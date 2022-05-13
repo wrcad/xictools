@@ -3506,11 +3506,11 @@ printtoraw
 proc2mod
 wrspiced
 
-!! utilities.tex 012609
+!! utilities.tex 051222
 !!KEYWORD
 mmjco
 !!TITLE
-The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
+The <tt>mmjco</tt> Utility: Tunnel Junction Model Calculator
 !!HTML 
     <i>WRspice</i> contains an internal tunnel junction model (<a
     href="tjm">TJM</a>) of a Josephson junction.  The model requires
@@ -3535,7 +3535,7 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
     tunnel junction amplitudes, which basically evaluates the Werthamer
     model as formulated for MiTMoJCo by Gulevich, the second to compress
     the amplitudes into a compact representation.  This representation is
-    used by the TJM (JJ level=3) device model in <i>WRspice<i>.  The
+    used by the TJM (JJ level=3) device model in <i>WRspice</i>.  The
     method is that of Odintsov, Semenov, and Zorin (See below for a list
     of references).
 
@@ -3547,7 +3547,7 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
     having to create a fit file at each temperature.
     <p>
     <li>There is a built-in BCS computation of energy gap given
-    tempoerature, superconducting transition temperature, and Debye
+    temperature, superconducting transition temperature, and Debye
     temperature of the junction materials.
     <p>
     <li>Tunnel current amplitude tables are generated in "rawfile"
@@ -3555,8 +3555,8 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
     <i>WaveView</i>.
     <p>
     <li>The fit and sweep file formats are compatible with the TJM
-    developed for Synoppsys PrimeSim-HSPICE under the IARPA SuperTools
-    project.
+    developed for Synopsys PrimeSim-HSPICE under the IARPA SuperTools
+    program.
     </ul>
 
     <h3>Running mmjco</h3>
@@ -3565,8 +3565,8 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
     Running <b>mmjco</b> enters a command-line processing loop, the
     user responds to the "<tt>mmjco></tt> " prompt with commands from
     the list below.  Each command can be followed by options as
-    indicated.  Additionally, there "<tt>cdf</tt>" and "<tt>swp</tt>"
-    mode where <b>mmjco</b> will create TCA and fit files or
+    indicated.  Additionally, there are "<tt>cdf</tt>" and "<tt>swp</tt>"
+    modes where <b>mmjco</b> will create TCA and fit files or
     temperature sweep files according to the arguments, and exit. 
     This is mostly to support <i>WRspice</i>, which uses this mode to
     create new models on-the-fly.
@@ -3578,25 +3578,26 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
 
     <h3>Command Line Operations</h3>
 
+    These modes are used by the TJM device model in <i>WRspice</i>.
+
     <p>
-    <tt>mmjco cdf</tt> <i>arguments</i>
+    Command:  <tt>mmjco cdf</tt> <i>arguments</i>
 
     <p>
     If the first argument to the <b>mmjco</b> executable is <tt>cdf</tt>,
     a TCA file and corresponding fit file are created, and <b>mmjco</b>
     exits immediately in this case.  Arguments following <tt>cdf</tt> are
     the same arguments that can follow the <tt>cd</tt> and <tt>cf</tt>
-    interactive commands.  This mode is used by the TJM device model in
-    <i>WRspice</i>.
+    interactive commands.
 
     <p>
-    <tt>mmjco swp -fs</tt> <i>sweepfile</i> <i>temperature</i>
+    Command:  <tt>mmjco swp -fs</tt> <i>sweepfile</i> <i>temperature</i>
 
     <p>
     Similarly, <tt>swf</tt> will create a possibly-interpolated fit file
     from an existing sweep file, for the temperature provided.
 
-    <h3>Interactive mmjco Commands</h3>
+    <h3>Interactive <b>mmjco</b> Commands</h3>
 
     <p>
     The following are the interactive commands which can be entered after
@@ -3606,7 +3607,7 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
       <dt>
       <tt>cd</tt>[<tt>ata</tt>]  [<tt>-t</tt> <i>temp</i>] 
       [<tt>-d</tt>|<tt>-d1</tt>|<tt>-d2</tt> <i>delta</i>]
-      [<tt>-s</tt> <i>smooth<i>] [<tt>-x</tt> <i>nx</i>]
+      [<tt>-s</tt> <i>smooth</i>] [<tt>-x</tt> <i>nx</i>]
       [<tt>-f</tt> <i>filename</i>] [<tt>-r</tt>|<tt>-rr</tt>|<tt>-rd</tt>]
       <dd>
       Create TCA data, save internally and to a file.  See below for
@@ -3644,7 +3645,7 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
      A name for the TCA amplitude file.  If not given, a default is used,
      described below.
      </td></tr>
-    <tr>td><tt>-r</tt></td> <td>
+    <tr><td><tt>-r</tt></td> <td>
      Output file is a complex-valued rawfile.
      </td></tr>
     <tr><td><tt>-rr</tt></td> <td>
@@ -3661,7 +3662,7 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
     <dl>
       <dt>
       <tt>cf</tt>[<tt>it</tt>]  [<tt>-n</tt> <i>terms</i>]
-      [<tt>-h</tt> <i>thr</i><] [<tt>-ff</tt> <i>filename>/i>]
+      [<tt>-h</tt> <i>thr</i>] [<tt>-ff</tt> <i>filename</i>]
       <dd>
       Create fit parameters for TCA data currently in memory from <tt>cd</tt>
       or <tt>ld</tt> commands.  This is saved internally and to a file.  See
@@ -3728,7 +3729,7 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
       records of fit parameters for temperatures starting with
       <i>Tstrt</i> and ending at at or near <i>Tend</i>, spaced in
       temperature by <i>Tdelta</i>.  These are real numbers in Kelvin.  If
-      the third numbver <i>Tdelta</i> does not appear, 0.1K is assumed. 
+      the third number <i>Tdelta</i> does not appear, 0.1K is assumed. 
       The <i>arguments</i> are those that can be given to the <tt>cd</tt>
       or <tt>cf</tt> commands.
     </dl>
@@ -3804,7 +3805,7 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
     </dl>
 
     <dl>
-      <dt>'
+      <dt>
       <tt>q</tt>[<tt>uit</tt>] | <tt>e</tt>[<tt>xit</tt>]
       <dd>
       Exit <b>mmjco</b>.
@@ -3836,18 +3837,18 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
     rounding to integer.
 
     <dl>
-    <dt>TTTTTT
+    <dt><tt>TTTTTT</tt>
     <dd>A six-digit integer equal to 1e4*<i>temperature</i>.
-    <dt>ddddd
+    <dt><tt>ddddd</tt>
     <dd>A 5-digit integer equal to 1e7*<i>d1</i>, where <i>d1</i> is the
      side 1 gap potential in volts.
-    <dt>DDDDD
+    <dt><tt>DDDDD</tt>
     <dd>A 5-digit integer equal to 1e7*<i>d2</i>, where <i>d2</i> is the
      side 2 gap potential in volts.
-    <dt>ss
+    <dt><tt>ss</tt>
     <dd>A two digit integer equal to 1e3*<i>sf</i>, where <i>sf</i> is the
      smoothing parameter.
-    <td>PPPP
+    <td><tt>PPPP</tt>
     <dd>The number of points used (<tt>-x</tt> option).
     </dl>
 
@@ -3859,15 +3860,15 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
     The fitting parameter file name has the following form.
 
     <blockquote>
-    <tt>tcaTTTTTTdddddDDDDDssPPPP-NNHHH.fit</tt>
+    <tt>tcaTTTTTTdddddDDDDDssPPPP-nNHHH.fit</tt>
     </blockquote>
 
     The first part, ahead of the '-', is as described above.  Following
     the hyphen:
     <dl>
-    <dt>NN
+    <dt><tt>nn</tt>
     <dd>The two-digit fitting table size.
-    <dt>HHH
+    <dt><tt>HHH</tt>
     <dd>A three digit integer equal to 1e3*<i>thr</i>, where <i>thr</i> is
      the compression threshold.
     </dl>
@@ -3875,23 +3876,23 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
     Sweep file names have the following form.
 
     <blockquote>
-    <tt>tswNNNttttttTTTTTTssPPPP-NNHHH.swp</tt>
+    <tt>tswNNNttttttTTTTTTssPPPP-nnHHH.swp</tt>
     </blockquote>
 
     The part following the hyphen is the same as for the fit file.
     <dl>
-    <dt>NNN
+    <dt><tt>NNN</tt>
     <dd>A three digit integer giving the number of records in the file.
-    <dt>tttttt
+    <dt><tt>tttttt</tt>
     <dd>A six digit integer equal to 1e4*<i>Tstart</i>, where
     <i>Tstart</i> is the starting temperature in Kelvin.
-    <td>TTTTTT
+    <td><tt>TTTTTT</tt>
     <dd>A six digit integer equal to 1e4*<i>Tdelta</i>, where
     <i>Tdelta</i> is the temperature spacing.
-    <dt>ss
+    <dt><tt>ss</tt>
     <dd>A two digit integer equal to 1e3*<i>sf</i>, where <i>sf</i> is the
      smoothing parameter.
-    <td>PPPP
+    <td><tt>PPPP</tt>
     <dd>The number of points used (<tt>-x</tt> option).
     </dl>
 
@@ -3905,6 +3906,9 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Amplitude Calculator
 
     <h3>References</h3>
 
+    Background references from the MiTMoJCo project.
+
+    <p>
     Tunnel current calculation:<br>
     A. I. Larkin and Yu. N. Ovchinnikov, Sov. Phys. JETP 24, 1035 (1967).<br>
     D. R. Gulevich, V. P. Koshelets, and F. V. Kusmartsev, Phys. Rev. B 96,
