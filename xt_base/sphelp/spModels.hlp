@@ -2084,7 +2084,7 @@ MOSFET Models
 
 .REDIRECT jjtcf jjmodel#jjtcf
 
-!! elements.tex 013022
+!! elements.tex 051422
 !!KEYWORD
 jjmodel 
 !!TITLE
@@ -2108,8 +2108,8 @@ Josephson Models
 
     <p>
     For <tt>level=3</tt>, a <a href="tjmodel">microscopic tunnel
-    junction</a> "Werthamer" model, also known as a Tunnel Junction
-    Model (TJM) is provided.  The model is more physics-based that the
+    junction</a> "Werthamer" model, also known as a tunnel junction
+    model (TJM) is provided.  The model is more physics-based than the
     empirical RSJ model.
 
     <p>
@@ -2127,7 +2127,7 @@ Josephson Models
 
     <p>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
-    <caption>Josephson Junction Level 1,2 Model Parameters</caption>
+    <caption>Josephson Junction RSJ Model (Level 1,2) Parameters</caption>
     <tr><th>name</th> <th>area</th>
         <th>parameter</th>
         <th>units</th> <th>default</th></tr>
@@ -2180,17 +2180,17 @@ Josephson Models
         <td>Capacitance scaling parameter</td>
         <td>-</td>      <td>0.0</td></tr>
     <tr><td><tt>vm</tt></td> <td>&nbsp;</td>
-        <td>Reference junction ICRIT*RSUB</td>
+        <td>Reference junction <tt>icrit*rsub</tt></td>
         <td>V</td>      <td>16.5e-3</td></tr>
     <tr><td><tt>rsub</tt> or <tt>r0</tt></td> <td>*</td>
-        <td>Reference subgap resistance</td>
-        <td>&#8486;</td>      <td>vm/icrit</td></tr>
+        <td>Reference junction subgap resistance</td>
+        <td>&#8486;</td>      <td><tt>vm/icrit</tt></td></tr>
     <tr><td><tt>icrn</tt></td> <td>&nbsp;</td>
-        <td>Reference ICRIT*RNORM</td>
+        <td>Reference junction <tt>icrit*rnorm</tt></td>
         <td>V</td>      <td>1.65e-3</td></tr>
     <tr><td><tt>rnorm</tt> or <tt>rn</tt></td> <td>*</td>
         <td>Reference normal state resistance</td>
-        <td>&#8486;</td>      <td>icrn/icrit</td></td></tr>
+        <td>&#8486;</td>      <td><tt>icrn/icrit</tt></td></td></tr>
     <tr><td><tt>gmu</tt></td> <td>&nbsp;</td>
         <td>Conductance scaling parameter</td>
         <td>-</td>      <td>0.0</td></tr>
@@ -2198,7 +2198,8 @@ Josephson Models
         <td>Ratio of critical to step currents</td>
         <td>-</td>      <td>pi/4</td></tr>
     <tr><td><tt>force</tt></td> <td>&nbsp;</td>
-        <td>No limits imposed for VM, RSUB, ICRN, RNORM</td>
+        <td>No limits imposed on <tt>vm</tt>, <tt>rsub</tt>, <tt>icrn</tt>,
+          <tt>rnorm</tt></td>
         <td>-</td>      <td>0</td></tr>
     <tr><td><tt>vshunt</tt></td> <td>&nbsp;</td>
         <td>Voltage to specify external shunt resistance</td>
@@ -2210,10 +2211,10 @@ Josephson Models
         <td>Shunt resistor inductance per ohm</td>
         <td>H/&#8486;</td>  <td>0.0</td></tr>
     <tr><td><tt>tsfactor</tt></td> <td>&nbsp;</td>
-        <td>Phase change max per time step per 2pi</td>
+        <td>Phase change max per time step per 2&pi;</td>
         <td></td>      <td><tt>dphimax</tt>/2&pi;</td></tr>
     <tr><td><tt>tsaccel</tt></td> <td>&nbsp;</td>
-        <td>Rario max time step to that at dripback voltage</td>
+        <td>Ratio max time step to that at <tt>vdp</tt></td>
         <td></td>      <td><tt>1.0</tt></td></tr>
     <tr><td><tt>vdp</tt></td> <td>&nbsp;</td>
         <td>Dropback voltage (read only)</td>
@@ -2230,7 +2231,6 @@ Josephson Models
 
     <dl>
     <dt><tt>level</tt><dd>
-
     This specifies the model to use.  There are three choices provided
     in <i>WRspice</i>.  Level 1 (the default) is the internal RSJ
     model, and level 2 indicates the Verilog-A example RSJ model,
@@ -2243,7 +2243,7 @@ Josephson Models
     <dt><tt>pijj</tt><dd>
     If this flag is given a nonzero integer value, the junctions will
     be modeled as a "pi junction" meaning that the zero-current phase
-    is pi rather than zero.  Such devices have been fabricated using
+    is &pi; rather than zero.  Such devices have been fabricated using
     ferromagnetic barrier materials.  Although these devices have some
     interesting behavior, they are not at this point available or used
     with any frequency.
@@ -2308,12 +2308,13 @@ Josephson Models
 
     <p>
     It is currently not possible to use other than the piecewise
-    linear model with temperature variation.  If <tt>rtype</tt>=4,
-    then legal values for the critical current parameter are
-    <tt>cct</tt>=0 (no critical current) and <tt>cct</tt>=1 (fixed
-    critical current).  If another value is specified for
-    <tt>cct</tt>, <tt>cct</tt> reverts to 0.  Thus, magnetic coupling
-    and quasiparticle injection are not simultaneously available.
+    linear model with this type of temperature variation.  If
+    <tt>rtype</tt>=4, then legal values for the critical current
+    parameter are <tt>cct</tt>=0 (no critical current) and
+    <tt>cct</tt>=1 (fixed critical current).  If another value is
+    specified for <tt>cct</tt>, <tt>cct</tt> reverts to 0.  Thus,
+    magnetic coupling and quasiparticle injection are not
+    simultaneously available.
     </dl>
 
     <dl>
@@ -2377,7 +2378,7 @@ Josephson Models
     <dl>
     <dt><tt>tdebye</tt></tt><dd>
     <b>range:</b> 40K - 500K<br>
-    This is the Debye temperature of the material(s) used in the
+    This is the Debye temperature of the material used in the
     Josephson junction.  The default is 276K corresponding to niobium. 
     The model support can compute the superconducting energy gap as a
     function of temperature, transition temperature, and Debye
@@ -2532,7 +2533,7 @@ Josephson Models
 
     <dl>
     <dt><tt>vm</tt><dd>
-    <b>range:</b>8mV - 100mV, can be 0 if Level=3<br>
+    <b>range:</b>8mV - 100mV<br>
     This is the product of the reference subgap resistance and the
     reference device critical current.  This parameter is commonly
     provided by foundries, and is a standard indicator for junction
@@ -2542,36 +2543,19 @@ Josephson Models
     href="tolpygo">[Tolpygo]</a>, which is 16.5mV, The reference
     junction subgap resistance is obtained from the value of this
     parameter and the critical current, unless given explicitly.
-
-    <p>
-    For the Level 3 model, the intrinsic subgap conductivity will be
-    subtracted if smaller than the given <tt>vm</tt> implies.  If
-    <tt>vm</tt> is set to 0, then no additional conductivity will be
-    added and only the intrinsic conductivity will be seen.  Often,
-    the intrinsic subgap conductivity is much smaller than observed in
-    real junctions.
     </dl>
 
     <dl>
     <dt><tt>rsub</tt> or <tt>r0</tt><dd>
-    <b>range:</b> 8mV/<tt>icrit</tt> - 100mV/<tt>icrit</tt>, can be 0
-    if Level=3<br>
+    <b>range:</b> 8mV/<tt>icrit</tt> - 100mV/<tt>icrit</tt><br>
     The reference junction subgap resistance can be given directly
     with this parameter, and a given value will override the
     <tt>vm</tt> value if also given.
-
-    <p>
-    For the Level 3 model, the subgap conductance will be reduced by
-    the intrinsic condutance if this is smaller.  If <tt>vm</tt> is
-    given as 0 and this parameter is not given, the parameter value
-    will be 0.  If the value is 0, no additional conductance will be
-    added.
     </dl>
 
     <dl>
     <dt><tt>icrn</tt><dd>
     <b>range:</b> 1.5mV - 1.9mV<br>
-    <b>Levels 1 and 2 only.</b><br>
     This is the product of the reference junction "normal state"
     resistance and the critical current, where the normal state
     resistance is the differential resistance measured well above the
@@ -2586,7 +2570,6 @@ Josephson Models
     <dl>
     <dt><tt>rnorm</tt> or <tt>rn</tt><dd>
     <b>range:</b> 1.5mV/<tt>icrit</tt> - 1.9mV/<tt>icrit</tt><br>
-    <b>Levels 1 and 2 only.</b><br>
     The reference junction normal state resistance can be given
     explicitly with this parameter, which will override <tt>icrn</tt>
     if this is also given.
@@ -2715,7 +2698,7 @@ Josephson Models
     </dl>
 
     <dl>
-    <dt><tt>vdpbak</tt> (read only)<dd>
+    <dt><tt>vdp</tt> (read only)<dd>
     This parameter returns the computed value of the dropback voltage,
     which is the voltage at which the return trace of a hysteretic
     Josephson junction i-v curve snaps back to the zero-voltage state. 
@@ -2727,6 +2710,7 @@ Josephson Models
 !!SEEALSO
 .model
  
+!! elements.tex 051422
 !!KEYWORD
 tjmodel 
 !!TITLE
@@ -2736,7 +2720,7 @@ Josephson Tunnel Junction Model
 
     <p>
     For <tt>level=3</tt>, a microscopic tunnel junction "Werthamer"
-    model, also known as a Tunnel Junction Model (TJM) is indicated. 
+    model, also known as a tunnel junction model (TJM) is indicated. 
     The model is more physics-based that the empirical <a
     href="jjmodel">RSJ model</a>.  The formulation follows the method of
     <blockquote>
@@ -2754,8 +2738,8 @@ Josephson Tunnel Junction Model
     OSZ approach in the reference, which in addition to saving memory
     allows rapid evaluation of the model expressions, basically
     replacing a required integration by a short series expansion. 
-    Thus model evaluation can be relatively inexpensive, though not as
-    fast as the simple RSJ model.
+    Thus model evaluation can be relatively inexpensive, though it is
+    not as fast as the simple RSJ model.
 
     <p>
     The parameters marked with an asterisk in the <b>area</b> column
@@ -2770,7 +2754,7 @@ Josephson Tunnel Junction Model
 
     <p>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
-    <caption>Josephson Junction Level 3 Model Parameters</caption>
+    <caption>Josephson Tunnel Junction Model (Level 3) Parameters</caption>
     <tr><th>name</th> <th>area</th>
         <th>parameter</th>
         <th>units</th> <th>default</th></tr>
@@ -2835,7 +2819,7 @@ Josephson Tunnel Junction Model
         <td>capacitance scaling parameter</td>
         <td>-</td>      <td>0.0</td></tr>
     <tr><td><tt>vm</tt></td> <td>&nbsp;</td>
-        <td>Reference junction ICRIT*RSUB</td>
+        <td>Reference junction <tt>icrit*rsub</tt></td>
         <td>V</td>      <td>16.5e-3</td></tr>
     <tr><td><tt>rsub</tt> or <tt>r0</tt></td> <td>*</td>
         <td>Reference subgap resistance</td>
@@ -2864,15 +2848,15 @@ Josephson Tunnel Junction Model
     <tr><td><tt>tsaccel</tt></td> <td>&nbsp;</td>
         <td>Ratio max time step to that at dropback voltage</td>
         <td></td>      <td><tt>1.0</tt></td></tr>
-    <tr><td><tt>dell1</tt></td> <td>&nbsp;</td>
-        <td>Side 1 delta at TNOM (read only)</td>
-        <td>V</td>      <td><tt>276</tt></td></tr>
-    <tr><td><tt>dell2</tt></td> <td>&nbsp;</td>
-        <td>Side2 delta at TNOM (read only)</td>
-        <td>V</td>      <td><tt>276</tt></td></tr>
-    <tr><td><tt>vg</tt> or <tt>vgap</tt></td> <td>&nbsp;</td>
-        <td>Gap voltage at TNOM (read only)</td>
-        <td>V</td>      <td><tt>276</tt></td></tr>
+    <tr><td><tt>dell1</tt> (read only)</td> <td>&nbsp;</td>
+        <td>Side 1 delta at <tt>tnom</tt></td>
+        <td>V</td>      <td></td></tr>
+    <tr><td><tt>dell2</tt> (read only)</td> <td>&nbsp;</td>
+        <td>Side2 delta at <tt>tnom</tt></td>
+        <td>V</td>      <td></td></tr>
+    <tr><td><tt>vg</tt> or <tt>vgap</tt> (read only)</td> <td>&nbsp;</td>
+        <td>Gap voltage at <tt>tnom</tt></td>
+        <td>V</td>      <td></td></tr>
     </table>
 
     <p>
@@ -2900,9 +2884,9 @@ Josephson Tunnel Junction Model
     <p>
     These files are produced automatically as needed according to the
     given model parameters and cached in the users <tt>.mmjco</tt>
-    directory.  So it is not common to use this parameter to load a
-    set by name, except to supply a name for a sweep file that the
-    user has prepared with <tt>mmjco</tt> which would provide
+    directory.  Therefor it is not common to use this parameter to
+    load a set by name, except to supply a name for a sweep file that
+    the user has prepared with <tt>mmjco</tt> which would provide
     precomputed data for all temperatures that might be of use,
     thereby avoiding on-the-fly table creation which can take some
     time.
@@ -2949,13 +2933,13 @@ Josephson Tunnel Junction Model
     <dl>
     <dt><tt>tc</tt>, <tt>tc1</tt>, <tt>tc2</tt><dd>
     <b>range:</b> 0.1K - 280.0K<br>
-    This is the superconducting transition temperature of the material
-    used in the Josephson junction.  The default value is 9.26K, the
-    transition temperature of niobium.  The transition temperature may
-    be set separately on side 1 and side 2 of the junction using the
-    <tt>tc1</tt> and <tt>tc2</tt> keywords.  The <tt>tc</tt> keyword
-    sets both sides.  If ambiguous, the last real or implied setting
-    has precedence.
+    This is the superconducting transition temperature of the
+    material(s) used in the Josephson junction.  The default value is
+    9.26K, the transition temperature of niobium.  The transition
+    temperature may be set separately on side 1 and side 2 of the
+    junction using the <tt>tc1</tt> and <tt>tc2</tt> keywords.  The
+    <tt>tc</tt> keyword sets both sides.  If ambiguous, the last real
+    or implied setting has precedence.
     </dl>
 
     <dl>
@@ -3215,14 +3199,14 @@ Josephson Tunnel Junction Model
     </dl>
 
     <dl>
-    <dt><tt>del1</tt>, <tt>del2</tt><dd>
+    <dt><tt>del1</tt>, <tt>del2</tt> (read only)<dd>
     These two read-only parameters return the gap potential in the
     electrodes.  These are computed internally as a function of
     temperature.
     </dl>
 
     <dl>
-    <dt><tt>vg</tt> or <tt>vgap</tt><dd>
+    <dt><tt>vg</tt> or <tt>vgap</tt> (read only)<dd>
     The junction gap voltage, equal to <tt>del1 + del2</tt>.
  
 !!SEEALSO

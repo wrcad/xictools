@@ -1064,7 +1064,7 @@ tra
 
 !!REDIRECT jjdesc jj#jjdesc
 
-!! elements.tex 013022
+!! elements.tex 051422
 !!KEYWORD
 jj
 !!TITLE
@@ -1092,8 +1092,8 @@ Josephson Junctions
 
     <p>
     For <tt>level=3</tt>, a <a href="tjmodel">microscopic tunnel
-    junction</a> "Werthamer" model, also known as a Tunnel Junction
-    Model (TJM) is provided.  The model is more physics-based that the
+    junction</a> "Werthamer" model, also known as a tunnel junction
+    model (TJM) is provided.  The model is more physics-based than the
     empirical RSJ model.
 
     <p>
@@ -1107,7 +1107,7 @@ Josephson Junctions
     in the <a href="tjm">next section</a>.
 
     <p>
-    Instance Parameters, JJ levels 1 and 2:<br>
+    Josephson Junction Instance Parameters Levels 1 and 2<br>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><th>Parameter Name</th> <th>Description</th></tr>
     <tr><td><tt>pijj=1|0</tt></td> <td>
@@ -1572,7 +1572,7 @@ Josephson Junctions
     the superconducting wave function be continuous around the loop. 
     Further, if the loop phase is not zero, it implies that a
     persistent current is flowing around the loop, and that the
-    magnetic fluc through the loop is a multiple of the flux quantum
+    magnetic flux through the loop is a multiple of the flux quantum
     &Phi;<sub>0</sub>.
 
     <p>
@@ -1630,7 +1630,7 @@ Josephson Junctions
 elements
 tjm
 
-!! elements.tex XXXXX
+!! elements.tex 051422
 !!KEYWORD
 tjm
 !!TITLE
@@ -1698,6 +1698,12 @@ Josephson Junctions (Tunnel Junction Model)
       Normal conductance.</td></tr>
     <tr><td><tt>rsint</tt> (read only)</td> <td>
       Intrinsic subgap resistance.</td></tr>
+    <tr><td><tt>gshunt</tt> (read only)</td> <td>
+      External shunt conductance from VSHUNT.</td></tr>
+    <tr><td><tt>rshunt</tt> (read only)</td> <td>
+      External shunt resistance from VSHUNT.</td></tr>
+    <tr><td><tt>lshval</tt> (read only)</td> <td>
+      External shunt resistor parasitic inductance.</td></tr>
     <tr><td><tt>del1</tt> (read only)</td> <td>
       Side 1 delta.</td></tr>
     <tr><td><tt>del2</tt> (read only)</td> <td>

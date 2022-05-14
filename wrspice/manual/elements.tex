@@ -4309,11 +4309,35 @@ BSIM3v3.1.  The following parameters are new for v3.2:
 \subsection{Josephson Junctions}
 \index{Josephson junction instance}
 
-% spElements.hlp:jj 013022
+% spElements.hlp:jj 051422
 
 \spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
  [{\it parameters} ...]}
 
+The default Josephson junction model is an extended version of the RSJ
+model as used by Jewett\cite{jewett}.  There are actually three
+Josephson junction models available, through the {\vt level} model
+parameter, which can take values 1 through 3.  The default {\vt
+level=1} model is the RSJ model mentioned.  This model has a
+simplified Verilog-A version which can be found among the Verilog-A
+examples.  This can be compiled with the {\vt adms} utility into a
+run-time loadable module which can be loaded with the {\cb devload}
+command.  A pre-compiled module is provided with the example.  Once
+loaded into {\WRspice}, the model can be accessed with {\vt level=2}.
+
+For {\vt level=3}, a microscopic tunnel junction "Werthamer" model,
+also known as a Tunnel Junction Model (TJM) is provided.  The model is
+more physics-based than the empirical RSJ model.
+
+Unless stated otherwise, information presented here applies to
+instances of the standard RSJ model ({\vt level=1}) and the Verilog-A
+Josephson junction model ({\vt level=2}) provided with {\WRspice} in
+the Verilog-A examples.
+
+The instance parameters for the microscopic model are described in the
+\ref{tjm}.
+
+Josephson Junction Instance parameters, Levels 1 and 2\\
 \begin{tabular}{|l|p{4.5in}|}\hline
 \bf Parameter Name & \bf Description\\ \hline\hline
 {\vt pijj=1|0} & Whether the device is a ``pi'' junction.\\ \hline
@@ -4332,21 +4356,44 @@ BSIM3v3.1.  The following parameters are new for v3.2:
   transient analysis, alias {\vt ic\_phase}.\\ \hline
 {\vt control=}{\it name} & Controlling voltage source or inductor
   name.\\ \hline
-{\vt n} & SFQ emission count (read only).\\ \hline
-{\vt phase} & Junction phase (read only).\\ \hline
-{\vt phsf} & True if SFQ count change at current time point (read only).\\
+{\vt n} (read only) & SFQ emission count.\\ \hline
+{\vt phsf} (read only) & True if SFQ count change at current time point.\\
  \hline
-{\vt phst} & Time of last SFQ emission (read only).\\ \hline
+{\vt phst} (read only) & Time of last SFQ emission.\\ \hline
+{\vt v} (read only) & Terminal voltage.\\ \hline
+{\vt phase} (read only) & Junction phase, alias {\vt phs}.\\ \hline
+{\vt tcf} (read only) & Temperature compensation factor.\\ \hline
+{\vt vg} or {\vt vgap} (read only) & Gap voltage.\\ \hline
+{\vt vless} (read only) & Gap threshold voltage.\\ \line
+{\vt more} (read only) & Gap knee voltage.\\ \hline
+{\vt icrit} (read only) & Maximum critical current.\\ \hline
+{\vt cc} (read only) & Capacitance current.\\ \hline
+{\vt cj} (read only) & Josephson current.\\ \hline
+{\vt cq} (read only) & Quasiparticle current.\\ \hline
+{\vt c} (read only) & Total device current.</td></tr>
+{\vt cap} (read only) & Capacitance.\\ \hline
+{\vt g0} (read only) & Subgap conductance.\\ \hline
+{\vt gn} (read only) & Normal conductance.\\ \hline
+{\vt gs} (read only) & Quasiparticle onset conductance.\\ \hline
+{\vt gshunt} (read only) & External shunt conductance from VSHUNT.\\ \hline
+{\vt rshunt} (read only) & External shunt resistance from VSHUNT.\\ \hline
+{\vt lshval} (read only) & External shunt resistor parasitic inductance.\\
+ \hline
+{\vt g1} (read only) & NbN quasiparticle parameter.\\ \hline
+{\vt g2} (read only) & NbN quasiparticle parameter.\\ \hline
+{\vt node1} (read only) & Node 1 number.\\ \hline
+{\vt node2} (read only) & Node 2 number.\\ \hline
+{\vt pnode} (read only) & Phase node number.\\ \hline
+{\vt lsernode} (read only) & Internal LSER node number.// /hline
+{\vt lserbrn} (read only) & Internal LSER branch number.\\ \hline
+{\vt lshnode} (read only) & Internal LSH node number.\\ \hline
+{\vt lshbrn} (read only) & Internal LSH branch number.\\ \hline
 \end{tabular}
 
 \spexamp{b1 1 0 10 jj1 ics=200uA\\
+b1 1 0 10 jj1 ics=200uA\\
 bxx 2 0 type1 control=l3\\
 b2 4 5 ybco phi=1.57}
-
-Unless stated otherwise, information presented here applies to the
-standard RSJ model, the Verilog-A Josephson junction model provided
-with {\WRspice} in the Verilog-A examples, and the microscopic model.
-These are referred to as levels 1, 2, and 3 respectively.
 
 The {\it n+} and {\it n-} are the positive and negative element nodes,
 respectively.  These are followed by an optional phase node.  The
@@ -4359,7 +4406,6 @@ values).  Other (optional) parameters follow in any order.
 
 \begin{description}
 \item{\vt pijj}\\
-{\bf Levels 1 and 2 only.}\\
 If the {\vt pijj} parameter is given and set to a nonzero integer
 value, the device instance will behave as a ``pi'' junction.  This
 type of junction has a ground state with phase $\pi$ rather than 0. 
@@ -4436,7 +4482,7 @@ This provides the initial junction phase in radians when the ``{\vt
 uic}'' option is included in the transient analysis specification.
 
 \item{\vt control}\\
-{\bf evel 1 only.}\\
+{\bf level 1 only.}\\
 The {\vt control} parameter is only needed if critical current
 modulation is part of the circuit operation, and is only relevant to
 Josephson junction model types that support critical current
@@ -4445,15 +4491,18 @@ larger than 1.  The {\it name} in the {\vt control} specification is
 the name of either a voltage source or inductor which appears
 somewhere in the circuit.  The current flowing through the indicated
 device is taken as the junction control current.
+\end{description}
 
+The remaining parameters are ``read only'' and can be accessed with
+the {\vt @}{\it device\/}[{\it param\/}] special vector notation
+during the simulation (in callbacks) or after the simulation if the
+vector is saved with the {\cb save} command or equivalent.
+
+\begin{description}
 \item{\vt n} (read only)\\
 This integer value is incremented whenever the junction phase changes
-by $2\pi$.  It is intended for pass/fail testing of SFQ circuit
-operation.
- 
-\item{\vt phase} (read only)\\
-This is set to the junction phase, and reading this is an alternative
-to using a third node to obtain the phase.
+by plus or minus $2\pi$.  It is intended for pass/fail testing of
+single flux quantum (SFQ) circuit operation.
  
 \item{\vt phsf} (read only)\\
 This flag is set true at the time point when the SFQ emission count
@@ -4463,6 +4512,116 @@ circuits.
 \item{\vt phst} (read only)\\
 This read-only parameter contains the last time that the SFQ emission
 count changed, intended for use in SFQ pass/fail testing.
+
+\item{\vt v} (read only)\\
+The voltage across the junction.
+
+\item{\vt phase} (read only)\\
+The junction phase.  Reading this is an alternative to using a third
+node to obtain the phase.
+
+\item{tcf} (read only)\\
+The temperature correction factor that modifies the critical
+current at operating temperatures other than nominal.  See the
+description of the temperature dependence of
+the RSJ model in \ref{tcf}.
+
+\item{\vt vg} or {\vt vgap} (read only)\\
+The gap voltage of the junction.
+
+\item{\vt vless} (read only)\\
+The voltage where the quasiparticle step current begins to rise.  it
+is the lower bounding point used to indicate the {\vt delv} gap
+spread, i.e., it is equal to {\vt vg - delv/2}.
+
+\item{\vt vmore} (read only)\\
+The voltage where the quasiparticle step ends and the normal resistive
+part begins.  It is the upper point used to indicate the {\vt delv}
+gap spread, equal to {\vt vg + delv/2}.
+
+\item{\vt icrit} (read only)\\
+The critical current of the junction instance.
+
+\item{\vt cc} (read only)\\
+The current flowing through the geometric capacitance of the junction.
+
+\item{\vt cj} (read only)\\
+The pair current (supercurrent) flowing through the junction.
+
+\item{\vt cq} (read only)\\
+The quasiparticle (normal) current flowing through the device.
+
+\item{\vt c} (read only)\\
+The total current flowing through the device, the sum of {\vt cc},
+{\vt cj} and {\vt cq}.
+
+\item{\vt cap} (read only)\\
+The geometric capacitance of the device instance.
+
+\item{\vt g0} (read only)\\
+The subgap conductance of the device instance.
+
+\item{\vt gn} (read only)\\
+The normal state conductance of the device instance.
+
+\item{\vt gs} (read only)\\
+The conductance of the quasiparticle branch at the gap voltage.
+
+\item{\vt gshunt} (read only)\\
+If the {\vt vshunt} model parameter is given and nonzero,
+{\vt gshunt} will return the external conductance added to the
+intrinsic conductance so that the total conductance multiplied
+by the critical current will equal {\vt vshunt}.
+
+\item{\vt rshunt} (read only)\\
+If {\vt gshunt} is nonzero, {\vt rshunt} will be the reciprocal,
+otherwise it will be 0.
+
+\item{\vt lshval} (read only)\\
+If the {\vt vshunt} model parameter is given and nonzero, this will be
+the parasitic inductance assumed in the external shunt resistance. 
+This will depend on the settings of the {\vt lsh0} and {\vt lsh1}
+model parameters, and the {\vt lsh} instance parameter which overrides
+the model parameters if given.
+
+\item{\vt g1} (read only)\\
+This applies if the {\vt rtype} model parameter is set to 3, which
+indicates use of the NbN polynomial model for subgap conductance. 
+This is the third-order amplitude in the polynomial.
+
+\item{\vt g2} (read only)\\
+This applies if the {\vt rtype} model parameter is set to 3, which
+indicates use of the NbN polynomial model for subgap conductance. 
+This is the fifth-order amplitude in the polynomial.
+
+\item{\vt node1} (read only)\\
+The internal node number of the first node.
+
+\item{\vt node2} (read only)\\
+The internal node number of the second node.
+
+\item{\vt pnode} (read only)\\
+The internal node number of the third (phase) node, 0 or -1 if not
+used.
+
+\item{\vt lsernode} (read only)\\
+The internal node number of the device internal node added for series
+parasitic inductance.  This will be 0 or -1 if not used (no series
+parasitic inductance assumed).
+
+\item{\vt lserbrn} (read only)\\
+If series parasitic inductance is nonzero ({\vt lser} given) this will
+be the internal number of the branch node of the inductor.
+
+\item{\vt lshnode} (read only)\\
+If the {\vt vshunt} model parameter is given and nonzero, and series
+parasitic inductance is nonzero, this will be the internal node number
+of the internal device node that incorporates the series inductance.
+
+\item{\vt lshbrn} (read only)\\
+If the {\vt vshunt} model parameter is given and nonzero, and series
+parasitic inductance is nonzero, this will be the internal branch
+number of the inductor's branch.
 \end{description}
 
 The Josephson junction device has unique behavior which complicates
@@ -4505,7 +4664,7 @@ around any loop consisting of Josephson junctions and inductors must
 be a multiple of $2\pi$.  This is due to the requirement that the
 superconducting wave function be continuous around the loop.  Further,
 if the loop phase is not zero, it implies that a persistent current is
-flowing around the loop, and that the magnetic fluc through the loop
+flowing around the loop, and that the magnetic flux through the loop
 is a multiple of the flux quantum $\Phi_0$.
 
 We therefor observe that in a circuit containing loops of Josephson
@@ -4543,6 +4702,16 @@ Thus the prescription is to ramp up all sources from zero, use the
 caused by the ramping sources to die away before starting the ``real''
 simulation.  The ramping-up effectively replaces the DC operating
 point analysis.
+
+The second approach is to use phase-mode DC analysis (see
+\ref{phasemode}), which is used in {\WRspice} transparently when
+Josephson junctions are present.  This applies to explicit DC analysis
+as well as operating point analysis.  Further, this enables AC and
+similar small-signal analysis with Josephson junctions in {\WRspice}.
+
+See the Josephson junction model description for more information.
+
+XXXXXXXX
 
 {\WRspice} after release 4.3.3 offers a DC analysis capability which
 uses phase-mode for circuits containing Josephson junctions.  Unlike
@@ -4627,23 +4796,324 @@ avoid the long-standing need to use ``{\vt uic}'' and ramp sources up
 from zero, and makes available DC sweep analysis, and for the first
 time in any simulator AC small-signal analysis.
 
-See the Josephson junction model description for more information.
 
+\subsubsection{Josephson Junction, Tunnel Junction Model}
+
+% spElements.hlp:tjm 051422
+
+\spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
+ [{\it parameters} ...]}
+
+Instance parameters, JJ level 3:\\
+\begin{tabular}{|l|p{4.5in}|}\hline
+\bf Parameter Name & \bf Description\\ \hline\hline
+{\vt area=}{\it val} & Scale factor that multiplies all currents and
+  other values, effectively modifying the junction area.\\ \hline
+{\vt ics=}{\it val} & Instantiated critical current, used as scale factor
+  for capacitance, conductances.\\ \hline
+{\vt temp\_k=}{\it val} & Device temperature, Kelvin.\\ \hline
+{\vt lser=}{\it val} & Junction series parasitic inductance. \\ \hline
+{\vt lsh=}{\it val} & Shunt resistor series parasitic inductance. \\ \hline
+{\vt ic=}{\it vj\/},{\it phi} & The initial junction voltage and phase
+  (initial condition) for transient analysis.\\ \hline
+{\vt vj=}{\it vj} & The initial junction voltage (initial condition) for
+  transient analysis, alias {\vt ic\_v}.\\ \hline
+{\vt phi=}{\it phi} & The initial junction phase (initial condition) for
+  transient analysis, alias {\vt ic\_phase}.\\ \hline
+{\vt n} (read only) & SFQ emission count.\\ \hline
+{\vt phsf} (read only) & True if SFQ count change at current time point.\\
+ \hline
+{\vt phst} (read only) & Time of last SFQ emission.\\ \hline
+{\vt v} (read only) & Terminal voltage.\\ \hline
+{\vt phase} (read only) & Junction phase, alias {\vt phs}.\\ \hline
+{\vt tcf} (read only) & Temperature compensation factor.\\ \hline
+{\vt icrit} (read only) & Maximum critical current.\\ \hline
+{\vt cc} (read only) & Capacitance current.\\ \hline
+{\vt cj} (read only) & Josephson current.\\ \hline
+{\vt cq} (read only) & Quasiparticle current.\\ \hline
+{\vt c} (read only) & Total device current.</td></tr>
+{\vt cap} (read only) & Capacitance.\\ \hline
+{\vt g0} (read only) & Subgap conductance.\\ \hline
+{\vt gn} (read only) & Normal conductance.\\ \hline
+{\vt rsint} (read only) & Intrinsic subgap resistance.\\ \hline
+{\vt gshunt} (read only) & External shunt conductance from VSHUNT.\\ \hline
+{\vt rshunt} (read only) & External shunt resistance from VSHUNT.\\ \hline
+{\vt lshval} (read only) & External shunt resistor parasitic inductance.\\
+[\vt del1} (read only) & Side 1 delta.\\ \hline
+{\vt del2} (read only) & Side 2 delta.\\ \hline
+{\vt vg} or {\vt vgap} (read only) & Gap voltage.\\ \hline
+{\vt vdp} (read only) & Dropback voltage.\\ \hline
+{\vt omega} (read only) & Plasma resonance frequency, radians.\\ \hline
+{\vt betac} (read only) & Stewart-McCumber parameter.\\ \hline
+{\vt alphan} (read only) & TJM alphaN value.\\ \hline
+{\vt kgap} (read only) & TJM kgap value.\\ \hline
+{\vt rejpt} (read only) & TJM rejpt value.
+{\vt kgap_rejpt} (read only) & TJM kgap_rejpt value.\\ \hline
+{\vt node1} (read only) & Node 1 number.\\ \hline
+{\vt node2} (read only) & Node 2 number.\\ \hline
+{\vt pnode} (read only) & Phase node number.\\ \hline
+{\vt lsernode} (read only) & Internal LSER node number.// /hline
+{\vt lserbrn} (read only) & Internal LSER branch number.\\ \hline
+{\vt lshnode} (read only) & Internal LSH node number.\\ \hline
+{\vt lshbrn} (read only) & Internal LSH branch number.\\ \hline
+\end{tabular}
+
+\spexamp{b1 1 0 10 jj1 ics=200uA\\
+b1 1 0 10 jj1 ics=200uA\\
+b2 4 5 ybco phi=1.57}
+
+The {\it n+} and {\it n-} are the positive and negative element nodes,
+respectively.  These are followed by an optional phase node.  The
+phase node, if specified, generally should have no other connections
+in the circuit, but the voltage of this node gives the phase of the
+junction in radians.  The {\it modname} is the name of the Josephson
+junction model.  If no model is specified, then a default model is
+used (see the description of the Josephson model for the default
+values).  Other (optional) parameters follow in any order.
+
+\begin{description}
+\item{\vt area}\\
+{\bf range:} 0.05 -- 20.0\\
+{\bf Deprecated, do not use in new files.}\\
+Histrorically, this parameter has been used to set the actual critical
+current of a Josephson junction instance.  It is not a physical area,
+but rather a scale factor, representing the ratio of the instance
+critical current to the reference critical current.  The parameter is
+retained for backwards compatibility, but should not be used in new
+circuit descrfiptions.  The {\vt ics} parameter (below) should be used
+instead.  By using {\vt ics}, one can change the critical current of
+the reference junction without changing the instance critical
+currents, which is not the case for {\vt area}.  In the new paradigm,
+the reference junction critical current corresponds to a ``typical''
+mid-sized junction, with a not necessarily convenient critical current
+value.  Use of {\vt area} assumes that the reference critical current
+is something nice, like the historical 1mA, and unchanging.  If not
+specified and {\vt ics} is not given, the effective value is 1.0.
+
+\item{\vt ics}\\
+{\bf range:} 0.02*{\vt icrit} -- 50.0*{\vt icrit}\\
+This gives the actual critical current of the instantiated junction,
+and in addition scales all conductance and capacitance values from the
+reference junction appropriately.  This is equivalent to giving the
+{\vt area} parameter with a value of {\vt ics}/{\vt icrit}.  The
+default is {\vt icrit}, the reference junction critical current.
+
+\item{\vt temp\_k}\\
+{\bf range:} 0.0 -- 0.95*{\vt tc}\\
+This is the assumed operating temperature of the device, in Kelvin. 
+The default is the model {\vt deftemp} value.  See the model description
+for more information about temperature modeling.
+
+\item{\vt lser}\\
+{\bf range:} 0.0 -- 10.0pH\\
+This models series inductance of the physical Josephson junction
+structure, caused by constriction of current through the junction
+orifice.  This inductance might typically be in the range of 0.1 to
+0.3 picohenries.  If nonzero, an internal node is added to the model,
+providing the connection point of the inductance and the Josephson
+junction.  The default value is 0.0, meaning that no parasitic
+inductance is assumed.  Nonzero given values less than 0.01pH revert
+to zero.
+
+\item{\vt lsh}\\
+{\bf range:} 0.0 -- 100.0pH\\
+This parameter specifies the series inductance of the external shunt
+resistance.  The {\vt vshunt} model parameter must be specified such
+that a positive external shunt conductance is applied, otherwise this
+parameter is ignored.  Ordinarily, the {\vt lsh0}/{\vt lsh1} model
+parameters would be used to specify the inductance, this parameter can
+be used to override these values on a per-instance basis if desired.
+
+\item{\vt ic}\\
+{\bf Levels 1 and 3 only.}\\
+The keyword is expected to be followed by two numbers, giving the
+initial junction voltage and phase in radians.  These apply in
+transient analysis when the ``{\vt uic}'' option is included in the
+transient analysis specification.  The initial junction voltage and
+phase both default to 0.0.
+
+\item{{\vt vj} or {\vt ic\_v}}\\
+This provides the initial voltage of the junction when the ``{\vt
+uic}'' option is included in the transient analysis specification. 
+The initial junction voltage defaults to 0.0.
+
+\item{{\vt phi} or {\vt ic\_phase}}\\
+This provides the initial junction phase in radians when the ``{\vt
+uic}'' option is included in the transient analysis specification.
+\end{description}
+
+The remaining parameters are ``read only'' and can be accessed with
+the {\vt @}{\it device\/}[{\it param\/}] special vector notation
+during the simulation (in callbacks) or after the simulation if the
+vector is saved with the {\cb save} command or equivalent.
+
+\begin{description}
+\item{\vt n} (read only)\\
+This integer value is incremented whenever the junction phase changes
+by plus or minus $2\pi$.  It is intended for pass/fail testing of
+single flux quantum (SFQ) circuit operation.
+ 
+\item{\vt phsf} (read only)\\
+This flag is set true at the time point when the SFQ emission count
+changes.  This is intended to facilitate pass/fail testing of SFQ
+circuits.
+
+\item{\vt phst} (read only)\\
+This read-only parameter contains the last time that the SFQ emission
+count changed, intended for use in SFQ pass/fail testing.
+
+\item{\vt v} (read only)\\
+The voltage across the junction.
+
+\item{\vt phase} (read only)\\
+The junction phase.  Reading this is an alternative to using a third
+node to obtain the phase.
+
+\item{tcf} (read only)\\
+The temperature correction factor that modifies the critical
+current at operating temperatures other than nominal.  See the
+description of the temperature dependence of
+the RSJ model in \ref{tcf}.
+
+\item{\vt icrit} (read only)\\
+The critical current of the junction instance.
+
+\item{\vt cc} (read only)\\
+The current flowing through the geometric capacitance of the junction.
+
+\item{\vt cj} (read only)\\
+The pair current (supercurrent) flowing through the junction.
+
+\item{\vt cq} (read only)\\
+The quasiparticle (normal) current flowing through the device.
+
+\item{\vt c} (read only)\\
+The total current flowing through the device, the sum of {\vt cc},
+{\vt cj} and {\vt cq}.
+
+\item{\vt cap} (read only)\\
+The geometric capacitance of the device instance.
+
+\item{\vt g0} (read only)\\
+The subgap conductance of the device instance.
+
+\item{\vt gn} (read only)\\
+The normal state conductance of the device instance.
+
+\item{\vt rsint} (read only)\\
+The intrinsic subgap resistance.  This is predicted from the tunnel
+junction model, but the predicted resistance is in general much higher
+than seen in actual fabricated junctions.  There is evidently
+quasiparticle conduction mechanisms that are not described in the
+tunnel junction model.
+
+\item{\vt gshunt} (read only)\\
+If the {\vt vshunt} model parameter is given and nonzero,
+{\vt gshunt} will return the external conductance added to the
+intrinsic conductance so that the total conductance multiplied
+by the critical current will equal {\vt vshunt}.
+
+\item{\vt rshunt} (read only)\\
+If {\vt gshunt} is nonzero, {\vt rshunt} will be the reciprocal,
+otherwise it will be 0.
+
+\item{\vt lshval} (read only)\\
+If the {\vt vshunt} model parameter is given and nonzero, this will be
+the parasitic inductance assumed in the external shunt resistance. 
+This will depend on the settings of the {\vt lsh0} and {\vt lsh1}
+model parameters, and the {\vt lsh} instance parameter which overrides
+the model parameters if given.
+
+\item{\vt del1} (read only)\\
+This is the computed energy gap of the side 1 superconductor. 
+This is computed using the BCS formula taking as input operating
+temperature, the superconducting transition temperature of side 1,
+and the Debye temperature of side 1.
+
+\item{\vt del2} (read only)\\
+This is the computed energy gap of the side 2 superconductor. 
+This is computed using the BCS formula taking as input operating
+temperature, the superconducting transition temperature of side 2,
+and the Debye temperature of side 2.
+
+\item{\vt vg} or {\vt vgap} (read only)\\
+The junction gap voltage, which is the sum of {\vt del1} and {\vt
+del2}.
+
+\item{\vt vdp} (read only)\\
+The dropback voltage, which is the same as the voltage corrresponding
+to the plasma resonance frequency.
+
+\item{\vt omega} (read only)\\
+The plasma resonance frequency in radians per second.
+
+\item{\vt betac} (read only)\\
+The Stewart-McCumber parameter of the junction.
+
+\item{\vt alphan} (read only)\\
+
+\item{\vt kgap} (read only)\\
+
+\item{\vt kgap_rejpt} (read only)\\
+
+\item{\vt rejpt} (read only)\\
+
+\item{\vt node1} (read only)\\
+The internal node number of the first node.
+
+\item{\vt node2} (read only)\\
+The internal node number of the second node.
+
+\item{\vt pnode} (read only)\\
+The internal node number of the third (phase) node, 0 or -1 if not
+used.
+
+\item{\vt lsernode} (read only)\\
+The internal node number of the device internal node added for series
+parasitic inductance.  This will be 0 or -1 if not used (no series
+parasitic inductance assumed).
+
+\item{\vt lserbrn} (read only)\\
+If series parasitic inductance is nonzero ({\vt lser} given) this will
+be the internal number of the branch node of the inductor.
+
+\item{\vt lshnode} (read only)\\
+If the {\vt vshunt} model parameter is given and nonzero, and series
+parasitic inductance is nonzero, this will be the internal node number
+of the internal device node that incorporates the series inductance.
+
+\item{\vt lshbrn} (read only)\\
+If the {\vt vshunt} model parameter is given and nonzero, and series
+parasitic inductance is nonzero, this will be the internal branch
+number of the inductor's branch.
+\end{description}
 
 %SU-------------------------------------
 \subsection{Josephson Junction Model}
 \index{Josephson junction model}
 \label{jjmodel}
 
-% spModels.hlp:jjmodel 013022
+% spModels.hlp:jjmodel 051422
 
 {\cb Type Name:} {\vt jj}
 
 The default Josephson junction model is an extended version of the RSJ
-model as used by Jewett\cite{jewett}.  For level=3, a microscopic
-tunnel junction ``Werthamer'' model is provided.  This is based on the
-open-source MitMoJCo project on {\vt
-https://github.com/drgulevich/mitmojco}. 
+model as used by Jewett\cite{jewett}.  There are actually three
+Josephson junction models available, through the {\vt level} model
+parameter, which can take values 1 through 3.  The default {\vt
+level=1} model is the RSJ model mentioned.  This model has a
+simplified Verilog-A version which can be found among the Verilog-A
+examples.  This can be compiled with the {\vt adms} utility into a
+run-time loadable module which can be loaded with the {\cb devload}
+command.  A pre-compiled module is provided with the example.  Once
+loaded into {\WRspice}, the model can be accessed with {\vt level=2}>.
+
+For {\vt level=3}, a microscopic tunnel junction ``Werthamer'' model,
+also known as a tunnel junction model (TJM) is provided.  The model is
+more physics-based than the empirical RSJ model.
+
+\subsubsection{Josephson Junction Model (RSJ Modxel)}
+\index{RSJ model}
 
 The parameters marked with an asterisk in the {\bf area} column scale
 with the {\vt ics} parameter given in the device line, not necessarily
@@ -4654,103 +5124,75 @@ Instantiations derive from the reference device for a desired critical
 current.  Appropriate scaling, not necessarily linear, will be applied
 when formulating instance capacitance and conductances.
 
+Josephson Junction RSJ Model (levels 1 and 2) Parameters\\
 \begin{quote}
 \begin{tabular}{|l|c|l|l|l|}\hline
 \multicolumn{5}{|c|}{\bf JJ Model Parameters}\\ \hline
 \bf name & \bf area & \bf parameter & \bf units & \bf default\\ \hline\hline
-\vt level & & \rr model type & - & 1\\ \hline
-\vt coeffset & & \rr coefficient set name & - &\\ \hline
-\vt pijj & & \rr pi junction & - & 0\\ \hline
-\vt rtype & & \rr Quasiparticle branch model & - & 1\\
+\vt level & & \rr Model type & - & 1\\ \hline
+\vt pijj & & \rr Default is a pi junction & - & 0\\ \hline
+\vt rtype & & \rr Quasiparticle current model & - & 1\\
 \hline
 \vt cct & & \rr Critical current model & - & 1\\
 \hline
 \vt icon & & \rr Critical current first zero & $A$ & 1.0e-2\\
 \hline
-\vt icrit & $*$ & \rr Reference junction critical current & $A$ & 1.0e-3\\
+\vt tc & & \rr Superconducting transition temperature & $K$ & 9.26\\
+\hline
+\vt tdebye & & \rr Debye temperature & $K$ & 276\\
+\hline
+\vt tnom & & \rr Parameter measurement temperature & $K$ & 4.2\\
+\hline
+\vt deftemp & & \rr Operating temperature & $K$ & \vt tnom\\
+\hline
+\vt tcfct & & \rr Temperature dependence fitting parameter & & 1.74\\
 \hline
 {\vt vg} or {\vt vgap} & & \rr Gap voltage & $V$ & 2.6e-3\\
 \hline
 \vt delv & & \rr Gap voltage spread & $V$ & 80.0e-6\\
 \hline
+\vt icrit & $*$ & \rr Reference junction critical current & $A$ & 1.0e-3\\
+\hline
 \vt cap & $*$ & \rr Reference junction capacitance & $F$ & 0.7e-12\\
 \hline
-\vt cpic & & \rr Reference junction capacitance per critical current & $F/A$ &
+\vt cpic & & \rr Capacitance per critical current & $F/A$ &
  0.7e-9\\ \hline
-\vt cmu & & \rr Capacitance area/edge scaling & & 0.0\\
+\vt cmu & & \rr Capacitance scaling parameter & & 0.0\\
 \hline
-\vt vm & & \rr Reference icrit*rsub & $V$ & 16.5e-3\\
+\vt vm & & \rr Reference junction {\vt icrit*rsub} & $V$ & 16.5e-3\\
 \hline
-{\vt rsub} or {\vt r0} & $*$ & \rr Reference subgap resistance & $\Omega$ & vm/icrit\\
+{\vt rsub} or {\vt r0} & $*$ & \rr Reference junction subgap resistance & 
+ $\Omega$ & \vt vm/icrit\\ \hline
+\vt icrn & & \rr Reference junction {\vt icrit*rnorm} & $V$ & 1.65e-3\\
 \hline
-\vt icrn & & \rr Reference icrit*rnorm & $V$ & 1.65e-3\\
+{\vt rnorm} or {\vt rn} & $*$ & \rr Reference normal state resistance & 
+$\Omega$ & \vt icrn/icrit\\
 \hline
-{\vt rnorm} or {\vt rn} & $*$ & \rr Reference normal state resistance & $\Omega$ &
- icrn/icrit\\
+\vt gmu & & \rr Conductance scaling parameter & & 0.0\\
 \hline
-\vt gmu & & \rr Conductance area/edge scaling & & 0.0\\
+{\vt icfct} or {\vt icfact} & & \rr Ratio of critical to step currents & - &
+${\pi}/4$\\ \hline
+\vt force & & \rr no limits imposed on {\vt vm}, {\vt rsub}, {\vt icrn},
+{\vt rnorm} & & 0\\ \hline
+\vt vshunt & & \rr Voltage to specify external shunt resistance & $V$ & 0.0\\
 \hline
-{\vt icfct} or {\vt icfact} & & \rr Ratio of critical to gap currents & - & ${\pi}/4$\\
+\vt lsh0 & & \rr Shunt resistor inductance constant part & $H$ & 0.0\\
 \hline
-\vt force & & \rr Don't check conductances & & 0\\
+\vt lsh1 & & \rr Shunt resistor inductance per ohm & $H/\Omega$ & 0.0\\
 \hline
-\vt vshunt & & \rr Voltage to specify fixed shunt resistance & $V$ & 0.0\\
+\vt tsfactor & & \rr Phase change max per time step per 2$\pi$ & & 
+${\vt dphimax}/2\pi$\\ \hline
+\vt tsaccel & & \rr Ratio max time step to that at <tt>vdp</tt> & & 1.0\\
 \hline
-\vt lsh0 & & \rr Shunt resistor series inductance, constant part & $H$ & 0.0\\
-\hline
-\vt lsh1 & & \rr Shunt resistor series inductance, proportional part & $H/\Omega$ & 0.0\\
-\hline
-\vt tsfactor & & \rr Time step phase change limit & & ${\vt dphimax}/2\pi$\\
-\hline
-\vt tsaccel & & \rr time step accelerator & & 1.0\\
-\hline
-\vt tc & & \rr superconducting transition temperature & $K$ & 9.26\\
-\hline
-\vt tnom & & \rr model reference temperature & $K$ & 4.2\\
-\hline
-\vt deftemp & & \rr operating temperature & $K$ & \vt tnom\\
-\hline
-\vt tcfct & & \rr temperature dependence fitting parameter & & 1.74\\
-\hline
-\vt vdbpak & & \rr dropback voltage (read only) & &\\
-\hline
-\end{tabular}
-\end{quote}
-
-The following are additional parameters that are used when Level=3 only.
-\begin{quote}
-\begin{tabular}{|l|c|l|l|l|}\hline
-\multicolumn{5}{|c|}{\bf JJ Model Parameters}\\ \hline
-\bf name & \bf area & \bf parameter & \bf units & \bf default\\ \hline\hline
-{\vt del1} & & \rr Energy gap side 1 & $V$ & 1.3e-3\\
-\hline
-{\vt del2} & & \rr Energy gap side 2 & $V$ & 1.3e-3\\
-\hline
-{\vt tc1} & & \rr Transition temperature side 1 & $K$ & 9.26\\
-\hline
-{\vt tc2} & & \rr Transition temperature side 2 & $K$ & 9.26\\
-\hline
-{\vt tdebye} & & \rr Debye temperature & $K$ & 276\\
-\hline
-{\vt tdebye1} & & \rr Debye temperature side 1 & $K$ & 276\\
-\hline
-{\vt tdebye2} & & \rr Debye temperature side 2 & $K$ & 276\\
-\hline
-{\vt smf} & & \rr Smoothing factor & $-$ & 0.008\\
-\hline
-{\vt nterms} & & \rr Number of terms in compression & $-$ &8\\
-\hline
-{\vt nxpts} & & \rr Number of TCA table entries & $-$ &500\\
-\hline
-{\vt thr} & & \rr Fitting algorithn threshold & $-$ &0,2\\
+\vt vdp & & \rr Dropback voltage (read only) & &\\
 \hline
 \end{tabular}
 \end{quote}
 
 Detailed information about these parameters is presented below. 
-Unless stated otherwise, this information also applies to the
-Verilog-A Josephson junction model provided with {\WRspice} in the
-Verilog-A examples, and the microscopic model.
+Unless stated otherwise, this information also applies to the internal
+RSJ model ({\vt level=1}) and the Verilog-A Josephson junction model
+provided with {\WRspice} in the Verilog-A examples ({\vt level=2}).
 
 \begin{description}
 \item{\vt level}\\
@@ -4758,32 +5200,10 @@ This specifies the model to use.  There are three choices provided in
 {\WRspice}.  Level 1 (the default) is the internal RSJ model, and
 level 2 indicates the Verilog-A example RSJ model, which is available
 if it has been loaded.  The third choice is level 3, which is an
-internal microscopic tunnel junction model, based on the open-source
-MitMoJCo project on {\vt https://github.com/drgulevich/mitmojco}. 
-
-\item{\vt coeffset}\\
-{\bf Level 3 only.}\\
-This provides the name of the table of compressed tunnel current
-amplitudes to use in the model.  These are provided as files as
-produced from the {\it mmjco} utility provided with {\WRspice}, and
-can also be produced with the Python program supplied with MitMoJCo. 
-The files are searched for along a path provided by setting the {\et
-tjm\_path} variable, or a path can be provided directly.  The default
-is to search the current directory and {\vt \$HOME/.mmjco} if that
-directory exists.
-
-These files are produced automatically as needed according to the
-given model parameters and cached in the users {\vt .mmjco} directory. 
-So it is not common to use this parameter to load a set by name.
-
-There are two built-in coefficient sets, ``tjm1'' (the default) and
-``tjm2''.  These are the MitMoJCo NbNb\_4k2\_008 and NbNb\_4K2\_001
-parameter sets, respectively.  Both assume niobium at temperature 4.2K
-and differ in the level of smoothing applied to mitigate the Riedel
-singularity.
+internal microscopic tunnel junction model described in the next
+section.
 
 \item{\vt pijj}\\
-{\bf Levels 1 and 2 only.}\\
 If this flag is given a nonzero integer value, the junctions will be
 modeled as a ``pi junction'' meaning that the zero-current phase is
 $\pi$ rather than zero.  Such devices have been fabricated using
@@ -4794,7 +5214,7 @@ with any frequency.
 \item{\vt rtype}\\
 The {\vt rtype} parameter determines the type of quasiparticle branch
 modeling employed.  Legal values are listed below, only 0 and 1 are
-supported in levels 2 and 3.
+supported in level 2.
 \begin{quote}
 \begin{tabular}{ll}
 \bf 0 & The junction is completely unshunted, all shunt conductances
@@ -4841,15 +5261,16 @@ examples (\ref{examples}) for an example input file ({\vt ex10.cir})
 which illustrates {\vt rtype=4}.
 
 It is currently not possible to use other than the piecewise linear
-model with temperature variation.  If {\vt rtype=4}, then legal values
-for the critical current parameter are {\vt cct=0} (no critical
-current) and {\vt cct=1} (fixed critical current).  If another value
-is specified for {\vt cct}, {\vt cct} reverts to 0.  Thus, magnetic
-coupling and quasiparticle injection are not simultaneously available.
+model with this type of temperature variation.  If {\vt rtype=4}, then
+legal values for the critical current parameter are {\vt cct=0} (no
+critical current) and {\vt cct=1} (fixed critical current).  If
+another value is specified for {\vt cct}, {\vt cct} reverts to 0. 
+Thus, magnetic coupling and quasiparticle injection are not
+simultaneously available.
 
 \item{\vt cct}\\
 The {\vt cct} parameter can take one of the following values in level
-1, only 0 and 1 are supported in levels 2 and 3.
+1, only 0 and 1 are supported in level 2.
 \begin{quote}
 \begin{tabular}{ll}
 \bf 0 & No critical current.\\
@@ -4886,11 +5307,73 @@ The parameter is not currently recognized by the Verilog-A Josephson
 junction model provided with {\WRspice}, as that model does not
 currently support values of {\vt cct} larger than 1.
 
+\item{\vt tc}\\
+{\bf range:} 0.1K -- 280K\\
+This is the transition temperature of the material used in the
+Josephson junction.  We assume that both junction electrodes use the
+same material.  The default value is 9.26K, the transition temperature
+of niobium.
+
+\item{\vt tdebye}\\
+{\bf range:} 40K -- 500K\\
+This is the Debye temperature of the material used in the Josephson
+junction.  The default is 276K corresponding to niobium.  The model
+support can compute the superconducting energy gap as a function of
+temperature, transition temperature, and Debye temperature using a BCS
+expression.
+
+\item{\vt tnom}\\
+{\bf range:} 0.0K -- 0.95*{\vt tc}\\
+This is the temperature at which all model parameters are measured. 
+The default is 4.2K, the boiling point of liquid helium.
+
+\item{\vt deftemp}\\
+{\bf range:} 0.0K -- 0.95*{\vt tc}\\
+This is the default operating temperature of instances of the model,
+which can be overridden on a per-instance basis by specifying the
+{\vt temp\_k} instance parameter.  The default is the {\vt tnom}
+value.
+
+\item{\vt tcfct}\\
+{\bf range:} 1.5 -- 2.5\\
+The model utilizes a BCS interpolation formula to represent
+temperature variation of the gap parameter of the superconductor, with
+the current restriction that the same superconductor (and gap
+parameter) appears on either side of the barrier.
+
+\begin{quote}
+$\Delta = \Delta_0 tanh(tcfct\sqrt(tc/T-1))$
+\end{quote}
+Reference: {\vt https://physics.stackexchange.com/questions/192416/\\
+interpolation-formula-for-bcs-superconducting-gap}
+
+Here, $\Delta$ is the gap parameter, with the subscript indicating the
+value at temperature T=0.  The {\vt tcfct} parameter is
+semi-empirical, commonly cited as 1.74, which is the default value. 
+It is taken that the junction gap voltage and critical current are
+directly proportional to the gap parameter.  The quasiparticle
+resistance is assumed invariant with temperature, which should be true
+for the low temperatures of interest.
+
+In order to apply temperature correction one takes the assumption that
+parameters for the reference junction are measured at nominal
+temperature {\vt tnom}, and we therefor have
+
+\begin{quote}
+$\Delta_{nom} = \Delta_0 tanh(tcfct\sqrt(tc/tnom-1))$
+\end{quote}
+
+The correction factor, which will multiply device critical current and
+gap voltage, is the ratio $\Delta/\Delta_{nom}$.  This is applied, in
+addition to area scaling, when extrapolating device parameters from
+reference junction parameters.
+
 \item{\vt icrit}\\
 {\bf range:} 1nA -- 0.1A\\
-This is the critical current of the reference junction, which defaults
-to 1.0mA if not given.  This parameter is not used if {\vt cct} is 0.
-the superconducting current through a Josepjson junctions is
+This is the critical current of the reference junction at nominal
+temperature, which defaults to 1.0mA if not given.  This parameter is
+not used if {\vt cct} is 0.  the superconducting current through a
+Josepjson junctions is
 \begin{quote}
 $I = I_c sin(\phi)$
 \end{quote}
@@ -4907,16 +5390,17 @@ factor which specifies the instantiated device critical current as
 well as appropriately scaling conductances and capacitance, from
 the model reference current which is {\vt icrit}.
 
-\item{{\vt vgap} or {\vt vg}}\\
+\item{{\vt vg} or {\vt vgap}}\\
 {\bf range:} 0.1mV -- 10.0mV\\
 This parameter specifies the gap voltage, which in a hysteretic
 Josephson junction is a voltage at which there is a large and abrupt
-increase in conductivity.  This parameter is material dependent, the
-default 2.6mV is appropriate for niobium junctions.
+increase in conductivity.  This parameter is material dependent.  If
+not given, the value used is computed using BCS theory from the
+operating temperature, superconducting transition temperature, and
+Debye temperature, assuming both electrodes are identical.
 
 \item{\vt delv}\\
-{\bf range:} $0.001{\vt vgap}$ -- $0.2{\vt vgap}$\\
-{\bf Levels 1 and 2 only.}\\
+{\bf range:} $0.001{\vt vg}$ -- $0.2{\vt vg}$\\
 This specifies the assumed width, in voltage, of the quasiparticle
 step region, or gap.  In this region, current increases sharply with
 increasing voltage.  The default value of 80uV is reasonable for
@@ -4959,8 +5443,7 @@ Here, $A$ is the ``area'' scaling factor, which is the ratio of the
 junction critical current to the reference critical current.
 
 \item{\vt vm}\\
-{\bf range:} 8mV -- 100mV, can be 0 if Level=3\\
-
+{\bf range:} 8mV -- 100mV\\
 This is the product of the reference subgap resistance and the
 reference device critical current.  This parameter is commonly
 provided by foundries, and is a standard indicator for junction
@@ -4970,26 +5453,14 @@ Lincoln Laboratory SFQ5EE process\cite{tolpygo}, which is 16.5mV, The
 reference junction subgap resistance is obtained from the value of
 this parameter and the critical current, unless given explicitly.
 
-For the Level 3 model, the intrinsic subgap conductivity will be
-subtracted if smaller than the given {\vt vm} implies.  If {\vt vm} is
-set to 0, then no additional conductivity will be added and only the
-intrinsic conductivity will be seen.  Often, the intrinsic subgap
-conductivity is much smaller than observed in real junctions.
-
 \item{{\vt rsub} or {\vt r0}}\\
-{\bf range:} 8mV/{\vt icrit} -- 100mV/{\vt icrit}, can be 0 if Level=3\\
+{\bf range:} 8mV/{\vt icrit} -- 100mV/{\vt icrit}\\
 The reference junction subgap resistance can be given directly
 with this parameter, and a given value will override the
 {\vt vm} value if also given.
 
-For the Level 3 model, the subgap conductance will be reduced by the
-intrinsic condutance if this is smaller.  If {\vt vm} is given as 0
-and this parameter is not given, the parameter value will be 0.  If
-the value is 0, no additional conductance will be added.
-
 \item{\vt icrn}\\
 {\bf range:} 1.5mV -- 1.9mV\\
-{\bf Levels 1 and 2 only.}\\
 This is the product of the reference junction ``normal state''
 resistance and the critical current, where the normal state resistance
 is the differential resistance measured well above the gap.  The
@@ -5001,7 +5472,6 @@ state resistance from the critical current.
 
 \item{{\vt rnorm} or {\vt rn}}\\
 {\bf range:} 1.5mV/{\vt icrit} -- 1.9mV/{\vt icrit}\\
-{\bf Levels 1 and 2 only.}\\
 The reference junction normal state resistance can be given explicitly
 with this parameter, which will override {\vt icrn} if this is also
 given.
@@ -5106,12 +5576,166 @@ proportional to voltages above this value.
 Experimentation suggests that a value of 2.5 is a good choice for RSFQ
 circuits, your results may vary.
 
-\item{\vt tc}\\
-{\bf range:} 0.1K -- 280K\\
-This is the transition temperature of the material used in the
-Josephson junction.  We assume that both junction electrodes use the
-same material.  The default value is 9.26K, the transition temperature
-of niobium.
+\item{\vt vdp} (read only)\\
+This parameter returns the computed value of the dropback voltage,
+which is the voltage at which the return trace of a hysteretic
+Josephson junction i-v curve snaps back to the zero-voltage state.  If
+is also the voltage equivalent of the plasma resonance, and the
+product of critical current and shunt resistance for critical damping.
+\end{description}
+
+
+\subsubsection{Josephson Tunnel Junction Model}
+\index{TJM}
+\index{Werthamer model}
+\label{tjmodel}
+
+%spModels:tjmodel 051422
+
+For {\vt level=3}, a microscopic tunnel junction "Werthamer" model,
+also known as a tunnel junction model (TJM) is indicated.  The model
+is more physics-based that the empirical RSJ model.  The formulation
+follows the method of
+\begin{quote}
+A. A. Odintsov, V. K. Semenov and A. B. Zorin, IEEE Trans. Magn. 23,
+763 (1987).
+\end{quote}
+as implemented in the the open-source MitMoJCo project on {\vt
+https://github.com/drgulevich/mitmojco}.  The actual model
+computations make use of predefined fitting parameters that can be
+produced with the {\vt mmjco} program provided with {\WRspice}
+(\ref{mmjco}).  The {\vt mmjco} program integrates the tunneling
+current expressions producing a tunnel current amplitude (TCA) table. 
+This is compressed into a smaller representation using the OSZ
+approach in the reference, which in addition to saving memory allows
+rapid evaluation of the model expressions, basically replacing a
+required integration by a short series expansion.  Thus model
+evaluation can be relatively inexpensive, though it is not as fast as
+the simple RSJ model.
+
+The parameters marked with an asterisk in the {\bf area} column scale
+with the {\vt ics} parameter given in the device line, not necessarily
+linearly.  The present model paradigm assumes that the model
+parameters apply to a ``reference'' junction, which is a typical
+mid-critical current device as produced by the fouhdry. 
+Instantiations derive from the reference device for a desired critical
+current.  Appropriate scaling, not necessarily linear, will be applied
+when formulating instance capacitance and conductances.
+
+Josephson Tunnel Junction Model (Level 3) Parameters\\
+\begin{quote}
+\begin{tabular}{|l|c|l|l|l|}\hline
+\multicolumn{5}{|c|}{\bf JJ Model Parameters}\\ \hline
+\bf name & \bf area & \bf parameter & \bf units & \bf default\\ \hline\hline
+\vt level & & \rr Model type & - & 3\\ \hline
+\vt coeffset & & \rr Coefficient set name & - &\\ \hline
+\vt rtype & & \rr Quasiparticle current enabled & - & 1\\
+\hline
+\vt cct & & \rr Critical current enabled & - & 1\\
+\hline
+\vt tnom & & \rr Parameter measurement temperature & $K$ & 4.2\\
+\hline
+\vt deftemp & & \rr Operating temperature & $K$ & \vt tnom\\
+\hline
+\vt tc & & \rr Superconducting transition temperature & $K$ & 9.26\\
+\hline
+\vt tc1 & & \rr Superconducting transition temp side 1 & $K$ & 9.26\\
+\hline
+\vt tc2 & & \rr Superconducting transition temp side 2 & $K$ & 9.26\\
+\hline
+\vt tdebye & & \rr Debye temperature & $K$ & 276\\
+\hline
+\vt tdebye1 & & \rr Debye temperature side 1 & $K$ & 276\\
+\hline
+\vt tdebye2 & & \rr Debye temperature side 2 & $K$ & 276\\
+\hline
+\vt smf & & \rr Riedel smoothing factor & $-$ & 0.008\\
+\hline
+\vt nterms & & \rr Terms in fit table & $-$ &8\\
+\hline
+\vt nxpts & & \rr Points in TCA table & $-$ &500\\
+\hline
+\vt thr & & \rr Fitting threshold parameter & $-$ &0,2\\
+\hline
+\vt icrit & $*$ & \rr Reference junction critical current & $A$ & 1.0e-3\\
+\hline
+\vt cap & $*$ & \rr Reference junction capacitance & $F$ & 0.7e-12\\
+\hline
+\vt cpic & & \rr Capacitance per critical current & $F/A$ &
+ 0.7e-9\\ \hline
+\vt cmu & & \rr Capacitance scaling parameter & & 0.0\\
+\hline
+\vt vm & & \rr Reference junction {\vt icrit*rsub} & $V$ & 16.5e-3\\
+\hline
+\vt rsub or {\vt r0} & $*$ & \rr Reference junction subgap resistance & 
+ $\Omega$ & \vt vm/icrit\\ \hline
+\vt gmu & & \rr Conductance scaling parameter & & 0.0\\
+\hline
+\vt icfct or {\vt icfact} & & \rr Ratio of critical to step currents & - &
+${\pi}/4$\\ \hline
+\vt force & & \rr no limits imposed on {\vt vm}, {\vt rsub} & & 0\\
+ \hline
+\vt vshunt & & \rr Voltage to specify external shunt resistance & $V$ & 0.0\\
+\hline
+\vt lsh0 & & \rr Shunt resistor inductance constant part & $H$ & 0.0\\
+\hline
+\vt lsh1 & & \rr Shunt resistor inductance per ohm & $H/\Omega$ & 0.0\\
+\hline
+\vt tsfactor & & \rr Phase change max per time step per 2$\pi$ & & 
+${\vt dphimax}/2\pi$\\ \hline
+\vt tsaccel & & \rr Ratio max time step to that at <tt>vdp</tt> & & 1.0\\
+\hline
+{\vt del1} (read only) & & \rr Energy gap side 1 & $V$ &\\
+\hline
+{\vt del2} (read only) & & \rr Energy gap side 2 & $V$ &\\
+\hline
+{\vt vg} or {\vt vgap} (read only) & & \rr Gap voltage & $V$ &\\
+\hline
+\end{tabular}
+\end{quote}
+
+Detailed information about these parameters is presented below. 
+
+\begin{description}
+\item{\vt level}\\
+This specifies the model to use, which is 3 in the present case.
+
+\item{\vt coeffset}\\
+This provides the name of the table of compressed tunnel current
+amplitudes to use in the model.  These are provided as files as
+produced from the {\vt mmjco} utility provided with {\WRspice} (see
+\ref{mmjco}).  Single temperature ``.fit'' files will overrule any
+other temperatures provided to the model.  If a tempature-swept
+``.swp'' file is provided, the model is able to accommodate
+temperatures within the range of the sweep.  The files are searched
+for along a path provided by setting the {\et tjm\_path} variable, or
+a path can be provided directly.  The default is to search the current
+directory and {\vt $HOME/.mmjco} if that directory exists.
+
+These files are produced automatically as needed according to the
+given model parameters and cached in the users {\vt .mmjco} directory. 
+Therefor it is not common to use this parameter to load a set by name,
+except to supply a name for a sweep file that the user has prepared
+with {\vt mmjco} which would provide precomputed data for all
+temperatures that might be of use, thereby avoiding on-the-fly table
+creation which can take some time.
+
+There are two built-in coefficient sets, ``tjm1'' (the default) and
+``tjm2''.  These are the MitMoJCo {\vt NbNb\_4k2\_008} and {\vt
+NbNb\_4K2\_001} parameter sets, respectively.  Both assume niobium at
+temperature 4.2K and differ in the level of smoothing applied to
+mitigate the Riedel singularity.
+</dl>
+
+\item{\vt rtype}\\
+For the tunnel junction model, {\vt rtype} is a flag, set by default,
+that enables inclusion of the quasiparticle current.  If set to 0,
+quasiparticle current will not be included in the model.
+
+\item{\vt cct}\\
+For the tunnel junction model, {\vt cct} is a flag, set by default,
+that enables inclusion of the pair current.  If set to 0, pair current
+will not be included in the model.
 
 \item{\vt tnom}\\
 {\bf range:} 0.0K -- 0.95*{\vt tc}\\
@@ -5122,48 +5746,234 @@ The default is 4.2K, the boiling point of liquid helium.
 {\bf range:} 0.0K -- 0.95*{\vt tc}\\
 This is the default operating temperature of instances of the model,
 which can be overridden on a per-instance basis by specifying the
-{\vt temo\_k} instance parameter.  The default is the {\vt tnom}
+{\vt temp\_k} instance parameter.  The default is the {\vt tnom}
 value.
 
-\item{\vt tcfct}\\
-{\bf range:} 1.5 -- 2.5\\
-The model utilizes a BCS interpolation formula to represent
-temperature variation of the gap parameter of the superconductor, with
-the current restriction that the same superconductor (and gap
-parameter) appears on either side of the barrier.
+\item{\vt tc}, {\vt tc1}, {\vt tc2}\\
+{\bf range:} 0.1K -- 280K\\
+This is the superconducting transition temperature of the material(s)
+used in the Josephson junction.  The default value is 9.26K, the
+transition temperature of niobium.  The transition temperature may be
+set separately on side 1 and side 2 of the junction using the {\vt
+tc1} and {\vt tc2} keywords.  The {\vt tc} keyword sets both sides. 
+If ambiguous, the last real or implied setting has precedence.
 
+\item{\vt tdebye}, {\vt tdebye1}, {\vt tdebye2}\\
+{\bf range:} 40K -- 500K\\
+This is the Debye temperature of the material(s) used in the Josephson
+junction.  The default is 276K corresponding to niobium.  As for the
+transition temperature, the two sides of the junction can be set
+independently.  The model support computes the superconducting energy
+gap as a function of temperature, transition temperature, and Debye
+temperature using a BCS expression.
+
+\item{\vt smf}\\
+{\bf range:} 0.001 -- 0.099\\
+This is a smoothing factor used when constructing the tunnel current
+amplitude tables, the use of which eliminates the Riedel singularity. 
+The default value is 0.008.  Higher values have larger smoothing,
+reducing the impact of the peaks at the gap.
+
+\item{\vt nterms}\\
+{\bf range:} 6 -- 20\\
+The computed tunnel current amplitude tables are compressed to tables
+having this many terms.  The more terms that are included, the more
+accurate are the parameter sets.  However, the time to prepare the fit
+tables grows rapidly with the number of terms.  The default number of
+terms is 8, which seems to provide reasonable accuracy.
+
+\item{\vt nxpts}\\
+{\bf range:} 100 -- 9999\\
+This sets the number of energy values over which the tunnel current
+amplitude tables are computed.  The default is 500.  Points are
+computed between zero and twice the junction gap energy.  More points
+may provide more accurate results.
+
+\item{\vt thr}\\
+{\bf range:} 0.1 -- 0.5\\
+This is the ratio of absolute to relative tolerance used in the table
+compression algorithm.  The default value of 0.2 seems to give good
+results.
+
+\item{\vt icrit}\\
+{\bf range:} 1nA -- 0.1A\\
+This is the critical current of the reference junction at nominal
+temperature, which defaults to 1.0mA if not given.  This parameter is
+not used if {\vt cct} is 0.  The {\vt icrit} parameter should not be
+confused with the {\vt ics} instance parameter.  The latter is
+actually a scale factor which specifies the instantiated device
+critical current as well as appropriately scaling conductances and
+capacitance, from the model reference current which is {\vt icrit}.
+
+\item{\vt cap}\\
+{\bf range:} 0.0 -- 1nF\\
+This is the capacitance of the reference junction, in farads.  This
+will override the {\vt cpic} parameter if given, setting a fixed value
+for reference junction capacitance, invariant with {\vt icrit}.  If
+not given, junction specific capacitance is set via the {\vt cpic}
+parameter, see below.
+
+\item{\vt cpic}\\
+{\bf range:} 0.0 -- 1e-9\\
+This supplies the default capacitance per critical current in F/A. 
+This defaults to the MIT Lincoln Laboratory SFQ5EE process <a
+href="tolpygo">[Tolpygo]</a> value (0.7pF for 1.0 mA), and will set
+the junction capacitance if <tt>cap</tt> is not given.  With
+<tt>cap</tt> not given, changing <tt>icrit</tt> will change the
+assumed capacitance of the reference junction.
+
+\item{\vt cmu}\\
+{\bf range:} 0.0 -- 1.0\\
+This is a new parameter in the current model, which is intended to
+account for nonlinearity in scaling of capacitance with area (or
+critical current, we actually define ``area'' as the actual over the
+reference critical current).  It is anticipated that the actual
+junction capacitance consists of two components:  a physical area
+dependent ``bulk'' term, and a perimeter-dependent fringing term.  The
+{\vt cmu} is a real number between 0 and 1 where if 0 we assume no
+perimeter dependence, and if 1 we assume that all variation scales
+with the perimeter.  The default value is 0.  The capacitance of an
+instantiated junctions is as follows:
 \begin{quote}
-$\Delta = \Delta_0 tanh(tcfct\sqrt(tc/T-1))$
+$C = cap (A(1-cmu) + \sqrt{A} cmu)$
 \end{quote}
-Reference: {\vt https://physics.stackexchange.com/questions/192416/\\
-interpolation-formula-for-bcs-superconducting-gap}
+Here, $A$ is the ``area'' scaling factor, which is the ratio of the
+junction critical current to the reference critical current.
 
-Here, $\Delta$ is the gap parameter, with the subscript indicating the
-value at temperature T=0.  The {\vt tcfct} parameter is
-semi-empirical, commonly cited as 1.74, which is the default value. 
-It is taken that the junction gap voltage and critical current are
-directly proportional to the gap parameter.  The quasiparticle
-resistance is assumed invariant with temperature, which should be true
-for the low temperatures of interest.
+\item{\vt vm}\\
+{\bf range:} 8mV -- 100mV, or 0\\
+This is the product of the reference subgap resistance and the
+reference device critical current.  This parameter is commonly
+provided by foundries, and is a standard indicator for junction
+quality (higher is better).  Values tend to decrease with increasing
+critical current density.  This defaults to the value for the MIT
+Lincoln Laboratory SFQ5EE process\cite{tolpygo}, which is 16.5mV, The
+reference junction subgap resistance is obtained from the value of
+this parameter and the critical current, unless given explicitly.
 
-In order to apply temperature correction one takes the assumption that
-parameters for the reference junction are measured at nominal
-temperature {\vt tnom}, and we therefor have
+The intrinsic subgap conductivity will be subtracted if smaller than
+the given {\vt vm} implies.  If {\vt vm} is set to 0, then no
+additional conductivity will be added and only the intrinsic
+conductivity will be seen.  Often, the intrinsic subgap conductivity
+is much smaller than observed in real junctions.
 
+\item{{\vt rsub} or {\vt r0}}\\
+{\bf range:} 8mV/{\vt icrit} -- 100mV/{\vt icrit}, or 0\\
+The reference junction subgap resistance can be given directly
+with this parameter, and a given value will override the
+{\vt vm} value if also given.
+
+The subgap conductance will be reduced by the intrinsic condutance if
+this is smaller.  If {\vt vm} is given as 0 and this parameter is not
+given, the parameter value will be 0.  If the value is 0, no
+additional conductance will be added.
+
+\item{\vt gmu}\\
+{\bf range:} 0.0 -- 1.0\\
+This is analogous to {\vt cmu}, and applies to the subgap and normal
+conductances.  The {\vt vm}, in particular, may vary with junction
+physical size, with small junctions having lower {\vt vm} than larger
+ones.  This parameter should capture this effect.  It is taken that a
+significant part of the conductivity is due to defects or
+imperfections around the periphery of the junction area, and the
+contribution would therefor scale with the perimeter.  The scaling for
+conductivity is as follows:
 \begin{quote}
-$\Delta_{nom} = \Delta_0 tanh(tcfct\sqrt(tc/tnom-1))$
+$G_x = G_{x0} (A(1-gmu) + \sqrt{A} gmu)$
 \end{quote}
+Here, $G_x$ refers to either the subgap or normal conductance,
+$G_{x0}$ is the same parameter for the reference junction.  The $A$ is
+the scaling parameter, that is, the ratio of instance to reference
+critical currents.  The default value is 0, meaning that scaling is
+assumed purely linear, which will be the case until a number is
+provided through additional data analysis.  It may prove necessary to
+have separate scaling parameters for subgap and above gap condutance,
+at which time a new model parameter may be added.
 
-The correction factor, which will multiply device critical current and
-gap voltage, is the ratio $\Delta/\Delta_{nom}$.  This is applied, in
-addition to area scaling, when extrapolating device parameters from
-reference junction parameters.
+\item{{\vt icfct} or {\vt icfact}}\\
+{\bf range:} 0.5 -- ${\pi}/4$\\
+This parameter sets the ratio of the critical current to the
+quasiparticle step height.  Theory provides the default value of
+$\pi/4$ which is usually adequately close.  Characterization of
+fabricated junctions would provide an improved number.
 
-\item{\vt vdpbak} (read only)\\
-This parameter returns the computed value of the dropback voltage,
-which is the voltage at which the return trace of a hysteretic
-Josephson junction i-v curve snaps back to the zero-voltage state.  If
-is also the voltage equivalent of the plasma resonance, and the
-product of critical current and shunt resistance for critical damping.
+\item{\vt force}\\
+{\bf range:} 0 or 1\\
+If this flag is set, then the only range test applied to subgap
+resistance values is that they be larger than zero.  This affects the
+parameters that set the quasiparticle branch conductance values, any
+input other than a short circuit is allowed.
+
+\item{\vt vshunt}\\
+{\bf range:} 0.0 -- 2.0mV\\
+This parameter is unique in that it does not describe an as-fabricated
+junction characteristic.  Rather, it is for convenience in specifying
+a shunt resistance to use globally in SFQ circuits, If given (in
+volts) conductance will be added automatically so that the product of
+the total subgap conductance and the critical current will equal {\vt
+vshunt}.  This avoids having to calculate the value of and add an
+explicit resistor across each Josephson junction, as used for damping
+in these circuits.  The designer should choose a value consistent with
+the process parameters and the amount of damping required.  Higher
+values will provide less damping, usually critical damping is desired. 
+This parameter defaults to 0, meaning that no additional demping is
+supplied by default.
+
+\item{\vt lsh0}\\
+{\bf range:} 0.0 -- 2.0pH
+\item{\vt lsh1}\\
+{\bf range:} 0.0 -- 10.0pH/${\Omega}$\\
+These parameters specify series parasitic inductance in the external
+shunt resistor.  the {\vt vshunt} parameter must be given a value such
+that the added external conductance is positive, or these parameters
+are ignored.  The inductance consists of a constant part ({\vt lsh0})
+assumed to come from resistor contacts, plus a value ({\vt lsh1})
+proportional to the resistance in ohms, intended to capture the length
+dependence.
+
+\item{\vt tsfactor}\\
+{\bf range:} 0.001 -- 1.0\\
+This is mainly for compatibility with the Verilog-A Josephson junction
+model provided with {\WRspice} in the Verilog-A examples.  This is
+equivalent to the {\WRspice} {\vt dphimax} parameter, but is
+normalized to $2\pi$.  If not given, it defaults to ${\vt dphimax}/2\pi$
+in {\WRspice}, or 0.1 in the Verilog-A model not used in {\WRspice}. 
+This is the maximum phase change allowed between internal time points. 
+
+\item{\vt tsaccel}\\
+{\bf range:} 1.0 -- 100.0\\
+Time step limiting is performed relative to the Josephson frequency of
+the instantaneous absolute junction voltage or the dropback voltage,
+whichever is larger.  The phase change is limited by {\vt tsfactor},
+thus corresponding to a maximum time step relative to the period of
+the frequency corresponding to the voltage.  Note that in SFQ
+circuits, where the junctions are critically damped, the junction
+voltage is unlikely to exceed the dropback voltage, which is
+numerically equal to the critical current times the shunt resistance
+({\vt vshunt}).  This implies that the maximum time step is a fixed
+value by default.
+
+When simulating SFQ circuits, between SFQ pulses there is often
+significant time where signals are quiescent and one could probably
+take larger time steps, speeding simulation.  This appears true to an
+extent, however one can see signs of instability if steps are too
+large.
+
+The {\vt tsaccel} parameter is the ratio of the longest time step
+allowed to that allowed at the dropback voltage.  In computing the
+time step, the low voltage threshold is reduced to the dropback
+voltage divided by {\vt tsaccel}, so time steps will be inversely
+proportional to voltages above this value.
+
+Experimentation suggests that a value of 2.5 is a good choice for RSFQ
+circuits, your results may vary.
+
+\item{\vt del1}, {\vt del2} (read only)\\
+These two read-only parameters return the gap potential in the
+electrodes.  These are computed internally as a function of
+temperature.
+
+\item{\vt vg} or {\vt vgap} (read only)\\
+The junction gap voltage, equal to {\vt del1 + del2}.
 \end{description}
 
