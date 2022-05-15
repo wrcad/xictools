@@ -2082,7 +2082,7 @@ MOSFET Models
 !!SEEALSO
 .model
 
-.REDIRECT jjtcf jjmodel#jjtcf
+!!REDIRECT rsjtcf jjmodel#tcf
 
 !! elements.tex 051422
 !!KEYWORD
@@ -2402,45 +2402,12 @@ Josephson Models
     the <tt>tnom</tt> value.
     </dl>
 
-    <a name="jjtcf"></a>
     <dl>
     <dt><tt>tcfct</tt><dd>
     <b>range:</b> 1.5 - 2.5<br>
-    The model utilizes a BCS interpolation formula to represent
-    temperature variation of the gap parameter of the superconductor,
-    with the current restriction that the same superconductor (and gap
-    parameter) appears on either side of the barrier.
-
-    <blockquote>
-    &Delta; = &Delta;<sub>0</sub> <i>tanh</i>(<tt>tcfct</tt>
-    &radic;(<tt>tc</tt>/T - 1))
-    </blockquote>
-    Reference: <a href="https://physics.stackexchange.com/questions/192416/interpolation-formula-for-bcs-superconducting-gap">
-    <tt>https://physics.stackexchange.com/questions/192416/interpolation-formula-for-bcs-superconducting-gap</tt></a>
-
-    <p>
-    Here, &Delta; is the gap parameter, with the subscript indicating the
-    value at temperature T=0.  The <tt>tcfct</tt> parameter is semi-empirical,
-    commonly cited as 1.74, which is the default value.  It is taken that
-    the junction gap voltage and critical current are directly proportional
-    to the gap parameter.  The quasiparticle resistance is assumed invariant with temperature, which
-    should be true for the low temperatures of interest.
-
-    <p>
-    In order to apply temperature correction one takes the assumption
-    that parameters for the reference junction are measured at nominal
-    temperature <tt>tnom</tt>, and we therefor have
-
-    <blockquote>
-    &Delta;<sub>nom</sub> = &Delta;<sub>0</sub> <i>tanh</i>(<tt>tcfct</tt>
-    &radic;(<tt>tc</tt>/<tt>tnom</tt> - 1))
-    </blockquote>
-
-    The correction factor, which will multiply device critical current
-    and gap voltage, is the ratio &Delta;/&Delta;<sub>nom</sub>.  This
-    is applied, in addition to area scaling, when extrapolating device
-    parameters from reference junction parameters.
-    </dl>
+    This is an empirical fitting parameter for approximate <a
+    href="rsjtcf">temperature dependence</a> of the energy gap, default
+    is 1.74.
 
     <dl>
     <dt><tt>icrit</tt><dd>
@@ -2707,8 +2674,86 @@ Josephson Models
     damping.
     </dl>
  
+    <a name="tcf"></a>
+    <h3>RSJ Model Temperature Dependence</h3>
+
+    When the junction is not operating at the nominal temperature
+    as specified with the <tt>tnom</tt> parameter, a correction factor
+    is applied to the critical current to account for the temperature
+    difference.  The superconducting energy gap and therefor the
+    junction gap voltage will also change as a function of temperature.
+
+    <p>
+    If the gap voltage is not specified with the <tt>vg</tt> parameter
+    or its alias <tt>vgap</tt>, the model will compute the gap voltage
+    from BCS theory using the superconducting transition temperature
+    (<tt>tc</tt> parameter) and Debye temperature (<tt>tdebye</tt>
+    parameter) at the operating temperature.
+
+    <p>
+    When a gap voltage is supplied, it is taken as the value at the
+    nominal temperature.  The model utilizes an interpolation formula
+    to represent temperature variation of the gap parameter of the
+    superconductor in the case.
+
+    <p>
+    In either case, the RSJ model currently assumes that the same
+    material appears on either side of the barrier.
+
+    <p>
+    Below is the approximation formula for the superconducting energy
+    gap that is employed when the nominal junction gap voltage is
+    given explicitly.  The junction vap voltage is twice the
+    superconductor energy gap.
+    <blockquote>
+    &Delta; = &Delta;<sub>0</sub> <i>tanh</i>(<tt>tcfct</tt>
+    &radic;(<tt>tc</tt>/T - 1))
+    </blockquote>
+    Reference: <a href="https://physics.stackexchange.com/questions/192416/interpolation-formula-for-bcs-superconducting-gap">
+    <tt>https://physics.stackexchange.com/questions/192416/interpolation-formula-for-bcs-superconducting-gap</tt></a>
+
+    <p>
+    Here, &Delta; is the energy gap, with the subscript indicating the
+    value at temperature T=0.  The <tt>tcfct</tt> parameter is semi-empirical,
+    commonly cited as 1.74, which is the default value.
+
+    <p>
+    In order to apply temperature correction one takes the assumption
+    that parameters for the reference junction are measured at nominal
+    temperature <tt>tnom</tt>, and we therefor have
+
+    <blockquote>
+    &Delta;<sub>nom</sub> = &Delta;<sub>0</sub> <i>tanh</i>(<tt>tcfct</tt>
+    &radic;(<tt>tc</tt>/<tt>tnom</tt> - 1))
+    </blockquote>
+
+    The correction factor which will multiply device
+    gap voltage, is the ratio &Delta;/&Delta;<sub>nom</sub>.
+    This will apply when the nominal gap voltage is given.  When not
+    given, the gap voltage is computed directly with BCS theory and the
+    approximation formula is not used.
+
+    <p>
+    The critical current temperature variation again follows BCS theory.
+    The temperature correction factor <i>tcf</i> multiplies the instance
+    critical current to account for the temperature difference between
+    operating and nominal temperatures.
+
+    <blockquote>
+    <i>tcf<i> = (Vg/Vg<sub>nom</sub>) *
+     (<i>tanh</i>(<tt>eVg/4KT</tt>) /
+     <i>tanh</i>(<tt>eVg</tt><sub>nom</sub><tt>/4KT</tt><sub>nom</sub>))
+    </blockquote>
+
+    Here, <tt>Vg</tt> is the computed gap voltage, <tt>e</tt> is the electron
+    charge, <tt>K</tt> is Boltzmann's constant, <tt>T</tt> is temperature in
+    Kelvin,
+
 !!SEEALSO
 .model
+tjmodel
+
+!!REDIRECT tjmtcf tjmodel#tcf
  
 !! elements.tex 051422
 !!KEYWORD
@@ -3209,6 +3254,38 @@ Josephson Tunnel Junction Model
     <dt><tt>vg</tt> or <tt>vgap</tt> (read only)<dd>
     The junction gap voltage, equal to <tt>del1 + del2</tt>.
  
+    <a name="tcf"></a>
+    <h3>TJM Model Temperature Dependence</h3>
+
+    When the junction is not operating at the nominal temperature
+    as specified with the <tt>tnom</tt> parameter, a correction factor
+    is applied to the critical current to account for the temperature
+    difference.  The superconducting energy gap and therefor the
+    junction gap voltage will also change as a function of temperature.
+
+    <p>
+    In the TJM model, the energy gaps are always computed from the BCS
+    integral equation involving superconducting transition temperature,
+    Debye temperature, and operating temperature.  The materials may be
+    different on the two sides of the barrier.  The junction gap voltage
+    is the sum of the gap potentials of the two materials.
+
+    <p>
+    The critical current temperature variation again follows BCS theory.
+    The temperature correction factor <i>tcf</i> multiplies the instance
+    critical current to account for the temperature difference between
+    operating and nominal temperatures.
+
+    <blockquote>
+    <i>tcf<i> = (Vg/Vg<sub>nom</sub>) *
+     (<i>tanh</i>(<tt>eVg/4KT</tt>) /
+     <i>tanh</i>(<tt>eVg</tt><sub>nom</sub><tt>/4KT</tt><sub>nom</sub>))
+    </blockquote>
+
+    Here, <tt>Vg</tt> is the computed gap voltage, <tt>e</tt> is the electron
+    charge, <tt>K</tt> is Boltzmann's constant, <tt>T</tt> is temperature in
+    Kelvin,
+
 !!SEEALSO
 .model
 jjmodel

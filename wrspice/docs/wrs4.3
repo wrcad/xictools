@@ -50,6 +50,7 @@ bottom of the file:
 
  mount c:/usr/local/xictools /usr/local/xictools
  export PATH="/usr/local/xictools/bin:$PATH"
+ export XT_HOMEDIR=c:/msys64/home/your_login
 
 This should be all that is needed to run the XicTools programs.
 
@@ -116,6 +117,55 @@ End of general info.
 
 
 ===============================================================================
+wrspice-4.3.14  5/15/2022
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Major update to the Josephson junction RSJ and TJM models.  A new
+  mmjco utility was added for working with TJM tunnel current tables. 
+  Internal computation of energy gap from BCS theory avoids use of
+  approximation formula.
+
+* WRspice can now handle a second index when accessing a list of
+  lists.
+
+    E.g.,
+
+    set v = ( ( a b c ) ( d e f ) )
+
+    $v[1][2] now returns f,
+    previously the second index would be ignored.
+
+  The set command and $xxx can now handle indexing to arbitrary depth
+  for lists.  All but the leaf must be a single index (not a range). 
+  This allows crude data structures to be defined and used, as in a
+  new version of the nor_op.cir example.  In this example, all info
+  about the circuit variables to be range tested are defined in a list
+  of structures.  We simply loop through the structures calling
+  findrange.  The circuit itself does not require any content to
+  support this.
+
+* New environment variable XT_HOMEDIR for Windows.
+
+  Set to Windows path to users MSYS2 home directory.
+
+  Replaces XIC_START_DIR which is deprecated.
+
+* Support for Apple M1.
+
+
+BUGS FIXED
+---- -----
+
+* Always treat "vs" in plot commands as if it is explicitly quoted to
+  avoid any attempt to incorporate it into an expression.
+
+* Lots of misc things fixed.
+
+
+------------------------------------------------------------------------------
 wrspice-4.3.13  1/20/2021
 Current Release
 

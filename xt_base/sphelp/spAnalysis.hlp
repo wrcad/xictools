@@ -170,7 +170,7 @@ Chained Sweep Analysis
 !!SEEALSO
 analyses
 
-!! format.tex 060219
+!! format.tex 051422
 !!KEYWORD
 .ac
 !!TITLE
@@ -264,7 +264,7 @@ analyses
 
 !!REDIRECT phasemode .dc#phasemode
 
-!! format.tex 120115
+!! format.tex 051422
 !!KEYWORD
 .dc
 !!TITLE
@@ -374,6 +374,8 @@ DC Analysis
     <a name="phasemode"></a>
     <h2>Phase-Mode DC Analysis</h2>
 
+!!format.tex 051422
+
     The <a href="jjdesc">Josephson junction</a> device has unique
     behavior which complicates simulation with a SPICE-type simulator. 
     Central is the idea of phase, which is a quantum-mechanical
@@ -388,7 +390,7 @@ DC Analysis
     Josephson junctions.  When quiescent, the voltage at all nodes of
     such a circuit is identically zero, and thus it would seem to be
     impossible to use a SPICE-type simulator to perform DC analysis on
-    this type of circuit.  However, by using phase.  which is nonzero
+    this type of circuit.  However, by using phase, which is nonzero
     at each node, instead of voltage, one can perform DC analysis,
     using "phase-mode DC".
 
@@ -763,7 +765,7 @@ Small-Signal Noise Analysis
 !!SEEALSO
 analyses
 
-!! format.tex 021212
+!! format.tex 051422
 !!KEYWORD
 .op
 !!TITLE
@@ -1102,7 +1104,7 @@ Pole-Zero Analysis
 !!SEEALSO
 analyses
  
-!! format.tex 060219
+!! format.tex 051422
 !!KEYWORD
 .sens
 !!TITLE
@@ -1151,7 +1153,7 @@ DC or Small-Signal AC Sensitivity Analysis
 !!SEEALSO
 analyses
 
-!! format.tex 060219
+!! format.tex 051422
 !!KEYWORD
 .tf
 !!TITLE
@@ -1205,7 +1207,7 @@ DC or Small-Signal AC Transfer Function Analysis
 !!SEEALSO
 analyses
 
-!! format.tex 060219
+!! format.tex 051422
 !!KEYWORD
 .tran
 !!TITLE

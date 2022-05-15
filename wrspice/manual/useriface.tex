@@ -309,7 +309,7 @@ standard output, and exit.
 \section{Environment Variables}
 \index{environment variables|(}
 
-% spSetup.hlp:environment 093017
+% spSetup.hlp:environment 051522
 
 Environment variables are keyword/value pairs that are made available
 to an application by the command shell or operating system.  The value
@@ -462,6 +462,19 @@ directory prefix which effectively replaces ``{\vt /usr/local}'', and
 the programs will be able to access the installation library files
 without further directives.  This should not be needed under Windows,
 as the Registry provides the default paths.
+
+\index{environment variables!XT\_HOMEDIR}
+\index{XT\_HOMEDIR environment variable}
+\item{\et XT\_HOMEDIR}\\
+This should be set to the Windows path to the user's MSYS2 home
+directory.  This can be done from the {\vt bash\_profile} file by
+adding a line
+\begin{quote}
+{\vt export XT_HOMEDIR=c:/msys64/home/}{\ityourlogin}
+\end{quote}
+Setting this will allow {\Xic} and {\WRspice} to find files in the
+user's MSYS2 home directory, even though the programs are Windows
+native and don't know the MSYS2 paths.
 
 \index{environment!XTNETDEBUG}
 \index{XTNETDEBUG environment variable}

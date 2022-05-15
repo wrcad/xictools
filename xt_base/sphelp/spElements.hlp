@@ -1173,9 +1173,9 @@ Josephson Junctions
     <tr><td><tt>gs</tt> (read only)</td> <td>
       Quasiparticle onset conductance.</td></tr>
     <tr><td><tt>gshunt</tt> (read only)</td> <td>
-      External shunt conductance from VSHUNT.</td></tr>
+      External shunt conductance from <tt>vshunt</tt>.</td></tr>
     <tr><td><tt>rshunt</tt> (read only)</td> <td>
-      External shunt resistance from VSHUNT.</td></tr>
+      External shunt resistance from <tt>vshunt</tt>.</td></tr>
     <tr><td><tt>lshval</tt> (read only)</td> <td>
       External shunt resistor parasitic inductance.</td></tr>
     <tr><td><tt>g1</tt> (read only)</td> <td>
@@ -1189,13 +1189,13 @@ Josephson Junctions
     <tr><td><tt>pnode</tt> (read only)</td> <td>
       Phase node number.</td></tr>
     <tr><td><tt>lsernode</tt> (read only)</td> <td>
-      Internal LSER node number.</td></tr>
+      Internal <tt>lser</tt> node number.</td></tr>
     <tr><td><tt>lserbrn</tt> (read only)</td> <td>
-      Internal LSER branch number.</td></tr>
+      Internal <tt>lser</tt> branch number.</td></tr>
     <tr><td><tt>lshnode</tt> (read only)</td> <td>
-      Internal LSH node number.</td></tr>
+      Internal <tt>lsh</tt> node number.</td></tr>
     <tr><td><tt>lshbrn</tt> (read only)</td> <td>
-      Internal LSH branch number.</td></tr>
+      Internal <tt>lsh</tt> branch number.</td></tr>
     </table>
 
     <p>
@@ -1374,7 +1374,7 @@ Josephson Junctions
     <dt><tt>tcf</tt> (read only)<dd>
     The temperature correction factor that modifies the critical
     current at operating temperatures other than nominal.  See the
-    description of the <a href="jjtcf">temperature dependence</a> of
+    description of the <a href="rsjtcf">temperature dependence</a> of
     the RSJ model.
     </dl>
 
@@ -1699,9 +1699,9 @@ Josephson Junctions (Tunnel Junction Model)
     <tr><td><tt>rsint</tt> (read only)</td> <td>
       Intrinsic subgap resistance.</td></tr>
     <tr><td><tt>gshunt</tt> (read only)</td> <td>
-      External shunt conductance from VSHUNT.</td></tr>
+      External shunt conductance from <tt>vshunt</tt>.</td></tr>
     <tr><td><tt>rshunt</tt> (read only)</td> <td>
-      External shunt resistance from VSHUNT.</td></tr>
+      External shunt resistance from <tt>vshunt</tt>.</td></tr>
     <tr><td><tt>lshval</tt> (read only)</td> <td>
       External shunt resistor parasitic inductance.</td></tr>
     <tr><td><tt>del1</tt> (read only)</td> <td>
@@ -1731,13 +1731,13 @@ Josephson Junctions (Tunnel Junction Model)
     <tr><td><tt>pnode</tt> (read only)</td> <td>
       Phase node number.</td></tr>
     <tr><td><tt>lsernode</tt> (read only)</td> <td>
-      Internal LSER node number.</td></tr>
+      Internal {\vt lser} node number.</td></tr>
     <tr><td><tt>lserbrn</tt> (read only)</td> <td>
-      Internal LSER branch number.</td></tr>
+      Internal {\vt lser} branch number.</td></tr>
     <tr><td><tt>lshnode</tt> (read only)</td> <td>
-      Internal LSH node number.</td></tr>
+      Internal {\vt lsh} node number.</td></tr>
     <tr><td><tt>lshbrn</tt> (read only)</td> <td>
-      Internal LSH branch number.</td></tr>
+      Internal {\vt lsh} branch number.</td></tr>
     </table>
 
     <p>
@@ -1889,8 +1889,10 @@ Josephson Junctions (Tunnel Junction Model)
 
     <dl>
     <dt><tt>tcf</tt> (read only)<dd>
-    The critical current correction factor, differs from 1.0 when the
-    operating and nominal temperatures differ.
+    The temperature correction factor that modifies the critical
+    current at operating temperatures other than nominal.  See the
+    description of the <a href="tjmtcf">temperature dependence</a> of
+    the TJM model.
     </dl>
 
     <dl>
@@ -2007,18 +2009,22 @@ Josephson Junctions (Tunnel Junction Model)
 
     <dl>
     <dt><tt>alphan</tt> (read only)<dd>
+    Internal model critical current scaling factor.
     </dl>
 
     <dl>
     <dt><tt>kgap</tt> (read only)<dd>
+    Internal model normalized gap parameter.
     </dl>
 
     <dl>
     <dt><tt>kgap_rejpt</tt> (read only)<dd>
+    Internal model normalized gap parameter.
     </dl>
 
     <dl>
     <dt><tt>rejpt</tt> (read only)<dd>
+    Internal model normalized resistance.
     </dl>
 
     <dl>
