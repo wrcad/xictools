@@ -1994,8 +1994,8 @@ Simulation Option Variables
     <dt><tt>tjm_path</tt><dd>
     This list variable provides the directories to search for tunnel
     current amplitude tables created with the <a
-    href="mmjco.txt"><i>mmjco</i> utility</a> or equivalent, for use
-    in the microscopic <a href="jjmodel">Josephson junction</a> model. 
+    href="mmjco"><b>mmjco</b> utility</a> or equivalent, for use
+    in the microscopic <a href="tjmodel">Josephson junction</a> model. 
     If not given, the search path is effectively "<tt>( . 
     $HOME/.mmjco }</tt>".
     </dl>

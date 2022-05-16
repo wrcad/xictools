@@ -568,7 +568,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                     inst->JJvg = inst->JJtcf * model->JJvgnom;
                 }
                 else {
-                    // Compute BCS gat voltage.
+                    // Compute BCS gap voltage.
                     inst->JJvg = DEV.bcs_egapv(inst->JJtemp_k, model->JJtc,
                         model->JJtdebye);
                     inst->JJtcf = inst->JJvg / model->JJvgnom;

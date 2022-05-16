@@ -50,6 +50,7 @@ bottom of the file:
 
  mount c:/usr/local/xictools /usr/local/xictools
  export PATH="/usr/local/xictools/bin:$PATH"
+ export XT_HOMEDIR=c:/msys64/home/(your_login)
 
 * The mintty Terminal Emulator Window
 
@@ -112,7 +113,35 @@ location.  The directory should be added to your shell search path.
 *****************************************************
 End of general info.
 
+
 ===============================================================================
+xic-4.3.11  01/20/2021
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New environment variable XT_HOMEDIR for Windows.
+
+  Set to Windows path to users MSYS2 home directory.
+
+  Replaces XIC_START_DIR which is deprecated.
+
+* Support for Apple M1.
+
+* Misc. tweaks for PyCellStudio support.
+
+* Fixes to aliasing, supporting GDS write when cellnames have
+  disallowed characters.
+
+
+BUGS FIXED
+---- -----
+
+* Misc. fixes.
+
+
+------------------------------------------------------------------------------
 xic-4.3.11  01/20/2021
 Current Release
 

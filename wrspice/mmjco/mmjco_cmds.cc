@@ -336,7 +336,7 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **pmt,
     }
     else {
         recs = 2;
-        /* Quadratic interpolation doesn't seem to give rood results.
+        /* Quadratic interpolation doesn't seem to give good results.
         if (resid > 0.5) {
             // Closer to the next reference, do quad unless at upper limit.
             if (ntemp + 2 < nrec)
