@@ -657,7 +657,7 @@ Microsoft Windows Notes
 !!REDIRECT --vv                 xic:cmdline#--vv
 !!REDIRECT --vb                 xic:cmdline#--vb
 
-!! 093017
+!! 052222
 !!KEYWORD
 xic:cmdline
 !!TITLE
@@ -986,7 +986,7 @@ Command Line Options
     <blockquote>
     <i>version</i> <i>osname</i> <i>arch</i>
     </blockquote>
-    for example "<tt>4.3.1 LinuxRHEL7 x86_64</tt>".
+    for example "<tt>4.3.11 LinuxCentos7 x86_64</tt>".
     </dl>
 
     <a name="--vv"></a>

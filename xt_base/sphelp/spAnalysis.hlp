@@ -374,7 +374,7 @@ DC Analysis
     <a name="phasemode"></a>
     <h2>Phase-Mode DC Analysis</h2>
 
-!!format.tex 051422
+!! format.tex 051422
 
     The <a href="jjdesc">Josephson junction</a> device has unique
     behavior which complicates simulation with a SPICE-type simulator. 

@@ -2408,6 +2408,7 @@ Josephson Models
     This is an empirical fitting parameter for approximate <a
     href="rsjtcf">temperature dependence</a> of the energy gap, default
     is 1.74.
+    </dl>
 
     <dl>
     <dt><tt>icrit</tt><dd>
@@ -2449,7 +2450,6 @@ Josephson Models
     <dl>
     <dt><tt>delv</tt><dd>
     <b>range:</b> 0.001*<tt>vg</tt> - 0.2*<tt>vg</tt><br>
-    <b>Levels 1 and 2 only.</b><br>
     This specifies the assumed width, in voltage, of the quasiparticle
     step region, or gap.  In this region, current increases sharply
     with increasing voltage.  The default value of 80uV is reasonable

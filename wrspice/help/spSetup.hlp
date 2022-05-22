@@ -293,7 +293,7 @@ Environment Variables
     This can be done from the <tt>bash_profile</tt> file by adding a line
     <blockquote>
     <tt>export XT_HOMEDIR=c:/msys64/home/</tt><i>yourlogin</i>
-    <//blockquote>
+    </blockquote>
     Setting this will allow <i>Xic</i> and <i>WRspice</i> to find
     files in the user's MSYS2 home directory, even though the programs
     are Windows native and don't know the MSYS2 paths.
