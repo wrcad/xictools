@@ -32,11 +32,11 @@ case $1 in
 oses)
   echo \
 "Darwin \
-LinuxCentos7 \
 LinuxCentos8 \
 LinuxDebian11 \
 LinuxFedora35 \
 LinuxOpenSUSE15 \
+LinuxRHEL7 \
 LinuxUbuntu20 \
 MINGW"
 ;;
@@ -47,8 +47,6 @@ host)
   case $2 in
   Darwin)
     echo macbook;;
-  LinuxCentos7)
-    echo frost;;
   LinuxCentos8)
     echo poe;;
   LinuxDebian11)
@@ -57,6 +55,8 @@ host)
     echo fedor;;
   LinuxOpenSUSE15)
     echo byron;;
+  LinuxRHEL7)
+    echo frost;;
   LinuxUbuntu20)
     echo ubun;;
   MINGW)
@@ -67,8 +67,6 @@ sfx)
   case $2 in
   Darwin)
     echo pkg;;
-  LinuxCentos7)
-    echo rpm;;
   LinuxCentos8)
     echo rpm;;
   LinuxDebian11)
@@ -76,6 +74,8 @@ sfx)
   LinuxFedora35)
     echo rpm;;
   LinuxOpenSUSE15)
+    echo rpm;;
+  LinuxRHEL7)
     echo rpm;;
   LinuxUbuntu20)
     echo deb;;

@@ -460,6 +460,10 @@ dnl         # No number found in major, try minor.
             6 | 7 | 8 | 9)
                 if test $oname = "Redhat" -o $oname = "Centos"; then
                     with_psf_ok=yes
+                    if test $major = 7; then
+                        # Use old name for this one.
+                        OSNAME=LinuxRHEL7
+                    fi
                 fi
                 ;;
             *)
