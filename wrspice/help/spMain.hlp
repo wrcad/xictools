@@ -3847,7 +3847,7 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Model Calculator
     <dt><tt>ss</tt>
     <dd>A two digit integer equal to 1e3*<i>sf</i>, where <i>sf</i> is the
      smoothing parameter.
-    <td><tt>PPPP</tt>
+    <dt><tt>PPPP</tt>
     <dd>The number of points used (<tt>-x</tt> option).
     </dl>
 
@@ -3859,7 +3859,7 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Model Calculator
     The fitting parameter file name has the following form.
 
     <blockquote>
-    <tt>tcaTTTTTTdddddDDDDDssPPPP-nNHHH.fit</tt>
+    <tt>tcaTTTTTTdddddDDDDDssPPPP-nnHHH.fit</tt>
     </blockquote>
 
     The first part, ahead of the '-', is as described above.  Following
@@ -3885,13 +3885,13 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Model Calculator
     <dt><tt>tttttt</tt>
     <dd>A six digit integer equal to 1e4*<i>Tstart</i>, where
     <i>Tstart</i> is the starting temperature in Kelvin.
-    <td><tt>TTTTTT</tt>
+    <dt><tt>TTTTTT</tt>
     <dd>A six digit integer equal to 1e4*<i>Tdelta</i>, where
     <i>Tdelta</i> is the temperature spacing.
     <dt><tt>ss</tt>
     <dd>A two digit integer equal to 1e3*<i>sf</i>, where <i>sf</i> is the
      smoothing parameter.
-    <td><tt>PPPP</tt>
+    <dt><tt>PPPP</tt>
     <dd>The number of points used (<tt>-x</tt> option).
     </dl>
 

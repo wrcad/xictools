@@ -414,10 +414,11 @@ Linux)
         dst=`rpm -qf /etc/os-release`
     fi
     if test -n "$dst"; then
-dnl     # RPM-based:  Red Hat, CentOS, OpenSuSE, and others.  Recognize 5/6/7
-dnl     # and assume RHEL production releases.  We obtain the release name
-dnl     # and number from RPM, which will work even if someone hacked the text
-dnl     # of the redhat-release file.
+dnl     # RPM-based:  Red Hat, CentOS, OpenSuSE, and others.  Recognize 5-9
+dnl     # as CentOS/RedHat releases.  We obtain the release name and number
+dnl     # from RPM, which will work even if someone hacked the text of the
+dnl     #  redhat-release file.
+
         DIST_SUFFIX="rpm"
         tifs=$IFS
         IFS=".-_ "
@@ -431,8 +432,8 @@ dnl     # Upper-case the first letter of oname.
         minor=$4
 
         if test -n "$major"; then
-dnl         # RedHat/CentOS/Fedora etc.  The $major may be a bare integer, or
-dnl         # something like "5Server".  Convert non-digits to spaces, then
+dnl         # RedHat/CentOS/Fedora etc.
+dnl         # Convert non-digits to spaces, then
 dnl         # keep only the first token. 
 
             major=`echo $major | tr -c 0-9 " "`
@@ -447,55 +448,26 @@ dnl         # No number found in major, try minor.
             major=$1
         fi
         if test -n "$major"; then
+            OSNAME="Linux$oname$major"
+            if test $linux32 = yes; then
+                ARCH="i686"
+                ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
+                lib_dirs="/usr/lib"
+            else
+                ARCH="x86_64"
+                lib_dirs="/usr/lib64"
+            fi
             case $major in
-            1 | 2 | 3 | 4)
-                echo "Architecture too archaic, not supported."
-                exit
-                ;;
-            5)
-                OSNAME="LinuxRHEL5"
-                if test $linux32 = yes; then
-                    ARCH="i686"
-                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                else
-                    ARCH="x86_64"
-                    lib_dirs="/usr/lib64"
+            6 | 7 | 8 | 9)
+                if test $oname = "Redhat" -o $oname = "Centos"; then
+                    with_psf_ok=yes
+                    if test $major = 7; then
+                        # Use old name for this one.
+                        OSNAME=LinuxRHEL7
+                    fi
                 fi
-                ;;
-            6)
-                OSNAME="LinuxRHEL6"
-                if test $linux32 = yes; then
-                    ARCH="i686"
-                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                    lib_dirs="/usr/lib"
-                else
-                    ARCH="x86_64"
-                    lib_dirs="/usr/lib64"
-                fi
-                with_psf_ok=yes
-                ;;
-            7)
-                OSNAME="LinuxRHEL7"
-                if test $linux32 = yes; then
-                    ARCH="i686"
-                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                    lib_dirs="/usr/lib"
-                else
-                    ARCH="x86_64"
-                    lib_dirs="/usr/lib64"
-                fi
-                with_psf_ok=yes
                 ;;
             *)
-                OSNAME="Linux$oname$major"
-                if test $linux32 = yes; then
-                    ARCH="i686"
-                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                    lib_dirs="/usr/lib"
-                else
-                    ARCH="x86_64"
-                    lib_dirs="/usr/lib64"
-                fi
                 ;;
             esac
         fi

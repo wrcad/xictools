@@ -566,7 +566,9 @@ $(destn)/devkit::
 	done;
 
 $(destn)/cadence-oasis::
-	cp -pfr cadence-oasis $(destn)
+	if [ -d cadence-oasis ]; then \
+	    cp -pfr cadence-oasis $(destn); \
+	fi
 
 devkit_examples:
 	(cd devlib/adms/examples; \

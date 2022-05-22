@@ -48,7 +48,7 @@ arguments
 !!REDIRECT --v          arguments#--v
 !!REDIRECT --vv         arguments#--vv
 
-!! useriface.tex 111515
+!! useriface.tex 052222
 !!KEYWORD
 arguments
 !!TITLE
@@ -403,7 +403,7 @@ Command Line Arguments
     <blockquote>
     <i>version osname arch</i>
     </blockquote>
-    for example "<tt>4.3.1 LinuxRHEL6 x86_64</tt>".
+    for example "<tt>4.3.11 LinuxCentos7 x86_64</tt>".
     </dl>
 
     <a name="--vv"></a>

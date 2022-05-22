@@ -1077,14 +1077,14 @@ Josephson Junctions
      </blockquote>
 
     <p>
-    The default Josephson junction <href="jjmodel">model</a> is an
+    The default Josephson junction <a href="jjmodel">model</a> is an
     extended version of the RSJ model as used by <a
     href="jewett">Jewett</a>.  There are actually three Josephson
     junction models available, through the <tt>level</tt> model
     parameter, which can take values 1 through 3.  The default
     <tt>level=1</tt> model is the RSJ model mentioned.  This model has
     a simplified Verilog-A version which can be found among the
-    Verilog-A examples.  This can be compiled with the <b>adms</b>
+    Verilog-A examples.  This can be compiled with the <tt>adms</tt>
     utility into a run-time loadable module which can be loaded with
     the <a href="devload"><b>devload</b></a> command.  A pre-compiled
     module is provided with the example.  Once loaded into
@@ -1526,7 +1526,7 @@ Josephson Junctions
     branch number of the inductor's branch.
     </dl>
 
-    <a href="jjdesc"></a>
+    <a name="jjdesc"></a>
     <h2>Josephson Junction Description</h2>
 
     <p>

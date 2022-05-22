@@ -110,66 +110,33 @@ OpenAccess Support
 
     <p>
     <font color=red><b>This interface is presently not available under
-    Microsoft Windows.</b></font><br>
-    OpenAccess is an open-source database for CAD/EDA data.  It is
-    used by Cadence Virtuoso 6.<i>x</i>, and by many other tools.  It
-    provides a commonality among tools from different vendors, and is
-    intended to facilitate seamless integration of tools from
-    different vendors into a process flow.  OpenAccess is distributed
-    by Si2 (<a href="http://www.si2.org"><tt>www.si2.org</tt></a>), an
-    industry coalition.  Source code and binary distributions are
-    available for a number of operating systems, to registered users
-    and coalition members.
+    Microsoft Windows.</b></font>
+
+    <p>
+    <font color=red><b>The OpenAccess plug-in is not provided with
+    <i>Xic</i> packages, the user must build this from source, which
+    requires OpenAccess source code.</b></font>
+
+    <p>
+    OpenAccess is a semi-open-source database for CAD/EDA data.  It is
+    used by Cadence Virtuoso, Synopsys Custom Compiler, and by many
+    other tools.  It provides a commonality among tools from different
+    vendors, and is intended to facilitate seamless integration of
+    tools from different vendors into a process flow.  OpenAccess is
+    distributed by Si2 (<a
+    href="http://www.si2.org"><tt>www.si2.org</tt></a>), an industry
+    coalition.  Source code and binary distributions are available for
+    a number of operating systems, to registered users and coalition
+    members.
 
     <p>
     <i>Xic</i> can connect to an OpenAccess (OA) database through a <a
-    href="plugins">plug-in</a>, which is supplied with all <i>Xic</i>
-    releases for other than Microsoft Windows, on which there is no OA
-    support.  Since there is no default location for OA, the user must
+    href="plugins">plug-in</a>
+    Since there is no default location for OA, the user must
     set the <a href="XIC_LIBRARY_PATH"><tt>XIC_LIBRARY_PATH</tt></a>
     or the <tt>LD_LIBRARY_PATH</tt> variable to include the library
     location in the search path during program loading.  This is most
     conveniently done in the user's shell startup script.
-
-    <p>
-    Presently, the plug-in is compiled with the OpenAccess releases
-    below.  The plug-in can work with libraries from newer OpenAccess
-    releases, but not with libraries from an older release.
-
-    <blockquote>
-    <table cellpadding=2 border=1 bgcolor="#ffffee">
-    <tr><th>Distribution</th> <th>OpenAccess Release</th></tr>
-    <tr><td>LinuxRHEL5 (32 and 64)</td> <td>22.04.054</td></tr>
-    <tr><td>all others</td> <td>22.04.064</td></tr>
-    </table>
-    </blockquote>
-
-    <p>
-    These are known to be compatible will OpenAccess from Ciranova <a
-    href="pycell">PyCell Studio</a> release 4.7.1 and later, and
-    Cadence Virtuoso 6.1.4 and later.  This includes Virtuoso 6.1.7
-    which jumps to OpenAccess API level 5.  The existing plugin can
-    handle API levels 4 and 5.
-
-    <p>
-    There are at least three ways to obtain OpenAccess.
-    <ol>
-    <li>From a Cadence <a href="cdsconnect">Virtuoso installation</a>
-    on the same computer.
-    <li>From a Ciranova (now Synopsys) PyCell Studio portable-pcell
-      installation on the same computer.
-    <li>From an OpenAccess distribution from the Si2 organization.
-    </ol>
-
-    <p>
-    The OpenAccess plug-in is provided with OS X releases, though
-    (regrettably) Ciranova and Cadence do not support the platform. 
-    Those inclined can get OpenAccess from Si2 and build it on OS X,
-    using patches available from the Whiteley Research web site. 
-    Unlike Windows, OS X is inherently a first-class CAD platform, too
-    bad the big guys don't support it.  The patch also ports
-    OpenAccess to FreeBSD, and improves support for recent Linux
-    releases.
 
     <p>
     Probably, the main interest in using OA is for limited compatibility
@@ -189,6 +156,11 @@ OpenAccess Support
     Virtuoso.  There are plans for a data translation stage in the
     future to possibly adapt <i>Xic</i> schematics to Virtuoso
     format.
+
+    <p>
+    Likewise, The plug-in allows a direct interface to Synopsys Custom
+    Compiler, and supports Python-based PCells including stretch handle
+    and abutment protocols.
 
     <p>
     When the OpenAccess plug-in is loaded, there are several changes to

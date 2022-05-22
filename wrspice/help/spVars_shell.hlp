@@ -40,7 +40,7 @@ shell_vars
 !!REDIRECT width        shell_vars#width
 !!REDIRECT wmfocusfix   shell_vars#wmfocusfix
 
-!! variables.tex 030419
+!! variables.tex 052222
 !!KEYWORD
 shell_vars
 !!TITLE
@@ -273,8 +273,8 @@ Shell Option Variables
     <table border=0 cellspacing=4>
     <tr><td>0</td> <td>default "auto" mode.</td></tr>
     <tr><td>1</td> <td>off, don't attempt to revert focus.</td></tr>
-    <tr><td>2</td> <td>assume older linux, e.g. RHEL6 and Gnome.</td></tr>
-    <tr><td>3</td> <td>assume newish linux, e.g., RHEL7 and KDE.</td></tr>
+    <tr><td>2</td> <td>assume older linux, e.g. CentOS 6 and Gnome.</td></tr>
+    <tr><td>3</td> <td>assume newish linux, e.g., CentOS 7 and KDE.</td></tr>
     <tr><td>4</td> <td>Apple Mac.</td></tr>
     <tr><td>5</td> <td>Microsoft Windows.</td></tr>
     </table>

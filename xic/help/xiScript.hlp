@@ -37,7 +37,7 @@ scr:forms
 !!REDIRECT XTROOT       macro#xtroot
 !!REDIRECT PROGROOT     macro#progroot
 
-!! 071820
+!! 052222
 !!KEYWORD
 macro
 !!TITLE
@@ -134,7 +134,7 @@ Macro Preprocessor
     <dt><tt>OSNAME</tt><dd>
     First implemented: release 4.2.12<br>
     This is set to the distribution name of the program, for example
-    "<tt>LinuxRHEL7_64</tt>".
+    "<tt>LinuxCentos7</tt>".
     </dl>
 
     <a name=ostype></a>
