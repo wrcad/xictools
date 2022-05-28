@@ -170,15 +170,15 @@ TJMdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
 
                     double noizDens[2];
                     double lnNdens[2];
+                    double gnois = 
+                        inst->TJMnoise * SPMAX(inst->TJMg0, inst->TJMgqp);
                     NevalSrc(&noizDens[0], &lnNdens[0], ckt, THERMNOISE,
-                        inst->TJMposNode, inst->TJMnegNode,
-                        inst->TJMnoise * inst->TJMgqp);
+                        inst->TJMposNode, inst->TJMnegNode, gnois);
 
                     *OnDens += noizDens[0];
 #ifdef WITH_KF
                     if (doing_flicker(model, inst)) {
-                        double cur =
-                            inst->TJMv * inst->TJMnoise * inst->TJMgqp;
+                        double cur = inst->TJMv * gnois;
                         if (!model->TJMafGiven)
                             cur *= cur;
                         else if (model->TJMaf != 1.0)

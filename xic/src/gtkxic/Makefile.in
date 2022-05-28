@@ -22,7 +22,7 @@ LIB_TARGET = gtkxic.a
 
 BASE = ../../../xt_base
 SECURE = ../../../secure
-INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)
+INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include
 
 HFILES = \
   gtkasm.h gtkcoord.h gtkcv.h gtkhtext.h gtkinlines.h gtklpal.h \

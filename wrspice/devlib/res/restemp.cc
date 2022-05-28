@@ -47,7 +47,6 @@ Authors: 1985 Thomas L. Quarles
 
 #include "resdefs.h"
 
-
 // Perform the temperature update to the resistors, calculate the
 // conductance as a function of the given nominal and current
 // temperatures - the resistance given in the struct is the nominal
@@ -57,10 +56,6 @@ Authors: 1985 Thomas L. Quarles
 int
 RESdev::temperature(sGENmodel *genmod, sCKT *ckt)
 {
-    double gmax = ckt->CKTcurTask->TSKgmax;
-    if (gmax <= 0.0)
-        gmax = RES_GMAX;
-
     sRESmodel *model = static_cast<sRESmodel*>(genmod);
     for ( ; model; model = model->next()) {
 
@@ -196,20 +191,21 @@ RESdev::temperature(sGENmodel *genmod, sCKT *ckt)
                     return (E_SYNTAX);
             }
             if (res_given) {
-                double G = inst->RESm/(inst->RESresist * factor);
-                if (G > gmax) {
-                    G = gmax;
-                    DVO.textOut(OUT_WARNING,
-                        "%s: resistance reset to %g by gmax limiting.",
-                        (const char*)inst->GENname, 1.0/gmax);
+                if (fabs(inst->RESresist) < RES_RMIN) {
+                    if (inst->RESresist < 0.0) {
+                        inst->RESresist = -RES_RMIN;
+                        DVO.textOut(OUT_WARNING,
+                            "%s: resistance reset to %g by rmin limiting.",
+                            (const char*)inst->GENname, -RES_RMIN);
+                    }
+                    else {
+                        inst->RESresist = RES_RMIN;
+                        DVO.textOut(OUT_WARNING,
+                            "%s: resistance reset to %g by rmin limiting.",
+                            (const char*)inst->GENname, RES_RMIN);
+                    }
                 }
-                else if (G < -gmax) {
-                    G = -gmax;
-                    DVO.textOut(OUT_WARNING,
-                        "%s: resistance reset to %g by gmax limiting.",
-                        (const char*)inst->GENname, -1.0/gmax);
-                }
-                inst->RESconduct = G;
+                inst->RESconduct = inst->RESm/(inst->RESresist * factor);
             }
 
 #ifdef USE_PRELOAD

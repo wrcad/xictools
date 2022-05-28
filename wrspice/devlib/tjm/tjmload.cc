@@ -76,62 +76,31 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
         ts.ts_vj  = *(ckt->CKTrhsOld + inst->TJMposNode) -
                 *(ckt->CKTrhsOld + inst->TJMnegNode);
 
-        if (model->TJMictype != 0) {
-            ts.ts_phi = ts.ts_vj;
-            *(ckt->CKTstate0 + inst->TJMphase) = ts.ts_phi;
-            *(ckt->CKTstate0 + inst->TJMvoltage) = 0.0;
+        ts.ts_phi = ts.ts_vj;
+        *(ckt->CKTstate0 + inst->TJMphase) = ts.ts_phi;
+        *(ckt->CKTstate0 + inst->TJMvoltage) = 0.0;
 
-            ts.ts_pfac = 1.0;
-            ts.ts_dcrt = 0;
-            ts.ts_crt  = inst->TJMcriti;
-            inst->tjm_load(ckt, ts);
-            // don't load shunt
+        ts.ts_pfac = 1.0;
+        ts.ts_dcrt = 0;
+        ts.ts_crt  = inst->TJMcriti;
+        inst->tjm_load(ckt, ts);
+        // don't load shunt
 #ifdef NEWLSH
-            if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
-                // Load lsh as 0-voltage source, don't load resistor. 
-                // Dangling voltage source shouldn't matter.
+        if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
+            // Load lsh as 0-voltage source, don't load resistor. 
+            // Dangling voltage source shouldn't matter.
 
-                if (inst->TJMlsh > 0.0) {
-                    ckt->ldadd(inst->TJMlshIbrIbrPtr, 0.0);
+            if (inst->TJMlsh > 0.0) {
+                ckt->ldadd(inst->TJMlshIbrIbrPtr, 0.0);
 #ifndef USE_PRELOAD
-                    ckt->ldset(inst->TJMlshPosIbrPtr, 1.0);
-                    ckt->ldset(inst->TJMlshIbrPosPtr, 1.0);
-                    ckt->ldset(inst->TJMlshNegIbrPtr, -1.0);
-                    ckt->ldset(inst->TJMlshIbrNegPtr, -1.0);
-#endif
-                }
-            }
-#endif
-        }
-        else {
-            // No critical current, treat like a nonlinear resistor.
-
-            ts.ts_phi = 0.0;
-            ts.ts_dcrt = 0.0;
-            ts.ts_crt  = 0.0;
-        
-            inst->tjm_load(ckt, ts);
-
-            // Load the shunt resistance implied if vshunt given.
-            if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
-                ckt->ldadd(inst->TJMrshPosPosPtr, inst->TJMgshunt);
-                ckt->ldadd(inst->TJMrshPosNegPtr, -inst->TJMgshunt);
-                ckt->ldadd(inst->TJMrshNegPosPtr, -inst->TJMgshunt);
-                ckt->ldadd(inst->TJMrshNegNegPtr, inst->TJMgshunt);
-#ifdef NEWLSH
-                // Load lsh as 0-voltage source.
-                if (inst->TJMlsh > 0.0) {
-                    ckt->ldadd(inst->TJMlshIbrIbrPtr, 0.0);
-#ifndef USE_PRELOAD
-                    ckt->ldset(inst->TJMlshPosIbrPtr, 1.0);
-                    ckt->ldset(inst->TJMlshIbrPosPtr, 1.0);
-                    ckt->ldset(inst->TJMlshNegIbrPtr, -1.0);
-                    ckt->ldset(inst->TJMlshIbrNegPtr, -1.0);
-#endif
-                }
+                ckt->ldset(inst->TJMlshPosIbrPtr, 1.0);
+                ckt->ldset(inst->TJMlshIbrPosPtr, 1.0);
+                ckt->ldset(inst->TJMlshNegIbrPtr, -1.0);
+                ckt->ldset(inst->TJMlshIbrNegPtr, -1.0);
 #endif
             }
         }
+#endif
         if (ckt->CKTmode & MODEINITSMSIG) {
             // for ac load
             inst->TJMdcrt = ts.ts_dcrt;
@@ -204,7 +173,7 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
 
         ts.ts_dcrt = 0;
         ts.ts_crt  = inst->TJMcriti;
-    
+        
         ckt->integrate(inst->TJMvoltage, inst->TJMdelVdelT);
         inst->tjm_load(ckt, ts);
 
@@ -348,6 +317,7 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
         }
 
         inst->TJMdelVdelT = ckt->find_ceq(inst->TJMvoltage);
+
         inst->tjm_init(ts.ts_phi);
 
         ts.ts_dcrt = 0;
@@ -494,8 +464,11 @@ sTJMinstance::tjm_init(double phi)
     tjm_cosphi_2_old = cosphi_2;
 
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    int narray = model->tjm_narray;
-    tjm_gcrit = model->tjm_alphaN * sqrt(TJMcap*TJMcriti/PHI0_2PI);
+    int narray = model->TJMnterms;;
+    if (model->TJMrtype > 0)
+        tjm_gcrit = tjm_alphaN * sqrt(TJMcap*TJMcriti/PHI0_2PI);
+    else
+        tjm_gcrit = 0.0;
 
     if (!tjm_Fc) {
         tjm_Fc = new IFcomplex[7*narray];
@@ -519,10 +492,10 @@ void
 sTJMinstance::tjm_newstep(sCKT *ckt)
 {
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    double kdt = model->tjm_kgap*model->TJMomegaJ*ckt->CKTdelta;
+    double kdt = tjm_kgap*TJMomegaJ*ckt->CKTdelta;
 
-    for (int i = 0; i < model->tjm_narray; i++) {
-        IFcomplex z(model->tjm_p[i]*kdt);
+    for (int i = 0; i < model->TJMnterms; i++) {
+        IFcomplex z(tjm_p[i]*kdt);
         double d = exp(z.real);
         cIFcomplex ez(d*cos(z.imag), d*sin(z.imag));
         tjm_exp_z[i] = ez;
@@ -547,19 +520,25 @@ sTJMinstance::tjm_update(double phi)
     double FsSp = 0.0;  // sine for pairs
     double FsSq = 0.0;  // sine for qp
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    for (int i = 0; i < model->tjm_narray; i++) {
+    for (int i = 0; i < model->TJMnterms; i++) {
         tjm_Fc[i] = tjm_exp_z[i]*tjm_Fcprev[i] + 
             tjm_alpha0[i]*tjm_cosphi_2_old + tjm_alpha1[i]*cosphi_2;
         tjm_Fs[i] = tjm_exp_z[i]*tjm_Fsprev[i] +
             tjm_alpha0[i]*tjm_sinphi_2_old + tjm_alpha1[i]*sinphi_2;
 
-        FcSp += (model->tjm_A[i]*tjm_Fc[i]).real;
-        FcSq += (model->tjm_B[i]*tjm_Fc[i]).real;
-        FsSp += (model->tjm_A[i]*tjm_Fs[i]).real;
-        FsSq += (model->tjm_B[i]*tjm_Fs[i]).real;
+        FcSp += (tjm_A[i]*tjm_Fc[i]).real;
+        FcSq += (tjm_B[i]*tjm_Fc[i]).real;
+        FsSp += (tjm_A[i]*tjm_Fs[i]).real;
+        FsSq += (tjm_B[i]*tjm_Fs[i]).real;
     }
-    double fct = TJMcriti * model->tjm_kgap_rejpt;
-    tjm_cp  = fct*(sinphi_2*FcSp + cosphi_2*FsSp);
-    tjm_cqp = fct*(sinphi_2*FcSq - cosphi_2*FsSq);
+    double fct = TJMcriti * tjm_kgap_rejpt;
+    if (model->TJMictype > 0)
+        tjm_cp  = fct*(sinphi_2*FcSp + cosphi_2*FsSp);
+    else
+        tjm_cp = 0.0;
+    if (model->TJMrtype > 0)
+        tjm_cqp = fct*(sinphi_2*FcSq - cosphi_2*FsSq);
+    else
+        tjm_cqp = 0.0;
 }
 

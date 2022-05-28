@@ -17,7 +17,7 @@
 #endif
 
 
-const char *mmjco::mm_version = "0.5";
+const char *mmjco::mm_version = "0.9";
 
 //#define DEBUG
 
@@ -25,12 +25,13 @@ namespace {
     bool erhdlr(int er, const char *text)
     {
         if (er) {
-            printf("%s %s\n", gsl_strerror(er), text);
+            fprintf(stderr, "%s %s\n", gsl_strerror(er), text);
             return (true);
         }
         return (false);
     }
 }
+
 
 //-----------------------------------------------------------------------------
 // Function description:
@@ -77,7 +78,7 @@ mmjco::mmjco(double T, double Delta1, double Delta2, double sm)
     // Define normalized gaps mm_d1 and mm_d2 (0 < mm_d1 <= mm_d2).
     mm_d1 = minimum(Delta1, Delta2)/(Delta1+Delta2);
     mm_d2 = 1.0 - mm_d1;
-    double Vg = 1.e-3*(Delta1+Delta2); // Gap voltage in volts.
+    double Vg = 1e-3*(Delta1+Delta2);  // Gap voltage in volts.
     mm_b  = MM_ECHG*Vg/(2*MM_BOLTZ*T); // Parameter alpha in Ref.
                                        // PRB 96, 024515 (2017)
 
@@ -121,30 +122,6 @@ mmjco::~mmjco()
     gsl_integration_qaws_table_free(mm_tbl);
 }
     
-
-// Static function.
-// Save the TCA data in a file.
-//
-void
-mmjco::save_data(const char *filename, const double *x,
-    const complex<double> *Jpair_data, const complex<double> *Jqp_data, int xsz)
-{
-    FILE *fp = fopen(filename, "w");
-    if (!fp) {
-        printf("Error: unable to open file %s.\n", filename);
-        return;
-    }
-    fprintf(fp,
-        "#    X            Jpair_real   Jpair_imag   Jqp_real     Jqp_imag\n");
-    for (int i = 0; i < xsz; i++) {
-        fprintf(fp, "%-4d %-12.5e %-12.5e %-12.5e %-12.5e %-12.5e\n", i, x[i],
-            Jpair_data[i].real(), Jpair_data[i].imag(),
-            Jqp_data[i].real(), Jqp_data[i].imag());
-    }
-    fclose(fp);
-    printf("TCA data saved to file %s.\n", filename);
-}
-
 
 //---------------------------------------------------
 //          Define tunnel current amplitudes
@@ -354,9 +331,9 @@ mmjco_fit::new_fit_parameters(const double *x,
     complex<double> p[use_nterms];
     complex<double> A[use_nterms];
     complex<double> B[use_nterms];
-    p[0] = -1.0+0.0j;
-    A[0] = 0.0+0.0j;
-    B[0] = 0.0+0.0j;
+    p[0] = complex<double>(-1.0, 0.0);
+    A[0] = complex<double>(0.0, 0.0);
+    B[0] = complex<double>(0.0, 0.0);
     double xnew = 1.0;
 
     double *xd = new double[4*lenx];
@@ -380,9 +357,9 @@ mmjco_fit::new_fit_parameters(const double *x,
     int nterms = 1;
     while (nterms < use_nterms) {
 
-        p[nterms] = -1.0+1.0j*xnew;
-        A[nterms] = 0.0+0.0j;
-        B[nterms] = 0.0+0.0j;
+        p[nterms] = complex<double>(-1.0, 1.0*xnew);
+        A[nterms] = complex<double>(0.0, 0.0);
+        B[nterms] = complex<double>(0.0, 0.0);
         nterms++;
 
         printf("# nterms = %d with new term at frequency %f. Calculating...\n",
@@ -486,42 +463,47 @@ mmjco_fit::new_fit_parameters(const double *x,
 }
 
 
-// Save TCA fit parameters p,A,B to file.
+// Save TCA fit parameters p,A,B to file.  The destination can be set
+// by passing fp, in which case the data string or file name will be
+// added as a leading text string.
 //
 void
-mmjco_fit::save_fit_parameters(const char *filename)
+mmjco_fit::save_fit_parameters(const char *filename, FILE *fp, const char *hdr)
 {
     if (!mmf_pAB || !mmf_nterms) {
-        printf("Error: no saved parameter set.\n");
+        fprintf(stderr, "Error: no saved parameter set.\n");
         return;
     }
     complex<double> *A = mmf_pAB + mmf_nterms;
     complex<double> *B = A + mmf_nterms;
-    FILE *fp = fopen(filename, "w");
+    bool closefp = false;
     if (!fp) {
-        printf("Error: unable to open file %s.\n", filename);
-        return;
+        fp = fopen(filename, "w");
+        if (!fp) {
+            fprintf(stderr, "Error: unable to open file %s.\n", filename);
+            return;
+        }
+        closefp = true;
     }
+    if (hdr)
+        fprintf(fp, "%s\n", hdr);
     for (int i = 0; i < mmf_nterms; i++) {
-        fprintf(fp, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",
+        fprintf(fp, "%12.5e,%12.5e,%12.5e,%12.5e,%12.5e,%12.5e\n",
             mmf_pAB[i].real(), mmf_pAB[i].imag(), A[i].real(), A[i].imag(),
             B[i].real(), B[i].imag());
     }
-    fclose(fp);
-    printf("Parameters saved to file %s.\n", filename);
+    if (closefp) {
+        fclose(fp);
+        printf("Parameters saved to file %s.\n", filename);
+    }
 }
 
 
 // Load TCA fit parameters from file.
 //
 void
-mmjco_fit::load_fit_parameters(const char *filename)
+mmjco_fit::load_fit_parameters(const char *filename, FILE *fp)
 {
-    FILE *fp = fopen(filename, "r");
-    if (!fp) {
-        printf("Error: unable to open file %s.\n", filename);
-        return;
-    }
     complex<double> p[MAX_NTERMS];
     complex<double> A[MAX_NTERMS];
     complex<double> B[MAX_NTERMS];
@@ -557,6 +539,37 @@ mmjco_fit::load_fit_parameters(const char *filename)
 }
 
 
+// Load TCA fit parameters from array.
+//
+void
+mmjco_fit::load_fit_parameters(const double *data, int nterms)
+{
+    complex<double> p[MAX_NTERMS];
+    complex<double> A[MAX_NTERMS];
+    complex<double> B[MAX_NTERMS];
+    const double *dp = data;
+    for (int i = 0; i < nterms; i++) {
+        p[i].real(dp[0]);
+        p[i].imag(dp[1]);
+        A[i].real(dp[2]);
+        A[i].imag(dp[3]);
+        B[i].real(dp[4]);
+        B[i].imag(dp[5]);
+        dp += 6;
+    }
+    mmf_nterms = nterms;
+    complex<double> *pAB = new complex<double>[3*nterms];
+    for (int i = 0; i < nterms; i++) {
+        pAB[i] = p[i];
+        pAB[nterms+i] = A[i];
+        pAB[2*nterms+i] = B[i];
+    }
+    delete [] mmf_pAB;
+    mmf_pAB = pAB;
+    printf("Loaded TCA parameters from data.\n");
+}
+
+
 // Return fitted TCAs from saved parameters for values in x.
 //
 void
@@ -564,7 +577,7 @@ mmjco_fit::tca_fit(const double *x, int xsz,
     complex<double> **Jpair_modelptr, complex<double> **Jqp_modelptr)
 {
     if (!mmf_pAB || !mmf_nterms) {
-        printf("Error: no saved fit parameters.\n");
+        fprintf(stderr, "Error: no saved fit parameters.\n");
         *Jpair_modelptr = 0;
         *Jqp_modelptr = 0;
         return;
@@ -586,11 +599,11 @@ mmjco_fit::residual(const complex<double> *Jpair_model,
     const complex<double> *Jqp_data, int xsz, double thr)
 {
     if (!Jpair_model || !Jqp_model) {
-        printf("Error: bad model.\n");
+        fprintf(stderr, "Warning: no model TCA data, skipping residual.\n");
         return (0.0);
     }
     if (!Jpair_data || !Jqp_data) {
-        printf("Error: bad data.\n");
+        fprintf(stderr, "Warning: no raw TCA data, skipping residual.\n");
         return (0.0);
     }
     double tot = 0.0;

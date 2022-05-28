@@ -3866,7 +3866,7 @@ Convert Menu - Input and ASCII Output
     check box in the <b>Cell Hierarchy Digests</b> panel.
     </dl>
 
-!! 072710
+!! 052222
     <a name="ChdRandomGzip"></a>
     <dl>
     <dt><b>ChdRandomGzip</b><dd>
@@ -3891,11 +3891,6 @@ Convert Menu - Input and ASCII Output
     The integer is the number of Mb between access points.  If 0, it
     is as if the variable is not set.  Setting as a boolean, i.e., to
     no value, is equivalent to setting to 1.
-
-    <p>
-    This feature is not available in the Linux2, LinuxRHEL3, and
-    LinuxRHEL3_64 distributions, where the operating system does not
-    provide a compatible <tt>zlib</tt>.
     </dl>
 
 !! 022716

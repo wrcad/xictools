@@ -1407,7 +1407,11 @@ namespace {
     // wire?  Some hackery:  The oaText and oaLine/oaPath participate
     // in a group (oaGroup) with group name
     // "__CDBA_PARENTCHILD_ONLY_GROUP".  The (exactly) two elements of
-    // the group are the text and associated line/fat line.
+    // the group are the text and associated line/fat line.  E.g.
+    // set grp [oa::GroupCreate $design "__CDBA_PARENTCHILD_ONLY_GROUP" \
+    //   "set" 0 0 "onLast"]
+    // oa::GroupMemberCreate $grp $line 1
+    // oa::GroupMemberCreate $grp $text 0
     //
     oaShape *findAssociatedObj(const oaText *text)
     {

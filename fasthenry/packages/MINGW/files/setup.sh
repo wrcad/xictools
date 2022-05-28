@@ -4,7 +4,7 @@ inno="/c/inno-5.5.9"
 
 appname=xictools_fasthenry
 appdir=fasthenry
-version=`../../version`
+version=`../../release.sh`
 osname=`../../../xt_base/info.sh osname`
 arch=`uname -m`
 top=../root/usr/local

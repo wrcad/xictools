@@ -57,3 +57,4 @@ TJMdev::trunc(sGENmodel *genmod, sCKT *ckt, double *timeStep)
     }
     return (OK);
 }
+

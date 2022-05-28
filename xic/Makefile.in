@@ -58,7 +58,7 @@ BASE = ../xt_base
 ifeq ($(USESECURE), yes)
 SECURE = ../secure
 SECURELIB = $(SECURE)/secure.a
-INCLUDE = -Iinclude -I$(BASE)/include -I$(SECURE)
+INCLUDE = -Iinclude -I$(BASE)/include -I$(SECURE)/include
 else
 INCLUDE = -Iinclude -I$(BASE)/include
 endif

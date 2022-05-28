@@ -745,7 +745,8 @@
         </admst:when>
         <!--not standard-->
         <admst:when
-          test="[name='div' or name='\$analysis' or name='\$simparam' or
+          test="[name='\$bcs_egapv' or name='div' or name='\$analysis' or
+            name='\$simparam' or
             name='\$shrinka' or name='\$shrinkl' or name='cfunc']">
           <admst:push into="$globalexpression/function" select="."/>
           <admst:value-to select="class" string="builtin"/>

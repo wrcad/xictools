@@ -6,6 +6,9 @@
 # Change this if you're not me.
 login=stevew
 
+# SSH command, note alternate port.
+sshcmd="ssh -p 2222"
+
 # Top of xictools repository at source.
 srcloc=/home/$login/src/xt
 
@@ -62,10 +65,10 @@ fetch_help()
         fi
 
         if [ $dryrun = yes ]; then
-            echo /usr/bin/rsync -e ssh -a $login@$home:$srcloc/$prog/help \
+            echo /usr/bin/rsync -e "$sshcmd" -a $login@$home:$srcloc/$prog/help \
   $help_destdir/$prog
         else
-            /usr/bin/rsync -e ssh -a $login@$home:$srcloc/$prog/help \
+            /usr/bin/rsync -e "$sshcmd" -a $login@$home:$srcloc/$prog/help \
   $help_destdir/$prog
         fi
     else
@@ -98,9 +101,9 @@ for p in $progs; do
         fi
         newloc=$docs_destdir/${p}_release_notes/$fname
         if [ $dryrun = yes ]; then
-            echo rsync --rsh=ssh $login@$home:$srcloc/$p/docs/$fname $newloc
+            echo rsync --rsh="$sshcmd" $login@$home:$srcloc/$p/docs/$fname $newloc
         else
-            rsync --rsh=ssh $login@$home:$srcloc/$p/docs/$fname $newloc
+            rsync --rsh="$sshcmd" $login@$home:$srcloc/$p/docs/$fname $newloc
         fi
         fetch_help $p
     else
@@ -118,14 +121,14 @@ if [ ! -d $script_destdir ]; then
 fi
 util=$srcloc/xt_base/packages/util
 if [ $dryrun = yes ]; then
-    echo rsync --rsh=ssh $login@$home:$util/wr_install $script_destdir
-    echo rsync --rsh=ssh $login@$home:$util/wr_uninstall $script_destdir
-    echo rsync --rsh=ssh $login@$home:$util/cleanold.bat $script_destdir
-    echo rsync --rsh=ssh $login@$home:$util/uninstall.bat $script_destdir
+    echo rsync --rsh="$sshcmd" $login@$home:$util/wr_install $script_destdir
+    echo rsync --rsh="$sshcmd" $login@$home:$util/wr_uninstall $script_destdir
+    echo rsync --rsh="$sshcmd" $login@$home:$util/cleanold.bat $script_destdir
+    echo rsync --rsh="$sshcmd" $login@$home:$util/uninstall.bat $script_destdir
 else
-    rsync --rsh=ssh $login@$home:$util/wr_install $script_destdir
-    rsync --rsh=ssh $login@$home:$util/wr_uninstall $script_destdir
-    rsync --rsh=ssh $login@$home:$util/cleanold.bat $script_destdir
-    rsync --rsh=ssh $login@$home:$util/uninstall.bat $script_destdir
+    rsync --rsh="$sshcmd" $login@$home:$util/wr_install $script_destdir
+    rsync --rsh="$sshcmd" $login@$home:$util/wr_uninstall $script_destdir
+    rsync --rsh="$sshcmd" $login@$home:$util/cleanold.bat $script_destdir
+    rsync --rsh="$sshcmd" $login@$home:$util/uninstall.bat $script_destdir
 fi
 

@@ -19,12 +19,12 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-ADMS = ADMS-release-2.3.6.tar.gz
+ADMS = ADMS-release-2.3.7.tar.gz
 
-ADMS_DIR = ADMS-release-2.3.6
+ADMS_DIR = ADMS-release-2.3.7
 
 GIT := \"`git log --pretty=format:'%h' -n 1u`\"
-IDSTR := "`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
+IDSTR := "`./release.sh` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
 
 REGEN = no
 
@@ -40,7 +40,7 @@ unpack:
 	@if [ ! -d  adms_wr ]; then \
 	    tar xzf $(ADMS); \
 	    mv -f $(ADMS_DIR) adms_wr; \
-	    sed -e s/VERSION/$$(./version)/ < files/configure.in.sed \
+	    sed -e s/VERSION/$$(./release.sh)/ < files/configure.in.sed \
 	      > adms_wr/configure.in; \
             sed -e s/GIT/$(GIT)/ -e s/XT_IDSTRING/$(IDSTR)/ \
 	      < files/admsXml.c.sed > adms_wr/admsXml/admsXml.c; \
@@ -50,6 +50,7 @@ unpack:
 	    cp -f files/config.h.in adms_wr/admsXml; \
 	    cp -f files/constants.vams adms_wr/admsXml; \
 	    cp -f files/disciplines.vams adms_wr/admsXml; \
+	    cp -f files/admsPreprocessor.h adms_wr/admsXml; \
 	    cp -f files/mkelements.pl adms_wr/admsXml; \
 	    cp -f files/admsPreprocessor.h adms_wr/admsXml; \
 	    cp -f files/admsVeriloga.h adms_wr/admsXml; \
@@ -83,7 +84,7 @@ src = adms_wr/admsXml
 
 install: install_test install_force
 
-install_force: install_clean install_bin install_lib
+install_force: uninstall_clean install_bin install_lib
 
 install_bin: $(dst_bin)
 install_lib: $(dst_lib) $(dst_lib)/doc $(dst_lib)/examples
@@ -95,10 +96,6 @@ install_test::
 	        exit 1; \
 	    fi; \
 	fi
-
-install_clean::
-	rm -f $(dst_bin)/admsXml$(EXESUFFIX)
-	rm -rf $(dst_lib)
 
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
@@ -167,6 +164,20 @@ $(dst_lib)/examples::
 	for a in $$files; do \
 	    $(INSTALL_LIB) adms_wr/testcases/$$a $@/testcases; \
 	done
+
+uninstall: uninstall_test uninstall_clean
+
+uninstall_test::
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	echo "No!  Use operating system or wr_uninstall script to uninstall!"; \
+	        exit 1; \
+	    fi; \
+	fi
+
+uninstall_clean::
+	-@rm -f $(dst_bin)/admsXml$(EXESUFFIX)
+	-@rm -rf $(dst_lib)
 
 package::
 	$(MAKE)

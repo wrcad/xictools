@@ -685,7 +685,7 @@ miscutil::new_release(const char *progname, const char *release)
 {
     if (!progname || !release || !*release)
         return (false);
-    char *p = pathlist::get_home(0);
+    char *p = pathlist::get_home();
     if (!p)
         return (0);
     char *dir = pathlist::mk_path(p, LOCALDIR);

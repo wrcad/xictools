@@ -1,6 +1,6 @@
-#line 2 "preprocessorLex.c"
+#line 1 "preprocessorLex.c"
 
-#line 4 "preprocessorLex.c"
+#line 3 "preprocessorLex.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -8,11 +8,17 @@
 
 #define yy_create_buffer preprocessor_create_buffer
 #define yy_delete_buffer preprocessor_delete_buffer
-#define yy_flex_debug preprocessor_flex_debug
+#define yy_scan_buffer preprocessor_scan_buffer
+#define yy_scan_string preprocessor_scan_string
+#define yy_scan_bytes preprocessor_scan_bytes
 #define yy_init_buffer preprocessor_init_buffer
 #define yy_flush_buffer preprocessor_flush_buffer
 #define yy_load_buffer_state preprocessor_load_buffer_state
 #define yy_switch_to_buffer preprocessor_switch_to_buffer
+#define yypush_buffer_state preprocessorpush_buffer_state
+#define yypop_buffer_state preprocessorpop_buffer_state
+#define yyensure_buffer_stack preprocessorensure_buffer_stack
+#define yy_flex_debug preprocessor_flex_debug
 #define yyin preprocessorin
 #define yyleng preprocessorleng
 #define yylex preprocessorlex
@@ -27,10 +33,244 @@
 
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
-#define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 37
+#define YY_FLEX_MINOR_VERSION 6
+#define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
+#endif
+
+#ifdef yy_create_buffer
+#define preprocessor_create_buffer_ALREADY_DEFINED
+#else
+#define yy_create_buffer preprocessor_create_buffer
+#endif
+
+#ifdef yy_delete_buffer
+#define preprocessor_delete_buffer_ALREADY_DEFINED
+#else
+#define yy_delete_buffer preprocessor_delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define preprocessor_scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer preprocessor_scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define preprocessor_scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string preprocessor_scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define preprocessor_scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes preprocessor_scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define preprocessor_init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer preprocessor_init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define preprocessor_flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer preprocessor_flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define preprocessor_load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state preprocessor_load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define preprocessor_switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer preprocessor_switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define preprocessorpush_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state preprocessorpush_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define preprocessorpop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state preprocessorpop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define preprocessorensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack preprocessorensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define preprocessorlex_ALREADY_DEFINED
+#else
+#define yylex preprocessorlex
+#endif
+
+#ifdef yyrestart
+#define preprocessorrestart_ALREADY_DEFINED
+#else
+#define yyrestart preprocessorrestart
+#endif
+
+#ifdef yylex_init
+#define preprocessorlex_init_ALREADY_DEFINED
+#else
+#define yylex_init preprocessorlex_init
+#endif
+
+#ifdef yylex_init_extra
+#define preprocessorlex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra preprocessorlex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define preprocessorlex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy preprocessorlex_destroy
+#endif
+
+#ifdef yyget_debug
+#define preprocessorget_debug_ALREADY_DEFINED
+#else
+#define yyget_debug preprocessorget_debug
+#endif
+
+#ifdef yyset_debug
+#define preprocessorset_debug_ALREADY_DEFINED
+#else
+#define yyset_debug preprocessorset_debug
+#endif
+
+#ifdef yyget_extra
+#define preprocessorget_extra_ALREADY_DEFINED
+#else
+#define yyget_extra preprocessorget_extra
+#endif
+
+#ifdef yyset_extra
+#define preprocessorset_extra_ALREADY_DEFINED
+#else
+#define yyset_extra preprocessorset_extra
+#endif
+
+#ifdef yyget_in
+#define preprocessorget_in_ALREADY_DEFINED
+#else
+#define yyget_in preprocessorget_in
+#endif
+
+#ifdef yyset_in
+#define preprocessorset_in_ALREADY_DEFINED
+#else
+#define yyset_in preprocessorset_in
+#endif
+
+#ifdef yyget_out
+#define preprocessorget_out_ALREADY_DEFINED
+#else
+#define yyget_out preprocessorget_out
+#endif
+
+#ifdef yyset_out
+#define preprocessorset_out_ALREADY_DEFINED
+#else
+#define yyset_out preprocessorset_out
+#endif
+
+#ifdef yyget_leng
+#define preprocessorget_leng_ALREADY_DEFINED
+#else
+#define yyget_leng preprocessorget_leng
+#endif
+
+#ifdef yyget_text
+#define preprocessorget_text_ALREADY_DEFINED
+#else
+#define yyget_text preprocessorget_text
+#endif
+
+#ifdef yyget_lineno
+#define preprocessorget_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno preprocessorget_lineno
+#endif
+
+#ifdef yyset_lineno
+#define preprocessorset_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno preprocessorset_lineno
+#endif
+
+#ifdef yywrap
+#define preprocessorwrap_ALREADY_DEFINED
+#else
+#define yywrap preprocessorwrap
+#endif
+
+#ifdef yyalloc
+#define preprocessoralloc_ALREADY_DEFINED
+#else
+#define yyalloc preprocessoralloc
+#endif
+
+#ifdef yyrealloc
+#define preprocessorrealloc_ALREADY_DEFINED
+#else
+#define yyrealloc preprocessorrealloc
+#endif
+
+#ifdef yyfree
+#define preprocessorfree_ALREADY_DEFINED
+#else
+#define yyfree preprocessorfree
+#endif
+
+#ifdef yytext
+#define preprocessortext_ALREADY_DEFINED
+#else
+#define yytext preprocessortext
+#endif
+
+#ifdef yyleng
+#define preprocessorleng_ALREADY_DEFINED
+#else
+#define yyleng preprocessorleng
+#endif
+
+#ifdef yyin
+#define preprocessorin_ALREADY_DEFINED
+#else
+#define yyin preprocessorin
+#endif
+
+#ifdef yyout
+#define preprocessorout_ALREADY_DEFINED
+#else
+#define yyout preprocessorout
+#endif
+
+#ifdef yy_flex_debug
+#define preprocessor_flex_debug_ALREADY_DEFINED
+#else
+#define yy_flex_debug preprocessor_flex_debug
+#endif
+
+#ifdef yylineno
+#define preprocessorlineno_ALREADY_DEFINED
+#else
+#define yylineno preprocessorlineno
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -66,6 +306,7 @@ typedef int16_t flex_int16_t;
 typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
+typedef uint64_t flex_uint64_t;
 #else
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
@@ -103,65 +344,61 @@ typedef unsigned int flex_uint32_t;
 #define UINT32_MAX             (4294967295U)
 #endif
 
+#ifndef SIZE_MAX
+#define SIZE_MAX               (~(size_t)0)
+#endif
+
 #endif /* ! C99 */
 
 #endif /* ! FLEXINT_H */
 
-#ifdef __cplusplus
+/* begin standard C++ headers. */
 
-/* The "const" storage-class-modifier is valid. */
-#define YY_USE_CONST
-
-#else	/* ! __cplusplus */
-
-/* C99 requires __STDC__ to be defined as 1. */
-#if defined (__STDC__)
-
-#define YY_USE_CONST
-
-#endif	/* defined (__STDC__) */
-#endif	/* ! __cplusplus */
-
-#ifdef YY_USE_CONST
+/* TODO: this is always defined, so inline it */
 #define yyconst const
+
+#if defined(__GNUC__) && __GNUC__ >= 3
+#define yynoreturn __attribute__((__noreturn__))
 #else
-#define yyconst
+#define yynoreturn
 #endif
 
 /* Returned upon end-of-file. */
 #define YY_NULL 0
 
-/* Promotes a possibly negative, possibly signed char to an unsigned
- * integer for use as an array index.  If the signed char is negative,
- * we want to instead treat it as an 8-bit unsigned char, hence the
- * double cast.
+/* Promotes a possibly negative, possibly signed char to an
+ *   integer in range [0..255] for use as an array index.
  */
-#define YY_SC_TO_UI(c) ((unsigned int) (unsigned char) c)
+#define YY_SC_TO_UI(c) ((YY_CHAR) (c))
 
 /* Enter a start condition.  This macro really ought to take a parameter,
  * but we do it the disgusting crufty way forced on us by the ()-less
  * definition of BEGIN.
  */
 #define BEGIN (yy_start) = 1 + 2 *
-
 /* Translate the current start state into a value that can be later handed
  * to BEGIN to return to the state.  The YYSTATE alias is for lex
  * compatibility.
  */
 #define YY_START (((yy_start) - 1) / 2)
 #define YYSTATE YY_START
-
 /* Action number for EOF rule of a given start state. */
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
-
 /* Special action meaning "start processing a new file". */
-#define YY_NEW_FILE preprocessorrestart(preprocessorin  )
-
+#define YY_NEW_FILE yyrestart( yyin  )
 #define YY_END_OF_BUFFER_CHAR 0
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -178,30 +415,49 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 typedef size_t yy_size_t;
 #endif
 
-extern yy_size_t preprocessorleng;
+extern yy_size_t yyleng;
 
-extern FILE *preprocessorin, *preprocessorout;
+extern FILE *yyin, *yyout;
 
 #define EOB_ACT_CONTINUE_SCAN 0
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
-
-    #define YY_LESS_LINENO(n)
+    
+    /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
+     *       access to the local variable yy_act. Since yyless() is a macro, it would break
+     *       existing scanners that call yyless() from OUTSIDE yylex.
+     *       One obvious solution it to make yy_act a global. I tried that, and saw
+     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
+     *       normally declared as a register variable-- so it is not worth it.
+     */
+    #define  YY_LESS_LINENO(n) \
+            do { \
+                yy_size_t yyl;\
+                for ( yyl = n; yyl < yyleng; ++yyl )\
+                    if ( yytext[yyl] == '\n' )\
+                        --yylineno;\
+            }while(0)
+    #define YY_LINENO_REWIND_TO(dst) \
+            do {\
+                const char *p;\
+                for ( p = yy_cp-1; p >= (dst); --p)\
+                    if ( *p == '\n' )\
+                        --yylineno;\
+            }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
 	do \
 		{ \
-		/* Undo effects of setting up preprocessortext. */ \
+		/* Undo effects of setting up yytext. */ \
         int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
 		*yy_cp = (yy_hold_char); \
 		YY_RESTORE_YY_MORE_OFFSET \
 		(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
-		YY_DO_BEFORE_ACTION; /* set up preprocessortext again */ \
+		YY_DO_BEFORE_ACTION; /* set up yytext again */ \
 		} \
 	while ( 0 )
-
 #define unput(c) yyunput( c, (yytext_ptr)  )
 
 #ifndef YY_STRUCT_YY_BUFFER_STATE
@@ -216,7 +472,7 @@ struct yy_buffer_state
 	/* Size of input buffer in bytes, not including room for EOB
 	 * characters.
 	 */
-	yy_size_t yy_buf_size;
+	int yy_buf_size;
 
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
@@ -244,7 +500,7 @@ struct yy_buffer_state
 
     int yy_bs_lineno; /**< The line count. */
     int yy_bs_column; /**< The column count. */
-    
+
 	/* Whether to try to fill the input buffer when we reach the
 	 * end of it.
 	 */
@@ -261,8 +517,8 @@ struct yy_buffer_state
 	 * possible backing-up.
 	 *
 	 * When we actually see the EOF, we change the status to "new"
-	 * (via preprocessorrestart()), so that the user can continue scanning by
-	 * just pointing preprocessorin at a new input file.
+	 * (via yyrestart()), so that the user can continue scanning by
+	 * just pointing yyin at a new input file.
 	 */
 #define YY_BUFFER_EOF_PENDING 2
 
@@ -272,7 +528,7 @@ struct yy_buffer_state
 /* Stack of input buffers. */
 static size_t yy_buffer_stack_top = 0; /**< index of top of stack. */
 static size_t yy_buffer_stack_max = 0; /**< capacity of stack. */
-static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
+static YY_BUFFER_STATE * yy_buffer_stack = NULL; /**< Stack as an array. */
 
 /* We provide macros for accessing buffer states in case in the
  * future we want to put the buffer states in a more general
@@ -283,103 +539,98 @@ static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
 #define YY_CURRENT_BUFFER ( (yy_buffer_stack) \
                           ? (yy_buffer_stack)[(yy_buffer_stack_top)] \
                           : NULL)
-
 /* Same as previous macro, but useful when we know that the buffer stack is not
  * NULL or when we need an lvalue. For internal use only.
  */
 #define YY_CURRENT_BUFFER_LVALUE (yy_buffer_stack)[(yy_buffer_stack_top)]
 
-/* yy_hold_char holds the character lost when preprocessortext is formed. */
+/* yy_hold_char holds the character lost when yytext is formed. */
 static char yy_hold_char;
 static yy_size_t yy_n_chars;		/* number of characters read into yy_ch_buf */
-yy_size_t preprocessorleng;
+yy_size_t yyleng;
 
 /* Points to current character in buffer. */
-static char *yy_c_buf_p = (char *) 0;
+static char *yy_c_buf_p = NULL;
 static int yy_init = 0;		/* whether we need to initialize */
 static int yy_start = 0;	/* start state number */
 
-/* Flag which is used to allow preprocessorwrap()'s to do buffer switches
- * instead of setting up a fresh preprocessorin.  A bit of a hack ...
+/* Flag which is used to allow yywrap()'s to do buffer switches
+ * instead of setting up a fresh yyin.  A bit of a hack ...
  */
 static int yy_did_buffer_switch_on_eof;
 
-void preprocessorrestart (FILE *input_file  );
-void preprocessor_switch_to_buffer (YY_BUFFER_STATE new_buffer  );
-YY_BUFFER_STATE preprocessor_create_buffer (FILE *file,int size  );
-void preprocessor_delete_buffer (YY_BUFFER_STATE b  );
-void preprocessor_flush_buffer (YY_BUFFER_STATE b  );
-void preprocessorpush_buffer_state (YY_BUFFER_STATE new_buffer  );
-void preprocessorpop_buffer_state (void );
+void yyrestart ( FILE *input_file  );
+void yy_switch_to_buffer ( YY_BUFFER_STATE new_buffer  );
+YY_BUFFER_STATE yy_create_buffer ( FILE *file, int size  );
+void yy_delete_buffer ( YY_BUFFER_STATE b  );
+void yy_flush_buffer ( YY_BUFFER_STATE b  );
+void yypush_buffer_state ( YY_BUFFER_STATE new_buffer  );
+void yypop_buffer_state ( void );
 
-static void preprocessorensure_buffer_stack (void );
-static void preprocessor_load_buffer_state (void );
-static void preprocessor_init_buffer (YY_BUFFER_STATE b,FILE *file  );
+static void yyensure_buffer_stack ( void );
+static void yy_load_buffer_state ( void );
+static void yy_init_buffer ( YY_BUFFER_STATE b, FILE *file  );
+#define YY_FLUSH_BUFFER yy_flush_buffer( YY_CURRENT_BUFFER )
 
-#define YY_FLUSH_BUFFER preprocessor_flush_buffer(YY_CURRENT_BUFFER )
+YY_BUFFER_STATE yy_scan_buffer ( char *base, yy_size_t size  );
+YY_BUFFER_STATE yy_scan_string ( const char *yy_str  );
+YY_BUFFER_STATE yy_scan_bytes ( const char *bytes, yy_size_t len  );
 
-YY_BUFFER_STATE preprocessor_scan_buffer (char *base,yy_size_t size  );
-YY_BUFFER_STATE preprocessor_scan_string (yyconst char *yy_str  );
-YY_BUFFER_STATE preprocessor_scan_bytes (yyconst char *bytes,yy_size_t len  );
+void *yyalloc ( yy_size_t  );
+void *yyrealloc ( void *, yy_size_t  );
+void yyfree ( void *  );
 
-void *preprocessoralloc (yy_size_t  );
-void *preprocessorrealloc (void *,yy_size_t  );
-void preprocessorfree (void *  );
-
-#define yy_new_buffer preprocessor_create_buffer
-
+#define yy_new_buffer yy_create_buffer
 #define yy_set_interactive(is_interactive) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){ \
-        preprocessorensure_buffer_stack (); \
+        yyensure_buffer_stack (); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            preprocessor_create_buffer(preprocessorin,YY_BUF_SIZE ); \
+            yy_create_buffer( yyin, YY_BUF_SIZE ); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
 	}
-
 #define yy_set_bol(at_bol) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){\
-        preprocessorensure_buffer_stack (); \
+        yyensure_buffer_stack (); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            preprocessor_create_buffer(preprocessorin,YY_BUF_SIZE ); \
+            yy_create_buffer( yyin, YY_BUF_SIZE ); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
 	}
-
 #define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
 
 /* Begin user sect3 */
+typedef flex_uint8_t YY_CHAR;
 
-typedef unsigned char YY_CHAR;
-
-FILE *preprocessorin = (FILE *) 0, *preprocessorout = (FILE *) 0;
+FILE *yyin = NULL, *yyout = NULL;
 
 typedef int yy_state_type;
 
-extern int preprocessorlineno;
+#define YY_FLEX_LEX_COMPAT
+extern int yylineno;
+int yylineno = 1;
 
-int preprocessorlineno = 1;
+extern char yytext[];
 
-extern char *preprocessortext;
-#define yytext_ptr preprocessortext
-
-static yy_state_type yy_get_previous_state (void );
-static yy_state_type yy_try_NUL_trans (yy_state_type current_state  );
-static int yy_get_next_buffer (void );
-static void yy_fatal_error (yyconst char msg[]  );
+static yy_state_type yy_get_previous_state ( void );
+static yy_state_type yy_try_NUL_trans ( yy_state_type current_state  );
+static int yy_get_next_buffer ( void );
+static void yynoreturn yy_fatal_error ( const char* msg  );
 
 /* Done after the current pattern has been matched and before the
- * corresponding action - sets up preprocessortext.
+ * corresponding action - sets up yytext.
  */
 #define YY_DO_BEFORE_ACTION \
 	(yytext_ptr) = yy_bp; \
-	preprocessorleng = (size_t) (yy_cp - yy_bp); \
+	yyleng = (yy_size_t) (yy_cp - yy_bp); \
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
+	if ( yyleng >= YYLMAX ) \
+		YY_FATAL_ERROR( "token too large, exceeds YYLMAX" ); \
+	yy_flex_strncpy( yytext, (yytext_ptr), yyleng + 1 ); \
 	(yy_c_buf_p) = yy_cp;
-
 #define YY_NUM_RULES 79
 #define YY_END_OF_BUFFER 80
 /* This struct is not used in this scanner,
@@ -389,7 +640,7 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static yyconst flex_int16_t yy_acclist[339] =
+static const flex_int16_t yy_acclist[342] =
     {   0,
        11,   11,   80,   78,   79,    6,   78,   79,    5,   79,
        78,   79,   78,   79,   78,   79,   75,   78,   79,   76,
@@ -402,35 +653,36 @@ static yyconst flex_int16_t yy_acclist[339] =
        79,   59,   79,   79,   71,   79,   79,   24,   79,   22,
        24,   79,   23,   79,   24,   79,   24,   79,   24,   79,
 
-    16403,16404,   11,   79,   12,   79,   11,   79,   28,   79,
-       25,   28,   79,   26,   79,   28,   79,   28,   79,   31,
-       79,   41,   79,   38,   41,   79,   40,   79,   41,   79,
-       41,   79,   53,   79,   49,   53,   79,16426,   55,   79,
-       53,   79,   53,   79,   53,   79,   46,   53,   79,   47,
-       53,   79,   48,   53,   79,   53,   79,   45,   53,   79,
-       53,   79,   53,   79,   37,   79,   36,   37,   79,   35,
-       37,   79,   34,   37,   79,   33,   79,   33,   79,   32,
-       33,   79,    6,    4,    1,   74,    8,   74,    2,   73,
-    16456,    6,   73,16456,   73,16456,   73,16456,   73,16456,
+    16403,16404,16405,   11,   79,   12,   79,   11,   79,   28,
+       79,   25,   28,   79,   26,   79,   28,   79,   28,   79,
+       31,   79,   41,   79,   38,   41,   79,   40,   79,   41,
+       79,   41,   79,   53,   79,   49,   53,   79,16426,   55,
+       79,   53,   79,   53,   79,   53,   79,   46,   53,   79,
+       47,   53,   79,   48,   53,   79,   53,   79,   45,   53,
+       79,   53,   79,   53,   79,   37,   79,   36,   37,   79,
+       35,   37,   79,   34,   37,   79,   33,   79,   33,   79,
+       32,   33,   79,    6,    4,    1,   74,    8,   74,    2,
+       73,16456,    6,   73,16456,   73,16456,   73,16456,   73,
 
-       61,   62,   65,   69,   66,   68,   57,   58,   56,   56,
-       60,   71,   22,   23,16403,16404, 8212, 8211,   21,16403,
-    16404,   11,   12,   25,   26,   27,   31,   29,   38,   40,
-       39,   49,16426, 8234,   55,   52,   45,   50,   45,   54,
-       44,16427,   36,   32,   32,    1,    8, 8264,   73,16456,
-       73,16456,   73,16456,   73,16456,   73,16456,   73,16456,
-       73,16456,   63,   66,   30,   52,   50, 8235,   44,16427,
-        7,   73,16456,   73,16456,   73,16456,   73,16456,   73,
-    16456,   73,16456,   73,16456,   67,   51,   73,16456,   16,
-       73,16456,   73,16456,   73,16456,   73,16456,   73,16456,
+    16456,   61,   62,   65,   69,   66,   68,   57,   58,   56,
+       56,   60,   71,   22,   23,16403,16404,16405, 8212, 8211,
+     8213,16403,16404,16405,   11,   12,   25,   26,   27,   31,
+       29,   38,   40,   39,   49,16426, 8234,   55,   52,   45,
+       50,   45,   54,   44,16427,   36,   32,   32,    1,    8,
+     8264,   73,16456,   73,16456,   73,16456,   73,16456,   73,
+    16456,   73,16456,   73,16456,   63,   66,   30,   52,   50,
+     8235,   44,16427,    7,   73,16456,   73,16456,   73,16456,
+       73,16456,   73,16456,   73,16456,   73,16456,   67,   51,
+       73,16456,   16,   73,16456,   73,16456,   73,16456,   73,
 
-       73,16456,    9,   16,   73,16456,   17,   73,16456,   14,
-       73,16456,   73,16456,   73,16456,   13,   73,16456,   17,
-       14,   13,    3,   10,   73,16456,   15,   73,16456,   73,
-    16456,   10,   15,    3,   18,   73,16456,   18
+    16456,   73,16456,   73,16456,    9,   16,   73,16456,   17,
+       73,16456,   14,   73,16456,   73,16456,   73,16456,   13,
+       73,16456,   17,   14,   13,    3,   10,   73,16456,   15,
+       73,16456,   73,16456,   10,   15,    3,   18,   73,16456,
+       18
     } ;
 
-static yyconst flex_int16_t yy_accept[314] =
+static const flex_int16_t yy_accept[314] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    2,    3,    3,    3,    3,    3,    3,
@@ -440,36 +692,36 @@ static yyconst flex_int16_t yy_accept[314] =
        31,   34,   36,   38,   41,   43,   45,   47,   50,   51,
        53,   55,   57,   60,   62,   64,   66,   68,   70,   73,
        75,   77,   79,   82,   84,   85,   87,   88,   90,   93,
-       95,   97,   99,  103,  105,  107,  109,  111,  114,  116,
-      118,  120,  122,  124,  127,  129,  131,  133,  135,  139,
+       95,   97,   99,  104,  106,  108,  110,  112,  115,  117,
+      119,  121,  123,  125,  128,  130,  132,  134,  136,  140,
 
-      141,  143,  145,  147,  150,  153,  156,  158,  161,  163,
-      165,  167,  170,  173,  176,  178,  180,  183,  184,  185,
-      185,  186,  186,  187,  187,  188,  189,  189,  190,  190,
-      190,  192,  193,  193,  193,  195,  197,  199,  201,  202,
-      202,  203,  203,  204,  205,  205,  206,  207,  207,  208,
-      209,  210,  211,  212,  212,  212,  213,  213,  214,  215,
-      217,  218,  219,  219,  220,  222,  223,  224,  225,  226,
-      227,  227,  227,  228,  229,  230,  231,  232,  232,  234,
-      235,  235,  236,  236,  237,  237,  238,  238,  239,  240,
-      241,  241,  241,  243,  244,  245,  246,  247,  247,  247,
+      142,  144,  146,  148,  151,  154,  157,  159,  162,  164,
+      166,  168,  171,  174,  177,  179,  181,  184,  185,  186,
+      186,  187,  187,  188,  188,  189,  190,  190,  191,  191,
+      191,  193,  194,  194,  194,  196,  198,  200,  202,  203,
+      203,  204,  204,  205,  206,  206,  207,  208,  208,  209,
+      210,  211,  212,  213,  213,  213,  214,  214,  215,  216,
+      219,  220,  221,  221,  222,  225,  226,  227,  228,  229,
+      230,  230,  230,  231,  232,  233,  234,  235,  235,  237,
+      238,  238,  239,  239,  240,  240,  241,  241,  242,  243,
+      244,  244,  244,  246,  247,  248,  249,  250,  250,  250,
 
-      248,  248,  248,  249,  251,  251,  251,  251,  251,  251,
-      253,  255,  257,  259,  261,  263,  264,  264,  264,  265,
-      266,  266,  267,  267,  267,  268,  268,  269,  271,  271,
-      272,  272,  272,  272,  272,  272,  272,  272,  272,  272,
-      272,  274,  276,  278,  280,  282,  284,  286,  286,  287,
-      287,  288,  288,  288,  288,  288,  288,  288,  288,  288,
-      288,  288,  288,  288,  288,  288,  290,  293,  295,  297,
-      299,  301,  303,  303,  303,  303,  303,  304,  304,  305,
-      305,  305,  305,  305,  305,  305,  305,  307,  310,  313,
-      315,  317,  320,  320,  321,  322,  322,  322,  323,  324,
+      251,  251,  251,  252,  254,  254,  254,  254,  254,  254,
+      256,  258,  260,  262,  264,  266,  267,  267,  267,  268,
+      269,  269,  270,  270,  270,  271,  271,  272,  274,  274,
+      275,  275,  275,  275,  275,  275,  275,  275,  275,  275,
+      275,  277,  279,  281,  283,  285,  287,  289,  289,  290,
+      290,  291,  291,  291,  291,  291,  291,  291,  291,  291,
+      291,  291,  291,  291,  291,  291,  293,  296,  298,  300,
+      302,  304,  306,  306,  306,  306,  306,  307,  307,  308,
+      308,  308,  308,  308,  308,  308,  308,  310,  313,  316,
+      318,  320,  323,  323,  324,  325,  325,  325,  326,  327,
 
-      324,  324,  327,  330,  332,  333,  334,  334,  335,  335,
-      338,  339,  339
+      327,  327,  330,  333,  335,  336,  337,  337,  338,  338,
+      341,  342,  342
     } ;
 
-static yyconst flex_int32_t yy_ec[256] =
+static const YY_CHAR yy_ec[256] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
         2,    2,    4,    1,    1,    1,    1,    1,    1,    1,
@@ -501,14 +753,14 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst flex_int32_t yy_meta[31] =
+static const YY_CHAR yy_meta[31] =
     {   0,
         1,    2,    3,    4,    5,    1,    1,    6,    5,    1,
         1,    1,    1,    7,    7,    1,    8,    9,    9,    1,
         1,    9,    9,    9,    9,    9,    9,    9,    9,    9
     } ;
 
-static yyconst flex_int16_t yy_base[357] =
+static const flex_int16_t yy_base[357] =
     {   0,
         0,   29,   49,   64,   79,   98,  118,    0,   29,   34,
       148,    0,   36,   38,  177,  196,  804,  803,  215,  234,
@@ -551,7 +803,7 @@ static yyconst flex_int16_t yy_base[357] =
       737,  746,  749,  758,  767,  776
     } ;
 
-static yyconst flex_int16_t yy_def[357] =
+static const flex_int16_t yy_def[357] =
     {   0,
       312,    1,  313,  313,  314,  314,  312,    7,  315,  315,
       312,   11,  316,  316,  317,  317,  318,  318,  319,  319,
@@ -594,7 +846,7 @@ static yyconst flex_int16_t yy_def[357] =
       312,  312,  312,  312,  312,  312
     } ;
 
-static yyconst flex_int16_t yy_nxt[845] =
+static const flex_int16_t yy_nxt[845] =
     {   0,
        40,   41,   42,   43,   41,   44,   40,   45,   46,   47,
        40,   48,   49,   40,   40,   40,   40,   50,   51,   52,
@@ -691,7 +943,7 @@ static yyconst flex_int16_t yy_nxt[845] =
       312,  312,  312,  312
     } ;
 
-static yyconst flex_int16_t yy_chk[845] =
+static const flex_int16_t yy_chk[845] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -788,8 +1040,17 @@ static yyconst flex_int16_t yy_chk[845] =
       312,  312,  312,  312
     } ;
 
-extern int preprocessor_flex_debug;
-int preprocessor_flex_debug = 0;
+/* Table of booleans, true if rule could match eol. */
+static const flex_int32_t yy_rule_can_match_eol[80] =
+    {   0,
+1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 
+    0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+    1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 
+    1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 
+        };
+
+extern int yy_flex_debug;
+int yy_flex_debug = 0;
 
 static yy_state_type *yy_state_buf=0, *yy_state_ptr=0;
 static char *yy_full_match;
@@ -801,7 +1062,7 @@ static int *yy_full_state;
 #define YY_TRAILING_HEAD_MASK 0x4000
 #define REJECT \
 { \
-*yy_cp = (yy_hold_char); /* undo effects of setting up preprocessortext */ \
+*yy_cp = (yy_hold_char); /* undo effects of setting up yytext */ \
 yy_cp = (yy_full_match); /* restore poss. backed-over text */ \
 (yy_lp) = (yy_full_lp); /* restore orig. accepting pos. */ \
 (yy_state_ptr) = (yy_full_state); /* restore orig. state */ \
@@ -813,7 +1074,12 @@ goto find_rule; \
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-char *preprocessortext;
+#ifndef YYLMAX
+#define YYLMAX 8192
+#endif
+
+char yytext[YYLMAX];
+char *yytext_ptr;
 #line 1 "preprocessorLex.l"
 /*
 This file is part of adms - http://sourceforge.net/projects/mot-adms.
@@ -856,8 +1122,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define yyflex_unput \
 {\
   int i;\
-  char *yycopy=strdup(preprocessortext);\
-  for ( i = preprocessorleng - 1; i >= 0; --i )\
+  char *yycopy=strdup(yytext);\
+  for ( i = yyleng - 1; i >= 0; --i )\
     unput(yycopy[i]);\
   free(yycopy);\
 }
@@ -866,25 +1132,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void adms_preprocessor_setfile_input (FILE *ifile)
 {
-  preprocessorin = ifile;
+  yyin = ifile;
 }
 
 FILE *adms_preprocessor_getfile_input (void)
 {
-  return preprocessorin;
+  return yyin;
 }
 
 void adms_preprocessor_setfile_output (FILE *ifile)
 {
-  preprocessorout = ifile;
+  yyout = ifile;
 }
 
 FILE *adms_preprocessor_getfile_output (void)
 {
-  return preprocessorout;
+  return yyout;
 }
 
-#define tkreturn(token) {pproot()->cr_scanner->cur_char_position+=preprocessorleng; return token;}
+#define tkreturn(token) {pproot()->cr_scanner->cur_char_position+=yyleng; return token;}
 
 static char* adms_preprocessor_lex_remove_leading_quote (char* name)
 {
@@ -916,7 +1182,7 @@ void preprocessorerror (const char *message)
   p_preprocessor cr_preprocessor=pproot()->cr_scanner;
   adms_message_fatal (("[%s:%i]:%s: %s\n",
     cr_preprocessor->filename,
-    adms_preprocessor_get_line_position(cr_preprocessor,cr_preprocessor->cur_char_position-preprocessorleng),
+    adms_preprocessor_get_line_position(cr_preprocessor,cr_preprocessor->cur_char_position-yyleng),
     message,
     cr_preprocessor->cur_message?cr_preprocessor->cur_message:"(unknown)"
   ))
@@ -981,14 +1247,14 @@ static void adms_preprocessor_lex_include_file (char* fileName)
   scanner->cur_continuator_position=NULL;
   pproot()->cr_scanner->buffer = (p_adms)YY_CURRENT_BUFFER;
   adms_slist_push(&pproot()->Scanner,(void*)pproot()->cr_scanner );
-  preprocessorin = myfh;
-  scanner->fid = preprocessorin;
+  yyin = myfh;
+  scanner->fid = yyin;
   scanner->cur_line_position = 1;
   scanner->cur_char_position = 1;
   scanner->filename=strdup(pproot()->cr_filename);
-  scanner->buffer = (void*) preprocessor_create_buffer(preprocessorin,YY_BUF_SIZE );
+  scanner->buffer = (void*) yy_create_buffer(yyin,YY_BUF_SIZE );
   pproot()->cr_scanner = scanner;
-  preprocessor_switch_to_buffer((YY_BUFFER_STATE)scanner->buffer );
+  yy_switch_to_buffer((YY_BUFFER_STATE)scanner->buffer );
   preprocessorlval.mystr = NULL;
   adms_k2strconcat(&preprocessorlval.mystr,"# 1 \"");
   adms_k2strconcat(&preprocessorlval.mystr,pproot()->cr_scanner->filename);
@@ -1001,7 +1267,7 @@ static char *adms_preprocessor_lex_skipp_text ()
 {
   char *c;
   int nbline=0;
-  c = preprocessortext;
+  c = yytext;
   while (*c)
   {
     if(*c=='\n')
@@ -1025,7 +1291,9 @@ static char *adms_preprocessor_lex_skipp_text ()
     return strdup("");
 }
 
-/* port branch access  I(<a>) --> I(a,a) */
+#line 1294 "preprocessorLex.c"
+#line 233 "preprocessorLex.l"
+ /* port branch access  I(<a>) --> I(a,a) */
 
 
 
@@ -1044,7 +1312,7 @@ static char *adms_preprocessor_lex_skipp_text ()
 
 
 
-#line 1048 "preprocessorLex.c"
+#line 1315 "preprocessorLex.c"
 
 #define INITIAL 0
 #define PRAGMA_PATH 1
@@ -1078,36 +1346,36 @@ static char *adms_preprocessor_lex_skipp_text ()
 #define YY_EXTRA_TYPE void *
 #endif
 
-static int yy_init_globals (void );
+static int yy_init_globals ( void );
 
 /* Accessor methods to globals.
    These are made visible to non-reentrant scanners for convenience. */
 
-int preprocessorlex_destroy (void );
+int yylex_destroy ( void );
 
-int preprocessorget_debug (void );
+int yyget_debug ( void );
 
-void preprocessorset_debug (int debug_flag  );
+void yyset_debug ( int debug_flag  );
 
-YY_EXTRA_TYPE preprocessorget_extra (void );
+YY_EXTRA_TYPE yyget_extra ( void );
 
-void preprocessorset_extra (YY_EXTRA_TYPE user_defined  );
+void yyset_extra ( YY_EXTRA_TYPE user_defined  );
 
-FILE *preprocessorget_in (void );
+FILE *yyget_in ( void );
 
-void preprocessorset_in  (FILE * in_str  );
+void yyset_in  ( FILE * _in_str  );
 
-FILE *preprocessorget_out (void );
+FILE *yyget_out ( void );
 
-void preprocessorset_out  (FILE * out_str  );
+void yyset_out  ( FILE * _out_str  );
 
-yy_size_t preprocessorget_leng (void );
+			yy_size_t yyget_leng ( void );
 
-char *preprocessorget_text (void );
+char *yyget_text ( void );
 
-int preprocessorget_lineno (void );
+int yyget_lineno ( void );
 
-void preprocessorset_lineno (int line_number  );
+void yyset_lineno ( int _line_number  );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -1115,35 +1383,43 @@ void preprocessorset_lineno (int line_number  );
 
 #ifndef YY_SKIP_YYWRAP
 #ifdef __cplusplus
-extern "C" int preprocessorwrap (void );
+extern "C" int yywrap ( void );
 #else
-extern int preprocessorwrap (void );
+extern int yywrap ( void );
 #endif
 #endif
 
-    static void yyunput (int c,char *buf_ptr  );
+#ifndef YY_NO_UNPUT
     
+    static void yyunput ( int c, char *buf_ptr  );
+    
+#endif
+
 #ifndef yytext_ptr
-static void yy_flex_strncpy (char *,yyconst char *,int );
+static void yy_flex_strncpy ( char *, const char *, int );
 #endif
 
 #ifdef YY_NEED_STRLEN
-static int yy_flex_strlen (yyconst char * );
+static int yy_flex_strlen ( const char * );
 #endif
 
 #ifndef YY_NO_INPUT
-
 #ifdef __cplusplus
-static int yyinput (void );
+static int yyinput ( void );
 #else
-static int input (void );
+static int input ( void );
 #endif
 
 #endif
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -1151,7 +1427,7 @@ static int input (void );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO do { if (fwrite( preprocessortext, preprocessorleng, 1, preprocessorout )) {} } while (0)
+#define ECHO do { if (fwrite( yytext, (size_t) yyleng, 1, yyout )) {} } while (0)
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
@@ -1162,20 +1438,20 @@ static int input (void );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		size_t n; \
+		yy_size_t n; \
 		for ( n = 0; n < max_size && \
-			     (c = getc( preprocessorin )) != EOF && c != '\n'; ++n ) \
+			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
 		if ( c == '\n' ) \
 			buf[n++] = (char) c; \
-		if ( c == EOF && ferror( preprocessorin ) ) \
+		if ( c == EOF && ferror( yyin ) ) \
 			YY_FATAL_ERROR( "input in flex scanner failed" ); \
 		result = n; \
 		} \
 	else \
 		{ \
 		errno=0; \
-		while ( (result = fread(buf, 1, max_size, preprocessorin))==0 && ferror(preprocessorin)) \
+		while ( (result = (int) fread(buf, 1, (yy_size_t) max_size, yyin)) == 0 && ferror(yyin)) \
 			{ \
 			if( errno != EINTR) \
 				{ \
@@ -1183,7 +1459,7 @@ static int input (void );
 				break; \
 				} \
 			errno=0; \
-			clearerr(preprocessorin); \
+			clearerr(yyin); \
 			} \
 		}\
 \
@@ -1216,12 +1492,12 @@ static int input (void );
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int preprocessorlex (void);
+extern int yylex (void);
 
-#define YY_DECL int preprocessorlex (void)
+#define YY_DECL int yylex (void)
 #endif /* !YY_DECL */
 
-/* Code executed at the beginning of each rule, after preprocessortext and preprocessorleng
+/* Code executed at the beginning of each rule, after yytext and yyleng
  * have been set up.
  */
 #ifndef YY_USER_ACTION
@@ -1230,28 +1506,23 @@ extern int preprocessorlex (void);
 
 /* Code executed at the end of each rule. */
 #ifndef YY_BREAK
-#define YY_BREAK break;
+#define YY_BREAK /*LINTED*/break;
 #endif
 
 #define YY_RULE_SETUP \
-	if ( preprocessorleng > 0 ) \
+	if ( yyleng > 0 ) \
 		YY_CURRENT_BUFFER_LVALUE->yy_at_bol = \
-				(preprocessortext[preprocessorleng - 1] == '\n'); \
+				(yytext[yyleng - 1] == '\n'); \
 	YY_USER_ACTION
 
 /** The main scanner function which does all the work.
  */
 YY_DECL
 {
-	register yy_state_type yy_current_state;
-	register char *yy_cp, *yy_bp;
-	register int yy_act;
+	yy_state_type yy_current_state;
+	char *yy_cp, *yy_bp;
+	int yy_act;
     
-#line 254 "preprocessorLex.l"
-
-
-#line 1254 "preprocessorLex.c"
-
 	if ( !(yy_init) )
 		{
 		(yy_init) = 1;
@@ -1262,33 +1533,39 @@ YY_DECL
 
         /* Create the reject buffer large enough to save one state per allowed character. */
         if ( ! (yy_state_buf) )
-            (yy_state_buf) = (yy_state_type *)preprocessoralloc(YY_STATE_BUF_SIZE  );
+            (yy_state_buf) = (yy_state_type *)yyalloc(YY_STATE_BUF_SIZE  );
             if ( ! (yy_state_buf) )
-                YY_FATAL_ERROR( "out of dynamic memory in preprocessorlex()" );
+                YY_FATAL_ERROR( "out of dynamic memory in yylex()" );
 
 		if ( ! (yy_start) )
 			(yy_start) = 1;	/* first start state */
 
-		if ( ! preprocessorin )
-			preprocessorin = stdin;
+		if ( ! yyin )
+			yyin = stdin;
 
-		if ( ! preprocessorout )
-			preprocessorout = stdout;
+		if ( ! yyout )
+			yyout = stdout;
 
 		if ( ! YY_CURRENT_BUFFER ) {
-			preprocessorensure_buffer_stack ();
+			yyensure_buffer_stack ();
 			YY_CURRENT_BUFFER_LVALUE =
-				preprocessor_create_buffer(preprocessorin,YY_BUF_SIZE );
+				yy_create_buffer( yyin, YY_BUF_SIZE );
 		}
 
-		preprocessor_load_buffer_state( );
+		yy_load_buffer_state(  );
 		}
 
-	while ( 1 )		/* loops until end-of-file is reached */
+	{
+#line 255 "preprocessorLex.l"
+
+
+#line 1562 "preprocessorLex.c"
+
+	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
 		yy_cp = (yy_c_buf_p);
 
-		/* Support of preprocessortext. */
+		/* Support of yytext. */
 		*yy_cp = (yy_hold_char);
 
 		/* yy_bp points to the position in yy_ch_buf of the start of
@@ -1305,14 +1582,14 @@ YY_DECL
 yy_match:
 		do
 			{
-			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+			YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
 				if ( yy_current_state >= 313 )
-					yy_c = yy_meta[(unsigned int) yy_c];
+					yy_c = yy_meta[yy_c];
 				}
-			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			*(yy_state_ptr)++ = yy_current_state;
 			++yy_cp;
 			}
@@ -1321,6 +1598,7 @@ yy_match:
 yy_find_action:
 		yy_current_state = *--(yy_state_ptr);
 		(yy_lp) = yy_accept[yy_current_state];
+goto find_rule; /* Shut up GCC warning -Wall */
 find_rule: /* we branch to this label when backing up */
 		for ( ; ; ) /* until we find what rule we matched */
 			{
@@ -1359,6 +1637,16 @@ find_rule: /* we branch to this label when backing up */
 
 		YY_DO_BEFORE_ACTION;
 
+		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
+			{
+			yy_size_t yyl;
+			for ( yyl = 0; yyl < yyleng; ++yyl )
+				if ( yytext[yyl] == '\n' )
+					
+    yylineno++;
+;
+			}
+
 do_action:	/* This label is used only to access EOF actions. */
 
 		switch ( yy_act )
@@ -1366,21 +1654,21 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 256 "preprocessorLex.l"
+#line 257 "preprocessorLex.l"
 {
-  preprocessorlval.mystr = strdup( preprocessortext );
+  preprocessorlval.mystr = strdup( yytext );
   tkreturn(TK_STRING)
 }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 261 "preprocessorLex.l"
+#line 262 "preprocessorLex.l"
 {
   p_continuator continuator;
 
   continuator=(p_continuator)malloc(sizeof(t_continuator));
-  continuator->char_position = preprocessorleng-1;
+  continuator->char_position = yyleng-1;
   continuator->line_position = pproot()->cr_scanner->cur_line_position;
 
   pproot()->cr_scanner->cur_line_position += 1;
@@ -1394,48 +1682,48 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 277 "preprocessorLex.l"
+#line 278 "preprocessorLex.l"
 {
 }
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 280 "preprocessorLex.l"
+#line 281 "preprocessorLex.l"
 {
-  preprocessorlval.mystr=strdup(preprocessortext);
+  preprocessorlval.mystr=strdup(yytext);
   return(TK_EOL);
 }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 284 "preprocessorLex.l"
+#line 285 "preprocessorLex.l"
 {
-  preprocessorlval.mystr=strdup(preprocessortext);
+  preprocessorlval.mystr=strdup(yytext);
   return(TK_EOL);
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 289 "preprocessorLex.l"
+#line 290 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
-  preprocessorlval.mystr=strdup(preprocessortext);
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
+  preprocessorlval.mystr=strdup(yytext);
   return(TK_SPACE );
 }
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 295 "preprocessorLex.l"
+#line 296 "preprocessorLex.l"
 {
   preprocessorlval.mystr=adms_preprocessor_lex_skipp_text (); return(TK_COMMENT);
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 299 "preprocessorLex.l"
+#line 300 "preprocessorLex.l"
 {
   preprocessorlval.mystr=adms_preprocessor_lex_skipp_text (); return(TK_COMMENT);
 }
@@ -1443,11 +1731,11 @@ YY_RULE_SETUP
 /* port branch access  I(<a>) --> I(a,a) */
 case 9:
 YY_RULE_SETUP
-#line 304 "preprocessorLex.l"
+#line 305 "preprocessorLex.l"
 {
     {
-        const char *t1 = strchr(preprocessortext, '<');
-        const char *t2 = strchr(preprocessortext, '>');
+        const char *t1 = strchr(yytext, '<');
+        const char *t2 = strchr(yytext, '>');
         int len = 2*(t2-t1) + 5;
         char *tn = (char*)malloc(len);
         const char *tt;
@@ -1468,9 +1756,9 @@ YY_RULE_SETUP
 /* pragma */
 case 10:
 YY_RULE_SETUP
-#line 328 "preprocessorLex.l"
+#line 329 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
   if ( DONT_SKIPP )
     {
       BEGIN( PRAGMA_DEFINE_START );
@@ -1482,16 +1770,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 338 "preprocessorLex.l"
+#line 339 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
   BEGIN( INITIAL );
 }
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 342 "preprocessorLex.l"
+#line 343 "preprocessorLex.l"
 {
   pproot()->cr_scanner->cur_message=strdup("- `define: unexpected end-of-line");
   yyflex_unput
@@ -1500,7 +1788,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 348 "preprocessorLex.l"
+#line 349 "preprocessorLex.l"
 {
   if ( DONT_SKIPP )
     {
@@ -1513,7 +1801,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 357 "preprocessorLex.l"
+#line 358 "preprocessorLex.l"
 {
   preprocessorlval.mystr=strdup("");;
   BEGIN( PRAGMA_NAME );
@@ -1522,7 +1810,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 362 "preprocessorLex.l"
+#line 363 "preprocessorLex.l"
 {
   preprocessorlval.mystr=strdup("");;
   BEGIN( PRAGMA_NAME );
@@ -1531,7 +1819,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 367 "preprocessorLex.l"
+#line 368 "preprocessorLex.l"
 {
   char* string=NULL;
   adms_k2strconcat(&string,"# ");
@@ -1546,7 +1834,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 378 "preprocessorLex.l"
+#line 379 "preprocessorLex.l"
 {
   char* string=NULL;
   adms_k2strconcat(&string,"# ");
@@ -1561,7 +1849,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 389 "preprocessorLex.l"
+#line 390 "preprocessorLex.l"
 {
   if(DONT_SKIPP)
     BEGIN(PRAGMA_PATH);
@@ -1572,45 +1860,42 @@ YY_RULE_SETUP
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 396 "preprocessorLex.l"
+#line 397 "preprocessorLex.l"
 {
   BEGIN( PRAGMA_DEFINE_NOARG );
-  preprocessorlval.mystr=strdup(preprocessortext );
+  preprocessorlval.mystr=strdup(yytext );
   tkreturn(TK_PRAGMA_NAME)
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 401 "preprocessorLex.l"
+#line 402 "preprocessorLex.l"
 {
   BEGIN( PRAGMA_DEFINE_NOARG );
-  preprocessorlval.mystr=strdup(preprocessortext );
+  preprocessorlval.mystr=strdup(yytext );
   tkreturn(TK_PRAGMA_NAME)
 }
 	YY_BREAK
 case 21:
-*yy_cp = (yy_hold_char); /* undo effects of setting up preprocessortext */
-(yy_c_buf_p) = yy_cp -= 1;
-YY_DO_BEFORE_ACTION; /* set up preprocessortext again */
 YY_RULE_SETUP
-#line 406 "preprocessorLex.l"
+#line 407 "preprocessorLex.l"
 {
   BEGIN( PRAGMA_DEFINE_WITHARG );
-  preprocessorlval.mystr=strdup(preprocessortext );
+  preprocessorlval.mystr=strdup(yytext );
   tkreturn(TK_PRAGMA_NAME)
 }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 411 "preprocessorLex.l"
+#line 412 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
 }
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 414 "preprocessorLex.l"
+#line 415 "preprocessorLex.l"
 {
   pproot()->cr_scanner->cur_message=strdup("- pragma name: unexpected end-of-line");
   yyflex_unput
@@ -1619,11 +1904,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 419 "preprocessorLex.l"
+#line 420 "preprocessorLex.l"
 {
   char* string=NULL;
   adms_k2strconcat(&string,"at character ");
-  adms_k2strconcat(&string,preprocessortext);
+  adms_k2strconcat(&string,yytext);
   adms_k2strconcat(&string," - identifier was expected");
   pproot()->cr_scanner->cur_message=string;
   yyflex_unput
@@ -1632,15 +1917,15 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 429 "preprocessorLex.l"
+#line 430 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
 }
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 432 "preprocessorLex.l"
+#line 433 "preprocessorLex.l"
 {
   pproot()->cr_scanner->cur_message=strdup("- `define: unexpected end-of-line)");
   yyflex_unput
@@ -1651,12 +1936,12 @@ YY_RULE_SETUP
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 438 "preprocessorLex.l"
+#line 439 "preprocessorLex.l"
 {
   p_continuator continuator;
 
   continuator=(p_continuator)malloc(sizeof(t_continuator));
-  continuator->char_position = preprocessorleng-1;
+  continuator->char_position = yyleng-1;
   continuator->line_position = pproot()->cr_scanner->cur_line_position;
 
   pproot()->cr_scanner->cur_line_position += 1;
@@ -1668,11 +1953,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 451 "preprocessorLex.l"
+#line 452 "preprocessorLex.l"
 {
   char* string=NULL;
   adms_k2strconcat(&string,"at character ");
-  adms_k2strconcat(&string,preprocessortext);
+  adms_k2strconcat(&string,yytext);
   adms_k2strconcat(&string," - whitespace was expected");
   pproot()->cr_scanner->cur_message=string;
   yyflex_unput
@@ -1681,9 +1966,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 461 "preprocessorLex.l"
+#line 462 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
   BEGIN( PRAGMA_DEFINE_TEXT_START );
   tkreturn(TK_ARG_NULL)
 }
@@ -1691,11 +1976,11 @@ YY_RULE_SETUP
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-#line 466 "preprocessorLex.l"
+#line 467 "preprocessorLex.l"
 {
   char* string=NULL;
   adms_k2strconcat(&string,"at character ");
-  adms_k2strconcat(&string,preprocessortext);
+  adms_k2strconcat(&string,yytext);
   adms_k2strconcat(&string," - `define has no closing paren");
   pproot()->cr_scanner->cur_message=string;
   yyflex_unput
@@ -1704,28 +1989,28 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 475 "preprocessorLex.l"
+#line 476 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
   BEGIN( PRAGMA_DEFINE_WITHARG_ARGS );
 }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 480 "preprocessorLex.l"
+#line 481 "preprocessorLex.l"
 {
   BEGIN( PRAGMA_DEFINE_WITHARG_COMMA );
-  preprocessorlval.mystr=strdup(preprocessortext );
+  preprocessorlval.mystr=strdup(yytext );
   tkreturn(TK_ARG)
 }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 485 "preprocessorLex.l"
+#line 486 "preprocessorLex.l"
 {
   char* string=NULL;
   adms_k2strconcat(&string,"at character ");
-  adms_k2strconcat(&string,preprocessortext);
+  adms_k2strconcat(&string,yytext);
   adms_k2strconcat(&string," - `define has unexpected syntax");
   pproot()->cr_scanner->cur_message=string;
   yyflex_unput
@@ -1734,29 +2019,29 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 495 "preprocessorLex.l"
+#line 496 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
 }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 498 "preprocessorLex.l"
+#line 499 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
   BEGIN( PRAGMA_DEFINE_TEXT_START );
 }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 502 "preprocessorLex.l"
+#line 503 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
 }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 505 "preprocessorLex.l"
+#line 506 "preprocessorLex.l"
 {
   yyflex_unput
   BEGIN( PRAGMA_DEFINE_WITHARG_ARGS );
@@ -1764,21 +2049,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 510 "preprocessorLex.l"
+#line 511 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
   BEGIN( PRAGMA_DEFINE_TEXT );
 }
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-#line 514 "preprocessorLex.l"
+#line 515 "preprocessorLex.l"
 {
   p_continuator continuator;
 
   continuator=(p_continuator)malloc(sizeof(t_continuator));
-  continuator->char_position = preprocessorleng-1;
+  continuator->char_position = yyleng-1;
   continuator->line_position = pproot()->cr_scanner->cur_line_position;
 
   pproot()->cr_scanner->cur_line_position += 1;
@@ -1791,7 +2076,7 @@ YY_RULE_SETUP
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 527 "preprocessorLex.l"
+#line 528 "preprocessorLex.l"
 {
   yyflex_unput
   BEGIN( INITIAL );
@@ -1800,7 +2085,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 532 "preprocessorLex.l"
+#line 533 "preprocessorLex.l"
 {
   yyflex_unput
   BEGIN( PRAGMA_DEFINE_TEXT );
@@ -1809,17 +2094,17 @@ YY_RULE_SETUP
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 537 "preprocessorLex.l"
+#line 538 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
 }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 541 "preprocessorLex.l"
+#line 542 "preprocessorLex.l"
 {
 
-  preprocessorlval.mystr=strdup(adms_preprocessor_lex_remove_leading_quote( preprocessortext ));
+  preprocessorlval.mystr=strdup(adms_preprocessor_lex_remove_leading_quote( yytext ));
   if(DONT_SKIPP)
   {
     p_preprocessor_pragma_define Define;
@@ -1834,8 +2119,8 @@ YY_RULE_SETUP
     }
     else
     {
-       preprocessorlval.mystr = strdup(preprocessortext);
-       pproot()->cr_scanner->cur_message=strdup(preprocessortext);
+       preprocessorlval.mystr = strdup(yytext);
+       pproot()->cr_scanner->cur_message=strdup(yytext);
        tkreturn(TK_ERROR_PRAGMA_NOT_FOUND)
     }
   }
@@ -1845,10 +2130,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 567 "preprocessorLex.l"
+#line 568 "preprocessorLex.l"
 {
 
-  preprocessorlval.mystr=strdup(adms_preprocessor_lex_remove_leading_quote( preprocessortext ));
+  preprocessorlval.mystr=strdup(adms_preprocessor_lex_remove_leading_quote( yytext ));
   if(DONT_SKIPP)
   {
     p_preprocessor_pragma_define Define;
@@ -1863,8 +2148,8 @@ YY_RULE_SETUP
     }
     else
     {
-       preprocessorlval.mystr=strdup(preprocessortext);
-       pproot()->cr_scanner->cur_message=strdup(preprocessortext);
+       preprocessorlval.mystr=strdup(yytext);
+       pproot()->cr_scanner->cur_message=strdup(yytext);
        tkreturn(TK_ERROR_PRAGMA_NOT_FOUND)
     }
   }
@@ -1874,49 +2159,49 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 593 "preprocessorLex.l"
+#line 594 "preprocessorLex.l"
 {
 
-  preprocessorlval.mystr = strdup(preprocessortext);
+  preprocessorlval.mystr = strdup(yytext);
   tkreturn(TK_IDENT)
 }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 599 "preprocessorLex.l"
+#line 600 "preprocessorLex.l"
 {
-  preprocessorlval.mystr = strdup(preprocessortext);
+  preprocessorlval.mystr = strdup(yytext);
   tkreturn('(')
 }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 604 "preprocessorLex.l"
+#line 605 "preprocessorLex.l"
 {
-  preprocessorlval.mystr = strdup(preprocessortext);
+  preprocessorlval.mystr = strdup(yytext);
   tkreturn(')')
 }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 609 "preprocessorLex.l"
+#line 610 "preprocessorLex.l"
 {
-  preprocessorlval.mystr = strdup(preprocessortext);
+  preprocessorlval.mystr = strdup(yytext);
   tkreturn(',')
 }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 614 "preprocessorLex.l"
+#line 615 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
-  preprocessorlval.mystr=strdup(preprocessortext);
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
+  preprocessorlval.mystr=strdup(yytext);
   return(TK_SPACE );
 }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 620 "preprocessorLex.l"
+#line 621 "preprocessorLex.l"
 {
   preprocessorlval.mystr=adms_preprocessor_lex_skipp_text (); return(TK_COMMENT);
 }
@@ -1924,7 +2209,7 @@ YY_RULE_SETUP
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
-#line 624 "preprocessorLex.l"
+#line 625 "preprocessorLex.l"
 {
   preprocessorlval.mystr=adms_preprocessor_lex_skipp_text (); return(TK_COMMENT);
 }
@@ -1932,34 +2217,34 @@ YY_RULE_SETUP
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-#line 628 "preprocessorLex.l"
+#line 629 "preprocessorLex.l"
 {
   /* SRW - fix bsim6 parse error, comma in quoted string macro arg caused
    * string to be tokenized, so argument list was hosed.  This prevents
    * a single '"' from being a viable non-ident.
    */
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng;
-  preprocessorlval.mystr=strdup(preprocessortext);
+  pproot()->cr_scanner->cur_char_position+=yyleng;
+  preprocessorlval.mystr=strdup(yytext);
   return(TK_SPACE );
 }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 639 "preprocessorLex.l"
+#line 640 "preprocessorLex.l"
 {
-  preprocessorlval.mystr = strdup(preprocessortext);
+  preprocessorlval.mystr = strdup(yytext);
   tkreturn(TK_NOT_IDENT)
 }
 	YY_BREAK
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
-#line 644 "preprocessorLex.l"
+#line 645 "preprocessorLex.l"
 {
   p_continuator continuator;
 
   continuator=(p_continuator)malloc(sizeof(t_continuator));
-  continuator->char_position = preprocessorleng-1;
+  continuator->char_position = yyleng-1;
   continuator->line_position = pproot()->cr_scanner->cur_line_position;
 
   pproot()->cr_scanner->cur_line_position += 1;
@@ -1972,7 +2257,7 @@ YY_RULE_SETUP
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
-#line 657 "preprocessorLex.l"
+#line 658 "preprocessorLex.l"
 {
   yyflex_unput
   BEGIN( INITIAL );
@@ -1981,24 +2266,24 @@ YY_RULE_SETUP
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 663 "preprocessorLex.l"
+#line 664 "preprocessorLex.l"
 {
   BEGIN( PRAGMA_COMMENT );
-  preprocessorlval.mystr=strdup(preprocessortext );
+  preprocessorlval.mystr=strdup(yytext );
   tkreturn(TK_PRAGMA_NAME)
 }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 668 "preprocessorLex.l"
+#line 669 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
 }
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
-#line 671 "preprocessorLex.l"
+#line 672 "preprocessorLex.l"
 {
   pproot()->cr_scanner->cur_message=strdup("- unexpected end-of-line");
   yyflex_unput
@@ -2007,11 +2292,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 676 "preprocessorLex.l"
+#line 677 "preprocessorLex.l"
 {
   char* string=NULL;
   adms_k2strconcat(&string,"at character ");
-  adms_k2strconcat(&string,preprocessortext);
+  adms_k2strconcat(&string,yytext);
   adms_k2strconcat(&string," - pragma name was expected");
   pproot()->cr_scanner->cur_message=string;
   yyflex_unput
@@ -2021,12 +2306,12 @@ YY_RULE_SETUP
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-#line 685 "preprocessorLex.l"
+#line 686 "preprocessorLex.l"
 {
   p_continuator continuator;
 
   continuator=(p_continuator)malloc(sizeof(t_continuator));
-  continuator->char_position = preprocessorleng-1;
+  continuator->char_position = yyleng-1;
   continuator->line_position = pproot()->cr_scanner->cur_line_position;
 
   pproot()->cr_scanner->cur_line_position += 1;
@@ -2038,19 +2323,19 @@ YY_RULE_SETUP
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 699 "preprocessorLex.l"
+#line 700 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
 }
 	YY_BREAK
 case 62:
 /* rule 62 can match eol */
 YY_RULE_SETUP
-#line 702 "preprocessorLex.l"
+#line 703 "preprocessorLex.l"
 {
   char* fileName;
   BEGIN( INITIAL );
-  fileName = adms_preprocessor_lex_get_path(preprocessortext,'"','"');
+  fileName = adms_preprocessor_lex_get_path(yytext,'"','"');
   adms_preprocessor_lex_include_file(fileName);
   tkreturn(TK_INCLUDE)
 }
@@ -2058,11 +2343,11 @@ YY_RULE_SETUP
 case 63:
 /* rule 63 can match eol */
 YY_RULE_SETUP
-#line 709 "preprocessorLex.l"
+#line 710 "preprocessorLex.l"
 {
   char* fileName;
   BEGIN( INITIAL );
-  fileName = adms_preprocessor_lex_get_path(preprocessortext,'<','>');
+  fileName = adms_preprocessor_lex_get_path(yytext,'<','>');
   adms_message_info(("%s: implicit path handled as explicit path!",fileName))
   adms_preprocessor_lex_include_file(fileName);
   tkreturn(TK_INCLUDE)
@@ -2070,11 +2355,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 717 "preprocessorLex.l"
+#line 718 "preprocessorLex.l"
 {
   char* string=NULL;
   adms_k2strconcat(&string,"at character ");
-  adms_k2strconcat(&string,preprocessortext);
+  adms_k2strconcat(&string,yytext);
   adms_k2strconcat(&string," - bad path");
   pproot()->cr_scanner->cur_message=string;
   yyflex_unput
@@ -2083,14 +2368,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 727 "preprocessorLex.l"
+#line 728 "preprocessorLex.l"
 {
-  pproot()->cr_scanner->cur_char_position+=preprocessorleng; 
+  pproot()->cr_scanner->cur_char_position+=yyleng; 
 }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 730 "preprocessorLex.l"
+#line 731 "preprocessorLex.l"
 {
   preprocessorlval.mystr=adms_preprocessor_lex_skipp_text (); return(TK_COMMENT);
 }
@@ -2098,7 +2383,7 @@ YY_RULE_SETUP
 case 67:
 /* rule 67 can match eol */
 YY_RULE_SETUP
-#line 733 "preprocessorLex.l"
+#line 734 "preprocessorLex.l"
 {
   preprocessorlval.mystr=adms_preprocessor_lex_skipp_text (); return(TK_COMMENT);
 }
@@ -2106,12 +2391,12 @@ YY_RULE_SETUP
 case 68:
 /* rule 68 can match eol */
 YY_RULE_SETUP
-#line 736 "preprocessorLex.l"
+#line 737 "preprocessorLex.l"
 {
   p_continuator continuator;
 
   continuator=(p_continuator)malloc(sizeof(t_continuator));
-  continuator->char_position = preprocessorleng-1;
+  continuator->char_position = yyleng-1;
   continuator->line_position = pproot()->cr_scanner->cur_line_position;
 
   pproot()->cr_scanner->cur_line_position += 1;
@@ -2125,7 +2410,7 @@ YY_RULE_SETUP
 case 69:
 /* rule 69 can match eol */
 YY_RULE_SETUP
-#line 750 "preprocessorLex.l"
+#line 751 "preprocessorLex.l"
 {
   yyflex_unput
   BEGIN( INITIAL );
@@ -2133,11 +2418,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 754 "preprocessorLex.l"
+#line 755 "preprocessorLex.l"
 {
   char* string=NULL;
   adms_k2strconcat(&string,"at character ");
-  adms_k2strconcat(&string,preprocessortext);
+  adms_k2strconcat(&string,yytext);
   adms_k2strconcat(&string," - unknown error");
   pproot()->cr_scanner->cur_message=string;
   yyflex_unput
@@ -2147,11 +2432,11 @@ YY_RULE_SETUP
 case 71:
 /* rule 71 can match eol */
 YY_RULE_SETUP
-#line 764 "preprocessorLex.l"
+#line 765 "preprocessorLex.l"
 {
   char* string=NULL;
   adms_k2strconcat(&string,"at character ");
-  adms_k2strconcat(&string,preprocessortext);
+  adms_k2strconcat(&string,yytext);
   adms_k2strconcat(&string," - unknown error");
   pproot()->cr_scanner->cur_message=string;
   tkreturn(TK_ERROR_PRAGMA_DEFINITION)
@@ -2159,12 +2444,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 773 "preprocessorLex.l"
+#line 774 "preprocessorLex.l"
 {
 
   p_preprocessor_pragma_define Define;
   preprocessorlval.mystr = 
-    strdup(adms_preprocessor_lex_remove_leading_quote( preprocessortext));
+    strdup(adms_preprocessor_lex_remove_leading_quote( yytext));
   if(DONT_SKIPP)
   {
     if ((Define = adms_preprocessor_pragma_define_exists (preprocessorlval.mystr)))
@@ -2178,8 +2463,8 @@ YY_RULE_SETUP
     }
     else
     {
-      preprocessorlval.mystr = strdup(preprocessortext);
-      pproot()->cr_scanner->cur_message=strdup(preprocessortext);
+      preprocessorlval.mystr = strdup(yytext);
+      pproot()->cr_scanner->cur_message=strdup(yytext);
       tkreturn(TK_ERROR_PRAGMA_NOT_FOUND)
     }
   }
@@ -2190,11 +2475,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 801 "preprocessorLex.l"
+#line 802 "preprocessorLex.l"
 {
 
   preprocessorlval.mystr = 
-    strdup(adms_preprocessor_lex_remove_leading_quote( preprocessortext ));
+    strdup(adms_preprocessor_lex_remove_leading_quote( yytext ));
   {
     p_preprocessor_pragma_define Define;
     if(DONT_SKIPP)
@@ -2210,8 +2495,8 @@ YY_RULE_SETUP
       }
       else
       {
-         preprocessorlval.mystr = strdup(preprocessortext);
-         pproot()->cr_scanner->cur_message=strdup(preprocessortext);
+         preprocessorlval.mystr = strdup(yytext);
+         pproot()->cr_scanner->cur_message=strdup(yytext);
          tkreturn(TK_ERROR_PRAGMA_NOT_FOUND)
       }
     }
@@ -2223,43 +2508,43 @@ YY_RULE_SETUP
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 831 "preprocessorLex.l"
+#line 832 "preprocessorLex.l"
 {
 
-  preprocessorlval.mystr = strdup(preprocessortext);
+  preprocessorlval.mystr = strdup(yytext);
   tkreturn(TK_IDENT)
 
 }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 838 "preprocessorLex.l"
+#line 839 "preprocessorLex.l"
 {
-  preprocessorlval.mystr = strdup(preprocessortext);
+  preprocessorlval.mystr = strdup(yytext);
   return '(';
 }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 843 "preprocessorLex.l"
+#line 844 "preprocessorLex.l"
 {
-  preprocessorlval.mystr = strdup(preprocessortext);
+  preprocessorlval.mystr = strdup(yytext);
   return ')';
 }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 848 "preprocessorLex.l"
+#line 849 "preprocessorLex.l"
 {
-  preprocessorlval.mystr = strdup(preprocessortext);
+  preprocessorlval.mystr = strdup(yytext);
   return ',';
 }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 853 "preprocessorLex.l"
+#line 854 "preprocessorLex.l"
 {
-  preprocessorlval.mystr = strdup(preprocessortext);
+  preprocessorlval.mystr = strdup(yytext);
   return TK_NOT_IDENT;
 }
 	YY_BREAK
@@ -2282,16 +2567,16 @@ case YY_STATE_EOF(PRAGMA_SUBSTITUTOR_PAIR):
 case YY_STATE_EOF(PRAGMA_SUBSTITUTOR_ARGITEM):
 case YY_STATE_EOF(PRAGMA_SUBSTITUTOR_ARGCOMMA):
 case YY_STATE_EOF(PRAGMA_SUBSTITUTOR_ARGEND):
-#line 858 "preprocessorLex.l"
+#line 859 "preprocessorLex.l"
 {
   char* string=NULL;
   if( pproot()->Scanner != NULL )
     {
-      preprocessor_delete_buffer((YY_BUFFER_STATE)(pproot()->cr_scanner->buffer));
+      yy_delete_buffer((YY_BUFFER_STATE)(pproot()->cr_scanner->buffer));
       free(pproot()->cr_scanner );
       pproot()->cr_scanner = (p_preprocessor) adms_slist_pull(&pproot()->Scanner );
-      preprocessorin = pproot()->cr_scanner->fid;
-      preprocessor_switch_to_buffer((YY_BUFFER_STATE)pproot()->cr_scanner->buffer );
+      yyin = pproot()->cr_scanner->fid;
+      yy_switch_to_buffer((YY_BUFFER_STATE)pproot()->cr_scanner->buffer );
     }
   else
     yyterminate ();
@@ -2310,10 +2595,10 @@ case YY_STATE_EOF(PRAGMA_SUBSTITUTOR_ARGEND):
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 883 "preprocessorLex.l"
+#line 884 "preprocessorLex.l"
 ECHO;
 	YY_BREAK
-#line 2317 "preprocessorLex.c"
+#line 2601 "preprocessorLex.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2328,15 +2613,15 @@ ECHO;
 			{
 			/* We're scanning a new file or input source.  It's
 			 * possible that this happened because the user
-			 * just pointed preprocessorin at a new source and called
-			 * preprocessorlex().  If so, then we have to assure
+			 * just pointed yyin at a new source and called
+			 * yylex().  If so, then we have to assure
 			 * consistency between YY_CURRENT_BUFFER and our
 			 * globals.  Here is the right place to do so, because
 			 * this is the first action (other than possibly a
 			 * back-up) that will match for the new input source.
 			 */
 			(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-			YY_CURRENT_BUFFER_LVALUE->yy_input_file = preprocessorin;
+			YY_CURRENT_BUFFER_LVALUE->yy_input_file = yyin;
 			YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
 			}
 
@@ -2389,11 +2674,11 @@ ECHO;
 				{
 				(yy_did_buffer_switch_on_eof) = 0;
 
-				if ( preprocessorwrap( ) )
+				if ( yywrap(  ) )
 					{
 					/* Note: because we've taken care in
 					 * yy_get_next_buffer() to have set up
-					 * preprocessortext, we can now set up
+					 * yytext, we can now set up
 					 * yy_c_buf_p so that if some total
 					 * hoser (like flex itself) wants to
 					 * call the scanner after we return the
@@ -2442,7 +2727,8 @@ ECHO;
 			"fatal flex scanner internal error--no action found" );
 	} /* end of action switch */
 		} /* end of scanning one token */
-} /* end of preprocessorlex */
+	} /* end of user's declarations */
+} /* end of yylex */
 
 /* yy_get_next_buffer - try to read in a new buffer
  *
@@ -2453,9 +2739,9 @@ ECHO;
  */
 static int yy_get_next_buffer (void)
 {
-    	register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
-	register char *source = (yytext_ptr);
-	register int number_to_move, i;
+    	char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
+	char *source = (yytext_ptr);
+	int number_to_move, i;
 	int ret_val;
 
 	if ( (yy_c_buf_p) > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] )
@@ -2484,7 +2770,7 @@ static int yy_get_next_buffer (void)
 	/* Try to read more data. */
 
 	/* First move last chars to start of buffer. */
-	number_to_move = (int) ((yy_c_buf_p) - (yytext_ptr)) - 1;
+	number_to_move = (int) ((yy_c_buf_p) - (yytext_ptr) - 1);
 
 	for ( i = 0; i < number_to_move; ++i )
 		*(dest++) = *(source++);
@@ -2523,7 +2809,7 @@ static int yy_get_next_buffer (void)
 		if ( number_to_move == YY_MORE_ADJ )
 			{
 			ret_val = EOB_ACT_END_OF_FILE;
-			preprocessorrestart(preprocessorin  );
+			yyrestart( yyin  );
 			}
 
 		else
@@ -2537,12 +2823,15 @@ static int yy_get_next_buffer (void)
 	else
 		ret_val = EOB_ACT_CONTINUE_SCAN;
 
-	if ((yy_size_t) ((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
+	if (((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
 		/* Extend the array by 50%, plus the number we really need. */
 		yy_size_t new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
-		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) preprocessorrealloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size  );
+		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) yyrealloc(
+			(void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf, (yy_size_t) new_size  );
 		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
 			YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
+		/* "- 2" to take care of EOB's */
+		YY_CURRENT_BUFFER_LVALUE->yy_buf_size = (int) (new_size - 2);
 	}
 
 	(yy_n_chars) += number_to_move;
@@ -2558,8 +2847,8 @@ static int yy_get_next_buffer (void)
 
     static yy_state_type yy_get_previous_state (void)
 {
-	register yy_state_type yy_current_state;
-	register char *yy_cp;
+	yy_state_type yy_current_state;
+	char *yy_cp;
     
 	yy_current_state = (yy_start);
 	yy_current_state += YY_AT_BOL();
@@ -2569,14 +2858,14 @@ static int yy_get_next_buffer (void)
 
 	for ( yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp )
 		{
-		register YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
+		YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
 			if ( yy_current_state >= 313 )
-				yy_c = yy_meta[(unsigned int) yy_c];
+				yy_c = yy_meta[yy_c];
 			}
-		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 		*(yy_state_ptr)++ = yy_current_state;
 		}
 
@@ -2590,16 +2879,16 @@ static int yy_get_next_buffer (void)
  */
     static yy_state_type yy_try_NUL_trans  (yy_state_type yy_current_state )
 {
-	register int yy_is_jam;
+	int yy_is_jam;
     
-	register YY_CHAR yy_c = 1;
+	YY_CHAR yy_c = 1;
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
 		if ( yy_current_state >= 313 )
-			yy_c = yy_meta[(unsigned int) yy_c];
+			yy_c = yy_meta[yy_c];
 		}
-	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 	yy_is_jam = (yy_current_state == 312);
 	if ( ! yy_is_jam )
 		*(yy_state_ptr)++ = yy_current_state;
@@ -2607,22 +2896,24 @@ static int yy_get_next_buffer (void)
 		return yy_is_jam ? 0 : yy_current_state;
 }
 
-    static void yyunput (int c, register char * yy_bp )
+#ifndef YY_NO_UNPUT
+
+    static void yyunput (int c, char * yy_bp )
 {
-	register char *yy_cp;
+	char *yy_cp;
     
     yy_cp = (yy_c_buf_p);
 
-	/* undo effects of setting up preprocessortext */
+	/* undo effects of setting up yytext */
 	*yy_cp = (yy_hold_char);
 
 	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
 		{ /* need to shift things up to make room */
 		/* +2 for EOB chars. */
-		register yy_size_t number_to_move = (yy_n_chars) + 2;
-		register char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
+		yy_size_t number_to_move = (yy_n_chars) + 2;
+		char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
 					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
-		register char *source =
+		char *source =
 				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
 
 		while ( source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
@@ -2631,7 +2922,7 @@ static int yy_get_next_buffer (void)
 		yy_cp += (int) (dest - source);
 		yy_bp += (int) (dest - source);
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars =
-			(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
+			(yy_n_chars) = (int) YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
 
 		if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
 			YY_FATAL_ERROR( "flex scanner push-back overflow" );
@@ -2639,10 +2930,16 @@ static int yy_get_next_buffer (void)
 
 	*--yy_cp = (char) c;
 
+    if ( c == '\n' ){
+        --yylineno;
+    }
+
 	(yytext_ptr) = yy_bp;
 	(yy_hold_char) = *yy_cp;
 	(yy_c_buf_p) = yy_cp;
 }
+
+#endif
 
 #ifndef YY_NO_INPUT
 #ifdef __cplusplus
@@ -2685,14 +2982,14 @@ static int yy_get_next_buffer (void)
 					 */
 
 					/* Reset buffer status. */
-					preprocessorrestart(preprocessorin );
+					yyrestart( yyin );
 
 					/*FALLTHROUGH*/
 
 				case EOB_ACT_END_OF_FILE:
 					{
-					if ( preprocessorwrap( ) )
-						return EOF;
+					if ( yywrap(  ) )
+						return 0;
 
 					if ( ! (yy_did_buffer_switch_on_eof) )
 						YY_NEW_FILE;
@@ -2711,10 +3008,14 @@ static int yy_get_next_buffer (void)
 		}
 
 	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
-	*(yy_c_buf_p) = '\0';	/* preserve preprocessortext */
+	*(yy_c_buf_p) = '\0';	/* preserve yytext */
 	(yy_hold_char) = *++(yy_c_buf_p);
 
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = (c == '\n');
+	if ( YY_CURRENT_BUFFER_LVALUE->yy_at_bol )
+		
+    yylineno++;
+;
 
 	return c;
 }
@@ -2725,32 +3026,32 @@ static int yy_get_next_buffer (void)
  * 
  * @note This function does not reset the start condition to @c INITIAL .
  */
-    void preprocessorrestart  (FILE * input_file )
+    void yyrestart  (FILE * input_file )
 {
     
 	if ( ! YY_CURRENT_BUFFER ){
-        preprocessorensure_buffer_stack ();
+        yyensure_buffer_stack ();
 		YY_CURRENT_BUFFER_LVALUE =
-            preprocessor_create_buffer(preprocessorin,YY_BUF_SIZE );
+            yy_create_buffer( yyin, YY_BUF_SIZE );
 	}
 
-	preprocessor_init_buffer(YY_CURRENT_BUFFER,input_file );
-	preprocessor_load_buffer_state( );
+	yy_init_buffer( YY_CURRENT_BUFFER, input_file );
+	yy_load_buffer_state(  );
 }
 
 /** Switch to a different input buffer.
  * @param new_buffer The new input buffer.
  * 
  */
-    void preprocessor_switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
+    void yy_switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
 {
     
 	/* TODO. We should be able to replace this entire function body
 	 * with
-	 *		preprocessorpop_buffer_state();
-	 *		preprocessorpush_buffer_state(new_buffer);
+	 *		yypop_buffer_state();
+	 *		yypush_buffer_state(new_buffer);
      */
-	preprocessorensure_buffer_stack ();
+	yyensure_buffer_stack ();
 	if ( YY_CURRENT_BUFFER == new_buffer )
 		return;
 
@@ -2763,21 +3064,21 @@ static int yy_get_next_buffer (void)
 		}
 
 	YY_CURRENT_BUFFER_LVALUE = new_buffer;
-	preprocessor_load_buffer_state( );
+	yy_load_buffer_state(  );
 
 	/* We don't actually know whether we did this switch during
-	 * EOF (preprocessorwrap()) processing, but the only time this flag
-	 * is looked at is after preprocessorwrap() is called, so it's safe
+	 * EOF (yywrap()) processing, but the only time this flag
+	 * is looked at is after yywrap() is called, so it's safe
 	 * to go ahead and always set it.
 	 */
 	(yy_did_buffer_switch_on_eof) = 1;
 }
 
-static void preprocessor_load_buffer_state  (void)
+static void yy_load_buffer_state  (void)
 {
     	(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
 	(yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
-	preprocessorin = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
+	yyin = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
 	(yy_hold_char) = *(yy_c_buf_p);
 }
 
@@ -2787,35 +3088,35 @@ static void preprocessor_load_buffer_state  (void)
  * 
  * @return the allocated buffer state.
  */
-    YY_BUFFER_STATE preprocessor_create_buffer  (FILE * file, int  size )
+    YY_BUFFER_STATE yy_create_buffer  (FILE * file, int  size )
 {
 	YY_BUFFER_STATE b;
     
-	b = (YY_BUFFER_STATE) preprocessoralloc(sizeof( struct yy_buffer_state )  );
+	b = (YY_BUFFER_STATE) yyalloc( sizeof( struct yy_buffer_state )  );
 	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in preprocessor_create_buffer()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
 	b->yy_buf_size = size;
 
 	/* yy_ch_buf has to be 2 characters longer than the size given because
 	 * we need to put in 2 end-of-buffer characters.
 	 */
-	b->yy_ch_buf = (char *) preprocessoralloc(b->yy_buf_size + 2  );
+	b->yy_ch_buf = (char *) yyalloc( (yy_size_t) (b->yy_buf_size + 2)  );
 	if ( ! b->yy_ch_buf )
-		YY_FATAL_ERROR( "out of dynamic memory in preprocessor_create_buffer()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
 	b->yy_is_our_buffer = 1;
 
-	preprocessor_init_buffer(b,file );
+	yy_init_buffer( b, file );
 
 	return b;
 }
 
 /** Destroy the buffer.
- * @param b a buffer created with preprocessor_create_buffer()
+ * @param b a buffer created with yy_create_buffer()
  * 
  */
-    void preprocessor_delete_buffer (YY_BUFFER_STATE  b )
+    void yy_delete_buffer (YY_BUFFER_STATE  b )
 {
     
 	if ( ! b )
@@ -2825,27 +3126,27 @@ static void preprocessor_load_buffer_state  (void)
 		YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
 
 	if ( b->yy_is_our_buffer )
-		preprocessorfree((void *) b->yy_ch_buf  );
+		yyfree( (void *) b->yy_ch_buf  );
 
-	preprocessorfree((void *) b  );
+	yyfree( (void *) b  );
 }
 
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
- * such as during a preprocessorrestart() or at EOF.
+ * such as during a yyrestart() or at EOF.
  */
-    static void preprocessor_init_buffer  (YY_BUFFER_STATE  b, FILE * file )
+    static void yy_init_buffer  (YY_BUFFER_STATE  b, FILE * file )
 
 {
 	int oerrno = errno;
     
-	preprocessor_flush_buffer(b );
+	yy_flush_buffer( b );
 
 	b->yy_input_file = file;
 	b->yy_fill_buffer = 1;
 
-    /* If b is the current buffer, then preprocessor_init_buffer was _probably_
-     * called from preprocessorrestart() or through yy_get_next_buffer.
+    /* If b is the current buffer, then yy_init_buffer was _probably_
+     * called from yyrestart() or through yy_get_next_buffer.
      * In that case, we don't want to reset the lineno or column.
      */
     if (b != YY_CURRENT_BUFFER){
@@ -2862,7 +3163,7 @@ static void preprocessor_load_buffer_state  (void)
  * @param b the buffer state to be flushed, usually @c YY_CURRENT_BUFFER.
  * 
  */
-    void preprocessor_flush_buffer (YY_BUFFER_STATE  b )
+    void yy_flush_buffer (YY_BUFFER_STATE  b )
 {
     	if ( ! b )
 		return;
@@ -2882,7 +3183,7 @@ static void preprocessor_load_buffer_state  (void)
 	b->yy_buffer_status = YY_BUFFER_NEW;
 
 	if ( b == YY_CURRENT_BUFFER )
-		preprocessor_load_buffer_state( );
+		yy_load_buffer_state(  );
 }
 
 /** Pushes the new state onto the stack. The new state becomes
@@ -2891,14 +3192,14 @@ static void preprocessor_load_buffer_state  (void)
  *  @param new_buffer The new state.
  *  
  */
-void preprocessorpush_buffer_state (YY_BUFFER_STATE new_buffer )
+void yypush_buffer_state (YY_BUFFER_STATE new_buffer )
 {
     	if (new_buffer == NULL)
 		return;
 
-	preprocessorensure_buffer_stack();
+	yyensure_buffer_stack();
 
-	/* This block is copied from preprocessor_switch_to_buffer. */
+	/* This block is copied from yy_switch_to_buffer. */
 	if ( YY_CURRENT_BUFFER )
 		{
 		/* Flush out information for old buffer. */
@@ -2912,8 +3213,8 @@ void preprocessorpush_buffer_state (YY_BUFFER_STATE new_buffer )
 		(yy_buffer_stack_top)++;
 	YY_CURRENT_BUFFER_LVALUE = new_buffer;
 
-	/* copied from preprocessor_switch_to_buffer. */
-	preprocessor_load_buffer_state( );
+	/* copied from yy_switch_to_buffer. */
+	yy_load_buffer_state(  );
 	(yy_did_buffer_switch_on_eof) = 1;
 }
 
@@ -2921,18 +3222,18 @@ void preprocessorpush_buffer_state (YY_BUFFER_STATE new_buffer )
  *  The next element becomes the new top.
  *  
  */
-void preprocessorpop_buffer_state (void)
+void yypop_buffer_state (void)
 {
     	if (!YY_CURRENT_BUFFER)
 		return;
 
-	preprocessor_delete_buffer(YY_CURRENT_BUFFER );
+	yy_delete_buffer(YY_CURRENT_BUFFER );
 	YY_CURRENT_BUFFER_LVALUE = NULL;
 	if ((yy_buffer_stack_top) > 0)
 		--(yy_buffer_stack_top);
 
 	if (YY_CURRENT_BUFFER) {
-		preprocessor_load_buffer_state( );
+		yy_load_buffer_state(  );
 		(yy_did_buffer_switch_on_eof) = 1;
 	}
 }
@@ -2940,7 +3241,7 @@ void preprocessorpop_buffer_state (void)
 /* Allocates the stack if it does not exist.
  *  Guarantees space for at least one push.
  */
-static void preprocessorensure_buffer_stack (void)
+static void yyensure_buffer_stack (void)
 {
 	yy_size_t num_to_alloc;
     
@@ -2950,15 +3251,15 @@ static void preprocessorensure_buffer_stack (void)
 		 * scanner will even need a stack. We use 2 instead of 1 to avoid an
 		 * immediate realloc on the next call.
          */
-		num_to_alloc = 1;
-		(yy_buffer_stack) = (struct yy_buffer_state**)preprocessoralloc
+      num_to_alloc = 1; /* After all that talk, this was set to 1 anyways... */
+		(yy_buffer_stack) = (struct yy_buffer_state**)yyalloc
 								(num_to_alloc * sizeof(struct yy_buffer_state*)
 								);
 		if ( ! (yy_buffer_stack) )
-			YY_FATAL_ERROR( "out of dynamic memory in preprocessorensure_buffer_stack()" );
-								  
+			YY_FATAL_ERROR( "out of dynamic memory in yyensure_buffer_stack()" );
+
 		memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
-				
+
 		(yy_buffer_stack_max) = num_to_alloc;
 		(yy_buffer_stack_top) = 0;
 		return;
@@ -2967,15 +3268,15 @@ static void preprocessorensure_buffer_stack (void)
 	if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1){
 
 		/* Increase the buffer to prepare for a possible push. */
-		int grow_size = 8 /* arbitrary grow size */;
+		yy_size_t grow_size = 8 /* arbitrary grow size */;
 
 		num_to_alloc = (yy_buffer_stack_max) + grow_size;
-		(yy_buffer_stack) = (struct yy_buffer_state**)preprocessorrealloc
+		(yy_buffer_stack) = (struct yy_buffer_state**)yyrealloc
 								((yy_buffer_stack),
 								num_to_alloc * sizeof(struct yy_buffer_state*)
 								);
 		if ( ! (yy_buffer_stack) )
-			YY_FATAL_ERROR( "out of dynamic memory in preprocessorensure_buffer_stack()" );
+			YY_FATAL_ERROR( "out of dynamic memory in yyensure_buffer_stack()" );
 
 		/* zero only the new slots.*/
 		memset((yy_buffer_stack) + (yy_buffer_stack_max), 0, grow_size * sizeof(struct yy_buffer_state*));
@@ -2987,9 +3288,9 @@ static void preprocessorensure_buffer_stack (void)
  * @param base the character buffer
  * @param size the size in bytes of the character buffer
  * 
- * @return the newly allocated buffer state object. 
+ * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE preprocessor_scan_buffer  (char * base, yy_size_t  size )
+YY_BUFFER_STATE yy_scan_buffer  (char * base, yy_size_t  size )
 {
 	YY_BUFFER_STATE b;
     
@@ -2997,69 +3298,69 @@ YY_BUFFER_STATE preprocessor_scan_buffer  (char * base, yy_size_t  size )
 	     base[size-2] != YY_END_OF_BUFFER_CHAR ||
 	     base[size-1] != YY_END_OF_BUFFER_CHAR )
 		/* They forgot to leave room for the EOB's. */
-		return 0;
+		return NULL;
 
-	b = (YY_BUFFER_STATE) preprocessoralloc(sizeof( struct yy_buffer_state )  );
+	b = (YY_BUFFER_STATE) yyalloc( sizeof( struct yy_buffer_state )  );
 	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in preprocessor_scan_buffer()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_scan_buffer()" );
 
-	b->yy_buf_size = size - 2;	/* "- 2" to take care of EOB's */
+	b->yy_buf_size = (int) (size - 2);	/* "- 2" to take care of EOB's */
 	b->yy_buf_pos = b->yy_ch_buf = base;
 	b->yy_is_our_buffer = 0;
-	b->yy_input_file = 0;
+	b->yy_input_file = NULL;
 	b->yy_n_chars = b->yy_buf_size;
 	b->yy_is_interactive = 0;
 	b->yy_at_bol = 1;
 	b->yy_fill_buffer = 0;
 	b->yy_buffer_status = YY_BUFFER_NEW;
 
-	preprocessor_switch_to_buffer(b  );
+	yy_switch_to_buffer( b  );
 
 	return b;
 }
 
-/** Setup the input buffer state to scan a string. The next call to preprocessorlex() will
+/** Setup the input buffer state to scan a string. The next call to yylex() will
  * scan from a @e copy of @a str.
  * @param yystr a NUL-terminated string to scan
  * 
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use
- *       preprocessor_scan_bytes() instead.
+ *       yy_scan_bytes() instead.
  */
-YY_BUFFER_STATE preprocessor_scan_string (yyconst char * yystr )
+YY_BUFFER_STATE yy_scan_string (const char * yystr )
 {
     
-	return preprocessor_scan_bytes(yystr,strlen(yystr) );
+	return yy_scan_bytes( yystr, (int) strlen(yystr) );
 }
 
-/** Setup the input buffer state to scan the given bytes. The next call to preprocessorlex() will
+/** Setup the input buffer state to scan the given bytes. The next call to yylex() will
  * scan from a @e copy of @a bytes.
  * @param yybytes the byte buffer to scan
  * @param _yybytes_len the number of bytes in the buffer pointed to by @a bytes.
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE preprocessor_scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_len )
+YY_BUFFER_STATE yy_scan_bytes  (const char * yybytes, yy_size_t  _yybytes_len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
 	yy_size_t n;
-	int i;
+	yy_size_t i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
-	n = _yybytes_len + 2;
-	buf = (char *) preprocessoralloc(n  );
+	n = (yy_size_t) (_yybytes_len + 2);
+	buf = (char *) yyalloc( n  );
 	if ( ! buf )
-		YY_FATAL_ERROR( "out of dynamic memory in preprocessor_scan_bytes()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_scan_bytes()" );
 
 	for ( i = 0; i < _yybytes_len; ++i )
 		buf[i] = yybytes[i];
 
 	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
 
-	b = preprocessor_scan_buffer(buf,n );
+	b = yy_scan_buffer( buf, n );
 	if ( ! b )
-		YY_FATAL_ERROR( "bad buffer in preprocessor_scan_bytes()" );
+		YY_FATAL_ERROR( "bad buffer in yy_scan_bytes()" );
 
 	/* It's okay to grow etc. this buffer, and we should throw it
 	 * away when we're done.
@@ -3073,9 +3374,9 @@ YY_BUFFER_STATE preprocessor_scan_bytes  (yyconst char * yybytes, yy_size_t  _yy
 #define YY_EXIT_FAILURE 2
 #endif
 
-static void yy_fatal_error (yyconst char* msg )
+static void yynoreturn yy_fatal_error (const char* msg )
 {
-    	(void) fprintf( stderr, "%s\n", msg );
+			fprintf( stderr, "%s\n", msg );
 	exit( YY_EXIT_FAILURE );
 }
 
@@ -3085,14 +3386,14 @@ static void yy_fatal_error (yyconst char* msg )
 #define yyless(n) \
 	do \
 		{ \
-		/* Undo effects of setting up preprocessortext. */ \
-        int yyless_macro_arg = (n); \
+		/* Undo effects of setting up yytext. */ \
+        yy_size_t yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
-		preprocessortext[preprocessorleng] = (yy_hold_char); \
-		(yy_c_buf_p) = preprocessortext + yyless_macro_arg; \
+		yytext[yyleng] = (yy_hold_char); \
+		(yy_c_buf_p) = yytext + yyless_macro_arg; \
 		(yy_hold_char) = *(yy_c_buf_p); \
 		*(yy_c_buf_p) = '\0'; \
-		preprocessorleng = yyless_macro_arg; \
+		yyleng = yyless_macro_arg; \
 		} \
 	while ( 0 )
 
@@ -3101,91 +3402,94 @@ static void yy_fatal_error (yyconst char* msg )
 /** Get the current line number.
  * 
  */
-int preprocessorget_lineno  (void)
+int yyget_lineno  (void)
 {
-        
-    return preprocessorlineno;
+    
+    return yylineno;
 }
 
 /** Get the input stream.
  * 
  */
-FILE *preprocessorget_in  (void)
+FILE *yyget_in  (void)
 {
-        return preprocessorin;
+        return yyin;
 }
 
 /** Get the output stream.
  * 
  */
-FILE *preprocessorget_out  (void)
+FILE *yyget_out  (void)
 {
-        return preprocessorout;
+        return yyout;
 }
 
 /** Get the length of the current token.
  * 
  */
-yy_size_t preprocessorget_leng  (void)
+yy_size_t yyget_leng  (void)
 {
-        return preprocessorleng;
+        return yyleng;
 }
 
 /** Get the current token.
  * 
  */
 
-char *preprocessorget_text  (void)
+char *yyget_text  (void)
 {
-        return preprocessortext;
+        return yytext;
 }
 
 /** Set the current line number.
- * @param line_number
+ * @param _line_number line number
  * 
  */
-void preprocessorset_lineno (int  line_number )
+void yyset_lineno (int  _line_number )
 {
     
-    preprocessorlineno = line_number;
+    yylineno = _line_number;
 }
 
 /** Set the input stream. This does not discard the current
  * input buffer.
- * @param in_str A readable stream.
+ * @param _in_str A readable stream.
  * 
- * @see preprocessor_switch_to_buffer
+ * @see yy_switch_to_buffer
  */
-void preprocessorset_in (FILE *  in_str )
+void yyset_in (FILE *  _in_str )
 {
-        preprocessorin = in_str ;
+        yyin = _in_str ;
 }
 
-void preprocessorset_out (FILE *  out_str )
+void yyset_out (FILE *  _out_str )
 {
-        preprocessorout = out_str ;
+        yyout = _out_str ;
 }
 
-int preprocessorget_debug  (void)
+int yyget_debug  (void)
 {
-        return preprocessor_flex_debug;
+        return yy_flex_debug;
 }
 
-void preprocessorset_debug (int  bdebug )
+void yyset_debug (int  _bdebug )
 {
-        preprocessor_flex_debug = bdebug ;
+        yy_flex_debug = _bdebug ;
 }
 
 static int yy_init_globals (void)
 {
         /* Initialization is the same as for the non-reentrant scanner.
-     * This function is called from preprocessorlex_destroy(), so don't allocate here.
+     * This function is called from yylex_destroy(), so don't allocate here.
      */
 
-    (yy_buffer_stack) = 0;
+    /* We do not touch yylineno unless the option is enabled. */
+    yylineno =  1;
+    
+    (yy_buffer_stack) = NULL;
     (yy_buffer_stack_top) = 0;
     (yy_buffer_stack_max) = 0;
-    (yy_c_buf_p) = (char *) 0;
+    (yy_c_buf_p) = NULL;
     (yy_init) = 0;
     (yy_start) = 0;
 
@@ -3196,39 +3500,39 @@ static int yy_init_globals (void)
 
 /* Defined in main.c */
 #ifdef YY_STDINIT
-    preprocessorin = stdin;
-    preprocessorout = stdout;
+    yyin = stdin;
+    yyout = stdout;
 #else
-    preprocessorin = (FILE *) 0;
-    preprocessorout = (FILE *) 0;
+    yyin = NULL;
+    yyout = NULL;
 #endif
 
     /* For future reference: Set errno on error, since we are called by
-     * preprocessorlex_init()
+     * yylex_init()
      */
     return 0;
 }
 
-/* preprocessorlex_destroy is for both reentrant and non-reentrant scanners. */
-int preprocessorlex_destroy  (void)
+/* yylex_destroy is for both reentrant and non-reentrant scanners. */
+int yylex_destroy  (void)
 {
     
     /* Pop the buffer stack, destroying each element. */
 	while(YY_CURRENT_BUFFER){
-		preprocessor_delete_buffer(YY_CURRENT_BUFFER  );
+		yy_delete_buffer( YY_CURRENT_BUFFER  );
 		YY_CURRENT_BUFFER_LVALUE = NULL;
-		preprocessorpop_buffer_state();
+		yypop_buffer_state();
 	}
 
 	/* Destroy the stack itself. */
-	preprocessorfree((yy_buffer_stack) );
+	yyfree((yy_buffer_stack) );
 	(yy_buffer_stack) = NULL;
 
-    preprocessorfree ( (yy_state_buf) );
+    yyfree ( (yy_state_buf) );
     (yy_state_buf)  = NULL;
 
     /* Reset the globals. This is important in a non-reentrant scanner so the next time
-     * preprocessorlex() is called, initialization will occur. */
+     * yylex() is called, initialization will occur. */
     yy_init_globals( );
 
     return 0;
@@ -3239,18 +3543,19 @@ int preprocessorlex_destroy  (void)
  */
 
 #ifndef yytext_ptr
-static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
+static void yy_flex_strncpy (char* s1, const char * s2, int n )
 {
-	register int i;
+		
+	int i;
 	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
 }
 #endif
 
 #ifdef YY_NEED_STRLEN
-static int yy_flex_strlen (yyconst char * s )
+static int yy_flex_strlen (const char * s )
 {
-	register int n;
+	int n;
 	for ( n = 0; s[n]; ++n )
 		;
 
@@ -3258,13 +3563,14 @@ static int yy_flex_strlen (yyconst char * s )
 }
 #endif
 
-void *preprocessoralloc (yy_size_t  size )
+void *yyalloc (yy_size_t  size )
 {
-	return (void *) malloc( size );
+			return malloc(size);
 }
 
-void *preprocessorrealloc  (void * ptr, yy_size_t  size )
+void *yyrealloc  (void * ptr, yy_size_t  size )
 {
+		
 	/* The cast to (char *) in the following accommodates both
 	 * implementations that use char* generic pointers, and those
 	 * that use void* generic pointers.  It works with the latter
@@ -3272,19 +3578,18 @@ void *preprocessorrealloc  (void * ptr, yy_size_t  size )
 	 * any pointer type to void*, and deal with argument conversions
 	 * as though doing an assignment.
 	 */
-	return (void *) realloc( (char *) ptr, size );
+	return realloc(ptr, size);
 }
 
-void preprocessorfree (void * ptr )
+void yyfree (void * ptr )
 {
-	free( (char *) ptr );	/* see preprocessorrealloc() for (char *) cast */
+			free( (char *) ptr );	/* see yyrealloc() for (char *) cast */
 }
 
 #define YYTABLES_NAME "yytables"
 
-#line 883 "preprocessorLex.l"
+#line 884 "preprocessorLex.l"
 
-
-int preprocessorwrap (void) {return 1;}
+int yywrap (void) {return 1;}
 
 

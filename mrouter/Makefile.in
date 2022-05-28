@@ -62,7 +62,7 @@ clean:
 distclean:
 	-@rm -rf lef def autom4te.cache config.cache config.status config.log \
   Makefile
-	-@rm -f mrouter-`./version`.tar.gz
+	-@rm -f mrouter-`./release.sh`.tar.gz
 	-@cd mrouter; $(MAKE) $@
 	-@cd examples; $(MAKE) $@
 	-@cd packages; $(MAKE) $@
@@ -87,10 +87,8 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/mrouter
 toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install: install_test install_clean install_bin \
+install: install_test uninstall_clean install_bin \
   install_lib install_help install_include install_doc install_examples
-
-uninstall: install_test install_clean
 
 install_bin:            $(toolbin)
 install_lib:            $(destn)/lib
@@ -106,10 +104,6 @@ install_test::
 	        exit 1; \
 	    fi; \
 	fi
-
-install_clean::
-	-@rm -rf $(destn)
-	-@rm -f $(toolbin)/mrouter$(EXESUFFIX)
 
 $(toolbin)::
 	@$(BASE)/util/mkdirpth $(toolbin)
@@ -132,8 +126,8 @@ $(destn)/include::
 
 $(destn)/doc::
 	@$(BASE)/util/mkdirpth $(destn)/doc
-#	$(INSTALL_LIB_RO) doc/mrmanual-`./version`.pdf  $@
-#	$(INSTALL_LIB_RO) doc/mrmanual-html-`./version`.tar.gz $@
+#	$(INSTALL_LIB_RO) doc/mrmanual-`./release.sh`.pdf  $@
+#	$(INSTALL_LIB_RO) doc/mrmanual-html-`./release.sh`.tar.gz $@
 #	$(INSTALL_LIB_RO) doc/Makefile                  $@
 #	$(INSTALL_LIB_RO) doc/mrman1.tex                $@
 #	$(INSTALL_LIB_RO) doc/mrman2.tex                $@
@@ -164,6 +158,20 @@ $(destn)/examples::
 	$(INSTALL_LIB) examples/xic/stdvia.scr          $@/xic
 	$(INSTALL_LIB) examples/xic/stdvias             $@/xic
 	$(INSTALL_LIB) examples/xic/xic_tech            $@/xic
+
+uninstall: uninstall_test uninstall_clean
+
+uninstall_test::
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	echo "No!  Use operating system or wr_uninstall script  to uninstall!"; \
+	        exit 1; \
+	    fi; \
+	fi
+
+uninstall_clean::
+	-@rm -rf $(destn)
+	-@rm -f $(toolbin)/mrouter$(EXESUFFIX)
 
 package::
 	$(MAKE) all

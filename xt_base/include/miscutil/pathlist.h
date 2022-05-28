@@ -76,7 +76,7 @@ namespace pathlist {
     char *get_user_name(bool);
         // Return user's name.
 
-    char *get_home(const char* = 0);
+    char *get_home();
         // Return user's home directory.
 
     char *get_bin_path(const char* = 0);

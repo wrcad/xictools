@@ -170,7 +170,7 @@ Chained Sweep Analysis
 !!SEEALSO
 analyses
 
-!! format.tex 060219
+!! format.tex 051422
 !!KEYWORD
 .ac
 !!TITLE
@@ -258,15 +258,13 @@ AC Small-Signal Analysis
     In interactive mode, the <a href="ac">ac</a> command, which takes
     the same arguments as the <tt>.ac</tt> line, can be used to
     initiate ac analysis.
- 
-    <p>
-    AC analysis is not available if Josephson junctions are included
-    in the circuit.
 
 !!SEEALSO
 analyses
 
-!! format.tex 120115
+!!REDIRECT phasemode .dc#phasemode
+
+!! format.tex 051422
 !!KEYWORD
 .dc
 !!TITLE
@@ -373,16 +371,123 @@ DC Analysis
     multi-threading so that if multiple CPUs are available, work can
     be done in parallel, saving time.
 
+    <a name="phasemode"></a>
+    <h2>Phase-Mode DC Analysis</h2>
+
+!! format.tex 051422
+
+    The <a href="jjdesc">Josephson junction</a> device has unique
+    behavior which complicates simulation with a SPICE-type simulator. 
+    Central is the idea of phase, which is a quantum-mechanical
+    concept and is generally invisible in the non-quantum world. 
+    However with superconductivity, and with Josephson junctions in
+    particular, phase becomes not only observable, but a critical
+    parameter describing these devices and the circuits that contain
+    them.
+
     <p>
-    If Josephson junctions are present in the circuit, they will be
-    taken as shorted (actually, a resistance of 1uV/Ic) during DC
-    analysis.  It is in general not possible to perform this type of
-    analysis on Josephson junctions.  The approach taken here may be
-    useful when working with hybrid semiconductor/superconductor
-    circuits, but in no case should one expect DC analysis of
-    Josephson circuits to "work".  Transient analysis, which takes into
-    account the past history of the Josephson excitation, is required
-    for a complete simulation.
+    A general superconducting circuit contains loops of inductors and
+    Josephson junctions.  When quiescent, the voltage at all nodes of
+    such a circuit is identically zero, and thus it would seem to be
+    impossible to use a SPICE-type simulator to perform DC analysis on
+    this type of circuit.  However, by using phase, which is nonzero
+    at each node, instead of voltage, one can perform DC analysis,
+    using "phase-mode DC".
+
+    <p>
+    <i>WRspice</i> after release 4.3.3 offers a DC analysis capability
+    which uses phase-mode for circuits containing Josephson
+    junctions.  Unlike strictly phase-mode simulators, <i>WRspice</i>
+    allows a mixture of phase (inductors and Josephson junctions) and
+    voltage mode components.
+
+    <p>
+    Within <i>WRspice</i>, every node connected to a Josephson
+    junction, inductor, or lossless transmission line (treated as an
+    inductor in DC analysis) has a "Phase" flag set.  This indicates
+    that the computed value is phase, not voltage, for these nodes. 
+    We have to special-case the matrix loading functions for
+    inductors, mutual inductors, lossless transmission lines, and
+    resistors.  Other devices are treated normally.
+
+    <p>
+    A Josephson junction can be modeled by the basic formula
+
+    <blockquote>
+    I = I<sub>c</sub>sin(V(i,j))
+    </blockquote>
+
+    where V(i,j) is the "voltage" difference between nodes i and j
+    (across the junction) which is actually the phase.  Inductors look
+    like resistors:
+
+    <blockquote>
+    I = &Phi;<sub>0</sub>(V(i,j)/2&pi;L)
+    </blockquote>
+
+    Where V(i,j) is the phase difference across the inductor. Mutual
+    inductance adds similar cross terms.
+
+    <p>
+    Capacitors are completely ignored as in normal DC analysis.  The
+    treatment of resistors is slightly complicated.  The connected
+    nodes can be "Ground", "Phase", or "Voltage" type.  If both nodes
+    are Voltage or Ground, the resistor is loaded normally.  If both
+    nodes are Phase or Ground, the resistor is not loaded at all.  The
+    interresting case is when one node is Phase, the other Voltage. 
+    In this case, we load the resistor as if the phase node is
+    actually ground (node number 0).  In addition we load a
+    voltage-controlled current source template that injects current
+    into the phase node of value V(voltage_node)/Resistance.
+
+    <p>
+    Resistors are the bridge between normal voltage-mode devices and
+    phase nodes.  Some circuits may require introduction of resistors
+    to get correct results.  For example, assume a Josephson junction
+    logic gate driving a CMOS comparator circuit.  If the input MOS
+    gate is connected directly to the junction, the DC operating point
+    will be incorrect, as the comparator will see phase as input. 
+    However, if a resistor separates the MOS gate from the junction,
+    the comparator input will be zero, as it should be.
+
+    <p>
+    There is (at present) a topological requirement that all phase
+    nodes must be at ground potential.  This means that for a network
+    of Josephson junctions and inductors, there must be a ground
+    connection to one of these devices.  A nonzero voltage source
+    connected to an inductor, which is connected to a resistor to
+    ground, although a perfectly valid circuit, will fail.  One must
+    use the equivalent consisting of the voltage source connected to a
+    resistor, connected to the inductor which is grounded.  This
+    satisfies the two topological requirements:
+
+    <dl>
+    <dt>Rule 1<dd>
+    There must be a resistor between a voltage-mode device and a
+    phase-mode device, no direct connections are allowed.
+    </dl>
+    <dl>
+    <dt>Rule 2<dd>
+    Every phase-node subnet must have a connection to ground, so all
+    phase nodes are at ground potential.
+    </dl>
+
+    <p>
+    With this bit of information, and the warning that controlled
+    sources can cause unexpected behavior, the DC analysis using this
+    technique can apply to general circuits containing Josephson
+    junctions.
+
+    <p>
+    Of course, for this to work, no Josephson junction can be biased
+    above its critical current or nonconvergence results.  Both DC
+    operating point and DC sweep are available, as is AC analysis. 
+    Noise analysis is available with the internal Josephson junction
+    model.  This new hybrid technique appears to be an important
+    advance, which should avoid the long-standing need to use
+    "<tt>uic</tt>" and ramp sources up from zero, and makes available
+    DC sweep analysis, and for the first time in any simulator AC
+    small-signal analysis.
 
 !!SEEALSO
 analyses
@@ -660,7 +765,7 @@ Small-Signal Noise Analysis
 !!SEEALSO
 analyses
 
-!! format.tex 021212
+!! format.tex 051422
 !!KEYWORD
 .op
 !!TITLE
@@ -704,25 +809,16 @@ Operating Point
     will keep the solution finite (but huge).
 
     <p>
-    If Josephson junctions are present in the circuit, they will be
-    taken as shorted (actually, a resistance of 1uV/Ic) during
-    operating point analysis.  It is in general not possible to
-    perform this type of analysis on Josephson junctions.  The
-    approach taken here may be useful when working with hybrid
-    semiconductor/superconductor circuits, but in no case should one
-    expect operating point analysis of Josephson circuits to "work". 
-    Transient analysis, which takes into account the past history of
-    the Josephson excitation, is required for a complete simulation.
-
-    <p>
-    When computing the initial operating point for transient analysis,
-    after the operating point is calculated with Josephson junctions
-    shorted, the Josephson junctions will be given any specified
-    initial voltage and phase (or these will be reset to exactly zero
-    with no initial conditions given).  Thus, the Josephson junctions
-    are always "<tt>uic</tt>", but the circuit is not in <tt>uic</tt>
-    mode unless <tt>uic</tt> is actually given in the transient
-    analysis command.
+    If Josephson junctions are present in the circuit, <a
+    href="phasemode">phase-mode DC</a> analysis is used to compute the
+    DC operating point.  Historically, <a href=".tran">transient
+    analysis</a> with Josephson junctions was performed using the
+    <tt>uic</tt> option since it was not previously possible to
+    perform a true DC analysis with Josephson junctions present.  The
+    phase-mode DC feature in <i>WRspice</i> avoids the need to use
+    <tt>uic</tt> in most circuits, however some circuits may still
+    require it, for example if the circuit is not quiescent with its
+    initial DC bias.
 
     <p>
     In operating point analysis, any <a
@@ -1008,7 +1104,7 @@ Pole-Zero Analysis
 !!SEEALSO
 analyses
  
-!! format.tex 060219
+!! format.tex 051422
 !!KEYWORD
 .sens
 !!TITLE
@@ -1053,15 +1149,11 @@ DC or Small-Signal AC Sensitivity Analysis
     In interactive mode, the <a href="sens"><b>sens</b></a> command,
     which takes the same arguments as the <tt>.sens</tt> line, can be
     used to initiate sensitivity analysis.
- 
-    <p>
-    Sensitivity analysis is not available if Josephson junctions are
-    included in the circuit.
 
 !!SEEALSO
 analyses
 
-!! format.tex 060219
+!! format.tex 051422
 !!KEYWORD
 .tf
 !!TITLE
@@ -1112,14 +1204,10 @@ DC or Small-Signal AC Transfer Function Analysis
     takes the same arguments as the <tt>.tf</tt> line, can be used to
     initiate transfer function analysis.
  
-    <p>
-    Transfer function analysis is not available if Josephson junctions
-    are included in the circuit.
-
 !!SEEALSO
 analyses
 
-!! format.tex 060219
+!! format.tex 051422
 !!KEYWORD
 .tran
 !!TITLE
@@ -1225,62 +1313,6 @@ Transient Analysis
     line are used to compute the initial conditions for the devices. 
     See the description of the <tt>.ic</tt> line for its
     interpretation when <tt>uic</tt> is not specified.
-
-    <p>
-    If Josephson junctions are present in the circuit, if <tt>uic</tt>
-    is not given, the operating point is computed taking the Josephson
-    junctions as shorted (actually, a resistance of 1uV/Ic).  After
-    this, the Josephson junctions will be given any specified initial
-    voltage and phase (or these will be reset to exactly zero with no
-    initial conditions given).  Thus, the Josephson junctions are
-    always "<tt>uic</tt>", but the circuit is not in <tt>uic</tt> mode
-    unless <tt>uic</tt> is actually given in the transient analysis
-    command.
-
-    <p>
-    In addition, with Josephson junctions present the value of current
-    flowing through all inductors in the circuit is reset to zero
-    before transient analysis and after the operating point is
-    calculated.  This is required to enforce the flux and Josephson
-    phase relationship around loops of Josephson junctions and
-    inductors.  The algorithm requires that both phase and flux start
-    at zero, and evolve according to the forces applied by the rest of
-    the circuit.
-
-    <p>
-    In 3.2.11 and earlier releases, the presence of Josephson
-    junctions would automatically cause simulation in <tt>uic</tt>
-    mode.  as if "<tt>uic</tt>" was included in the <tt>tran</tt>
-    command.  In releases after 3.2.11, the presence of Josephson
-    junctions does not automatically specify <tt>uic</tt> mode. 
-    Instead, as with simulations without Josephson junctions, a dc
-    operating point calculation is performed to obtain the initial
-    node voltages, which are used as the starting point for transient
-    analysis.  If Josephson junctions are present, the calculated
-    inductor currents are zeroed before transient analysis starts,
-    which is a technical requirement for maintaining the flux/phase
-    relationship in JJ/inductor loops.
-
-    <p>
-    If a circuit containing Josephson junctions has all sources with a
-    time=0 value of zero, then it is possible to give <tt>uic</tt>
-    explicitly in the <tt>tran</tt> command line.  This will avoid the
-    dc operating point analysis, and therefor perhaps simulate
-    slightly faster.
-
-    <p>
-    If a circuit has sources that have nonzero time=0 values, it is
-    not recommended to give <tt>uic</tt>, though it will typically
-    work.  Effectively, there is a large initial transient, which may
-    initialize multi-valued Josephson circuits into an unexpected
-    mode, or produce other undesirable effects.
-
-    <p>
-    The advantage of the present non-uic approach when simulating with
-    Josephson junctions is that it facilitates simulating hybrid
-    semiconductor/superconductor circuits.  In this case, a dc
-    operating point calculation is generally needed to initialize the
-    semiconductor circuitry.
 
     <p>
     The <tt>scroll</tt> keyword is useful in the <a

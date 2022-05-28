@@ -10,6 +10,13 @@ login=stevew
 export=/home/$login/export/xictools
 # Build area.
 xictools=/home/$login/src/xt
+# SSH command, note alternate port.
+sshcmd="ssh -p 2222"
+
+force=""
+if [ -n $1 -a $1 = -f ]; then
+    force="-f";
+fi
 
 sshc=$SSH_CONNECTION
 if [ -z "$sshc" ]; then
@@ -28,7 +35,7 @@ files="exported.new"
 for f in $files; do
     rm -f $f
     echo uploading $f
-    rsync --rsh=ssh $login@$home:$export/$f .
+    rsync --rsh="$sshcmd" $login@$home:$export/$f .
     if [ ! -f $f ]; then
         echo "Error: failed to upload \'$f\' script, can't continue."
         exit 1
@@ -51,7 +58,7 @@ for prog in $progs; do
     echo -n "Update $prog ? "
     read xy
     if [ x${xy:0:1} = xy ]; then
-        ./update -y $prog
+        ./update -y $force $prog
         if [ $prog = xic ]; then
             ./update_help xic
             vers=$(./exported.new version $prog)

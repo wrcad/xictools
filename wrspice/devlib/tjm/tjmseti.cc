@@ -56,31 +56,13 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
 #ifdef NEWLSH
         &&L_TJM_LSH, 
 #endif
+        &&L_TJM_TEMP_K,
+        &&L_TJM_DTEMP,
         &&L_TJM_OFF,
         &&L_TJM_IC,
         &&L_TJM_ICP,
         &&L_TJM_ICV,
         &&L_TJM_NOISE};
-
-        // &&L_TJM_QUEST_V,
-        // &&L_TJM_QUEST_PHS,
-        // &&L_TJM_QUEST_PHSN,
-        // &&L_TJM_QUEST_PHSF,
-        // &&L_TJM_QUEST_PHST,
-        // &&L_TJM_QUEST_CRT,
-        // &&L_TJM_QUEST_IC,
-        // &&L_TJM_QUEST_IJ,
-        // &&L_TJM_QUEST_IG,
-        // &&L_TJM_QUEST_I,
-        // &&L_TJM_QUEST_CAP,
-        // &&L_TJM_QUEST_G0,
-        // &&L_TJM_QUEST_GN,
-        // &&L_TJM_QUEST_GS,
-        // &&L_TJM_QUEST_G1,
-        // &&L_TJM_QUEST_G2,
-        // &&L_TJM_QUEST_N1,
-        // &&L_TJM_QUEST_N2,
-        // &&L_TJM_QUEST_NP};
 
     if ((unsigned int)param > TJM_NOISE)
         return (E_BADPARM);
@@ -114,6 +96,14 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->TJMlshGiven = true;
         return (OK);
 #endif
+    L_TJM_TEMP_K:
+        inst->TJMtemp = value->rValue;
+        inst->TJMtempGiven = true;
+        return (OK);
+    L_TJM_DTEMP:
+        inst->TJMdtemp = value->rValue;
+        inst->TJMdtempGiven = true;
+        return (OK);
     L_TJM_OFF:
         inst->TJMoffGiven = true;
         return (OK);
@@ -167,6 +157,14 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->TJMlshGiven = true;
         break;
 #endif
+    case TJM_TEMP_K:
+        inst->TJMtemp = value->rValue;
+        inst->TJMtempGiven = true;
+        break;
+    case L_TJM_DTEMP:
+        inst->TJMdtemp = value->rValue;
+        inst->TJMdtempGiven = true;
+        break;
     case TJM_OFF:
         inst->TJMoffGiven = true;
         break;
@@ -203,3 +201,4 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
 #endif
     return (OK);
 }
+

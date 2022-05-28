@@ -190,7 +190,7 @@ help
     <a href="usingxic">Using <i>Xic</i></a><br>
     <a href="xic:cmdline">Command Line Options</a><br>
     <a href="xic:env">Environment Variables</a><br>
-    <a href="xic:paths"><i>Xic</i> Search Paths</a><br>
+    <a href="xicpaths"><i>Xic</i> Search Paths</a><br>
     <a href="initfiles">Initialization Files</a><br>
     <a href="logfiles">Log Files and Error Reporting</a><br>
     <a href="fileorg">Cell Organization and Libraries</a><br>

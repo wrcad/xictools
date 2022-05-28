@@ -579,13 +579,13 @@ FIOaliasTab::dump_alias(const char *filename)
         return;
     }
 
-    tgen_t<bd_t> gen(at_alias_tab->bd_tab);
-    bd_t *e;
-    while ((e = gen.next()) != 0) {
-        if (output())
-            fprintf(fp, "%-33s %s\n", e->alias, e->name);
-        else
-            fprintf(fp, "%-33s %s\n", e->name, e->alias);
+    for (unsigned int i = 0; i <= at_alias_tab->bd_tab->hashmask; i++) {
+        for (bd_t *e = at_alias_tab->bd_tab->tab[i]; e; e = e->n_next) {
+            if (output())
+                fprintf(fp, "%-33s %s\n", e->alias, e->name);
+            else
+                fprintf(fp, "%-33s %s\n", e->name, e->alias);
+        }
     }
 
     fclose(fp);
@@ -734,7 +734,7 @@ const char *
 bdtable_t::find_name(const char *alias)
 {
     unsigned int i = string_hash(alias, hashmask) + hashmask + 1;
-    for (bd_t *e = tab[i]; e; e = e->n_next) {
+    for (bd_t *e = tab[i]; e; e = e->a_next) {
         if (str_compare(alias, e->alias))
             return (e->name);
     }
@@ -751,10 +751,17 @@ bdtable_t::add(const char *name, const char *alias, eltab_t<bd_t> *fct)
     bd_t *e = fct->new_element();
     e->name = name;
     e->alias = alias;
-    unsigned int i = string_hash(name, hashmask);
+    add(e);
+}
+
+
+void
+bdtable_t::add(bd_t *e)
+{
+    unsigned int i = string_hash(e->name, hashmask);
     e->n_next = tab[i];
     tab[i] = e;
-    i = string_hash(alias, hashmask) + hashmask + 1;
+    i = string_hash(e->alias, hashmask) + hashmask + 1;
     e->a_next = tab[i];
     tab[i] = e;
     count++;
@@ -801,30 +808,21 @@ bdtable_t::check_rehash()
 
     unsigned int newmask = (hashmask << 1) | 1;
     bdtable_t *st =
-        (bdtable_t*)new char[sizeof(bdtable_t) + 2*newmask*sizeof(bd_t*)];
-    st->count = count;
+        (bdtable_t*)malloc(sizeof(bdtable_t) + 2*newmask*sizeof(bd_t*));
+    st->count = 0;
     st->hashmask = newmask;
-    for (unsigned int i = 0; i <= 2*newmask; i++)
-        st->tab[i] = 0;
+    memset(st->tab, 0, 2*(newmask+1)*sizeof(bd_t*));
+
     for (unsigned int i = 0;  i <= hashmask; i++) {
         bd_t *en;
         for (bd_t *e = tab[i]; e; e = en) {
             en = e->n_next;
-            unsigned int j = string_hash(e->name, newmask);
-            e->n_next = st->tab[j];
-            st->tab[j] = e;
+            e->n_next = 0;
+            e->a_next = 0;
+            st->add(e);
         }
         tab[i] = 0;
-    }
-    for (unsigned int i = hashmask + 1;  i <= 2*hashmask; i++) {
-        bd_t *en;
-        for (bd_t *e = tab[i]; e; e = en) {
-            en = e->n_next;
-            unsigned int j = string_hash(e->name, newmask) + newmask + 1;
-            e->a_next = st->tab[j];
-            st->tab[j] = e;
-        }
-        tab[i] = 0;
+        tab[i + hashmask + 1] = 0;
     }
 
     delete this;

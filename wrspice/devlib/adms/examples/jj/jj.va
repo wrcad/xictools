@@ -51,6 +51,11 @@
 
 // Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
+// Version 1.39, January 18, 2022 added block name "tempblk" to
+//   avoid compiler fatal error with some compilers (eg. pVA) due to
+//   the presence of locally named parameters.
+// Version 1.38, July 30, 2021 added a term to temperature
+//   correction of critical current.
 // Version 1.37, July 26, 2020 the NOIDT is now on by default,
 //   as it seems to lower iteration count with WRspice and reduce
 //   simulation time.
@@ -270,6 +275,8 @@
 
 // Phi0/2pi = hbar over 2 e.
 `define PHI0_2PI    3.29105978475453e-16
+`define BOLTZ       1.3806226e-23
+`define ECHG        1.602176634e-19
 
 module jj (n1, n2, ph);
 
@@ -518,9 +525,21 @@ analog begin
 `endif
 
         // Temperature correction
-        tcf = tanh(tcfct*sqrt(tc/(temp_k+1e-3) - 1))/
-            tanh(tcfct*sqrt(tc/(tnom+1e-3)-1));
-        vgap_t = vgap*tcf;
+        if (temp_k != tnom)
+            begin : tempblk
+            real tmp, tmp2;
+            tcf = tanh(tcfct*sqrt(tc/(temp_k + 1e-4) - 1))/
+                tanh(tcfct*sqrt(tc/(tnom + 1e-4) - 1));
+            vgap_t = vgap*tcf;
+            tmp = `ECHG*vgap_t/(4.0*`BOLTZ*(temp_k + 1e-4));
+            tmp2 = `ECHG*vgap/(4.0*`BOLTZ*(tnom + 1e-4));
+            tcf = tcf*(tanh(tmp)/tanh(tmp2));
+            end
+        else
+            begin
+            tcf = 1.0;
+            vgap_t = vgap;
+            end
 
         phase = 0.0;
         if (ics != icrit)

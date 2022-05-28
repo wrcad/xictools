@@ -239,6 +239,17 @@ SPinput::parseMod(sLine *curline)
     bool gotlev = false;
     for (int i = 0; i < DEV.numdevs(); i++) {
         IFdevice *dev = DEV.device(i);
+
+        // First look for model names matches.  The ADMS script makes
+        // the following assignments:
+        // key  mod names
+        //  b    jj
+        //  j    njf,pjf
+        //  m    nmos,pmos
+        //  q    npn,pnp
+        //  z    nmf,pmf
+        //  x    x  (x= any char not one of above)
+
         if (dev && dev->modkeyMatch(token)) {
             if (!gotlev) {
                 if (!findLev(line, &lev, dev->isMOS())) {
@@ -281,32 +292,55 @@ SPinput::parseMod(sLine *curline)
                 return;
             }
         }
+    }
+
+    // No model names match.  Try to match to the module name, which is
+    // given only in ADMS modules.
+
+    for (int i = 0; i < DEV.numdevs(); i++) {
+        IFdevice *dev = DEV.device(i);
         if (dev && dev->moduleNameMatch(token)) {
-            // Match to the module name, ignore level.
+            if (!gotlev) {
+                if (!findLev(line, &lev, dev->isMOS())) {
+                    logError(curline,
+                    "Illegal argument to level parameter - level=1 assumed");
+                }
+                gotlev = true;
+            }
 
-            char *lcname = lstring::copy(modname);
-            lstring::strtolower(lcname);
+            if (dev->levelMatch(lev)) {
+                // The hash key is always lower case, model name
+                // resolution is case insensitive.
 
-            if (!ip_modtab)
-                ip_modtab = new sModTab;
-            else if (sHtab::get(ip_modtab, lcname)) {
-                // Uh-oh, a model with this name has already been seen.
-                logError(curline,
-                    ".model %s duplicate definition (ignored)", modname);
-                curline->comment_out();
+                if (lev > 1 && !dev->level(0)) {
+                    logError(curline,
+                        "Given level value ignored in this model");
+                }
 
+                char *lcname = lstring::copy(modname);
+                lstring::strtolower(lcname);
+
+                if (!ip_modtab)
+                    ip_modtab = new sModTab;
+                else if (sHtab::get(ip_modtab, lcname)) {
+                    // Uh-oh, a model with this name has already been seen.
+                    logError(curline,
+                        ".model %s duplicate definition (ignored)", modname);
+                    curline->comment_out();
+
+                    delete [] lcname;
+                    delete [] modname;
+                    delete [] token;
+                    return;
+                }
+
+                ip_modtab->add(lcname, new sINPmodel(lstring::copy(modname), i,
+                    lstring::copy(curline->line())));
                 delete [] lcname;
                 delete [] modname;
                 delete [] token;
                 return;
             }
-
-            ip_modtab->add(lcname, new sINPmodel(lstring::copy(modname), i,
-                lstring::copy(curline->line())));
-            delete [] lcname;
-            delete [] modname;
-            delete [] token;
-            return;
         }
     }
 

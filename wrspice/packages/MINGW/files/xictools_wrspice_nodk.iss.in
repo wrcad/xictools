@@ -51,7 +51,8 @@ Source: "..\root\usr\local\xictools\wrspice.current\docs\MSWINFO.TXT"; DestDir: 
 
 [Icons]
 
-Name: "{group}\wrspice"; Filename: "{app}\xictools\wrspice.current\bin\wrspice.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\wrspice.current\bin\wrspice.exe"
+# bat file is no longer needed or included.
+#Name: "{group}\wrspice"; Filename: "{app}\xictools\wrspice.current\bin\wrspice.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\wrspice.current\bin\wrspice.exe"
 
 [code]
 

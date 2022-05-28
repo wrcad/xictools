@@ -4,7 +4,7 @@
 # $mathend_mark = ""; 
 
 manual::
-	@sed -e "s/@RELEASE@/`../version xic`/" \
+	@sed -e "s/@RELEASE@/`../release.sh xic`/" \
   -e "s/@DATE@/`date +'%B %-d, %Y'`/" < xicmanual.sed > xicmanual.tex
 	latex xicmanual.tex
 	-@rm -f xicmanual.tex
@@ -13,7 +13,7 @@ index::
 	makeindex xicmanual.idx
 
 html::
-	@sed -e "s/@RELEASE@/`../version xic`/" \
+	@sed -e "s/@RELEASE@/`../release.sh xic`/" \
   -e "s/@DATE@/`date +'%B %-d, %Y'`/" < xicmanual.sed > xicmanual.tex
 	latex2html -image_type png -local_icons -no_math -html_version \
  3.2,math xicmanual
@@ -23,16 +23,16 @@ html::
 	    sed -e "s/0*This page intentionally left blank.//" < zzztmp > $$a; \
 	    unlink zzztmp; \
 	done
-	@tar czf xicmanual-html-`../version xic`.tar.gz xicmanual
+	@tar czf xicmanual-html-`../release.sh xic`.tar.gz xicmanual
 	-@rm -f xicmanual.tex
 
 ps::
-	dvips -o xicmanual-`../version xic`.ps xicmanual.dvi
-	-@rm -f xicmanual-`../version xic`.ps.gz
-	gzip xicmanual-`../version xic`.ps
+	dvips -o xicmanual-`../release.sh xic`.ps xicmanual.dvi
+	-@rm -f xicmanual-`../release.sh xic`.ps.gz
+	gzip xicmanual-`../release.sh xic`.ps
 
 pdf::
-	dvipdf xicmanual.dvi xicmanual-`../version xic`.pdf
+	dvipdf xicmanual.dvi xicmanual-`../release.sh xic`.pdf
 
 clean distclean::
 	-@rm -rf *.log *.aux *.ilg *.ind *.dvi xicmanual *.gz *.pdf

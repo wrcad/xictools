@@ -49,3 +49,5 @@ distclean:
 	-@rm -rf lib autom4te.cache
 	-@rm -f include/config.h
 
+install uninstall package:
+

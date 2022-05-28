@@ -1,23 +1,50 @@
 
 MMJCO - Tunnel Junction Amplitude calculator.
-Version 0.5 (ALPHA)     9/3/2020
+Version 0.9 (ALPHA+)     05/11/2022
 S. Whiteley,  wrcad.com, Synopsys, Inc.
 
-This is derived from the MiTMoJCo project, specifically the
+
+WRspice contains an internal tunnel junction model (TJM) of a
+Josephson junction.  The model requires pre-prepared tables of "fit"
+parameters, which avoid performing lengthly calculation at run time. 
+The mmjco program generates the needed files.
+
+In general, the user may not need to interact directly with mmjco, as
+WRspice will call mmjco when needed to create new fit files, and store
+these under a directory named ".mmjco" in the user's home directory. 
+Once a fit file has been created for a particular parameter set, it
+will be reused in future WRspice sessions when needed,
+
+The core functionality of mmjco is derived from the MiTMoJCo project
+by D.  R.  Gulevich (found on GitHub.com), specifically the
 mitmojco.py environment that provides an interface for creating tunnel
-junction amplitudes and fitting tables.
-
-This has been implemented as two C++ classes, one for creating tunnel
+junction amplitude (TCA) and fitting tables.  This has been
+implemented in mmjco> as two C++ classes, one for creating tunnel
 junction amplitudes, which basically evaluates the Werthamer model as
-formulated for MiTMoJCo by D.  R.  Gulevich, the second to compress
-the amplitudes into a compact representation, as used by MiTMoJCo and
-the TJM (JJ level=3) device model in WRspice.  The method is that of
-Odintsov, Semenov, and Zorin (see mmjco.cc comments for literature
-references).
+formulated for MiTMoJCo by Gulevich, the second to compress the
+amplitudes into a compact representation.  This representation is used
+by the TJM (JJ level=3) device model in WRspice.  The method is that
+of Odintsov, Semenov, and Zorin (See below for a list of references).
 
-++++ Building
+The <b>mmjco</b> program has additional features.
+o  Sweep tables can be produced for a range of temperatures, allowing
+   temperature sweeps to be performed in simulation without having to
+   create a fit file at each temperature.
 
-One should be able to build on any Linux-like platform.
+o  There is a built-in BCS computation of energy gap given
+   tempoerature, superconducting transition temperature, and Debye
+   temperature of the junction materials.
+
+o  Tunnel current amplitude tables are generated in "rawfile" format,
+   so can be plotted within WRspice or Synopsys WaveView.
+
+o  The fit and sweep file formats are compatible with the TJM developed
+   for Synopsys PrfimeSym-HSPICE under the IARPA SuperTools project.
+
+
+++++ Building mmjco
+
+One should be able to build mmjco on any Linux-like platform.
 
 Presently, the file will build into a static library, and a
 stand-alone application "mmjco" that will provide an interactive
@@ -46,56 +73,62 @@ paths to libraries for your system, and type "make".  If all goes well
 the "mmjco" binary should be created in the current directory, along
 with a libmmjco.a library file.
 
-++++ Running
+If built with the preprocessor symbol WRSPICE defined, the program is
+intended to serve as an accessory to the WRspice circuit simulator,
+for building tables for use with the TMJ model.  There are two main
+effects:
 
-Presently, running mmjco enters a command-line processing loop, the user
-responds to the "mmjco> " prompt with commands from the list below.  Each
-command can be followed by options as indicated.
+  - The tunnel current amplitude files use the "rawfile" format, and
+    can be plotted in WRspice, WaveView, and other programs.
 
-Text in square brackets ([...]) is optional.  A vertical pipe
-character ( | ) indicates that either the text to the right or left is
-acceptable, i.e., it separates options.
+  - The created amplitude and fit files are saved by default in a
+    directory named ".mmjco" in the user's home directory.  This
+    location is in the default WRspice search path for fit files.
 
-cd[ata]  [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] [-f filename]
+
+++++ Running mmjco
+
+Running mmjco enters a command-line processing loop, the user responds
+to the "mmjco> " prompt with commands from the list below.  Each
+command can be followed by options as indicated.  Additionally,there
+are "cdf" and "swp" modes where mmjco will create TCA and fit files or
+temperature sweep files according to the arguments, and exit.  This is
+mostly to support WRspice, which uses this mode to create new models
+on-the-fly.
+
+In this document, text in square brackets ([...]) is optional.  A
+vertical pipe character ( | ) indicates that either the text to the
+right or left is acceptable, i.e., it separates options.
+
+
+++++ Command Line Operations
+
+mmjco cdf arguments
+
+If the first argument to the mmjco executable is "cdf", a TCA file and
+corresponding fit file are created, and mmjco exits immediately in
+this case.  Arguments following "cdf" are the same arguments that can
+follow the cd and cf interactive commands.  This mode is used by the
+TJM device model in WRspice.
+
+mmjco swp -fs sweepfile temperature
+
+Similarly, "swf" will create a possibly-interpolated fit file
+from an existing sweep file, for the temperature provided.
+
+
+++++ Interactive mmjco Commands
+
+The following are the interactive commands which can be entered after
+starting mmjco with no arguments.
+
+cd[ata]  [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] [-f filename] \
+         [-r | -rr | -rd]
 
     Create TCA data, save internally and to a file.  See below for
     an explanation of the options.
 
-cf[it]  [-n terms] [-h thr] [-f filename]
-
-    Create fit parameters for TCA data currently in memory, from cd
-    or ld commands.  This is saved internallyand to a file.  See
-    below for an explanation of the options.
-
-cm[odel]  [-h thr] [-f [filename]]
-
-    Create a model for TCA data using fitting parameters currently in
-    memory, compute the residual, and optionally save to a file.  If -f
-    is given without a filename, a file name will be generated
-    internally.  If -f is not given, the model will not be saved to a
-    file, but used only to compute the residual.  The printed
-    residual number is an indication of the fit quality, smaller
-    values indicate better matching.
-
-ld[ata] filename
-
-    Load the internal TCA data register from a TCA data file whose name
-    must be given.
-
-lf[it] filename
-
-    Load the internal fit parameters register from a fit parameter file
-    given.
-
-h[elp] | v[ersion] | ?
-
-    Print help and the running mmjco release number.
-
-q[uit] | e[xit]
-
-    Exit the mmjco interface.
-
-Tunnel current amplitude and smoothing options:
+    Tunnel current amplitude and smoothing options:
 
     -t   The assumed temperature follows, in Kelvin.  Default 4.2.
 
@@ -120,53 +153,210 @@ Tunnel current amplitude and smoothing options:
     -f   A name for the TCA anplitude file.  If not given, a
          default is used, described below.
 
-Fitting table options:
+    -r   Output file is a complex-valued rawfile.
+    -rr  Output file is a real-valued rawfile.
+    -rd  Output file diomple data file.  If none of the "-r" options
+         is set, the format will be "-rr" if the program was built with
+         WRSPICE defined, "-rd" otherwise.
+
+cf[it]  [-n terms] [-h thr] [-ff filename]
+
+    Create fit parameters for TCA data currently in memory, from cd
+    or ld commands.  This is saved internallyand to a file.  See
+    below for an explanation of the options.
+
+    Fitting table options:
 
     -n   The size of the table, defaults to 8.  Larger tables are
          more accurate but take more time to generate and process.
-         A maximum of 20 is enforced..
+         A maximum of 20 is enforced.
 
     -h   The ratio of the absolute to relative tolerances, used in
          compression, the default is 0.2.
 
-    -f   A name for the fitting parameter table.  If not given, a
+    -ff  A name for the fitting parameter table.  If not given, a
          default is used, described below.
 
-Running mmjco can generate two types of files:  a file containing the
-swept values of the tunnel current amplitudes, and a file containing
+cm[odel]  [-h thr] [-fm [filename]] [-r | -rr | -rd]
+
+    Create a model for TCA data using fitting parameters currently in
+    memory, compute the residual, and optionally save to a file.  If -fm
+    is given without a filename, a file name will be generated
+    internally.  If -fm is not given, the model will not be saved to a
+    file, but used only to compute the residual.  The printed
+    residual number is an indication of the fit quality, smaller
+    values indicate better matching.
+
+    If one of -r, -rr, -rd is given when a file is being generated, it
+    overrides the default type for file to produce.
+      -r  complex-valued rawfile
+      -rr real-valued rawfile
+      -rd simple data file
+
+    The default file type is "-rr" when built with WRSPICE defined,
+    or the simple data file format otherwise.
+
+    The model files are saved in the current directory (unless a path
+    is given explicitly).
+
+
+cs[weep] Tstrt Tend [Tdelta] arguments
+
+    Create a temperature sweep file, which involves creating
+    sequential records of fit parameters for temperatures starting
+    with Tstrt and ending at at or near Tend, spaced in temperature by
+    Tdelta.  These are real numbers in Kelvin.  If the third numbver
+    Tdelta does not appear, 0.1K is assumed.  The arguments are those
+    that can be given to the cd or cf commands.
+
+ct[ab] T1 T2 [... TN] arguments
+
+    Create a temperature table file.  The first two temperatures T1
+    and T2 are required, and these can be followed by an arbitrary
+    number of additional temperatures.  The temperatures are real
+    numbers in Kelvin.  The arguments are those that can be given to
+    the cd or cf commands.  The file will contain fit parameters for
+    each temperature given.
+
+d[ir] directory_path
+
+    Give a path to a directory where all amplitude and fit files will
+    be stored and loaded from, if a rooted path is not given with the
+    file names.  The location is by default the current directory,
+    unless the WRSPICE preprocessor symbol is used, in which case the
+    default location is ".mmjco" in the user's home directory.
+
+g[ap] [-tc Tc] [-td Td] [T1 T2...]
+
+    Compute and print the superconducting energy gap at temperatures. 
+    The -tc specifies the superconducting transition temperature, and
+    -td specifies the Debye temperature, both Kelvin.  If not given,
+    the defaults are for Niobium:  Tc = 9.26K and Td = 276K.  There
+    can be zero to 10 real number arguments representing temperatures
+    in Kelvin.  If zero, print the gap for temperatures from 0 to Tc
+    at 0.1K increments.  If two numbers, print the gap for the smaller
+    to the larger in 0.1K increments.  Otherwise, print the gap at the
+    given temperatures.
+
+ld[ata] filename
+
+    Load the internal TCA data register from a TCA data file whose name
+    must be given.  This understands all supported file formats.
+
+lf[it] filename
+
+    Load the internal fit parameters register from a fit parameter file
+    given.
+
+ls[weep] -fs filename temp
+
+    Load the internal fit register from a sweep file, interpolating to
+    temperature temp.
+
+h[elp] | v[ersion] | ?
+
+    Print help and the running mmjco release number.
+
+q[uit] | e[xit]
+
+    Exit mmjco.
+
+
+++++ File Name Encoding
+
+Running mmjco can generate three types of files:  a file containing
+values of the tunnel current amplitudes (TCA files), a file containing
 the fitting parameters used to represent the tunnel current amplitues
-in a compact form.  The "model" files use the same format as the TCA
-files.
+in a compact form, and files that contain collections of fitting
+parameter sets, as for a temperature sweep.  The "model" files use the
+same format as the TCA files.  By default, these files are given a
+name that encodes the various parameter values used in creation.
 
-By default, these files are given a name that encodes the various
-parameter values used in creation.  This format is described below.
+Tunnel current amplitude files, including model files, are by default
+given an internally-generated file name in the forms below.
 
-Tunnel current amplitude file name
+    tcaTTTTTTdddddDDDDDssPPPP.data
+    tcaTTTTTTdddddDDDDDssPPPP.raw
 
-    tcaTTTDD1DD2SFXXXX.data
+The "tca" and ".data"/".raw" and similar are literal.  All fields are
+fixed width and zero padded.  Real numbers are converted to integers
+by multiplying by a scale factor and rounding to integer.
 
-The "tca" and ".data" are literal.  TTT is a three-digit integer equal
-to 100*temp (truncated to integer).  DD1 and DD2 are three digit
-integers equal to 100*d1 and 100*d2, truncated to integer.  SF is a
-two digit integer representing the smoothing parameter equal to
-1000*sf, truncated to integer.  The XXXX is the number of points used
-(-x option), 0-padded if needed to fill out 4 integers,  Model files
-use the same default name, however ".model" replaces ".data".
+TTTTTT
+    A six-digit integer equal to 1e4*<i>temperature</i>.
+ddddd
+    A 5-digit integer equal to 1e7*<i>d1</i>, where <i>d1</i> is the
+    side 1 gap potential in volts.
+DDDDD
+    A 5-digit integer equal to 1e7*<i>d2</i>, where <i>d2</i> is the
+    side 2 gap potential in volts.
+ss
+    A two digit integer equal to 1e3*<i>sf</i>, where <i>sf</i> is the
+    smoothing parameter.
+PPPP
+    The number of points used (<tt>-x</tt> option).
 
-The fitting parameter file name has the form
+In WRspice, a rawfile (.raw extension) can be loaded with the load
+command, and the amplitudes can then be plotted with "plot all".
 
-    tcaTTTDD1DD2SFXXXX-NNHHH.fit
+The fitting parameter file name has the following form.
+
+    tcaTTTTTTdddddDDDDDssPPPP-NNHHH.fit
 
 The first part, ahead of the '-', is as described above.  Following
-the hyphen, NN is the zero-padded two-digit fitting table size.  This
-is followed by the compression threshold, as a three digit integer
-representing 1000*thr, truncated to integer.
+the hyphen:
 
-The fit parameter table format is precisely that used by MiTMoJCo. 
-Note that the table values do not match those found in the MiTMoJCo
-distribution.  It seems that these values are not unique, and the
-various programs can converge to different sets.  It was found that
-the original and present versions of mitmojco.py gave different
-values, and neither matched the values provided in the amplitudes
-folder.
+NN
+    The two-digit fitting table size.
+HHH
+    A three digit integer equal to 1e3*thr, where thr is the
+    compression threshold.
+
+Sweep file names have the following form.
+
+    tswNNNttttttTTTTTTssPPPP-NNHHH.swp
+
+The part following the hyphen is the same as for the fit file.
+
+NNN
+    A three digit integer giving the number of records in the file.
+tttttt
+    A six digit integer equal to 1e4*Tstart, where Tstart is the
+    starting temperature in Kelvin.
+TTTTTT
+    A six digit integer equal to 1e4*Tdelta, where Tdelta is the
+    temperature spacing.
+ss
+    A two digit integer equal to 1e3*sf, where sf is the
+    smoothing parameter.
+PPPP
+    The number of points used (-x option).
+
+The fit parameter table format is similar to that used by MiTMoJCo,
+identical if the header is ignored.  Note that the table values do not
+    match those found in the MiTMoJCo distribution.  It seems that these
+    values are not unique, and the various programs can converge to
+    different sets.  It was found that the original and present versions
+    of mitmojco.py gave different values, and neither matched the
+    values provided in the amplitudes folder.
+
+
+++++ References
+
+Tunnel current calculation:
+A. I. Larkin and Yu. N. Ovchinnikov, Sov. Phys. JETP 24, 1035 (1967).
+D. R. Gulevich, V. P. Koshelets, and F. V. Kusmartsev, Phys. Rev. B 96,
+ 024515 (2017).
+A. B. Zorin, I. O. Kulik, K. K. Likharev, and J. R. Schrieffer, Sov. J. 
+ Low Temp. Phys. 5, 537 (1979).
+D. R. Gulevich, V. P. Koshelets, and F. V. Kusmartsev, Phys.  Rev. B 96,
+ 024515 (2017).
+D. R. Gulevich, V. P. Koshelets, F. V. Kusmartsev, arXiv:1709.04052 (2017).
+D. R. Gulevich, L. V. Filippenko, V. P. Koshelets, arXiv:1809.01642 (2018).
+
+Compression:
+A. A. Odintsov, V. K. Semenov and A. B. Zorin, IEEE Trans. Magn. 23, 763
+ (1987).
+D. R. Gulevich, V. P. Koshelets, and F. V. Kusmartsev, Phys. Rev. B 96,
+  024515 (2017).
 

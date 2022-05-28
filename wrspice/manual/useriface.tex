@@ -4,7 +4,7 @@
 \section{Starting {\WRspice}}
 \index{command line options|(}
 
-% spCmdLine.hlp:arguments 111515
+% spCmdLine.hlp:arguments 052222
 
 The {\WRspice} simulator is invoked by typing
 \begin{quote}
@@ -286,7 +286,7 @@ format is
 \begin{quote}
 {\it version osname arch}
 \end{quote}
-for example ``{\vt 4.3.1 LinuxRHEL6 x86\_64}''.
+for example ``{\vt 4.3.11 LinuxCentos7 x86\_64}''.
 
 \index{command line options!--vv}
 \item{\vt -\/-vv}\\
@@ -309,7 +309,7 @@ standard output, and exit.
 \section{Environment Variables}
 \index{environment variables|(}
 
-% spSetup.hlp:environment 093017
+% spSetup.hlp:environment 051522
 
 Environment variables are keyword/value pairs that are made available
 to an application by the command shell or operating system.  The value
@@ -462,6 +462,46 @@ directory prefix which effectively replaces ``{\vt /usr/local}'', and
 the programs will be able to access the installation library files
 without further directives.  This should not be needed under Windows,
 as the Registry provides the default paths.
+
+\index{environment variables!XT\_HOMEDIR}
+\index{XT\_HOMEDIR environment variable}
+\item{\et XT\_HOMEDIR}\\
+Under Windows, the user's ``home'' directory is determined by looking
+at environment variables.
+
+In Linux, the {\et HOME} environment variable is set the the user's home
+directory, and this is also true under Windows if using a Linux emulation
+package such as Cygwin or MSYS.  However, in this case {\et HOME} will be
+relative to the file system as seen within the emulator, and not the
+actual Windows file system as seen in {\Xic} or {\WRspice} which are
+Windows-native programs.  Therefor, the {\et HOME} environment variable
+is ignored under Windows.
+
+Instead, the programs will first look for {\et XT\_HOMEDIR}.  This
+should be set to the Windows path to the user's MSYS2 or Cygwin home  
+directory.  For example, this can be done from the {\vt bash\_profile}
+file by adding a line
+\begin{quote}
+{\vt export XT\_HOMEDIR=c:/msys64/home/}{\it yourlogin}
+\end{quote}
+Setting this will allow {\Xic} and {\WRspice} to find files in the
+user's MSYS2 home directory, even though the programs are Windows
+native and don't know the MSYS2 paths.
+
+The deprecated {\et XIC\_START\_DIR} variable is checked next, and if
+found its value is taken as the user's home directory in the same
+manner.
+
+If not found, the {\et HOMEDIR} and {\et HOMEPATH}
+variables, if both are found, are concatenated to yield the home
+directory path.  In the unlikely event that these are not set, the
+{\et USERPROFILE} variable is checked, and if all else fails, ``{\vt
+C:$\backslash$}'' is assumed.  The {\et HOMEDIR}/{\et HOMEPATH} and
+{\et USERPROFILE} variables are set by Windows, at least in some
+Windows versions.
+
+Under other operating systems, the home directory is well-defined
+and is obtained from operating system calls.
 
 \index{environment!XTNETDEBUG}
 \index{XTNETDEBUG environment variable}

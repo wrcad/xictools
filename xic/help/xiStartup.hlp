@@ -657,7 +657,7 @@ Microsoft Windows Notes
 !!REDIRECT --vv                 xic:cmdline#--vv
 !!REDIRECT --vb                 xic:cmdline#--vb
 
-!! 093017
+!! 052222
 !!KEYWORD
 xic:cmdline
 !!TITLE
@@ -986,7 +986,7 @@ Command Line Options
     <blockquote>
     <i>version</i> <i>osname</i> <i>arch</i>
     </blockquote>
-    for example "<tt>4.3.1 LinuxRHEL7 x86_64</tt>".
+    for example "<tt>4.3.11 LinuxCentos7 x86_64</tt>".
     </dl>
 
     <a name="--vv"></a>
@@ -1015,6 +1015,7 @@ Command Line Options
 !!REDIRECT XT_LICENSE_PATH      xic:env#XT_LICENSE_PATH
 !!REDIRECT XTLSERVER            xic:env#XTLSERVER
 !!REDIRECT XT_PREFIX            xic:env#XT_PREFIX
+!!REDIRECT XT_HOMEDIR           xic:env#XT_HOMEDIR
 !!REDIRECT XTNETDEBUG           xic:env#XTNETDEBUG
 !!REDIRECT XT_LOCAL_MALLOC      xic:env#XT_LOCAL_MALLOC
 !!REDIRECT XT_SYSTEM_MALLOC     xic:env#XT_SYSTEM_MALLOC
@@ -1050,7 +1051,7 @@ Command Line Options
 !!REDIRECT SPICE_EXEC_NAME      xic:env#SPICE_EXEC_NAME
 !!REDIRECT IMSAVE_PATH          xic:env#IMSAVE_PATH
 
-!! 112019
+!! 052822
 !!KEYWORD
 xic:env
 !!TITLE
@@ -1225,6 +1226,60 @@ Environment Variables
     needed under Windows, as the Registry provides the default paths.
     </dl>
 
+    <a name="XT_HOMEDIR"></a>
+    <dl>
+    <dt><b>XT_HOMEDIR</b><dd>
+    Under Windows, the user's "home" directory is determined by
+    looking at environment variables.
+
+    <p>
+    In Linux, the <b>HOME</b> environment variable is set the the
+    user's home directory, and this is also true under Windows if
+    using a Linux emulation package such as Cygwin or MSYS.  However,
+    in this case <b>HOME</b> will be relative to the file system as
+    seen within the emulator, and not the actual Windows file system
+    as seen in <i>Xic</i> or <i>WRspice</i> which are Windows-native
+    programs.  Therefor, the <b>HOME</b> environment variable is
+    ignored under Windows.
+
+    <p>
+    Instead, the programs will first look for <b>XT_HOMEDIR</b>.  This
+    should be set to the Windows path to the user's MSYS2 or Cygwin
+    home directory.  For example, this can be done from the
+    <tt>bash_profile</tt> file by adding a line
+    <blockquote>
+    <tt>export XT_HOMEDIR=c:/msys64/home/</tt><i>yourlogin</i>
+    </blockquote>
+    Setting this will allow <i>Xic</i> and <i>WRspice</i> to find
+    files in the user's MSYS2 home directory, even though the programs
+    are Windows native and don't know the MSYS2 paths.
+
+    <p>
+    The deprecated <b>XIC_START_DIR</b> variable is checked next, and
+    if found its value is taken as the user's home directory in the
+    same manner.
+
+    <p>
+    If not found, the <b>HOMEDIR</b> and <b>HOMEPATH</b> variables, if
+    both are found, are concatenated to yield the home directory path. 
+    In the unlikely event that these are not set, the
+    <b>USERPROFILE</b> variable is checked, and if all else fails,
+    "<tt>C:/</tt>" is assumed.  The <b>HOMEDIR</b>/<b>HOMEPATH</b> and
+    <b>USERPROFILE</b> variables are set by Windows, at least in some
+    Windows versions.
+
+    <p>
+    Under other operating systems, the home directory is well-defined
+    and is obtained from operating system calls.
+
+    <p>
+    Under Windows, if <i>Xic</i> finds itself in the <tt>C:\</tt>
+    directory on startup, it will change the working directory to the
+    home directory.  This is the default when starting from the
+    Windows <b>Start Menu</b> or otherwise from an icon, unless the
+    icon property is changed.
+    </dl>
+   
     <a name="XTNETDEBUG"></a>
     <dl>
     <dt><b>XTNETDEBUG</b>
@@ -1457,36 +1512,10 @@ Environment Variables
     </dl>
 
     <a name="XIC_START_DIR"></a>
-    <a name="HOME"></a>
     <dl>
-    <dt><b>XIC_START_DIR</b>, <b>HOME</b>
-    <dd>
-    Under Windows, the user's "home" directory is determined by
-    looking at environment variables.  The first one found to be set
-    is assumed to contain a path to the user's home directory.  First,
-    <b>XIC_START_DIR</b> is checked.  This is <i>Xic</i> (and family)
-    specific, and would be set previously by the user.  If not found,
-    <b>HOME</b> is checked.  This can be set by environments such as
-    Cygwin, when starting in a Cygwin shell window, or may be set by
-    other environments or by the user.  If not found, the
-    <b>HOMEDIR</b> and <b>HOMEPATH</b> variables, if both are found,
-    are concatenated to yield the home directory path.  In the
-    unlikely event that these are not set, the <b>USERPROFILE</b>
-    variable is checked, and if all else fails, "<tt>C:/</tt>" is
-    assumed.  The <b>HOMEDIR</b>/<b>HOMEPATH</b> and
-    <b>USERPROFILE</b> variables are set by Windows, at least in
-    recent Windows versions.
-
-    <p>
-    Under other operating systems, the home directory is well-defined
-    and is obtained from operating system calls.
-
-    <p>
-    Under Windows, if <i>Xic</i> finds itself in the <tt>C:\</tt>
-    directory on startup, it will change the working directory to the
-    home directory.  This is the default when starting from the
-    Windows <b>Start Menu</b> or otherwise from an icon, unless the
-    icon property is changed.
+    <dt><b>XIC_START_DIR</b><dd>
+    This variable is deprecated.  Under Windows, it is interpreted in
+    the same manner as <a href="XT_HOMEDIR"><b>XT_HOMEDIR</b></a>.
     </dl>
 
     <a name="XIC_EXIT_CMD"></a>

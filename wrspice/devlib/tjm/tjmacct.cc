@@ -49,10 +49,10 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
 
         bool didm = false;
         double vmax = 0;
-        double vth = model->TJMvdpbak/model->TJMtsaccl;
 
         sTJMinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
+            double vth = inst->TJMvdpbak/model->TJMtsaccl;
 
             // Keep phi in the range -2pi - 2pi, with an integer 4pi
             // modulus.  This preserves phase accuracy for large phase
@@ -116,18 +116,16 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
             }
 
             // find max vj for time step
-            if (model->TJMictype != 0 && inst->TJMcriti > 0) {
-                if (!didm) {
-                    didm = true;
-                    if (vmax < vth)
-                        vmax = vth;
-                }
-                double vj = *(ckt->CKTstate0 + inst->TJMvoltage);
-                if (vj < 0)
-                    vj = -vj;
-                if (vmax < vj)
-                    vmax = vj;
+            if (!didm) {
+                didm = true;
+                if (vmax < vth)
+                    vmax = vth;
             }
+            double vj = *(ckt->CKTstate0 + inst->TJMvoltage);
+            if (vj < 0)
+                vj = -vj;
+            if (vmax < vj)
+                vmax = vj;
         }
         if (vmax > 0.0) {
             // Limit next time step.
@@ -163,7 +161,7 @@ sTJMinstance::tjm_accept(double phi)
     sincos(0.5*phi, tjm_sinphi_2_old, tjm_cosphi_2_old);
 
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    for (int i = 0; i < model->tjm_narray; i++) {
+    for (int i = 0; i < model->TJMnterms; i++) {
         tjm_Fcprev[i] = tjm_Fc[i];
         tjm_Fsprev[i] = tjm_Fs[i];
     }

@@ -32,12 +32,10 @@ case $1 in
 oses)
   echo \
 "Darwin \
-LinuxDebian10 \
-LinuxFedora32 \
+LinuxCentos8 \
+LinuxDebian11 \
+LinuxFedora35 \
 LinuxOpenSUSE15 \
-LinuxRHEL5.i686 \
-LinuxRHEL5 \
-LinuxRHEL6 \
 LinuxRHEL7 \
 LinuxUbuntu20 \
 MINGW"
@@ -49,18 +47,14 @@ host)
   case $2 in
   Darwin)
     echo macbook;;
-  LinuxDebian10)
+  LinuxCentos8)
+    echo poe;;
+  LinuxDebian11)
     echo debby;;
-  LinuxFedora32)
+  LinuxFedora35)
     echo fedor;;
   LinuxOpenSUSE15)
     echo byron;;
-  LinuxRHEL5.i686)
-    echo shelley;;
-  LinuxRHEL5)
-    echo shelley;;
-  LinuxRHEL6)
-    echo poe;;
   LinuxRHEL7)
     echo frost;;
   LinuxUbuntu20)
@@ -73,17 +67,13 @@ sfx)
   case $2 in
   Darwin)
     echo pkg;;
-  LinuxDebian10)
+  LinuxCentos8)
+    echo rpm;;
+  LinuxDebian11)
     echo deb;;
-  LinuxFedora32)
+  LinuxFedora35)
     echo rpm;;
   LinuxOpenSUSE15)
-    echo rpm;;
-  LinuxRHEL5.i686)
-    echo rpm;;
-  LinuxRHEL5)
-    echo rpm;;
-  LinuxRHEL6)
     echo rpm;;
   LinuxRHEL7)
     echo rpm;;

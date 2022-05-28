@@ -54,7 +54,7 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->sValue = model->tjm_coeffs;
         data->type = IF_STRING;
         break;
-    case TJM_MOD_RTP:
+    case TJM_MOD_RT:
         value->iValue = model->TJMrtype;
         data->type = IF_INTEGER;
         break;
@@ -62,8 +62,43 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->iValue = model->TJMictype;
         data->type = IF_INTEGER;
         break;
-    case TJM_MOD_VG:
-        value->rValue = model->TJMvg;
+    case TJM_MOD_DEFTEMP:
+        value->rValue = model->TJMdeftemp;
+        break;
+    case TJM_MOD_TNOM:
+        value->rValue = model->TJMtnom;
+        break;
+    case TJM_MOD_TC:
+        value->rValue = SPMIN(model->TJMtc1, model->TJMtc2);
+        break;
+    case TJM_MOD_TC1:
+        value->rValue = model->TJMtc1;
+        break;
+    case TJM_MOD_TC2:
+        value->rValue = model->TJMtc2;
+        break;
+    case TJM_MOD_TDEBYE:
+        value->rValue = SPMIN(model->TJMtdebye1, model->TJMtdebye2);
+        break;
+    case TJM_MOD_TDEBYE1:
+        value->rValue = model->TJMtdebye1;
+        break;
+    case TJM_MOD_TDEBYE2:
+        value->rValue = model->TJMtdebye2;
+        break;
+    case TJM_MOD_SMF:
+        value->rValue = model->TJMsmf;
+        break;
+    case TJM_MOD_NTERMS:
+        value->iValue = model->TJMnterms;
+        data->type = IF_INTEGER;
+        break;
+    case TJM_MOD_NXPTS:
+        value->iValue = model->TJMnxpts;
+        data->type = IF_INTEGER;
+        break;
+    case TJM_MOD_THR:
+        value->rValue = model->TJMthr;
         break;
     case TJM_MOD_CRT:
         value->rValue = model->TJMcriti;
@@ -113,15 +148,14 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_TSACCL:
         value->rValue = model->TJMtsaccl;
         break;
-    case TJM_MQUEST_VDP:
-        value->rValue = model->TJMvdpbak;
+    case TJM_MQUEST_DEL1NOM:
+        value->rValue = model->TJMdel1Nom;
         break;
-    case TJM_MQUEST_OMEGAJ:
-        value->rValue = model->TJMomegaJ;
+    case TJM_MQUEST_DEL2NOM:
+        value->rValue = model->TJMdel2Nom;
         break;
-    case TJM_MQUEST_BETAC:
-        value->rValue = 
-            model->TJMvm*model->TJMvm*model->TJMcap/(model->TJMcriti*PHI0_2PI);
+    case TJM_MQUEST_VGAPNOM:
+        value->rValue = model->TJMvgNom;
         break;
     case TJM_MOD_TJM:
         value->iValue = 1;

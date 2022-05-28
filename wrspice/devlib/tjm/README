@@ -1,0 +1,334 @@
+The WRspice Josephson Tunnel Junction Model
+
+This is a physics-based model of a Josephson junction.  The tunneling
+physics is represented with a formulation similar to MitMojCo
+(https://github.com/drgulevich/mitmojco), using the mmjco program
+provided with WRspice.  The mmjco program is used to compute tunnel
+current amplitude tables and compresssed "fit" files as needed.  These
+are saved in the user's $HOME/.mmjco directory, so are available
+immediately after generation (generation may take a few tens of seconds).
+
+Temerature dependence of the order parameter is computed directly from
+the BCS theory using a numerical solution to equation 3.52 of Tinkham,
+Introduction to Superconductivity, 2nd ed.  p.  63.
+The problem is duscussed in
+https://physics.stackexchange.com/questions/54200/superconducting-gap-
+ temperature-dependence-how-to-calculate-this-integral
+however we use a different solution technique.
+
+Similarly, the temperature correction to the critical current is
+obtained from equations based on the Ambegaoker and Baratoff result,
+also given as equation 6.10 in Tinkham.  the multiplicative correction
+factor is the ratio of the result at the operating temperature to that
+at the nominal temperature.
+
+Although many of the model parameters can be given explicitly, the intent is
+for only the fundamental parameters, listed below, to be provided.  The model
+will be purely physics-based in that case.  The default parameters apply to
+niobium.
+
+The basic model parameters are
+tc1,2     Superconducting transition temperatures of the two electrodes.
+tdebye1,2 The Debye temperatures of the two electrrodes.
+tnom      The nominal temperature, where the critical current is measured.
+temp      The operating temperature.
+icrit     The critical current at nominal temperature.
+cpic,cap  Specification of device capacitance.
+
+///
+if del1/2 given, this sets the gap value at tnom, and the actual gap value
+used for tca fit parameter generation is taken as the approximation
+
+    delN = tanh(tcfN*sqrt(tcN/(temp - 1)/tanh(tcfN*sqrt(tcN/tnom - 1)
+
+Thus, the BCS computation is skipped in this case in favor of the
+approximation above.  The parameters tcN and tdebyeN are ignored in
+this case.
+
+If a coefficient set name is given, the following parameters are ignored:
+tcN, tdebyeN, delN, vgap. tnom, deftemp.
+There is no attempt to scale critical current with deftemp/tnom.
+
+If a coefficient sweep file is given, the following parameters are
+ignored:
+tcN, tdebyeN, delN, vgap. tnom.
+
+In this case, the instance parameters temp and dtemp are recognized.
+tcN and tdebyeN, temp and tnom are used in the BCS calculation to yield
+the critical current temp dependence, so these parameters must match those
+used to generate the sweep data.
+
+If no coeffset is given as a model parameter, coefficient sets will be
+created for each instance temperature.  The use of a sweep file will
+avoid the need to actually create the fit tables, which can take tens
+of seconds apiece to generate.  If a single temperature fit file name
+is given, the instance temperature is given by that fit file and the
+temp/dtemp instance parameters are ignored, as are the model
+parameters listed above.
+
+///
+
+There is provision for adding shunt resistance to match measured Vm and
+add explicit resistance to damp junctions for convenience in circuits.
+Other parameters may provide empirical tweaks and establish timestep
+control.
+
+The full list of model parameters is found below.
+
+Model Parameters
+
+coeffset
+if given, the string must name a coefficient set fit file in the
+coefficient search path.  if not given, the needed coefficient set
+name is generated from given values of physical parameters.  Missing
+sets are auto-generated via mmjco and saved in the user's $HOME/.mmjco
+directory.  The search path is may be provided by a user in a WRspice
+list variable named "tjm_path", the default path is "( .  $HOME/.mmjco
+)"
+
+cct
+0 no pair current.
+1 include pair current (the default).
+This allows the user so suppress the pair current, which may be useful
+on occasion, say for observing a clean quasiparticle branch i-v curve.
+
+rtype
+0 no quasiparticle current
+1 has quasiparticle current (the default)
+Allows suppression of quasiparticle current for model debugging.
+
+del1
+del2
+Specify the two electrode order parameters directly (in volts).  If
+not given, values are computed internally from temperature and other
+parameters using BCS theory.
+0.05mv = 5mv, no default.
+
+vg/vgap
+If given, specifies or overrides del1 and del2 as equal and half of
+vg.  If not given, the value is taken as del1 + del2.
+0.1mv - 10mv, no default.
+
+tnom
+The temperature assumed for critical current measurement.
+0 - 280, default 4.2
+
+temp
+Operating temperature.
+0 - 280, default tnom
+
+tc
+tc1
+tc2
+Critical temperature for two electrodes, default 9.2K (for niobium). 
+tc sets or overrides tc1 and tc2 as equal to the value given.
+0.5 - 280, default 9.2
+
+tdebye
+tdebye1
+tdebye2
+The Debye temperature for the two electrodes, default 276K (niobium). 
+tdebye sets or overrides the tdebye1 and tdebye2 values as equal to
+the value given.
+40 - 500, default 276
+
+smf
+The smoothing parameter, used to finitize the Riedel singularity when
+generating tunnel current amplitude tables.
+.001 - .099, default .008
+
+nterms
+The number of terms used in the fitting table.
+6-20, default 8
+
+nxpts
+The number of entries in the TCA table being compressed.
+100-9999, default 500
+
+thr
+The threshold used in the fitting algorithm.
+0.1-0.5, default 0.2
+
+icrit
+Model critical current at the nominal temperature.
+1e-9 - 1e-1, default 1e-3 A.
+
+cap
+Model capacitance.
+default cpic times the model nominal critical current.
+range 0 - 1e-6 times the model nominal critical current,
+
+cpic
+Model capacitance per critical current at nominal temperature.
+0 - 1e-6, default 0.7e-9 F/A
+
+cmu
+Capacitance scaling parameter from model to instance with area A.
+Cinst = Cmodel(A*(1-cmu) + sqrt(A)*cmu)
+The default is linear scaling, however edge effects can be included if
+necessary.
+0 - 1.0, default 0.
+
+vm
+Product of Model critical current at nominal temperature and subgap
+resistance.  This will generally add empirical conductance, as the
+microscopic model typically underestimates subgap conductance, as it
+does not account for multiple Andreev reflections through pinholes or
+other effects which are found in real junctions.  If 0, or iv larger
+than the intrinsic value, no additional conductance is added.
+0 or 8mv - 100mv, default 16.5mv
+
+r0, rsub
+Subgap resistance.  If 0, no additionalresistance added,
+0 or vm / model nominal critical current.
+
+gmu
+Subgap resistance scaling factor from model to instance with area A.
+inst_g0 = model_g0*(A*(1-gmu) + sqrt(A)*gmu);
+The default is linear scaling, however edge effects can be included if
+necessary.
+default 0.
+
+noise
+Noise scale factor (currently unused).
+
+icfct, icfact
+Ratio of critical current to quasiparticle step height at nominal
+temperature.  The BCS value of pi/4 often overestimates this effect in
+measured junctions.  A smaller value may be a useful empirical adjustment.
+0.5 = pi/4, default pi/4
+
+vshunt
+Add shunt linear conductance so that R = vshunt/Ic in the subgap
+region.  This is for convenience when using the element in SFQ
+circuits, as it avoids the need to add explicit damping resistors.
+
+force
+Allow out of range parameter values.
+
+lsh0
+Constant part of series inductance of shunt resistor effectively added
+by vshunt.
+
+lsh1
+Linear (in resistance) part of shunt resistor series inductnace.
+
+tsfactor
+Phase change maximum per time step per 2pi phase change.
+
+tsaccel
+Ratio of maximum time step to that at dropback voltage.
+
+Read-Only
+
+rsint
+The intrinsic subgap resistance of the reference junction, i.e., not
+including any additional conductance added through vm, r0, vshunt.
+
+vdp
+Dropback voltage.
+
+omegaj
+Plasma resonance frequency, radians.
+
+betac
+Stewart-McCumber parameter.
+
+ictempfct
+Critical current temperature correction factor.
+
+Instance Parameters
+
+area
+The scaling factor to the model critical current.
+
+ics
+The expected instance nominal temperaturecritical current.  This is
+used to obtain the "area" scaling factor, which will be used to scale
+the temperature adjusted model current.  Thus the actual instance
+critical current will vary with temperature.
+
+lser
+Parasitic series inductance value.
+
+lsh
+Parasitic inductance in the shunt resistance iv model parameter vshunt
+is given, overrides the lsh0,lsh1 model parameters.
+
+off
+Not used.
+
+ic
+initial condition vector, vj, phi
+
+phi,ic_phase
+initial condition: phase
+
+vj,ic_v
+initial condition: voltage
+
+noise
+Not used.
+
+Read Only instance parameters
+
+v
+Terminal voltage.
+
+phase
+Junction phase.
+
+n
+Junction SFQ pulse count.
+
+phsf
+Junction SFQ pulse flag.
+
+phst
+Junction SFQ last pulse time.
+
+icrit
+Maximum critical current.
+
+cc
+Capacitance current.
+
+cj
+Josephson pair current.
+
+cq
+Quasiparticle current.
+
+c
+Total device current.
+
+cap
+Device capacitance.
+
+g0
+Subgap conductance.
+
+gn
+Normal conductance.
+
+node1
+Reference node.
+
+node2
+Second node.
+
+pnode
+Phase node if used.
+
+lsernode
+Internal node if lser nonzero.
+
+lserbrn
+Internal branch if lser is nonzero.
+
+lshnode
+Internal node if shunt resistor inductance is nonzero.
+
+lshbrn
+Internal branch if shunt resistor inductance is nonzero.
+

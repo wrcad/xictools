@@ -9,7 +9,6 @@ Copyright (c) Whiteley Research Inc 1996
 #define CONFIG_H
 
 #undef STDC_HEADERS
-#undef TIME_WITH_SYS_TIME
 #undef HAVE_ALLOCA_H
 #undef HAVE_DIRENT_H
 #undef HAVE_EXECINFO_H

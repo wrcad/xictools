@@ -525,7 +525,7 @@ set similarly.
 
 
 % -----------------------------------------------------------------------------
-% xic:cmdline 093017
+% xic:cmdline 052222
 \section{Command Line Options}
 
 \index{command line}
@@ -828,7 +828,7 @@ tokens and exit.  The tokens are
 \begin{quote}
 {\it version osname arch}       
 \end{quote}
-for example ``{\vt 4.3.1 LinuxRHEL7 x86\_64}''.
+for example ``{\vt 4.3.11 LinuxCentos7 x86\_64}''.
 
 \index{command line!options!\symbol{45}\symbol{45}vv}
 \item{\et \symbol{45}\symbol{45}vv}\\
@@ -849,7 +849,7 @@ Open} command.
 
 
 % -----------------------------------------------------------------------------
-% xic:env 112019
+% xic:env 052822
 \section{{\Xic} Environment Variables}
 \label{xicenv}
 \index{environment}
@@ -982,6 +982,52 @@ the programs will be able to access the installation library files
 without further directives.  The {\Xic} {\et -R} command line option
 can also be used for this purpose.  This should not be needed under
 Windows, as the Registry provides the default paths.
+
+\index{environment!XT\_HOMEDIR}
+\index{XT\_HOMEDIR environment variable}
+\item{\et XT\_HOMEDIR}\\
+Under Windows, the user's ``home'' directory is determined by looking
+at environment variables.
+
+In Linux, the {\et HOME} environment variable is set the the user's home
+directory, and this is also true under Windows if using a Linux emulation
+package such as Cygwin or MSYS.  However, in this case {\et HOME} will be
+relative to the file system as seen within the emulator, and not the
+actual Windows file system as seen in {\Xic} or {\WRspice} which are
+Windows-native programs.  Therefor, the {\et HOME} environment variable
+is ignored under Windows.
+
+Instead, the programs will first look for {\et XT\_HOMEDIR}.  This
+should be set to the Windows path to the user's MSYS2 or Cygwin home
+directory.  For example, this can be done from the {\vt bash\_profile}
+file by adding a line
+\begin{quote}
+{\vt export XT\_HOMEDIR=c:/msys64/home/}{\it yourlogin}
+\end{quote}
+Setting this will allow {\Xic} and {\WRspice} to find files in the
+user's MSYS2 home directory, even though the programs are Windows
+native and don't know the MSYS2 paths.
+
+The deprecated {\et XIC\_START\_DIR} variable is checked next, and if
+found its value is taken as the user's home directory in the same
+manner.
+
+If not found, the {\et HOMEDIR} and {\et HOMEPATH}
+variables, if both are found, are concatenated to yield the home
+directory path.  In the unlikely event that these are not set, the
+{\et USERPROFILE} variable is checked, and if all else fails, ``{\vt
+C:$\backslash$}'' is assumed.  The {\et HOMEDIR}/{\et HOMEPATH} and
+{\et USERPROFILE} variables are set by Windows, at least in some
+Windows versions.
+
+Under other operating systems, the home directory is well-defined
+and is obtained from operating system calls.
+
+Under Windows, if {\Xic} finds itself in the {\vt C:$\backslash$}
+directory on startup, it will change the working directory to the home
+directory.  This is the default when starting from the Windows {\cb
+Start Menu} or otherwise from an icon, unless the icon property is
+changed.
 
 \index{environment!XTNETDEBUG}
 \index{XTNETDEBUG environment variable}
@@ -1175,30 +1221,8 @@ tracking down problems when the user expects success.
 
 \index{environment!XIC\_START\_DIR}
 \index{XIC\_START\_DIR environment variable}
-\item{{\et XIC\_START\_DIR}, {\et HOME}}\\
-Under Windows, the user's ``home'' directory is determined by looking
-at environment variables.  The first one found to be set is assumed to
-contain a path to the user's home directory.  First, {\et
-XIC\_START\_DIR} is checked.  This is {\Xic} (and family) specific, and
-would be set previously by the user.  If not found, {\et HOME} is
-checked.  This can be set by environments such as Cygwin, when
-starting in a Cygwin shell window, or may be set by other environments
-or by the user.  If not found, the {\et HOMEDIR} and {\et HOMEPATH}
-variables, if both are found, are concatenated to yield the home
-directory path.  In the unlikely event that these are not set, the
-{\et USERPROFILE} variable is checked, and if all else fails, ``{\vt
-C:$\backslash$}'' is assumed.  The {\et HOMEDIR}/{\et HOMEPATH} and
-{\et USERPROFILE} variables are set by Windows, at least in recent
-Windows versions.
-
-Under other operating systems, the home directory is well-defined
-and is obtained from operating system calls.
-
-Under Windows, if {\Xic} finds itself in the {\vt C:$\backslash$}
-directory on startup, it will change the working directory to the home
-directory.  This is the default when starting from the Windows {\cb
-Start Menu} or otherwise from an icon, unless the icon property is
-changed.
+This variable is deprecated.  Under Windows, it is interpreted in the
+same manner as {\et XT\_HOMEDIR}.
 
 \index{exit command}
 \index{environment!XIC\_EXIT\_CMD}
@@ -2039,52 +2063,24 @@ bit) of the running {\Xic} program.
 
 {\bf This interface is presently not available under Microsoft Windows.}
 
-OpenAccess is an open-source database for CAD/EDA data.  It is used
-by Cadence Virtuoso 6.{\it x\/}, and by many other tools.  It provides
-a commonality among tools from different vendors, and is intended to
-facilitate seamless integration of tools from different vendors into a
-process flow.  OpenAccess is distributed by Si2 ({\vt www.si2.org}). 
-Source code and binary distributions are available for a number of
-operating systems, to registered users and coalition members.
+{\bf The OpenAccess plug-in is not provided with {\Xic} packages, the
+user must build this from source, which requires OpenAccess source
+code.  }
 
-{\Xic} can connect to an OpenAccess (OA) database through a plug-in,
-which is supplied with all {\Xic} releases for other than Microsoft
-Windows, on which there is no OA support.  Since there is no default
-location for OA, the user must set the {\vt XIC\_LIBRARY\_PATH} or the
-{\vt LD\_LIBRARY\_PATH} variable to include the library location in
-the search path during program loading.  This is most conveniently
-done in the user's shell startup script.
+OpenAccess is a semi-open-source database for CAD/EDA data.  It is
+used by Cadence Virtuoso, Synopsys Custom Compiler, and by many other
+tools.  It provides a commonality among tools from different vendors,
+and is intended to facilitate seamless integration of tools from
+different vendors into a process flow.  OpenAccess is distributed by
+Si2 ({\vt www.si2.org}).  Source code and binary distributions are
+available for a number of operating systems, to registered users and
+coalition members.
 
-Presently, the plug-in is compiled with the OpenAccess releases below. 
-The plug-in can work with libraries from newer OpenAccess releases,
-but not with libraries from an older release.
- 
-\begin{tabular}{ll}
-\bf Distribution & \bf OpenAccess Release\\
-LinuxRHEL5 (32 and 64 bit) & 22.04.054\\
-all others & 22.04.064\\
-\end{tabular}
- 
-These are known to be compatible will OpenAccess from Ciranova PyCell
-Studio release 4.7.1 and later, and Cadence Virtuoso 6.1.4 and later. 
-This includes Virtuoso 6.1.7 which jumps to OpenAccess API level 5. 
-The existing plugin can handle API levels 4 and 5.
-
-There are at least three ways to obtain OpenAccess.
-\begin{enumerate}
-\item{From a Cadence Virtuoso installation on the same computer.}
-\item{From a Ciranova (now Synopsys) PyCell Studio portable-pcell
-  installation on the same computer.}
-\item{From an OpenAccess distribution from the Si2 organization.}
-\end{enumerate}
-
-The OpenAccess plug-in is provided with OS X releases, though
-(regrettably) Ciranova and Cadence do not support the platform.  Those
-inclined can get OpenAccess from Si2 and build it on OS X, using
-patches available from the Whiteley Research web site.  Unlike
-Windows, OS X is inherently a first-class CAD platform, too bad the
-big guys don't support it.  The patch also ports OpenAccess to
-FreeBSD, and improves support for recent Linux releases.
+{\Xic} can connect to an OpenAccess (OA) database through a plug-in. 
+Since there is no default location for OA, the user must set the {\vt
+XIC\_LIBRARY\_PATH} or the {\vt LD\_LIBRARY\_PATH} variable to include
+the library location in the search path during program loading.  This
+is most conveniently done in the user's shell startup script.
 
 Probably, the main interest in using OA is for limited compatibility
 with Cadence Virtuoso.  There are two levels here.  The first level is
@@ -2102,6 +2098,10 @@ Schematic and schematic symbol views from {\Xic} can not be read as
 anything but garbage by Virtuoso.  There are plans for a data
 translation stage in the future to possibly adapt {\Xic} schematics to
 Virtuoso format.
+
+Likewise, The plug-in allows a direct interface to Synopsys Custom
+Compiler, and supports Python-based PCells including stretch handle
+and abutment protocols.
 
 When the OpenAccess plug-in is loaded, there are several changes to
 {\Xic}.

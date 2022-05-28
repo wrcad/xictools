@@ -9,7 +9,7 @@ LOCATION = vl
 # -DHAVE_TIMES          | library has times()
 # -DHAVE_VSNPRINTF      | library has vsnprintf()
 
-VERSION = `./version`
+VERSION = `./release.sh`
 
 prefix = @prefix@
 itopok = @itopok@
@@ -31,7 +31,7 @@ FILTER = @FILTER@
 TOOLROOT = @TOOLROOT@
 
 BASE = ../xt_base
-INCLUDE = -I. -I$(BASE)/include
+INCLUDE = -Iinclude -I$(BASE)/include
 
 CCFILES = vl_data.cc vl_expr.cc vl_gate.cc vl_obj.cc vl_parse.cc vl_print.cc \
   vl_sim.cc vl_st.cc vl_sys.cc
@@ -77,8 +77,8 @@ distclean: clean
 	-@rm -f config.cache config.h config.log config.status Makefile
 
 # yacc/lex rules
-verilog_yacc.cc verilog_yacc.h: verilog.y vl_defs.h vl_list.h vl_st.h \
-    vl_types.h
+verilog_yacc.cc verilog_yacc.h: verilog.y include/vl_defs.h \
+    include/vl_list.h include/vl_st.h include/vl_types.h
 	$(YACC) -d verilog.y
 	@if [ -f verilog.tab.c ]; then \
 	    mv -f verilog.tab.c verilog_yacc.cc; \
@@ -88,7 +88,8 @@ verilog_yacc.cc verilog_yacc.h: verilog.y vl_defs.h vl_list.h vl_st.h \
 	    mv -f y.tab.h verilog_yacc.h; \
 	fi
 
-verilog_lex.cc: verilog.l verilog_yacc.h vl_defs.h vl_list.h vl_st.h vl_types.h
+verilog_lex.cc: verilog.l verilog_yacc.h include/vl_defs.h \
+    include/vl_list.h include/vl_st.h include/vl_types.h
 	$(LEX) verilog.l
 	@mv -f lex.yy.c verilog_lex.cc
 

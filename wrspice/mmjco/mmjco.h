@@ -43,13 +43,13 @@ public:
     complex<double> Jpair(double x)
         {
             double absx = maximum(fabs(x), 1e-5);
-            return (Repair(absx) + sign(x)*1j*Impair(absx));
+            return (complex<double>(Repair(absx), sign(x)*Impair(absx)));
         }
 
     complex<double> Jqp(double x)
         {
             double absx = maximum(fabs(x), 1e-5);
-            return (Reqp(absx) + sign(x)*1j*Imqp(absx));
+            return (complex<double>(Reqp(absx), sign(x)*Imqp(absx)));
         }
 
     // As above, but smoothed.
@@ -77,9 +77,6 @@ public:
 
     static double minimum(double x, double y) { return (x < y ? x : y); }
     static double maximum(double x, double y) { return (x > y ? x : y); }
-
-    static void save_data(const char*, const double*, const complex<double>*,
-        const complex<double>*, int);
 
     static const char *version()    { return (mm_version); }
 
@@ -201,12 +198,13 @@ private:
         {
             if (mm_symj) {
                 double absx = maximum(fabs(x),1.e-5);
-                return (dRe(absx) + sign(x)*1j*(dIm(absx) + dIm_at_0(absx)));
+                return (complex<double>(dRe(absx),
+                    sign(x)*(dIm(absx) + dIm_at_0(absx))));
             }
             else {
                 double absx = maximum(fabs(x),1.e-5);
-                return (dRe(absx) + dRe_minus(absx) + sign(x)*1j*(dIm(absx) +
-                    dIm_minus(absx)));
+                return (complex<double>(dRe(absx) + dRe_minus(absx),
+                    sign(x)*(dIm(absx) + dIm_minus(absx))));
             }
         }
 
@@ -215,12 +213,13 @@ private:
 
             if (mm_symj) {
                 double absx = maximum(fabs(x),1.e-5);
-                return (dRe(absx) + sign(x)*1j*(-dIm(absx) + dIm_at_0(absx)));
+                return (complex<double>(dRe(absx),
+                    sign(x)*(-dIm(absx) + dIm_at_0(absx))));
             }
             else {
                 double absx = maximum(fabs(x),1.e-5);
-                return (dRe(absx) - dRe_minus(absx) + sign(x)*1j*(-dIm(absx) +
-                    dIm_minus(absx)));
+                return (complex<double>(dRe(absx) - dRe_minus(absx),
+                    sign(x)*(-dIm(absx) + dIm_minus(absx))));
             }
         }
 
@@ -321,8 +320,9 @@ public:
 
     void new_fit_parameters(const double*, const complex<double>*,
         const complex<double>*, int, int, double);
-    void save_fit_parameters(const char*);
-    void load_fit_parameters(const char*);
+    void save_fit_parameters(const char*, FILE* = 0, const char* = 0);
+    void load_fit_parameters(const char*, FILE*);
+    void load_fit_parameters(const double*, int);
     void tca_fit(const double*, int, complex<double>**, complex<double>**);
     double residual(const complex<double>*, const complex<double>*,
         const complex<double>*, const complex<double>*, int, double);

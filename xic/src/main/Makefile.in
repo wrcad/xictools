@@ -18,7 +18,7 @@ LIB_TARGET = main.a
 
 BASE = ../../../xt_base
 SECURE = ../../../secure
-INCLUDE = -I../../include -I$(BASE)/include -I$(SECURE)
+INCLUDE = -I../../include -I$(BASE)/include -I$(SECURE)/include
 
 HFILES =
 CCFILES = \

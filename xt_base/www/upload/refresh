@@ -7,6 +7,9 @@
 login=stevew
 srcdir=/home/$login/src/xt/xt_base/www/upload
 
+# SSH command, note alternate port.
+sshcmd="ssh -p 2222"
+
 sshc=$SSH_CONNECTION
 if [ -z "$sshc" ]; then
     echo "Can't get home IP, exiting"
@@ -20,7 +23,7 @@ files="fetchnew mklinks mktab refresh update update_help update_man \
  upload wupd xupd"
 for f in $files; do
     echo uploading $f
-    rsync --rsh=ssh $login@$home:$srcdir/$f .
+    rsync --rsh="$sshcmd" $login@$home:$srcdir/$f .
     if [ ! -f $f ]; then
         echo "Error: failed to upload \'$f\' script."
     fi
@@ -32,7 +35,7 @@ done
 f=README
 if [ -n "$f" ]; then
     echo uploading $f
-    rsync --rsh=ssh $login@$home:$srcdir/$f .
+    rsync --rsh="$sshcmd" $login@$home:$srcdir/$f .
     if [ ! -f $f ]; then
         echo "Error: failed to upload \'$f\' script."
     fi

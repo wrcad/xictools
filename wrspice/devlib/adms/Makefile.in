@@ -5,7 +5,7 @@
 
 # This must match the SyntaxLevel defined in device.xml.  If it is
 # smaller, you need to update this Makefile to match devkit/Makefile.
-SyntaxLevel = 17
+SyntaxLevel = 18
 
 #######################################################################
 #  MANDATORY User Configuration
@@ -140,10 +140,12 @@ WRSPICE = wrspice
 #  isn't like mine, likely for non-Linux.
 #######################################################################
 
+ifneq ($(WRSPICE),)
 VSTR = $(shell $(WRSPICE) --v)
 DEVLIB_VERSION = $(word 1, $(VSTR))
 OSNAME = $(word 2, $(VSTR))
 ARCH = $(word 3, $(VSTR))
+endif
 
 # This Makefile originated from this distribution:
 #DEVLIB_VERSION = @DEVLIB_VERSION@
@@ -163,16 +165,16 @@ DATE = @DATE@
 
 # Advanced users can edit the blocks below if necessary.
 
-ifeq ($(OSNAME),Win32)
+ifeq ($(OSNAME),MINGW)
 
-# Windows, compiler and libraries from win-builds.org.
-CXX = /usr/local/win-builds/bin/g++
-CC = /usr/local/win-builds/bin/gcc
-LINKCC = $(CXX) -static-libgcc -static-libstdc++
-CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread 
+# MINGW x86_64
+CXX = /mingw64/bin/g++
+CC = /mingw64/bin/gcc
+LINKCC = /mingw64/bin/g++ -static-libgcc -static-libstdc++
+CFLAGS = -O2 -Wall -W -Wshadow -Wwrite-strings -pthread 
 LSHFLAG = -shared -Wl,--enable-auto-import,--export-all-symbols
-DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
-FILTER = |sed -e s/C:// -e s///
+DEPEND_PROG = $(CC) -MM -O2 -Wall -W -Wshadow -Wwrite-strings -pthread
+FILTER = 
 PIC_OPT = 
 SOEXT = dll
 DEVWINDLL = -L$(DLL_LOC) -lwrspice
@@ -183,7 +185,7 @@ else ifeq ($(OSNAME:Darwin%=Darwin),Darwin)
 CXX = g++
 CC = gcc
 LINKCC = $(CXX)
-CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread -mmacosx-version-min=10.10 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+CFLAGS = @CFLAGS_S@ @UFLAGS@
 LSHFLAG = -dynamiclib -undefined dynamic_lookup
 DEPEND_PROG = $(CC) -MM
 FILTER = 

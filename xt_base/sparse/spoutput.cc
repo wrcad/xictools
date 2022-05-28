@@ -208,11 +208,11 @@ spMatrixFrame::spPrint(int printReordered, int data, int header, FILE *fp)
 
     // Create a packed external to internal row and column translation
     // array.
-#if SP_OPT_TRANSLATE
-    int top = AllocatedExtSize;
-#else
+//#if SP_OPT_TRANSLATE
+//    int top = AllocatedExtSize;
+//#else
     int top = AllocatedSize;
-#endif
+//#endif
     int *printOrdToIntRowMap = new int[top + 1];
     int *printOrdToIntColMap = new int[top + 1];
     memset(printOrdToIntRowMap, 0, (top+1)*sizeof(int));

@@ -14,7 +14,7 @@ while IFS= read -r line; do
         echo 'version)'
         echo '  case $2 in'
         for a in $progs; do
-          printf "  %s) echo %s;;\n" $a $($edir/../../../$a/version)
+          printf "  %s) echo %s;;\n" $a $($edir/../../../$a/release.sh)
         done
         echo '  esac'
         echo ';;'

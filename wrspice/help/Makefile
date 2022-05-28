@@ -11,7 +11,7 @@ BASE = ../../xt_base/help
 SPBASE = ../../xt_base/sphelp
 MOZY = ../../mozy/help
 
-depend: $(BASEFILES) $(MOZYFILES) $(SPFILES)
+depend: $(BASEFILES) $(MOZYFILES) $(SPFILES) cptest
 	cd screenshots; $(MAKE)
 
 $(BASEFILES):
@@ -39,7 +39,7 @@ spSources.hlp:  $(SPBASE)/spSources.hlp
 
 clean:
 
-distclean:
+distclean: cptest
 	-@rm -f $(BASEFILES) $(MOZYFILES) $(SPFILES)
 	-@cd screenshots; $(MAKE) distclean
 

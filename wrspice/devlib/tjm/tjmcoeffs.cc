@@ -38,22 +38,46 @@
  $Id:$
  *========================================================================*/
 
+// Enable external TJM support.  WRspice provides tjm_fopen, defined
+// in ckt.cc.  WRspice is sensitive to a variable named "tjm_path"
+// which is list of locations to search for fit files.  This
+// effectively defaults to "( .  ~/.mmjco )".
+//
+#define TJM_IF
+
+#include <stdio.h>
+#include <unistd.h>
 #include "tjmdefs.h"
 #include "stab.h"
-#include <stdio.h>
-
-// WRspice provides this, defined in ckt.cc.  This not defined in the
-// headers to avoid having to include stdio there.  WRspice is
-// sensitive to a variable named "tjm_path" which is list of locations
-// to search for fit files.  This effectively defaults to
-// "( . ~/.mmjco )".
-//
-extern FILE *tjm_fopen(const char*);
 
 
 //
 // A database of tunneling amplitude tables for the TJM.
 //
+
+// Static function.
+// Return the coefficient set file name for the parameters.
+//
+char *
+TJMcoeffSet::fit_fname(double temp, double d1, double d2, double sm,
+    int numxpts, int numterms, double thr)
+{
+    char tbuf[80];
+    sprintf(tbuf, "tca%06ld%05ld%05ld%02ld%04d",
+        lround(temp*1e4), lround(d1*1e7), lround(d2*1e7), lround(sm*1e3),
+        numxpts);
+    /* Original format.
+    sprintf(tbuf, "tca%03ld%03ld%03ld%02ld%04d",
+        lround(temp*100), lround(d1*100000), lround(d2*100000),
+        lround(sm*1000), numxpts);
+    */
+    sprintf(tbuf+strlen(tbuf), "-%02d%03ld.fit", numterms,
+        lround(thr*1e3));
+    char *tr = new char[strlen(tbuf)+1];
+    strcpy(tr, tbuf);
+    return (tr);
+}
+
 
 namespace {
     // Built-in default TJM models, where p, A, and B are Dirichlet
@@ -126,17 +150,12 @@ namespace {
         cIFcomplex(-0.161605, 0.336628)};
 }
 
+
 sTab<TJMcoeffSet> *TJMcoeffSet::TJMcoeffsTab = 0;
 
-#define MAX_PARAMS 20
-
-
-// Static Function.
-TJMcoeffSet *
-TJMcoeffSet::getTJMcoeffSet(const char *nm)
+void
+TJMcoeffSet::check_coeffTab()
 {
-    if (!nm)
-        return (0);
     if (!TJMcoeffsTab) {
         TJMcoeffsTab = new sTab<TJMcoeffSet>(true);
         IFcomplex *p = new IFcomplex[8];
@@ -161,19 +180,113 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm)
         cs = new TJMcoeffSet(strdup("tjm2"), 10, p, A, B);
         TJMcoeffsTab->add(cs);
     }
+}
 
+
+#define MAX_PARAMS 20
+
+// Static Function.
+TJMcoeffSet *
+TJMcoeffSet::getTJMcoeffSet(double temp, double d1, double d2, double sm,
+    int numxpts, int numterms, double thr)
+{
+    char *nm = fit_fname(temp, d1, d2, sm, numxpts, numterms, thr);
+    TJMcoeffSet *cs = getTJMcoeffSet(nm, temp);
+    if (cs) {
+        delete [] nm;
+        return (cs);
+    }
+    char buf[80];
+    sprintf(buf,
+        "mmjco cdf -t %.4f -d1 %.4f -d2 %.4f -s %.3f -x %d -n %d -h %.2f",
+        temp, d1*1e3, d2*1e3, sm, numxpts, numterms, thr);
+    const char *mpath = getenv("MMJCO_PATH");
+    char *str;
+    if (mpath) {
+        str = new char[strlen(mpath) + strlen(buf) + 2];
+        sprintf(str, "%s/%s", mpath, buf);
+    }
+    else {
+        str = new char[strlen(buf) + 1];
+        strcpy(str, buf);
+    }
+    printf("%s\n", str);
+    int ret = system(str);
+    delete [] str;
+    if (ret != 0) {
+        printf("Operation failed: return value %d\n", ret);
+        delete [] nm;
+        return (0);
+    }
+    cs = getTJMcoeffSet(nm, temp);
+    delete [] nm;
+    return (cs);
+}
+
+
+// Static Function.
+TJMcoeffSet *
+TJMcoeffSet::getTJMcoeffSet(const char *nm, double temp)
+{
+    if (!nm)
+        return (0);
+    check_coeffTab();
+
+    const char *swpfile = 0;
+    char buf[256];
+    if (!strncmp(nm, "tsweep", 6)) {
+        // A sweep file.
+        swpfile = strdup(nm);
+
+        // Compose the name of the fit file.
+        strcpy(buf, nm);
+        char *t = strrchr(buf, '.');
+        if (t && !strcmp(t, ".swp"))
+            *t = 0;
+        sprintf(buf + strlen(buf), "_%.4f.fit", temp);
+        nm = buf;
+    }
+
+    // Maybe we already have this one in memory?
     TJMcoeffSet *cs = TJMcoeffsTab->find(nm);
     if (cs)
         return (cs);
 
-    FILE *fp = tjm_fopen(nm);
+    if (swpfile) {
+        // Call mmjco to generate a fit file for temp.
+        const char *mpath = getenv("MMJCO_PATH");
+        char *cmd;
+        if (mpath) {
+            cmd = new char[strlen(mpath) + strlen(swpfile) + 32];
+            sprintf(cmd, "%s/mmjco swf -fs %s %.4f", mpath, swpfile, temp);
+        }
+        else {
+            cmd = new char[strlen(swpfile) + 32];
+            sprintf(cmd, "mmjco swf -fs %s %.4f", swpfile, temp);
+        }
+        int ret = system(cmd);
+        delete [] cmd;
+        if (ret != 0) {
+//XXX
+fprintf(stderr, "system command failed\n");
+            delete [] swpfile;
+            return (0);
+        }
+    }
+
+    char *rpath = 0;
+    FILE *fp;
+    if (swpfile)
+        fp = tjm_fopen(nm, &rpath);
+    else
+        fp = tjm_fopen(nm, 0);
     if (fp) {
         cIFcomplex p[MAX_PARAMS], A[MAX_PARAMS], B[MAX_PARAMS];
-        char buf[256];
+        char tbuf[256];
         int cnt = 0;
-        while (fgets(buf, 256, fp) != 0) {
+        while (fgets(tbuf, 256, fp) != 0) {
             double pr, pi, ar, ai, br, bi;
-            if (sscanf(buf, "%lf %lf %lf %lf %lf %lf", &pr, &pi, &ar, &ai,
+            if (sscanf(tbuf, "%lf, %lf, %lf, %lf, %lf, %lf", &pr, &pi, &ar, &ai,
                     &br, &bi) == 6) {
                 if (cnt < MAX_PARAMS) {
                     p[cnt].real = pr;
@@ -195,9 +308,51 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm)
                 nA[i] = A[i];
                 nB[i] = B[i];
             }
-            return (new TJMcoeffSet(strdup(nm), cnt, nA, nB, np));
+            cs = new TJMcoeffSet(strdup(nm), cnt, np, nA, nB);
         }
+        fclose(fp);
     }
-    return (0);
+    if (swpfile) {
+        unlink(rpath);
+        delete [] rpath;
+        delete [] swpfile;
+    }
+    return (cs);
+}
+
+
+// Static function.
+// Jqp model.
+//
+cIFcomplex *
+TJMcoeffSet::modelJqp(const cIFcomplex *cp, const cIFcomplex *cb, int csz,
+    const double *w, int lenw)
+{
+#define rep(z)  (-fabs(z))
+#define zeta(n) cp[n].real
+#define eta(n)  cp[n].imag
+#define reb(n)  cb[n].real
+#define imb(n)  cb[n].imag
+    cIFcomplex *sum = new cIFcomplex[lenw];
+    for (int k = 0; k < lenw; k++) {
+        sum[k].real = 0.0;
+        sum[k].imag = 0.0;
+        for (int n = 0; n < csz; n++) { 
+            double numr = reb(n)*rep(zeta(n)) + imb(n)*eta(n);
+            double numi = w[k]*reb(n);
+            double denr = rep(zeta(n))*rep(zeta(n)) + eta(n)*eta(n) - w[k]*w[k];
+            double deni = 2.0*w[k]*rep(zeta(n));
+            double d = denr*denr + deni*deni;
+            sum[k].real -= (numr*denr + numi*deni)/d;
+            sum[k].imag -= (numi*denr - numr*deni)/d;
+        }
+        sum[k].imag += w[k];
+    }
+    return (sum);
+#undef rep
+#undef zeta
+#undef eta
+#undef reb
+#undef imb
 }
 

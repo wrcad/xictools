@@ -220,10 +220,12 @@ namespace {
             if (v->length() == 1) {
                 char *b = lstring::copy(buf);
                 if (v->isreal()) {
+                    const char *bb = b;
+                    double *d = SPnum.parse(&bb, false);
                     sprintf(buf, "%s", 
                         format ? numprint(v->realval(0), format, buf2) :
                         SPnum.printnum(v->realval(0), v->units(), false));
-                    if (strcmp(b, buf))
+                    if (strcmp(b, buf) && (!d || *d != v->realval(0)))
                         TTY.printf("%s = %s\n", b, buf);
                     else
                         TTY.printf("%s\n", buf);

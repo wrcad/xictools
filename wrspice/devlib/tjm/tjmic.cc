@@ -72,12 +72,12 @@ TJMdev::getic(sGENmodel *genmod, sCKT *ckt)
     for (sTJMmodel *model = static_cast<sTJMmodel*>(genmod); model;
             model = model->next()) {
 
-        double vth = model->TJMvdpbak/model->TJMtsaccl;
         if (model->TJMictype != 0) {
-            if (vmax < vth)
-                vmax = vth;
             sTJMinstance *inst;
             for (inst = model->inst(); inst; inst = inst->next()) {
+                double vth = inst->TJMvdpbak/model->TJMtsaccl;
+                if (vmax < vth)
+                    vmax = vth;
 
                 if (inst->TJMcriti > 0) {
                     double temp = inst->TJMinitVoltage;

@@ -20,13 +20,13 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-FASTHENRY = fasthenry-3.0wr-113020.tar.gz
+FASTHENRY = fasthenry-3.0wr-010222.tar.gz
 
 FASTHENRY_DIR = fasthenry-3.0wr
 SRCDIR = $(FASTHENRY_DIR)/src/fasthenry
 
-IDSTR := \"`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`\"
-VERS := \"`./version`\"
+IDSTR := \"`./release.sh` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`\"
+VERS := \"`./release.sh`\"
 
 all: unpack
 	# Make the KLU version since it is faster.
@@ -72,7 +72,7 @@ dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
 install: install_test install_force
 
-install_force: install_clean install_bin install_lib install_examples
+install_force: uninstall_clean install_bin install_lib install_examples
 
 install_bin: $(dst_bin)
 install_lib: $(dst_lib) $(dst_lib)/doc
@@ -85,13 +85,6 @@ install_test::
 	        exit 1; \
 	    fi; \
 	fi
-
-install_clean::
-	-@execs=`packages/util/fh_files bin`; \
-	for aa in $$execs; do \
-	    rm -f $(dst_bin)/$$aa$(EXESUFFIX); \
-	done
-	rm -rf $(dst_lib)
 
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
@@ -142,6 +135,23 @@ $(dst_lib)/examples::
 	@$(BASE)/util/mkdirpth $@/torture
 	@$(INSTALL_LIB) $(FASTHENRY_DIR)/examples/torture/README $@/torture
 	@$(INSTALL_LIB) $(FASTHENRY_DIR)/examples/torture/bfh.inp $@/torture
+
+uninstall: uninstall_test uninstall_clean
+
+uninstall_test::
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	echo "No!  Use operating system or wr_uninstall script to uninstall!"; \
+	        exit 1; \
+	    fi; \
+	fi
+
+uninstall_clean::
+	-@execs=`packages/util/fh_files bin`; \
+	for aa in $$execs; do \
+	    rm -f $(dst_bin)/$$aa$(EXESUFFIX); \
+	done
+	-@rm -rf $(dst_lib)
 
 package::
 	$(MAKE) all

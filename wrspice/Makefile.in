@@ -73,7 +73,7 @@ VLOG = ../vl
 ifeq ($(USESECURE), yes)
 SECURE = ../secure
 SECURELIB = $(SECURE)/secure.a
-INCLUDE = -Iinclude -I$(BASE)/include -I$(SECURE)
+INCLUDE = -Iinclude -I$(BASE)/include -I$(SECURE)/include
 else
 INCLUDE = -Iinclude -I$(BASE)/include
 endif
@@ -161,7 +161,7 @@ bin/printtoraw: bin/printtoraw.o $(BASE)/lib/miscutil.a
 	@$(LINKCC) -o bin/printtoraw bin/printtoraw.o $(BASE)/lib/miscutil.a \
   $(STDCLIB) $(WINPTHREADFIX)
 
-mmjco/mmjco: 
+mmjco/mmjco::
 	cd mmjco; make
 
 #######################################################################
@@ -303,6 +303,7 @@ clean: eclean
 	-@for a in $(SUBDIRS) devlib; do \
 	    (cd $$a; $(MAKE) $@) \
 	done
+	cd mmjco; $(MAKE) clean
 	-@rm -f bin/*.o $(WDEMODIR).tar.gz
 
 distclean: eclean
@@ -310,6 +311,7 @@ distclean: eclean
   ipc_demo_files; do \
 	    (cd $$a; $(MAKE) $@) \
 	done
+	-@cd mmjco; $(MAKE) distclean
 	-@rm -f bin/*.o wrspice_ipc_demo.tar.gz Makefile
 	-@rm -f examples/wrspice_ipc_demo.tar.gz
 
@@ -346,7 +348,7 @@ wdemo wrspice_ipc_demo:
 	@cp -pf ../xic/src/sced/sced_spiceipc.cc $(WDEMODIR)
 	@cp -pf ../xic/include/sced_spiceipc.h $(WDEMODIR)
 	@cp -pf bin/wrspiced.cc $(WDEMODIR)
-	@cp -pf version $(WDEMODIR)
+	@cp -pf release.sh $(WDEMODIR)
 	@tar czf $(WDEMODIR).tar.gz $(WDEMODIR)
 	@rm -rf $(WDEMODIR)
 	@cp -f $(WDEMODIR).tar.gz examples
@@ -444,7 +446,7 @@ $(destn)/bin::
 	@for aa in wrspiced multidec proc2mod printtoraw; do \
 	    $(INSTALL_BIN) bin/$$aa$(EXESUFFIX) $@; \
 	done
-	$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@; \
+	@$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@;
 # Don't strip wrspice.exe, Webroot will think its a virus!
 	@if [ $(DLL_SPICE_PROG) = wrspice ]; then \
 	    $(INSTALL_BIN) bin/wrspice.dll $@; \
@@ -564,7 +566,9 @@ $(destn)/devkit::
 	done;
 
 $(destn)/cadence-oasis::
-	cp -pfr cadence-oasis $(destn)
+	if [ -d cadence-oasis ]; then \
+	    cp -pfr cadence-oasis $(destn); \
+	fi
 
 devkit_examples:
 	(cd devlib/adms/examples; \

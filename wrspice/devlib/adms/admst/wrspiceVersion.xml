@@ -2773,6 +2773,21 @@
       <admst:variable name="e" select="ckt->va_random($args)"/>
     </admst:when>
 
+    <!-- WRspice internal function -->
+    <admst:when test="[name='\$bcs_egapv']">
+      <admst:assert test="[count(arguments)=1 or count(arguments)=2 or
+          count(arguments)=3]"
+        format="%(name): should have 1 to 3 arguments\n"/>
+      <admst:for-each select="arguments">
+        <admst:if test="[$args!='']">
+          <admst:variable name="args" select="$args,"/>
+        </admst:if>
+        <admst:apply-templates select="." match="ddx"/>
+        <admst:variable name="args" select="$args$e"/>
+      </admst:for-each>
+      <admst:variable name="e" select="DEV.bcs_egapv($args)"/>
+    </admst:when>
+
     <!--
       The following random distribution functions have an extra
       argument to pass the time-lattice spacing for use duriing
@@ -5115,37 +5130,35 @@ error here?  below generates "bad attribute" erors
   -->
   <admst:choose>
     <admst:when test="[
-        $package_devkey='a' or
-        $package_devkey='b' or
-        $package_devkey='c' or
-        $package_devkey='d' or
-        $package_devkey='e' or
-        $package_devkey='f' or
-        $package_devkey='g' or
-        $package_devkey='h' or
-        $package_devkey='i' or
-        $package_devkey='l' or
-        $package_devkey='n' or
-        $package_devkey='o' or
-        $package_devkey='p' or
-        $package_devkey='r' or
-        $package_devkey='s' or
-        $package_devkey='t' or
-        $package_devkey='u' or
-        $package_devkey='v' or
-        $package_devkey='w' or
-        $package_devkey='y']">
+      $package_devkey='a' or
+      $package_devkey='c' or
+      $package_devkey='d' or
+      $package_devkey='e' or
+      $package_devkey='f' or
+      $package_devkey='g' or
+      $package_devkey='h' or
+      $package_devkey='i' or
+      $package_devkey='l' or
+      $package_devkey='n' or
+      $package_devkey='o' or
+      $package_devkey='p' or
+      $package_devkey='r' or
+      $package_devkey='s' or
+      $package_devkey='t' or
+      $package_devkey='u' or
+      $package_devkey='v' or
+      $package_devkey='w' or
+      $package_devkey='y']">
 
       <!-- Source devices are allowed now -->
       <!-- a: Spice3 arbitrary source -->
-      <!-- e:  voltage-controlled voltage source -->
-      <!-- f:  current-controlled current source -->
-      <!-- g:  voltage-conttrolled current source -->
-      <!-- h:  current-controlled voltage source -->
+      <!-- e: voltage-controlled voltage source -->
+      <!-- f: current-controlled current source -->
+      <!-- g: voltage-conttrolled current source -->
+      <!-- h: current-controlled voltage source -->
       <!-- i: current source -->
       <!-- v: voltage source -->
 
-      <!-- b: josephson junction -->
       <!-- c: capacitor -->
       <!-- d: diode -->
       <!-- l: inductor -->
@@ -5163,6 +5176,32 @@ error here?  below generates "bad attribute" erors
         <admst:value-of select="analog"/>
         <admst:value-of select="."/>
         <admst:new datatype="variable" arguments="%p,$package_devkey,%p">
+          <admst:push into="module/variable" select="." onduplicate="ignore"/>
+          <admst:value-to select="sizetype" value="scalar"/>
+          <admst:value-to select="type" value="integer"/>
+          <admst:value-to select="input" value="yes"/>
+          <admst:value-to select="output" value="yes"/>
+          <admst:value-to select="parametertype" value="model"/>
+          <admst:value-to select="scope" value="global_model"/>
+          <admst:new datatype="number" arguments="0">
+            <admst:value-to select="scalingunit" value="1"/>
+            <admst:value-of select="."/>
+            <admst:value-of select="../module"/>
+            <admst:new datatype="expression" arguments="%p,%p">
+              <admst:value-of select="."/>
+              <admst:value-to select="../../default" value="%p"/>
+            </admst:new>
+          </admst:new>
+        </admst:new>
+      </admst:if>
+    </admst:when>
+    <admst:when test="[$package_devkey='b']">
+      <!-- b: josephson junction -->
+      <!-- default model name is "jj" -->
+      <admst:if test="[nilled(variable[name='jj'])]">
+        <admst:value-of select="analog"/>
+        <admst:value-of select="."/>
+        <admst:new datatype="variable" arguments="%p,jj,%p">
           <admst:push into="module/variable" select="." onduplicate="ignore"/>
           <admst:value-to select="sizetype" value="scalar"/>
           <admst:value-to select="type" value="integer"/>

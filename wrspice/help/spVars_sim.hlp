@@ -687,7 +687,7 @@ Simulation Option Variables
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
       <th>Set From</th></tr>
-    <tr><td>1e6</td> <td>1e-2</td> <td>1e12</td>
+    <tr><td>1e3</td> <td>1e-3</td> <td>1e6</td>
       <th>Simultion Defaults/Convergence</th></tr>
     </table>
     </dl>
@@ -1994,8 +1994,8 @@ Simulation Option Variables
     <dt><tt>tjm_path</tt><dd>
     This list variable provides the directories to search for tunnel
     current amplitude tables created with the <a
-    href="mmjco.txt"><i>mmjco</i> utility</a> or equivalent, for use
-    in the microscopic <a href="jjmodel">Josephson junction</a> model. 
+    href="mmjco"><b>mmjco</b> utility</a> or equivalent, for use
+    in the microscopic <a href="tjmodel">Josephson junction</a> model. 
     If not given, the search path is effectively "<tt>( . 
     $HOME/.mmjco }</tt>".
     </dl>

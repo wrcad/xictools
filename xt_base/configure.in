@@ -7,7 +7,8 @@ dnl ***
 dnl *** Initialize
 dnl ***
 
-AC_INIT(configure)
+AC_INIT
+AC_CONFIG_SRCDIR([configure])
 
 linux32=no
 if test "`uname -m`" = i686; then
@@ -47,13 +48,13 @@ fi
 
 DATE=`/bin/date`
 if test -d ../wrspice; then
-    SPICE_VERSION=`../wrspice/version wrspice`
-    DEVLIB_VERSION=`../wrspice/version devlib`
+    SPICE_VERSION=`../wrspice/release.sh wrspice`
+    DEVLIB_VERSION=`../wrspice/release.sh devlib`
     DEVLIB_SHARED_FILE=libwrsdev.so.2.0
     DEVLIB_STATIC_FILE=libwrsdev.a
 fi
 if test -d ../xic; then
-    GFX_VERSION=`../xic/version xic`
+    GFX_VERSION=`../xic/release.sh xic`
 fi
 TOOLROOT="xictools"
 AC_SUBST(prefix)
@@ -79,6 +80,7 @@ if test $enable_mingw != yes -a $enable_mingw != no; then
     mingw_dir=$enable_mingw
     mingw=yes
 elif test $enable_mingw = yes; then
+    mingw_dir=/mingw64
     mingw=yes
 fi
 )
@@ -136,6 +138,21 @@ if test $enable_oa != yes -a $enable_oa != no; then
 elif test $enable_oa = yes; then
     with_oa=yes
     oa_loc=$OA_DEF_LOC
+fi
+)
+
+dnl Enable use of PyCellStudio-provided Python, and the potential to
+dnl use portable PCells.  The Python plug-in build and the running xic
+dnl must see the PyCellStudio environment.  Linux only.
+dnl
+dnl --enable-cni=/path/to/PyCellStudio
+with_cni="no"
+AC_ARG_ENABLE(cni,
+    [  ]--enable-cni[[=path_to_cni]]           enable Python from PyCellStudio,
+if test $enable_cni != no; then
+    cni_loc=$enable_cni
+    with_cni=yes
+
 fi
 )
 
@@ -224,16 +241,6 @@ if test -z "$PATCH"; then
     echo "  Error: the \"patch\" program is required and not found."
     exit 1
 fi
-AC_PATH_PROG(FLEX, flex, "")
-if test -z "$FLEX"; then
-    echo "  Error: the \"flex\" program is required and not found."
-    exit 1
-fi
-AC_PATH_PROG(BISON, bison, "")
-if test -z "$BISON"; then
-    echo "  Error: the \"bison\" program is required and not found."
-    exit 1
-fi
 AC_PATH_PROG(acf1, autoconf, "")
 if test -z "$acf1"; then
     AC_PATH_PROG(acf2, autoconf-2.69, "")
@@ -255,8 +262,30 @@ fi
 AC_PATH_PROG(LD, ld, "")
 AC_PATH_PROG(RANLIB, ranlib, "")
 
-NEED_FILTER=no
 sys_os=`uname`
+
+AC_PATH_PROG(FLEX, flex, "")
+if test -z "$FLEX"; then
+    echo "  Error: the \"flex\" program is required and not found."
+    exit 1
+fi
+LEX="$FLEX -l"
+if test $sys_os == "Darwin"; then
+    BISON=/usr/local/gtk2-bundle-x11/bin/bison
+else
+    AC_PATH_PROG(BISON, bison, "")
+fi
+if test -z "$BISON"; then
+    echo "  Error: the \"bison\" program is required and not found."
+    exit 1
+fi
+YACC="$BISON -y"
+AC_SUBST(LEX)
+AC_SUBST(YACC)
+AC_SUBST(FLEX)
+AC_SUBST(BISON)
+
+NEED_FILTER=no
 if test ${sys_os:0:6} = CYGWIN -o ${sys_os:0:5} = MINGW; then
     mingw=yes
 dnl # Filtering drive specifiers and linefeeds not needed in MSYS2.
@@ -319,9 +348,6 @@ AC_SUBST([NO_IGNORED_QUALIFIERS])
 
 AC_PROG_MAKE_SET
 
-LEX="flex -l"
-AC_PROG_LEX
-AC_PROG_YACC
 AC_PATH_XTRA
 
 DLL_SPICE_PROG='dll-wrspice'
@@ -356,15 +382,15 @@ Darwin)
     IFS="."
     set $kern
     IFS=$tifs
-dnl # uname -r returns the kernel release, it seems that the major
-dnl # index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
+dnl # uname -r returns the kernel release.
     if test $1 -ge 13; then
         OSNAME="Darwin"
-        ARCH="x86_64"
+dnl # uname -m is x86_64 or arm64.
+        ARCH=`uname -m`
         DIST_SUFFIX="pkg"
         SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
-dnl # support OSX 10.10 (Yosemite) and later.
-        UFLAGS="-mmacosx-version-min=10.10 -arch $ARCH -isysroot $SDK"
+dnl # support OSX 12.0 (Monterey) and later.
+        UFLAGS="-mmacosx-version-min=12.0 -arch $ARCH -isysroot $SDK"
         MALLOC='$(BASE)/lib/malloc.a'
         oa_lpath=$oa_loc/lib/darwin_64/opt
     else
@@ -388,10 +414,11 @@ Linux)
         dst=`rpm -qf /etc/os-release`
     fi
     if test -n "$dst"; then
-dnl     # RPM-based:  Red Hat, CentOS, OpenSuSE, and others.  Recognize 5/6/7
-dnl     # and assume RHEL production releases.  We obtain the release name
-dnl     # and number from RPM, which will work even if someone hacked the text
-dnl     # of the redhat-release file.
+dnl     # RPM-based:  Red Hat, CentOS, OpenSuSE, and others.  Recognize 5-9
+dnl     # as CentOS/RedHat releases.  We obtain the release name and number
+dnl     # from RPM, which will work even if someone hacked the text of the
+dnl     #  redhat-release file.
+
         DIST_SUFFIX="rpm"
         tifs=$IFS
         IFS=".-_ "
@@ -405,8 +432,8 @@ dnl     # Upper-case the first letter of oname.
         minor=$4
 
         if test -n "$major"; then
-dnl         # RedHat/CentOS/Fedora etc.  The $major may be a bare integer, or
-dnl         # something like "5Server".  Convert non-digits to spaces, then
+dnl         # RedHat/CentOS/Fedora etc.
+dnl         # Convert non-digits to spaces, then
 dnl         # keep only the first token. 
 
             major=`echo $major | tr -c 0-9 " "`
@@ -421,55 +448,26 @@ dnl         # No number found in major, try minor.
             major=$1
         fi
         if test -n "$major"; then
+            OSNAME="Linux$oname$major"
+            if test $linux32 = yes; then
+                ARCH="i686"
+                ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
+                lib_dirs="/usr/lib"
+            else
+                ARCH="x86_64"
+                lib_dirs="/usr/lib64"
+            fi
             case $major in
-            1 | 2 | 3 | 4)
-                echo "Architecture too archaic, not supported."
-                exit
-                ;;
-            5)
-                OSNAME="LinuxRHEL5"
-                if test $linux32 = yes; then
-                    ARCH="i686"
-                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                else
-                    ARCH="x86_64"
-                    lib_dirs="/usr/lib64"
+            6 | 7 | 8 | 9)
+                if test $oname = "Redhat" -o $oname = "Centos"; then
+                    with_psf_ok=yes
+                    if test $major = 7; then
+                        # Use old name for this one.
+                        OSNAME=LinuxRHEL7
+                    fi
                 fi
-                ;;
-            6)
-                OSNAME="LinuxRHEL6"
-                if test $linux32 = yes; then
-                    ARCH="i686"
-                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                    lib_dirs="/usr/lib"
-                else
-                    ARCH="x86_64"
-                    lib_dirs="/usr/lib64"
-                fi
-                with_psf_ok=yes
-                ;;
-            7)
-                OSNAME="LinuxRHEL7"
-                if test $linux32 = yes; then
-                    ARCH="i686"
-                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                    lib_dirs="/usr/lib"
-                else
-                    ARCH="x86_64"
-                    lib_dirs="/usr/lib64"
-                fi
-                with_psf_ok=yes
                 ;;
             *)
-                OSNAME="Linux$oname$major"
-                if test $linux32 = yes; then
-                    ARCH="i686"
-                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                    lib_dirs="/usr/lib"
-                else
-                    ARCH="x86_64"
-                    lib_dirs="/usr/lib64"
-                fi
                 ;;
             esac
         fi
@@ -709,12 +707,12 @@ dnl *** Python and Tcl/Tk configuration
 dnl ***
 
 if test $OSNAME = "Darwin"; then
-    if test -d /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/python2.7; then
-        PY_INCLUDE="-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/python2.7"
-        PY_LIBS="-L/usr/lib -lpython2.7"
-        PY_TARGETS="py27.dylib"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
-    fi
+dnl *** Apple prevents us from linking to python27 within the platform.
+dnl *** We now include a skeletal python27 in the gtk2-bundle.
+    PY_INCLUDE=-I/usr/local/gtk2-bundle-x11/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
+    PY_LIBS="-L/usr/local/gtk2-bundle-x11/lib -lpython2.7"
+    PY_TARGETS="py27.dylib"
+    echo '#define HAVE_PYTHON 1'>> confdefs.h
     if test -f /usr/include/tcl.h; then
         TCL_INCLUDE=
         TCL_LIBS="-ltcl"
@@ -726,7 +724,12 @@ if test $OSNAME = "Darwin"; then
         echo '#define HAVE_TK 1'>> confdefs.h
     fi
 elif test ${OSNAME:0:5} = "Linux"; then
-    if test -d /usr/include/python2.7; then
+    if test [ $with_cni == yes ]; then
+        PY_INCLUDE="-I$cni_loc/linux64/3rd/Python/include/python2.6"
+        PY_LIBS="-L$cni_loc/linux64/3rd/Python/lib -lpython2.6"
+        PY_TARGETS="py26.so"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    elif test -d /usr/include/python2.7; then
         PY_INCLUDE="-I/usr/include/python2.7"
         PY_LIBS="-lpython2.7"
         PY_TARGETS="py27.so"
@@ -764,7 +767,11 @@ dnl *** Checks for header files
 dnl ***
 
 AC_HEADER_DIRENT
-AC_HEADER_STDC
+# Autoupdate added the next two lines to ensure that your configure
+# script's behavior did not change.  They are probably safe to remove.
+# AC_CHECK_INCLUDES_DEFAULT
+# AC_PROG_EGREP
+
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(
     alloca.h execinfo.h dirent.h fcntl.h fenv.h float.h fnmatch.h \
@@ -783,13 +790,13 @@ dnl ***
 dnl *** Checks for typedefs, structures, and compiler characteristics
 dnl ***
 AC_C_CONST
-AC_HEADER_TIME
+AC_CHECK_HEADERS_ONCE([sys/time.h])
+
 AC_STRUCT_TM
-AC_TYPE_SIGNAL
+
 dnl check for socklen_t
 dnl AC_CHECK_SOCKTYPE(TYPE, DEFAULT)
-AC_DEFUN(AC_CHECK_SOCKTYPE,
-[AC_REQUIRE([AC_HEADER_STDC])dnl
+AC_DEFUN(AC_CHECK_SOCKTYPE,[
 AC_MSG_CHECKING(for $1)
 AC_CACHE_VAL(ac_cv_type_$1,
 [AC_EGREP_CPP(dnl
@@ -797,10 +804,9 @@ changequote(<<,>>)dnl
 <<(^|[^a-zA-Z_0-9])$1[^a-zA-Z_0-9]>>dnl
 changequote([,]), [#include <sys/types.h>
 #include <sys/socket.h>
-#if STDC_HEADERS
 #include <stdlib.h>
 #include <stddef.h>
-#endif], ac_cv_type_$1=yes, ac_cv_type_$1=no)])dnl
+], ac_cv_type_$1=yes, ac_cv_type_$1=no)])dnl
 AC_MSG_RESULT($ac_cv_type_$1)
 if test $ac_cv_type_$1 = no; then
     AC_DEFINE($1, $2)
@@ -845,7 +851,8 @@ if test $OSNAME = "MINGW"; then
     if test -z $REGEX; then
         MSLIBS="$MSLIBS -lregex -ltre -lintl -liconv"
     fi
-    MSLIBS2="-lbfd -liberty -lintl -liconv -lm"
+    MSLIBS2="$mingw_dir/lib/binutils/libbfd.a \
+ $mingw_dir/lib/binutils/libiberty.a -lintl -liconv -lm"
     dnl -lbfd -liberty required for stackdump.o, and fnmatch used in mswfile.cc
     SLIBS="$MSLIBS"
     LIBS="$MSLIBS $MSLIBS2 $LIBS"
@@ -914,54 +921,68 @@ else
     IMG_LIBS=
     IMG_FLAGS=
 
-dnl  Try to link static graphics libraries if found.
+dnl If set to yes, link static libraries if found.  Probably not
+dnl a good idea as they may become incompatible with dynamic libs.
+    prefer_static=no
 
     AC_CHECK_LIB(png, main)
     AC_CHECK_LIB(png, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
-    if test $linux32 = yes; then
-        if test -f /usr/lib/libpng.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib/libpng.a"
+    if test $prefer_static = yes; then
+        if test $linux32 = yes; then
+            if test -f /usr/lib/libpng.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib/libpng.a"
+            else
+                IMG_LIBS="$IMG_LIBS -lpng"
+            fi
         else
-            IMG_LIBS="$IMG_LIBS -lpng"
+            if test -f /usr/lib64/libpng.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib64/libpng.a"
+            else
+                IMG_LIBS="$IMG_LIBS -lpng"
+            fi
         fi
     else
-        if test -f /usr/lib64/libpng.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib64/libpng.a"
-        else
-            IMG_LIBS="$IMG_LIBS -lpng"
-        fi
+        IMG_LIBS="$IMG_LIBS -lpng"
     fi)
 
     AC_CHECK_LIB(tiff, main)
     AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
-    if test $linux32 = yes; then
-        if test -f /usr/lib/libtiff.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib/libtiff.a"
+    if test $prefer_static = yes; then
+        if test $linux32 = yes; then
+            if test -f /usr/lib/libtiff.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib/libtiff.a"
+            else
+                IMG_LIBS="$IMG_LIBS -ltiff"
+            fi
         else
-            IMG_LIBS="$IMG_LIBS -ltiff"
+            if test -f /usr/lib64/libtiff.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib64/libtiff.a"
+            else
+                IMG_LIBS="$IMG_LIBS -ltiff"
+            fi
         fi
     else
-        if test -f /usr/lib64/libtiff.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib64/libtiff.a"
-        else
-            IMG_LIBS="$IMG_LIBS -ltiff"
-        fi
+        IMG_LIBS="$IMG_LIBS -ltiff"
     fi)
 
     AC_CHECK_LIB(jpeg, main)
     AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
-    if test $linux32 = yes; then
-        if test -f /usr/lib/libjpeg.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib/libjpeg.a"
+    if test $prefer_static = yes; then
+        if test $linux32 = yes; then
+            if test -f /usr/lib/libjpeg.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib/libjpeg.a"
+            else
+                IMG_LIBS="$IMG_LIBS -ljpeg"
+            fi
         else
-            IMG_LIBS="$IMG_LIBS -ljpeg"
+            if test -f /usr/lib64/libjpeg.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib64/libjpeg.a"
+            else
+                IMG_LIBS="$IMG_LIBS -ljpeg"
+            fi
         fi
     else
-        if test -f /usr/lib64/libjpeg.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib64/libjpeg.a"
-        else
-            IMG_LIBS="$IMG_LIBS -ljpeg"
-        fi
+        IMG_LIBS="$IMG_LIBS -ljpeg"
     fi)
 
     tmplibs1="$tmplibsq $IMG_LIBS"
@@ -1051,7 +1072,6 @@ dnl *** Checks for library functions
 dnl ***
 
 AC_FUNC_VPRINTF
-AC_FUNC_WAIT3
 if test $OSNAME = "MINGW"; then
     dnl These are macros.
     ac_cv_func_gethostname="yes"
@@ -1140,9 +1160,9 @@ if test -f ginterf/ginterf.a; then
 fi
 
 if test -f config.h.in; then
-    AC_CONFIG_HEADER(config.h)
+    AC_CONFIG_HEADERS([config.h])
 elif test -f include/config.h.in; then
-    AC_CONFIG_HEADER(include/config.h)
+    AC_CONFIG_HEADERS([include/config.h])
 fi
 
 makefiles="Makefile"
@@ -1221,10 +1241,12 @@ if test -d ../wrspice; then
         ../wrspice/src/fte/Makefile \
         ../wrspice/src/${GRPREF}wrs/Makefile \
         ../wrspice/src/inp/Makefile \
+        ../wrspice/src/malt/Makefile \
         ../wrspice/src/misc/Makefile \
         ../wrspice/src/plot/Makefile \
         ../wrspice/src/sparse/Makefile \
         ../wrspice/ipc_demo_files/Makefile \
+        ../wrspice/mmjco/Makefile \
         ../wrspice/Makefile \
         ../wrspice/devlib/Makefile"
     (cd ../wrspice/devlib; make -f Makefile.in devlist)
@@ -1245,7 +1267,8 @@ if test -d ../fasthenry; then
     makefiles="$makefiles ../fasthenry/Makefile"
 fi
 
-AC_OUTPUT($makefiles)
+AC_CONFIG_FILES([$makefiles])
+AC_OUTPUT
 
 echo '#! /bin/sh'               > info.sh
 echo "# created by configure, don't edit" >> info.sh

@@ -25,6 +25,7 @@ sw
 tra
 urc
 jj
+tjm
 
 
 !! elements.tex 012509
@@ -1061,7 +1062,9 @@ Uniform RC Line
 passive
 tra
 
-!! elements.tex 032520
+!!REDIRECT jjdesc jj#jjdesc
+
+!! elements.tex 051422
 !!KEYWORD
 jj
 !!TITLE
@@ -1074,7 +1077,37 @@ Josephson Junctions
      </blockquote>
 
     <p>
-    Parameters:<br>
+    The default Josephson junction <a href="jjmodel">model</a> is an
+    extended version of the RSJ model as used by <a
+    href="jewett">Jewett</a>.  There are actually three Josephson
+    junction models available, through the <tt>level</tt> model
+    parameter, which can take values 1 through 3.  The default
+    <tt>level=1</tt> model is the RSJ model mentioned.  This model has
+    a simplified Verilog-A version which can be found among the
+    Verilog-A examples.  This can be compiled with the <tt>adms</tt>
+    utility into a run-time loadable module which can be loaded with
+    the <a href="devload"><b>devload</b></a> command.  A pre-compiled
+    module is provided with the example.  Once loaded into
+    <i>WRspice</i>, the model can be accessed with <tt>level=2</tt>.
+
+    <p>
+    For <tt>level=3</tt>, a <a href="tjmodel">microscopic tunnel
+    junction</a> "Werthamer" model, also known as a tunnel junction
+    model (TJM) is provided.  The model is more physics-based than the
+    empirical RSJ model.
+
+    <p>
+    Unless stated otherwise, information presented here applies to
+    instances of the standard RSJ model (<tt>level=1</tt>) and the
+    Verilog-A Josephson junction model (<tt>level=2</tt>) provided
+    with <i>WRspice</i> in the Verilog-A examples.
+
+    <p>
+    The instance parameters for the microscopic model are described
+    in the <a href="tjm">next section</a>.
+
+    <p>
+    Josephson Junction Instance Parameters Levels 1 and 2<br>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><th>Parameter Name</th> <th>Description</th></tr>
     <tr><td><tt>pijj=1|0</tt></td> <td>
@@ -1085,7 +1118,7 @@ Josephson Junctions
     <tr><td><tt>ics=</tt><i>val</i></td> <td>Instantiated critical
       current, used as scale factor for
       capacitance, conductances.</td></tr>
-    <tr><td><tt>temp=</tt><i>val</i></td> <td>Device temperature,
+    <tr><td><tt>temp_k=</tt><i>val</i></td> <td>Device temperature,
       Kelvin.</td></tr>
     <tr><td><tt>lser=</tt><i>val</i></td> <td>Junction series parasitic
       inductance.</td></tr>
@@ -1102,14 +1135,67 @@ Josephson Junctions
       analysis, alias <tt>ic_phase</tt>.</td></tr>
     <tr><td><tt>control=</tt><i>name</i></td> <td>
       Controlling voltage source or inductor name.</td></tr>
-    <tr><td><tt>n</tt></td> <td>
-      SFQ emission count (read only).</td></tr>
-    <tr><td><tt>phase</tt></td> <td>
-      Junction phase (read only).</td></tr>
-    <tr><td><tt>phsf</tt></td> <td>
-      True if SFQ count change at current time point (read only).</td></tr>
-    <tr><td><tt>phst</tt></td> <td>
-      Time of last SFQ emission (read only).</td></tr>
+
+    <tr><td><tt>n</tt> (read only)</td> <td>
+      SFQ emission count.</td></tr>
+    <tr><td><tt>phsf</tt> (read only)</td> <td>
+      True if SFQ count change at current time point.</td></tr>
+    <tr><td><tt>phst</tt> (read only)</td> <td>
+      Time of last SFQ emission.</td></tr>
+    <tr><td><tt>v</tt> (read only)</td> <td>
+      Terminal voltage.</td></tr>
+    <tr><td><tt>phase</tt> (read only)</td> <td>
+      Junction phase, alias <tt>phs</tt>.</td></tr>
+    <tr><td><tt>tcf</tt> (read only)</td> <td>
+      Temperature compensation factor.</td></tr>
+    <tr><td><tt>vg</tt> or <tt>vgap</tt> (read only)</td> <td>
+      Gap voltage.</td></tr>
+    <tr><td><tt>vless</tt> (read only)</td> <td>
+      Gap threshold voltage.</td></tr>
+    <tr><td><tt>vmore</tt> (read only)</td> <td>
+      Gap knee voltage.</td></tr>
+    <tr><td><tt>icrit</tt> (read only)</td> <td>
+      Maximum critical current.</td></tr>
+    <tr><td><tt>cc</tt> (read only)</td> <td>
+      Capacitance current.</td></tr>
+    <tr><td><tt>cj</tt> (read only)</td> <td>
+      Josephson current.</td></tr>
+    <tr><td><tt>cq</tt> (read only)</td> <td>
+      Quasiparticle current.</td></tr>
+    <tr><td><tt>c</tt> (read only)</td> <td>
+      Total device current.</td></tr>
+    <tr><td><tt>cap</tt> (read only)</td> <td>
+      Capacitance.</td></tr>
+    <tr><td><tt>g0</tt> (read only)</td> <td>
+      Subgap conductance.</td></tr>
+    <tr><td><tt>gn</tt> (read only)</td> <td>
+      Normal conductance.</td></tr>
+    <tr><td><tt>gs</tt> (read only)</td> <td>
+      Quasiparticle onset conductance.</td></tr>
+    <tr><td><tt>gshunt</tt> (read only)</td> <td>
+      External shunt conductance from <tt>vshunt</tt>.</td></tr>
+    <tr><td><tt>rshunt</tt> (read only)</td> <td>
+      External shunt resistance from <tt>vshunt</tt>.</td></tr>
+    <tr><td><tt>lshval</tt> (read only)</td> <td>
+      External shunt resistor parasitic inductance.</td></tr>
+    <tr><td><tt>g1</tt> (read only)</td> <td>
+      NbN quasiparticle parameter.</td></tr>
+    <tr><td><tt>g2</tt> (read only)</td> <td>
+      NbN quasiparticle parameter.</td></tr>
+    <tr><td><tt>node1</tt> (read only)</td> <td>
+      Node 1 number.</td></tr>
+    <tr><td><tt>node2</tt> (read only)</td> <td>
+      Node 2 number.</td></tr>
+    <tr><td><tt>pnode</tt> (read only)</td> <td>
+      Phase node number.</td></tr>
+    <tr><td><tt>lsernode</tt> (read only)</td> <td>
+      Internal <tt>lser</tt> node number.</td></tr>
+    <tr><td><tt>lserbrn</tt> (read only)</td> <td>
+      Internal <tt>lser</tt> branch number.</td></tr>
+    <tr><td><tt>lshnode</tt> (read only)</td> <td>
+      Internal <tt>lsh</tt> node number.</td></tr>
+    <tr><td><tt>lshbrn</tt> (read only)</td> <td>
+      Internal <tt>lsh</tt> branch number.</td></tr>
     </table>
 
     <p>
@@ -1119,13 +1205,6 @@ Josephson Junctions
         bxx 2 0 type1 control=l3<br>
         b2 4 5 ybco phi=1.57
     </tt></blockquote>
-
-    <p>
-    Unless stated otherwise, information presented here applies to the
-    standard RSJ model, the Verilog-A Josephson junction model
-    provided with <i>WRspice</i> in the Verilog-A examples, and the
-    microscopic model.  These are referred to as model levels 1, 2,
-    and 3 respectively.
 
     <p>
     The <i>n+</i> and <i>n-</i> are the positive and negative element
@@ -1140,13 +1219,11 @@ Josephson Junctions
 
     <dl>
     <dt><tt>pijj</tt><dd>
-    <b>Levels 1 and 2 only.</b><br>
     If the <tt>pijj</tt> parameter is given and set to a nonzero
     integer value, the device instance will behave as a "pi" junction. 
     This type of junction has a ground state with phase &pi; rather
     than 0.  The value given on the device line (if any) overrides the
-    value given in the model.  This parameter may not be recognized in
-    the Verilog-A model.
+    value given in the model.
     </dl>
 
     <dl>
@@ -1183,10 +1260,10 @@ Josephson Junctions
     </dl>
 
     <dl>
-    <dt><tt>temp</tt><dd>
+    <dt><tt>temp_k</tt><dd>
     <b>range:</b> 0.0 - 0.95*<tt>tc</tt><br>
     This is the assumed operating temperature of the device, in
-    Kelvin.  The default is the model <tt>temp</tt> value.  See the <a
+    Kelvin.  The default is the model <tt>deftemp</tt> value.  See the <a
     href="jjmodel">model description</a> for more information about
     temperature modeling.
     </dl>
@@ -1218,7 +1295,7 @@ Josephson Junctions
 
     <dl>
     <dt><tt>ic</tt><dd>
-    <b>Levels 1 and 3 only.</b><br>
+    <b>Level 1 only.</b><br>
     The keyword is expected to be followed by two numbers, giving the
     initial junction voltage and phase in radians.  These apply in
     transient analysis when the "<tt>uic</tt>" option is included in
@@ -1255,17 +1332,18 @@ Josephson Junctions
     current.
     </dl>
 
+    <p>
+    The remaining parameters are "read only" and can be accessed with
+    the <tt>@</tt><i>device</i>[<i>param</i>] <a
+    href="specialvec">special vector</a> notation during the
+    simulation (in callbacks) or after the simulation if the vector is
+    saved with the <a href="save"><b>save</b></a> command or equivalent.
+
     <dl>
     <dt><tt>n</tt> (read only)<dd>
     This integer value is incremented whenever the junction phase
-    changes by 2&pi;.  It is intended for pass/fail testing of SFQ
-    circuit operation.
-    </dl>
-
-    <dl>
-    <dt><tt>phase</tt> (read only)<dd>
-    This is set to the junction phase, and reading this is an
-    alternative to using a third node to obtain the phase.
+    changes by plus or minus 2&pi;.  It is intended for pass/fail
+    testing of single flux quantum (SFQ) circuit operation.
     </dl>
 
     <dl>
@@ -1280,6 +1358,176 @@ Josephson Junctions
     This read-only parameter contains the last time that the SFQ
     emission count changed, intended for use in SFQ pass/fail testing.
     </dl>
+
+    <dl>
+    <dt><tt>v</tt> (read only)<dd>
+    The voltage across the junction.
+    </dl>
+
+    <dl>
+    <dt><tt>phase</tt> (read only)<dd>
+    The junction phase.  Reading this is an alternative to using a
+    third node to obtain the phase.
+    </dl>
+
+    <dl>
+    <dt><tt>tcf</tt> (read only)<dd>
+    The temperature correction factor that modifies the critical
+    current at operating temperatures other than nominal.  See the
+    description of the <a href="rsjtcf">temperature dependence</a> of
+    the RSJ model.
+    </dl>
+
+    <dl>
+    <dt><tt>vg</tt> or <tt>vgap</tt> (read only)<dd>
+    The gap voltage of the junction.
+    </dl>
+
+    <dl>
+    <dt><tt>vless</tt> (read only)<dd>
+    The voltage where the quasiparticle step current begins to rise. 
+    it is the lower bounding point used to indicate the <tt>delv</tt>
+    gap spread, i.e., it is equal to <tt>vg - delv/2</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>vmore</tt> (read only)<dd>
+    The voltage where the quasiparticle step ends and the normal
+    resistive part begins.  It is the upper point used to indicate the
+    <tt>delv</tt> gap spread, equal to <tt>vg + delv/2</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>icrit</tt> (read only)<dd>
+    The critical current of the junction instance.
+    </dl>
+
+    <dl>
+    <dt><tt>cc</tt> (read only)<dd>
+    The current flowing through the geometric capacitance of the
+    junction.
+    </dl>
+
+    <dl>
+    <dt><tt>cj</tt> (read only)<dd>
+    The pair current (supercurrent) flowing through the junction.
+    </dl>
+
+    <dl>
+    <dt><tt>cq</tt> (read only)<dd>
+    The quasiparticle (normal) current flowing through the device.
+    </dl>
+
+    <dl>
+    <dt><tt>c</tt> (read only)<dd>
+    The total current flowing through the device, the sum of
+    <tt>cc</tt>, <tt>cj</tt> and <tt>cq</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>cap</tt> (read only)<dd>
+    The geometric capacitance of the device instance.
+    </dl>
+
+    <dl>
+    <dt><tt>g0</tt> (read only)<dd>
+    The subgap conductance of the device instance.
+    </dl>
+
+    <dl>
+    <dt><tt>gn</tt> (read only)<dd>
+    The normal state conductance of the device instance.
+    </dl>
+
+    <dl>
+    <dt><tt>gs</tt> (read only)<dd>
+    The conductance of the quasiparticle branch at the gap voltage.
+    </dl>
+
+    <dl>
+    <dt><tt>gshunt</tt> (read only)<dd>
+    If the <tt>vshunt</tt> model parameter is given and nonzero,
+    <tt>gshunt</tt> will return the external conductance added to the
+    intrinsic conductance so that the total conductance multiplied
+    by the critical current will equal <tt>vshunt</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>rshunt</tt> (read only)<dd>
+    If <tt>gshunt</tt> is nonzero, <tt>rshunt</tt> will be the
+    reciprocal, otherwise it will be 0.
+    </dl>
+
+    <dl>
+    <dt><tt>lshval</tt> (read only)<dd>
+    If the <tt>vshunt</tt> model parameter is given and nonzero, this
+    will be the parasitic inductance assumed in the external shunt
+    resistance.  This will depend on the settings of the <tt>lsh0</tt>
+    and <tt>lsh1</tt> model parameters, and the <tt>lsh</tt> instance
+    parameter which overrides the model parameters if given.
+    </dl>
+
+    <dl>
+    <dt><tt>g1</tt> (read only)<dd>
+    This applies if the <tt>rtype</tt> model parameter is set to 3,
+    which indicates use of the NbN polynomial model for subgap
+    conductance.  This is the third-order amplitude in the polynomial.
+    </dl>
+
+    <dl>
+    <dt><tt>g2</tt> (read only)<dd>
+    This applies if the <tt>rtype</tt> model parameter is set to 3,
+    which indicates use of the NbN polynomial model for subgap
+    conductance.  This is the fifth-order amplitude in the polynomial.
+    </dl>
+
+    <dl>
+    <dt><tt>node1</tt> (read only)<dd>
+    The internal node number of the first node.
+    </dl>
+
+    <dl>
+    <dt><tt>node2</tt> (read only)<dd>
+    The internal node number of the second node.
+    </dl>
+
+    <dl>
+    <dt><tt>pnode</tt> (read only)<dd>
+    The internal node number of the third (phase) node, 0 or -1 if not
+    used.
+    </dl>
+
+    <dl>
+    <dt><tt>lsernode</tt> (read only)<dd>
+    The internal node number of the device internal node added for
+    series parasitic inductance.  This will be 0 or -1 if not used (no
+    series parasitic inductance assumed).
+    </dl>
+
+    <dl>
+    <dt><tt>lserbrn</tt> (read only)<dd>
+    If series parasitic inductance is nonzero (<tt>lser</tt> given)
+    this will be the internal number of the branch node of the
+    inductor.
+    </dl>
+
+    <dl>
+    <dt><tt>lshnode</tt> (read only)<dd>
+    If the <tt>vshunt</tt> model parameter is given and nonzero, and
+    series parasitic inductance is nonzero, this will be the internal
+    node number of the internal device node that incorporates the
+    series inductance.
+    </dl>
+
+    <dl>
+    <dt><tt>lshbrn</tt> (read only)<dd>
+    If the <tt>vshunt</tt> model parameter is given and nonzero, and
+    series parasitic inductance is nonzero, this will be the internal
+    branch number of the inductor's branch.
+    </dl>
+
+    <a name="jjdesc"></a>
+    <h2>Josephson Junction Description</h2>
 
     <p>
     The Josephson junction device has unique behavior which
@@ -1324,7 +1572,7 @@ Josephson Junctions
     the superconducting wave function be continuous around the loop. 
     Further, if the loop phase is not zero, it implies that a
     persistent current is flowing around the loop, and that the
-    magnetic fluc through the loop is a multiple of the flux quantum
+    magnetic flux through the loop is a multiple of the flux quantum
     &Phi;<sub>0</sub>.
 
     <p>
@@ -1368,98 +1616,11 @@ Josephson Junctions
     replaces the DC operating point analysis.
 
     <p>
-    <i>WRspice</i> after release 4.3.3 offers a DC analysis capability
-    which uses phase-mode for circuits containing Josephson
-    junctions.  Unlike strictly phase-mode simulators, <i>WRspice</i>
-    allows a mixture of phase (inductors and Josephson junctions) and
-    voltage mode components.
-
-    <p>
-    Within <i>WRspice</i>, every node connected to a Josephson
-    junction, inductor, or lossless transmission line (treated as an
-    inductor in DC analysis) has a "Phase" flag set.  This indicates
-    that the computed value is phase, not voltage, for these nodes. 
-    We have to special-case the matrix loading functions for
-    inductors, mutual inductors, lossless transmission lines, and
-    resistors.  Other devices are treated normally.
-
-    <p>
-    A Josephson junction can be modeled by the basic formula
-
-    <blockquote>
-    I = I<sub>c</sub>sin(V(i,j))
-    </blockquote>
-
-    where V(i,j) is the "voltage" difference between nodes i and j
-    (across the junction) which is actually the phase.  Inductors look
-    like resistors:
-
-    <blockquote>
-    I = &Phi;<sub>0</sub>(V(i,j)/2&pi;L)
-    </blockquote>
-
-    Where V(i,j) is the phase difference across the inductor. Mutual
-    inductance adds similar cross terms.
-
-    <p>
-    Capacitors are completely ignored as in normal DC analysis.  The
-    treatment of resistors is slightly complicated.  The connected
-    nodes can be "Ground", "Phase", or "Voltage" type.  If both nodes
-    are Voltage or Ground, the resistor is loaded normally.  If both
-    nodes are Phase or Ground, the resistor is not loaded at all.  The
-    interresting case is when one node is Phase, the other Voltage. 
-    In this case, we load the resistor as if the phase node is
-    actually ground (node number 0).  In addition we load a
-    voltage-controlled current source template that injects current
-    into the phase node of value V(voltage_node)/Resistance.
-
-    <p>
-    Resistors are the bridge between normal voltage-mode devices and
-    phase nodes.  Some circuits may require introduction of resistors
-    to get correct results.  For example, assume a Josephson junction
-    logic gate driving a CMOS comparator circuit.  If the input MOS
-    gate is connected directly to the junction, the DC operating point
-    will be incorrect, as the comparator will see phase as input. 
-    However, if a resistor separates the MOS gate from the junction,
-    the comparator input will be zero, as it should be.
-
-    <p>
-    There is (at present) a topological requirement that all phase
-    nodes must be at ground potential.  This means that for a network
-    of Josephson junctions and inductors, there must be a ground
-    connection to one of these devices.  A nonzero voltage source
-    connected to an inductor, which is connected to a resistor to
-    ground, although a perfectly valid circuit, will fail.  One must
-    use the equivalent consisting of the voltage source connected to a
-    resistor, connected to the inductor which is grounded.  This
-    satisfies the two topological requirements:
-
-    <dl>
-    <dt>Rule 1<dd>
-    There must be a resistor between a voltage-mode device and a
-    phase-mode device, no direct connections allowed.
-    </dl>
-    <dl>
-    <dt>Rule 2<dd>
-    Every phase-node subnet must have a connection to ground, so all
-    phase nodes are at ground potential.
-    </dl>
-
-    With this bit of information, and the warning that controlled
-    sources can cause unexpected behavior, the DC analysis using thes
-    technique can apply to general circuits containing Josephson
-    junctions.
-
-    <p>
-    Of course, for this to work, no Josephson junction can be biased
-    above its critical current or nonconvergence results.  Both DC
-    operating point and DC sweep are available, as is AC analysis. 
-    Noise analysis is available with the internal Josephson junction
-    model.  This new hybrid technique appears to be an important
-    advance, which should avoid the long-standing need to use
-    "<tt>uic</tt>" and ramp sources up from zero, and makes available
-    DC sweep analysis, and for the first time in any simulator AC
-    small-signal analysis.
+    The second approach is to use <a href="phasemode">phase-mode DC</a>
+    analysis, which is used in <i>WRspice</i> transparently when Josephson
+    junctions are present.  This applies to explicit DC analysis as well
+    as operating point analysis.  Further, this enables AC and similar
+    small-signal analysis with Josephson junctions in <i>WRspice</i>.
 
     <p>
     See the Josephson junction <a href="jjmodel">model description</a>
@@ -1467,4 +1628,450 @@ Josephson Junctions
 
 !!SEEALSO
 elements
+tjm
 
+!! elements.tex 051422
+!!KEYWORD
+tjm
+!!TITLE
+Josephson Junctions (Tunnel Junction Model)
+!!HTML
+    General form:
+    <blockquote>
+        <tt>b</tt><i>name</i> <i>n+ n-</i> [<i>np</i>] [<i>modname</i>]
+          [<i>parameters</i> ...]
+     </blockquote>
+
+    <p>
+    Instance Parameters, JJ level 3:<br>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Parameter Name</th> <th>Description</th></tr>
+    <tr><td><tt>area=</tt><i>val</i></td> <td>
+      Scale factor that multiplies all currents and other values,
+      effectively modifying the junction area.</td></tr>
+    <tr><td><tt>ics=</tt><i>val</i></td> <td>Instantiated critical
+      current, used as scale factor for
+      capacitance, conductances.</td></tr>
+    <tr><td><tt>temp_k=</tt><i>val</i></td> <td>Device temperature,
+      Kelvin.</td></tr>
+    <tr><td><tt>lser=</tt><i>val</i></td> <td>Junction series parasitic
+      inductance.</td></tr>
+    <tr><td><tt>lsh=</tt><i>val</i></td> <td>Shunt resistor series parasitic
+      inductance.</td></tr>
+    <tr><td><tt>ic=</tt><i>vj</i>,<i>phi</i></td> <td>
+      The initial junction voltage and phase (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>vj=</tt><i>vj</i></td> <td>
+      The initial junction voltage (initial condition) for transient
+      analysis, alias <tt>ic_v</tt>.</td></tr>
+    <tr><td><tt>phi=</tt><i>phi</i></td> <td>
+      The initial junction phase (initial condition) for transient
+      analysis, alias <tt>ic_phase</tt>.</td></tr>
+
+    <tr><td><tt>n</tt> (read only)</td> <td>
+      SFQ emission count.</td></tr>
+    <tr><td><tt>phsf</tt> (read only)</td> <td>
+      True if SFQ count change at current time point.</td></tr>
+    <tr><td><tt>phst</tt> (read only)</td> <td>
+      Time of last SFQ emission.</td></tr>
+    <tr><td><tt>v</tt> (read only)</td> <td>
+      Terminal voltage.</td></tr>
+    <tr><td><tt>phase</tt> (read only)</td> <td>
+      Junction phase, alias <tt>phs</tt>.</td></tr>
+    <tr><td><tt>tcf</tt> (read only)</td> <td>
+      Critical current temperature correction factor.</td></tr>
+    <tr><td><tt>icrit</tt> (read only)</td> <td>
+      Maximum critical current.</td></tr>
+    <tr><td><tt>cc</tt> (read only)</td> <td>
+      Capacitance current.</td></tr>
+    <tr><td><tt>cj</tt> (read only)</td> <td>
+      Josephson current.</td></tr>
+    <tr><td><tt>cq</tt> (read only)</td> <td>
+      Quasiparticle current.</td></tr>
+    <tr><td><tt>c</tt> (read only)</td> <td>
+      Total device current.</td></tr>
+    <tr><td><tt>cap</tt> (read only)</td> <td>
+      Capacitance.</td></tr>
+    <tr><td><tt>g0</tt> (read only)</td> <td>
+      Subgap conductance.</td></tr>
+    <tr><td><tt>gn</tt> (read only)</td> <td>
+      Normal conductance.</td></tr>
+    <tr><td><tt>rsint</tt> (read only)</td> <td>
+      Intrinsic subgap resistance.</td></tr>
+    <tr><td><tt>gshunt</tt> (read only)</td> <td>
+      External shunt conductance from <tt>vshunt</tt>.</td></tr>
+    <tr><td><tt>rshunt</tt> (read only)</td> <td>
+      External shunt resistance from <tt>vshunt</tt>.</td></tr>
+    <tr><td><tt>lshval</tt> (read only)</td> <td>
+      External shunt resistor parasitic inductance.</td></tr>
+    <tr><td><tt>del1</tt> (read only)</td> <td>
+      Side 1 delta.</td></tr>
+    <tr><td><tt>del2</tt> (read only)</td> <td>
+      Side 2 delta.</td></tr>
+    <tr><td><tt>vg</tt> or <tt>vgap</tt> (read only)</td> <td>
+      Gap voltage.</td></tr>
+    <tr><td><tt>vdp</tt> (read only)</td> <td>
+      Dropback voltage.</td></tr>
+    <tr><td><tt>omega</tt> (read only)</td> <td>
+      Plasma resonance frequency, radians.</td></tr>
+    <tr><td><tt>betac</tt> (read only)</td> <td>
+      Stewart-McCumber parameter.</td></tr>
+    <tr><td><tt>alphan</tt> (read only)</td> <td>
+      TJM alphaN value.</td></tr>
+    <tr><td><tt>kgap</tt> (read only)</td> <td>
+      TJM kgap value.</td></tr>
+    <tr><td><tt>rejpt</tt> (read only)</td> <td>
+      TJM rejpt value.</td></tr>
+    <tr><td><tt>kgap_rejpt</tt> (read only)</td> <td>
+      TJM kgap_rejpt value.</td></tr>
+    <tr><td><tt>node1</tt> (read only)</td> <td>
+      Node 1 number.</td></tr>
+    <tr><td><tt>node2</tt> (read only)</td> <td>
+      Node 2 number.</td></tr>
+    <tr><td><tt>pnode</tt> (read only)</td> <td>
+      Phase node number.</td></tr>
+    <tr><td><tt>lsernode</tt> (read only)</td> <td>
+      Internal {\vt lser} node number.</td></tr>
+    <tr><td><tt>lserbrn</tt> (read only)</td> <td>
+      Internal {\vt lser} branch number.</td></tr>
+    <tr><td><tt>lshnode</tt> (read only)</td> <td>
+      Internal {\vt lsh} node number.</td></tr>
+    <tr><td><tt>lshbrn</tt> (read only)</td> <td>
+      Internal {\vt lsh} branch number.</td></tr>
+    </table>
+
+    <p>
+    Example:
+    <blockquote><tt>
+        b1 1 0 10 jj1 ics=200uA<br>
+        b2 4 5 ybco phi=1.57
+    </tt></blockquote>
+
+    <p>
+    The <i>n+</i> and <i>n-</i> are the positive and negative element
+    nodes, respectively.  These are followed by an optional phase
+    node.  The phase node, if specified, generally should have no
+    other connections in the circuit, but the voltage of this node
+    gives the phase of the junction in radians.  The <i>modname</i> is
+    the name of the Josephson junction model.  If no model is
+    specified, then a default model is used (see the description of
+    the <a href="jjmodel">Josephson model</a> for the default values). 
+    Other (optional) parameters follow in any order.
+
+    <dl>
+    <dt><tt>area</tt><dd>
+    <b>range:</b> 0.05 - 20.0<br>
+    <font color="red">Deprecated, do not use in new files.</font><br>
+    Histrorically, this parameter has been used to set the actual
+    critical current of a Josephson junction instance.  It is not a
+    physical area, but rather a scale factor, representing the ratio
+    of the instance critical current to the reference critical
+    current.  The parameter is retained for backwards compatibility,
+    but should not be used in new circuit descrfiptions.  The
+    <tt>ics</tt> parameter (below) should be used instead.  By using
+    <tt>ics</tt>, one can change the critical current of the reference
+    junction without changing the instance critical currents, which is
+    not the case for <tt>area</tt>.  In the new paradigm, the
+    reference junction critical current corresponds to a "typical"
+    mid-sized junction, with a not necessarily convenient critical
+    current value.  Use of <tt>area</tt> assumes that the reference
+    critical current is something nice, like the historical 1mA, and
+    unchanging.  If not specified and <tt>ics</tt> is not given, the
+    effective value is 1.0.
+    </dl>
+
+    <dl>
+    <dt><tt>ics</tt><dd>
+    <b>range:</b> 0.02*<tt>icrit</tt> - 50.0*<tt>icrit</tt><br>
+    This gives the actual critical current of the instantiated
+    junction, and in addition scales all conductance and capacitance
+    values from the reference junction appropriately.  This is
+    equivalent to giving the <tt>area</tt> parameter with a value of
+    <tt>ics</tt>/<tt>icrit</tt>.  The default is <tt>icrit</tt>, the
+    reference junction critical current.
+    </dl>
+
+    <dl>
+    <dt><tt>temp_k</tt><dd>
+    <b>range:</b> 0.0 - 0.95*<tt>tc</tt><br>
+    This is the assumed operating temperature of the device, in
+    Kelvin.  The default is the model <tt>deftemp</tt> value.  See the <a
+    href="jjmodel">model description</a> for more information about
+    temperature modeling.
+    </dl>
+
+    <dl>
+    <dt><tt>lser</tt><dd>
+    <b>range:</b> 0.0 - 10.0pH<br>
+    This models series inductance of the physical Josephson junction
+    structure, caused by constriction of current through the junction
+    orifice.  This inductance might typically be in the range of 0.1
+    to 0.3 picohenries.  If nonzero, an internal node is added to the
+    model, providing the connection point of the inductance and the
+    Josephson junction.  The default value is 0.0, meaning that no
+    parasitic inductance is assumed.  Nonzero given values less than
+    0.01pH revert to zero.
+    </dl>
+
+    <dl>
+    <dt><tt>lsh</tt><dd>
+    <b>range:</b> 0.0 - 100.0pH<br>
+    This parameter specifies the series inductance of the external
+    shunt resistance.  The <tt>vshunt</tt> model parameter must be
+    specified such that a positive external shunt conductance is
+    applied, otherwise this parameter is ignored.  Ordinarily, the <a
+    href="jjmodel"><tt>lsh0</tt>/<tt>lsh1</tt></a> model parameters
+    would be used to specify the inductance, this parameter can be
+    used to override these values on a per-instance basis if desired.
+    </dl>
+
+    <dl>
+    <dt><tt>ic</tt><dd>
+    The keyword is expected to be followed by two numbers, giving the
+    initial junction voltage and phase in radians.  These apply in
+    transient analysis when the "<tt>uic</tt>" option is included in
+    the <a href=".tran">transient analysis</a> specification.  The
+    initial junction voltage and phase both default to 0.0.
+    </dl>
+
+    <dl>
+    <dt><tt>vj</tt> or <tt>ic_v</tt><dd>
+    This provides the initial voltage of the junction when the
+    "<tt>uic</tt>" option is included in the <a href=".tran">transient
+    analysis</a> specification.  The initial junction voltage defaults
+    to 0.0.
+    </dl>
+
+    <dl>
+    <dt><tt>phi</tt> or <tt>ic_phase</tt><dd>
+    This provides the initial junction phase in radians when the
+    "<tt>uic</tt>" option is included in the <a href=".tran">transient
+    analysis</a> specification.
+    </dl>
+
+    <p>
+    The remaining parameters are "read only" and can be accessed with
+    the <tt>@</tt><i>device</i>[<i>param</i>] <a
+    href="specialvec">special vector</a> notation during the
+    simulation (in callbacks) or after the simulation if the vector is
+    saved with the <a href="save"><b>save</b></a> command or equivalent.
+
+    <dl>
+    <dt><tt>n</tt> (read only)<dd>
+    This integer value is incremented whenever the junction phase
+    changes by plus or minus 2&pi;.  It is intended for pass/fail
+    testing of SFQ circuit operation.
+    </dl>
+
+    <dl>
+    <dt><tt>phsf</tt> (read only)<dd>
+    This flag is set true at the time point when the SFQ emission
+    count changes.  This is intended to facilitate pass/fail testing
+    of SFQ circuits.
+    </dl>
+
+    <dl>
+    <dt><tt>phst</tt> (read only)<dd>
+    This read-only parameter contains the last time that the SFQ
+    emission count changed, intended for use in SFQ pass/fail testing.
+    </dl>
+
+    <dl>
+    <dt><tt>v</tt> (read only)<dd>
+    The voltage across the junction.
+    </dl>
+
+    <dl>
+    <dt><tt>phase</tt> (read only)<dd>
+    The junction phase.  Reading this is an alternative to using a
+    third node to obtain the phase.
+    </dl>
+
+    <dl>
+    <dt><tt>tcf</tt> (read only)<dd>
+    The temperature correction factor that modifies the critical
+    current at operating temperatures other than nominal.  See the
+    description of the <a href="tjmtcf">temperature dependence</a> of
+    the TJM model.
+    </dl>
+
+    <dl>
+    <dt><tt>icrit</tt> (read only)<dd>
+    The critical current of the junction instance.
+    </dl>
+
+    <dl>
+    <dt><tt>cc</tt> (read only)<dd>
+    The current flowing through the geometric capacitance of the
+    junction.
+    </dl>
+
+    <dl>
+    <dt><tt>cj</tt> (read only)<dd>
+    The pair current (supercurrent) flowing through the junction.
+    </dl>
+
+    <dl>
+    <dt><tt>cq</tt> (read only)<dd>
+    The quasiparticle (normal) current flowing through the device.
+    </dl>
+
+    <dl>
+    <dt><tt>c</tt> (read only)<dd>
+    The total current flowing through the device, the sum of
+    <tt>cc</tt>, <tt>cj</tt> and <tt>cq</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>cap</tt> (read only)<dd>
+    The geometric capacitance of the device instance.
+    </dl>
+
+    <dl>
+    <dt><tt>g0</tt> (read only)<dd>
+    The subgap conductance of the device instance.
+    </dl>
+
+    <dl>
+    <dt><tt>gn</tt> (read only)<dd>
+    The normal state conductance of the device instance.
+    </dl>
+
+    <dl>
+    <dt><tt>rsint</tt> (read only)<dd>
+    The intrinsic subgap resistance.  This is predicted from the
+    tunnel junction model, but the predicted resistance is in general
+    much higher than seen in actual fabricated junctions.  There is
+    evidently quasiparticle conduction mechanisms that are not
+    described in the tunnel junction model.
+    </dl>
+
+    <dl>
+    <dt><tt>gshunt</tt> (read only)<dd>
+    If the <tt>vshunt</tt> model parameter is given and nonzero,
+    <tt>gshunt</tt> will return the external conductance added to the
+    intrinsic conductance so that the total conductance multiplied
+    by the critical current will equal <tt>vshunt</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>rshunt</tt> (read only)<dd>
+    If <tt>gshunt</tt> is nonzero, <tt>rshunt</tt> will be the
+    reciprocal, otherwise it will be 0.
+    </dl>
+
+    <dl>
+    <dt><tt>lshval</tt> (read only)<dd>
+    If the <tt>vshunt</tt> model parameter is given and nonzero, this
+    will be the parasitic inductance assumed in the external shunt
+    resistance.  This will depend on the settings of the <tt>lsh0</tt>
+    and <tt>lsh1</tt> model parameters, and the <tt>lsh</tt> instance
+    parameter which overrides the model parameters if given.
+    </dl>
+
+    <dl>
+    <dt><tt>del1</tt> (read only)<dd>
+    This is the computed energy gap of the side 1 superconductor. 
+    This is computed using the BCS formula taking as input operating
+    temperature, the superconducting transition temperature of side 1,
+    and the Debye temperature of side 1.
+    </dl>
+
+    <dl>
+    <dt><tt>del2</tt> (read only)<dd>
+    This is the computed energy gap of the side 2 superconductor. 
+    This is computed using the BCS formula taking as input operating
+    temperature, the superconducting transition temperature of side 2,
+    and the Debye temperature of side 2.
+    </dl>
+
+    <dl>
+    <dt><tt>vg</tt> or <tt>vgap</tt> (read only)<dd>
+    The junction gap voltage, which is the sum of <tt>del1</tt> and
+    <tt>del2</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>vdp</tt> (read only)<dd>
+    The dropback voltage, which is the same as the voltage
+    corrresponding to the plasma resonance frequency.
+    </dl>
+
+    <dl>
+    <dt><tt>omega</tt> (read only)<dd>
+    The plasma resonance frequency in radians per second.
+    </dl>
+
+    <dl>
+    <dt><tt>betac</tt> (read only)<dd>
+    The Stewart-McCumber parameter of the junction.
+    </dl>
+
+    <dl>
+    <dt><tt>alphan</tt> (read only)<dd>
+    Internal model critical current scaling factor.
+    </dl>
+
+    <dl>
+    <dt><tt>kgap</tt> (read only)<dd>
+    Internal model normalized gap parameter.
+    </dl>
+
+    <dl>
+    <dt><tt>kgap_rejpt</tt> (read only)<dd>
+    Internal model normalized gap parameter.
+    </dl>
+
+    <dl>
+    <dt><tt>rejpt</tt> (read only)<dd>
+    Internal model normalized resistance.
+    </dl>
+
+    <dl>
+    <dt><tt>node1</tt> (read only)<dd>
+    The internal node number of the first node.
+    </dl>
+
+    <dl>
+    <dt><tt>node2</tt> (read only)<dd>
+    The internal node number of the second node.
+    </dl>
+
+    <dl>
+    <dt><tt>pnode</tt> (read only)<dd>
+    The internal node number of the third (phase) node, 0 or -1 if not
+    used.
+    </dl>
+
+    <dl>
+    <dt><tt>lsernode</tt> (read only)<dd>
+    The internal node number of the device internal node added for
+    series parasitic inductance.  This will be 0 or -1 if not used (no
+    series parasitic inductance assumed).
+    </dl>
+
+    <dl>
+    <dt><tt>lserbrn</tt> (read only)<dd>
+    If series parasitic inductance is nonzero (<tt>lser</tt> given)
+    this will be the internal number of the branch node of the
+    inductor.
+    </dl>
+
+    <dl>
+    <dt><tt>lshnode</tt> (read only)<dd>
+    If the <tt>vshunt</tt> model parameter is given and nonzero, and
+    series parasitic inductance is nonzero, this will be the internal
+    node number of the internal device node that incorporates the
+    series inductance.
+    </dl>
+
+    <dl>
+    <dt><tt>lshbrn</tt> (read only)<dd>
+    If the <tt>vshunt</tt> model parameter is given and nonzero, and
+    series parasitic inductance is nonzero, this will be the internal
+    branch number of the inductor's branch.
+    </dl>
+
+!!SEEALSO
+elements
+jj

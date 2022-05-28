@@ -7,5 +7,7 @@ info.sh
 packages/pkgfiles
 packages/files/fetch_form.html
 packages/test
+packages/util/utod
+packages/util/utod.exe
 util/timegen
 util/timegen.exe

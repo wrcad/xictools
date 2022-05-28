@@ -128,55 +128,55 @@ static p_nature lookup_nature(const char *myname)
   p_yaccval _yaccval;
 }
 
-%token <_lexval> tk_from
-%token <_lexval> tk_branch
-%token <_lexval> tk_number
-%token <_lexval> tk_nature
-%token <_lexval> tk_aliasparameter
-%token <_lexval> tk_output
-%token <_lexval> tk_anystring
-%token <_lexval> tk_dollar_ident
-%token <_lexval> tk_or
 %token <_lexval> tk_aliasparam
-%token <_lexval> tk_if
+%token <_lexval> tk_aliasparameter
 %token <_lexval> tk_analog
-%token <_lexval> tk_parameter
-%token <_lexval> tk_discipline
-%token <_lexval> tk_char
+%token <_lexval> tk_and
+%token <_lexval> tk_anystring
 %token <_lexval> tk_anytext
-%token <_lexval> tk_for
-%token <_lexval> tk_while
-%token <_lexval> tk_real
-%token <_lexval> tk_op_shr
-%token <_lexval> tk_case
-%token <_lexval> tk_potential
-%token <_lexval> tk_endcase
-%token <_lexval> tk_disc_id
-%token <_lexval> tk_inf
-%token <_lexval> tk_exclude
-%token <_lexval> tk_ground
-%token <_lexval> tk_endmodule
 %token <_lexval> tk_begin
-%token <_lexval> tk_enddiscipline
+%token <_lexval> tk_beginattribute
+%token <_lexval> tk_bitwise_equr
+%token <_lexval> tk_branch
+%token <_lexval> tk_case
+%token <_lexval> tk_char
+%token <_lexval> tk_default
+%token <_lexval> tk_disc_id
+%token <_lexval> tk_discipline
+%token <_lexval> tk_dollar_ident
 %token <_lexval> tk_domain
-%token <_lexval> tk_ident
-%token <_lexval> tk_op_shl
-%token <_lexval> tk_string
-%token <_lexval> tk_integer
-%token <_lexval> tk_module
-%token <_lexval> tk_endattribute
 %token <_lexval> tk_else
 %token <_lexval> tk_end
-%token <_lexval> tk_inout
-%token <_lexval> tk_and
-%token <_lexval> tk_bitwise_equr
-%token <_lexval> tk_default
-%token <_lexval> tk_function
-%token <_lexval> tk_input
-%token <_lexval> tk_beginattribute
-%token <_lexval> tk_endnature
+%token <_lexval> tk_endattribute
+%token <_lexval> tk_endcase
+%token <_lexval> tk_enddiscipline
 %token <_lexval> tk_endfunction
+%token <_lexval> tk_endmodule
+%token <_lexval> tk_endnature
+%token <_lexval> tk_exclude
 %token <_lexval> tk_flow
+%token <_lexval> tk_for
+%token <_lexval> tk_from
+%token <_lexval> tk_function
+%token <_lexval> tk_ground
+%token <_lexval> tk_ident
+%token <_lexval> tk_if
+%token <_lexval> tk_inf
+%token <_lexval> tk_inout
+%token <_lexval> tk_input
+%token <_lexval> tk_integer
+%token <_lexval> tk_module
+%token <_lexval> tk_nature
+%token <_lexval> tk_number
+%token <_lexval> tk_op_shl
+%token <_lexval> tk_op_shr
+%token <_lexval> tk_or
+%token <_lexval> tk_output
+%token <_lexval> tk_parameter
+%token <_lexval> tk_potential
+%token <_lexval> tk_real
+%token <_lexval> tk_string
+%token <_lexval> tk_while
 
 %type <_yaccval> R_admsParse
 %type <_yaccval> R_l.admsParse
@@ -1558,7 +1558,7 @@ R_s.blockvariable
             adms_block_list_variable_prepend_once_or_abort(((p_block)gBlockList->data),myvariableprototype); 
             adms_slist_push(&gBlockVariableList,(p_adms)myvariableprototype);
           }
-        | tk_ident '[' tk_number ':' tk_number ']'
+        | tk_ident '[' tk_integer ':' tk_integer ']'
           {
             NEWVARIABLE($1)
             adms_block_list_variable_prepend_once_or_abort(((p_block)gBlockList->data),myvariableprototype); 
@@ -1909,7 +1909,7 @@ R_e.conditional
           {
             $$=$1;
           }
-        | R_e.bitwise_equ '?' R_e.bitwise_equ ':' R_e.bitwise_equ
+        | R_e.bitwise_equ '?' R_e.conditional ':' R_e.conditional
           {
             p_adms m1=YY($1);
             p_adms m2=YY($3);

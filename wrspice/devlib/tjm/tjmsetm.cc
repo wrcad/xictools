@@ -58,7 +58,7 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
             model->tjm_coeffsGiven = true;
         }
         break;
-    case TJM_MOD_RTP:
+    case TJM_MOD_RT:
         model->TJMrtype = value->iValue;
         model->TJMrtypeGiven = true;
         break;
@@ -66,9 +66,65 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->TJMictype = value->iValue;
         model->TJMictypeGiven = true;
         break;
-    case TJM_MOD_VG:
-        model->TJMvg = value->rValue;
-        model->TJMvgGiven = true;
+    case TJM_MOD_DEFTEMP:
+        model->TJMdeftemp = value->rValue;
+        model->TJMdeftempGiven = true;
+        break;
+    case TJM_MOD_TNOM:
+        model->TJMtnom = value->rValue;
+        model->TJMtnomGiven = true;
+        break;
+    case TJM_MOD_TC:
+        model->TJMtc1 = value->rValue;
+        model->TJMtc2 = value->rValue;
+        model->TJMtc1Given = true;
+        model->TJMtc2Given = true;
+        break;
+    case TJM_MOD_TC1:
+        if (!model->TJMtc1Given) {
+            model->TJMtc1 = value->rValue;
+            model->TJMtc1Given = true;
+        }
+        break;
+    case TJM_MOD_TC2:
+        if (!model->TJMtc2Given) {
+            model->TJMtc2 = value->rValue;
+            model->TJMtc2Given = true;
+        }
+        break;
+    case TJM_MOD_TDEBYE:
+        model->TJMtdebye1 = value->rValue;
+        model->TJMtdebye2 = value->rValue;
+        model->TJMtdebye1Given = true;
+        model->TJMtdebye2Given = true;
+        break;
+    case TJM_MOD_TDEBYE1:
+        if (!model->TJMtdebye1Given) {
+            model->TJMtdebye1 = value->rValue;
+            model->TJMtdebye1Given = true;
+        }
+        break;
+    case TJM_MOD_TDEBYE2:
+        if (!model->TJMtdebye2Given) {
+            model->TJMtdebye2 = value->rValue;
+            model->TJMtdebye2Given = true;
+        }
+        break;
+    case TJM_MOD_SMF:
+        model->TJMsmf = value->rValue;
+        model->TJMsmfGiven = true;
+        break;
+    case TJM_MOD_NTERMS:
+        model->TJMnterms = value->iValue;
+        model->TJMntermsGiven = true;
+        break;
+    case TJM_MOD_NXPTS:
+        model->TJMnxpts = value->iValue;
+        model->TJMnxptsGiven = true;
+        break;
+    case TJM_MOD_THR:
+        model->TJMthr = value->rValue;
+        model->TJMthrGiven = true;
         break;
     case TJM_MOD_CRT:
         model->TJMcriti = value->rValue;

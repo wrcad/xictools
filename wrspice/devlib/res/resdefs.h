@@ -68,8 +68,8 @@ Authors: 1985 Thomas L. Quarles
 // Use WRspice pre-loading of constant elements when possible.
 #define USE_PRELOAD
 
-// Maximum conductivity allowed, when not limited by circuit gmax.
-#define RES_GMAX 1e12
+// Minimum resistance allowed.
+#define RES_RMIN 1e-5
 
 namespace RES {
 

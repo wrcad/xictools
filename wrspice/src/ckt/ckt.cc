@@ -45,6 +45,9 @@ Authors: 1985 Thomas L. Quarles
          1993 Stephen R. Whiteley
 ****************************************************************************/
 
+// Enable TJM device support.
+#define TJM_IF
+
 #include <math.h>
 #include "config.h"
 #include "simulator.h"
@@ -84,7 +87,7 @@ Authors: 1985 Thomas L. Quarles
 // #define TDEBUG
 #include "miscutil/threadpool.h"
 #ifdef __APPLE__
-OSSpinLock sCKT::CKTloadLock2;
+os_unfair_lock_s sCKT::CKTloadLock2;
 #else
 pthread_spinlock_t sCKT::CKTloadLock2;
 #endif
@@ -2777,15 +2780,16 @@ sCKT::enableFPE(int state)
 // End of sCKT functions.
 
 
-// This is used in the TJM device library model.  It is kept out of
-// circuit.h due to the stdio reference.
+#ifdef TJM_IF
+// This is used in the TJM device library model.
 //
-FILE *tjm_fopen(const char *nm)
+FILE *tjm_fopen(const char *nm, char **pfp)
 {
     const char *tjm_path = "( . ~/.mmjco )";
     VTvalue vv;
     if (Sp.GetVar("tjm_path", VTYP_STRING, &vv, Sp.CurCircuit()))
         tjm_path = vv.get_string();
-    return (pathlist::open_path_file(nm, tjm_path, "r", 0, false));
+    return (pathlist::open_path_file(nm, tjm_path, "r", pfp, false));
 }
+#endif
 

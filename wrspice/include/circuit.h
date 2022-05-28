@@ -63,7 +63,7 @@ Authors: 1985 Thomas L. Quarles
 #ifdef WITH_THREADS
 #include <pthread.h>
 #ifdef __APPLE__
-#include <libkern/OSAtomic.h>
+#include <os/lock.h>
 #endif
 #endif
 
@@ -506,9 +506,9 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_dphiMax_MIN         M_PI/1000
 #define DEF_dphiMax_MAX         M_PI
 
-#define DEF_gmax                1e6
-#define DEF_gmax_MIN            1e-2
-#define DEF_gmax_MAX            1e12
+#define DEF_gmax                1e3
+#define DEF_gmax_MIN            1e-3
+#define DEF_gmax_MAX            1e6
 
 #define DEF_gmin                1e-12
 #define DEF_gmin_MIN            1e-15
@@ -1831,9 +1831,9 @@ public:
                 // how to do this atomically.
 
 #ifdef __APPLE__
-                OSSpinLockLock(&CKTloadLock2);
+                os_unfair_lock_lock(&CKTloadLock2);
                 *(long double*)ptr += val;
-                OSSpinLockUnlock(&CKTloadLock2);
+                os_unfair_lock_unlock(&CKTloadLock2);
 #else
                 pthread_spin_lock(&CKTloadLock2);
                 *(long double*)ptr += val;
@@ -2115,7 +2115,7 @@ public:
 
 #ifdef WITH_THREADS
 #ifdef __APPLE__
-    static OSSpinLock CKTloadLock2;
+    static os_unfair_lock_s CKTloadLock2;
 #else
     static pthread_spinlock_t CKTloadLock2;
 #endif
@@ -2128,6 +2128,11 @@ public:
 #endif
 #endif
 };
+
+#ifdef TJM_IF
+// This is used in the TJM device library model.
+FILE *tjm_fopen(const char*, char**);
+#endif
 
 #define CKTstate0 CKTstates[0]
 #define CKTstate1 CKTstates[1]

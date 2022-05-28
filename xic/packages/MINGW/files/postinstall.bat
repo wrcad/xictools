@@ -4,6 +4,10 @@
 @rem   by the installer program.
 
 mklink /j xic %cd%\xic.current
+if not exist bin\ (
+    if exist bin ( del bin )
+    mkdir bin
+)
 mklink bin\xic.exe %cd%\xic\bin\xic.exe
 mklink bin\xic.dll %cd%\xic\bin\xic.dll
 mklink bin\wrdecode.exe %cd%\xic\bin\wrdecode.exe

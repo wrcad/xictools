@@ -1133,6 +1133,12 @@ namespace {
     }
 
 
+    // Extract and return a "value" token.  This is the RHS of a
+    // name=value construct.  We have to deal with a range of
+    // possibilities, including input to the "set" comand where we
+    // have lists and lists of lists.  In these cases, the entire list
+    // structure is returned, with white-space preserved.
+    //
     char *valtok(const char **s)
     {
         const char *str = *s;
@@ -1181,12 +1187,18 @@ namespace {
                     else if (*str == ',')
                         break;
                 }
-                if (*str == '(')
+                if (*str == '(') {
+                    keepws = true;
                     pn++;
+                }
                 else if (*str == ')') {
                     if (!pn)
                         break;
                     pn--;
+                    if (!pn) {
+                        str++;
+                        break;
+                    }
                 }
                 str++;
             }

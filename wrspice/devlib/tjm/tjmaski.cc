@@ -57,17 +57,20 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
 #ifdef NEWLSH
         &&L_TJM_LSH, 
 #endif
+        &&L_TJM_TEMP_K,
+        &&L_TJM_DTEMP,
         &&L_TJM_OFF,
         &&L_TJM_IC,
         &&L_TJM_ICP,
         &&L_TJM_ICV,
         &&L_TJM_NOISE,
 
-        &&L_TJM_QUEST_V,
-        &&L_TJM_QUEST_PHS,
         &&L_TJM_QUEST_PHSN,
         &&L_TJM_QUEST_PHSF,
         &&L_TJM_QUEST_PHST,
+        &&L_TJM_QUEST_V,
+        &&L_TJM_QUEST_PHS,
+        &&L_TJM_QUEST_TCF,
         &&L_TJM_QUEST_CRT,
         &&L_TJM_QUEST_IC,
         &&L_TJM_QUEST_IJ,
@@ -76,6 +79,20 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_TJM_QUEST_CAP,
         &&L_TJM_QUEST_G0,
         &&L_TJM_QUEST_GN,
+        &&L_TJM_QUEST_RSINT,
+        &&L_TJM_QUEST_GXSH,
+        &&L_TJM_QUEST_RXSH,
+        &&L_TJM_QUEST_LSHVAL,
+        &&L_TJM_QUEST_DEL1,
+        &&L_TJM_QUEST_DEL2,
+        &&L_TJM_QUEST_VGAP,
+        &&L_TJM_QUEST_VDP,
+        &&L_TJM_QUEST_OMEGAJ,
+        &&L_TJM_QUEST_BETAC,
+        &&L_TJM_QUEST_ALPHAN,
+        &&L_TJM_QUEST_KGAP,
+        &&L_TJM_QUEST_REJPT,
+        &&L_TJM_QUEST_KGAP_REJPT,
         &&L_TJM_QUEST_N1,
         &&L_TJM_QUEST_N2,
         &&L_TJM_QUEST_NP
@@ -129,6 +146,12 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->v.rValue = inst->TJMlsh;
         return (OK);
 #endif
+    L_TJM_TEMP_K:
+        data->v.rValue = inst->TJMtemp;
+        return (OK);
+    L_TJM_DTEMP:
+        data->v.rValue = inst->TJMdtemp;
+        return (OK);
     L_TJM_OFF:
         data->type = IF_FLAG;
         data->v.iValue = inst->TJMoffGiven;
@@ -147,6 +170,17 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_TJM_NOISE:
         data->v.rValue = inst->TJMnoise;
         return (OK);
+    L_TJM_QUEST_PHSN:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->TJMphsN;
+        return (OK);
+    L_TJM_QUEST_PHSF:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->TJMphsF;
+        return (OK);
+    L_TJM_QUEST_PHST:
+        data->v.rValue = inst->TJMphsT;
+        return (OK);
     L_TJM_QUEST_V:
         data->v.rValue = (ckt->rhsOld(inst->TJMposNode) -
             ckt->rhsOld(inst->TJMnegNode));
@@ -158,16 +192,8 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
             data->v.rValue =  phi + (pint*4)*M_PI;
         }
         return (OK);
-    L_TJM_QUEST_PHSN:
-        data->type = IF_INTEGER;
-        data->v.iValue = inst->TJMphsN;
-        return (OK);
-    L_TJM_QUEST_PHSF:
-        data->type = IF_INTEGER;
-        data->v.iValue = inst->TJMphsF;
-        return (OK);
-    L_TJM_QUEST_PHST:
-        data->v.rValue = inst->TJMphsT;
+    L_TJM_QUEST_TCF:
+        data->v.rValue = inst->TJMicTempFactor;
         return (OK);
     L_TJM_QUEST_CRT:
         data->v.rValue = inst->TJMcriti;
@@ -193,6 +219,52 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         return (OK);
     L_TJM_QUEST_GN:
         data->v.rValue = inst->tjm_gcrit + inst->TJMg0;
+        return (OK);
+    L_TJM_QUEST_RSINT:
+        data->v.rValue = inst->TJMrsint;
+        return (OK);
+    L_TJM_QUEST_GXSH:
+        data->v.rValue = inst->TJMgshunt;
+        return (OK);
+    L_TJM_QUEST_RXSH:
+        data->v.rValue = inst->TJMgshunt > 0.0 ? 1.0/inst->TJMgshunt : 0.0;
+        return (OK);
+    L_TJM_QUEST_LSHVAL:
+        data->v.rValue = inst->TJMlsh;
+        return (OK);
+    L_TJM_QUEST_DEL1:
+        data->v.rValue = inst->TJMdel1;
+        return (OK);
+    L_TJM_QUEST_DEL2:
+        data->v.rValue = inst->TJMdel2;
+        return (OK);
+    L_TJM_QUEST_VGAP:
+        data->v.rValue = inst->TJMvgap;
+        return (OK);
+    L_TJM_QUEST_VDP:
+        data->v.rValue = inst->TJMvdpbak;
+        return (OK);
+    L_TJM_QUEST_OMEGAJ:
+        data->v.rValue = inst->TJMomegaJ;
+        return (OK);
+    L_TJM_QUEST_BETAC:
+        {
+            sTJMmodel *model = (sTJMmodel*)inst->GENmodPtr;
+            double tvm = model->TJMvm*inst->TJMicTempFactor;
+            data->v.rValue = tvm*tvm*inst->TJMcap / (inst->TJMcriti*PHI0_2PI);
+        }
+        return (OK);
+    L_TJM_QUEST_ALPHAN:
+        data->v.rValue = inst->tjm_alphaN;
+        return (OK);
+    L_TJM_QUEST_KGAP:
+        data->v.rValue = inst->tjm_kgap;
+        return (OK);
+    L_TJM_QUEST_REJPT:
+        data->v.rValue = inst->tjm_rejpt;
+        return (OK);
+    L_TJM_QUEST_KGAP_REJPT:
+        data->v.rValue = inst->tjm_kgap_rejpt;
         return (OK);
     L_TJM_QUEST_N1:
         data->type = IF_INTEGER;
@@ -248,6 +320,12 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->v.rValue = inst->TJMlsh;
         break;
 #endif
+    case TJM_TEMP_K:
+        data->v.rValue = inst->TJMtemp;
+        break;
+    case TJM_DTEMP:
+        data->v.rValue = inst->TJMdtemp;
+        break;
     case TJM_OFF:
         data->type = IF_FLAG;
         data->v.iValue = inst->TJMoffGiven;
@@ -266,6 +344,17 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case TJM_NOISE:
         data->v.uValue = inst->TJMnoise;
         break;
+    case TJM_QUEST_PHSN:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->TJMphsN;
+        break;
+    case TJM_QUEST_PHSF:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->TJMphsF;
+        break;
+    case TJM_QUEST_PHST:
+        data->v.rValue = inst->TJMphsT;
+        break;
     case TJM_QUEST_V:
         data->v.rValue = (ckt->rhsOld(inst->TJMposNode) -
             ckt->rhsOld(inst->TJMnegNode));
@@ -277,16 +366,8 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
             data->v.rValue =  phi + (pint*4)*M_PI;
         }
         break;
-    case TJM_QUEST_PHSN:
-        data->type = IF_INTEGER;
-        data->v.iValue = inst->TJMphsN;
-        break;
-    case TJM_QUEST_PHSF:
-        data->type = IF_INTEGER;
-        data->v.iValue = inst->TJMphsF;
-        break;
-    case TJM_QUEST_PHST:
-        data->v.rValue = inst->TJMphsT;
+    case TJM_QUEST_TCF:
+        data->v.rValue = inst->TJMicTempFactor;
         break;
     case TJM_QUEST_CRT:
         data->v.rValue = inst->TJMcriti;
@@ -312,6 +393,43 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         break;
     case TJM_QUEST_GN:
         data->v.rValue = inst->tjm_gcrit + inst->TJMg0;
+        break;
+    case TJM_QUEST_RSINT:
+        data->v.rValue = inst->TJMrsint;
+        break;
+    case TJM_QUEST_DEL1:
+        data->v.rValue = inst->TJMdel1;
+        break;
+    case TJM_QUEST_DEL2:
+        data->v.rValue = inst->TJMdel2;
+        break;
+    case TJM_QUEST_VGAP:
+        data->v.rValue = inst->TJMvgap;
+        break;
+    case TJM_QUEST_VDP:
+        data->v.rValue = inst->TJMvdpbak;
+        break;
+    case TJM_QUEST_OMEGAJ:
+        data->v.rValue = inst->TJMomegaJ;
+        break;
+    case TJM_QUEST_BETAC:
+        {
+            sTJMmodel *model = (sTJMmodel*)inst->GENmodPtr;
+            double tvm = model->TJMvm*inst->TJMicTempFactor;
+            data->v.rValue = tvm*tvm*inst->TJMcap / (inst->TJMcriti*PHI0_2PI);
+        }
+        break;
+    case TJM_QUEST_ALPHAN:
+        data->v.rValue = inst->tjm_alphaN;
+        break;
+    case TJM_QUEST_KGAP:
+        data->v.rValue = inst->tjm_kgap;
+        break;
+    case TJM_QUEST_REJPT:
+        data->v.rValue = inst->tjm_rejpt;
+        break;
+    case TJM_QUEST_KGAP_REJPT:
+        data->v.rValue = inst->tjm_kgap_rejpt;
         break;
     case TJM_QUEST_N1:
         data->type = IF_INTEGER;

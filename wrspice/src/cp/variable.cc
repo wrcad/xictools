@@ -300,7 +300,7 @@ CommandTab::com_shift(wordlist *wl)
 wordlist *
 CshPar::VarList()
 {
-    return (cp_vardb->wl());
+    return (cp_vardb ? cp_vardb->wl() : 0);
 }
 
 
@@ -645,12 +645,14 @@ namespace {
 
 
     // Parse and deal with 'range' ...
+    // The range2 provides two-deep access to list of lists.
     //
-    wordlist *var_range(variable *v, const char *range)
+    wordlist *var_range(variable *v, wordlist *range)
     {
+top:
         if (range) {
             int up, low;
-            const char *s = range;
+            const char *s = range->wl_word;
             if (!isdigit(*s) && *s != '-')
                 GRpkgIf()->ErrPrintf(ET_WARN,
                     "nonparseable range specified, %s[%s.\n", v->name(), s);
@@ -676,6 +678,17 @@ namespace {
             }
             else
                 up = low;
+
+            if (v->list() && low == up && range->wl_next) {
+                variable *vv = v->list();
+                while (vv && up--)
+                    vv = vv->next();
+                if (!vv)
+                    return (0);
+                range = range->wl_next;
+                v = vv;
+                goto top;
+            }
             return (v->var2wl(low, up));
         }
         return (v->varwl());
@@ -705,20 +718,30 @@ CshPar::VarEval(const char *cstring)
     GCarray<char*> gc_string(string);
     Strip(string);
 
-    char *range = 0, *s;
-    if ((s = strchr(string, '[')) != 0) {
-        *s = '\0';
-        range = rng_t::eval_range(s+1);
+    // Create a list of range specs that follow the name.  These are used
+    // only when accessing lists of lists, to any depth.
+    wordlist *range = 0;
+    char *s = string;
+    while ((s = strchr(s, '[')) != 0) {
+        *s++ = '\0';
+        char *str = rng_t::eval_range(s);
+        if (!str)
+            break;
+        wordlist *nwl = new wordlist;
+        nwl->wl_word = str;
+        range = wordlist::append(range, nwl);
     }
-    GCarray<char*> gc_range(range);
 
     char buf[BSIZE_SP];
     wordlist *wl = 0;
 
-    if (!*string)
+    if (!*string) {
+        wordlist::destroy(range);
         return (new wordlist("$", 0));
+    }
     if (*string == '$') {
         sprintf(buf, "%d", (int)getpid());
+        wordlist::destroy(range);
         return (new wordlist(buf, 0));
     }
     if (*string == '<') {
@@ -749,6 +772,7 @@ CshPar::VarEval(const char *cstring)
             if (!wl)
                 wl = new wordlist("", 0);
         }
+        wordlist::destroy(range);
         return (wl);
     }
 
@@ -770,8 +794,9 @@ CshPar::VarEval(const char *cstring)
                 else {
                     // Sp.EnqVectorVar() takes care of range
                     if (range) {
-                        char *ts = new char[strlen(s) + strlen(range) + 2];
-                        sprintf(ts, "%s[%s", s, range);
+                        char *ts = new char[strlen(s) +
+                            strlen(range->wl_word) + 2];
+                        sprintf(ts, "%s[%s", s, range->wl_word);
                         v = Sp.EnqVectorVar(ts, true);
                         delete [] ts;
                     }
@@ -793,6 +818,7 @@ CshPar::VarEval(const char *cstring)
             sprintf(buf, "%12g", cp_return_val);
             wl->wl_word = lstring::copy(buf);
         }
+        wordlist::destroy(range);
         return (wl);
     }
     
@@ -823,8 +849,8 @@ CshPar::VarEval(const char *cstring)
             else {
                 // Sp.EnqVectorVar() takes care of range
                 if (range) {
-                    char *ts = new char[strlen(s) + strlen(range) + 2];
-                    sprintf(ts, "%s[%s", s, range);
+                    char *ts = new char[strlen(s) + strlen(range->wl_word) + 2];
+                    sprintf(ts, "%s[%s", s, range->wl_word);
                     v = Sp.EnqVectorVar(ts, true);
                     delete [] ts;
                 }
@@ -844,6 +870,7 @@ CshPar::VarEval(const char *cstring)
         sprintf(buf, "%d", cnt);
         wl = new wordlist;
         wl->wl_word = lstring::copy(buf);
+        wordlist::destroy(range);
         return (wl);
     }
 
@@ -852,25 +879,36 @@ CshPar::VarEval(const char *cstring)
     // (e.g, device parameter) variable, it could be anything...
     //
     variable *v = Sp.GetRawVar(string, Sp.CurCircuit());
-    if (v)
-        return (var_range(v, range));
+    if (v) {
+        wl = var_range(v, range);
+        wordlist::destroy(range);
+        return (wl);
+    }
 
     if (isdigit(*string)) {
         v = cp_vardb->get("argv");
-        return (v ? var_range(v, string) : 0);
+        wordlist::destroy(range);
+        if (v) {
+            range = new wordlist(string);
+            wl = var_range(v, range);
+            wordlist::destroy(range);
+            return (wl);
+        }
+        return (0);
     }
 
     v = Sp.EnqPlotVar(string);
     if (v) {
         wl = var_range(v, range);
+        wordlist::destroy(range);
         variable::destroy(v);
         return (wl);
     }
 
     // Sp.EnqVectorVar() takes care of range
     if (range) {
-        char *ts = new char[strlen(string) + strlen(range) + 2];
-        sprintf(ts, "%s[%s", string, range);
+        char *ts = new char[strlen(string) + strlen(range->wl_word) + 2];
+        sprintf(ts, "%s[%s", string, range->wl_word);
 
         // take care of forms like v($something)
         if (*ts == '&' && lstring::ciinstr("vi", *(ts+1)) &&
@@ -881,6 +919,7 @@ CshPar::VarEval(const char *cstring)
         delete [] ts;
         if (v) {
             wl = v->varwl();
+            wordlist::destroy(range);
             variable::destroy(v);
             return (wl);
         }
@@ -897,9 +936,12 @@ CshPar::VarEval(const char *cstring)
     delete [] ts;
     if (v) {
         wl = v->varwl();
+        wordlist::destroy(range);
         variable::destroy(v);
         return (wl);
     }
+
+    wordlist::destroy(range);
 
     if ((s = getenv(string)) != 0)
         return (new wordlist(s, 0));

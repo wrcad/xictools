@@ -20,6 +20,28 @@ if [ -n "$XIC_LIBRARY_PATH" ]; then
     fi
 fi
 
+# Connect to Custom Compiler, PyCellStudio if  found.
+
+if [ -n "$CC_HOME" ]; then
+    export SYNOPSYS_CUSTOM_INSTALL=$CC_HOME/auxx
+    export CNI_ROOT=$CC_HOME/linux64/PyCellStudio
+fi
+if [ -n "$CNI_ROOT" ]; then
+    cni_bin=$CNI_ROOT/bin
+
+    . $cni_bin/functions.bash
+
+    setup_PYTHON_VERSION "$@"
+    check_CNI_ROOT
+    get_platform
+    check_platform
+    setup_OpenAccess
+    setup_CNI_env
+    setup_Python_env
+    setup_LD_LIBRARY_PATH "$@"
+    setup_PATH
+fi
+
 # Call the Xic program, passing along the argument list.
 
 export LD_LIBRARY_PATH
