@@ -289,14 +289,48 @@ Environment Variables
     <a name="XT_HOMEDIR"></a>
     <dl>
     <dt><b>XT_HOMEDIR</b><dd>
-    This should be set to the Windows path to the user's MSYS2 home directory.
-    This can be done from the <tt>bash_profile</tt> file by adding a line
+    Under Windows, the user's "home" directory is determined by
+    looking at environment variables.
+
+    <p>
+    In Linux, the <b>HOME</b> environment variable is set the the
+    user's home directory, and this is also true under Windows if
+    using a Linux emulation package such as Cygwin or MSYS.  However,
+    in this case <b>HOME</b> will be relative to the file system as
+    seen within the emulator, and not the actual Windows file system
+    as seen in <i>Xic</i> or <i>WRspice</i> which are Windows-native
+    programs.  Therefor, the <b>HOME</b> environment variable is
+    ignored under Windows.
+
+    <p>
+    Instead, the programs will first look for <b>XT_HOMEDIR</b>.  This
+    should be set to the Windows path to the user's MSYS2 or Cygwin
+    home directory.  For example, this can be done from the
+    <tt>bash_profile</tt> file by adding a line
     <blockquote>
     <tt>export XT_HOMEDIR=c:/msys64/home/</tt><i>yourlogin</i>
     </blockquote>
     Setting this will allow <i>Xic</i> and <i>WRspice</i> to find
     files in the user's MSYS2 home directory, even though the programs
     are Windows native and don't know the MSYS2 paths.
+
+    <p>
+    The deprecated <b>XIC_START_DIR</b> variable is checked next, and
+    if found its value is taken as the user's home directory in the
+    same manner.
+
+    <p>
+    If not found, the <b>HOMEDIR</b> and <b>HOMEPATH</b> variables, if
+    both are found, are concatenated to yield the home directory path.
+    In the unlikely event that these are not set, the
+    <b>USERPROFILE</b> variable is checked, and if all else fails,
+    "<tt>C:/</tt>" is assumed.  The <b>HOMEDIR</b>/<b>HOMEPATH</b> and
+    <b>USERPROFILE</b> variables are set by Windows, at least in some
+    Windows versions.
+
+    <p>
+    Under other operating systems, the home directory is well-defined
+    and is obtained from operating system calls.
     </dl>
    
     <a name="XT_REMOTE_TEST"></a>
