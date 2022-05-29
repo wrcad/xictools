@@ -270,11 +270,7 @@ if test -z "$FLEX"; then
     exit 1
 fi
 LEX="$FLEX -l"
-if test $sys_os == "Darwin"; then
-    BISON=/usr/local/gtk2-bundle-x11/bin/bison
-else
-    AC_PATH_PROG(BISON, bison, "")
-fi
+AC_PATH_PROG(BISON, bison, "")
 if test -z "$BISON"; then
     echo "  Error: the \"bison\" program is required and not found."
     exit 1
@@ -709,8 +705,8 @@ dnl ***
 if test $OSNAME = "Darwin"; then
 dnl *** Apple prevents us from linking to python27 within the platform.
 dnl *** We now include a skeletal python27 in the gtk2-bundle.
-    PY_INCLUDE=-I/usr/local/gtk2-bundle-x11/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
-    PY_LIBS="-L/usr/local/gtk2-bundle-x11/lib -lpython2.7"
+    PY_INCLUDE=-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
+    PY_LIBS="-L/opt/local/lib -lpython2.7"
     PY_TARGETS="py27.dylib"
     echo '#define HAVE_PYTHON 1'>> confdefs.h
     if test -f /usr/include/tcl.h; then
@@ -861,28 +857,14 @@ if test $OSNAME = "MINGW"; then
     AC_CHECK_LIB(rt, main, LIBRT="-lrt")
 
 elif test $OSNAME = "Darwin"; then
-dnl  If the gtk2-bundle export package is found, use it.  Otherwise
 dnl  assume libraries/includes are under /opt (MacPorts).
     if test $with_quartz = yes; then
-        if test -d /usr/local/gtk2-bundle; then
-            LIBS=-L/usr/local/gtk2-bundle/lib
-            IMG_LIBS=-L/usr/local/gtk2-bundle/lib
-            IMG_INCLUDES="-I/usr/local/gtk2-bundle/include"
-        elif test -d /opt; then
-            LIBS=-L/opt/lib
-            IMG_LIBS=-L/opt/lib
-            IMG_INCLUDES="-I/opt/include"
-        fi
+        echo "NO QUARTZ SUPPORT";
+        exit 1
     else
-        if test -d /usr/local/gtk2-bundle-x11; then
-            LIBS=-L/usr/local/gtk2-bundle-x11/lib
-            IMG_LIBS=-L/usr/local/gtk2-bundle-x11/lib
-            IMG_INCLUDES="-I/usr/local/gtk2-bundle-x11/include"
-        elif test -d /opt; then
-            LIBS=-L/opt/lib
-            IMG_LIBS=-L/opt/lib
-            IMG_INCLUDES="-I/opt/include"
-        fi
+        LIBS=-L/opt/local/lib
+        IMG_LIBS=-L/opt/local/lib
+        IMG_INCLUDES="-I/opt/local/include"
     fi
 
     IMG_FLAGS=

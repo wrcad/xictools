@@ -727,7 +727,7 @@ if [ $windows = yes ]; then
             continue
         fi
         if [ $cleanchk = no ]; then
-            check_clean
+#            check_clean
             cleanchk=yes
         fi
         do_update $fname /usr/local
@@ -758,7 +758,7 @@ for fname in $pkgs; do
         continue
     fi
     if [ $cleanchk = no ]; then
-        check_clean
+#        check_clean
         cleanchk=yes
     fi
     if [ -z "$prefix" ]; then
