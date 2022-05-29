@@ -141,6 +141,13 @@ packages: all
 	    fi; \
 	done
 
+quick_pkgs: all
+	-@export quick_pkgs=1; for a in $(SUBDIRS); do \
+	    if [ -d $$a -a -d $$a/packages ]; then \
+	        (cd $$a; $(MAKE) package); \
+	    fi; \
+	done
+
 install: all
 	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a -a -d $$a/packages ]; then \
