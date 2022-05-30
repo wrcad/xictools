@@ -1,5 +1,6 @@
                   XicTools Open-Source  Release
                          October 1, 2017
+                       Revised May 29, 2022
 
 Whiteley Research is pleased to offer the XicTools programs:  Xic
 (graphical editor) and WRspice (circuit simulator) as open-source. 
@@ -43,18 +44,6 @@ in some cases.  This shall presumably be clarified in the future.  All
 old headers have been retained, so users can make their own judgement
 about the constraints on a given set of files.  Incorporating a better
 HTML viewer, that understands CSS, should be a priority.
-
-Incidently, the GNU licenses are an absolute scourge and should die. 
-Gnu-licensed software is anything but free, its use is highly
-restricted and is poison in a commercial environment.  Fortunately the
-world is moving away from that nonsense, but the damage has been done. 
-For years, Gnu-licensed Linux, and open-source in general, was
-considered to be something far-out hippy-dippy communist, due to
-"copy-lefts" and other peculiarities, by corporate IT departments. 
-These people instead bought Microsoft, costing the world billions of
-dollars (maybe a trillion?  who knows) as a consequence of poor
-security, and need for countermeasures.  Anyway, Bill Gates owes a big
-wet kiss to the GNU folks who made open-source toxic for so long.
 
 
 1. Overview - What's Here
@@ -154,19 +143,16 @@ fasthenry
 
 3.  Building the XicTools
 
+
 3.1.  Prerequisites
 
 CentOS/RedHat Linux is the reference platform.  You should have
-success building the tools on a RPM-based Linux, including OpenSuSE
-and Fedora.  Other Linux distributions will provide challenges, for
-now.
+success building the tools on Linux and Linux-like operating systems
+and environments.  These include Cygwin and MSYS2 on Windows, and OSX
+with MacPorts.
 
 You will need to be familiar with makefiles, compilers, and the tools
-needed to build Linux programs.  Unless you are very lucky, something
-won't work right, and you'll need to know how to fix it. 
-User-friendliness varies from nonexistant to execrable, meaning that
-the code itself is the documentation.  This will all change over time,
-but for now, this is probably for experts only.
+needed to build Linux programs.
 
 You will need to have the development versions of lots of different
 libraries installed, including GTK.  As you encounter missing headers,
@@ -175,12 +161,11 @@ system source repositories.  You of course need the basic software
 development tools installed.  It can be a bit of a challenge to
 figure out which packages to install, Google is your friend.
 
-Here's a probably incomplete list of things to add, based on the port to
-Ubuntu-17.10.  This works for Debian-9 as well.
-
 Programs and Utilities:
-These were missing from the basic operating system after a fresh
-install.  These can be installed with "sudo apt-get install <progname>".
+There may be a meta-package containing the development toolchain,
+which should be installed.  These programs may be missing and would
+require installation.
+
   git, autoconf, flex, bison, pkg-config
 
 Libraries and Development Packages:
@@ -189,15 +174,43 @@ package contains the include files needed to compile programs with the
 libraries.  If a build fails with a missing header (.h) file, the game
 is to figure out which development package provides it, and install
 the package.  In other cases, the library may be wholly missing, so
-both the library and development packages should be installed.  For
-Ubuntu/Debian, I installed gtk and all its dependents with
-  sudo apt-get install build-essential libgtk2.0-dev
-This brings in lot of dependent packages, on other systems, the dependents
-may require separate installation.
-Also needed, libncurses using
-  sudo apt-get install libncurses5-dev libncursesw5-dev
-and libjpeg, libtiff using
-  sudo apt-get install libjpeg-dev libtiff-dev
+both the library and development packages should be installed. 
+Install the devel version, which will also install the bare library if
+necessary.
+
+  libgsl, libjpeg, libtiff, gtk2, ncurses
+
+The gtk2 package will bring in a large number of dependent packages.
+
+Below are lists of package names that I had to install on some operating
+systems.
+
+You must have root permission to install packages on Linux.
+
+Ubuntu 20
+Debian 11
+   These use the same packages.  The "build-essential" provides the
+   program development toolchain.  The package names can be listed after
+   "apt install", or the command can be invoked on the packages
+   individually or in smaller groups.
+
+   apt install build-essential autoconf automake flex bison gpp git
+   libgtk2.0-dev libgsl-dev libtiff-dev libjpeg-dev libncurses5-dev
+
+Fedora 35/36
+    In Fedora, the development tools are preinstalled, but you have
+    to install g++ to get C++ support.  Again, packages can be installed
+    one at a time or in groups.
+
+    dnf install autoconf automake flex bison patch g++ gpp gtk2-devel
+    gsl-devel rpm-build libjpeg-turbo-devel ncurses-devel
+
+CentOS 8 Stream
+    The first line installs the development tools, including for C++.
+
+    dnf group install "Development Tools"
+    dnf install gtk2-devel gsl-devel ncurses-devel libtiff-devel libjpeg-devel
+
 
 3.2.  Build Procedure for Linux
 
@@ -220,125 +233,81 @@ packaging step entirely if you wish.  However, if you don't install
 from the packages, you won't have the "Safe Install" feature, see
 http://wrcad.com for info about the packages.  Basically, if you are a
 "user", you probably want to install with packages.  If you are a
-"developer", you may wish to enable direct installation.  If you are
-building on a non-rpm Linux, the packaging system is not yet
-supported, so direct installation is your sole option.
+"developer", you may wish to enable direct installation.
 
-    4. "make packages" will create all of the package files.
+    5. "make packages" will create all of the package files.
        Packages are left in xt/xt_base/packages/pkgfiles.
 
-    5. cd xt_base/packages/pkgfiles; ../util/wr_install all
+    6. cd xt_base/packages/pkgfiles; ../util/wr_install all
        This will install the programs from the package files.
+    
+    7. Set your shell search path to include the main <i>XicTools</i>
+       bin, by default /usr/local/xictools/bin.
 
 
 3.3  Windows
 
-This is set up for a hybrid build environment consisting of Cygwin
-(www.cygwin.org, I use 64-bit version), win-builds-1.5
-(win-builds.org, presently only the 32-bit version).  Also used is the
-inno-setup 5.5.9 packager (http://www.jrsoftware.org/).  Cygwin
-provides bash, make, and similar.  win-builds provides the compiler
-tool chain, and the gtk libraries and prerequisites.
+Currently the MSYS2/MINGWx64 environment is used to build and run on
+Windows.  The user will have to install this environment, or at least
+the run-time components.  This replaces the "gtk2-bundle" which
+provided the needed libraries previously and was distributed with the
+programs.
 
-The procedure below will give you the "mingw" tool chain for building
-the programs, and the gtk-2 libraries and all dependencies.  The
-latter are resolved in gtk2-bundle, which is necessary for exported
-packages.
+Go to msys2.org, download and run the installer, and follow the
+instructions, using the defaults.  When done you will have a shell
+window on screen.  Add packages as needed, but you will want the
+development toolchain for mingw64:
 
-1.  Go to http://cygwin.org, and download the 64-bit setup
-application.
+    pacman -S base-devel
+    pacman -S mingw-w64-x86_64-toolchain
 
-BEWARE:  there is a cygwin.com site that looks the same but may be
-unsafe, DON'T download from there.
+Add the vim editor, the winpty program needed to run wrspice, and
+the mingw64 versions of the gtk2 and gsl libraries.
 
-Run the installer.  Specify c:\cygwin64 as the installation location.
-The basic tools are already selected for initial installation, but you
-will need a few additional things, including:
-  git, autoconf-2.69, make, flex, bison, patch
-All of these are in category "Devel", the autoconf is listed as
-"autoconf2.5" for some reason last I looked.
+    pacman -S vim
+    pacman -S winpty
+    pacman -S mingw_w64-x86_64-gtk2
+    pacman -S mingw_w64-x86_64-gsl
+
+Use the vim editor to edit the .bash_profile file that exists in the
+current (and home) directory adding the following lines to the bottom
+of the file.
+
+    mount c:/usr/local/xictools /usr/local/xictools
+    export PATH="/usr/local/xictools/bin:$PATH"
+    export XT_HOMEDIR=c:/msys64/home/<your_username>
+
+Of course, replace <your_username> with the correct text.
+
+Also used is the inno-setup 5.5.9 packager
+(http://www.jrsoftware.org/).  You might wish to get this (or a newer
+release) if you intend to produce packages for Windows.  The XicTools
+Makefile assumes that this is installed at c:/inno-5.5.9 which is
+mounted on /inno-5.5.9 in MSYS2.
+
+To start the shell window the next time, click "MSYS2 64bit" in the
+Start menu, then click "MSYS2 MinGW x64" in the sub-menu.  This
+provides the MSYS2 shell environment with support for mingw64.  MinGW
+is "minimal Gnu (for) Windows" and is a library that provides a
+limited Linux-like programming environment under Windows.  The
+XicTools programs use this environment and are thus Windows-native
+programs.
+
+This is about complete to build XicTools, but there may be a thing or
+two missing.  You will have to use the "pacman" package manager
+commands to find the package needed, then use commands like above to
+install it.
 
 You will run the installer in the future to update your packages, and
 to add packages needed later.
 
-Once installed, you can start bash terminal windows from an icon on
-the desktop.  You will be building and probably running the XicTools
-programs from these windows (There are issues running the programs,
-though.  See the Xic or WRspice release notes).
-
-2.  From a bash window, edit your .bash_profile file.  Add the
- following lines (between the dashed lines) to the end of this file. 
- This will set your search path, among other things.
-
-----------------------------------------
-mount c:/usr/local  /usr/local
-mount -f c:/inno-5.5.9 /inno-5.5.9
-
-PATH="$PATH:/usr/local/xictools/bin"
-if [ -z "$CYGWIN_BUILD" ]; then
-    PATH="/usr/local/gtk2-bundle/bin:/usr/local/win-builds/bin:$PATH"
-fi
-PATH="${HOME}/bin:$PATH"
-export PATH
-----------------------------------------
-
-3.  Go to http:/win-builds.org, and download the installer
-application.  Run the installer, with the location set to
-
-      c:\usr\local\win-builds
-
-Choose 32 bits (for now, will support 64-bits at some point), choose
-native installation (NOT MSYS/Cygwin).  Install everything, it isn't
-worth the effort to pick and choose.
-
-4.  We need to adjust the location of the png include files so that
-the build script will find them.  The configuration script will attempt
-to do this automatically if needed, so you really only need to do
-the procedure below if that fails.
-
-    a.  Click on the Cygwin terminal icon with the right mouse button,
-        click Run as Administrator from the menu.
-    b.  Enter these commands into the new Cygwin bash window:
-          cd c:/usr/local/win-builds/include/libpng14
-          cp *.h ..
-          (exit the window)
-
-5.  If you do not already have the gtk2-bundle package installed, go
-to http://wrcad.com/xictools/Win32 and get the gtk2-bundle package and
-install it (execute it like a program).
-
-6.  Go to http://www.jrsoftware.org and grab inno-setup 5.5.9. 
-Install it in c:\inno-5.5.9 This location, and the version number, are
-built into the packaging system so should not be changed.
-
-7.  Open a new bash window, you should be able to build xictools from
-this window.
+The actual build procedure follows the Linux procedure above.
 
 
 3.4  OS X
 
 You will need xcode, the X-Quartz X-Windows server, and the MacPorts
 gtk2 libraries.
-
-There is provision for creating a "gtk2-bundle" from the MacPorts, which
-is deployed with packages.  Again, a local user can likely skip this
-and link directly.
-
-Here's a step-by-step procedure for building the X11 version of the
-programs.  It is also possible to build a native version, but alas,
-the last time I looked at this, the graphics support in the native gtk
-had very serious shortcomings and the graphics display, notably
-ghosting, doesn't work correctly.
-
-Overall, we install a special version of macports/gtk in
-/usr/local/gtk2-bundle-x11.  This is used to build and run the
-programs on the local machine.  One can build a "gtk2-bundle-x11"
-package which contains only the run-time elements needed, and export
-this.  This package will install a small run-time only
-/usr/local/gtk2-bundle-x11, allowing the program packages to be
-installed and run on other Macs.  There are other ways to obtain these
-libraries and build the programs for local use, should you prefer, but
-you're on your own in this case.
 
 1.  Install xcode
     This is Apple's development package, available as a download from the
@@ -358,46 +327,25 @@ you're on your own in this case.
     through macports.  Follow the instructions to install and start
     the server.
 
-5.  Download the latest source code for the Macports installer from
-    macports.org.  Presently, this file is named
-    Macports-2.4.2.tar.gz, but the release number will likely be
-    different (get the gzip (.gz) version).  You are going to be
-    building a special macports from source, don't bother downloading
-    the pre-built package manager.
+5.  Download the MacPorts installer from macports.org.  This provides
+    the graphical libraries used by the programs.  Following the
+    instructions, install MacPorts for your operating system.  Be sure
+    to install the default package which installs in the default
+    location (i.e., don't build from source and change the location).
 
-6.  Move the Macports file you just downloaded into a work area where
-    you have all permissions.  Copy the file xt_base/packages/util/MPbuild
-    from the xictools source tree into this same work area.
+    Once the basic installation is done, run, as root, the following
+    commands:
 
-7.  Edit the MPbuild script copy with a text editor.  Read the comment
-    and perform configuration as directed.
+    port -v selfupdate<br>
+    port install gtk2<br>
+    port install gsl<br>
+    port install python2_select<br>
+    port install python27<br>
+    port install autoconf<br>
+    port install pkgconfig<br>
 
-8.  Move any existing /usr/local/gtk2-bundle-x11 directory out of the way.
-    You will have this directory if you have installed the gtk2-bundle-x11
-    package from wrcad.com.  It is not likely that you will need this
-    anymore, so it can be deleted.
+6.  Set your shell search path to include /usr/local/xictools/bin.
 
-9.  Run the script by, in a Terminal window in the work area, giving the
-    command
-
-      ./MPbuild
-
-    Respond to the prompts.  You should answer "n" to the first prompt
-    to build the standard x11 version, but you can choose to build a
-    quartz native version.  However, this may not work correctly yet.
-
-    The script takes a long time to run, several hours on my old
-    mid-2010 macbook pro.  Make sure to use the ac adaptor!
-
-10.  Make sure that /usr/local/gtk2-bundle-x11/bin is in your search
-    path, ahead of /opt/local/bin (if this exists).
-
-    The shell search path is likely set in your .bash_profile file
-    in your home directory (PATH variable).  After adding the directory
-    to the search path assignment with a text editor, save the file.
-    Exit the Terminal window, and start a new one.  The new window will
-    have the new path set.
-
-You should now be able to build the graphical xictools programs (mozy,
-xic, wrspice).
+You should now be able to build XicTools folling the procedure above
+for Linux.
 

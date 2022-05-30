@@ -19,8 +19,8 @@ EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
 
 ifeq ($(OSNAME),Darwin)
-	GSL = -L/usr/local/gtk2-bundle-x11/lib
-	INCLUDE = -I/usr/local/gtk2-bundle-x11/include
+	GSL = -L/opt/local/lib
+	INCLUDE = -I/opt/local/include
 endif
 
 CCFILES = mmjco.cc mmjco_cmds.cc mmjco_tempr.cc mmjco_tscale.cc

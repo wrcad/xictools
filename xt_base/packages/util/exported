@@ -31,10 +31,10 @@
 case $1 in
 oses)
   echo \
-"Darwin \
+"Darwin.arm64 \
 LinuxCentos8 \
 LinuxDebian11 \
-LinuxFedora35 \
+LinuxFedora36 \
 LinuxOpenSUSE15 \
 LinuxRHEL7 \
 LinuxUbuntu20 \
@@ -45,13 +45,13 @@ progs)
 ;;
 host)
   case $2 in
-  Darwin)
-    echo macbook;;
+  Darwin.arm64)
+    echo stephens-air;;
   LinuxCentos8)
     echo poe;;
   LinuxDebian11)
     echo debby;;
-  LinuxFedora35)
+  LinuxFedora36)
     echo fedor;;
   LinuxOpenSUSE15)
     echo byron;;
@@ -65,13 +65,13 @@ host)
 ;;
 sfx)
   case $2 in
-  Darwin)
+  Darwin.arm64)
     echo pkg;;
   LinuxCentos8)
     echo rpm;;
   LinuxDebian11)
     echo deb;;
-  LinuxFedora35)
+  LinuxFedora36)
     echo rpm;;
   LinuxOpenSUSE15)
     echo rpm;;

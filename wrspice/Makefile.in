@@ -583,7 +583,9 @@ devkit_examples:
 
 package::
 	$(MAKE) all
-	$(MAKE) devkit_examples
+	if [ -z "$(quick_pkgs)" ]; then \
+	    $(MAKE) devkit_examples; \
+	fi
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_wrspice_pkg
