@@ -45,7 +45,7 @@ progs)
 ;;
 host)
   case $2 in
-  Darwin)
+  Darwin.arm64)
     echo stephens-air;;
   LinuxCentos8)
     echo poe;;
@@ -65,7 +65,7 @@ host)
 ;;
 sfx)
   case $2 in
-  Darwin)
+  Darwin.arm64)
     echo pkg;;
   LinuxCentos8)
     echo rpm;;
