@@ -76,6 +76,7 @@ namespace {
     const char *mkw_cross       = "cross";
     const char *mkw_rise        = "rise";
     const char *mkw_fall        = "fall";
+    const char *mkw_minx        = "minx";
     const char *mkw_from        = "from";
     const char *mkw_to          = "to";
     const char *mkw_min         = "min";
@@ -691,6 +692,7 @@ namespace {
         if (lstring::cieq(s, mkw_cross)) return (true);
         if (lstring::cieq(s, mkw_rise)) return (true);
         if (lstring::cieq(s, mkw_fall)) return (true);
+        if (lstring::cieq(s, mkw_minx)) return (true);
         if (lstring::cieq(s, mkw_from)) return (true);
         if (lstring::cieq(s, mkw_to)) return (true);
         if (lstring::cieq(s, mkw_min)) return (true);
@@ -728,7 +730,7 @@ sMpoint::~sMpoint()
 
 // The general form of the definition string is
 //   [before/at/after/when] expr[val][=][expr] [td|ts=offset] [cross=crosses]
-//     [rise=rises] [fall=falls]
+//     [rise=rises] [fall=falls] [minx=val]
 // One or two expressions follow the initial keyword, with optional
 // '=' or 'val=' ahead of the second expression.  the second
 // expression can be missing.
@@ -743,7 +745,9 @@ sMpoint::~sMpoint()
 //   expr==expr2, and the td,cross,rise,fall keywords apply.  The risis,
 //   falls, crosses are integers.  The offset is a numeric value, or the
 //   name of another measure.  The trigger is the matching
-//   rise/fall/cross found after the offset.
+//   rise/fall/cross found after the offset.  If minx is given, crossing
+//   events are only recognized if greater than this distance from the
+//   previous one.
 //
 // If expr2 is not given, then expr1 is one of:
 //
@@ -1020,6 +1024,17 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
                 last = s;
                 continue;
             }
+            if (lstring::cieq(tok, mkw_minx)) {
+                delete [] tok;
+                bool err;
+                t_minx = gval(&s, &err);
+                if (err) {
+                    listerr(errstr, mkw_minx);
+                    return (E_SYNTAX);
+                }
+                last = s;
+                continue;
+            }
         }
         s = last;
         break;
@@ -1145,6 +1160,12 @@ sMpoint::print(sLstr *plstr)
             plstr->add(mkw_cross);
             plstr->add_c('=');
             plstr->add_u(t_crosses);
+        }
+        if (t_minx > 0.0) {
+            plstr->add_c(' ');
+            plstr->add(mkw_minx);
+            plstr->add_c('=');
+            plstr->add_u(t_minx);
         }
     }
     if (t_conj)
@@ -1329,13 +1350,20 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
             }
             double x = xs->realval(0);
             ix = xs->unscalarized_length() - 1;
+            bool need_lastx = false;
             if (t_v1 <= t_v2 && v2 < v1) {
-                t_rise_cnt++;
-                t_cross_cnt++;
+                if (t_lastx == 0.0 || x >= t_lastx + t_minx) {
+                    t_rise_cnt++;
+                    t_cross_cnt++;
+                    need_lastx = true;
+                }
             }
             else if (t_v1 > t_v2 && v2 >= v1) {
-                t_fall_cnt++;
-                t_cross_cnt++;
+                if (t_lastx == 0.0 || x >= t_lastx + t_minx) {
+                    t_fall_cnt++;
+                    t_cross_cnt++;
+                    need_lastx = true;
+                }
             }
             else {
                 t_v1 = v1;
@@ -1353,9 +1381,19 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
                 }
                 else
                     fval = x;
+                t_lastx = fval;
                 foundit = true;
                 if (end)
                     ix--;
+            }
+            else if (need_lastx && t_minx > 0.0) {
+                double d = v2 - t_v2 - (v1 - t_v1);
+                if (d != 0.0) {
+                    double xp = xs->unscalarized_prev_real();
+                    t_lastx = xp + (x - xp)*(t_v1 - t_v2)/d;
+                }
+                else
+                    t_lastx = x;
             }
             t_v1 = v1;
             t_v2 = v2;
