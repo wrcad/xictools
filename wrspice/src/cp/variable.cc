@@ -1062,6 +1062,23 @@ CshPar::RawVarSet(const char *vname, bool isset, variable *v)
 }
 
 
+namespace {
+    bool is_integer(const char *s)
+    {
+        if (!s)
+            return (false);
+        if (*s == '-' || *s == '+')
+            s++;
+        while (*s) {
+            if (!isdigit(*s))
+                return (false);
+            s++;
+        }
+        return (true);
+    }
+}
+
+
 // Return a variable struct filled from the parsed wordlist.
 //
 variable *
@@ -1112,8 +1129,21 @@ CshPar::ParseSet(wordlist *wl)
         else
             goto bad;
         val = lstring::copy(val);
+        bool isstr = (*val == '"' && *(val + strlen(val) - 1) == '"');
         Unquote(val);
+        if (isstr) {
+            // Word was double-quoted, take as a string.
+            vv = new variable(name);
+            delete [] name;
+            vv->set_next(vars);
+            vars = vv;
+            vv->set_string(val);
+            delete [] val;
+            val = 0;
+            continue;
+        }
         if (lstring::eq(val, "(")) {
+            // A list
             delete [] val;
             val = 0;
             variable *lv = GetList(&wl);
@@ -1126,7 +1156,19 @@ CshPar::ParseSet(wordlist *wl)
             vars = vv;
             continue;
         }
+        if (is_integer(val)) {
+            // An integer.
+            vv = new variable(name);
+            delete [] name;
+            vv->set_next(vars);
+            vars = vv;
+            vv->set_integer(atoi(val));
+            delete [] val;
+            val = 0;
+            continue;
+        }
 
+        // Real if recognized as such, otherwise a string.
         const char *st = val;
         double *td = SPnum.parse(&st, true);
         vv = new variable(name);

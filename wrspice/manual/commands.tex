@@ -3102,7 +3102,7 @@ JJexamples/nor\_mc.cir}.
 \subsection{\spcmd{measure}}
 \index{measure command}
 
-% spCommands.hlp:measure 032220
+% spCommands.hlp:measure 071722
 
 The {\cb measure} command allows one to set up a runop (see
 \ref{runop}) which will identify a measurement point or interval, and
@@ -3196,7 +3196,9 @@ pointspec} elements are true, i.e., the conjunction is true.
 \item{\it pointspec}\\
 {\it keyword} {\it expression1} [{\vt =}][{\vt val=}] [{\it expression2\/}]
 [{\vt cross=}{\it crosses\/}] [{\vt rise=}{\it rises\/}]
-[{\vt fall=}{\it falls\/}]] [{\vt td=}{\it delay\/}]
+[{\vt fall=}{\it falls\/}]\newline
+ [{\vt minx=}{\it min\_delta}] [{\vt td=}{\it delay\/}]
+
 \end{description}
 
 The {\it pointspec} begins with one of the following kewords:  {\vt
@@ -3288,6 +3290,11 @@ rises above {\it expression2}.
 \item{{\vt fall=}{\it falls}}\\
 Integer {\it falls} is the number of times that {\it expression1}
 falls below {\it expression2}.
+
+\item{{\vt minx=}{\it min\_delta}}\\
+Real {\it min\_delta} is the minimum time before a following crossing
+event will be recognized, used to suppress spurious crossings from
+noise or ringing.
 \end{description}
 
 \begin{description}
@@ -3352,7 +3359,7 @@ Form 2:
 \begin{quote}\vt
     trig|targ {\it variable} [val=]{\it value}
         [td={\it delay}] [cross={\it crosses}]
-        [rise={\it rises}] [fall={\it falls}]
+        [rise={\it rises}] [fall={\it falls}] [minx={\it min\_delta}]
 \end{quote}
 
 Form 2 allows the interval boundaries to be referenced to times when a
@@ -3364,9 +3371,11 @@ rise/fall/cross} fields should be set.  Their values are integers
 which represent the variable crossing the threshold a number of times. 
 The {\vt rise} indicates the variable rising through the threshold,
 {\vt fall} indicates the variable decreasing from above to below the
-threshold, and {\vt cross} indicates {\vt rises + falls}.  The
-interval boundary is set when the specified number of transitions is
-reached.
+threshold, and {\vt cross} indicates {\vt rises + falls}.  If given,
+the {\vt minx} value sets the minimum time delta between the crossing
+events, those that occur too soon are ignored.  This can be used to
+suppress false triggering from ringing or noise.  The interval
+boundary is set when the specified number of transitions is reached.
 
 If the delay is specified, transition counting starts after the
 specified delay.
@@ -3380,6 +3389,7 @@ Form 3:
 \begin{quote}\vt
     trig|targ when {\it expr1\/}={\it expr2} [td={\it delay}]
         [cross={\it crosses}] [rise={\it rises}] [fall={\it falls}]
+        [minx={\vt min\_delta}]
 \end{quote}
 
 The third form is similar to the second form, except that crossings

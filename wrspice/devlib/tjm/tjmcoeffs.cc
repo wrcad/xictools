@@ -234,16 +234,17 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm, double temp)
 
     const char *swpfile = 0;
     char buf[256];
-    if (!strncmp(nm, "tsweep", 6)) {
+    // Avoid file access, assume that a ".swp" suffix indicates a
+    // sweep file.
+    const char *sfx = strrchr(nm, '.');
+    if (sfx && !strcmp(sfx, ".swp")) {
         // A sweep file.
         swpfile = strdup(nm);
 
         // Compose the name of the fit file.
         strcpy(buf, nm);
-        char *t = strrchr(buf, '.');
-        if (t && !strcmp(t, ".swp"))
-            *t = 0;
-        sprintf(buf + strlen(buf), "_%.4f.fit", temp);
+        char *t = buf + (sfx - nm);
+        sprintf(t, "_%.4f.fit", temp);
         nm = buf;
     }
 

@@ -1009,21 +1009,6 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
         ExecCmds(execs);
         ExecsPop();
 
-        // This is subtle.  Suppose that there are lines like "param
-        // p1 = $val" and that the execs contain "set val = 10".  At
-        // this point, we need to update the parameters, before we do
-        // the parameter expand in subcircuit expansion, otherwise
-        // we get unexpanded shell variables in the netlist.
-
-        for (sLine *dd = deck->next(); dd; dd = dd->next()) {
-            if (lstring::cimatch(PARAM_KW, dd->line())) {
-                if (strchr(dd->line(), '$')) {
-                    dd->var_subst();
-                    ptab = sParamTab::extract_params(ptab, dd->line());
-                }
-            }
-        }
-
         // Still in list? may have been destroyed.
         sPlot *px = OP.plotList();
         for ( ; px; px = px->next_plot()) {
@@ -1033,6 +1018,20 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
         if (!px)
             pl_ex = 0;
     }
+
+    // We need to shell expand the parameter definitions before we do
+    // the parameter expand in subcircuit expansion, otherwise we can
+    // get unexpanded shell variables in the netlist.
+
+    for (sLine *dd = deck->next(); dd; dd = dd->next()) {
+        if (lstring::cimatch(PARAM_KW, dd->line())) {
+            if (strchr(dd->line(), '$')) {
+                dd->var_subst();
+                ptab = sParamTab::extract_params(ptab, dd->line());
+            }
+        }
+    }
+
 #ifdef TIME_DEBUG
     double tend = OP.seconds();
     printf("init 2: %g\n", tend - tstart);

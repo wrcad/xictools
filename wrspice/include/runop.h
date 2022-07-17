@@ -225,7 +225,7 @@ private:
 //
 // The general form of the definition string is
 //   [when/at] expr[val][=][expr] [td=offset] [cross=crosses] [rise=rises]
-//     [fall=falls]
+//     [fall=falls] [minx=val]
 // The initial keyword (which may be missing if unambiguous) is one of
 // "at" or "when".  These are equivalent.  One or two expressions follow,
 // with optional '=' or 'val=' ahead of the second expression.  the second
@@ -235,7 +235,9 @@ private:
 //   expr==expr2, and the td,cross,rise,fall keywords apply.  The risis,
 //   falls, crosses are integers.  The offset is a numeric value, or the
 //   name of another measure.  The trigger is the matching
-//   rise/fall/cross found after the offset.
+//   rise/fall/cross found after the offset.  If minx is given, crossing
+//   events are only recognized if greater than this distance from the
+//   previous one.
 //
 // If expr2 is not given, then expr1 is one of:
 //
@@ -285,6 +287,8 @@ struct sMpoint
             t_v1            = 0.0;
             t_v2            = 0.0;
             t_px            = 0.0;
+            t_minx          = 0.0;
+            t_lastx         = 0.0;
             t_indx          = 0;
             t_crosses       = 0;
             t_rises         = 0;
@@ -326,6 +330,7 @@ struct sMpoint
             t_v1 = 0.0;
             t_v2 = 0.0;
             t_px = 0.0;
+            t_lastx = 0.0;
             t_indx = 0;
             t_cross_cnt = 0;
             t_rise_cnt = 0;
@@ -363,6 +368,8 @@ private:
     double t_v1;            // Previous expr1 value,
     double t_v2;            // Previous expr2 value,
     double t_px;            // Previous time value.
+    double t_minx;          // Minimum time from last cross event.
+    double t_lastx;         // Time of last cross event.
     int t_indx;             // Index of trigger point.
     int t_crosses;          // The 'crosses' value.
     int t_rises;            // The 'rises' value.

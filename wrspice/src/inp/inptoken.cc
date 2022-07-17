@@ -259,6 +259,7 @@ SPinput::getValue(const char **line, IFdata *data, sCKT *ckt,
         char *word = getTok(line, true);
         if (!word)
             return (false);
+        lstring::unquote_in_place(word);
         data->v.sValue = word;
     }
     else if (type == IF_PARSETREE) {
