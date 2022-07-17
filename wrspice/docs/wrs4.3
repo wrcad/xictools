@@ -117,6 +117,52 @@ End of general info.
 
 
 ===============================================================================
+wrspice-4.3.15  7/17/2022
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New .measure/.stop keyword:  minx = value.
+
+  The rises/falls/crosses have to occur more than value from the
+  previous crossing event or they are not counted.  This can be used
+  to filter ringing from event counts.
+
+* Modified set command data type behavior.
+
+  The set command now stores double-quoted assignments as strings,
+  e.g., set foo = "1.234" is a string data type internally.  Further,
+  if assigned an integer, the accepted data type is now integer and
+  not real.  Previously all numeric input was taken as real, quoted or
+  not, so we had "set foo = "1"; echo $foo printing 1.000000e+00.
+
+  Now:
+  set v1 = 1.23
+  set v2 = "1.23"
+  echo $v1
+    1.230000e+00
+  echo $v2
+    1.23
+  set v1 = 1
+  echo $v1
+    1
+
+* Enable TJM sweep file support.
+
+  The "coeffset" JJ model level=3 parameter can now be set to the name
+  of a temperature sweep ".swp" file created with the mmjco utility. 
+  These provide model data over a range of temperatures, as opposed to
+  a single temperature fit file.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed shell expansion in .param lines, this was not being done.
+
+
+-------------------------------------------------------------------------------
 wrspice-4.3.14  5/29/2022
 Current Release
 

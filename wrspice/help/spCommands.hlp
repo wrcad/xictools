@@ -4174,7 +4174,7 @@ mctrial command
 !!SEEALSO
 simcmds
 
-!! commands.tex 032220
+!! commands.tex 071722
 !!KEYWORD
 measure
 !!TITLE
@@ -4300,8 +4300,8 @@ measure command
     <dt><i>pointspec</i><dd>
     <i>keyword</i> <i>expression1</i> [<tt>=</tt>][<tt>val=</tt>]
       [</i>expression2</i> [<tt>cross=</tt><i>crosses</i>]
-      [<tt>rise=</tt><i>rises</i>] [<tt>fall=</tt><i>falls</i>]]
-      [<tt>td=</tt><i>delay</i>]
+      [<tt>rise=</tt><i>rises</i>] [<tt>fall=</tt><i>falls</i>]
+      [<tt>minx=</tt><i>min_delta</i>]] [<tt>td=</tt><i>delay</i>]
     </dl>
 
     <p>
@@ -4407,6 +4407,10 @@ measure command
     <dt><tt>fall=</tt><i>falls</i><dd>
     Integer <i>falls</i> is the number of times that
     <i>expression1</i> falls below <i>expression2</i>.
+    <dt><tt>minx=</tt><i>min_delta</i><dd>
+    Real <i>min_delta</i> is the minimum time before a following 
+    crossing event will be recognized, used to suppress spurious crossings
+    from noise or ringing.
     </dl>
 
     <dl>
@@ -4484,6 +4488,7 @@ measure command
     <tt>trig|targ</tt> <i>variable</i> <tt>val=</tt><i>value</i>
             [<tt>td=</tt><i>delay</i>] [<tt>cross=</tt><i>crosses</i>]
             [<tt>rise=</tt><i>rises</i>] [<tt>fall=</tt><i>falls</i>]
+            [<tt>minx=</tt><i>min_delta</i>]
     </blockquote>
 
     <p>
@@ -4498,7 +4503,10 @@ measure command
     <tt>rise</tt> indicates the variable rising through the threshold,
     <tt>fall</tt> indicates the variable decreasing from above to
     below the threshold, and <tt>cross</tt> indicates <tt>rises +
-    falls</tt>.  The interval boundary is set when the specified
+    falls</tt>.  If given, the <tt>minx</tt> value sets the minimum
+    time delta between the crossing events, those that occur too soon
+    are ignored.  This can be used to suppress false triggering from
+    ringing or noise.  The interval boundary is set when the specified
     number of transitions is reached.
 
     <p>
@@ -4520,7 +4528,7 @@ measure command
     <tt>trig|targ when</tt> <i>expr1</i>=<i>expr2</i>
             [<tt>td=</tt><i>delay</i>]
             [<tt>cross=</tt><i>crosses</i>] [<tt>rise=</tt><i>rises</i>]
-            [<tt>fall=</tt><i>falls</i>]
+            [<tt>fall=</tt><i>falls</i>] [<tt>minx=</tt><i>min_delta</i>]
     </blockquote>
 
     <p>
