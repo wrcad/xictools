@@ -411,8 +411,15 @@ sTJMinstance::tjm_load(sCKT *ckt, tjmstuff &ts)
 {
     *(ckt->CKTstate0 + TJMvoltage) = ts.ts_vj;
     *(ckt->CKTstate0 + TJMphase)   = ts.ts_phi;
-    *(ckt->CKTstate0 + TJMcrti)    = tjm_cp;
-    *(ckt->CKTstate0 + TJMqpi)     = tjm_cqp + (tjm_gcrit + TJMg0)*ts.ts_vj;
+    if (ckt->CKTmode & MODEDC) {
+        tjm_cp = ts.ts_crt*sin(ts.ts_phi); 
+        *(ckt->CKTstate0 + TJMcrti)= tjm_cp;
+        *(ckt->CKTstate0 + TJMqpi) = 0.0;
+    }
+    else {
+        *(ckt->CKTstate0 + TJMcrti)= tjm_cp;
+        *(ckt->CKTstate0 + TJMqpi) = tjm_cqp + (tjm_gcrit + TJMg0)*ts.ts_vj;
+    }
 
     double crhs, gqt;
     if (ckt->CKTmode & MODEDC) {

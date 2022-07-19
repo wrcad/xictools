@@ -54,15 +54,19 @@ namespace {
     {
         if (!ckt->CKTstates[0])
             return (0.0);
-        double val = ckt->CKTtranDiffs[0]*
-            *(ckt->CKTstates[0] + inst->JJcrti)*
-            sin(*(ckt->CKTstates[0] + inst->JJphase));
-        for (int i = 1; i <= ckt->CKTtranDegree; i++) {
-            val += ckt->CKTtranDiffs[i]*
-                *(ckt->CKTstates[i] + inst->JJcrti)*
-                sin(*(ckt->CKTstates[i] + inst->JJphase));
+        if (ckt->CKTcurrentAnalysis & DOING_TRAN) {
+            double val = ckt->CKTtranDiffs[0]*
+                *(ckt->CKTstates[0] + inst->JJcrti)*
+                sin(*(ckt->CKTstates[0] + inst->JJphase));
+            for (int i = 1; i <= ckt->CKTtranDegree; i++) {
+                val += ckt->CKTtranDiffs[i]*
+                    *(ckt->CKTstates[i] + inst->JJcrti)*
+                    sin(*(ckt->CKTstates[i] + inst->JJphase));
+            }
+            return (val);
         }
-        return (val);
+        return ( *(ckt->CKTstates[0] + inst->JJcrti)*
+            sin(*(ckt->CKTstates[0] + inst->JJphase)) );
     }
 }
 
