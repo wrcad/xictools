@@ -484,6 +484,9 @@ struct sPlot
     int num_dimensions()                    const { return (pl_ndims); }
     void set_num_dimensions(int n)          { pl_ndims = n; }
 
+    int fftsc_ix()                          const { return (pl_fftsc_ix); }
+    void set_fftsc_ix(int n)                { pl_fftsc_ix = n; }
+
     bool active()                           const { return (pl_active); }
     void set_active(bool b)                 { pl_active = b; }
 
@@ -515,6 +518,7 @@ private:
     double pl_step;
 
     int pl_ndims;           // Number of dimensions.
+    int pl_fftsc_ix;        // Index to keep FFT scale names unique.
     bool pl_active;         // True when the plot is being used.
     bool pl_written;        // Some or all of the vecs have been saved.
 };

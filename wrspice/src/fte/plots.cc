@@ -774,6 +774,7 @@ sPlot::sPlot(const char *n)
     pl_step = 0.0;
 
     pl_ndims = 0;
+    pl_fftsc_ix = 0;
     pl_active = false;
     pl_written = false;
 
