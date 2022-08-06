@@ -176,7 +176,6 @@ struct sTJMinstancePOD
     double TJMdel1;
     double TJMdel2;
     double TJMvgap;
-    double TJMrsint;
     double TJMicTempFactor;
     double TJMvdpbak;
     double TJMomegaJ;
@@ -313,6 +312,7 @@ struct sTJMmodelPOD
     double      TJMcmu;
     double      TJMvm;
     double      TJMr0;
+    double      TJMrsint;
     double      TJMdel1Nom;
     double      TJMdel2Nom;
     double      TJMvgNom;
@@ -365,6 +365,8 @@ struct sTJMmodel : sGENmodel, sTJMmodelPOD
 
     sTJMmodel *next()    { return (static_cast<sTJMmodel*>(GENnextModel)); }
     sTJMinstance *inst() { return (static_cast<sTJMinstance*>(GENinstances)); }
+
+    int tjm_initmod();
 };
 
 // Tunnel parameters database return.  The coefficients are created
@@ -396,7 +398,7 @@ struct TJMcoeffSet
     static TJMcoeffSet *getTJMcoeffSet(double, double, double, double, int,
         int, double);
     static TJMcoeffSet *getTJMcoeffSet(const char*, double);
-    static cIFcomplex *modelJqp(const cIFcomplex*, const cIFcomplex*, int,
+    static IFcomplex *modelJqp(const IFcomplex*, const IFcomplex*, int,
         const double*, int);
 
     TJMcoeffSet *next()             const {return (cfs_next); }
@@ -453,7 +455,6 @@ enum {
     TJM_QUEST_CAP,
     TJM_QUEST_G0,
     TJM_QUEST_GN,
-    TJM_QUEST_RSINT,
     TJM_QUEST_GXSH,
     TJM_QUEST_RXSH,
     TJM_QUEST_LSHVAL,
@@ -518,6 +519,7 @@ enum {
 #endif
     TJM_MOD_TSFACT,
     TJM_MOD_TSACCL,
+    TJM_MQUEST_RSINT,
     TJM_MQUEST_DEL1NOM,
     TJM_MQUEST_DEL2NOM,
     TJM_MQUEST_VGAPNOM

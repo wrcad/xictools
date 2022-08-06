@@ -79,7 +79,6 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_TJM_QUEST_CAP,
         &&L_TJM_QUEST_G0,
         &&L_TJM_QUEST_GN,
-        &&L_TJM_QUEST_RSINT,
         &&L_TJM_QUEST_GXSH,
         &&L_TJM_QUEST_RXSH,
         &&L_TJM_QUEST_LSHVAL,
@@ -219,9 +218,6 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         return (OK);
     L_TJM_QUEST_GN:
         data->v.rValue = inst->tjm_gcrit + inst->TJMg0;
-        return (OK);
-    L_TJM_QUEST_RSINT:
-        data->v.rValue = inst->TJMrsint;
         return (OK);
     L_TJM_QUEST_GXSH:
         data->v.rValue = inst->TJMgshunt;
@@ -393,9 +389,6 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         break;
     case TJM_QUEST_GN:
         data->v.rValue = inst->tjm_gcrit + inst->TJMg0;
-        break;
-    case TJM_QUEST_RSINT:
-        data->v.rValue = inst->TJMrsint;
         break;
     case TJM_QUEST_DEL1:
         data->v.rValue = inst->TJMdel1;
