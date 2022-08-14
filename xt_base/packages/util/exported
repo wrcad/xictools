@@ -32,6 +32,7 @@ case $1 in
 oses)
   echo \
 "Darwin.arm64 \
+Darwin.x86_64 \
 LinuxCentos8 \
 LinuxDebian11 \
 LinuxFedora36 \
@@ -47,6 +48,8 @@ host)
   case $2 in
   Darwin.arm64)
     echo stephens-air;;
+  Darwin.x86_64)
+    echo macbook2;;
   LinuxCentos8)
     echo poe;;
   LinuxDebian11)
@@ -66,6 +69,8 @@ host)
 sfx)
   case $2 in
   Darwin.arm64)
+    echo pkg;;
+  Darwin.x86_64)
     echo pkg;;
   LinuxCentos8)
     echo rpm;;

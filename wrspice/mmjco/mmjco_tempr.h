@@ -8,7 +8,7 @@
 //   http://www.apache.org/licenses/LICENSE-2.0
 //
 // References:
-// Tinkham, "Introduction to Superconductiovity".
+// Tinkham, "Introduction to Superconductivity".
 // https://physics.stackexchange.com/questions/54200/superconducting-gap-
 //  temperature-dependence-how-to-calculate-this-integral
 // https://en.wikipedia.org/wiki/Romberg%27s_method

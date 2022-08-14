@@ -462,10 +462,17 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
         if (model->JJr0 < model->JJrn) {
             DVO.textOut(OUT_WARNING,
+                "%s: RSUB=%g smaller than RN, reset RN to %g.\n",
+                model->GENmodName, model->JJr0, model->JJr0);
+            model->JJrn = model->JJr0;
+            model->JJicrn = model->JJr0 * model->JJcriti;
+   /*XXX
+            DVO.textOut(OUT_WARNING,
                 "%s: RSUB=%g smaller than RN, reset to %g.\n",
                 model->GENmodName, model->JJr0, model->JJrn);
             model->JJr0 = model->JJrn;
             model->JJvm = model->JJr0 * model->JJcriti;
+    */
         }
 
         if (model->JJvShuntGiven) {

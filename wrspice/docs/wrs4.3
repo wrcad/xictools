@@ -117,6 +117,38 @@ End of general info.
 
 
 ===============================================================================
+wrspice-4.3.16  8/14/2022
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* OSX Intel package support restored.
+
+* Tunnel Junction Model (TJM, JJ level 3) improvements.
+
+  Improved method of obtaining subgap resistance from coefficient set. 
+  This is now temperature independent (nominal temperature).
+
+  Update devlib/adms/examples/jj/tjm.va to the latest.
+
+
+BUGS FIXED
+---- -----
+
+* Prevent duplicate scale names for FFTs, which would cause
+  segmentation faults (a duplicate vector was being deleted somewhere,
+  leaving a bad pointer).
+
+* The Delete button in the Vectors tool was not working.
+
+* Fixed startup transient in TJM (problem with phase-mode DCOP).
+
+* Fix returns from JJ/TJM CJ/CQ read-only instance parameters in DC
+  analysis, which were not correct.
+
+
+-------------------------------------------------------------------------------
 wrspice-4.3.15  7/17/2022
 Current Release
 
