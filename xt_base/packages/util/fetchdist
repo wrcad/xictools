@@ -61,48 +61,44 @@ get()
         exit 1
     fi
 
-    echo Fetching $program-$osname >&2
+    echo Fetching $program-$ostok >&2
     case $osname in
     Darwin*)
-        if [ ! -d $outdir/$osname ]; then
-            mkdir $outdir/$osname
+        if [ ! -d $outdir/$ostok ]; then
+            mkdir $outdir/$ostok
         fi
-        host=$($utildir/exported host $osname)
+        host=$($utildir/exported host $ostok)
         if [ -z "$host" ]; then
-            echo "Unknown distribution name $osname"
+            echo "Unknown distribution name $ostok"
         else
             if [ -z "$arch" ]; then
                 arch=x86_64
             fi
             fname=xictools_$program-$osname-$version-$arch.pkg
             dir=$USER@$host:/Users/$USER/src/xt/xt_base/packages/pkgfiles
-            rsync $dir/$fname $outdir/$osname/$fname
-            chmod 0644 $outdir/$osname/$fname
+            rsync $dir/$fname $outdir/$ostok/$fname
+            chmod 0644 $outdir/$ostok/$fname
         fi
         ;;
     Linux*)
-        if [ ! -d $outdir/$osname ]; then
-            mkdir $outdir/$osname
+        if [ ! -d $outdir/$ostok ]; then
+            mkdir $outdir/$ostok
         fi
         if [ -z "$arch" ]; then
             arch=x86_64
         fi
-        host=$($utildir/exported host $osname)
+        host=$($utildir/exported host $ostok)
 
         if [ -z "$host" ]; then
-            echo "Unknown distribution name $osname"
+            echo "Unknown distribution name $ostok"
         else
-            sfx=$($utildir/exported sfx $osname)
+            sfx=$($utildir/exported sfx $ostok)
             fname="xictools_$program-$osname-$version-$arch.$sfx"
+            odir=$outdir/$ostok
             if [ $arch = x86_64 ]; then
                 dir=$USER@$host:/home/$USER/src/xt/xt_base/packages/pkgfiles
-                odir=$outdir/$osname
             else
                 dir=$USER@$host:/home/$USER/src/xt-32/xt_base/packages/pkgfiles
-                odir=$outdir/$osname.$arch
-            fi
-            if [ ! -d $odir ]; then
-                mkdir $odir
             fi
             rsync $dir/$fname $odir/$fname
             chmod 0644 $odir/$fname

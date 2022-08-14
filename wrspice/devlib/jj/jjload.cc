@@ -790,6 +790,11 @@ jjstuff::jj_load(sCKT *ckt, sJJmodel *model, sJJinstance *inst)
     *(ckt->CKTstate0 + inst->JJconI)    = js_ci;
     // these two for JJask()
     *(ckt->CKTstate0 + inst->JJcrti)    = js_crt;
+#ifdef NEWJJDC
+    if (ckt->CKTmode & MODEDC)
+        *(ckt->CKTstate0 + inst->JJqpi) = 0.0;
+    else
+#endif
     *(ckt->CKTstate0 + inst->JJqpi)     = crhs + gqt*js_vj;
 
 #ifdef ASM_SINCOS

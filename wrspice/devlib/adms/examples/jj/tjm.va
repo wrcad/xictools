@@ -49,7 +49,21 @@
 //   legend must also reproduce the markings.
 //-------------------------------------------------------------------------
 
-// Version 0.1, July 30, 2021 (original release)
+// Version 0.1, July 30, 2021
+//   Original release.
+// Version 0.2, Sept 30, 2021
+//   Added file input for fit params.
+// Version 0.5, March 24, 2022
+//   Support for mmjco "sweep" files as well as fit files.
+//   Support for filename as model parameter.
+// Version 0.9, March 25, 2022
+//   Removal of model parameters for temperature variation, these
+//   are now provided exclusively by the input file.  We no longer
+//   expect to generate fit files on-the-fly.
+//   Temperature variation is now in device context.
+// Version 1.0, March 28, 2022
+//   Added vgnom and tnom, temperature tracking of Tc.
+//   Release for HSPICE customization.
 //
 // Stephen R. Whiteley          stevew@wrcad.com, whiteley@synopsys.com
 // Whiteley Research Inc.       http://wrcad.com
@@ -81,6 +95,9 @@
     `define P(txt)
 `endif
 
+// Define nonzero to enable debugging messages.
+`define debugpr 0
+
 // This enables series inductance modeling with the LSER parameter.
 `define NEWLSER
 
@@ -104,6 +121,9 @@
 // inaccurate in some implementations.  This seems to reduce
 // iterations and run time in WRspice too, so now defaulting to on.
 `define NOIDT
+
+// Maximum index of fit table.
+`define TJM_MAXFIX 11
 
 // MIT-LL SFQ5EE process, parameters from:
 // Tolpygo et al., IEEE Trans. Appl. Supercond., vol. 26, 1100110, (2016)
@@ -137,12 +157,6 @@
 
 // Phi0/2pi = hbar over 2 e.
 `define PHI0_2PI    3.29105978475453e-16
-`ifdef WRspice
-`define BOLTZ       1.3806226e-23
-`define ECHG        1.602176634e-19
-`else
-`define bcs_egapv(t, tc, f, d) (d*tanh(f*sqrt(tc/(t + 1e-4))))
-`endif
 
 module tjm (n1, n2, ph);
 
@@ -171,36 +185,19 @@ electrical nph;
 // Model Parameters
 //
 
+// Current Amplitude table from mmjco or another source.
+parameter string mmjco_input = "tca_swp_data"
+    `P(type="model" info="Sweep or fit input file");
+
+parameter real tnom     = 4.2 from [0.2:270]
+    `P(type="model" info="Parameter measurement temperature K");
+parameter real deftemp  = tnom from [0.2:270]
+    `P(type="model" info="Default operating temperature K");
+parameter real vgnom    = 2.712m from [0.1m:20.0m]
+    `P(type="model" info="Gap voltge at tnom");
+
 parameter integer cct   = 1 from [0:1]
     `P(type="model" info="Critical current model type");
-
-// Temperature correction
-parameter real tc1      = 9.26 from [0.1:280]
-    `P(type="model" info="Superconducting trans temp 1 Kelvin");
-parameter real tc2      = 9.26 from [0.1:280]
-    `P(type="model" info="Superconducting trans temp 2 Kelvin");
-parameter real tc       = 9.26 from [0.1:280]
-    `P(type="model" info="Superconducting trans temp Kelvin");
-parameter real tnom     = 4.2 from [0.0:tc]
-    `P(type="model" info="Parameter measurement temperature Kelvin");
-parameter real temp     = tnom from [0.0:tc]
-    `P(type="model" info="Operating temperature Kelvin");
-`ifdef WRspice
-// WRspice has support for computing gap potential given Debye temperature
-// and Tc for a BCS superconductor and temperature ($bcs_egapv).
-parameter real tdb1     = 276 from [40:500]
-    `P(type="model" info="Debye temperature 1 Kelvin");
-parameter real tdb2     = 276 from [40:500]
-    `P(type="model" info="Debye temperature 2 Kelvin");
-`else
-// Use a fitting formula with given deltas at T=0 for temperature dep.
-parameter real tcfct    = 1.74 from [1.5:2.5]
-    `P(type="model" info="Temperature correction parameter");
-parameter real del01    = 1.4m from [.05m:5m]
-    `P(type="model" info="Energy gap 1 at T=0" units="V");
-parameter real del02    = 1.4m from [.05m:5m]
-    `P(type="model" info="Energy gap 2 at T=0" units="V");
-`endif
 
 // Factor used in timestep control.  This is similar to the WRspice
 // dphimax parameter, dphimax/(2*pi) = tsfactor.  Smaller values might
@@ -211,7 +208,7 @@ parameter real tsfactor = 0.1 from [0.001:1]
 
 // Use longer time steps when JJ voltage is smaller, a value of about
 // 2.5 seems to work best for RSFQ.
-parameter real tsaccel = 1.0 from [1.0:20.0]
+parameter real tsaccel  = 1.0 from [1.0:20.0]
     `P(type="model" info="Ratio max time step to that at dropback voltage");
 
 // Critical current for area=1.
@@ -268,6 +265,11 @@ parameter real lsh1   = 0 from [0:10p]
 parameter real gmu      = 0.0 from [0.0:1.0]
     `P(type="model" info="Conductance scaling factor");
 
+integer tjm_narray `P(type="model" info="Size of fit table");
+integer tjm_nxpts `P(type="model" info="Fit TCA points");
+real tjm_sm `P(type="model" info="Fit table smoothing parameter");
+real tjm_thr `P(type="model" info="Fit table threshold parameter");
+
 //
 // Instance Parameters
 //
@@ -280,6 +282,11 @@ aliasparam phi          = ic_phase;
 // Scaling critical current.
 parameter real ics      = icrit from [icrit/50:icrit*50]
     `P(type="instance" info="Scaled critical current" units="A");
+
+parameter real temp_k   = deftemp from [0.2:270.0]
+    `P(type="instance" info="Operating temperature K");
+parameter real dtemp    = 0.0 from [-10.0:10.0]
+    `P(type="instance" info="Operating temperature difference K");
 
 `ifdef NEWLSER
 // Series inductance.
@@ -302,28 +309,27 @@ parameter real area     = 1.0 from [0.05:20.0]
 
 // Internal variables.  Those with `P() given are accessible in WRspice
 // as read-only parameters (ADMS feature).
-real vdpbak `P(type="model" info="Dropback voltage");
-real omegaJ `P(type="model" info="Plasma frequency");
-real betac `P(type="model" info="Stewart-McCumber parameter");
-real vgap `P(type="model" info="Gap voltage" units="V");
-real del1 `P(type="model" info="Energy gap 1" units="V");
-real del2 `P(type="model" info="Energy gap 2" units="V");
+real vdpbak `P(type="instance" info="Dropback voltage");
+real omegaJ `P(type="instance" info="Plasma frequency");
+real betac `P(type="instance" info="Stewart-McCumber parameter");
+real vgap `P(type="instance" info="Gap voltage" units="V");
+real del1 `P(type="instance" info="Energy gap 1" units="V");
+real del2 `P(type="instance" info="Energy gap 2" units="V");
 
-integer tjm_narray `P(type="model" info="");
-real tjm_alphaN `P(type="model" info="");
-real tjm_kgap `P(type="model" info="");
-real tjm_rejpt `P(type="model" info="");
-real tjm_kgap_rejpt `P(type="model" info="");
+real tjm_alphaN `P(type="instance" info="");
+real tjm_kgap `P(type="instance" info="");
+real tjm_rejpt `P(type="instance" info="");
+real tjm_kgap_rejpt `P(type="instance" info="");
 
-real P_r[0:7];
-real P_i[0:7];
-real A_r[0:7];
-real A_i[0:7];
-real B_r[0:7];
-real B_i[0:7];
-
+real P_r[0:`TJM_MAXFIX];
+real P_i[0:`TJM_MAXFIX];
+real A_r[0:`TJM_MAXFIX];
+real A_i[0:`TJM_MAXFIX];
+real B_r[0:`TJM_MAXFIX];
+real B_i[0:`TJM_MAXFIX];
 integer i;
 
+real temp `P(type="instance" info="Junction temperature K");
 real tcf `P(type="instance" info="Temperature ic correction factor");
 real phase `P(type="instance" info="Junction phase");
 `ifdef NEWNPAR
@@ -345,26 +351,24 @@ real lasttime;
 real tjm_sinphi_2_old;
 real tjm_cosphi_2_old;
 real tjm_gcrit;
-real tjm_Fc_r[0:11];
-real tjm_Fc_i[0:11];
-real tjm_Fs_r[0:11];
-real tjm_Fs_i[0:11];
-real tjm_Fcprev_r[0:11];
-real tjm_Fcprev_i[0:11];
-real tjm_Fsprev_r[0:11];
-real tjm_Fsprev_i[0:11];
-real tjm_alpha0_r[0:11];
-real tjm_alpha0_i[0:11];
-real tjm_alpha1_r[0:11];
-real tjm_alpha1_i[0:11];
-real tjm_exp_z_r[0:11];
-real tjm_exp_z_i[0:11];
+real tjm_Fc_r[0:`TJM_MAXFIX];
+real tjm_Fc_i[0:`TJM_MAXFIX];
+real tjm_Fs_r[0:`TJM_MAXFIX];
+real tjm_Fs_i[0:`TJM_MAXFIX];
+real tjm_Fcprev_r[0:`TJM_MAXFIX];
+real tjm_Fcprev_i[0:`TJM_MAXFIX];
+real tjm_Fsprev_r[0:`TJM_MAXFIX];
+real tjm_Fsprev_i[0:`TJM_MAXFIX];
+real tjm_alpha0_r[0:`TJM_MAXFIX];
+real tjm_alpha0_i[0:`TJM_MAXFIX];
+real tjm_alpha1_r[0:`TJM_MAXFIX];
+real tjm_alpha1_i[0:`TJM_MAXFIX];
+real tjm_exp_z_r[0:`TJM_MAXFIX];
+real tjm_exp_z_i[0:`TJM_MAXFIX];
 
 real i1, i2, vth, start_phase, tsf;
-`ifdef WRspice
 real SmallSigL;
 integer pmode;
-`endif
 
 analog begin
 
@@ -383,126 +387,10 @@ analog begin
         begin : initialization
         real halfvg;
         real halfdv;
+        integer code, fd, nrec;
+        string ftype;
+        real dnrec, tstrt, tdel;
 `endif
-        // Mitmojco  BCS42_008 and NbNb_4K2_008
-        P_r[0] = -4.373312;
-        P_r[1] = -0.411779;
-        P_r[2] = -0.139858;
-        P_r[3] = -0.013048;
-        P_r[4] = -0.043182;
-        P_r[5] = -1.105852;
-        P_r[6] = -0.651673;
-        P_r[7] = -0.073309;
-        P_i[0] = -0.114845;
-        P_i[1] = 0.898335;
-        P_i[2] = 0.991853;
-        P_i[3] = 1.000349;
-        P_i[4] = 1.000747;
-        P_i[5] = -0.000000;
-        P_i[6] = 0.123645;
-        P_i[7] = 0.000067;
-        A_r[0] = 1.057436;
-        A_r[1] = 0.219525;
-        A_r[2] = 0.077953;
-        A_r[3] = 0.006675;
-        A_r[4] = 0.025091;
-        A_r[5] = 1.376607;
-        A_r[6] = -0.459333;
-        A_r[7] = -0.000889;
-        A_i[0] = -18.941930;
-        A_i[1] = 0.072188;
-        A_i[2] = 0.007944;
-        A_i[3] = -0.000475;
-        A_i[4] = 0.000289;
-        A_i[5] = -0.000002;
-        A_i[6] = -0.152676;
-        A_i[7] = -0.041516;
-        B_r[0] = 0.108712;
-        B_r[1] = 0.109049;
-        B_r[2] = 0.072237;
-        B_r[3] = 0.006656;
-        B_r[4] = 0.025316;
-        B_r[5] = -0.217956;
-        B_r[6] = -0.401859;
-        B_r[7] = 0.000643;
-        B_i[0] = 7.209623;
-        B_i[1] = 0.238592;
-        B_i[2] = 0.029470;
-        B_i[3] = -0.000208;
-        B_i[4] = 0.002275;
-        B_i[5] = 0.000001;
-        B_i[6] = -0.545156;
-        B_i[7] = -0.098458;
-        tjm_narray = 8;
-
-`ifdef WRspice
-        del1 = $bcs_egapv(temp, tc1, tdb1);
-        del2 = $bcs_egapv(temp, tc2, tdb2);
-`else
-        del1 = bcs_egapv(temp, tc1, tcfct, del01);
-        del2 = bcs_egapv(temp, tc2, tcfct, del02);
-`endif
-        vgap = del1 + del2;
-        if (temp != tnom)
-            begin
-            real vgnom, tmp, tmp2;
-`ifdef WRspice
-            vgnom = $bcs_egapv(tnom, tc1, tdb1) + $bcs_egapv(tnom, tc2, tdb2);
-`else
-            vgnom = bcs_egapv(tnom, tc1, tcfct, del01) +
-                bcs_egapv(tnom, tc2, tcfct, del02);
-`endif
-            tmp = `ECHG*vgap/(4.0*`BOLTZ*(temp + 1e-4));
-            tmp2 = `ECHG*vgnom/(4.0*`BOLTZ*(tnom + 1e-4));
-            tcf = (vgap/vgnom)*(tanh(tmp)/tanh(tmp2));
-            end
-        else
-            tcf = 1.0;
-
-        // Dropback voltage.
-        begin
-        halfvg = 0.5*vgap;
-        if (cap > 0.0)
-            begin
-            vdpbak = sqrt(`PHI0_2PI*icrit/cap);
-            if (vdpbak > halfvg)
-                vdpbak = halfvg;
-            omegaJ = sqrt(icrit/(cap*`PHI0_2PI));
-            end
-        else
-            vdpbak = halfvg;
-        vth = vdpbak/tsaccel;
-        end
-
-        tjm_kgap = (0.5*vgap/`PHI0_2PI)/omegaJ;
-        tjm_rejpt = 0.0;
-        for (i = 0;  i < tjm_narray; i = i+1) begin
-            real cr, bmg;
-            bmg = P_r[i]*P_r[i] + P_i[i]*P_i[i];
-            cr = (A_r[i]*P_r[i] + A_i[i]*P_i[i])/bmg;
-            tjm_rejpt = tjm_rejpt - cr;
-//$display("%g %g %g %g %g\n", tjm_rejpt, A_r[i], A_i[i], P_r[i], P_i[i]);
-        end
-        tjm_rejpt = tjm_rejpt*icfct;
-        tjm_kgap_rejpt = tjm_kgap/tjm_rejpt;
-        tjm_alphaN = 1.0/(2*tjm_rejpt*tjm_kgap);
-
-        // Renormalize.  Here we would rotate to C and D vectors,
-        // however we want to preserve the pair and qp amplitudes for
-        // separate access.
-        for (i = 0;  i < tjm_narray; i = i+1) begin
-            real cr, ci, bmg;
-            bmg = P_r[i]*P_r[i] + P_i[i]*P_i[i];
-            cr = (A_r[i]*P_r[i] + A_i[i]*P_i[i])/bmg;
-            ci = (A_i[i]*P_r[i] - A_r[i]*P_i[i])/bmg;
-            A_r[i] = -cr*icfct/tjm_kgap;
-            A_i[i] = -ci*icfct/tjm_kgap;
-            cr = (B_r[i]*P_r[i] + B_i[i]*P_i[i])/bmg;
-            ci = (B_i[i]*P_r[i] - B_r[i]*P_i[i])/bmg;
-            B_r[i] = -cr/tjm_kgap;
-            B_i[i] = -ci/tjm_kgap;
-//$display("%g %g %g %g\n", A_r[i], A_i[i], B_r[i], B_i[i]);
-        end 
 
         // dphiMax
         //   If simulator returns nonzero, the dphimax .option is
@@ -519,11 +407,243 @@ analog begin
 
     begin : initial_instance
         real halfdv;
+        integer code, fd, nrec;
+        string ftype;
+        real dnrec, tstrt, tdel;
 `endif
+        // Here we read the parameters for the model data, either from
+        // a mmjco temperature sweep file, or a single temperature
+        // fit file.
+
+        fd = $fopen(mmjco_input, "r");
+        if (fd == 0)
+            $fatal(0, "TJM.va model:  could not open input file.");
+        code = $fscanf(fd, "%s %f %f %f %f %d %d %f\n", ftype, dnrec, tstrt,
+            tdel, tjm_sm, tjm_nxpts, tjm_narray, tjm_thr);
+        if (code != 8)
+            $fatal(0, "TJM.va model:  header read error.");
+        if (tjm_narray < 6 || tjm_narray > `TJM_MAXFIX)
+            $fatal(0, "TJM.va model:  bad table size.");
+
+        if (ftype == "tsweep")
+            begin : readswp
+            integer ntemp, recs, pos, pend, recsize;
+            real resid, f1, f2, d1, d2;
+
+            // The device temperature.
+            temp = temp_k + dtemp;
+
+            nrec = dnrec;
+            if (`debugpr)
+                $display("XXX1 %d %f %f %f %d %d %f", nrec, tstrt, tdel,
+                    tjm_sm, tjm_nxpts, tjm_narray, tjm_thr);
+
+            // Note: integer assignments are rounded so the logic here
+            // differs from c/c++ which use truncation.
+
+            ntemp = (temp - tstrt)/tdel + 1e-6 - 0.5;
+
+            if (`debugpr)
+                $display("XXX2 %f %d", temp, ntemp);
+
+            if (ntemp < 0 || ntemp >= nrec)
+                $fatal(0, "TJM.va model:  range mismatch in sweep file.");
+
+            recs = 0;
+            resid = (temp - tstrt) - ntemp*tdel;
+            if (resid < 1e-6)
+                // Close enough to reference, no interpolation needed.
+                recs = 1;
+            else
+                recs = 2;
+
+            if (`debugpr)
+                $display("XXX3 %d %f %d", ntemp, resid, recs);
+
+            // Compute the record size, they are all the same.
+            pos = $ftell(fd);
+
+            if (`debugpr)
+                $display("XXX4 %d", pos);
+
+            code = $fseek(fd, 0, 2);
+            if (code != 0)
+                $fatal(0, "TJM.va model:  seek to end failed.");
+            pend = $ftell(fd);
+
+            if (`debugpr)
+                $display("XXX5 %d", pend);
+
+            recsize = (pend - pos)/dnrec;
+
+            if (`debugpr)
+                $display("XXX6 %d %d %d", pos, pend, recsize);
+
+            code = $fseek(fd, pos, 0);
+            if (code != 0)
+                $fatal(0, "TJM.va model:  seek to previous.");
+            code = $fseek(fd, ntemp*recsize, 1);
+            if (code != 0)
+                $fatal(0, "TJM.va model:  seek to offset failed.");
+
+            f1 = 1.0;
+            f2 = resid/tdel;
+            if (recs == 2)
+                f1 = f1 - f2;
+
+            if (`debugpr)
+                $display("XXX7 %f %f", f1, f2);
+
+            // Read section header.
+            code = $fscanf(fd, "%*s %*f %f %f\n", d1, d2);
+            if (code != 2)
+                $fatal(0, "TJM.va model:  line read failed.");
+            del1 = f1*d1;
+            del2 = f1*d2;
+            vgap = del1 + del2;
+            if (`debugpr)
+                $display("XXX8 %f %f %f", del1, del2, vgap);
+
+            for (i=0; i < tjm_narray; i=i+1)
+                begin : readblk1
+                real pr, pi, ar, ai, br, bi;
+                code = $fscanf(fd, "%f, %f, %f, %f, %f, %f\n",
+                    pr, pi, ar, ai, br, bi);
+                if (code != 6)
+                    $fatal(0, "TJM.va model:  read error in block.");
+                P_r[i] = f1*pr;
+                P_i[i] = f1*pi;
+                A_r[i] = f1*ar;
+                A_i[i] = f1*ai;
+                B_r[i] = f1*br;
+                B_i[i] = f1*bi;
+                end
+
+            if (recs == 2)
+                begin
+                // Read section header.
+                code = $fscanf(fd, "%*s %*f %f %f\n", d1, d2);
+                if (code != 2)
+                    $fatal(0, "TJM.va model:  line read failed.");
+                del1 = del1 + f2*d1;
+                del2 = del2 + f2*d2;
+                vgap = del2 + del2;
+                if (`debugpr)
+                    $display("XXX9 %f %f %f", del1, del2, vgap);
+                
+                for (i=0; i < tjm_narray; i=i+1)
+                    begin : readblk2
+                    real pr, pi, ar, ai, br, bi;
+                    code = $fscanf(fd, "%f, %f, %f, %f, %f, %f\n",
+                        pr, pi, ar, ai, br, bi);
+                    if (code != 6)
+                        $fatal(0, "TJM.va model:  read error in block.");
+                    P_r[i] += f2*pr;
+                    P_i[i] += f2*pi;
+                    A_r[i] += f2*ar;
+                    A_i[i] += f2*ai;
+                    B_r[i] += f2*br;
+                    B_i[i] += f2*bi;
+                    end
+                end
+            $fclose(fd);
+            end
+        else
+            if (ftype == "tcafit")
+                begin : readfit
+
+                // Here deftemp, temp_k and dtemp parameters are
+                // ignored, temperature is supplied by the fit
+                // parameter data.
+
+                temp = dnrec;         // Really temperature.
+                vgap = tstrt + tdel;  // Really d1 + d2.
+                for (i=0; i < tjm_narray; i=i+1)
+                    begin
+                    code = $fscanf(fd, "%f, %f, %f, %f, %f, %f\n",
+                        P_r[i], P_i[i], A_r[i], A_i[i], B_r[i], B_i[i]);
+                    if (code != 6)
+                        $fatal(0, "TJM.va model:  read error in block.");
+                    end
+                $fclose(fd);
+                if (`debugpr)
+                    $display("XXX1 %d %f %f", tjm_narray, temp, vgap);
+                end
+            else
+                $fatal(0, "TJM.va model:  input file type unknown.");
+
+        // The input file gives the deltas and temperature.  We need
+        // to accommodate temperature variation if Ic.  We assume that
+        // the given ics applies at temperature=tnom.  Here we compute
+        // a multiplier that applies to critical current only when
+        // temperature is not nominal.
+
+        if (temp != tnom)
+            begin : tempset
+            real tmp, tmp2;
+            tmp = `P_Q*vgap/(4.0*`P_K*(temp + 1e-4));
+            tmp2 = `P_Q*vgnom/(4.0*`P_K*(tnom + 1e-4));
+            tcf = (vgap/vgnom)*(tanh(tmp)/tanh(tmp2));
+            end
+        else
+            tcf = 1.0;
+
+        // Dropback voltage.
+        halfvg = 0.5*vgap;
+        if (cap > 0.0)
+            begin
+            vdpbak = sqrt(`PHI0_2PI*icrit/cap);
+            if (vdpbak > halfvg)
+                vdpbak = halfvg;
+            omegaJ = sqrt(icrit/(cap*`PHI0_2PI));
+            end
+        else
+            vdpbak = halfvg;
+        vth = vdpbak/tsaccel;
+        if (`debugpr)
+            $display("YYY1 %f %f", vdpbak, omegaJ);
+
+        tjm_kgap = (0.5*vgap/`PHI0_2PI)/omegaJ;
+        tjm_rejpt = 0.0;
+        for (i = 0;  i < tjm_narray; i = i+1)
+            begin : jpt
+            real cr, bmg;
+            bmg = P_r[i]*P_r[i] + P_i[i]*P_i[i];
+            cr = (A_r[i]*P_r[i] + A_i[i]*P_i[i])/bmg;
+            tjm_rejpt = tjm_rejpt - cr;
+            if (`debugpr)
+                $display("YYY2 %g %g %g %g %g", tjm_rejpt, A_r[i], A_i[i],
+                    P_r[i], P_i[i]);
+            end
+        tjm_rejpt = tjm_rejpt*icfct;
+        tjm_kgap_rejpt = tjm_kgap/tjm_rejpt;
+        tjm_alphaN = 1.0/(2*tjm_rejpt*tjm_kgap);
+        if (`debugpr)
+            $display("YYY3 %g %g %g %g %g", icfct, tjm_rejpt, tjm_kgap,
+                tjm_kgap_rejpt, tjm_alphaN);
+
+        // Renormalize.  Here we would rotate to C and D vectors,
+        // however we want to preserve the pair and qp amplitudes for
+        // separate access.
+        for (i = 0;  i < tjm_narray; i = i+1)
+            begin : renorm
+            real cr, ci, bmg;
+            bmg = P_r[i]*P_r[i] + P_i[i]*P_i[i];
+            cr = (A_r[i]*P_r[i] + A_i[i]*P_i[i])/bmg;
+            ci = (A_i[i]*P_r[i] - A_r[i]*P_i[i])/bmg;
+            A_r[i] = -cr*icfct/tjm_kgap;
+            A_i[i] = -ci*icfct/tjm_kgap;
+            cr = (B_r[i]*P_r[i] + B_i[i]*P_i[i])/bmg;
+            ci = (B_i[i]*P_r[i] - B_r[i]*P_i[i])/bmg;
+            B_r[i] = -cr/tjm_kgap;
+            B_i[i] = -ci/tjm_kgap;
+            if (`debugpr)
+                $display("R1 %g %g %g %g", A_r[i], A_i[i], B_r[i], B_i[i]);
+            end 
 
         lasttime = 0.0;
 
-        begin
+        begin : setbc
         real tvm;
         tvm = vm*tcf;
         betac = tvm*tvm*cap/(icrit*`PHI0_2PI);
@@ -592,14 +712,8 @@ analog begin
         //   If simulator returns nonzero, it supports phase-mode DC
         //   analysis.  Requires WRspice-4.3.3.
         //
-`ifdef WRspice
         pmode = (cct > 0 && $simparam("dcPhaseMode", 0.0) > 0);
-`endif
     end
-
-
-`ifdef WRspice
-    // Only WRspice can do DC analysis at present.
 
     if (analysis("static") != 0)
         begin
@@ -737,22 +851,17 @@ analog begin
             end
         else
             begin
-            $error(
+            $fatal(0,
  "TJM.va model:  DC analysis is unsupported, use \"uic\" to avoid DCOP.");
-            $finish(0);
             end
         end
 
     else if (analysis("tran") != 0)
-`else  // not WRspice
-    if (analysis("tran") != 0)
-`endif  // WRspice
-
         begin : tranan
 
         if ($realtime != lasttime)
             // new_step
-            begin
+            begin : nstep
             real kdt;
             kdt = tjm_kgap*omegaJ*($realtime - lasttime);
             lasttime = $realtime;
@@ -761,9 +870,10 @@ analog begin
             tjm_sinphi_2_old = sin(0.5*phase);
             tjm_cosphi_2_old = cos(0.5*phase);
 
-//$display("  %g %g\n", $realtime, kdt);
+            if (`debugpr)
+                $display("T1  %g %g", $realtime, kdt);
             for (i = 0; i < tjm_narray; i = i+1)
-                begin
+                begin : upd
                 real z_r, z_i, d, ez_r, ez_i, mz, zt_r, zt_i;
                 z_r = P_r[i]*kdt;
                 z_i = P_i[i]*kdt;
@@ -779,7 +889,9 @@ analog begin
                 tjm_alpha0_i[i] = zt_i - ez_i;
                 tjm_alpha1_r[i] = 1.0 - zt_r;
                 tjm_alpha1_i[i] = -zt_i;
-//$display("%g %g %g %g\n", tjm_alpha0_r[i], tjm_alpha0_i[i], tjm_alpha1_r[i], tjm_alpha1_i[i]);
+                if (`debugpr)
+                    $display("T2 %g %g %g %g", tjm_alpha0_r[i],
+                        tjm_alpha0_i[i], tjm_alpha1_r[i], tjm_alpha1_i[i]);
 
                 // accept
                 tjm_Fcprev_r[i] = tjm_Fc_r[i];
@@ -889,7 +1001,9 @@ analog begin
             FcSq = FcSq + B_r[i]*tjm_Fc_r[i] - B_i[i]*tjm_Fc_i[i];
             FsSp = FsSp + A_r[i]*tjm_Fs_r[i] - A_i[i]*tjm_Fs_i[i];
             FsSq = FsSq + B_r[i]*tjm_Fs_r[i] - B_i[i]*tjm_Fs_i[i];
-//$display("%g %g %g %g\n", tjm_Fc_r[i], tjm_Fc_i[i], tjm_Fs_r[i], tjm_Fs_i[i]);
+            if (`debugpr)
+                $display("U1 %g %g %g %g", tjm_Fc_r[i], tjm_Fc_i[i],
+                    tjm_Fs_r[i], tjm_Fs_i[i]);
             end
         fct = ic_scaled*tjm_kgap_rejpt;
         if (cct > 0)
@@ -941,10 +1055,7 @@ analog begin
         end
 
     else
-        begin
-        $error("TJM.va model:  unknown or unsupported analysis.");
-        $finish(0);
-        end
+        $fatal(0, "TJM.va model:  unknown or unsupported analysis.");
 end
 endmodule
 

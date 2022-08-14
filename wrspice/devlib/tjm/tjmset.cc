@@ -498,6 +498,10 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
 
+        int rval = model->tjm_initmod();
+        if (rval)
+            return (rval);
+
         sTJMinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
             if (!inst->TJMtempGiven)
@@ -562,7 +566,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             else
                 inst->TJMvdpbak = halfvg;
 
-            int rval = inst->tjm_init1();
+            rval = inst->tjm_init1();
             if (rval != OK)
                 return (rval);
 
@@ -618,7 +622,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             double sqrta = sqrt(inst->TJMarea);
             double gfac = inst->TJMarea*(1.0 - model->TJMgmu) +
                 sqrta*model->TJMgmu;
-            inst->TJMgqp = gfac/inst->TJMrsint;
+            inst->TJMgqp = gfac/model->TJMrsint;
 
             // G0 is the user-specified subgap conductance, subtract
             // off the intrinsic conductance if we can.
@@ -766,6 +770,75 @@ TJMdev::resetup(sGENmodel *inModel, sCKT *ckt)
 
 
 int
+sTJMmodel::tjm_initmod()
+{
+    // Compute the intrinsic subgap resistance at nominal temperature. 
+    // This will be subtracted from the given subgap conductance so
+    // that the given Vm will be seen at nominal temperature (if
+    // possible).  The extra conductance is temperature independent so
+    // Vm will change with temperature according to intrinsic
+    // parameters.  The extra conductance could itself be temperature
+    // dependent if we had a suitable model for the conductance
+    // mechanism.
+
+    TJMcoeffSet *cs;
+    if (tjm_coeffsGiven)
+        cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs, TJMtnom);
+    else {
+        cs = TJMcoeffSet::getTJMcoeffSet(TJMtnom, TJMdel1Nom, TJMdel2Nom,
+            TJMsmf, TJMnxpts, TJMnterms, TJMthr);
+    }
+    if (!cs) {
+        DVO.textOut(OUT_FATAL,
+            "%s: coefficient set %s not found.\n", GENmodName, tjm_coeffs);
+        return (E_PANIC);
+    }
+    if (TJMnterms != cs->size()) {
+        DVO.textOut(OUT_FATAL,
+            "%s: coefficient set %s term count %d not equal to %d.\n",
+            GENmodName, tjm_coeffs, cs->size(), TJMnterms);
+        return (E_PANIC);
+    }
+
+    // Compute the internal subgap resistance.  This involves
+    // computing the quasiparticle model, extracting the current at
+    // 80% of Vgap, and computing the linear resistance.  Must be a
+    // better way?
+
+    // First, define the X-axis, per mmjco.
+    double *xpts = new double[TJMnxpts];
+    double x = 0.001;
+    double dx = (2.0 - x)/(TJMnxpts - 1);
+    for (int i = 0; i < TJMnxpts; i++) {
+        xpts[i] = x;
+        x += dx;
+    }
+
+    // This returns the quasiparticle TCA model.
+    IFcomplex *qp = TJMcoeffSet::modelJqp(cs->p(), cs->B(),
+        TJMnterms, xpts, TJMnxpts);
+
+    // Index of the point closest to 80% of Vgap.  Also index a point
+    // just above the gap.  This is used to "calibrate" the y-axis.
+    int np8 = round((0.8 - 0.001)/dx);
+    int nu = round((1.015 - 0.001)/dx);
+
+    double yp8 = qp[np8].imag;
+    double yu = qp[nu].imag;
+    double ip8 = ((yp8/(yu - yp8)) * (TJMcriti/TJMicFactor));
+
+    // Save the approximate intrinsic subgap resistance.
+    TJMrsint = 0.8*(TJMdel1Nom + TJMdel2Nom)/ip8;
+
+    delete [] xpts;
+    delete [] qp;
+    // End of subgap resistance computation.
+
+    return (OK);
+}
+
+
+int
 sTJMinstance::tjm_init1()
 {
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
@@ -797,7 +870,6 @@ sTJMinstance::tjm_init1()
         tjm_B[i] = cs->B()[i];
     }
 
-// XXX Vg is temp dependent.
     double omega_g = 0.5*TJMvgap/PHI0_2PI;  // e*Vg = hbar*omega_g
     tjm_kgap = omega_g/TJMomegaJ;
 
@@ -809,37 +881,6 @@ sTJMinstance::tjm_init1()
     tjm_kgap_rejpt = tjm_kgap/rejpt;
     tjm_alphaN = 1.0/(2*rejpt*tjm_kgap);
 
-    // Compute the internal subgap resistance.  This involves
-    // computing the quasiparticle model, extracting the current at
-    // 80% of Vgap, and computing the linear resistance.  Must be a
-    // better way?
-
-    // First, define the X-axis, per mmjco.
-    double *xpts = new double[model->TJMnxpts];
-    double x = 0.001;
-    double dx = (2.0 - x)/(model->TJMnxpts - 1);
-    for (int i = 0; i < model->TJMnxpts; i++) {
-        xpts[i] = x;
-        x += dx;
-    }
-
-    // This returns the quasiparticle TCA model.
-    cIFcomplex *qp =
-        TJMcoeffSet::modelJqp((const cIFcomplex*)tjm_p,
-        (const cIFcomplex*)tjm_B, model->TJMnterms, xpts, model->TJMnxpts);
-
-    // Index of the point closest to 80% of Vgap.
-    int n = round((0.8 - 0.001)/dx);
-
-    // Un-normalization factor.
-    double fct = model->TJMcriti * TJMicTempFactor * tjm_kgap_rejpt;
-
-    // Save the approximate intrinsic subgap resistance.
-    TJMrsint = 0.8*TJMvgap/(fct*qp[n].imag);
-
-    delete [] xpts;
-    delete [] qp;
-    // End of subgap resistance computation.
 
     // Renormalize.  Here we would rotate to C and D vectors, however
     // we want to preserve the pair and qp amplitudes for separate

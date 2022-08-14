@@ -958,8 +958,14 @@ namespace {
             d += blsize;
         }
         if (v->name()) {
-            char *bf = new char[strlen(v->name()) + 10];
-            sprintf(bf, "%s_scale", v->name());
+            // It is bad news if we get duplicate names (seg faults)
+            // so we keep an index in the plot to prevent this.
+
+            int ix = t->plot() ? t->plot()->fftsc_ix() : 0;
+            char *bf = new char[16];
+            sprintf(bf, "fft%d_scale", ix);
+            if (t->plot())
+                t->plot()->set_fftsc_ix(++ix);
             t->set_name(bf);
             delete [] bf;
         }

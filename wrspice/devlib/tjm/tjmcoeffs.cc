@@ -325,8 +325,8 @@ fprintf(stderr, "system command failed\n");
 // Static function.
 // Jqp model.
 //
-cIFcomplex *
-TJMcoeffSet::modelJqp(const cIFcomplex *cp, const cIFcomplex *cb, int csz,
+IFcomplex *
+TJMcoeffSet::modelJqp(const IFcomplex *cp, const IFcomplex *cb, int csz,
     const double *w, int lenw)
 {
 #define rep(z)  (-fabs(z))
@@ -334,7 +334,7 @@ TJMcoeffSet::modelJqp(const cIFcomplex *cp, const cIFcomplex *cb, int csz,
 #define eta(n)  cp[n].imag
 #define reb(n)  cb[n].real
 #define imb(n)  cb[n].imag
-    cIFcomplex *sum = new cIFcomplex[lenw];
+    IFcomplex *sum = new IFcomplex[lenw];
     for (int k = 0; k < lenw; k++) {
         sum[k].real = 0.0;
         sum[k].imag = 0.0;

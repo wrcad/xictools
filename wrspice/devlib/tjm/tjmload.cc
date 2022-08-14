@@ -73,6 +73,9 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
 #ifdef NEWJJDC
 
     if (ckt->CKTmode & MODEDC) {
+        if (ckt->CKTmode & MODEUIC)
+            return (OK);
+
         ts.ts_vj  = *(ckt->CKTrhsOld + inst->TJMposNode) -
                 *(ckt->CKTrhsOld + inst->TJMnegNode);
 
@@ -319,6 +322,7 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
         inst->TJMdelVdelT = ckt->find_ceq(inst->TJMvoltage);
 
         inst->tjm_init(ts.ts_phi);
+        inst->tjm_newstep(ckt);
 
         ts.ts_dcrt = 0;
         ts.ts_crt  = inst->TJMcriti;
@@ -411,8 +415,6 @@ sTJMinstance::tjm_load(sCKT *ckt, tjmstuff &ts)
 {
     *(ckt->CKTstate0 + TJMvoltage) = ts.ts_vj;
     *(ckt->CKTstate0 + TJMphase)   = ts.ts_phi;
-    *(ckt->CKTstate0 + TJMcrti)    = tjm_cp;
-    *(ckt->CKTstate0 + TJMqpi)     = tjm_cqp + (tjm_gcrit + TJMg0)*ts.ts_vj;
 
     double crhs, gqt;
     if (ckt->CKTmode & MODEDC) {
@@ -424,6 +426,15 @@ sTJMinstance::tjm_load(sCKT *ckt, tjmstuff &ts)
         tjm_update(ts.ts_phi);
         crhs = tjm_cp + tjm_cqp + TJMdelVdelT*TJMcap;
         gqt = tjm_gcrit + TJMg0 +  ckt->CKTag[0]*TJMcap;
+    }
+    if (ckt->CKTmode & MODEDC) {
+        tjm_cp = ts.ts_crt*sin(ts.ts_phi); 
+        *(ckt->CKTstate0 + TJMcrti)= tjm_cp;
+        *(ckt->CKTstate0 + TJMqpi) = 0.0;
+    }
+    else {
+        *(ckt->CKTstate0 + TJMcrti)= tjm_cp;
+        *(ckt->CKTstate0 + TJMqpi) = tjm_cqp + (tjm_gcrit + TJMg0)*ts.ts_vj;
     }
 
     // load matrix, rhs vector

@@ -182,6 +182,7 @@ CommandTab::com_unlet(wordlist *wl)
     for ( ; wl; wl = wl->wl_next) {
         char buf[BSIZE_SP];
         strcpy(buf, wl->wl_word);
+        CP.Unquote(buf);
         const char *s = buf;
         bool allflag = false;
         sPlot *pl = stripplot(&s, &allflag);
