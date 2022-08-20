@@ -17,7 +17,7 @@
 #endif
 
 
-const char *mmjco::mm_version = "0.9";
+const char *mmjco::mm_version = "0.95";
 
 //#define DEBUG
 

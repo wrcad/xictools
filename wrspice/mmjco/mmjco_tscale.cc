@@ -64,6 +64,25 @@ mmjco_mtdb::new_dels()
 }
 
 
+// Create the sub-gap resistance parameter for a new fit table for
+// temperature t by interpolating from the presently stored ip8s.
+//
+void
+mmjco_mtdb::new_ip8s()
+{
+    const double *tvals = mt_temps;
+    double *fvals = new double[mt_ntemps];
+
+    for (int j = 0; j < mt_ntemps; j++) {
+        fvals[j] = mt_ip8s[j];
+    }
+    const double *fv = fvals;
+    mmjco_tscale ts(mt_ntemps, tvals, fv);
+    mt_res_ip8 = ts.value(mt_res_temp);
+    delete [] fvals;
+}
+
+
 // Load a fit table or sweep file.  The file consists of concatenated
 // fit tables for different temperatures.  The data of each fit set is
 // printed before fit data, and is parsed to obtain parameters.  For
@@ -87,6 +106,7 @@ mmjco_mtdb::load(FILE *fp, int ntemps, int nterms)
     double *data = 0;
     double *dp = 0;
     double d1 = 0.0, d2 = 0.0;
+    double ip8 = 0.0;
     int ix = 0;
 
     while ((s = fgets(buf, 256, fp)) != 0) {
@@ -97,7 +117,7 @@ mmjco_mtdb::load(FILE *fp, int ntemps, int nterms)
 
         // New format: print values, easy to parse.
         if (!strncmp(s, "tcafit", 6)) {
-            if (sscanf(s+7, "%lf %lf %lf", &temp, &d1, &d2) != 3) {
+            if (sscanf(s+7, "%lf %lf %lf %lf", &temp, &d1, &d2, &ip8) < 3) {
                 fprintf(stderr, "Error: wrong record separator token count.\n");
                 return (false);
             }
@@ -123,7 +143,7 @@ mmjco_mtdb::load(FILE *fp, int ntemps, int nterms)
         }
         dp += 6;
         if ((dp - data)/6 == nterms) {
-            if (!add_table(buf, temp, d1, d2, ix-1, data)) {
+            if (!add_table(buf, temp, d1, d2, ip8, ix-1, data)) {
                 fprintf(stderr, "Error: failed to add fit set.\n");
                 return (false);
             }
@@ -152,9 +172,9 @@ mmjco_mtdb::dump_file(const char *fname)
 
     FILE *fp = fopen(fname, "w");
     if (fp) {
-        fprintf(fp, "tcafit %11.4e %11.4e %11.4e %.3f %-4d %-2d %.3f\n",
+        fprintf(fp, "tcafit %11.4e %11.4e %11.4e %.3f %-4d %-2d %.3f %11.4e\n",
             mt_res_temp, mt_res_dels[0], mt_res_dels[1], mt_sm, mt_xp,
-            mt_nterms, mt_thr);
+            mt_nterms, mt_thr, mt_res_ip8);
         const double *dp = mt_res_data;
         for (int i = 0; i < mt_nterms; i++) {
             fprintf(fp, "%12.5e,%12.5e,%12.5e,%12.5e,%12.5e,%12.5e\n",

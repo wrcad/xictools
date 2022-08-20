@@ -41,6 +41,9 @@
 #include "tjmdefs.h"
 #include "tempr.h"
 
+//XXX
+#include <stdio.h>
+
 
 #ifndef M_PI_4
 #define M_PI_4      0.785398163397448309615660845819875721  // pi/4
@@ -627,11 +630,12 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             // G0 is the user-specified subgap conductance, subtract
             // off the intrinsic conductance if we can.
             inst->TJMg0 = model->TJMr0 > 0.0 ? gfac / model->TJMr0 : 0.0;
+            double tg0 = inst->TJMg0;
             if (inst->TJMg0 >= inst->TJMgqp)
                 inst->TJMg0 -= inst->TJMgqp;
             if (model->TJMvShuntGiven && model->TJMvShunt > 0.0) {
                 double gshunt = inst->TJMcriti/model->TJMvShunt -
-                    SPMAX(inst->TJMg0, inst->TJMgqp);
+                    SPMAX(tg0, inst->TJMgqp);
                 if (gshunt > 0.0)
                     inst->TJMgshunt = gshunt;
             }
@@ -800,39 +804,49 @@ sTJMmodel::tjm_initmod()
         return (E_PANIC);
     }
 
-    // Compute the internal subgap resistance.  This involves
-    // computing the quasiparticle model, extracting the current at
-    // 80% of Vgap, and computing the linear resistance.  Must be a
-    // better way?
+//XXX    if (cs->norm_ip8() == 0.0) {
+    if (1) {
+        // We get this from mmjco presently, older files will not contain
+        // the value so we compute it here when necessary.
 
-    // First, define the X-axis, per mmjco.
-    double *xpts = new double[TJMnxpts];
-    double x = 0.001;
-    double dx = (2.0 - x)/(TJMnxpts - 1);
-    for (int i = 0; i < TJMnxpts; i++) {
-        xpts[i] = x;
-        x += dx;
+        // Compute the internal subgap resistance.  This involves
+        // computing the quasiparticle model, extracting the current at
+        // 80% of Vgap, and computing the linear resistance.  Must be a
+        // better way?
+
+        // First, define the X-axis, per mmjco.
+        double *xpts = new double[TJMnxpts];
+        double x = 0.001;
+        double dx = (2.0 - x)/(TJMnxpts - 1);
+        for (int i = 0; i < TJMnxpts; i++) {
+            xpts[i] = x;
+            x += dx;
+        }
+
+        // This returns the quasiparticle TCA model.
+        IFcomplex *qp = TJMcoeffSet::modelJqp(cs->p(), cs->B(),
+            TJMnterms, xpts, TJMnxpts);
+
+        // Index of the point closest to 80% of Vgap.  Also index a point
+        // just above the gap.  This is used to "calibrate" the y-axis.
+        int np8 = round((0.8 - 0.001)/dx);
+        int nu = round((1.015 - 0.001)/dx);
+
+        double yp8 = qp[np8].imag;
+        double yu = qp[nu].imag;
+        double ip8 = ((yp8/(yu - yp8)) * (TJMcriti/TJMicFactor));
+
+        // Save the approximate intrinsic subgap resistance.
+        TJMrsint = 0.8*(TJMdel1Nom + TJMdel2Nom)/ip8;
+
+        delete [] xpts;
+        delete [] qp;
+        // End of subgap resistance computation.
     }
-
-    // This returns the quasiparticle TCA model.
-    IFcomplex *qp = TJMcoeffSet::modelJqp(cs->p(), cs->B(),
-        TJMnterms, xpts, TJMnxpts);
-
-    // Index of the point closest to 80% of Vgap.  Also index a point
-    // just above the gap.  This is used to "calibrate" the y-axis.
-    int np8 = round((0.8 - 0.001)/dx);
-    int nu = round((1.015 - 0.001)/dx);
-
-    double yp8 = qp[np8].imag;
-    double yu = qp[nu].imag;
-    double ip8 = ((yp8/(yu - yp8)) * (TJMcriti/TJMicFactor));
-
-    // Save the approximate intrinsic subgap resistance.
-    TJMrsint = 0.8*(TJMdel1Nom + TJMdel2Nom)/ip8;
-
-    delete [] xpts;
-    delete [] qp;
-    // End of subgap resistance computation.
+    else {
+        double fct = 0.8*(TJMdel1Nom + TJMdel2Nom)*TJMicFactor/TJMcriti;
+        TJMrsint = fct/cs->norm_ip8();
+    }
 
     return (OK);
 }
