@@ -142,7 +142,7 @@ public:
     SpiceLine *makeSpiceDeck(SymTab** = 0, bool = false);
 
 private:
-    SpiceLine *ckt_deck(CDs*, bool = false);
+    SpiceLine *ckt_deck(CDs*, bool = false, bool = false);
     sp_nmlist_t *def_node_term_list(CDs*);
     stringlist *list_def_node_names();
     SpiceLine *add_mutual(CDs*, bool, stringlist**, int);

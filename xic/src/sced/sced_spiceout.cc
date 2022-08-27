@@ -355,13 +355,16 @@ SpOut::makeSpiceDeck(SymTab **sctab, bool add_top_sc)
         Tstring(sp_celldesc->cellname()));
     SpiceLine *d0 = new SpiceLine(buf);
     SpiceLine *d = d0;
+    d->li_next = get_sptext_labels(sp_celldesc);
+    while (d->li_next)
+        d = d->li_next;
     d->li_next = add_dot_global();
     while (d->li_next)
         d = d->li_next;
     d->li_next = add_dot_include();
     while (d->li_next)
         d = d->li_next;
-    d->li_next = ckt_deck(sp_celldesc, add_top_sc);
+    d->li_next = ckt_deck(sp_celldesc, false, add_top_sc);
     while (d->li_next)
         d = d->li_next;
     if (sctab)
@@ -501,7 +504,7 @@ namespace {
 // Not recursive.
 //
 SpiceLine *
-SpOut::ckt_deck(CDs *sdesc, bool add_sc)
+SpOut::ckt_deck(CDs *sdesc, bool add_sptext, bool add_sc)
 {
     if (!sdesc || !sdesc->isElectrical())
         return (0);
@@ -770,14 +773,16 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
     spice_deck_sort(d0);
     check_dups(d0, sdesc);
 
-    // Add text from labels.
-    d1 = get_sptext_labels(sdesc);
-    if (d1) {
-        SpiceLine *tmpd = d1;
-        while (d1->li_next)
-            d1 = d1->li_next;
-        d1->li_next = d0;
-        d0 = tmpd;
+    if (add_sptext) {
+        // Add text from labels.
+        d1 = get_sptext_labels(sdesc);
+        if (d1) {
+            SpiceLine *tmpd = d1;
+            while (d1->li_next)
+                d1 = d1->li_next;
+            d1->li_next = d0;
+            d0 = tmpd;
+        }
     }
 
     // Maybe add a .subckt header.  This should only be done here at the
@@ -1447,7 +1452,7 @@ SpOut::subcircuits(CDs *sdesc)
         while (d->li_next)
             d = d->li_next;
 
-        d->li_next = ckt_deck(sub);
+        d->li_next = ckt_deck(sub, true);
         while (d->li_next)
             d = d->li_next;
         sLstr lstr;
@@ -1484,7 +1489,7 @@ SpOut::subcircuits_tab(CDs *sdesc)
         d = d0 = scl;
         while (d->li_next)
             d = d->li_next;
-        d->li_next = ckt_deck(sub);
+        d->li_next = ckt_deck(sub, true);
         while (d->li_next)
             d = d->li_next;
         sLstr lstr;
