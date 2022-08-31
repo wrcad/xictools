@@ -189,6 +189,7 @@ struct sTJMinstancePOD
     double TJMgqp;          // intrinsic conductance at Vj = 0
     double TJMgshunt;       // shunt conductance if vshunt given
     double TJMnoise;        // noise scale factor
+    double TJMvshunt;       // External shunt conductance * Ic
 
     double *TJMposNegPtr;   // pointer to sparse matrix at (positive, negative)
     double *TJMnegPosPtr;   // pointer to sparse matrix at (negative, positive)
@@ -234,6 +235,7 @@ struct sTJMinstancePOD
     unsigned TJMinitVoltGiven : 1;  // ic was specified
     unsigned TJMinitPhaseGiven : 1; // ic was specified
     unsigned TJMnoiseGiven : 1;     // noise scaling was specified
+    unsigned TJMvshuntGiven :1;     // vshunt was specified
     unsigned TJMoffGiven : 1;       // "off" was specified
 
     // for noise analysis
@@ -443,6 +445,7 @@ enum {
     TJM_ICP,
     TJM_ICV,
     TJM_NOISE,
+    TJM_VSHUNT,
 
     TJM_QUEST_PHSN,
     TJM_QUEST_PHSF,

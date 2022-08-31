@@ -569,6 +569,19 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             else
                 inst->TJMvdpbak = halfvg;
 
+            if (!inst->TJMvshuntGiven)
+                inst->TJMvshunt = model->TJMvShunt;
+            else {
+                if (inst->TJMvshunt < 0.0 ||
+                        inst->TJMvshunt > model->TJMvgNom) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: VSHUNT=%g out of range [%g-%g], reset to %g.\n",
+                        inst->GENname, inst->TJMvshunt, 0.0, model->TJMvgNom,
+                        0.0);
+                    inst->TJMvshunt = 0.0;
+                }
+            }
+
             rval = inst->tjm_init1();
             if (rval != OK)
                 return (rval);
@@ -633,8 +646,8 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             double tg0 = inst->TJMg0;
             if (inst->TJMg0 >= inst->TJMgqp)
                 inst->TJMg0 -= inst->TJMgqp;
-            if (model->TJMvShuntGiven && model->TJMvShunt > 0.0) {
-                double gshunt = inst->TJMcriti/model->TJMvShunt -
+            if (inst->TJMvshunt > 1e-12) {
+                double gshunt = inst->TJMcriti/inst->TJMvshunt -
                     SPMAX(tg0, inst->TJMgqp);
                 if (gshunt > 0.0)
                     inst->TJMgshunt = gshunt;

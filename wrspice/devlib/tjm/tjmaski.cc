@@ -64,6 +64,7 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_TJM_ICP,
         &&L_TJM_ICV,
         &&L_TJM_NOISE,
+        &&L_TJM_VSHUNT,
 
         &&L_TJM_QUEST_PHSN,
         &&L_TJM_QUEST_PHSF,
@@ -168,6 +169,9 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         return (OK);
     L_TJM_NOISE:
         data->v.rValue = inst->TJMnoise;
+        return (OK);
+    L_TJM_VSHUNT:
+        data->v.rValue = inst->TJMvshunt;
         return (OK);
     L_TJM_QUEST_PHSN:
         data->type = IF_INTEGER;
@@ -339,6 +343,9 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         break;
     case TJM_NOISE:
         data->v.uValue = inst->TJMnoise;
+        break;
+    case TJM_VSHUNT:
+        data->v.rValue = inst->TJMvshunt;
         break;
     case TJM_QUEST_PHSN:
         data->type = IF_INTEGER;

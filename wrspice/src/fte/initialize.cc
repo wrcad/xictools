@@ -359,6 +359,18 @@ IFsimulator::ImplicitCommand(wordlist *wl)
         CP.PopArg();
         return (true);
     }
+
+    // Implicit print of expression list.
+    pnlist *n0 = Sp.GetPtree(wl, true);
+    if (n0) {
+        sDvList *dl0 = Sp.DvList(n0);
+        if (!dl0)
+            return (false);
+        sDvList::destroy(dl0);
+        CommandTab::com_print(wl);
+        return (true);
+    }
+
     return (false);
 }
 

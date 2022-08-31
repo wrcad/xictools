@@ -14,8 +14,10 @@ xictools=/home/$login/src/xt
 sshcmd="ssh -p 2222"
 
 force=""
-if [ -n $1 -a $1 = -f ]; then
-    force="-f";
+if [ -n $1 ]; then
+    if [ $1 = -f ]; then
+        force="-f";
+    fi
 fi
 
 sshc=$SSH_CONNECTION

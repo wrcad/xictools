@@ -279,7 +279,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         // Otherwise, we will use an approximation formula.
         //
         if (!model->JJvgGiven)
-            model->JJvgnom = DEV.bcs_egapv(model->JJtnom, model->JJtc,
+            model->JJvgnom = 2.0*DEV.bcs_egapv(model->JJtnom, model->JJtc,
                 model->JJtdebye);
         else {
             if (model->JJvgnom < VgMin || model->JJvgnom > VgMax) {
@@ -576,7 +576,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 }
                 else {
                     // Compute BCS gap voltage.
-                    inst->JJvg = DEV.bcs_egapv(inst->JJtemp_k, model->JJtc,
+                    inst->JJvg = 2.0*DEV.bcs_egapv(inst->JJtemp_k, model->JJtc,
                         model->JJtdebye);
                     inst->JJtcf = inst->JJvg / model->JJvgnom;
                 }
@@ -590,6 +590,19 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             else {
                 inst->JJvg = model->JJvgnom;
                 inst->JJtcf = 1.0;
+            }
+
+            if (!inst->JJvshuntGiven)
+                inst->JJvshunt = model->JJvShunt;
+            else {
+                if (inst->JJvshunt < 0.0 ||
+                        inst->JJvshunt > model->JJvgnom) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: VSHUNT=%g out of range [%g-%g], reset to %g.\n",
+                        inst->GENname, inst->JJvshunt, 0.0, model->JJvgnom,
+                        0.0);
+                    inst->JJvshunt = 0.0;
+                }
             }
 
             double halfdv = 0.5*model->JJdelv;
@@ -684,8 +697,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             inst->JJcr2 = inst->JJcriti/model->JJicFactor +
                 inst->JJvless * inst->JJg0 - inst->JJvmore * inst->JJgn;
 
-            if (model->JJvShuntGiven && model->JJvShunt > 0.0) {
-                double gshunt = inst->JJcriti/model->JJvShunt - inst->JJgqp;
+            if (inst->JJvshunt > 1e-12) {
+                double gshunt = inst->JJcriti/inst->JJvshunt - inst->JJgqp;
                 if (gshunt > 0.0)
                     inst->JJgshunt = gshunt;
             }

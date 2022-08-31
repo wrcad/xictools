@@ -66,7 +66,6 @@ int
 TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
 {
     sTJMinstance *inst = (sTJMinstance*)in_inst;
-    sTJMmodel *model = (sTJMmodel*)inst->GENmodPtr;
 
     tjmstuff ts;
 
@@ -89,7 +88,7 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
         inst->tjm_load(ckt, ts);
         // don't load shunt
 #ifdef NEWLSH
-        if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
+        if (inst->TJMgshunt > 1e-12) {
             // Load lsh as 0-voltage source, don't load resistor. 
             // Dangling voltage source shouldn't matter.
 
@@ -181,7 +180,7 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
         inst->tjm_load(ckt, ts);
 
         // Load the shunt resistance implied if vshunt given.
-        if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
+        if (inst->TJMgshunt > 1e-12) {
             ckt->ldadd(inst->TJMrshPosPosPtr, inst->TJMgshunt);
             ckt->ldadd(inst->TJMrshPosNegPtr, -inst->TJMgshunt);
             ckt->ldadd(inst->TJMrshNegPosPtr, -inst->TJMgshunt);
@@ -253,7 +252,7 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
         inst->tjm_load(ckt, ts);
 
         // Load the shunt resistance implied if vshunt given.
-        if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
+        if (inst->TJMgshunt > 1e-12) {
             ckt->ldadd(inst->TJMrshPosPosPtr, inst->TJMgshunt);
             ckt->ldadd(inst->TJMrshPosNegPtr, -inst->TJMgshunt);
             ckt->ldadd(inst->TJMrshNegPosPtr, -inst->TJMgshunt);
@@ -329,7 +328,7 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
 
         inst->tjm_load(ckt, ts);
 
-        if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
+        if (inst->TJMgshunt > 1e-12) {
             ckt->ldadd(inst->TJMrshPosPosPtr, inst->TJMgshunt);
             ckt->ldadd(inst->TJMrshPosNegPtr, -inst->TJMgshunt);
             ckt->ldadd(inst->TJMrshNegPosPtr, -inst->TJMgshunt);

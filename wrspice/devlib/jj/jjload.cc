@@ -179,7 +179,7 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             js.jj_load(ckt, model, inst);
             // don't load shunt
 #ifdef NEWLSH
-            if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+            if (inst->JJgshunt > 1e-12) {
                 // Load lsh as 0-voltage source, don't load resistor. 
                 // Dangling voltage source shouldn't matter.
 
@@ -207,7 +207,7 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             js.jj_load(ckt, model, inst);
 
             // Load the shunt resistance implied if vshunt given.
-            if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+            if (inst->JJgshunt > 1e-12) {
                 ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
                 ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
                 ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
@@ -366,7 +366,7 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         js.jj_load(ckt, model, inst);
 
         // Load the shunt resistance implied if vshunt given.
-        if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+        if (inst->JJgshunt > 1e-12) {
             ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
             ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
             ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
@@ -446,7 +446,7 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         js.jj_load(ckt, model, inst);
 
         // Load the shunt resistance implied if vshunt given.
-        if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+        if (inst->JJgshunt > 1e-12) {
             ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
             ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
             ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
@@ -529,7 +529,7 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             js.jj_ic(model, inst);
         js.jj_load(ckt, model, inst);
 
-        if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+        if (inst->JJgshunt > 1e-12) {
             ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
             ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
             ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);

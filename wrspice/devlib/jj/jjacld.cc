@@ -57,7 +57,7 @@ JJdev::acLoad(sGENmodel *genmod, sCKT *ckt)
             *inst->JJnegPosPtr -= G;
 
             // Load the shunt resistance implied if vshunt given.
-            if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+            if (inst->JJgshunt > 1e-12) {
                 G = inst->JJgshunt;
                 ckt->ldadd(inst->JJrshPosPosPtr, G);
                 ckt->ldadd(inst->JJrshPosNegPtr, -G);

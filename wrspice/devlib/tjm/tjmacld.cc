@@ -57,7 +57,7 @@ TJMdev::acLoad(sGENmodel *genmod, sCKT *ckt)
             *inst->TJMnegPosPtr -= G;
 
             // Load the shunt resistance implied if vshunt given.
-            if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
+            if (inst->TJMgshunt > 1e-12) {
                 G = inst->TJMgshunt;
                 ckt->ldadd(inst->TJMrshPosPosPtr, G);
                 ckt->ldadd(inst->TJMrshPosNegPtr, -G);

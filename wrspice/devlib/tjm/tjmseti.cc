@@ -62,9 +62,10 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         &&L_TJM_IC,
         &&L_TJM_ICP,
         &&L_TJM_ICV,
-        &&L_TJM_NOISE};
+        &&L_TJM_NOISE,
+        &&L_TJM_VSHUNT};
 
-    if ((unsigned int)param > TJM_NOISE)
+    if ((unsigned int)param > TJM_VSHUNT)
         return (E_BADPARM);
 #endif
 
@@ -135,6 +136,10 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->TJMnoise = value->rValue;
         inst->TJMnoiseGiven = true;
         return (OK);
+    L_TJM_VSHUNT:
+        inst->TJMvshunt = value->rValue;
+        inst->TJMvshuntGiven = true;
+        return (OK);
 #else
     switch (param) {
     case TJM_AREA:
@@ -194,6 +199,10 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     case TJM_NOISE:
         inst->TJMnoise = value->uValue;
         inst->TJMnoiseGiven = true;
+        break;
+    case YJM_VSHUNT:
+        inst->TJMvshunt = value->rValue;
+        inst->TJMvshuntGiven = true;
         break;
     default:
         return (E_BADPARM);
