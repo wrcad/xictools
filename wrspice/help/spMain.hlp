@@ -3505,7 +3505,7 @@ printtoraw
 proc2mod
 wrspiced
 
-!! utilities.tex 051222
+!! utilities.tex 090222
 !!KEYWORD
 mmjco
 !!TITLE
@@ -3902,6 +3902,188 @@ The <tt>mmjco</tt> Utility: Tunnel Junction Model Calculator
     different sets.  It was found that the original and present versions
     of <tt>mitmojco.py</tt> gave different values, and neither matched the
     values provided in the amplitudes folder.
+
+    <h3>File Formats</h3>
+
+    <h4>TCA file formats</h4>
+
+    Tunnel current amplitude (TCA) tables are created by the
+    <tt>cd</tt> and <tt>cm</tt> commands.  They consist of real and
+    imaginary parts of the pair and quasiparticle amplitudes, on a
+    scale of normalized potential across the structure, where the unit
+    value is the sum of the gap energies of the two electrodes.  The
+    scale extends from 0 to 2 in these units.
+
+    <p>
+    There actually are three formats available, selectable with
+    options to the <tt>cd</tt> and <tt>cm</tt> commands.
+
+    <dl>
+    <dt>
+    option: <tt>-rd</tt><dd>
+    The file name is described in the previous section, with a suffix
+    "<tt>.data</tt>".  This is a generic numerical format, consisting
+    of a comment line and six columns of numbers.  The number of data
+    lines is the value given with the "<tt>-x</tt>" option to the
+    <tt>cd</tt> command, defaulting to 500.  The example below
+    illustrates the format.
+    </dl>
+
+    <p>
+    <pre>
+    #    X            Jpair_real   Jpair_imag   Jqp_real     Jqp_imag
+    0    1.00000e-03  7.50623e-01  2.85275e-04  -7.50625e-01 3.37356e-04
+    1    5.00601e-03  7.51136e-01  1.36358e-03  -7.51123e-01 1.62410e-03
+    2    9.01202e-03  7.51643e-01  2.27465e-03  -7.51594e-01 2.74301e-03
+    3    1.30180e-02  7.52144e-01  3.03372e-03  -7.52040e-01 3.70900e-03
+    ...
+    498  1.99599e+00  4.22402e-01  -5.29166e-01 1.52235e-02  1.87539e+00
+    499  2.00000e+00  4.21420e-01  -5.28564e-01 1.51180e-02  1.87962e+00
+    </pre>
+
+    <p>
+    The other two options emit the data using the SPICE "rawfile"
+    format.  This is a format developed for plot data in Berkeley
+    Spice3, which is supported by most plotting programs, including
+    Synopsys WaveView and the <a href="load"><b>load</b></a> function
+    of <i>WRspice</i>.  The only difference is that one format ouptuts
+    complex numbers for two variables (pair and quasiparticle
+    amplitudes), while the other format outputs real values for four
+    variables (the real and imaginary parts of the amplitudes).
+
+    <dl>
+    <dt>
+    option: <tt>-r</tt><dd>
+    The file name is described in the previous section, with a suffix
+    "<tt>.raw</tt>".  Output is in rawfile format using complex
+    numbers.
+    </dl>
+
+    <dl>
+    <dt>
+    option: <tt>-rr</tt><dd>
+    The file name is described in the previous section, with a suffix
+    "<tt>.raw</tt>".  Output is in rawfile format using real numbers.
+    </dl>
+
+    <p>
+    The <a href="rawfilefmt">rawfile format</a> description can be
+    found in the <i>WRspice</tt> documentation.
+
+
+    <h4>Fit file format</h4>
+
+    A fit file contains a compacted digest of a TCA table, as
+    prescribed by the Odintsov, Semenov and Zorin (OSZ) algorithm. 
+    These can be generated with the <tt>cf</tt> command.  Fit files
+    can be used as input to simulators that contain a compatible
+    tunnel junction model (TJM).  Presently, <i>WRspice</i> and
+    Synopsys HSPICE can use these files.
+
+    <p>
+    An example fit file is shown below.
+
+    <p>
+    <pre>
+    tcafit  4.2000e+00  1.3696e-03  1.3696e-03 0.008 500  8  0.200 3.9580e-2
+    -5.55136e+00, 7.35249e-02, 1.28573e+00, 1.08362e+01,-1.58776e-01, 2.87279e+01
+    -1.24623e-02, 1.00032e+00, 5.84894e-03,-4.50828e-04, 5.81876e-03,-2.11396e-04
+    -3.83312e-02, 1.00112e+00, 2.10779e-02,-3.09528e-04, 2.13882e-02, 1.13197e-03
+    -1.18261e-01, 9.98252e-01, 6.29481e-02, 1.95061e-03, 6.04875e-02, 1.68472e-02
+    -5.41049e-02, 7.52572e-07,-2.72420e-04, 5.67468e+00, 5.43002e-04, 2.37802e+00
+    -9.94491e-01, 6.50936e-01, 7.80341e-01, 1.14849e-01,-2.36003e-01, 9.49693e-01
+    -3.42835e-01, 9.60836e-01, 1.75970e-01, 1.81214e-02, 1.47672e-01, 1.40112e-01
+    -2.80018e-01, 6.49039e-03, 6.26863e-03, 1.81423e-01, 9.20013e-03, 3.23103e-02
+    </pre>
+
+    <p>
+    The first line is a header, the first word of which is "<tt>tcafit</tt>".
+    The numbers that follow in this line are:
+    <ul>
+    <li>The temperature in Kelvin (4.2000e+00).
+    <li>The left electrode pair-breaking energy in ev (1.3696e-03).
+    <li>The right electrode pair-breaking energy in ev (1.3696e-03).
+    <li>The smoothing parameter value used to create the TCA table,
+    <tt>-s</tt> option in the <tt>cd</tt> command for example (0.008).
+    <li>The number of scale points used in the TCA table, <tt>-x</tt>
+    option in the <tt>cd</tt> command for example (500).
+    <li>The number of terms used in the fit table, <tt>-n</tt> option
+    in the <tt>cf</tt> command (8).
+    <li>The value of the threshold parameter used when generating the
+    fit parameter table, <tt>-h</tt> option of the <tt>cf</tt> command
+    (0.200).
+    <li>Normalized quasiparticle current at x=0.8, used to estimate
+    the sub-gap conductance (3.9580e-2).
+    </ul>
+
+    <p>
+    Following the header line are six columns of real numbers.  The
+    number of rows is equal to the "terms", which is the <tt>-n</tt>
+    option to the <tt>cf</tt> command.  The columns are the OSZ
+    parameters P.real, P.imag, A.real, A.imag, B.real, B.imag.
+
+
+    <h4>Sweep file format</h4>
+
+    Temperature sweep files are concatenations of fit records as
+    described above for a temperature range.  These allow rapid
+    temperature modeling through interpolation in supporting
+    simulators (<t>WRspice</i> and Synopsys HSPICE).  Sweep files are
+    created with the <tt>cs</tt> command.
+
+    <p>
+    Below is an example temperature sweep file.
+
+    <p>
+    <pre>
+    tsweep 91 0.1000 0.1000 0.008 500 8 0.200
+    tcafit  1.0000e-01  1.4086e-03  1.4086e-03  1.3185e-02
+    -8.51331e+00, 1.15164e-01, 1.29900e+00, 1.11105e+01,-4.05570e-01, 5.65607e+01
+    -1.06700e-02, 1.00009e+00, 3.58651e-03,-2.25268e-04, 3.57013e-03,-5.66586e-05
+    -2.47980e-02, 1.00072e+00, 1.14692e-02,-5.49747e-04, 1.15840e-02,-1.07382e-04
+    -6.31470e-02, 1.00196e+00, 2.92347e-02,-1.70767e-03, 2.93324e-02, 2.09767e-03
+    -1.86179e+00, 9.23541e-01, 7.52628e-01,-8.71131e-02,-4.37397e-01, 2.11473e+00
+    -1.56178e-01, 1.00378e+00, 6.81933e-02,-6.76474e-03, 7.04144e-02, 1.46763e-02
+    -3.74403e-01, 1.01258e+00, 1.53951e-01,-3.71976e-02, 1.73747e-01, 7.86682e-02
+    -8.73847e-01, 1.06711e+00, 2.56553e-01,-1.53780e-01, 4.86150e-01, 3.82557e-01
+    tcafit  2.0000e-01  1.4086e-03  1.4086e-03  1.3185e-02
+    -8.51331e+00, 1.15164e-01, 1.29900e+00, 1.11105e+01,-4.05570e-01, 5.65607e+01
+    -1.06700e-02, 1.00009e+00, 3.58651e-03,-2.25268e-04, 3.57013e-03,-5.66586e-05
+    ...
+    </pre>
+
+    <p>
+    The first line is a file header starting with the word "<tt>tsweep</tt>". 
+    The numbers that follow on this line are:
+    <ul>
+    <li>The number of fit records contained in this file (91).
+    <li>The lowest temperature K used for fit parameters in the file,
+    this will be used in the first fit record (0.1000).
+    <li>The temperature delta K used in the sweep file (0.1000).
+    <li>The smoothing parameter, <tt>-s</tt> option, used to create
+    all TCA tables (0.008).
+    <li>The number of scale points, <tt>-x</tt> option, used to create
+    all TCA tables (500).
+    <li>The number of terms used for each fit table, <tt>-n</tt>
+    option (8).
+    <li>The value of the threshold parameter used in each fit table
+    (0.200).
+    </ul>
+
+    <p>
+    Following this header, fit records are concatenated.  These are
+    similar to the format described above, the only difference is that
+    the header line is simplified to omit redundant information.  The
+    fit record header contains the following value following the word
+    "<tt>tcafit</tt>".
+    <ul>
+    <li>The temperature in Kelvin (4.2000e+00).
+    <li>The left electrode pair-breaking energy in ev (1.3696e-03).
+    <li>The right electrode pair-breaking energy in ev (1.3696e-03).
+    <li>Normalized quasiparticle current at x=0.8, used to estimate
+    the sub-gap conductance (3.9580e-2).
+    </ul>
+
 
     <h3>References</h3>
 

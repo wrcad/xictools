@@ -1,29 +1,50 @@
 \chapter{{\WRspice} Commands}
 \label{commands}
 
-% spCommands.hlp:commands 011721
+% spCommands.hlp:commands 083122
 
-When a line is entered, it is interpreted as one of several things. 
+When a line is entered, it is interpreted in one of several ways. 
+
+\begin{enumerate}
+\item{An alias}\\
 First, it may be an alias, in which case the line is replaced with the
-result after alias substitution, and the line is re-parsed.  Second,
-it may be the name of a codeblock, which is a user-defined command
-obtained from a script file, in which case the codeblock is executed. 
+result after alias substitution, and the line is re-parsed.
+
+\item{A codeblock}\\
+Second, it may be the name of a codeblock, which is a user-defined
+command obtained from a script file, in which case the codeblock is
+executed. 
+
+\item{A command}\\
 Third, it may be a pre-defined command, in which case it is executed. 
+
+\item{An assignment, implivit {\cb let}}\\
 Fourth, it may be an assignment statement, which consists of a vector
 name, an `{\vt =}' symbol, and an expression, in which case it is
-executed as if it were preceded by the word ``{\vt let}''.  Fifth, it
-may be the name of a circuit file, in which case it is loaded as if
-with a {\cb source} command, or it may be the name of a command script
--- {\WRspice} searches the current {\et sourcepath} (search path) for
-the file and executes it when it is found.  The effect of this is
-identical to the effect of ``{\vt source} {\it file}'', except that
-the variables {\et argc} and {\et argv} are set.  Finally, it may be a
-UNIX command, in which case if the variable {\et unixcom} is set, it
-is executed as though it were typed to the operating system shell.
+executed as if it were preceded by the word ``{\vt let}''.
+
+\item{A circuit filename, implicit {\cb source}}\\
+Fifth, it may be the name of a circuit file, in which case it is
+loaded as if with a {\cb source} command, or it may be the name of a
+command script -- {\WRspice} searches the current {\et sourcepath}
+(search path) for the file and executes it when it is found.  The
+effect of this is identical to the effect of ``{\vt source} {\it
+file}'', except that the variables {\et argc} and {\et argv} are set.
+
+\item{An opeerating system command}\\
+Sixth, it may be a command known to the hosting operating system, in
+which case if the variable {\et unixcom} is set, it is executed as
+though it were typed to the operating system shell.
+
+\item{An expression list}\\
+Finally, if the command line can be recognized as a list of
+expressions, the {\cb print} command is invoked on the line.
+\end{enumerate}
 
 
 The following table lists all built-in commands understood by
 {\WRspice}.
+\newpage
 
 \begin{longtable}{|l|l|}\hline
 \multicolumn{2}{|c|}{\bf Control Structures}\\ \hline
@@ -1395,7 +1416,7 @@ determined.
 \index{print command}
 \label{print}
 
-% spCommands.hlp:print 092816
+% spCommands.hlp:print 083122
 
 The {\cb print} command is used to print vector data on-screen or
 to a file using output redirection.
@@ -1404,6 +1425,12 @@ print [/{\it format\/}] [col | line] {\it expr\/} [...]
 \end{quote}
 The command prints the values of the given expressions to the standard
 output.
+
+If command line input can be recognized as an expression list, the
+print command will be invoked implicitly.  In this case, the line
+cannot contain directives or a format string, This saves a bit of
+typing when using the {\WRspice} command line as a calculator, for
+example.
 
 The default is to use exponential format for all values, with the
 number of digits given by the {\et numdgt} variable.  However this,

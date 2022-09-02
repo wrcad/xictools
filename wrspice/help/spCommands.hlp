@@ -136,33 +136,65 @@ qhelp
 quit
 version
 
-!! commands.tex 011721
+!! commands.tex 083122
 !!KEYWORD
 commands
 !!TITLE
 Built-in Commands
 !!HTML 
-    When a line is entered, it is interpreted as one of several
-    things.  First, it may be an <a href="alias">alias</a>, in which
+    When a line is entered, it is interpreted in one of several
+    ways.
+
+    <ol>
+    <li>An alias<br>
+    First, it may be an <a href="alias">alias</a>, in which
     case the line is replaced with the result after alias
-    substitution, and the line is re-parsed.  Second, it may be the
-    name of a <a href="codeblock">codeblock</a>, which is a
-    user-defined command obtained from a script file, in which case
-    the codeblock is executed.  Third, it may be a pre-defined
-    command, in which case it is executed.  Fourth, it may be an
-    assignment statement, which consists of a vector name, an '='
-    symbol, and an expression, in which case it is executed as if it
-    were preceded by the word "<tt>let</tt>".  Fifth, it may be the
-    name of a circuit file, in which case it is loaded as if with a <a
-    href="source"><b>source</b></a> command, or it may be the name of
-    a command script - <i>WRspice</i> searches the current <a
-    href="sourcepath"><tt>sourcepath</tt></a> (search path) for the
-    file and executes it when it is found.  The effect of this is
-    identical to the effect of "<tt>source</tt> <i>file</i>", except
-    that the variables <tt>argc</tt> and <tt>argv</tt> are set. 
-    Finally, it may be a UNIX command, in which case if the variable
-    <a href="unixcom"><tt>unixcom</tt></a> is set, it is executed as
+    substitution, and the line is re-parsed.
+
+    <p>
+    <li>A codeblock<br>
+    Second, it may be the name of a <a href="codeblock">codeblock</a>,
+    which is a user-defined command obtained from a script file, in
+    which case the codeblock is executed.
+
+    <p>
+    <li>A command<br>
+    Third, it may be a pre-defined command, in which case it is
+    executed.
+
+    <p>
+    <li>An assignment, implicit <a href="let"><b>let</b></a><br>
+    Fourth, it may be an assignment statement, which consists of a
+    vector name, an '=' symbol, and an expression, in which case it is
+    executed as if it were preceded by the word "<tt>let</tt>".
+
+    <p>
+    <li>A circuit filename, implicit <b>source</b><br>
+    Fifth, it may be the name of a circuit file, in which case it is
+    loaded as if with a <a href="source"><b>source</b></a> command, or
+    it may be the name of a command script -- <i>WRspice</i> searches
+    the current <a href="sourcepath"><tt>sourcepath</tt></a> (search
+    path) for the file and executes it when it is found.  The effect
+    of this is identical to the effect of "<tt>source</tt>
+    <i>file</i>", except that the variables <tt>argc</tt> and
+    <tt>argv</tt> are set. 
+
+    <p>
+    <li>An operating system command<br>
+    Sixth, it may be a command known to the hosting operating system,
+    in which case if the variable <a
+    href="unixcom"><tt>unixcom</tt></a> is set, it is executed as
     though it were typed to the operating system shell.
+
+    <p>
+    <li>An expression list, implicit <b>print</b><br>
+    Finally, if the command line can be recognized as a list of
+    expressions, the <a href="print"><b>print</b></a> command is
+    invoked on the line.
+    </ol>
+    
+
+
 
     The following table lists all built-in commands understood by
     <i>WRspice</i>.
@@ -2020,7 +2052,7 @@ load command
 rawfilefmt
 iocmds
 
-!! commands.tex 092816
+!! commands.tex 083122
 !!KEYWORD
 print
 !!TITLE
@@ -2034,6 +2066,13 @@ print command
     to a file using output redirection.  The command prints the values
     of the given <a href="explists">expressions</a> to the standard
     output.
+
+    <p>
+    If command line input can be recognized as an expression list, the
+    print command will be invoked implicitly.  In this case, the line
+    cannot contain directives or a format string, This saves a bit of
+    typing when using the <i>WRspice</i> command line as a calculator,
+    for example.
 
     <p>
     The default is to use exponential format for all values, with the
