@@ -176,6 +176,7 @@ struct sJJinstancePOD
     double JJgqp;                  // intrinsic conductance at Vj = 0
     double JJgshunt;               // shunt conductance if vshunt given
     double JJnoise;                // noise scale factor
+    double JJvshunt;               // specified external shunt
 
     double *JJposNegPtr;           // pointer to sparse matrix at 
                                    //  (positive, negative)
@@ -226,6 +227,7 @@ struct sJJinstancePOD
     unsigned JJinitPhaseGiven : 1; // ic was specified
     unsigned JJcontrolGiven : 1;   // control ind or vsource was specified
     unsigned JJnoiseGiven : 1;     // noise scaling was specified
+    unsigned JJvshuntGiven : 1;    // External shunt was specified
     unsigned JJoffGiven : 1;       // "off" was specified
 
     // for noise analysis
@@ -361,6 +363,7 @@ enum {
     JJ_ICV,
     JJ_CON,
     JJ_NOISE,
+    JJ_VSHUNT,
 
     JJ_QUEST_V,
     JJ_QUEST_PHS,

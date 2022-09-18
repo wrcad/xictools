@@ -189,6 +189,7 @@ struct sTJMinstancePOD
     double TJMgqp;          // intrinsic conductance at Vj = 0
     double TJMgshunt;       // shunt conductance if vshunt given
     double TJMnoise;        // noise scale factor
+    double TJMvshunt;       // External shunt conductance * Ic
 
     double *TJMposNegPtr;   // pointer to sparse matrix at (positive, negative)
     double *TJMnegPosPtr;   // pointer to sparse matrix at (negative, positive)
@@ -234,6 +235,7 @@ struct sTJMinstancePOD
     unsigned TJMinitVoltGiven : 1;  // ic was specified
     unsigned TJMinitPhaseGiven : 1; // ic was specified
     unsigned TJMnoiseGiven : 1;     // noise scaling was specified
+    unsigned TJMvshuntGiven :1;     // vshunt was specified
     unsigned TJMoffGiven : 1;       // "off" was specified
 
     // for noise analysis
@@ -375,13 +377,14 @@ struct sTJMmodel : sGENmodel, sTJMmodelPOD
 struct TJMcoeffSet
 {
     TJMcoeffSet(const char *cname, int csize, const IFcomplex *pc,
-            const IFcomplex *Ac, const IFcomplex *Bc)
+            const IFcomplex *Ac, const IFcomplex *Bc, double ip8)
         {
             cfs_next    = 0;
             cfs_name    = cname;
             cfs_p       = pc;
             cfs_A       = Ac;
             cfs_B       = Bc;
+            cfs_ip8     = ip8;
             cfs_size    = csize;
         }
 
@@ -407,6 +410,7 @@ struct TJMcoeffSet
     const IFcomplex *p()            const {return (cfs_p); }
     const IFcomplex *A()            const {return (cfs_A); }
     const IFcomplex *B()            const {return (cfs_B); }
+    double norm_ip8()               const {return (cfs_ip8); }
     int size()                      const {return (cfs_size); }
 
 private:
@@ -415,6 +419,7 @@ private:
     const IFcomplex *cfs_p;
     const IFcomplex *cfs_A;
     const IFcomplex *cfs_B;
+    double cfs_ip8;
     int cfs_size;
 
     static sTab<TJMcoeffSet> *TJMcoeffsTab;
@@ -440,6 +445,7 @@ enum {
     TJM_ICP,
     TJM_ICV,
     TJM_NOISE,
+    TJM_VSHUNT,
 
     TJM_QUEST_PHSN,
     TJM_QUEST_PHSF,

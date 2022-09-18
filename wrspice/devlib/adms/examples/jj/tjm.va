@@ -64,6 +64,9 @@
 // Version 1.0, March 28, 2022
 //   Added vgnom and tnom, temperature tracking of Tc.
 //   Release for HSPICE customization.
+// Version 1.1, Aug. 21, 2022
+//   Support for sub-gap resistance parameter from mmjco.  Changes
+//   for conformity with WRspice internal tunnel junction model.
 //
 // Stephen R. Whiteley          stevew@wrcad.com, whiteley@synopsys.com
 // Whiteley Research Inc.       http://wrcad.com
@@ -193,7 +196,7 @@ parameter real tnom     = 4.2 from [0.2:270]
     `P(type="model" info="Parameter measurement temperature K");
 parameter real deftemp  = tnom from [0.2:270]
     `P(type="model" info="Default operating temperature K");
-parameter real vgnom    = 2.712m from [0.1m:20.0m]
+parameter real vgnom    = 2.7392m from [0.1m:20.0m]
     `P(type="model" info="Gap voltge at tnom");
 
 parameter integer cct   = 1 from [0:1]
@@ -332,6 +335,9 @@ integer i;
 real temp `P(type="instance" info="Junction temperature K");
 real tcf `P(type="instance" info="Temperature ic correction factor");
 real phase `P(type="instance" info="Junction phase");
+real gsint `P(type="instance" info="Reference intrinsic subgap conductance");
+real gsubs `P(type="instance" info="Specified subgap conductivity");
+real gshfix `P(type="instance" info="External shunt correction");
 `ifdef NEWNPAR
 integer n `P(type="instance" info="SFQ emission count");
 `endif
@@ -366,7 +372,7 @@ real tjm_alpha1_i[0:`TJM_MAXFIX];
 real tjm_exp_z_r[0:`TJM_MAXFIX];
 real tjm_exp_z_i[0:`TJM_MAXFIX];
 
-real i1, i2, vth, start_phase, tsf;
+real i1, i2, vth, start_phase, tsf, ip8;
 real SmallSigL;
 integer pmode;
 
@@ -411,6 +417,8 @@ analog begin
         string ftype;
         real dnrec, tstrt, tdel;
 `endif
+        ip8 = 0.0;
+
         // Here we read the parameters for the model data, either from
         // a mmjco temperature sweep file, or a single temperature
         // fit file.
@@ -418,9 +426,9 @@ analog begin
         fd = $fopen(mmjco_input, "r");
         if (fd == 0)
             $fatal(0, "TJM.va model:  could not open input file.");
-        code = $fscanf(fd, "%s %f %f %f %f %d %d %f\n", ftype, dnrec, tstrt,
-            tdel, tjm_sm, tjm_nxpts, tjm_narray, tjm_thr);
-        if (code != 8)
+        code = $fscanf(fd, "%s %f %f %f %f %d %d %f %f\n", ftype, dnrec,
+            tstrt, tdel, tjm_sm, tjm_nxpts, tjm_narray, tjm_thr, ip8);
+        if (code < 8)
             $fatal(0, "TJM.va model:  header read error.");
         if (tjm_narray < 6 || tjm_narray > `TJM_MAXFIX)
             $fatal(0, "TJM.va model:  bad table size.");
@@ -428,7 +436,7 @@ analog begin
         if (ftype == "tsweep")
             begin : readswp
             integer ntemp, recs, pos, pend, recsize;
-            real resid, f1, f2, d1, d2;
+            real resid, f1, f2, d1, d2, xx;
 
             // The device temperature.
             temp = temp_k + dtemp;
@@ -495,11 +503,12 @@ analog begin
                 $display("XXX7 %f %f", f1, f2);
 
             // Read section header.
-            code = $fscanf(fd, "%*s %*f %f %f\n", d1, d2);
-            if (code != 2)
+            code = $fscanf(fd, "%*s %*f %f %f %f\n", d1, d2, xx);
+            if (code < 2)
                 $fatal(0, "TJM.va model:  line read failed.");
             del1 = f1*d1;
             del2 = f1*d2;
+            ip8 = f1*xx;
             vgap = del1 + del2;
             if (`debugpr)
                 $display("XXX8 %f %f %f", del1, del2, vgap);
@@ -522,11 +531,12 @@ analog begin
             if (recs == 2)
                 begin
                 // Read section header.
-                code = $fscanf(fd, "%*s %*f %f %f\n", d1, d2);
-                if (code != 2)
+                code = $fscanf(fd, "%*s %*f %f %f %f\n", d1, d2, xx);
+                if (code < 2)
                     $fatal(0, "TJM.va model:  line read failed.");
                 del1 = del1 + f2*d1;
                 del2 = del2 + f2*d2;
+                ip8 = ip8 + f2*xx;
                 vgap = del2 + del2;
                 if (`debugpr)
                     $display("XXX9 %f %f %f", del1, del2, vgap);
@@ -578,7 +588,7 @@ analog begin
         // a multiplier that applies to critical current only when
         // temperature is not nominal.
 
-        if (temp != tnom)
+        if (abs(temp - tnom) > 1e-6)
             begin : tempset
             real tmp, tmp2;
             tmp = `P_Q*vgap/(4.0*`P_K*(temp + 1e-4));
@@ -686,6 +696,20 @@ analog begin
 `ifdef WRspice
         SmallSigL = 0.0;
 `endif
+        gsint = ip8*icrit/(0.8*vgnom*icfct);
+        gsint = gsint*(scale*(1-gmu) + sqrt(scale)*gmu);
+        gsubs = 1.0/rsubs;
+        if (gsubs > gsint)
+            begin
+            gshfix = gsubs;
+            gsubs = gsubs - gsint;
+            end
+        else
+            begin
+            gshfix = gsint;
+            gsubs = 0.0;
+            end
+
 `ifdef NEWVSHUNT
         gshunt=0.0;
 `ifdef NEWLSH
@@ -693,7 +717,7 @@ analog begin
 `endif
         if (vshunt >= 1u)
             begin
-            gshunt = ic_scaled/vshunt;
+            gshunt = ic_scaled/vshunt - gshfix;
 `ifdef NEWLSH
             if (gshunt > 0)
                 if (lsh != 0.0)
@@ -1013,7 +1037,7 @@ analog begin
             I(bj) <+ V(bj)*tjm_gcrit;
             end
         I(br) <+ fct*(sinphi_2*FcSq - cosphi_2*FsSq);
-        I(br) <+ V(br)/rsubs;
+        I(br) <+ V(br)*gsubs;
         end
 
         // Limit time step.  This is important, as the simulator may have

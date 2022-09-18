@@ -404,7 +404,10 @@ namespace {
             }
         }
 
-        if (noscale)
+        // Don't print a scalar scale.
+        if (scale && scale->length() == 1)
+            scale = 0;
+        else if (noscale)
             scale = 0;
         else if (!scale && bv->plot()->num_dimensions()) {
             // No common scale, use the plot's scale.

@@ -2083,8 +2083,9 @@ MOSFET Models
 .model
 
 !!REDIRECT rsjtcf jjmodel#tcf
+!!REDIRECT rsjvshunt jjmodel#vshunt
 
-!! elements.tex 051422
+!! elements.tex 083122
 !!KEYWORD
 jjmodel 
 !!TITLE
@@ -2586,9 +2587,10 @@ Josephson Models
     allowed.
     </dl>
 
+    <a name="vshunt"></a>
     <dl>
     <dt><tt>vshunt</tt><dd>
-    <b>range:</b> 0.0 - 2.0mV<br>
+    <b>range:</b> 0.0 - nominal gap voltage<br>
     This parameter is unique in that it does not describe an
     as-fabricated junction characteristic.  Rather, it is for
     convenience in specifying a shunt resistance to use globally in
@@ -2754,8 +2756,9 @@ Josephson Models
 tjmodel
 
 !!REDIRECT tjmtcf tjmodel#tcf
+!!REDIRECT tjmvshunt tjmodel#vshunt
  
-!! elements.tex 051422
+!! elements.tex 083122
 !!KEYWORD
 tjmodel 
 !!TITLE
@@ -3165,9 +3168,10 @@ Josephson Tunnel Junction Model
     values, any input other than a short circuit is allowed.
     </dl>
 
+    <a name="vshunt"></a>
     <dl>
     <dt><tt>vshunt</tt><dd>
-    <b>range:</b> 0.0 - 2.0mV<br>
+    <b>range:</b> 0.0 - nominal gap voltage<br>
     This parameter is unique in that it does not describe an
     as-fabricated junction characteristic.  Rather, it is for
     convenience in specifying a shunt resistance to use globally in

@@ -67,49 +67,10 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         &&L_JJ_ICP,
         &&L_JJ_ICV,
         &&L_JJ_CON,
-        &&L_JJ_NOISE};
+        &&L_JJ_NOISE,
+        &&L_JJ_VSHUNT};
 
-        // &&L_JJ_QUEST_V,
-        // &&L_JJ_QUEST_PHS,
-        // &&L_JJ_QUEST_PHSN,
-        // &&L_JJ_QUEST_PHSF,
-        // &&L_JJ_QUEST_PHST,
-        // &&L_JJ_QUEST_TCF,
-        // &&L_JJ_QUEST_VG,
-        // &&L_JJ_QUEST_VL,
-        // &&L_JJ_QUEST_VM,
-        // &&L_JJ_QUEST_CRT,
-        // &&L_JJ_QUEST_IC,
-        // &&L_JJ_QUEST_IJ,
-        // &&L_JJ_QUEST_IG,
-        // &&L_JJ_QUEST_I,
-        // &&L_JJ_QUEST_CAP,
-        // &&L_JJ_QUEST_G0,
-        // &&L_JJ_QUEST_GN,
-        // &&L_JJ_QUEST_GS,
-        // &&L_JJ_QUEST_GXSH,
-        // &&L_JJ_QUEST_RXSH,
-//#ifdef NEWLSH
-        //&&L_JJ_QUEST_LSHVAL,
-//#endif
-        //&&L_JJ_QUEST_G1,
-        //&&L_JJ_QUEST_G2,
-        //&&L_JJ_QUEST_N1,
-        //&&L_JJ_QUEST_N2,
-        //&&L_JJ_QUEST_NP
-//#ifdef NEWLSER
-        //,
-        //&&L_JJ_QUEST_NI,
-        //&&L_JJ_QUEST_NB
-//#endif
-//#ifdef NEWLSH
-        //,
-        //&&L_JJ_QUEST_NSHI,
-        //&&L_JJ_QUEST_NSHB
-//#endif
-        //};
-
-    if ((unsigned int)param > JJ_NOISE)
+    if ((unsigned int)param > JJ_VSHUNT)
         return (E_BADPARM);
 #endif
 
@@ -180,6 +141,10 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->JJnoise = value->rValue;
         inst->JJnoiseGiven = true;
         return (OK);
+    L_JJ_VSHUNT:
+        inst->JJvshunt = value->rValue;
+        inst->JJvshuntGiven = true;
+        return (OK);
 #else
     switch (param) {
     case JJ_AREA:
@@ -239,6 +204,10 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     case JJ_NOISE:
         inst->JJnoise = value->uValue;
         inst->JJnoiseGiven = true;
+        break;
+    case JJ_VSHUNT:
+        inst->JJvshunt = value->rValue;
+        inst->JJvshuntGiven = true;
         break;
     default:
         return (E_BADPARM);

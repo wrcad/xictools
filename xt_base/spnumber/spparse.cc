@@ -954,7 +954,13 @@ Parser::handle_string()
             if (!*s)
                 break;
             if (*s == ']') {
-                s++;
+                for (const char *ss = prsr_sptr; ss != s; ss++) {
+                    // If there is a '[' in the string, keep the ']'.
+                    if (*ss == '[') {
+                        s++;
+                        break;
+                    }
+                }
                 break;
             }
             if (*s == ':') {

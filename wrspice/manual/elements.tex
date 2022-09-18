@@ -4309,7 +4309,7 @@ BSIM3v3.1.  The following parameters are new for v3.2:
 \subsection{Josephson Junctions}
 \index{Josephson junction instance}
 
-% spElements.hlp:jj 051422
+% spElements.hlp:jj 083122
 
 \spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
  [{\it parameters} ...]}
@@ -4356,6 +4356,9 @@ Josephson Junction Instance parameters, Levels 1 and 2\\
   transient analysis, alias {\vt ic\_phase}.\\ \hline
 {\vt control=}{\it name} & Controlling voltage source or inductor
   name.\\ \hline
+{\vt vshunt=}{\it val} & Voltage to specify external shunt resistance.
+  \\ \hline
+
 {\vt n} (read only) & SFQ emission count.\\ \hline
 {\vt phsf} (read only) & True if SFQ count change at current time point.\\
  \hline
@@ -4460,11 +4463,12 @@ to zero.
 \item{\vt lsh}\\
 {\bf range:} 0.0 -- 100.0pH\\
 This parameter specifies the series inductance of the external shunt
-resistance.  The {\vt vshunt} model parameter must be specified such
-that a positive external shunt conductance is applied, otherwise this
-parameter is ignored.  Ordinarily, the {\vt lsh0}/{\vt lsh1} model
-parameters would be used to specify the inductance, this parameter can
-be used to override these values on a per-instance basis if desired.
+resistance.  The {\vt vshunt} instance or model parameter must be
+specified such that a positive external shunt conductance is applied,
+otherwise this parameter is ignored.  Ordinarily, the {\vt lsh0}/{\vt
+lsh1} model parameters would be used to specify the inductance, this
+parameter can be used to override these values on a per-instance basis
+if desired.
 
 \item{\vt ic}\\
 {\bf Levels 1 and 3 only.}\\
@@ -4493,6 +4497,13 @@ larger than 1.  The {\it name} in the {\vt control} specification is
 the name of either a voltage source or inductor which appears
 somewhere in the circuit.  The current flowing through the indicated
 device is taken as the junction control current.
+
+\item{\vt vshunt}\\
+{\bf range:} 0.0 -- nominal gap voltage\\
+See the description of the {\vt vshunt} model parameter.  The model
+parameter, if given, will provide the default used in all instances. 
+However this can be overridden on a per-instance basis with the {\vt
+vshunt} instance parameter.
 \end{description}
 
 The remaining parameters are ``read only'' and can be accessed with
@@ -4570,21 +4581,21 @@ The normal state conductance of the device instance.
 The conductance of the quasiparticle branch at the gap voltage.
 
 \item{\vt gshunt} (read only)\\
-If the {\vt vshunt} model parameter is given and nonzero,
+If the {\vt vshunt} instance or model parameter is given and nonzero,
 {\vt gshunt} will return the external conductance added to the
-intrinsic conductance so that the total conductance multiplied
-by the critical current will equal {\vt vshunt}.
+intrinsic conductance so that the total conductance multiplied by the
+critical current will equal {\vt vshunt}.
 
 \item{\vt rshunt} (read only)\\
 If {\vt gshunt} is nonzero, {\vt rshunt} will be the reciprocal,
 otherwise it will be 0.
 
 \item{\vt lshval} (read only)\\
-If the {\vt vshunt} model parameter is given and nonzero, this will be
-the parasitic inductance assumed in the external shunt resistance. 
-This will depend on the settings of the {\vt lsh0} and {\vt lsh1}
-model parameters, and the {\vt lsh} instance parameter which overrides
-the model parameters if given.
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+this will be the parasitic inductance assumed in the external shunt
+resistance.  This will depend on the settings of the {\vt lsh0} and
+{\vt lsh1} model parameters, and the {\vt lsh} instance parameter
+which overrides the model parameters if given.
 
 \item{\vt g1} (read only)\\
 This applies if the {\vt rtype} model parameter is set to 3, which
@@ -4616,14 +4627,15 @@ If series parasitic inductance is nonzero ({\vt lser} given) this will
 be the internal number of the branch node of the inductor.
 
 \item{\vt lshnode} (read only)\\
-If the {\vt vshunt} model parameter is given and nonzero, and series
-parasitic inductance is nonzero, this will be the internal node number
-of the internal device node that incorporates the series inductance.
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+and series parasitic inductance is nonzero, this will be the internal
+node number of the internal device node that incorporates the series
+inductance.
 
 \item{\vt lshbrn} (read only)\\
-If the {\vt vshunt} model parameter is given and nonzero, and series
-parasitic inductance is nonzero, this will be the internal branch
-number of the inductor's branch.
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+and series parasitic inductance is nonzero, this will be the internal
+branch number of the inductor's branch.
 \end{description}
 
 
@@ -4721,7 +4733,7 @@ See the Josephson junction model description for more information.
 \subsubsection{Josephson Junction (Tunnel Junction Model)}
 \label{tjm}
 
-% spElements.hlp:tjm 051422
+% spElements.hlp:tjm 083122
 
 \spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
  [{\it parameters} ...]}
@@ -4742,6 +4754,9 @@ Instance parameters, JJ level 3:\\
   transient analysis, alias {\vt ic\_v}.\\ \hline
 {\vt phi=}{\it phi} & The initial junction phase (initial condition) for
   transient analysis, alias {\vt ic\_phase}.\\ \hline
+{\vt vshunt=}{\it val} & Voltage to specify external shunt resistance.
+  \\ \hline
+
 {\vt n} (read only) & SFQ emission count.\\ \hline
 {\vt phsf} (read only) & True if SFQ count change at current time point.\\
  \hline
@@ -4843,11 +4858,12 @@ to zero.
 \item{\vt lsh}\\
 {\bf range:} 0.0 -- 100.0pH\\
 This parameter specifies the series inductance of the external shunt
-resistance.  The {\vt vshunt} model parameter must be specified such
-that a positive external shunt conductance is applied, otherwise this
-parameter is ignored.  Ordinarily, the {\vt lsh0}/{\vt lsh1} model
-parameters would be used to specify the inductance, this parameter can
-be used to override these values on a per-instance basis if desired.
+resistance.  The {\vt vshunt} instance or model parameter must be
+specified such that a positive external shunt conductance is applied,
+otherwise this parameter is ignored.  Ordinarily, the {\vt lsh0}/{\vt
+lsh1} model parameters would be used to specify the inductance, this
+parameter can be used to override these values on a per-instance basis
+if desired.
 
 \item{\vt ic}\\
 {\bf Levels 1 and 3 only.}\\
@@ -4865,6 +4881,13 @@ The initial junction voltage defaults to 0.0.
 \item{{\vt phi} or {\vt ic\_phase}}\\
 This provides the initial junction phase in radians when the ``{\vt
 uic}'' option is included in the transient analysis specification.
+
+\item{\vt vshunt}\\
+{\bf range:} 0.0 -- nominal gap voltage\\
+See the description of the {\vt vshunt} model parameter.  The model
+parameter, if given, will provide the default used in all instances. 
+However this can be overridden on a per-instance basis with the {\vt
+vshunt} instance parameter.
 \end{description}
 
 The remaining parameters are ``read only'' and can be accessed with
@@ -4932,21 +4955,21 @@ quasiparticle conduction mechanisms that are not described in the
 tunnel junction model.
 
 \item{\vt gshunt} (read only)\\
-If the {\vt vshunt} model parameter is given and nonzero,
+If the {\vt vshunt} instance or model parameter is given and nonzero,
 {\vt gshunt} will return the external conductance added to the
-intrinsic conductance so that the total conductance multiplied
-by the critical current will equal {\vt vshunt}.
+intrinsic conductance so that the total conductance multiplied by the
+critical current will equal {\vt vshunt}.
 
 \item{\vt rshunt} (read only)\\
 If {\vt gshunt} is nonzero, {\vt rshunt} will be the reciprocal,
 otherwise it will be 0.
 
 \item{\vt lshval} (read only)\\
-If the {\vt vshunt} model parameter is given and nonzero, this will be
-the parasitic inductance assumed in the external shunt resistance. 
-This will depend on the settings of the {\vt lsh0} and {\vt lsh1}
-model parameters, and the {\vt lsh} instance parameter which overrides
-the model parameters if given.
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+this will be the parasitic inductance assumed in the external shunt
+resistance.  This will depend on the settings of the {\vt lsh0} and
+{\vt lsh1} model parameters, and the {\vt lsh} instance parameter
+which overrides the model parameters if given.
 
 \item{\vt del1} (read only)\\
 This is the computed energy gap of the side 1 superconductor. 
@@ -5006,9 +5029,10 @@ If series parasitic inductance is nonzero ({\vt lser} given) this will
 be the internal number of the branch node of the inductor.
 
 \item{\vt lshnode} (read only)\\
-If the {\vt vshunt} model parameter is given and nonzero, and series
-parasitic inductance is nonzero, this will be the internal node number
-of the internal device node that incorporates the series inductance.
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+and series parasitic inductance is nonzero, this will be the internal
+node number of the internal device node that incorporates the series
+inductance.
 
 \item{\vt lshbrn} (read only)\\
 If the {\vt vshunt} model parameter is given and nonzero, and series
@@ -5022,7 +5046,7 @@ number of the inductor's branch.
 \index{Josephson junction model}
 \label{jjmodel}
 
-% spModels.hlp:jjmodel 051422
+% spModels.hlp:jjmodel 083122
 
 {\cb Type Name:} {\vt jj}
 
@@ -5413,7 +5437,7 @@ affects the parameters that set the quasiparticle branch conductance
 values, any input other than a short circuit is allowed.
 
 \item{\vt vshunt}\\
-{\bf range:} 0.0 -- 2.0mV\\
+{\bf range:} 0.0 -- nominal gap voltage\\
 This parameter is unique in that it does not describe an as-fabricated
 junction characteristic.  Rather, it is for convenience in specifying
 a shunt resistance to use globally in SFQ circuits, If given (in
@@ -5553,7 +5577,7 @@ $K$ is Boltzmann's constant, $T$ is temperature in Kelvin,
 \index{Werthamer model}
 \label{tjmodel}
 
-%spModels:tjmodel 051422
+%spModels:tjmodel 083122
 
 For {\vt level=3}, a microscopic tunnel junction "Werthamer" model,
 also known as a tunnel junction model (TJM) is indicated.  The model
@@ -5868,7 +5892,7 @@ parameters that set the quasiparticle branch conductance values, any
 input other than a short circuit is allowed.
 
 \item{\vt vshunt}\\
-{\bf range:} 0.0 -- 2.0mV\\
+{\bf range:} 0.0 -- nominal gap voltage\\
 This parameter is unique in that it does not describe an as-fabricated
 junction characteristic.  Rather, it is for convenience in specifying
 a shunt resistance to use globally in SFQ circuits, If given (in

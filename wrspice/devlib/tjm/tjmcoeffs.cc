@@ -166,7 +166,7 @@ TJMcoeffSet::check_coeffTab()
             A[i] = A_1[i];
             B[i] = B_1[i];
         }
-        TJMcoeffSet *cs = new TJMcoeffSet(strdup("tjm1"), 8, p, A, B);
+        TJMcoeffSet *cs = new TJMcoeffSet(strdup("tjm1"), 8, p, A, B, 0.0);
         TJMcoeffsTab->add(cs);
 
         p = new IFcomplex[10];
@@ -177,7 +177,7 @@ TJMcoeffSet::check_coeffTab()
             A[i] = A_2[i];
             B[i] = B_2[i];
         }
-        cs = new TJMcoeffSet(strdup("tjm2"), 10, p, A, B);
+        cs = new TJMcoeffSet(strdup("tjm2"), 10, p, A, B, 0.0);
         TJMcoeffsTab->add(cs);
     }
 }
@@ -285,7 +285,16 @@ fprintf(stderr, "system command failed\n");
         cIFcomplex p[MAX_PARAMS], A[MAX_PARAMS], B[MAX_PARAMS];
         char tbuf[256];
         int cnt = 0;
+        double ip8 = 0.0;
         while (fgets(tbuf, 256, fp) != 0) {
+
+            if (cnt == 0) {
+                double dmy;
+                if (sscanf(tbuf, "%*s %*f %*f %*f %*f %*d %*d %lf %lf",
+                        &dmy, &ip8) > 1)
+                    continue;
+            }
+
             double pr, pi, ar, ai, br, bi;
             if (sscanf(tbuf, "%lf, %lf, %lf, %lf, %lf, %lf", &pr, &pi, &ar, &ai,
                     &br, &bi) == 6) {
@@ -309,7 +318,7 @@ fprintf(stderr, "system command failed\n");
                 nA[i] = A[i];
                 nB[i] = B[i];
             }
-            cs = new TJMcoeffSet(strdup(nm), cnt, np, nA, nB);
+            cs = new TJMcoeffSet(strdup(nm), cnt, np, nA, nB, ip8);
         }
         fclose(fp);
     }

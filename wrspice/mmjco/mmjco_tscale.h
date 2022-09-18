@@ -56,14 +56,15 @@ class mmjco_mtdb
 {
 public:
     mmjco_mtdb() :
-        mt_nterms(0), mt_ntemps(0), mt_temps(0), mt_dels(0), mt_data(0),
-        mt_names(0), mt_res_data(0), mt_res_dels(0), mt_sm(0.0), mt_thr(0.0),
-        mt_res_temp(0), mt_xp(0) { }
+        mt_nterms(0), mt_ntemps(0), mt_temps(0), mt_dels(0), mt_ip8s(0),
+        mt_data(0), mt_names(0), mt_res_data(0), mt_res_dels(0),
+        mt_res_ip8(0.0), mt_sm(0.0), mt_thr(0.0), mt_res_temp(0), mt_xp(0) { }
 
     ~mmjco_mtdb()
         {
             delete [] mt_temps;
             delete [] mt_dels;
+            delete [] mt_ip8s;
             delete [] mt_data;
             if (mt_names) {
                 for (int i = 0; i < mt_ntemps; i++)
@@ -91,6 +92,8 @@ public:
             memset(mt_temps, 0, mt_ntemps*sizeof(double));
             mt_dels = new double[2*mt_ntemps];
             memset(mt_dels, 0, 2*mt_ntemps*sizeof(double));
+            mt_ip8s = new double[mt_ntemps];
+            memset(mt_ip8s, 0, mt_ntemps*sizeof(double));
             mt_data = new double[mt_ntemps*mt_nterms*6];
             memset(mt_data, 0, mt_ntemps*mt_nterms*6*sizeof(double));
             mt_names = new const char*[mt_ntemps];
@@ -101,14 +104,15 @@ public:
     // Add a tca fit set with given name, temperature and data at
     // index ix.
     //
-    bool add_table(const char *name, double t, double d1, double d2, int ix,
-            double *data)
+    bool add_table(const char *name, double t, double d1, double d2,
+            double ip8, int ix, double *data)
         {
             if (ix < 0 || ix >= mt_ntemps)
                 return (false);
             mt_temps[ix] = t;
             mt_dels[2*ix] = d1;
             mt_dels[2*ix + 1] = d2;
+            mt_ip8s[ix] = ip8;
             double *dp = mt_data + ix*mt_nterms*6;
             memcpy(dp, data, mt_nterms*6*sizeof(double));
             delete [] mt_names[ix];
@@ -135,10 +139,12 @@ public:
             mt_res_temp = temp;
             new_tab();
             new_dels();
+            new_ip8s();
         }
 
     void new_tab();
     void new_dels();
+    void new_ip8s();
     bool load(FILE*, int, int);
     bool dump_file(const char*);
 
@@ -147,10 +153,12 @@ private:
     int mt_ntemps;
     double *mt_temps;
     double *mt_dels;
+    double *mt_ip8s;
     double *mt_data;
     const char **mt_names;
     double *mt_res_data;
     double *mt_res_dels;
+    double mt_res_ip8;
     double mt_sm;
     double mt_thr;
     double mt_res_temp;

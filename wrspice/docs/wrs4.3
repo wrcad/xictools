@@ -117,7 +117,33 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.16  8/14/2022
+wrspice-4.3.17  9/18/2022
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Expressions given on the command line are evaluated and printed.
+
+  This implicit print function is quite useful.  WRspice is a
+  great scientific calculator.
+
+* The JJ and TJM devices now accept vshunt as an instance as well as a
+  model parameter.
+
+  The instance parameter overrides vshunt given as a model parameter.
+
+* Documentation updates.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed JJ bug, the default value of vgap was 1/2 what it should be.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.3.16  8/27/2022
 Current Release
 
 CHANGES AND NEW FEATURES
@@ -146,6 +172,18 @@ BUGS FIXED
 
 * Fix returns from JJ/TJM CJ/CQ read-only instance parameters in DC
   analysis, which were not correct.
+
++ The scale will no longer be printed if it has length 1.  This avoids
+  always having "yes" printed as the scale in the Constants plot.
+
+* Fixed an ancient shortcoming that goes back to Spice3:  The index of
+  a vector could not be a simple vector name.  For example,
+
+  let I=1
+  print A[I]
+
+  The print statement would fail with a syntax error. However,
+  A[I+0] is fine, as is A[$&I].  This has been fixed, at long last.
 
 
 -------------------------------------------------------------------------------

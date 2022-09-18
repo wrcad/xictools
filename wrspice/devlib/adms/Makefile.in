@@ -15,13 +15,16 @@ SyntaxLevel = 18
 SOURCE = path_to_module.va
 
 # Set this to a unique name for the SPICE model for this device.  This
-# name can appear in the .model line:  .model myname modelname ... 
-# If such a .model line is found, then devices that reference myname
-# will see this model, and the level number (below) will be ignored.
+# name can appear in the .model line:
+#   .model myname modelname(level=N ... )
+# Devices that reference myname will use our model if the level number
+# (below) also matches N in the example.  If level (below) is set to 1,
+# level can be omitted from the .model line as it defaults to 1.
 #
 # Note that this device will also be available using the standard
 # SPICE model names and the level given below.  For example, for a
-# MOSFET the standard model names are nmos and pmos.
+# MOSFET the standard model names are nmos and pmos.  In this case,
+# level (below) should be unique among the levels for the device.
 #
 MODELNAME = modelname
 
@@ -39,7 +42,7 @@ MODULE = name_of_module
 KEY = q
 
 # Set this to the model level number (a positive number) which will
-# associate to this device, when the model name is the standard name
+# associate to this device.  When the model name is the standard name
 # for the device (e.g., npn or pnp for BJT, nmos or pmos for MOSFET). 
 # This should be uniqe among the internal and other loaded devices of
 # the same type key letter.  Giving this number in a "level" model

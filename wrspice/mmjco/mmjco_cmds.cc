@@ -836,6 +836,24 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
     mmc_nterms = nterms;
     mmc_thr = thr;
 
+    // Compute the sub-gap resistance parameter.
+
+    complex<double> *qp = mmc_qp_data;
+    double dx = 1.999/(mmc_numxpts - 1);
+
+    // Index of the point closest to 80% of Vgap.  Also index a point
+    // just above the gap.  This is used to "calibrate" the y-axis.
+    int np8 = round((0.8 - 0.001)/dx);
+    int nu = round((1.015 - 0.001)/dx);
+
+    double yp8 = qp[np8].imag();
+    double yu = qp[nu].imag();
+    double ip8 = yp8/(yu - yp8);
+
+    // Example: Compute the approximate intrinsic subgap resistance.
+    // double fct = 0.8*(TJMdel1Nom + TJMdel2Nom)*(TJMicFactor/TJMcriti);
+    // double rsint = fct/ip8;
+
     // Compute fitting parameters.
     printf("Computing fitting parameters at T=%.4fK\n", mmc_temp);
     mmc_mf.new_fit_parameters(mmc_xpts, mmc_pair_data, mmc_qp_data, mmc_numxpts,
@@ -877,12 +895,14 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
     char *hdr = new char[80];
     if (fp) {
         // Sweep or table file.
-        sprintf(hdr, "tcafit %11.4e %11.4e %11.4e", mmc_temp, mmc_d1, mmc_d2);
+        sprintf(hdr, "tcafit %11.4e %11.4e %11.4e %11.4e", mmc_temp, mmc_d1,
+            mmc_d2, ip8);
     }
     else {
         // Stand-alone file.
-        sprintf(hdr, "tcafit %11.4e %11.4e %11.4e %.3f %-4d %-2d %.3f",
-            mmc_temp, mmc_d1, mmc_d2, mmc_sm, mmc_numxpts, mmc_nterms, mmc_thr);
+        sprintf(hdr, "tcafit %11.4e %11.4e %11.4e %.3f %-4d %-2d %.3f %11.4e",
+            mmc_temp, mmc_d1, mmc_d2, mmc_sm, mmc_numxpts, mmc_nterms, mmc_thr,
+            ip8);
     }
     mmc_mf.save_fit_parameters(fitfile, fp, hdr);
     delete [] hdr;
@@ -1071,7 +1091,7 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
         }
         if (!done_header) {
             done_header = true;
-            if (vals[0] + ntemps*vals[0] > (mmc_tc1 + mmc_tc2)*0.999) {
+            if (vals[0] + ntemps*vals[2] > (mmc_tc1 + mmc_tc2)*0.999) {
                 fprintf(stderr, "Error: upper range close to or above Tc.\n");
                 err = 1;
                 break;

@@ -1064,7 +1064,7 @@ tra
 
 !!REDIRECT jjdesc jj#jjdesc
 
-!! elements.tex 051422
+!! elements.tex 083122
 !!KEYWORD
 jj
 !!TITLE
@@ -1135,6 +1135,8 @@ Josephson Junctions
       analysis, alias <tt>ic_phase</tt>.</td></tr>
     <tr><td><tt>control=</tt><i>name</i></td> <td>
       Controlling voltage source or inductor name.</td></tr>
+    <tr><td><tt>vshunt=</tt><i>val</i></td> <td>
+      Voltage to specify external shunt resistance.</td></tr>
 
     <tr><td><tt>n</tt> (read only)</td> <td>
       SFQ emission count.</td></tr>
@@ -1285,10 +1287,10 @@ Josephson Junctions
     <dt><tt>lsh</tt><dd>
     <b>range:</b> 0.0 - 100.0pH<br>
     This parameter specifies the series inductance of the external
-    shunt resistance.  The <tt>vshunt</tt> model parameter must be
-    specified such that a positive external shunt conductance is
-    applied, otherwise this parameter is ignored.  Ordinarily, the <a
-    href="jjmodel"><tt>lsh0</tt>/<tt>lsh1</tt></a> model parameters
+    shunt resistance.  The <tt>vshunt</tt> instance or model parameter
+    must be specified such that a positive external shunt conductance
+    is applied, otherwise this parameter is ignored.  Ordinarily, the
+    <a href="jjmodel"><tt>lsh0</tt>/<tt>lsh1</tt></a> model parameters
     would be used to specify the inductance, this parameter can be
     used to override these values on a per-instance basis if desired.
     </dl>
@@ -1330,6 +1332,15 @@ Josephson Junctions
     which appears somewhere in the circuit.  The current flowing
     through the indicated device is taken as the junction control
     current.
+    </dl>
+
+    <dl>
+    <dt><tt>vshunt</tt><dd>
+    <b>range:</b> 0.0 - nominal gap voltage<br>
+    See the description of the <a href="rsjvshunt"><tt>vshunt</tt></a>
+    model parameter.  The model parameter, if given, will provide the
+    default used in all instances.  However this can be overridden on
+    a per-instance basis with the <tt>vshunt</tt> instance parameter.
     </dl>
 
     <p>
@@ -1446,10 +1457,10 @@ Josephson Junctions
 
     <dl>
     <dt><tt>gshunt</tt> (read only)<dd>
-    If the <tt>vshunt</tt> model parameter is given and nonzero,
-    <tt>gshunt</tt> will return the external conductance added to the
-    intrinsic conductance so that the total conductance multiplied
-    by the critical current will equal <tt>vshunt</tt>.
+    If the <tt>vshunt</tt> instance or model parameter is given and
+    nonzero, <tt>gshunt</tt> will return the external conductance
+    added to the intrinsic conductance so that the total conductance
+    multiplied by the critical current will equal <tt>vshunt</tt>.
     </dl>
 
     <dl>
@@ -1460,11 +1471,12 @@ Josephson Junctions
 
     <dl>
     <dt><tt>lshval</tt> (read only)<dd>
-    If the <tt>vshunt</tt> model parameter is given and nonzero, this
-    will be the parasitic inductance assumed in the external shunt
-    resistance.  This will depend on the settings of the <tt>lsh0</tt>
-    and <tt>lsh1</tt> model parameters, and the <tt>lsh</tt> instance
-    parameter which overrides the model parameters if given.
+    If the <tt>vshunt</tt> instance or model parameter is given and
+    nonzero, this will be the parasitic inductance assumed in the
+    external shunt resistance.  This will depend on the settings of
+    the <tt>lsh0</tt> and <tt>lsh1</tt> model parameters, and the
+    <tt>lsh</tt> instance parameter which overrides the model
+    parameters if given.
     </dl>
 
     <dl>
@@ -1513,17 +1525,17 @@ Josephson Junctions
 
     <dl>
     <dt><tt>lshnode</tt> (read only)<dd>
-    If the <tt>vshunt</tt> model parameter is given and nonzero, and
-    series parasitic inductance is nonzero, this will be the internal
-    node number of the internal device node that incorporates the
-    series inductance.
+    If the <tt>vshunt</tt> instance or model parameter is given and
+    nonzero, and series parasitic inductance is nonzero, this will be
+    the internal node number of the internal device node that
+    incorporates the series inductance.
     </dl>
 
     <dl>
     <dt><tt>lshbrn</tt> (read only)<dd>
-    If the <tt>vshunt</tt> model parameter is given and nonzero, and
-    series parasitic inductance is nonzero, this will be the internal
-    branch number of the inductor's branch.
+    If the <tt>vshunt</tt> instance or model parameter is given and
+    nonzero, and series parasitic inductance is nonzero, this will be
+    the internal branch number of the inductor's branch.
     </dl>
 
     <a name="jjdesc"></a>
@@ -1630,7 +1642,7 @@ Josephson Junctions
 elements
 tjm
 
-!! elements.tex 051422
+!! elements.tex 083122
 !!KEYWORD
 tjm
 !!TITLE
@@ -1667,6 +1679,8 @@ Josephson Junctions (Tunnel Junction Model)
     <tr><td><tt>phi=</tt><i>phi</i></td> <td>
       The initial junction phase (initial condition) for transient
       analysis, alias <tt>ic_phase</tt>.</td></tr>
+    <tr><td><tt>vshunt=</tt><i>val</i></td> <td>
+      Voltage to specify external shunt resistance.</td></tr>
 
     <tr><td><tt>n</tt> (read only)</td> <td>
       SFQ emission count.</td></tr>
@@ -1817,10 +1831,10 @@ Josephson Junctions (Tunnel Junction Model)
     <dt><tt>lsh</tt><dd>
     <b>range:</b> 0.0 - 100.0pH<br>
     This parameter specifies the series inductance of the external
-    shunt resistance.  The <tt>vshunt</tt> model parameter must be
-    specified such that a positive external shunt conductance is
-    applied, otherwise this parameter is ignored.  Ordinarily, the <a
-    href="jjmodel"><tt>lsh0</tt>/<tt>lsh1</tt></a> model parameters
+    shunt resistance.  The <tt>vshunt</tt> instance or model parameter
+    must be specified such that a positive external shunt conductance
+    is applied, otherwise this parameter is ignored.  Ordinarily, the
+    <a href="jjmodel"><tt>lsh0</tt>/<tt>lsh1</tt></a> model parameters
     would be used to specify the inductance, this parameter can be
     used to override these values on a per-instance basis if desired.
     </dl>
@@ -1847,6 +1861,15 @@ Josephson Junctions (Tunnel Junction Model)
     This provides the initial junction phase in radians when the
     "<tt>uic</tt>" option is included in the <a href=".tran">transient
     analysis</a> specification.
+    </dl>
+
+    <dl>
+    <dt><tt>vshunt</tt><dd>
+    <b>range:</b> 0.0 - nominal gap voltage<br>
+    See the description of the <a href="tjmvshunt"><tt>vshunt</tt></a>
+    model parameter.  The model parameter, if given, will provide the
+    default used in all instances.  However this can be overridden on
+    a per-instance basis with the <tt>vshunt</tt> instance parameter.
     </dl>
 
     <p>
@@ -1948,10 +1971,10 @@ Josephson Junctions (Tunnel Junction Model)
 
     <dl>
     <dt><tt>gshunt</tt> (read only)<dd>
-    If the <tt>vshunt</tt> model parameter is given and nonzero,
-    <tt>gshunt</tt> will return the external conductance added to the
-    intrinsic conductance so that the total conductance multiplied
-    by the critical current will equal <tt>vshunt</tt>.
+    If the <tt>vshunt</tt> instance or model parameter is given and
+    nonzero, <tt>gshunt</tt> will return the external conductance
+    added to the intrinsic conductance so that the total conductance
+    multiplied by the critical current will equal <tt>vshunt</tt>.
     </dl>
 
     <dl>
@@ -1962,11 +1985,12 @@ Josephson Junctions (Tunnel Junction Model)
 
     <dl>
     <dt><tt>lshval</tt> (read only)<dd>
-    If the <tt>vshunt</tt> model parameter is given and nonzero, this
-    will be the parasitic inductance assumed in the external shunt
-    resistance.  This will depend on the settings of the <tt>lsh0</tt>
-    and <tt>lsh1</tt> model parameters, and the <tt>lsh</tt> instance
-    parameter which overrides the model parameters if given.
+    If the <tt>vshunt</tt> instance or model parameter is given and
+    nonzero, this will be the parasitic inductance assumed in the
+    external shunt resistance.  This will depend on the settings of
+    the <tt>lsh0</tt> and <tt>lsh1</tt> model parameters, and the
+    <tt>lsh</tt> instance parameter which overrides the model
+    parameters if given.
     </dl>
 
     <dl>
@@ -2059,10 +2083,10 @@ Josephson Junctions (Tunnel Junction Model)
 
     <dl>
     <dt><tt>lshnode</tt> (read only)<dd>
-    If the <tt>vshunt</tt> model parameter is given and nonzero, and
-    series parasitic inductance is nonzero, this will be the internal
-    node number of the internal device node that incorporates the
-    series inductance.
+    If the <tt>vshunt</tt> instance or model parameter is given and
+    nonzero, and series parasitic inductance is nonzero, this will be
+    the internal node number of the internal device node that
+    incorporates the series inductance.
     </dl>
 
     <dl>
