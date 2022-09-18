@@ -6258,7 +6258,7 @@ would override our new {\vt cval} value.
 \label{loadable}
 \index{loadable device modules}
 
-% spMain.hlp:loadable 040718
+% spMain.hlp:loadable 091822
 
 It is possible to load device models into {\WRspice} at run time,
 through use of ``loadable device modules''.  These are dynamically
@@ -6321,17 +6321,18 @@ There are two ways to reference a loaded device model.
 There are traditional model names in SPICE, which often provide
 differentiation of device polarity.  These are names like ``{\vt
 npn}'' and ``{\vt pnp}'' for a BJT device, and ``{\vt nmos}'' and
-``{\vt pmos}'' for MOSFETs.  The SPICE input file will include lines
-like
+``{\vt pmos}'' for MOSFETs.  Other devices will use the key character
+as the model name.  The SPICE input file will include lines like
 \begin{quote}
-{\vt .model mynpn npn level=N ...}\\
-{\vt .model nch nmos level=M ...}
+{\vt .model mynpn npn level=100 ...}\\
+{\vt .model nch nmos level=101 ...}\\
+{\vt .model sxx s level=2 ...}
 \end{quote}
 Every device model must have a unique {\vt level} value (an integer)
 for its type.  If a module is loaded that has a conflicting level, a
 warning is issued.  If the conflict is with a built-in model, the
 built-in model will always have precedence, and the loaded model will
-not be accessible by level.}
+not be accessible.}
 
 \item{By model name.\\
 Every loadable module has a given model name.  Further, device models
@@ -6342,12 +6343,13 @@ n-type and -1 for p-type.
 
 The model can be referenced by name, for example
 \begin{quote}
-{\vt .model mynpn hicum2 type=1 ...}\\
-{\vt .model nch bsim6 type=1 ...}
+{\vt .model mynpn hicum2 type=1 level=8 ...}\\
+{\vt .model nch bsim6 type=1 level=80 ...}
 \end{quote}
-This requires that the model name be unique.  {\WRspice} presently
-does not check for a unique name, as it is also legitimate to use the
-level parameter in addition.  The user will have to be careful.}
+If the device has a level value different from 1, a matching level
+parameter must be defined in the {\vt .model} line.  {\WRspice} does
+not check for a unique name, as the level parameter should enforce
+uniqueness.}
 \end{enumerate}
 
 The {\vt devkit} directory in the {\WRspice} installation location
