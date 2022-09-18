@@ -117,6 +117,32 @@ End of general info.
 
 
 ===============================================================================
+wrspice-4.3.17  9/18/2022
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Expressions given on the command line are evaluated and printed.
+
+  This implicit print function is quite useful.  WRspice is a
+  great scientific calculator.
+
+* The JJ and TJM devices now accept vshunt as an instance as well as a
+  model parameter.
+
+  The instance parameter overrides vshunt given as a model parameter.
+
+* Documentation updates.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed JJ bug, the default value of vgap was 1/2 what it should be.
+
+
+-------------------------------------------------------------------------------
 wrspice-4.3.16  8/27/2022
 Current Release
 
