@@ -503,7 +503,7 @@ hcopypanel
 mplotpanel
 graphcmds
  
-!! commands.tex 052411
+!! commands.tex 092522
 !!KEYWORD
 plot
 !!TITLE
@@ -618,6 +618,7 @@ plot command
     <tr><td><a href="polar"><tt>polar</tt></a></td> <td>*</td> <td>*</td></tr>
     <tr><td><a href="polydegree"><tt>polydegree</tt></a></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
     <tr><td><a href="polysteps"><tt>polysteps</tt></a></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="present"><tt>present</tt></a></td> <td>*</td> <td>*</td></tr>
     <tr><td><a href="scaletype"><tt>scaletype</tt></a></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
     <tr><td><a href="single"><tt>single</tt></a></td> <td>*</td> <td>*</td></tr>
     <tr><td><a href="smith"><tt>smith</tt></a></td> <td>*</td> <td>*</td></tr>

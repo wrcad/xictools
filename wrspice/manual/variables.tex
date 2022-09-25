@@ -620,7 +620,7 @@ default is ``{\vt radians}''.
 \subsection{Plot Variables}
 \label{plotvars}
 
-% spVars_plot.hlp:plot_vars 080816
+% spVars_plot.hlp:plot_vars 092522
 
 These variables control the numerous plotting modes and capabilities
 of the {\cb plot}, {\cb hardcopy}, {\cb xgraph}, and {\cb asciiplot}
@@ -1027,6 +1027,14 @@ the scale is non-monotonic, no polynomial fitting is done.
 This variable sets the number of intermediate points to plot between
 each actual point used for interpolation.  If not set, 10 points are
 used. 
+
+\index{present variable}
+\item{\et present}\\
+Setting this boolean variable will cause plots to be rendered without
+certain features, including title strings, date, logo, and vertical
+scale factors in multi-range cases.  The resulting plot window is
+intended to be customized by the user by adding text, and the exported
+image may be more suitable for use in presentations, papers, etc.
 
 \index{scaletype variable}
 \item{\et scaletype}\\

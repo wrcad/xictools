@@ -276,6 +276,7 @@ const char *kw_plotstyle        = "plotstyle";
 const char *kw_pointchars       = "pointchars";
 const char *kw_polydegree       = "polydegree";
 const char *kw_polysteps        = "polysteps";
+const char *kw_present          = "present";
 const char *kw_scaletype        = "scaletype";
 const char *kw_ticmarks         = "ticmarks";
 const char *kw_title            = "title";
@@ -1027,6 +1028,22 @@ struct KWent_polysteps : public KWent
     }
 };
 
+struct KWent_present : public KWent
+{
+    KWent_present() { set(
+        kw_present,
+        VTYP_BOOL, 0.0, 0.0,
+        "Presentation graphics mode."); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset)
+            v->set_boolean(true);
+        CP.RawVarSet(word, isset, v);
+        KWent::callback(isset, v);
+    }
+};
+
 struct KWent_scaletype : public KWent
 {
     KWent_scaletype() { set(
@@ -1501,6 +1518,7 @@ sKW *cKeyWords::KWplot[] = {
     new KWent_pointchars(),
     new KWent_polydegree(),
     new KWent_polysteps(),
+    new KWent_present(),
     new KWent_scaletype(),
     new KWent_ticmarks(),
     new KWent_title(),

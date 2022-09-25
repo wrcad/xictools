@@ -2369,7 +2369,7 @@ modified.
 \index{plot window}
 \index{plot panel}
 
-% PlotPanel.hlp:plotpanel 101516
+% PlotPanel.hlp:plotpanel 092522
 
 This panel displays and controls aspects of plots generated from a
 simulation with the {\cb plot} command.  The plot window contains a
@@ -2505,38 +2505,18 @@ below.
 A string must be selected before it can be edited or otherwise
 altered.  A string can be selected by clicking on it with the left
 mouse button (button 1).  The selection is indicated by the appearance
-of a thick black bar to the left of the string, and a thin bar at the
-end of the string.  At most one string can be selected at a time.
+of a thick color1 (default black) bar to the left of the string, and a
+thin bar to the right of the string.  At most one string can be
+selected at a time.
 
 A string can be deselected by clicking in the plot window away from
-any string.  Clicking on another string will move the selection to
-that string.  When a string is selected, the left and right arrow keys
-will cycle the selection to other strings in the plot that can be
-modified.
-
-Only a selected string can be modified in any way.  With a string
-selected:
-
-\begin{itemize}
-\item{Pressing the {\cb Delete} key will erase the string.  There is
-no ``undo'' so be careful.}
-
-\item{The up and down arrow keys cycle through the various available
-colors, recoloring the selected string.  These are the same 19 colors
-used for plot traces.  To change the color of the title, for example,
-one would click on the title string, then press the up or down arrow
-keys until the title color is satisfactory.}
-
-\item{The selected string can be dragged to a new location, or copied
-to a new location or to a different plot window.}
-
-\item{The string can be edited.}
-\end{itemize}
+any string.  Clicking on another string will change the current
+selection to that string.
 
 A drag can be initiated by pressing and holding button 1 over the
-selected string, and moving the mouse pointer.  A ``ghost'' outline of
-the string will be ``attached'' to the mouse pointer.  When the button
-is released, the string will be moved to the new location.  If the
+selected string, and moving the mouse pointer.  A ghost outline of the
+string will be attached to the mouse pointer.  When the button is
+released, the string will be moved to the release location.  If the
 {\kb Shift} key is pressed while the mouse button is released, the
 string will be copied to the new location.  Strings can be copied to
 other plot windows using this drag and drop technique, but the {\kb
@@ -2547,17 +2527,51 @@ left, center, and right justification of the string.  The string
 outline box attached to the mouse pointer will shift to indicate the
 justification.
 
-The selected string can be edited by using the {\kb Backspace} key to
-remove characters from the right, and by adding new characters to the
-end of the string.  The string has has a notion of ``termination''. 
-Terminated strings can't be edited.  When a selected string is
-terminated, the right-side indicator bar is black.  If the string is
-not terminated, the indicator bar is red (by default, actually this is
-the first trace color).  A string is un-terminated by pressing {\kb
-Backspace}.  Pressing {\kb Backspace} additional times will remove
-characters from the right.  Typed characters will be added to the end
-of the string.  The string is terminated by pressing the {\kb Enter}
-key, which causes the right-side indicator bar to turn black.
+Strings have a termination property.  When selected, the color of the
+right side indicator bar will be color1 (default black) if terminated,
+color2 (default red) if not terminated.  When the selected string is
+not terminated, it can be edited.  Pressing the {\cb Backspace} key
+will cause a selected terminated string to become non-terminated. 
+Pressing the {\cb Enter} key will terminate a selected non-terminated
+string.
+
+When the selected string is terminated, as indicated by a color1
+(default black) vertical bar on the right side:
+
+\index{colorN}
+\begin{itemize}
+\item{Pressing the {\cb Delete} key will erase the string.  There is
+no undo/redo so be careful.}
+
+\item{The left and right arrow keys will cycle the current selection
+to other strings in the plot that can be modified.}
+
+\item{The up and down arrow keys cycle through the various available
+colors, recoloring the selected string.  These are the same colorN
+colors used for plot traces.  To change the color of the title, for
+example, one would click on the title string, then press the up or
+down arrow keys until the title color is satisfactory.}
+
+\item{The selected string can be dragged to a new location, or copied
+to a new location or to a different plot window.}
+\end{itemize}
+
+With the selected string not terminated, an editing mode is active.  A
+vertical line cursor may be visible within the word.  This is rendered
+as color2 (default limegreen).  If not visible, it is logically off
+the right side of the string.  Pressing {\cb Backspace} removes the
+character to the left of the cursor, and moves the cursor left by one
+character.  With the cursor invisible, {\cb Backspace} removes the
+rightmost character in the string.  The cursor is moved with the left
+and right arrow keys.  Characters typed on the keyboard are inserted
+into the string to the right of the cursor, advancing the cursor.  The
+{\cb Delete} key will delete the character to the right of the cursor. 
+It will have no effect in editing mode if the cursor is not visible.
+
+If all of the characters are deleted, then the string is deleted. 
+When all characters have been entered, pressing {\cb Enter}
+terminates the string and exits the editing mode.  Note that
+presently there is no undo/redo capability.
 
 With no selection, or if the selection is terminated, typing
 characters into the plot window will start a new string at the mouse

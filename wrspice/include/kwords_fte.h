@@ -80,6 +80,7 @@ extern const char *kw_plotstyle;
 extern const char *kw_pointchars;
 extern const char *kw_polydegree;
 extern const char *kw_polysteps;
+extern const char *kw_present;
 extern const char *kw_scaletype;
 extern const char *kw_ticmarks;
 extern const char *kw_title;

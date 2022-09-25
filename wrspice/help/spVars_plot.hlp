@@ -57,6 +57,7 @@ plot_vars
 !!REDIRECT polar        plot_vars#polar
 !!REDIRECT polydegree   plot_vars#polydegree
 !!REDIRECT polysteps    plot_vars#polysteps
+!!REDIRECT present      plot_vars#present
 !!REDIRECT scaletype    plot_vars#scaletype
 !!REDIRECT single       plot_vars#single
 !!REDIRECT smith        plot_vars#smith
@@ -77,7 +78,7 @@ plot_vars
 !!REDIRECT ylog         plot_vars#ylog
 !!REDIRECT ysep         plot_vars#ysep
 
-!! variables.tex 080816
+!! variables.tex 092522
 !!KEYWORD
 plot_vars
 !!TITLE
@@ -620,6 +621,17 @@ Plotting Variables
     This variable sets the number of intermediate points to plot
     between each actual point used for interpolation.  If not set, 10
     points are used.
+    </dl>
+
+    <a name="present"></a>
+    <dl>
+    <dt><tt>present</tt><dd>
+    Setting this boolean variable will cause plots to be rendered
+    without certain features, including title strings, date, logo, and
+    vertical scale factors in multi-range cases.  The resulting plot
+    window is intended to be customized by the user by adding text,
+    and the exported image may be more suitable for use in
+    presentations, papers, etc.
     </dl>
 
     <a name="scaletype"></a>

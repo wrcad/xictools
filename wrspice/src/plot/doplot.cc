@@ -322,6 +322,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
                     lstring::cieq(tok, kw_ysep) ||
                     lstring::cieq(tok, kw_noplotlogo) ||
                     lstring::cieq(tok, kw_nogrid) ||
+                    lstring::cieq(tok, kw_present) ||
 
                     lstring::cieq(tok, kw_lingrid) ||
                     lstring::cieq(tok, kw_xlog) ||

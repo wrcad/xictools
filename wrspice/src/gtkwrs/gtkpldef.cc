@@ -207,15 +207,16 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
-        gtk_box_pack_start(GTK_BOX(hbox), entry->ent->frame, true, true, 0);
+        gtk_box_pack_start(GTK_BOX(hbox), entry->ent->frame, true, true, 2);
     }
 
     entry = KWGET(kw_noplotlogo);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
-        gtk_box_pack_start(GTK_BOX(hbox), entry->ent->frame, true, true, 0);
+        gtk_box_pack_start(GTK_BOX(hbox), entry->ent->frame, true, true, 2);
     }
+    gtk_box_set_homogeneous(GTK_BOX(hbox), true);
     gtk_table_attach(GTK_TABLE(form), hbox, 1, 2,
         entrycount, entrycount + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -233,16 +234,27 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
+    hbox = gtk_hbox_new(false, 0);
+    gtk_widget_show(hbox);
     entry = KWGET(kw_nogrid);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
-
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
-            entrycount, entrycount + 1,
-            (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-            (GtkAttachOptions)0, 2, 2);
+        gtk_box_pack_start(GTK_BOX(hbox), entry->ent->frame, true, true, 2);
     }
+
+    entry = KWGET(kw_present);
+    if (entry) {
+        entry->ent = new xEnt(kw_bool_func);
+        entry->ent->create_widgets(entry, 0);
+        gtk_box_pack_start(GTK_BOX(hbox), entry->ent->frame, true, true, 2);
+    }
+
+    gtk_box_set_homogeneous(GTK_BOX(hbox), true);
+    gtk_table_attach(GTK_TABLE(form), hbox, 1, 2,
+        entrycount, entrycount + 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
     entry = KWGET(kw_scaletype);

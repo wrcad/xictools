@@ -194,6 +194,7 @@ struct grAttributes
     bool nointerp;
     bool ysep;
     bool nogrid;
+    bool present;
     bool noplotlogo;
     const char *xlabel;
     const char *ylabel;
@@ -503,6 +504,7 @@ SPgraphics::Setup(sGrInit *gr, sDvList **dlptr, const char *attrs,
     gr->ysep = grs.ysep;
     gr->noplotlogo = grs.noplotlogo;
     gr->nogrid = grs.nogrid;
+    gr->present = grs.present;
 
     // See if there is one type we can give for the y scale...
     gr->ytype = *dl0->dl_dvec->units();
@@ -608,6 +610,7 @@ sGraph::setup(sDvList *dl0, sGrInit *gr)
     gr_ysep = gr->ysep;
     gr_noplotlogo = gr->noplotlogo;
     gr_nogrid = gr->nogrid;
+    gr_present = gr->present;
 
     if (!gr_oneval) {
         if (gr->xlabel)
@@ -835,6 +838,7 @@ grAttributes::grAttributes()
     ysep = getflag(kw_ysep);
     noplotlogo = getflag(kw_noplotlogo);
     nogrid = getflag(kw_nogrid);
+    present = getflag(kw_present);
 
     xlabel = getword(kw_xlabel);
     ylabel = getword(kw_ylabel);
@@ -1118,6 +1122,8 @@ grAttributes::setup(const char *attr)
             noplotlogo = true;
         else if (lstring::cieq(tok, kw_nogrid))
             nogrid = true;
+        else if (lstring::cieq(tok, kw_present))
+            present = true;
         delete [] tok;
     }
 }

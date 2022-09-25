@@ -175,6 +175,7 @@ struct sKeyed
             x = y = 0;
             colorindex = 0;
             xform = 0;
+            inspos = 0;
             terminated = false;
             fixed = false;
             ignore = false;
@@ -211,6 +212,7 @@ struct sKeyed
     int x, y;             // position code for region
     int colorindex;       // index into colors array
     int xform;            // rotation/scale code
+    int inspos;           // insertion position
     bool terminated;      // flag indicating entry complete
     bool fixed;           // location set by user;
     bool ignore;          // non-selectable, non-editable
@@ -329,6 +331,7 @@ struct sGraph
 
             gr_ysep         = false;
             gr_nogrid       = false;
+            gr_present      = false;
             gr_xmono        = false;
             gr_xlimfixed    = false;
             gr_ylimfixed    = false;
@@ -713,6 +716,7 @@ private:
 
     bool gr_ysep;                   // separate traces along vertical
     bool gr_nogrid;                 // don't show grid
+    bool gr_present;                // presentation mode, simple display
     bool gr_xmono;                  // scale is monotonic
     bool gr_xlimfixed;              // x limits fixed
     bool gr_ylimfixed;              // y limits fixed
@@ -878,6 +882,7 @@ struct sGrInit
             ysep = false;
             noplotlogo = false;
             nogrid = false;
+            present = false;
 
             free_title = false;
             free_xlabel = false;
@@ -915,6 +920,7 @@ struct sGrInit
     bool ysep;            // separate multiple traces along vertical
     bool noplotlogo;      // don't show WRspice logo
     bool nogrid;          // don't show grid
+    bool present;         // simple display for presentations
     bool xlimfixed;       // x limits were specified
     bool ylimfixed;       // y limits were specified
 

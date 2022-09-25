@@ -321,15 +321,17 @@ sGraph::gr_redraw_keyed()
     sKeyed *kplotname = 0;
     sKeyed *kdate = 0;
 
-    if (gr_grtype != GRID_POLAR && gr_grtype != GRID_SMITH &&
-            gr_grtype != GRID_SMITHGRID) {
-        for (sKeyed *k = gr_keyed; k; k = k->next) {
-            if (k->type == LAname && k->text)
-                kplotname = k;
-            else if (k->type == LAtitle && k->text)
-                ktitle = k;
-            else if (k->type == LAdate && k->text)
-                kdate = k;
+    if (!gr_present) {
+        if (gr_grtype != GRID_POLAR && gr_grtype != GRID_SMITH &&
+                gr_grtype != GRID_SMITHGRID) {
+            for (sKeyed *k = gr_keyed; k; k = k->next) {
+                if (k->type == LAname && k->text)
+                    kplotname = k;
+                else if (k->type == LAtitle && k->text)
+                    ktitle = k;
+                else if (k->type == LAdate && k->text)
+                    kdate = k;
+            }
         }
     }
 
@@ -652,8 +654,19 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
         gr_dev->Text(k->text, x, y, k->xform);
     }
     else if (code == LEFT_KEY) {
-        // Rotate to previous string
-        if (k && k->next && gr_seltext) {
+        if (k && gr_seltext && !k->terminated) {
+            if (k->inspos > 0) {
+                gr_show_sel_text(false);
+                k->inspos--;
+                int xl, yb, xr, yt;
+                if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
+                    gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
+                }
+                gr_show_sel_text(true);
+            }
+        }
+        else if (k && k->next && gr_seltext) {
+            // Rotate to previous string
             gr_show_sel_text(false);
             for (;;) {
                 gr_keyed = k->next;
@@ -669,8 +682,19 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
         }
     }
     else if (code == RIGHT_KEY) {
-        // Rotate to next string
-        if (k && k->next && gr_seltext) {
+        if (k && gr_seltext && !k->terminated) {
+            if (k->inspos < (int)strlen(k->text)) {
+                gr_show_sel_text(false);
+                k->inspos++;
+                int xl, yb, xr, yt;
+                if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
+                    gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
+                }
+                gr_show_sel_text(true);
+            }
+        }
+        else if (k && k->next && gr_seltext) {
+            // Rotate to next string
             gr_show_sel_text(false);
             for (;;) {
                 sKeyed *kk;
@@ -704,20 +728,33 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             gr_show_sel_text(true);
             return;
         }
-        gr_show_sel_text(false);
-        char *s = k->text;
-        char *t = s + strlen(s) - 1;
-        if (t < s) {
-            k->ignore = true;
-            gr_seltext = false;
-            return;
+        if (k->inspos > 0) {
+            int len = strlen(k->text);
+            if (k->inspos > len)
+                k->inspos = len;
+
+            gr_show_sel_text(false);
+            char *cptx = lstring::copy(k->text);
+            char *s = cptx + k->inspos - 1;
+            while (*s) {
+                *s = *(s+1);
+                s++;
+            }
+            k->inspos--;
+
+            int xl, yb, xr, yt;
+            if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
+                delete [] k->text;
+                k->text = cptx;
+                gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
+            }
+            if (!cptx[0]) {
+                k->ignore = true;
+                gr_seltext = false;
+            }
+            else
+                gr_show_sel_text(true);
         }
-        int xl, yb, xr, yt;
-        if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
-            *t = '\0';
-            gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
-        }
-        gr_show_sel_text(true);
     }
     else if (code == DELETE_KEY) {
         if (gr_apptype == GR_PLOT && gr_cmd_data && GP.SourceGraph() == this) {
@@ -739,14 +776,41 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
         }
         if (!k || !gr_seltext)
             return;
-        gr_show_sel_text(false);
-        gr_seltext = false;
-        int xl, yb, xr, yt;
-        if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
-            k->text[0] = 0;
-            gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
+        int len = strlen(k->text);
+        if (k->inspos > len)
+            k->inspos = len;
+        if (k->terminated) {
+            gr_show_sel_text(false);
+            gr_seltext = false;
+            int xl, yb, xr, yt;
+            if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
+                k->text[0] = 0;
+                gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
+            }
+            k->inspos = 0;
+            k->ignore = true;
         }
-        k->ignore = true;
+        else if (k->inspos != len) {
+            gr_show_sel_text(false);
+            char *cptx = lstring::copy(k->text);
+            char *s = cptx + k->inspos;
+            while (*s) {
+                *s = *(s+1);
+                s++;
+            }
+            int xl, yb, xr, yt;
+            if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
+                delete [] k->text;
+                k->text = cptx;
+                gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
+            }
+            if (!cptx[0]) {
+                k->ignore = true;
+                gr_seltext = false;
+            }
+            else
+                gr_show_sel_text(true);
+        }
     }
     else {
         // Add character to current string.  If terminated, start a new
@@ -757,20 +821,34 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             if (!k || k->terminated || !gr_seltext) {
                 k = new sKeyed;
                 k->next = gr_keyed;
-                if (gr_keyed)
+                if (gr_keyed && gr_keyed->type == LAuser)
                     k->colorindex = gr_keyed->colorindex;
                 else
                     k->colorindex = 1;
                 gr_keyed = k;
                 k->text = lstring::copy(text);
+                k->inspos = strlen(k->text);
                 gr_set_keyed_posn(k, tx, ty);
             }
             else {
                 int xl, yb, xr, yt;
                 if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
-                    char *tmp = new char[strlen(k->text) + strlen(text) + 1];
-                    strcpy(tmp, k->text);
-                    strcat(tmp, text);
+                    int txl = strlen(text);
+                    char *tmp = new char[strlen(k->text) + txl + 1];
+                    int i;
+                    for (i = 0; i < k->inspos; i++) {
+                        tmp[i] = k->text[i];
+                        if (!tmp[i]) {
+                            k->inspos = i;
+                            break;
+                        }
+                    }
+                    for (i = k->inspos; i < k->inspos + txl; i++) {
+                        tmp[i] = text[i - k->inspos];
+                    }
+                    strcpy(tmp + i, k->text + k->inspos);
+                    k->inspos += strlen(text);
+
                     delete [] k->text;
                     k->text = tmp;
                     gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
@@ -816,27 +894,29 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
         else if (gr_cmdmode & ControlMode)
             button = 3;
     }
-    if (gr_format != FT_SINGLE || gr_ysep) {
-        // Check the text field width icons.
-        int xl = gr_vport.left() - 3*gr_fontwid - gr_fontwid/2;
-        int xr = xl + gr_fontwid + gr_fontwid/4;
-        int yb = gr_vport.top();
-        int yt = yb + gr_fonthei;
-        if (x >= xl && x <= xr && y >= yb && y <= yt) {
-            if (gr_field > FIELD_MIN) {
-                gr_field--;
-                gr_redraw();
+    if (!gr_present) {
+        if (gr_format != FT_SINGLE || gr_ysep) {
+            // Check the text field width icons.
+            int xl = gr_vport.left() - 3*gr_fontwid - gr_fontwid/2;
+            int xr = xl + gr_fontwid + gr_fontwid/4;
+            int yb = gr_vport.top();
+            int yt = yb + gr_fonthei;
+            if (x >= xl && x <= xr && y >= yb && y <= yt) {
+                if (gr_field > FIELD_MIN) {
+                    gr_field--;
+                    gr_redraw();
+                }
+                return;
             }
-            return;
-        }
-        xl = xr;
-        xr = xl + gr_fontwid + gr_fontwid/4;
-        if (x > xl && x <= xr && y >= yb && y <= yt) {
-            if (gr_field < FIELD_MAX) {
-                gr_field++;
-                gr_redraw();
+            xl = xr;
+            xr = xl + gr_fontwid + gr_fontwid/4;
+            if (x > xl && x <= xr && y >= yb && y <= yt) {
+                if (gr_field < FIELD_MAX) {
+                    gr_field++;
+                    gr_redraw();
+                }
+                return;
             }
-            return;
         }
     }
 
@@ -845,20 +925,23 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
         gr_seltext = false;
         gr_show_sel_text(false);
     }
-    if (gr_apptype == GR_PLOT && !(gr_grtype == GRID_POLAR ||
-            gr_grtype == GRID_SMITH || gr_grtype == GRID_SMITHGRID)) {
-        if (dv_scale_icon_hdlr(button, x, y))
-            return;
-    }
-    if (x > DIM_ICON_X - gr_fontwid/2 &&
-            x < DIM_ICON_X + gr_fontwid + gr_fontwid/2 &&
-            y > DIM_ICON_Y && y < DIM_ICON_Y + gr_fonthei) {
-        // Clicked on the dimension map icon.
-        if (gr_selections) {
-            gr_sel_show = !gr_sel_show;
-            gr_dev->Clear();
-            gr_redraw();
-            return;
+
+    if (!gr_present) {
+        if (gr_apptype == GR_PLOT && !(gr_grtype == GRID_POLAR ||
+                gr_grtype == GRID_SMITH || gr_grtype == GRID_SMITHGRID)) {
+            if (dv_scale_icon_hdlr(button, x, y))
+                return;
+        }
+        if (x > DIM_ICON_X - gr_fontwid/2 &&
+                x < DIM_ICON_X + gr_fontwid + gr_fontwid/2 &&
+                y > DIM_ICON_Y && y < DIM_ICON_Y + gr_fonthei) {
+            // Clicked on the dimension map icon.
+            if (gr_selections) {
+                gr_sel_show = !gr_sel_show;
+                gr_dev->Clear();
+                gr_redraw();
+                return;
+            }
         }
     }
 
@@ -918,20 +1001,22 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
                     mp_bdown_hdlr(button, x, y);
                     return;
                 }
-                if (dv_dims_map_hdlr(button, x, y, false))
-                    return;
+                if (!gr_present) {
+                    if (dv_dims_map_hdlr(button, x, y, false))
+                        return;
 
-                // no text selected, select a trace ?
-                int i = gr_select_trace(x, y);
-                if (i >= 0) {
-                    sDvList *dl = static_cast<sDvList*>(gr_plotdata);
-                    while (i-- && dl)
-                        dl = dl->dl_next;
-                    gr_cmd_data = dl;
-                    GP.SetSourceGraph(this);
-                    if (dl) {
-                        gr_set_ghost(ghost_trace, 0, 0);
-                        gr_show_ghost(true);
+                    // no text selected, select a trace ?
+                    int i = gr_select_trace(x, y);
+                    if (i >= 0) {
+                        sDvList *dl = static_cast<sDvList*>(gr_plotdata);
+                        while (i-- && dl)
+                            dl = dl->dl_next;
+                        gr_cmd_data = dl;
+                        GP.SetSourceGraph(this);
+                        if (dl) {
+                            gr_set_ghost(ghost_trace, 0, 0);
+                            gr_show_ghost(true);
+                        }
                     }
                 }
             }
@@ -942,6 +1027,9 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
             mp_bdown_hdlr(button, x, y);
             return;
         }
+        if (gr_present)
+            return;
+
         if (dv_dims_map_hdlr(button, x, y, false))
             return;
         if (gr_reference.mark && gr_reference.set) {
@@ -959,6 +1047,9 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
             mp_bdown_hdlr(button, x, y);
             return;
         }
+        if (gr_present)
+            return;
+
         if (dv_dims_map_hdlr(button, x, y, false))
             return;
         if (!(gr_cmdmode & Moving)) {
@@ -1054,6 +1145,9 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
                 gr_cmdmode &= ~Moving;
             return;
         }
+
+        if (gr_present)
+            return;
 
         int btn = button;
         if (gr_cmdmode & ShiftMode)
@@ -1312,7 +1406,7 @@ sGraph::gr_zoomin(int x0, int y0)
     gr_pressy = y0;
 
     gr_set_ghost(ghost_zoom, x0, y0);
-    gr_dev->MovePointer(x1, yinv(y1), true);
+    gr_dev->MovePointer(16, -16, false);
 }
 
 
@@ -2126,24 +2220,34 @@ sGraph::gr_ghost_trace(int x, int y)
 void
 sGraph::gr_show_sel_text(bool show)
 {
-    if (gr_keyed) {
-        gr_show_ghost(false);
-        int xl, yb, xr, yt;
-        if (gr_get_keyed_bb(gr_keyed, &xl, &yb, &xr, &yt)) {
-            if (show) {
-                gr_dev->SetColor(gr_colors[1].pixel);
-                gr_dev->Box(xl-4, yinv(yb), xl-3, yinv(yt));
-                if (!gr_keyed->terminated)
-                    gr_dev->SetColor(gr_colors[2].pixel);
-                gr_dev->Line(xr+2, yinv(yb), xr+2, yinv(yt));
-            }
-            else {
-                gr_refresh(xl-5, yinv(yb)+1, xl-2, yinv(yt));
-                gr_refresh(xr+2, yinv(yb)+1, xr+3, yinv(yt));
+    sKeyed *k = gr_keyed;
+    if (!k)
+        return;
+
+    gr_show_ghost(false);
+    int xl, yb, xr, yt;
+    if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
+        if (show) {
+            gr_dev->SetColor(gr_colors[1].pixel);
+            gr_dev->Box(xl-4, yinv(yb), xl-3, yinv(yt));
+            if (!k->terminated)
+                gr_dev->SetColor(gr_colors[2].pixel);
+            gr_dev->Line(xr+2, yinv(yb), xr+2, yinv(yt));
+            if (k->text && !k->terminated &&
+                    k->inspos < (int)strlen(k->text)) {
+                gr_dev->SetColor(gr_colors[3].pixel);
+                int xx = xl-1 + k->inspos*gr_fontwid;
+                gr_dev->Line(xx, yinv(yb), xx, yinv(yt));
             }
         }
-        gr_show_ghost(true);
+        else {
+            gr_refresh(xl-5, yinv(yb)+1, xl-2, yinv(yt));
+            gr_refresh(xr+2, yinv(yb)+1, xr+3, yinv(yt));
+            int xx = xl-1 + k->inspos*gr_fontwid;
+            gr_refresh(xx, yinv(yb)+1, xx+1, yinv(yt));
+        }
     }
+    gr_show_ghost(true);
 }
 
 
@@ -2208,7 +2312,7 @@ namespace {
 void
 sGraph::gr_show_logo()
 {
-    if (gr_noplotlogo)
+    if (gr_noplotlogo || gr_present)
         return;
     int ident = GRpkgIf()->CurDev()->ident;
     if (ident == _devHP_)
@@ -2929,113 +3033,118 @@ sGraph::dv_redraw()
     // Do the plotting.
     dv_trace(false);
 
-    // Show the dimensions map icon, but not in hard-copies.
-    if (gr_selections && gr_selsize &&
-            GRpkgIf()->CurDev()->devtype != GRhardcopy) {
-        int x = DIM_ICON_X;
-        int y = DIM_ICON_Y;
-        int w = gr_fontwid+2;
-        int d = gr_fonthei/2;
-        y += d;
-        GRmultiPt p(6);
-        if (gr_sel_show) {
-            p.assign(0, x, yinv(y-d));
-            p.assign(1, x+w, yinv(y-d));
-            p.assign(2, x+w+d, yinv(y));
-            p.assign(3, x+w, yinv(y+d));
-            p.assign(4, x, yinv(y+d));
-            p.assign(5, x, yinv(y-d));
+    if (!gr_present) {
+        // Show the dimensions map icon, but not in hard-copies.
+        if (gr_selections && gr_selsize &&
+                GRpkgIf()->CurDev()->devtype != GRhardcopy) {
+            int x = DIM_ICON_X;
+            int y = DIM_ICON_Y;
+            int w = gr_fontwid+2;
+            int d = gr_fonthei/2;
+            y += d;
+            GRmultiPt p(6);
+            if (gr_sel_show) {
+                p.assign(0, x, yinv(y-d));
+                p.assign(1, x+w, yinv(y-d));
+                p.assign(2, x+w+d, yinv(y));
+                p.assign(3, x+w, yinv(y+d));
+                p.assign(4, x, yinv(y+d));
+                p.assign(5, x, yinv(y-d));
 #ifdef WIN32
-            y -= 2;
+                y -= 2;
 #endif
-            gr_dev->SetColor(gr_colors[5].pixel);
-            gr_dev->PolyLine(&p, 6);
-            gr_dev->SetColor(gr_colors[4].pixel);
-            gr_dev->Text("d", x+2, yinv(y-d), 0);
+                gr_dev->SetColor(gr_colors[5].pixel);
+                gr_dev->PolyLine(&p, 6);
+                gr_dev->SetColor(gr_colors[4].pixel);
+                gr_dev->Text("d", x+2, yinv(y-d), 0);
+            }
+            else {
+                p.assign(0, x, yinv(y-d));
+                p.assign(1, x+w, yinv(y-d));
+                p.assign(2, x+w, yinv(y+d));
+                p.assign(3, x, yinv(y+d));
+                p.assign(4, x-d, yinv(y));
+                p.assign(5, x, yinv(y-d));
+#ifdef WIN32
+                y -= 2;
+#endif
+                gr_dev->SetColor(gr_colors[5].pixel);
+                gr_dev->PolyLine(&p, 6);
+                gr_dev->SetColor(gr_colors[4].pixel);
+                gr_dev->Text("d", x+1, yinv(y-d), 0);
+            }
+        }
+
+        int yu = gr_vport.top() + gr_fonthei + gr_fonthei/2;
+        if (gr_grtype == GRID_POLAR || gr_grtype == GRID_SMITH ||
+                gr_grtype == GRID_SMITHGRID) {
+            gr_save_text(gr_title, effleft() + gr_fontwid, yu, LAtitle, 1, 0);
+            gr_save_text(gr_plotname, effleft() + gr_fontwid, yu - gr_fonthei,
+                LAname, 8, 0);
+            gr_save_text(gr_date, effleft() + gr_fontwid,
+                gr_area.bottom() + gr_fonthei, LAdate, 8, 0);
         }
         else {
-            p.assign(0, x, yinv(y-d));
-            p.assign(1, x+w, yinv(y-d));
-            p.assign(2, x+w, yinv(y+d));
-            p.assign(3, x, yinv(y+d));
-            p.assign(4, x-d, yinv(y));
-            p.assign(5, x, yinv(y-d));
-#ifdef WIN32
-            y -= 2;
-#endif
-            gr_dev->SetColor(gr_colors[5].pixel);
-            gr_dev->PolyLine(&p, 6);
-            gr_dev->SetColor(gr_colors[4].pixel);
-            gr_dev->Text("d", x+1, yinv(y-d), 0);
-        }
-    }
+            gr_save_text(gr_title, gr_vport.left(), yu, LAtitle, 1,0);
+            gr_save_text(gr_plotname, gr_vport.left(), yu - gr_fonthei, LAname,
+                8, 0);
+            int nt = gr_title ? strlen(gr_title) : 0;
+            int np = gr_plotname ? strlen(gr_plotname) : 0;
+            if (nt < np) {
+                gr_save_text(gr_date, gr_vport.right(), yu, LAdate, 8,
+                    TXTF_HJR);
+            }
+            else {
+                gr_save_text(gr_date, gr_vport.right(), yu - gr_fonthei, LAdate,
+                    8, TXTF_HJR);
+            }
 
-    int yu = gr_vport.top() + gr_fonthei + gr_fonthei/2;
-    if (gr_grtype == GRID_POLAR || gr_grtype == GRID_SMITH ||
-            gr_grtype == GRID_SMITHGRID) {
-        gr_save_text(gr_title, effleft() + gr_fontwid, yu, LAtitle, 1, 0);
-        gr_save_text(gr_plotname, effleft() + gr_fontwid, yu - gr_fonthei,
-            LAname, 8, 0);
-        gr_save_text(gr_date, effleft() + gr_fontwid,
-            gr_area.bottom() + gr_fonthei, LAdate, 8, 0);
-    }
-    else {
-        gr_save_text(gr_title, gr_vport.left(), yu, LAtitle, 1,0);
-        gr_save_text(gr_plotname, gr_vport.left(), yu - gr_fonthei, LAname, 8,
-            0);
-        int nt = gr_title ? strlen(gr_title) : 0;
-        int np = gr_plotname ? strlen(gr_plotname) : 0;
-        if (nt < np)
-            gr_save_text(gr_date, gr_vport.right(), yu, LAdate, 8, TXTF_HJR);
-        else
-            gr_save_text(gr_date, gr_vport.right(), yu - gr_fonthei, LAdate,
-                8, TXTF_HJR);
+            if (GRpkgIf()->CurDev()->devtype != GRhardcopy) {
+                if (gr_format != FT_SINGLE || gr_ysep) {
+                    // Icons to shift the left side field width.
+                    int x = gr_vport.left() - 3*gr_fontwid - gr_fontwid/2;
+                    int y = gr_fonthei/2 + gr_vport.top();
+                    int d = gr_fontwid;
+                    gr_dev->SetColor(gr_colors[1].pixel);
+                    GRmultiPt p(4);
+                    if (gr_field > FIELD_MIN) {
+                        p.assign(0, x + d, yinv(y));
+                        p.assign(1, x, yinv(y + d/2));
+                        p.assign(2, x + d, yinv(y + d));
+                        p.assign(3, x + d, yinv(y));
+                        gr_dev->Polygon(&p, 4);
+                    }
+                    if (gr_field < FIELD_MAX) {
+                        x += gr_fontwid + gr_fontwid/2;
+                        p.assign(0, x, yinv(y));
+                        p.assign(1, x + d, yinv(y + d/2));
+                        p.assign(2, x, yinv(y + d));
+                        p.assign(3, x, yinv(y));
+                        gr_dev->Polygon(&p, 4);
+                    }
+                }
 
-        if (GRpkgIf()->CurDev()->devtype != GRhardcopy) {
-            if (gr_format != FT_SINGLE || gr_ysep) {
-                // Icons to shift the left side field width.
-                int x = gr_vport.left() - 3*gr_fontwid - gr_fontwid/2;
-                int y = gr_fonthei/2 + gr_vport.top();
+                // scale translation icons
+                int x = gr_vport.left();
+                int y = gr_fonthei/2 + gr_area.bottom();
                 int d = gr_fontwid;
                 gr_dev->SetColor(gr_colors[1].pixel);
                 GRmultiPt p(4);
-                if (gr_field > FIELD_MIN) {
-                    p.assign(0, x + d, yinv(y));
-                    p.assign(1, x, yinv(y + d/2));
-                    p.assign(2, x + d, yinv(y + d));
-                    p.assign(3, x + d, yinv(y));
-                    gr_dev->Polygon(&p, 4);
-                }
-                if (gr_field < FIELD_MAX) {
-                    x += gr_fontwid + gr_fontwid/2;
-                    p.assign(0, x, yinv(y));
-                    p.assign(1, x + d, yinv(y + d/2));
-                    p.assign(2, x, yinv(y + d));
-                    p.assign(3, x, yinv(y));
-                    gr_dev->Polygon(&p, 4);
-                }
+                p.assign(0, x + d, yinv(y));
+                p.assign(1, x, yinv(y + d/2));
+                p.assign(2, x + d, yinv(y + d));
+                p.assign(3, x + d, yinv(y));
+                gr_dev->Polygon(&p, 4);
+                x += 3*gr_fontwid;
+                p.assign(0, x, yinv(y));
+                p.assign(1, x + d, yinv(y + d/2));
+                p.assign(2, x, yinv(y + d));
+                p.assign(3, x, yinv(y));
+                gr_dev->Polygon(&p, 4);
+
+                // The vertical scale icons are rendered with the trace
+                // legends.
             }
-
-            // scale translation icons
-            int x = gr_vport.left();
-            int y = gr_fonthei/2 + gr_area.bottom();
-            int d = gr_fontwid;
-            gr_dev->SetColor(gr_colors[1].pixel);
-            GRmultiPt p(4);
-            p.assign(0, x + d, yinv(y));
-            p.assign(1, x, yinv(y + d/2));
-            p.assign(2, x + d, yinv(y + d));
-            p.assign(3, x + d, yinv(y));
-            gr_dev->Polygon(&p, 4);
-            x += 3*gr_fontwid;
-            p.assign(0, x, yinv(y));
-            p.assign(1, x + d, yinv(y + d/2));
-            p.assign(2, x, yinv(y + d));
-            p.assign(3, x, yinv(y));
-            gr_dev->Polygon(&p, 4);
-
-            // The vertical scale icons are rendered with the trace
-            // legends.
         }
     }
     bool ret = gr_stop;
@@ -3319,6 +3428,9 @@ sGraph::dv_trace(bool leg_only)
 void
 sGraph::dv_legend(int plotno, sDataVec *dv)
 {
+    if (gr_present)
+        return;
+
     gr_dev->SetLinestyle(0);
     int yu = gr_vport.top();
     int spa;
@@ -4437,6 +4549,15 @@ sGraph::dv_pl_environ(double x0, double x1, double y0, double y1, bool unset)
         else
             Sp.SetVar(s);
     }
+
+    if (gr_present) {
+        s = "_temp_present";
+        if (unset)
+            Sp.RemVar(s);
+        else
+            Sp.SetVar(s);
+    }
+
 }
 
 
@@ -4486,8 +4607,7 @@ sGraph::timeout(void *arg)
 {
     sGraph *graph = (sGraph*)arg;
     graph->gr_set_ghost(ghost_tbox, 0, 0);
-    graph->gr_dev->MovePointer(
-        graph->gr_pressx, graph->yinv(graph->gr_pressy), true);
+    graph->gr_dev->MovePointer(0, 0, false);
     graph->gr_cmdmode |= Moving;
     return (false);
 }
