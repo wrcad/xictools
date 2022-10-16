@@ -1302,11 +1302,11 @@ cPCellDb::md5Digest(const char *path)
     }
 
     unsigned char buf[1000];
-    long length = 0;
+    //long length = 0;
     MD5cx context;
     int nbytes;
     while ((nbytes = fread(buf, 1, sizeof(buf), fp)) != 0) {
-        length += nbytes;
+        //length += nbytes;
         context.update(buf, nbytes);
     }
     fclose(fp);

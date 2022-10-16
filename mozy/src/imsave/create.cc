@@ -252,8 +252,8 @@ create_image_from_drawable(void *dp, unsigned long drawable, int x, int y,
             return (0);
         }
     }
-    int clipx = 0;
-    int clipy = 0;
+    //int clipx = 0;
+    //int clipy = 0;
 
     width = xatt.width - x;
     height = xatt.height - y;
@@ -269,23 +269,23 @@ create_image_from_drawable(void *dp, unsigned long drawable, int x, int y,
             height = ratt.height - (ry + y);
     }
     if (x < 0) {
-        clipx = -x;
+        //clipx = -x;
         width += x;
         x = 0;
     }
     if (y < 0) {
-        clipy = -y;
+        //clipy = -y;
         height += y;
         y = 0;
     }
     if (!is_pixmap) {
         if ((rx + x) < 0) {
-            clipx -= (rx + x);
+            //clipx -= (rx + x);
             width += (rx + x);
             x = -rx;
         }
         if ((ry + y) < 0) {
-            clipy -= (ry + y);
+            //clipy -= (ry + y);
             height += (ry + y);
             y = -ry;
         }

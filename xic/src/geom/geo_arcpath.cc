@@ -291,10 +291,10 @@ normal_donut:
             points[sides+2] = points[0];
 
             double A1 = ang2;
-            double A2 = ang1;
+            //double A2 = ang1;
             for (int i = 1; i < sides; i++) {
                 A1 += DPhi;
-                A2 -= DPhi;
+                //A2 -= DPhi;
                 T = rad(A1, rad1x, rad1y);
                 points[i].set(mmRnd(cen_x + T*cos(A1)),
                     mmRnd(cen_y + T*sin(A1)));

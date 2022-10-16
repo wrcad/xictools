@@ -357,7 +357,7 @@ PLCImageGIF::ScanlineProc()
     htmGIFStream *gifstream = o_gstream;
     int err;
 
-    int bytes_avail = o_plc->plc_left;
+    // int bytes_avail = o_plc->plc_left;
 
     // Get a new block of compressed data.  This will
     // automatically make a new request for input data when
@@ -385,7 +385,7 @@ PLCImageGIF::ScanlineProc()
     gifstream->next_in = o_gbuf;
 
     // bytes left in current buffer (+1 for block header)
-    bytes_avail -= (gifstream->avail_in + 1);
+    // bytes_avail -= (gifstream->avail_in + 1);
 
     // adjust output buffer
     gifstream->next_out  = o_buffer + gifstream->total_out;
@@ -417,7 +417,7 @@ PLCImageGIF::ScanlineProc()
 #else
 
     bool have_all = false;
-    int bytes_avail = o_plc->plc_left;
+    // int bytes_avail = o_plc->plc_left;
 
     // Get a new block of compressed data.  This will
     // automatically make a new request for input data when
@@ -436,7 +436,7 @@ PLCImageGIF::ScanlineProc()
         o_ib.size += len;
 
         // bytes left in current buffer (+1 for block header)
-        bytes_avail -= (len + 1);
+        // bytes_avail -= (len + 1);
 
         // prevent image transfer function from doing anything
         o_prev_pos = o_data_pos = 0;
@@ -726,7 +726,7 @@ PLCImageGZF::ScanlineProc()
     bool done = false;
 
     // bytes left in current input buffer
-    int bytes_avail = o_plc->plc_left;
+    // int bytes_avail = o_plc->plc_left;
 
     // Get a new block of compressed data.  This will
     // automatically make a new request for input data when there
@@ -745,7 +745,7 @@ PLCImageGZF::ScanlineProc()
     o_zstream.next_in = o_zbuf;
 
     // bytes left in current buffer (+1 for block header)
-    bytes_avail -= (o_zstream.avail_in + 1);
+    // bytes_avail -= (o_zstream.avail_in + 1);
 
     // adjust output buffer
     o_zstream.next_out  = o_buffer + o_zstream.total_out;

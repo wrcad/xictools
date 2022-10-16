@@ -5660,7 +5660,8 @@ oas_in::read_point_list(unsigned int *len, bool is_polygon)
     Point *pts = new Point[type <= 1 && is_polygon ? vcount+1 : vcount];
 
     if (type == 0) {
-        int vtot = 0, htot = 0;
+        //int vtot = 0;
+        int htot = 0;
         if (is_polygon && (vcount < 2 || (vcount & 1))) {
             Errs()->add_error(
                 "read_point_list: bad poly point list type=%d np=%d.",
@@ -5672,7 +5673,7 @@ oas_in::read_point_list(unsigned int *len, bool is_polygon)
         for (unsigned int i = 0; i < vcount; i++) {
             if (i & 1) {
                 pts[i].set(0, read_signed());
-                vtot += pts[i].y;
+                //vtot += pts[i].y;
             }
             else {
                 pts[i].set(read_signed(), 0);
@@ -5689,7 +5690,8 @@ oas_in::read_point_list(unsigned int *len, bool is_polygon)
         }
     }
     else if (type == 1) {
-        int vtot = 0, htot = 0;
+        int vtot = 0;
+        //int htot = 0;
         if (is_polygon && (vcount < 2 || (vcount & 1))) {
             Errs()->add_error(
                 "read_point_list: bad poly point list type=%d np=%d.",
@@ -5701,7 +5703,7 @@ oas_in::read_point_list(unsigned int *len, bool is_polygon)
         for (unsigned int i = 0; i < vcount; i++) {
             if (i & 1) {
                 pts[i].set(read_signed(), 0);
-                htot += pts[i].x;
+                //htot += pts[i].x;
             }
             else {
                 pts[i].set(0, read_signed());

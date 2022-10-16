@@ -494,6 +494,7 @@ fhLayout::fhLayout()
 
 
 namespace {
+#ifdef XXX_NOTUSED
     // If line p1,p2 is horizontal and intersects z->Z, split the
     // (Manhattan) zoid and link in the new piece after z.
     //
@@ -538,6 +539,7 @@ namespace {
             zx->Z.xll = zx->Z.xul = x;
         }
     }
+#endif
 
 
     // Split a terminal name into port name and suffix.  Both returns
@@ -718,7 +720,7 @@ fhLayout::setup()
 
     slice_groups(max_rect_size, min_rect_size);
 
-#ifdef XXXnotddef
+#ifdef XXX_NOTUSED
     // Cut at outside edges of other objects, along the long
     // dimension first, then the short dimension.
     //

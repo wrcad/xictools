@@ -2669,6 +2669,26 @@ diff -r -c source.lefdef/def.orig/def/defrData.hpp def/def/defrData.hpp
   };
   
   extern defrData *defData;
+diff -r -c source.lefdef/def.orig/def/defrReader.cpp def/def/defrReader.cpp
+*** source.lefdef/def.orig/def/defrReader.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defrReader.cpp	2022-10-16 13:52:28.000000000 -0700
+***************
+*** 2469,2475 ****
+          //defrPath->reverseOrder();
+          (*defCallbacks->PathCbk)(defrPathCbkType, &defData->PathObj, defSettings->UserData);
+          defData->PathObj.Destroy();
+!         free((char*) &defData->PathObj);
+      }
+  
+      defData->PathObj.Init();
+--- 2469,2475 ----
+          //defrPath->reverseOrder();
+          (*defCallbacks->PathCbk)(defrPathCbkType, &defData->PathObj, defSettings->UserData);
+          defData->PathObj.Destroy();
+!         //free((char*) &defData->PathObj);
+      }
+  
+      defData->PathObj.Init();
 diff -r -c source.lefdef/def.orig/def/defrSettings.cpp def/def/defrSettings.cpp
 *** source.lefdef/def.orig/def/defrSettings.cpp	2016-02-05 14:39:14.000000000 -0800
 --- def/def/defrSettings.cpp	2020-12-30 16:46:37.000000000 -0800
