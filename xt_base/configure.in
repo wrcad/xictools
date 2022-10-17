@@ -396,7 +396,7 @@ dnl # support OSX 12.0 (Monterey) and later.
     INSTALL='STRIPPROG="strip -S" $(BASE)/util/install-sh'
     lib_dirs="$lib_dirs $ac_x_libraries"
     SOEXT=dylib
-    LSHFLAG="-dynamiclib -undefined dynamic_lookup"
+    LSHFLAG="-dynamiclib -undefined dynamic_lookup -Wl,-w"
 ;;
 Linux)
     OSNAME="LinuxUnknown"
@@ -675,7 +675,7 @@ dnl         # Filter needed in Windows, pkg-config adds ^M that chokes g++.
             tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0`"
             tkl="`${gtklocd}pkg-config --libs gtk+-2.0`"
         fi
-        TOOLKITINC="-DUSE_GTK $tkcf"
+        TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
         if test $OSNAME = "Darwin" -a $with_quartz = yes; then
             TOOLKITCFLAGS="-DWITH_QUARTZ"
         fi
