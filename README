@@ -241,7 +241,7 @@ http://wrcad.com for info about the packages.  Basically, if you are a
     6. cd xt_base/packages/pkgfiles; ../util/wr_install all
        This will install the programs from the package files.
     
-    7. Set your shell search path to include the main <i>XicTools</i>
+    7. Set your shell search path to include the main XicTools
        bin, by default /usr/local/xictools/bin.
 
 
@@ -336,13 +336,13 @@ gtk2 libraries.
     Once the basic installation is done, run, as root, the following
     commands:
 
-    port -v selfupdate<br>
-    port install gtk2<br>
-    port install gsl<br>
-    port install python2_select<br>
-    port install python27<br>
-    port install autoconf<br>
-    port install pkgconfig<br>
+    port -v selfupdate
+    port install gtk2
+    port install gsl
+    port install python2_select
+    port install python27
+    port install autoconf
+    port install pkgconfig
 
 6.  Set your shell search path to include /usr/local/xictools/bin.
 

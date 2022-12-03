@@ -173,13 +173,13 @@ The FileTool Utility
     <dl>
     <dt><tt>filetool</tt><dd>
     [<tt>-set</tt> <i>var</i>[=<i>value</i>] ...]<br>
-    &nbsp;&nbsp<tt>-eval</tt> <i>script_file_to_read</i> |<br>
-    &nbsp;&nbsp<tt>-info</tt> <i>layout_file</i> [<i>flags</i>] |<br>
-    &nbsp;&nbsp<tt>-text</tt> <i>layout_file</i> [<i>text_opts</i>] |<br>
-    &nbsp;&nbsp<tt>-comp</tt> <i>comp_args</i> |<br>
-    &nbsp;&nbsp<tt>-split</tt> <i>split_args</i> |<br>
-    &nbsp;&nbsp<tt>-cfile</tt> <i>cfile_args</i> |<br>
-    &nbsp;&nbsp<i>translate_args</i>
+    &nbsp;&nbsp;<tt>-eval</tt> <i>script_file_to_read</i> |<br>
+    &nbsp;&nbsp;<tt>-info</tt> <i>layout_file</i> [<i>flags</i>] |<br>
+    &nbsp;&nbsp;<tt>-text</tt> <i>layout_file</i> [<i>text_opts</i>] |<br>
+    &nbsp;&nbsp;<tt>-comp</tt> <i>comp_args</i> |<br>
+    &nbsp;&nbsp;<tt>-split</tt> <i>split_args</i> |<br>
+    &nbsp;&nbsp;<tt>-cfile</tt> <i>cfile_args</i> |<br>
+    &nbsp;&nbsp;<i>translate_args</i>
     </dl>
 
     <p>
