@@ -2349,7 +2349,7 @@ sCKT::terr(int qcap, double *timeStep)
     double y1 = fabs(*(CKTstate1 + ccap));
     double volttol = CKTcurTask->TSKabstol +
         CKTcurTask->TSKreltol*SPMAX(y0,y1);
-            
+
     y0 = fabs(*(CKTstate0 + qcap));
     y1 = fabs(*(CKTstate1 + qcap));
     double chargetol = SPMAX(y0,y1);
