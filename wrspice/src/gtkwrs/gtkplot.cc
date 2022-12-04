@@ -367,10 +367,15 @@ plot_bag::init(sGraph *gr)
     gr->area().set_width(w);
     gr->area().set_height(h);
 
+#ifndef __APPLE__
+    // With OSX 13.0.1 abd XQuartz 2.8.2, these lines cause the
+    // toolbar to become hidden when a plot window pops up.  Not sure
+    // why these lines are needed in any case.
     if (TB()->context && TB()->context->Window()) {
         gtk_window_set_transient_for(GTK_WINDOW(Shell()),
             GTK_WINDOW(TB()->context->Shell()));
     }
+#endif
     return (false);
 }
 

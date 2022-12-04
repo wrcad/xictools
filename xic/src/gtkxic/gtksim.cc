@@ -160,8 +160,13 @@ sSim::control(SpType status)
     // Prevent the pop-up from taking focus.  Otherwise, when it pops
     // down it will give focus back to the main window, causing iplots
     // to disappear below.
+#ifndef __APPLE__
+    // With these set as below in XQuartz 2.8.2 and OSX 13.0.1, the
+    // buttons don't respond to presses, and when the widget pops down
+    // it hides the main window.
     gtk_window_set_accept_focus(GTK_WINDOW(popup), false);
     gtk_window_set_focus_on_map(GTK_WINDOW(popup), false);
+#endif
 
     GtkWidget *form = gtk_table_new(1, 3, false);
     gtk_widget_show(form);
