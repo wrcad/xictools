@@ -51,6 +51,8 @@
 
 // Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
+// Version 1.40, January 10, 2023 increased range of vm, rsub,
+//   icrn, rn.
 // Version 1.39, January 18, 2022 added block name "tempblk" to
 //   avoid compiler fatal error with some compilers (eg. pVA) due to
 //   the presence of locally named parameters.
@@ -373,22 +375,22 @@ parameter real icfct    = `M_PI_4 from [0.5:`M_PI_4]
 aliasparam icfact       = icfct;
 
 `ifdef NORLMT
-parameter real vm       = `Vm*1e-3 from (0:1e6]
+parameter real vm       = `Vm*1e-3 from (0:inf]
     `P(type="model" info="Ic * subgap resistance" units="V");
-parameter real rsub     = vm/icrit from (0:1e6]
+parameter real rsub     = vm/icrit from (0:inf]
     `P(type="model" info="Subgap resistance" units="O");
-parameter real icrn     = `IcR*1e-3 from (0:1e6]
+parameter real icrn     = `IcR*1e-3 from (0:inf]
     `P(type="model" info="Ic * normal resistance" units="V");
-parameter real rnorm    = icrn/icrit from (0:1e6]
+parameter real rnorm    = icrn/icrit from (0:inf]
     `P(type="model" info="Normal resistance" units="O");
 `else
-parameter real vm       = `Vm*1e-3 from [8m:100m]
+parameter real vm       = `Vm*1e-3 from [8m:1]
     `P(type="model" info="Ic * subgap resistance" units="V");
-parameter real rsub     = vm/icrit from [8e-3/icrit:1e-1/icrit]
+parameter real rsub     = vm/icrit from [8e-3/icrit:1/icrit]
     `P(type="model" info="Subgap resistance" units="O");
-parameter real icrn     = `IcR*1e-3 from [0.5m:vgap*icfct]
+parameter real icrn     = `IcR*1e-3 from [0.5m:1.5*vgap*icfct]
     `P(type="model" info="Ic * normal resistance" units="V");
-parameter real rnorm    = icrn/icrit from [0.5e-3/icrit:(vgap*icfct)/icrit]
+parameter real rnorm    = icrn/icrit from [0.5e-3/icrit:(1.5*vgap*icfct)/icrit]
     `P(type="model" info="Normal resistance" units="O");
 `endif
 aliasparam r0           = rsub;
