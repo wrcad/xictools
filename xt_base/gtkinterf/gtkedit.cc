@@ -796,7 +796,7 @@ GTKeditPopup::ed_quit_proc(GtkWidget*, void *client_data)
 {
     GTKeditPopup *w = static_cast<GTKeditPopup*>(client_data);
     if (w && w->ed_widget_type != GTKeditPopup::Browser &&
-            w->ed_text_changed && w->wb_shell->window) {
+            w->ed_text_changed && gtk_widget_get_window(w->wb_shell)) {
 
         // If there is no window, "delete window" was received, and we
         // can't pop up the confirmation.  Changes will be lost.  Too
@@ -1442,8 +1442,9 @@ GTKeditPopup::ed_drag_data_received(GtkWidget *caller, GdkDragContext *context,
         // stop text view native handler
         gtk_signal_emit_stop_by_name(GTK_OBJECT(caller), "drag-data-received");
     }
-    if (data->length > 0 && data->format == 8) {
-        char *src = (char*)data->data;
+    if (gtk_selection_data_get_length(data) > 0 &&
+            gtk_selection_data_get_format(data) == 8) {
+        char *src = (char*)gtk_selection_data_get_data(data);
         GdkModifierType mask;
         gdk_window_get_pointer(0, 0, 0, &mask);
         if (mask & GDK_CONTROL_MASK) {

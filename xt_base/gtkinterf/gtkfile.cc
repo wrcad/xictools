@@ -2381,7 +2381,7 @@ GTKfilePopup::fs_resize_proc(GtkWidget *widget, GtkAllocation *a, void *fsp)
             // window size, which includes the scrollbars.  Probably
             // should attach this handler to the container, but maybe
             // we will want to deal with scrollbar changes in future.
-            a = &fs->fs_scrwin->allocation;
+            gtk_widget_get_allocation(fs->fs_scrwin, a);
 
             if (a->width == fs->fs_alloc_width)
                 return;
@@ -2511,7 +2511,9 @@ void
 GTKfilePopup::fs_drag_data_received(GtkWidget *widget, GdkDragContext *context,
     gint x, gint y, GtkSelectionData *data, guint, guint time)
 {
-    if (data->length >= 0 && data->format == 8 && data->data) {
+    if (gtk_selection_data_get_length(data) >= 0 && 
+            gtk_selection_data_get_format(data) == 8 && 
+            gtk_selection_data_get_data(data)) {
         GTKfilePopup *fs =
             (GTKfilePopup*)gtk_object_get_data(GTK_OBJECT(widget), "fsbag");
         if (fs) {
@@ -2532,8 +2534,9 @@ GTKfilePopup::fs_drag_data_received(GtkWidget *widget, GdkDragContext *context,
                 }
             }
             if (dst) {
-                gtk_DoFileAction(fs->wb_shell, (char*)data->data, dst,
-                    context, true);
+                gtk_DoFileAction(fs->wb_shell,
+                    (char*)gtk_selection_data_get_data(data), dst, context,
+                    true);
                 delete [] dst;
             }
             gtk_drag_finish(context, true, false, time);
@@ -2563,7 +2566,8 @@ GTKfilePopup::fs_source_drag_data_get(GtkWidget *widget, GdkDragContext*,
         else
             path = fs->get_selection();
         if (path) {
-            gtk_selection_data_set(selection_data, selection_data->target,
+            gtk_selection_data_set(selection_data,
+                gtk_selection_data_get_target(selection_data),
                 8, (unsigned char*)path, strlen(path));
             delete [] path;
         }
@@ -2613,7 +2617,8 @@ void
 GTKfilePopup::fs_selection_get(GtkWidget *widget,
     GtkSelectionData *selection_data, guint, guint, void*)
 {
-    if (selection_data->selection != GDK_SELECTION_PRIMARY)
+    if (gtk_selection_data_get_selection(selection_data) !=
+            GDK_SELECTION_PRIMARY)
         return;  
 
     // stop native handler
@@ -2628,7 +2633,8 @@ GTKfilePopup::fs_selection_get(GtkWidget *widget,
         else
             path = fs->get_selection();
         if (path) {
-            gtk_selection_data_set(selection_data, selection_data->target,
+            gtk_selection_data_set(selection_data,
+                gtk_selection_data_get_target(selection_data),
                 8, (unsigned char*)path, strlen(path));
             delete [] path;
         }
@@ -2685,17 +2691,16 @@ namespace {
 #else
             GdkWindow *window = GTK_WIDGET(tree)->window;
 #endif
-            int hei;
-            gdk_window_get_size(window, 0, &hei);
-            float value = vadj->value;
-            float upper = vadj->upper - hei;
+            int hei = gdk_window_get_height(window);
+            float value = gtk_adjustment_get_value(vadj);
+            float upper = gtk_adjustment_get_upper(vadj) - hei;
             value += VINCR;
             if (value > upper)
                 value = upper;
             gtk_adjustment_set_value(vadj, value);
         }
         else {
-            float value = vadj->value;
+            float value = gtk_adjustment_get_value(vadj);
             value -= VINCR;
             if (value < 0)
                 value = 0;
@@ -2743,8 +2748,7 @@ GTKfilePopup::fs_scroll_hdlr(GtkWidget *tree)
         (GTKfilePopup*)gtk_object_get_data(GTK_OBJECT(tree), "fsbag");
     if (!fs)
         return;
-    int hei;
-    gdk_window_get_size(window, 0, &hei);
+    int hei = gdk_window_get_height(window);
 #define SENS_PIXELS 4
 #define VT_REP 200
     if (y < SENS_PIXELS) {
@@ -3147,7 +3151,7 @@ gtkinterf::gtk_DoFileAction(GtkWidget *shell, const char *src, const char *dst,
 
     sLstr lstr;
     GtkWidget *prog = 0;
-    switch (context->suggested_action) {
+    switch (gdk_drag_context_get_suggested_action(context)) {
     default:
     case GDK_ACTION_COPY:
 #ifdef WIN32
@@ -3257,6 +3261,9 @@ namespace {
                     action == GDK_ACTION_LINK) {
                 GdkDragContext *context = (GdkDragContext*)client_data;
                 context->suggested_action = action;
+                /*  Doesn't exist, how to set?
+                gdk_drag_context_set_suggested_action(context, action);
+                */
                 gtk_DoFileAction(popup, src, dst, context, false);
             }
         }
@@ -3396,8 +3403,8 @@ namespace {
 
         float new_val = gtk_progress_get_value(GTK_PROGRESS(data)) + 2;
         GtkAdjustment *adj = GTK_PROGRESS(data)->adjustment;
-        if (new_val > adj->upper)
-            new_val = adj->lower;
+        if (new_val > gtk_adjustment_get_upper(adj))
+            new_val = gtk_adjustment_get_lower(adj);
         gtk_progress_set_value(GTK_PROGRESS(data), new_val);
         return (true);
     }

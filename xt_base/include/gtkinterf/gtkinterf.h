@@ -477,8 +477,9 @@ namespace gtkinterf {
             {
                 if (wb_shell) {
                     gtk_window_set_title(GTK_WINDOW(wb_shell), title);
-                    if (wb_shell->window)
-                        gdk_window_set_icon_name(wb_shell->window, icontitle);
+                    GdkWindow *w = gtk_widget_get_window(wb_shell);
+                    if (w)
+                        gdk_window_set_icon_name(w, icontitle);
                 }
             }
 
