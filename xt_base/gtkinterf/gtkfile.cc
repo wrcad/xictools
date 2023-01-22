@@ -62,8 +62,11 @@ extern "C" { extern int fnmatch(const char*, const char*, int); }
 #endif
 #endif
 
+#include <gdk/gdkkeysyms.h>
+
 // Define this to omit the open/closed icons.
 // #define NO_ICONS
+
 
 //
 // File selection pop-up.  The panel consists of a CTree which maintains
@@ -460,6 +463,7 @@ namespace gtkinterf {
     // Menu callback codes.
     enum
     {
+        fsNotUsed,
         fsOpen,
         fsNew,
         fsDelete,
@@ -496,15 +500,6 @@ GTKfilePopup::any_selection()
     return (FSmonitor.any_selection());
 }
 
-
-#define IFINIT(i, a, b, c, d, e) { \
-    menu_items[i].path = (char*)a; \
-    menu_items[i].accelerator = (char*)b; \
-    menu_items[i].callback = (GtkItemFactoryCallback)c; \
-    menu_items[i].callback_action = d; \
-    menu_items[i].item_type = (char*)e; \
-    i++; }
-
 #define DEF_TEXT_USWIDTH 300
 
 
@@ -526,7 +521,7 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
     fs_anc_btn = 0;
     fs_filter = 0;
     fs_scrwin = 0;
-    fs_item_factory = 0;
+    fs_menubar = 0;
 
     fs_bmap = 0;
     fs_curnode = 0;
@@ -661,78 +656,175 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
     }
 
     //
-    // menu bar
+    // Menu bar.
     //
     if (fs_type == fsSEL || fs_type == fsSAVE || fs_type == fsOPEN) {
-        GtkItemFactoryEntry menu_items[50];
-        int nitems = 0;
-
-        IFINIT(nitems, "/_File", 0, 0, 0, "<Branch>");
-        if (fs_type == fsSEL)
-            IFINIT(nitems, "/File/_Open", "<control>O", fs_menu_proc, fsOpen,
-                0);
-        IFINIT(nitems, "/File/_New Folder", "<control>F", fs_menu_proc, fsNew,
-            0);
-        IFINIT(nitems, "/File/_Delete", "<control>D", fs_menu_proc, fsDelete,
-            0);
-        IFINIT(nitems, "/File/_Rename", "<control>R", fs_menu_proc, fsRename,
-            0);
-        IFINIT(nitems, "/File/N_ew Root", "<control>E", fs_menu_proc, fsRoot,
-            0);
-        IFINIT(nitems, "/File/N_ew CWD", "<control>C", fs_menu_proc, fsCwd, 0);
-        IFINIT(nitems, "/File/sep1", 0, 0, 0, "<Separator>");
-        IFINIT(nitems, "/File/_Quit", "<control>Q", fs_quit_proc, 0, 0);
-        IFINIT(nitems, "/_Up", 0, 0, 0, "<Branch>");
-        if (!nofiles) {
-            IFINIT(nitems, "/_Listing", 0, 0, 0, "<Branch>");
-            IFINIT(nitems, "/Listing/_Show Filter", "<control>S", fs_menu_proc,
-                fsFilt, "<CheckItem>");
-            IFINIT(nitems, "/Listing/_Relist", "<control>L", fs_menu_proc,
-                fsRelist, 0);
-            IFINIT(nitems, "/Listing/_List by Date", "<control>T",
-                fs_menu_proc, fsMtime, "<CheckItem>");
-            IFINIT(nitems, "/Listing/Show La_bel", "<control>B", fs_menu_proc,
-                fsLabel, "<CheckItem>");
-        }
-        IFINIT(nitems, "/_Help", 0, 0, 0, "<LastBranch>");
-        IFINIT(nitems, "/Help/_Help", "<control>H", fs_menu_proc, fsHelp, 0);
-
         GtkAccelGroup *accel_group = gtk_accel_group_new();
-        fs_item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR,
-            "<files>", accel_group);
-        for (int i = 0; i < nitems; i++) {
-            gtk_item_factory_create_item(fs_item_factory, menu_items + i,
-                this, 2);
-        }
         gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
+        fs_menubar = gtk_menu_bar_new();
+        gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", fs_menubar);
+        gtk_widget_show(fs_menubar);
+        GtkWidget *item;
 
-        fs_anc_btn = gtk_item_factory_get_item(fs_item_factory, "/Up");
-        if (fs_type == fsSEL)
-            fs_open_btn = gtk_item_factory_get_widget(fs_item_factory,
-                "/File/Open");
-        fs_new_btn = gtk_item_factory_get_widget(fs_item_factory,
-            "/File/New Folder");
-        fs_delete_btn = gtk_item_factory_get_widget(fs_item_factory,
-            "/File/Delete");
-        fs_rename_btn = gtk_item_factory_get_widget(fs_item_factory,
-            "/File/Rename");
+        // File menu.
+        item = gtk_menu_item_new_with_mnemonic("_File");
+        gtk_widget_set_name(item, "File");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fs_menubar), item);
+        GtkWidget *fileMenu = gtk_menu_new();
+        gtk_widget_show(fileMenu);
+        gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), fileMenu);
 
-        GtkWidget *menubar = gtk_item_factory_get_widget(fs_item_factory,
-            "<files>");
-        gtk_widget_show(menubar);
-        gtk_box_pack_start(GTK_BOX(hbox), menubar, true, true, 0);
+        if (fs_type == fsSEL) {
+            item = gtk_menu_item_new_with_mnemonic("_Open");
+            gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsOpen);
+            gtk_widget_show(item);
+            fs_open_btn = item;
+            gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(fs_menu_proc), this);
+            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_o,
+                GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+        }
+
+        item = gtk_menu_item_new_with_mnemonic("_New Folder");
+        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsNew);
+        gtk_widget_show(item);
+        fs_new_btn = item;
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(fs_menu_proc), this);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_f,
+            GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+        item = gtk_menu_item_new_with_mnemonic("_Delete");
+        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsDelete);
+        gtk_widget_show(item);
+        fs_delete_btn = item;
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(fs_menu_proc), this);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_d,
+            GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+        item = gtk_menu_item_new_with_mnemonic("_Rename");
+        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsRename);
+        gtk_widget_show(item);
+        fs_rename_btn = item;
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(fs_menu_proc), this);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_r,
+            GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+        item = gtk_menu_item_new_with_mnemonic("_New Root");
+        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsRoot);
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(fs_menu_proc), this);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_e,
+            GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+        item = gtk_menu_item_new_with_mnemonic("N_ew CWD");
+        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsCwd);
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(fs_menu_proc), this);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_c,
+            GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+        item = gtk_separator_menu_item_new();
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+
+        item = gtk_menu_item_new_with_mnemonic("_Quit");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(fs_menu_proc), this);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
+            GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+        // Up menu.
+        item = gtk_menu_item_new_with_mnemonic("_Up");
+        gtk_widget_set_name(item, "Up");
+        fs_anc_btn = item;
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fs_menubar), item);
+        GtkWidget *upMenu = gtk_menu_new();
+        gtk_widget_show(upMenu);
+        gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), upMenu);
 
         if (!nofiles) {
-            // Initialize Show Label button.
-            GtkWidget *btn = gtk_item_factory_get_widget(fs_item_factory,
-                "/Listing/Show Label");
-            if (btn) {
-                if (fs_type == fsSEL)
-                    GRX->SetStatus(btn, fs_sel_show_label);
-                else if (fs_type == fsOPEN)
-                    GRX->SetStatus(btn, fs_open_show_label);
-            }
+            // Listing menu.
+            item = gtk_menu_item_new_with_mnemonic("_Listing");
+            gtk_widget_set_name(item, "Listing");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(fs_menubar), item);
+            GtkWidget *listMenu = gtk_menu_new();
+            gtk_widget_show(listMenu);
+            gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), listMenu);
+
+            item = gtk_check_menu_item_new_with_mnemonic("_Show Filter");
+            gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsFilt);
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(listMenu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(fs_menu_proc), this);
+            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
+                GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+            item = gtk_menu_item_new_with_mnemonic("_Relist");
+            gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsRelist);
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(listMenu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(fs_menu_proc), this);
+            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_l,
+                GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+            item = gtk_check_menu_item_new_with_mnemonic("_List by Date");
+            gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsMtime);
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(listMenu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(fs_menu_proc), this);
+            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_t,
+                GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+            item = gtk_check_menu_item_new_with_mnemonic("Show La_bel");
+            gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsLabel);
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(listMenu), item);
+            if (fs_type == fsSEL)
+                GRX->SetStatus(item, fs_sel_show_label);
+            else if (fs_type == fsOPEN)
+                    GRX->SetStatus(item, fs_open_show_label);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(fs_menu_proc), this);
+            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_b,
+                GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
         }
+
+        item = gtk_menu_item_new_with_mnemonic("_Help");
+        gtk_widget_show(item);
+        gtk_widget_set_name(item, "Help");
+        gtk_menu_item_set_right_justified(GTK_MENU_ITEM(item), true);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fs_menubar), item);
+        GtkWidget *helpMenu = gtk_menu_new();
+        gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), helpMenu);
+        gtk_widget_show(helpMenu);
+
+        item = gtk_menu_item_new_with_mnemonic("_Help");
+        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsHelp);
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(fs_menu_proc), this);
+
+        gtk_box_pack_start(GTK_BOX(hbox), fs_menubar, true, true, 0);
     }
 
     int rowcnt = 0;
@@ -1040,10 +1132,6 @@ GTKfilePopup::~GTKfilePopup()
 
     gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
         GTK_SIGNAL_FUNC(fs_quit_proc), this);
-
-    // It seems that this is needed to avoid a memory leak.
-    if (fs_item_factory)
-        g_object_unref(fs_item_factory);
 
     gtk_widget_hide(wb_shell);
     // shell destroyed in gtk_bag destructor
@@ -2239,12 +2327,14 @@ GTKfilePopup::fs_upmenu_proc(GtkWidget *widget, void *client_data)
 // Private static GTK signal handler.
 //
 void
-GTKfilePopup::fs_menu_proc(GtkWidget *widget, void *client_data,
-    unsigned int code)
+GTKfilePopup::fs_menu_proc(GtkWidget *widget, void *client_data)
 {
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(client_data);
-    if (fs)
-        fs->menu_handler(widget, code);
+    if (fs) {
+        unsigned long code =
+            (unsigned long)gtk_object_get_data(GTK_OBJECT(widget), "index");
+        fs->menu_handler(widget, (int)code);
+    }
 }
 
 

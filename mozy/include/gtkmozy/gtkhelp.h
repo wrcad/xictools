@@ -41,6 +41,7 @@
 #ifndef GTKHELP_H
 #define GTKHELP_H
 
+
 #include "gtkinterf/gtklist.h"
 #include "gtkinterf/gtksearch.h"
 #include "help/help_defs.h"
@@ -146,13 +147,10 @@ namespace gtkinterf {
         // GTK signal handlers
         static void h_drag_data_received(GtkWidget*, GdkDragContext*,
             gint, gint, GtkSelectionData*, guint, guint, void*);
-        static void h_back_proc(GtkWidget*, void*);
-        static void h_forw_proc(GtkWidget*, void*);
         static void h_stop_proc(GtkWidget*, void*);
         static void h_fontsel(gtk_bag*, GtkWidget*);
-        static void h_menu_hdlr(GtkWidget*, void*, unsigned);
+        static void h_menu_hdlr(GtkWidget*, void*);
         static void h_bm_handler(GtkWidget*, void*);
-        static void h_cancel_proc(GtkWidget*, void*);
         static int h_destroy_hdlr(GtkWidget*, GdkEvent*, void*);
 
         // dialog callbacks
@@ -170,7 +168,10 @@ namespace gtkinterf {
         static int h_ntop_timeout(void*);
 
         GtkWidget *h_parent;            // transient for...
-        GtkItemFactory *h_item_factory; // menu item factory
+        GtkWidget *h_menubar;           // the menubar
+        GtkWidget *h_file_menu;         // file menu
+        GtkWidget *h_options_menu;      // options menu
+        GtkWidget *h_bookmarks_menu;    // bookmarks menu
         gtk_viewer *h_viewer;           // viewer class
         HLPparams *h_params;            // default parameters
         HLPtopic *h_root_topic;         // root (original) topic
@@ -195,7 +196,6 @@ namespace gtkinterf {
 #endif
 
         static GtkWindow *h_transient_for;
-        static GtkItemFactoryEntry h_help_menu_items[];
     };
 }
 

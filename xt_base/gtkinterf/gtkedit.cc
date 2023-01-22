@@ -261,20 +261,8 @@ namespace {
 }
 #endif
 
-
 GtkWindow *GTKeditPopup::ed_transient_for = 0;
 
-#define UseItemFactory
-
-#ifdef UseItemFactory
-#define IFINIT(i, a, b, c, d, e) { \
-    menu_items[i].path = (char*)a; \
-    menu_items[i].accelerator = (char*)b; \
-    menu_items[i].callback = (GtkItemFactoryCallback)c; \
-    menu_items[i].callback_action = d; \
-    menu_items[i].item_type = (char*)e; \
-    i++; }
-#endif
 
 // Create the editor popup.
 //
@@ -296,7 +284,6 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
     ed_fsels[1] = 0;
     ed_fsels[2] = 0;
     ed_fsels[3] = 0;
-    ed_item_factory = 0;
     ed_string = 0;
     ed_saved_as = 0;
     ed_dropfile = 0;
@@ -308,6 +295,15 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
     ed_text_changed = false;
     ed_havesource = with_source;
     ed_in_undo = true;
+
+    ed_menubar = 0;
+    ed_File_Load = 0;
+    ed_File_Read = 0;
+    ed_File_Save = 0;
+    ed_File_SaveAs = 0;
+    ed_Edit_Redo = 0;
+    ed_Edit_Undo = 0;
+    ed_Options_Attach = 0;
 
     if (register_edit(true)) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "too many edit windows open.\n");
@@ -344,348 +340,229 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
     // Menu bar.
     //
     int row = 0;
-#ifdef UseItemFactory
-    GtkItemFactoryEntry menu_items[30];
-    int nitems = 0;
-#else
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
-    GtkWidget *menubar = gtk_menu_bar_new();
-    gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", menubar);
-    gtk_widget_show(menubar);
-#endif
+    ed_menubar = gtk_menu_bar_new();
+    gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", ed_menubar);
+    gtk_widget_show(ed_menubar);
+    GtkWidget *item;
 
     // File menu.
-#ifdef UseItemFactory
-    IFINIT(nitems, "/_File", 0, 0, 0, "<Branch>")
-#else
-    GtkWidget *fileI = gtk_menu_item_new_with_mnemonic("_File");
-    gtk_widget_set_name(fileI, "File");
-    gtk_widget_show(fileI);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), fileI);
+    item = gtk_menu_item_new_with_mnemonic("_File");
+    gtk_widget_set_name(item, "File");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(ed_menubar), item);
     GtkWidget *fileMenu = gtk_menu_new();
     gtk_widget_show(fileMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(fileI), fileMenu);
-#endif
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), fileMenu);
 
     if (ed_widget_type == Editor || ed_widget_type == Browser) {
-#ifdef UseItemFactory
-        IFINIT(nitems, "/File/_Open", "<control>O", ed_open_proc, 0, 0);
-        IFINIT(nitems, "/File/_Load", "<control>L", ed_load_proc, 0, 0);
-#else
-        GtkWidget *openI = gtk_menu_item_new_with_mnemonic("_Open");
-        gtk_widget_show(openI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), openI);
-        g_signal_connect(G_OBJECT(openI), "activate",
+        item = gtk_menu_item_new_with_mnemonic("_Open");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_open_proc), this);
-        gtk_widget_add_accelerator(openI, "activate", accel_group, GDK_o,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_o,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-        GtkWidget *loadI = gtk_menu_item_new_with_mnemonic("_Load");
-        gtk_widget_show(loadI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), loadI);
-        g_signal_connect(G_OBJECT(loadI), "activate",
+
+        item = gtk_menu_item_new_with_mnemonic("_Load");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_load_proc), this);
-        gtk_widget_add_accelerator(loadI, "activate", accel_group, GDK_l,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_l,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-#endif
+        ed_File_Load = item;
     }
     if (ed_widget_type != Browser) {
-#ifdef UseItemFactory
-        IFINIT(nitems, "/File/_Read", "<control>R", ed_read_proc, 0, 0);
-#else
-        GtkWidget *readI = gtk_menu_item_new_with_mnemonic("_Read");
-        gtk_widget_show(readI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), readI);
-        g_signal_connect(G_OBJECT(readI), "activate",
+        item = gtk_menu_item_new_with_mnemonic("_Read");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_read_proc), this);
-        gtk_widget_add_accelerator(readI, "activate", accel_group, GDK_r,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_r,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-#endif
+        ed_File_Read = item;
     }
     if (ed_widget_type != Browser && ed_widget_type != Mailer) {
-#ifdef UseItemFactory
-        IFINIT(nitems, "/File/_Save", "<control>S", ed_save_proc, 0, 0);
-#else
-        GtkWidget *saveI = gtk_menu_item_new_with_mnemonic("_Save");
-        gtk_widget_show(saveI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), saveI);
-        g_signal_connect(G_OBJECT(saveI), "activate",
+        item = gtk_menu_item_new_with_mnemonic("_Save");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_save_proc), this);
-        gtk_widget_add_accelerator(saveI, "activate", accel_group, GDK_s,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
         if (ed_widget_type != StringEditor) {
             // Don't desensitize in string edit mode.
-            gtk_widget_set_sensitive(saveI, false);
+            gtk_widget_set_sensitive(item, false);
         }
-#endif
+        ed_File_Save = item;
     }
     if (ed_widget_type != StringEditor) {
-#ifdef UseItemFactory
-        IFINIT(nitems, "/File/Save _As", "<alt>A", ed_save_as_proc, 0, 0);
-        IFINIT(nitems, "/File/_Print", "<alt>N", ed_print_proc, 0,
-            "<CheckItem>");
-#else
-        GtkWidget *saveAsI = gtk_menu_item_new_with_mnemonic("Save _As");
-        gtk_widget_show(saveAsI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), saveAsI);
-        g_signal_connect(G_OBJECT(saveAsI), "activate",
+        item = gtk_menu_item_new_with_mnemonic("Save _As");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_save_as_proc), this);
-//        gtk_widget_add_accelerator(saveAsI, "activate", accel_group, GDK_a,
-//            GDK_ALTL_MASK, GTK_ACCEL_VISIBLE);
-        GtkWidget *printI = gtk_check_menu_item_new_with_mnemonic("_Print");
-        gtk_widget_show(printI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), printI);
-        g_signal_connect(G_OBJECT(printI), "activate",
-            G_CALLBACK(ed_print_proc), this);
-//        gtk_widget_add_accelerator(printI, "activate", accel_group, GDK_n,
+//        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_a,
 //            GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-#endif
+        ed_File_SaveAs = item;
+
+        item = gtk_check_menu_item_new_with_mnemonic("_Print");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(ed_print_proc), this);
+//        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_n,
+//            GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
     }
 
 #ifdef WIN32
     if (ed_widget_type == Editor) {
-#ifdef UseItemFactory
-        IFINIT(nitems, "/File/_Write CRLF", 0, crlf_proc, 0,
-            "<CheckItem>");
-#else
-        GtkWidget *writeI = gtk_check_menu_item_new_with_mnemonic("_Write CRLF");
-        gtk_widget_show(writeI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), writeI);
-        g_signal_connect(G_OBJECT(writeI), "activate",
+        item = gtk_check_menu_item_new_with_mnemonic("_Write CRLF");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(crlf_proc), this);
-        GRX->SetStatus(writeI, GRX->GetCRLFtermination());
-#endif
+        GRX->SetStatus(item, GRX->GetCRLFtermination());
     }
 #endif
 
-#ifdef UseItemFactory
-    IFINIT(nitems, "/File/sep1", 0, 0, 0, "<Separator>");
-#else
-    GtkWidget *sep = gtk_separator_menu_item_new();
-    gtk_widget_show(sep);
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), sep);
-#endif
+    item = gtk_separator_menu_item_new();
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+
     if (ed_widget_type == Mailer) {
-#ifdef UseItemFactory
-        IFINIT(nitems, "/File/_Send Mail", "<control>S", ed_mail_proc, 0, 0);
-#else
-        GtkWidget *sendI = gtk_menu_item_new_with_mnemonic("_Send Mail");
-        gtk_widget_show(sendI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), sendI);
-        g_signal_connect(G_OBJECT(sendI), "activate",
+        item = gtk_menu_item_new_with_mnemonic("_Send Mail");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_mail_proc), this);
-        gtk_widget_add_accelerator(sendI, "activate", accel_group, GDK_s,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-#endif
     }
-#ifdef UseItemFactory
-    IFINIT(nitems, "/File/_Quit", "<control>Q", ed_quit_proc, 0, 0);
-#else
-    GtkWidget *quitI = gtk_menu_item_new_with_mnemonic("_Quit");
-    gtk_widget_show(quitI);
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), quitI);
-    g_signal_connect(G_OBJECT(quitI), "activate",
+    item = gtk_menu_item_new_with_mnemonic("_Quit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(ed_quit_proc), this);
-    gtk_widget_add_accelerator(quitI, "activate", accel_group, GDK_q,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-#endif
 
     // Edit menu.
-#ifdef UseItemFactory
-    IFINIT(nitems, "/_Edit", 0, 0, 0, "<Branch>");
-#else
-    GtkWidget *editI = gtk_menu_item_new_with_mnemonic("_Edit");
-    gtk_widget_set_name(editI, "Edit");
-    gtk_widget_show(editI);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), editI);
+    item = gtk_menu_item_new_with_mnemonic("_Edit");
+    gtk_widget_set_name(item, "Edit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(ed_menubar), item);
     GtkWidget *editMenu = gtk_menu_new();
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(editI), editMenu);
-#endif
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), editMenu);
 
     if (ed_widget_type != Browser) {
-#ifdef UseItemFactory
-        IFINIT(nitems, "/Edit/Undo", "<Alt>U", ed_undo_proc, 0, 0);
-        IFINIT(nitems, "/Edit/Redo", "<Alt>R", ed_redo_proc, 0, 0);
-        IFINIT(nitems, "/Edit/Cut to Clipboard", "<control>X", ed_cut_proc,
-            0, 0);
-#else
-        GtkWidget *undoI = gtk_menu_item_new_with_label("Undo");
-        gtk_widget_show(undoI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), undoI);
-        g_signal_connect(G_OBJECT(undoI), "activate",
+        item = gtk_menu_item_new_with_label("Undo");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_undo_proc), this);
-//        gtk_widget_add_accelerator(undoI, "activate", accel_group, GDK_u,
+//        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_u,
 //            GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-        GtkWidget *redoI = gtk_menu_item_new_with_label("Redo");
-        gtk_widget_show(redoI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), redoI);
-        g_signal_connect(G_OBJECT(redoI), "activate",
+        ed_Edit_Undo = item;
+
+        item = gtk_menu_item_new_with_label("Redo");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_redo_proc), this);
-//        gtk_widget_add_accelerator(redoI, "activate", accel_group, GDK_r,
+//        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_r,
 //            GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-        GtkWidget *cutcI = gtk_menu_item_new_with_label("Cut to Clipboard");
-        gtk_widget_show(cutcI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), cutcI);
-        g_signal_connect(G_OBJECT(cutcI), "activate",
+        ed_Edit_Redo = item;
+
+        item = gtk_menu_item_new_with_label("Cut to Clipboard");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_cut_proc), this);
-        gtk_widget_add_accelerator(cutcI, "activate", accel_group, GDK_x,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_x,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-#endif
     }
-#ifdef UseItemFactory
-    IFINIT(nitems, "/Edit/Copy to Clipboard", "<control>C", ed_copy_proc,
-        0, 0);
-#else
-    GtkWidget *cptcI = gtk_menu_item_new_with_label("Copy To Clipboard");
-    gtk_widget_show(cptcI);
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), cptcI);
-    g_signal_connect(G_OBJECT(cptcI), "activate",
+    item = gtk_menu_item_new_with_label("Copy To Clipboard");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(ed_copy_proc), this);
-    gtk_widget_add_accelerator(cptcI, "activate", accel_group, GDK_x,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_x,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-#endif
     if (ed_widget_type != Browser) {
-#ifdef UseItemFactory
-        IFINIT(nitems, "/Edit/Paste from Clipboard", "<control>V",
-            ed_paste_proc, 0, 0);
-        IFINIT(nitems, "/Edit/Paste Primary", "<alt>P", ed_paste_prim_proc,
-            0, 0);
-#else
-        GtkWidget *pfcbI = gtk_menu_item_new_with_label("Paste from Clipboard");
-        gtk_widget_show(pfcbI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), pfcbI);
-        g_signal_connect(G_OBJECT(pfcbI), "activate",
+        item = gtk_menu_item_new_with_label("Paste from Clipboard");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_paste_proc), this);
-        gtk_widget_add_accelerator(pfcbI, "activate", accel_group, GDK_v,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_v,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-        GtkWidget *pprmI = gtk_menu_item_new_with_label("Paste Primary");
-        gtk_widget_show(pprmI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), pprmI);
-        g_signal_connect(G_OBJECT(pprmI), "activate",
+
+        item = gtk_menu_item_new_with_label("Paste Primary");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_paste_prim_proc), this);
-//        gtk_widget_add_accelerator(pprmI, "activate", accel_group, GDK_p,
+//        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_p,
 //            GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-#endif
     }
 
     // Options menu.
-#ifdef UseItemFactory
-    IFINIT(nitems, "/_Options", 0, 0, 0, "<Branch>");
-#else
-    GtkWidget *optnI = gtk_menu_item_new_with_mnemonic("_Options");
-    gtk_widget_set_name(optnI, "Options");
-    gtk_widget_show(optnI);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), optnI);
+    item = gtk_menu_item_new_with_mnemonic("_Options");
+    gtk_widget_set_name(item, "Options");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(ed_menubar), item);
     GtkWidget *optnMenu = gtk_menu_new();
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(optnI), optnMenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), optnMenu);
     gtk_widget_show(optnMenu);
-#endif
 
-#ifdef UseItemFactory
-    IFINIT(nitems, "/Options/_Search", 0, ed_search_proc, 0, "<CheckItem>");
-#else
-    GtkWidget *srchI = gtk_check_menu_item_new_with_mnemonic("_Search");
-    gtk_widget_show(srchI);
-    gtk_menu_shell_append(GTK_MENU_SHELL(optnMenu), srchI);
-    g_signal_connect(G_OBJECT(srchI), "activate",
+    item = gtk_check_menu_item_new_with_mnemonic("_Search");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(optnMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(ed_search_proc), this);
-#endif
     if (ed_widget_type != Browser && ed_widget_type != Mailer && ed_havesource) {
-#ifdef UseItemFactory
-        IFINIT(nitems, "/Options/_Source", 0, ed_source_proc, 0, 0);
-#else
-        GtkWidget *sorcI = gtk_menu_item_new_with_mnemonic("_Source");
-        gtk_widget_show(sorcI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(optnMenu), sorcI);
-        g_signal_connect(G_OBJECT(sorcI), "activate",
+        item = gtk_menu_item_new_with_mnemonic("_Source");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(optnMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_source_proc), this);
-#endif
     }
     if (ed_widget_type == Mailer) {
-#ifdef UseItemFactory
-        IFINIT(nitems, "/Options/_Attach", 0, ed_attach_proc, 0, 0);
-#else
-        GtkWidget *atchI = gtk_menu_item_new_with_mnemonic("_Attach");
-        gtk_widget_show(atchI);
-        gtk_menu_shell_append(GTK_MENU_SHELL(optnMenu), atchI);
-        g_signal_connect(G_OBJECT(atchI), "activate",
+        item = gtk_menu_item_new_with_mnemonic("_Attach");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(optnMenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_attach_proc), this);
-#endif
+        ed_Options_Attach = item;
     }
-#ifdef UseItemFactory
-    IFINIT(nitems, "/Options/_Font", 0, ed_font_proc, 0, "<CheckItem>");
-#else
-    GtkWidget *fontI = gtk_check_menu_item_new_with_mnemonic("_Font");
-    gtk_widget_show(fontI);
-    gtk_menu_shell_append(GTK_MENU_SHELL(optnMenu), fontI);
-    g_signal_connect(G_OBJECT(fontI), "activate",
+    item = gtk_check_menu_item_new_with_mnemonic("_Font");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(optnMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(ed_font_proc), this);
-#endif
 
     // Help menu.
-#ifdef UseItemFactory
-    IFINIT(nitems, "/_Help", 0, 0, 0, "<LastBranch>");
-#else
-    GtkWidget *helpI = gtk_menu_item_new_with_mnemonic("_Help");
-    gtk_widget_show(helpI);
-    gtk_widget_set_name(helpI, "Help");
-    gtk_menu_item_set_right_justified(GTK_MENU_ITEM(helpI), true);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), helpI);
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_show(item);
+    gtk_widget_set_name(item, "Help");
+    gtk_menu_item_set_right_justified(GTK_MENU_ITEM(item), true);
+    gtk_menu_shell_append(GTK_MENU_SHELL(ed_menubar), item);
     GtkWidget *helpMenu = gtk_menu_new();
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(helpI), helpMenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), helpMenu);
     gtk_widget_show(helpMenu);
-#endif
 
-#ifdef UseItemFactory
-    IFINIT(nitems, "/Help/_Help", "<alt>H", ed_help_proc, 0, 0);
-#else
-    GtkWidget *mhelpI = gtk_menu_item_new_with_mnemonic("_Help");
-    gtk_widget_show(mhelpI);
-    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), mhelpI);
-    g_signal_connect(G_OBJECT(mhelpI), "activate",
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(ed_help_proc), this);
-#endif
+//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_h,
+//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
 
-#ifdef UseItemFactory
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-    ed_item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<edit>",
-        accel_group);
-    for (int i = 0; i < nitems; i++)
-        gtk_item_factory_create_item(ed_item_factory, menu_items + i, this, 2);
-    gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
-
-    GtkWidget *menubar =
-        gtk_item_factory_get_widget(ed_item_factory, "<edit>");
-    gtk_widget_show(menubar);
-    gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", menubar);
-
-    GtkWidget *save =
-        gtk_item_factory_get_widget(ed_item_factory, "/File/Save");
-    if (save && ed_widget_type != StringEditor)
-        // don't desensitize in string edit mode
-        gtk_widget_set_sensitive(save, false);
-
-    // name the menubar objects
-    GtkWidget *widget = gtk_item_factory_get_item(ed_item_factory, "/File");
-    if (widget)
-        gtk_widget_set_name(widget, "File");
-    widget = gtk_item_factory_get_item(ed_item_factory, "/Edit");
-    if (widget)
-        gtk_widget_set_name(widget, "Edit");
-    widget = gtk_item_factory_get_item(ed_item_factory, "/Options");
-    if (widget)
-        gtk_widget_set_name(widget, "Options");
-    widget = gtk_item_factory_get_item(ed_item_factory, "/Help");
-    if (widget)
-        gtk_widget_set_name(widget, "Help");
-#ifdef WIN32
-    widget = gtk_item_factory_get_item(ed_item_factory, "/File/Write CRLF");
-    if (widget)
-        GRX->SetStatus(widget, GRX->GetCRLFtermination());
-#endif
-#endif
-
-    gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, row, row+1,
+    gtk_table_attach(GTK_TABLE(form), ed_menubar, 0, 1, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     row++;
@@ -880,10 +757,6 @@ GTKeditPopup::~GTKeditPopup()
 
     delete [] ed_dropfile;
 
-    // It seems that this is needed to avoid a memory leak.
-    if (ed_item_factory)
-        g_object_unref(ed_item_factory);
-
     if (wb_shell)
         gtk_widget_hide(wb_shell);
     // shell destroyed in gtk_bag destructor
@@ -935,12 +808,10 @@ GTKeditPopup::register_edit(bool mode)
 void
 GTKeditPopup::check_sens()
 {
-    GtkWidget *w = gtk_item_factory_get_widget(ed_item_factory, "/Edit/Undo");
-    if (w)
-        gtk_widget_set_sensitive(w, (ed_undo_list != 0));
-    w = gtk_item_factory_get_widget(ed_item_factory, "/Edit/Redo");
-    if (w)
-        gtk_widget_set_sensitive(w, (ed_redo_list != 0));
+    if (ed_Edit_Undo)
+        gtk_widget_set_sensitive(ed_Edit_Undo, (ed_undo_list != 0));
+    if (ed_Edit_Redo)
+        gtk_widget_set_sensitive(ed_Edit_Redo, (ed_redo_list != 0));
 }
 
 
@@ -1659,10 +1530,8 @@ GTKeditPopup::ed_change_proc(GtkWidget*, void *client_data)
         if (w->ed_text_changed)
             return;
         w->ed_text_changed = true;
-        GtkWidget *save =
-            gtk_item_factory_get_widget(w->ed_item_factory, "/File/Save");
-        if (save)
-            gtk_widget_set_sensitive(save, true);
+        if (w->ed_File_Save)
+            gtk_widget_set_sensitive(w->ed_File_Save, true);
     }
 }
 
@@ -1674,8 +1543,6 @@ void
 GTKeditPopup::ed_help_proc(GtkWidget*, void *client_data)
 {
     GTKeditPopup *w = static_cast<GTKeditPopup*>(client_data);
-//XXX
-printf("here %p\n", w);
     if (w) {
         const char *keyw = w->ed_widget_type == GTKeditPopup::Mailer ?
             "mailclient" : "xeditor";
@@ -1723,11 +1590,9 @@ GTKeditPopup::ed_drag_data_received(GtkWidget *caller, GdkDragContext *context,
                 if (w->wb_input)
                     w->wb_input->popdown();
             }
-            GtkWidget *item = gtk_item_factory_get_widget(w->ed_item_factory,
-                "/File/Load");
+            GtkWidget *item = w->ed_File_Load;
             if (!item)
-                item = gtk_item_factory_get_widget(w->ed_item_factory,
-                    "/Options/Attach");
+                item = w->ed_Options_Attach;
             if (item) {
                 w->ed_dropfile = lstring::copy(src);
                 gtk_menu_item_activate(GTK_MENU_ITEM(item));
@@ -1844,9 +1709,7 @@ GTKeditPopup::ed_do_attach_proc(const char *fnamein, void *client_data)
     gtk_widget_show(img);
     gtk_container_add(GTK_CONTAINER(item), img);
 
-    GtkWidget *menubar = gtk_item_factory_get_widget(w->ed_item_factory,
-        "<edit>");
-    gtk_menu_bar_insert(GTK_MENU_BAR(menubar), item, 3);
+    gtk_menu_bar_insert(GTK_MENU_BAR(w->ed_menubar), item, 3);
 
     GtkWidget *menu = gtk_menu_new();
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
@@ -1888,10 +1751,8 @@ GTKeditPopup::ed_fsel_callback(const char *fname, void *client_data)
         w->ed_dropfile = lstring::copy(fname);
         if (w->wb_input)
             w->wb_input->popdown();
-        GtkWidget *item = gtk_item_factory_get_widget(w->ed_item_factory,
-            "/File/Load");
-        if (item)
-            gtk_menu_item_activate(GTK_MENU_ITEM(item));
+        if (w->ed_File_Load)
+            gtk_menu_item_activate(GTK_MENU_ITEM(w->ed_File_Load));
     }
 }
 
@@ -1952,10 +1813,8 @@ GTKeditPopup::ed_do_saveas_proc(const char *fnamein, void *client_data)
                     w->ed_saved_as = 0;
                 }
                 w->ed_text_changed = false;
-                GtkWidget *save = gtk_item_factory_get_widget(
-                    w->ed_item_factory, "/File/Save");
-                if (save)
-                    gtk_widget_set_sensitive(save, false);
+                if (w->ed_File_Save)
+                    gtk_widget_set_sensitive(w->ed_File_Save, false);
             }
             else {
                 if (!w->write_file(fname, 0 , -1)) {
@@ -2033,10 +1892,8 @@ GTKeditPopup::ed_do_load_proc(const char *fnamein, void *client_data)
         gtk_frame_set_label(GTK_FRAME(w->ed_title), fname);
         if (w->ed_text_changed) {
             w->ed_text_changed = false;
-            GtkWidget *save =
-                gtk_item_factory_get_widget(w->ed_item_factory, "/File/Save");
-            if (save)
-                gtk_widget_set_sensitive(save, false);
+            if (w->ed_File_Save)
+                gtk_widget_set_sensitive(w->ed_File_Save, false);
         }
         if (w->ed_saved_as) {
             delete [] w->ed_saved_as;
@@ -2100,27 +1957,21 @@ GTKeditPopup::ed_set_sens(gtk_bag *wb, bool set, int)
     GTKeditPopup *w = dynamic_cast<GTKeditPopup*>(wb);
     if (!w)
         return;
-    GtkWidget *load = gtk_item_factory_get_widget(w->ed_item_factory,
-        "/File/Load");
-    GtkWidget *read = gtk_item_factory_get_widget(w->ed_item_factory,
-        "/File/Read");
-    GtkWidget *saveas = gtk_item_factory_get_widget(w->ed_item_factory,
-        "/File/Save As");
     if (set) {
-        if (load)
-            gtk_widget_set_sensitive(load, true);
-        if (read)
-            gtk_widget_set_sensitive(read, true);
-        if (saveas)
-            gtk_widget_set_sensitive(saveas, true);
+        if (w->ed_File_Load)
+            gtk_widget_set_sensitive(w->ed_File_Load, true);
+        if (w->ed_File_Read)
+            gtk_widget_set_sensitive(w->ed_File_Read, true);
+        if (w->ed_File_SaveAs)
+            gtk_widget_set_sensitive(w->ed_File_SaveAs, true);
     }
     else {
-        if (load)
-            gtk_widget_set_sensitive(load, false);
-        if (read)
-            gtk_widget_set_sensitive(read, false);
-        if (saveas)
-            gtk_widget_set_sensitive(saveas, false);
+        if (w->ed_File_Load)
+            gtk_widget_set_sensitive(w->ed_File_Load, false);
+        if (w->ed_File_Read)
+            gtk_widget_set_sensitive(w->ed_File_Read, false);
+        if (w->ed_File_SaveAs)
+            gtk_widget_set_sensitive(w->ed_File_SaveAs, false);
     }
 }
 

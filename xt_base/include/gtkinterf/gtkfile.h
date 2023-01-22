@@ -41,6 +41,7 @@
 #ifndef GTKFILE_H
 #define GTKFILE_H
 
+
 struct stringlist;
 
 namespace gtkinterf {
@@ -105,7 +106,7 @@ namespace gtkinterf {
         static int fs_tree_expand_proc(GtkTreeView*, GtkTreeIter*,
             GtkTreePath*, void*);
         static void fs_upmenu_proc(GtkWidget*, void*);
-        static void fs_menu_proc(GtkWidget*, void*, unsigned int);
+        static void fs_menu_proc(GtkWidget*, void*);
         static void fs_open_proc(GtkWidget*, void*);
         static void fs_filter_sel_proc(GtkList*, GtkWidget*, void*);
         static void fs_filter_unsel_proc(GtkList*, GtkWidget*, void*);
@@ -159,7 +160,7 @@ namespace gtkinterf {
         GtkWidget *fs_anc_btn;
         GtkWidget *fs_filter;
         GtkWidget *fs_scrwin;
-        GtkItemFactory *fs_item_factory;
+        GtkWidget *fs_menubar;
 
         sFsBmap *fs_bmap;
         GtkTreePath *fs_curnode;

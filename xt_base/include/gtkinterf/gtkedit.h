@@ -171,7 +171,6 @@ namespace gtkinterf {
         GtkWidget *ed_title;
         GtkWidget *ed_msg;
         GRfilePopup *ed_fsels[4];  // can have 4 up at once
-        GtkItemFactory *ed_item_factory;
         const char *ed_string;
         char *ed_saved_as;
         char *ed_dropfile;
@@ -184,6 +183,15 @@ namespace gtkinterf {
         bool ed_havesource;
         bool ed_ign_change;
         bool ed_in_undo;
+
+        GtkWidget *ed_menubar;
+        GtkWidget *ed_File_Load;
+        GtkWidget *ed_File_Read;
+        GtkWidget *ed_File_Save;
+        GtkWidget *ed_File_SaveAs;
+        GtkWidget *ed_Edit_Redo;
+        GtkWidget *ed_Edit_Undo;
+        GtkWidget *ed_Options_Attach;
 
         static GtkWindow *ed_transient_for;
     };

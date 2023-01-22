@@ -41,6 +41,9 @@
 #ifndef GTKTOOLB_H
 #define GTKTOOLB_H
 
+//XXX
+#define UseItemFactory
+
 #include "gtkinterf/gtkinterf.h"
 #include "keywords.h"
 #include "toolbar.h"
@@ -252,7 +255,13 @@ private:
 
     double tb_elapsed_start;
     char *tb_dropfile;
+#ifdef UseItemFactory
     GtkItemFactory *tb_item_factory;
+#else
+    GtkWidget *tb_file_menu;
+    GtkWidget *tb_edit_menu;
+    GtkWidget *tb_tools_menu;
+#endif
     GReditPopup *tb_mailer;
     int tb_clr_1, tb_clr_2, tb_clr_3, tb_clr_4;
     bool tb_suppress_update;
