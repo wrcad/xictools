@@ -41,9 +41,6 @@
 #ifndef GTKTOOLB_H
 #define GTKTOOLB_H
 
-//XXX
-#define UseItemFactory
-
 #include "gtkinterf/gtkinterf.h"
 #include "keywords.h"
 #include "toolbar.h"
@@ -183,7 +180,8 @@ public:
             if (context)
                 context->PopUpInfo(MODE_ON, msg);
         }
-    void PopUpNotes()       { notes_proc(0, 0, 0); }
+
+    void PopUpNotes()       { notes_proc(0, 0); }
 
     GtkWidget *TextPop(int, int, const char*, const char*,
         const char*, void(*)(GtkWidget*, int, int), const char**, int,
@@ -240,28 +238,28 @@ private:
         guint);
     static void target_drag_leave(GtkWidget*, GdkDragContext*, guint);
     static void wr_btn_hdlr(GtkWidget*, void*);
-    static void open_proc(GtkWidget*, void*, unsigned);
-    static void source_proc(GtkWidget*, void*, unsigned);
-    static void load_proc(GtkWidget*, void*, unsigned);
-    static void update_proc(GtkWidget*, void*, unsigned);
-    static void wrupdate_proc(GtkWidget*, void*, unsigned);
-    static int quit_proc(GtkWidget*, void*, unsigned);
-    static void edit_proc(GtkWidget*, void*, unsigned);
-    static void xic_proc(GtkWidget*, void*, unsigned);
-    static void menu_proc(GtkWidget*, void*, unsigned);
-    static void help_proc(GtkWidget*, void*, unsigned);
-    static void about_proc(GtkWidget*, void*, unsigned);
-    static void notes_proc(GtkWidget*, void*, unsigned);
+    static void open_proc(GtkWidget*, void*);
+    static void source_proc(GtkWidget*, void*);
+    static void load_proc(GtkWidget*, void*);
+    static void update_proc(GtkWidget*, void*);
+    static void wrupdate_proc(GtkWidget*, void*);
+    static int quit_proc(GtkWidget*, void*);
+    static void edit_proc(GtkWidget*, void*);
+    static void xic_proc(GtkWidget*, void*);
+    static void menu_proc(GtkWidget*, void*);
+    static void help_proc(GtkWidget*, void*);
+    static void about_proc(GtkWidget*, void*);
+    static void notes_proc(GtkWidget*, void*);
 
     double tb_elapsed_start;
     char *tb_dropfile;
-#ifdef UseItemFactory
-    GtkItemFactory *tb_item_factory;
-#else
+
     GtkWidget *tb_file_menu;
+    GtkWidget *tb_source_btn;
+    GtkWidget *tb_load_btn;
     GtkWidget *tb_edit_menu;
     GtkWidget *tb_tools_menu;
-#endif
+
     GReditPopup *tb_mailer;
     int tb_clr_1, tb_clr_2, tb_clr_3, tb_clr_4;
     bool tb_suppress_update;

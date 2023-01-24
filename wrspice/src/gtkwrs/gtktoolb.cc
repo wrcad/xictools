@@ -79,6 +79,8 @@
 #include "../../icons/wrspice_48x48.xpm"
 #endif
 
+#include <gdk/gdkkeysyms.h>
+
 
 #ifdef WIN32
 // Reference a symbol in the resource module so the resources are linked.
@@ -383,13 +385,13 @@ GTKtoolbar::GTKtoolbar()
 
     tb_elapsed_start = 0.0;
     tb_dropfile = 0;
-#ifdef UseItemFactory
-    tb_item_factory = 0;
-#else
+
     tb_file_menu = 0;
+    tb_source_btn = 0;
+    tb_load_btn = 0;
     tb_edit_menu = 0;
     tb_tools_menu = 0;
-#endif
+
     tb_mailer = 0;
     tb_clr_1 = 0;
     tb_clr_2 = 0;
@@ -420,9 +422,7 @@ GTKtoolbar::Toolbar()
     if (!CP.Display())
         return;
 
-#if GTK_CHECK_VERSION(2,10,4)
     gtk_window_set_default_icon_name("wrspice");
-#endif
     tbpop(true);
 
     // now launch the application windows that start realized
@@ -430,7 +430,7 @@ GTKtoolbar::Toolbar()
         if (!tb->active)
             continue;
         tb->active = false;
-        menu_proc(0, 0, tb - entries);
+        menu_proc(0, (gpointer)(tb - entries));
     }
 }
 
@@ -864,14 +864,8 @@ ErrMsgBox::PopUpErr(const char *string)
     gtk_signal_connect(GTK_OBJECT(cancel), "clicked",
         GTK_SIGNAL_FUNC(er_cancel_proc), er_popup);
     gtk_object_set_data(GTK_OBJECT(cancel), "shell", er_popup);
-#if GTK_CHECK_VERSION(2,4,0)
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(er_text),
         er_wrap ? GTK_WRAP_WORD_CHAR : GTK_WRAP_NONE);
-#else
-    // gtk-2.2.4 doesn't have GTK_WRAP_WORD_CHAR
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(er_text),
-        er_wrap ? GTK_WRAP_CHAR : GTK_WRAP_NONE);
-#endif
     gtk_box_pack_start(GTK_BOX(hbox), cancel, true, true, 0);
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -987,14 +981,8 @@ ErrMsgBox::er_wrap_proc(GtkWidget *btn, void*)
 {
     if (MB.er_popup && MB.er_text) {
         MB.er_wrap = GRX->GetStatus(btn);
-#if GTK_CHECK_VERSION(2,4,0)
         gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(MB.er_text),
             MB.er_wrap ? GTK_WRAP_WORD_CHAR : GTK_WRAP_NONE);
-#else
-        // gtk-2.2.4 doesn't have GTK_WRAP_WORD_CHAR
-        gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(MB.er_text),
-            MB.er_wrap ? GTK_WRAP_CHAR : GTK_WRAP_NONE);
-#endif
     }
 }
 
@@ -1403,11 +1391,7 @@ GTKtoolbar::RevertFocus(GtkWidget *widget)
         RevertMode = (RVTtype)vv.get_int();
     if (RevertMode == RVTauto) {
 #ifdef __linux__
-#if GTK_CHECK_VERSION(2,24,24)
         RevertMode = RVTrhel7;
-#else
-        RevertMode = RVTrhel6;
-#endif
 #else
 #ifdef ___APPLE__
         RevertMode = RVTmac;
@@ -1730,21 +1714,6 @@ namespace {
         "                    "};
 }
 
-#ifdef UseItemFactory
-#define IFINIT(i, a, b, c, d, e) { \
-    menu_items[i].path = (char*)a; \
-    menu_items[i].accelerator = (char*)b; \
-    menu_items[i].callback = (GtkItemFactoryCallback)c; \
-    menu_items[i].callback_action = d; \
-    menu_items[i].item_type = (char*)e; \
-    i++; }
-
-#define IFGET(zz) \
-    gtk_item_factory_get_widget(GTK_ITEM_FACTORY(tb_item_factory), zz)
-
-#define GIFC(x) (GtkItemFactoryCallback)x
-#endif
-
 
 namespace {
     //
@@ -1800,20 +1769,6 @@ namespace {
         else
             raise(SIGINT);
     }
-
-#ifdef UseItemFactory
-#else
-    GtkWidget *find_item(GList *list, unsigned int ix)
-    {
-        for (GList *l = list; l; l = l->next) {
-            unsigned long x = (unsigned long)gtk_object_get_data(
-                GTK_OBJECT(l->data), "index");
-            if (x == ix)
-                return (GTK_WIDGET(l->data));
-        }
-        return (0);
-    }
-#endif
 }
 
 
@@ -1841,7 +1796,6 @@ GTKtoolbar::tbpop(bool up)
 #endif
     GTKeditPopup::set_transient_for(GTK_WINDOW(toolbar));
 
-#if GTK_CHECK_VERSION(2,10,4)
 #ifdef WIN32
     // Icons are obtained from resources.
 #else
@@ -1855,7 +1809,6 @@ GTKtoolbar::tbpop(bool up)
     g3->next = 0;  
     g2->next = g3;
     gtk_window_set_icon_list(GTK_WINDOW(w->Shell()), g1);
-#endif
 #endif
 
     // This is needed to get the window to change size if the font size
@@ -1871,104 +1824,12 @@ GTKtoolbar::tbpop(bool up)
     gtk_widget_show(form);
     gtk_container_add(GTK_CONTAINER(toolbar), form);
 
-#ifdef UseItemFactory
-    int nitems = 0;
-    GtkItemFactoryEntry menu_items[30];
-
-    IFINIT(nitems, "/_File",                  0, 0, 0, "<Branch>")
-    IFINIT(nitems, "/File/_File Select", "<control>O", GIFC(open_proc), 0, 0);
-    IFINIT(nitems, "/File/_Source","<control>S", GIFC(source_proc), 0, 0);
-    IFINIT(nitems, "/File/_Load",  "<control>L", GIFC(load_proc), 0, 0);
-    IFINIT(nitems, "/File/Update _Tools",     0, GIFC(update_proc), 0, 0);
-    IFINIT(nitems, "/File/Update _WRspice",   0, GIFC(wrupdate_proc), 0, 0);
-    IFINIT(nitems, "/File/sep1",              0, 0, 0, "<Separator>");
-    if (CP.GetFlag(CP_NOTTYIO)) {
-        IFINIT(nitems, "/File/_Close",  "<control>Q", GIFC(quit_proc), 0, 0);
-    }
-    else {
-        IFINIT(nitems, "/File/_Quit",  "<control>Q", GIFC(quit_proc), 0, 0);
-    }
-
-    IFINIT(nitems, "/_Edit",                  0, 0, 0, "<Branch>");
-    IFINIT(nitems, "/Edit/_Text Editor", "<control>T", GIFC(edit_proc), 0, 0);
-    if (!CP.GetFlag(CP_NOTTYIO)) {
-        IFINIT(nitems, "/Edit/_Xic",   "<control>X", GIFC(xic_proc), 0, 0);
-    }
-
-    // note that the tools order is alterable from tbsetup
-    IFINIT(nitems, "/_Tools", 0, 0, 0, "<Branch>");
-    int ix = 0;
-    for (tbent *tb = entries; tb && tb->name; tb++, ix++) {
-        if (tb->name == ntb_toolbar)
-            continue;
-        if (tb->name == ntb_bug)
-            continue;  // in WR button
-        else if (tb->name == ntb_circuits) {
-            IFINIT(nitems, "/Tools/_Circuits",  "<alt>C", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_colors) {
-            IFINIT(nitems, "/Tools/C_olors",    "<alt>O", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_commands) {
-            IFINIT(nitems, "/Tools/Co_mmands",  "<alt>M", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_debug) {
-            IFINIT(nitems, "/Tools/_Debug",     "<alt>D", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_files) {
-            IFINIT(nitems, "/Tools/_Files",     "<alt>Z", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_font) {
-            IFINIT(nitems, "/Tools/Fo_nts",     "<alt>N", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_plotdefs) {
-            IFINIT(nitems, "/Tools/P_lot Opts", "<alt>L", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_plots) {
-            IFINIT(nitems, "/Tools/_Plots",     "<alt>P", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_shell) {
-            IFINIT(nitems, "/Tools/_Shell",     "<alt>S", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_simdefs) {
-            IFINIT(nitems, "/Tools/S_im Opts",  "<alt>I", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_trace) {
-            IFINIT(nitems, "/Tools/_Trace",     "<alt>A", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_variables) {
-            IFINIT(nitems, "/Tools/Va_riables", "<alt>R", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-        else if (tb->name == ntb_vectors) {
-            IFINIT(nitems, "/Tools/_Vectors",   "<alt>V", GIFC(menu_proc), ix,
-                "<CheckItem>");
-        }
-    }
-
-    IFINIT(nitems, "/_Help",                  0, 0, 0, "<LastBranch>");
-    IFINIT(nitems, "/Help/_Help",  "<control>H", GIFC(help_proc), 0, 0);
-    IFINIT(nitems, "/Help/_About", "<control>A", GIFC(about_proc), 0, 0);
-    IFINIT(nitems, "/Help/_Notes", "<control>N", GIFC(notes_proc), 0, 0);
-#else
     // Menu bar.
     //
-    int row = 0;
     GtkAccelGroup *accel_group = gtk_accel_group_new();
-    gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
-    GtkWidgret *menubar = gtk_menu_bar_new();
-    gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", menubar);
+    gtk_window_add_accel_group(GTK_WINDOW(w->Shell()), accel_group);
+    GtkWidget *menubar = gtk_menu_bar_new();
+    gtk_object_set_data(GTK_OBJECT(w->Shell()), "menubar", menubar);
     gtk_widget_show(menubar);
     GtkWidget *item;
 
@@ -2000,6 +1861,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_tooltip_text(item, "Source input file");
+    tb_source_btn = item;
 
     // "/File/_Load", "<control>L", load_proc, 0
     item = gtk_menu_item_new_with_mnemonic("_Load");
@@ -2010,6 +1872,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_widget_add_accelerator(item, "activate", accel_group, GDK_l,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_tooltip_text(item, "Load plot data file");
+    tb_load_btn = item;
 
     // "/File/Update _Tools", 0, update_proc, 0
     item = gtk_menu_item_new_with_mnemonic("Update _Tools");
@@ -2035,6 +1898,7 @@ GTKtoolbar::tbpop(bool up)
         // "/File/_Close", "<control>Q", quit_proc, 0
         item = gtk_menu_item_new_with_mnemonic("_Close");
         gtk_widget_set_tooltip_text(item, "Close WRspice");
+    }
     else {
         // "/File/_Quit", "<control>Q", quit_proc, 0
         item = gtk_menu_item_new_with_mnemonic("_Quit");
@@ -2075,7 +1939,7 @@ GTKtoolbar::tbpop(bool up)
             G_CALLBACK(xic_proc), this);
         gtk_widget_add_accelerator(item, "activate", accel_group, GDK_x,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-        gtk_widget_set_tooltip_text(bitem, "Start Xic");
+        gtk_widget_set_tooltip_text(item, "Start Xic");
     }
 
     // Tools menu.
@@ -2088,7 +1952,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_widget_show(tb_tools_menu);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), tb_tools_menu);
 
-    int ix = 0;
+    unsigned long ix = 0;
     for (tbent *tb = entries; tb && tb->name; tb++, ix++) {
         if (tb->name == ntb_toolbar)
             continue;
@@ -2103,6 +1967,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_c,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List circuits");
             tb_circuits = item;
         }
         else if (tb->name == ntb_colors) {
@@ -2114,7 +1979,8 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_c,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-            tb_colora = item;
+            gtk_widget_set_tooltip_text(item, "Set plot colors");
+            tb_colors = item;
         }
         else if (tb->name == ntb_commands) {
             // "/Tools/Co_mmands", "<alt>M", menu_proc, ix, "<CheckItem>"
@@ -2125,6 +1991,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_m,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set command options");
             tb_commands = item;
         }
         else if (tb->name == ntb_debug) {
@@ -2136,6 +2003,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_d,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set debugging options");
             tb_debug = item;
         }
         else if (tb->name == ntb_files) {
@@ -2147,6 +2015,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_z,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List search path files");
             tb_files = item;
         }
         else if (tb->name == ntb_font) {
@@ -2158,6 +2027,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_n,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set window fonts");
             tb_font = item;
         }
         else if (tb->name == ntb_plotdefs) {
@@ -2169,6 +2039,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_l,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set plot options");
             tb_plotdefs = item;
         }
         else if (tb->name == ntb_plots) {
@@ -2180,6 +2051,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_p,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List result plot data");
             tb_plots = item;
         }
         else if (tb->name == ntb_shell) {
@@ -2191,6 +2063,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set shell options");
             tb_shell = item;
         }
         else if (tb->name == ntb_simdefs) {
@@ -2202,6 +2075,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_i,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set simulation options");
             tb_simdefs = item;
         }
         else if (tb->name == ntb_trace) {
@@ -2213,6 +2087,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_a,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List traces in effect");
             tb_trace = item;
         }
         else if (tb->name == ntb_variables) {
@@ -2224,6 +2099,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_r,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List set shell variables");
             tb_variables = item;
         }
         else if (tb->name == ntb_vectors) {
@@ -2235,6 +2111,7 @@ GTKtoolbar::tbpop(bool up)
                 G_CALLBACK(menu_proc), (gpointer)ix);
             // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_v,
             //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List vectors in current plot");
             tb_vectors = item;
         }
     }
@@ -2276,17 +2153,6 @@ GTKtoolbar::tbpop(bool up)
     gtk_widget_add_accelerator(item, "activate", accel_group, GDK_n,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_tooltip_text(item, "Show release notes");
-#endif
-
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-    tb_item_factory =
-        gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<wrs>", accel_group);
-    for (int i = 0; i < nitems; i++)
-        gtk_item_factory_create_item(tb_item_factory, menu_items + i, 0, 2);
-    gtk_window_add_accel_group(GTK_WINDOW(toolbar), accel_group);
-
-    GtkWidget *menubar = gtk_item_factory_get_widget(tb_item_factory, "<wrs>");
-    gtk_widget_show(menubar);
 
     for (tbent *tb = entries; tb && tb->name; tb++) {
         if (tb->name == ntb_toolbar)
@@ -2294,162 +2160,58 @@ GTKtoolbar::tbpop(bool up)
         if (tb->name == ntb_bug)
             continue;  // in WR button
         else if (tb->name == ntb_circuits) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Circuits");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "List circuits");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_circuits)
+                GRX->SetStatus(tb_circuits, tb->active);
         }
         else if (tb->name == ntb_colors) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Colors");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "Set plot colors");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_colors)
+                GRX->SetStatus(tb_colors, tb->active);
         }
         else if (tb->name == ntb_commands) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Commands");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "Set command options");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_commands)
+                GRX->SetStatus(tb_commands, tb->active);
         }
         else if (tb->name == ntb_debug) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Debug");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "Set debugging options");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_debug)
+                GRX->SetStatus(tb_debug, tb->active);
         }
         else if (tb->name == ntb_files) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Files");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "List search path files");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_files)
+                GRX->SetStatus(tb_files, tb->active);
         }
         else if (tb->name == ntb_font) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Fonts");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "Set window fonts");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_font)
+                GRX->SetStatus(tb_font, tb->active);
         }
         else if (tb->name == ntb_plotdefs) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Plot Opts");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "Set plot options");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_plotdefs)
+                GRX->SetStatus(tb_plotdefs, tb->active);
         }
         else if (tb->name == ntb_plots) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Plots");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "List result plot data");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_plots)
+                GRX->SetStatus(tb_plots, tb->active);
         }
         else if (tb->name == ntb_shell) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Shell");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "Set shell options");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_shell)
+                GRX->SetStatus(tb_shell, tb->active);
         }
         else if (tb->name == ntb_simdefs) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Sim Opts");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "Set simulation options");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_simdefs)
+                GRX->SetStatus(tb_simdefs, tb->active);
         }
         else if (tb->name == ntb_trace) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Trace");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "List traces in effect");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_trace)
+                GRX->SetStatus(tb_trace, tb->active);
         }
         else if (tb->name == ntb_variables) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Variables");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn, "List set shell variables");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_variables)
+                GRX->SetStatus(tb_variables, tb->active);
         }
         else if (tb->name == ntb_vectors) {
-            GtkWidget *btn = gtk_item_factory_get_widget(tb_item_factory,
-                "/Tools/Vectors");
-            if (btn) {
-                gtk_widget_set_tooltip_text(btn,
-                    "List vectors in current plot");
-                GRX->SetStatus(btn, tb->active);
-            }
+            if (tb_vectors)
+                GRX->SetStatus(tb_vectors, tb->active);
         }
     }
-
-    {
-#ifdef UseItemFactory
-        // Add the rest of the tooltips.
-        GtkWidget *btn;
-        GtkItemFactory *tbif = tb_item_factory;
-
-        btn = gtk_item_factory_get_widget(tbif, "/File/File Select");
-        if (btn)
-            gtk_widget_set_tooltip_text(btn, "Show File Selection panel");
-        btn = gtk_item_factory_get_widget(tbif, "/File/Source");
-        if (btn)
-            gtk_widget_set_tooltip_text(btn, "Source input file");
-        btn = gtk_item_factory_get_widget(tbif, "/File/Load");
-        if (btn)
-            gtk_widget_set_tooltip_text(btn, "Load plot data file");
-        btn = gtk_item_factory_get_widget(tbif, "/File/Update Tools");
-        if (btn)
-            gtk_widget_set_tooltip_text(btn, "Update tool window locations");
-        btn = gtk_item_factory_get_widget(tbif, "/File/Update WRspice");
-        if (btn)
-            gtk_widget_set_tooltip_text(btn, "Update WRspice");
-        if (CP.GetFlag(CP_NOTTYIO)) {
-            btn = gtk_item_factory_get_widget(tbif, "/File/Close");
-            if (btn)
-                gtk_widget_set_tooltip_text(btn, "Close WRspice");
-        }
-        else {
-            btn = gtk_item_factory_get_widget(tbif, "/File/Quit");
-            if (btn)
-                gtk_widget_set_tooltip_text(btn, "Quit WRspice");
-        }
-        btn = gtk_item_factory_get_widget(tbif, "/Edit/Text Editor");
-        if (btn)
-            gtk_widget_set_tooltip_text(btn, "Pop up text editor");
-        if (!CP.GetFlag(CP_NOTTYIO)) {
-            btn = gtk_item_factory_get_widget(tbif, "/Edit/Xic");
-            if (btn)
-                gtk_widget_set_tooltip_text(btn, "Start Xic");
-        }
-        btn = gtk_item_factory_get_widget(tbif, "/Help/Help");
-        if (btn)
-            gtk_widget_set_tooltip_text(btn, "Pop up Help window");
-        btn = gtk_item_factory_get_widget(tbif, "/Help/About");
-        if (btn)
-            gtk_widget_set_tooltip_text(btn, "Pop up About window");
-        btn = gtk_item_factory_get_widget(tbif, "/Help/Notes");
-        if (btn)
-            gtk_widget_set_tooltip_text(btn, "Show release notes");
-    }
-#endif
 
     GtkWidget *hbox = gtk_hbox_new(false, 2);
     gtk_widget_show(hbox);
@@ -2546,36 +2308,6 @@ GTKtoolbar::tbpop(bool up)
             gtk_widget_set_uposition(toolbar, x, y);
             continue;
         }
-#ifdef UseItemFactory
-        if (tb->name == ntb_bug)
-            continue;  // in "WR" button
-        else if (tb->name == ntb_circuits)
-            tb_circuits = IFGET("/Tools/Circuits");
-        else if (tb->name == ntb_colors)
-            tb_colors = IFGET("/Tools/Colors");
-        else if (tb->name == ntb_commands)
-            tb_commands = IFGET("/Tools/Commands");
-        else if (tb->name == ntb_debug)
-            tb_debug = IFGET("/Tools/Debug");
-        else if (tb->name == ntb_files)
-            tb_files = IFGET("/Tools/Files");
-        else if (tb->name == ntb_font)
-            tb_font = IFGET("/Tools/Fonts");
-        else if (tb->name == ntb_plotdefs)
-            tb_plotdefs = IFGET("/Tools/Plot Opts");
-        else if (tb->name == ntb_plots)
-            tb_plots = IFGET("/Tools/Plots");
-        else if (tb->name == ntb_shell)
-            tb_shell = IFGET("/Tools/Shell");
-        else if (tb->name == ntb_simdefs)
-            tb_simdefs = IFGET("/Tools/Sim Opts");
-        else if (tb->name == ntb_trace)
-            tb_trace = IFGET("/Tools/Trace");
-        else if (tb->name == ntb_variables)
-            tb_variables = IFGET("/Tools/Variables");
-        else if (tb->name == ntb_vectors)
-            tb_vectors = IFGET("/Tools/Vectors");
-#endif
     }
 
     // MSW seems to need this before gtk_window_show.
@@ -2656,11 +2388,9 @@ GTKtoolbar::drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
             if (TB()->context->ActiveInput())
                 TB()->context->ActiveInput()->popdown();
         }
-        GtkWidget *item = gtk_item_factory_get_widget(TB()->tb_item_factory,
-            "/File/Source");
+        GtkWidget *item = TB()->tb_source_btn;
         if (!item)
-            item = gtk_item_factory_get_widget(TB()->tb_item_factory,
-                "/File/Load");
+            item = TB()->tb_load_btn;
         if (item) {
             TB()->tb_dropfile = lstring::copy(src);
             gtk_menu_item_activate(GTK_MENU_ITEM(item));
@@ -2753,7 +2483,7 @@ namespace {
 // Pop up the file selection panel.
 //
 void
-GTKtoolbar::open_proc(GtkWidget*, void*, unsigned)
+GTKtoolbar::open_proc(GtkWidget*, void*)
 {
     static int cnt;
     int x = 100, y = 100;
@@ -2791,7 +2521,7 @@ namespace {
 // Prompt for circuit to source.
 //
 void
-GTKtoolbar::source_proc(GtkWidget*, void*, unsigned)
+GTKtoolbar::source_proc(GtkWidget*, void*)
 {
     char buf[512];
     *buf = '\0';
@@ -2828,7 +2558,7 @@ namespace {
 // Prompt for rawfile to load.
 //
 void
-GTKtoolbar::load_proc(GtkWidget*, void*, unsigned)
+GTKtoolbar::load_proc(GtkWidget*, void*)
 {
     char buf[512];
     *buf = '\0';
@@ -2846,7 +2576,7 @@ GTKtoolbar::load_proc(GtkWidget*, void*, unsigned)
 // Update the tool configuration.
 //
 void
-GTKtoolbar::update_proc(GtkWidget*, void*, unsigned int)
+GTKtoolbar::update_proc(GtkWidget*, void*)
 {
     CommandTab::com_tbupdate(0);
 }
@@ -2856,7 +2586,7 @@ GTKtoolbar::update_proc(GtkWidget*, void*, unsigned int)
 // Check for updates, download/install update.
 //
 void
-GTKtoolbar::wrupdate_proc(GtkWidget*, void*, unsigned int)
+GTKtoolbar::wrupdate_proc(GtkWidget*, void*)
 {
     CommandTab::com_wrupdate(0);
     raise(SIGINT);  // for new prompt, else it hangs
@@ -2867,7 +2597,7 @@ GTKtoolbar::wrupdate_proc(GtkWidget*, void*, unsigned int)
 // Quit the program, confirm if work is unsaved
 //
 int
-GTKtoolbar::quit_proc(GtkWidget*, void*, unsigned int)
+GTKtoolbar::quit_proc(GtkWidget*, void*)
 {
     if (CP.GetFlag(CP_NOTTYIO)) {
         // In server mode, just hide ourself.
@@ -2887,7 +2617,7 @@ GTKtoolbar::quit_proc(GtkWidget*, void*, unsigned int)
 // Pop up a text editor.
 //
 void
-GTKtoolbar::edit_proc(GtkWidget*, void*, unsigned)
+GTKtoolbar::edit_proc(GtkWidget*, void*)
 {
     CommandTab::com_edit(0);
 }
@@ -2897,7 +2627,7 @@ GTKtoolbar::edit_proc(GtkWidget*, void*, unsigned)
 // Start the Xic program.
 //
 void
-GTKtoolbar::xic_proc(GtkWidget*, void*, unsigned int)
+GTKtoolbar::xic_proc(GtkWidget*, void*)
 {
     bool usearg = false;
     wordlist wl;
@@ -2928,8 +2658,9 @@ GTKtoolbar::xic_proc(GtkWidget*, void*, unsigned int)
 // Handler for the "tools" menu.
 //
 void
-GTKtoolbar::menu_proc(GtkWidget*, void*, unsigned indx)
+GTKtoolbar::menu_proc(GtkWidget*, void *data)
 {
+    unsigned long indx = (unsigned long)data;
     tbent *tb = &TB()->entries[indx];
     if (tb->name == TB()->ntb_bug) {
         if (!tb->active)
@@ -3022,7 +2753,7 @@ GTKtoolbar::menu_proc(GtkWidget*, void*, unsigned indx)
 // Pop up the help browser.
 //
 void
-GTKtoolbar::help_proc(GtkWidget*, void*, unsigned)
+GTKtoolbar::help_proc(GtkWidget*, void*)
 {
     CommandTab::com_help(0);
 }
@@ -3032,7 +2763,7 @@ GTKtoolbar::help_proc(GtkWidget*, void*, unsigned)
 // Pop up a file containing the "about" information
 //
 void
-GTKtoolbar::about_proc(GtkWidget*, void*, unsigned)
+GTKtoolbar::about_proc(GtkWidget*, void*)
 {
     char buf[256];
     if (Global.StartupDir() && *Global.StartupDir()) {
@@ -3086,7 +2817,7 @@ GTKtoolbar::about_proc(GtkWidget*, void*, unsigned)
 // Pop up a file browser loaded with the release notes.
 //
 void
-GTKtoolbar::notes_proc(GtkWidget*, void*, unsigned)
+GTKtoolbar::notes_proc(GtkWidget*, void*)
 {
     if (!TB()->toolbar)
         return;
