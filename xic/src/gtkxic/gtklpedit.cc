@@ -423,8 +423,8 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
 
     GtkWidget *nbook = gtk_notebook_new();
     gtk_widget_show(nbook);
-    gtk_signal_connect(GTK_OBJECT(nbook), "switch-page",
-        GTK_SIGNAL_FUNC(lp_page_change_proc), 0);
+    g_signal_connect(G_OBJECT(nbook), "switch-page",
+        G_CALLBACK(lp_page_change_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), nbook, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -459,10 +459,10 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     text_scrollable_new(&contr, &lp_text, FNT_FIXED);
 
     gtk_widget_add_events(lp_text, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(lp_text), "button-press-event",
-        GTK_SIGNAL_FUNC(lp_text_btn_hdlr), 0);
-    gtk_signal_connect_after(GTK_OBJECT(lp_text), "realize",
-        GTK_SIGNAL_FUNC(text_realize_proc), 0);
+    g_signal_connect(G_OBJECT(lp_text), "button-press-event",
+        G_CALLBACK(lp_text_btn_hdlr), 0);
+    g_signal_connect_after(G_OBJECT(lp_text), "realize",
+        G_CALLBACK(text_realize_proc), 0);
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(lp_text));

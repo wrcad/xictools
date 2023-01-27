@@ -96,14 +96,14 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
 
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        (GtkSignalFunc)pl_cancel_proc, pd_shell);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pl_cancel_proc), pd_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 2);
 
     button = gtk_toggle_button_new_with_label("Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "toggled",
-        (GtkSignalFunc)pl_help_proc, pd_shell);
+    g_signal_connect(G_OBJECT(button), "toggled",
+        G_CALLBACK(pl_help_proc), pd_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 2);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 0, 1,
@@ -694,8 +694,8 @@ GTKtoolbar::PopDownPlotDefs()
     SetLoc(ntb_plotdefs, pd_shell);
 
     GRX->Deselect(tb_plotdefs);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(pd_shell),
-        GTK_SIGNAL_FUNC(pl_cancel_proc), pd_shell);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(pd_shell),
+        (gpointer)pl_cancel_proc, pd_shell);
 
     for (int i = 0; KW.plot(i)->word; i++) {
         xKWent *ent = static_cast<xKWent*>(KW.plot(i));

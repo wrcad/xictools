@@ -276,8 +276,8 @@ sEs::sEs(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -305,24 +305,24 @@ sEs::sEs(GRobject c)
     button = gtk_button_new_with_label("Clear Extraction");
     gtk_widget_set_name(button, "ClearEx");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     es_clrex = button;
 
     button = gtk_button_new_with_label("Do Extraction");
     gtk_widget_set_name(button, "DoEx");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     es_doex = button;
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_cancel_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
@@ -381,8 +381,8 @@ sEs::views_and_ops_page()
     gtk_widget_set_name(button, "ExtView");
     gtk_widget_show(button);
     es_p1_extview = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(tform), button, 0, 2, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(0), 2, 2);
@@ -391,8 +391,8 @@ sEs::views_and_ops_page()
     gtk_widget_set_name(button, "Groups");
     gtk_widget_show(button);
     es_p1_groups = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(tform), button, 2, 3, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(0), 2, 2);
@@ -401,8 +401,8 @@ sEs::views_and_ops_page()
     gtk_widget_set_name(button, "Nodes");
     gtk_widget_show(button);
     es_p1_nodes = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(tform), button, 3, 4, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(0), 2, 2);
@@ -411,8 +411,8 @@ sEs::views_and_ops_page()
     gtk_widget_set_name(button, "Terms");
     gtk_widget_show(button);
     es_p1_terms = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(tform), button, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(0), 2, 2);
@@ -421,8 +421,8 @@ sEs::views_and_ops_page()
     gtk_widget_set_name(button, "CTOnly");
     gtk_widget_show(button);
     es_p1_cterms = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(tform), button, 2, 4, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(0), 2, 2);
@@ -449,22 +449,22 @@ sEs::views_and_ops_page()
     button = gtk_button_new_with_label("Reset Terms");
     gtk_widget_set_name(button, "ResetTerms");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_button_new_with_label("Reset Subckts");
     gtk_widget_set_name(button, "ResetSubs");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_check_button_new_with_label("Recursive");
     gtk_widget_set_name(button, "Recurse");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     es_p1_recurs = button;
 
@@ -476,8 +476,8 @@ sEs::views_and_ops_page()
     gtk_widget_set_name(button, "EditTerms");
     gtk_widget_show(button);
     es_p1_tedit = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(tform), button, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(0), 2, 2);
@@ -486,8 +486,8 @@ sEs::views_and_ops_page()
     gtk_widget_set_name(button, "FindTerm");
     gtk_widget_show(button);
     es_p1_tfind = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(tform), button, 1, 2, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(0), 2, 2);
@@ -519,22 +519,22 @@ sEs::views_and_ops_page()
     button = gtk_button_new_with_label("Groups/Nodes");
     gtk_widget_set_name(button, "GrpNodSel");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_button_new_with_label("Devices");
     gtk_widget_set_name(button, "DevsSel");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_button_new_with_label("Subckts");
     gtk_widget_set_name(button, "SubcSel");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
@@ -575,8 +575,8 @@ sEs::net_and_cell_page()
     GtkWidget *button = gtk_toggle_button_new_with_label("Apply");
     gtk_widget_set_name(button, "NlpSet");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     es_p2_nlprpset = button;
 
@@ -597,8 +597,8 @@ sEs::net_and_cell_page()
     button = gtk_toggle_button_new_with_label("Apply");
     gtk_widget_set_name(button, "NllSet");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     es_p2_nllset = button;
 
@@ -615,8 +615,8 @@ sEs::net_and_cell_page()
         "Ignore net name labels");
     gtk_widget_set_name(button, "IgnName");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -627,8 +627,8 @@ sEs::net_and_cell_page()
         "Find old-style net (term name) labels");
     gtk_widget_set_name(button, "OldName");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -639,8 +639,8 @@ sEs::net_and_cell_page()
         "Update net name labels after association");
     gtk_widget_set_name(button, "UpdName");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -651,8 +651,8 @@ sEs::net_and_cell_page()
         "Merge groups with matching net names");
     gtk_widget_set_name(button, "Merge");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -686,8 +686,8 @@ sEs::net_and_cell_page()
     button = gtk_check_button_new_with_label("Assume convex vias");
     gtk_widget_set_name(button, "ViaCvx");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(vform), button, 0, 1, vcnt, vcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -704,7 +704,7 @@ sEs::net_and_cell_page()
 
     GtkWidget *vsb = sb_vdepth.init(EXT_DEF_VIA_SEARCH_DEPTH, 0,
         CDMAXCALLDEPTH, 0);
-    sb_vdepth.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "ViaDepth");
+    sb_vdepth.connect_changed(G_CALLBACK(es_val_changed), 0, "ViaDepth");
     gtk_widget_set_size_request(vsb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), vsb, false, false, 0);
 
@@ -717,8 +717,8 @@ sEs::net_and_cell_page()
         "Check for via connections between subcells");
     gtk_widget_set_name(button, "ViaSubs");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(vform), button, 0, 2, vcnt, vcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -745,8 +745,8 @@ sEs::net_and_cell_page()
         "Assume clear-field ground plane is global");
     gtk_widget_set_name(button, "GPGlob");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(tform), button, 0, 2, tcnt, tcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -757,8 +757,8 @@ sEs::net_and_cell_page()
         "Invert dark-field ground plane for multi-nets");
     gtk_widget_set_name(button, "GPMulti");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(tform), button, 0, 2, tcnt, tcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -776,20 +776,20 @@ sEs::net_and_cell_page()
     gtk_widget_set_name(mi, "0");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(es_gpinv_proc), 0);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(es_gpinv_proc), 0);
     mi = gtk_menu_item_new_with_label("Invert flat in top-level cell");
     gtk_widget_set_name(mi, "1");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(es_gpinv_proc), 0);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(es_gpinv_proc), 0);
     mi = gtk_menu_item_new_with_label("Invert flat in all cells");
     gtk_widget_set_name(mi, "2");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(es_gpinv_proc), 0);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(es_gpinv_proc), 0);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(es_p2_gpmthd), menu);
     gtk_table_attach(GTK_TABLE(tform), es_p2_gpmthd, 0, 2, tcnt, tcnt+1,
         (GtkAttachOptions)0,
@@ -860,8 +860,8 @@ sEs::devs_page()
             if (d) {
                 GtkWidget *mi = gtk_menu_item_new_with_label(sl->string);
                 gtk_widget_show(mi);
-                gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                    GTK_SIGNAL_FUNC(es_dev_menu_proc), d);
+                g_signal_connect(G_OBJECT(mi), "activate",
+                    G_CALLBACK(es_dev_menu_proc), d);
                 gtk_menu_append(GTK_MENU(es_p2_menu), mi);
             }
         }
@@ -886,8 +886,8 @@ sEs::devs_page()
         "Don't merge series devices");
     gtk_widget_set_name(button, "NoSeries");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -897,8 +897,8 @@ sEs::devs_page()
     button = gtk_check_button_new_with_label("Don't merge parallel devices");
     gtk_widget_set_name(button, "NoPara");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -909,8 +909,8 @@ sEs::devs_page()
         "Include devices with terminals shorted");
     gtk_widget_set_name(button, "KeepShrt");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -921,8 +921,8 @@ sEs::devs_page()
         "Don't merge devices with terminals shorted");
     gtk_widget_set_name(button, "NoMrgShrt");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -933,8 +933,8 @@ sEs::devs_page()
         "Skip device parameter measurement");
     gtk_widget_set_name(button, "NoMeas");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -945,8 +945,8 @@ sEs::devs_page()
         "Use measurement results cache property");
     gtk_widget_set_name(button, "UseCache");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -957,8 +957,8 @@ sEs::devs_page()
         "Don't read measurement results from property");
     gtk_widget_set_name(button, "NoRdCache");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -994,14 +994,14 @@ sEs::devs_page()
     button = gtk_check_button_new_with_label("Set/use fixed grid size");
     gtk_widget_set_name(button, "DeltaSet");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     es_p3_deltaset = button;
 
     int ndgt = CD()->numDigits();
     GtkWidget *sb = sb_delta.init(0.01, 0.01, 1000.0, ndgt);
-    sb_delta.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "Delta");
+    sb_delta.connect_changed(G_CALLBACK(es_val_changed), 0, "Delta");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -1013,8 +1013,8 @@ sEs::devs_page()
     button = gtk_check_button_new_with_label("Try to tile");
     gtk_widget_set_name(button, "TryTile");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(rlform), button, 0, 1, rlcnt, rlcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -1030,7 +1030,7 @@ sEs::devs_page()
     es_p3_lmax = label;
 
     sb = sb_maxpts.init(1000.0, 1000.0, 100000.0, 0);
-    sb_maxpts.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "MaxPts");
+    sb_maxpts.connect_changed(G_CALLBACK(es_val_changed), 0, "MaxPts");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -1049,7 +1049,7 @@ sEs::devs_page()
     es_p3_lgrid = label;
 
     sb = sb_gridpts.init(10.0, 10.0, 100000.0, 0);
-    sb_gridpts.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "GridPts");
+    sb_gridpts.connect_changed(G_CALLBACK(es_val_changed), 0, "GridPts");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -1084,8 +1084,8 @@ sEs::misc_page()
     GtkWidget *button = gtk_toggle_button_new_with_label("Apply");
     gtk_widget_set_name(button, "UseKeys");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     es_p4_flkeyset = button;
 
@@ -1102,8 +1102,8 @@ sEs::misc_page()
         "Extract opaque cells, ignore OPAQUE flag");
     gtk_widget_set_name(button, "Opaque");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -1114,8 +1114,8 @@ sEs::misc_page()
         "Be very verbose on prompt line during extraction.");
     gtk_widget_set_name(button, "Verbose");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -1131,8 +1131,8 @@ sEs::misc_page()
     button = gtk_toggle_button_new_with_label("Apply");
     gtk_widget_set_name(button, "GlbSet");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     es_p4_glbexset = button;
 
@@ -1165,8 +1165,8 @@ sEs::misc_page()
         "Don't run symmetry trials in association");
     gtk_widget_set_name(button, "NoPerm");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(aform), button, 0, 2, arowcnt, arowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -1177,8 +1177,8 @@ sEs::misc_page()
         "Logically merge physical contacts for split net handling");
     gtk_widget_set_name(button, "MergePC");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(aform), button, 0, 2, arowcnt, arowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -1189,8 +1189,8 @@ sEs::misc_page()
         "Apply post-association permutation fix");
     gtk_widget_set_name(button, "PrmFix");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(es_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(es_action), 0);
     gtk_table_attach(GTK_TABLE(aform), button, 0, 2, arowcnt, arowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -1206,7 +1206,7 @@ sEs::misc_page()
     gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
 
     GtkWidget *sb = sb_loop.init(EXT_DEF_LVS_LOOP_MAX, 0.0, 1000000.0, 0);
-    sb_loop.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "Loop");
+    sb_loop.connect_changed(G_CALLBACK(es_val_changed), 0, "Loop");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -1224,7 +1224,7 @@ sEs::misc_page()
     gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
 
     sb = sb_iters.init(EXT_DEF_LVS_ITER_MAX, 10.0, 1000000.0, 0);
-    sb_iters.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "Iters");
+    sb_iters.connect_changed(G_CALLBACK(es_val_changed), 0, "Iters");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -1919,8 +1919,8 @@ sEs::dev_menu_upd()
         if (d) {
             GtkWidget *mi = gtk_menu_item_new_with_label(sl->string);
             gtk_widget_show(mi);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(es_dev_menu_proc), d);
+            g_signal_connect(G_OBJECT(mi), "activate",
+                G_CALLBACK(es_dev_menu_proc), d);
             gtk_menu_append(GTK_MENU(es_p2_menu), mi);
         }
     }

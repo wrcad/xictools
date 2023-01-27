@@ -164,8 +164,8 @@ sOAtc::sOAtc(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ot_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ot_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     ot_label = label;
 
@@ -180,16 +180,16 @@ sOAtc::sOAtc(GRobject c)
     button = gtk_button_new_with_label("Unattach");
     gtk_widget_set_name(button, "Unattach");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ot_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ot_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     ot_unat = button;
 
     button = gtk_button_new_with_label("Attach");
     gtk_widget_set_name(button, "Attach");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ot_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ot_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     ot_at = button;
 
@@ -201,8 +201,8 @@ sOAtc::sOAtc(GRobject c)
     button = gtk_button_new_with_label("Default");
     gtk_widget_set_name(button, "Default");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ot_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ot_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     ot_def = button;
 
@@ -217,16 +217,16 @@ sOAtc::sOAtc(GRobject c)
     button = gtk_button_new_with_label("Destroy Tech");
     gtk_widget_set_name(button, "Destroy");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ot_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ot_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     ot_dest = button;
 
     button = gtk_button_new_with_label("Create New Tech");
     gtk_widget_set_name(button, "Create");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ot_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ot_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     ot_crt = button;
 
@@ -254,8 +254,8 @@ sOAtc::sOAtc(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ot_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ot_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

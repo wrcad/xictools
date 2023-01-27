@@ -295,8 +295,8 @@ sStv::sStv(GRobject caller, CDc *cdesc)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(stv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(stv_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -311,15 +311,15 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     stv_name = NEW_COMBO_BOX;
     gtk_widget_show(stv_name);
-    gtk_signal_connect(GTK_OBJECT(stv_name), "changed",
-        GTK_SIGNAL_FUNC(stv_name_menu_proc), 0);
+    g_signal_connect(G_OBJECT(stv_name), "changed",
+        G_CALLBACK(stv_name_menu_proc), 0);
     gtk_table_attach(GTK_TABLE(form), stv_name, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     stv_layerv = NEW_COMBO_BOX;
     gtk_widget_show(stv_layerv);
-    gtk_signal_connect(GTK_OBJECT(stv_layerv), "changed",
-        GTK_SIGNAL_FUNC(stv_vlayer_menu_proc), 0);
+    g_signal_connect(G_OBJECT(stv_layerv), "changed",
+        G_CALLBACK(stv_vlayer_menu_proc), 0);
     gtk_table_attach(GTK_TABLE(form), stv_layerv, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -544,8 +544,8 @@ sStv::sStv(GRobject caller, CDc *cdesc)
     button = gtk_button_new_with_label("");
     gtk_widget_set_name(button, "Apply");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(stv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(stv_action), 0);
     stv_apply = button;
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -554,8 +554,8 @@ sStv::sStv(GRobject caller, CDc *cdesc)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(stv_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(stv_cancel_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 1, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);

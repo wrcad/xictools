@@ -237,8 +237,8 @@ sLA::sLA(GRobject c)
         gtk_tree_view_get_selection(GTK_TREE_VIEW(la_list));
     gtk_tree_selection_set_select_function(sel, la_select_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
-    gtk_signal_connect(GTK_OBJECT(la_list), "focus",
-        GTK_SIGNAL_FUNC(la_focus_proc), this);
+    g_signal_connect(G_OBJECT(la_list), "focus",
+        G_CALLBACK(la_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), la_list);
 
@@ -258,8 +258,8 @@ sLA::sLA(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(la_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(la_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 3, 4,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

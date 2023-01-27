@@ -231,8 +231,8 @@ sCmd::sCmd(GRobject c, sExtCmd *cmd,
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cmd_help_proc), (void*)hkw);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cmd_help_proc), (void*)hkw);
     gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -257,8 +257,8 @@ sCmd::sCmd(GRobject c, sExtCmd *cmd,
     gtk_widget_set_name(button, cmd_excmd->gotext());
     gtk_box_pack_start(GTK_BOX(row2), button, true, true, 0);
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cmd_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cmd_action_proc), 0);
     cmd_go = button;
 
     // setup check buttons
@@ -277,8 +277,8 @@ sCmd::sCmd(GRobject c, sExtCmd *cmd,
         if (cmd_excmd->button(i)->is_active())
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(cmd_action_proc), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(cmd_action_proc), 0);
     }
 
     // set sensitivity
@@ -330,8 +330,8 @@ sCmd::sCmd(GRobject c, sExtCmd *cmd,
             gtk_widget_set_name(mi, buf);
             gtk_widget_show(mi);
             gtk_menu_append(GTK_MENU(menu), mi);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(cmd_depth_proc), 0);
+            g_signal_connect(G_OBJECT(mi), "activate",
+                G_CALLBACK(cmd_depth_proc), 0);
         }
 
         gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
@@ -381,16 +381,16 @@ sCmd::sCmd(GRobject c, sExtCmd *cmd,
             (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
         gtk_drag_dest_set(cmd_text, DD, target_table, n_targets,
             GDK_ACTION_COPY);
-        gtk_signal_connect_after(GTK_OBJECT(cmd_text), "drag-data-received",
-            GTK_SIGNAL_FUNC(cmd_drag_data_received), 0);
+        g_signal_connect_after(G_OBJECT(cmd_text), "drag-data-received",
+            G_CALLBACK(cmd_drag_data_received), 0);
     }
 
     const char *cn = "Cancel";
     cmd_cancel = gtk_button_new_with_label(cn);
     gtk_widget_set_name(cmd_cancel, cn);
     gtk_widget_show(cmd_cancel);
-    gtk_signal_connect(GTK_OBJECT(cmd_cancel), "clicked",
-        GTK_SIGNAL_FUNC(cmd_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(cmd_cancel), "clicked",
+        G_CALLBACK(cmd_cancel_proc), 0);
     gtk_box_pack_start(GTK_BOX(row2), cmd_cancel, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row2, 0, 1, rowcnt, rowcnt+1,

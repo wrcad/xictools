@@ -229,16 +229,16 @@ sPlc::sPlc(bool noprompt)
     gtk_widget_set_name(button, "UseArray");
     gtk_widget_show(button);
     pl_arraybtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pl_array_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pl_array_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     button = gtk_toggle_button_new_with_label("Replace");
     gtk_widget_set_name(button, "Replace");
     gtk_widget_show(button);
     pl_replbtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pl_replace_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pl_replace_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     button = gtk_toggle_button_new_with_label("Smash");
@@ -257,32 +257,32 @@ sPlc::sPlc(bool noprompt)
     gtk_widget_set_name(mi, "Origin");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(pl_refmenu_proc), (void*)(long)PL_ORIGIN);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(pl_refmenu_proc), (void*)(long)PL_ORIGIN);
     mi = gtk_menu_item_new_with_label("Lower Left");
     gtk_widget_set_name(mi, "LL");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(pl_refmenu_proc), (void*)(long)PL_LL);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(pl_refmenu_proc), (void*)(long)PL_LL);
     mi = gtk_menu_item_new_with_label("Upper Left");
     gtk_widget_set_name(mi, "UL");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(pl_refmenu_proc), (void*)(long)PL_UL);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(pl_refmenu_proc), (void*)(long)PL_UL);
     mi = gtk_menu_item_new_with_label("Upper Right");
     gtk_widget_set_name(mi, "UR");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(pl_refmenu_proc), (void*)(long)PL_UR);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(pl_refmenu_proc), (void*)(long)PL_UR);
     mi = gtk_menu_item_new_with_label("Lower Right");
     gtk_widget_set_name(mi, "LR");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(pl_refmenu_proc), (void*)(long)PL_LR);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(pl_refmenu_proc), (void*)(long)PL_LR);
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(pl_refmenu), menu);
     gtk_box_pack_start(GTK_BOX(hbox), pl_refmenu, false, false, 0);
@@ -291,8 +291,8 @@ sPlc::sPlc(bool noprompt)
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pl_help_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pl_help_proc), 0);
 
     int rowcnt = 0;
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -316,7 +316,7 @@ sPlc::sPlc(bool noprompt)
     gtk_box_pack_start(GTK_BOX(vbox), label, true, true, 0);
 
     GtkWidget *sb = sb_nx.init(1.0, 1.0, MAX_ARRAY, 0);
-    sb_nx.connect_changed(GTK_SIGNAL_FUNC(pl_array_set_proc), (void*)PL_NX,
+    sb_nx.connect_changed(G_CALLBACK(pl_array_set_proc), (void*)PL_NX,
         "Nx");
     gtk_box_pack_start(GTK_BOX(vbox), sb, false, false, 0);
 
@@ -327,7 +327,7 @@ sPlc::sPlc(bool noprompt)
     gtk_box_pack_start(GTK_BOX(vbox), label, true, true, 0);
 
     sb = sb_ny.init(1.0, 1.0, MAX_ARRAY, 0);
-    sb_ny.connect_changed(GTK_SIGNAL_FUNC(pl_array_set_proc), (void*)PL_NY,
+    sb_ny.connect_changed(G_CALLBACK(pl_array_set_proc), (void*)PL_NY,
         "Ny");
     gtk_box_pack_start(GTK_BOX(vbox), sb, false, false, 0);
 
@@ -345,7 +345,7 @@ sPlc::sPlc(bool noprompt)
     gtk_box_pack_start(GTK_BOX(vbox), label, true, true, 0);
 
     sb = sb_dx.init(0.0, -1e6, 1e6, ndgt);
-    sb_dx.connect_changed(GTK_SIGNAL_FUNC(pl_array_set_proc), (void*)PL_DX,
+    sb_dx.connect_changed(G_CALLBACK(pl_array_set_proc), (void*)PL_DX,
         "Dx");
     gtk_box_pack_start(GTK_BOX(vbox), sb, true, true, 0);
 
@@ -356,7 +356,7 @@ sPlc::sPlc(bool noprompt)
     gtk_box_pack_start(GTK_BOX(vbox), label, true, true, 0);
 
     sb = sb_dy.init(0.0, -1e6, 1e6, ndgt);
-    sb_dy.connect_changed(GTK_SIGNAL_FUNC(pl_array_set_proc), (void*)PL_DY,
+    sb_dy.connect_changed(G_CALLBACK(pl_array_set_proc), (void*)PL_DY,
         "Dy");
     gtk_box_pack_start(GTK_BOX(vbox), sb, true, true, 0);
 
@@ -399,7 +399,7 @@ sPlc::sPlc(bool noprompt)
     gtk_box_pack_start(GTK_BOX(hbox), label, true, true, 0);
 
     sb = sb_mmlen.init(ED()->plMenuLen(), 1.0, 75.0, 0);
-    sb_mmlen.connect_changed(GTK_SIGNAL_FUNC(pl_val_changed), 0, "mmlen");
+    sb_mmlen.connect_changed(G_CALLBACK(pl_val_changed), 0, "mmlen");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(hbox), sb, false, false, 0);
 
@@ -427,18 +427,18 @@ sPlc::sPlc(bool noprompt)
         pl_placebtn = button;
         bool status = GRX->GetStatus(pl_menu_placebtn);
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), status);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(pl_place_proc), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(pl_place_proc), 0);
         gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-        gtk_signal_connect(GTK_OBJECT(pl_menu_placebtn), "clicked",
-            GTK_SIGNAL_FUNC(pl_menu_place_proc), 0);
+        g_signal_connect(G_OBJECT(pl_menu_placebtn), "clicked",
+            G_CALLBACK(pl_menu_place_proc), 0);
     }
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pl_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pl_cancel_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -458,8 +458,8 @@ sPlc::sPlc(bool noprompt)
     // drop site
     gtk_drag_dest_set(pl_popup, GTK_DEST_DEFAULT_ALL, target_table,
         n_targets, GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(pl_popup), "drag-data-received",
-        GTK_SIGNAL_FUNC(pl_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(pl_popup), "drag-data-received",
+        G_CALLBACK(pl_drag_data_received), 0);
 
     if (!ED()->plMenu() && !noprompt)
         // Positioning is incorrect unless an idle proc is used here.
@@ -552,8 +552,8 @@ sPlc::rebuild_menu()
         gtk_widget_set_name(mi, "Add New Entry");
         gtk_widget_show(mi);
         gtk_object_set_user_data(GTK_OBJECT(mi), (char*)PL_NEW_CODE);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(pl_menu_proc), 0);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(pl_menu_proc), 0);
         gtk_menu_append(GTK_MENU(menu), mi);
     }
 
@@ -562,8 +562,8 @@ sPlc::rebuild_menu()
         gtk_widget_set_name(mi, p->string);
         gtk_widget_show(mi);
         gtk_object_set_user_data(GTK_OBJECT(mi), p->string);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(pl_menu_proc), 0);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(pl_menu_proc), 0);
         gtk_menu_append(GTK_MENU(menu), mi);
     }
     gtk_option_menu_remove_menu(GTK_OPTION_MENU(pl_masterbtn));

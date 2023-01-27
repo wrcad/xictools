@@ -506,8 +506,8 @@ sDbg::sDbg(GRobject c)
     gtk_widget_set_name(db_modebtn, "Mode");
     gtk_widget_set_sensitive(db_modebtn, false);
     gtk_widget_show(db_modebtn);
-    gtk_signal_connect(GTK_OBJECT(db_modebtn), "clicked",
-        GTK_SIGNAL_FUNC(db_mode_proc), 0);
+    g_signal_connect(G_OBJECT(db_modebtn), "clicked",
+        G_CALLBACK(db_mode_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), db_modebtn, false, false, 0);
     gtk_box_pack_start(GTK_BOX(hbox), frame, true, true, 0);
 
@@ -521,12 +521,12 @@ sDbg::sDbg(GRobject c)
     GtkWidget *contr;
     text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
 
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",
-        GTK_SIGNAL_FUNC(db_text_btn_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
+        G_CALLBACK(db_text_btn_hdlr), 0);
 
     gtk_widget_add_events(wb_shell, GDK_KEY_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "key-press-event",
-        GTK_SIGNAL_FUNC(db_key_dn_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_shell), "key-press-event",
+        G_CALLBACK(db_key_dn_hdlr), 0);
 
     gtk_widget_set_size_request(wb_textarea, DEF_WIDTH, DEF_HEIGHT);
 
@@ -541,21 +541,22 @@ sDbg::sDbg(GRobject c)
     // drop site
     gtk_drag_dest_set(wb_textarea, GTK_DEST_DEFAULT_ALL, target_table,
         n_targets, GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "drag-data-received",
-        GTK_SIGNAL_FUNC(db_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(wb_textarea), "drag-data-received",
+        G_CALLBACK(db_drag_data_received), 0);
 
     GtkTextBuffer *tbf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
     g_signal_connect(G_OBJECT(tbf), "insert-text",
-        GTK_SIGNAL_FUNC(db_insert_text_proc), this);
+        G_CALLBACK(db_insert_text_proc), this);
     g_signal_connect(G_OBJECT(tbf), "delete-range",
-        GTK_SIGNAL_FUNC(db_delete_range_proc), this);
+        G_CALLBACK(db_delete_range_proc), this);
     db_in_undo = false;
     check_sens();
 
-    if (db_caller)
-        gtk_signal_connect(GTK_OBJECT(db_caller), "toggled",
-            GTK_SIGNAL_FUNC(db_cancel_proc), wb_shell);
+    if (db_caller) {
+        g_signal_connect(G_OBJECT(db_caller), "toggled",
+            G_CALLBACK(db_cancel_proc), wb_shell);
+    }
 
     text_set_editable(wb_textarea, true);
     text_set_change_hdlr(wb_textarea, db_change_proc, 0, true);
@@ -579,17 +580,18 @@ sDbg::~sDbg()
     if (db_vars_pop)
         db_vars_pop->popdown();
     if (db_caller) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(db_caller),
-            GTK_SIGNAL_FUNC(db_cancel_proc), wb_shell);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(db_caller),
+            (gpointer)db_cancel_proc, wb_shell);
         GRX->Deselect(db_caller);
     }
     histlist::destroy(db_undo_list);
     histlist::destroy(db_redo_list);
 
     SI()->Clear();
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(db_cancel_proc), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)db_cancel_proc, wb_shell);
+    }
 
     if (db_item_factory)
         g_object_unref(db_item_factory);
@@ -2033,8 +2035,8 @@ sDbV::sDbV(void *p)
         gtk_tree_view_get_selection(GTK_TREE_VIEW(dv_list));
     gtk_tree_selection_set_select_function(sel, dv_select_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
-    gtk_signal_connect(GTK_OBJECT(dv_list), "focus",
-        GTK_SIGNAL_FUNC(dv_focus_proc), this);
+    g_signal_connect(G_OBJECT(dv_list), "focus",
+        G_CALLBACK(dv_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), dv_list);
 
@@ -2051,8 +2053,8 @@ sDbV::sDbV(void *p)
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dv_cancel_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dv_cancel_proc), this);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -2066,8 +2068,8 @@ sDbV::~sDbV()
     if (dv_pointer)
         *(void**)dv_pointer = 0;
     if (dv_popup) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(dv_popup),
-            GTK_SIGNAL_FUNC(dv_cancel_proc), this);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(dv_popup),
+            (gpointer)dv_cancel_proc, this);
         gtk_widget_destroy(dv_popup);
     }
 }

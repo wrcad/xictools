@@ -215,8 +215,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(topform), row, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -234,8 +234,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
 
     cvo_nbook = gtk_notebook_new();
     gtk_widget_show(cvo_nbook);
-    gtk_signal_connect(GTK_OBJECT(cvo_nbook), "switch-page",
-        GTK_SIGNAL_FUNC(cvo_page_chg_proc), 0);
+    g_signal_connect(G_OBJECT(cvo_nbook), "switch-page",
+        G_CALLBACK(cvo_page_chg_proc), 0);
     gtk_table_attach(GTK_TABLE(topform), cvo_nbook, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -261,15 +261,15 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     button = gtk_check_button_new_with_label("Physical");
     gtk_widget_set_name(button, "invis_p");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     cvo_invis_p = button;
     button = gtk_check_button_new_with_label("Electrical");
     gtk_widget_set_name(button, "invis_e");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     cvo_invis_e = button;
     const char *s = CDvdb()->getVariable(VA_SkipInvisible);
@@ -299,8 +299,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
         "Strip For Export - (convert physical data only)");
     gtk_widget_set_name(button, "strip");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_StripForExport));
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -311,8 +311,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     button = gtk_check_button_new_with_label("Include library cell masters");
     gtk_widget_set_name(button, "libcells");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_KeepLibMasters));
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -324,8 +324,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
         "Include parameterized cell sub-masters");
     gtk_widget_set_name(button, "pcsub");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -336,8 +336,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
         "Include standard via cell sub-masters");
     gtk_widget_set_name(button, "viasub");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -348,8 +348,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
         "Consider ALL cells in current symbol table for output");
     gtk_widget_set_name(button, "allcells");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -360,8 +360,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
         "Don't flatten standard vias, keep as instance at top level");
     gtk_widget_set_name(button, "noflvias");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -372,8 +372,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
         "Don't flatten pcells, keep as instance at top level");
     gtk_widget_set_name(button, "noflpcs");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -384,8 +384,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
         "Ignore labels in subcells when flattening");
     gtk_widget_set_name(button, "nofllbs");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -396,8 +396,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
         "Keep bad output (for debugging)");
     gtk_widget_set_name(button, "keepbad");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -446,7 +446,7 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
 
     GtkWidget *sb = sb_scale.init(FIO()->WriteScale(), CDSCALEMIN, CDSCALEMAX,
         5);
-    sb_scale.connect_changed(GTK_SIGNAL_FUNC(cvo_val_changed), 0);
+    sb_scale.connect_changed(G_CALLBACK(cvo_val_changed), 0);
     gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
@@ -467,8 +467,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     button = gtk_button_new_with_label("Write File");
     gtk_widget_set_name(button, "WriteFile");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)0,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -483,8 +483,8 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvo_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvo_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(topform), button, 1, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

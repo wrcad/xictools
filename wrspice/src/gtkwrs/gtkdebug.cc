@@ -97,14 +97,14 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
 
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        (GtkSignalFunc)dbg_cancel_proc, db_shell);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dbg_cancel_proc), db_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 2);
 
     button = gtk_toggle_button_new_with_label("Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "toggled",
-        (GtkSignalFunc)dbg_help_proc, db_shell);
+    g_signal_connect(G_OBJECT(button), "toggled",
+        G_CALLBACK(dbg_help_proc), db_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 2);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 4, 0, 1,
@@ -145,8 +145,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_debug_proc), entry);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_debug_proc), entry);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
             entrycount, entrycount + 1,
@@ -162,8 +162,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_upd_proc), dbent);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_upd_proc), dbent);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 3,
             entrycount, entrycount + 1,
@@ -177,8 +177,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_upd_proc), dbent);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_upd_proc), dbent);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 3, 4,
             entrycount, entrycount + 1,
@@ -193,8 +193,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_upd_proc), dbent);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_upd_proc), dbent);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
             entrycount, entrycount + 1,
@@ -208,8 +208,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_upd_proc), dbent);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_upd_proc), dbent);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
             entrycount, entrycount + 1,
@@ -223,8 +223,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_upd_proc), dbent);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_upd_proc), dbent);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 3,
             entrycount, entrycount + 1,
@@ -238,8 +238,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_upd_proc), dbent);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_upd_proc), dbent);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 3, 4,
             entrycount, entrycount + 1,
@@ -254,8 +254,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_upd_proc), dbent);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_upd_proc), dbent);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
             entrycount, entrycount + 1,
@@ -269,8 +269,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_upd_proc), dbent);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_upd_proc), dbent);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
             entrycount, entrycount + 1,
@@ -284,8 +284,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_upd_proc), dbent);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_upd_proc), dbent);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 3,
             entrycount, entrycount + 1,
@@ -299,8 +299,8 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         entry->ent->mode = KW_NO_CB;
         entry->ent->create_widgets(entry, 0);
 
-        gtk_signal_connect(GTK_OBJECT(entry->ent->active), "clicked",
-            GTK_SIGNAL_FUNC(dbg_upd_proc), dbent);
+        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+            G_CALLBACK(dbg_upd_proc), dbent);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 3, 4,
             entrycount, entrycount + 1,
@@ -392,8 +392,8 @@ GTKtoolbar::PopDownDebugDefs()
     SetLoc(ntb_debug, db_shell);
 
     GRX->Deselect(tb_debug);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(db_shell),
-        GTK_SIGNAL_FUNC(dbg_cancel_proc), db_shell);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(db_shell),
+        (gpointer)dbg_cancel_proc, db_shell);
 
     int i;
     for (i = 0; KW.debug(i)->word; i++) {

@@ -250,7 +250,7 @@ gtkMenuConfig::instantiateMainMenus()
         GtkWidget *btn = gtk_item_factory_get_widget(item_factory,
             "/File/Open");
         GtkWidget *popup = gtkMenu()->new_popup_menu(btn,
-            XM()->OpenCellMenuList(), GTK_SIGNAL_FUNC(edmenu_proc), 0);
+            XM()->OpenCellMenuList(), G_CALLBACK(edmenu_proc), 0);
         if (popup) {
             gtk_widget_set_name(popup, "EditSubmenu");
             gtk_object_set_data(GTK_OBJECT(btn), "menu", popup);
@@ -423,7 +423,7 @@ gtkMenuConfig::instantiateMainMenus()
         GtkWidget *btn = gtk_item_factory_get_widget(item_factory,
             "/View/View");
         GtkWidget *popup = gtkMenu()->new_popup_menu(btn,
-            XM()->ViewList(), GTK_SIGNAL_FUNC(vimenu_proc), 0);
+            XM()->ViewList(), G_CALLBACK(vimenu_proc), 0);
         if (popup) {
             gtk_widget_set_name(popup, "ViewSubmenu");
             gtk_object_set_data(GTK_OBJECT(btn), "menu", popup);
@@ -768,8 +768,8 @@ gtkMenuConfig::instantiateTopButtonMenu()
                 ent->is_toggle());
             if (ent->is_set())
                 Menu()->Select(button);
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                GTK_SIGNAL_FUNC(top_btnmenu_callback), (void*)(intptr_t)i);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(top_btnmenu_callback), (void*)(intptr_t)i);
             if (ent->description) {
                 GtkTooltips *tt = gtk_NewTooltip();
                 gtk_tooltips_set_tip(tt, button, ent->description, "");
@@ -814,11 +814,11 @@ gtkMenuConfig::instantiateSideButtonMenus()
                 const char **spm = get_style_pixmap();
                 button = new_pixmap_button(spm, ent->menutext, false);
                 GtkWidget *menu = gtkMenu()->new_popup_menu(0,
-                    EditIf()->styleList(), GTK_SIGNAL_FUNC(stmenu_proc), 0);
+                    EditIf()->styleList(), G_CALLBACK(stmenu_proc), 0);
                 if (menu) {
                     gtk_widget_set_name(menu, "StyleMenu");
-                    gtk_signal_connect(GTK_OBJECT(button), "button-press-event",
-                        GTK_SIGNAL_FUNC(popup_btn_proc), menu);
+                    g_signal_connect(G_OBJECT(button), "button-press-event",
+                        G_CALLBACK(popup_btn_proc), menu);
                 }
             }
             else {
@@ -826,8 +826,8 @@ gtkMenuConfig::instantiateSideButtonMenus()
                     ent->is_toggle());
                 if (ent->is_set())
                     Menu()->Select(button);
-                gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                    GTK_SIGNAL_FUNC(btnmenu_callback), (void*)(intptr_t)i);
+                g_signal_connect(G_OBJECT(button), "clicked",
+                    G_CALLBACK(btnmenu_callback), (void*)(intptr_t)i);
             }
             if (ent->description) {
                 GtkTooltips *tt = gtk_NewTooltip();
@@ -867,11 +867,11 @@ gtkMenuConfig::instantiateSideButtonMenus()
                 button = new_pixmap_button(ent->xpm, ent->menutext,
                     false);
                 GtkWidget *menu = gtkMenu()->new_popup_menu(0,
-                    ScedIf()->shapesList(), GTK_SIGNAL_FUNC(shmenu_proc), 0);
+                    ScedIf()->shapesList(), G_CALLBACK(shmenu_proc), 0);
                 if (menu) {
                     gtk_widget_set_name(menu, "ShapeMenu");
-                    gtk_signal_connect(GTK_OBJECT(button), "button-press-event",
-                        GTK_SIGNAL_FUNC(popup_btn_proc), menu);
+                    g_signal_connect(G_OBJECT(button), "button-press-event",
+                        G_CALLBACK(popup_btn_proc), menu);
                 }
             }
             else {
@@ -879,8 +879,8 @@ gtkMenuConfig::instantiateSideButtonMenus()
                     ent->is_toggle());
                 if (ent->is_set())
                     Menu()->Select(button);
-                gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                    GTK_SIGNAL_FUNC(btnmenu_callback), (void*)(intptr_t)i);
+                g_signal_connect(G_OBJECT(button), "clicked",
+                    G_CALLBACK(btnmenu_callback), (void*)(intptr_t)i);
             }
             if (ent->description) {
                 GtkTooltips *tt = gtk_NewTooltip();
@@ -940,7 +940,7 @@ gtkMenuConfig::instantiateSubwMenus(int wnum, GtkItemFactory *item_factory)
         GtkWidget *btn = gtk_item_factory_get_widget(item_factory,
             "/View/View");
         GtkWidget *popup = gtkMenu()->new_popup_menu(btn,
-            XM()->ViewList(), GTK_SIGNAL_FUNC(vimenu_proc),
+            XM()->ViewList(), G_CALLBACK(vimenu_proc),
             (void*)(intptr_t)wnum);
         if (popup) {
             gtk_object_set_data(GTK_OBJECT(btn), "menu", popup);

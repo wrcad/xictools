@@ -125,34 +125,34 @@ GTKltab::GTKltab(bool nogr)
     gtk_widget_set_name(gd_viewport, "LayerTable");
 
     gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "configure-event",
-        GTK_SIGNAL_FUNC(ltab_resize_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "configure-event",
+        G_CALLBACK(ltab_resize_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "expose-event",
-        GTK_SIGNAL_FUNC(ltab_redraw_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
+        G_CALLBACK(ltab_redraw_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "button-press-event",
-        GTK_SIGNAL_FUNC(ltab_button_down_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "button-press-event",
+        G_CALLBACK(ltab_button_down_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_RELEASE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "button-release-event",
-        GTK_SIGNAL_FUNC(ltab_button_up_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "button-release-event",
+        G_CALLBACK(ltab_button_up_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_POINTER_MOTION_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "motion-notify-event",
-        GTK_SIGNAL_FUNC(ltab_motion_hdlr), this);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "drag-begin",
-        GTK_SIGNAL_FUNC(ltab_drag_begin), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "drag-end",
-        GTK_SIGNAL_FUNC(ltab_drag_end), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "drag-data-get",
-        GTK_SIGNAL_FUNC(ltab_drag_data_get), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "motion-notify-event",
+        G_CALLBACK(ltab_motion_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "drag-begin",
+        G_CALLBACK(ltab_drag_begin), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "drag-end",
+        G_CALLBACK(ltab_drag_end), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "drag-data-get",
+        G_CALLBACK(ltab_drag_data_get), 0);
     gtk_drag_dest_set(gd_viewport, GTK_DEST_DEFAULT_ALL, ltab_targets,
         n_ltab_targets, GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "drag-data-received",
-        GTK_SIGNAL_FUNC(ltab_drag_data_received), this);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "style-set",
-        GTK_SIGNAL_FUNC(ltab_font_change_hdlr), this);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "scroll-event",
-        (GtkSignalFunc)ltab_scroll_event_hdlr, this);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "drag-data-received",
+        G_CALLBACK(ltab_drag_data_received), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "style-set",
+        G_CALLBACK(ltab_font_change_hdlr), this);
+    g_signal_connect(GTK_OBJECT(gd_viewport), "scroll-event",
+        G_CALLBACK(ltab_scroll_event_hdlr), this);
 
     GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);
 
@@ -171,8 +171,8 @@ GTKltab::GTKltab(bool nogr)
 
     GtkAdjustment *adj = gtk_range_get_adjustment(GTK_RANGE(ltab_scrollbar));
     gtk_range_set_adjustment(GTK_RANGE(ltab_scrollbar), adj);
-    gtk_signal_connect(GTK_OBJECT(adj), "value-changed",
-        GTK_SIGNAL_FUNC(ltab_scroll_change_proc), this);
+    g_signal_connect(G_OBJECT(adj), "value-changed",
+        G_CALLBACK(ltab_scroll_change_proc), this);
 
     int ew;
     entry_size(&ew, 0);
@@ -190,8 +190,8 @@ GTKltab::GTKltab(bool nogr)
 
     GtkWidget *button = gtk_button_new();
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ltab_search_hdlr), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ltab_search_hdlr), this);
     GtkStyle *style = gtk_widget_get_style(button);
     GdkPixmap *pmask;
     GdkPixmap *pixmap =
@@ -208,8 +208,8 @@ GTKltab::GTKltab(bool nogr)
     gtk_widget_show(entry);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
     gtk_widget_set_size_request(entry, 80, -1);
-    gtk_signal_connect(GTK_OBJECT(entry), "activate",
-        GTK_SIGNAL_FUNC(ltab_activate_proc), this);
+    g_signal_connect(G_OBJECT(entry), "activate",
+        G_CALLBACK(ltab_activate_proc), this);
     ltab_entry = entry;
 }
 

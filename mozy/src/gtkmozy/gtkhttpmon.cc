@@ -196,16 +196,16 @@ grbits::start(Transaction *t)
 
     gb->g_popup = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(gb->g_popup), "Download");
-    gtk_signal_connect(GTK_OBJECT(gb->g_popup), "destroy",
-        GTK_SIGNAL_FUNC(grbits::g_dl_cancel_proc), gb);
+    g_signal_connect(G_OBJECT(gb->g_popup), "destroy",
+        G_CALLBACK(grbits::g_dl_cancel_proc), gb);
     GtkWidget *form = gtk_table_new(1, 2, false);
     gtk_widget_show(form);
     gtk_container_add(GTK_CONTAINER(gb->g_popup), form);
     GtkWidget *frame = gtk_frame_new(t->url());
     gtk_widget_show(frame);
     gb->g_text_area = gtk_drawing_area_new();
-    gtk_signal_connect(GTK_OBJECT(gb->g_text_area), "expose-event",
-        GTK_SIGNAL_FUNC(grbits::g_da_expose), gb);
+    g_signal_connect(G_OBJECT(gb->g_text_area), "expose-event",
+        G_CALLBACK(grbits::g_da_expose), gb);
     gtk_widget_show(gb->g_text_area);
     gtk_widget_set_size_request(gb->g_text_area, 320, 30);
     gtk_container_add(GTK_CONTAINER(frame), gb->g_text_area);
@@ -217,8 +217,8 @@ grbits::start(Transaction *t)
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(grbits::g_cancel_btn_proc), gb);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(grbits::g_cancel_btn_proc), gb);
     if (t->xpos() >= 0 && t->ypos() >= 0) {
         GdkScreen *scrn = gdk_screen_get_default();
         int x, y;
@@ -299,8 +299,8 @@ void
 grbits::g_dl_cancel_proc(GtkWidget*, void *data)
 {
     grbits *gb = (grbits*)data;
-    gtk_signal_disconnect_by_func(GTK_OBJECT(gb->g_popup),
-        GTK_SIGNAL_FUNC(g_dl_cancel_proc), data);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(gb->g_popup),
+        (gpointer)g_dl_cancel_proc, data);
     gtk_widget_destroy(GTK_WIDGET(gb->g_popup));
     delete [] gb->g_textbuf;
     gb->g_textbuf = 0;
@@ -316,8 +316,8 @@ void
 grbits::g_cancel_btn_proc(GtkWidget*, void *data)
 {
     grbits *gb = (grbits*)data;
-    gtk_signal_disconnect_by_func(GTK_OBJECT(gb->g_popup),
-        GTK_SIGNAL_FUNC(g_dl_cancel_proc), gb);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(gb->g_popup),
+        (gpointer)g_dl_cancel_proc, gb);
     gtk_widget_destroy(GTK_WIDGET(gb->g_popup));
     delete [] gb->g_textbuf;
     gb->g_textbuf = 0;

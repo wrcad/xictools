@@ -162,8 +162,8 @@ sOAdf::sOAdf(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(od_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(od_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
@@ -177,8 +177,8 @@ sOAdf::sOAdf(GRobject c)
     frame = gtk_frame_new("Library Path");
     gtk_widget_show(frame);
     gtk_container_add(GTK_CONTAINER(frame), entry);
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(od_change), 0);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(od_change), 0);
     od_path = entry;
 
     gtk_table_attach(GTK_TABLE(form), frame, 0, 2, rowcnt, rowcnt+1,
@@ -197,8 +197,8 @@ sOAdf::sOAdf(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_widget_set_name(entry, "lib");
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(od_change), 0);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(od_change), 0);
     od_lib = entry;
 
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
@@ -217,8 +217,8 @@ sOAdf::sOAdf(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_widget_set_name(entry, "tech");
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(od_change), 0);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(od_change), 0);
     od_techlib = entry;
 
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
@@ -237,8 +237,8 @@ sOAdf::sOAdf(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_widget_set_name(entry, "layout");
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(od_change), 0);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(od_change), 0);
     od_layout = entry;
 
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
@@ -257,8 +257,8 @@ sOAdf::sOAdf(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_widget_set_name(entry, "schem");
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(od_change), 0);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(od_change), 0);
     od_schem = entry;
 
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
@@ -277,8 +277,8 @@ sOAdf::sOAdf(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_widget_set_name(entry, "symb");
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(od_change), 0);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(od_change), 0);
     od_symb = entry;
 
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
@@ -297,8 +297,8 @@ sOAdf::sOAdf(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_widget_set_name(entry, "prop");
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(od_change), 0);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(od_change), 0);
     od_prop = entry;
 
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
@@ -309,8 +309,8 @@ sOAdf::sOAdf(GRobject c)
     button = gtk_check_button_new_with_label("Dump CDF files when reading");
     gtk_widget_set_name(button, "cdf");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(od_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(od_action), 0);
     od_cdf = button;
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
@@ -324,8 +324,8 @@ sOAdf::sOAdf(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(od_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(od_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

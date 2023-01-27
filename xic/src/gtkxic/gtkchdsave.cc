@@ -183,8 +183,8 @@ sCs::sCs(GRobject caller, bool(*callback)(const char*, bool, void*),
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cs_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cs_action), 0);
     gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -204,16 +204,16 @@ sCs::sCs(GRobject caller, bool(*callback)(const char*, bool, void*),
 
     gtk_widget_set_size_request(cs_text, 320, -1);
 
-    gtk_signal_connect_after(GTK_OBJECT(cs_text), "changed",
-        GTK_SIGNAL_FUNC(cs_change_proc), 0);
+    g_signal_connect_after(G_OBJECT(cs_text), "changed",
+        G_CALLBACK(cs_change_proc), 0);
 
     // drop site
     GtkDestDefaults DD = (GtkDestDefaults)
         (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
     gtk_drag_dest_set(cs_text, DD, target_table, n_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(cs_text), "drag-data-received",
-        GTK_SIGNAL_FUNC(cs_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(cs_text), "drag-data-received",
+        G_CALLBACK(cs_drag_data_received), 0);
 
     GtkWidget *sep = gtk_hseparator_new();
     gtk_widget_show(sep);
@@ -226,8 +226,8 @@ sCs::sCs(GRobject caller, bool(*callback)(const char*, bool, void*),
         "Include geometry records in file");
     gtk_widget_set_name(cs_geom, "Geom");
     gtk_widget_show(cs_geom);
-    gtk_signal_connect(GTK_OBJECT(cs_geom), "clicked",
-        GTK_SIGNAL_FUNC(cs_action), 0);
+    g_signal_connect(G_OBJECT(cs_geom), "clicked",
+        G_CALLBACK(cs_action), 0);
 
     gtk_table_attach(GTK_TABLE(form), cs_geom, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -250,8 +250,8 @@ sCs::sCs(GRobject caller, bool(*callback)(const char*, bool, void*),
     cs_apply = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(cs_apply, "Apply");
     gtk_widget_show(cs_apply);
-    gtk_signal_connect(GTK_OBJECT(cs_apply), "clicked",
-        GTK_SIGNAL_FUNC(cs_action), 0);
+    g_signal_connect(G_OBJECT(cs_apply), "clicked",
+        G_CALLBACK(cs_action), 0);
     gtk_table_attach(GTK_TABLE(form), cs_apply, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -259,8 +259,8 @@ sCs::sCs(GRobject caller, bool(*callback)(const char*, bool, void*),
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cs_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cs_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -345,10 +345,10 @@ void
 sCs::cs_change_proc(GtkWidget*, void*)
 {
     if (Cs) {
-        gtk_signal_connect(GTK_OBJECT(Cs->cs_popup), "key-press-event",
-            GTK_SIGNAL_FUNC(cs_key_hdlr), 0);
-        gtk_signal_disconnect_by_func(GTK_OBJECT(Cs->cs_text),
-            GTK_SIGNAL_FUNC(cs_change_proc), 0);
+        g_signal_connect(G_OBJECT(Cs->cs_popup), "key-press-event",
+            G_CALLBACK(cs_key_hdlr), 0);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(Cs->cs_text),
+            (gpointer)cs_change_proc, 0);
     }
 }
 

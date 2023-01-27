@@ -381,8 +381,8 @@ sAttr::sAttr(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(at_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(at_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(topform), row, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -420,8 +420,8 @@ sAttr::sAttr(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(cursvals[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(at_curs_menu_proc), (void*)(long)i);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(at_curs_menu_proc), (void*)(long)i);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     at_cursor = entry;
@@ -431,8 +431,8 @@ sAttr::sAttr(GRobject c)
         "Use full-window cursor");
     gtk_widget_set_name(button, "fullscr");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(at_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(at_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     at_fullscr = button;
 
@@ -452,7 +452,7 @@ sAttr::sAttr(GRobject c)
 
     GtkWidget *sb = sb_cellthr.init(DSP_DEF_CELL_THRESHOLD,
         DSP_MIN_CELL_THRESHOLD, DSP_MAX_CELL_THRESHOLD, 0);
-    sb_cellthr.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "cellthr");
+    sb_cellthr.connect_changed(G_CALLBACK(at_val_changed), 0, "cellthr");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -471,7 +471,7 @@ sAttr::sAttr(GRobject c)
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
 
     sb = sb_cxpct.init(DSP_DEF_CX_DARK_PCNT, DSP_MIN_CX_DARK_PCNT, 100.0, 0);
-    sb_cxpct.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "cxpct");
+    sb_cxpct.connect_changed(G_CALLBACK(at_val_changed), 0, "cxpct");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -490,7 +490,7 @@ sAttr::sAttr(GRobject c)
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
 
     sb = sb_offset.init(0, -16, 16, 0);
-    sb_offset.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "offset");
+    sb_offset.connect_changed(G_CALLBACK(at_val_changed), 0, "offset");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -513,8 +513,8 @@ sAttr::sAttr(GRobject c)
         "Show origin of selected physical instances");
     gtk_widget_set_name(button, "mark");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(at_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(at_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -525,8 +525,8 @@ sAttr::sAttr(GRobject c)
         "Show centroids of selected physical objects");
     gtk_widget_set_name(button, "centr");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(at_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(at_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -548,8 +548,8 @@ sAttr::sAttr(GRobject c)
         "Erase behind physical properties text");
     gtk_widget_set_name(button, "ebprop");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(at_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(at_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -567,7 +567,7 @@ sAttr::sAttr(GRobject c)
 
     sb = sb_tsize.init(DSP_DEF_PTRM_TXTHT, DSP_MIN_PTRM_TXTHT,
         DSP_MAX_PTRM_TXTHT, 0);
-    sb_tsize.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "tsize");
+    sb_tsize.connect_changed(G_CALLBACK(at_val_changed), 0, "tsize");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -606,20 +606,20 @@ sAttr::sAttr(GRobject c)
     gtk_widget_set_name(mi, "0");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(at_ebt_proc), 0);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(at_ebt_proc), 0);
     mi = gtk_menu_item_new_with_label("Cell terminals only");
     gtk_widget_set_name(mi, "1");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(at_ebt_proc), 0);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(at_ebt_proc), 0);
     mi = gtk_menu_item_new_with_label("All terminals");
     gtk_widget_set_name(mi, "2");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(at_ebt_proc), 0);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(at_ebt_proc), 0);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(at_ebterms), menu);
     gtk_box_pack_end(GTK_BOX(row), at_ebterms, false, false, 0);
 
@@ -639,7 +639,7 @@ sAttr::sAttr(GRobject c)
 
     sb = sb_ttsize.init(DSP()->TermTextSize(), DSP_MIN_PTRM_TXTHT,
         DSP_MAX_PTRM_TXTHT, 0);
-    sb_ttsize.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "TTSize");
+    sb_ttsize.connect_changed(G_CALLBACK(at_val_changed), 0, "TTSize");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -659,7 +659,7 @@ sAttr::sAttr(GRobject c)
 
     sb = sb_tmsize.init(DSP()->TermMarkSize(), DSP_MIN_PTRM_DELTA,
         DSP_MAX_PTRM_DELTA, 0);
-    sb_tmsize.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "TMSize");
+    sb_tmsize.connect_changed(G_CALLBACK(at_val_changed), 0, "TMSize");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -697,8 +697,8 @@ sAttr::sAttr(GRobject c)
         gtk_widget_set_name(mi, hdn_menu[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(at_menuproc), (void*)(long)i);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(at_menuproc), (void*)(long)i);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry), 0);
@@ -721,7 +721,7 @@ sAttr::sAttr(GRobject c)
 
     sb = sb_lheight.init(CD_DEF_TEXT_HEI, CD_MIN_TEXT_HEI,
         CD_MAX_TEXT_HEI, 2);
-    sb_lheight.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "lheight");
+    sb_lheight.connect_changed(G_CALLBACK(at_val_changed), 0, "lheight");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -741,7 +741,7 @@ sAttr::sAttr(GRobject c)
 
     sb = sb_llen.init(DSP_DEF_MAX_LABEL_LEN, DSP_MIN_MAX_LABEL_LEN,
         DSP_MAX_MAX_LABEL_LEN, 0);
-    sb_llen.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "llen");
+    sb_llen.connect_changed(G_CALLBACK(at_val_changed), 0, "llen");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -761,7 +761,7 @@ sAttr::sAttr(GRobject c)
 
     sb = sb_llines.init(DSP_DEF_MAX_LABEL_LINES, DSP_MIN_MAX_LABEL_LINES,
         DSP_MAX_MAX_LABEL_LINES, 0);
-    sb_llines.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "llines");
+    sb_llines.connect_changed(G_CALLBACK(at_val_changed), 0, "llines");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -786,8 +786,8 @@ sAttr::sAttr(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(at_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(at_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(topform), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

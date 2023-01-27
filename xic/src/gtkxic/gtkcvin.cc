@@ -241,8 +241,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(topform), row, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -251,8 +251,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
 
     cvi_nbook = gtk_notebook_new();
     gtk_widget_show(cvi_nbook);
-    gtk_signal_connect(GTK_OBJECT(cvi_nbook), "switch-page",
-        GTK_SIGNAL_FUNC(cvi_page_chg_proc), 0);
+    g_signal_connect(G_OBJECT(cvi_nbook), "switch-page",
+        G_CALLBACK(cvi_page_chg_proc), 0);
     gtk_table_attach(GTK_TABLE(topform), cvi_nbook, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -275,8 +275,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     button = gtk_check_button_new_with_label("Don't eval native");
     gtk_widget_set_name(button, "nonpc");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     cvi_nonpc = button;
 
@@ -284,8 +284,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         button = gtk_check_button_new_with_label("Eval OpenAccess");
         gtk_widget_set_name(button, "yesoapc");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(cvi_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(cvi_action), 0);
         gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
         cvi_yesoapc = button;
     }
@@ -299,8 +299,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         "Don't create new layers when reading, abort instead");
     gtk_widget_set_name(button, "nolyr");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -319,8 +319,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         gtk_widget_set_name(mi, overvals[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(cvi_over_menu_proc), (void*)overvals[i]);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(cvi_over_menu_proc), (void*)overvals[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
@@ -339,8 +339,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         "Don't prompt for overwrite instructions");
     gtk_widget_set_name(button, "replace");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -351,8 +351,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         "Clip and merge overlapping boxes");
     gtk_widget_set_name(button, "merge");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -363,8 +363,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         "Skip testing for badly formed polygons");
     gtk_widget_set_name(button, "polys");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -383,8 +383,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         gtk_widget_set_name(mi, dupvals[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(cvi_dup_menu_proc), (void*)dupvals[i]);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(cvi_dup_menu_proc), (void*)dupvals[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
@@ -403,8 +403,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         "Skip testing for empty cells");
     gtk_widget_set_name(button, "empties");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -415,8 +415,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         "Map all unmapped GDSII datatypes to same Xic layer");
     gtk_widget_set_name(button, "dtypes");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -436,8 +436,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         gtk_widget_set_name(mi, forcevals[i].name);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(cvi_force_menu_proc),
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(cvi_force_menu_proc),
             (void*)(long)forcevals[i].code);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
@@ -458,8 +458,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         "Don't flatten standard vias, keep as instance at top level");
     gtk_widget_set_name(button, "noflvias");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -470,8 +470,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         "Don't flatten pcells, keep as instance at top level");
     gtk_widget_set_name(button, "noflpcs");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -482,8 +482,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         "Ignore labels in subcells when flattening");
     gtk_widget_set_name(button, "nofllbs");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -494,8 +494,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         "Skip reading text labels from physical archives");
     gtk_widget_set_name(button, "nolabels");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -526,8 +526,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         gtk_widget_set_name(mi, mergvals[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(cvi_merg_menu_proc), (void*)mergvals[i]);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(cvi_merg_menu_proc), (void*)mergvals[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry), cvi_merg_val);
@@ -582,7 +582,7 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
 
     GtkWidget *sb = sb_scale.init(FIO()->ReadScale(), CDSCALEMIN, CDSCALEMAX,
         5);
-    sb_scale.connect_changed(GTK_SIGNAL_FUNC(cvi_val_changed), 0);
+    sb_scale.connect_changed(G_CALLBACK(cvi_val_changed), 0);
     gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
@@ -596,8 +596,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     button = gtk_button_new_with_label("Read File");
     gtk_widget_set_name(button, "ReadFile");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)0,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -612,8 +612,8 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cvi_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(topform), button, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

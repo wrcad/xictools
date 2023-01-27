@@ -147,8 +147,8 @@ sExp::sExp(gtk_bag *owner, const char *string, bool nopeek, void *arg)
     gtk_window_set_resizable(GTK_WINDOW(exp_popup), false);
     BlackHoleFix(exp_popup);
 
-    gtk_signal_connect(GTK_OBJECT(exp_popup), "key-press-event",
-        GTK_SIGNAL_FUNC(exp_key_hdlr), this);
+    g_signal_connect(G_OBJECT(exp_popup), "key-press-event",
+        G_CALLBACK(exp_key_hdlr), this);
 
     GtkWidget *form = gtk_table_new(2, 1, false);
     gtk_widget_show(form);
@@ -170,8 +170,8 @@ sExp::sExp(gtk_bag *owner, const char *string, bool nopeek, void *arg)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -192,78 +192,78 @@ sExp::sExp(gtk_bag *owner, const char *string, bool nopeek, void *arg)
     gtk_box_pack_start(GTK_BOX(row), exp_text, false, false, 0);
     gtk_widget_set_size_request(exp_text, 60, -1);
     gtk_entry_set_position(GTK_ENTRY(exp_text), 0);
-    gtk_signal_connect_after(GTK_OBJECT(exp_text), "changed",
-        GTK_SIGNAL_FUNC(exp_change_proc), this);
+    g_signal_connect_after(G_OBJECT(exp_text), "changed",
+        G_CALLBACK(exp_change_proc), this);
 
     button = gtk_button_new_with_label("+");
     gtk_widget_set_name(button, "plus");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
 
     button = gtk_button_new_with_label("-");
     gtk_widget_set_name(button, "minus");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
 
     button = gtk_button_new_with_label("All");
     gtk_widget_set_name(button, "all");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
 
     button = gtk_button_new_with_label("0");
     gtk_widget_set_name(button, "0");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
 
     button = gtk_button_new_with_label("1");
     gtk_widget_set_name(button, "1");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
 
     button = gtk_button_new_with_label("2");
     gtk_widget_set_name(button, "2");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
 
     button = gtk_button_new_with_label("3");
     gtk_widget_set_name(button, "3");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
 
     button = gtk_button_new_with_label("4");
     gtk_widget_set_name(button, "4");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
 
     button = gtk_button_new_with_label("5");
     gtk_widget_set_name(button, "5");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
 
     if (!nopeek) {
         button = gtk_button_new_with_label("Peek Mode");
         gtk_widget_set_name(button, "peek");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(exp_action), this);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(exp_action), this);
         gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     }
 
@@ -277,8 +277,8 @@ sExp::sExp(gtk_bag *owner, const char *string, bool nopeek, void *arg)
     button = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(button, "apply");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_action), this);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -286,8 +286,8 @@ sExp::sExp(gtk_bag *owner, const char *string, bool nopeek, void *arg)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(exp_cancel_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(exp_cancel_proc), this);
 
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -308,8 +308,8 @@ sExp::~sExp()
     if (p_caller && !p_no_desel)
         GRX->Deselect(p_caller);
     if (exp_popup) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(exp_popup),
-            GTK_SIGNAL_FUNC(exp_cancel_proc), this);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(exp_popup),
+            (gpointer)exp_cancel_proc, this);
         // Destroy widget first, so "black hole" is filled in.
         gtk_widget_destroy(exp_popup);
     }
@@ -465,8 +465,8 @@ sExp::exp_change_proc(GtkWidget*, void *client_data)
 {
     sExp *exp = static_cast<sExp*>(client_data);
     if (exp) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(exp->exp_text),
-            GTK_SIGNAL_FUNC(exp_change_proc), exp);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(exp->exp_text),
+            (gpointer)exp_change_proc, exp);
         int pos = gtk_editable_get_position(GTK_EDITABLE(exp->exp_text));
         gtk_editable_delete_text(GTK_EDITABLE(exp->exp_text), pos+1, -1);
     }
@@ -482,7 +482,7 @@ sExp::exp_key_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
 {
     sExp *exp = static_cast<sExp*>(client_data);
     if (exp && event->key.keyval == GDK_Return) {
-        gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+        g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
         const char *string = gtk_entry_get_text(GTK_ENTRY(exp->exp_text));
         if (!exp->p_caller || (exp->exp_callback &&
                 !(*exp->exp_callback)(string, exp->exp_cb_arg)))

@@ -181,10 +181,10 @@ sMem::sMem()
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 4, 2);
 
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "expose-event",
-        GTK_SIGNAL_FUNC(mem_redraw), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "style-set",
-        GTK_SIGNAL_FUNC(mem_font_change), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
+        G_CALLBACK(mem_redraw), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "style-set",
+        G_CALLBACK(mem_font_change), 0);
 
     //
     // the dismiss button
@@ -192,8 +192,8 @@ sMem::sMem()
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(mem_popdown), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(mem_popdown), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -207,9 +207,10 @@ sMem::~sMem()
 {
     Mem = 0;
     Menu()->MenuButtonSet(0, MenuALLOC, false);
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(mem_popdown), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)mem_popdown, wb_shell);
+    }
 }
 
 

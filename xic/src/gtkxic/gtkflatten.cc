@@ -165,8 +165,8 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fl_action_proc), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -202,8 +202,8 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(fl_depth_proc), 0);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(fl_depth_proc), 0);
     }
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
@@ -221,8 +221,8 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
         "Don't flatten standard vias, move to top");
     gtk_widget_set_name(button, "StdVias");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fl_action_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -233,8 +233,8 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
         "Don't flatten param. cells, move to top");
     gtk_widget_set_name(button, "PCells");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fl_action_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -244,8 +244,8 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     button = gtk_check_button_new_with_label("Ignore labels in subcells");
     gtk_widget_set_name(button, "Labels");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fl_action_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -256,8 +256,8 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     gtk_widget_set_name(button, "Mode");
     gtk_widget_show(button);
     GRX->SetStatus(button, fmode);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fl_action_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -267,8 +267,8 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
         "Use object merging when flattening");
     gtk_widget_set_name(button, "Merge");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fl_action_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -283,16 +283,16 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     button = gtk_button_new_with_label("Flatten");
     gtk_widget_set_name(button, "Flatten");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fl_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     fl_go = button;
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fl_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fl_cancel_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,

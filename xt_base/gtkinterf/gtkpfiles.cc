@@ -134,8 +134,8 @@ files_bag::files_bag(gtk_bag *w, const char **buttons, int numbuttons,
             gtk_widget_set_name(button, buttons[i]);
             gtk_widget_show(button);
             f_buttons[i] = button;
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                GTK_SIGNAL_FUNC(action_proc), this);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(action_proc), this);
             gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
         }
     }
@@ -205,8 +205,8 @@ files_bag::files_bag(gtk_bag *w, const char **buttons, int numbuttons,
     GtkWidget *button = gtk_toggle_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(destroy), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(destroy), this);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -218,8 +218,8 @@ files_bag::files_bag(gtk_bag *w, const char **buttons, int numbuttons,
 files_bag::~files_bag()
 {
     if (f_destroy)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(f_destroy), f_instptr);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)f_destroy, f_instptr);
     f_instptr = 0;
     if (f_path_list) {
         for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
@@ -266,8 +266,8 @@ files_bag::update(const char *path, const char **buttons, int numbuttons,
             gtk_widget_set_name(button, buttons[i]);
             gtk_widget_show(button);
             f_buttons[i] = button;
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                GTK_SIGNAL_FUNC(action_proc), this);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(action_proc), this);
             gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
         }
         gtk_widget_show(hbox);
@@ -291,8 +291,8 @@ files_bag::viewing_area(int width, int height)
         gtk_widget_show(f_notebook);
     }
     else {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(f_notebook),
-            GTK_SIGNAL_FUNC(f_page_proc), this);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(f_notebook),
+            (gpointer)f_page_proc, this);
         while (GTK_NOTEBOOK(f_notebook)->children)
             gtk_notebook_remove_page(GTK_NOTEBOOK(f_notebook), 0);
     }
@@ -338,8 +338,8 @@ files_bag::viewing_area(int width, int height)
         gtk_widget_show(mi);
         gtk_object_set_data(GTK_OBJECT(mi), "index", (void*)(long)i);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(f_menu_proc), this);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(f_menu_proc), this);
 
         GtkWidget *page = create_page(dl);
         gtk_notebook_append_page(GTK_NOTEBOOK(f_notebook), page, 0);
@@ -350,8 +350,8 @@ files_bag::viewing_area(int width, int height)
         }
 
     }
-    gtk_signal_connect(GTK_OBJECT(f_notebook), "switch-page",
-        GTK_SIGNAL_FUNC(f_page_proc), this);
+    g_signal_connect(G_OBJECT(f_notebook), "switch-page",
+        G_CALLBACK(f_page_proc), this);
     gtk_notebook_set_page(GTK_NOTEBOOK(f_notebook), init_page);
     gtk_option_menu_remove_menu(GTK_OPTION_MENU(f_menu));
     gtk_option_menu_set_menu(GTK_OPTION_MENU(f_menu), menu);
@@ -473,8 +473,8 @@ files_bag::relist(stringlist *oldlist)
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_show(mi);
         gtk_menu_insert(GTK_MENU(menu), mi, n);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(f_menu_proc), this);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(f_menu_proc), this);
 
         const char **nary = new const char*[len+1];
         for (int i = 0; i < n; i++)
@@ -595,18 +595,18 @@ files_bag::create_page(sDirList *dl)
 
     if (f_btn_hdlr) {
         gtk_widget_add_events(nbtext, GDK_BUTTON_PRESS_MASK);
-        gtk_signal_connect(GTK_OBJECT(nbtext), "button-press-event",
-            GTK_SIGNAL_FUNC(f_btn_hdlr), this);
+        g_signal_connect(G_OBJECT(nbtext), "button-press-event",
+            G_CALLBACK(f_btn_hdlr), this);
     }
-    gtk_signal_connect(GTK_OBJECT(nbtext), "button-release-event",
-        GTK_SIGNAL_FUNC(f_btn_release_hdlr), this);
-    gtk_signal_connect(GTK_OBJECT(nbtext), "motion-notify-event",
-        GTK_SIGNAL_FUNC(f_motion), this);
-    gtk_signal_connect_after(GTK_OBJECT(nbtext), "realize",
-        GTK_SIGNAL_FUNC(f_realize_proc), this);
+    g_signal_connect(G_OBJECT(nbtext), "button-release-event",
+        G_CALLBACK(f_btn_release_hdlr), this);
+    g_signal_connect(G_OBJECT(nbtext), "motion-notify-event",
+        G_CALLBACK(f_motion), this);
+    g_signal_connect_after(G_OBJECT(nbtext), "realize",
+        G_CALLBACK(f_realize_proc), this);
 
-    gtk_signal_connect(GTK_OBJECT(nbtext), "unrealize",
-        GTK_SIGNAL_FUNC(f_unrealize_proc), this);
+    g_signal_connect(G_OBJECT(nbtext), "unrealize",
+        G_CALLBACK(f_unrealize_proc), this);
 
     // Gtk-2 is tricky to overcome internal selection handling.
     // Must remove clipboard (in f_realize_proc), and explicitly
@@ -615,10 +615,10 @@ files_bag::create_page(sDirList *dl)
 
     gtk_selection_add_targets(nbtext, GDK_SELECTION_PRIMARY,
         target_table, n_targets);
-    gtk_signal_connect(GTK_OBJECT(nbtext), "selection-clear-event",
-        GTK_SIGNAL_FUNC(f_selection_clear), 0);
-    gtk_signal_connect(GTK_OBJECT(nbtext), "selection-get",
-        GTK_SIGNAL_FUNC(f_selection_get), 0);
+    g_signal_connect(G_OBJECT(nbtext), "selection-clear-event",
+        G_CALLBACK(f_selection_clear), 0);
+    g_signal_connect(G_OBJECT(nbtext), "selection-get",
+        G_CALLBACK(f_selection_get), 0);
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(nbtext));
@@ -630,16 +630,16 @@ files_bag::create_page(sDirList *dl)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
 
     // drag source (starts explicitly)
-    gtk_signal_connect(GTK_OBJECT(nbtext), "drag-data-get",
-        GTK_SIGNAL_FUNC(f_source_drag_data_get), this);
+    g_signal_connect(G_OBJECT(nbtext), "drag-data-get",
+        G_CALLBACK(f_source_drag_data_get), this);
 
     // drop site
     gtk_drag_dest_set(nbtext, GTK_DEST_DEFAULT_ALL, target_table,
         n_targets,
         (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE |
          GDK_ACTION_LINK | GDK_ACTION_ASK));
-    gtk_signal_connect_after(GTK_OBJECT(nbtext), "drag-data-received",
-        GTK_SIGNAL_FUNC(f_drag_data_received), this);
+    g_signal_connect_after(G_OBJECT(nbtext), "drag-data-received",
+        G_CALLBACK(f_drag_data_received), this);
     return (vtab);
 }
 
@@ -820,7 +820,7 @@ files_bag::f_source_drag_data_get(GtkWidget *caller, GdkDragContext*,
 {
     if (GTK_IS_TEXT_VIEW(caller))
     // stop text view native handler
-    gtk_signal_emit_stop_by_name(GTK_OBJECT(caller), "drag-data-get");
+    g_signal_stop_emission_by_name(G_OBJECT(caller), "drag-data-get");
 
     (void)caller;
     char *s = f_instptr->get_selection();
@@ -850,15 +850,8 @@ files_bag::f_motion(GtkWidget *widget, GdkEvent *event, void*)
 {
     if (f_instptr) {
         if (f_instptr->f_drag_start) {
-#if GTK_CHECK_VERSION(2,12,0)
             if (event->motion.is_hint)
                 gdk_event_request_motions((GdkEventMotion*)event);
-#else
-            // Strange voodoo to "turn on" motion events, that are
-            // otherwise suppressed since GDK_POINTER_MOTION_HINT_MASK
-            // is set.  See GdkEventMask doc.
-            gdk_window_get_pointer(widget->window, 0, 0, 0);
-#endif
             if ((abs((int)event->motion.x - f_instptr->f_drag_x) > 4 ||
                     abs((int)event->motion.y - f_instptr->f_drag_y) > 4)) {
                 f_instptr->f_drag_start = false;
@@ -1017,7 +1010,7 @@ files_bag::f_selection_get(GtkWidget *widget,
         return;  
 
     // stop native handler
-    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "selection-get");
+    g_signal_stop_emission_by_name(G_OBJECT(widget), "selection-get");
 
     char *s = f_instptr->get_selection();
     gtk_selection_data_set(selection_data, selection_data->target,

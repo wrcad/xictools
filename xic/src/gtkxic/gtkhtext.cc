@@ -121,8 +121,8 @@ GTKedit::GTKedit(bool nogr)
     GtkWidget *ebox = gtk_event_box_new();
     gtk_widget_show(ebox);
     gtk_widget_add_events(ebox, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(ebox), "button-press-event",
-        GTK_SIGNAL_FUNC(pe_keys_hdlr), 0);
+    g_signal_connect(G_OBJECT(ebox), "button-press-event",
+        G_CALLBACK(pe_keys_hdlr), 0);
     gtk_container_add(GTK_CONTAINER(ebox), pe_keys);
 
     pe_keyframe = gtk_frame_new(0);
@@ -143,8 +143,8 @@ GTKedit::GTKedit(bool nogr)
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(pe_r_menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(pe_r_menu_proc), this);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(pe_r_menu_proc), this);
     }
     pe_r_button = gtk_button_new_with_label("R");
     gtk_widget_set_size_request(pe_r_button, -1, 20);
@@ -153,8 +153,8 @@ GTKedit::GTKedit(bool nogr)
     GtkTooltips *tt = gtk_NewTooltip();
     gtk_tooltips_set_tip(tt, pe_r_button,
         "Recall edit string from a register.", "");
-    gtk_signal_connect(GTK_OBJECT(pe_r_button), "button-press-event",
-        GTK_SIGNAL_FUNC(pe_popup_btn_proc), this);
+    g_signal_connect(G_OBJECT(pe_r_button), "button-press-event",
+        G_CALLBACK(pe_popup_btn_proc), this);
     gtk_box_pack_start(GTK_BOX(pe_container), pe_r_button, false, false, 0);
 
     // S (save) button
@@ -166,8 +166,8 @@ GTKedit::GTKedit(bool nogr)
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(pe_s_menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(pe_s_menu_proc), this);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(pe_s_menu_proc), this);
     }
     pe_s_button = gtk_button_new_with_label("S");
     gtk_widget_set_size_request(pe_s_button, -1, 20);
@@ -176,8 +176,8 @@ GTKedit::GTKedit(bool nogr)
     tt = gtk_NewTooltip();
     gtk_tooltips_set_tip(tt, pe_s_button,
         "Save edit string to a register.", "");
-    gtk_signal_connect(GTK_OBJECT(pe_s_button), "button-press-event",
-        GTK_SIGNAL_FUNC(pe_popup_btn_proc), this);
+    g_signal_connect(G_OBJECT(pe_s_button), "button-press-event",
+        G_CALLBACK(pe_popup_btn_proc), this);
     gtk_box_pack_start(GTK_BOX(pe_container), pe_s_button, false, false, 0);
 
     // L (long text) button
@@ -188,8 +188,8 @@ GTKedit::GTKedit(bool nogr)
     tt = gtk_NewTooltip();
     gtk_tooltips_set_tip(tt, pe_l_button,
         "Associate a block of text with the label - pop up an editor.", "");
-    gtk_signal_connect(GTK_OBJECT(pe_l_button), "clicked",
-        GTK_SIGNAL_FUNC(pe_l_btn_hdlr), this);
+    g_signal_connect(G_OBJECT(pe_l_button), "clicked",
+        G_CALLBACK(pe_l_btn_hdlr), this);
     gtk_box_pack_start(GTK_BOX(pe_container), pe_l_button, false, false, 0);
 
     // the prompt line
@@ -205,44 +205,44 @@ GTKedit::GTKedit(bool nogr)
     gtk_box_pack_start(GTK_BOX(pe_container), frame, true, true, 0);
 
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "expose-event",
-        GTK_SIGNAL_FUNC(pe_redraw_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
+        G_CALLBACK(pe_redraw_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "button-press-event",
-        GTK_SIGNAL_FUNC(pe_btn_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "button-press-event",
+        G_CALLBACK(pe_btn_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_RELEASE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "button-release-event",
-        GTK_SIGNAL_FUNC(pe_btn_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "button-release-event",
+        G_CALLBACK(pe_btn_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_POINTER_MOTION_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "motion-notify-event",
-        GTK_SIGNAL_FUNC(pe_motion_hdlr), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "motion-notify-event",
+        G_CALLBACK(pe_motion_hdlr), 0);
 
     gtk_widget_add_events(gd_viewport, GDK_ENTER_NOTIFY_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "enter-notify-event",
-        GTK_SIGNAL_FUNC(pe_enter_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "enter-notify-event",
+        G_CALLBACK(pe_enter_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_LEAVE_NOTIFY_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "leave-notify-event",
-        GTK_SIGNAL_FUNC(pe_leave_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "leave-notify-event",
+        G_CALLBACK(pe_leave_hdlr), this);
 
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "selection-received",
-        GTK_SIGNAL_FUNC(pe_selection_proc), this);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "style-set",
-        GTK_SIGNAL_FUNC(pe_font_change_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "selection-received",
+        G_CALLBACK(pe_selection_proc), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "style-set",
+        G_CALLBACK(pe_font_change_hdlr), this);
 
     // prompt line drop site
     gtk_drag_dest_set(frame, GTK_DEST_DEFAULT_ALL, pl_targets,
         n_pl_targets, GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(frame), "drag-data-received",
-        GTK_SIGNAL_FUNC(pe_drag_data_received), this);
+    g_signal_connect_after(G_OBJECT(frame), "drag-data-received",
+        G_CALLBACK(pe_drag_data_received), this);
 
     // selections
     gtk_selection_add_targets(gd_viewport, GDK_SELECTION_PRIMARY, sel_targets,
         n_sel_targets);
 #ifndef WIN32
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "selection-clear-event",
-        GTK_SIGNAL_FUNC(pe_selection_clear), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "selection-get",
-        GTK_SIGNAL_FUNC(pe_selection_get), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "selection-clear-event",
+        G_CALLBACK(pe_selection_clear), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "selection-get",
+        G_CALLBACK(pe_selection_get), 0);
 #endif
 
     // Set sizes

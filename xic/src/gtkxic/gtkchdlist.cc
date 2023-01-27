@@ -208,71 +208,71 @@ sCHL::sCHL(GRobject c)
     chl_addbtn = gtk_toggle_button_new_with_label("Add");
     gtk_widget_set_name(chl_addbtn, "Add");
     gtk_widget_show(chl_addbtn);
-    gtk_signal_connect(GTK_OBJECT(chl_addbtn), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLadd);
+    g_signal_connect(G_OBJECT(chl_addbtn), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLadd);
     gtk_box_pack_start(GTK_BOX(hbox), chl_addbtn, true, true, 0);
 
     chl_savbtn = gtk_toggle_button_new_with_label("Save");
     gtk_widget_set_name(chl_savbtn, "Save");
     gtk_widget_show(chl_savbtn);
-    gtk_signal_connect(GTK_OBJECT(chl_savbtn), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLsav);
+    g_signal_connect(G_OBJECT(chl_savbtn), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLsav);
     gtk_box_pack_start(GTK_BOX(hbox), chl_savbtn, true, true, 0);
 
     chl_delbtn = gtk_toggle_button_new_with_label("Delete");
     gtk_widget_set_name(chl_delbtn, "Remove");
     gtk_widget_show(chl_delbtn);
-    gtk_signal_connect(GTK_OBJECT(chl_delbtn), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLdel);
+    g_signal_connect(G_OBJECT(chl_delbtn), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLdel);
     gtk_box_pack_start(GTK_BOX(hbox), chl_delbtn, true, true, 0);
 
     chl_cfgbtn = gtk_toggle_button_new_with_label("Config");
     gtk_widget_set_name(chl_cfgbtn, "Config");
     gtk_widget_show(chl_cfgbtn);
-    gtk_signal_connect(GTK_OBJECT(chl_cfgbtn), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLcfg);
+    g_signal_connect(G_OBJECT(chl_cfgbtn), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLcfg);
     gtk_box_pack_start(GTK_BOX(hbox), chl_cfgbtn, true, true, 0);
 
     chl_dspbtn = gtk_toggle_button_new_with_label("Display");
     gtk_widget_set_name(chl_dspbtn, "Display");
     gtk_widget_show(chl_dspbtn);
-    gtk_signal_connect(GTK_OBJECT(chl_dspbtn), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLdsp);
+    g_signal_connect(G_OBJECT(chl_dspbtn), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLdsp);
     gtk_box_pack_start(GTK_BOX(hbox), chl_dspbtn, true, true, 0);
 
     chl_cntbtn = gtk_button_new_with_label("Contents");
     gtk_widget_set_name(chl_cntbtn, "Contents");
     gtk_widget_show(chl_cntbtn);
-    gtk_signal_connect(GTK_OBJECT(chl_cntbtn), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLcnt);
+    g_signal_connect(G_OBJECT(chl_cntbtn), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLcnt);
     gtk_box_pack_start(GTK_BOX(hbox), chl_cntbtn, true, true, 0);
 
     chl_celbtn = gtk_toggle_button_new_with_label("Cell");
     gtk_widget_set_name(chl_celbtn, "Cell");
     gtk_widget_show(chl_celbtn);
-    gtk_signal_connect(GTK_OBJECT(chl_celbtn), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLcel);
+    g_signal_connect(G_OBJECT(chl_celbtn), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLcel);
     gtk_box_pack_start(GTK_BOX(hbox), chl_celbtn, true, true, 0);
 
     chl_infbtn = gtk_button_new_with_label("Info");
     gtk_widget_set_name(chl_infbtn, "Info");
     gtk_widget_show(chl_infbtn);
-    gtk_signal_connect(GTK_OBJECT(chl_infbtn), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLinf);
+    g_signal_connect(G_OBJECT(chl_infbtn), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLinf);
     gtk_box_pack_start(GTK_BOX(hbox), chl_infbtn, true, true, 0);
 
     chl_qinfbtn = gtk_button_new_with_label("?");
     gtk_widget_set_name(chl_qinfbtn, "Qinfo");
     gtk_widget_show(chl_qinfbtn);
-    gtk_signal_connect(GTK_OBJECT(chl_qinfbtn), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLqinf);
+    g_signal_connect(G_OBJECT(chl_qinfbtn), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLqinf);
     gtk_box_pack_start(GTK_BOX(hbox), chl_qinfbtn, true, true, 0);
 
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLhlp);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLhlp);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     int rowcnt = 0;
@@ -317,8 +317,8 @@ sCHL::sCHL(GRobject c)
         gtk_tree_view_get_selection(GTK_TREE_VIEW(chl_list));
     gtk_tree_selection_set_select_function(sel, chl_selection_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
-    gtk_signal_connect(GTK_OBJECT(chl_list), "focus",
-        GTK_SIGNAL_FUNC(chl_focus_proc), this);
+    g_signal_connect(G_OBJECT(chl_list), "focus",
+        G_CALLBACK(chl_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), chl_list);
     gtk_widget_set_size_request(swin, 380, 120);
@@ -346,8 +346,8 @@ sCHL::sCHL(GRobject c)
           "Use auto-rename when writing CHD reference cells");
     gtk_widget_set_name(chl_rename, "rename");
     gtk_widget_show(chl_rename);
-    gtk_signal_connect(GTK_OBJECT(chl_rename), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLrenam);
+    g_signal_connect(G_OBJECT(chl_rename), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLrenam);
     gtk_table_attach(GTK_TABLE(form), chl_rename, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -356,8 +356,8 @@ sCHL::sCHL(GRobject c)
     chl_loadtop = gtk_check_button_new_with_label("Load top cell only");
     gtk_widget_set_name(chl_loadtop, "LoadTopCell");
     gtk_widget_show(chl_loadtop);
-    gtk_signal_connect(GTK_OBJECT(chl_loadtop), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLltop);
+    g_signal_connect(G_OBJECT(chl_loadtop), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLltop);
     gtk_table_attach(GTK_TABLE(form), chl_loadtop, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -365,8 +365,8 @@ sCHL::sCHL(GRobject c)
     chl_failres = gtk_check_button_new_with_label("Fail on unresolved");
     gtk_widget_set_name(chl_failres, "FailOnUnresolved");
     gtk_widget_show(chl_failres);
-    gtk_signal_connect(GTK_OBJECT(chl_failres), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLfail);
+    g_signal_connect(G_OBJECT(chl_failres), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLfail);
     gtk_table_attach(GTK_TABLE(form), chl_failres, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -375,8 +375,8 @@ sCHL::sCHL(GRobject c)
     chl_usetab = gtk_check_button_new_with_label("Use cell table");
     gtk_widget_set_name(chl_usetab, "UseCellTab");
     gtk_widget_show(chl_usetab);
-    gtk_signal_connect(GTK_OBJECT(chl_usetab), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLutab);
+    g_signal_connect(G_OBJECT(chl_usetab), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLutab);
     gtk_table_attach(GTK_TABLE(form), chl_usetab, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -384,8 +384,8 @@ sCHL::sCHL(GRobject c)
     chl_showtab = gtk_toggle_button_new_with_label("Edit Cell Table");
     gtk_widget_set_name(chl_showtab, "EditCellTab");
     gtk_widget_show(chl_showtab);
-    gtk_signal_connect(GTK_OBJECT(chl_showtab), "clicked",
-        GTK_SIGNAL_FUNC(chl_action_proc), (void*)CHLetab);
+    g_signal_connect(G_OBJECT(chl_showtab), "clicked",
+        G_CALLBACK(chl_action_proc), (void*)CHLetab);
     gtk_table_attach(GTK_TABLE(form), chl_showtab, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -408,18 +408,18 @@ sCHL::sCHL(GRobject c)
     GtkWidget *mi = gtk_menu_item_new_with_label("Create new MEMORY CGD");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(chl_geom_proc), (void*)(long)CHD_CGDmemory);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(chl_geom_proc), (void*)(long)CHD_CGDmemory);
     mi = gtk_menu_item_new_with_label("Create new FILE CHD");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(chl_geom_proc), (void*)(long)CHD_CGDfile);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(chl_geom_proc), (void*)(long)CHD_CGDfile);
     mi = gtk_menu_item_new_with_label("Ignore geometry records");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(chl_geom_proc), (void*)(long)CHD_CGDnone);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(chl_geom_proc), (void*)(long)CHD_CGDnone);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(chl_geomenu), menu);
 
     gtk_table_attach(GTK_TABLE(form), chl_geomenu, 1, 2, rowcnt, rowcnt+1,
@@ -440,8 +440,8 @@ sCHL::sCHL(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(chl_cancel), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(chl_cancel), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -471,9 +471,10 @@ sCHL::~sCHL()
         chl_del_pop->popdown();
     Cvt()->PopUpDisplayWindow(0, MODE_OFF, 0, 0, 0);
 
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(chl_cancel), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)chl_cancel, wb_shell);
+    }
 }
 
 

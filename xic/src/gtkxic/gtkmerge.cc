@@ -225,16 +225,16 @@ sMC::sMC(mitem_t *mi)
         gtk_check_button_new_with_label("Overwrite Physical");
     gtk_widget_set_name(button, "OverwritePhysical");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(mc_btn_proc), (void*)MC_readP);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(mc_btn_proc), (void*)MC_readP);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), mc_do_phys);
     gtk_box_pack_start(GTK_BOX(vbox), button, false, false, 0);
 
     button = gtk_check_button_new_with_label("Overwrite Electrical");
     gtk_widget_set_name(button, "ReadAllElectrical");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(mc_btn_proc), (void*)MC_readE);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(mc_btn_proc), (void*)MC_readE);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
         mc_do_elec);
     gtk_box_pack_start(GTK_BOX(vbox), button, false, false, 0);
@@ -249,15 +249,15 @@ sMC::sMC(mitem_t *mi)
     button = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(button, "Apply");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(mc_btn_proc), (void*)MC_apply);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(mc_btn_proc), (void*)MC_apply);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Apply To Rest");
     gtk_widget_set_name(button, "ApplyToRest");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(mc_btn_proc), (void*)MC_abort);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(mc_btn_proc), (void*)MC_abort);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, 2, 3,

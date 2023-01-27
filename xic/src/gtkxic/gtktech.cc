@@ -141,8 +141,8 @@ sTc::sTc(GRobject caller)
     gtk_widget_set_name(tc_none, "none");
     gtk_widget_show(tc_none);
     GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(tc_none));
-    gtk_signal_connect(GTK_OBJECT(tc_none), "clicked",
-        GTK_SIGNAL_FUNC(tc_action), 0);
+    g_signal_connect(G_OBJECT(tc_none), "clicked",
+        G_CALLBACK(tc_action), 0);
     GtkWidget *row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
     gtk_box_pack_start(GTK_BOX(row), tc_none, true, true, 0);
@@ -150,8 +150,8 @@ sTc::sTc(GRobject caller)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tc_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
@@ -164,8 +164,8 @@ sTc::sTc(GRobject caller)
     gtk_widget_set_name(tc_cmt, "cmt");
     gtk_widget_show(tc_cmt);
     group = gtk_radio_button_group(GTK_RADIO_BUTTON(tc_cmt));
-    gtk_signal_connect(GTK_OBJECT(tc_cmt), "clicked",
-        GTK_SIGNAL_FUNC(tc_action), 0);
+    g_signal_connect(G_OBJECT(tc_cmt), "clicked",
+        G_CALLBACK(tc_action), 0);
 
     gtk_table_attach(GTK_TABLE(form), tc_cmt, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -176,8 +176,8 @@ sTc::sTc(GRobject caller)
         "Include default definitions");
     gtk_widget_set_name(tc_use, "all");
     gtk_widget_show(tc_use);
-    gtk_signal_connect(GTK_OBJECT(tc_use), "clicked",
-        GTK_SIGNAL_FUNC(tc_action), 0);
+    g_signal_connect(G_OBJECT(tc_use), "clicked",
+        G_CALLBACK(tc_action), 0);
 
     gtk_table_attach(GTK_TABLE(form), tc_use, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -216,8 +216,8 @@ sTc::sTc(GRobject caller)
     button = gtk_button_new_with_label("Write File");
     gtk_widget_set_name(button, "write");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -226,8 +226,8 @@ sTc::sTc(GRobject caller)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tc_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tc_cancel_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);

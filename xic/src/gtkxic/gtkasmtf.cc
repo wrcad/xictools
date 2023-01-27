@@ -118,8 +118,8 @@ sAsmTf::sAsmTf(sAsmPage *src)
         gtk_object_set_data(GTK_OBJECT(mi), "angle", (void*)(long)i);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(tf_angle_proc), this);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(tf_angle_proc), this);
     }
     gtk_option_menu_set_history(GTK_OPTION_MENU(tf_angle), tf_angle_ix);
 
@@ -191,8 +191,8 @@ sAsmTf::sAsmTf(sAsmPage *src)
     tf_use_win = gtk_check_button_new_with_label("Use Window");
     gtk_widget_set_name(tf_use_win, "Window");
     gtk_widget_show(tf_use_win);
-    gtk_signal_connect(GTK_OBJECT(tf_use_win), "clicked",
-        GTK_SIGNAL_FUNC(tf_use_win_proc), this);
+    g_signal_connect(G_OBJECT(tf_use_win), "clicked",
+        G_CALLBACK(tf_use_win_proc), this);
     gtk_box_pack_start(GTK_BOX(hbox), tf_use_win, true, true, 0);
 
     tf_do_clip = gtk_check_button_new_with_label("Clip");

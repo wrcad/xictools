@@ -165,8 +165,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         gtk_widget_set_name(mi, gds_input[i].name);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(fmt_input_proc), this);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(fmt_input_proc), this);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry), cvofmt_t::fmt_gds_inp);
@@ -199,8 +199,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         gtk_widget_set_name(mi, gds_limits[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(fmt_level_proc), (void*)gds_limits[i]);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(fmt_level_proc), (void*)gds_limits[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry),
@@ -222,8 +222,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         "Skip layers without Xic to GDSII layer mapping");
     gtk_widget_set_name(button, "gdsmap");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_NoGdsMapOk));
     fmt_gdsmap = button;
 
@@ -239,8 +239,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         "Accept but truncate too-long strings");
     gtk_widget_set_name(button, "gdscut");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_GdsTruncateLongStrings));
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     fmt_gdscut = button;
@@ -262,7 +262,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     }
 
     GtkWidget *sb = sb_gdsunit.init(initd, 0.01, 100.0, 5);
-    sb_gdsunit.connect_changed(GTK_SIGNAL_FUNC(fmt_val_changed), this);
+    sb_gdsunit.connect_changed(G_CALLBACK(fmt_val_changed), this);
     gtk_widget_set_size_request(sb, 100, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -291,8 +291,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_box_pack_start(GTK_BOX(hbox), label, true, true, 0);
 
     button = gtk_toggle_button_new_with_label("Advanced");
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     gtk_widget_show(button);
     gtk_widget_set_name(button, "Advanced");
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
@@ -307,8 +307,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         "Skip layers without Xic to GDSII layer mapping");
     gtk_widget_set_name(button, "oasmap");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_NoGdsMapOk));
     fmt_oasmap = button;
 
@@ -320,8 +320,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     button = gtk_check_button_new_with_label("Use compression");
     gtk_widget_set_name(button, "oascmp");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_OasWriteCompressed));
     fmt_oascmp = button;
 
@@ -332,8 +332,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     button = gtk_check_button_new_with_label("Find repetitions");
     gtk_widget_set_name(button, "oasrep");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_OasWriteRep));
     fmt_oasrep = button;
 
@@ -345,8 +345,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     button = gtk_check_button_new_with_label("Use string tables");
     gtk_widget_set_name(button, "oastab");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_OasWriteNameTab));
     fmt_oastab = button;
 
@@ -357,8 +357,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     button = gtk_check_button_new_with_label("Write CRC checksum");
     gtk_widget_set_name(button, "oassum");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_OasWriteChecksum));
     fmt_oassum = button;
 
@@ -402,8 +402,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
     gtk_object_set_data(GTK_OBJECT(mi), "cvofmt", this);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(fmt_flags_proc), (void*)"Strip");
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(fmt_flags_proc), (void*)"Strip");
     GtkWidget *msep = gtk_menu_item_new();  // separator
     gtk_menu_append(GTK_MENU(menu), msep);
     gtk_widget_show(msep);
@@ -413,8 +413,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mi),
             m->code & flgs);
         gtk_object_set_data(GTK_OBJECT(mi), "cvofmt", this);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(fmt_flags_proc), (void*)m->name);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(fmt_flags_proc), (void*)m->name);
         gtk_widget_show(mi);
     }
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(pc_item), menu);
@@ -424,8 +424,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(btn);
     gtk_widget_set_name(btn, "last_seen");
     gtk_box_pack_start(GTK_BOX(hbox), btn, false, false, 0);
-    gtk_signal_connect(GTK_OBJECT(btn), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(btn), "clicked",
+        G_CALLBACK(fmt_action), 0);
 
     gtk_table_attach(GTK_TABLE(table), hbox, 0, 3, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -449,8 +449,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         gtk_widget_set_name(mi, m->name);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(fmt_style_proc), (void*)m->name);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(fmt_style_proc), (void*)m->name);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     for (int i = 0; cname_formats[i].name; i++) {
@@ -482,8 +482,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         gtk_widget_set_name(mi, m->name);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(fmt_style_proc), (void*)m->name);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(fmt_style_proc), (void*)m->name);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     for (int i = 0; layer_formats[i].name; i++) {
@@ -515,8 +515,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         gtk_widget_set_name(mi, m->name);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(fmt_style_proc), (void*)m->name);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(fmt_style_proc), (void*)m->name);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     for (int i = 0; label_formats[i].name; i++) {
@@ -560,8 +560,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         "Accept but truncate too-long strings");
     gtk_widget_set_name(button, "cgxcut");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_GdsTruncateLongStrings));
     fmt_cgxcut = button;
 
@@ -601,8 +601,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     button = gtk_check_button_new_with_label("OASIS text: print offsets");
     gtk_widget_set_name(button, "oasoff");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_OasPrintOffset));
     fmt_oasoff = button;
 
@@ -613,8 +613,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     button = gtk_check_button_new_with_label("OASIS text: no line wrap");
     gtk_widget_set_name(button, "oasnwp");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fmt_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fmt_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_OasPrintNoWrap));
     fmt_oasnwp = button;
 
@@ -663,28 +663,28 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     mi = gtk_menu_item_new_with_label("no geometry info saved");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(fmt_info_proc), (void*)cvINFOnone);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(fmt_info_proc), (void*)cvINFOnone);
     mi = gtk_menu_item_new_with_label("totals only");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(fmt_info_proc), (void*)cvINFOtotals);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(fmt_info_proc), (void*)cvINFOtotals);
     mi = gtk_menu_item_new_with_label("per-layer counts");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(fmt_info_proc), (void*)cvINFOpl);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(fmt_info_proc), (void*)cvINFOpl);
     mi = gtk_menu_item_new_with_label("per-cell counts");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(fmt_info_proc), (void*)cvINFOpc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(fmt_info_proc), (void*)cvINFOpc);
     mi = gtk_menu_item_new_with_label("per-cell and per-layer counts");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(fmt_info_proc), (void*)cvINFOplpc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(fmt_info_proc), (void*)cvINFOplpc);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(fmt_chdinfo), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(fmt_chdinfo),
         FIO()->CvtInfo());
@@ -714,8 +714,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     configure(fmtmode);
 
-    gtk_signal_connect(GTK_OBJECT(fmt_form), "switch-page",
-        GTK_SIGNAL_FUNC(fmt_page_proc), this);
+    g_signal_connect(G_OBJECT(fmt_form), "switch-page",
+        G_CALLBACK(fmt_page_proc), this);
 }
 
 
@@ -727,8 +727,8 @@ cvofmt_t::~cvofmt_t()
     // This prevents the handler from being called after this is
     // deleted, which can happen when the widgets are destroyed.
 
-    gtk_signal_disconnect_by_func(GTK_OBJECT(fmt_form),
-        GTK_SIGNAL_FUNC(fmt_page_proc), this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(fmt_form),
+        (gpointer)fmt_page_proc, this);
 }
 
 

@@ -276,11 +276,11 @@ void
 GTKdev::SetDoubleClickExit(GtkWidget *widget, GtkWidget *cancel)
 {
     gtk_widget_add_events(widget, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(widget), "button-press-event",
-        GTK_SIGNAL_FUNC(dc_btn_hdlr), cancel);
+    g_signal_connect(G_OBJECT(widget), "button-press-event",
+        G_CALLBACK(dc_btn_hdlr), cancel);
     gtk_widget_add_events(widget, GDK_LEAVE_NOTIFY_MASK);
-    gtk_signal_connect(GTK_OBJECT(widget), "leave-notify-event",
-        GTK_SIGNAL_FUNC(dc_leave_hdlr), 0);
+    g_signal_connect(G_OBJECT(widget), "leave-notify-event",
+        G_CALLBACK(dc_leave_hdlr), 0);
 }
 
 
@@ -438,8 +438,8 @@ GTKaffirmPopup::GTKaffirmPopup(gtk_bag *owner, const char *question_str,
     gtk_widget_show(form);
     gtk_container_set_border_width(GTK_CONTAINER(form), 2);
     gtk_widget_add_events(pw_shell, GDK_KEY_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(pw_shell), "key-press-event",
-        GTK_SIGNAL_FUNC(pw_affirm_key), this);
+    g_signal_connect(G_OBJECT(pw_shell), "key-press-event",
+        G_CALLBACK(pw_affirm_key), this);
     gtk_container_add(GTK_CONTAINER(pw_shell), form);
 
     GtkWidget *frame = gtk_frame_new(0);
@@ -456,15 +456,15 @@ GTKaffirmPopup::GTKaffirmPopup(gtk_bag *owner, const char *question_str,
     gtk_widget_set_name(pw_yes, "Yes");
     gtk_widget_show(pw_yes);
     gtk_box_pack_start(GTK_BOX(hbox), pw_yes, true, true, 0);
-    gtk_signal_connect(GTK_OBJECT(pw_yes), "clicked",
-        GTK_SIGNAL_FUNC(pw_affirm_button), this);
+    g_signal_connect(G_OBJECT(pw_yes), "clicked",
+        G_CALLBACK(pw_affirm_button), this);
 
     pw_cancel = gtk_button_new_with_label("No");
     gtk_widget_set_name(pw_cancel, "No");
     gtk_widget_show(pw_cancel);
     gtk_box_pack_start(GTK_BOX(hbox), pw_cancel, true, true, 0);
-    gtk_signal_connect(GTK_OBJECT(pw_cancel), "clicked",
-        GTK_SIGNAL_FUNC(pw_affirm_button), this);
+    g_signal_connect(G_OBJECT(pw_cancel), "clicked",
+        G_CALLBACK(pw_affirm_button), this);
     gtk_window_set_focus(GTK_WINDOW(pw_shell), pw_cancel);
 
     gtk_box_pack_start(GTK_BOX(form), hbox, false, false, 0);
@@ -485,10 +485,10 @@ GTKaffirmPopup::~GTKaffirmPopup()
     if (p_caller && !p_no_desel)
         GRX->Deselect(p_caller);
     if (p_caller_data)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(p_caller),
-            GTK_SIGNAL_FUNC(popdown_widget), this);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(pw_shell),
-        GTK_SIGNAL_FUNC(pw_affirm_popdown), this);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(p_caller),
+            (gpointer)popdown_widget, this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(pw_shell),
+        (gpointer)pw_affirm_popdown, this);
 
     gtk_widget_destroy(pw_shell);
 }
@@ -590,9 +590,9 @@ GTKaffirmPopup::pw_attach_idle_proc(void *arg)
 {
     GTKaffirmPopup *p = static_cast<GTKaffirmPopup*>(arg);
     if (p->p_caller_data && p->p_caller) {
-        gtk_signal_connect(GTK_OBJECT(p->p_caller),
+        g_signal_connect(G_OBJECT(p->p_caller),
             (const char*)p->p_caller_data,
-            GTK_SIGNAL_FUNC(popdown_widget), p);
+            G_CALLBACK(popdown_widget), p);
     }
     return (false);
 }
@@ -663,8 +663,8 @@ GTKnumPopup::GTKnumPopup(gtk_bag *owner, const char *prompt_str,
     GtkObject *adj = gtk_adjustment_new(initd, mind, maxd, del, pagesize, 0);
     pw_text = gtk_spin_button_new(GTK_ADJUSTMENT(adj), climb_rate, numd);
     gtk_widget_show(pw_text);
-    gtk_signal_connect(GTK_OBJECT(pw_text), "changed",
-        GTK_SIGNAL_FUNC(pw_numer_val_changed), this);
+    g_signal_connect(G_OBJECT(pw_text), "changed",
+        G_CALLBACK(pw_numer_val_changed), this);
     gtk_window_set_focus(GTK_WINDOW(pw_shell), pw_text);
     gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(pw_text), true);
 
@@ -687,15 +687,15 @@ GTKnumPopup::GTKnumPopup(gtk_bag *owner, const char *prompt_str,
     pw_yes = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(pw_yes, "Apply");
     gtk_widget_show(pw_yes);
-    gtk_signal_connect(GTK_OBJECT(pw_yes), "clicked",
-        GTK_SIGNAL_FUNC(pw_numer_button), this);
+    g_signal_connect(G_OBJECT(pw_yes), "clicked",
+        G_CALLBACK(pw_numer_button), this);
     gtk_box_pack_start(GTK_BOX(hbox), pw_yes, true, true, 0);
 
     pw_cancel = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(pw_cancel, "Dismiss");
     gtk_widget_show(pw_cancel);
-    gtk_signal_connect(GTK_OBJECT(pw_cancel), "clicked",
-        GTK_SIGNAL_FUNC(pw_numer_button), this);
+    g_signal_connect(G_OBJECT(pw_cancel), "clicked",
+        G_CALLBACK(pw_numer_button), this);
     gtk_box_pack_start(GTK_BOX(hbox), pw_cancel, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 3, 4,
@@ -718,10 +718,10 @@ GTKnumPopup::~GTKnumPopup()
     if (p_caller && !p_no_desel)
         GRX->Deselect(p_caller);
     if (p_caller_data)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(p_caller),
-            GTK_SIGNAL_FUNC(popdown_widget), this);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(pw_shell),
-        GTK_SIGNAL_FUNC(pw_numer_popdown), this);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(p_caller),
+            (gpointer)popdown_widget, this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(pw_shell),
+        (gpointer)pw_numer_popdown, this);
 
     gtk_widget_destroy(pw_shell);
 }
@@ -796,8 +796,8 @@ GTKnumPopup::pw_numer_val_changed(GtkWidget*, void *client_data)
     if (p) {
         if (!p->pw_setentr) {
             // After the text changes, Enter calls the Apply method
-            gtk_signal_connect(GTK_OBJECT(p->pw_shell), "key-press-event",
-                GTK_SIGNAL_FUNC(pw_numer_key_hdlr), p);
+            g_signal_connect(G_OBJECT(p->pw_shell), "key-press-event",
+                G_CALLBACK(pw_numer_key_hdlr), p);
             p->pw_setentr = true;
         }
         const char *s = gtk_entry_get_text(GTK_ENTRY(p->pw_text));
@@ -873,9 +873,9 @@ GTKnumPopup::pw_attach_idle_proc(void *arg)
 {
     GTKnumPopup *p = static_cast<GTKnumPopup*>(arg);
     if (p->p_caller_data && p->p_caller) {
-        gtk_signal_connect(GTK_OBJECT(p->p_caller),
+        g_signal_connect(G_OBJECT(p->p_caller),
             (const char*)p->p_caller_data,
-            GTK_SIGNAL_FUNC(popdown_widget), p);
+            G_CALLBACK(popdown_widget), p);
     }
     return (false);
 }
@@ -980,20 +980,16 @@ GTKledPopup::GTKledPopup(gtk_bag *owner, const char *prompt_str,
         // set up a separate drop handler, so data_get/data_received is
         // actually done twice.  However GTK-1 needs this or the
         // transfer won't be done at all.
-#if GTK_CHECK_VERSION(2,10,0)
         GtkDestDefaults DD = (GtkDestDefaults)
             (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
-#else
-        GtkDestDefaults DD = GTK_DEST_DEFAULT_ALL;
-#endif
         gtk_drag_dest_set(pw_text, DD, target_table, n_targets,
             GDK_ACTION_COPY);
-        gtk_signal_connect_after(GTK_OBJECT(pw_text), "drag-data-received",
-            GTK_SIGNAL_FUNC(pw_editstr_drag_data_received), 0);
+        g_signal_connect_after(G_OBJECT(pw_text), "drag-data-received",
+            G_CALLBACK(pw_editstr_drag_data_received), 0);
 
         // Handle Return, same as pressing pw_yes.
-        gtk_signal_connect(GTK_OBJECT(pw_shell), "key-press-event",
-            GTK_SIGNAL_FUNC(pw_editstr_key), this);
+        g_signal_connect(G_OBJECT(pw_shell), "key-press-event",
+            G_CALLBACK(pw_editstr_key), this);
     }
     else {
         GtkWidget *contr;
@@ -1025,15 +1021,15 @@ GTKledPopup::GTKledPopup(gtk_bag *owner, const char *prompt_str,
     pw_yes = gtk_button_new_with_label(btnstr);
     gtk_widget_set_name(pw_yes, btnstr);
     gtk_widget_show(pw_yes);
-    gtk_signal_connect(GTK_OBJECT(pw_yes), "clicked",
-        GTK_SIGNAL_FUNC(pw_editstr_button), this);
+    g_signal_connect(G_OBJECT(pw_yes), "clicked",
+        G_CALLBACK(pw_editstr_button), this);
     gtk_box_pack_start(GTK_BOX(hbox), pw_yes, true, true, 0);
 
     pw_cancel = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(pw_cancel, "Dismiss");
     gtk_widget_show(pw_cancel);
-    gtk_signal_connect(GTK_OBJECT(pw_cancel), "clicked",
-        GTK_SIGNAL_FUNC(pw_editstr_button), this);
+    g_signal_connect(G_OBJECT(pw_cancel), "clicked",
+        G_CALLBACK(pw_editstr_button), this);
     gtk_box_pack_start(GTK_BOX(hbox), pw_cancel, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 3, 4,
@@ -1056,10 +1052,10 @@ GTKledPopup::~GTKledPopup()
     if (p_caller && !p_no_desel)
         GRX->Deselect(p_caller);
     if (p_caller_data)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(p_caller),
-            GTK_SIGNAL_FUNC(popdown_widget), this);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(pw_shell),
-        GTK_SIGNAL_FUNC(pw_editstr_popdown), this);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(p_caller),
+            (gpointer)popdown_widget, this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(pw_shell),
+        (gpointer)pw_editstr_popdown, this);
 
     gtk_widget_destroy(pw_shell);
 }
@@ -1250,9 +1246,9 @@ GTKledPopup::pw_attach_idle_proc(void *arg)
 {
     GTKledPopup *p = static_cast<GTKledPopup*>(arg);
     if (p->p_caller_data && p->p_caller) {
-        gtk_signal_connect(GTK_OBJECT(p->p_caller),
+        g_signal_connect(G_OBJECT(p->p_caller),
             (const char*)p->p_caller_data,
-            GTK_SIGNAL_FUNC(popdown_widget), p);
+            G_CALLBACK(popdown_widget), p);
     }
     return (false);
 }
@@ -1278,8 +1274,8 @@ GTKmsgPopup::GTKmsgPopup(gtk_bag *owner, const char *string, bool err)
     // Hit any key to pop down.
     //
     gtk_widget_add_events(pw_shell, GDK_KEY_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(pw_shell), "key-press-event",
-        GTK_SIGNAL_FUNC(pw_message_popdown_ev), this);
+    g_signal_connect(G_OBJECT(pw_shell), "key-press-event",
+        G_CALLBACK(pw_message_popdown_ev), this);
 
     GtkWidget *form = gtk_table_new(1, 2, false);
     gtk_widget_show(form);
@@ -1305,8 +1301,8 @@ GTKmsgPopup::GTKmsgPopup(gtk_bag *owner, const char *string, bool err)
     pw_cancel = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(pw_cancel, "Dismiss");
     gtk_widget_show(pw_cancel);
-    gtk_signal_connect(GTK_OBJECT(pw_cancel), "clicked",
-        GTK_SIGNAL_FUNC(pw_message_popdown), this);
+    g_signal_connect(G_OBJECT(pw_cancel), "clicked",
+        G_CALLBACK(pw_message_popdown), this);
     gtk_window_set_focus(GTK_WINDOW(pw_shell), pw_cancel);
     gtk_table_attach(GTK_TABLE(form), pw_cancel, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -1326,8 +1322,8 @@ GTKmsgPopup::~GTKmsgPopup()
         *p_usrptr = 0;
     if (p_caller)
         GRX->Deselect(p_caller);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(pw_shell),
-        GTK_SIGNAL_FUNC(pw_message_popdown), this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(pw_shell),
+        (gpointer)pw_message_popdown, this);
 
     gtk_widget_destroy(pw_shell);
 }
@@ -1566,8 +1562,8 @@ GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
         text_set_chars(pw_text, message_str);
 
         gtk_widget_add_events(pw_text, GDK_BUTTON_PRESS_MASK);
-        gtk_signal_connect_after(GTK_OBJECT(pw_text), "realize",
-            GTK_SIGNAL_FUNC(text_realize_proc), this);
+        g_signal_connect_after(G_OBJECT(pw_text), "realize",
+            G_CALLBACK(text_realize_proc), this);
 
         gtk_table_attach(GTK_TABLE(form), contr, 0, 1, 0, 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -1590,8 +1586,8 @@ GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
         GtkWidget*button = gtk_toggle_button_new_with_label("Save Text ");
         gtk_widget_set_name(button, "Save");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(pw_btn_hdlr), this);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(pw_btn_hdlr), this);
         gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
     }
     if ((pw_which == PuErr || pw_which == PuErrAlso) &&
@@ -1599,8 +1595,8 @@ GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
         GtkWidget*button = gtk_button_new_with_label("Show Error Log");
         gtk_widget_set_name(button, "ErrLog");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(pw_btn_hdlr), this);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(pw_btn_hdlr), this);
         gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
     }
     if (pw_which == PuInfo2) {
@@ -1608,22 +1604,22 @@ GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
         gtk_widget_set_name(button, "Help");
         gtk_widget_show(button);
         gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(pw_text_action), this);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(pw_text_action), this);
 
         pw_btn = gtk_toggle_button_new_with_label("Activate");
         gtk_widget_set_name(pw_btn, "Activate");
         gtk_widget_show(pw_btn);
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pw_btn), true);
         gtk_box_pack_start(GTK_BOX(hbox), pw_btn, true, true, 0);
-        gtk_signal_connect(GTK_OBJECT(pw_btn), "clicked",
-            GTK_SIGNAL_FUNC(pw_text_action), this);
+        g_signal_connect(G_OBJECT(pw_btn), "clicked",
+            G_CALLBACK(pw_text_action), this);
     }
     pw_cancel = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(pw_cancel, "Dismiss");
     gtk_widget_show(pw_cancel);
-    gtk_signal_connect(GTK_OBJECT(pw_cancel), "clicked",
-        GTK_SIGNAL_FUNC(pw_text_popdown), this);
+    g_signal_connect(G_OBJECT(pw_cancel), "clicked",
+        G_CALLBACK(pw_text_popdown), this);
 
     gtk_box_pack_start(GTK_BOX(hbox), pw_cancel, true, true, 0);
     gtk_window_set_focus(GTK_WINDOW(pw_shell), pw_cancel);
@@ -1653,8 +1649,8 @@ GTKtextPopup::~GTKtextPopup()
         *p_usrptr = 0;
     if (p_caller)
         GRX->Deselect(p_caller);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(pw_shell),
-        GTK_SIGNAL_FUNC(pw_text_popdown), this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(pw_shell),
+        (gpointer)pw_text_popdown, this);
 
 #ifdef HAVE_MOZY
     delete pw_if;
@@ -2288,8 +2284,8 @@ gtkinterf::DblClickSpinBtnContainer(GtkWidget *spinbtn)
     GtkWidget *ebox = gtk_event_box_new();
     gtk_widget_show(ebox);
     gtk_widget_add_events(ebox, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(ebox), "button-press-event",
-        GTK_SIGNAL_FUNC(dc_spinbtn_hdlr), 0);
+    g_signal_connect(G_OBJECT(ebox), "button-press-event",
+        G_CALLBACK(dc_spinbtn_hdlr), 0);
     gtk_container_add(GTK_CONTAINER(ebox), spinbtn);
     return (ebox);
 }
@@ -2316,10 +2312,10 @@ namespace {
 void
 gtkinterf::BlackHoleFix(GtkWidget *widg)
 {
-    gtk_signal_connect(GTK_OBJECT(widg), "destroy",
-        GTK_SIGNAL_FUNC(bh_proc), 0);
-    gtk_signal_connect(GTK_OBJECT(widg), "unmap",
-        GTK_SIGNAL_FUNC(bh_proc), 0);
+    g_signal_connect(G_OBJECT(widg), "destroy",
+        G_CALLBACK(bh_proc), 0);
+    g_signal_connect(G_OBJECT(widg), "unmap",
+        G_CALLBACK(bh_proc), 0);
 }
 
 
@@ -2409,10 +2405,10 @@ namespace {
 
             gdk_window_move(caller->window, B1cf.x + B1cf.width,
                 B1cf.y + B1cf.width);
-            gtk_signal_disconnect_by_func(GTK_OBJECT(caller),
-                GTK_SIGNAL_FUNC(B1motion), 0);
-            gtk_signal_disconnect_by_func(GTK_OBJECT(caller),
-                GTK_SIGNAL_FUNC(B1button), 0);
+            g_signal_handlers_disconnect_by_func(G_OBJECT(caller),
+                (gpointer)B1motion, 0);
+            g_signal_handlers_disconnect_by_func(G_OBJECT(caller),
+                (gpointer)B1button, 0);
         }
         return (true);
     }
@@ -2462,11 +2458,11 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
         (int)event->button.y_root - B1box.y, B1box.width, B1box.height);
 
     gtk_widget_add_events(caller, GDK_BUTTON1_MOTION_MASK);
-    gtk_signal_connect(GTK_OBJECT(caller), "motion-notify-event",
-        GTK_SIGNAL_FUNC(B1motion), 0);
+    g_signal_connect(G_OBJECT(caller), "motion-notify-event",
+        G_CALLBACK(B1motion), 0);
     gtk_widget_add_events(caller, GDK_BUTTON_RELEASE_MASK);
-    gtk_signal_connect(GTK_OBJECT(caller), "button-release-event",
-        GTK_SIGNAL_FUNC(B1button), 0);
+    g_signal_connect(G_OBJECT(caller), "button-release-event",
+        G_CALLBACK(B1button), 0);
 
     gdk_pointer_grab(caller->window, false,
         (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK |
@@ -2769,13 +2765,13 @@ gtkinterf::text_scrollable_new(GtkWidget **container, GtkWidget **textp,
     // the cursor and possibly scroll the text.  It is also needed to
     // make non-editable text views work as drop receivers.  The
     // handler simply returns 1.
-    gtk_signal_connect(GTK_OBJECT(text), "drag-motion",
-        GTK_SIGNAL_FUNC(tv_drag_motion), 0);
+    g_signal_connect(G_OBJECT(text), "drag-motion",
+        G_CALLBACK(tv_drag_motion), 0);
 
     // This prevents drag_data_received from being emitted multiple
     // times.
-    gtk_signal_connect(GTK_OBJECT(text), "drag-drop",
-        GTK_SIGNAL_FUNC(tv_drag_motion), 0);
+    g_signal_connect(G_OBJECT(text), "drag-drop",
+        G_CALLBACK(tv_drag_motion), 0);
 
     // This prevents the text view from processing a drop with its own
     // handler, which will insert the text.
@@ -2920,12 +2916,7 @@ gtkinterf::text_select_range(GtkWidget *widget, int start, int end)
     GtkTextIter istart, iend;
     gtk_text_buffer_get_iter_at_offset(tbf, &istart, start);
     gtk_text_buffer_get_iter_at_offset(tbf, &iend, end);
-#if GTK_CHECK_VERSION(2,4,0)
     gtk_text_buffer_select_range(tbf, &istart, &iend);
-#else
-    gtk_text_buffer_move_mark_by_name(tbf, "insert", &istart);
-    gtk_text_buffer_move_mark_by_name(tbf, "selection_bound", &iend);
-#endif
 }
 
 
@@ -3013,7 +3004,7 @@ void
 gtkinterf::text_set_scroll_value(GtkWidget *widget, double val)
 {
     GTK_TEXT_VIEW(widget)->vadjustment->value = val;
-    gtk_signal_emit_by_name(GTK_OBJECT(GTK_TEXT_VIEW(widget)->vadjustment),
+    g_signal_emit_by_name(G_OBJECT(GTK_TEXT_VIEW(widget)->vadjustment),
         "value_changed");
 }
 

@@ -178,43 +178,43 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
         | GDK_KEY_PRESS_MASK
         | GDK_KEY_RELEASE_MASK);
 
-    gtk_signal_connect(GTK_OBJECT(v_fixed), "size-allocate",
-        GTK_SIGNAL_FUNC(v_resize_hdlr), this);
+    g_signal_connect(G_OBJECT(v_fixed), "size-allocate",
+        G_CALLBACK(v_resize_hdlr), this);
 
-    gtk_signal_connect(GTK_OBJECT(v_vsba), "value-changed",
-        (GtkSignalFunc)v_vsb_change_hdlr, this);
-    gtk_signal_connect(GTK_OBJECT(v_hsba), "value-changed",
-        (GtkSignalFunc)v_hsb_change_hdlr, this);
+    g_signal_connect(G_OBJECT(v_vsba), "value-changed",
+        G_CALLBACK(v_vsb_change_hdlr), this);
+    g_signal_connect(G_OBJECT(v_hsba), "value-changed",
+        G_CALLBACK(v_hsb_change_hdlr), this);
 
     gtk_selection_add_targets(GTK_WIDGET(v_draw_area),
         GDK_SELECTION_PRIMARY, targets, n_targets);
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "selection-clear-event",
-        (GtkSignalFunc)v_selection_clear_hdlr, this);
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "selection-get",
-        (GtkSignalFunc)v_selection_get_hdlr, this);
+    g_signal_connect(G_OBJECT(v_draw_area), "selection-clear-event",
+        G_CALLBACK(v_selection_clear_hdlr), this);
+    g_signal_connect(G_OBJECT(v_draw_area), "selection-get",
+        G_CALLBACK(v_selection_get_hdlr), this);
 
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "expose-event",
-        (GtkSignalFunc)v_expose_event_hdlr, this);
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "motion-notify-event",
-        (GtkSignalFunc)v_motion_event_hdlr, this);
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "button-press-event",
-        (GtkSignalFunc)v_button_dn_hdlr, this);
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "button-release-event",
-        (GtkSignalFunc)v_button_up_hdlr, this);
+    g_signal_connect(G_OBJECT(v_draw_area), "expose-event",
+        G_CALLBACK(v_expose_event_hdlr), this);
+    g_signal_connect(G_OBJECT(v_draw_area), "motion-notify-event",
+        G_CALLBACK(v_motion_event_hdlr), this);
+    g_signal_connect(G_OBJECT(v_draw_area), "button-press-event",
+        G_CALLBACK(v_button_dn_hdlr), this);
+    g_signal_connect(G_OBJECT(v_draw_area), "button-release-event",
+        G_CALLBACK(v_button_up_hdlr), this);
 
-    gtk_signal_connect_after(GTK_OBJECT(v_draw_area), "key-press-event",
-        (GtkSignalFunc)v_key_dn_hdlr, this);
+    g_signal_connect_after(G_OBJECT(v_draw_area), "key-press-event",
+        G_CALLBACK(v_key_dn_hdlr), this);
 
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "focus-in-event",
-        (GtkSignalFunc)v_focus_event_hdlr, this);
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "focus-out-event",
-        (GtkSignalFunc)v_focus_event_hdlr, this);
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "leave-notify-event",
-        (GtkSignalFunc)v_focus_event_hdlr, this);
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "enter-notify-event",
-        (GtkSignalFunc)v_focus_event_hdlr, this);
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "scroll-event",
-        (GtkSignalFunc)v_scroll_event_hdlr, this);
+    g_signal_connect(G_OBJECT(v_draw_area), "focus-in-event",
+        G_CALLBACK(v_focus_event_hdlr), this);
+    g_signal_connect(G_OBJECT(v_draw_area), "focus-out-event",
+        G_CALLBACK(v_focus_event_hdlr), this);
+    g_signal_connect(G_OBJECT(v_draw_area), "leave-notify-event",
+        G_CALLBACK(v_focus_event_hdlr), this);
+    g_signal_connect(G_OBJECT(v_draw_area), "enter-notify-event",
+        G_CALLBACK(v_focus_event_hdlr), this);
+    g_signal_connect(G_OBJECT(v_draw_area), "scroll-event",
+        G_CALLBACK(v_scroll_event_hdlr), this);
 
     gtk_table_attach(GTK_TABLE(v_form), v_fixed, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -231,8 +231,8 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     // Font tracking
     GTKfont::trackFontChange(v_draw_area, FNT_MOZY);
     GTKfont::trackFontChange(v_draw_area, FNT_MOZY_FIXED);
-    gtk_signal_connect(GTK_OBJECT(v_draw_area), "style-set",
-        GTK_SIGNAL_FUNC(v_font_change_hdlr), this);
+    g_signal_connect(G_OBJECT(v_draw_area), "style-set",
+        G_CALLBACK(v_font_change_hdlr), this);
 
     set_font(FC.getName(FNT_MOZY));
     set_fixed_font(FC.getName(FNT_MOZY_FIXED));
@@ -243,8 +243,8 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
 
 gtk_viewer::~gtk_viewer()
 {
-    gtk_signal_disconnect_by_func(GTK_OBJECT(v_draw_area),
-        (GtkSignalFunc)v_focus_event_hdlr, this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(v_draw_area),
+        (gpointer)v_focus_event_hdlr, this);
     gdk_pixmap_unref(v_pixmap);
 }
 
@@ -766,7 +766,6 @@ gtk_viewer::tk_alloc_font(const char *family, int size, unsigned char style)
     // subscript y-offset
     font->sub_yoffset = (int)(font->descent * 0.8);
 
-#if GTK_CHECK_VERSION(2,4,0)
     // underline offset
     font->ul_offset = pm->underline_position/PANGO_SCALE;
     font->ul_offset += font->descent;
@@ -779,12 +778,6 @@ gtk_viewer::tk_alloc_font(const char *family, int size, unsigned char style)
 
     // strikeout descent
     font->st_thickness = pm->strikethrough_thickness/PANGO_SCALE;
-#else
-    font->ul_offset = font->descent;
-    font->ul_thickness = 1;
-    font->st_offset = font->ascent/2 - font->descent/2;
-    font->st_thickness = 1;
-#endif
 
     pango_font_metrics_unref(pm);
     return (font);
@@ -1499,13 +1492,13 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
                     gtk_entry_set_text(GTK_ENTRY(ed), entry->value);
 
                 gtk_object_set_data(GTK_OBJECT(ed), "viewer", this);
-                gtk_signal_connect(GTK_OBJECT(ed), "key-press-event",
-                    GTK_SIGNAL_FUNC(input_key_hdlr), entry);
+                g_signal_connect(G_OBJECT(ed), "key-press-event",
+                    G_CALLBACK(input_key_hdlr), entry);
 
             }
             // These pass mouse wheel scroll event to main window.
-            gtk_signal_connect(GTK_OBJECT(ed), "scroll-event",
-                (GtkSignalFunc)v_scroll_event_hdlr, this);
+            g_signal_connect(G_OBJECT(ed), "scroll-event",
+                G_CALLBACK(v_scroll_event_hdlr), this);
             if (entry->type == FORM_PASSWD)
                 gtk_entry_set_visibility(GTK_ENTRY(ed), false);
             entry->widget = ed;
@@ -1555,8 +1548,8 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             gtk_widget_set_size_request(cb, entry->width, entry->height);
 
             gtk_object_set_data(GTK_OBJECT(cb), "viewer", this);
-            gtk_signal_connect(GTK_OBJECT(cb), "toggled",
-                (GtkSignalFunc)radio_change_hdlr, entry);
+            g_signal_connect(G_OBJECT(cb), "toggled",
+                G_CALLBACK(radio_change_hdlr), entry);
 
             entry->widget = cb;
             gtk_widget_show(cb);
@@ -1602,8 +1595,8 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             gtk_box_pack_start(GTK_BOX(hbox), button, 0, 0, 0);
 
             gtk_object_set_data(GTK_OBJECT(button), "viewer", this);
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                (GtkSignalFunc)button_press_hdlr, entry);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(button_press_hdlr), entry);
 
             entry->widget = hbox;
             if (GTK_WIDGET_NO_WINDOW(hbox)) {
@@ -1629,8 +1622,8 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             gtk_widget_set_size_request(cb, entry->width, entry->height);
 
             gtk_object_set_data(GTK_OBJECT(cb), "viewer", this);
-            gtk_signal_connect(GTK_OBJECT(cb), "clicked",
-                (GtkSignalFunc)button_press_hdlr, entry);
+            g_signal_connect(G_OBJECT(cb), "clicked",
+                G_CALLBACK(button_press_hdlr), entry);
 
             entry->widget = cb;
             gtk_widget_show(cb);

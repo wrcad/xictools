@@ -315,39 +315,39 @@ sNM::sNM(GRobject caller, int node)
     gtk_widget_set_name(button, "UseNoPhys");
     gtk_widget_show(button);
     nm_use_np = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(nm_use_np_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(nm_use_np_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_toggle_button_new_with_label("Map Name");
     gtk_widget_set_name(button, "Rename");
     gtk_widget_show(button);
     nm_rename = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(nm_rename_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(nm_rename_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_toggle_button_new_with_label("Unmap");
     gtk_widget_set_name(button, "Remove");
     gtk_widget_show(button);
     nm_remove = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(nm_remove_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(nm_remove_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_toggle_button_new_with_label("Click-Select Mode");
     gtk_widget_set_name(button, "Click");
     gtk_widget_show(button);
     nm_point_btn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(nm_point_proc), wb_shell);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(nm_point_proc), wb_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(nm_help_proc), wb_shell);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(nm_help_proc), wb_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     int rowcnt = 0;
@@ -369,8 +369,8 @@ sNM::sNM(GRobject caller, int node)
 
     button = new_pixmap_button(lsearch_xpm, 0, false);
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(nm_search_hdlr), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(nm_search_hdlr), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
     nm_srch_btn = button;
 
@@ -378,8 +378,8 @@ sNM::sNM(GRobject caller, int node)
     gtk_widget_show(entry);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
     gtk_widget_set_size_request(entry, 80, -1);
-    gtk_signal_connect(GTK_OBJECT(entry), "activate",
-        GTK_SIGNAL_FUNC(nm_activate_proc), 0);
+    g_signal_connect(G_OBJECT(entry), "activate",
+        G_CALLBACK(nm_activate_proc), 0);
     nm_srch_entry = entry;
 
     button = gtk_radio_button_new_with_label(0, "Nodes");
@@ -439,8 +439,8 @@ sNM::sNM(GRobject caller, int node)
         gtk_tree_view_get_selection(GTK_TREE_VIEW(nm_node_list));
     gtk_tree_selection_set_select_function(sel, nm_select_nlist_proc, 0, 0);
     // TreeView bug hack, see note with handler.   
-    gtk_signal_connect(GTK_OBJECT(nm_node_list), "focus",
-        GTK_SIGNAL_FUNC(nm_n_focus_proc), this);
+    g_signal_connect(G_OBJECT(nm_node_list), "focus",
+        G_CALLBACK(nm_n_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), nm_node_list);
     gtk_paned_pack1(GTK_PANED(paned), swin, true, true);
@@ -471,8 +471,8 @@ sNM::sNM(GRobject caller, int node)
         gtk_tree_view_get_selection(GTK_TREE_VIEW(nm_term_list));
     gtk_tree_selection_set_select_function(sel, nm_select_tlist_proc, 0, 0);
     // TreeView bug hack, see note with handler.   
-    gtk_signal_connect(GTK_OBJECT(nm_term_list), "focus",
-        GTK_SIGNAL_FUNC(nm_t_focus_proc), this);
+    g_signal_connect(G_OBJECT(nm_term_list), "focus",
+        G_CALLBACK(nm_t_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), nm_term_list);
     gtk_paned_pack2(GTK_PANED(paned), swin, true, true);
@@ -498,16 +498,16 @@ sNM::sNM(GRobject caller, int node)
     button = gtk_button_new_with_label(" Deselect ");
     gtk_widget_set_name(button, "Deselect");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(nm_desel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(nm_desel_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     button = gtk_button_new_with_label("Dismiss");
     GtkWidget *dismiss_btn = button;
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(nm_cancel_proc), wb_shell);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(nm_cancel_proc), wb_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_check_button_new_with_label("Use Extract");
@@ -516,16 +516,16 @@ sNM::sNM(GRobject caller, int node)
         gtk_widget_show(button);
     else
         gtk_widget_hide(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(nm_usex_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(nm_usex_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
     nm_usex_btn = button;
 
     button = gtk_button_new_with_label("Find");
     gtk_widget_set_name(button, "Find");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(nm_find_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(nm_find_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
     nm_find_btn = button;
 
@@ -577,8 +577,8 @@ sNM::~sNM()
         nm_win_width = wid;
         nm_win_height = hei;
         nm_grip_pos = gtk_paned_get_position(GTK_PANED(nm_paned));
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(nm_cancel_proc), wb_shell);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)nm_cancel_proc, wb_shell);
     }
     if (nm_node) {
         DSP()->HliteElecTerm(ERASE, nm_node, nm_cdesc, 0);

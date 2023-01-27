@@ -278,8 +278,8 @@ sDE::sDE(GRobject caller)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(de_help_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(de_help_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 3, 4, row-2, row,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -341,8 +341,8 @@ sDE::sDE(GRobject caller)
     de_toggle = gtk_toggle_button_new_with_label("Hot Spot");
     gtk_widget_set_name(de_toggle, "hotspot");
     gtk_widget_show(de_toggle);
-    gtk_signal_connect(GTK_OBJECT(de_toggle), "clicked",
-        GTK_SIGNAL_FUNC(de_branch_proc), 0);
+    g_signal_connect(G_OBJECT(de_toggle), "clicked",
+        G_CALLBACK(de_branch_proc), 0);
     gtk_table_attach(GTK_TABLE(form), de_toggle, 0, 1, row, row+1,
         (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
     GtkWidget *entry = gtk_option_menu_new();
@@ -355,8 +355,8 @@ sDE::sDE(GRobject caller)
         gtk_widget_set_name(mi, orient_labels[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(de_menu_proc), (void*)(long)i);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(de_menu_proc), (void*)(long)i);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, row, row+1,
@@ -411,8 +411,8 @@ sDE::sDE(GRobject caller)
     button = gtk_button_new_with_label("Save in Library");
     gtk_widget_set_name(button, "save_lib");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(de_devs_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(de_devs_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -420,8 +420,8 @@ sDE::sDE(GRobject caller)
     button = gtk_button_new_with_label("Save as Cell File");
     gtk_widget_set_name(button, "save_nat");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(de_devs_proc), (void*)(long)1);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(de_devs_proc), (void*)(long)1);
     gtk_table_attach(GTK_TABLE(form), button, 2, 3, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -429,8 +429,8 @@ sDE::sDE(GRobject caller)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(de_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(de_cancel_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 3, 4, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);

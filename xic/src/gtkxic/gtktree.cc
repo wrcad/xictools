@@ -256,8 +256,8 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(t_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(t_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, 0, 1,
@@ -292,8 +292,8 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
         gtk_tree_view_get_selection(GTK_TREE_VIEW(t_tree));
     gtk_tree_selection_set_select_function(sel, t_select_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
-    gtk_signal_connect(GTK_OBJECT(t_tree), "focus",
-        GTK_SIGNAL_FUNC(t_focus_proc), this);
+    g_signal_connect(G_OBJECT(t_tree), "focus",
+        G_CALLBACK(t_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), t_tree);
 
@@ -304,24 +304,24 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
 
-    gtk_signal_connect(GTK_OBJECT(t_tree), "test_collapse_row",
+    g_signal_connect(G_OBJECT(t_tree), "test_collapse_row",
         (GtkSignalFunc)t_collapse_proc, 0);
     // init for drag/drop
-    gtk_signal_connect(GTK_OBJECT(t_tree), "button-press-event",
-        GTK_SIGNAL_FUNC(t_btn_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(t_tree), "button-release-event",
-        GTK_SIGNAL_FUNC(t_btn_release_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(t_tree), "motion-notify-event",
-        GTK_SIGNAL_FUNC(t_motion_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(t_tree), "drag-data-get",
-        GTK_SIGNAL_FUNC(t_drag_data_get), 0);
+    g_signal_connect(G_OBJECT(t_tree), "button-press-event",
+        G_CALLBACK(t_btn_hdlr), 0);
+    g_signal_connect(G_OBJECT(t_tree), "button-release-event",
+        G_CALLBACK(t_btn_release_hdlr), 0);
+    g_signal_connect(G_OBJECT(t_tree), "motion-notify-event",
+        G_CALLBACK(t_motion_hdlr), 0);
+    g_signal_connect(G_OBJECT(t_tree), "drag-data-get",
+        G_CALLBACK(t_drag_data_get), 0);
 
     gtk_selection_add_targets(t_tree, GDK_SELECTION_PRIMARY, target_table,
         n_targets);
-    gtk_signal_connect(GTK_OBJECT(t_tree), "selection-clear-event",
-        GTK_SIGNAL_FUNC(t_selection_clear), 0);
-    gtk_signal_connect(GTK_OBJECT(t_tree), "selection-get",
-        GTK_SIGNAL_FUNC(t_selection_get), 0);
+    g_signal_connect(G_OBJECT(t_tree), "selection-clear-event",
+        G_CALLBACK(t_selection_clear), 0);
+    g_signal_connect(G_OBJECT(t_tree), "selection-get",
+        G_CALLBACK(t_selection_get), 0);
 
     wb_textarea = gtk_label_new("");
     gtk_widget_show(wb_textarea);
@@ -340,8 +340,8 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(t_cancel), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(t_cancel), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
     GtkWidget *dismiss_btn = button;
 
@@ -362,8 +362,8 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
         button = gtk_button_new_with_label(buttons[i]);
         gtk_widget_set_name(button, buttons[i]);
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(t_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(t_action), 0);
         gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
         t_buttons[i] = button;
     }
@@ -373,9 +373,10 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
         (GtkAttachOptions)0, 2, 2);
     gtk_window_set_focus(GTK_WINDOW(wb_shell), dismiss_btn);
 
-    if (t_caller)
-        gtk_signal_connect(GTK_OBJECT(t_caller), "toggled",
-            GTK_SIGNAL_FUNC(t_cancel), 0);
+    if (t_caller) {
+        g_signal_connect(G_OBJECT(t_caller), "toggled",
+            G_CALLBACK(t_cancel), 0);
+    }
 
     update(0, 0, dmode);
 }
@@ -391,13 +392,14 @@ sTree::~sTree()
     if (t_curnode)
         gtk_tree_path_free(t_curnode);
     if (t_caller) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(t_caller),
-            GTK_SIGNAL_FUNC(t_cancel), 0);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(t_caller),
+            (gpointer)t_cancel, 0);
         GRX->Deselect(t_caller);
     }
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(t_cancel), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)t_cancel, wb_shell);
+    }
 }
 
 

@@ -198,8 +198,8 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(co_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(co_action), 0);
     gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -238,8 +238,8 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
         (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
     gtk_drag_dest_set(co_p1_text, DD, target_table, n_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(co_p1_text), "drag-data-received",
-        GTK_SIGNAL_FUNC(co_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(co_p1_text), "drag-data-received",
+        G_CALLBACK(co_drag_data_received), 0);
 
     GtkWidget *sep = gtk_hseparator_new();
     gtk_widget_show(sep);
@@ -277,28 +277,28 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
     GtkWidget *mi = gtk_menu_item_new_with_label("no geometry info saved");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(co_info_proc), (void*)cvINFOnone);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(co_info_proc), (void*)cvINFOnone);
     mi = gtk_menu_item_new_with_label("totals only");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(co_info_proc), (void*)cvINFOtotals);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(co_info_proc), (void*)cvINFOtotals);
     mi = gtk_menu_item_new_with_label("per-layer counts");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(co_info_proc), (void*)cvINFOpl);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(co_info_proc), (void*)cvINFOpl);
     mi = gtk_menu_item_new_with_label("per-cell counts");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(co_info_proc), (void*)cvINFOpc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(co_info_proc), (void*)cvINFOpc);
     mi = gtk_menu_item_new_with_label("per-cell and per-layer counts");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(co_info_proc), (void*)cvINFOplpc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(co_info_proc), (void*)cvINFOplpc);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(co_p1_info), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(co_p1_info), FIO()->CvtInfo());
 
@@ -427,10 +427,10 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
     rowcnt++;
 
 
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "key-press-event",
-        GTK_SIGNAL_FUNC(co_key_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(co_nbook), "switch-page",
-        GTK_SIGNAL_FUNC(co_page_proc), 0);
+    g_signal_connect(G_OBJECT(wb_shell), "key-press-event",
+        G_CALLBACK(co_key_hdlr), 0);
+    g_signal_connect(G_OBJECT(co_nbook), "switch-page",
+        G_CALLBACK(co_page_proc), 0);
 
     //
     // Apply/Dismiss buttons
@@ -438,8 +438,8 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
     co_apply = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(co_apply, "Apply");
     gtk_widget_show(co_apply);
-    gtk_signal_connect(GTK_OBJECT(co_apply), "clicked",
-        GTK_SIGNAL_FUNC(co_action), 0);
+    g_signal_connect(G_OBJECT(co_apply), "clicked",
+        G_CALLBACK(co_action), 0);
     gtk_table_attach(GTK_TABLE(form), co_apply, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -447,8 +447,8 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(co_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(co_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

@@ -184,11 +184,11 @@ sLpalette::sLpalette(GRobject caller)
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(recall_menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(lp_recall_proc), (void*)(intptr_t)i);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(lp_recall_proc), (void*)(intptr_t)i);
     }
-    gtk_signal_connect(GTK_OBJECT(recall_btn), "button-press-event",
-        GTK_SIGNAL_FUNC(lp_popup_menu), recall_menu);
+    g_signal_connect(G_OBJECT(recall_btn), "button-press-event",
+        G_CALLBACK(lp_popup_menu), recall_menu);
     gtk_box_pack_start(GTK_BOX(row), recall_btn, true, true, 2);
 
     GtkWidget *save_btn = gtk_button_new_with_label("Save");
@@ -204,11 +204,11 @@ sLpalette::sLpalette(GRobject caller)
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(save_menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(lp_save_proc), (void*)(intptr_t)i);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(lp_save_proc), (void*)(intptr_t)i);
     }
-    gtk_signal_connect(GTK_OBJECT(save_btn), "button-press-event",
-        GTK_SIGNAL_FUNC(lp_popup_menu), save_menu);
+    g_signal_connect(G_OBJECT(save_btn), "button-press-event",
+        G_CALLBACK(lp_popup_menu), save_menu);
     gtk_box_pack_start(GTK_BOX(row), save_btn, true, true, 2);
 
     lp_remove = gtk_toggle_button_new_with_label("Remove");
@@ -219,8 +219,8 @@ sLpalette::sLpalette(GRobject caller)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(lp_help_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(lp_help_proc), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
 
     int rowcnt = 0;
@@ -242,40 +242,40 @@ sLpalette::sLpalette(GRobject caller)
     rowcnt++;
 
     gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "configure-event",
-        GTK_SIGNAL_FUNC(lp_resize_hdlr), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "configure-event",
+        G_CALLBACK(lp_resize_hdlr), 0);
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "expose-event",
-        GTK_SIGNAL_FUNC(lp_redraw_hdlr), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
+        G_CALLBACK(lp_redraw_hdlr), 0);
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "button-press-event",
-        GTK_SIGNAL_FUNC(lp_button_down_hdlr), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "button-press-event",
+        G_CALLBACK(lp_button_down_hdlr), 0);
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_RELEASE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "button-release-event",
-        GTK_SIGNAL_FUNC(lp_button_up_hdlr), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "button-release-event",
+        G_CALLBACK(lp_button_up_hdlr), 0);
     gtk_widget_add_events(gd_viewport, GDK_POINTER_MOTION_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "motion-notify-event",
-        GTK_SIGNAL_FUNC(lp_motion_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "drag-begin",
-        GTK_SIGNAL_FUNC(lp_drag_begin), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "drag-end",
-        GTK_SIGNAL_FUNC(lp_drag_end), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "drag-data-get",
-        GTK_SIGNAL_FUNC(lp_drag_data_get), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "motion-notify-event",
+        G_CALLBACK(lp_motion_hdlr), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "drag-begin",
+        G_CALLBACK(lp_drag_begin), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "drag-end",
+        G_CALLBACK(lp_drag_end), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "drag-data-get",
+        G_CALLBACK(lp_drag_data_get), 0);
     gtk_drag_dest_set(gd_viewport, GTK_DEST_DEFAULT_ALL, lp_targets,
         n_lp_targets, GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "drag-data-received",
-        GTK_SIGNAL_FUNC(lp_drag_data_received), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "style-set",
-        GTK_SIGNAL_FUNC(lp_font_change_hdlr), 0);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "drag-data-received",
+        G_CALLBACK(lp_drag_data_received), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "style-set",
+        G_CALLBACK(lp_font_change_hdlr), 0);
 
     GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(lp_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(lp_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

@@ -206,8 +206,8 @@ sCgo::sCgo(GRobject caller,
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cgo_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cgo_action), 0);
     gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -260,8 +260,8 @@ sCgo::sCgo(GRobject caller,
         (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
     gtk_drag_dest_set(cgo_p1_entry, DD, target_table, n_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(cgo_p1_entry), "drag-data-received",
-        GTK_SIGNAL_FUNC(cgo_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(cgo_p1_entry), "drag-data-received",
+        G_CALLBACK(cgo_drag_data_received), 0);
 
     GtkWidget *sep = gtk_hseparator_new();
     gtk_widget_show(sep);
@@ -349,8 +349,8 @@ sCgo::sCgo(GRobject caller,
     // Drop site.
     gtk_drag_dest_set(cgo_p2_entry, DD, target_table, n_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(cgo_p2_entry), "drag-data-received",
-        GTK_SIGNAL_FUNC(cgo_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(cgo_p2_entry), "drag-data-received",
+        G_CALLBACK(cgo_drag_data_received), 0);
 
     gtk_notebook_append_page(GTK_NOTEBOOK(cgo_nbook), tab_form, tab_label);
 
@@ -436,10 +436,10 @@ sCgo::sCgo(GRobject caller,
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "key-press-event",
-        GTK_SIGNAL_FUNC(cgo_key_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(cgo_nbook), "switch-page",
-        GTK_SIGNAL_FUNC(cgo_page_proc), 0);
+    g_signal_connect(G_OBJECT(wb_shell), "key-press-event",
+        G_CALLBACK(cgo_key_hdlr), 0);
+    g_signal_connect(G_OBJECT(cgo_nbook), "switch-page",
+        G_CALLBACK(cgo_page_proc), 0);
 
     sep = gtk_hseparator_new();
     gtk_widget_show(sep);
@@ -454,8 +454,8 @@ sCgo::sCgo(GRobject caller,
     cgo_apply = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(cgo_apply, "Apply");
     gtk_widget_show(cgo_apply);
-    gtk_signal_connect(GTK_OBJECT(cgo_apply), "clicked",
-        GTK_SIGNAL_FUNC(cgo_action), 0);
+    g_signal_connect(G_OBJECT(cgo_apply), "clicked",
+        G_CALLBACK(cgo_action), 0);
     gtk_table_attach(GTK_TABLE(form), cgo_apply, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -463,8 +463,8 @@ sCgo::sCgo(GRobject caller,
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cgo_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cgo_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

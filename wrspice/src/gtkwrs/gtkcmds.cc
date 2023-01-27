@@ -111,14 +111,14 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
 
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        (GtkSignalFunc)cmd_cancel_proc, sd_shell);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cmd_cancel_proc), sd_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 2);
 
     button = gtk_toggle_button_new_with_label("Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "toggled",
-        (GtkSignalFunc)cmd_help_proc, cm_shell);
+    g_signal_connect(G_OBJECT(button), "toggled",
+        G_CALLBACK(cmd_help_proc), cm_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 2);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 0, 1,
@@ -928,8 +928,8 @@ GTKtoolbar::PopDownCmdConfig()
     SetLoc(ntb_commands, cm_shell);
 
     GRX->Deselect(tb_commands);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(cm_shell),
-        GTK_SIGNAL_FUNC(cmd_cancel_proc), cm_shell);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(cm_shell),
+        (gpointer)cmd_cancel_proc, cm_shell);
 
     for (int i = 0; KW.cmds(i)->word; i++) {
         xKWent *ent = static_cast<xKWent*>(KW.cmds(i));

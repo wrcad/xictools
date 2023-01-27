@@ -60,22 +60,22 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_use_win = gtk_check_button_new_with_label("Use Window");
     gtk_widget_set_name(wnd_use_win, "Window");
     gtk_widget_show(wnd_use_win);
-    gtk_signal_connect(GTK_OBJECT(wnd_use_win), "clicked",
-        GTK_SIGNAL_FUNC(wnd_action), this);
+    g_signal_connect(G_OBJECT(wnd_use_win), "clicked",
+        G_CALLBACK(wnd_action), this);
     gtk_box_pack_start(GTK_BOX(row), wnd_use_win, false, false, 0);
 
     wnd_clip = gtk_check_button_new_with_label("Clip to Window");
     gtk_widget_set_name(wnd_clip, "Clip");
     gtk_widget_show(wnd_clip);
-    gtk_signal_connect(GTK_OBJECT(wnd_clip), "clicked",
-        GTK_SIGNAL_FUNC(wnd_action), this);
+    g_signal_connect(G_OBJECT(wnd_clip), "clicked",
+        G_CALLBACK(wnd_action), this);
     gtk_box_pack_start(GTK_BOX(row), wnd_clip, false, false, 0);
 
     wnd_flatten = gtk_check_button_new_with_label("Flatten Hierarchy");
     gtk_widget_set_name(wnd_flatten, "Flatten");
     gtk_widget_show(wnd_flatten);
-    gtk_signal_connect(GTK_OBJECT(wnd_flatten), "clicked",
-        GTK_SIGNAL_FUNC(wnd_action), this);
+    g_signal_connect(G_OBJECT(wnd_flatten), "clicked",
+        G_CALLBACK(wnd_action), this);
     gtk_box_pack_start(GTK_BOX(row), wnd_flatten, false, false, 0);
 
     int rowcnt = 0;
@@ -107,11 +107,11 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(wnd_s_menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(wnd_sto_menu_proc), this);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(wnd_sto_menu_proc), this);
     }
-    gtk_signal_connect(GTK_OBJECT(wnd_sbutton), "button-press-event",
-        GTK_SIGNAL_FUNC(wnd_popup_btn_proc), wnd_s_menu);
+    g_signal_connect(G_OBJECT(wnd_sbutton), "button-press-event",
+        G_CALLBACK(wnd_popup_btn_proc), wnd_s_menu);
 
     wnd_l_label = gtk_label_new("Left");
     gtk_widget_show(wnd_l_label);
@@ -137,7 +137,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
         initd = MICRONS(FIO()->InWindow()->left);
 
     GtkWidget *sb = sb_left.init(initd, -1e6, 1e6, ndgt);
-    sb_left.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "left");
+    sb_left.connect_changed(G_CALLBACK(wnd_val_changed), this, "left");
     gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 1, 2, rowcnt, rowcnt+1,
@@ -160,7 +160,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
         initd = MICRONS(FIO()->InWindow()->bottom);
 
     sb = sb_bottom.init(initd, -1e6, 1e6, ndgt);
-    sb_bottom.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "bottom");
+    sb_bottom.connect_changed(G_CALLBACK(wnd_val_changed), this, "bottom");
     gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 3, 4, rowcnt, rowcnt+1,
@@ -176,8 +176,8 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_ecf_pre = gtk_check_button_new_with_label("pre-filter");
     gtk_widget_set_name(wnd_ecf_pre, "pre");
     gtk_widget_show(wnd_ecf_pre);
-    gtk_signal_connect(GTK_OBJECT(wnd_ecf_pre), "clicked",
-        GTK_SIGNAL_FUNC(wnd_action), this);
+    g_signal_connect(G_OBJECT(wnd_ecf_pre), "clicked",
+        G_CALLBACK(wnd_action), this);
     if (wnd_func_mode == WndFuncOut || wnd_func_mode == WndFuncIn)
         gtk_widget_hide(hbox);
     gtk_box_pack_start(GTK_BOX(hbox), wnd_ecf_pre, false, false, 0);
@@ -199,11 +199,11 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(wnd_r_menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(wnd_rcl_menu_proc), this);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(wnd_rcl_menu_proc), this);
     }
-    gtk_signal_connect(GTK_OBJECT(wnd_rbutton), "button-press-event",
-        GTK_SIGNAL_FUNC(wnd_popup_btn_proc), wnd_r_menu);
+    g_signal_connect(G_OBJECT(wnd_rbutton), "button-press-event",
+        G_CALLBACK(wnd_popup_btn_proc), wnd_r_menu);
 
     wnd_r_label = gtk_label_new("Right");
     gtk_widget_show(wnd_r_label);
@@ -227,7 +227,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
         initd = MICRONS(FIO()->InWindow()->right);
 
     sb = sb_right.init(initd, -1e6, 1e6, ndgt);
-    sb_right.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "right");
+    sb_right.connect_changed(G_CALLBACK(wnd_val_changed), this, "right");
     gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 1, 2, rowcnt, rowcnt+1,
@@ -250,7 +250,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
         initd = MICRONS(FIO()->InWindow()->top);
 
     sb = sb_top.init(initd, -1e6, 1e6, ndgt);
-    sb_top.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "top");
+    sb_top.connect_changed(G_CALLBACK(wnd_val_changed), this, "top");
     gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 3, 4, rowcnt, rowcnt+1,
@@ -266,8 +266,8 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_ecf_post = gtk_check_button_new_with_label("post-filter");
     gtk_widget_set_name(wnd_ecf_post, "post");
     gtk_widget_show(wnd_ecf_post);
-    gtk_signal_connect(GTK_OBJECT(wnd_ecf_post), "clicked",
-        GTK_SIGNAL_FUNC(wnd_action), this);
+    g_signal_connect(G_OBJECT(wnd_ecf_post), "clicked",
+        G_CALLBACK(wnd_action), this);
     if (wnd_func_mode == WndFuncOut || wnd_func_mode == WndFuncIn)
         gtk_widget_hide(hbox);
     gtk_box_pack_start(GTK_BOX(hbox), wnd_ecf_post, false, false, 0);

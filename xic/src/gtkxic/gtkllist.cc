@@ -60,15 +60,15 @@ llist_t::llist_t()
     ll_luse = gtk_check_button_new_with_label("Layers only");
     gtk_widget_set_name(ll_luse, "luse");
     gtk_widget_show(ll_luse);
-    gtk_signal_connect(GTK_OBJECT(ll_luse), "clicked",
-        GTK_SIGNAL_FUNC(ll_action), this);
+    g_signal_connect(G_OBJECT(ll_luse), "clicked",
+        G_CALLBACK(ll_action), this);
     gtk_box_pack_start(GTK_BOX(row), ll_luse, true, true, 0);
 
     ll_lskip = gtk_check_button_new_with_label("Skip layers");
     gtk_widget_set_name(ll_lskip, "lskip");
     gtk_widget_show(ll_lskip);
-    gtk_signal_connect(GTK_OBJECT(ll_lskip), "clicked",
-        GTK_SIGNAL_FUNC(ll_action), this);
+    g_signal_connect(G_OBJECT(ll_lskip), "clicked",
+        G_CALLBACK(ll_action), this);
     gtk_box_pack_start(GTK_BOX(row), ll_lskip, true, true, 0);
 
     int rowcnt = 0;
@@ -87,8 +87,8 @@ llist_t::llist_t()
     ll_aluse = gtk_check_button_new_with_label("Use Layer Aliases");
     gtk_widget_show(ll_aluse);
     gtk_widget_set_name(ll_aluse, "aluse");
-    gtk_signal_connect(GTK_OBJECT(ll_aluse), "clicked",
-        GTK_SIGNAL_FUNC(ll_action), this);
+    g_signal_connect(G_OBJECT(ll_aluse), "clicked",
+        G_CALLBACK(ll_action), this);
     gtk_table_attach(GTK_TABLE(tform), ll_aluse, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -96,16 +96,16 @@ llist_t::llist_t()
     ll_aledit = gtk_toggle_button_new_with_label("Edit Layer Aliases");
     gtk_widget_show(ll_aledit);
     gtk_widget_set_name(ll_aledit, "aledit");
-    gtk_signal_connect(GTK_OBJECT(ll_aledit), "clicked",
-        GTK_SIGNAL_FUNC(ll_action), this);
+    g_signal_connect(G_OBJECT(ll_aledit), "clicked",
+        G_CALLBACK(ll_action), this);
     gtk_table_attach(GTK_TABLE(tform), ll_aledit, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
     update();
     // must be done after entry text set
-    gtk_signal_connect(GTK_OBJECT(ll_laylist), "changed",
-        GTK_SIGNAL_FUNC(ll_text_changed), this);
+    g_signal_connect(G_OBJECT(ll_laylist), "changed",
+        G_CALLBACK(ll_text_changed), this);
 
     ll_frame = gtk_frame_new(0);
     gtk_widget_show(ll_frame);

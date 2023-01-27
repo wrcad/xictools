@@ -297,15 +297,15 @@ sClr::sClr(GRobject c)
         gtk_widget_set_name(mi, "ph");
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(c_mode_menu_proc), (void*)(long)Physical);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(c_mode_menu_proc), (void*)(long)Physical);
 
         mi = gtk_menu_item_new_with_label("Electrical");
         gtk_widget_set_name(mi, "ph");
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(c_mode_menu_proc), (void*)(long)Electrical);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(c_mode_menu_proc), (void*)(long)Electrical);
 
         gtk_option_menu_set_menu(GTK_OPTION_MENU(c_modemenu), menu);
         gtk_option_menu_set_history(GTK_OPTION_MENU(c_modemenu),
@@ -328,16 +328,16 @@ sClr::sClr(GRobject c)
         gtk_widget_set_name(mi, "at");
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(c_categ_menu_proc),
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(c_categ_menu_proc),
             (void*)(long)CATEG_ATTR);
 
         mi = gtk_menu_item_new_with_label("Prompt Line");
         gtk_widget_set_name(mi, "pl");
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(c_categ_menu_proc),
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(c_categ_menu_proc),
             (void*)(long)CATEG_PROMPT);
 
         mi = gtk_menu_item_new_with_label("Plot Marks");
@@ -348,8 +348,8 @@ sClr::sClr(GRobject c)
         else
             gtk_widget_hide(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(c_categ_menu_proc),
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(c_categ_menu_proc),
             (void*)(long)CATEG_PLOT);
 
         gtk_option_menu_set_menu(GTK_OPTION_MENU(c_categmenu), menu);
@@ -375,8 +375,8 @@ sClr::sClr(GRobject c)
     gtk_widget_set_name(button, "Colors");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_list_btn_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_list_btn_proc), 0);
 
     int rowcnt = 0;
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt + 1,
@@ -402,8 +402,8 @@ sClr::sClr(GRobject c)
     gtk_color_selection_set_has_palette(GTK_COLOR_SELECTION(c_sel),
         true);
 
-    gtk_signal_connect(GTK_OBJECT(c_sel), "color-changed",
-        GTK_SIGNAL_FUNC(c_change_proc), 0);
+    g_signal_connect(G_OBJECT(c_sel), "color-changed",
+        G_CALLBACK(c_change_proc), 0);
     update_color();
 
     if (fix256) {
@@ -446,22 +446,22 @@ sClr::sClr(GRobject c)
     button = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(button, "Apply");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_apply_proc), c_shell);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_apply_proc), c_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_btn_proc), c_shell);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_btn_proc), c_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_cancel_proc), c_shell);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_cancel_proc), c_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt + 1,
@@ -637,8 +637,8 @@ sClr::c_categ_menu_proc(GtkWidget*, void *arg)
                 gtk_widget_set_name(mi, c->descr);
                 gtk_widget_show(mi);
                 gtk_menu_append(GTK_MENU(menu), mi);
-                gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                    GTK_SIGNAL_FUNC(sClr::c_attr_menu_proc),
+                g_signal_connect(G_OBJECT(mi), "activate",
+                    G_CALLBACK(sClr::c_attr_menu_proc),
                     (void*)(uintptr_t)c->tab_indx);
             }
             if (Clr->c_display_mode == DSP()->CurMode())
@@ -659,8 +659,8 @@ sClr::c_categ_menu_proc(GtkWidget*, void *arg)
                 gtk_widget_set_name(mi, c->descr);
                 gtk_widget_show(mi);
                 gtk_menu_append(GTK_MENU(menu), mi);
-                gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                    GTK_SIGNAL_FUNC(sClr::c_attr_menu_proc),
+                g_signal_connect(G_OBJECT(mi), "activate",
+                    G_CALLBACK(sClr::c_attr_menu_proc),
                     (void*)(uintptr_t)c->tab_indx);
             }
             Clr->c_mode = Menu2[0].tab_indx;
@@ -678,8 +678,8 @@ sClr::c_categ_menu_proc(GtkWidget*, void *arg)
                 gtk_widget_set_name(mi, c->descr);
                 gtk_widget_show(mi);
                 gtk_menu_append(GTK_MENU(menu), mi);
-                gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                    GTK_SIGNAL_FUNC(sClr::c_attr_menu_proc),
+                g_signal_connect(G_OBJECT(mi), "activate",
+                    G_CALLBACK(sClr::c_attr_menu_proc),
                     (void*)(uintptr_t)c->tab_indx);
             }
             Clr->c_mode = Menu3[0].tab_indx;

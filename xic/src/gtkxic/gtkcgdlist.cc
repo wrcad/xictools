@@ -183,43 +183,43 @@ sCGL::sCGL(GRobject c)
     cgl_addbtn = gtk_toggle_button_new_with_label("Add");
     gtk_widget_set_name(cgl_addbtn, "Add");
     gtk_widget_show(cgl_addbtn);
-    gtk_signal_connect(GTK_OBJECT(cgl_addbtn), "clicked",
-        GTK_SIGNAL_FUNC(cgl_action_proc), (void*)CGLadd);
+    g_signal_connect(G_OBJECT(cgl_addbtn), "clicked",
+        G_CALLBACK(cgl_action_proc), (void*)CGLadd);
     gtk_box_pack_start(GTK_BOX(hbox), cgl_addbtn, true, true, 0);
 
     cgl_savbtn = gtk_toggle_button_new_with_label("Save");
     gtk_widget_set_name(cgl_savbtn, "Save");
     gtk_widget_show(cgl_savbtn);
-    gtk_signal_connect(GTK_OBJECT(cgl_savbtn), "clicked",
-        GTK_SIGNAL_FUNC(cgl_action_proc), (void*)CGLsav);
+    g_signal_connect(G_OBJECT(cgl_savbtn), "clicked",
+        G_CALLBACK(cgl_action_proc), (void*)CGLsav);
     gtk_box_pack_start(GTK_BOX(hbox), cgl_savbtn, true, true, 0);
 
     cgl_delbtn = gtk_toggle_button_new_with_label("Delete");
     gtk_widget_set_name(cgl_delbtn, "Delete");
     gtk_widget_show(cgl_delbtn);
-    gtk_signal_connect(GTK_OBJECT(cgl_delbtn), "clicked",
-        GTK_SIGNAL_FUNC(cgl_action_proc), (void*)CGLdel);
+    g_signal_connect(G_OBJECT(cgl_delbtn), "clicked",
+        G_CALLBACK(cgl_action_proc), (void*)CGLdel);
     gtk_box_pack_start(GTK_BOX(hbox), cgl_delbtn, true, true, 0);
 
     cgl_cntbtn = gtk_button_new_with_label("Contents");
     gtk_widget_set_name(cgl_cntbtn, "Contents");
     gtk_widget_show(cgl_cntbtn);
-    gtk_signal_connect(GTK_OBJECT(cgl_cntbtn), "clicked",
-        GTK_SIGNAL_FUNC(cgl_action_proc), (void*)CGLcnt);
+    g_signal_connect(G_OBJECT(cgl_cntbtn), "clicked",
+        G_CALLBACK(cgl_action_proc), (void*)CGLcnt);
     gtk_box_pack_start(GTK_BOX(hbox), cgl_cntbtn, true, true, 0);
 
     cgl_infbtn = gtk_toggle_button_new_with_label("Info");
     gtk_widget_set_name(cgl_infbtn, "Info");
     gtk_widget_show(cgl_infbtn);
-    gtk_signal_connect(GTK_OBJECT(cgl_infbtn), "clicked",
-        GTK_SIGNAL_FUNC(cgl_action_proc), (void*)CGLinf);
+    g_signal_connect(G_OBJECT(cgl_infbtn), "clicked",
+        G_CALLBACK(cgl_action_proc), (void*)CGLinf);
     gtk_box_pack_start(GTK_BOX(hbox), cgl_infbtn, true, true, 0);
 
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cgl_action_proc), (void*)CGLhlp);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cgl_action_proc), (void*)CGLhlp);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 0, 1,
@@ -260,8 +260,8 @@ sCGL::sCGL(GRobject c)
         gtk_tree_view_get_selection(GTK_TREE_VIEW(cgl_list));
     gtk_tree_selection_set_select_function(sel, cgl_selection_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
-    gtk_signal_connect(GTK_OBJECT(cgl_list), "focus",
-        GTK_SIGNAL_FUNC(cgl_focus_proc), this);
+    g_signal_connect(G_OBJECT(cgl_list), "focus",
+        G_CALLBACK(cgl_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), cgl_list);
     gtk_widget_set_size_request(swin, -1, 120);
@@ -285,8 +285,8 @@ sCGL::sCGL(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cgl_cancel), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cgl_cancel), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 3, 4,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -316,9 +316,10 @@ sCGL::~sCGL()
     if (cgl_inf_pop)
         cgl_inf_pop->popdown();
 
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(cgl_cancel), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)cgl_cancel, wb_shell);
+    }
 }
 
 

@@ -319,8 +319,8 @@ sCells::sCells(GRobject c)
     gtk_widget_set_name(button, "Clear");
     gtk_widget_show(button);
     c_clearbtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)ClearCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)ClearCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
     if (!EditIf()->hasEdit())
         gtk_widget_hide(button);
@@ -329,24 +329,24 @@ sCells::sCells(GRobject c)
     gtk_widget_set_name(button, "Tree");
     gtk_widget_show(button);
     c_treebtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)TreeCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)TreeCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Open");
     gtk_widget_set_name(button, "Open");
     gtk_widget_show(button);
     c_openbtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)OpenCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)OpenCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Place");
     gtk_widget_set_name(button, "Place");
     gtk_widget_show(button);
     c_placebtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)PlaceCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)PlaceCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
     if (!EditIf()->hasEdit())
         gtk_widget_hide(button);
@@ -355,8 +355,8 @@ sCells::sCells(GRobject c)
     gtk_widget_set_name(button, "Copy");
     gtk_widget_show(button);
     c_copybtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)CopyCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)CopyCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
     if (!EditIf()->hasEdit())
         gtk_widget_hide(button);
@@ -365,8 +365,8 @@ sCells::sCells(GRobject c)
     gtk_widget_set_name(button, "Replace");
     gtk_widget_show(button);
     c_replbtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)ReplCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)ReplCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
     if (!EditIf()->hasEdit())
         gtk_widget_hide(button);
@@ -375,8 +375,8 @@ sCells::sCells(GRobject c)
     gtk_widget_set_name(button, "Rename");
     gtk_widget_show(button);
     c_renamebtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)RenameCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)RenameCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
     if (!EditIf()->hasEdit())
         gtk_widget_hide(button);
@@ -385,47 +385,47 @@ sCells::sCells(GRobject c)
     gtk_widget_set_name(button, "Search");
     gtk_widget_show(button);
     c_searchbtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)SearchCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)SearchCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Flags");
     gtk_widget_set_name(button, "Flags");
     gtk_widget_show(button);
     c_flagbtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)FlagCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)FlagCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Info");
     gtk_widget_set_name(button, "Info");
     gtk_widget_show(button);
     c_infobtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)InfoCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)InfoCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
     button = gtk_toggle_button_new_with_label("Show");
     gtk_widget_set_name(button, "Show");
     gtk_widget_show(button);
     c_showbtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)ShowCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)ShowCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
     button = gtk_toggle_button_new_with_label("Filter");
     gtk_widget_set_name(button, "Filter");
     gtk_widget_show(button);
     c_fltrbtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_action_proc), (void*)FltrCode);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_action_proc), (void*)FltrCode);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_help_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_help_proc), 0);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), vbox, 0, 1, 0, 1,
@@ -453,19 +453,19 @@ sCells::sCells(GRobject c)
     text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
 
     gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",
-        GTK_SIGNAL_FUNC(c_btn_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "size-allocate",
-        GTK_SIGNAL_FUNC(c_resize_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
+        G_CALLBACK(c_btn_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "size-allocate",
+        G_CALLBACK(c_resize_hdlr), 0);
     // init for drag/drop
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-release-event",
-        GTK_SIGNAL_FUNC(c_btn_release_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "motion-notify-event",
-        GTK_SIGNAL_FUNC(c_motion_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "drag-data-get",
-        GTK_SIGNAL_FUNC(c_drag_data_get), 0);
-    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "realize",
-        GTK_SIGNAL_FUNC(c_realize_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "button-release-event",
+        G_CALLBACK(c_btn_release_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "motion-notify-event",
+        G_CALLBACK(c_motion_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "drag-data-get",
+        G_CALLBACK(c_drag_data_get), 0);
+    g_signal_connect_after(G_OBJECT(wb_textarea), "realize",
+        G_CALLBACK(c_realize_hdlr), 0);
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
@@ -489,8 +489,8 @@ sCells::sCells(GRobject c)
     button = gtk_toggle_button_new_with_label("Save Text ");
     gtk_widget_set_name(button, "Save");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_save_btn_hdlr), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_save_btn_hdlr), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     c_page_combo = gtk_option_menu_new();
@@ -502,8 +502,8 @@ sCells::sCells(GRobject c)
     button = gtk_toggle_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_cancel), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(c_cancel), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
     GtkWidget *dismiss_btn = button;
 
@@ -516,13 +516,13 @@ sCells::sCells(GRobject c)
     gtk_widget_show(menu);
     GtkWidget *mi = gtk_menu_item_new_with_label("Phys Cells");
     gtk_widget_show(mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(c_mode_proc), (void*)(long)Physical);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(c_mode_proc), (void*)(long)Physical);
     gtk_menu_append(GTK_MENU(menu), mi);
     mi = gtk_menu_item_new_with_label("Elec Cells");
     gtk_widget_show(mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(c_mode_proc), (void*)(long)Electrical);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(c_mode_proc), (void*)(long)Electrical);
     gtk_menu_append(GTK_MENU(menu), mi);
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(c_mode_combo), menu);
@@ -532,9 +532,10 @@ sCells::sCells(GRobject c)
         (GtkAttachOptions)0, 2, 2);
     gtk_window_set_focus(GTK_WINDOW(wb_shell), dismiss_btn);
 
-    if (c_caller)
-        gtk_signal_connect(GTK_OBJECT(c_caller), "toggled",
-            GTK_SIGNAL_FUNC(c_cancel), 0);
+    if (c_caller) {
+        g_signal_connect(G_OBJECT(c_caller), "toggled",
+            G_CALLBACK(c_cancel), 0);
+    }
     check_sens();
 }
 
@@ -544,8 +545,8 @@ sCells::~sCells()
     Cells = 0;
     XM()->SetTreeCaptive(false);
     if (c_caller) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(c_caller),
-            GTK_SIGNAL_FUNC(c_cancel), 0);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(c_caller),
+            (gpointer)c_cancel, 0);
         GRX->Deselect(c_caller);
     }
     if (ListCmd)
@@ -568,8 +569,8 @@ sCells::~sCells()
     if (c_msg_pop)
         c_msg_pop->popdown();
     if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(c_cancel), wb_shell);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)c_cancel, wb_shell);
     delete c_pfilter;
     delete c_efilter;
     delete [] c_copyname;
@@ -1233,8 +1234,8 @@ sCells::cell_list(int cols)
             sprintf(buf, "%d - %d", i*pagesz, tmpmax);
             GtkWidget *mi = gtk_menu_item_new_with_label(buf);
             gtk_widget_show(mi);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(c_page_proc), (void*)(long)i);
+            g_signal_connect(G_OBJECT(mi), "activate",
+                G_CALLBACK(c_page_proc), (void*)(long)i);
             gtk_menu_append(GTK_MENU(menu), mi);
         }
         gtk_option_menu_remove_menu(GTK_OPTION_MENU(c_page_combo));
@@ -1512,7 +1513,7 @@ sCells::c_drag_data_get(GtkWidget *widget, GdkDragContext*,
 {
     if (GTK_IS_TEXT_VIEW(widget))
     // stop text view native handler
-    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "drag-data-get");
+    g_signal_stop_emission_by_name(G_OBJECT(widget), "drag-data-get");
 
     char *string = text_get_selection(widget);
     if (string) {

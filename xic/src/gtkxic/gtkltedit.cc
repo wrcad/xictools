@@ -146,8 +146,8 @@ gtkLcb::gtkLcb(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(le_btn_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(le_btn_proc), this);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, 0, 1,
@@ -185,24 +185,24 @@ gtkLcb::gtkLcb(GRobject c)
     button = gtk_toggle_button_new_with_label("Add Layer");
     gtk_widget_set_name(button, "Add Layer");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gtkLcb::le_btn_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gtkLcb::le_btn_proc), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
     le_add = button;
 
     button = gtk_toggle_button_new_with_label("Remove Layer");
     gtk_widget_set_name(button, "Remove Layer");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gtkLcb::le_btn_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gtkLcb::le_btn_proc), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
     le_rem = button;
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gtkLcb::le_popdown), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gtkLcb::le_popdown), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 3, 4,
@@ -291,8 +291,8 @@ gtkLcb::le_popdown(GtkWidget*, void *client_data)
     if (cbs->le_caller)
         GRX->Deselect(cbs->le_caller);
     if (cbs->le_shell) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(cbs->le_shell),
-            GTK_SIGNAL_FUNC(le_popdown), cbs);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(cbs->le_shell),
+            (gpointer)le_popdown, cbs);
         gtk_widget_destroy(GTK_WIDGET(cbs->le_shell));
         cbs->le_shell = 0;
     }

@@ -158,8 +158,8 @@ GTKlistPopup::GTKlistPopup(gtk_bag *owner, stringlist *symlist,
     gtk_tree_selection_set_select_function(sel,
         (GtkTreeSelectionFunc)ls_selection_proc, this, 0);
     // TreeView bug hack, see note with handler.
-    gtk_signal_connect(GTK_OBJECT(ls_list), "focus",
-        GTK_SIGNAL_FUNC(ls_focus_proc), this);
+    g_signal_connect(G_OBJECT(ls_list), "focus",
+        G_CALLBACK(ls_focus_proc), this);
 
     gtk_object_set_data(GTK_OBJECT(ls_list), "arg", arg);
     gtk_container_add(GTK_CONTAINER(swin), ls_list);
@@ -190,16 +190,16 @@ GTKlistPopup::GTKlistPopup(gtk_bag *owner, stringlist *symlist,
         GtkWidget *button = gtk_button_new_with_label("Apply");
         gtk_widget_set_name(button, "Apply");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(ls_apply_proc), this);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(ls_apply_proc), this);
         gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     }
 
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ls_quit_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ls_quit_proc), this);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, 2, 3,
@@ -225,8 +225,8 @@ GTKlistPopup::~GTKlistPopup()
     if (p_caller)
         GRX->Deselect(p_caller);
 
-    gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-        GTK_SIGNAL_FUNC(ls_quit_proc), this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+        (gpointer)ls_quit_proc, this);
 
     if (ls_open_pb)
         g_object_unref(ls_open_pb);

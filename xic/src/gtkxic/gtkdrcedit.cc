@@ -287,8 +287,8 @@ sDim::sDim(GRobject c)
         for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
             GtkWidget *mi = gtk_menu_item_new_with_label(tst->name());
             gtk_widget_show(mi);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(dim_rule_menu_proc), tst);
+            g_signal_connect(G_OBJECT(mi), "activate",
+                G_CALLBACK(dim_rule_menu_proc), tst);
             gtk_menu_append(GTK_MENU(dim_menu), mi);
         }
     }
@@ -301,8 +301,8 @@ sDim::sDim(GRobject c)
         for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
             GtkWidget *mi = gtk_menu_item_new_with_label(tst->name());
             gtk_widget_show(mi);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(dim_rule_proc), (void*)tst->name());
+            g_signal_connect(G_OBJECT(mi), "activate",
+                G_CALLBACK(dim_rule_proc), (void*)tst->name());
             gtk_menu_append(GTK_MENU(dim_umenu), mi);
         }
     }
@@ -343,10 +343,10 @@ sDim::sDim(GRobject c)
     text_scrollable_new(&contr, &dim_text, FNT_FIXED);
 
     gtk_widget_add_events(dim_text, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(dim_text), "button-press-event",
-        GTK_SIGNAL_FUNC(dim_text_btn_hdlr), 0);
-    gtk_signal_connect_after(GTK_OBJECT(dim_text), "realize",
-        GTK_SIGNAL_FUNC(text_realize_proc), 0);
+    g_signal_connect(G_OBJECT(dim_text), "button-press-event",
+        G_CALLBACK(dim_text_btn_hdlr), 0);
+    g_signal_connect_after(G_OBJECT(dim_text), "realize",
+        G_CALLBACK(text_realize_proc), 0);
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(dim_text));
@@ -438,8 +438,8 @@ sDim::rule_menu_upd()
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
         GtkWidget *mi = gtk_menu_item_new_with_label(tst->name());
         gtk_widget_show(mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(sDim::dim_rule_menu_proc), tst);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(sDim::dim_rule_menu_proc), tst);
         gtk_menu_append(GTK_MENU(dim_menu), mi);
     }
 
@@ -452,8 +452,8 @@ sDim::rule_menu_upd()
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
         GtkWidget *mi = gtk_menu_item_new_with_label(tst->name());
         gtk_widget_show(mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(sDim::dim_rule_proc), (void*)tst->name());
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(sDim::dim_rule_proc), (void*)tst->name());
         gtk_menu_append(GTK_MENU(dim_umenu), mi);
     }
 }

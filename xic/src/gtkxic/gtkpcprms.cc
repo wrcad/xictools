@@ -266,8 +266,8 @@ sPcp::sPcp(GRobject c, PCellParam *prm, const char *dbname, pcpMode mode)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pcp_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pcp_action_proc), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -299,22 +299,22 @@ sPcp::sPcp(GRobject c, PCellParam *prm, const char *dbname, pcpMode mode)
         gtk_widget_set_name(button, "Apply");
     }
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pcp_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pcp_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Reset");
     gtk_widget_set_name(button, "Reset");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pcp_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pcp_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pcp_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pcp_cancel_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt, rowcnt+1,
@@ -458,8 +458,8 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         GtkWidget *w = gtk_check_button_new();
         gtk_widget_show(w);
         GRX->SetStatus(w, p->boolVal());
-        gtk_signal_connect(GTK_OBJECT(w), "clicked",
-            GTK_SIGNAL_FUNC(pcp_bool_proc), p);
+        g_signal_connect(G_OBJECT(w), "clicked",
+            G_CALLBACK(pcp_bool_proc), p);
         return (w);
     }
 
@@ -482,8 +482,8 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                 gtk_widget_set_name(mi, sl->string);
                 gtk_widget_show(mi);
                 gtk_menu_append(GTK_MENU(menu), mi);
-                gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                    GTK_SIGNAL_FUNC(pcp_menu_proc), p);
+                g_signal_connect(G_OBJECT(mi), "activate",
+                    G_CALLBACK(pcp_menu_proc), p);
                 char buf[64];
                 if (p->type() == PCPint) {
                     sprintf(buf, "%ld", p->intVal());
@@ -578,7 +578,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                 return (0);
             gtk_widget_show(w);
             gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
-            sb->connect_changed(GTK_SIGNAL_FUNC(pcp_num_proc), p, 0);
+            sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
 
             if (!pc->checkConstraint(p)) {
                 gtk_widget_set_sensitive(w, false);
@@ -641,7 +641,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
             }
             gtk_widget_show(w);
             gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
-            sb->connect_changed(GTK_SIGNAL_FUNC(pcp_num_proc), p, 0);
+            sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
 
             if (!pc->checkConstraint(p)) {
                 gtk_widget_set_sensitive(w, false);
@@ -716,7 +716,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
             }
             gtk_widget_show(w);
             gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
-            sb->connect_changed(GTK_SIGNAL_FUNC(pcp_num_proc), p, 0);
+            sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
 
             if (!pc->checkConstraint(p)) {
                 gtk_widget_set_sensitive(w, false);
@@ -745,7 +745,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         GtkWidget *w = sb->init(p->intVal(), minv, maxv, 0);
         gtk_widget_show(w);
         gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
-        sb->connect_changed(GTK_SIGNAL_FUNC(pcp_num_proc), p, 0);
+        sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
         return (w);
     }
     else if (p->type() == PCPtime) {
@@ -756,7 +756,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         GtkWidget *w = sb->init(p->timeVal(), minv, maxv, 0);
         gtk_widget_show(w);
         gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
-        sb->connect_changed(GTK_SIGNAL_FUNC(pcp_num_proc), p, 0);
+        sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
         return (w);
     }
     else if (p->type() == PCPfloat) {
@@ -767,7 +767,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         GtkWidget *w = sb->init(p->floatVal(), minv, maxv, 4);
         gtk_widget_show(w);
         gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
-        sb->connect_changed(GTK_SIGNAL_FUNC(pcp_num_proc), p, 0);
+        sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
         return (w);
     }
     else if (p->type() == PCPdouble) {
@@ -778,15 +778,15 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         GtkWidget *w = sb->init(p->doubleVal(), minv, maxv, 4);
         gtk_widget_show(w);
         gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
-        sb->connect_changed(GTK_SIGNAL_FUNC(pcp_num_proc), p, 0);
+        sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
         return (w);
     }
     else if (p->type() == PCPstring) {
         GtkWidget *w = gtk_entry_new();
         gtk_widget_show(w);
         gtk_entry_set_text(GTK_ENTRY(w), p->stringVal());
-        gtk_signal_connect(GTK_OBJECT(w), "changed",
-            GTK_SIGNAL_FUNC(pcp_string_proc), p);
+        g_signal_connect(G_OBJECT(w), "changed",
+            G_CALLBACK(pcp_string_proc), p);
         return (w);
     }
     return (0);

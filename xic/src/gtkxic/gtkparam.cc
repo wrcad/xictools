@@ -112,24 +112,24 @@ cParam::cParam()
         GDK_BUTTON_PRESS_MASK |
         GDK_BUTTON_RELEASE_MASK |
         GDK_POINTER_MOTION_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "button-press-event",
-        GTK_SIGNAL_FUNC(readout_btn_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "button-release-event",
-        GTK_SIGNAL_FUNC(readout_btn_hdlr), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "button-press-event",
+        G_CALLBACK(readout_btn_hdlr), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "button-release-event",
+        G_CALLBACK(readout_btn_hdlr), 0);
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "expose-event",
-        GTK_SIGNAL_FUNC(readout_redraw), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "style-set",
-        GTK_SIGNAL_FUNC(readout_font_change), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "motion-notify-event",
-        GTK_SIGNAL_FUNC(readout_motion_hdlr), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
+        G_CALLBACK(readout_redraw), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "style-set",
+        G_CALLBACK(readout_font_change), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "motion-notify-event",
+        G_CALLBACK(readout_motion_hdlr), 0);
     gtk_selection_add_targets(gd_viewport, GDK_SELECTION_PRIMARY, targets,
         n_targets);
 #ifndef WIN32
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "selection-clear-event",
-        GTK_SIGNAL_FUNC(readout_selection_clear), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "selection-get",
-        GTK_SIGNAL_FUNC(readout_selection_get), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "selection-clear-event",
+        G_CALLBACK(readout_selection_clear), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "selection-get",
+        G_CALLBACK(readout_selection_get), 0);
 #endif
 
     GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);

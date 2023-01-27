@@ -274,7 +274,6 @@ namespace {
         return ((*orig_key_press_event)(w, event));
     }
 
-#if GTK_CHECK_VERSION(2,10,0)
     GPrintFunc old_print_handler;
 
     void
@@ -286,7 +285,6 @@ namespace {
             return;
         (*old_print_handler)(string);
     }
-#endif
 }
 
 
@@ -403,11 +401,9 @@ GTKdev::Init(int *argc, char **argv)
         g_object_unref(entry);
     }
 
-#if GTK_CHECK_VERSION(2,10,0)
     // In GTK-2.10.4 (RHEL5), there is a spurious(?) g_print message
     // when dragging (using native handler) from a GtkTextView.
     old_print_handler = g_set_print_handler(new_print_handler);
-#endif
 
     return (false);
 }
@@ -1250,17 +1246,11 @@ namespace {
         ghost_timer_id = 0;
 
         // This redraws ghost objects.
-#if GTK_CHECK_VERSION(2,8,0)
         int x0, y0;
         GdkScreen *screen;
         GdkDisplay *display = gdk_display_get_default();
         gdk_display_get_pointer(display, &screen, &x0, &y0, 0);
         gdk_display_warp_pointer(display, screen, x0, y0);
-#else
-#ifdef WITH_X11
-        XWarpPointer(gr_x_display(), None, None, 0, 0, 0, 0, 0, 0);
-#endif
-#endif
         return (0);
     }
 }
@@ -2313,7 +2303,6 @@ gtk_draw::MovePointer(int x, int y, bool absolute)
 {
     // Called with 0,0 this redraws ghost objects
     if (gd_window) {
-#if GTK_CHECK_VERSION(2,8,0)
         int x0, y0;
         GdkScreen *screen;
         GdkDisplay *display = gdk_display_get_default();
@@ -2323,12 +2312,6 @@ gtk_draw::MovePointer(int x, int y, bool absolute)
         x += x0;
         y += y0;
         gdk_display_warp_pointer(display, screen, x, y);
-#else
-#ifdef WITH_X11
-        XWarpPointer(gr_x_display(), None,
-            absolute ? gr_x_window(gd_window) : None, 0, 0, 0, 0, x, y);
-#endif
-#endif
     }
 }
 
@@ -3185,21 +3168,21 @@ gtkinterf::gtk_NewPopup(gtk_bag *w, const char *title,
             keyprop_init = true;
         }
         gtk_widget_add_events(popup, GDK_VISIBILITY_NOTIFY_MASK);
-        gtk_signal_connect(GTK_OBJECT(popup), "visibility-notify-event",
-            GTK_SIGNAL_FUNC(ToTop), w ? w->Shell() : 0);
+        g_signal_connect(G_OBJECT(popup), "visibility-notify-event",
+            G_CALLBACK(ToTop), w ? w->Shell() : 0);
         gtk_widget_add_events(popup, GDK_BUTTON_PRESS_MASK);
-        gtk_signal_connect_after(GTK_OBJECT(popup), "button-press-event",
-            GTK_SIGNAL_FUNC(Btn1MoveHdlr), 0);
+        g_signal_connect_after(G_OBJECT(popup), "button-press-event",
+            G_CALLBACK(Btn1MoveHdlr), 0);
     }
     if (title)
         gtk_window_set_title(GTK_WINDOW(popup), title);
     if (quit_cb) {
         gtk_object_set_data(GTK_OBJECT(popup), "delete_ev_cb",
             (void*)quit_cb);
-        gtk_signal_connect(GTK_OBJECT(popup), "delete-event",
-            GTK_SIGNAL_FUNC(delete_event_hdlr), arg ? arg : popup);
-        gtk_signal_connect(GTK_OBJECT(popup), "destroy",
-            GTK_SIGNAL_FUNC(quit_cb), arg ? arg : popup);
+        g_signal_connect(G_OBJECT(popup), "delete-event",
+            G_CALLBACK(delete_event_hdlr), arg ? arg : popup);
+        g_signal_connect(G_OBJECT(popup), "destroy",
+            G_CALLBACK(quit_cb), arg ? arg : popup);
     }
     return (popup);
 }

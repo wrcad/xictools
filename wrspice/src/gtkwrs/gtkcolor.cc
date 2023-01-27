@@ -102,14 +102,14 @@ GTKtoolbar::PopUpColors(int x, int y)
 
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        (GtkSignalFunc)clr_cancel_proc, co_shell);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(clr_cancel_proc), co_shell);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 2);
 
     button = gtk_button_new_with_label("Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        (GtkSignalFunc)clr_help_proc, 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(clr_help_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 2);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, 0, 1,
@@ -151,8 +151,8 @@ GTKtoolbar::PopDownColors()
     SetLoc(ntb_colors, co_shell);
 
     GRX->Deselect(tb_colors);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(co_shell),
-        GTK_SIGNAL_FUNC(clr_cancel_proc), co_shell);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(co_shell),
+        (gpointer)clr_cancel_proc, co_shell);
 
     for (int i = 0; KW.color(i)->word; i++) {
         xKWent *ent = static_cast<xKWent*>(KW.color(i));

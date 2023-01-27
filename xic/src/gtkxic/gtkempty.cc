@@ -141,8 +141,8 @@ sEC::sEC(stringlist *l)
     GtkWidget *button = gtk_button_new_with_label("Delete All");
     gtk_widget_set_name(button, "DeleteAll");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ec_btn_proc), (void*)EC_delete);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ec_btn_proc), (void*)EC_delete);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -151,8 +151,8 @@ sEC::sEC(stringlist *l)
     button = gtk_button_new_with_label("Skip All");
     gtk_widget_set_name(button, "SkipAll");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ec_btn_proc), (void*)EC_skip);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ec_btn_proc), (void*)EC_skip);
 
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -180,10 +180,10 @@ sEC::sEC(stringlist *l)
     text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
 
     gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",
-        GTK_SIGNAL_FUNC(ec_btn_hdlr), 0);
-    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "realize",
-        GTK_SIGNAL_FUNC(text_realize_proc), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
+        G_CALLBACK(ec_btn_hdlr), 0);
+    g_signal_connect_after(G_OBJECT(wb_textarea), "realize",
+        G_CALLBACK(text_realize_proc), 0);
 
     // The font change pop-up uses this to redraw the widget
     gtk_object_set_data(GTK_OBJECT(wb_textarea), "font_changed",
@@ -196,8 +196,8 @@ sEC::sEC(stringlist *l)
     button = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(button, "Apply");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ec_btn_proc), (void*)EC_apply);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ec_btn_proc), (void*)EC_apply);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 3, 4,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -206,8 +206,8 @@ sEC::sEC(stringlist *l)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ec_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ec_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, 3, 4,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -237,9 +237,10 @@ sEC::~sEC()
     }
     delete [] ec_list;
     delete ec_tab;
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(ec_cancel_proc), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)ec_cancel_proc, wb_shell);
+    }
 }
 
 

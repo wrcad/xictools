@@ -249,8 +249,8 @@ sDC::sDC(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dc_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dc_action_proc), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, f_rowcnt, f_rowcnt+1,
@@ -290,14 +290,14 @@ sDC::sDC(GRobject c)
     dc_use = gtk_toggle_button_new_with_label("Use");
     gtk_widget_set_name(dc_use, "use");
     gtk_widget_show(dc_use);
-    gtk_signal_connect(GTK_OBJECT(dc_use), "clicked",
-        GTK_SIGNAL_FUNC(dc_action_proc), 0);
+    g_signal_connect(G_OBJECT(dc_use), "clicked",
+        G_CALLBACK(dc_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), dc_use, false, false, 0);
 
     dc_chdname = gtk_entry_new();
     gtk_widget_show(dc_chdname);
-    gtk_signal_connect(GTK_OBJECT(dc_chdname), "changed",
-        GTK_SIGNAL_FUNC(dc_text_changed), 0);
+    g_signal_connect(G_OBJECT(dc_chdname), "changed",
+        G_CALLBACK(dc_text_changed), 0);
     gtk_box_pack_start(GTK_BOX(row), dc_chdname, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(table), row, 2, 4, rowcnt, rowcnt+1,
@@ -315,8 +315,8 @@ sDC::sDC(GRobject c)
 
     dc_cname = gtk_entry_new();
     gtk_widget_show(dc_cname);
-    gtk_signal_connect(GTK_OBJECT(dc_cname), "changed",
-        GTK_SIGNAL_FUNC(dc_text_changed), 0);
+    g_signal_connect(G_OBJECT(dc_cname), "changed",
+        G_CALLBACK(dc_text_changed), 0);
 
     gtk_table_attach(GTK_TABLE(table), dc_cname, 2, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -347,12 +347,12 @@ sDC::sDC(GRobject c)
     dc_none = gtk_toggle_button_new_with_label("None");
     gtk_widget_set_name(dc_none, "none");
     gtk_widget_show(dc_none);
-    gtk_signal_connect(GTK_OBJECT(dc_none), "clicked",
-        GTK_SIGNAL_FUNC(dc_action_proc), 0);
+    g_signal_connect(G_OBJECT(dc_none), "clicked",
+        G_CALLBACK(dc_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), dc_none, false, false, 0);
 
     GtkWidget *sb = sb_part.init(DRC_PART_DEF, DRC_PART_MIN, DRC_PART_MAX, 2);
-    sb_part.connect_changed(GTK_SIGNAL_FUNC(dc_val_changed), 0, "partsize");
+    sb_part.connect_changed(G_CALLBACK(dc_val_changed), 0, "partsize");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_start(GTK_BOX(row), sb, true, true, 0);
 
@@ -375,8 +375,8 @@ sDC::sDC(GRobject c)
     dc_wind = gtk_check_button_new_with_label("Use window");
     gtk_widget_set_name(dc_wind, "wind");
     gtk_widget_show(dc_wind);
-    gtk_signal_connect(GTK_OBJECT(dc_wind), "clicked",
-        GTK_SIGNAL_FUNC(dc_action_proc), this);
+    g_signal_connect(G_OBJECT(dc_wind), "clicked",
+        G_CALLBACK(dc_action_proc), this);
 
     gtk_table_attach(GTK_TABLE(table), dc_wind, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -385,8 +385,8 @@ sDC::sDC(GRobject c)
     dc_flat = gtk_check_button_new_with_label("Flatten");
     gtk_widget_set_name(dc_flat, "flat");
     gtk_widget_show(dc_flat);
-    gtk_signal_connect(GTK_OBJECT(dc_flat), "clicked",
-        GTK_SIGNAL_FUNC(dc_action_proc), this);
+    g_signal_connect(G_OBJECT(dc_flat), "clicked",
+        G_CALLBACK(dc_action_proc), this);
 
     gtk_table_attach(GTK_TABLE(table), dc_flat, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -395,8 +395,8 @@ sDC::sDC(GRobject c)
     dc_set = gtk_toggle_button_new_with_label("Set");
     gtk_widget_set_name(dc_set, "set");
     gtk_widget_show(dc_set);
-    gtk_signal_connect(GTK_OBJECT(dc_set), "clicked",
-        GTK_SIGNAL_FUNC(dc_action_proc), 0);
+    g_signal_connect(G_OBJECT(dc_set), "clicked",
+        G_CALLBACK(dc_action_proc), 0);
 
     gtk_table_attach(GTK_TABLE(table), dc_set, 3, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -417,7 +417,7 @@ sDC::sDC(GRobject c)
     int ndgt = CD()->numDigits();
 
     sb = sb_left.init(0.0, -1e6, 1e6, ndgt);
-    sb_left.connect_changed(GTK_SIGNAL_FUNC(dc_val_changed), this, "left");
+    sb_left.connect_changed(G_CALLBACK(dc_val_changed), this, "left");
     gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 1, 2, rowcnt, rowcnt+1,
@@ -432,7 +432,7 @@ sDC::sDC(GRobject c)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_bottom.init(0.0, -1e6, 1e6, ndgt);
-    sb_bottom.connect_changed(GTK_SIGNAL_FUNC(dc_val_changed), this, "bottom");
+    sb_bottom.connect_changed(G_CALLBACK(dc_val_changed), this, "bottom");
     gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 3, 4, rowcnt, rowcnt+1,
@@ -449,7 +449,7 @@ sDC::sDC(GRobject c)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_right.init(0.0, -1e6, 1e6, ndgt);
-    sb_right.connect_changed(GTK_SIGNAL_FUNC(dc_val_changed), this, "right");
+    sb_right.connect_changed(G_CALLBACK(dc_val_changed), this, "right");
     gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 1, 2, rowcnt, rowcnt+1,
@@ -464,7 +464,7 @@ sDC::sDC(GRobject c)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_top.init(0.0, -1e6, 1e6, ndgt);
-    sb_top.connect_changed(GTK_SIGNAL_FUNC(dc_val_changed), this, "top");
+    sb_top.connect_changed(G_CALLBACK(dc_val_changed), this, "top");
     gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 3, 4, rowcnt, rowcnt+1,
@@ -486,8 +486,8 @@ sDC::sDC(GRobject c)
     button = gtk_toggle_button_new_with_label("Check");
     gtk_widget_set_name(button, "check");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dc_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dc_action_proc), 0);
     GtkWidget *check_btn = button;
 
     // This is black magic to allow button pressess/releases to be
@@ -502,8 +502,8 @@ sDC::sDC(GRobject c)
     button = gtk_toggle_button_new_with_label("Check in\nBackground");
     gtk_widget_set_name(button, "checkbg");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dc_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dc_action_proc), 0);
 
     gtk_table_attach(GTK_TABLE(table), button, 2, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -525,8 +525,8 @@ sDC::sDC(GRobject c)
     text_scrollable_new(&contr, &dc_jobs, FNT_FIXED);
 
     gtk_widget_add_events(dc_jobs, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(dc_jobs), "button-press-event",
-        GTK_SIGNAL_FUNC(dc_button_dn), 0);
+    g_signal_connect(G_OBJECT(dc_jobs), "button-press-event",
+        G_CALLBACK(dc_button_dn), 0);
 
     // The font change pop-up uses this to redraw the widget
     gtk_object_set_data(GTK_OBJECT(dc_jobs), "font_changed",
@@ -551,8 +551,8 @@ sDC::sDC(GRobject c)
     button = gtk_button_new_with_label("Abort job");
     gtk_widget_set_name(button, "abort");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dc_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dc_action_proc), 0);
     dc_kill = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, rowcnt, rowcnt+1,
@@ -579,8 +579,8 @@ sDC::sDC(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dc_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dc_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, f_rowcnt, f_rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

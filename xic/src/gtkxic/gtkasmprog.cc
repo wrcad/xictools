@@ -114,14 +114,14 @@ sAsmPrg::sAsmPrg()
 
     GtkWidget *button = gtk_button_new_with_label("Abort");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(prg_abort_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(prg_abort_proc), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(prg_cancel_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(prg_cancel_proc), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, row, row + 1,
@@ -149,8 +149,8 @@ sAsmPrg::~sAsmPrg()
 {
     if (prg_refptr)
         *prg_refptr = 0;
-    gtk_signal_disconnect_by_func(GTK_OBJECT(prg_shell),
-        GTK_SIGNAL_FUNC(prg_cancel_proc), this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(prg_shell),
+        (gpointer)prg_cancel_proc, this);
     gtk_widget_destroy(prg_shell);
 }
 

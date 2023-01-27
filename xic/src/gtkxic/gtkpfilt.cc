@@ -149,8 +149,8 @@ sPflt::sPflt(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pf_action), (void*)10L);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pf_action), (void*)10L);
     gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 1, 2, rowcnt, rowcnt+1,
@@ -166,8 +166,8 @@ sPflt::sPflt(GRobject c)
 
     pf_phys_cell = gtk_entry_new();
     gtk_widget_show(pf_phys_cell);
-    gtk_signal_connect(GTK_OBJECT(pf_phys_cell), "changed",
-        GTK_SIGNAL_FUNC(pf_action), (void*)0L);
+    g_signal_connect(G_OBJECT(pf_phys_cell), "changed",
+        G_CALLBACK(pf_action), (void*)0L);
     gtk_table_attach(GTK_TABLE(form), pf_phys_cell, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -181,8 +181,8 @@ sPflt::sPflt(GRobject c)
 
     pf_phys_inst = gtk_entry_new();
     gtk_widget_show(pf_phys_inst);
-    gtk_signal_connect(GTK_OBJECT(pf_phys_inst), "changed",
-        GTK_SIGNAL_FUNC(pf_action), (void*)1L);
+    g_signal_connect(G_OBJECT(pf_phys_inst), "changed",
+        G_CALLBACK(pf_action), (void*)1L);
     gtk_table_attach(GTK_TABLE(form), pf_phys_inst, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -196,8 +196,8 @@ sPflt::sPflt(GRobject c)
 
     pf_phys_obj = gtk_entry_new();
     gtk_widget_show(pf_phys_obj);
-    gtk_signal_connect(GTK_OBJECT(pf_phys_obj), "changed",
-        GTK_SIGNAL_FUNC(pf_action), (void*)2L);
+    g_signal_connect(G_OBJECT(pf_phys_obj), "changed",
+        G_CALLBACK(pf_action), (void*)2L);
     gtk_table_attach(GTK_TABLE(form), pf_phys_obj, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -224,8 +224,8 @@ sPflt::sPflt(GRobject c)
 
     pf_elec_cell = gtk_entry_new();
     gtk_widget_show(pf_elec_cell);
-    gtk_signal_connect(GTK_OBJECT(pf_elec_cell), "changed",
-        GTK_SIGNAL_FUNC(pf_action), (void*)3L);
+    g_signal_connect(G_OBJECT(pf_elec_cell), "changed",
+        G_CALLBACK(pf_action), (void*)3L);
     gtk_table_attach(GTK_TABLE(form), pf_elec_cell, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -239,8 +239,8 @@ sPflt::sPflt(GRobject c)
 
     pf_elec_inst = gtk_entry_new();
     gtk_widget_show(pf_elec_inst);
-    gtk_signal_connect(GTK_OBJECT(pf_elec_inst), "changed",
-        GTK_SIGNAL_FUNC(pf_action), (void*)4L);
+    g_signal_connect(G_OBJECT(pf_elec_inst), "changed",
+        G_CALLBACK(pf_action), (void*)4L);
     gtk_table_attach(GTK_TABLE(form), pf_elec_inst, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -254,8 +254,8 @@ sPflt::sPflt(GRobject c)
 
     pf_elec_obj = gtk_entry_new();
     gtk_widget_show(pf_elec_obj);
-    gtk_signal_connect(GTK_OBJECT(pf_elec_obj), "changed",
-        GTK_SIGNAL_FUNC(pf_action), (void*)5L);
+    g_signal_connect(G_OBJECT(pf_elec_obj), "changed",
+        G_CALLBACK(pf_action), (void*)5L);
     gtk_table_attach(GTK_TABLE(form), pf_elec_obj, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -267,8 +267,8 @@ sPflt::sPflt(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pf_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pf_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

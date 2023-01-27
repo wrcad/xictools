@@ -536,8 +536,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
                 if (hc->hc_textmode != HCgraphical || !hc->hc_popup->window ||
                         IsIconic(hc->hc_popup)) {
                     // window is 0 if "delete window" event
-                    gtk_signal_disconnect_by_func(GTK_OBJECT(hc->hc_popup),
-                        GTK_SIGNAL_FUNC(hc_cancel_proc), wb);
+                    g_signal_handlers_disconnect_by_func(G_OBJECT(hc->hc_popup),
+                        (gpointer)hc_cancel_proc, wb);
                     if (hc->hc_left)
                         hc->hc_lft_val = gtk_spin_button_get_value_as_float(
                             GTK_SPIN_BUTTON(hc->hc_left));
@@ -710,8 +710,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
     int rcnt = 0;
     if (textmode != HCgraphical) {
         // Handle Return, same as pressing Print.
-        gtk_signal_connect(GTK_OBJECT(hc->hc_popup), "key-press-event",
-            GTK_SIGNAL_FUNC(hc_key_hdlr), wb);
+        g_signal_connect(G_OBJECT(hc->hc_popup), "key-press-event",
+            G_CALLBACK(hc_key_hdlr), wb);
 
         if (textmode == HCtextPS) {
             GtkWidget *row1 = gtk_hbox_new(false, 2);
@@ -729,8 +729,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
             gtk_widget_show(button);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
             gtk_box_pack_start(GTK_BOX(row1), button, false, false, 0);
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                GTK_SIGNAL_FUNC(hc_pagesize_proc), wb);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(hc_pagesize_proc), wb);
 
             hc->hc_textfmt = PStimes;  // default postscript times
 
@@ -778,8 +778,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
     gtk_widget_set_name(button, "ToFile");
     gtk_widget_show(button);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(hc_tofile_proc), wb);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(hc_tofile_proc), wb);
     if (hc->hc_tofile)
         GRX->Select(button);
     hc->hc_tofbtn = button;
@@ -791,8 +791,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
     GtkWidget *helpbutton = gtk_button_new_with_label("Help");
     gtk_widget_set_name(helpbutton, "Help");
     gtk_widget_show(helpbutton);
-    gtk_signal_connect(GTK_OBJECT(helpbutton), "clicked",
-        GTK_SIGNAL_FUNC(hc_help_proc), wb);
+    g_signal_connect(G_OBJECT(helpbutton), "clicked",
+        G_CALLBACK(hc_help_proc), wb);
 
     row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
@@ -844,14 +844,14 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         GtkWidget *mi = gtk_menu_item_new_with_label("Portrait");
         gtk_widget_set_name(mi, "Portrait");
         gtk_widget_show(mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(hc_port_proc), wb);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(hc_port_proc), wb);
         gtk_menu_append(GTK_MENU(menu), mi);
         mi = gtk_menu_item_new_with_label("Landscape");
         gtk_widget_set_name(mi, "Landscape");
         gtk_widget_show(mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(hc_port_proc), wb);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(hc_port_proc), wb);
         gtk_menu_append(GTK_MENU(menu), mi);
         gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
         gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
@@ -859,8 +859,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         button = gtk_check_button_new_with_label("Best Fit");
         gtk_widget_set_name(button, "BestFit");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(hc_fit_proc), wb);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(hc_fit_proc), wb);
         hc->hc_fitbtn = button;
         gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
@@ -868,8 +868,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
             button = gtk_check_button_new_with_label("Legend");
             gtk_widget_set_name(button, "Legend");
             gtk_widget_show(button);
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                GTK_SIGNAL_FUNC(hc_legend_proc), wb);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(hc_legend_proc), wb);
             hc->hc_legbtn = button;
             gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
         }
@@ -893,8 +893,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
             gtk_widget_show(mi);
             gtk_menu_append(GTK_MENU(menu), mi);
             gtk_object_set_user_data(GTK_OBJECT(mi), (void*)(long)i);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(hc_formenu_proc), wb);
+            g_signal_connect(G_OBJECT(mi), "activate",
+                G_CALLBACK(hc_formenu_proc), wb);
         }
         gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
         gtk_option_menu_set_history(GTK_OPTION_MENU(entry), hc->hc_fmt);
@@ -931,8 +931,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
                 gtk_widget_show(mi);
                 gtk_menu_append(GTK_MENU(menu), mi);
                 gtk_object_set_user_data(GTK_OBJECT(mi), (void*)(long)i);
-                gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                    GTK_SIGNAL_FUNC(hc_resol_proc), wb);
+                g_signal_connect(G_OBJECT(mi), "activate",
+                    G_CALLBACK(hc_resol_proc), wb);
             }
         }
         else {
@@ -967,8 +967,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         button = gtk_toggle_button_new_with_label("Width");
         gtk_widget_set_name(button, "AutoWidth");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(hc_auto_proc), wb);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(hc_auto_proc), wb);
 
         frame = gtk_frame_new(0);
         gtk_widget_show(frame);
@@ -998,8 +998,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         button = gtk_toggle_button_new_with_label("Height");
         gtk_widget_set_name(button, "AutoHeight");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(hc_auto_proc), wb);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(hc_auto_proc), wb);
 
         frame = gtk_frame_new(0);
         gtk_widget_show(frame);
@@ -1099,8 +1099,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
             gtk_widget_show(mi);
             gtk_menu_append(GTK_MENU(menu), mi);
             gtk_object_set_user_data(GTK_OBJECT(mi), (void*)(long)i);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(hc_pagesize_proc), wb);
+            g_signal_connect(G_OBJECT(mi), "activate",
+                G_CALLBACK(hc_pagesize_proc), wb);
         }
         gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
         gtk_option_menu_set_history(GTK_OPTION_MENU(entry), 0);
@@ -1110,8 +1110,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         button = gtk_check_button_new_with_label("Metric (mm)");
         gtk_widget_set_name(button, "Metric");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(hc_metric_proc), wb);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(hc_metric_proc), wb);
         gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
         hc->hc_metbtn = button;
 
@@ -1127,8 +1127,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
             gtk_widget_set_name(button, "Frame");
             gtk_widget_show(button);
             gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                GTK_SIGNAL_FUNC(hc_frame_proc), wb);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(hc_frame_proc), wb);
         }
 
         label = gtk_label_new("Line Width (points)");
@@ -1178,15 +1178,15 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
     button = gtk_button_new_with_label("Print");
     gtk_widget_set_name(button, "Print");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(hc_go_proc), wb);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(hc_go_proc), wb);
     gtk_box_pack_start(GTK_BOX(row5), button, true, true, 0);
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(hc_cancel_proc), wb);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(hc_cancel_proc), wb);
     gtk_box_pack_start(GTK_BOX(row5), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row5, 0, 1, rcnt, rcnt+1,
@@ -1249,8 +1249,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         gtk_widget_set_name(mi, no_printer_msg);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(hc_formenu_proc), wb);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(hc_formenu_proc), wb);
     }
     else {
         for (int i = 0; i < hc->hc_numprinters; i++) {
@@ -1259,8 +1259,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
             gtk_widget_set_name(mi, hc->hc_printers[i]);
             gtk_widget_show(mi);
             gtk_menu_append(GTK_MENU(menu), mi);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(hc_formenu_proc), wb);
+            g_signal_connect(G_OBJECT(mi), "activate",
+                G_CALLBACK(hc_formenu_proc), wb);
         }
     }
     hc_set_printer(wb);
@@ -1549,8 +1549,8 @@ GTKprintPopup::hc_set_format(gtk_bag *wb, int index, bool set_menu)
                 gtk_widget_show(mi);
                 gtk_menu_append(GTK_MENU(menu), mi);
                 gtk_object_set_user_data(GTK_OBJECT(mi), (void*)(long)j);
-                gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                    GTK_SIGNAL_FUNC(hc_resol_proc), wb);
+                g_signal_connect(G_OBJECT(mi), "activate",
+                    G_CALLBACK(hc_resol_proc), wb);
             }
         }
         else {
@@ -1596,8 +1596,8 @@ GTKprintPopup::hc_update_menu(GTKprintPopup *hc)
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
     gtk_object_set_user_data(GTK_OBJECT(mi), (void*)PStimes);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(hc_menu_proc), hc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(hc_menu_proc), hc);
     if (hc->hc_textfmt == PStimes)
         hist = i;
     i++;
@@ -1607,8 +1607,8 @@ GTKprintPopup::hc_update_menu(GTKprintPopup *hc)
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
     gtk_object_set_user_data(GTK_OBJECT(mi), (void*)PShelv);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(hc_menu_proc), hc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(hc_menu_proc), hc);
     if (hc->hc_textfmt == PShelv)
         hist = i;
     i++;
@@ -1618,8 +1618,8 @@ GTKprintPopup::hc_update_menu(GTKprintPopup *hc)
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
     gtk_object_set_user_data(GTK_OBJECT(mi), (void*)PScentury);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(hc_menu_proc), hc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(hc_menu_proc), hc);
     if (hc->hc_textfmt == PScentury)
         hist = i;
     i++;
@@ -1629,8 +1629,8 @@ GTKprintPopup::hc_update_menu(GTKprintPopup *hc)
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
     gtk_object_set_user_data(GTK_OBJECT(mi), (void*)PSlucida);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(hc_menu_proc), hc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(hc_menu_proc), hc);
     if (hc->hc_textfmt == PSlucida)
         hist = i;
     i++;
@@ -1640,8 +1640,8 @@ GTKprintPopup::hc_update_menu(GTKprintPopup *hc)
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
     gtk_object_set_user_data(GTK_OBJECT(mi), (void*)PlainText);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(hc_menu_proc), hc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(hc_menu_proc), hc);
     if (hc->hc_textfmt == PlainText)
         hist = i;
     i++;
@@ -1652,8 +1652,8 @@ GTKprintPopup::hc_update_menu(GTKprintPopup *hc)
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
     gtk_object_set_user_data(GTK_OBJECT(mi), (void*)PrettyText);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(hc_menu_proc), hc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(hc_menu_proc), hc);
     if (hc->hc_textfmt == PrettyText)
         hist = i;
     i++;
@@ -1664,8 +1664,8 @@ GTKprintPopup::hc_update_menu(GTKprintPopup *hc)
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
     gtk_object_set_user_data(GTK_OBJECT(mi), (void*)HtmlText);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(hc_menu_proc), hc);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(hc_menu_proc), hc);
     if (hc->hc_textfmt == HtmlText)
         hist = i;
     i++;
@@ -2823,8 +2823,8 @@ GTKprintPopup::hc_pop_message(gtk_bag *wb)
     gtk_widget_set_name(button, "Abort");
     gtk_object_set_data(GTK_OBJECT(button), "abort", (void*)1);
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(hc_go_abort_proc), wb);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(hc_go_abort_proc), wb);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 2, 3,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);

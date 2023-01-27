@@ -70,8 +70,8 @@ cnmap_t::cnmap_t(bool outp)
     cn_to_lower = gtk_check_button_new_with_label("To Lower");
     gtk_widget_show(cn_to_lower);
     gtk_widget_set_name(cn_to_lower, "tolower");
-    gtk_signal_connect(GTK_OBJECT(cn_to_lower), "clicked",
-        GTK_SIGNAL_FUNC(cn_action), this);
+    g_signal_connect(G_OBJECT(cn_to_lower), "clicked",
+        G_CALLBACK(cn_action), this);
     gtk_table_attach(GTK_TABLE(tform), cn_to_lower, col, col+1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -79,8 +79,8 @@ cnmap_t::cnmap_t(bool outp)
     cn_rd_alias = gtk_check_button_new_with_label("Read Alias");
     gtk_widget_show(cn_rd_alias);
     gtk_widget_set_name(cn_rd_alias, "rdalias");
-    gtk_signal_connect(GTK_OBJECT(cn_rd_alias), "clicked",
-        GTK_SIGNAL_FUNC(cn_action), this);
+    g_signal_connect(G_OBJECT(cn_rd_alias), "clicked",
+        G_CALLBACK(cn_action), this);
     gtk_table_attach(GTK_TABLE(tform), cn_rd_alias, col, col+1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -102,8 +102,8 @@ cnmap_t::cnmap_t(bool outp)
     cn_to_upper = gtk_check_button_new_with_label("To Upper");
     gtk_widget_show(cn_to_upper);
     gtk_widget_set_name(cn_to_upper, "toupper");
-    gtk_signal_connect(GTK_OBJECT(cn_to_upper), "clicked",
-        GTK_SIGNAL_FUNC(cn_action), this);
+    g_signal_connect(G_OBJECT(cn_to_upper), "clicked",
+        G_CALLBACK(cn_action), this);
     gtk_table_attach(GTK_TABLE(tform), cn_to_upper, col, col+1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -111,18 +111,18 @@ cnmap_t::cnmap_t(bool outp)
     cn_wr_alias = gtk_check_button_new_with_label("Write Alias");
     gtk_widget_show(cn_wr_alias);
     gtk_widget_set_name(cn_wr_alias, "wralias");
-    gtk_signal_connect(GTK_OBJECT(cn_wr_alias), "clicked",
-        GTK_SIGNAL_FUNC(cn_action), this);
+    g_signal_connect(G_OBJECT(cn_wr_alias), "clicked",
+        G_CALLBACK(cn_action), this);
     gtk_table_attach(GTK_TABLE(tform), cn_wr_alias, col, col+1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
     update();
     // must be done after entry text set
-    gtk_signal_connect(GTK_OBJECT(cn_prefix), "changed",
-        GTK_SIGNAL_FUNC(cn_text_changed), this);
-    gtk_signal_connect(GTK_OBJECT(cn_suffix), "changed",
-        GTK_SIGNAL_FUNC(cn_text_changed), this);
+    g_signal_connect(G_OBJECT(cn_prefix), "changed",
+        G_CALLBACK(cn_text_changed), this);
+    g_signal_connect(G_OBJECT(cn_suffix), "changed",
+        G_CALLBACK(cn_text_changed), this);
 
     cn_frame = gtk_frame_new("Cell Name Mapping");
     gtk_widget_show(cn_frame);

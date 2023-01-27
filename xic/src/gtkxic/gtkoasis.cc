@@ -207,8 +207,8 @@ sOas::sOas(GRobject c)
         "Don't write trapezoid records");
     gtk_widget_set_name(button, "notrap");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     oas_notrap = button;
 
@@ -216,8 +216,8 @@ sOas::sOas(GRobject c)
     gtk_widget_show(button);
     gtk_widget_set_name(button, "Help");
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -228,8 +228,8 @@ sOas::sOas(GRobject c)
         "Convert Wire to Box records when possible");
     gtk_widget_set_name(button, "wtob");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -240,8 +240,8 @@ sOas::sOas(GRobject c)
         "Convert rounded-end Wire records to Poly records");
     gtk_widget_set_name(button, "rwtop");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -252,8 +252,8 @@ sOas::sOas(GRobject c)
         "Skip GCD check");
     gtk_widget_set_name(button, "nogcd");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -264,8 +264,8 @@ sOas::sOas(GRobject c)
         "Use alternate modal sort algorithm");
     gtk_widget_set_name(button, "oldsort");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -290,8 +290,8 @@ sOas::sOas(GRobject c)
         gtk_widget_set_name(mi, pmaskvals[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(oas_pmask_menu_proc), (void*)pmaskvals[i]);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(oas_pmask_menu_proc), (void*)pmaskvals[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
@@ -318,8 +318,8 @@ sOas::sOas(GRobject c)
 
     button = gtk_button_new_with_label("Restore Defaults");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     oas_def = button;
     gtk_table_attach(GTK_TABLE(form), button, 2, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -335,40 +335,40 @@ sOas::sOas(GRobject c)
     gtk_widget_set_name(button, "Cells");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     oas_objc = button;
 
     button = gtk_check_button_new_with_label("Boxes");
     gtk_widget_set_name(button, "Boxes");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     oas_objb = button;
 
     button = gtk_check_button_new_with_label("Polys");
     gtk_widget_set_name(button, "Polys");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     oas_objp = button;
 
     button = gtk_check_button_new_with_label("Wires");
     gtk_widget_set_name(button, "Wires");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     oas_objw = button;
 
     button = gtk_check_button_new_with_label("Labels");
     gtk_widget_set_name(button, "Labels");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     oas_objl = button;
 
     GtkWidget *frame = gtk_frame_new("Objects");
@@ -391,8 +391,8 @@ sOas::sOas(GRobject c)
 
     button = gtk_toggle_button_new_with_label("None");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     oas_noruns = button;
     gtk_table_attach(GTK_TABLE(form), button,
         2, 3, rowcnt, rowcnt+1,
@@ -400,7 +400,7 @@ sOas::sOas(GRobject c)
         (GtkAttachOptions)0, 2, 2);
 
     GtkWidget *sb = sb_entm.init(REP_RUN_MIN, REP_RUN_MIN, REP_RUN_MAX, 0);
-    sb_entm.connect_changed(GTK_SIGNAL_FUNC(oas_val_changed), 0);
+    sb_entm.connect_changed(G_CALLBACK(oas_val_changed), 0);
     gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 3, 4, rowcnt, rowcnt+1,
@@ -417,8 +417,8 @@ sOas::sOas(GRobject c)
 
     button = gtk_toggle_button_new_with_label("None");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     oas_noarrs = button;
     gtk_table_attach(GTK_TABLE(form), button,
         2, 3, rowcnt, rowcnt+1,
@@ -426,7 +426,7 @@ sOas::sOas(GRobject c)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_enta.init(REP_ARRAY_MIN, REP_ARRAY_MIN, REP_ARRAY_MAX, 0);
-    sb_enta.connect_changed(GTK_SIGNAL_FUNC(oas_val_changed), 0);
+    sb_enta.connect_changed(G_CALLBACK(oas_val_changed), 0);
     gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 3, 4, rowcnt, rowcnt+1,
@@ -442,7 +442,7 @@ sOas::sOas(GRobject c)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_entx.init(REP_MAX_ITEMS, REP_MAX_ITEMS_MIN, REP_MAX_ITEMS_MAX, 0);
-    sb_entx.connect_changed(GTK_SIGNAL_FUNC(oas_val_changed), 0);
+    sb_entx.connect_changed(G_CALLBACK(oas_val_changed), 0);
     gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 3, 4, rowcnt, rowcnt+1,
@@ -459,8 +459,8 @@ sOas::sOas(GRobject c)
 
     button = gtk_toggle_button_new_with_label("None");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_action), 0);
     oas_nosim = button;
     gtk_table_attach(GTK_TABLE(form), button,
         2, 3, rowcnt, rowcnt+1,
@@ -469,7 +469,7 @@ sOas::sOas(GRobject c)
 
     sb = sb_entt.init(REP_MAX_REPS, REP_MAX_REPS_MIN,
         REP_MAX_REPS_MAX, 0);
-    sb_entt.connect_changed(GTK_SIGNAL_FUNC(oas_val_changed), 0);
+    sb_entt.connect_changed(G_CALLBACK(oas_val_changed), 0);
     gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 3, 4, rowcnt, rowcnt+1,
@@ -480,8 +480,8 @@ sOas::sOas(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(oas_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(oas_cancel_proc), 0);
 
     if (rowcnt < formbtm)
         rowcnt = formbtm;

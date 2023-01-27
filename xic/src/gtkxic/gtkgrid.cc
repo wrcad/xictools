@@ -240,8 +240,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
         return;
     gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "expose-event",
-        GTK_SIGNAL_FUNC(gd_redraw_hdlr), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(wb_shell), "expose-event",
+        G_CALLBACK(gd_redraw_hdlr), grid_pops + gd_win_num);
 
     GtkWidget *topform = gtk_table_new(2, 1, false);
     gtk_widget_show(topform);
@@ -264,8 +264,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_btn_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(topform), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -296,7 +296,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
 
     GtkWidget *sb = sb_resol.init(1.0, 0.0, 10000.0, 4);
     GtkWidget *focus_widget = sb;
-    sb_resol.connect_changed(GTK_SIGNAL_FUNC(gd_resol_change_proc),
+    sb_resol.connect_changed(G_CALLBACK(gd_resol_change_proc),
         grid_pops + gd_win_num, "Resolution");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_start(GTK_BOX(vbox), sb, false, false, 0);
@@ -321,7 +321,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_container_add(GTK_CONTAINER(frame), vbox);
 
     sb = sb_snap.init(1, 1.0, 10.0, 0);
-    sb_snap.connect_changed(GTK_SIGNAL_FUNC(gd_snap_change_proc),
+    sb_snap.connect_changed(G_CALLBACK(gd_snap_change_proc),
         grid_pops + gd_win_num, "Snap");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_start(GTK_BOX(vbox), sb, true, false, 0);
@@ -330,8 +330,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(vbox), button, false, false, 0);
     gd_snapbtn = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_snap_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_snap_proc), grid_pops + gd_win_num);
 
     gtk_table_attach(GTK_TABLE(form), frame, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -369,8 +369,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
         gtk_widget_set_name(mi, edgevals[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(gd_edge_menu_proc), grid_pops + gd_win_num);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(gd_edge_menu_proc), grid_pops + gd_win_num);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gd_edge = entry;
@@ -381,8 +381,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_set_name(button, "offg");
     gtk_widget_show(button);
     gd_off_grid = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_btn_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
     gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
 
     button = gtk_check_button_new_with_label(
@@ -390,8 +390,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_set_name(button, "usenm");
     gtk_widget_show(button);
     gd_use_nm_edge = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_btn_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
     gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
 
     button = gtk_check_button_new_with_label(
@@ -399,8 +399,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_set_name(button, "wedge");
     gtk_widget_show(button);
     gd_wire_edge = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_btn_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
     gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
 
     button = gtk_check_button_new_with_label(
@@ -408,8 +408,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_set_name(button, "wpath");
     gtk_widget_show(button);
     gd_wire_path = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_btn_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
     gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
 
     label = gtk_label_new("Snapping");
@@ -428,8 +428,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     button = gtk_toggle_button_new_with_label("Show");
     gtk_widget_show(button);
     gtk_widget_set_name(button, "Show");
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_btn_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
     GRX->SetStatus(button, gd_grid.displayed());
     gd_showbtn = button;
     rcnt = 0;
@@ -440,8 +440,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     button = gtk_toggle_button_new_with_label("On Top");
     gtk_widget_show(button);
     gtk_widget_set_name(button, "OnTop");
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_btn_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
     GRX->SetStatus(button, gd_grid.show_on_top());
     gd_topbtn = button;
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rcnt, rcnt+1,
@@ -465,8 +465,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
             GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
             gtk_menu_append(GTK_MENU(menu), menu_item);
-            gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-                GTK_SIGNAL_FUNC(gd_sto_menu_proc), grid_pops + gd_win_num);
+            g_signal_connect(G_OBJECT(menu_item), "activate",
+                G_CALLBACK(gd_sto_menu_proc), grid_pops + gd_win_num);
             gtk_widget_show(menu_item);
         }
         gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
@@ -493,16 +493,16 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
         GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(menu_item, buf);
         gtk_menu_append(GTK_MENU(menu), menu_item);
-        gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-            GTK_SIGNAL_FUNC(gd_rcl_menu_proc), grid_pops + gd_win_num);
+        g_signal_connect(G_OBJECT(menu_item), "activate",
+            G_CALLBACK(gd_rcl_menu_proc), grid_pops + gd_win_num);
         gtk_widget_show(menu_item);
 
         strcpy(buf, LASTAPPL);
         menu_item = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(menu_item, buf);
         gtk_menu_append(GTK_MENU(menu), menu_item);
-        gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-            GTK_SIGNAL_FUNC(gd_rcl_menu_proc), grid_pops + gd_win_num);
+        g_signal_connect(G_OBJECT(menu_item), "activate",
+            G_CALLBACK(gd_rcl_menu_proc), grid_pops + gd_win_num);
         gtk_widget_show(menu_item);
 
         for (int i = 1; i < TECH_NUM_GRIDS; i++) {
@@ -510,8 +510,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
             menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
             gtk_menu_append(GTK_MENU(menu), menu_item);
-            gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-                GTK_SIGNAL_FUNC(gd_rcl_menu_proc), grid_pops + gd_win_num);
+            g_signal_connect(G_OBJECT(menu_item), "activate",
+                G_CALLBACK(gd_rcl_menu_proc), grid_pops + gd_win_num);
             gtk_widget_show(menu_item);
         }
         gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
@@ -532,8 +532,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_object_set_data(GTK_OBJECT(button), "axes", (void*)AxesNone);
     GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
     gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_axes_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_axes_proc), grid_pops + gd_win_num);
     gd_noaxesbtn = button;
 
     button = gtk_radio_button_new_with_label(group, "Plain Axes");
@@ -546,8 +546,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     }
     gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
     group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_axes_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_axes_proc), grid_pops + gd_win_num);
     gd_plaxesbtn = button;
 
     button = gtk_radio_button_new_with_label(group, "Mark Origin");
@@ -559,8 +559,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
         GTK_TOGGLE_BUTTON(gd_noaxesbtn)->active = false;
     }
     gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_axes_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_axes_proc), grid_pops + gd_win_num);
     gd_oraxesbtn = button;
 
     gtk_table_attach(GTK_TABLE(form), vbox, 0, 2, rcnt, rcnt+1,
@@ -571,7 +571,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_show(frame);
 
     sb = sb_cmult.init(1, 1.0, 50.0, 0);
-    sb_cmult.connect_changed(GTK_SIGNAL_FUNC(gd_cmult_change_proc),
+    sb_cmult.connect_changed(G_CALLBACK(gd_cmult_change_proc),
         grid_pops + gd_win_num, "CoarseMult");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_container_add(GTK_CONTAINER(frame), sb);
@@ -600,8 +600,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_show(button);
     group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
     gtk_object_set_data(GTK_OBJECT(button), "lst", (void*)LstSolid);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_lst_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_lst_proc), grid_pops + gd_win_num);
     gtk_table_attach(GTK_TABLE(eform), button, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -612,8 +612,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_show(button);
     group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
     gtk_object_set_data(GTK_OBJECT(button), "lst", (void*)LstDots);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_lst_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_lst_proc), grid_pops + gd_win_num);
     gtk_table_attach(GTK_TABLE(eform), button, 1, 2, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -627,8 +627,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_set_name(button, "Textured");
     gtk_widget_show(button);
     gtk_object_set_data(GTK_OBJECT(button), "lst", (void*)LstStip);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_lst_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_lst_proc), grid_pops + gd_win_num);
     gtk_table_attach(GTK_TABLE(eform), button, 2, 3, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -643,7 +643,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gd_crs_frame = bframe;
 
     sb = sb_crs.init(0, 0.0, 6.0, 0);
-    sb_crs.connect_changed(GTK_SIGNAL_FUNC(gd_crs_change_proc),
+    sb_crs.connect_changed(G_CALLBACK(gd_crs_change_proc),
         grid_pops + gd_win_num, "CrossSize");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_container_add(GTK_CONTAINER(bframe), sb);
@@ -666,25 +666,25 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_add_events(darea, GDK_BUTTON_PRESS_MASK);
     gtk_widget_add_events(darea, GDK_BUTTON_RELEASE_MASK);
     gtk_widget_add_events(darea, GDK_POINTER_MOTION_MASK);
-    gtk_signal_connect(GTK_OBJECT(darea), "button-press-event",
-        GTK_SIGNAL_FUNC(gd_button_press_hdlr), grid_pops + gd_win_num);
-    gtk_signal_connect(GTK_OBJECT(darea), "button-release-event",
-        GTK_SIGNAL_FUNC(gd_button_release_hdlr), grid_pops + gd_win_num);
-    gtk_signal_connect(GTK_OBJECT(darea), "motion-notify-event",
-        GTK_SIGNAL_FUNC(gd_motion_hdlr), grid_pops + gd_win_num);
-    gtk_signal_connect(GTK_OBJECT(darea), "drag-data-get",
-        GTK_SIGNAL_FUNC(gd_drag_data_get), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(darea), "button-press-event",
+        G_CALLBACK(gd_button_press_hdlr), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(darea), "button-release-event",
+        G_CALLBACK(gd_button_release_hdlr), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(darea), "motion-notify-event",
+        G_CALLBACK(gd_motion_hdlr), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(darea), "drag-data-get",
+        G_CALLBACK(gd_drag_data_get), grid_pops + gd_win_num);
 
     darea = gtk_drawing_area_new();
     gtk_widget_show(darea);
     gtk_widget_set_size_request(darea, 200, 10);
     gtk_widget_add_events(darea, GDK_BUTTON_PRESS_MASK);
     gtk_widget_add_events(darea, GDK_BUTTON_RELEASE_MASK);
-    gtk_signal_connect(GTK_OBJECT(darea), "button-press-event",
-        GTK_SIGNAL_FUNC(gd_button_press_hdlr), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(darea), "button-press-event",
+        G_CALLBACK(gd_button_press_hdlr), grid_pops + gd_win_num);
     gd_viewport = darea;
-    gtk_signal_connect(GTK_OBJECT(darea), "button-release-event",
-        GTK_SIGNAL_FUNC(gd_button_release_hdlr), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(darea), "button-release-event",
+        G_CALLBACK(gd_button_release_hdlr), grid_pops + gd_win_num);
     gtk_table_attach(GTK_TABLE(eform), darea, 0, 3, 3, 4,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -710,8 +710,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_set_name(button, "cvis");
     gtk_widget_show(button);
     gd_nocoarse = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_btn_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
 
     gtk_table_attach(GTK_TABLE(gform), button, 0, 2, 0, 1,
         (GtkAttachOptions)0,
@@ -725,7 +725,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
 
     sb = sb_thresh.init(DSP_DEF_GRID_THRESHOLD, DSP_MIN_GRID_THRESHOLD,
         DSP_MAX_GRID_THRESHOLD, 0);
-    sb_thresh.connect_changed(GTK_SIGNAL_FUNC(gd_thresh_change_proc),
+    sb_thresh.connect_changed(G_CALLBACK(gd_thresh_change_proc),
         grid_pops + gd_win_num, "GridThreshold");
     gtk_widget_set_size_request(sb, 50, -1);
     gtk_table_attach(GTK_TABLE(gform), sb, 1, 2, 1, 2,
@@ -746,16 +746,16 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     button = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(button, "Apply Grid");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_apply_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_apply_proc), grid_pops + gd_win_num);
     gd_apply = button;
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(gd_cancel_proc), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_cancel_proc), grid_pops + gd_win_num);
     gd_cancel = button;
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
@@ -768,8 +768,8 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     // cancel.
     //
     gtk_window_set_focus(GTK_WINDOW(wb_shell), focus_widget);
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "key-release-event",
-        GTK_SIGNAL_FUNC(gd_key_hdlr), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(wb_shell), "key-release-event",
+        G_CALLBACK(gd_key_hdlr), grid_pops + gd_win_num);
 
     update();
 }
@@ -789,9 +789,10 @@ sGrd::~sGrd()
         *p_usrptr = 0;
     if (p_caller)
         GRX->Deselect(p_caller);
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(gd_cancel_proc), grid_pops + gd_win_num);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)gd_cancel_proc, grid_pops + gd_win_num);
+    }
 }
 
 

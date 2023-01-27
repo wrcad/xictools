@@ -148,24 +148,24 @@ sPi::sPi(CDo *odesc)
     GtkWidget *contr;
     text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
 
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",
-        GTK_SIGNAL_FUNC(pi_text_btn_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-release-event",
-        GTK_SIGNAL_FUNC(pi_text_btn_release_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
+        G_CALLBACK(pi_text_btn_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "button-release-event",
+        G_CALLBACK(pi_text_btn_release_hdlr), 0);
 
     // dnd stuff
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "motion-notify-event",
-        GTK_SIGNAL_FUNC(pi_motion_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "drag-data-get",
-        GTK_SIGNAL_FUNC(pi_drag_data_get), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "motion-notify-event",
+        G_CALLBACK(pi_motion_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "drag-data-get",
+        G_CALLBACK(pi_drag_data_get), 0);
     GtkDestDefaults DD = (GtkDestDefaults)
         (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP);
     gtk_drag_dest_set(wb_textarea, DD, target_table, n_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "drag-data-received",
-        GTK_SIGNAL_FUNC(pi_drag_data_received), 0);
-    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "realize",
-        GTK_SIGNAL_FUNC(text_realize_proc), 0);
+    g_signal_connect_after(G_OBJECT(wb_textarea), "drag-data-received",
+        G_CALLBACK(pi_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(wb_textarea), "realize",
+        G_CALLBACK(text_realize_proc), 0);
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
@@ -201,8 +201,8 @@ sPi::sPi(CDo *odesc)
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(pi_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(pi_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 2, 3,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -218,9 +218,10 @@ sPi::~sPi()
     Pi = 0;
     if (pi_odesc)
         DSP()->ShowCurrentObject(ERASE, pi_odesc, HighlightingColor);
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(pi_cancel_proc), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)pi_cancel_proc, wb_shell);
+    }
 }
 
 
@@ -490,7 +491,7 @@ sPbase::drag_data_get(GtkSelectionData *selection_data)
 {
     if (GTK_IS_TEXT_VIEW(wb_textarea)) {
         // stop text view native handler
-        gtk_signal_emit_stop_by_name(GTK_OBJECT(wb_textarea), "drag-data-get");
+        g_signal_stop_emission_by_name(G_OBJECT(wb_textarea), "drag-data-get");
     }
 
     PrptyText *p = get_selection();

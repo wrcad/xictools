@@ -201,8 +201,8 @@ sLx::sLx(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -236,8 +236,8 @@ sLx::sLx(GRobject c)
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(lx_depth_proc), (void*)(long)i);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(lx_depth_proc), (void*)(long)i);
     }
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(lx_depth), menu);
@@ -247,8 +247,8 @@ sLx::sLx(GRobject c)
         "Recursively create in subcells");
     gtk_widget_set_name(lx_recurse, "Recurse");
     gtk_widget_show(lx_recurse);
-    gtk_signal_connect(GTK_OBJECT(lx_recurse), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(lx_recurse), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_box_pack_start(GTK_BOX(row), lx_recurse, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
@@ -290,12 +290,12 @@ sLx::sLx(GRobject c)
     lx_none = gtk_toggle_button_new_with_label("None");
     gtk_widget_set_name(lx_none, "None");
     gtk_widget_show(lx_none);
-    gtk_signal_connect(GTK_OBJECT(lx_none), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(lx_none), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_box_pack_start(GTK_BOX(row), lx_none, false, false, 0);
 
     GtkWidget *sb = sb_part.init(0, GRD_PART_MIN, GRD_PART_MAX, 2);
-    sb_part.connect_changed(GTK_SIGNAL_FUNC(lx_val_changed), 0, "PartSize");
+    sb_part.connect_changed(G_CALLBACK(lx_val_changed), 0, "PartSize");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_start(GTK_BOX(row), sb, true, true, 0);
 
@@ -316,7 +316,7 @@ sLx::sLx(GRobject c)
     gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
 
     sb = sb_thread.init(DSP_DEF_THREADS, DSP_MIN_THREADS, DSP_MAX_THREADS, 0);
-    sb_thread.connect_changed(GTK_SIGNAL_FUNC(lx_val_changed), 0, "thread");
+    sb_thread.connect_changed(G_CALLBACK(lx_val_changed), 0, "thread");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -339,31 +339,31 @@ sLx::sLx(GRobject c)
     gtk_widget_set_name(lx_deflt, "Default");
     gtk_widget_show(lx_deflt);
     GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(lx_deflt));
-    gtk_signal_connect(GTK_OBJECT(lx_deflt), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(lx_deflt), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_box_pack_start(GTK_BOX(row), lx_deflt, true, true, 0);
 
     lx_join = gtk_radio_button_new_with_label(group, "Joined");
     gtk_widget_set_name(lx_join, "Join");
     gtk_widget_show(lx_join);
     group = gtk_radio_button_group(GTK_RADIO_BUTTON(lx_join));
-    gtk_signal_connect(GTK_OBJECT(lx_join), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(lx_join), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_box_pack_start(GTK_BOX(row), lx_join, true, true, 0);
 
     lx_split_h = gtk_radio_button_new_with_label(group, "Horiz Split");
     gtk_widget_set_name(lx_split_h, "SplitH");
     gtk_widget_show(lx_split_h);
     group = gtk_radio_button_group(GTK_RADIO_BUTTON(lx_split_h));
-    gtk_signal_connect(GTK_OBJECT(lx_split_h), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(lx_split_h), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_box_pack_start(GTK_BOX(row), lx_split_h, true, true, 0);
 
     lx_split_v = gtk_radio_button_new_with_label(group, "Vert Split");
     gtk_widget_set_name(lx_split_v, "SplitV");
     gtk_widget_show(lx_split_v);
-    gtk_signal_connect(GTK_OBJECT(lx_split_v), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(lx_split_v), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_box_pack_start(GTK_BOX(row), lx_split_v, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), frame, 0, 2, rowcnt, rowcnt+1,
@@ -406,11 +406,11 @@ sLx::sLx(GRobject c)
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(lx_recall_menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(lx_recall_proc), (void*)(long)i);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(lx_recall_proc), (void*)(long)i);
     }
-    gtk_signal_connect(GTK_OBJECT(lx_recall), "button-press-event",
-        GTK_SIGNAL_FUNC(lx_popup_menu), lx_recall_menu);
+    g_signal_connect(G_OBJECT(lx_recall), "button-press-event",
+        G_CALLBACK(lx_popup_menu), lx_recall_menu);
     gtk_box_pack_start(GTK_BOX(row), lx_recall, false, false, 0);
 
     lx_save = gtk_button_new_with_label("Save");
@@ -426,11 +426,11 @@ sLx::sLx(GRobject c)
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(lx_save_menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(lx_save_proc), (void*)(long)i);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(lx_save_proc), (void*)(long)i);
     }
-    gtk_signal_connect(GTK_OBJECT(lx_save), "button-press-event",
-        GTK_SIGNAL_FUNC(lx_popup_menu), lx_save_menu);
+    g_signal_connect(G_OBJECT(lx_save), "button-press-event",
+        G_CALLBACK(lx_popup_menu), lx_save_menu);
     gtk_box_pack_start(GTK_BOX(row), lx_save, false, false, 0);
     gtk_box_pack_start(GTK_BOX(vbox), row, false, false, 0);
 
@@ -441,8 +441,8 @@ sLx::sLx(GRobject c)
         "Don't clear layer before evaluation");
     gtk_widget_set_name(lx_noclear, "NoClear");
     gtk_widget_show(lx_noclear);
-    gtk_signal_connect(GTK_OBJECT(lx_noclear), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(lx_noclear), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_table_attach(GTK_TABLE(form), lx_noclear, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -455,8 +455,8 @@ sLx::sLx(GRobject c)
         "Use object merging while processing");
     gtk_widget_set_name(lx_merge, "Merge");
     gtk_widget_show(lx_merge);
-    gtk_signal_connect(GTK_OBJECT(lx_merge), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(lx_merge), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_table_attach(GTK_TABLE(form), lx_merge, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -466,8 +466,8 @@ sLx::sLx(GRobject c)
         "Fast mode, NOT UNDOABLE");
     gtk_widget_set_name(lx_fast, "Fast");
     gtk_widget_show(lx_fast);
-    gtk_signal_connect(GTK_OBJECT(lx_fast), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(lx_fast), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_table_attach(GTK_TABLE(form), lx_fast, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -482,15 +482,15 @@ sLx::sLx(GRobject c)
     button = gtk_button_new_with_label("Evaluate");
     gtk_widget_set_name(button, "Evaluate");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(lx_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(lx_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(lx_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(lx_cancel_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,

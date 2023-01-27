@@ -234,8 +234,8 @@ sAsm::sAsm(GRobject c)
     //
     asm_notebook = gtk_notebook_new();
     gtk_widget_show(asm_notebook);
-    gtk_signal_connect(GTK_OBJECT(asm_notebook), "switch-page",
-        GTK_SIGNAL_FUNC(asm_page_change_proc), 0);
+    g_signal_connect(G_OBJECT(asm_notebook), "switch-page",
+        G_CALLBACK(asm_page_change_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), asm_notebook, 0, 1, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -253,13 +253,13 @@ sAsm::sAsm(GRobject c)
 
     GtkWidget *button = gtk_button_new_with_label("Create Layout File");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(asm_go_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(asm_go_proc), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(asm_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(asm_cancel_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, row, row+1,
@@ -291,8 +291,8 @@ sAsm::~sAsm()
     delete [] asm_sources;
     delete asm_fmt;
     if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(asm_cancel_proc), wb_shell);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)asm_cancel_proc, wb_shell);
 
     if (asm_item_factory)
         g_object_unref(asm_item_factory);
@@ -695,8 +695,8 @@ sAsm::output_page_setup()
         (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
     gtk_drag_dest_set(asm_outfile, DD, target_table, n_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(asm_outfile), "drag-data-received",
-        GTK_SIGNAL_FUNC(asm_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(asm_outfile), "drag-data-received",
+        G_CALLBACK(asm_drag_data_received), 0);
 
     GtkWidget *frame = gtk_frame_new(0);
     gtk_widget_show(frame);

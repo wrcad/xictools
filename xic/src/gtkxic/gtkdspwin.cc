@@ -197,8 +197,8 @@ sDw::sDw(GRobject caller, bool(*cb)(bool, const BBox*, void*), void *arg)
     dw_apply = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(dw_apply, "window");
     gtk_widget_show(dw_apply);
-    gtk_signal_connect(GTK_OBJECT(dw_apply), "clicked",
-        GTK_SIGNAL_FUNC(dw_action), 0);
+    g_signal_connect(G_OBJECT(dw_apply), "clicked",
+        G_CALLBACK(dw_action), 0);
 
     gtk_table_attach(GTK_TABLE(form), dw_apply, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -219,15 +219,15 @@ sDw::sDw(GRobject caller, bool(*cb)(bool, const BBox*, void*), void *arg)
     dw_center = gtk_button_new_with_label("Center Full View");
     gtk_widget_set_name(dw_center, "center");
     gtk_widget_show(dw_center);
-    gtk_signal_connect(GTK_OBJECT(dw_center), "clicked",
-        GTK_SIGNAL_FUNC(dw_action), 0);
+    g_signal_connect(G_OBJECT(dw_center), "clicked",
+        G_CALLBACK(dw_action), 0);
     gtk_box_pack_start(GTK_BOX(hbox), dw_center, true, true, 0);
 
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dw_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dw_cancel_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 3, rowcnt, rowcnt+1,

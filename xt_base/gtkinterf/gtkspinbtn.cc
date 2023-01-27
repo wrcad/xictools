@@ -168,12 +168,12 @@ GTKspinBtn::init(double val, double minv, double maxv, int numd)
         sb_entry = gtk_entry_new();
         gtk_widget_show(sb_entry);
         gtk_widget_add_events(sb_entry, GDK_KEY_RELEASE_MASK);
-        gtk_signal_connect(GTK_OBJECT(sb_entry), "focus-out-event",
-            GTK_SIGNAL_FUNC(sb_focus_out_proc), this);
-        gtk_signal_connect(GTK_OBJECT(sb_entry), "key-press-event",
-            GTK_SIGNAL_FUNC(sb_key_press_proc), this);
-        gtk_signal_connect(GTK_OBJECT(sb_entry), "key-release-event",
-            GTK_SIGNAL_FUNC(sb_key_release_proc), this);
+        g_signal_connect(G_OBJECT(sb_entry), "focus-out-event",
+            G_CALLBACK(sb_focus_out_proc), this);
+        g_signal_connect(G_OBJECT(sb_entry), "key-press-event",
+            G_CALLBACK(sb_key_press_proc), this);
+        g_signal_connect(G_OBJECT(sb_entry), "key-release-event",
+            G_CALLBACK(sb_key_release_proc), this);
         gtk_box_pack_start(GTK_BOX(sb_cont), sb_entry, true, true, 0);
 
         char buf[64];
@@ -185,19 +185,19 @@ GTKspinBtn::init(double val, double minv, double maxv, int numd)
         sb_up = new_pixmap_button(uparr_xpm, 0, false);  
         gtk_widget_set_name(sb_up, "up");
         gtk_widget_show(sb_up);
-        gtk_signal_connect(GTK_OBJECT(sb_up), "button-press-event",
-            GTK_SIGNAL_FUNC(sb_btndn_proc), this);
-        gtk_signal_connect(GTK_OBJECT(sb_up), "button-release-event",
-            GTK_SIGNAL_FUNC(sb_btnup_proc), this);
+        g_signal_connect(G_OBJECT(sb_up), "button-press-event",
+            G_CALLBACK(sb_btndn_proc), this);
+        g_signal_connect(G_OBJECT(sb_up), "button-release-event",
+            G_CALLBACK(sb_btnup_proc), this);
         gtk_box_pack_start(GTK_BOX(vbox), sb_up, true, true, 0);
 
         sb_dn = new_pixmap_button(dnarr_xpm, 0, false);
         gtk_widget_set_name(sb_dn, "dn");
         gtk_widget_show(sb_dn);
-        gtk_signal_connect(GTK_OBJECT(sb_dn), "button-press-event",
-            GTK_SIGNAL_FUNC(sb_btndn_proc), this);
-        gtk_signal_connect(GTK_OBJECT(sb_dn), "button-release-event",
-            GTK_SIGNAL_FUNC(sb_btnup_proc), this);
+        g_signal_connect(G_OBJECT(sb_dn), "button-press-event",
+            G_CALLBACK(sb_btndn_proc), this);
+        g_signal_connect(G_OBJECT(sb_dn), "button-release-event",
+            G_CALLBACK(sb_btnup_proc), this);
         gtk_box_pack_start(GTK_BOX(vbox), sb_dn, true, true, 0);
 
         gtk_box_pack_start(GTK_BOX(sb_cont), vbox, false, false, 0);
@@ -241,8 +241,8 @@ GTKspinBtn::connect_changed(GtkSignalFunc func, void *arg, const char *id)
         sb_func = (SbSignalFunc)func;
         GtkAdjustment *adj = gtk_spin_button_get_adjustment(
             GTK_SPIN_BUTTON(sb_widget));
-        gtk_signal_connect(GTK_OBJECT(adj), "value-changed",
-            GTK_SIGNAL_FUNC(sb_val_changed), this);
+        g_signal_connect(G_OBJECT(adj), "value-changed",
+            G_CALLBACK(sb_val_changed), this);
     }
 }
 
@@ -655,7 +655,7 @@ GTKspinBtn::sb_key_press_proc(GtkWidget *widget, GdkEventKey *event, void *arg)
     switch (key) {
     case GDK_Up:
         if (GTK_WIDGET_HAS_FOCUS(widget)) {
-            gtk_signal_emit_stop_by_name(GTK_OBJECT(widget),
+            g_signal_stop_emission_by_name(G_OBJECT(widget),
                 "key_press_event");
             if (!key_repeat)
                 sb->sb_incr = sb->sb_del;
@@ -679,7 +679,7 @@ GTKspinBtn::sb_key_press_proc(GtkWidget *widget, GdkEventKey *event, void *arg)
 
     case GDK_Down:
         if (GTK_WIDGET_HAS_FOCUS (widget)) {
-            gtk_signal_emit_stop_by_name(GTK_OBJECT(widget),
+            g_signal_stop_emission_by_name(G_OBJECT(widget),
                 "key_press_event");
             if (!key_repeat)
                 sb->sb_incr = sb->sb_del;

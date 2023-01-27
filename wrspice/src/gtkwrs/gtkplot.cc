@@ -175,7 +175,6 @@ plot_bag::init(sGraph *gr)
 {
     wb_sens_set = sens_set;
 
-#if GTK_CHECK_VERSION(2,10,4)
 #ifdef WIN32
     // Icons are obtained from resources.
 #else
@@ -190,10 +189,9 @@ plot_bag::init(sGraph *gr)
     g2->next = g3;
     gtk_window_set_icon_list(GTK_WINDOW(Shell()), g1);
 #endif
-#endif
 
-    gtk_signal_connect(GTK_OBJECT(Shell()), "destroy",
-        GTK_SIGNAL_FUNC(b_quit), gr);
+    g_signal_connect(G_OBJECT(Shell()), "destroy",
+        G_CALLBACK(b_quit), gr);
 
     GtkWidget *form = gtk_table_new(2, 1, false);
     gtk_widget_show(form);
@@ -257,38 +255,38 @@ plot_bag::init(sGraph *gr)
     GTKfont::setupFont(Viewport(), FNT_SCREEN, true);
 
     gtk_widget_add_events(Viewport(), GDK_STRUCTURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(Viewport()), "configure_event",
-        GTK_SIGNAL_FUNC(resize), gr);
+    g_signal_connect(G_OBJECT(Viewport()), "configure_event",
+        G_CALLBACK(resize), gr);
     gtk_widget_add_events(Viewport(), GDK_EXPOSURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(Viewport()), "expose_event",
-        GTK_SIGNAL_FUNC(redraw), gr);
+    g_signal_connect(G_OBJECT(Viewport()), "expose_event",
+        G_CALLBACK(redraw), gr);
     gtk_widget_add_events(Viewport(), GDK_KEY_PRESS_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(Viewport()), "key_press_event",
-        GTK_SIGNAL_FUNC(keypress), gr);
+    g_signal_connect_after(G_OBJECT(Viewport()), "key_press_event",
+        G_CALLBACK(keypress), gr);
     gtk_widget_add_events(Viewport(), GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(Viewport()), "button_press_event",
-        GTK_SIGNAL_FUNC(buttonpress), gr);
+    g_signal_connect_after(G_OBJECT(Viewport()), "button_press_event",
+        G_CALLBACK(buttonpress), gr);
     gtk_widget_add_events(Viewport(), GDK_BUTTON_RELEASE_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(Viewport()), "button_release_event",
-        GTK_SIGNAL_FUNC(buttonup), gr);
+    g_signal_connect_after(G_OBJECT(Viewport()), "button_release_event",
+        G_CALLBACK(buttonup), gr);
     gtk_widget_add_events(Viewport(), GDK_POINTER_MOTION_MASK);
-    gtk_signal_connect(GTK_OBJECT(Viewport()), "motion_notify_event",
-        GTK_SIGNAL_FUNC(motion), gr);
+    g_signal_connect(G_OBJECT(Viewport()), "motion_notify_event",
+        G_CALLBACK(motion), gr);
     gtk_widget_add_events(Viewport(), GDK_ENTER_NOTIFY_MASK);
-    gtk_signal_connect(GTK_OBJECT(Viewport()), "enter_notify_event",
-        GTK_SIGNAL_FUNC(enter_hdlr), gr);
+    g_signal_connect(G_OBJECT(Viewport()), "enter_notify_event",
+        G_CALLBACK(enter_hdlr), gr);
     gtk_widget_add_events(Viewport(), GDK_LEAVE_NOTIFY_MASK);
-    gtk_signal_connect(GTK_OBJECT(Viewport()), "leave_notify_event",
-        GTK_SIGNAL_FUNC(leave_hdlr), gr);
-    gtk_signal_connect(GTK_OBJECT(Viewport()), "style_set",
-        GTK_SIGNAL_FUNC(font_change_hdlr), gr);
+    g_signal_connect(G_OBJECT(Viewport()), "leave_notify_event",
+        G_CALLBACK(leave_hdlr), gr);
+    g_signal_connect(G_OBJECT(Viewport()), "style_set",
+        G_CALLBACK(font_change_hdlr), gr);
 
     // gtk2 - this avoids issue of an expose event on focus change
     gtk_widget_add_events(Viewport(), GDK_FOCUS_CHANGE_MASK);
-    gtk_signal_connect(GTK_OBJECT(Viewport()), "focus_in_event",
-        GTK_SIGNAL_FUNC(focus), this);
-    gtk_signal_connect(GTK_OBJECT(Viewport()), "focus_out_event",
-        GTK_SIGNAL_FUNC(focus), this);
+    g_signal_connect(G_OBJECT(Viewport()), "focus_in_event",
+        G_CALLBACK(focus), this);
+    g_signal_connect(G_OBJECT(Viewport()), "focus_out_event",
+        G_CALLBACK(focus), this);
 
     GtkWidget *frame = gtk_frame_new(0);
     gtk_widget_show(frame);
@@ -324,8 +322,8 @@ plot_bag::init(sGraph *gr)
     TB()->FixLoc(&x, &y);
     gtk_widget_set_uposition(Shell(), x, y);
     gtk_widget_add_events(Shell(), GDK_VISIBILITY_NOTIFY_MASK);
-    gtk_signal_connect(GTK_OBJECT(Shell()), "visibility_notify_event",
-        GTK_SIGNAL_FUNC(ToTop), 0);
+    g_signal_connect(G_OBJECT(Shell()), "visibility_notify_event",
+        G_CALLBACK(ToTop), 0);
 
     // MSW seems to need this before gtk_window_show.
     TB()->RevertFocus(Shell());
@@ -397,60 +395,40 @@ plot_bag::init_gbuttons(sGraph *graph)
     if (!pb_checkwins[pbtn_dismiss]) {
         GtkWidget *button = gtk_button_new_with_label("Dismiss");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            (GtkSignalFunc)b_quit, graph);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(b_quit), graph);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
         gtk_widget_set_tooltip_text(button, "Delete this window");
-#else
-        gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-            "Delete this window", "");
-#endif
         pb_checkwins[pbtn_dismiss] = button;
     }
 
     if (!pb_checkwins[pbtn_help]) {
         GtkWidget *button = gtk_button_new_with_label("Help");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            (GtkSignalFunc)b_help, graph);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(b_help), graph);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
         gtk_widget_set_tooltip_text(button, "Press for help");
-#else
-        gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-            "Press for help", "");
-#endif
         pb_checkwins[pbtn_help] = button;
     }
 
     if (!pb_checkwins[pbtn_redraw]) {
         GtkWidget *button = gtk_button_new_with_label("Redraw");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            (GtkSignalFunc)b_recolor, graph);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(b_recolor), graph);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
         gtk_widget_set_tooltip_text(button, "Redraw the plot");
-#else
-        gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-            "Redraw the plot", "");
-#endif
         pb_checkwins[pbtn_redraw] = button;
     }
 
     if (!pb_checkwins[pbtn_print]) {
         GtkWidget *button = gtk_toggle_button_new_with_label("Print");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            (GtkSignalFunc)b_hardcopy, graph);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(b_hardcopy), graph);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
         gtk_widget_set_tooltip_text(button, "Print control panel");
-#else
-        gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-            "Print control panel", "");
-#endif
         pb_checkwins[pbtn_print] = button;
     }
 
@@ -459,16 +437,11 @@ plot_bag::init_gbuttons(sGraph *graph)
             GtkWidget *button = gtk_button_new_with_label("Save Plot");
             gtk_widget_show(button);
             gtk_object_set_data(GTK_OBJECT(wb_shell), "save_plot", button);
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                (GtkSignalFunc)b_save_plot, graph);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(b_save_plot), graph);
             gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
             gtk_widget_set_tooltip_text(button,
                 "Save the plot in a plot file");
-#else
-            gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                "Save the plot in a plot file", "");
-#endif
             pb_checkwins[pbtn_saveplot] = button;
         }
 
@@ -476,16 +449,11 @@ plot_bag::init_gbuttons(sGraph *graph)
             GtkWidget *button = gtk_button_new_with_label("Save Print ");
             gtk_widget_show(button);
             gtk_object_set_data(GTK_OBJECT(wb_shell), "save_print", button);
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                (GtkSignalFunc)b_save_print, graph);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(b_save_print), graph);
             gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
             gtk_widget_set_tooltip_text(button,
                 "Save the plot in a print file");
-#else
-            gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                "Save the plot in a print file", "");
-#endif
             pb_checkwins[pbtn_saveprint] = button;
         }
 
@@ -495,15 +463,10 @@ plot_bag::init_gbuttons(sGraph *graph)
             gtk_object_set_data(GTK_OBJECT(wb_shell), "points", button);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
                 (graph->plottype() == PLOT_POINT)); 
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                (GtkSignalFunc)b_points, graph);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(b_points), graph);
             gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
             gtk_widget_set_tooltip_text(button, "Plot data as points");
-#else
-            gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                "Plot data as points", "");
-#endif
             pb_checkwins[pbtn_points] = button;
         }
 
@@ -513,15 +476,10 @@ plot_bag::init_gbuttons(sGraph *graph)
             gtk_object_set_data(GTK_OBJECT(wb_shell), "combplot", button);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
                 (graph->plottype() == PLOT_COMB)); 
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                (GtkSignalFunc)b_points, graph);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(b_points), graph);
             gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
             gtk_widget_set_tooltip_text(button, "Plot data as histogram");
-#else
-            gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                "Plot data as histogram", "");
-#endif
             pb_checkwins[pbtn_comb] = button;
         }
 
@@ -532,16 +490,11 @@ plot_bag::init_gbuttons(sGraph *graph)
                 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
                     (graph->gridtype() == GRID_XLOG ||
                         graph->gridtype() == GRID_LOGLOG));
-                gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                    (GtkSignalFunc)b_logx, graph);
+                g_signal_connect(G_OBJECT(button), "clicked",
+                    G_CALLBACK(b_logx), graph);
                 gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
                 gtk_widget_set_tooltip_text(button,
                     "Use logarithmic horizontal scale");
-#else
-                gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                    "Use logarithmic horizontal scale", "");
-#endif
                 pb_checkwins[pbtn_logx] = button;
             }
         }
@@ -559,16 +512,11 @@ plot_bag::init_gbuttons(sGraph *graph)
                 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
                     (graph->gridtype() == GRID_YLOG ||
                         graph->gridtype() == GRID_LOGLOG));
-                gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                    (GtkSignalFunc)b_logy, graph);
+                g_signal_connect(G_OBJECT(button), "clicked",
+                    G_CALLBACK(b_logy), graph);
                 gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
                 gtk_widget_set_tooltip_text(button,
                     "Use logarithmic vertical scale");
-#else
-                gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                    "Use logarithmic vertical scale", "");
-#endif
                 pb_checkwins[pbtn_logy] = button;
             }
         }
@@ -584,15 +532,10 @@ plot_bag::init_gbuttons(sGraph *graph)
             gtk_widget_show(button);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
                 graph->reference().mark);
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                (GtkSignalFunc)b_marker, graph);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(b_marker), graph);
             gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
             gtk_widget_set_tooltip_text(button, "Show marker");
-#else
-            gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                "Show marker", "");
-#endif
             pb_checkwins[pbtn_marker] = button;
         }
 
@@ -603,15 +546,10 @@ plot_bag::init_gbuttons(sGraph *graph)
                 gtk_widget_show(button);
                 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
                     (graph->yseparate()));
-                gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                    (GtkSignalFunc)b_separate, graph);
+                g_signal_connect(G_OBJECT(button), "clicked",
+                    G_CALLBACK(b_separate), graph);
                 gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
                 gtk_widget_set_tooltip_text(button, "Show traces separately");
-#else
-                gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                    "Show traces separately", "");
-#endif
                 pb_checkwins[pbtn_separate] = button;
             }
 
@@ -634,16 +572,11 @@ plot_bag::init_gbuttons(sGraph *graph)
                         button);
                     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
                         (graph->format() == FT_SINGLE));
-                    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                        (GtkSignalFunc)b_onescale, graph);
+                    g_signal_connect(G_OBJECT(button), "clicked",
+                        G_CALLBACK(b_onescale), graph);
                     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
                     gtk_widget_set_tooltip_text(button, 
                         "Use single vertical scale");
-#else
-                    gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                        "Use single vertical scale", "");
-#endif
                     pb_checkwins[pbtn_single] = button;
                 }
             }
@@ -657,16 +590,11 @@ plot_bag::init_gbuttons(sGraph *graph)
                         button);
                     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
                         (graph->format() == FT_SINGLE));
-                    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                        (GtkSignalFunc)b_multiscale, graph);
+                    g_signal_connect(G_OBJECT(button), "clicked",
+                        G_CALLBACK(b_multiscale), graph);
                     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
                     gtk_widget_set_tooltip_text(button, 
                         "Use single vertical scale");
-#else
-                    gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                        "Use single vertical scale", "");
-#endif
                     pb_checkwins[pbtn_single] = button;
                 }
 
@@ -678,16 +606,11 @@ plot_bag::init_gbuttons(sGraph *graph)
                         button);
                     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
                         (graph->format() == FT_GROUP));
-                    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                        (GtkSignalFunc)b_multiscale, graph);
+                    g_signal_connect(G_OBJECT(button), "clicked",
+                        G_CALLBACK(b_multiscale), graph);
                     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-#if GTK_CHECK_VERSION(2,12,0)
                     gtk_widget_set_tooltip_text(button, 
                         "Same scale for groups: V, I, other");
-#else
-                    gtk_tooltips_set_tip(gtk_tooltips_new(), button,
-                        "Same scale for groups: V, I, other", "");
-#endif
                     pb_checkwins[pbtn_group] = button;
                 }
             }
@@ -860,8 +783,8 @@ void
 sGraph::gr_popdown()
 {
     plot_bag *w = dynamic_cast<plot_bag*>(dev());
-    gtk_signal_disconnect_by_func(GTK_OBJECT(w->Shell()),
-        GTK_SIGNAL_FUNC(plot_bag::b_quit), this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(w->Shell()),
+        (gpointer)plot_bag::b_quit, this);
     delete w;
     set_dev(0);
     GP.DestroyGraph(id());

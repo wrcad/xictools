@@ -174,8 +174,8 @@ sEd::sEd(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ed_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ed_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -189,8 +189,8 @@ sEd::sEd(GRobject c)
         "Constrain angles to 45 degree multiples");
     gtk_widget_set_name(button, "cons45");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ed_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ed_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -201,8 +201,8 @@ sEd::sEd(GRobject c)
         "Merge new boxes and polys with existing boxes/polys");
     gtk_widget_set_name(button, "merge");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ed_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ed_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -213,8 +213,8 @@ sEd::sEd(GRobject c)
         "Clip and merge new boxes only, not polys");
     gtk_widget_set_name(button, "noply");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ed_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ed_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -225,8 +225,8 @@ sEd::sEd(GRobject c)
         "Prompt to save modified native cells");
     gtk_widget_set_name(button, "prompt");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ed_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ed_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -237,8 +237,8 @@ sEd::sEd(GRobject c)
         "No wire width change in magnification");
     gtk_widget_set_name(button, "noww");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ed_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ed_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -249,8 +249,8 @@ sEd::sEd(GRobject c)
         "Allow Create Cell to overwrite existing cell");
     gtk_widget_set_name(button, "crcovr");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ed_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ed_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -269,7 +269,7 @@ sEd::sEd(GRobject c)
     gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
 
     GtkWidget *sb = sb_ulen.init(DEF_MAX_UNDO_LEN, 0.0, 1000.0, 0);
-    sb_ulen.connect_changed(GTK_SIGNAL_FUNC(ed_val_changed), 0, "ulen");
+    sb_ulen.connect_changed(G_CALLBACK(ed_val_changed), 0, "ulen");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -287,7 +287,7 @@ sEd::sEd(GRobject c)
     gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
 
     sb = sb_maxgobjs.init(DEF_MAX_GHOST_OBJECTS, 50.0, 50000.0, 0);
-    sb_maxgobjs.connect_changed(GTK_SIGNAL_FUNC(ed_val_changed), 0, "maxg");
+    sb_maxgobjs.connect_changed(G_CALLBACK(ed_val_changed), 0, "maxg");
     gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
@@ -314,8 +314,8 @@ sEd::sEd(GRobject c)
         gtk_widget_set_name(mi, depthvals[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(ed_depth_menu_proc), (void*)depthvals[i]);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(ed_depth_menu_proc), (void*)depthvals[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_box_pack_end(GTK_BOX(row), entry, false, false, 0);
@@ -332,8 +332,8 @@ sEd::sEd(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ed_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ed_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

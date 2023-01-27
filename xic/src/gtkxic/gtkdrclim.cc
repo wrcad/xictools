@@ -171,8 +171,8 @@ sDL::sDL(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dl_action_proc), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
@@ -192,15 +192,15 @@ sDL::sDL(GRobject c)
     dl_luse = gtk_check_button_new_with_label("Check listed layers only");
     gtk_widget_set_name(dl_luse, "luse");
     gtk_widget_show(dl_luse);
-    gtk_signal_connect(GTK_OBJECT(dl_luse), "clicked",
-        GTK_SIGNAL_FUNC(dl_action_proc), 0);
+    g_signal_connect(G_OBJECT(dl_luse), "clicked",
+        G_CALLBACK(dl_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), dl_luse, true, true, 0);
 
     dl_lskip = gtk_check_button_new_with_label("Skip listed layers");
     gtk_widget_set_name(dl_lskip, "lskip");
     gtk_widget_show(dl_lskip);
-    gtk_signal_connect(GTK_OBJECT(dl_lskip), "clicked",
-        GTK_SIGNAL_FUNC(dl_action_proc), this);
+    g_signal_connect(G_OBJECT(dl_lskip), "clicked",
+        G_CALLBACK(dl_action_proc), this);
     gtk_box_pack_start(GTK_BOX(row), dl_lskip, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
@@ -227,15 +227,15 @@ sDL::sDL(GRobject c)
     dl_ruse = gtk_check_button_new_with_label("Check listed rules only");
     gtk_widget_set_name(dl_ruse, "ruse");
     gtk_widget_show(dl_ruse);
-    gtk_signal_connect(GTK_OBJECT(dl_ruse), "clicked",
-        GTK_SIGNAL_FUNC(dl_action_proc), 0);
+    g_signal_connect(G_OBJECT(dl_ruse), "clicked",
+        G_CALLBACK(dl_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), dl_ruse, true, true, 0);
 
     dl_rskip = gtk_check_button_new_with_label("Skip listed rules");
     gtk_widget_set_name(dl_rskip, "rskip");
     gtk_widget_show(dl_rskip);
-    gtk_signal_connect(GTK_OBJECT(dl_rskip), "clicked",
-        GTK_SIGNAL_FUNC(dl_action_proc), this);
+    g_signal_connect(G_OBJECT(dl_rskip), "clicked",
+        G_CALLBACK(dl_action_proc), this);
     gtk_box_pack_start(GTK_BOX(row), dl_rskip, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
@@ -277,7 +277,7 @@ sDL::sDL(GRobject c)
 
     GtkWidget *sb = sb_max_errs.init(DRC()->maxErrors(),
         DRC_MAX_ERRS_MIN, DRC_MAX_ERRS_MAX, 0);
-    sb_max_errs.connect_changed(GTK_SIGNAL_FUNC(dl_val_changed), 0, "MaxErrs");
+    sb_max_errs.connect_changed(G_CALLBACK(dl_val_changed), 0, "MaxErrs");
     gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 1, 2, rcnt, rcnt+1,
@@ -297,7 +297,7 @@ sDL::sDL(GRobject c)
 
     sb = sb_imax_objs.init(DRC()->intrMaxObjs(),
         DRC_INTR_MAX_OBJS_MIN, DRC_INTR_MAX_OBJS_MAX, 0);
-    sb_imax_objs.connect_changed(GTK_SIGNAL_FUNC(dl_val_changed), 0,
+    sb_imax_objs.connect_changed(G_CALLBACK(dl_val_changed), 0,
         "IMaxObjs");
     gtk_widget_set_size_request(sb, 100, -1);
 
@@ -318,7 +318,7 @@ sDL::sDL(GRobject c)
 
     sb = sb_imax_time.init(DRC()->intrMaxTime(),
         DRC_INTR_MAX_TIME_MIN, DRC_INTR_MAX_TIME_MAX, 0);
-    sb_imax_time.connect_changed(GTK_SIGNAL_FUNC(dl_val_changed), 0,
+    sb_imax_time.connect_changed(G_CALLBACK(dl_val_changed), 0,
         "IMaxTime");
     gtk_widget_set_size_request(sb, 100, -1);
 
@@ -339,7 +339,7 @@ sDL::sDL(GRobject c)
 
     sb = sb_imax_errs.init(DRC()->intrMaxErrors(),
         DRC_INTR_MAX_ERRS_MIN, DRC_INTR_MAX_ERRS_MAX, 0);
-    sb_imax_errs.connect_changed(GTK_SIGNAL_FUNC(dl_val_changed), 0,
+    sb_imax_errs.connect_changed(G_CALLBACK(dl_val_changed), 0,
         "IMaxErrs");
     gtk_widget_set_size_request(sb, 100, -1);
 
@@ -355,8 +355,8 @@ sDL::sDL(GRobject c)
         "Skip interactive test of moved/copied/placed cells");
     gtk_widget_set_name(button, "skip_cells_intr");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dl_action_proc), 0);
     gtk_table_attach(GTK_TABLE(tform), button, 0, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -380,8 +380,8 @@ sDL::sDL(GRobject c)
     gtk_widget_show(button);
     GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
     gtk_box_pack_start(GTK_BOX(col), button, false, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dl_action_proc), 0);
     dl_b1 = button;
 
     button = gtk_radio_button_new_with_label(group,
@@ -390,8 +390,8 @@ sDL::sDL(GRobject c)
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(col), button, false, false, 0);
     group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dl_action_proc), 0);
     dl_b2 = button;
 
     button = gtk_radio_button_new_with_label(group, "Record all errors");
@@ -399,8 +399,8 @@ sDL::sDL(GRobject c)
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(col), button, false, false, 0);
     group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dl_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dl_action_proc), 0);
     dl_b3 = button;
 
     gtk_table_attach(GTK_TABLE(form), frame, 0, 2, rowcnt, rowcnt+1,
@@ -414,8 +414,8 @@ sDL::sDL(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(dl_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(dl_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -425,10 +425,10 @@ sDL::sDL(GRobject c)
     update();
 
     // must be done after entry text set
-    gtk_signal_connect(GTK_OBJECT(dl_llist), "changed",
-        GTK_SIGNAL_FUNC(dl_text_changed), 0);
-    gtk_signal_connect(GTK_OBJECT(dl_rlist), "changed",
-        GTK_SIGNAL_FUNC(dl_text_changed), 0);
+    g_signal_connect(G_OBJECT(dl_llist), "changed",
+        G_CALLBACK(dl_text_changed), 0);
+    g_signal_connect(G_OBJECT(dl_rlist), "changed",
+        G_CALLBACK(dl_text_changed), 0);
 }
 
 

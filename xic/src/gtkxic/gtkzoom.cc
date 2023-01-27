@@ -169,8 +169,8 @@ sZm::sZm(gtk_bag *owner, WindowDesc *w)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(zm_action), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(zm_action), this);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 3, rowcnt, rowcnt+1,
@@ -184,8 +184,8 @@ sZm::sZm(gtk_bag *owner, WindowDesc *w)
         button = gtk_check_button_new_with_label("Auto Y-Scale");
         gtk_widget_set_name(button, "autoy");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(zm_action), this);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(zm_action), this);
         zm_autoy = button;
 
         gtk_table_attach(GTK_TABLE(form), button, 0, 3, rowcnt, rowcnt+1,
@@ -211,8 +211,8 @@ sZm::sZm(gtk_bag *owner, WindowDesc *w)
         zm_yapply = gtk_button_new_with_label("Apply");
         gtk_widget_set_name(zm_yapply, "yscale");
         gtk_widget_show(zm_yapply);
-        gtk_signal_connect(GTK_OBJECT(zm_yapply), "clicked",
-            GTK_SIGNAL_FUNC(zm_action), this);
+        g_signal_connect(G_OBJECT(zm_yapply), "clicked",
+            G_CALLBACK(zm_action), this);
 
         gtk_table_attach(GTK_TABLE(form), zm_yapply, 2, 3, rowcnt, rowcnt+1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -246,8 +246,8 @@ sZm::sZm(gtk_bag *owner, WindowDesc *w)
     zm_zapply = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(zm_zapply, "zoom");
     gtk_widget_show(zm_zapply);
-    gtk_signal_connect(GTK_OBJECT(zm_zapply), "clicked",
-        GTK_SIGNAL_FUNC(zm_action), this);
+    g_signal_connect(G_OBJECT(zm_zapply), "clicked",
+        G_CALLBACK(zm_action), this);
 
     gtk_table_attach(GTK_TABLE(form), zm_zapply, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -305,8 +305,8 @@ sZm::sZm(gtk_bag *owner, WindowDesc *w)
     zm_wapply = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(zm_wapply, "window");
     gtk_widget_show(zm_wapply);
-    gtk_signal_connect(GTK_OBJECT(zm_wapply), "clicked",
-        GTK_SIGNAL_FUNC(zm_action), this);
+    g_signal_connect(G_OBJECT(zm_wapply), "clicked",
+        G_CALLBACK(zm_action), this);
 
     gtk_table_attach(GTK_TABLE(form), zm_wapply, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -324,8 +324,8 @@ sZm::sZm(gtk_bag *owner, WindowDesc *w)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(zm_cancel_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(zm_cancel_proc), this);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -348,8 +348,8 @@ sZm::~sZm()
     if (p_caller && !p_no_desel)
         GRX->Deselect(p_caller);
     if (zm_popup) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(zm_popup),
-            GTK_SIGNAL_FUNC(zm_cancel_proc), this);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(zm_popup),
+            (gpointer)zm_cancel_proc, this);
         gtk_widget_destroy(zm_popup);
     }
 }

@@ -260,8 +260,8 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
     GtkWidget *button = gtk_button_new_with_label("Save All");
     gtk_widget_set_name(button, "SaveAll");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_btn_proc), (void*)sc_save);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_btn_proc), (void*)sc_save);
 
     int rowcnt = 0;
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt + 1,
@@ -271,8 +271,8 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
     button = gtk_button_new_with_label("Skip All");
     gtk_widget_set_name(button, "SkipAll");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_btn_proc), (void*)sc_skip);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_btn_proc), (void*)sc_skip);
 
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -306,8 +306,8 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
     button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_btn_proc), (void*)sc_help);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_btn_proc), (void*)sc_help);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt,  rowcnt + 1,
@@ -320,10 +320,10 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
 
     refresh();
     gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",
-        GTK_SIGNAL_FUNC(sc_btn_hdlr), 0);
-    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "realize",
-        GTK_SIGNAL_FUNC(text_realize_proc), 0);
+    g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
+        G_CALLBACK(sc_btn_hdlr), 0);
+    g_signal_connect_after(G_OBJECT(wb_textarea), "realize",
+        G_CALLBACK(text_realize_proc), 0);
 
     int ww = sc_width*GTKfont::stringWidth(wb_textarea, 0);
     if (ww < 200)
@@ -346,8 +346,8 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
     button = gtk_button_new_with_label("Apply - Continue");
     gtk_widget_set_name(button, "Apply");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -356,8 +356,8 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
     button = gtk_button_new_with_label("ABORT");
     gtk_widget_set_name(button, "Abort");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-    GTK_SIGNAL_FUNC(sc_cancel_proc), (void*)1);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_cancel_proc), (void*)1);
 
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -369,9 +369,10 @@ sSC::~sSC()
 {
     SC = 0;
     delete [] sc_list;
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(sc_cancel_proc), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)sc_cancel_proc, wb_shell);
+    }
 }
 
 

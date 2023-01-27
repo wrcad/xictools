@@ -89,8 +89,8 @@ sAsmPage::sAsmPage(sAsm *mt)
         (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
     gtk_drag_dest_set(pg_path, DD, sAsm::target_table, sAsm::n_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(pg_path), "drag-data-received",
-        GTK_SIGNAL_FUNC(sAsm::asm_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(pg_path), "drag-data-received",
+        G_CALLBACK(sAsm::asm_drag_data_received), 0);
 
     gtk_table_attach(GTK_TABLE(table), pg_path, 0, 3, row, row + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -267,10 +267,10 @@ sAsmPage::sAsmPage(sAsm *mt)
         GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     pg_toplevels = gtk_list_new();
     gtk_widget_show(pg_toplevels);
-    gtk_signal_connect(GTK_OBJECT(pg_toplevels), "select-child",
-        GTK_SIGNAL_FUNC(pg_selection_proc), this);
-    gtk_signal_connect(GTK_OBJECT(pg_toplevels), "unselect-child",
-        GTK_SIGNAL_FUNC(pg_unselection_proc), this);
+    g_signal_connect(G_OBJECT(pg_toplevels), "select-child",
+        G_CALLBACK(pg_selection_proc), this);
+    g_signal_connect(G_OBJECT(pg_toplevels), "unselect-child",
+        G_CALLBACK(pg_unselection_proc), this);
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(swin),
         pg_toplevels);
     gtk_box_pack_start(GTK_BOX(vbox), swin, true, true, 2);
@@ -278,8 +278,8 @@ sAsmPage::sAsmPage(sAsm *mt)
     // drop site
     gtk_drag_dest_set(pg_toplevels, GTK_DEST_DEFAULT_ALL,
         sAsm::target_table, sAsm::n_targets, GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(pg_toplevels), "drag-data-received",
-        GTK_SIGNAL_FUNC(pg_drag_data_received), this);
+    g_signal_connect_after(G_OBJECT(pg_toplevels), "drag-data-received",
+        G_CALLBACK(pg_drag_data_received), this);
 
     gtk_table_attach(GTK_TABLE(table), vbox, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -302,8 +302,8 @@ sAsmPage::sAsmPage(sAsm *mt)
 sAsmPage::~sAsmPage()
 {
     // avoid signal, may crash otherwise
-    gtk_signal_disconnect_by_func(GTK_OBJECT(pg_toplevels),
-        GTK_SIGNAL_FUNC(pg_unselection_proc), this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(pg_toplevels),
+        (gpointer)pg_unselection_proc, this);
     delete pg_tx;
     for (unsigned int i = 0; i < pg_numtlcells; i++)
         delete pg_cellinfo[i];

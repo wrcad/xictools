@@ -244,8 +244,8 @@ sFh::sFh(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_help_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_help_proc), 0);
     gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -273,16 +273,16 @@ sFh::sFh(GRobject c)
     button = gtk_check_button_new_with_label("Run in foreground");
     gtk_widget_set_name(button, VA_FhForeg);
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhForeg);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_btn_proc), (void*)fhForeg);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
     fh_foreg = button;
 
     button = gtk_check_button_new_with_label("Out to console");
     gtk_widget_set_name(button, VA_FhMonitor);
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhMonitor);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_btn_proc), (void*)fhMonitor);
     gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
     fh_out = button;
 
@@ -305,8 +305,8 @@ sFh::sFh(GRobject c)
     button = gtk_button_new_with_label("Run File");
     gtk_widget_set_name(button, "RunFile");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhRunFile);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_btn_proc), (void*)fhRunFile);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     GtkWidget *entry = gtk_entry_new();
@@ -322,8 +322,8 @@ sFh::sFh(GRobject c)
     button = gtk_button_new_with_label("Run FastHenry");
     gtk_widget_set_name(button, "Run");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhRun);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_btn_proc), (void*)fhRun);
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -332,8 +332,8 @@ sFh::sFh(GRobject c)
     button = gtk_button_new_with_label("Dump FastHenry File");
     gtk_widget_set_name(button, "Dump");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhDump);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_btn_proc), (void*)fhDump);
 
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -345,8 +345,8 @@ sFh::sFh(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_container_add(GTK_CONTAINER(frame), entry);
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhArgs);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fh_change_proc), (void*)fhArgs);
     fh_args = entry;
 
     gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
@@ -366,8 +366,8 @@ sFh::sFh(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_widget_set_size_request(entry, 50, -1);
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhFreq);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fh_change_proc), (void*)fhFreq);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
     fh_fmin = entry;
 
@@ -377,8 +377,8 @@ sFh::sFh(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_widget_set_size_request(entry, 50, -1);
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhFreq);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fh_change_proc), (void*)fhFreq);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
     fh_fmax = entry;
 
@@ -388,8 +388,8 @@ sFh::sFh(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_widget_set_size_request(entry, 30, -1);
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhFreq);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fh_change_proc), (void*)fhFreq);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
     fh_ndec = entry;
 
@@ -403,8 +403,8 @@ sFh::sFh(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_container_add(GTK_CONTAINER(frame), entry);
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhPath);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fh_change_proc), (void*)fhPath);
     fh_path = entry;
 
     gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
@@ -434,9 +434,8 @@ sFh::sFh(GRobject c)
         gtk_widget_set_name(mi, fh_units_strings[i]);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(fh_units_proc),
-                (void*)fh_units_strings[i]);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(fh_units_proc), (void*)fh_units_strings[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_container_add(GTK_CONTAINER(frame), entry);
@@ -453,7 +452,7 @@ sFh::sFh(GRobject c)
         FH_MIN_MANH_GRID_CNT,
         FH_MAX_MANH_GRID_CNT, 0);
     gtk_widget_set_size_request(sb, 100, -1);
-    sb_fh_manh_grid_cnt.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+    sb_fh_manh_grid_cnt.connect_changed(G_CALLBACK(fh_change_proc),
         (void*)fhManhGridCnt, VA_FhManhGridCnt);
     gtk_container_add(GTK_CONTAINER(frame), sb);
 
@@ -467,8 +466,8 @@ sFh::sFh(GRobject c)
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_container_add(GTK_CONTAINER(frame), entry);
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhDefaults);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fh_change_proc), (void*)fhDefaults);
     fh_defs = entry;
 
     gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
@@ -481,7 +480,7 @@ sFh::sFh(GRobject c)
     sb = sb_fh_nhinc.init(DEF_FH_NHINC, FH_MIN_DEF_NHINC,
         FH_MAX_DEF_NHINC, 0);
     gtk_widget_set_size_request(sb, 100, -1);
-    sb_fh_nhinc.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+    sb_fh_nhinc.connect_changed(G_CALLBACK(fh_change_proc),
         (void*)fhNhinc, VA_FhDefNhinc);
     gtk_container_add(GTK_CONTAINER(frame), sb);
 
@@ -494,7 +493,7 @@ sFh::sFh(GRobject c)
 
     sb = sb_fh_rh.init(DEF_FH_RH, FH_MIN_DEF_RH, FH_MAX_DEF_RH, 3);
     gtk_widget_set_size_request(sb, 100, -1);
-    sb_fh_rh.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+    sb_fh_rh.connect_changed(G_CALLBACK(fh_change_proc),
         (void*)fhRh, VA_FhDefRh);
     gtk_container_add(GTK_CONTAINER(frame), sb);
 
@@ -506,8 +505,8 @@ sFh::sFh(GRobject c)
     button = gtk_check_button_new_with_label("Override Layer NHINC, RH");
     gtk_widget_set_name(button, VA_FhOverride);
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhOverrd);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_btn_proc), (void*)fhOverrd);
     fh_nhinc_ovr = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 2, row, row+1,
@@ -518,8 +517,8 @@ sFh::sFh(GRobject c)
     button = gtk_check_button_new_with_label("Use FastHenry Internal NHINC, RH");
     gtk_widget_set_name(button, VA_FhUseFilament);
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhFlmt);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_btn_proc), (void*)fhFlmt);
     fh_nhinc_fh = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 2, row, row+1,
@@ -545,15 +544,15 @@ sFh::sFh(GRobject c)
     button = gtk_check_button_new_with_label("Enable");
     gtk_widget_set_name(button, "Enable");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhEnable);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_btn_proc), (void*)fhEnable);
     fh_enab = button;
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     sb = sb_fh_volel_min.init(FH_DEF_VOLEL_MIN, FH_MIN_VOLEL_MIN,
         FH_MAX_VOLEL_MIN, 2);
     gtk_widget_set_size_request(sb, 100, -1);
-    sb_fh_volel_min.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+    sb_fh_volel_min.connect_changed(G_CALLBACK(fh_change_proc),
         (void*)fhVolElMin, VA_FhVolElMin);
     frame = gtk_frame_new(VA_FhVolElMin);
     gtk_widget_show(frame);
@@ -568,7 +567,7 @@ sFh::sFh(GRobject c)
     sb = sb_fh_volel_target.init(FH_DEF_VOLEL_TARG, FH_MIN_VOLEL_TARG,
         FH_MAX_VOLEL_TARG, 0);
     gtk_widget_set_size_request(sb, 100, -1);
-    sb_fh_volel_target.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+    sb_fh_volel_target.connect_changed(G_CALLBACK(fh_change_proc),
         (void*)fhVolElTarg, VA_FhVolElTarget);
     frame = gtk_frame_new(VA_FhVolElTarget);
     gtk_widget_show(frame);
@@ -594,8 +593,8 @@ sFh::sFh(GRobject c)
     text_scrollable_new(&contr, &fh_jobs, FNT_FIXED);
 
     gtk_widget_add_events(fh_jobs, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(fh_jobs), "button-press-event",
-        GTK_SIGNAL_FUNC(fh_button_dn), 0);
+    g_signal_connect(G_OBJECT(fh_jobs), "button-press-event",
+        G_CALLBACK(fh_button_dn), 0);
 
     // The font change pop-up uses this to redraw the widget
     gtk_object_set_data(GTK_OBJECT(fh_jobs), "font_changed",
@@ -620,8 +619,8 @@ sFh::sFh(GRobject c)
     button = gtk_button_new_with_label("Abort job");
     gtk_widget_set_name(button, "Abort");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhKill);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_btn_proc), (void*)fhKill);
     fh_kill = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
@@ -654,8 +653,8 @@ sFh::sFh(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fh_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -672,9 +671,10 @@ sFh::~sFh()
     if (fh_caller)
         GRX->Deselect(fh_caller);
     FH()->setPopUpVisible(false);
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(sFh::fh_cancel_proc), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)sFh::fh_cancel_proc, wb_shell);
+    }
 }
 
 

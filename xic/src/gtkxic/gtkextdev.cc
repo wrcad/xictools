@@ -173,8 +173,8 @@ sED::sED(GRobject caller)
     ed_update = gtk_button_new_with_label("Update\nList");
     gtk_widget_set_name(ed_update, "Update");
     gtk_widget_show(ed_update);
-    gtk_signal_connect(GTK_OBJECT(ed_update), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(ed_update), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), ed_update, false, false, 0);
 
     GtkWidget *vbox = gtk_vbox_new(false, 2);
@@ -187,22 +187,22 @@ sED::sED(GRobject caller)
     ed_show_all = gtk_button_new_with_label("Show All");
     gtk_widget_set_name(ed_show_all, "ShowAll");
     gtk_widget_show(ed_show_all);
-    gtk_signal_connect(GTK_OBJECT(ed_show_all), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(ed_show_all), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox1), ed_show_all, true, true, 0);
 
     ed_erase_all = gtk_button_new_with_label("Erase All");
     gtk_widget_set_name(ed_erase_all, "EraseAll");
     gtk_widget_show(ed_erase_all);
-    gtk_signal_connect(GTK_OBJECT(ed_erase_all), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(ed_erase_all), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox1), ed_erase_all, true, true, 0);
 
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox1), button, false, false, 0);
 
     gtk_box_pack_start(GTK_BOX(vbox), hbox1, false, false, 0);
@@ -213,15 +213,15 @@ sED::sED(GRobject caller)
     ed_show = gtk_button_new_with_label("Show");
     gtk_widget_set_name(ed_show, "Show");
     gtk_widget_show(ed_show);
-    gtk_signal_connect(GTK_OBJECT(ed_show), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(ed_show), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox1), ed_show, true, true, 0);
 
     ed_erase = gtk_button_new_with_label("Erase");
     gtk_widget_set_name(ed_erase, "Erase");
     gtk_widget_show(ed_erase);
-    gtk_signal_connect(GTK_OBJECT(ed_erase), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(ed_erase), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox1), ed_erase, true, true, 0);
     GtkWidget *label = gtk_label_new("Indices");
     gtk_widget_show(label);
@@ -273,8 +273,8 @@ sED::sED(GRobject caller)
         gtk_tree_view_get_selection(GTK_TREE_VIEW(ed_list));
     gtk_tree_selection_set_select_function(sel, ed_selection_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
-    gtk_signal_connect(GTK_OBJECT(ed_list), "focus",
-        GTK_SIGNAL_FUNC(ed_focus_proc), this);
+    g_signal_connect(G_OBJECT(ed_list), "focus",
+        G_CALLBACK(ed_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), ed_list);
     gtk_widget_set_size_request(ed_list, -1, 100);
@@ -306,8 +306,8 @@ sED::sED(GRobject caller)
     ed_select = gtk_toggle_button_new_with_label("Enable\nSelect");
     gtk_widget_set_name(ed_select, "Select");
     gtk_widget_show(ed_select);
-    gtk_signal_connect(GTK_OBJECT(ed_select), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(ed_select), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), ed_select, true, true, 0);
 
     vbox = gtk_vbox_new(false, 2);
@@ -316,16 +316,16 @@ sED::sED(GRobject caller)
         "Show computed parameters of selected device");
     gtk_widget_set_name(ed_compute, "Compute");
     gtk_widget_show(ed_compute);
-    gtk_signal_connect(GTK_OBJECT(ed_compute), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(ed_compute), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(vbox), ed_compute, true, true, 0);
 
     ed_compare = gtk_check_button_new_with_label(
         "Show elec/phys comparison of selected device");
     gtk_widget_set_name(ed_compare, "Compare");
     gtk_widget_show(ed_compare);
-    gtk_signal_connect(GTK_OBJECT(ed_compare), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(ed_compare), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(vbox), ed_compare, true, true, 0);
     gtk_box_pack_start(GTK_BOX(hbox), vbox, true, true, 0);
 
@@ -348,8 +348,8 @@ sED::sED(GRobject caller)
     ed_measbox = gtk_toggle_button_new_with_label("Enable Measure Box");
     gtk_widget_set_name(ed_measbox, "MeasBox");
     gtk_widget_show(ed_measbox);
-    gtk_signal_connect(GTK_OBJECT(ed_measbox), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(ed_measbox), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_table_attach(GTK_TABLE(tform), ed_measbox, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -357,8 +357,8 @@ sED::sED(GRobject caller)
     ed_paint = gtk_button_new_with_label("Paint Box (use current layer)");
     gtk_widget_set_name(ed_paint, "Paint");
     gtk_widget_show(ed_paint);
-    gtk_signal_connect(GTK_OBJECT(ed_paint), "clicked",
-        GTK_SIGNAL_FUNC(ed_action_proc), 0);
+    g_signal_connect(G_OBJECT(ed_paint), "clicked",
+        G_CALLBACK(ed_action_proc), 0);
     gtk_table_attach(GTK_TABLE(tform), ed_paint, 1, 2, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -368,8 +368,8 @@ sED::sED(GRobject caller)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ed_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ed_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -403,8 +403,8 @@ sED::~sED()
     }
 
     if (ed_popup) {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(ed_popup),
-            GTK_SIGNAL_FUNC(ed_cancel_proc), ed_popup);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(ed_popup),
+            (gpointer)ed_cancel_proc, ed_popup);
         gtk_widget_destroy(ed_popup);
     }
 }

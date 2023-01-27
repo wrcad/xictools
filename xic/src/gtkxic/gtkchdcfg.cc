@@ -191,8 +191,8 @@ sCfg::sCfg(GRobject caller, const char *chdname)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cf_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cf_action), 0);
     gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -218,8 +218,8 @@ sCfg::sCfg(GRobject caller, const char *chdname)
     gtk_widget_set_name(cf_apply_tc, "ApplyTc");
     gtk_widget_show(cf_apply_tc);
     gtk_box_pack_start(GTK_BOX(hbox), cf_apply_tc, false, false, 0);
-    gtk_signal_connect(GTK_OBJECT(cf_apply_tc), "clicked",
-        GTK_SIGNAL_FUNC(cf_action), 0);
+    g_signal_connect(G_OBJECT(cf_apply_tc), "clicked",
+        G_CALLBACK(cf_action), 0);
 
     GtkWidget *label = gtk_label_new("Set Default Cell");
     gtk_widget_show(label);
@@ -250,8 +250,8 @@ sCfg::sCfg(GRobject caller, const char *chdname)
     gtk_widget_set_name(cf_last, "Last");
     gtk_widget_show(cf_last);
     gtk_box_pack_start(GTK_BOX(hbox), cf_last, false, false, 0);
-    gtk_signal_connect(GTK_OBJECT(cf_last), "clicked",
-        GTK_SIGNAL_FUNC(cf_action), 0);
+    g_signal_connect(G_OBJECT(cf_last), "clicked",
+        G_CALLBACK(cf_action), 0);
 
     gtk_table_attach(GTK_TABLE(tform), hbox, 0, 1, ncnt, ncnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -267,8 +267,8 @@ sCfg::sCfg(GRobject caller, const char *chdname)
         (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
     gtk_drag_dest_set(cf_text, DD, target_table, n_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(cf_text), "drag-data-received",
-        GTK_SIGNAL_FUNC(cf_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(cf_text), "drag-data-received",
+        G_CALLBACK(cf_drag_data_received), 0);
 
     gtk_table_attach(GTK_TABLE(tform), cf_text, 1, 2, ncnt, ncnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -302,8 +302,8 @@ sCfg::sCfg(GRobject caller, const char *chdname)
     gtk_widget_set_name(cf_apply_cgd, "ApplyCgd");
     gtk_widget_show(cf_apply_cgd);
     gtk_box_pack_start(GTK_BOX(hbox), cf_apply_cgd, false, false, 0);
-    gtk_signal_connect(GTK_OBJECT(cf_apply_cgd), "clicked",
-        GTK_SIGNAL_FUNC(cf_action), 0);
+    g_signal_connect(G_OBJECT(cf_apply_cgd), "clicked",
+        G_CALLBACK(cf_action), 0);
 
     label = gtk_label_new("Setup Linked Cell Geometry Digest");
     gtk_widget_show(label);
@@ -325,8 +325,8 @@ sCfg::sCfg(GRobject caller, const char *chdname)
     cf_newcgd = gtk_check_button_new_with_label("Open new CGD");
     gtk_widget_set_name(cf_newcgd, "NewCGD");
     gtk_widget_show(cf_newcgd);
-    gtk_signal_connect(GTK_OBJECT(cf_newcgd), "clicked",
-        GTK_SIGNAL_FUNC(cf_action), 0);
+    g_signal_connect(G_OBJECT(cf_newcgd), "clicked",
+        G_CALLBACK(cf_action), 0);
     gtk_table_attach(GTK_TABLE(tform), cf_newcgd, 0, 2, cgcnt, cgcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 0);
@@ -353,8 +353,8 @@ sCfg::sCfg(GRobject caller, const char *chdname)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cf_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cf_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -376,9 +376,10 @@ sCfg::~sCfg()
     delete [] cf_cgdname;
     if (cf_caller)
         GRX->Deselect(cf_caller);
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(cf_cancel_proc), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)cf_cancel_proc, wb_shell);
+    }
 }
 
 

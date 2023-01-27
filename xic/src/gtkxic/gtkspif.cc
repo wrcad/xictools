@@ -180,8 +180,8 @@ sSC::sSC(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -195,8 +195,8 @@ sSC::sSC(GRobject c)
         "List all devices and subcircuits.");
     gtk_widget_set_name(button, "listall");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -207,8 +207,8 @@ sSC::sSC(GRobject c)
         "Check and report solitary connections.");
     gtk_widget_set_name(button, "checksol");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -219,8 +219,8 @@ sSC::sSC(GRobject c)
         "Don't show WRspice Tool Control panel.");
     gtk_widget_set_name(button, "notools");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -231,8 +231,8 @@ sSC::sSC(GRobject c)
         "Spice device prefix aliases");
     gtk_widget_set_name(button, "alias_b");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -249,8 +249,8 @@ sSC::sSC(GRobject c)
         "Remote WRspice server host\nname");
     gtk_widget_set_name(button, "hostname_b");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -267,8 +267,8 @@ sSC::sSC(GRobject c)
         "Remote WRspice server host\ndisplay name");
     gtk_widget_set_name(button, "dispname_b");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -285,8 +285,8 @@ sSC::sSC(GRobject c)
         "Path to local WRspice\nexecutable");
     gtk_widget_set_name(button, "progname_b");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -303,8 +303,8 @@ sSC::sSC(GRobject c)
         "Path to local directory\ncontaining WRspice executable");
     gtk_widget_set_name(button, "execdir_b");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -321,8 +321,8 @@ sSC::sSC(GRobject c)
         "Assumed WRspice program\nexecutable name");
     gtk_widget_set_name(button, "execname_b");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -339,8 +339,8 @@ sSC::sSC(GRobject c)
         "Assumed WRspice subcircuit\nconcatenation character");
     gtk_widget_set_name(button, "catchar_b");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -357,8 +357,8 @@ sSC::sSC(GRobject c)
         "Assumed WRspice subcircuit\nexpansion mode");
     gtk_widget_set_name(button, "catmode_b");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -390,8 +390,8 @@ sSC::sSC(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sc_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sc_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

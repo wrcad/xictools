@@ -180,8 +180,8 @@ sJn::sJn(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(jn_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(jn_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -195,8 +195,8 @@ sJn::sJn(GRobject c)
         "No limits in join operation");
     gtk_widget_set_name(button, "NoLimit");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(jn_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(jn_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -214,7 +214,7 @@ sJn::sJn(GRobject c)
         (GtkAttachOptions)0, 2, 2);
 
     GtkWidget *sb = sb_mverts.init(Zlist::JoinMaxVerts, 0, 8000, 0);
-    sb_mverts.connect_changed(GTK_SIGNAL_FUNC(jn_val_changed), 0, "MaxVerts");
+    sb_mverts.connect_changed(G_CALLBACK(jn_val_changed), 0, "MaxVerts");
     gtk_widget_set_size_request(sb, 60, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
@@ -233,7 +233,7 @@ sJn::sJn(GRobject c)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_mgroup.init(Zlist::JoinMaxGroup, 0, 1e6, 0);
-    sb_mgroup.connect_changed(GTK_SIGNAL_FUNC(jn_val_changed), 0, "MaxGroup");
+    sb_mgroup.connect_changed(G_CALLBACK(jn_val_changed), 0, "MaxGroup");
     gtk_widget_set_size_request(sb, 60, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
@@ -252,7 +252,7 @@ sJn::sJn(GRobject c)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_mqueue.init(Zlist::JoinMaxQueue, 0, 1e6, 0);
-    sb_mqueue.connect_changed(GTK_SIGNAL_FUNC(jn_val_changed), 0, "MaxQueue");
+    sb_mqueue.connect_changed(G_CALLBACK(jn_val_changed), 0, "MaxQueue");
     gtk_widget_set_size_request(sb, 60, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
@@ -267,8 +267,8 @@ sJn::sJn(GRobject c)
         "Clean break in join operation limiting");
     gtk_widget_set_name(button, "BreakClean");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(jn_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(jn_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -282,8 +282,8 @@ sJn::sJn(GRobject c)
         "Include wires (as polygons) in join/split");
     gtk_widget_set_name(button, "Wires");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(jn_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(jn_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -299,36 +299,36 @@ sJn::sJn(GRobject c)
     jn_join = gtk_button_new_with_label("Join");
     gtk_widget_set_name(jn_join, "Join");
     gtk_widget_show(jn_join);
-    gtk_signal_connect(GTK_OBJECT(jn_join), "clicked",
-        GTK_SIGNAL_FUNC(jn_action), 0);
+    g_signal_connect(G_OBJECT(jn_join), "clicked",
+        G_CALLBACK(jn_action), 0);
     gtk_box_pack_start(GTK_BOX(row), jn_join, true, true, 0);
 
     jn_join_lyr = gtk_button_new_with_label("Join Lyr");
     gtk_widget_set_name(jn_join_lyr, "JoinLyr");
     gtk_widget_show(jn_join_lyr);
-    gtk_signal_connect(GTK_OBJECT(jn_join_lyr), "clicked",
-        GTK_SIGNAL_FUNC(jn_action), 0);
+    g_signal_connect(G_OBJECT(jn_join_lyr), "clicked",
+        G_CALLBACK(jn_action), 0);
     gtk_box_pack_start(GTK_BOX(row), jn_join_lyr, true, true, 0);
 
     jn_join_all = gtk_button_new_with_label("Join All");
     gtk_widget_set_name(jn_join_all, "JoinAll");
     gtk_widget_show(jn_join_all);
-    gtk_signal_connect(GTK_OBJECT(jn_join_all), "clicked",
-        GTK_SIGNAL_FUNC(jn_action), 0);
+    g_signal_connect(G_OBJECT(jn_join_all), "clicked",
+        G_CALLBACK(jn_action), 0);
     gtk_box_pack_start(GTK_BOX(row), jn_join_all, true, true, 0);
 
     jn_split_h = gtk_button_new_with_label("Split Horiz");
     gtk_widget_set_name(jn_split_h, "SplitH");
     gtk_widget_show(jn_split_h);
-    gtk_signal_connect(GTK_OBJECT(jn_split_h), "clicked",
-        GTK_SIGNAL_FUNC(jn_action), 0);
+    g_signal_connect(G_OBJECT(jn_split_h), "clicked",
+        G_CALLBACK(jn_action), 0);
     gtk_box_pack_start(GTK_BOX(row), jn_split_h, true, true, 0);
 
     jn_split_v = gtk_button_new_with_label("Split Vert");
     gtk_widget_set_name(jn_split_v, "SplitV");
     gtk_widget_show(jn_split_v);
-    gtk_signal_connect(GTK_OBJECT(jn_split_v), "clicked",
-        GTK_SIGNAL_FUNC(jn_action), 0);
+    g_signal_connect(G_OBJECT(jn_split_v), "clicked",
+        G_CALLBACK(jn_action), 0);
     gtk_box_pack_start(GTK_BOX(row), jn_split_v, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
@@ -342,8 +342,8 @@ sJn::sJn(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(jn_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(jn_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

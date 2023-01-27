@@ -295,8 +295,8 @@ sFpe::sFpe(GRobject c)
         return;
     gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "configure-event",
-        GTK_SIGNAL_FUNC(fp_config_hdlr), 0);
+    g_signal_connect(G_OBJECT(wb_shell), "configure-event",
+        G_CALLBACK(fp_config_hdlr), 0);
 
     fp_width = 466;
 //    fp_height = 300;
@@ -335,10 +335,10 @@ sFpe::sFpe(GRobject c)
     gtk_widget_add_events(darea, GDK_ENTER_NOTIFY_MASK);
     gtk_container_add(GTK_CONTAINER(frame), darea);
     fp_connect_sigs(darea, false, true);
-    gtk_signal_connect(GTK_OBJECT(darea), "enter-notify-event",
-        GTK_SIGNAL_FUNC(fp_enter_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(darea), "expose-event",
-        GTK_SIGNAL_FUNC(fp_redraw_edit_hdlr), 0);
+    g_signal_connect(G_OBJECT(darea), "enter-notify-event",
+        G_CALLBACK(fp_enter_hdlr), 0);
+    g_signal_connect(G_OBJECT(darea), "expose-event",
+        G_CALLBACK(fp_redraw_edit_hdlr), 0);
 
     //
     // Pixel editor controls
@@ -356,14 +356,14 @@ sFpe::sFpe(GRobject c)
     GtkWidget *sb = sb_nx.init(8.0, 2.0, 32.0, 0);
     sb_nx.set_wrap(false);
     sb_nx.set_editable(true);
-    sb_nx.connect_changed(GTK_SIGNAL_FUNC(fp_nxy_proc), (void*)(long)1, "nx");
+    sb_nx.connect_changed(G_CALLBACK(fp_nxy_proc), (void*)(long)1, "nx");
     gtk_widget_set_size_request(sb, 50, -1);
     gtk_box_pack_start(GTK_BOX(echbox), sb, false, false, 0);
 
     sb = sb_ny.init(8.0, 2.0, 32.0, 0);
     sb_ny.set_wrap(false);
     sb_ny.set_editable(true);
-    sb_ny.connect_changed(GTK_SIGNAL_FUNC(fp_nxy_proc), (void*)(long)2, "ny");
+    sb_ny.connect_changed(G_CALLBACK(fp_nxy_proc), (void*)(long)2, "ny");
     gtk_widget_set_size_request(sb, 50, -1);
     gtk_box_pack_start(GTK_BOX(echbox), sb, false, false, 0);
     gtk_container_add(GTK_CONTAINER(frame), echbox);
@@ -375,22 +375,22 @@ sFpe::sFpe(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Rot90");
     gtk_widget_set_name(button, "Rot90");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_rot90_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_rot90_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     button = gtk_button_new_with_label("X");
     gtk_widget_set_name(button, "MX");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_refl_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_refl_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     button = gtk_button_new_with_label("Y");
     gtk_widget_set_name(button, "MY");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_refl_proc), (void*)1L);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_refl_proc), (void*)1L);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
     gtk_box_pack_start(GTK_BOX(ecvbox), hbox, false, false, 0);
 
@@ -401,8 +401,8 @@ sFpe::sFpe(GRobject c)
     button = gtk_button_new_with_label("Stores");
     gtk_widget_set_name(button, "ShowStores");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_mode_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_mode_proc), 0);
     gtk_box_pack_start(GTK_BOX(ecvbox), button, false, false, 0);
 
     hsep = gtk_hseparator_new();
@@ -422,7 +422,7 @@ sFpe::sFpe(GRobject c)
     sb = sb_defpats.init(1.0, 1.0, 4.0, 0);
     sb_defpats.set_wrap(true);
     sb_defpats.set_editable(false);
-    sb_defpats.connect_changed(GTK_SIGNAL_FUNC(fp_bank_proc), 0, "Defpats");
+    sb_defpats.connect_changed(G_CALLBACK(fp_bank_proc), 0, "Defpats");
     gtk_widget_set_size_request(sb, 50, -1);
     gtk_container_add(GTK_CONTAINER(frame), sb);
     gtk_box_pack_start(GTK_BOX(scvbox), frame, false, false, 0);
@@ -434,8 +434,8 @@ sFpe::sFpe(GRobject c)
     button = gtk_button_new_with_label("Dump Defs");
     gtk_widget_set_name(button, "Dumpdefs");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_btn_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_btn_proc), 0);
     gtk_box_pack_start(GTK_BOX(scvbox), button, false, false, 0);
 
     hsep = gtk_hseparator_new();
@@ -445,8 +445,8 @@ sFpe::sFpe(GRobject c)
     button = gtk_button_new_with_label("Pixel Editor");
     gtk_widget_set_name(button, "PexEd");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_mode_proc), (void*)(long)1);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_mode_proc), (void*)(long)1);
     gtk_box_pack_start(GTK_BOX(scvbox), button, false, false, 0);
 
     hsep = gtk_hseparator_new();
@@ -469,8 +469,8 @@ sFpe::sFpe(GRobject c)
     gtk_box_pack_start(GTK_BOX(vbox), fp_stoctrl, true, true, 0);
     gtk_box_pack_start(GTK_BOX(vbox), frame, true, true, 0);
     gtk_box_pack_start(GTK_BOX(row), vbox, true, true, 0);
-    gtk_signal_connect(GTK_OBJECT(darea), "expose-event",
-        GTK_SIGNAL_FUNC(fp_redraw_sample_hdlr), 0);
+    g_signal_connect(G_OBJECT(darea), "expose-event",
+        G_CALLBACK(fp_redraw_sample_hdlr), 0);
 
     //
     // Patterns
@@ -497,9 +497,8 @@ sFpe::sFpe(GRobject c)
             else
                 fp_connect_sigs(darea, true, true);
             gtk_box_pack_start(GTK_BOX(hbox), iframe, true, true, 0);
-            gtk_signal_connect(GTK_OBJECT(darea), "expose-event",
-                GTK_SIGNAL_FUNC(fp_redraw_store_hdlr),
-                (void*)(long)(i + j*3));
+            g_signal_connect(G_OBJECT(darea), "expose-event",
+                G_CALLBACK(fp_redraw_store_hdlr), (void*)(long)(i + j*3));
         }
         gtk_box_pack_start(GTK_BOX(vbox), hbox, true, true, 0);
     }
@@ -522,53 +521,53 @@ sFpe::sFpe(GRobject c)
     button = gtk_button_new_with_label("Load");
     gtk_widget_set_name(button, "Load");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_btn_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_btn_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(button, "Apply");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_btn_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_btn_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_btn_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_btn_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_toggle_button_new_with_label("Outline");
     gtk_widget_set_name(button, "Outline");
     gtk_widget_show(button);
     fp_outl = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_outline_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_outline_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_toggle_button_new_with_label("Fat");
     gtk_widget_set_name(button, "Fat");
     gtk_widget_show(button);
     fp_fat = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_outline_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_outline_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_toggle_button_new_with_label("Cut");
     gtk_widget_set_name(button, "Cut");
     gtk_widget_show(button);
     fp_cut = button;
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_outline_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_outline_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fp_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fp_cancel_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
@@ -619,9 +618,10 @@ sFpe::~sFpe()
         DefineFillpattern(fp_fp);   // Destroy pixmap.
         delete fp_fp;
     }
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(fp_cancel_proc), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)fp_cancel_proc, wb_shell);
+    }
 }
 
 
@@ -1230,25 +1230,25 @@ void
 sFpe::fp_connect_sigs(GtkWidget *darea, bool dnd_src, bool dnd_rcvr)
 {
     gtk_widget_add_events(darea, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(darea), "button-press-event",
-        GTK_SIGNAL_FUNC(fp_button_press_hdlr), 0);
+    g_signal_connect(G_OBJECT(darea), "button-press-event",
+        G_CALLBACK(fp_button_press_hdlr), 0);
     gtk_widget_add_events(darea, GDK_BUTTON_RELEASE_MASK);
-    gtk_signal_connect(GTK_OBJECT(darea), "button-release-event",
-        GTK_SIGNAL_FUNC(fp_button_rel_hdlr), 0);
+    g_signal_connect(G_OBJECT(darea), "button-release-event",
+        G_CALLBACK(fp_button_rel_hdlr), 0);
     gtk_widget_add_events(darea, GDK_KEY_PRESS_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(darea), "key-press-event",
-        GTK_SIGNAL_FUNC(fp_key_press_hdlr), 0);
+    g_signal_connect_after(G_OBJECT(darea), "key-press-event",
+        G_CALLBACK(fp_key_press_hdlr), 0);
     gtk_widget_add_events(darea, GDK_POINTER_MOTION_MASK);
-    gtk_signal_connect(GTK_OBJECT(darea), "motion-notify-event",
-        GTK_SIGNAL_FUNC(fp_motion_hdlr), 0);
+    g_signal_connect(G_OBJECT(darea), "motion-notify-event",
+        G_CALLBACK(fp_motion_hdlr), 0);
     if (dnd_src) {
         // source
-        gtk_signal_connect(GTK_OBJECT(darea), "drag-data-get",
-            GTK_SIGNAL_FUNC(fp_source_drag_data_get), 0);
-        gtk_signal_connect(GTK_OBJECT(darea), "drag-begin",
-            GTK_SIGNAL_FUNC(fp_source_drag_begin), 0);
-        gtk_signal_connect(GTK_OBJECT(darea), "drag-end",
-            GTK_SIGNAL_FUNC(fp_source_drag_end), 0);
+        g_signal_connect(G_OBJECT(darea), "drag-data-get",
+            G_CALLBACK(fp_source_drag_data_get), 0);
+        g_signal_connect(G_OBJECT(darea), "drag-begin",
+            G_CALLBACK(fp_source_drag_begin), 0);
+        g_signal_connect(G_OBJECT(darea), "drag-end",
+            G_CALLBACK(fp_source_drag_end), 0);
     }
     if (dnd_rcvr) {
         // destination
@@ -1256,13 +1256,12 @@ sFpe::fp_connect_sigs(GtkWidget *darea, bool dnd_src, bool dnd_rcvr)
             (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP);
         gtk_drag_dest_set(darea->parent, DD, target_table, n_targets,
             GDK_ACTION_COPY);
-        gtk_signal_connect_after(GTK_OBJECT(darea->parent),
-            "drag-data-received",
-            GTK_SIGNAL_FUNC(fp_target_drag_data_received), 0);
-        gtk_signal_connect(GTK_OBJECT(darea->parent), "drag-leave",
-            GTK_SIGNAL_FUNC(fp_target_drag_leave), 0);
-        gtk_signal_connect(GTK_OBJECT(darea->parent), "drag-motion",
-            GTK_SIGNAL_FUNC(fp_target_drag_motion), 0);
+        g_signal_connect_after(G_OBJECT(darea->parent), "drag-data-received",
+            G_CALLBACK(fp_target_drag_data_received), 0);
+        g_signal_connect(G_OBJECT(darea->parent), "drag-leave",
+            G_CALLBACK(fp_target_drag_leave), 0);
+        g_signal_connect(G_OBJECT(darea->parent), "drag-motion",
+            G_CALLBACK(fp_target_drag_motion), 0);
     }
 }
 

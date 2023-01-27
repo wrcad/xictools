@@ -475,8 +475,8 @@ GTKmenu::NewDDentry(GRobject button, const char *label)
     GtkWidget *menu_item = gtk_menu_item_new_with_label(label);
     gtk_widget_set_name(menu_item, label);
     gtk_menu_append(GTK_MENU(menu), menu_item);
-    gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-        GTK_SIGNAL_FUNC(func), data);
+    g_signal_connect(G_OBJECT(menu_item), "activate",
+        G_CALLBACK(func), data);
     gtk_widget_show(menu_item);
 }
 
@@ -677,14 +677,14 @@ GTKmenu::new_popup_menu(GtkWidget *root, const char *const *list,
             GtkWidget *menu_item = gtk_menu_item_new_with_label(*s);
             gtk_widget_set_name(menu_item, *s);
             gtk_menu_append(GTK_MENU(menu), menu_item);
-            gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+            g_signal_connect(G_OBJECT(menu_item), "activate",
                 handler, arg);
             gtk_widget_show(menu_item);
         }
         if (root) {
             gtk_menu_item_set_submenu(GTK_MENU_ITEM(root), menu);
-            gtk_signal_connect_object(GTK_OBJECT(root), "event",
-                GTK_SIGNAL_FUNC(button_press), GTK_OBJECT(menu));
+            g_signal_connect_object(G_OBJECT(root), "event",
+                G_CALLBACK(button_press), G_OBJECT(menu), (GConnectFlags)0);
         }
     }
     return (menu);

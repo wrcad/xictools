@@ -176,8 +176,8 @@ sTfm::sTfm(GRobject c,
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     int rowcnt = 0;
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
@@ -208,8 +208,8 @@ sTfm::sTfm(GRobject c,
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(tf_ang_proc), 0);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(tf_ang_proc), 0);
         d += da;
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
@@ -219,16 +219,16 @@ sTfm::sTfm(GRobject c,
     button = gtk_check_button_new_with_label("Reflect Y");
     gtk_widget_set_name(button, "rfly");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     tf_rfly = button;
 
     button = gtk_check_button_new_with_label("Reflect X");
     gtk_widget_set_name(button, "rflx");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     tf_rflx = button;
 
@@ -273,15 +273,15 @@ sTfm::sTfm(GRobject c,
     button = gtk_button_new_with_label("Identity Transform");
     gtk_widget_set_name(button, "ident");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     tf_id = button;
     button = gtk_button_new_with_label("Last Transform");
     gtk_widget_set_name(button, "last");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     tf_last = button;
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
@@ -297,32 +297,32 @@ sTfm::sTfm(GRobject c,
     button = gtk_button_new_with_label("Sto 1");
     gtk_widget_set_name(button, "sto1");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     button = gtk_button_new_with_label("Sto 2");
     gtk_widget_set_name(button, "sto2");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     button = gtk_button_new_with_label("Sto 3");
     gtk_widget_set_name(button, "sto3");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     button = gtk_button_new_with_label("Sto 4");
     gtk_widget_set_name(button, "sto4");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     button = gtk_button_new_with_label("Sto 5");
     gtk_widget_set_name(button, "sto5");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -337,32 +337,32 @@ sTfm::sTfm(GRobject c,
     button = gtk_button_new_with_label("Rcl 1");
     gtk_widget_set_name(button, "rcl1");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     button = gtk_button_new_with_label("Rcl 2");
     gtk_widget_set_name(button, "rcl2");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     button = gtk_button_new_with_label("Rcl 3");
     gtk_widget_set_name(button, "rcl3");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     button = gtk_button_new_with_label("Rcl 4");
     gtk_widget_set_name(button, "rcl4");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     button = gtk_button_new_with_label("Rcl 5");
     gtk_widget_set_name(button, "rcl5");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_action_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -375,8 +375,8 @@ sTfm::sTfm(GRobject c,
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(tf_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(tf_cancel_proc), 0);
     tf_cancel = button;
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -416,8 +416,8 @@ sTfm::update()
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(tf_ang_proc), 0);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(tf_ang_proc), 0);
         d += da;
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(tf_ang), menu);

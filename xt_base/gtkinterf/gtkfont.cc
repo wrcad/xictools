@@ -296,8 +296,8 @@ void
 GTKfont::trackFontChange(GtkWidget *widget, int fnum)
 {
     gtk_font.registerCallback(widget, fnum);
-    gtk_signal_connect(GTK_OBJECT(widget), "destroy",
-        GTK_SIGNAL_FUNC(unreg_hdlr), (void*)(long)fnum);
+    g_signal_connect(G_OBJECT(widget), "destroy",
+        G_CALLBACK(unreg_hdlr), (void*)(long)fnum);
 }
 
 
@@ -527,8 +527,8 @@ GTKfontPopup::GTKfontPopup(gtk_bag *owner, int indx, void *arg,
             gtk_widget_set_name(button, btns[i]);
             gtk_widget_show(button);
             gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                GTK_SIGNAL_FUNC(ft_button_proc), this);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(ft_button_proc), this);
         }
     }
     if (use_def) {
@@ -536,8 +536,8 @@ GTKfontPopup::GTKfontPopup(gtk_bag *owner, int indx, void *arg,
         gtk_widget_set_name(button, "Apply");
         gtk_widget_show(button);
         gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(ft_apply_proc), this);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(ft_apply_proc), this);
         if (indx > 0) {
             GtkWidget *opt = gtk_option_menu_new();
             gtk_widget_show(opt);
@@ -550,8 +550,8 @@ GTKfontPopup::GTKfontPopup(gtk_bag *owner, int indx, void *arg,
                 gtk_widget_set_name(mi, gtk_font.getLabel(i));
                 gtk_object_set_data(GTK_OBJECT(mi), "index", (void*)(long)i);
                 gtk_menu_append(GTK_MENU(menu), mi);
-                gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                    GTK_SIGNAL_FUNC(ft_opt_menu_proc), this);
+                g_signal_connect(G_OBJECT(mi), "activate",
+                    G_CALLBACK(ft_opt_menu_proc), this);
             }
             gtk_option_menu_set_menu(GTK_OPTION_MENU(opt), menu);
             gtk_option_menu_set_history(GTK_OPTION_MENU(opt), indx-1);
@@ -563,8 +563,8 @@ GTKfontPopup::GTKfontPopup(gtk_bag *owner, int indx, void *arg,
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ft_quit_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(ft_quit_proc), this);
     gtk_window_set_focus(GTK_WINDOW(wb_shell), button);
 
     if (labeltext) {
@@ -596,8 +596,8 @@ GTKfontPopup::~GTKfontPopup()
         *p_usrptr = 0;
     if (p_caller)
         GRX->Deselect(p_caller);
-    gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-        GTK_SIGNAL_FUNC(ft_quit_proc), this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+        (gpointer)ft_quit_proc, this);
 }
 
 
@@ -815,10 +815,8 @@ GTKfontPopup::show_available_fonts(bool fixed)
         const char *name = pango_font_family_get_name(families[i]);
 
         if (fixed) {
-#if GTK_CHECK_VERSION(2,4,0)
             if (!pango_font_family_is_monospace(families[i]))
                 continue;
-#endif
             // Bah! The function above lies sometimes.
             char buf[256];
             sprintf(buf, "%s 10", name);

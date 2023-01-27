@@ -160,22 +160,22 @@ GTKmcolPopup::GTKmcolPopup(gtk_bag *owner, stringlist *symlist,
     text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
 
     gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",
-        GTK_SIGNAL_FUNC(mc_btn_proc), this);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-release-event",
-        GTK_SIGNAL_FUNC(mc_btn_release_proc), this);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "motion-notify-event",
-        GTK_SIGNAL_FUNC(mc_motion_proc), this);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "drag-data-get",
-        GTK_SIGNAL_FUNC(mc_source_drag_data_get), this);
-    gtk_signal_connect(GTK_OBJECT(wb_textarea), "map-event",
-        GTK_SIGNAL_FUNC(mc_map_hdlr), this);
-    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "realize",
-        GTK_SIGNAL_FUNC(text_realize_proc), this);
+    g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
+        G_CALLBACK(mc_btn_proc), this);
+    g_signal_connect(G_OBJECT(wb_textarea), "button-release-event",
+        G_CALLBACK(mc_btn_release_proc), this);
+    g_signal_connect(G_OBJECT(wb_textarea), "motion-notify-event",
+        G_CALLBACK(mc_motion_proc), this);
+    g_signal_connect(G_OBJECT(wb_textarea), "drag-data-get",
+        G_CALLBACK(mc_source_drag_data_get), this);
+    g_signal_connect(G_OBJECT(wb_textarea), "map-event",
+        G_CALLBACK(mc_map_hdlr), this);
+    g_signal_connect_after(G_OBJECT(wb_textarea), "realize",
+        G_CALLBACK(text_realize_proc), this);
 
     // this callback formats the text
-    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "size-allocate",
-        GTK_SIGNAL_FUNC(mc_resize_proc), this);
+    g_signal_connect_after(G_OBJECT(wb_textarea), "size-allocate",
+        G_CALLBACK(mc_resize_proc), this);
 
     // drop handler needs this
     gtk_object_set_data(GTK_OBJECT(wb_textarea), "label", label);
@@ -194,8 +194,8 @@ GTKmcolPopup::GTKmcolPopup(gtk_bag *owner, stringlist *symlist,
     GtkWidget*button = gtk_toggle_button_new_with_label("Save Text ");
     gtk_widget_set_name(button, "Save");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(mc_save_btn_hdlr), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(mc_save_btn_hdlr), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     mc_pagesel = gtk_option_menu_new();
@@ -206,8 +206,8 @@ GTKmcolPopup::GTKmcolPopup(gtk_bag *owner, stringlist *symlist,
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(mc_quit_proc), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(mc_quit_proc), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     if (buttons) {
@@ -216,8 +216,8 @@ GTKmcolPopup::GTKmcolPopup(gtk_bag *owner, stringlist *symlist,
             gtk_widget_set_name(button, buttons[i]);
             gtk_widget_set_sensitive(button, false);
             gtk_widget_show(button);
-            gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                GTK_SIGNAL_FUNC(mc_action_proc), this);
+            g_signal_connect(G_OBJECT(button), "clicked",
+                G_CALLBACK(mc_action_proc), this);
             gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
             mc_buttons[i] = button;
         }
@@ -251,8 +251,8 @@ GTKmcolPopup::~GTKmcolPopup()
         GRX->Deselect(p_caller);
     stringlist::destroy(mc_strings);
 
-    gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-        GTK_SIGNAL_FUNC(mc_quit_proc), this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+        (gpointer)mc_quit_proc, this);
 }
 
 
@@ -365,8 +365,8 @@ GTKmcolPopup::relist()
             GtkWidget *mi = gtk_menu_item_new_with_label(buf);
             gtk_widget_show(mi);
             gtk_object_set_data(GTK_OBJECT(mi), "menuent", (void*)(long)i);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(mc_menu_proc), this);
+            g_signal_connect(G_OBJECT(mi), "activate",
+                G_CALLBACK(mc_menu_proc), this);
             gtk_menu_append(GTK_MENU(menu), mi);
         }
         gtk_option_menu_remove_menu(GTK_OPTION_MENU(mc_pagesel));
@@ -629,16 +629,9 @@ GTKmcolPopup::mc_motion_proc(GtkWidget *widget, GdkEvent *event, void *arg)
     GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(arg);
     if (mcol && !mcol->p_no_dd) {
         if (mcol->mc_dragging) {
-#if GTK_CHECK_VERSION(2,12,0)
             if (event->motion.is_hint)
                 gdk_event_request_motions((GdkEventMotion*)event);
             (void)widget;
-#else
-            // Strange voodoo to "turn on" motion events, that are
-            // otherwise suppressed since GDK_POINTER_MOTION_HINT_MASK
-            // is set.  See GdkEventMask doc.
-            gdk_window_get_pointer(widget->window, 0, 0, 0);
-#endif
             if ((abs((int)event->motion.x - mcol->mc_drag_x) > 4 ||
                     abs((int)event->motion.y - mcol->mc_drag_y) > 4)) {
                 mcol->mc_dragging = false;
@@ -664,7 +657,7 @@ GTKmcolPopup::mc_source_drag_data_get(GtkWidget *widget, GdkDragContext*,
 {
     if (GTK_IS_TEXT_VIEW(widget)) {
         // stop text view native handler
-        gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "drag-data-get");
+        g_signal_stop_emission_by_name(G_OBJECT(widget), "drag-data-get");
     }
 
     GtkWidget *label = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(widget),

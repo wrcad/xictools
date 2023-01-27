@@ -195,15 +195,15 @@ sSim::control(SpType status)
     GtkWidget *button = gtk_button_new_with_label("Pause");
     gtk_widget_set_name(button, "Pause");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sp_pause_proc), w);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sp_pause_proc), w);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(sp_cancel_proc), w);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(sp_cancel_proc), w);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 2, 3,

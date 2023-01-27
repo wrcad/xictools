@@ -315,8 +315,8 @@ sCmp::sCmp(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cmp_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cmp_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -373,13 +373,13 @@ sCmp::sCmp(GRobject c)
     // drop site
     gtk_drag_dest_set(cmp_fname1, DD, target_table, n_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(cmp_fname1), "drag-data-received",
-        GTK_SIGNAL_FUNC(cmp_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(cmp_fname1), "drag-data-received",
+        G_CALLBACK(cmp_drag_data_received), 0);
     gtk_drag_dest_set(cmp_cnames1, DD, target_table, n_targets,
         GDK_ACTION_COPY);
     // Don't use connect_after here, see note in cmp_drag_data_received.
-    gtk_signal_connect(GTK_OBJECT(cmp_cnames1), "drag-data-received",
-        GTK_SIGNAL_FUNC(cmp_drag_data_received), 0);
+    g_signal_connect(G_OBJECT(cmp_cnames1), "drag-data-received",
+        G_CALLBACK(cmp_drag_data_received), 0);
 
     //
     // Right file/cell entries
@@ -415,13 +415,13 @@ sCmp::sCmp(GRobject c)
     // drop site
     gtk_drag_dest_set(cmp_fname2, DD, target_table, n_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(cmp_fname2), "drag-data-received",
-        GTK_SIGNAL_FUNC(cmp_drag_data_received), 0);
+    g_signal_connect_after(G_OBJECT(cmp_fname2), "drag-data-received",
+        G_CALLBACK(cmp_drag_data_received), 0);
     gtk_drag_dest_set(cmp_cnames2, DD, target_table, n_targets,
         GDK_ACTION_COPY);
     // Don't use connect_after here, see note in cmp_drag_data_received.
-    gtk_signal_connect(GTK_OBJECT(cmp_cnames2), "drag-data-received",
-        GTK_SIGNAL_FUNC(cmp_drag_data_received), 0);
+    g_signal_connect(G_OBJECT(cmp_cnames2), "drag-data-received",
+        G_CALLBACK(cmp_drag_data_received), 0);
 
     //
     // Layer list and associated buttons
@@ -430,15 +430,15 @@ sCmp::sCmp(GRobject c)
     gtk_widget_show(rc);
     cmp_layer_use = gtk_check_button_new_with_label("Layers Only");
     gtk_widget_show(cmp_layer_use);
-    gtk_signal_connect(GTK_OBJECT(cmp_layer_use), "clicked",
-        GTK_SIGNAL_FUNC(cmp_action), this);
+    g_signal_connect(G_OBJECT(cmp_layer_use), "clicked",
+        G_CALLBACK(cmp_action), this);
     gtk_table_attach(GTK_TABLE(rc), cmp_layer_use, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     cmp_layer_skip = gtk_check_button_new_with_label("Skip Layers");
     gtk_widget_show(cmp_layer_skip);
-    gtk_signal_connect(GTK_OBJECT(cmp_layer_skip), "clicked",
-        GTK_SIGNAL_FUNC(cmp_action), this);
+    g_signal_connect(G_OBJECT(cmp_layer_skip), "clicked",
+        G_CALLBACK(cmp_action), this);
     gtk_table_attach(GTK_TABLE(rc), cmp_layer_skip, 1, 2, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -492,8 +492,8 @@ sCmp::sCmp(GRobject c)
     button = gtk_button_new_with_label("Go");
     gtk_widget_set_name(button, "Go");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cmp_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cmp_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -501,8 +501,8 @@ sCmp::sCmp(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cmp_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cmp_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -587,28 +587,28 @@ sCmp::per_cell_obj_page()
     gtk_widget_show(vbox);
     cmp_p1_boxes = gtk_check_button_new_with_label("Boxes");
     gtk_widget_show(cmp_p1_boxes);
-    gtk_signal_connect(GTK_OBJECT(cmp_p1_boxes), "clicked",
-        GTK_SIGNAL_FUNC(cmp_p1_action), 0);
+    g_signal_connect(G_OBJECT(cmp_p1_boxes), "clicked",
+        G_CALLBACK(cmp_p1_action), 0);
     gtk_box_pack_start(GTK_BOX(vbox), cmp_p1_boxes, false, false, 0);
     cmp_p1_polys = gtk_check_button_new_with_label("Polygons");
     gtk_widget_show(cmp_p1_polys);
-    gtk_signal_connect(GTK_OBJECT(cmp_p1_polys), "clicked",
-        GTK_SIGNAL_FUNC(cmp_p1_action), 0);
+    g_signal_connect(G_OBJECT(cmp_p1_polys), "clicked",
+        G_CALLBACK(cmp_p1_action), 0);
     gtk_box_pack_start(GTK_BOX(vbox), cmp_p1_polys, false, false, 0);
     cmp_p1_wires = gtk_check_button_new_with_label("Wires");
     gtk_widget_show(cmp_p1_wires);
-    gtk_signal_connect(GTK_OBJECT(cmp_p1_wires), "clicked",
-        GTK_SIGNAL_FUNC(cmp_p1_action), 0);
+    g_signal_connect(G_OBJECT(cmp_p1_wires), "clicked",
+        G_CALLBACK(cmp_p1_action), 0);
     gtk_box_pack_start(GTK_BOX(vbox), cmp_p1_wires, false, false, 0);
     cmp_p1_labels = gtk_check_button_new_with_label("Labels");
     gtk_widget_show(cmp_p1_labels);
-    gtk_signal_connect(GTK_OBJECT(cmp_p1_labels), "clicked",
-        GTK_SIGNAL_FUNC(cmp_p1_action), 0);
+    g_signal_connect(G_OBJECT(cmp_p1_labels), "clicked",
+        G_CALLBACK(cmp_p1_action), 0);
     gtk_box_pack_start(GTK_BOX(vbox), cmp_p1_labels, false, false, 0);
     cmp_p1_insta = gtk_check_button_new_with_label("Cell Instances");
     gtk_widget_show(cmp_p1_insta);
-    gtk_signal_connect(GTK_OBJECT(cmp_p1_insta), "clicked",
-        GTK_SIGNAL_FUNC(cmp_p1_action), 0);
+    g_signal_connect(G_OBJECT(cmp_p1_insta), "clicked",
+        G_CALLBACK(cmp_p1_action), 0);
     gtk_box_pack_start(GTK_BOX(vbox), cmp_p1_insta, false, false, 0);
     GtkWidget *frame = gtk_frame_new("Object Types");
     gtk_widget_show(frame);
@@ -648,8 +648,8 @@ sCmp::per_cell_obj_page()
     gtk_widget_show(vbox);
     cmp_p1_phys = gtk_radio_button_new_with_label(0, "Physical");
     gtk_widget_show(cmp_p1_phys);
-    gtk_signal_connect(GTK_OBJECT(cmp_p1_phys), "clicked",
-        GTK_SIGNAL_FUNC(cmp_p1_action), 0);
+    g_signal_connect(G_OBJECT(cmp_p1_phys), "clicked",
+        G_CALLBACK(cmp_p1_action), 0);
     gtk_box_pack_start(GTK_BOX(vbox), cmp_p1_phys, false, false, 0);
     GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(cmp_p1_phys));
     cmp_p1_elec = gtk_radio_button_new_with_label(group, "Electrical");
@@ -677,20 +677,20 @@ sCmp::per_cell_obj_page()
     gtk_widget_set_name(mi, "default");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(cmp_p1_fltr_proc), (void*)0L);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(cmp_p1_fltr_proc), (void*)0L);
     mi = gtk_menu_item_new_with_label("None");
     gtk_widget_set_name(mi, "none");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(cmp_p1_fltr_proc), (void*)1L);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(cmp_p1_fltr_proc), (void*)1L);
     mi = gtk_menu_item_new_with_label("Custom");
     gtk_widget_set_name(mi, "custom");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(cmp_p1_fltr_proc), (void*)2L);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(cmp_p1_fltr_proc), (void*)2L);
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(cmp_p1_fltr), menu);
     gtk_box_pack_start(GTK_BOX(hbox), cmp_p1_fltr, true, true, 0);
@@ -698,8 +698,8 @@ sCmp::per_cell_obj_page()
     cmp_p1_setup = gtk_toggle_button_new_with_label("Setup");
     gtk_widget_show(cmp_p1_setup);
     gtk_box_pack_start(GTK_BOX(hbox), cmp_p1_setup, false, false, 0);
-    gtk_signal_connect(GTK_OBJECT(cmp_p1_setup), "clicked",
-        GTK_SIGNAL_FUNC(cmp_p1_action), (void*)1L);
+    g_signal_connect(G_OBJECT(cmp_p1_setup), "clicked",
+        G_CALLBACK(cmp_p1_action), (void*)1L);
 
     gtk_box_pack_start(GTK_BOX(vbox), hbox, false, false, 0);
 
@@ -771,8 +771,8 @@ sCmp::flat_geom_page()
     cmp_p3_aoi_use = gtk_check_button_new_with_label("Use Window");
     gtk_widget_set_name(cmp_p3_aoi_use, "Window");
     gtk_widget_show(cmp_p3_aoi_use);
-    gtk_signal_connect(GTK_OBJECT(cmp_p3_aoi_use), "clicked",
-        GTK_SIGNAL_FUNC(cmp_action), this);
+    g_signal_connect(G_OBJECT(cmp_p3_aoi_use), "clicked",
+        G_CALLBACK(cmp_action), this);
     gtk_box_pack_start(GTK_BOX(row), cmp_p3_aoi_use, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(table), row, 0, 4, rcnt, rcnt+1,
@@ -794,11 +794,11 @@ sCmp::flat_geom_page()
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(cmp_p3_s_menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(cmp_sto_menu_proc), this);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(cmp_sto_menu_proc), this);
     }
-    gtk_signal_connect(GTK_OBJECT(cmp_p3_s_btn), "button-press-event",
-        GTK_SIGNAL_FUNC(cmp_popup_btn_proc), cmp_p3_s_menu);
+    g_signal_connect(G_OBJECT(cmp_p3_s_btn), "button-press-event",
+        G_CALLBACK(cmp_popup_btn_proc), cmp_p3_s_menu);
 
     GtkWidget *wnd_l_label = gtk_label_new("Left");
     gtk_widget_show(wnd_l_label);
@@ -852,11 +852,11 @@ sCmp::flat_geom_page()
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(cmp_p3_r_menu), mi);
-        gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(cmp_rcl_menu_proc), this);
+        g_signal_connect(G_OBJECT(mi), "activate",
+            G_CALLBACK(cmp_rcl_menu_proc), this);
     }
-    gtk_signal_connect(GTK_OBJECT(cmp_p3_r_btn), "button-press-event",
-        GTK_SIGNAL_FUNC(cmp_popup_btn_proc), cmp_p3_r_menu);
+    g_signal_connect(G_OBJECT(cmp_p3_r_btn), "button-press-event",
+        G_CALLBACK(cmp_popup_btn_proc), cmp_p3_r_menu);
 
     GtkWidget *wnd_r_label = gtk_label_new("Right");
     gtk_widget_show(wnd_r_label);
@@ -1501,7 +1501,7 @@ sCmp::cmp_drag_data_received(GtkWidget *entry,
         // was finally resolved by not using connect-after, and
         // adding the emit_stop call below.
         //
-        gtk_signal_emit_stop_by_name(GTK_OBJECT(entry),
+        g_signal_stop_emission_by_name(G_OBJECT(entry),
             "drag-data-received");
         return;
     }

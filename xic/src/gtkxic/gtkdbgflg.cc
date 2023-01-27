@@ -174,8 +174,8 @@ sDbgFlg::sDbgFlg(GRobject c)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(df_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(df_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -188,8 +188,8 @@ sDbgFlg::sDbgFlg(GRobject c)
     button = gtk_check_button_new_with_label("Selection list consistency");
     gtk_widget_set_name(button, "sel");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(df_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(df_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -199,8 +199,8 @@ sDbgFlg::sDbgFlg(GRobject c)
     button = gtk_check_button_new_with_label("Undo/redo list processing");
     gtk_widget_set_name(button, "undo");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(df_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(df_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -217,8 +217,8 @@ sDbgFlg::sDbgFlg(GRobject c)
     }
     gtk_widget_set_name(button, "ldb3d");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(df_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(df_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -230,8 +230,8 @@ sDbgFlg::sDbgFlg(GRobject c)
             "Net resistance solver");
         gtk_widget_set_name(button, "rlsolv");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(df_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(df_action), 0);
         gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -253,8 +253,8 @@ sDbgFlg::sDbgFlg(GRobject c)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    gtk_signal_connect(GTK_OBJECT(df_fname), "focus-out-event",
-        GTK_SIGNAL_FUNC(df_focus_out_proc), 0);
+    g_signal_connect(G_OBJECT(df_fname), "focus-out-event",
+        G_CALLBACK(df_focus_out_proc), 0);
 
     GtkWidget *sep = gtk_hseparator_new();
     gtk_widget_show(sep);
@@ -278,8 +278,8 @@ sDbgFlg::sDbgFlg(GRobject c)
         "Lisp parser (lisp.log)");
     gtk_widget_set_name(button, "lisp");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(df_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(df_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -291,8 +291,8 @@ sDbgFlg::sDbgFlg(GRobject c)
             "Schematic connectivity (connect.log)");
         gtk_widget_set_name(button, "connect");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(df_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(df_action), 0);
         gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -305,8 +305,8 @@ sDbgFlg::sDbgFlg(GRobject c)
             "Resistance/inductance extraction (rlsolver.log)");
         gtk_widget_set_name(button, "rlsolvlog");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(df_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(df_action), 0);
         gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -322,32 +322,32 @@ sDbgFlg::sDbgFlg(GRobject c)
         button = gtk_check_button_new_with_label("Group");
         gtk_widget_set_name(button, "group");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(df_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(df_action), 0);
         gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
         df_group = button;
 
         button = gtk_check_button_new_with_label("Extract");
         gtk_widget_set_name(button, "extract");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(df_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(df_action), 0);
         gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
         df_extract = button;
 
         button = gtk_check_button_new_with_label("Assoc");
         gtk_widget_set_name(button, "assoc");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(df_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(df_action), 0);
         gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
         df_assoc = button;
 
         button = gtk_check_button_new_with_label("Verbose");
         gtk_widget_set_name(button, "verbose");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(df_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(df_action), 0);
         gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
         df_verbose = button;
 
@@ -367,24 +367,24 @@ sDbgFlg::sDbgFlg(GRobject c)
         button = gtk_check_button_new_with_label("Load");
         gtk_widget_set_name(button, "load");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(df_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(df_action), 0);
         gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
         df_load = button;
 
         button = gtk_check_button_new_with_label("Net");
         gtk_widget_set_name(button, "net");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(df_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(df_action), 0);
         gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
         df_net = button;
 
         button = gtk_check_button_new_with_label("PCell");
         gtk_widget_set_name(button, "pcell");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(df_action), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(df_action), 0);
         gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
         df_pcell = button;
 
@@ -400,8 +400,8 @@ sDbgFlg::sDbgFlg(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(df_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(df_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

@@ -614,12 +614,11 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         // drop site
         gtk_drag_dest_set(wb_textarea, GTK_DEST_DEFAULT_ALL, target_table,
             n_targets, GDK_ACTION_COPY);
-        gtk_signal_connect(GTK_OBJECT(wb_textarea),
-            "drag-data-received", GTK_SIGNAL_FUNC(ed_drag_data_received),
-            this);
+        g_signal_connect(G_OBJECT(wb_textarea), "drag-data-received",
+            G_CALLBACK(ed_drag_data_received), this);
         if (ed_widget_type == Browser)
-            gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "realize",
-                GTK_SIGNAL_FUNC(text_realize_proc), this);
+            g_signal_connect_after(G_OBJECT(wb_textarea), "realize",
+                G_CALLBACK(text_realize_proc), this);
     }
 
     // Default window size, 80 cols, 12 or 24 rows.
@@ -630,8 +629,8 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         12*fh : 24*fh;
     gtk_widget_set_size_request(wb_textarea, defw, defh);
 
-    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "button-press-event",
-        GTK_SIGNAL_FUNC(ed_btn_hdlr), this);
+    g_signal_connect_after(G_OBJECT(wb_textarea), "button-press-event",
+        G_CALLBACK(ed_btn_hdlr), this);
 
     gtk_table_attach(GTK_TABLE(form), ed_title, 0, 1, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -735,9 +734,10 @@ GTKeditPopup::~GTKeditPopup()
     if (wb_fontsel)
         wb_fontsel->popdown();
     register_edit(false);
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(ed_quit_proc), this);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)ed_quit_proc, this);
+    }
     delete ed_search_pop;
     for (int k = 0; k < 4; k++) {
         if (ed_fsels[k])
@@ -1563,7 +1563,7 @@ GTKeditPopup::ed_drag_data_received(GtkWidget *caller, GdkDragContext *context,
 {
     if (GTK_IS_TEXT_VIEW(caller)) {
         // stop text view native handler
-        gtk_signal_emit_stop_by_name(GTK_OBJECT(caller), "drag-data-received");
+        g_signal_stop_emission_by_name(G_OBJECT(caller), "drag-data-received");
     }
     if (gtk_selection_data_get_length(data) > 0 &&
             gtk_selection_data_get_format(data) == 8) {
@@ -1726,8 +1726,8 @@ GTKeditPopup::ed_do_attach_proc(const char *fnamein, void *client_data)
 
     mitem = gtk_menu_item_new_with_label("Unattach");
     gtk_widget_show(mitem);
-    gtk_signal_connect(GTK_OBJECT(mitem), "activate",
-        GTK_SIGNAL_FUNC(ed_unattach_proc), item);
+    g_signal_connect(G_OBJECT(mitem), "activate",
+        G_CALLBACK(ed_unattach_proc), item);
     gtk_menu_append(GTK_MENU(menu), mitem);
 
     delete [] fname;

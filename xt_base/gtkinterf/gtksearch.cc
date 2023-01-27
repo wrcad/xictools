@@ -145,8 +145,8 @@ GTKsearchPopup::pop_up_search(int mode)
     if (mode == MODE_OFF) {
         if (s_cb)
             (*s_cb)(0, false, false, s_arg);
-        gtk_signal_disconnect_by_func(GTK_OBJECT(s_popup),
-            GTK_SIGNAL_FUNC(search_cancel), this);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(s_popup),
+            (gpointer)search_cancel, this);
         if (s_timer_id) {
             gtk_timeout_remove(s_timer_id);
             s_timer_id = 0;
@@ -198,30 +198,30 @@ GTKsearchPopup::pop_up_search(int mode)
     s_dn = new_pixmap_button(down_xpm, 0, false);
     gtk_widget_set_name(s_dn, "SearchDown");
     gtk_widget_show(s_dn);
-    gtk_signal_connect(GTK_OBJECT(s_dn), "clicked",
-        GTK_SIGNAL_FUNC(search_action), this);
+    g_signal_connect(G_OBJECT(s_dn), "clicked",
+        G_CALLBACK(search_action), this);
     gtk_box_pack_start(GTK_BOX(hbox), s_dn, true, true, 0);
 
     s_up = new_pixmap_button(up_xpm, 0, false);
     gtk_widget_set_name(s_up, "SearchUp");
     gtk_widget_show(s_up);
-    gtk_signal_connect(GTK_OBJECT(s_up), "clicked",
-        GTK_SIGNAL_FUNC(search_action), this);
+    g_signal_connect(G_OBJECT(s_up), "clicked",
+        G_CALLBACK(search_action), this);
     gtk_box_pack_start(GTK_BOX(hbox), s_up, true, true, 0);
 
     s_igncase = gtk_check_button_new_with_label(" No Case ");
     gtk_widget_set_name(s_igncase, "NoCase");
     gtk_widget_show(s_igncase);
     gtk_box_pack_start(GTK_BOX(hbox), s_igncase, true, true, 0);
-    gtk_signal_connect(GTK_OBJECT(s_igncase), "clicked",
-        GTK_SIGNAL_FUNC(search_action), this);
+    g_signal_connect(G_OBJECT(s_igncase), "clicked",
+        G_CALLBACK(search_action), this);
 
     GtkWidget *button = gtk_button_new_with_label(" Dismiss ");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(search_cancel), this);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(search_cancel), this);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 2, 3,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

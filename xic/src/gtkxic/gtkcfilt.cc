@@ -242,8 +242,8 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
             GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
             gtk_menu_append(GTK_MENU(menu), menu_item);
-            gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-                GTK_SIGNAL_FUNC(cf_sto_menu_proc), (void*)(long)i);
+            g_signal_connect(G_OBJECT(menu_item), "activate",
+                G_CALLBACK(cf_sto_menu_proc), (void*)(long)i);
             gtk_widget_show(menu_item);
         }
         gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
@@ -267,8 +267,8 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
             GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
             gtk_menu_append(GTK_MENU(menu), menu_item);
-            gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-                GTK_SIGNAL_FUNC(cf_rcl_menu_proc), (void*)(long)i);
+            g_signal_connect(G_OBJECT(menu_item), "activate",
+                G_CALLBACK(cf_rcl_menu_proc), (void*)(long)i);
             gtk_widget_show(menu_item);
         }
         gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
@@ -285,8 +285,8 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cf_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cf_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -298,13 +298,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nimm = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nimm);
-    gtk_signal_connect(GTK_OBJECT(cf_nimm), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nimm), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nimm, false, false, 0);
     cf_imm = gtk_check_button_new_with_label("Immutable");
     gtk_widget_show(cf_imm);
-    gtk_signal_connect(GTK_OBJECT(cf_imm), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_imm), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_imm, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -316,13 +316,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nvsm = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nvsm);
-    gtk_signal_connect(GTK_OBJECT(cf_nvsm), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nvsm), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nvsm, false, false, 0);
     cf_vsm = gtk_check_button_new_with_label("Via sub-master");
     gtk_widget_show(cf_vsm);
-    gtk_signal_connect(GTK_OBJECT(cf_vsm), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_vsm), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_vsm, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 1, 2, rowcnt, rowcnt+1,
@@ -335,13 +335,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nlib = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nlib);
-    gtk_signal_connect(GTK_OBJECT(cf_nlib), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nlib), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nlib, false, false, 0);
     cf_lib = gtk_check_button_new_with_label("Library");
     gtk_widget_show(cf_lib);
-    gtk_signal_connect(GTK_OBJECT(cf_lib), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_lib), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_lib, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -353,13 +353,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_npsm = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_npsm);
-    gtk_signal_connect(GTK_OBJECT(cf_npsm), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_npsm), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_npsm, false, false, 0);
     cf_psm = gtk_check_button_new_with_label("PCell sub-master");
     gtk_widget_show(cf_psm);
-    gtk_signal_connect(GTK_OBJECT(cf_psm), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_psm), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_psm, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 1, 2, rowcnt, rowcnt+1,
@@ -372,13 +372,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_ndev = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_ndev);
-    gtk_signal_connect(GTK_OBJECT(cf_ndev), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_ndev), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_ndev, false, false, 0);
     cf_dev = gtk_check_button_new_with_label("Device");
     gtk_widget_show(cf_dev);
-    gtk_signal_connect(GTK_OBJECT(cf_dev), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_dev), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_dev, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -390,13 +390,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nspr = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nspr);
-    gtk_signal_connect(GTK_OBJECT(cf_nspr), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nspr), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nspr, false, false, 0);
     cf_spr = gtk_check_button_new_with_label("PCell super");
     gtk_widget_show(cf_spr);
-    gtk_signal_connect(GTK_OBJECT(cf_spr), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_spr), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_spr, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 1, 2, rowcnt, rowcnt+1,
@@ -409,13 +409,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_ntop = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_ntop);
-    gtk_signal_connect(GTK_OBJECT(cf_ntop), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_ntop), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_ntop, false, false, 0);
     cf_top = gtk_check_button_new_with_label("Top level");
     gtk_widget_show(cf_top);
-    gtk_signal_connect(GTK_OBJECT(cf_top), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_top), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_top, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -427,13 +427,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nmod = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nmod);
-    gtk_signal_connect(GTK_OBJECT(cf_nmod), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nmod), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nmod, false, false, 0);
     cf_mod = gtk_check_button_new_with_label("Modified");
     gtk_widget_show(cf_mod);
-    gtk_signal_connect(GTK_OBJECT(cf_mod), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_mod), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_mod, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 1, 2, rowcnt, rowcnt+1,
@@ -446,13 +446,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nalt = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nalt);
-    gtk_signal_connect(GTK_OBJECT(cf_nalt), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nalt), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nalt, false, false, 0);
     cf_alt = gtk_check_button_new_with_label("With alt");
     gtk_widget_show(cf_alt);
-    gtk_signal_connect(GTK_OBJECT(cf_alt), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_alt), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_alt, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -464,13 +464,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nref = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nref);
-    gtk_signal_connect(GTK_OBJECT(cf_nref), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nref), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nref, false, false, 0);
     cf_ref = gtk_check_button_new_with_label("Reference");
     gtk_widget_show(cf_ref);
-    gtk_signal_connect(GTK_OBJECT(cf_ref), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_ref), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_ref, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 1, 2, rowcnt, rowcnt+1,
@@ -483,13 +483,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_npcl = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_npcl);
-    gtk_signal_connect(GTK_OBJECT(cf_npcl), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_npcl), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_npcl, false, false, 0);
     cf_pcl = gtk_check_button_new_with_label("Parent cells");
     gtk_widget_show(cf_pcl);
-    gtk_signal_connect(GTK_OBJECT(cf_pcl), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_pcl), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_pcl, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -509,13 +509,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nscl = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nscl);
-    gtk_signal_connect(GTK_OBJECT(cf_nscl), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nscl), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nscl, false, false, 0);
     cf_scl = gtk_check_button_new_with_label("Subcell cells");
     gtk_widget_show(cf_scl);
-    gtk_signal_connect(GTK_OBJECT(cf_scl), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_scl), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_scl, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -535,13 +535,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nlyr = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nlyr);
-    gtk_signal_connect(GTK_OBJECT(cf_nlyr), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nlyr), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nlyr, false, false, 0);
     cf_lyr = gtk_check_button_new_with_label("With layers");
     gtk_widget_show(cf_lyr);
-    gtk_signal_connect(GTK_OBJECT(cf_lyr), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_lyr), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_lyr, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -561,13 +561,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nflg = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nflg);
-    gtk_signal_connect(GTK_OBJECT(cf_nflg), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nflg), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nflg, false, false, 0);
     cf_flg = gtk_check_button_new_with_label("With flags");
     gtk_widget_show(cf_flg);
-    gtk_signal_connect(GTK_OBJECT(cf_flg), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_flg), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_flg, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -587,13 +587,13 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     gtk_widget_show(hbox);
     cf_nftp = gtk_check_button_new_with_label("not");
     gtk_widget_show(cf_nftp);
-    gtk_signal_connect(GTK_OBJECT(cf_nftp), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_nftp), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_nftp, false, false, 0);
     cf_ftp = gtk_check_button_new_with_label("From filetypes");
     gtk_widget_show(cf_ftp);
-    gtk_signal_connect(GTK_OBJECT(cf_ftp), "clicked",
-        GTK_SIGNAL_FUNC(cf_radio), 0);
+    g_signal_connect(G_OBJECT(cf_ftp), "clicked",
+        G_CALLBACK(cf_radio), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cf_ftp, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -614,8 +614,8 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     button = gtk_button_new_with_label("Apply");
     gtk_widget_set_name(button, "Apply");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cf_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cf_action), 0);
     cf_apply = button;
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -624,8 +624,8 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cf_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cf_cancel_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 1, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);

@@ -414,22 +414,22 @@ sDv::sDv(GRobject caller, stringlist *wl)
         gtk_window_set_default_size(GTK_WINDOW(wb_shell), width, -1);
 
         gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-        gtk_signal_connect(GTK_OBJECT(gd_viewport), "expose-event",
-            GTK_SIGNAL_FUNC(dv_redraw_hdlr), 0);
+        g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
+            G_CALLBACK(dv_redraw_hdlr), 0);
         gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
-        gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "button-press-event",
-            GTK_SIGNAL_FUNC(dv_btn_hdlr), 0);
+        g_signal_connect_after(G_OBJECT(gd_viewport), "button-press-event",
+            G_CALLBACK(dv_btn_hdlr), 0);
         gtk_widget_add_events(gd_viewport, GDK_POINTER_MOTION_MASK);
-        gtk_signal_connect(GTK_OBJECT(gd_viewport), "motion-notify-event",
-            GTK_SIGNAL_FUNC(dv_motion_hdlr), 0);
+        g_signal_connect(G_OBJECT(gd_viewport), "motion-notify-event",
+            G_CALLBACK(dv_motion_hdlr), 0);
         gtk_widget_add_events(gd_viewport, GDK_ENTER_NOTIFY_MASK);
-        gtk_signal_connect(GTK_OBJECT(gd_viewport), "enter-notify-event",
-            GTK_SIGNAL_FUNC(dv_enter_hdlr), 0);
+        g_signal_connect(G_OBJECT(gd_viewport), "enter-notify-event",
+            G_CALLBACK(dv_enter_hdlr), 0);
         gtk_widget_add_events(gd_viewport, GDK_LEAVE_NOTIFY_MASK);
-        gtk_signal_connect(GTK_OBJECT(gd_viewport), "leave-notify-event",
-            GTK_SIGNAL_FUNC(dv_leave_hdlr), 0);
-        gtk_signal_connect(GTK_OBJECT(gd_viewport), "style-set",
-            GTK_SIGNAL_FUNC(dv_font_change_hdlr), 0);
+        g_signal_connect(G_OBJECT(gd_viewport), "leave-notify-event",
+            G_CALLBACK(dv_leave_hdlr), 0);
+        g_signal_connect(G_OBJECT(gd_viewport), "style-set",
+            G_CALLBACK(dv_font_change_hdlr), 0);
 
         gtk_table_attach(GTK_TABLE(form), gd_viewport, 0, 1, 0, 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -442,15 +442,15 @@ sDv::sDv(GRobject caller, stringlist *wl)
         gtk_widget_set_name(button, "More");
         dv_morebtn = button;
         // don't show unless needed
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(dv_more_proc), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(dv_more_proc), 0);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
         button = new_pixmap_button(dd_xpm, 0, false);
         gtk_widget_set_name(button, "Drop");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(dv_switch_proc), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(dv_switch_proc), 0);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
         gtk_table_attach(GTK_TABLE(form), vbox, 1, 2, 0, 1,
@@ -509,8 +509,8 @@ sDv::sDv(GRobject caller, stringlist *wl)
             GtkWidget *ent = gtk_menu_item_new_with_label(ww->string);
             gtk_widget_set_name(ent, ww->string);
             gtk_widget_show(ent);
-            gtk_signal_connect(GTK_OBJECT(ent), "activate",
-                GTK_SIGNAL_FUNC(dv_menu_proc), 0);
+            g_signal_connect(G_OBJECT(ent), "activate",
+                G_CALLBACK(dv_menu_proc), 0);
             gtk_object_set_user_data(GTK_OBJECT(ent), ww->string);
             ww->string = 0;
             gtk_menu_append(GTK_MENU(menu), ent);
@@ -521,8 +521,8 @@ sDv::sDv(GRobject caller, stringlist *wl)
         GtkWidget *button = new_pixmap_button(pict_xpm, 0, false);
         gtk_widget_set_name(button, "Style");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(dv_switch_proc), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(dv_switch_proc), 0);
         gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
         gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
@@ -622,8 +622,8 @@ sDv::sDv(GRobject caller, stringlist *wl)
                 GtkWidget *ent = gtk_menu_item_new_with_label(ww->string);
                 gtk_widget_set_name(ent, ww->string);
                 gtk_widget_show(ent);
-                gtk_signal_connect(GTK_OBJECT(ent), "activate",
-                    GTK_SIGNAL_FUNC(dv_menu_proc), 0);
+                g_signal_connect(G_OBJECT(ent), "activate",
+                    G_CALLBACK(dv_menu_proc), 0);
                 gtk_object_set_user_data(GTK_OBJECT(ent), ww->string);
                 gtk_menu_append(GTK_MENU(menu), ent);
                 ww->string = 0;
@@ -634,8 +634,8 @@ sDv::sDv(GRobject caller, stringlist *wl)
         GtkWidget *button = new_pixmap_button(dda_xpm, 0, false);
         gtk_widget_set_name(button, "Style");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(dv_switch_proc), 0);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(dv_switch_proc), 0);
         gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
         gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 0, 1,
@@ -652,9 +652,10 @@ sDv::~sDv()
     if (dv_caller)
         GRX->SetStatus(dv_caller, false);
     delete [] dv_entries;
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(dv_cancel_proc), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)dv_cancel_proc, wb_shell);
+    }
 }
 
 

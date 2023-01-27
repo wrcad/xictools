@@ -619,8 +619,8 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
     }
 
     // Revert focus to application window when file selector pops up.
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "focus-in-event",
-        (GtkSignalFunc)fs_focus_hdlr, 0);
+    g_signal_connect(G_OBJECT(wb_shell), "focus-in-event",
+        G_CALLBACK(fs_focus_hdlr), 0);
 
     GtkWidget *form = gtk_table_new(1, 1, false);
     gtk_widget_show(form);
@@ -634,8 +634,8 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
     fs_up_btn = gtk_button_new();
     gtk_widget_set_name(fs_up_btn, "Up");
     gtk_widget_show(fs_up_btn);
-    gtk_signal_connect(GTK_OBJECT(fs_up_btn), "clicked",
-        GTK_SIGNAL_FUNC(fs_up_btn_proc), this);
+    g_signal_connect(G_OBJECT(fs_up_btn), "clicked",
+        G_CALLBACK(fs_up_btn_proc), this);
     gtk_box_pack_start(GTK_BOX(hbox), fs_up_btn, false, false, 0);
 
     fs_go_btn = gtk_button_new();
@@ -644,8 +644,8 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
     else
         gtk_widget_set_name(fs_go_btn, "Go");
     gtk_widget_show(fs_go_btn);
-    gtk_signal_connect(GTK_OBJECT(fs_go_btn), "clicked",
-        GTK_SIGNAL_FUNC(fs_open_proc), this);
+    g_signal_connect(G_OBJECT(fs_go_btn), "clicked",
+        G_CALLBACK(fs_open_proc), this);
     gtk_box_pack_start(GTK_BOX(hbox), fs_go_btn, false, false, 0);
 
     if (fs_type == fsDOWNLOAD) {
@@ -878,9 +878,7 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
     gtk_tree_view_append_column(GTK_TREE_VIEW(fs_tree), tvcol);
 #endif
 
-#if GTK_CHECK_VERSION(2,12,0)
     gtk_tree_view_set_show_expanders(GTK_TREE_VIEW(fs_tree), true);
-#endif
     gtk_tree_view_set_enable_tree_lines(GTK_TREE_VIEW(fs_tree), true);
     gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(fs_tree), false);
 
@@ -899,36 +897,36 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
 
     gtk_widget_add_events(fs_tree, GDK_BUTTON_PRESS_MASK);
 
-    gtk_signal_connect (GTK_OBJECT(fs_tree), "test-collapse-row",
-        (GtkSignalFunc)fs_tree_collapse_proc, this);
-    gtk_signal_connect (GTK_OBJECT(fs_tree), "test-expand-row",
-        (GtkSignalFunc)fs_tree_expand_proc, this);
+    g_signal_connect(G_OBJECT(fs_tree), "test-collapse-row",
+        G_CALLBACK(fs_tree_collapse_proc), this);
+    g_signal_connect(G_OBJECT(fs_tree), "test-expand-row",
+        G_CALLBACK(fs_tree_expand_proc), this);
 
     // directory list drag source (explicit drag start)
-    gtk_signal_connect(GTK_OBJECT(fs_tree), "drag-data-get",
-        GTK_SIGNAL_FUNC(fs_source_drag_data_get), this);
-    gtk_signal_connect(GTK_OBJECT(fs_tree), "button-press-event",
-        GTK_SIGNAL_FUNC(fs_button_press_proc), this);
-    gtk_signal_connect(GTK_OBJECT(fs_tree), "button-release-event",
-        GTK_SIGNAL_FUNC(fs_button_release_proc), this);
-    gtk_signal_connect(GTK_OBJECT(fs_tree), "motion-notify-event",
-        GTK_SIGNAL_FUNC(fs_motion_proc), this);
+    g_signal_connect(G_OBJECT(fs_tree), "drag-data-get",
+        G_CALLBACK(fs_source_drag_data_get), this);
+    g_signal_connect(G_OBJECT(fs_tree), "button-press-event",
+        G_CALLBACK(fs_button_press_proc), this);
+    g_signal_connect(G_OBJECT(fs_tree), "button-release-event",
+        G_CALLBACK(fs_button_release_proc), this);
+    g_signal_connect(G_OBJECT(fs_tree), "motion-notify-event",
+        G_CALLBACK(fs_motion_proc), this);
 
     // directory list drop site
     gtk_drag_dest_set(fs_tree, GTK_DEST_DEFAULT_ALL, target_table, n_targets,
         (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK |
         GDK_ACTION_ASK));
-    gtk_signal_connect_after(GTK_OBJECT(fs_tree), "drag-data-received",
-        GTK_SIGNAL_FUNC(fs_drag_data_received), this);
-    gtk_signal_connect(GTK_OBJECT(fs_tree), "drag-motion",
-        GTK_SIGNAL_FUNC(fs_dir_drag_motion), this);
-    gtk_signal_connect(GTK_OBJECT(fs_tree), "drag-leave",
-        GTK_SIGNAL_FUNC(fs_dir_drag_leave), this);
+    g_signal_connect_after(G_OBJECT(fs_tree), "drag-data-received",
+        G_CALLBACK(fs_drag_data_received), this);
+    g_signal_connect(G_OBJECT(fs_tree), "drag-motion",
+        G_CALLBACK(fs_dir_drag_motion), this);
+    g_signal_connect(G_OBJECT(fs_tree), "drag-leave",
+        G_CALLBACK(fs_dir_drag_leave), this);
 
     gtk_selection_add_targets(fs_tree, GDK_SELECTION_PRIMARY, target_table,
         n_targets);
-    gtk_signal_connect(GTK_OBJECT(fs_tree), "selection-get",
-        GTK_SIGNAL_FUNC(fs_selection_get), 0);
+    g_signal_connect(G_OBJECT(fs_tree), "selection-get",
+        G_CALLBACK(fs_selection_get), 0);
 
     //
     // files list
@@ -953,12 +951,12 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         for (const char **s = fs_filter_options; *s; s++)
             items = g_list_append(items, (char*)*s);
         gtk_combo_set_popdown_strings(GTK_COMBO(fs_filter), items);
-        gtk_signal_connect(GTK_OBJECT(GTK_COMBO(fs_filter)->list),
-            "select-child", GTK_SIGNAL_FUNC(fs_filter_sel_proc), this);
-        gtk_signal_connect(GTK_OBJECT(GTK_COMBO(fs_filter)->list),
-            "unselect-child", GTK_SIGNAL_FUNC(fs_filter_unsel_proc), this);
-        gtk_signal_connect(GTK_OBJECT(GTK_COMBO(fs_filter)->entry),
-            "activate", GTK_SIGNAL_FUNC(fs_filter_activate_proc), this);
+        g_signal_connect(G_OBJECT(GTK_COMBO(fs_filter)->list),
+            "select-child", G_CALLBACK(fs_filter_sel_proc), this);
+        g_signal_connect(G_OBJECT(GTK_COMBO(fs_filter)->list),
+            "unselect-child", G_CALLBACK(fs_filter_unsel_proc), this);
+        g_signal_connect(G_OBJECT(GTK_COMBO(fs_filter)->entry),
+            "activate", G_CALLBACK(fs_filter_activate_proc), this);
         gtk_box_pack_start(GTK_BOX(vbox), fs_filter, false, false, 0);
 
         GtkWidget *paned = gtk_hpaned_new();
@@ -974,36 +972,36 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
 
         // file list drag source (explicit drag start)
-        gtk_signal_connect(GTK_OBJECT(wb_textarea), "drag-begin",
-            GTK_SIGNAL_FUNC(fs_drag_begin), this);
-        gtk_signal_connect(GTK_OBJECT(wb_textarea), "drag-data-get",
-            GTK_SIGNAL_FUNC(fs_source_drag_data_get), this);
-        gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",
-            GTK_SIGNAL_FUNC(fs_button_press_proc), this);
-        gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-release-event",
-            GTK_SIGNAL_FUNC(fs_button_release_proc), this);
+        g_signal_connect(G_OBJECT(wb_textarea), "drag-begin",
+            G_CALLBACK(fs_drag_begin), this);
+        g_signal_connect(G_OBJECT(wb_textarea), "drag-data-get",
+            G_CALLBACK(fs_source_drag_data_get), this);
+        g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
+            G_CALLBACK(fs_button_press_proc), this);
+        g_signal_connect(G_OBJECT(wb_textarea), "button-release-event",
+            G_CALLBACK(fs_button_release_proc), this);
         // This is needed to enable motion events when mouse buttons
         // are not pressed.
         gtk_widget_add_events(wb_textarea, GDK_POINTER_MOTION_MASK);
-        gtk_signal_connect(GTK_OBJECT(wb_textarea), "motion-notify-event",
-            GTK_SIGNAL_FUNC(fs_motion_proc), this);
-        gtk_signal_connect(GTK_OBJECT(wb_textarea), "size-allocate",
-            GTK_SIGNAL_FUNC(fs_resize_proc), this);
+        g_signal_connect(G_OBJECT(wb_textarea), "motion-notify-event",
+            G_CALLBACK(fs_motion_proc), this);
+        g_signal_connect(G_OBJECT(wb_textarea), "size-allocate",
+            G_CALLBACK(fs_resize_proc), this);
         gtk_widget_add_events(wb_textarea, GDK_LEAVE_NOTIFY_MASK);
-        gtk_signal_connect(GTK_OBJECT(wb_textarea), "leave-notify-event",
-            GTK_SIGNAL_FUNC(fs_leave_proc), this);
-        gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "realize",
-            GTK_SIGNAL_FUNC(fs_realize_proc), this);
-        gtk_signal_connect(GTK_OBJECT(wb_textarea), "unrealize",
-            GTK_SIGNAL_FUNC(fs_unrealize_proc), this);
+        g_signal_connect(G_OBJECT(wb_textarea), "leave-notify-event",
+            G_CALLBACK(fs_leave_proc), this);
+        g_signal_connect_after(G_OBJECT(wb_textarea), "realize",
+            G_CALLBACK(fs_realize_proc), this);
+        g_signal_connect(G_OBJECT(wb_textarea), "unrealize",
+            G_CALLBACK(fs_unrealize_proc), this);
 
         // file list drop site
         gtk_drag_dest_set(wb_textarea, GTK_DEST_DEFAULT_ALL, target_table,
             n_targets,
             (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE |
             GDK_ACTION_LINK | GDK_ACTION_ASK));
-        gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "drag-data-received",
-            GTK_SIGNAL_FUNC(fs_drag_data_received), this);
+        g_signal_connect_after(G_OBJECT(wb_textarea), "drag-data-received",
+            G_CALLBACK(fs_drag_data_received), this);
 
         // Gtk-2 is tricky to overcome internal selection handling.
         // Must remove clipboard (in fs_realize_proc), and explicitly
@@ -1012,10 +1010,10 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
 
         gtk_selection_add_targets(wb_textarea, GDK_SELECTION_PRIMARY,
             target_table, n_targets);
-        gtk_signal_connect(GTK_OBJECT(wb_textarea), "selection-clear-event",
-            GTK_SIGNAL_FUNC(fs_selection_clear), 0);
-        gtk_signal_connect(GTK_OBJECT(wb_textarea), "selection-get",
-            GTK_SIGNAL_FUNC(fs_selection_get), 0);
+        g_signal_connect(G_OBJECT(wb_textarea), "selection-clear-event",
+            G_CALLBACK(fs_selection_clear), 0);
+        g_signal_connect(G_OBJECT(wb_textarea), "selection-get",
+            G_CALLBACK(fs_selection_get), 0);
 
         GtkTextBuffer *textbuf =
             gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
@@ -1066,8 +1064,8 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         GtkWidget *button = gtk_button_new_with_label("Dismiss");
         gtk_widget_set_name(button, "Dismiss");
         gtk_widget_show(button);
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(fs_quit_proc), this);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(fs_quit_proc), this);
 
         gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -1130,8 +1128,8 @@ GTKfilePopup::~GTKfilePopup()
     delete [] fs_colwid;
     delete fs_bmap;
 
-    gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-        GTK_SIGNAL_FUNC(fs_quit_proc), this);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+        (gpointer)fs_quit_proc, this);
 
     gtk_widget_hide(wb_shell);
     // shell destroyed in gtk_bag destructor
@@ -1822,8 +1820,8 @@ GTKfilePopup::set_label()
             gtk_menu_append(GTK_MENU(menu), menu_item);
             gtk_object_set_data(GTK_OBJECT(menu_item), "offset",
                 (void*)(e - fs_rootdir - 1));
-            gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-                GTK_SIGNAL_FUNC(fs_upmenu_proc), this);
+            g_signal_connect(G_OBJECT(menu_item), "activate",
+                G_CALLBACK(fs_upmenu_proc), this);
             gtk_widget_show(menu_item);
             if (!*s)
                 break;
@@ -2192,8 +2190,8 @@ GTKfilePopup::fs_focus_hdlr(GtkWidget *widget, GdkEvent*, void*)
 {
     if (GRX->MainFrame() && GRX->MainFrame()->PositionReferenceWidget())
         GRX->SetFocus(GRX->MainFrame()->PositionReferenceWidget());
-    gtk_signal_disconnect_by_func(GTK_OBJECT(widget),
-        GTK_SIGNAL_FUNC(fs_focus_hdlr), 0);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
+        (gpointer)fs_focus_hdlr, 0);
     return (0);
 }
 
@@ -2522,15 +2520,8 @@ GTKfilePopup::fs_motion_proc(GtkWidget *widget, GdkEvent *event, void *fsp)
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
     if (fs) {
         if (fs->fs_dragging) {
-#if GTK_CHECK_VERSION(2,12,0)
             if (event->motion.is_hint)
                 gdk_event_request_motions((GdkEventMotion*)event);
-#else
-            // Strange voodoo to "turn on" motion events, that are
-            // otherwise suppressed since GDK_POINTER_MOTION_HINT_MASK
-            // is set.  See GdkEventMask doc.
-            gdk_window_get_pointer(widget->window, 0, 0, 0);
-#endif
             if ((abs((int)event->motion.x - fs->fs_drag_x) > 4 ||
                     abs((int)event->motion.y - fs->fs_drag_y) > 4)) {
                 fs->fs_dragging = false;
@@ -2645,7 +2636,7 @@ GTKfilePopup::fs_source_drag_data_get(GtkWidget *widget, GdkDragContext*,
     GtkSelectionData *selection_data, guint, guint, gpointer)
 {
     // stop native handler
-    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "drag-data-get");
+    g_signal_stop_emission_by_name(G_OBJECT(widget), "drag-data-get");
 
     GTKfilePopup *fs =
         (GTKfilePopup*)gtk_object_get_data(GTK_OBJECT(widget), "fsbag");
@@ -2712,7 +2703,7 @@ GTKfilePopup::fs_selection_get(GtkWidget *widget,
         return;  
 
     // stop native handler
-    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "selection-get");
+    g_signal_stop_emission_by_name(G_OBJECT(widget), "selection-get");
 
     GTKfilePopup *fs =
         (GTKfilePopup*)gtk_object_get_data(GTK_OBJECT(widget), "fsbag");
@@ -2776,11 +2767,7 @@ namespace {
         if (!vadj)
             return;
         if (up) {
-#if GTK_CHECK_VERSION(2,12,0)
             GdkWindow *window = gtk_widget_get_window(GTK_WIDGET(tree));
-#else
-            GdkWindow *window = GTK_WIDGET(tree)->window;
-#endif
             int hei = gdk_window_get_height(window);
             float value = gtk_adjustment_get_value(vadj);
             float upper = gtk_adjustment_get_upper(vadj) - hei;
@@ -2822,11 +2809,7 @@ GTKfilePopup::fs_scroll_hdlr(GtkWidget *tree)
 {
     if (!GTK_IS_TREE_VIEW(tree))
         return;
-#if GTK_CHECK_VERSION(2,12,0)
     GdkWindow *window = gtk_widget_get_window(tree);
-#else
-    GdkWindow *window = tree->window;
-#endif
     if (!window)
         return;
     int x, y;
@@ -3315,8 +3298,8 @@ namespace {
         if (!popup)
             popup  = caller;
         if (popup) {
-            gtk_signal_disconnect_by_func(GTK_OBJECT(popup),
-                GTK_SIGNAL_FUNC(action_cancel), popup);
+            g_signal_handlers_disconnect_by_func(G_OBJECT(popup),
+                (gpointer)action_cancel, popup);
             gtk_widget_destroy(popup);
         }
     }
@@ -3413,8 +3396,8 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     GtkWidget *button = gtk_button_new_with_label("Move");
     gtk_widget_set_name(button, "Move");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(action_proc), context);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(action_proc), context);
     gtk_object_set_data(GTK_OBJECT(button), "popup", popup);
     gtk_object_set_data(GTK_OBJECT(button), "action",
         (void*)GDK_ACTION_MOVE);
@@ -3423,8 +3406,8 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     button = gtk_button_new_with_label("Copy");
     gtk_widget_set_name(button, "Copy");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(action_proc), context);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(action_proc), context);
     gtk_object_set_data(GTK_OBJECT(button), "popup", popup);
     gtk_object_set_data(GTK_OBJECT(button), "action",
         (void*)GDK_ACTION_COPY);
@@ -3433,8 +3416,8 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     button = gtk_button_new_with_label("Link");
     gtk_widget_set_name(button, "Link");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(action_proc), context);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(action_proc), context);
     gtk_object_set_data(GTK_OBJECT(button), "popup", popup);
     gtk_object_set_data(GTK_OBJECT(button), "action",
         (void*)GDK_ACTION_LINK);
@@ -3443,8 +3426,8 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     button = gtk_button_new_with_label("Cancel");
     gtk_widget_set_name(button, "Cancel");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(action_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(action_proc), 0);
     gtk_object_set_data(GTK_OBJECT(button), "popup", popup);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
@@ -3478,8 +3461,8 @@ namespace {
                 (uintptr_t)gtk_object_get_data(GTK_OBJECT(popup), "timer");
             if (timer)
                 gtk_timeout_remove(timer);
-            gtk_signal_disconnect_by_func(GTK_OBJECT(popup),
-                GTK_SIGNAL_FUNC(progress_cancel), popup);
+            g_signal_handlers_disconnect_by_func(G_OBJECT(popup),
+                (gpointer)progress_cancel, popup);
             gtk_widget_destroy(popup);
         }
     }
@@ -3578,8 +3561,8 @@ namespace {
         if (!popup)
             popup = caller;
         if (popup) {
-            gtk_signal_disconnect_by_func(GTK_OBJECT(popup),
-                GTK_SIGNAL_FUNC(fail_cancel), popup);
+            g_signal_handlers_disconnect_by_func(G_OBJECT(popup),
+                (gpointer)fail_cancel, popup);
             gtk_widget_destroy(popup);
         }
     }
@@ -3617,8 +3600,8 @@ gtkinterf::gtk_Message(GtkWidget *shell, bool failed, const char *msg)
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fail_cancel), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(fail_cancel), 0);
     gtk_object_set_data(GTK_OBJECT(button), "popup", popup);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 1, 2,

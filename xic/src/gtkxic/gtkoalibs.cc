@@ -206,43 +206,43 @@ sLBoa::sLBoa(GRobject c)
     lb_openbtn = gtk_button_new_with_label("Open/Close");
     gtk_widget_set_name(lb_openbtn, "Open");
     gtk_widget_show(lb_openbtn);
-    gtk_signal_connect(GTK_OBJECT(lb_openbtn), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBopen);
+    g_signal_connect(G_OBJECT(lb_openbtn), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBopen);
     gtk_box_pack_start(GTK_BOX(hbox), lb_openbtn, true, true, 0);
 
     lb_writbtn = gtk_button_new_with_label("Writable Y/N");
     gtk_widget_set_name(lb_writbtn, "Writble");
     gtk_widget_show(lb_writbtn);
-    gtk_signal_connect(GTK_OBJECT(lb_writbtn), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBwrt);
+    g_signal_connect(G_OBJECT(lb_writbtn), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBwrt);
     gtk_box_pack_start(GTK_BOX(hbox), lb_writbtn, true, true, 0);
 
     lb_contbtn = gtk_button_new_with_label("Contents");
     gtk_widget_set_name(lb_contbtn, "Contents");
     gtk_widget_show(lb_contbtn);
-    gtk_signal_connect(GTK_OBJECT(lb_contbtn), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBcont);
+    g_signal_connect(G_OBJECT(lb_contbtn), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBcont);
     gtk_box_pack_start(GTK_BOX(hbox), lb_contbtn, true, true, 0);
 
     GtkWidget *button = gtk_button_new_with_label("Create");
     gtk_widget_set_name(button, "Create");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBcrt);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBcrt);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_toggle_button_new_with_label("Defaults");
     gtk_widget_set_name(button, "Defaults");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBdefs);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBdefs);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBhelp);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBhelp);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     int rowcnt = 0;
@@ -256,15 +256,15 @@ sLBoa::sLBoa(GRobject c)
     lb_techbtn = gtk_toggle_button_new_with_label("Tech");
     gtk_widget_set_name(lb_techbtn, "Tech");
     gtk_widget_show(lb_techbtn);
-    gtk_signal_connect(GTK_OBJECT(lb_techbtn), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBtech);
+    g_signal_connect(G_OBJECT(lb_techbtn), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBtech);
     gtk_box_pack_start(GTK_BOX(hbox), lb_techbtn, false, false, 0);
 
     lb_destbtn = gtk_button_new_with_label("Destroy");
     gtk_widget_set_name(lb_destbtn, "Destroy");
     gtk_widget_show(lb_destbtn);
-    gtk_signal_connect(GTK_OBJECT(lb_destbtn), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBdest);
+    g_signal_connect(G_OBJECT(lb_destbtn), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBdest);
     gtk_box_pack_start(GTK_BOX(hbox), lb_destbtn, false, false, 0);
 
     sLstr lstr;
@@ -295,23 +295,23 @@ sLBoa::sLBoa(GRobject c)
     gtk_widget_show(lb_both);
     GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(lb_both));
     gtk_box_pack_start(GTK_BOX(hbox), lb_both, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(lb_both), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBboth);
+    g_signal_connect(G_OBJECT(lb_both), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBboth);
 
     lb_phys = gtk_radio_button_new_with_label(group, "Physical");
     gtk_widget_set_name(lb_phys, "Phys");
     gtk_widget_show(lb_phys);
     gtk_box_pack_start(GTK_BOX(hbox), lb_phys, true, false, 0);
     group = gtk_radio_button_group(GTK_RADIO_BUTTON(lb_phys));
-    gtk_signal_connect(GTK_OBJECT(lb_phys), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBphys);
+    g_signal_connect(G_OBJECT(lb_phys), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBphys);
 
     lb_elec = gtk_radio_button_new_with_label(group, "Electrical");
     gtk_widget_set_name(lb_elec, "Elec");
     gtk_widget_show(lb_elec);
     gtk_box_pack_start(GTK_BOX(hbox), lb_elec, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(lb_elec), "clicked",
-        GTK_SIGNAL_FUNC(lb_action_proc), (void*)LBelec);
+    g_signal_connect(G_OBJECT(lb_elec), "clicked",
+        G_CALLBACK(lb_action_proc), (void*)LBelec);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -361,8 +361,8 @@ sLBoa::sLBoa(GRobject c)
         gtk_tree_view_get_selection(GTK_TREE_VIEW(lb_list));
     gtk_tree_selection_set_select_function(sel, lb_selection_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
-    gtk_signal_connect(GTK_OBJECT(lb_list), "focus",
-        GTK_SIGNAL_FUNC(lb_focus_proc), this);
+    g_signal_connect(G_OBJECT(lb_list), "focus",
+        G_CALLBACK(lb_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), lb_list);
     gtk_widget_set_size_request(lb_list, -1, 100);
@@ -370,8 +370,8 @@ sLBoa::sLBoa(GRobject c)
     // Set up font and tracking.
     GTKfont::setupFont(lb_list, FNT_PROP, true);
 
-    gtk_signal_connect(GTK_OBJECT(lb_list), "button-press-event",
-        GTK_SIGNAL_FUNC(lb_button_press_proc), this);
+    g_signal_connect(G_OBJECT(lb_list), "button-press-event",
+        G_CALLBACK(lb_button_press_proc), this);
 
     gtk_table_attach(GTK_TABLE(form), swin, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -394,8 +394,8 @@ sLBoa::sLBoa(GRobject c)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(lb_cancel), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(lb_cancel), 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -425,9 +425,10 @@ sLBoa::~sLBoa()
     if (lb_content_pop)
         lb_content_pop->popdown();
 
-    if (wb_shell)
-        gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(lb_cancel), wb_shell);
+    if (wb_shell) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+            (gpointer)lb_cancel, wb_shell);
+    }
 
     if (lb_open_pb)
         g_object_unref(lb_open_pb);

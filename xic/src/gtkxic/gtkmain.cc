@@ -1126,39 +1126,39 @@ win_bag::subw_initialize(int wnum)
 
     gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "expose-event",
-        GTK_SIGNAL_FUNC(redraw_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
+        G_CALLBACK(redraw_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_KEY_PRESS_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "key-press-event",
-        GTK_SIGNAL_FUNC(key_dn_hdlr), this);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "key-press-event",
+        G_CALLBACK(key_dn_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_KEY_RELEASE_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "key-release-event",
-        GTK_SIGNAL_FUNC(key_up_hdlr), this);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "key-release-event",
+        G_CALLBACK(key_up_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "button-press-event",
-        GTK_SIGNAL_FUNC(button_dn_hdlr), this);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "button-press-event",
+        G_CALLBACK(button_dn_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_RELEASE_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "button-release-event",
-        GTK_SIGNAL_FUNC(button_up_hdlr), this);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "button-release-event",
+        G_CALLBACK(button_up_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_POINTER_MOTION_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "motion-notify-event",
-        GTK_SIGNAL_FUNC(motion_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "motion-notify-event",
+        G_CALLBACK(motion_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_ENTER_NOTIFY_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "enter-notify-event",
-        GTK_SIGNAL_FUNC(enter_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "enter-notify-event",
+        G_CALLBACK(enter_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_LEAVE_NOTIFY_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "leave-notify-event",
-        GTK_SIGNAL_FUNC(leave_hdlr), this);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "scroll-event",
-        GTK_SIGNAL_FUNC(scroll_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "leave-notify-event",
+        G_CALLBACK(leave_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "scroll-event",
+        G_CALLBACK(scroll_hdlr), this);
 
     // For gtk2 - this avoids issue of an expose event on focus change.
     //
     gtk_widget_add_events(gd_viewport, GDK_FOCUS_CHANGE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "focus-in-event",
-        GTK_SIGNAL_FUNC(focus_hdlr), this);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "focus-out-event",
-        GTK_SIGNAL_FUNC(focus_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "focus-in-event",
+        G_CALLBACK(focus_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "focus-out-event",
+        G_CALLBACK(focus_hdlr), this);
 
     // Drop handler setup.
     //
@@ -1166,12 +1166,12 @@ win_bag::subw_initialize(int wnum)
         (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP);
     gtk_drag_dest_set(gd_viewport, DD, main_targets, n_main_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "drag-data-received",
-        GTK_SIGNAL_FUNC(drag_data_received), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "drag-leave",
-        GTK_SIGNAL_FUNC(target_drag_leave), 0);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "drag-motion",
-        GTK_SIGNAL_FUNC(target_drag_motion), 0);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "drag-data-received",
+        G_CALLBACK(drag_data_received), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "drag-leave",
+        G_CALLBACK(target_drag_leave), 0);
+    g_signal_connect(G_OBJECT(gd_viewport), "drag-motion",
+        G_CALLBACK(target_drag_motion), 0);
 
     GTKfont::setupFont(gd_viewport, FNT_SCREEN, false);
 
@@ -1198,8 +1198,8 @@ win_bag::subw_initialize(int wnum)
     gtk_widget_size_allocate(wib_keyspressed, &a);
 
     gtk_widget_add_events(ebox, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(ebox), "button-press-event",
-        GTK_SIGNAL_FUNC(keys_hdlr), this);
+    g_signal_connect(G_OBJECT(ebox), "button-press-event",
+        G_CALLBACK(keys_hdlr), this);
 
     // Arrange and pack the widgets.
     //
@@ -1236,8 +1236,8 @@ win_bag::subw_initialize(int wnum)
 
     // Have to set this after initialization.
     //
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "configure-event",
-        GTK_SIGNAL_FUNC(resize_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "configure-event",
+        G_CALLBACK(resize_hdlr), this);
 
     XM()->UpdateCursor(wib_windesc, (CursorType)Gbag()->get_cursor_type(),
         true);
@@ -1261,8 +1261,8 @@ win_bag::pre_destroy(int wnum)
     LastPos[wnum].width = rect.width;
     LastPos[wnum].height = rect.height;
 
-    gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-        GTK_SIGNAL_FUNC(subwin_cancel_proc), (void*)(intptr_t)wnum);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+        (gpointer)subwin_cancel_proc, (void*)(intptr_t)wnum);
 }
 
 
@@ -2527,14 +2527,14 @@ main_bag::initialize()
 
     // set up signals for top level window
     gtk_widget_add_events(wb_shell, GDK_STRUCTURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "map-event",
-        GTK_SIGNAL_FUNC(map_hdlr), this);
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "unmap-event",
-        GTK_SIGNAL_FUNC(map_hdlr), this);
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "destroy-event",
-        GTK_SIGNAL_FUNC(main_destroy_proc), 0);
-    gtk_signal_connect(GTK_OBJECT(wb_shell), "delete-event",
-        GTK_SIGNAL_FUNC(main_destroy_proc), 0);
+    g_signal_connect(G_OBJECT(wb_shell), "map-event",
+        G_CALLBACK(map_hdlr), this);
+    g_signal_connect(G_OBJECT(wb_shell), "unmap-event",
+        G_CALLBACK(map_hdlr), this);
+    g_signal_connect(G_OBJECT(wb_shell), "destroy-event",
+        G_CALLBACK(main_destroy_proc), 0);
+    g_signal_connect(G_OBJECT(wb_shell), "delete-event",
+        G_CALLBACK(main_destroy_proc), 0);
 
     GtkWidget *frame = gtk_frame_new(0);
     gtk_widget_show(frame);
@@ -2606,42 +2606,42 @@ main_bag::initialize()
     gtk_widget_show(gd_viewport);
 
     gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "configure-event",
-        GTK_SIGNAL_FUNC(resize_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "configure-event",
+        G_CALLBACK(resize_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "expose-event",
-        GTK_SIGNAL_FUNC(redraw_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
+        G_CALLBACK(redraw_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_KEY_PRESS_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "key-press-event",
-        GTK_SIGNAL_FUNC(key_dn_hdlr), this);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "key-press-event",
+        G_CALLBACK(key_dn_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_KEY_RELEASE_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "key-release-event",
-        GTK_SIGNAL_FUNC(key_up_hdlr), this);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "key-release-event",
+        G_CALLBACK(key_up_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "button-press-event",
-        GTK_SIGNAL_FUNC(button_dn_hdlr), this);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "button-press-event",
+        G_CALLBACK(button_dn_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_RELEASE_MASK);
-    gtk_signal_connect_after(GTK_OBJECT(gd_viewport), "button-release-event",
-        GTK_SIGNAL_FUNC(button_up_hdlr), this);
+    g_signal_connect_after(G_OBJECT(gd_viewport), "button-release-event",
+        G_CALLBACK(button_up_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_POINTER_MOTION_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "motion-notify-event",
-        GTK_SIGNAL_FUNC(motion_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "motion-notify-event",
+        G_CALLBACK(motion_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_ENTER_NOTIFY_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "enter-notify-event",
-        GTK_SIGNAL_FUNC(enter_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "enter-notify-event",
+        G_CALLBACK(enter_hdlr), this);
     gtk_widget_add_events(gd_viewport, GDK_LEAVE_NOTIFY_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "leave-notify-event",
-        GTK_SIGNAL_FUNC(leave_hdlr), this);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "scroll-event",
-        GTK_SIGNAL_FUNC(scroll_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "leave-notify-event",
+        G_CALLBACK(leave_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "scroll-event",
+        G_CALLBACK(scroll_hdlr), this);
 
     // For gtk2 - this avoids issue of an expose event on focus change.
     //
     gtk_widget_add_events(gd_viewport, GDK_FOCUS_CHANGE_MASK);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "focus-in-event",
-        GTK_SIGNAL_FUNC(focus_hdlr), this);
-    gtk_signal_connect(GTK_OBJECT(gd_viewport), "focus-out-event",
-        GTK_SIGNAL_FUNC(focus_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "focus-in-event",
+        G_CALLBACK(focus_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "focus-out-event",
+        G_CALLBACK(focus_hdlr), this);
 
     GtkWidget *maindrawingwin = gtk_frame_new(0);
     gtk_widget_show(maindrawingwin);
@@ -2653,13 +2653,12 @@ main_bag::initialize()
         (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP);
     gtk_drag_dest_set(maindrawingwin, DD, main_targets, n_main_targets,
         GDK_ACTION_COPY);
-    gtk_signal_connect_after(GTK_OBJECT(maindrawingwin),
-        "drag-data-received",
-        GTK_SIGNAL_FUNC(drag_data_received), 0);
-    gtk_signal_connect(GTK_OBJECT(maindrawingwin), "drag-leave",
-        GTK_SIGNAL_FUNC(target_drag_leave), 0);
-    gtk_signal_connect(GTK_OBJECT(frame), "drag-motion",
-        GTK_SIGNAL_FUNC(target_drag_motion), 0);
+    g_signal_connect_after(G_OBJECT(maindrawingwin), "drag-data-received",
+        G_CALLBACK(drag_data_received), 0);
+    g_signal_connect(G_OBJECT(maindrawingwin), "drag-leave",
+        G_CALLBACK(target_drag_leave), 0);
+    g_signal_connect(G_OBJECT(frame), "drag-motion",
+        G_CALLBACK(target_drag_motion), 0);
 
     GTKfont::setupFont(gd_viewport, FNT_SCREEN, false);
 

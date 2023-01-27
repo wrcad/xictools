@@ -203,8 +203,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
     gtk_table_attach(GTK_TABLE(topform), row, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -232,26 +232,26 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     gtk_widget_set_name(mi, "Lfile");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(cv_input_proc), (void*)(long)cConvert::cvLayoutFile);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(cv_input_proc), (void*)(long)cConvert::cvLayoutFile);
     mi = gtk_menu_item_new_with_label("Cell Hierarchy Digest Name");
     gtk_widget_set_name(mi, "CHname");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate", 
-        GTK_SIGNAL_FUNC(cv_input_proc), (void*)(long)cConvert::cvChdName);
+    g_signal_connect(G_OBJECT(mi), "activate", 
+        G_CALLBACK(cv_input_proc), (void*)(long)cConvert::cvChdName);
     mi = gtk_menu_item_new_with_label("Cell Hierarchy Digest File");
     gtk_widget_set_name(mi, "CHfile");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(cv_input_proc), (void*)(long)cConvert::cvChdFile);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(cv_input_proc), (void*)(long)cConvert::cvChdFile);
     mi = gtk_menu_item_new_with_label("Native Cell Directory");
     gtk_widget_set_name(mi, "Cdir");
     gtk_widget_show(mi);
     gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_signal_connect(GTK_OBJECT(mi), "activate",
-        GTK_SIGNAL_FUNC(cv_input_proc), (void*)(long)cConvert::cvNativeDir);
+    g_signal_connect(G_OBJECT(mi), "activate",
+        G_CALLBACK(cv_input_proc), (void*)(long)cConvert::cvNativeDir);
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(cv_input), menu);
     gtk_box_pack_start(GTK_BOX(row), cv_input, false, false, 0);
@@ -272,8 +272,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
 
     cv_nbook = gtk_notebook_new();
     gtk_widget_show(cv_nbook);
-    gtk_signal_connect(GTK_OBJECT(cv_nbook), "switch-page",
-        GTK_SIGNAL_FUNC(cv_page_chg_proc), 0);
+    g_signal_connect(G_OBJECT(cv_nbook), "switch-page",
+        G_CALLBACK(cv_page_chg_proc), 0);
     gtk_table_attach(GTK_TABLE(topform), cv_nbook, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -294,8 +294,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
         "Strip For Export - (convert physical data only)");
     gtk_widget_set_name(button, "strip");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_StripForExport));
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -306,8 +306,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     button = gtk_check_button_new_with_label("Include library cell masters");
     gtk_widget_set_name(button, "libcells");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     GRX->SetStatus(button, CDvdb()->getVariable(VA_KeepLibMasters));
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -319,8 +319,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
         "Include parameterized cell sub-masters");
     gtk_widget_set_name(button, "pcsub");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -331,8 +331,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
         "Include standard via cell sub-masters");
     gtk_widget_set_name(button, "viasub");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -343,8 +343,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
         "Don't flatten standard vias, keep as instance at top level");
     gtk_widget_set_name(button, "noflvias");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -355,8 +355,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
         "Don't flatten pcells, keep as instance at top level");
     gtk_widget_set_name(button, "noflpcs");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -367,8 +367,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
         "Ignore labels in subcells when flattening");
     gtk_widget_set_name(button, "nofllbs");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -379,8 +379,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
         "Skip reading text labels from physical archives");
     gtk_widget_set_name(button, "nolabels");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -391,8 +391,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
         "Keep bad output (for debugging)");
     gtk_widget_set_name(button, "keepbad");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -450,7 +450,7 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
 
     GtkWidget *sb = sb_scale.init(FIO()->TransScale(), CDSCALEMIN, CDSCALEMAX,
         5);
-    sb_scale.connect_changed(GTK_SIGNAL_FUNC(cv_val_changed), 0);
+    sb_scale.connect_changed(G_CALLBACK(cv_val_changed), 0);
     gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
@@ -471,8 +471,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     button = gtk_button_new_with_label("Convert");
     gtk_widget_set_name(button, "Convert");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)0,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -487,8 +487,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_cancel_proc), 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(cv_cancel_proc), 0);
 
     gtk_table_attach(GTK_TABLE(topform), button, 1, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

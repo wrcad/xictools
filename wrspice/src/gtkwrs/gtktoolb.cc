@@ -574,8 +574,8 @@ GTKtoolbar::PopDownTBhelp(TBH_type type)
 {
     if (!tb_kw_help[type])
         return;
-    gtk_signal_disconnect_by_func(GTK_OBJECT(tb_kw_help[type]),
-        GTK_SIGNAL_FUNC(sTBhelp::th_cancel_proc), tb_kw_help[type]);
+    g_signal_handlers_disconnect_by_func(G_OBJECT(tb_kw_help[type]),
+        (gpointer)sTBhelp::th_cancel_proc, (gpointer)tb_kw_help[type]);
     gdk_window_get_root_origin(tb_kw_help[type]->window,
         &tb_kw_help_pos[type].x, &tb_kw_help_pos[type].y);
     gtk_widget_destroy(GTK_WIDGET(tb_kw_help[type]));
@@ -646,14 +646,14 @@ sTBhelp::sTBhelp(GRobject parent, GRobject call_btn)
     gtk_widget_add_events(th_text,
         GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 
-    gtk_signal_connect(GTK_OBJECT(th_text), "button_press_event",
-        GTK_SIGNAL_FUNC(th_btn_hdlr), this);
-    gtk_signal_connect(GTK_OBJECT(th_text), "button_release_event",
-        GTK_SIGNAL_FUNC(th_btn_hdlr), this);
+    g_signal_connect(G_OBJECT(th_text), "button_press_event",
+        G_CALLBACK(th_btn_hdlr), this);
+    g_signal_connect(G_OBJECT(th_text), "button_release_event",
+        G_CALLBACK(th_btn_hdlr), this);
 
     // This will provide an arrow cursor.
-    gtk_signal_connect_after(GTK_OBJECT(th_text), "realize",
-        GTK_SIGNAL_FUNC(text_realize_proc), 0);
+    g_signal_connect_after(G_OBJECT(th_text), "realize",
+        G_CALLBACK(text_realize_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -674,8 +674,8 @@ sTBhelp::sTBhelp(GRobject parent, GRobject call_btn)
     //
     GtkWidget *button = gtk_button_new_with_label("Dismiss");
     gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(th_cancel_proc), th_popup);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(th_cancel_proc), th_popup);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 3, 4,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -840,8 +840,8 @@ ErrMsgBox::PopUpErr(const char *string)
     gtk_object_set_data(GTK_OBJECT(er_popup), "text", er_text);
     text_set_chars(er_text, string);
     gtk_widget_add_events(er_text, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(er_text), "button_press_event",
-        GTK_SIGNAL_FUNC(er_btn_hdlr), 0);
+    g_signal_connect(G_OBJECT(er_text), "button_press_event",
+        G_CALLBACK(er_btn_hdlr), 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -854,15 +854,15 @@ ErrMsgBox::PopUpErr(const char *string)
     gtk_widget_show(hbox);
     GtkWidget *wrap = gtk_toggle_button_new_with_label("Wrap Lines");
     gtk_widget_show(wrap);
-    gtk_signal_connect(GTK_OBJECT(wrap), "clicked",
-        GTK_SIGNAL_FUNC(er_wrap_proc), 0);
+    g_signal_connect(G_OBJECT(wrap), "clicked",
+        G_CALLBACK(er_wrap_proc), 0);
     GRX->SetStatus(wrap, er_wrap);
     gtk_box_pack_start(GTK_BOX(hbox), wrap, false, false, 0);
 
     GtkWidget *cancel = gtk_button_new_with_label("Dismiss");
     gtk_widget_show(cancel);
-    gtk_signal_connect(GTK_OBJECT(cancel), "clicked",
-        GTK_SIGNAL_FUNC(er_cancel_proc), er_popup);
+    g_signal_connect(G_OBJECT(cancel), "clicked",
+        G_CALLBACK(er_cancel_proc), er_popup);
     gtk_object_set_data(GTK_OBJECT(cancel), "shell", er_popup);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(er_text),
         er_wrap ? GTK_WRAP_WORD_CHAR : GTK_WRAP_NONE);
@@ -956,7 +956,7 @@ ErrMsgBox::stuff_msg(const char *string)
     GtkAdjustment *adj = GTK_TEXT_VIEW(er_text)->vadjustment;
     if (adj && adj->value < adj->upper - adj->page_size) {
         adj->value = adj->upper - adj->page_size;
-        gtk_signal_emit_by_name(GTK_OBJECT(adj), "value_changed");
+        g_signal_emit_by_name(G_OBJECT(adj), "value_changed");
     }
 }
 
@@ -1075,8 +1075,8 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
     //
     GtkWidget *cancel = gtk_button_new_with_label("Dismiss");
     gtk_widget_show(cancel);
-    gtk_signal_connect(GTK_OBJECT(cancel), "clicked",
-        GTK_SIGNAL_FUNC(ms_cancel_proc), popup);
+    g_signal_connect(G_OBJECT(cancel), "clicked",
+        G_CALLBACK(ms_cancel_proc), popup);
     gtk_object_set_data(GTK_OBJECT(cancel), "shell", popup);
     gtk_table_attach(GTK_TABLE(form), cancel, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -1370,8 +1370,8 @@ namespace {
     //
     int revert_proc(GtkWidget *widget, GdkEvent*, void*)
     {
-        gtk_signal_disconnect_by_func(GTK_OBJECT(widget),
-            GTK_SIGNAL_FUNC(revert_proc), widget);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
+            (gpointer)revert_proc, widget);
         // Use a timeout rather than an idle, KDE seems to need the delay.
         gtk_timeout_add(800, set_accept_focus, widget);
         // gtk_idle_add(set_accept_focus, widget);
@@ -1415,8 +1415,8 @@ GTKtoolbar::RevertFocus(GtkWidget *widget)
 
         // Start with sensitivity off, and use a timer to turn it back
         // on, presumably well after mapping.
-        gtk_signal_connect(GTK_OBJECT(widget), "expose_event",
-            GTK_SIGNAL_FUNC(revert_proc), widget);
+        g_signal_connect(G_OBJECT(widget), "expose_event",
+            G_CALLBACK(revert_proc), widget);
     }
     else if (RevertMode == RVTrhel6) {
         // RHEL 6 or older, uses Gnome.  The set_keep_above ends up
@@ -1435,8 +1435,8 @@ GTKtoolbar::RevertFocus(GtkWidget *widget)
             gtk_window_set_keep_above(GTK_WINDOW(widget), true);
         }
         gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
-        gtk_signal_connect(GTK_OBJECT(widget), "expose_event",
-            GTK_SIGNAL_FUNC(revert_proc), widget);
+        g_signal_connect(G_OBJECT(widget), "expose_event",
+            G_CALLBACK(revert_proc), widget);
     }
     else if (RevertMode == RVTmsw) {
         if (!Sp.GetVar("nototop", VTYP_BOOL, 0)) {
@@ -1445,8 +1445,8 @@ GTKtoolbar::RevertFocus(GtkWidget *widget)
         }
         gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
         gtk_window_set_accept_focus(GTK_WINDOW(widget), false);
-        gtk_signal_connect(GTK_OBJECT(widget), "expose_event",
-            GTK_SIGNAL_FUNC(revert_proc), widget);
+        g_signal_connect(G_OBJECT(widget), "expose_event",
+            G_CALLBACK(revert_proc), widget);
     }
 }
 
@@ -1815,10 +1815,10 @@ GTKtoolbar::tbpop(bool up)
     // is increased.
     gtk_window_set_policy(GTK_WINDOW(w->Shell()), false, true, false);
 
-    gtk_signal_connect(GTK_OBJECT(toolbar), "destroy",
-        GTK_SIGNAL_FUNC(quit_proc), 0);
-    gtk_signal_connect(GTK_OBJECT(toolbar), "delete_event",
-        GTK_SIGNAL_FUNC(quit_proc), 0);
+    g_signal_connect(G_OBJECT(toolbar), "destroy",
+        G_CALLBACK(quit_proc), 0);
+    g_signal_connect(G_OBJECT(toolbar), "delete_event",
+        G_CALLBACK(quit_proc), 0);
 
     GtkWidget *form = gtk_table_new(1, 2, false);
     gtk_widget_show(form);
@@ -2220,8 +2220,8 @@ GTKtoolbar::tbpop(bool up)
     GtkWidget *pixbtn = gtk_button_new();
     gtk_widget_show(pixbtn);
     tb_bug = pixbtn;
-    gtk_signal_connect(GTK_OBJECT(pixbtn), "clicked",
-        GTK_SIGNAL_FUNC(wr_btn_hdlr), 0);
+    g_signal_connect(G_OBJECT(pixbtn), "clicked",
+        G_CALLBACK(wr_btn_hdlr), 0);
     GtkStyle *style = gtk_widget_get_style(pixbtn);
     GdkPixmap *pmask;
     GdkPixmap *pixmap =
@@ -2236,8 +2236,8 @@ GTKtoolbar::tbpop(bool up)
     // the Run button
     pixbtn = gtk_button_new();
     gtk_widget_show(pixbtn);
-    gtk_signal_connect(GTK_OBJECT(pixbtn), "clicked",
-        GTK_SIGNAL_FUNC(rs_btn_hdlr), 0);
+    g_signal_connect(G_OBJECT(pixbtn), "clicked",
+        G_CALLBACK(rs_btn_hdlr), 0);
     style = gtk_widget_get_style(pixbtn);
     pixmap = gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
             &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)run_xpm);
@@ -2250,8 +2250,8 @@ GTKtoolbar::tbpop(bool up)
     // the Stop button
     pixbtn = gtk_button_new();
     gtk_widget_show(pixbtn);
-    gtk_signal_connect(GTK_OBJECT(pixbtn), "clicked",
-        GTK_SIGNAL_FUNC(rs_btn_hdlr), (void*)1);
+    g_signal_connect(G_OBJECT(pixbtn), "clicked",
+        G_CALLBACK(rs_btn_hdlr), (void*)1);
     style = gtk_widget_get_style(pixbtn);
     pixmap = gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
             &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)stop_xpm);
@@ -2284,17 +2284,17 @@ GTKtoolbar::tbpop(bool up)
     gtk_drag_dest_set(frame,
         (GtkDestDefaults)(GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP),
         target_table, n_targets, GDK_ACTION_COPY);
-    gtk_signal_connect(GTK_OBJECT(frame), "drag_data_received",
-        GTK_SIGNAL_FUNC(drag_data_received), 0);
-    gtk_signal_connect(GTK_OBJECT(frame), "drag_leave",
-        GTK_SIGNAL_FUNC(target_drag_leave), 0);
-    gtk_signal_connect(GTK_OBJECT(frame), "drag-motion",
-        GTK_SIGNAL_FUNC(target_drag_motion), 0);
+    g_signal_connect(G_OBJECT(frame), "drag_data_received",
+        G_CALLBACK(drag_data_received), 0);
+    g_signal_connect(G_OBJECT(frame), "drag_leave",
+        G_CALLBACK(target_drag_leave), 0);
+    g_signal_connect(G_OBJECT(frame), "drag-motion",
+        G_CALLBACK(target_drag_motion), 0);
 
-    gtk_signal_connect(GTK_OBJECT(w->Viewport()), "expose_event",
-        GTK_SIGNAL_FUNC(expose_hdlr), w);
-    gtk_signal_connect(GTK_OBJECT(w->Viewport()), "style_set",
-        GTK_SIGNAL_FUNC(font_change_hdlr), 0);
+    g_signal_connect(G_OBJECT(w->Viewport()), "expose_event",
+        G_CALLBACK(expose_hdlr), w);
+    g_signal_connect(G_OBJECT(w->Viewport()), "style_set",
+        G_CALLBACK(font_change_hdlr), 0);
 
     gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
@@ -2987,8 +2987,8 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
         // second term is for "debug" button in debug panel
         deflt = gtk_button_new_with_label("Def");
         gtk_widget_show(deflt);
-        gtk_signal_connect(GTK_OBJECT(deflt), "clicked",
-            GTK_SIGNAL_FUNC(def_proc), this);
+        g_signal_connect(G_OBJECT(deflt), "clicked",
+            G_CALLBACK(def_proc), this);
         gtk_misc_set_padding(GTK_MISC(GTK_BIN(deflt)->child), 4, 0);
         gtk_box_pack_start(GTK_BOX(hbox), deflt, false, false, 2);
     }
@@ -3049,12 +3049,12 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
             gtk_widget_show(ebox);
             gtk_container_add(GTK_CONTAINER(ebox), arrow);
             gtk_widget_add_events(ebox, GDK_BUTTON_PRESS_MASK);
-            gtk_signal_connect_after(GTK_OBJECT(ebox), "button_press_event",
-                GTK_SIGNAL_FUNC(cb), kwstruct);
+            g_signal_connect_after(G_OBJECT(ebox), "button_press_event",
+                G_CALLBACK(cb), kwstruct);
             if (mode == KW_FLOAT) {
                 gtk_widget_add_events(ebox, GDK_BUTTON_RELEASE_MASK);
-                gtk_signal_connect_after(GTK_OBJECT(ebox),
-                    "button_release_event", GTK_SIGNAL_FUNC(cb), kwstruct);
+                g_signal_connect_after(G_OBJECT(ebox),
+                    "button_release_event", G_CALLBACK(cb), kwstruct);
             }
             gtk_box_pack_start(GTK_BOX(vbox), ebox, false, false, 0);
 
@@ -3064,12 +3064,12 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
             gtk_widget_show(ebox);
             gtk_container_add(GTK_CONTAINER(ebox), arrow);
             gtk_widget_add_events(ebox, GDK_BUTTON_PRESS_MASK);
-            gtk_signal_connect_after(GTK_OBJECT(ebox), "button_press_event",
-                GTK_SIGNAL_FUNC(cb), kwstruct);
+            g_signal_connect_after(G_OBJECT(ebox), "button_press_event",
+                G_CALLBACK(cb), kwstruct);
             if (mode == KW_FLOAT) {
                 gtk_widget_add_events(ebox, GDK_BUTTON_RELEASE_MASK);
-                gtk_signal_connect_after(GTK_OBJECT(ebox),
-                    "button_release_event", GTK_SIGNAL_FUNC(cb), kwstruct);
+                g_signal_connect_after(G_OBJECT(ebox),
+                    "button_release_event", G_CALLBACK(cb), kwstruct);
             }
             gtk_object_set_data(GTK_OBJECT(ebox), "down", (void*)1);
             gtk_box_pack_start(GTK_BOX(vbox), ebox, false, false, 0);
@@ -3111,11 +3111,11 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
         }
         else if (update)
             (*update)(true, v, this);
-        gtk_signal_connect(GTK_OBJECT(entry), "changed",
-            GTK_SIGNAL_FUNC(value_changed), kwstruct);
+        g_signal_connect(G_OBJECT(entry), "changed",
+            G_CALLBACK(value_changed), kwstruct);
         if (entry2)
-            gtk_signal_connect(GTK_OBJECT(entry2), "changed",
-                GTK_SIGNAL_FUNC(value_changed), kwstruct);
+            g_signal_connect(G_OBJECT(entry2), "changed",
+                G_CALLBACK(value_changed), kwstruct);
     }
     if (mode != KW_NO_CB)
         set_state(v ? true : false);
@@ -3125,8 +3125,8 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
     gtk_container_add(GTK_CONTAINER(frame), hbox);
 
     if (mode != KW_NO_CB)
-        gtk_signal_connect(GTK_OBJECT(active), "clicked",
-            GTK_SIGNAL_FUNC(action_proc), kwstruct);
+        g_signal_connect(G_OBJECT(active), "clicked",
+            G_CALLBACK(action_proc), kwstruct);
 }
 
 
