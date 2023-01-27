@@ -43,6 +43,8 @@
 
 #include "menu.h"
 
+//XXX
+#define UseItemFactory
 
 inline class GTKmenu *gtkMenu();
 
@@ -111,7 +113,10 @@ private:
     GtkWidget *btnPhysMenuWidget;
     GtkWidget *btnElecMenuWidget;
 
+#ifdef UseItemFactory
     GtkItemFactory *itemFactory;
+#else
+#endif
     GtkWidget *modalShell;
 };
 

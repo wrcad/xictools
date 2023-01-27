@@ -700,9 +700,9 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         GtkTextBuffer *tbf =
             gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
         g_signal_connect(G_OBJECT(tbf), "insert-text",
-            GTK_SIGNAL_FUNC(ed_insert_text_proc), this);
+            G_CALLBACK(ed_insert_text_proc), this);
         g_signal_connect(G_OBJECT(tbf), "delete-range",
-            GTK_SIGNAL_FUNC(ed_delete_range_proc), this);
+            G_CALLBACK(ed_delete_range_proc), this);
         ed_in_undo = false;
     }
 

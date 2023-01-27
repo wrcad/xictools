@@ -3197,16 +3197,6 @@ gtkinterf::gtk_QueryColor(GdkColor *clr)
 }
 
 
-// Convenience function for creating a colored tooltip.
-//
-GtkTooltips *
-gtkinterf::gtk_NewTooltip()
-{
-    GtkTooltips *tt = gtk_tooltips_new();
-    return (tt);
-}
-
-
 // Set the RGB values and allocate the pixel from cname.  This supports
 // "R G B" triples as well as the usual.  Returns true on success.
 //

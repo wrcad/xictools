@@ -59,6 +59,18 @@ public:
     void set_main_global_sens(bool);
 
 private:
+    void instantiateFileMenu();
+    void instantiateCellMenu();
+    void instantiateEditMenu();
+    void instantiateModifyMenu();
+    void instantiateViewMenu();
+    void instantiateAttributesMenu();
+    void instantiateConvertMenu();
+    void instantiateDRCMenu();
+    void instantiateExtractMenu();
+    void instantiateUserMenu();
+    void instantiateHelpMenu();
+
     static gtkMenuConfig *ptr()
         {
             if (!instancePtr)

@@ -627,7 +627,6 @@ namespace gtkinterf {
     GtkWidget *gtk_NewPopup(gtk_bag*, const char*,
         void(*)(GtkWidget*, void*), void*);
     void gtk_QueryColor(GdkColor*);
-    GtkTooltips *gtk_NewTooltip();
     bool gtk_ColorSet(GdkColor*, const char*);
     GdkColor *gtk_PopupColor(GRattrColor);
 

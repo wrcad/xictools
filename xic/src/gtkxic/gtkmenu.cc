@@ -55,7 +55,10 @@ GTKmenu::GTKmenu()
     topButtonWidget = 0;
     btnPhysMenuWidget = 0;
     btnElecMenuWidget = 0;
+#ifdef UseItemFactory
     itemFactory = 0;
+#else
+#endif
     modalShell = 0;
 }
 
@@ -73,6 +76,7 @@ GTKmenu::GTKmenu()
 void
 GTKmenu::InitMainMenu(GtkWidget *window)
 {
+#ifdef UseItemFactory
     GtkAccelGroup *accel_group = gtk_accel_group_new();
 
     // This function initializes the item factory.
@@ -93,6 +97,8 @@ GTKmenu::InitMainMenu(GtkWidget *window)
 
     mainMenu = gtk_item_factory_get_widget(item_factory, "<main>");
     gtk_widget_show(mainMenu);
+#else
+#endif
 }
 
 
@@ -391,6 +397,7 @@ GTKmenu::NewSubwMenu(int wnum)
     mname[5] = '>';
     mname[6] = 0;
 
+#ifdef UseItemFactory
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     GtkItemFactory *item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR,
         mname, accel_group);
@@ -402,6 +409,8 @@ GTKmenu::NewSubwMenu(int wnum)
     gtk_widget_show(menubar);
 
     return (menubar);
+#else
+#endif
 }
 
 
@@ -573,6 +582,7 @@ GTKmenu::HideButtonMenu(bool hide)
 void
 GTKmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
 {
+#ifdef UseItemFactory
     if (!itemFactory)
         return;
     MenuBox *mbox = FindMainMenu(mname);
@@ -594,6 +604,8 @@ GTKmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
                 gtk_widget_set_sensitive(widget, !desens);
         }
     }
+#else
+#endif
 }
 
 
@@ -605,6 +617,7 @@ GTKmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
 GtkWidget *
 GTKmenu::name_to_widget(const char *name)
 {
+#ifdef UseItemFactory
     if (!name || !*name)
         return (0);
     if (*name == '/')
@@ -631,6 +644,8 @@ GTKmenu::name_to_widget(const char *name)
                 return ((GtkWidget*)ent->cmd.caller);
         }
     }
+#else
+#endif
 
     return (0);
 }

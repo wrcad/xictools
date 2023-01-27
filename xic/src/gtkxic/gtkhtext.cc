@@ -150,9 +150,8 @@ GTKedit::GTKedit(bool nogr)
     gtk_widget_set_size_request(pe_r_button, -1, 20);
     gtk_widget_hide(pe_r_button);
     gtk_widget_set_name(pe_r_button, "Recall");
-    GtkTooltips *tt = gtk_NewTooltip();
-    gtk_tooltips_set_tip(tt, pe_r_button,
-        "Recall edit string from a register.", "");
+    gtk_widget_set_tooltip_text(pe_r_button,
+        "Recall edit string from a register.");
     g_signal_connect(G_OBJECT(pe_r_button), "button-press-event",
         G_CALLBACK(pe_popup_btn_proc), this);
     gtk_box_pack_start(GTK_BOX(pe_container), pe_r_button, false, false, 0);
@@ -173,9 +172,8 @@ GTKedit::GTKedit(bool nogr)
     gtk_widget_set_size_request(pe_s_button, -1, 20);
     gtk_widget_hide(pe_s_button);
     gtk_widget_set_name(pe_s_button, "Save");
-    tt = gtk_NewTooltip();
-    gtk_tooltips_set_tip(tt, pe_s_button,
-        "Save edit string to a register.", "");
+    gtk_widget_set_tooltip_text(pe_s_button,
+        "Save edit string to a register.");
     g_signal_connect(G_OBJECT(pe_s_button), "button-press-event",
         G_CALLBACK(pe_popup_btn_proc), this);
     gtk_box_pack_start(GTK_BOX(pe_container), pe_s_button, false, false, 0);
@@ -185,9 +183,8 @@ GTKedit::GTKedit(bool nogr)
     gtk_widget_set_size_request(pe_l_button, -1, 20);
     gtk_widget_hide(pe_l_button);
     gtk_widget_set_name(pe_l_button, "LongText");
-    tt = gtk_NewTooltip();
-    gtk_tooltips_set_tip(tt, pe_l_button,
-        "Associate a block of text with the label - pop up an editor.", "");
+    gtk_widget_set_tooltip_text(pe_l_button,
+        "Associate a block of text with the label - pop up an editor.");
     g_signal_connect(G_OBJECT(pe_l_button), "clicked",
         G_CALLBACK(pe_l_btn_hdlr), this);
     gtk_box_pack_start(GTK_BOX(pe_container), pe_l_button, false, false, 0);
