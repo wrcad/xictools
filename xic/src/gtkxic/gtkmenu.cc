@@ -58,6 +58,7 @@ GTKmenu::GTKmenu()
 #ifdef UseItemFactory
     itemFactory = 0;
 #else
+    accelGroup = 0;
 #endif
     modalShell = 0;
 }
@@ -98,6 +99,10 @@ GTKmenu::InitMainMenu(GtkWidget *window)
     mainMenu = gtk_item_factory_get_widget(item_factory, "<main>");
     gtk_widget_show(mainMenu);
 #else
+    accelGroup = gtk_accel_group_new();
+    gtk_window_add_accel_group(GTK_WINDOW(window), accelGroup);
+    mainMenu = gtk_menu_bar_new();
+    gtk_widget_show(mainMenu);
 #endif
 }
 

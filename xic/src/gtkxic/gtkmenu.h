@@ -99,6 +99,11 @@ public:
             return (m == Physical ? btnPhysMenuWidget : btnElecMenuWidget);
         }
 
+#ifdef UseItemFactory
+#else
+    GtkAccelGroup *AccelGroup() { return (accelGroup); }
+#endif
+
 private:
     GtkWidget *name_to_widget(const char*);
 
@@ -116,6 +121,7 @@ private:
 #ifdef UseItemFactory
     GtkItemFactory *itemFactory;
 #else
+    GtkAccelGroup *accelGroup;
 #endif
     GtkWidget *modalShell;
 };
