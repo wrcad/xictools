@@ -2230,7 +2230,7 @@ gtkMenuConfig::instantiateDRCMenu()
     gtk_widget_show(drcMenu);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), drcMenu);
 
-    ent = 7mbox->menu[drcMenuLimit];
+    ent = &mbox->menu[drcMenuLimit];
     item = miset(ent, "_Setup", 0);
     gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -2339,7 +2339,6 @@ gtkMenuConfig::instantiateExtractMenu()
     if (!item_factory)
         return;
     if_entry mi[50];
-#endif
 
     // Extract menu
     MenuBox *mbox = Menu()->FindMainMenu("extr");
@@ -2357,7 +2356,6 @@ gtkMenuConfig::instantiateExtractMenu()
         set(mbox->menu[extMenuExC], "/Extract/Extract _C", 0);
         set(mbox->menu[extMenuExLR], "/Extract/Extract L_R", 0);
 
-#ifdef UseItemFactory
         int j = 0, i = 0;
         for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
             mi[j++] = if_entry(ent->menutext, ent->accel, i ? HANDLER : 0,
@@ -2377,9 +2375,100 @@ gtkMenuConfig::instantiateExtractMenu()
             "/Extract");
         if (widget)
             gtk_widget_set_name(widget, "Extract");
-#else
-#endif
     }
+#else
+    // Extract menu
+    MenuBox *mbox = Menu()->FindMainMenu("extr");
+    if (!mbox || !mbox->menu)
+        return
+    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    if (!accel_group)
+        return;
+    GtkWidget *menubar = gtkMenu()->MainMenu();
+    if (!menubar)
+        return;
+
+    MenuEnt *ent = &mbox->menu[extMenu];
+    set(*ent, "E_xtract", 0);
+
+    GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
+    gtk_widget_set_name(item, "Extract");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *extMenu = gtk_menu_new();
+    gtk_widget_show(extMenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), extMenu);
+
+    ent = &mbox->menu[extMenuExcfg];
+    item = miset(ent, "Set_up", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)extMenuExcfg);
+    check_separator(ent, extMenu);
+
+    ent = &mbox->menu[extMenuSel];
+    item = miset(ent, "_Net Selections", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)extMenuSel);
+    check_separator(ent, extMenu);
+
+    ent = &mbox->menu[extMenuDvsel];
+    item = miset(ent, "_Device Selections", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)extMenuDvsel);
+    check_separator(ent, extMenu);
+
+    ent = &mbox->menu[extMenuSourc];
+    item = miset(ent, "_Source SPICE", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)extMenuSourc);
+    check_separator(ent, extMenu);
+
+    ent = &mbox->menu[extMenuExset];
+    item = miset(ent, "Source P_hysical", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)extMenuExset);
+    check_separator(ent, extMenu);
+
+    ent = &mbox->menu[extMenuPnet];
+    item = miset(ent, "Dump Ph_ys Netlist", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)extMenuPnet);
+    check_separator(ent, extMenu);
+
+    ent = &mbox->menu[extMenuEnet];
+    item = miset(ent, "Dump E_lec Netlist", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)extMenuEnet);
+    check_separator(ent, extMenu);
+
+    ent = &mbox->menu[extMenuLvs];
+    item = miset(ent, "Dump L_VS", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)extMenuLvs);
+    check_separator(ent, extMenu);
+
+    ent = &mbox->menu[extMenuExC];
+    item = miset(ent, "Extract _C", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)extMenuExC);
+    check_separator(ent, extMenu);
+
+    ent = &mbox->menu[extMenuExLR];
+    item = miset(ent, "Extract L_R", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)extMenuExLR);
+    check_separator(ent, extMenu);
+#endif
 }
 
 
@@ -2391,7 +2480,6 @@ gtkMenuConfig::instantiateUserMenu()
     if (!item_factory)
         return;
     if_entry mi[50];
-#endif
 
     // User menu
     MenuBox *mbox = Menu()->FindMainMenu("user");
@@ -2401,7 +2489,6 @@ gtkMenuConfig::instantiateUserMenu()
         set(mbox->menu[userMenuDebug], "/User/_Debugger", 0);
         set(mbox->menu[userMenuHash], "/User/_Rehash", 0);
 
-#ifdef UseItemFactory
         int j = 0, i = 0;
         for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
             mi[j++] = if_entry(ent->menutext, ent->accel, i ? HANDLER : 0,
@@ -2420,9 +2507,44 @@ gtkMenuConfig::instantiateUserMenu()
         GtkWidget *widget = gtk_item_factory_get_item(item_factory, "/User");
         if (widget)
             gtk_widget_set_name(widget, "User");
-#else
-#endif
     }
+#else
+    // User menu
+    MenuBox *mbox = Menu()->FindMainMenu("user");
+    if (!mbox || !mbox->menu)
+        return
+    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    if (!accel_group)
+        return;
+    GtkWidget *menubar = gtkMenu()->MainMenu();
+    if (!menubar)
+        return;
+
+    MenuEnt *ent = &mbox->menu[userMenu];
+    item = miset(ent, "/_User", 0);
+
+    GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
+    gtk_widget_set_name(item, "User");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *userMenu = gtk_menu_new();
+    gtk_widget_show(userMenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), userMenu);
+
+    ent = &mbox->menu[userMenuDebug];
+    item = miset(ent, "/User/_Debugger", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)userMenuDebug);
+    check_separator(ent, userMenu);
+
+    ent = &mbox->menu[userMenuHash];
+    item = miset(ent, "/User/_Rehash", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)userMenuHash);
+    check_separator(ent, userMenu);
+#endif
 }
 
 
@@ -2434,7 +2556,6 @@ gtkMenuConfig::instantiateHelpMenu()
     if (!item_factory)
         return;
     if_entry mi[50];
-#endif
 
     // Help menu
     MenuBox *mbox = Menu()->FindMainMenu("help");
@@ -2448,7 +2569,6 @@ gtkMenuConfig::instantiateHelpMenu()
         set(mbox->menu[helpMenuLogs], "/Help/Log _Files", 0);
         set(mbox->menu[helpMenuDebug], "/Help/_Logging", 0);
 
-#ifdef UseItemFactory
         int j = 0, i = 0;
         for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
             mi[j++] = if_entry(ent->menutext, ent->accel, i ? HANDLER : 0,
@@ -2467,9 +2587,73 @@ gtkMenuConfig::instantiateHelpMenu()
         GtkWidget *widget = gtk_item_factory_get_item(item_factory, "/Help");
         if (widget)
             gtk_widget_set_name(widget, "Help");
-#else
-#endif
     }
+#else
+    // Extract menu
+    MenuBox *mbox = Menu()->FindMainMenu("help");
+    if (!mbox || !mbox->menu)
+        return
+    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    if (!accel_group)
+        return;
+    GtkWidget *menubar = gtkMenu()->MainMenu();
+    if (!menubar)
+        return;
+
+    MenuEnt *ent = &mbox->menu[helpMenu];
+    set(, "_Help", 0, "<LastBranch>");
+
+    GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
+    gtk_widget_set_name(item, "Help");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *helpMenu = gtk_menu_new();
+    gtk_widget_show(helpMenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), helpMenu);
+
+    ent = &mbox->menu[helpMenuHelp];
+    item = miset(ent, "_Help", "<control>H");
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuHelp);
+    check_separator(ent, helpMenu);
+
+    ent = &mbox->menu[helpMenuMultw];
+    item = miset(ent, "_Multi-Window", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuMultw);
+    check_separator(ent, helpMenu);
+
+    ent = &mbox->menu[helpMenuAbout];
+    item = miset(ent, "_About", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuAbout);
+    check_separator(ent, helpMenu);
+
+    ent = &mbox->menu[helpMenuNotes];
+    item = miset(ent, "_Release Notes", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuNotes);
+    check_separator(ent, helpMenu);
+
+    ent = &mbox->menu[helpMenuLogs];
+    item = miset(ent, "Log _Files", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuLogs);
+    check_separator(ent, helpMenu);
+
+    ent = &mbox->menu[helpMenuDebug];
+    item = miset(ent, "_Logging", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuDebug);
+    check_separator(ent, helpMenu);
+
+#endif
 }
 
 
