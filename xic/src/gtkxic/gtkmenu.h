@@ -44,7 +44,7 @@
 #include "menu.h"
 
 //XXX
-#define UseItemFactory
+//#define UseItemFactory
 
 inline class GTKmenu *gtkMenu();
 
@@ -88,6 +88,11 @@ public:
     void UpdateUserMenu();
     void HideButtonMenu(bool);
     void DisableMainMenuItem(const char*, const char*, bool);
+
+#ifdef UseItemFactory
+#else
+    GtkWidget *FindMenuWidget(const char*);
+#endif
 
     void SetModal(GtkWidget *w) { modalShell = w; }
     GtkWidget *GetModal()       { return (modalShell); }

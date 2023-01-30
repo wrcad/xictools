@@ -53,7 +53,11 @@ public:
     void instantiateMainMenus();
     void instantiateTopButtonMenu();
     void instantiateSideButtonMenus();
+#ifdef UseItemFactory
     void instantiateSubwMenus(int, GtkItemFactory*);
+#else
+    void instantiateSubwMenus(int, GtkWidget*, GtkAccelGroup*);
+#endif
     void updateDynamicMenus();
     void switch_menu_mode(DisplayMode, int);
     void set_main_global_sens(bool);
@@ -65,11 +69,30 @@ private:
     void instantiateModifyMenu();
     void instantiateViewMenu();
     void instantiateAttributesMenu();
+#ifdef UseItemFacgtory
+#else
+    void instantiateAttrSubMenu(GtkWidget*);
+    void instantiateObjSubMenu(GtkWidget*);
+#endif
     void instantiateConvertMenu();
     void instantiateDRCMenu();
     void instantiateExtractMenu();
     void instantiateUserMenu();
     void instantiateHelpMenu();
+
+    void instantiatePhysSideButtonMenu();
+    void instantiateElecSideButtonMenu();
+
+#ifdef UseItemFactory
+    void instantiateSubwViewMenu(int, GtkItemFactory*);
+    void instantiateSubwAttrMenu(int, GtkItemFactory*);
+    void instantiateSubwHelpMenu(int, GtkItemFactory*);
+#else
+    void instantiateSubwViewMenu(int, GtkWidget*, GtkAccelGroup*);
+    void instantiateSubwAttrMenu(int, GtkWidget*, GtkAccelGroup*);
+    void instantiateSubwObjSubMenu(int, GtkWidget*);
+    void instantiateSubwHelpMenu(int, GtkWidget*, GtkAccelGroup*);
+#endif
 
     static gtkMenuConfig *ptr()
         {
@@ -80,17 +103,25 @@ private:
   
     static void on_null_ptr();
 
+#ifdef UseItemFacgtory
     static void menu_handler(GtkWidget*, void*, unsigned);
+#else
+    static void menu_handler(GtkWidget*, void*);
+#endif
     static int user_cmd_proc(void*);
     static int cmd_proc(void*);
+#ifdef UseItemFacgtory
     static void make_entries(GtkItemFactory*, GtkItemFactoryEntry*, int,
         MenuEnt*, int);
+#endif
     static void edmenu_proc(GtkWidget*, void*);
     static void vimenu_proc(GtkWidget*, void*);
     static void stmenu_proc(GtkWidget*, void*);
     static void shmenu_proc(GtkWidget*, void*);
+#ifdef UseItemFacgtory
     static void top_btnmenu_callback(GtkWidget*, void*);
     static void btnmenu_callback(GtkWidget*, void*);
+#endif
     static int popup_btn_proc(GtkWidget*, GdkEvent*, void*);
     static const char **get_style_pixmap();
 

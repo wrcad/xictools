@@ -103,6 +103,7 @@ GTKmenu::InitMainMenu(GtkWidget *window)
     gtk_window_add_accel_group(GTK_WINDOW(window), accelGroup);
     mainMenu = gtk_menu_bar_new();
     gtk_widget_show(mainMenu);
+    gtkCfg()->instantiateMainMenus();
 #endif
 }
 
@@ -393,6 +394,8 @@ GTKmenu::NewSubwMenu(int wnum)
     win_bag *w = dynamic_cast<win_bag*>(DSP()->Window(wnum)->Wbag());
     if (!w)
         return (0);
+
+#ifdef UseItemFactory
     char mname[8];
     mname[0] = '<';
     mname[1] = 's';
@@ -402,7 +405,6 @@ GTKmenu::NewSubwMenu(int wnum)
     mname[5] = '>';
     mname[6] = 0;
 
-#ifdef UseItemFactory
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     GtkItemFactory *item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR,
         mname, accel_group);
@@ -415,6 +417,13 @@ GTKmenu::NewSubwMenu(int wnum)
 
     return (menubar);
 #else
+    GtkAccelGroup *accel_group = gtk_accel_group_new();
+    gtk_window_add_accel_group(GTK_WINDOW(w->Shell()), accel_group);
+    GtkWidget *menubar = gtk_menu_bar_new();
+    gtk_widget_show(menubar);
+    gtkCfg()->instantiateSubwMenus(wnum, menubar, accel_group);
+
+    return (menubar);
 #endif
 }
 
@@ -582,6 +591,18 @@ GTKmenu::HideButtonMenu(bool hide)
 }
 
 
+GtkWidget *
+GTKmenu::FindMenuWidget(const char *path)
+{
+    // replacement for gtk_item_factory_get_item
+    // XXX write me!
+    if (!path || !*path)
+        return (0);
+    fprintf(stderr, "GTKmenu::FindMenuWidget was called for\n%s\n", path);
+    return (0);
+}
+
+
 // Disable/enable menus (item is null) or menu entries.
 //
 void
@@ -610,6 +631,25 @@ GTKmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
         }
     }
 #else
+    MenuBox *mbox = FindMainMenu(mname);
+    if (mbox && mbox->menu) {
+        if (!item) {
+            char *tmp = strip_accel(mbox->menu[0].menutext);
+            GtkWidget *widget = FindMenuWidget(tmp);
+            delete [] tmp;
+            if (widget)
+                gtk_widget_set_sensitive(widget, !desens);
+            return;
+        }
+        MenuEnt *ent = FindEntry(mname, item, 0);
+        if (ent) {
+            char *tmp = strip_accel(ent->menutext);
+            GtkWidget *widget = FindMenuWidget(tmp);
+            delete [] tmp;
+            if (widget)
+                gtk_widget_set_sensitive(widget, !desens);
+        }
+    }
 #endif
 }
 
@@ -650,6 +690,32 @@ GTKmenu::name_to_widget(const char *name)
         }
     }
 #else
+    if (!name || !*name)
+        return (0);
+    if (*name == '/')
+        // Name is an "icon factory" path.
+        return (FindMenuWidget(name));
+    if (lstring::prefix("sub", name) && isdigit(name[3])) {
+        // widget is in subwindow menu
+        int wnum = name[3] - '0';
+        if (wnum > 0 && wnum < DSP_NUMWINS &&
+                DSP()->Window(wnum)) {
+            for (MenuBox *m = mm_subw_menus[wnum]; m && m->name; m++) {
+                for (MenuEnt *ent = m->menu; ent && ent->entry; ent++) {
+                    if (!strcmp(name + 4, ent->menutext))
+                        return ((GtkWidget*)ent->cmd.caller);
+                }
+            }
+        }
+    }
+
+    // try the button menu
+    if (GetButtonMenu() && GetButtonMenu()->menu) {
+        for (MenuEnt *ent = GetButtonMenu()->menu; ent->entry; ent++) {
+            if (!strcmp(name, ent->menutext))
+                return ((GtkWidget*)ent->cmd.caller);
+        }
+    }
 #endif
 
     return (0);

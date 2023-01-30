@@ -73,6 +73,7 @@
 #include "bitmaps/style_f.xpm"
 #include "bitmaps/style_r.xpm"
 
+#include <gdk/gdkkeysyms.h>
 
 bool
 cMain::MenuItemLocation(int, int*, int*)
@@ -105,6 +106,12 @@ cMain::MenuItemLocation(int, int*, int*)
 #else
 #define HANDLER G_CALLBACK(menu_handler)
 #endif
+
+#define voidptr (gpointer)(long)
+
+namespace {
+    const char *MIDX = "midx";
+}
 
 
 gtkMenuConfig *gtkMenuConfig::instancePtr = 0;
@@ -156,8 +163,8 @@ gtkMenuConfig::on_null_ptr()
 //         "<Branch>"         -> create an item to hold sub items
 //         "<LastBranch>"     -> create a right justified branch
 
-namespace {
 #ifdef UseItemFactory
+namespace {
     // Subclass GtkItemFactoryEntry so can use constructor
     //
     struct if_entry : public GtkItemFactoryEntry
@@ -181,11 +188,74 @@ namespace {
             }
     };
 
+    // This is toolkit-specific so not a method.
+    inline void
+    set(MenuEnt &ent, const char *text, const char *ac, const char *it = 0)
+    {
+        ent.menutext = text;
+        ent.accel = ac;
+        if (it)
+            ent.item = it;
+        else if (ent.is_menu())
+            ent.item = "<Branch>";
+        else if (ent.is_toggle())
+            ent.item = "<CheckItem>";
+    }
+}
+
 #else
 
-    // This is toolkit-specific so not a method.
-    inline GtkWidget *
-    miset(MenuEnt *ent, const char *text, const char *ac, const char *it = 0)
+namespace {
+
+    // The MenuEnt structure is defined in the main application code,
+    // otherwise these could be methods.  We prefer to keep this
+    // low-level toolkit-specific code out the the application
+    // structures.
+
+    void set(MenuEnt *ent, const char *text, const char *ac, const char *it = 0)
+    {
+        ent->menutext = text;
+        ent->accel = ac;
+        if (it)
+            ent->item = it;
+        else if (ent->is_menu())
+            ent->item = "<Branch>";
+        else if (ent->is_toggle())
+            ent->item = "<CheckItem>";
+    }
+
+
+    GtkWidget *new_item(MenuEnt *ent)
+    {
+        GtkWidget *item;
+        if (ent->is_toggle())
+            item = gtk_check_menu_item_new_with_mnemonic(ent->menutext);
+        else
+            item = gtk_menu_item_new_with_mnemonic(ent->menutext);
+        gtk_widget_show(item);
+        if (ent->description)
+            gtk_widget_set_tooltip_text(item, ent->description);
+
+        if (ent->menutext) {
+            // Name the button by stripping the underscore accelerator
+            // from trhe lavel text.
+            char bf[32];
+            int i = 0;
+            for (const char *s = ent->menutext; *s && i < 31; s++) {
+                if (*s == '_')
+                    continue;
+                bf[i++] = *s;
+            }
+            bf[i] = 0;
+            if (bf[0])
+                gtk_widget_set_name(item, bf);
+        }
+        return (item);
+    }
+
+
+    GtkWidget *miset(MenuEnt *ent, const char *text, const char *ac,
+        const char *it = 0)
     {
         ent->menutext = text;
         ent->accel = ac;
@@ -201,36 +271,54 @@ namespace {
         else
             item = gtk_menu_item_new_with_mnemonic(ent->menutext);
         gtk_widget_show(item);
+        if (ent->description)
+            gtk_widget_set_tooltip_text(item, ent->description);
+        if (ent->menutext) {
+            // Name the button by stripping the underscore accelerator
+            // from trhe lavel text.
+            char bf[32];
+            int i = 0;
+            for (const char *s = ent->menutext; *s && i < 31; s++) {
+                if (*s == '_')
+                    continue;
+                bf[i++] = *s;
+            }
+            bf[i] = 0;
+            if (bf[0])
+                gtk_widget_set_name(item, bf);
+        }
         return (item);
     }
 
-    inline GtkWidget *new_item(MenuEnt *ent)
-    {
-        GtkWidget *item;
-        if (ent->is_toggle())
-            item = gtk_check_menu_item_new_with_mnemonic(ent->menutext);
-        else
-            item = gtk_menu_item_new_with_mnemonic(ent->menutext);
-        gtk_widget_show(item);
-        return (item);
-    }
-#endif
 
-    // This is toolkit-specific so not a method.
-    inline void
-    set(MenuEnt &ent, const char *text, const char *ac, const char *it = 0)
+    void set_btn(MenuEnt *ent, unsigned long ix, gpointer cb)
     {
-        ent.menutext = text;
-        ent.accel = ac;
-        if (it)
-            ent.item = it;
-        else if (ent.is_menu())
-            ent.item = "<Branch>";
-        else if (ent.is_toggle())
-            ent.item = "<CheckItem>";
+        GtkWidget *button = new_pixmap_button(ent->xpm, ent->menutext,
+            ent->is_toggle());
+        gtk_object_set_data(GTK_OBJECT(button), MIDX, voidptr ix);
+        if (ent->is_set())
+            Menu()->Select(button);
+        g_signal_connect(G_OBJECT(button), "clicked",
+            G_CALLBACK(cb), (gpointer)(ent - ix));
+        if (ent->description)
+            gtk_widget_set_tooltip_text(button, ent->description);
+        gtk_widget_show(button);
+        gtk_widget_set_name(button, ent->menutext);
+        ent->cmd.caller = button;
     }
 
+
+    void check_separator(MenuEnt *ent, GtkWidget *menu)
+    {
+        if (ent->is_separator()) {
+            GtkWidget *item = gtk_separator_menu_item_new();
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+        }
+    }
 }
+
+#endif
 
 
 void
@@ -256,6 +344,7 @@ void
 gtkMenuConfig::instantiateTopButtonMenu()
 {
     // Horizontal button line at top of main window.
+#ifdef UseItemFactory
     MenuBox *mbox = Menu()->GetMiscMenu();
     if (mbox && mbox->menu) {
         set(mbox->menu[miscMenu], 0, 0);
@@ -286,302 +375,75 @@ gtkMenuConfig::instantiateTopButtonMenu()
             ent->cmd.caller = button;
         }
     }
+#else
+    MenuBox *mbox = Menu()->GetMiscMenu();
+    if (!mbox || !mbox->menu)
+        return;
+
+    MenuEnt *ent = &mbox->menu[miscMenu];
+    set(ent, 0, 0);
+
+    ent = &mbox->menu[miscMenuMail];
+    set(ent, "Mail", 0);
+    set_btn(ent, miscMenuMail, (gpointer)menu_handler);
+
+    ent = &mbox->menu[miscMenuLtvis];
+    set(ent, "LTvisib", 0);
+    set_btn(ent, miscMenuLtvis, (gpointer)menu_handler);
+
+    ent = &mbox->menu[miscMenuLpal];
+    set(ent, "Palette", 0);
+    set_btn(ent, miscMenuLpal, (gpointer)menu_handler);
+
+    ent = &mbox->menu[miscMenuSetcl];
+    set(ent, "SetCL", 0);
+    set_btn(ent, miscMenuSetcl, (gpointer)menu_handler);
+
+    ent = &mbox->menu[miscMenuSelcp];
+    set(ent, "SelCP", 0);
+    set_btn(ent, miscMenuSelcp, (gpointer)menu_handler);
+
+    ent = &mbox->menu[miscMenuDesel];
+    set(ent, "Desel", 0);
+    set_btn(ent, miscMenuDesel, (gpointer)menu_handler);
+
+    ent = &mbox->menu[miscMenuRdraw];
+    set(ent, "Rdraw", 0);
+    set_btn(ent, miscMenuRdraw, (gpointer)menu_handler);
+#endif
 }
 
 
 void
 gtkMenuConfig::instantiateSideButtonMenus()
 {
-    // Physical button menu.
-    MenuBox *mbox = Menu()->GetPhysButtonMenu();
-    if (mbox && mbox->menu) {
-
-        set(mbox->menu[btnPhysMenu], 0, 0);
-        set(mbox->menu[btnPhysMenuLabel], "Labels", 0);
-        set(mbox->menu[btnPhysMenuLogo], "Logo", 0);
-        set(mbox->menu[btnPhysMenuBox], "Boxes", 0);
-        set(mbox->menu[btnPhysMenuPolyg], "Polygons", 0);
-        set(mbox->menu[btnPhysMenuWire], "Wires", 0);
-        set(mbox->menu[btnPhysMenuStyle], "Style", 0);
-        set(mbox->menu[btnPhysMenuRound], "Round", 0);
-        set(mbox->menu[btnPhysMenuDonut], "Donut", 0);
-        set(mbox->menu[btnPhysMenuArc], "Arc", 0);
-        set(mbox->menu[btnPhysMenuSides], "Sides", 0);
-        set(mbox->menu[btnPhysMenuXor], "Xor", 0);
-        set(mbox->menu[btnPhysMenuBreak], "Break", 0);
-        set(mbox->menu[btnPhysMenuErase], "Erase", 0);
-        set(mbox->menu[btnPhysMenuPut], "Put", 0);
-        set(mbox->menu[btnPhysMenuSpin], "Spin", 0);
-
-        for (int i = 1; i < btnPhysMenu_END; i++) {
-            MenuEnt *ent = &mbox->menu[i];
-            GtkWidget *button;
-            if (i == btnPhysMenuStyle) {
-
-                const char **spm = get_style_pixmap();
-                button = new_pixmap_button(spm, ent->menutext, false);
-                GtkWidget *menu = gtkMenu()->new_popup_menu(0,
-                    EditIf()->styleList(), G_CALLBACK(stmenu_proc), 0);
-                if (menu) {
-                    gtk_widget_set_name(menu, "StyleMenu");
-                    g_signal_connect(G_OBJECT(button), "button-press-event",
-                        G_CALLBACK(popup_btn_proc), menu);
-                }
-            }
-            else {
-                button = new_pixmap_button(ent->xpm, ent->menutext,
-                    ent->is_toggle());
-                if (ent->is_set())
-                    Menu()->Select(button);
-                g_signal_connect(G_OBJECT(button), "clicked",
-                    G_CALLBACK(btnmenu_callback), (void*)(intptr_t)i);
-            }
-            if (ent->description)
-                gtk_widget_set_tooltip_text(button, ent->description); 
-            gtk_widget_show(button);
-            gtk_widget_set_name(button, ent->menutext);
-            ent->cmd.caller = button;
-        }
-    }
-
-    // Electrical button menu.
-    mbox = Menu()->GetElecButtonMenu();
-    if (mbox && mbox->menu) {
-
-        set(mbox->menu[btnElecMenu], 0, 0);
-        set(mbox->menu[btnElecMenuDevs], "Devices", 0);
-        set(mbox->menu[btnElecMenuShape], "Shape", 0);
-        set(mbox->menu[btnElecMenuWire], "Wire", 0);
-        set(mbox->menu[btnElecMenuLabel], "Label", 0);
-        set(mbox->menu[btnElecMenuErase], "Erase", 0);
-        set(mbox->menu[btnElecMenuBreak], "Break", 0);
-        set(mbox->menu[btnElecMenuSymbl], "Symbolic", 0);
-        set(mbox->menu[btnElecMenuNodmp], "Node Map", 0);
-        set(mbox->menu[btnElecMenuSubct], "Subcircuit", 0);
-        set(mbox->menu[btnElecMenuTerms], "Show Terms", 0);
-        set(mbox->menu[btnElecMenuSpCmd], "Command", 0);
-        set(mbox->menu[btnElecMenuRun], "Run", 0);
-        set(mbox->menu[btnElecMenuDeck], "Dump Deck", 0);
-        set(mbox->menu[btnElecMenuPlot], "Plot", 0);
-        set(mbox->menu[btnElecMenuIplot], "Intr Plot", 0);
-
-        for (int i = 1; i < btnElecMenu_END; i++) {
-            MenuEnt *ent = &mbox->menu[i];
-            GtkWidget *button;
-            if (i == btnElecMenuShape) {
-                button = new_pixmap_button(ent->xpm, ent->menutext, false);
-                GtkWidget *menu = gtkMenu()->new_popup_menu(0,
-                    ScedIf()->shapesList(), G_CALLBACK(shmenu_proc), 0);
-                if (menu) {
-                    gtk_widget_set_name(menu, "ShapeMenu");
-                    g_signal_connect(G_OBJECT(button), "button-press-event",
-                        G_CALLBACK(popup_btn_proc), menu);
-                }
-            }
-            else {
-                button = new_pixmap_button(ent->xpm, ent->menutext,
-                    ent->is_toggle());
-                if (ent->is_set())
-                    Menu()->Select(button);
-                g_signal_connect(G_OBJECT(button), "clicked",
-                    G_CALLBACK(btnmenu_callback), (void*)(intptr_t)i);
-            }
-            if (ent->description)
-                gtk_widget_set_tooltip_text(button, ent->description); 
-            gtk_widget_show(button);
-            gtk_widget_set_name(button, ent->menutext);
-            ent->cmd.caller = button;
-        }
-    }
+    instantiatePhysSideButtonMenu();
+    instantiateElecSideButtonMenu();
 }
 
 
+#ifdef UseItemFactory
 void
 gtkMenuConfig::instantiateSubwMenus(int wnum, GtkItemFactory *item_factory)
 {
-#ifdef UseItemFactory
-    if (!item_factory)
-        return;
-    if_entry mi[50];
-#endif
+    instantiateSubwViewMenu(wnum, item_factory);
+    instantiateSubwAttrMenu(wnum, item_factory);
+    instantiateSubwHelpMenu(wnum, item_factory);
 
-    // Subwin View Menu
-    MenuBox *mbox = Menu()->FindSubwMenu("view", wnum);
-    if (mbox && mbox->menu) {
-
-        set(mbox->menu[subwViewMenu], "/_View", 0);
-        set(mbox->menu[subwViewMenuView], "/View/_View", 0);
-        set(mbox->menu[subwViewMenuSced], "/View/E_lectrical", 0);
-        set(mbox->menu[subwViewMenuPhys], "/View/P_hysical", 0);
-        set(mbox->menu[subwViewMenuExpnd], "/View/_Expand", 0);
-        set(mbox->menu[subwViewMenuZoom], "/View/_Zoom", 0);
-        set(mbox->menu[subwViewMenuWdump], "/View/_Dump To File", 0);
-        set(mbox->menu[subwViewMenuLshow], "/View/_Show Location", 0);
-        set(mbox->menu[subwViewMenuSwap], "/View/Swap With _Main", 0);
-        set(mbox->menu[subwViewMenuLoad], "/View/Load _New", 0);
-        set(mbox->menu[subwViewMenuCancl], "/View/_Quit", "<control>Q");
-
-#ifdef UseItemFactory
-        int j = 0, i = 0;
-        for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
-            if (i == subwViewMenuSced || i == subwViewMenuPhys) {
-                if (!ScedIf()->hasSced()) {
-                    i++;
-                    continue;
-                }
-            }
-            mi[j++] = if_entry(ent->menutext, ent->accel,
-                i && i != subwViewMenuView ? HANDLER : 0, i, ent->item);
-            if (ent->is_separator())
-                mi[j++] = if_entry("/View/sep", 0, 0, NOTMAPPED,
-                    "<Separator>");
-            i++;
-        }
-        GtkItemFactoryEntry *menu = new GtkItemFactoryEntry[j];
-        memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
-        make_entries(item_factory, menu, j, mbox->menu, i);
-        delete [] menu;
-
-        GtkWidget *btn = gtk_item_factory_get_widget(item_factory,
-            "/View/View");
-        GtkWidget *popup = gtkMenu()->new_popup_menu(btn,
-            XM()->ViewList(), G_CALLBACK(vimenu_proc),
-            (void*)(intptr_t)wnum);
-        if (popup) {
-            gtk_object_set_data(GTK_OBJECT(btn), "menu", popup);
-            gtk_object_set_data(GTK_OBJECT(btn), "callb", (void*)vimenu_proc);
-            gtk_object_set_data(GTK_OBJECT(btn), "data",(void*)(intptr_t)wnum);
-
-            // Set up the mapping so that the accelerator for the
-            // "view" button will activate the "full" operation from
-            // the sub-menu.
-
-            GList *contents = gtk_container_children(GTK_CONTAINER(popup));
-            if (contents) {
-                // the first item is the "full" button
-                GtkWidget *fullbut = GTK_WIDGET(contents->data);
-                mbox->menu[subwViewMenuView].alt_caller = fullbut;
-                g_list_free(contents);
-            }
-        }
-
-        // name the menubar object
-        GtkWidget *widget = gtk_item_factory_get_item(item_factory, "/View");
-        if (widget)
-            gtk_widget_set_name(widget, "View");
-#else
-#endif
-    }
-
-    // Subwin Attr Menu
-    mbox = Menu()->FindSubwMenu("attr", wnum);
-    if (mbox && mbox->menu) {
-
-        set(mbox->menu[subwAttrMenu], "/_Attributes", 0);
-        set(mbox->menu[subwAttrMenuFreez], "/Attributes/Freeze _Display", 0);
-        set(mbox->menu[subwAttrMenuCntxt], "/Attributes/Show Conte_xt in Push",
-            0);
-        set(mbox->menu[subwAttrMenuProps], "/Attributes/Show _Phys Properties",
-            0);
-        set(mbox->menu[subwAttrMenuLabls], "/Attributes/Show _Labels", 0);
-        set(mbox->menu[subwAttrMenuLarot], "/Attributes/L_abel True Orient", 0);
-        set(mbox->menu[subwAttrMenuCnams], "/Attributes/Show Cell _Names", 0);
-        set(mbox->menu[subwAttrMenuCnrot], "/Attributes/Cell Na_me True Orient",
-            0);
-        set(mbox->menu[subwAttrMenuNouxp],"/Attributes/Don't Show _Unexpanded",
-            0);
-        set(mbox->menu[subwAttrMenuObjs],"/Attributes/Objects Shown", 0);
-        set(mbox->menu[subwAttrMenuTinyb], "/Attributes/Subthreshold _Boxes",
-            0);
-        set(mbox->menu[subwAttrMenuNosym], "/Attributes/No Top _Symbolic", 0);
-        set(mbox->menu[subwAttrMenuGrid], "/Attributes/Set _Grid", "<control>G");
-
-#ifdef UseItemFactory
-        int j = 0, i = 0;
-        for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
-            if (i == subwAttrMenuNosym) {
-                if (!ScedIf()->hasSced()) {
-                    i++;
-                    continue;
-                }
-            }
-            mi[j++] = if_entry(ent->menutext, ent->accel,
-                i && i != subwAttrMenuObjs ? HANDLER : 0, i, ent->item);
-            if (ent->is_separator())
-                mi[j++] = if_entry("/Attributes/sep", 0, 0, NOTMAPPED,
-                    "<Separator>");
-            i++;
-        }
-        GtkItemFactoryEntry *menu = new GtkItemFactoryEntry[j];
-        memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
-        make_entries(item_factory, menu, j, mbox->menu, i);
-        delete [] menu;
-
-        mbox = Menu()->GetSubwObjMenu(wnum);
-        if (mbox && mbox->menu) {
-            set(mbox->menu[0],
-                "/Attributes/Objects Shown/Boxes", 0);
-            set(mbox->menu[1],
-                "/Attributes/Objects Shown/Polys", 0);
-            set(mbox->menu[2],
-                "/Attributes/Objects Shown/Wires", 0);
-            set(mbox->menu[3],
-                "/Attributes/Objects Shown/Labels", 0);
-
-            j = 0, i = 0;
-            for (MenuEnt *ent = mbox->menu; ent->entry && ent->menutext;
-                    ent++) {
-                mi[j++] = if_entry(ent->menutext, ent->accel,
-                    HANDLER, i, ent->item);
-                i++;
-            }
-            menu = new GtkItemFactoryEntry[j];
-            memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
-            make_entries(item_factory, menu, j, mbox->menu, i);
-            delete [] menu;
-        }
-
-        // name the menubar object
-        GtkWidget *widget = gtk_item_factory_get_item(item_factory,
-            "/Attributes");
-        if (widget)
-            gtk_widget_set_name(widget, "Attributes");
-#else
-#endif
-    }
-
-    // Subwin Help Menu
-    mbox = Menu()->FindSubwMenu("help", wnum);
-    if (mbox && mbox->menu) {
-
-        set(mbox->menu[subwHelpMenu], "/_Help", 0, "<LastBranch>");
-        set(mbox->menu[subwHelpMenuHelp], "/Help/_Help", "<control>H");
-
-#ifdef UseItemFactory
-        int j = 0, i = 0;
-        for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
-            mi[j++] = if_entry(ent->menutext, ent->accel, i ? HANDLER : 0,
-                i, ent->item);
-            if (ent->is_separator())
-                mi[j++] = if_entry("/Help/sep", 0, 0, NOTMAPPED,
-                    "<Separator>");
-            i++;
-        }
-        GtkItemFactoryEntry *menu = new GtkItemFactoryEntry[j];
-        memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
-        make_entries(item_factory, menu, j, mbox->menu, i);
-        delete [] menu;
-
-        // name the menubar object
-        GtkWidget *widget = gtk_item_factory_get_item(item_factory, "/Help");
-        if (widget)
-            gtk_widget_set_name(widget, "Help");
-    }
     switch_menu_mode(DSP()->CurMode(), wnum);
-#else
-#endif
 }
+#else
+void
+gtkMenuConfig::instantiateSubwMenus(int wnum, GtkWidget *menubar,
+    GtkAccelGroup *accel_group)
+{
+    instantiateSubwViewMenu(wnum, menubar, accel_group);
+    instantiateSubwAttrMenu(wnum, menubar, accel_group);
+    instantiateSubwHelpMenu(wnum, menubar, accel_group);
 
+    switch_menu_mode(DSP()->CurMode(), wnum);
+}
+#endif
 
 void
 gtkMenuConfig::updateDynamicMenus()
@@ -604,10 +466,23 @@ gtkMenuConfig::updateDynamicMenus()
         g_list_free(gl);
     }
 #else
+    //XXX How to get userMenu?
+    GtkWidget *UserMenu = 0;
+    GtkWidget *submenu = 0;
+    if (UserMenu) {
+        submenu = GTK_MENU_ITEM(userMenu)->submenu;
+        if (submenu) {
+            GList *gl = gtk_container_children(GTK_CONTAINER(submenu));
+            for (GList *l = gl; l; l = l->next)
+                gtk_widget_destroy(GTK_WIDGET(l->data));
+            g_list_free(gl);
+        }
+    }
 #endif
 
     Menu()->RebuildDynamicMenus();
 
+#ifdef UseItemFactory
     if_entry mi[50];
     MenuBox *mbox = Menu()->FindMainMenu("user");
     if (mbox && mbox->menu && mbox->isDynamic()) {
@@ -616,7 +491,6 @@ gtkMenuConfig::updateDynamicMenus()
         set(mbox->menu[userMenuDebug], "/User/_Debugger", 0);
         set(mbox->menu[userMenuHash], "/User/_Rehash", 0);
 
-#ifdef UseItemFactory
         int i = 0, j = 0;
         for (MenuEnt *ent = mbox->menu; ent->entry && i < userMenu_END;
                 ent++) {
@@ -725,9 +599,129 @@ gtkMenuConfig::updateDynamicMenus()
         }
         stringlist::destroy(snew);
         stringlist::destroy(sold);
-#else
-#endif
     }
+#else
+    MenuBox *mbox = Menu()->FindMainMenu("user");
+    if (!mbox || !mbox->menu || !mbox->isDynamic())
+        return;
+
+    MenuEnt *ent = &mbox->menu[userMenu];
+    set(&mbox->menu[userMenu], "_User", 0);
+
+/*XXX
+    GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
+    gtk_widget_set_name(item, "User");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+*/
+
+    ent = &mbox->menu[userMenuDebug];
+    GtkWidget *item = miset(ent, "_Debugger", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)userMenuDebug);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[userMenuHash];
+    item = miset(ent, "_Rehash", 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), (gpointer)(long)userMenuHash);
+    check_separator(ent, submenu);
+
+/*XXX
+    // Create new GtkMenuStrings.
+    int cnt = 0;
+    for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
+        if (cnt >= userMenu_END) {
+            ent->menutext = ent->description;
+            if (ent->is_menu())
+                ent->item = "<Branch>";
+        }
+        cnt++;
+    }
+
+    stringlist *snew = 0;
+    stringlist *sold = 0;
+
+    // Add the dynamic entries.
+    for (MenuEnt *ent = &mbox->menu[userMenu_END]; ent->entry; ent++) {
+        GtkItemFactoryEntry entry;
+        char buf[256];
+
+        // The path saved in the menutext field is in the form
+        // User/top/next/...  The top component is resolved
+        // through the ScriptPath, so *must* be the basename of a
+        // .scr or .scm file.  Components that follow are label
+        // text.  The entry field is label text.
+        //
+        // Below we implement a stack, so that the display labels
+        // can be substituted into the item factory path. 
+        // Further, we need to strip out the '_' characters from
+        // the item path since these would be interpreted as
+        // accelerator characters.
+
+        // Pop the stack until the old path is a prefix of the
+        // present path.
+        while (sold && !lstring::prefix(sold->string, ent->menutext)) {
+            stringlist *sx = sold;
+            sold = sold->next;
+            sx->next = 0;
+            stringlist::destroy(sx);
+            sx = snew;
+            snew = snew->next;
+            sx->next = 0;
+            stringlist::destroy(sx);
+        }
+
+        // Build the item factory path in buf.
+        if (!snew) {
+            strcpy(buf, ent->menutext);
+            char *t = strrchr(buf, '/');
+            *t = 0;
+        }
+        else
+            strcpy(buf, snew->string);
+        char *t = buf + strlen(buf);
+        *t++ = '/';
+        strcpy(t, ent->entry);
+        // Strip out underscores.
+        for ( ; *t; t++) {
+            if (*t == '_')
+                *t = '-';
+        }
+        if (ent->is_menu()) {
+            // Push the stack.
+            sold = new stringlist(lstring::copy(ent->menutext), sold);
+            snew = new stringlist(lstring::copy(buf), snew);
+        }
+
+        entry.path = buf;
+        entry.accelerator = (gchar*)ent->accel;
+        entry.item_type = (gchar*)ent->item;
+        if (!entry.item_type) {
+            entry.callback = HANDLER;
+            entry.callback_action = (ent - mbox->menu);
+        }
+        else {
+            entry.callback = 0;
+            entry.callback_action = 0;
+        }
+        gtk_item_factory_create_item(item_factory, &entry,
+            mbox->menu, 2);
+        GtkWidget *btn = gtk_item_factory_get_widget(item_factory,
+            entry.path);
+        if (btn)
+            ent->cmd.caller = btn;
+    }
+    stringlist::destroy(snew);
+    stringlist::destroy(sold);
+*/
+
+#endif
 }
 
 
@@ -891,21 +885,6 @@ gtkMenuConfig::set_main_global_sens(bool sens)
 #endif
 }
 
-#ifdef UseItemFactory
-#else
-namespace {
-    void check_separator(MenuEnt *ent, GtkWidget *menu)
-    {
-        if (ent->issep()) {
-            GtkWidget *item = gtk_separator_menu_item_new();
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-        }
-    }
-}
-#endif
-
-
 void
 gtkMenuConfig::instantiateFileMenu()
 {
@@ -997,7 +976,7 @@ gtkMenuConfig::instantiateFileMenu()
     // File menu
     MenuBox *mbox = Menu()->FindMainMenu("file");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -1006,31 +985,33 @@ gtkMenuConfig::instantiateFileMenu()
         return;
 
     MenuEnt *ent = &mbox->menu[fileMenu];
-    set(*ent, "_File", 0);
+    set(ent, "_File", 0);
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "File");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *fileMenu = gtk_menu_new();
-    gtk_widget_show(fileMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), fileMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[fileMenuFsel];
     item = miset(ent, "F_ile Select", "<control>O");
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuFsel);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)fileMenuFsel);
+        G_CALLBACK(menu_handler), mbox->menu);
     gtk_widget_add_accelerator(item, "activate", accel_group, GDK_o,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    check_separator(ent, fileMenu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuOpen];
     item = miset(ent, "_Open", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuOpen);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     // g_signal_connect(G_OBJECT(item), "activate",
-    //     G_CALLBACK(menu_handler), (gpointer)(long)fileMenuOpen);
-    check_separator(ent, fileMenu);
+    //     G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     // Initialize the popup menus
     // set data "menu" -> menu in the buttons
@@ -1062,88 +1043,98 @@ gtkMenuConfig::instantiateFileMenu()
     }
 
     ent = &mbox->menu[fileMenuSave];
-    set(*ent, "_Save", "<Alt>S");
+    set(ent, "_Save", "<Alt>S");
     if (EditIf()->hasEdit()) {
         item = new_item(ent);
-        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuSave);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
-            G_CALLBACK(menu_handler), (gpointer)(long)fileMenuSave);
+            G_CALLBACK(menu_handler), mbox->menu);
     //    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
     //        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
     }
-    check_separator(ent, fileMenu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuSaveAs];
     item = miset(ent, "Save _As", "<control>S");
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuSaveAs);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(ed_open_proc), this);
+        G_CALLBACK(menu_handler), mbox->menu);
     gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
-        G_CALLBACK(menu_handler), (gpointer)(long)fileMenuSaveAs);
-    check_separator(ent, fileMenu);
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuSaveAsDev];
     item = miset(ent, "Save As _Device", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuSaveAsDev);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)fileMenuSaveAsDev);
-    check_separator(ent, fileMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuHcopy];
     item = miset(ent, "_Print", "<Alt>N");
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuHcopy);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)fileMenuHcopy);
+        G_CALLBACK(menu_handler), mbox->menu);
 //    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_n,
 //        GDK_ALTL_MASK, GTK_ACCEL_VISIBLE);
-    check_separator(ent, fileMenu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuFiles];
     item = miset(ent, "_Files List", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuFiles);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)fileMenuFiles);
-    check_separator(ent, fileMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuHier];
     item = miset(ent, "_Hierarchy Digests", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuHier);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)fileMenuHier);
-    check_separator(ent, fileMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuGeom];
     item = miset(ent, "_Geometry Digests", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuGeom);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)fileMenuGeom);
-    check_separator(ent, fileMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuLibs];
     item = miset(ent, "_Libraries List", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuLibs);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)fileMenuLibs);
-    check_separator(ent, fileMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuOAlib];
-    set(*ent, "Open_Access Libs", 0);
+    set(ent, "Open_Access Libs", 0);
     if (OAif()->hasOA()) {
         item = new_item(ent);
-        gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+        gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuOAlib);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
-            G_CALLBACK(menu_handler), (gpointer)(long)fileMenuOAlib);
+            G_CALLBACK(menu_handler), mbox->menu);
     }
-    check_separator(ent, fileMenu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuExit];
     item = miset(ent, "_Quit", "<control>Q");
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr fileMenuExit);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)fileMenuExit);
+        G_CALLBACK(menu_handler), mbox->menu);
     gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    check_separator(ent, fileMenu);
+    check_separator(ent, submenu);
 #endif
 }
 
@@ -1189,7 +1180,7 @@ gtkMenuConfig::instantiateCellMenu()
     // Cell menu
     MenuBox *mbox = Menu()->FindMainMenu("cell");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -1197,55 +1188,60 @@ gtkMenuConfig::instantiateCellMenu()
     if (!menubar)
         return;
 
-    MenuBox *ent = &mbox->menu[cellMenu];
-    set(*ent, "_Cell", 0);
+    MenuEnt *ent = &mbox->menu[cellMenu];
+    set(ent, "_Cell", 0);
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "Cell");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *cellMenu = gtk_menu_new();
-    gtk_widget_show(cellMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), cellMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[cellMenuPush];
     item = miset(ent, "_Push", "<Alt>G");
-    gtk_menu_shell_append(GTK_MENU_SHELL(cellMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cellMenuPush);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cellMenuPush);
+        G_CALLBACK(menu_handler), mbox->menu);
 //    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_g,
 //        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-    check_separator(ent, cellMenu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[cellMenuPop];
     item = miset(ent, "P_op", "<Alt>B");
-    gtk_menu_shell_append(GTK_MENU_SHELL(cellMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cellMenuPop);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cellMenuPop);
+        G_CALLBACK(menu_handler), mbox->menu);
 //    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_b,
 //        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-    check_separator(ent, cellMenu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[cellMenuStabs];
     item = miset(ent, "_Symbol Tables", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(cellMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cellMenuStabs);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cellMenuStabs);
-    check_separator(ent, cellMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[cellMenuCells];
     item = miset(ent, "_Cells List", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(cellMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cellMenuCells);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cellMenuCells);
-    check_separator(ent, cellMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[cellMenuTree];
     item = miset(ent, "Show _Tree", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(cellMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cellMenuTree);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cellMenuTree);
-    check_separator(ent, cellMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 #endif
 }
 
@@ -1297,7 +1293,7 @@ gtkMenuConfig::instantiateEditMenu()
     // Edit menu
     MenuBox *mbox = Menu()->FindMainMenu("edit");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -1305,86 +1301,96 @@ gtkMenuConfig::instantiateEditMenu()
     if (!menubar)
         return;
 
-    MenoEnt *ent = &mbox->menu[editMenu];
-    set(*ent, "_Edit", 0);
+    MenuEnt *ent = &mbox->menu[editMenu];
+    set(ent, "_Edit", 0);
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "Edit");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *editMenu = gtk_menu_new();
-    gtk_widget_show(editMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), editMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[editMenuCedit];
     item = miset(ent, "_Enable Editing", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr editMenuCedit);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)editMenuCedit);
-    check_separator(ent, editMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuEdSet];
     item = miset(ent, "_Setup", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr editMenuEdSet);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)editMenuEdSet);
-    check_separator(ent, editMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuPcctl];
     item = miset(ent, "PCell C_ontrol", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr editMenuPcctl);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)editMenuPcctl);
-    check_separator(ent, editMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuCrcel];
     item = miset(ent, "Cre_ate Cell", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr editMenuCrcel);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)editMenuCrcel);
-    check_separator(ent, editMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuCrvia];
     item = miset(ent, "Create _Via", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr editMenuCrvia);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)editMenuCrvia);
-    check_separator(ent, editMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuFlatn];
     item = miset(ent, "_Flatten", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr editMenuFlatn);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)editMenuFlatn);
-    check_separator(ent, editMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuJoin];
     item = miset(ent, "_Join\\/Split", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr editMenuJoin);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)editMenuJoin);
-    check_separator(ent, editMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuLexpr];
     item = miset(ent, "_Layer Expression", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr editMenuLexpr);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)editMenuLexpr);
-    check_separator(ent, editMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuPrpty];
     item = miset(ent, "Propert_ies", "<Alt>P");
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr editMenuPrpty);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)editMenuPrpty);
-    check_separator(ent, editMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuCprop];
     item = miset(ent, "_Cell Properties", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr editMenuCprop);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)editMenuCprop);
-    check_separator(ent, editMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 #endif
 }
 
@@ -1436,7 +1442,7 @@ gtkMenuConfig::instantiateModifyMenu()
     // Modify menu
     MenuBox *mbox = Menu()->FindMainMenu("mod");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -1445,80 +1451,89 @@ gtkMenuConfig::instantiateModifyMenu()
         return;
 
     MenuEnt *ent = &mbox->menu[modfMenu];
-    set(*ent, "_Modify", 0);
+    set(ent, "_Modify", 0);
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "Modify");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *modMenu = gtk_menu_new();
-    gtk_widget_show(modMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), modMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[modfMenuUndo];
     item = miset(ent, "_Undo", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(modMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr modfMenuUndo);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)modMenuUndo);
-    check_separator(ent, modMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[modfMenuRedo];
     item = miset(ent, "_Redo", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(modMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr modfMenuRedo);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)modMenuRedo);
-    check_separator(ent, modMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[modfMenuDelet];
     item = miset(ent, "_Delete", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(modMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr modfMenuDelet);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)modMenuDelet);
-    check_separator(ent, modMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[modfMenuEundr];
     item = miset(ent, "Erase U_nder", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(modMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr modfMenuEundr);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)modMenuEundr);
-    check_separator(ent, modMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[modfMenuMove];
     item = miset(ent, "_Move", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(modMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr modfMenuMove);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)modMenuMove);
-    check_separator(ent, modMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[modfMenuCopy];
     item = miset(ent, "Cop_y", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(modMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr modfMenuCopy);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)modMenuCopy);
-    check_separator(ent, modMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[modfMenuStrch];
     item = miset(ent, "_Stretch", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(modMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr modfMenuStrch);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)modMenuStrch);
-    check_separator(ent, modMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[modfMenuChlyr];
     item = miset(ent, "Chan_ge Layer", "<control>L");
-    gtk_menu_shell_append(GTK_MENU_SHELL(modMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr modfMenuChlyr);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)modMenuChlyr);
+        G_CALLBACK(menu_handler), mbox->menu);
     gtk_widget_add_accelerator(item, "activate", accel_group, GDK_l,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    check_separator(ent, modMenu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[modfMenuMClcg];
     item = miset(ent, "Set _Layer Chg Mode", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(modMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr modfMenuMClcg);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)modMenuMClcg);
-    check_separator(ent, modMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 #endif
 }
 
@@ -1608,7 +1623,7 @@ gtkMenuConfig::instantiateViewMenu()
     // View menu
     MenuBox *mbox = Menu()->FindMainMenu("view");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -1616,21 +1631,22 @@ gtkMenuConfig::instantiateViewMenu()
     if (!menubar)
         return;
 
-    MenuBox *ent = &mbox->menu[viewMenu];
-    set(*ent, "_View", 0);
+    MenuEnt *ent = &mbox->menu[viewMenu];
+    set(ent, "_View", 0);
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "View");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *viewMenu = gtk_menu_new();
-    gtk_widget_show(viewMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), viewMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[viewMenuView];
     item = miset(ent, "Vie_w", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
-    check_separator(ent, viewMenu);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuView);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    check_separator(ent, submenu);
 
     // Initialize the popup menu.
     // set data "menu" -> menu in the buttons
@@ -1662,80 +1678,90 @@ gtkMenuConfig::instantiateViewMenu()
     }
 
     ent = &mbox->menu[viewMenuSced];
-    set(*ent, "E_lectrical", 0);
+    set(ent, "E_lectrical", 0);
     if (ScedIf()->hasSced()) {
         item = new_item(ent);
-        gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
+        gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuSced);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
-            G_CALLBACK(menu_handler), (gpointer)(long)viewMenuSced);
-        check_separator(ent, viewMenu);
+            G_CALLBACK(menu_handler), mbox->menu);
+        check_separator(ent, submenu);
     }
 
     ent = &mbox->menu[viewMenuPhys];
-    set(*ent, "P_hysical", 0);
+    set(ent, "P_hysical", 0);
     if (ScedIf()->hasSced()) {
         item = new_item(ent);
-        gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
+        gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuPhys);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
-            G_CALLBACK(menu_handler), (gpointer)(long)viewMenuPhys);
-        check_separator(ent, viewMenu);
+            G_CALLBACK(menu_handler), mbox->menu);
+        check_separator(ent, submenu);
     }
 
     ent = &mbox->menu[viewMenuExpnd];
     item = miset(ent, "_Expand", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuExpnd);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)viewMenuExpnd);
-    check_separator(ent, viewMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[viewMenuZoom];
     item = miset(ent, "_Zoom", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuZoom);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)viewMenuZoom);
-    check_separator(ent, viewMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[viewMenuVport];
     item = miset(ent, "_Viewport", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuVport);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)viewMenuVport);
-    check_separator(ent, viewMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[viewMenuPeek];
     item = miset(ent, "_Peek", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuPeek);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)viewMenuPeek);
-    check_separator(ent, viewMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[viewMenuCsect];
     item = miset(ent, "_Cross Section", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuCsect);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)viewMenuCsect);
-    check_separator(ent, viewMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[viewMenuRuler];
     item = miset(ent, "_Rulers", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuRuler);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)viewMenuRuler);
-    check_separator(ent, viewMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[viewMenuInfo];
     item = miset(ent, "_Info", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuInfo);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)viewMenuInfo);
-    check_separator(ent, viewMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[viewMenuAlloc];
     item = miset(ent, "_Allocation", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(viewMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr viewMenuAlloc);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)viewMenuAlloc);
-    check_separator(ent, viewMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
 #endif
 }
@@ -1870,7 +1896,7 @@ gtkMenuConfig::instantiateAttributesMenu()
     // Attributes menu
     MenuBox *mbox = Menu()->FindMainMenu("attr");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -1879,168 +1905,267 @@ gtkMenuConfig::instantiateAttributesMenu()
         return;
 
     MenuEnt *ent = &mbox->menu[attrMenu];
-    set(*ent, "_Attributes", 0);
+    set(ent, "_Attributes", 0);
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "Attributes");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *attrMenu = gtk_menu_new();
-    gtk_widget_show(attrMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), attrMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[attrMenuUpdat];
     item = miset(ent, "Save _Tech", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuUpdat);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)attrMenuUpdat);
-    check_separator(ent, attrMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[attrMenuKeymp];
     item = miset(ent, "_Key Map", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuKeymp);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)attrMenuKeymp);
-    check_separator(ent, attrMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[attrMenuMacro];
     item = miset(ent, "Define _Macro", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuMacro);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)attrMenuMacro);
-    check_separator(ent, attrMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[attrMenuMainWin];
     item = miset(ent, "Main _Window", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
-    check_separator(ent, attrMenu);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuMainWin);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    check_separator(ent, submenu);
+    instantiateAttrSubMenu(item);
 
     ent = &mbox->menu[attrMenuAttr];
     item = miset(ent, "Set _Attributes", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuAttr);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)attrMenuAttr);
-    check_separator(ent, attrMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[attrMenuDots];
-    set(*ent, "Connection _Dots", 0);
+    set(ent, "Connection _Dots", 0);
     if (ScedIf()->hasSced()) {
         item = new_item(ent);
-        gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
+        gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuDots);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
-            G_CALLBACK(menu_handler), (gpointer)(long)attrMenuDots);
-        check_separator(ent, attrMenu);
+            G_CALLBACK(menu_handler), mbox->menu);
+        check_separator(ent, submenu);
     }
 
     ent = &mbox->menu[attrMenuFont];
     item = miset(ent, "Set F_ont", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuFont);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)attrMenuFont);
-    check_separator(ent, attrMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[attrMenuColor];
     item = miset(ent, "Set _Color", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuColor);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)attrMenuColor);
-    check_separator(ent, attrMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[attrMenuFill];
     item = miset(ent, "Set _Fill", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuFill);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)attrMenuFill);
-    check_separator(ent, attrMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[attrMenuEdlyr];
     item = miset(ent, "_Edit Layers", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuEdlyr);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)attrMenuEdlyr);
-    check_separator(ent, attrMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[attrMenuLpedt];
     item = miset(ent, "Edit Tech _Params", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(attrMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr attrMenuLpedt);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)attrMenuLpedt);
-    check_separator(ent, attrMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
-    mbox = Menu()->GetAttrSubMenu();
-    if (mbox && mbox->menu) {
-        set(mbox->menu[subwAttrMenuFreez],
-            "/Attributes/Main Window/Freeze _Display", 0);
-        set(mbox->menu[subwAttrMenuCntxt],
-            "/Attributes/Main Window/Show Conte_xt in Push", 0);
-        set(mbox->menu[subwAttrMenuProps],
-            "/Attributes/Main Window/Show _Phys Properties", 0);
-        set(mbox->menu[subwAttrMenuLabls],
-            "/Attributes/Main Window/Show _Labels", 0);
-        set(mbox->menu[subwAttrMenuLarot],
-            "/Attributes/Main Window/L_abel True Orient", 0);
-        set(mbox->menu[subwAttrMenuCnams],
-            "/Attributes/Main Window/Show Cell _Names", 0);
-        set(mbox->menu[subwAttrMenuCnrot],
-            "/Attributes/Main Window/Cell Na_me True Orient", 0);
-        set(mbox->menu[subwAttrMenuNouxp],
-            "/Attributes/Main Window/Don't Show _Unexpanded", 0);
-        set(mbox->menu[subwAttrMenuObjs],
-            "/Attributes/Main Window/Objects Shown", 0);
-        set(mbox->menu[subwAttrMenuTinyb],
-            "/Attributes/Main Window/Subthreshold _Boxes", 0);
-        set(mbox->menu[subwAttrMenuNosym],
-            "/Attributes/Main Window/No Top _Symbolic", 0);
-        set(mbox->menu[subwAttrMenuGrid],
-            "/Attributes/Main Window/Set _Grid", "<control>G");
-
-        j = 0, i = 1;
-        for (MenuEnt *ent = mbox->menu + 1; ent->entry && ent->menutext;
-                ent++) {
-            if (i == subwAttrMenuNosym) {
-                if (!ScedIf()->hasSced()) {
-                    i++;
-                    continue;
-                }
-            }
-            mi[j++] = if_entry(ent->menutext, ent->accel,
-                i != subwAttrMenuObjs ? HANDLER : 0, i, ent->item);
-            if (ent->is_separator())
-                mi[j++] = if_entry("/Attributes/Main Window/sep", 0, 0,
-                    NOTMAPPED, "<Separator>");
-            i++;
-        }
-        menu = new GtkItemFactoryEntry[j];
-        memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
-        make_entries(item_factory, menu, j, mbox->menu, i);
-        delete [] menu;
-    }
-
-    mbox = Menu()->GetObjSubMenu();
-    if (mbox && mbox->menu) {
-        set(mbox->menu[0],
-            "/Attributes/Main Window/Objects Shown/Boxes", 0);
-        set(mbox->menu[1],
-            "/Attributes/Main Window/Objects Shown/Polys", 0);
-        set(mbox->menu[2],
-            "/Attributes/Main Window/Objects Shown/Wires", 0);
-        set(mbox->menu[3],
-            "/Attributes/Main Window/Objects Shown/Labels", 0);
-
-        j = 0, i = 0;
-        for (MenuEnt *ent = mbox->menu; ent->entry && ent->menutext;
-                ent++) {
-            mi[j++] = if_entry(ent->menutext, ent->accel,
-                HANDLER, i, ent->item);
-            i++;
-        }
-        menu = new GtkItemFactoryEntry[j];
-        memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
-        make_entries(item_factory, menu, j, mbox->menu, i);
-        delete [] menu;
-    }
 #endif
 }
+
+#ifdef UseItemFactory
+#else
+void
+gtkMenuConfig::instantiateAttrSubMenu(GtkWidget *root)
+{
+    MenuBox *mbox = Menu()->GetAttrSubMenu();
+    if (!mbox || !mbox->menu)
+        return;
+
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(root), submenu);
+//    g_signal_connect_object(G_OBJECT(root), "event",
+//        G_CALLBACK(button_press), G_OBJECT(submenu), (GConnectFlags)0);
+
+    MenuEnt *ent = &mbox->menu[subwAttrMenuFreez];
+    GtkWidget *item = miset(ent, "Freeze _Display", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuFreez);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuCntxt];
+    item = miset(ent, "Show Conte_xt in Push", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuCntxt);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuProps];
+    item = miset(ent, "Show _Phys Properties", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuProps);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuLabls];
+    item = miset(ent, "Show _Labels", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuLabls);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuLarot];
+    item = miset(ent, "L_abel True Orient", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuLarot);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuCnams];
+    item = miset(ent, "Show Cell _Names", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuCnams);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuCnrot];
+    item = miset(ent, "Cell Na_me True Orient", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuCnrot);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuNouxp];
+    item = miset(ent, "Don't Show _Unexpanded", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuNouxp);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuObjs];
+    item = miset(ent, "Objects Shown", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuObjs);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    check_separator(ent, submenu);
+    instantiateObjSubMenu(item);
+
+    ent = &mbox->menu[subwAttrMenuTinyb];
+    item = miset(ent, "Subthreshold _Boxes", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuNouxp);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuNosym];
+    set(ent, "No Top _Symbolic", 0);
+    if (ScedIf()->hasSced()) {
+        item = new_item(ent);
+        gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuNosym);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(menu_handler), mbox->menu);
+        check_separator(ent, submenu);
+    }
+
+    ent = &mbox->menu[subwAttrMenuGrid];
+    item = miset(ent, "Set _Grid", "<control>G");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuGrid);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+}
+
+void
+gtkMenuConfig::instantiateObjSubMenu(GtkWidget *root)
+{
+    MenuBox *mbox = Menu()->GetObjSubMenu();
+    if (!mbox || !mbox->menu)
+        return;
+
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(root), submenu);
+//    g_signal_connect_object(G_OBJECT(root), "event",
+//        G_CALLBACK(button_press), G_OBJECT(submenu), (GConnectFlags)0);
+
+    MenuEnt *ent = &mbox->menu[0];
+    GtkWidget *item = miset(ent, "Boxes", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[1];
+    item = miset(ent, "Polys", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr 1);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[2];
+    item = miset(ent, "Wires", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr 2);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[3];
+    item = miset(ent, "Labels", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr 3);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+}
+#endif
 
 
 void
@@ -2089,7 +2214,7 @@ gtkMenuConfig::instantiateConvertMenu()
     // Convert menu
     MenuBox *mbox = Menu()->FindMainMenu("conv");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -2098,64 +2223,71 @@ gtkMenuConfig::instantiateConvertMenu()
         return;
 
     MenuEnt *ent = &mbox->menu[cvrtMenu];
-    set(*ent, "C_onvert", 0);
+    set(ent, "C_onvert", 0);
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "Convert");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *convMenu = gtk_menu_new();
-    gtk_widget_show(convMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), convMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[cvrtMenuExprt];
     item = miset(ent, "_Export Cell Data", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(convMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cvrtMenuExprt);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cvrtMenuExprt);
-    check_separator(ent, convMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[cvrtMenuImprt];
     item = miset(ent, "_Import Cell Data", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(convMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cvrtMenuImprt);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cvrtMenuImprt);
-    check_separator(ent, convMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[cvrtMenuConvt];
     item = miset(ent, "_Format Conversion", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(convMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cvrtMenuConvt);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cvrtMenuConvt);
-    check_separator(ent, convMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[cvrtMenuAssem];
     item = miset(ent, "_Assemble Layout", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(convMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cvrtMenuAssem);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cvrtMenuAssem);
-    check_separator(ent, convMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[cvrtMenuDiff];
     item = miset(ent, "_Compare _Layouts", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(convMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cvrtMenuDiff);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cvrtMenuDiff);
-    check_separator(ent, convMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[cvrtMenuCut];
     item = miset(ent, "C_ut and Export", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(convMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cvrtMenuCut);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cvrtMenuCut);
-    check_separator(ent, convMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[cvrtMenuTxted];
     item = miset(ent, "_Text Editor", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(convMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr cvrtMenuTxted);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)cvrtMenuCut);
-    check_separator(ent, convMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 #endif
 }
 
@@ -2211,7 +2343,7 @@ gtkMenuConfig::instantiateDRCMenu()
     // DRC menu
     MenuBox *mbox = Menu()->FindMainMenu("drc");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -2220,112 +2352,125 @@ gtkMenuConfig::instantiateDRCMenu()
         return;
 
     MenuEnt *ent = &mbox->menu[drcMenu];
-    set(*ent, "_DRC", 0);
+    set(ent, "_DRC", 0);
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "DRC");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *drcMenu = gtk_menu_new();
-    gtk_widget_show(drcMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), drcMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[drcMenuLimit];
     item = miset(ent, "_Setup", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuLimit);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuLimin);
-    check_separator(ent, drcMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuSflag];
     item = miset(ent, "Set Skip _Flags", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuSflag);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuSflag);
-    check_separator(ent, drcMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuIntr];
     item = miset(ent, "Enable _Interactive", "<Alt>I");
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuIntr);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuIntr);
+        G_CALLBACK(menu_handler), mbox->menu);
 //    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_i,
 //        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-    check_separator(ent, drcMenu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuNopop];
     item = miset(ent, "_No Pop Up Errors", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuNopop);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuNopop);
-    check_separator(ent, drcMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuCheck];
     item = miset(ent, "_Batch Check", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuCheck);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuCheck);
-    check_separator(ent, drcMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuPoint];
     item = miset(ent, "Check In Re_gion", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuPoint);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuPoint);
-    check_separator(ent, drcMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuClear];
     item = miset(ent, "_Clear Errors", "<Alt>R");
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuClear);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuClear);
+        G_CALLBACK(menu_handler), mbox->menu);
 //    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_r,
 //        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-    check_separator(ent, drcMenu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuQuery];
     item = miset(ent, "_Query Errors", "<Alt>Q");
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuQuery);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuQuery);
+        G_CALLBACK(menu_handler), mbox->menu);
 //    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
 //        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-    check_separator(ent, drcMenu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuErdmp];
     item = miset(ent, "_Dump Error File", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuErdmp);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuErdmp);
-    check_separator(ent, drcMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuErupd];
     item = miset(ent, "_Update Highlighting", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuErupd);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuErupd);
-    check_separator(ent, drcMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuNext];
     item = miset(ent, "Show _Errors", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuNext);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuNext);
-    check_separator(ent, drcMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuErlyr];
     item = miset(ent, "Create _Layer", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuErlyr);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuErlyr);
-    check_separator(ent, drcMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuDredt];
     item = miset(ent, "Edit R_ules", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(drcMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr drcMenuDredt);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)drcMenuDredt);
-    check_separator(ent, drcMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
 #endif
 }
@@ -2380,7 +2525,7 @@ gtkMenuConfig::instantiateExtractMenu()
     // Extract menu
     MenuBox *mbox = Menu()->FindMainMenu("extr");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -2389,85 +2534,95 @@ gtkMenuConfig::instantiateExtractMenu()
         return;
 
     MenuEnt *ent = &mbox->menu[extMenu];
-    set(*ent, "E_xtract", 0);
+    set(ent, "E_xtract", 0);
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "Extract");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *extMenu = gtk_menu_new();
-    gtk_widget_show(extMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), extMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[extMenuExcfg];
     item = miset(ent, "Set_up", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr extMenuExcfg);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)extMenuExcfg);
-    check_separator(ent, extMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[extMenuSel];
     item = miset(ent, "_Net Selections", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr extMenuSel);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)extMenuSel);
-    check_separator(ent, extMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[extMenuDvsel];
     item = miset(ent, "_Device Selections", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr extMenuDvsel);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)extMenuDvsel);
-    check_separator(ent, extMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[extMenuSourc];
     item = miset(ent, "_Source SPICE", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr extMenuSourc);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)extMenuSourc);
-    check_separator(ent, extMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[extMenuExset];
     item = miset(ent, "Source P_hysical", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr extMenuExset);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)extMenuExset);
-    check_separator(ent, extMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[extMenuPnet];
     item = miset(ent, "Dump Ph_ys Netlist", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr extMenuPnet);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)extMenuPnet);
-    check_separator(ent, extMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[extMenuEnet];
     item = miset(ent, "Dump E_lec Netlist", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr extMenuEnet);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)extMenuEnet);
-    check_separator(ent, extMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[extMenuLvs];
     item = miset(ent, "Dump L_VS", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr extMenuLvs);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)extMenuLvs);
-    check_separator(ent, extMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[extMenuExC];
     item = miset(ent, "Extract _C", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr extMenuExC);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)extMenuExC);
-    check_separator(ent, extMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[extMenuExLR];
     item = miset(ent, "Extract L_R", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr extMenuExLR);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)extMenuExLR);
-    check_separator(ent, extMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 #endif
 }
 
@@ -2512,7 +2667,7 @@ gtkMenuConfig::instantiateUserMenu()
     // User menu
     MenuBox *mbox = Menu()->FindMainMenu("user");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -2521,29 +2676,31 @@ gtkMenuConfig::instantiateUserMenu()
         return;
 
     MenuEnt *ent = &mbox->menu[userMenu];
-    item = miset(ent, "/_User", 0);
+    set(ent, "_User", 0);
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "User");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *userMenu = gtk_menu_new();
-    gtk_widget_show(userMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), userMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[userMenuDebug];
-    item = miset(ent, "/User/_Debugger", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    item = miset(ent, "_Debugger", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr userMenuDebug);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)userMenuDebug);
-    check_separator(ent, userMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[userMenuHash];
-    item = miset(ent, "/User/_Rehash", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(extMenu), item);
+    item = miset(ent, "_Rehash", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr userMenuHash);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)userMenuHash);
-    check_separator(ent, userMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 #endif
 }
 
@@ -2592,7 +2749,7 @@ gtkMenuConfig::instantiateHelpMenu()
     // Extract menu
     MenuBox *mbox = Menu()->FindMainMenu("help");
     if (!mbox || !mbox->menu)
-        return
+        return;
     GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
     if (!accel_group)
         return;
@@ -2601,70 +2758,891 @@ gtkMenuConfig::instantiateHelpMenu()
         return;
 
     MenuEnt *ent = &mbox->menu[helpMenu];
-    set(, "_Help", 0, "<LastBranch>");
+    set(ent, "_Help", 0, "<LastBranch>");
 
     GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
     gtk_widget_set_name(item, "Help");
+    gtk_menu_item_set_right_justified(GTK_MENU_ITEM(item), true);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *helpMenu = gtk_menu_new();
-    gtk_widget_show(helpMenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), helpMenu);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[helpMenuHelp];
     item = miset(ent, "_Help", "<control>H");
-    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr helpMenuHelp);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuHelp);
-    check_separator(ent, helpMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[helpMenuMultw];
     item = miset(ent, "_Multi-Window", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr helpMenuMultw);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuMultw);
-    check_separator(ent, helpMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[helpMenuAbout];
     item = miset(ent, "_About", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr helpMenuAbout);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuAbout);
-    check_separator(ent, helpMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[helpMenuNotes];
     item = miset(ent, "_Release Notes", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr helpMenuNotes);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuNotes);
-    check_separator(ent, helpMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[helpMenuLogs];
     item = miset(ent, "Log _Files", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr helpMenuLogs);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuLogs);
-    check_separator(ent, helpMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
     ent = &mbox->menu[helpMenuDebug];
     item = miset(ent, "_Logging", 0);
-    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr helpMenuDebug);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(menu_handler), (gpointer)(long)helpMenuDebug);
-    check_separator(ent, helpMenu);
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
 
 #endif
 }
+
+
+void
+gtkMenuConfig::instantiatePhysSideButtonMenu()
+{
+#ifdef UseItemFactory
+    // Physical button menu.
+    MenuBox *mbox = Menu()->GetPhysButtonMenu();
+    if (mbox && mbox->menu) {
+
+        set(mbox->menu[btnPhysMenu], 0, 0);
+        set(mbox->menu[btnPhysMenuLabel], "Labels", 0);
+        set(mbox->menu[btnPhysMenuLogo], "Logo", 0);
+        set(mbox->menu[btnPhysMenuBox], "Boxes", 0);
+        set(mbox->menu[btnPhysMenuPolyg], "Polygons", 0);
+        set(mbox->menu[btnPhysMenuWire], "Wires", 0);
+        set(mbox->menu[btnPhysMenuStyle], "Style", 0);
+        set(mbox->menu[btnPhysMenuRound], "Round", 0);
+        set(mbox->menu[btnPhysMenuDonut], "Donut", 0);
+        set(mbox->menu[btnPhysMenuArc], "Arc", 0);
+        set(mbox->menu[btnPhysMenuSides], "Sides", 0);
+        set(mbox->menu[btnPhysMenuXor], "Xor", 0);
+        set(mbox->menu[btnPhysMenuBreak], "Break", 0);
+        set(mbox->menu[btnPhysMenuErase], "Erase", 0);
+        set(mbox->menu[btnPhysMenuPut], "Put", 0);
+        set(mbox->menu[btnPhysMenuSpin], "Spin", 0);
+
+        for (int i = 1; i < btnPhysMenu_END; i++) {
+            MenuEnt *ent = &mbox->menu[i];
+            GtkWidget *button;
+            if (i == btnPhysMenuStyle) {
+
+                const char **spm = get_style_pixmap();
+                button = new_pixmap_button(spm, ent->menutext, false);
+                GtkWidget *menu = gtkMenu()->new_popup_menu(0,
+                    EditIf()->styleList(), G_CALLBACK(stmenu_proc), 0);
+                if (menu) {
+                    gtk_widget_set_name(menu, "StyleMenu");
+                    g_signal_connect(G_OBJECT(button), "button-press-event",
+                        G_CALLBACK(popup_btn_proc), menu);
+                }
+            }
+            else {
+                button = new_pixmap_button(ent->xpm, ent->menutext,
+                    ent->is_toggle());
+                if (ent->is_set())
+                    Menu()->Select(button);
+                g_signal_connect(G_OBJECT(button), "clicked",
+                    G_CALLBACK(btnmenu_callback), (void*)(intptr_t)i);
+            }
+            if (ent->description)
+                gtk_widget_set_tooltip_text(button, ent->description); 
+            gtk_widget_show(button);
+            gtk_widget_set_name(button, ent->menutext);
+            ent->cmd.caller = button;
+        }
+    }
+#else
+    // Physical button menu.
+    MenuBox *mbox = Menu()->GetPhysButtonMenu();
+    if (!mbox || !mbox->menu)
+        return;
+
+    MenuEnt *ent = &mbox->menu[btnPhysMenu];
+    set(ent, 0, 0);
+
+    ent = &mbox->menu[btnPhysMenuLabel];
+    set(ent, "Labels", 0);
+    set_btn(ent, btnPhysMenuLabel, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuLogo];
+    set(ent, "Logo", 0);
+    set_btn(ent, btnPhysMenuLogo, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuBox];
+    set(ent, "Boxes", 0);
+    set_btn(ent, btnPhysMenuBox, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuPolyg];
+    set(ent, "Polygons", 0);
+    set_btn(ent, btnPhysMenuPolyg, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuWire];
+    set(ent, "Wires", 0);
+    set_btn(ent, btnPhysMenuWire, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuStyle];
+    set(ent, "Style", 0);
+
+    const char **spm = get_style_pixmap();
+    GtkWidget *button = new_pixmap_button(spm, ent->menutext, false);
+    GtkWidget *menu = gtkMenu()->new_popup_menu(0,
+        EditIf()->styleList(), G_CALLBACK(stmenu_proc), 0);
+    if (menu) {
+        gtk_widget_set_name(menu, "StyleMenu");
+        g_signal_connect(G_OBJECT(button), "button-press-event",
+            G_CALLBACK(popup_btn_proc), menu);
+    }
+    if (ent->description)
+        gtk_widget_set_tooltip_text(button, ent->description); 
+    gtk_widget_show(button);
+    gtk_widget_set_name(button, ent->menutext);
+    ent->cmd.caller = button;
+
+    ent = &mbox->menu[btnPhysMenuRound];
+    set(ent, "Round", 0);
+    set_btn(ent, btnPhysMenuRound, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuDonut];
+    set(ent, "Donut", 0);
+    set_btn(ent, btnPhysMenuDonut, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuArc];
+    set(ent, "Arc", 0);
+    set_btn(ent, btnPhysMenuArc, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuSides];
+    set(ent, "Sides", 0);
+    set_btn(ent, btnPhysMenuSides, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuXor];
+    set(ent, "Xor", 0);
+    set_btn(ent, btnPhysMenuXor, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuBreak];
+    set(ent, "Break", 0);
+    set_btn(ent, btnPhysMenuBreak, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuErase];
+    set(ent, "Erase", 0);
+    set_btn(ent, btnPhysMenuErase, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuPut];
+    set(ent, "Put", 0);
+    set_btn(ent, btnPhysMenuPut, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnPhysMenuSpin];
+    set(ent, "Spin", 0);
+    set_btn(ent, btnPhysMenuSpin, (gpointer)menu_handler);
+#endif
+}
+
+void
+gtkMenuConfig::instantiateElecSideButtonMenu()
+{
+    // Electrical button menu.
+#ifdef UseItemFactory
+    mbox = Menu()->GetElecButtonMenu();
+    if (mbox && mbox->menu) {
+
+        set(mbox->menu[btnElecMenu], 0, 0);
+        set(mbox->menu[btnElecMenuDevs], "Devices", 0);
+        set(mbox->menu[btnElecMenuShape], "Shape", 0);
+        set(mbox->menu[btnElecMenuWire], "Wire", 0);
+        set(mbox->menu[btnElecMenuLabel], "Label", 0);
+        set(mbox->menu[btnElecMenuErase], "Erase", 0);
+        set(mbox->menu[btnElecMenuBreak], "Break", 0);
+        set(mbox->menu[btnElecMenuSymbl], "Symbolic", 0);
+        set(mbox->menu[btnElecMenuNodmp], "Node Map", 0);
+        set(mbox->menu[btnElecMenuSubct], "Subcircuit", 0);
+        set(mbox->menu[btnElecMenuTerms], "Show Terms", 0);
+        set(mbox->menu[btnElecMenuSpCmd], "Command", 0);
+        set(mbox->menu[btnElecMenuRun], "Run", 0);
+        set(mbox->menu[btnElecMenuDeck], "Dump Deck", 0);
+        set(mbox->menu[btnElecMenuPlot], "Plot", 0);
+        set(mbox->menu[btnElecMenuIplot], "Intr Plot", 0);
+
+        for (int i = 1; i < btnElecMenu_END; i++) {
+            MenuEnt *ent = &mbox->menu[i];
+            GtkWidget *button;
+            if (i == btnElecMenuShape) {
+                button = new_pixmap_button(ent->xpm, ent->menutext, false);
+                GtkWidget *menu = gtkMenu()->new_popup_menu(0,
+                    ScedIf()->shapesList(), G_CALLBACK(shmenu_proc), 0);
+                if (menu) {
+                    gtk_widget_set_name(menu, "ShapeMenu");
+                    g_signal_connect(G_OBJECT(button), "button-press-event",
+                        G_CALLBACK(popup_btn_proc), menu);
+                }
+            }
+            else {
+                button = new_pixmap_button(ent->xpm, ent->menutext,
+                    ent->is_toggle());
+                if (ent->is_set())
+                    Menu()->Select(button);
+                g_signal_connect(G_OBJECT(button), "clicked",
+                    G_CALLBACK(btnmenu_callback), (void*)(intptr_t)i);
+            }
+            if (ent->description)
+                gtk_widget_set_tooltip_text(button, ent->description); 
+            gtk_widget_show(button);
+            gtk_widget_set_name(button, ent->menutext);
+            ent->cmd.caller = button;
+        }
+    }
+#else
+
+    // Electrical button menu.
+    MenuBox *mbox = Menu()->GetElecButtonMenu();
+    if (!mbox || !mbox->menu)
+        return;
+
+    MenuEnt *ent = &mbox->menu[btnElecMenu];
+    set(ent, 0, 0);
+
+    ent = &mbox->menu[btnElecMenuDevs];
+    set(ent, "Devices", 0);
+    set_btn(ent, btnElecMenuDevs, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuShape];
+    set(ent, "Shape", 0);
+
+    GtkWidget *button = new_pixmap_button(ent->xpm, ent->menutext, false);
+    GtkWidget *menu = gtkMenu()->new_popup_menu(0,
+        ScedIf()->shapesList(), G_CALLBACK(shmenu_proc), 0);
+    if (menu) {
+        gtk_widget_set_name(menu, "ShapeMenu");
+        g_signal_connect(G_OBJECT(button), "button-press-event",
+            G_CALLBACK(popup_btn_proc), menu);
+    }
+    if (ent->description)
+        gtk_widget_set_tooltip_text(button, ent->description); 
+    gtk_widget_show(button);
+    gtk_widget_set_name(button, ent->menutext);
+    ent->cmd.caller = button;
+
+    ent = &mbox->menu[btnElecMenuWire];
+    set(ent, "Wire", 0);
+    set_btn(ent, btnElecMenuWire, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuLabel];
+    set(ent, "Label", 0);
+    set_btn(ent, btnElecMenuLabel, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuErase];
+    set(ent, "Erase", 0);
+    set_btn(ent, btnElecMenuErase, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuBreak];
+    set(ent, "Break", 0);
+    set_btn(ent, btnElecMenuBreak, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuSymbl];
+    set(ent, "Symbolic", 0);
+    set_btn(ent, btnElecMenuSymbl, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuNodmp];
+    set(ent, "Node Map", 0);
+    set_btn(ent, btnElecMenuNodmp, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuSubct];
+    set(ent, "Subcircuit", 0);
+    set_btn(ent, btnElecMenuSubct, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuTerms];
+    set(ent, "Show Terms", 0);
+    set_btn(ent, btnElecMenuTerms, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuSpCmd];
+    set(ent, "Command", 0);
+    set_btn(ent, btnElecMenuSpCmd, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuRun];
+    set(ent, "Run", 0);
+    set_btn(ent, btnElecMenuRun, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuDeck];
+    set(ent, "Dump Deck", 0);
+    set_btn(ent, btnElecMenuDeck, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuPlot];
+    set(ent, "Plot", 0);
+    set_btn(ent, btnElecMenuPlot, (gpointer)menu_handler);
+
+    ent = &mbox->menu[btnElecMenuIplot];
+    set(ent, "Intr Plot", 0);
+    set_btn(ent, btnElecMenuIplot, (gpointer)menu_handler);
+#endif
+}
+
+
+#ifdef UseItemFactory
+void
+gtkMenuConfig::instantiateSubwViewMenu(int wnum, GtkItemFactory *item_factory))
+{
+    if (!item_factory)
+        return;
+    if_entry mi[50];
+
+    // Subwin View Menu
+    MenuBox *mbox = Menu()->FindSubwMenu("view", wnum);
+    if (mbox && mbox->menu) {
+
+        set(mbox->menu[subwViewMenu], "/_View", 0);
+        set(mbox->menu[subwViewMenuView], "/View/_View", 0);
+        set(mbox->menu[subwViewMenuSced], "/View/E_lectrical", 0);
+        set(mbox->menu[subwViewMenuPhys], "/View/P_hysical", 0);
+        set(mbox->menu[subwViewMenuExpnd], "/View/_Expand", 0);
+        set(mbox->menu[subwViewMenuZoom], "/View/_Zoom", 0);
+        set(mbox->menu[subwViewMenuWdump], "/View/_Dump To File", 0);
+        set(mbox->menu[subwViewMenuLshow], "/View/_Show Location", 0);
+        set(mbox->menu[subwViewMenuSwap], "/View/Swap With _Main", 0);
+        set(mbox->menu[subwViewMenuLoad], "/View/Load _New", 0);
+        set(mbox->menu[subwViewMenuCancl], "/View/_Quit", "<control>Q");
+
+        int j = 0, i = 0;
+        for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
+            if (i == subwViewMenuSced || i == subwViewMenuPhys) {
+                if (!ScedIf()->hasSced()) {
+                    i++;
+                    continue;
+                }
+            }
+            mi[j++] = if_entry(ent->menutext, ent->accel,
+                i && i != subwViewMenuView ? HANDLER : 0, i, ent->item);
+            if (ent->is_separator())
+                mi[j++] = if_entry("/View/sep", 0, 0, NOTMAPPED,
+                    "<Separator>");
+            i++;
+        }
+        GtkItemFactoryEntry *menu = new GtkItemFactoryEntry[j];
+        memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
+        make_entries(item_factory, menu, j, mbox->menu, i);
+        delete [] menu;
+
+        GtkWidget *btn = gtk_item_factory_get_widget(item_factory,
+            "/View/View");
+        GtkWidget *popup = gtkMenu()->new_popup_menu(btn,
+            XM()->ViewList(), G_CALLBACK(vimenu_proc),
+            (void*)(intptr_t)wnum);
+        if (popup) {
+            gtk_object_set_data(GTK_OBJECT(btn), "menu", popup);
+            gtk_object_set_data(GTK_OBJECT(btn), "callb", (void*)vimenu_proc);
+            gtk_object_set_data(GTK_OBJECT(btn), "data",(void*)(intptr_t)wnum);
+
+            // Set up the mapping so that the accelerator for the
+            // "view" button will activate the "full" operation from
+            // the sub-menu.
+
+            GList *contents = gtk_container_children(GTK_CONTAINER(popup));
+            if (contents) {
+                // the first item is the "full" button
+                GtkWidget *fullbut = GTK_WIDGET(contents->data);
+                mbox->menu[subwViewMenuView].alt_caller = fullbut;
+                g_list_free(contents);
+            }
+        }
+
+        // name the menubar object
+        GtkWidget *widget = gtk_item_factory_get_item(item_factory, "/View");
+        if (widget)
+            gtk_widget_set_name(widget, "View");
+    }
+}
+#else
+void
+gtkMenuConfig::instantiateSubwViewMenu(int wnum, GtkWidget *menubar,
+    GtkAccelGroup *accel_group)
+{
+    // Subwin View Menu
+    MenuBox *mbox = Menu()->FindSubwMenu("view", wnum);
+    if (!mbox || !mbox->menu)
+        return;
+    if (!menubar || !accel_group)
+        return;
+
+    MenuEnt *ent = &mbox->menu[subwViewMenu];
+    set(ent, "_View", 0);
+
+    GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
+    gtk_widget_set_name(item, "View");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    ent = &mbox->menu[subwViewMenuView];
+    item = miset(ent, "_View", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwViewMenuView);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    check_separator(ent, submenu);
+
+    GtkWidget *btn = item;
+    GtkWidget *popup = gtkMenu()->new_popup_menu(btn,
+        XM()->ViewList(), G_CALLBACK(vimenu_proc), (void*)(intptr_t)wnum);
+    if (popup) {
+        gtk_object_set_data(GTK_OBJECT(btn), "menu", popup);
+        gtk_object_set_data(GTK_OBJECT(btn), "callb", (void*)vimenu_proc);
+        gtk_object_set_data(GTK_OBJECT(btn), "data",(void*)(intptr_t)wnum);
+
+        // Set up the mapping so that the accelerator for the
+        // "view" button will activate the "full" operation from
+        // the sub-menu.
+
+        GList *contents = gtk_container_children(GTK_CONTAINER(popup));
+        if (contents) {
+            // the first item is the "full" button
+            GtkWidget *fullbut = GTK_WIDGET(contents->data);
+            mbox->menu[subwViewMenuView].alt_caller = fullbut;
+            g_list_free(contents);
+        }
+    }
+
+    ent = &mbox->menu[subwViewMenuSced];
+    set(ent, "E_lectrical", 0);
+    if (ScedIf()->hasSced()) {
+        item = new_item(ent);
+        gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwViewMenuSced);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(menu_handler), mbox->menu);
+        check_separator(ent, submenu);
+    }
+
+    ent = &mbox->menu[subwViewMenuPhys];
+    set(ent, "P_hysical", 0);
+    if (ScedIf()->hasSced()) {
+        item = new_item(ent);
+        gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwViewMenuPhys);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(menu_handler), mbox->menu);
+        check_separator(ent, submenu);
+    }
+
+    ent = &mbox->menu[subwViewMenuExpnd];
+    item = miset(ent, "_Expand", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwViewMenuExpnd);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwViewMenuZoom];
+    item = miset(ent, "_Zoom", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwViewMenuZoom);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwViewMenuWdump];
+    item = miset(ent, "_Dump To File", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwViewMenuWdump);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwViewMenuLshow];
+    item = miset(ent, "_Show Location", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwViewMenuLshow);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwViewMenuSwap];
+    item = miset(ent, "Swap With _Main", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwViewMenuSwap);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwViewMenuLoad];
+    item = miset(ent, "Load _New", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwViewMenuLoad);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwViewMenuCancl];
+    item = miset(ent, "_Quit", "<control>Q");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwViewMenuCancl);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    check_separator(ent, submenu);
+}
+#endif
+
+
+#ifdef UseItemFactory
+void
+gtkMenuConfig::instantiateSubwAttrMenu(int wnum, GtkItermFactory *item_factory)
+{
+    // Subwin Attr Menu
+    mbox = Menu()->FindSubwMenu("attr", wnum);
+    if (mbox && mbox->menu) {
+
+        set(mbox->menu[subwAttrMenu], "/_Attributes", 0);
+        set(mbox->menu[subwAttrMenuFreez], "/Attributes/Freeze _Display", 0);
+        set(mbox->menu[subwAttrMenuCntxt], "/Attributes/Show Conte_xt in Push",
+            0);
+        set(mbox->menu[subwAttrMenuProps], "/Attributes/Show _Phys Properties",
+            0);
+        set(mbox->menu[subwAttrMenuLabls], "/Attributes/Show _Labels", 0);
+        set(mbox->menu[subwAttrMenuLarot], "/Attributes/L_abel True Orient", 0);
+        set(mbox->menu[subwAttrMenuCnams], "/Attributes/Show Cell _Names", 0);
+        set(mbox->menu[subwAttrMenuCnrot], "/Attributes/Cell Na_me True Orient",
+            0);
+        set(mbox->menu[subwAttrMenuNouxp],"/Attributes/Don't Show _Unexpanded",
+            0);
+        set(mbox->menu[subwAttrMenuObjs],"/Attributes/Objects Shown", 0);
+        set(mbox->menu[subwAttrMenuTinyb], "/Attributes/Subthreshold _Boxes",
+            0);
+        set(mbox->menu[subwAttrMenuNosym], "/Attributes/No Top _Symbolic", 0);
+        set(mbox->menu[subwAttrMenuGrid], "/Attributes/Set _Grid", "<control>G");
+
+        int j = 0, i = 0;
+        for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
+            if (i == subwAttrMenuNosym) {
+                if (!ScedIf()->hasSced()) {
+                    i++;
+                    continue;
+                }
+            }
+            mi[j++] = if_entry(ent->menutext, ent->accel,
+                i && i != subwAttrMenuObjs ? HANDLER : 0, i, ent->item);
+            if (ent->is_separator())
+                mi[j++] = if_entry("/Attributes/sep", 0, 0, NOTMAPPED,
+                    "<Separator>");
+            i++;
+        }
+        GtkItemFactoryEntry *menu = new GtkItemFactoryEntry[j];
+        memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
+        make_entries(item_factory, menu, j, mbox->menu, i);
+        delete [] menu;
+
+        mbox = Menu()->GetSubwObjMenu(wnum);
+        if (mbox && mbox->menu) {
+            set(mbox->menu[0],
+                "/Attributes/Objects Shown/Boxes", 0);
+            set(mbox->menu[1],
+                "/Attributes/Objects Shown/Polys", 0);
+            set(mbox->menu[2],
+                "/Attributes/Objects Shown/Wires", 0);
+            set(mbox->menu[3],
+                "/Attributes/Objects Shown/Labels", 0);
+
+            j = 0, i = 0;
+            for (MenuEnt *ent = mbox->menu; ent->entry && ent->menutext;
+                    ent++) {
+                mi[j++] = if_entry(ent->menutext, ent->accel,
+                    HANDLER, i, ent->item);
+                i++;
+            }
+            menu = new GtkItemFactoryEntry[j];
+            memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
+            make_entries(item_factory, menu, j, mbox->menu, i);
+            delete [] menu;
+        }
+
+        // name the menubar object
+        GtkWidget *widget = gtk_item_factory_get_item(item_factory,
+            "/Attributes");
+        if (widget)
+            gtk_widget_set_name(widget, "Attributes");
+    }
+}
+#else
+void
+gtkMenuConfig::instantiateSubwAttrMenu(int wnum, GtkWidget *menubar,
+    GtkAccelGroup *accel_group)
+{
+    // Subwin Attr Menu
+    MenuBox *mbox = Menu()->FindSubwMenu("attr", wnum);
+    if (!mbox || !mbox->menu)
+        return;
+    if (!menubar || !accel_group)
+        return;
+
+    MenuEnt *ent = &mbox->menu[subwAttrMenu];
+    set(ent, "_Attributes", 0);
+
+    GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
+    gtk_widget_set_name(item, "Attributes");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    ent = &mbox->menu[subwAttrMenuFreez];
+    item = miset(ent, "Freeze _Display", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuFreez);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuCntxt];
+    item = miset(ent, "Show Conte_xt in Push", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuCntxt);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuProps];
+    item = miset(ent, "Show _Phys Properties", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuProps);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuLabls];
+    item = miset(ent, "Show _Labels", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuLabls);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuLarot];
+    item = miset(ent, "L_abel True Orient", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuLarot);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuCnams];
+    item = miset(ent, "Show Cell _Names", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuCnams);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuCnrot];
+    item = miset(ent, "Cell Na_me True Orient", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuCnrot);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuNouxp];
+    item = miset(ent, "Don't Show _Unexpanded", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuNouxp);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuObjs];
+    item = miset(ent, "Objects Shown", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuObjs);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    check_separator(ent, submenu);
+    instantiateSubwObjSubMenu(wnum,item);
+
+    ent = &mbox->menu[subwAttrMenuTinyb];
+    item = miset(ent, "Subthreshold _Boxes", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuTinyb);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[subwAttrMenuNosym];
+    set(ent, "No Top _Symbolic", 0);
+    if (ScedIf()->hasSced()) {
+        item = new_item(ent);
+        gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuNosym);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(menu_handler), mbox->menu);
+        check_separator(ent, submenu);
+    }
+
+    ent = &mbox->menu[subwAttrMenuGrid];
+    item = miset(ent, "Set _Grid", "<control>G");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwAttrMenuGrid);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_g,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    check_separator(ent, submenu);
+}
+
+
+void
+gtkMenuConfig::instantiateSubwObjSubMenu(int wnum, GtkWidget *root)
+{
+    MenuBox *mbox = Menu()->GetSubwObjMenu(wnum);
+    if (!mbox || !mbox->menu)
+        return;
+
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(root), submenu);
+//    g_signal_connect_object(G_OBJECT(root), "event",
+//        G_CALLBACK(button_press), G_OBJECT(submenu), (GConnectFlags)0);
+
+    MenuEnt *ent = &mbox->menu[0];
+    GtkWidget *item = miset(ent, "Boxes", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[1];
+    item = miset(ent, "Polys", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr 1);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[2];
+    item = miset(ent, "Wires", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr 2);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+
+    ent = &mbox->menu[3];
+    item = miset(ent, "Labels", 0);
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr 3);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    check_separator(ent, submenu);
+}
+#endif
+
+#ifdef UseItemFactory
+void
+gtkMenuConfig::instantiateSubwHelpMenu(int wnum, GtkItemFactory *item_factory)
+{
+    // Subwin Help Menu
+    mbox = Menu()->FindSubwMenu("help", wnum);
+    if (mbox && mbox->menu) {
+
+        set(mbox->menu[subwHelpMenu], "/_Help", 0, "<LastBranch>");
+        set(mbox->menu[subwHelpMenuHelp], "/Help/_Help", "<control>H");
+
+        int j = 0, i = 0;
+        for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
+            mi[j++] = if_entry(ent->menutext, ent->accel, i ? HANDLER : 0,
+                i, ent->item);
+            if (ent->is_separator())
+                mi[j++] = if_entry("/Help/sep", 0, 0, NOTMAPPED,
+                    "<Separator>");
+            i++;
+        }
+        GtkItemFactoryEntry *menu = new GtkItemFactoryEntry[j];
+        memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
+        make_entries(item_factory, menu, j, mbox->menu, i);
+        delete [] menu;
+
+        // name the menubar object
+        GtkWidget *widget = gtk_item_factory_get_item(item_factory, "/Help");
+        if (widget)
+            gtk_widget_set_name(widget, "Help");
+    }
+}
+#else
+void
+gtkMenuConfig::instantiateSubwHelpMenu(int wnum, GtkWidget *menubar,
+    GtkAccelGroup *accel_group)
+{
+    // Subwin Help Menu
+    MenuBox *mbox = Menu()->FindSubwMenu("help", wnum);
+    if (!mbox || !mbox->menu)
+        return;
+    if (!menubar || !accel_group)
+        return;
+
+    MenuEnt *ent = &mbox->menu[subwHelpMenu];
+    set(ent, "_Help", 0, "<LastBranch>");
+
+    GtkWidget *item = gtk_menu_item_new_with_mnemonic(ent->menutext);
+    gtk_widget_set_name(item, "Help");
+    gtk_menu_item_set_right_justified(GTK_MENU_ITEM(item), true);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    ent = &mbox->menu[subwHelpMenuHelp];
+    item = miset(ent, "_Help", "<control>H");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, voidptr subwHelpMenuHelp);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(menu_handler), mbox->menu);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_h,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    check_separator(ent, submenu);
+}
+#endif
 
 
 // Static function.
 // This callback controls the dispatching of application
 // commands from the menus.
 //
+#ifdef UseItemFactory
 void
 gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data,
     unsigned int action)
 {
+#else
+void
+gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data)
+{
+    unsigned int action =
+        (unsigned long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+    if (action == 0) {
+        fprintf(stderr, "Null action in menu_handler\n");
+        return;
+    }
+#endif
     // sanity check
     if (!client_data)
         return;
@@ -2862,6 +3840,7 @@ gtkMenuConfig::cmd_proc(void *arg)
 }
 
 
+#ifdef UseItemFactyory
 // Static function.
 // Add a set of entries to the item factory, extracting the just-added
 // widget into the CmdDesc of the related menu.
@@ -2870,7 +3849,6 @@ void
 gtkMenuConfig::make_entries(GtkItemFactory *item_factory,
     GtkItemFactoryEntry *entries, int nitems, MenuEnt *menu, int menuitems)
 {
-#ifdef UseItemFactyory
     for (int i = 0; i < nitems; i++) {
         if (entries[i].callback_action == NOTMAPPED) {
             // separator
@@ -2897,9 +3875,8 @@ gtkMenuConfig::make_entries(GtkItemFactory *item_factory,
         }
         delete [] path;
     }
-#else
-#endif
 }
+#endif
 
 
 // Static function.
@@ -3047,6 +4024,7 @@ gtkMenuConfig::shmenu_proc(GtkWidget *caller, void*)
 }
 
 
+#ifdef UseItemFactory
 // Static function.
 void
 gtkMenuConfig::top_btnmenu_callback(GtkWidget *widget, void *data)
@@ -3061,7 +4039,7 @@ gtkMenuConfig::btnmenu_callback(GtkWidget *widget, void *data)
 {
     menu_handler(widget,  Menu()->GetButtonMenu()->menu, (uintptr_t)data);
 }
-
+#endif
 
 namespace {
     // Positioning function for pop-up menus.
