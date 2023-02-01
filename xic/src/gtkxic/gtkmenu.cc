@@ -592,13 +592,11 @@ GTKmenu::HideButtonMenu(bool hide)
 
 
 GtkWidget *
-GTKmenu::FindMenuWidget(const char *path)
+GTKmenu::FindMainMenuWidget(const char *mname, const char *item)
 {
-    // replacement for gtk_item_factory_get_item
-    // XXX write me!
-    if (!path || !*path)
-        return (0);
-    fprintf(stderr, "GTKmenu::FindMenuWidget was called for\n%s\n", path);
+    MenuEnt *ent = FindEntry(mname, item, 0);
+    if (ent)
+        return (GTK_WIDGET(ent->cmd.caller));
     return (0);
 }
 
@@ -631,29 +629,19 @@ GTKmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
         }
     }
 #else
-    MenuBox *mbox = FindMainMenu(mname);
-    if (mbox && mbox->menu) {
-        if (!item) {
-            char *tmp = strip_accel(mbox->menu[0].menutext);
-            GtkWidget *widget = FindMenuWidget(tmp);
-            delete [] tmp;
-            if (widget)
-                gtk_widget_set_sensitive(widget, !desens);
-            return;
-        }
-        MenuEnt *ent = FindEntry(mname, item, 0);
-        if (ent) {
-            char *tmp = strip_accel(ent->menutext);
-            GtkWidget *widget = FindMenuWidget(tmp);
-            delete [] tmp;
-            if (widget)
-                gtk_widget_set_sensitive(widget, !desens);
-        }
-    }
+    MenuEnt *ent = FindEntry(mname, item, 0);
+    if (ent && ent->cmd.caller)
+        gtk_widget_set_sensitive(GTK_WIDGET(ent->cmd.caller), !desens);
+else if (ent)
+printf("caller %p %s %s\n", ent->cmd.caller, mname, item);
+else
+printf("caller failed %s %s\n", mname, item);
+//XXX
 #endif
 }
 
 
+#ifdef XXX_NOTUSED
 // Return the activating widget indicated by name, which is either an
 // iconfactory path for the main menu, or the button text for the button
 // menu, or the button text following "subN" for one of the subwindow
@@ -720,7 +708,7 @@ GTKmenu::name_to_widget(const char *name)
 
     return (0);
 }
-
+#endif
 
 // Static function.
 // Strip underscores (accelerator indicators) out of the path string.

@@ -645,7 +645,7 @@ sNM::update(int node)
     GRX->SetStatus(nm_use_np, SCD()->includeNoPhys());
     if (nm_use_extract) {
         GRX->SetStatus(nm_point_btn,
-            Menu()->MenuButtonStatus("ext", MenuEXSEL));
+            Menu()->MenuButtonStatus(MMext, MenuEXSEL));
     }
     else
         GRX->SetStatus(nm_point_btn, (nm_cmd != 0));
@@ -1386,9 +1386,9 @@ sNM::nm_point_proc(GtkWidget *caller, void*)
         return;
     int state = GRX->GetStatus(caller);
     if (sNM::nm_use_extract) {
-        bool st = Menu()->MenuButtonStatus("ext", MenuEXSEL);
+        bool st = Menu()->MenuButtonStatus(MMext, MenuEXSEL);
         if (st != state)
-            Menu()->MenuButtonPress("ext", MenuEXSEL);
+            Menu()->MenuButtonPress(MMext, MenuEXSEL);
     }
     else {
         if (state) {

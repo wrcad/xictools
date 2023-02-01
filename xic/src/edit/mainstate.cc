@@ -468,7 +468,7 @@ click:
                             // vertex selection.
 
                             CDol::destroy(slist);
-                            Menu()->MenuButtonPress("main", MenuSTRCH);
+                            Menu()->MenuButtonPress(MMmain, MenuSTRCH);
                             return;
                         }
                         set_op(StretchObj);
@@ -508,8 +508,8 @@ click:
                             // Edit standard via parameters.
                             ED()->PopUpStdVia(0, MODE_ON, cd);
                         }
-                        else if (!Menu()->MenuButtonStatus("edit", MenuPRPTY))
-                            Menu()->MenuButtonPress("edit", MenuPRPTY);
+                        else if (!Menu()->MenuButtonStatus(MMedit, MenuPRPTY))
+                            Menu()->MenuButtonPress(MMedit, MenuPRPTY);
                     }
                 }
                 else {

@@ -89,7 +89,7 @@ cEdit::PopUpLayerChangeMode(ShowMode mode)
     if (!GRX || !mainBag())
         return;
     if (mode == MODE_OFF) {
-        Menu()->MenuButtonSet("main", MenuMCLCG, false);
+        Menu()->MenuButtonSet(MMmain, MenuMCLCG, false);
         delete Lcg;
         return;
     }

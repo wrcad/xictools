@@ -480,7 +480,7 @@ void
 cConvert::SetConvertFilename(const char *fname)
 {
     if (fname) {
-        if (Menu()->MenuButtonStatus("conv", MenuCONVT) == 1) {
+        if (Menu()->MenuButtonStatus(MMconv, MenuCONVT) == 1) {
             delete [] cvt_cv_filename;
             cvt_cv_filename = lstring::copy(fname);
         }
@@ -524,7 +524,7 @@ void
 cConvert::SetWriteFilename(const char *fname)
 {
     if (fname) {
-        if (Menu()->MenuButtonStatus("conv", MenuEXPRT) == 1) {
+        if (Menu()->MenuButtonStatus(MMconv, MenuEXPRT) == 1) {
             delete [] cvt_wr_filename;
             cvt_wr_filename = lstring::copy(fname);
         }
@@ -657,16 +657,16 @@ CutState::cut_doit(int x, int y)
     char namebuf[256];
     if (DSP()->MainWdesc()->DbType() == WDcddb) {
         Cvt()->SetupWriteCut(&AOI);
-        if (Menu()->MenuButtonStatus("conv", MenuEXPRT) == 0)
-            Menu()->MenuButtonPress("conv", MenuEXPRT);
+        if (Menu()->MenuButtonStatus(MMconv, MenuEXPRT) == 0)
+            Menu()->MenuButtonPress(MMconv, MenuEXPRT);
         sprintf(namebuf, "%s-cut", Tstring(DSP()->CurCellName()));
         Cvt()->SetWriteFilename(namebuf);
         Cvt()->PopUpExport(0, MODE_UPD, 0, 0);
     }
     else if (DSP()->MainWdesc()->DbType() == WDchd) {
         Cvt()->SetupConvertCut(&AOI);
-        if (Menu()->MenuButtonStatus("conv", MenuCONVT) == 0)
-            Menu()->MenuButtonPress("conv", MenuCONVT);
+        if (Menu()->MenuButtonStatus(MMconv, MenuCONVT) == 0)
+            Menu()->MenuButtonPress(MMconv, MenuCONVT);
         Cvt()->SetConvertFilename(DSP()->MainWdesc()->DbName());
         // "-cut" is appended to this name in the pop-up handler.
         Cvt()->PopUpConvert(0, MODE_UPD, cConvert::cvChdName, 0, 0);

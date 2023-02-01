@@ -1249,9 +1249,9 @@ sEs::update()
 
     if (DSP()->CurMode() == Electrical) {
         GRX->SetStatus(es_p1_tedit,
-            Menu()->MenuButtonStatus("side", MenuSUBCT));
+            Menu()->MenuButtonStatus(MMside, MenuSUBCT));
         GRX->SetStatus(es_p1_tfind,
-            Menu()->MenuButtonStatus("side", MenuNODMP));
+            Menu()->MenuButtonStatus(MMside, MenuNODMP));
     }
 
     GRX->SetStatus(es_p1_extview, EX()->isExtractionView());
@@ -1609,9 +1609,9 @@ sEs::es_action(GtkWidget *caller, void*)
             EX()->editTermsExec(Es->es_p1_tedit, Es->es_p1_cterms);
         else {
             bool state = GRX->GetStatus(caller);
-            bool st = Menu()->MenuButtonStatus("side", MenuSUBCT);
+            bool st = Menu()->MenuButtonStatus(MMside, MenuSUBCT);
             if (st != state)
-                Menu()->MenuButtonPress("side", MenuSUBCT);
+                Menu()->MenuButtonPress(MMside, MenuSUBCT);
         }
     }
     else if (!strcmp(name, "FindTerm")) {
@@ -1623,9 +1623,9 @@ sEs::es_action(GtkWidget *caller, void*)
                 SCD()->PopUpNodeMap(0, MODE_OFF);
         }
         else {
-            bool st = Menu()->MenuButtonStatus("side", MenuNODMP);
+            bool st = Menu()->MenuButtonStatus(MMside, MenuNODMP);
             if (st != state)
-                Menu()->MenuButtonPress("side", MenuNODMP);
+                Menu()->MenuButtonPress(MMside, MenuNODMP);
         }
     }
 

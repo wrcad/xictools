@@ -979,7 +979,7 @@ cSpiceIPC::CloseSpice()
             Proc()->RemoveChildHandler(ipc_child_sp_pid, child_hdlr);
 #endif
             write_msg("close 0", ipc_msg_skt);
-            Menu()->MenuButtonSet("main", MenuRUN, false);
+            Menu()->MenuButtonSet(MMmain, MenuRUN, false);
         }
     }
     close_all();
@@ -1046,7 +1046,7 @@ cSpiceIPC::SigIOhdlr(int sig)
         if (Errs()->has_error())
             Log()->ErrorLog(SpiceIPC, Errs()->get_error());
         SCD()->PopUpSim(SpError);
-        Menu()->MenuButtonSet("main", MenuRUN, false);
+        Menu()->MenuButtonSet(MMmain, MenuRUN, false);
         return;
     }
     if (FD_ISSET(ipc_msg_skt, &readfds)) {
@@ -1059,7 +1059,7 @@ cSpiceIPC::SigIOhdlr(int sig)
             Log()->ErrorLog(SpiceIPC, Errs()->get_error());
         if (!ok) {
             SCD()->PopUpSim(SpError);
-            Menu()->MenuButtonSet("main", MenuRUN, false);
+            Menu()->MenuButtonSet(MMmain, MenuRUN, false);
         }
     }
     if (ipc_stdout_skt > 0 && FD_ISSET(ipc_stdout_skt, &readfds)) {
@@ -1766,7 +1766,7 @@ cSpiceIPC::runnit(const char *what)
     if (i > 0) {
         if (!complete_spice()) {
             SCD()->PopUpSim(SpError);
-            Menu()->MenuButtonSet("main", MenuRUN, false);
+            Menu()->MenuButtonSet(MMmain, MenuRUN, false);
         }
     }
     else {
@@ -2384,11 +2384,11 @@ cSpiceIPC::complete_spice()
             return (false);
 
         SCD()->PopUpSim(SpDone);
-        Menu()->MenuButtonSet("main", MenuRUN, false);
+        Menu()->MenuButtonSet(MMmain, MenuRUN, false);
     }
     else {
         SCD()->PopUpSim(SpPause);
-        Menu()->MenuButtonSet("main", MenuRUN, false);
+        Menu()->MenuButtonSet(MMmain, MenuRUN, false);
     }
     return (true);
 }

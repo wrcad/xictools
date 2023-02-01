@@ -830,11 +830,11 @@ sLpalette::b3_handler(int x, int y, int state, bool down)
             LT()->HandleLayerSelect(ld);
 
             if (ctrl && !shft)
-                Menu()->MenuButtonPress("main", MenuCOLOR);
+                Menu()->MenuButtonPress(MMmain, MenuCOLOR);
             else if (!ctrl && shft)
-                Menu()->MenuButtonPress("main", MenuFILL);
+                Menu()->MenuButtonPress(MMmain, MenuFILL);
             else if (ctrl && shft)
-                Menu()->MenuButtonPress("main", MenuLPEDT);
+                Menu()->MenuButtonPress(MMmain, MenuLPEDT);
         }
         else if (dspPkgIf()->IsTrueColor())
             gtkLtab()->blink(ld);

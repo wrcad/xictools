@@ -69,7 +69,7 @@ private:
     void instantiateModifyMenu();
     void instantiateViewMenu();
     void instantiateAttributesMenu();
-#ifdef UseItemFacgtory
+#ifdef UseItemFactory
 #else
     void instantiateAttrSubMenu(GtkWidget*);
     void instantiateObjSubMenu(GtkWidget*);
@@ -103,14 +103,14 @@ private:
   
     static void on_null_ptr();
 
-#ifdef UseItemFacgtory
+#ifdef UseItemFactory
     static void menu_handler(GtkWidget*, void*, unsigned);
 #else
     static void menu_handler(GtkWidget*, void*);
 #endif
     static int user_cmd_proc(void*);
     static int cmd_proc(void*);
-#ifdef UseItemFacgtory
+#ifdef UseItemFactory
     static void make_entries(GtkItemFactory*, GtkItemFactoryEntry*, int,
         MenuEnt*, int);
 #endif
@@ -118,7 +118,7 @@ private:
     static void vimenu_proc(GtkWidget*, void*);
     static void stmenu_proc(GtkWidget*, void*);
     static void shmenu_proc(GtkWidget*, void*);
-#ifdef UseItemFacgtory
+#ifdef UseItemFactory
     static void top_btnmenu_callback(GtkWidget*, void*);
     static void btnmenu_callback(GtkWidget*, void*);
 #endif

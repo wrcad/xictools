@@ -75,7 +75,8 @@ enum
     ME_MENU     = 0x4,
     ME_SEP      = 0x8,
     ME_DYNAMIC  = 0x10,
-    ME_ALT      = 0x20
+    ME_ALT      = 0x20,
+    ME_RIGHT    = 0x40
 };
 //  ME_VANILLA
 //    Nothing special.
@@ -91,6 +92,8 @@ enum
 //    This item is a dynamic element.
 //  ME_ALT
 //    This item is an alternate for the previous item.
+//  ME_RIGHT
+//    Menu is right-justified in menu bar.
 
 struct WindowDesc;
 
@@ -149,6 +152,7 @@ struct MenuEnt
     bool is_dynamic()   { return (flags & ME_DYNAMIC); }
     bool is_separator() { return (flags & ME_SEP); }
     bool is_alt()       { return (flags & ME_ALT); }
+    bool is_right()     { return (flags & ME_RIGHT); }
 
     void set_state(bool b)
         {
@@ -249,6 +253,54 @@ struct MenuList
 // If an entry string passed to NewDDmenu has this text, a separator is
 // inserted.
 #define MENU_SEP_STRING "<separator>"
+
+// Menu names used in MainMdenu::FindEntry and others.
+//
+// menuname can take one of the following:
+// (null)     same as MMmain
+// MMmain     search all top, button, and misc menus
+// MMside     search the side menu only
+// MMtop      search the top entries only
+//
+// main window top menu:
+// MMfile     search the file menu only
+// MMcell     search the cell menu only
+// MMedit     search the edit menu only
+// MMmod      search the modify menu only
+// MMview     search the view menu only
+// MMattr     search the attributes menu (and sub-menu) only
+// MMconv     search the convert menu only
+// MMdrc      search the drc menu only
+// MMext      search the extract menu only
+// MMuser     search the user menu only
+// MMhelp     search the help menu only
+//
+// subwindows:
+// MMsub1     search all menus in subwin 1
+// MMsub2     search all menus in subwin 2
+// MMsub3     search all menus in subwin 3
+// MMsub4     sea3ch all menus in subwin 4
+//
+#define MMmain      "main"
+#define MMside      "side"
+#define MMtop       "top"
+
+#define MMfile      "file"
+#define MMcell      "cell"
+#define MMedit      "edit"
+#define MMmod       "mod"
+#define MMview      "view"
+#define MMattr      "attr"
+#define MMconv      "conv"
+#define MMdrc       "drc"
+#define MMext       "ext"
+#define MMuser      "user"
+#define MMhelp      "help"
+ 
+#define MMsub1      "sub1"
+#define MMsub2      "sub2"
+#define MMsub3      "sub3"
+#define MMsub4      "sub4"
 
 inline class MenuMain *Menu();
 

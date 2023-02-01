@@ -77,7 +77,7 @@ MenuBox *
 cMain::createHelpMenu()
 {
     HelpMenu[helpMenu] =
-        MenuEnt(M_NoOp,     "",        ME_MENU,     CMD_SAFE,
+        MenuEnt(M_NoOp,     "",        ME_MENU|ME_RIGHT, CMD_SAFE,
         0);
     HelpMenu[helpMenuHelp] =
         MenuEnt(M_Help,     MenuHELP,  ME_TOGGLE,   CMD_SAFE,
@@ -115,7 +115,7 @@ MenuBox *
 cMain::createSubwHelpMenu()
 {
     SubwHelpMenu[subwHelpMenu] =
-        MenuEnt(M_NoOp,     "",        ME_MENU,     CMD_SAFE,
+        MenuEnt(M_NoOp,     "",        ME_MENU|ME_RIGHT, CMD_SAFE,
         0);
     SubwHelpMenu[subwHelpMenuHelp] =
         MenuEnt(M_Help,     MenuHELP,  ME_VANILLA,  CMD_SAFE,

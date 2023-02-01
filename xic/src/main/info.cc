@@ -1257,7 +1257,7 @@ InfoState::InfoState(const char *nm, const char *hk) : CmdState(nm, hk)
     TmpCell = 0;
     ExpObjs = 0;
     ExpMode = false;
-    Menu()->MenuButtonSet("view", MenuINFO, true);
+    Menu()->MenuButtonSet(MMview, MenuINFO, true);
 }
 
 
@@ -1273,7 +1273,7 @@ InfoState::~InfoState()
         delete o->odesc;
         delete o;
     }
-    Menu()->MenuButtonSet("view", MenuINFO, false);
+    Menu()->MenuButtonSet(MMview, MenuINFO, false);
 }
 
 

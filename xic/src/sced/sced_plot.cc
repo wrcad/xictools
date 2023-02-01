@@ -291,7 +291,7 @@ cSced::clearPlots()
         sc_iplot_hpr_list = 0;
         sc_iplot_status_changed = true;
     }
-    Menu()->MenuButtonSet("side", "iplot", false);
+    Menu()->MenuButtonSet(MMside, "iplot", false);
 }
 
 

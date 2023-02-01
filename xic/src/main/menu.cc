@@ -166,7 +166,7 @@ MenuMain::RegisterMenu(MenuBox *mbox)
         end->next = ml;
         ml->prev = end;
     }
-    if (lstring::ciprefix("attr", mbox->name)) {
+    if (lstring::ciprefix(MMattr, mbox->name)) {
         // This is the Attributes menu, copy the sub-menu which is the
         // same as the viewport Attributes menu.
 
@@ -652,57 +652,12 @@ MenuMain::MatchEntry(const char *item, int nchars, int wnum, bool exact)
 }
 
 
-// Menu names.
+// This will look through the indicated menu for button, and return
+// the MenuEnt object if found, also return its MenuBox if mbox is not
+// null.  If menuname is 0 or empty, search all the main window menus.
 //
-#define MNmain      "main"
-#define MNside      "side"
-#define MNtop       "top"
-
-#define MNfile      "file"
-#define MNcell      "cell"
-#define MNedit      "edit"
-#define MNmod       "mod"
-#define MNview      "view"
-#define MNattri     "attri"
-#define MNcnvrt     "cnvrt"
-#define MNdrc       "drc"
-#define MNextrc     "extrc"
-#define MNuser      "user"
-#define MNhelp      "help"
- 
-#define MNsub1      "sub1"
-#define MNsub2      "sub2"
-#define MNsub3      "sub3"
-#define MNsub4      "sub4"
-
-// Look through the indicated menu for button, and return the MenuEnt
-// object if found, also return its MenuBox if mbox is not null.  If
-// menuname is 0 or empty, search all the main window menus.
-//
-// menuname can take one of the following:
-// (null)     same as MNmain
-// MNmain     search all top, button, and misc menus
-// MNside     search the side menu only
-// MNtop      search the top entries only
-//
-// main window top menu:
-// MNfile     search the file menu only
-// MNcell     search the cell menu only
-// MNedit     search the edit menu only
-// MNmod      search the modify menu only
-// MNview     search the view menu only
-// MNattri    search the attributes menu (and sub-menu) only
-// MNcnvrt    search the convert menu only
-// MNdrc      search the drc menu only
-// MNextrc    search the extract menu only
-// MNuser     search the user menu only
-// MNhelp     search the help menu only
-//
-// subwindows:
-// MNsub1     search all menus in subwin 1
-// MNsub2     search all menus in subwin 2
-// MNsub3     search all menus in subwin 3
-// MNsub4     sea3ch all menus in subwin 4
+// See the set of defines for this function in menu.h ahead of the
+// MenuMain definition.
 //
 MenuEnt*
 MenuMain::FindEntry(const char *menuname, const char *button, MenuBox **mbox)
@@ -729,9 +684,9 @@ MenuMain::FindEntry(const char *menuname, const char *button, MenuBox **mbox)
     button = buf2;
 
     if (menuname && *menuname) {
-        if (lstring::cieq(menuname, MNmain))
+        if (lstring::cieq(menuname, MMmain))
             return (FindEntOfWin(DSP()->MainWdesc(), button, mbox));
-        if (lstring::cieq(menuname, MNside)) {
+        if (lstring::cieq(menuname, MMside)) {
             if (GetButtonMenu() && GetButtonMenu()->menu) {
                 for (MenuEnt *ent = GetButtonMenu()->menu; ent->entry; ent++) {
                     if (lstring::ciprefix(button, ent->entry)) {
@@ -742,7 +697,7 @@ MenuMain::FindEntry(const char *menuname, const char *button, MenuBox **mbox)
                 }
             }
         }
-        else if (lstring::cieq(menuname, MNtop) ||
+        else if (lstring::cieq(menuname, MMtop) ||
                 lstring::cieq(menuname, "misc")) {
             if (mm_misc_menu && mm_misc_menu->menu) {
                 for (MenuEnt *ent = mm_misc_menu->menu; ent->entry; ent++) {
@@ -751,13 +706,13 @@ MenuMain::FindEntry(const char *menuname, const char *button, MenuBox **mbox)
                 }
             }
         }
-        else if (lstring::cieq(menuname, MNsub1))
+        else if (lstring::cieq(menuname, MMsub1))
             return (FindEntOfWin(DSP()->Window(1), button, mbox));
-        else if (lstring::cieq(menuname, MNsub2))
+        else if (lstring::cieq(menuname, MMsub2))
             return (FindEntOfWin(DSP()->Window(2), button, mbox));
-        else if (lstring::cieq(menuname, MNsub3))
+        else if (lstring::cieq(menuname, MMsub3))
             return (FindEntOfWin(DSP()->Window(3), button, mbox));
-        else if (lstring::cieq(menuname, MNsub4))
+        else if (lstring::cieq(menuname, MMsub4))
             return (FindEntOfWin(DSP()->Window(4), button, mbox));
         else {
             char mbuf[16];
@@ -791,7 +746,7 @@ MenuMain::FindEntry(const char *menuname, const char *button, MenuBox **mbox)
                         return (ent);
                     }
                 }
-                if (lstring::ciprefix("attr", m->name) && mm_attr_submenu &&
+                if (lstring::ciprefix(MMattr, m->name) && mm_attr_submenu &&
                         mm_attr_submenu->menu) {
                     for (MenuEnt *ent = mm_attr_submenu->menu; ent->entry;
                             ent++) {
@@ -921,7 +876,7 @@ MenuMain::FindEntByObj(const char *menuname, GRobject obj)
         menuname = buf1;
     }
 
-    if (!menuname || !*menuname || lstring::cieq(menuname, MNmain)) {
+    if (!menuname || !*menuname || lstring::cieq(menuname, MMmain)) {
         if (GetButtonMenu() && GetButtonMenu()->menu) {
             for (MenuEnt *ent = GetButtonMenu()->menu; ent->entry; ent++) {
                 if (ent->cmd.caller == obj)
@@ -958,7 +913,7 @@ MenuMain::FindEntByObj(const char *menuname, GRobject obj)
     }
 
     int subw_num = 0;
-    if (lstring::cieq(menuname, MNside)) {
+    if (lstring::cieq(menuname, MMside)) {
         if (GetButtonMenu() && GetButtonMenu()->menu) {
             for (MenuEnt *ent = GetButtonMenu()->menu; ent->entry; ent++) {
                 if (ent->cmd.caller == obj)
@@ -966,7 +921,7 @@ MenuMain::FindEntByObj(const char *menuname, GRobject obj)
             }
         }
     }
-    else if (lstring::cieq(menuname, MNtop) ||
+    else if (lstring::cieq(menuname, MMtop) ||
             lstring::cieq(menuname, "misc")) {
         if (mm_misc_menu && mm_misc_menu->menu) {
             for (MenuEnt *ent = mm_misc_menu->menu; ent->entry; ent++) {
@@ -975,13 +930,13 @@ MenuMain::FindEntByObj(const char *menuname, GRobject obj)
             }
         }
     }
-    else if (lstring::cieq(menuname, MNsub1))
+    else if (lstring::cieq(menuname, MMsub1))
         subw_num = 1;
-    else if (lstring::cieq(menuname, MNsub2))
+    else if (lstring::cieq(menuname, MMsub2))
         subw_num = 2;
-    else if (lstring::cieq(menuname, MNsub3))
+    else if (lstring::cieq(menuname, MMsub3))
         subw_num = 3;
-    else if (lstring::cieq(menuname, MNsub4))
+    else if (lstring::cieq(menuname, MMsub4))
         subw_num = 4;
     else {
         char mbuf[16];
@@ -1012,7 +967,7 @@ MenuMain::FindEntByObj(const char *menuname, GRobject obj)
                 if (ent->cmd.caller == obj)
                     return (ent);
             }
-            if (lstring::ciprefix("attr", m->name) && mm_attr_submenu &&
+            if (lstring::ciprefix(MMattr, m->name) && mm_attr_submenu &&
                     mm_attr_submenu->menu) {
                 for (MenuEnt *ent = mm_attr_submenu->menu; ent->entry; ent++) {
                     if (ent->cmd.caller == obj)

@@ -270,7 +270,7 @@ cEdit::propertiesExec(CmdDesc *cmd)
     if (!XM()->CheckCurCell(true, false, DSP()->CurMode()))
         return;
     if (DSP()->CurMode() == Electrical &&
-            Menu()->MenuButtonStatus("main", MenuSYMBL) == 1) {
+            Menu()->MenuButtonStatus(MMmain, MenuSYMBL) == 1) {
         PL()->ShowPrompt("Can't show properties in symbolic mode.");
         return;
     }

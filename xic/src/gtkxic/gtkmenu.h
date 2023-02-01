@@ -44,7 +44,7 @@
 #include "menu.h"
 
 //XXX
-//#define UseItemFactory
+#define UseItemFactory
 
 inline class GTKmenu *gtkMenu();
 
@@ -89,10 +89,7 @@ public:
     void HideButtonMenu(bool);
     void DisableMainMenuItem(const char*, const char*, bool);
 
-#ifdef UseItemFactory
-#else
-    GtkWidget *FindMenuWidget(const char*);
-#endif
+    GtkWidget *FindMainMenuWidget(const char*, const char*);
 
     void SetModal(GtkWidget *w) { modalShell = w; }
     GtkWidget *GetModal()       { return (modalShell); }
@@ -110,7 +107,7 @@ public:
 #endif
 
 private:
-    GtkWidget *name_to_widget(const char*);
+//XXX    GtkWidget *name_to_widget(const char*);
 
     static char *strip_accel(const char*);
     static GtkWidget *new_popup_menu(GtkWidget*, const char* const*,

@@ -168,7 +168,7 @@ cMain::OpenCellMenuList()
 void
 cMain::PushOpenCellName(const char *name)
 {
-    MenuEnt *ent = Menu()->FindEntry("file", MenuOPEN);
+    MenuEnt *ent = Menu()->FindEntry(MMfile, MenuOPEN);
     if (!ent || !ent->cmd.caller)
         return;
     int i;
@@ -213,7 +213,7 @@ cMain::ReplaceOpenCellName(const char *newname, const char *oldname)
             if (newname && *newname) {
                 delete [] menu_list[i];
                 menu_list[i] = lstring::copy(newname);
-                MenuEnt *ent = Menu()->FindEntry("file", MenuOPEN);
+                MenuEnt *ent = Menu()->FindEntry(MMfile, MenuOPEN);
                 if (!ent || !ent->cmd.caller)
                     return;
                 Menu()->SetDDentry(ent->cmd.caller, i, menu_list[i]);

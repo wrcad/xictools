@@ -297,7 +297,7 @@ cSced::showMutualExec(CmdDesc *cmd)
     if (!XM()->CheckCurCell(false, false, Electrical))
         return;
     if (DSP()->CurMode() == Electrical &&
-            Menu()->MenuButtonStatus("main", MenuSYMBL) == 1) {
+            Menu()->MenuButtonStatus(MMmain, MenuSYMBL) == 1) {
         PL()->ShowPrompt("Can't show mutual inductors in symbolic mode.");
         return;
     }

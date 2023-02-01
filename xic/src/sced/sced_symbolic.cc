@@ -73,17 +73,17 @@ namespace {
             state = true;
         }
 
-        MenuEnt *ent = Menu()->FindEntry("cell", MenuPUSH);
+        MenuEnt *ent = Menu()->FindEntry(MMcell, MenuPUSH);
         if (ent)
             Menu()->SetSensitive(ent->cmd.caller, state);
 
-        ent = Menu()->FindEntry("side", MenuPLACE);
+        ent = Menu()->FindEntry(MMside, MenuPLACE);
         if (ent)
             Menu()->SetSensitive(ent->cmd.caller, state);
-        ent = Menu()->FindEntry("edit", MenuPRPTY, 0);
+        ent = Menu()->FindEntry(MMedit, MenuPRPTY, 0);
         if (ent)
             Menu()->SetSensitive(ent->cmd.caller, state);
-        ent = Menu()->FindEntry("edit", MenuFLATN);
+        ent = Menu()->FindEntry(MMedit, MenuFLATN);
         if (ent)
             Menu()->SetSensitive(ent->cmd.caller, state);
 
@@ -91,10 +91,10 @@ namespace {
         if (ent)
             Menu()->SetSensitive(ent->cmd.caller, state);
 
-        ent = Menu()->FindEntry("ext", MenuEXSEL);
+        ent = Menu()->FindEntry(MMext, MenuEXSEL);
         if (ent)
             Menu()->SetSensitive(ent->cmd.caller, state);
-        ent = Menu()->FindEntry("ext", MenuDVSEL);
+        ent = Menu()->FindEntry(MMext, MenuDVSEL);
         if (ent)
             Menu()->SetSensitive(ent->cmd.caller, state);
     }
@@ -248,11 +248,11 @@ cSced::assertSymbolic(bool mode)
         // Set the button if the cell is symbolic, whether or not it
         // is being displayed as such, set_sensitive will do the right
         // thing.
-        Menu()->MenuButtonSet("main", MenuSYMBL, true);
+        Menu()->MenuButtonSet(MMmain, MenuSYMBL, true);
         set_sensitive(false);
     }
     else {
-        Menu()->MenuButtonSet("main", MenuSYMBL, false);
+        Menu()->MenuButtonSet(MMmain, MenuSYMBL, false);
         set_sensitive(true);
     }
     cursde->computeBB();
