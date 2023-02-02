@@ -55,11 +55,7 @@ GTKmenu::GTKmenu()
     topButtonWidget = 0;
     btnPhysMenuWidget = 0;
     btnElecMenuWidget = 0;
-#ifdef UseItemFactory
-    itemFactory = 0;
-#else
     accelGroup = 0;
-#endif
     modalShell = 0;
 }
 
@@ -77,34 +73,11 @@ GTKmenu::GTKmenu()
 void
 GTKmenu::InitMainMenu(GtkWidget *window)
 {
-#ifdef UseItemFactory
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-
-    // This function initializes the item factory.
-    //  Param 1: The type of menu - can be GTK_TYPE_MENU_BAR, GTK_TYPE_MENU,
-    //           or GTK_TYPE_OPTION_MENU.
-    //  Param 2: The path of the menu.
-    //  Param 3: A pointer to a gtk_accel_group.  The item factory sets up
-    //           the accelerator table while generating menus.
-
-    GtkItemFactory *item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR,
-        "<main>", accel_group);
-    itemFactory = item_factory;
-
-    gtkCfg()->instantiateMainMenus();
-
-    // Attach the new accelerator group to the top level window.
-    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
-
-    mainMenu = gtk_item_factory_get_widget(item_factory, "<main>");
-    gtk_widget_show(mainMenu);
-#else
     accelGroup = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(window), accelGroup);
     mainMenu = gtk_menu_bar_new();
     gtk_widget_show(mainMenu);
     gtkCfg()->instantiateMainMenus();
-#endif
 }
 
 
@@ -395,28 +368,6 @@ GTKmenu::NewSubwMenu(int wnum)
     if (!w)
         return (0);
 
-#ifdef UseItemFactory
-    char mname[8];
-    mname[0] = '<';
-    mname[1] = 's';
-    mname[2] = 'u';
-    mname[3] = 'b';
-    mname[4] = wnum + '0';
-    mname[5] = '>';
-    mname[6] = 0;
-
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-    GtkItemFactory *item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR,
-        mname, accel_group);
-
-    gtkCfg()->instantiateSubwMenus(wnum, item_factory);
-
-    gtk_window_add_accel_group(GTK_WINDOW(w->Shell()), accel_group);
-    GtkWidget *menubar = gtk_item_factory_get_widget(item_factory, mname);
-    gtk_widget_show(menubar);
-
-    return (menubar);
-#else
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(w->Shell()), accel_group);
     GtkWidget *menubar = gtk_menu_bar_new();
@@ -424,7 +375,6 @@ GTKmenu::NewSubwMenu(int wnum)
     gtkCfg()->instantiateSubwMenus(wnum, menubar, accel_group);
 
     return (menubar);
-#endif
 }
 
 
@@ -606,29 +556,6 @@ GTKmenu::FindMainMenuWidget(const char *mname, const char *item)
 void
 GTKmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
 {
-#ifdef UseItemFactory
-    if (!itemFactory)
-        return;
-    MenuBox *mbox = FindMainMenu(mname);
-    if (mbox && mbox->menu) {
-        if (!item) {
-            char *tmp = strip_accel(mbox->menu[0].menutext);
-            GtkWidget *widget = gtk_item_factory_get_item(itemFactory, tmp);
-            delete [] tmp;
-            if (widget)
-                gtk_widget_set_sensitive(widget, !desens);
-            return;
-        }
-        MenuEnt *ent = FindEntry(mname, item, 0);
-        if (ent) {
-            char *tmp = strip_accel(ent->menutext);
-            GtkWidget *widget = gtk_item_factory_get_item(itemFactory, tmp);
-            delete [] tmp;
-            if (widget)
-                gtk_widget_set_sensitive(widget, !desens);
-        }
-    }
-#else
     MenuEnt *ent = FindEntry(mname, item, 0);
     if (ent && ent->cmd.caller)
         gtk_widget_set_sensitive(GTK_WIDGET(ent->cmd.caller), !desens);
@@ -637,78 +564,8 @@ printf("caller %p %s %s\n", ent->cmd.caller, mname, item);
 else
 printf("caller failed %s %s\n", mname, item);
 //XXX
-#endif
 }
 
-
-#ifdef XXX_NOTUSED
-// Return the activating widget indicated by name, which is either an
-// iconfactory path for the main menu, or the button text for the button
-// menu, or the button text following "subN" for one of the subwindow
-// menus.
-//
-GtkWidget *
-GTKmenu::name_to_widget(const char *name)
-{
-#ifdef UseItemFactory
-    if (!name || !*name)
-        return (0);
-    if (*name == '/')
-        // widget is an iconfactory item whose path is in name
-        return (gtk_item_factory_get_item(itemFactory, name));
-    if (lstring::prefix("sub", name) && isdigit(name[3])) {
-        // widget is in subwindow menu
-        int wnum = name[3] - '0';
-        if (wnum > 0 && wnum < DSP_NUMWINS &&
-                DSP()->Window(wnum)) {
-            for (MenuBox *m = mm_subw_menus[wnum]; m && m->name; m++) {
-                for (MenuEnt *ent = m->menu; ent && ent->entry; ent++) {
-                    if (!strcmp(name + 4, ent->menutext))
-                        return ((GtkWidget*)ent->cmd.caller);
-                }
-            }
-        }
-    }
-
-    // try the button menu
-    if (GetButtonMenu() && GetButtonMenu()->menu) {
-        for (MenuEnt *ent = GetButtonMenu()->menu; ent->entry; ent++) {
-            if (!strcmp(name, ent->menutext))
-                return ((GtkWidget*)ent->cmd.caller);
-        }
-    }
-#else
-    if (!name || !*name)
-        return (0);
-    if (*name == '/')
-        // Name is an "icon factory" path.
-        return (FindMenuWidget(name));
-    if (lstring::prefix("sub", name) && isdigit(name[3])) {
-        // widget is in subwindow menu
-        int wnum = name[3] - '0';
-        if (wnum > 0 && wnum < DSP_NUMWINS &&
-                DSP()->Window(wnum)) {
-            for (MenuBox *m = mm_subw_menus[wnum]; m && m->name; m++) {
-                for (MenuEnt *ent = m->menu; ent && ent->entry; ent++) {
-                    if (!strcmp(name + 4, ent->menutext))
-                        return ((GtkWidget*)ent->cmd.caller);
-                }
-            }
-        }
-    }
-
-    // try the button menu
-    if (GetButtonMenu() && GetButtonMenu()->menu) {
-        for (MenuEnt *ent = GetButtonMenu()->menu; ent->entry; ent++) {
-            if (!strcmp(name, ent->menutext))
-                return ((GtkWidget*)ent->cmd.caller);
-        }
-    }
-#endif
-
-    return (0);
-}
-#endif
 
 // Static function.
 // Strip underscores (accelerator indicators) out of the path string.

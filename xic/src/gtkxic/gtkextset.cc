@@ -56,6 +56,7 @@
 #include "gtkinterf/gtkspinbtn.h"
 #include "miscutil/filestat.h"
 
+#define UseItemFactory
 
 //--------------------------------------------------------------------
 // Pop-up to control misc. extraction variables.
@@ -144,7 +145,9 @@ namespace {
             GtkWidget *es_p4_apmrg;
             GtkWidget *es_p4_apfix;
 
+#ifdef UseItemFactory
             GtkItemFactory *es_item_factory;
+#endif
             int es_gpmhst;
             sDevDesc *es_devdesc;
 
@@ -245,7 +248,9 @@ sEs::sEs(GRobject c)
     es_p4_noperm = 0;
     es_p4_apmrg = 0;
     es_p4_apfix = 0;
+#ifdef UseItemFactory
     es_item_factory = 0;
+#endif
     es_gpmhst = 0;
     es_devdesc = 0;
 
@@ -344,8 +349,10 @@ sEs::~sEs()
     SCD()->PopUpNodeMap(0, MODE_OFF);
     if (es_caller)
         GRX->Deselect(es_caller);
+#ifdef UseItemFactory
     if (es_item_factory)
         g_object_unref(es_item_factory);
+#endif
     if (es_popup)
         gtk_widget_destroy(es_popup);
 }
@@ -802,6 +809,7 @@ sEs::net_and_cell_page()
 }
 
 
+#ifdef UseItemFactory
 #define IFINIT(i, a, b, c, d, e) { \
     menu_items[i].path = (char*)a; \
     menu_items[i].accelerator = (char*)b; \
@@ -809,6 +817,7 @@ sEs::net_and_cell_page()
     menu_items[i].callback_action = d; \
     menu_items[i].item_type = (char*)e; \
     i++; }
+#endif
 
 // Page 3, Device Config.
 //
@@ -822,6 +831,7 @@ sEs::devs_page()
     //
     // Menu bar.
     //
+#ifdef UseItemFactory
     GtkItemFactoryEntry menu_items[50];
     int nitems = 0;
 
@@ -873,6 +883,8 @@ sEs::devs_page()
     es_p2_undblk =
         gtk_item_factory_get_widget(es_item_factory, "/Device Block/Undelete");
     gtk_widget_set_sensitive(es_p2_undblk, false);
+#else
+#endif
 
     gtk_table_attach(GTK_TABLE(form), menubar, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

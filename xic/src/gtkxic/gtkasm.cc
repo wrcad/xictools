@@ -51,6 +51,7 @@
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkutil.h"
 #include "miscutil/filestat.h"
+#include <gdk/gdkkeysyms.h>
 
 
 //-----------------------------------------------------------------------------
@@ -62,6 +63,7 @@
 namespace {
     sAsm *Asm;
     sAsmPrg *AsmPrg;
+    const char *MIDX = "midx";
 }
 
 
@@ -133,6 +135,7 @@ const char *sAsm::path_to_source_string =
 const char *sAsm::path_to_new_string = "Path to New Layout File";
 int sAsm::asm_fmt_type = cConvert::cvGds;
 
+#ifdef UseItemFactory
 #define IFINIT(i, a, b, c, d, e) { \
     menu_items[i].path = (char*)a; \
     menu_items[i].accelerator = (char*)b; \
@@ -140,13 +143,18 @@ int sAsm::asm_fmt_type = cConvert::cvGds;
     menu_items[i].callback_action = d; \
     menu_items[i].item_type = (char*)e; \
     i++; }
+#endif
 
 
 sAsm::sAsm(GRobject c)
 {
     Asm = this;
     asm_caller = c;
+#ifdef UseItemFactory
     asm_item_factory = 0;
+#else
+    asm_filesel_btn = 0;
+#endif
     asm_notebook = 0;
     asm_outfile = 0;
     asm_topcell = 0;
@@ -181,6 +189,7 @@ sAsm::sAsm(GRobject c)
 
     // menu bar
     //
+#ifdef UseItemFactory
     GtkItemFactoryEntry menu_items[30];
     int nitems = 0;
 
@@ -222,6 +231,154 @@ sAsm::sAsm(GRobject c)
     GtkWidget *menubar = gtk_item_factory_get_widget(asm_item_factory,
         "<filetool>");
     gtk_widget_show(menubar);
+#else
+    GtkAccelGroup *accel_group = gtk_accel_group_new();
+    gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
+    GtkWidget *menubar = gtk_menu_bar_new();
+    gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", menubar);
+    gtk_widget_show(menubar);
+    GtkWidget *item;
+
+    // File menu.
+    item = gtk_menu_item_new_with_mnemonic("_File");
+    gtk_widget_set_name(item, "File");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // _File Select, <control>O, asm_action_proc, OpenCode, CheckItem>
+    item = gtk_check_menu_item_new_with_mnemonic("_File Select");
+    gtk_widget_set_name(item, "File Select");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)OpenCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(asm_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_o,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    asm_filesel_btn = item;
+
+    // _Save, <control>S, asm_action_proc, SaveCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Save");
+    gtk_widget_set_name(item, "Save");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)SaveCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(asm_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // File/_Recall, <control>R, asm_action_proc, RecallCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Recall");
+    gtk_widget_set_name(item, "Recall");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)RecallCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(asm_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_r,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    item = gtk_separator_menu_item_new();
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+
+    // _Quit, <control>Q, asm_action_proc, CancelCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Quit");
+    gtk_widget_set_name(item, "Quit");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)CancelCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(asm_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Options menu.
+    item = gtk_menu_item_new_with_mnemonic("_Options");
+    gtk_widget_set_name(item, "Options");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // R_eset, <control>E, asm_action_proc, ResetCode, 0
+    item = gtk_menu_item_new_with_mnemonic("R_eset");
+    gtk_widget_set_name(item, "Reset");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)ResetCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(asm_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_e,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // _New Source, <control>N, asm_action_proc, NewCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_New Source");
+    gtk_widget_set_name(item, "New Source");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)NewCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(asm_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_n,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Remove Source, 0, asm_action_proc, DelCode, 0
+    item = gtk_menu_item_new_with_mnemonic("Remove Source");
+    gtk_widget_set_name(item, "Remove Source");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)DelCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(asm_action_proc), this);
+
+    // New _Toplevel, <control>T, asm_action_proc, NewTlCode, 0
+    item = gtk_menu_item_new_with_mnemonic("New _Toplevel");
+    gtk_widget_set_name(item, "New Toplevel");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)NewTlCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(asm_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_t,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Remove Toplevel, 0, asm_action_proc, DelTlCode, 0
+    item = gtk_menu_item_new_with_mnemonic("Remove Toplevel");
+    gtk_widget_set_name(item, "Remove Toplevel");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)DelTlCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(asm_action_proc), this);
+
+    // Help menu.
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_menu_item_set_right_justified(GTK_MENU_ITEM(item), true);
+    gtk_widget_set_name(item, "Help");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // _Help, <control>H, asm_action_proc, HelpCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_set_name(item, "Help");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)HelpCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(asm_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+#endif
 
     int row = 0;
     gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, row, row+1,
@@ -290,12 +447,15 @@ sAsm::~sAsm()
     }
     delete [] asm_sources;
     delete asm_fmt;
-    if (wb_shell)
+    if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)asm_cancel_proc, wb_shell);
+    }
 
+#ifdef UseItemFactory
     if (asm_item_factory)
         g_object_unref(asm_item_factory);
+#endif
 }
 
 
@@ -892,9 +1052,16 @@ sAsm::asm_page_change_proc(GtkWidget*, void*, int page, void*)
 // Static function.
 // Handle menu button presses.
 //
+#ifdef UseItemFactory
 void
 sAsm::asm_action_proc(GtkWidget *caller, void*, unsigned int code)
 {
+#else
+void
+sAsm::asm_action_proc(GtkWidget *caller, void*)
+{
+    long code = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+#endif
     if (!Asm)
         return;
     if (code == NoCode) {
@@ -1099,9 +1266,13 @@ sAsm::asm_fsel_cancel(GRfilePopup*, void*)
     if (!Asm)
         return;
     Asm->asm_fsel = 0;
+#ifdef UseItemFactory
     GtkWidget *item = gtk_item_factory_get_widget(Asm->asm_item_factory,
         "/File/File Select");
     GRX->Deselect(item);
+#else
+    GRX->Deselect(Asm->asm_filesel_btn);
+#endif
 }
 
 

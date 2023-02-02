@@ -43,9 +43,6 @@
 
 #include "menu.h"
 
-//XXX
-#define UseItemFactory
-
 inline class GTKmenu *gtkMenu();
 
 // MenuMain subclass.
@@ -101,13 +98,9 @@ public:
             return (m == Physical ? btnPhysMenuWidget : btnElecMenuWidget);
         }
 
-#ifdef UseItemFactory
-#else
     GtkAccelGroup *AccelGroup() { return (accelGroup); }
-#endif
 
 private:
-//XXX    GtkWidget *name_to_widget(const char*);
 
     static char *strip_accel(const char*);
     static GtkWidget *new_popup_menu(GtkWidget*, const char* const*,
@@ -119,13 +112,8 @@ private:
     GtkWidget *topButtonWidget;
     GtkWidget *btnPhysMenuWidget;
     GtkWidget *btnElecMenuWidget;
-
-#ifdef UseItemFactory
-    GtkItemFactory *itemFactory;
-#else
-    GtkAccelGroup *accelGroup;
-#endif
     GtkWidget *modalShell;
+    GtkAccelGroup *accelGroup;
 };
 
 #endif

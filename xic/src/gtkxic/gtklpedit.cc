@@ -56,6 +56,7 @@
 #include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
+#define UseItemFactory
 
 //--------------------------------------------------------------------
 // Tech parameter editor pop-up
@@ -136,7 +137,9 @@ namespace {
             GtkWidget *lp_tline;            // Tline menu entry
             GtkWidget *lp_antenna;          // Antenna menu entry
             GtkWidget *lp_nddt;             // NoDrcDataType menu entry
+#ifdef UseItemFactory
             GtkItemFactory *lp_item_factory;
+#endif
 
             CDl *lp_ldesc;                  // current layer
             int lp_line_selected;           // number of line selected or -1
@@ -189,6 +192,7 @@ cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
 }
 
 
+#ifdef UseItemFactory
 #define IFINIT(i, a, b, c, d, e) { \
     menu_items[i].path = (char*)a; \
     menu_items[i].accelerator = (char*)b; \
@@ -196,6 +200,7 @@ cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
     menu_items[i].callback_action = d; \
     menu_items[i].item_type = (char*)e; \
     i++; }
+#endif
 
 sLpe::sLpe(GRobject c, const char *msg, const char *string)
 {
@@ -224,7 +229,9 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     lp_tline = 0;
     lp_antenna = 0;
     lp_nddt = 0;
+#ifdef UseItemFactory
     lp_item_factory = 0;
+#endif
     lp_page = 0;
 
     lp_ldesc = 0;
@@ -244,6 +251,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     //
     // menu bar
     //
+#ifdef UseItemFactory
 #define NUM_MENU_ITEMS 60
     GtkItemFactoryEntry menu_items[NUM_MENU_ITEMS];
 
@@ -415,6 +423,8 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     if (widget)
         gtk_widget_set_name(widget, "Help");
 
+#else
+#endif
     int rowcnt = 0;
     gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, rowcnt, rowcnt + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -519,8 +529,10 @@ sLpe::~sLpe()
     }
     if (lp_caller)
         GRX->Deselect(lp_caller);
+#ifdef UseItemFactory
     if (lp_item_factory)
         g_object_unref(lp_item_factory);
+#endif
     if (lp_popup)
         gtk_widget_destroy(lp_popup);
 }

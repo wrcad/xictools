@@ -56,7 +56,9 @@
 #include "gtkinterf/gtksearch.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
+#include <gdk/gdkkeysyms.h>
 
+//#define UseItemFactory
 
 //-----------------------------------------------------------------------------
 // Pop-up panel and supporting functions for script debugger.
@@ -215,7 +217,11 @@ namespace {
             static void db_change_proc(GtkWidget*, void*);
             static int db_key_dn_hdlr(GtkWidget*, GdkEvent*, void*);
             static int db_text_btn_hdlr(GtkWidget*, GdkEvent*, void*);
+#ifdef UseItemFactory
             static void db_action_proc(GtkWidget*, void*, unsigned);
+#else
+            static void db_action_proc(GtkWidget*, void*);
+#endif
             static ESret db_open_cb(const char*, void*);
             static int db_open_idle(void*);
             static void db_do_saveas_proc(const char*, void*);
@@ -237,7 +243,11 @@ namespace {
             GtkWidget *db_filemenu;
             GtkWidget *db_editmenu;
             GtkWidget *db_execmenu;
+#ifdef UseItemFactory
             GtkItemFactory *db_item_factory;
+#else
+            GtkWidget *db_load_btn;
+#endif
             GRledPopup *db_load_pop;
             sDbV *db_vars_pop;
 
@@ -335,6 +345,7 @@ cMain::DbgLoad(MenuEnt *ent)
 //  2.  ErasePrompt() safe to call, does nothing while
 //      editor is active
 
+#ifdef UseItemFactory
 #define IFINIT(i, a, b, c, d, e) { \
     menu_items[i].path = (char*)a; \
     menu_items[i].accelerator = (char*)b; \
@@ -342,6 +353,11 @@ cMain::DbgLoad(MenuEnt *ent)
     menu_items[i].callback_action = d; \
     menu_items[i].item_type = (char*)e; \
     i++; }
+#else
+namespace {
+    const char *MIDX = "midx";
+}
+#endif
 
 sDbg::sDbg(GRobject c)
 {
@@ -356,7 +372,11 @@ sDbg::sDbg(GRobject c)
     db_filemenu = 0;
     db_editmenu = 0;
     db_execmenu = 0;
+#ifdef UseItemFactory
     db_item_factory = 0;
+#else
+    db_load_btn = 0;
+#endif
     db_load_pop = 0;
     db_vars_pop = 0;
 
@@ -393,6 +413,7 @@ sDbg::sDbg(GRobject c)
     //
     // menu bar
     //
+#ifdef UseItemFactory
     GtkItemFactoryEntry menu_items[30];
     int nitems = 0;
 
@@ -469,16 +490,281 @@ sDbg::sDbg(GRobject c)
         GRX->SetStatus(widget, GRX->GetCRLFtermination());
 #endif
 
-    gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
     db_filemenu = gtk_item_factory_get_item(db_item_factory, "/File");
     db_editmenu = gtk_item_factory_get_item(db_item_factory, "/Edit");
     db_execmenu = gtk_item_factory_get_item(db_item_factory, "/Execute");
     db_saveas = gtk_item_factory_get_item(db_item_factory, "/File/Save As");
     db_undo = gtk_item_factory_get_item(db_item_factory, "/Edit/Undo");
     db_redo = gtk_item_factory_get_item(db_item_factory, "/Edit/Redo");
+
+#else
+    GtkAccelGroup *accel_group = gtk_accel_group_new();
+    gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
+    GtkWidget *menubar = gtk_menu_bar_new();
+    gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", menubar);
+    gtk_widget_show(menubar);
+    GtkWidget *item;
+
+    // File menu.
+    item = gtk_menu_item_new_with_mnemonic("_File");
+    gtk_widget_set_name(item, "File");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+    db_filemenu = item;
+
+    // _New, 0, db_action_proc, NewCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_New");
+    gtk_widget_set_name(item, "New");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)NewCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+
+    // _Load", <control>", db_action_proc, LoadCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Load");
+    gtk_widget_set_name(item, "Load");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)LoadCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_l,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    db_load_btn = item;
+
+    // _Print, <control>P, db_action_proc, PrintCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Print");
+    gtk_widget_set_name(item, "Print");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)PrintCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_p,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // _Save As, <alt>A, db_action_proc, SaveAsCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Save As");
+    gtk_widget_set_name(item, "Save As");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)SaveAsCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_a,
+//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+    db_saveas = item;
+
+#ifdef WIN32
+    // _Write CRLF, 0, db_action_proc, CRLFcode, <CheckItem>"
+    item = gtk_check_menu_item_new_with_mnemonic("_Write CRLF");
+    gtk_widget_set_name(item, "Write CRLF");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)CRLFcode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+#endif
+
+    item = gtk_separator_menu_item_new();
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+
+    // _Quit, <control>Q, db_action_proc, CancelCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Quit");
+    gtk_widget_set_name(item, "Quit");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)CancelCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Edit menu.
+    item = gtk_menu_item_new_with_mnemonic("_Edit");
+    gtk_widget_set_name(item, "Edit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+    db_editmenu = item;
+
+    // Undo, <Alt>U, db_undo_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("Undo");
+    gtk_widget_set_name(item, "Undo");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_undo_proc), this);
+//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_u,
+//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+    db_undo = item;
+
+    // Redo, <Alt>R, db_redo_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("Redo");
+    gtk_widget_set_name(item, "Redo");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_redo_proc), this);
+//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_r,
+//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+    db_redo = item;
+
+    item = gtk_separator_menu_item_new();
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+
+    // Cut to Clipboard, <control>X, db_cut_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("Cut to Clipboard");
+    gtk_widget_set_name(item, "Cut to Clipboard");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_cut_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_x,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Copy to Clipboard, <control>C, db_copy_proc,  0, 0
+    item = gtk_menu_item_new_with_mnemonic("Copy to Clipboard");
+    gtk_widget_set_name(item, "Copy to Clipboard");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_copy_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_c,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Paste from Clipboard, <control>V, db_paste_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("Paste from Clipboard");
+    gtk_widget_set_name(item, "Paste from Clipboard");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_paste_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_v,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Paste Primary, <alt>P, db_paste_prim_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("Paste Primary");
+    gtk_widget_set_name(item, "Paste Primary");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_paste_prim_proc), this);
+//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_p,
+//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+
+    // Execute menu.
+    item = gtk_menu_item_new_with_mnemonic("E_xecute");
+    gtk_widget_set_name(item, "Execute");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+    db_execmenu = item;
+
+    // _Run, <control>R, db_action_proc, RunCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Run");
+    gtk_widget_set_name(item, "Run");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)RunCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_r,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // S_tep, <control>T, db_action_proc, StepCode, 0
+    item = gtk_menu_item_new_with_mnemonic("S_tep");
+    gtk_widget_set_name(item, "Step");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)StepCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_t,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // R_eset, <control>E, db_action_proc, StartCode, 0
+    item = gtk_menu_item_new_with_mnemonic("R_eset");
+    gtk_widget_set_name(item, "Reset");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)StartCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_e,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // _Monitor, <control>M, db_action_proc, MonitorCode,0
+    item = gtk_menu_item_new_with_mnemonic("_Monitor");
+    gtk_widget_set_name(item, "Monitor");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)MonitorCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_m,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Options menu.
+    item = gtk_menu_item_new_with_mnemonic("_Options");
+    gtk_widget_set_name(item, "Options");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // _Search, 0, db_search_proc, 0, <CheckItem>);
+    item = gtk_check_menu_item_new_with_mnemonic("_Search");
+    gtk_widget_set_name(item, "Search");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_search_proc), this);
+
+    // _Font, 0, db_font_proc, 0, <CheckItem>
+    item = gtk_check_menu_item_new_with_mnemonic("_Font");
+    gtk_widget_set_name(item, "Font");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_font_proc), this);
+
+    // Help menu.
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_menu_item_set_right_justified(GTK_MENU_ITEM(item), true);
+    gtk_widget_set_name(item, "Help");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // _Help, <control>H, db_action_proc, HelpCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_set_name(item, "Help");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)HelpCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(db_action_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+#endif
+
+    gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, 0, 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
 
     //
     // label area
@@ -593,8 +879,10 @@ sDbg::~sDbg()
             (gpointer)db_cancel_proc, wb_shell);
     }
 
+#ifdef UseItemFactory
     if (db_item_factory)
         g_object_unref(db_item_factory);
+#endif
 }
 
 
@@ -1655,9 +1943,16 @@ sDbg::db_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 // Static function.
 // General menu processing.
 //
+#ifdef UseItemFactory
 void
 sDbg::db_action_proc(GtkWidget *caller, void *client_data, unsigned code)
 {
+#else
+void
+sDbg::db_action_proc(GtkWidget *caller, void *client_data)
+{
+    long code = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+#endif
     if (!Dbg)
         return;
     switch (code) {
@@ -1878,7 +2173,11 @@ sDbg::db_drag_data_received(GtkWidget *caller, GdkDragContext *context, gint,
                 Dbg->db_load_pop->update(0, src);
             else {
                 Dbg->db_dropfile = lstring::copy(src);
+#ifdef UseItemFactory
                 db_action_proc(0, 0, LoadCode);
+#else
+                db_action_proc(Dbg->db_load_btn, 0);
+#endif
             }
             gtk_drag_finish(context, true, false, time);
             return;

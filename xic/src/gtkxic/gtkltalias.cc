@@ -46,6 +46,7 @@
 #include "gtkinterf/gtkfont.h"
 #include <errno.h>
 
+#define UseItemFactory
 
 //--------------------------------------------------------------------
 // Layer Alias Table Editor pop-up
@@ -127,6 +128,7 @@ cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
 }
 
 
+#ifdef UseItemFactory
 #define IFINIT(i, a, b, c, d, e) { \
     menu_items[i].path = (char*)a; \
     menu_items[i].accelerator = (char*)b; \
@@ -134,6 +136,7 @@ cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
     menu_items[i].callback_action = d; \
     menu_items[i].item_type = (char*)e; \
     i++; }
+#endif
 
 sLA::sLA(GRobject c)
 {
@@ -154,6 +157,7 @@ sLA::sLA(GRobject c)
     gtk_widget_show(form);
     gtk_container_add(GTK_CONTAINER(wb_shell), form);
 
+#ifdef UseItemFactory
     GtkItemFactoryEntry menu_items[20];
     int nitems = 0;
 
@@ -208,6 +212,8 @@ sLA::sLA(GRobject c)
     if (widget)
         gtk_widget_set_sensitive(widget, false);
 
+#else
+#endif
     gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -517,6 +523,7 @@ int
 sLA::la_select_proc(GtkTreeSelection*, GtkTreeModel*, GtkTreePath *path,
     int issel, void*)
 {
+#ifdef UseItemFactory
     if (LA) {
         if (issel) {
             LA->la_row = -1;
@@ -542,6 +549,8 @@ sLA::la_select_proc(GtkTreeSelection*, GtkTreeModel*, GtkTreePath *path,
         if (widget)
             gtk_widget_set_sensitive(widget, true);
     }
+#else
+#endif
     return (true);
 }
 

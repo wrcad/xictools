@@ -54,7 +54,9 @@
 #include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include "miscutil/filestat.h"
+#include <gdk/gdkkeysyms.h>
 
+//#define UseItemFactory
 
 //-----------------------------------------------------------------------------
 // Pop up to display a listing of design rules for the current layer.
@@ -85,7 +87,12 @@ namespace {
             void check_sens();
 
             static void dim_font_changed();
+#ifdef UseItemFactory
             static void dim_cancel_proc(GtkWidget*, void*, unsigned);
+#else
+            static void dim_cancel_proc(GtkWidget*, void*);
+#endif
+#ifdef UseItemFactory
             static void dim_cancel_proc2(GtkWidget*, void*);
             static void dim_help_proc(GtkWidget*, void*, unsigned);
             static void dim_inhibit_proc(GtkWidget*, void*, unsigned);
@@ -93,10 +100,22 @@ namespace {
             static void dim_delete_proc(GtkWidget*, void*, unsigned);
             static void dim_undo_proc(GtkWidget*, void*, unsigned);
             static void dim_rule_proc(GtkWidget*, void*, unsigned);
+#else
+            static void dim_help_proc(GtkWidget*, void*);
+            static void dim_inhibit_proc(GtkWidget*, void*);
+            static void dim_edit_proc(GtkWidget*, void*);
+            static void dim_delete_proc(GtkWidget*, void*);
+            static void dim_undo_proc(GtkWidget*, void*);
+            static void dim_rule_proc(GtkWidget*, void*);
+#endif
             static bool dim_cb(const char*, void*);
             static void dim_show_msg(const char*);
             static bool dim_editsave(const char*, void*, XEtype);
+#ifdef UseItemFactory
             static void dim_rule_menu_proc(GtkWidget*, void*, unsigned);
+#else
+            static void dim_rule_menu_proc(GtkWidget*, void*);
+#endif
             static int dim_text_btn_hdlr(GtkWidget*, GdkEvent*, void*);
 
             GRobject dim_caller;        // initiating button
@@ -110,7 +129,9 @@ namespace {
             GtkWidget *dim_umenu;       // user rules menu
             GtkWidget *dim_delblk;      // rule block delete
             GtkWidget *dim_undblk;      // rule block undelete
+#ifdef UseItemFactory
             GtkItemFactory *dim_item_factory;
+#endif
             DRCtestDesc *dim_editing_rule;  // rule selected for editing
             int dim_start;
             int dim_end;
@@ -160,6 +181,7 @@ cDRC::PopUpRules(GRobject caller, ShowMode mode)
 // End of cDRC functions.
 
 
+#ifdef UseItemFactory
 #define IFINIT(i, a, b, c, d, e) { \
     menu_items[i].path = (char*)a; \
     menu_items[i].accelerator = (char*)b; \
@@ -167,6 +189,11 @@ cDRC::PopUpRules(GRobject caller, ShowMode mode)
     menu_items[i].callback_action = d; \
     menu_items[i].item_type = (char*)e; \
     i++; }
+#else
+namespace {
+    const char *MIDX = "midx";
+}
+#endif
 
 sDim::sDim(GRobject c)
 {
@@ -182,13 +209,20 @@ sDim::sDim(GRobject c)
     dim_umenu = 0;
     dim_delblk = 0;
     dim_undblk = 0;
+#ifdef UseItemFactory
     dim_item_factory = 0;
+#endif
     dim_editing_rule = 0;
     dim_start = 0;
     dim_end = 0;
 
+#ifdef UseItemFactory
     dim_popup = gtk_NewPopup(0, "Design Rule Editor",
         dim_cancel_proc2, 0);
+#else
+    dim_popup = gtk_NewPopup(0, "Design Rule Editor",
+        dim_cancel_proc, 0);
+#endif
     if (!dim_popup)
         return;
 
@@ -199,6 +233,7 @@ sDim::sDim(GRobject c)
     //
     // menu bar
     //
+#ifdef UseItemFactory
     GtkItemFactoryEntry menu_items[50];
     int nitems = 0;
 
@@ -334,6 +369,351 @@ sDim::sDim(GRobject c)
     widget = gtk_item_factory_get_item(dim_item_factory, "/Help");
     if (widget)
         gtk_widget_set_name(widget, "Help");
+#else
+    GtkAccelGroup *accel_group = gtk_accel_group_new();
+    gtk_window_add_accel_group(GTK_WINDOW(dim_popup), accel_group);
+    GtkWidget *menubar = gtk_menu_bar_new();
+    gtk_object_set_data(GTK_OBJECT(dim_popup), "menubar", menubar);
+    gtk_widget_show(menubar);
+    GtkWidget *item;
+
+    // Edit menu.
+    item = gtk_menu_item_new_with_mnemonic("_Edit");
+    gtk_widget_set_name(item, "Edit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // _Edit, <control>E, dim_edit_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("_Edit");
+    gtk_widget_set_name(item, "Edit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_edit_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_e,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    dim_edit = item;
+
+    // _Inhibit, <control>I, dim_inhibit_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("_Inhibit");
+    gtk_widget_set_name(item, "Inhibit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_inhibit_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_i,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    dim_inhibit = item;
+
+    // _Delete, <control>D, dim_delete_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("_Delete");
+    gtk_widget_set_name(item, "Delete");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_delete_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_d,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    dim_del = item;
+
+    // _Undo, <control>U, dim_undo_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("_Undo");
+    gtk_widget_set_name(item, "Undo");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_undo_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_u,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    dim_undo = item;
+
+    item = gtk_separator_menu_item_new();
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+
+    // _Quit, <control>Q, dim_cancel_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("_Quit");
+    gtk_widget_set_name(item, "Quit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_cancel_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Rules menu.
+    item = gtk_menu_item_new_with_mnemonic("_Rules");
+    gtk_widget_set_name(item, "Rules");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // User Defined Rule, 0, 0, 0, "<Branch>"
+    item = gtk_menu_item_new_with_mnemonic("User Defined Rule");
+    gtk_widget_set_name(item, "User Defined Rule");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    GtkWidget *sm = gtk_menu_new();
+    gtk_widget_show(sm);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sm);
+
+    for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
+        item = gtk_menu_item_new_with_label(tst->name());
+        gtk_widget_set_name(item, tst->name());
+        gtk_widget_show(item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(dim_rule_proc), (void*)tst->name());
+        gtk_menu_shell_append(GTK_MENU_SHELL(sm), item);
+    }
+
+    // Connected, 0, dim_rule_proc, drConnected, 0
+    item = gtk_menu_item_new_with_mnemonic("Connected");
+    gtk_widget_set_name(item, "Connected");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drConnected);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // NoHoles, 0, dim_rule_proc, drNoHoles, 0
+    item = gtk_menu_item_new_with_mnemonic("NoHoles");
+    gtk_widget_set_name(item, "NoHoles");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drNoHoles);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // Exist, 0, dim_rule_proc, drExist, 0
+    item = gtk_menu_item_new_with_mnemonic("Exist");
+    gtk_widget_set_name(item, "Exist");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drExist);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // Overlap", 0, dim_rule_proc, drOverlap, 0
+    item = gtk_menu_item_new_with_mnemonic("Overlap");
+    gtk_widget_set_name(item, "Overlap");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drOverlap);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // IfOverlap, 0, dim_rule_proc, drIfOverlap, 0
+    item = gtk_menu_item_new_with_mnemonic("IfOverlap");
+    gtk_widget_set_name(item, "IfOverlap");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drIfOverlap);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // NoOverlap, 0, dim_rule_proc, drNoOverlap, 0
+    item = gtk_menu_item_new_with_mnemonic("NoOverlap");
+    gtk_widget_set_name(item, "NoOverlap");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drNoOverlap);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // AnyOverlap, 0, dim_rule_proc, drAnyOverlap, 0
+    item = gtk_menu_item_new_with_mnemonic("AnyOverlap");
+    gtk_widget_set_name(item, "AnyOverlap");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drAnyOverlap);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // PartOverlap, 0, dim_rule_proc, drPartOverlap, 0
+    item = gtk_menu_item_new_with_mnemonic("PartOverlap");
+    gtk_widget_set_name(item, "PartOverlap");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drPartOverlap);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // AnyNoOverlap, 0, dim_rule_proc, drAnyNoOverlap, 0);
+    item = gtk_menu_item_new_with_mnemonic("AnyNoOverlap");
+    gtk_widget_set_name(item, "AnyNoOverlap");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drAnyNoOverlap);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // MinArea, 0, dim_rule_proc, drMinArea, 0)
+    item = gtk_menu_item_new_with_mnemonic("MinArea");
+    gtk_widget_set_name(item, "MinArea");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinArea);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // MaxArea, 0, dim_rule_proc, drMaxArea, 0
+    item = gtk_menu_item_new_with_mnemonic("MaxArea");
+    gtk_widget_set_name(item, "MaxArea");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMaxArea);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // MinEdgeLength, 0, dim_rule_proc, drMinEdgeLength, 0
+    item = gtk_menu_item_new_with_mnemonic("MinEdgeLength");
+    gtk_widget_set_name(item, "MinEdgeLength");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinEdgeLength);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // MaxWidth, 0, dim_rule_proc, drMaxWidth, 0);
+    item = gtk_menu_item_new_with_mnemonic("MaxWidth");
+    gtk_widget_set_name(item, "MaxWidth");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMaxWidth);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // MinWidth, 0, dim_rule_proc, drMinWidth, 0
+    item = gtk_menu_item_new_with_mnemonic("MinWidth");
+    gtk_widget_set_name(item, "MinWidth");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinWidth);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // MinSpace, 0, dim_rule_proc, drMinSpace, 0
+    item = gtk_menu_item_new_with_mnemonic("MinSpace");
+    gtk_widget_set_name(item, "MinSpace");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinSpace);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // MinSpaceTo, 0, dim_rule_proc, drMinSpaceTo, 0
+    item = gtk_menu_item_new_with_mnemonic("MinSpaceTo");
+    gtk_widget_set_name(item, "MinSpaceTo");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinSpaceTo);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // MinSpaceFrom", 0, dim_rule_proc, drMinSpaceFrom, 0
+    item = gtk_menu_item_new_with_mnemonic("MinSpaceFrom");
+    gtk_widget_set_name(item, "MinSpaceFrom");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinSpaceFrom);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // MinOverlap, 0, dim_rule_proc, drMinOverlap, 0
+    item = gtk_menu_item_new_with_mnemonic("MinOverlap");
+    gtk_widget_set_name(item, "MinOverlap");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinOverlap);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // MinNoOverlap, 0, dim_rule_proc, drMinNoOverlap, 0
+    item = gtk_menu_item_new_with_mnemonic("MinNoOverlap");
+    gtk_widget_set_name(item, "MinNoOverlap");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinNoOverlap);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_proc), 0);
+
+    // Rule Block menu.
+    item = gtk_menu_item_new_with_mnemonic("Rule _Block");
+    gtk_widget_set_name(item, "Rule Block");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // New, 0, dim_rule_menu_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("New");
+    gtk_widget_set_name(item, "New");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_menu_proc), 0);
+
+    // Delete, 0, dim_rule_menu_proc, 1, <CheckItem>
+    item = gtk_check_menu_item_new_with_mnemonic("Delete");
+    gtk_widget_set_name(item, "Delete");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)1);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_menu_proc), 0);
+    dim_delblk = item;
+
+    // Undelete, 0, dim_rule_menu_proc, 2, 0
+    item = gtk_check_menu_item_new_with_mnemonic("Undelete");
+    gtk_widget_set_name(item, "Undelete");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)2);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_rule_menu_proc), 0);
+    dim_undblk = item;
+    gtk_widget_set_sensitive(dim_undblk, false);
+
+    item = gtk_separator_menu_item_new();
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+
+    for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
+        item = gtk_menu_item_new_with_label(tst->name());
+        gtk_widget_set_name(item, tst->name());
+        gtk_widget_show(item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(dim_rule_menu_proc), tst);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    }
+
+    // Help menu.
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_set_name(item, "Help");
+    gtk_menu_item_set_right_justified(GTK_MENU_ITEM(item), true);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // _Help, <control>H, dim_help_proc, 0, 0);
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_set_name(item, "Help");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(dim_help_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+#endif
 
     gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -377,8 +757,10 @@ sDim::~sDim()
     if (dim_caller)
         GRX->Deselect(dim_caller);
 
+#ifdef UseItemFactory
     if (dim_item_factory)
         g_object_unref(dim_item_factory);
+#endif
 
     if (dim_popup)
         gtk_widget_destroy(dim_popup);
@@ -543,33 +925,50 @@ sDim::dim_font_changed()
 // Static function.
 // Pop down the dimensions panel.
 //
+#ifdef UseItemFactory
 void
 sDim::dim_cancel_proc(GtkWidget*, void*, unsigned)
+#else
+void
+sDim::dim_cancel_proc(GtkWidget*, void*)
+#endif
 {
     DRC()->PopUpRules(0, MODE_OFF);
 }
 
+#ifdef UseItemFactory
 // Static function.
 void
 sDim::dim_cancel_proc2(GtkWidget*, void*)
 {
     DRC()->PopUpRules(0, MODE_OFF);
 }
+#endif
 
 
 // Static function.
 // Enter help mode.
 //
+#ifdef UseItemFactory
 void
 sDim::dim_help_proc(GtkWidget*, void*, unsigned)
+#else
+void
+sDim::dim_help_proc(GtkWidget*, void*)
+#endif
 {
     DSPmainWbag(PopUpHelp("xic:dredt"))
 }
 
 
 // Static function.
+#ifdef UseItemFactory
 void
 sDim::dim_inhibit_proc(GtkWidget*, void*, unsigned)
+#else
+void
+sDim::dim_inhibit_proc(GtkWidget*, void*)
+#endif
 {
     if (!Dim)
         return;
@@ -586,8 +985,13 @@ sDim::dim_inhibit_proc(GtkWidget*, void*, unsigned)
 // Use the Rule Editor pop-up to edit the parameters associated with
 // the selected rule.
 //
+#ifdef UseItemFactory
 void
 sDim::dim_edit_proc(GtkWidget*, void*, unsigned)
+#else
+void
+sDim::dim_edit_proc(GtkWidget*, void*)
+#endif
 {
     if (!LT()->CurLayer() || !Dim)
         return;
@@ -610,8 +1014,13 @@ sDim::dim_edit_proc(GtkWidget*, void*, unsigned)
 // Static function.
 // Remove any selected rule from the list, and redraw.
 //
+#ifdef UseItemFactory
 void
 sDim::dim_delete_proc(GtkWidget*, void*, unsigned)
+#else
+void
+sDim::dim_delete_proc(GtkWidget*, void*)
+#endif
 {
     if (!LT()->CurLayer() || !Dim)
         return;
@@ -630,8 +1039,13 @@ sDim::dim_delete_proc(GtkWidget*, void*, unsigned)
 // Undo the last insertion or deletion.  A second call undoes the undo,
 // etc.
 //
+#ifdef UseItemFactory
 void
 sDim::dim_undo_proc(GtkWidget*, void*, unsigned)
+#else
+void
+sDim::dim_undo_proc(GtkWidget*, void*)
+#endif
 {
     if (!LT()->CurLayer() || !Dim)
         return;
@@ -653,9 +1067,16 @@ sDim::dim_undo_proc(GtkWidget*, void*, unsigned)
 // rule name, action is undefined and must be set to
 // drUserDefinedRule.
 //
+#ifdef UseItemFactory
 void
 sDim::dim_rule_proc(GtkWidget*, void *user_name, unsigned action)
 {
+#else
+void
+sDim::dim_rule_proc(GtkWidget *caller, void *user_name)
+{
+    long action = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+#endif
     if (!LT()->CurLayer() || !Dim)
         return;
     if (user_name)
@@ -809,9 +1230,16 @@ sDim::dim_editsave(const char *fname, void*, XEtype type)
 // Static function.
 // Edit a user-defined rule block.
 //
+#ifdef UseItemFactory
 void
 sDim::dim_rule_menu_proc(GtkWidget*, void *client_data, unsigned type)
 {
+#else
+void
+sDim::dim_rule_menu_proc(GtkWidget *caller, void *client_data)
+{
+    long type = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+#endif
     if (type == 2) {
         // Undelete button
         if (!DRC()->userTests())

@@ -43,6 +43,9 @@
 
 #include "gtkinterf/gtkspinbtn.h"
 
+//XXX
+//#define UseItemFactory
+
 enum ASMcode { ASM_INIT, ASM_INFO, ASM_READ, ASM_WRITE, ASM_CNAME };
 
 // Scale spin button digits and size
@@ -229,7 +232,11 @@ private:
     static void asm_cancel_proc(GtkWidget*, void*);
     static void asm_go_proc(GtkWidget*, void*);
     static void asm_page_change_proc(GtkWidget*, void*, int, void*);
+#ifdef UseItemFactory
     static void asm_action_proc(GtkWidget*, void*, unsigned int);
+#else
+    static void asm_action_proc(GtkWidget*, void*);
+#endif
     static void asm_save_cb(const char*, void*);
     static void asm_recall_cb(const char*, void*);
     static void asm_fsel_open(const char*, void*);
@@ -241,7 +248,11 @@ private:
     static bool asm_do_run(const char*);
 
     GRobject asm_caller;                // calling button
+#ifdef UseItemFactory
     GtkItemFactory *asm_item_factory;   // menu item factory
+#else
+    GtkWidget *asm_filesel_btn;         // file select menu button
+#endif
     GtkWidget *asm_notebook;            // pages, one per source file
     GtkWidget *asm_outfile;             // output file name entry
     GtkWidget *asm_topcell;             // new top level cell name entry
