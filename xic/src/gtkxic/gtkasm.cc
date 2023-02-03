@@ -135,26 +135,12 @@ const char *sAsm::path_to_source_string =
 const char *sAsm::path_to_new_string = "Path to New Layout File";
 int sAsm::asm_fmt_type = cConvert::cvGds;
 
-#ifdef UseItemFactory
-#define IFINIT(i, a, b, c, d, e) { \
-    menu_items[i].path = (char*)a; \
-    menu_items[i].accelerator = (char*)b; \
-    menu_items[i].callback = (GtkItemFactoryCallback)c; \
-    menu_items[i].callback_action = d; \
-    menu_items[i].item_type = (char*)e; \
-    i++; }
-#endif
-
 
 sAsm::sAsm(GRobject c)
 {
     Asm = this;
     asm_caller = c;
-#ifdef UseItemFactory
-    asm_item_factory = 0;
-#else
     asm_filesel_btn = 0;
-#endif
     asm_notebook = 0;
     asm_outfile = 0;
     asm_topcell = 0;
@@ -189,49 +175,6 @@ sAsm::sAsm(GRobject c)
 
     // menu bar
     //
-#ifdef UseItemFactory
-    GtkItemFactoryEntry menu_items[30];
-    int nitems = 0;
-
-    IFINIT(nitems, "/_File", 0, 0, 0, "<Branch>")
-    IFINIT(nitems, "/File/_File Select", "<control>O", asm_action_proc,
-        OpenCode, "<CheckItem>");
-    IFINIT(nitems, "/File/_Save", "<control>S", asm_action_proc,
-        SaveCode, 0);
-    IFINIT(nitems, "/File/_Recall", "<control>R", asm_action_proc,
-        RecallCode, 0);
-    IFINIT(nitems, "/File/sep1", 0, 0, 0, "<Separator>");
-    IFINIT(nitems, "/File/_Quit", "<control>Q", asm_action_proc,
-        CancelCode, 0);
-
-    IFINIT(nitems, "/_Options", 0, 0, 0, "<Branch>")
-    IFINIT(nitems, "/Options/R_eset", "<control>E", asm_action_proc,
-        ResetCode, 0);
-    IFINIT(nitems, "/Options/_New Source", "<control>N", asm_action_proc,
-        NewCode, 0);
-    IFINIT(nitems, "/Options/Remove Source", 0, asm_action_proc,
-        DelCode, 0);
-    IFINIT(nitems, "/Options/New _Toplevel", "<control>T", asm_action_proc,
-        NewTlCode, 0);
-    IFINIT(nitems, "/Options/Remove Toplevel", 0, asm_action_proc,
-        DelTlCode, 0);
-
-    IFINIT(nitems, "/_Help", 0, 0, 0, "<LastBranch>");
-    IFINIT(nitems, "/Help/_Help", "<control>H", asm_action_proc,
-        HelpCode, 0);
-
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-    asm_item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<filetool>",
-        accel_group);
-    for (int i = 0; i < nitems; i++)
-        gtk_item_factory_create_item(asm_item_factory, menu_items + i,
-            this, 2);
-    gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
-
-    GtkWidget *menubar = gtk_item_factory_get_widget(asm_item_factory,
-        "<filetool>");
-    gtk_widget_show(menubar);
-#else
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
     GtkWidget *menubar = gtk_menu_bar_new();
@@ -378,8 +321,6 @@ sAsm::sAsm(GRobject c)
     gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-#endif
-
     int row = 0;
     gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -451,11 +392,6 @@ sAsm::~sAsm()
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)asm_cancel_proc, wb_shell);
     }
-
-#ifdef UseItemFactory
-    if (asm_item_factory)
-        g_object_unref(asm_item_factory);
-#endif
 }
 
 
@@ -1052,16 +988,10 @@ sAsm::asm_page_change_proc(GtkWidget*, void*, int page, void*)
 // Static function.
 // Handle menu button presses.
 //
-#ifdef UseItemFactory
-void
-sAsm::asm_action_proc(GtkWidget *caller, void*, unsigned int code)
-{
-#else
 void
 sAsm::asm_action_proc(GtkWidget *caller, void*)
 {
     long code = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
-#endif
     if (!Asm)
         return;
     if (code == NoCode) {
@@ -1266,13 +1196,7 @@ sAsm::asm_fsel_cancel(GRfilePopup*, void*)
     if (!Asm)
         return;
     Asm->asm_fsel = 0;
-#ifdef UseItemFactory
-    GtkWidget *item = gtk_item_factory_get_widget(Asm->asm_item_factory,
-        "/File/File Select");
-    GRX->Deselect(item);
-#else
     GRX->Deselect(Asm->asm_filesel_btn);
-#endif
 }
 
 

@@ -58,7 +58,6 @@
 #include "miscutil/filestat.h"
 #include <gdk/gdkkeysyms.h>
 
-//#define UseItemFactory
 
 //-----------------------------------------------------------------------------
 // Pop-up panel and supporting functions for script debugger.
@@ -217,11 +216,7 @@ namespace {
             static void db_change_proc(GtkWidget*, void*);
             static int db_key_dn_hdlr(GtkWidget*, GdkEvent*, void*);
             static int db_text_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-#ifdef UseItemFactory
-            static void db_action_proc(GtkWidget*, void*, unsigned);
-#else
             static void db_action_proc(GtkWidget*, void*);
-#endif
             static ESret db_open_cb(const char*, void*);
             static int db_open_idle(void*);
             static void db_do_saveas_proc(const char*, void*);
@@ -243,11 +238,7 @@ namespace {
             GtkWidget *db_filemenu;
             GtkWidget *db_editmenu;
             GtkWidget *db_execmenu;
-#ifdef UseItemFactory
-            GtkItemFactory *db_item_factory;
-#else
             GtkWidget *db_load_btn;
-#endif
             GRledPopup *db_load_pop;
             sDbV *db_vars_pop;
 
@@ -345,19 +336,9 @@ cMain::DbgLoad(MenuEnt *ent)
 //  2.  ErasePrompt() safe to call, does nothing while
 //      editor is active
 
-#ifdef UseItemFactory
-#define IFINIT(i, a, b, c, d, e) { \
-    menu_items[i].path = (char*)a; \
-    menu_items[i].accelerator = (char*)b; \
-    menu_items[i].callback = (GtkItemFactoryCallback)c; \
-    menu_items[i].callback_action = d; \
-    menu_items[i].item_type = (char*)e; \
-    i++; }
-#else
 namespace {
     const char *MIDX = "midx";
 }
-#endif
 
 sDbg::sDbg(GRobject c)
 {
@@ -372,11 +353,7 @@ sDbg::sDbg(GRobject c)
     db_filemenu = 0;
     db_editmenu = 0;
     db_execmenu = 0;
-#ifdef UseItemFactory
-    db_item_factory = 0;
-#else
     db_load_btn = 0;
-#endif
     db_load_pop = 0;
     db_vars_pop = 0;
 
@@ -413,91 +390,6 @@ sDbg::sDbg(GRobject c)
     //
     // menu bar
     //
-#ifdef UseItemFactory
-    GtkItemFactoryEntry menu_items[30];
-    int nitems = 0;
-
-    IFINIT(nitems, "/_File", 0, 0, 0, "<Branch>")
-    IFINIT(nitems, "/File/_New", 0, db_action_proc, NewCode, 0);
-    IFINIT(nitems, "/File/_Load", "<control>L", db_action_proc,
-        LoadCode, 0);
-    IFINIT(nitems, "/File/_Print", "<control>P", db_action_proc,
-        PrintCode, 0);
-    IFINIT(nitems, "/File/_Save As", "<alt>A", db_action_proc,
-        SaveAsCode, 0);
-#ifdef WIN32
-    IFINIT(nitems, "/File/_Write CRLF", 0, db_action_proc,
-        CRLFcode, "<CheckItem>");
-#endif
-    IFINIT(nitems, "/File/sep1", 0, 0, 0, "<Separator>");
-    IFINIT(nitems, "/File/_Quit", "<control>Q", db_action_proc,
-        CancelCode, 0);
-
-    IFINIT(nitems, "/_Edit", 0, 0, 0, "<Branch>")
-    IFINIT(nitems, "/Edit/Undo", "<Alt>U", db_undo_proc, 0, 0);
-    IFINIT(nitems, "/Edit/Redo", "<Alt>R", db_redo_proc, 0, 0);
-    IFINIT(nitems, "/Edit/sep1", 0, 0, 0, "<Separator>");
-    IFINIT(nitems, "/Edit/Cut to Clipboard", "<control>X", db_cut_proc, 0, 0);
-    IFINIT(nitems, "/Edit/Copy to Clipboard", "<control>C", db_copy_proc,  
-        0, 0);
-    IFINIT(nitems, "/Edit/Paste from Clipboard", "<control>V",
-        db_paste_proc, 0, 0);
-    IFINIT(nitems, "/Edit/Paste Primary", "<alt>P", db_paste_prim_proc,
-        0, 0);
-
-    IFINIT(nitems, "/E_xecute", 0, 0, 0, "<Branch>")
-    IFINIT(nitems, "/Execute/_Run", "<control>R", db_action_proc,
-        RunCode, 0);
-    IFINIT(nitems, "/Execute/S_tep", "<control>T", db_action_proc,
-        StepCode, 0);
-    IFINIT(nitems, "/Execute/R_eset", "<control>E", db_action_proc,
-        StartCode, 0);
-    IFINIT(nitems, "/Execute/_Monitor","<control>M",db_action_proc,
-        MonitorCode,0);
-
-    IFINIT(nitems, "/_Options", 0, 0, 0, "<Branch>")
-    IFINIT(nitems, "/Options/_Search", 0, db_search_proc, 0, "<CheckItem>");
-    IFINIT(nitems, "/Options/_Font", 0, db_font_proc, 0, "<CheckItem>");
-
-    IFINIT(nitems, "/_Help", 0, 0, 0, "<LastBranch>");
-    IFINIT(nitems, "/Help/_Help", "<control>H", db_action_proc,
-        HelpCode, 0);
-
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-    db_item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<debug>",
-        accel_group);
-    for (int i = 0; i < nitems; i++)
-        gtk_item_factory_create_item(db_item_factory, menu_items + i, 0, 2);
-    gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
-
-    GtkWidget *menubar = gtk_item_factory_get_widget(db_item_factory,
-        "<debug>");
-    gtk_widget_show(menubar);
-
-    // name the menubar objects
-    GtkWidget *widget = gtk_item_factory_get_item(db_item_factory, "/File");
-    if (widget)
-        gtk_widget_set_name(widget, "File");
-    widget = gtk_item_factory_get_item(db_item_factory, "/Execute");
-    if (widget)
-        gtk_widget_set_name(widget, "Execute");
-    widget = gtk_item_factory_get_item(db_item_factory, "/Help");
-    if (widget)
-        gtk_widget_set_name(widget, "Help");
-#ifdef WIN32
-    widget = gtk_item_factory_get_item(db_item_factory, "/File/Write CRLF");
-    if (widget)
-        GRX->SetStatus(widget, GRX->GetCRLFtermination());
-#endif
-
-    db_filemenu = gtk_item_factory_get_item(db_item_factory, "/File");
-    db_editmenu = gtk_item_factory_get_item(db_item_factory, "/Edit");
-    db_execmenu = gtk_item_factory_get_item(db_item_factory, "/Execute");
-    db_saveas = gtk_item_factory_get_item(db_item_factory, "/File/Save As");
-    db_undo = gtk_item_factory_get_item(db_item_factory, "/Edit/Undo");
-    db_redo = gtk_item_factory_get_item(db_item_factory, "/Edit/Redo");
-
-#else
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
     GtkWidget *menubar = gtk_menu_bar_new();
@@ -568,6 +460,7 @@ sDbg::sDbg(GRobject c)
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(db_action_proc), this);
+    GRX->SetStatus(item, GRX->GetCRLFtermination());
 #endif
 
     item = gtk_separator_menu_item_new();
@@ -760,7 +653,6 @@ sDbg::sDbg(GRobject c)
         G_CALLBACK(db_action_proc), this);
     gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-#endif
 
     gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -878,11 +770,6 @@ sDbg::~sDbg()
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)db_cancel_proc, wb_shell);
     }
-
-#ifdef UseItemFactory
-    if (db_item_factory)
-        g_object_unref(db_item_factory);
-#endif
 }
 
 
@@ -1943,16 +1830,10 @@ sDbg::db_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 // Static function.
 // General menu processing.
 //
-#ifdef UseItemFactory
-void
-sDbg::db_action_proc(GtkWidget *caller, void *client_data, unsigned code)
-{
-#else
 void
 sDbg::db_action_proc(GtkWidget *caller, void *client_data)
 {
     long code = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
-#endif
     if (!Dbg)
         return;
     switch (code) {
@@ -2173,11 +2054,7 @@ sDbg::db_drag_data_received(GtkWidget *caller, GdkDragContext *context, gint,
                 Dbg->db_load_pop->update(0, src);
             else {
                 Dbg->db_dropfile = lstring::copy(src);
-#ifdef UseItemFactory
-                db_action_proc(0, 0, LoadCode);
-#else
                 db_action_proc(Dbg->db_load_btn, 0);
-#endif
             }
             gtk_drag_finish(context, true, false, time);
             return;

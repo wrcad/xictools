@@ -55,8 +55,8 @@
 #include "gtkmain.h"
 #include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
+#include <gdk/gdkkeysyms.h>
 
-#define UseItemFactory
 
 //--------------------------------------------------------------------
 // Tech parameter editor pop-up
@@ -96,14 +96,13 @@ namespace {
             void check_sens();
 
             static void lp_font_changed();
-            static void lp_cancel_proc(GtkWidget*, void*, unsigned);
-            static void lp_cancel_proc2(GtkWidget*, void*);
-            static void lp_help_proc(GtkWidget*, void*, unsigned);
-            static void lp_edit_proc(GtkWidget*, void*, unsigned);
-            static void lp_delete_proc(GtkWidget*, void*, unsigned);
-            static void lp_undo_proc(GtkWidget*, void*, unsigned);
-            static void lp_kw_proc(GtkWidget*, void*, unsigned);
-            static void lp_attr_proc(GtkWidget*, void*, unsigned);
+            static void lp_cancel_proc(GtkWidget*, void*);
+            static void lp_help_proc(GtkWidget*, void*);
+            static void lp_edit_proc(GtkWidget*, void*);
+            static void lp_delete_proc(GtkWidget*, void*);
+            static void lp_undo_proc(GtkWidget*, void*);
+            static void lp_kw_proc(GtkWidget*, void*);
+            static void lp_attr_proc(GtkWidget*, void*);
             static int lp_text_btn_hdlr(GtkWidget*, GdkEvent*, void*);
             static void lp_page_change_proc(GtkWidget*, void*, int, void*);
 
@@ -137,9 +136,6 @@ namespace {
             GtkWidget *lp_tline;            // Tline menu entry
             GtkWidget *lp_antenna;          // Antenna menu entry
             GtkWidget *lp_nddt;             // NoDrcDataType menu entry
-#ifdef UseItemFactory
-            GtkItemFactory *lp_item_factory;
-#endif
 
             CDl *lp_ldesc;                  // current layer
             int lp_line_selected;           // number of line selected or -1
@@ -192,15 +188,9 @@ cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
 }
 
 
-#ifdef UseItemFactory
-#define IFINIT(i, a, b, c, d, e) { \
-    menu_items[i].path = (char*)a; \
-    menu_items[i].accelerator = (char*)b; \
-    menu_items[i].callback = (GtkItemFactoryCallback)c; \
-    menu_items[i].callback_action = d; \
-    menu_items[i].item_type = (char*)e; \
-    i++; }
-#endif
+namespace {
+    const char *MIDX = "midx";
+}
 
 sLpe::sLpe(GRobject c, const char *msg, const char *string)
 {
@@ -229,9 +219,6 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     lp_tline = 0;
     lp_antenna = 0;
     lp_nddt = 0;
-#ifdef UseItemFactory
-    lp_item_factory = 0;
-#endif
     lp_page = 0;
 
     lp_ldesc = 0;
@@ -240,7 +227,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     lp_start = 0;
     lp_end = 0;
 
-    lp_popup = gtk_NewPopup(0, "Tech Parameter Editor", lp_cancel_proc2, 0);
+    lp_popup = gtk_NewPopup(0, "Tech Parameter Editor", lp_cancel_proc, 0);
     if (!lp_popup)
         return;
 
@@ -251,180 +238,529 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     //
     // menu bar
     //
-#ifdef UseItemFactory
-#define NUM_MENU_ITEMS 60
-    GtkItemFactoryEntry menu_items[NUM_MENU_ITEMS];
+    GtkAccelGroup *accel_group = gtk_accel_group_new();
+    gtk_window_add_accel_group(GTK_WINDOW(lp_popup), accel_group);
+    GtkWidget *menubar = gtk_menu_bar_new();
+    gtk_object_set_data(GTK_OBJECT(lp_popup), "menubar", menubar);
+    gtk_widget_show(menubar);
+    GtkWidget *item;
 
-    int nitems = 0;
-    IFINIT(nitems, "/_Edit", 0, 0, 0, "<Branch>");
-    IFINIT(nitems, "/Edit/_Edit", "<control>E", lp_edit_proc, 0, 0);
-    IFINIT(nitems, "/Edit/_Delete", "<control>D", lp_delete_proc, 0, 0);
-    IFINIT(nitems, "/Edit/_Undo", "<control>U", lp_undo_proc, 0, 0);
-    IFINIT(nitems, "/Edit/sep1", 0, 0, 0, "<Separator>");
-    IFINIT(nitems, "/Edit/_Quit", "<control>Q", lp_cancel_proc, 0, 0);
+    // Edit menu.
+    item = gtk_menu_item_new_with_mnemonic("_Edit");
+    gtk_widget_set_name(item, "Edit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
-    IFINIT(nitems, "/Layer _Keywords", 0, 0, 0, "<Branch>");
+    // _Edit, <control>E, lp_edit_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("_Edit");
+    gtk_widget_set_name(item, "Edit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_edit_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_e,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    lp_edit = item;
 
-    IFINIT(nitems, "/Layer Keywords/LppName", 0, lp_kw_proc,
-        lpLppName, 0);
-    IFINIT(nitems, "/Layer Keywords/Description", 0, lp_kw_proc,
-        lpDescription, 0);
-    IFINIT(nitems, "/Layer Keywords/NoSelect", 0, lp_kw_proc,
-        lpNoSelect, 0);
-    IFINIT(nitems, "/Layer Keywords/NoMerge", 0, lp_kw_proc,
-        lpNoMerge, 0);
-    IFINIT(nitems, "/Layer Keywords/WireActive", 0, lp_kw_proc,
-        lpWireActive, 0);
-    IFINIT(nitems, "/Layer Keywords/Symbolic", 0, lp_kw_proc,
-        lpSymbolic, 0);
+    // _Delete, <control>D, lp_delete_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("_Delete");
+    gtk_widget_set_name(item, "Delete");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_delete_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_d,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    lp_del = item;
+
+    // _Undo, <control>U, lp_undo_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("_Undo");
+    gtk_widget_set_name(item, "Undo");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_undo_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_u,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    lp_undo = item;
+
+    item = gtk_separator_menu_item_new();
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+
+    // _Quit, <control>Q, lp_cancel_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("_Quit");
+    gtk_widget_set_name(item, "Quit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_cancel_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Layer Keywords menu.
+    item = gtk_menu_item_new_with_mnemonic("Layer _Keywords");
+    gtk_widget_set_name(item, "Layer Keywords");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+    lp_lyr_menu = item;
+
+    // LppName, 0, lp_kw_proc, lpLppName, 0
+    item = gtk_menu_item_new_with_mnemonic("LppName");
+    gtk_widget_set_name(item, "LppName");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpLppName);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // Description, 0, lp_kw_proc, lpDescription, 0);
+    item = gtk_menu_item_new_with_mnemonic("Description");
+    gtk_widget_set_name(item, "Description");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpDescription);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // NoSelect, 0, lp_kw_proc, lpNoSelect, 0);
+    item = gtk_menu_item_new_with_mnemonic("NoSelect");
+    gtk_widget_set_name(item, "NoSelect");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpNoSelect);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // NoMerge, 0, lp_kw_proc, lpNoMerge, 0);
+    item = gtk_menu_item_new_with_mnemonic("NoMerge");
+    gtk_widget_set_name(item, "NoMerge");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpNoMerge);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_nmrg = item;
+
+    // WireActive, 0, lp_kw_proc, lpWireActive, 0);
+    item = gtk_menu_item_new_with_mnemonic("WireActive");
+    gtk_widget_set_name(item, "WireActive");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpWireActive);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_wira = item;
+
+    // Symbolic, 0, lp_kw_proc, lpSymbolic, 0
+    item = gtk_menu_item_new_with_mnemonic("Symbolic");
+    gtk_widget_set_name(item, "Symbolic");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpSymbolic);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
 
     // The Invalid keyword is not really supported.  At best
     // it can be provided in the tech file only.
 
-    IFINIT(nitems, "/Layer Keywords/Invisible", 0, lp_kw_proc,
-        lpInvisible, 0);
-    IFINIT(nitems, "/Layer Keywords/NoInstView", 0, lp_kw_proc,
-        lpNoInstView, 0);
-    IFINIT(nitems, "/Layer Keywords/WireWidth", 0, lp_kw_proc,
-        lpWireWidth, 0);
-    IFINIT(nitems, "/Layer Keywords/CrossThick", 0, lp_kw_proc,
-        lpCrossThick, 0);
+    // Invisible, 0, lp_kw_proc, lpInvisible, 0
+    item = gtk_menu_item_new_with_mnemonic("Invisible");
+    gtk_widget_set_name(item, "Invisible");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpInvisible);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_ivis = item;
 
-    IFINIT(nitems, "/Extract _Keywords", 0, 0, 0, "<Branch>");
+    // NoInstView, 0, lp_kw_proc, lpNoInstView, 0
+    item = gtk_menu_item_new_with_mnemonic("NoInstView");
+    gtk_widget_set_name(item, "NoInstView");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpNoInstView);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_noiv = item;
 
-    IFINIT(nitems, "/Extract Keywords/Conductor", 0, lp_kw_proc,
-        exConductor, 0);
-    IFINIT(nitems, "/Extract Keywords/Routing", 0, lp_kw_proc,
-        exRouting, 0);
-    IFINIT(nitems, "/Extract Keywords/GroundPlane", 0, lp_kw_proc,
-        exGroundPlane, 0);
-    IFINIT(nitems, "/Extract Keywords/GroundPlaneClear", 0, lp_kw_proc,
-        exGroundPlaneClear, 0);
-    IFINIT(nitems, "/Extract Keywords/Contact", 0, lp_kw_proc,
-        exContact, 0);
-    IFINIT(nitems, "/Extract Keywords/Via", 0, lp_kw_proc,
-        exVia, 0);
-    IFINIT(nitems, "/Extract Keywords/ViaCut", 0, lp_kw_proc,
-        exViaCut, 0);
-    IFINIT(nitems, "/Extract Keywords/Dielectric", 0, lp_kw_proc,
-        exDielectric, 0);
-    IFINIT(nitems, "/Extract Keywords/DarkField", 0, lp_kw_proc,
-        exDarkField, 0);
+    // WireWidth, 0, lp_kw_proc, lpWireWidth, 0
+    item = gtk_menu_item_new_with_mnemonic("WireWidth");
+    gtk_widget_set_name(item, "WireWidth");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpWireWidth);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
 
-    IFINIT(nitems, "/Physical _Keywords", 0, 0, 0, "<Branch>");
+    // CrossThick, 0, lp_kw_proc, lpCrossThick, 0
+    item = gtk_menu_item_new_with_mnemonic("CrossThick");
+    gtk_widget_set_name(item, "CrossThick");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpCrossThick);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_xthk = item;
 
-    IFINIT(nitems, "/Physical Keywords/Planarize", 0, lp_kw_proc,
-        phPlanarize, 0);
-    IFINIT(nitems, "/Physical Keywords/Thickness", 0, lp_kw_proc,
-        phThickness, 0);
-    IFINIT(nitems, "/Physical Keywords/FH_nhinc", 0, lp_kw_proc,
-        phFH_nhinc, 0);
-    IFINIT(nitems, "/Physical Keywords/FH_rh", 0, lp_kw_proc,
-        phFH_rh, 0);
-    IFINIT(nitems, "/Physical Keywords/Rho", 0, lp_kw_proc,
-        phRho, 0);
-    IFINIT(nitems, "/Physical Keywords/Sigma", 0, lp_kw_proc,
-        phSigma, 0);
-    IFINIT(nitems, "/Physical Keywords/Rsh", 0, lp_kw_proc,
-        phRsh, 0);
-    IFINIT(nitems, "/Physical Keywords/Tau", 0, lp_kw_proc,
-        phTau, 0);
-    IFINIT(nitems, "/Physical Keywords/EpsRel", 0, lp_kw_proc,
-        phEpsRel, 0);
-    IFINIT(nitems, "/Physical Keywords/Capacitance", 0, lp_kw_proc,
-        phCapacitance, 0);
-    IFINIT(nitems, "/Physical Keywords/Lambda", 0, lp_kw_proc,
-        phLambda, 0);
-    IFINIT(nitems, "/Physical Keywords/Tline", 0, lp_kw_proc,
-        phTline, 0);
-    IFINIT(nitems, "/Physical Keywords/Antenna", 0, lp_kw_proc,
-        phAntenna, 0);
-
-    IFINIT(nitems, "/Convert _Keywords", 0, 0, 0, "<Branch>");
-
-    IFINIT(nitems, "/Convert Keywords/StreamIn", 0, lp_kw_proc,
-        cvStreamIn, 0);
-    IFINIT(nitems, "/Convert Keywords/StreamOut", 0, lp_kw_proc,
-        cvStreamOut, 0);
-    IFINIT(nitems, "/Convert Keywords/NoDrcDataType", 0, lp_kw_proc,
-        cvNoDrcDataType, 0);
-
-    IFINIT(nitems, "/Global _Attributes", 0, 0, 0, "<Branch>");
-    IFINIT(nitems, "/Global Attributes/BoxLineStyle", 0, lp_attr_proc,
-        lpBoxLineStyle, 0);
-    IFINIT(nitems, "/Global Attributes/LayerReorderMode", 0, lp_attr_proc,
-        lpLayerReorderMode, 0);
-    IFINIT(nitems, "/Global Attributes/NoPlanarize", 0, lp_attr_proc,
-        lpNoPlanarize, 0);
-    IFINIT(nitems, "/Global Attributes/AntennaTotal", 0, lp_attr_proc,
-        lpAntennaTotal, 0);
-    IFINIT(nitems, "/Global Attributes/SubstrateEps", 0, lp_attr_proc,
-        lpSubstrateEps, 0);
-    IFINIT(nitems, "/Global Attributes/SubstrateThickness", 0, lp_attr_proc,
-        lpSubstrateThickness, 0);
-
-    IFINIT(nitems, "/_Help", 0, 0, 0, "<LastBranch>");
-    IFINIT(nitems, "/Help/_Help", "<control>H", lp_help_proc, 0, 0);
-
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-    lp_item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<lp>",
-        accel_group);
-    GtkItemFactory *ifc = lp_item_factory;
-    for (int i = 0; i < nitems; i++)
-        gtk_item_factory_create_item(ifc, menu_items + i, 0, 2);
-    gtk_window_add_accel_group(GTK_WINDOW(lp_popup), accel_group);
-
-    GtkWidget *menubar = gtk_item_factory_get_widget(ifc, "<lp>");
-    gtk_widget_show(menubar);
-
-    lp_lyr_menu = gtk_item_factory_get_item(ifc, "/Layer Keywords");
-    gtk_widget_set_name(lp_lyr_menu, "/Layer Keywords");
-    lp_ext_menu = gtk_item_factory_get_item(ifc, "/Extract Keywords");
-    gtk_widget_set_name(lp_ext_menu, "/Extract Keywords");
-    lp_phy_menu = gtk_item_factory_get_item(ifc, "/Physical Keywords");
-    gtk_widget_set_name(lp_phy_menu, "/Physical Keywords");
-    lp_cvt_menu = gtk_item_factory_get_item(ifc, "/Convert Keywords");
-    gtk_widget_set_name(lp_cvt_menu, "/Convert Keywords");
-
+    // Extract Keywords menu.
+    item = gtk_menu_item_new_with_mnemonic("Extract _Keywords");
+    gtk_widget_set_name(item, "Extract Keywords");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+    lp_ext_menu = item;
     gtk_widget_hide(lp_ext_menu);
+
+    // Conductor, 0, lp_kw_proc, exConductor, 0
+    item = gtk_menu_item_new_with_mnemonic("Conductor");
+    gtk_widget_set_name(item, "Conductor");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exConductor);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // Routing, 0, lp_kw_proc, exRouting, 0);
+    item = gtk_menu_item_new_with_mnemonic("Routing");
+    gtk_widget_set_name(item, "Routing");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exRouting);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // GroundPlane, 0, lp_kw_proc, exGroundPlane, 0);
+    item = gtk_menu_item_new_with_mnemonic("GroundPlane");
+    gtk_widget_set_name(item, "GroundPlane");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exGroundPlane);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // GroundPlaneClear, 0, lp_kw_proc, exGroundPlaneClear, 0
+    item = gtk_menu_item_new_with_mnemonic("GroundPlaneClear");
+    gtk_widget_set_name(item, "GroundPlaneClear");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exGroundPlaneClear);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // Contact, 0, lp_kw_proc, exContact, 0);
+    item = gtk_menu_item_new_with_mnemonic("Contact");
+    gtk_widget_set_name(item, "Contact");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exContact);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // Via, 0, lp_kw_proc, exVia, 0);
+    item = gtk_menu_item_new_with_mnemonic("Via");
+    gtk_widget_set_name(item, "Via");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exVia);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // ViaCut, 0, lp_kw_proc, exViaCut, 0
+    item = gtk_menu_item_new_with_mnemonic("ViaCut");
+    gtk_widget_set_name(item, "ViaCut");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exViaCut);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // Dielectric, 0, lp_kw_proc, exDielectric, 0
+    item = gtk_menu_item_new_with_mnemonic("Dielectric");
+    gtk_widget_set_name(item, "Dielectric");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exDielectric);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // DarkField, 0, lp_kw_proc, exDarkField, 0
+    item = gtk_menu_item_new_with_mnemonic("DarkField");
+    gtk_widget_set_name(item, "DarkField");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exDarkField);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_darkfield = item;
+
+    // Physical Keywords menu.
+    item = gtk_menu_item_new_with_mnemonic("Physical _Keywords");
+    gtk_widget_set_name(item, "Physical Keywords");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+    lp_phy_menu = item;
     gtk_widget_hide(lp_phy_menu);
+
+    // Planarize, 0, lp_kw_proc, phPlanarize, 0
+    item = gtk_menu_item_new_with_mnemonic("Planarize");
+    gtk_widget_set_name(item, "Planarize");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phPlanarize);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // Thickness, 0, lp_kw_proc, phThickness, 0
+    item = gtk_menu_item_new_with_mnemonic("Thickness");
+    gtk_widget_set_name(item, "Thickness");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phThickness);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // FH_nhinc, 0, lp_kw_proc, phFH_nhinc, 0
+    item = gtk_menu_item_new_with_mnemonic("FH_nhinc");
+    gtk_widget_set_name(item, "FH_nhinc");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phFH_nhinc);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // FH_rh, 0, lp_kw_proc, phFH_rh, 0
+    item = gtk_menu_item_new_with_mnemonic("FH_rh");
+    gtk_widget_set_name(item, "FH_rh");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phFH_rh);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // Rho, 0, lp_kw_proc, phRho, 0
+    item = gtk_menu_item_new_with_mnemonic("Rho");
+    gtk_widget_set_name(item, "Rho");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phRho);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_rho = item;
+
+    // Sigma, 0, lp_kw_proc, phSigma, 0
+    item = gtk_menu_item_new_with_mnemonic("Sigma");
+    gtk_widget_set_name(item, "Sigma");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phSigma);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_sigma = item;
+
+    // Rsh, 0, lp_kw_proc, phRsh, 0
+    item = gtk_menu_item_new_with_mnemonic("Rsh");
+    gtk_widget_set_name(item, "Rsh");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phRsh);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_rsh = item;
+
+    // Tau, 0, lp_kw_proc, phTau, 0
+    item = gtk_menu_item_new_with_mnemonic("Tau");
+    gtk_widget_set_name(item, "Tau");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phTau);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_tau = item;
+
+    // EpsRel, 0, lp_kw_proc, phEpsRel, 0
+    item = gtk_menu_item_new_with_mnemonic("EpsRel");
+    gtk_widget_set_name(item, "EpsRel");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phEpsRel);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_epsrel = item;
+
+    // Capacitance, 0, lp_kw_proc, phCapacitance, 0
+    item = gtk_menu_item_new_with_mnemonic("Capacitance");
+    gtk_widget_set_name(item, "Capacitance");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phCapacitance);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_cap = item;
+
+    // Lambda, 0, lp_kw_proc, phLambda, 0);
+    item = gtk_menu_item_new_with_mnemonic("Lambda");
+    gtk_widget_set_name(item, "Lambda");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phLambda);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_lambda = item;
+
+    // Tline, 0, lp_kw_proc, phTline, 0
+    item = gtk_menu_item_new_with_mnemonic("Tline");
+    gtk_widget_set_name(item, "Tline");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phTline);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_tline = item;
+
+    // Antenna, 0, lp_kw_proc, phAntenna, 0
+    item = gtk_menu_item_new_with_mnemonic("Antenna");
+    gtk_widget_set_name(item, "Antenna");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phAntenna);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_antenna = item;
+
+    // Convert Keywords menu.
+    item = gtk_menu_item_new_with_mnemonic("Convert _Keywords");
+    gtk_widget_set_name(item, "Convert Keywords");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+    lp_cvt_menu = item;
     gtk_widget_hide(lp_cvt_menu);
 
-    lp_edit = gtk_item_factory_get_widget(ifc, "/Edit/Edit");
-    lp_del = gtk_item_factory_get_widget(ifc, "/Edit/Delete");
-    lp_undo = gtk_item_factory_get_widget(ifc, "/Edit/Undo");
+    // StreamIn, 0, lp_kw_proc, cvStreamIn, 0
+    item = gtk_menu_item_new_with_mnemonic("StreamIn");
+    gtk_widget_set_name(item, "StreamIn");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)cvStreamIn);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
 
-    lp_ivis = gtk_item_factory_get_widget(ifc, "/Layer Keywords/Invisible");
-    lp_nmrg = gtk_item_factory_get_widget(ifc, "/Layer Keywords/NoMerge");
-    lp_xthk = gtk_item_factory_get_widget(ifc, "/Layer Keywords/CrossThick");
-    lp_wira = gtk_item_factory_get_widget(ifc, "/Layer Keywords/WireActive");
-    lp_noiv = gtk_item_factory_get_widget(ifc, "/Layer Keywords/NoInstView");
+    // StreamOut, 0, lp_kw_proc, cvStreamOut, 0
+    item = gtk_menu_item_new_with_mnemonic("StreamOut");
+    gtk_widget_set_name(item, "StreamOut");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)cvStreamOut);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
 
-    lp_darkfield = gtk_item_factory_get_widget(ifc,
-        "/Extract Keywords/DarkField");
+    // NoDrcDataType, 0, lp_kw_proc, cvNoDrcDataType, 0
+    item = gtk_menu_item_new_with_mnemonic("NoDrcDataType");
+    gtk_widget_set_name(item, "NoDrcDataType");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)cvNoDrcDataType);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+    lp_nddt = item;
 
-    lp_rho = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Rho");
-    lp_sigma = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Sigma");
-    lp_rsh = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Rsh");
-    lp_tau = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Tau");
-    lp_epsrel = gtk_item_factory_get_widget(ifc, "/Physical Keywords/EpsRel");
-    lp_cap = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Capacitance");
-    lp_lambda = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Lambda");
-    lp_tline = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Tline");
-    lp_antenna = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Antenna");
+    // Global Attributes menu.
+    item = gtk_menu_item_new_with_mnemonic("Global _Attributes");
+    gtk_widget_set_name(item, "Global Attributes");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
-    lp_nddt = gtk_item_factory_get_widget(ifc,
-        "/Convert Keywords/NoDrcDataType");
+    // BoxLineStyle, 0, lp_attr_proc, lpBoxLineStyle, 0
+    item = gtk_menu_item_new_with_mnemonic("BoxLineStyle");
+    gtk_widget_set_name(item, "BoxLineStyle");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpBoxLineStyle);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
 
-    GtkWidget *widget = gtk_item_factory_get_item(ifc, "/Edit");
-    if (widget)
-        gtk_widget_set_name(widget, "Edit");
-    widget = gtk_item_factory_get_item(ifc, "/Help");
-    if (widget)
-        gtk_widget_set_name(widget, "Help");
+    // LayerReorderMode, 0, lp_attr_proc, lpLayerReorderMode, 0
+    item = gtk_menu_item_new_with_mnemonic("LayerReorderMode");
+    gtk_widget_set_name(item, "LayerReorderMode");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpLayerReorderMode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
 
-#else
-#endif
+    // NoPlanarize, 0, lp_attr_proc, lpNoPlanarize, 0
+    item = gtk_menu_item_new_with_mnemonic("NoPlanarize");
+    gtk_widget_set_name(item, "NoPlanarize");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpNoPlanarize);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // AntennaTotal, 0, lp_attr_proc, lpAntennaTotal, 0
+    item = gtk_menu_item_new_with_mnemonic("AntennaTotal");
+    gtk_widget_set_name(item, "AntennaTotal");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpAntennaTotal);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // SubstrateEps, 0, lp_attr_proc, lpSubstrateEps, 0
+    item = gtk_menu_item_new_with_mnemonic("SubstrateEps");
+    gtk_widget_set_name(item, "SubstrateEps");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpSubstrateEps);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // SubstrateThickness, 0, lp_attr_proc, lpSubstrateThickness, 0
+    item = gtk_menu_item_new_with_mnemonic("SubstrateThickness");
+    gtk_widget_set_name(item, "SubstrateThickness");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpSubstrateThickness);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_kw_proc), 0);
+
+    // Help Menu.
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_menu_item_set_right_justified(GTK_MENU_ITEM(item), true);
+    gtk_widget_set_name(item, "Help");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // _Help, <control>H, lp_help_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_set_name(item, "Help");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(lp_help_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
     int rowcnt = 0;
     gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, rowcnt, rowcnt + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -529,10 +865,6 @@ sLpe::~sLpe()
     }
     if (lp_caller)
         GRX->Deselect(lp_caller);
-#ifdef UseItemFactory
-    if (lp_item_factory)
-        g_object_unref(lp_item_factory);
-#endif
     if (lp_popup)
         gtk_widget_destroy(lp_popup);
 }
@@ -922,14 +1254,7 @@ sLpe::check_sens()
 // Pop down the extraction editor.
 //
 void
-sLpe::lp_cancel_proc(GtkWidget*, void*, unsigned)
-{
-    XM()->PopUpLayerParamEditor(0, MODE_OFF, 0, 0);
-}
-
-// Static function.
-void
-sLpe::lp_cancel_proc2(GtkWidget*, void*)
+sLpe::lp_cancel_proc(GtkWidget*, void*)
 {
     XM()->PopUpLayerParamEditor(0, MODE_OFF, 0, 0);
 }
@@ -939,7 +1264,7 @@ sLpe::lp_cancel_proc2(GtkWidget*, void*)
 // Enter help mode.
 //
 void
-sLpe::lp_help_proc(GtkWidget*, void*, unsigned)
+sLpe::lp_help_proc(GtkWidget*, void*)
 {
     DSPmainWbag(PopUpHelp("xic:lpedt"))
 }
@@ -949,7 +1274,7 @@ sLpe::lp_help_proc(GtkWidget*, void*, unsigned)
 // Edit the selected entry.
 //
 void
-sLpe::lp_edit_proc(GtkWidget*, void*, unsigned)
+sLpe::lp_edit_proc(GtkWidget*, void*)
 {
     if (!Lpe)
         return;
@@ -1032,7 +1357,7 @@ sLpe::lp_edit_proc(GtkWidget*, void*, unsigned)
 // Delete the selected entry.
 //
 void
-sLpe::lp_delete_proc(GtkWidget*, void*, unsigned)
+sLpe::lp_delete_proc(GtkWidget*, void*)
 {
     if (Lpe) {
         int start, end;
@@ -1113,7 +1438,7 @@ sLpe::lp_delete_proc(GtkWidget*, void*, unsigned)
 // Undo the last operation.
 //
 void
-sLpe::lp_undo_proc(GtkWidget*, void*, unsigned)
+sLpe::lp_undo_proc(GtkWidget*, void*)
 {
     if (!Lpe)
         return;
@@ -1128,8 +1453,9 @@ sLpe::lp_undo_proc(GtkWidget*, void*, unsigned)
 // Handle addition of a new keyword entry.
 //
 void
-sLpe::lp_kw_proc(GtkWidget*, void*, unsigned type)
+sLpe::lp_kw_proc(GtkWidget *caller, void*)
 {
+    long type = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
     if (!Lpe)
         return;
     char *string = 0;
@@ -1162,8 +1488,9 @@ sLpe::lp_kw_proc(GtkWidget*, void*, unsigned type)
 // Handle attribute.
 //
 void
-sLpe::lp_attr_proc(GtkWidget*, void*, unsigned type)
+sLpe::lp_attr_proc(GtkWidget *caller, void*)
 {
+    long type = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
     if (!Lpe)
         return;
     char tbuf[64];

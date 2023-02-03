@@ -56,7 +56,6 @@
 #include "gtkinterf/gtkspinbtn.h"
 #include "miscutil/filestat.h"
 
-#define UseItemFactory
 
 //--------------------------------------------------------------------
 // Pop-up to control misc. extraction variables.
@@ -89,7 +88,7 @@ namespace {
             static void es_gpinv_proc(GtkWidget*, void*);
             void dev_menu_upd();
             static bool es_editsave(const char*, void*, XEtype);
-            static void es_dev_menu_proc(GtkWidget*, void*, unsigned int);
+            static void es_dev_menu_proc(GtkWidget*, void*);
 
             GRobject es_caller;
             GtkWidget *es_popup;
@@ -145,9 +144,6 @@ namespace {
             GtkWidget *es_p4_apmrg;
             GtkWidget *es_p4_apfix;
 
-#ifdef UseItemFactory
-            GtkItemFactory *es_item_factory;
-#endif
             int es_gpmhst;
             sDevDesc *es_devdesc;
 
@@ -248,9 +244,6 @@ sEs::sEs(GRobject c)
     es_p4_noperm = 0;
     es_p4_apmrg = 0;
     es_p4_apfix = 0;
-#ifdef UseItemFactory
-    es_item_factory = 0;
-#endif
     es_gpmhst = 0;
     es_devdesc = 0;
 
@@ -349,10 +342,6 @@ sEs::~sEs()
     SCD()->PopUpNodeMap(0, MODE_OFF);
     if (es_caller)
         GRX->Deselect(es_caller);
-#ifdef UseItemFactory
-    if (es_item_factory)
-        g_object_unref(es_item_factory);
-#endif
     if (es_popup)
         gtk_widget_destroy(es_popup);
 }
@@ -809,15 +798,9 @@ sEs::net_and_cell_page()
 }
 
 
-#ifdef UseItemFactory
-#define IFINIT(i, a, b, c, d, e) { \
-    menu_items[i].path = (char*)a; \
-    menu_items[i].accelerator = (char*)b; \
-    menu_items[i].callback = (GtkItemFactoryCallback)c; \
-    menu_items[i].callback_action = d; \
-    menu_items[i].item_type = (char*)e; \
-    i++; }
-#endif
+namespace {
+    const char *MIDX = "midx";
+}
 
 // Page 3, Device Config.
 //
@@ -831,60 +814,48 @@ sEs::devs_page()
     //
     // Menu bar.
     //
-#ifdef UseItemFactory
-    GtkItemFactoryEntry menu_items[50];
-    int nitems = 0;
-
-    IFINIT(nitems, "/_Device Block", 0, 0, 0, "<Branch>");
-    IFINIT(nitems, "/Device Block/New", 0, es_dev_menu_proc,
-        0, 0);
-    IFINIT(nitems, "/Device Block/Delete", 0, es_dev_menu_proc,
-        1, "<CheckItem>");
-    IFINIT(nitems, "/Device Block/Undelete", 0, es_dev_menu_proc,
-        2, 0);
-    IFINIT(nitems, "/Device Block/sep1", 0, 0, 0, "<Separator>");
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-    es_item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<extrc>",
-        accel_group);
-    for (int i = 0; i < nitems; i++)
-        gtk_item_factory_create_item(es_item_factory, menu_items + i, 0, 2);
-    gtk_window_add_accel_group(GTK_WINDOW(es_popup), accel_group);
-
-    GtkWidget *menubar = gtk_item_factory_get_widget(es_item_factory,
-        "<extrc>");
+    GtkWidget *menubar = gtk_menu_bar_new();
     gtk_widget_show(menubar);
 
-    es_p2_menu = gtk_item_factory_get_item(es_item_factory, "/Device Block");
-    if (es_p2_menu)
-        es_p2_menu = GTK_MENU_ITEM(es_p2_menu)->submenu;
-    if (es_p2_menu) {
-        stringlist *dnames = EX()->listDevices();
-        for (stringlist *sl = dnames; sl; sl = sl->next) {
-            const char *t = sl->string;
-            char *nm = lstring::gettok(&t);
-            char *pf = lstring::gettok(&t);
-            sDevDesc *d = EX()->findDevice(nm, pf);
-            delete [] nm;
-            delete [] pf;
+    // Device Block menu.
+    GtkWidget *item = gtk_menu_item_new_with_mnemonic("_Device Block");
+    gtk_widget_set_name(item, "Device Block");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
-            if (d) {
-                GtkWidget *mi = gtk_menu_item_new_with_label(sl->string);
-                gtk_widget_show(mi);
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(es_dev_menu_proc), d);
-                gtk_menu_append(GTK_MENU(es_p2_menu), mi);
-            }
-        }
-        stringlist::destroy(dnames);
-    }
+    // New, 0, es_dev_menu_proc, 0, 0
+    item = gtk_menu_item_new_with_mnemonic("New");
+    gtk_widget_set_name(item, "New");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)0);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(es_dev_menu_proc), 0);
 
-    es_p2_delblk =
-        gtk_item_factory_get_widget(es_item_factory, "/Device Block/Delete");
-    es_p2_undblk =
-        gtk_item_factory_get_widget(es_item_factory, "/Device Block/Undelete");
-    gtk_widget_set_sensitive(es_p2_undblk, false);
-#else
-#endif
+    // Delete, 0, es_dev_menu_proc, 1, <CheckItem>
+    item = gtk_check_menu_item_new_with_mnemonic("Delete");
+    gtk_widget_set_name(item, "Delete");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)1);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(es_dev_menu_proc), 0);
+
+    // Undelete, 0, es_dev_menu_proc, 2, 0);
+    item = gtk_check_menu_item_new_with_mnemonic("Undelete");
+    gtk_widget_set_name(item, "Undelete");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)2);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(es_dev_menu_proc), 0);
+
+    item = gtk_separator_menu_item_new();
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
 
     gtk_table_attach(GTK_TABLE(form), menubar, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -1967,8 +1938,9 @@ sEs::es_editsave(const char *fname, void*, XEtype type)
 // Edit a Device Block.
 //
 void
-sEs::es_dev_menu_proc(GtkWidget*, void *client_data, unsigned int type)
+sEs::es_dev_menu_proc(GtkWidget *caller, void *client_data)
 {
+    long type = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
     if (type == 2) {
         // Undelete button
         EX()->addDevice(Es->es_devdesc);

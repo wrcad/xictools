@@ -45,8 +45,8 @@
 #include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include <errno.h>
+#include <gdk/gdkkeysyms.h>
 
-#define UseItemFactory
 
 //--------------------------------------------------------------------
 // Layer Alias Table Editor pop-up
@@ -69,7 +69,7 @@ namespace {
             static void la_cancel_proc(GtkWidget*, void*);
             static ESret str_cb(const char*, void*);
             static void yn_cb(bool, void*);
-            static void la_action_proc(GtkWidget*, void*, unsigned);
+            static void la_action_proc(GtkWidget*, void*);
             static int la_select_proc(GtkTreeSelection*, GtkTreeModel*,
                 GtkTreePath*, int, void*);
             static bool la_focus_proc(GtkWidget*, GdkEvent*, void*);
@@ -77,7 +77,8 @@ namespace {
             GRaffirmPopup *la_affirm;
             GRledPopup *la_line_edit;
             GtkWidget *la_list;
-            GtkItemFactory *la_factory;
+            GtkWidget *la_del_btn;
+            GtkWidget *la_edit_btn;
             GRobject la_calling_btn;
             int la_row;
             bool la_show_dec;
@@ -127,16 +128,9 @@ cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
     gtk_widget_show(LA->Shell());
 }
 
-
-#ifdef UseItemFactory
-#define IFINIT(i, a, b, c, d, e) { \
-    menu_items[i].path = (char*)a; \
-    menu_items[i].accelerator = (char*)b; \
-    menu_items[i].callback = (GtkItemFactoryCallback)c; \
-    menu_items[i].callback_action = d; \
-    menu_items[i].item_type = (char*)e; \
-    i++; }
-#endif
+namespace {
+    const char *MIDX = "midx";
+}
 
 sLA::sLA(GRobject c)
 {
@@ -144,7 +138,8 @@ sLA::sLA(GRobject c)
     la_affirm = 0;
     la_line_edit = 0;
     la_list = 0;
-    la_factory = 0;
+    la_del_btn = 0;
+    la_edit_btn = 0;
     la_calling_btn = c;
     la_row = -1;
     la_show_dec = false;
@@ -157,63 +152,136 @@ sLA::sLA(GRobject c)
     gtk_widget_show(form);
     gtk_container_add(GTK_CONTAINER(wb_shell), form);
 
-#ifdef UseItemFactory
-    GtkItemFactoryEntry menu_items[20];
-    int nitems = 0;
-
-    IFINIT(nitems, "/_File", 0, 0, 0, "<Branch>")
-    IFINIT(nitems, "/File/_Open", "<control>O", la_action_proc,
-        OpenCode, 0);
-    IFINIT(nitems, "/File/_Save", "<control>S", la_action_proc,
-        SaveCode, 0);
-    IFINIT(nitems, "/File/sep1", 0, 0, 0, "<Separator>");
-    IFINIT(nitems, "/File/_Quit", "<control>Q", la_action_proc,
-        CancelCode, 0);
-
-    IFINIT(nitems, "/_Edit", 0, 0, 0, "<Branch>")
-    IFINIT(nitems, "/Edit/_New", "<control>N", la_action_proc,
-        NewCode, 0);
-    IFINIT(nitems, "/Edit/_Delete", "<control>D", la_action_proc,
-        DeleteCode, 0);
-    IFINIT(nitems, "/Edit/_Edit", "<control>E", la_action_proc,
-        EditCode, 0);
-    IFINIT(nitems, "/Edit/Decimal _Form", "<control>F", la_action_proc,
-        DecCode, "<CheckItem>");
-
-    IFINIT(nitems, "/_Help", 0, 0, 0, "<LastBranch>");
-    IFINIT(nitems, "/Help/_Help", "<control>H", la_action_proc,
-        HelpCode, 0);
-
     GtkAccelGroup *accel_group = gtk_accel_group_new();
-    la_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<aliases>",
-        accel_group);
-    for (int i = 0; i < nitems; i++)
-        gtk_item_factory_create_item(la_factory, menu_items + i, 0, 2);
     gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
-
-    GtkWidget *menubar = gtk_item_factory_get_widget(la_factory, "<aliases>");
+    GtkWidget *menubar = gtk_menu_bar_new();
+    gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", menubar);
     gtk_widget_show(menubar);
+    GtkWidget *item;
 
-    // name the menubar objects
-    GtkWidget *widget = gtk_item_factory_get_item(la_factory, "/File");
-    if (widget)
-        gtk_widget_set_name(widget, "File");
-    widget = gtk_item_factory_get_item(la_factory, "/Edit");
-    if (widget)
-        gtk_widget_set_name(widget, "Edit");
-    widget = gtk_item_factory_get_item(la_factory, "/Help");
-    if (widget)
-        gtk_widget_set_name(widget, "Help");
+    // File menu.
+    item = gtk_menu_item_new_with_mnemonic("_File");
+    gtk_widget_set_name(item, "File");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
-    widget = gtk_item_factory_get_item(la_factory, "/Edit/Delete");
-    if (widget)
-        gtk_widget_set_sensitive(widget, false);
-    widget = gtk_item_factory_get_item(la_factory, "/Edit/Edit");
-    if (widget)
-        gtk_widget_set_sensitive(widget, false);
+    // _Open, <control>O, la_action_proc, OpenCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Open");
+    gtk_widget_set_name(item, "Open");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)OpenCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(la_action_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_o,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-#else
-#endif
+    // _Save, <control>S, la_action_proc, SaveCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Save");
+    gtk_widget_set_name(item, "Save");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)SaveCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(la_action_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    item = gtk_separator_menu_item_new();
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+
+    // _Quit, <control>Q, la_action_proc, CancelCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Quit");
+    gtk_widget_set_name(item, "Quit");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)CancelCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(la_action_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Edit menu.
+    item = gtk_menu_item_new_with_mnemonic("_Edit");
+    gtk_widget_set_name(item, "Edit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // _New, <control>N, la_action_proc, NewCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_New");
+    gtk_widget_set_name(item, "New");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)NewCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(la_action_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_n,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // _Delete, <control>D, la_action_proc, DeleteCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Delete");
+    gtk_widget_set_name(item, "Delete");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)DeleteCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(la_action_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_d,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_set_sensitive(item, false);
+    la_del_btn = item;
+
+    // _Edit, <control>E, la_action_proc, EditCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Edit");
+    gtk_widget_set_name(item, "Edit");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)EditCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(la_action_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_e,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_set_sensitive(item, false);
+    la_edit_btn = item;
+
+    // Decimal _Form, <control>F, la_action_proc, DecCode, <CheckItem>
+    item = gtk_check_menu_item_new_with_mnemonic("Decimal _Form");
+    gtk_widget_set_name(item, "Decimal Form");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)DecCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(la_action_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_f,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Help menu.
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_set_name(item, "Help");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    submenu = gtk_menu_new();
+    gtk_widget_show(submenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
+
+    // _Help, <control>H, la_action_proc, HelpCode, 0
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_set_name(item, "Help");
+    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)HelpCode);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(la_action_proc), 0);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
     gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -284,8 +352,6 @@ sLA::~sLA()
     LA = 0;
     if (la_calling_btn)
         GRX->Deselect(la_calling_btn);
-    if (la_factory)
-        g_object_unref(la_factory);
 }
 
 
@@ -437,8 +503,9 @@ sLA::yn_cb(bool yn, void*)
 
 // Static function.
 void
-sLA::la_action_proc(GtkWidget *caller, void*, unsigned code)
+sLA::la_action_proc(GtkWidget *caller, void*)
 {
+    long code = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
     int w, h;
     gdk_window_get_size(LA->wb_shell->window, &w, &h);
     GRloc loc(LW_XYR, w + 4, 0);
@@ -523,17 +590,13 @@ int
 sLA::la_select_proc(GtkTreeSelection*, GtkTreeModel*, GtkTreePath *path,
     int issel, void*)
 {
-#ifdef UseItemFactory
     if (LA) {
         if (issel) {
             LA->la_row = -1;
-            GtkWidget *widget =
-                gtk_item_factory_get_item(LA->la_factory, "/Edit/Delete");
-            if (widget)
-                gtk_widget_set_sensitive(widget, false);
-            widget = gtk_item_factory_get_item(LA->la_factory, "/Edit/Edit");
-            if (widget)
-                gtk_widget_set_sensitive(widget, false);
+            if (LA->la_del_btn)
+                gtk_widget_set_sensitive(LA->la_del_btn, false);
+            if (LA->la_edit_btn)
+                gtk_widget_set_sensitive(LA->la_edit_btn, false);
             return (true);
         }
         if (LA->la_no_select)
@@ -541,16 +604,11 @@ sLA::la_select_proc(GtkTreeSelection*, GtkTreeModel*, GtkTreePath *path,
         int *indices = gtk_tree_path_get_indices(path);
         if (indices)
             LA->la_row = *indices;
-        GtkWidget *widget =
-            gtk_item_factory_get_item(LA->la_factory, "/Edit/Delete");
-        if (widget)
-            gtk_widget_set_sensitive(widget, true);
-        widget = gtk_item_factory_get_item(LA->la_factory, "/Edit/Edit");
-        if (widget)
-            gtk_widget_set_sensitive(widget, true);
+        if (LA->la_del_btn)
+            gtk_widget_set_sensitive(LA->la_del_btn, true);
+        if (LA->la_edit_btn)
+            gtk_widget_set_sensitive(LA->la_edit_btn, true);
     }
-#else
-#endif
     return (true);
 }
 
