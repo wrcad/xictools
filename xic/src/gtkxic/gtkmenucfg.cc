@@ -1390,8 +1390,6 @@ gtkMenuConfig::instantiateAttrSubMenu(GtkWidget *root)
 
     GtkWidget *submenu = gtk_menu_new();
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(root), submenu);
-//    g_signal_connect_object(G_OBJECT(root), "event",
-//        G_CALLBACK(button_press), G_OBJECT(submenu), (GConnectFlags)0);
 
     MenuEnt *ent = &mbox->menu[subwAttrMenuFreez];
     GtkWidget *item = miset(ent, "Freeze _Display", 0);

@@ -559,10 +559,11 @@ GTKmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
     MenuEnt *ent = FindEntry(mname, item, 0);
     if (ent && ent->cmd.caller)
         gtk_widget_set_sensitive(GTK_WIDGET(ent->cmd.caller), !desens);
-else if (ent)
-printf("caller %p %s %s\n", ent->cmd.caller, mname, item);
-else
-printf("caller failed %s %s\n", mname, item);
+//XXX
+    else if (ent)
+        printf("caller %p %s %s\n", ent->cmd.caller, mname, item);
+    else
+        printf("caller failed %s %s\n", mname, item);
 //XXX
 }
 

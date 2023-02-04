@@ -655,6 +655,7 @@ MenuMain::MatchEntry(const char *item, int nchars, int wnum, bool exact)
 // This will look through the indicated menu for button, and return
 // the MenuEnt object if found, also return its MenuBox if mbox is not
 // null.  If menuname is 0 or empty, search all the main window menus.
+// If button is null, return the menubar button for the menu.
 //
 // See the set of defines for this function in menu.h ahead of the
 // MenuMain definition.
@@ -662,8 +663,6 @@ MenuMain::MatchEntry(const char *item, int nchars, int wnum, bool exact)
 MenuEnt*
 MenuMain::FindEntry(const char *menuname, const char *button, MenuBox **mbox)
 {
-    if (!button)
-        return (0);
     if (mbox)
         *mbox = 0;
 
@@ -676,14 +675,25 @@ MenuMain::FindEntry(const char *menuname, const char *button, MenuBox **mbox)
         menuname = buf1;
     }
 
-    char buf2[16];
-    char *s = buf2;
-    while (*button && !isspace(*button) && (s - buf2) < 15)
-        *s++ = *button++;
-    *s = '\0';
-    button = buf2;
+    if (button) {
+        char buf2[16];
+        char *s = buf2;
+        while (*button && !isspace(*button) && (s - buf2) < 15)
+            *s++ = *button++;
+        *s = '\0';
+        button = buf2;
+    }
 
     if (menuname && *menuname) {
+        if (!button || !*button) {
+            MenuBox *mb = FindMainMenu(menuname);
+            if (mb) {
+                if (mbox)
+                    *mbox = mb;
+                return (mb->menu);
+            }
+            return (0);
+        }
         if (lstring::cieq(menuname, MMmain))
             return (FindEntOfWin(DSP()->MainWdesc(), button, mbox));
         if (lstring::cieq(menuname, MMside)) {
