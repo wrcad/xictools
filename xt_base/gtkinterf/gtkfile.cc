@@ -62,6 +62,8 @@ extern "C" { extern int fnmatch(const char*, const char*, int); }
 #endif
 #endif
 
+//#define UseCombo
+
 #include <gdk/gdkkeysyms.h>
 
 // Define this to omit the open/closed icons.
@@ -252,17 +254,17 @@ sFsBmap::~sFsBmap()
 void
 sFsBmap::enable(GTKfilePopup *fs, int id)
 {
-    if (!GTK_BIN(fs->fs_up_btn)->child) {
+    if (!gtk_bin_get_child(GTK_BIN(fs->fs_up_btn))) {
         gtk_container_add(GTK_CONTAINER(fs->fs_up_btn), up);
         gtk_widget_show(up);
     }
-    if (!GTK_BIN(fs->fs_go_btn)->child) {
+    if (!gtk_bin_get_child(GTK_BIN(fs->fs_go_btn))) {
         gtk_container_add(GTK_CONTAINER(fs->fs_go_btn), go);
         gtk_widget_show(go);
     }
     if (id == 0) {
         if (fs->fs_up_btn && up_state != PIXBactive) {
-            GtkImage *im = GTK_IMAGE(GTK_BIN(fs->fs_up_btn)->child);
+            GtkImage *im = GTK_IMAGE(gtk_bin_get_child(GTK_BIN(fs->fs_up_btn)));
             gtk_image_set_from_pixbuf(im, up_pb);
             gtk_widget_set_sensitive(fs->fs_up_btn, true);
             up_state = PIXBactive;
@@ -270,7 +272,7 @@ sFsBmap::enable(GTKfilePopup *fs, int id)
     }
     else {
         if (fs->fs_go_btn && !no_disable_go && go_state != PIXBactive) {
-            GtkImage *im = GTK_IMAGE(GTK_BIN(fs->fs_go_btn)->child);
+            GtkImage *im = GTK_IMAGE(gtk_bin_get_child(GTK_BIN(fs->fs_go_btn)));
             gtk_image_set_from_pixbuf(im, go_pb);
             gtk_widget_set_sensitive(fs->fs_go_btn, true);
             go_state = PIXBactive;
@@ -284,17 +286,17 @@ sFsBmap::enable(GTKfilePopup *fs, int id)
 void
 sFsBmap::disable(GTKfilePopup *fs, int id)
 {
-    if (!GTK_BIN(fs->fs_up_btn)->child) {
+    if (!gtk_bin_get_child(GTK_BIN(fs->fs_up_btn))) {
         gtk_container_add(GTK_CONTAINER(fs->fs_up_btn), up);
         gtk_widget_show(up);
     }
-    if (!GTK_BIN(fs->fs_go_btn)->child) {
+    if (!gtk_bin_get_child(GTK_BIN(fs->fs_go_btn))) {
         gtk_container_add(GTK_CONTAINER(fs->fs_go_btn), go);
         gtk_widget_show(go);
     }
     if (id == 0) {
         if (fs->fs_up_btn && up_state != PIXBgray) {
-            GtkImage *im = GTK_IMAGE(GTK_BIN(fs->fs_up_btn)->child);
+            GtkImage *im = GTK_IMAGE(gtk_bin_get_child(GTK_BIN(fs->fs_up_btn)));
             gtk_image_set_from_pixbuf(im, up_gray_pb);
             gtk_widget_set_sensitive(fs->fs_up_btn, false);
             up_state = PIXBgray;
@@ -302,7 +304,7 @@ sFsBmap::disable(GTKfilePopup *fs, int id)
     }
     else {
         if (fs->fs_go_btn && !no_disable_go && go_state != PIXBgray) {
-            GtkImage *im = GTK_IMAGE(GTK_BIN(fs->fs_go_btn)->child);
+            GtkImage *im = GTK_IMAGE(gtk_bin_get_child(GTK_BIN(fs->fs_go_btn)));
             gtk_image_set_from_pixbuf(im, go_gray_pb);
             gtk_widget_set_sensitive(fs->fs_go_btn, false);
             go_state = PIXBgray;
@@ -662,7 +664,7 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         GtkAccelGroup *accel_group = gtk_accel_group_new();
         gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
         fs_menubar = gtk_menu_bar_new();
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", fs_menubar);
+        g_object_set_data(G_OBJECT(wb_shell), "menubar", fs_menubar);
         gtk_widget_show(fs_menubar);
         GtkWidget *item;
 
@@ -677,62 +679,62 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
 
         if (fs_type == fsSEL) {
             item = gtk_menu_item_new_with_mnemonic("_Open");
-            gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsOpen);
+            g_object_set_data(G_OBJECT(item), "index", (gpointer)fsOpen);
             gtk_widget_show(item);
             fs_open_btn = item;
             gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(fs_menu_proc), this);
-            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_o,
+            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_o,
                 GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
         }
 
         item = gtk_menu_item_new_with_mnemonic("_New Folder");
-        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsNew);
+        g_object_set_data(G_OBJECT(item), "index", (gpointer)fsNew);
         gtk_widget_show(item);
         fs_new_btn = item;
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(fs_menu_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_f,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_f,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
         item = gtk_menu_item_new_with_mnemonic("_Delete");
-        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsDelete);
+        g_object_set_data(G_OBJECT(item), "index", (gpointer)fsDelete);
         gtk_widget_show(item);
         fs_delete_btn = item;
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(fs_menu_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_d,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_d,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
         item = gtk_menu_item_new_with_mnemonic("_Rename");
-        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsRename);
+        g_object_set_data(G_OBJECT(item), "index", (gpointer)fsRename);
         gtk_widget_show(item);
         fs_rename_btn = item;
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(fs_menu_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_r,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_r,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
         item = gtk_menu_item_new_with_mnemonic("_New Root");
-        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsRoot);
+        g_object_set_data(G_OBJECT(item), "index", (gpointer)fsRoot);
         gtk_widget_show(item);
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(fs_menu_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_e,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_e,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
         item = gtk_menu_item_new_with_mnemonic("N_ew CWD");
-        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsCwd);
+        g_object_set_data(G_OBJECT(item), "index", (gpointer)fsCwd);
         gtk_widget_show(item);
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(fs_menu_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_c,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_c,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
         item = gtk_separator_menu_item_new();
@@ -744,7 +746,7 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(fs_menu_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
         // Up menu.
@@ -768,34 +770,34 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
             gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), listMenu);
 
             item = gtk_check_menu_item_new_with_mnemonic("_Show Filter");
-            gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsFilt);
+            g_object_set_data(G_OBJECT(item), "index", (gpointer)fsFilt);
             gtk_widget_show(item);
             gtk_menu_shell_append(GTK_MENU_SHELL(listMenu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(fs_menu_proc), this);
-            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
+            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
                 GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
             item = gtk_menu_item_new_with_mnemonic("_Relist");
-            gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsRelist);
+            g_object_set_data(G_OBJECT(item), "index", (gpointer)fsRelist);
             gtk_widget_show(item);
             gtk_menu_shell_append(GTK_MENU_SHELL(listMenu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(fs_menu_proc), this);
-            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_l,
+            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_l,
                 GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
             item = gtk_check_menu_item_new_with_mnemonic("_List by Date");
-            gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsMtime);
+            g_object_set_data(G_OBJECT(item), "index", (gpointer)fsMtime);
             gtk_widget_show(item);
             gtk_menu_shell_append(GTK_MENU_SHELL(listMenu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(fs_menu_proc), this);
-            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_t,
+            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_t,
                 GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
             item = gtk_check_menu_item_new_with_mnemonic("Show La_bel");
-            gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsLabel);
+            g_object_set_data(G_OBJECT(item), "index", (gpointer)fsLabel);
             gtk_widget_show(item);
             gtk_menu_shell_append(GTK_MENU_SHELL(listMenu), item);
             if (fs_type == fsSEL)
@@ -804,7 +806,7 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
                     GRX->SetStatus(item, fs_open_show_label);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(fs_menu_proc), this);
-            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_b,
+            gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_b,
                 GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
         }
 
@@ -818,7 +820,7 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         gtk_widget_show(helpMenu);
 
         item = gtk_menu_item_new_with_mnemonic("_Help");
-        gtk_object_set_data(GTK_OBJECT(item), "index", (gpointer)fsHelp);
+        g_object_set_data(G_OBJECT(item), "index", (gpointer)fsHelp);
         gtk_widget_show(item);
         gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
@@ -942,9 +944,11 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         gtk_widget_show(vbox);
         gtk_box_pack_start(GTK_BOX(vbox), contr, true, true, 0);
 
+#ifdef XXX_COMBO
         fs_filter = gtk_combo_new();
         gtk_widget_hide(fs_filter);
-        gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(fs_filter)->entry), false);
+        gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(fs_filter)->entry),
+            false);
         gtk_combo_disable_activate(GTK_COMBO(fs_filter));
 
         GList *items = 0;
@@ -957,6 +961,21 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
             "unselect-child", G_CALLBACK(fs_filter_unsel_proc), this);
         g_signal_connect(G_OBJECT(GTK_COMBO(fs_filter)->entry),
             "activate", G_CALLBACK(fs_filter_activate_proc), this);
+#else
+        fs_filter = gtk_combo_box_text_new_with_entry();
+        gtk_widget_hide(fs_filter);
+        for (const char **s = fs_filter_options; *s; s++)
+            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(fs_filter), *s);
+        GtkWidget *entry = gtk_bin_get_child(GTK_BIN(fs_filter));
+        gtk_editable_set_editable(GTK_EDITABLE(entry), false);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(fs_filter), fs_filter_index);
+        g_signal_connect(G_OBJECT(fs_filter),
+            "changed", G_CALLBACK(fs_filter_sel_proc), this);
+        g_signal_connect(G_OBJECT(entry),
+            "backspace", G_CALLBACK(fs_filter_unsel_proc), this);
+        g_signal_connect(G_OBJECT(entry),
+            "activate", G_CALLBACK(fs_filter_activate_proc), this);
+#endif
         gtk_box_pack_start(GTK_BOX(vbox), fs_filter, false, false, 0);
 
         GtkWidget *paned = gtk_hpaned_new();
@@ -1074,10 +1093,10 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         rowcnt++;
     }
 
-    gtk_object_set_data(GTK_OBJECT(wb_shell), "fsbag", this);
-    gtk_object_set_data(GTK_OBJECT(fs_tree), "fsbag", this);
+    g_object_set_data(G_OBJECT(wb_shell), "fsbag", this);
+    g_object_set_data(G_OBJECT(fs_tree), "fsbag", this);
     if (wb_textarea)
-        gtk_object_set_data(GTK_OBJECT(wb_textarea), "fsbag", this);
+        g_object_set_data(G_OBJECT(wb_textarea), "fsbag", this);
 
     fs_bmap = new sFsBmap(this);
     if (fs_type == fsDOWNLOAD || fs_type == fsSAVE || fs_type == fsOPEN) {
@@ -1108,7 +1127,7 @@ GTKfilePopup::~GTKfilePopup()
 
     FSmonitor.remove(this);
     if (fs_timer_tag)
-        gtk_timeout_remove(fs_timer_tag);
+        g_source_remove(fs_timer_tag);
     if (p_cancel)
         (*p_cancel)(this, p_cb_arg);
     if (p_usrptr)
@@ -1677,7 +1696,9 @@ GTKfilePopup::list_files()
     delete [] p;
     closedir(wdir);
     stringlist::destroy(filt);
-    int w = wb_textarea->allocation.width;
+    GtkAllocation a;
+    gtk_widget_get_allocation(wb_textarea, &a);
+    int w = a.width;
     if (w <= 1)
         w = DEF_TEXT_USWIDTH;
     int ncols = w/GTKfont::stringWidth(wb_textarea, 0);
@@ -1799,7 +1820,7 @@ GTKfilePopup::set_label()
     }
 
     if (fs_anc_btn) {
-        GtkWidget *menu = GTK_MENU_ITEM(fs_anc_btn)->submenu;
+        GtkWidget *menu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(fs_anc_btn));
         if (menu)
             gtk_widget_destroy(menu);
         menu = gtk_menu_new();
@@ -1817,8 +1838,8 @@ GTKfilePopup::set_label()
             s = e;
             GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
-            gtk_menu_append(GTK_MENU(menu), menu_item);
-            gtk_object_set_data(GTK_OBJECT(menu_item), "offset",
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+            g_object_set_data(G_OBJECT(menu_item), "offset",
                 (void*)(e - fs_rootdir - 1));
             g_signal_connect(G_OBJECT(menu_item), "activate",
                 G_CALLBACK(fs_upmenu_proc), this);
@@ -1911,7 +1932,7 @@ GTKfilePopup::menu_handler(GtkWidget *widget, int code)
             }
         }
         if (data)
-            gtk_idle_add((GtkFunction)fs_open_idle, data);
+            g_idle_add((GSourceFunc)fs_open_idle, data);
     }
     else if (code == fsNew) {
         char *path = get_path(fs_curnode, false);
@@ -2231,7 +2252,7 @@ GTKfilePopup::fs_tree_select_proc(GtkTreeSelection*, GtkTreeModel*,
     if (!fs)
         return (false);
     if (!fs->fs_tid)
-        fs->fs_tid = gtk_idle_add(fs_sel_test_idle, fs);
+        fs->fs_tid = g_idle_add(fs_sel_test_idle, fs);
     return (true);
 }
 
@@ -2309,7 +2330,7 @@ GTKfilePopup::fs_upmenu_proc(GtkWidget *widget, void *client_data)
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(client_data);
     if (fs) {
         intptr_t offset = 
-            (intptr_t)gtk_object_get_data(GTK_OBJECT(widget), "offset");
+            (intptr_t)g_object_get_data(G_OBJECT(widget), "offset");
         if (offset <= 0)
             offset = 1;
         if (offset >= 256)
@@ -2330,7 +2351,7 @@ GTKfilePopup::fs_menu_proc(GtkWidget *widget, void *client_data)
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(client_data);
     if (fs) {
         unsigned long code =
-            (unsigned long)gtk_object_get_data(GTK_OBJECT(widget), "index");
+            (unsigned long)g_object_get_data(G_OBJECT(widget), "index");
         fs->menu_handler(widget, (int)code);
     }
 }
@@ -2347,6 +2368,7 @@ GTKfilePopup::fs_open_proc(GtkWidget *widget, void *client_data)
 }
 
 
+#ifdef XXX_COMBO
 // Private static GTK signal handler.
 // A new filter entry has been selected, update the index and toggle
 // the editable flag.
@@ -2357,11 +2379,11 @@ GTKfilePopup::fs_filter_sel_proc(GtkList *list, GtkWidget *widget, void *fsp)
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
     if (fs) {
         int ox = fs->fs_filter_index;
-        fs->fs_filter_index = gtk_list_child_position(list, widget);
-        gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(fs->fs_filter)->entry),
+        int ix = gtk_list_child_position(list, widget);
+        fs->fs_filter_index = ix;
+        gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(fs->fs_filter)->entry),
             (fs->fs_filter_index > 1));
-        if (fs->fs_filter_index != ox)
-            fs->list_files();
+        fs->list_files();
     }
 }
 
@@ -2379,23 +2401,80 @@ GTKfilePopup::fs_filter_unsel_proc(GtkList *list, GtkWidget *widget, void *fsp)
             // update entry
             const char *text =
                 gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(fs->fs_filter)->entry));
-            gtk_label_set_text(GTK_LABEL(GTK_BIN(widget)->child), text);
+            gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(widget))),
+                text);
             delete [] fs_filter_options[i];
             fs_filter_options[i] = lstring::copy(text);
         }
     }
 }
+#else
+
+// Private static GTK signal handler.
+// A new filter entry has been selected, update the index and toggle
+// the editable flag.
+//
+// This also is called (stupidly) when editable text changes in the entry.
+//
+void
+GTKfilePopup::fs_filter_sel_proc(GtkWidget *widget, void *fsp)
+{
+    GtkComboBox *cb = GTK_COMBO_BOX(widget);
+    GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
+    if (cb && fs) {
+        int ox = fs->fs_filter_index;
+        int ix = gtk_combo_box_get_active(cb);
+        if (ix < 0 || ix == ox) {
+            // Just a text change, or something bogus.
+            return;
+        }
+        fs->fs_filter_index = ix;
+        GtkWidget *entry = gtk_bin_get_child(GTK_BIN(cb));
+        gtk_editable_set_editable(GTK_EDITABLE(entry), (ix > 1));
+        fs->list_files();
+    }
+}
+
+// Private static GTK signal handler.
+// A Backspace was entered, don't allow if it would erase a colon.
+//
+void
+GTKfilePopup::fs_filter_unsel_proc(GtkWidget *widget, void *fsp)
+{
+    GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
+    if (fs) {
+        GtkWidget *entry = gtk_bin_get_child(GTK_BIN(fs->fs_filter));
+        const char *text = gtk_entry_get_text(GTK_ENTRY(entry));
+        if (text && *(text + strlen(text) - 1) == ':') {
+            g_signal_stop_emission_by_name(G_OBJECT(entry), "backspace");
+        }
+    }
+}
+#endif
 
 
 // Private static GTK signal handler.
-// Called when Enter pressed while editing combo box string.
+// Called when Enter is pressed while the combo box has focus.  Relist
+// the files and save the string if editing.
 //
 void
 GTKfilePopup::fs_filter_activate_proc(GtkWidget*, void *fsp)
 {
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
-    if (fs)
+    if (fs) {
+        int i = fs->fs_filter_index;
+        if (i > 1) {
+            GtkWidget *entry = gtk_bin_get_child(GTK_BIN(fs->fs_filter));
+            // update entry
+            const char *text = gtk_entry_get_text(GTK_ENTRY(entry));
+            delete [] fs_filter_options[i];
+            fs_filter_options[i] = lstring::copy(text);
+            gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(fs->fs_filter), i);
+            gtk_combo_box_text_insert_text(GTK_COMBO_BOX_TEXT(fs->fs_filter),
+                i, text);
+        }
         fs->list_files();
+    }
 }
 
 
@@ -2461,7 +2540,7 @@ GTKfilePopup::fs_unrealize_proc(GtkWidget *widget, void*)
 void
 GTKfilePopup::fs_resize_proc(GtkWidget *widget, GtkAllocation *a, void *fsp)
 {
-    if (GTK_WIDGET_REALIZED(widget) && fsp) {
+    if (gtk_widget_get_realized(widget) && fsp) {
         GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
         if (fs) {
             // This handler is called when a scrollbar is added or
@@ -2596,7 +2675,7 @@ GTKfilePopup::fs_drag_data_received(GtkWidget *widget, GdkDragContext *context,
             gtk_selection_data_get_format(data) == 8 && 
             gtk_selection_data_get_data(data)) {
         GTKfilePopup *fs =
-            (GTKfilePopup*)gtk_object_get_data(GTK_OBJECT(widget), "fsbag");
+            (GTKfilePopup*)g_object_get_data(G_OBJECT(widget), "fsbag");
         if (fs) {
             char *dst = 0;
             if (widget == fs->wb_textarea)
@@ -2639,7 +2718,7 @@ GTKfilePopup::fs_source_drag_data_get(GtkWidget *widget, GdkDragContext*,
     g_signal_stop_emission_by_name(G_OBJECT(widget), "drag-data-get");
 
     GTKfilePopup *fs =
-        (GTKfilePopup*)gtk_object_get_data(GTK_OBJECT(widget), "fsbag");
+        (GTKfilePopup*)g_object_get_data(G_OBJECT(widget), "fsbag");
     if (fs) {
         char *path;
         if (GTK_IS_TREE_VIEW(widget))
@@ -2665,7 +2744,7 @@ GTKfilePopup::fs_dir_drag_motion(GtkWidget *widget, GdkDragContext*, int x,
     int y, guint)
 {
     GTKfilePopup *fs =
-        (GTKfilePopup*)gtk_object_get_data(GTK_OBJECT(widget), "fsbag");
+        (GTKfilePopup*)g_object_get_data(G_OBJECT(widget), "fsbag");
     if (!fs)
         return (true);
     fs_scroll_hdlr(widget);
@@ -2706,7 +2785,7 @@ GTKfilePopup::fs_selection_get(GtkWidget *widget,
     g_signal_stop_emission_by_name(G_OBJECT(widget), "selection-get");
 
     GTKfilePopup *fs =
-        (GTKfilePopup*)gtk_object_get_data(GTK_OBJECT(widget), "fsbag");
+        (GTKfilePopup*)g_object_get_data(G_OBJECT(widget), "fsbag");
     if (fs) {
         char *path;
         if (GTK_IS_TREE_VIEW(widget))
@@ -2741,7 +2820,7 @@ void
 GTKfilePopup::fs_dir_drag_leave(GtkWidget *widget, GdkDragContext*, guint)
 {
     GTKfilePopup *fs =
-        (GTKfilePopup*)gtk_object_get_data(GTK_OBJECT(widget), "fsbag");
+        (GTKfilePopup*)g_object_get_data(G_OBJECT(widget), "fsbag");
     if (!fs)
         return;
     if (fs->fs_cset_node) {
@@ -2818,7 +2897,7 @@ GTKfilePopup::fs_scroll_hdlr(GtkWidget *tree)
     if (!(mask & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)))
         return;
     GTKfilePopup *fs =
-        (GTKfilePopup*)gtk_object_get_data(GTK_OBJECT(tree), "fsbag");
+        (GTKfilePopup*)g_object_get_data(G_OBJECT(tree), "fsbag");
     if (!fs)
         return;
     int hei = gdk_window_get_height(window);
@@ -2828,18 +2907,18 @@ GTKfilePopup::fs_scroll_hdlr(GtkWidget *tree)
         if (fs->fs_vtimer)
             return;
         move_vertical(GTK_TREE_VIEW(tree), false);
-        fs->fs_vtimer = gtk_timeout_add(VT_REP,
-            (GtkFunction)fs_vertical_timeout, fs);
+        fs->fs_vtimer = g_timeout_add(VT_REP,
+            (GSourceFunc)fs_vertical_timeout, fs);
     }
     else if (hei - y < SENS_PIXELS) {
         if (fs->fs_vtimer)
             return;
         move_vertical(GTK_TREE_VIEW(tree), true);
-        fs->fs_vtimer = gtk_timeout_add(VT_REP,
-            (GtkFunction)fs_vertical_timeout, fs);
+        fs->fs_vtimer = g_timeout_add(VT_REP,
+            (GSourceFunc)fs_vertical_timeout, fs);
     }
     else if (fs->fs_vtimer) {
-        gtk_timeout_remove(fs->fs_vtimer);
+        g_source_remove(fs->fs_vtimer);
         fs->fs_vtimer = 0;
     }
 }
@@ -3279,7 +3358,7 @@ gtkinterf::gtk_DoFileAction(GtkWidget *shell, const char *src, const char *dst,
         return;
     }
     if (prog)
-        gtk_timeout_add(1000, (GtkFunction)progress_destroy_timeout,
+        g_timeout_add(1000, (GSourceFunc)progress_destroy_timeout,
             prog);
 
     if (lstr.string())
@@ -3293,7 +3372,7 @@ namespace {
     void
     action_cancel(GtkWidget *caller, void*)
     {
-        GtkWidget *popup = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(caller),
+        GtkWidget *popup = (GtkWidget*)g_object_get_data(G_OBJECT(caller),
             "popup");
         if (!popup)
             popup  = caller;
@@ -3314,26 +3393,26 @@ namespace {
             action_cancel(caller, 0);
             return;
         }
-        GtkWidget *popup = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(caller),
+        GtkWidget *popup = (GtkWidget*)g_object_get_data(G_OBJECT(caller),
             "popup");
         if (popup) {
             const char *src = 0, *dst = 0;
             GtkWidget *entry_src =
-                (GtkWidget*)gtk_object_get_data(GTK_OBJECT(popup), "source");
+                (GtkWidget*)g_object_get_data(G_OBJECT(popup), "source");
             if (entry_src)
                 src = gtk_entry_get_text(GTK_ENTRY(entry_src));
             GtkWidget *entry_dst =
-                (GtkWidget*)gtk_object_get_data(GTK_OBJECT(popup), "dest");
+                (GtkWidget*)g_object_get_data(G_OBJECT(popup), "dest");
             if (entry_dst)
                 dst = gtk_entry_get_text(GTK_ENTRY(entry_dst));
 
             GdkDragAction action = (GdkDragAction)
-                    (intptr_t)gtk_object_get_data(GTK_OBJECT(caller),
+                    (intptr_t)g_object_get_data(G_OBJECT(caller),
                     "action");
             if (action == GDK_ACTION_MOVE || action == GDK_ACTION_COPY ||
                     action == GDK_ACTION_LINK) {
                 GdkDragContext *context = (GdkDragContext*)client_data;
-                context->suggested_action = action;
+//XXX                context->suggested_action = action;
                 /*  Doesn't exist, how to set?
                 gdk_drag_context_set_suggested_action(context, action);
                 */
@@ -3374,7 +3453,7 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     GtkWidget *frame = gtk_frame_new("Source");
     gtk_widget_show(frame);
     gtk_container_add(GTK_CONTAINER(frame), entry_src);
-    gtk_object_set_data(GTK_OBJECT(popup), "source", entry_src);
+    g_object_set_data(G_OBJECT(popup), "source", entry_src);
     gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -3385,7 +3464,7 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     frame = gtk_frame_new("Destination");
     gtk_widget_show(frame);
     gtk_container_add(GTK_CONTAINER(frame), entry_dst);
-    gtk_object_set_data(GTK_OBJECT(popup), "dest", entry_dst);
+    g_object_set_data(G_OBJECT(popup), "dest", entry_dst);
     gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -3398,8 +3477,8 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(action_proc), context);
-    gtk_object_set_data(GTK_OBJECT(button), "popup", popup);
-    gtk_object_set_data(GTK_OBJECT(button), "action",
+    g_object_set_data(G_OBJECT(button), "popup", popup);
+    g_object_set_data(G_OBJECT(button), "action",
         (void*)GDK_ACTION_MOVE);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
@@ -3408,8 +3487,8 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(action_proc), context);
-    gtk_object_set_data(GTK_OBJECT(button), "popup", popup);
-    gtk_object_set_data(GTK_OBJECT(button), "action",
+    g_object_set_data(G_OBJECT(button), "popup", popup);
+    g_object_set_data(G_OBJECT(button), "action",
         (void*)GDK_ACTION_COPY);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
@@ -3418,8 +3497,8 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(action_proc), context);
-    gtk_object_set_data(GTK_OBJECT(button), "popup", popup);
-    gtk_object_set_data(GTK_OBJECT(button), "action",
+    g_object_set_data(G_OBJECT(button), "popup", popup);
+    g_object_set_data(G_OBJECT(button), "action",
         (void*)GDK_ACTION_LINK);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
@@ -3428,7 +3507,7 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(action_proc), 0);
-    gtk_object_set_data(GTK_OBJECT(button), "popup", popup);
+    g_object_set_data(G_OBJECT(button), "popup", popup);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 2, 3,
@@ -3458,9 +3537,9 @@ namespace {
         GtkWidget *popup = (GtkWidget*)client_data;
         if (popup) {
             uintptr_t timer =
-                (uintptr_t)gtk_object_get_data(GTK_OBJECT(popup), "timer");
+                (uintptr_t)g_object_get_data(G_OBJECT(popup), "timer");
             if (timer)
-                gtk_timeout_remove(timer);
+                g_source_remove(timer);
             g_signal_handlers_disconnect_by_func(G_OBJECT(popup),
                 (gpointer)progress_cancel, popup);
             gtk_widget_destroy(popup);
@@ -3474,11 +3553,15 @@ namespace {
     progress_timeout(void *data)
     {
 
+#ifdef XXX_PROG
         float new_val = gtk_progress_get_value(GTK_PROGRESS(data)) + 2;
         GtkAdjustment *adj = GTK_PROGRESS(data)->adjustment;
         if (new_val > gtk_adjustment_get_upper(adj))
             new_val = gtk_adjustment_get_lower(adj);
         gtk_progress_set_value(GTK_PROGRESS(data), new_val);
+#else
+        gtk_progress_bar_pulse(GTK_PROGRESS_BAR(data));
+#endif
         return (true);
     }
 
@@ -3520,16 +3603,20 @@ gtkinterf::gtk_Progress(GtkWidget *shell, const char *msg)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
+#ifdef XXX_PROG
     GtkAdjustment *adj =
         (GtkAdjustment*)gtk_adjustment_new(0, 1, 100, 0, 0, 0);
     GtkWidget *pbar = gtk_progress_bar_new_with_adjustment(adj);
+#else
+    GtkWidget *pbar = gtk_progress_bar_new();
+#endif
     gtk_widget_show(pbar);
     gtk_progress_bar_set_bar_style(GTK_PROGRESS_BAR(pbar),
         GTK_PROGRESS_CONTINUOUS);
     gtk_progress_set_activity_mode(GTK_PROGRESS(pbar), true);
-    unsigned timer = gtk_timeout_add(100, (GtkFunction)progress_timeout,
+    unsigned timer = g_timeout_add(100, (GSourceFunc)progress_timeout,
         pbar);
-    gtk_object_set_data(GTK_OBJECT(popup), "timer", (void*)(long)timer);
+    g_object_set_data(G_OBJECT(popup), "timer", (void*)(long)timer);
 
     gtk_table_attach(GTK_TABLE(form), pbar, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -3556,7 +3643,7 @@ namespace {
     void
     fail_cancel(GtkWidget *caller, void*)
     {
-        GtkWidget *popup = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(caller),
+        GtkWidget *popup = (GtkWidget*)g_object_get_data(G_OBJECT(caller),
             "popup");
         if (!popup)
             popup = caller;
@@ -3602,7 +3689,7 @@ gtkinterf::gtk_Message(GtkWidget *shell, bool failed, const char *msg)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fail_cancel), 0);
-    gtk_object_set_data(GTK_OBJECT(button), "popup", popup);
+    g_object_set_data(G_OBJECT(button), "popup", popup);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

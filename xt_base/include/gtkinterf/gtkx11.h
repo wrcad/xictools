@@ -73,12 +73,14 @@ namespace gtkinterf {
         return (GDK_VISUAL_XVISUAL(visual));
     }
 
+#ifdef XGCOK
+// No good with Cairo.
     inline GC
     gr_x_gc(GdkGC *gc)
     {
         return (gdk_x11_gc_get_xgc(gc));
     }
-
+#endif
 
     inline Colormap
     gr_x_colormap(GdkColormap *cmap)

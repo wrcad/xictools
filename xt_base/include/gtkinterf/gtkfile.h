@@ -108,8 +108,13 @@ namespace gtkinterf {
         static void fs_upmenu_proc(GtkWidget*, void*);
         static void fs_menu_proc(GtkWidget*, void*);
         static void fs_open_proc(GtkWidget*, void*);
+#ifdef XXX_COMBO
         static void fs_filter_sel_proc(GtkList*, GtkWidget*, void*);
         static void fs_filter_unsel_proc(GtkList*, GtkWidget*, void*);
+#else
+        static void fs_filter_sel_proc(GtkWidget*, void*);
+        static void fs_filter_unsel_proc(GtkWidget*, void*);
+#endif
         static void fs_filter_activate_proc(GtkWidget*, void*);
         static void fs_up_btn_proc(GtkWidget*, void*);
         static void fs_realize_proc(GtkWidget*, void*);

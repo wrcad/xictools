@@ -72,7 +72,7 @@ struct GTKspinBtn
 
     GtkWidget *init(double, double, double, int);
     int width_for_string(const char*);
-    void connect_changed(GtkSignalFunc, void*, const char* = 0);
+    void connect_changed(GCallback, void*, const char* = 0);
     void set_min(double);
     void set_max(double);
     void set_delta(double);

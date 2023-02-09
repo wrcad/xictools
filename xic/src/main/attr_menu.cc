@@ -110,7 +110,7 @@ cMain::createAttrMenu()
         MenuEnt(&M_NoOp,     "",        ME_MENU,     CMD_SAFE,
         0);
     AttrMenu[attrMenuUpdat] =
-        MenuEnt(&M_SaveTech, MenuUPDAT, ME_VANILLA,  CMD_SAFE,
+        MenuEnt(&M_SaveTech, MenuUPDAT, ME_TOGGLE,   CMD_SAFE,
         MenuUPDAT": Save updated technology file in the current directory.");
     AttrMenu[attrMenuKeymp] =
         MenuEnt(&M_KeyMap,   MenuKEYMP, ME_VANILLA,  CMD_NOTSAFE,

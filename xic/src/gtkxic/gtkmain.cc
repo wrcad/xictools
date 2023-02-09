@@ -587,7 +587,7 @@ GTKpkg::CheckForInterrupt()
     GdkEvent *ev;
     while ((ev = gdk_event_get()) != 0) {
         if (ev->type == GDK_KEY_PRESS) {
-            if ((ev->key.keyval == GDK_c || ev->key.keyval == GDK_C) &&
+            if ((ev->key.keyval == GDK_KEY_c || ev->key.keyval == GDK_KEY_C) &&
                     (ev->key.state & GDK_CONTROL_MASK)) {
 
                 intr = true;
@@ -596,7 +596,7 @@ GTKpkg::CheckForInterrupt()
             }
         }
         else if (ev->type == GDK_KEY_RELEASE) {
-            if ((ev->key.keyval == GDK_c || ev->key.keyval == GDK_C) &&
+            if ((ev->key.keyval == GDK_KEY_c || ev->key.keyval == GDK_KEY_C) &&
                     (ev->key.state & GDK_CONTROL_MASK)) {
 
                 gdk_event_free(ev);
@@ -2808,7 +2808,8 @@ main_bag::initialize()
 #ifdef WITH_X11
     XGCValues xval;
     xval.fill_rule = WindingRule;
-    XChangeGC(gr_x_display(), gr_x_gc(GC()), GCFillRule, &xval);
+//XXX    XChangeGC(gr_x_display(), gr_x_gc(GC()), GCFillRule, &xval);
+    XChangeGC(gr_x_display(), gdk_x11_gc_get_xgc(GC()), GCFillRule, &xval);
 #endif
 
     gcvalues.function = GDK_XOR;
@@ -2951,8 +2952,8 @@ sEventHdlr::main_event_handler(GdkEvent *event, void*)
 {
     if (event->type == GDK_KEY_PRESS) {
         LogEvent(event);
-        if ((event->key.keyval == GDK_c || event->key.keyval == GDK_C) &&
-                (event->key.state & GDK_CONTROL_MASK)) {
+        if ((event->key.keyval == GDK_KEY_c || event->key.keyval == GDK_KEY_C)
+                && (event->key.state & GDK_CONTROL_MASK)) {
 
             cMain::InterruptHandler();
             return;
@@ -2965,8 +2966,8 @@ sEventHdlr::main_event_handler(GdkEvent *event, void*)
     }
     else if (event->type == GDK_KEY_RELEASE) {
         LogEvent(event);
-        if ((event->key.keyval == GDK_c || event->key.keyval == GDK_C) &&
-                (event->key.state & GDK_CONTROL_MASK)) {
+        if ((event->key.keyval == GDK_KEY_c || event->key.keyval == GDK_KEY_C)
+                && (event->key.state & GDK_CONTROL_MASK)) {
 
             return;
         }

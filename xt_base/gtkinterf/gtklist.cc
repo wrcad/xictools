@@ -82,7 +82,9 @@ gtk_bag::PopUpList(stringlist *symlist, const char *title,
     list_count++;
     if (list_count == 6)
         list_count = 0;
-    gtk_widget_set_uposition(list->Shell(), x, y);
+// will this work?
+//XXX    gtk_widget_set_uposition(list->Shell(), x, y);
+    gtk_window_move(GTK_WINDOW(list->Shell()), x, y);
 
     list->set_visible(true);
     return (list);
@@ -161,7 +163,7 @@ GTKlistPopup::GTKlistPopup(gtk_bag *owner, stringlist *symlist,
     g_signal_connect(G_OBJECT(ls_list), "focus",
         G_CALLBACK(ls_focus_proc), this);
 
-    gtk_object_set_data(GTK_OBJECT(ls_list), "arg", arg);
+    g_object_set_data(G_OBJECT(ls_list), "arg", arg);
     gtk_container_add(GTK_CONTAINER(swin), ls_list);
 
     // Use a fixed font.

@@ -134,7 +134,7 @@ gtk_bag::PopUpTextEditor(const char *fname,
             GTK_WINDOW(we->transient_for()));
     }
     gtk_widget_show(we->wb_shell);
-    if (!GTK_WIDGET_HAS_FOCUS(we->wb_textarea))
+    if (!gtk_widget_has_focus(we->wb_textarea))
         gtk_widget_grab_focus(we->wb_textarea);
     return (we);
 }
@@ -206,7 +206,7 @@ gtk_bag::PopUpStringEditor(const char *string,
     GRX->SetPopupLocation(GRloc(), we->wb_shell, wb_shell);
 
     gtk_widget_show(we->wb_shell);
-    if (!GTK_WIDGET_HAS_FOCUS(we->wb_textarea))
+    if (!gtk_widget_has_focus(we->wb_textarea))
         gtk_widget_grab_focus(we->wb_textarea);
     return (we);
 }
@@ -232,11 +232,11 @@ gtk_bag::PopUpMail(const char *subject, const char *mailaddr,
     }
     we->register_quit_callback(downproc);
 
-    GtkWidget *entry = (GtkWidget*)gtk_object_get_data(
-        GTK_OBJECT(we->wb_shell), "subject");
+    GtkWidget *entry = (GtkWidget*)g_object_get_data(
+        G_OBJECT(we->wb_shell), "subject");
     if (entry)
         gtk_entry_set_text(GTK_ENTRY(entry), subject);
-    entry = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(we->wb_shell),
+    entry = (GtkWidget*)g_object_get_data(G_OBJECT(we->wb_shell),
         "mailaddr");
     if (entry)
         gtk_entry_set_text(GTK_ENTRY(entry), mailaddr);
@@ -246,7 +246,7 @@ gtk_bag::PopUpMail(const char *subject, const char *mailaddr,
     GRX->SetPopupLocation(loc, we->wb_shell, wb_shell);
 
     gtk_widget_show(we->wb_shell);
-    if (!GTK_WIDGET_HAS_FOCUS(we->wb_textarea))
+    if (!gtk_widget_has_focus(we->wb_textarea))
         gtk_widget_grab_focus(we->wb_textarea);
     return (we);
 }
@@ -267,7 +267,6 @@ GtkWindow *GTKeditPopup::ed_transient_for = 0;
 // Create the editor popup.
 //
 // data set:
-// main item factory name:  "<edit>"
 // shell            "menubar"           menubar
 // shell            "mailaddr"          entry
 // shell            "subject"           entry
@@ -343,7 +342,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
     ed_menubar = gtk_menu_bar_new();
-    gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", ed_menubar);
+    g_object_set_data(G_OBJECT(wb_shell), "menubar", ed_menubar);
     gtk_widget_show(ed_menubar);
     GtkWidget *item;
 
@@ -362,7 +361,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_open_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_o,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_o,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
         item = gtk_menu_item_new_with_mnemonic("_Load");
@@ -370,7 +369,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_load_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_l,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_l,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
         ed_File_Load = item;
     }
@@ -380,7 +379,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_read_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_r,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_r,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
         ed_File_Read = item;
     }
@@ -390,7 +389,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_save_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
         if (ed_widget_type != StringEditor) {
             // Don't desensitize in string edit mode.
@@ -404,8 +403,9 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_save_as_proc), this);
-//        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_a,
-//            GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_a,
+            (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+            GTK_ACCEL_VISIBLE);
         ed_File_SaveAs = item;
 
         item = gtk_check_menu_item_new_with_mnemonic("_Print");
@@ -413,8 +413,9 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_print_proc), this);
-//        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_n,
-//            GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_n,
+            (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+            GTK_ACCEL_VISIBLE);
     }
 
 #ifdef WIN32
@@ -438,7 +439,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_mail_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     }
     item = gtk_menu_item_new_with_mnemonic("_Quit");
@@ -446,7 +447,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
     gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(ed_quit_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     // Edit menu.
@@ -463,8 +464,9 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_undo_proc), this);
-//        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_u,
-//            GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_u,
+            (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+            GTK_ACCEL_VISIBLE);
         ed_Edit_Undo = item;
 
         item = gtk_menu_item_new_with_label("Redo");
@@ -472,8 +474,9 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_redo_proc), this);
-//        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_r,
-//            GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_r,
+            (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+            GTK_ACCEL_VISIBLE);
         ed_Edit_Redo = item;
 
         item = gtk_menu_item_new_with_label("Cut to Clipboard");
@@ -481,7 +484,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_cut_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_x,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_x,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     }
     item = gtk_menu_item_new_with_label("Copy To Clipboard");
@@ -489,7 +492,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
     gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(ed_copy_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_x,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_x,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     if (ed_widget_type != Browser) {
         item = gtk_menu_item_new_with_label("Paste from Clipboard");
@@ -497,7 +500,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_paste_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_v,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_v,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
         item = gtk_menu_item_new_with_label("Paste Primary");
@@ -505,8 +508,9 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(editMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(ed_paste_prim_proc), this);
-//        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_p,
-//            GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_p,
+            (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+            GTK_ACCEL_VISIBLE);
     }
 
     // Options menu.
@@ -559,8 +563,9 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
     gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(ed_help_proc), this);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_h,
-//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
+        (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+        GTK_ACCEL_VISIBLE);
 
     gtk_table_attach(GTK_TABLE(form), ed_menubar, 0, 1, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -574,8 +579,8 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         GtkWidget *frame = gtk_frame_new("To:");
         gtk_widget_show(frame);
         gtk_container_add(GTK_CONTAINER(frame), entry);
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "mailaddr", entry);
-        gtk_entry_set_editable(GTK_ENTRY(entry), true);
+        g_object_set_data(G_OBJECT(wb_shell), "mailaddr", entry);
+        gtk_editable_set_editable(GTK_EDITABLE(entry), true);
 
         gtk_table_attach(GTK_TABLE(form), frame, 0, 1, row, row+1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -588,8 +593,8 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
         frame = gtk_frame_new("Subject:");
         gtk_widget_show(frame);
         gtk_container_add(GTK_CONTAINER(frame), entry);
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "subject", entry);
-        gtk_entry_set_editable(GTK_ENTRY(entry), true);
+        g_object_set_data(G_OBJECT(wb_shell), "subject", entry);
+        gtk_editable_set_editable(GTK_EDITABLE(entry), true);
 
         gtk_table_attach(GTK_TABLE(form), frame, 0, 1, row, row+1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -1268,12 +1273,12 @@ GTKeditPopup::ed_mail_proc(GtkWidget*, void *client_data)
     GRloc loc(LW_XYR, 50, 100);
 
     const char *mailaddr = mail_addr;
-    GtkWidget *entry = (GtkWidget*)gtk_object_get_data(
-        GTK_OBJECT(w->wb_shell), "mailaddr");
+    GtkWidget *entry = (GtkWidget*)g_object_get_data(
+        G_OBJECT(w->wb_shell), "mailaddr");
     if (entry)
         mailaddr = gtk_entry_get_text(GTK_ENTRY(entry));
     const char *subject = mail_subject;
-    entry = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(w->wb_shell),
+    entry = (GtkWidget*)g_object_get_data(G_OBJECT(w->wb_shell),
         "subject");
     if (entry)
         subject = gtk_entry_get_text(GTK_ENTRY(entry));
@@ -1284,12 +1289,12 @@ GTKeditPopup::ed_mail_proc(GtkWidget*, void *client_data)
     int anum = 0;
     const char **attach_ary = 0;
     GtkWidget *menubar =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(w->wb_shell), "menubar");
+        (GtkWidget*)g_object_get_data(G_OBJECT(w->wb_shell), "menubar");
     if (menubar) {
         GList *list = gtk_container_children(GTK_CONTAINER(menubar));
         for (GList *g = list; g; g = g->next) {
             GtkWidget *item = GTK_WIDGET(g->data);
-            char *fname = (char*)gtk_object_get_data(GTK_OBJECT(item),
+            char *fname = (char*)g_object_get_data(G_OBJECT(item),
                 "attach");
             if (fname && *fname)
                 anum++;
@@ -1299,7 +1304,7 @@ GTKeditPopup::ed_mail_proc(GtkWidget*, void *client_data)
             int cnt = 0;
             for (GList *g = list; g; g = g->next) {
                 GtkWidget *item = GTK_WIDGET(g->data);
-                char *fname = (char*)gtk_object_get_data(GTK_OBJECT(item),
+                char *fname = (char*)g_object_get_data(G_OBJECT(item),
                     "attach");
                 if (fname && *fname)
                     attach_ary[cnt++] = lstring::copy(fname);
@@ -1353,13 +1358,13 @@ GTKeditPopup::ed_mail_proc(GtkWidget*, void *client_data)
 
     bool err = false;
     GtkWidget *menubar =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(w->wb_shell),
+        (GtkWidget*)g_object_get_data(G_OBJECT(w->wb_shell),
             "menubar");
     if (menubar) {
-        GList *list = gtk_container_children(GTK_CONTAINER(menubar));
+        GList *list = gtk_container_get_children(GTK_CONTAINER(menubar));
         for (GList *g = list; g; g = g->next) {
             GtkWidget *item = GTK_WIDGET(g->data);
-            char *fname = (char*)gtk_object_get_data(GTK_OBJECT(item),
+            char *fname = (char*)g_object_get_data(G_OBJECT(item),
                 "attach");
             if (fname && *fname) {
                 FILE *ifp = fopen(fname, "r");
@@ -1709,26 +1714,26 @@ GTKeditPopup::ed_do_attach_proc(const char *fnamein, void *client_data)
     gtk_widget_show(img);
     gtk_container_add(GTK_CONTAINER(item), img);
 
-    gtk_menu_bar_insert(GTK_MENU_BAR(w->ed_menubar), item, 3);
+    gtk_menu_shell_insert(GTK_MENU_SHELL(w->ed_menubar), item, 3);
 
     GtkWidget *menu = gtk_menu_new();
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
 
-    gtk_object_set_data_full(GTK_OBJECT(item), "attach", lstring::copy(fname),
+    g_object_set_data_full(G_OBJECT(item), "attach", lstring::copy(fname),
         ed_data_destr);
 
     if (strlen(fname) > 20)
         strcpy(fname + 20, "...");
     GtkWidget *mitem = gtk_menu_item_new_with_label(fname);
     gtk_widget_show(mitem);
-    gtk_menu_append(GTK_MENU(menu), mitem);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mitem);
     gtk_widget_set_sensitive(mitem, false);
 
     mitem = gtk_menu_item_new_with_label("Unattach");
     gtk_widget_show(mitem);
     g_signal_connect(G_OBJECT(mitem), "activate",
         G_CALLBACK(ed_unattach_proc), item);
-    gtk_menu_append(GTK_MENU(menu), mitem);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mitem);
 
     delete [] fname;
     if (w->wb_input)

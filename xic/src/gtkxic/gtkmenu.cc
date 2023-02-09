@@ -544,8 +544,15 @@ GTKmenu::HideButtonMenu(bool hide)
 GtkWidget *
 GTKmenu::FindMainMenuWidget(const char *mname, const char *item)
 {
-    MenuEnt *ent = FindEntry(mname, item, 0);
-    if (ent)
+    MenuEnt *ent = 0;
+    if (!item) {
+        MenuBox *mbox = FindMainMenu(mname);
+        if (mbox)
+            ent = mbox->menu;
+    }
+    else
+        ent = FindEntry(mname, item, 0);
+    if (ent && ent->cmd.caller)
         return (GTK_WIDGET(ent->cmd.caller));
     return (0);
 }
@@ -556,7 +563,14 @@ GTKmenu::FindMainMenuWidget(const char *mname, const char *item)
 void
 GTKmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
 {
-    MenuEnt *ent = FindEntry(mname, item, 0);
+    MenuEnt *ent = 0;
+    if (!item) {
+        MenuBox *mbox = FindMainMenu(mname);
+        if (mbox)
+            ent = mbox->menu;
+    }
+    else
+        ent = FindEntry(mname, item, 0);
     if (ent && ent->cmd.caller)
         gtk_widget_set_sensitive(GTK_WIDGET(ent->cmd.caller), !desens);
 //XXX
@@ -589,6 +603,11 @@ GTKmenu::strip_accel(const char *string)
 
 
 // Static function.
+// Create a pop-up menu.  The root arg can only be a GtkMenuItem, not
+// a vanilla button.  Note that the menu item takes care of handling the
+// pop-up signal, a vanilla button must provide a handler to actually
+// display the menu (pass null root in this case).
+//
 GtkWidget *
 GTKmenu::new_popup_menu(GtkWidget *root, const char *const *list,
     GtkSignalFunc handler, void *arg)
@@ -613,36 +632,10 @@ GTKmenu::new_popup_menu(GtkWidget *root, const char *const *list,
                 handler, arg);
             gtk_widget_show(menu_item);
         }
-        if (root) {
+        if (root)
             gtk_menu_item_set_submenu(GTK_MENU_ITEM(root), menu);
-            g_signal_connect_object(G_OBJECT(root), "event",
-                G_CALLBACK(button_press), G_OBJECT(menu), (GConnectFlags)0);
-        }
     }
     return (menu);
-}
-
-
-// Static function.
-// Respond to a button-press by posting a menu passed in as widget.
-//
-// Note that the "widget" argument is the menu being posted, NOT
-// the button that was pressed.
-//
-int
-GTKmenu::button_press(GtkWidget *widget, GdkEvent *event)
-{
-    if (event->type == GDK_BUTTON_PRESS) {
-        GdkEventButton *bevent = (GdkEventButton*)event;
-        gtk_menu_popup(GTK_MENU(widget), 0, 0, 0, 0, bevent->button,
-            bevent->time);
-        // Tell calling code that we have handled this event; the buck
-        // stops here.
-        return (true);
-    }
-
-    // Tell calling code that we have not handled this event; pass it on.
-    return (false);
 }
 
 

@@ -1011,7 +1011,7 @@ plot_bag::keypress(GtkWidget*, GdkEvent *event, void *client_data)
     int keyval = kev->keyval;
 
     // Make sure we catch backspace.
-    if (keyval == GDK_h && kev->string && *kev->string == '\b')
+    if (keyval == GDK_KEY_h && kev->string && *kev->string == '\b')
         keyval = GDK_BackSpace;
 
     int code = 0;

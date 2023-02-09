@@ -148,7 +148,7 @@ GTKsearchPopup::pop_up_search(int mode)
         g_signal_handlers_disconnect_by_func(G_OBJECT(s_popup),
             (gpointer)search_cancel, this);
         if (s_timer_id) {
-            gtk_timeout_remove(s_timer_id);
+            g_source_remove(s_timer_id);
             s_timer_id = 0;
         }
         if (s_caller)
@@ -228,8 +228,8 @@ GTKsearchPopup::pop_up_search(int mode)
         (GtkAttachOptions)0, 2, 2);
 
     GtkWidget *parent = s_searchwin;
-    while (parent->parent)
-        parent = parent->parent;
+    while (gtk_widget_get_parent(parent))
+        parent = gtk_widget_get_parent(parent);
     gtk_window_set_transient_for(GTK_WINDOW(s_popup), GTK_WINDOW(parent));
     GRX->SetPopupLocation(GRloc(), s_popup, s_searchwin);
     gtk_widget_show(s_popup);
@@ -266,8 +266,8 @@ GTKsearchPopup::search_action(GtkWidget *caller, void *client_data)
                 if (!(*w->s_cb)(w->s_last_search, false,
                         GRX->GetStatus(w->s_igncase), w->s_arg)) {
                     gtk_label_set_text(GTK_LABEL(w->s_label), "Not found");
-                    w->s_timer_id = gtk_timeout_add(3000,
-                        (GtkFunction)fix_label_timeout, w);
+                    w->s_timer_id = g_timeout_add(3000,
+                        (GSourceFunc)fix_label_timeout, w);
                 }
                 free(target);
                 return;
@@ -293,16 +293,16 @@ GTKsearchPopup::search_action(GtkWidget *caller, void *client_data)
             else if (err) {
                 if (!w->s_timer_id) {
                     gtk_label_set_text(GTK_LABEL(w->s_label), err);
-                    w->s_timer_id = gtk_timeout_add(5000,
-                        (GtkFunction)fix_label_timeout, w);
+                    w->s_timer_id = g_timeout_add(5000,
+                        (GSourceFunc)fix_label_timeout, w);
                 }
                 delete [] err;
             }
             else {
                 if (!w->s_timer_id) {
                     gtk_label_set_text(GTK_LABEL(w->s_label), "Not found");
-                    w->s_timer_id = gtk_timeout_add(3000,
-                        (GtkFunction)fix_label_timeout, w);
+                    w->s_timer_id = g_timeout_add(3000,
+                        (GSourceFunc)fix_label_timeout, w);
                 }
             }
             delete [] s;
@@ -318,8 +318,8 @@ GTKsearchPopup::search_action(GtkWidget *caller, void *client_data)
                 if (!(*w->s_cb)(w->s_last_search, true,
                         GRX->GetStatus(w->s_igncase), w->s_arg)) {
                     gtk_label_set_text(GTK_LABEL(w->s_label), "Not found");
-                    w->s_timer_id = gtk_timeout_add(3000,
-                        (GtkFunction)fix_label_timeout, w);
+                    w->s_timer_id = g_timeout_add(3000,
+                        (GSourceFunc)fix_label_timeout, w);
                 }
                 free(target);
                 return;
@@ -363,8 +363,8 @@ GTKsearchPopup::search_action(GtkWidget *caller, void *client_data)
             delete [] s;
             if (!w->s_timer_id) {
                 gtk_label_set_text(GTK_LABEL(w->s_label), "Not found");
-                w->s_timer_id = gtk_timeout_add(3000,
-                    (GtkFunction)fix_label_timeout, w);
+                w->s_timer_id = g_timeout_add(3000,
+                    (GSourceFunc)fix_label_timeout, w);
             }
         }
         free(target);

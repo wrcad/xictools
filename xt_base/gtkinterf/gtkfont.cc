@@ -506,7 +506,7 @@ GTKfontPopup::GTKfontPopup(gtk_bag *owner, int indx, void *arg,
 
     GtkWidget *form = gtk_vbox_new(false, 2);
     gtk_container_add(GTK_CONTAINER(wb_shell), form);
-    gtk_container_border_width(GTK_CONTAINER(wb_shell), 2);
+    gtk_container_set_border_width(GTK_CONTAINER(wb_shell), 2);
     gtk_widget_show(form);
     ft_fsel = gtk_font_selection_new();
     gtk_widget_show(ft_fsel);
@@ -539,6 +539,7 @@ GTKfontPopup::GTKfontPopup(gtk_bag *owner, int indx, void *arg,
         g_signal_connect(G_OBJECT(button), "clicked",
             G_CALLBACK(ft_apply_proc), this);
         if (indx > 0) {
+#ifdef XXX_OPT
             GtkWidget *opt = gtk_option_menu_new();
             gtk_widget_show(opt);
             GtkWidget *menu = gtk_menu_new();
@@ -548,13 +549,25 @@ GTKfontPopup::GTKfontPopup(gtk_bag *owner, int indx, void *arg,
                     gtk_menu_item_new_with_label(gtk_font.getLabel(i));
                 gtk_widget_show(mi);
                 gtk_widget_set_name(mi, gtk_font.getLabel(i));
-                gtk_object_set_data(GTK_OBJECT(mi), "index", (void*)(long)i);
-                gtk_menu_append(GTK_MENU(menu), mi);
+                g_object_set_data(G_OBJECT(mi), "index", (void*)(long)i);
+                gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
                 g_signal_connect(G_OBJECT(mi), "activate",
                     G_CALLBACK(ft_opt_menu_proc), this);
             }
             gtk_option_menu_set_menu(GTK_OPTION_MENU(opt), menu);
             gtk_option_menu_set_history(GTK_OPTION_MENU(opt), indx-1);
+#else
+            GtkWidget *opt = gtk_combo_box_text_new();
+            gtk_widget_show(opt);
+            for (int i = 1; i < gtk_font.num_app_fonts; i++) {
+                gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(opt),
+                    gtk_font.getLabel(i));
+            }
+            //XXX Connect signals.
+            g_signal_connect(G_OBJECT(opt), "changed",
+                G_CALLBACK(ft_opt_menu_proc), this);
+            gtk_combo_box_set_active(GTK_COMBO_BOX(opt), indx-1);
+#endif
             gtk_box_pack_start(GTK_BOX(hbox), opt, true, true, 0);
         }
     }
@@ -573,7 +586,7 @@ GTKfontPopup::GTKfontPopup(gtk_bag *owner, int indx, void *arg,
         gtk_box_pack_start(GTK_BOX(form), ft_label, true, true, 0);
     }
 
-    gtk_idle_add((GtkFunction)index_idle, this);
+    g_idle_add((GSourceFunc)index_idle, this);
 }
 
 
@@ -650,7 +663,7 @@ GTKfontPopup::update_label(const char *text)
             return;
     }
     if (ft_label)
-        gtk_label_set(GTK_LABEL(ft_label), text);
+        gtk_label_set_text(GTK_LABEL(ft_label), text);
 }
 
 
@@ -668,7 +681,9 @@ GTKfontPopup::set_index(int ix)
     else
         set_font_name(gtk_font.getName(FNT_FIXED));
     GtkFontSelection *fsel = GTK_FONT_SELECTION(ft_fsel);
-    gtk_widget_set_sensitive(fsel->face_list, !gtk_font.isFamilyOnly(ix));
+//XXX    gtk_widget_set_sensitive(fsel->face_list, !gtk_font.isFamilyOnly(ix));
+    gtk_widget_set_sensitive(gtk_font_selection_get_face_list(fsel),
+        !gtk_font.isFamilyOnly(ix));
 }
 
 
@@ -762,8 +777,13 @@ GTKfontPopup::ft_opt_menu_proc(GtkWidget *caller, void *client_data)
 {
     GTKfontPopup *sel = static_cast<GTKfontPopup*>(client_data);
     if (sel) {
-        int ix = (intptr_t)gtk_object_get_data(GTK_OBJECT(caller), "index");
+#ifdef XXX_OPT
+        int ix = (intptr_t)g_object_get_data(G_OBJECT(caller), "index");
         sel->set_index(ix);
+#else
+        int ix = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+        sel->set_index(ix + 1);
+#endif
     }
 }
 
@@ -800,7 +820,9 @@ GTKfontPopup::show_available_fonts(bool fixed)
 {
     GtkFontSelection *fsel = GTK_FONT_SELECTION(ft_fsel);
     GtkListStore *model = GTK_LIST_STORE(
-        gtk_tree_view_get_model(GTK_TREE_VIEW(fsel->family_list)));
+//XXX        gtk_tree_view_get_model(GTK_TREE_VIEW(fsel->family_list)));
+        gtk_tree_view_get_model(
+            GTK_TREE_VIEW(gtk_font_selection_get_family_list(fsel))));
 
     PangoFontFamily **families;
     int n_families;
@@ -832,8 +854,9 @@ GTKfontPopup::show_available_fonts(bool fixed)
 
         gtk_list_store_set(model, &iter, 0, families[i], 1, name, -1);
     }
-    fsel->family = 0;
-    g_free(families);
+//XXX Can't access family element, so probably can't free families.
+//    fsel->family = 0;
+//    g_free(families);
 }
 // End of GTKfontPopup functions
 

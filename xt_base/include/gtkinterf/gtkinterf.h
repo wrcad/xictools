@@ -84,6 +84,18 @@ namespace gtkinterf {
     class GTKdev : public GRscreenDev
     {
     public:
+        struct sColorAlloc
+        {
+            unsigned long plane_mask[1];
+            unsigned long drawing_pixels[64];
+            int num_allocated;       // number private single plane cells
+                                     //  allocated
+            int num_mask_allocated;  // number private dual plane cells
+                                     //  allocated
+            bool no_alloc;           // set if no private colors anywhere
+        };
+        static sColorAlloc ColorAlloc;
+
         GTKdev();
         ~GTKdev();
 
@@ -328,6 +340,9 @@ namespace gtkinterf {
         void set_cursor_type(unsigned int t)    { gb_cursor_type = t; }
         unsigned int get_cursor_type()          { return (gb_cursor_type); }
         GRlineDb *linedb()                      { return (gb_gdraw.linedb()); }
+
+#define NUMGCS 10
+        static sGbag *app_gbags[NUMGCS];
 
 #ifdef WIN32
         void set_fillpattern(const GRfillType *fp) { gb_fillpattern = fp; }

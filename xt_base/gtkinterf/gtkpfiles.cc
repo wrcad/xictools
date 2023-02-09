@@ -45,6 +45,7 @@
 #include <unistd.h>
 #include <ctype.h>
 
+//#define XXX_OPT
 
 //------------------------------------------------------------------------
 //  Generic Search Path Files Listing Popup
@@ -175,7 +176,11 @@ files_bag::files_bag(gtk_bag *w, const char **buttons, int numbuttons,
         f_idle_proc(0);
     }
 
+#ifdef XXX_OPT
     f_menu = gtk_option_menu_new();
+#else
+    f_menu = gtk_combo_box_text_new();
+#endif
     gtk_widget_show(f_menu);
     gtk_table_attach(GTK_TABLE(form), f_menu, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -217,9 +222,10 @@ files_bag::files_bag(gtk_bag *w, const char **buttons, int numbuttons,
 
 files_bag::~files_bag()
 {
-    if (f_destroy)
+    if (f_destroy) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)f_destroy, f_instptr);
+    }
     f_instptr = 0;
     if (f_path_list) {
         for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
@@ -293,14 +299,12 @@ files_bag::viewing_area(int width, int height)
     else {
         g_signal_handlers_disconnect_by_func(G_OBJECT(f_notebook),
             (gpointer)f_page_proc, this);
-        while (GTK_NOTEBOOK(f_notebook)->children)
+        while (gtk_container_get_children(GTK_CONTAINER(f_notebook)))
             gtk_notebook_remove_page(GTK_NOTEBOOK(f_notebook), 0);
     }
     if (!f_path_list)
         return;
 
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_show(menu);
 
     int init_page = 0;
     int maxchars = 120;
@@ -316,6 +320,10 @@ files_bag::viewing_area(int width, int height)
     }
     delete [] f_directory;
     f_directory = 0;
+
+#ifdef XXX_OPT
+    GtkWidget *menu = gtk_menu_new();
+    gtk_widget_show(menu);
 
     char buf[256];
     int i = 0;
@@ -336,8 +344,8 @@ files_bag::viewing_area(int width, int height)
 
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_show(mi);
-        gtk_object_set_data(GTK_OBJECT(mi), "index", (void*)(long)i);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        g_object_set_data(G_OBJECT(mi), "index", (void*)(long)i);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(f_menu_proc), this);
 
@@ -352,10 +360,44 @@ files_bag::viewing_area(int width, int height)
     }
     g_signal_connect(G_OBJECT(f_notebook), "switch-page",
         G_CALLBACK(f_page_proc), this);
-    gtk_notebook_set_page(GTK_NOTEBOOK(f_notebook), init_page);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(f_notebook), init_page);
     gtk_option_menu_remove_menu(GTK_OPTION_MENU(f_menu));
     gtk_option_menu_set_menu(GTK_OPTION_MENU(f_menu), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(f_menu), init_page);
+#else
+    char buf[256];
+    int i = 0;
+    for (sDirList *dl = f_path_list->dirs(); dl; i++, dl = dl->next()) {
+
+        if (i == init_page)
+            f_directory = lstring::copy(dl->dirname());
+
+        int len = strlen(dl->dirname());
+        if (len <= maxchars)
+            strcpy(buf, dl->dirname());
+        else {
+            int partchars = maxchars/2 - 2;
+            strncpy(buf, dl->dirname(), partchars);
+            strcpy(buf + partchars, " ... ");
+            strcat(buf, dl->dirname() + len - partchars);
+        }
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(f_menu), buf);
+
+        GtkWidget *page = create_page(dl);
+        gtk_notebook_append_page(GTK_NOTEBOOK(f_notebook), page, 0);
+        GtkWidget *nbtext = (GtkWidget*)dl->dataptr();
+        if (i == init_page) {
+            wb_textarea = nbtext;
+            gtk_widget_set_size_request(nbtext, width, height);
+        }
+    }
+    g_signal_connect(G_OBJECT(f_notebook), "switch-page",
+        G_CALLBACK(f_page_proc), this);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(f_notebook), init_page);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(f_menu), init_page);
+    g_signal_connect(G_OBJECT(f_menu), "changed",
+        G_CALLBACK(f_menu_proc), this);
+#endif
 }
 
 
@@ -407,9 +449,14 @@ files_bag::relist(stringlist *oldlist)
         int width = DEF_WIDTH;
         int height = DEF_HEIGHT;
         GtkWidget *text1 =
-            (GtkWidget*)gtk_object_get_data(GTK_OBJECT(wb_shell), "text1");
-        if (text1 && text1->window)
-            gdk_window_get_size(text1->window, &width, &height);
+            (GtkWidget*)g_object_get_data(G_OBJECT(wb_shell), "text1");
+        if (text1) {
+            GdkWindow *win = gtk_widget_get_window(text1);
+            if (win) {
+                width = gdk_window_get_width(win);
+                height = gdk_window_get_height(win);
+            }
+        }
         viewing_area(width, height);
         return;
     }
@@ -426,7 +473,9 @@ files_bag::relist(stringlist *oldlist)
         stmp = stmp->next;
     }
 
+#ifdef XXX_OPT
     GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(f_menu));
+#endif
 
     int n = 0;
     for (sDirList *dl = f_path_list->dirs(); dl; n++, dl = dl->next()) {
@@ -442,8 +491,10 @@ files_bag::relist(stringlist *oldlist)
                 GTK_NOTEBOOK(f_notebook), oldn);
             gtk_notebook_reorder_child(GTK_NOTEBOOK(f_notebook), pg, n);
 
+#ifdef XXX_OPT
             GtkWidget *itm = get_nth_item(GTK_MENU(menu), oldn);
             gtk_menu_reorder_child(GTK_MENU(menu), itm, n);
+#endif
 
             const char *t = ary[oldn];
             // We know that oldn is larger than n.
@@ -470,11 +521,13 @@ files_bag::relist(stringlist *oldlist)
             strcat(buf, dl->dirname() + dlen - partchars);
         }
 
+#ifdef XXX_OPT
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_show(mi);
-        gtk_menu_insert(GTK_MENU(menu), mi, n);
+        gtk_menu_shell_insert(GTK_MENU_SHELL(menu), mi, n);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(f_menu_proc), this);
+#endif
 
         const char **nary = new const char*[len+1];
         for (int i = 0; i < n; i++)
@@ -494,8 +547,34 @@ files_bag::relist(stringlist *oldlist)
     while (gtk_notebook_get_nth_page(GTK_NOTEBOOK(f_notebook), n) != 0)
         gtk_notebook_remove_page(GTK_NOTEBOOK(f_notebook), n);
     GtkWidget *itm;
+#ifdef XXX_OPT
     while ((itm = get_nth_item(GTK_MENU(menu), n)) != 0)
         gtk_container_remove(GTK_CONTAINER(menu), itm);
+#else
+    // Clear the combo box, note how the empty list is detected.
+    GtkTreeModel *mdl =
+        gtk_combo_box_get_model(GTK_COMBO_BOX(f_menu));
+    GtkTreeIter iter;
+    while (gtk_tree_model_get_iter_first(mdl, &iter))
+        gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(f_menu), 0);
+
+    for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
+        char buf[256];
+        int maxchars = 120;
+        int dlen = strlen(dl->dirname());
+        if (dlen <= maxchars)
+            strcpy(buf, dl->dirname());
+        else {
+            int partchars = maxchars/2 - 2;
+            strncpy(buf, dl->dirname(), partchars);
+            strcpy(buf + partchars, " ... ");
+            strcat(buf, dl->dirname() + dlen - partchars);
+        }
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(f_menu), buf);
+    }
+    n = gtk_notebook_get_current_page(GTK_NOTEBOOK(f_notebook));
+    gtk_combo_box_set_active(GTK_COMBO_BOX(f_menu), n);
+#endif
 }
 
 
@@ -648,7 +727,7 @@ files_bag::create_page(sDirList *dl)
 void
 files_bag::f_resize_hdlr(GtkWidget *widget, GtkAllocation *a, void *arg)
 {
-    if (GTK_WIDGET_REALIZED(widget)) {
+    if (gtk_widget_get_realized(widget)) {
         files_bag *f = static_cast<files_bag*>(arg);
         if (f)
             f->resize(a);
@@ -661,6 +740,7 @@ void
 files_bag::f_menu_proc(GtkWidget *caller, void *arg)
 {
     files_bag *f = (files_bag*)arg;
+#ifdef XXX_OPT
     GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(f->f_menu));
     GList *list = gtk_container_get_children(GTK_CONTAINER(menu));
     int n = -1;
@@ -673,7 +753,11 @@ files_bag::f_menu_proc(GtkWidget *caller, void *arg)
         i++;
     }
     g_list_free(list);
-    gtk_notebook_set_page(GTK_NOTEBOOK(f->f_notebook), n);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(f->f_notebook), n);
+#else
+    int n = gtk_combo_box_get_active(GTK_COMBO_BOX(f->f_menu));
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(f->f_notebook), n);
+#endif
 }
 
 
@@ -762,7 +846,7 @@ files_bag::f_timer(void*)
         }
     }
     if (dirtyone)
-        gtk_idle_add((GtkFunction)f_idle_proc, 0);
+        g_idle_add((GSourceFunc)f_idle_proc, 0);
 
     return (true);
 }
@@ -783,7 +867,7 @@ files_bag::f_monitor_setup()
             d->set_mtime(st.st_mtime);
     }
     if (!f_timer_tag)
-        f_timer_tag = gtk_timeout_add(1000, (GtkFunction)f_timer, 0);
+        f_timer_tag = g_timeout_add(1000, (GSourceFunc)f_timer, 0);
 }
 
 
@@ -798,7 +882,7 @@ void
 files_bag::f_drag_data_received(GtkWidget*, GdkDragContext *context,
     gint, gint, GtkSelectionData *data, guint, guint time)
 {
-    char *src = (char*)data->data;
+    char *src = (char*)gtk_selection_data_get_data(data);
     if (src && *src && f_instptr->wb_textarea) {
         const char *dst = f_instptr->f_directory;
         if (dst && *dst && strcmp(src, dst)) {
@@ -824,7 +908,8 @@ files_bag::f_source_drag_data_get(GtkWidget *caller, GdkDragContext*,
 
     (void)caller;
     char *s = f_instptr->get_selection();
-    gtk_selection_data_set(selection_data, selection_data->target,
+    gtk_selection_data_set(selection_data,
+        gtk_selection_data_get_target(selection_data),
         8, (unsigned char*)s, s ? strlen(s) + 1 : 0);
     delete [] s;
 }
@@ -1006,14 +1091,16 @@ void
 files_bag::f_selection_get(GtkWidget *widget,
     GtkSelectionData *selection_data, guint, guint, void*)
 {
-    if (selection_data->selection != GDK_SELECTION_PRIMARY)
+    if (gtk_selection_data_get_selection(selection_data) !=
+            GDK_SELECTION_PRIMARY)
         return;  
 
     // stop native handler
     g_signal_stop_emission_by_name(G_OBJECT(widget), "selection-get");
 
     char *s = f_instptr->get_selection();
-    gtk_selection_data_set(selection_data, selection_data->target,
+    gtk_selection_data_set(selection_data,
+        gtk_selection_data_get_target(selection_data),
         8, (unsigned char*)s, s ? strlen(s) + 1 : 0);
     delete [] s;
 }

@@ -69,7 +69,7 @@ namespace gtkinterf {
         ~gtk_timer()
             {
                 if (real_id > 0)
-                    gtk_timeout_remove(real_id);
+                    g_source_remove(real_id);
             }
 
         int(*callback)(void*);

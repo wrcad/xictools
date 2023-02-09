@@ -226,7 +226,7 @@ GTKspinBtn::width_for_string(const char *str)
 // Set up a text-changed handler.
 //
 void
-GTKspinBtn::connect_changed(GtkSignalFunc func, void *arg, const char *id)
+GTKspinBtn::connect_changed(GCallback func, void *arg, const char *id)
 {
     if (sb_mode != sbModePass) {
         if (id)
@@ -259,8 +259,9 @@ GTKspinBtn::set_min(double min)
     else {
         GtkAdjustment *adj =
             gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(sb_widget));
-        if (adj->lower != min && min < adj->upper) {
-            adj->lower = min;
+        if (gtk_adjustment_get_lower(adj) != min &&
+                min < gtk_adjustment_get_upper(adj)) {
+            gtk_adjustment_set_lower(adj, min);
             set_value(atof(gtk_entry_get_text(GTK_ENTRY(sb_widget))));
         }
     }
@@ -279,8 +280,9 @@ GTKspinBtn::set_max(double max)
     else {
         GtkAdjustment *adj =
             gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(sb_widget));
-        if (adj->upper != max && max > adj->lower) {
-            adj->upper = max;
+        if (gtk_adjustment_get_upper(adj) != max &&
+                max > gtk_adjustment_get_lower(adj)) {
+            gtk_adjustment_set_upper(adj, max);
             set_value(atof(gtk_entry_get_text(GTK_ENTRY(sb_widget))));
         }
     }
@@ -350,9 +352,9 @@ void
 GTKspinBtn::set_editable(bool ed)
 {
     if (sb_mode != sbModePass)
-        gtk_entry_set_editable(GTK_ENTRY(sb_entry), ed);
+        gtk_editable_set_editable(GTK_EDITABLE(sb_entry), ed);
     else
-        gtk_entry_set_editable(GTK_ENTRY(sb_widget), ed);
+        gtk_editable_set_editable(GTK_EDITABLE(sb_widget), ed);
 }
 
 
@@ -363,11 +365,11 @@ GTKspinBtn::set_sensitive(bool sens, bool clear)
         if (!sens) {
             // May not get up event, so stop timers.
             if (sb_dly_timer) {
-                gtk_timeout_remove(sb_dly_timer);
+                g_source_remove(sb_dly_timer);
                 sb_dly_timer = 0;
             }
             if (sb_timer) {
-                gtk_timeout_remove(sb_timer);
+                g_source_remove(sb_timer);
                 sb_timer = 0;
             }
         }
@@ -464,11 +466,12 @@ GTKspinBtn::set_value(double val)
     else {
         const char *t = gtk_entry_get_text(GTK_ENTRY(sb_widget));
         char buf[64];
-        printnum(buf, GTK_SPIN_BUTTON(sb_widget)->digits, val);
+        printnum(buf, gtk_spin_button_get_digits(GTK_SPIN_BUTTON(sb_widget)),
+            val);
         if (strcmp(t, buf)) {
             GtkAdjustment *adj =
                 gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(sb_widget));
-            if (adj->value != val)
+            if (gtk_adjustment_get_value(adj) != val)
                 gtk_spin_button_set_value(GTK_SPIN_BUTTON(sb_widget), val);
             else {
                 gtk_entry_set_text(GTK_ENTRY(sb_widget), buf);
@@ -499,12 +502,14 @@ GTKspinBtn::is_valid(const char *str, double *pval)
         return (false);
     }
     else {
-        GtkAdjustment *adj = GTK_SPIN_BUTTON(sb_widget)->adjustment;
+        GtkAdjustment *adj = gtk_spin_button_get_adjustment(
+            GTK_SPIN_BUTTON(sb_widget));
         if (!adj)
             return (false);
         double val;
         if (sscanf(str, "%lf", &val) == 1 &&
-                val >= adj->lower && val <= adj->upper) {
+                val >= gtk_adjustment_get_lower(adj) &&
+                val <= gtk_adjustment_get_upper(adj)) {
             if (pval)
                 *pval = val;
             return (true);
@@ -567,7 +572,7 @@ GTKspinBtn::sb_timeout_proc(void *arg)
     GTKspinBtn *sb = (GTKspinBtn*)arg;
     if (sb->sb_dly_timer) {
         sb->sb_dly_timer = 0;
-        sb->sb_timer = gtk_timeout_add(SB_TIME_TICK, sb_timeout_proc, arg);
+        sb->sb_timer = g_timeout_add(SB_TIME_TICK, sb_timeout_proc, arg);
         sb->sb_timer_calls = 0;
         return (0);
     }
@@ -597,7 +602,7 @@ GTKspinBtn::sb_btndn_proc(GtkWidget *widget, GdkEventButton *event, void *arg)
     if (!strcmp(name, "up")) {
         if (!sb->sb_dly_timer)
             sb->sb_dly_timer =
-                gtk_timeout_add(SB_TIME_DLY, sb_timeout_proc, arg);
+                g_timeout_add(SB_TIME_DLY, sb_timeout_proc, arg);
         if (event->button == 1)
             sb->sb_incr = sb->sb_del;
         else if (event->button == 2)
@@ -610,7 +615,7 @@ GTKspinBtn::sb_btndn_proc(GtkWidget *widget, GdkEventButton *event, void *arg)
     else {
         if (!sb->sb_dly_timer)
             sb->sb_dly_timer =
-                gtk_timeout_add(SB_TIME_DLY, sb_timeout_proc, arg);
+                g_timeout_add(SB_TIME_DLY, sb_timeout_proc, arg);
         if (event->button == 1)
             sb->sb_incr = -sb->sb_del;
         else if (event->button == 2)
@@ -629,11 +634,11 @@ GTKspinBtn::sb_btnup_proc(GtkWidget*, GdkEventButton*, void *arg)
 {
     GTKspinBtn *sb = (GTKspinBtn*)arg;
     if (sb->sb_dly_timer) {
-        gtk_timeout_remove(sb->sb_dly_timer);
+        g_source_remove(sb->sb_dly_timer);
         sb->sb_dly_timer = 0;
     }
     if (sb->sb_timer) {
-        gtk_timeout_remove(sb->sb_timer);
+        g_source_remove(sb->sb_timer);
         sb->sb_timer = 0;
     }
     return (1);
@@ -654,7 +659,7 @@ GTKspinBtn::sb_key_press_proc(GtkWidget *widget, GdkEventKey *event, void *arg)
 
     switch (key) {
     case GDK_Up:
-        if (GTK_WIDGET_HAS_FOCUS(widget)) {
+        if (gtk_widget_has_focus(widget)) {
             g_signal_stop_emission_by_name(G_OBJECT(widget),
                 "key_press_event");
             if (!key_repeat)
@@ -678,7 +683,7 @@ GTKspinBtn::sb_key_press_proc(GtkWidget *widget, GdkEventKey *event, void *arg)
         return (0);
 
     case GDK_Down:
-        if (GTK_WIDGET_HAS_FOCUS (widget)) {
+        if (gtk_widget_has_focus(widget)) {
             g_signal_stop_emission_by_name(G_OBJECT(widget),
                 "key_press_event");
             if (!key_repeat)

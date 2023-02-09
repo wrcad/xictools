@@ -302,8 +302,10 @@ sAsmPage::sAsmPage(sAsm *mt)
 sAsmPage::~sAsmPage()
 {
     // avoid signal, may crash otherwise
-    g_signal_handlers_disconnect_by_func(G_OBJECT(pg_toplevels),
-        (gpointer)pg_unselection_proc, this);
+    if (pg_toplevels) {
+        g_signal_handlers_disconnect_by_func(G_OBJECT(pg_toplevels),
+            (gpointer)pg_unselection_proc, this);
+    }
     delete pg_tx;
     for (unsigned int i = 0; i < pg_numtlcells; i++)
         delete pg_cellinfo[i];

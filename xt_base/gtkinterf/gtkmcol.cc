@@ -81,7 +81,8 @@ gtk_bag::PopUpMultiCol(stringlist *symlist, const char *title,
     mcol_count++;
     if (mcol_count == 6)
         mcol_count = 0;
-    gtk_widget_set_uposition(mcol->Shell(), x, y);
+//XXX    gtk_widget_set_uposition(mcol->Shell(), x, y);
+    gtk_window_move(GTK_WINDOW(mcol->Shell()), x, y);
 
     mcol->set_visible(true);
     return (mcol);
@@ -178,7 +179,7 @@ GTKmcolPopup::GTKmcolPopup(gtk_bag *owner, stringlist *symlist,
         G_CALLBACK(mc_resize_proc), this);
 
     // drop handler needs this
-    gtk_object_set_data(GTK_OBJECT(wb_textarea), "label", label);
+    g_object_set_data(G_OBJECT(wb_textarea), "label", label);
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
@@ -198,7 +199,11 @@ GTKmcolPopup::GTKmcolPopup(gtk_bag *owner, stringlist *symlist,
         G_CALLBACK(mc_save_btn_hdlr), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
+#ifdef XXX_OPT
     mc_pagesel = gtk_option_menu_new();
+#else
+    mc_pagesel = gtk_combo_box_text_new();
+#endif
     gtk_box_pack_start(GTK_BOX(hbox), mc_pagesel, false, false, 0);
 
     // Dismiss button.
@@ -290,7 +295,7 @@ GTKmcolPopup::update(stringlist *symlist, const char *title)
 
     if (title) {
         GtkWidget *label = (GtkWidget*)
-            gtk_object_get_data(GTK_OBJECT(wb_textarea), "label");
+            g_object_get_data(G_OBJECT(wb_textarea), "label");
         if (label)
             gtk_label_set_text(GTK_LABEL(label), title);
     }
@@ -355,6 +360,7 @@ GTKmcolPopup::relist()
         gtk_widget_hide(mc_pagesel);
     else {
         char buf[128];
+#ifdef XXX_OPT
         GtkWidget *menu = gtk_menu_new();
         gtk_widget_show(menu);
         for (int i = 0; i*mc_pagesize < cnt; i++) {
@@ -364,19 +370,40 @@ GTKmcolPopup::relist()
             sprintf(buf, "%d - %d", i*mc_pagesize + 1, tmpmax);
             GtkWidget *mi = gtk_menu_item_new_with_label(buf);
             gtk_widget_show(mi);
-            gtk_object_set_data(GTK_OBJECT(mi), "menuent", (void*)(long)i);
+            g_object_set_data(G_OBJECT(mi), "menuent", (void*)(long)i);
             g_signal_connect(G_OBJECT(mi), "activate",
                 G_CALLBACK(mc_menu_proc), this);
-            gtk_menu_append(GTK_MENU(menu), mi);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         }
         gtk_option_menu_remove_menu(GTK_OPTION_MENU(mc_pagesel));
         gtk_option_menu_set_menu(GTK_OPTION_MENU(mc_pagesel), menu);
         gtk_option_menu_set_history(GTK_OPTION_MENU(mc_pagesel), mc_page);
+#else
+        // Clear the combo box, note how the empty list is detected.
+        GtkTreeModel *mdl =
+            gtk_combo_box_get_model(GTK_COMBO_BOX(mc_pagesel));
+        GtkTreeIter iter;
+        while (gtk_tree_model_get_iter_first(mdl, &iter))
+            gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(mc_pagesel), 0);
+
+        for (int i = 0; i*mc_pagesize < cnt; i++) {
+            int tmpmax = (i+1)*mc_pagesize;
+            if (tmpmax > cnt)
+                tmpmax = cnt;
+            sprintf(buf, "%d - %d", i*mc_pagesize + 1, tmpmax);
+            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(mc_pagesel),
+                buf);
+        }
+        gtk_combo_box_set_active(GTK_COMBO_BOX(mc_pagesel), mc_page);
+        g_signal_connect(G_OBJECT(mc_pagesel), "activate",
+            G_CALLBACK(mc_menu_proc), this);
+#endif
         gtk_widget_show(mc_pagesel);
     }
 
-    int cols = (wb_textarea->allocation.width - 4)/
-        GTKfont::stringWidth(wb_textarea, 0);
+    GtkAllocation a;
+    gtk_widget_get_allocation(wb_textarea, &a);
+    int cols = (a.width - 4)/GTKfont::stringWidth(wb_textarea, 0);
     char *s = stringlist::col_format(s0, cols);
     stringlist::destroy(s0);
     text_set_chars(wb_textarea, s);
@@ -389,7 +416,7 @@ GTKmcolPopup::relist()
 void
 GTKmcolPopup::resize_handler(int width)
 {
-    if (wb_textarea && wb_textarea->window && mc_strings) {
+    if (wb_textarea && gtk_widget_get_window(wb_textarea) && mc_strings) {
         if (width > 0 && width != mc_alloc_width) {
             mc_alloc_width = width;
             relist();
@@ -519,7 +546,11 @@ GTKmcolPopup::mc_menu_proc(GtkWidget *widget, void *client_data)
 {
     GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(client_data);
     if (mcol) {
-        int i = (intptr_t)gtk_object_get_data(GTK_OBJECT(widget), "menuent");
+#ifdef XXX_OPT
+        int i = (intptr_t)g_object_get_data(G_OBJECT(widget), "menuent");
+#else
+        int i = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+#endif
         if (mcol->mc_page != i) {
             mcol->mc_page = i;
             mcol->relist();
@@ -566,8 +597,11 @@ int
 GTKmcolPopup::mc_map_hdlr(GtkWidget*, GdkEvent*, void *client_data)
 {
     GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(client_data);
-    if (mcol && mcol->wb_textarea)
-        mcol->resize_handler(mcol->wb_textarea->allocation.width);
+    if (mcol && mcol->wb_textarea) {
+        GtkAllocation a;
+        gtk_widget_get_allocation(mcol->wb_textarea, &a);
+        mcol->resize_handler(a.width);
+    }
     return (false);
 }
 
@@ -660,21 +694,22 @@ GTKmcolPopup::mc_source_drag_data_get(GtkWidget *widget, GdkDragContext*,
         g_signal_stop_emission_by_name(G_OBJECT(widget), "drag-data-get");
     }
 
-    GtkWidget *label = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(widget),
+    GtkWidget *label = (GtkWidget*)g_object_get_data(G_OBJECT(widget),
         "label");
     char *s = text_get_selection(widget);
     if (!s)
         return;
 
-    if (selection_data->target == gdk_atom_intern("TWOSTRING", true)) {
+    if (gtk_selection_data_get_target(selection_data) ==
+            gdk_atom_intern("TWOSTRING", true)) {
         // We use a newline to separate the file and cell names, the
         // drop receiver must handle this.
 
-        char *ltext = 0;
+        const char *ltext = 0;
         if (label)
-            gtk_label_get(GTK_LABEL(label), &ltext);
+            ltext = gtk_label_get_text(GTK_LABEL(label));
         if (ltext) {
-            char *t = strchr(ltext, '\n');
+            const char *t = strchr(ltext, '\n');
             if (t)
                 ltext = t+1;
         }
@@ -684,13 +719,15 @@ GTKmcolPopup::mc_source_drag_data_get(GtkWidget *widget, GdkDragContext*,
         strcat(t, "\n");
         strcat(t, s);
         delete [] s;
-        gtk_selection_data_set(selection_data, selection_data->target,
+        gtk_selection_data_set(selection_data,
+            gtk_selection_data_get_target(selection_data),
             8, (unsigned char*)t, strlen(t) + 1);
         delete [] t;
     }
     else {
         // Plain text format, just pass the listing text.
-        gtk_selection_data_set(selection_data, selection_data->target,
+        gtk_selection_data_set(selection_data,
+            gtk_selection_data_get_target(selection_data),
             8, (unsigned char*)s, strlen(s) + 1);
         delete [] s;
     }
@@ -765,7 +802,7 @@ GTKmcolPopup::mc_save_cb(const char *string, void *arg)
         GRX->SetPopupLocation(GRloc(), mcp->mc_msg_pop->pw_shell,
             mcp->wb_shell);
         mcp->mc_msg_pop->set_visible(true);
-        gtk_timeout_add(2000, mc_timeout, mcp);
+        g_timeout_add(2000, mc_timeout, mcp);
     }
     return (ESTR_DN);
 }

@@ -161,9 +161,11 @@ void
 GTKdev::ComputePopupLocation(GRloc loc, GtkWidget *sub, GtkWidget *parent,
     int *xpos, int *ypos)
 {
-    int x, y, mwidth, mheight;
-    gdk_window_get_origin(parent->window, &x, &y);
-    gdk_window_get_size(parent->window, &mwidth, &mheight);
+    int x, y;
+    GdkWindow *win = gtk_widget_get_window(parent);
+    gdk_window_get_origin(win, &x, &y);
+    int mwidth = gdk_window_get_width(win);
+    int mheight = gdk_window_get_height(win);
 
 #ifdef WIN32
     // There seems to be a GTK bug that causes a difference in
@@ -229,7 +231,7 @@ void
 GTKdev::WidgetLocation(GtkWidget *w, int *x, int *y, int *wid, int *hei)
 {
     GdkRectangle rect;
-    if (w->window && ShellGeometry(w, 0, &rect)) {
+    if (gtk_widget_get_window(w) && ShellGeometry(w, 0, &rect)) {
         *x = rect.x;
         *y = rect.y;
         *wid = rect.width;
@@ -249,13 +251,14 @@ GTKdev::WidgetLocation(GtkWidget *w, int *x, int *y, int *wid, int *hei)
 void
 GTKdev::SetFocus(GtkWidget *window)
 {
-    if (window && window->window) {
+    if (window && gtk_widget_get_window(window)) {
 #ifdef WITH_X11
-        XSetInputFocus(gr_x_display(), gr_x_window(window->window),
+        XSetInputFocus(gr_x_display(),
+            gr_x_window(gtk_widget_get_window(window)),
             RevertToPointerRoot, CurrentTime);
 #else
 #ifdef WIN32
-        ::SetFocus((HWND)GDK_WINDOW_HWND(window->window));
+        ::SetFocus((HWND)GDK_WINDOW_HWND(gtk_widget_get_window(window)));
 #endif
 #endif
     }
@@ -289,8 +292,8 @@ GTKdev::RegisterBigWindow(GtkWidget *window)
 {
 #ifdef WITH_X11
     dv_big_window_xid = 0;
-    if (window && window->window)
-        dv_big_window_xid = gr_x_window(window->window);
+    if (window && gtk_widget_get_window(window))
+        dv_big_window_xid = gr_x_window(gtk_widget_get_window(window));
 #else
     (void)window;
 #endif
@@ -432,7 +435,7 @@ GTKaffirmPopup::GTKaffirmPopup(gtk_bag *owner, const char *question_str,
     if (!pw_shell)
         return;
     gtk_window_set_resizable(GTK_WINDOW(pw_shell), false);
-    gtk_object_set_data(GTK_OBJECT(pw_shell), "affirm_w", this);
+    g_object_set_data(G_OBJECT(pw_shell), "affirm_w", this);
 
     GtkWidget *form = gtk_vbox_new(false, 2);
     gtk_widget_show(form);
@@ -519,7 +522,7 @@ GTKaffirmPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 sig = "toggled";
             if (sig) {
                 p_caller_data = (void*)sig;
-                gtk_idle_add((GtkFunction)pw_attach_idle_proc, this);
+                g_idle_add((GSourceFunc)pw_attach_idle_proc, this);
             }
         }
     }
@@ -623,7 +626,7 @@ GTKnumPopup::GTKnumPopup(gtk_bag *owner, const char *prompt_str,
     if (!pw_shell)
         return;
     gtk_window_set_resizable(GTK_WINDOW(pw_shell), false);
-    gtk_object_set_data(GTK_OBJECT(pw_shell), "numer_w", this);
+    g_object_set_data(G_OBJECT(pw_shell), "numer_w", this);
     BlackHoleFix(pw_shell);
 
     GtkWidget *form = gtk_table_new(1, 4, false);
@@ -752,7 +755,7 @@ GTKnumPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 sig = "toggled";
             if (sig) {
                 p_caller_data = (void*)sig;
-                gtk_idle_add((GtkFunction)pw_attach_idle_proc, this);
+                g_idle_add((GSourceFunc)pw_attach_idle_proc, this);
             }
         }
     }
@@ -838,9 +841,11 @@ GTKnumPopup::pw_numer_button(GtkWidget *widget, void *client_data)
         // If the last two values are the same to the precision, the
         // pw_tmp_value must be the truncated version.
         char b1[64], b2[64];
-        sprintf(b1, "%0.*f", (int)GTK_SPIN_BUTTON(p->pw_text)->digits,
+        sprintf(b1, "%0.*f",
+            (int)gtk_spin_button_get_digits(GTK_SPIN_BUTTON(p->pw_text)),
             p->pw_value);
-        sprintf(b2, "%0.*f", (int)GTK_SPIN_BUTTON(p->pw_text)->digits,
+        sprintf(b2, "%0.*f",
+            (int)gtk_spin_button_get_digits(GTK_SPIN_BUTTON(p->pw_text)),
             p->pw_tmp_value);
         double d;
         if (!strcmp(b1, b2))
@@ -923,7 +928,7 @@ GTKledPopup::GTKledPopup(gtk_bag *owner, const char *prompt_str,
         owner->MonitorAdd(this);
 
     pw_shell = gtk_NewPopup(owner, "Text Entry", pw_editstr_popdown, this);
-    gtk_object_set_data(GTK_OBJECT(pw_shell), "edit_w", this);
+    g_object_set_data(G_OBJECT(pw_shell), "edit_w", this);
 
     GtkWidget *form = gtk_table_new(1, 4, false);
     gtk_widget_show(form);
@@ -952,7 +957,7 @@ GTKledPopup::GTKledPopup(gtk_bag *owner, const char *prompt_str,
     }
 
     // This allows user to change label text.
-    gtk_object_set_data(GTK_OBJECT(pw_shell), "label", pw_label);
+    g_object_set_data(G_OBJECT(pw_shell), "label", pw_label);
 
     // Text area, text widget if multi-line, entry widget if not.
     //
@@ -961,7 +966,7 @@ GTKledPopup::GTKledPopup(gtk_bag *owner, const char *prompt_str,
         gtk_widget_show(pw_text);
         if (init_str)
             gtk_entry_set_text(GTK_ENTRY(pw_text), init_str);
-        gtk_entry_set_editable(GTK_ENTRY(pw_text), true);
+        gtk_editable_set_editable(GTK_EDITABLE(pw_text), true);
         gtk_table_attach(GTK_TABLE(form), pw_text, 0, 1, 1, 2,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 0);
@@ -1086,7 +1091,7 @@ GTKledPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 sig = "toggled";
             if (sig) {
                 p_caller_data = (void*)sig;
-                gtk_idle_add((GtkFunction)pw_attach_idle_proc, this);
+                g_idle_add((GSourceFunc)pw_attach_idle_proc, this);
             }
         }
     }
@@ -1221,14 +1226,17 @@ GTKledPopup::pw_editstr_drag_data_received(GtkWidget *entry,
     GdkDragContext *context, gint, gint, GtkSelectionData *data,
     guint, guint time)
 {
-    if (data->length >= 0 && data->format == 8 && data->data) {
-        char *src = (char*)data->data;
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+        char *src = (char*)gtk_selection_data_get_data(data);
         gtk_entry_set_text(GTK_ENTRY(entry), src);
-        int wid, hei;
-        gdk_window_get_size(entry->window, &wid, &hei);
+        GdkWindow *win = gtk_widget_get_window(entry);
+        int wid = gdk_window_get_width(win);
         int twid = GTKfont::stringWidth(entry, src);
         if (wid < twid) {
-            GtkAllocation a = entry->allocation;
+            GtkAllocation a;
+            gtk_widget_get_allocation(entry, &a);
             a.width = twid;
             gtk_widget_size_allocate(entry, &a);
             gtk_widget_queue_resize(entry);
@@ -1269,7 +1277,7 @@ GTKmsgPopup::GTKmsgPopup(gtk_bag *owner, const char *string, bool err)
 
     pw_shell = gtk_NewPopup(owner,
         err ? "ERROR" : "Message", pw_message_popdown, this);
-    gtk_object_set_data(GTK_OBJECT(pw_shell), "message_w", this);
+    g_object_set_data(G_OBJECT(pw_shell), "message_w", this);
 
     // Hit any key to pop down.
     //
@@ -1505,12 +1513,12 @@ GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
         pw_shell = gtk_NewPopup(owner, "Info", pw_text_popdown, this);
     else if (pw_which == PuHTML) {
         pw_shell = gtk_NewPopup(owner, "Info", pw_text_popdown, this);
-        gtk_window_set_policy(GTK_WINDOW(pw_shell), true, true, false);
+//XXX        gtk_window_set_policy(GTK_WINDOW(pw_shell), true, true, false);
         gtk_window_set_wmclass(GTK_WINDOW(pw_shell), "Mozy", "mozy");
     }
     else
         pw_shell = gtk_NewPopup(owner, "ERROR", pw_text_popdown, this);
-    gtk_object_set_data(GTK_OBJECT(pw_shell), "text_w", this);
+    g_object_set_data(G_OBJECT(pw_shell), "text_w", this);
 
     GtkWidget *form = gtk_table_new(1, 3, false);
     gtk_widget_show(form);
@@ -1557,7 +1565,7 @@ GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
         text_scrollable_new(&contr, &pw_text,
             pw_style == STY_FIXED ? FNT_FIXED : FNT_PROP);
         if (pw_which == PuInfo || pw_which == PuInfo2)
-            gtk_object_set_data(GTK_OBJECT(pw_text), "export", (void*)1);
+            g_object_set_data(G_OBJECT(pw_text), "export", (void*)1);
         textbox(message_str, &width, &height);
         text_set_chars(pw_text, message_str);
 
@@ -1633,7 +1641,7 @@ GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
 GTKtextPopup::~GTKtextPopup()
 {
     if (pw_idle_id)
-        gtk_idle_remove(pw_idle_id);
+        g_source_remove(pw_idle_id);
     if (pw_btn && GRX->GetStatus(pw_btn))
         gtk_button_clicked(GTK_BUTTON(pw_btn));
     if (p_parent) {
@@ -1729,7 +1737,7 @@ GTKtextPopup::update(const char *message_str)
         }
 #endif
     }
-    else if (pw_text && pw_text->window) {
+    else if (pw_text && gtk_widget_get_window(pw_text)) {
         if (GTK_IS_TEXT_VIEW(pw_text)) {
             text_set_chars(pw_text, message_str);
             return (true);
@@ -1872,7 +1880,7 @@ GTKtextPopup::pw_save_cb(const char *string, void *arg)
         GRX->SetPopupLocation(GRloc(), txtp->pw_msg_pop->pw_shell,
             txtp->pw_shell);
         txtp->pw_msg_pop->set_visible(true);
-        gtk_timeout_add(2000, pw_timeout, txtp);
+        g_timeout_add(2000, pw_timeout, txtp);
     }
     return (ESTR_DN);
 }
@@ -2327,31 +2335,33 @@ gtkinterf::ShellGeometry(GtkWidget *widget, GdkRectangle *widget_box,
     GdkRectangle *wmparent_box)
 {
     if (widget_box) {
-        if (!widget->window) {
+        if (!gtk_widget_get_window(widget)) {
             widget_box->x = 0;
             widget_box->y = 0;
             widget_box->width = 0;
             widget_box->height = 0;
         }
         else {
-            int x, y, w, h;
-            gdk_window_get_origin(widget->window, &x, &y);
-            gdk_window_get_size(widget->window, &w, &h);
+            int x, y;
+            gdk_window_get_origin(gtk_widget_get_window(widget), &x, &y);
             widget_box->x = x;
             widget_box->y = y;
-            widget_box->width = w;
-            widget_box->height = h;
+            GdkWindow *win = gtk_widget_get_window(widget);
+            widget_box->width = gdk_window_get_width(win);
+            widget_box->height = gdk_window_get_height(win);
         }
     }
     if (wmparent_box) {
-        if (!widget->window) {
+        if (!gtk_widget_get_window(widget)) {
             wmparent_box->x = 0;
             wmparent_box->y = 0;
             wmparent_box->width = 0;
             wmparent_box->height = 0;
         }
-        else
-            gdk_window_get_frame_extents(widget->window, wmparent_box);
+        else {
+            gdk_window_get_frame_extents(gtk_widget_get_window(widget),
+                wmparent_box);
+        }
     }
     return (true);
 }
@@ -2379,7 +2389,7 @@ namespace {
     int
     B1motion(GtkWidget *caller, GdkEvent *event, void*)
     {
-        if (caller->window != event->motion.window)
+        if (gtk_widget_get_window(caller) != event->motion.window)
             return (false);
         gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
             B1cf.x, B1cf.y, B1box.width, B1box.height);
@@ -2394,7 +2404,7 @@ namespace {
     int
     B1button(GtkWidget *caller, GdkEvent *event, void*)
     {
-        if (caller->window != event->button.window)
+        if (gtk_widget_get_window(caller) != event->button.window)
             return (false);
         if (event->button.button == 1) {
             gdk_pointer_ungrab(GDK_CURRENT_TIME);
@@ -2403,7 +2413,7 @@ namespace {
             B1cf.x = (int)event->button.x_root - B1box.x;
             B1cf.y = (int)event->button.y_root - B1box.y;
 
-            gdk_window_move(caller->window, B1cf.x + B1cf.width,
+            gdk_window_move(gtk_widget_get_window(caller), B1cf.x + B1cf.width,
                 B1cf.y + B1cf.width);
             g_signal_handlers_disconnect_by_func(G_OBJECT(caller),
                 (gpointer)B1motion, 0);
@@ -2420,7 +2430,7 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
 {
     if (event->button.button != 1)
         return (false);
-    if (caller->window != event->button.window)
+    if (gtk_widget_get_window(caller) != event->button.window)
         return (false);
     if (event->type != GDK_BUTTON_PRESS)
         return (false);
@@ -2464,7 +2474,7 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
     g_signal_connect(G_OBJECT(caller), "button-release-event",
         G_CALLBACK(B1button), 0);
 
-    gdk_pointer_grab(caller->window, false,
+    gdk_pointer_grab(gtk_widget_get_window(caller), false,
         (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK |
         GDK_BUTTON_RELEASE_MASK), 0, B1hand_cursor, GDK_CURRENT_TIME);
     return (true);
@@ -2493,11 +2503,13 @@ gtkinterf::ToTop(GtkWidget *caller, GdkEvent *event, void *client_data)
 
         XWindowChanges xv;
         GtkWidget *overshell = (GtkWidget*)client_data;
-        if (!overshell)
-            overshell = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(caller),
+        if (!overshell) {
+            overshell = (GtkWidget*)g_object_get_data(G_OBJECT(caller),
                 "parent");
-        if (overshell && GTK_WIDGET_DRAWABLE(overshell) &&
-                gr_x_window(overshell->window) != GRX->BigWindowXid()) {
+        }
+        if (overshell && gtk_widget_is_drawable(overshell) &&
+                gr_x_window(gtk_widget_get_window(overshell)) !=
+                GRX->BigWindowXid()) {
 
             GdkRectangle r;
             ShellGeometry(caller, 0, &r);
@@ -2511,9 +2523,10 @@ gtkinterf::ToTop(GtkWidget *caller, GdkEvent *event, void *client_data)
                 tt_ltime = t;
                 return (true);
             }
-            xv.sibling = gr_x_window(overshell->window);
+            xv.sibling = gr_x_window(gtk_widget_get_window(overshell));
             xv.stack_mode = Above;
-            XReconfigureWMWindow(gr_x_display(), gr_x_window(vev->window),
+            XReconfigureWMWindow(gr_x_display(),
+                gr_x_window(vev->window),
                 DefaultScreen(gr_x_display()), CWSibling|CWStackMode, &xv);
             tt_last = r;
             tt_ltime = t;
@@ -2606,7 +2619,8 @@ gtkinterf::ToTop(GtkWidget *caller, GdkEvent *event, void *client_data)
 bool
 gtkinterf::IsIconic(GtkWidget *w)
 {
-    return (gdk_window_get_state(w->window) & GDK_WINDOW_STATE_ICONIFIED);
+    return (gdk_window_get_state(gtk_widget_get_window(w)) &
+        GDK_WINDOW_STATE_ICONIFIED);
 }
 
 
@@ -2618,8 +2632,8 @@ gtkinterf::MonitorGeom(GtkWidget *w, int *px, int *py, int *pw, int *ph)
 {
     GdkScreen *scrn = w ? gtk_widget_get_screen(w) : gdk_screen_get_default();
     int pmon;
-    if (w && GDK_IS_WINDOW(w->window))
-        pmon = gdk_screen_get_monitor_at_window(scrn, w->window);
+    if (w && GDK_IS_WINDOW(gtk_widget_get_window(w)))
+        pmon = gdk_screen_get_monitor_at_window(scrn, gtk_widget_get_window(w));
     else {
         int x, y;
         GRX->PointerRootLoc(&x, &y);
@@ -2657,9 +2671,9 @@ namespace {
         static GdkCursor *cursor;
         if (event->button.button == 2) {
             int dc_state =
-                (intptr_t)gtk_object_get_data(GTK_OBJECT(caller), "pirate");
+                (intptr_t)g_object_get_data(G_OBJECT(caller), "pirate");
             if (dc_state) {
-                gtk_object_set_data(GTK_OBJECT(caller), "pirate", (void*)0);
+                g_object_set_data(G_OBJECT(caller), "pirate", (void*)0);
                 if (GTK_IS_BUTTON(cancel))
                     gtk_button_clicked(GTK_BUTTON(cancel));
                 else if (GTK_IS_MENU_ITEM(cancel))
@@ -2668,8 +2682,8 @@ namespace {
             else {
                 if (!cursor)
                     cursor = gdk_cursor_new(GDK_PIRATE);
-                gdk_window_set_cursor(caller->window, cursor);
-                gtk_object_set_data(GTK_OBJECT(caller), "pirate", (void*)1);
+                gdk_window_set_cursor(gtk_widget_get_window(caller), cursor);
+                g_object_set_data(G_OBJECT(caller), "pirate", (void*)1);
             }
             return (true);
         }
@@ -2682,11 +2696,11 @@ namespace {
     int
     dc_leave_hdlr(GtkWidget *caller, GdkEvent *event, void*)
     {
-        int dc_state = (intptr_t)gtk_object_get_data(GTK_OBJECT(caller),
+        int dc_state = (intptr_t)g_object_get_data(G_OBJECT(caller),
             "pirate");
         if (dc_state && event->crossing.mode == GDK_CROSSING_NORMAL) {
-            gtk_object_set_data(GTK_OBJECT(caller), "pirate", (void*)0);
-            gdk_window_set_cursor(caller->window, 0);
+            g_object_set_data(G_OBJECT(caller), "pirate", (void*)0);
+            gdk_window_set_cursor(gtk_widget_get_window(caller), 0);
             return (true);
         }
         return (false);
@@ -2970,7 +2984,9 @@ gtkinterf::text_get_selection_pos(GtkWidget *widget, int *startp, int *endp)
 double
 gtkinterf::text_get_scroll_value(GtkWidget *widget)
 {
-    return (GTK_TEXT_VIEW(widget)->vadjustment->value);
+    GtkAdjustment *va = gtk_text_view_get_vadjustment(GTK_TEXT_VIEW(widget));
+    return (gtk_adjustment_get_value(va));
+    
 }
 
 
@@ -3003,9 +3019,9 @@ gtkinterf::text_get_scroll_to_line_value(GtkWidget *widget, int line,
 void
 gtkinterf::text_set_scroll_value(GtkWidget *widget, double val)
 {
-    GTK_TEXT_VIEW(widget)->vadjustment->value = val;
-    g_signal_emit_by_name(G_OBJECT(GTK_TEXT_VIEW(widget)->vadjustment),
-        "value_changed");
+    GtkAdjustment *va = gtk_text_view_get_vadjustment(GTK_TEXT_VIEW(widget));
+    gtk_adjustment_set_value(va, val);
+    g_signal_emit_by_name(G_OBJECT(va), "value_changed");
 }
 
 

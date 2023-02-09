@@ -1848,7 +1848,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(open_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_o,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_o,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_tooltip_text(item, "Show File Selection panel");
 
@@ -1858,7 +1858,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(source_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_tooltip_text(item, "Source input file");
     tb_source_btn = item;
@@ -1869,7 +1869,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(load_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_l,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_l,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_tooltip_text(item, "Load plot data file");
     tb_load_btn = item;
@@ -1908,7 +1908,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(quit_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     // Edit menu.
@@ -1926,7 +1926,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_menu_shell_append(GTK_MENU_SHELL(tb_edit_menu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(edit_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_t,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_t,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_tooltip_text(item, "Pop up text editor");
 
@@ -1937,7 +1937,7 @@ GTKtoolbar::tbpop(bool up)
         gtk_menu_shell_append(GTK_MENU_SHELL(tb_edit_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(xic_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_x,
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_x,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
         gtk_widget_set_tooltip_text(item, "Start Xic");
     }
@@ -1965,8 +1965,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_c,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_c, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "List circuits");
             tb_circuits = item;
         }
@@ -1977,8 +1978,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_c,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_c, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "Set plot colors");
             tb_colors = item;
         }
@@ -1989,8 +1991,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_m,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_m, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "Set command options");
             tb_commands = item;
         }
@@ -2001,8 +2004,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_d,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_d, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "Set debugging options");
             tb_debug = item;
         }
@@ -2013,8 +2017,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_z,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_z, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "List search path files");
             tb_files = item;
         }
@@ -2025,8 +2030,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_n,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_n, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "Set window fonts");
             tb_font = item;
         }
@@ -2037,8 +2043,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_l,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_l, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "Set plot options");
             tb_plotdefs = item;
         }
@@ -2049,8 +2056,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_p,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_p, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "List result plot data");
             tb_plots = item;
         }
@@ -2061,8 +2069,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_s, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "Set shell options");
             tb_shell = item;
         }
@@ -2073,8 +2082,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_i,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_i, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "Set simulation options");
             tb_simdefs = item;
         }
@@ -2085,8 +2095,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_a,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_a, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "List traces in effect");
             tb_trace = item;
         }
@@ -2097,8 +2108,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_r,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_r, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "List set shell variables");
             tb_variables = item;
         }
@@ -2109,8 +2121,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(menu_proc), (gpointer)ix);
-            // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_v,
-            //     GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_v, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
             gtk_widget_set_tooltip_text(item, "List vectors in current plot");
             tb_vectors = item;
         }
@@ -2130,7 +2143,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(help_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_h,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_tooltip_text(item, "Pop up Help window");
 
@@ -2140,7 +2153,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(about_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_a,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_a,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_tooltip_text(item, "Pop up About window");
 
@@ -2150,7 +2163,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(notes_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_n,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_n,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     gtk_widget_set_tooltip_text(item, "Show release notes");
 

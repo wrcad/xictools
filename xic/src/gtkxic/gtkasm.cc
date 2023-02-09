@@ -167,7 +167,7 @@ sAsm::sAsm(GRobject c)
     GRpkgIf()->RegisterMainWbag(this);
 
     // Without this, spin entries sometimes freeze up for some reason.
-    gtk_object_set_data(GTK_OBJECT(wb_shell), "no_prop_key", (void*)1);
+    g_object_set_data(G_OBJECT(wb_shell), "no_prop_key", (void*)1);
 
     GtkWidget *form = gtk_table_new(1, 4, false);
     gtk_widget_show(form);
@@ -178,7 +178,7 @@ sAsm::sAsm(GRobject c)
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
     GtkWidget *menubar = gtk_menu_bar_new();
-    gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", menubar);
+    g_object_set_data(G_OBJECT(wb_shell), "menubar", menubar);
     gtk_widget_show(menubar);
     GtkWidget *item;
 
@@ -194,7 +194,7 @@ sAsm::sAsm(GRobject c)
     // _File Select, <control>O, asm_action_proc, OpenCode, CheckItem>
     item = gtk_check_menu_item_new_with_mnemonic("_File Select");
     gtk_widget_set_name(item, "File Select");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)OpenCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)OpenCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -206,7 +206,7 @@ sAsm::sAsm(GRobject c)
     // _Save, <control>S, asm_action_proc, SaveCode, 0
     item = gtk_menu_item_new_with_mnemonic("_Save");
     gtk_widget_set_name(item, "Save");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)SaveCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)SaveCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -217,7 +217,7 @@ sAsm::sAsm(GRobject c)
     // File/_Recall, <control>R, asm_action_proc, RecallCode, 0
     item = gtk_menu_item_new_with_mnemonic("_Recall");
     gtk_widget_set_name(item, "Recall");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)RecallCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)RecallCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -232,7 +232,7 @@ sAsm::sAsm(GRobject c)
     // _Quit, <control>Q, asm_action_proc, CancelCode, 0
     item = gtk_menu_item_new_with_mnemonic("_Quit");
     gtk_widget_set_name(item, "Quit");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)CancelCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)CancelCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -252,7 +252,7 @@ sAsm::sAsm(GRobject c)
     // R_eset, <control>E, asm_action_proc, ResetCode, 0
     item = gtk_menu_item_new_with_mnemonic("R_eset");
     gtk_widget_set_name(item, "Reset");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)ResetCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)ResetCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -263,7 +263,7 @@ sAsm::sAsm(GRobject c)
     // _New Source, <control>N, asm_action_proc, NewCode, 0
     item = gtk_menu_item_new_with_mnemonic("_New Source");
     gtk_widget_set_name(item, "New Source");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)NewCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)NewCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -274,7 +274,7 @@ sAsm::sAsm(GRobject c)
     // Remove Source, 0, asm_action_proc, DelCode, 0
     item = gtk_menu_item_new_with_mnemonic("Remove Source");
     gtk_widget_set_name(item, "Remove Source");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)DelCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)DelCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -283,7 +283,7 @@ sAsm::sAsm(GRobject c)
     // New _Toplevel, <control>T, asm_action_proc, NewTlCode, 0
     item = gtk_menu_item_new_with_mnemonic("New _Toplevel");
     gtk_widget_set_name(item, "New Toplevel");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)NewTlCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)NewTlCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -294,7 +294,7 @@ sAsm::sAsm(GRobject c)
     // Remove Toplevel, 0, asm_action_proc, DelTlCode, 0
     item = gtk_menu_item_new_with_mnemonic("Remove Toplevel");
     gtk_widget_set_name(item, "Remove Toplevel");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)DelTlCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)DelTlCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -313,7 +313,7 @@ sAsm::sAsm(GRobject c)
     // _Help, <control>H, asm_action_proc, HelpCode, 0
     item = gtk_menu_item_new_with_mnemonic("_Help");
     gtk_widget_set_name(item, "Help");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)HelpCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)HelpCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -710,7 +710,6 @@ sAsm::notebook_remove(int index)
     if (index == 0 && asm_pages <= 1)
         // never delete first entry
         return;
-    gtk_notebook_remove_page(GTK_NOTEBOOK(asm_notebook), index + 1);
     sAsmPage *src = asm_sources[index];
     for (unsigned int i = index; i < asm_pages-1; i++) {
         asm_sources[i] = asm_sources[i+1];
@@ -720,6 +719,9 @@ sAsm::notebook_remove(int index)
     asm_pages--;
     asm_sources[asm_pages] = 0;
     delete src;
+    // Have to do this after deleting src or tne signal handler removal
+    // in the destructor will emit CRITICAL warnings.
+    gtk_notebook_remove_page(GTK_NOTEBOOK(asm_notebook), index + 1);
 }
 
 
@@ -727,7 +729,7 @@ int
 sAsm::current_page_index()
 {
     // Compensate for the "Output" tab.
-    int ix = gtk_notebook_current_page(GTK_NOTEBOOK(asm_notebook));
+    int ix = gtk_notebook_get_current_page(GTK_NOTEBOOK(asm_notebook));
     return (ix - 1);
 }
 
@@ -861,8 +863,8 @@ sAsm::set_status_message(const char *msg)
 {
     if (Asm) {
         if (Asm->asm_timer_id)
-            gtk_timeout_remove(Asm->asm_timer_id);
-        Asm->asm_timer_id = gtk_timeout_add(10000, asm_timer_callback, 0);
+            g_source_remove(Asm->asm_timer_id);
+        Asm->asm_timer_id = g_timeout_add(10000, asm_timer_callback, 0);
         gtk_label_set_text(GTK_LABEL(Asm->asm_status), msg);
     }
 }
@@ -915,9 +917,15 @@ void
 sAsm::asm_drag_data_received(GtkWidget *entry, GdkDragContext *context,
     gint, gint, GtkSelectionData *data, guint, guint time)
 {
-    if (data->length >= 0 && data->format == 8 && data->data) {
-        char *src = (char*)data->data;
-        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+//    if (data->length >= 0 && data->format == 8 && data->data) {
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+//        char *src = (char*)data->data;
+        char *src = (char*)gtk_selection_data_get_data(data);
+//        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+        if (gtk_selection_data_get_target(data) ==
+                gdk_atom_intern("TWOSTRING", true)) {
             // Drops from content lists may be in the form
             // "fname_or_chd\ncellname".  Keep the filename.
             char *t = strchr(src, '\n');
@@ -991,7 +999,7 @@ sAsm::asm_page_change_proc(GtkWidget*, void*, int page, void*)
 void
 sAsm::asm_action_proc(GtkWidget *caller, void*)
 {
-    long code = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+    long code = (long)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!Asm)
         return;
     if (code == NoCode) {
@@ -1104,8 +1112,8 @@ sAsm::asm_save_cb(const char *fname, void*)
         FILE *fp = fopen(fname, "w");
         if (!fp) {
             const char *msg = "Can't open file, try again";
-            GtkWidget *label = (GtkWidget*)gtk_object_get_data(
-                GTK_OBJECT(Asm->wb_input), "label");
+            GtkWidget *label = (GtkWidget*)g_object_get_data(
+                G_OBJECT(Asm->wb_input), "label");
             if (label)
                 gtk_label_set_text(GTK_LABEL(label), msg);
             else
@@ -1143,8 +1151,8 @@ sAsm::asm_recall_cb(const char *fname, void*)
         FILE *fp = fopen(fname, "r");
         if (!fp) {
             const char *msg = "Can't open file, try again";
-            GtkWidget *label = (GtkWidget*)gtk_object_get_data(
-                GTK_OBJECT(Asm->wb_input), "label");
+            GtkWidget *label = (GtkWidget*)g_object_get_data(
+                G_OBJECT(Asm->wb_input), "label");
             if (label)
                 gtk_label_set_text(GTK_LABEL(label), msg);
             else

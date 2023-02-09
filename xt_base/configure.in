@@ -676,9 +676,9 @@ dnl         # Filter needed in Windows, pkg-config adds ^M that chokes g++.
             tkl="`${gtklocd}pkg-config --libs gtk+-2.0`"
         fi
         TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
-#        TOOLKITCFLAGS="-DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED \
-# -DGTK_DISABLE_DEPRECATED
-# -DGSEAL_ENABLE"
+dnl        TOOLKITCFLAGS="-DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED \
+dnl -DGTK_DISABLE_DEPRECATED \
+dnl -DGSEAL_ENABLE"
         if test $OSNAME = "Darwin" -a $with_quartz = yes; then
             TOOLKITCFLAGS+="-DWITH_QUARTZ"
         fi

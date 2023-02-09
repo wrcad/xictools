@@ -715,7 +715,7 @@ gtkMenuConfig::instantiateFileMenu()
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_o,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_o,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 
@@ -731,13 +731,12 @@ gtkMenuConfig::instantiateFileMenu()
     // set data "menu" -> menu in the buttons
     // set data "callb" -> callback function
     // set data "data" -> callback data
-    GtkWidget *btn = item;
-    GtkWidget *popup = gtkMenu()->new_popup_menu(btn,
+    GtkWidget *popup = gtkMenu()->new_popup_menu(item,
         XM()->OpenCellMenuList(), G_CALLBACK(edmenu_proc), 0);
     if (popup) {
         gtk_widget_set_name(popup, "EditSubmenu");
-        gtk_object_set_data(GTK_OBJECT(btn), "menu", popup);
-        gtk_object_set_data(GTK_OBJECT(btn), "callb", (void*)edmenu_proc);
+        gtk_object_set_data(GTK_OBJECT(item), "menu", popup);
+        gtk_object_set_data(GTK_OBJECT(item), "callb", (void*)edmenu_proc);
 
         // Set up the mapping so that the accelerator for the
         // "open" button will activate the "new" operation from
@@ -751,7 +750,7 @@ gtkMenuConfig::instantiateFileMenu()
             g_list_free(contents);
         }
         if (mbox->menu[fileMenuOpen].description) {
-            gtk_widget_set_tooltip_text(btn, 
+            gtk_widget_set_tooltip_text(item, 
                 mbox->menu[fileMenuOpen].description);
         }
     }
@@ -764,8 +763,9 @@ gtkMenuConfig::instantiateFileMenu()
         gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(menu_handler), mbox->menu);
-    //    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
-    //        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
+            (GdkModifierType) (GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+            GTK_ACCEL_VISIBLE);
     }
     check_separator(ent, submenu);
 
@@ -775,7 +775,7 @@ gtkMenuConfig::instantiateFileMenu()
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_s,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 
@@ -793,8 +793,9 @@ gtkMenuConfig::instantiateFileMenu()
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_n,
-//        GDK_ALTL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_n,
+        (GdkModifierType) (GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+        GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 
     ent = &mbox->menu[fileMenuFiles];
@@ -846,7 +847,7 @@ gtkMenuConfig::instantiateFileMenu()
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 }
@@ -880,8 +881,9 @@ gtkMenuConfig::instantiateCellMenu()
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_g,
-//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_g,
+        (GdkModifierType) (GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+        GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 
     ent = &mbox->menu[cellMenuPop];
@@ -890,8 +892,9 @@ gtkMenuConfig::instantiateCellMenu()
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_b,
-//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_b,
+        (GdkModifierType) (GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+        GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 
     ent = &mbox->menu[cellMenuStabs];
@@ -1108,7 +1111,7 @@ gtkMenuConfig::instantiateModifyMenu()
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_l,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_l,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 
@@ -1154,13 +1157,12 @@ gtkMenuConfig::instantiateViewMenu()
     // set data "menu" -> menu in the buttons
     // set data "callb" -> callback function
     // set data "data" -> callback data
-    GtkWidget *btn = item;
-    GtkWidget *popup = gtkMenu()->new_popup_menu(btn,
+    GtkWidget *popup = gtkMenu()->new_popup_menu(item,
         XM()->ViewList(), G_CALLBACK(vimenu_proc), 0);
     if (popup) {
         gtk_widget_set_name(popup, "ViewSubmenu");
-        gtk_object_set_data(GTK_OBJECT(btn), "menu", popup);
-        gtk_object_set_data(GTK_OBJECT(btn), "callb", (void*)vimenu_proc);
+        gtk_object_set_data(GTK_OBJECT(item), "menu", popup);
+        gtk_object_set_data(GTK_OBJECT(item), "callb", (void*)vimenu_proc);
 
         // Set up the mapping so that the accelerator for the
         // "view" button will activate the "full" operation from
@@ -1174,7 +1176,7 @@ gtkMenuConfig::instantiateViewMenu()
             g_list_free(contents);
         }
         if (mbox->menu[viewMenuView].description) {
-            gtk_widget_set_tooltip_text(btn, 
+            gtk_widget_set_tooltip_text(item, 
                 mbox->menu[viewMenuView].description);
         }
     }
@@ -1661,8 +1663,9 @@ gtkMenuConfig::instantiateDRCMenu()
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_i,
-//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_i,
+        (GdkModifierType) (GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+        GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuNopop];
@@ -1695,8 +1698,9 @@ gtkMenuConfig::instantiateDRCMenu()
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_r,
-//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_r,
+        (GdkModifierType) (GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+        GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuQuery];
@@ -1705,8 +1709,9 @@ gtkMenuConfig::instantiateDRCMenu()
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
-//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
+        (GdkModifierType) (GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+        GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 
     ent = &mbox->menu[drcMenuErdmp];
@@ -2164,13 +2169,12 @@ gtkMenuConfig::instantiateSubwViewMenu(int wnum, GtkWidget *menubar,
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     check_separator(ent, submenu);
 
-    GtkWidget *btn = item;
-    GtkWidget *popup = gtkMenu()->new_popup_menu(btn,
+    GtkWidget *popup = gtkMenu()->new_popup_menu(item,
         XM()->ViewList(), G_CALLBACK(vimenu_proc), (void*)(intptr_t)wnum);
     if (popup) {
-        gtk_object_set_data(GTK_OBJECT(btn), "menu", popup);
-        gtk_object_set_data(GTK_OBJECT(btn), "callb", (void*)vimenu_proc);
-        gtk_object_set_data(GTK_OBJECT(btn), "data",(void*)(intptr_t)wnum);
+        gtk_object_set_data(GTK_OBJECT(item), "menu", popup);
+        gtk_object_set_data(GTK_OBJECT(item), "callb", (void*)vimenu_proc);
+        gtk_object_set_data(GTK_OBJECT(item), "data",(void*)(intptr_t)wnum);
 
         // Set up the mapping so that the accelerator for the
         // "view" button will activate the "full" operation from
@@ -2261,7 +2265,7 @@ gtkMenuConfig::instantiateSubwViewMenu(int wnum, GtkWidget *menubar,
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_q,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 }
@@ -2382,7 +2386,7 @@ gtkMenuConfig::instantiateSubwAttrMenu(int wnum, GtkWidget *menubar,
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_g,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_g,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 }
@@ -2459,7 +2463,7 @@ gtkMenuConfig::instantiateSubwHelpMenu(int wnum, GtkWidget *menubar,
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(menu_handler), mbox->menu);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_h,
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
         GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     check_separator(ent, submenu);
 }
@@ -2544,6 +2548,7 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data)
     if (ent->is_dynamic()) {
         // script from user menu
         if (!XM()->DbgLoad(ent)) {
+
             EV()->InitCallback();
             // Putting the call in a timeout proc allows the current
             // command to return and finish before the new one starts
@@ -2614,7 +2619,7 @@ gtkMenuConfig::user_cmd_proc(void *arg)
         return (true);
     DSP()->SetInterrupt(DSPinterNone);
     MenuEnt *ent = (MenuEnt*)arg;
-    const char *entry = ent->menutext + strlen("/User/");
+    const char *entry = ent->menutext;
     // entry is the same as m->entry, but contains the menu path
     // for submenu items
     char buf[128];
