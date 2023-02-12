@@ -22,9 +22,9 @@ LIB_TARGET = ../lib/gtkinterf.a
 
 HFILES =
 CCFILES = \
-  gtkedit.cc gtkfile.cc gtkfont.cc gtkhcopy.cc gtkinterf.cc gtklist.cc \
-  gtkmcol.cc gtkpfiles.cc gtksearch.cc gtkspinbtn.cc gtkutil.cc \
-  gtkxdraw.cc mswdraw.cc mswpdev.cc
+  gtkdraw.cc gtkedit.cc gtkfile.cc gtkfont.cc gtkhcopy.cc gtkinterf.cc \
+  gtklist.cc gtkmcol.cc gtkpfiles.cc gtksearch.cc gtkspinbtn.cc \
+  gtkutil.cc gtkxdraw.cc mswdraw.cc mswpdev.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
 $(LIB_TARGET): $(CCOBJS)
