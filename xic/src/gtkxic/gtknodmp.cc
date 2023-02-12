@@ -104,8 +104,8 @@ namespace {
         GdkRectangle r;
         gtk_tree_view_get_background_area(GTK_TREE_VIEW(list), p, 0, &r);
 
-        int last_row = (int)(adj->value/r.height);
-        int vis_rows = (int)(adj->page_size/r.height);
+        int last_row = (int)(gtk_adjustment_get_value(adj)/r.height);
+        int vis_rows = (int)(gtk_adjustment_get_page_size(adj)/r.height);
         if (row < last_row || row > last_row + vis_rows) {
             gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(list), p, 0,
                 false, 0.0, 0.0);
@@ -385,7 +385,7 @@ sNM::sNM(GRobject caller, int node)
     button = gtk_radio_button_new_with_label(0, "Nodes");
     gtk_widget_set_name(button, "Nodes");
     gtk_widget_show(button);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
     nm_srch_nodes = button;
 
@@ -572,8 +572,8 @@ sNM::~sNM()
     if (nm_caller)
         GRX->SetStatus(nm_caller, false);
     if (wb_shell) {
-        int wid, hei;
-        gdk_window_get_size(wb_shell->window, &wid, &hei);
+        int wid = gdk_window_get_width(gtk_widget_get_window(wb_shell));
+        int hei = gdk_window_get_height(gtk_widget_get_window(wb_shell));
         nm_win_width = wid;
         nm_win_height = hei;
         nm_grip_pos = gtk_paned_get_position(GTK_PANED(nm_paned));
@@ -747,8 +747,8 @@ sNM::update_map()
             GtkAdjustment *adj =
                 gtk_tree_view_get_vadjustment(GTK_TREE_VIEW(nm_node_list));
             if (adj) {
-                last_row = (int)(adj->value/r.height);
-                vis_rows = (int)(adj->page_size/r.height);
+                last_row = (int)(gtk_adjustment_get_value(adj)/r.height);
+                vis_rows = (int)(gtk_adjustment_get_page_size(adj)/r.height);
             }
         }
     }

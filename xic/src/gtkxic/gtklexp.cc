@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "edit.h"
 #include "dsp_inlines.h"
@@ -219,13 +221,14 @@ sLx::sLx(GRobject c)
     gtk_widget_show(label);
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
+#define DMAX 6
+#ifdef XXX_OPT
     lx_depth = gtk_option_menu_new();
     gtk_widget_set_name(lx_depth, "Depth");
     gtk_widget_show(lx_depth);
     GtkWidget *menu = gtk_menu_new();
     gtk_widget_set_name(menu, "Depth");
 
-#define DMAX 6
     for (int i = 0; i <= DMAX; i++) {
         char buf[16];
         if (i == DMAX)
@@ -235,12 +238,17 @@ sLx::sLx(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(lx_depth_proc), (void*)(long)i);
     }
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(lx_depth), menu);
+#else
+    lx_depth = gtk_combo_box_text_new();
+    gtk_widget_set_name(lx_depth, "Depth");
+    gtk_widget_show(lx_depth);
+#endif
     gtk_box_pack_start(GTK_BOX(row), lx_depth, false, false, 0);
 
     lx_recurse = gtk_check_button_new_with_label(
@@ -338,7 +346,7 @@ sLx::sLx(GRobject c)
     lx_deflt = gtk_radio_button_new_with_label(0, "Default");
     gtk_widget_set_name(lx_deflt, "Default");
     gtk_widget_show(lx_deflt);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(lx_deflt));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(lx_deflt));
     g_signal_connect(G_OBJECT(lx_deflt), "clicked",
         G_CALLBACK(lx_action), 0);
     gtk_box_pack_start(GTK_BOX(row), lx_deflt, true, true, 0);
@@ -346,7 +354,7 @@ sLx::sLx(GRobject c)
     lx_join = gtk_radio_button_new_with_label(group, "Joined");
     gtk_widget_set_name(lx_join, "Join");
     gtk_widget_show(lx_join);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(lx_join));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(lx_join));
     g_signal_connect(G_OBJECT(lx_join), "clicked",
         G_CALLBACK(lx_action), 0);
     gtk_box_pack_start(GTK_BOX(row), lx_join, true, true, 0);
@@ -354,7 +362,7 @@ sLx::sLx(GRobject c)
     lx_split_h = gtk_radio_button_new_with_label(group, "Horiz Split");
     gtk_widget_set_name(lx_split_h, "SplitH");
     gtk_widget_show(lx_split_h);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(lx_split_h));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(lx_split_h));
     g_signal_connect(G_OBJECT(lx_split_h), "clicked",
         G_CALLBACK(lx_action), 0);
     gtk_box_pack_start(GTK_BOX(row), lx_split_h, true, true, 0);
@@ -405,7 +413,7 @@ sLx::sLx(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(lx_recall_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(lx_recall_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(lx_recall_proc), (void*)(long)i);
     }
@@ -425,7 +433,7 @@ sLx::sLx(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(lx_save_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(lx_save_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(lx_save_proc), (void*)(long)i);
     }
@@ -500,7 +508,9 @@ sLx::sLx(GRobject c)
 
     if (last_lexpr)
         gtk_entry_set_text(GTK_ENTRY(lx_lexpr), last_lexpr);
+#ifdef XXX_OPT
     gtk_option_menu_set_history(GTK_OPTION_MENU(lx_depth), depth_hst);
+#endif
     if (create_mode == CLdefault) {
         GRX->SetStatus(lx_deflt, true);
         GRX->SetStatus(lx_join, false);
@@ -545,13 +555,13 @@ sLx::~sLx()
         GRX->Deselect(lx_caller);
     if (lx_save_menu) {
         g_object_ref(lx_save_menu);
-        gtk_object_ref(GTK_OBJECT(lx_save_menu));
+//XXX        gtk_object_ref(GTK_OBJECT(lx_save_menu));
         gtk_widget_destroy(lx_save_menu);
         g_object_unref(lx_save_menu);
     }
     if (lx_recall_menu) {
         g_object_ref(lx_recall_menu);
-        gtk_object_ref(GTK_OBJECT(lx_recall_menu));
+//XXX        gtk_object_ref(GTK_OBJECT(lx_recall_menu));
         gtk_widget_destroy(lx_recall_menu);
         g_object_unref(lx_recall_menu);
     }

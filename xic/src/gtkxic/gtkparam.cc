@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_GDK
+
 #include "main.h"
 #include "pushpop.h"
 #include "dsp_color.h"
@@ -84,7 +86,7 @@ void
 cMain::ShowParameters(const char*)
 {
     if (!id)
-        id = gtk_idle_add(print_idle, 0);
+        id = g_idle_add(print_idle, 0);
 }
 
 
@@ -145,7 +147,7 @@ void
 cParam::print()
 {
     if (!gd_window)
-        gd_window = gd_viewport->window;
+        gd_window = gtk_widget_get_window(gd_viewport);
     unsigned long c1 = DSP()->Color(PromptTextColor);
     unsigned long c2 = DSP()->Color(PromptEditTextColor);
     int fwid, fhei;
@@ -269,16 +271,19 @@ cParam::print()
 void
 cParam::display(int start, int end)
 {
-    gd_window = gd_viewport->window;
+    gd_window = gtk_widget_get_window(gd_viewport);
     if (!gd_window)
         return;
 
-    int winw, winh;
-    gdk_window_get_size(gd_window, &winw, &winh);
+    int winw = gdk_window_get_width(gd_window);
+    int winh = gdk_window_get_height(gd_window);
     if (winw != p_width || winh != p_height) {
+#ifdef XXX_GDK
         if (p_pm)
             gdk_pixmap_unref(p_pm);
-        p_pm = gdk_pixmap_new(gd_window, winw, winh, GRX->Visual()->depth);
+#endif
+        p_pm = gdk_pixmap_new(gd_window, winw, winh,
+            gdk_visual_get_depth(GRX->Visual()));
         p_width = winw;
         p_height = winh;
         start = 0;
@@ -286,6 +291,8 @@ cParam::display(int start, int end)
     }
     p_win_bak = gd_window;
     gd_window = p_pm;
+    // XXX Have to set the pointer directly or a Gtk-CRITICAL results.
+    // gtk_widget_set_window(gd_viewport, gd_window);
     gd_viewport->window = gd_window;
 
     if (start == 0 && end == 256) {
@@ -296,11 +303,13 @@ cParam::display(int start, int end)
 
     p_text.display(this, start, end);
 
+#ifdef XXX_GDK
     gdk_window_copy_area(p_win_bak, CpyGC(), 0, 0, gd_window,
         0, 0, p_width, p_height);
+#endif
     gd_window = p_win_bak;
     p_win_bak = 0;
-    gd_viewport->window = gd_window;
+    gtk_widget_set_window(gd_viewport, gd_window);
 }
 
 
@@ -492,9 +501,11 @@ cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
         int nrects;
         gdk_region_get_rectangles(pev->region, &rects, &nrects);
         for (int i = 0; i < nrects; i++) {
+#ifdef XXX_GDK
             gdk_window_copy_area(Param()->gd_window, Param()->CpyGC(),
                 rects[i].x, rects[i].y, Param()->p_pm,
                 rects[i].x, rects[i].y, rects[i].width, rects[i].height);
+#endif
         }
         g_free(rects);
     }
@@ -512,8 +523,8 @@ cParam::readout_font_change(GtkWidget*, void*, void*)
     if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
         int fw, fh;
         Param()->TextExtent(0, &fw, &fh);
-        int winw, winh;
-        gdk_window_get_size(Param()->gd_window, &winw, &winh);
+//XXX        int winw = gdk_window_get_width(Param()->gd_window);
+//XXX        int winh = gdk_window_get_height(Param()->gd_window);
         gtk_widget_set_size_request(Param()->gd_viewport, -1, fh + 2);
         Param()->print();
     }
@@ -533,10 +544,10 @@ cParam::readout_selection_clear(GtkWidget*, GdkEventSelection*, void*)
 
 
 void
-cParam::readout_selection_get(GtkWidget*, GtkSelectionData *selection_data,
+cParam::readout_selection_get(GtkWidget*, GtkSelectionData *data,
     guint, guint, void*)
 {
-    if (selection_data->selection != GDK_SELECTION_PRIMARY)
+    if (gtk_selection_data_get_selection(data) != GDK_SELECTION_PRIMARY)
         return;
     if (!Param())
         return;
@@ -546,7 +557,7 @@ cParam::readout_selection_get(GtkWidget*, GtkSelectionData *selection_data,
         return;  // refuse
     int length = strlen(str);
 
-    gtk_selection_data_set(selection_data, GDK_SELECTION_TYPE_STRING,
+    gtk_selection_data_set(data, GDK_SELECTION_TYPE_STRING,
         8*sizeof(char), (unsigned char*)str, length);
     delete [] str;
 }

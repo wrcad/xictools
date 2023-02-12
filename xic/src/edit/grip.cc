@@ -128,9 +128,12 @@ cEdit::registerGrips(CDc *cdesc)
         CDo *odesc;
         while ((odesc = gdesc.next()) != 0) {
 
+            /* XXX Don't need to be this restrictive?  All we use is
+             * the BB anyhway.
             // Grips can use only box edges (for now).
             if (odesc->type() != CDBOX)
                 continue;
+            */
 
             for (CDp *pd = odesc->prpty(XICP_GRIP); pd; pd = pd->next_prp()) {
                 if (pd->value() != XICP_GRIP)
@@ -354,6 +357,8 @@ sCniGripDesc::sCniGripDesc()
     gd_loc = CN_LL;
     gd_absolute = false;
     gd_vert = false;
+    gd_has_min = false;
+    gd_has_max = false;
 }
 
 
@@ -487,6 +492,7 @@ sCniGripDesc::parse(const char **pstr)
                 return (false);
             }
             gd_minval = *d;
+            gd_has_min = true;
         }
         else if (!strcasecmp(tok, "maxval")) {
             delete [] tok;
@@ -509,6 +515,7 @@ sCniGripDesc::parse(const char **pstr)
                 return (false);
             }
             gd_maxval = *d;
+            gd_has_max = true;
         }
         else if (!strcasecmp(tok, "location")) {
             delete [] tok;
@@ -935,7 +942,8 @@ sGrip::param_value(int x1, int y1, int x2, int y2, double *pval) const
     // the new parameter value.
     int dx = x2 - pmid.x;
     int dy = y2 - pmid.y;
-    double a = (g_ux*dx + g_uy*dy)/CDphysResolution;
+    double a = (g_ux*dx + g_uy*dy);
+    a /= CDphysResolution;
     if (g_ux && g_uy)
         a /= M_SQRT2;
 
@@ -951,19 +959,25 @@ sGrip::param_value(int x1, int y1, int x2, int y2, double *pval) const
     double amax = (gd_maxval - g_value)/scale;
     double amin = (gd_minval - g_value)/scale;
     bool rv = false;
-    if (amax < amin) {
-        double t = amin;
-        amin = amax;
-        amax = t;
-        rv = true;
+    if (gd_has_max && gd_has_min) {
+        if (amax < amin) {
+            double t = amin;
+            amin = amax;
+            amax = t;
+            rv = true;
+        }
     }
-    if (a > amax) {
-        a = amax;
-        dnew = rv ? gd_minval : gd_maxval;
+    if (gd_has_max) {
+        if (a > amax) {
+            a = amax;
+            dnew = rv ? gd_minval : gd_maxval;
+        }
     }
-    else if (a < amin) {
-        a = amin;
-        dnew = rv ? gd_maxval : gd_minval;
+    if (gd_has_min) {
+        if (a < amin) {
+            a = amin;
+            dnew = rv ? gd_maxval : gd_minval;
+        }
     }
 
     // Check against the constraint, if any.
@@ -985,7 +999,8 @@ sGrip::show_ghost(int map_x, int map_y, bool erase)
 
     int dx = map_x - pmid.x;
     int dy = map_y - pmid.y;
-    double a = (g_ux*dx + g_uy*dy)/CDphysResolution;
+    double a = (g_ux*dx + g_uy*dy);
+    a /= CDphysResolution;
     if (g_ux && g_uy)
         a /= M_SQRT2;
 
@@ -1001,19 +1016,25 @@ sGrip::show_ghost(int map_x, int map_y, bool erase)
     double amax = (gd_maxval - g_value)/scale;
     double amin = (gd_minval - g_value)/scale;
     bool rv = false;
-    if (amax < amin) {
-        double t = amin;
-        amin = amax;
-        amax = t;
-        rv = true;
+    if (gd_has_max && gd_has_min) {
+        if (amax < amin) {
+            double t = amin;
+            amin = amax;
+            amax = t;
+            rv = true;
+        }
     }
-    if (a > amax) {
-        a = amax;
-        dnew = rv ? gd_minval : gd_maxval;
+    if (gd_has_max) {
+        if (a > amax) {
+            a = amax;
+            dnew = rv ? gd_minval : gd_maxval;
+        }
     }
-    else if (a < amin) {
-        a = amin;
-        dnew = rv ? gd_maxval : gd_minval;
+    if (gd_has_min) {
+        if (a < amin) {
+            a = amin;
+            dnew = rv ? gd_maxval : gd_minval;
+        }
     }
 
     // Check against the constraint, if any.
@@ -1036,7 +1057,8 @@ sGrip::show_ghost(int map_x, int map_y, bool erase)
     if (grip2) {
         dx2 = map_x - pmid.x;
         dy2 = map_y - pmid.y;
-        double a2 = (grip2->g_ux*dx2 + grip2->g_uy*dy2)/CDphysResolution;
+        double a2 = (grip2->g_ux*dx2 + grip2->g_uy*dy2);
+        a2 /= CDphysResolution;
         if (grip2->g_ux && grip2->g_uy)
             a2 /= M_SQRT2;
 
@@ -1051,19 +1073,25 @@ sGrip::show_ghost(int map_x, int map_y, bool erase)
         double amax2 = (grip2->gd_maxval - grip2->g_value)/scale2;
         double amin2 = (grip2->gd_minval - grip2->g_value)/scale2;
         bool rv2 = false;
-        if (amax2 < amin2) {
-            double t = amin2;
-            amin2 = amax2;
-            amax2 = t;
-            rv2 = true;
+        if (grip2->gd_has_max && grip2->gd_has_min) {
+            if (amax2 < amin2) {
+                double t = amin2;
+                amin2 = amax2;
+                amax2 = t;
+                rv2 = true;
+            }
         }
-        if (a2 > amax2) {
-            a2 = amax2;
-            dnew2 = rv2 ? grip2->gd_minval : grip2->gd_maxval;
+        if (grip2->gd_has_max) {
+            if (a2 > amax2) {
+                a2 = amax2;
+                dnew2 = rv2 ? grip2->gd_minval : grip2->gd_maxval;
+            }
         }
-        else if (a2 < amin2) {
-            a2 = amin2;
-            dnew2 = rv2 ? grip2->gd_maxval : grip2->gd_minval;
+        if (grip2->gd_has_min) {
+            if (a2 < amin2) {
+                a2 = amin2;
+                dnew2 = rv2 ? grip2->gd_maxval : grip2->gd_minval;
+            }
         }
 
         // Check against the constraint, if any.

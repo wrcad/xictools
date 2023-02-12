@@ -76,8 +76,7 @@ namespace {
             static void cgo_info_proc(GtkWidget*, void*);
             static void cgo_drag_data_received(GtkWidget*, GdkDragContext*,
                 gint, gint, GtkSelectionData*, guint, guint);
-            static void cgo_page_proc(GtkNotebook*, GtkNotebookPage*, int,
-                void*);
+            static void cgo_page_proc(GtkNotebook*, void*, int, void*);
 
             GRobject cgo_caller;
             GtkWidget *cgo_nbook;
@@ -141,13 +140,16 @@ cConvert::PopUpCgdOpen(GRobject caller, ShowMode mode,
 
     int mwid;
     MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
-    if (x + Cgo->Shell()->requisition.width > mwid)
-        x = mwid - Cgo->Shell()->requisition.width;
-    gtk_widget_set_uposition(Cgo->Shell(), x, y);
+    GtkRequisition req;
+    gtk_widget_get_requisition(Cgo->Shell(), &req);
+    if (x + req.width > mwid)
+        x = mwid - req.width;
+    gtk_window_move(GTK_WINDOW(Cgo->Shell()), x, y);
     gtk_widget_show(Cgo->Shell());
 
     // OpenSuse-13.1 gtk-2.24.23 bug
-    gtk_widget_set_uposition(Cgo->Shell(), x, y);
+//XXX
+    gtk_window_move(GTK_WINDOW(Cgo->Shell()), x, y);
 }
 
 
@@ -718,9 +720,12 @@ sCgo::cgo_drag_data_received(GtkWidget *entry,
     GdkDragContext *context, gint, gint, GtkSelectionData *data,
     guint, guint time)
 {
-    if (data->length >= 0 && data->format == 8 && data->data) {
-        char *src = (char*)data->data;
-        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+        char *src = (char*)gtk_selection_data_get_data(data);
+        if (gtk_selection_data_get_target(data) ==
+                gdk_atom_intern("TWOSTRING", true)) {
             // Drops from content lists may be in the form
             // "fname_or_chd\ncellname".  Keep the filename.
             char *t = strchr(src, '\n');
@@ -739,7 +744,7 @@ sCgo::cgo_drag_data_received(GtkWidget *entry,
 // Handle page change, set focus to text entry.
 //
 void
-sCgo::cgo_page_proc(GtkNotebook*, GtkNotebookPage*, int num, void*)
+sCgo::cgo_page_proc(GtkNotebook*, void*, int num, void*)
 {
     if (!Cgo)
         return;

@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -104,6 +106,7 @@ sAsmTf::sAsmTf(sAsmPage *src)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
+#ifdef XXX_OPT
     tf_angle = gtk_option_menu_new();
     gtk_widget_set_name(tf_angle, "rotation");
     gtk_widget_show(tf_angle);
@@ -115,13 +118,15 @@ sAsmTf::sAsmTf(sAsmPage *src)
         char buf[32];
         sprintf(buf, "%d", i*45);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
-        gtk_object_set_data(GTK_OBJECT(mi), "angle", (void*)(long)i);
+        g_object_set_data(G_OBJECT(mi), "angle", (void*)(long)i);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(tf_angle_proc), this);
     }
     gtk_option_menu_set_history(GTK_OPTION_MENU(tf_angle), tf_angle_ix);
+#else
+#endif
 
     gtk_table_attach(GTK_TABLE(form), tf_angle, 1, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
@@ -358,7 +363,10 @@ sAsmTf::reset()
 {
     sb_placement_x.set_value(0.0);
     sb_placement_y.set_value(0.0);
+#ifdef XXX_OPT
     gtk_option_menu_set_history(GTK_OPTION_MENU(tf_angle), 0);
+#else
+#endif
     GRX->Deselect(tf_mirror);
     sb_magnification.set_value(1.0);
     GRX->Deselect(tf_ecf_pre);
@@ -436,7 +444,10 @@ sAsmTf::set_tx_params(tlinfo *tl)
     sb_placement_y.set_digits(ndgt);
     sb_placement_y.set_value(MICRONS(tl->y));
     tf_angle_ix = tl->angle/45;
+#ifdef XXX_OPT
     gtk_option_menu_set_history(GTK_OPTION_MENU(tf_angle), tf_angle_ix);
+#else
+#endif
     sb_magnification.set_value(tl->magn);
     sb_scale.set_value(tl->scale);
     GRX->SetStatus(tf_mirror, tl->mirror_y);
@@ -467,8 +478,7 @@ void
 sAsmTf::tf_angle_proc(GtkWidget *widget, void *mtxp)
 {
     sAsmTf *tx = static_cast<sAsmTf*>(mtxp);
-    tx->tf_angle_ix = (intptr_t)gtk_object_get_data(GTK_OBJECT(widget),
-        "angle");
+    tx->tf_angle_ix = (intptr_t)g_object_get_data(G_OBJECT(widget), "angle");
 }
 
 

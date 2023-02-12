@@ -82,8 +82,6 @@ gtk_bag::PopUpList(stringlist *symlist, const char *title,
     list_count++;
     if (list_count == 6)
         list_count = 0;
-// will this work?
-//XXX    gtk_widget_set_uposition(list->Shell(), x, y);
     gtk_window_move(GTK_WINDOW(list->Shell()), x, y);
 
     list->set_visible(true);

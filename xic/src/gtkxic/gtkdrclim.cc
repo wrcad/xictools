@@ -378,7 +378,7 @@ sDL::sDL(GRobject c)
     button = gtk_radio_button_new_with_label(0, "One error per object");
     gtk_widget_set_name(button, "one_err");
     gtk_widget_show(button);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
     gtk_box_pack_start(GTK_BOX(col), button, false, false, 0);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(dl_action_proc), 0);
@@ -389,7 +389,7 @@ sDL::sDL(GRobject c)
     gtk_widget_set_name(button, "one_type");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(col), button, false, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(dl_action_proc), 0);
     dl_b2 = button;
@@ -398,7 +398,7 @@ sDL::sDL(GRobject c)
     gtk_widget_set_name(button, "all_errs");
     gtk_widget_show(button);
     gtk_box_pack_start(GTK_BOX(col), button, false, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(dl_action_proc), 0);
     dl_b3 = button;
@@ -518,27 +518,27 @@ sDL::update()
     GRX->SetStatus(dl_skip, DRC()->isIntrSkipInst());
     if (DRC()->errorLevel() == DRCone_err) {
         GRX->SetStatus(dl_b1, true);
-        GTK_TOGGLE_BUTTON(dl_b1)->active = true;
+//XXX        GTK_TOGGLE_BUTTON(dl_b1)->active = true;
         GRX->SetStatus(dl_b2, false);
-        GTK_TOGGLE_BUTTON(dl_b2)->active = false;
+//XXX        GTK_TOGGLE_BUTTON(dl_b2)->active = false;
         GRX->SetStatus(dl_b3, false);
-        GTK_TOGGLE_BUTTON(dl_b3)->active = false;
+//XXX        GTK_TOGGLE_BUTTON(dl_b3)->active = false;
     }
     else if (DRC()->errorLevel() == DRCone_type) {
         GRX->SetStatus(dl_b1, false);
-        GTK_TOGGLE_BUTTON(dl_b1)->active = false;
+//XXX        GTK_TOGGLE_BUTTON(dl_b1)->active = false;
         GRX->SetStatus(dl_b2, true);
-        GTK_TOGGLE_BUTTON(dl_b2)->active = true;
+//XXX        GTK_TOGGLE_BUTTON(dl_b2)->active = true;
         GRX->SetStatus(dl_b3, false);
-        GTK_TOGGLE_BUTTON(dl_b3)->active = false;
+//XXX        GTK_TOGGLE_BUTTON(dl_b3)->active = false;
     }
     else {
         GRX->SetStatus(dl_b1, false);
-        GTK_TOGGLE_BUTTON(dl_b1)->active = false;
+//XXX        GTK_TOGGLE_BUTTON(dl_b1)->active = false;
         GRX->SetStatus(dl_b2, false);
-        GTK_TOGGLE_BUTTON(dl_b2)->active = false;
+//XXX        GTK_TOGGLE_BUTTON(dl_b2)->active = false;
         GRX->SetStatus(dl_b3, true);
-        GTK_TOGGLE_BUTTON(dl_b3)->active = true;
+//XXX        GTK_TOGGLE_BUTTON(dl_b3)->active = true;
     }
 }
 

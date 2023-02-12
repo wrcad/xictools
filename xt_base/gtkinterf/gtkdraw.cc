@@ -37,6 +37,9 @@
  *========================================================================*
  $Id:$
  *========================================================================*/
+#undef GDK_DISABLE_DEPRECATED
+#undef GTK_DISABLE_DEPRECATED
+#undef GSEAL_ENABLE
 
 #include "config.h"
 #include "gtkinterf.h"
@@ -57,6 +60,9 @@ using namespace mswinterf;
 #else
 #include <sys/select.h>
 #endif
+
+// This all has to go to Cairo.  The gdk draw functions are not supported
+// in gtk-3.  Ugh, much work ahead,
 
 // Looks like Cairo and GTK don't support the X-windows shared memory
 // extension.

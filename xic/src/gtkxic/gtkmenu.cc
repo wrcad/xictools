@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_BOX
+
 #include "main.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
@@ -129,9 +131,11 @@ GTKmenu::InitSideButtonMenus(bool horiz_buttons)
 
             // Override the class size allocation method with a local version
             // that does a better job keeping buttons the same size.
+#ifdef XXX_BOX
             GtkWidgetClass *ks = GTK_WIDGET_GET_CLASS(pbox);
             if (ks)
                 ks->size_allocate = gtk_vbox_size_allocate;
+#endif
             gtk_widget_set_size_request(pbox, 28, -1);
         }
 
@@ -385,20 +389,20 @@ GTKmenu::SetDDentry(GRobject button, int indx, const char *newlabel)
 {
     if (!button)
         return;
-    GtkWidget *menu = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(button),
+    GtkWidget *menu = (GtkWidget*)g_object_get_data(G_OBJECT(button),
         "menu");
     // The button can be either a button in the menu, or the button that
     // pops up the menu.
     if (!menu)
-        menu = GTK_WIDGET(button)->parent;
+        menu = gtk_widget_get_parent(GTK_WIDGET(button));
     if (menu && GTK_IS_MENU(menu)) {
         int count = 0;
-        GList *btns = gtk_container_children(GTK_CONTAINER(menu));
+        GList *btns = gtk_container_get_children(GTK_CONTAINER(menu));
         for (GList *a = btns; a; a = a->next) {
             GtkWidget *menu_item = (GtkWidget*)a->data;
             if (GTK_IS_MENU_ITEM(menu_item)) {
                 GList *contents =
-                    gtk_container_children(GTK_CONTAINER(menu_item));
+                    gtk_container_get_children(GTK_CONTAINER(menu_item));
                 if (contents) {
                     GtkWidget *label = (GtkWidget*)contents->data;
                     if (GTK_IS_LABEL(label)) {
@@ -427,12 +431,12 @@ GTKmenu::NewDDentry(GRobject button, const char *label)
 {
     if (!button || !label)
         return;
-    GtkWidget *menu = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(button),
+    GtkWidget *menu = (GtkWidget*)g_object_get_data(G_OBJECT(button),
         "menu");
     // The button can be either a button in the menu, or the button that
     // pops up the menu.
     if (!menu) {
-        menu = GTK_WIDGET(button)->parent;
+        menu = gtk_widget_get_parent(GTK_WIDGET(button));
         if (menu && GTK_IS_MENU(menu)) {
             button = gtk_menu_get_attach_widget(GTK_MENU(menu));
             if (!button)
@@ -441,13 +445,13 @@ GTKmenu::NewDDentry(GRobject button, const char *label)
         else
             return;
     }
-    GtkSignalFunc func = (GtkSignalFunc)gtk_object_get_data(GTK_OBJECT(button),
+    GCallback func = (GCallback)g_object_get_data(G_OBJECT(button),
         "callb");
-    void *data = gtk_object_get_data(GTK_OBJECT(button), "data");
+    void *data = g_object_get_data(G_OBJECT(button), "data");
 
     GtkWidget *menu_item = gtk_menu_item_new_with_label(label);
     gtk_widget_set_name(menu_item, label);
-    gtk_menu_append(GTK_MENU(menu), menu_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
         G_CALLBACK(func), data);
     gtk_widget_show(menu_item);
@@ -464,21 +468,21 @@ GTKmenu::NewDDmenu(GRobject button, const char *const *list)
 {
     if (!button || !list)
         return;
-    GtkWidget *menu = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(button),
+    GtkWidget *menu = (GtkWidget*)g_object_get_data(G_OBJECT(button),
         "menu");
 
     // The button can be either a button in the menu, or the button that
     // pops up the menu.
     if (!menu)
-        menu = GTK_WIDGET(button)->parent;
+        menu = gtk_widget_get_parent(GTK_WIDGET(button));
     if (menu && GTK_IS_MENU(menu)) {
         int count = 0;
-        GList *btns = gtk_container_children(GTK_CONTAINER(menu));
+        GList *btns = gtk_container_get_children(GTK_CONTAINER(menu));
         for (GList *a = btns; a; a = a->next) {
             GtkWidget *menu_item = (GtkWidget*)a->data;
             if (GTK_IS_MENU_ITEM(menu_item)) {
                 GList *contents =
-                    gtk_container_children(GTK_CONTAINER(menu_item));
+                    gtk_container_get_children(GTK_CONTAINER(menu_item));
                 if (contents) {
                     GtkWidget *label = (GtkWidget*)contents->data;
                     if (GTK_IS_LABEL(label)) {
@@ -520,22 +524,26 @@ GTKmenu::HideButtonMenu(bool hide)
 {
     if (hide) {
         if (btnPhysMenuWidget) {
-            gtk_widget_set_sensitive(btnPhysMenuWidget->parent, false);
-            gtk_widget_hide(btnPhysMenuWidget->parent);
+            gtk_widget_set_sensitive(gtk_widget_get_parent(btnPhysMenuWidget),
+                false);
+            gtk_widget_hide(gtk_widget_get_parent(btnPhysMenuWidget));
         }
         else if (btnElecMenuWidget) {
-            gtk_widget_set_sensitive(btnElecMenuWidget->parent, false);
-            gtk_widget_hide(btnElecMenuWidget->parent);
+            gtk_widget_set_sensitive(gtk_widget_get_parent(btnElecMenuWidget),
+                false);
+            gtk_widget_hide(gtk_widget_get_parent(btnElecMenuWidget));
         }
     }
     else {
         if (btnPhysMenuWidget) {
-            gtk_widget_set_sensitive(btnPhysMenuWidget->parent, true);
-            gtk_widget_show(btnPhysMenuWidget->parent);
+            gtk_widget_set_sensitive(gtk_widget_get_parent(btnPhysMenuWidget),
+                true);
+            gtk_widget_show(gtk_widget_get_parent(btnPhysMenuWidget));
         }
         else if (btnElecMenuWidget) {
-            gtk_widget_set_sensitive(btnElecMenuWidget->parent, true);
-            gtk_widget_show(btnElecMenuWidget->parent);
+            gtk_widget_set_sensitive(gtk_widget_get_parent(btnElecMenuWidget),
+                true);
+            gtk_widget_show(gtk_widget_get_parent(btnElecMenuWidget));
         }
     }
 }
@@ -610,7 +618,7 @@ GTKmenu::strip_accel(const char *string)
 //
 GtkWidget *
 GTKmenu::new_popup_menu(GtkWidget *root, const char *const *list,
-    GtkSignalFunc handler, void *arg)
+    GCallback handler, void *arg)
 {
     GtkWidget *menu = 0;
     if (list && *list) {
@@ -620,14 +628,14 @@ GTKmenu::new_popup_menu(GtkWidget *root, const char *const *list,
             if (!strcmp(*s, MENU_SEP_STRING)) {
                 // insert a separator
                 GtkWidget *msep = gtk_menu_item_new();  // separator
-                gtk_menu_append(GTK_MENU(menu), msep);
+                gtk_menu_shell_append(GTK_MENU_SHELL(menu), msep);
                 gtk_widget_show(msep);
                 continue;
             }
 
             GtkWidget *menu_item = gtk_menu_item_new_with_label(*s);
             gtk_widget_set_name(menu_item, *s);
-            gtk_menu_append(GTK_MENU(menu), menu_item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
             g_signal_connect(G_OBJECT(menu_item), "activate",
                 handler, arg);
             gtk_widget_show(menu_item);
@@ -648,15 +656,18 @@ GTKmenu::new_popup_menu(GtkWidget *root, const char *const *list,
 void
 GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 {
+#ifdef XXX_BOX
     g_return_if_fail (widget != NULL);
     g_return_if_fail (GTK_IS_VBOX (widget));
     g_return_if_fail (allocation != NULL);
 
     GtkBox *box = GTK_BOX(widget);
+//XXX    gtk_widget_set_allocation(widget, allocation);
     widget->allocation = *allocation;
 
     gint nvis_children = 0;
     gint nexpand_children = 0;
+//XXX    GList *children = gtk_container_get_children(GTK_CONTAINER(box));
     GList *children = box->children;
 
     GtkBoxChild *child;
@@ -700,6 +711,7 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
         gint child_height;
 
         gint count = 0;
+//XXX        children = gtk_container_get_children(GTK_CONTAINER(box));
         children = box->children;
         while (children) {
             child = (GtkBoxChild*)children->data;
@@ -707,6 +719,7 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 
             if ((child->pack == GTK_PACK_START) &&
                     GTK_WIDGET_VISIBLE(child->widget)) {
+//XXX                if (gtk_box_get_homogeneous(GTK_BOX(box))) {
                 if (box->homogeneous) {
                     /*
                     if (nvis_children == 1)
@@ -755,7 +768,7 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 
                 gtk_widget_size_allocate(child->widget, &child_allocation);
 
-                y += child_height + box->spacing;
+                y += child_height + gtk_box_get_spacing(GTK_BOX(box));
             }
         }
 
@@ -816,6 +829,7 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
             }
         }
     }
+#endif
 }
 // End of GTKmenu functions.
 

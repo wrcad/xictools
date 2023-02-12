@@ -136,7 +136,7 @@ cMain::PopUpMemory(ShowMode mode)
 
     GRX->SetPopupLocation(GRloc(), Mem->Shell(), mainBag()->Viewport());
     gtk_widget_show(Mem->Shell());
-    Mem->SetWindow(Mem->Viewport()->window);
+    Mem->SetWindow(gtk_widget_get_window(Mem->Viewport()));
     Mem->SetWindowBackground(GRX->NameColor("white"));
 }
 // End of cMain functions.

@@ -84,7 +84,7 @@ GTKtoolbar::PopUpSimDefs(int x, int y)
     sd_shell = gtk_NewPopup(0, "Simulation Options", si_cancel_proc, 0);
     if (x || y) {
         FixLoc(&x, &y);
-        gtk_widget_set_uposition(sd_shell, x, y);
+        gtk_window_move(GTK_WINDOW(sd_shell), x, y);
     }
 
     GtkWidget *form = gtk_table_new(1, 2, false);
@@ -1175,7 +1175,7 @@ namespace {
                 i = 0;
             }
             else {
-                if (gtk_object_get_data(GTK_OBJECT(caller), "down")) {
+                if (g_object_get_data(G_OBJECT(caller), "down")) {
                     i--;
                     if (i < 0) {
                         i = 0;
@@ -1205,7 +1205,7 @@ namespace {
                 i = 0;
             }
             else {
-                if (gtk_object_get_data(GTK_OBJECT(caller), "down")) {
+                if (g_object_get_data(G_OBJECT(caller), "down")) {
                     i--;
                     if (i < 0) {
                         i = 0;
@@ -1235,7 +1235,7 @@ namespace {
                 i = 0;
             }
             else {
-                if (gtk_object_get_data(GTK_OBJECT(caller), "down")) {
+                if (g_object_get_data(G_OBJECT(caller), "down")) {
                     i--;
                     if (i < 0) {
                         i = 0;
@@ -1265,7 +1265,7 @@ namespace {
                 i = 0;
             }
             else {
-                if (gtk_object_get_data(GTK_OBJECT(caller), "down")) {
+                if (g_object_get_data(G_OBJECT(caller), "down")) {
                     i--;
                     if (i < 0) {
                         i = 0;

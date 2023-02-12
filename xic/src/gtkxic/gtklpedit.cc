@@ -241,7 +241,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(lp_popup), accel_group);
     GtkWidget *menubar = gtk_menu_bar_new();
-    gtk_object_set_data(GTK_OBJECT(lp_popup), "menubar", menubar);
+    g_object_set_data(G_OBJECT(lp_popup), "menubar", menubar);
     gtk_widget_show(menubar);
     GtkWidget *item;
 
@@ -314,7 +314,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // LppName, 0, lp_kw_proc, lpLppName, 0
     item = gtk_menu_item_new_with_mnemonic("LppName");
     gtk_widget_set_name(item, "LppName");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpLppName);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpLppName);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -323,7 +323,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Description, 0, lp_kw_proc, lpDescription, 0);
     item = gtk_menu_item_new_with_mnemonic("Description");
     gtk_widget_set_name(item, "Description");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpDescription);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpDescription);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -332,7 +332,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // NoSelect, 0, lp_kw_proc, lpNoSelect, 0);
     item = gtk_menu_item_new_with_mnemonic("NoSelect");
     gtk_widget_set_name(item, "NoSelect");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpNoSelect);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpNoSelect);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -341,7 +341,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // NoMerge, 0, lp_kw_proc, lpNoMerge, 0);
     item = gtk_menu_item_new_with_mnemonic("NoMerge");
     gtk_widget_set_name(item, "NoMerge");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpNoMerge);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpNoMerge);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -351,7 +351,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // WireActive, 0, lp_kw_proc, lpWireActive, 0);
     item = gtk_menu_item_new_with_mnemonic("WireActive");
     gtk_widget_set_name(item, "WireActive");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpWireActive);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpWireActive);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -361,7 +361,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Symbolic, 0, lp_kw_proc, lpSymbolic, 0
     item = gtk_menu_item_new_with_mnemonic("Symbolic");
     gtk_widget_set_name(item, "Symbolic");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpSymbolic);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpSymbolic);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -373,7 +373,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Invisible, 0, lp_kw_proc, lpInvisible, 0
     item = gtk_menu_item_new_with_mnemonic("Invisible");
     gtk_widget_set_name(item, "Invisible");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpInvisible);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpInvisible);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -383,7 +383,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // NoInstView, 0, lp_kw_proc, lpNoInstView, 0
     item = gtk_menu_item_new_with_mnemonic("NoInstView");
     gtk_widget_set_name(item, "NoInstView");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpNoInstView);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpNoInstView);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -393,7 +393,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // WireWidth, 0, lp_kw_proc, lpWireWidth, 0
     item = gtk_menu_item_new_with_mnemonic("WireWidth");
     gtk_widget_set_name(item, "WireWidth");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpWireWidth);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpWireWidth);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -402,7 +402,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // CrossThick, 0, lp_kw_proc, lpCrossThick, 0
     item = gtk_menu_item_new_with_mnemonic("CrossThick");
     gtk_widget_set_name(item, "CrossThick");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpCrossThick);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpCrossThick);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -423,7 +423,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Conductor, 0, lp_kw_proc, exConductor, 0
     item = gtk_menu_item_new_with_mnemonic("Conductor");
     gtk_widget_set_name(item, "Conductor");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exConductor);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)exConductor);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -432,7 +432,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Routing, 0, lp_kw_proc, exRouting, 0);
     item = gtk_menu_item_new_with_mnemonic("Routing");
     gtk_widget_set_name(item, "Routing");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exRouting);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)exRouting);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -441,7 +441,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // GroundPlane, 0, lp_kw_proc, exGroundPlane, 0);
     item = gtk_menu_item_new_with_mnemonic("GroundPlane");
     gtk_widget_set_name(item, "GroundPlane");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exGroundPlane);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)exGroundPlane);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -450,7 +450,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // GroundPlaneClear, 0, lp_kw_proc, exGroundPlaneClear, 0
     item = gtk_menu_item_new_with_mnemonic("GroundPlaneClear");
     gtk_widget_set_name(item, "GroundPlaneClear");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exGroundPlaneClear);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)exGroundPlaneClear);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -459,7 +459,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Contact, 0, lp_kw_proc, exContact, 0);
     item = gtk_menu_item_new_with_mnemonic("Contact");
     gtk_widget_set_name(item, "Contact");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exContact);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)exContact);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -468,7 +468,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Via, 0, lp_kw_proc, exVia, 0);
     item = gtk_menu_item_new_with_mnemonic("Via");
     gtk_widget_set_name(item, "Via");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exVia);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)exVia);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -477,7 +477,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // ViaCut, 0, lp_kw_proc, exViaCut, 0
     item = gtk_menu_item_new_with_mnemonic("ViaCut");
     gtk_widget_set_name(item, "ViaCut");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exViaCut);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)exViaCut);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -486,7 +486,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Dielectric, 0, lp_kw_proc, exDielectric, 0
     item = gtk_menu_item_new_with_mnemonic("Dielectric");
     gtk_widget_set_name(item, "Dielectric");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exDielectric);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)exDielectric);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -495,7 +495,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // DarkField, 0, lp_kw_proc, exDarkField, 0
     item = gtk_menu_item_new_with_mnemonic("DarkField");
     gtk_widget_set_name(item, "DarkField");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)exDarkField);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)exDarkField);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -516,7 +516,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Planarize, 0, lp_kw_proc, phPlanarize, 0
     item = gtk_menu_item_new_with_mnemonic("Planarize");
     gtk_widget_set_name(item, "Planarize");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phPlanarize);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phPlanarize);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -525,7 +525,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Thickness, 0, lp_kw_proc, phThickness, 0
     item = gtk_menu_item_new_with_mnemonic("Thickness");
     gtk_widget_set_name(item, "Thickness");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phThickness);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phThickness);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -534,7 +534,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // FH_nhinc, 0, lp_kw_proc, phFH_nhinc, 0
     item = gtk_menu_item_new_with_mnemonic("FH_nhinc");
     gtk_widget_set_name(item, "FH_nhinc");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phFH_nhinc);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phFH_nhinc);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -543,7 +543,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // FH_rh, 0, lp_kw_proc, phFH_rh, 0
     item = gtk_menu_item_new_with_mnemonic("FH_rh");
     gtk_widget_set_name(item, "FH_rh");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phFH_rh);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phFH_rh);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -552,7 +552,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Rho, 0, lp_kw_proc, phRho, 0
     item = gtk_menu_item_new_with_mnemonic("Rho");
     gtk_widget_set_name(item, "Rho");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phRho);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phRho);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -562,7 +562,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Sigma, 0, lp_kw_proc, phSigma, 0
     item = gtk_menu_item_new_with_mnemonic("Sigma");
     gtk_widget_set_name(item, "Sigma");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phSigma);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phSigma);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -572,7 +572,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Rsh, 0, lp_kw_proc, phRsh, 0
     item = gtk_menu_item_new_with_mnemonic("Rsh");
     gtk_widget_set_name(item, "Rsh");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phRsh);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phRsh);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -582,7 +582,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Tau, 0, lp_kw_proc, phTau, 0
     item = gtk_menu_item_new_with_mnemonic("Tau");
     gtk_widget_set_name(item, "Tau");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phTau);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phTau);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -592,7 +592,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // EpsRel, 0, lp_kw_proc, phEpsRel, 0
     item = gtk_menu_item_new_with_mnemonic("EpsRel");
     gtk_widget_set_name(item, "EpsRel");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phEpsRel);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phEpsRel);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -602,7 +602,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Capacitance, 0, lp_kw_proc, phCapacitance, 0
     item = gtk_menu_item_new_with_mnemonic("Capacitance");
     gtk_widget_set_name(item, "Capacitance");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phCapacitance);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phCapacitance);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -612,7 +612,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Lambda, 0, lp_kw_proc, phLambda, 0);
     item = gtk_menu_item_new_with_mnemonic("Lambda");
     gtk_widget_set_name(item, "Lambda");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phLambda);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phLambda);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -622,7 +622,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Tline, 0, lp_kw_proc, phTline, 0
     item = gtk_menu_item_new_with_mnemonic("Tline");
     gtk_widget_set_name(item, "Tline");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phTline);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phTline);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -632,7 +632,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // Antenna, 0, lp_kw_proc, phAntenna, 0
     item = gtk_menu_item_new_with_mnemonic("Antenna");
     gtk_widget_set_name(item, "Antenna");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)phAntenna);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)phAntenna);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -653,7 +653,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // StreamIn, 0, lp_kw_proc, cvStreamIn, 0
     item = gtk_menu_item_new_with_mnemonic("StreamIn");
     gtk_widget_set_name(item, "StreamIn");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)cvStreamIn);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)cvStreamIn);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -662,7 +662,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // StreamOut, 0, lp_kw_proc, cvStreamOut, 0
     item = gtk_menu_item_new_with_mnemonic("StreamOut");
     gtk_widget_set_name(item, "StreamOut");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)cvStreamOut);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)cvStreamOut);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -671,7 +671,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // NoDrcDataType, 0, lp_kw_proc, cvNoDrcDataType, 0
     item = gtk_menu_item_new_with_mnemonic("NoDrcDataType");
     gtk_widget_set_name(item, "NoDrcDataType");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)cvNoDrcDataType);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)cvNoDrcDataType);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -690,7 +690,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // BoxLineStyle, 0, lp_attr_proc, lpBoxLineStyle, 0
     item = gtk_menu_item_new_with_mnemonic("BoxLineStyle");
     gtk_widget_set_name(item, "BoxLineStyle");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpBoxLineStyle);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpBoxLineStyle);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -699,7 +699,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // LayerReorderMode, 0, lp_attr_proc, lpLayerReorderMode, 0
     item = gtk_menu_item_new_with_mnemonic("LayerReorderMode");
     gtk_widget_set_name(item, "LayerReorderMode");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpLayerReorderMode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpLayerReorderMode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -708,7 +708,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // NoPlanarize, 0, lp_attr_proc, lpNoPlanarize, 0
     item = gtk_menu_item_new_with_mnemonic("NoPlanarize");
     gtk_widget_set_name(item, "NoPlanarize");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpNoPlanarize);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpNoPlanarize);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -717,7 +717,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // AntennaTotal, 0, lp_attr_proc, lpAntennaTotal, 0
     item = gtk_menu_item_new_with_mnemonic("AntennaTotal");
     gtk_widget_set_name(item, "AntennaTotal");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpAntennaTotal);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpAntennaTotal);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -726,7 +726,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // SubstrateEps, 0, lp_attr_proc, lpSubstrateEps, 0
     item = gtk_menu_item_new_with_mnemonic("SubstrateEps");
     gtk_widget_set_name(item, "SubstrateEps");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpSubstrateEps);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpSubstrateEps);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -735,7 +735,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     // SubstrateThickness, 0, lp_attr_proc, lpSubstrateThickness, 0
     item = gtk_menu_item_new_with_mnemonic("SubstrateThickness");
     gtk_widget_set_name(item, "SubstrateThickness");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)lpSubstrateThickness);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)lpSubstrateThickness);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -818,7 +818,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     gtk_widget_set_size_request(lp_text, DEF_WIDTH, DEF_HEIGHT);
 
     // The font change pop-up uses this to redraw the widget
-    gtk_object_set_data(GTK_OBJECT(lp_text), "font_changed",
+    g_object_set_data(G_OBJECT(lp_text), "font_changed",
         (void*)lp_font_changed);
 
     gtk_table_attach(GTK_TABLE(form), contr, 0, 1, rowcnt, rowcnt + 1,
@@ -1455,7 +1455,7 @@ sLpe::lp_undo_proc(GtkWidget*, void*)
 void
 sLpe::lp_kw_proc(GtkWidget *caller, void*)
 {
-    long type = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+    long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!Lpe)
         return;
     char *string = 0;
@@ -1490,7 +1490,7 @@ sLpe::lp_kw_proc(GtkWidget *caller, void*)
 void
 sLpe::lp_attr_proc(GtkWidget *caller, void*)
 {
-    long type = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+    long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!Lpe)
         return;
     char tbuf[64];

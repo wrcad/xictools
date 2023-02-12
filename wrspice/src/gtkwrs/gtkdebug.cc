@@ -76,7 +76,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
     db_shell = gtk_NewPopup(0, "Debug Options", dbg_cancel_proc, 0);
     if (x || y) {
         FixLoc(&x, &y);
-        gtk_widget_set_uposition(db_shell, x, y);
+        gtk_window_move(GTK_WINDOW(db_shell), x, y);
     }
 
     GtkWidget *form = gtk_table_new(4, 1, false);

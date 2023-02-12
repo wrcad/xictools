@@ -38,6 +38,9 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_GDK
+#define XXX_OPT
+
 #include "main.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
@@ -180,8 +183,11 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
             if (w && w->Window()) {
+#ifdef XXX_GDK
                 if (!GDK_IS_PIXMAP(w->Window()))
                     gdk_window_set_cursor(w->Window(), 0);
+#else
+#endif
             }
             return;
         }
@@ -189,8 +195,11 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
             if (w && w->Window()) {
+#ifdef XXX_GDK
                 if (!GDK_IS_PIXMAP(w->Window()))
                     gdk_window_set_cursor(w->Window(), 0);
+#else
+#endif
             }
         }
     }
@@ -199,6 +208,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
             if (w && w->Window()) {
+#ifdef XXX_GDK
                 if (!GDK_IS_PIXMAP(w->Window())) {
 
                     GdkPixmap *data = gdk_bitmap_create_from_data(w->Window(),
@@ -217,6 +227,8 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
                     gdk_pixmap_unref(mask);
                     gdk_window_set_cursor(w->Window(), cursor);
                 }
+#else
+#endif
             }
             return;
         }
@@ -224,6 +236,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
             if (w && w->Window()) {
+#ifdef XXX_GDK
                 if (!GDK_IS_PIXMAP(w->Window())) {
                     GdkPixmap *data = gdk_bitmap_create_from_data(w->Window(),
                         cursorCross_bits, cursor_width, cursor_height);
@@ -241,6 +254,8 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
                     gdk_pixmap_unref(mask);
                     gdk_window_set_cursor(w->Window(), cursor);
                 }
+#else
+#endif
             }
         }
     }
@@ -411,6 +426,7 @@ sAttr::sAttr(GRobject c)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
 
+#ifdef XXX_OPT
     GtkWidget *entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "cursmenu");
     gtk_widget_show(entry);
@@ -419,11 +435,16 @@ sAttr::sAttr(GRobject c)
     for (int i = 0; cursvals[i]; i++) {
         GtkWidget *mi = gtk_menu_item_new_with_label(cursvals[i]);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(at_curs_menu_proc), (void*)(long)i);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
+#else
+    GtkWidget *entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "cursmenu");
+    gtk_widget_show(entry);
+#endif
     at_cursor = entry;
     gtk_box_pack_start(GTK_BOX(row), entry, false, false, 0);
 
@@ -596,6 +617,7 @@ sAttr::sAttr(GRobject c)
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
 
+#ifdef XXX_OPT
     at_ebterms = gtk_option_menu_new();
     gtk_widget_set_name(at_ebterms, "EBTerms");
     gtk_widget_show(at_ebterms);
@@ -605,22 +627,27 @@ sAttr::sAttr(GRobject c)
     GtkWidget *mi = gtk_menu_item_new_with_label("Don't erase");
     gtk_widget_set_name(mi, "0");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(at_ebt_proc), 0);
     mi = gtk_menu_item_new_with_label("Cell terminals only");
     gtk_widget_set_name(mi, "1");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(at_ebt_proc), 0);
     mi = gtk_menu_item_new_with_label("All terminals");
     gtk_widget_set_name(mi, "2");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(at_ebt_proc), 0);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(at_ebterms), menu);
+#else
+    at_ebterms = gtk_combo_box_text_new();
+    gtk_widget_set_name(at_ebterms, "EBTerms");
+    gtk_widget_show(at_ebterms);
+#endif
     gtk_box_pack_end(GTK_BOX(row), at_ebterms, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rcnt, rcnt+1,
@@ -687,6 +714,7 @@ sAttr::sAttr(GRobject c)
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
 
+#ifdef XXX_OPT
     entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "hidn");
     gtk_widget_show(entry);
@@ -696,12 +724,17 @@ sAttr::sAttr(GRobject c)
         mi = gtk_menu_item_new_with_label(hdn_menu[i]);
         gtk_widget_set_name(mi, hdn_menu[i]);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(at_menuproc), (void*)(long)i);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry), 0);
+#else
+    entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "hidn");
+    gtk_widget_show(entry);
+#endif
     gtk_box_pack_end(GTK_BOX(row), entry, false, false, 0);
     at_hdn = entry;
 
@@ -825,8 +858,11 @@ sAttr::update()
     sb_tsize.set_value(d);
 
     if (at_ebthst != (int)DSP()->EraseBehindTerms()) {
+#ifdef XXX_OPT
         gtk_option_menu_set_history(GTK_OPTION_MENU(at_ebterms),
             DSP()->EraseBehindTerms());
+#else
+#endif
         at_ebthst = DSP()->EraseBehindTerms();
     }
 
@@ -871,7 +907,10 @@ sAttr::update()
 
     str = CDvdb()->getVariable(VA_LabelHiddenMode);
     d = str ? atoi(str) : 0;
+#ifdef XXX_OPT
     gtk_option_menu_set_history(GTK_OPTION_MENU(at_hdn), d);
+#else
+#endif
 
     double dd;
     str = CDvdb()->getVariable(VA_LabelDefHeight);

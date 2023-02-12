@@ -447,7 +447,8 @@ sCGL::action_hdlr(GtkWidget *caller, void *client_data)
     if (client_data == (void*)CGLadd) {
         if (state) {
             int xo, yo;
-            gdk_window_get_root_origin(Shell()->window, &xo, &yo);
+            gdk_window_get_root_origin(gtk_widget_get_window(Shell()),
+                &xo, &yo);
             char *cn = CDcgd()->newCgdName();
             // Pop down first, panel used elsewhere.
             Cvt()->PopUpCgdOpen(0, MODE_OFF, 0, 0, 0, 0, 0, 0);

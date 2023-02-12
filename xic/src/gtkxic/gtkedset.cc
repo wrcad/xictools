@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "edit.h"
 #include "undolist.h"
@@ -304,6 +306,7 @@ sEd::sEd(GRobject c)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
 
+#ifdef XXX_OPT
     GtkWidget *entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "depthmenu");
     gtk_widget_show(entry);
@@ -313,11 +316,16 @@ sEd::sEd(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(depthvals[i]);
         gtk_widget_set_name(mi, depthvals[i]);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(ed_depth_menu_proc), (void*)depthvals[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
+#else
+    GtkWidget *entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "depthmenu");
+    gtk_widget_show(entry);
+#endif
     gtk_box_pack_end(GTK_BOX(row), entry, false, false, 0);
     ed_depth = entry;
 
@@ -381,7 +389,10 @@ sEd::update()
     const char *str = CDvdb()->getVariable(VA_MaxGhostDepth);
     if (str)
         hst = atoi(str) + 1;
+#ifdef XXX_OPT
     gtk_option_menu_set_history(GTK_OPTION_MENU(ed_depth), hst);
+#else
+#endif
 }
 
 

@@ -196,7 +196,7 @@ sDim::sDim(GRobject c)
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(dim_popup), accel_group);
     GtkWidget *menubar = gtk_menu_bar_new();
-    gtk_object_set_data(GTK_OBJECT(dim_popup), "menubar", menubar);
+    g_object_set_data(G_OBJECT(dim_popup), "menubar", menubar);
     gtk_widget_show(menubar);
     GtkWidget *item;
 
@@ -297,7 +297,7 @@ sDim::sDim(GRobject c)
     // Connected, 0, dim_rule_proc, drConnected, 0
     item = gtk_menu_item_new_with_mnemonic("Connected");
     gtk_widget_set_name(item, "Connected");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drConnected);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drConnected);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -306,7 +306,7 @@ sDim::sDim(GRobject c)
     // NoHoles, 0, dim_rule_proc, drNoHoles, 0
     item = gtk_menu_item_new_with_mnemonic("NoHoles");
     gtk_widget_set_name(item, "NoHoles");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drNoHoles);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drNoHoles);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -315,7 +315,7 @@ sDim::sDim(GRobject c)
     // Exist, 0, dim_rule_proc, drExist, 0
     item = gtk_menu_item_new_with_mnemonic("Exist");
     gtk_widget_set_name(item, "Exist");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drExist);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drExist);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -324,7 +324,7 @@ sDim::sDim(GRobject c)
     // Overlap", 0, dim_rule_proc, drOverlap, 0
     item = gtk_menu_item_new_with_mnemonic("Overlap");
     gtk_widget_set_name(item, "Overlap");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drOverlap);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drOverlap);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -333,7 +333,7 @@ sDim::sDim(GRobject c)
     // IfOverlap, 0, dim_rule_proc, drIfOverlap, 0
     item = gtk_menu_item_new_with_mnemonic("IfOverlap");
     gtk_widget_set_name(item, "IfOverlap");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drIfOverlap);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drIfOverlap);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -342,7 +342,7 @@ sDim::sDim(GRobject c)
     // NoOverlap, 0, dim_rule_proc, drNoOverlap, 0
     item = gtk_menu_item_new_with_mnemonic("NoOverlap");
     gtk_widget_set_name(item, "NoOverlap");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drNoOverlap);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drNoOverlap);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -351,7 +351,7 @@ sDim::sDim(GRobject c)
     // AnyOverlap, 0, dim_rule_proc, drAnyOverlap, 0
     item = gtk_menu_item_new_with_mnemonic("AnyOverlap");
     gtk_widget_set_name(item, "AnyOverlap");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drAnyOverlap);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drAnyOverlap);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -360,7 +360,7 @@ sDim::sDim(GRobject c)
     // PartOverlap, 0, dim_rule_proc, drPartOverlap, 0
     item = gtk_menu_item_new_with_mnemonic("PartOverlap");
     gtk_widget_set_name(item, "PartOverlap");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drPartOverlap);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drPartOverlap);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -369,7 +369,7 @@ sDim::sDim(GRobject c)
     // AnyNoOverlap, 0, dim_rule_proc, drAnyNoOverlap, 0);
     item = gtk_menu_item_new_with_mnemonic("AnyNoOverlap");
     gtk_widget_set_name(item, "AnyNoOverlap");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drAnyNoOverlap);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drAnyNoOverlap);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -378,7 +378,7 @@ sDim::sDim(GRobject c)
     // MinArea, 0, dim_rule_proc, drMinArea, 0)
     item = gtk_menu_item_new_with_mnemonic("MinArea");
     gtk_widget_set_name(item, "MinArea");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinArea);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinArea);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -387,7 +387,7 @@ sDim::sDim(GRobject c)
     // MaxArea, 0, dim_rule_proc, drMaxArea, 0
     item = gtk_menu_item_new_with_mnemonic("MaxArea");
     gtk_widget_set_name(item, "MaxArea");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMaxArea);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMaxArea);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -396,7 +396,7 @@ sDim::sDim(GRobject c)
     // MinEdgeLength, 0, dim_rule_proc, drMinEdgeLength, 0
     item = gtk_menu_item_new_with_mnemonic("MinEdgeLength");
     gtk_widget_set_name(item, "MinEdgeLength");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinEdgeLength);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinEdgeLength);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -405,7 +405,7 @@ sDim::sDim(GRobject c)
     // MaxWidth, 0, dim_rule_proc, drMaxWidth, 0);
     item = gtk_menu_item_new_with_mnemonic("MaxWidth");
     gtk_widget_set_name(item, "MaxWidth");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMaxWidth);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMaxWidth);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -414,7 +414,7 @@ sDim::sDim(GRobject c)
     // MinWidth, 0, dim_rule_proc, drMinWidth, 0
     item = gtk_menu_item_new_with_mnemonic("MinWidth");
     gtk_widget_set_name(item, "MinWidth");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinWidth);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinWidth);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -423,7 +423,7 @@ sDim::sDim(GRobject c)
     // MinSpace, 0, dim_rule_proc, drMinSpace, 0
     item = gtk_menu_item_new_with_mnemonic("MinSpace");
     gtk_widget_set_name(item, "MinSpace");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinSpace);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinSpace);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -432,7 +432,7 @@ sDim::sDim(GRobject c)
     // MinSpaceTo, 0, dim_rule_proc, drMinSpaceTo, 0
     item = gtk_menu_item_new_with_mnemonic("MinSpaceTo");
     gtk_widget_set_name(item, "MinSpaceTo");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinSpaceTo);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinSpaceTo);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -441,7 +441,7 @@ sDim::sDim(GRobject c)
     // MinSpaceFrom", 0, dim_rule_proc, drMinSpaceFrom, 0
     item = gtk_menu_item_new_with_mnemonic("MinSpaceFrom");
     gtk_widget_set_name(item, "MinSpaceFrom");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinSpaceFrom);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinSpaceFrom);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -450,7 +450,7 @@ sDim::sDim(GRobject c)
     // MinOverlap, 0, dim_rule_proc, drMinOverlap, 0
     item = gtk_menu_item_new_with_mnemonic("MinOverlap");
     gtk_widget_set_name(item, "MinOverlap");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinOverlap);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinOverlap);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -459,7 +459,7 @@ sDim::sDim(GRobject c)
     // MinNoOverlap, 0, dim_rule_proc, drMinNoOverlap, 0
     item = gtk_menu_item_new_with_mnemonic("MinNoOverlap");
     gtk_widget_set_name(item, "MinNoOverlap");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)drMinNoOverlap);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinNoOverlap);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -485,7 +485,7 @@ sDim::sDim(GRobject c)
     // Delete, 0, dim_rule_menu_proc, 1, <CheckItem>
     item = gtk_check_menu_item_new_with_mnemonic("Delete");
     gtk_widget_set_name(item, "Delete");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)1);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)1);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -495,7 +495,7 @@ sDim::sDim(GRobject c)
     // Undelete, 0, dim_rule_menu_proc, 2, 0
     item = gtk_check_menu_item_new_with_mnemonic("Undelete");
     gtk_widget_set_name(item, "Undelete");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)2);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)2);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -557,7 +557,7 @@ sDim::sDim(GRobject c)
     gtk_widget_set_size_request(dim_text, DEF_WIDTH, DEF_HEIGHT);
 
     // The font change pop-up uses this to redraw the widget
-    gtk_object_set_data(GTK_OBJECT(dim_text), "font_changed",
+    g_object_set_data(G_OBJECT(dim_text), "font_changed",
         (void*)dim_font_changed);
 
     gtk_table_attach(GTK_TABLE(form), contr, 0, 1, 1, 2,
@@ -625,7 +625,7 @@ sDim::update()
 void
 sDim::rule_menu_upd()
 {
-    GList *gl = gtk_container_children(GTK_CONTAINER(dim_menu));
+    GList *gl = gtk_container_get_children(GTK_CONTAINER(dim_menu));
     int cnt = 0;
     for (GList *l = gl; l; l = l->next, cnt++) {
         if (cnt > 3)  // ** skip first four entries **
@@ -638,10 +638,10 @@ sDim::rule_menu_upd()
         gtk_widget_show(mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(sDim::dim_rule_menu_proc), tst);
-        gtk_menu_append(GTK_MENU(dim_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(dim_menu), mi);
     }
 
-    gl = gtk_container_children(GTK_CONTAINER(dim_umenu));
+    gl = gtk_container_get_children(GTK_CONTAINER(dim_umenu));
     cnt = 0;
     for (GList *l = gl; l; l = l->next, cnt++)
         gtk_widget_destroy(GTK_WIDGET(l->data));
@@ -652,7 +652,7 @@ sDim::rule_menu_upd()
         gtk_widget_show(mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(sDim::dim_rule_proc), (void*)tst->name());
-        gtk_menu_append(GTK_MENU(dim_umenu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(dim_umenu), mi);
     }
 }
 
@@ -847,7 +847,7 @@ sDim::dim_undo_proc(GtkWidget*, void*)
 void
 sDim::dim_rule_proc(GtkWidget *caller, void *user_name)
 {
-    long action = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+    long action = (long)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!LT()->CurLayer() || !Dim)
         return;
     if (user_name)
@@ -1004,7 +1004,7 @@ sDim::dim_editsave(const char *fname, void*, XEtype type)
 void
 sDim::dim_rule_menu_proc(GtkWidget *caller, void *client_data)
 {
-    long type = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+    long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
     if (type == 2) {
         // Undelete button
         if (!DRC()->userTests())

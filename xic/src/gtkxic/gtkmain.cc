@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_GDK
+
 #include "config.h"
 #include "main.h"
 #include "editif.h"
@@ -219,8 +221,8 @@ namespace {
             {
                 if (be->button >= GS_NBTNS)
                     return;
-                gdk_pointer_grab(w->window, true, GDK_BUTTON_RELEASE_MASK,
-                    0, 0, be->time);
+                gdk_pointer_grab(gtk_widget_get_window(w), true,
+                    GDK_BUTTON_RELEASE_MASK, 0, 0, be->time);
                 caller[be->button] = w;
                 send_event[be->button] = be->send_event;
 
@@ -429,8 +431,8 @@ GTKpkg::Initialize(GRwbag *wcp)
 
     // Initialize the application's GUI.
     //
-    int wid, hei;
-    gdk_window_get_size(w->Window(), &wid, &hei);
+    int wid = gdk_window_get_width(w->Window());
+    int hei = gdk_window_get_height(w->Window());
     DSP()->Initialize(wid, hei, 0, (XM()->RunMode() != ModeNormal));
     LT()->InitLayerTable();
 
@@ -554,6 +556,7 @@ GTKpkg::CheckForInterrupt()
     lasttime = Timer()->elapsed_msec();
 
     if (dispatch_events) {
+#ifdef XXX_GDK
         GdkGC *gc = mainBag()->GC();
         if (gc == mainBag()->XorGC())
             // If ghost-drawing, defer event processing, which may
@@ -561,6 +564,7 @@ GTKpkg::CheckForInterrupt()
             return (false);
         GdkGCValues gcv;
         gdk_gc_get_values(gc, &gcv);
+#endif
 
         // Dispatch all events, this is the default operation.  Turn
         // off Peek mode in case we have to do some drawing.
@@ -570,10 +574,12 @@ GTKpkg::CheckForInterrupt()
         DSP()->SetSlowMode(b);
 
         // Reset the GC, these may have changed during event processing.
+#ifdef XXX_GDK
         gdk_gc_set_foreground(gc, &gcv.foreground);
         gdk_gc_set_fill(gc, gcv.fill);
         gdk_gc_set_line_attributes(gc, gcv.line_width, gcv.line_style,
         gcv.cap_style, gcv.join_style);
+#endif
 
         return (DSP()->Interrupt());
     }
@@ -761,8 +767,10 @@ GTKpkg::GetMainWinIdentifier(char *buf)
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return (false);
 #ifdef WITH_X11
-    if (mainBag() && mainBag()->Shell() && mainBag()->Shell()->window) {
-        sprintf(buf, "%ld", (long)gr_x_window(mainBag()->Shell()->window));
+    if (mainBag() && mainBag()->Shell() &&
+            gtk_widget_get_window(mainBag()->Shell())) {
+        sprintf(buf, "%ld", (long)gr_x_window(
+            gtk_widget_get_window(mainBag()->Shell())));
         return (true);
     }
 #endif
@@ -931,7 +939,7 @@ GTKpkg::RegisterIdleProc(int(*proc)(void*), void *arg)
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
          return (0);
-    return (gtk_idle_add(proc, arg));
+    return (g_idle_add(proc, arg));
 }
 
 
@@ -940,7 +948,7 @@ GTKpkg::RemoveIdleProc(int id)
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
          return (false);
-    gtk_idle_remove(id);
+    g_source_remove(id);
     return (true);
 }
 
@@ -975,7 +983,7 @@ GTKpkg::StartTimer(int time, bool *set)
     if (set)
         *set = false;
     if (time > 0)
-        id = gtk_timeout_add(time, main_local::timer_cb, set);
+        id = g_timeout_add(time, main_local::timer_cb, set);
     return (id);
 }
 
@@ -1065,8 +1073,10 @@ win_bag::~win_bag()
     PopUpExpand(0, MODE_OFF, 0, 0, 0, false);
     PopUpGrid(0, MODE_OFF);
     PopUpZoom(0, MODE_OFF);
+#ifdef XXX_GDK
     if (wib_draw_pixmap)
         gdk_pixmap_unref(wib_draw_pixmap);
+#endif
 }
 
 
@@ -1094,8 +1104,9 @@ win_bag::subw_initialize(int wnum)
         // multi-monitor safe.
 
         int x, y;
-        gdk_window_get_origin(mainBag()->Shell()->window, &x, &y);
-        gtk_widget_set_uposition(wb_shell,
+        gdk_window_get_origin(gtk_widget_get_window(mainBag()->Shell()),
+            &x, &y);
+        gtk_window_move(GTK_WINDOW(wb_shell),
             LastPos[wnum].x + x, LastPos[wnum].y + y);
         gtk_window_set_default_size(GTK_WINDOW(wb_shell),
             LastPos[wnum].width, LastPos[wnum].height);
@@ -1105,7 +1116,7 @@ win_bag::subw_initialize(int wnum)
         ShellGeometry(mainBag()->Shell(), &rect, 0);
         rect.x += rect.width - 560;
         rect.y += (wnum-1)*40 + 60; // make room for device toolbar
-        gtk_widget_set_uposition(wb_shell, rect.x, rect.y);
+        gtk_window_move(GTK_WINDOW(wb_shell), rect.x, rect.y);
     }
 
     GtkWidget *menu = GTK_WIDGET(Menu()->CreateSubwinMenu(wnum));
@@ -1221,7 +1232,7 @@ win_bag::subw_initialize(int wnum)
     gtk_window_set_transient_for(GTK_WINDOW(wb_shell),
         GTK_WINDOW(mainBag()->Shell()));
     gtk_widget_show(wb_shell);
-    gd_window = gd_viewport->window;
+    gd_window = gtk_widget_get_window(gd_viewport);
 
     gd_backg = GRX->NameColor("black");
     gd_foreg = GRX->NameColor("white");
@@ -1230,8 +1241,8 @@ win_bag::subw_initialize(int wnum)
 
     // Application initialization callback.
     //
-    int wid, hei;
-    gdk_window_get_size(gd_window, &wid, &hei);
+    int wid = gdk_window_get_width(gd_window);
+    int hei = gdk_window_get_height(gd_window);
     DSP()->Initialize(wid, hei, wnum);
 
     // Have to set this after initialization.
@@ -1255,7 +1266,7 @@ win_bag::pre_destroy(int wnum)
     // multi-monitor setups.
 
     int x, y;
-    gdk_window_get_origin(mainBag()->Shell()->window, &x, &y);
+    gdk_window_get_origin(gtk_widget_get_window(mainBag()->Shell()), &x, &y);
     LastPos[wnum].x = rect_d.x - x;
     LastPos[wnum].y = rect_d.y - y;
     LastPos[wnum].width = rect.width;
@@ -1287,12 +1298,14 @@ win_bag::SwitchToPixmap()
     if (!wib_draw_pixmap ||
             vp_width != wib_px_width || vp_height != wib_px_height) {
         GdkPixmap *pm = wib_draw_pixmap;
+#ifdef XXX_GDK
         if (pm)
             gdk_pixmap_unref(pm);
+#endif
         wib_px_width = vp_width;
         wib_px_height = vp_height;
         pm = gdk_pixmap_new(gd_window, wib_px_width, wib_px_height,
-            GRX->Visual()->depth);
+            gdk_visual_get_depth(GRX->Visual()));
         if (pm)
             wib_draw_pixmap = pm;
         else {
@@ -1317,9 +1330,11 @@ win_bag::SwitchFromPixmap(const BBox *BB)
 {
     // Note that the bounding values are included in the display.
     if (wib_window_bak) {
+#ifdef XXX_GDK
         gdk_window_copy_area(wib_window_bak, CpyGC(),
             BB->left, BB->top, gd_window, BB->left, BB->top,
             BB->width() + 1, abs(BB->height()) + 1);
+#endif
         gd_window = wib_window_bak;
         wib_window_bak = 0;
         // This fixes a display problem on OpenSuse plasma (at least).
@@ -1349,9 +1364,11 @@ win_bag::CopyPixmap(const BBox *BB)
 {
     // Note that the bounding values are included in the display.
     if (wib_window_bak) {
+#ifdef XXX_GDK
         gdk_window_copy_area(wib_window_bak, CpyGC(),
             BB->left, BB->top, gd_window, BB->left, BB->top,
             BB->width() + 1, abs(BB->height()) + 1);
+#endif
     }
 }
 
@@ -1365,8 +1382,10 @@ win_bag::DestroyPixmap()
         gd_window = wib_window_bak;
         wib_window_bak = 0;
     }
+#ifdef XXX_GDK
     if (wib_draw_pixmap)
         gdk_pixmap_unref(wib_draw_pixmap);
+#endif
     wib_draw_pixmap = 0;
     wib_px_width = 0;
     wib_px_height = 0;
@@ -1415,7 +1434,7 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
     }
     else {
         pm = gdk_pixmap_new(gd_window, vp_width, vp_height,
-            GRX->Visual()->depth);
+            gdk_visual_get_depth(GRX->Visual()));
         if (!pm)
             return (false);
         GdkWindow *tmpw = gd_window;
@@ -1453,8 +1472,11 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
 #endif
 #endif
 #endif
+
+#ifdef XXX_GDK
     if (!native)
         gdk_pixmap_unref(pm);
+#endif
     if (!im)
         return (false);
     ImErrType ret = im->save_image(filename, 0);
@@ -1807,8 +1829,8 @@ win_bag::resize_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
     win_bag *w = static_cast<win_bag*>(client_data);
     if (event->type == GDK_CONFIGURE && w->wib_windesc) {
-        int width, height;
-        gdk_window_get_size(caller->window, &width, &height);
+        int width = gdk_window_get_width(gtk_widget_get_window(caller));
+        int height = gdk_window_get_height(gtk_widget_get_window(caller));
         EV()->ResizeCallback(w->wib_windesc, width, height);
         w->wib_resized = true;  // used in redraw_hdlr
     }
@@ -1824,7 +1846,7 @@ win_bag::resize_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 int
 win_bag::redraw_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
 {
-    if (widget->parent == DontRedrawMe) {
+    if (gtk_widget_get_parent(widget) == DontRedrawMe) {
         DontRedrawMe = 0;
         return (false);
     }
@@ -1921,7 +1943,7 @@ win_bag::key_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 
     if (kev->keyval == GDK_Shift_L || kev->keyval == GDK_Shift_R ||
             kev->keyval == GDK_Control_L || kev->keyval == GDK_Control_R) {
-        gdk_keyboard_grab(caller->window, true, kev->time);
+        gdk_keyboard_grab(gtk_widget_get_window(caller), true, kev->time);
         grabbed_key = kev->keyval;
     }
 
@@ -1959,7 +1981,7 @@ win_bag::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
     GdkEventButton *bev = (GdkEventButton*)event;
     int button = Kmap()->ButtonMap(bev->button);
-    if (!GTK_WIDGET_SENSITIVE(gtkMenu()->MainMenu()) && button == 1)
+    if (!gtk_widget_get_sensitive(gtkMenu()->MainMenu()) && button == 1)
         // menu is insensitive, so ignore press
         return (true);
     if (event->type == GDK_2BUTTON_PRESS ||
@@ -2043,7 +2065,7 @@ win_bag::button_up_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 {
     GdkEventButton *bev = (GdkEventButton*)event;
     int button = Kmap()->ButtonMap(bev->button);
-    if (!GTK_WIDGET_SENSITIVE(gtkMenu()->MainMenu()) && button == 1)
+    if (!gtk_widget_get_sensitive(gtkMenu()->MainMenu()) && button == 1)
         // menu is insensitive, so ignore release
         return (true);
     if (bev->button < GS_NBTNS)
@@ -2155,13 +2177,13 @@ win_bag::motion_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 #ifdef MOTION_IDLE
     if (w->wib_windesc) {
         if (w->wib_id) {
-            gtk_idle_remove(w->wib_id);
+            g_source_remove(w->wib_id);
             w->wib_id = 0;
         }
         w->wib_state = mev->state;
         w->wib_x = (int)mev->x;
         w->wib_y = (int)mev->y;
-        w->wib_id = gtk_idle_add(motion_idle, client_data);
+        w->wib_id = g_idle_add(motion_idle, client_data);
     }
 #else
     if (w->wib_windesc) {
@@ -2234,11 +2256,11 @@ win_bag::enter_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 
 #ifdef MOTION_IDLE
     if (w->wib_id) {
-        gtk_idle_remove(w->wib_id);
+        g_source_remove(w->wib_id);
         w->wib_id = 0;
     }
 #endif
-    GTK_WIDGET_SET_FLAGS(caller, GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(caller, true);
     gtk_window_set_focus(GTK_WINDOW(w->Shell()), caller);
 
     GdkEventCrossing *cev = (GdkEventCrossing*)event;
@@ -2297,7 +2319,7 @@ win_bag::leave_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 
 #ifdef MOTION_IDLE
     if (w->wib_id) {
-        gtk_idle_remove(w->wib_id);
+        g_source_remove(w->wib_id);
         w->wib_id = 0;
     }
 #endif
@@ -2367,11 +2389,14 @@ win_bag::drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
     GtkSelectionData *data, guint, guint time)
 {
     bool success = false;
-    if (!data->data)
+    if (!gtk_selection_data_get_data(data))
         ;
-    else if (data->target == gdk_atom_intern("property", true)) {
+    else if (gtk_selection_data_get_target(data) ==
+            gdk_atom_intern("property", true)) {
         if (gtkEdit() && gtkEdit()->is_active()) {
-            unsigned char *val = data->data + sizeof(int);
+            unsigned char *val =
+                (unsigned char*)gtk_selection_data_get_data(data) +
+                sizeof(int);
             CDs *cursd = CurCell(true);
             hyList *hp = new hyList(cursd, (char*)val, HYcvAscii);
             gtkEdit()->insert(hp);
@@ -2379,10 +2404,12 @@ win_bag::drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
             success = true;
         }
     }
-    else if (data->length >= 0 && data->format == 8) {
-        char *src = (char*)data->data;
+    else if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8) {
+        char *src = (char*)gtk_selection_data_get_data(data);
         char *t = 0;
-        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+        if (gtk_selection_data_get_target(data) ==
+                gdk_atom_intern("TWOSTRING", true)) {
             // Drops from content lists may be in the form
             // "fname_or_chd\ncellname".
             t = strchr(src, '\n');
@@ -2422,9 +2449,12 @@ win_bag::target_drag_leave(GtkWidget *widget, GdkDragContext*, guint)
 {
     // called on drop, too
     if (HaveDrag) {
-        if (gtk_object_get_data(GTK_OBJECT(widget), "drag_hlite")) {
+        if (g_object_get_data(G_OBJECT(widget), "drag_hlite")) {
             gtk_drag_unhighlight(widget);
-            gtk_object_remove_data(GTK_OBJECT(widget), "drag_hlite");
+//XXX does this work?
+//XXX            gtk_object_remove_data(GTK_OBJECT(widget), "drag_hlite");
+            g_object_replace_data(G_OBJECT(widget), "drag_hlite",
+                0, 0, 0, 0);
         }
         DontRedrawMe = widget;
         HaveDrag = false;
@@ -2447,7 +2477,7 @@ win_bag::target_drag_motion(GtkWidget *widget, GdkDragContext*, gint, gint,
         HaveDrag = true;
         DontRedrawMe = widget;
         gtk_drag_highlight(widget);
-        gtk_object_set_data(GTK_OBJECT(widget), "drag_hlite", (void*)1);
+        g_object_set_data(G_OBJECT(widget), "drag_hlite", (void*)1);
     }
     return (true);
 }
@@ -2785,7 +2815,7 @@ main_bag::initialize()
         int x = r.x + (r.width - w)/2;
         int y = r.y + (r.height - h)/2;
         gtk_window_set_default_size(GTK_WINDOW(wb_shell), w, h);
-        gtk_widget_set_uposition(wb_shell, x, y);
+        gtk_window_move(GTK_WINDOW(wb_shell), x, y);
     }
     else {
         gtk_window_parse_geometry(GTK_WINDOW(wb_shell), XM()->Geometry());
@@ -2794,27 +2824,33 @@ main_bag::initialize()
     // Realize
     //
     gtk_widget_show(wb_shell);
-    gd_window = gd_viewport->window;
+    gd_window = gtk_widget_get_window(gd_viewport);
     GRX->SetDefaultFocusWin(gd_window);
 
     // Make the GC's.
     //
     GdkGCValues gcvalues;
     gcvalues.cap_style = GDK_CAP_BUTT;
+#ifdef XXX_GDK
     Gbag()->set_gc(gdk_gc_new_with_values(gd_window, &gcvalues,
         (GdkGCValuesMask)GDK_GC_CAP_STYLE));
+#endif
 
     // Growl... GTK doesn't have this
 #ifdef WITH_X11
     XGCValues xval;
     xval.fill_rule = WindingRule;
 //XXX    XChangeGC(gr_x_display(), gr_x_gc(GC()), GCFillRule, &xval);
+#ifdef XXX_GDK
     XChangeGC(gr_x_display(), gdk_x11_gc_get_xgc(GC()), GCFillRule, &xval);
+#endif
 #endif
 
     gcvalues.function = GDK_XOR;
+#ifdef XXX_GDK
     Gbag()->set_xorgc(gdk_gc_new_with_values(gd_window, &gcvalues,
         (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE)));
+#endif
 
     gd_backg = GRX->NameColor("black");
     gd_foreg = GRX->NameColor("white");
@@ -2822,30 +2858,36 @@ main_bag::initialize()
     GdkColor clr;
     clr.pixel = gd_backg;
     gtk_QueryColor(&clr);
+#ifdef XXX_GDK
     gdk_gc_set_background(GC(), &clr);
     gdk_gc_set_background(XorGC(), &clr);
+#endif
     clr.pixel = gd_foreg;
     gtk_QueryColor(&clr);
+#ifdef XXX_GDK
     gdk_gc_set_foreground(GC(), &clr);
+#endif
     clr.pixel = gd_backg ^ gd_foreg;
     gtk_QueryColor(&clr);
+#ifdef XXX_GDK
     gdk_gc_set_foreground(XorGC(), &clr);
+#endif
 
     // Set backgrounds of text areas and drawing areas.
     //
     SetWindowBackground(gd_backg);
     clr.pixel = DSP()->Color(PromptBackgroundColor);
     gtk_QueryColor(&clr);
-    gdk_window_set_background(wb_textarea->window, &clr);
-    gdk_window_clear(wb_textarea->window);
-    gdk_window_set_background(mb_readout->window, &clr);
-    gdk_window_clear(mb_readout->window);
+    gdk_window_set_background(gtk_widget_get_window(wb_textarea), &clr);
+    gdk_window_clear(gtk_widget_get_window(wb_textarea));
+    gdk_window_set_background(gtk_widget_get_window(mb_readout), &clr);
+    gdk_window_clear(gtk_widget_get_window(mb_readout));
 
     // Set the I-beam cursor in the prompt and status text area.
 
     GdkCursor *i_cursor = gdk_cursor_new(GDK_XTERM);
-    gdk_window_set_cursor(wb_textarea->window, i_cursor);
-    gdk_window_set_cursor(mb_readout->window, i_cursor);
+    gdk_window_set_cursor(gtk_widget_get_window(wb_textarea), i_cursor);
+    gdk_window_set_cursor(gtk_widget_get_window(mb_readout), i_cursor);
 }
 
 
@@ -2978,7 +3020,7 @@ sEventHdlr::main_event_handler(GdkEvent *event, void*)
         LogEvent(event);
         if (gtkPkgIf()->IsBusy()) {
             GtkWidget *evw = gtk_get_event_widget(event);
-            if (gtk_object_get_data(GTK_OBJECT(evw), "abort"))
+            if (g_object_get_data(G_OBJECT(evw), "abort"))
                 gtk_main_do_event(event);
             else if (event->button.button < 4)
                 // Ignore mouse wheel events.
@@ -3010,7 +3052,7 @@ sEventHdlr::main_event_handler(GdkEvent *event, void*)
                     return;
                 }
                 GtkWidget *evw = gtk_get_event_widget(event);
-                if (gtk_object_get_data(GTK_OBJECT(evw), "abort"))
+                if (g_object_get_data(G_OBJECT(evw), "abort"))
                     gtk_main_do_event(event);
                 return;
             }

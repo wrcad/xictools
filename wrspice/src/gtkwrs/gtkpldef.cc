@@ -75,7 +75,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     pd_shell = gtk_NewPopup(0, "Plot Options", pl_cancel_proc, 0);
     if (x || y) {
         FixLoc(&x, &y);
-        gtk_widget_set_uposition(pd_shell, x, y);
+        gtk_window_move(GTK_WINDOW(pd_shell), x, y);
     }
 
     GtkWidget *form = gtk_table_new(1, 2, false);
@@ -765,7 +765,7 @@ namespace {
                 i = 0;
             }
             else {
-                if (gtk_object_get_data(GTK_OBJECT(caller), "down")) {
+                if (g_object_get_data(G_OBJECT(caller), "down")) {
                     i--;
                     if (i < 0) {
                         i = 0;
@@ -794,7 +794,7 @@ namespace {
                 i = 0;
             }
             else {
-                if (gtk_object_get_data(GTK_OBJECT(caller), "down")) {
+                if (g_object_get_data(G_OBJECT(caller), "down")) {
                     i--;
                     if (i < 0) {
                         i = 0;
@@ -823,7 +823,7 @@ namespace {
                 i = 0;
             }
             else {
-                if (gtk_object_get_data(GTK_OBJECT(caller), "down")) {
+                if (g_object_get_data(G_OBJECT(caller), "down")) {
                     i--;
                     if (i < 0) {
                         i = 0;
@@ -846,7 +846,7 @@ namespace {
             if (i < 0)
                 i = wrsHCcb.format;
             else {
-                if (gtk_object_get_data(GTK_OBJECT(caller), "down")) {
+                if (g_object_get_data(G_OBJECT(caller), "down")) {
                     i--;
                     if (i < 0) {
                         i = 0;
@@ -896,13 +896,13 @@ namespace {
                 if (ent->entry2) {
                     sprintf(buf, "%d", val2);
                     gtk_entry_set_text(GTK_ENTRY(ent->entry2), buf);
-                    gtk_entry_set_editable(GTK_ENTRY(ent->entry2), false);
+                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), false);
                     gtk_widget_set_sensitive(ent->entry2, false);
                 }
             }
             else {
                 if (ent->entry2) {
-                    gtk_entry_set_editable(GTK_ENTRY(ent->entry2), true);
+                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), true);
                     gtk_widget_set_sensitive(ent->entry2, true);
                 }
             }
@@ -939,13 +939,13 @@ namespace {
                 if (ent->entry2) {
                     sprintf(buf, "%g", dval2);
                     gtk_entry_set_text(GTK_ENTRY(ent->entry2), buf);
-                    gtk_entry_set_editable(GTK_ENTRY(ent->entry2), false);
+                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), false);
                     gtk_widget_set_sensitive(ent->entry2, false);
                 }
             }
             else {
                 if (ent->entry2) {
-                    gtk_entry_set_editable(GTK_ENTRY(ent->entry2), true);
+                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), true);
                     gtk_widget_set_sensitive(ent->entry2, true);
                 }
             }

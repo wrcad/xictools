@@ -166,14 +166,22 @@ namespace {
     }
 }
 
+bool lockout;
 
 void
 cConvert::PopUpFiles(GRobject caller, ShowMode mode)
 {
+    static bool lockout;
     if (!GRX || !mainBag())
         return;
     if (mode == MODE_OFF) {
+        // Make sure we aren't reentered from destructor code.  This
+        // was a problem once, will memory-fault.
+        if (lockout)
+            return;
+        lockout = true;
         delete FL();
+        lockout = false;
         return;
     }
     if (mode == MODE_UPD) {
@@ -187,7 +195,7 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
 
     // This is needed to reliable show the busy cursor.
     dspPkgIf()->SetWorking(true);
-    gtk_timeout_add(500, msw_timeout, caller);
+    g_timeout_add(500, msw_timeout, caller);
 
     /****
     new sFL(caller);

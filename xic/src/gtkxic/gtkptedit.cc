@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "ext.h"
 #include "sced.h"
@@ -136,15 +138,17 @@ cExt::PopUpPhysTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
 
     int mwid, mhei;
     MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, &mhei);
-    if (x + TE->shell()->requisition.width > mwid)
-        x = mwid - TE->shell()->requisition.width;
-    if (y + TE->shell()->requisition.height > mhei)
-        y = mhei - TE->shell()->requisition.height;
-    gtk_widget_set_uposition(TE->shell(), x, y);
+    GtkRequisition req;
+    gtk_widget_get_requisition(TE->shell(), &req);
+    if (x + req.width > mwid)
+        x = mwid - req.width;
+    if (y + req.height > mhei)
+        y = mhei - req.height;
+    gtk_window_move(GTK_WINDOW(TE->shell()), x, y);
     gtk_widget_show(TE->shell());
 
     // OpenSuse-13.1 gtk-2.24.23 bug
-    gtk_widget_set_uposition(TE->shell(), x, y);
+    gtk_window_move(GTK_WINDOW(TE->shell()), x, y);
 }
 // End of cSced functions.
 
@@ -237,9 +241,15 @@ sTE::sTE(GRobject caller, TermEditInfo *tinfo, void(*action)(TermEditInfo*, CDst
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
+#ifdef XXX_OPT
     GtkWidget *entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "layer");
     gtk_widget_show(entry);
+#else
+    GtkWidget *entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "layer");
+    gtk_widget_show(entry);
+#endif
     te_layer = entry;
 
     gtk_table_attach(GTK_TABLE(table), entry, 1, 2, rc, rc+1,
@@ -335,7 +345,7 @@ sTE::sTE(GRobject caller, TermEditInfo *tinfo, void(*action)(TermEditInfo*, CDst
         (GtkAttachOptions)0, 2, 2);
 
     // Pressing Enter in the entry presses Apply.
-    GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
+    gtk_widget_set_can_default(button, true);
     gtk_window_set_default(GTK_WINDOW(te_popup), button);
 
     button = gtk_button_new_with_label("Dismiss");
@@ -380,7 +390,7 @@ sTE::update(TermEditInfo *tinfo, CDsterm *term)
     GtkWidget *mi = gtk_menu_item_new_with_label(anyname);
     gtk_widget_set_name(mi, anyname);
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(te_menu_proc), 0);
     CDl *ld;
@@ -391,11 +401,13 @@ sTE::update(TermEditInfo *tinfo, CDsterm *term)
         mi = gtk_menu_item_new_with_label(ld->name());
         gtk_widget_set_name(mi, ld->name());
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(te_menu_proc), (void*)ld->name());
     }
+#ifdef XXX_OPT
     gtk_option_menu_set_menu(GTK_OPTION_MENU(te_layer), menu);
+#endif
 
     bool hset = false;
     if (tinfo->layer_name() && *tinfo->layer_name()) {
@@ -405,8 +417,10 @@ sTE::update(TermEditInfo *tinfo, CDsterm *term)
             if (!ld->isRouting())
                 continue;
             if (!strcmp(ld->name(), tinfo->layer_name())) {
+#ifdef XXX_OPT
                 gtk_option_menu_set_history(GTK_OPTION_MENU(te_layer),
                     cnt);
+#endif
                 hset = true;
                 te_lname = ld->name();
                 break;
@@ -415,7 +429,9 @@ sTE::update(TermEditInfo *tinfo, CDsterm *term)
         }
     }
     if (!hset) {
+#ifdef XXX_OPT
         gtk_option_menu_set_history(GTK_OPTION_MENU(te_layer), 0);
+#endif
         te_lname = 0;
     }
 

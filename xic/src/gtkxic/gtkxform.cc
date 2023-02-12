@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+//#define XXX_OPT
+
 #include "main.h"
 #include "edit.h"
 #include "dsp_inlines.h"
@@ -193,6 +195,7 @@ sTfm::sTfm(GRobject c,
     gtk_widget_show(label);
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
+#ifdef XXX_OPT
     GtkWidget *entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "rotat");
     gtk_widget_show(entry);
@@ -207,12 +210,30 @@ sTfm::sTfm(GRobject c,
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(tf_ang_proc), 0);
         d += da;
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
+#else
+    GtkWidget *entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "rotat");
+    gtk_widget_show(entry);
+
+    /*
+    int da = DSP()->CurMode() == Physical ? 45 : 90;
+    int d = 0;
+    while (d < 360) {
+        char buf[16];
+        sprintf(buf, "%d", d);
+        d += da;
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), buf);
+    }
+    */
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(tf_ang_proc), this);
+#endif
     tf_ang = entry;
     gtk_box_pack_start(GTK_BOX(row), entry, false, false, 0);
 
@@ -248,7 +269,7 @@ sTfm::sTfm(GRobject c,
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
 
     GtkWidget *sb = sb_mag.init(1.0, TFM_MIND, TFM_MAXD, TFM_NUMD);
-    sb_mag.connect_changed((GtkSignalFunc)tf_val_changed, 0);
+    sb_mag.connect_changed((GCallback)tf_val_changed, 0);
 
     char buf[64];
     sprintf(buf, "%.*f", TFM_NUMD, TFM_MAXD);
@@ -408,6 +429,7 @@ sTfm::update()
     char buf[32];
     int da = DSP()->CurMode() == Physical ? 45 : 90;
     int d = 0;
+#ifdef XXX_OPT
     GtkWidget *menu = gtk_menu_new();
     gtk_widget_set_name(menu, "rotat");
     while (d < 360) {
@@ -415,7 +437,7 @@ sTfm::update()
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(tf_ang_proc), 0);
         d += da;
@@ -423,6 +445,22 @@ sTfm::update()
     gtk_option_menu_set_menu(GTK_OPTION_MENU(tf_ang), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(tf_ang),
         GEO()->curTx()->angle()/da);
+#else
+    // Clear the combo box, note how the empty list is detected.
+    GtkTreeModel *mdl =
+        gtk_combo_box_get_model(GTK_COMBO_BOX(tf_ang));
+    GtkTreeIter iter;
+    while (gtk_tree_model_get_iter_first(mdl, &iter))
+        gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(tf_ang), 0);
+
+    while (d < 360) {
+        sprintf(buf, "%d", d);
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(tf_ang), buf);
+        d += da;
+    }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(tf_ang),
+        GEO()->curTx()->angle()/da);
+#endif
     has_tf |= GEO()->curTx()->angle();
     if (DSP()->CurMode() == Physical) {
         sb_mag.set_value(GEO()->curTx()->magn());
@@ -524,9 +562,19 @@ sTfm::tf_action_proc(GtkWidget *widget, void*)
 void
 sTfm::tf_ang_proc(GtkWidget *widget, void*)
 {
-    if (Tfm && Tfm->tf_callback)
+    if (Tfm && Tfm->tf_callback) {
+#ifdef XXX_OPT
         (*Tfm->tf_callback)("ang", true, gtk_widget_get_name(widget),
             Tfm->tf_arg);
+#else
+        char *t = gtk_combo_box_text_get_active_text(
+            GTK_COMBO_BOX_TEXT(Tfm->tf_ang));
+        if (t) {
+            (*Tfm->tf_callback)("ang", true, t, Tfm->tf_arg);
+            g_free(t);
+        }
+#endif
+    }
 }
 
 

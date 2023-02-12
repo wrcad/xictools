@@ -155,7 +155,7 @@ sLA::sLA(GRobject c)
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
     GtkWidget *menubar = gtk_menu_bar_new();
-    gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", menubar);
+    g_object_set_data(G_OBJECT(wb_shell), "menubar", menubar);
     gtk_widget_show(menubar);
     GtkWidget *item;
 
@@ -171,7 +171,7 @@ sLA::sLA(GRobject c)
     // _Open, <control>O, la_action_proc, OpenCode, 0
     item = gtk_menu_item_new_with_mnemonic("_Open");
     gtk_widget_set_name(item, "Open");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)OpenCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)OpenCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -182,7 +182,7 @@ sLA::sLA(GRobject c)
     // _Save, <control>S, la_action_proc, SaveCode, 0
     item = gtk_menu_item_new_with_mnemonic("_Save");
     gtk_widget_set_name(item, "Save");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)SaveCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)SaveCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -197,7 +197,7 @@ sLA::sLA(GRobject c)
     // _Quit, <control>Q, la_action_proc, CancelCode, 0
     item = gtk_menu_item_new_with_mnemonic("_Quit");
     gtk_widget_set_name(item, "Quit");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)CancelCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)CancelCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -217,7 +217,7 @@ sLA::sLA(GRobject c)
     // _New, <control>N, la_action_proc, NewCode, 0
     item = gtk_menu_item_new_with_mnemonic("_New");
     gtk_widget_set_name(item, "New");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)NewCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)NewCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -228,7 +228,7 @@ sLA::sLA(GRobject c)
     // _Delete, <control>D, la_action_proc, DeleteCode, 0
     item = gtk_menu_item_new_with_mnemonic("_Delete");
     gtk_widget_set_name(item, "Delete");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)DeleteCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)DeleteCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -241,7 +241,7 @@ sLA::sLA(GRobject c)
     // _Edit, <control>E, la_action_proc, EditCode, 0
     item = gtk_menu_item_new_with_mnemonic("_Edit");
     gtk_widget_set_name(item, "Edit");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)EditCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)EditCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -254,7 +254,7 @@ sLA::sLA(GRobject c)
     // Decimal _Form, <control>F, la_action_proc, DecCode, <CheckItem>
     item = gtk_check_menu_item_new_with_mnemonic("Decimal _Form");
     gtk_widget_set_name(item, "Decimal Form");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)DecCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)DecCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -274,7 +274,7 @@ sLA::sLA(GRobject c)
     // _Help, <control>H, la_action_proc, HelpCode, 0
     item = gtk_menu_item_new_with_mnemonic("_Help");
     gtk_widget_set_name(item, "Help");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)HelpCode);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)HelpCode);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -505,9 +505,8 @@ sLA::yn_cb(bool yn, void*)
 void
 sLA::la_action_proc(GtkWidget *caller, void*)
 {
-    long code = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
-    int w, h;
-    gdk_window_get_size(LA->wb_shell->window, &w, &h);
+    long code = (long)g_object_get_data(G_OBJECT(caller), MIDX);
+    int w = gdk_window_get_width(gtk_widget_get_window(LA->wb_shell));
     GRloc loc(LW_XYR, w + 4, 0);
     if (code == CancelCode)
         XM()->PopUpLayerAliases(0, MODE_OFF);

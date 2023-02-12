@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_LIST
+
 #include "main.h"
 #include "fio.h"
 #include "fio_assemble.h"
@@ -982,12 +984,15 @@ sAsm::asm_page_change_proc(GtkWidget*, void*, int page, void*)
     if (page > 0) {
         sAsmPage *src = Asm->asm_sources[page-1];
         int n = src->pg_curtlcell;
+#ifdef XXX_LIST
         if (n >= 0)
             gtk_list_select_item(GTK_LIST(src->pg_toplevels), n);
         else {
             src->pg_tx->reset();
             gtk_list_unselect_all(GTK_LIST(src->pg_toplevels));
         }
+#else
+#endif
         src->upd_sens();
     }
 }
@@ -1057,6 +1062,7 @@ sAsm::asm_action_proc(GtkWidget *caller, void*)
             int n = src->pg_curtlcell;
             if (n >= 0) {
 
+#ifdef XXX_LIST
                 if (n > 0)
                     gtk_list_clear_items(GTK_LIST(src->pg_toplevels), n, n+1);
                 else {
@@ -1073,6 +1079,8 @@ sAsm::asm_action_proc(GtkWidget *caller, void*)
                     GList *g = g_list_append(0, l->children->data);
                     gtk_list_remove_items(GTK_LIST(src->pg_toplevels), g);
                 }
+#else
+#endif
 
                 delete src->pg_cellinfo[n];
                 src->pg_numtlcells--;
@@ -1081,9 +1089,13 @@ sAsm::asm_action_proc(GtkWidget *caller, void*)
                 src->pg_cellinfo[src->pg_numtlcells] = 0;
                 src->pg_curtlcell = -1;
                 src->upd_sens();
-                if (src->pg_numtlcells > 0)
+#ifdef XXX_LIST
+                if (src->pg_numtlcells > 0) {
                     gtk_list_select_item(GTK_LIST(src->pg_toplevels),
                         src->pg_numtlcells-1);
+                }
+#else
+#endif
             }
         }
     }

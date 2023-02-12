@@ -564,7 +564,7 @@ GTKtoolbar::PopUpTBhelp(GRobject parent, GRobject call_btn, TBH_type type)
         return;
     sTBhelp *th = new sTBhelp(parent, call_btn);
     tb_kw_help[type] = th->show(type);;
-    gtk_object_set_data(GTK_OBJECT(tb_kw_help[type]), "tbtype",
+    g_object_set_data(G_OBJECT(tb_kw_help[type]), "tbtype",
         (void*)(long)type);
 }
 
@@ -576,7 +576,7 @@ GTKtoolbar::PopDownTBhelp(TBH_type type)
         return;
     g_signal_handlers_disconnect_by_func(G_OBJECT(tb_kw_help[type]),
         (gpointer)sTBhelp::th_cancel_proc, (gpointer)tb_kw_help[type]);
-    gdk_window_get_root_origin(tb_kw_help[type]->window,
+    gdk_window_get_root_origin(gtk_widget_get_window(tb_kw_help[type]),
         &tb_kw_help_pos[type].x, &tb_kw_help_pos[type].y);
     gtk_widget_destroy(GTK_WIDGET(tb_kw_help[type]));
     tb_kw_help[type] = 0;
@@ -590,8 +590,8 @@ sTBhelp::sTBhelp(GRobject parent, GRobject call_btn)
     th_lx = 0;
     th_ly = 0;
 
-    gtk_object_set_data_full(GTK_OBJECT(th_popup), "tbhelp", this, th_destroy);
-    gtk_object_set_data(GTK_OBJECT(th_popup), "caller", call_btn);
+    g_object_set_data_full(G_OBJECT(th_popup), "tbhelp", this, th_destroy);
+    g_object_set_data(G_OBJECT(th_popup), "caller", call_btn);
 
     GtkWidget *form = gtk_table_new(1, 4, false);
     gtk_widget_show(form);
@@ -690,7 +690,7 @@ sTBhelp::show(TBH_type type)
     gtk_window_set_transient_for(GTK_WINDOW(th_popup),
         GTK_WINDOW(TB()->context->Shell()));
     if (TB()->tb_kw_help_pos[type].x != 0 && TB()->tb_kw_help_pos[type].y != 0)
-        gtk_widget_set_uposition(th_popup, TB()->tb_kw_help_pos[type].x,
+        gtk_window_move(GTK_WINDOW(th_popup), TB()->tb_kw_help_pos[type].x,
             TB()->tb_kw_help_pos[type].y);
     gtk_widget_show(th_popup);
     return (th_popup);
@@ -739,11 +739,11 @@ void
 sTBhelp::th_cancel_proc(GtkWidget*, void *client_data)
 {
     GtkWidget *popup = (GtkWidget*)client_data;
-    GtkWidget *caller = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(popup),
+    GtkWidget *caller = (GtkWidget*)g_object_get_data(G_OBJECT(popup),
         "caller");
     if (caller)
         GRX->Deselect(caller);
-    int type = (intptr_t)gtk_object_get_data(GTK_OBJECT(popup), "tbtype");
+    int type = (intptr_t)g_object_get_data(G_OBJECT(popup), "tbtype");
     TB()->PopDownTBhelp((TBH_type)type);
 }
 
@@ -837,7 +837,7 @@ ErrMsgBox::PopUpErr(const char *string)
     //
     GtkWidget *hbox;
     text_scrollable_new(&hbox, &er_text, FNT_PROP);
-    gtk_object_set_data(GTK_OBJECT(er_popup), "text", er_text);
+    g_object_set_data(G_OBJECT(er_popup), "text", er_text);
     text_set_chars(er_text, string);
     gtk_widget_add_events(er_text, GDK_BUTTON_PRESS_MASK);
     g_signal_connect(G_OBJECT(er_text), "button_press_event",
@@ -863,7 +863,7 @@ ErrMsgBox::PopUpErr(const char *string)
     gtk_widget_show(cancel);
     g_signal_connect(G_OBJECT(cancel), "clicked",
         G_CALLBACK(er_cancel_proc), er_popup);
-    gtk_object_set_data(GTK_OBJECT(cancel), "shell", er_popup);
+    g_object_set_data(G_OBJECT(cancel), "shell", er_popup);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(er_text),
         er_wrap ? GTK_WRAP_WORD_CHAR : GTK_WRAP_NONE);
     gtk_box_pack_start(GTK_BOX(hbox), cancel, true, true, 0);
@@ -871,7 +871,7 @@ ErrMsgBox::PopUpErr(const char *string)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     GRX->SetDoubleClickExit(er_popup, cancel);
-    GTK_WIDGET_SET_FLAGS(cancel, GTK_CAN_DEFAULT);
+    gtk_widget_set_can_default(cancel, true);
     gtk_window_set_default(GTK_WINDOW(er_popup), cancel);
 
     int mwid, mhei;
@@ -911,7 +911,7 @@ ErrMsgBox::PopUpErr(const char *string)
     // MSW seems to need this before gtk_window_show.
     TB()->RevertFocus(er_popup);
 
-    gtk_widget_set_uposition(er_popup, er_x, er_y);
+    gtk_window_move(GTK_WINDOW(er_popup), er_x, er_y);
     gtk_widget_show(er_popup);
     if (TB()->context && TB()->context->Window()) {
         gtk_window_set_transient_for(GTK_WINDOW(er_popup),
@@ -953,9 +953,11 @@ ErrMsgBox::stuff_msg(const char *string)
 
     text_insert_chars_at_point(er_text, 0, string, -1, -1);
     text_set_editable(er_text, false);
-    GtkAdjustment *adj = GTK_TEXT_VIEW(er_text)->vadjustment;
-    if (adj && adj->value < adj->upper - adj->page_size) {
-        adj->value = adj->upper - adj->page_size;
+    GtkAdjustment *adj = gtk_text_view_get_vadjustment(GTK_TEXT_VIEW(er_text));
+    if (adj && gtk_adjustment_get_value(adj) <
+            gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj)) {
+        gtk_adjustment_set_value(adj,
+            gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj));
         g_signal_emit_by_name(G_OBJECT(adj), "value_changed");
     }
 }
@@ -966,9 +968,10 @@ void
 ErrMsgBox::er_cancel_proc(GtkWidget*, void*)
 {
     if (MB.er_popup) {
-        if (GTK_WIDGET_DRAWABLE(MB.er_popup))
-            gdk_window_get_root_origin(MB.er_popup->window,
+        if (gtk_widget_is_drawable(MB.er_popup)) {
+            gdk_window_get_root_origin(gtk_widget_get_window(MB.er_popup),
                 &MB.er_x, &MB.er_y);
+        }
         gtk_widget_destroy(MB.er_popup);
         MB.er_popup = 0;
     }
@@ -1077,7 +1080,7 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
     gtk_widget_show(cancel);
     g_signal_connect(G_OBJECT(cancel), "clicked",
         G_CALLBACK(ms_cancel_proc), popup);
-    gtk_object_set_data(GTK_OBJECT(cancel), "shell", popup);
+    g_object_set_data(G_OBJECT(cancel), "shell", popup);
     gtk_table_attach(GTK_TABLE(form), cancel, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -1088,8 +1091,10 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
     int mwid, mhei;
     MonitorGeom(0, 0, 0, &mwid, &mhei);
     // make sure the label is fully on-screen
-    int wd = popup->requisition.width;
-    int ht = popup->requisition.height;
+    GtkRequisition req;
+    gtk_widget_get_requisition(popup, &req);
+    int wd = req.width;
+    int ht = req.height;
     if (x + wd > mwid)
         x = mwid - wd;
     if (y + ht > mhei)
@@ -1098,7 +1103,7 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
     // MSW seems to need this before gtk_window_show.
     RevertFocus(popup);
 
-    gtk_widget_set_uposition(popup, x, y);
+    gtk_window_move(GTK_WINDOW(popup), x, y);
     gtk_widget_show(popup);
     if (TB()->context && TB()->context->Window()) {
         gtk_window_set_transient_for(GTK_WINDOW(popup),
@@ -1149,8 +1154,8 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         int ux = 18*fwid;
         int vx = ux + 14*fwid;
 
-        int wid, hei;
-        gdk_window_get_size(context->Window(), &wid, &hei);
+        int wid = gdk_window_get_width(context->Window());
+        int hei = gdk_window_get_height(context->Window());
         context->SetColor(SpGrPkg::DefColors[0].pixel);
         context->Box(0, 0, wid, hei);
 
@@ -1270,7 +1275,7 @@ int
 GTKtoolbar::RegisterIdleProc(int(*proc)(void*), void *arg)
 {
     if (GRX)
-        return (gtk_idle_add(proc, arg));
+        return (g_idle_add(proc, arg));
     return (0);
 }
 
@@ -1279,7 +1284,7 @@ bool
 GTKtoolbar::RemoveIdleProc(int id)
 {
     if (GRX)
-        gtk_idle_remove(id);
+        g_source_remove(id);
     return (true);
 }
 
@@ -1359,8 +1364,8 @@ namespace {
 #ifdef WITH_X11
         // This is probably crap.
         if (GRX->ConsoleXid() && Sp.GetVar("wmfocusfix", VTYP_BOOL, 0)) {
-            XSetInputFocus(gdk_display, GRX->ConsoleXid(), RevertToPointerRoot,
-                CurrentTime);
+            XSetInputFocus(gdk_x11_get_default_xdisplay(), GRX->ConsoleXid(),
+                RevertToPointerRoot, CurrentTime);
         }
 #endif
         return (false);
@@ -1373,8 +1378,8 @@ namespace {
         g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
             (gpointer)revert_proc, widget);
         // Use a timeout rather than an idle, KDE seems to need the delay.
-        gtk_timeout_add(800, set_accept_focus, widget);
-        // gtk_idle_add(set_accept_focus, widget);
+        g_timeout_add(800, set_accept_focus, widget);
+        // g_idle_add(set_accept_focus, widget);
         return (0);
     }
 }
@@ -1523,10 +1528,11 @@ GTKtoolbar::SetActive(const char *str, bool state)
 void
 GTKtoolbar::SetLoc(const char *str, GtkWidget *shell)
 {
-    if (GTK_WIDGET_DRAWABLE(shell)) {
+    if (gtk_widget_is_drawable(shell)) {
         for (tbent *tb = entries; tb && tb->name; tb++) {
             if (tb->name == str) {
-                gdk_window_get_root_origin(shell->window, &tb->x, &tb->y);
+                gdk_window_get_root_origin(gtk_widget_get_window(shell),
+                    &tb->x, &tb->y);
                 int x, y;
                 MonitorGeom(shell, &x, &y);
                 tb->x -= x;
@@ -1566,9 +1572,9 @@ GTKtoolbar::ConfigString()
         lstr.add("tbsetup toolbar off");
     else {
         lstr.add("tbsetup");
-        if (toolbar->window) {
+        if (gtk_widget_get_window(toolbar)) {
             int x, y;
-            gdk_window_get_root_origin(toolbar->window, &x, &y);
+            gdk_window_get_root_origin(gtk_widget_get_window(toolbar), &x, &y);
             sprintf(buf, fmt, "toolbar", "on", x, y);
             lstr.add(buf);
         }
@@ -1813,7 +1819,8 @@ GTKtoolbar::tbpop(bool up)
 
     // This is needed to get the window to change size if the font size
     // is increased.
-    gtk_window_set_policy(GTK_WINDOW(w->Shell()), false, true, false);
+// this is the defaut setting?
+//XXX    gtk_window_set_policy(GTK_WINDOW(w->Shell()), false, true, false);
 
     g_signal_connect(G_OBJECT(toolbar), "destroy",
         G_CALLBACK(quit_proc), 0);
@@ -1829,7 +1836,7 @@ GTKtoolbar::tbpop(bool up)
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(w->Shell()), accel_group);
     GtkWidget *menubar = gtk_menu_bar_new();
-    gtk_object_set_data(GTK_OBJECT(w->Shell()), "menubar", menubar);
+    g_object_set_data(G_OBJECT(w->Shell()), "menubar", menubar);
     gtk_widget_show(menubar);
     GtkWidget *item;
 
@@ -2236,6 +2243,7 @@ GTKtoolbar::tbpop(bool up)
     g_signal_connect(G_OBJECT(pixbtn), "clicked",
         G_CALLBACK(wr_btn_hdlr), 0);
     GtkStyle *style = gtk_widget_get_style(pixbtn);
+#ifdef XXX_GDK
     GdkPixmap *pmask;
     GdkPixmap *pixmap =
         gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
@@ -2243,6 +2251,8 @@ GTKtoolbar::tbpop(bool up)
     GtkWidget *pixwidg = gtk_pixmap_new(pixmap, pmask);
     gtk_widget_show(pixwidg);
     gtk_container_add(GTK_CONTAINER(pixbtn), pixwidg);
+#else
+#endif
     gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
     gtk_widget_set_tooltip_text(pixbtn, "Pop up email client");
 
@@ -2252,11 +2262,14 @@ GTKtoolbar::tbpop(bool up)
     g_signal_connect(G_OBJECT(pixbtn), "clicked",
         G_CALLBACK(rs_btn_hdlr), 0);
     style = gtk_widget_get_style(pixbtn);
+#ifdef XXX_GDK
     pixmap = gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
             &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)run_xpm);
     pixwidg = gtk_pixmap_new(pixmap, pmask);
     gtk_widget_show(pixwidg);
     gtk_container_add(GTK_CONTAINER(pixbtn), pixwidg);
+#else
+#endif
     gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
     gtk_widget_set_tooltip_text(pixbtn, "Run current circuit");
 
@@ -2266,11 +2279,14 @@ GTKtoolbar::tbpop(bool up)
     g_signal_connect(G_OBJECT(pixbtn), "clicked",
         G_CALLBACK(rs_btn_hdlr), (void*)1);
     style = gtk_widget_get_style(pixbtn);
+#ifdef XXX_GDK
     pixmap = gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
             &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)stop_xpm);
     pixwidg = gtk_pixmap_new(pixmap, pmask);
     gtk_widget_show(pixwidg);
     gtk_container_add(GTK_CONTAINER(pixbtn), pixwidg);
+#else
+#endif
     gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
     gtk_widget_set_tooltip_text(pixbtn, "Pause current analysis");
 
@@ -2318,7 +2334,7 @@ GTKtoolbar::tbpop(bool up)
             int x = tb->x;
             int y = tb->y;
             FixLoc(&x, &y);
-            gtk_widget_set_uposition(toolbar, x, y);
+            gtk_window_move(GTK_WINDOW(toolbar), x, y);
             continue;
         }
     }
@@ -2327,13 +2343,14 @@ GTKtoolbar::tbpop(bool up)
     RevertFocus(toolbar);
 
     gtk_widget_show(toolbar);
-    w->SetWindow(w->Viewport()->window);
+    w->SetWindow(gtk_widget_get_window(w->Viewport()));
     char tbuf[28];
     sprintf(tbuf, "WRspice-%s", Global.Version());
     w->Title(tbuf, "WRspice");
 
     // create GC's, these will also be used in the plots
     //
+#ifdef XXX_GDK
     if (!w->GC()) {
         GdkGCValues gcvalues;
         gcvalues.cap_style = GDK_CAP_NOT_LAST;
@@ -2350,6 +2367,7 @@ GTKtoolbar::tbpop(bool up)
         gtk_QueryColor(&clr);
         gdk_gc_set_foreground(w->XorGC(), &clr);
     }
+#endif
 
     // drawing colors
     const char *s = XRMgetFromDb("fgcolor1");
@@ -2372,7 +2390,7 @@ GTKtoolbar::tbpop(bool up)
     w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
     w->SetBackground(SpGrPkg::DefColors[0].pixel);
     w->Clear();
-    gtk_timeout_add(2000, res_timeout, 0);
+    g_timeout_add(2000, res_timeout, 0);
 }
 
 
@@ -2385,13 +2403,14 @@ void
 GTKtoolbar::drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
     GtkSelectionData *data, guint, guint time)
 {
-    if (data->length >= 0 && data->format == 8) {
-        char *src = (char*)data->data;
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8) {
+        char *src = (char*)gtk_selection_data_get_data(data);
         delete [] TB()->tb_dropfile;
         TB()->tb_dropfile = 0;
         if (TB()->context->ActiveInput()) {
-            GtkWidget *entry = (GtkWidget*)gtk_object_get_data
-                (GTK_OBJECT(TB()->context->ActiveInput()), "text");
+            GtkWidget *entry = (GtkWidget*)g_object_get_data
+                (G_OBJECT(TB()->context->ActiveInput()), "text");
             if (entry) {
                 gtk_entry_set_text(GTK_ENTRY(entry), src);
                 gtk_drag_finish(context, true, false, time);
@@ -2877,15 +2896,17 @@ GTKtoolbar::notes_proc(GtkWidget*, void*)
 void
 tb_bag::switch_to_pixmap()
 {
-    int w, h;
-    gdk_window_get_size(gd_window, &w, &h);
+    int w = gdk_window_get_width(gd_window);
+    int h = gdk_window_get_height(gd_window);
     if (!b_pixmap || w != b_wid || h != b_hei) {
+#ifdef XXX_GDK
         GdkPixmap *pm = b_pixmap;
         if (pm)
             gdk_pixmap_unref(pm);
         b_wid = w;
         b_hei = h;
-        pm = gdk_pixmap_new(gd_window, w, h, GRX->Visual()->depth);
+        pm = gdk_pixmap_new(gd_window, w, h,
+            gdk_visual_get_depth(GRX->Visual()));
         if (pm)
             b_pixmap = pm;
         else {
@@ -2893,10 +2914,13 @@ tb_bag::switch_to_pixmap()
             b_wid = 0;
             b_hei = 0;
         }
+#else
+#endif
     }
     b_winbak = gd_window;
     gd_window = b_pixmap;
-    gd_viewport->window = gd_window;
+//XXX    gd_viewport->window = gd_window;
+    gtk_widget_set_window(gd_viewport, gd_window);
 }
 
 
@@ -2906,11 +2930,14 @@ void
 tb_bag::switch_from_pixmap()
 {
     if (b_winbak) {
+#ifdef XXX_GDK
         gdk_window_copy_area(b_winbak, CpyGC(), 0, 0, gd_window,
             0, 0, b_wid, b_hei);
+#else
+#endif
         gd_window = b_winbak;
         b_winbak = 0;
-        gd_viewport->window = gd_window;
+        gtk_widget_set_window(gd_viewport, gd_window);
     }
 }
 // End of tb_bag functions.
@@ -2936,7 +2963,7 @@ namespace {
     void def_proc(GtkWidget*, void *client_data)
     {
         xEnt *ent = (xEnt*)client_data;
-        if (GTK_TOGGLE_BUTTON(ent->active)->active)
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ent->active)))
             gtk_toggle_button_toggled(GTK_TOGGLE_BUTTON(ent->active));
         if (ent->defstr)
             gtk_entry_set_text(GTK_ENTRY(ent->entry), ent->defstr);
@@ -3002,7 +3029,7 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
         gtk_widget_show(deflt);
         g_signal_connect(G_OBJECT(deflt), "clicked",
             G_CALLBACK(def_proc), this);
-        gtk_misc_set_padding(GTK_MISC(GTK_BIN(deflt)->child), 4, 0);
+        gtk_misc_set_padding(GTK_MISC(gtk_bin_get_child(GTK_BIN(deflt))), 4, 0);
         gtk_box_pack_start(GTK_BOX(hbox), deflt, false, false, 2);
     }
 
@@ -3084,7 +3111,7 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
                 g_signal_connect_after(G_OBJECT(ebox),
                     "button_release_event", G_CALLBACK(cb), kwstruct);
             }
-            gtk_object_set_data(GTK_OBJECT(ebox), "down", (void*)1);
+            g_object_set_data(G_OBJECT(ebox), "down", (void*)1);
             gtk_box_pack_start(GTK_BOX(vbox), ebox, false, false, 0);
 
             gtk_box_pack_start(GTK_BOX(hbox), vbox, false, false, 2);
@@ -3353,7 +3380,7 @@ namespace {
     //
     void bump(xKWent *entry)
     {
-        if (!GTK_WIDGET_SENSITIVE(entry->ent->entry))
+        if (!gtk_widget_is_sensitive(entry->ent->entry))
             return;
         char *string =
             gtk_editable_get_chars(GTK_EDITABLE(entry->ent->entry), 0, -1);
@@ -3404,7 +3431,7 @@ namespace {
     int delay_timer(void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
-        entry->ent->thandle = gtk_timeout_add(50, repeat_timer, client_data);
+        entry->ent->thandle = g_timeout_add(50, repeat_timer, client_data);
         return (false);
     }
 }
@@ -3418,12 +3445,12 @@ kw_float_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
     xKWent *entry = static_cast<xKWent*>(client_data);
     if (event->type == GDK_BUTTON_PRESS) {
         entry->ent->down =
-            gtk_object_get_data(GTK_OBJECT(caller), "down") ? true : false;
+            g_object_get_data(G_OBJECT(caller), "down") ? true : false;
         bump(entry);
-        entry->ent->thandle = gtk_timeout_add(200, delay_timer, entry);
+        entry->ent->thandle = g_timeout_add(200, delay_timer, entry);
     }
     else if (event->type == GDK_BUTTON_RELEASE)
-        gtk_timeout_remove(entry->ent->thandle);
+        g_source_remove(entry->ent->thandle);
     return (true);
 }
 

@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "editif.h"
 #include "cfilter.h"
@@ -493,7 +495,11 @@ sCells::sCells(GRobject c)
         G_CALLBACK(c_save_btn_hdlr), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
+#ifdef XXX_OPT
     c_page_combo = gtk_option_menu_new();
+#else
+    c_page_combo = gtk_combo_box_text_new();
+#endif
     gtk_box_pack_start(GTK_BOX(hbox), c_page_combo, false, false, 0);
 
     //
@@ -509,6 +515,7 @@ sCells::sCells(GRobject c)
 
     // mode menu
     //
+#ifdef XXX_OPT
     c_mode_combo = gtk_option_menu_new();
     gtk_widget_show(c_mode_combo);
     gtk_box_pack_start(GTK_BOX(hbox), c_mode_combo, false, false, 0);
@@ -518,14 +525,19 @@ sCells::sCells(GRobject c)
     gtk_widget_show(mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(c_mode_proc), (void*)(long)Physical);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     mi = gtk_menu_item_new_with_label("Elec Cells");
     gtk_widget_show(mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(c_mode_proc), (void*)(long)Electrical);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(c_mode_combo), menu);
+#else
+    c_mode_combo = gtk_combo_box_text_new();
+    gtk_widget_show(c_mode_combo);
+    gtk_box_pack_start(GTK_BOX(hbox), c_mode_combo, false, false, 0);
+#endif
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, 2, 3,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -641,10 +653,9 @@ sCells::update()
         gtk_widget_show(c_flagbtn);
         gtk_widget_show(c_fltrbtn);
     }
-    if (!c_no_update && wb_textarea && wb_textarea->window) {
-        int width, height;
-        gdk_window_get_size(wb_textarea->window, &width, &height);
-        c_cols = (width-4)/GTKfont::stringWidth(Cells->wb_textarea, 0);
+    if (!c_no_update && wb_textarea && gtk_widget_get_window(wb_textarea)) {
+        int wid = gdk_window_get_width(gtk_widget_get_window(wb_textarea));
+        c_cols = (wid-4)/GTKfont::stringWidth(Cells->wb_textarea, 0);
         char *s = cell_list(c_cols);
         update_text(s);
         delete [] s;
@@ -672,7 +683,10 @@ sCells::update()
         c_mode = DSP()->CurMode();
         if (oldm != c_mode)
             XM()->PopUpCellFilt(0, MODE_UPD, c_mode, 0, 0);
+#ifdef XXX_OPT
         gtk_option_menu_set_history(GTK_OPTION_MENU(c_mode_combo), c_mode);
+#else
+#endif
         gtk_widget_set_sensitive(c_mode_combo, false);
     }
     else
@@ -1225,6 +1239,7 @@ sCells::cell_list(int cols)
         gtk_widget_hide(c_page_combo);
     else {
         char buf[128];
+#ifdef XXX_OPT
         GtkWidget *menu = gtk_menu_new();
         gtk_widget_show(menu);
         for (int i = 0; i*pagesz < cnt; i++) {
@@ -1236,11 +1251,13 @@ sCells::cell_list(int cols)
             gtk_widget_show(mi);
             g_signal_connect(G_OBJECT(mi), "activate",
                 G_CALLBACK(c_page_proc), (void*)(long)i);
-            gtk_menu_append(GTK_MENU(menu), mi);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         }
         gtk_option_menu_remove_menu(GTK_OPTION_MENU(c_page_combo));
         gtk_option_menu_set_menu(GTK_OPTION_MENU(c_page_combo), menu);
         gtk_option_menu_set_history(GTK_OPTION_MENU(c_page_combo), c_page);
+#else
+#endif
         gtk_widget_show(c_page_combo);
     }
 
@@ -1509,7 +1526,7 @@ sCells::c_highlight_idle(void *arg)
 //
 void
 sCells::c_drag_data_get(GtkWidget *widget, GdkDragContext*,
-    GtkSelectionData *selection_data, guint, guint, void*)
+    GtkSelectionData *data, guint, guint, void*)
 {
     if (GTK_IS_TEXT_VIEW(widget))
     // stop text view native handler
@@ -1517,7 +1534,7 @@ sCells::c_drag_data_get(GtkWidget *widget, GdkDragContext*,
 
     char *string = text_get_selection(widget);
     if (string) {
-        gtk_selection_data_set(selection_data, selection_data->target,
+        gtk_selection_data_set(data, gtk_selection_data_get_target(data),
             8, (unsigned char*)string, strlen(string)+1);
         delete [] string;
     }
@@ -1562,7 +1579,7 @@ sCells::c_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 void
 sCells::c_resize_hdlr(GtkWidget *widget, GtkAllocation *a)
 {
-    if (Cells && GTK_WIDGET_REALIZED(widget))
+    if (Cells && gtk_widget_get_realized(widget))
         Cells->resize_hdlr(a);
 }
 
@@ -1676,7 +1693,7 @@ sCells::c_save_cb(const char *string, void *arg)
         GRX->SetPopupLocation(GRloc(), cp->c_msg_pop->pw_shell,
             cp->wb_shell);
         cp->c_msg_pop->set_visible(true);
-        gtk_timeout_add(2000, c_timeout, cp);
+        g_timeout_add(2000, c_timeout, cp);
     }
     return (ESTR_DN);
 }

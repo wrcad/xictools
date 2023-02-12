@@ -215,7 +215,7 @@ sPc::sPc()
     pc_item = gtk_menu_item_new_with_label("Add");
     gtk_widget_set_name(pc_item, "AddI");
     gtk_widget_show(pc_item);
-    gtk_menu_bar_append(GTK_MENU_BAR(menubar), pc_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), pc_item);
     g_signal_connect(G_OBJECT(pc_item), "event",
         G_CALLBACK(pc_button_press), 0);
     gtk_box_pack_start(GTK_BOX(hbox), menubar, true, true, 0);
@@ -255,7 +255,7 @@ sPc::sPc()
     gtk_widget_set_size_request(wb_textarea, 300, 200);
 
     // The font change pop-up uses this to redraw the widget
-    gtk_object_set_data(GTK_OBJECT(wb_textarea), "font_changed",
+    g_object_set_data(G_OBJECT(wb_textarea), "font_changed",
         (void*)pc_font_changed);
 
     gtk_table_attach(GTK_TABLE(form), contr, 0, 1, 1, 2,
@@ -324,7 +324,7 @@ sPc::update()
                 break;
             GtkWidget *menu_item = gtk_menu_item_new_with_label(s);
             gtk_widget_set_name(menu_item, s);
-            gtk_menu_append(GTK_MENU(menu), menu_item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
             g_signal_connect(G_OBJECT(menu_item), "activate",
                 G_CALLBACK(pc_menu_proc), &pc_phys_addmenu[i]);
             gtk_widget_show(menu_item);
@@ -337,7 +337,7 @@ sPc::update()
                 break;
             GtkWidget *menu_item = gtk_menu_item_new_with_label(s);
             gtk_widget_set_name(menu_item, s);
-            gtk_menu_append(GTK_MENU(menu), menu_item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
             g_signal_connect(G_OBJECT(menu_item), "activate",
                 G_CALLBACK(pc_menu_proc), &pc_elec_addmenu[i]);
             gtk_widget_show(menu_item);
@@ -534,7 +534,7 @@ sPc::pc_menu_proc(GtkWidget*, void *client_data)
 int
 sPc::pc_button_press(GtkWidget *widget, GdkEvent *event)
 {
-    GtkWidget *menu = GTK_MENU_ITEM(widget)->submenu;
+    GtkWidget *menu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(widget));
     if (event->type == GDK_BUTTON_PRESS) {
         GRX->Deselect(Pc->pc_edit);
         GRX->Deselect(Pc->pc_del);

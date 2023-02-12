@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_COMBO
+
 #include "main.h"
 #include "dsp_inlines.h"
 #include "cd_strmdata.h"
@@ -153,12 +155,13 @@ gtkLcb::gtkLcb(GRobject c)
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    gtk_object_set_data(GTK_OBJECT(le_shell), "label", label);
+    g_object_set_data(G_OBJECT(le_shell), "label", label);
 
     char *init_str = 0;
     //
     // combo box input area
     //
+#ifdef XXX_COMBO
     GtkWidget *combo = gtk_combo_new();
     gtk_widget_show(combo);
     gtk_table_attach(GTK_TABLE(form), combo, 0, 1, 1, 2,
@@ -167,8 +170,11 @@ gtkLcb::gtkLcb(GRobject c)
     GtkWidget *text = GTK_COMBO(combo)->entry;
     if (init_str)
         gtk_entry_set_text(GTK_ENTRY(text), init_str);
-    gtk_object_set_data(GTK_OBJECT(le_shell), "text", text);
+    g_object_set_data(G_OBJECT(le_shell), "text", text);
     le_opmenu = GTK_COMBO(combo)->list;
+#else
+    GtkWidget *text = 0;
+#endif
 
     GtkWidget *sep = gtk_hseparator_new();
     gtk_widget_show(sep);
@@ -223,17 +229,21 @@ gtkLcb::~gtkLcb()
 void
 gtkLcb::update(CDll *list)
 {
+#ifdef XXX_COMBO
     gtk_list_clear_items(GTK_LIST(le_opmenu), 0, -1);
+#endif
     if (!list) {
         GtkWidget *text =
-            (GtkWidget*)gtk_object_get_data(GTK_OBJECT(le_shell), "text");
+            (GtkWidget*)g_object_get_data(G_OBJECT(le_shell), "text");
         if (text)
             gtk_entry_set_text(GTK_ENTRY(text), "");
     }
     for (CDll *l = list; l; l = l->next) {
+#ifdef XXX_COMBO
         GtkWidget *item = gtk_list_item_new_with_label(l->ldesc->name());
         gtk_widget_show(item);
         gtk_container_add(GTK_CONTAINER(le_opmenu), item);
+#endif
     }
 }
 
@@ -246,11 +256,11 @@ char *
 gtkLcb::layername()
 {
     GtkWidget *text =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(le_shell), "text");
+        (GtkWidget*)g_object_get_data(G_OBJECT(le_shell), "text");
     if (!text)
         return (0);
     GtkWidget *label =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(le_shell), "label");
+        (GtkWidget*)g_object_get_data(G_OBJECT(le_shell), "label");
     char *string = le_get_lname(text, label);
     if (!string) {
         GRX->Deselect(le_add);
@@ -311,7 +321,7 @@ gtkLcb::le_btn_proc(GtkWidget *caller, void *client_data)
         return;
     if (caller == cbs->le_add) {
         GtkWidget *label =
-            (GtkWidget*)gtk_object_get_data(GTK_OBJECT(cbs->le_shell), "label");
+            (GtkWidget*)g_object_get_data(G_OBJECT(cbs->le_shell), "label");
         if (!label)
             return;
         if (!GRX->GetStatus(caller)) {
@@ -321,7 +331,7 @@ gtkLcb::le_btn_proc(GtkWidget *caller, void *client_data)
         }
         GRX->Deselect(cbs->le_rem);
         GtkWidget *text =
-            (GtkWidget*)gtk_object_get_data(GTK_OBJECT(cbs->le_shell), "text");
+            (GtkWidget*)g_object_get_data(G_OBJECT(cbs->le_shell), "text");
         if (!text)
             return;
         char *string = le_get_lname(text, label);
@@ -336,7 +346,7 @@ gtkLcb::le_btn_proc(GtkWidget *caller, void *client_data)
     }
     else if (caller == cbs->le_rem) {
         GtkWidget *label =
-            (GtkWidget*)gtk_object_get_data(GTK_OBJECT(cbs->le_shell), "label");
+            (GtkWidget*)g_object_get_data(G_OBJECT(cbs->le_shell), "label");
         if (!label)
             return;
         if (!GRX->GetStatus(caller)) {

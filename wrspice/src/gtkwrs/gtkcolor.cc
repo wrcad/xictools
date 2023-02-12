@@ -81,7 +81,7 @@ GTKtoolbar::PopUpColors(int x, int y)
     co_shell = gtk_NewPopup(0, "Plot Colors", clr_cancel_proc, 0);
     if (x || y) {
         FixLoc(&x, &y);
-        gtk_widget_set_uposition(co_shell, x, y);
+        gtk_window_move(GTK_WINDOW(co_shell), x, y);
     }
 
     GtkWidget *form = gtk_table_new(2, 1, false);

@@ -331,14 +331,14 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     stv_layer1 = gtk_entry_new();
-    gtk_entry_set_editable(GTK_ENTRY(stv_layer1), false);
+    gtk_editable_set_editable(GTK_EDITABLE(stv_layer1), false);
     gtk_widget_set_size_request(stv_layer1, NUMWID, -1);
     gtk_widget_show(stv_layer1);
     gtk_table_attach(GTK_TABLE(form), stv_layer1, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     stv_layer2 = gtk_entry_new();
-    gtk_entry_set_editable(GTK_ENTRY(stv_layer2), false);
+    gtk_editable_set_editable(GTK_EDITABLE(stv_layer2), false);
     gtk_widget_set_size_request(stv_layer2, NUMWID, -1);
     gtk_widget_show(stv_layer2);
     gtk_table_attach(GTK_TABLE(form), stv_layer2, 2, 3, rowcnt, rowcnt+1,
@@ -489,14 +489,14 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     stv_imp1 = gtk_entry_new();
-    gtk_entry_set_editable(GTK_ENTRY(stv_imp1), false);
+    gtk_editable_set_editable(GTK_EDITABLE(stv_imp1), false);
     gtk_widget_set_size_request(stv_imp1, NUMWID, -1);
     gtk_widget_show(stv_imp1);
     gtk_table_attach(GTK_TABLE(form), stv_imp1, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     stv_imp2 = gtk_entry_new();
-    gtk_entry_set_editable(GTK_ENTRY(stv_imp2), false);
+    gtk_editable_set_editable(GTK_EDITABLE(stv_imp2), false);
     gtk_widget_set_size_request(stv_imp2, NUMWID, -1);
     gtk_widget_show(stv_imp2);
     gtk_table_attach(GTK_TABLE(form), stv_imp2, 2, 3, rowcnt, rowcnt+1,

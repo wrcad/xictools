@@ -140,7 +140,7 @@ sTc::sTc(GRobject caller)
     tc_none = gtk_radio_button_new_with_label(0, "Omit default definitions");
     gtk_widget_set_name(tc_none, "none");
     gtk_widget_show(tc_none);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(tc_none));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(tc_none));
     g_signal_connect(G_OBJECT(tc_none), "clicked",
         G_CALLBACK(tc_action), 0);
     GtkWidget *row = gtk_hbox_new(false, 2);
@@ -163,7 +163,7 @@ sTc::sTc(GRobject caller)
         "Comment default definitions");
     gtk_widget_set_name(tc_cmt, "cmt");
     gtk_widget_show(tc_cmt);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(tc_cmt));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(tc_cmt));
     g_signal_connect(G_OBJECT(tc_cmt), "clicked",
         G_CALLBACK(tc_action), 0);
 

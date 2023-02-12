@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_PROG
+
 #include "config.h"
 #include "gtkinterf.h"
 #include "gtkutil.h"
@@ -944,24 +946,6 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         gtk_widget_show(vbox);
         gtk_box_pack_start(GTK_BOX(vbox), contr, true, true, 0);
 
-#ifdef XXX_COMBO
-        fs_filter = gtk_combo_new();
-        gtk_widget_hide(fs_filter);
-        gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(fs_filter)->entry),
-            false);
-        gtk_combo_disable_activate(GTK_COMBO(fs_filter));
-
-        GList *items = 0;
-        for (const char **s = fs_filter_options; *s; s++)
-            items = g_list_append(items, (char*)*s);
-        gtk_combo_set_popdown_strings(GTK_COMBO(fs_filter), items);
-        g_signal_connect(G_OBJECT(GTK_COMBO(fs_filter)->list),
-            "select-child", G_CALLBACK(fs_filter_sel_proc), this);
-        g_signal_connect(G_OBJECT(GTK_COMBO(fs_filter)->list),
-            "unselect-child", G_CALLBACK(fs_filter_unsel_proc), this);
-        g_signal_connect(G_OBJECT(GTK_COMBO(fs_filter)->entry),
-            "activate", G_CALLBACK(fs_filter_activate_proc), this);
-#else
         fs_filter = gtk_combo_box_text_new_with_entry();
         gtk_widget_hide(fs_filter);
         for (const char **s = fs_filter_options; *s; s++)
@@ -972,10 +956,9 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         g_signal_connect(G_OBJECT(fs_filter),
             "changed", G_CALLBACK(fs_filter_sel_proc), this);
         g_signal_connect(G_OBJECT(entry),
-            "backspace", G_CALLBACK(fs_filter_unsel_proc), this);
+            "backspace", G_CALLBACK(fs_filter_bsp_proc), this);
         g_signal_connect(G_OBJECT(entry),
             "activate", G_CALLBACK(fs_filter_activate_proc), this);
-#endif
         gtk_box_pack_start(GTK_BOX(vbox), fs_filter, false, false, 0);
 
         GtkWidget *paned = gtk_hpaned_new();
@@ -2368,48 +2351,6 @@ GTKfilePopup::fs_open_proc(GtkWidget *widget, void *client_data)
 }
 
 
-#ifdef XXX_COMBO
-// Private static GTK signal handler.
-// A new filter entry has been selected, update the index and toggle
-// the editable flag.
-//
-void
-GTKfilePopup::fs_filter_sel_proc(GtkList *list, GtkWidget *widget, void *fsp)
-{
-    GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
-    if (fs) {
-        int ox = fs->fs_filter_index;
-        int ix = gtk_list_child_position(list, widget);
-        fs->fs_filter_index = ix;
-        gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(fs->fs_filter)->entry),
-            (fs->fs_filter_index > 1));
-        fs->list_files();
-    }
-}
-
-
-// Private static GTK signal handler.
-// A filter entry has been selected, update the text for this entry.
-//
-void
-GTKfilePopup::fs_filter_unsel_proc(GtkList *list, GtkWidget *widget, void *fsp)
-{
-    GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
-    if (fs) {
-        int i = gtk_list_child_position(list, widget);
-        if (i > 1) {
-            // update entry
-            const char *text =
-                gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(fs->fs_filter)->entry));
-            gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(widget))),
-                text);
-            delete [] fs_filter_options[i];
-            fs_filter_options[i] = lstring::copy(text);
-        }
-    }
-}
-#else
-
 // Private static GTK signal handler.
 // A new filter entry has been selected, update the index and toggle
 // the editable flag.
@@ -2439,7 +2380,7 @@ GTKfilePopup::fs_filter_sel_proc(GtkWidget *widget, void *fsp)
 // A Backspace was entered, don't allow if it would erase a colon.
 //
 void
-GTKfilePopup::fs_filter_unsel_proc(GtkWidget *widget, void *fsp)
+GTKfilePopup::fs_filter_bsp_proc(GtkWidget*, void *fsp)
 {
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
     if (fs) {
@@ -2450,7 +2391,6 @@ GTKfilePopup::fs_filter_unsel_proc(GtkWidget *widget, void *fsp)
         }
     }
 }
-#endif
 
 
 // Private static GTK signal handler.
@@ -3358,8 +3298,7 @@ gtkinterf::gtk_DoFileAction(GtkWidget *shell, const char *src, const char *dst,
         return;
     }
     if (prog)
-        g_timeout_add(1000, (GSourceFunc)progress_destroy_timeout,
-            prog);
+        g_timeout_add(1000, (GSourceFunc)progress_destroy_timeout, prog);
 
     if (lstr.string())
         gtk_Message(shell, false, lstr.string());
@@ -3413,7 +3352,7 @@ namespace {
                     action == GDK_ACTION_LINK) {
                 GdkDragContext *context = (GdkDragContext*)client_data;
 //XXX                context->suggested_action = action;
-                /*  Doesn't exist, how to set?
+                /*  XXX Doesn't exist, how to set?
                 gdk_drag_context_set_suggested_action(context, action);
                 */
                 gtk_DoFileAction(popup, src, dst, context, false);

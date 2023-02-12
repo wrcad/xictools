@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "fio.h"
 #include "fio_compare.h"
@@ -291,7 +293,7 @@ sCmp::sCmp(GRobject c)
         return;
 
     // Without this, spin entries sometimes freeze up for some reason.
-    gtk_object_set_data(GTK_OBJECT(cmp_popup), "no_prop_key", (void*)1);
+    g_object_set_data(G_OBJECT(cmp_popup), "no_prop_key", (void*)1);
 
     GtkWidget *form = gtk_table_new(2, 1, false);
     gtk_widget_show(form);
@@ -524,13 +526,13 @@ sCmp::~sCmp()
         GRX->Deselect(cmp_caller);
     if (cmp_p3_s_menu) {
         g_object_ref(cmp_p3_s_menu);
-        gtk_object_ref(GTK_OBJECT(cmp_p3_s_menu));
+//XXX        gtk_object_ref(GTK_OBJECT(cmp_p3_s_menu));
         gtk_widget_destroy(cmp_p3_s_menu);
         g_object_unref(cmp_p3_s_menu);
     }
     if (cmp_p3_r_menu) {
         g_object_ref(cmp_p3_r_menu);
-        gtk_object_ref(GTK_OBJECT(cmp_p3_r_menu));
+//XXX        gtk_object_ref(GTK_OBJECT(cmp_p3_r_menu));
         gtk_widget_destroy(cmp_p3_r_menu);
         g_object_unref(cmp_p3_r_menu);
     }
@@ -651,7 +653,7 @@ sCmp::per_cell_obj_page()
     g_signal_connect(G_OBJECT(cmp_p1_phys), "clicked",
         G_CALLBACK(cmp_p1_action), 0);
     gtk_box_pack_start(GTK_BOX(vbox), cmp_p1_phys, false, false, 0);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(cmp_p1_phys));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(cmp_p1_phys));
     cmp_p1_elec = gtk_radio_button_new_with_label(group, "Electrical");
     gtk_widget_show(cmp_p1_elec);
     gtk_box_pack_start(GTK_BOX(vbox), cmp_p1_elec, false, false, 0);
@@ -667,6 +669,7 @@ sCmp::per_cell_obj_page()
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(vbox), label, false, false, 0);
 
+#ifdef XXX_OPT
     cmp_p1_fltr = gtk_option_menu_new();
     gtk_widget_set_name(cmp_p1_fltr, "Filter");
     gtk_widget_show(cmp_p1_fltr);
@@ -676,23 +679,28 @@ sCmp::per_cell_obj_page()
     GtkWidget *mi = gtk_menu_item_new_with_label("Default");
     gtk_widget_set_name(mi, "default");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(cmp_p1_fltr_proc), (void*)0L);
     mi = gtk_menu_item_new_with_label("None");
     gtk_widget_set_name(mi, "none");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(cmp_p1_fltr_proc), (void*)1L);
     mi = gtk_menu_item_new_with_label("Custom");
     gtk_widget_set_name(mi, "custom");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(cmp_p1_fltr_proc), (void*)2L);
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(cmp_p1_fltr), menu);
+#else
+    cmp_p1_fltr = gtk_combo_box_text_new();
+    gtk_widget_set_name(cmp_p1_fltr, "Filter");
+    gtk_widget_show(cmp_p1_fltr);
+#endif
     gtk_box_pack_start(GTK_BOX(hbox), cmp_p1_fltr, true, true, 0);
 
     cmp_p1_setup = gtk_toggle_button_new_with_label("Setup");
@@ -793,7 +801,7 @@ sCmp::flat_geom_page()
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(cmp_p3_s_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(cmp_p3_s_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(cmp_sto_menu_proc), this);
     }
@@ -851,7 +859,7 @@ sCmp::flat_geom_page()
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(cmp_p3_r_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(cmp_p3_r_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(cmp_rcl_menu_proc), this);
     }
@@ -1067,7 +1075,7 @@ sCmp::compose_arglist()
         delete [] tok;
     }
 
-    int page = gtk_notebook_current_page(GTK_NOTEBOOK(cmp_mode));
+    int page = gtk_notebook_get_current_page(GTK_NOTEBOOK(cmp_mode));
     if (page == 0) {
         if (GRX->GetStatus(cmp_p1_recurse))
             lstr.add(" -h");
@@ -1456,10 +1464,13 @@ sCmp::cmp_drag_data_received(GtkWidget *entry,
     GdkDragContext *context, gint, gint, GtkSelectionData *data,
     guint, guint time)
 {
-    if (Cmp && data->length >= 0 && data->format == 8 && data->data) {
-        char *src = (char*)data->data;
+    if (Cmp && gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+        char *src = (char*)gtk_selection_data_get_data(data);
         char *t = 0;
-        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+        if (gtk_selection_data_get_target(data) ==
+                gdk_atom_intern("TWOSTRING", true)) {
             // Drops from content lists may be in the form
             // "fname_or_chd\ncellname".
             t = strchr(src, '\n');
@@ -1581,7 +1592,7 @@ sCmp_store::save()
     delete [] cs_layers;
     cs_layers = lstring::copy(
         gtk_entry_get_text(GTK_ENTRY(Cmp->cmp_layer_list)));
-    cs_mode = gtk_notebook_current_page(GTK_NOTEBOOK(Cmp->cmp_mode));
+    cs_mode = gtk_notebook_get_current_page(GTK_NOTEBOOK(Cmp->cmp_mode));
     cs_layer_only = GRX->GetStatus(Cmp->cmp_layer_use);
     cs_layer_skip = GRX->GetStatus(Cmp->cmp_layer_skip);
     cs_differ = GRX->GetStatus(Cmp->cmp_diff_only);
@@ -1640,7 +1651,7 @@ sCmp_store::recall()
         cs_cells2 ? cs_cells2 : "");
     gtk_entry_set_text(GTK_ENTRY(Cmp->cmp_layer_list),
         cs_layers ? cs_layers : "");
-    gtk_notebook_set_page(GTK_NOTEBOOK(Cmp->cmp_mode), cs_mode);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(Cmp->cmp_mode), cs_mode);
     GRX->SetStatus(Cmp->cmp_layer_use, cs_layer_only);
     GRX->SetStatus(Cmp->cmp_layer_skip, cs_layer_skip);
     GRX->SetStatus(Cmp->cmp_diff_only, cs_differ);
@@ -1673,8 +1684,11 @@ sCmp_store::recall_p1()
         GRX->SetStatus(Cmp->cmp_p1_phys, !cs_p1_elec);
         GRX->SetStatus(Cmp->cmp_p1_elec, cs_p1_elec);
         GRX->SetStatus(Cmp->cmp_p1_cell_prp, cs_p1_cell_prp);
+#ifdef XXX_OPT
         gtk_option_menu_set_history(GTK_OPTION_MENU(Cmp->cmp_p1_fltr),
             cs_p1_fltr);
+#else
+#endif
     }
 }
 

@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -174,6 +176,7 @@ sTb::sTb(GRobject c)
 
     row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
+#ifdef XXX_OPT
     GtkWidget *entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "tables");
     gtk_widget_show(entry);
@@ -185,13 +188,18 @@ sTb::sTb(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(s->string);
         gtk_widget_set_name(mi, s->string);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(tb_menu_proc), 0);
     }
     tb_namelist = list;
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry), 0);
+#else
+    GtkWidget *entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "tables");
+    gtk_widget_show(entry);
+#endif
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
     gtk_widget_set_size_request(entry, 100, -1);
     tb_tables = entry;
@@ -269,6 +277,7 @@ sTb::update()
         changed = true;
 
     if (changed) {
+#ifdef XXX_OPT
         GtkWidget *menu = gtk_menu_new();
         gtk_widget_set_name(menu, "tables");
 
@@ -276,13 +285,14 @@ sTb::update()
             GtkWidget *mi = gtk_menu_item_new_with_label(s->string);
             gtk_widget_set_name(mi, s->string);
             gtk_widget_show(mi);
-            gtk_menu_append(GTK_MENU(menu), mi);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
             g_signal_connect(G_OBJECT(mi), "activate",
                 G_CALLBACK(tb_menu_proc), 0);
         }
         gtk_option_menu_remove_menu(GTK_OPTION_MENU(tb_tables));
         gtk_option_menu_set_menu(GTK_OPTION_MENU(tb_tables), menu);
         gtk_option_menu_set_history(GTK_OPTION_MENU(tb_tables), 0);
+#endif
         stringlist::destroy(tb_namelist);
         tb_namelist = list;
     }

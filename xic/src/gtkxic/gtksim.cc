@@ -82,11 +82,11 @@ namespace {
         const char *msg = (const char*)arg;
         GtkWidget *shell = Sim.shell();
         if (shell) {
-            GtkWidget *label = (GtkWidget*)gtk_object_get_data(
-                GTK_OBJECT(shell), "label");
+            GtkWidget *label = (GtkWidget*)g_object_get_data(
+                G_OBJECT(shell), "label");
             if (label) {
                 gtk_label_set_text(GTK_LABEL(label), msg);
-                if (!GTK_WIDGET_MAPPED(shell)) {
+                if (!gtk_widget_get_mapped(shell)) {
                     GRX->SetPopupLocation(GRloc(LW_LL), shell,
                         mainBag()->Viewport());
                     gtk_widget_show(shell);
@@ -149,7 +149,7 @@ sSim::control(SpType status)
         break;
     }
     if (sp_shell) {
-        gtk_idle_add(label_set_idle, (void*)msg);
+        g_idle_add(label_set_idle, (void*)msg);
         return;
     }
     main_bag *w = mainBag();
@@ -177,7 +177,7 @@ sSim::control(SpType status)
     GtkWidget *frame = gtk_frame_new(0);
     gtk_widget_show(frame);
     gtk_container_add(GTK_CONTAINER(frame), label);
-    gtk_object_set_data(GTK_OBJECT(popup), "label", label);
+    g_object_set_data(G_OBJECT(popup), "label", label);
 
     gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

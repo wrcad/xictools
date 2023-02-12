@@ -179,10 +179,10 @@ llist_t::action(GtkWidget *caller)
         if (GRX->GetStatus(caller)) {
             CDvdb()->setVariable(VA_UseLayerList, 0);
             // Give the list entry the focus.
-            GtkWidget *parent = ll_frame->parent;
+            GtkWidget *parent = gtk_widget_get_parent(ll_frame);
             if (parent) {
-                while (parent->parent)
-                    parent = parent->parent;
+                while (gtk_widget_get_parent(parent))
+                    parent = gtk_widget_get_parent(parent);
                 gtk_window_set_focus(GTK_WINDOW(parent), ll_laylist);
             }
         }
@@ -192,10 +192,10 @@ llist_t::action(GtkWidget *caller)
     if (!strcmp(name, "lskip")) {
         if (GRX->GetStatus(caller)) {
             CDvdb()->setVariable(VA_UseLayerList, "n");
-            GtkWidget *parent = ll_frame->parent;
+            GtkWidget *parent = gtk_widget_get_parent(ll_frame);
             if (parent) {
-                while (parent->parent)
-                    parent = parent->parent;
+                while (gtk_widget_get_parent(parent))
+                    parent = gtk_widget_get_parent(parent);
                 gtk_window_set_focus(GTK_WINDOW(parent), ll_laylist);
             }
         }

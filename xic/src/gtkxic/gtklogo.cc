@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "edit.h"
 #include "dsp_inlines.h"
@@ -185,7 +187,7 @@ sLgo::sLgo(GRobject c)
     GtkWidget *button = gtk_radio_button_new_with_label(0, "Vector");
     gtk_widget_set_name(button, "Vector");
     gtk_widget_show(button);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(lgo_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
@@ -194,7 +196,7 @@ sLgo::sLgo(GRobject c)
     button = gtk_radio_button_new_with_label(group, "Manhattan");
     gtk_widget_set_name(button, "Manhattan");
     gtk_widget_show(button);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(lgo_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
@@ -241,6 +243,7 @@ sLgo::sLgo(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
+#ifdef XXX_OPT
     GtkWidget *entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "endstyle");
     gtk_widget_show(entry);
@@ -251,11 +254,17 @@ sLgo::sLgo(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(endstyles[i]);
         gtk_widget_set_name(mi, endstyles[i]);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(lgo_es_menu_proc), (void*)(long)i);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
+#else
+    GtkWidget *entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "endstyle");
+    gtk_widget_show(entry);
+    GtkWidget *menu;
+#endif
     lgo_endstyle = entry;
 
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
@@ -271,6 +280,7 @@ sLgo::sLgo(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
+#ifdef XXX_OPT
     entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "pathwidth");
     gtk_widget_show(entry);
@@ -281,12 +291,17 @@ sLgo::sLgo(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(pathwidth[i]);
         gtk_widget_set_name(mi, pathwidth[i]);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(lgo_pw_menu_proc), (void*)(long)(i+1));
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     lgo_pwidth = entry;
+#else
+    entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "pathwidth");
+    gtk_widget_show(entry);
+#endif
 
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -386,6 +401,7 @@ sLgo::update()
     }
     ED()->assert_logo_pixel_size();
 
+#ifdef XXX_OPT
     if (str_to_int(&dd, CDvdb()->getVariable(VA_LogoPathWidth)) &&
             dd >= 1 && dd <= 5)
         gtk_option_menu_set_history(GTK_OPTION_MENU(lgo_pwidth), dd - 1);
@@ -399,6 +415,7 @@ sLgo::update()
     else
         gtk_option_menu_set_history(GTK_OPTION_MENU(lgo_endstyle),
             DEF_LOGO_END_STYLE);
+#endif
 
     if (CDvdb()->getVariable(VA_LogoToFile))
         GRX->SetStatus(lgo_create, true);

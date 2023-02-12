@@ -177,12 +177,12 @@ sPi::sPi(CDo *odesc)
         NULL);
 
     // for passing hypertext via selections, see gtkhtext.cc
-    gtk_object_set_data(GTK_OBJECT(wb_textarea), "hyexport", (void*)2);
+    g_object_set_data(G_OBJECT(wb_textarea), "hyexport", (void*)2);
 
     gtk_widget_set_size_request(wb_textarea, 300, 200);
 
     // The font change pop-up uses this to redraw the widget
-    gtk_object_set_data(GTK_OBJECT(wb_textarea), "font_changed",
+    g_object_set_data(G_OBJECT(wb_textarea), "font_changed",
         (void*)pi_font_changed);
 
     gtk_table_attach(GTK_TABLE(form), contr, 0, 1, 0, 1,
@@ -487,7 +487,7 @@ sPbase::motion(GtkWidget *widget, GdkEvent *event, void*)
 
 
 void
-sPbase::drag_data_get(GtkSelectionData *selection_data)
+sPbase::drag_data_get(GtkSelectionData *data)
 {
     if (GTK_IS_TEXT_VIEW(wb_textarea)) {
         // stop text view native handler
@@ -525,7 +525,7 @@ sPbase::drag_data_get(GtkSelectionData *selection_data)
         strcpy(bf + sizeof(int), s);
         delete [] s;
     }
-    gtk_selection_data_set(selection_data, selection_data->target,
+    gtk_selection_data_set(data, gtk_selection_data_get_target(data),
         8, (unsigned char*)bf, sz);
     delete [] bf;
 }
@@ -536,7 +536,8 @@ sPbase::data_received(GtkWidget *caller, GdkDragContext *context,
     GtkSelectionData *data, guint time)
 {
     bool success = false;
-    if (data->target == gdk_atom_intern("property", true) &&
+    if (gtk_selection_data_get_target(data) ==
+            gdk_atom_intern("property", true) &&
             caller != gtk_drag_get_source_widget(context)) {
         if (!pi_odesc) {
             dspPkgIf()->RegisterTimeoutProc(3000, pi_bad_cb, this);
@@ -544,8 +545,9 @@ sPbase::data_received(GtkWidget *caller, GdkDragContext *context,
                 false, false, GRloc(LW_LR));
         }
         else {
-            int num = *(int*)data->data;
-            unsigned char *val = data->data + sizeof(int);
+            int num = *(int*)gtk_selection_data_get_data(data);
+            unsigned char *val =
+                (unsigned char*)gtk_selection_data_get_data(data) + sizeof(int);
             bool accept = false;
             // Note: the window text is updated by call to PrptyRelist() in
             // CommitChangges()

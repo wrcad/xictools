@@ -130,7 +130,7 @@ sDt::sDt(GRobject caller)
     dt_none = gtk_radio_button_new_with_label(0, "Don't show dots");
     gtk_widget_set_name(dt_none, "none");
     gtk_widget_show(dt_none);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(dt_none));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(dt_none));
     g_signal_connect(G_OBJECT(dt_none), "clicked",
         G_CALLBACK(dt_action), 0);
 
@@ -142,7 +142,7 @@ sDt::sDt(GRobject caller)
     dt_norm = gtk_radio_button_new_with_label(group, "Show dots normally");
     gtk_widget_set_name(dt_norm, "norm");
     gtk_widget_show(dt_norm);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(dt_norm));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(dt_norm));
     g_signal_connect(G_OBJECT(dt_norm), "clicked",
         G_CALLBACK(dt_action), 0);
 

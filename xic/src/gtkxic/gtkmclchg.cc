@@ -159,7 +159,7 @@ sLcg::sLcg()
     lcg_none = gtk_radio_button_new_with_label(0, "Don't allow layer change.");
     gtk_widget_set_name(lcg_none, "none");
     gtk_widget_show(lcg_none);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(lcg_none));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(lcg_none));
     g_signal_connect(G_OBJECT(lcg_none), "clicked",
         G_CALLBACK(lcg_action), 0);
 
@@ -172,7 +172,7 @@ sLcg::sLcg()
         "Allow layer change for objects on current layer.  ");
     gtk_widget_set_name(lcg_cur, "norm");
     gtk_widget_show(lcg_cur);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(lcg_cur));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(lcg_cur));
     g_signal_connect(G_OBJECT(lcg_cur), "clicked",
         G_CALLBACK(lcg_action), 0);
 

@@ -1513,7 +1513,6 @@ GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
         pw_shell = gtk_NewPopup(owner, "Info", pw_text_popdown, this);
     else if (pw_which == PuHTML) {
         pw_shell = gtk_NewPopup(owner, "Info", pw_text_popdown, this);
-//XXX        gtk_window_set_policy(GTK_WINDOW(pw_shell), true, true, false);
         gtk_window_set_wmclass(GTK_WINDOW(pw_shell), "Mozy", "mozy");
     }
     else

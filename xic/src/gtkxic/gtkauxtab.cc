@@ -221,7 +221,7 @@ sAT::sAT(GRobject c)
     button = gtk_radio_button_new_with_label(0, "Override");
     gtk_widget_set_name(button, "Override");
     gtk_widget_show(button);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(at_action_proc), 0);
     at_over = button;
@@ -233,7 +233,7 @@ sAT::sAT(GRobject c)
     button = gtk_radio_button_new_with_label(group, "Skip");
     gtk_widget_set_name(button, "Skip");
     gtk_widget_show(button);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(at_action_proc), 0);
     at_skip = button;
@@ -346,13 +346,13 @@ sAT::~sAT()
 void
 sAT::update()
 {
-    if (!wb_textarea || !wb_textarea->window)
+    if (!wb_textarea || !gtk_widget_get_window(wb_textarea))
         return;
     select_range(0, 0);
     CDcellTab *ct = CDcdb()->auxCellTab();
     if (ct) {
-        int width, height;
-        gdk_window_get_size(wb_textarea->window, &width, &height);
+        int width = gdk_window_get_width(gtk_widget_get_window(wb_textarea));
+//XXX        int height = gdk_window_get_height(gtk_widget_get_window(wb_textarea));
         int cols = (width-4)/GTKfont::stringWidth(wb_textarea, 0);
         stringlist *s0 = ct->list();
         char *newtext = stringlist::col_format(s0, cols);
@@ -674,7 +674,7 @@ sAT::at_clear_cb(bool state, void*)
 //
 void
 sAT::at_drag_data_get(GtkWidget *widget, GdkDragContext*,
-    GtkSelectionData *selection_data, guint, guint, void*)
+    GtkSelectionData *data, guint, guint, void*)
 {
     if (GTK_IS_TEXT_VIEW(widget))
     // stop text view native handler
@@ -682,7 +682,7 @@ sAT::at_drag_data_get(GtkWidget *widget, GdkDragContext*,
 
     char *string = text_get_selection(widget);
     if (string) {
-        gtk_selection_data_set(selection_data, selection_data->target,
+        gtk_selection_data_set(data, gtk_selection_data_get_target(data),
             8, (unsigned char*)string, strlen(string)+1);
         delete [] string;
     }
@@ -696,9 +696,12 @@ void
 sAT::at_drag_data_received(GtkWidget*, GdkDragContext *context,
     gint, gint, GtkSelectionData *data, guint, guint time)
 {
-    if (data->length >= 0 && data->format == 8 && data->data) {
-        char *src = (char*)data->data;
-        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+        char *src = (char*)gtk_selection_data_get_data(data);
+        if (gtk_selection_data_get_target(data) ==
+                gdk_atom_intern("TWOSTRING", true)) {
             // Drops from content lists may be in the form
             // "fname_or_chd\ncellname".  Keep the cellname.
             char *t = strchr(src, '\n');

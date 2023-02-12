@@ -117,9 +117,11 @@ cOAif::PopUpOAtech(GRobject caller, ShowMode mode, int x, int y)
 
     int mwid;
     MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
-    if (x + OAtc->shell()->requisition.width > mwid)
-        x = mwid - OAtc->shell()->requisition.width;
-    gtk_widget_set_uposition(OAtc->shell(), x, y);
+    GtkRequisition req;
+    gtk_widget_get_requisition(OAtc->shell(), &req);
+    if (x + req.width > mwid)
+        x = mwid - req.width;
+    gtk_window_move(GTK_WINDOW(OAtc->shell()), x, y);
     gtk_widget_show(OAtc->shell());
 }
 

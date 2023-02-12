@@ -253,7 +253,7 @@ sCF::sCF(GRobject caller, const stringlist *sl, int dmode)
         G_CALLBACK(text_realize_proc), 0);
 
     // The font change pop-up uses this to redraw the widget
-    gtk_object_set_data(GTK_OBJECT(wb_textarea), "font_changed",
+    g_object_set_data(G_OBJECT(wb_textarea), "font_changed",
         (void*)cf_font_changed);
 
     gtk_table_attach(GTK_TABLE(form), contr, 0, 4, rowcnt, rowcnt+1,

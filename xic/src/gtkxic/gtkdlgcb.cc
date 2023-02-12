@@ -80,7 +80,7 @@ cMain::GetCurFileSelection()
         GtkWidget *widget;
         gdk_window_get_user_data(window, (void**)&widget);
         if (widget &&
-                gtk_object_get_data(GTK_OBJECT(widget), "export")) {
+                g_object_get_data(G_OBJECT(widget), "export")) {
             tbuf = text_get_selection(widget);
             if (tbuf && CDcdb()->findSymbol(tbuf))
                 return (tbuf);

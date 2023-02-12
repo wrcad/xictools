@@ -144,7 +144,7 @@ namespace gtkinterf {
         void CallCallback(GRobject);
         void Location(GRobject, int*, int*);
         void PointerRootLoc(int*, int*);
-        char *GetLabel(GRobject);
+        const char *GetLabel(GRobject);
         void SetLabel(GRobject, const char*);
         void SetSensitive(GRobject, bool);
         bool IsSensitive(GRobject);

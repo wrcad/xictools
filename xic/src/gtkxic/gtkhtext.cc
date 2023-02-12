@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_GDK
+
 #include "main.h"
 #include "editif.h"
 #include "dsp_inlines.h"
@@ -142,7 +144,7 @@ GTKedit::GTKedit(bool nogr)
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(pe_r_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(pe_r_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(pe_r_menu_proc), this);
     }
@@ -164,7 +166,7 @@ GTKedit::GTKedit(bool nogr)
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(pe_s_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(pe_s_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(pe_s_menu_proc), this);
     }
@@ -322,11 +324,13 @@ GTKedit::flash_msg_here(int x, int y, const char *msg, ...)
 
     int mwid, mhei;
     MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, &mhei);
-    if (x + popup->requisition.width > mwid)
-        x = mwid - popup->requisition.width;
-    if (y + popup->requisition.height > mhei)
-        y = mhei - popup->requisition.height;
-    gtk_widget_set_uposition(popup, x, y);
+    GtkRequisition req;
+    gtk_widget_get_requisition(popup, &req);
+    if (x + req.width > mwid)
+        x = mwid - req.width;
+    if (y + req.height > mhei)
+        y = mhei - req.height;
+    gtk_window_move(GTK_WINDOW(popup), x, y);
     gtk_window_set_transient_for(GTK_WINDOW(popup),
         GTK_WINDOW(mainBag()->Shell()));
 
@@ -433,8 +437,10 @@ GTKedit::restore_backing(void *tw)
 {
     GdkWindow *tmp_window = (GdkWindow*)tw;
     if (tmp_window) {
+#ifdef XXX_GDK
         gdk_window_copy_area(tmp_window, GC(), 0, 0, pe_pixmap,
             0, 0, pe_wid, pe_hei);
+#endif
         gd_window = tmp_window;
     }
 }
@@ -444,7 +450,7 @@ void
 GTKedit::init_window()
 {
     if (!gd_window)
-        gd_window = gd_viewport->window;
+        gd_window = gtk_widget_get_window(gd_viewport);
     if (gd_window) {
         SetWindowBackground(bg_pixel());
         Clear();
@@ -458,13 +464,18 @@ bool
 GTKedit::check_pixmap()
 {
     if (!gd_window)
-        gd_window = gd_viewport->window;
-    int w, h;
-    gdk_window_get_size(gd_window, &w, &h);
+        gd_window = gtk_widget_get_window(gd_viewport);
+    int w = gdk_window_get_width(gd_window);
+    int h = gdk_window_get_height(gd_window);
     if (!pe_pixmap || w != pe_wid || h != pe_hei) {
         if (pe_pixmap)
+#ifdef XXX_GDK
             gdk_pixmap_unref(pe_pixmap);
-        pe_pixmap = gdk_pixmap_new(gd_window, w, h, GRX->Visual()->depth);
+#else
+            ;
+#endif
+        pe_pixmap = gdk_pixmap_new(gd_window, w, h,
+            gdk_visual_get_depth(GRX->Visual()));
         pe_wid = w;
         pe_hei = h;
     }
@@ -534,7 +545,7 @@ namespace {
     {
         GTKedit *ed = (GTKedit*)arg;
         int x, y;
-        gdk_window_get_origin(ed->Viewport()->window, &x, &y);
+        gdk_window_get_origin(gtk_widget_get_window(ed->Viewport()), &x, &y);
         GdkDisplay *display = gdk_display_get_default();
         GdkScreen *screen = gdk_display_get_default_screen(display);
         int h;
@@ -558,7 +569,7 @@ GTKedit::warp_pointer()
     // The pointer move must be in an idle proc, so it runs after
     // prompt line reconfiguration.
 
-    gtk_idle_add(warp_ptr, this);
+    g_idle_add(warp_ptr, this);
 }
 
 
@@ -718,8 +729,8 @@ GTKedit::pe_redraw_hdlr(GtkWidget*, GdkEvent*, void*)
 {
     if (ptr()) {
         if (ptr()->pe_id)
-            gtk_idle_remove(ptr()->pe_id);
-        ptr()->pe_id = gtk_idle_add(pe_redraw_idle, ptr());
+            g_source_remove(ptr()->pe_id);
+        ptr()->pe_id = g_idle_add(pe_redraw_idle, ptr());
     }
     return (true);
 }
@@ -828,13 +839,13 @@ namespace {
 // Selection handler, supports hypertext transfer
 //
 void
-GTKedit::pe_selection_proc(GtkWidget*, GtkSelectionData *sdata, guint, void*)
+GTKedit::pe_selection_proc(GtkWidget*, GtkSelectionData *data, guint, void*)
 {
-    if (sdata->length < 0) {
+    if (gtk_selection_data_get_length(data) < 0) {
         ptr()->draw_cursor(DRAW);
         return;
     }
-    if (sdata->type != GDK_SELECTION_TYPE_STRING) {
+    if (gtk_selection_data_get_data_type(data) != GDK_SELECTION_TYPE_STRING) {
         Log()->ErrorLog(mh::Internal,
             "Selection conversion failed. not string data.");
         ptr()->draw_cursor(DRAW);
@@ -847,10 +858,13 @@ GTKedit::pe_selection_proc(GtkWidget*, GtkSelectionData *sdata, guint, void*)
         GtkWidget *widget;
         gdk_window_get_user_data(wnd, (void**)&widget);
         if (widget) {
-            int code = (intptr_t)gtk_object_get_data(GTK_OBJECT(widget),
+            int code = (intptr_t)g_object_get_data(G_OBJECT(widget),
                 "hyexport");
             if (code) {
+/* FIXME XXX
                 int start = GTK_OLD_EDITABLE(widget)->selection_start_pos;
+                */
+          int start = 0;
                 // The text is coming from the Property Editor or
                 // Property Info pop-up, fetch the original
                 // hypertext to insert.
@@ -866,9 +880,10 @@ GTKedit::pe_selection_proc(GtkWidget*, GtkSelectionData *sdata, guint, void*)
     }
     if (!hpl) {
         // Might not be 0-terminated?
-        char *s = new char[sdata->length + 1];
-        memcpy(s, sdata->data, sdata->length);
-        s[sdata->length] = 0;
+        int len = gtk_selection_data_get_length(data);
+        char *s = new char[len + 1];
+        memcpy(s, gtk_selection_data_get_data(data), len);
+        s[len] = 0;
         char *d = uni_decode(s);
         delete [] s;
         ptr()->insert(d);
@@ -909,11 +924,13 @@ GTKedit::pe_drag_data_received(GtkWidget*, GdkDragContext *context,
     gint, gint, GtkSelectionData *data, guint, guint time, void*)
 {
     bool success = false;
-    if (!ptr() || !data->data)
+    if (!ptr() || !gtk_selection_data_get_data(data))
         ;
-    else if (data->target == gdk_atom_intern("property", true)) {
+    else if (gtk_selection_data_get_target(data) ==
+            gdk_atom_intern("property", true)) {
         if (ptr()->is_active()) {
-            unsigned char *val = data->data + sizeof(int);
+            unsigned char *val =
+                (unsigned char*)gtk_selection_data_get_data(data) + sizeof(int);
             CDs *cursd = CurCell(true);
             hyList *hp = new hyList(cursd, (char*)val, HYcvAscii);
             ptr()->insert(hp);
@@ -922,10 +939,12 @@ GTKedit::pe_drag_data_received(GtkWidget*, GdkDragContext *context,
         }
     }
     else {
-        if (data->length >= 0 && data->format == 8) {
-            char *src = (char*)data->data;
+        if (gtk_selection_data_get_length(data) >= 0 &&
+                gtk_selection_data_get_format(data) == 8) {
+            char *src = (char*)gtk_selection_data_get_data(data);
             char *t = 0;
-            if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+            if (gtk_selection_data_get_target(data) ==
+                    gdk_atom_intern("TWOSTRING", true)) {
                 // Drops from content lists may be in the form
                 // "fname_or_chd\ncellname".
                 t = strchr(src, '\n');
@@ -982,10 +1001,10 @@ GTKedit::pe_selection_clear(GtkWidget*, GdkEventSelection*, void*)
 
 
 void
-GTKedit::pe_selection_get(GtkWidget*, GtkSelectionData *selection_data,
+GTKedit::pe_selection_get(GtkWidget*, GtkSelectionData *data,
     guint, guint, void*)
 {
-    if (selection_data->selection != GDK_SELECTION_PRIMARY)
+    if (gtk_selection_data_get_selection(data) != GDK_SELECTION_PRIMARY)
         return;
     if (!ptr())
         return;
@@ -999,7 +1018,7 @@ GTKedit::pe_selection_get(GtkWidget*, GtkSelectionData *selection_data,
     // GDK_SELECTION_TYPE_STRING doesn't work for UTF-8 when target
     // is a GTK window.
 
-    gtk_selection_data_set(selection_data,
+    gtk_selection_data_set(data,
         gdk_atom_intern_static_string("UTF8_STRING"), 8*sizeof(char),
         s, length);
     delete [] s;

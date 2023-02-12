@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+//#define XXX_OPT
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -81,7 +83,6 @@ gtk_bag::PopUpMultiCol(stringlist *symlist, const char *title,
     mcol_count++;
     if (mcol_count == 6)
         mcol_count = 0;
-//XXX    gtk_widget_set_uposition(mcol->Shell(), x, y);
     gtk_window_move(GTK_WINDOW(mcol->Shell()), x, y);
 
     mcol->set_visible(true);

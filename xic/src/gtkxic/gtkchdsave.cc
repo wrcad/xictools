@@ -123,9 +123,11 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
 
     int mwid;
     MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
-    if (x + Cs->shell()->requisition.width > mwid)
-        x = mwid - Cs->shell()->requisition.width;
-    gtk_widget_set_uposition(Cs->shell(), x, y);
+    GtkRequisition req;
+    gtk_widget_get_requisition(Cs->shell(), &req);
+    if (x + req.width > mwid)
+        x = mwid - req.width;
+    gtk_window_move(GTK_WINDOW(Cs->shell()), x, y);
     gtk_widget_show(Cs->shell());
 }
 
@@ -192,11 +194,11 @@ sCs::sCs(GRobject caller, bool(*callback)(const char*, bool, void*),
     rowcnt++;
 
     // This allows user to change label text.
-    gtk_object_set_data(GTK_OBJECT(cs_popup), "label", cs_label);
+    g_object_set_data(G_OBJECT(cs_popup), "label", cs_label);
 
     cs_text = gtk_entry_new();
     gtk_widget_show(cs_text);
-    gtk_entry_set_editable(GTK_ENTRY(cs_text), true);
+    gtk_editable_set_editable(GTK_EDITABLE(cs_text), true);
     gtk_table_attach(GTK_TABLE(form), cs_text, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 0);
@@ -375,9 +377,12 @@ sCs::cs_drag_data_received(GtkWidget *entry,
     GdkDragContext *context, gint, gint, GtkSelectionData *data,
     guint, guint time)
 {
-    if (data->length >= 0 && data->format == 8 && data->data) {
-        char *src = (char*)data->data;
-        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+        char *src = (char*)gtk_selection_data_get_data(data);
+        if (gtk_selection_data_get_target(data) ==
+                gdk_atom_intern("TWOSTRING", true)) {
             // Drops from content lists may be in the form
             // "fname_or_chd\ncellname".  Keep the filename.
             char *t = strchr(src, '\n');

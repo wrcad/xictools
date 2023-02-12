@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "fio.h"
 #include "cvrt.h"
@@ -179,7 +181,7 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     gtk_window_set_resizable(GTK_WINDOW(cv_popup), false);
 
     // Without this, spin entries sometimes freeze up for some reason.
-    gtk_object_set_data(GTK_OBJECT(cv_popup), "no_prop_key", (void*)1);
+    g_object_set_data(G_OBJECT(cv_popup), "no_prop_key", (void*)1);
 
     GtkWidget *topform = gtk_table_new(2, 1, false);
     gtk_widget_show(topform);
@@ -222,6 +224,7 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
 
+#ifdef XXX_OPT
     cv_input = gtk_option_menu_new();
     gtk_widget_set_name(cv_input, "Input");
     gtk_widget_show(cv_input);
@@ -231,29 +234,34 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     GtkWidget *mi = gtk_menu_item_new_with_label("Layout File");
     gtk_widget_set_name(mi, "Lfile");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(cv_input_proc), (void*)(long)cConvert::cvLayoutFile);
     mi = gtk_menu_item_new_with_label("Cell Hierarchy Digest Name");
     gtk_widget_set_name(mi, "CHname");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate", 
         G_CALLBACK(cv_input_proc), (void*)(long)cConvert::cvChdName);
     mi = gtk_menu_item_new_with_label("Cell Hierarchy Digest File");
     gtk_widget_set_name(mi, "CHfile");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(cv_input_proc), (void*)(long)cConvert::cvChdFile);
     mi = gtk_menu_item_new_with_label("Native Cell Directory");
     gtk_widget_set_name(mi, "Cdir");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(cv_input_proc), (void*)(long)cConvert::cvNativeDir);
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(cv_input), menu);
+#else
+    cv_input = gtk_combo_box_text_new();
+    gtk_widget_set_name(cv_input, "Input");
+    gtk_widget_show(cv_input);
+#endif
     gtk_box_pack_start(GTK_BOX(row), cv_input, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(topform), row, 0, 2, toprcnt, toprcnt+1,
@@ -542,7 +550,10 @@ sCv::update(int inp_type)
 
     if (inp_type >= cConvert::cvLayoutFile &&
             inp_type <= cConvert::cvNativeDir)
+#ifdef XXX_OPT
         gtk_option_menu_set_history(GTK_OPTION_MENU(cv_input), inp_type - 1);
+#else
+#endif
     if (inp_type == cConvert::cvChdName)
         cv_fmt->configure(cvofmt_chd);
     else if (inp_type == cConvert::cvChdFile)

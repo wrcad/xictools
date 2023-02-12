@@ -305,7 +305,7 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
 
     g_signal_connect(G_OBJECT(t_tree), "test_collapse_row",
-        (GtkSignalFunc)t_collapse_proc, 0);
+        (GCallback)t_collapse_proc, 0);
     // init for drag/drop
     g_signal_connect(G_OBJECT(t_tree), "button-press-event",
         G_CALLBACK(t_btn_hdlr), 0);
@@ -960,11 +960,11 @@ sTree::t_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 //
 void
 sTree::t_drag_data_get(GtkWidget*, GdkDragContext*,
-    GtkSelectionData *selection_data, guint, guint, void*)
+    GtkSelectionData *data, guint, guint, void*)
 {
     if (!Tree || !Tree->t_curnode || !Tree->t_selection)
         return;
-    gtk_selection_data_set(selection_data, selection_data->target,
+    gtk_selection_data_set(data, gtk_selection_data_get_target(data),
         8, (unsigned char*)Tree->t_selection, strlen(Tree->t_selection)+1);
 }
 
@@ -987,14 +987,14 @@ sTree::t_selection_clear(GtkWidget*, GdkEventSelection*, void*)
 // Static function.
 //
 void
-sTree::t_selection_get(GtkWidget*, GtkSelectionData *selection_data,
+sTree::t_selection_get(GtkWidget*, GtkSelectionData *data,
     guint, guint, void*)
 {
-    if (selection_data->selection != GDK_SELECTION_PRIMARY)
+    if (gtk_selection_data_get_selection(data) != GDK_SELECTION_PRIMARY)
         return;
     if (!Tree || !Tree->t_curnode || !Tree->t_selection)
         return;
-    gtk_selection_data_set(selection_data, selection_data->target,
+    gtk_selection_data_set(data, gtk_selection_data_get_target(data),
         8, (unsigned char*)Tree->t_selection, strlen(Tree->t_selection)+1);
 }
 

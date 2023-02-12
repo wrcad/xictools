@@ -45,7 +45,6 @@
 #include <unistd.h>
 #include <ctype.h>
 
-//#define XXX_OPT
 
 //------------------------------------------------------------------------
 //  Generic Search Path Files Listing Popup
@@ -176,11 +175,7 @@ files_bag::files_bag(gtk_bag *w, const char **buttons, int numbuttons,
         f_idle_proc(0);
     }
 
-#ifdef XXX_OPT
-    f_menu = gtk_option_menu_new();
-#else
     f_menu = gtk_combo_box_text_new();
-#endif
     gtk_widget_show(f_menu);
     gtk_table_attach(GTK_TABLE(form), f_menu, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -305,7 +300,6 @@ files_bag::viewing_area(int width, int height)
     if (!f_path_list)
         return;
 
-
     int init_page = 0;
     int maxchars = 120;
     if (f_path_list && f_directory) {
@@ -321,54 +315,9 @@ files_bag::viewing_area(int width, int height)
     delete [] f_directory;
     f_directory = 0;
 
-#ifdef XXX_OPT
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_show(menu);
-
     char buf[256];
     int i = 0;
     for (sDirList *dl = f_path_list->dirs(); dl; i++, dl = dl->next()) {
-
-        if (i == init_page)
-            f_directory = lstring::copy(dl->dirname());
-
-        int len = strlen(dl->dirname());
-        if (len <= maxchars)
-            strcpy(buf, dl->dirname());
-        else {
-            int partchars = maxchars/2 - 2;
-            strncpy(buf, dl->dirname(), partchars);
-            strcpy(buf + partchars, " ... ");
-            strcat(buf, dl->dirname() + len - partchars);
-        }
-
-        GtkWidget *mi = gtk_menu_item_new_with_label(buf);
-        gtk_widget_show(mi);
-        g_object_set_data(G_OBJECT(mi), "index", (void*)(long)i);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(f_menu_proc), this);
-
-        GtkWidget *page = create_page(dl);
-        gtk_notebook_append_page(GTK_NOTEBOOK(f_notebook), page, 0);
-        GtkWidget *nbtext = (GtkWidget*)dl->dataptr();
-        if (i == init_page) {
-            wb_textarea = nbtext;
-            gtk_widget_set_size_request(nbtext, width, height);
-        }
-
-    }
-    g_signal_connect(G_OBJECT(f_notebook), "switch-page",
-        G_CALLBACK(f_page_proc), this);
-    gtk_notebook_set_current_page(GTK_NOTEBOOK(f_notebook), init_page);
-    gtk_option_menu_remove_menu(GTK_OPTION_MENU(f_menu));
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(f_menu), menu);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(f_menu), init_page);
-#else
-    char buf[256];
-    int i = 0;
-    for (sDirList *dl = f_path_list->dirs(); dl; i++, dl = dl->next()) {
-
         if (i == init_page)
             f_directory = lstring::copy(dl->dirname());
 
@@ -397,7 +346,6 @@ files_bag::viewing_area(int width, int height)
     gtk_combo_box_set_active(GTK_COMBO_BOX(f_menu), init_page);
     g_signal_connect(G_OBJECT(f_menu), "changed",
         G_CALLBACK(f_menu_proc), this);
-#endif
 }
 
 
@@ -413,24 +361,6 @@ namespace {
             }
         }
         return (-1);
-    }
-
-    // Gtk doesn't seem to have this.
-    //
-    GtkWidget *get_nth_item(GtkMenu *menu, int n)
-    {
-        GList *list = gtk_container_get_children(GTK_CONTAINER(menu));
-        int i = 0;
-        for (GList *g = list; g; g = g->next) {
-            if (i == n) {
-                GtkWidget *mi = (GtkWidget*)g->data;
-                g_list_free(list);
-                return (mi);
-            }
-            i++;
-        }
-        g_list_free(list);
-        return (0);
     }
 }
 
@@ -473,10 +403,6 @@ files_bag::relist(stringlist *oldlist)
         stmp = stmp->next;
     }
 
-#ifdef XXX_OPT
-    GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(f_menu));
-#endif
-
     int n = 0;
     for (sDirList *dl = f_path_list->dirs(); dl; n++, dl = dl->next()) {
         int oldn = findstr(dl->dirname(), ary, len);
@@ -490,11 +416,6 @@ files_bag::relist(stringlist *oldlist)
             GtkWidget *pg = gtk_notebook_get_nth_page(
                 GTK_NOTEBOOK(f_notebook), oldn);
             gtk_notebook_reorder_child(GTK_NOTEBOOK(f_notebook), pg, n);
-
-#ifdef XXX_OPT
-            GtkWidget *itm = get_nth_item(GTK_MENU(menu), oldn);
-            gtk_menu_reorder_child(GTK_MENU(menu), itm, n);
-#endif
 
             const char *t = ary[oldn];
             // We know that oldn is larger than n.
@@ -521,14 +442,6 @@ files_bag::relist(stringlist *oldlist)
             strcat(buf, dl->dirname() + dlen - partchars);
         }
 
-#ifdef XXX_OPT
-        GtkWidget *mi = gtk_menu_item_new_with_label(buf);
-        gtk_widget_show(mi);
-        gtk_menu_shell_insert(GTK_MENU_SHELL(menu), mi, n);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(f_menu_proc), this);
-#endif
-
         const char **nary = new const char*[len+1];
         for (int i = 0; i < n; i++)
             nary[i] = ary[i];
@@ -546,11 +459,7 @@ files_bag::relist(stringlist *oldlist)
 
     while (gtk_notebook_get_nth_page(GTK_NOTEBOOK(f_notebook), n) != 0)
         gtk_notebook_remove_page(GTK_NOTEBOOK(f_notebook), n);
-    GtkWidget *itm;
-#ifdef XXX_OPT
-    while ((itm = get_nth_item(GTK_MENU(menu), n)) != 0)
-        gtk_container_remove(GTK_CONTAINER(menu), itm);
-#else
+
     // Clear the combo box, note how the empty list is detected.
     GtkTreeModel *mdl =
         gtk_combo_box_get_model(GTK_COMBO_BOX(f_menu));
@@ -574,7 +483,6 @@ files_bag::relist(stringlist *oldlist)
     }
     n = gtk_notebook_get_current_page(GTK_NOTEBOOK(f_notebook));
     gtk_combo_box_set_active(GTK_COMBO_BOX(f_menu), n);
-#endif
 }
 
 
@@ -737,27 +645,11 @@ files_bag::f_resize_hdlr(GtkWidget *widget, GtkAllocation *a, void *arg)
 
 // Static private function.
 void
-files_bag::f_menu_proc(GtkWidget *caller, void *arg)
+files_bag::f_menu_proc(GtkWidget*, void *arg)
 {
     files_bag *f = (files_bag*)arg;
-#ifdef XXX_OPT
-    GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(f->f_menu));
-    GList *list = gtk_container_get_children(GTK_CONTAINER(menu));
-    int n = -1;
-    int i = 0;
-    for (GList *g = list; g; g = g->next) {
-        if (g->data == caller) {
-            n = i;
-            break;
-        }
-        i++;
-    }
-    g_list_free(list);
-    gtk_notebook_set_current_page(GTK_NOTEBOOK(f->f_notebook), n);
-#else
     int n = gtk_combo_box_get_active(GTK_COMBO_BOX(f->f_menu));
     gtk_notebook_set_current_page(GTK_NOTEBOOK(f->f_notebook), n);
-#endif
 }
 
 

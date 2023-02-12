@@ -142,9 +142,11 @@ cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
 
     int mwid;
     MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
-    if (x + Cfg->Shell()->requisition.width > mwid)
-        x = mwid - Cfg->Shell()->requisition.width;
-    gtk_widget_set_uposition(Cfg->Shell(), x, y);
+    GtkRequisition req;
+    gtk_widget_get_requisition(Cfg->Shell(), &req);
+    if (x + req.width > mwid)
+        x = mwid - req.width;
+    gtk_window_move(GTK_WINDOW(Cfg->Shell()), x, y);
     gtk_widget_show(Cfg->Shell());
 }
 
@@ -259,7 +261,7 @@ sCfg::sCfg(GRobject caller, const char *chdname)
 
     cf_text = gtk_entry_new();
     gtk_widget_show(cf_text);
-    gtk_entry_set_editable(GTK_ENTRY(cf_text), true);
+    gtk_editable_set_editable(GTK_EDITABLE(cf_text), true);
     gtk_entry_set_text(GTK_ENTRY(cf_text), "");
 
     // drop site
@@ -404,13 +406,13 @@ sCfg::update(const char *chdname)
         const char *cgdname = chd->getCgdName();
         if (cgdname) {
             gtk_entry_set_text(GTK_ENTRY(cf_cgdentry), cgdname);
-            gtk_entry_set_editable(GTK_ENTRY(cf_cgdentry), false);
+            gtk_editable_set_editable(GTK_EDITABLE(cf_cgdentry), false);
             GRX->SetStatus(cf_newcgd, false);
         }
         else {
             gtk_entry_set_text(GTK_ENTRY(cf_cgdentry),
                 cf_cgdname ? cf_cgdname : "");
-            gtk_entry_set_editable(GTK_ENTRY(cf_cgdentry), true);
+            gtk_editable_set_editable(GTK_EDITABLE(cf_cgdentry), true);
         }
 
         gtk_widget_set_sensitive(cf_newcgd, !chd->hasCgd());
@@ -437,9 +439,9 @@ sCfg::update(const char *chdname)
             sprintf(buf, "CHD %s is not configured.", chdname);
         gtk_label_set_text(GTK_LABEL(cf_label), buf);
 
-        gtk_label_set_text(GTK_LABEL(GTK_BIN(cf_apply_tc)->child),
+        gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(cf_apply_tc))),
             has_name ? "Clear" : "Apply");
-        gtk_label_set_text(GTK_LABEL(GTK_BIN(cf_apply_cgd)->child),
+        gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(cf_apply_cgd))),
             chd->hasCgd() ? "Clear" : "Apply");
     }
     gtk_widget_set_sensitive(cf_apply_tc, chd != 0);
@@ -520,7 +522,8 @@ sCfg::button_hdlr(GtkWidget *widget)
         if (!cgd) {
             if (GRX->GetStatus(cf_newcgd)) {
                 int xo, yo;
-                gdk_window_get_root_origin(Shell()->window, &xo, &yo);
+                gdk_window_get_root_origin(gtk_widget_get_window(Shell()),
+                    &xo, &yo);
                 char *cn;
                 if (cf_cgdname && *cf_cgdname)
                     cn = lstring::copy(cf_cgdname);
@@ -619,9 +622,12 @@ void
 sCfg::cf_drag_data_received(GtkWidget *entry, GdkDragContext *context,
     gint, gint, GtkSelectionData *data, guint, guint time)
 {
-    if (data->length >= 0 && data->format == 8 && data->data) {
-        char *src = (char*)data->data;
-        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+        char *src = (char*)gtk_selection_data_get_data(data);
+        if (gtk_selection_data_get_target(data) ==
+                gdk_atom_intern("TWOSTRING", true)) {
             // Drops from content lists may be in the form
             // "fname_or_chd\ncellname".  Keep the cellname.
             char *t = strchr(src, '\n');

@@ -169,7 +169,7 @@ sSel::sSel(GRobject c)
     sl_pm_norm = gtk_radio_button_new_with_label(0, "Normal");
     gtk_widget_set_name(sl_pm_norm, "Normal");
     gtk_widget_show(sl_pm_norm);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(sl_pm_norm));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_pm_norm));
     gtk_box_pack_start(GTK_BOX(vbox), sl_pm_norm, true, false, 0);
     g_signal_connect(G_OBJECT(sl_pm_norm), "clicked",
         G_CALLBACK(sl_ptr_mode_proc), (void*)PTRnormal);
@@ -178,7 +178,7 @@ sSel::sSel(GRobject c)
     gtk_widget_set_name(sl_pm_sel, "Select");
     gtk_widget_show(sl_pm_sel);
     gtk_box_pack_start(GTK_BOX(vbox), sl_pm_sel, true, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(sl_pm_sel));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_pm_sel));
     g_signal_connect(G_OBJECT(sl_pm_sel), "clicked",
         G_CALLBACK(sl_ptr_mode_proc), (void*)PTRselect);
 
@@ -186,7 +186,7 @@ sSel::sSel(GRobject c)
     gtk_widget_set_name(sl_pm_mod, "Modify");
     gtk_widget_show(sl_pm_mod);
     gtk_box_pack_start(GTK_BOX(vbox), sl_pm_mod, true, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(sl_pm_mod));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_pm_mod));
     g_signal_connect(G_OBJECT(sl_pm_mod), "clicked",
         G_CALLBACK(sl_ptr_mode_proc), (void*)PTRmodify);
 
@@ -205,7 +205,7 @@ sSel::sSel(GRobject c)
     sl_am_norm = gtk_radio_button_new_with_label(0, "Normal");
     gtk_widget_set_name(sl_am_norm, "Normal");
     gtk_widget_show(sl_am_norm);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(sl_am_norm));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_am_norm));
     gtk_box_pack_start(GTK_BOX(vbox), sl_am_norm, true, false, 0);
     g_signal_connect(G_OBJECT(sl_am_norm), "clicked",
         G_CALLBACK(sl_area_mode_proc), (void*)ASELnormal);
@@ -214,7 +214,7 @@ sSel::sSel(GRobject c)
     gtk_widget_set_name(sl_am_enc, "Enclosed");
     gtk_widget_show(sl_am_enc);
     gtk_box_pack_start(GTK_BOX(vbox), sl_am_enc, true, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(sl_am_enc));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_am_enc));
     g_signal_connect(G_OBJECT(sl_am_enc), "clicked",
         G_CALLBACK(sl_area_mode_proc), (void*)ASELenclosed);
 
@@ -222,7 +222,7 @@ sSel::sSel(GRobject c)
     gtk_widget_set_name(sl_am_all, "All");
     gtk_widget_show(sl_am_all);
     gtk_box_pack_start(GTK_BOX(vbox), sl_am_all, true, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(sl_am_all));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_am_all));
     g_signal_connect(G_OBJECT(sl_am_all), "clicked",
         G_CALLBACK(sl_area_mode_proc), (void*)ASELall);
 
@@ -241,7 +241,7 @@ sSel::sSel(GRobject c)
     sl_sel_norm = gtk_radio_button_new_with_label(0, "Normal");
     gtk_widget_set_name(sl_sel_norm, "Normal");
     gtk_widget_show(sl_sel_norm);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(sl_sel_norm));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_sel_norm));
     gtk_box_pack_start(GTK_BOX(vbox), sl_sel_norm, true, false, 0);
     g_signal_connect(G_OBJECT(sl_sel_norm), "clicked",
         G_CALLBACK(sl_add_mode_proc), (void*)SELnormal);
@@ -250,7 +250,7 @@ sSel::sSel(GRobject c)
     gtk_widget_set_name(sl_sel_togl, "Toggle");
     gtk_widget_show(sl_sel_togl);
     gtk_box_pack_start(GTK_BOX(vbox), sl_sel_togl, true, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(sl_sel_togl));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_sel_togl));
     g_signal_connect(G_OBJECT(sl_sel_togl), "clicked",
         G_CALLBACK(sl_add_mode_proc), (void*)SELtoggle);
 
@@ -258,7 +258,7 @@ sSel::sSel(GRobject c)
     gtk_widget_set_name(sl_sel_add, "Add");
     gtk_widget_show(sl_sel_add);
     gtk_box_pack_start(GTK_BOX(vbox), sl_sel_add, true, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(sl_sel_add));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_sel_add));
     g_signal_connect(G_OBJECT(sl_sel_add), "clicked",
         G_CALLBACK(sl_add_mode_proc), (void*)SELselect);
 
@@ -266,7 +266,7 @@ sSel::sSel(GRobject c)
     gtk_widget_set_name(sl_sel_rem, "Remove");
     gtk_widget_show(sl_sel_rem);
     gtk_box_pack_start(GTK_BOX(vbox), sl_sel_rem, true, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(sl_sel_rem));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_sel_rem));
     g_signal_connect(G_OBJECT(sl_sel_rem), "clicked",
         G_CALLBACK(sl_add_mode_proc), (void*)SELdesel);
 

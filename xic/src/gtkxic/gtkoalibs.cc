@@ -293,7 +293,7 @@ sLBoa::sLBoa(GRobject c)
     lb_both = gtk_radio_button_new_with_label(0, "All");
     gtk_widget_set_name(lb_both, "All");
     gtk_widget_show(lb_both);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(lb_both));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(lb_both));
     gtk_box_pack_start(GTK_BOX(hbox), lb_both, true, false, 0);
     g_signal_connect(G_OBJECT(lb_both), "clicked",
         G_CALLBACK(lb_action_proc), (void*)LBboth);
@@ -302,7 +302,7 @@ sLBoa::sLBoa(GRobject c)
     gtk_widget_set_name(lb_phys, "Phys");
     gtk_widget_show(lb_phys);
     gtk_box_pack_start(GTK_BOX(hbox), lb_phys, true, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(lb_phys));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(lb_phys));
     g_signal_connect(G_OBJECT(lb_phys), "clicked",
         G_CALLBACK(lb_action_proc), (void*)LBphys);
 

@@ -89,6 +89,8 @@ struct sCniGripDesc
             gd_loc = gd.gd_loc;
             gd_absolute = gd.gd_absolute;
             gd_vert = gd.gd_vert;
+            gd_has_min = gd.gd_has_min;
+            gd_has_max = gd.gd_has_max;
         }
 
 protected:
@@ -104,6 +106,8 @@ protected:
                             // coordinates, otherwise increment is
                             // meaasured relative to object center.
     bool gd_vert;           // True measurement direction vertical.
+    bool gd_has_min;        // The gd_minval was given.
+    bool gd_has_max;        // The gd_maxval was given.
 };
 
 

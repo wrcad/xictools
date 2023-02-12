@@ -335,7 +335,7 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
     gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), ww, hh);
 
     // The font change pop-up uses this to redraw the widget
-    gtk_object_set_data(GTK_OBJECT(wb_textarea), "font_changed",
+    g_object_set_data(G_OBJECT(wb_textarea), "font_changed",
         (void*)sc_font_changed);
 
     gtk_table_attach(GTK_TABLE(form), contr, 0, 2, rowcnt, rowcnt + 1,

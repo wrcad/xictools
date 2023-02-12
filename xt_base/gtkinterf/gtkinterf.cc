@@ -365,12 +365,10 @@ GTKdev::Init(int *argc, char **argv)
     // it has the focus when this function is called, this is not
     // really good.
 #ifdef WITH_X11
-/* XXX gdk_display is unknown
     int foc;
     Window xwin;
-    XGetInputFocus(gdk_display, &xwin, &foc);
+    XGetInputFocus(gr_x_display(), &xwin, &foc);
     dv_console_xid = xwin;
-*/
 #endif
 
     // set correct information
@@ -433,7 +431,6 @@ GTKdev::InitColormap(int mincolors, int maxcolors, bool dualplane)
         return (true);
     }
     const char *msg = "Found %s visual, %d planes.\n";
-//XXX    switch (dv_visual->type) {
     switch (gdk_visual_get_visual_type(dv_visual)) {
     case GDK_VISUAL_STATIC_GRAY:
         printf(msg, "static gray", gdk_visual_get_depth(dv_visual));
@@ -464,110 +461,10 @@ GTKdev::InitColormap(int mincolors, int maxcolors, bool dualplane)
         ColorAlloc.no_alloc = true;
         return (false);
     }
-#ifdef OLD_VISUALS
-    int ncolors = gdk_visual_get_colormap_size(dv_visual);
-
-    // limit allocation to 48 dual-plane cells
-    if (ncolors > 96)
-        ncolors = 96;
-
-    if (dualplane) {
-        if (2*maxcolors > ncolors)
-            maxcolors = ncolors/2;
-    }
-    else {
-        if (maxcolors > ncolors)
-            maxcolors = ncolors;
-    }
-    if (maxcolors < mincolors) {
-        fprintf(stderr, "Fatal error: Too many colors requested.\n");
-        return (true);
-    }
-
-    int n = maxcolors;
-    int ok = false;
-    while (n >= 16) {
-        if (dualplane) {
-            ok = gdk_colors_alloc(dv_cmap, false,
-//XXX            ok = gdk_colormap_alloc_colors(dv_cmap, false,
-                ColorAlloc.plane_mask, 1, ColorAlloc.drawing_pixels, n);
-        }
-        else {
-            ok = gdk_colors_alloc(dv_cmap, false,
-//XXX            ok = gdk_colormap_alloc_colors(dv_cmap, false,
-                0, 0, ColorAlloc.drawing_pixels, n);
-        }
-        if (ok)
-            break;
-        n -= 4;
-    }
-    if (!ok) {
-        // Failed to allocate colors from default colormap.  Create
-        // a new colormap and try again.
-        printf("Allocating colormap.\n");
-        n = maxcolors;
-        GdkColormap *newcmap = gdk_colormap_new(dv_visual, false);
-        ncolors = gdk_visual_get_colormap_size(dv_visual);
-        ncolors -= (dualplane ? 2*maxcolors : maxcolors);
-        // ncolors is number of unallocated colorcells.  Allocate half
-        // for friendliness with default colormap, and leave half
-        // unallocated.
-        ncolors /= 2;
-        if (ncolors > 0) {
-            unsigned long xx[256];
-            gdk_colors_alloc(newcmap, true, 0, 0, xx, ncolors);
-//XXX            gdk_colormap_alloc_colors(newcmap, true, 0, 0, xx, ncolors);
-            for (int i = 0; i < ncolors; i++) {
-                GdkColor clr;
-                clr.pixel = i;
-                gtk_QueryColor(&clr);
-                gdk_color_change(newcmap, &clr);
-            }
-        }
-        dv_cmap = newcmap;
-        gtk_widget_set_default_colormap(dv_cmap);
-        while (n >= mincolors) {
-            if (dualplane) {
-                ok = gdk_colors_alloc(dv_cmap, false,
-//XXX                ok = gdk_colormap_alloc_colors(dv_cmap, false,
-                    ColorAlloc.plane_mask, 1, ColorAlloc.drawing_pixels, n);
-            }
-            else {
-                ok = gdk_colors_alloc(dv_cmap, false,
-//XXX                ok = gdk_colormap_alloc_colors(dv_cmap, false,
-                    0, 0, ColorAlloc.drawing_pixels, n);
-            }
-            if (ok)
-                break;
-            n -= 4;
-        }
-        if (!ok) {
-            fprintf(stderr,
-                "Fatal error: Can't allocate %d read/write colorcells.\n",
-                mincolors);
-            return (true);
-        }
-    }
-
-    if (dualplane) {
-        ColorAlloc.num_mask_allocated = n;
-        printf("Allocating %d dual-plane private colorcells.\n", n);
-        dv_dual_plane = true;
-    }
-    else {
-        ColorAlloc.num_allocated = n;
-        printf("Allocating %d single-plane private colorcells.\n", n);
-    }
-    return (false);
-#else
-    // All of the code above is to support, e.g., 256-color modes and
-    // similar which are long gone.  The code above uses deprecated
-    // gdk calls.
-    // 
+    // No longer support these visuals.
     fprintf(stderr,
         "Fatal error: Graphical environment is not unsupported.\n");
     return (true);
-#endif
 }
 
 struct clr_t : public GdkColor
@@ -733,8 +630,6 @@ GTKdev::NewWbag(const char *appname, GRwbag *reuse)
 {
     gtk_bag *w = reuse ? dynamic_cast<gtk_bag*>(reuse) : new gtk_bag();
     w->wb_shell = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-//XXX    gtk_window_set_policy(GTK_WINDOW(w->Shell()), true, true, false);
-// shrink, grow, auto_shrink:  default is false true falsE
     if (appname) {
         char buf[128];
         strcpy(buf, appname);  // appname is actually the class name
@@ -954,7 +849,17 @@ GTKdev::ConnectFd()
 }
 
 
-// Set the state of btn to unselected
+namespace {
+    void toggle_hdlr(GtkWidget *caller, void*)
+    {
+        g_signal_stop_emission_by_name(G_OBJECT(caller), "toggled");
+        g_signal_handlers_disconnect_by_func(G_OBJECT(caller),
+            (gpointer)toggle_hdlr, 0);
+    }
+}
+
+
+// Set the state of btn to unselected, suppress the signal.
 //
 void
 GTKdev::Deselect(GRobject btn)
@@ -962,25 +867,23 @@ GTKdev::Deselect(GRobject btn)
     if (!btn)
         return;
     if (GTK_IS_TOGGLE_BUTTON(btn)) {
-        GtkToggleButton *toggle = (GtkToggleButton*)btn;
-        if (gtk_toggle_button_get_active(toggle)) {
-            gtk_toggle_button_set_active(toggle, 0);
-
-            /*XXX CHECK/FIX this
-            toggle->button.depressed = false;
-            GtkStateType new_state = (GTK_BUTTON(toggle)->in_button ?
-                GTK_STATE_PRELIGHT : GTK_STATE_NORMAL);
-            gtk_widget_set_state(GTK_WIDGET(toggle), new_state);
-            */
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn))) {
+            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
+                (gpointer)0);
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), 0);
         }
     }
     else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), 0);
+        if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn))) {
+            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
+                (gpointer)0);
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), 0);
+        }
     }
 }
 
 
-// Set the state of btn to selected
+// Set the state of btn to selected, suppress the signal.
 //
 void
 GTKdev::Select(GRobject btn)
@@ -988,25 +891,23 @@ GTKdev::Select(GRobject btn)
     if (!btn)
         return;
     if (GTK_IS_TOGGLE_BUTTON(btn)) {
-        GtkToggleButton *toggle = (GtkToggleButton*)btn;
-        if (!gtk_toggle_button_get_active(toggle)) {
-            gtk_toggle_button_set_active(toggle, 1);
-
-            /*XXX CHECK/FIX this
-            toggle->button.depressed = true;
-            GtkStateType new_state = (GTK_BUTTON(toggle)->in_button ?
-                GTK_STATE_PRELIGHT : GTK_STATE_ACTIVE);
-            gtk_widget_set_state(GTK_WIDGET(toggle), new_state);
-            */
+        if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn))) {
+            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
+                (gpointer)0);
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), 1);
         }
     }
     else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), 1);
+        if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn))) {
+            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
+                (gpointer)0);
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), 1);
+        }
     }
 }
 
 
-// Return the status of btn
+// Return the status of btn.
 //
 bool
 GTKdev::GetStatus(GRobject btn)
@@ -1021,7 +922,7 @@ GTKdev::GetStatus(GRobject btn)
 }
 
 
-// Set the status of btn
+// Set the status of btn, subbress the signal.
 //
 void
 GTKdev::SetStatus(GRobject btn, bool state)
@@ -1029,30 +930,20 @@ GTKdev::SetStatus(GRobject btn, bool state)
     if (!btn)
         return;
     if (GTK_IS_TOGGLE_BUTTON(btn)) {
-        GtkToggleButton *toggle = (GtkToggleButton*)btn;
-        if (gtk_toggle_button_get_active(toggle) && !state) {
-            gtk_toggle_button_set_active(toggle, false);
-
-            /*XXX
-            toggle->button.depressed = false;
-            GtkStateType new_state = (GTK_BUTTON(toggle)->in_button ?
-                GTK_STATE_PRELIGHT : GTK_STATE_NORMAL);
-            gtk_widget_set_state(GTK_WIDGET(toggle), new_state);
-            */
-        }
-        else if (!gtk_toggle_button_get_active(toggle) && state) {
-            gtk_toggle_button_set_active(toggle, true);
-
-            /*XXX
-            toggle->button.depressed = true;
-            GtkStateType new_state = (GTK_BUTTON(toggle)->in_button ?
-                GTK_STATE_PRELIGHT : GTK_STATE_ACTIVE);
-            gtk_widget_set_state(GTK_WIDGET(toggle), new_state);
-            */
+        bool cur = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+        if (cur != state) {
+            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
+                (gpointer)0);
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), state);
         }
     }
     else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), state);
+        bool cur = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn));
+        if (cur != state) {
+            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
+                (gpointer)0);
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), state);
+        }
     }
 }
 
@@ -1123,13 +1014,12 @@ GTKdev::PointerRootLoc(int *x, int *y)
 }
 
 
-// Return the label string of the button.
+// Return the label string of the button, accelerators stripped.  Do not
+// free the return.
 //
-char *
+const char *
 GTKdev::GetLabel(GRobject btn)
 {
-//XXX should this return allocated string?
-//XXX should this return markup or plain text?  use gtk_label_get_text
     if (!btn)
         return (0);
     const char *string = 0;
@@ -1149,7 +1039,7 @@ GTKdev::GetLabel(GRobject btn)
         }
         g_list_free(stuff);
     }
-    return (strdup(string));
+    return (string);
 }
 
 
@@ -1461,6 +1351,7 @@ gtk_bag::~gtk_bag()
         gtk_widget_destroy(wb_shell);
     if (this == GRX->MainFrame())
         GRX->RegisterMainFrame(0);
+
 }
 // End of gtk_bag functions.
 

@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "edit.h"
 #include "dsp_inlines.h"
@@ -182,6 +184,7 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     gtk_widget_show(label);
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
+#ifdef XXX_OPT
     GtkWidget *entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "Depth");
     gtk_widget_show(entry);
@@ -201,13 +204,18 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(fl_depth_proc), 0);
     }
 
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry), depth);
+#else
+    GtkWidget *entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "Depth");
+    gtk_widget_show(entry);
+#endif
     gtk_box_pack_start(GTK_BOX(row), entry, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

@@ -139,7 +139,7 @@ struct grbits : public http_monitor
             g_jbuf_set = false;
 
             // Die after the interval.
-            gtk_timeout_add(2000, (GtkFunction)terminate, 0);
+            g_timeout_add(2000, (GSourceFunc)terminate, 0);
         }
 
     bool graphics_enabled()
@@ -226,11 +226,12 @@ grbits::start(Transaction *t)
         int pmon = gdk_screen_get_monitor_at_point(scrn, x, y);
         GdkRectangle r;
         gdk_screen_get_monitor_geometry(scrn, pmon, &r);
-        gtk_widget_set_uposition(gb->g_popup, t->xpos() + r.x, t->ypos() + r.y);
+        gtk_window_move(GTK_WINDOW(gb->g_popup),
+            t->xpos() + r.x, t->ypos() + r.y);
     }
     gtk_widget_show(gb->g_popup);
 
-    gtk_idle_add((GtkFunction)grbits::g_idle_proc, t);
+    g_idle_add((GSourceFunc)grbits::g_idle_proc, t);
     gtk_main();
 }
 
@@ -264,7 +265,7 @@ namespace {
 bool
 grbits::widget_print(const char *buf)
 {
-    if (g_text_area && g_text_area->window) {
+    if (g_text_area && gtk_widget_get_window(g_text_area)) {
         char *str = lstring::copy(buf ? buf : g_textbuf);
         if (str) {
             char *e = str + strlen(str) - 1;
@@ -278,10 +279,15 @@ grbits::widget_print(const char *buf)
                     delete [] g_textbuf;
                     g_textbuf = lstring::copy(s);  // for expose
                 }
-                gdk_window_clear(g_text_area->window);
-                GdkFont *fnt = gtk_style_get_font(g_text_area->style);
-                gdk_draw_string(g_text_area->window, fnt,
-                    g_text_area->style->black_gc, 2, fnt->ascent + 2, s);
+                GdkWindow *win = gtk_widget_get_window(g_text_area);
+                gdk_window_clear(win);
+                GtkStyle *style = gtk_widget_get_style(g_text_area);
+                GdkFont *fnt = gtk_style_get_font(style);
+
+//                GdkGC *bgc = gtk_style_get_black_gc(style);
+//                int asnt = gdk_font_get_ascent(fnt);
+                gdk_draw_string(win, fnt,
+                    style->black_gc, 2, fnt->ascent + 2, s);
             }
             delete [] str;
         }

@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+//#define XXX_OPT
+
 #include "config.h"
 #include "gtkinterf.h"
 #include "gtkhcopy.h"

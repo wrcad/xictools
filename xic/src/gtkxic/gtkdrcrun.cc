@@ -493,7 +493,7 @@ sDC::sDC(GRobject c)
     // This is black magic to allow button pressess/releases to be
     // dispatched when the busy flag is set.  Un-setting the Check
     // button will pause the DRC run.
-    gtk_object_set_data(GTK_OBJECT(button), "abort", (void*)1);
+    g_object_set_data(G_OBJECT(button), "abort", (void*)1);
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -529,7 +529,7 @@ sDC::sDC(GRobject c)
         G_CALLBACK(dc_button_dn), 0);
 
     // The font change pop-up uses this to redraw the widget
-    gtk_object_set_data(GTK_OBJECT(dc_jobs), "font_changed",
+    g_object_set_data(G_OBJECT(dc_jobs), "font_changed",
         (void*)dc_font_changed);
 
     GtkTextBuffer *textbuf =

@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "ext.h"
 #include "ext_extract.h"
@@ -761,6 +763,7 @@ sEs::net_and_cell_page()
     tcnt++;
     es_p2_gpmulti = button;
 
+#ifdef XXX_OPT
     es_p2_gpmthd = gtk_option_menu_new();
     gtk_widget_set_name(es_p2_gpmthd, "GPMthd");
     gtk_widget_show(es_p2_gpmthd);
@@ -771,22 +774,27 @@ sEs::net_and_cell_page()
         "Invert in each cell, clip out subcells");
     gtk_widget_set_name(mi, "0");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(es_gpinv_proc), 0);
     mi = gtk_menu_item_new_with_label("Invert flat in top-level cell");
     gtk_widget_set_name(mi, "1");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(es_gpinv_proc), 0);
     mi = gtk_menu_item_new_with_label("Invert flat in all cells");
     gtk_widget_set_name(mi, "2");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(es_gpinv_proc), 0);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(es_p2_gpmthd), menu);
+#else
+    es_p2_gpmthd = gtk_combo_box_text_new();
+    gtk_widget_set_name(es_p2_gpmthd, "GPMthd");
+    gtk_widget_show(es_p2_gpmthd);
+#endif
     gtk_table_attach(GTK_TABLE(tform), es_p2_gpmthd, 0, 2, tcnt, tcnt+1,
         (GtkAttachOptions)0,
         (GtkAttachOptions)0, 2, 2);
@@ -829,7 +837,7 @@ sEs::devs_page()
     // New, 0, es_dev_menu_proc, 0, 0
     item = gtk_menu_item_new_with_mnemonic("New");
     gtk_widget_set_name(item, "New");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)0);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)0);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -838,7 +846,7 @@ sEs::devs_page()
     // Delete, 0, es_dev_menu_proc, 1, <CheckItem>
     item = gtk_check_menu_item_new_with_mnemonic("Delete");
     gtk_widget_set_name(item, "Delete");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)1);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)1);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -847,7 +855,7 @@ sEs::devs_page()
     // Undelete, 0, es_dev_menu_proc, 2, 0);
     item = gtk_check_menu_item_new_with_mnemonic("Undelete");
     gtk_widget_set_name(item, "Undelete");
-    gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)(long)2);
+    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)2);
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -1289,8 +1297,12 @@ sEs::update()
         CDvdb()->getVariable(VA_GroundPlaneMulti) != 0);
 
     if (es_gpmhst != (int)Tech()->GroundPlaneMode())
+#ifdef XXX_OPT
         gtk_option_menu_set_history(GTK_OPTION_MENU(es_p2_gpmthd),
             Tech()->GroundPlaneMode());
+#else
+        ;
+#endif
 
     // page 3
     GRX->SetStatus(es_p3_noseries,
@@ -1882,7 +1894,7 @@ sEs::es_gpinv_proc(GtkWidget *caller, void*)
 void
 sEs::dev_menu_upd()
 {
-    GList *gl = gtk_container_children(GTK_CONTAINER(es_p2_menu));
+    GList *gl = gtk_container_get_children(GTK_CONTAINER(es_p2_menu));
     int cnt = 0;
     for (GList *l = gl; l; l = l->next, cnt++) {
         if (cnt > 3)  // ** skip first four entries **
@@ -1904,7 +1916,7 @@ sEs::dev_menu_upd()
             gtk_widget_show(mi);
             g_signal_connect(G_OBJECT(mi), "activate",
                 G_CALLBACK(es_dev_menu_proc), d);
-            gtk_menu_append(GTK_MENU(es_p2_menu), mi);
+            gtk_menu_shell_append(GTK_MENU_SHELL(es_p2_menu), mi);
         }
     }
     stringlist::destroy(dnames);
@@ -1940,7 +1952,7 @@ sEs::es_editsave(const char *fname, void*, XEtype type)
 void
 sEs::es_dev_menu_proc(GtkWidget *caller, void *client_data)
 {
-    long type = (long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+    long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
     if (type == 2) {
         // Undelete button
         EX()->addDevice(Es->es_devdesc);

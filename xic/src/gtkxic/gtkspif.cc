@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "sced.h"
 #include "edit_variables.h"
@@ -362,6 +364,7 @@ sSC::sSC(GRobject c)
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
+#ifdef XXX_OPT
     entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "expmode");
     gtk_widget_show(entry);
@@ -370,12 +373,17 @@ sSC::sSC(GRobject c)
     GtkWidget *mi = gtk_menu_item_new_with_label("WRspice");
     gtk_widget_set_name(mi, "WRspice");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     mi = gtk_menu_item_new_with_label("Spice3");
     gtk_widget_set_name(mi, "Spice3");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
+#else
+    entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "expmode");
+    gtk_widget_show(entry);
+#endif
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -492,16 +500,24 @@ sSC::update()
     GRX->SetStatus(sc_catchar_b, set);
 
     s = CDvdb()->getVariable(VA_SpiceSubcCatmode);
+#ifdef XXX_OPT
     int h = gtk_option_menu_get_history(GTK_OPTION_MENU(sc_catmode));
+#else
+    int h = 0;
+#endif
     set = (s != 0);
     if (s) {
         if (*s == 'w' || *s == 'W') {
+#ifdef XXX_OPT
             if (h != 0)
                 gtk_option_menu_set_history(GTK_OPTION_MENU(sc_catmode), 0);
+#endif
         }
         else if (*s == 's' || *s == 'S') {
+#ifdef XXX_OPT
             if (h != 1)
                 gtk_option_menu_set_history(GTK_OPTION_MENU(sc_catmode), 1);
+#endif
         }
         else {
             CDvdb()->clearVariable(VA_SpiceSubcCatmode);
@@ -509,10 +525,12 @@ sSC::update()
         }
     }
     else {
+#ifdef XXX_OPT
         if (CD()->GetSubcCatmode() == cCD::SUBC_CATMODE_WR && h != 0)
             gtk_option_menu_set_history(GTK_OPTION_MENU(sc_catmode), 0);
         else if (CD()->GetSubcCatmode() == cCD::SUBC_CATMODE_SPICE3 && h != 1)
             gtk_option_menu_set_history(GTK_OPTION_MENU(sc_catmode), 1);
+#endif
     }
     gtk_widget_set_sensitive(sc_catmode, !set);
     GRX->SetStatus(sc_catmode_b, set);
@@ -616,10 +634,12 @@ sSC::sc_action(GtkWidget *caller, void*)
     }
     else if (!strcmp(name, "catmode_b")) {
         if (state) {
+#ifdef XXX_OPT
             int h =
                 gtk_option_menu_get_history(GTK_OPTION_MENU(SC->sc_catmode));
             CDvdb()->setVariable(VA_SpiceSubcCatmode,
                 h ? "Spice3" : "WRspice");
+#endif
         }
         else
             CDvdb()->clearVariable(VA_SpiceSubcCatmode);

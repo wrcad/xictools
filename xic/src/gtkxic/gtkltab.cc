@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_GDK
+
 #include "main.h"
 #include "dsp_layer.h"
 #include "dsp_color.h"
@@ -61,6 +63,10 @@
 #include <gdk/gdkwin32.h>
 #endif
 
+//XXX
+#undef GDK_DISABLE_DEPRECATED 
+#undef GTK_DISABLE_DEPRECATED
+#undef GSEAL_ENABLE 
 
 //--------------------------------------------------------------------
 // The Layer Table
@@ -194,10 +200,15 @@ GTKltab::GTKltab(bool nogr)
         G_CALLBACK(ltab_search_hdlr), this);
     GtkStyle *style = gtk_widget_get_style(button);
     GdkPixmap *pmask;
+#ifdef XXX_GDK
     GdkPixmap *pixmap =
         gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
             &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)lsearch_xpm);
     GtkWidget *pixwidg = gtk_pixmap_new(pixmap, pmask);
+#else
+    GdkPixmap *pixmap = 0;
+    GtkWidget *pixwidg = 0;
+#endif
     gtk_widget_show(pixwidg);
     gtk_container_add(GTK_CONTAINER(button), pixwidg);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
@@ -219,12 +230,14 @@ GTKltab::setup_drawable()
 {
     // Make sure window is set.
     if (!gd_window)
-        gd_window = gd_viewport->window;
+        gd_window = gtk_widget_get_window(gd_viewport);
 
+#ifdef XXX_GDK
     if (!ltab_gbag.main_gc()) {
         ltab_gbag.set_gc(gdk_gc_new(gd_window));
         ltab_gbag.set_xorgc(gdk_gc_new(gd_window));
     }
+#endif
     SetGbag(&ltab_gbag);
 }
 
@@ -428,10 +441,12 @@ namespace {
 
         ~blinker()
             {
+#ifdef XXX_GDK
                 if (b_dim_pm)
                     gdk_pixmap_unref(b_dim_pm);
                 if (b_norm_pm)
                     gdk_pixmap_unref(b_norm_pm);
+#endif
             }
 
         bool is_ok()
@@ -443,17 +458,21 @@ namespace {
             {
                 if (!b_dim_pm)
                     return;
+#ifdef XXX_GDK
                 gdk_window_copy_area(b_wbag->Window(), b_wbag->GC(), 0, 0,
                     b_dim_pm, 0, 0, b_wid, b_hei);
                 gdk_flush();
+#endif
             }
 
         void show_norm()
             {
                 if (!b_norm_pm)
                     return;
+#ifdef XXX_GDK
                 gdk_window_copy_area(b_wbag->Window(), b_wbag->GC(), 0, 0,
                     b_norm_pm, 0, 0, b_wid, b_hei);
+#endif
                 gdk_flush();
             }
 
@@ -487,11 +506,12 @@ namespace {
         b_wid = 0;
         b_hei = 0;
 
+#ifdef XXX_GDK
         if (!wb)
             return;
 
         GdkPixmap *pm = gdk_pixmap_new(wb->Window(), 1, 1,
-            GRX->Visual()->depth);
+            gdk_visual_get_depth(GRX->Visual()));
         if (!pm)
             return;
         GdkWindow *bk = wb->Window();
@@ -499,12 +519,19 @@ namespace {
         wb->SetColor(dsp_prm(ld)->pixel());
         wb->Pixel(0, 0);
         wb->SetWindow(bk);
+#ifdef XXX_GDK
         GdkImage *im = gdk_image_get(pm, 0, 0, 1, 1);
         gdk_pixmap_unref(pm);
+#endif
         if (!im)
             return;
 
+#ifdef XXX_GDK
         int bpp = im->bpp;
+//        int bpp = gdk_image_get_bpp(im);
+#else 
+        int bpp = 4;
+#endif
 
         int im_order = im->byte_order;
         int order = GDK_LSB_FIRST;
@@ -513,7 +540,10 @@ namespace {
             order = GDK_MSB_FIRST;
 
         pix = 0;
+#ifdef XXX_GDK
         memcpy(&pix, im->mem, bpp);
+//        memcpy(&pix, gdk_image_get_mem(im), bpp);
+#endif
         if (order != im_order)
             pix = revbytes(pix, bpp);
         if (order == GDK_MSB_FIRST)
@@ -582,7 +612,8 @@ namespace {
                     *z++ = a[j];
             }
         }
-        pm = gdk_pixmap_new(wb->Window(), b_wid, b_hei, GRX->Visual()->depth);
+        pm = gdk_pixmap_new(wb->Window(), b_wid, b_hei,
+            gdk_visual_get_depth(GRX->Visual()));
         if (!pm) {
             gdk_image_destroy(im);
             gdk_pixmap_unref(b_norm_pm);
@@ -592,6 +623,7 @@ namespace {
         gdk_draw_image(pm, wb->GC(), im, 0, 0, 0, 0, b_wid, b_hei);
         gdk_image_destroy(im);
         b_dim_pm = pm;
+#endif // XXX_GDK
     }
 
 
@@ -673,7 +705,7 @@ GTKltab::blink(CDl *ld)
         delete oldb;
     }
     if (!blink_timer_id)
-        blink_timer_id = gtk_idle_add(blink_idle, 0);
+        blink_timer_id = g_idle_add(blink_idle, 0);
 }
 
 
@@ -683,15 +715,17 @@ GTKltab::show(const CDl *ld)
     if (lt_disabled)
         return;
     if (!gd_window)
-        gd_window = gd_viewport->window;
+        gd_window = gtk_widget_get_window(gd_viewport);
     if (!ltab_pixmap || ltab_pmap_width != lt_win_width ||
             ltab_pmap_height != lt_win_height) {
+#ifdef XXX_GDK
         if (ltab_pixmap)
             gdk_pixmap_unref(ltab_pixmap);
+#endif
         ltab_pmap_width = lt_win_width;
         ltab_pmap_height = lt_win_height;
         ltab_pixmap = gdk_pixmap_new(gd_window, ltab_pmap_width,
-            ltab_pmap_height, GRX->Visual()->depth);
+            ltab_pmap_height, gdk_visual_get_depth(GRX->Visual()));
     }
 
     GdkWindow *win = gd_window;
@@ -699,8 +733,10 @@ GTKltab::show(const CDl *ld)
 
     show_direct(ld);
 
+#ifdef XXX_GDK
     gdk_window_copy_area(win, GC(), 0, 0, gd_window, 0, 0, lt_win_width,
         lt_win_height);
+#endif
     gd_window = win;
     ltab_pmap_dirty = false;
 }
@@ -714,15 +750,17 @@ GTKltab::refresh(int x, int y, int w, int h)
     if (lt_disabled)
         return;
     if (!gd_window)
-        gd_window = gd_viewport->window;
+        gd_window = gtk_widget_get_window(gd_viewport);
     if (!ltab_pixmap || ltab_pmap_width != lt_win_width ||
             ltab_pmap_height != lt_win_height) {
+#ifdef XXX_GDK
         if (ltab_pixmap)
             gdk_pixmap_unref(ltab_pixmap);
+#endif
         ltab_pmap_width = lt_win_width;
         ltab_pmap_height = lt_win_height;
         ltab_pixmap = gdk_pixmap_new(gd_window, ltab_pmap_width,
-            ltab_pmap_height, GRX->Visual()->depth);
+            ltab_pmap_height, gdk_visual_get_depth(GRX->Visual()));
         ltab_pmap_dirty = true;
     }
 
@@ -733,8 +771,9 @@ GTKltab::refresh(int x, int y, int w, int h)
         show_direct();
         ltab_pmap_dirty = false;
     }
-
+#ifdef XXX_GDK
     gdk_window_copy_area(win, GC(), x, y, gd_window, x, y, w, h);
+#endif
     gd_window = win;
 }
 
@@ -746,8 +785,10 @@ GTKltab::win_size(int *wid, int *hei)
 {
     *wid = 0;
     *hei = 0;
-    if (gd_window)
-        gdk_window_get_size(gd_window, wid, hei);
+    if (gd_window) {
+        *wid = gdk_window_get_width(gd_window);
+        *hei = gdk_window_get_height(gd_window);
+    }
 }
 
 
@@ -776,17 +817,17 @@ GTKltab::update_scrollbar()
         // so thie really isn't necessary.
 
         if (ltab_last_mode >= 0 && ltab_last_mode != DSP()->CurMode()) {
-            ltab_sbvals[ltab_last_mode] = adj->value;
-            adj->value = ltab_sbvals[DSP()->CurMode()];
+            ltab_sbvals[ltab_last_mode] = gtk_adjustment_get_value(adj);
+            gtk_adjustment_set_value(adj, ltab_sbvals[DSP()->CurMode()]);
         }
         ltab_last_mode = DSP()->CurMode();
-        ltab_sbvals[ltab_last_mode] = adj->value;
+        ltab_sbvals[ltab_last_mode] = gtk_adjustment_get_value(adj);
 
         int numents = CDldb()->layersUsed(DSP()->CurMode()) - 1;
-        adj->upper = numents;
-        adj->step_increment = 1;
-        adj->page_increment = lt_vis_entries;
-        adj->page_size = lt_vis_entries;
+        gtk_adjustment_set_upper(adj, numents);
+        gtk_adjustment_set_step_increment(adj, 1);
+        gtk_adjustment_set_page_increment(adj, lt_vis_entries);
+        gtk_adjustment_set_page_size(adj, lt_vis_entries);
         gtk_adjustment_changed(adj);
         gtk_adjustment_value_changed(adj);
 
@@ -797,25 +838,29 @@ GTKltab::update_scrollbar()
         // GTK-1.2, where both operations are performed visibly.
 
         if (lt_vis_entries <= CDldb()->layersUsed(DSP()->CurMode()) - 1) {
-            if (!ltab_hidden && !GTK_WIDGET_MAPPED(ltab_scrollbar)) {
+            if (!ltab_hidden && !gtk_widget_get_mapped(ltab_scrollbar)) {
                 int w = gtk_paned_get_position(
-                    GTK_PANED(ltab_container->parent));
-                // int w = GTK_PANED(ltab_container->parent)->handle_xpos;
-                int ww = ltab_scrollbar->requisition.width;
+                    GTK_PANED(gtk_widget_get_parent(ltab_container)));
+                GtkRequisition req;
+                gtk_widget_get_requisition(ltab_scrollbar, &req);
+                int ww = req.width;
                 if (getenv("XIC_MENU_RIGHT"))
                     ww = -ww;
                 gtk_paned_set_position(
-                    GTK_PANED(ltab_container->parent), w - ww);
+                    GTK_PANED(gtk_widget_get_parent(ltab_container)), w - ww);
                 gtk_widget_show(ltab_scrollbar);
             }
         }
-        else if (GTK_WIDGET_MAPPED(ltab_scrollbar)) {
-            int w = gtk_paned_get_position(GTK_PANED(ltab_container->parent));
-            // int w = GTK_PANED(ltab_container->parent)->handle_xpos;
-            int ww = ltab_scrollbar->requisition.width;
+        else if (gtk_widget_get_mapped(ltab_scrollbar)) {
+            int w = gtk_paned_get_position(
+                GTK_PANED(gtk_widget_get_parent(ltab_container)));
+            GtkRequisition req;
+            gtk_widget_get_requisition(ltab_scrollbar, &req);
+            int ww = req.width;
             if (getenv("XIC_MENU_RIGHT"))
                 ww = -ww;
-            gtk_paned_set_position(GTK_PANED(ltab_container->parent), w + ww);
+            gtk_paned_set_position(
+                GTK_PANED(gtk_widget_get_parent(ltab_container)), w + ww);
             gtk_widget_hide(ltab_scrollbar);
         }
     }
@@ -830,9 +875,12 @@ GTKltab::hide_layer_table(bool hide)
 
     static int last_wid;
     if (hide) {
-        last_wid = gtk_paned_get_position(GTK_PANED(ltab_container->parent));
-        if (GTK_WIDGET_MAPPED(ltab_scrollbar)) {
-            int ww = ltab_scrollbar->requisition.width;
+        last_wid = gtk_paned_get_position(
+            GTK_PANED(gtk_widget_get_parent(ltab_container)));
+        if (gtk_widget_get_mapped(ltab_scrollbar)) {
+            GtkRequisition req;
+            gtk_widget_get_requisition(ltab_scrollbar, &req);
+            int ww = req.width;
             if (getenv("XIC_MENU_RIGHT"))
                 ww = -ww;
             last_wid += ww;
@@ -840,19 +888,22 @@ GTKltab::hide_layer_table(bool hide)
 
         gtk_widget_hide(ltab_container);
         gtk_widget_hide(ltab_scrollbar);
-        gtk_paned_set_position(GTK_PANED(ltab_container->parent), 0);
+        gtk_paned_set_position(
+            GTK_PANED(gtk_widget_get_parent(ltab_container)), 0);
         ltab_hidden = true;
     }
     else {
         if (lt_vis_entries <= CDldb()->layersUsed(DSP()->CurMode()) - 1) {
             gtk_widget_show(ltab_scrollbar);
-            int ww = ltab_scrollbar->requisition.width;
+            GtkRequisition req;
+            gtk_widget_get_requisition(ltab_scrollbar, &req);
+            int ww = req.width;
             if (getenv("XIC_MENU_RIGHT"))
                 ww = -ww;
             last_wid -= ww;
         }
         gtk_widget_show(ltab_container);
-        gtk_paned_set_position(GTK_PANED(ltab_container->parent),
+        gtk_paned_set_position(GTK_PANED(gtk_widget_get_parent(ltab_container)),
             last_wid);
         ltab_hidden = false;
     }
@@ -884,7 +935,7 @@ GTKltab::set_layer()
                 pos = 0;
             else if (pos > nt)
                 pos = nt;
-            adj->value = pos;
+            gtk_adjustment_set_value(adj, pos);
             lt_first_visible = pos;
             update_scrollbar();
             show();
@@ -937,15 +988,18 @@ GTKltab::ltab_button_down_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 
     // Handle mouse wheel events (gtk1 only)
     if (button == 4 || button == 5) {
-        if (GTK_WIDGET_MAPPED(lt->ltab_scrollbar)) {
+        if (gtk_widget_get_mapped(lt->ltab_scrollbar)) {
             GtkAdjustment *adj = gtk_range_get_adjustment(
                 GTK_RANGE(lt->ltab_scrollbar));
-            double nval = adj->value + ((button == 4) ?
-                -adj->page_increment / 4 : adj->page_increment / 4);
-            if (nval < adj->lower)
-                nval = adj->lower;
-            else if (nval > adj->upper - adj->page_size)  
-                nval = adj->upper - adj->page_size;
+            double nval = gtk_adjustment_get_value(adj) + ((button == 4) ?
+                -gtk_adjustment_get_page_increment(adj) / 4 :
+                gtk_adjustment_get_page_increment(adj) / 4);
+            if (nval < gtk_adjustment_get_lower(adj))
+                nval = gtk_adjustment_get_lower(adj);
+            else if (nval > gtk_adjustment_get_upper(adj) -
+                    gtk_adjustment_get_page_size(adj))
+                nval = gtk_adjustment_get_upper(adj) -
+                    gtk_adjustment_get_page_size(adj);
             gtk_adjustment_set_value(adj, nval);
         }  
         return (true);
@@ -1042,13 +1096,13 @@ GTKltab::ltab_drag_end(GtkWidget*, GdkDragContext*, gpointer)
 // Static function.
 void
 GTKltab::ltab_drag_data_get(GtkWidget*, GdkDragContext*,
-    GtkSelectionData *selection_data, guint, guint, void*)
+    GtkSelectionData *data, guint, guint, void*)
 {
     CDl *ld = LT()->CurLayer();
     if (!ld)
         return;
     LayerFillData dd(ld);
-    gtk_selection_data_set(selection_data, selection_data->target,
+    gtk_selection_data_set(data, gtk_selection_data_get_target(data),
         8, (unsigned char*)&dd, sizeof(LayerFillData));
 }
 
@@ -1070,22 +1124,24 @@ GTKltab::ltab_drag_data_received(GtkWidget*, GdkDragContext *context,
     // datum is a guint16 array of the format:
     //  R G B opacity
     GdkAtom a = gdk_atom_intern("fillpattern", true);
-    if (data->target == a) {
+    if (gtk_selection_data_get_target(data) == a) {
         if (mainBag())
-            XM()->FillLoadCallback((LayerFillData*)data->data,
+            XM()->FillLoadCallback(
+                (LayerFillData*)gtk_selection_data_get_data(data),
                 LT()->LayerAt(x, y));
     }
     else {
-        if (data->length < 0) {
+        if (gtk_selection_data_get_length(data) < 0) {
             gtk_drag_finish(context, false, false, time);
             return;
         }
-        if (data->format != 16 || data->length != 8) {
+        if (gtk_selection_data_get_format(data) != 16 ||
+                gtk_selection_data_get_length(data) != 8) {
             fprintf(stderr, "Received invalid color data\n");
             gtk_drag_finish(context, false, false, time);
             return;
         }
-        guint16 *vals = (guint16*)data->data;
+        guint16 *vals = (guint16*)gtk_selection_data_get_data(data);
 
         int entry = lt->entry_of_xy(x, y);
         if (entry > lt->last_entry()) {
@@ -1127,7 +1183,7 @@ GTKltab::ltab_scroll_change_proc(GtkAdjustment *adj, void *arg)
 {
     GTKltab *lt = static_cast<GTKltab*>(arg);
     if (lt) {
-        int val = (int)adj->value;
+        int val = (int)gtk_adjustment_get_value(adj);
         if (val != lt->first_visible()) {
             lt->set_first_visible(val);
             lt->show();
@@ -1144,7 +1200,7 @@ int
 GTKltab::ltab_scroll_event_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 {
     GTKltab *lt = static_cast<GTKltab*>(arg);
-    if (lt && GTK_WIDGET_MAPPED(lt->ltab_scrollbar))
+    if (lt && gtk_widget_get_mapped(lt->ltab_scrollbar))
         gtk_propagate_event(lt->ltab_scrollbar, event);
     return (true);
 }
@@ -1159,9 +1215,9 @@ GTKltab::ltab_ent_timer(void *arg)
         lt->ltab_last_index = 0;
         delete [] lt->ltab_search_str;
         lt->ltab_search_str = 0;
-        GList *gl = gtk_container_children(GTK_CONTAINER(lt->ltab_sbtn));
+        GList *gl = gtk_container_get_children(GTK_CONTAINER(lt->ltab_sbtn));
         GtkWidget *oldpw = GTK_WIDGET(gl->data);
-        gtk_object_ref(GTK_OBJECT(oldpw));
+//XXX        gtk_object_ref(GTK_OBJECT(oldpw));
         gtk_container_remove(GTK_CONTAINER(lt->ltab_sbtn), oldpw);
         gtk_container_add(GTK_CONTAINER(lt->ltab_sbtn), lt->ltab_lsearch);
         if (LT()->CurLayer())
@@ -1200,21 +1256,26 @@ GTKltab::ltab_search_hdlr(GtkWidget*, void *arg)
     if (!lt->ltab_lsearchn) {
         GtkStyle *style = gtk_widget_get_style(lt->ltab_sbtn);
         GdkPixmap *pmask;
+#ifdef XXX_GDK
         GdkPixmap *pixmap =
             gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
                 &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)lsearchn_xpm);
         lt->ltab_lsearchn = gtk_pixmap_new(pixmap, pmask);
+#else
+        GdkPixmap *pixmap = 0;
+        lt->ltab_lsearchn = 0;
+#endif
         gtk_widget_show(lt->ltab_lsearchn);
     }
-    GList *gl = gtk_container_children(GTK_CONTAINER(lt->ltab_sbtn));
+    GList *gl = gtk_container_get_children(GTK_CONTAINER(lt->ltab_sbtn));
     GtkWidget *oldpw = GTK_WIDGET(gl->data);
-    gtk_object_ref(GTK_OBJECT(oldpw));
+//XXX    gtk_object_ref(GTK_OBJECT(oldpw));
     gtk_container_remove(GTK_CONTAINER(lt->ltab_sbtn), oldpw);
     gtk_container_add(GTK_CONTAINER(lt->ltab_sbtn), lt->ltab_lsearchn);
 
     if (lt->ltab_timer_id)
-        gtk_timeout_remove(lt->ltab_timer_id);
-    lt->ltab_timer_id = gtk_timeout_add(3000, ltab_ent_timer, lt);
+        g_source_remove(lt->ltab_timer_id);
+    lt->ltab_timer_id = g_timeout_add(3000, ltab_ent_timer, lt);
 }
 
 

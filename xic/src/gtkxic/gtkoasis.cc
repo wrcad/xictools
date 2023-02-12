@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -154,13 +156,16 @@ cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
 
     int mwid;
     MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
-    if (x + Oas->shell()->requisition.width > mwid)
-        x = mwid - Oas->shell()->requisition.width;
-    gtk_widget_set_uposition(Oas->shell(), x, y);
+    GtkRequisition req;
+    gtk_widget_get_requisition(Oas->shell(), &req);
+    if (x + req.width > mwid)
+        x = mwid - req.width;
+    gtk_window_move(GTK_WINDOW(Oas->shell()), x, y);
     gtk_widget_show(Oas->shell());
 
     // OpenSuse 13.1 gtk-2.24.23 bug
-    gtk_widget_set_uposition(Oas->shell(), x, y);
+//XXX ?
+    gtk_window_move(GTK_WINDOW(Oas->shell()), x, y);
 }
 
 
@@ -280,6 +285,7 @@ sOas::sOas(GRobject c)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
 
+#ifdef XXX_OPT
     GtkWidget *entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "pmask");
     gtk_widget_show(entry);
@@ -289,11 +295,17 @@ sOas::sOas(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(pmaskvals[i]);
         gtk_widget_set_name(mi, pmaskvals[i]);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(oas_pmask_menu_proc), (void*)pmaskvals[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
+#else
+    GtkWidget *entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "pmask");
+    gtk_widget_show(entry);
+    GtkWidget *menu;
+#endif
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
     oas_pmask = entry;
 
@@ -558,7 +570,9 @@ sOas::update()
         nn = (atoi(str) & 0x3);
     else
         nn = 4;
+#ifdef XXX_OPT
     gtk_option_menu_set_history(GTK_OPTION_MENU(oas_pmask), nn);
+#endif
 
     const char *s = CDvdb()->getVariable(VA_OasWriteRep);
     if (s) {

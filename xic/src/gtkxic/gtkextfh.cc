@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "ext.h"
 #include "ext_fh.h"
@@ -424,6 +426,7 @@ sFh::sFh(GRobject c)
 
     frame = gtk_frame_new(VA_FhUnits);
     gtk_widget_show(frame);
+#ifdef XXX_OPT
     entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, VA_FhUnits);
     gtk_widget_show(entry);
@@ -433,11 +436,16 @@ sFh::sFh(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(fh_units_strings[i]);
         gtk_widget_set_name(mi, fh_units_strings[i]);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(fh_units_proc), (void*)fh_units_strings[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
+#else
+    entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, VA_FhUnits);
+    gtk_widget_show(entry);
+#endif
     gtk_container_add(GTK_CONTAINER(frame), entry);
     fh_units = entry;
 
@@ -597,7 +605,7 @@ sFh::sFh(GRobject c)
         G_CALLBACK(fh_button_dn), 0);
 
     // The font change pop-up uses this to redraw the widget
-    gtk_object_set_data(GTK_OBJECT(fh_jobs), "font_changed",
+    g_object_set_data(G_OBJECT(fh_jobs), "font_changed",
         (void*)fh_font_changed);
 
     GtkTextBuffer *textbuf =
@@ -724,7 +732,11 @@ sFh::update()
     int uoff = FH()->getUnitsIndex(var);
     int ucur = fh_option_history(fh_units);
     if (uoff != ucur)
+#ifdef XXX_OPT
         gtk_option_menu_set_history(GTK_OPTION_MENU(fh_units), uoff);
+#else
+        ;
+#endif
 
     var = CDvdb()->getVariable(VA_FhManhGridCnt);
     if (sb_fh_manh_grid_cnt.is_valid(var))
@@ -812,7 +824,7 @@ sFh::update_jobs_list()
 void
 sFh::update_label(const char *s)
 {
-    gtk_label_set(GTK_LABEL(fh_label), s);
+    gtk_label_set_text(GTK_LABEL(fh_label), s);
 }
 
 
@@ -1018,7 +1030,13 @@ sFh::fh_def_string(int id)
 int
 sFh::fh_option_history(GtkWidget *opt)
 {
-    return (gtk_option_menu_get_history(GTK_OPTION_MENU(opt)));
+    return (
+#ifdef XXX_OPT
+        gtk_option_menu_get_history(GTK_OPTION_MENU(opt))
+#else
+        0
+#endif
+        );
 }
 
 

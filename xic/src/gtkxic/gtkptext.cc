@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_GDK
+
 #include "main.h"
 #include "edit.h"
 #include "geo_zlist.h"
@@ -230,6 +232,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     if (!sPf::font())
         return (0);
 
+#ifdef XXX_GDK
     int wid, hei, numlines;
     polytextExtent(string, &wid, &hei, &numlines);
     GdkPixmap *pixmap = gdk_pixmap_new(mainBag()->Window(), wid, hei,
@@ -321,6 +324,9 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     gdk_image_destroy(im);
     PolyList *po = Zlist::to_poly_list(z0);
     return (po);
+#else
+    return 0;
+#endif
 }
 
 

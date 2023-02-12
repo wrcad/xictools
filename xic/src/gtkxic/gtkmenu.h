@@ -104,7 +104,7 @@ private:
 
     static char *strip_accel(const char*);
     static GtkWidget *new_popup_menu(GtkWidget*, const char* const*,
-        GtkSignalFunc, void*);
+        GCallback, void*);
     static void gtk_vbox_size_allocate(GtkWidget*, GtkAllocation*);
 
     GtkWidget *mainMenu;

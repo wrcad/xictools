@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "ext.h"
 #include "ext_fc.h"
@@ -452,6 +454,7 @@ sFc::sFc(GRobject c)
 
     frame = gtk_frame_new("FcUnits");
     gtk_widget_show(frame);
+#ifdef XXX_OPT
     entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "FcUnits");
     gtk_widget_show(entry);
@@ -461,13 +464,18 @@ sFc::sFc(GRobject c)
         GtkWidget *mi = gtk_menu_item_new_with_label(units_strings[i]);
         gtk_widget_set_name(mi, units_strings[i]);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(fc_units_proc), (void*)units_strings[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry),
         FC()->getUnitsIndex(0));
+#else
+    entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "FcUnits");
+    gtk_widget_show(entry);
+#endif
     gtk_container_add(GTK_CONTAINER(frame), entry);
     fc_units = entry;
 
@@ -739,7 +747,7 @@ sFc::sFc(GRobject c)
         G_CALLBACK(fc_button_dn), 0);
 
     // The font change pop-up uses this to redraw the widget
-    gtk_object_set_data(GTK_OBJECT(fc_jobs), "font_changed",
+    g_object_set_data(G_OBJECT(fc_jobs), "font_changed",
         (void*)fc_font_changed);
 
     GtkTextBuffer *textbuf =
@@ -883,7 +891,11 @@ sFc::update()
     int uoff = FC()->getUnitsIndex(var);
     int ucur = fc_option_history(fc_units);
     if (uoff != ucur)
+#ifdef XXX_OPT
         gtk_option_menu_set_history(GTK_OPTION_MENU(fc_units), uoff);
+#else
+        ;
+#endif
 
     static double fcpt_bak;
     var = CDvdb()->getVariable(VA_FcPanelTarget);
@@ -962,7 +974,7 @@ sFc::update_jobs_list()
 void
 sFc::update_label(const char *s)
 {
-    gtk_label_set(GTK_LABEL(fc_label), s);
+    gtk_label_set_text(GTK_LABEL(fc_label), s);
 }
 
 
@@ -1106,7 +1118,13 @@ sFc::fc_def_string(int id)
 int
 sFc::fc_option_history(GtkWidget *opt)
 {
-    return (gtk_option_menu_get_history(GTK_OPTION_MENU(opt)));
+    return (
+#ifdef XXX_OPT
+        gtk_option_menu_get_history(GTK_OPTION_MENU(opt))
+#else
+        0
+#endif
+        );
 }
 
 

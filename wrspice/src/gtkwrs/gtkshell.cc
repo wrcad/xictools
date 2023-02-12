@@ -73,7 +73,7 @@ GTKtoolbar::PopUpShellDefs(int x, int y)
     sh_shell = gtk_NewPopup(0, "Shell Options", sh_cancel_proc, 0);
     if (x || y) {
         FixLoc(&x, &y);
-        gtk_widget_set_uposition(sh_shell, x, y);
+        gtk_window_move(GTK_WINDOW(sh_shell), x, y);
     }
 
     GtkWidget *form = gtk_table_new(4, 1, false);
@@ -401,12 +401,12 @@ namespace {
             if (isset) {
                 s = get_sourcepath();
                 gtk_entry_set_text(GTK_ENTRY(ent->entry), s ? s : "");
-                gtk_entry_set_editable(GTK_ENTRY(ent->entry), false);
+                gtk_editable_set_editable(GTK_EDITABLE(ent->entry), false);
                 gtk_widget_set_sensitive(ent->entry, false);
                 delete [] s;
             }
             else {
-                gtk_entry_set_editable(GTK_ENTRY(ent->entry), true);
+                gtk_editable_set_editable(GTK_EDITABLE(ent->entry), true);
                 gtk_widget_set_sensitive(ent->entry, true);
             }
         }

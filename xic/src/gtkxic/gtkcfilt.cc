@@ -232,7 +232,7 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     GtkWidget *item = gtk_menu_item_new_with_label("Store");
     gtk_widget_set_name(item, "Store");
     gtk_widget_show(item);
-    gtk_menu_bar_append(GTK_MENU_BAR(menubar), item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
     {
         char buf[16];
         GtkWidget *menu = gtk_menu_new();
@@ -241,7 +241,7 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
             sprintf(buf, "reg%d", i);
             GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
-            gtk_menu_append(GTK_MENU(menu), menu_item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
             g_signal_connect(G_OBJECT(menu_item), "activate",
                 G_CALLBACK(cf_sto_menu_proc), (void*)(long)i);
             gtk_widget_show(menu_item);
@@ -257,7 +257,7 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
     item = gtk_menu_item_new_with_label("Recall");
     gtk_widget_set_name(item, "Recall");
     gtk_widget_show(item);
-    gtk_menu_bar_append(GTK_MENU_BAR(menubar), item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
     {
         char buf[16];
         GtkWidget *menu = gtk_menu_new();
@@ -266,7 +266,7 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
             sprintf(buf, "reg%d", i);
             GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
-            gtk_menu_append(GTK_MENU(menu), menu_item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
             g_signal_connect(G_OBJECT(menu_item), "activate",
                 G_CALLBACK(cf_rcl_menu_proc), (void*)(long)i);
             gtk_widget_show(menu_item);

@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_GDK
+
 #include "main.h"
 #include "dsp_color.h"
 #include "dsp_layer.h"
@@ -183,7 +185,7 @@ sLpalette::sLpalette(GRobject caller)
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(recall_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(recall_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(lp_recall_proc), (void*)(intptr_t)i);
     }
@@ -203,7 +205,7 @@ sLpalette::sLpalette(GRobject caller)
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(save_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(save_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(lp_save_proc), (void*)(intptr_t)i);
     }
@@ -297,8 +299,10 @@ sLpalette::~sLpalette()
         GRX->Deselect(lp_caller);
     if (lp_shell)
         gtk_widget_destroy(lp_shell);
+#ifdef XXX_GDK
     if (lp_pixmap)
         gdk_pixmap_unref(lp_pixmap);
+#endif
 }
 
 
@@ -308,20 +312,24 @@ void
 sLpalette::update_info(CDl *ldesc)
 {
     if (!gd_window)
-        gd_window = gd_viewport->window;
+        gd_window = gtk_widget_get_window(gd_viewport);
     if (!gd_window)
         return;
 
-    int win_width, win_height;
-    gdk_window_get_size(gd_window, &win_width, &win_height);
+    int win_width = gdk_window_get_width(gd_window);
+    int win_height = gdk_window_get_height(gd_window);
     if (!lp_pixmap || lp_pmap_width != win_width ||
             lp_pmap_height != win_height) {
         if (lp_pixmap)
+#ifdef XXX_GDK
             gdk_pixmap_unref(lp_pixmap);
+#else
+            ;
+#endif
         lp_pmap_width = win_width;
         lp_pmap_height = win_height;
         lp_pixmap = gdk_pixmap_new(gd_window, lp_pmap_width, lp_pmap_height,
-            GRX->Visual()->depth);
+            gdk_visual_get_depth(GRX->Visual()));
         lp_pmap_dirty = true;
     }
 
@@ -427,7 +435,9 @@ sLpalette::update_info(CDl *ldesc)
         Text(buf, x, y, 0);
     }
 
+#ifdef XXX_GDK
     gdk_window_copy_area(win, GC(), 0, 0, gd_window, 0, 0, win_width, 5*fhei);
+#endif
     gd_window = win;
 }
 
@@ -565,8 +575,8 @@ sLpalette::init_size()
 void
 sLpalette::redraw()
 {
-    int win_width, win_height;
-    gdk_window_get_size(gd_window, &win_width, &win_height);
+    int win_width = gdk_window_get_width(gd_window);
+    int win_height = gdk_window_get_height(gd_window);
     SetFillpattern(0);
     SetColor(user_backg());
     Box(0, lp_hist_y - 8, win_width, lp_hist_y - 6);
@@ -713,12 +723,12 @@ void
 sLpalette::refresh(int x, int y, int w, int h)
 {
     if (!gd_window)
-        gd_window = gd_viewport->window;
+        gd_window = gtk_widget_get_window(gd_viewport);
     if (!gd_window)
         return;
 
-    int win_width, win_height;
-    gdk_window_get_size(gd_window, &win_width, &win_height);
+    int win_width = gdk_window_get_width(gd_window);
+    int win_height = gdk_window_get_height(gd_window);
     if (w <= 0)
         w = win_width;
     if (h <= 0)
@@ -728,11 +738,15 @@ sLpalette::refresh(int x, int y, int w, int h)
             lp_pmap_height != win_height) {
         // Widget is not currently resizable.
         if (lp_pixmap)
+#ifdef XXX_GDK
             gdk_pixmap_unref(lp_pixmap);
+#else
+            ;
+#endif
         lp_pmap_width = win_width;
         lp_pmap_height = win_height;
         lp_pixmap = gdk_pixmap_new(gd_window, lp_pmap_width, lp_pmap_height,
-            GRX->Visual()->depth);
+            gdk_visual_get_depth(GRX->Visual()));
         lp_pmap_dirty = true;
     }
 
@@ -744,7 +758,9 @@ sLpalette::refresh(int x, int y, int w, int h)
         lp_pmap_dirty = false;
     }
 
+#ifdef XXX_GDK
     gdk_window_copy_area(win, GC(), x, y, gd_window, x, y, w, h);
+#endif
     gd_window = win;
 }
 
@@ -934,12 +950,14 @@ sLpalette::lp_resize_hdlr(GtkWidget*, GdkEvent*, void*)
     if (!Lpal)
         return (0);
     if (!Lpal->gd_window) {
-        Lpal->gd_window = Lpal->gd_viewport->window;
+        Lpal->gd_window = gtk_widget_get_window(Lpal->gd_viewport);
 
+#ifdef XXX_GDK
         if (!Lpal->lp_gbag.main_gc()) {
             Lpal->lp_gbag.set_gc(gdk_gc_new(Lpal->gd_window));
             Lpal->lp_gbag.set_xorgc(gdk_gc_new(Lpal->gd_window));
         }
+#endif
         Lpal->SetGbag(&Lpal->lp_gbag);
     }
     Lpal->update_layer(LT()->CurLayer());
@@ -1074,13 +1092,13 @@ sLpalette::lp_drag_end(GtkWidget*, GdkDragContext*, gpointer)
 //
 void
 sLpalette::lp_drag_data_get(GtkWidget*, GdkDragContext*,
-    GtkSelectionData *selection_data, guint, guint, void*)
+    GtkSelectionData *data, guint, guint, void*)
 {
     CDl *ld = LT()->CurLayer();
     if (!ld)
         return;
     LayerFillData dd(ld);
-    gtk_selection_data_set(selection_data, selection_data->target,
+    gtk_selection_data_set(data, gtk_selection_data_get_target(data),
         8, (unsigned char*)&dd, sizeof(LayerFillData));
 }
 
@@ -1096,8 +1114,8 @@ sLpalette::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
     // datum is a guint16 array of the format:
     //  R G B opacity
     GdkAtom a = gdk_atom_intern("fillpattern", true);
-    if (data->target == a) {
-        LayerFillData *dd = (LayerFillData*)data->data;
+    if (gtk_selection_data_get_target(data) == a) {
+        LayerFillData *dd = (LayerFillData*)gtk_selection_data_get_data(data);
         if (dd->d_from_layer) {
             if (dd->d_layernum > 0) {
                 CDl *ld = CDldb()->layer(dd->d_layernum, DSP()->CurMode());
@@ -1107,7 +1125,8 @@ sLpalette::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
         }
         else {
             CDl *ld = Lpal->ldesc_at(x, y);
-            XM()->FillLoadCallback((LayerFillData*)data->data, ld);
+            XM()->FillLoadCallback(
+                (LayerFillData*)gtk_selection_data_get_data(data), ld);
             if (dspPkgIf()->IsTrueColor()) {
                 // update the colors
                 Lpal->update_layer(0);
@@ -1117,16 +1136,17 @@ sLpalette::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
         }
     }
     else {
-        if (data->length < 0) {
+        if (gtk_selection_data_get_length(data) < 0) {
             gtk_drag_finish(context, false, false, time);
             return;
         }
-        if (data->format != 16 || data->length != 8) {
+        if (gtk_selection_data_get_format(data) != 16 ||
+                gtk_selection_data_get_length(data) != 8) {
             fprintf(stderr, "Received invalid color data\n");
             gtk_drag_finish(context, false, false, time);
             return;
         }
-        guint16 *vals = (guint16*)data->data;
+        guint16 *vals = (guint16*)gtk_selection_data_get_data(data);
 
         CDl *ld = Lpal->ldesc_at(x, y);
 
@@ -1162,9 +1182,10 @@ namespace {
         *pushin = true;
         GtkWidget *btn = GTK_WIDGET(data);
         GRX->Location(btn, x, y);
-        GtkAllocation *a = &btn->allocation;;
-        (*x) -= a->width;
-        (*y) += a->height;
+        GtkAllocation a;
+        gtk_widget_get_allocation(btn, &a);
+        (*x) -= a.width;
+        (*y) += a.height;
     }
 }
 

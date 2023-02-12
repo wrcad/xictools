@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -155,6 +157,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     GtkWidget *row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
 
+#ifdef XXX_OPT
     GtkWidget *entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "input");
     gtk_widget_show(entry);
@@ -164,12 +167,17 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         GtkWidget *mi = gtk_menu_item_new_with_label(gds_input[i].name);
         gtk_widget_set_name(mi, gds_input[i].name);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(fmt_input_proc), this);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry), cvofmt_t::fmt_gds_inp);
+#else
+    GtkWidget *entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "input");
+    gtk_widget_show(entry);
+#endif
     gtk_box_pack_start(GTK_BOX(row), entry, false, false, 0);
     fmt_gdsftopt = entry;
 
@@ -189,6 +197,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         (GtkAttachOptions)0, 2, 2);
     rcnt++;
 
+#ifdef XXX_OPT
     entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "levmenu");
     gtk_widget_show(entry);
@@ -198,13 +207,19 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         GtkWidget *mi = gtk_menu_item_new_with_label(gds_limits[i]);
         gtk_widget_set_name(mi, gds_limits[i]);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(fmt_level_proc), (void*)gds_limits[i]);
     }
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry),
         FIO()->GdsOutLevel());
+#else
+    entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "levmenu");
+    gtk_widget_show(entry);
+    GtkWidget *menu = 0;
+#endif
     fmt_level = entry;
     gtk_table_attach(GTK_TABLE(table), entry, 0, 1, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -390,7 +405,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(menubar);
     GtkWidget *pc_item = gtk_menu_item_new_with_label("Extension Flags");
     gtk_widget_show(pc_item);
-    gtk_menu_bar_append(GTK_MENU_BAR(menubar), pc_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), pc_item);
 
     fmt_strip = FIO()->IsStripForExport();
     menu = gtk_menu_new();
@@ -400,19 +415,19 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     GtkWidget *mi =
         gtk_menu_item_new_with_label(which_flags[(int)fmt_strip]);
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
-    gtk_object_set_data(GTK_OBJECT(mi), "cvofmt", this);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
+    g_object_set_data(G_OBJECT(mi), "cvofmt", this);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(fmt_flags_proc), (void*)"Strip");
     GtkWidget *msep = gtk_menu_item_new();  // separator
-    gtk_menu_append(GTK_MENU(menu), msep);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), msep);
     gtk_widget_show(msep);
     for (fmt_menu *m = cif_extensions; m->name; m++) {
         mi = gtk_check_menu_item_new_with_label(m->name);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mi),
             m->code & flgs);
-        gtk_object_set_data(GTK_OBJECT(mi), "cvofmt", this);
+        g_object_set_data(G_OBJECT(mi), "cvofmt", this);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(fmt_flags_proc), (void*)m->name);
         gtk_widget_show(mi);
@@ -439,6 +454,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
+#ifdef XXX_OPT
     entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "cnamemenu");
     gtk_widget_show(entry);
@@ -448,7 +464,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         mi = gtk_menu_item_new_with_label(m->name);
         gtk_widget_set_name(mi, m->name);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(fmt_style_proc), (void*)m->name);
     }
@@ -459,6 +475,11 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
             break;
         }
     }
+#else
+    entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "cnamemenu");
+    gtk_widget_show(entry);
+#endif
     fmt_cifcname = entry;
 
     gtk_table_attach(GTK_TABLE(table), entry, 0, 1, rcnt+1, rcnt+2,
@@ -472,6 +493,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
+#ifdef XXX_OPT
     entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "layermenu");
     gtk_widget_show(entry);
@@ -481,7 +503,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         mi = gtk_menu_item_new_with_label(m->name);
         gtk_widget_set_name(mi, m->name);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(fmt_style_proc), (void*)m->name);
     }
@@ -492,6 +514,11 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
             break;
         }
     }
+#else
+    entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "layermenu");
+    gtk_widget_show(entry);
+#endif
     fmt_ciflayer = entry;
 
     gtk_table_attach(GTK_TABLE(table), entry, 1, 2, rcnt+1, rcnt+2,
@@ -505,6 +532,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
+#ifdef XXX_OPT
     entry = gtk_option_menu_new();
     gtk_widget_set_name(entry, "labelmenu");
     gtk_widget_show(entry);
@@ -514,7 +542,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         mi = gtk_menu_item_new_with_label(m->name);
         gtk_widget_set_name(mi, m->name);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(fmt_style_proc), (void*)m->name);
     }
@@ -525,6 +553,11 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
             break;
         }
     }
+#else
+    entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "labelmenu");
+    gtk_widget_show(entry);
+#endif
     fmt_ciflabel = entry;
 
     gtk_table_attach(GTK_TABLE(table), entry, 2, 3, rcnt+1, rcnt+2,
@@ -662,27 +695,27 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(menu);
     mi = gtk_menu_item_new_with_label("no geometry info saved");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(fmt_info_proc), (void*)cvINFOnone);
     mi = gtk_menu_item_new_with_label("totals only");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(fmt_info_proc), (void*)cvINFOtotals);
     mi = gtk_menu_item_new_with_label("per-layer counts");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(fmt_info_proc), (void*)cvINFOpl);
     mi = gtk_menu_item_new_with_label("per-cell counts");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(fmt_info_proc), (void*)cvINFOpc);
     mi = gtk_menu_item_new_with_label("per-cell and per-layer counts");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(fmt_info_proc), (void*)cvINFOplpc);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(fmt_chdinfo), menu);
@@ -710,7 +743,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     // End of pages
 
     if (init_format >= 0 && init_format <= FMT_MAX_ID)
-        gtk_notebook_set_page(GTK_NOTEBOOK(fmt_form), init_format);
+        gtk_notebook_set_current_page(GTK_NOTEBOOK(fmt_form), init_format);
 
     configure(fmtmode);
 
@@ -751,8 +784,10 @@ cvofmt_t::update()
         CDvdb()->getVariable(VA_OasWriteRep));
     GRX->SetStatus(fmt_oassum,
         CDvdb()->getVariable(VA_OasWriteChecksum));
+#ifdef XXX_OPT
     gtk_option_menu_set_history(GTK_OPTION_MENU(fmt_level),
         FIO()->GdsOutLevel());
+#endif
 #ifdef FMT_WITH_DIGESTS
     gtk_option_menu_set_history(GTK_OPTION_MENU(fmt_chdinfo),
         FIO()->CvtInfo());
@@ -770,8 +805,8 @@ cvofmt_t::update()
 
     unsigned int flgs = fmt_strip ?
         FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();
-    GList *g0 = gtk_container_children(GTK_CONTAINER(fmt_cifflags));
-    GtkWidget *lab = GTK_BIN(g0->data)->child;
+    GList *g0 = gtk_container_get_children(GTK_CONTAINER(fmt_cifflags));
+    GtkWidget *lab = gtk_bin_get_child(GTK_BIN(g0->data));
     gtk_label_set_text(GTK_LABEL(lab), which_flags[(int)fmt_strip]);
     int cnt = 0;
     // list: strip, separator, flags ...
@@ -783,22 +818,28 @@ cvofmt_t::update()
 
     for (int i = 0; cname_formats[i].name; i++) {
         if (cname_formats[i].code == FIO()->CifStyle().cname_type()) {
+#ifdef XXX_OPT
             gtk_option_menu_set_history(
                 GTK_OPTION_MENU(fmt_cifcname), i);
+#endif
             break;
         }
     }
     for (int i = 0; layer_formats[i].name; i++) {
         if (layer_formats[i].code == FIO()->CifStyle().layer_type()) {
+#ifdef XXX_OPT
             gtk_option_menu_set_history(
                 GTK_OPTION_MENU(fmt_ciflayer), i);
+#endif
             break;
         }
     }
     for (int i = 0; label_formats[i].name; i++) {
         if (label_formats[i].code == FIO()->CifStyle().label_type()) {
+#ifdef XXX_OPT
             gtk_option_menu_set_history(
                 GTK_OPTION_MENU(fmt_ciflabel), i);
+#endif
             break;
         }
     }
@@ -948,7 +989,7 @@ void
 cvofmt_t::set_page(int ix)
 {
     if (ix >= 0 && ix <= 7)
-        gtk_notebook_set_page(GTK_NOTEBOOK(fmt_form), ix);
+        gtk_notebook_set_current_page(GTK_NOTEBOOK(fmt_form), ix);
 }
 
 
@@ -1057,7 +1098,7 @@ cvofmt_t::fmt_action(GtkWidget *caller, void*)
 void
 cvofmt_t::fmt_flags_proc(GtkWidget *caller, void *client_data)
 {
-    cvofmt_t *fmt = (cvofmt_t*)gtk_object_get_data(GTK_OBJECT(caller),
+    cvofmt_t *fmt = (cvofmt_t*)g_object_get_data(G_OBJECT(caller),
         "cvofmt");
     if (!fmt)
         return;
@@ -1067,8 +1108,8 @@ cvofmt_t::fmt_flags_proc(GtkWidget *caller, void *client_data)
         unsigned int flgs = fmt->fmt_strip ?
             FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();
         GList *g0 =
-            gtk_container_children(GTK_CONTAINER(fmt->fmt_cifflags));
-        GtkWidget *lab = GTK_BIN(g0->data)->child;
+            gtk_container_get_children(GTK_CONTAINER(fmt->fmt_cifflags));
+        GtkWidget *lab = gtk_bin_get_child(GTK_BIN(g0->data));
         gtk_label_set_text(GTK_LABEL(lab), which_flags[(int)fmt->fmt_strip]);
         int cnt = 0;
         // list: strip, separator, flags ...

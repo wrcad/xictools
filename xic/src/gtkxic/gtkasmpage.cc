@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_LIST
+
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -265,7 +267,10 @@ sAsmPage::sAsmPage(sAsm *mt)
     gtk_widget_show(swin);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin),
         GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+#ifdef XXX_LIST
     pg_toplevels = gtk_list_new();
+#else
+#endif
     gtk_widget_show(pg_toplevels);
     g_signal_connect(G_OBJECT(pg_toplevels), "select-child",
         G_CALLBACK(pg_selection_proc), this);
@@ -333,8 +338,11 @@ sAsmPage::reset()
     gtk_entry_set_text(GTK_ENTRY(pg_prefix), "");
     gtk_entry_set_text(GTK_ENTRY(pg_suffix), "");
 
+#ifdef XXX_LIST
     gtk_list_clear_items(
         GTK_LIST(pg_toplevels), 0, pg_numtlcells);
+#else
+#endif
     for (unsigned int j = 0; j < pg_numtlcells; j++) {
         delete pg_cellinfo[j];
         pg_cellinfo[j] = 0;
@@ -365,12 +373,15 @@ sAsmPage::add_instance(const char *cname)
     }
     tlinfo *tl = new tlinfo(cname);
     pg_cellinfo[pg_numtlcells] = tl;
+#ifdef XXX_LIST
     GtkWidget *item = gtk_list_item_new_with_label(cname ? cname : ASM_TOPC);
     gtk_widget_show(item);
     gtk_list_append_items(GTK_LIST(pg_toplevels), g_list_append(0, item));
     pg_numtlcells++;
     pg_curtlcell = -1;
     gtk_list_select_item(GTK_LIST(pg_toplevels), pg_numtlcells-1);
+#else
+#endif
     upd_sens();
     return (tl);
 }
@@ -388,8 +399,11 @@ sAsmPage::pg_selection_proc(GtkWidget *caller, GtkWidget *child, void *srcp)
 {
     sAsmPage *src = static_cast<sAsmPage*>(srcp);
     src->pg_owner->store_tx_params();
+#ifdef XXX_LIST
     unsigned int n = gtk_list_child_position(GTK_LIST(caller), child);
     src->pg_owner->show_tx_params(n);
+#else
+#endif
 }
 
 
@@ -414,9 +428,12 @@ sAsmPage::pg_drag_data_received(GtkWidget*, GdkDragContext *context,
     gint, gint, GtkSelectionData *data, guint, guint time, void *srcp)
 {
     sAsmPage *src = static_cast<sAsmPage*>(srcp);
-    if (data->length >= 0 && data->format == 8 && data->data) {
-        char *s = (char*)data->data;
-        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+        char *s = (char*)gtk_selection_data_get_data(data);
+        if (gtk_selection_data_get_target(data) ==
+                gdk_atom_intern("TWOSTRING", true)) {
             // Drops from content lists may be in the form
             // "fname_or_chd\ncellname".  Keep the cellname.
             char *t = strchr(s, '\n');

@@ -188,10 +188,10 @@ sExp::sExp(gtk_bag *owner, const char *string, bool nopeek, void *arg)
     if (!string)
         string = "";
     gtk_entry_set_text(GTK_ENTRY(exp_text), string);
-    gtk_entry_set_editable(GTK_ENTRY(exp_text), true);
+    gtk_editable_set_editable(GTK_EDITABLE(exp_text), true);
     gtk_box_pack_start(GTK_BOX(row), exp_text, false, false, 0);
     gtk_widget_set_size_request(exp_text, 60, -1);
-    gtk_entry_set_position(GTK_ENTRY(exp_text), 0);
+    gtk_editable_set_position(GTK_EDITABLE(exp_text), 0);
     g_signal_connect_after(G_OBJECT(exp_text), "changed",
         G_CALLBACK(exp_change_proc), this);
 
@@ -375,16 +375,20 @@ sExp::action_proc(GtkWidget *widget)
     const char *name = gtk_widget_get_name(widget);
     if (!strcmp(name, "plus")) {
         const char *t = gtk_entry_get_text(GTK_ENTRY(exp_text));
-        if (t && *t == '+')
-            gtk_entry_append_text(GTK_ENTRY(exp_text), "+");
+        if (t && *t == '+') {
+            int pos = 0;
+            gtk_editable_insert_text(GTK_EDITABLE(exp_text), "+", 1, &pos);
+        }
         else
             gtk_entry_set_text(GTK_ENTRY(exp_text), "+");
         return;
     }
     if (!strcmp(name, "minus")) {
         const char *t = gtk_entry_get_text(GTK_ENTRY(exp_text));
-        if (t && *t == '-')
-            gtk_entry_append_text(GTK_ENTRY(exp_text), "-");
+        if (t && *t == '-') {
+            int pos = 0;
+            gtk_editable_insert_text(GTK_EDITABLE(exp_text), "-", 1, &pos);
+        }
         else
             gtk_entry_set_text(GTK_ENTRY(exp_text), "-");
         return;

@@ -140,7 +140,7 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     gtk_widget_show(v_fixed);
     // Without this, form widgets will render outside of the drawing
     // area.  This clips them to the drawing area.
-    gtk_fixed_set_has_window(GTK_FIXED(v_fixed), true);
+    gtk_widget_set_has_window(v_fixed, true);
 
     v_draw_area = gtk_drawing_area_new();
     gtk_widget_show(v_draw_area);
@@ -403,12 +403,12 @@ int
 gtk_viewer::scroll_position(bool horiz)
 {
     if (horiz) {
-        if (GTK_WIDGET_MAPPED(v_hsb) && v_hsba)
-            return ((int)GTK_ADJUSTMENT(v_hsba)->value);
+        if (gtk_widget_get_mapped(v_hsb) && v_hsba)
+            return ((int)gtk_adjustment_get_value(GTK_ADJUSTMENT(v_hsba)));
     }
     else {
-        if (GTK_WIDGET_MAPPED(v_vsb) && v_vsba)
-            return ((int)GTK_ADJUSTMENT(v_vsba)->value);
+        if (gtk_widget_get_mapped(v_vsb) && v_vsba)
+            return ((int)gtk_adjustment_get_value(GTK_ADJUSTMENT(v_vsba)));
     }
     return (0);
 }
@@ -418,33 +418,37 @@ void
 gtk_viewer::set_scroll_position(int value, bool horiz)
 {
     if (horiz) {
-        if (GTK_WIDGET_MAPPED(v_hsb) && v_hsba) {
+        if (gtk_widget_get_mapped(v_hsb) && v_hsba) {
             if (value < 0)
                 value = 0;
-            if (value > v_hsba->upper - v_hsba->page_size)
-                value = (int)(v_hsba->upper - v_hsba->page_size);
-            int oldv = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(v_hsba));
+            int v = (int)(gtk_adjustment_get_upper(v_hsba) -
+                gtk_adjustment_get_page_size(v_hsba));
+            if (value > v)
+                value = v;
+            int oldv = (int)gtk_adjustment_get_value(v_hsba);
             if (value == oldv && value != htm_viewarea.x) {
                 // Make sure handler is called after (e.g.) font change.
                 hsb_change_handler(value);
                 return;
             }
-            gtk_adjustment_set_value(GTK_ADJUSTMENT(v_hsba), value);
+            gtk_adjustment_set_value(v_hsba, value);
         }
     }
     else {
-        if (GTK_WIDGET_MAPPED(v_vsb) && v_vsba) {
+        if (gtk_widget_get_mapped(v_vsb) && v_vsba) {
             if (value < 0)
                 value = 0;
-            if (value > v_vsba->upper - v_vsba->page_size)
-                value = (int)(v_vsba->upper - v_vsba->page_size);
-            int oldv = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(v_vsba));
+            int v = (int)(gtk_adjustment_get_upper(v_vsba) -
+                gtk_adjustment_get_page_size(v_vsba));
+            if (value > v)
+                value = v;
+            int oldv = (int)gtk_adjustment_get_value(v_vsba);
             if (value == oldv && value != htm_viewarea.y) {
                 // Make sure handler is called after (e.g.) font change.
                 vsb_change_handler(value);
                 return;
             }
-            gtk_adjustment_set_value(GTK_ADJUSTMENT(v_vsba), value);
+            gtk_adjustment_set_value(v_vsba, value);
         }
     }
 }
@@ -472,12 +476,12 @@ gtk_viewer::anchor_position(const char *name)
 void
 gtk_viewer::scroll_visible(int l, int t, int r, int b)
 {
-    if (GTK_WIDGET_MAPPED(v_hsb) && v_hsba) {
+    if (gtk_widget_get_mapped(v_hsb) && v_hsba) {
         int xmin = l < r ? l : r - 50;
         int xmax = l > r ? l : r + 50;
         gtk_adjustment_clamp_page(GTK_ADJUSTMENT(v_hsba), xmin, xmax);
     }
-    if (GTK_WIDGET_MAPPED(v_vsb) && v_vsba) {
+    if (gtk_widget_get_mapped(v_vsb) && v_vsba) {
         int ymin = t < b ? t : b - 50;
         int ymax = t > b ? t : b + 50;
         gtk_adjustment_clamp_page(GTK_ADJUSTMENT(v_vsba), ymin, ymax);
@@ -493,9 +497,11 @@ gtk_viewer::tk_resize_area(int w, int h)
 {
     // This is called after formatting with the document size.
     int wid, hei;
-    if (GTK_WIDGET_MAPPED(v_draw_area)) {
-        wid = v_form->allocation.width;
-        hei = v_form->allocation.height;
+    if (gtk_widget_get_mapped(v_draw_area)) {
+        GtkAllocation a;
+        gtk_widget_get_allocation(v_form, &a);
+        wid = a.width;
+        hei = a.height;
     }
     else {
         wid = v_width;
@@ -506,9 +512,9 @@ gtk_viewer::tk_resize_area(int w, int h)
 
     if (h > hei) {
         double val = gtk_adjustment_get_value(v_vsba);
-        v_vsba->upper = h;
-        v_vsba->page_size = v_height;
-        v_vsba->page_increment = v_height/2;
+        gtk_adjustment_set_upper(v_vsba, h);
+        gtk_adjustment_set_page_size(v_vsba, v_height);
+        gtk_adjustment_set_page_increment(v_vsba, v_height/2);
         gtk_adjustment_changed(v_vsba);
         if (v_vpolicy != GTK_POLICY_NEVER)
             gtk_widget_show(v_vsb);
@@ -532,9 +538,9 @@ gtk_viewer::tk_resize_area(int w, int h)
         // slightly larger than wid.  The scrollbar can be annoying.
 
         double val = gtk_adjustment_get_value(v_hsba);
-        v_hsba->upper = w;
-        v_hsba->page_size = v_width;
-        v_hsba->page_increment = v_width/2;
+        gtk_adjustment_set_upper(v_hsba, w);
+        gtk_adjustment_set_page_size(v_hsba, v_width);
+        gtk_adjustment_set_page_increment(v_hsba, v_width/2);
         gtk_adjustment_changed(v_hsba);
         if (v_hpolicy != GTK_POLICY_NEVER)
             gtk_widget_show(v_hsb);
@@ -555,9 +561,9 @@ gtk_viewer::tk_resize_area(int w, int h)
 void
 gtk_viewer::tk_refresh_area(int x, int y, int w, int h)
 {
-    if (v_draw_area->window)
-        gdk_window_copy_area(v_draw_area->window, v_gc, x, y, v_pixmap,
-            x, y, w, h);
+    GdkWindow *win = gtk_widget_get_window(v_draw_area);
+    if (win)
+        gdk_window_copy_area(win, v_gc, x, y, v_pixmap, x, y, w, h);
 }
 
 
@@ -568,9 +574,11 @@ gtk_viewer::tk_window_size(htmInterface::WinRetMode mode,
     if (mode == htmInterface::VIEWABLE) {
         // Return the total available viewable size, assuming no
         // scrollbars.
-        if (GTK_WIDGET_MAPPED(v_draw_area)) {
-            *wp = v_form->allocation.width;
-            *hp = v_form->allocation.height;
+        if (gtk_widget_get_mapped(v_draw_area)) {
+            GtkAllocation a;
+            gtk_widget_get_allocation(v_form, &a);
+            *wp = a.width;
+            *hp = a.height;
         }
         else {
             *wp = v_width;
@@ -588,7 +596,9 @@ gtk_viewer::tk_window_size(htmInterface::WinRetMode mode,
 unsigned int
 gtk_viewer::tk_scrollbar_width()
 {
-    return (v_vsb->allocation.width);
+    GtkAllocation a;
+    gtk_widget_get_allocation(v_vsb, &a);
+    return (a.width);
 }
 
 
@@ -629,7 +639,7 @@ gtk_viewer::tk_set_anchor_cursor(bool set)
         GdkColor fg, bg;
         fg.pixel = 1;
         bg.pixel = 0;
-        GdkWindow *window = v_draw_area->window;
+        GdkWindow *window = gtk_widget_get_window(v_draw_area);
         if (!window)
             return;
         GdkPixmap *shape = gdk_pixmap_create_from_data(window, fingers_bits,
@@ -648,9 +658,9 @@ gtk_viewer::tk_set_anchor_cursor(bool set)
             &white, &black, fingers_x_hot, fingers_y_hot);
     }
     if (set)
-        gdk_window_set_cursor(v_draw_area->window, v_cursor);
+        gdk_window_set_cursor(gtk_widget_get_window(v_draw_area), v_cursor);
     else
-        gdk_window_set_cursor(v_draw_area->window, 0);
+        gdk_window_set_cursor(gtk_widget_get_window(v_draw_area), 0);
 }
 
 
@@ -687,7 +697,7 @@ gtk_viewer::tk_start_timer(unsigned int id, int msec)
 {
     for (gtk_timer *t = v_timers; t; t = t->next) {
         if (t->id == (int)id) {
-            t->real_id = gtk_timeout_add(msec, (GtkFunction)t->callback,
+            t->real_id = g_timeout_add(msec, (GSourceFunc)t->callback,
                 t->arg);
             return;
         }
@@ -704,7 +714,7 @@ gtk_viewer::tk_claim_selection(const char *seltext)
         gtk_selection_owner_set(v_draw_area, GDK_SELECTION_PRIMARY,
             GDK_CURRENT_TIME);
     else if (gdk_selection_owner_get(GDK_SELECTION_PRIMARY) ==
-                v_draw_area->window)
+                gtk_widget_get_window(v_draw_area))
         gtk_selection_owner_set(0, GDK_SELECTION_PRIMARY, GDK_CURRENT_TIME);
 }
 
@@ -887,7 +897,7 @@ CCXmode
 gtk_viewer::tk_visual_mode()
 {
     GdkVisual *vs = gdk_visual_get_system();
-    switch (vs->type) {
+    switch (gdk_visual_get_visual_type(vs)) {
     case GDK_VISUAL_STATIC_GRAY:
         return (MODE_BW);
     case GDK_VISUAL_GRAYSCALE:
@@ -908,7 +918,7 @@ int
 gtk_viewer::tk_visual_depth()
 {
     GdkVisual *vs = gdk_visual_get_system();
-    return (vs->depth);
+    return (gdk_visual_get_depth(vs));
 }
 
 
@@ -1360,7 +1370,7 @@ namespace {
                     return (true);
             }
             gtk_viewer *viewer =
-                (gtk_viewer*)gtk_object_get_data(GTK_OBJECT(widget), "viewer");
+                (gtk_viewer*)g_object_get_data(G_OBJECT(widget), "viewer");
             if (viewer) {
                 viewer->formActivate(0, entry);
                 return (true);
@@ -1410,7 +1420,7 @@ namespace {
     file_selection(const char *fname, void *arg)
     {
         if (fname && *fname && arg) {
-            GtkWidget *edit = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(arg),
+            GtkWidget *edit = (GtkWidget*)g_object_get_data(G_OBJECT(arg),
                 "lineedit");
             if (edit)
                 gtk_entry_set_text(GTK_ENTRY(edit), fname);
@@ -1423,10 +1433,10 @@ namespace {
     {
         if (arg) {
             GtkWidget *button =
-                (GtkWidget*)gtk_object_get_data(GTK_OBJECT(arg),
+                (GtkWidget*)g_object_get_data(G_OBJECT(arg),
                 "browse");
             if (button)
-                gtk_object_set_data(GTK_OBJECT(button), "filesel", 0);
+                g_object_set_data(G_OBJECT(button), "filesel", 0);
         }
     }
 
@@ -1435,7 +1445,7 @@ namespace {
     button_press_hdlr(GtkWidget *widget, htmForm *entry)
     {
         gtk_viewer *viewer =
-            (gtk_viewer*)gtk_object_get_data(GTK_OBJECT(widget), "viewer");
+            (gtk_viewer*)g_object_get_data(G_OBJECT(widget), "viewer");
         if (!viewer)
             return;
 
@@ -1446,13 +1456,13 @@ namespace {
         else if (entry->type == FORM_FILE) {
             // pop up/down a file selection window
             GRfilePopup *fs =
-                (GRfilePopup*)gtk_object_get_data(GTK_OBJECT(widget),
+                (GRfilePopup*)g_object_get_data(G_OBJECT(widget),
                 "filesel");
             if (!fs) {
                 fs = new GTKfilePopup(0, fsSEL, entry->widget, 0);
                 fs->register_callback(file_selection);
                 fs->register_quit_callback(file_selection_destroy);
-                gtk_object_set_data(GTK_OBJECT(widget), "filesel", fs);
+                g_object_set_data(G_OBJECT(widget), "filesel", fs);
             }
             fs->set_visible(true);
         }
@@ -1491,7 +1501,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
                     // enter key terminates with action
                     gtk_entry_set_text(GTK_ENTRY(ed), entry->value);
 
-                gtk_object_set_data(GTK_OBJECT(ed), "viewer", this);
+                g_object_set_data(G_OBJECT(ed), "viewer", this);
                 g_signal_connect(G_OBJECT(ed), "key-press-event",
                     G_CALLBACK(input_key_hdlr), entry);
 
@@ -1547,7 +1557,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             entry->height = 16;
             gtk_widget_set_size_request(cb, entry->width, entry->height);
 
-            gtk_object_set_data(GTK_OBJECT(cb), "viewer", this);
+            g_object_set_data(G_OBJECT(cb), "viewer", this);
             g_signal_connect(G_OBJECT(cb), "toggled",
                 G_CALLBACK(radio_change_hdlr), entry);
 
@@ -1573,7 +1583,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             if (entry->maxlength != -1)
                 gtk_entry_set_max_length(GTK_ENTRY(ed), entry->maxlength);
             gtk_widget_show(ed);
-            gtk_object_set_data(GTK_OBJECT(hbox), "lineedit", ed);
+            g_object_set_data(G_OBJECT(hbox), "lineedit", ed);
 
             int ew = entry->size * GTKfont::stringWidth(ed, 0) + PADVAL;
             int ht = GTKfont::stringHeight(ed, 0) + PADVAL;
@@ -1585,7 +1595,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             gtk_widget_show(button);
             int bw = GTKfont::stringWidth(button, lab) + PADVAL;
             gtk_widget_set_size_request(button, bw, ht);
-            gtk_object_set_data(GTK_OBJECT(hbox), "browse", button);
+            g_object_set_data(G_OBJECT(hbox), "browse", button);
 
             entry->width = ew + bw + PADVAL;
             entry->height = ht;
@@ -1594,7 +1604,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             gtk_box_pack_start(GTK_BOX(hbox), ed, 0, 0, 0);
             gtk_box_pack_start(GTK_BOX(hbox), button, 0, 0, 0);
 
-            gtk_object_set_data(GTK_OBJECT(button), "viewer", this);
+            g_object_set_data(G_OBJECT(button), "viewer", this);
             g_signal_connect(G_OBJECT(button), "clicked",
                 G_CALLBACK(button_press_hdlr), entry);
 
@@ -1621,7 +1631,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             entry->height = GTKfont::stringHeight(cb, 0) + PADVAL;
             gtk_widget_set_size_request(cb, entry->width, entry->height);
 
-            gtk_object_set_data(GTK_OBJECT(cb), "viewer", this);
+            g_object_set_data(G_OBJECT(cb), "viewer", this);
             g_signal_connect(G_OBJECT(cb), "clicked",
                 G_CALLBACK(button_press_hdlr), entry);
 
@@ -1828,7 +1838,7 @@ gtk_viewer::tk_get_text(htmForm *entry)
             GtkWidget *form = GTK_WIDGET(entry->widget);
             if (form) {
                 GtkWidget *ed = (GtkWidget*)
-                    gtk_object_get_data(GTK_OBJECT(form), "lineedit");
+                    g_object_get_data(G_OBJECT(form), "lineedit");
                 if (ed)
                     return (lstring::copy(gtk_entry_get_text(GTK_ENTRY(ed))));
             }
@@ -1861,7 +1871,7 @@ gtk_viewer::tk_set_text(htmForm *entry, const char *string)
             GtkWidget *form = GTK_WIDGET(entry->widget);
             if (form) {
                 GtkWidget *ed = (GtkWidget*)
-                    gtk_object_get_data(GTK_OBJECT(form), "lineedit");
+                    g_object_get_data(G_OBJECT(form), "lineedit");
                 if (ed)
                     gtk_entry_set_text(GTK_ENTRY(ed), string);
             }
@@ -1959,7 +1969,7 @@ gtk_viewer::tk_form_destroy(htmForm *entry)
         entry->widget = 0;
         if (entry->type == FORM_FILE) {
             GRfilePopup *fs =
-                (GRfilePopup*)gtk_object_get_data(GTK_OBJECT(w), "filesel");
+                (GRfilePopup*)g_object_get_data(G_OBJECT(w), "filesel");
             if (fs)
                 // The popdown method won't work since there is no parent
                 // container.
@@ -2129,7 +2139,7 @@ gtk_viewer::button_down_handler(GdkEventButton *event)
     }
     // Handle mouse wheel events (gtk1 only)
     if (event->button == 4 || event->button == 5) {
-        if (GTK_WIDGET_MAPPED(v_vsb) && v_vsba) {
+        if (gtk_widget_get_mapped(v_vsb) && v_vsba) {
             double nval = v_vsba->value + ((event->button == 4) ?
                 -v_vsba->page_increment / 4 : v_vsba->page_increment / 4);
             if (nval < v_vsba->lower)
@@ -2337,7 +2347,7 @@ int
 gtk_viewer::v_scroll_event_hdlr(GtkWidget*, GdkEvent *event, void *vp)
 {
     gtk_viewer *v = static_cast<gtk_viewer*>(vp);
-    if (v && GTK_WIDGET_MAPPED(v->v_vsb))
+    if (v && gtk_widget_get_mapped(v->v_vsb))
         gtk_propagate_event(v->v_vsb, event);
     return (true);
 }

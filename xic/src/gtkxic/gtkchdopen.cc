@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "cvrt.h"
 #include "dsp_inlines.h"
@@ -77,8 +79,7 @@ namespace {
             static void co_info_proc(GtkWidget*, void*);
             static void co_drag_data_received(GtkWidget*, GdkDragContext*,
                 gint, gint, GtkSelectionData*, guint, guint);
-            static void co_page_proc(GtkNotebook*, GtkNotebookPage*, int,
-                void*);
+            static void co_page_proc(GtkNotebook*, void*, int, void*);
 
             GRobject co_caller;
             GtkWidget *co_nbook;
@@ -133,13 +134,15 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
 
     int mwid;
     MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
-    if (x + Co->Shell()->requisition.width > mwid)
-        x = mwid - Co->Shell()->requisition.width;
-    gtk_widget_set_uposition(Co->Shell(), x, y);
+    GtkRequisition req;
+    gtk_widget_get_requisition(Co->Shell(), &req);
+    if (x + req.width > mwid)
+        x = mwid - req.width;
+    gtk_window_move(GTK_WINDOW(Co->Shell()), x, y);
     gtk_widget_show(Co->Shell());
 
     // OpenSuse-13.1 gtk-2.24.23 bug
-    gtk_widget_set_uposition(Co->Shell(), x, y);
+    gtk_window_move(GTK_WINDOW(Co->Shell()), x, y);
 }
 
 namespace {
@@ -207,7 +210,7 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
     rowcnt++;
 
     // This allows user to change label text.
-    gtk_object_set_data(GTK_OBJECT(wb_shell), "label", label);
+    g_object_set_data(G_OBJECT(wb_shell), "label", label);
 
     co_nbook = gtk_notebook_new();
     gtk_widget_show(co_nbook);
@@ -227,7 +230,7 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
 
     co_p1_text = gtk_entry_new();
     gtk_widget_show(co_p1_text);
-    gtk_entry_set_editable(GTK_ENTRY(co_p1_text), true);
+    gtk_editable_set_editable(GTK_EDITABLE(co_p1_text), true);
     gtk_table_attach(GTK_TABLE(tab_form), co_p1_text, 0, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 0);
@@ -269,6 +272,7 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
 
+#ifdef XXX_OPT
     co_p1_info = gtk_option_menu_new();
     gtk_widget_show(co_p1_info);
 
@@ -276,31 +280,35 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
     gtk_widget_show(menu);
     GtkWidget *mi = gtk_menu_item_new_with_label("no geometry info saved");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(co_info_proc), (void*)cvINFOnone);
     mi = gtk_menu_item_new_with_label("totals only");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(co_info_proc), (void*)cvINFOtotals);
     mi = gtk_menu_item_new_with_label("per-layer counts");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(co_info_proc), (void*)cvINFOpl);
     mi = gtk_menu_item_new_with_label("per-cell counts");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(co_info_proc), (void*)cvINFOpc);
     mi = gtk_menu_item_new_with_label("per-cell and per-layer counts");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(co_info_proc), (void*)cvINFOplpc);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(co_p1_info), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(co_p1_info), FIO()->CvtInfo());
+#else
+    co_p1_info = gtk_combo_box_text_new();
+    gtk_widget_show(co_p1_info);
+#endif
 
     gtk_table_attach(GTK_TABLE(tab_form), co_p1_info, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -320,7 +328,7 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
 
     co_p2_text = gtk_entry_new();
     gtk_widget_show(co_p2_text);
-    gtk_entry_set_editable(GTK_ENTRY(co_p2_text), true);
+    gtk_editable_set_editable(GTK_EDITABLE(co_p2_text), true);
     gtk_table_attach(GTK_TABLE(tab_form), co_p2_text, 0, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 0);
@@ -353,7 +361,7 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
         "Read geometry records into new MEMORY CGD");
     gtk_widget_set_name(co_p2_mem, "mem");
     gtk_widget_show(co_p2_mem);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(co_p2_mem));
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(co_p2_mem));
     gtk_table_attach(GTK_TABLE(tab_form), co_p2_mem, 0, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 0);
@@ -363,7 +371,7 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
         "Read geometry records into new FILE CGD");
     gtk_widget_set_name(co_p2_file, "file");
     gtk_widget_show(co_p2_file);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(co_p2_file));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(co_p2_file));
     gtk_table_attach(GTK_TABLE(tab_form), co_p2_file, 0, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 0);
@@ -482,8 +490,11 @@ sCo::update(const char *init_idname, const char *init_str)
     }
     if (init_idname)
         gtk_entry_set_text(GTK_ENTRY(co_idname), init_idname);
+#ifdef XXX_OPT
     gtk_option_menu_set_history(GTK_OPTION_MENU(co_p1_info),
         FIO()->CvtInfo());
+#else
+#endif
     co_p1_cnmap->update();
 }
 
@@ -611,9 +622,12 @@ sCo::co_drag_data_received(GtkWidget *entry,
     GdkDragContext *context, gint, gint, GtkSelectionData *data,
     guint, guint time)
 {
-    if (data->length >= 0 && data->format == 8 && data->data) {
-        char *src = (char*)data->data;
-        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+        char *src = (char*)gtk_selection_data_get_data(data);
+        if (gtk_selection_data_get_target(data) ==
+                gdk_atom_intern("TWOSTRING", true)) {
             // Drops from content lists may be in the form
             // "fname_or_chd\ncellname".  Keep the filename.
             char *t = strchr(src, '\n');
@@ -632,7 +646,7 @@ sCo::co_drag_data_received(GtkWidget *entry,
 // Handle page change, set focus to text entry.
 //
 void
-sCo::co_page_proc(GtkNotebook*, GtkNotebookPage*, int num, void*)
+sCo::co_page_proc(GtkNotebook*, void*, int num, void*)
 {
     if (!Co)
         return;

@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "config.h"
 #include "main.h"
 #include "cvrt.h"
@@ -400,6 +402,7 @@ sCHL::sCHL(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
+#ifdef XXX_OPT
     chl_geomenu = gtk_option_menu_new();
     gtk_widget_show(chl_geomenu);
 
@@ -407,20 +410,24 @@ sCHL::sCHL(GRobject c)
     gtk_widget_show(menu);
     GtkWidget *mi = gtk_menu_item_new_with_label("Create new MEMORY CGD");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(chl_geom_proc), (void*)(long)CHD_CGDmemory);
     mi = gtk_menu_item_new_with_label("Create new FILE CHD");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(chl_geom_proc), (void*)(long)CHD_CGDfile);
     mi = gtk_menu_item_new_with_label("Ignore geometry records");
     gtk_widget_show(mi);
-    gtk_menu_append(GTK_MENU(menu), mi);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(chl_geom_proc), (void*)(long)CHD_CGDnone);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(chl_geomenu), menu);
+#else
+    chl_geomenu = gtk_combo_box_text_new();
+    gtk_widget_show(chl_geomenu);
+#endif
 
     gtk_table_attach(GTK_TABLE(form), chl_geomenu, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -490,8 +497,11 @@ sCHL::update()
     GRX->SetStatus(chl_rename, CDvdb()->getVariable(VA_RefCellAutoRename));
     GRX->SetStatus(chl_usetab, CDvdb()->getVariable(VA_UseCellTab));
     GRX->SetStatus(chl_failres, CDvdb()->getVariable(VA_ChdFailOnUnresolved));
+#ifdef XXX_OPT
     gtk_option_menu_set_history(GTK_OPTION_MENU(chl_geomenu),
         sCHDin::get_default_cgd_type());
+#else
+#endif
 
     if (chl_selection && !CDchd()->chdRecall(chl_selection, false)) {
         delete [] chl_selection;
@@ -767,7 +777,8 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
     if (client_data == (void*)CHLadd) {
         if (state) {
             int xo, yo;
-            gdk_window_get_root_origin(Shell()->window, &xo, &yo);
+            gdk_window_get_root_origin(gtk_widget_get_window(Shell()),
+                &xo, &yo);
             char *cn = CDchd()->newChdName();
             Cvt()->PopUpChdOpen(chl_addbtn, MODE_ON, cn, 0,
                 xo + 20, yo + 100, chl_add_cb, 0);
@@ -784,7 +795,8 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
             GRX->Deselect(chl_delbtn);
             if (chl_selection) {
                 int xo, yo;
-                gdk_window_get_root_origin(Shell()->window, &xo, &yo);
+                gdk_window_get_root_origin(gtk_widget_get_window(Shell()),
+                    &xo, &yo);
                 Cvt()->PopUpChdSave(chl_savbtn, MODE_ON, chl_selection,
                     xo + 20, yo + 100, chl_sav_cb, 0);
             }
@@ -816,7 +828,8 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
     if (client_data == (void*)CHLcfg) {
         if (state) {
             int xo, yo;
-            gdk_window_get_root_origin(Shell()->window, &xo, &yo);
+            gdk_window_get_root_origin(gtk_widget_get_window(Shell()),
+                &xo, &yo);
             Cvt()->PopUpChdConfig(chl_cfgbtn, MODE_ON, chl_selection,
                 xo + 20, yo + 100);
         }

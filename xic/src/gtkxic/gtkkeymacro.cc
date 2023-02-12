@@ -308,8 +308,8 @@ cKbMacro::isModifierDown()
 {
     if (mainBag()) {
         int x, y, state;
-        gdk_window_get_pointer(mainBag()->Viewport()->window, &x, &y,
-            (GdkModifierType*)&state);
+        gdk_window_get_pointer(gtk_widget_get_window(mainBag()->Viewport()),
+            &x, &y, (GdkModifierType*)&state);
         if (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK))
             // modifier down
             return (true);
@@ -350,14 +350,14 @@ cKbMacro::execKey(sKeyEvent *k)
 
     dspPkgIf()->CheckForInterrupt();
     GtkWidget *w = gtk_keyb::name_to_widget(k->widget_name);
-    if (w && !w->window)
+    if (w && !gtk_widget_get_window(w))
         gtk_widget_realize(w);
-    if (!w || !w->window)
+    if (!w || !gtk_widget_get_window(w))
         return (false);
 
     GdkEventKey event;
     memset(&event, 0, sizeof(GdkEventKey));
-    event.window = w->window;
+    event.window = gtk_widget_get_window(w);
     event.send_event = true;
     event.time = GDK_CURRENT_TIME;
     event.state = k->state;
@@ -379,9 +379,9 @@ cKbMacro::execBtn(sBtnEvent *b)
     if (b->type == BUTTON_PRESS)
         dspPkgIf()->CheckForInterrupt();
     GtkWidget *w = gtk_keyb::name_to_widget(b->widget_name);
-    if (w && !w->window)
+    if (w && !gtk_widget_get_window(w))
         gtk_widget_realize(w);
-    if (!w || !w->window)
+    if (!w || !gtk_widget_get_window(w))
         return (false);
 
     if (GTK_IS_BUTTON(w)) {
@@ -398,7 +398,8 @@ cKbMacro::execBtn(sBtnEvent *b)
         if (b->type == BUTTON_RELEASE) {
             if (km_last_menu) {
                 gtk_menu_item_activate(GTK_MENU_ITEM(w));
-                gtk_menu_shell_deactivate(GTK_MENU_SHELL(w->parent));
+                gtk_menu_shell_deactivate(
+                    GTK_MENU_SHELL(gtk_widget_get_parent(w)));
             }
             km_last_menu = 0;
         }
@@ -410,11 +411,11 @@ cKbMacro::execBtn(sBtnEvent *b)
         km_last_menu = w;
         km_last_btn = 0;
         int xo, yo;
-        gdk_window_get_root_origin(w->window, &xo, &yo);
+        gdk_window_get_root_origin(gtk_widget_get_window(w), &xo, &yo);
 
         GdkEventButton event;
         memset(&event, 0, sizeof(GdkEventButton));
-        event.window = w->window;
+        event.window = gtk_widget_get_window(w);
         event.send_event = true;
         event.time = GDK_CURRENT_TIME;
         event.x = b->x;
@@ -527,7 +528,7 @@ gtk_keyb::macro_event_handler(GdkEvent *ev, void *arg)
                 BUTTON_PRESS : BUTTON_RELEASE, ev->button.button,
                 (int)ev->button.x, (int)ev->button.y);
             if (ev->type == GDK_BUTTON_PRESS && GTK_IS_MENU_ITEM(widg) &&
-                    GTK_MENU_ITEM(widg)->submenu) {
+                    gtk_menu_item_get_submenu(GTK_MENU_ITEM(widg))) {
                 // show the menu
                 km->grabber = widg;
                 gtk_main_do_event(ev);
@@ -578,7 +579,7 @@ gtk_keyb::widget_path(GtkWidget *widget)
     while (widget) {
         aa[cnt] = (char*)gtk_widget_get_name(widget);
         len += strlen(aa[cnt]) + 1;
-        widget = widget->parent;
+        widget = gtk_widget_get_parent(widget);
         cnt++;
     }
     cnt--;
@@ -609,7 +610,7 @@ gtk_keyb::find_widget(GtkWidget *w, const char *path)
     char name[128];
     strncpy(name, path, t-path);
     name[t-path] = 0;
-    GList *g = gtk_container_children(GTK_CONTAINER(w));
+    GList *g = gtk_container_get_children(GTK_CONTAINER(w));
     for (GList *gt = g; gt; gt = gt->next) {
         GtkWidget *ww = GTK_WIDGET(gt->data);
         if (!strcmp(name, gtk_widget_get_name(ww))) {

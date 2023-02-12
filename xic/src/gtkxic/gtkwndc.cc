@@ -106,7 +106,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(wnd_s_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(wnd_s_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(wnd_sto_menu_proc), this);
     }
@@ -198,7 +198,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
-        gtk_menu_append(GTK_MENU(wnd_r_menu), mi);
+        gtk_menu_shell_append(GTK_MENU_SHELL(wnd_r_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(wnd_rcl_menu_proc), this);
     }
@@ -285,12 +285,12 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
 wnd_t::~wnd_t()
 {
     g_object_ref(wnd_s_menu);
-    gtk_object_ref(GTK_OBJECT(wnd_s_menu));
+//XXX    gtk_object_ref(GTK_OBJECT(wnd_s_menu));
     gtk_widget_destroy(wnd_s_menu);
     g_object_unref(wnd_s_menu);
 
     g_object_ref(wnd_r_menu);
-    gtk_object_ref(GTK_OBJECT(wnd_r_menu));
+//XXX    gtk_object_ref(GTK_OBJECT(wnd_r_menu));
     gtk_widget_destroy(wnd_r_menu);
     g_object_unref(wnd_r_menu);
 }

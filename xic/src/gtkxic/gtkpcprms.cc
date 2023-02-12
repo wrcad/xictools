@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_OPT
+
 #include "main.h"
 #include "edit.h"
 #include "pcell.h"
@@ -472,18 +474,25 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
             // parameter type.
 
             stringlist *slc = pc->choices();
+#ifdef XXX_OPT
             GtkWidget *w = gtk_option_menu_new();
             gtk_widget_show(w);
             GtkWidget *menu = gtk_menu_new();
             gtk_option_menu_set_menu(GTK_OPTION_MENU(w), menu);
+#else
+            GtkWidget *w = gtk_combo_box_text_new();
+            gtk_widget_show(w);
+#endif
             int hstv = -1, i = 0;
             for (stringlist *sl = slc; sl; sl = sl->next) {
+#ifdef XXX_OPT
                 GtkWidget *mi = gtk_menu_item_new_with_label(sl->string);
                 gtk_widget_set_name(mi, sl->string);
                 gtk_widget_show(mi);
-                gtk_menu_append(GTK_MENU(menu), mi);
+                gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
                 g_signal_connect(G_OBJECT(mi), "activate",
                     G_CALLBACK(pcp_menu_proc), p);
+#endif
                 char buf[64];
                 if (p->type() == PCPint) {
                     sprintf(buf, "%ld", p->intVal());
@@ -524,7 +533,11 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                 i++;
             }
             if (hstv >= 0)
+#ifdef XXX_OPT
                 gtk_option_menu_set_history(GTK_OPTION_MENU(w), hstv);
+#else
+                ;
+#endif
             else {
                 gtk_widget_set_sensitive(w, false);
                 errlstr.add("Parameter ");
@@ -577,7 +590,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
             else
                 return (0);
             gtk_widget_show(w);
-            gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
+            g_object_set_data(G_OBJECT(w), "sb", sb);
             sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
 
             if (!pc->checkConstraint(p)) {
@@ -640,7 +653,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                 sb->set_snap(true);
             }
             gtk_widget_show(w);
-            gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
+            g_object_set_data(G_OBJECT(w), "sb", sb);
             sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
 
             if (!pc->checkConstraint(p)) {
@@ -715,7 +728,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                 sb->set_snap(true);
             }
             gtk_widget_show(w);
-            gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
+            g_object_set_data(G_OBJECT(w), "sb", sb);
             sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
 
             if (!pc->checkConstraint(p)) {
@@ -744,7 +757,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         double maxv = 1e30;
         GtkWidget *w = sb->init(p->intVal(), minv, maxv, 0);
         gtk_widget_show(w);
-        gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
+        g_object_set_data(G_OBJECT(w), "sb", sb);
         sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
         return (w);
     }
@@ -755,7 +768,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         double maxv = 1e30;
         GtkWidget *w = sb->init(p->timeVal(), minv, maxv, 0);
         gtk_widget_show(w);
-        gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
+        g_object_set_data(G_OBJECT(w), "sb", sb);
         sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
         return (w);
     }
@@ -766,7 +779,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         double maxv = 1e30;
         GtkWidget *w = sb->init(p->floatVal(), minv, maxv, 4);
         gtk_widget_show(w);
-        gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
+        g_object_set_data(G_OBJECT(w), "sb", sb);
         sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
         return (w);
     }
@@ -777,7 +790,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         double maxv = 1e30;
         GtkWidget *w = sb->init(p->doubleVal(), minv, maxv, 4);
         gtk_widget_show(w);
-        gtk_object_set_data(GTK_OBJECT(w), "sb", sb);
+        g_object_set_data(G_OBJECT(w), "sb", sb);
         sb->connect_changed(G_CALLBACK(pcp_num_proc), p, 0);
         return (w);
     }
@@ -821,7 +834,7 @@ void
 sPcp::pcp_num_proc(GtkWidget *w, void *arg)
 {
     PCellParam *p = (PCellParam*)arg;
-    GTKspinBtn *sb = (GTKspinBtn*)gtk_object_get_data(GTK_OBJECT(w), "sb");
+    GTKspinBtn *sb = (GTKspinBtn*)g_object_get_data(G_OBJECT(w), "sb");
     if (!sb)
         return;
     if (p->type() == PCPint) {

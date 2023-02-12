@@ -343,7 +343,7 @@ namespace gtkinterf {
     gtkQueueLoop::start()
     {
         if (!id)
-            id = gtk_idle_add((GtkFunction)queue_idle, this);
+            id = g_idle_add((GSourceFunc)queue_idle, this);
     }
 
 
@@ -351,7 +351,7 @@ namespace gtkinterf {
     gtkQueueLoop::suspend()
     {
         if (id) {
-            gtk_idle_remove(id);
+            g_source_remove(id);
             id = 0;
         }
     }
@@ -361,7 +361,7 @@ namespace gtkinterf {
     gtkQueueLoop::resume()
     {
         if (!id)
-            id = gtk_idle_add((GtkFunction)queue_idle, this);
+            id = g_idle_add((GSourceFunc)queue_idle, this);
     }
 }
 
@@ -432,7 +432,6 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
     if (!h_is_frame) {
         h_params = new HLPparams(HLP()->no_file_fonts());
         wb_shell = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-        gtk_window_set_policy(GTK_WINDOW(wb_shell), true, true, false);
         gtk_window_set_wmclass(GTK_WINDOW(wb_shell), "Mozy", "mozy");
 
         char buf[128];
@@ -453,7 +452,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         if (xpos > 0 && ypos > 0) {
             int x, y;
             MonitorGeom(topw, &x, &y);
-            gtk_widget_set_uposition(wb_shell, xpos + x, ypos + y);
+            gtk_window_move(GTK_WINDOW(wb_shell), xpos + x, ypos + y);
         }
 
         gtk_window_set_default_size(GTK_WINDOW(wb_shell), HLP_DEF_WIDTH,
@@ -467,7 +466,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         gtk_widget_add_events(wb_shell, GDK_BUTTON_PRESS_MASK);
         g_signal_connect_after(G_OBJECT(wb_shell), "button-press-event",
             G_CALLBACK(Btn1MoveHdlr), 0);
-        gtk_object_set_data(GTK_OBJECT(wb_shell), MIDX, (gpointer)HA_CANCEL);
+        g_object_set_data(G_OBJECT(wb_shell), MIDX, (gpointer)HA_CANCEL);
         g_signal_connect(G_OBJECT(wb_shell), "destroy",
             G_CALLBACK(h_menu_hdlr), this);
 
@@ -485,21 +484,21 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         GtkWidget *button = new_pixmap_button(backward_xpm, 0, false);
         gtk_widget_set_name(button, "Back");
         gtk_widget_show(button);
-        gtk_object_set_data(GTK_OBJECT(button), MIDX, (gpointer)HA_BACK);
+        g_object_set_data(G_OBJECT(button), MIDX, (gpointer)HA_BACK);
         g_signal_connect(G_OBJECT(button), "clicked",
             G_CALLBACK(h_menu_hdlr), this);
         gtk_widget_set_sensitive(button, false);
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "back", button);
+        g_object_set_data(G_OBJECT(wb_shell), "back", button);
         gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
         button = new_pixmap_button(forward_xpm, 0, false);
         gtk_widget_set_name(button, "Forward");
         gtk_widget_show(button);
-        gtk_object_set_data(GTK_OBJECT(button), MIDX, (gpointer)HA_FORWARD);
+        g_object_set_data(G_OBJECT(button), MIDX, (gpointer)HA_FORWARD);
         g_signal_connect(G_OBJECT(button), "clicked",
             G_CALLBACK(h_menu_hdlr), this);
         gtk_widget_set_sensitive(button, false);
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "forward", button);
+        g_object_set_data(G_OBJECT(wb_shell), "forward", button);
         gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
         //
@@ -508,7 +507,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         GtkAccelGroup *accel_group = gtk_accel_group_new();
         gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
         h_menubar = gtk_menu_bar_new();
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "menubar", h_menubar);
+        g_object_set_data(G_OBJECT(wb_shell), "menubar", h_menubar);
         gtk_widget_show(h_menubar);
 
         gtk_box_pack_start(GTK_BOX(hbox), h_menubar, true, true, 0);
@@ -519,7 +518,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         g_signal_connect(G_OBJECT(button), "clicked",
             G_CALLBACK(h_stop_proc), this);
         gtk_widget_set_sensitive(button, false);
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "stopbtn", button);
+        g_object_set_data(G_OBJECT(wb_shell), "stopbtn", button);
         gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
 
         gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 0, 1,
@@ -540,9 +539,9 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/File/_Open", "<control>O", h_menu_hdlr, HA_OPEN, 0
         item = gtk_menu_item_new_with_mnemonic("_Open");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_OPEN);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_OPEN);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_file_menu), item);
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "open", item);
+        g_object_set_data(G_OBJECT(wb_shell), "open", item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
         gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_o,
@@ -551,7 +550,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/File/Open _File", "<control>F", h_menu_hdlr, HA_FILE, 0
         item = gtk_menu_item_new_with_mnemonic("Open _File");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_FILE);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_FILE);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_file_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -561,9 +560,9 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/File/_Save", "<control>S", h_menu_hdlr, HA_SAVE, 0
         item = gtk_menu_item_new_with_mnemonic("_Save");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_SAVE);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_SAVE);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_file_menu), item);
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "save", item);
+        g_object_set_data(G_OBJECT(wb_shell), "save", item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
         gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
@@ -572,7 +571,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/File/_Print", "<control>P", h_menu_hdlr, HA_PRINT, 0
         item = gtk_menu_item_new_with_mnemonic("_Print");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_PRINT);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_PRINT);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_file_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -582,7 +581,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/File/_Reload", "<control>R", h_menu_hdlr, HA_RELOAD, 0
         item = gtk_menu_item_new_with_mnemonic("_Reload");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_RELOAD);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_RELOAD);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_file_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -592,7 +591,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/File/Old _Charset", 0, h_menu_hdlr, HA_ISO8859, "<CheckItem>"
         item = gtk_check_menu_item_new_with_mnemonic("Old _Charset");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_ISO8859);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_ISO8859);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_file_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -601,7 +600,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         //  "<CheckItem>"
         item = gtk_check_menu_item_new_with_mnemonic("_Make FIFO");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_MKFIFO);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_MKFIFO);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_file_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -619,7 +618,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/File/_Quit", "<control>Q", h_menu_hdlr, HA_QUIT, 0
         item = gtk_menu_item_new_with_mnemonic("_Quit");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_QUIT);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_QUIT);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_file_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -638,7 +637,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/Save Config", 0, h_menu_hdlr, HA_DUMPCFG, 0
         item = gtk_menu_item_new_with_mnemonic("Save Config");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_DUMPCFG);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_DUMPCFG);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -646,7 +645,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/Set Proxy", 0, h_menu_hdlr, HA_PROXY, 0
         item = gtk_menu_item_new_with_mnemonic("Set Proxy");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_PROXY);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_PROXY);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -656,9 +655,9 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/_Search Database", "<Alt>S", h_menu_hdlr) HA_SEARCH, 0
         item = gtk_menu_item_new_with_mnemonic("_Search Database");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_SEARCH);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_SEARCH);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "search", item);
+        g_object_set_data(G_OBJECT(wb_shell), "search", item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
         // gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
@@ -667,7 +666,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/Find _Text", "<Alt>T", h_menu_hdlr, HA_FIND, "<CheckItem>"
         item = gtk_check_menu_item_new_with_mnemonic("Find _Text");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_FIND);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_FIND);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -677,7 +676,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/Default Colors", 0, h_menu_hdlr, HA_COLORS, "<CheckItem>"
         item = gtk_check_menu_item_new_with_mnemonic("Defult Colors");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_COLORS);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_COLORS);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -685,7 +684,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/Set _Font", 0, h_menu_hdlr, HA_FONT, "<CheckItem>"
         item = gtk_check_menu_item_new_with_mnemonic("Set _Font");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_FONT);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_FONT);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -693,7 +692,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/_Don't Cache", 0, h_menu_hdlr, HA_NOCACHE, "<CheckItem>"),
         item = gtk_check_menu_item_new_with_mnemonic("_Don't Cache");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_NOCACHE);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_NOCACHE);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -701,7 +700,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/_Clear Cache", 0, h_menu_hdlr, HA_CLRCACHE, 0
         item = gtk_menu_item_new_with_mnemonic("_Clear Cache");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_CLRCACHE);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_CLRCACHE);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -709,7 +708,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/_Reload Cache", 0, h_menu_hdlr, HA_LDCACHE, 0
         item = gtk_menu_item_new_with_mnemonic("_Reload Cache");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_LDCACHE);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_LDCACHE);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -717,7 +716,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/Show Cache", 0, h_menu_hdlr, HA_SHCACHE, 0
         item = gtk_menu_item_new_with_mnemonic("Show Cache");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_SHCACHE);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_SHCACHE);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -729,7 +728,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/No Cookies", 0, h_menu_hdlr, HA_NOCKS, "<CheckItem>"),
         item = gtk_check_menu_item_new_with_mnemonic("No Cookies");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_NOCKS);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_NOCKS);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -739,7 +738,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         item = gtk_radio_menu_item_new_with_mnemonic(group, "No Images");
         group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item));
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_NOIMG);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_NOIMG);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -749,7 +748,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         item = gtk_radio_menu_item_new_with_mnemonic(group, "Sync Images");
         group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item));
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_SYIMG);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_SYIMG);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -759,7 +758,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         item = gtk_radio_menu_item_new_with_mnemonic(group, "Delayed Images");
         group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item));
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_DLIMG);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_DLIMG);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -768,7 +767,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         //  "/Options/Delayed Images"
         item = gtk_radio_menu_item_new_with_mnemonic(group,"Progressive Images");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_PGIMG);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_PGIMG);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -782,7 +781,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         item = gtk_radio_menu_item_new_with_mnemonic(group, "Anchor Plain");
         group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item));
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_APLN);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_APLN);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -792,7 +791,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         item = gtk_radio_menu_item_new_with_mnemonic(group, "Anchor Buttons");
         group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item));
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_ABUT);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_ABUT);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -801,7 +800,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         //  "/Options/Anchor Buttons"
         item = gtk_radio_menu_item_new_with_mnemonic(group, "Anchor Underline");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_AUND);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_AUND);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -810,7 +809,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         //  "<CheckItem>"
         item = gtk_check_menu_item_new_with_mnemonic("Anchor Highlight");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_HLITE);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_HLITE);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -818,7 +817,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/Bad HTML Warnings", 0, h_menu_hdlr, HA_WARN, "<CheckItem>"
         item = gtk_check_menu_item_new_with_mnemonic("Bad HTML Warnings");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_WARN);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_WARN);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -826,7 +825,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/Freeze Animations", 0, h_menu_hdlr, HA_FREEZ, "<CheckItem>"
         item = gtk_check_menu_item_new_with_mnemonic("Freeze Animations");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_FREEZ);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_FREEZ);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -834,7 +833,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Options/Log Transactions", 0, h_menu_hdlr, HA_COMM, "<CheckItem>"
         item = gtk_check_menu_item_new_with_mnemonic("Log Transactions");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_COMM);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_COMM);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_options_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -851,7 +850,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Bookmarks/Add", 0, h_menu_hdlr, HA_BMADD, 0
         item = gtk_menu_item_new_with_mnemonic("Add");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_BMADD);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_BMADD);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_bookmarks_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -859,7 +858,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Bookmarks/Delete", 0, GIFC(h_menu_hdlr), HA_BMDEL, "<CheckItem>"
         item = gtk_check_menu_item_new_with_mnemonic("Delete");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_BMDEL);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_BMDEL);
         gtk_menu_shell_append(GTK_MENU_SHELL(h_bookmarks_menu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -876,7 +875,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
             item = gtk_menu_item_new_with_label(title);
             gtk_widget_show(item);
             gtk_menu_shell_append(GTK_MENU_SHELL(h_bookmarks_menu), item);
-            gtk_object_set_data_full(GTK_OBJECT(item), "data",
+            g_object_set_data_full(G_OBJECT(item), "data",
                 lstring::copy(b->url), h_bm_dest);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(h_bm_handler), this);
@@ -895,7 +894,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         // "/Help/_Help", "<control>H", h_menu_hdlr, HA_HELP, 0
         item = gtk_menu_item_new_with_mnemonic("_Help");
         gtk_widget_show(item);
-        gtk_object_set_data(GTK_OBJECT(item), MIDX, (gpointer)HA_HELP);
+        g_object_set_data(G_OBJECT(item), MIDX, (gpointer)HA_HELP);
         gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_menu_hdlr), this);
@@ -935,7 +934,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         gtk_widget_show(label);
         gtk_container_add(GTK_CONTAINER(frame), label);
         gtk_box_pack_start(GTK_BOX(hbox), frame, true, true, 0);
-        gtk_object_set_data(GTK_OBJECT(wb_shell), "label", label);
+        g_object_set_data(G_OBJECT(wb_shell), "label", label);
 
         gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 3, 4,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -1063,16 +1062,16 @@ GTKhelpPopup::check_halt_processing(bool run_events)
     if (run_events) {
         gtk_DoEvents(100);
         GtkWidget *stopbtn =
-            (GtkWidget*)gtk_object_get_data(GTK_OBJECT(wb_shell), "stopbtn");
-        if (stopbtn && !GTK_WIDGET_IS_SENSITIVE(stopbtn) &&
-                gtk_object_get_data(GTK_OBJECT(stopbtn), "pressed"))
+            (GtkWidget*)g_object_get_data(G_OBJECT(wb_shell), "stopbtn");
+        if (stopbtn && !gtk_widget_get_sensitive(stopbtn) &&
+                g_object_get_data(G_OBJECT(stopbtn), "pressed"))
             // abort
             return (true);
     }
     else {
         GtkWidget *stopbtn =
-            (GtkWidget*)gtk_object_get_data(GTK_OBJECT(wb_shell), "stopbtn");
-        if (stopbtn && gtk_object_get_data(GTK_OBJECT(stopbtn), "pressed"))
+            (GtkWidget*)g_object_get_data(G_OBJECT(wb_shell), "stopbtn");
+        if (stopbtn && g_object_get_data(G_OBJECT(stopbtn), "pressed"))
             // stop button pressed already
             return (true);
     }
@@ -1084,7 +1083,7 @@ void
 GTKhelpPopup::set_halt_proc_sens(bool sens)
 {
     GtkWidget *stopbtn =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(wb_shell), "stopbtn");
+        (GtkWidget*)g_object_get_data(G_OBJECT(wb_shell), "stopbtn");
     if (stopbtn)
         gtk_widget_set_sensitive(stopbtn, sens);
 }
@@ -1096,8 +1095,8 @@ GTKhelpPopup::set_status_line(const char *msg)
     if (h_frame_parent)
         h_frame_parent->set_status_line(msg);
     else {
-        GtkWidget *label = (GtkWidget*)gtk_object_get_data(
-            GTK_OBJECT(wb_shell), "label");
+        GtkWidget *label = (GtkWidget*)g_object_get_data(
+            G_OBJECT(wb_shell), "label");
         if (label)
             gtk_label_set_text(GTK_LABEL(label), msg);
     }
@@ -1257,7 +1256,7 @@ GTKhelpPopup::reuse(HLPtopic *newtop, bool newlink)
         newtop->set_sibling(h_root_topic->lastborn());
         h_root_topic->set_lastborn(newtop);
         newtop->set_parent(h_root_topic);
-        GtkWidget *back = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(wb_shell),
+        GtkWidget *back = (GtkWidget*)g_object_get_data(G_OBJECT(wb_shell),
             "back");
         if (back)
             gtk_widget_set_sensitive(back, true);
@@ -1270,7 +1269,7 @@ GTKhelpPopup::reuse(HLPtopic *newtop, bool newlink)
     // progressive loading mode.
 
     if (!h_viewer->initialized())
-        gtk_timeout_add(200, (GtkFunction)ils_to, this);
+        g_timeout_add(200, (GSourceFunc)ils_to, this);
     else
         reuse_display();
 }
@@ -1306,7 +1305,7 @@ GTKhelpPopup::reuse_display()
 
     delete [] anchor;
     GtkWidget *label =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(wb_shell), "label");
+        (GtkWidget*)g_object_get_data(G_OBJECT(wb_shell), "label");
     if (label)
         gtk_label_set_text(GTK_LABEL(label), h_cur_topic->keyword());
 
@@ -1514,9 +1513,11 @@ void
 GTKhelpPopup::frame_rendering_area(htmRect *rect)
 {
     rect->x = 0;
-    rect->y = h_viewer->top_widget()->allocation.x;
-    rect->width = h_viewer->top_widget()->allocation.width;
-    rect->height = h_viewer->top_widget()->allocation.height;
+    GtkAllocation a;
+    gtk_widget_get_allocation(h_viewer->top_widget(), &a);
+    rect->y = a.x;
+    rect->width = a.width;
+    rect->height = a.height;
 }
 
 
@@ -1656,8 +1657,8 @@ namespace {
     GtkWidget *find_item(GList *list, unsigned int ix)
     {
         for (GList *l = list; l; l = l->next) {
-            unsigned long x = (unsigned long)gtk_object_get_data(
-                GTK_OBJECT(l->data), MIDX);
+            unsigned long x = (unsigned long)g_object_get_data(
+                G_OBJECT(l->data), MIDX);
             if (x == ix)
                 return (GTK_WIDGET(l->data));
         }
@@ -1870,7 +1871,7 @@ GTKhelpPopup::anchor_track_signal_handler(htmAnchorCallbackStruct *cbs)
 {
     if (!h_cur_topic)
         return;
-    GtkWidget *label = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(wb_shell),
+    GtkWidget *label = (GtkWidget*)g_object_get_data(G_OBJECT(wb_shell),
         "label");
     if (!label)
         return;
@@ -1983,8 +1984,10 @@ void
 GTKhelpPopup::h_drag_data_received(GtkWidget*, GdkDragContext *context,
     gint, gint, GtkSelectionData *data, guint, guint time, void *hlpptr)
 {
-    if (data->length >= 0 && data->format == 8 && data->data) {
-        char *src = (char*)data->data;
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+        char *src = (char*)gtk_selection_data_get_data(data);
         GTKhelpPopup *w = static_cast<GTKhelpPopup*>(hlpptr);
         if (w) {
             if (w->wb_input) {
@@ -2015,7 +2018,7 @@ GTKhelpPopup::h_stop_proc(GtkWidget *btn, void *hlpptr)
     if (w)
         w->stop_image_download();
     gtk_widget_set_sensitive(btn, false);
-    gtk_object_set_data(GTK_OBJECT(btn), "pressed", (void*)1);
+    g_object_set_data(G_OBJECT(btn), "pressed", (void*)1);
 }
 
 
@@ -2039,7 +2042,7 @@ void
 GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
 {
     unsigned long activate =
-        (unsigned long)gtk_object_get_data(GTK_OBJECT(caller), MIDX);
+        (unsigned long)g_object_get_data(G_OBJECT(caller), MIDX);
     if (activate == HA_NIL)
         return;
     GTKhelpPopup *w = static_cast<GTKhelpPopup*>(hlpptr);
@@ -2079,11 +2082,11 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
             last->set_topline(w->scroll_position(false));
             top->reuse(top->lastborn(), false);
             GtkWidget *back = (GtkWidget*)
-                gtk_object_get_data(GTK_OBJECT(w->Shell()), "back");
+                g_object_get_data(G_OBJECT(w->Shell()), "back");
             if (back)
                 gtk_widget_set_sensitive(back, top->lastborn() != 0);
             GtkWidget *forw = (GtkWidget*)
-                gtk_object_get_data(GTK_OBJECT(w->Shell()), "forward");
+                g_object_get_data(G_OBJECT(w->Shell()), "forward");
             if (forw)
                 gtk_widget_set_sensitive(forw, true);
        }
@@ -2101,11 +2104,11 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
                 top->set_topline(w->scroll_position(false));
             top->reuse(top->lastborn(), false);
             GtkWidget *forw = (GtkWidget*)
-                gtk_object_get_data(GTK_OBJECT(w->Shell()), "forward");
+                g_object_get_data(G_OBJECT(w->Shell()), "forward");
             if (forw)
                 gtk_widget_set_sensitive(forw, top->next() != 0);
             GtkWidget *back = (GtkWidget*)
-                gtk_object_get_data(GTK_OBJECT(w->Shell()), "back");
+                g_object_get_data(G_OBJECT(w->Shell()), "back");
             if (back)
                 gtk_widget_set_sensitive(back, true);
         }
@@ -2179,12 +2182,15 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
                 y += 200;
                 int mwid;
                 MonitorGeom(0, 0, 0, &mwid, 0);
-                if (x + Clr->Shell()->requisition.width > mwid)
-                    x = mwid - Clr->Shell()->requisition.width;
-                gtk_widget_set_uposition(Clr->Shell(), x, y);
-                if (w->h_parent)
+                GtkRequisition req;
+                gtk_widget_get_requisition(Clr->Shell(), &req);
+                if (x + req.width > mwid)
+                    x = mwid - req.width;
+                gtk_window_move(GTK_WINDOW(Clr->Shell()), x, y);
+                if (w->h_parent) {
                     gtk_window_set_transient_for(GTK_WINDOW(Clr->Shell()),
                         GTK_WINDOW(w->h_parent));
+                }
                 gtk_widget_show(Clr->Shell());
             }
         }
@@ -2303,13 +2309,12 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
         gtk_widget_set_name(item, title);
         gtk_widget_show(item);
         gtk_menu_shell_append(GTK_MENU_SHELL(w->h_bookmarks_menu), item);
-        gtk_object_set_data_full(GTK_OBJECT(item), "data", url,
-            h_bm_dest);
+        g_object_set_data_full(G_OBJECT(item), "data", url, h_bm_dest);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(h_bm_handler), w);
     }
     else if (activate == HA_BMDEL) {
-        gtk_object_set_data(GTK_OBJECT(w->Shell()), "bm_delete",
+        g_object_set_data(G_OBJECT(w->Shell()), "bm_delete",
             (void*)GRX->GetStatus(caller) ? caller : 0);
     }
 }
@@ -2322,13 +2327,13 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
 void
 GTKhelpPopup::h_bm_handler(GtkWidget *caller, void *hlpptr)
 {
-    char *url = (char*)gtk_object_get_data(GTK_OBJECT(caller), "data");
+    char *url = (char*)g_object_get_data(G_OBJECT(caller), "data");
     if (!url)
         return;
     GTKhelpPopup *w = static_cast<GTKhelpPopup*>(hlpptr);
     if (!w)
         return;
-    GtkWidget *delbtn = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(w->Shell()),
+    GtkWidget *delbtn = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
         "bm_delete");
     if (delbtn) {
         // delete button is active, delete entry
@@ -2423,7 +2428,7 @@ GTKhelpPopup::h_do_search_proc(const char *target, void *hlpptr)
     if (w) {
         if (target && *target) {
             ntop *n = new ntop(target, w->h_cur_topic);
-            gtk_timeout_add(100, (GtkFunction)h_ntop_timeout, n);
+            g_timeout_add(100, (GSourceFunc)h_ntop_timeout, n);
         }
         if (w->wb_input)
             w->wb_input->popdown();
@@ -2615,11 +2620,11 @@ void
 GTKhelpPopup::h_sens_set(gtk_bag *w, bool set, int)
 {
     GtkWidget *search =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(w->Shell()), "search");
+        (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()), "search");
     GtkWidget *save =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(w->Shell()), "save");
+        (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()), "save");
     GtkWidget *open =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(w->Shell()), "open");
+        (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()), "open");
     if (set) {
         if (search)
             gtk_widget_set_sensitive(search, true);
@@ -2770,8 +2775,8 @@ GTKhelpPopup::register_fifo(const char *fname)
 #endif
 
     if (h_fifo_tid)
-        gtk_timeout_remove(h_fifo_tid);
-    h_fifo_tid = gtk_timeout_add(100, fifo_check_proc, this);
+        g_source_remove(h_fifo_tid);
+    h_fifo_tid = g_timeout_add(100, fifo_check_proc, this);
 
     return (ret);
 }
@@ -2781,7 +2786,7 @@ void
 GTKhelpPopup::unregister_fifo()
 {
     if (h_fifo_tid) {
-        gtk_timeout_remove(h_fifo_tid);
+        g_source_remove(h_fifo_tid);
         h_fifo_tid = 0;
     }
     if (h_fifo_name) {
