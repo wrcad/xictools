@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -176,33 +174,20 @@ sTb::sTb(GRobject c)
 
     row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "tables");
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "tables");
-
-    stringlist *list = CDcdb()->listTables();
-    for (stringlist *s = list; s; s = s->next) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(s->string);
-        gtk_widget_set_name(mi, s->string);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(tb_menu_proc), 0);
-    }
-    tb_namelist = list;
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(entry), 0);
-#else
     GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "tables");
     gtk_widget_show(entry);
-#endif
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
     gtk_widget_set_size_request(entry, 100, -1);
     tb_tables = entry;
+
+    stringlist *list = CDcdb()->listTables();
+    for (stringlist *s = list; s; s = s->next)
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), s->string);
+    tb_namelist = list;
+    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), 0);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(tb_menu_proc), 0);
 
     tb_add = gtk_toggle_button_new_with_label("Add");
     gtk_widget_set_name(tb_add, "add");
@@ -277,22 +262,13 @@ sTb::update()
         changed = true;
 
     if (changed) {
-#ifdef XXX_OPT
-        GtkWidget *menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "tables");
-
+        gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(
+            GTK_COMBO_BOX(tb_tables))));
         for (stringlist *s = list; s; s = s->next) {
-            GtkWidget *mi = gtk_menu_item_new_with_label(s->string);
-            gtk_widget_set_name(mi, s->string);
-            gtk_widget_show(mi);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-            g_signal_connect(G_OBJECT(mi), "activate",
-                G_CALLBACK(tb_menu_proc), 0);
+            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(tb_tables),
+                s->string);
         }
-        gtk_option_menu_remove_menu(GTK_OPTION_MENU(tb_tables));
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(tb_tables), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(tb_tables), 0);
-#endif
+        gtk_combo_box_set_active(GTK_COMBO_BOX(tb_tables), 0);
         stringlist::destroy(tb_namelist);
         tb_namelist = list;
     }
@@ -409,8 +385,12 @@ void
 sTb::tb_menu_proc(GtkWidget *caller, void*)
 {
     if (Tb) {
-        const char *name = gtk_widget_get_name(caller);
-        XM()->SetSymbolTable(name);
+        char *name = gtk_combo_box_text_get_active_text(
+            GTK_COMBO_BOX_TEXT(caller));
+        if (name) {
+            XM()->SetSymbolTable(name);
+            g_free(name);
+        }
     }
 }
 

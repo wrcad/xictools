@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -285,30 +283,19 @@ sOas::sOas(GRobject c)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
 
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "pmask");
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "overmenu");
-    for (int i = 0; pmaskvals[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(pmaskvals[i]);
-        gtk_widget_set_name(mi, pmaskvals[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(oas_pmask_menu_proc), (void*)pmaskvals[i]);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-#else
     GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "pmask");
     gtk_widget_show(entry);
-    GtkWidget *menu;
-#endif
-    gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
     oas_pmask = entry;
+    for (int i = 0; pmaskvals[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            pmaskvals[i]);
+    }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), 0);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(oas_pmask_menu_proc), 0);
 
+    gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -570,9 +557,7 @@ sOas::update()
         nn = (atoi(str) & 0x3);
     else
         nn = 4;
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(oas_pmask), nn);
-#endif
+    gtk_combo_box_set_active(GTK_COMBO_BOX(oas_pmask), nn);
 
     const char *s = CDvdb()->getVariable(VA_OasWriteRep);
     if (s) {
@@ -965,11 +950,13 @@ sOas::oas_val_changed(GtkWidget*, void*)
 
 // Static function.
 void
-sOas::oas_pmask_menu_proc(GtkWidget*, void *client_data)
+sOas::oas_pmask_menu_proc(GtkWidget *caller, void*)
 {
+    char *s = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(caller));
+    if (!s)
+        return;
     char bf[2];
     bf[1] = 0;
-    char *s = (char*)client_data;
     for (int i = 0; pmaskvals[i]; i++) {
         if (!strcmp(s, pmaskvals[i])) {
             if (i == 0)
@@ -991,5 +978,6 @@ sOas::oas_pmask_menu_proc(GtkWidget*, void *client_data)
             break;
         }
     }
+    g_free(s);
 }
 

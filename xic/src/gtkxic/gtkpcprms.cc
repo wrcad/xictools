@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "edit.h"
 #include "pcell.h"
@@ -474,25 +472,12 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
             // parameter type.
 
             stringlist *slc = pc->choices();
-#ifdef XXX_OPT
-            GtkWidget *w = gtk_option_menu_new();
-            gtk_widget_show(w);
-            GtkWidget *menu = gtk_menu_new();
-            gtk_option_menu_set_menu(GTK_OPTION_MENU(w), menu);
-#else
             GtkWidget *w = gtk_combo_box_text_new();
             gtk_widget_show(w);
-#endif
             int hstv = -1, i = 0;
             for (stringlist *sl = slc; sl; sl = sl->next) {
-#ifdef XXX_OPT
-                GtkWidget *mi = gtk_menu_item_new_with_label(sl->string);
-                gtk_widget_set_name(mi, sl->string);
-                gtk_widget_show(mi);
-                gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(pcp_menu_proc), p);
-#endif
+                gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(w),
+                    sl->string);
                 char buf[64];
                 if (p->type() == PCPint) {
                     sprintf(buf, "%ld", p->intVal());
@@ -532,12 +517,10 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                 }
                 i++;
             }
+            g_signal_connect(G_OBJECT(w), "changed",
+                G_CALLBACK(pcp_menu_proc), p);
             if (hstv >= 0)
-#ifdef XXX_OPT
-                gtk_option_menu_set_history(GTK_OPTION_MENU(w), hstv);
-#else
-                ;
-#endif
+                gtk_combo_box_set_active(GTK_COMBO_BOX(w), hstv);
             else {
                 gtk_widget_set_sensitive(w, false);
                 errlstr.add("Parameter ");
@@ -936,13 +919,16 @@ void
 sPcp::pcp_menu_proc(GtkWidget *w, void *arg)
 {
     PCellParam *p = (PCellParam*)arg;
-    const char *s = gtk_widget_get_name(w);
+    char *t = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(w));
+    char *s = t;
     while (isspace(*s))
         s++;
-    char *t = lstring::copy(s);
-    char *e = t + strlen(t) - 1;
-    while (e >= t && isspace(*e))
+    char *e = s + strlen(s) - 1;
+    while (e >= s && isspace(*e))
         *e-- = 0;
+    char *tt = lstring::copy(s);
+    g_free(t);
+    t = tt;
 
     if (p->type() == PCPint) {
         int i;

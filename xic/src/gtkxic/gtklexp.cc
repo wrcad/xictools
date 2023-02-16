@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "edit.h"
 #include "dsp_inlines.h"
@@ -222,12 +220,9 @@ sLx::sLx(GRobject c)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
 #define DMAX 6
-#ifdef XXX_OPT
-    lx_depth = gtk_option_menu_new();
+    lx_depth = gtk_combo_box_text_new();
     gtk_widget_set_name(lx_depth, "Depth");
     gtk_widget_show(lx_depth);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "Depth");
 
     for (int i = 0; i <= DMAX; i++) {
         char buf[16];
@@ -235,20 +230,11 @@ sLx::sLx(GRobject c)
             strcpy(buf, "all");
         else
             sprintf(buf, "%d", i);
-        GtkWidget *mi = gtk_menu_item_new_with_label(buf);
-        gtk_widget_set_name(mi, buf);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(lx_depth_proc), (void*)(long)i);
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(lx_depth), buf);
     }
-
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(lx_depth), menu);
-#else
-    lx_depth = gtk_combo_box_text_new();
-    gtk_widget_set_name(lx_depth, "Depth");
-    gtk_widget_show(lx_depth);
-#endif
+    gtk_combo_box_set_active(GTK_COMBO_BOX(lx_depth), 0);
+    g_signal_connect(G_OBJECT(lx_depth), "changed",
+        G_CALLBACK(lx_depth_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), lx_depth, false, false, 0);
 
     lx_recurse = gtk_check_button_new_with_label(
@@ -407,6 +393,7 @@ sLx::sLx(GRobject c)
 
     lx_recall_menu = gtk_menu_new();
     gtk_widget_set_name(lx_recall_menu, "Recall");
+    g_object_ref(lx_recall_menu);
     for (int i = 0; i < ED_LEXPR_STORES; i++) {
         char buf[16];
         sprintf(buf, "Reg %d", i);
@@ -427,6 +414,7 @@ sLx::sLx(GRobject c)
 
     lx_save_menu = gtk_menu_new();
     gtk_widget_set_name(lx_save_menu, "Save");
+    g_object_ref(lx_save_menu);
     for (int i = 0; i < ED_LEXPR_STORES; i++) {
         char buf[16];
         sprintf(buf, "Reg %d", i);
@@ -508,9 +496,7 @@ sLx::sLx(GRobject c)
 
     if (last_lexpr)
         gtk_entry_set_text(GTK_ENTRY(lx_lexpr), last_lexpr);
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(lx_depth), depth_hst);
-#endif
+    gtk_combo_box_set_active(GTK_COMBO_BOX(lx_depth), depth_hst);
     if (create_mode == CLdefault) {
         GRX->SetStatus(lx_deflt, true);
         GRX->SetStatus(lx_join, false);
@@ -554,16 +540,12 @@ sLx::~sLx()
     if (lx_caller)
         GRX->Deselect(lx_caller);
     if (lx_save_menu) {
-        g_object_ref(lx_save_menu);
-//XXX        gtk_object_ref(GTK_OBJECT(lx_save_menu));
-        gtk_widget_destroy(lx_save_menu);
         g_object_unref(lx_save_menu);
+        gtk_widget_destroy(lx_save_menu);
     }
     if (lx_recall_menu) {
-        g_object_ref(lx_recall_menu);
-//XXX        gtk_object_ref(GTK_OBJECT(lx_recall_menu));
-        gtk_widget_destroy(lx_recall_menu);
         g_object_unref(lx_recall_menu);
+        gtk_widget_destroy(lx_recall_menu);
     }
 
     if (lx_popup)
@@ -727,9 +709,9 @@ sLx::lx_val_changed(GtkWidget *caller, void*)
 
 // Static function.
 void
-sLx::lx_depth_proc(GtkWidget*, void *arg)
+sLx::lx_depth_proc(GtkWidget *caller, void*)
 {
-    depth_hst = (intptr_t)arg;
+    depth_hst = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
 }
 
 

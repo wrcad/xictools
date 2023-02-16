@@ -38,9 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-#define XXX_GDK
-
 #include "main.h"
 #include "scedif.h"
 #include "cd_lgen.h"
@@ -110,7 +107,7 @@ namespace {
     //
     clritem Menu3[] = {
         { "Plot Mark 1", Color2 },
-        { "Plot Mark 2", Color2 },
+        { "Plot Mark 2", Color3 },
         { "Plot Mark 3", Color4 },
         { "Plot Mark 4", Color5 },
         { "Plot Mark 5", Color6 },
@@ -143,6 +140,8 @@ namespace {
             void update();
 
         private:
+            void fill_categ_menu();
+            void fill_attr_menu(int);
             void update_color();
             void set_sample_bg();
 
@@ -162,8 +161,7 @@ namespace {
             GtkWidget *c_shell;
             GtkWidget *c_modemenu;
             GtkWidget *c_categmenu;
-            GtkWidget *c_pmmi;
-            GtkWidget *c_entry;
+            GtkWidget *c_attrmenu;
             GtkWidget *c_sel;
             GtkWidget *c_listbtn;
             GtkWidget *c_sample;
@@ -248,8 +246,7 @@ sClr::sClr(GRobject c)
     c_shell = 0;
     c_modemenu = 0;
     c_categmenu = 0;
-    c_pmmi = 0;
-    c_entry = 0;
+    c_attrmenu = 0;
     c_sel = 0;
     c_listbtn = 0;
     c_sample = 0;
@@ -284,38 +281,6 @@ sClr::sClr(GRobject c)
     //
     // Physical/Electrical mode selector
     //
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    c_modemenu = entry;
-    gtk_widget_set_name(entry, "ModeMenu");
-    if (ScedIf()->hasSced())
-        gtk_widget_show(entry);
-    else
-        gtk_widget_hide(entry);
-    gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
-    {
-        GtkWidget *menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "modemenu");
-
-        GtkWidget *mi = gtk_menu_item_new_with_label("Physical");
-        gtk_widget_set_name(mi, "ph");
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(c_mode_menu_proc), (void*)(long)Physical);
-
-        mi = gtk_menu_item_new_with_label("Electrical");
-        gtk_widget_set_name(mi, "ph");
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(c_mode_menu_proc), (void*)(long)Electrical);
-
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(c_modemenu), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(c_modemenu),
-            c_display_mode);
-    }
-#else
     GtkWidget *entry = gtk_combo_box_text_new();
     c_modemenu = entry;
     gtk_widget_set_name(entry, "ModeMenu");
@@ -329,94 +294,55 @@ sClr::sClr(GRobject c)
     g_signal_connect(G_OBJECT(entry), "changed",
         G_CALLBACK(c_mode_menu_proc), this);
     gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
-#endif
 
     //
     // Categories menu
     //
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    c_categmenu = entry;
-    gtk_widget_set_name(entry, "CategMenu");
-    gtk_widget_show(entry);
-    gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
-    {
-        GtkWidget *menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "CMenu");
-
-        GtkWidget *mi = gtk_menu_item_new_with_label("Attributes");
-        gtk_widget_set_name(mi, "at");
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(c_categ_menu_proc),
-            (void*)(long)CATEG_ATTR);
-
-        mi = gtk_menu_item_new_with_label("Prompt Line");
-        gtk_widget_set_name(mi, "pl");
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(c_categ_menu_proc),
-            (void*)(long)CATEG_PROMPT);
-
-        mi = gtk_menu_item_new_with_label("Plot Marks");
-        c_pmmi = mi;
-        gtk_widget_set_name(mi, "pm");
-        if (c_display_mode == Electrical)
-            gtk_widget_show(mi);
-        else
-            gtk_widget_hide(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(c_categ_menu_proc),
-            (void*)(long)CATEG_PLOT);
-
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(c_categmenu), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(c_categmenu), 0);
-    }
-#else
     entry = gtk_combo_box_text_new();
     c_categmenu = entry;
     gtk_widget_set_name(entry, "CategMenu");
     gtk_widget_show(entry);
     gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
 
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), "Attributes");
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(c_categ_menu_proc),
-        (void*)(long)CATEG_ATTR);
+    fill_categ_menu();
 
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), "Prompt Line");
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(c_categ_menu_proc),
-        (void*)(long)CATEG_PROMPT);
-
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), "Plot Marks");
-    if (c_display_mode == Electrical)
-        gtk_widget_show(mi);
-    else
-        gtk_widget_hide(mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(c_categ_menu_proc),
-        (void*)(long)CATEG_PLOT);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), 0);
-#endif
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(c_categ_menu_proc), 0);
 
     //
     // Attribute selection menu
     //
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-#else
-    entry = gtk_combo_box_text_new();
-#endif
-    c_entry = entry;
+    // For this one, we need to pass an index to the handler function. 
+    // To do this, it doesn't seem possible to use GtkComboBoxText,
+    // instead we implement the GtkComboBox interfaces and place the
+    // callback data in a "hidden" column.  Perhaps there is an easier
+    // way?
+
+    // Thse GtkListStore thingy is actually a GtkTreeModel!
+    GtkListStore *store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
+    entry = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
+
+    // Pass off ownership to the congtainer.
+    g_object_unref(G_OBJECT(store));
+
+    // Now set up rendering for a single text column.  Without this
+    // the menu will be blank.
+    GtkCellRenderer *rnd = gtk_cell_renderer_text_new();
+    gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(entry), rnd, true);
+    gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(entry), rnd,
+        "text", 0, (void*)0);
+
+    // See the menu setup code for how to pass the integer, and the
+    // handler code for how to get retrieve it.
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(c_attr_menu_proc), 0);
+
+    c_attrmenu = entry;
     gtk_widget_set_name(entry, "AttrMenu");
     gtk_widget_show(entry);
     gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
     gtk_widget_set_size_request(entry, 180, -1);
-    c_categ_menu_proc(0, (void*)(long)CATEG_ATTR);
+    fill_attr_menu(CATEG_ATTR);
 
     //
     // Colors button
@@ -544,17 +470,10 @@ sClr::update()
         // Rebuild the ATTR menu if current, since the visibility of
         // the Current Layer item will have changed.
         //
-#ifdef XXX_OPT
-        if (gtk_option_menu_get_history(
-                GTK_OPTION_MENU(Clr->c_categmenu)) == CATEG_ATTR) {
-            sClr::c_categ_menu_proc(0, (void*)CATEG_ATTR);
-        }
-#else
         if (gtk_combo_box_get_active(
-                GTK_ComboBox(Clr->c_categmenu)) == CATEG_ATTR) {
-            sClr::c_categ_menu_proc(0, 0);
+                GTK_COMBO_BOX(Clr->c_categmenu)) == CATEG_ATTR) {
+            fill_attr_menu(CATEG_ATTR);
         }
-#endif
         c_ref_mode = DSP()->CurMode();
     }
     else {
@@ -577,15 +496,9 @@ sClr::update_color()
         int r, g, b;
         c_get_rgb(c_mode, &r, &g, &b);
         GdkColor rgb;
-//XXX FIXME
-//XXX        double rgb[4];
-//XXX        rgb[0] = r/255.0;
-//XXX        rgb[1] = g/255.0;
-//XXX        rgb[2] = b/255.0;
-//XXX        rgb[3] = 0.0;
-rgb.red = r << 8;
-rgb.green = g << 8;
-rgb.blue = b << 8;
+        rgb.red = r << 8;
+        rgb.green = g << 8;
+        rgb.blue = b << 8;
         gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(c_sel), &rgb);
         set_sample_bg();
     }
@@ -615,22 +528,98 @@ sClr::set_sample_bg()
 }
 
 
+void
+sClr::fill_categ_menu()
+{
+    if (Clr) {
+        GtkListStore *store = GTK_LIST_STORE(
+            gtk_combo_box_get_model(GTK_COMBO_BOX(c_categmenu)));
+        gtk_list_store_clear(store);
+        gtk_combo_box_text_append_text(
+            GTK_COMBO_BOX_TEXT(c_categmenu), "Attributes");
+        gtk_combo_box_text_append_text(
+            GTK_COMBO_BOX_TEXT(c_categmenu), "Prompt Line");
+        if (c_display_mode == Electrical) {
+            gtk_combo_box_text_append_text(
+                GTK_COMBO_BOX_TEXT(c_categmenu), "Plot Marks");
+        }
+        gtk_combo_box_set_active(GTK_COMBO_BOX(Clr->c_categmenu), 0);
+    }
+}
+
+
+void
+sClr::fill_attr_menu(int categ)
+{
+    if (!c_attrmenu)
+        return;
+    if (categ == CATEG_ATTR) {
+        GtkListStore *store = GTK_LIST_STORE(
+            gtk_combo_box_get_model(GTK_COMBO_BOX(c_attrmenu)));
+        gtk_list_store_clear(store);
+
+        GtkTreeIter iter;
+        for (clritem *c = Menu1; c->descr; c++) {
+            // We want the Current Layer entry only when the mode
+            // matches the display mode, since the current layer
+            // of the "opposite" mode is not known here.
+            //
+            if (c == Menu1 && c_display_mode != DSP()->CurMode())
+                continue;
+
+            gtk_list_store_append(store, &iter);
+            gtk_list_store_set(store, &iter, 0, c->descr,
+                1, c->tab_indx, -1);
+        }
+        if (c_display_mode == DSP()->CurMode())
+            c_mode = Menu1[0].tab_indx;
+        else
+            c_mode = Menu1[1].tab_indx;
+    }
+    else if (categ == CATEG_PROMPT) {
+        GtkListStore *store = GTK_LIST_STORE(
+            gtk_combo_box_get_model(GTK_COMBO_BOX(c_attrmenu)));
+        gtk_list_store_clear(store);
+
+        GtkTreeIter iter;
+        for (clritem *c = Menu2; c->descr; c++) {
+            gtk_list_store_append(store, &iter);
+            gtk_list_store_set(store, &iter, 0, c->descr,
+                1, c->tab_indx, -1);
+        }
+        c_mode = Menu2[0].tab_indx;
+    }
+    else if (categ == CATEG_PLOT) {
+        GtkListStore *store = GTK_LIST_STORE(
+            gtk_combo_box_get_model(GTK_COMBO_BOX(c_attrmenu)));
+        gtk_list_store_clear(store);
+
+        GtkTreeIter iter;
+        for (clritem *c = Menu3; c->descr; c++) {
+            gtk_list_store_append(store, &iter);
+            gtk_list_store_set(store, &iter, 0, c->descr,
+                1, c->tab_indx, -1);
+        }
+        c_mode = Menu3[0].tab_indx;
+    }
+    else
+        return;
+    gtk_combo_box_set_active(GTK_COMBO_BOX(c_attrmenu), 0);
+    update_color();
+}
+
+
 // Static function.
 void
 sClr::c_change_proc(GtkWidget*, void*)
 {
     if (Clr) {
-//XXX        double rgb[4];
         GdkColor rgb;
         gtk_color_selection_get_current_color(
             GTK_COLOR_SELECTION(Clr->c_sel), &rgb);
-//XXX FIXME
-//XXX        int r = 0xff & (int)(rgb[0] * 255);
-//XXX        int g = 0xff & (int)(rgb[1] * 255);
-//XXX        int b = 0xff & (int)(rgb[2] * 255);
-int r = rgb.red >> 8;
-int g = rgb.green >> 8;
-int b = rgb.blue >> 8;
+        int r = (unsigned int)rgb.red >> 8;
+        int g = (unsigned int)rgb.green >> 8;
+        int b = (unsigned int)rgb.blue >> 8;
         c_set_rgb(r, g, b);
     }
 }
@@ -658,216 +647,42 @@ sClr::c_mode_menu_proc(GtkWidget*, void*)
 {
     if (!Clr)
         return;
-    bool atupd = false;
-#ifdef XXX_OPT
-    Clr->c_display_mode = gtk_option_menu_get_history(
-        GTK_OPTION_MENU(Clr->c_modemenu)) ? Electrical : Physical;
-#else
-    Clr->c_display_mode = gtk_combo_box_get_ac gtive(
+    Clr->c_display_mode = gtk_combo_box_get_active(
         GTK_COMBO_BOX(Clr->c_modemenu)) ? Electrical : Physical;
-#endif
-    if (Clr->c_display_mode == Electrical)
-        gtk_widget_show(Clr->c_pmmi);
-    else {
-        // The plot marks are available when showing Electrical only.
-#ifdef XXX_OPT
-        if (gtk_option_menu_get_history(
-                GTK_OPTION_MENU(Clr->c_categmenu)) == CATEG_PLOT) {
-            sClr::c_categ_menu_proc(0, (void*)CATEG_ATTR);
-            atupd = true;
-        }
-#else
-        if (gtk_combo_box_get_active(
-                GTK_COMBO_BOX(Clr->c_categmenu)) == CATEG_PLOT) {
-            sClr::c_categ_menu_proc(0, (void*)CATEG_ATTR);
-            atupd = true;
-        }
-#endif
-        gtk_widget_hide(Clr->c_pmmi);
-    }
-
-    // Rebuild the ATTR menu if current, since the visibility of the
-    // Current Layer item will have changed.  Don't need to call this
-    // if already done above.
-    //
-#ifdef XXX_OPT
-    if (!atupd && gtk_option_menu_get_history(
-            GTK_OPTION_MENU(Clr->c_categmenu)) == CATEG_ATTR) {
-        sClr::c_categ_menu_proc(0, (void*)CATEG_ATTR);
-    }
-#else
-    if (!atupd && gtk_combo_box_get_active(
-                GTK_COMBO_BOX(Clr->c_categmenu)) == CATEG_PLOT) {
-        sClr::c_categ_menu_proc(0, (void*)CATEG_ATTR);
-    }
-#endif
-    Clr->update_color();
+    Clr->fill_categ_menu();
+    Clr->fill_attr_menu(CATEG_ATTR);
 }
 
 
 // Static function.
 void
-sClr::c_categ_menu_proc(GtkWidget*, void *arg)
+sClr::c_categ_menu_proc(GtkWidget*, void*)
 {
     if (!Clr)
         return;
-    switch ((intptr_t)arg) {
-    case CATEG_ATTR:
-        {
-#ifdef XXX_OPT
-            GtkWidget *menu = gtk_menu_new();
-            gtk_widget_set_name(menu, "Menu");
-            for (clritem *c = Menu1; c->descr; c++) {
-                // We want the Current Layer entry only when the mode
-                // matches the display mode, since the current layer
-                // of the "opposite" mode is not known here.
-                //
-                if (c == Menu1 && Clr->c_display_mode != DSP()->CurMode())
-                    continue;
-                GtkWidget *mi = gtk_menu_item_new_with_label(c->descr);
-                gtk_widget_set_name(mi, c->descr);
-                gtk_widget_show(mi);
-                gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(sClr::c_attr_menu_proc),
-                    (void*)(uintptr_t)c->tab_indx);
-            }
-            if (Clr->c_display_mode == DSP()->CurMode())
-                Clr->c_mode = Menu1[0].tab_indx;
-            else
-                Clr->c_mode = Menu1[1].tab_indx;
-            gtk_option_menu_set_menu(GTK_OPTION_MENU(Clr->c_entry), menu);
-            gtk_option_menu_set_history(GTK_OPTION_MENU(Clr->c_entry), 0);
-#else
-            // Clear the combo box, note how the empty list is detected.
-            GtkTreeModel *mdl =
-                gtk_combo_box_get_model(GTK_COMBO_BOX(Clr->c_categmenu));
-            GtkTreeIter iter;
-            while (gtk_tree_model_get_iter_first(mdl, &iter)) {
-                gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(Clr->c_categmenu),
-                    0);
-            }
-            for (clritem *c = Menu1; c->descr; c++) {
-                // We want the Current Layer entry only when the mode
-                // matches the display mode, since the current layer
-                // of the "opposite" mode is not known here.
-                //
-                if (c == Menu1 && Clr->c_display_mode != DSP()->CurMode())
-                    continue;
-                gtk_combo_box_text_append_text(
-                    GTK_COMBO_BOX_TEXT(Clr->c_categmenu), c->descr);
 
-                    /*
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(sClr::c_attr_menu_proc),
-                    (void*)(uintptr_t)c->tab_indx);
-                    */
-            }
-            if (Clr->c_display_mode == DSP()->CurMode())
-                Clr->c_mode = Menu1[0].tab_indx;
-            else
-                Clr->c_mode = Menu1[1].tab_indx;
-            gtk_combo_box_set_active(GTK_COMBO_BOX(Clr->c_entry), 0);
-#endif
-            Clr->update_color();
-        }
-        break;
-    case CATEG_PROMPT:
-        {
-#ifdef XXX_OPT
-            GtkWidget *menu = gtk_menu_new();
-            gtk_widget_set_name(menu, "Menu");
-            for (clritem *c = Menu2; c->descr; c++) {
-                GtkWidget *mi = gtk_menu_item_new_with_label(c->descr);
-                gtk_widget_set_name(mi, c->descr);
-                gtk_widget_show(mi);
-                gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(sClr::c_attr_menu_proc),
-                    (void*)(uintptr_t)c->tab_indx);
-            }
-            Clr->c_mode = Menu2[0].tab_indx;
-            gtk_option_menu_set_menu(GTK_OPTION_MENU(Clr->c_entry), menu);
-            gtk_option_menu_set_history(GTK_OPTION_MENU(Clr->c_entry), 0);
-#else
-            // Clear the combo box, note how the empty list is detected.
-            GtkTreeModel *mdl =
-                gtk_combo_box_get_model(GTK_COMBO_BOX(Clr->c_entry));
-            GtkTreeIter iter;
-            while (gtk_tree_model_get_iter_first(mdl, &iter)) {
-                gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(Clr->c_entry),
-                    0);
-            }
-            for (clritem *c = Menu2; c->descr; c++) {
-                gtk_combo_box_text_append_text(
-                    GTK_COMBO_BOX_TEXT(Clr->c_entry), c->descr);
-
-                    /*
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(sClr::c_attr_menu_proc),
-                    (void*)(uintptr_t)c->tab_indx);
-                    */
-            }
-            Clr->c_mode = Menu2[0].tab_indx;
-            gtk_combo_box_set_active(GTK_COMBO_BOX(Clr->c_entry), 0);
-#endif
-            Clr->update_color();
-        }
-        break;
-    case CATEG_PLOT:
-        {
-#ifdef XXX_OPT
-            GtkWidget *menu = gtk_menu_new();
-            gtk_widget_set_name(menu, "Menu");
-            for (clritem *c = Menu3; c->descr; c++) {
-                GtkWidget *mi = gtk_menu_item_new_with_label(c->descr);
-                gtk_widget_set_name(mi, c->descr);
-                gtk_widget_show(mi);
-                gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(sClr::c_attr_menu_proc),
-                    (void*)(uintptr_t)c->tab_indx);
-            }
-            Clr->c_mode = Menu3[0].tab_indx;
-            gtk_option_menu_set_menu(GTK_OPTION_MENU(Clr->c_entry), menu);
-            gtk_option_menu_set_history(GTK_OPTION_MENU(Clr->c_entry), 0);
-#else
-            // Clear the combo box, note how the empty list is detected.
-            GtkTreeModel *mdl =
-                gtk_combo_box_get_model(GTK_COMBO_BOX(Clr->c_entry));
-            GtkTreeIter iter;
-            while (gtk_tree_model_get_iter_first(mdl, &iter)) {
-                gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(Clr->c_entry),
-                    0);
-            }
-            for (clritem *c = Menu3; c->descr; c++) {
-                gtk_combo_box_text_append_text(
-                    GTK_COMBO_BOX_TEXT(Clr->c_entry), c->descr);
-
-                    /*
-                gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(sClr::c_attr_menu_proc),
-                    (void*)(uintptr_t)c->tab_indx);
-                    */
-            }
-            Clr->c_mode = Menu3[0].tab_indx;
-            gtk_combo_box_set_active(GTK_COMBO_BOX(Clr->c_entry), 0);
-#endif
-            Clr->update_color();
-        }
-        break;
-    }
+    Clr->fill_attr_menu(gtk_combo_box_get_active(
+        GTK_COMBO_BOX(Clr->c_categmenu)));
 }
 
 
 // Static function.
 void
-sClr::c_attr_menu_proc(GtkWidget*, void *arg)
+sClr::c_attr_menu_proc(GtkWidget*, void *)
 {
     if (Clr) {
-        Clr->c_mode = (intptr_t)arg;
-        Clr->update_color();
+        GtkTreeIter iter;
+        if (!gtk_combo_box_get_active_iter(GTK_COMBO_BOX(Clr->c_attrmenu), &iter))
+            return;
+        GtkListStore *store = GTK_LIST_STORE(
+            gtk_combo_box_get_model(GTK_COMBO_BOX(Clr->c_attrmenu)));
+        GValue gv = G_VALUE_INIT;
+        gtk_tree_model_get_value(GTK_TREE_MODEL(store), &iter, 1, &gv);
+        if (g_value_get_int(&gv) >= 0) {
+            Clr->c_mode = g_value_get_int(&gv);;
+            Clr->update_color();
+        }
+        g_value_unset(&gv);
     }
 }
 
@@ -1032,13 +847,6 @@ sClr::c_list_callback(const char *string, void*)
         if (sscanf(string, "%d %d %d", &r, &g, &b) != 3)
             return;
         if (Clr) {
-            /* XXX FIXME
-            double rgb[4];
-            rgb[0] = (double)r/255.0;
-            rgb[1] = (double)g/255.0;
-            rgb[2] = (double)b/255.0;
-            rgb[3] = 0.0;
-            */
             GdkColor rgb;
             rgb.red = r << 8;
             rgb.green = g << 8;
@@ -1125,9 +933,6 @@ namespace {
                 colorcell.blue = blue << 8;
 
                 colorcell.pixel = DSP()->SelectPixel();
-#ifdef XXX_GDK
-                gdk_color_change(GRX->Colormap(), &colorcell);
-#endif
 
                 CDl *ld;
                 CDlgen lgen(DSP()->CurMode());
@@ -1145,9 +950,6 @@ namespace {
                             colorcell.green = 192 * lp->green();
                             colorcell.blue = 192 * lp->blue();
                         }
-#ifdef XXX_GDK
-                        gdk_color_change(GRX->Colormap(), &colorcell);
-#endif
                     }
                 }
             }

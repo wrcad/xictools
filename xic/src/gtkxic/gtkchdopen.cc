@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "cvrt.h"
 #include "dsp_inlines.h"
@@ -272,43 +270,21 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
 
-#ifdef XXX_OPT
-    co_p1_info = gtk_option_menu_new();
-    gtk_widget_show(co_p1_info);
-
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_show(menu);
-    GtkWidget *mi = gtk_menu_item_new_with_label("no geometry info saved");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(co_info_proc), (void*)cvINFOnone);
-    mi = gtk_menu_item_new_with_label("totals only");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(co_info_proc), (void*)cvINFOtotals);
-    mi = gtk_menu_item_new_with_label("per-layer counts");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(co_info_proc), (void*)cvINFOpl);
-    mi = gtk_menu_item_new_with_label("per-cell counts");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(co_info_proc), (void*)cvINFOpc);
-    mi = gtk_menu_item_new_with_label("per-cell and per-layer counts");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(co_info_proc), (void*)cvINFOplpc);
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(co_p1_info), menu);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(co_p1_info), FIO()->CvtInfo());
-#else
     co_p1_info = gtk_combo_box_text_new();
     gtk_widget_show(co_p1_info);
-#endif
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(co_p1_info),
+        "no geometry info saved");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(co_p1_info),
+        "totals only");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(co_p1_info),
+        "per-layer counts");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(co_p1_info),
+        "per-cell counts");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(co_p1_info),
+        "per-cell and per-layer counts");
+    gtk_combo_box_set_active(GTK_COMBO_BOX(co_p1_info), FIO()->CvtInfo());
+    g_signal_connect(G_OBJECT(co_p1_info), "changed",
+        G_CALLBACK(co_info_proc), 0);
 
     gtk_table_attach(GTK_TABLE(tab_form), co_p1_info, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -490,11 +466,27 @@ sCo::update(const char *init_idname, const char *init_str)
     }
     if (init_idname)
         gtk_entry_set_text(GTK_ENTRY(co_idname), init_idname);
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(co_p1_info),
-        FIO()->CvtInfo());
-#else
-#endif
+
+    // Since the enum is defined elsewhere, don't assume that the
+    // values are the same as the menu button order.
+    switch (FIO()->CvtInfo()) {
+    case cvINFOnone:
+        gtk_combo_box_set_active(GTK_COMBO_BOX(co_p1_info), 0);
+        break;
+    case cvINFOtotals:
+        gtk_combo_box_set_active(GTK_COMBO_BOX(co_p1_info), 1);
+        break;
+    case cvINFOpl:
+        gtk_combo_box_set_active(GTK_COMBO_BOX(co_p1_info), 2);
+        break;
+    case cvINFOpc:
+        gtk_combo_box_set_active(GTK_COMBO_BOX(co_p1_info), 3);
+        break;
+    case cvINFOplpc:
+        gtk_combo_box_set_active(GTK_COMBO_BOX(co_p1_info), 4);
+        break;
+    }
+
     co_p1_cnmap->update();
 }
 
@@ -585,10 +577,11 @@ sCo::co_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
 
 // Private static GTK signal handler.
 void
-sCo::co_info_proc(GtkWidget*, void *arg)
+sCo::co_info_proc(GtkWidget *caller, void*)
 {
+    int tp = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
     cvINFO cv;
-    switch ((intptr_t)arg) {
+    switch (tp) {
     case cvINFOnone:
         cv = cvINFOnone;
         break;

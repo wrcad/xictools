@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "config.h"
 #include "main.h"
 #include "cvrt.h"
@@ -402,32 +400,16 @@ sCHL::sCHL(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_OPT
-    chl_geomenu = gtk_option_menu_new();
-    gtk_widget_show(chl_geomenu);
-
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_show(menu);
-    GtkWidget *mi = gtk_menu_item_new_with_label("Create new MEMORY CGD");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(chl_geom_proc), (void*)(long)CHD_CGDmemory);
-    mi = gtk_menu_item_new_with_label("Create new FILE CHD");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(chl_geom_proc), (void*)(long)CHD_CGDfile);
-    mi = gtk_menu_item_new_with_label("Ignore geometry records");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(chl_geom_proc), (void*)(long)CHD_CGDnone);
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(chl_geomenu), menu);
-#else
     chl_geomenu = gtk_combo_box_text_new();
     gtk_widget_show(chl_geomenu);
-#endif
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(chl_geomenu),
+        "Create new MEMORY CGD");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(chl_geomenu),
+        "Create new FILE CHD");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(chl_geomenu),
+        "Ignore geometry records");
+    g_signal_connect(G_OBJECT(chl_geomenu), "changed",
+        G_CALLBACK(chl_geom_proc), 0);
 
     gtk_table_attach(GTK_TABLE(form), chl_geomenu, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -497,11 +479,20 @@ sCHL::update()
     GRX->SetStatus(chl_rename, CDvdb()->getVariable(VA_RefCellAutoRename));
     GRX->SetStatus(chl_usetab, CDvdb()->getVariable(VA_UseCellTab));
     GRX->SetStatus(chl_failres, CDvdb()->getVariable(VA_ChdFailOnUnresolved));
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(chl_geomenu),
-        sCHDin::get_default_cgd_type());
-#else
-#endif
+
+    // Since the enum is defined elsewhere, don't assume that the values
+    // are the same as the menu order.
+    switch (sCHDin::get_default_cgd_type()) {
+    case CHD_CGDmemory:
+        gtk_combo_box_set_active(GTK_COMBO_BOX(chl_geomenu), 0);
+        break;
+    case CHD_CGDfile:
+        gtk_combo_box_set_active(GTK_COMBO_BOX(chl_geomenu), 1);
+        break;
+    case CHD_CGDnone:
+        gtk_combo_box_set_active(GTK_COMBO_BOX(chl_geomenu), 2);
+        break;
+    }
 
     if (chl_selection && !CDchd()->chdRecall(chl_selection, false)) {
         delete [] chl_selection;
@@ -971,12 +962,17 @@ sCHL::chl_action_proc(GtkWidget *caller, void *client_data)
 // Handler for the geom handling menu.
 //
 void
-sCHL::chl_geom_proc(GtkWidget*, void *client_data)
+sCHL::chl_geom_proc(GtkWidget *caller, void*)
 {
     if (!CHL)
         return;
-    ChdCgdType tp = (ChdCgdType)(intptr_t)client_data;
-    sCHDin::set_default_cgd_type(tp);
+    int tp = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (tp == 0)
+        sCHDin::set_default_cgd_type(CHD_CGDmemory);
+    else if (tp == 1)
+        sCHDin::set_default_cgd_type(CHD_CGDfile);
+    else 
+        sCHDin::set_default_cgd_type(CHD_CGDnone);
 }
 
 

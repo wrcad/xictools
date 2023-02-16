@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "dsp_inlines.h"
 #include "menu.h"
@@ -361,28 +359,16 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_show(col);
     gtk_container_add(GTK_CONTAINER(frame), col);
 
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "edgemenu");
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "edgemenu");
-    for (int i = 0; edgevals[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(edgevals[i]);
-        gtk_widget_set_name(mi, edgevals[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(gd_edge_menu_proc), grid_pops + gd_win_num);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    gd_edge = entry;
-#else
     GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "edgemenu");
     gtk_widget_show(entry);
-    GtkWidget *menu;
-#endif
+    for (int i = 0; edgevals[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            edgevals[i]);
+    }
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(gd_edge_menu_proc), grid_pops + gd_win_num);
+    gd_edge = entry;
     gtk_box_pack_start(GTK_BOX(col), entry, true, true, 0);
 
     button = gtk_check_button_new_with_label(
@@ -465,6 +451,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_set_name(item, "Store");
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *menu;
     {
         char buf[64];
         menu = gtk_menu_new();
@@ -550,7 +537,6 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_show(button);
     g_object_set_data(G_OBJECT(button), "axes", (void*)AxesPlain);
     if (gd_grid.axes() == AxesPlain) {
-//XXX is this right?
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_noaxesbtn), false);
     }
@@ -565,7 +551,6 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_show(button);
     g_object_set_data(G_OBJECT(button), "axes", (void*)AxesMark);
     if (gd_grid.axes() == AxesMark) {
-//XXX is this right?
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_noaxesbtn), false);
     }
@@ -630,7 +615,6 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
     gd_dotsbtn = button;
     if (gd_grid.linestyle().mask == 0) {
-//XXX is this right?
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_solidbtn), false);
     }
@@ -646,7 +630,6 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
     gd_stipbtn = button;
     if (gd_grid.linestyle().mask != 0 && gd_grid.linestyle().mask != -1) {
-//XXX is this right?
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_solidbtn), false);
     }
@@ -860,10 +843,8 @@ sGrd::update(bool skip_init)
         gtk_frame_set_label(GTK_FRAME(gd_snapbox), "SnapPerGrid");
     }
 
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(gd_edge),
+    gtk_combo_box_set_active(GTK_COMBO_BOX(gd_edge),
         wd->Attrib()->edge_snapping());
-#endif
     GRX->SetStatus(gd_off_grid, wd->Attrib()->edge_off_grid());
     GRX->SetStatus(gd_use_nm_edge, wd->Attrib()->edge_non_manh());
     GRX->SetStatus(gd_wire_edge, wd->Attrib()->edge_wire_edge());
@@ -1067,12 +1048,7 @@ sGrd::gd_edge_menu_proc(GtkWidget*, void *arg)
     WindowDesc *wd = DSP()->Window(grd->gd_win_num);
     if (!wd)
         return;
-
-#ifdef XXX_OPT
-    switch (gtk_option_menu_get_history(GTK_OPTION_MENU(grd->gd_edge))) {
-#else
-    switch (0) {
-#endif
+    switch (gtk_combo_box_get_active(GTK_COMBO_BOX(grd->gd_edge))) {
     case EdgeSnapNone:
         wd->Attrib()->set_edge_snapping(EdgeSnapNone);
         break;
@@ -1286,7 +1262,7 @@ int
 sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
 {
     sGrd *grd = *(sGrd**)arg;
-    if (!grd)
+    if (!grd || !grd->gd_viewport)
         return (false);
 
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {

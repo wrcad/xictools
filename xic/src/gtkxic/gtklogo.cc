@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "edit.h"
 #include "dsp_inlines.h"
@@ -243,28 +241,15 @@ sLgo::sLgo(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "endstyle");
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "esmenu");
-
-    for (int i = 0; endstyles[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(endstyles[i]);
-        gtk_widget_set_name(mi, endstyles[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(lgo_es_menu_proc), (void*)(long)i);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-#else
     GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "endstyle");
     gtk_widget_show(entry);
-    GtkWidget *menu;
-#endif
+    for (int i = 0; endstyles[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            endstyles[i]);
+    }
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(lgo_es_menu_proc), 0);
     lgo_endstyle = entry;
 
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
@@ -280,28 +265,16 @@ sLgo::sLgo(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "pathwidth");
-    gtk_widget_show(entry);
-    menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "pwmenu");
-
-    for (int i = 0; pathwidth[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(pathwidth[i]);
-        gtk_widget_set_name(mi, pathwidth[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(lgo_pw_menu_proc), (void*)(long)(i+1));
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    lgo_pwidth = entry;
-#else
     entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "pathwidth");
     gtk_widget_show(entry);
-#endif
+    for (int i = 0; pathwidth[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            pathwidth[i]);
+    }
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(lgo_pw_menu_proc), 0);
+    lgo_pwidth = entry;
 
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -401,21 +374,19 @@ sLgo::update()
     }
     ED()->assert_logo_pixel_size();
 
-#ifdef XXX_OPT
     if (str_to_int(&dd, CDvdb()->getVariable(VA_LogoPathWidth)) &&
             dd >= 1 && dd <= 5)
-        gtk_option_menu_set_history(GTK_OPTION_MENU(lgo_pwidth), dd - 1);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(lgo_pwidth), dd - 1);
     else
-        gtk_option_menu_set_history(GTK_OPTION_MENU(lgo_pwidth),
+        gtk_combo_box_set_active(GTK_COMBO_BOX(lgo_pwidth),
             DEF_LOGO_PATH_WIDTH - 1);
 
     if (str_to_int(&dd, CDvdb()->getVariable(VA_LogoEndStyle)) &&
             dd >= 0 && dd <= 2)
-        gtk_option_menu_set_history(GTK_OPTION_MENU(lgo_endstyle), dd);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(lgo_endstyle), dd);
     else
-        gtk_option_menu_set_history(GTK_OPTION_MENU(lgo_endstyle),
+        gtk_combo_box_set_active(GTK_COMBO_BOX(lgo_endstyle),
             DEF_LOGO_END_STYLE);
-#endif
 
     if (CDvdb()->getVariable(VA_LogoToFile))
         GRX->SetStatus(lgo_create, true);
@@ -491,12 +462,12 @@ sLgo::lgo_action(GtkWidget *caller, void*)
 
 // Static function.
 void
-sLgo::lgo_es_menu_proc(GtkWidget*, void *client_data)
+sLgo::lgo_es_menu_proc(GtkWidget *caller, void*)
 {
     if (!Lgo)
         return;
     char buf[32];
-    int es = (intptr_t)client_data;
+    int es = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
     if (es >= 0 && es <= 2 && es != DEF_LOGO_END_STYLE) {
         sprintf(buf, "%d", es);
         CDvdb()->setVariable(VA_LogoEndStyle, buf);
@@ -508,12 +479,12 @@ sLgo::lgo_es_menu_proc(GtkWidget*, void *client_data)
 
 // Static function.
 void
-sLgo::lgo_pw_menu_proc(GtkWidget*, void *client_data)
+sLgo::lgo_pw_menu_proc(GtkWidget *caller, void*)
 {
     if (!Lgo)
         return;
     char buf[32];
-    int pw = (intptr_t)client_data;
+    int pw = 1 + gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
     if (pw >= 1 && pw <= 5 && pw != DEF_LOGO_PATH_WIDTH) {
         sprintf(buf, "%d", pw);
         CDvdb()->setVariable(VA_LogoPathWidth, buf);

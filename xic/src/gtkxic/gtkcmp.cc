@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "fio.h"
 #include "fio_compare.h"
@@ -525,16 +523,12 @@ sCmp::~sCmp()
     if (cmp_caller)
         GRX->Deselect(cmp_caller);
     if (cmp_p3_s_menu) {
-        g_object_ref(cmp_p3_s_menu);
-//XXX        gtk_object_ref(GTK_OBJECT(cmp_p3_s_menu));
-        gtk_widget_destroy(cmp_p3_s_menu);
         g_object_unref(cmp_p3_s_menu);
+        gtk_widget_destroy(cmp_p3_s_menu);
     }
     if (cmp_p3_r_menu) {
-        g_object_ref(cmp_p3_r_menu);
-//XXX        gtk_object_ref(GTK_OBJECT(cmp_p3_r_menu));
-        gtk_widget_destroy(cmp_p3_r_menu);
         g_object_unref(cmp_p3_r_menu);
+        gtk_widget_destroy(cmp_p3_r_menu);
     }
 
     if (cmp_popup)
@@ -669,38 +663,18 @@ sCmp::per_cell_obj_page()
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(vbox), label, false, false, 0);
 
-#ifdef XXX_OPT
-    cmp_p1_fltr = gtk_option_menu_new();
-    gtk_widget_set_name(cmp_p1_fltr, "Filter");
-    gtk_widget_show(cmp_p1_fltr);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "fltmenu");
-
-    GtkWidget *mi = gtk_menu_item_new_with_label("Default");
-    gtk_widget_set_name(mi, "default");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(cmp_p1_fltr_proc), (void*)0L);
-    mi = gtk_menu_item_new_with_label("None");
-    gtk_widget_set_name(mi, "none");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(cmp_p1_fltr_proc), (void*)1L);
-    mi = gtk_menu_item_new_with_label("Custom");
-    gtk_widget_set_name(mi, "custom");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(cmp_p1_fltr_proc), (void*)2L);
-
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(cmp_p1_fltr), menu);
-#else
     cmp_p1_fltr = gtk_combo_box_text_new();
     gtk_widget_set_name(cmp_p1_fltr, "Filter");
     gtk_widget_show(cmp_p1_fltr);
-#endif
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(cmp_p1_fltr),
+        "Default");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(cmp_p1_fltr),
+        "None");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(cmp_p1_fltr),
+        "Custrom");
+    gtk_combo_box_set_active(GTK_COMBO_BOX(cmp_p1_fltr), 0);
+    g_signal_connect(G_OBJECT(cmp_p1_fltr), "changed",
+        G_CALLBACK(cmp_p1_fltr_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), cmp_p1_fltr, true, true, 0);
 
     cmp_p1_setup = gtk_toggle_button_new_with_label("Setup");
@@ -796,6 +770,7 @@ sCmp::flat_geom_page()
     char buf[64];
     cmp_p3_s_menu = gtk_menu_new();
     gtk_widget_set_name(cmp_p3_s_menu, "Smenu");
+    g_object_ref(cmp_p3_s_menu);
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
         sprintf(buf, "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
@@ -854,6 +829,7 @@ sCmp::flat_geom_page()
 
     cmp_p3_r_menu = gtk_menu_new();
     gtk_widget_set_name(cmp_p3_r_menu, "Rmenu");
+    g_object_ref(cmp_p3_r_menu);
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
         sprintf(buf, "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
@@ -1381,17 +1357,17 @@ sCmp::cmp_p1_action(GtkWidget *caller, void *arg)
 
 // Static function.
 void
-sCmp::cmp_p1_fltr_proc(GtkWidget*, void *arg)
+sCmp::cmp_p1_fltr_proc(GtkWidget *caller, void*)
 {
-    if (!Cmp)
-        return;
-    int n = (intptr_t)arg;
-    if (n == 1)
-        Cmp->cmp_p1_fltr_mode = PrpFltNone;
-    else if (n == 2)
-        Cmp->cmp_p1_fltr_mode = PrpFltCstm;
-    else
-        Cmp->cmp_p1_fltr_mode = PrpFltDflt;
+    if (Cmp) {
+        int n = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+        if (n == 1)
+            Cmp->cmp_p1_fltr_mode = PrpFltNone;
+        else if (n == 2)
+            Cmp->cmp_p1_fltr_mode = PrpFltCstm;
+        else
+            Cmp->cmp_p1_fltr_mode = PrpFltDflt;
+    }
 }
 
 
@@ -1684,11 +1660,8 @@ sCmp_store::recall_p1()
         GRX->SetStatus(Cmp->cmp_p1_phys, !cs_p1_elec);
         GRX->SetStatus(Cmp->cmp_p1_elec, cs_p1_elec);
         GRX->SetStatus(Cmp->cmp_p1_cell_prp, cs_p1_cell_prp);
-#ifdef XXX_OPT
-        gtk_option_menu_set_history(GTK_OPTION_MENU(Cmp->cmp_p1_fltr),
+        gtk_combo_box_set_active(GTK_COMBO_BOX(Cmp->cmp_p1_fltr),
             cs_p1_fltr);
-#else
-#endif
     }
 }
 

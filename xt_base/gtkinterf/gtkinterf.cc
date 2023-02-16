@@ -850,11 +850,19 @@ GTKdev::ConnectFd()
 
 
 namespace {
-    void toggle_hdlr(GtkWidget *caller, void*)
+    void toggle_btn_hdlr(GtkWidget *caller, void*)
     {
         g_signal_stop_emission_by_name(G_OBJECT(caller), "toggled");
         g_signal_handlers_disconnect_by_func(G_OBJECT(caller),
-            (gpointer)toggle_hdlr, 0);
+            (gpointer)toggle_btn_hdlr, 0);
+    }
+
+    void toggle_menu_hdlr(GtkWidget *caller, void*)
+    {
+        g_signal_stop_emission_by_name(G_OBJECT(caller), "toggled");
+        g_signal_stop_emission_by_name(G_OBJECT(caller), "activate");
+        g_signal_handlers_disconnect_by_func(G_OBJECT(caller),
+            (gpointer)toggle_menu_hdlr, 0);
     }
 }
 
@@ -868,15 +876,15 @@ GTKdev::Deselect(GRobject btn)
         return;
     if (GTK_IS_TOGGLE_BUTTON(btn)) {
         if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn))) {
-            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
-                (gpointer)0);
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_btn_hdlr), (gpointer)0);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), 0);
         }
     }
     else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
         if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn))) {
-            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
-                (gpointer)0);
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_menu_hdlr), (gpointer)0);
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), 0);
         }
     }
@@ -892,15 +900,15 @@ GTKdev::Select(GRobject btn)
         return;
     if (GTK_IS_TOGGLE_BUTTON(btn)) {
         if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn))) {
-            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
-                (gpointer)0);
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_btn_hdlr), (gpointer)0);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), 1);
         }
     }
     else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
         if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn))) {
-            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
-                (gpointer)0);
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_menu_hdlr), (gpointer)0);
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), 1);
         }
     }
@@ -922,7 +930,7 @@ GTKdev::GetStatus(GRobject btn)
 }
 
 
-// Set the status of btn, subbress the signal.
+// Set the status of btn, suppress the signal.
 //
 void
 GTKdev::SetStatus(GRobject btn, bool state)
@@ -932,16 +940,16 @@ GTKdev::SetStatus(GRobject btn, bool state)
     if (GTK_IS_TOGGLE_BUTTON(btn)) {
         bool cur = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
         if (cur != state) {
-            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
-                (gpointer)0);
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_btn_hdlr), (gpointer)0);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), state);
         }
     }
     else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
         bool cur = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn));
         if (cur != state) {
-            g_signal_connect(G_OBJECT(btn), "toggled", G_CALLBACK(toggle_hdlr),
-                (gpointer)0);
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_menu_hdlr), (gpointer)0);
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), state);
         }
     }

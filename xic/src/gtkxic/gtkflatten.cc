@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "edit.h"
 #include "dsp_inlines.h"
@@ -184,12 +182,10 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     gtk_widget_show(label);
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
+
+    GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "Depth");
     gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "Depth");
 
     if (depth < 0)
         depth = 0;
@@ -201,21 +197,12 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
             strcpy(buf, "all");
         else
             sprintf(buf, "%d", i);
-        GtkWidget *mi = gtk_menu_item_new_with_label(buf);
-        gtk_widget_set_name(mi, buf);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(fl_depth_proc), 0);
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), buf);
     }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), depth);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fl_depth_proc), 0);
 
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(entry), depth);
-#else
-    GtkWidget *entry = gtk_combo_box_text_new();
-    gtk_widget_set_name(entry, "Depth");
-    gtk_widget_show(entry);
-#endif
     gtk_box_pack_start(GTK_BOX(row), entry, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -391,8 +378,13 @@ sFlt::fl_depth_proc(GtkWidget *caller, void*)
 {
     if (!Flt)
         return;
-    if (Flt->fl_callback)
-        (*Flt->fl_callback)("depth", true, gtk_widget_get_name(caller),
-            Flt->fl_arg);
+    if (Flt->fl_callback) {
+        char *str = gtk_combo_box_text_get_active_text(
+            GTK_COMBO_BOX_TEXT(caller));
+        if (str) {
+            (*Flt->fl_callback)("depth", true, str, Flt->fl_arg);
+            g_free(str);
+        }
+    }
 }
 

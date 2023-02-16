@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "edit.h"
 #include "undolist.h"
@@ -306,26 +304,15 @@ sEd::sEd(GRobject c)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
 
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "depthmenu");
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "depthmenu");
-    for (int i = 0; depthvals[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(depthvals[i]);
-        gtk_widget_set_name(mi, depthvals[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(ed_depth_menu_proc), (void*)depthvals[i]);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-#else
     GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "depthmenu");
     gtk_widget_show(entry);
-#endif
+    for (int i = 0; depthvals[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            depthvals[i]);
+    }
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(ed_depth_menu_proc), 0);
     gtk_box_pack_end(GTK_BOX(row), entry, false, false, 0);
     ed_depth = entry;
 
@@ -389,10 +376,7 @@ sEd::update()
     const char *str = CDvdb()->getVariable(VA_MaxGhostDepth);
     if (str)
         hst = atoi(str) + 1;
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(ed_depth), hst);
-#else
-#endif
+    gtk_combo_box_set_active(GTK_COMBO_BOX(ed_depth), hst);
 }
 
 
@@ -489,9 +473,12 @@ sEd::ed_val_changed(GtkWidget *caller, void*)
 
 // Static function.
 void
-sEd::ed_depth_menu_proc(GtkWidget*, void *client_data)
+sEd::ed_depth_menu_proc(GtkWidget *caller, void*)
 {
-    char *s = (char*)client_data;
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (i < 0)
+        return;
+    const char *s = depthvals[i];
     if (isdigit(*s))
         CDvdb()->setVariable(VA_MaxGhostDepth, s);
     else

@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "edit.h"
 #include "edit_variables.h"
@@ -180,27 +178,15 @@ sPCc::sPCc(GRobject c)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
 
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "abutmenu");
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "overmenu");
-    for (int i = 0; abutvals[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(abutvals[i]);
-        gtk_widget_set_name(mi, abutvals[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(pcc_abut_menu_proc), (void*)abutvals[i]);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-#else
     GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "abutmenu");
     gtk_widget_show(entry);
-    GtkWidget *menu;
-#endif
+    for (int i = 0; abutvals[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            abutvals[i]);
+    }
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(pcc_abut_menu_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
     pcc_abut = entry;
 
@@ -295,14 +281,13 @@ void
 sPCc::update()
 {
     const char *s = CDvdb()->getVariable(VA_PCellAbutMode);
-#ifdef XXX_OPT
     if (s && atoi(s) == 2)
-        gtk_option_menu_set_history(GTK_OPTION_MENU(pcc_abut), 2);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(pcc_abut), 2);
     else if (s && atoi(s) == 0)
-        gtk_option_menu_set_history(GTK_OPTION_MENU(pcc_abut), 0);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(pcc_abut), 0);
     else
-        gtk_option_menu_set_history(GTK_OPTION_MENU(pcc_abut), 1);
-#endif
+        gtk_combo_box_set_active(GTK_COMBO_BOX(pcc_abut), 1);
+
     GRX->SetStatus(pcc_hidestr, CDvdb()->getVariable(VA_PCellHideGrips));
     GRX->SetStatus(pcc_listsm, CDvdb()->getVariable(VA_PCellListSubMasters));
     GRX->SetStatus(pcc_allwarn, CDvdb()->getVariable(VA_PCellShowAllWarnings));
@@ -361,14 +346,14 @@ sPCc::pcc_action(GtkWidget *caller, void*)
 
 // Static function.
 void
-sPCc::pcc_abut_menu_proc(GtkWidget*, void *client_data)
+sPCc::pcc_abut_menu_proc(GtkWidget *caller, void*)
 {
-    const char *s = (const char*)client_data;
-    if (s == abutvals[0])
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (i == 0)
         CDvdb()->setVariable(VA_PCellAbutMode, "0");
-    else if (s == abutvals[1])
+    else if (i == 1)
         CDvdb()->clearVariable(VA_PCellAbutMode);
-    else if (s == abutvals[2])
+    else if (i == 2)
         CDvdb()->setVariable(VA_PCellAbutMode, "2");
 }
 

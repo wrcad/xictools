@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "fio.h"
 #include "sced.h"
@@ -347,28 +345,20 @@ sDE::sDE(GRobject caller)
         G_CALLBACK(de_branch_proc), 0);
     gtk_table_attach(GTK_TABLE(form), de_toggle, 0, 1, row, row+1,
         (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "orient");
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "orient");
-    for (int i = 0; orient_labels[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(orient_labels[i]);
-        gtk_widget_set_name(mi, orient_labels[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(de_menu_proc), (void*)(long)i);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-#else
+
     GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "orient");
     gtk_widget_show(entry);
-#endif
+
+    for (int i = 0; orient_labels[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            orient_labels[i]);
+    }
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(de_menu_proc), 0);
     gtk_table_attach(GTK_TABLE(form), entry, 1, 2, row, row+1,
         (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
+
     de_branch = gtk_entry_new();
     gtk_widget_show(de_branch);
     gtk_table_attach(GTK_TABLE(form), de_branch, 2, 4, row, row+1,
@@ -392,10 +382,7 @@ sDE::sDE(GRobject caller)
                 ix = 3;
         }
         de_menustate = ix;
-#ifdef XXX_OPT
-        gtk_option_menu_set_history(GTK_OPTION_MENU(entry), ix);
-#else
-#endif
+        gtk_combo_box_set_active(GTK_COMBO_BOX(entry), ix);
         if (pb->br_string())
             gtk_entry_set_text(GTK_ENTRY(de_branch), pb->br_string());
 
@@ -541,10 +528,10 @@ sDE::de_help_proc(GtkWidget*, void*)
 
 // Static function.
 void
-sDE::de_menu_proc(GtkWidget*, void *arg)
+sDE::de_menu_proc(GtkWidget *caller, void*)
 {
     if (DE)
-        DE->de_menustate = (intptr_t)arg;
+        DE->de_menustate = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
 }
 
 
