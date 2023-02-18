@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "ext.h"
 #include "ext_fc.h"
@@ -82,7 +80,6 @@ namespace {
             void select_pid(int);
 
             static const char *fc_def_string(int);
-            static int fc_option_history(GtkWidget*);
             static void fc_cancel_proc(GtkWidget*, void*);
             static void fc_help_proc(GtkWidget*, void*);
             static void fc_page_change_proc(GtkWidget*, void*, int, void*);
@@ -454,28 +451,16 @@ sFc::sFc(GRobject c)
 
     frame = gtk_frame_new("FcUnits");
     gtk_widget_show(frame);
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "FcUnits");
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "FcUnits");
-    for (int i = 0; units_strings[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(units_strings[i]);
-        gtk_widget_set_name(mi, units_strings[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(fc_units_proc), (void*)units_strings[i]);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(entry),
-        FC()->getUnitsIndex(0));
-#else
     entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "FcUnits");
     gtk_widget_show(entry);
-#endif
+    for (int i = 0; units_strings[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            units_strings[i]);
+    }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), FC()->getUnitsIndex(0));
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fc_units_proc), 0);
     gtk_container_add(GTK_CONTAINER(frame), entry);
     fc_units = entry;
 
@@ -754,10 +739,7 @@ sFc::sFc(GRobject c)
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(fc_jobs));
     const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
-#if GTK_CHECK_VERSION(2,8,0)
-        "paragraph-background", bclr,
-#endif
-        NULL);
+        "paragraph-background", bclr, NULL);
 
     gtk_widget_set_size_request(fc_jobs, 200, 200);
 
@@ -889,13 +871,9 @@ sFc::update()
     if (!var)
         var = "";
     int uoff = FC()->getUnitsIndex(var);
-    int ucur = fc_option_history(fc_units);
+    int ucur = gtk_combo_box_get_active(GTK_COMBO_BOX(fc_units));
     if (uoff != ucur)
-#ifdef XXX_OPT
-        gtk_option_menu_set_history(GTK_OPTION_MENU(fc_units), uoff);
-#else
-        ;
-#endif
+        gtk_combo_box_set_active(GTK_COMBO_BOX(fc_units), uoff);
 
     static double fcpt_bak;
     var = CDvdb()->getVariable(VA_FcPanelTarget);
@@ -1112,23 +1090,6 @@ sFc::fc_def_string(int id)
 
 
 // Static function.
-// Return the current index value of the option menu.  Too bad GTK+
-// doesn't provide this.
-//
-int
-sFc::fc_option_history(GtkWidget *opt)
-{
-    return (
-#ifdef XXX_OPT
-        gtk_option_menu_get_history(GTK_OPTION_MENU(opt))
-#else
-        0
-#endif
-        );
-}
-
-
-// Static function.
 void
 sFc::fc_cancel_proc(GtkWidget*, void*)
 {
@@ -1226,10 +1187,12 @@ sFc::fc_change_proc(GtkWidget *widget, void *arg)
 
 // Static function.
 void
-sFc::fc_units_proc(GtkWidget*, void *arg)
+sFc::fc_units_proc(GtkWidget *caller, void*)
 {
-    const char *str = (const char*)arg;
-    str = FC()->getUnitsString(str);
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (i < 0)
+        return;
+    const char *str = FC()->getUnitsString(units_strings[i]);
     if (str)
         CDvdb()->setVariable(VA_FcUnits, str);
     else

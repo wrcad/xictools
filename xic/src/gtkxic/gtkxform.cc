@@ -397,14 +397,6 @@ sTfm::update()
 
     gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(
         GTK_COMBO_BOX(tf_ang))));
-    // Clear the combo box, note how the empty list is detected.
-    /*
-    GtkTreeModel *mdl =
-        gtk_combo_box_get_model(GTK_COMBO_BOX(tf_ang));
-    GtkTreeIter iter;
-    while (gtk_tree_model_get_iter_first(mdl, &iter))
-        gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(tf_ang), 0);
-        */
 
     while (d < 360) {
         sprintf(buf, "%d", d);

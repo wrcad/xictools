@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "ext.h"
 #include "ext_fh.h"
@@ -82,7 +80,6 @@ namespace {
             void select_pid(int);
 
             static const char *fh_def_string(int);
-            static int fh_option_history(GtkWidget*);
             static void fh_cancel_proc(GtkWidget*, void*);
             static void fh_help_proc(GtkWidget*, void*);
             static void fh_change_proc(GtkWidget*, void*);
@@ -426,26 +423,16 @@ sFh::sFh(GRobject c)
 
     frame = gtk_frame_new(VA_FhUnits);
     gtk_widget_show(frame);
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, VA_FhUnits);
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, VA_FhUnits);
-    for (int i = 0; fh_units_strings[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(fh_units_strings[i]);
-        gtk_widget_set_name(mi, fh_units_strings[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(fh_units_proc), (void*)fh_units_strings[i]);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-#else
     entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, VA_FhUnits);
     gtk_widget_show(entry);
-#endif
+    for (int i = 0; fh_units_strings[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            fh_units_strings[i]);
+    }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), FH()->getUnitsIndex(0));
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fh_units_proc), 0);
     gtk_container_add(GTK_CONTAINER(frame), entry);
     fh_units = entry;
 
@@ -730,13 +717,9 @@ sFh::update()
     if (!var)
         var = "";
     int uoff = FH()->getUnitsIndex(var);
-    int ucur = fh_option_history(fh_units);
+    int ucur = gtk_combo_box_get_active(GTK_COMBO_BOX(fh_units));
     if (uoff != ucur)
-#ifdef XXX_OPT
-        gtk_option_menu_set_history(GTK_OPTION_MENU(fh_units), uoff);
-#else
-        ;
-#endif
+        gtk_combo_box_set_active(GTK_COMBO_BOX(fh_units), uoff);
 
     var = CDvdb()->getVariable(VA_FhManhGridCnt);
     if (sb_fh_manh_grid_cnt.is_valid(var))
@@ -1024,23 +1007,6 @@ sFh::fh_def_string(int id)
 
 
 // Static function.
-// Return the current index value of the option menu.  Too bad GTK+
-// doesn't provide this.
-//
-int
-sFh::fh_option_history(GtkWidget *opt)
-{
-    return (
-#ifdef XXX_OPT
-        gtk_option_menu_get_history(GTK_OPTION_MENU(opt))
-#else
-        0
-#endif
-        );
-}
-
-
-// Static function.
 void
 sFh::fh_cancel_proc(GtkWidget*, void*)
 {
@@ -1150,9 +1116,12 @@ sFh::fh_change_proc(GtkWidget *widget, void *arg)
 
 // Static function.
 void
-sFh::fh_units_proc(GtkWidget*, void *arg)
+sFh::fh_units_proc(GtkWidget *caller, void*)
 {
-    const char *str = (const char*)arg;
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (i < 0)
+        return;
+    const char *str = fh_units_strings[i];
     str = FH()->getUnitsString(str);
     if (str)
         CDvdb()->setVariable(VA_FhUnits, str);

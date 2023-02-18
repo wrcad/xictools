@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "ext.h"
 #include "sced.h"
@@ -219,41 +217,17 @@ sES::sES(GRobject caller)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(hbox), label, true, true, 0);
 
-#ifdef XXX_OPT
-    es_gpmnu = gtk_option_menu_new();
-    gtk_widget_set_name(es_gpmnu, "qpgp");
-    gtk_widget_show(es_gpmnu);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "qpgp");
-
-    GtkWidget *mi = gtk_menu_item_new_with_label(
-        "Use ground plane if available");
-    gtk_widget_set_name(mi, "menu0");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(es_menu_proc), (void*)0);
-
-    mi = gtk_menu_item_new_with_label("Create and use ground plane");
-    gtk_widget_set_name(mi, "menu1");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(es_menu_proc), (void*)1);
-
-    mi = gtk_menu_item_new_with_label("Never use ground plane");
-    gtk_widget_set_name(mi, "menu2");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(es_menu_proc), (void*)2);
-
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(es_gpmnu), menu);
-#else
     es_gpmnu = gtk_combo_box_text_new();
     gtk_widget_set_name(es_gpmnu, "qpgp");
     gtk_widget_show(es_gpmnu);
-#endif
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(es_gpmnu),
+        "Use ground plane if available");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(es_gpmnu),
+        "Create and use ground plane");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(es_gpmnu),
+        "Never use ground plane");
+    g_signal_connect(G_OBJECT(es_gpmnu), "changed",
+        G_CALLBACK(es_menu_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), es_gpmnu, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
@@ -476,11 +450,8 @@ sES::~sES()
 void
 sES::update()
 {
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(es_gpmnu),
+    gtk_combo_box_set_active(GTK_COMBO_BOX(es_gpmnu),
         EX()->quickPathMode());
-#else
-#endif
     GRX->SetStatus(es_qpconn, EX()->isQuickPathUseConductor());
     GRX->SetStatus(es_blink, EX()->isBlinkSelections());
     if (GRX->GetStatus(es_gnsel))
@@ -729,11 +700,11 @@ sES::es_val_changed(GtkWidget*, void*)
 
 // Static function.
 void
-sES::es_menu_proc(GtkWidget*, void *arg)
+sES::es_menu_proc(GtkWidget *caller, void*)
 {
     if (!ES)
         return;
-    int code = (intptr_t)arg;
+    int code = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
     if (code == 0)
         CDvdb()->clearVariable(VA_QpathGroundPlane);
     else if (code == 1)

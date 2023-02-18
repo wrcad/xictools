@@ -278,10 +278,8 @@ cParam::display(int start, int end)
     int winw = gdk_window_get_width(gd_window);
     int winh = gdk_window_get_height(gd_window);
     if (winw != p_width || winh != p_height) {
-#ifdef XXX_GDK
         if (p_pm)
-            gdk_pixmap_unref(p_pm);
-#endif
+            g_object_unref(p_pm);
         p_pm = gdk_pixmap_new(gd_window, winw, winh,
             gdk_visual_get_depth(GRX->Visual()));
         p_width = winw;
@@ -291,9 +289,11 @@ cParam::display(int start, int end)
     }
     p_win_bak = gd_window;
     gd_window = p_pm;
-    // XXX Have to set the pointer directly or a Gtk-CRITICAL results.
+    // Have to set the pointer directly or a Gtk-CRITICAL results.
     // gtk_widget_set_window(gd_viewport, gd_window);
+#ifdef XXX_GDK
     gd_viewport->window = gd_window;
+#endif
 
     if (start == 0 && end == 256) {
         SetWindowBackground(DSP()->Color(PromptBackgroundColor));
@@ -523,8 +523,6 @@ cParam::readout_font_change(GtkWidget*, void*, void*)
     if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
         int fw, fh;
         Param()->TextExtent(0, &fw, &fh);
-//XXX        int winw = gdk_window_get_width(Param()->gd_window);
-//XXX        int winh = gdk_window_get_height(Param()->gd_window);
         gtk_widget_set_size_request(Param()->gd_viewport, -1, fh + 2);
         Param()->print();
     }

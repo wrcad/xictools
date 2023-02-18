@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "ext.h"
 #include "ext_extract.h"
@@ -763,38 +761,19 @@ sEs::net_and_cell_page()
     tcnt++;
     es_p2_gpmulti = button;
 
-#ifdef XXX_OPT
-    es_p2_gpmthd = gtk_option_menu_new();
-    gtk_widget_set_name(es_p2_gpmthd, "GPMthd");
-    gtk_widget_show(es_p2_gpmthd);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "GPMthd");
-
-    GtkWidget *mi = gtk_menu_item_new_with_label(
-        "Invert in each cell, clip out subcells");
-    gtk_widget_set_name(mi, "0");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(es_gpinv_proc), 0);
-    mi = gtk_menu_item_new_with_label("Invert flat in top-level cell");
-    gtk_widget_set_name(mi, "1");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(es_gpinv_proc), 0);
-    mi = gtk_menu_item_new_with_label("Invert flat in all cells");
-    gtk_widget_set_name(mi, "2");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(es_gpinv_proc), 0);
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(es_p2_gpmthd), menu);
-#else
     es_p2_gpmthd = gtk_combo_box_text_new();
     gtk_widget_set_name(es_p2_gpmthd, "GPMthd");
     gtk_widget_show(es_p2_gpmthd);
-#endif
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(es_p2_gpmthd),
+        "Invert in each cell, clip out subcells");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(es_p2_gpmthd),
+        "Invert flat in top-level cell");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(es_p2_gpmthd),
+        "Invert flat in all cells");
+    gtk_combo_box_set_active(GTK_COMBO_BOX(es_p2_gpmthd),
+        Tech()->GroundPlaneMode());
+    g_signal_connect(G_OBJECT(es_p2_gpmthd), "changed",
+        G_CALLBACK(es_gpinv_proc), 0);
     gtk_table_attach(GTK_TABLE(tform), es_p2_gpmthd, 0, 2, tcnt, tcnt+1,
         (GtkAttachOptions)0,
         (GtkAttachOptions)0, 2, 2);
@@ -1296,13 +1275,10 @@ sEs::update()
     GRX->SetStatus(es_p2_gpmulti,
         CDvdb()->getVariable(VA_GroundPlaneMulti) != 0);
 
-    if (es_gpmhst != (int)Tech()->GroundPlaneMode())
-#ifdef XXX_OPT
-        gtk_option_menu_set_history(GTK_OPTION_MENU(es_p2_gpmthd),
+    if (es_gpmhst != (int)Tech()->GroundPlaneMode()) {
+        gtk_combo_box_set_active(GTK_COMBO_BOX(es_p2_gpmthd),
             Tech()->GroundPlaneMode());
-#else
-        ;
-#endif
+    }
 
     // page 3
     GRX->SetStatus(es_p3_noseries,
@@ -1871,19 +1847,17 @@ sEs::es_val_changed(GtkWidget *caller, void*)
 void
 sEs::es_gpinv_proc(GtkWidget *caller, void*)
 {
-    const char *name = gtk_widget_get_name(caller);
-    if (!name)
-        return;
-    if (!strcmp(name, "0")) {
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (i == 0) {
         CDvdb()->clearVariable(VA_GroundPlaneMethod);
         Es->es_gpmhst = 0;
     }
-    else if (!strcmp(name, "1")) {
-        CDvdb()->setVariable(VA_GroundPlaneMethod, name);
+    else if (i == 1) {
+        CDvdb()->setVariable(VA_GroundPlaneMethod, "1");
         Es->es_gpmhst = 1;
     }
-    else if (!strcmp(name, "2")) {
-        CDvdb()->setVariable(VA_GroundPlaneMethod, name);
+    else if (i == 2) {
+        CDvdb()->setVariable(VA_GroundPlaneMethod, "2");
         Es->es_gpmhst = 2;
     }
 }

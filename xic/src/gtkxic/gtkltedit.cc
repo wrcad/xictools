@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_COMBO
-
 #include "main.h"
 #include "dsp_inlines.h"
 #include "cd_strmdata.h"
@@ -80,6 +78,7 @@ namespace {
             GtkWidget *le_add;      // add layer button
             GtkWidget *le_rem;      // remove layer button
             GtkWidget *le_opmenu;   // removed layers menu;
+            GtkWidget *le_label;    // info label;
 
             static const char *initmsg;
         };
@@ -122,6 +121,7 @@ gtkLcb::gtkLcb(GRobject c)
     le_add = 0;
     le_rem = 0;
     le_opmenu = 0;
+    le_label = 0;
 
     le_shell = gtk_NewPopup(mainBag(), "Layer Editor", le_popdown, this);
     if (!le_shell)
@@ -138,12 +138,12 @@ gtkLcb::gtkLcb(GRobject c)
     //
     GtkWidget *row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
-    GtkWidget *label = gtk_label_new(prompt_str);
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
+    le_label = gtk_label_new(prompt_str);
+    gtk_widget_show(le_label);
+    gtk_misc_set_padding(GTK_MISC(le_label), 2, 2);
     GtkWidget *frame = gtk_frame_new(0);
     gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), label);
+    gtk_container_add(GTK_CONTAINER(frame), le_label);
     gtk_box_pack_start(GTK_BOX(row), frame, true, true, 0);
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "Help");
@@ -155,26 +155,19 @@ gtkLcb::gtkLcb(GRobject c)
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    g_object_set_data(G_OBJECT(le_shell), "label", label);
 
     char *init_str = 0;
     //
     // combo box input area
     //
-#ifdef XXX_COMBO
-    GtkWidget *combo = gtk_combo_new();
-    gtk_widget_show(combo);
-    gtk_table_attach(GTK_TABLE(form), combo, 0, 1, 1, 2,
+    le_opmenu = gtk_combo_box_text_new_with_entry();
+    gtk_widget_show(le_opmenu);
+    gtk_table_attach(GTK_TABLE(form), le_opmenu, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 0);
-    GtkWidget *text = GTK_COMBO(combo)->entry;
+    GtkWidget *text = gtk_bin_get_child(GTK_BIN(le_opmenu));
     if (init_str)
         gtk_entry_set_text(GTK_ENTRY(text), init_str);
-    g_object_set_data(G_OBJECT(le_shell), "text", text);
-    le_opmenu = GTK_COMBO(combo)->list;
-#else
-    GtkWidget *text = 0;
-#endif
 
     GtkWidget *sep = gtk_hseparator_new();
     gtk_widget_show(sep);
@@ -229,22 +222,16 @@ gtkLcb::~gtkLcb()
 void
 gtkLcb::update(CDll *list)
 {
-#ifdef XXX_COMBO
-    gtk_list_clear_items(GTK_LIST(le_opmenu), 0, -1);
-#endif
-    if (!list) {
-        GtkWidget *text =
-            (GtkWidget*)g_object_get_data(G_OBJECT(le_shell), "text");
-        if (text)
-            gtk_entry_set_text(GTK_ENTRY(text), "");
-    }
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(
+        GTK_COMBO_BOX(le_opmenu))));
     for (CDll *l = list; l; l = l->next) {
-#ifdef XXX_COMBO
-        GtkWidget *item = gtk_list_item_new_with_label(l->ldesc->name());
-        gtk_widget_show(item);
-        gtk_container_add(GTK_CONTAINER(le_opmenu), item);
-#endif
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(le_opmenu),
+            l->ldesc->name());
     }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(le_opmenu), 0);
+    GtkWidget *text = gtk_bin_get_child(GTK_BIN(le_opmenu));
+    if (!list)
+        gtk_entry_set_text(GTK_ENTRY(text), "");
 }
 
 
@@ -255,17 +242,14 @@ gtkLcb::update(CDll *list)
 char *
 gtkLcb::layername()
 {
-    GtkWidget *text =
-        (GtkWidget*)g_object_get_data(G_OBJECT(le_shell), "text");
+    GtkWidget *text = gtk_bin_get_child(GTK_BIN(le_opmenu));
     if (!text)
         return (0);
-    GtkWidget *label =
-        (GtkWidget*)g_object_get_data(G_OBJECT(le_shell), "label");
-    char *string = le_get_lname(text, label);
+    char *string = le_get_lname(text, le_label);
+
     if (!string) {
         GRX->Deselect(le_add);
         add_cb(false);
-        return (0);
     }
     return (string);
 }
@@ -320,8 +304,7 @@ gtkLcb::le_btn_proc(GtkWidget *caller, void *client_data)
     if (!cbs)
         return;
     if (caller == cbs->le_add) {
-        GtkWidget *label =
-            (GtkWidget*)g_object_get_data(G_OBJECT(cbs->le_shell), "label");
+        GtkWidget *label = cbs->le_label;
         if (!label)
             return;
         if (!GRX->GetStatus(caller)) {
@@ -330,8 +313,7 @@ gtkLcb::le_btn_proc(GtkWidget *caller, void *client_data)
             return;
         }
         GRX->Deselect(cbs->le_rem);
-        GtkWidget *text =
-            (GtkWidget*)g_object_get_data(G_OBJECT(cbs->le_shell), "text");
+        GtkWidget *text = gtk_bin_get_child(GTK_BIN(cbs->le_opmenu));
         if (!text)
             return;
         char *string = le_get_lname(text, label);
@@ -345,8 +327,7 @@ gtkLcb::le_btn_proc(GtkWidget *caller, void *client_data)
         cbs->add_cb(true);
     }
     else if (caller == cbs->le_rem) {
-        GtkWidget *label =
-            (GtkWidget*)g_object_get_data(G_OBJECT(cbs->le_shell), "label");
+        GtkWidget *label = cbs->le_label;
         if (!label)
             return;
         if (!GRX->GetStatus(caller)) {
@@ -385,9 +366,10 @@ gtkLcb::le_get_lname(GtkWidget *text, GtkWidget *label)
 {
     const char *string = gtk_entry_get_text(GTK_ENTRY(text));
     if (!string || !*string) {
-        if (label)
+        if (label) {
             gtk_label_set_text(GTK_LABEL(label),
                 "No name entered.  Enter a layer name:");
+        }
         return (0);
     }
     char *lname = lstring::copy(string);

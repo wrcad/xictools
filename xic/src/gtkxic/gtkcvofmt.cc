@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -86,6 +84,11 @@ namespace {
         { 0,                        0 }
     };
 
+    enum {
+        CNAME_STYLE=1,
+        LAYER_STYLE,
+        LABEL_STYLE
+    };
 
     fmt_menu cname_formats[] =
     {
@@ -157,27 +160,16 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     GtkWidget *row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
 
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "input");
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "input");
-    for (int i = 0; gds_input[i].name; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(gds_input[i].name);
-        gtk_widget_set_name(mi, gds_input[i].name);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(fmt_input_proc), this);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(entry), cvofmt_t::fmt_gds_inp);
-#else
     GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "input");
     gtk_widget_show(entry);
-#endif
+    for (int i = 0; gds_input[i].name; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            gds_input[i].name);
+    }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), cvofmt_t::fmt_gds_inp);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fmt_input_proc), this);
     gtk_box_pack_start(GTK_BOX(row), entry, false, false, 0);
     fmt_gdsftopt = entry;
 
@@ -197,29 +189,16 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         (GtkAttachOptions)0, 2, 2);
     rcnt++;
 
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "levmenu");
-    gtk_widget_show(entry);
-    menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "levmenu");
-    for (int i = 0; gds_limits[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(gds_limits[i]);
-        gtk_widget_set_name(mi, gds_limits[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(fmt_level_proc), (void*)gds_limits[i]);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(entry),
-        FIO()->GdsOutLevel());
-#else
     entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "levmenu");
     gtk_widget_show(entry);
-    GtkWidget *menu = 0;
-#endif
+    for (int i = 0; gds_limits[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            gds_limits[i]);
+    }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), FIO()->GdsOutLevel());
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fmt_level_proc), 0);
     fmt_level = entry;
     gtk_table_attach(GTK_TABLE(table), entry, 0, 1, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -408,7 +387,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), pc_item);
 
     fmt_strip = FIO()->IsStripForExport();
-    menu = gtk_menu_new();
+    GtkWidget *menu = gtk_menu_new();
     fmt_cifflags = menu;
     unsigned int flgs = fmt_strip ?
         FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();
@@ -454,32 +433,19 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "cnamemenu");
-    gtk_widget_show(entry);
-    menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "cnamemenu");
-    for (fmt_menu *m = cname_formats; m->name; m++) {
-        mi = gtk_menu_item_new_with_label(m->name);
-        gtk_widget_set_name(mi, m->name);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(fmt_style_proc), (void*)m->name);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    for (int i = 0; cname_formats[i].name; i++) {
-        if (cname_formats[i].code == FIO()->CifStyle().cname_type()) {
-            gtk_option_menu_set_history(GTK_OPTION_MENU(entry), i);
-            break;
-        }
-    }
-#else
     entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "cnamemenu");
     gtk_widget_show(entry);
-#endif
+    int a = -1;
+    for (fmt_menu *m = cname_formats; m->name; m++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), m->name);
+        if (m->code == FIO()->CifStyle().cname_type())
+            a = m - cname_formats;
+    }
+    if (a >= 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(entry), a);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fmt_style_proc), (void*)(long)CNAME_STYLE);
     fmt_cifcname = entry;
 
     gtk_table_attach(GTK_TABLE(table), entry, 0, 1, rcnt+1, rcnt+2,
@@ -493,32 +459,19 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "layermenu");
-    gtk_widget_show(entry);
-    menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "layermenu");
-    for (fmt_menu *m = layer_formats; m->name; m++) {
-        mi = gtk_menu_item_new_with_label(m->name);
-        gtk_widget_set_name(mi, m->name);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(fmt_style_proc), (void*)m->name);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    for (int i = 0; layer_formats[i].name; i++) {
-        if (layer_formats[i].code == FIO()->CifStyle().layer_type()) {
-            gtk_option_menu_set_history(GTK_OPTION_MENU(entry), i);
-            break;
-        }
-    }
-#else
     entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "layermenu");
     gtk_widget_show(entry);
-#endif
+    a = -1;
+    for (fmt_menu *m = layer_formats; m->name; m++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), m->name);
+        if (m->code == FIO()->CifStyle().layer_type())
+            a = m - layer_formats;
+    }
+    if (a >= 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(entry), a);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fmt_style_proc), (void*)(long)LAYER_STYLE);
     fmt_ciflayer = entry;
 
     gtk_table_attach(GTK_TABLE(table), entry, 1, 2, rcnt+1, rcnt+2,
@@ -532,32 +485,19 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "labelmenu");
-    gtk_widget_show(entry);
-    menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "labelmenu");
-    for (fmt_menu *m = label_formats; m->name; m++) {
-        mi = gtk_menu_item_new_with_label(m->name);
-        gtk_widget_set_name(mi, m->name);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(fmt_style_proc), (void*)m->name);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    for (int i = 0; label_formats[i].name; i++) {
-        if (label_formats[i].code == FIO()->CifStyle().label_type()) {
-            gtk_option_menu_set_history(GTK_OPTION_MENU(entry), i);
-            break;
-        }
-    }
-#else
     entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "labelmenu");
     gtk_widget_show(entry);
-#endif
+    a = -1;
+    for (fmt_menu *m = label_formats; m->name; m++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), m->name);
+        if (m->code == FIO()->CifStyle().label_type())
+            a = m - label_formats;
+    }
+    if (a >= 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(entry), a);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(fmt_style_proc), (void*)(long)LABEL_STYLE);
     fmt_ciflabel = entry;
 
     gtk_table_attach(GTK_TABLE(table), entry, 2, 3, rcnt+1, rcnt+2,
@@ -784,10 +724,7 @@ cvofmt_t::update()
         CDvdb()->getVariable(VA_OasWriteRep));
     GRX->SetStatus(fmt_oassum,
         CDvdb()->getVariable(VA_OasWriteChecksum));
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(fmt_level),
-        FIO()->GdsOutLevel());
-#endif
+    gtk_combo_box_set_active(GTK_COMBO_BOX(fmt_level), FIO()->GdsOutLevel());
 #ifdef FMT_WITH_DIGESTS
     gtk_option_menu_set_history(GTK_OPTION_MENU(fmt_chdinfo),
         FIO()->CvtInfo());
@@ -818,28 +755,19 @@ cvofmt_t::update()
 
     for (int i = 0; cname_formats[i].name; i++) {
         if (cname_formats[i].code == FIO()->CifStyle().cname_type()) {
-#ifdef XXX_OPT
-            gtk_option_menu_set_history(
-                GTK_OPTION_MENU(fmt_cifcname), i);
-#endif
+            gtk_combo_box_set_active( GTK_COMBO_BOX(fmt_cifcname), i);
             break;
         }
     }
     for (int i = 0; layer_formats[i].name; i++) {
         if (layer_formats[i].code == FIO()->CifStyle().layer_type()) {
-#ifdef XXX_OPT
-            gtk_option_menu_set_history(
-                GTK_OPTION_MENU(fmt_ciflayer), i);
-#endif
+            gtk_combo_box_set_active(GTK_COMBO_BOX(fmt_ciflayer), i);
             break;
         }
     }
     for (int i = 0; label_formats[i].name; i++) {
         if (label_formats[i].code == FIO()->CifStyle().label_type()) {
-#ifdef XXX_OPT
-            gtk_option_menu_set_history(
-                GTK_OPTION_MENU(fmt_ciflabel), i);
-#endif
+            gtk_combo_box_set_active(GTK_COMBO_BOX(fmt_ciflabel), i);
             break;
         }
     }
@@ -1151,18 +1079,13 @@ cvofmt_t::fmt_flags_proc(GtkWidget *caller, void *client_data)
 
 // Static function.
 void
-cvofmt_t::fmt_level_proc(GtkWidget*, void *client_data)
+cvofmt_t::fmt_level_proc(GtkWidget *w, void*)
 {
-    char *s = (char*)client_data;
-    for (int i = 0; gds_limits[i]; i++) {
-        if (!strcmp(s, gds_limits[i])) {
-            if (i)
-                CDvdb()->setVariable(VA_GdsOutLevel, i == 1 ? "1" : "2");
-            else
-                CDvdb()->clearVariable(VA_GdsOutLevel);
-            return;
-        }
-    }
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(w));
+    if (i > 0)
+        CDvdb()->setVariable(VA_GdsOutLevel, i == 1 ? "1" : "2");
+    else if (i == 0)
+        CDvdb()->clearVariable(VA_GdsOutLevel);
 }
 
 
@@ -1184,32 +1107,23 @@ namespace {
 
 // Static function.
 void
-cvofmt_t::fmt_style_proc(GtkWidget*, void *client_data)
+cvofmt_t::fmt_style_proc(GtkWidget *w, void *arg)
 {
-    char *s = (char*)client_data;
-    for (int i = 0; cname_formats[i].name; i++) {
-        if (!strcmp(s, cname_formats[i].name)) {
-            FIO()->CifStyle().set_cname_type(
-                (EXTcnameType)cname_formats[i].code);
-            resetvar();
-            return;
-        }
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(w));
+    if (i < 0)
+        return;
+    int which = (intptr_t)arg;
+    if (which == CNAME_STYLE) {
+        FIO()->CifStyle().set_cname_type((EXTcnameType)cname_formats[i].code);
+        resetvar();
     }
-    for (int i = 0; layer_formats[i].name; i++) {
-        if (!strcmp(s, layer_formats[i].name)) {
-            FIO()->CifStyle().set_layer_type(
-                (EXTlayerType)layer_formats[i].code);
-            resetvar();
-            return;
-        }
+    else if (which == LAYER_STYLE) {
+        FIO()->CifStyle().set_layer_type((EXTlayerType)layer_formats[i].code);
+        resetvar();
     }
-    for (int i = 0; label_formats[i].name; i++) {
-        if (!strcmp(s, label_formats[i].name)) {
-            FIO()->CifStyle().set_label_type(
-                (EXTlabelType)label_formats[i].code);
-            resetvar();
-            return;
-        }
+    else if (which == LABEL_STYLE) {
+        FIO()->CifStyle().set_label_type((EXTlabelType)label_formats[i].code);
+        resetvar();
     }
 }
 
@@ -1219,15 +1133,12 @@ void
 cvofmt_t::fmt_input_proc(GtkWidget *w, void *arg)
 {
     cvofmt_t *fmt = (cvofmt_t*)arg;
-    for (int i = 0; gds_input[i].name; i++) {
-        const char *n = gtk_widget_get_name(w);
-        if (n && !strcmp(n, gds_input[i].name)) {
-            fmt_gds_inp = i;
-            if (fmt && fmt->fmt_cb)
-                (*fmt->fmt_cb)(cConvert::cvGds);
-            break;
-        }
-    }
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(w));
+    if (i < 0)
+        return;
+    fmt_gds_inp = i;
+    if (fmt && fmt->fmt_cb)
+        (*fmt->fmt_cb)(cConvert::cvGds);
 }
 
 

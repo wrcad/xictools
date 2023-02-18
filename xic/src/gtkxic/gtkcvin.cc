@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -311,26 +309,15 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
 
     row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "overmenu");
-    gtk_widget_show(entry);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "overmenu");
-    for (int i = 0; overvals[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(overvals[i]);
-        gtk_widget_set_name(mi, overvals[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(cvi_over_menu_proc), (void*)overvals[i]);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-#else
     GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "overmenu");
     gtk_widget_show(entry);
-#endif
+    for (int i = 0; overvals[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            overvals[i]);
+    }
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(cvi_over_menu_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
     cvi_over = entry;
 
@@ -381,26 +368,15 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
 
     row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "dupmenu");
-    gtk_widget_show(entry);
-    menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "dupmenu");
-    for (int i = 0; dupvals[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(dupvals[i]);
-        gtk_widget_set_name(mi, dupvals[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(cvi_dup_menu_proc), (void*)dupvals[i]);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-#else
     entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "dupmenu");
     gtk_widget_show(entry);
-#endif
+    for (int i = 0; dupvals[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            dupvals[i]);
+    }
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(cvi_dup_menu_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
     cvi_dup = entry;
 
@@ -439,28 +415,15 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
 
     row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
-
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "forcemenu");
-    gtk_widget_show(entry);
-    menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "forcemenu");
-    for (int i = 0; forcevals[i].name; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(forcevals[i].name);
-        gtk_widget_set_name(mi, forcevals[i].name);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(cvi_force_menu_proc),
-            (void*)(long)forcevals[i].code);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-#else
     entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "forcemenu");
     gtk_widget_show(entry);
-#endif
+    for (int i = 0; forcevals[i].name; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            forcevals[i].name);
+    }
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(cvi_force_menu_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
     cvi_force = entry;
 
@@ -536,27 +499,16 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
 
     row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
-#ifdef XXX_OPT
-    entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "mergmenu");
-    gtk_widget_show(entry);
-    menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "mergmenu");
-    for (int i = 0; mergvals[i]; i++) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(mergvals[i]);
-        gtk_widget_set_name(mi, mergvals[i]);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(cvi_merg_menu_proc), (void*)mergvals[i]);
-    }
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(entry), cvi_merg_val);
-#else
     entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "mergmenu");
     gtk_widget_show(entry);
-#endif
+    for (int i = 0; mergvals[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            mergvals[i]);
+    }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), cvi_merg_val);
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(cvi_merg_menu_proc), 0);
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
     cvi_merg = entry;
 
@@ -675,9 +627,7 @@ sCvi::update()
         (FIO()->IsNoOverwriteElec() ? 1 : 0);
     if (CDvdb()->getVariable(VA_AutoRename))
         overval = 4;
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(cvi_over), overval);
-#endif
+    gtk_combo_box_set_active(GTK_COMBO_BOX(cvi_over), overval);
     GRX->SetStatus(cvi_replace, CDvdb()->getVariable(VA_NoAskOverwrite));
     GRX->SetStatus(cvi_merge, CDvdb()->getVariable(VA_MergeInput));
     GRX->SetStatus(cvi_polys, CDvdb()->getVariable(VA_NoPolyCheck));
@@ -698,17 +648,11 @@ sCvi::update()
         else
             hst = 0;
     }
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(cvi_dup), hst);
-#else
-#endif
+    gtk_combo_box_set_active(GTK_COMBO_BOX(cvi_dup), hst);
 
     for (int i = 0; forcevals[i].name; i++) {
         if (forcevals[i].code == FIO()->CifStyle().lread_type()) {
-#ifdef XXX_OPT
-            gtk_option_menu_set_history(GTK_OPTION_MENU(cvi_force), i);
-#else
-#endif
+            gtk_combo_box_set_active(GTK_COMBO_BOX(cvi_force), i);
             break;
         }
     }
@@ -861,77 +805,68 @@ sCvi::cvi_action(GtkWidget *caller, void*)
 
 // Static function.
 void
-sCvi::cvi_over_menu_proc(GtkWidget*, void *client_data)
+sCvi::cvi_over_menu_proc(GtkWidget *caller, void*)
 {
-    char *s = (char*)client_data;
-    for (int i = 0; overvals[i]; i++) {
-        if (!strcmp(s, overvals[i])) {
-            if (i == 0) {
-                // Overwrite All (default)
-                CDvdb()->clearVariable(VA_NoOverwritePhys);
-                CDvdb()->clearVariable(VA_NoOverwriteElec);
-                CDvdb()->clearVariable(VA_AutoRename);
-            }
-            else if (i == 1) {
-                // Overwrite Phys
-                CDvdb()->clearVariable(VA_NoOverwritePhys);
-                CDvdb()->setVariable(VA_NoOverwriteElec, 0);
-                CDvdb()->clearVariable(VA_AutoRename);
-            }
-            else if (i == 2) {
-                // Ovewrwrite Elec
-                CDvdb()->setVariable(VA_NoOverwritePhys, 0);
-                CDvdb()->clearVariable(VA_NoOverwriteElec);
-                CDvdb()->clearVariable(VA_AutoRename);
-            }
-            else if (i == 3) {
-                // Overwrite None
-                CDvdb()->setVariable(VA_NoOverwritePhys, 0);
-                CDvdb()->setVariable(VA_NoOverwriteElec, 0);
-                CDvdb()->clearVariable(VA_AutoRename);
-            }
-            else {
-                // Auto Rename
-                CDvdb()->setVariable(VA_AutoRename, 0);
-                CDvdb()->clearVariable(VA_NoOverwritePhys);
-                CDvdb()->clearVariable(VA_NoOverwriteElec);
-            }
-            return;
-        }
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (i == 0) {
+        // Overwrite All (default)
+        CDvdb()->clearVariable(VA_NoOverwritePhys);
+        CDvdb()->clearVariable(VA_NoOverwriteElec);
+        CDvdb()->clearVariable(VA_AutoRename);
+    }
+    else if (i == 1) {
+        // Overwrite Phys
+        CDvdb()->clearVariable(VA_NoOverwritePhys);
+        CDvdb()->setVariable(VA_NoOverwriteElec, 0);
+        CDvdb()->clearVariable(VA_AutoRename);
+    }
+    else if (i == 2) {
+        // Ovewrwrite Elec
+        CDvdb()->setVariable(VA_NoOverwritePhys, 0);
+        CDvdb()->clearVariable(VA_NoOverwriteElec);
+        CDvdb()->clearVariable(VA_AutoRename);
+    }
+    else if (i == 3) {
+        // Overwrite None
+        CDvdb()->setVariable(VA_NoOverwritePhys, 0);
+        CDvdb()->setVariable(VA_NoOverwriteElec, 0);
+        CDvdb()->clearVariable(VA_AutoRename);
+    }
+    else if (i == 4) {
+        // Auto Rename
+        CDvdb()->setVariable(VA_AutoRename, 0);
+        CDvdb()->clearVariable(VA_NoOverwritePhys);
+        CDvdb()->clearVariable(VA_NoOverwriteElec);
     }
 }
 
 
 // Static function.
 void
-sCvi::cvi_dup_menu_proc(GtkWidget*, void *client_data)
+sCvi::cvi_dup_menu_proc(GtkWidget *caller, void*)
 {
-    char *s = (char*)client_data;
-    for (int i = 0; dupvals[i]; i++) {
-        if (!strcmp(s, dupvals[i])) {
-            if (i == 0) {
-                // Skip Test
-                CDvdb()->setVariable(VA_DupCheckMode, "NoTest");
-            }
-            else if (i == 1) {
-                // Warn
-                CDvdb()->clearVariable(VA_DupCheckMode);
-            }
-            else if (i == 2) {
-                // Remove Dups
-                CDvdb()->setVariable(VA_DupCheckMode, "Remove");
-            }
-            return;
-        }
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (i == 0) {
+        // Skip Test
+        CDvdb()->setVariable(VA_DupCheckMode, "NoTest");
+    }
+    else if (i == 1) {
+        // Warn
+        CDvdb()->clearVariable(VA_DupCheckMode);
+    }
+    else if (i == 2) {
+        // Remove Dups
+        CDvdb()->setVariable(VA_DupCheckMode, "Remove");
     }
 }
 
 
 // Static function.
 void
-sCvi::cvi_force_menu_proc(GtkWidget*, void *client_data)
+sCvi::cvi_force_menu_proc(GtkWidget *caller, void*)
 {
-    FIO()->CifStyle().set_lread_type((EXTlreadType)(intptr_t)client_data);
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    FIO()->CifStyle().set_lread_type(forcevals[i].code);
     if (FIO()->CifStyle().lread_type() != EXTlreadDef) {
         char buf[32];
         sprintf(buf, "%d", FIO()->CifStyle().lread_type());
@@ -944,25 +879,21 @@ sCvi::cvi_force_menu_proc(GtkWidget*, void *client_data)
 
 // Static function.
 void
-sCvi::cvi_merg_menu_proc(GtkWidget*, void *client_data)
+sCvi::cvi_merg_menu_proc(GtkWidget *caller, void*)
 {
     if (!Cvi)
         return;
-    char *s = (char*)client_data;
-    for (int i = 0; mergvals[i]; i++) {
-        if (!strcmp(s, mergvals[i])) {
-            cvi_merg_val = i;
-            if (i > 0) {
-                // Can't use window/flatten ro scale factor.
-                gtk_widget_set_sensitive(Cvi->cvi_wnd->frame(), false);
-                Cvi->sb_scale.set_sensitive(false);
-            }
-            else {
-                gtk_widget_set_sensitive(Cvi->cvi_wnd->frame(), true);
-                Cvi->sb_scale.set_sensitive(true);
-            }
-            return;
-        }
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (i > 0) {
+        cvi_merg_val = i;
+        // Can't use window/flatten ro scale factor.
+        gtk_widget_set_sensitive(Cvi->cvi_wnd->frame(), false);
+        Cvi->sb_scale.set_sensitive(false);
+    }
+    else if (i == 0) {
+        cvi_merg_val = i;
+        gtk_widget_set_sensitive(Cvi->cvi_wnd->frame(), true);
+        Cvi->sb_scale.set_sensitive(true);
     }
 }
 

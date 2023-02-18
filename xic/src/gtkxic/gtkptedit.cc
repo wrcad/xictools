@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "ext.h"
 #include "sced.h"
@@ -74,6 +72,13 @@ namespace {
             void update(TermEditInfo*, CDsterm*);
 
         private:
+            void set_layername(const char *n)
+                {
+                    const char *nn = lstring::copy(n);
+                    delete [] te_lname;
+                    te_lname = nn;
+                }
+
             static void te_cancel_proc(GtkWidget*, void*);
             static void te_action_proc(GtkWidget*, void*);
             static void te_menu_proc(GtkWidget*, void*);
@@ -241,15 +246,9 @@ sTE::sTE(GRobject caller, TermEditInfo *tinfo, void(*action)(TermEditInfo*, CDst
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_OPT
-    GtkWidget *entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "layer");
-    gtk_widget_show(entry);
-#else
     GtkWidget *entry = gtk_combo_box_text_new();
     gtk_widget_set_name(entry, "layer");
     gtk_widget_show(entry);
-#endif
     te_layer = entry;
 
     gtk_table_attach(GTK_TABLE(table), entry, 1, 2, rc, rc+1,
@@ -371,6 +370,7 @@ sTE::~sTE()
         (*te_action)(0, te_term);
     if (te_popup)
         gtk_widget_destroy(te_popup);
+    delete [] te_lname;
 }
 
 
@@ -384,30 +384,20 @@ sTE::update(TermEditInfo *tinfo, CDsterm *term)
 
     gtk_widget_set_sensitive(te_popup, (term != 0));
 
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "layer");
-    const char *anyname = "any layer";
-    GtkWidget *mi = gtk_menu_item_new_with_label(anyname);
-    gtk_widget_set_name(mi, anyname);
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(te_menu_proc), 0);
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(
+        GTK_COMBO_BOX(te_layer))));
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(te_layer), "any layer");
     CDl *ld;
     CDlgen lgen(Physical);
     while ((ld = lgen.next()) != 0) {
         if (!ld->isRouting())
             continue;
-        mi = gtk_menu_item_new_with_label(ld->name());
-        gtk_widget_set_name(mi, ld->name());
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(te_menu_proc), (void*)ld->name());
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(te_layer), 
+            ld->name());
     }
-#ifdef XXX_OPT
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(te_layer), menu);
-#endif
+    gtk_combo_box_set_active(GTK_COMBO_BOX(te_layer), 0);
+    g_signal_connect(G_OBJECT(te_layer), "changed",
+        G_CALLBACK(te_menu_proc), 0);
 
     bool hset = false;
     if (tinfo->layer_name() && *tinfo->layer_name()) {
@@ -417,22 +407,17 @@ sTE::update(TermEditInfo *tinfo, CDsterm *term)
             if (!ld->isRouting())
                 continue;
             if (!strcmp(ld->name(), tinfo->layer_name())) {
-#ifdef XXX_OPT
-                gtk_option_menu_set_history(GTK_OPTION_MENU(te_layer),
-                    cnt);
-#endif
+                gtk_combo_box_set_active(GTK_COMBO_BOX(te_layer), cnt);
+                set_layername(ld->name());
                 hset = true;
-                te_lname = ld->name();
                 break;
             }
             cnt++;
         }
     }
     if (!hset) {
-#ifdef XXX_OPT
-        gtk_option_menu_set_history(GTK_OPTION_MENU(te_layer), 0);
-#endif
-        te_lname = 0;
+        gtk_combo_box_set_active(GTK_COMBO_BOX(te_layer), 0);
+        set_layername(0);
     }
 
     sLstr lstr;
@@ -615,9 +600,18 @@ sTE::te_action_proc(GtkWidget *caller, void*)
 
 // Static function.
 void
-sTE::te_menu_proc(GtkWidget*, void *client_data)
+sTE::te_menu_proc(GtkWidget *caller, void*)
 {
-    if (TE)
-        TE->te_lname = (char*)client_data;
+    if (TE) {
+        if (gtk_combo_box_get_active(GTK_COMBO_BOX(caller)) == 0) {
+            // any_layer
+            TE->set_layername(0);
+            return;
+        }
+        char *lname = gtk_combo_box_text_get_active_text(
+            GTK_COMBO_BOX_TEXT(caller));
+        TE->set_layername(lname);
+        g_free(lname);
+    }
 }
 

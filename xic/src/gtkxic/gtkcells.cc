@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "editif.h"
 #include "cfilter.h"
@@ -495,11 +493,9 @@ sCells::sCells(GRobject c)
         G_CALLBACK(c_save_btn_hdlr), this);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
-#ifdef XXX_OPT
-    c_page_combo = gtk_option_menu_new();
-#else
     c_page_combo = gtk_combo_box_text_new();
-#endif
+    g_signal_connect(G_OBJECT(c_page_combo), "changed",
+        G_CALLBACK(c_page_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), c_page_combo, false, false, 0);
 
     //
@@ -515,29 +511,16 @@ sCells::sCells(GRobject c)
 
     // mode menu
     //
-#ifdef XXX_OPT
-    c_mode_combo = gtk_option_menu_new();
-    gtk_widget_show(c_mode_combo);
-    gtk_box_pack_start(GTK_BOX(hbox), c_mode_combo, false, false, 0);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_show(menu);
-    GtkWidget *mi = gtk_menu_item_new_with_label("Phys Cells");
-    gtk_widget_show(mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(c_mode_proc), (void*)(long)Physical);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    mi = gtk_menu_item_new_with_label("Elec Cells");
-    gtk_widget_show(mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(c_mode_proc), (void*)(long)Electrical);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(c_mode_combo), menu);
-#else
     c_mode_combo = gtk_combo_box_text_new();
     gtk_widget_show(c_mode_combo);
     gtk_box_pack_start(GTK_BOX(hbox), c_mode_combo, false, false, 0);
-#endif
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c_mode_combo),
+        "Phys Cells");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c_mode_combo),
+        "Elec Cells");
+    g_signal_connect(G_OBJECT(c_mode_combo), "changed",
+        G_CALLBACK(c_mode_proc), 0);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(c_mode_combo), c_mode);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, 2, 3,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -683,10 +666,7 @@ sCells::update()
         c_mode = DSP()->CurMode();
         if (oldm != c_mode)
             XM()->PopUpCellFilt(0, MODE_UPD, c_mode, 0, 0);
-#ifdef XXX_OPT
-        gtk_option_menu_set_history(GTK_OPTION_MENU(c_mode_combo), c_mode);
-#else
-#endif
+        gtk_combo_box_set_active(GTK_COMBO_BOX(c_mode_combo), c_mode);
         gtk_widget_set_sensitive(c_mode_combo, false);
     }
     else
@@ -1239,25 +1219,18 @@ sCells::cell_list(int cols)
         gtk_widget_hide(c_page_combo);
     else {
         char buf[128];
-#ifdef XXX_OPT
-        GtkWidget *menu = gtk_menu_new();
-        gtk_widget_show(menu);
+        GtkListStore *store = GTK_LIST_STORE(gtk_combo_box_get_model(
+            GTK_COMBO_BOX(c_page_combo)));
+        gtk_list_store_clear(store);
         for (int i = 0; i*pagesz < cnt; i++) {
             int tmpmax = (i+1)*pagesz;
             if (tmpmax > cnt)
                 tmpmax = cnt;
             sprintf(buf, "%d - %d", i*pagesz, tmpmax);
-            GtkWidget *mi = gtk_menu_item_new_with_label(buf);
-            gtk_widget_show(mi);
-            g_signal_connect(G_OBJECT(mi), "activate",
-                G_CALLBACK(c_page_proc), (void*)(long)i);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
+            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c_page_combo),
+                buf);
         }
-        gtk_option_menu_remove_menu(GTK_OPTION_MENU(c_page_combo));
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(c_page_combo), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(c_page_combo), c_page);
-#else
-#endif
+        gtk_combo_box_set_active(GTK_COMBO_BOX(c_page_combo), c_page);
         gtk_widget_show(c_page_combo);
     }
 
@@ -1435,10 +1408,10 @@ sCells::c_rename_cb(const char *newname, void *arg)
 
 
 void
-sCells::c_page_proc(GtkWidget*, void *arg)
+sCells::c_page_proc(GtkWidget *caller, void*)
 {
     if (Cells) {
-        int i = (intptr_t)arg;
+        int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
         if (Cells->c_page != i) {
             Cells->c_page = i;
             Cells->update();
@@ -1448,9 +1421,12 @@ sCells::c_page_proc(GtkWidget*, void *arg)
 
 
 void
-sCells::c_mode_proc(GtkWidget*, void *arg)
+sCells::c_mode_proc(GtkWidget *caller, void*)
 {
-    DisplayMode m = (DisplayMode)(intptr_t)arg;
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (i < 0)
+        return;
+    DisplayMode m = i ? Electrical : Physical;
     if (Cells && Cells->c_mode != m) {
         Cells->c_mode = m;
         XM()->PopUpCellFilt(0, MODE_UPD, Cells->c_mode, 0, 0);

@@ -787,16 +787,16 @@ sTE::te_action_proc(GtkWidget *caller, void*)
 
 // Static function.
 void
-sTE::te_menu_proc(GtkWidget*, void*)
+sTE::te_menu_proc(GtkWidget *caller, void*)
 {
     if (TE) {
-        if (gtk_combo_box_get_active(GTK_COMBO_BOX(TE->te_layer)) == 0) {
+        if (gtk_combo_box_get_active(GTK_COMBO_BOX(caller)) == 0) {
             // any_layer
             TE->set_layername(0);
             return;
         }
         char *lname = gtk_combo_box_text_get_active_text(
-            GTK_COMBO_BOX_TEXT(TE->te_layer));
+            GTK_COMBO_BOX_TEXT(caller));
         TE->set_layername(lname);
         g_free(lname);
     }

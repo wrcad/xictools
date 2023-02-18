@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_OPT
-
 #include "main.h"
 #include "edit.h"
 #include "dsp_inlines.h"
@@ -249,50 +247,23 @@ sPlc::sPlc(bool noprompt)
     pl_smshbtn = button;
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
-#ifdef XXX_OPT
-    pl_refmenu = gtk_option_menu_new();
-    gtk_widget_set_name(pl_refmenu, "Ref");
-    gtk_widget_show(pl_refmenu);
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "refmenu");
-
-    GtkWidget *mi = gtk_menu_item_new_with_label("Origin");
-    gtk_widget_set_name(mi, "Origin");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(pl_refmenu_proc), (void*)(long)PL_ORIGIN);
-    mi = gtk_menu_item_new_with_label("Lower Left");
-    gtk_widget_set_name(mi, "LL");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(pl_refmenu_proc), (void*)(long)PL_LL);
-    mi = gtk_menu_item_new_with_label("Upper Left");
-    gtk_widget_set_name(mi, "UL");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(pl_refmenu_proc), (void*)(long)PL_UL);
-    mi = gtk_menu_item_new_with_label("Upper Right");
-    gtk_widget_set_name(mi, "UR");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(pl_refmenu_proc), (void*)(long)PL_UR);
-    mi = gtk_menu_item_new_with_label("Lower Right");
-    gtk_widget_set_name(mi, "LR");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(pl_refmenu_proc), (void*)(long)PL_LR);
-
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(pl_refmenu), menu);
-#else
     pl_refmenu = gtk_combo_box_text_new();
     gtk_widget_set_name(pl_refmenu, "Ref");
     gtk_widget_show(pl_refmenu);
-#endif
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_refmenu),
+        "Origin");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_refmenu),
+        "Lower Left");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_refmenu),
+        "Upper Left");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_refmenu),
+        "Upper Right");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_refmenu),
+        "Lower Right");
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pl_refmenu),
+        ED()->instanceRef());
+    g_signal_connect(G_OBJECT(pl_refmenu), "changed",
+        G_CALLBACK(pl_refmenu_proc), 0);
     gtk_box_pack_start(GTK_BOX(hbox), pl_refmenu, false, false, 0);
 
     button = gtk_button_new_with_label("Help");
@@ -378,17 +349,10 @@ sPlc::sPlc(bool noprompt)
     //
     // Master selection option menu.
     //
-#ifdef XXX_OPT
-    GtkWidget *opmenu = gtk_option_menu_new();
-    gtk_widget_set_name(opmenu, "Master");
-    gtk_widget_show(opmenu);
-    pl_masterbtn = opmenu;
-#else
     GtkWidget *opmenu = gtk_combo_box_text_new();
     gtk_widget_set_name(opmenu, "Master");
     gtk_widget_show(opmenu);
     pl_masterbtn = opmenu;
-#endif
     rebuild_menu();
 
     gtk_table_attach(GTK_TABLE(form), opmenu, 0, 1, 2, 3,
@@ -463,13 +427,12 @@ sPlc::sPlc(bool noprompt)
     if (DSP()->CurMode() == Electrical)
         gtk_widget_set_sensitive(pl_arraybtn, false);
     set_sens(false);
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(pl_refmenu),
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pl_refmenu),
         ED()->instanceRef());
-#endif
 
     // Give focus to menu, otherwise cancel button may get focus, and
     // Enter (intending to change reference corner) will pop down.
+    gtk_widget_set_can_focus(pl_masterbtn, true);
     gtk_window_set_focus(GTK_WINDOW(pl_popup), pl_masterbtn);
 
     // drop site
@@ -506,10 +469,8 @@ sPlc::~sPlc()
 void
 sPlc::update()
 {
-#ifdef XXX_OPT
-    gtk_option_menu_set_history(GTK_OPTION_MENU(pl_refmenu),
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pl_refmenu),
         ED()->instanceRef());
-#endif
 
     ED()->plInitMenuLen();
     const char *s = sb_mmlen.get_string();
@@ -563,36 +524,22 @@ sPlc::rebuild_menu()
 {
     if (!pl_masterbtn)
         return;
-#ifdef XXX_OPT
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_show(menu);
-
-    {
-        GtkWidget *mi = gtk_menu_item_new_with_label("New");
-        gtk_widget_set_name(mi, "Add New Entry");
-        gtk_widget_show(mi);
-//XXX
-        g_object_set_data(G_OBJECT(mi), "user", (char*)PL_NEW_CODE);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(pl_menu_proc), 0);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    }
-
+    g_signal_handlers_disconnect_by_func(G_OBJECT(pl_masterbtn),
+        (gpointer)pl_menu_proc, (gpointer)0);
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(
+        GTK_COMBO_BOX(pl_masterbtn))));
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_masterbtn),
+        "New");
     for (stringlist *p = ED()->plMenu(); p; p = p->next) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(p->string);
-        gtk_widget_set_name(mi, p->string);
-        gtk_widget_show(mi);
-//XXX
-        g_object_set_data(G_OBJECT(mi), "user", p->string);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(pl_menu_proc), 0);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_masterbtn),
+            p->string);
     }
-    gtk_option_menu_remove_menu(GTK_OPTION_MENU(pl_masterbtn));
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(pl_masterbtn), menu);
     if (ED()->plMenu())
-        gtk_option_menu_set_history(GTK_OPTION_MENU(pl_masterbtn), 1);
-#endif
+        gtk_combo_box_set_active(GTK_COMBO_BOX(pl_masterbtn), 1);
+    else
+        gtk_combo_box_set_active(GTK_COMBO_BOX(pl_masterbtn), 0);
+    g_signal_connect(G_OBJECT(pl_masterbtn), "changed",
+        G_CALLBACK(pl_menu_proc), 0);
 }
 
 
@@ -666,10 +613,21 @@ sPlc::pl_replace_proc(GtkWidget *caller, void*)
 // cell, or the origin of the cell, in physical mode.
 //
 void
-sPlc::pl_refmenu_proc(GtkWidget*, void *arg)
+sPlc::pl_refmenu_proc(GtkWidget *caller, void*)
 {
-    PLref ref = (PLref)(intptr_t)(arg);
-    ED()->setInstanceRef(ref);
+    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+    if (i < 0)
+        return;
+    if (i == 0)
+        ED()->setInstanceRef(PL_ORIGIN);
+    else if (i == 1)
+        ED()->setInstanceRef(PL_LL);
+    else if (i == 2)
+        ED()->setInstanceRef(PL_UL);
+    else if (i == 3)
+        ED()->setInstanceRef(PL_UR);
+    else if (i == 4)
+        ED()->setInstanceRef(PL_LR);
 }
 
 
@@ -802,10 +760,13 @@ sPlc::pl_menu_proc(GtkWidget *caller, void*)
 {
     if (!Plc)
         return;
-    char *string = 0;
-    if (caller)
-        string = (char*)g_object_get_data(G_OBJECT(caller), "user");
-    if (!string || !strcmp(string, PL_NEW_CODE)) {
+    int i = 0;
+    if (caller) {
+        i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
+        if (i < 0)
+            return;
+    }
+    if (i == 0) {
         if (GRX->GetStatus(Plc->pl_placebtn))
             GRX->CallCallback(Plc->pl_menu_placebtn);
         char *dfile = Plc->pl_dropfile;
@@ -831,11 +792,15 @@ sPlc::pl_menu_proc(GtkWidget *caller, void*)
             Plc->pl_str_editor->register_usrptr((void**)&Plc->pl_str_editor);
     }
     else {
+        char *tok = gtk_combo_box_text_get_active_text(
+            GTK_COMBO_BOX_TEXT(caller));
+        char *string = tok;
         char *aname = lstring::getqtok(&string);
         char *cname = lstring::getqtok(&string);
         ED()->addMaster(aname, cname);
         delete [] aname;
         delete [] cname;
+        g_free(tok);
     }
 }
 
