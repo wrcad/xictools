@@ -52,14 +52,10 @@
 //  Main header for the GTK+ library
 //
 
-#if GTK_CHECK_VERSION(2,0,0)
 #ifndef WITH_QUARTZ
 #ifndef WIN32
 #define WITH_X11
 #endif
-#endif
-#else
-#define WITH_X11
 #endif
 
 namespace ginterf
@@ -430,6 +426,11 @@ namespace gtkinterf {
         void SetViewport(GtkWidget *w)  { gd_viewport = w; }
         GdkWindow *Window()             { return (gd_window); }
         void SetWindow(GdkWindow *w)    { gd_window = w; }
+#ifdef XXX_GDK
+#else
+        cairo_t *CairoCx()              { return (gd_cr); }
+        void SetCairoCx(cairo_t *cr)    { gd_cr = cr; }
+#endif
 
         void SetBackgPixel(unsigned int p)    { gd_backg = p; }
         unsigned int GetBackgPixel()          { return (gd_backg); }
@@ -437,9 +438,15 @@ namespace gtkinterf {
         unsigned int GetForegPixel()          { return (gd_foreg); }
 
     protected:
-        GtkWidget *gd_viewport;     // drawing widget
-        GdkWindow *gd_window;       // drawing window
-        sGbag *gd_gbag;             // graphics rendering context
+        GtkWidget *gd_viewport;         // drawing widget
+        GdkWindow *gd_window;           // drawing window
+#ifdef XXX_GDK
+#else
+        cairo_surface_t *gd_surface;    // drawing surface
+        cairo_surface_t *gd_image;      // image backing
+        cairo_t *gd_cr;
+#endif
+        sGbag *gd_gbag;                 // graphics rendering context
         unsigned int gd_backg;
         unsigned int gd_foreg;
     };

@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_LIST
-
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -65,6 +63,7 @@ sAsmPage::sAsmPage(sAsm *mt)
     pg_tx = 0;
     pg_tablabel = 0;
     pg_form = gtk_table_new(3, 1, false);
+    pg_no_select = false;
     gtk_widget_show(pg_form);
     int row = 0;
 
@@ -267,28 +266,34 @@ sAsmPage::sAsmPage(sAsm *mt)
     gtk_widget_show(swin);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin),
         GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-#ifdef XXX_LIST
-    pg_toplevels = gtk_list_new();
-#else
-#endif
+    GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
+    pg_toplevels = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
     gtk_widget_show(pg_toplevels);
-    g_signal_connect(G_OBJECT(pg_toplevels), "select-child",
-        G_CALLBACK(pg_selection_proc), this);
-    g_signal_connect(G_OBJECT(pg_toplevels), "unselect-child",
-        G_CALLBACK(pg_unselection_proc), this);
+    gtk_tree_view_set_enable_search(GTK_TREE_VIEW(pg_toplevels), false);
+    GtkTreeViewColumn *tvcol = gtk_tree_view_column_new();
+    gtk_tree_view_append_column(GTK_TREE_VIEW(pg_toplevels), tvcol);
+    GtkCellRenderer *rnd = gtk_cell_renderer_text_new();
+    gtk_tree_view_column_pack_start(tvcol, rnd, true);
+    gtk_tree_view_column_add_attribute(tvcol, rnd, "text", 0);
+
+    GtkTreeSelection *sel =
+        gtk_tree_view_get_selection(GTK_TREE_VIEW(pg_toplevels));
+    gtk_tree_selection_set_select_function(sel, pg_selection_proc, this, 0);
+    // TreeView bug hack, see note with handlers.   
+    g_signal_connect(G_OBJECT(pg_toplevels), "focus",
+        G_CALLBACK(pg_focus_proc), this);
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(swin),
         pg_toplevels);
     gtk_box_pack_start(GTK_BOX(vbox), swin, true, true, 2);
+    gtk_table_attach(GTK_TABLE(table), vbox, 0, 1, 0, 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 2, 2);
 
     // drop site
     gtk_drag_dest_set(pg_toplevels, GTK_DEST_DEFAULT_ALL,
         sAsm::target_table, sAsm::n_targets, GDK_ACTION_COPY);
     g_signal_connect_after(G_OBJECT(pg_toplevels), "drag-data-received",
         G_CALLBACK(pg_drag_data_received), this);
-
-    gtk_table_attach(GTK_TABLE(table), vbox, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 2, 2);
 
     frame = gtk_frame_new(0);
     gtk_widget_show(frame);
@@ -306,11 +311,6 @@ sAsmPage::sAsmPage(sAsm *mt)
 
 sAsmPage::~sAsmPage()
 {
-    // avoid signal, may crash otherwise
-    if (pg_toplevels) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(pg_toplevels),
-            (gpointer)pg_unselection_proc, this);
-    }
     delete pg_tx;
     for (unsigned int i = 0; i < pg_numtlcells; i++)
         delete pg_cellinfo[i];
@@ -338,11 +338,9 @@ sAsmPage::reset()
     gtk_entry_set_text(GTK_ENTRY(pg_prefix), "");
     gtk_entry_set_text(GTK_ENTRY(pg_suffix), "");
 
-#ifdef XXX_LIST
-    gtk_list_clear_items(
-        GTK_LIST(pg_toplevels), 0, pg_numtlcells);
-#else
-#endif
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(
+        GTK_TREE_VIEW(pg_toplevels))));
+
     for (unsigned int j = 0; j < pg_numtlcells; j++) {
         delete pg_cellinfo[j];
         pg_cellinfo[j] = 0;
@@ -373,15 +371,16 @@ sAsmPage::add_instance(const char *cname)
     }
     tlinfo *tl = new tlinfo(cname);
     pg_cellinfo[pg_numtlcells] = tl;
-#ifdef XXX_LIST
-    GtkWidget *item = gtk_list_item_new_with_label(cname ? cname : ASM_TOPC);
-    gtk_widget_show(item);
-    gtk_list_append_items(GTK_LIST(pg_toplevels), g_list_append(0, item));
+    GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(
+        GTK_TREE_VIEW(pg_toplevels)));
+    GtkTreeIter iter;
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter, 0, cname ? cname : ASM_TOPC, -1);
     pg_numtlcells++;
     pg_curtlcell = -1;
-    gtk_list_select_item(GTK_LIST(pg_toplevels), pg_numtlcells-1);
-#else
-#endif
+    GtkTreeSelection *sel = gtk_tree_view_get_selection(
+        GTK_TREE_VIEW(pg_toplevels));
+    gtk_tree_selection_select_iter(sel, &iter);
     upd_sens();
     return (tl);
 }
@@ -394,29 +393,44 @@ sAsmPage::add_instance(const char *cname)
 // Static function.
 // Handle selection change in the "top-level" cell list.
 //
-void
-sAsmPage::pg_selection_proc(GtkWidget *caller, GtkWidget *child, void *srcp)
+int
+sAsmPage::pg_selection_proc(GtkTreeSelection*, GtkTreeModel*,
+    GtkTreePath *tp, int issel, void *srcp)
 {
     sAsmPage *src = static_cast<sAsmPage*>(srcp);
-    src->pg_owner->store_tx_params();
-#ifdef XXX_LIST
-    unsigned int n = gtk_list_child_position(GTK_LIST(caller), child);
-    src->pg_owner->show_tx_params(n);
-#else
-#endif
+    if (src->pg_no_select && !issel)
+        return (false);
+    if (!issel) {
+        src->pg_owner->store_tx_params();
+        int n = gtk_tree_path_get_indices(tp)[0];
+        src->pg_owner->show_tx_params(n);
+    }
+    else {
+        src->pg_curtlcell = -1;
+        src->pg_tx->reset();
+        src->upd_sens();
+    }
+    return (true);
 }
 
 
 // Static function.
-// Handle deselection, called when clicking on selected topcell entry.
+// This handler is a hack to avoid a GtkTreeWidget defect:  when focus
+// is taken and there are no selections, the 0'th row will be
+// selected.  There seems to be no way to avoid this other than a hack
+// like this one.  We set a flag to lock out selection changes in this
+// case.
 //
-void
-sAsmPage::pg_unselection_proc(GtkWidget*, GtkWidget*, void *srcp)
+int
+sAsmPage::pg_focus_proc(GtkWidget*, GdkEvent*, void *srcp)
 {
     sAsmPage *src = static_cast<sAsmPage*>(srcp);
-    src->pg_curtlcell = -1;
-    src->pg_tx->reset();
-    src->upd_sens();
+    GtkTreeSelection *sel =
+        gtk_tree_view_get_selection(GTK_TREE_VIEW(src->pg_toplevels));
+    // If nothing selected set the flag.
+    if (!gtk_tree_selection_get_selected(sel, 0, 0))
+        src->pg_no_select = true;
+    return (false);
 }
 
 

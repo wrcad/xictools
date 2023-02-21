@@ -165,9 +165,9 @@ struct sAsmPage
     tlinfo *add_instance(const char*);
 
 private:
-    static void pg_selection_proc(GtkWidget*, GtkWidget*, void*);
-    static void pg_unselection_proc(GtkWidget*, GtkWidget*, void*);
-
+    static int pg_selection_proc(GtkTreeSelection*, GtkTreeModel*,
+        GtkTreePath*, int, void*);
+    static int pg_focus_proc(GtkWidget*, GdkEvent*, void*);
     static void pg_drag_data_received(GtkWidget*, GdkDragContext*,
         gint, gint, GtkSelectionData*, guint, guint, void*);
 
@@ -192,6 +192,7 @@ private:
     unsigned int pg_numtlcells;     // number of instances
     int pg_curtlcell;               // index of selected instance, or -1
     GTKspinBtn sb_scale;            // scale spin button
+    bool pg_no_select;              // treeview focus fix
 };
 
 // The main widget container.

@@ -63,14 +63,19 @@ struct tbpoint_t
     int x, y;
 };
 
+//XXX merge functionality inti gtk_draw
 struct tb_bag : public gtk_bag, public gtk_draw
 {
     tb_bag(int type = 0) : gtk_draw(type)
         {
             b_wid = 0;
             b_hei = 0;
+#ifdef XXX_GDK
             b_pixmap = 0;
             b_winbak = 0;
+#else
+            b_image = 0;
+#endif
         }
 
     void switch_to_pixmap();
@@ -78,8 +83,12 @@ struct tb_bag : public gtk_bag, public gtk_draw
 
     int b_wid;
     int b_hei;
+#ifdef XXX_GDK
     GdkPixmap *b_pixmap;
     GdkWindow *b_winbak;
+#else
+    cairo_surface_t *b_image;
+#endif
 };
 
 extern inline class GTKtoolbar *TB();

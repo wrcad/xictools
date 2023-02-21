@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-//#define XXX_OPT
-
 #include <ctype.h>
 #include <stdint.h>
 #include "gtkinterf.h"
@@ -541,35 +539,15 @@ GTKfontPopup::GTKfontPopup(gtk_bag *owner, int indx, void *arg,
         g_signal_connect(G_OBJECT(button), "clicked",
             G_CALLBACK(ft_apply_proc), this);
         if (indx > 0) {
-#ifdef XXX_OPT
-            GtkWidget *opt = gtk_option_menu_new();
-            gtk_widget_show(opt);
-            GtkWidget *menu = gtk_menu_new();
-            gtk_widget_show(menu);
-            for (int i = 1; i < gtk_font.num_app_fonts; i++) {
-                GtkWidget *mi =
-                    gtk_menu_item_new_with_label(gtk_font.getLabel(i));
-                gtk_widget_show(mi);
-                gtk_widget_set_name(mi, gtk_font.getLabel(i));
-                g_object_set_data(G_OBJECT(mi), "index", (void*)(long)i);
-                gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(ft_opt_menu_proc), this);
-            }
-            gtk_option_menu_set_menu(GTK_OPTION_MENU(opt), menu);
-            gtk_option_menu_set_history(GTK_OPTION_MENU(opt), indx-1);
-#else
             GtkWidget *opt = gtk_combo_box_text_new();
             gtk_widget_show(opt);
             for (int i = 1; i < gtk_font.num_app_fonts; i++) {
                 gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(opt),
                     gtk_font.getLabel(i));
             }
-            //XXX Connect signals.
+            gtk_combo_box_set_active(GTK_COMBO_BOX(opt), indx-1);
             g_signal_connect(G_OBJECT(opt), "changed",
                 G_CALLBACK(ft_opt_menu_proc), this);
-            gtk_combo_box_set_active(GTK_COMBO_BOX(opt), indx-1);
-#endif
             gtk_box_pack_start(GTK_BOX(hbox), opt, true, true, 0);
         }
     }
@@ -683,7 +661,6 @@ GTKfontPopup::set_index(int ix)
     else
         set_font_name(gtk_font.getName(FNT_FIXED));
     GtkFontSelection *fsel = GTK_FONT_SELECTION(ft_fsel);
-//XXX    gtk_widget_set_sensitive(fsel->face_list, !gtk_font.isFamilyOnly(ix));
     gtk_widget_set_sensitive(gtk_font_selection_get_face_list(fsel),
         !gtk_font.isFamilyOnly(ix));
 }
@@ -779,13 +756,8 @@ GTKfontPopup::ft_opt_menu_proc(GtkWidget *caller, void *client_data)
 {
     GTKfontPopup *sel = static_cast<GTKfontPopup*>(client_data);
     if (sel) {
-#ifdef XXX_OPT
-        int ix = (intptr_t)g_object_get_data(G_OBJECT(caller), "index");
-        sel->set_index(ix);
-#else
         int ix = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
         sel->set_index(ix + 1);
-#endif
     }
 }
 
@@ -822,7 +794,6 @@ GTKfontPopup::show_available_fonts(bool fixed)
 {
     GtkFontSelection *fsel = GTK_FONT_SELECTION(ft_fsel);
     GtkListStore *model = GTK_LIST_STORE(
-//XXX        gtk_tree_view_get_model(GTK_TREE_VIEW(fsel->family_list)));
         gtk_tree_view_get_model(
             GTK_TREE_VIEW(gtk_font_selection_get_family_list(fsel))));
 
@@ -856,9 +827,7 @@ GTKfontPopup::show_available_fonts(bool fixed)
 
         gtk_list_store_set(model, &iter, 0, families[i], 1, name, -1);
     }
-//XXX Can't access family element, so probably can't free families.
-//    fsel->family = 0;
-//    g_free(families);
+    g_free(families);
 }
 // End of GTKfontPopup functions
 

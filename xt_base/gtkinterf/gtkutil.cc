@@ -38,6 +38,8 @@
  $Id:$
  *========================================================================*/
 
+#define XXX_GDK
+
 #include <stdio.h>
 #include <ctype.h>
 #include <stdint.h>
@@ -2373,10 +2375,18 @@ gtkinterf::ShellGeometry(GtkWidget *widget, GdkRectangle *widget_box,
 
 namespace {
     GdkCursor *B1hand_cursor;
-    GdkGC *B1gc;
     GdkRectangle B1box;
     GdkRectangle B1cf;
+#ifdef xXXX_GDK
+    GdkGC *B1gc;
+#else
+    cairo_t *B1cr;
+//    cairo_surface_t *B1sfc;
+#endif
 
+//XXX
+// The box-drawing doesn't show in either gdk or cairo versions.  Maybe
+// drawing on the root window is no allowed in OSX and elsewhere?
 
     inline GdkWindow *
     gr_default_root_window()
@@ -2390,12 +2400,20 @@ namespace {
     {
         if (gtk_widget_get_window(caller) != event->motion.window)
             return (false);
+#ifdef xXXX_GDK
         gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
             B1cf.x, B1cf.y, B1box.width, B1box.height);
         B1cf.x = (int)event->motion.x_root - B1box.x;
         B1cf.y = (int)event->motion.y_root - B1box.y;
         gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
             B1cf.x, B1cf.y, B1box.width, B1box.height);
+#else
+        cairo_rectangle(B1cr, B1cf.x, B1cf.y, B1box.width, B1box.height);
+        B1cf.x = (int)event->motion.x_root - B1box.x;
+        B1cf.y = (int)event->motion.y_root - B1box.y;
+        cairo_rectangle(B1cr, B1cf.x, B1cf.y, B1box.width, B1box.height);
+        cairo_stroke(B1cr);
+#endif
         return (true);
     }
 
@@ -2407,8 +2425,13 @@ namespace {
             return (false);
         if (event->button.button == 1) {
             gdk_pointer_ungrab(GDK_CURRENT_TIME);
+#ifdef xXXX_GDK
             gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
                 B1cf.x, B1cf.y, B1box.width, B1box.height);
+#else
+            cairo_rectangle(B1cr, B1cf.x, B1cf.y, B1box.width, B1box.height);
+            cairo_stroke(B1cr);
+#endif
             B1cf.x = (int)event->button.x_root - B1box.x;
             B1cf.y = (int)event->button.y_root - B1box.y;
 
@@ -2435,6 +2458,7 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
         return (false);
     if (!B1hand_cursor) {
         // first call, create cursor and GC
+#ifdef xXXX_GDK
         B1hand_cursor = gdk_cursor_new(GDK_HAND2);
         B1gc = gdk_gc_new(gr_default_root_window());
         gdk_gc_set_subwindow(B1gc, GDK_INCLUDE_INFERIORS);
@@ -2448,6 +2472,27 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
         gtk_QueryColor(&clr);
         gdk_gc_set_foreground(B1gc, &clr);
         gdk_gc_set_function(B1gc, GDK_XOR);
+#else
+        B1hand_cursor = gdk_cursor_new(GDK_HAND2);
+
+        GdkWindow *w = gr_default_root_window();
+//        B1sfc = gdk_window_create_similar_surface(w, CAIRO_CONTENT_COLOR,
+//            gdk_window_get_width(w), gdk_window_get_height(w));
+//        B1cr = cairo_create(B1sfc);
+        B1cr = gdk_cairo_create(w);
+
+        GdkColor wp;
+        gdk_color_white(GRX->Colormap(), &wp);
+        GdkColor bp;
+        gdk_color_black(GRX->Colormap(), &bp);
+        GdkColor clr;
+        clr.pixel = wp.pixel ^ bp.pixel;
+        gtk_QueryColor(&clr);
+
+        cairo_set_source_rgb(B1cr, clr.red/255.0, clr.green/255.0,
+            clr.blue/255.0);
+        cairo_set_operator(B1cr, CAIRO_OPERATOR_XOR);
+#endif
     }
 
     GdkRectangle shell_box, parent_box;
@@ -2462,9 +2507,16 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
     B1cf.width = shell_box.x - parent_box.x;
     B1cf.height = shell_box.y - parent_box.y;
 
+#ifdef xXXX_GDK
     gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
         (int)event->button.x_root - B1box.x,
         (int)event->button.y_root - B1box.y, B1box.width, B1box.height);
+#else
+    cairo_rectangle(B1cr,
+        (int)event->button.x_root - B1box.x,
+        (int)event->button.y_root - B1box.y, B1box.width, B1box.height);
+    cairo_stroke(B1cr);
+#endif
 
     gtk_widget_add_events(caller, GDK_BUTTON1_MOTION_MASK);
     g_signal_connect(G_OBJECT(caller), "motion-notify-event",
@@ -3127,7 +3179,7 @@ gtkinterf::text_realize_proc(GtkWidget *w, void*)
     if (wd) {
         GdkCursor *c = gdk_cursor_new(GDK_TOP_LEFT_ARROW);
         gdk_window_set_cursor(wd, c);
-        gdk_cursor_destroy(c);
+        gdk_cursor_unref(c);
     }
 }
 

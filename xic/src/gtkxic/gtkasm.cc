@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_LIST
-
 #include "main.h"
 #include "fio.h"
 #include "fio_assemble.h"
@@ -984,15 +982,18 @@ sAsm::asm_page_change_proc(GtkWidget*, void*, int page, void*)
     if (page > 0) {
         sAsmPage *src = Asm->asm_sources[page-1];
         int n = src->pg_curtlcell;
-#ifdef XXX_LIST
-        if (n >= 0)
-            gtk_list_select_item(GTK_LIST(src->pg_toplevels), n);
-        else {
-            src->pg_tx->reset();
-            gtk_list_unselect_all(GTK_LIST(src->pg_toplevels));
+        GtkTreeSelection *sel =
+            gtk_tree_view_get_selection(GTK_TREE_VIEW(src->pg_toplevels));
+        if (n >= 0) {
+            // Select the nth row.
+            GtkTreePath *path = gtk_tree_path_new_from_indices(n, -1);
+            gtk_tree_selection_select_path(sel, path);
+            gtk_tree_path_free(path);
         }
-#else
-#endif
+        else {
+            // Clear selections.
+            gtk_tree_selection_unselect_all(sel);
+        }
         src->upd_sens();
     }
 }
@@ -1062,25 +1063,14 @@ sAsm::asm_action_proc(GtkWidget *caller, void*)
             int n = src->pg_curtlcell;
             if (n >= 0) {
 
-#ifdef XXX_LIST
-                if (n > 0)
-                    gtk_list_clear_items(GTK_LIST(src->pg_toplevels), n, n+1);
-                else {
-                    // Hideous gtk1 bug in gtk_list_clear_items:
-                    // removing the first element if there is more
-                    // than one causes a seg fault.
-                    // gtklist.c (1.2.10) line 1302:
-                    //   new_focus_child = list->children->prev->data;
-                    // should be
-                    //   new_focus_child = list->children->data;
-                    // Here's a hack-around.
-                    //
-                    GtkList *l = GTK_LIST(src->pg_toplevels);
-                    GList *g = g_list_append(0, l->children->data);
-                    gtk_list_remove_items(GTK_LIST(src->pg_toplevels), g);
-                }
-#else
-#endif
+                // Remove the nth row.
+                GtkTreeModel *store = gtk_tree_view_get_model(
+                    GTK_TREE_VIEW(src->pg_toplevels));
+                GtkTreePath *path = gtk_tree_path_new_from_indices(n, -1);
+                GtkTreeIter iter;
+                gtk_tree_model_get_iter(store, &iter, path);
+                gtk_list_store_remove(GTK_LIST_STORE(store), &iter);
+                gtk_tree_path_free(path);
 
                 delete src->pg_cellinfo[n];
                 src->pg_numtlcells--;
@@ -1089,13 +1079,14 @@ sAsm::asm_action_proc(GtkWidget *caller, void*)
                 src->pg_cellinfo[src->pg_numtlcells] = 0;
                 src->pg_curtlcell = -1;
                 src->upd_sens();
-#ifdef XXX_LIST
-                if (src->pg_numtlcells > 0) {
-                    gtk_list_select_item(GTK_LIST(src->pg_toplevels),
-                        src->pg_numtlcells-1);
-                }
-#else
-#endif
+
+                // Select the top row.
+                path = gtk_tree_path_new_from_indices(
+                    src->pg_numtlcells-1, -1);
+                GtkTreeSelection *sel = gtk_tree_view_get_selection(
+                    GTK_TREE_VIEW(src->pg_toplevels));
+                gtk_tree_selection_select_path(sel, path);
+                gtk_tree_path_free(path);
             }
         }
     }

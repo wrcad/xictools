@@ -49,6 +49,8 @@ Authors: 1988 Jeffrey M. Hsu
 // GTK drivers for plotting.
 //
 
+//#define XXX_GDK
+
 #include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
@@ -108,7 +110,12 @@ struct plot_bag : public gtk_bag,  public gtk_draw
             pb_bbox = 0;
             for (int i = 0; i < pbtn_NUMBTNS; i++)
                 pb_checkwins[i] = 0;
+#ifdef XXX_GDK
             pb_pixmap = 0;
+#else
+            pb_surface = 0;
+            pb_image = 0;
+#endif
             pb_pmwid = pb_pmhei = 0;
             pb_id = 0;
             pb_x = pb_y = 0;
@@ -117,10 +124,16 @@ struct plot_bag : public gtk_bag,  public gtk_draw
 
     ~plot_bag()
         {
-            if (pb_pixmap)
 #ifdef XXX_GDK
+            if (pb_pixmap)
                 gdk_pixmap_unref(pb_pixmap);
 #else
+                /*
+            if (pb_surface)
+                cairo_surface_destroy(pb_surface);
+            if (pb_image)
+                cairo_surface_destroy(pb_image);
+                */
 #endif
             if (pb_id)
                 g_source_remove(pb_id);
@@ -165,7 +178,12 @@ private:
 
     GtkWidget *pb_bbox;             // frame containing button box
     GtkWidget *pb_checkwins[pbtn_NUMBTNS];  // button widget pointers
+#ifdef XXX_GDK
     GdkPixmap *pb_pixmap;           // backing store
+#else
+    cairo_surface_t *pb_surface;    // direct drawing surface
+    cairo_surface_t *pb_image;      // backing store
+#endif
     int pb_pmwid, pb_pmhei;         // pixmap size
     int pb_id;                      // motion idle id
     int pb_x, pb_y;                 // motion coords
@@ -358,6 +376,8 @@ plot_bag::init(sGraph *gr)
             (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE)));
     }
 #else
+    cairo_t *cr = gdk_cairo_create(Window());
+    SetCairoCx(cr);
 #endif
     gr->gr_pkg_init_colors();
     gr->set_fontsize();
@@ -366,8 +386,8 @@ plot_bag::init(sGraph *gr)
     GdkCursor *cursor = gdk_cursor_new(GDK_LEFT_PTR);
     gdk_window_set_cursor(Window(), cursor);
 
-    int w, h;
-    gtk_window_get_size(GTK_WINDOW(Window()), &w, &h);
+    int w = gdk_window_get_width(Window());
+    int h = gdk_window_get_height(Window());
     gr->area().set_width(w);
     gr->area().set_height(h);
 
@@ -746,17 +766,40 @@ sGraph::gr_redraw()
         wb->pb_pmhei = height;
     }
 #else
+    if (!wb->pb_image || wb->pb_pmwid != width || wb->pb_pmhei != height) {
+        /*
+        if (wb->pb_surface)
+            cairo_surface_destroy(wb->pb_surface);
+        wb->pb_image = gdk_window_create_similar_surface(
+            wb->Window(), CAIRO_CONTENT_COLOR, width, height);
+        if (wb->pb_image)
+            cairo_surface_destroy(wb->pb_image);
+        wb->pb_image = cairo_surface_create_similar_image(
+            wb->pb_surface, CAIRO_FORMAT_RGB24, width, height);
+        wb->pb_pmwid = width;
+        wb->pb_pmhei = height;
+        */
+    }
 #endif
+#ifdef XXX_GDK
     GdkWindow *wtmp = wb->Window();
     wb->SetWindow(wb->pb_pixmap);
     wb->SetColor(gr_colors[0].pixel);
     wb->Box(0, 0, width, height);
     gr_redraw_direct();  // This might change area().width/area().height.
     wb->SetWindow(wtmp);
-#ifdef XXX_GDK
     gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
         width, height);
 #else
+    wb->SetColor(gr_colors[0].pixel);
+    wb->Box(0, 0, width, height);
+    gr_redraw_direct();  // This might change area().width/area().height.
+    /*
+    cairo_t *cr = cairo_create(wb->pb_surface);
+    cairo_set_source_surface(cr, wb->pb_image, 0, 0);
+    cairo_paint(cr);
+    cairo_destroy(cr);
+    */
 #endif
     gr_redraw_keyed();
     gr_dirty = false;
@@ -771,8 +814,13 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
     int h = gdk_window_get_height(wb->Window());
     area().set_width(w);
     area().set_height(h);
+#ifdef XXX_GDK
     if (gr_dirty || !wb->pb_pixmap || wb->pb_pmwid != area().width() ||
             wb->pb_pmhei != area().height()) {
+#else
+    if (gr_dirty || !wb->pb_image || wb->pb_pmwid != area().width() ||
+            wb->pb_pmhei != area().height()) {
+#endif
         gr_redraw();
         return;
     }
@@ -780,6 +828,10 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
     gdk_window_copy_area(wb->Window(), wb->GC(), left,
         top, wb->pb_pixmap, left, top, right - left, bottom - top);
 #else
+    cairo_t *cr = cairo_create(wb->pb_surface);
+    cairo_set_source_surface(cr, wb->pb_image, 0, 0);
+    cairo_paint(cr);
+    cairo_destroy(cr);
 #endif
     GdkRectangle r;
     r.x = left;
@@ -912,16 +964,23 @@ plot_bag::redraw_timeout(void *arg)
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
 
     wb->pb_rdid = 0;
+#ifdef XXX_GDK
     GdkWindow *wtmp = wb->Window();
     wb->SetWindow(wb->pb_pixmap);
     wb->SetColor(graph->color(0).pixel);
     wb->Box(0, 0, graph->area().width(), graph->area().height());
     graph->gr_redraw_direct();
     wb->SetWindow(wtmp);
-#ifdef XXX_GDK
     gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
         graph->area().width(), graph->area().height());
 #else
+    wb->SetColor(graph->color(0).pixel);
+    wb->Box(0, 0, graph->area().width(), graph->area().height());
+    graph->gr_redraw_direct();
+    cairo_t *cr = cairo_create(wb->pb_surface);
+    cairo_set_source_surface(cr, wb->pb_image, 0, 0);
+    cairo_paint(cr);
+    cairo_destroy(cr);
 #endif
     graph->gr_redraw_keyed();
     graph->set_dirty(false);
@@ -943,16 +1002,30 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
 
     int w = gdk_window_get_width(wb->Window());
     int h = gdk_window_get_height(wb->Window());
+#ifdef XXX_GDK
     if (!wb->pb_pixmap || wb->pb_pmwid != w || wb->pb_pmhei != h) {
         graph->area().set_width(w);
         graph->area().set_height(h);
 
-#ifdef XXX_GDK
         if (wb->pb_pixmap)
             gdk_pixmap_unref(wb->pb_pixmap);
         wb->pb_pixmap = gdk_pixmap_new(wb->Window(), graph->area().width(),
             graph->area().height(), gdk_visual_get_depth(GRX->Visual()));
 #else
+    if (!wb->pb_image || wb->pb_pmwid != w || wb->pb_pmhei != h) {
+        graph->area().set_width(w);
+        graph->area().set_height(h);
+
+        /*
+        if (wb->pb_surface)
+            cairo_surface_destroy(wb->pb_surface);
+        wb->pb_image = gdk_window_create_similar_surface(
+            wb->Window(), CAIRO_CONTENT_COLOR, w, h);
+        if (wb->pb_image)
+            cairo_surface_destroy(wb->pb_image);
+        wb->pb_image = cairo_surface_create_similar_image(
+            wb->pb_surface, CAIRO_FORMAT_RGB24, w, h);
+            */
 #endif
         wb->pb_pmwid = graph->area().width();
         wb->pb_pmhei = graph->area().height();
@@ -975,6 +1048,10 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         gdk_gc_set_clip_rectangle(wb->GC(), 0);
         gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
 #else
+        cairo_t *cr = cairo_create(wb->pb_surface);
+        cairo_set_source_surface(cr, wb->pb_image, 0, 0);
+        cairo_paint(cr);
+        cairo_destroy(cr);
 #endif
     }
     return (true);

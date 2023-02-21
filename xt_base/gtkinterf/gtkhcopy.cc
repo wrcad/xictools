@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-//#define XXX_OPT
-
 #include "config.h"
 #include "gtkinterf.h"
 #include "gtkhcopy.h"
@@ -748,21 +746,6 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
 
             hc->hc_textfmt = PStimes;  // default postscript times
 
-#ifdef XXX_OPT
-            GtkWidget *entry = gtk_option_menu_new();
-            gtk_widget_set_name(entry, "TextFmt");
-            gtk_widget_show(entry);
-            gtk_box_pack_start(GTK_BOX(row1), entry, true, true, 0);
-            GtkWidget *menu = gtk_menu_new();
-            gtk_widget_set_name(menu, "TextFmt");
-            gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-            hc->hc_fontmenu = entry;
-
-            hc_update_menu(hc);
-
-            // for some reason, the option menu doesn't size itself properly
-            gtk_window_set_default_size(GTK_WINDOW(hc->hc_popup), 320, -1);
-#else
             GtkWidget *entry = gtk_combo_box_text_new();
             gtk_widget_set_name(entry, "TextFmt");
             gtk_widget_show(entry);
@@ -807,14 +790,13 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
             if (hc->hc_textfmt == HtmlText)
                 hist = i;
 
-            g_signal_connect(G_OBJECT(entry), "changed",
-                G_CALLBACK(hc_menu_proc), hc);
             if (hist < 0) {
                 hist = 0;
                 hc->hc_textfmt = PStimes;
             }
             gtk_combo_box_set_active(GTK_COMBO_BOX(entry), hist);
-#endif
+            g_signal_connect(G_OBJECT(entry), "changed",
+                G_CALLBACK(hc_menu_proc), hc);
 
             gtk_table_attach(GTK_TABLE(form), row1, 0, 1, rcnt, rcnt+1,
                 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -880,11 +862,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         hc->hc_tofile ? hc->hc_tofilename : hc->hc_cmdtext);
     gtk_box_pack_start(GTK_BOX(row), hc->hc_cmdtxtbox, true, true, 0);
 #ifdef WIN32
-#ifdef XXX_OPT
-    hc->hc_prntmenu = gtk_option_menu_new();
-#else
     hc->hc_prntmenu = gtk_combo_box_text_new();
-#endif
     gtk_widget_show(hc->hc_prntmenu);
     gtk_box_pack_start(GTK_BOX(row), hc->hc_prntmenu, true, true, 0);
 #endif
@@ -906,28 +884,6 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         GtkWidget *hbox = gtk_hbox_new(false, 2);
         gtk_widget_show(hbox);
 
-#ifdef XXX_OPT
-        GtkWidget *entry = gtk_option_menu_new();
-        gtk_widget_set_name(entry, "Orient");
-        gtk_widget_show(entry);
-        hc->hc_orientmenu = entry;
-
-        GtkWidget *menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "Orient");
-        GtkWidget *mi = gtk_menu_item_new_with_label("Portrait");
-        gtk_widget_set_name(mi, "Portrait");
-        gtk_widget_show(mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(hc_port_proc), wb);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        mi = gtk_menu_item_new_with_label("Landscape");
-        gtk_widget_set_name(mi, "Landscape");
-        gtk_widget_show(mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(hc_port_proc), wb);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-#else
         GtkWidget *entry = gtk_combo_box_text_new();
         gtk_widget_set_name(entry, "Orient");
         gtk_widget_show(entry);
@@ -938,11 +894,10 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
             "Landscape");
 
-        g_signal_connect(G_OBJECT(entry), "changed",
-            G_CALLBACK(hc_port_proc), wb);
         gtk_combo_box_set_active(GTK_COMBO_BOX(entry),
             (hc->hc_orient & HClandscape) ? 1:0);
-#endif
+        g_signal_connect(G_OBJECT(entry), "changed",
+            G_CALLBACK(hc_port_proc), wb);
         gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
 
         button = gtk_check_button_new_with_label("Best Fit");
@@ -966,29 +921,6 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_OPT
-        entry = gtk_option_menu_new();
-        gtk_widget_set_name(entry, "Format");
-        gtk_widget_show(entry);
-        hc->hc_fmtmenu = entry;
-
-        menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "Format");
-        for (int i = 0; GRpkgIf()->HCof(i); i++) {
-            if (hc->hc_drvrmask & (1 << i))
-                continue;
-            HCdesc *hcdesc = GRpkgIf()->HCof(i);
-            mi = gtk_menu_item_new_with_label(hcdesc->descr);
-            gtk_widget_set_name(mi, hcdesc->descr);
-            gtk_widget_show(mi);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-            g_object_set_data(G_OBJECT(mi), MYID, (void*)(long)i);
-            g_signal_connect(G_OBJECT(mi), "activate",
-                G_CALLBACK(hc_formenu_proc), wb);
-        }
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(entry), hc->hc_fmt);
-#else
         entry = gtk_combo_box_text_new();
         gtk_widget_set_name(entry, "Format");
         gtk_widget_show(entry);
@@ -1004,7 +936,6 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         gtk_combo_box_set_active(GTK_COMBO_BOX(entry), hc->hc_fmt);
         g_signal_connect(G_OBJECT(entry), "changed",
             G_CALLBACK(hc_formenu_proc), wb);
-#endif
 
         gtk_table_attach(GTK_TABLE(row), entry, 0, 1, 1, 2,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -1022,36 +953,6 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_OPT
-        entry = gtk_option_menu_new();
-        gtk_widget_set_name(entry, "Resolution");
-        gtk_widget_show(entry);
-        hc->hc_resmenu = entry;
-
-        menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "Resolution");
-        const char **s = GRpkgIf()->HCof(hc->hc_fmt) ?
-            GRpkgIf()->HCof(hc->hc_fmt)->limits.resols : 0;
-        if (s && *s) {
-            for (int i = 0; s[i]; i++) {
-                mi = gtk_menu_item_new_with_label(s[i]);
-                gtk_widget_set_name(mi, s[i]);
-                gtk_widget_show(mi);
-                gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-                g_object_set_data(G_OBJECT(mi), MYID, (void*)(long)i);
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(hc_resol_proc), wb);
-            }
-        }
-        else {
-            mi = gtk_menu_item_new_with_label("fixed");
-            gtk_widget_set_name(mi, "fixed");
-            gtk_widget_show(mi);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        }
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(entry), hc->hc_resol);
-#else
         entry = gtk_combo_box_text_new();
         gtk_widget_set_name(entry, "Resolution");
         gtk_widget_show(entry);
@@ -1064,16 +965,15 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
                 gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
                     s[i]);
             }
+            gtk_combo_box_set_active(GTK_COMBO_BOX(entry), hc->hc_resol);
             g_signal_connect(G_OBJECT(entry), "changed",
                 G_CALLBACK(hc_resol_proc), wb);
-            gtk_combo_box_set_active(GTK_COMBO_BOX(entry), hc->hc_resol);
         }
         else {
             gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
                 "fixed");
             gtk_combo_box_set_active(GTK_COMBO_BOX(entry), 0);
         }
-#endif
 
         gtk_table_attach(GTK_TABLE(row), entry, 1, 2, 1, 2,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -1218,26 +1118,6 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         row = gtk_hbox_new(false, 2);
         gtk_widget_show(row);
 
-#ifdef XXX_OPT
-        entry = gtk_option_menu_new();
-        gtk_widget_set_name(entry, "PageSize");
-        gtk_widget_show(entry);
-        menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "PageSize");
-        int i = 0;
-        for (sMedia *m = pagesizes; m->name; m++, i++) {
-            mi = gtk_menu_item_new_with_label(m->name);
-            gtk_widget_set_name(mi, m->name);
-            gtk_widget_show(mi);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-            g_object_set_data(G_OBJECT(mi), MYID, (void*)(long)i);
-            g_signal_connect(G_OBJECT(mi), "activate",
-                G_CALLBACK(hc_pagesize_proc), wb);
-        }
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(entry), 0);
-        hc->hc_pgsmenu = entry;
-#else
         entry = gtk_combo_box_text_new();
         gtk_widget_set_name(entry, "PageSize");
         gtk_widget_show(entry);
@@ -1249,7 +1129,6 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         gtk_combo_box_set_active(GTK_COMBO_BOX(entry), 0);
         g_signal_connect(G_OBJECT(entry), "changed",
             G_CALLBACK(hc_pagesize_proc), wb);
-#endif
         gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
 
         button = gtk_check_button_new_with_label("Metric (mm)");
@@ -1384,32 +1263,6 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         gtk_widget_hide(hc->hc_cmdtxtbox);
         gtk_widget_show(hc->hc_prntmenu);
     }
-#ifdef XXX_OPT
-    GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "printers");
-    gtk_widget_show(menu);
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(hc->hc_prntmenu), menu);
-    if (!hc->hc_numprinters) {
-        GtkWidget *mi =
-            gtk_menu_item_new_with_label(no_printer_msg);
-        gtk_widget_set_name(mi, no_printer_msg);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(hc_formenu_proc), wb);
-    }
-    else {
-        for (int i = 0; i < hc->hc_numprinters; i++) {
-            GtkWidget *mi =
-                gtk_menu_item_new_with_label(hc->hc_printers[i]);
-            gtk_widget_set_name(mi, hc->hc_printers[i]);
-            gtk_widget_show(mi);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-            g_signal_connect(G_OBJECT(mi), "activate",
-                G_CALLBACK(hc_formenu_proc), wb);
-        }
-    }
-#else
     if (!hc->hc_numprinters) {
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(hc->hc_prntmenu),
             no_printer_msg);
@@ -1420,9 +1273,9 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
                 hc->hc_printers[i]);
         }
     }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(whc->hc_prntmenu), 0);
     g_signal_connect(G_OBJECT(mi), "activate",
         G_CALLBACK(hc_prntmenu_proc), wb);
-#endif
     hc_set_printer(wb);
 #endif
 
@@ -1470,11 +1323,7 @@ GTKprintPopup::hc_set_printer(gtk_bag *wb)
     if (!hc->hc_printers) {
         curprinter = 0;
         if (hc->hc_prntmenu)
-#ifdef XXX_OPT
-            gtk_option_menu_set_history(GTK_OPTION_MENU(hc->hc_prntmenu), 0);
-#else
-            gtk_cxombo_box_set_acgtive(GTK_COMBO_BOX(hc->hc_prntmenu), 0);
-#endif
+            gtk_cxombo_box_set_active(GTK_COMBO_BOX(hc->hc_prntmenu), 0);
         return;
     }
     if (curprinter < 0)
@@ -1483,12 +1332,7 @@ GTKprintPopup::hc_set_printer(gtk_bag *wb)
         curprinter = 0;
 
     if (hc->hc_prntmenu)
-#ifdef XXX_OPT
-        gtk_option_menu_set_history(GTK_OPTION_MENU(hc->hc_prntmenu),
-            curprinter);
-#else
-        gtk_combo_box_set_acgtive(GTK_COMBO_BOX(hc->hc_prntmenu), curprinter);
-#endif
+        gtk_combo_box_set_active(GTK_COMBO_BOX(hc->hc_prntmenu), curprinter);
     char *name = hc->hc_printers[curprinter];
 
     if (MSPdesc.limits.resols) {
@@ -1579,11 +1423,7 @@ GTKprintPopup::hc_set_format(gtk_bag *wb, int index, bool set_menu)
         return;
 
     if (set_menu)
-#ifdef XXX_OPT
-        gtk_option_menu_set_history(GTK_OPTION_MENU(hc->hc_fmtmenu), index);
-#else
         gtk_combo_box_set_active(GTK_COMBO_BOX(hc->hc_fmtmenu), index);
-#endif
 
     // Set the current defaults to the current values.
     if (oldhcdesc->defaults.command)
@@ -1704,44 +1544,8 @@ GTKprintPopup::hc_set_format(gtk_bag *wb, int index, bool set_menu)
     }
 
     if (hc->hc_resmenu) {
-#ifdef XXX_OPT
-        GtkWidget *menu =
-            gtk_option_menu_get_menu(GTK_OPTION_MENU(hc->hc_resmenu));
-        const char *mname = gtk_widget_get_name(menu);
-        mname = lstring::copy(mname);
-        gtk_widget_destroy(menu);
-        menu = gtk_menu_new();
-        gtk_widget_set_name(menu, mname);
-        delete [] mname;
-
-        const char **s = newhcdesc->limits.resols;
-        if (s && *s) {
-            for (int j = 0; s[j]; j++) {
-                GtkWidget *mi = gtk_menu_item_new_with_label(s[j]);
-                gtk_widget_set_name(mi, s[j]);
-                gtk_widget_show(mi);
-                gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-                g_object_set_data(G_OBJECT(mi), MYID, (void*)(long)j);
-                g_signal_connect(G_OBJECT(mi), "activate",
-                    G_CALLBACK(hc_resol_proc), wb);
-            }
-        }
-        else {
-            GtkWidget *mi = gtk_menu_item_new_with_label("fixed");
-            gtk_widget_set_name(mi, "fixed");
-            gtk_widget_show(mi);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-        }
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(hc->hc_resmenu), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(hc->hc_resmenu),
-            hc->hc_resol);
-#else
-        // Clear the combo box, note how the empty list is detected.
-        GtkTreeModel *mdl =
-            gtk_combo_box_get_model(GTK_COMBO_BOX(hc->hc_resmenu));
-        GtkTreeIter iter;
-        while (gtk_tree_model_get_iter_first(mdl, &iter))
-            gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(hc->hc_resmenu), 0);
+        gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(
+            GTK_COMBO_BOX(hc->hc_resmenu))));
 
         const char **s = newhcdesc->limits.resols;
         if (s && *s) {
@@ -1755,7 +1559,6 @@ GTKprintPopup::hc_set_format(gtk_bag *wb, int index, bool set_menu)
                 "fixed");
         }
         gtk_combo_box_set_active(GTK_COMBO_BOX(hc->hc_resmenu), hc->hc_resol);
-#endif
     }
     if (hc->hc_cb && hc->hc_cb->hcsetup)
         (*hc->hc_cb->hcsetup)(true, hc->hc_fmt, false, hc->hc_context);
@@ -1771,96 +1574,54 @@ GTKprintPopup::hc_set_format(gtk_bag *wb, int index, bool set_menu)
 }
 
 
-#ifdef XXX_OPT
 // Static function.
 void
 GTKprintPopup::hc_update_menu(GTKprintPopup *hc)
 {
-    GtkWidget *menu =
-        gtk_option_menu_get_menu(GTK_OPTION_MENU(hc->hc_fontmenu));
-    if (!menu)
-        return;
-    GList *gl = gtk_container_children(GTK_CONTAINER(menu));
-    for (GList *l = gl; l; l = l->next)
-        gtk_widget_destroy(GTK_WIDGET(l->data));
-    g_list_free(gl);
-
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(
+        GTK_COMBO_BOX(hc->hc_fontmenu))));
     int i = 0, hist = -1;
-    GtkWidget *mi = gtk_menu_item_new_with_label("PostScript Times");
-    gtk_widget_set_name(mi, "PostScript Times");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_object_set_data(G_OBJECT(mi), MYID, (void*)PStimes);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(hc_menu_proc), hc);
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(hc->hc_fontmenu),
+        "PostScript Times");
     if (hc->hc_textfmt == PStimes)
         hist = i;
     i++;
 
-    mi = gtk_menu_item_new_with_label("PostScript Helvetica");
-    gtk_widget_set_name(mi, "PostScript Helvetica");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_object_set_data(G_OBJECT(mi), MYID, (void*)PShelv);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(hc_menu_proc), hc);
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(hc->hc_fontmenu),
+        "PostScript Times");
     if (hc->hc_textfmt == PShelv)
         hist = i;
     i++;
 
-    mi = gtk_menu_item_new_with_label("PostScript Century");
-    gtk_widget_set_name(mi, "PostScript Century");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_object_set_data(G_OBJECT(mi), MYID, (void*)PScentury);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(hc_menu_proc), hc);
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(hc->hc_fontmenu),
+        "PostScript Century");
     if (hc->hc_textfmt == PScentury)
         hist = i;
     i++;
 
-    mi = gtk_menu_item_new_with_label("PostScript Lucida");
-    gtk_widget_set_name(mi, "PostScript Lucida");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_object_set_data(G_OBJECT(mi), MYID, (void*)PSlucida);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(hc_menu_proc), hc);
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(hc->hc_fontmenu),
+        "PostScript Lucida");
     if (hc->hc_textfmt == PSlucida)
         hist = i;
     i++;
 
-    mi = gtk_menu_item_new_with_label("Plain Text");
-    gtk_widget_set_name(mi, "Plain Text");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_object_set_data(G_OBJECT(mi), MYID, (void*)PlainText);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(hc_menu_proc), hc);
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(hc->hc_fontmenu),
+        "Plain Text");
     if (hc->hc_textfmt == PlainText)
         hist = i;
     i++;
 
     /*
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(hc->hc_fontmenu),
+        "Pretty Text");
     mi = gtk_menu_item_new_with_label("Pretty Text");
-    gtk_widget_set_name(mi, "Pretty Text");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_object_set_data(G_OBJECT(mi), MYID, (void*)PrettyText);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(hc_menu_proc), hc);
     if (hc->hc_textfmt == PrettyText)
         hist = i;
     i++;
     */
 
-    mi = gtk_menu_item_new_with_label("HTML Text");
-    gtk_widget_set_name(mi, "HTML Text");
-    gtk_widget_show(mi);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    g_object_set_data(G_OBJECT(mi), MYID, (void*)HtmlText);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(hc_menu_proc), hc);
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(hc->hc_fontmenu),
+        "HTML Text");
     if (hc->hc_textfmt == HtmlText)
         hist = i;
     i++;
@@ -1869,23 +1630,16 @@ GTKprintPopup::hc_update_menu(GTKprintPopup *hc)
         hist = 0;
         hc->hc_textfmt = PStimes;
     }
-    gtk_option_menu_set_history(GTK_OPTION_MENU(hc->hc_fontmenu), hist);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(hc->hc_fontmenu), hist);
 }
-#endif
 
 
 // Static function.
 // Handler for the "font" menu.
 //
 void
-GTKprintPopup::hc_menu_proc(GtkWidget *caller, void *client_data)
+GTKprintPopup::hc_menu_proc(GtkWidget*, void *client_data)
 {
-#ifdef XXX_OPT
-    HCtextType indx =
-        (HCtextType)(intptr_t)g_object_get_data(G_OBJECT(caller), MYID);
-    GTKprintPopup *hc = (GTKprintPopup*)client_data;
-    hc->hc_textfmt = indx;
-#else
     GTKprintPopup *hc = (GTKprintPopup*)client_data;
     if (!hc)
         return;
@@ -1915,7 +1669,6 @@ GTKprintPopup::hc_menu_proc(GtkWidget *caller, void *client_data)
         hc->hc_textfmt = HtmlText;
     }
     g_free(text);
-#endif
 }
 
 
@@ -1923,16 +1676,12 @@ GTKprintPopup::hc_menu_proc(GtkWidget *caller, void *client_data)
 // Handler for the "format" menu.
 //
 void
-GTKprintPopup::hc_formenu_proc(GtkWidget *caller, void *client_data)
+GTKprintPopup::hc_formenu_proc(GtkWidget*, void *client_data)
 {
     gtk_bag *wb = static_cast<gtk_bag*>(client_data);
     GTKprintPopup *hc = wb->HC();
     if (hc) {
-#ifdef XXX_OPT
-        int index = (intptr_t)g_object_get_data(G_OBJECT(caller), MYID);
-#else
         int index = gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_fmtmenu));
-#endif
         hc_set_format(wb, index, false);
     }
 }
@@ -1945,11 +1694,7 @@ GTKprintPopup::hc_formenu_proc(GtkWidget *caller, void *client_data)
 void
 GTKprintPopup::hc_prntmenu_proc(GtkWidget *caller, void*)
 {
-#ifdef XXX_OPT
-    curprinter = gtk_option_menu_get_history(GTK_OPTION_MENU(caller));
-#else
     curprinter = gtk_combo_box_get_active(GTK_OPTION_MENU(caller));
-#endif
 }
 #endif
 
@@ -1971,11 +1716,7 @@ GTKprintPopup::hc_pagesize_proc(GtkWidget *caller, void *client_data)
             hc->hc_metric = true;
         return;
     }
-#ifdef XXX_OPT
-    int index = (intptr_t)g_object_get_data(G_OBJECT(caller), MYID);
-#else
     int index = gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_pgsmenu));
-#endif
     double shrink = 0.375 * 72;
     double width = pagesizes[index].width - 2*shrink;
     double height = pagesizes[index].height - 2*shrink;
@@ -2118,12 +1859,7 @@ GTKprintPopup::hc_port_proc(GtkWidget*, void *client_data)
     if (hc) {
         // The landscape button merely sets a flag passed to the driver.
         // It is up to the driver to respond appropriately.
-#ifdef XXX_OPT
-        bool state = gtk_option_menu_get_history(
-            GTK_OPTION_MENU(hc->hc_orientmenu));
-#else
         bool state = gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_orientmenu));
-#endif
         if (state)
             hc->hc_orient &= ~HClandscape;
         else
@@ -2777,15 +2513,11 @@ GTKprintPopup::hc_proc_hdlr(int pid, int status, void*)
 // possibilities.
 //
 void
-GTKprintPopup::hc_resol_proc(GtkWidget *caller, void *client_data)
+GTKprintPopup::hc_resol_proc(GtkWidget*, void *client_data)
 {
     GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
     if (hc) {
-#ifdef XXX_OPT
-        int i = (intptr_t)g_object_get_data(G_OBJECT(caller), MYID);
-#else
         int i = gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_resmenu));
-#endif
         if (i >= 0 && i < 100)
             // sanity check
             hc->hc_resol = i;
@@ -2958,34 +2690,20 @@ GTKprintPopup::hc_set_sens(GTKprintPopup *hc, unsigned int word)
             gtk_widget_set_sensitive(hc->hc_metbtn, true);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(hc->hc_metbtn),
                 hc->hc_metric);
-#ifdef XXX_OPT
-            gtk_option_menu_set_history(GTK_OPTION_MENU(hc->hc_pgsmenu),
-                hc->hc_pgsindex);
-#else
             gtk_combo_box_set_active(GTK_COMBO_BOX(hc->hc_pgsmenu),
                 hc->hc_pgsindex);
-#endif
         }
     }
 
     if (hc->hc_orientmenu) {
         if (word & HCnoLandscape) {
-#ifdef XXX_OPT
-            gtk_option_menu_set_history(GTK_OPTION_MENU(hc->hc_orientmenu), 0);
-#else
             gtk_combo_box_set_active(GTK_COMBO_BOX(hc->hc_orientmenu), 0);
-#endif
             gtk_widget_set_sensitive(hc->hc_orientmenu, false);
         }
         else {
             gtk_widget_set_sensitive(hc->hc_orientmenu, true);
-#ifdef XXX_OPT
-            gtk_option_menu_set_history(GTK_OPTION_MENU(hc->hc_orientmenu),
-                (hc->hc_orient & HClandscape) != 0);
-#else
             gtk_combo_box_set_active(GTK_COMBO_BOX(hc->hc_orientmenu),
                 (hc->hc_orient & HClandscape) != 0);
-#endif
         }
     }
 
@@ -3097,8 +2815,6 @@ GTKprintPopup::hc_pop_message(gtk_bag *wb)
 
     GdkRectangle rect;
     ShellGeometry(wb->HC()->hc_popup, 0, &rect);
-// uposition?
-//XXX    gtk_widget_set_uposition(GP->popup, rect.x + rect.width, rect.y);
     gtk_window_move(GTK_WINDOW(GP->popup), rect.x + rect.width, rect.y);
     gtk_widget_show(GP->popup);
 

@@ -44,6 +44,8 @@
  *
  **************************************************************************/
 
+//#define XXX_GDK
+
 #include "config.h"
 #include "spglobal.h"
 #include "graph.h"
@@ -1144,6 +1146,8 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         tb_elapsed_start = elapsed;
     }
     else if (context && context->Window()) {
+        int wid = gdk_window_get_width(context->Window());
+        int hei = gdk_window_get_height(context->Window());
         context->switch_to_pixmap();
         int fwid, dy;
         context->TextExtent(0, &fwid, &dy);
@@ -1154,8 +1158,6 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         int ux = 18*fwid;
         int vx = ux + 14*fwid;
 
-        int wid = gdk_window_get_width(context->Window());
-        int hei = gdk_window_get_height(context->Window());
         context->SetColor(SpGrPkg::DefColors[0].pixel);
         context->Box(0, 0, wid, hei);
 
@@ -1817,11 +1819,6 @@ GTKtoolbar::tbpop(bool up)
     gtk_window_set_icon_list(GTK_WINDOW(w->Shell()), g1);
 #endif
 
-    // This is needed to get the window to change size if the font size
-    // is increased.
-// this is the defaut setting?
-//XXX    gtk_window_set_policy(GTK_WINDOW(w->Shell()), false, true, false);
-
     g_signal_connect(G_OBJECT(toolbar), "destroy",
         G_CALLBACK(quit_proc), 0);
     g_signal_connect(G_OBJECT(toolbar), "delete_event",
@@ -2237,56 +2234,27 @@ GTKtoolbar::tbpop(bool up)
     gtk_widget_show(hbox);
 
     // the WR logo button
-    GtkWidget *pixbtn = gtk_button_new();
+    GtkWidget *pixbtn = new_pixmap_button(tm30, "WR", false);
     gtk_widget_show(pixbtn);
     tb_bug = pixbtn;
     g_signal_connect(G_OBJECT(pixbtn), "clicked",
         G_CALLBACK(wr_btn_hdlr), 0);
-    GtkStyle *style = gtk_widget_get_style(pixbtn);
-#ifdef XXX_GDK
-    GdkPixmap *pmask;
-    GdkPixmap *pixmap =
-        gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
-            &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)tm30);
-    GtkWidget *pixwidg = gtk_pixmap_new(pixmap, pmask);
-    gtk_widget_show(pixwidg);
-    gtk_container_add(GTK_CONTAINER(pixbtn), pixwidg);
-#else
-#endif
     gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
     gtk_widget_set_tooltip_text(pixbtn, "Pop up email client");
 
     // the Run button
-    pixbtn = gtk_button_new();
+    pixbtn = new_pixmap_button(run_xpm, "Run", false);
     gtk_widget_show(pixbtn);
     g_signal_connect(G_OBJECT(pixbtn), "clicked",
         G_CALLBACK(rs_btn_hdlr), 0);
-    style = gtk_widget_get_style(pixbtn);
-#ifdef XXX_GDK
-    pixmap = gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
-            &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)run_xpm);
-    pixwidg = gtk_pixmap_new(pixmap, pmask);
-    gtk_widget_show(pixwidg);
-    gtk_container_add(GTK_CONTAINER(pixbtn), pixwidg);
-#else
-#endif
     gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
     gtk_widget_set_tooltip_text(pixbtn, "Run current circuit");
 
     // the Stop button
-    pixbtn = gtk_button_new();
+    pixbtn = new_pixmap_button(stop_xpm, "Stop", false);
     gtk_widget_show(pixbtn);
     g_signal_connect(G_OBJECT(pixbtn), "clicked",
         G_CALLBACK(rs_btn_hdlr), (void*)1);
-    style = gtk_widget_get_style(pixbtn);
-#ifdef XXX_GDK
-    pixmap = gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
-            &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)stop_xpm);
-    pixwidg = gtk_pixmap_new(pixmap, pmask);
-    gtk_widget_show(pixwidg);
-    gtk_container_add(GTK_CONTAINER(pixbtn), pixwidg);
-#else
-#endif
     gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
     gtk_widget_set_tooltip_text(pixbtn, "Pause current analysis");
 
@@ -2367,6 +2335,9 @@ GTKtoolbar::tbpop(bool up)
         gtk_QueryColor(&clr);
         gdk_gc_set_foreground(w->XorGC(), &clr);
     }
+#else
+    cairo_t *cr = gdk_cairo_create(w->Window());
+    w->SetCairoCx(cr);
 #endif
 
     // drawing colors
@@ -2898,8 +2869,8 @@ tb_bag::switch_to_pixmap()
 {
     int w = gdk_window_get_width(gd_window);
     int h = gdk_window_get_height(gd_window);
-    if (!b_pixmap || w != b_wid || h != b_hei) {
 #ifdef XXX_GDK
+    if (!b_pixmap || w != b_wid || h != b_hei) {
         GdkPixmap *pm = b_pixmap;
         if (pm)
             gdk_pixmap_unref(pm);
@@ -2915,12 +2886,26 @@ tb_bag::switch_to_pixmap()
             b_hei = 0;
         }
 #else
+    if (!b_image || w != b_wid || h != b_hei) {
+        if (b_image)
+            cairo_surface_destroy(b_image);
+        cairo_surface_t *sfc = gdk_window_create_similar_surface(
+            gd_window, CAIRO_CONTENT_COLOR, w, h);
+        b_image = cairo_surface_create_similar_image(
+            sfc, CAIRO_FORMAT_RGB24, w, h);
+        cairo_surface_destroy(sfc);
+        b_wid = w;
+        b_hei = h;
 #endif
     }
+#ifdef XXX_GDK
     b_winbak = gd_window;
     gd_window = b_pixmap;
-//XXX    gd_viewport->window = gd_window;
-    gtk_widget_set_window(gd_viewport, gd_window);
+//XXX
+    gd_viewport->window = gd_window;
+//    gtk_widget_set_window(gd_viewport, gd_window);
+#else
+#endif
 }
 
 
@@ -2929,16 +2914,23 @@ tb_bag::switch_to_pixmap()
 void
 tb_bag::switch_from_pixmap()
 {
-    if (b_winbak) {
 #ifdef XXX_GDK
+    if (b_winbak) {
         gdk_window_copy_area(b_winbak, CpyGC(), 0, 0, gd_window,
             0, 0, b_wid, b_hei);
-#else
-#endif
         gd_window = b_winbak;
         b_winbak = 0;
         gtk_widget_set_window(gd_viewport, gd_window);
     }
+#else
+    /*
+    cairo_t *cr = gdk_cairo_create(gd_window);
+    cairo_set_source_surface(cr, b_image, 0, 0);
+    cairo_paint(cr);
+    cairo_destroy(cr);
+    */
+
+#endif
 }
 // End of tb_bag functions.
 

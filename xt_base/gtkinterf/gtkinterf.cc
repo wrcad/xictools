@@ -43,10 +43,6 @@
 #include "gtkfont.h"
 #include "gtkhcopy.h"
 #include "ginterf/grlinedb.h"
-#include "miscutil/texttf.h"
-#include "miscutil/lstring.h"
-#include <sys/types.h>
-#include <sys/time.h>
 #ifdef WIN32
 #include <winsock2.h>
 #include <windowsx.h>
@@ -54,8 +50,6 @@
 #include "mswdraw.h"
 #include "mswpdev.h"
 using namespace mswinterf;
-#else
-#include <sys/select.h>
 #endif
 
 // Looks like Cairo and GTK don't support the X-windows shared memory
@@ -76,21 +70,6 @@ using namespace mswinterf;
 // Support ancient visuals.
 //#define OLD_VISUALS
 
-// Bypass gdk drawing functions for speed.
-//
-// Note:  Recent GTK (2.18.6) sets up a clipping context in the GC, so
-// directly sharing the XGC causes display problems.
-//
-// We always use gdk drawing functions with GTK-2.  The direct to X
-// functions work fine up to GTK-2.18 (probably), but since the GTK-2
-// releases are dynamically linked, we can't count on the user having
-// a compatible GTK-2 installation.
-//
-// #define DIRECT_TO_X
-
-// Use our own Win32 drawing.  This is necessary, as currently gdk
-// does not handle stippled drawing.
-#define DIRECT_TO_GDI
 
 // Global access pointer.
 GTKdev *GRX;
@@ -178,11 +157,6 @@ GTKdev::GTKdev()
 #endif
 #ifdef WIN32
     dv_crlf_terminate = true;
-#endif
-
-#ifdef DIRECT_TO_X
-    // GRmultiPt uses short integers.
-    GRmultiPt::set_short_data(true);
 #endif
 }
 

@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_PROG
-
 #include "config.h"
 #include "gtkinterf.h"
 #include "gtkutil.h"
@@ -3491,16 +3489,7 @@ namespace {
     int
     progress_timeout(void *data)
     {
-
-#ifdef XXX_PROG
-        float new_val = gtk_progress_get_value(GTK_PROGRESS(data)) + 2;
-        GtkAdjustment *adj = GTK_PROGRESS(data)->adjustment;
-        if (new_val > gtk_adjustment_get_upper(adj))
-            new_val = gtk_adjustment_get_lower(adj);
-        gtk_progress_set_value(GTK_PROGRESS(data), new_val);
-#else
         gtk_progress_bar_pulse(GTK_PROGRESS_BAR(data));
-#endif
         return (true);
     }
 
@@ -3542,17 +3531,9 @@ gtkinterf::gtk_Progress(GtkWidget *shell, const char *msg)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_PROG
-    GtkAdjustment *adj =
-        (GtkAdjustment*)gtk_adjustment_new(0, 1, 100, 0, 0, 0);
-    GtkWidget *pbar = gtk_progress_bar_new_with_adjustment(adj);
-#else
     GtkWidget *pbar = gtk_progress_bar_new();
-#endif
+    gtk_progress_bar_set_pulse_step(GTK_PROGRESS_BAR(pbar), 0.05);
     gtk_widget_show(pbar);
-    gtk_progress_bar_set_bar_style(GTK_PROGRESS_BAR(pbar),
-        GTK_PROGRESS_CONTINUOUS);
-    gtk_progress_set_activity_mode(GTK_PROGRESS(pbar), true);
     unsigned timer = g_timeout_add(100, (GSourceFunc)progress_timeout,
         pbar);
     g_object_set_data(G_OBJECT(popup), "timer", (void*)(long)timer);

@@ -38,9 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_ASMPROG
-#define XXX_PROG
-
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
@@ -131,16 +128,9 @@ sAsmPrg::sAsmPrg()
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-#ifdef XXX_ASMPROG
-    GtkAdjustment *adj =
-        (GtkAdjustment*)gtk_adjustment_new(0, 1, 100, 0, 0, 0);
-    prg_pbar = gtk_progress_bar_new_with_adjustment(adj);
+    prg_pbar = gtk_progress_bar_new();
     gtk_widget_show(prg_pbar);
-    gtk_progress_bar_set_bar_style(GTK_PROGRESS_BAR(prg_pbar),
-        GTK_PROGRESS_CONTINUOUS);
-    gtk_progress_set_activity_mode(GTK_PROGRESS(prg_pbar), true);
-#else
-#endif
+    gtk_progress_bar_set_pulse_step(GTK_PROGRESS_BAR(prg_pbar), 0.05);
 
     gtk_table_attach(GTK_TABLE(form), prg_pbar, 1, 2, row, row + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -164,12 +154,7 @@ sAsmPrg::~sAsmPrg()
 void
 sAsmPrg::update(const char *msg, ASMcode code)
 {
-#ifdef XXX_PROG
-    double new_val =
-        gtk_progress_get_value(GTK_PROGRESS(prg_pbar)) + 2;
-    gtk_progress_set_value(GTK_PROGRESS(prg_pbar), new_val);
-#else
-#endif
+    gtk_progress_bar_pulse(GTK_PROGRESS_BAR(prg_pbar));
     char *str = lstring::copy(msg);
     char *s = str + strlen(str) - 1;
     while (s >= str && isspace(*s))
