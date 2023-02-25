@@ -70,6 +70,12 @@ Authors: 1988 Jeffrey M. Hsu
 #include "../../icons/wrspice_48x48.xpm"
 #endif
 
+
+#ifdef XXX_GDK
+#else
+#include <cairo-xlib.h>
+#endif
+
 // help keywords used in this file
 // plotpanel
 // mplotpanel
@@ -378,6 +384,7 @@ plot_bag::init(sGraph *gr)
 #else
     cairo_t *cr = gdk_cairo_create(Window());
     SetCairoCx(cr);
+    cairo_set_line_width(cr, 1);
 #endif
     gr->gr_pkg_init_colors();
     gr->set_fontsize();
@@ -974,13 +981,16 @@ plot_bag::redraw_timeout(void *arg)
     gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
         graph->area().width(), graph->area().height());
 #else
+fprintf(stderr, "redraw\n");
     wb->SetColor(graph->color(0).pixel);
     wb->Box(0, 0, graph->area().width(), graph->area().height());
     graph->gr_redraw_direct();
+    /*XXX
     cairo_t *cr = cairo_create(wb->pb_surface);
     cairo_set_source_surface(cr, wb->pb_image, 0, 0);
     cairo_paint(cr);
     cairo_destroy(cr);
+    */
 #endif
     graph->gr_redraw_keyed();
     graph->set_dirty(false);
@@ -1012,11 +1022,35 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         wb->pb_pixmap = gdk_pixmap_new(wb->Window(), graph->area().width(),
             graph->area().height(), gdk_visual_get_depth(GRX->Visual()));
 #else
-    if (!wb->pb_image || wb->pb_pmwid != w || wb->pb_pmhei != h) {
+    if (wb->pb_pmwid != w || wb->pb_pmhei != h) {
+        if (wb->pb_pmwid == 0 && wb->pb_pmhei == 0) {
+            wb->pb_pmwid = w;
+            wb->pb_pmhei = h;
+        }
+        else {
+            cairo_surface_t *sfc = cairo_get_target(wb->gd_cr);
+            cairo_surface_type_t t = cairo_surface_get_type(sfc);
+            if (t == CAIRO_SURFACE_TYPE_XLIB) {
+                cairo_xlib_surface_set_size(sfc, w, h);
+                cairo_reset_clip(wb->gd_cr);
+//fprintf(stderr, "x11 resized\n");
+            }
+            else if (t == CAIRO_SURFACE_TYPE_QUARTZ) {
+//fprintf(stderr, "quartz resized\n");
+            }
+            else if (t == CAIRO_SURFACE_TYPE_WIN32) {
+            }
+//fprintf(stderr, "resized %d\n", t);
+
+        }
         graph->area().set_width(w);
         graph->area().set_height(h);
 
         /*
+    if (!wb->pb_image || wb->pb_pmwid != w || wb->pb_pmhei != h) {
+        graph->area().set_width(w);
+        graph->area().set_height(h);
+
         if (wb->pb_surface)
             cairo_surface_destroy(wb->pb_surface);
         wb->pb_image = gdk_window_create_similar_surface(
@@ -1048,10 +1082,12 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         gdk_gc_set_clip_rectangle(wb->GC(), 0);
         gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
 #else
+        /*
         cairo_t *cr = cairo_create(wb->pb_surface);
         cairo_set_source_surface(cr, wb->pb_image, 0, 0);
         cairo_paint(cr);
         cairo_destroy(cr);
+        */
 #endif
     }
     return (true);

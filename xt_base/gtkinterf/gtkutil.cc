@@ -56,6 +56,10 @@
 #include "gtkinterf.h"
 #include "gtkutil.h"
 #include "gtkfont.h"
+//#ifdef XXX_GTK
+//#else
+//#include "gtkgc.h"
+//#endif
 #ifdef HAVE_MOZY
 #include "gtkmozy/gtkviewer.h"
 #include "htm/htm_callback.h"
@@ -2377,16 +2381,17 @@ namespace {
     GdkCursor *B1hand_cursor;
     GdkRectangle B1box;
     GdkRectangle B1cf;
-#ifdef xXXX_GDK
-    GdkGC *B1gc;
+#ifdef XXX_GDK
+//    GdkGC *B1gc;
 #else
+    Gc *B1gc;
     cairo_t *B1cr;
 //    cairo_surface_t *B1sfc;
 #endif
 
 //XXX
 // The box-drawing doesn't show in either gdk or cairo versions.  Maybe
-// drawing on the root window is no allowed in OSX and elsewhere?
+// drawing on the root window is not allowed in OSX and elsewhere?
 
     inline GdkWindow *
     gr_default_root_window()
@@ -2474,6 +2479,21 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
         gdk_gc_set_function(B1gc, GDK_XOR);
 #else
         B1hand_cursor = gdk_cursor_new(GDK_HAND2);
+
+        /*
+        B1gc = new Gc(gr_default_root_window());
+        Gc->set_subwindow(GC_INCLUDE_INFERIORS);
+
+        GdkColor wp;
+        gdk_color_white(GRX->Colormap(), &wp);
+        GdkColor bp;
+        gdk_color_black(GRX->Colormap(), &bp);
+        GdkColor clr;
+        clr.pixel = wp.pixel ^ bp.pixel;
+        gtk_QueryColor(&clr);
+        Gc->set_foreground(&clr);
+        Gc->set_function(GC_XOR);
+        */
 
         GdkWindow *w = gr_default_root_window();
 //        B1sfc = gdk_window_create_similar_surface(w, CAIRO_CONTENT_COLOR,

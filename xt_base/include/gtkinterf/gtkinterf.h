@@ -71,6 +71,11 @@ using namespace gtkinterf;
 
 #define NUMITEMS(x)  sizeof(x)/sizeof(x[0])
 
+#ifdef XXX_GDK
+#else
+struct Gc;
+#endif
+
 namespace gtkinterf {
     struct gtk_draw;
     struct gtk_bag;
@@ -276,7 +281,11 @@ namespace gtkinterf {
                     gb_gc = gb_gcbak;
             }
 
+#ifdef XXX_GDK
         GdkGC *main_gc()
+#else
+        Gc *main_gc()
+#endif
             {
                 return (gb_gc != gb_xorgc ? gb_gc : gb_gcbak);
             }
@@ -329,10 +338,17 @@ namespace gtkinterf {
                 gb_gdraw.set_ghost_func(f);
             }
 
+#ifdef XXX_GDK
         void set_gc(GdkGC *gc)                  { gb_gc = gc; }
         GdkGC *get_gc()                         { return (gb_gc); }
         void set_xorgc(GdkGC *gc)               { gb_xorgc = gc; }
         GdkGC *get_xorgc()                      { return (gb_xorgc); }
+#else
+        void set_gc(Gc *gc)                     { gb_gc = gc; }
+        Gc *get_gc()                            { return (gb_gc); }
+        void set_xorgc(Gc *gc)                  { gb_xorgc = gc; }
+        Gc *get_xorgc()                         { return (gb_xorgc); }
+#endif
         void set_cursor_type(unsigned int t)    { gb_cursor_type = t; }
         unsigned int get_cursor_type()          { return (gb_cursor_type); }
         GRlineDb *linedb()                      { return (gb_gdraw.linedb()); }
@@ -348,9 +364,15 @@ namespace gtkinterf {
         static sGbag *default_gbag(int = 0);
 
     private:
+#ifdef XXX_GDK
         GdkGC *gb_gc;
         GdkGC *gb_xorgc;
         GdkGC *gb_gcbak;
+#else
+        Gc *gb_gc;
+        Gc *gb_xorgc;
+        Gc *gb_gcbak;
+#endif
 #ifdef WIN32
         const GRfillType *gb_fillpattern;
 #endif
@@ -413,9 +435,15 @@ namespace gtkinterf {
         double Resolution()     { return (1.0); }
 
         // non-overrides
+#ifdef XXX_GDK
         GdkGC *GC()             { return (gd_gbag ? gd_gbag->get_gc() : 0); }
         GdkGC *XorGC()          { return (gd_gbag ? gd_gbag->get_xorgc() : 0); }
         GdkGC *CpyGC()          { return (gd_gbag ? gd_gbag->main_gc() : 0); }
+#else
+        Gc *GC()            { return (gd_gbag ? gd_gbag->get_gc() : 0); }
+        Gc *XorGC()         { return (gd_gbag ? gd_gbag->get_xorgc() : 0); }
+        Gc *CpyGC()         { return (gd_gbag ? gd_gbag->main_gc() : 0); }
+#endif
 
         GRlineDb *XorLineDb()   { return (gd_gbag ? gd_gbag->linedb() : 0); }
 
