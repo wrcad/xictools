@@ -44,8 +44,6 @@
  *
  **************************************************************************/
 
-//#define XXX_GDK
-
 #include "config.h"
 #include "spglobal.h"
 #include "graph.h"
@@ -2319,6 +2317,23 @@ GTKtoolbar::tbpop(bool up)
     // create GC's, these will also be used in the plots
     //
 #ifdef XXX_GDK
+#ifdef NEW_GC
+    if (!w->GC()) {
+        ndkGCvalues gcvalues;
+        gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
+        w->Gbag()->set_gc(new ndkGC(w->Window(), &gcvalues, ndkGC_CAP_STYLE));
+        gcvalues.v_function = ndkGC_XOR;
+        w->Gbag()->set_xorgc(new ndkGC(w->Window(), &gcvalues,
+            (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
+
+        // set up initial xor color
+        // offset 1 is assumed to be the highlighting color
+        GdkColor clr;
+        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
+        gtk_QueryColor(&clr);
+        w->XorGC()->set_foreground(&clr);
+    }
+#else
     if (!w->GC()) {
         GdkGCValues gcvalues;
         gcvalues.cap_style = GDK_CAP_NOT_LAST;
@@ -2335,7 +2350,23 @@ GTKtoolbar::tbpop(bool up)
         gtk_QueryColor(&clr);
         gdk_gc_set_foreground(w->XorGC(), &clr);
     }
+#endif
 #else
+    if (!w->GC()) {
+        GcValues gcvalues;
+        gcvalues.v_cap_style = GC_CAP_NOT_LAST;
+        w->Gbag()->set_gc(new Gc(w->Window(), &gcvalues, GC_CAP_STYLE));
+        gcvalues.v_function = GC_XOR;
+        w->Gbag()->set_xorgc(new Gc(w->Window(), &gcvalues,
+            (GcValuesMask)(GC_FUNCTION | GC_CAP_STYLE)));
+
+        // set up initial xor color
+        // offset 1 is assumed to be the highlighting color
+        GdkColor clr;
+        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
+        gtk_QueryColor(&clr);
+        w->XorGC()->set_foreground(&clr);
+    }
     cairo_t *cr = gdk_cairo_create(w->Window());
     w->SetCairoCx(cr);
 #endif
@@ -2887,6 +2918,7 @@ tb_bag::switch_to_pixmap()
         }
 #else
     if (!b_image || w != b_wid || h != b_hei) {
+        /*
         if (b_image)
             cairo_surface_destroy(b_image);
         cairo_surface_t *sfc = gdk_window_create_similar_surface(
@@ -2896,6 +2928,7 @@ tb_bag::switch_to_pixmap()
         cairo_surface_destroy(sfc);
         b_wid = w;
         b_hei = h;
+        */
 #endif
     }
 #ifdef XXX_GDK
@@ -2916,8 +2949,18 @@ tb_bag::switch_from_pixmap()
 {
 #ifdef XXX_GDK
     if (b_winbak) {
-        gdk_window_copy_area(b_winbak, CpyGC(), 0, 0, gd_window,
-            0, 0, b_wid, b_hei);
+#ifdef NEW_GC
+        // XXX draw_drawable for MSW
+#ifdef WITH_X11
+        copy_x11_pixmap_to_drawable(b_winbak, CpyGC(), gd_window,
+            0, 0, 0, 0, b_wid, b_hei);
+#endif
+#else
+        copy_x11_pixmap_to_drawable(b_winbak, CpyGC(), gd_window,
+            0, 0, 0, 0, b_wid, b_hei);
+//        gdk_window_copy_area(b_winbak, CpyGC(), 0, 0, gd_window,
+//            0, 0, b_wid, b_hei);
+#endif
         gd_window = b_winbak;
         b_winbak = 0;
         gtk_widget_set_window(gd_viewport, gd_window);

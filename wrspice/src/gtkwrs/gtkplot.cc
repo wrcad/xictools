@@ -49,8 +49,6 @@ Authors: 1988 Jeffrey M. Hsu
 // GTK drivers for plotting.
 //
 
-//#define XXX_GDK
-
 #include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
@@ -70,11 +68,6 @@ Authors: 1988 Jeffrey M. Hsu
 #include "../../icons/wrspice_48x48.xpm"
 #endif
 
-
-#ifdef XXX_GDK
-#else
-#include <cairo-xlib.h>
-#endif
 
 // help keywords used in this file
 // plotpanel
@@ -372,6 +365,16 @@ plot_bag::init(sGraph *gr)
     // create GC's
     //
 #ifdef XXX_GDK
+#ifdef NEW_GC
+    if (!GC()) {
+        ndkGCvalues gcvalues;
+        gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
+        Gbag()->set_gc(new ndkGC(Window(), &gcvalues, ndkGC_CAP_STYLE));
+        gcvalues.v_function = ndkGC_XOR;
+        Gbag()->set_xorgc(new ndkGC(Window(), &gcvalues,
+            (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
+    }
+#else
     if (!GC()) {
         GdkGCValues gcvalues;
         gcvalues.cap_style = GDK_CAP_NOT_LAST;
@@ -381,10 +384,18 @@ plot_bag::init(sGraph *gr)
         Gbag()->set_xorgc(gdk_gc_new_with_values(Window(), &gcvalues,
             (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE)));
     }
+#endif
 #else
+    if (!GC()) {
+        GcValues gcvalues;
+        gcvalues.v_cap_style = GC_CAP_NOT_LAST;
+        Gbag()->set_gc(new Gc(Window(), &gcvalues, GC_CAP_STYLE));
+        gcvalues.v_function = GC_XOR;
+        Gbag()->set_xorgc(new Gc(Window(), &gcvalues,
+            (GcValuesMask)(GC_FUNCTION | GC_CAP_STYLE)));
+    }
     cairo_t *cr = gdk_cairo_create(Window());
     SetCairoCx(cr);
-    cairo_set_line_width(cr, 1);
 #endif
     gr->gr_pkg_init_colors();
     gr->set_fontsize();
@@ -795,8 +806,17 @@ sGraph::gr_redraw()
     wb->Box(0, 0, width, height);
     gr_redraw_direct();  // This might change area().width/area().height.
     wb->SetWindow(wtmp);
+#ifdef NEW_GC
+    // XXX fixme  gdk_draw_drawable for MSW
+#ifdef WITH_X11
+fprintf(stderr, "pd1\n");
+    copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
+        0, 0, 0, 0, width, height);
+#endif
+#else
     gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
         width, height);
+#endif
 #else
     wb->SetColor(gr_colors[0].pixel);
     wb->Box(0, 0, width, height);
@@ -832,13 +852,22 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
         return;
     }
 #ifdef XXX_GDK
+#ifdef NEW_GC
+#ifdef WITH_X11
+    //XXX draw_drawable for MSW
+fprintf(stderr, "pd2\n");
+    copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
+        left, top, left, top, right - left, bottom - top);
+#endif
+#else
     gdk_window_copy_area(wb->Window(), wb->GC(), left,
         top, wb->pb_pixmap, left, top, right - left, bottom - top);
+#endif
 #else
-    cairo_t *cr = cairo_create(wb->pb_surface);
-    cairo_set_source_surface(cr, wb->pb_image, 0, 0);
-    cairo_paint(cr);
-    cairo_destroy(cr);
+//    cairo_t *cr = cairo_create(wb->pb_surface);
+//    cairo_set_source_surface(cr, wb->pb_image, 0, 0);
+//    cairo_paint(cr);
+//    cairo_destroy(cr);
 #endif
     GdkRectangle r;
     r.x = left;
@@ -846,12 +875,21 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
     r.width = right - left;
     r.height = bottom - top;
 #ifdef XXX_GDK
+#ifdef NEW_GC
+    wb->GC()->set_clip_rectangle(&r);
+    wb->XorGC()->set_clip_rectangle(&r);
+    if (!notxt)
+        gr_redraw_keyed();
+    wb->GC()->set_clip_rectangle(0);
+    wb->XorGC()->set_clip_rectangle(0);
+#else
     gdk_gc_set_clip_rectangle(wb->GC(), &r);
     gdk_gc_set_clip_rectangle(wb->XorGC(), &r);
     if (!notxt)
         gr_redraw_keyed();
     gdk_gc_set_clip_rectangle(wb->GC(), 0);
     gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
+#endif
 #else
 #endif
 }
@@ -978,8 +1016,17 @@ plot_bag::redraw_timeout(void *arg)
     wb->Box(0, 0, graph->area().width(), graph->area().height());
     graph->gr_redraw_direct();
     wb->SetWindow(wtmp);
+#ifdef NEW_GC
+    // XXX draw_drawable for MSW
+#ifdef WITH_X11
+fprintf(stderr, "pd3\n");
+    copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
+        0, 0, 0, 0, graph->area().width(), graph->area().height());
+#endif
+#else
     gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
         graph->area().width(), graph->area().height());
+#endif
 #else
 fprintf(stderr, "redraw\n");
     wb->SetColor(graph->color(0).pixel);
@@ -1072,6 +1119,19 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
     }
     else {
 #ifdef XXX_GDK
+#ifdef NEW_GC
+        /* XXX draw drawable
+        gdk_window_copy_area(wb->Window(), wb->GC(), pev->area.x,
+            pev->area.y, wb->pb_pixmap, pev->area.x, pev->area.y,
+            pev->area.width, pev->area.height);
+            */
+
+        wb->GC()->set_clip_rectangle(&pev->area);
+        wb->XorGC()->set_clip_rectangle(&pev->area);
+        graph->gr_redraw_keyed();
+        wb->GC()->set_clip_rectangle(0);
+        wb->XorGC()->set_clip_rectangle(0);
+#else
         gdk_window_copy_area(wb->Window(), wb->GC(), pev->area.x,
             pev->area.y, wb->pb_pixmap, pev->area.x, pev->area.y,
             pev->area.width, pev->area.height);
@@ -1081,6 +1141,7 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         graph->gr_redraw_keyed();
         gdk_gc_set_clip_rectangle(wb->GC(), 0);
         gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
+#endif
 #else
         /*
         cairo_t *cr = cairo_create(wb->pb_surface);

@@ -32,14 +32,14 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * GtkInterf Graphical Interface Library                                  *
+ * GtkInterf Graphical Interface Library, New Drawing Kit (ndk)           *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-// gtkgc.h:  This derives from the gdkgc.h from GTK-2.0.  It defines a
-// Gc class which is a replacement for the GdkGC but which fits into the
+// ndkgc.h:  This derives from the gdkgc.h from GTK-2.0.  It defines a
+// ndkGC class which is a replacement for the GdkGC but which fits into the
 // post-2.0 context.
 
 // GDK - The GIMP Drawing Kit
@@ -68,29 +68,32 @@
 // GTK+ at ftp://ftp.gtk.org/pub/gtk/.
 //
 
-#ifndef _GTKGC_H_
-#define _GTKGC_H_
+#ifndef _NDKGC_H_
+#define _NDKGC_H_
 
+#ifdef NEW_PIX
+#include "ndkpixmap.h"
+#endif
 
-// GC cap styles.
-enum GcCapStyle
+// ndkGC cap styles.
+enum ndkGCcapStyle
 {
-    GC_CAP_NOT_LAST,
-    GC_CAP_BUTT,
-    GC_CAP_ROUND,
-    GC_CAP_PROJECTING
+    ndkGC_CAP_NOT_LAST,
+    ndkGC_CAP_BUTT,
+    ndkGC_CAP_ROUND,
+    ndkGC_CAP_PROJECTING
 };
 
-// GC fill types.
-enum GcFill
+// ndkGC fill types.
+enum ndkGCfill
 {
-    GC_SOLID,
-    GC_TILED,
-    GC_STIPPLED,
-    GC_OPAQUE_STIPPLED
+    ndkGC_SOLID,
+    ndkGC_TILED,
+    ndkGC_STIPPLED,
+    ndkGC_OPAQUE_STIPPLED
 };
 
-// GC function types.
+// ndkGC function types.
 //   Copy:          Overwrites destination pixels with the source pixels.
 //   Invert:        Inverts the destination pixels.
 //   Xor:           XORs the destination pixels with the source pixels.
@@ -108,244 +111,210 @@ enum GcFill
 //   Nand:          (NOT source) OR (NOT destination).
 //   Set:           Set pixels to 1.
 //
-enum GcFunction
+enum ndkGCfunction
 {
-    GC_COPY,
-    GC_INVERT,
-    GC_XOR,
-    GC_CLEAR,
-    GC_AND,
-    GC_AND_REVERSE,
-    GC_AND_INVERT,
-    GC_NOOP,
-    GC_OR,
-    GC_EQUIV,
-    GC_OR_REVERSE,
-    GC_COPY_INVERT,
-    GC_OR_INVERT,
-    GC_NAND,
-    GC_NOR,
-    GC_SET
+    ndkGC_COPY,
+    ndkGC_INVERT,
+    ndkGC_XOR,
+    ndkGC_CLEAR,
+    ndkGC_AND,
+    ndkGC_AND_REVERSE,
+    ndkGC_AND_INVERT,
+    ndkGC_NOOP,
+    ndkGC_OR,
+    ndkGC_EQUIV,
+    ndkGC_OR_REVERSE,
+    ndkGC_COPY_INVERT,
+    ndkGC_OR_INVERT,
+    ndkGC_NAND,
+    ndkGC_NOR,
+    ndkGC_SET
 };
 
-// GC join styles.
-enum GcJoinStyle
+// ndkGC join styles.
+enum ndkGCjoinStyle
 {
-    GC_JOIN_MITER,
-    GC_JOIN_ROUND,
-    GC_JOIN_BEVEL
+    ndkGC_JOIN_MITER,
+    ndkGC_JOIN_ROUND,
+    ndkGC_JOIN_BEVEL
 };
 
-// GC line styles.
-enum GcLineStyle
+// ndkGC line styles.
+enum ndkGClineStyle
 {
-    GC_LINE_SOLID,
-    GC_LINE_ON_OFF_DASH,
-    GC_LINE_DOUBLE_DASH
+    ndkGC_LINE_SOLID,
+    ndkGC_LINE_ON_OFF_DASH,
+    ndkGC_LINE_DOUBLE_DASH
 };
 
-enum GcSubwindowMode
+enum ndkGCsubwinMode
 {
-    GC_CLIP_BY_CHILDREN  = 0,
-    GC_INCLUDE_INFERIORS = 1
+    ndkGC_CLIP_BY_CHILDREN  = 0,
+    ndkGC_INCLUDE_INFERIORS = 1
 };
 
-//XXX
-typedef void GcPixmap;
-typedef void GcBitmap;
-
-enum GcValuesMask
+enum ndkGCvaluesMask
 {
-    GC_FOREGROUND    = 1 << 0,
-    GC_BACKGROUND    = 1 << 1,
-    GC_FONT          = 1 << 2,
-    GC_FUNCTION      = 1 << 3,
-    GC_FILL          = 1 << 4,
-    GC_TILE          = 1 << 5,
-    GC_STIPPLE       = 1 << 6,
-    GC_CLIP_MASK     = 1 << 7,
-    GC_SUBWINDOW     = 1 << 8,
-    GC_TS_X_ORIGIN   = 1 << 9,
-    GC_TS_Y_ORIGIN   = 1 << 10,
-    GC_CLIP_X_ORIGIN = 1 << 11,
-    GC_CLIP_Y_ORIGIN = 1 << 12,
-    GC_EXPOSURES     = 1 << 13,
-    GC_LINE_WIDTH    = 1 << 14,
-    GC_LINE_STYLE    = 1 << 15,
-    GC_CAP_STYLE     = 1 << 16,
-    GC_JOIN_STYLE    = 1 << 17
+    ndkGC_FOREGROUND    = 1 << 0,
+    ndkGC_BACKGROUND    = 1 << 1,
+    ndkGC_FONT          = 1 << 2,
+    ndkGC_FUNCTION      = 1 << 3,
+    ndkGC_FILL          = 1 << 4,
+    ndkGC_TILE          = 1 << 5,
+    ndkGC_STIPPLE       = 1 << 6,
+    ndkGC_CLIP_MASK     = 1 << 7,
+    ndkGC_SUBWINDOW     = 1 << 8,
+    ndkGC_TS_X_ORIGIN   = 1 << 9,
+    ndkGC_TS_Y_ORIGIN   = 1 << 10,
+    ndkGC_CLIP_X_ORIGIN = 1 << 11,
+    ndkGC_CLIP_Y_ORIGIN = 1 << 12,
+    ndkGC_EXPOSURES     = 1 << 13,
+    ndkGC_LINE_WIDTH    = 1 << 14,
+    ndkGC_LINE_STYLE    = 1 << 15,
+    ndkGC_CAP_STYLE     = 1 << 16,
+    ndkGC_JOIN_STYLE    = 1 << 17
 };
 
 #ifdef WITH_X11
-enum GcDirtyValues
+enum ndkGCdirtyValues
 {
-    GC_DIRTY_CLIP = 1 << 0,
-    GC_DIRTY_TS = 1 << 1
+    ndkGC_DIRTY_CLIP = 1 << 0,
+    ndkGC_DIRTY_TS = 1 << 1
 };
 #endif
 
-struct GcValues
+struct ndkGCvalues
 {
     GdkColor        v_foreground;
     GdkColor        v_background;
-    GcFunction      v_function;
-    GcFill          v_fill;
-    GcPixmap        *v_tile;
-    GcPixmap        *v_stipple;
-    GcPixmap        *v_clip_mask;
-    GcSubwindowMode v_subwindow_mode;
+    ndkGCfunction   v_function;
+    ndkGCfill       v_fill;
+#ifdef NEW_PIX
+    ndkPixmap       *v_tile;
+    ndkPixmap       *v_stipple;
+    ndkPixmap       *v_clip_mask;
+#else
+#ifdef XXX_GDK
+    GdkPixmap       *v_tile;
+    GdkBitmap       *v_stipple;
+    GdkPixmap       *v_clip_mask;
+#else
+    void            *v_tile;
+    void            *v_stipple;
+    void            *v_clip_mask;
+#endif
+#endif
+    ndkGCsubwinMode v_subwindow_mode;
     int             v_ts_x_origin;
     int             v_ts_y_origin;
     int             v_clip_x_origin;
     int             v_clip_y_origin;
     int             v_graphics_exposures;
     int             v_line_width;
-    GcLineStyle     v_line_style;
-    GcCapStyle      v_cap_style;
-    GcJoinStyle     v_join_style;
+    ndkGClineStyle  v_line_style;
+    ndkGCcapStyle   v_cap_style;
+    ndkGCjoinStyle  v_join_style;
 };
 
-struct Gc
+struct ndkGC
 {
-    Gc(GdkDrawable*, GcValues*, GcValuesMask);
-    ~Gc();
+#ifdef NEW_PIX
+    ndkGC(GdkWindow*, ndkGCvalues*, ndkGCvaluesMask);
+#else
+#ifdef XXX_GDK
+    ndkGC(GdkDrawable*, ndkGCvalues*, ndkGCvaluesMask);
+#else
+#endif
+#endif
+    ~ndkGC();
 
-    void set_values(GcValues*, GcValuesMask);
-    void get_values(GcValues*);
-
-    // Sets the colormap for the GC to the given colormap.  The depth of
-    // the colormap's visual must match the depth of the drawable for
-    // which the GC was created.
-    //
-    void set_colormap(GdkColormap *cmap)
-    {
-        if (gc_colormap != cmap) {
-            if (gc_colormap)
-                g_object_unref(gc_colormap);
-            gc_colormap = cmap;
-            g_object_ref(gc_colormap);
-        }
-    }
-
-    GdkColormap *get_colormap()     { return (gc_colormap); }
-
+    void set_values(ndkGCvalues*, ndkGCvaluesMask);
+    void get_values(ndkGCvalues*);
 
     void set_foreground(const GdkColor *color)
     {
-        GcValues values;
+        ndkGCvalues values;
         values.v_foreground = *color;
-        set_values(&values, GC_FOREGROUND);
+        set_values(&values, ndkGC_FOREGROUND);
     }
-
-    void get_foreground(GdkColor *color)
-    {
-        if (!gc_colormap)
-            g_warning("No colormap in Gc::get_foreground");
-        else {
-            color->pixel = gc_bg_pixel;
-            gdk_colormap_query_color(gc_colormap, gc_fg_pixel, color);
-        }
-    }
-
-/* XXX
-    // Set the foreground color of a GC using an unallocated color.  The
-    // pixel value for the color will be determined using GdkRGB.  If the
-    // colormap for the GC has not previously been initialized for GdkRGB,
-    // then for pseudo-color colormaps (colormaps with a small modifiable
-    // number of colors), a colorcube will be allocated in the colormap.
-    // 
-    // Calling this function for a GC without a colormap is an error.
-    //
-    void set_rgb_fg_color(const GdkColor *color)
-    {
-        GdkColormap *cmap = get_colormap_warn();
-        if (!cmap)
-            return;
-        GdkColor tmp_color = *color;
-        gdk_rgb_find_color(cmap, &tmp_color);
-        set_foreground(&tmp_color);
-    }
-*/
 
     unsigned int get_fg_pixel()     { return (gc_fg_pixel); }
 
 
     void set_background(const GdkColor *color)
     {
-        GcValues values;
+        ndkGCvalues values;
         values.v_background = *color;
-        set_values(&values, GC_BACKGROUND);
+        set_values(&values, ndkGC_BACKGROUND);
     }
-
-    void get_background(GdkColor *color)
-    {
-        if (!gc_colormap)
-            g_warning("No colormap in Gc::get_background");
-        else {
-            color->pixel = gc_bg_pixel;
-            gdk_colormap_query_color(gc_colormap, gc_bg_pixel, color);
-        }
-    }
-
-/*
-    // Set the background color of a GC using an unallocated color.  The
-    // pixel value for the color will be determined using GdkRGB.  If the
-    // colormap for the GC has not previously been initialized for GdkRGB,
-    // then for pseudo-color colormaps (colormaps with a small modifiable
-    // number of colors), a colorcube will be allocated in the colormap.
-    // 
-    // Calling this function for a GC without a colormap is an error.
-    //
-    void set_rgb_bg_color(const GdkColor *color)
-    {
-        GdkColormap *cmap = get_colormap_warn();
-        if (!cmap)
-            return;
-        GdkColor tmp_color = *color;
-        gdk_rgb_find_color(cmap, &tmp_color);
-        set_background(&tmp_color);
-    }
-*/
 
     unsigned int get_bg_pixel()     { return (gc_bg_pixel); }
 
 
-    void set_function(GcFunction function)
+    void set_function(ndkGCfunction function)
     {
-        GcValues values;
+        ndkGCvalues values;
         values.v_function = function;
-        set_values(&values, GC_FUNCTION);
+        set_values(&values, ndkGC_FUNCTION);
     }
 
 
-    void set_fill(GcFill fill)
+    void set_fill(ndkGCfill fill)
     {
-        GcValues values;
+        ndkGCvalues values;
         values.v_fill = fill;
-        set_values(&values, GC_FILL);
+        set_values(&values, ndkGC_FILL);
     }
 
-    GcFill get_fill()               { return ((GcFill)gc_fill); }
+    ndkGCfill get_fill()            { return ((ndkGCfill)gc_fill); }
 
 
-    void set_tile(GcPixmap *tile)
+#ifdef NEW_PIX
+    void set_tile(ndkPixmap *tile)
     {
-        GcValues values;
+        ndkGCvalues values;
         values.v_tile = tile;
-        set_values(&values, GC_TILE);
+        set_values(&values, ndkGC_TILE);
     }
 
-    GcPixmap *get_tile()            { return (gc_tile); }
-
-
-    void set_stipple(GcPixmap *stipple)
+    ndkPixmap *get_tile()           { return (gc_tile); }
+#else
+#ifdef XXX_GDK
+    void set_tile(GdkPixmap *tile)
     {
-        GcValues values;
-        values.v_stipple = stipple;
-        set_values(&values, GC_STIPPLE);
+        ndkGCvalues values;
+        values.v_tile = tile;
+        set_values(&values, ndkGC_TILE);
     }
 
-    GcBitmap *get_stipple()         { return (gc_stipple); }
+    GdkPixmap *get_tile()           { return (gc_tile); }
+#else
+#endif
+#endif
+
+
+#ifdef NEW_PIX
+    void set_stipple(ndkPixmap *stipple)
+    {
+        ndkGCvalues values;
+        values.v_stipple = stipple;
+        set_values(&values, ndkGC_STIPPLE);
+    }
+
+    ndkPixmap *get_stipple()        { return (gc_stipple); }
+#else
+#ifdef XXX_GDK
+    void set_stipple(GdkBitmap *stipple)
+    {
+        ndkGCvalues values;
+        values.v_stipple = stipple;
+        set_values(&values, ndkGC_STIPPLE);
+    }
+
+    GdkBitmap *get_stipple()        { return (gc_stipple); }
+#else
+#endif
+#endif
 
 
     // Set the origin when using tiles or stipples with the GC.  The tile
@@ -354,10 +323,11 @@ struct Gc
     //
     void set_ts_origin(int x, int y)
     {
-        GcValues values;
+        ndkGCvalues values;
         values.v_ts_x_origin = x;
         values.v_ts_y_origin = y;
-        set_values(&values, (GcValuesMask)(GC_TS_X_ORIGIN | GC_TS_Y_ORIGIN));
+        set_values(&values,
+            (ndkGCvaluesMask)(ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN));
     }
 
 
@@ -367,25 +337,39 @@ struct Gc
     //
     void set_clip_origin(int x, int y)
     {
-        GcValues values;
+        ndkGCvalues values;
         values.v_clip_x_origin = x;
         values.v_clip_y_origin = y;
-        set_values(&values, (GcValuesMask)(GC_CLIP_X_ORIGIN |
-            GC_CLIP_Y_ORIGIN));
+        set_values(&values,
+            (ndkGCvaluesMask)(ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN));
     }
 
     // Sets the clip mask for a graphics context from a bitmap.  The clip
     // mask is interpreted relative to the clip origin.  (See
     // set_clip_origin()).
     //
-    void set_clip_mask(GcBitmap *mask)
+#ifdef NEW_PIX
+    void set_clip_mask(ndkPixmap *mask)
     {
-        GcValues values;
+        ndkGCvalues values;
         values.v_clip_mask = mask;
-        set_values(&values, GC_CLIP_MASK);
+        set_values(&values, ndkGC_CLIP_MASK);
     }
 
-    GcBitmap *get_clip_mask()       { return (gc_clip_mask); }
+    ndkPixmap *get_clip_mask()      { return (gc_clip_mask); }
+#else
+#ifdef XXX_GDK
+    void set_clip_mask(GdkPixmap *mask)
+    {
+        ndkGCvalues values;
+        values.v_clip_mask = mask;
+        set_values(&values, ndkGC_CLIP_MASK);
+    }
+
+    GdkPixmap *get_clip_mask()      { return (gc_clip_mask); }
+#else
+#endif
+#endif
 
     // Sets the clip mask for a graphics context from a rectangle.  The
     // clip mask is interpreted relative to the clip origin.  (See
@@ -423,20 +407,20 @@ struct Gc
     // Sets how drawing with this GC on a window will affect child windows
     // of that window. 
     //
-    void set_subwindow(GcSubwindowMode mode)
+    void set_subwindow(ndkGCsubwinMode mode)
     {
         // This could get called a lot to reset the subwindow mode in the
         // client side clipping, so bail out early.
         if (gc_subwindow_mode == mode)
             return;
       
-        GcValues values;
+        ndkGCvalues values;
         values.v_subwindow_mode = mode;
-        set_values(&values, GC_SUBWINDOW);
+        set_values(&values, ndkGC_SUBWINDOW);
     }
 
-    GcSubwindowMode get_subwindow()  {
-        return ((GcSubwindowMode)gc_subwindow_mode); }
+    ndkGCsubwinMode get_subwindow()  {
+        return ((ndkGCsubwinMode)gc_subwindow_mode); }
 
 
     // Sets whether copying non-visible portions of a drawable using this
@@ -445,9 +429,9 @@ struct Gc
     //
     void set_exposures(bool exposures)
     {
-        GcValues values;
+        ndkGCvalues values;
         values.v_graphics_exposures = exposures;
-        set_values(&values, GC_EXPOSURES);
+        set_values(&values, ndkGC_EXPOSURES);
     }
 
     bool get_exposures()            { return gc_exposures; }
@@ -462,17 +446,18 @@ struct Gc
     // corresponding members of GcValues for full explanations of the
     // arguments.
     //
-    void set_line_attributes(int line_width, GcLineStyle line_style,
-        GcCapStyle cap_style, GcJoinStyle join_style)
+    void set_line_attributes(int line_width, ndkGClineStyle line_style,
+        ndkGCcapStyle cap_style, ndkGCjoinStyle join_style)
     {
-        GcValues values;
+        ndkGCvalues values;
         values.v_line_width = line_width;
         values.v_line_style = line_style;
         values.v_cap_style = cap_style;
         values.v_join_style = join_style;
 
-        set_values(&values, (GcValuesMask)(GC_LINE_WIDTH | GC_LINE_STYLE |
-            GC_CAP_STYLE | GC_JOIN_STYLE));
+        set_values(&values,
+            (ndkGCvaluesMask)(ndkGC_LINE_WIDTH | ndkGC_LINE_STYLE |
+            ndkGC_CAP_STYLE | ndkGC_JOIN_STYLE));
     }
 
     // dash_offset: the phase of the dash pattern.
@@ -508,24 +493,31 @@ struct Gc
 #endif
 
     void offset(int, int);
-    static void copy(Gc*, Gc*);
+    static void copy(ndkGC*, ndkGC*);
 
 private:
     void gc_set_clip_region_real(GdkRegion*, bool);
     void gc_set_clip_region_internal(GdkRegion*, bool);
     void gc_add_drawable_clip(unsigned int, GdkRegion*, int, int);
     void gc_remove_drawable_clip();
-    GdkColormap *get_colormap_warn();
-    void gc_update_context(cairo_t*, const GdkColor*, GcBitmap*, bool,
+#ifdef NEW_PIX
+    void gc_update_context(cairo_t*, const GdkColor*, ndkPixmap*, bool,
+        GdkWindow*);
+#else
+#ifdef XXX_GDK
+    void gc_update_context(cairo_t*, const GdkColor*, GdkBitmap*, bool,
         GdkDrawable*);
+#else
+#endif
+#endif
 #ifdef WITH_X11
     void gc_x11_flush();
-    void gc_x11_set_values(GcValues*, GcValuesMask);
-    void gc_x11_get_values(GcValues*);
-    static void gc_values_to_xvalues(GcValues*, GcValuesMask, XGCValues*,
+    void gc_x11_set_values(ndkGCvalues*, ndkGCvaluesMask);
+    void gc_x11_get_values(ndkGCvalues*);
+    static void gc_values_to_xvalues(ndkGCvalues*, ndkGCvaluesMask, XGCValues*,
         unsigned long*);
     void gc_windowing_set_clip_region(const GdkRegion*, bool);
-    static void gc_windowing_copy(Gc*, Gc*);
+    static void gc_windowing_copy(ndkGC*, ndkGC*);
 #endif
 
     int             gc_clip_x_origin;
@@ -535,17 +527,30 @@ private:
 
     GdkRegion       *gc_clip_region;
     GdkRegion       *gc_old_clip_region;
-    GcPixmap        *gc_old_clip_mask;
 
     unsigned int    gc_region_tag_applied;
     int             gc_region_tag_offset_x;
     int             gc_region_tag_offset_y;
 
-    GcBitmap        *gc_stipple;
-    GcPixmap        *gc_tile;
-    GcPixmap        *gc_clip_mask;
+#ifdef NEW_PIX
+    ndkPixmap       *gc_stipple;
+    ndkPixmap       *gc_tile;
+    ndkPixmap       *gc_clip_mask;
+    ndkPixmap       *gc_old_clip_mask;
+#else
+#ifdef XXX_GDK
+    GdkBitmap       *gc_stipple;
+    GdkBitmap       *gc_tile;
+    GdkBitmap       *gc_clip_mask;
+    GdkBitmap       *gc_old_clip_mask;
+#else
+    void            *gc_stipple;
+    void            *gc_tile;
+    void            *gc_clip_mask;
+    void            *gc_old_clip_mask;
+#endif
+#endif
 
-    GdkColormap     *gc_colormap;
     unsigned int    gc_fg_pixel;
     unsigned int    gc_bg_pixel;
 

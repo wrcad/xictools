@@ -58,7 +58,6 @@ using namespace mswinterf;
 
 #include <gdk/gdkkeysyms.h>
 #ifdef WITH_X11
-#include "gtkx11.h"
 #include <X11/Xproto.h>
 #ifdef USE_XSHM
 #ifdef HAVE_SHMGET

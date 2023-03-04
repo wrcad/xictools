@@ -38,66 +38,34 @@
  $Id:$
  *========================================================================*/
 
-#ifndef GTKX11_H
-#define GTKX11_H
+// ntkimage.cc:  This derives from the gdkimage.c from GTK-2.0.  It
+// supports a ndkImage class which is a replacement for the GdkImage
+// but which fits into the post-2.0 context.
 
-#include <gdk/gdkx.h>
-#include <cairo-xlib.h>
+// GDK - The GIMP Drawing Kit
+// Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the
+// Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+// Boston, MA 02111-1307, USA.
+//
 
-// Some X info functions, encapsulate gtk1/2 differences.
+//
+// Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
+// file for a list of people on the GTK+ Team.  See the ChangeLog
+// files for a list of changes.  These files are distributed with
+// GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+//
 
-
-namespace gtkinterf {
-    inline Display *
-    gr_x_display()
-    {
-        return (gdk_x11_get_default_xdisplay());
-    }
-
-
-    inline int
-    gr_x_screen()
-    {
-        return (gdk_x11_get_default_screen());
-    }
-
-
-    inline Window
-    gr_x_window(GdkWindow *window)
-    {
-        return (GDK_WINDOW_XWINDOW(window));
-    }
-
-    inline Visual *
-    gr_x_visual(GdkVisual *visual)
-    {
-        return (GDK_VISUAL_XVISUAL(visual));
-    }
-
-#ifdef XGCOK
-// No good with Cairo.
-    inline GC
-    gr_x_gc(GdkGC *gc)
-    {
-        return (gdk_x11_gc_get_xgc(gc));
-    }
-#endif
-
-    inline Colormap
-    gr_x_colormap(GdkColormap *cmap)
-    {
-        return (gdk_x11_colormap_get_xcolormap(cmap));
-    }
-
-
-    inline Atom
-    gr_x_atom_intern(const char *atom_name, bool only_if_exists)
-    {
-        return (gdk_x11_atom_to_xatom(gdk_atom_intern(atom_name,
-            only_if_exists)));
-    }
-}
-// End of encapsulation
-
-#endif
 

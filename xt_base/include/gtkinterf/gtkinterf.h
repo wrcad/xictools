@@ -52,6 +52,10 @@
 //  Main header for the GTK+ library
 //
 
+#define XXX_GDK
+#define NEW_GC
+#define NEW_PIX
+
 #ifndef WITH_QUARTZ
 #ifndef WIN32
 #define WITH_X11
@@ -71,9 +75,11 @@ using namespace gtkinterf;
 
 #define NUMITEMS(x)  sizeof(x)/sizeof(x[0])
 
-#ifdef XXX_GDK
-#else
-struct Gc;
+#ifdef WITH_X11
+#include "gtkinterf/gtkx11.h"
+#endif
+#ifdef NEW_GC
+#include "gtkinterf/ndkgc.h"
 #endif
 
 namespace gtkinterf {
@@ -281,10 +287,10 @@ namespace gtkinterf {
                     gb_gc = gb_gcbak;
             }
 
-#ifdef XXX_GDK
-        GdkGC *main_gc()
+#ifdef NEW_GC
+        ndkGC *main_gc()
 #else
-        Gc *main_gc()
+        GdkGC *main_gc()
 #endif
             {
                 return (gb_gc != gb_xorgc ? gb_gc : gb_gcbak);
@@ -338,16 +344,16 @@ namespace gtkinterf {
                 gb_gdraw.set_ghost_func(f);
             }
 
-#ifdef XXX_GDK
+#ifdef NEW_GC
+        void set_gc(ndkGC *gc)                  { gb_gc = gc; }
+        ndkGC *get_gc()                         { return (gb_gc); }
+        void set_xorgc(ndkGC *gc)               { gb_xorgc = gc; }
+        ndkGC *get_xorgc()                      { return (gb_xorgc); }
+#else
         void set_gc(GdkGC *gc)                  { gb_gc = gc; }
         GdkGC *get_gc()                         { return (gb_gc); }
         void set_xorgc(GdkGC *gc)               { gb_xorgc = gc; }
         GdkGC *get_xorgc()                      { return (gb_xorgc); }
-#else
-        void set_gc(Gc *gc)                     { gb_gc = gc; }
-        Gc *get_gc()                            { return (gb_gc); }
-        void set_xorgc(Gc *gc)                  { gb_xorgc = gc; }
-        Gc *get_xorgc()                         { return (gb_xorgc); }
 #endif
         void set_cursor_type(unsigned int t)    { gb_cursor_type = t; }
         unsigned int get_cursor_type()          { return (gb_cursor_type); }
@@ -364,14 +370,14 @@ namespace gtkinterf {
         static sGbag *default_gbag(int = 0);
 
     private:
-#ifdef XXX_GDK
+#ifdef NEW_GC
+        ndkGC *gb_gc;
+        ndkGC *gb_xorgc;
+        ndkGC *gb_gcbak;
+#else
         GdkGC *gb_gc;
         GdkGC *gb_xorgc;
         GdkGC *gb_gcbak;
-#else
-        Gc *gb_gc;
-        Gc *gb_xorgc;
-        Gc *gb_gcbak;
 #endif
 #ifdef WIN32
         const GRfillType *gb_fillpattern;
@@ -435,14 +441,14 @@ namespace gtkinterf {
         double Resolution()     { return (1.0); }
 
         // non-overrides
-#ifdef XXX_GDK
+#ifdef NEW_GC
+        ndkGC *GC()         { return (gd_gbag ? gd_gbag->get_gc() : 0); }
+        ndkGC *XorGC()      { return (gd_gbag ? gd_gbag->get_xorgc() : 0); }
+        ndkGC *CpyGC()      { return (gd_gbag ? gd_gbag->main_gc() : 0); }
+#else
         GdkGC *GC()             { return (gd_gbag ? gd_gbag->get_gc() : 0); }
         GdkGC *XorGC()          { return (gd_gbag ? gd_gbag->get_xorgc() : 0); }
         GdkGC *CpyGC()          { return (gd_gbag ? gd_gbag->main_gc() : 0); }
-#else
-        Gc *GC()            { return (gd_gbag ? gd_gbag->get_gc() : 0); }
-        Gc *XorGC()         { return (gd_gbag ? gd_gbag->get_xorgc() : 0); }
-        Gc *CpyGC()         { return (gd_gbag ? gd_gbag->main_gc() : 0); }
 #endif
 
         GRlineDb *XorLineDb()   { return (gd_gbag ? gd_gbag->linedb() : 0); }
@@ -717,6 +723,13 @@ namespace gtkinterf {
     void text_set_change_hdlr(GtkWidget*, void(*)(GtkWidget*, void*),
         void*, bool);
     void text_realize_proc(GtkWidget*, void*);
+//#ifdef NEW_GC
+#ifdef WITH_X11
+    void copy_x11_pixmap_to_drawable(GdkDrawable*, void*, GdkPixmap*,
+//    void copy_x11_pixmap_to_drawable(GdkDrawable*, ndkGC*, GdkPixmap*,
+    int, int, int, int, int, int);
+#endif
+//#endif
 }
 
 // Global access, set in constructor
