@@ -67,43 +67,27 @@
 #ifndef NDKPIXMAP_H
 #define NDKPIXMAP_H
 
-//#ifdef NEW_GC
-#include "ndkgc.h"
-//#endif
 
-/* XXX where used?
-struct ndkPixmapColor
-{
-    char *color_string;
-    GdkColor color;
-    int transparent;
-};
-
-struct ndkPixmapInfo
-{
-    unsigned int ncolors;
-    GdkColormap *colormap;
-    unsigned long pixels[1];
-};
-*/
+struct ndkGC;
+struct ndkDrawable;
 
 struct ndkPixmap
 {
-#ifdef XXX_GDK
-    ndkPixmap(GdkDrawable*, int, int, bool);
-    ndkPixmap(GdkDrawable*, const char*, int, int);
-    ndkPixmap(GdkDrawable*, const char*, int, int,
-        const GdkColor*, const GdkColor*);
-#else
+#ifdef NEW_DRW
     ndkPixmap(GdkWindow*, int, int, bool);
     ndkPixmap(GdkWindow*, const char*, int, int);
     ndkPixmap(GdkWindow*, const char*, int, int,
+        const GdkColor*, const GdkColor*);
+#else
+    ndkPixmap(GdkDrawable*, int, int, bool);
+    ndkPixmap(GdkDrawable*, const char*, int, int);
+    ndkPixmap(GdkDrawable*, const char*, int, int,
         const GdkColor*, const GdkColor*);
 #endif
     ndkPixmap(ndkPixmap*, int, int);
     ~ndkPixmap();
 
-#ifdef XXX_GDK
+#ifdef NEW_DRW
     void copy_to_window(GdkWindow*, ndkGC*, int, int, int, int, int, int);
     void copy_from_window(GdkWindow*, ndkGC*, int, int, int, int, int, int);
 #else
@@ -112,6 +96,8 @@ struct ndkPixmap
 #endif
     void copy_to_pixmap(ndkPixmap*, ndkGC*, int, int, int, int, int, int);
     void copy_from_pixmap(ndkPixmap*, ndkGC*, int, int, int, int, int, int);
+    void copy_to_drawable(ndkDrawable*, ndkGC*, int, int, int, int, int, int);
+    void copy_from_drawable(ndkDrawable*, ndkGC*, int, int, int, int, int, int);
 
     static ndkPixmap *lookup(unsigned long);
     static ndkPixmap *lookup_for_display(GdkDisplay*, unsigned long);

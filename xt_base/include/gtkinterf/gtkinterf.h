@@ -52,9 +52,9 @@
 //  Main header for the GTK+ library
 //
 
-#define XXX_GDK
 #define NEW_GC
-#define NEW_PIX
+//#define NEW_PIX
+//#define NEW_DRW
 
 #ifndef WITH_QUARTZ
 #ifndef WIN32
@@ -80,6 +80,10 @@ using namespace gtkinterf;
 #endif
 #ifdef NEW_GC
 #include "gtkinterf/ndkgc.h"
+#endif
+#ifdef NEW_PIX
+#include "gtkinterf/ndkpixmap.h"
+#include "gtkinterf/ndkdrawable.h"
 #endif
 
 namespace gtkinterf {
@@ -391,7 +395,12 @@ namespace gtkinterf {
         gtk_draw(int = 0);
         virtual ~gtk_draw();
 
+#ifdef NEW_DRW
+        void SetViewport(GtkWidget*);
+        void *WindowID();
+#else
         void *WindowID()                    { return (gd_window); }
+#endif
 
         // gtkinterf.cc
         void Halt();
@@ -457,13 +466,12 @@ namespace gtkinterf {
         void SetGbag(sGbag *b)  { gd_gbag = b; }
 
         GtkWidget *Viewport()           { return (gd_viewport); }
+#ifdef NEW_DRW
+        ndkDrawable *GetDrawable()      { return (&gd_dw); }
+#else
         void SetViewport(GtkWidget *w)  { gd_viewport = w; }
         GdkWindow *Window()             { return (gd_window); }
         void SetWindow(GdkWindow *w)    { gd_window = w; }
-#ifdef XXX_GDK
-#else
-        cairo_t *CairoCx()              { return (gd_cr); }
-        void SetCairoCx(cairo_t *cr)    { gd_cr = cr; }
 #endif
 
         void SetBackgPixel(unsigned int p)    { gd_backg = p; }
@@ -473,12 +481,10 @@ namespace gtkinterf {
 
     protected:
         GtkWidget *gd_viewport;         // drawing widget
-        GdkWindow *gd_window;           // drawing window
-#ifdef XXX_GDK
+#ifdef NEW_DRW
+        ndkDrawable gd_dw;              // drawing context
 #else
-        cairo_surface_t *gd_surface;    // drawing surface
-        cairo_surface_t *gd_image;      // image backing
-        cairo_t *gd_cr;
+        GdkWindow *gd_window;           // drawing window
 #endif
         sGbag *gd_gbag;                 // graphics rendering context
         unsigned int gd_backg;

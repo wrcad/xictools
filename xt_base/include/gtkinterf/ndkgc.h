@@ -68,11 +68,12 @@
 // GTK+ at ftp://ftp.gtk.org/pub/gtk/.
 //
 
-#ifndef _NDKGC_H_
-#define _NDKGC_H_
+#ifndef NDKGC_H
+#define NDKGC_H
 
 #ifdef NEW_PIX
-#include "ndkpixmap.h"
+//XXX #include "ndkpixmap.h"
+struct ndkPixmap;
 #endif
 
 // ndkGC cap styles.
@@ -194,15 +195,9 @@ struct ndkGCvalues
     ndkPixmap       *v_stipple;
     ndkPixmap       *v_clip_mask;
 #else
-#ifdef XXX_GDK
     GdkPixmap       *v_tile;
     GdkBitmap       *v_stipple;
     GdkPixmap       *v_clip_mask;
-#else
-    void            *v_tile;
-    void            *v_stipple;
-    void            *v_clip_mask;
-#endif
 #endif
     ndkGCsubwinMode v_subwindow_mode;
     int             v_ts_x_origin;
@@ -221,10 +216,7 @@ struct ndkGC
 #ifdef NEW_PIX
     ndkGC(GdkWindow*, ndkGCvalues*, ndkGCvaluesMask);
 #else
-#ifdef XXX_GDK
     ndkGC(GdkDrawable*, ndkGCvalues*, ndkGCvaluesMask);
-#else
-#endif
 #endif
     ~ndkGC();
 
@@ -279,7 +271,6 @@ struct ndkGC
 
     ndkPixmap *get_tile()           { return (gc_tile); }
 #else
-#ifdef XXX_GDK
     void set_tile(GdkPixmap *tile)
     {
         ndkGCvalues values;
@@ -288,8 +279,6 @@ struct ndkGC
     }
 
     GdkPixmap *get_tile()           { return (gc_tile); }
-#else
-#endif
 #endif
 
 
@@ -303,7 +292,6 @@ struct ndkGC
 
     ndkPixmap *get_stipple()        { return (gc_stipple); }
 #else
-#ifdef XXX_GDK
     void set_stipple(GdkBitmap *stipple)
     {
         ndkGCvalues values;
@@ -312,8 +300,6 @@ struct ndkGC
     }
 
     GdkBitmap *get_stipple()        { return (gc_stipple); }
-#else
-#endif
 #endif
 
 
@@ -358,7 +344,6 @@ struct ndkGC
 
     ndkPixmap *get_clip_mask()      { return (gc_clip_mask); }
 #else
-#ifdef XXX_GDK
     void set_clip_mask(GdkPixmap *mask)
     {
         ndkGCvalues values;
@@ -367,8 +352,6 @@ struct ndkGC
     }
 
     GdkPixmap *get_clip_mask()      { return (gc_clip_mask); }
-#else
-#endif
 #endif
 
     // Sets the clip mask for a graphics context from a rectangle.  The
@@ -504,11 +487,8 @@ private:
     void gc_update_context(cairo_t*, const GdkColor*, ndkPixmap*, bool,
         GdkWindow*);
 #else
-#ifdef XXX_GDK
     void gc_update_context(cairo_t*, const GdkColor*, GdkBitmap*, bool,
         GdkDrawable*);
-#else
-#endif
 #endif
 #ifdef WITH_X11
     void gc_x11_flush();
@@ -538,17 +518,10 @@ private:
     ndkPixmap       *gc_clip_mask;
     ndkPixmap       *gc_old_clip_mask;
 #else
-#ifdef XXX_GDK
     GdkBitmap       *gc_stipple;
     GdkBitmap       *gc_tile;
     GdkBitmap       *gc_clip_mask;
     GdkBitmap       *gc_old_clip_mask;
-#else
-    void            *gc_stipple;
-    void            *gc_tile;
-    void            *gc_clip_mask;
-    void            *gc_old_clip_mask;
-#endif
 #endif
 
     unsigned int    gc_fg_pixel;

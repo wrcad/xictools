@@ -2374,12 +2374,10 @@ namespace {
     GdkCursor *B1hand_cursor;
     GdkRectangle B1box;
     GdkRectangle B1cf;
-#ifdef XXX_GDK
-    GdkGC *B1gc;
+#ifdef NEW_GC
+    ndkGC *B1gc;
 #else
-    Gc *B1gc;
-    cairo_t *B1cr;
-//    cairo_surface_t *B1sfc;
+    GdkGC *B1gc;
 #endif
 
 //XXX
@@ -2398,19 +2396,14 @@ namespace {
     {
         if (gtk_widget_get_window(caller) != event->motion.window)
             return (false);
-#ifdef XXX_GDK
-        gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
-            B1cf.x, B1cf.y, B1box.width, B1box.height);
-        B1cf.x = (int)event->motion.x_root - B1box.x;
-        B1cf.y = (int)event->motion.y_root - B1box.y;
-        gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
-            B1cf.x, B1cf.y, B1box.width, B1box.height);
+#ifdef NEW_GC
 #else
-        cairo_rectangle(B1cr, B1cf.x, B1cf.y, B1box.width, B1box.height);
+        gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
+            B1cf.x, B1cf.y, B1box.width, B1box.height);
         B1cf.x = (int)event->motion.x_root - B1box.x;
         B1cf.y = (int)event->motion.y_root - B1box.y;
-        cairo_rectangle(B1cr, B1cf.x, B1cf.y, B1box.width, B1box.height);
-        cairo_stroke(B1cr);
+        gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
+            B1cf.x, B1cf.y, B1box.width, B1box.height);
 #endif
         return (true);
     }
@@ -2423,12 +2416,10 @@ namespace {
             return (false);
         if (event->button.button == 1) {
             gdk_pointer_ungrab(GDK_CURRENT_TIME);
-#ifdef XXX_GDK
+#ifdef NEW_GC
+#else
             gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
                 B1cf.x, B1cf.y, B1box.width, B1box.height);
-#else
-            cairo_rectangle(B1cr, B1cf.x, B1cf.y, B1box.width, B1box.height);
-            cairo_stroke(B1cr);
 #endif
             B1cf.x = (int)event->button.x_root - B1box.x;
             B1cf.y = (int)event->button.y_root - B1box.y;
@@ -2456,7 +2447,23 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
         return (false);
     if (!B1hand_cursor) {
         // first call, create cursor and GC
-#ifdef XXX_GDK
+#ifdef NEW_GC
+        B1hand_cursor = gdk_cursor_new(GDK_HAND2);
+        B1gc = new ndkGC(gr_default_root_window(), 0, (ndkGCvaluesMask)0);
+        B1gc->set_subwindow(ndkGC_INCLUDE_INFERIORS);
+
+        GdkColor wp;
+        gdk_color_parse("white", &wp);
+        gdk_colormap_alloc_color(GRX->Colormap(), &wp, false, true);
+        GdkColor bp;
+        gdk_color_parse("black", &bp);
+        gdk_colormap_alloc_color(GRX->Colormap(), &bp, false, true);
+        GdkColor clr;
+        clr.pixel = wp.pixel ^ bp.pixel;
+        gtk_QueryColor(&clr);
+        B1gc->set_foreground(&clr);
+        B1gc->set_function(ndkGC_XOR);
+#else
         B1hand_cursor = gdk_cursor_new(GDK_HAND2);
         B1gc = gdk_gc_new(gr_default_root_window());
         gdk_gc_set_subwindow(B1gc, GDK_INCLUDE_INFERIORS);
@@ -2470,43 +2477,6 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
         gtk_QueryColor(&clr);
         gdk_gc_set_foreground(B1gc, &clr);
         gdk_gc_set_function(B1gc, GDK_XOR);
-#else
-        B1hand_cursor = gdk_cursor_new(GDK_HAND2);
-
-        /*
-        B1gc = new Gc(gr_default_root_window());
-        Gc->set_subwindow(GC_INCLUDE_INFERIORS);
-
-        GdkColor wp;
-        gdk_color_white(GRX->Colormap(), &wp);
-        GdkColor bp;
-        gdk_color_black(GRX->Colormap(), &bp);
-        GdkColor clr;
-        clr.pixel = wp.pixel ^ bp.pixel;
-        gtk_QueryColor(&clr);
-        Gc->set_foreground(&clr);
-        Gc->set_function(GC_XOR);
-        */
-
-        GdkWindow *w = gr_default_root_window();
-//        B1sfc = gdk_window_create_similar_surface(w, CAIRO_CONTENT_COLOR,
-//            gdk_window_get_width(w), gdk_window_get_height(w));
-//        B1cr = cairo_create(B1sfc);
-        B1cr = gdk_cairo_create(w);
-
-        GdkColor wp;
-        gdk_color_parse("white", &wp);
-        gdk_colormap_alloc_color(GRX->Colormap(), &wp, false, true);
-        GdkColor bp;
-        gdk_color_parse("black", &bp);
-        gdk_colormap_alloc_color(GRX->Colormap(), &bp, false, true);
-        GdkColor clr;
-        clr.pixel = wp.pixel ^ bp.pixel;
-        gtk_QueryColor(&clr);
-
-        cairo_set_source_rgb(B1cr, clr.red/255.0, clr.green/255.0,
-            clr.blue/255.0);
-        cairo_set_operator(B1cr, CAIRO_OPERATOR_XOR);
 #endif
     }
 
@@ -2522,15 +2492,20 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
     B1cf.width = shell_box.x - parent_box.x;
     B1cf.height = shell_box.y - parent_box.y;
 
-#ifdef XXX_GDK
+#ifdef NEW_GC
+    Drawable xid = gdk_x11_drawable_get_xid(gr_default_root_window());
+    int x1 = (int)event->button.x_root - B1box.x;
+    int y1 = (int)event->button.y_root - B1box.y;
+    int x2 = x1 + B1box.width;
+    int y2 = y1 + B1box.height;
+    XDrawLine(B1gc->get_xdisplay(), xid, B1gc->get_xgc(), x1, y1, x2, y1);
+    XDrawLine(B1gc->get_xdisplay(), xid, B1gc->get_xgc(), x2, y1, x2, y2);
+    XDrawLine(B1gc->get_xdisplay(), xid, B1gc->get_xgc(), x2, y2, x1, y2);
+    XDrawLine(B1gc->get_xdisplay(), xid, B1gc->get_xgc(), x1, y2, x1, y1);
+#else
     gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
         (int)event->button.x_root - B1box.x,
         (int)event->button.y_root - B1box.y, B1box.width, B1box.height);
-#else
-    cairo_rectangle(B1cr,
-        (int)event->button.x_root - B1box.x,
-        (int)event->button.y_root - B1box.y, B1box.width, B1box.height);
-    cairo_stroke(B1cr);
 #endif
 
     gtk_widget_add_events(caller, GDK_BUTTON1_MOTION_MASK);

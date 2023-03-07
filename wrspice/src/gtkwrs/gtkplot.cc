@@ -109,11 +109,9 @@ struct plot_bag : public gtk_bag,  public gtk_draw
             pb_bbox = 0;
             for (int i = 0; i < pbtn_NUMBTNS; i++)
                 pb_checkwins[i] = 0;
-#ifdef XXX_GDK
-            pb_pixmap = 0;
+#ifdef NEW_DRW
 #else
-            pb_surface = 0;
-            pb_image = 0;
+            pb_pixmap = 0;
 #endif
             pb_pmwid = pb_pmhei = 0;
             pb_id = 0;
@@ -123,16 +121,10 @@ struct plot_bag : public gtk_bag,  public gtk_draw
 
     ~plot_bag()
         {
-#ifdef XXX_GDK
+#ifdef NEW_DRW
+#else
             if (pb_pixmap)
                 gdk_pixmap_unref(pb_pixmap);
-#else
-                /*
-            if (pb_surface)
-                cairo_surface_destroy(pb_surface);
-            if (pb_image)
-                cairo_surface_destroy(pb_image);
-                */
 #endif
             if (pb_id)
                 g_source_remove(pb_id);
@@ -177,11 +169,9 @@ private:
 
     GtkWidget *pb_bbox;             // frame containing button box
     GtkWidget *pb_checkwins[pbtn_NUMBTNS];  // button widget pointers
-#ifdef XXX_GDK
-    GdkPixmap *pb_pixmap;           // backing store
+#ifdef NEW_DRW
 #else
-    cairo_surface_t *pb_surface;    // direct drawing surface
-    cairo_surface_t *pb_image;      // backing store
+    GdkPixmap *pb_pixmap;           // backing store
 #endif
     int pb_pmwid, pb_pmhei;         // pixmap size
     int pb_id;                      // motion idle id
@@ -269,9 +259,7 @@ plot_bag::init(sGraph *gr)
         dahei = 300;
     }
     gtk_widget_set_size_request(Viewport(), dawid, dahei);
-
     gtk_widget_show(Viewport());
-
     GTKfont::setupFont(Viewport(), FNT_SCREEN, true);
 
     gtk_widget_add_events(Viewport(), GDK_STRUCTURE_MASK);
@@ -301,7 +289,7 @@ plot_bag::init(sGraph *gr)
     g_signal_connect(G_OBJECT(Viewport()), "style_set",
         G_CALLBACK(font_change_hdlr), gr);
 
-    // gtk2 - this avoids issue of an expose event on focus change
+    // This avoids issue of an expose event on focus change.
     gtk_widget_add_events(Viewport(), GDK_FOCUS_CHANGE_MASK);
     g_signal_connect(G_OBJECT(Viewport()), "focus_in_event",
         G_CALLBACK(focus), this);
@@ -321,6 +309,7 @@ plot_bag::init(sGraph *gr)
         (GtkAttachOptions)0,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 0, 0);
 
+//XXX
     // The first plot is issued a blank sGbag, which is filled in here.
     // Subsequent plots are issued the same sGbag for the class (plots and
     // mplots are separate classes).  This is a problem for plots, which
@@ -349,7 +338,10 @@ plot_bag::init(sGraph *gr)
     TB()->RevertFocus(Shell());
 
     gtk_widget_show(Shell());
+#ifdef NEW_DRW
+#else
     SetWindow(gtk_widget_get_window(Viewport()));
+#endif
     {
         char buf1[128], buf2[64];
         const char *anam = "";
@@ -364,15 +356,25 @@ plot_bag::init(sGraph *gr)
 
     // create GC's
     //
-#ifdef XXX_GDK
 #ifdef NEW_GC
     if (!GC()) {
         ndkGCvalues gcvalues;
         gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
-        Gbag()->set_gc(new ndkGC(Window(), &gcvalues, ndkGC_CAP_STYLE));
+#ifdef NEW_DRW
+        GdkWindow *window = GetDrawable()->get_window();
+        if (window) {
+            Gbag()->set_gc(new ndkGC(window, &gcvalues, ndkGC_CAP_STYLE));
+            gcvalues.v_function = ndkGC_XOR;
+            Gbag()->set_xorgc(new ndkGC(window, &gcvalues,
+                (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
+        }
+#else
+        Gbag()->set_gc(new ndkGC(Window(), &gcvalues,
+            ndkGC_CAP_STYLE));
         gcvalues.v_function = ndkGC_XOR;
         Gbag()->set_xorgc(new ndkGC(Window(), &gcvalues,
             (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
+#endif
     }
 #else
     if (!GC()) {
@@ -385,29 +387,26 @@ plot_bag::init(sGraph *gr)
             (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE)));
     }
 #endif
-#else
-    if (!GC()) {
-        GcValues gcvalues;
-        gcvalues.v_cap_style = GC_CAP_NOT_LAST;
-        Gbag()->set_gc(new Gc(Window(), &gcvalues, GC_CAP_STYLE));
-        gcvalues.v_function = GC_XOR;
-        Gbag()->set_xorgc(new Gc(Window(), &gcvalues,
-            (GcValuesMask)(GC_FUNCTION | GC_CAP_STYLE)));
-    }
-    cairo_t *cr = gdk_cairo_create(Window());
-    SetCairoCx(cr);
-#endif
     gr->gr_pkg_init_colors();
     gr->set_fontsize();
 
     // set up cursor
     GdkCursor *cursor = gdk_cursor_new(GDK_LEFT_PTR);
+#ifdef NEW_DRW
+    GdkWindow *window = GetDrawable()->get_window();
+    if (window) {
+        gdk_window_set_cursor(window, cursor);
+        gr->area().set_width(gdk_window_get_width(window));
+        gr->area().set_height(gdk_window_get_height(window));
+    }
+#else
     gdk_window_set_cursor(Window(), cursor);
 
     int w = gdk_window_get_width(Window());
     int h = gdk_window_get_height(Window());
     gr->area().set_width(w);
     gr->area().set_height(h);
+#endif
 
 #ifndef __APPLE__
     // With OSX 13.0.1 abd XQuartz 2.8.2, these lines cause the
@@ -768,13 +767,28 @@ sGraph::gr_redraw()
         return;
     }
     plot_bag *wb = dynamic_cast<plot_bag*>(gr_dev);
+#ifdef NEW_DRW
+    ndkDrawable *dw = wb->GetDrawable();
+    dw->set_draw_to_pixmap();
+    int width = dw->get_width();
+    int height = dw->get_height();
+    area().set_width(width);
+    area().set_height(height);
+    wb->SetColor(gr_colors[0].pixel);
+    wb->Box(0, 0, width, height);
+    gr_redraw_direct();  // This might change area().width/area().height.
+    dw->set_draw_to_window();
+    dw->copy_pixmap_to_window(wb->GC(), 0, 0, -1, -1);
+    gr_redraw_keyed();
+    gr_dirty = false;
+
+#else
     if (!wb->Window())
         return;
     int width = gdk_window_get_width(wb->Window());
     int height = gdk_window_get_height(wb->Window());
     area().set_width(width);
     area().set_height(height);
-#ifdef XXX_GDK
     if (!wb->pb_pixmap || wb->pb_pmwid != width || wb->pb_pmhei != height) {
         if (wb->pb_pixmap)
             gdk_pixmap_unref(wb->pb_pixmap);
@@ -783,23 +797,6 @@ sGraph::gr_redraw()
         wb->pb_pmwid = width;
         wb->pb_pmhei = height;
     }
-#else
-    if (!wb->pb_image || wb->pb_pmwid != width || wb->pb_pmhei != height) {
-        /*
-        if (wb->pb_surface)
-            cairo_surface_destroy(wb->pb_surface);
-        wb->pb_image = gdk_window_create_similar_surface(
-            wb->Window(), CAIRO_CONTENT_COLOR, width, height);
-        if (wb->pb_image)
-            cairo_surface_destroy(wb->pb_image);
-        wb->pb_image = cairo_surface_create_similar_image(
-            wb->pb_surface, CAIRO_FORMAT_RGB24, width, height);
-        wb->pb_pmwid = width;
-        wb->pb_pmhei = height;
-        */
-    }
-#endif
-#ifdef XXX_GDK
     GdkWindow *wtmp = wb->Window();
     wb->SetWindow(wb->pb_pixmap);
     wb->SetColor(gr_colors[0].pixel);
@@ -807,9 +804,7 @@ sGraph::gr_redraw()
     gr_redraw_direct();  // This might change area().width/area().height.
     wb->SetWindow(wtmp);
 #ifdef NEW_GC
-    // XXX fixme  gdk_draw_drawable for MSW
 #ifdef WITH_X11
-fprintf(stderr, "pd1\n");
     copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
         0, 0, 0, 0, width, height);
 #endif
@@ -817,19 +812,9 @@ fprintf(stderr, "pd1\n");
     gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
         width, height);
 #endif
-#else
-    wb->SetColor(gr_colors[0].pixel);
-    wb->Box(0, 0, width, height);
-    gr_redraw_direct();  // This might change area().width/area().height.
-    /*
-    cairo_t *cr = cairo_create(wb->pb_surface);
-    cairo_set_source_surface(cr, wb->pb_image, 0, 0);
-    cairo_paint(cr);
-    cairo_destroy(cr);
-    */
-#endif
     gr_redraw_keyed();
     gr_dirty = false;
+#endif // NEW_DRW
 }
 
 
@@ -837,44 +822,56 @@ void
 sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
 {
     plot_bag *wb = dynamic_cast<plot_bag*>(gr_dev);
+#ifdef NEW_DRW
+    ndkDrawable *dw = wb->GetDrawable();
+    int w = dw->get_width();
+    int h = dw->get_height();
+    area().set_width(w);
+    area().set_height(h);
+    if (gr_dirty || !dw->get_pixmap() || wb->pb_pmwid != area().width() ||
+            wb->pb_pmhei != area().height()) {
+
+        gr_redraw();
+        return;
+    }
+
+    dw->set_draw_to_window();
+    dw->copy_pixmap_to_window(wb->GC(), 0, 0, -1, -1);
+
+    GdkRectangle r;
+    r.x = left;
+    r.y = top;
+    r.width = right - left;
+    r.height = bottom - top;
+    wb->GC()->set_clip_rectangle(&r);
+    wb->XorGC()->set_clip_rectangle(&r);
+    if (!notxt)
+        gr_redraw_keyed();
+    wb->GC()->set_clip_rectangle(0);
+    wb->XorGC()->set_clip_rectangle(0);
+
+#else
     int w = gdk_window_get_width(wb->Window());
     int h = gdk_window_get_height(wb->Window());
     area().set_width(w);
     area().set_height(h);
-#ifdef XXX_GDK
     if (gr_dirty || !wb->pb_pixmap || wb->pb_pmwid != area().width() ||
             wb->pb_pmhei != area().height()) {
-#else
-    if (gr_dirty || !wb->pb_image || wb->pb_pmwid != area().width() ||
-            wb->pb_pmhei != area().height()) {
-#endif
         gr_redraw();
         return;
     }
-#ifdef XXX_GDK
 #ifdef NEW_GC
-#ifdef WITH_X11
-    //XXX draw_drawable for MSW
-fprintf(stderr, "pd2\n");
     copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
         left, top, left, top, right - left, bottom - top);
-#endif
 #else
     gdk_window_copy_area(wb->Window(), wb->GC(), left,
         top, wb->pb_pixmap, left, top, right - left, bottom - top);
-#endif
-#else
-//    cairo_t *cr = cairo_create(wb->pb_surface);
-//    cairo_set_source_surface(cr, wb->pb_image, 0, 0);
-//    cairo_paint(cr);
-//    cairo_destroy(cr);
 #endif
     GdkRectangle r;
     r.x = left;
     r.y = top;
     r.width = right - left;
     r.height = bottom - top;
-#ifdef XXX_GDK
 #ifdef NEW_GC
     wb->GC()->set_clip_rectangle(&r);
     wb->XorGC()->set_clip_rectangle(&r);
@@ -890,8 +887,7 @@ fprintf(stderr, "pd2\n");
     gdk_gc_set_clip_rectangle(wb->GC(), 0);
     gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
 #endif
-#else
-#endif
+#endif //NEW_DRW
 }
 
 
@@ -988,8 +984,17 @@ plot_bag::resize(GtkWidget *caller, GdkEvent*, void *client_data)
     sGraph *graph = static_cast<sGraph*>(client_data);
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
 
+#ifdef NEW_DRW
+    if (!wb->GetDrawable()->get_window()) {
+        GtkWidget *vp = wb->Viewport();
+        if (gtk_widget_get_window(vp))
+            wb->GetDrawable()->set_window(gtk_widget_get_window(vp));
+    }
+
+#else
     if (!wb->Window())
         wb->SetWindow(gtk_widget_get_window(wb->Viewport()));
+#endif
     int w = gdk_window_get_width(gtk_widget_get_window(caller));
     int h = gdk_window_get_height(gtk_widget_get_window(caller));
     graph->area().set_width(w);
@@ -1009,7 +1014,18 @@ plot_bag::redraw_timeout(void *arg)
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
 
     wb->pb_rdid = 0;
-#ifdef XXX_GDK
+#ifdef NEW_DRW
+    ndkDrawable *dw = wb->GetDrawable();
+    dw->set_draw_to_pixmap();
+    wb->SetColor(graph->color(0).pixel);
+    wb->Box(0, 0, graph->area().width(), graph->area().height());
+    graph->gr_redraw_direct();
+    dw->set_draw_to_window();
+    dw->copy_pixmap_to_window(wb->GC(), 0, 0, -1, -1);
+    graph->gr_redraw_keyed();
+    graph->set_dirty(false);
+
+#else
     GdkWindow *wtmp = wb->Window();
     wb->SetWindow(wb->pb_pixmap);
     wb->SetColor(graph->color(0).pixel);
@@ -1017,30 +1033,15 @@ plot_bag::redraw_timeout(void *arg)
     graph->gr_redraw_direct();
     wb->SetWindow(wtmp);
 #ifdef NEW_GC
-    // XXX draw_drawable for MSW
-#ifdef WITH_X11
-fprintf(stderr, "pd3\n");
     copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
         0, 0, 0, 0, graph->area().width(), graph->area().height());
-#endif
 #else
     gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
         graph->area().width(), graph->area().height());
 #endif
-#else
-fprintf(stderr, "redraw\n");
-    wb->SetColor(graph->color(0).pixel);
-    wb->Box(0, 0, graph->area().width(), graph->area().height());
-    graph->gr_redraw_direct();
-    /*XXX
-    cairo_t *cr = cairo_create(wb->pb_surface);
-    cairo_set_source_surface(cr, wb->pb_image, 0, 0);
-    cairo_paint(cr);
-    cairo_destroy(cr);
-    */
-#endif
     graph->gr_redraw_keyed();
     graph->set_dirty(false);
+#endif //NEW_DRW
 
     return (0);
 }
@@ -1053,13 +1054,38 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
     sGraph *graph = static_cast<sGraph*>(client_data);
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
     GdkEventExpose *pev = &event->expose;
+
+#ifdef NEW_DRW
+    ndkDrawable *dw = wb->GetDrawable();
+
+    bool dirty = dw->set_draw_to_pixmap();
+    graph->area().set_width(dw->get_width());
+    graph->area().set_height(dw->get_height());
+    if (dirty)
+        graph->set_dirty(true);
+
+    if (graph->dirty()) {
+        if (wb->pb_rdid)
+            g_source_remove(wb->pb_rdid);
+        wb->pb_rdid = g_timeout_add(250, redraw_timeout, client_data);
+    }
+    else {
+        dw->copy_pixmap_to_window(wb->GC(), pev->area.x, pev->area.y,
+            pev->area.width, pev->area.height);
+        wb->GC()->set_clip_rectangle(&pev->area);
+        wb->XorGC()->set_clip_rectangle(&pev->area);
+        graph->gr_redraw_keyed();
+        wb->GC()->set_clip_rectangle(0);
+        wb->XorGC()->set_clip_rectangle(0);
+    }
+
+#else
     // hack for Motif
     if (pev->window != wb->Window())
         return (false);
 
     int w = gdk_window_get_width(wb->Window());
     int h = gdk_window_get_height(wb->Window());
-#ifdef XXX_GDK
     if (!wb->pb_pixmap || wb->pb_pmwid != w || wb->pb_pmhei != h) {
         graph->area().set_width(w);
         graph->area().set_height(h);
@@ -1068,46 +1094,6 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
             gdk_pixmap_unref(wb->pb_pixmap);
         wb->pb_pixmap = gdk_pixmap_new(wb->Window(), graph->area().width(),
             graph->area().height(), gdk_visual_get_depth(GRX->Visual()));
-#else
-    if (wb->pb_pmwid != w || wb->pb_pmhei != h) {
-        if (wb->pb_pmwid == 0 && wb->pb_pmhei == 0) {
-            wb->pb_pmwid = w;
-            wb->pb_pmhei = h;
-        }
-        else {
-            cairo_surface_t *sfc = cairo_get_target(wb->gd_cr);
-            cairo_surface_type_t t = cairo_surface_get_type(sfc);
-            if (t == CAIRO_SURFACE_TYPE_XLIB) {
-                cairo_xlib_surface_set_size(sfc, w, h);
-                cairo_reset_clip(wb->gd_cr);
-//fprintf(stderr, "x11 resized\n");
-            }
-            else if (t == CAIRO_SURFACE_TYPE_QUARTZ) {
-//fprintf(stderr, "quartz resized\n");
-            }
-            else if (t == CAIRO_SURFACE_TYPE_WIN32) {
-            }
-//fprintf(stderr, "resized %d\n", t);
-
-        }
-        graph->area().set_width(w);
-        graph->area().set_height(h);
-
-        /*
-    if (!wb->pb_image || wb->pb_pmwid != w || wb->pb_pmhei != h) {
-        graph->area().set_width(w);
-        graph->area().set_height(h);
-
-        if (wb->pb_surface)
-            cairo_surface_destroy(wb->pb_surface);
-        wb->pb_image = gdk_window_create_similar_surface(
-            wb->Window(), CAIRO_CONTENT_COLOR, w, h);
-        if (wb->pb_image)
-            cairo_surface_destroy(wb->pb_image);
-        wb->pb_image = cairo_surface_create_similar_image(
-            wb->pb_surface, CAIRO_FORMAT_RGB24, w, h);
-            */
-#endif
         wb->pb_pmwid = graph->area().width();
         wb->pb_pmhei = graph->area().height();
         graph->set_dirty(true);
@@ -1118,7 +1104,6 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         wb->pb_rdid = g_timeout_add(250, redraw_timeout, client_data);
     }
     else {
-#ifdef XXX_GDK
 #ifdef NEW_GC
         /* XXX draw drawable
         gdk_window_copy_area(wb->Window(), wb->GC(), pev->area.x,
@@ -1142,15 +1127,8 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         gdk_gc_set_clip_rectangle(wb->GC(), 0);
         gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
 #endif
-#else
-        /*
-        cairo_t *cr = cairo_create(wb->pb_surface);
-        cairo_set_source_surface(cr, wb->pb_image, 0, 0);
-        cairo_paint(cr);
-        cairo_destroy(cr);
-        */
-#endif
     }
+#endif // NEW_DRW
     return (true);
 }
 

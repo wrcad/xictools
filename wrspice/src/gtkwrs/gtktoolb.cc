@@ -913,7 +913,11 @@ ErrMsgBox::PopUpErr(const char *string)
 
     gtk_window_move(GTK_WINDOW(er_popup), er_x, er_y);
     gtk_widget_show(er_popup);
+#ifdef NEW_DRW
+    if (TB()->context && TB()->context->GetDrawable()) {
+#else
     if (TB()->context && TB()->context->Window()) {
+#endif
         gtk_window_set_transient_for(GTK_WINDOW(er_popup),
             GTK_WINDOW(TB()->context->Shell()));
     }
@@ -1105,7 +1109,11 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
 
     gtk_window_move(GTK_WINDOW(popup), x, y);
     gtk_widget_show(popup);
+#ifdef NEW_DRW
+    if (TB()->context && TB()->context->GetDrawable()) {
+#else
     if (TB()->context && TB()->context->Window()) {
+#endif
         gtk_window_set_transient_for(GTK_WINDOW(popup),
             GTK_WINDOW(TB()->context->Shell()));
     }
@@ -1143,10 +1151,17 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         ResPrint::get_elapsed(&elapsed, &user, &cpu);
         tb_elapsed_start = elapsed;
     }
+#ifdef NEW_DRW
+    else if (context && context->GetDrawable()->get_window()) {
+        int wid = context->GetDrawable()->get_width();
+        int hei = context->GetDrawable()->get_height();
+        context->GetDrawable()->set_draw_to_pixmap();
+#else
     else if (context && context->Window()) {
         int wid = gdk_window_get_width(context->Window());
         int hei = gdk_window_get_height(context->Window());
         context->switch_to_pixmap();
+#endif
         int fwid, dy;
         context->TextExtent(0, &fwid, &dy);
         context->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
@@ -1258,7 +1273,13 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             }
         }
         context->Update();
+#ifdef NEW_DRW
+        context->GetDrawable()->set_draw_to_window();
+        context->GetDrawable()->copy_pixmap_to_window(
+            context->CpyGC(), 0, 0, -1, -1);
+#else
         context->switch_from_pixmap();
+#endif
     }
 }
 
@@ -1742,6 +1763,15 @@ namespace {
         TB()->UpdateMain(RES_UPD);
         return (true);
     }
+
+
+    int
+    resize_hdlr(GtkWidget*, GdkEvent*, void*)
+    {
+        TB()->UpdateMain(RES_BEGIN);
+        return (true);
+    }
+
 
     // Redraw the resource listing
     //
@@ -2286,6 +2316,9 @@ GTKtoolbar::tbpop(bool up)
     g_signal_connect(G_OBJECT(frame), "drag-motion",
         G_CALLBACK(target_drag_motion), 0);
 
+//    gtk_widget_add_events(w->Viewport(), GDK_STRUCTURE_MASK);
+//    g_signal_connect(G_OBJECT(w->Viewport()), "configure_event",
+//        G_CALLBACK(resize_hdlr), w);
     g_signal_connect(G_OBJECT(w->Viewport()), "expose_event",
         G_CALLBACK(expose_hdlr), w);
     g_signal_connect(G_OBJECT(w->Viewport()), "style_set",
@@ -2309,22 +2342,36 @@ GTKtoolbar::tbpop(bool up)
     RevertFocus(toolbar);
 
     gtk_widget_show(toolbar);
-    w->SetWindow(gtk_widget_get_window(w->Viewport()));
+#ifdef NEW_DRW
+    w->GetDrawable()->set_window(gtk_widget_get_window(w->Viewport()));
+#else
+    w->SetWindow(w->Viewport()->window);
+#endif
     char tbuf[28];
     sprintf(tbuf, "WRspice-%s", Global.Version());
     w->Title(tbuf, "WRspice");
 
+#ifdef NEW_GC
     // create GC's, these will also be used in the plots
     //
-#ifdef XXX_GDK
-#ifdef NEW_GC
     if (!w->GC()) {
         ndkGCvalues gcvalues;
+#ifdef NEW_DRW
+        GdkWindow *window = w->GetDrawable()->get_window();
+        if (window) {
+            gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
+            w->Gbag()->set_gc(new ndkGC(window, &gcvalues, ndkGC_CAP_STYLE));
+            gcvalues.v_function = ndkGC_XOR;
+            w->Gbag()->set_xorgc(new ndkGC(window, &gcvalues,
+                (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
+        }
+#else
         gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
         w->Gbag()->set_gc(new ndkGC(w->Window(), &gcvalues, ndkGC_CAP_STYLE));
         gcvalues.v_function = ndkGC_XOR;
         w->Gbag()->set_xorgc(new ndkGC(w->Window(), &gcvalues,
             (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
+#endif
 
         // set up initial xor color
         // offset 1 is assumed to be the highlighting color
@@ -2334,6 +2381,8 @@ GTKtoolbar::tbpop(bool up)
         w->XorGC()->set_foreground(&clr);
     }
 #else
+    // create GC's, these will also be used in the plots
+    //
     if (!w->GC()) {
         GdkGCValues gcvalues;
         gcvalues.cap_style = GDK_CAP_NOT_LAST;
@@ -2350,25 +2399,6 @@ GTKtoolbar::tbpop(bool up)
         gtk_QueryColor(&clr);
         gdk_gc_set_foreground(w->XorGC(), &clr);
     }
-#endif
-#else
-    if (!w->GC()) {
-        GcValues gcvalues;
-        gcvalues.v_cap_style = GC_CAP_NOT_LAST;
-        w->Gbag()->set_gc(new Gc(w->Window(), &gcvalues, GC_CAP_STYLE));
-        gcvalues.v_function = GC_XOR;
-        w->Gbag()->set_xorgc(new Gc(w->Window(), &gcvalues,
-            (GcValuesMask)(GC_FUNCTION | GC_CAP_STYLE)));
-
-        // set up initial xor color
-        // offset 1 is assumed to be the highlighting color
-        GdkColor clr;
-        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
-        gtk_QueryColor(&clr);
-        w->XorGC()->set_foreground(&clr);
-    }
-    cairo_t *cr = gdk_cairo_create(w->Window());
-    w->SetCairoCx(cr);
 #endif
 
     // drawing colors
@@ -2392,7 +2422,7 @@ GTKtoolbar::tbpop(bool up)
     w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
     w->SetBackground(SpGrPkg::DefColors[0].pixel);
     w->Clear();
-    g_timeout_add(2000, res_timeout, 0);
+    gtk_timeout_add(2000, res_timeout, 0);
 }
 
 
@@ -2636,7 +2666,7 @@ GTKtoolbar::quit_proc(GtkWidget*, void*)
     if (CP.GetFlag(CP_NOTTYIO)) {
         // In server mode, just hide ourself.
         gtk_widget_hide(TB()->toolbar);
-        TB()->context->SetWindow(0);
+//XXX        TB()->context->SetWindow(0);
     }
     else {
         CommandTab::com_quit(0);
@@ -2895,12 +2925,14 @@ GTKtoolbar::notes_proc(GtkWidget*, void*)
 // End of GTKtoolbar functions.
 
 
+#ifdef NEW_DRW
+#else
+
 void
 tb_bag::switch_to_pixmap()
 {
     int w = gdk_window_get_width(gd_window);
     int h = gdk_window_get_height(gd_window);
-#ifdef XXX_GDK
     if (!b_pixmap || w != b_wid || h != b_hei) {
         GdkPixmap *pm = b_pixmap;
         if (pm)
@@ -2916,65 +2948,102 @@ tb_bag::switch_to_pixmap()
             b_wid = 0;
             b_hei = 0;
         }
-#else
-    if (!b_image || w != b_wid || h != b_hei) {
-        /*
-        if (b_image)
-            cairo_surface_destroy(b_image);
-        cairo_surface_t *sfc = gdk_window_create_similar_surface(
-            gd_window, CAIRO_CONTENT_COLOR, w, h);
-        b_image = cairo_surface_create_similar_image(
-            sfc, CAIRO_FORMAT_RGB24, w, h);
-        cairo_surface_destroy(sfc);
-        b_wid = w;
-        b_hei = h;
-        */
-#endif
     }
-#ifdef XXX_GDK
     b_winbak = gd_window;
     gd_window = b_pixmap;
-//XXX
     gd_viewport->window = gd_window;
-//    gtk_widget_set_window(gd_viewport, gd_window);
-#else
-#endif
 }
-
 
 // Copy the pixmap to the window, and swap it out.
 //
 void
 tb_bag::switch_from_pixmap()
 {
-#ifdef XXX_GDK
     if (b_winbak) {
 #ifdef NEW_GC
-        // XXX draw_drawable for MSW
-#ifdef WITH_X11
         copy_x11_pixmap_to_drawable(b_winbak, CpyGC(), gd_window,
             0, 0, 0, 0, b_wid, b_hei);
-#endif
 #else
-        copy_x11_pixmap_to_drawable(b_winbak, CpyGC(), gd_window,
-            0, 0, 0, 0, b_wid, b_hei);
-//        gdk_window_copy_area(b_winbak, CpyGC(), 0, 0, gd_window,
-//            0, 0, b_wid, b_hei);
+//        copy_x11_pixmap_to_drawable(b_winbak, CpyGC(), gd_window,
+//            0, 0, 0, 0, b_wid, b_hei);
+        gdk_window_copy_area(b_winbak, CpyGC(), 0, 0, gd_window,
+            0, 0, b_wid, b_hei);
 #endif
         gd_window = b_winbak;
         b_winbak = 0;
-        gtk_widget_set_window(gd_viewport, gd_window);
+//        gtk_widget_set_window(gd_viewport, gd_window);
+        gd_viewport->window = gd_window;
+    }
+}
+#endif
+
+
+void
+tb_bag::create_GCs()
+{
+#ifdef NEW_DRW
+    if (GetDrawable()->get_window())
+        return;
+    GdkWindow *window = gtk_widget_get_window(Viewport());
+    if (!window)
+        return;
+    GetDrawable()->set_window(window);
+#else
+    SetWindow(gtk_widget_get_window(Viewport()));
+#endif
+
+    // create GC's, these will also be used in the plots
+    //
+#ifdef NEW_GC
+    if (!GC()) {
+        ndkGCvalues gcvalues;
+#ifdef NEW_DRW
+        if (window) {
+            gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
+            Gbag()->set_gc(new ndkGC(window, &gcvalues, ndkGC_CAP_STYLE));
+            gcvalues.v_function = ndkGC_XOR;
+            Gbag()->set_xorgc(new ndkGC(window, &gcvalues,
+                (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
+        }
+#else
+        gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
+        Gbag()->set_gc(new ndkGC(Window(), &gcvalues, ndkGC_CAP_STYLE));
+        gcvalues.v_function = ndkGC_XOR;
+        Gbag()->set_xorgc(new ndkGC(Window(), &gcvalues,
+            (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
+#endif
+
+        // set up initial xor color
+        // offset 1 is assumed to be the highlighting color
+        GdkColor clr;
+        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
+        gtk_QueryColor(&clr);
+        XorGC()->set_foreground(&clr);
     }
 #else
-    /*
-    cairo_t *cr = gdk_cairo_create(gd_window);
-    cairo_set_source_surface(cr, b_image, 0, 0);
-    cairo_paint(cr);
-    cairo_destroy(cr);
-    */
+    if (!GC()) {
+        GdkGCValues gcvalues;
+        gcvalues.cap_style = GDK_CAP_NOT_LAST;
+        Gbag()->set_gc(gdk_gc_new_with_values(Window(), &gcvalues,
+            GDK_GC_CAP_STYLE));
+        gcvalues.function = GDK_XOR;
+        Gbag()->set_xorgc(gdk_gc_new_with_values(Window(), &gcvalues,
+            (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE)));
 
+        // set up initial xor color
+        // offset 1 is assumed to be the highlighting color
+        GdkColor clr;
+        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
+        gtk_QueryColor(&clr);
+        gdk_gc_set_foreground(XorGC(), &clr);
+    }
 #endif
+
+    SetWindowBackground(SpGrPkg::DefColors[0].pixel);
+    SetBackground(SpGrPkg::DefColors[0].pixel);
+    Clear();
 }
+
 // End of tb_bag functions.
 
 

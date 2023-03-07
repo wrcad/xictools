@@ -70,24 +70,26 @@ struct tb_bag : public gtk_bag, public gtk_draw
         {
             b_wid = 0;
             b_hei = 0;
-#ifdef XXX_GDK
+#ifdef NEW_DRW
+#else
             b_pixmap = 0;
             b_winbak = 0;
-#else
-            b_image = 0;
 #endif
         }
 
+#ifdef NEW_DRW
+#else
     void switch_to_pixmap();
     void switch_from_pixmap();
+#endif
+    void create_GCs();
 
     int b_wid;
     int b_hei;
-#ifdef XXX_GDK
+#ifdef NEW_DRW
+#else
     GdkPixmap *b_pixmap;
     GdkWindow *b_winbak;
-#else
-    cairo_surface_t *b_image;
 #endif
 };
 

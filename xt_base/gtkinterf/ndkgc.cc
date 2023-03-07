@@ -71,12 +71,13 @@
 #include "config.h"
 #include "gtkinterf.h"
 
+#ifdef NDKGC_H
 
-#ifdef XXX_GDK
-ndkGC::ndkGC(GdkDrawable *drawable, ndkGCvalues *values,
+#ifdef NEW_DRW
+ndkGC::ndkGC(ndkDrawable *drawable, ndkGCvalues *values,
     ndkGCvaluesMask values_mask)
 #else
-ndkGC::ndkGC(ndkDrawable *drawable, ndkGCvalues *values,
+ndkGC::ndkGC(GdkDrawable *drawable, ndkGCvalues *values,
     ndkGCvaluesMask values_mask)
 #endif
 {
@@ -132,22 +133,18 @@ ndkGC::ndkGC(ndkDrawable *drawable, ndkGCvalues *values,
             if (gc_stipple)
                 gc_stipple->inc_ref();
 #else
-#ifdef XXX_GDK
             if (gc_stipple)
                 gdk_pixmap_ref(gc_stipple);
-#endif
 #endif
         }
         if (values_mask & ndkGC_TILE) {
             gc_tile = values->v_tile;
 #ifdef NEW_PIX
             if (gc_tile)
-                gc-tile->inc_ref();
+                gc_tile->inc_ref();
 #else
-#ifdef XXX_GDK
             if (gc_tile)
                 gdk_pixmap_ref(gc_tile);
-#endif
 #endif
         }
         if (values_mask & ndkGC_CLIP_MASK) {
@@ -156,10 +153,8 @@ ndkGC::ndkGC(ndkDrawable *drawable, ndkGCvalues *values,
             if (gc_clip_mask)
                 gc_clip_mask->inc_ref();
 #else
-#ifdef XXX_GDK
             if (gc_clip_mask)
                 gdk_pixmap_ref(gc_clip_mask);
-#endif
 #endif
         }
 
@@ -239,7 +234,6 @@ ndkGC::~ndkGC()
     if (gc_stipple)
         gc_stipple->dec_ref();
 #else
-#ifdef XXX_GDK
     if (gc_clip_mask)
         gdk_pixmap_unref(gc_clip_mask);
     if (gc_old_clip_mask)
@@ -248,7 +242,6 @@ ndkGC::~ndkGC()
         gdk_pixmap_unref(gc_tile);
     if (gc_stipple)
         gdk_pixmap_unref(gc_stipple);
-#endif
 #endif
 }
 
@@ -283,7 +276,6 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
                 gc_clip_mask->inc_ref();
             }
 #else
-#ifdef XXX_GDK
             if (gc_clip_mask) {
                 gdk_pixmap_unref(gc_clip_mask);
                 gc_clip_mask = 0;
@@ -292,7 +284,6 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
                 gc_clip_mask = values->v_clip_mask;
                 gdk_pixmap_ref(gc_clip_mask);
             }
-#endif
 #endif
         }
       
@@ -315,7 +306,6 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
                 gc_stipple->inc_ref();
             }
 #else
-#ifdef XXX_GDK
             if (gc_stipple) {
                 gdk_pixmap_unref(gc_stipple);
                 gc_stipple = 0;
@@ -324,7 +314,6 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
                 gc_stipple = values->v_stipple;
                 gdk_pixmap_ref(gc_stipple);
             }
-#endif
 #endif
         }
     }
@@ -340,7 +329,6 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
                 gc_tile->inc_ref();
             }
 #else
-#ifdef XXX_GDK
             if (gc_tile) {
                 gdk_pixmap_unref(gc_tile);
                 gc_tile = 0;
@@ -349,7 +337,6 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
                 gc_tile = values->v_tile;
                 gdk_pixmap_ref(gc_tile);
             }
-#endif
 #endif
         }
     }
@@ -450,7 +437,6 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_clip_mask->inc_ref();
         }
 #else
-#ifdef XXX_GDK
         if (dst_gc->gc_clip_mask) {
             gdk_pixmap_unref(dst_gc->gc_clip_mask);
             dst_gc->gc_clip_mask = 0;
@@ -459,7 +445,6 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_clip_mask = src_gc->gc_clip_mask;
             gdk_pixmap_ref(dst_gc->gc_clip_mask);
         }
-#else
 #endif
     }
   
@@ -474,7 +459,6 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_old_clip_mask->inc_ref();
         }
 #else
-#ifdef XXX_GDK
         if (dst_gc->gc_old_clip_mask) {
             gdk_pixmap_unref(dst_gc->gc_old_clip_mask);
             dst_gc->gc_old_clip_mask = 0;
@@ -483,7 +467,6 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_old_clip_mask = src_gc->gc_old_clip_mask;
             gdk_pixmap_ref(dst_gc->gc_old_clip_mask);
         }
-#else
 #endif
     }
 
@@ -500,7 +483,6 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_stipple->inc_ref();
         }
 #else
-#ifdef XXX_GDK
         if (dst_gc->gc_stipple) {
             gdk_pixmap_unref(dst_gc->gc_stipple);
             dst_gc->gc_stipple = 0;
@@ -509,7 +491,6 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_stipple = src_gc->gc_stipple;
             gdk_pixmap_ref(dst_gc->gc_stipple);
         }
-#else
 #endif
     }
   
@@ -524,7 +505,6 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_tile->inc_ref();
         }
 #else
-#ifdef XXX_GDK
         if (dst_gc->gc_tile) {
             gdk_pixmap_unref(dst_gc->gc_tile);
             dst_gc->gc_tile = 0;
@@ -533,7 +513,6 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_tile = src_gc->gc_tile;
             gdk_pixmap_ref(dst_gc->gc_tile);
         }
-#else
 #endif
     }
 
@@ -554,11 +533,9 @@ ndkGC::gc_set_clip_region_real(GdkRegion *region, bool reset_origin)
 {
     if (gc_clip_mask) {
 #ifdef NEW_PIX
-        gc_clip_ref->dec_ref();
+        gc_clip_mask->dec_ref();
 #else
-#ifdef XXX_GDK
         gdk_pixmap_unref(gc_clip_mask);
-#endif
 #endif
         gc_clip_mask = 0;
     }
@@ -675,9 +652,7 @@ ndkGC::gc_remove_drawable_clip()
 #ifdef NEW_PIX
             gc_old_clip_mask->dec_ref();
 #else
-#ifdef XXX_GDK
             gdk_pixmap_unref(gc_old_clip_mask);
-#endf
 #endif
             gc_old_clip_mask = 0;
 
@@ -698,38 +673,27 @@ namespace {
     cairo_surface_t *make_stipple_tile_surface(cairo_t *cr,
         ndkPixmap *stipple, GdkColor *foreground, GdkColor *background)
 #else
-#ifdef XXX_GDK
     cairo_surface_t *make_stipple_tile_surface(cairo_t *cr,
         GdkBitmap *stipple, GdkColor *foreground, GdkColor *background)
-#endidf
 #endif
     {
 #ifdef NEW_PIX
-        int width = stipple->get_width():
+        int width = stipple->get_width();
         int height = stipple->get_height();
 #else
-#ifdef XXX_GDK
         int width, height;
         gdk_drawable_get_size(stipple, &width, &height);
 #endif
-#endif
 
 #ifdef NEW_PIX
-#ifdef WITH_X11
-        cairo_surface_t *sfx = cairo_get_target(cr);
+        cairo_surface_t *sfc = cairo_get_target(cr);
         cairo_surface_t *alpha_surface = cairo_xlib_surface_create(
             cairo_xlib_surface_get_display(sfc), stipple->get_xid(),
-            cairo_xliv_surface_get_visual(sfc), width, height);
-        cairo_surface_descroy(sfc);
+            cairo_xlib_surface_get_visual(sfc), width, height);
+        cairo_surface_destroy(sfc);
 #else
-            // MSW
-#endif
-#else
-#ifdef XXX_GDK
         cairo_surface_t *alpha_surface =
-//            _gdk_drawable_ref_cairo_surface(stipple);
             GDK_DRAWABLE_GET_CLASS(stipple)->ref_cairo_surface(stipple);
-#endif
 #endif
       
         cairo_surface_t *surface = cairo_surface_create_similar(
@@ -775,11 +739,9 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
     ndkPixmap  *override_stipple, bool gc_changed,
     GdkDrawable *target_drawable)
 #else
-#ifdef XXX_GDK
 ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
     GdkBitmap  *override_stipple, bool gc_changed,
     GdkDrawable *target_drawable)
-#endif
 #endif
 {
     gc_remove_drawable_clip();
@@ -807,9 +769,7 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
 #ifdef NEW_PIX
     ndkPixmap *stipple = 0;
 #else
-#ifdef XXX_GDK
     GdkBitmap *stipple = 0;
-#endif
 #endif
     switch (fill) {
     case ndkGC_SOLID:
@@ -837,12 +797,10 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
         break;
     case ndkGC_TILED:
 #ifdef NEW_PIX
-        tile_surface = gc_tile;
+//XXXXX FIXME        tile_surface = gc_tile;
 #else
-#ifdef XXX_GDK
         tile_surface = 
             GDK_DRAWABLE_GET_CLASS(gc_tile)->ref_cairo_surface(gc_tile);
-#endkf
 #endif
         break;
     case ndkGC_STIPPLED:
@@ -1213,9 +1171,7 @@ ndkGC::gc_values_to_xvalues(ndkGCvalues *values, ndkGCvaluesMask mask,
 #ifdef NEW_PIX
             xvalues->tile = values->v_tile->get_xid();
 #else
-#ifdef XXX_GDK
             xvalues->tile = GDK_DRAWABLE_XID(values->v_tile);
-#endif
 #endif
         else
             xvalues->tile = None;
@@ -1226,9 +1182,7 @@ ndkGC::gc_values_to_xvalues(ndkGCvalues *values, ndkGCvaluesMask mask,
 #ifdef NEW_PIX
             xvalues->stipple = values->v_stipple->get_xid();
 #else
-#ifdef XXX_GDK
             xvalues->stipple = GDK_DRAWABLE_XID(values->v_stipple);
-#endif
 #endif
         }
         else
@@ -1240,9 +1194,7 @@ ndkGC::gc_values_to_xvalues(ndkGCvalues *values, ndkGCvaluesMask mask,
 #ifdef NEW_PIX
             xvalues->clip_mask = values->v_clip_mask->get_xid();
 #else
-#ifdef XXX_GDK
             xvalues->clip_mask = GDK_DRAWABLE_XID(values->v_clip_mask);
-#endif
 #endif
         }
         else
@@ -1360,5 +1312,7 @@ ndkGC::gc_windowing_copy(ndkGC *dst_gc, ndkGC *src_gc)
     dst_gc->gc_have_clip_mask = src_gc->gc_have_clip_mask;
 }
 
-#endif
+#endif  // WITH_X11
+
+#endif  // NDKGC_H
 
