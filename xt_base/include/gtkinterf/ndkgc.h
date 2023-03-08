@@ -477,18 +477,39 @@ struct ndkGC
 
     void offset(int, int);
     static void copy(ndkGC*, ndkGC*);
+#ifdef NEW_DRW
+    void draw_rectangle(ndkDrawable*, bool, int, int, int, int);
+#endif
+#ifdef NEW_PIX
+    void draw_rectangle(ndkPixmap*, bool, int, int, int, int);
+#endif
+#if defined(NEW_DRW) || defined(NEW_PIX)
+    void draw_rectangle(GdkWindow*, bool, int, int, int, int);
+#else
+    void draw_rectangle(GdkDrawable*, bool, int, int, int, int);
+#endif
 
 private:
     void gc_set_clip_region_real(GdkRegion*, bool);
     void gc_set_clip_region_internal(GdkRegion*, bool);
     void gc_add_drawable_clip(unsigned int, GdkRegion*, int, int);
     void gc_remove_drawable_clip();
+#ifdef NEW_DRW
+#ifdef NEW_PIX
+    void gc_update_context(cairo_t*, const GdkColor*, ndkPixmap*, bool,
+        ndkDrawable*);
+#else
+    void gc_update_context(cairo_t*, const GdkColor*, GdkBitmap*, bool,
+        ndkDrawable*);
+#endif
+#else
 #ifdef NEW_PIX
     void gc_update_context(cairo_t*, const GdkColor*, ndkPixmap*, bool,
         GdkWindow*);
 #else
     void gc_update_context(cairo_t*, const GdkColor*, GdkBitmap*, bool,
         GdkDrawable*);
+#endif
 #endif
 #ifdef WITH_X11
     void gc_x11_flush();

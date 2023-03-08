@@ -1765,14 +1765,6 @@ namespace {
     }
 
 
-    int
-    resize_hdlr(GtkWidget*, GdkEvent*, void*)
-    {
-        TB()->UpdateMain(RES_BEGIN);
-        return (true);
-    }
-
-
     // Redraw the resource listing
     //
     int
@@ -2316,9 +2308,6 @@ GTKtoolbar::tbpop(bool up)
     g_signal_connect(G_OBJECT(frame), "drag-motion",
         G_CALLBACK(target_drag_motion), 0);
 
-//    gtk_widget_add_events(w->Viewport(), GDK_STRUCTURE_MASK);
-//    g_signal_connect(G_OBJECT(w->Viewport()), "configure_event",
-//        G_CALLBACK(resize_hdlr), w);
     g_signal_connect(G_OBJECT(w->Viewport()), "expose_event",
         G_CALLBACK(expose_hdlr), w);
     g_signal_connect(G_OBJECT(w->Viewport()), "style_set",
