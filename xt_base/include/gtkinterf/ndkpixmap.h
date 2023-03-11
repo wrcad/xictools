@@ -38,53 +38,54 @@
  $Id:$
  *========================================================================*/
 
-/* GDK - The GIMP Drawing Kit
- * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
+// GDK - The GIMP Drawing Kit
+// Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the
+// Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+// Boston, MA 02111-1307, USA.
 
-/*
- * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
- * file for a list of people on the GTK+ Team.  See the ChangeLog
- * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
- */
+// Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
+// file for a list of people on the GTK+ Team.  See the ChangeLog
+// files for a list of changes.  These files are distributed with
+// GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
 
 #ifndef NDKPIXMAP_H
 #define NDKPIXMAP_H
 
 
+#ifdef NEW_GC
 struct ndkGC;
+#endif
+#ifdef NEW_DRW
 struct ndkDrawable;
+#endif
 
 struct ndkPixmap
 {
 #ifdef NEW_DRW
-    ndkPixmap(GdkWindow*, int, int, bool);
+    ndkPixmap(GdkWindow*, int, int, bool=false);
     ndkPixmap(GdkWindow*, const char*, int, int);
     ndkPixmap(GdkWindow*, const char*, int, int,
         const GdkColor*, const GdkColor*);
 #else
-    ndkPixmap(GdkDrawable*, int, int, bool);
+    ndkPixmap(GdkDrawable*, int, int, bool=false);
     ndkPixmap(GdkDrawable*, const char*, int, int);
     ndkPixmap(GdkDrawable*, const char*, int, int,
         const GdkColor*, const GdkColor*);
 #endif
-    ndkPixmap(ndkPixmap*, int, int);
+    ndkPixmap(ndkPixmap*, int, int, bool=false);
     ~ndkPixmap();
 
 #ifdef NEW_DRW
@@ -96,11 +97,11 @@ struct ndkPixmap
 #endif
     void copy_to_pixmap(ndkPixmap*, ndkGC*, int, int, int, int, int, int);
     void copy_from_pixmap(ndkPixmap*, ndkGC*, int, int, int, int, int, int);
+#ifdef NEW_DRW
     void copy_to_drawable(ndkDrawable*, ndkGC*, int, int, int, int, int, int);
     void copy_from_drawable(ndkDrawable*, ndkGC*, int, int, int, int, int, int);
-
+#endif
     static ndkPixmap *lookup(unsigned long);
-    static ndkPixmap *lookup_for_display(GdkDisplay*, unsigned long);
 
     void inc_ref()      { pm_refcnt++; }
     void dec_ref()      { pm_refcnt--; if (!pm_refcnt) delete this; }
@@ -108,6 +109,7 @@ struct ndkPixmap
     int get_height()    { return (pm_height); }
     int get_depth()     { return (pm_depth); }
     GdkScreen *get_screen() { return (pm_screen); }
+    GdkVisual *get_visual() { return (pm_visual); }
 #ifdef WITH_X11
     Pixmap get_xid()    { return (pm_xid); }
 #endif
@@ -118,6 +120,7 @@ private:
     int pm_depth;
     int pm_refcnt;
     GdkScreen *pm_screen;
+    GdkVisual *pm_visual;
 #ifdef WITH_X11
     Pixmap pm_xid;
 #endif

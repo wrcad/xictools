@@ -174,7 +174,7 @@ namespace gtkinterf {
         {
             friend struct MsgList;
 
-            Msg(gtk_bag *wb, pid_t p, Msg *n)
+            Msg(GTKbag *wb, pid_t p, Msg *n)
                 { next = n; w = wb; pid = p; msg_list = 0; err = false; }
             ~Msg() { stringlist::destroy(msg_list); }
 
@@ -208,7 +208,7 @@ namespace gtkinterf {
 
         private:
             Msg *next;
-            gtk_bag *w;
+            GTKbag *w;
             pid_t pid;
             stringlist *msg_list;
             bool err;
@@ -216,9 +216,9 @@ namespace gtkinterf {
 
         static Msg *List;
 
-        void add(gtk_bag*, pid_t);
+        void add(GTKbag*, pid_t);
         Msg *find(pid_t);
-        void remove(gtk_bag*);
+        void remove(GTKbag*);
         Msg *remove(pid_t);
     };
 }
@@ -228,10 +228,10 @@ MsgList::Msg *MsgList::List;
 namespace { MsgList Mlist; }
 
 
-// Add a job for this gtk_bag and pid.
+// Add a job for this GTKbag and pid.
 //
 void
-MsgList::add(gtk_bag *w, pid_t pid)
+MsgList::add(GTKbag *w, pid_t pid)
 {
     List = new Msg(w, pid, List);
 }
@@ -253,7 +253,7 @@ MsgList::find(pid_t pid)
 // Remove from the list those elements for w, which is being destroyed.
 //
 void
-MsgList::remove(gtk_bag *w)
+MsgList::remove(GTKbag *w)
 {
     Msg *sp = 0, *sn;
     for (Msg *s = List; s; s = sn) {
@@ -296,7 +296,7 @@ MsgList::remove(pid_t pid)
 // if any.
 //
 void
-gtk_bag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw *context)
+GTKbag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw *context)
 {
     GTKprintPopup::hc_hcpopup(caller, this, cb, mode, context);
 }
@@ -308,7 +308,7 @@ gtk_bag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw *context)
 // popup to be attached to a new button.
 //
 void
-gtk_bag::HCupdate(HCcb *cb, GRobject caller)
+GTKbag::HCupdate(HCcb *cb, GRobject caller)
 {
     if (!wb_hc)
         return;
@@ -385,7 +385,7 @@ gtk_bag::HCupdate(HCcb *cb, GRobject caller)
 // Change the format selection of the Print panel.
 //
 void
-gtk_bag::HCsetFormat(int fmt)
+GTKbag::HCsetFormat(int fmt)
 {
     GTKprintPopup::hc_set_format(this, fmt, true);
 }
@@ -395,11 +395,11 @@ gtk_bag::HCsetFormat(int fmt)
 // will not be shown.
 //
 void
-gtk_bag::HcopyDisableMsgs()
+GTKbag::HcopyDisableMsgs()
 {
     Mlist.remove(this);
 }
-// End of gtk_bag functions.
+// End of GTKbag functions.
 
 
 #ifdef WIN32
@@ -507,7 +507,7 @@ namespace {
 // struct.
 //
 void
-GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
+GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
     HCmode textmode, GRdraw *context)
 {
     GTKprintPopup *hc = wb->HC();
@@ -1294,7 +1294,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
 // Pop up an advisory, hopefully next to the hardcopy panel.
 //
 void
-GTKprintPopup::hc_pop_up_text(gtk_bag *w, const char *message, bool error)
+GTKprintPopup::hc_pop_up_text(GTKbag *w, const char *message, bool error)
 {
     if (!w)
         return;
@@ -1315,7 +1315,7 @@ namespace {
 // Static function.
 //
 void
-GTKprintPopup::hc_set_printer(gtk_bag *wb)
+GTKprintPopup::hc_set_printer(GTKbag *wb)
 {
     GTKprintPopup *hc = wb->HC();
     if (!hc)
@@ -1398,7 +1398,7 @@ GTKprintPopup::hc_set_printer(gtk_bag *wb)
 // Change the print format.
 //
 void
-GTKprintPopup::hc_set_format(gtk_bag *wb, int index, bool set_menu)
+GTKprintPopup::hc_set_format(GTKbag *wb, int index, bool set_menu)
 {
     GTKprintPopup *hc = wb->HC();
     if (!hc || !hc->hc_active)
@@ -1678,7 +1678,7 @@ GTKprintPopup::hc_menu_proc(GtkWidget*, void *client_data)
 void
 GTKprintPopup::hc_formenu_proc(GtkWidget*, void *client_data)
 {
-    gtk_bag *wb = static_cast<gtk_bag*>(client_data);
+    GTKbag *wb = static_cast<GTKbag*>(client_data);
     GTKprintPopup *hc = wb->HC();
     if (hc) {
         int index = gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_fmtmenu));
@@ -1705,7 +1705,7 @@ GTKprintPopup::hc_prntmenu_proc(GtkWidget *caller, void*)
 void
 GTKprintPopup::hc_pagesize_proc(GtkWidget *caller, void *client_data)
 {
-    GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
+    GTKprintPopup *hc = static_cast<GTKbag*>(client_data)->HC();
     if (!hc)
         return;
     if (GTK_IS_RADIO_BUTTON(caller)) {
@@ -1737,7 +1737,7 @@ GTKprintPopup::hc_pagesize_proc(GtkWidget *caller, void *client_data)
 void
 GTKprintPopup::hc_metric_proc(GtkWidget *caller, void *client_data)
 {
-    GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
+    GTKprintPopup *hc = static_cast<GTKbag*>(client_data)->HC();
     if (!hc)
         return;
     bool wasmetric = hc->hc_metric;
@@ -1824,7 +1824,7 @@ GTKprintPopup::hc_metric_proc(GtkWidget *caller, void *client_data)
 void
 GTKprintPopup::hc_cancel_proc(GtkWidget*, void *client_data)
 {
-    gtk_bag *wb = static_cast<gtk_bag*>(client_data);
+    GTKbag *wb = static_cast<GTKbag*>(client_data);
     GTKprintPopup *hc = wb->HC();
     if (hc) {
         hc->hc_active = true;
@@ -1840,7 +1840,7 @@ GTKprintPopup::hc_cancel_proc(GtkWidget*, void *client_data)
 void
 GTKprintPopup::hc_frame_proc(GtkWidget *caller, void *client_data)
 {
-    GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
+    GTKprintPopup *hc = static_cast<GTKbag*>(client_data)->HC();
     if (hc) {
         if (hc->hc_cb && hc->hc_cb->hcframe)
             (*hc->hc_cb->hcframe)(HCframeCmd, (GRobject)caller, 0, 0, 0, 0,
@@ -1855,7 +1855,7 @@ GTKprintPopup::hc_frame_proc(GtkWidget *caller, void *client_data)
 void
 GTKprintPopup::hc_port_proc(GtkWidget*, void *client_data)
 {
-    GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
+    GTKprintPopup *hc = static_cast<GTKbag*>(client_data)->HC();
     if (hc) {
         // The landscape button merely sets a flag passed to the driver.
         // It is up to the driver to respond appropriately.
@@ -1884,7 +1884,7 @@ GTKprintPopup::hc_port_proc(GtkWidget*, void *client_data)
 void
 GTKprintPopup::hc_fit_proc(GtkWidget *caller, void *client_data)
 {
-    GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
+    GTKprintPopup *hc = static_cast<GTKbag*>(client_data)->HC();
     if (hc) {
         if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(caller)))
             hc->hc_orient |= HCbest;
@@ -1900,7 +1900,7 @@ GTKprintPopup::hc_fit_proc(GtkWidget *caller, void *client_data)
 void
 GTKprintPopup::hc_tofile_proc(GtkWidget *caller, void *client_data)
 {
-    GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
+    GTKprintPopup *hc = static_cast<GTKbag*>(client_data)->HC();
     if (hc) {
         bool state = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(caller));
         hc->hc_tofile = state;
@@ -1937,7 +1937,7 @@ GTKprintPopup::hc_tofile_proc(GtkWidget *caller, void *client_data)
 void
 GTKprintPopup::hc_legend_proc(GtkWidget *caller, void *client_data)
 {
-    GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
+    GTKprintPopup *hc = static_cast<GTKbag*>(client_data)->HC();
     if (hc) {
         bool state = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(caller));
         hc->hc_legend = (state ? HClegOn : HClegOff);
@@ -1951,7 +1951,7 @@ GTKprintPopup::hc_legend_proc(GtkWidget *caller, void *client_data)
 void
 GTKprintPopup::hc_auto_proc(GtkWidget *btn, void *client_data)
 {
-    GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
+    GTKprintPopup *hc = static_cast<GTKbag*>(client_data)->HC();
     if (!hc)
         return;
     HCdesc *hcdesc = GRpkgIf()->HCof(hc->hc_fmt);
@@ -2023,7 +2023,7 @@ GTKprintPopup::hc_auto_proc(GtkWidget *btn, void *client_data)
 int
 GTKprintPopup::hc_key_hdlr(GtkWidget*, GdkEvent *ev, void *client_data)
 {
-    gtk_bag *wb = static_cast<gtk_bag*>(client_data);
+    GTKbag *wb = static_cast<GTKbag*>(client_data);
     GTKprintPopup *hc = wb->HC();
     if (hc && ev->key.keyval == GDK_Return) {
         hc->hc_go_proc(0, client_data);
@@ -2039,7 +2039,7 @@ GTKprintPopup::hc_key_hdlr(GtkWidget*, GdkEvent *ev, void *client_data)
 void
 GTKprintPopup::hc_go_proc(GtkWidget*, void *client_data)
 {
-    gtk_bag *wb = static_cast<gtk_bag*>(client_data);
+    GTKbag *wb = static_cast<GTKbag*>(client_data);
     GTKprintPopup *hc = wb->HC();
     GRpkgIf()->HCabort(0);
     if (GRpkgIf()->HCof(hc->hc_fmt) &&
@@ -2058,7 +2058,7 @@ GTKprintPopup::hc_go_proc(GtkWidget*, void *client_data)
 
 // Static function.
 void
-GTKprintPopup::hc_do_go(gtk_bag *wb)
+GTKprintPopup::hc_do_go(GTKbag *wb)
 {
     static bool in_do_go;
     GTKprintPopup *hc = wb->HC();
@@ -2389,7 +2389,7 @@ GTKprintPopup::hc_do_go(gtk_bag *wb)
 // Static function, returns child pid if successful.
 //
 int
-GTKprintPopup::hc_printit(const char *str, const char *filename, gtk_bag *wb)
+GTKprintPopup::hc_printit(const char *str, const char *filename, GTKbag *wb)
 {
     if (!str || !*filename)
         return (-1);
@@ -2515,7 +2515,7 @@ GTKprintPopup::hc_proc_hdlr(int pid, int status, void*)
 void
 GTKprintPopup::hc_resol_proc(GtkWidget*, void *client_data)
 {
-    GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
+    GTKprintPopup *hc = static_cast<GTKbag*>(client_data)->HC();
     if (hc) {
         int i = gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_resmenu));
         if (i >= 0 && i < 100)
@@ -2535,7 +2535,7 @@ GTKprintPopup::hc_help_proc(GtkWidget*, void *client_data)
     if (GRX->MainFrame())
         GRX->MainFrame()->PopUpHelp("hcopypanel");
     else {
-        gtk_bag *w = static_cast<gtk_bag*>(client_data);
+        GTKbag *w = static_cast<GTKbag*>(client_data);
         w->PopUpHelp("hcopypanel");
     }
 }
@@ -2773,7 +2773,7 @@ GTKprintPopup::hc_set_sens(GTKprintPopup *hc, unsigned int word)
 
 // Static function.
 void
-GTKprintPopup::hc_pop_message(gtk_bag *wb)
+GTKprintPopup::hc_pop_message(GTKbag *wb)
 {
     if (GP)
         return;
@@ -2828,7 +2828,7 @@ GTKprintPopup::hc_pop_message(gtk_bag *wb)
 int
 GTKprintPopup::hc_go_idle_proc(void *client_data)
 {
-    hc_do_go(static_cast<gtk_bag*>(client_data));
+    hc_do_go(static_cast<GTKbag*>(client_data));
     hc_go_cancel_proc(0, 0);
     return (false);
 }

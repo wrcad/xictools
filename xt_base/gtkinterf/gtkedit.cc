@@ -114,7 +114,7 @@ namespace {
 // Pop up a text editor.
 //
 GReditPopup *
-gtk_bag::PopUpTextEditor(const char *fname,
+GTKbag::PopUpTextEditor(const char *fname,
     bool(*editsave)(const char*, void*, XEtype), void *arg, bool source)
 {
     GTKeditPopup *we = new GTKeditPopup(this, GTKeditPopup::Editor, fname,
@@ -143,7 +143,7 @@ gtk_bag::PopUpTextEditor(const char *fname,
 // Pop up the file for browsing (read only, no load or source).
 //
 GReditPopup *
-gtk_bag::PopUpFileBrowser(const char *fname)
+GTKbag::PopUpFileBrowser(const char *fname)
 {
     // If we happen to already have this file open, reread it.
     // Called after something was appended to the file.
@@ -180,7 +180,7 @@ gtk_bag::PopUpFileBrowser(const char *fname)
 // Callback is also called on quit with a 0 string argument.
 //
 GReditPopup *
-gtk_bag::PopUpStringEditor(const char *string,
+GTKbag::PopUpStringEditor(const char *string,
     bool (*callback)(const char*, void*, XEtype), void *arg)
 {
     if (!callback) {
@@ -216,7 +216,7 @@ gtk_bag::PopUpStringEditor(const char *string,
 // when done.  The downproc, if given, is called before destruction.
 //
 GReditPopup *
-gtk_bag::PopUpMail(const char *subject, const char *mailaddr,
+GTKbag::PopUpMail(const char *subject, const char *mailaddr,
     void(*downproc)(GReditPopup*), GRloc loc)
 {
     for (int i = 0; i < NUM_SUBED; i++) {
@@ -250,7 +250,7 @@ gtk_bag::PopUpMail(const char *subject, const char *mailaddr,
         gtk_widget_grab_focus(we->wb_textarea);
     return (we);
 }
-// End of gtk_bag functions
+// End of GTKbag functions
 
 #ifdef WIN32
 namespace {
@@ -272,7 +272,7 @@ GtkWindow *GTKeditPopup::ed_transient_for = 0;
 // shell            "subject"           entry
 // menuitem         "attach"            file name
 //
-GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
+GTKeditPopup::GTKeditPopup(GTKbag *owner, GTKeditPopup::WidgetType type,
     const char *file_or_string, bool with_source, void *arg)
 {
     p_parent = owner;
@@ -723,7 +723,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
 GTKeditPopup::~GTKeditPopup()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
@@ -764,7 +764,7 @@ GTKeditPopup::~GTKeditPopup()
 
     if (wb_shell)
         gtk_widget_hide(wb_shell);
-    // shell destroyed in gtk_bag destructor
+    // shell destroyed in GTKbag destructor
 }
 
 
@@ -774,7 +774,7 @@ void
 GTKeditPopup::popdown()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -1957,7 +1957,7 @@ GTKeditPopup::ed_do_read_proc(const char *fnamein, void *client_data)
 // Set/reset sensitivity of menu items that use PopUpInput.
 //
 void
-GTKeditPopup::ed_set_sens(gtk_bag *wb, bool set, int)
+GTKeditPopup::ed_set_sens(GTKbag *wb, bool set, int)
 {
     GTKeditPopup *w = dynamic_cast<GTKeditPopup*>(wb);
     if (!w)

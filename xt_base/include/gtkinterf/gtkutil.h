@@ -73,7 +73,7 @@ namespace gtkinterf {
     //
     struct GTKaffirmPopup : public GRaffirmPopup, public base_w
     {
-        GTKaffirmPopup(gtk_bag*, const char*, void*);
+        GTKaffirmPopup(GTKbag*, const char*, void*);
         ~GTKaffirmPopup();
 
         // GRpopup overrides
@@ -102,7 +102,7 @@ namespace gtkinterf {
     // Numerical entry.
     struct GTKnumPopup : GRnumPopup, public base_w
     {
-        GTKnumPopup(gtk_bag*, const char*, double, double, double,
+        GTKnumPopup(GTKbag*, const char*, double, double, double,
             double, int, void*);
         ~GTKnumPopup();
 
@@ -138,7 +138,7 @@ namespace gtkinterf {
     //
     struct GTKledPopup : public GRledPopup, public base_w
     {
-        GTKledPopup(gtk_bag*, const char*, const char*, int, bool,
+        GTKledPopup(GTKbag*, const char*, const char*, int, bool,
             const char*, void*);
         ~GTKledPopup();
 
@@ -190,7 +190,7 @@ namespace gtkinterf {
     //
     struct GTKmsgPopup : public GRmsgPopup, public base_w
     {
-        GTKmsgPopup(gtk_bag*, const char*, bool);
+        GTKmsgPopup(GTKbag*, const char*, bool);
         ~GTKmsgPopup();
 
         // GRpopup overrides
@@ -223,7 +223,7 @@ namespace gtkinterf {
     // Fancy message box.
     struct GTKtextPopup : public GRtextPopup, public base_w
     {
-        GTKtextPopup(gtk_bag*, const char*, int, STYtype, void*);
+        GTKtextPopup(GTKbag*, const char*, int, STYtype, void*);
         ~GTKtextPopup();
 
         // GRpopup overrides

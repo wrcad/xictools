@@ -45,9 +45,9 @@
 #define MC_MAXBTNS 3
 
 namespace gtkinterf {
-    struct GTKmcolPopup : public GRmcolPopup, public gtk_bag
+    struct GTKmcolPopup : public GRmcolPopup, public GTKbag
     {
-        GTKmcolPopup(gtk_bag*, stringlist*, const char*, const char**,
+        GTKmcolPopup(GTKbag*, stringlist*, const char*, const char**,
             int, void*);
         ~GTKmcolPopup();
 

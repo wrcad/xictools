@@ -49,12 +49,12 @@ namespace gtkinterf {
 
     // Main container for the file selection pop-up.
     //
-    struct GTKfilePopup : public GRfilePopup, public gtk_bag
+    struct GTKfilePopup : public GRfilePopup, public GTKbag
     {
         friend struct sFsBmap;
         static char *any_selection();
 
-        GTKfilePopup(gtk_bag*, FsMode, void*, const char*);
+        GTKfilePopup(GTKbag*, FsMode, void*, const char*);
         ~GTKfilePopup();
 
         // GRpopup overrides

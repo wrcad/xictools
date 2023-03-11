@@ -66,9 +66,6 @@ using namespace mswinterf;
 #endif
 #endif
 
-// Support ancient visuals.
-//#define OLD_VISUALS
-
 
 // Global access pointer.
 GTKdev *GRX;
@@ -380,25 +377,19 @@ GTKdev::Init(int *argc, char **argv)
 }
 
 
-// Allocate the read/write colorcells.  Try to allocate 2-plane cells
-// so ghost drawing always appears white.  If this fails, allocate
-// single plane cells.  If mincolors or more cells can not be allocated,
-// return true.  If maxcolors < 0, set a flag to prevent private cell
-// allocation elsewhere.
+// Set up colormap, nothing much to do.  Return true if error.
 //
 bool
-GTKdev::InitColormap(int mincolors, int maxcolors, bool dualplane)
+GTKdev::InitColormap(int, int, bool)
 {
     dv_cmap = gdk_colormap_get_system();
     dv_visual = gdk_visual_get_system();
 
-    if (maxcolors <= 0) {
-        if (maxcolors < 0)
-            ColorAlloc.no_alloc = true;
-        return (false);
-    }
+    // Only true-color visuals are supported, colormaps are history.
+    ColorAlloc.no_alloc = true;
+    dv_true_color = true;
 
-    // Make sure that the necessary visual is available
+    // Make sure that the necessary visual is available.
     if (!dv_visual) {
         fprintf(stderr, "Fatal error: Graphics mode unsupported.\n");
         return (true);
@@ -407,13 +398,9 @@ GTKdev::InitColormap(int mincolors, int maxcolors, bool dualplane)
     switch (gdk_visual_get_visual_type(dv_visual)) {
     case GDK_VISUAL_STATIC_GRAY:
         printf(msg, "static gray", gdk_visual_get_depth(dv_visual));
-        dv_true_color = true;
-        ColorAlloc.no_alloc = true;
         return (false);
     case GDK_VISUAL_STATIC_COLOR:
         printf(msg, "static color", gdk_visual_get_depth(dv_visual));
-        dv_true_color = true;
-        ColorAlloc.no_alloc = true;
         return (false);
     case GDK_VISUAL_GRAYSCALE:
         printf(msg, "grayscale", gdk_visual_get_depth(dv_visual));
@@ -425,13 +412,10 @@ GTKdev::InitColormap(int mincolors, int maxcolors, bool dualplane)
         break;
     case GDK_VISUAL_TRUE_COLOR:
         printf(msg, "true color", gdk_visual_get_depth(dv_visual));
-        dv_true_color = true;
-        ColorAlloc.no_alloc = true;
         return (false);
     case GDK_VISUAL_DIRECT_COLOR:
         printf(msg, "direct color", gdk_visual_get_depth(dv_visual));
-        dv_true_color = true;
-        ColorAlloc.no_alloc = true;
+        dv_true_color = false;
         return (false);
     }
     // No longer support these visuals.
@@ -486,39 +470,19 @@ GTKdev::RGBofPixel(int pixel, int *r, int *g, int *b)
 }
 
 
-//XXX this should go away
-// Allocate a private colorcell.  Take cells from the pool until exhausted,
-// then allocate as single plane cells individually.  If that fails,
-// get a read only cell, and return true.
+// We don't "allocate" colors anymore.  This function will return
+// the true color pixel given the RGB.
 //
 int
 GTKdev::AllocateColor(int *address, int red, int green, int blue)
 {
-    static int num_used;
     GdkColor newcolor;
     newcolor.red   = (red   * 256);
     newcolor.green = (green * 256);
     newcolor.blue  = (blue  * 256);
-    if (num_used < ColorAlloc.num_mask_allocated ||
-            num_used < ColorAlloc.num_allocated) {
-        newcolor.pixel = ColorAlloc.drawing_pixels[num_used++];
-        *address = (int)newcolor.pixel;
-#ifdef OLD_VISUAL
-        gdk_color_change(dv_cmap, &newcolor);
-#endif
-        return (false);
-    }
-    if ((ColorAlloc.num_mask_allocated || ColorAlloc.num_allocated) &&
-            gdk_colormap_alloc_color(dv_cmap, &newcolor, true, false)) {
-        *address = (int)newcolor.pixel;
-        num_used++;
-        return (false);
-    }
-    else {
-        gdk_colormap_alloc_color(dv_cmap, &newcolor, false, true);
-        *address = newcolor.pixel;
-        return (true);
-    }
+    gdk_colormap_alloc_color(dv_cmap, &newcolor, false, true);
+    *address = newcolor.pixel;
+    return (true);
 }
 
 
@@ -531,10 +495,6 @@ GTKdev::NameColor(const char *colorname)
     GdkColor c;
     if (gtk_ColorSet(&c, colorname))
         return (c.pixel);
-#ifdef OLD_VISUALS
-    if (gdk_color_black(Colormap(), &c))
-        return (c.pixel);
-#endif
     return (0);
 }
 
@@ -582,7 +542,7 @@ GTKdev::NameToRGB(const char *colorname, int *indices)
 GRdraw *
 GTKdev::NewDraw(int apptype)
 {
-    gtk_draw *w = new gtk_draw();
+    GTKdraw *w = new GTKdraw();
     if (apptype > 0 && apptype < NUMGCS) {
         // Reset the w->gbag field to one specific to this apptype.
         // The default value is used othewise.
@@ -596,12 +556,12 @@ GTKdev::NewDraw(int apptype)
 
 // New window function.  Create a top level shell.  We can pass an
 // existing newly-created subclass in the second argument, otherwise a
-// new gtk_bag will be created.
+// new GTKbag will be created.
 //
 GRwbag *
 GTKdev::NewWbag(const char *appname, GRwbag *reuse)
 {
-    gtk_bag *w = reuse ? dynamic_cast<gtk_bag*>(reuse) : new gtk_bag();
+    GTKbag *w = reuse ? dynamic_cast<GTKbag*>(reuse) : new GTKbag();
     w->wb_shell = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     if (appname) {
         char buf[128];
@@ -1237,9 +1197,9 @@ sGdraw::draw_ghost(int x, int y)
 
 
 //-----------------------------------------------------------------------------
-// gtk_bag methods
+// GTKbag methods
 
-const char *gtk_bag::wb_open_folder_xpm[] = {
+const char *GTKbag::wb_open_folder_xpm[] = {
     "16 16 12 1",
     "   c None",
     ".  c #808080",
@@ -1271,7 +1231,7 @@ const char *gtk_bag::wb_open_folder_xpm[] = {
     "                "
 };
 
-const char *gtk_bag::wb_closed_folder_xpm[] = {
+const char *GTKbag::wb_closed_folder_xpm[] = {
     "16 16 8 1",
     "   c None",
     ".  c #909000",
@@ -1299,7 +1259,7 @@ const char *gtk_bag::wb_closed_folder_xpm[] = {
     "                "
 };
 
-gtk_bag::gtk_bag()
+GTKbag::GTKbag()
 {
     wb_shell = 0;
     wb_textarea = 0;
@@ -1322,7 +1282,7 @@ gtk_bag::gtk_bag()
 }
 
 
-gtk_bag::~gtk_bag()
+GTKbag::~GTKbag()
 {
     ClearPopups();
     HcopyDisableMsgs();
@@ -1334,7 +1294,7 @@ gtk_bag::~gtk_bag()
         GRX->RegisterMainFrame(0);
 
 }
-// End of gtk_bag functions.
+// End of GTKbag functions.
 
 
 //
@@ -1429,7 +1389,7 @@ namespace {
 // Create a new popup window, and connect to signals.
 //
 GtkWidget *
-gtkinterf::gtk_NewPopup(gtk_bag *w, const char *title,
+gtkinterf::gtk_NewPopup(GTKbag *w, const char *title,
     void(*quit_cb)(GtkWidget*, void*), void *arg)
 {
     GtkWidget *popup;

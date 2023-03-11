@@ -81,7 +81,6 @@
 
 #include <gdk/gdkkeysyms.h>
 
-
 #ifdef WIN32
 // Reference a symbol in the resource module so the resources are linked.
 extern int ResourceModuleId;
@@ -894,7 +893,7 @@ ErrMsgBox::PopUpErr(const char *string)
     if (GRpkgIf()->CurDev()->devtype == GRmultiWindow && GP.Cur() &&
             GP.Cur()->apptype() == GR_PLOT) {
         // can't do this in hardcopy context
-        GtkWidget *plot = ((gtk_bag*)GP.Cur()->dev())->Shell();
+        GtkWidget *plot = ((GTKbag*)GP.Cur()->dev())->Shell();
         if (plot) {
             GdkRectangle rect;
             ShellGeometry(plot, 0, &rect);
@@ -2355,6 +2354,9 @@ GTKtoolbar::tbpop(bool up)
                 (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
         }
 #else
+        // We handle our own double-buffering.
+        gtk_widget_set_double_buffered(w->Viewport(), false);
+
         gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
         w->Gbag()->set_gc(new ndkGC(w->Window(), &gcvalues, ndkGC_CAP_STYLE));
         gcvalues.v_function = ndkGC_XOR;
@@ -2370,6 +2372,7 @@ GTKtoolbar::tbpop(bool up)
         w->XorGC()->set_foreground(&clr);
     }
 #else
+
     // create GC's, these will also be used in the plots
     //
     if (!w->GC()) {
@@ -2411,7 +2414,7 @@ GTKtoolbar::tbpop(bool up)
     w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
     w->SetBackground(SpGrPkg::DefColors[0].pixel);
     w->Clear();
-    gtk_timeout_add(2000, res_timeout, 0);
+    g_timeout_add(2000, res_timeout, 0);
 }
 
 
@@ -2655,7 +2658,11 @@ GTKtoolbar::quit_proc(GtkWidget*, void*)
     if (CP.GetFlag(CP_NOTTYIO)) {
         // In server mode, just hide ourself.
         gtk_widget_hide(TB()->toolbar);
-//XXX        TB()->context->SetWindow(0);
+#ifdef NEW_DRW
+        TB()->context->GetDrawable()->set_window(0);
+#else
+        TB()->context->SetWindow(0);
+#endif
     }
     else {
         CommandTab::com_quit(0);
@@ -2964,76 +2971,9 @@ tb_bag::switch_from_pixmap()
         gd_viewport->window = gd_window;
     }
 }
-#endif
-
-
-void
-tb_bag::create_GCs()
-{
-#ifdef NEW_DRW
-    if (GetDrawable()->get_window())
-        return;
-    GdkWindow *window = gtk_widget_get_window(Viewport());
-    if (!window)
-        return;
-    GetDrawable()->set_window(window);
-#else
-    SetWindow(gtk_widget_get_window(Viewport()));
-#endif
-
-    // create GC's, these will also be used in the plots
-    //
-#ifdef NEW_GC
-    if (!GC()) {
-        ndkGCvalues gcvalues;
-#ifdef NEW_DRW
-        if (window) {
-            gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
-            Gbag()->set_gc(new ndkGC(window, &gcvalues, ndkGC_CAP_STYLE));
-            gcvalues.v_function = ndkGC_XOR;
-            Gbag()->set_xorgc(new ndkGC(window, &gcvalues,
-                (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
-        }
-#else
-        gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
-        Gbag()->set_gc(new ndkGC(Window(), &gcvalues, ndkGC_CAP_STYLE));
-        gcvalues.v_function = ndkGC_XOR;
-        Gbag()->set_xorgc(new ndkGC(Window(), &gcvalues,
-            (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
-#endif
-
-        // set up initial xor color
-        // offset 1 is assumed to be the highlighting color
-        GdkColor clr;
-        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
-        gtk_QueryColor(&clr);
-        XorGC()->set_foreground(&clr);
-    }
-#else
-    if (!GC()) {
-        GdkGCValues gcvalues;
-        gcvalues.cap_style = GDK_CAP_NOT_LAST;
-        Gbag()->set_gc(gdk_gc_new_with_values(Window(), &gcvalues,
-            GDK_GC_CAP_STYLE));
-        gcvalues.function = GDK_XOR;
-        Gbag()->set_xorgc(gdk_gc_new_with_values(Window(), &gcvalues,
-            (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE)));
-
-        // set up initial xor color
-        // offset 1 is assumed to be the highlighting color
-        GdkColor clr;
-        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
-        gtk_QueryColor(&clr);
-        gdk_gc_set_foreground(XorGC(), &clr);
-    }
-#endif
-
-    SetWindowBackground(SpGrPkg::DefColors[0].pixel);
-    SetBackground(SpGrPkg::DefColors[0].pixel);
-    Clear();
-}
-
 // End of tb_bag functions.
+#endif
+
 
 
 //==========================================================================

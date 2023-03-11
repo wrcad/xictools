@@ -160,12 +160,46 @@ ndkDrawable::copy_pixmap_to_window(ndkGC *gc, int x, int y, int w, int h)
 }
 
 
+GdkScreen *
+ndkDrawable::get_screen()
+{
+    if (d_state == DW_WINDOW && d_window)
+        return (gdk_window_get_screen(d_window));
+    if (d_state == DW_PIXMAP && d_pixmap)
+        return (d_pixmap->get_screen());
+    if (d_window)
+        return (gdk_window_get_screen(d_window));
+    if (d_pixmap)
+        return (d_pixmap->get_screen());
+    return (0);
+}
+
+
+GdkVisual *
+ndkDrawable::get_visual()
+{
+    if (d_state == DW_WINDOW && d_window)
+        return (gdk_window_get_visual(d_window));
+    if (d_state == DW_PIXMAP && d_pixmap)
+        return (d_pixmap->get_visual());
+    if (d_window)
+        return (gdk_window_get_visual(d_window));
+    if (d_pixmap)
+        return (d_pixmap->get_visual());
+    return (0);
+}
+
+
 int
 ndkDrawable::get_width()
 {
     if (d_state == DW_WINDOW && d_window)
         return (gdk_window_get_width(d_window));
     if (d_state == DW_PIXMAP && d_pixmap)
+        return (d_pixmap->get_width());
+    if (d_window)
+        return (gdk_window_get_width(d_window));
+    if (d_pixmap)
         return (d_pixmap->get_width());
     return (-1);
 }
@@ -178,6 +212,25 @@ ndkDrawable::get_height()
         return (gdk_window_get_height(d_window));
     if (d_state == DW_PIXMAP && d_pixmap)
         return (d_pixmap->get_height());
+    if (d_window)
+        return (gdk_window_get_height(d_window));
+    if (d_pixmap)
+        return (d_pixmap->get_height());
+    return (-1);
+}
+
+
+int
+ndkDrawable::get_depth()
+{
+    if (d_state == DW_WINDOW && d_window)
+        return (gdk_visual_get_depth(gdk_window_get_visual(d_window)));
+    if (d_state == DW_PIXMAP && d_pixmap)
+        return (d_pixmap->get_depth());
+    if (d_window)
+        return (gdk_visual_get_depth(gdk_window_get_visual(d_window)));
+    if (d_pixmap)
+        return (d_pixmap->get_depth());
     return (-1);
 }
 

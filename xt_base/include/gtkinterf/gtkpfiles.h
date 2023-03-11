@@ -59,9 +59,9 @@ namespace gtkinterf {
     // is destroyed.  There can be only one listing window, since it
     // is referenced by a static pointer.
 
-    struct files_bag : public gtk_bag
+    struct files_bag : public GTKbag
     {
-        files_bag(gtk_bag*, const char**, int, const char*,
+        files_bag(GTKbag*, const char**, int, const char*,
             void(*)(GtkWidget*, void*), int(*)(GtkWidget*, GdkEvent*, void*),
             sPathList*(*)(int), void(*)(GtkWidget*, void*), void(*)(void*));
         ~files_bag();

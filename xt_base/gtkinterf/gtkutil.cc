@@ -335,7 +335,7 @@ namespace {
 
 
 void
-gtk_bag::ClearPopups()
+GTKbag::ClearPopups()
 {
     if (wb_message)
         wb_message->popdown();
@@ -362,7 +362,7 @@ gtk_bag::ClearPopups()
 // Clean up after a pop-up is destroyed, called from destructors.
 //
 void
-gtk_bag::ClearPopup(GRpopup *popup)
+GTKbag::ClearPopup(GRpopup *popup)
 {
     MonitorRemove(popup);
     if (popup == wb_input) {
@@ -418,7 +418,7 @@ gtk_bag::ClearPopup(GRpopup *popup)
 // Args x,y are shell coordinates for popup.  Arg action_callback is
 // called with a bool and action_arg when choice is made.
 
-GTKaffirmPopup::GTKaffirmPopup(gtk_bag *owner, const char *question_str,
+GTKaffirmPopup::GTKaffirmPopup(GTKbag *owner, const char *question_str,
     void *arg)
 {
     p_parent = owner;
@@ -476,7 +476,7 @@ GTKaffirmPopup::GTKaffirmPopup(gtk_bag *owner, const char *question_str,
 GTKaffirmPopup::~GTKaffirmPopup()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
@@ -534,7 +534,7 @@ void
 GTKaffirmPopup::popdown()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -605,7 +605,7 @@ GTKaffirmPopup::pw_attach_idle_proc(void *arg)
 // Popup to solicit a numeric value, consisting of a label and a spin
 // button.
 
-GTKnumPopup::GTKnumPopup(gtk_bag *owner, const char *prompt_str,
+GTKnumPopup::GTKnumPopup(GTKbag *owner, const char *prompt_str,
     double initd, double mind, double maxd, double del, int numd, void *arg)
 {
     p_parent = owner;
@@ -709,7 +709,7 @@ GTKnumPopup::GTKnumPopup(gtk_bag *owner, const char *prompt_str,
 GTKnumPopup::~GTKnumPopup()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
@@ -767,7 +767,7 @@ void
 GTKnumPopup::popdown()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -906,7 +906,7 @@ namespace {
     guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
 }
 
-GTKledPopup::GTKledPopup(gtk_bag *owner, const char *prompt_str,
+GTKledPopup::GTKledPopup(GTKbag *owner, const char *prompt_str,
     const char *init_str, int textwidth, bool multiline, const char *btnstr,
     void *arg)
 {
@@ -1045,7 +1045,7 @@ GTKledPopup::GTKledPopup(gtk_bag *owner, const char *prompt_str,
 GTKledPopup::~GTKledPopup()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (owner)
             owner->ClearPopup(this);
     }
@@ -1103,7 +1103,7 @@ void
 GTKledPopup::popdown()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -1117,7 +1117,7 @@ void
 GTKledPopup::update(const char *prompt_str, const char *init_str)
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -1265,7 +1265,7 @@ GTKledPopup::pw_attach_idle_proc(void *arg)
 //----------------------------------------------------------------------------
 // Simple message box.
 
-GTKmsgPopup::GTKmsgPopup(gtk_bag *owner, const char *string, bool err)
+GTKmsgPopup::GTKmsgPopup(GTKbag *owner, const char *string, bool err)
 {
     p_parent = owner;
     pw_label = 0;
@@ -1321,7 +1321,7 @@ GTKmsgPopup::GTKmsgPopup(gtk_bag *owner, const char *string, bool err)
 GTKmsgPopup::~GTKmsgPopup()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (owner)
             owner->ClearPopup(this);
     }
@@ -1342,7 +1342,7 @@ void
 GTKmsgPopup::popdown()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -1465,7 +1465,7 @@ namespace {
 
 char *GTKtextPopup::pw_errlog = 0;
 
-GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
+GTKtextPopup::GTKtextPopup(GTKbag *owner, const char *message_str,
     int which, STYtype sty, void *arg)
 {
     p_parent = owner;
@@ -1643,7 +1643,7 @@ GTKtextPopup::~GTKtextPopup()
     if (pw_btn && GRX->GetStatus(pw_btn))
         gtk_button_clicked(GTK_BUTTON(pw_btn));
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (owner)
             owner->ClearPopup(this);
     }
@@ -1672,7 +1672,7 @@ void
 GTKtextPopup::popdown()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -1686,7 +1686,7 @@ bool
 GTKtextPopup::get_btn2_state()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return (false);
     }
@@ -1702,7 +1702,7 @@ void
 GTKtextPopup::set_btn2_state(bool state)
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -1913,10 +1913,10 @@ GTKtextPopup::pw_text_upd_idle(void *arg)
 
 
 //----------------------------------------------------------------------------
-// gtk_bag methods
+// GTKbag methods
 
 GRaffirmPopup *
-gtk_bag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
+GTKbag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
     void (*action_callback)(bool, void*), void *action_arg)
 {
     GTKaffirmPopup *p = new GTKaffirmPopup(this, question_str, action_arg);
@@ -1932,7 +1932,7 @@ gtk_bag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
 
 
 GRnumPopup *
-gtk_bag::PopUpNumeric(GRobject caller, GRloc loc,
+GTKbag::PopUpNumeric(GRobject caller, GRloc loc,
     const char *prompt_str, double initd, double mind, double maxd, double del,
     int numd, void(*action_callback)(double, bool, void*), void *action_arg)
 {
@@ -1950,7 +1950,7 @@ gtk_bag::PopUpNumeric(GRobject caller, GRloc loc,
 
 
 GRledPopup *
-gtk_bag::PopUpEditString(GRobject caller, GRloc loc,
+GTKbag::PopUpEditString(GRobject caller, GRloc loc,
     const char *prompt_str, const char *init_str,
     ESret (*action_callback)(const char *, void*),
     void *action_arg, int textwidth,
@@ -1972,8 +1972,8 @@ gtk_bag::PopUpEditString(GRobject caller, GRloc loc,
 
 // PopUpInput and PopUpMessage implement an input solicitation
 // widget with error reporting.  Only one of each widget is
-// possible per parent gtk_bag as they set fields in the
-// gtk_bag struct.
+// possible per parent GTKbag as they set fields in the
+// GTKbag struct.
 // char *prompt_str;     label string
 // char *initial_str;    initial text
 // char  *action_str;    action button string
@@ -1982,7 +1982,7 @@ gtk_bag::PopUpEditString(GRobject caller, GRloc loc,
 // int textwidth;        width of entry area
 //
 void
-gtk_bag::PopUpInput(const char *prompt_str, const char *initial_str,
+GTKbag::PopUpInput(const char *prompt_str, const char *initial_str,
     const char *action_str, void(*action_callback)(const char*, void*),
     void *arg, int textwidth)
 {
@@ -2006,14 +2006,14 @@ gtk_bag::PopUpInput(const char *prompt_str, const char *initial_str,
 
 // Pop up a message box If err is true, the popup will get the
 // resources of an error popup.  If multi is true, the widget will not
-// use the gtk_bag::message field, so that there can be arbitrarily
+// use the GTKbag::message field, so that there can be arbitrarily
 // many of these, but the user must keep track of them.  If desens is
-// true, then any popup pointed to by gtk_bag::wb_input is
+// true, then any popup pointed to by GTKbag::wb_input is
 // desensitized while the message is active.  This is done only if
 // multi is false.
 //
 GRmsgPopup *
-gtk_bag::PopUpMessage(const char *string, bool err,
+GTKbag::PopUpMessage(const char *string, bool err,
     bool desens, bool multi, GRloc loc)
 {
     if (!multi && wb_message)
@@ -2041,8 +2041,8 @@ gtk_bag::PopUpMessage(const char *string, bool err,
 //
 
 // The next few functions pop up and down error and info popups.  The
-// shell and text widgets are stored in the gtk_bag struct, so there
-// can be only one of each type per gtk_bag.  Additional calls to
+// shell and text widgets are stored in the GTKbag struct, so there
+// can be only one of each type per GTKbag.  Additional calls to
 // PopUpxxx() simply update the text.
 //
 // The functions return an integer index, which is incremented when the
@@ -2051,7 +2051,7 @@ gtk_bag::PopUpMessage(const char *string, bool err,
 // is still visible.
 
 int
-gtk_bag::PopUpWarn(ShowMode mode, const char *message_str, STYtype sty,
+GTKbag::PopUpWarn(ShowMode mode, const char *message_str, STYtype sty,
     GRloc loc)
 {
     if (sty == STY_HTML)
@@ -2085,7 +2085,7 @@ gtk_bag::PopUpWarn(ShowMode mode, const char *message_str, STYtype sty,
 
 
 int
-gtk_bag::PopUpErr(ShowMode mode, const char *message_str, STYtype sty,
+GTKbag::PopUpErr(ShowMode mode, const char *message_str, STYtype sty,
     GRloc loc)
 {
     if (sty == STY_HTML)
@@ -2122,7 +2122,7 @@ gtk_bag::PopUpErr(ShowMode mode, const char *message_str, STYtype sty,
 // Return the widget.
 //
 GRtextPopup *
-gtk_bag::PopUpErrText(const char *message_str, STYtype sty, GRloc loc)
+GTKbag::PopUpErrText(const char *message_str, STYtype sty, GRloc loc)
 {
     if (sty == STY_HTML)
         return (0);
@@ -2139,7 +2139,7 @@ gtk_bag::PopUpErrText(const char *message_str, STYtype sty, GRloc loc)
 
 
 int
-gtk_bag::PopUpInfo(ShowMode mode, const char *message_str, STYtype sty,
+GTKbag::PopUpInfo(ShowMode mode, const char *message_str, STYtype sty,
     GRloc loc)
 {
     if (sty == STY_HTML)
@@ -2173,7 +2173,7 @@ gtk_bag::PopUpInfo(ShowMode mode, const char *message_str, STYtype sty,
 
 
 int
-gtk_bag::PopUpInfo2(ShowMode mode, const char *message_str,
+GTKbag::PopUpInfo2(ShowMode mode, const char *message_str,
     bool(*cb)(bool, void*), void *arg, STYtype sty, GRloc loc)
 {
     if (sty == STY_HTML)
@@ -2208,7 +2208,7 @@ gtk_bag::PopUpInfo2(ShowMode mode, const char *message_str,
 
 
 int
-gtk_bag::PopUpHTMLinfo(ShowMode mode, const char *message_str, GRloc loc)
+GTKbag::PopUpHTMLinfo(ShowMode mode, const char *message_str, GRloc loc)
 {
     if (mode == MODE_OFF) {
         if (wb_htinfo)
@@ -2238,17 +2238,17 @@ gtk_bag::PopUpHTMLinfo(ShowMode mode, const char *message_str, GRloc loc)
 }
 
 
-GRledPopup *gtk_bag::ActiveInput()      { return (wb_input); }
-GRmsgPopup *gtk_bag::ActiveMessage()    { return (wb_message); }
-GRtextPopup *gtk_bag::ActiveInfo()      { return (wb_info); }
-GRtextPopup *gtk_bag::ActiveInfo2()     { return (wb_info2); }
-GRtextPopup *gtk_bag::ActiveHtinfo()    { return (wb_htinfo); }
-GRtextPopup *gtk_bag::ActiveWarn()      { return (wb_warning); }
-GRtextPopup *gtk_bag::ActiveError()     { return (wb_error); }
-GRfontPopup *gtk_bag::ActiveFontsel()   { return (wb_fontsel); }
+GRledPopup *GTKbag::ActiveInput()       { return (wb_input); }
+GRmsgPopup *GTKbag::ActiveMessage()     { return (wb_message); }
+GRtextPopup *GTKbag::ActiveInfo()       { return (wb_info); }
+GRtextPopup *GTKbag::ActiveInfo2()      { return (wb_info2); }
+GRtextPopup *GTKbag::ActiveHtinfo()     { return (wb_htinfo); }
+GRtextPopup *GTKbag::ActiveWarn()       { return (wb_warning); }
+GRtextPopup *GTKbag::ActiveError()      { return (wb_error); }
+GRfontPopup *GTKbag::ActiveFontsel()    { return (wb_fontsel); }
 
 void
-gtk_bag::SetErrorLogName(const char *fname)
+GTKbag::SetErrorLogName(const char *fname)
 {
     GTKtextPopup::set_error_log(fname);
 }
@@ -2258,14 +2258,14 @@ gtk_bag::SetErrorLogName(const char *fname)
 // Resolve help pop-up when mozy is not included.
 //
 bool
-gtk_bag::PopUpHelp(const char*)
+GTKbag::PopUpHelp(const char*)
 {
     PopUpErr(MODE_ON, "Help system is not available in this executable.");
     return (false);
 }
 
 #endif
-// End of gtk_bag functions.
+// End of GTKbag functions.
 
 
 //-----------------------------------------------------------------------------

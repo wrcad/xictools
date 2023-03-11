@@ -103,9 +103,9 @@ namespace gtkinterf {
 
     // The font selection pop-up
     //
-    struct GTKfontPopup : public GRfontPopup, public gtk_bag
+    struct GTKfontPopup : public GRfontPopup, public GTKbag
     {
-        GTKfontPopup(gtk_bag*, int, void*, const char**, const char*);
+        GTKfontPopup(GTKbag*, int, void*, const char**, const char*);
         ~GTKfontPopup();
 
         // GRpopup overrides

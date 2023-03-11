@@ -47,48 +47,25 @@
 #include <math.h>
 #include <gtk/gtk.h>
 #include "ginterf/graphics.h"
+#include "gtkinterf/gtkdraw.h"
 
 //
-//  Main header for the GTK+ library
+//  Main header for the graphical interface using the GTK toolkit.
 //
 
-#define NEW_GC
-//#define NEW_PIX
-//#define NEW_DRW
-
-#ifndef WITH_QUARTZ
-#ifndef WIN32
-#define WITH_X11
-#endif
-#endif
-
-namespace ginterf
-{
-    struct GRlineDb;
-}
 
 namespace gtkinterf { }
 using namespace gtkinterf;
 
-// Default background for HTML windows
+// Default background for HTML windows.
 #define HTML_BG_COLOR "#e8e8f0"
 
 #define NUMITEMS(x)  sizeof(x)/sizeof(x[0])
 
-#ifdef WITH_X11
-#include "gtkinterf/gtkx11.h"
-#endif
-#ifdef NEW_GC
-#include "gtkinterf/ndkgc.h"
-#endif
-#ifdef NEW_PIX
-#include "gtkinterf/ndkpixmap.h"
-#include "gtkinterf/ndkdrawable.h"
-#endif
 
 namespace gtkinterf {
-    struct gtk_draw;
-    struct gtk_bag;
+    struct GTKdraw;     // The drawing package.
+    struct GTKbag;      // A collection of support dialogs and widgets.
 
     // GTK driver class
     //
@@ -140,8 +117,8 @@ namespace gtkinterf {
         // will be rooted in the main window, rather than the pop-up's
         // window
         //
-        void RegisterMainFrame(gtk_bag *w) { dv_main_wbag = w; }
-        gtk_bag *MainFrame()        { return (dv_main_wbag); }
+        void RegisterMainFrame(GTKbag *w) { dv_main_wbag = w; }
+        GTKbag *MainFrame()         { return (dv_main_wbag); }
 
         // Which image transfer code block to use.
         int ImageCode()             { return (dv_image_code); }
@@ -203,7 +180,7 @@ namespace gtkinterf {
         int dv_miny;
         int dv_image_code;
         int dv_loop_level;
-        gtk_bag *dv_main_wbag;
+        GTKbag *dv_main_wbag;
         GdkWindow *dv_default_focus_win;
         GdkColormap *dv_cmap;
         GdkVisual *dv_visual;
@@ -222,276 +199,6 @@ namespace gtkinterf {
 #endif
     };
 
-    // Encapsulation of the window ghost-drawing capability.
-    //
-    struct sGdraw
-    {
-        sGdraw() {
-            gd_draw_ghost = 0;
-            gd_linedb = 0;
-            gd_ref_x = 0;
-            gd_ref_y = 0;
-            gd_last_x = 0;
-            gd_last_y = 0;
-            gd_ghost_cx_cnt = 0;
-            gd_first_ghost = false;
-            gd_show_ghost = false;
-            gd_undraw = false;
-        }
-
-        void set_ghost(GhostDrawFunc, int, int);
-        void show_ghost(bool);
-        void undraw_ghost(bool);
-        void draw_ghost(int, int);
-
-        bool has_ghost()    { return (gd_draw_ghost != 0); }
-        bool showing()      { return (gd_show_ghost); }
-        GRlineDb *linedb()  { return (gd_linedb); }
-
-        GhostDrawFunc get_ghost_func()  { return (gd_draw_ghost); }
-        void set_ghost_func(GhostDrawFunc f)
-            {
-                gd_draw_ghost = f;
-                gd_first_ghost = true;
-            }
-
-    private:
-        GhostDrawFunc gd_draw_ghost;
-        GRlineDb *gd_linedb;        // line clipper for XOR mode
-        int gd_ref_x;
-        int gd_ref_y;
-        int gd_last_x;
-        int gd_last_y;
-        int gd_ghost_cx_cnt;
-        bool gd_first_ghost;
-        bool gd_show_ghost;
-        bool gd_undraw;
-    };
-
-    // Graphical context, may be used by multiple windows.
-    struct sGbag
-    {
-        sGbag() {
-            gb_gc = 0;
-            gb_xorgc = 0;
-            gb_gcbak = 0;
-#ifdef WIN32
-            gb_fillpattern = 0;
-#endif
-            gb_cursor_type = 0;
-        }
-
-        void set_xor(bool x)
-            {
-                if (x) {
-                    gb_gcbak = gb_gc;
-                    gb_gc = gb_xorgc;
-                }
-                else
-                    gb_gc = gb_gcbak;
-            }
-
-#ifdef NEW_GC
-        ndkGC *main_gc()
-#else
-        GdkGC *main_gc()
-#endif
-            {
-                return (gb_gc != gb_xorgc ? gb_gc : gb_gcbak);
-            }
-
-        void set_ghost(GhostDrawFunc cb, int x, int y)
-            {
-                set_xor(true);
-                gb_gdraw.set_ghost(cb, x, y);
-                set_xor(false);
-            }
-
-        void show_ghost(bool show)
-            {
-                set_xor(true);
-                gb_gdraw.show_ghost(show);
-                set_xor(false);
-            }
-
-        void undraw_ghost(bool rst)
-            {
-                set_xor(true);
-                gb_gdraw.undraw_ghost(rst);
-                set_xor(false);
-            }
-
-        void draw_ghost(int x, int y)
-            {
-                set_xor(true);
-                gb_gdraw.draw_ghost(x, y);
-                set_xor(false);
-            }
-
-        bool has_ghost()
-            {
-                return (gb_gdraw.has_ghost());
-            }
-
-        bool showing_ghost()
-            {
-                return (gb_gdraw.showing());
-            }
-
-        GhostDrawFunc get_ghost_func()
-            {
-                return (gb_gdraw.get_ghost_func());
-            }
-
-        void set_ghost_func(GhostDrawFunc f)
-            {
-                gb_gdraw.set_ghost_func(f);
-            }
-
-#ifdef NEW_GC
-        void set_gc(ndkGC *gc)                  { gb_gc = gc; }
-        ndkGC *get_gc()                         { return (gb_gc); }
-        void set_xorgc(ndkGC *gc)               { gb_xorgc = gc; }
-        ndkGC *get_xorgc()                      { return (gb_xorgc); }
-#else
-        void set_gc(GdkGC *gc)                  { gb_gc = gc; }
-        GdkGC *get_gc()                         { return (gb_gc); }
-        void set_xorgc(GdkGC *gc)               { gb_xorgc = gc; }
-        GdkGC *get_xorgc()                      { return (gb_xorgc); }
-#endif
-        void set_cursor_type(unsigned int t)    { gb_cursor_type = t; }
-        unsigned int get_cursor_type()          { return (gb_cursor_type); }
-        GRlineDb *linedb()                      { return (gb_gdraw.linedb()); }
-
-#define NUMGCS 10
-        static sGbag *app_gbags[NUMGCS];
-
-#ifdef WIN32
-        void set_fillpattern(const GRfillType *fp) { gb_fillpattern = fp; }
-        const GRfillType *get_fillpattern()     { return (gb_fillpattern); }
-#endif
-
-        static sGbag *default_gbag(int = 0);
-
-    private:
-#ifdef NEW_GC
-        ndkGC *gb_gc;
-        ndkGC *gb_xorgc;
-        ndkGC *gb_gcbak;
-#else
-        GdkGC *gb_gc;
-        GdkGC *gb_xorgc;
-        GdkGC *gb_gcbak;
-#endif
-#ifdef WIN32
-        const GRfillType *gb_fillpattern;
-#endif
-        unsigned int gb_cursor_type;
-        sGdraw gb_gdraw;
-    };
-
-    struct gtk_draw : virtual public GRdraw
-    {
-        gtk_draw(int = 0);
-        virtual ~gtk_draw();
-
-#ifdef NEW_DRW
-        void SetViewport(GtkWidget*);
-        void *WindowID();
-#else
-        void *WindowID()                    { return (gd_window); }
-#endif
-
-        // gtkinterf.cc
-        void Halt();
-        void Clear();
-        void ResetViewport(int, int)                    { }
-        void DefineViewport()                           { }
-        void Dump(int)                                  { }
-        void Pixel(int, int);
-        void Pixels(GRmultiPt*, int);
-        void Line(int, int, int, int);
-        void PolyLine(GRmultiPt*, int);
-        void Lines(GRmultiPt*, int);
-        void Box(int, int, int, int);
-        void Boxes(GRmultiPt*, int);
-        void Arc(int, int, int, int, double, double);
-        void Polygon(GRmultiPt*, int);
-        void Zoid(int, int, int, int, int, int);
-        void Text(const char*, int, int, int, int = -1, int = -1);
-        void TextExtent(const char*, int*, int*);
-
-        void SetGhost(GhostDrawFunc cb, int x, int y)
-                                            { gd_gbag->set_ghost(cb, x, y); }
-        void ShowGhost(bool show)           { gd_gbag->show_ghost(show); }
-        void UndrawGhost(bool reset = false)
-                                            { gd_gbag->undraw_ghost(reset); }
-        void DrawGhost(int x, int y)        { gd_gbag->draw_ghost(x, y); }
-
-        void MovePointer(int, int, bool);
-        void QueryPointer(int*, int*, unsigned*);
-        void DefineColor(int*, int, int, int);
-        void SetBackground(int);
-        void SetWindowBackground(int);
-        void SetGhostColor(int);
-        void SetColor(int);
-        void DefineLinestyle(GRlineType*)               { }
-        void SetLinestyle(const GRlineType*);
-        void DefineFillpattern(GRfillType*);
-        void SetFillpattern(const GRfillType*);
-        void Update();
-        void Input(int*, int*, int*, int*);
-        void SetXOR(int);
-        void ShowGlyph(int, int, int);
-        GRobject GetRegion(int, int, int, int);
-        void PutRegion(GRobject, int, int, int, int);
-        void FreeRegion(GRobject);
-        void DisplayImage(const GRimage*, int, int, int, int);
-        double Resolution()     { return (1.0); }
-
-        // non-overrides
-#ifdef NEW_GC
-        ndkGC *GC()         { return (gd_gbag ? gd_gbag->get_gc() : 0); }
-        ndkGC *XorGC()      { return (gd_gbag ? gd_gbag->get_xorgc() : 0); }
-        ndkGC *CpyGC()      { return (gd_gbag ? gd_gbag->main_gc() : 0); }
-#else
-        GdkGC *GC()             { return (gd_gbag ? gd_gbag->get_gc() : 0); }
-        GdkGC *XorGC()          { return (gd_gbag ? gd_gbag->get_xorgc() : 0); }
-        GdkGC *CpyGC()          { return (gd_gbag ? gd_gbag->main_gc() : 0); }
-#endif
-
-        GRlineDb *XorLineDb()   { return (gd_gbag ? gd_gbag->linedb() : 0); }
-
-        sGbag *Gbag()           { return (gd_gbag); }
-        void SetGbag(sGbag *b)  { gd_gbag = b; }
-
-        GtkWidget *Viewport()           { return (gd_viewport); }
-#ifdef NEW_DRW
-        ndkDrawable *GetDrawable()      { return (&gd_dw); }
-#else
-        void SetViewport(GtkWidget *w)  { gd_viewport = w; }
-        GdkWindow *Window()             { return (gd_window); }
-        void SetWindow(GdkWindow *w)    { gd_window = w; }
-#endif
-
-        void SetBackgPixel(unsigned int p)    { gd_backg = p; }
-        unsigned int GetBackgPixel()          { return (gd_backg); }
-        void SetForegPixel(unsigned int p)    { gd_foreg = p; }
-        unsigned int GetForegPixel()          { return (gd_foreg); }
-
-    protected:
-        GtkWidget *gd_viewport;         // drawing widget
-#ifdef NEW_DRW
-        ndkDrawable gd_dw;              // drawing context
-#else
-        GdkWindow *gd_window;           // drawing window
-#endif
-        sGbag *gd_gbag;                 // graphics rendering context
-        unsigned int gd_backg;
-        unsigned int gd_foreg;
-    };
-
-
     struct GTKfontPopup;
     struct GTKledPopup;
     struct GTKmsgPopup;
@@ -500,21 +207,21 @@ namespace gtkinterf {
 
     // Context implementation
     //
-    struct gtk_bag : virtual public GRwbag
+    struct GTKbag : virtual public GRwbag
     {
         friend GRwbag *GTKdev::NewWbag(const char*, GRwbag*);
-        friend GtkWidget *gtk_NewPopup(gtk_bag*, const char*,
+        friend GtkWidget *gtk_NewPopup(GTKbag*, const char*,
             void(*)(GtkWidget*, void*), void*);
 
-        gtk_bag();
-        virtual ~gtk_bag();
+        GTKbag();
+        virtual ~GTKbag();
 
         // This return will be used for positioning pop-ups rather than
         // the shell.  It is generally up to the user to set this.
         //
         GtkWidget *PositionReferenceWidget()
             {
-                gtk_draw *drw = dynamic_cast<gtk_draw*>(this);
+                GTKdraw *drw = dynamic_cast<GTKdraw*>(this);
                 if (drw && drw->Viewport())
                     return (drw->Viewport());
                 if (wb_textarea)
@@ -644,7 +351,7 @@ namespace gtkinterf {
         GTKprintPopup *wb_hc;       // hard copy parameters
         GRmonList wb_monitor;       // certain popups use this
         void *wb_call_data;         // internal data
-        void (*wb_sens_set)(gtk_bag*, bool, int);
+        void (*wb_sens_set)(GTKbag*, bool, int);
                                     // sensitivity change callback
         int wb_warn_cnt;            // counters for window id
         int wb_err_cnt;
@@ -656,9 +363,8 @@ namespace gtkinterf {
         static const char *wb_closed_folder_xpm[];
         static const char *wb_open_folder_xpm[];
     };
-}
 
-namespace gtkinterf {
+
     //
     // Misc global functions exported
     //
@@ -686,7 +392,7 @@ namespace gtkinterf {
     void gtk_Message(GtkWidget*, bool, const char*);
 
     // gtkinterf.cc
-    GtkWidget *gtk_NewPopup(gtk_bag*, const char*,
+    GtkWidget *gtk_NewPopup(GTKbag*, const char*,
         void(*)(GtkWidget*, void*), void*);
     void gtk_QueryColor(GdkColor*);
     bool gtk_ColorSet(GdkColor*, const char*);
@@ -729,13 +435,6 @@ namespace gtkinterf {
     void text_set_change_hdlr(GtkWidget*, void(*)(GtkWidget*, void*),
         void*, bool);
     void text_realize_proc(GtkWidget*, void*);
-//#ifdef NEW_GC
-#ifdef WITH_X11
-    void copy_x11_pixmap_to_drawable(GdkDrawable*, void*, GdkPixmap*,
-//    void copy_x11_pixmap_to_drawable(GdkDrawable*, ndkGC*, GdkPixmap*,
-    int, int, int, int, int, int);
-#endif
-//#endif
 }
 
 // Global access, set in constructor

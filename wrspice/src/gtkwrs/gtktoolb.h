@@ -63,10 +63,9 @@ struct tbpoint_t
     int x, y;
 };
 
-//XXX merge functionality inti gtk_draw
-struct tb_bag : public gtk_bag, public gtk_draw
+struct tb_bag : public GTKbag, public GTKdraw
 {
-    tb_bag(int type = 0) : gtk_draw(type)
+    tb_bag(int type = 0) : GTKdraw(type)
         {
             b_wid = 0;
             b_hei = 0;
@@ -82,7 +81,6 @@ struct tb_bag : public gtk_bag, public gtk_draw
     void switch_to_pixmap();
     void switch_from_pixmap();
 #endif
-    void create_GCs();
 
     int b_wid;
     int b_hei;

@@ -81,7 +81,7 @@ namespace gtkinterf {
         bool h_deletion;
     };
 
-    struct GTKeditPopup : public GReditPopup, public gtk_bag
+    struct GTKeditPopup : public GReditPopup, public GTKbag
     {
         // internal widget state
         enum EventType {QUIT, SAVE, SAVEAS, SOURCE, LOAD, TEXTMOD};
@@ -89,7 +89,7 @@ namespace gtkinterf {
         // widget configuration
         enum WidgetType { Editor, Browser, StringEditor, Mailer };
 
-        GTKeditPopup(gtk_bag*, WidgetType type, const char*, bool, void*);
+        GTKeditPopup(GTKbag*, WidgetType type, const char*, bool, void*);
         ~GTKeditPopup();
 
         // GRpopup overrides
@@ -166,7 +166,7 @@ namespace gtkinterf {
         static void ed_do_saveas_proc(const char*, void*);
         static void ed_do_load_proc(const char*, void*);
         static void ed_do_read_proc(const char*, void*);
-        static void ed_set_sens(gtk_bag*, bool, int);
+        static void ed_set_sens(GTKbag*, bool, int);
 
         GtkWidget *ed_title;
         GtkWidget *ed_msg;

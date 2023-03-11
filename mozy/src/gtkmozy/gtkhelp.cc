@@ -90,7 +90,7 @@
 // Architecture note
 // Each window has a corresponding "parent" topic struct linked from
 // HLP()->context()->TopList.  In the parents, the context field
-// points to a gtk_bag which contains the window information.  Each
+// points to a GTKbag which contains the window information.  Each
 // new page displayed in the window has a corresponding topic struct
 // linked from lastborn in the parent, and has the parent field set to
 // point to the parent (in the TopList).  Topics linked to lastborn
@@ -121,7 +121,7 @@ namespace {
     };
 
     // Default color selection pop-up.
-    struct sClr : public gtk_bag
+    struct sClr : public GTKbag
     {
         sClr(GRobject caller);
         ~sClr();
@@ -276,13 +276,13 @@ struct ntop
 
 
 //-----------------------------------------------------------------------------
-// Main entry - gtk_bag method
+// Main entry - GTKbag method
 
 // Top level help popup call, takes care of accessing the database.
 // Return false if the topic is not found.
 //
 bool
-gtk_bag::PopUpHelp(const char *wordin)
+GTKbag::PopUpHelp(const char *wordin)
 {
     if (!HLP()->get_path(0)) {
         PopUpErr(MODE_ON, "Error: no path to database.");
@@ -976,7 +976,7 @@ GTKhelpPopup::~GTKhelpPopup()
     delete [] h_frame_name;
 
     gtk_widget_hide(wb_shell);
-    // shell destroyed in gtk_bag destructor
+    // shell destroyed in GTKbag destructor
 
     if (!HLP()->context()->topList())
         delete Clr;
@@ -1562,7 +1562,7 @@ GTKhelpPopup::scroll_visible(int l, int t, int r, int b)
 
 
 //-----------------------------------------------------------------------------
-// gtk_bag functions
+// GTKbag functions
 
 // Entry point for postscript output.
 //
@@ -2026,7 +2026,7 @@ GTKhelpPopup::h_stop_proc(GtkWidget *btn, void *hlpptr)
 // Pop up the font selection widget.
 //
 void
-GTKhelpPopup::h_fontsel(gtk_bag *w, GtkWidget *caller)
+GTKhelpPopup::h_fontsel(GTKbag *w, GtkWidget *caller)
 {
     if (GRX->GetStatus(caller))
         w->PopUpFontSel(0, GRloc(), MODE_ON, h_font_cb, caller, FNT_MOZY);
@@ -2617,7 +2617,7 @@ GTKhelpPopup::h_do_save_proc(const char *fnamein, void *hlpptr)
 // Callback for PopUpInput() sensitivity set.
 //
 void
-GTKhelpPopup::h_sens_set(gtk_bag *w, bool set, int)
+GTKhelpPopup::h_sens_set(GTKbag *w, bool set, int)
 {
     GtkWidget *search =
         (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()), "search");

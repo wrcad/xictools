@@ -50,26 +50,26 @@ namespace gtkinterf {
     // Struct to record parameters for hard copy generation
     struct GTKprintPopup
     {
-        friend void gtk_bag::HCupdate(HCcb*, GRobject);
+        friend void GTKbag::HCupdate(HCcb*, GRobject);
 
         GTKprintPopup();
         ~GTKprintPopup();
 
         void destroy_widgets();
 
-        // called fron gtk_bag destructor.
-        void pop_down_print(gtk_bag *w)
+        // called fron GTKbag destructor.
+        void pop_down_print(GTKbag *w)
             {
                 hc_active = true;
                 w->PopUpPrint(hc_caller, 0, HCgraphical);
             }
 
-        static void hc_hcpopup(GRobject, gtk_bag*, HCcb*, HCmode, GRdraw*);
-        static void hc_pop_up_text(gtk_bag*, const char*, bool);
+        static void hc_hcpopup(GRobject, GTKbag*, HCcb*, HCmode, GRdraw*);
+        static void hc_pop_up_text(GTKbag*, const char*, bool);
 #ifdef WIN32
-        static void hc_set_printer(gtk_bag*);
+        static void hc_set_printer(GTKbag*);
 #endif
-        static void hc_set_format(gtk_bag*, int, bool);
+        static void hc_set_format(GTKbag*, int, bool);
 
     private:
         static void hc_update_menu(GTKprintPopup*);
@@ -89,8 +89,8 @@ namespace gtkinterf {
         static void hc_auto_proc(GtkWidget*, void*);
         static int hc_key_hdlr(GtkWidget*, GdkEvent*, void*);
         static void hc_go_proc(GtkWidget*, void*);
-        static void hc_do_go(gtk_bag*);
-        static int hc_printit(const char*, const char*, gtk_bag*);
+        static void hc_do_go(GTKbag*);
+        static int hc_printit(const char*, const char*, GTKbag*);
         static int hc_msg_idle_proc(void*);
         static void hc_proc_hdlr(int, int, void*);
         static void hc_resol_proc(GtkWidget*, void*);
@@ -100,7 +100,7 @@ namespace gtkinterf {
         static void hc_set_sens(GTKprintPopup*, unsigned);
 
         // message pop-up
-        static void hc_pop_message(gtk_bag*);
+        static void hc_pop_message(GTKbag*);
         static int hc_go_idle_proc(void*);
         static void hc_go_cancel_proc(GtkWidget*, void*);
         static void hc_go_abort_proc(GtkWidget*, void*);

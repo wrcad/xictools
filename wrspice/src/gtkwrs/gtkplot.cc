@@ -100,11 +100,11 @@ enum pbtn_type
 
 // special 'widget bag' for plot and mplot windows.
 //
-struct plot_bag : public gtk_bag,  public gtk_draw
+struct plot_bag : public GTKbag,  public GTKdraw
 {
     friend struct sGraph;
 
-    plot_bag(int type) : gtk_draw(type)
+    plot_bag(int type) : GTKdraw(type)
         {
             pb_bbox = 0;
             for (int i = 0; i < pbtn_NUMBTNS; i++)
@@ -112,8 +112,8 @@ struct plot_bag : public gtk_bag,  public gtk_draw
 #ifdef NEW_DRW
 #else
             pb_pixmap = 0;
-#endif
             pb_pmwid = pb_pmhei = 0;
+#endif
             pb_id = 0;
             pb_x = pb_y = 0;
             pb_rdid = 0;
@@ -136,7 +136,7 @@ struct plot_bag : public gtk_bag,  public gtk_draw
 
 private:
     static bool check_event(GdkEvent*, sGraph*);
-    static void sens_set(gtk_bag*, bool, int);
+    static void sens_set(GTKbag*, bool, int);
     static int resize(GtkWidget*, GdkEvent*, void*);
     static int redraw_timeout(void*);
     static int redraw(GtkWidget*, GdkEvent*, void*);
@@ -172,8 +172,8 @@ private:
 #ifdef NEW_DRW
 #else
     GdkPixmap *pb_pixmap;           // backing store
-#endif
     int pb_pmwid, pb_pmhei;         // pixmap size
+#endif
     int pb_id;                      // motion idle id
     int pb_x, pb_y;                 // motion coords
     int pb_rdid;                    // redisplay timeout id
@@ -309,7 +309,6 @@ plot_bag::init(sGraph *gr)
         (GtkAttachOptions)0,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 0, 0);
 
-//XXX
     // The first plot is issued a blank sGbag, which is filled in here.
     // Subsequent plots are issued the same sGbag for the class (plots and
     // mplots are separate classes).  This is a problem for plots, which
@@ -339,6 +338,7 @@ plot_bag::init(sGraph *gr)
 
     gtk_widget_show(Shell());
 #ifdef NEW_DRW
+    GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
 #else
     SetWindow(gtk_widget_get_window(Viewport()));
 #endif
@@ -369,6 +369,9 @@ plot_bag::init(sGraph *gr)
                 (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
         }
 #else
+        // We handle our own double-buffering.
+        gtk_widget_set_double_buffered(Viewport(), false);
+
         Gbag()->set_gc(new ndkGC(Window(), &gcvalues,
             ndkGC_CAP_STYLE));
         gcvalues.v_function = ndkGC_XOR;
@@ -828,14 +831,12 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
     int h = dw->get_height();
     area().set_width(w);
     area().set_height(h);
-    if (gr_dirty || !dw->get_pixmap() || wb->pb_pmwid != area().width() ||
-            wb->pb_pmhei != area().height()) {
-
+    bool dirty = dw->set_draw_to_pixmap();
+    dw->set_draw_to_window();
+    if (dirty) {
         gr_redraw();
         return;
     }
-
-    dw->set_draw_to_window();
     dw->copy_pixmap_to_window(wb->GC(), 0, 0, -1, -1);
 
     GdkRectangle r;
@@ -952,7 +953,7 @@ plot_bag::check_event(GdkEvent *ev, sGraph *graph)
 // Callback for PopUpInput() sensitivity set
 //
 void
-plot_bag::sens_set(gtk_bag *w, bool set, int)
+plot_bag::sens_set(GTKbag *w, bool set, int)
 {
     GtkWidget *save_plot =
         (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()), "save_plot");
@@ -1105,11 +1106,9 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
     }
     else {
 #ifdef NEW_GC
-        /* XXX draw drawable
-        gdk_window_copy_area(wb->Window(), wb->GC(), pev->area.x,
-            pev->area.y, wb->pb_pixmap, pev->area.x, pev->area.y,
+        copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
+            pev->area.x, pev->area.y, pev->area.x, pev->area.y,
             pev->area.width, pev->area.height);
-            */
 
         wb->GC()->set_clip_rectangle(&pev->area);
         wb->XorGC()->set_clip_rectangle(&pev->area);

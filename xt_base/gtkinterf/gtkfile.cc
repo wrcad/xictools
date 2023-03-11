@@ -314,10 +314,10 @@ sFsBmap::disable(GTKfilePopup *fs, int id)
 // End of sFsBmap functions
 
 
-// Method to access file browser via a gtk_bag.
+// Method to access file browser via a GTKbag.
 //
 GRfilePopup *
-gtk_bag::PopUpFileSelector(FsMode mode, GRloc loc,
+GTKbag::PopUpFileSelector(FsMode mode, GRloc loc,
     void(*cb)(const char*, void*), void(*quit)(GRfilePopup*, void*),
     void *arg, const char *name)
 {
@@ -505,7 +505,7 @@ GTKfilePopup::any_selection()
 #define DEF_TEXT_USWIDTH 300
 
 
-GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
+GTKfilePopup::GTKfilePopup(GTKbag *owner, FsMode mode, void *arg,
     const char *root_or_fname)
 {
     p_parent = owner;
@@ -1101,7 +1101,7 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
 GTKfilePopup::~GTKfilePopup()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
@@ -1132,7 +1132,7 @@ GTKfilePopup::~GTKfilePopup()
         (gpointer)fs_quit_proc, this);
 
     gtk_widget_hide(wb_shell);
-    // shell destroyed in gtk_bag destructor
+    // shell destroyed in GTKbag destructor
 }
 
 
@@ -1142,7 +1142,7 @@ void
 GTKfilePopup::popdown()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -1157,7 +1157,7 @@ char *
 GTKfilePopup::get_selection()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return (0);
     }

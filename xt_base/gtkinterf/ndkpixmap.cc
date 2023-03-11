@@ -73,6 +73,17 @@
 
 #ifdef NDKPIXMAP_H
 
+
+#ifdef WITH_X11
+namespace {
+    int xid_hash(XID *xid)          { return (*xid); }
+    bool xid_equal(XID *a, XID *b)  { return (*a == *b); }
+
+    GHashTable *pixmap_xid_tab;
+}
+#endif
+
+
 #ifdef NEW_DRW
 ndkPixmap::ndkPixmap(GdkWindow *window, int width, int height, bool bitmap)
 {
@@ -82,19 +93,29 @@ ndkPixmap::ndkPixmap(GdkWindow *window, int width, int height, bool bitmap)
     pm_refcnt = 1;
     pm_width = width;
     pm_height = height;
-    if (bitmap)
-        pm_depth = 1;
-    else
-        pm_depth = gdk_visual_get_depth(gdk_drawable_get_visual(window));
     pm_screen = gdk_window_get_screen(window);
+    if (bitmap) {
+        pm_visual = 0;
+        pm_depth = 1;
+    }
+    else {
+        pm_visual = gdk_window_get_visual(window);
+        pm_depth = gdk_visual_get_depth(pm_visual);
+    }
 
 #ifdef WITH_X11
     pm_xid = XCreatePixmap(gdk_x11_drawable_get_xdisplay(window),
         gdk_x11_drawable_get_xid(window), width, height, pm_depth);
-#endif
 
-//  _gdk_xid_table_insert (GDK_WINDOW_DISPLAY (drawable), 
-//			 &GDK_PIXMAP_XID (pixmap), pixmap);
+    if (!pixmap_xid_tab) {
+        pixmap_xid_tab = g_hash_table_new((GHashFunc)xid_hash,
+            (GEqualFunc)xid_equal);
+    }
+    if (g_hash_table_lookup(pixmap_xid_tab, &pm_xid)) {
+        g_warning("XID collision detected!");
+    }
+    g_hash_table_insert(pixmap_xid_tab, &pm_xid, this);
+#endif
 }
 
 
@@ -108,15 +129,23 @@ ndkPixmap::ndkPixmap(GdkWindow *window, const char *data,
     pm_refcnt = 1;
     pm_width = width;
     pm_height = height;
-    pm_depth = 1;
     pm_screen = gdk_window_get_screen(window);
+    pm_visual = 0;
+    pm_depth = 1;
+
 #ifdef WITH_X11
     pm_xid = XCreateBitmapFromData(gdk_x11_drawable_get_xdisplay(window),
         gdk_x11_drawable_get_xid(window), (char *)data, width, height);
-#endif
 
-//    _gdk_xid_table_insert(GDK_WINDOW_DISPLAY(drawable), 
-//        &GDK_PIXMAP_XID(pixmap), pixmap);
+    if (!pixmap_xid_tab) {
+        pixmap_xid_tab = g_hash_table_new((GHashFunc)xid_hash,
+            (GEqualFunc)xid_equal);
+    }
+    if (g_hash_table_lookup(pixmap_xid_tab, &pm_xid)) {
+        g_warning("XID collision detected!");
+    }
+    g_hash_table_insert(pixmap_xid_tab, &pm_xid, this);
+#endif
 }
 
 
@@ -130,17 +159,27 @@ ndkPixmap::ndkPixmap(GdkWindow *window, const char *data,
     pm_refcnt = 1;
     pm_width = width;
     pm_height = height;
-    pm_depth = gdk_visual_get_depth(gdk_drawable_get_visual(window));
-
     pm_screen = gdk_window_get_screen(window);
+    pm_visual = gdk_window_get_visual(window);
+    pm_depth = gdk_visual_get_depth(pm_visual);
+
 #ifdef WITH_X11
     pm_xid = XCreatePixmapFromBitmapData(gdk_x11_drawable_get_xdisplay(window),
         gdk_x11_drawable_get_xid(window), (char *)data, width, height,
         fg->pixel, bg->pixel, pm_depth);
-#endif
 
-//    _gdk_xid_table_insert (GDK_WINDOW_DISPLAY (drawable),
-//    &GDK_PIXMAP_XID (pixmap), pixmap);
+    pm_xid = XCreateBitmapFromData(gdk_x11_drawable_get_xdisplay(window),
+        gdk_x11_drawable_get_xid(window), (char *)data, width, height);
+
+    if (!pixmap_xid_tab) {
+        pixmap_xid_tab = g_hash_table_new((GHashFunc)xid_hash,
+            (GEqualFunc)xid_equal);
+    }
+    if (g_hash_table_lookup(pixmap_xid_tab, &pm_xid)) {
+        g_warning("XID collision detected!");
+    }
+    g_hash_table_insert(pixmap_xid_tab, &pm_xid, this);
+#endif
 }
 
 
@@ -155,19 +194,29 @@ ndkPixmap::ndkPixmap(GdkDrawable *drawable, int width, int height, bool bitmap)
     pm_refcnt = 1;
     pm_width = width;
     pm_height = height;
-    if (bitmap)
-        pm_depth = 1;
-    else
-        pm_depth = gdk_visual_get_depth(gdk_drawable_get_visual(drawable));
     pm_screen = gdk_drawable_get_screen(drawable);
+    if (bitmap) {
+        pm_visual = 0;
+        pm_depth = 1;
+    }
+    else {
+        pm_visual = gdk_drawable_get_visual(drawable);
+        pm_depth = gdk_visual_get_depth(pm_visual);
+    }
 
 #ifdef WITH_X11
     pm_xid = XCreatePixmap(gdk_x11_drawable_get_xdisplay(drawable),
         gdk_x11_drawable_get_xid(drawable), width, height, pm_depth);
-#endif
 
-//  _gdk_xid_table_insert (GDK_WINDOW_DISPLAY (drawable), 
-//			 &GDK_PIXMAP_XID (pixmap), pixmap);
+    if (!pixmap_xid_tab) {
+        pixmap_xid_tab = g_hash_table_new((GHashFunc)xid_hash,
+            (GEqualFunc)xid_equal);
+    }
+    if (g_hash_table_lookup(pixmap_xid_tab, &pm_xid)) {
+        g_warning("XID collision detected!");
+    }
+    g_hash_table_insert(pixmap_xid_tab, &pm_xid, this);
+#endif
 }
 
 
@@ -182,15 +231,22 @@ ndkPixmap::ndkPixmap(GdkDrawable *drawable, const char *data,
     pm_refcnt = 1;
     pm_width = width;
     pm_height = height;
-    pm_depth = 1;
     pm_screen = gdk_drawable_get_screen(drawable);
+    pm_visual = 0;
+    pm_depth = 1;
 #ifdef WITH_X11
     pm_xid = XCreateBitmapFromData(gdk_x11_drawable_get_xdisplay(drawable),
         gdk_x11_drawable_get_xid(drawable), (char *)data, width, height);
-#endif
 
-//    _gdk_xid_table_insert(GDK_WINDOW_DISPLAY(drawable), 
-//        &GDK_PIXMAP_XID(pixmap), pixmap);
+    if (!pixmap_xid_tab) {
+        pixmap_xid_tab = g_hash_table_new((GHashFunc)xid_hash,
+            (GEqualFunc)xid_equal);
+    }
+    if (g_hash_table_lookup(pixmap_xid_tab, &pm_xid)) {
+        g_warning("XID collision detected!");
+    }
+    g_hash_table_insert(pixmap_xid_tab, &pm_xid, this);
+#endif
 }
 
 
@@ -205,23 +261,31 @@ ndkPixmap::ndkPixmap(GdkDrawable *drawable, const char *data,
     pm_refcnt = 1;
     pm_width = width;
     pm_height = height;
-    pm_depth = gdk_visual_get_depth(gdk_drawable_get_visual(drawable));
-
     pm_screen = gdk_drawable_get_screen(drawable);
+    pm_visual = gdk_drawable_get_visual(drawable);
+    pm_depth = gdk_visual_get_depth(pm_visual);
+
 #ifdef WITH_X11
-    pm_xid = XCreatePixmapFromBitmapData(gdk_x11_drawable_get_xdisplay(drawable),
+    pm_xid = XCreatePixmapFromBitmapData(
+        gdk_x11_drawable_get_xdisplay(drawable),
         gdk_x11_drawable_get_xid(drawable), (char *)data, width, height,
         fg->pixel, bg->pixel, pm_depth);
-#endif
 
-//    _gdk_xid_table_insert (GDK_WINDOW_DISPLAY (drawable),
-//    &GDK_PIXMAP_XID (pixmap), pixmap);
+    if (!pixmap_xid_tab) {
+        pixmap_xid_tab = g_hash_table_new((GHashFunc)xid_hash,
+            (GEqualFunc)xid_equal);
+    }
+    if (g_hash_table_lookup(pixmap_xid_tab, &pm_xid)) {
+        g_warning("XID collision detected!");
+    }
+    g_hash_table_insert(pixmap_xid_tab, &pm_xid, this);
+#endif
 }
 
 #endif
 
 
-ndkPixmap::ndkPixmap(ndkPixmap *pm, int width, int height)
+ndkPixmap::ndkPixmap(ndkPixmap *pm, int width, int height, bool bitmap)
 {
     if (!pm) {
         pm_refcnt = 0;
@@ -237,22 +301,38 @@ ndkPixmap::ndkPixmap(ndkPixmap *pm, int width, int height)
     pm_refcnt = 1;
     pm_width = width >= 0 ? width : pm->get_width();
     pm_height = height >= 0 ? height : pm->get_height();
-    pm_depth = pm->get_depth();
     pm_screen = pm->get_screen();
+    if (bitmap) {
+        pm_visual = 0;
+        pm_depth = 1;
+    }
+    else {
+        pm_visual = pm->get_visual();
+        pm_depth = pm->get_depth();
+    }
 #ifdef WITH_X11
     pm_xid = XCreatePixmap(
         gdk_x11_display_get_xdisplay(gdk_screen_get_display(pm_screen)),
         pm->get_xid(), pm_width, pm_height, pm_depth);
+
+    if (!pixmap_xid_tab) {
+        pixmap_xid_tab = g_hash_table_new((GHashFunc)xid_hash,
+            (GEqualFunc)xid_equal);
+    }
+    if (g_hash_table_lookup(pixmap_xid_tab, &pm_xid)) {
+        g_warning("XID collision detected!");
+    }
+    g_hash_table_insert(pixmap_xid_tab, &pm_xid, this);
 #endif
 }
 
 ndkPixmap::~ndkPixmap()
 {
     GdkDisplay *display = gdk_screen_get_display(pm_screen);
-    if (!display->closed) {
-	    XFreePixmap(gdk_x11_display_get_xdisplay(display), pm_xid);
-    }
-//    _gdk_xid_table_remove(display, pm_xid);
+    if (!gdk_display_is_closed(display))
+        XFreePixmap(gdk_x11_display_get_xdisplay(display), pm_xid);
+    if (pixmap_xid_tab)
+        g_hash_table_remove(pixmap_xid_tab, &pm_xid);
 }
 
 
@@ -329,7 +409,7 @@ ndkPixmap::copy_from_window(GdkWindow *window, ndkGC *gc, int xsrc, int ysrc,
     if (ysrc + height > shei)
         height = shei - ysrc;
   
-    int src_depth = gdk_visual_get_depth(gdk_drawable_get_visual(window));
+    int src_depth = gdk_visual_get_depth(gdk_window_get_visual(window));
     if (src_depth == 1) {
         XCopyArea(gc->get_xdisplay(), gdk_x11_drawable_get_xid(window),
             pm_xid, gc->get_xgc(), xsrc, ysrc, width, height, xdest, ydest);
@@ -387,8 +467,8 @@ ndkPixmap::copy_to_window(GdkDrawable *drawable, ndkGC *gc, int xsrc, int ysrc,
 
 
 void
-ndkPixmap::copy_from_window(GdkDrawable *drawable, ndkGC *gc, int xsrc, int ysrc,
-    int xdest, int ydest, int width, int height)
+ndkPixmap::copy_from_window(GdkDrawable *drawable, ndkGC *gc,
+    int xsrc, int ysrc, int xdest, int ydest, int width, int height)
 {
     // Don't draw from outside of the window, this can trigger an X server
     // bug.
@@ -409,8 +489,8 @@ ndkPixmap::copy_from_window(GdkDrawable *drawable, ndkGC *gc, int xsrc, int ysrc
         ysrc = 0;
     }
 
-    int swid = gdk_drawable_get_width(drawable);
-    int shei = gdk_drawable_get_height(drawable);
+    int swid, shei;
+    gdk_drawable_get_size(drawable, &swid, &shei);
     if (xsrc + width > swid)
         width = swid - xsrc;
     if (ysrc + height > shei)
@@ -517,6 +597,8 @@ ndkPixmap::copy_from_pixmap(ndkPixmap *pixmap, ndkGC *gc, int xsrc, int ysrc,
 }
 
 
+#ifdef NEW_DRW
+
 void
 ndkPixmap::copy_to_drawable(ndkDrawable *dw, ndkGC *gc, int xsrc, int ysrc,
     int xdest, int ydest, int width, int height)
@@ -554,41 +636,14 @@ ndkPixmap::copy_from_drawable(ndkDrawable *dw, ndkGC *gc, int xsrc, int ysrc,
     }
 }
 
+#endif
 
-// Static function.
-// Looks up the ndkPixmap that wraps the given native pixmap handle.
-//
-// For example in the X backend, a native pixmap handle is an Xlib
-// XID.
-//
-// Return value: the ndkPixmap wrapper for the native pixmap,
-// or 0 if there is none.
-//
+
 ndkPixmap *
-ndkPixmap::lookup(unsigned long anid)
+ndkPixmap::lookup(unsigned long id)
 {
-//    return (ndkPixmap*) gdk_xid_table_lookup_for_display(
-//        gdk_display_get_default(), anid);
-//XXX
-return (0);
-}
-
-
-// Static function.
-// Looks up the ndkPixmap that wraps the given native pixmap handle.
-//
-// For example in the X backend, a native pixmap handle is an Xlib
-// XID.
-//
-// Return value: the ndkPixmap wrapper for the native pixmap,
-// or %NULL if there is none.
-//
-ndkPixmap*
-ndkPixmap::lookup_for_display(GdkDisplay *display, unsigned long anid)
-{
-//    if (GDK_IS_DISPLAY(display))
-//        return (ndkPixmap*)gdk_xid_table_lookup_for_display(display, anid);
-//XXX
+    if (pixmap_xid_tab)
+        return ((ndkPixmap*)g_hash_table_lookup(pixmap_xid_tab, &id));
     return (0);
 }
 

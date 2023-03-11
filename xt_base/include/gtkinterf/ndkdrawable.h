@@ -71,8 +71,11 @@ struct ndkDrawable
     bool set_draw_to_pixmap();
     bool check_compatible_pixmap();
     void copy_pixmap_to_window(ndkGC*, int, int, int, int);
+    GdkScreen *get_screen();
+    GdkVisual *get_visual();
     int get_width();
     int get_height();
+    int get_depth();
 
 private:
     GdkWindow *d_window;

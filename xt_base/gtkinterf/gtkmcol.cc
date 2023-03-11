@@ -61,7 +61,7 @@
 // auxiliary toggle button button names.
 //
 GRmcolPopup *
-gtk_bag::PopUpMultiCol(stringlist *symlist, const char *title,
+GTKbag::PopUpMultiCol(stringlist *symlist, const char *title,
     void (*callback)(const char*, void*), void *arg,
     const char **buttons, int pgsize, bool no_dd)
 {
@@ -101,7 +101,7 @@ namespace {
 }
 
 
-GTKmcolPopup::GTKmcolPopup(gtk_bag *owner, stringlist *symlist,
+GTKmcolPopup::GTKmcolPopup(GTKbag *owner, stringlist *symlist,
     const char *title, const char **buttons, int pgsize, void *arg)
 {
     p_parent = owner;
@@ -235,7 +235,7 @@ GTKmcolPopup::GTKmcolPopup(gtk_bag *owner, stringlist *symlist,
 GTKmcolPopup::~GTKmcolPopup()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
@@ -262,7 +262,7 @@ void
 GTKmcolPopup::popdown()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -276,7 +276,7 @@ void
 GTKmcolPopup::update(stringlist *symlist, const char *title)
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }

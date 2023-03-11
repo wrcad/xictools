@@ -42,9 +42,9 @@
 #define GTKLIST_H
 
 namespace gtkinterf {
-    struct GTKlistPopup : public GRlistPopup, public gtk_bag
+    struct GTKlistPopup : public GRlistPopup, public GTKbag
     {
-        GTKlistPopup(gtk_bag*, stringlist*, const char*, const char*,
+        GTKlistPopup(GTKbag*, stringlist*, const char*, const char*,
             bool, bool, void*);
         ~GTKlistPopup();
 

@@ -281,6 +281,7 @@ grbits::widget_print(const char *buf)
                 }
                 GdkWindow *win = gtk_widget_get_window(g_text_area);
                 gdk_window_clear(win);
+#ifdef XXX_DEPREC
                 GtkStyle *style = gtk_widget_get_style(g_text_area);
                 GdkFont *fnt = gtk_style_get_font(style);
 
@@ -288,6 +289,7 @@ grbits::widget_print(const char *buf)
 //                int asnt = gdk_font_get_ascent(fnt);
                 gdk_draw_string(win, fnt,
                     style->black_gc, 2, fnt->ascent + 2, s);
+#endif
             }
             delete [] str;
         }

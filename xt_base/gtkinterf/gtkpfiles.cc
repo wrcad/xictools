@@ -91,7 +91,7 @@ int files_bag::f_timer_tag = 0;
 // The user may explicitly set:
 // caller               the initiating toggle button or menu item
 //
-files_bag::files_bag(gtk_bag *w, const char **buttons, int numbuttons,
+files_bag::files_bag(GTKbag *w, const char **buttons, int numbuttons,
     const char *files_msg, void(*action_proc)(GtkWidget*, void*),
     int(*btn_hdlr)(GtkWidget*, GdkEvent*, void*),
     sPathList *(*files_listing)(int), void(*destroy)(GtkWidget*, void*),
@@ -227,7 +227,7 @@ files_bag::~files_bag()
             dl->set_dataptr(0);
     }
     delete [] f_directory;
-    // shell destroyed in gtk_bag destructor
+    // shell destroyed in GTKbag destructor
 }
 
 

@@ -58,7 +58,7 @@ namespace gtkinterf {
     // Basic graphical data subclass
     //
     struct GTKhelpPopup : public HelpWidget, public htmDataInterface,
-        public gtk_bag
+        public GTKbag
     {
         // Return from newtopic().
         enum NTtype { NTnone, NTnew, NThandled };
@@ -107,7 +107,7 @@ namespace gtkinterf {
 
         gtk_viewer *viewer() { return (h_viewer); }
 
-        // gtk_bag functions
+        // GTKbag functions
         char *GetPostscriptText(int, const char*, const char*, bool, bool);
         char *GetPlainText();
         char *GetHtmlText();
@@ -148,7 +148,7 @@ namespace gtkinterf {
         static void h_drag_data_received(GtkWidget*, GdkDragContext*,
             gint, gint, GtkSelectionData*, guint, guint, void*);
         static void h_stop_proc(GtkWidget*, void*);
-        static void h_fontsel(gtk_bag*, GtkWidget*);
+        static void h_fontsel(GTKbag*, GtkWidget*);
         static void h_menu_hdlr(GtkWidget*, void*);
         static void h_bm_handler(GtkWidget*, void*);
         static int h_destroy_hdlr(GtkWidget*, GdkEvent*, void*);
@@ -162,7 +162,7 @@ namespace gtkinterf {
         static void h_do_save_proc(const char*, void*);
 
         // misc
-        static void h_sens_set(gtk_bag*, bool, int);
+        static void h_sens_set(GTKbag*, bool, int);
         static void h_font_cb(const char*, const char*, void*);
         static void h_bm_dest(void*);
         static int h_ntop_timeout(void*);

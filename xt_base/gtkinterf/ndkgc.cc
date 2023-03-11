@@ -73,8 +73,8 @@
 
 #ifdef NDKGC_H
 
-#ifdef NEW_DRW
-ndkGC::ndkGC(ndkDrawable *drawable, ndkGCvalues *values,
+#ifdef NEW_PIX
+ndkGC::ndkGC(GdkWindow *drawable, ndkGCvalues *values,
     ndkGCvaluesMask values_mask)
 #else
 ndkGC::ndkGC(GdkDrawable *drawable, ndkGCvalues *values,
@@ -921,7 +921,7 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
         break;
     case ndkGC_TILED:
 #ifdef NEW_PIX
-        tile_surface = cairo_xlib_surface_create(gc->get_xdisplay(),
+        tile_surface = cairo_xlib_surface_create(get_xdisplay(),
             gc_tile->get_xid(), gdk_x11_visual_get_xvisual(GRX->Visual()),
             gc_tile->get_width(), gc_tile->get_height());
 #else

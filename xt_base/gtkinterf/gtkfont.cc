@@ -447,7 +447,7 @@ GTKfont::refresh(int fnum)
 // buttons.  Otherwise, the btns will appear instead of these.
 //
 void
-gtk_bag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
+GTKbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
     void(*cb)(const char*, const char*, void*), void *arg,
     int indx, const char **btns, const char *labeltext)
 {
@@ -474,13 +474,13 @@ gtk_bag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
 
     wb_fontsel->set_visible(true);
 }
-// End of gtk_bag functions
+// End of GTKbag functions
 
 
 GTKfontPopup *GTKfontPopup::activeFontSels[4];
 
 
-GTKfontPopup::GTKfontPopup(gtk_bag *owner, int indx, void *arg,
+GTKfontPopup::GTKfontPopup(GTKbag *owner, int indx, void *arg,
     const char **btns, const char *labeltext)
 {
     p_parent = owner;
@@ -579,7 +579,7 @@ GTKfontPopup::~GTKfontPopup()
         }
     }
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (owner)
             owner->ClearPopup(this);
     }
@@ -600,7 +600,7 @@ void
 GTKfontPopup::popdown()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -614,7 +614,7 @@ void
 GTKfontPopup::set_font_name(const char *fontname)
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -638,7 +638,7 @@ void
 GTKfontPopup::update_label(const char *text)
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }

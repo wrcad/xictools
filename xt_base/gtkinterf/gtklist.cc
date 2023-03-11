@@ -63,7 +63,7 @@
 // call the callback with the selection and dismiss.
 //
 GRlistPopup *
-gtk_bag::PopUpList(stringlist *symlist, const char *title,
+GTKbag::PopUpList(stringlist *symlist, const char *title,
     const char *header, void (*callback)(const char*, void*), void *arg,
     bool usepix, bool use_apply)
 {
@@ -89,7 +89,7 @@ gtk_bag::PopUpList(stringlist *symlist, const char *title,
 }
 
 
-GTKlistPopup::GTKlistPopup(gtk_bag *owner, stringlist *symlist,
+GTKlistPopup::GTKlistPopup(GTKbag *owner, stringlist *symlist,
     const char *title, const char *header, bool usepix, bool use_apply,
     void *arg)
 {
@@ -214,7 +214,7 @@ GTKlistPopup::GTKlistPopup(gtk_bag *owner, stringlist *symlist,
 GTKlistPopup::~GTKlistPopup()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
@@ -241,7 +241,7 @@ void
 GTKlistPopup::popdown()
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
@@ -256,7 +256,7 @@ GTKlistPopup::update(stringlist *symlist, const char *title,
     const char *header)
 {
     if (p_parent) {
-        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
