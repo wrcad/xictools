@@ -112,7 +112,7 @@ namespace {
     };
 
     namespace gtkmodif {
-        struct sSC : public gtk_bag
+        struct sSC : public GTKbag
         {
             sSC(stringlist*, bool(*)(const char*));
             ~sSC();

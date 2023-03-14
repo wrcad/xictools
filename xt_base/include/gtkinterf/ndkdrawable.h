@@ -67,10 +67,13 @@ struct ndkDrawable
 #endif
 
     void set_window(GdkWindow*);
+    void set_pixmap(GdkWindow*);
+    void set_pixmap(ndkPixmap*);
     void set_draw_to_window();
     bool set_draw_to_pixmap();
     bool check_compatible_pixmap();
     void copy_pixmap_to_window(ndkGC*, int, int, int, int);
+    void refresh(ndkGC*, GdkEventExpose*);
     GdkScreen *get_screen();
     GdkVisual *get_visual();
     int get_width();

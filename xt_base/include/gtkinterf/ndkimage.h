@@ -110,6 +110,9 @@ struct ndkImage
 #if defined(NEW_DRW) && defined(NEW_GC)
     void copy_to_drawable(ndkDrawable*, ndkGC*, int, int, int, int, int, int);
 #endif
+#if defined(NEW_PIX) && defined(NEW_GC)
+    void copy_to_pixmap(ndkPixmap*, ndkGC*, int, int, int, int, int, int);
+#endif
     void put_pixel(int, int, unsigned int);
     unsigned int get_pixel(int, int);
 

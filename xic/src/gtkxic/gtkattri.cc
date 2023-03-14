@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_GDK
-
 #include "main.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
@@ -181,31 +179,71 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         // GTK default cursor.
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+#ifdef NEW_DRW
+            if (w && w->GetDrawable()->get_window()) {
+                gdk_window_set_cursor(w->GetDrawable()->get_window(), 0);
+            }
+#else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window()))
                     gdk_window_set_cursor(w->Window(), 0);
             }
+#endif
             return;
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+#ifdef NEW_DRW
+            if (w && w->GetDrawable()->get_window()) {
+                gdk_window_set_cursor(w->GetDrawable()->get_window(), 0);
+            }
+#else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window()))
                     gdk_window_set_cursor(w->Window(), 0);
             }
+#endif
         }
     }
     else if (t == CursorCross) {
         // Legacy cross cursor.
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+#ifdef NEW_DRW
+            if (w && w->GetDrawable()->get_window()) {
+                GdkWindow *win = w->GetDrawable()->get_window();
+                ndkPixmap *data = new ndkPixmap(win, cursorCross_bits,
+                    cursor_width, cursor_height);
+                ndkPixmap *mask = new ndkPixmap(win, cursorCross_mask,
+                    cursor_width, cursor_height);
+
+                GdkColor foreg, backg;
+                backg.pixel = w->GetBackgPixel();
+                foreg.pixel = w->GetForegPixel();
+                gtk_QueryColor(&backg);
+                gtk_QueryColor(&foreg);
+/* XXX  FIXME! need a replacement
+                GdkCursor *cursor = gdk_cursor_new_from_pixmap(data, mask,
+                    &foreg, &backg, cursor_x_hot, cursor_y_hot);
+*/
+                data->dec_ref();
+                mask->dec_ref();
+//                gdk_window_set_cursor(win, cursor);
+//                gdk_cursor_unref(cursor);
+
+// XXX temp hack looks terrible
+                GdkCursor *cursor = gdk_cursor_new(GDK_CROSSHAIR);
+                gdk_window_set_cursor(win, cursor);
+                gdk_cursor_unref(cursor);
+            }
+#else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window())) {
-#ifdef XXX_GDK
-                    GdkPixmap *data = gdk_bitmap_create_from_data(w->Window(),
+                    GdkWindow *win = w->Window();
+                    GdkPixmap *data = gdk_bitmap_create_from_data(win,
                         cursorCross_bits, cursor_width, cursor_height);
-                    GdkPixmap *mask = gdk_bitmap_create_from_data(w->Window(),
+                    GdkPixmap *mask = gdk_bitmap_create_from_data(win,
                         cursorCross_mask, cursor_width, cursor_height);
 
                     GdkColor foreg, backg;
@@ -217,36 +255,50 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
                         &foreg, &backg, cursor_x_hot, cursor_y_hot);
                     g_object_unref(data);
                     g_object_unref(mask);
-                    gdk_window_set_cursor(w->Window(), cursor);
+                    gdk_window_set_cursor(win, cursor);
                     gdk_cursor_unref(cursor);
-#else
-                    GdkCursor *cursor = gdk_cursor_new(GDK_CROSSHAIR);
-                    gdk_window_set_cursor(w->Window(), cursor);
-                    gdk_cursor_unref(cursor);
-
-                    /*XXX  How to do a real cursor now?
-                    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(
-                    cursor_ cross_bits, GDK_COLORSPACE_RGB, false,
-                    1, cursor_width, cursor_height, 2, 0, 0);
-
-                    GdkCursor *cursor = gdk_cursor_new_from_pixbuf(
-                        display, pixbuf, cursor_x_hot, cursor_y_hot);
-                    gdk_window_set_cursor(w->Window(), cursor);
-                    */
-#endif
                 }
             }
+#endif
             return;
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+#ifdef NEW_DRW
+            if (w && w->GetDrawable()->get_window()) {
+                GdkWindow *win = w->GetDrawable()->get_window();
+                ndkPixmap *data = new ndkPixmap(win, cursorCross_bits,
+                    cursor_width, cursor_height);
+                ndkPixmap *mask = new ndkPixmap(win, cursorCross_mask,
+                    cursor_width, cursor_height);
+
+                GdkColor foreg, backg;
+                backg.pixel = w->GetBackgPixel();
+                foreg.pixel = w->GetForegPixel();
+                gtk_QueryColor(&backg);
+                gtk_QueryColor(&foreg);
+/* XXX  FIXME! need a replacement
+                GdkCursor *cursor = gdk_cursor_new_from_pixmap(data, mask,
+                    &foreg, &backg, cursor_x_hot, cursor_y_hot);
+*/
+                data->dec_ref();
+                mask->dec_ref();
+//                gdk_window_set_cursor(win, cursor);
+//                gdk_cursor_unref(cursor);
+
+// XXX temp hack looks terrible
+                GdkCursor *cursor = gdk_cursor_new(GDK_CROSSHAIR);
+                gdk_window_set_cursor(win, cursor);
+                gdk_cursor_unref(cursor);
+            }
+#else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window())) {
-#ifdef XXX_GDK
-                    GdkPixmap *data = gdk_bitmap_create_from_data(w->Window(),
+                    GdkWindow *win = w->Window();
+                    GdkPixmap *data = gdk_bitmap_create_from_data(win,
                         cursorCross_bits, cursor_width, cursor_height);
-                    GdkPixmap *mask = gdk_bitmap_create_from_data(w->Window(),
+                    GdkPixmap *mask = gdk_bitmap_create_from_data(win,
                         cursorCross_mask, cursor_width, cursor_height);
 
                     GdkColor foreg, backg;
@@ -258,15 +310,11 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
                         &foreg, &backg, cursor_x_hot, cursor_y_hot);
                     g_object_unref(data);
                     g_object_unref(mask);
-                    gdk_window_set_cursor(w->Window(), cursor);
+                    gdk_window_set_cursor(win, cursor);
                     gdk_cursor_unref(cursor);
-#else
-                    GdkCursor *cursor = gdk_cursor_new(GDK_CROSSHAIR);
-                    gdk_window_set_cursor(w->Window(), cursor);
-                    gdk_cursor_unref(cursor);
-#endif
                 }
             }
+#endif
         }
     }
     else if (t == CursorLeftArrow) {
@@ -275,19 +323,33 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
             left_cursor = gdk_cursor_new(GDK_LEFT_PTR);
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+#ifdef NEW_DRW
+            if (w && w->GetDrawable()->get_window()) {
+                gdk_window_set_cursor(w->GetDrawable()->get_window(),
+                    left_cursor);
+            }
+#else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window()))
                     gdk_window_set_cursor(w->Window(), left_cursor);
             }
+#endif
             return;
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+#ifdef NEW_DRW
+            if (w && w->GetDrawable()->get_window()) {
+                gdk_window_set_cursor(w->GetDrawable()->get_window(),
+                    left_cursor);
+            }
+#else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window()))
                     gdk_window_set_cursor(w->Window(), left_cursor);
             }
+#endif
         }
     }
     else if (t == CursorRightArrow) {
@@ -296,19 +358,33 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
             right_cursor = gdk_cursor_new(GDK_RIGHT_PTR);
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+#ifdef NEW_DRW
+            if (w && w->GetDrawable()->get_window()) {
+                gdk_window_set_cursor(w->GetDrawable()->get_window(),
+                    right_cursor);
+            }
+#else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window()))
                     gdk_window_set_cursor(w->Window(), right_cursor);
             }
+#endif
             return;
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+#ifdef NEW_DRW
+            if (w && w->GetDrawable()->get_window()) {
+                gdk_window_set_cursor(w->GetDrawable()->get_window(),
+                    right_cursor);
+            }
+#else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window()))
                     gdk_window_set_cursor(w->Window(), right_cursor);
             }
+#endif
         }
     }
     else if (t == CursorBusy) {
@@ -317,15 +393,30 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
             busy_cursor = gdk_cursor_new(GDK_WATCH);
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+#ifdef NEW_DRW
+            if (w && w->GetDrawable()->get_window()) {
+                gdk_window_set_cursor(w->GetDrawable()->get_window(),
+                    busy_cursor);
+            }
+#else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window()))
                     gdk_window_set_cursor(w->Window(), busy_cursor);
             }
+#endif
             return;
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+#ifdef NEW_DRW
+            if (w && w->GetDrawable()->get_window()) {
+                gdk_window_set_cursor(w->GetDrawable()->get_window(),
+                    busy_cursor);
+                // Force immediate display of busy cursor.
+                dspPkgIf()->CheckForInterrupt();
+            }
+#else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window())) {
                     gdk_window_set_cursor(w->Window(), busy_cursor);
@@ -333,6 +424,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
                     dspPkgIf()->CheckForInterrupt();
                 }
             }
+#endif
         }
     }
 }

@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_GDK
-
 #include "main.h"
 #include "edit.h"
 #include "geo_zlist.h"
@@ -232,12 +230,26 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     if (!sPf::font())
         return (0);
 
-#ifdef XXX_GDK
     int wid, hei, numlines;
     polytextExtent(string, &wid, &hei, &numlines);
+#ifdef NEW_PIX
+    GdkWindow *window = mainBag()->GetDrawable()->get_window();
+    ndkPixmap *pixmap = new ndkPixmap(window, wid, hei);
+#else
     GdkPixmap *pixmap = gdk_pixmap_new(mainBag()->Window(), wid, hei,
         GRX->Visual()->depth);
+#endif
 
+#ifdef NEW_GC
+    ndkGC *gc = new ndkGC(window);
+    GdkColor c;
+    gdk_color_white(GRX->Colormap(), &c);
+    gc->set_background(&c);
+    gc->set_foreground(&c);
+    pixmap->fill(gc);
+    gdk_color_black(GRX->Colormap(), &c);
+    gc->set_foreground(&c);
+#else
     GdkGC *gc = gdk_gc_new(mainBag()->Window());
     GdkColor c;
     gdk_color_white(GRX->Colormap(), &c);
@@ -246,6 +258,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     gdk_draw_rectangle(pixmap, gc, true, 0, 0, wid, hei);
     gdk_color_black(GRX->Colormap(), &c);
     gdk_gc_set_foreground(gc, &c);
+#endif
 
     PangoFontDescription *pfd =
         pango_font_description_from_string(sPf::font());
@@ -278,7 +291,11 @@ cEdit::polytext(const char *string, int psz, int x, int y)
             tx += wid - len;
             break;
         }
+#ifdef NEW_PIX
+        pixmap->copy_from_pango_layout(gc, lout);
+#else
         gdk_draw_layout(pixmap, gc, tx, ty, lout);
+#endif
         g_object_unref(lout);
         t = s+1;
         s = strchr(t, '\n');
@@ -297,19 +314,39 @@ cEdit::polytext(const char *string, int psz, int x, int y)
         tx += wid - len;
         break;
     }
+#ifdef NEW_PIX
+    pixmap->copy_from_pango_layout(gc, lout);
+#else
     gdk_draw_layout(pixmap, gc, tx, ty, lout);
+#endif
     g_object_unref(lout);
     pango_font_description_free(pfd);
     y -= psz*(hei - fh);
 
+#ifdef NEW_IMG
+    ndkImage *im = new ndkImage(pixmap, 0, 0, wid, hei);
+#else
     GdkImage *im = gdk_image_get(pixmap, 0, 0, wid, hei);
+#endif
+#ifdef NEW_PIX
+    pixmap->dec_ref();
+#else
     gdk_pixmap_unref(pixmap);
+#endif
+#ifdef NEW_GC
+    delete gc;
+#else
     gdk_gc_unref(gc);
+#endif
 
     Zlist *z0 = 0;
     for (int i = 0; i < hei; i++) {
         for (int j = 0; j < wid;  j++) {
+#ifdef NEW_IMG
+            int px = im->get_pixel(j, i);
+#else
             int px = gdk_image_get_pixel(im, j, i);
+#endif
             // Many fonts are anti-aliased, the code below does a
             // semi-reasonable job of filtering the pixels.
             int r, g, b;
@@ -321,12 +358,12 @@ cEdit::polytext(const char *string, int psz, int x, int y)
             }
         }
     }
+#ifdef NEW_IMG
+#else
     gdk_image_destroy(im);
+#endif
     PolyList *po = Zlist::to_poly_list(z0);
     return (po);
-#else
-    return 0;
-#endif
 }
 
 

@@ -76,7 +76,7 @@
 
 namespace {
     namespace gtklibs {
-        struct sLB : public gtk_bag
+        struct sLB : public GTKbag
         {
             sLB(GRobject);
             ~sLB();

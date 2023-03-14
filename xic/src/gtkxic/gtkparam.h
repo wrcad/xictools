@@ -146,7 +146,7 @@ inline class cParam *Param();
 
 // The status readout line.
 //
-class cParam : public gtk_draw
+class cParam : public GTKdraw
 {
 public:
     friend inline cParam *Param() { return (cParam::instancePtr); }

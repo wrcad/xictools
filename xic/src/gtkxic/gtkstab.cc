@@ -58,7 +58,7 @@
 
 namespace {
     namespace gtkstab {
-        struct sTb : public gtk_bag
+        struct sTb : public GTKbag
         {
             sTb(GRobject);
             ~sTb();

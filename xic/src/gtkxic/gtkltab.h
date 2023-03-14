@@ -50,7 +50,7 @@
 
 inline class GTKltab *gtkLtab();
 
-class GTKltab : public cLtab, public gtk_draw
+class GTKltab : public cLtab, public GTKdraw
 {
     static GTKltab *ptr() { return (instancePtr); }
 

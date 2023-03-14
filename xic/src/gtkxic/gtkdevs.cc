@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_GDK
-
 #include "main.h"
 #include "sced.h"
 #include "edit.h"
@@ -222,7 +220,7 @@ namespace {
     namespace gtkdevs {
         enum dvType { dvMenuCateg, dvMenuAlpha, dvMenuPict };
 
-        struct sDv : public gtk_bag, public gtk_draw
+        struct sDv : public GTKbag, public GTKdraw
         {
             sDv(GRobject, stringlist*);
             ~sDv();
@@ -341,7 +339,11 @@ cSced::PopUpDevs(GRobject caller, ShowMode mode)
     GRX->SetPopupLocation(GRloc(LW_UL), Dv->Shell(), mainBag()->Viewport());
 
     if (Dv->Viewport())
+#ifdef NEW_DRW
+        Dv->GetDrawable()->set_window(gtk_widget_get_window(Dv->Viewport()));
+#else
         Dv->SetWindow(gtk_widget_get_window(Dv->Viewport()));
+#endif
 }
 
 
@@ -764,6 +766,9 @@ sDv::render_cell(int which, bool selected)
         dv_entries[which].x - dv_leftofst, SPA, dv_entries[which].width,
         CELL_SIZE - 2*SPA);
 #endif
+    Box(dv_entries[which].x - dv_leftofst, SPA, dv_entries[which].width,
+        CELL_SIZE - 2*SPA);
+
     CDcbin cbin;
     if (OIfailed(CD()->OpenExisting(dv_entries[which].name, &cbin)))
         return;
@@ -797,11 +802,15 @@ sDv::render_cell(int which, bool selected)
     wd.InitViewport(vp_width, vp_height);
     *wd.ClipRect() = wd.Viewport();
 
+#ifdef NEW_DRW
+    GetDrawable()->set_draw_to_pixmap();
+#else
     GdkPixmap *pm = gdk_pixmap_new(gd_window,  vp_width, vp_height,
         gdk_visual_get_depth(GRX->Visual()));
     // swap in the pixmap
     GRobject window_bak = gd_window;
     gd_window = pm;
+#endif
 
     SetColor(selected ? dv_selec : dv_backg);
     SetFillpattern(0);
@@ -852,13 +861,13 @@ sDv::render_cell(int which, bool selected)
     int xoff = dv_entries[which].x - dv_leftofst - 2;
     int yoff = SPA;
 
-#ifdef XXX_GDK
+#ifdef NEW_DRW
+    GetDrawable()->set_draw_to_window();
+#else
     gdk_window_copy_area((GdkWindow*)window_bak, GC(),
         xoff, yoff, (GdkWindow*)gd_window, 0, 0, vp_width, vp_height);
-#endif
 
     gd_window = (GdkWindow*)window_bak;
-#ifdef XXX_GDK
     gdk_pixmap_unref(pm);
 #endif
 }
@@ -1053,7 +1062,11 @@ int
 sDv::dv_redraw_idle(void*)
 {
     Dv->dv_leftofst = Dv->dv_entries[Dv->dv_leftindx].x - SPA;
+#ifdef NEW_DRW
+    int width = Dv->GetDrawable()->get_width();
+#else
     int width = gdk_window_get_width(gtk_widget_get_window(Dv->gd_viewport));
+#endif
     int i;
     for (i = Dv->dv_leftindx; i < Dv->dv_numdevs; i++) {
         if (Dv->dv_entries[i].x - Dv->dv_leftofst +

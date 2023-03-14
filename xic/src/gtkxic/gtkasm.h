@@ -197,7 +197,7 @@ private:
 
 // The main widget container.
 //
-struct sAsm : public gtk_bag
+struct sAsm : public GTKbag
 {
     friend void cConvert::PopUpAssemble(GRobject, ShowMode);
 

@@ -134,7 +134,7 @@ private:
 // Base class for drawing window, used for subwindows.  Pop-ups here
 // are associated with each drawing window, independently.
 //
-struct win_bag : virtual public DSPwbag, public gtk_bag, public gtk_draw
+struct win_bag : virtual public DSPwbag, public GTKbag, public GTKdraw
 {
     win_bag();
     ~win_bag();
@@ -228,7 +228,11 @@ protected:
     bool wib_resized;           // window was just resized
 
     GdkWindow *wib_window_bak;  // screen buffer
+#ifdef NEW_PIX
+    ndkPixmap *wib_draw_pixmap; // backing pixmap
+#else
     GdkPixmap *wib_draw_pixmap; // backing pixmap
+#endif
     int wib_px_width;           // pixmap width
     int wib_px_height;          // pixmap height
 

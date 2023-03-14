@@ -48,7 +48,7 @@
 // Number of text lines at top.
 #define LP_TEXT_LINES 5
 
-struct sLpalette : public gtk_draw
+struct sLpalette : public GTKdraw
 {
     sLpalette(GRobject);
     ~sLpalette();

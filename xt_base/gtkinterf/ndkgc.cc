@@ -104,6 +104,7 @@ ndkGC::ndkGC(GdkDrawable *drawable, ndkGCvalues *values,
     //
     gc_fg_pixel             = 0;
     gc_bg_pixel             = 1;
+    gc_function             = ndkGC_COPY;
 
 #ifdef WITH_X11
     gc_gc                   = 0;
@@ -531,7 +532,7 @@ ndkGC::draw_rectangle(ndkDrawable *d, bool filled, int x, int y, int w, int h)
     int xid = d->get_xid();
     if (xid == None)
         return;
-    if (filled) {
+    if (!filled) {
         int x1 = x;
         int y1 = y;
         int x2 = x1 + w;

@@ -74,21 +74,18 @@ using namespace mswinterf;
 #endif
 #endif
 
-// Bypass gdk drawing functions for speed.
-//
-// Note:  Recent GTK (2.18.6) sets up a clipping context in the GC, so
-// directly sharing the XGC causes display problems.
-//
-// We always use gdk drawing functions with GTK-2.  The direct to X
-// functions work fine up to GTK-2.18 (probably), but since the GTK-2
-// releases are dynamically linked, we can't count on the user having
-// a compatible GTK-2 installation.
-//
-// #define DIRECT_TO_X
 
-#ifdef DIRECT_TO_X
-    // GRmultiPt uses short integers.
-    GRmultiPt::set_short_data(true);
+#ifdef WITH_X11
+// XPoint, XSegment, XRectangle all use shorts.  This sets GRmultiPt
+// to use shorts as well.
+
+namespace {
+struct GRsetupDummy
+    {
+        GRsetupDummy()  { GRmultiPt::set_short_data(true); }
+    };
+    GRsetupDummy __gt_dummy;
+}
 #endif
 
 // Use our own Win32 drawing.  This is necessary, as currently gdk
@@ -341,8 +338,19 @@ GTKdraw::Pixels(GRmultiPt *data, int n)
     if (xid == None)
         return;
 
-    XDrawPoints(GC()->get_xdisplay(), xid, GC()->get_xgc(),
-        (XPoint*)data->data(), n, CoordModeOrigin);
+    if (GRmultiPt::is_short_data()) {
+        XDrawPoints(GC()->get_xdisplay(), xid, GC()->get_xgc(),
+            (XPoint*)data->data(), n, CoordModeOrigin);
+    }
+    else {
+        p->data_ptr_init();
+        while (n--) {
+            int x = p->data_ptr_x();
+            int y = p->data_ptr_y();
+            Point(x, y);
+            p->data_ptr_inc();
+        }
+    }
 #else
     gdk_draw_points(gd_window, GC(), (GdkPoint*)data->data(), n);
 #endif
@@ -481,8 +489,27 @@ GTKdraw::PolyLine(GRmultiPt *p, int n)
 #endif
     if (xid == None)
         return;
-    XDrawLines(GC()->get_xdisplay(), xid, GC()->get_xgc(),
-        (XPoint*)p->data(), n, CoordModeOrigin);
+    if (GRmultiPt::is_short_data()) {
+        XDrawLines(GC()->get_xdisplay(), xid, GC()->get_xgc(),
+            (XPoint*)p->data(), n, CoordModeOrigin);
+    }
+    else {
+        n--;
+        p->data_ptr_init();
+        while (n--) {
+            int x = p->data_ptr_x();
+            int y = p->data_ptr_y();
+            p->data_ptr_inc();
+            if (abs(p->data_ptr_x() - x) <= 1 &&
+                    abs(p->data_ptr_y() - y) <= 1) {
+                // Keep tiny features from disappearing.
+                Line(p->data_ptr_x(), p->data_ptr_y(),
+                    p->data_ptr_x(), p->data_ptr_y());
+            }
+            else
+                Line(x, y, p->data_ptr_x(), p->data_ptr_y());
+        }
+    }
 #else
     gdk_draw_lines(gd_window, GC(), (GdkPoint*)p->data(), n);
 #endif
@@ -516,8 +543,20 @@ GTKdraw::Lines(GRmultiPt *p, int n)
 #endif
     if (xid == None)
         return;
-    XDrawSegments(GC()->get_xdisplay(), xid, GC()->get_xgc(),
-        (XSegment*)p->data(), n);
+    if (GRmultiPt::is_short_data()) {
+        XDrawSegments(GC()->get_xdisplay(), xid, GC()->get_xgc(),
+            (XSegment*)p->data(), n);
+    }
+    else {
+        p->data_ptr_init();
+        while (n--) {
+            int x = p->data_ptr_x();
+            int y = p->data_ptr_y();
+            p->data_ptr_inc();
+            Line(x, y, p->data_ptr_x(), p->data_ptr_y());
+            p->data_ptr_inc();
+        }
+    }
 #else
     gdk_draw_segments(gd_window, GC(), (GdkSegment*)p->data(), n);
 #endif
@@ -673,8 +712,20 @@ GTKdraw::Boxes(GRmultiPt *data, int n)
 #endif
     if (xid == None)
         return;
-    XFillRectangles(GC()->get_xdisplay(), xid, GC()->get_xgc(),
-        (XRectangle*)data->data(), n);
+    if (GRmultiPt::is_short_data()) {
+        XFillRectangles(GC()->get_xdisplay(), xid, GC()->get_xgc(),
+            (XRectangle*)data->data(), n);
+    }
+    else {
+        data->data_ptr_init();
+        while (n--) {
+            int x = data->data_ptr_x();
+            int y = data->data_ptr_y();
+            data->data_ptr_inc();
+            Box(x, y, x + data->data_ptr_x() - 1, y + data->data_ptr_y() - 1);
+            data->data_ptr_inc();
+        }
+    }
 #else
     data->data_ptr_init();
     while (n--) {
@@ -787,8 +838,13 @@ GTKdraw::Polygon(GRmultiPt *data, int numv)
 #endif
     if (xid == None)
         return;
-    XFillPolygon(GC()->get_xdisplay(), xid, GC()->get_xgc(),
-        (XPoint*)data->data(), numv, Complex, CoordModeOrigin);
+    if (GRmultiPt::is_short_data()) {
+        XFillPolygon(GC()->get_xdisplay(), xid, GC()->get_xgc(),
+            (XPoint*)data->data(), numv, Complex, CoordModeOrigin);
+    }
+    else {
+//XXX copy int to short
+    }
 #else
     gdk_draw_polygon(gd_window, GC(), true, (GdkPoint*)data->data(), numv);
 #endif
@@ -898,30 +954,9 @@ GTKdraw::Zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 
 
 namespace {
+
 #ifdef NEW_GC
 #ifdef NEW_PIX
-    ndkPixmap *
-    pango_layout_to_pixmap(GdkDrawable *window, PangoLayout *lout, ndkGC *gc,
-        int wid, int hei)
-    {
-        ndkPixmap *p = new ndkPixmap(window, wid, hei);
-        cairo_surface_t *sfc = cairo_xlib_surface_create(gc->get_xdisplay(),
-            p->get_xid(), gdk_x11_visual_get_xvisual(GRX->Visual()), wid, hei);
-        cairo_t *cr = cairo_create(sfc);
-        cairo_surface_destroy(sfc);
-        GdkColor clr;
-        clr.pixel = gc->get_bg_pixel();
-        gtk_QueryColor(&clr);
-        gdk_cairo_set_source_color(cr, &clr);
-        cairo_paint(cr);
-        clr.pixel = gc->get_fg_pixel();
-        gtk_QueryColor(&clr);
-        gdk_cairo_set_source_color(cr, &clr);
-        pango_cairo_show_layout(cr, lout);
-        cairo_fill(cr);
-        cairo_destroy(cr);
-        return (p);
-    }
 #else
     GdkPixmap *
     pango_layout_to_pixmap(GdkDrawable *window, PangoLayout *lout, ndkGC *gc,
@@ -944,7 +979,6 @@ namespace {
         return (p);
     }
 #endif
-
    
 #ifdef WITH_X11
     void x11_draw_image(GdkDrawable *drawable, ndkGC *gc, GdkImage *image,
@@ -963,7 +997,74 @@ namespace {
                 xsrc, ysrc, xdest, ydest, width, height);
     }
 #endif
+#endif
 
+#ifdef NEW_GC
+    struct fixgc
+    {
+        fixgc(ndkGC *gc, ndkGC *xgc, unsigned int oldfg, unsigned int newfg,
+            unsigned int oldfunc, unsigned int newfunc)
+        {
+            if (gc == xgc) {
+                GdkColor clr;
+                clr.pixel = newfg;
+                gc->set_foreground(&clr);
+            }
+            gc->set_function((ndkGCfunction)newfunc);
+            f_gc = gc;
+            f_xgc = xgc;
+            f_oldfg = oldfg;
+            f_oldfunc = oldfunc;
+        }
+
+        ~fixgc()
+        {
+            if (f_gc == f_xgc) {
+                GdkColor clr;
+                clr.pixel = f_oldfg;
+                f_gc->set_foreground(&clr);
+            }
+            f_gc->set_function((ndkGCfunction)f_oldfunc);
+        }
+
+        ndkGC *f_gc;
+        ndkGC *f_xgc;
+        unsigned int f_oldfg;
+        unsigned int f_oldfunc;
+    };
+#else
+    struct fixgc
+    {
+        fixgc(GdkGC *gc, GdkGC *xgc, unsigned int oldfg, unsigned int newfg,
+            unsigned int oldfunc, unsigned int newfunc)
+        {
+            if (gc == xgc) {
+                GdkColor clr;
+                clr.pixel = newfg;
+                gdk_gc_set_foreground(gc, &clr);
+            }
+            gdk_gc_set_function(gc, (GdkFunction)newfunc);
+            f_gc = gc;
+            f_xgc = xgc;
+            f_oldfg = oldfg;
+            f_oldfunc = oldfunc;
+        }
+
+        ~fixgc()
+        {
+            if (f_gc == f_xgc) {
+                GdkColor clr;
+                clr.pixel = f_oldfg;
+                gdk_gc_set_foreground(f_gc, &clr);
+            }
+            gdk_gc_set_function(f_gc, (GdkFunction)f_oldfunc);
+        }
+
+        GdkGC *f_gc;
+        GdkGC *f_xgc;
+        unsigned int f_oldfg;
+        unsigned int f_oldfunc;
+    };
 #endif
 }
 
@@ -988,11 +1089,31 @@ GTKdraw::Text(const char *text, int x, int y, int xform, int, int)
 #ifdef NEW_GC
 #else
 GdkGCValues vals;
-gdk_gc_get_values(CpyGC(), &vals);
+gdk_gc_get_values(GC(), &vals);
 #endif
 #ifdef NEW_DRW
     if (gd_dw.get_state() == DW_NONE)
         return;
+#endif
+
+/*
+    if (GC() == XorGC()) {
+        // Set the foreground to the true ghost-drawng color, this is
+        // current the true color xor'ed with the background.
+        GdkColor clr;
+        clr.pixel = gd_foreg;
+        gdk_gc_set_foreground(GC(), &clr);
+    }
+    // Switch to copy function.
+    gdk_gc_set_function(GC(), GDK_COPY);
+*/
+
+#ifdef NEW_GC
+fixgc gcfix(GC(), XorGC(), GC()->get_fg_pixel(), gd_foreg,
+    GC()->get_function(), ndkGC_COPY);
+#else
+fixgc gcfix(GC(), XorGC(), vals.foreground.pixel, gd_foreg,
+    vals.function, GDK_COPY);
 #endif
 
     // We need to handle strings with embedded newlines on a single
@@ -1047,18 +1168,24 @@ gdk_gc_get_values(CpyGC(), &vals);
 
 
 #ifdef NEW_GC
-    unsigned int bg_pixel = CpyGC()->get_bg_pixel();
+    unsigned int bg_pixel = GC()->get_bg_pixel();
 #ifdef NEW_PIX
 #ifdef NEW_DRW
-    ndkPixmap *p = pango_layout_to_pixmap(gd_dw.get_window(), lout,
-        CpyGC(), wid, hei);
+    ndkPixmap *p = new ndkPixmap(gd_dw.get_window(), wid, hei);
 #else
-    ndkPixmap *p = pango_layout_to_pixmap(gd_window, lout, CpyGC(), wid, hei);
+    ndkPixmap *p = new ndkPixmap(gd_window, wid, hei);
+#endif
+    p->copy_from_pango_layout(GC(), lout);
+#else
+    GdkPixmap *p = pango_layout_to_pixmap(gd_window, lout, GC(), wid, hei);
 #endif
 #else
-    GdkPixmap *p = pango_layout_to_pixmap(gd_window, lout, CpyGC(), wid, hei);
-#endif
-#else
+    /*
+    gdk_draw_layout(gd_window, GC(), x, y, lout);
+    g_object_unref(lout);
+return;
+*/
+
     GdkColor clr;
     GdkPixmap *p = gdk_pixmap_new(gd_window, wid, hei,
         gdk_visual_get_depth(GRX->Visual()));
@@ -1068,10 +1195,10 @@ gdk_gc_get_values(CpyGC(), &vals);
     clr.pixel = bg_pixel;
     GdkColor tclr;
     tclr.pixel = vals.foreground.pixel;
-    gdk_gc_set_foreground(CpyGC(), &clr);
-    gdk_draw_rectangle(p, CpyGC(), true, 0, 0, wid, hei);
-    gdk_gc_set_foreground(CpyGC(), &tclr);
-    gdk_draw_layout(p, CpyGC(), 0, 0, lout);
+    gdk_gc_set_foreground(GC(), &clr);
+    gdk_draw_rectangle(p, GC(), true, 0, 0, wid, hei);
+    gdk_gc_set_foreground(GC(), &tclr);
+    gdk_draw_layout(p, GC(), 0, 0, lout);
 #endif
     g_object_unref(lout);
 
@@ -1080,13 +1207,13 @@ gdk_gc_get_values(CpyGC(), &vals);
         // 0 no rotation, 14 MX MY R180
 #ifdef NEW_PIX
 #ifdef NEW_DRW
-        p->copy_to_drawable(&gd_dw, CpyGC(), 0, 0, x, y, wid, hei);
+        p->copy_to_drawable(&gd_dw, GC(), 0, 0, x, y, wid, hei);
 #else
-        p->copy_to_window(gd_window, CpyGC(), 0, 0, x, y, wid, hei);
+        p->copy_to_window(gd_window, GC(), 0, 0, x, y, wid, hei);
 #endif
         p->dec_ref();
 #else
-        copy_x11_pixmap_to_drawable(gd_window, CpyGC(), p, 0, 0, x, y,
+        copy_x11_pixmap_to_drawable(gd_window, GC(), p, 0, 0, x, y,
             wid, hei);
         gdk_pixmap_unref(p);
 #endif
@@ -1240,18 +1367,19 @@ gdk_gc_get_values(CpyGC(), &vals);
 #ifdef NEW_DRW
     if (xform & 1)
         // rotation
-        im1->copy_to_drawable(&gd_dw, CpyGC(), 0, 0, x, y, hei, wid);
+        im1->copy_to_drawable(&gd_dw, GC(), 0, 0, x, y, hei, wid);
     else
-        im1->copy_to_drawable(&gd_dw, CpyGC(), 0, 0, x, y, wid, hei);
+        im1->copy_to_drawable(&gd_dw, GC(), 0, 0, x, y, wid, hei);
 #else
     if (xform & 1)
         // rotation
-        im1->copy_to_drawable(gd_window, CpyGC(), 0, 0, x, y, hei, wid);
+        im1->copy_to_drawable(gd_window, GC(), 0, 0, x, y, hei, wid);
     else
-        im1->copy_to_drawable(gd_window, CpyGC(), 0, 0, x, y, wid, hei);
+        im1->copy_to_drawable(gd_window, GC(), 0, 0, x, y, wid, hei);
 #endif
     delete im1;
-#else
+
+#else // NEW_IMG
     GdkImage *im = gdk_image_get(p, 0, 0, wid, hei);
     gdk_pixmap_unref(p);
 
@@ -1373,14 +1501,22 @@ gdk_gc_get_values(CpyGC(), &vals);
     }
 
     gdk_image_destroy(im);
+#ifdef NEW_GC
     if (xform & 1)
         // rotation
-        x11_draw_image(gd_window, CpyGC(), im1, 0, 0, x, y, hei, wid);
+        x11_draw_image(gd_window, GC(), im1, 0, 0, x, y, hei, wid);
     else
-        x11_draw_image(gd_window, CpyGC(), im1, 0, 0, x, y, wid, hei);
+        x11_draw_image(gd_window, GC(), im1, 0, 0, x, y, wid, hei);
+#else
+    if (xform & 1)
+        // rotation
+        gdk_draw_image(gd_window, GC(), im1, 0, 0, x, y, hei, wid);
+    else
+        gdk_draw_image(gd_window, GC(), im1, 0, 0, x, y, wid, hei);
+#endif
     gdk_image_destroy(im1);
 
-#endif // NEW_PIX
+#endif // not NEW_IMG
 }
 
 

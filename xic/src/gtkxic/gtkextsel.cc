@@ -60,7 +60,7 @@
 
 namespace {
     namespace gtkextsel {
-        struct sES : public gtk_bag
+        struct sES : public GTKbag
         {
             sES(GRobject);
             ~sES();

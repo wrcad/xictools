@@ -62,7 +62,7 @@
 
 namespace {
     namespace gtkextfh {
-        struct sFh : public gtk_bag
+        struct sFh : public GTKbag
         {
             sFh(GRobject);
             ~sFh();

@@ -101,6 +101,8 @@ struct ndkPixmap
     void copy_to_drawable(ndkDrawable*, ndkGC*, int, int, int, int, int, int);
     void copy_from_drawable(ndkDrawable*, ndkGC*, int, int, int, int, int, int);
 #endif
+    void copy_from_pango_layout(ndkGC*, PangoLayout*);
+    void fill(ndkGC*);
     static ndkPixmap *lookup(unsigned long);
 
     void inc_ref()      { pm_refcnt++; }

@@ -75,7 +75,7 @@ namespace {
     guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
 
     namespace gtkcells {
-        struct sCells : public gtk_bag
+        struct sCells : public GTKbag
         {
             sCells(GRobject);
             ~sCells();

@@ -140,7 +140,7 @@ namespace {
         };
 
         // Main window.
-        struct sDbg : public gtk_bag
+        struct sDbg : public GTKbag
         {
             friend struct sDbV;
 

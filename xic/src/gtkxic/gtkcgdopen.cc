@@ -56,7 +56,7 @@
 
 namespace {
     namespace gtkcgdopen {
-        struct sCgo : public gtk_bag
+        struct sCgo : public GTKbag
         {
             sCgo(GRobject, bool(*)(const char*, const char*, int, void*),
                 void*, const char*, const char*);

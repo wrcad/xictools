@@ -66,6 +66,14 @@ ndkDrawable::~ndkDrawable()
 }
 
 
+// The primary way to use the interface is to use this function to
+// define a window, then use set_draw_tp_pixmap to create a pixmap if
+// necessary and set xid to the pixmap, then after drawing call
+// set_draw_to_window to return the xid to the window, and call
+// copy_pixmap_to_window to update the window.  The assumption here is
+// that the pixmap is used for only one window, so can be used for
+// expose event refresn=hing.
+//
 void
 ndkDrawable::set_window(GdkWindow *window)
 {
@@ -87,6 +95,42 @@ ndkDrawable::set_window(GdkWindow *window)
         d_xid = None;
 #endif
     }
+}
+
+
+// Another way to use the interface, which is useful when you have a
+// lot of similar windows to manage, is to call this function before
+// drawing, then explicitly copy into the window with
+// copy_pixmap_to_window.  The pixmap only changs when it needs to be
+// enlarged for different windows.
+//
+void
+ndkDrawable::set_pixmap(GdkWindow *window)
+{
+    if (!window || !GDK_IS_WINDOW(window))
+        return;
+    int wid = gdk_window_get_width(window);
+    int hei = gdk_window_get_height(window);
+    if (!d_pixmap ||
+            wid > d_pixmap->get_width() || hei > d_pixmap->get_height()) {
+        d_pixmap = new ndkPixmap(window, wid, hei);
+    }
+    d_window = window;
+    d_xid = d_pixmap->get_xid();
+    d_state = DW_PIXMAP;
+}
+
+
+void
+ndkDrawable::set_pixmap(ndkPixmap *pixmap)
+{
+    if (!pixmap)
+        return;
+    if (d_pixmap)
+        d_pixmap->dec_ref();
+    d_pixmap = pixmap;
+    d_xid = d_pixmap->get_xid();
+    d_state = DW_PIXMAP;
 }
 
 
@@ -136,7 +180,7 @@ ndkDrawable::check_compatible_pixmap()
             wid != d_pixmap->get_width() || hei != d_pixmap->get_height()) {
         if (d_pixmap)
             d_pixmap->dec_ref();
-        d_pixmap = new ndkPixmap(d_window, wid, hei,false);
+        d_pixmap = new ndkPixmap(d_window, wid, hei);
         dirty = true;
     }
     if (d_state == DW_PIXMAP)
@@ -156,6 +200,31 @@ ndkDrawable::copy_pixmap_to_window(ndkGC *gc, int x, int y, int w, int h)
         if (h < 0 || h + y > hp)
             h = hp - y;
         d_pixmap->copy_to_window(d_window, gc, x, y, x, y, w, h);
+    }
+}
+
+
+void
+ndkDrawable::refresh(ndkGC *gc, GdkEventExpose *pev)
+{
+    if (d_window && d_pixmap) {
+        if (!pev) {
+            d_pixmap->copy_to_window(d_window, gc, 0, 0, 0, 0,
+                d_pixmap->get_width(), d_pixmap->get_height());
+            return;
+        }
+        GdkRectangle *rects;
+        int nrects;
+        gdk_region_get_rectangles(pev->region, &rects, &nrects);
+        GdkRectangle *r = rects;
+        if (nrects <= 0)
+            return;
+        while (nrects--) {
+            d_pixmap->copy_to_window(d_window, gc, r->x, r->y, r->x, r->y,
+                r->width, r->height);
+            r++;
+        }
+        g_free(rects);
     }
 }
 

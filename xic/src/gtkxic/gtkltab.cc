@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_GDK
-
 #include "main.h"
 #include "dsp_layer.h"
 #include "dsp_color.h"
@@ -63,10 +61,6 @@
 #include <gdk/gdkwin32.h>
 #endif
 
-//XXX
-#undef GDK_DISABLE_DEPRECATED 
-#undef GTK_DISABLE_DEPRECATED
-#undef GSEAL_ENABLE 
 
 //--------------------------------------------------------------------
 // The Layer Table
@@ -229,16 +223,26 @@ void
 GTKltab::setup_drawable()
 {
     // Make sure window is set.
+#ifdef NEW_DRW
+    if (!GetDrawable()->get_window()) {
+        GdkWindow *window = gtk_widget_get_window(gd_viewport);
+        GetDrawable()->set_window(window);
+        if (!ltab_gbag.main_gc()) {
+            ltab_gbag.set_gc(new ndkGC(window));
+            ltab_gbag.set_xorgc(new ndkGC(window));
+        }
+        SetGbag(&ltab_gbag);
+    }
+#else
     if (!gd_window)
         gd_window = gtk_widget_get_window(gd_viewport);
 
-#ifdef XXX_GDK
     if (!ltab_gbag.main_gc()) {
         ltab_gbag.set_gc(gdk_gc_new(gd_window));
         ltab_gbag.set_xorgc(gdk_gc_new(gd_window));
     }
-#endif
     SetGbag(&ltab_gbag);
+#endif
 }
 
 
@@ -441,7 +445,12 @@ namespace {
 
         ~blinker()
             {
-#ifdef XXX_GDK
+#ifdef NEW_PIX
+                if (b_dim_pm)
+                    b_dim_pm->dec_ref();
+                if (b_norm_pm)
+                    b_norm_pm->dec_ref();
+#else
                 if (b_dim_pm)
                     gdk_pixmap_unref(b_dim_pm);
                 if (b_norm_pm)
@@ -458,7 +467,10 @@ namespace {
             {
                 if (!b_dim_pm)
                     return;
-#ifdef XXX_GDK
+#if defined(NEW_DRW) && defined(NEW_PIX)
+                b_dim_pm->copy_to_window(b_wbag->GetDrawable()->get_window(),
+                    b_wbag->GC(), 0, 0, 0, 0, b_wid, b_hei);
+#else
                 gdk_window_copy_area(b_wbag->Window(), b_wbag->GC(), 0, 0,
                     b_dim_pm, 0, 0, b_wid, b_hei);
                 gdk_flush();
@@ -469,7 +481,10 @@ namespace {
             {
                 if (!b_norm_pm)
                     return;
-#ifdef XXX_GDK
+#if defined(NEW_DRW) && defined(NEW_PIX)
+                b_norm_pm->copy_to_window(b_wbag->GetDrawable()->get_window(),
+                    b_wbag->GC(), 0, 0, 0, 0, b_wid, b_hei);
+#else
                 gdk_window_copy_area(b_wbag->Window(), b_wbag->GC(), 0, 0,
                     b_norm_pm, 0, 0, b_wid, b_hei);
 #endif
@@ -478,8 +493,13 @@ namespace {
 
     private:
         win_bag *b_wbag;
+#ifdef NEW_PIX
+        ndkPixmap *b_dim_pm;
+        ndkPixmap *b_norm_pm;
+#else
         GdkPixmap *b_dim_pm;
         GdkPixmap *b_norm_pm;
+#endif
         int b_wid;
         int b_hei;
     };
@@ -506,7 +526,112 @@ namespace {
         b_wid = 0;
         b_hei = 0;
 
-#ifdef XXX_GDK
+#if defined(NEW_DRW) && defined(NEW_PIX) && defined(NEW_IMG)
+        if (!wb)
+            return;
+
+        GdkWindow *window = wb->GetDrawable()->get_window();
+        ndkPixmap *pm = new ndkPixmap(window, 1, 1);
+        if (!pm)
+            return;
+        wb->GetDrawable()->set_pixmap(pm);
+        wb->SetColor(dsp_prm(ld)->pixel());
+        wb->Pixel(0, 0);
+        wb->GetDrawable()->set_window(window);  // frees pm
+        ndkImage *im = new ndkImage(pm, 0, 0, 1, 1);
+        if (!im)
+            return;
+
+        int bpp = im->get_bytes_per_pixel();
+
+        int im_order = im->get_byte_order();
+        int order = GDK_LSB_FIRST;
+        unsigned int pix = 1;
+        if (!(*(unsigned char*)&pix))
+            order = GDK_MSB_FIRST;
+
+        pix = 0;
+        memcpy(&pix, im->get_pixels(), bpp);
+        if (order != im_order)
+            pix = revbytes(pix, bpp);
+        if (order == GDK_MSB_FIRST)
+            pix >>= 8*(sizeof(int) - bpp);
+        delete im;
+
+        // im->visual = 0 from pixmap
+        unsigned red_mask = GRX->Visual()->red_mask;
+        unsigned green_mask = GRX->Visual()->green_mask;
+        unsigned blue_mask = GRX->Visual()->blue_mask;
+        int r = (pix & red_mask);
+        r = (((r * DIMPIXVAL)/10) & red_mask);
+        int g = (pix & green_mask);
+        g = (((g * DIMPIXVAL)/10) & green_mask);
+        int b = (pix & blue_mask);
+        b = (((b * DIMPIXVAL)/10) & blue_mask);
+        unsigned int dimpix = r | g | b;
+
+        if (order == GDK_MSB_FIRST) {
+            pix <<= 8*(sizeof(int) - bpp);
+            dimpix <<= 8*(sizeof(int) - bpp);
+        }
+        if (order != im_order) {
+            pix = revbytes(pix, bpp);
+            dimpix = revbytes(dimpix, bpp);
+        }
+
+        b_wid = wb->GetDrawable()->get_width();
+        b_hei = wb->GetDrawable()->get_height();
+        if (b_wid < 0 || b_hei < 0 || (!b_wid && !b_hei))
+            return;
+
+        pm = new ndkPixmap(window, b_wid, b_hei, GRX->Visual()->depth);
+        if (!pm)
+            return;
+        pm->copy_from_window(window, wb->GC(), 0, 0, 0, 0, b_wid, b_hei);
+        b_norm_pm = pm;
+
+        // There is a bug in 2.24.10, using the window rather than the
+        // pixmap in gdk_image_get doesn't work.  The image has offsets
+        // that seem to require compensation with
+        // gdk_window_get_internal_paint_info() or similar, but I could
+        // never get this to work properly.
+
+        im = new ndkImage(pm, 0, 0, b_wid, b_hei);
+        if (!im) {
+            delete pm;
+            b_norm_pm = 0;
+            return;
+        }
+
+        // There may be some alpha info that should be ignored.
+        unsigned int mask = red_mask | green_mask | blue_mask;
+
+        char *z = (char*)im->get_pixels();
+        int i = b_wid*b_hei;
+        while (i--) {
+            unsigned f = 0;
+            unsigned char *a = (unsigned char*)&f;
+            for (int j = 0; j < bpp; j++)
+                a[j] = *z++;
+            if ((f & mask) == (pix & mask)) {
+                z -= bpp;
+                a = (unsigned char*)&dimpix;
+                for (int j = 0; j < bpp; j++)
+                    *z++ = a[j];
+            }
+        }
+        pm = new ndkPixmap(window, b_wid, b_hei);
+        if (!pm) {
+            delete im;
+            b_norm_pm->dec_ref();
+            b_norm_pm = 0;
+            return;
+        }
+        im->copy_to_pixmap(pm, wb->GC(), 0, 0, 0, 0, b_wid, b_hei);
+        delete im;
+        b_dim_pm = pm;
+
+#else
         if (!wb)
             return;
 
@@ -519,19 +644,12 @@ namespace {
         wb->SetColor(dsp_prm(ld)->pixel());
         wb->Pixel(0, 0);
         wb->SetWindow(bk);
-#ifdef XXX_GDK
         GdkImage *im = gdk_image_get(pm, 0, 0, 1, 1);
         gdk_pixmap_unref(pm);
-#endif
         if (!im)
             return;
 
-#ifdef XXX_GDK
         int bpp = im->bpp;
-//        int bpp = gdk_image_get_bpp(im);
-#else 
-        int bpp = 4;
-#endif
 
         int im_order = im->byte_order;
         int order = GDK_LSB_FIRST;
@@ -540,10 +658,7 @@ namespace {
             order = GDK_MSB_FIRST;
 
         pix = 0;
-#ifdef XXX_GDK
         memcpy(&pix, im->mem, bpp);
-//        memcpy(&pix, gdk_image_get_mem(im), bpp);
-#endif
         if (order != im_order)
             pix = revbytes(pix, bpp);
         if (order == GDK_MSB_FIRST)
@@ -714,14 +829,16 @@ GTKltab::show(const CDl *ld)
 {
     if (lt_disabled)
         return;
+#ifdef NEW_DRW
+//XXX if we set the window here, GCs wont exist.  call init_drawable
+    GetDrawable()->set_draw_to_pixmap();
+#else
     if (!gd_window)
         gd_window = gtk_widget_get_window(gd_viewport);
     if (!ltab_pixmap || ltab_pmap_width != lt_win_width ||
             ltab_pmap_height != lt_win_height) {
-#ifdef XXX_GDK
         if (ltab_pixmap)
             gdk_pixmap_unref(ltab_pixmap);
-#endif
         ltab_pmap_width = lt_win_width;
         ltab_pmap_height = lt_win_height;
         ltab_pixmap = gdk_pixmap_new(gd_window, ltab_pmap_width,
@@ -730,14 +847,19 @@ GTKltab::show(const CDl *ld)
 
     GdkWindow *win = gd_window;
     gd_window = ltab_pixmap;
+#endif
 
     show_direct(ld);
 
-#ifdef XXX_GDK
+#ifdef NEW_DRW
+    GetDrawable()->set_draw_to_window();
+    GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, lt_win_width,
+        lt_win_height);
+#else
     gdk_window_copy_area(win, GC(), 0, 0, gd_window, 0, 0, lt_win_width,
         lt_win_height);
-#endif
     gd_window = win;
+#endif
     ltab_pmap_dirty = false;
 }
 
@@ -749,14 +871,14 @@ GTKltab::refresh(int x, int y, int w, int h)
 {
     if (lt_disabled)
         return;
+#ifdef NEW_DRW
+#else
     if (!gd_window)
         gd_window = gtk_widget_get_window(gd_viewport);
     if (!ltab_pixmap || ltab_pmap_width != lt_win_width ||
             ltab_pmap_height != lt_win_height) {
-#ifdef XXX_GDK
         if (ltab_pixmap)
             gdk_pixmap_unref(ltab_pixmap);
-#endif
         ltab_pmap_width = lt_win_width;
         ltab_pmap_height = lt_win_height;
         ltab_pixmap = gdk_pixmap_new(gd_window, ltab_pmap_width,
@@ -766,15 +888,19 @@ GTKltab::refresh(int x, int y, int w, int h)
 
     GdkWindow *win = gd_window;
     gd_window = ltab_pixmap;
+#endif
 
     if (ltab_pmap_dirty) {
         show_direct();
         ltab_pmap_dirty = false;
     }
-#ifdef XXX_GDK
+#ifdef NEW_DRW
+    GetDrawable()->set_draw_to_window();
+    GetDrawable()->copy_pixmap_to_window(GC(), x, y, w, h);
+#else
     gdk_window_copy_area(win, GC(), x, y, gd_window, x, y, w, h);
-#endif
     gd_window = win;
+#endif
 }
 
 
@@ -783,12 +909,19 @@ GTKltab::refresh(int x, int y, int w, int h)
 void
 GTKltab::win_size(int *wid, int *hei)
 {
+#ifdef NEW_DRW
+    if (wid)
+        *wid = GetDrawable()->get_width();
+    if (hei)
+        *hei = GetDrawable()->get_height();
+#else
     *wid = 0;
     *hei = 0;
     if (gd_window) {
         *wid = gdk_window_get_width(gd_window);
         *hei = gdk_window_get_height(gd_window);
     }
+#endif
 }
 
 

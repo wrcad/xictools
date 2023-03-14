@@ -41,7 +41,7 @@
 #ifndef GTKPRPTY_H
 #define GTKPRPTY_H
 
-struct sPbase : public gtk_bag
+struct sPbase : public GTKbag
 {
     sPbase()
         {

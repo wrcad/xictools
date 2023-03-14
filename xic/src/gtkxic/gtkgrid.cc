@@ -55,9 +55,9 @@
 // Help keyword used: xic:grid
 
 namespace gtkgrid {
-    struct sGrd : public gtk_bag, public gtk_draw, public GRpopup
+    struct sGrd : public GTKbag, public GTKdraw, public GRpopup
     {
-        sGrd(gtk_bag*, WindowDesc*);
+        sGrd(GTKbag*, WindowDesc*);
         ~sGrd();
 
         // GRpopup override
@@ -186,7 +186,7 @@ win_bag::PopUpGrid(GRobject caller, ShowMode mode)
 // End of win_bag functions.
 
 
-sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
+sGrd::sGrd(GTKbag *owner, WindowDesc *wd)
 {
     p_parent = owner;
     gd_mfglabel = 0;
@@ -799,7 +799,7 @@ sGrd::popdown()
 {
     if (!p_parent)
         return;
-    gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+    GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
     if (!owner || !owner->MonitorActive(this))
         return;
 
@@ -1271,13 +1271,23 @@ sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
         gtk_widget_show(grd->gd_viewport);
 
         if (gtk_widget_get_mapped(grd->gd_viewport)) {
+#ifdef NEW_DRW
+            grd->GetDrawable()->set_window(
+                gtk_widget_get_window(grd->gd_viewport));
+#else
             grd->gd_window = gtk_widget_get_window(grd->gd_viewport);
+#endif
             grd->SetWindowBackground(GRX->NameColor("white"));
             grd->Clear();
             grd->SetFillpattern(0);
             grd->SetColor(GRX->NameColor("blue"));
+#ifdef NEW_DRW
+            int wid = grd->GetDrawable()->get_width();
+            int hei = grd->GetDrawable()->get_height();
+#else
             int wid = gdk_window_get_width(grd->gd_window);
             int hei = gdk_window_get_height(grd->gd_window);
+#endif
             int w = wid/32 - 1;
             if (w < 2)
                 w = 2;
@@ -1308,7 +1318,12 @@ sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
             grd->SetColor(style->bg[GTK_STATE_ACTIVE].pixel);
             grd->Box(os, 0, xs, hei);
 
+#ifdef NEW_DRW
+            grd->GetDrawable()->set_window(
+                gtk_widget_get_window(grd->gd_sample));
+#else
             grd->gd_window = gtk_widget_get_window(grd->gd_sample);
+#endif
             grd->SetWindowBackground(GRX->NameColor("black"));
             grd->Clear();
             if (grd->gd_grid.linestyle().mask) {
@@ -1334,11 +1349,21 @@ sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
             gtk_widget_hide(grd->gd_crs_frame);
 
         if (gtk_widget_get_mapped(grd->gd_viewport)) {
+#ifdef NEW_DRW
+            grd->GetDrawable()->set_window(
+                gtk_widget_get_window(grd->gd_viewport));
+#else
             grd->gd_window = gtk_widget_get_window(grd->gd_viewport);
+#endif
             GtkStyle *style = gtk_widget_get_style(grd->gd_viewport);
             grd->SetWindowBackground(style->bg[GTK_STATE_NORMAL].pixel);
             grd->Clear();
+#ifdef NEW_DRW
+            grd->GetDrawable()->set_window(
+                gtk_widget_get_window(grd->gd_sample));
+#else
             grd->gd_window = gtk_widget_get_window(grd->gd_sample);
+#endif
             grd->SetWindowBackground(style->bg[GTK_STATE_NORMAL].pixel);
             grd->Clear();
         }
@@ -1373,7 +1398,11 @@ sGrd::gd_button_press_hdlr(GtkWidget *widget, GdkEvent *event, void *arg)
     }
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {
         int x = (int)event->button.x;
+#ifdef NEW_DRW
+        int wid = grd->GetDrawable()->get_width();
+#else
         int wid = gdk_window_get_width(grd->gd_window);
+#endif
         int w = wid/32 - 1;
         if (w < 2)
             w = 2;
@@ -1417,7 +1446,11 @@ sGrd::gd_button_release_hdlr(GtkWidget *widget, GdkEvent *event, void *arg)
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {
 
         int x = (int)event->button.x;
+#ifdef NEW_DRW
+        int wid = grd->GetDrawable()->get_width();
+#else
         int wid = gdk_window_get_width(grd->gd_window);
+#endif
         int w = wid/32 - 1;
         if (w < 2)
             w = 2;

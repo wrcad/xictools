@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_GDK
-
 #include "main.h"
 #include "dsp_layer.h"
 #include "dsp_color.h"
@@ -106,7 +104,7 @@ namespace {
         // Pixel operations
         enum FPSETtype { FPSEToff, FPSETon, FPSETflip };
 
-        struct sFpe : public gtk_bag, public gtk_draw
+        struct sFpe : public GTKbag, public GTKdraw
         {
             sFpe(GRobject);
             ~sFpe();
@@ -331,6 +329,7 @@ sFpe::sFpe(GRobject c)
     fp_editframe = frame;
 
     GtkWidget *darea = gtk_drawing_area_new();
+    gtk_widget_set_double_buffered(darea, false);
     gtk_widget_show(darea);
     fp_editor = darea;
     gtk_widget_set_size_request(darea, fp_edt_box_dim, fp_edt_box_dim);
@@ -462,6 +461,7 @@ sFpe::sFpe(GRobject c)
     gtk_widget_show(frame);
 
     darea = gtk_drawing_area_new();
+    gtk_widget_set_double_buffered(darea, false);
     gtk_widget_show(darea);
     fp_sample = darea;
     gtk_widget_set_size_request(darea, fp_def_box_h, fp_pat_box_h);
@@ -490,6 +490,7 @@ sFpe::sFpe(GRobject c)
             GtkWidget *iframe = gtk_frame_new(0);
             gtk_widget_show(iframe);
             darea = gtk_drawing_area_new();
+            gtk_widget_set_double_buffered(darea, false);
             gtk_widget_show(darea);
             fp_stores[i + j*3] = darea;
             gtk_widget_set_size_request(darea, fp_def_box_w, fp_def_box_h);
@@ -657,15 +658,14 @@ sFpe::redraw_edit()
         return;
     int wid = gdk_window_get_width(gtk_widget_get_window(fp_editor));
     int hei = gdk_window_get_height(gtk_widget_get_window(fp_editor));
+#ifdef NEW_DRW
+    GetDrawable()->set_pixmap(gtk_widget_get_window(fp_editor));
+#else
     fp_pm_widget = 0;
 
     if (!fp_pixmap || wid > fp_pm_w || hei > fp_pm_h) {
         if (fp_pixmap)
-#ifdef XXX_GDK
             gdk_pixmap_unref(fp_pixmap);
-#else
-            ;
-#endif
         fp_pixmap = gdk_pixmap_new(gtk_widget_get_window(fp_editor), wid, hei,
             gdk_visual_get_depth(GRX->Visual()));
         if (fp_pixmap) {
@@ -674,14 +674,15 @@ sFpe::redraw_edit()
         }
     }
 
-    int mind = mmMin(wid, hei);
-    fp_spa = 2;
-    fp_epsz = (mind - 2*fp_spa)/mmMax(fp_nx, fp_ny);
-
     if (fp_pixmap)
         gd_window = fp_pixmap;
     else
         gd_window = gtk_widget_get_window(fp_editor);
+#endif
+
+    int mind = mmMin(wid, hei);
+    fp_spa = 2;
+    fp_epsz = (mind - 2*fp_spa)/mmMax(fp_nx, fp_ny);
 
     SetFillpattern(0);
     GtkStyle *style = gtk_widget_get_style(Shell());
@@ -691,9 +692,6 @@ sFpe::redraw_edit()
     Box(fp_spa - 1, fp_spa - 1,
         fp_spa + fp_nx*fp_epsz + 2, fp_spa + fp_ny*fp_epsz + 2);
 
-#ifdef XXX_GDK
-    gdk_gc_set_fill(GC(), GDK_SOLID);
-#endif
     int bpl = (fp_nx + 7)/8;
     unsigned char *a = fp_array;
     for (int i = 0; i < fp_ny; i++) {
@@ -709,13 +707,15 @@ sFpe::redraw_edit()
             mask <<= 1;
         }
     }
+#ifdef NEW_DRW
+    GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, wid, hei);
+#else
     if (fp_pixmap) {
-#ifdef XXX_GDK
         gdk_window_copy_area(gtk_widget_get_window(fp_editor), GC(), 0, 0,
             gd_window, 0, 0, wid, hei);
-#endif
         fp_pm_widget = fp_editor;
     }
+#endif
 }
 
 
@@ -724,15 +724,14 @@ sFpe::redraw_sample()
 {
     int wid = gdk_window_get_width(gtk_widget_get_window(fp_sample));
     int hei = gdk_window_get_height(gtk_widget_get_window(fp_sample));
+#ifdef NEW_DRW
+    GetDrawable()->set_pixmap(gtk_widget_get_window(fp_sample));
+#else
     fp_pm_widget = 0;
 
     if (!fp_pixmap || wid > fp_pm_w || hei > fp_pm_h) {
         if (fp_pixmap)
-#ifdef XXX_GDK
             gdk_pixmap_unref(fp_pixmap);
-#else
-            ;
-#endif
         fp_pixmap = gdk_pixmap_new(gtk_widget_get_window(fp_sample), wid, hei,
             gdk_visual_get_depth(GRX->Visual()));
         if (fp_pixmap) {
@@ -740,17 +739,16 @@ sFpe::redraw_sample()
             fp_pm_h = hei;
         }
     }
-    if (fp_pixmap) {
+    if (fp_pixmap)
         gd_window = fp_pixmap;
-        SetColor(fp_pixbg);
-        SetFillpattern(0);
-        Box(0, 0, wid, hei);
-    }
     else {
         gd_window = gtk_widget_get_window(fp_sample);
-        SetWindowBackground(fp_pixbg);
-        Clear();
     }
+#endif
+
+    SetColor(fp_pixbg);
+    SetFillpattern(0);
+    Box(0, 0, wid, hei);
 
     SetColor(fp_foreg);
     set_fp(fp_array, fp_nx, fp_ny);
@@ -814,13 +812,15 @@ sFpe::redraw_sample()
         Line(x1, y1, x2, y2);
         Line(x1, y2, x2, y1);
     }
+#ifdef NEW_DRW
+    GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, wid, hei);
+#else
     if (fp_pixmap) {
-#ifdef XXX_GDK
         gdk_window_copy_area(gtk_widget_get_window(fp_sample), GC(), 0, 0,
             gd_window, 0, 0, wid, hei);
-#endif
         fp_pm_widget = fp_sample;
     }
+#endif
 }
 
 
@@ -832,15 +832,14 @@ sFpe::redraw_store(int i)
 
     int wid = gdk_window_get_width(gtk_widget_get_window(fp_stores[i]));
     int hei = gdk_window_get_height(gtk_widget_get_window(fp_stores[i]));
+#ifdef NEW_DRW
+    GetDrawable()->set_pixmap(gtk_widget_get_window(fp_stores[i]));
+#else
     fp_pm_widget = 0;
 
     if (!fp_pixmap || wid > fp_pm_w || hei > fp_pm_h) {
         if (fp_pixmap)
-#ifdef XXX_GDK
             gdk_pixmap_unref(fp_pixmap);
-#else
-            ;
-#endif
         fp_pixmap = gdk_pixmap_new(
             gtk_widget_get_window(fp_stores[i]), wid, hei,
             gdk_visual_get_depth(GRX->Visual()));
@@ -849,17 +848,15 @@ sFpe::redraw_store(int i)
             fp_pm_h = hei;
         }
     }
-    if (fp_pixmap) {
+    if (fp_pixmap)
         gd_window = fp_pixmap;
-        SetColor(fp_pixbg);
-        SetFillpattern(0);
-        Box(0, 0, wid, hei);
-    }
-    else {
+    else
         gd_window = gtk_widget_get_window(fp_stores[i]);
-        SetWindowBackground(fp_pixbg);
-        Clear();
-    }
+#endif
+
+    SetColor(fp_pixbg);
+    SetFillpattern(0);
+    Box(0, 0, wid, hei);
 
     SetColor(fp_foreg);
     if (i == 1) {
@@ -875,13 +872,15 @@ sFpe::redraw_store(int i)
             SetFillpattern(0);
         }
     }
+#ifdef NEW_DRW
+    GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, wid, hei);
+#else
     if (fp_pixmap) {
-#ifdef XXX_GDK
         gdk_window_copy_area(gtk_widget_get_window(fp_stores[i]), GC(), 0, 0,
             gd_window, 0, 0, wid, hei);
-#endif
         fp_pm_widget = fp_stores[i];
     }
+#endif
 }
 
 
@@ -1462,15 +1461,16 @@ sFpe::fp_config_hdlr(GtkWidget*, GdkEvent*, void*)
 int
 sFpe::fp_redraw_edit_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
+#ifdef NEW_DRW
+#else
     if (Fpe->fp_pm_widget == Fpe->fp_editor) {
         GdkEventExpose *pev = (GdkEventExpose*)event;
-#ifdef XXX_GDK
         gdk_window_copy_area(gtk_widget_get_window(Fpe->fp_editor), Fpe->GC(),
             pev->area.x, pev->area.y, Fpe->fp_pixmap,
             pev->area.x, pev->area.y, pev->area.width, pev->area.height);
-#endif
     }
     else
+#endif
         Fpe->redraw_edit();
     return (true);
 }
@@ -1482,15 +1482,16 @@ sFpe::fp_redraw_edit_hdlr(GtkWidget*, GdkEvent *event, void*)
 int
 sFpe::fp_redraw_sample_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
+#ifdef NEW_DRW
+#else
     if (Fpe->fp_pm_widget == Fpe->fp_sample) {
         GdkEventExpose *pev = (GdkEventExpose*)event;
-#ifdef XXX_GDK
         gdk_window_copy_area(gtk_widget_get_window(Fpe->fp_sample), Fpe->GC(),
             pev->area.x, pev->area.y, Fpe->fp_pixmap,
             pev->area.x, pev->area.y, pev->area.width, pev->area.height);
-#endif
     }
     else
+#endif
         Fpe->redraw_sample();
     return (true);
 }
@@ -1503,16 +1504,17 @@ int
 sFpe::fp_redraw_store_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 {
     int i = (intptr_t)arg;
+#ifdef NEW_DRW
+#else
     if (Fpe->fp_pm_widget == Fpe->fp_stores[i]) {
         GdkEventExpose *pev = (GdkEventExpose*)event;
-#ifdef XXX_GDK
         gdk_window_copy_area(gtk_widget_get_window(Fpe->fp_stores[i]),
             Fpe->GC(),
             pev->area.x, pev->area.y, Fpe->fp_pixmap,
             pev->area.x, pev->area.y, pev->area.width, pev->area.height);
-#endif
     }
     else
+#endif
         Fpe->redraw_store(i);
     return (true);
 }
@@ -1727,7 +1729,12 @@ sFpe::fp_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
         x = Fpe->fp_spa + x*Fpe->fp_epsz + Fpe->fp_epsz/2;
         y = Fpe->fp_spa + y*Fpe->fp_epsz + Fpe->fp_epsz/2;
 
+#ifdef NEW_DRW
+        Fpe->GetDrawable()->set_pixmap(gtk_widget_get_window(Fpe->fp_editor));
+        Fpe->GetDrawable()->set_draw_to_window();
+#else
         Fpe->gd_window = gtk_widget_get_window(Fpe->fp_editor);
+#endif
         Fpe->UndrawGhost();
         Fpe->DrawGhost(x, y);
     }

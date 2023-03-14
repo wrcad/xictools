@@ -69,7 +69,7 @@ namespace {
             int value;
         };
 
-        struct sPc : public gtk_bag
+        struct sPc : public GTKbag
         {
             sPc();
             ~sPc();

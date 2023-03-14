@@ -75,7 +75,7 @@ namespace {
     guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
 
     namespace gtkchdcfg {
-        struct sCfg : public gtk_bag
+        struct sCfg : public GTKbag
         {
             sCfg(GRobject, const char*);
             ~sCfg();

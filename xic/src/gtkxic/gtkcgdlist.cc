@@ -71,7 +71,7 @@
 
 namespace {
     namespace gtkcgdlist {
-        struct sCGL : public gtk_bag
+        struct sCGL : public GTKbag
         {
             sCGL(GRobject);
             ~sCGL();

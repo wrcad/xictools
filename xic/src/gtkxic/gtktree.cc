@@ -72,9 +72,9 @@ namespace {
 #define TR_MAXBTNS 5
 
     namespace gtktree {
-        // subclass gtk_bag so sTree can be passed to ToTop handler function
+        // subclass GTKbag so sTree can be passed to ToTop handler function
         //
-        struct sTree : public gtk_bag
+        struct sTree : public GTKbag
         {
             sTree(GRobject, const char*, TreeUpdMode);
             ~sTree();

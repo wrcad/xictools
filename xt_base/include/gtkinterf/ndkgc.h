@@ -213,9 +213,9 @@ struct ndkGCvalues
 struct ndkGC
 {
 #ifdef NEW_PIX
-    ndkGC(GdkWindow*, ndkGCvalues*, ndkGCvaluesMask);
+    ndkGC(GdkWindow*, ndkGCvalues* =0, ndkGCvaluesMask =(ndkGCvaluesMask)0);
 #else
-    ndkGC(GdkDrawable*, ndkGCvalues*, ndkGCvaluesMask);
+    ndkGC(GdkDrawable*, ndkGCvalues* =0, ndkGCvaluesMask =(ndkGCvaluesMask)0);
 #endif
     ~ndkGC();
 
@@ -247,7 +247,10 @@ struct ndkGC
         ndkGCvalues values;
         values.v_function = function;
         set_values(&values, ndkGC_FUNCTION);
+        gc_function = function;
     }
+
+    ndkGCfunction get_function()    { return (gc_function); }
 
 
     void set_fill(ndkGCfill fill)
@@ -546,6 +549,7 @@ private:
 
     unsigned int    gc_fg_pixel;
     unsigned int    gc_bg_pixel;
+    ndkGCfunction   gc_function;
 
 #ifdef WITH_X11
     GC              gc_gc;

@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_GDK
-
 #include "main.h"
 #include "editif.h"
 #include "dsp_inlines.h"
@@ -424,10 +422,17 @@ void *
 GTKedit::setup_backing(bool clear)
 {
     GdkWindow *tmp_window = 0;
+#ifdef NEW_DRW
+    if (clear) {
+        GetDrawable()->set_draw_to_pixmap();
+        tmp_window = GetDrawable()->get_window();
+    }
+#else
     if (pe_pixmap && clear) {
         tmp_window = gd_window;
         gd_window = pe_pixmap;
     }
+#endif
     return (tmp_window);
 }
 
@@ -435,26 +440,38 @@ GTKedit::setup_backing(bool clear)
 void
 GTKedit::restore_backing(void *tw)
 {
+#ifdef NEW_DRW
+    GetDrawable()->set_draw_to_window();
+    GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, -1, -1);
+#else
     GdkWindow *tmp_window = (GdkWindow*)tw;
     if (tmp_window) {
-#ifdef XXX_GDK
         gdk_window_copy_area(tmp_window, GC(), 0, 0, pe_pixmap,
             0, 0, pe_wid, pe_hei);
-#endif
         gd_window = tmp_window;
     }
+#endif
 }
 
 
 void
 GTKedit::init_window()
 {
+#ifdef NEW_DRW
+    if (!GetDrawable()->get_window())
+        GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
+    if (GetDrawable()->get_window()) {
+        SetWindowBackground(bg_pixel());
+        Clear();
+    }
+#else
     if (!gd_window)
         gd_window = gtk_widget_get_window(gd_viewport);
     if (gd_window) {
         SetWindowBackground(bg_pixel());
         Clear();
     }
+#endif
 }
 
 
@@ -463,22 +480,21 @@ GTKedit::init_window()
 bool
 GTKedit::check_pixmap()
 {
+#ifdef NEW_DRW
+#else
     if (!gd_window)
         gd_window = gtk_widget_get_window(gd_viewport);
     int w = gdk_window_get_width(gd_window);
     int h = gdk_window_get_height(gd_window);
     if (!pe_pixmap || w != pe_wid || h != pe_hei) {
         if (pe_pixmap)
-#ifdef XXX_GDK
             gdk_pixmap_unref(pe_pixmap);
-#else
-            ;
-#endif
         pe_pixmap = gdk_pixmap_new(gd_window, w, h,
             gdk_visual_get_depth(GRX->Visual()));
         pe_wid = w;
         pe_hei = h;
     }
+#endif
     return (true);
 }
 

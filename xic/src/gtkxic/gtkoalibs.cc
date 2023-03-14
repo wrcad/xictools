@@ -61,7 +61,7 @@
 
 namespace {
     namespace gtkoalibs {
-        struct sLBoa : public gtk_bag
+        struct sLBoa : public GTKbag
         {
             sLBoa(GRobject);
             ~sLBoa();

@@ -59,7 +59,7 @@
 
 namespace {
     namespace gtkchdopen {
-        struct sCo : public gtk_bag
+        struct sCo : public GTKbag
         {
             sCo(GRobject, bool(*)(const char*, const char*, int, void*), void*,
                 const char*, const char*);

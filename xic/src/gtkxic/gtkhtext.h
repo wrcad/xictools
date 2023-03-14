@@ -53,7 +53,7 @@
 
 inline class GTKedit *gtkEdit();
 
-class GTKedit : public cPromptEdit, public gtk_draw
+class GTKedit : public cPromptEdit, public GTKdraw
 {
     static GTKedit *ptr() { return (instancePtr); }
 

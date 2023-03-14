@@ -63,7 +63,7 @@
 
 namespace {
     namespace gtkextfc {
-        struct sFc : public gtk_bag
+        struct sFc : public GTKbag
         {
             sFc(GRobject);
             ~sFc();

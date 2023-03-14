@@ -56,7 +56,7 @@
 
 namespace {
     namespace gtkltalias {
-        struct sLA : public gtk_bag
+        struct sLA : public GTKbag
         {
             sLA(GRobject);
             ~sLA();

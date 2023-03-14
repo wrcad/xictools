@@ -55,7 +55,7 @@
 
 namespace {
     namespace gtkrule {
-        struct sRu : public gtk_bag
+        struct sRu : public GTKbag
         {
             sRu(GRobject, DRCtype, const char*, bool(*)(const char*, void*),
                 void*, const DRCtestDesc*);
@@ -1418,6 +1418,8 @@ sRu::apply()
             }
             if (sb_opp1.get_value() > 0.0 || sb_opp2.get_value() > 0.0) {
                 lstr.add_c(' ');
+#undef Opposite
+// Stupid thing in X.h.
                 lstr.add(Dkw.Opposite());
                 lstr.add_c(' ');
                 lstr.add(sb_opp1.get_string());

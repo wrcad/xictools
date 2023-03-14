@@ -50,7 +50,7 @@
 
 namespace {
     namespace gtklogo {
-        struct sLgo : public gtk_bag
+        struct sLgo : public GTKbag
         {
             sLgo(GRobject);
             ~sLgo();

@@ -55,7 +55,7 @@ namespace gtkexpand {
     {
         typedef bool(*ExpandCallback)(const char*, void*);
 
-        sExp(gtk_bag*, const char*, bool, void*);
+        sExp(GTKbag*, const char*, bool, void*);
         ~sExp();
 
         GtkWidget *shell() { return (exp_popup); }
@@ -130,7 +130,7 @@ win_bag::PopUpExpand(GRobject caller, ShowMode mode,
 }
 
 
-sExp::sExp(gtk_bag *owner, const char *string, bool nopeek, void *arg)
+sExp::sExp(GTKbag *owner, const char *string, bool nopeek, void *arg)
 {
     p_parent = owner;
     exp_popup = 0;
@@ -325,7 +325,7 @@ sExp::popdown()
 {
     if (!p_parent)
         return;
-    gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+    GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
     if (owner)
         GRX->SetFocus(owner->Shell());
     if (!owner || !owner->MonitorActive(this))
@@ -357,7 +357,7 @@ sExp::update(const char *string)
 {
     if (!p_parent)
         return;
-    gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+    GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
     if (!owner || !owner->MonitorActive(this))
         return;
 

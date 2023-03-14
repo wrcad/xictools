@@ -63,7 +63,7 @@ namespace {
     guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
 
     namespace gtkauxtab {
-        struct sAT : public gtk_bag
+        struct sAT : public GTKbag
         {
             sAT(GRobject);
             ~sAT();

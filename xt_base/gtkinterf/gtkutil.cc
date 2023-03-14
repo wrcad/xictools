@@ -3173,10 +3173,11 @@ gtkinterf::text_realize_proc(GtkWidget *w, void*)
     }
 }
 
+
+
 /****************/
 // Some translation code, based in GDK-2 source.
 
-//#ifdef NEW_GC
 #ifdef WITH_X11
 
 // Replacement for gdk_draw_drawable.
@@ -3245,9 +3246,6 @@ gtkinterf::copy_x11_pixmap_to_drawable(GdkDrawable *drawable, void *gcp,
         XCopyArea(gr_x_display(), gdk_x11_drawable_get_xid(src),
             gdk_x11_drawable_get_xid(drawable), gdk_x11_gc_get_xgc(gc),
             xsrc, ysrc, width, height, xdest, ydest);
-//XXX
-//fprintf(stderr, "%ld %ld %d %d %d %d %d %d\n", gdk_x11_drawable_get_xid(drawable),
-//gdk_x11_drawable_get_xid(src), xdest, ydest, xsrc, ysrc, width, height);
 #endif
     }
     else
@@ -3256,5 +3254,4 @@ gtkinterf::copy_x11_pixmap_to_drawable(GdkDrawable *drawable, void *gcp,
            src_depth, dest_depth);
 }
 #endif
-//#endif
 

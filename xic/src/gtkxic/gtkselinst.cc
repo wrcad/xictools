@@ -94,7 +94,7 @@ namespace {
     };
 
     namespace gtkselinst {
-        struct sCI : public gtk_bag
+        struct sCI : public GTKbag
         {
             sCI(CDol*, bool = false);
             ~sCI();

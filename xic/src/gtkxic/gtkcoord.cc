@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_GDK
-
 #include "main.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
@@ -90,24 +88,24 @@ cCoord::cCoord()
     co_rel = false;
     co_snap = true;
 
-    gd_viewport = gtk_drawing_area_new();
-    gtk_widget_show(gd_viewport);
-    gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
-    g_signal_connect(G_OBJECT(gd_viewport), "button-press-event",
+    SetViewport(gtk_drawing_area_new());
+    gtk_widget_show(Viewport());
+    gtk_widget_add_events(Viewport(), GDK_BUTTON_PRESS_MASK);
+    g_signal_connect(G_OBJECT(Viewport()), "button-press-event",
         G_CALLBACK(co_btn), 0);
-    gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
+    gtk_widget_add_events(Viewport(), GDK_EXPOSURE_MASK);
+    g_signal_connect(G_OBJECT(Viewport()), "expose-event",
         G_CALLBACK(co_redraw), 0);
-    g_signal_connect(G_OBJECT(gd_viewport), "style-set",
+    g_signal_connect(G_OBJECT(Viewport()), "style-set",
         G_CALLBACK(co_font_change), 0);
 
-    GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);
+    GTKfont::setupFont(Viewport(), FNT_SCREEN, true);
 
     // Set size.
     int wid, hei;
     wid = 600;
-    hei = GTKfont::stringHeight(gd_viewport, 0) + 2;
-    gtk_widget_set_size_request(gd_viewport, wid, hei);
+    hei = GTKfont::stringHeight(Viewport(), 0) + 2;
+    gtk_widget_set_size_request(Viewport(), wid, hei);
 }
 
 
@@ -156,6 +154,13 @@ cCoord::do_print(int xc, int yc, int update)
 {
     if (!DSP()->MainWdesc() || !EV()->CurrentWin())
         return;
+#ifdef NEW_DRW
+    if (!GetDrawable()->get_window())
+        GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
+    GetDrawable()->set_draw_to_pixmap();
+    co_width = GetDrawable()->get_width();
+    co_height = GetDrawable()->get_height();
+#else
     gd_window = gtk_widget_get_window(gd_viewport);
     if (!gd_window)
         return;
@@ -163,20 +168,17 @@ cCoord::do_print(int xc, int yc, int update)
     int winw = gdk_window_get_width(gd_window);
     int winh = gdk_window_get_height(gd_window);
     if (winw != co_width || winh != co_height) {
-#ifdef XXX_GDK
         if (co_pm)
             gdk_pixmap_unref(co_pm);
         co_pm = gdk_pixmap_new(gd_window, winw, winh,
             gdk_visual_get_depth(GRX->Visual()));
-#endif
         co_width = winw;
         co_height = winh;
     }
     co_win_bak = gd_window;
     gd_window = co_pm;
-    // XXX Have to set the pointer directly or a Gtk-CRITICAL results.
-    // gtk_widget_set_window(gd_viewport, gd_window);
     gd_viewport->window = gd_window;
+#endif
 
     const char *fmt;
     DisplayMode mode = EV()->CurrentWin()->Mode();
@@ -215,9 +217,13 @@ cCoord::do_print(int xc, int yc, int update)
         EV()->CurrentWin()->Snap(&xc, &yc);
     if (update == COOR_MOTION) {
         if (xc == co_lx && yc == co_ly) {
+#ifdef NEW_DRW
+            GetDrawable()->set_draw_to_window();
+#else
             gd_window = co_win_bak;
             co_win_bak = 0;
             gtk_widget_set_window(gd_viewport, gd_window);
+#endif
             return;
         }
         co_lx = xc;
@@ -231,9 +237,10 @@ cCoord::do_print(int xc, int yc, int update)
     SetColor(DSP()->Color(PromptBackgroundColor));
     SetFillpattern(0);
     Box(0, co_height, co_width, 0);
+    SetBackground(DSP()->Color(PromptBackgroundColor));
+
 
     char buf[128];
-    SetFillpattern(0);
     const char *str = "x,y";
     SetColor(c1);
     Text(str, x, y, 0);
@@ -302,13 +309,16 @@ cCoord::do_print(int xc, int yc, int update)
     SetColor(c2);
     Text(buf, x, y, 0);
 
-#ifdef XXX_GDK
+#ifdef NEW_DRW
+    GetDrawable()->set_draw_to_window();
+    GetDrawable()->copy_pixmap_to_window(CpyGC(), 0, 0, -1, -1);
+#else
     gdk_window_copy_area(co_win_bak, CpyGC(), 0, 0, gd_window,
         0, 0, co_width, co_height);
-#endif
     gd_window = co_win_bak;
     co_win_bak = 0;
     gtk_widget_set_window(gd_viewport, gd_window);
+#endif
 }
 
 
@@ -327,7 +337,11 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
 {
     if (!Coord())
         return;
+#ifdef NEW_DRW
+    if (!ev || !Coord()->GetDrawable()->get_pixmap()) {
+#else
     if (!ev || !Coord()->co_pm) {
+#endif
         int x, y;
         EV()->Cursor().get_xy(&x, &y);
         Coord()->print(x, y, COOR_BEGIN);
@@ -335,8 +349,10 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
     }
 
     GdkEventExpose *pev = (GdkEventExpose*)ev;
+#ifdef NEW_DRW
+    Coord()->GetDrawable()->refresh(Coord()->CpyGC(), pev);
+#else
     if (Coord() && GDK_IS_DRAWABLE(Coord()->gd_window)) {
-#ifdef XXX_GDK
         GdkRectangle *rects;
         int nrects;
         gdk_region_get_rectangles(pev->region, &rects, &nrects);
@@ -346,21 +362,28 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
                 rects[i].x, rects[i].y, rects[i].width, rects[i].height);
         }
         g_free(rects);
-#endif
     }
+#endif
 }
 
 
 void
 cCoord::co_font_change(GtkWidget*, void*, void*)
 {
-    if (Coord() && GDK_IS_DRAWABLE(Coord()->gd_window)) {
+#ifdef NEW_DRW
+    if (Coord() && Coord()->GetDrawable()->get_window()) {
         int fw, fh;
         Coord()->TextExtent(0, &fw, &fh);
-//XXX        int winw, winh;
-//XXX        gdk_window_get_size(Coord()->gd_window, &winw, &winh);
         gtk_widget_set_size_request(Coord()->Viewport(), -1, fh + 2);
         Coord()->do_print(Coord()->co_xc, Coord()->co_yc, COOR_BEGIN);
     }
+#else
+    if (Coord() && GDK_IS_DRAWABLE(Coord()->gd_window)) {
+        int fw, fh;
+        Coord()->TextExtent(0, &fw, &fh);
+        gtk_widget_set_size_request(Coord()->Viewport(), -1, fh + 2);
+        Coord()->do_print(Coord()->co_xc, Coord()->co_yc, COOR_BEGIN);
+    }
+#endif
 }
 

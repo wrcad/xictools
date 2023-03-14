@@ -67,7 +67,7 @@
 
 namespace {
     namespace gtkchdlist {
-        struct sCHL : public gtk_bag
+        struct sCHL : public GTKbag
         {
             sCHL(GRobject);
             ~sCHL();

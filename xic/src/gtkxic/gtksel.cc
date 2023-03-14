@@ -56,7 +56,7 @@
 
 namespace {
     namespace gtksel {
-        struct sSel : public gtk_bag
+        struct sSel : public GTKbag
         {
             sSel(GRobject);
             ~sSel();

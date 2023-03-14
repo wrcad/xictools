@@ -56,7 +56,7 @@
 namespace gtkzoom {
     struct sZm : public GRpopup
     {
-        sZm(gtk_bag*, WindowDesc*);
+        sZm(GTKbag*, WindowDesc*);
         ~sZm();
 
         GtkWidget *shell() { return (zm_popup); }
@@ -131,7 +131,7 @@ win_bag::PopUpZoom(GRobject caller, ShowMode mode)
 }
 
 
-sZm::sZm(gtk_bag *owner, WindowDesc *w)
+sZm::sZm(GTKbag *owner, WindowDesc *w)
 {
     p_parent = owner;
     zm_autoy = 0;
@@ -362,7 +362,7 @@ sZm::popdown()
 {
     if (!p_parent)
         return;
-    gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+    GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
     if (owner)
         GRX->SetFocus(owner->Shell());
     if (!owner || !owner->MonitorActive(this))

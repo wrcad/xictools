@@ -1735,6 +1735,7 @@ cPromptEdit::draw_text(bool draw, int ncols, bool clear)
     if (clear) {
         SetColor(bg_pixel());
         Clear();
+        SetBackground(bg_pixel());
     }
 
     sLstr lstr;

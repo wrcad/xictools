@@ -65,7 +65,7 @@ namespace {
     };
 
     namespace gtkempty {
-        struct sEC : public gtk_bag
+        struct sEC : public GTKbag
         {
             sEC(stringlist*);
             ~sEC();

@@ -79,7 +79,7 @@ namespace {
     };
 
     namespace gtkcflags {
-        struct sCF : public gtk_bag
+        struct sCF : public GTKbag
         {
             sCF(GRobject, const stringlist*, int);
             ~sCF();

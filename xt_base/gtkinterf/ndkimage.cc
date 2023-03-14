@@ -639,6 +639,27 @@ ndkImage::copy_to_drawable(ndkDrawable *drawable, ndkGC *gc,
 #endif
 
 
+#if defined(NEW_PIX) && defined(NEW_GC)
+
+void
+ndkImage::copy_to_pixmap(ndkPixmap *pixmap, ndkGC *gc,
+    int xsrc, int ysrc, int xdest, int ydest, int width, int height)
+{
+#ifdef USE_SHM  
+    if (im_type == ndkIMAGE_SHARED) {
+        XShmPutImage(
+            gc->get_xdisplay(), pixmap->get_xid(), gc->get_xgc(),
+            im_ximage, xsrc, ysrc, xdest, ydest, width, height, False);
+        return;
+    }
+#endif
+    XPutImage(
+        gc->get_xdisplay(), pixmap->get_xid(), gc->get_xgc(), im_ximage,
+        xsrc, ysrc, xdest, ydest, width, height);
+}
+
+#endif
+
 void
 ndkImage::put_pixel(int x, int y, unsigned int pixel)
 {
@@ -707,152 +728,4 @@ namespace {
 #endif
 
 #endif  // NDKIMAGE_H
-
-#ifdef NOTDEF
-
-
-#if defined (HAVE_IPC_H) && defined (HAVE_SHM_H) && defined (HAVE_XSHM_H)
-#define USE_SHM
-#endif
-
-#ifdef USE_SHM
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#endif /* USE_SHM */
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
-#ifdef USE_SHM
-#include <X11/extensions/XShm.h>
-#endif /* USE_SHM */
-
-#include <errno.h>
-
-#include "gdk.h"        /* For gdk_error_trap_* / gdk_flush_* */
-#include "gdkx.h"
-#include "gdkimage.h"
-#include "gdkprivate.h"
-#include "gdkprivate-x11.h"
-#include "gdkdisplay-x11.h"
-#include "gdkscreen-x11.h"
-#include "gdkalias.h"
-
-
-static void gdk_x11_image_destroy (GdkImage      *image);
-static void gdk_image_finalize    (GObject       *object);
-
-
-/**
- * gdk_image_new_bitmap:
- * @visual: the #GdkVisual to use for the image.
- * @data: the pixel data. 
- * @width: the width of the image in pixels. 
- * @height: the height of the image in pixels. 
- * 
- * Creates a new #GdkImage with a depth of 1 from the given data.
- * <warning><para>THIS FUNCTION IS INCREDIBLY BROKEN. The passed-in data must 
- * be allocated by malloc() (NOT g_malloc()) and will be freed when the 
- * image is freed.</para></warning>
- * 
- * Return value: a new #GdkImage.
- **/
-GdkImage *
-gdk_image_new_bitmap (GdkVisual *visual, 
-              gpointer   data, 
-              gint       width, 
-              gint       height)
-{
-  Visual *xvisual;
-  GdkImage *image;
-  GdkDisplay *display;
-  GdkImagePrivateX11 *private;
-  
-  image = g_object_new (gdk_image_get_type (), NULL);
-  private = PRIVATE_DATA (image);
-  private->screen = gdk_visual_get_screen (visual);
-  display = GDK_SCREEN_DISPLAY (private->screen);
-  
-  image->type = GDK_IMAGE_NORMAL;
-  image->visual = visual;
-  image->width = width;
-  image->height = height;
-  image->depth = 1;
-  image->bits_per_pixel = 1;
-  if (display->closed)
-    private->ximage = NULL;
-  else
-    {
-      xvisual = ((GdkVisualPrivate*) visual)->xvisual;
-      private->ximage = XCreateImage (GDK_SCREEN_XDISPLAY(private->screen),
-                      xvisual, 1, XYBitmap,
-                      0, NULL, width, height, 8, 0);
-      private->ximage->data = data;
-      private->ximage->bitmap_bit_order = MSBFirst;
-      private->ximage->byte_order = MSBFirst;
-    }
-  
-  image->byte_order = MSBFirst;
-  image->mem =  private->ximage->data;
-  image->bpl = private->ximage->bytes_per_line;
-  image->bpp = 1;
-  return image;
-} 
-
-
-void
-_gdk_windowing_image_init (GdkDisplay *display)
-{
-  GdkDisplayX11 *display_x11 = GDK_DISPLAY_X11 (display);
-  
-  if (display_x11->use_xshm)
-    {
-#ifdef USE_SHM
-      Display *xdisplay = display_x11->xdisplay;
-      int major, minor, event_base;
-      Bool pixmaps;
-  
-      if (XShmQueryExtension (xdisplay) &&
-      XShmQueryVersion (xdisplay, &major, &minor, &pixmaps))
-    {
-      display_x11->have_shm_pixmaps = pixmaps;
-      event_base = XShmGetEventBase (xdisplay);
-
-      gdk_x11_register_standard_event_type (display,
-                        event_base, ShmNumberEvents);
-    }
-      else
-#endif /* USE_SHM */
-    display_x11->use_xshm = FALSE;
-    }
-}
-
-Pixmap
-get_shm_pixmap(GdkImage *image)
-{
-    GdkDisplay *display = GDK_SCREEN_DISPLAY(im_screen);
-
-    if (gdk_display_is_closed(display))
-        return (None);
-
-#ifdef USE_SHM  
-    // Future:  do we need one of these per-screen per-image? 
-    // ShmPixmaps are the same for every screen, but can they be
-    // shared?  Not a concern right now since we tie images to a
-    // particular screen.
-    //
-
-    if (!im_shm_pixmap && im_type == GDK_IMAGE_SHARED && 
-            GDK_DISPLAY_X11(display)->have_shm_pixmaps) {
-        im_shm_pixmap = XShmCreatePixmap(GDK_SCREEN_XDISPLAY(im_screen),
-            GDK_SCREEN_XROOTWIN(im_screen), im_mem, im_x_shm_info, 
-            im_width, im_height, im_depth);
-    }
-    return (im_shm_pixmap);
-#else
-    return (None);
-#endif    
-}
-
-#endif
 

@@ -70,7 +70,7 @@
 
 namespace {
     namespace gtkmem {
-        struct sMem : public gtk_bag, public gtk_draw
+        struct sMem : public GTKbag, public GTKdraw
         {
             sMem();
             ~sMem();
@@ -136,7 +136,11 @@ cMain::PopUpMemory(ShowMode mode)
 
     GRX->SetPopupLocation(GRloc(), Mem->Shell(), mainBag()->Viewport());
     gtk_widget_show(Mem->Shell());
+#ifdef NEW_DRW
+    Mem->GetDrawable()->set_window(gtk_widget_get_window(Mem->Viewport()));
+#else
     Mem->SetWindow(gtk_widget_get_window(Mem->Viewport()));
+#endif
     Mem->SetWindowBackground(GRX->NameColor("white"));
 }
 // End of cMain functions.

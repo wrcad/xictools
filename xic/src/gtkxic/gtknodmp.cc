@@ -143,7 +143,7 @@ namespace {
             void esc();
         };
 
-        struct sNM : public gtk_bag
+        struct sNM : public GTKbag
         {
             sNM(GRobject, int);
             ~sNM();

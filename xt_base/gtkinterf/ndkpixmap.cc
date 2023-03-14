@@ -326,6 +326,7 @@ ndkPixmap::ndkPixmap(ndkPixmap *pm, int width, int height, bool bitmap)
 #endif
 }
 
+
 ndkPixmap::~ndkPixmap()
 {
     GdkDisplay *display = gdk_screen_get_display(pm_screen);
@@ -635,8 +636,37 @@ ndkPixmap::copy_from_drawable(ndkDrawable *dw, ndkGC *gc, int xsrc, int ysrc,
             copy_from_pixmap(p, gc, xsrc, ysrc, xdest, ydest, width, height);
     }
 }
-
 #endif
+
+
+void
+ndkPixmap::copy_from_pango_layout(ndkGC *gc, PangoLayout *lout)
+{
+    if (pm_depth == 1 || !pm_visual)
+        return;
+    cairo_surface_t *sfc = cairo_xlib_surface_create(gc->get_xdisplay(),
+        pm_xid, gdk_x11_visual_get_xvisual(pm_visual), pm_width, pm_height);
+    cairo_t *cr = cairo_create(sfc);
+    cairo_surface_destroy(sfc);
+    GdkColor clr;
+    clr.pixel = gc->get_bg_pixel();
+    gtk_QueryColor(&clr);
+    gdk_cairo_set_source_color(cr, &clr);
+    cairo_paint(cr);
+    clr.pixel = gc->get_fg_pixel();
+    gtk_QueryColor(&clr);
+    gdk_cairo_set_source_color(cr, &clr);
+    pango_cairo_show_layout(cr, lout);
+    cairo_fill(cr);
+    cairo_destroy(cr);
+}
+
+
+void
+ndkPixmap::fill(ndkGC *gc)
+{
+    // Write Me!
+}
 
 
 ndkPixmap *

@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_GDK
-
 #include "main.h"
 #include "pushpop.h"
 #include "dsp_color.h"
@@ -95,9 +93,6 @@ cParam *cParam::instancePtr = 0;
 cParam::cParam()
 {
     instancePtr = this;
-    gd_viewport = gtk_drawing_area_new();
-    gtk_widget_set_name(gd_viewport, "Readout");
-    gtk_widget_show(gd_viewport);
 
     p_win_bak = 0;
     p_pm = 0;
@@ -110,44 +105,52 @@ cParam::cParam()
     p_width = 0;
     p_height = 0;
 
-    gtk_widget_add_events(gd_viewport,
+    SetViewport(gtk_drawing_area_new());
+    gtk_widget_show(Viewport());
+    gtk_widget_set_name(Viewport(), "Readout");
+    gtk_widget_add_events(Viewport(),
         GDK_BUTTON_PRESS_MASK |
         GDK_BUTTON_RELEASE_MASK |
         GDK_POINTER_MOTION_MASK);
-    g_signal_connect(G_OBJECT(gd_viewport), "button-press-event",
+    g_signal_connect(G_OBJECT(Viewport()), "button-press-event",
         G_CALLBACK(readout_btn_hdlr), 0);
-    g_signal_connect(G_OBJECT(gd_viewport), "button-release-event",
+    g_signal_connect(G_OBJECT(Viewport()), "button-release-event",
         G_CALLBACK(readout_btn_hdlr), 0);
-    gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
+    gtk_widget_add_events(Viewport(), GDK_EXPOSURE_MASK);
+    g_signal_connect(G_OBJECT(Viewport()), "expose-event",
         G_CALLBACK(readout_redraw), 0);
-    g_signal_connect(G_OBJECT(gd_viewport), "style-set",
+    g_signal_connect(G_OBJECT(Viewport()), "style-set",
         G_CALLBACK(readout_font_change), 0);
-    g_signal_connect(G_OBJECT(gd_viewport), "motion-notify-event",
+    g_signal_connect(G_OBJECT(Viewport()), "motion-notify-event",
         G_CALLBACK(readout_motion_hdlr), 0);
-    gtk_selection_add_targets(gd_viewport, GDK_SELECTION_PRIMARY, targets,
+    gtk_selection_add_targets(Viewport(), GDK_SELECTION_PRIMARY, targets,
         n_targets);
 #ifndef WIN32
-    g_signal_connect(G_OBJECT(gd_viewport), "selection-clear-event",
+    g_signal_connect(G_OBJECT(Viewport()), "selection-clear-event",
         G_CALLBACK(readout_selection_clear), 0);
-    g_signal_connect(G_OBJECT(gd_viewport), "selection-get",
+    g_signal_connect(G_OBJECT(Viewport()), "selection-get",
         G_CALLBACK(readout_selection_get), 0);
 #endif
 
-    GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);
+    GTKfont::setupFont(Viewport(), FNT_SCREEN, true);
 
     // Set size
     int wid = 600;
-    int hei = GTKfont::stringHeight(gd_viewport, 0) + 2;
-    gtk_widget_set_size_request(gd_viewport, wid, hei);
+    int hei = GTKfont::stringHeight(Viewport(), 0) + 2;
+    gtk_widget_set_size_request(Viewport(), wid, hei);
 }
 
 
 void
 cParam::print()
 {
+#ifdef NEW_DRW
+    if (!GetDrawable()->get_window())
+        GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
+#else
     if (!gd_window)
-        gd_window = gtk_widget_get_window(gd_viewport);
+        gd_window = gtk_widget_get_window(Viewport());
+#endif
     unsigned long c1 = DSP()->Color(PromptTextColor);
     unsigned long c2 = DSP()->Color(PromptEditTextColor);
     int fwid, fhei;
@@ -271,6 +274,26 @@ cParam::print()
 void
 cParam::display(int start, int end)
 {
+#ifdef NEW_DRW
+    if (!GetDrawable()->get_window())
+        GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
+    if (!GetDrawable()->get_window())
+        return;
+    GetDrawable()->set_draw_to_pixmap();
+
+    if (start == 0 && end == 256) {
+        SetWindowBackground(DSP()->Color(PromptBackgroundColor));
+        int wid = GetDrawable()->get_width();
+        int hei = GetDrawable()->get_width();
+        SetColor(DSP()->Color(PromptBackgroundColor));
+        Box(0, 0, wid, hei);
+        SetBackground(DSP()->Color(PromptBackgroundColor));
+    }
+    p_text.display(this, start, end);
+
+    GetDrawable()->set_draw_to_window();
+    GetDrawable()->copy_pixmap_to_window(CpyGC(), 0, 0, -1, -1);
+#else
     gd_window = gtk_widget_get_window(gd_viewport);
     if (!gd_window)
         return;
@@ -289,11 +312,7 @@ cParam::display(int start, int end)
     }
     p_win_bak = gd_window;
     gd_window = p_pm;
-    // Have to set the pointer directly or a Gtk-CRITICAL results.
-    // gtk_widget_set_window(gd_viewport, gd_window);
-#ifdef XXX_GDK
     gd_viewport->window = gd_window;
-#endif
 
     if (start == 0 && end == 256) {
         SetWindowBackground(DSP()->Color(PromptBackgroundColor));
@@ -303,13 +322,12 @@ cParam::display(int start, int end)
 
     p_text.display(this, start, end);
 
-#ifdef XXX_GDK
     gdk_window_copy_area(p_win_bak, CpyGC(), 0, 0, gd_window,
         0, 0, p_width, p_height);
-#endif
     gd_window = p_win_bak;
     p_win_bak = 0;
     gtk_widget_set_window(gd_viewport, gd_window);
+#endif
 }
 
 
@@ -496,19 +514,21 @@ cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
     if (!Param())
         return (false);
     GdkEventExpose *pev = (GdkEventExpose*)event;
+#ifdef NEW_DRW
+    Param()->GetDrawable()->refresh(Param()->CpyGC(), pev);
+#else
     if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
         GdkRectangle *rects;
         int nrects;
         gdk_region_get_rectangles(pev->region, &rects, &nrects);
         for (int i = 0; i < nrects; i++) {
-#ifdef XXX_GDK
             gdk_window_copy_area(Param()->gd_window, Param()->CpyGC(),
                 rects[i].x, rects[i].y, Param()->p_pm,
                 rects[i].x, rects[i].y, rects[i].width, rects[i].height);
-#endif
         }
         g_free(rects);
     }
+#endif
 
     return (true);
 }
@@ -520,7 +540,11 @@ cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
 void
 cParam::readout_font_change(GtkWidget*, void*, void*)
 {
+#ifdef NEW_DRW
+    if (Param() && GDK_IS_DRAWABLE(Param()->GetDrawable()->get_window())) {
+#else
     if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
+#endif
         int fw, fh;
         Param()->TextExtent(0, &fw, &fh);
         gtk_widget_set_size_request(Param()->gd_viewport, -1, fh + 2);
@@ -673,6 +697,7 @@ ptext_t::display(cParam *prm, unsigned int fc, unsigned int lc)
     prm->SetLinestyle(0);
 
     prm->SetWindowBackground(DSP()->Color(PromptBackgroundColor));
+    prm->SetBackground(DSP()->Color(PromptBackgroundColor));
     prm->SetColor(DSP()->Color(PromptBackgroundColor));
     prm->Box(pt_chars[fc].pc_posn, 0,
         pt_chars[lc-1].pc_posn + pt_chars[lc-1].pc_width - 1, prm->height());

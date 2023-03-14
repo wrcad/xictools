@@ -45,7 +45,7 @@
 inline class cCoord *Coord();
 
 // The coordinate readout
-class cCoord : public gtk_draw
+class cCoord : public GTKdraw
 {
 public:
     // update mode for cCoord::print()
