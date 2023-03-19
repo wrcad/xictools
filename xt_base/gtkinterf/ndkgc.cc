@@ -73,13 +73,8 @@
 
 #ifdef NDKGC_H
 
-#ifdef NEW_PIX
 ndkGC::ndkGC(GdkWindow *drawable, ndkGCvalues *values,
     ndkGCvaluesMask values_mask)
-#else
-ndkGC::ndkGC(GdkDrawable *drawable, ndkGCvalues *values,
-    ndkGCvaluesMask values_mask)
-#endif
 {
     gc_clip_x_origin        = 0;
     gc_clip_y_origin        = 0;
@@ -116,6 +111,7 @@ ndkGC::ndkGC(GdkDrawable *drawable, ndkGCvalues *values,
 #endif
     gc_subwindow_mode       = false;
     gc_fill                 = ndkGC_SOLID;
+    gc_fill_rule            = ndkGC_EVEN_ODD_RULE;
     gc_exposures            = false;
 
     if (values) {
@@ -130,33 +126,18 @@ ndkGC::ndkGC(GdkDrawable *drawable, ndkGCvalues *values,
 
         if (values_mask & ndkGC_STIPPLE) {
             gc_stipple = values->v_stipple;
-#ifdef NEW_PIX
             if (gc_stipple)
                 gc_stipple->inc_ref();
-#else
-            if (gc_stipple)
-                gdk_pixmap_ref(gc_stipple);
-#endif
         }
         if (values_mask & ndkGC_TILE) {
             gc_tile = values->v_tile;
-#ifdef NEW_PIX
             if (gc_tile)
                 gc_tile->inc_ref();
-#else
-            if (gc_tile)
-                gdk_pixmap_ref(gc_tile);
-#endif
         }
         if (values_mask & ndkGC_CLIP_MASK) {
             gc_clip_mask = values->v_clip_mask;
-#ifdef NEW_PIX
             if (gc_clip_mask)
                 gc_clip_mask->inc_ref();
-#else
-            if (gc_clip_mask)
-                gdk_pixmap_ref(gc_clip_mask);
-#endif
         }
 
         if (values_mask & ndkGC_FOREGROUND)
@@ -168,6 +149,8 @@ ndkGC::ndkGC(GdkDrawable *drawable, ndkGCvalues *values,
             gc_subwindow_mode = values->v_subwindow_mode;
         if (values_mask & ndkGC_FILL)
             gc_fill = values->v_fill;
+        if (values_mask & ndkGC_FILL_RULE)
+            gc_fill_rule = values->v_fill_rule;
         if (values_mask & ndkGC_EXPOSURES)
             gc_exposures = values->v_graphics_exposures;
         else
@@ -175,6 +158,8 @@ ndkGC::ndkGC(GdkDrawable *drawable, ndkGCvalues *values,
     }
 
 #ifdef WITH_X11
+    if (!drawable)
+        drawable = gdk_get_default_root_window();
     gc_screen = gdk_window_get_screen(drawable);
     gc_depth = gdk_drawable_get_depth(drawable);
 
@@ -225,7 +210,6 @@ ndkGC::~ndkGC()
         gdk_region_destroy(gc_clip_region);
     if (gc_old_clip_region)
         gdk_region_destroy(gc_old_clip_region);
-#ifdef NEW_PIX
     if (gc_clip_mask)
         gc_clip_mask->dec_ref();
     if (gc_old_clip_mask)
@@ -234,16 +218,6 @@ ndkGC::~ndkGC()
         gc_tile->dec_ref();
     if (gc_stipple)
         gc_stipple->dec_ref();
-#else
-    if (gc_clip_mask)
-        gdk_pixmap_unref(gc_clip_mask);
-    if (gc_old_clip_mask)
-        gdk_pixmap_unref(gc_old_clip_mask);
-    if (gc_tile)
-        gdk_pixmap_unref(gc_tile);
-    if (gc_stipple)
-        gdk_pixmap_unref(gc_stipple);
-#endif
 }
 
 
@@ -267,7 +241,6 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
 
     if (values_mask & ndkGC_CLIP_MASK) {
         if (gc_clip_mask != values->v_clip_mask) {
-#ifdef NEW_PIX
             if (gc_clip_mask) {
                 gc_clip_mask->dec_ref();
                 gc_clip_mask = 0;
@@ -276,16 +249,6 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
                 gc_clip_mask = values->v_clip_mask;
                 gc_clip_mask->inc_ref();
             }
-#else
-            if (gc_clip_mask) {
-                gdk_pixmap_unref(gc_clip_mask);
-                gc_clip_mask = 0;
-            }
-            if (values->v_clip_mask) {
-                gc_clip_mask = values->v_clip_mask;
-                gdk_pixmap_ref(gc_clip_mask);
-            }
-#endif
         }
       
         if (gc_clip_region) {
@@ -295,9 +258,10 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
     }
     if (values_mask & ndkGC_FILL)
         gc_fill = values->v_fill;
+    if (values_mask & ndkGC_FILL_RULE)
+        gc_fill_rule = values->v_fill_rule;
     if (values_mask & ndkGC_STIPPLE) {
         if (gc_stipple != values->v_stipple) {
-#ifdef NEW_PIX
             if (gc_stipple) {
                 gc_stipple->dec_ref();
                 gc_stipple = 0;
@@ -306,21 +270,10 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
                 gc_stipple = values->v_stipple;
                 gc_stipple->inc_ref();
             }
-#else
-            if (gc_stipple) {
-                gdk_pixmap_unref(gc_stipple);
-                gc_stipple = 0;
-            }
-            if (values->v_stipple) {
-                gc_stipple = values->v_stipple;
-                gdk_pixmap_ref(gc_stipple);
-            }
-#endif
         }
     }
     if (values_mask & ndkGC_TILE) {
         if (gc_tile != values->v_tile) {
-#ifdef NEW_PIX
             if (gc_tile) {
                 gc_tile->dec_ref();
                 gc_tile = 0;
@@ -329,16 +282,6 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
                 gc_tile = values->v_tile;
                 gc_tile->inc_ref();
             }
-#else
-            if (gc_tile) {
-                gdk_pixmap_unref(gc_tile);
-                gc_tile = 0;
-            }
-            if (values->v_tile) {
-                gc_tile = values->v_tile;
-                gdk_pixmap_ref(gc_tile);
-            }
-#endif
         }
     }
     if (values_mask & ndkGC_FOREGROUND)
@@ -428,7 +371,6 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
         dst_gc->gc_old_clip_region = 0;
 
     if (src_gc->gc_clip_mask != dst_gc->gc_clip_mask) {
-#ifdef NEW_PIX
         if (dst_gc->gc_clip_mask) {
             dst_gc->gc_clip_mask->dec_ref();
             dst_gc->gc_clip_mask = 0;
@@ -437,20 +379,9 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_clip_mask = src_gc->gc_clip_mask;
             dst_gc->gc_clip_mask->inc_ref();
         }
-#else
-        if (dst_gc->gc_clip_mask) {
-            gdk_pixmap_unref(dst_gc->gc_clip_mask);
-            dst_gc->gc_clip_mask = 0;
-        }
-        if (src_gc->gc_clip_mask) {
-            dst_gc->gc_clip_mask = src_gc->gc_clip_mask;
-            gdk_pixmap_ref(dst_gc->gc_clip_mask);
-        }
-#endif
     }
   
     if (src_gc->gc_old_clip_mask != dst_gc->gc_old_clip_mask) {
-#ifdef NEW_PIX
         if (dst_gc->gc_old_clip_mask) {
             dst_gc->gc_old_clip_mask->dec_ref();
             dst_gc->gc_old_clip_mask = 0;
@@ -459,22 +390,12 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_old_clip_mask = src_gc->gc_old_clip_mask;
             dst_gc->gc_old_clip_mask->inc_ref();
         }
-#else
-        if (dst_gc->gc_old_clip_mask) {
-            gdk_pixmap_unref(dst_gc->gc_old_clip_mask);
-            dst_gc->gc_old_clip_mask = 0;
-        }
-        if (src_gc->gc_old_clip_mask) {
-            dst_gc->gc_old_clip_mask = src_gc->gc_old_clip_mask;
-            gdk_pixmap_ref(dst_gc->gc_old_clip_mask);
-        }
-#endif
     }
 
     dst_gc->gc_fill = src_gc->gc_fill;
+    dst_gc->gc_fill_rule = src_gc->gc_fill_rule;
   
     if (src_gc->gc_stipple != dst_gc->gc_stipple) {
-#ifdef NEW_PIX
         if (dst_gc->gc_stipple) {
             dst_gc->gc_stipple->dec_ref();
             dst_gc->gc_stipple = 0;
@@ -483,20 +404,9 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_stipple = src_gc->gc_stipple;
             dst_gc->gc_stipple->inc_ref();
         }
-#else
-        if (dst_gc->gc_stipple) {
-            gdk_pixmap_unref(dst_gc->gc_stipple);
-            dst_gc->gc_stipple = 0;
-        }
-        if (src_gc->gc_stipple) {
-            dst_gc->gc_stipple = src_gc->gc_stipple;
-            gdk_pixmap_ref(dst_gc->gc_stipple);
-        }
-#endif
     }
   
     if (src_gc->gc_tile != dst_gc->gc_tile) {
-#ifdef NEW_PIX
         if (dst_gc->gc_tile) {
             dst_gc->gc_tile->dec_ref();
             dst_gc->gc_tile = 0;
@@ -505,16 +415,6 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
             dst_gc->gc_tile = src_gc->gc_tile;
             dst_gc->gc_tile->inc_ref();
         }
-#else
-        if (dst_gc->gc_tile) {
-            gdk_pixmap_unref(dst_gc->gc_tile);
-            dst_gc->gc_tile = 0;
-        }
-        if (src_gc->gc_tile) {
-            dst_gc->gc_tile = src_gc->gc_tile;
-            gdk_pixmap_ref(dst_gc->gc_tile);
-        }
-#endif
     }
 
     dst_gc->gc_fg_pixel = src_gc->gc_fg_pixel;
@@ -524,12 +424,29 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
 }
 
 
-#ifdef NEW_DRW
-void
-ndkGC::draw_rectangle(ndkDrawable *d, bool filled, int x, int y, int w, int h)
-{
 #ifdef WITH_X11
-    int xid = d->get_xid();
+
+void
+ndkGC::draw_line(XID xid, int x1, int y1, int x2, int y2)
+{
+    XDrawLine(get_xdisplay(), xid, get_xgc(), x1, y1, x2, y2);
+}
+
+
+void
+ndkGC::draw_arc(XID xid, bool filled, int x, int y, int w, int h,
+    int as, int ae)
+{
+    if (filled)
+        XFillArc(get_xdisplay(), xid, get_xgc(), x, y, w, h, as, ae);
+    else
+        XDrawArc(get_xdisplay(), xid, get_xgc(), x, y, w, h, as, ae);
+}
+
+
+void
+ndkGC::draw_rectangle(XID xid, bool filled, int x, int y, int w, int h)
+{
     if (xid == None)
         return;
     if (!filled) {
@@ -545,85 +462,60 @@ ndkGC::draw_rectangle(ndkDrawable *d, bool filled, int x, int y, int w, int h)
     else {
         XFillRectangle(get_xdisplay(), xid, get_xgc(), x, y, w, h);
     }
-#endif
-}
-#endif
-
-
-#ifdef NEW_PIX
-void
-ndkGC::draw_rectangle(ndkPixmap *pmap, bool filled, int x, int y, int w, int h)
-{
-#ifdef WITH_X11
-    int xid = pmap->get_xid();
-    if (xid == None)
-        return;
-    if (filled) {
-        int x1 = x;
-        int y1 = y;
-        int x2 = x1 + w;
-        int y2 = y1 + h;
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x1, y1, x2, y1);
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x2, y1, x2, y2);
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x2, y2, x1, y2);
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x1, y2, x1, y1);
-    }
-    else {
-        XFillRectangle(get_xdisplay(), xid, get_xgc(), x, y, w, h);
-    }
-#endif
-}
-#endif
-
-#if defined(NEW_DRW) || defined(NEW_PIX)
-void
-ndkGC::draw_rectangle(GdkWindow *win, bool filled, int x, int y, int w, int h)
-{
-#ifdef WITH_X11
-    int xid = gdk_x11_drawable_get_xid(win);
-    if (xid == None)
-        return;
-    if (filled) {
-        int x1 = x;
-        int y1 = y;
-        int x2 = x1 + w;
-        int y2 = y1 + h;
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x1, y1, x2, y1);
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x2, y1, x2, y2);
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x2, y2, x1, y2);
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x1, y2, x1, y1);
-    }
-    else {
-        XFillRectangle(get_xdisplay(), xid, get_xgc(), x, y, w, h);
-    }
-#endif
 }
 
-#else
 
 void
-ndkGC::draw_rectangle(GdkDrawable *d, bool filled, int x, int y, int w, int h)
+ndkGC::draw_polygon(XID xid, bool filled, GdkPoint *pts, int npts)
 {
-#ifdef WITH_X11
-    int xid = gdk_x11_drawable_get_xid(d);
-    if (xid == None)
+    if (npts < 4)
         return;
-    if (filled) {
-        int x1 = x;
-        int y1 = y;
-        int x2 = x1 + w;
-        int y2 = y1 + h;
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x1, y1, x2, y1);
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x2, y1, x2, y2);
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x2, y2, x1, y2);
-        XDrawLine(get_xdisplay(), xid, get_xgc(), x1, y2, x1, y1);
+    if (sizeof(GdkPoint) != sizeof(XPoint)) {
+        XPoint *xpts = new XPoint[npts];
+        int n = npts;
+        while (n--) {
+            xpts[n].x = pts[n].x;
+            xpts[n].y = pts[n].y;
+        }
+        if (filled) {
+            XFillPolygon(get_xdisplay(), xid, get_xgc(),
+                xpts, npts, Complex, CoordModeOrigin);
+        }
+        else {
+            XDrawLines(get_xdisplay(), xid, get_xgc(),
+                xpts, npts, CoordModeOrigin);
+        }
+        delete [] xpts;
     }
     else {
-        XFillRectangle(get_xdisplay(), xid, get_xgc(), x, y, w, h);
+        if (filled) {
+            XFillPolygon(get_xdisplay(), xid, get_xgc(),
+                (XPoint*)pts, npts, Complex, CoordModeOrigin);
+        }
+        else {
+            XDrawLines(get_xdisplay(), xid, get_xgc(),
+                (XPoint*)pts, npts, CoordModeOrigin);
+        }
     }
-#endif
 }
+
+
+void
+ndkGC::draw_pango_layout(XID xid, int x, int y, PangoLayout *lout)
+{
+    int wid, hei;
+    pango_layout_get_pixel_size(lout, &wid, &hei);
+    if (wid <= 0 || hei <= 0)
+        return;
+    ndkPixmap *p = new ndkPixmap((GdkWindow*)0, wid, hei);
+    p->copy_from_pango_layout(this, lout);
+    XCopyArea(get_xdisplay(), p->get_xid(), xid, get_xgc(),
+        0, 0, wid, hei, x, y);
+    p->dec_ref();
+}
+
 #endif
+
 
 // END of public methods.
 
@@ -634,11 +526,7 @@ void
 ndkGC::gc_set_clip_region_real(GdkRegion *region, bool reset_origin)
 {
     if (gc_clip_mask) {
-#ifdef NEW_PIX
         gc_clip_mask->dec_ref();
-#else
-        gdk_pixmap_unref(gc_clip_mask);
-#endif
         gc_clip_mask = 0;
     }
   
@@ -678,13 +566,8 @@ ndkGC::gc_add_drawable_clip(unsigned int region_tag, GdkRegion *region,
         gdk_region_offset(region, offset_x, offset_y);
 
     if (gc_clip_mask) {
-#ifdef NEW_PIX
         int w = gc_clip_mask->get_width();
         int h = gc_clip_mask->get_height();
-#else
-        int w, h;
-        gdk_drawable_get_size(gc_clip_mask, &w, &h);
-#endif
 
         GdkRectangle r;
         r.x = 0;
@@ -701,23 +584,15 @@ ndkGC::gc_add_drawable_clip(unsigned int region_tag, GdkRegion *region,
             // The region and the mask intersect, create a new clip
             // mask that includes both areas.
             gc_old_clip_mask = gc_clip_mask;
-#ifdef NEW_PIX
             ndkPixmap *new_mask = new ndkPixmap(gc_old_clip_mask, w, h);
-#else
-            GdkPixmap *new_mask = gdk_pixmap_new(gc_old_clip_mask, w, h);
-#endif
             ndkGC *tmp_gc = new ndkGC(new_mask, 0, (ndkGCvaluesMask)0);
 
             GdkColor black = {0, 0, 0, 0};
             tmp_gc->set_foreground(&black);
-//XXX            gdk_draw_rectangle(new_mask, tmp_gc, true, 0, 0, -1, -1);
+            tmp_gc->draw_rectangle(new_mask, true, 0, 0, w, h);
             tmp_gc->gc_set_clip_region_internal(region, true);
             // Takes ownership of region.
-#ifdef NEW_PIX
-            new_mask->copy_from_pixmap(gc_old_clip_maks, tmp_gc, 0, 0, 0, 0,
-                -1, -1);
-#else
-            gdk_draw_drawable(new_mask, tmp_gc, gc_old_clip_mask, 0, 0, 0, 0,
+            new_mask->copy_from_pixmap(gc_old_clip_mask, tmp_gc, 0, 0, 0, 0,
                 -1, -1);
             tmp_gc->set_clip_region(0);
             set_clip_mask(new_mask);
@@ -761,11 +636,7 @@ ndkGC::gc_remove_drawable_clip()
         gc_region_tag_applied = 0;
         if (gc_old_clip_mask) {
             set_clip_mask(gc_old_clip_mask);
-#ifdef NEW_PIX
             gc_old_clip_mask->dec_ref();
-#else
-            gdk_pixmap_unref(gc_old_clip_mask);
-#endif
             gc_old_clip_mask = 0;
 
             if (gc_clip_region) {
@@ -782,32 +653,17 @@ ndkGC::gc_remove_drawable_clip()
 
 
 namespace {
-#ifdef NEW_PIX
     cairo_surface_t *make_stipple_tile_surface(cairo_t *cr,
         ndkPixmap *stipple, GdkColor *foreground, GdkColor *background)
-#else
-    cairo_surface_t *make_stipple_tile_surface(cairo_t *cr,
-        GdkBitmap *stipple, GdkColor *foreground, GdkColor *background)
-#endif
     {
-#ifdef NEW_PIX
         int width = stipple->get_width();
         int height = stipple->get_height();
-#else
-        int width, height;
-        gdk_drawable_get_size(stipple, &width, &height);
-#endif
 
-#ifdef NEW_PIX
         cairo_surface_t *sfc = cairo_get_target(cr);
         cairo_surface_t *alpha_surface = cairo_xlib_surface_create(
             cairo_xlib_surface_get_display(sfc), stipple->get_xid(),
             cairo_xlib_surface_get_visual(sfc), width, height);
         cairo_surface_destroy(sfc);
-#else
-        cairo_surface_t *alpha_surface =
-            GDK_DRAWABLE_GET_CLASS(stipple)->ref_cairo_surface(stipple);
-#endif
       
         cairo_surface_t *surface = cairo_surface_create_similar(
             cairo_get_target(cr), CAIRO_CONTENT_COLOR_ALPHA, width, height);
@@ -847,27 +703,9 @@ namespace {
 // functions other than GDK_COPY are not currently handled.
 //
 void
-#ifdef NEW_DRW
-#ifdef NEW_PIX
 ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
     ndkPixmap  *override_stipple, bool gc_changed,
     ndkDrawable *target_drawable)
-#else
-ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
-    GdkBitmap  *override_stipple, bool gc_changed,
-    ndkDrawable *target_drawable)
-#endif
-#else
-#ifdef NEW_PIX
-ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
-    ndkPixmap  *override_stipple, bool gc_changed,
-    GdkWindow *target_drawable)
-#else
-ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
-    GdkBitmap  *override_stipple, bool gc_changed,
-    GdkDrawable *target_drawable)
-#endif
-#endif
 {
     gc_remove_drawable_clip();
 
@@ -891,11 +729,7 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
         gtk_QueryColor(&background);
     }
 
-#ifdef NEW_PIX
     ndkPixmap *stipple = 0;
-#else
-    GdkBitmap *stipple = 0;
-#endif
     switch (fill) {
     case ndkGC_SOLID:
         break;
@@ -921,14 +755,9 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
         gdk_cairo_set_source_color(cr, &foreground);
         break;
     case ndkGC_TILED:
-#ifdef NEW_PIX
         tile_surface = cairo_xlib_surface_create(get_xdisplay(),
             gc_tile->get_xid(), gdk_x11_visual_get_xvisual(GRX->Visual()),
             gc_tile->get_width(), gc_tile->get_height());
-#else
-        tile_surface = 
-            GDK_DRAWABLE_GET_CLASS(gc_tile)->ref_cairo_surface(gc_tile);
-#endif
         break;
     case ndkGC_STIPPLED:
         tile_surface = make_stipple_tile_surface(cr, stipple, &foreground, 0);
@@ -980,20 +809,11 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
     cairo_reset_clip(cr);
     // The reset above resets the window clip rect, so we want to re-set
     // that.
-#ifdef NEW_DRW
     if (target_drawable && target_drawable->get_state() == DW_WINDOW) {
         GdkWindow *window = target_drawable->get_window();
         if (window && GDK_DRAWABLE_GET_CLASS(window)->set_cairo_clip)
             GDK_DRAWABLE_GET_CLASS(window)->set_cairo_clip(window, cr);
     }
-    // XXX What to do if output is a pixmap?
-#else
-    if (target_drawable &&
-            GDK_DRAWABLE_GET_CLASS(target_drawable)->set_cairo_clip)
-        GDK_DRAWABLE_GET_CLASS(target_drawable)->set_cairo_clip(
-            target_drawable, cr);
-#endif
-
     if (gc_clip_region) {
         cairo_save(cr);
 
@@ -1183,11 +1003,8 @@ ndkGC::gc_x11_get_values(ndkGCvalues *values)
             break;
         }
 
-/* XXX Problem here, need surface of drawable
-GdkWindow *wd = gdk_window_lookup_for_display(xvalues.tile);
-        values->v_tile = xvalues.tile;
-        values->v_stipple = xvalues.stipple;
-*/
+        values->v_tile = ndkPixmap::lookup(xvalues.tile);
+        values->v_stipple = ndkPixmap::lookup(xvalues.stipple);
         values->v_clip_mask = 0;
         values->v_subwindow_mode = (ndkGCsubwinMode)xvalues.subwindow_mode;
         values->v_ts_x_origin = xvalues.ts_x_origin;
@@ -1262,103 +1079,119 @@ ndkGC::gc_values_to_xvalues(ndkGCvalues *values, ndkGCvaluesMask mask,
         switch (values->v_function) {
         case ndkGC_COPY:
             xvalues->function = GXcopy;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_INVERT:
             xvalues->function = GXinvert;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_XOR:
             xvalues->function = GXxor;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_CLEAR:
             xvalues->function = GXclear;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_AND:
             xvalues->function = GXand;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_AND_REVERSE:
             xvalues->function = GXandReverse;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_AND_INVERT:
             xvalues->function = GXandInverted;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_NOOP:
             xvalues->function = GXnoop;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_OR:
             xvalues->function = GXor;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_EQUIV:
             xvalues->function = GXequiv;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_OR_REVERSE:
             xvalues->function = GXorReverse;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_COPY_INVERT:
             xvalues->function = GXcopyInverted;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_OR_INVERT:
             xvalues->function = GXorInverted;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_NAND:
             xvalues->function = GXnand;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_SET:
             xvalues->function = GXset;
+            *xvalues_mask |= GCFunction;
             break;
         case ndkGC_NOR:
             xvalues->function = GXnor;
+            *xvalues_mask |= GCFunction;
         break;
         }
-        *xvalues_mask |= GCFunction;
     }
     if (mask & ndkGC_FILL) {
         switch (values->v_fill) {
         case ndkGC_SOLID:
             xvalues->fill_style = FillSolid;
+            *xvalues_mask |= GCFillStyle;
             break;
         case ndkGC_TILED:
             xvalues->fill_style = FillTiled;
+            *xvalues_mask |= GCFillStyle;
             break;
         case ndkGC_STIPPLED:
             xvalues->fill_style = FillStippled;
+            *xvalues_mask |= GCFillStyle;
             break;
         case ndkGC_OPAQUE_STIPPLED:
             xvalues->fill_style = FillOpaqueStippled;
+            *xvalues_mask |= GCFillStyle;
             break;
         }
-        *xvalues_mask |= GCFillStyle;
+    }
+    if (mask & ndkGC_FILL_RULE) {
+        switch (values->v_fill_rule) {
+        case ndkGC_EVEN_ODD_RULE:
+            xvalues->fill_rule = EvenOddRule;
+            *xvalues_mask |= GCFillRule;
+            break;
+        case ndkGC_WINDING_RULE:
+            xvalues->fill_rule = WindingRule;
+            *xvalues_mask |= GCFillRule;
+            break;
+        }
     }
     if (mask & ndkGC_TILE) {
         if (values->v_tile)
-#ifdef NEW_PIX
             xvalues->tile = values->v_tile->get_xid();
-#else
-            xvalues->tile = GDK_DRAWABLE_XID(values->v_tile);
-#endif
         else
             xvalues->tile = None;
         *xvalues_mask |= GCTile;
     }
     if (mask & ndkGC_STIPPLE) {
-        if (values->v_stipple) {
-#ifdef NEW_PIX
+        if (values->v_stipple)
             xvalues->stipple = values->v_stipple->get_xid();
-#else
-            xvalues->stipple = GDK_DRAWABLE_XID(values->v_stipple);
-#endif
-        }
         else
             xvalues->stipple = None;
         *xvalues_mask |= GCStipple;
     }
     if (mask & ndkGC_CLIP_MASK) {
-        if (values->v_clip_mask) {
-#ifdef NEW_PIX
+        if (values->v_clip_mask)
             xvalues->clip_mask = values->v_clip_mask->get_xid();
-#else
-            xvalues->clip_mask = GDK_DRAWABLE_XID(values->v_clip_mask);
-#endif
-        }
         else
             xvalues->clip_mask = None;
         *xvalues_mask |= GCClipMask;
@@ -1398,46 +1231,53 @@ ndkGC::gc_values_to_xvalues(ndkGCvalues *values, ndkGCvaluesMask mask,
         switch (values->v_line_style) {
         case ndkGC_LINE_SOLID:
             xvalues->line_style = LineSolid;
+            *xvalues_mask |= GCLineStyle;
             break;
         case ndkGC_LINE_ON_OFF_DASH:
             xvalues->line_style = LineOnOffDash;
+            *xvalues_mask |= GCLineStyle;
             break;
         case ndkGC_LINE_DOUBLE_DASH:
             xvalues->line_style = LineDoubleDash;
+            *xvalues_mask |= GCLineStyle;
             break;
         }
-        *xvalues_mask |= GCLineStyle;
     }
     if (mask & ndkGC_CAP_STYLE) {
         switch (values->v_cap_style) {
         case ndkGC_CAP_NOT_LAST:
             xvalues->cap_style = CapNotLast;
+            *xvalues_mask |= GCCapStyle;
             break;
         case ndkGC_CAP_BUTT:
             xvalues->cap_style = CapButt;
+            *xvalues_mask |= GCCapStyle;
             break;
         case ndkGC_CAP_ROUND:
             xvalues->cap_style = CapRound;
+            *xvalues_mask |= GCCapStyle;
             break;
         case ndkGC_CAP_PROJECTING:
             xvalues->cap_style = CapProjecting;
+            *xvalues_mask |= GCCapStyle;
             break;
         }
-        *xvalues_mask |= GCCapStyle;
     }
     if (mask & ndkGC_JOIN_STYLE) {
         switch (values->v_join_style) {
         case ndkGC_JOIN_MITER:
             xvalues->join_style = JoinMiter;
+            *xvalues_mask |= GCJoinStyle;
             break;
         case ndkGC_JOIN_ROUND:
             xvalues->join_style = JoinRound;
+            *xvalues_mask |= GCJoinStyle;
             break;
         case ndkGC_JOIN_BEVEL:
             xvalues->join_style = JoinBevel;
+            *xvalues_mask |= GCJoinStyle;
             break;
         }
-        *xvalues_mask |= GCJoinStyle;
     }
 }
 

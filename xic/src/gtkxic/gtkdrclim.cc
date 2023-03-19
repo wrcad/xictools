@@ -518,27 +518,18 @@ sDL::update()
     GRX->SetStatus(dl_skip, DRC()->isIntrSkipInst());
     if (DRC()->errorLevel() == DRCone_err) {
         GRX->SetStatus(dl_b1, true);
-//XXX        GTK_TOGGLE_BUTTON(dl_b1)->active = true;
         GRX->SetStatus(dl_b2, false);
-//XXX        GTK_TOGGLE_BUTTON(dl_b2)->active = false;
         GRX->SetStatus(dl_b3, false);
-//XXX        GTK_TOGGLE_BUTTON(dl_b3)->active = false;
     }
     else if (DRC()->errorLevel() == DRCone_type) {
         GRX->SetStatus(dl_b1, false);
-//XXX        GTK_TOGGLE_BUTTON(dl_b1)->active = false;
         GRX->SetStatus(dl_b2, true);
-//XXX        GTK_TOGGLE_BUTTON(dl_b2)->active = true;
         GRX->SetStatus(dl_b3, false);
-//XXX        GTK_TOGGLE_BUTTON(dl_b3)->active = false;
     }
     else {
         GRX->SetStatus(dl_b1, false);
-//XXX        GTK_TOGGLE_BUTTON(dl_b1)->active = false;
         GRX->SetStatus(dl_b2, false);
-//XXX        GTK_TOGGLE_BUTTON(dl_b2)->active = false;
         GRX->SetStatus(dl_b3, true);
-//XXX        GTK_TOGGLE_BUTTON(dl_b3)->active = true;
     }
 }
 

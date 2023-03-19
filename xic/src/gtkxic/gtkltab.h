@@ -92,7 +92,6 @@ private:
     static void ltab_search_hdlr(GtkWidget*, void*);
     static void ltab_activate_proc(GtkWidget*, void*);
 
-    sGbag ltab_gbag;            // private drawing context
     GtkWidget *ltab_container;  // top-level subwidget for export
     GtkWidget *ltab_scrollbar;  // scroll bar
 
@@ -103,7 +102,10 @@ private:
     GtkWidget *ltab_lsearch;
     GtkWidget *ltab_lsearchn;
 
+#ifdef NEW_NDK
+#else
     GdkPixmap *ltab_pixmap;
+#endif
     int ltab_pmap_width;
     int ltab_pmap_height;
     bool ltab_pmap_dirty;

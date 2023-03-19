@@ -68,6 +68,7 @@
 #include "config.h"
 #include "gtkinterf.h"
 
+
 #ifdef NDKIMAGE_H
 
 ndkImage::ndkImage(ndkImageType type, GdkVisual *visual,
@@ -261,42 +262,6 @@ shmerr:
 }
 
 
-#ifdef XXX_DEPREC
-ndkImage::ndkImage(GdkDrawable *drawable, int src_x, int src_y,
-    int width, int height)
-{
-    im_type = ndkIMAGE_NORMAL;
-    im_screen = gdk_drawable_get_screen(drawable);
-    im_visual = gdk_drawable_get_visual(drawable); // could be NULL
-    im_width = width;
-    im_height = height;
-    im_depth = gdk_drawable_get_depth(drawable);
-  
-    im_ximage = XGetImage(
-        gdk_x11_display_get_xdisplay(gdk_screen_get_display(im_screen)),
-        gdk_x11_drawable_get_xid(drawable),
-        src_x, src_y, width, height, AllPlanes, ZPixmap);
-  
-    if (!im_ximage) {
-        // Somethng unfortunate happened.
-        im_mem = 0;
-        im_bpl = 0;
-        im_bits_per_pixel = 0;
-        im_bpp = 0;
-        im_byte_order = GDK_LSB_FIRST;
-        return;
-    }
-    im_mem = im_ximage->data;
-    im_bpl = im_ximage->bytes_per_line;
-    im_bits_per_pixel = im_ximage->bits_per_pixel;
-    im_bpp = (im_ximage->bits_per_pixel + 7) / 8;
-    im_byte_order = (im_ximage->byte_order == LSBFirst) ?
-        GDK_LSB_FIRST : GDK_MSB_FIRST;
-}
-#endif
-
-#ifdef NEW_PIX
-
 ndkImage::ndkImage(ndkPixmap *pixmap, int src_x, int src_y,
     int width, int height)
 {
@@ -329,43 +294,6 @@ ndkImage::ndkImage(ndkPixmap *pixmap, int src_x, int src_y,
 }
 
 
-/*
-ndkImage::ndkImage(GdkWindow *window, int src_x, int src_y,
-    int width, int height)
-{
-    im_type = ndkIMAGE_NORMAL;
-    im_screen = gdk_window_get_screen(window);
-    im_visual = gdk_drawable_get_visual(window); // could be NULL
-    im_width = width;
-    im_height = height;
-    im_depth = gdk_visual_get_depth(im_visual);
-  
-    im_ximage = XGetImage(GDK_SCREEN_XDISPLAY(im_screen),
-        gdk_x11_drawable_get_xid(window), src_x, src_y, width, height,
-        AllPlanes, ZPixmap);
-  
-    if (!im_ximage) {
-        // Somethng unfortunate happened.
-        im_mem = 0;
-        im_bpl = 0;
-        im_bits_per_pixel = 0;
-        im_bpp = 0;
-        im_byte_order = GDK_LSB_FIRST;
-        return;
-    }
-    im_mem = im_ximage->data;
-    im_bpl = im_ximage->bytes_per_line;
-    im_bits_per_pixel = im_ximage->bits_per_pixel;
-    im_bpp = (im_ximage->bits_per_pixel + 7) / 8;
-    im_byte_order = (im_ximage->byte_order == LSBFirst) ?
-        GDK_LSB_FIRST : GDK_MSB_FIRST;
-}
-*/
-
-
-#endif
-#ifdef NEW_DRW
-
 ndkImage::ndkImage(ndkDrawable *drawable, int src_x, int src_y,
     int width, int height)
 {
@@ -396,7 +324,38 @@ ndkImage::ndkImage(ndkDrawable *drawable, int src_x, int src_y,
         GDK_LSB_FIRST : GDK_MSB_FIRST;
 }
 
-#endif
+
+ndkImage::ndkImage(GdkWindow *window, int src_x, int src_y,
+    int width, int height)
+{
+    im_type = ndkIMAGE_NORMAL;
+    im_screen = gdk_window_get_screen(window);
+    im_visual = gdk_drawable_get_visual(window); // could be NULL
+    im_width = width;
+    im_height = height;
+    im_depth = gdk_visual_get_depth(im_visual);
+  
+    im_ximage = XGetImage(GDK_SCREEN_XDISPLAY(im_screen),
+        gdk_x11_drawable_get_xid(window), src_x, src_y, width, height,
+        AllPlanes, ZPixmap);
+  
+    if (!im_ximage) {
+        // Somethng unfortunate happened.
+        im_mem = 0;
+        im_bpl = 0;
+        im_bits_per_pixel = 0;
+        im_bpp = 0;
+        im_byte_order = GDK_LSB_FIRST;
+        return;
+    }
+    im_mem = im_ximage->data;
+    im_bpl = im_ximage->bytes_per_line;
+    im_bits_per_pixel = im_ximage->bits_per_pixel;
+    im_bpp = (im_ximage->bits_per_pixel + 7) / 8;
+    im_byte_order = (im_ximage->byte_order == LSBFirst) ?
+        GDK_LSB_FIRST : GDK_MSB_FIRST;
+}
+
 
 ndkImage::~ndkImage()
 {
@@ -445,180 +404,6 @@ ndkImage::~ndkImage()
 }
 
 
-#ifdef XXX_NOTDEF
-ndkImage::copy_from_drawable(GdkDrawable *drawable,
-    int src_x, int src_y, int dest_x, int dest_y, int width, int height)
-{
-
-    /*
-GdkImage*
-_gdk_x11_copy_to_image(GdkDrawable *drawable, GdkImage *image,
-    int src_x, int src_y, int dest_x, int dest_y, int width, int height)
-    */
-{
-    GdkRectangle window_rect;
-    bool success = true;
-
-    GdkVisual *visual = gdk_drawable_get_visual(drawable);
-    GdkDisplay *display = gdk_drawable_get_display(drawable);
-    Display *xdisplay = gdk_x11_display_get_xdisplay(display);
-    Drawable xid = gtk_x11_drawable_get_xid(drawable);
-    GdkScreen = gdk_drawable_get_scfreen(drawable);
-
-    if (gdk_display_is_closed(display))
-        return;
-  
-    bool have_grab = false;
-
-#define UNGRAB() G_STMT_START { \
-    if (have_grab) { \
-        gdk_x11_display_ungrab(display); \
-        have_grab = false; } \
-    } G_STMT_END
-
-    Pixmap shm_pixmap = None;
-    if (im_type == GDK_IMAGE_SHARED) {
-        shm_pixmap = im_shm_pixmap;
-        if (shm_pixmap) {
-            XGCValues values;
-
-            // Again easy, we can just XCopyArea, and don't have to
-            // worry about clipping.
-            values.subwindow_mode = IncludeInferiors;
-            GC xgc = XCreateGC(xdisplay, xid, GCSubwindowMode, &values);
-      
-            XCopyArea(xdisplay, xid, shm_pixmap, xgc, src_x, src_y,
-                width, height, dest_x, dest_y);
-            XSync(xdisplay, false);
-            XFreeGC(xdisplay, xgc);
-            return;
-        }
-    }
-
-    // Now the general case - we may have to worry about clipping to
-    // the screen bounds, in which case we'll have to grab the server
-    // and only get a piece of the window.
-    //
-
-    if (GDK_IS_WINDOW(drawable)) {
-
-        have_grab = true;
-        gdk_x11_display_grab(display);
-
-        // Translate screen area into window coordinates.
-        GdkRectangle screen_rect;
-        Window child;
-        XTranslateCoordinates(xdisplay, GDK_SCREEN_XROOTWIN(screen),
-            xid, 0, 0, &screen_rect.x, &screen_rect.y, &child);
-
-        screen_rect.width = gdk_screen_get_width(screen);
-        screen_rect.height = gdk_screen_get_height(screen);
-      
-        gdk_error_trap_push ();
-
-        window_rect.x = 0;
-        window_rect.y = 0;
-      
-        gdk_window_get_geometry(GDK_WINDOW(drawable), NULL, NULL,
-            &window_rect.width, &window_rect.height, NULL);
-      
-        // compute intersection of screen and window, in window
-        // coordinates
-        //
-
-        if (gdk_error_trap_pop () || !gdk_rectangle_intersect(
-                &window_rect, &screen_rect, &window_rect))
-            goto out;
-    }
-    else {
-        window_rect.x = 0;
-        window_rect.y = 0;
-        gdk_drawable_get_size(drawable,
-            &window_rect.width, &window_rect.height);
-    }
-      
-    GdkRectangle req;
-    req.x = src_x;
-    req.y = src_y;
-    req.width = width;
-    req.height = height;
-  
-    // window_rect specifies the part of drawable which we can get from
-    // the server in window coordinates. 
-    // For pixmaps this is all of the pixmap, for windows it is just 
-    // the onscreen part.
-
-    if (!gdk_rectangle_intersect(&req, &window_rect, &req))
-        goto out;
-
-    gdk_error_trap_push ();
-  
-    if (!image && req.x == src_x && req.y == src_y && req.width == width &&
-            req.height == height) {
-        image = get_full_image(drawable, src_x, src_y, width, height);
-        if (!image)
-            success = false;
-    }
-    else {
-        bool created_image = false;
-      
-        if (!image) {
-            image = _gdk_image_new_for_depth(impl->screen, GDK_IMAGE_NORMAL, 
-                visual, width, height, gdk_drawable_get_depth (drawable));
-            created_image = true;
-        }
-
-        // In the ShmImage but no ShmPixmap case, we could use
-        // XShmGetImage when we are getting the entire image.
-
-        if (XGetSubImage(xdisplay, impl->xid, req.x, req.y,
-                req.width, req.height, AllPlanes, ZPixmap, image->im_ximage,
-                dest_x + req.x - src_x, dest_y + req.y - src_y) == None) {
-            if (created_image)
-                g_object_unref(image);
-            success = false;
-        }
-    }
-    gdk_error_trap_pop ();
-
-out:
-  
-    if (have_grab) {               
-        gdk_x11_display_ungrab(display);
-        have_grab = false;
-    }
-  
-    if (success && !image) {
-        // We "succeeded", but could get no content for the image so
-        // return junk.
-        image = _gdk_image_new_for_depth(impl->screen, GDK_IMAGE_NORMAL, 
-            visual, width, height, gdk_drawable_get_depth(drawable));
-    }
-      
-    return (image);
-}
-#endif  // XXX_NOTDEF
-
-void
-ndkImage::copy_to_drawable(GdkDrawable *drawable, ndkGC *gc,
-    int xsrc, int ysrc, int xdest, int ydest, int width, int height)
-{
-#ifdef USE_SHM  
-    if (im_type == ndkIMAGE_SHARED) {
-        XShmPutImage(GDK_SCREEN_XDISPLAY(im_screen),
-            gdk_x11_drawable_get_xid(drawable), gc->get_xgc(),
-            im_ximage, xsrc, ysrc, xdest, ydest, width, height, False);
-        return;
-    }
-#endif
-    XPutImage(GDK_SCREEN_XDISPLAY(im_screen), 
-        gdk_x11_drawable_get_xid(drawable), gc->get_xgc(), im_ximage,
-        xsrc, ysrc, xdest, ydest, width, height);
-}
-
-
-#if defined(NEW_DRW) && defined(NEW_GC)
-
 void
 ndkImage::copy_to_drawable(ndkDrawable *drawable, ndkGC *gc,
     int xsrc, int ysrc, int xdest, int ydest, int width, int height)
@@ -636,10 +421,6 @@ ndkImage::copy_to_drawable(ndkDrawable *drawable, ndkGC *gc,
         xsrc, ysrc, xdest, ydest, width, height);
 }
 
-#endif
-
-
-#if defined(NEW_PIX) && defined(NEW_GC)
 
 void
 ndkImage::copy_to_pixmap(ndkPixmap *pixmap, ndkGC *gc,
@@ -658,7 +439,24 @@ ndkImage::copy_to_pixmap(ndkPixmap *pixmap, ndkGC *gc,
         xsrc, ysrc, xdest, ydest, width, height);
 }
 
+
+void
+ndkImage::copy_to_window(GdkWindow *window, ndkGC *gc,
+    int xsrc, int ysrc, int xdest, int ydest, int width, int height)
+{
+#ifdef USE_SHM  
+    if (im_type == ndkIMAGE_SHARED) {
+        XShmPutImage(GDK_SCREEN_XDISPLAY(im_screen),
+            gdk_x11_drawable_get_xid(window), gc->get_xgc(),
+            im_ximage, xsrc, ysrc, xdest, ydest, width, height, False);
+        return;
+    }
 #endif
+    XPutImage(GDK_SCREEN_XDISPLAY(im_screen), 
+        gdk_x11_drawable_get_xid(window), gc->get_xgc(), im_ximage,
+        xsrc, ysrc, xdest, ydest, width, height);
+}
+
 
 void
 ndkImage::put_pixel(int x, int y, unsigned int pixel)
@@ -678,22 +476,6 @@ ndkImage::get_pixel(int x, int y)
 }
 
 #ifdef XXX_NOTUSED
-
-Display *
-ndkImage::image_get_xdisplay()
-{
-    return GDK_SCREEN_XDISPLAY(im_screen);
-}
-
-
-XImage *
-ndkImage::x11_image_get_ximage()
-{
-    if (gdk_screen_is_closed(im_screen))
-        return (0);
-    return (im_ximage);
-}
-
 
 namespace {
     int

@@ -65,7 +65,7 @@ struct tbpoint_t
 
 struct tb_bag : public GTKbag, public GTKdraw
 {
-    tb_bag(int type = 0) : GTKdraw(type)
+    tb_bag(int type) : GTKdraw(type)
         {
             b_wid = 0;
             b_hei = 0;

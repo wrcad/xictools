@@ -74,12 +74,15 @@ cMain::SetCoordMode(COmode mode, int rx, int ry)
 }
 
 
-cCoord::cCoord()
+cCoord::cCoord() : GTKdraw(XW_TEXT)
 {
     instancePtr = this;
 
+#ifdef NEW_NDK
+#else
     co_win_bak = 0;
     co_pm = 0;
+#endif
     co_width = co_height = 0;
     co_x = co_y = 0;
     co_lx = co_ly = 0;
@@ -154,7 +157,7 @@ cCoord::do_print(int xc, int yc, int update)
 {
     if (!DSP()->MainWdesc() || !EV()->CurrentWin())
         return;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
     GetDrawable()->set_draw_to_pixmap();
@@ -217,7 +220,7 @@ cCoord::do_print(int xc, int yc, int update)
         EV()->CurrentWin()->Snap(&xc, &yc);
     if (update == COOR_MOTION) {
         if (xc == co_lx && yc == co_ly) {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             GetDrawable()->set_draw_to_window();
 #else
             gd_window = co_win_bak;
@@ -309,7 +312,7 @@ cCoord::do_print(int xc, int yc, int update)
     SetColor(c2);
     Text(buf, x, y, 0);
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(CpyGC(), 0, 0, -1, -1);
 #else
@@ -337,7 +340,7 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
 {
     if (!Coord())
         return;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (!ev || !Coord()->GetDrawable()->get_pixmap()) {
 #else
     if (!ev || !Coord()->co_pm) {
@@ -349,7 +352,7 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
     }
 
     GdkEventExpose *pev = (GdkEventExpose*)ev;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Coord()->GetDrawable()->refresh(Coord()->CpyGC(), pev);
 #else
     if (Coord() && GDK_IS_DRAWABLE(Coord()->gd_window)) {
@@ -370,7 +373,7 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
 void
 cCoord::co_font_change(GtkWidget*, void*, void*)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (Coord() && Coord()->GetDrawable()->get_window()) {
         int fw, fh;
         Coord()->TextExtent(0, &fw, &fh);

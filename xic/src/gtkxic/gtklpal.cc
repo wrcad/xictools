@@ -135,7 +135,7 @@ cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
 }
 
 
-sLpalette::sLpalette(GRobject caller)
+sLpalette::sLpalette(GRobject caller) : GTKdraw(XW_LPAL)
 {
     Lpal = this;
     lp_caller = caller;
@@ -143,7 +143,10 @@ sLpalette::sLpalette(GRobject caller)
     lp_remove = 0;
     memset(lp_history, 0, LP_PALETTE_COLS * sizeof(CDl*));
     memset(lp_user, 0, LP_PALETTE_COLS * LP_PALETTE_ROWS * sizeof(CDl*));
+#ifdef NEW_NDK
+#else
     lp_pixmap = 0;
+#endif
     lp_pmap_width = 0;
     lp_pmap_height = 0;
     lp_pmap_dirty = false;
@@ -230,6 +233,7 @@ sLpalette::sLpalette(GRobject caller)
     rowcnt++;
 
     gd_viewport = gtk_drawing_area_new();
+    gtk_widget_set_double_buffered(gd_viewport, false);
     gtk_widget_set_name(gd_viewport, "LayerPalette");
     gtk_widget_show(gd_viewport);
 
@@ -297,7 +301,7 @@ sLpalette::~sLpalette()
         GRX->Deselect(lp_caller);
     if (lp_shell)
         gtk_widget_destroy(lp_shell);
-#ifdef NEW_PIX
+#ifdef NEW_NDK
 #else
     if (lp_pixmap)
         gdk_pixmap_unref(lp_pixmap);
@@ -310,7 +314,7 @@ sLpalette::~sLpalette()
 void
 sLpalette::update_info(CDl *ldesc)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
     if (!GetDrawable()->get_window())
@@ -348,6 +352,7 @@ sLpalette::update_info(CDl *ldesc)
 
     SetColor(text_backg());
     SetFillpattern(0);
+    SetBackground(text_backg());
     Box(0, 0, win_width, LP_TEXT_LINES*fhei + 2);
 
     unsigned long c1 = DSP()->Color(PromptTextColor);
@@ -439,7 +444,7 @@ sLpalette::update_info(CDl *ldesc)
             sprintf(buf, "%d (%02Xh)", d, d);
         Text(buf, x, y, 0);
     }
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, win_width, 5*fhei);
 #else
@@ -582,7 +587,7 @@ sLpalette::init_size()
 void
 sLpalette::redraw()
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     int win_width = GetDrawable()->get_width();
     int win_height = GetDrawable()->get_height();
 #else
@@ -734,7 +739,7 @@ sLpalette::redraw()
 void
 sLpalette::refresh(int x, int y, int w, int h)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
     if (!GetDrawable()->get_window())
@@ -780,7 +785,7 @@ sLpalette::refresh(int x, int y, int w, int h)
         lp_pmap_dirty = false;
     }
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(GC(), x, y, w, h);
 #else
@@ -974,26 +979,14 @@ sLpalette::lp_resize_hdlr(GtkWidget*, GdkEvent*, void*)
 {
     if (!Lpal)
         return (0);
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (!Lpal->GetDrawable()->get_window()) {
         GdkWindow *window = gtk_widget_get_window(Lpal->gd_viewport);
         Lpal->GetDrawable()->set_window(window);
-        if (!Lpal->lp_gbag.main_gc()) {
-            Lpal->lp_gbag.set_gc(new ndkGC(window));
-            Lpal->lp_gbag.set_xorgc(new ndkGC(window));
-        }
-        Lpal->SetGbag(&Lpal->lp_gbag);
     }
 #else
-    if (!Lpal->gd_window) {
+    if (!Lpal->gd_window)
         Lpal->gd_window = gtk_widget_get_window(Lpal->gd_viewport);
-
-        if (!Lpal->lp_gbag.main_gc()) {
-            Lpal->lp_gbag.set_gc(gdk_gc_new(Lpal->gd_window));
-            Lpal->lp_gbag.set_xorgc(gdk_gc_new(Lpal->gd_window));
-        }
-        Lpal->SetGbag(&Lpal->lp_gbag);
-    }
 #endif
     Lpal->update_layer(LT()->CurLayer());
     Lpal->update_info(LT()->CurLayer());

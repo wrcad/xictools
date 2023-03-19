@@ -83,8 +83,9 @@
 #include <winsock.h>
 #endif
 
-// Uncomment to build without graphics.
-// #define NO_GRAPHICS
+// To build without graphics:
+// -  Add -DNO_GRAPHICS to the compile options.
+// -  Don't link with gtkhttpmon.o or any of the graphics libraries.
 
 static const char *usage =
 "\nhttpget %s: retrieve a document or file via HTTP or FTP\n"
@@ -167,33 +168,4 @@ main(int argc, char **argv)
     }
     return (EXIT_SUCCESS);
 }
-
-
-#ifdef NO_GRAPHICS
-
-bool
-http_monitor::graphics_enabled()
-{
-    return (false);
-}
-
-
-void
-http_monitor::initialize(int&, char**)
-{
-}
-
-
-void
-http_monitor::setup_comm(sComm*)
-{ 
-}
-
-
-void
-http_monitor::start(Transaction*)
-{   
-}
-
-#endif
 

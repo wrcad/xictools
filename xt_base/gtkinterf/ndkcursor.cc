@@ -32,87 +32,73 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Xic Integrated Circuit Layout and Schematic Editor                     *
+ * GtkInterf Graphical Interface Library, New Drawing Kit (ndk)           *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef GTKLPAL_H
-#define GTKLPAL_H
+// A Cursor that can have transparency the old way, with a mask, which
+// is no longer available from stock GTK.
 
-// Number of layer entries.
-#define LP_PALETTE_COLS 5
-#define LP_PALETTE_ROWS 3
+#include "config.h"
+#include "gtkinterf.h"
 
-// Number of text lines at top.
-#define LP_TEXT_LINES 5
+#ifdef NDKCURSOR_H
 
-struct sLpalette : public GTKdraw
+ndkCursor::ndkCursor(GdkWindow *window, const char *data, const char *mask,
+    int width, int height, int xhot, int yhot, GdkColor *fg, GdkColor *bg)
 {
-    sLpalette(GRobject);
-    ~sLpalette();
+    if (!window)
+        return;
+    Display *xdisplay = gdk_x11_display_get_xdisplay(
+        gdk_window_get_display(window));
+    c_datapm = new ndkPixmap(window, data, width, height);
+    c_maskpm = new ndkPixmap(window, mask, width, height);
+    XColor xfg, xbg;
+    xfg.pixel = fg->pixel;
+    xfg.red = fg->red;
+    xfg.green = fg->green;
+    xfg.blue = fg->blue;
+    xbg.pixel = bg->pixel;
+    xbg.red = bg->red;
+    xbg.green = bg->green;
+    xbg.blue = bg->blue;
+    c_xcursor = XCreatePixmapCursor(xdisplay, c_datapm->get_xid(),
+        c_maskpm->get_xid(), &xfg, &xbg, xhot, yhot);
+}
 
-    GtkWidget *shell() { return (lp_shell); }
 
-    void update_info(CDl*);
-    void update_layer(CDl*);
+ndkCursor::~ndkCursor()
+{
+    if (c_datapm)
+        c_datapm->dec_ref();
+    if (c_maskpm)
+        c_maskpm->dec_ref();
+}
 
-private:
-    void update_user(CDl*, int, int);
-    void init_size();
-    void redraw();
-    void refresh(int, int, int, int);
-    void b1_handler(int, int, int, bool);
-    void b2_handler(int, int, int, bool);
-    void b3_handler(int, int, int, bool);
-    CDl *ldesc_at(int, int);
-    bool remove(int, int);
 
-    static void lp_cancel_proc(GtkWidget*, void*);
-    static void lp_help_proc(GtkWidget*, void*);
-    static int lp_resize_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int lp_redraw_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int lp_button_down_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int lp_button_up_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int lp_motion_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void lp_drag_begin(GtkWidget*, GdkDragContext*, gpointer);
-    static void lp_drag_end(GtkWidget*, GdkDragContext*, gpointer);
-    static void lp_drag_data_get(GtkWidget*, GdkDragContext*,
-        GtkSelectionData*, guint, guint, void*);
-    static void lp_drag_data_received(GtkWidget*, GdkDragContext*, gint, gint,
-        GtkSelectionData*, guint, guint);
-    static void lp_font_change_hdlr(GtkWidget*, void*, void*);
-    static void lp_recall_proc(GtkWidget*, void*);
-    static void lp_save_proc(GtkWidget*, void*);
-    static int lp_popup_menu(GtkWidget*, GdkEvent*, void*);
+void
+ndkCursor::set_in_window(GdkWindow *window)
+{
+    if (!window)
+        return;
+    Display *xdisplay = gdk_x11_display_get_xdisplay(
+        gdk_window_get_display(window));
+    XDefineCursor(xdisplay, gdk_x11_drawable_get_xid(window), c_xcursor);
+}
 
-    GRobject lp_caller;
-    GtkWidget *lp_shell;
-    GtkWidget *lp_remove;
 
-    CDl *lp_history[LP_PALETTE_COLS];
-    CDl *lp_user[LP_PALETTE_COLS * LP_PALETTE_ROWS];
-
-#ifdef NEW_NDK
-#else
-    GdkPixmap *lp_pixmap;
-#endif
-    int lp_pmap_width;  
-    int lp_pmap_height;
-    bool lp_pmap_dirty;
-
-    int lp_drag_x;
-    int lp_drag_y;
-    bool lp_dragging;
-
-    int lp_hist_y;
-    int lp_user_y;
-    int lp_line_height;
-    int lp_box_dimension;
-    int lp_box_text_spacing;
-    int lp_entry_width;
-};
+void
+ndkCursor::revert_in_window(GdkWindow *window)
+{
+    if (!window)
+        return;
+    Display *xdisplay = gdk_x11_display_get_xdisplay(
+        gdk_window_get_display(window));
+    XDefineCursor(xdisplay, gdk_x11_drawable_get_xid(window), None);
+    gdk_window_set_cursor(window, 0);
+}
 
 #endif
 

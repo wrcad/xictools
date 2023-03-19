@@ -86,7 +86,7 @@ hyList *GTKedit::pe_stores[PE_NUMSTORES];
 GTKedit *GTKedit::instancePtr = 0;
 
 
-GTKedit::GTKedit(bool nogr)
+GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
 {
     if (instancePtr) {
         fprintf(stderr, "Singleton class GTKedit already instantiated.\n");
@@ -106,7 +106,10 @@ GTKedit::GTKedit(bool nogr)
     pe_s_menu = 0;
     pe_id = 0;
     pe_wid = pe_hei = 0;
+#ifdef NEW_NDK
+#else
     pe_pixmap = 0;
+#endif
     if (nogr)
         return;
 
@@ -422,7 +425,7 @@ void *
 GTKedit::setup_backing(bool clear)
 {
     GdkWindow *tmp_window = 0;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (clear) {
         GetDrawable()->set_draw_to_pixmap();
         tmp_window = GetDrawable()->get_window();
@@ -440,7 +443,7 @@ GTKedit::setup_backing(bool clear)
 void
 GTKedit::restore_backing(void *tw)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, -1, -1);
 #else
@@ -457,7 +460,7 @@ GTKedit::restore_backing(void *tw)
 void
 GTKedit::init_window()
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
     if (GetDrawable()->get_window()) {
@@ -480,7 +483,7 @@ GTKedit::init_window()
 bool
 GTKedit::check_pixmap()
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 #else
     if (!gd_window)
         gd_window = gtk_widget_get_window(gd_viewport);
@@ -873,14 +876,16 @@ GTKedit::pe_selection_proc(GtkWidget*, GtkSelectionData *data, guint, void*)
     if (wnd) {
         GtkWidget *widget;
         gdk_window_get_user_data(wnd, (void**)&widget);
-        if (widget) {
+        if (widget && GTK_IS_TEXT_VIEW(widget)) {
             int code = (intptr_t)g_object_get_data(G_OBJECT(widget),
                 "hyexport");
             if (code) {
-/* FIXME XXX
-                int start = GTK_OLD_EDITABLE(widget)->selection_start_pos;
-                */
-          int start = 0;
+                GtkTextBuffer *gb =
+                    gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
+                GtkTextIter siter, eiter;
+                gtk_text_buffer_get_selection_bounds(gb, &siter, &eiter);
+                int start = gtk_text_iter_get_offset(&siter);
+
                 // The text is coming from the Property Editor or
                 // Property Info pop-up, fetch the original
                 // hypertext to insert.

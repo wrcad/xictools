@@ -65,42 +65,25 @@
 #define NDKPIXMAP_H
 
 
-#ifdef NEW_GC
 struct ndkGC;
-#endif
-#ifdef NEW_DRW
 struct ndkDrawable;
-#endif
 
 struct ndkPixmap
 {
-#ifdef NEW_DRW
     ndkPixmap(GdkWindow*, int, int, bool=false);
     ndkPixmap(GdkWindow*, const char*, int, int);
     ndkPixmap(GdkWindow*, const char*, int, int,
         const GdkColor*, const GdkColor*);
-#else
-    ndkPixmap(GdkDrawable*, int, int, bool=false);
-    ndkPixmap(GdkDrawable*, const char*, int, int);
-    ndkPixmap(GdkDrawable*, const char*, int, int,
-        const GdkColor*, const GdkColor*);
-#endif
     ndkPixmap(ndkPixmap*, int, int, bool=false);
     ~ndkPixmap();
 
-#ifdef NEW_DRW
     void copy_to_window(GdkWindow*, ndkGC*, int, int, int, int, int, int);
     void copy_from_window(GdkWindow*, ndkGC*, int, int, int, int, int, int);
-#else
-    void copy_to_window(GdkDrawable*, ndkGC*, int, int, int, int, int, int);
-    void copy_from_window(GdkDrawable*, ndkGC*, int, int, int, int, int, int);
-#endif
     void copy_to_pixmap(ndkPixmap*, ndkGC*, int, int, int, int, int, int);
     void copy_from_pixmap(ndkPixmap*, ndkGC*, int, int, int, int, int, int);
-#ifdef NEW_DRW
     void copy_to_drawable(ndkDrawable*, ndkGC*, int, int, int, int, int, int);
     void copy_from_drawable(ndkDrawable*, ndkGC*, int, int, int, int, int, int);
-#endif
+
     void copy_from_pango_layout(ndkGC*, PangoLayout*);
     void fill(ndkGC*);
     static ndkPixmap *lookup(unsigned long);

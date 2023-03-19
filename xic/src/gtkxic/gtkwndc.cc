@@ -284,15 +284,8 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
 
 wnd_t::~wnd_t()
 {
-    g_object_ref(wnd_s_menu);
-//XXX    gtk_object_ref(GTK_OBJECT(wnd_s_menu));
     gtk_widget_destroy(wnd_s_menu);
-    g_object_unref(wnd_s_menu);
-
-    g_object_ref(wnd_r_menu);
-//XXX    gtk_object_ref(GTK_OBJECT(wnd_r_menu));
     gtk_widget_destroy(wnd_r_menu);
-    g_object_unref(wnd_r_menu);
 }
 
 

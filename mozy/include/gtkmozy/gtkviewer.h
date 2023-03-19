@@ -289,15 +289,25 @@ namespace gtkinterf {
         GtkAdjustment *v_vsba;
         GtkWidget *v_hsb;
         GtkWidget *v_vsb;
+#ifdef NEW_NDK
+        ndkPixmap *v_pixmap;
+        ndkPixmap *v_pixmap_bak;
+        ndkGC *v_gc;
+#else
         GdkPixmap *v_pixmap;
         GdkPixmap *v_pixmap_bak;
         GdkGC *v_gc;
+#endif
         void *v_font;
             // This is a GdkFont when using X fonts (GTK-1.2), or a
             // PangoFontDescription when using Pango in GTK-2
 
         Transaction *v_transact;    // pointer to download context
+#ifdef NEW_NDK
+        ndkCursor *v_cursor;        // transient anchor cursor
+#else
         GdkCursor *v_cursor;        // transient anchor cursor
+#endif
         gtk_timer *v_timers;        // list of animation timers
         int v_width;                // viewport width
         int v_height;               // viewport height

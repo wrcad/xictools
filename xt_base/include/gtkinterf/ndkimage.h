@@ -64,15 +64,10 @@
 #ifndef NDKIMAGE_H
 #define NDKIMAGE_H
 
-#ifdef NEW_GC
+
 struct ndkGC;
-#endif
-#ifdef NEW_PIX
 struct ndkPixmap;
-#endif
-#ifdef NEW_DRW
 struct ndkDrawable;
-#endif
 
 // Types of images.
 //   Normal: Normal X image type. These are slow as they involve passing
@@ -95,24 +90,14 @@ enum ndkImageType
 struct ndkImage
 {
     ndkImage(ndkImageType, GdkVisual*, int, int);
-    ndkImage(GdkDrawable*, int, int, int, int);
-#ifdef NEW_PIX
     ndkImage(ndkPixmap*, int, int, int, int);
-//    ndkImage(GdkWindow*, int, int, int, int);
-#endif
-#ifdef NEW_DRW
     ndkImage(ndkDrawable*, int, int, int, int);
-#endif
+    ndkImage(GdkWindow*, int, int, int, int);
     ~ndkImage();
 
-    void copy_from_drawable(GdkDrawable*, int, int, int, int, int, int);
-    void copy_to_drawable(GdkDrawable*, ndkGC*, int, int, int, int, int, int);
-#if defined(NEW_DRW) && defined(NEW_GC)
     void copy_to_drawable(ndkDrawable*, ndkGC*, int, int, int, int, int, int);
-#endif
-#if defined(NEW_PIX) && defined(NEW_GC)
     void copy_to_pixmap(ndkPixmap*, ndkGC*, int, int, int, int, int, int);
-#endif
+    void copy_to_window(GdkWindow*, ndkGC*, int, int, int, int, int, int);
     void put_pixel(int, int, unsigned int);
     unsigned int get_pixel(int, int);
 

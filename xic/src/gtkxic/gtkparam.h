@@ -181,8 +181,11 @@ private:
     static void readout_selection_get(GtkWidget*, GtkSelectionData*, guint,
         guint, gpointer);
 
+#ifdef NEW_NDK
+#else
     GdkWindow *p_win_bak;
     GdkPixmap *p_pm;
+#endif
 
     int p_drag_x;
     int p_drag_y;

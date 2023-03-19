@@ -80,7 +80,9 @@ inline int ceillog(double x)
 #define NUMPLOTCOLORS 20    // number of distinct plotting colors
 #define MAXNUMTR 18         // max number of traces where yseparate used
 
-enum {GR_PLOT=0, GR_MPLT=1};
+// Window classes.
+enum {GR_TB, GR_PLOT, GR_MPLT};
+#define GR_TBstr   "toolbar"
 #define GR_PLOTstr "plot"
 #define GR_MPLTstr "mplot"
 

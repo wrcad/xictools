@@ -2374,7 +2374,7 @@ namespace {
     GdkCursor *B1hand_cursor;
     GdkRectangle B1box;
     GdkRectangle B1cf;
-#ifdef NEW_GC
+#ifdef NEW_NDK
     ndkGC *B1gc;
 #else
     GdkGC *B1gc;
@@ -2396,7 +2396,7 @@ namespace {
     {
         if (gtk_widget_get_window(caller) != event->motion.window)
             return (false);
-#ifdef NEW_GC
+#ifdef NEW_NDK
 #else
         gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
             B1cf.x, B1cf.y, B1box.width, B1box.height);
@@ -2416,7 +2416,7 @@ namespace {
             return (false);
         if (event->button.button == 1) {
             gdk_pointer_ungrab(GDK_CURRENT_TIME);
-#ifdef NEW_GC
+#ifdef NEW_NDK
 #else
             gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
                 B1cf.x, B1cf.y, B1box.width, B1box.height);
@@ -2447,7 +2447,7 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
         return (false);
     if (!B1hand_cursor) {
         // first call, create cursor and GC
-#ifdef NEW_GC
+#ifdef NEW_NDK
         B1hand_cursor = gdk_cursor_new(GDK_HAND2);
         B1gc = new ndkGC(gr_default_root_window(), 0, (ndkGCvaluesMask)0);
         B1gc->set_subwindow(ndkGC_INCLUDE_INFERIORS);
@@ -2492,7 +2492,7 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
     B1cf.width = shell_box.x - parent_box.x;
     B1cf.height = shell_box.y - parent_box.y;
 
-#ifdef NEW_GC
+#ifdef NEW_NDK
     Drawable xid = gdk_x11_drawable_get_xid(gr_default_root_window());
     int x1 = (int)event->button.x_root - B1box.x;
     int y1 = (int)event->button.y_root - B1box.y;
@@ -3172,86 +3172,4 @@ gtkinterf::text_realize_proc(GtkWidget *w, void*)
         gdk_cursor_unref(c);
     }
 }
-
-
-
-/****************/
-// Some translation code, based in GDK-2 source.
-
-#ifdef WITH_X11
-
-// Replacement for gdk_draw_drawable.
-void
-gtkinterf::copy_x11_pixmap_to_drawable(GdkDrawable *drawable, void *gcp,
-    GdkPixmap *src, int xsrc, int ysrc, int xdest, int ydest,
-    int width, int height)
-{
-    // Work around an Xserver bug where non-visible areas from a
-    // pixmap to a window will clear the window background in
-    // destination areas that are supposed to be clipped out. 
-    // This is a problem with client side windows as this means
-    // things may draw outside the virtual windows.  This could
-    // also happen for window to window copies, but I don't think
-    // we generate any calls like that.
-    //
-    // See: 
-    // http://lists.freedesktop.org/archives/xorg/2009-February/043318.html
-    //
-
-    if (GDK_IS_WINDOW(drawable)) {
-        if (xsrc < 0) {
-            width += xsrc;
-            xdest -= xsrc;
-            xsrc = 0;
-        }
-      
-        if (ysrc < 0) {
-            height += ysrc;
-            ydest -= ysrc;
-            ysrc = 0;
-        }
-
-        int swid, shei;
-        gdk_pixmap_get_size(src, &swid, &shei);
-        if (xsrc + width > swid)
-            width = swid - xsrc;
-        if (ysrc + height > shei)
-            height = shei - ysrc;
-    }
-  
-    int src_depth = gdk_drawable_get_depth(src);
-    if (src_depth == 1) {
-#ifdef NEW_GC
-        ndkGC *gc = (ndkGC*)gcp;
-        XCopyArea(gc->get_xdisplay(), gdk_x11_drawable_get_xid(src),
-            gdk_x11_drawable_get_xid(drawable), gc->get_xgc(), xsrc, ysrc,
-            width, height, xdest, ydest);
-#else
-        GdkGC *gc = (GdkGC*)gcp;
-        XCopyArea(gr_x_display(), gdk_x11_drawable_get_xid(src),
-            gdk_x11_drawable_get_xid(drawable), gdk_x11_gc_get_xgc(gc),
-            xsrc, ysrc, width, height, xdest, ydest);
-#endif
-        return;
-    }
-    int dest_depth = gdk_drawable_get_depth(drawable);
-    if (dest_depth != 0 && src_depth == dest_depth) {
-#ifdef NEW_GC
-        ndkGC *gc = (ndkGC*)gcp;
-        XCopyArea(gc->get_xdisplay(), gdk_x11_drawable_get_xid(src),
-            gdk_x11_drawable_get_xid(drawable), gc->get_xgc(), xsrc, ysrc,
-            width, height, xdest, ydest);
-#else
-        GdkGC *gc = (GdkGC*)gcp;
-        XCopyArea(gr_x_display(), gdk_x11_drawable_get_xid(src),
-            gdk_x11_drawable_get_xid(drawable), gdk_x11_gc_get_xgc(gc),
-            xsrc, ysrc, width, height, xdest, ydest);
-#endif
-    }
-    else
-        g_warning(
-    "Attempt to draw a drawable with depth %d to a drawable with depth %d",
-           src_depth, dest_depth);
-}
-#endif
 

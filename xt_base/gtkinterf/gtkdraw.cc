@@ -53,15 +53,7 @@
 using namespace mswinterf;
 #endif
 
-#ifdef NEW_PIX
-#include "ndkpixmap.h"
-#endif
 
-// This all has to go to Cairo.  The gdk draw functions are not supported
-// in gtk-3.  Ugh, much work ahead,
-
-// Looks like Cairo and GTK don't support the X-windows shared memory
-// extension.
 //#define USE_XSHM
 
 #include <gdk/gdkkeysyms.h>
@@ -75,6 +67,7 @@ using namespace mswinterf;
 #endif
 
 
+#ifdef NEW_NDK
 #ifdef WITH_X11
 // XPoint, XSegment, XRectangle all use shorts.  This sets GRmultiPt
 // to use shorts as well.
@@ -87,10 +80,80 @@ struct GRsetupDummy
     GRsetupDummy __gt_dummy;
 }
 #endif
+#endif
 
 // Use our own Win32 drawing.  This is necessary, as currently gdk
 // does not handle stippled drawing.
 #define DIRECT_TO_GDI
+
+// Graphics context storage.  The 0 element is the default.
+//
+sGbag *sGbag::app_gbags[NUMGCS];
+
+sGbag::sGbag()
+{
+#ifdef NEW_NDK
+    // Create GCs.  Use the root window as the drawable, hope that's ok.
+    gb_gc = new ndkGC(0);
+    gb_xorgc = new ndkGC(0);
+    GdkColor clr;
+    clr.pixel = 0;  // black
+    gb_gc->set_background(&clr);
+    gb_xorgc->set_background(&clr);
+    clr.pixel = 0xffffff;  // white
+    gb_gc->set_foreground(&clr);
+    gb_xorgc->set_foreground(&clr);
+    gb_xorgc->set_function(ndkGC_XOR);
+    ndkGCvalues gcv;
+    gcv.v_cap_style = ndkGC_CAP_NOT_LAST;
+    gb_gc->set_values(&gcv, ndkGC_CAP_STYLE);
+    gb_xorgc->set_values(&gcv, ndkGC_CAP_STYLE);
+#else
+    gb_gc = gdk_gc_new(gdk_get_default_root_window());
+    gb_xorgc = gdk_gc_new(gdk_get_default_root_window());
+    GdkColor clr;
+    clr.pixel = 0;  // black
+    gdk_gc_set_background(gb_gc, & clr);
+    gdk_gc_set_background(gb_xorgc, & clr);
+    clr.pixel = 0xffffff;  // white
+    gdk_gc_set_foreground(gb_gc, & clr);
+    gdk_gc_set_foreground(gb_xorgc, & clr);
+    GdkGCValues gcvalues;
+    gcvalues.function = GDK_XOR;
+    gdk_gc_set_values(gb_xorgc, &gcvalues, GDK_GC_FUNCTION);
+    gcvalues.cap_style = GDK_CAP_NOT_LAST;
+    gdk_gc_set_values(gb_gc, &gcvalues, GDK_GC_CAP_STYLE);
+    gdk_gc_set_values(gb_xorgc, &gcvalues, GDK_GC_CAP_STYLE);
+#endif
+    gb_gcbak = 0;
+#ifdef WIN32
+    gb_fillpattern = 0;
+#endif
+    gb_cursor_type = 0;
+}
+
+
+sGbag::~sGbag()
+{
+    // Don't destroy the GCs here.  WRspice will copy the sGbag but
+    // keep the same GCs, so plot windows can have the same drawing
+    // context except for XOR mode.  The Gbag copy will be freed,
+    // obviously this would be bad news if the GCs were destroyed.
+}
+
+
+// Static method to create/return the default graphics context.  Note that
+// this does not create the GCs.
+//
+sGbag *
+sGbag::default_gbag(int type)
+{
+    if (type < 0 || type >= NUMGCS)
+        type = 0;
+    if (!app_gbags[type])
+        app_gbags[type] = new sGbag;
+    return (app_gbags[type]);
+}
 
 
 //-----------------------------------------------------------------------------
@@ -99,13 +162,14 @@ struct GRsetupDummy
 GTKdraw::GTKdraw(int type)
 {
     gd_viewport = 0;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 #else
     gd_window = 0;
 #endif
     gd_gbag = sGbag::default_gbag(type);
     gd_backg = 0;
-    gd_foreg = (unsigned int)-1;
+    gd_foreg = 0xffffff;
+    gd_xor_fg = gd_foreg;
 }
 
 
@@ -124,7 +188,7 @@ GTKdraw::~GTKdraw()
 }
 
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 void
 GTKdraw::SetViewport(GtkWidget *w)
 {
@@ -159,7 +223,7 @@ GTKdraw::Halt()
 void
 GTKdraw::Clear()
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (gd_dw.get_state() == DW_NONE)
         return;
     if (gd_dw.get_state() == DW_WINDOW) {
@@ -170,11 +234,7 @@ GTKdraw::Clear()
     else if (gd_dw.get_state() == DW_PIXMAP) {
         int w = gd_dw.get_width();
         int h = gd_dw.get_height();
-#ifdef NEW_GC
         Box(0, 0, w, h);
-#else
-        gdk_draw_rectangle(gd_window, GC(), true, 0, 0, w, h);
-#endif
     }
 
 #else
@@ -185,11 +245,7 @@ GTKdraw::Clear()
     else {
         int w, h;
         gdk_drawable_get_size(gd_window, &w, &h);
-#ifdef NEW_GC
-        Box(0, 0, w, h);
-#else
         gdk_draw_rectangle(gd_window, GC(), true, 0, 0, w, h);
-#endif
     }
 #endif
 }
@@ -254,12 +310,8 @@ GTKdraw::Pixel(int x, int y)
 
 #else
 
-#ifdef NEW_GC
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Drawable xid = gd_dw.get_xid();
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gd_window);
-#endif
     if (xid == None)
         return;
     XDrawPoint(GC()->get_xdisplay(), xid, GC()->get_xgc(), x, y);
@@ -329,12 +381,8 @@ GTKdraw::Pixels(GRmultiPt *data, int n)
 
 #else
 
-#ifdef NEW_GC
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Drawable xid = gd_dw.get_xid();
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gd_window);
-#endif
     if (xid == None)
         return;
 
@@ -343,12 +391,12 @@ GTKdraw::Pixels(GRmultiPt *data, int n)
             (XPoint*)data->data(), n, CoordModeOrigin);
     }
     else {
-        p->data_ptr_init();
+        data->data_ptr_init();
         while (n--) {
-            int x = p->data_ptr_x();
-            int y = p->data_ptr_y();
-            Point(x, y);
-            p->data_ptr_inc();
+            int x = data->data_ptr_x();
+            int y = data->data_ptr_y();
+            Pixel(x, y);
+            data->data_ptr_inc();
         }
     }
 #else
@@ -394,7 +442,7 @@ GTKdraw::Line(int x1, int y1, int x2, int y2)
 
 // XXX WIN32 needs support
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Drawable xid = gd_dw.get_xid();
 #else
     Drawable xid = gdk_x11_drawable_get_xid(gd_window);
@@ -410,7 +458,7 @@ GTKdraw::Line(int x1, int y1, int x2, int y2)
         if (x1 == x2) {
             const llist_t *ll = XorLineDb()->add_vert(x1, y1, y2);
             while (ll) {
-#ifdef NEW_GC
+#ifdef NEW_NDK
                 XDrawLine(GC()->get_xdisplay(), xid, GC()->get_xgc(),
                     x1, ll->vmin(), x1, ll->vmax());
 #else
@@ -422,7 +470,7 @@ GTKdraw::Line(int x1, int y1, int x2, int y2)
         else if (y1 == y2) {
             const llist_t *ll = XorLineDb()->add_horz(y1, x1, x2);
             while (ll) {
-#ifdef NEW_GC
+#ifdef NEW_NDK
                 XDrawLine(GC()->get_xdisplay(), xid, GC()->get_xgc(),
                     ll->vmin(), y1, ll->vmax(), y1);
 #else
@@ -434,7 +482,7 @@ GTKdraw::Line(int x1, int y1, int x2, int y2)
         else {
             const nmllist_t *ll = XorLineDb()->add_nm(x1, y1, x2, y2);
             while (ll) {
-#ifdef NEW_GC
+#ifdef NEW_NDK
                 XDrawLine(GC()->get_xdisplay(), xid, GC()->get_xgc(),
                     ll->x1(), ll->y1(), ll->x2(), ll->y2());
 #else
@@ -447,7 +495,7 @@ GTKdraw::Line(int x1, int y1, int x2, int y2)
         return;
     }
 
-#ifdef NEW_GC
+#ifdef NEW_NDK
     XDrawLine(GC()->get_xdisplay(), xid, GC()->get_xgc(), x1, y1, x2, y2);
 #else
     gdk_draw_line(gd_window, GC(), x1, y1, x2, y2);
@@ -481,12 +529,8 @@ GTKdraw::PolyLine(GRmultiPt *p, int n)
         return;
     }
 
-#ifdef NEW_GC
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Drawable xid = gd_dw.get_xid();
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gd_window);
-#endif
     if (xid == None)
         return;
     if (GRmultiPt::is_short_data()) {
@@ -535,12 +579,8 @@ GTKdraw::Lines(GRmultiPt *p, int n)
         return;
     }
 
-#ifdef NEW_GC
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Drawable xid = gd_dw.get_xid();
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gd_window);
-#endif
     if (xid == None)
         return;
     if (GRmultiPt::is_short_data()) {
@@ -618,12 +658,8 @@ GTKdraw::Box(int x1, int y1, int x2, int y2)
 
 #else
 
-#ifdef NEW_GC
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Drawable xid = gd_dw.get_xid();
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gd_window);
-#endif
     if (xid == None)
         return;
     XFillRectangle(GC()->get_xdisplay(), xid, GC()->get_xgc(),
@@ -704,12 +740,8 @@ GTKdraw::Boxes(GRmultiPt *data, int n)
 
 #else
 
-#ifdef NEW_GC
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Drawable xid = gd_dw.get_xid();
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gd_window);
-#endif
     if (xid == None)
         return;
     if (GRmultiPt::is_short_data()) {
@@ -756,12 +788,8 @@ GTKdraw::Arc(int x0, int y0, int rx, int ry, double theta1, double theta2)
         return;
     int dx = 2*rx;
     int dy = 2*ry;
-#ifdef NEW_GC
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Drawable xid = gd_dw.get_xid();
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gd_window);
-#endif
     if (xid == None)
         return;
     XDrawArc(GC()->get_xdisplay(), xid, GC()->get_xgc(),
@@ -830,12 +858,8 @@ GTKdraw::Polygon(GRmultiPt *data, int numv)
 
 #else
 
-#ifdef NEW_GC
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Drawable xid = gd_dw.get_xid();
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gd_window);
-#endif
     if (xid == None)
         return;
     if (GRmultiPt::is_short_data()) {
@@ -862,7 +886,7 @@ GTKdraw::Zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 #if defined(WIN32) && defined(DIRECT_TO_GDI)
     POINT points[5];
 #else
-#ifdef NEW_GC
+#ifdef NEW_NDK
     XPoint points[5];
 #else
     GdkPoint points[5];
@@ -935,12 +959,8 @@ GTKdraw::Zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 
 #else
 
-#ifdef NEW_GC
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Drawable xid = gd_dw.get_xid();
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gd_window);
-#endif
     if (xid == None)
         return;
     XFillPolygon(GC()->get_xdisplay(), xid, GC()->get_xgc(),
@@ -954,52 +974,7 @@ GTKdraw::Zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 
 
 namespace {
-
-#ifdef NEW_GC
-#ifdef NEW_PIX
-#else
-    GdkPixmap *
-    pango_layout_to_pixmap(GdkDrawable *window, PangoLayout *lout, ndkGC *gc,
-        int wid, int hei)
-    {
-        GdkPixmap *p = gdk_pixmap_new(window, wid, hei,
-            gdk_visual_get_depth(GRX->Visual()));
-        cairo_t *cr = gdk_cairo_create(p);
-        GdkColor clr;
-        clr.pixel = gc->get_bg_pixel();
-        gtk_QueryColor(&clr);
-        gdk_cairo_set_source_color(cr, &clr);
-        cairo_paint(cr);
-        clr.pixel = gc->get_fg_pixel();
-        gtk_QueryColor(&clr);
-        gdk_cairo_set_source_color(cr, &clr);
-        pango_cairo_show_layout(cr, lout);
-        cairo_fill(cr);
-        cairo_destroy(cr);
-        return (p);
-    }
-#endif
-   
-#ifdef WITH_X11
-    void x11_draw_image(GdkDrawable *drawable, ndkGC *gc, GdkImage *image,
-        int xsrc, int ysrc, int xdest, int ydest, int width, int height)
-    {
-
-#ifdef USE_SHM  
-        if (image->type == GDK_IMAGE_SHARED)
-            XShmPutImage(gc->get_xdisplay(), gdk_x11_drawable_get_xid(drawable),
-                gc->get_xgc(), GDK_IMAGE_XIMAGE(image),
-                xsrc, ysrc, xdest, ydest, width, height, False);
-        else
-#endif
-            XPutImage(gc->get_xdisplay(), gdk_x11_drawable_get_xid(drawable),
-                gc->get_xgc(), GDK_IMAGE_XIMAGE(image),
-                xsrc, ysrc, xdest, ydest, width, height);
-    }
-#endif
-#endif
-
-#ifdef NEW_GC
+#ifdef NEW_NDK
     struct fixgc
     {
         fixgc(ndkGC *gc, ndkGC *xgc, unsigned int oldfg, unsigned int newfg,
@@ -1032,6 +1007,7 @@ namespace {
         unsigned int f_oldfg;
         unsigned int f_oldfunc;
     };
+
 #else
     struct fixgc
     {
@@ -1086,34 +1062,16 @@ GTKdraw::Text(const char *text, int x, int y, int xform, int, int)
     if (!text || !*text)
         return;
 
-#ifdef NEW_GC
-#else
-GdkGCValues vals;
-gdk_gc_get_values(GC(), &vals);
-#endif
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (gd_dw.get_state() == DW_NONE)
         return;
-#endif
-
-/*
-    if (GC() == XorGC()) {
-        // Set the foreground to the true ghost-drawng color, this is
-        // current the true color xor'ed with the background.
-        GdkColor clr;
-        clr.pixel = gd_foreg;
-        gdk_gc_set_foreground(GC(), &clr);
-    }
-    // Switch to copy function.
-    gdk_gc_set_function(GC(), GDK_COPY);
-*/
-
-#ifdef NEW_GC
-fixgc gcfix(GC(), XorGC(), GC()->get_fg_pixel(), gd_foreg,
-    GC()->get_function(), ndkGC_COPY);
+    fixgc gcfix(GC(), XorGC(), GC()->get_fg_pixel(), gd_foreg,
+        GC()->get_function(), ndkGC_COPY);
 #else
-fixgc gcfix(GC(), XorGC(), vals.foreground.pixel, gd_foreg,
-    vals.function, GDK_COPY);
+    GdkGCValues vals;
+    gdk_gc_get_values(GC(), &vals);
+    fixgc gcfix(GC(), XorGC(), vals.foreground.pixel, gd_foreg,
+        vals.function, GDK_COPY);
 #endif
 
     // We need to handle strings with embedded newlines on a single
@@ -1167,24 +1125,16 @@ fixgc gcfix(GC(), XorGC(), vals.foreground.pixel, gd_foreg,
     xform &= (TXTF_ROT | TXTF_MX | TXTF_MY);
 
 
-#ifdef NEW_GC
+#ifdef NEW_NDK
     unsigned int bg_pixel = GC()->get_bg_pixel();
-#ifdef NEW_PIX
-#ifdef NEW_DRW
     ndkPixmap *p = new ndkPixmap(gd_dw.get_window(), wid, hei);
-#else
-    ndkPixmap *p = new ndkPixmap(gd_window, wid, hei);
-#endif
     p->copy_from_pango_layout(GC(), lout);
-#else
-    GdkPixmap *p = pango_layout_to_pixmap(gd_window, lout, GC(), wid, hei);
-#endif
 #else
     /*
     gdk_draw_layout(gd_window, GC(), x, y, lout);
     g_object_unref(lout);
-return;
-*/
+    return;
+    */
 
     GdkColor clr;
     GdkPixmap *p = gdk_pixmap_new(gd_window, wid, hei,
@@ -1205,12 +1155,8 @@ return;
 /* XXX force to use image as test
     if (!xform || xform == 14) {
         // 0 no rotation, 14 MX MY R180
-#ifdef NEW_PIX
-#ifdef NEW_DRW
+#ifdef NEW_NDK
         p->copy_to_drawable(&gd_dw, GC(), 0, 0, x, y, wid, hei);
-#else
-        p->copy_to_window(gd_window, GC(), 0, 0, x, y, wid, hei);
-#endif
         p->dec_ref();
 #else
         copy_x11_pixmap_to_drawable(gd_window, GC(), p, 0, 0, x, y,
@@ -1221,14 +1167,9 @@ return;
     }
     */
 
-#ifdef NEW_IMG
+#ifdef NEW_NDK
     ndkImage *im = new ndkImage(p, 0, 0, wid, hei);
-#ifdef NEW_PIX
     p->dec_ref();
-#else
-    gdk_pixmap_unref(p);
-#endif
-
 
     // Create a second image for the transformed copy.  This will contain
     // the background pixels from the rendering area.
@@ -1236,30 +1177,14 @@ return;
     ndkImage *im1;
     if (xform & 1) {
         // rotation
-#ifdef NEW_PIX
         p = (ndkPixmap*)GetRegion(x, y, hei, wid);
-#else
-        p = (GdkPixmap*)GetRegion(x, y, hei, wid);
-#endif
         im1 = new ndkImage(p, 0, 0, hei, wid);
-#ifdef NEW_PIX
         p->dec_ref();
-#else
-        gdk_pixmap_unref(p);
-#endif
     }
     else {
-#ifdef NEW_PIX
         p = (ndkPixmap*)GetRegion(x, y, wid, hei);
-#else
-        p = (GdkPixmap*)GetRegion(x, y, wid, hei);
-#endif
         im1 = new ndkImage(p, 0, 0, wid, hei);
-#ifdef NEW_PIX
         p->dec_ref();
-#else
-        gdk_pixmap_unref(p);
-#endif
     }
 
     // Transform and copy the pixels, only those that are non-background.
@@ -1364,22 +1289,14 @@ return;
     }
     delete im;
 
-#ifdef NEW_DRW
     if (xform & 1)
         // rotation
         im1->copy_to_drawable(&gd_dw, GC(), 0, 0, x, y, hei, wid);
     else
         im1->copy_to_drawable(&gd_dw, GC(), 0, 0, x, y, wid, hei);
-#else
-    if (xform & 1)
-        // rotation
-        im1->copy_to_drawable(gd_window, GC(), 0, 0, x, y, hei, wid);
-    else
-        im1->copy_to_drawable(gd_window, GC(), 0, 0, x, y, wid, hei);
-#endif
     delete im1;
 
-#else // NEW_IMG
+#else
     GdkImage *im = gdk_image_get(p, 0, 0, wid, hei);
     gdk_pixmap_unref(p);
 
@@ -1501,22 +1418,14 @@ return;
     }
 
     gdk_image_destroy(im);
-#ifdef NEW_GC
-    if (xform & 1)
-        // rotation
-        x11_draw_image(gd_window, GC(), im1, 0, 0, x, y, hei, wid);
-    else
-        x11_draw_image(gd_window, GC(), im1, 0, 0, x, y, wid, hei);
-#else
     if (xform & 1)
         // rotation
         gdk_draw_image(gd_window, GC(), im1, 0, 0, x, y, hei, wid);
     else
         gdk_draw_image(gd_window, GC(), im1, 0, 0, x, y, wid, hei);
-#endif
     gdk_image_destroy(im1);
 
-#endif // not NEW_IMG
+#endif
 }
 
 
@@ -1565,7 +1474,7 @@ void
 GTKdraw::MovePointer(int x, int y, bool absolute)
 {
     // Called with 0,0 this redraws ghost objects.
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GdkWindow *window = gd_dw.get_window();
 #else
     GdkWindow *window = gd_window;
@@ -1589,7 +1498,7 @@ GTKdraw::MovePointer(int x, int y, bool absolute)
 void
 GTKdraw::QueryPointer(int *x, int *y, unsigned *state)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GdkWindow *window = gd_dw.get_window();
 #else
     GdkWindow *window = gd_window;
@@ -1623,7 +1532,7 @@ GTKdraw::DefineColor(int *pixel, int red, int green, int blue)
         *pixel = newcolor.pixel;
     else
         *pixel = 0;
-#ifdef NEW_GC
+#ifdef NEW_NDK
     if (gd_gbag && gd_gbag->get_gc())
         GC()->set_foreground(&newcolor);
 #else
@@ -1641,20 +1550,16 @@ GTKdraw::SetBackground(int pixel)
     gd_backg = pixel;
     GdkColor clr;
     clr.pixel = pixel;
-#ifdef NEW_GC
+#ifdef NEW_NDK
     GC()->set_background(&clr);
     XorGC()->set_background(&clr);
-    if (!GTKdev::ColorAlloc.num_mask_allocated) {
-        clr.pixel = gd_foreg ^ pixel;
-        XorGC()->set_foreground(&clr);
-    }
+    clr.pixel = gd_xor_fg ^ pixel;
+    XorGC()->set_foreground(&clr);
 #else
     gdk_gc_set_background(GC(), &clr);
     gdk_gc_set_background(XorGC(), &clr);
-    if (!GTKdev::ColorAlloc.num_mask_allocated) {
-        clr.pixel = gd_foreg ^ pixel;
-        gdk_gc_set_foreground(XorGC(), &clr);
-    }
+    clr.pixel = gd_xor_fg ^ pixel;
+    gdk_gc_set_foreground(XorGC(), &clr);
 #endif
 }
 
@@ -1664,7 +1569,7 @@ GTKdraw::SetBackground(int pixel)
 void
 GTKdraw::SetWindowBackground(int pixel)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GdkWindow *window = gd_dw.get_window();
     if (window) {
         GdkColor clr;
@@ -1681,21 +1586,18 @@ GTKdraw::SetWindowBackground(int pixel)
 }
 
 
-// Set the color used for ghost drawing.  pixel is an existing cell
-// of the proper color.  If two-plane cells have been allocated,
-// copy the pixel value to the upper plane half space, otherwise
-// just set the xor foreground color.
+// Set the color used for ghost drawing.
 //
 void
 GTKdraw::SetGhostColor(int pixel)
 {
-    gd_foreg = pixel;
-    GdkColor newcolor;
-    newcolor.pixel = pixel ^ gd_backg;
-#ifdef NEW_GC
-    XorGC()->set_foreground(&newcolor);
+    gd_xor_fg = pixel;
+    GdkColor clr;
+    clr.pixel = gd_xor_fg ^ gd_backg;
+#ifdef NEW_NDK
+    XorGC()->set_foreground(&clr);
 #else
-    gdk_gc_set_foreground(XorGC(), &newcolor);
+    gdk_gc_set_foreground(XorGC(), &clr);
 #endif
 }
 
@@ -1709,7 +1611,7 @@ GTKdraw::SetColor(int pixel)
         return;
     GdkColor clr;
     clr.pixel = pixel;
-#ifdef NEW_GC
+#ifdef NEW_NDK
     GC()->set_foreground(&clr);
 #else
     gdk_gc_set_foreground(GC(), &clr);
@@ -1722,7 +1624,7 @@ GTKdraw::SetColor(int pixel)
 void
 GTKdraw::SetLinestyle(const GRlineType *lineptr)
 {
-#ifdef NEW_GC
+#ifdef NEW_NDK
     if (!lineptr || !lineptr->mask || lineptr->mask == -1) {
         GC()->set_line_attributes(0, ndkGC_LINE_SOLID, ndkGC_CAP_BUTT,
             ndkGC_JOIN_MITER);
@@ -1815,21 +1717,16 @@ GTKdraw::DefineFillpattern(GRfillType *fillp)
     }
 #else
 
-#ifdef NEW_PIX
+#ifdef NEW_NDK
     if (fillp->xPixmap()) {
         ((ndkPixmap*)fillp->xPixmap())->dec_ref();
         fillp->setXpixmap(0);
     }
     if (fillp->hasMap()) {
         unsigned char *map = fillp->newBitmap();
-#ifdef NEW_DRW
         GdkWindow *window = gd_dw.get_window();
         fillp->setXpixmap((GRfillData)new ndkPixmap(window,
             (char*)map, fillp->nX(), fillp->nY()));
-#else
-        fillp->setXpixmap((GRfillData)new ndkPixmap(gd_window, (char*)map,
-            fillp->nX(), fillp->nY()));
-#endif
         delete [] map;
     }
 #else
@@ -1863,15 +1760,11 @@ GTKdraw::SetFillpattern(const GRfillType *fillp)
 
 #else
 
-#ifdef NEW_GC
+#ifdef NEW_NDK
     if (!fillp || !fillp->xPixmap())
         GC()->set_fill(ndkGC_SOLID);
     else {
-#ifdef NEW_PIX
         GC()->set_stipple((ndkPixmap*)fillp->xPixmap());
-#else
-        GC()->set_stipple((GdkPixmap*)fillp->xPixmap());
-#endif
         GC()->set_fill(ndkGC_STIPPLED);
     }
 #else
@@ -1922,7 +1815,7 @@ GTKdraw::Input(int *keyret, int *butret, int *xret, int *yret)
 {
     *keyret = *butret = 0;
     *xret = *yret = 0;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GdkWindow *window = gd_dw.get_window();
 #else
     GdkWindow *window = gd_window;
@@ -1964,7 +1857,7 @@ GTKdraw::Input(int *keyret, int *butret, int *xret, int *yret)
 void
 GTKdraw::SetXOR(int val)
 {
-#ifdef NEW_GC
+#ifdef NEW_NDK
     switch (val) {
     case GRxNone:
         XorGC()->set_function(ndkGC_XOR);
@@ -2015,7 +1908,7 @@ namespace {
 #ifdef WIN32
         HBITMAP pmap;
 #else
-#ifdef NEW_PIX
+#ifdef NEW_NDK
         ndkPixmap *pmap;
 #else
         GdkPixmap *pmap;
@@ -2084,24 +1977,12 @@ GTKdraw::ShowGlyph(int gnum, int x, int y)
 
 #else
 
-#ifdef NEW_GC
-#ifdef NEW_PIX
+#ifdef NEW_NDK
     if (!st->pmap) {
-#ifdef NEW_DRW
         GdkWindow *window = gd_dw.get_window();
         st->pmap = new ndkPixmap(window, (char*)st->bits,
             GlyphWidth, GlyphWidth);
-#else
-        st->pmap = new ndkPixmap(gd_window, (char*)st->bits,
-            GlyphWidth, GlyphWidth);
-#endif
     }
-#else
-    if (!st->pmap) {
-        st->pmap = gdk_bitmap_create_from_data(gd_window, (char*)st->bits,
-            GlyphWidth, GlyphWidth);
-    }
-#endif
     GC()->set_stipple(st->pmap);
     GC()->set_fill(ndkGC_STIPPLED);
     GC()->set_ts_origin(x, y);
@@ -2128,26 +2009,13 @@ GTKdraw::ShowGlyph(int gnum, int x, int y)
 GRobject
 GTKdraw::GetRegion(int x, int y, int wid, int hei)
 {
-#ifdef NEW_GC
-#ifdef NEW_PIX
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GdkWindow *window = gd_dw.get_window();
     ndkPixmap *pm = new ndkPixmap(window, wid, hei);
     pm->copy_from_drawable(&gd_dw, CpyGC(), x, y, 0, 0, wid, hei);
-#else
-    ndkPixmap *pm = new ndkPixmap(gd_window, wid, hei);
-    pm->copy_from_window(gd_window, CpyGC(), x, y, 0, 0, wid, hei);
-#endif
     return ((GRobject)pm);
-#else  // NEW_PIX
-    GdkPixmap *pm = gdk_pixmap_new(gd_window, wid, hei,
-        gdk_visual_get_depth(GRX->Visual()));
-    copy_x11_pixmap_to_drawable(pm, CpyGC(), gd_window, x, y, 0, 0,
-        wid, hei);
-    return ((GRobject)pm);
-#endif
 
-#else  // NEW_GC
+#else
     GdkPixmap *pm = gdk_pixmap_new(gd_window, wid, hei,
         gdk_visual_get_depth(GRX->Visual()));
     gdk_window_copy_area(pm, CpyGC(), 0, 0, gd_window, x, y, wid, hei);
@@ -2159,17 +2027,8 @@ GTKdraw::GetRegion(int x, int y, int wid, int hei)
 void
 GTKdraw::PutRegion(GRobject pm, int x, int y, int wid, int hei)
 {
-#ifdef NEW_GC
-#ifdef NEW_PIX
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     ((ndkPixmap*)pm)->copy_to_drawable(&gd_dw, CpyGC(), 0, 0, x, y, wid, hei);
-#else
-    ((ndkPixmap*)pm)->copy_to_window(gd_window, CpyGC(), 0, 0, x, y, wid, hei);
-#endif
-#else
-    copy_x11_pixmap_to_drawable(gd_window, CpyGC(), (GdkPixmap*)pm, 0, 0, x, y,
-        wid, hei);
-#endif
 #else
     gdk_window_copy_area(gd_window, CpyGC(), x, y, (GdkPixmap*)pm, 0, 0,
         wid, hei);
@@ -2180,7 +2039,7 @@ GTKdraw::PutRegion(GRobject pm, int x, int y, int wid, int hei)
 void
 GTKdraw::FreeRegion(GRobject pm)
 {
-#ifdef NEW_PIX
+#ifdef NEW_NDK
     ((ndkPixmap*)pm)->dec_ref();
 #else
     gdk_pixmap_unref((GdkPixmap*)pm);
@@ -2192,7 +2051,7 @@ void
 GTKdraw::DisplayImage(const GRimage *image, int x, int y,
     int width, int height)
 {
-#ifdef NEW_IMG
+#ifdef NEW_NDK
     ndkImage *im = new ndkImage(ndkIMAGE_FASTEST, GRX->Visual(),
         width, height);
 
@@ -2224,11 +2083,7 @@ GTKdraw::DisplayImage(const GRimage *image, int x, int y,
 #endif
         }
     }
-#ifdef NEW_DRW
     im->copy_to_drawable(&gd_dw, CpyGC(), 0, 0, x, y, width, height);
-#else
-    im->copy_to_drawable(&gd_window, CpyGC(), 0, 0, x, y, width, height);
-#endif
     delete im;
 
 #endif

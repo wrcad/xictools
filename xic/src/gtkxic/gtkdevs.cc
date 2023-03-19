@@ -339,7 +339,7 @@ cSced::PopUpDevs(GRobject caller, ShowMode mode)
     GRX->SetPopupLocation(GRloc(LW_UL), Dv->Shell(), mainBag()->Viewport());
 
     if (Dv->Viewport())
-#ifdef NEW_DRW
+#ifdef NEW_NDK
         Dv->GetDrawable()->set_window(gtk_widget_get_window(Dv->Viewport()));
 #else
         Dv->SetWindow(gtk_widget_get_window(Dv->Viewport()));
@@ -359,7 +359,7 @@ cSced::DevsEscCallback()
 
 
 // wl is consumed
-sDv::sDv(GRobject caller, stringlist *wl)
+sDv::sDv(GRobject caller, stringlist *wl) : GTKdraw(XW_DEFAULT)
 {
     Dv = this;
     dv_caller = caller;
@@ -761,11 +761,6 @@ void
 sDv::render_cell(int which, bool selected)
 {
     SetColor(selected ? dv_selec : dv_backg);
-#ifdef XXX_GDK
-    gdk_draw_rectangle(gd_window, GC(), true,
-        dv_entries[which].x - dv_leftofst, SPA, dv_entries[which].width,
-        CELL_SIZE - 2*SPA);
-#endif
     Box(dv_entries[which].x - dv_leftofst, SPA, dv_entries[which].width,
         CELL_SIZE - 2*SPA);
 
@@ -802,7 +797,7 @@ sDv::render_cell(int which, bool selected)
     wd.InitViewport(vp_width, vp_height);
     *wd.ClipRect() = wd.Viewport();
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_pixmap();
 #else
     GdkPixmap *pm = gdk_pixmap_new(gd_window,  vp_width, vp_height,
@@ -861,7 +856,7 @@ sDv::render_cell(int which, bool selected)
     int xoff = dv_entries[which].x - dv_leftofst - 2;
     int yoff = SPA;
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_window();
 #else
     gdk_window_copy_area((GdkWindow*)window_bak, GC(),
@@ -923,13 +918,11 @@ sDv::show_selected(int which)
     xp.assign(2, xp.at(1).x + w, xp.at(1).y);
     GtkStyle *style = gtk_widget_get_style(gd_viewport);
     int state = gtk_widget_get_state(gd_viewport);
-//XXX    SetColor(gd_viewport->style->light[gd_viewport->state].pixel);
     SetColor(style->light[state].pixel);
     PolyLine(&xp, 3);
     xp.assign(0, dv_entries[which].x - SPA/2 - dv_leftofst, SPA/2 + h);
     xp.assign(1, xp.at(0).x + w, xp.at(0).y);
     xp.assign(2, xp.at(1).x, xp.at(1).y - h);
-//XXX    SetColor(gd_viewport->style->dark[gd_viewport->state].pixel);
     SetColor(style->dark[state].pixel);
     PolyLine(&xp, 3);
 }
@@ -956,12 +949,10 @@ sDv::show_unselected(int which)
     int state = gtk_widget_get_state(gd_viewport);
     SetColor(style->dark[state].pixel);
 
-//XXX    SetColor(gd_viewport->style->dark[gd_viewport->state].pixel);
     PolyLine(&xp, 3);
     xp.assign(0, dv_entries[which].x - SPA/2 - dv_leftofst, SPA/2 + h);
     xp.assign(1, xp.at(0).x + w, xp.at(0).y);
     xp.assign(2, xp.at(1).x, xp.at(1).y - h);
-//XXX    SetColor(gd_viewport->style->light[gd_viewport->state].pixel);
     SetColor(style->light[state].pixel);
     PolyLine(&xp, 3);
 }
@@ -1062,7 +1053,7 @@ int
 sDv::dv_redraw_idle(void*)
 {
     Dv->dv_leftofst = Dv->dv_entries[Dv->dv_leftindx].x - SPA;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     int width = Dv->GetDrawable()->get_width();
 #else
     int width = gdk_window_get_width(gtk_widget_get_window(Dv->gd_viewport));

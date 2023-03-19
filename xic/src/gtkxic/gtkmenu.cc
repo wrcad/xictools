@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_BOX
-
 #include "main.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
@@ -129,13 +127,12 @@ GTKmenu::InitSideButtonMenus(bool horiz_buttons)
         else {
             pbox = gtk_vbox_new(true, 0);
 
-            // Override the class size allocation method with a local version
-            // that does a better job keeping buttons the same size.
-#ifdef XXX_BOX
+            // Override the class size allocation method with a local
+            // version that does a better job keeping buttons the same
+            // size.
             GtkWidgetClass *ks = GTK_WIDGET_GET_CLASS(pbox);
             if (ks)
                 ks->size_allocate = gtk_vbox_size_allocate;
-#endif
             gtk_widget_set_size_request(pbox, 28, -1);
         }
 
@@ -656,44 +653,44 @@ GTKmenu::new_popup_menu(GtkWidget *root, const char *const *list,
 void
 GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 {
-#ifdef XXX_BOX
     g_return_if_fail (widget != NULL);
     g_return_if_fail (GTK_IS_VBOX (widget));
     g_return_if_fail (allocation != NULL);
 
     GtkBox *box = GTK_BOX(widget);
-//XXX    gtk_widget_set_allocation(widget, allocation);
-    widget->allocation = *allocation;
+    gtk_widget_set_allocation(widget, allocation);
 
     gint nvis_children = 0;
     gint nexpand_children = 0;
-//XXX    GList *children = gtk_container_get_children(GTK_CONTAINER(box));
-    GList *children = box->children;
+    GList *children_list = gtk_container_get_children(GTK_CONTAINER(box));
 
-    GtkBoxChild *child;
+    GList *children = children_list;
     while (children) {
-        child = (GtkBoxChild*)children->data;
+        GtkWidget *child = GTK_WIDGET(children->data);
         children = children->next;
 
-        if (GTK_WIDGET_VISIBLE (child->widget)) {
+        if (gtk_widget_get_visible(child)) {
             nvis_children += 1;
-            if (child->expand)
+            gboolean expand;
+            gtk_box_query_child_packing(box, child, &expand, 0, 0, 0);
+            if (expand)
                 nexpand_children += 1;
         }
     }
 
+    gint border_width = gtk_container_get_border_width(GTK_CONTAINER(box));
     if (nvis_children > 0) {
         gint height, extra, mod = 0;
-        if (box->homogeneous) {
-            height = (allocation->height -
-                GTK_CONTAINER(box)->border_width * 2 -
-                (nvis_children - 1) * box->spacing);
+        if (gtk_box_get_homogeneous(box)) {
+            height = (allocation->height - border_width * 2 -
+                (nvis_children - 1) * gtk_box_get_spacing(box));
             extra = height / nvis_children;
             mod = height % nvis_children;
         }
         else if (nexpand_children > 0) {
-            height = (gint)allocation->height -
-                (gint)widget->requisition.height;
+            GtkRequisition req;
+            gtk_widget_get_requisition(widget, &req);
+            height = (gint)allocation->height - (gint)req.height;
             extra = height / nexpand_children;
         }
         else {
@@ -702,31 +699,32 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
         }
 
         GtkAllocation child_allocation;
-        gint y = allocation->y + GTK_CONTAINER(box)->border_width;
-        child_allocation.x = allocation->x +
-            GTK_CONTAINER(box)->border_width;
+        gint y = allocation->y + border_width;
+        child_allocation.x = allocation->x + border_width;
         child_allocation.width = MAX(1, (gint)allocation->width -
-            (gint)GTK_CONTAINER(box)->border_width * 2);
+            border_width * 2);
 
         gint child_height;
-
         gint count = 0;
-//XXX        children = gtk_container_get_children(GTK_CONTAINER(box));
-        children = box->children;
+        children = children_list;
         while (children) {
-            child = (GtkBoxChild*)children->data;
+            GtkWidget *child = GTK_WIDGET(children->data);
             children = children->next;
 
-            if ((child->pack == GTK_PACK_START) &&
-                    GTK_WIDGET_VISIBLE(child->widget)) {
-//XXX                if (gtk_box_get_homogeneous(GTK_BOX(box))) {
-                if (box->homogeneous) {
+            GtkPackType pack;
+            guint padding;
+            gboolean expand;
+            gboolean fill;
+            gtk_box_query_child_packing(box, child, &expand, &fill,
+                &padding, &pack);
+            if ((pack == GTK_PACK_START) && gtk_widget_get_visible(child)) {
+                if (gtk_box_get_homogeneous(box)) {
                     /*
                     if (nvis_children == 1)
                         child_height = height;
                     else
                     */
-                        child_height = extra + (count < mod);
+                    child_height = extra + (count < mod);
 
                     nvis_children -= 1;
                     height -= (extra + (count < mod));
@@ -735,12 +733,10 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
                 else {
                     GtkRequisition child_requisition;
 
-                    gtk_widget_get_child_requisition(child->widget,
-                        &child_requisition);
-                    child_height = child_requisition.height +
-                        child->padding * 2;
+                    gtk_widget_get_child_requisition(child, &child_requisition);
+                    child_height = child_requisition.height + padding * 2;
 
-                    if (child->expand) {
+                    if (expand) {
                         if (nexpand_children == 1)
                             child_height += height;
                         else
@@ -751,42 +747,45 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
                     }
                 }
 
-                if (child->fill) {
+                if (fill) {
                     child_allocation.height = MAX(1, child_height -
-                        (gint)child->padding * 2);
-                    child_allocation.y = y + child->padding;
+                        (gint)padding * 2);
+                    child_allocation.y = y + padding;
                 }
                 else {
                     GtkRequisition child_requisition;
 
-                    gtk_widget_get_child_requisition(child->widget,
-                        &child_requisition);
+                    gtk_widget_get_child_requisition(child, &child_requisition);
                     child_allocation.height = child_requisition.height;
                     child_allocation.y = y + (child_height -
                         child_allocation.height) / 2;
                 }
 
-                gtk_widget_size_allocate(child->widget, &child_allocation);
+                gtk_widget_size_allocate(child, &child_allocation);
 
                 y += child_height + gtk_box_get_spacing(GTK_BOX(box));
             }
         }
 
-        y = allocation->y + allocation->height -
-            GTK_CONTAINER(box)->border_width;
+        y = allocation->y + allocation->height - border_width;
 
-        children = box->children;
+        children = children_list;
         while (children) {
-            child = (GtkBoxChild*)children->data;
+            GtkWidget *child = GTK_WIDGET(children->data);
             children = children->next;
 
-            if ((child->pack == GTK_PACK_END) &&
-                    GTK_WIDGET_VISIBLE(child->widget)) {
-                GtkRequisition child_requisition;
-                gtk_widget_get_child_requisition(child->widget,
-                    &child_requisition);
+            GtkPackType pack;
+            guint padding;
+            gboolean expand;
+            gboolean fill;
+            gtk_box_query_child_packing(box, child, &expand, &fill,
+                &padding, &pack);
 
-                if (box->homogeneous) {
+            if ((pack == GTK_PACK_END) && gtk_widget_get_visible(child)) {
+                GtkRequisition child_requisition;
+                gtk_widget_get_child_requisition(child, &child_requisition);
+
+                if (gtk_box_get_homogeneous(box)) {
                     /*
                     if (nvis_children == 1)
                         child_height = height;
@@ -798,10 +797,9 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
                     height -= (extra + (count < mod));
                 }
                 else {
-                    child_height = child_requisition.height +
-                        child->padding * 2;
+                    child_height = child_requisition.height + padding * 2;
 
-                    if (child->expand) {
+                    if (expand) {
                         if (nexpand_children == 1)
                             child_height += height;
                         else
@@ -812,10 +810,10 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
                     }
                 }
 
-                if (child->fill) {
+                if (fill) {
                     child_allocation.height = MAX(1, child_height -
-                        (gint)child->padding * 2);
-                    child_allocation.y = y + child->padding - child_height;
+                        (gint)padding * 2);
+                    child_allocation.y = y + padding - child_height;
                 }
                 else {
                     child_allocation.height = child_requisition.height;
@@ -823,13 +821,13 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
                         child_allocation.height) / 2 - child_height;
                 }
 
-                gtk_widget_size_allocate(child->widget, &child_allocation);
+                gtk_widget_size_allocate(child, &child_allocation);
 
-                y -= (child_height + box->spacing);
+                y -= (child_height + gtk_box_get_spacing(box));
             }
         }
     }
-#endif
+    g_list_free(children_list);
 }
 // End of GTKmenu functions.
 

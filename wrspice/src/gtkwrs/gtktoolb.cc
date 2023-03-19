@@ -912,7 +912,7 @@ ErrMsgBox::PopUpErr(const char *string)
 
     gtk_window_move(GTK_WINDOW(er_popup), er_x, er_y);
     gtk_widget_show(er_popup);
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (TB()->context && TB()->context->GetDrawable()) {
 #else
     if (TB()->context && TB()->context->Window()) {
@@ -1108,7 +1108,7 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
 
     gtk_window_move(GTK_WINDOW(popup), x, y);
     gtk_widget_show(popup);
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (TB()->context && TB()->context->GetDrawable()) {
 #else
     if (TB()->context && TB()->context->Window()) {
@@ -1150,7 +1150,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         ResPrint::get_elapsed(&elapsed, &user, &cpu);
         tb_elapsed_start = elapsed;
     }
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     else if (context && context->GetDrawable()->get_window()) {
         int wid = context->GetDrawable()->get_width();
         int hei = context->GetDrawable()->get_height();
@@ -1272,7 +1272,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             }
         }
         context->Update();
-#ifdef NEW_DRW
+#ifdef NEW_NDK
         context->GetDrawable()->set_draw_to_window();
         context->GetDrawable()->copy_pixmap_to_window(
             context->CpyGC(), 0, 0, -1, -1);
@@ -1809,8 +1809,8 @@ GTKtoolbar::tbpop(bool up)
     //
     if (!up || toolbar)
         return;
-    tb_bag *w = new tb_bag(GR_PLOT);
-    GRpkgIf()->NewWbag(GR_PLOTstr, w);
+    tb_bag *w = new tb_bag(GR_TB);
+    GRpkgIf()->NewWbag(GR_TBstr, w);
     context = w;
     toolbar = w->Shell();
 
@@ -2330,7 +2330,7 @@ GTKtoolbar::tbpop(bool up)
     RevertFocus(toolbar);
 
     gtk_widget_show(toolbar);
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     w->GetDrawable()->set_window(gtk_widget_get_window(w->Viewport()));
 #else
     w->SetWindow(w->Viewport()->window);
@@ -2339,58 +2339,13 @@ GTKtoolbar::tbpop(bool up)
     sprintf(tbuf, "WRspice-%s", Global.Version());
     w->Title(tbuf, "WRspice");
 
-#ifdef NEW_GC
-    // create GC's, these will also be used in the plots
-    //
-    if (!w->GC()) {
-        ndkGCvalues gcvalues;
-#ifdef NEW_DRW
-        GdkWindow *window = w->GetDrawable()->get_window();
-        if (window) {
-            gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
-            w->Gbag()->set_gc(new ndkGC(window, &gcvalues, ndkGC_CAP_STYLE));
-            gcvalues.v_function = ndkGC_XOR;
-            w->Gbag()->set_xorgc(new ndkGC(window, &gcvalues,
-                (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
-        }
+    // set up initial xor color
+    GdkColor clr;
+    clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
+#ifdef NEW_NDK
+    w->XorGC()->set_foreground(&clr);
 #else
-        // We handle our own double-buffering.
-        gtk_widget_set_double_buffered(w->Viewport(), false);
-
-        gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
-        w->Gbag()->set_gc(new ndkGC(w->Window(), &gcvalues, ndkGC_CAP_STYLE));
-        gcvalues.v_function = ndkGC_XOR;
-        w->Gbag()->set_xorgc(new ndkGC(w->Window(), &gcvalues,
-            (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
-#endif
-
-        // set up initial xor color
-        // offset 1 is assumed to be the highlighting color
-        GdkColor clr;
-        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
-        gtk_QueryColor(&clr);
-        w->XorGC()->set_foreground(&clr);
-    }
-#else
-
-    // create GC's, these will also be used in the plots
-    //
-    if (!w->GC()) {
-        GdkGCValues gcvalues;
-        gcvalues.cap_style = GDK_CAP_NOT_LAST;
-        w->Gbag()->set_gc(gdk_gc_new_with_values(w->Window(), &gcvalues,
-            GDK_GC_CAP_STYLE));
-        gcvalues.function = GDK_XOR;
-        w->Gbag()->set_xorgc(gdk_gc_new_with_values(w->Window(), &gcvalues,
-            (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE)));
-
-        // set up initial xor color
-        // offset 1 is assumed to be the highlighting color
-        GdkColor clr;
-        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
-        gtk_QueryColor(&clr);
-        gdk_gc_set_foreground(w->XorGC(), &clr);
-    }
+    gdk_gc_set_foreground(w->XorGC(), &clr);
 #endif
 
     // drawing colors
@@ -2658,7 +2613,7 @@ GTKtoolbar::quit_proc(GtkWidget*, void*)
     if (CP.GetFlag(CP_NOTTYIO)) {
         // In server mode, just hide ourself.
         gtk_widget_hide(TB()->toolbar);
-#ifdef NEW_DRW
+#ifdef NEW_NDK
         TB()->context->GetDrawable()->set_window(0);
 #else
         TB()->context->SetWindow(0);
@@ -2921,7 +2876,7 @@ GTKtoolbar::notes_proc(GtkWidget*, void*)
 // End of GTKtoolbar functions.
 
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 #else
 
 void
@@ -2956,19 +2911,11 @@ void
 tb_bag::switch_from_pixmap()
 {
     if (b_winbak) {
-#ifdef NEW_GC
-        copy_x11_pixmap_to_drawable(b_winbak, CpyGC(), gd_window,
-            0, 0, 0, 0, b_wid, b_hei);
-#else
-//        copy_x11_pixmap_to_drawable(b_winbak, CpyGC(), gd_window,
-//            0, 0, 0, 0, b_wid, b_hei);
         gdk_window_copy_area(b_winbak, CpyGC(), 0, 0, gd_window,
             0, 0, b_wid, b_hei);
-#endif
         gd_window = b_winbak;
         b_winbak = 0;
-//        gtk_widget_set_window(gd_viewport, gd_window);
-        gd_viewport->window = gd_window;
+        gtk_widget_set_window(gd_viewport, gd_window);
     }
 }
 // End of tb_bag functions.

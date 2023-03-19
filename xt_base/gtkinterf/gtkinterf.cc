@@ -87,26 +87,8 @@ GRpkg::DevDepInit(unsigned int cfg)
 }
 
 
-// Graphics context storage.  The 0 element is the default.
-//
-sGbag *sGbag::app_gbags[NUMGCS];
-
 // Color Allocations.
 GTKdev::sColorAlloc GTKdev::ColorAlloc;
-
-
-// Static method to create/return the default graphics context.  Note that
-// this does not create the GCs.
-//
-sGbag *
-sGbag::default_gbag(int type)
-{
-    if (type < 0 || type >= NUMGCS)
-        type = 0;
-    if (!app_gbags[type])
-        app_gbags[type] = new sGbag;
-    return (app_gbags[type]);
-}
 
 
 //-----------------------------------------------------------------------------
@@ -542,15 +524,7 @@ GTKdev::NameToRGB(const char *colorname, int *indices)
 GRdraw *
 GTKdev::NewDraw(int apptype)
 {
-    GTKdraw *w = new GTKdraw();
-    if (apptype > 0 && apptype < NUMGCS) {
-        // Reset the w->gbag field to one specific to this apptype.
-        // The default value is used othewise.
-        if (!sGbag::app_gbags[apptype])
-            sGbag::app_gbags[apptype] = new sGbag;
-        w->SetGbag(sGbag::app_gbags[apptype]);
-    }
-    return (w);
+    return (new GTKdraw(apptype));
 }
 
 

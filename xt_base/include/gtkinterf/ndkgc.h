@@ -68,12 +68,8 @@
 #ifndef NDKGC_H
 #define NDKGC_H
 
-#ifdef NEW_PIX
 struct ndkPixmap;
-#endif
-#ifdef NEW_DRW
 struct ndkDrawable;
-#endif
 
 // ndkGC cap styles.
 enum ndkGCcapStyle
@@ -91,6 +87,13 @@ enum ndkGCfill
     ndkGC_TILED,
     ndkGC_STIPPLED,
     ndkGC_OPAQUE_STIPPLED
+};
+
+// ndkGC fill rule
+enum ndkGCfillRule
+{
+    ndkGC_EVEN_ODD_RULE,
+    ndkGC_WINDING_RULE
 };
 
 // ndkGC function types.
@@ -160,19 +163,20 @@ enum ndkGCvaluesMask
     ndkGC_FONT          = 1 << 2,
     ndkGC_FUNCTION      = 1 << 3,
     ndkGC_FILL          = 1 << 4,
-    ndkGC_TILE          = 1 << 5,
-    ndkGC_STIPPLE       = 1 << 6,
-    ndkGC_CLIP_MASK     = 1 << 7,
-    ndkGC_SUBWINDOW     = 1 << 8,
-    ndkGC_TS_X_ORIGIN   = 1 << 9,
-    ndkGC_TS_Y_ORIGIN   = 1 << 10,
-    ndkGC_CLIP_X_ORIGIN = 1 << 11,
-    ndkGC_CLIP_Y_ORIGIN = 1 << 12,
-    ndkGC_EXPOSURES     = 1 << 13,
-    ndkGC_LINE_WIDTH    = 1 << 14,
-    ndkGC_LINE_STYLE    = 1 << 15,
-    ndkGC_CAP_STYLE     = 1 << 16,
-    ndkGC_JOIN_STYLE    = 1 << 17
+    ndkGC_FILL_RULE     = 1 << 5,
+    ndkGC_TILE          = 1 << 6,
+    ndkGC_STIPPLE       = 1 << 7,
+    ndkGC_CLIP_MASK     = 1 << 8,
+    ndkGC_SUBWINDOW     = 1 << 9,
+    ndkGC_TS_X_ORIGIN   = 1 << 10,
+    ndkGC_TS_Y_ORIGIN   = 1 << 11,
+    ndkGC_CLIP_X_ORIGIN = 1 << 12,
+    ndkGC_CLIP_Y_ORIGIN = 1 << 13,
+    ndkGC_EXPOSURES     = 1 << 14,
+    ndkGC_LINE_WIDTH    = 1 << 15,
+    ndkGC_LINE_STYLE    = 1 << 16,
+    ndkGC_CAP_STYLE     = 1 << 17,
+    ndkGC_JOIN_STYLE    = 1 << 18
 };
 
 #ifdef WITH_X11
@@ -189,15 +193,10 @@ struct ndkGCvalues
     GdkColor        v_background;
     ndkGCfunction   v_function;
     ndkGCfill       v_fill;
-#ifdef NEW_PIX
+    ndkGCfillRule   v_fill_rule;
     ndkPixmap       *v_tile;
     ndkPixmap       *v_stipple;
     ndkPixmap       *v_clip_mask;
-#else
-    GdkPixmap       *v_tile;
-    GdkBitmap       *v_stipple;
-    GdkPixmap       *v_clip_mask;
-#endif
     ndkGCsubwinMode v_subwindow_mode;
     int             v_ts_x_origin;
     int             v_ts_y_origin;
@@ -212,11 +211,7 @@ struct ndkGCvalues
 
 struct ndkGC
 {
-#ifdef NEW_PIX
     ndkGC(GdkWindow*, ndkGCvalues* =0, ndkGCvaluesMask =(ndkGCvaluesMask)0);
-#else
-    ndkGC(GdkDrawable*, ndkGCvalues* =0, ndkGCvaluesMask =(ndkGCvaluesMask)0);
-#endif
     ~ndkGC();
 
     void set_values(ndkGCvalues*, ndkGCvaluesMask);
@@ -262,8 +257,15 @@ struct ndkGC
 
     ndkGCfill get_fill()            { return ((ndkGCfill)gc_fill); }
 
+    void set_fill_rule(ndkGCfillRule rule)
+    {
+        ndkGCvalues values;
+        values.v_fill_rule = rule;
+        set_values(&values, ndkGC_FILL_RULE);
+    }
 
-#ifdef NEW_PIX
+    ndkGCfillRule get_fill_rule()   { return ((ndkGCfillRule)gc_fill_rule); }
+
     void set_tile(ndkPixmap *tile)
     {
         ndkGCvalues values;
@@ -272,19 +274,8 @@ struct ndkGC
     }
 
     ndkPixmap *get_tile()           { return (gc_tile); }
-#else
-    void set_tile(GdkPixmap *tile)
-    {
-        ndkGCvalues values;
-        values.v_tile = tile;
-        set_values(&values, ndkGC_TILE);
-    }
-
-    GdkPixmap *get_tile()           { return (gc_tile); }
-#endif
 
 
-#ifdef NEW_PIX
     void set_stipple(ndkPixmap *stipple)
     {
         ndkGCvalues values;
@@ -293,16 +284,6 @@ struct ndkGC
     }
 
     ndkPixmap *get_stipple()        { return (gc_stipple); }
-#else
-    void set_stipple(GdkBitmap *stipple)
-    {
-        ndkGCvalues values;
-        values.v_stipple = stipple;
-        set_values(&values, ndkGC_STIPPLE);
-    }
-
-    GdkBitmap *get_stipple()        { return (gc_stipple); }
-#endif
 
 
     // Set the origin when using tiles or stipples with the GC.  The tile
@@ -336,7 +317,6 @@ struct ndkGC
     // mask is interpreted relative to the clip origin.  (See
     // set_clip_origin()).
     //
-#ifdef NEW_PIX
     void set_clip_mask(ndkPixmap *mask)
     {
         ndkGCvalues values;
@@ -345,16 +325,6 @@ struct ndkGC
     }
 
     ndkPixmap *get_clip_mask()      { return (gc_clip_mask); }
-#else
-    void set_clip_mask(GdkPixmap *mask)
-    {
-        ndkGCvalues values;
-        values.v_clip_mask = mask;
-        set_values(&values, ndkGC_CLIP_MASK);
-    }
-
-    GdkPixmap *get_clip_mask()      { return (gc_clip_mask); }
-#endif
 
     // Sets the clip mask for a graphics context from a rectangle.  The
     // clip mask is interpreted relative to the clip origin.  (See
@@ -479,40 +449,57 @@ struct ndkGC
 
     void offset(int, int);
     static void copy(ndkGC*, ndkGC*);
-#ifdef NEW_DRW
-    void draw_rectangle(ndkDrawable*, bool, int, int, int, int);
-#endif
-#ifdef NEW_PIX
-    void draw_rectangle(ndkPixmap*, bool, int, int, int, int);
-#endif
-#if defined(NEW_DRW) || defined(NEW_PIX)
-    void draw_rectangle(GdkWindow*, bool, int, int, int, int);
-#else
-    void draw_rectangle(GdkDrawable*, bool, int, int, int, int);
-#endif
+    void draw_line(ndkDrawable *d, int x1, int y1, int x2, int y2)
+        { draw_line(d->get_xid(), x1, y1, x2, y2); }
+    void draw_arc(ndkDrawable *d, bool filled, int x, int y, int w, int h,
+            int as, int ae)
+        { draw_arc(d->get_xid(), filled, x, y, w, h, as, ae); }
+    void draw_rectangle(ndkDrawable *d, bool filled, int x, int y, int w, int h)
+        { draw_rectangle(d->get_xid(), filled, x, y, w, h); }
+    void draw_polygon(ndkDrawable *d, bool filled, GdkPoint *pts, int npts)
+        { draw_polygon(d->get_xid(), filled, pts, npts); }
+    void draw_pango_layout(ndkDrawable *d, int x, int y, PangoLayout *lout)
+        { draw_pango_layout(d->get_xid(), x, y, lout); }
+
+    void draw_line(ndkPixmap *p, int x1, int y1, int x2, int y2)
+        { draw_line(p->get_xid(), x1, y1, x2, y2); }
+    void draw_arc(ndkPixmap *p, bool filled, int x, int y, int w, int h,
+            int as, int ae)
+        { draw_arc(p->get_xid(), filled, x, y, w, h, as, ae); }
+    void draw_rectangle(ndkPixmap *p, bool filled, int x, int y, int w, int h)
+        { draw_rectangle(p->get_xid(), filled, x, y, w, h); }
+    void draw_polygon(ndkPixmap *p, bool filled, GdkPoint *pts, int npts)
+        { draw_polygon(p->get_xid(), filled, pts, npts); }
+    void draw_pango_layout(ndkPixmap *p, int x, int y, PangoLayout *lout)
+        { draw_pango_layout(p->get_xid(), x, y, lout); }
+
+    void draw_line(GdkWindow *d, int x1, int y1, int x2, int y2)
+        { draw_line(gdk_x11_drawable_get_xid(d), x1, y1, x2, y2); }
+    void draw_arc(GdkWindow *d, bool filled, int x, int y, int w, int h,
+            int as, int ae)
+        { draw_arc(gdk_x11_drawable_get_xid(d), filled, x, y, w, h, as, ae); }
+    void draw_rectangle(GdkWindow *d, bool filled, int x, int y, int w, int h)
+        { draw_rectangle(gdk_x11_drawable_get_xid(d), filled, x, y, w, h); }
+    void draw_polygon(GdkWindow *d, bool filled, GdkPoint *pts, int npts)
+        { draw_polygon(gdk_x11_drawable_get_xid(d), filled, pts, npts); }
+    void draw_pango_layout(GdkWindow *d, int x, int y, PangoLayout *lout)
+        { draw_pango_layout(gdk_x11_drawable_get_xid(d), x, y, lout); }
 
 private:
+#ifdef WITH_X11
+    void draw_line(XID, int, int, int, int);
+    void draw_arc(XID, bool, int, int, int, int, int, int);
+    void draw_rectangle(XID, bool, int, int, int, int);
+    void draw_polygon(XID, bool, GdkPoint*, int);
+    void draw_pango_layout(XID, int, int, PangoLayout*);
+#endif
+
     void gc_set_clip_region_real(GdkRegion*, bool);
     void gc_set_clip_region_internal(GdkRegion*, bool);
     void gc_add_drawable_clip(unsigned int, GdkRegion*, int, int);
     void gc_remove_drawable_clip();
-#ifdef NEW_DRW
-#ifdef NEW_PIX
     void gc_update_context(cairo_t*, const GdkColor*, ndkPixmap*, bool,
         ndkDrawable*);
-#else
-    void gc_update_context(cairo_t*, const GdkColor*, GdkBitmap*, bool,
-        ndkDrawable*);
-#endif
-#else
-#ifdef NEW_PIX
-    void gc_update_context(cairo_t*, const GdkColor*, ndkPixmap*, bool,
-        GdkWindow*);
-#else
-    void gc_update_context(cairo_t*, const GdkColor*, GdkBitmap*, bool,
-        GdkDrawable*);
-#endif
-#endif
 #ifdef WITH_X11
     void gc_x11_flush();
     void gc_x11_set_values(ndkGCvalues*, ndkGCvaluesMask);
@@ -535,17 +522,10 @@ private:
     int             gc_region_tag_offset_x;
     int             gc_region_tag_offset_y;
 
-#ifdef NEW_PIX
     ndkPixmap       *gc_stipple;
     ndkPixmap       *gc_tile;
     ndkPixmap       *gc_clip_mask;
     ndkPixmap       *gc_old_clip_mask;
-#else
-    GdkBitmap       *gc_stipple;
-    GdkBitmap       *gc_tile;
-    GdkBitmap       *gc_clip_mask;
-    GdkBitmap       *gc_old_clip_mask;
-#endif
 
     unsigned int    gc_fg_pixel;
     unsigned int    gc_bg_pixel;
@@ -561,6 +541,7 @@ private:
 #endif
     bool            gc_subwindow_mode;
     unsigned char   gc_fill;
+    bool            gc_fill_rule;
     bool            gc_exposures;
 };
 

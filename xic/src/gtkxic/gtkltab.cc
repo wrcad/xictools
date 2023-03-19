@@ -86,7 +86,7 @@ namespace {
 
 GTKltab *GTKltab::instancePtr = 0;
 
-GTKltab::GTKltab(bool nogr)
+GTKltab::GTKltab(bool nogr) : GTKdraw(XW_LTAB)
 {
     if (instancePtr) {
         fprintf(stderr, "Singleton class GTKltab already instantiated.\n");
@@ -101,7 +101,10 @@ GTKltab::GTKltab(bool nogr)
     ltab_sbtn = 0;
     ltab_lsearch = 0;
     ltab_lsearchn = 0;
+#ifdef NEW_NDK
+#else
     ltab_pixmap = 0;
+#endif
     ltab_pmap_width = 0;
     ltab_pmap_height = 0;
     ltab_pmap_dirty = false;
@@ -121,6 +124,7 @@ GTKltab::GTKltab(bool nogr)
         return;
 
     gd_viewport = gtk_drawing_area_new();
+    gtk_widget_set_double_buffered(gd_viewport, false);
     gtk_widget_show(gd_viewport);
     gtk_widget_set_name(gd_viewport, "LayerTable");
 
@@ -188,26 +192,13 @@ GTKltab::GTKltab(bool nogr)
     gtk_widget_show(hbox);
     ltab_search_container = hbox;
 
-    GtkWidget *button = gtk_button_new();
+    GtkWidget *button = new_pixmap_button(lsearch_xpm, 0, false);
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(ltab_search_hdlr), this);
-    GtkStyle *style = gtk_widget_get_style(button);
-    GdkPixmap *pmask;
-#ifdef XXX_GDK
-    GdkPixmap *pixmap =
-        gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
-            &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)lsearch_xpm);
-    GtkWidget *pixwidg = gtk_pixmap_new(pixmap, pmask);
-#else
-    GdkPixmap *pixmap = 0;
-    GtkWidget *pixwidg = 0;
-#endif
-    gtk_widget_show(pixwidg);
-    gtk_container_add(GTK_CONTAINER(button), pixwidg);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
     ltab_sbtn = button;
-    ltab_lsearch = pixwidg;
+    ltab_lsearch = gtk_bin_get_child(GTK_BIN(button));
 
     GtkWidget *entry = gtk_entry_new();
     gtk_widget_show(entry);
@@ -223,25 +214,14 @@ void
 GTKltab::setup_drawable()
 {
     // Make sure window is set.
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (!GetDrawable()->get_window()) {
         GdkWindow *window = gtk_widget_get_window(gd_viewport);
         GetDrawable()->set_window(window);
-        if (!ltab_gbag.main_gc()) {
-            ltab_gbag.set_gc(new ndkGC(window));
-            ltab_gbag.set_xorgc(new ndkGC(window));
-        }
-        SetGbag(&ltab_gbag);
     }
 #else
     if (!gd_window)
         gd_window = gtk_widget_get_window(gd_viewport);
-
-    if (!ltab_gbag.main_gc()) {
-        ltab_gbag.set_gc(gdk_gc_new(gd_window));
-        ltab_gbag.set_xorgc(gdk_gc_new(gd_window));
-    }
-    SetGbag(&ltab_gbag);
 #endif
 }
 
@@ -445,7 +425,7 @@ namespace {
 
         ~blinker()
             {
-#ifdef NEW_PIX
+#ifdef NEW_NDK
                 if (b_dim_pm)
                     b_dim_pm->dec_ref();
                 if (b_norm_pm)
@@ -467,7 +447,7 @@ namespace {
             {
                 if (!b_dim_pm)
                     return;
-#if defined(NEW_DRW) && defined(NEW_PIX)
+#ifdef NEW_NDK
                 b_dim_pm->copy_to_window(b_wbag->GetDrawable()->get_window(),
                     b_wbag->GC(), 0, 0, 0, 0, b_wid, b_hei);
 #else
@@ -481,7 +461,7 @@ namespace {
             {
                 if (!b_norm_pm)
                     return;
-#if defined(NEW_DRW) && defined(NEW_PIX)
+#ifdef NEW_NDK
                 b_norm_pm->copy_to_window(b_wbag->GetDrawable()->get_window(),
                     b_wbag->GC(), 0, 0, 0, 0, b_wid, b_hei);
 #else
@@ -493,7 +473,7 @@ namespace {
 
     private:
         win_bag *b_wbag;
-#ifdef NEW_PIX
+#ifdef NEW_NDK
         ndkPixmap *b_dim_pm;
         ndkPixmap *b_norm_pm;
 #else
@@ -526,7 +506,7 @@ namespace {
         b_wid = 0;
         b_hei = 0;
 
-#if defined(NEW_DRW) && defined(NEW_PIX) && defined(NEW_IMG)
+#ifdef NEW_NDK
         if (!wb)
             return;
 
@@ -559,9 +539,11 @@ namespace {
         delete im;
 
         // im->visual = 0 from pixmap
-        unsigned red_mask = GRX->Visual()->red_mask;
-        unsigned green_mask = GRX->Visual()->green_mask;
-        unsigned blue_mask = GRX->Visual()->blue_mask;
+        unsigned int red_mask, green_mask, blue_mask;
+        gdk_visual_get_red_pixel_details(GRX->Visual(), &red_mask, 0, 0);
+        gdk_visual_get_green_pixel_details(GRX->Visual(), &green_mask, 0, 0);
+        gdk_visual_get_blue_pixel_details(GRX->Visual(), &blue_mask, 0, 0);
+
         int r = (pix & red_mask);
         r = (((r * DIMPIXVAL)/10) & red_mask);
         int g = (pix & green_mask);
@@ -584,7 +566,8 @@ namespace {
         if (b_wid < 0 || b_hei < 0 || (!b_wid && !b_hei))
             return;
 
-        pm = new ndkPixmap(window, b_wid, b_hei, GRX->Visual()->depth);
+        pm = new ndkPixmap(window, b_wid, b_hei,
+            gdk_visual_get_depth(GRX->Visual()));
         if (!pm)
             return;
         pm->copy_from_window(window, wb->GC(), 0, 0, 0, 0, b_wid, b_hei);
@@ -738,7 +721,7 @@ namespace {
         gdk_draw_image(pm, wb->GC(), im, 0, 0, 0, 0, b_wid, b_hei);
         gdk_image_destroy(im);
         b_dim_pm = pm;
-#endif // XXX_GDK
+#endif
     }
 
 
@@ -829,8 +812,7 @@ GTKltab::show(const CDl *ld)
 {
     if (lt_disabled)
         return;
-#ifdef NEW_DRW
-//XXX if we set the window here, GCs wont exist.  call init_drawable
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_pixmap();
 #else
     if (!gd_window)
@@ -851,7 +833,7 @@ GTKltab::show(const CDl *ld)
 
     show_direct(ld);
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, lt_win_width,
         lt_win_height);
@@ -871,7 +853,7 @@ GTKltab::refresh(int x, int y, int w, int h)
 {
     if (lt_disabled)
         return;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 #else
     if (!gd_window)
         gd_window = gtk_widget_get_window(gd_viewport);
@@ -894,7 +876,7 @@ GTKltab::refresh(int x, int y, int w, int h)
         show_direct();
         ltab_pmap_dirty = false;
     }
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(GC(), x, y, w, h);
 #else
@@ -909,7 +891,7 @@ GTKltab::refresh(int x, int y, int w, int h)
 void
 GTKltab::win_size(int *wid, int *hei)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (wid)
         *wid = GetDrawable()->get_width();
     if (hei)
@@ -1350,7 +1332,7 @@ GTKltab::ltab_ent_timer(void *arg)
         lt->ltab_search_str = 0;
         GList *gl = gtk_container_get_children(GTK_CONTAINER(lt->ltab_sbtn));
         GtkWidget *oldpw = GTK_WIDGET(gl->data);
-//XXX        gtk_object_ref(GTK_OBJECT(oldpw));
+        g_object_ref(oldpw);
         gtk_container_remove(GTK_CONTAINER(lt->ltab_sbtn), oldpw);
         gtk_container_add(GTK_CONTAINER(lt->ltab_sbtn), lt->ltab_lsearch);
         if (LT()->CurLayer())
@@ -1387,22 +1369,14 @@ GTKltab::ltab_search_hdlr(GtkWidget*, void *arg)
     LT()->SetCurLayer(ld);
 
     if (!lt->ltab_lsearchn) {
-        GtkStyle *style = gtk_widget_get_style(lt->ltab_sbtn);
-        GdkPixmap *pmask;
-#ifdef XXX_GDK
-        GdkPixmap *pixmap =
-            gdk_pixmap_colormap_create_from_xpm_d(0, GRX->Colormap(),
-                &pmask, &style->bg[GTK_STATE_NORMAL], (gchar **)lsearchn_xpm);
-        lt->ltab_lsearchn = gtk_pixmap_new(pixmap, pmask);
-#else
-        GdkPixmap *pixmap = 0;
-        lt->ltab_lsearchn = 0;
-#endif
+        GdkPixbuf *pb = gdk_pixbuf_new_from_xpm_data(lsearchn_xpm);
+        lt->ltab_lsearchn = gtk_image_new_from_pixbuf(pb);
+        g_object_unref(pb);
         gtk_widget_show(lt->ltab_lsearchn);
     }
     GList *gl = gtk_container_get_children(GTK_CONTAINER(lt->ltab_sbtn));
     GtkWidget *oldpw = GTK_WIDGET(gl->data);
-//XXX    gtk_object_ref(GTK_OBJECT(oldpw));
+    g_object_ref(oldpw);
     gtk_container_remove(GTK_CONTAINER(lt->ltab_sbtn), oldpw);
     gtk_container_add(GTK_CONTAINER(lt->ltab_sbtn), lt->ltab_lsearchn);
 

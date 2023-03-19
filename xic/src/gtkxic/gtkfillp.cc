@@ -161,8 +161,11 @@ namespace {
             static void drawghost(int, int, int, int, bool = false);
 
             GRobject fp_caller;
+#ifdef NEW_NDK
+#else
             GdkPixmap *fp_pixmap;
             GtkWidget *fp_pm_widget;
+#endif
             GtkWidget *fp_outl;
             GtkWidget *fp_fat;
             GtkWidget *fp_cut;
@@ -251,12 +254,15 @@ cMain::FillLoadCallback(LayerFillData *dd, CDl *ld)
 }
 
 
-sFpe::sFpe(GRobject c)
+sFpe::sFpe(GRobject c) : GTKdraw(XW_DRAWING)
 {
     Fpe = this;
     fp_caller = c;
+#ifdef NEW_NDK
+#else
     fp_pixmap = 0;
     fp_pm_widget = 0;
+#endif
     fp_outl = 0;
     fp_fat = 0;
     fp_cut = 0;
@@ -658,7 +664,7 @@ sFpe::redraw_edit()
         return;
     int wid = gdk_window_get_width(gtk_widget_get_window(fp_editor));
     int hei = gdk_window_get_height(gtk_widget_get_window(fp_editor));
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_pixmap(gtk_widget_get_window(fp_editor));
 #else
     fp_pm_widget = 0;
@@ -707,7 +713,7 @@ sFpe::redraw_edit()
             mask <<= 1;
         }
     }
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, wid, hei);
 #else
     if (fp_pixmap) {
@@ -724,7 +730,7 @@ sFpe::redraw_sample()
 {
     int wid = gdk_window_get_width(gtk_widget_get_window(fp_sample));
     int hei = gdk_window_get_height(gtk_widget_get_window(fp_sample));
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_pixmap(gtk_widget_get_window(fp_sample));
 #else
     fp_pm_widget = 0;
@@ -812,7 +818,7 @@ sFpe::redraw_sample()
         Line(x1, y1, x2, y2);
         Line(x1, y2, x2, y1);
     }
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, wid, hei);
 #else
     if (fp_pixmap) {
@@ -832,7 +838,7 @@ sFpe::redraw_store(int i)
 
     int wid = gdk_window_get_width(gtk_widget_get_window(fp_stores[i]));
     int hei = gdk_window_get_height(gtk_widget_get_window(fp_stores[i]));
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_pixmap(gtk_widget_get_window(fp_stores[i]));
 #else
     fp_pm_widget = 0;
@@ -872,7 +878,7 @@ sFpe::redraw_store(int i)
             SetFillpattern(0);
         }
     }
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, wid, hei);
 #else
     if (fp_pixmap) {
@@ -1435,10 +1441,7 @@ sFpe::fp_target_drag_leave(GtkWidget *widget, GdkDragContext*, guint)
     // called on drop, too
     if (g_object_get_data(G_OBJECT(widget), "drag_hlite")) {
         gtk_drag_unhighlight(widget);
-//XXX        g_object_remove_data(G_OBJECT(widget), "drag_hlite");
-        int i = g_object_replace_data(G_OBJECT(widget), "drag_hlite", 0, 0, 0, 0);
-if (i == 0)
-printf("g_object_replace_data didn't work in gtkfillp.cc\n");
+        g_object_set_data(G_OBJECT(widget), "drag_hlite", 0);
     }
 }
 
@@ -1447,7 +1450,10 @@ printf("g_object_replace_data didn't work in gtkfillp.cc\n");
 int
 sFpe::fp_config_hdlr(GtkWidget*, GdkEvent*, void*)
 {
+#ifdef NEW_NDK
+#else
     Fpe->fp_pm_widget = 0;
+#endif
     // Can't call these before we have a window!
     Fpe->sb_nx.set_value(Fpe->fp_nx);
     Fpe->sb_ny.set_value(Fpe->fp_ny);
@@ -1461,7 +1467,7 @@ sFpe::fp_config_hdlr(GtkWidget*, GdkEvent*, void*)
 int
 sFpe::fp_redraw_edit_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 #else
     if (Fpe->fp_pm_widget == Fpe->fp_editor) {
         GdkEventExpose *pev = (GdkEventExpose*)event;
@@ -1482,7 +1488,7 @@ sFpe::fp_redraw_edit_hdlr(GtkWidget*, GdkEvent *event, void*)
 int
 sFpe::fp_redraw_sample_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 #else
     if (Fpe->fp_pm_widget == Fpe->fp_sample) {
         GdkEventExpose *pev = (GdkEventExpose*)event;
@@ -1504,7 +1510,7 @@ int
 sFpe::fp_redraw_store_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 {
     int i = (intptr_t)arg;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 #else
     if (Fpe->fp_pm_widget == Fpe->fp_stores[i]) {
         GdkEventExpose *pev = (GdkEventExpose*)event;
@@ -1729,7 +1735,7 @@ sFpe::fp_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
         x = Fpe->fp_spa + x*Fpe->fp_epsz + Fpe->fp_epsz/2;
         y = Fpe->fp_spa + y*Fpe->fp_epsz + Fpe->fp_epsz/2;
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
         Fpe->GetDrawable()->set_pixmap(gtk_widget_get_window(Fpe->fp_editor));
         Fpe->GetDrawable()->set_draw_to_window();
 #else

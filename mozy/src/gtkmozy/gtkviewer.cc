@@ -143,6 +143,7 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     gtk_widget_set_has_window(v_fixed, true);
 
     v_draw_area = gtk_drawing_area_new();
+    gtk_widget_set_double_buffered(v_draw_area, false);  // we handle it
     gtk_widget_show(v_draw_area);
     gtk_widget_set_size_request(v_draw_area, v_width, v_height);
     gtk_fixed_put(GTK_FIXED(v_fixed), v_draw_area, 0, 0);
@@ -155,17 +156,6 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
         v_height/2, v_height);
     v_vsb = gtk_vscrollbar_new(GTK_ADJUSTMENT(v_vsba));
     gtk_widget_hide(v_vsb);
-    v_pixmap = gdk_pixmap_new(0, v_width, v_height, tk_visual_depth());
-#ifdef XXX_DEOREC
-    v_gc = gdk_gc_new(v_pixmap);
-    htmColor c;
-    tk_parse_color("white", &c);
-    tk_set_foreground(c.pixel);
-    gdk_draw_rectangle(v_pixmap, v_gc, true, 0, 0, v_width, v_height);
-#endif
-
-    v_pixmap_bak = 0;
-    v_font = 0;
 
     int events = gtk_widget_get_events(v_draw_area);
     gtk_widget_set_events(v_draw_area, events
@@ -247,7 +237,9 @@ gtk_viewer::~gtk_viewer()
 {
     g_signal_handlers_disconnect_by_func(G_OBJECT(v_draw_area),
         (gpointer)v_focus_event_hdlr, this);
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_pixmap->dec_ref();
+#else
     gdk_pixmap_unref(v_pixmap);
 #endif
 }
@@ -534,7 +526,6 @@ gtk_viewer::tk_resize_area(int w, int h)
             gtk_widget_show(v_vsb);
 
         if (v_width <= 1 || v_height <= 1) {
-//XXX            resize_handler(&v_form->allocation);
             GtkAllocation a;
             gtk_widget_get_allocation(v_form, &a);
             resize_handler(&a);
@@ -569,9 +560,11 @@ gtk_viewer::tk_resize_area(int w, int h)
 void
 gtk_viewer::tk_refresh_area(int x, int y, int w, int h)
 {
-#ifdef XXX_DEPREC
     GdkWindow *win = gtk_widget_get_window(v_draw_area);
     if (win)
+#ifdef NEW_NDK
+        v_pixmap->copy_to_window(win, v_gc, x, y, x, y, w, h);
+#else
         gdk_window_copy_area(win, v_gc, x, y, v_pixmap, x, y, w, h);
 #endif
 }
@@ -645,23 +638,30 @@ namespace {
 void
 gtk_viewer::tk_set_anchor_cursor(bool set)
 {
-#ifdef XXX_DEPREC
+    GdkWindow *window = gtk_widget_get_window(v_draw_area);
+    if (!window)
+        return;
     if (!v_cursor) {
+#ifdef NEW_NDK
+        GdkColormap *colormap = gtk_widget_get_colormap(v_draw_area);
+        GdkColor white, black;
+        white.pixel = 0xffffff;
+        black.pixel = 0;
+        v_cursor = new ndkCursor(window, fingers_bits, fingers_m_bits,
+            fingers_width, fingers_height, fingers_x_hot, fingers_y_hot,
+            &white, &black);
+#else
+            
         GdkColor fg, bg;
         fg.pixel = 1;
         bg.pixel = 0;
-        GdkWindow *window = gtk_widget_get_window(v_draw_area);
-        if (!window)
-            return;
         GdkPixmap *shape = gdk_pixmap_create_from_data(window, fingers_bits,
             fingers_width, fingers_height, 1, &fg, &bg);
         GdkPixmap *mask = gdk_pixmap_create_from_data(window, fingers_m_bits,
             fingers_m_width, fingers_m_height, 1, &fg, &bg);
-//XXX   Calls above fail under Quartz.
         if (!shape || !mask)
             return;
 
-#ifdef XXX_DEPREC
         GdkColormap *colormap = gtk_widget_get_colormap(v_draw_area);
         GdkColor white, black;
         gdk_color_white(colormap, &white);
@@ -670,6 +670,12 @@ gtk_viewer::tk_set_anchor_cursor(bool set)
             &white, &black, fingers_x_hot, fingers_y_hot);
 #endif
     }
+#ifdef NEW_NDK
+    if (set)
+        v_cursor->set_in_window(window);
+    else
+        v_cursor->revert_in_window(window);
+#else
     if (set)
         gdk_window_set_cursor(gtk_widget_get_window(v_draw_area), v_cursor);
     else
@@ -910,7 +916,7 @@ gtk_viewer::tk_text_width(htmFont *font, const char *text, int len)
 CCXmode
 gtk_viewer::tk_visual_mode()
 {
-    GdkVisual *vs = gdk_visual_get_system();
+    GdkVisual *vs = GRX->Visual();
     switch (gdk_visual_get_visual_type(vs)) {
     case GDK_VISUAL_STATIC_GRAY:
         return (MODE_BW);
@@ -931,32 +937,37 @@ gtk_viewer::tk_visual_mode()
 int
 gtk_viewer::tk_visual_depth()
 {
-    GdkVisual *vs = gdk_visual_get_system();
-    return (gdk_visual_get_depth(vs));
+    return (gdk_visual_get_depth(GRX->Visual()));
 }
 
 
 htmPixmap *
 gtk_viewer::tk_new_pixmap(int w, int h)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    ndkPixmap *pm = new ndkPixmap(gtk_widget_get_window(v_draw_area), w, h);
+#else
     GdkPixmap *pm = gdk_pixmap_new(0, w, h, tk_visual_depth());
+#endif
     htmColor c;
     tk_parse_color("white", &c);
     tk_set_foreground(c.pixel);
-    gdk_draw_rectangle(pm, v_gc, true, 0, 0, w, h);
-    return ((htmPixmap*)pm);
+#ifdef NEW_NDK
+    v_gc->draw_rectangle(pm, true, 0, 0, w, h);
 #else
-    return (0);
+    gdk_draw_rectangle(pm, v_gc, true, 0, 0, w, h);
 #endif
+    return ((htmPixmap*)pm);
 }
 
 
 void
 gtk_viewer::tk_release_pixmap(htmPixmap *pm)
 {
-#ifdef XXX_DEPREC
     if (pm)
+#ifdef NEW_NDK
+        ((ndkPixmap*)pm)->dec_ref();
+#else
         gdk_pixmap_unref((GdkPixmap*)pm);
 #endif
 }
@@ -969,9 +980,13 @@ gtk_viewer::tk_pixmap_from_info(htmImage *image, htmImageInfo *info,
     unsigned int size = info->width * info->height;
 
     (void)image;
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    ndkImage *img = new ndkImage(ndkIMAGE_FASTEST,
+        GRX->Visual(), info->width, info->height);
+#else
     GdkImage *img = gdk_image_new(GDK_IMAGE_FASTEST,
-        gdk_visual_get_system(), info->width, info->height);
+        GRX->Visual(), info->width, info->height);
+#endif
 
     int wid = info->width;
     for (unsigned int i = 0; i < size; i++) {
@@ -989,18 +1004,26 @@ gtk_viewer::tk_pixmap_from_info(htmImage *image, htmImageInfo *info,
         *c2++ = *c1--;
         gdk_image_put_pixel(img, x, y, qpx);
 #else
+#ifdef NEW_NDK
+        img->put_pixel(x, y, px);
+#else
         gdk_image_put_pixel(img, x, y, px);
+#endif
 #endif
     }
 
+#ifdef NEW_NDK
+    ndkPixmap *pmap = new ndkPixmap(gtk_widget_get_window(v_draw_area),
+        info->width, info->height);
+    img->copy_to_pixmap(pmap, v_gc, 0, 0, 0, 0, info->width, info->height);
+    delete img;
+#else
     GdkPixmap *pmap = gdk_pixmap_new(0, info->width, info->height,
         tk_visual_depth());
     gdk_draw_image(pmap, v_gc, img, 0, 0, 0, 0, info->width, info->height);
     gdk_image_destroy(img);
-    return (pmap);
-#esle
-    return (0);
 #endif
+    return (pmap);
 }
 
 
@@ -1010,7 +1033,11 @@ gtk_viewer::tk_set_draw_to_pixmap(htmPixmap *pm)
     if (pm) {
         if (!v_pixmap_bak) {
             v_pixmap_bak = v_pixmap;
+#ifdef NEW_NDK
+            v_pixmap = (ndkPixmap*)pm;
+#else
             v_pixmap = (GdkPixmap*)pm;
+#endif
         }
     }
     else {
@@ -1030,21 +1057,24 @@ gtk_viewer::tk_bitmap_from_data(int width, int height, unsigned char *data)
     GdkColor fg, bg;
     fg.pixel = 1;
     bg.pixel = 0;
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    ndkPixmap *pm = new ndkPixmap(gtk_widget_get_window(v_draw_area),
+        (char*)data, width, height);
+#else
     GdkPixmap *pm = gdk_pixmap_create_from_data(v_draw_area->window,
         (char*)data, width, height, 1, &fg, &bg);
-    return (pm);
-#else
-    return (0);
 #endif
+    return (pm);
 }
 
 
 void
 gtk_viewer::tk_release_bitmap(htmBitmap *bmap)
 {
-#ifdef XXX_DEPREC
     if (bmap)
+#ifdef NEW_NDK
+        ((ndkPixmap*)bmap)->dec_ref();
+#else
         gdk_pixmap_unref((GdkPixmap*)bmap);
 #endif
 }
@@ -1053,11 +1083,10 @@ gtk_viewer::tk_release_bitmap(htmBitmap *bmap)
 htmXImage *
 gtk_viewer::tk_new_image(int w, int h)
 {
-#ifdef XXX_DEPREC
-    return ((htmXImage*)gdk_image_new(GDK_IMAGE_FASTEST,
-        gdk_visual_get_system(), w, h));
+#ifdef NEW_NDK
+    return ((htmXImage*)new ndkImage(ndkIMAGE_FASTEST, GRX->Visual(), w, h));
 #else
-    return (0);
+    return ((htmXImage*)gdk_image_new(GDK_IMAGE_FASTEST, GRX->Visual(), w, h));
 #endif
 }
 
@@ -1066,10 +1095,13 @@ void
 gtk_viewer::tk_fill_image(htmXImage *ximage, unsigned char *data,
     unsigned int *color_map, int lo, int hi)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    ndkImage *image = (ndkImage*)ximage;
+    int wid = image->get_width();
+#else
     GdkImage *image = (GdkImage*)ximage;
-//    int wid = image->width;
     int wid = gdk_image_get_width(image);
+#endif
 
     for (int i = lo; i < hi; i++) {
         int y = i/wid;
@@ -1086,10 +1118,13 @@ gtk_viewer::tk_fill_image(htmXImage *ximage, unsigned char *data,
         *c2++ = *c1--;
         gdk_image_put_pixel(image, x, y, qpx);
 #else
+#ifdef NEW_NDK
+        image->put_pixel(x, y, px);
+#else
         gdk_image_put_pixel(image, x, y, px);
 #endif
-    }
 #endif
+    }
 }
 
 
@@ -1097,7 +1132,9 @@ void
 gtk_viewer::tk_draw_image(int xs, int ys, htmXImage *image,
     int x, int y, int w, int h)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    ((ndkImage*)image)->copy_to_pixmap(v_pixmap, v_gc, xs, ys, x, y, w, h);
+#else
     gdk_draw_image(v_pixmap, v_gc, (GdkImage*)image, xs, ys, x, y, w, h);
 #endif
 }
@@ -1106,7 +1143,9 @@ gtk_viewer::tk_draw_image(int xs, int ys, htmXImage *image,
 void
 gtk_viewer::tk_release_image(htmXImage *image)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    delete (ndkImage*)image;
+#else
     gdk_image_destroy((GdkImage*)image);
 #endif
 }
@@ -1117,7 +1156,9 @@ gtk_viewer::tk_set_foreground(unsigned int pix)
 {
     GdkColor c;
     c.pixel = pix;
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_gc->set_foreground(&c);
+#else
     gdk_gc_set_foreground(v_gc, &c);
 #endif
 }
@@ -1128,7 +1169,9 @@ gtk_viewer::tk_set_background(unsigned int pix)
 {
     GdkColor c;
     c.pixel = pix;
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_gc->set_background(&c);
+#else
     gdk_gc_set_background(v_gc, &c);
 #endif
 }
@@ -1222,7 +1265,9 @@ gtk_viewer::tk_get_pixels(unsigned short *reds, unsigned short *greens,
 void
 gtk_viewer::tk_set_clip_mask(htmPixmap*, htmBitmap *bmap)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_gc->set_clip_mask((ndkPixmap*)bmap);
+#else
     gdk_gc_set_clip_mask(v_gc, (GdkBitmap*)bmap);
 #endif
 }
@@ -1231,7 +1276,9 @@ gtk_viewer::tk_set_clip_mask(htmPixmap*, htmBitmap *bmap)
 void
 gtk_viewer::tk_set_clip_origin(int x, int y)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_gc->set_clip_origin(x, y);
+#else
     gdk_gc_set_clip_origin(v_gc, x, y);
 #endif
 }
@@ -1240,7 +1287,19 @@ gtk_viewer::tk_set_clip_origin(int x, int y)
 void
 gtk_viewer::tk_set_clip_rectangle(htmRect *r)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    if (!r) {
+        v_gc->set_clip_rectangle(0);
+        return;
+    }
+    GdkRectangle rect;
+    rect.x = r->x;
+    rect.y = r->y;
+    rect.width = r->width;
+    rect.height = r->height;
+    v_gc->set_clip_origin(0, 0);
+    v_gc->set_clip_rectangle(&rect);
+#else
     if (!r) {
         gdk_gc_set_clip_rectangle(v_gc, 0);
         return;
@@ -1260,7 +1319,9 @@ void
 gtk_viewer::tk_draw_pixmap(int xs, int ys, htmPixmap *pm,
     int x, int y, int w, int h)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    ((ndkPixmap*)pm)->copy_to_pixmap(v_pixmap, v_gc, x, y, xs, ys, w, h);
+#else
     gdk_window_copy_area(v_pixmap, v_gc, xs, ys, (GdkPixmap*)pm, x, y, w, h);
 #endif
 }
@@ -1270,7 +1331,11 @@ void
 gtk_viewer::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
     int x, int y, int w, int h)
 {
+#ifdef NEW_NDK
+    if (!pm)
+#else
     if (!GDK_IS_PIXMAP(pm))
+#endif
         return;
 #ifdef WIN32
     // The GC tiling feature is not supported in the Windows GTK2
@@ -1312,7 +1377,13 @@ gtk_viewer::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
         ix += pw;
     }
 #else
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_gc->set_fill(ndkGC_TILED);
+    v_gc->set_tile((ndkPixmap*)pm);
+    v_gc->set_ts_origin(org_x, org_y);
+    v_gc->draw_rectangle(v_pixmap, true, x, y, w, h);
+    v_gc->set_fill(ndkGC_SOLID);
+#else
     gdk_gc_set_fill(v_gc, GDK_TILED);
     gdk_gc_set_tile(v_gc, GDK_DRAWABLE(pm));
     gdk_gc_set_ts_origin(v_gc, org_x, org_y);
@@ -1326,7 +1397,9 @@ gtk_viewer::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
 void
 gtk_viewer::tk_draw_rectangle(bool fill, int x, int y, int w, int h)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_gc->draw_rectangle(v_pixmap, fill, x, y, w, h);
+#else
     gdk_draw_rectangle(v_pixmap, v_gc, fill, x, y, w, h);
 #endif
 }
@@ -1335,7 +1408,14 @@ gtk_viewer::tk_draw_rectangle(bool fill, int x, int y, int w, int h)
 void
 gtk_viewer::tk_set_line_style(FillMode m)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    if (m == TILED)
+        v_gc->set_line_attributes(1, ndkGC_LINE_DOUBLE_DASH,
+            ndkGC_CAP_BUTT, ndkGC_JOIN_BEVEL);
+    else
+        v_gc->set_line_attributes(1, ndkGC_LINE_SOLID,
+            ndkGC_CAP_BUTT, ndkGC_JOIN_BEVEL);
+#else
     if (m == TILED)
         gdk_gc_set_line_attributes(v_gc, 1, GDK_LINE_DOUBLE_DASH,
             GDK_CAP_BUTT, GDK_JOIN_BEVEL);
@@ -1349,7 +1429,9 @@ gtk_viewer::tk_set_line_style(FillMode m)
 void
 gtk_viewer::tk_draw_line(int x1, int y1, int x2, int y2)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_gc->draw_line(v_pixmap, x1, y1, x2, y2);
+#else
     gdk_draw_line(v_pixmap, v_gc, x1, y1, x2, y2);
 #endif
 }
@@ -1371,7 +1453,9 @@ gtk_viewer::tk_draw_text(int x, int y, const char *text, int len)
         g_free((void*)text);
     }
     y -= v_text_yoff;
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_gc->draw_pango_layout(v_pixmap, x, y, lout);
+#else
     gdk_draw_layout(v_pixmap, v_gc, x, y, lout);
 #endif
     g_object_unref(lout);
@@ -1386,7 +1470,9 @@ gtk_viewer::tk_draw_polygon(bool fill, htmPoint *points, int numpts)
         gpts[i].x = points[i].x;
         gpts[i].y = points[i].y;
     }
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_gc->draw_polygon(v_pixmap, fill, gpts, numpts);
+#else
     gdk_draw_polygon(v_pixmap, v_gc, fill, gpts, numpts);
 #endif
     delete [] gpts;
@@ -1396,7 +1482,9 @@ gtk_viewer::tk_draw_polygon(bool fill, htmPoint *points, int numpts)
 void
 gtk_viewer::tk_draw_arc(bool fill, int x, int y, int w, int h, int as, int ae)
 {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+    v_gc->draw_arc(v_pixmap, fill, x, y, w, h, as, ae);
+#else
     gdk_draw_arc(v_pixmap, v_gc, fill, x, y, w, h, as, ae);
 #endif
 }
@@ -1580,15 +1668,13 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
                 gtk_entry_set_visibility(GTK_ENTRY(ed), false);
             entry->widget = ed;
             gtk_widget_show(ed);
-#ifdef XXX_DEPREC
-            if (GTK_WIDGET_NO_WINDOW(ed)) {
+            if (!gtk_widget_get_has_window(ed)) {
                 GtkWidget *b = gtk_event_box_new();
                 gtk_widget_show(b);
                 gtk_container_add(GTK_CONTAINER(b), ed);
                 add_widget(b);
             }
             else
-#endif
                 add_widget(ed);
         }
         break;
@@ -1605,15 +1691,13 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
 
             entry->widget = cb;
             gtk_widget_show(cb);
-#ifdef XXX_DEPREC
-            if (GTK_WIDGET_NO_WINDOW(cb)) {
+            if (!gtk_widget_get_has_window(cb)) {
                 GtkWidget *b = gtk_event_box_new();
                 gtk_widget_show(b);
                 gtk_container_add(GTK_CONTAINER(b), cb);
                 add_widget(b);
             }
             else
-#endif
                 add_widget(cb);
         }
         break;
@@ -1634,15 +1718,13 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
 
             entry->widget = cb;
             gtk_widget_show(cb);
-#ifdef XXX_DEPREC
-            if (GTK_WIDGET_NO_WINDOW(cb)) {
+            if (!gtk_widget_get_has_window(cb)) {
                 GtkWidget *b = gtk_event_box_new();
                 gtk_widget_show(b);
                 gtk_container_add(GTK_CONTAINER(b), cb);
                 add_widget(b);
             }
             else
-#endif
                 add_widget(cb);
         }
         break;
@@ -1682,15 +1764,13 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
                 G_CALLBACK(button_press_hdlr), entry);
 
             entry->widget = hbox;
-#ifdef XXX_DEPREC
-            if (GTK_WIDGET_NO_WINDOW(hbox)) {
+            if (!gtk_widget_get_has_window(hbox)) {
                 GtkWidget *b = gtk_event_box_new();
                 gtk_widget_show(b);
                 gtk_container_add(GTK_CONTAINER(b), hbox);
                 add_widget(b);
             }
             else
-#endif
                 add_widget(hbox);
         }
         break;
@@ -1712,15 +1792,13 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
 
             entry->widget = cb;
             gtk_widget_show(cb);
-#ifdef XXX_DEPREC
-            if (GTK_WIDGET_NO_WINDOW(cb)) {
+            if (!gtk_widget_get_has_window(cb)) {
                 GtkWidget *b = gtk_event_box_new();
                 gtk_widget_show(b);
                 gtk_container_add(GTK_CONTAINER(b), cb);
                 add_widget(b);
             }
             else
-#endif
                 add_widget(cb);
         }
         break;
@@ -1730,6 +1808,8 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             // multiple select or more than one item visible: it's a listbox
             GtkWidget *scrolled_win = gtk_scrolled_window_new(0, 0);
             gtk_widget_show(scrolled_win);
+#ifdef NEW_LIS
+#else
 #ifdef XXX_DEPREC
             GtkWidget *list = gtk_list_new();
             gtk_scrolled_window_add_with_viewport(
@@ -1737,52 +1817,54 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             gtk_widget_show(list);
             gtk_object_set_user_data(GTK_OBJECT(scrolled_win), list);
 #endif
+#endif
             gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
                 GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-#ifdef XXX_DEPREC
             if (entry->multiple)
+#ifdef NEW_LIS
+#else
+#ifdef XXX_DEPREC
                 gtk_list_set_selection_mode(GTK_LIST(list),
                     GTK_SELECTION_MULTIPLE);
 #endif
+#endif
 
             entry->widget = scrolled_win;
-#ifdef XXX_DEPREC
             gtk_widget_show(scrolled_win);
-            if (GTK_WIDGET_NO_WINDOW(scrolled_win)) {
+            if (!gtk_widget_get_has_window(scrolled_win)) {
                 GtkWidget *b = gtk_event_box_new();
                 gtk_widget_show(b);
                 gtk_container_add(GTK_CONTAINER(b), scrolled_win);
                 add_widget(b);
             }
             else
-#endif
                 add_widget(scrolled_win);
         }
-#ifdef XXX_DEPREC
         else {
-            GtkWidget *option_menu = gtk_option_menu_new();
-            GtkWidget *menu = gtk_menu_new();
-            gtk_widget_show(option_menu);
-            gtk_option_menu_set_menu(GTK_OPTION_MENU(option_menu), menu);
-
+#ifdef NEW_OPT
+            GtkWidget *option_menu = gtk_combo_box_text_new();
             entry->widget = option_menu;
             gtk_widget_show(option_menu);
-            if (GTK_WIDGET_NO_WINDOW(option_menu)) {
-                GtkWidget *b = gtk_event_box_new();
-                gtk_widget_show(b);
-                gtk_container_add(GTK_CONTAINER(b), option_menu);
-                add_widget(b);
-            }
-            else
-                add_widget(option_menu);
-        }
+            add_widget(option_menu);
+#else
+#ifdef XXX_DEPREC
+            GtkWidget *option_menu = gtk_option_menu_new();
+            GtkWidget *menu = gtk_menu_new();
+            gtk_option_menu_set_menu(GTK_OPTION_MENU(option_menu), menu);
+            entry->widget = option_menu;
+            gtk_widget_show(option_menu);
+            add_widget(option_menu);
 #endif
+#endif
+        }
         break;
 
     case FORM_OPTION:
-#ifdef XXX_DEPREC
         if (parent->multiple || parent->size > 1) {
             // scrolled_win/viewport/list
+#ifdef NEW_LIS
+#else
+#ifdef XXX_DEPREC
             GtkList *list =
                 GTK_LIST(GTK_BIN(GTK_BIN(parent->widget)->child)->child);
             // append item to bottom of list
@@ -1791,8 +1873,16 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             gtk_widget_show(listitem);
             gtk_container_add(GTK_CONTAINER(list), listitem);
             entry->widget = listitem;
+#endif
+#endif
         }
         else {
+#ifdef NEW_OPT
+            GtkComboBoxText *txw = GTK_COMBO_BOX_TEXT(parent->widget);
+            if (txw)
+                gtk_combo_box_text_append_text(txw, entry->name);
+#else
+#ifdef XXX_DEPREC
             GtkWidget *menu = gtk_option_menu_get_menu(
                 GTK_OPTION_MENU(parent->widget));
             GtkWidget *menu_entry =
@@ -1800,8 +1890,9 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             gtk_widget_show(menu_entry);
             gtk_menu_append(GTK_MENU(menu), menu_entry);
             entry->widget = menu_entry;
-        }
 #endif
+#endif
+        }
         break;
 
     case FORM_TEXTAREA:
@@ -1832,15 +1923,13 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
 
             entry->widget = textw;
             GtkWidget *w = frame ? frame : textw;
-#ifdef XXX_DEPREC
-            if (GTK_WIDGET_NO_WINDOW(w)) {
+            if (!gtk_widget_get_has_window(w)) {
                 GtkWidget *b = gtk_event_box_new();
                 gtk_widget_show(b);
                 gtk_container_add(GTK_CONTAINER(b), w);
                 add_widget(b);
             }
             else
-#endif
                 add_widget(w);
         }
         break;
@@ -1858,6 +1947,8 @@ gtk_viewer::tk_select_close(htmForm *entry)
 {
     if (entry->multiple || entry->size > 1) {
         // scrolled_win/viewport/list
+#ifdef NEW_LIS
+#else
 #ifdef XXX_DEPREC
         GtkList *list =
             GTK_LIST(GTK_BIN(GTK_BIN(entry->widget)->child)->child);
@@ -1869,8 +1960,6 @@ gtk_viewer::tk_select_close(htmForm *entry)
         }
         if (ht < 40)
             ht = 40;
-#endif
-#ifdef XXX_DEPREC
         gtk_widget_size_request(GTK_BIN(GTK_BIN(entry->widget)->child)->child,
             &req);
         if (ht < req.height)
@@ -1880,13 +1969,17 @@ gtk_viewer::tk_select_close(htmForm *entry)
         gtk_widget_set_size_request(GTK_WIDGET(entry->widget), entry->width,
             entry->height);
 #endif
+#endif
 
         // set initial selections
         int cnt = 0;
         for (htmForm *e = entry->options; e; e = e->next, cnt++) {
+#ifdef NEW_LIS
+#else
 #ifdef XXX_DEPREC
             if (e->selected)
                 gtk_list_select_item(list, cnt);
+#endif
 #endif
         }
     }
@@ -1904,6 +1997,8 @@ gtk_viewer::tk_select_close(htmForm *entry)
             entry->options->selected = true;
             cnt = 0;
         }
+#ifdef NEW_OPT
+#else
 #ifdef XXX_DEPREC
         GtkWidget *menu =
             gtk_option_menu_get_menu(GTK_OPTION_MENU(option_menu));
@@ -1914,6 +2009,7 @@ gtk_viewer::tk_select_close(htmForm *entry)
         gtk_widget_set_size_request(GTK_WIDGET(entry->widget), entry->width,
             entry->height);
         gtk_option_menu_set_history(GTK_OPTION_MENU(option_menu), cnt);
+#endif
 #endif
     }
 }
@@ -1998,20 +2094,25 @@ gtk_viewer::tk_get_checked(htmForm *entry)
             GTK_TOGGLE_BUTTON(entry->widget)));
         break;
     case FORM_SELECT:
-#ifdef XXX_DEPFREC
         if (entry->multiple || entry->size > 1) {
-            for (htmForm *e = entry->options; e; e = e->next)
+            for (htmForm *e = entry->options; e; e = e->next) {
                 e->checked =
-                    (GTK_WIDGET(e->widget)->state == GTK_STATE_SELECTED);
+                    (gtk_widget_get_state(GTK_WIDGET(e->widget)) ==
+                    GTK_STATE_SELECTED);
+            }
         }
         else {
+#ifdef NEW_OPT
+#else
+#ifdef XXX_DEPREC
             GtkWidget *menu =
                 gtk_option_menu_get_menu(GTK_OPTION_MENU(entry->widget));
             GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
             for (htmForm *e = entry->options; e; e = e->next)
                 e->checked = (GTK_WIDGET(e->widget) == active);
-        }
 #endif
+#endif
+        }
         break;
     default:
         break;
@@ -2035,11 +2136,14 @@ gtk_viewer::tk_set_checked(htmForm *entry)
     case FORM_SELECT:
         if (entry->multiple || entry->size > 1) {
             for (htmForm *e = entry->options; e; e = e->next) {
+#ifdef NEW_LIS
+#else
 #ifdef XXX_DEPREC
                 if (e->selected)
                     gtk_list_item_select(GTK_LIST_ITEM(e->widget));
                 else
                     gtk_list_item_deselect(GTK_LIST_ITEM(e->widget));
+#endif
 #endif
             }
         }
@@ -2047,9 +2151,14 @@ gtk_viewer::tk_set_checked(htmForm *entry)
             int cnt = 0;
             for (htmForm *e = entry->options; e; e = e->next) {
                 if (e->selected) {
+#ifdef NEW_OPT
+                    gtk_combo_box_set_active(GTK_GOMBO_BOX(entry->widget),
+                       cnt);
+#else
 #ifdef XXX_DEPREC
                     gtk_option_menu_set_history(GTK_OPTION_MENU(entry->widget),
                         cnt);
+#endif
 #endif
                     break;
                 }
@@ -2161,8 +2270,12 @@ gtk_viewer::show_selection_box(int x, int y, bool nodraw)
         rnd.rand_seed(time(0));
         int j = rnd.rand_value();
         tk_set_foreground(j);
-#ifdef XXX_DEPREC
-        gdk_draw_rectangle(v_draw_area->window, v_gc, false, xx, yy, w, h);
+#ifdef NEW_NDK
+        v_gc->draw_rectangle(gtk_widget_get_window(v_draw_area),
+            false, xx, yy, w, h);
+#else
+        gdk_draw_rectangle(gtk_widget_get_window(v_draw_areaw)indow,
+            v_gc, false, xx, yy, w, h);
 #endif
     }
 }
@@ -2171,9 +2284,32 @@ gtk_viewer::show_selection_box(int x, int y, bool nodraw)
 bool
 gtk_viewer::expose_event_handler(GdkEventExpose *event)
 {
+    if (!v_seen_expose && !v_pixmap) {
+#ifdef NEW_NDK
+        v_pixmap = new ndkPixmap(gtk_widget_get_window(v_draw_area),
+            v_width, v_height);
+        v_gc = new ndkGC(gtk_widget_get_window(v_draw_area));
+#else
+        v_pixmap = gdk_pixmap_new(gtk_widget_get_window(v_draw_area),
+            v_width, v_height, tk_visual_depth());
+        v_gc = gdk_gc_new(v_pixmap);
+#endif
+        htmColor c;
+        tk_parse_color("white", &c);
+        tk_set_foreground(c.pixel);
+#ifdef NEW_NDK
+        v_gc->draw_rectangle(v_pixmap, true, 0, 0, v_width, v_height);
+#else
+        gdk_draw_rectangle(v_pixmap, v_gc, true, 0, 0, v_width, v_height);
+#endif
+    }
     setReady();
-#ifdef XXX_DEPFEC
-    gdk_window_copy_area(v_draw_area->window, v_gc,
+#ifdef NEW_NDK
+    v_pixmap->copy_to_window(gtk_widget_get_window(v_draw_area), v_gc,
+        event->area.x, event->area.y, event->area.x, event->area.y,
+        event->area.width, event->area.height);
+#else
+    gdk_window_copy_area(gtk_widget_get_window(v_draw_area), v_gc,
         event->area.x, event->area.y, v_pixmap, event->area.x, event->area.y,
         event->area.width, event->area.height);
 #endif
@@ -2195,7 +2331,15 @@ gtk_viewer::resize_handler(GtkAllocation *a)
     if (a->width != v_width || a->height != v_height) {
         v_width = a->width;
         v_height = a->height;
-#ifdef XXX_DEPFEC
+//XXX
+    if (!gtk_widget_get_window(v_draw_area))
+        return true;
+
+#ifdef NEW_NDK
+        ndkPixmap *pm = (ndkPixmap*)tk_new_pixmap(v_width, v_height);
+        v_pixmap->dec_ref();
+        v_pixmap = pm;
+#else
         GdkPixmap *pm = (GdkPixmap*)tk_new_pixmap(v_width, v_height);
         gdk_pixmap_unref(v_pixmap);
         v_pixmap = pm;
@@ -2206,7 +2350,6 @@ gtk_viewer::resize_handler(GtkAllocation *a)
         htmWidget::resize();
 #ifndef WIN32
         // This hangs up badly in MSW for some reason.
-//XXX        if (GTK_WIDGET_REALIZED(v_draw_area)) {
         if (gtk_widget_get_realized(v_draw_area)) {
             // Flush the redraw queue.  If this isn't done, scrollbars
             // sometimes leave gray areas.
@@ -2301,7 +2444,10 @@ gtk_viewer::vsb_change_handler(int newval)
         // scroll down
         int delta = newval - oldval;
         if (delta < v_height) {
-#ifdef XXXDEPREC
+#ifdef NEW_NDK
+            v_pixmap->copy_to_pixmap(v_pixmap, v_gc, 0, delta, 0, 0,
+                v_width, v_height - delta);
+#else
             gdk_window_copy_area(v_pixmap, v_gc, 0, 0, v_pixmap,
                 0, delta, v_width, v_height - delta);
 #endif
@@ -2316,7 +2462,10 @@ gtk_viewer::vsb_change_handler(int newval)
         // scroll up
         int delta = oldval - newval;
         if (delta < v_height) {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+            v_pixmap->copy_to_pixmap(v_pixmap, v_gc, 0, 0, 0, delta,
+                v_width, v_height - delta);
+#else
             gdk_window_copy_area(v_pixmap, v_gc, 0, delta, v_pixmap,
                 0, 0, v_width, v_height - delta);
 #endif
@@ -2349,7 +2498,10 @@ gtk_viewer::hsb_change_handler(int newval)
         // scroll right
         int delta = newval - oldval;
         if (delta < v_width) {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+            v_pixmap->copy_to_pixmap(v_pixmap, v_gc, delta, 0, 0, 0,
+                v_width - delta, v_height);
+#else
             gdk_window_copy_area(v_pixmap, v_gc, 0, 0, v_pixmap,
                 delta, 0, v_width - delta, v_height);
 #endif
@@ -2364,7 +2516,10 @@ gtk_viewer::hsb_change_handler(int newval)
         // scroll left
         int delta = oldval - newval;
         if (delta < v_width) {
-#ifdef XXX_DEPREC
+#ifdef NEW_NDK
+            v_pixmap->copy_to_pixmap(v_pixmap, v_gc, 0, 0, delta, 0,
+                v_width - delta, v_height);
+#else
             gdk_window_copy_area(v_pixmap, v_gc, delta, 0, v_pixmap,
                 0, 0, v_width - delta, v_height);
 #endif
@@ -2386,16 +2541,11 @@ bool
 gtk_viewer::selection_clear_handler(GtkWidget *widget,
     GdkEventSelection *event)
 {
-#ifdef XXX_DEPREC
-    if (!gtk_selection_clear(widget, event))
-        return (false);
-#endif
-
     if (event->selection == GDK_SELECTION_PRIMARY) {
         if (htm_text_selection)
             selectRegion(0, 0, 0, 0);
     }
-    return (true);
+    return (false);
 }
 
 
@@ -2415,24 +2565,24 @@ gtk_viewer::selection_get_handler(GtkWidget*,
         gtk_selection_data_set(data, GDK_SELECTION_TYPE_STRING,
             8*sizeof(char), (unsigned char*)str, length);
     }
+#ifdef HAVE_X11
     else if (info == TARGET_TEXT || info == TARGET_COMPOUND_TEXT) {
 
-#ifdef XXX_DEPREC
         GdkAtom encoding;
         int fmtnum;
         unsigned char *text;
         int new_length;
-        gdk_string_to_compound_text(str, &encoding, &fmtnum, &text,
-            &new_length);
+        gdk_x11_display_string_to_compound_text(gdk_display_get_default(),
+            str, &encoding, &fmtnum, &text, &new_length);
         // Strange problem here in gtk2 on RHEL5, some text returns 0
         // here that causes error message and erroneous transfer.
         if (fmtnum == 0)
             fmtnum = 8;
-        gtk_selection_data_set(selection_data, encoding, fmtnum, text,
+        gtk_selection_data_set(data, encoding, fmtnum, text,
             new_length);
-        gdk_free_compound_text(text);
-#endif
+        gdk_x11_free_compound_text(text);
     }
+#endif
 }
 
 
@@ -2639,9 +2789,7 @@ gtk_viewer::v_focus_event_hdlr(GtkWidget *widget, GdkEvent *event, void *vp)
         return (0);
 
     if (event->type == GDK_ENTER_NOTIFY) {
-#ifdef XXX_DEPREC
-        GTK_WIDGET_SET_FLAGS(v->v_draw_area, GTK_CAN_FOCUS);
-#endif
+        gtk_widget_set_can_focus(v->v_draw_area, true);
         GtkWidget *w = v->v_draw_area;
         while (gtk_widget_get_parent(w))
             w = gtk_widget_get_parent(w);

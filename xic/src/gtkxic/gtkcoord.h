@@ -78,8 +78,11 @@ private:
     static void co_redraw(GtkWidget*, GdkEvent*, void*);
     static void co_font_change(GtkWidget*, void*, void*);
 
+#ifdef NEW_NDK
+#else
     GdkWindow *co_win_bak;
     GdkPixmap *co_pm;
+#endif
     int co_width, co_height;
     int co_x, co_y;
     int co_lx, co_ly;

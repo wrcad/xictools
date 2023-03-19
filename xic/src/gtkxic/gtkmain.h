@@ -64,8 +64,15 @@ namespace gtkzoom {
     struct sZm;
 }
 
-// The XIC apptype for window group creation
-#define XIC_APPTYPE 3
+// Graphics contexgt classes for application windows.
+enum XIC_WINDOW_CLASS
+{
+    XW_DEFAULT, // Misc.
+    XW_TEXT,    // Prompt line and similar.
+    XW_DRAWING, // Main drawing area and viewports.
+    XW_LPAL,    // The layer palette.
+    XW_LTAB     // The layer table.
+};
 
 // widget name, for selections
 #define PROPERTY_TEXT_WIDGET "property_text"
@@ -227,14 +234,13 @@ protected:
     char wib_keys[CBUFMAX + 3]; // keys pressed
     bool wib_resized;           // window was just resized
 
-    GdkWindow *wib_window_bak;  // screen buffer
-#ifdef NEW_PIX
-    ndkPixmap *wib_draw_pixmap; // backing pixmap
+#ifdef NEW_NDK
 #else
+    GdkWindow *wib_window_bak;  // screen buffer
     GdkPixmap *wib_draw_pixmap; // backing pixmap
-#endif
     int wib_px_width;           // pixmap width
     int wib_px_height;          // pixmap height
+#endif
 
     int wib_id;                 // motion idle id
     int wib_state;              // motion state

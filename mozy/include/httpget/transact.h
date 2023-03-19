@@ -303,6 +303,7 @@ struct http_monitor
     virtual void initialize(int&, char**)   { }
     virtual void setup_comm(cComm*)         { }
     virtual void start(Transaction*)        { }
+    virtual void start_test()               { }
 };
 
 namespace httpget {

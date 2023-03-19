@@ -38,8 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#define XXX_GDK
-
 #include "main.h"
 #include "editif.h"
 #include "fio.h"
@@ -801,16 +799,13 @@ sDbg::set_mode(DBmode mode)
             gtk_label_set_text(GTK_LABEL(db_modelabel), "Edit Mode");
             gtk_widget_set_sensitive(db_execmenu, false);
             gtk_widget_set_sensitive(db_editmenu, true);
-//XXX            gtk_widget_set(db_modebtn, "label", "Run", (char*)0);
             g_object_set(G_OBJECT(db_modebtn), "label", "Run", (char*)0);
 
             GdkCursor *c = gdk_cursor_new(GDK_XTERM);
             gdk_window_set_cursor(
                 gtk_text_view_get_window(GTK_TEXT_VIEW(wb_textarea),
                 GTK_TEXT_WINDOW_TEXT), c);
-#ifdef XXX_GDK
-            gdk_cursor_destroy(c);
-#endif
+            g_object_unref(G_OBJECT(c));
         }
     }
     else if (mode == DBrun) {
@@ -823,16 +818,13 @@ sDbg::set_mode(DBmode mode)
             gtk_label_set_text(GTK_LABEL(db_modelabel), "Exec Mode");
             gtk_widget_set_sensitive(db_execmenu, true);
             gtk_widget_set_sensitive(db_editmenu, false);
-//XXX            gtk_widget_set(db_modebtn, "label", "Edit", (char*)0);
             g_object_set(G_OBJECT(db_modebtn), "label", "Edit", (char*)0);
 
             GdkCursor *c = gdk_cursor_new(GDK_TOP_LEFT_ARROW);
             gdk_window_set_cursor(
                 gtk_text_view_get_window(GTK_TEXT_VIEW(wb_textarea),
                 GTK_TEXT_WINDOW_TEXT),  c);
-#ifdef XXX_GDK
-            gdk_cursor_destroy(c);
-#endif
+            g_object_unref(G_OBJECT(c));
         }
     }
 }

@@ -113,7 +113,10 @@ private:
 
     int pe_id;             // redraw idle function id
     int pe_wid, pe_hei;    // drawing area size
+#ifdef NEW_NDK
+#else
     GdkPixmap *pe_pixmap;  // backing pixmap
+#endif
 
     static hyList *pe_stores[PE_NUMSTORES]; // editor text string registers
 

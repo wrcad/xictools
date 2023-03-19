@@ -1,5 +1,5 @@
 #######################################################################
-LOCATION = mozr/src/httpget
+LOCATION = mozy/src/httpget
 #######################################################################
 
 # Below are the recognized CFLAGS defines.  The configure script
@@ -11,8 +11,7 @@ LOCATION = mozr/src/httpget
 # Note: the graphical support is no longer included in the library
 # produced here.  The executable target is no longer produced here.
 # Graphics support is provided if built with:
-#  ../gtkinterf/gtkhttpmon.cc  (for gtk 1/2)
-#  ../qtinterf/httpmon_d.cc    (for qt-3/4)
+#  ../gtkmozy/gtkhttpmon.cc  (for gtk 1/2)
 
 VERSION = 2.20
 

@@ -167,6 +167,7 @@ struct grbits : public http_monitor
         }
 
     void start(Transaction*);
+    void start_test();
 
 private:
     static void g_dl_cancel_proc(GtkWidget*, void*);
@@ -181,6 +182,14 @@ public:
     bool g_jbuf_set;
     jmp_buf g_jbuf;
 };
+
+
+namespace {
+    grbits _monitor_;
+}
+namespace httpget {
+    http_monitor *Monitor = &_monitor_;
+}
 
 
 void
@@ -236,23 +245,55 @@ grbits::start(Transaction *t)
 }
 
 
-// This will override the http_monitor stubs on httpget, when linked
-// with this, enabling graphics.
-//
 namespace {
-    grbits _monitor_;
-
-    struct http_init_t
+    int test_print(void *data)
     {
-        http_init_t()
-            {
-                httpget::Monitor = &_monitor_;
-            }
-    };
-
-    http_init_t _http_init_;
+        grbits *gb = (grbits*)data;
+        static int n = 1;
+        char buf[80];
+        sprintf(buf, "Testing %d %d %d...\n", n, n+1, n+2);
+        n += 3; 
+        gb->widget_print(buf);
+        return 1;
+    }
 }
 
+void
+grbits::start_test()
+{
+    grbits *gb = new grbits;
+    gtk_init(0, 0);
+
+    gb->g_popup = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(gb->g_popup), "Download");
+    g_signal_connect(G_OBJECT(gb->g_popup), "destroy",
+        G_CALLBACK(grbits::g_dl_cancel_proc), gb);
+    GtkWidget *form = gtk_table_new(1, 2, false);
+    gtk_widget_show(form);
+    gtk_container_add(GTK_CONTAINER(gb->g_popup), form);
+    GtkWidget *frame = gtk_frame_new("http://dummy_url.com");
+    gtk_widget_show(frame);
+    gb->g_text_area = gtk_drawing_area_new();
+    g_signal_connect(G_OBJECT(gb->g_text_area), "expose-event",
+        G_CALLBACK(grbits::g_da_expose), gb);
+    gtk_widget_show(gb->g_text_area);
+    gtk_widget_set_size_request(gb->g_text_area, 320, 30);
+    gtk_container_add(GTK_CONTAINER(frame), gb->g_text_area);
+    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    GtkWidget *button = gtk_button_new_with_label("Cancel");
+    gtk_widget_show(button);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 1, 1, 2,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(grbits::g_cancel_btn_proc), gb);
+    gtk_widget_show(gb->g_popup);
+
+    g_timeout_add(1000, (GSourceFunc)test_print, gb);
+    gtk_main();
+}
 
 //-----------------------------------------------------------------------------
 // The download monitor widget
@@ -281,14 +322,28 @@ grbits::widget_print(const char *buf)
                 }
                 GdkWindow *win = gtk_widget_get_window(g_text_area);
                 gdk_window_clear(win);
+
+#if 1
+                cairo_t *cr = gdk_cairo_create(win);
+                cairo_set_source_rgb(cr, 0, 0, 0);
+                cairo_select_font_face(cr, "Mono",
+                    CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+                cairo_set_font_size(cr, 13);
+                cairo_move_to(cr, 2, 15);
+                cairo_show_text(cr, s);
+                cairo_fill(cr);
+                cairo_destroy(cr);
+
+#else
 #ifdef XXX_DEPREC
                 GtkStyle *style = gtk_widget_get_style(g_text_area);
                 GdkFont *fnt = gtk_style_get_font(style);
 
-//                GdkGC *bgc = gtk_style_get_black_gc(style);
-//                int asnt = gdk_font_get_ascent(fnt);
+                GdkGC *bgc = gtk_style_get_black_gc(style);
+                int asnt = gdk_font_get_ascent(fnt);
                 gdk_draw_string(win, fnt,
                     style->black_gc, 2, fnt->ascent + 2, s);
+#endif
 #endif
             }
             delete [] str;

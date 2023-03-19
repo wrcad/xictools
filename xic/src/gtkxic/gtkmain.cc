@@ -429,7 +429,7 @@ GTKpkg::Initialize(GRwbag *wcp)
 
     // Initialize the application's GUI.
     //
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     int wid = w->GetDrawable()->get_width();
     int hei = w->GetDrawable()->get_height();
 #else
@@ -559,7 +559,7 @@ GTKpkg::CheckForInterrupt()
     lasttime = Timer()->elapsed_msec();
 
     if (dispatch_events) {
-#ifdef NEW_GC
+#ifdef NEW_NDK
         ndkGC *gc = mainBag()->GC();
         if (gc == mainBag()->XorGC())
             // If ghost-drawing, defer event processing, which may
@@ -585,7 +585,7 @@ GTKpkg::CheckForInterrupt()
         DSP()->SetSlowMode(b);
 
         // Reset the GC, these may have changed during event processing.
-#ifdef NEW_GC
+#ifdef NEW_NDK
         gc->set_foreground(&gcv.v_foreground);
         gc->set_fill(gcv.v_fill);
         gc->set_line_attributes(gcv.v_line_width, gcv.v_line_style,
@@ -1060,7 +1060,7 @@ GTKpkg::RegisterEventHandler(void(*handler)(GdkEvent*, void*), void *arg)
 
 bool win_bag::HaveDrag = false;
 
-win_bag::win_bag()
+win_bag::win_bag() : GTKdraw(XW_DRAWING)
 {
     wib_windesc = 0;
     wib_gridpop = 0;
@@ -1073,10 +1073,13 @@ win_bag::win_bag()
     memset(wib_keys, 0, sizeof(wib_keys));
     wib_resized = false;
 
+#ifdef NEW_NDK
+#else
     wib_window_bak = 0;
     wib_draw_pixmap = 0;
     wib_px_width = 0;
     wib_px_height = 0;
+#endif
 
     wib_id = 0;
     wib_state = 0;
@@ -1089,10 +1092,9 @@ win_bag::~win_bag()
     PopUpExpand(0, MODE_OFF, 0, 0, 0, false);
     PopUpGrid(0, MODE_OFF);
     PopUpZoom(0, MODE_OFF);
-    if (wib_draw_pixmap)
-#ifdef NEW_PIX
-        wib_draw_pixmap->dec_ref();
+#ifdef NEW_NDK
 #else
+    if (wib_draw_pixmap)
         gdk_pixmap_unref(wib_draw_pixmap);
 #endif
 }
@@ -1250,7 +1252,7 @@ win_bag::subw_initialize(int wnum)
     gtk_window_set_transient_for(GTK_WINDOW(wb_shell),
         GTK_WINDOW(mainBag()->Shell()));
     gtk_widget_show(wb_shell);
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
 #else
     gd_window = gtk_widget_get_window(gd_viewport);
@@ -1263,7 +1265,7 @@ win_bag::subw_initialize(int wnum)
 
     // Application initialization callback.
     //
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     int wid = GetDrawable()->get_width();
     int hei = GetDrawable()->get_height();
 #else
@@ -1314,7 +1316,7 @@ win_bag::SwitchToPixmap()
     if (!wib_windesc)
         return;
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_pixmap();
 #else
     if (wib_window_bak) {
@@ -1329,11 +1331,7 @@ win_bag::SwitchToPixmap()
             vp_width != wib_px_width || vp_height != wib_px_height) {
         GdkPixmap *pm = wib_draw_pixmap;
         if (pm)
-#ifdef NEW_PIX
-            pm->dec_ref();
-#else
             gdk_pixmap_unref(pm);
-#endif
         wib_px_width = vp_width;
         wib_px_height = vp_height;
         pm = gdk_pixmap_new(gd_window, wib_px_width, wib_px_height,
@@ -1362,7 +1360,7 @@ void
 win_bag::SwitchFromPixmap(const BBox *BB)
 {
     // Note that the bounding values are included in the display.
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(CpyGC(), BB->left, BB->top,
         BB->width()+1, abs(BB->height())+1);
@@ -1387,7 +1385,7 @@ win_bag::SwitchFromPixmap(const BBox *BB)
 GRobject
 win_bag::DrawableReset()
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_window();
     return (0);
 #else
@@ -1405,7 +1403,7 @@ win_bag::DrawableReset()
 void
 win_bag::CopyPixmap(const BBox *BB)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(CpyGC(),
         BB->left, BB->top, BB->width() + 1, abs(BB->height()) + 1);
@@ -1425,7 +1423,7 @@ win_bag::CopyPixmap(const BBox *BB)
 void
 win_bag::DestroyPixmap()
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     //XXX anything to do here?
 #else
     if (wib_window_bak) {
@@ -1451,8 +1449,14 @@ win_bag::PixmapOk()
         return (false);
     int vp_width = wib_windesc->ViewportWidth();
     int vp_height = wib_windesc->ViewportHeight();
+#ifdef NEW_NDK
+    return (GetDrawable()->get_pixmap() &&
+        GetDrawable()->get_pixmap()->get_width() == vp_width &&
+        GetDrawable()->get_pixmap()->get_height() == vp_height);
+#else
     return (wib_draw_pixmap && wib_px_width == vp_width &&
         wib_px_height == vp_height);
+#endif
 }
 
 
@@ -1472,7 +1476,7 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
     if (BB.right < BB.left || BB.bottom < BB.top)
         return (false);
 
-#ifdef NEW_PIX
+#ifdef NEW_NDK
     ndkPixmap *pm = 0;
 #else
     GdkPixmap *pm = 0;
@@ -1480,13 +1484,20 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
     bool native = false;
     int vp_width = wib_windesc->ViewportWidth();
     int vp_height = wib_windesc->ViewportHeight();
+#ifdef NEW_NDK
+    if (GetDrawable()->get_pixmap() &&
+            GetDrawable()->get_pixmap()->get_width() == vp_width &&
+            GetDrawable()->get_pixmap()->get_height() == vp_height) { 
+        pm = GetDrawable()->get_pixmap();
+#else
     if (wib_draw_pixmap && wib_px_width == vp_width &&
             wib_px_height == vp_height) {
         pm = wib_draw_pixmap;
+#endif
         native = true;
     }
     else {
-#ifdef NEW_PIX
+#ifdef NEW_NDK
         pm = new ndkPixmap(GetDrawable()->get_window(), vp_width, vp_height);
         if (!pm)
             return (false);
@@ -1526,7 +1537,7 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
     gdk_win32_hdc_release(gd_window, GC(), Win32GCvalues);
 #else
 #ifdef WITH_X11
-#ifdef NEW_PIX
+#ifdef NEW_NDK
     Image *im = create_image_from_drawable(gr_x_display(),
         pm->get_xid(), BB.left, BB.top, BB.width() + 1, abs(BB.height()) + 1);
 #else
@@ -1543,7 +1554,7 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
 #endif
 
     if (!native)
-#ifdef NEW_PIX
+#ifdef NEW_NDK
         pm->dec_ref();
 #else
         gdk_pixmap_unref(pm);
@@ -2895,7 +2906,7 @@ main_bag::initialize()
     // Realize
     //
     gtk_widget_show(wb_shell);
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GdkWindow *window = gtk_widget_get_window(gd_viewport);
     GetDrawable()->set_window(window);
     GRX->SetDefaultFocusWin(window);
@@ -2906,37 +2917,26 @@ main_bag::initialize()
 
     // Make the GC's.
     //
-#ifdef NEW_GC
+#ifdef NEW_NDK
     ndkGCvalues gcvalues;
     gcvalues.v_cap_style = ndkGC_CAP_BUTT;
-    Gbag()->set_gc(new ndkGC(window, &gcvalues,
-        (ndkGCvaluesMask)ndkGC_CAP_STYLE));
+    gcvalues.v_fill_rule = ndkGC_WINDING_RULE;
+    CpyGC()->set_values(&gcvalues,
+        (ndkGCvaluesMask)(ndkGC_CAP_STYLE | ndkGC_FILL_RULE));
+    XorGC()->set_values(&gcvalues, ndkGC_CAP_STYLE);
 #else
     GdkGCValues gcvalues;
     gcvalues.cap_style = GDK_CAP_BUTT;
-    Gbag()->set_gc(gdk_gc_new_with_values(gd_window, &gcvalues,
-        (GdkGCValuesMask)GDK_GC_CAP_STYLE));
-#endif
-
+    gdk_gc_set_values(CpyGC(), &gcvalues, GDK_GC_CAP_STYLE);
+    gcvalues.function = GDK_XOR;
+    gdk_gc_set_values(XorGC(), &gcvalues,
+        (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE));
     // Growl... GTK doesn't have this
 #ifdef WITH_X11
     XGCValues xval;
     xval.fill_rule = WindingRule;
-#ifdef NEW_GC
-    XChangeGC(gr_x_display(), GC()->get_xgc(), GCFillRule, &xval);
-#else
     XChangeGC(gr_x_display(), gdk_x11_gc_get_xgc(GC()), GCFillRule, &xval);
 #endif
-#endif
-
-#ifdef NEW_GC
-    gcvalues.v_function = ndkGC_XOR;
-    Gbag()->set_xorgc(new ndkGC(window, &gcvalues,
-        (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
-#else
-    gcvalues.function = GDK_XOR;
-    Gbag()->set_xorgc(gdk_gc_new_with_values(gd_window, &gcvalues,
-        (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE)));
 #endif
 
     gd_backg = GRX->NameColor("black");
@@ -2944,26 +2944,19 @@ main_bag::initialize()
 
     GdkColor clr;
     clr.pixel = gd_backg;
-    gtk_QueryColor(&clr);
-#ifdef NEW_GC
-    GC()->set_background(&clr);
+#ifdef NEW_NDK
+    CpyGC()->set_background(&clr);
     XorGC()->set_background(&clr);
-#else
-    gdk_gc_set_background(GC(), &clr);
-    gdk_gc_set_background(XorGC(), &clr);
-#endif
     clr.pixel = gd_foreg;
-    gtk_QueryColor(&clr);
-#ifdef NEW_GC
-    GC()->set_foreground(&clr);
-#else
-    gdk_gc_set_foreground(GC(), &clr);
-#endif
+    CpyGC()->set_foreground(&clr);
     clr.pixel = gd_backg ^ gd_foreg;
-    gtk_QueryColor(&clr);
-#ifdef NEW_GC
     XorGC()->set_foreground(&clr);
 #else
+    gdk_gc_set_background(CpyGC(), &clr);
+    gdk_gc_set_background(XorGC(), &clr);
+    clr.pixel = gd_foreg;
+    gdk_gc_set_foreground(CpyGC(), &clr);
+    clr.pixel = gd_backg ^ gd_foreg;
     gdk_gc_set_foreground(XorGC(), &clr);
 #endif
 

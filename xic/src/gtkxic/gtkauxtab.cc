@@ -352,7 +352,6 @@ sAT::update()
     CDcellTab *ct = CDcdb()->auxCellTab();
     if (ct) {
         int width = gdk_window_get_width(gtk_widget_get_window(wb_textarea));
-//XXX        int height = gdk_window_get_height(gtk_widget_get_window(wb_textarea));
         int cols = (width-4)/GTKfont::stringWidth(wb_textarea, 0);
         stringlist *s0 = ct->list();
         char *newtext = stringlist::col_format(s0, cols);

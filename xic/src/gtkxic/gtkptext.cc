@@ -232,7 +232,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
 
     int wid, hei, numlines;
     polytextExtent(string, &wid, &hei, &numlines);
-#ifdef NEW_PIX
+#ifdef NEW_NDK
     GdkWindow *window = mainBag()->GetDrawable()->get_window();
     ndkPixmap *pixmap = new ndkPixmap(window, wid, hei);
 #else
@@ -240,23 +240,23 @@ cEdit::polytext(const char *string, int psz, int x, int y)
         GRX->Visual()->depth);
 #endif
 
-#ifdef NEW_GC
+#ifdef NEW_NDK
     ndkGC *gc = new ndkGC(window);
     GdkColor c;
-    gdk_color_white(GRX->Colormap(), &c);
+    c.pixel = 0xffffff;  // white
     gc->set_background(&c);
     gc->set_foreground(&c);
     pixmap->fill(gc);
-    gdk_color_black(GRX->Colormap(), &c);
+    c.pixel = 0;  // black
     gc->set_foreground(&c);
 #else
     GdkGC *gc = gdk_gc_new(mainBag()->Window());
     GdkColor c;
-    gdk_color_white(GRX->Colormap(), &c);
+    c.pixel = 0xffffff;  // white
     gdk_gc_set_background(gc, &c);
     gdk_gc_set_foreground(gc, &c);
     gdk_draw_rectangle(pixmap, gc, true, 0, 0, wid, hei);
-    gdk_color_black(GRX->Colormap(), &c);
+    c.pixel = 0;  // black
     gdk_gc_set_foreground(gc, &c);
 #endif
 
@@ -291,7 +291,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
             tx += wid - len;
             break;
         }
-#ifdef NEW_PIX
+#ifdef NEW_NDK
         pixmap->copy_from_pango_layout(gc, lout);
 #else
         gdk_draw_layout(pixmap, gc, tx, ty, lout);
@@ -314,35 +314,30 @@ cEdit::polytext(const char *string, int psz, int x, int y)
         tx += wid - len;
         break;
     }
-#ifdef NEW_PIX
+#ifdef NEW_NDK
     pixmap->copy_from_pango_layout(gc, lout);
 #else
     gdk_draw_layout(pixmap, gc, tx, ty, lout);
 #endif
+
     g_object_unref(lout);
     pango_font_description_free(pfd);
     y -= psz*(hei - fh);
 
-#ifdef NEW_IMG
+#ifdef NEW_NDK
     ndkImage *im = new ndkImage(pixmap, 0, 0, wid, hei);
-#else
-    GdkImage *im = gdk_image_get(pixmap, 0, 0, wid, hei);
-#endif
-#ifdef NEW_PIX
     pixmap->dec_ref();
-#else
-    gdk_pixmap_unref(pixmap);
-#endif
-#ifdef NEW_GC
     delete gc;
 #else
+    GdkImage *im = gdk_image_get(pixmap, 0, 0, wid, hei);
+    gdk_pixmap_unref(pixmap);
     gdk_gc_unref(gc);
 #endif
 
     Zlist *z0 = 0;
     for (int i = 0; i < hei; i++) {
         for (int j = 0; j < wid;  j++) {
-#ifdef NEW_IMG
+#ifdef NEW_NDK
             int px = im->get_pixel(j, i);
 #else
             int px = gdk_image_get_pixel(im, j, i);
@@ -358,7 +353,8 @@ cEdit::polytext(const char *string, int psz, int x, int y)
             }
         }
     }
-#ifdef NEW_IMG
+#ifdef NEW_NDK
+    delete im;
 #else
     gdk_image_destroy(im);
 #endif

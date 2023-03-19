@@ -80,25 +80,8 @@
 
 using namespace httpget;
 
-// The Monitor pointer is reset in the graphics library to enable
-// graphics.
-
-http_monitor *httpget::Monitor = 0;
-
 namespace {
     http_monitor _monitor_;
-
-    struct http_init_t
-    {
-        http_init_t()
-            {
-                if (!Monitor)
-                    Monitor = &_monitor_;
-            }
-    };
-
-    http_init_t _http_init_;
-
 
     // This prints the debugging messages if enabled.  These always go to
     // stderr.
@@ -122,6 +105,13 @@ namespace {
         return (false);
     }
 }
+
+
+#ifdef NO_GRAPHICS
+namespace httpget {
+    http_monitor *Monitor = &_monitor_;
+}
+#endif
 
 
 Transaction::Transaction()
@@ -186,6 +176,8 @@ Transaction::~Transaction()
 int
 Transaction::parse_cmd(int argc, char **argv, bool *xoption)
 {
+    if (!Monitor)
+        Monitor = &_monitor_;
     if (argc < 2)
         return (EXIT_FAILURE);
     for (int i = 1; i < argc; i++) {
@@ -224,6 +216,10 @@ Transaction::parse_cmd(int argc, char **argv, bool *xoption)
                 case 'g':
                     if (Monitor->graphics_enabled()) {
                         t_use_graphics = true;
+                        if (argv[i][j+1] == 't') {
+                            Monitor->start_test();
+                            exit(0);
+                        }
                         if (isdigit(argv[i][j+1])) {
                             if (sscanf(&argv[i][j+1], "%d:%d",
                                     &t_xpos, &t_ypos) != 2) {

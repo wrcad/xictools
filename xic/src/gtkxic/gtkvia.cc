@@ -179,30 +179,14 @@ namespace {
 using namespace gtkstdvia;
 
 namespace {
-    // Sweep some GTK version schmutz under the rug.
-
-#if GTK_CHECK_VERSION(2,24,0)
-#define NEW_COMBO_BOX   gtk_combo_box_text_new()
-#else
-#define NEW_COMBO_BOX   gtk_combo_box_new_text()
-#endif
-
     inline char *get_active_text(GtkWidget *w)
     {
-#if GTK_CHECK_VERSION(2,24,0)
         return (gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(w)));
-#else
-        return (gtk_combo_box_get_active_text(GTK_COMBO_BOX(w)));
-#endif
     }
 
     inline void append_text(GtkWidget *w, const char *txt)
     {
-#if GTK_CHECK_VERSION(2,24,0)
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(w), txt);
-#else
-        gtk_combo_box_append_text(GTK_COMBO_BOX(w), txt);
-#endif
     }
 }
 
@@ -309,14 +293,14 @@ sStv::sStv(GRobject caller, CDc *cdesc)
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    stv_name = NEW_COMBO_BOX;
+    stv_name = gtk_combo_box_text_new();
     gtk_widget_show(stv_name);
     g_signal_connect(G_OBJECT(stv_name), "changed",
         G_CALLBACK(stv_name_menu_proc), 0);
     gtk_table_attach(GTK_TABLE(form), stv_name, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    stv_layerv = NEW_COMBO_BOX;
+    stv_layerv = gtk_combo_box_text_new();
     gtk_widget_show(stv_layerv);
     g_signal_connect(G_OBJECT(stv_layerv), "changed",
         G_CALLBACK(stv_vlayer_menu_proc), 0);

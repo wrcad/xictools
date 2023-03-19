@@ -42,10 +42,7 @@
 #define GTKDRAW_H
 
 
-#define NEW_GC
-#define NEW_PIX
-#define NEW_DRW
-#define NEW_IMG
+#define NEW_NDK
 
 #ifndef WITH_QUARTZ
 #ifndef WIN32
@@ -56,17 +53,12 @@
 #ifdef WITH_X11
 #include "gtkinterf/gtkx11.h"
 #endif
-#ifdef NEW_GC
-#include "gtkinterf/ndkgc.h"
-#endif
-#ifdef NEW_PIX
+#ifdef NEW_NDK
 #include "gtkinterf/ndkpixmap.h"
-#endif
-#ifdef NEW_DRW
 #include "gtkinterf/ndkdrawable.h"
-#endif
-#ifdef NEW_IMG
 #include "gtkinterf/ndkimage.h"
+#include "gtkinterf/ndkgc.h"
+#include "gtkinterf/ndkcursor.h"
 #endif
 
 namespace ginterf
@@ -124,15 +116,8 @@ namespace gtkinterf {
     // Graphical context, may be used by multiple windows.
     struct sGbag
     {
-        sGbag() {
-            gb_gc = 0;
-            gb_xorgc = 0;
-            gb_gcbak = 0;
-#ifdef WIN32
-            gb_fillpattern = 0;
-#endif
-            gb_cursor_type = 0;
-        }
+        sGbag();
+        ~sGbag();
 
         void set_xor(bool x)
             {
@@ -144,7 +129,7 @@ namespace gtkinterf {
                     gb_gc = gb_gcbak;
             }
 
-#ifdef NEW_GC
+#ifdef NEW_NDK
         ndkGC *main_gc()
 #else
         GdkGC *main_gc()
@@ -201,7 +186,7 @@ namespace gtkinterf {
                 gb_gdraw.set_ghost_func(f);
             }
 
-#ifdef NEW_GC
+#ifdef NEW_NDK
         void set_gc(ndkGC *gc)                  { gb_gc = gc; }
         ndkGC *get_gc()                         { return (gb_gc); }
         void set_xorgc(ndkGC *gc)               { gb_xorgc = gc; }
@@ -227,7 +212,7 @@ namespace gtkinterf {
         static sGbag *default_gbag(int = 0);
 
     private:
-#ifdef NEW_GC
+#ifdef NEW_NDK
         ndkGC *gb_gc;
         ndkGC *gb_xorgc;
         ndkGC *gb_gcbak;
@@ -245,10 +230,10 @@ namespace gtkinterf {
 
     struct GTKdraw : virtual public GRdraw
     {
-        GTKdraw(int = 0);
+        GTKdraw(int);
         virtual ~GTKdraw();
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
         void SetViewport(GtkWidget*);
         void *WindowID();
 #else
@@ -303,7 +288,7 @@ namespace gtkinterf {
         double Resolution()     { return (1.0); }
 
         // non-overrides
-#ifdef NEW_GC
+#ifdef NEW_NDK
         ndkGC *GC()         { return (gd_gbag ? gd_gbag->get_gc() : 0); }
         ndkGC *XorGC()      { return (gd_gbag ? gd_gbag->get_xorgc() : 0); }
         ndkGC *CpyGC()      { return (gd_gbag ? gd_gbag->main_gc() : 0); }
@@ -319,7 +304,7 @@ namespace gtkinterf {
         void SetGbag(sGbag *b)  { gd_gbag = b; }
 
         GtkWidget *Viewport()           { return (gd_viewport); }
-#ifdef NEW_DRW
+#ifdef NEW_NDK
         ndkDrawable *GetDrawable()      { return (&gd_dw); }
 #else
         void SetViewport(GtkWidget *w)  { gd_viewport = w; }
@@ -327,29 +312,21 @@ namespace gtkinterf {
         void SetWindow(GdkWindow *w)    { gd_window = w; }
 #endif
 
-        void SetBackgPixel(unsigned int p)    { gd_backg = p; }
         unsigned int GetBackgPixel()          { return (gd_backg); }
-        void SetForegPixel(unsigned int p)    { gd_foreg = p; }
         unsigned int GetForegPixel()          { return (gd_foreg); }
 
     protected:
         GtkWidget *gd_viewport;         // drawing widget
-#ifdef NEW_DRW
+#ifdef NEW_NDK
         ndkDrawable gd_dw;              // drawing context
 #else
         GdkWindow *gd_window;           // drawing window
 #endif
         sGbag *gd_gbag;                 // graphics rendering context
-        unsigned int gd_backg;
-        unsigned int gd_foreg;
+        unsigned int gd_backg;          // background pixel, same in both GCs
+        unsigned int gd_foreg;          // foreground drawing pixel
+        unsigned int gd_xor_fg;         // ghost drawing pixel
     };
-
-//XXX
-#ifdef WITH_X11
-    void copy_x11_pixmap_to_drawable(GdkDrawable*, void*, GdkPixmap*,
-//    void copy_x11_pixmap_to_drawable(GdkDrawable*, ndkGC*, GdkPixmap*,
-    int, int, int, int, int, int);
-#endif
 }
 
 #endif  // GTKDRAW_H

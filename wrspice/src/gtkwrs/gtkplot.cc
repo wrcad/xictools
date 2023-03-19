@@ -109,7 +109,7 @@ struct plot_bag : public GTKbag,  public GTKdraw
             pb_bbox = 0;
             for (int i = 0; i < pbtn_NUMBTNS; i++)
                 pb_checkwins[i] = 0;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 #else
             pb_pixmap = 0;
             pb_pmwid = pb_pmhei = 0;
@@ -121,7 +121,7 @@ struct plot_bag : public GTKbag,  public GTKdraw
 
     ~plot_bag()
         {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 #else
             if (pb_pixmap)
                 gdk_pixmap_unref(pb_pixmap);
@@ -169,7 +169,7 @@ private:
 
     GtkWidget *pb_bbox;             // frame containing button box
     GtkWidget *pb_checkwins[pbtn_NUMBTNS];  // button widget pointers
-#ifdef NEW_DRW
+#ifdef NEW_NDK
 #else
     GdkPixmap *pb_pixmap;           // backing store
     int pb_pmwid, pb_pmhei;         // pixmap size
@@ -309,12 +309,12 @@ plot_bag::init(sGraph *gr)
         (GtkAttachOptions)0,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 0, 0);
 
-    // The first plot is issued a blank sGbag, which is filled in here.
-    // Subsequent plots are issued the same sGbag for the class (plots and
-    // mplots are separate classes).  This is a problem for plots, which
-    // have ghost drawn markers in some plots and not others, so a copy
-    // is made in this case.
-    // We use the same gc's though (same gc's for each class).
+    // The first plot is issued a sGbag and GCs.  Subsequent plots are
+    // issued the same sGbag for the class (plots and mplots are
+    // separate classes).  This is a problem for plots, which have
+    // ghost drawn markers in some plots and not others, so a copy of
+    // the Gbag is made in this case.  We use the same GC's though
+    // (same GC's for each class).
     //
     if (GC() && gr->apptype() == GR_PLOT) {
         // already filled in, make a copy
@@ -337,7 +337,7 @@ plot_bag::init(sGraph *gr)
     TB()->RevertFocus(Shell());
 
     gtk_widget_show(Shell());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
 #else
     SetWindow(gtk_widget_get_window(Viewport()));
@@ -354,48 +354,12 @@ plot_bag::init(sGraph *gr)
         Title(buf1, buf2);
     }
 
-    // create GC's
-    //
-#ifdef NEW_GC
-    if (!GC()) {
-        ndkGCvalues gcvalues;
-        gcvalues.v_cap_style = ndkGC_CAP_NOT_LAST;
-#ifdef NEW_DRW
-        GdkWindow *window = GetDrawable()->get_window();
-        if (window) {
-            Gbag()->set_gc(new ndkGC(window, &gcvalues, ndkGC_CAP_STYLE));
-            gcvalues.v_function = ndkGC_XOR;
-            Gbag()->set_xorgc(new ndkGC(window, &gcvalues,
-                (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
-        }
-#else
-        // We handle our own double-buffering.
-        gtk_widget_set_double_buffered(Viewport(), false);
-
-        Gbag()->set_gc(new ndkGC(Window(), &gcvalues,
-            ndkGC_CAP_STYLE));
-        gcvalues.v_function = ndkGC_XOR;
-        Gbag()->set_xorgc(new ndkGC(Window(), &gcvalues,
-            (ndkGCvaluesMask)(ndkGC_FUNCTION | ndkGC_CAP_STYLE)));
-#endif
-    }
-#else
-    if (!GC()) {
-        GdkGCValues gcvalues;
-        gcvalues.cap_style = GDK_CAP_NOT_LAST;
-        Gbag()->set_gc(gdk_gc_new_with_values(Window(), &gcvalues,
-            GDK_GC_CAP_STYLE));
-        gcvalues.function = GDK_XOR;
-        Gbag()->set_xorgc(gdk_gc_new_with_values(Window(), &gcvalues,
-            (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE)));
-    }
-#endif
     gr->gr_pkg_init_colors();
     gr->set_fontsize();
 
     // set up cursor
     GdkCursor *cursor = gdk_cursor_new(GDK_LEFT_PTR);
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     GdkWindow *window = GetDrawable()->get_window();
     if (window) {
         gdk_window_set_cursor(window, cursor);
@@ -770,7 +734,7 @@ sGraph::gr_redraw()
         return;
     }
     plot_bag *wb = dynamic_cast<plot_bag*>(gr_dev);
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     ndkDrawable *dw = wb->GetDrawable();
     dw->set_draw_to_pixmap();
     int width = dw->get_width();
@@ -782,8 +746,6 @@ sGraph::gr_redraw()
     gr_redraw_direct();  // This might change area().width/area().height.
     dw->set_draw_to_window();
     dw->copy_pixmap_to_window(wb->GC(), 0, 0, -1, -1);
-    gr_redraw_keyed();
-    gr_dirty = false;
 
 #else
     if (!wb->Window())
@@ -806,18 +768,12 @@ sGraph::gr_redraw()
     wb->Box(0, 0, width, height);
     gr_redraw_direct();  // This might change area().width/area().height.
     wb->SetWindow(wtmp);
-#ifdef NEW_GC
-#ifdef WITH_X11
-    copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
-        0, 0, 0, 0, width, height);
-#endif
-#else
     gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
         width, height);
 #endif
+
     gr_redraw_keyed();
     gr_dirty = false;
-#endif // NEW_DRW
 }
 
 
@@ -825,7 +781,7 @@ void
 sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
 {
     plot_bag *wb = dynamic_cast<plot_bag*>(gr_dev);
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     ndkDrawable *dw = wb->GetDrawable();
     int w = dw->get_width();
     int h = dw->get_height();
@@ -861,26 +817,13 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
         gr_redraw();
         return;
     }
-#ifdef NEW_GC
-    copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
-        left, top, left, top, right - left, bottom - top);
-#else
     gdk_window_copy_area(wb->Window(), wb->GC(), left,
         top, wb->pb_pixmap, left, top, right - left, bottom - top);
-#endif
     GdkRectangle r;
     r.x = left;
     r.y = top;
     r.width = right - left;
     r.height = bottom - top;
-#ifdef NEW_GC
-    wb->GC()->set_clip_rectangle(&r);
-    wb->XorGC()->set_clip_rectangle(&r);
-    if (!notxt)
-        gr_redraw_keyed();
-    wb->GC()->set_clip_rectangle(0);
-    wb->XorGC()->set_clip_rectangle(0);
-#else
     gdk_gc_set_clip_rectangle(wb->GC(), &r);
     gdk_gc_set_clip_rectangle(wb->XorGC(), &r);
     if (!notxt)
@@ -888,7 +831,6 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
     gdk_gc_set_clip_rectangle(wb->GC(), 0);
     gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
 #endif
-#endif //NEW_DRW
 }
 
 
@@ -985,7 +927,7 @@ plot_bag::resize(GtkWidget *caller, GdkEvent*, void *client_data)
     sGraph *graph = static_cast<sGraph*>(client_data);
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (!wb->GetDrawable()->get_window()) {
         GtkWidget *vp = wb->Viewport();
         if (gtk_widget_get_window(vp))
@@ -1015,7 +957,7 @@ plot_bag::redraw_timeout(void *arg)
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
 
     wb->pb_rdid = 0;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     ndkDrawable *dw = wb->GetDrawable();
     dw->set_draw_to_pixmap();
     wb->SetColor(graph->color(0).pixel);
@@ -1023,8 +965,6 @@ plot_bag::redraw_timeout(void *arg)
     graph->gr_redraw_direct();
     dw->set_draw_to_window();
     dw->copy_pixmap_to_window(wb->GC(), 0, 0, -1, -1);
-    graph->gr_redraw_keyed();
-    graph->set_dirty(false);
 
 #else
     GdkWindow *wtmp = wb->Window();
@@ -1033,17 +973,12 @@ plot_bag::redraw_timeout(void *arg)
     wb->Box(0, 0, graph->area().width(), graph->area().height());
     graph->gr_redraw_direct();
     wb->SetWindow(wtmp);
-#ifdef NEW_GC
-    copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
-        0, 0, 0, 0, graph->area().width(), graph->area().height());
-#else
     gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
         graph->area().width(), graph->area().height());
 #endif
+
     graph->gr_redraw_keyed();
     graph->set_dirty(false);
-#endif //NEW_DRW
-
     return (0);
 }
 
@@ -1056,7 +991,7 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
     GdkEventExpose *pev = &event->expose;
 
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     ndkDrawable *dw = wb->GetDrawable();
 
     bool dirty = dw->set_draw_to_pixmap();
@@ -1105,17 +1040,6 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         wb->pb_rdid = g_timeout_add(250, redraw_timeout, client_data);
     }
     else {
-#ifdef NEW_GC
-        copy_x11_pixmap_to_drawable(wb->Window(), wb->GC(), wb->pb_pixmap,
-            pev->area.x, pev->area.y, pev->area.x, pev->area.y,
-            pev->area.width, pev->area.height);
-
-        wb->GC()->set_clip_rectangle(&pev->area);
-        wb->XorGC()->set_clip_rectangle(&pev->area);
-        graph->gr_redraw_keyed();
-        wb->GC()->set_clip_rectangle(0);
-        wb->XorGC()->set_clip_rectangle(0);
-#else
         gdk_window_copy_area(wb->Window(), wb->GC(), pev->area.x,
             pev->area.y, wb->pb_pixmap, pev->area.x, pev->area.y,
             pev->area.width, pev->area.height);
@@ -1125,9 +1049,8 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         graph->gr_redraw_keyed();
         gdk_gc_set_clip_rectangle(wb->GC(), 0);
         gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
-#endif
     }
-#endif // NEW_DRW
+#endif
     return (true);
 }
 

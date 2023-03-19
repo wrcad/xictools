@@ -90,12 +90,15 @@ cMain::ShowParameters(const char*)
 
 cParam *cParam::instancePtr = 0;
 
-cParam::cParam()
+cParam::cParam() : GTKdraw(XW_TEXT)
 {
     instancePtr = this;
 
+#ifdef NEW_NDK
+#else
     p_win_bak = 0;
     p_pm = 0;
+#endif
     p_drag_x = 0;
     p_drag_y = 0;
     p_has_drag = false;
@@ -144,7 +147,7 @@ cParam::cParam()
 void
 cParam::print()
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
 #else
@@ -274,7 +277,7 @@ cParam::print()
 void
 cParam::display(int start, int end)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
     if (!GetDrawable()->get_window())
@@ -514,7 +517,7 @@ cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
     if (!Param())
         return (false);
     GdkEventExpose *pev = (GdkEventExpose*)event;
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Param()->GetDrawable()->refresh(Param()->CpyGC(), pev);
 #else
     if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
@@ -540,7 +543,7 @@ cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
 void
 cParam::readout_font_change(GtkWidget*, void*, void*)
 {
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     if (Param() && GDK_IS_DRAWABLE(Param()->GetDrawable()->get_window())) {
 #else
     if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {

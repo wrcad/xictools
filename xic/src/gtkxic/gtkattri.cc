@@ -135,6 +135,13 @@ namespace {
         char(0x80), char(0x03), char(0x80), char(0x03),
         char(0x80), char(0x03), char(0x80), char(0x03),
         char(0x80), char(0x03), char(0x00), char(0x00) };
+
+    GdkCursor *left_cursor;
+    GdkCursor *right_cursor;
+    GdkCursor *busy_cursor;
+#ifdef NEW_NDK
+    ndkCursor *cross_cursor;
+#endif
 }
 
 using namespace gtkattri;
@@ -167,10 +174,6 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
     if (!wd && mainBag())
         mainBag()->Gbag()->set_cursor_type(t);
 
-    static GdkCursor *left_cursor;
-    static GdkCursor *right_cursor;
-    static GdkCursor *busy_cursor;
-
     // The cross cursor makes things complicated, as it requires
     // background and foreground colors per window, i.e., each window
     // is given a separate instantiation of the cursor.
@@ -179,8 +182,12 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         // GTK default cursor.
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             if (w && w->GetDrawable()->get_window()) {
+                if (cross_cursor) {
+                    cross_cursor->revert_in_window(
+                        w->GetDrawable()->get_window());
+                }
                 gdk_window_set_cursor(w->GetDrawable()->get_window(), 0);
             }
 #else
@@ -194,8 +201,12 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             if (w && w->GetDrawable()->get_window()) {
+                if (cross_cursor) {
+                    cross_cursor->revert_in_window(
+                        w->GetDrawable()->get_window());
+                }
                 gdk_window_set_cursor(w->GetDrawable()->get_window(), 0);
             }
 #else
@@ -210,32 +221,20 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         // Legacy cross cursor.
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             if (w && w->GetDrawable()->get_window()) {
-                GdkWindow *win = w->GetDrawable()->get_window();
-                ndkPixmap *data = new ndkPixmap(win, cursorCross_bits,
-                    cursor_width, cursor_height);
-                ndkPixmap *mask = new ndkPixmap(win, cursorCross_mask,
-                    cursor_width, cursor_height);
-
-                GdkColor foreg, backg;
-                backg.pixel = w->GetBackgPixel();
-                foreg.pixel = w->GetForegPixel();
-                gtk_QueryColor(&backg);
-                gtk_QueryColor(&foreg);
-/* XXX  FIXME! need a replacement
-                GdkCursor *cursor = gdk_cursor_new_from_pixmap(data, mask,
-                    &foreg, &backg, cursor_x_hot, cursor_y_hot);
-*/
-                data->dec_ref();
-                mask->dec_ref();
-//                gdk_window_set_cursor(win, cursor);
-//                gdk_cursor_unref(cursor);
-
-// XXX temp hack looks terrible
-                GdkCursor *cursor = gdk_cursor_new(GDK_CROSSHAIR);
-                gdk_window_set_cursor(win, cursor);
-                gdk_cursor_unref(cursor);
+                if (!cross_cursor) {
+                    GdkColor foreg, backg;
+                    backg.pixel = w->GetBackgPixel();
+                    foreg.pixel = w->GetForegPixel();
+                    gtk_QueryColor(&backg);
+                    gtk_QueryColor(&foreg);
+                    cross_cursor = new ndkCursor(w->GetDrawable()->get_window(),
+                        cursorCross_bits, cursorCross_mask,
+                        cursor_width, cursor_height, cursor_x_hot, cursor_y_hot,
+                        &foreg, &backg);
+                }
+                cross_cursor->set_in_window(w->GetDrawable()->get_window());
             }
 #else
             if (w && w->Window()) {
@@ -265,32 +264,20 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             if (w && w->GetDrawable()->get_window()) {
-                GdkWindow *win = w->GetDrawable()->get_window();
-                ndkPixmap *data = new ndkPixmap(win, cursorCross_bits,
-                    cursor_width, cursor_height);
-                ndkPixmap *mask = new ndkPixmap(win, cursorCross_mask,
-                    cursor_width, cursor_height);
-
-                GdkColor foreg, backg;
-                backg.pixel = w->GetBackgPixel();
-                foreg.pixel = w->GetForegPixel();
-                gtk_QueryColor(&backg);
-                gtk_QueryColor(&foreg);
-/* XXX  FIXME! need a replacement
-                GdkCursor *cursor = gdk_cursor_new_from_pixmap(data, mask,
-                    &foreg, &backg, cursor_x_hot, cursor_y_hot);
-*/
-                data->dec_ref();
-                mask->dec_ref();
-//                gdk_window_set_cursor(win, cursor);
-//                gdk_cursor_unref(cursor);
-
-// XXX temp hack looks terrible
-                GdkCursor *cursor = gdk_cursor_new(GDK_CROSSHAIR);
-                gdk_window_set_cursor(win, cursor);
-                gdk_cursor_unref(cursor);
+                if (!cross_cursor) {
+                    GdkColor foreg, backg;
+                    backg.pixel = w->GetBackgPixel();
+                    foreg.pixel = w->GetForegPixel();
+                    gtk_QueryColor(&backg);
+                    gtk_QueryColor(&foreg);
+                    cross_cursor = new ndkCursor(w->GetDrawable()->get_window(),
+                        cursorCross_bits, cursorCross_mask,
+                        cursor_width, cursor_height, cursor_x_hot, cursor_y_hot,
+                        &foreg, &backg);
+                }
+                cross_cursor->set_in_window(w->GetDrawable()->get_window());
             }
 #else
             if (w && w->Window()) {
@@ -323,8 +310,12 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
             left_cursor = gdk_cursor_new(GDK_LEFT_PTR);
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             if (w && w->GetDrawable()->get_window()) {
+                if (cross_cursor) {
+                    cross_cursor->revert_in_window(
+                        w->GetDrawable()->get_window());
+                }
                 gdk_window_set_cursor(w->GetDrawable()->get_window(),
                     left_cursor);
             }
@@ -339,8 +330,12 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             if (w && w->GetDrawable()->get_window()) {
+                if (cross_cursor) {
+                    cross_cursor->revert_in_window(
+                        w->GetDrawable()->get_window());
+                }
                 gdk_window_set_cursor(w->GetDrawable()->get_window(),
                     left_cursor);
             }
@@ -358,8 +353,12 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
             right_cursor = gdk_cursor_new(GDK_RIGHT_PTR);
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             if (w && w->GetDrawable()->get_window()) {
+                if (cross_cursor) {
+                    cross_cursor->revert_in_window(
+                        w->GetDrawable()->get_window());
+                }
                 gdk_window_set_cursor(w->GetDrawable()->get_window(),
                     right_cursor);
             }
@@ -374,8 +373,12 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             if (w && w->GetDrawable()->get_window()) {
+                if (cross_cursor) {
+                    cross_cursor->revert_in_window(
+                        w->GetDrawable()->get_window());
+                }
                 gdk_window_set_cursor(w->GetDrawable()->get_window(),
                     right_cursor);
             }
@@ -393,8 +396,12 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
             busy_cursor = gdk_cursor_new(GDK_WATCH);
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             if (w && w->GetDrawable()->get_window()) {
+                if (cross_cursor) {
+                    cross_cursor->revert_in_window(
+                        w->GetDrawable()->get_window());
+                }
                 gdk_window_set_cursor(w->GetDrawable()->get_window(),
                     busy_cursor);
             }
@@ -409,8 +416,12 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
             if (w && w->GetDrawable()->get_window()) {
+                if (cross_cursor) {
+                    cross_cursor->revert_in_window(
+                        w->GetDrawable()->get_window());
+                }
                 gdk_window_set_cursor(w->GetDrawable()->get_window(),
                     busy_cursor);
                 // Force immediate display of busy cursor.

@@ -221,6 +221,7 @@ namespace gtkinterf {
         //
         GtkWidget *PositionReferenceWidget()
             {
+                // This can be a derived class that includes a GTKdraw.
                 GTKdraw *drw = dynamic_cast<GTKdraw*>(this);
                 if (drw && drw->Viewport())
                     return (drw->Viewport());

@@ -136,7 +136,7 @@ cMain::PopUpMemory(ShowMode mode)
 
     GRX->SetPopupLocation(GRloc(), Mem->Shell(), mainBag()->Viewport());
     gtk_widget_show(Mem->Shell());
-#ifdef NEW_DRW
+#ifdef NEW_NDK
     Mem->GetDrawable()->set_window(gtk_widget_get_window(Mem->Viewport()));
 #else
     Mem->SetWindow(gtk_widget_get_window(Mem->Viewport()));
@@ -149,7 +149,7 @@ cMain::PopUpMemory(ShowMode mode)
 // Minimum widget width so that title text isn't truncated.
 #define MEM_MINWIDTH 240
 
-sMem::sMem()
+sMem::sMem() : GTKdraw(XW_TEXT)
 {
     Mem = this;
     wb_shell = gtk_NewPopup(mainBag(), "Memory Monitor", mem_popdown, 0);
