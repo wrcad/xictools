@@ -563,6 +563,8 @@ GTKmenu::FindMainMenuWidget(const char *mname, const char *item)
 }
 
 
+#define MENU_DEBUG
+
 // Disable/enable menus (item is null) or menu entries.
 //
 void
@@ -578,12 +580,16 @@ GTKmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
         ent = FindEntry(mname, item, 0);
     if (ent && ent->cmd.caller)
         gtk_widget_set_sensitive(GTK_WIDGET(ent->cmd.caller), !desens);
-//XXX
-    else if (ent)
-        printf("caller %p %s %s\n", ent->cmd.caller, mname, item);
-    else
-        printf("caller failed %s %s\n", mname, item);
-//XXX
+#ifdef MENU_DEBUG
+    else if (ent) {
+        printf("DisableMainMenuItem assertion failed:  caller %p %s %s\n",
+            ent->cmd.caller, mname, item);
+    }
+    else {
+        printf("DisableMainMenuItem assertion failed:  caller failed %s %s\n",
+            mname, item);
+    }
+#endif
 }
 
 

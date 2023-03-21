@@ -73,7 +73,7 @@
 
 #ifdef NDKGC_H
 
-ndkGC::ndkGC(GdkWindow *drawable, ndkGCvalues *values,
+ndkGC::ndkGC(GdkWindow *window, ndkGCvalues *values,
     ndkGCvaluesMask values_mask)
 {
     gc_clip_x_origin        = 0;
@@ -158,23 +158,23 @@ ndkGC::ndkGC(GdkWindow *drawable, ndkGCvalues *values,
     }
 
 #ifdef WITH_X11
-    if (!drawable)
-        drawable = gdk_get_default_root_window();
-    gc_screen = gdk_window_get_screen(drawable);
-    gc_depth = gdk_drawable_get_depth(drawable);
+    if (!window)
+        window = gdk_get_default_root_window();
+    gc_screen = gdk_window_get_screen(window);
+#ifdef NOTGTK3
+    gc_depth = gdk_drawable_get_depth(window);
+#else
+    gc_depth = gdk_visual_get_depth(gdk_window_get_visual(window));
+#endif
 
     gc_dirty_mask = 0;
     if (values_mask & (ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN)) {
-        unsigned int foo = values_mask;
-        foo &= ~(ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN);
-        values_mask = (ndkGCvaluesMask)foo;
+        values_mask &= ~(ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN);
         gc_dirty_mask |= ndkGC_DIRTY_CLIP;
     }
 
     if (values_mask & (ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN)) {
-        unsigned int foo = values_mask;
-        foo &= ~(ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN);
-        values_mask = (ndkGCvaluesMask)foo;
+        values_mask &= ~(ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN);
         gc_dirty_mask |= ndkGC_DIRTY_TS;
     }
 
@@ -194,7 +194,11 @@ ndkGC::ndkGC(GdkWindow *drawable, ndkGCvalues *values,
     gc_values_to_xvalues(values, values_mask, &xvalues, &xvalues_mask);
 
     gc_gc = XCreateGC(get_xdisplay(),
-        gdk_x11_drawable_get_xid(drawable), xvalues_mask, &xvalues);
+#ifdef NOTGTK3
+        gdk_x11_drawable_get_xid(window), xvalues_mask, &xvalues);
+#else
+        gdk_x11_window_get_xid(window), xvalues_mask, &xvalues);
+#endif
 #endif
 }
 
@@ -206,10 +210,17 @@ ndkGC::~ndkGC()
         XFreeGC(get_xdisplay(), gc_gc);
 #endif
 
+#if NOTGTK3
     if (gc_clip_region)
         gdk_region_destroy(gc_clip_region);
     if (gc_old_clip_region)
         gdk_region_destroy(gc_old_clip_region);
+#else
+    if (gc_clip_region)
+        cairo_region_destroy(gc_clip_region);
+    if (gc_old_clip_region)
+        cairo_region_destroy(gc_old_clip_region);
+#endif
     if (gc_clip_mask)
         gc_clip_mask->dec_ref();
     if (gc_old_clip_mask)
@@ -252,7 +263,11 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
         }
       
         if (gc_clip_region) {
+#ifdef NOTGTK3
             gdk_region_destroy(gc_clip_region);
+#else
+            cairo_region_destroy(gc_clip_region);
+#endif
             gc_clip_region = 0;
         }
     }
@@ -327,8 +342,8 @@ ndkGC::offset(int x_offset, int y_offset)
         values.v_ts_x_origin = gc_ts_x_origin - x_offset;
         values.v_ts_y_origin = gc_ts_y_origin - y_offset;
       
-        set_values(&values, (ndkGCvaluesMask)(ndkGC_CLIP_X_ORIGIN |
-             ndkGC_CLIP_Y_ORIGIN | ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN));
+        set_values(&values, ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN |
+            ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN);
     }
 }
 
@@ -351,21 +366,37 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
     dst_gc->gc_ts_y_origin = src_gc->gc_ts_y_origin;
 
     if (dst_gc->gc_clip_region)
+#ifdef NOTGTK3
         gdk_region_destroy(dst_gc->gc_clip_region);
+#else
+        cairo_region_destroy(dst_gc->gc_clip_region);
+#endif
 
     if (src_gc->gc_clip_region)
+#ifdef NOTGTK3
         dst_gc->gc_clip_region = gdk_region_copy(src_gc->gc_clip_region);
+#else
+        dst_gc->gc_clip_region = cairo_region_copy(src_gc->gc_clip_region);
+#endif
     else
         dst_gc->gc_clip_region = 0;
 
     dst_gc->gc_region_tag_applied = src_gc->gc_region_tag_applied;
   
     if (dst_gc->gc_old_clip_region)
+#ifdef NOTGTK3
         gdk_region_destroy(dst_gc->gc_old_clip_region);
+#else
+        cairo_region_destroy(dst_gc->gc_old_clip_region);
+#endif
 
     if (src_gc->gc_old_clip_region) {
         dst_gc->gc_old_clip_region =
+#ifdef NOTGTK3
             gdk_region_copy(src_gc->gc_old_clip_region);
+#else
+            cairo_region_copy(src_gc->gc_old_clip_region);
+#endif
     }
     else
         dst_gc->gc_old_clip_region = 0;
@@ -422,6 +453,7 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
     dst_gc->gc_subwindow_mode = src_gc->gc_subwindow_mode;
     dst_gc->gc_exposures = src_gc->gc_exposures;
 }
+// END of public methods.
 
 
 #ifdef WITH_X11
@@ -508,387 +540,10 @@ ndkGC::draw_pango_layout(XID xid, int x, int y, PangoLayout *lout)
     if (wid <= 0 || hei <= 0)
         return;
     ndkPixmap *p = new ndkPixmap((GdkWindow*)0, wid, hei);
-    p->copy_from_pango_layout(this, lout);
+    p->copy_from_pango_layout(this, x, y, lout);
     XCopyArea(get_xdisplay(), p->get_xid(), xid, get_xgc(),
         0, 0, wid, hei, x, y);
     p->dec_ref();
-}
-
-#endif
-
-
-// END of public methods.
-
-
-// Takes ownership of passed-in region.
-//
-void
-ndkGC::gc_set_clip_region_real(GdkRegion *region, bool reset_origin)
-{
-    if (gc_clip_mask) {
-        gc_clip_mask->dec_ref();
-        gc_clip_mask = 0;
-    }
-  
-    if (gc_clip_region)
-        gdk_region_destroy(gc_clip_region);
-    gc_clip_region = region;
-
-    gc_windowing_set_clip_region(region, reset_origin);
-}
-
-
-// Doesn't copy region, allows not to reset origin.
-//
-void
-ndkGC::gc_set_clip_region_internal(GdkRegion *region, bool reset_origin)
-{
-    gc_remove_drawable_clip();
-    gc_set_clip_region_real(region, reset_origin);
-}
-
-
-/*****
-void
-ndkGC::gc_add_drawable_clip(unsigned int region_tag, GdkRegion *region,
-    int offset_x, int offset_y)
-{
-    if (gc_region_tag_applied == region_tag &&
-            offset_x == gc_region_tag_offset_x &&
-            offset_y == gc_region_tag_offset_y)
-        return; // Already appied this drawable region.
-  
-    if (gc_region_tag_applied)
-        gc_remove_drawable_clip();
-
-    region = gdk_region_copy(region);
-    if (offset_x != 0 || offset_y != 0)
-        gdk_region_offset(region, offset_x, offset_y);
-
-    if (gc_clip_mask) {
-        int w = gc_clip_mask->get_width();
-        int h = gc_clip_mask->get_height();
-
-        GdkRectangle r;
-        r.x = 0;
-        r.y = 0;
-        r.width = w;
-        r.height = h;
-
-        // Its quite common to expose areas that are completely in or
-        // outside the region, so we try to avoid allocating bitmaps
-        // that are just fully set or completely unset.
-        //
-        GdkOverlapType overlap = gdk_region_rect_in(region, &r);
-        if (overlap == GDK_OVERLAP_RECTANGLE_PART) {
-            // The region and the mask intersect, create a new clip
-            // mask that includes both areas.
-            gc_old_clip_mask = gc_clip_mask;
-            ndkPixmap *new_mask = new ndkPixmap(gc_old_clip_mask, w, h);
-            ndkGC *tmp_gc = new ndkGC(new_mask, 0, (ndkGCvaluesMask)0);
-
-            GdkColor black = {0, 0, 0, 0};
-            tmp_gc->set_foreground(&black);
-            tmp_gc->draw_rectangle(new_mask, true, 0, 0, w, h);
-            tmp_gc->gc_set_clip_region_internal(region, true);
-            // Takes ownership of region.
-            new_mask->copy_from_pixmap(gc_old_clip_mask, tmp_gc, 0, 0, 0, 0,
-                -1, -1);
-            tmp_gc->set_clip_region(0);
-            set_clip_mask(new_mask);
-            g_object_unref(new_mask);
-        }
-        else if (overlap == GDK_OVERLAP_RECTANGLE_OUT) {
-            // No intersection, set empty clip region.
-            GdkRegion *empty = gdk_region_new();
-
-            gdk_region_destroy(region);
-            gc_old_clip_mask = cairo_surface_reference(gc_clip_mask);
-            gc_clip_region = empty;
-            gc_windowing_set_clip_region(empty, false);
-        }
-        else {
-            // Completely inside region, don't set unnecessary clip.
-            gdk_region_destroy(region);
-            return;
-        }
-    }
-    else {
-        gc_old_clip_region = gc_clip_region;
-        gc_clip_region = region;
-        if (gc_old_clip_region)
-            gdk_region_intersect(region, gc_old_clip_region);
-
-        gc_windowing_set_clip_region(gc_clip_region, false);
-    }
-
-    gc_region_tag_applied = region_tag;
-    gc_region_tag_offset_x = offset_x;
-    gc_region_tag_offset_y = offset_y;
-}
-*****/
-
-
-void
-ndkGC::gc_remove_drawable_clip()
-{
-    if (gc_region_tag_applied) {
-        gc_region_tag_applied = 0;
-        if (gc_old_clip_mask) {
-            set_clip_mask(gc_old_clip_mask);
-            gc_old_clip_mask->dec_ref();
-            gc_old_clip_mask = 0;
-
-            if (gc_clip_region) {
-                g_object_unref(gc_clip_region);
-                gc_clip_region = 0;
-            }
-        }
-        else {
-            gc_set_clip_region_real(gc_old_clip_region, false);
-            gc_old_clip_region = 0;
-        }
-    }
-}
-
-
-namespace {
-    cairo_surface_t *make_stipple_tile_surface(cairo_t *cr,
-        ndkPixmap *stipple, GdkColor *foreground, GdkColor *background)
-    {
-        int width = stipple->get_width();
-        int height = stipple->get_height();
-
-        cairo_surface_t *sfc = cairo_get_target(cr);
-        cairo_surface_t *alpha_surface = cairo_xlib_surface_create(
-            cairo_xlib_surface_get_display(sfc), stipple->get_xid(),
-            cairo_xlib_surface_get_visual(sfc), width, height);
-        cairo_surface_destroy(sfc);
-      
-        cairo_surface_t *surface = cairo_surface_create_similar(
-            cairo_get_target(cr), CAIRO_CONTENT_COLOR_ALPHA, width, height);
-
-        cairo_t *tmp_cr = cairo_create(surface);
-        cairo_set_operator(tmp_cr, CAIRO_OPERATOR_SOURCE);
-        if (background)
-            gdk_cairo_set_source_color(tmp_cr, background);
-        else
-            cairo_set_source_rgba(tmp_cr, 0, 0, 0 ,0);
-        cairo_paint(tmp_cr);
-
-        cairo_set_operator(tmp_cr, CAIRO_OPERATOR_OVER);
-        gdk_cairo_set_source_color(tmp_cr, foreground);
-        cairo_mask_surface(tmp_cr, alpha_surface, 0, 0);
-        cairo_destroy(tmp_cr);
-        cairo_surface_destroy(alpha_surface);
-
-        return (surface);
-    }
-}
-
-
-// override_foreground:  a foreground color to use to override the
-//   foreground color of the GC.
-// override_stipple:  a stipple pattern to use to override the stipple
-//   from the GC.  If this is present and the fill mode of the GC isn't
-//   GC_STIPPLED or GC_OPAQUE_STIPPLED the fill mode will be forced to
-//   GC_STIPPLED.
-// gc_changed:  pass false if the GC has not changed since the last
-//   call to this function.
-// target_drawable:  The drawable you're drawing in.  If passed in
-//   this is used for client side window clip emulation.
-// 
-// Set the attributes of a cairo context to match those of the GC as
-// far as possible.  Some aspects of a GC, such as clip masks and
-// functions other than GDK_COPY are not currently handled.
-//
-void
-ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
-    ndkPixmap  *override_stipple, bool gc_changed,
-    ndkDrawable *target_drawable)
-{
-    gc_remove_drawable_clip();
-
-    ndkGCfill fill = (ndkGCfill)gc_fill;
-    if (override_stipple && fill != ndkGC_OPAQUE_STIPPLED)
-        fill = ndkGC_STIPPLED;
-
-    GdkColor foreground;
-    if (fill != ndkGC_TILED) {
-        if (override_foreground)
-            foreground = *override_foreground;
-        else {
-            foreground.pixel = gc_fg_pixel;
-            gtk_QueryColor(&foreground);
-        }
-    }
-
-    GdkColor background;
-    if (fill == ndkGC_OPAQUE_STIPPLED) {
-        background.pixel = gc_bg_pixel;
-        gtk_QueryColor(&background);
-    }
-
-    ndkPixmap *stipple = 0;
-    switch (fill) {
-    case ndkGC_SOLID:
-        break;
-    case ndkGC_TILED:
-        if (!gc_tile)
-            fill = ndkGC_SOLID;
-        break;
-    case ndkGC_STIPPLED:
-    case ndkGC_OPAQUE_STIPPLED:
-        if (override_stipple)
-            stipple = override_stipple;
-        else
-            stipple = gc_stipple;
-      
-        if (!stipple)
-            fill = ndkGC_SOLID;
-        break;
-    }
-  
-    cairo_surface_t *tile_surface = 0;
-    switch (fill) {
-    case ndkGC_SOLID:
-        gdk_cairo_set_source_color(cr, &foreground);
-        break;
-    case ndkGC_TILED:
-        tile_surface = cairo_xlib_surface_create(get_xdisplay(),
-            gc_tile->get_xid(), gdk_x11_visual_get_xvisual(GRX->Visual()),
-            gc_tile->get_width(), gc_tile->get_height());
-        break;
-    case ndkGC_STIPPLED:
-        tile_surface = make_stipple_tile_surface(cr, stipple, &foreground, 0);
-        break;
-    case ndkGC_OPAQUE_STIPPLED:
-        tile_surface = make_stipple_tile_surface(cr, stipple, &foreground,
-            &background);
-        break;
-    }
-
-    // Tiles, stipples, and clip regions are all specified in device
-    // space, not user space.  For the clip region, we can simply
-    // change the matrix, clip, then clip back, but for the source
-    // pattern, we need to compute the right matrix.
-    //
-    // What we want is:
-    //
-    //     CTM_inverse * Pattern_matrix = Translate(- ts_x, - ts_y)
-    //
-    // (So that ts_x, ts_y in device space is taken to 0,0 in pattern
-    // space). So, pattern_matrix = CTM * Translate(- ts_x, - tx_y);
-
-    if (tile_surface) {
-        cairo_pattern_t *pattern =
-            cairo_pattern_create_for_surface(tile_surface);
-
-        cairo_matrix_t user_to_device;
-        cairo_get_matrix(cr, &user_to_device);
-
-        cairo_matrix_t device_to_pattern;
-        cairo_matrix_init_translate(&device_to_pattern, -gc_ts_x_origin,
-            -gc_ts_y_origin);
-
-        cairo_matrix_t user_to_pattern;
-        cairo_matrix_multiply(&user_to_pattern, &user_to_device,
-            &device_to_pattern);
-      
-        cairo_pattern_set_matrix(pattern, &user_to_pattern);
-        cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
-        cairo_set_source(cr, pattern);
-      
-        cairo_surface_destroy(tile_surface);
-        cairo_pattern_destroy(pattern);
-    }
-
-    if (!gc_changed)
-        return;
-
-    cairo_reset_clip(cr);
-    // The reset above resets the window clip rect, so we want to re-set
-    // that.
-    if (target_drawable && target_drawable->get_state() == DW_WINDOW) {
-        GdkWindow *window = target_drawable->get_window();
-        if (window && GDK_DRAWABLE_GET_CLASS(window)->set_cairo_clip)
-            GDK_DRAWABLE_GET_CLASS(window)->set_cairo_clip(window, cr);
-    }
-    if (gc_clip_region) {
-        cairo_save(cr);
-
-        cairo_identity_matrix(cr);
-        cairo_translate(cr, gc_clip_x_origin, gc_clip_y_origin);
-
-        cairo_new_path(cr);
-        gdk_cairo_region(cr, gc_clip_region);
-
-        cairo_restore(cr);
-
-        cairo_clip(cr);
-    }
-}
-
-
-#ifdef WITH_X11
-
-namespace {
-    // Adapted this from _gdk_region_get_xrectangles from GDK source.
-    //
-    void region_get_xrectangles(const GdkRegion *region,
-        int x_offset, int y_offset, XRectangle **rects, int *n_rects)
-    {
-        struct fakereg  // Must match GdkRegion.
-        {
-            long size;
-            long numRects;
-            GdkSegment *rects;
-            GdkSegment extents;
-        }; 
-        fakereg *reg = (fakereg*)(void*)region;
-        XRectangle *rectangles = g_new(XRectangle, reg->numRects);
-        const GdkSegment *boxes = reg->rects;
-        for (int i = 0; i < reg->numRects; i++) {
-            rectangles[i].x = CLAMP(boxes[i].x1 + x_offset, G_MINSHORT,
-                G_MAXSHORT);
-            rectangles[i].y = CLAMP(boxes[i].y1 + y_offset, G_MINSHORT,
-                G_MAXSHORT);
-            rectangles[i].width = CLAMP(boxes[i].x2 + x_offset, G_MINSHORT,
-                G_MAXSHORT) - rectangles[i].x;
-            rectangles[i].height = CLAMP(boxes[i].y2 + y_offset, G_MINSHORT,
-                G_MAXSHORT) - rectangles[i].y;
-        }
-        *rects = rectangles;
-        *n_rects = reg->numRects;
-    }
-}
-
-
-void
-ndkGC::gc_x11_flush()
-{
-    Display *xdisplay = get_xdisplay();
-    if (gc_dirty_mask & ndkGC_DIRTY_CLIP) {
-        GdkRegion *clip_region = get_clip_region();
-      
-        if (!clip_region)
-            XSetClipOrigin(xdisplay, gc_gc, gc_clip_x_origin, gc_clip_y_origin);
-        else {
-            XRectangle *rectangles;
-            int n_rects;
-            region_get_xrectangles(clip_region, gc_clip_x_origin,
-                gc_clip_y_origin, &rectangles, &n_rects);
-      
-            XSetClipRectangles(xdisplay, gc_gc, 0, 0, rectangles, n_rects,
-                YXBanded);
-            g_free(rectangles);
-        }
-    }
-
-    if (gc_dirty_mask & ndkGC_DIRTY_TS) {
-        XSetTSOrigin(xdisplay, gc_gc, gc_ts_x_origin, gc_ts_y_origin);
-    }
-    gc_dirty_mask = 0;
 }
 
 
@@ -896,16 +551,12 @@ void
 ndkGC::gc_x11_set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
 {
     if (values_mask & (ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN)) {
-        int foo = values_mask;
-        foo &= ~(ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN);
-        values_mask = (ndkGCvaluesMask)foo;
+        values_mask &= ~(ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN);
         gc_dirty_mask |= ndkGC_DIRTY_CLIP;
     }
 
     if (values_mask & (ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN)) {
-        int foo = values_mask;
-        foo &= ~(ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN);
-        values_mask = (ndkGCvaluesMask)foo;
+        values_mask &= ~(ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN);
         gc_dirty_mask |= ndkGC_DIRTY_TS;
     }
 
@@ -1281,9 +932,440 @@ ndkGC::gc_values_to_xvalues(ndkGCvalues *values, ndkGCvaluesMask mask,
     }
 }
 
+#endif
+
+
+#ifdef GDK_IMPORTS
+// Is any of this stuff needed?
+
+// Takes ownership of passed-in region.
+//
+#ifdef NOTGTK3
+void
+ndkGC::gc_set_clip_region_real(GdkRegion *region, bool reset_origin)
+#else
+void
+ndkGC::gc_set_clip_region_real(cairo_region_t *region, bool reset_origin)
+#endif
+{
+    if (gc_clip_mask) {
+        gc_clip_mask->dec_ref();
+        gc_clip_mask = 0;
+    }
+  
+    if (gc_clip_region)
+#ifdef NOTGTK3
+        gdk_region_destroy(gc_clip_region);
+#else
+        cairo_region_destroy(gc_clip_region);
+#endif
+    gc_clip_region = region;
+
+    gc_windowing_set_clip_region(region, reset_origin);
+}
+
+
+// Doesn't copy region, allows not to reset origin.
+//
+#ifdef NOTGTK3
+void
+ndkGC::gc_set_clip_region_internal(GdkRegion *region, bool reset_origin)
+#else
+void
+ndkGC::gc_set_clip_region_internal(cairo_region_t *region, bool reset_origin)
+#endif
+{
+    gc_remove_drawable_clip();
+    gc_set_clip_region_real(region, reset_origin);
+}
+
+
+/*****
+void
+ndkGC::gc_add_drawable_clip(unsigned int region_tag, GdkRegion *region,
+    int offset_x, int offset_y)
+{
+    if (gc_region_tag_applied == region_tag &&
+            offset_x == gc_region_tag_offset_x &&
+            offset_y == gc_region_tag_offset_y)
+        return; // Already appied this drawable region.
+  
+    if (gc_region_tag_applied)
+        gc_remove_drawable_clip();
+
+    region = gdk_region_copy(region);
+    if (offset_x != 0 || offset_y != 0)
+        gdk_region_offset(region, offset_x, offset_y);
+
+    if (gc_clip_mask) {
+        int w = gc_clip_mask->get_width();
+        int h = gc_clip_mask->get_height();
+
+        GdkRectangle r;
+        r.x = 0;
+        r.y = 0;
+        r.width = w;
+        r.height = h;
+
+        // Its quite common to expose areas that are completely in or
+        // outside the region, so we try to avoid allocating bitmaps
+        // that are just fully set or completely unset.
+        //
+        GdkOverlapType overlap = gdk_region_rect_in(region, &r);
+        if (overlap == GDK_OVERLAP_RECTANGLE_PART) {
+            // The region and the mask intersect, create a new clip
+            // mask that includes both areas.
+            gc_old_clip_mask = gc_clip_mask;
+            ndkPixmap *new_mask = new ndkPixmap(gc_old_clip_mask, w, h);
+            ndkGC *tmp_gc = new ndkGC(new_mask, 0, 0);
+
+            GdkColor black = {0, 0, 0, 0};
+            tmp_gc->set_foreground(&black);
+            tmp_gc->draw_rectangle(new_mask, true, 0, 0, w, h);
+            tmp_gc->gc_set_clip_region_internal(region, true);
+            // Takes ownership of region.
+            new_mask->copy_from_pixmap(gc_old_clip_mask, tmp_gc, 0, 0, 0, 0,
+                -1, -1);
+            tmp_gc->set_clip_region(0);
+            set_clip_mask(new_mask);
+            g_object_unref(new_mask);
+        }
+        else if (overlap == GDK_OVERLAP_RECTANGLE_OUT) {
+            // No intersection, set empty clip region.
+            GdkRegion *empty = gdk_region_new();
+
+            gdk_region_destroy(region);
+            gc_old_clip_mask = cairo_surface_reference(gc_clip_mask);
+            gc_clip_region = empty;
+            gc_windowing_set_clip_region(empty, false);
+        }
+        else {
+            // Completely inside region, don't set unnecessary clip.
+            gdk_region_destroy(region);
+            return;
+        }
+    }
+    else {
+        gc_old_clip_region = gc_clip_region;
+        gc_clip_region = region;
+        if (gc_old_clip_region)
+            gdk_region_intersect(region, gc_old_clip_region);
+
+        gc_windowing_set_clip_region(gc_clip_region, false);
+    }
+
+    gc_region_tag_applied = region_tag;
+    gc_region_tag_offset_x = offset_x;
+    gc_region_tag_offset_y = offset_y;
+}
+*****/
+
 
 void
+ndkGC::gc_remove_drawable_clip()
+{
+    if (gc_region_tag_applied) {
+        gc_region_tag_applied = 0;
+        if (gc_old_clip_mask) {
+            set_clip_mask(gc_old_clip_mask);
+            gc_old_clip_mask->dec_ref();
+            gc_old_clip_mask = 0;
+
+            if (gc_clip_region) {
+                g_object_unref(gc_clip_region);
+                gc_clip_region = 0;
+            }
+        }
+        else {
+            gc_set_clip_region_real(gc_old_clip_region, false);
+            gc_old_clip_region = 0;
+        }
+    }
+}
+
+
+namespace {
+    cairo_surface_t *make_stipple_tile_surface(cairo_t *cr,
+        ndkPixmap *stipple, GdkColor *foreground, GdkColor *background)
+    {
+        int width = stipple->get_width();
+        int height = stipple->get_height();
+
+        cairo_surface_t *sfc = cairo_get_target(cr);
+        cairo_surface_t *alpha_surface = cairo_xlib_surface_create(
+            cairo_xlib_surface_get_display(sfc), stipple->get_xid(),
+            cairo_xlib_surface_get_visual(sfc), width, height);
+        cairo_surface_destroy(sfc);
+      
+        cairo_surface_t *surface = cairo_surface_create_similar(
+            cairo_get_target(cr), CAIRO_CONTENT_COLOR_ALPHA, width, height);
+
+        cairo_t *tmp_cr = cairo_create(surface);
+        cairo_set_operator(tmp_cr, CAIRO_OPERATOR_SOURCE);
+        if (background)
+            gdk_cairo_set_source_color(tmp_cr, background);
+        else
+            cairo_set_source_rgba(tmp_cr, 0, 0, 0 ,0);
+        cairo_paint(tmp_cr);
+
+        cairo_set_operator(tmp_cr, CAIRO_OPERATOR_OVER);
+        gdk_cairo_set_source_color(tmp_cr, foreground);
+        cairo_mask_surface(tmp_cr, alpha_surface, 0, 0);
+        cairo_destroy(tmp_cr);
+        cairo_surface_destroy(alpha_surface);
+
+        return (surface);
+    }
+}
+
+
+// override_foreground:  a foreground color to use to override the
+//   foreground color of the GC.
+// override_stipple:  a stipple pattern to use to override the stipple
+//   from the GC.  If this is present and the fill mode of the GC isn't
+//   GC_STIPPLED or GC_OPAQUE_STIPPLED the fill mode will be forced to
+//   GC_STIPPLED.
+// gc_changed:  pass false if the GC has not changed since the last
+//   call to this function.
+// target_drawable:  The drawable you're drawing in.  If passed in
+//   this is used for client side window clip emulation.
+// 
+// Set the attributes of a cairo context to match those of the GC as
+// far as possible.  Some aspects of a GC, such as clip masks and
+// functions other than GDK_COPY are not currently handled.
+//
+void
+ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
+    ndkPixmap  *override_stipple, bool gc_changed,
+    ndkDrawable *target_drawable)
+{
+    gc_remove_drawable_clip();
+
+    ndkGCfill fill = (ndkGCfill)gc_fill;
+    if (override_stipple && fill != ndkGC_OPAQUE_STIPPLED)
+        fill = ndkGC_STIPPLED;
+
+    GdkColor foreground;
+    if (fill != ndkGC_TILED) {
+        if (override_foreground)
+            foreground = *override_foreground;
+        else {
+            foreground.pixel = gc_fg_pixel;
+            gtk_QueryColor(&foreground);
+        }
+    }
+
+    GdkColor background;
+    if (fill == ndkGC_OPAQUE_STIPPLED) {
+        background.pixel = gc_bg_pixel;
+        gtk_QueryColor(&background);
+    }
+
+    ndkPixmap *stipple = 0;
+    switch (fill) {
+    case ndkGC_SOLID:
+        break;
+    case ndkGC_TILED:
+        if (!gc_tile)
+            fill = ndkGC_SOLID;
+        break;
+    case ndkGC_STIPPLED:
+    case ndkGC_OPAQUE_STIPPLED:
+        if (override_stipple)
+            stipple = override_stipple;
+        else
+            stipple = gc_stipple;
+      
+        if (!stipple)
+            fill = ndkGC_SOLID;
+        break;
+    }
+  
+    cairo_surface_t *tile_surface = 0;
+    switch (fill) {
+    case ndkGC_SOLID:
+        gdk_cairo_set_source_color(cr, &foreground);
+        break;
+    case ndkGC_TILED:
+        tile_surface = cairo_xlib_surface_create(get_xdisplay(),
+            gc_tile->get_xid(), gdk_x11_visual_get_xvisual(GRX->Visual()),
+            gc_tile->get_width(), gc_tile->get_height());
+        break;
+    case ndkGC_STIPPLED:
+        tile_surface = make_stipple_tile_surface(cr, stipple, &foreground, 0);
+        break;
+    case ndkGC_OPAQUE_STIPPLED:
+        tile_surface = make_stipple_tile_surface(cr, stipple, &foreground,
+            &background);
+        break;
+    }
+
+    // Tiles, stipples, and clip regions are all specified in device
+    // space, not user space.  For the clip region, we can simply
+    // change the matrix, clip, then clip back, but for the source
+    // pattern, we need to compute the right matrix.
+    //
+    // What we want is:
+    //
+    //     CTM_inverse * Pattern_matrix = Translate(- ts_x, - ts_y)
+    //
+    // (So that ts_x, ts_y in device space is taken to 0,0 in pattern
+    // space). So, pattern_matrix = CTM * Translate(- ts_x, - tx_y);
+
+    if (tile_surface) {
+        cairo_pattern_t *pattern =
+            cairo_pattern_create_for_surface(tile_surface);
+
+        cairo_matrix_t user_to_device;
+        cairo_get_matrix(cr, &user_to_device);
+
+        cairo_matrix_t device_to_pattern;
+        cairo_matrix_init_translate(&device_to_pattern, -gc_ts_x_origin,
+            -gc_ts_y_origin);
+
+        cairo_matrix_t user_to_pattern;
+        cairo_matrix_multiply(&user_to_pattern, &user_to_device,
+            &device_to_pattern);
+      
+        cairo_pattern_set_matrix(pattern, &user_to_pattern);
+        cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
+        cairo_set_source(cr, pattern);
+      
+        cairo_surface_destroy(tile_surface);
+        cairo_pattern_destroy(pattern);
+    }
+
+    if (!gc_changed)
+        return;
+
+    cairo_reset_clip(cr);
+//XXX WTF?
+    // The reset above resets the window clip rect, so we want to re-set
+    // that.
+    if (target_drawable && target_drawable->get_state() == DW_WINDOW) {
+        GdkWindow *window = target_drawable->get_window();
+#ifdef NOTGTK3
+        if (window && GDK_DRAWABLE_GET_CLASS(window)->set_cairo_clip)
+            GDK_DRAWABLE_GET_CLASS(window)->set_cairo_clip(window, cr);
+#else
+//        GdkWindowClass *wc = GDK_WINDOW_GET_CLASS(window);
+//        gdk_window_class_set_cairo_clip(window, cr);
+#endif
+    }
+    if (gc_clip_region) {
+        cairo_save(cr);
+
+        cairo_identity_matrix(cr);
+        cairo_translate(cr, gc_clip_x_origin, gc_clip_y_origin);
+
+        cairo_new_path(cr);
+        gdk_cairo_region(cr, gc_clip_region);
+
+        cairo_restore(cr);
+
+        cairo_clip(cr);
+    }
+}
+
+
+#ifdef WITH_X11
+
+namespace {
+    // Adapted this from _gdk_region_get_xrectangles from GDK source.
+    //
+#ifdef NOTGTK3
+    void region_get_xrectangles(const GdkRegion *region,
+        int x_offset, int y_offset, XRectangle **rects, int *n_rects)
+    {
+        struct fakereg  // Must match GdkRegion.
+        {
+            long size;
+            long numRects;
+            GdkSegment *rects;
+            GdkSegment extents;
+        }; 
+        fakereg *reg = (fakereg*)(void*)region;
+        XRectangle *rectangles = g_new(XRectangle, reg->numRects);
+        const GdkSegment *boxes = reg->rects;
+        for (int i = 0; i < reg->numRects; i++) {
+            rectangles[i].x = CLAMP(boxes[i].x1 + x_offset, G_MINSHORT,
+                G_MAXSHORT);
+            rectangles[i].y = CLAMP(boxes[i].y1 + y_offset, G_MINSHORT,
+                G_MAXSHORT);
+            rectangles[i].width = CLAMP(boxes[i].x2 + x_offset, G_MINSHORT,
+                G_MAXSHORT) - rectangles[i].x;
+            rectangles[i].height = CLAMP(boxes[i].y2 + y_offset, G_MINSHORT,
+                G_MAXSHORT) - rectangles[i].y;
+        }
+        *rects = rectangles;
+        *n_rects = reg->numRects;
+    }
+#else
+    void region_get_xrectangles(const cairo_region_t *region,
+        int x_offset, int y_offset, XRectangle **rects, int *n_rects)
+    {
+        if (!region) {
+            *n_rects = 0;
+            *rects = 0;
+            return;
+        }
+        int nrects = cairo_region_num_rectangles(region);
+        XRectangle *rectangles = g_new(XRectangle, nrects);
+        cairo_rectangle_int_t rect;
+        for (int i = 0; i < nrects; i++) {
+            cairo_region_get_rectangle(region, i, &rect);
+            rectangles[i].x = CLAMP(rect.x + x_offset, G_MINSHORT, G_MAXSHORT);
+            rectangles[i].y = CLAMP(rect.y + y_offset, G_MINSHORT, G_MAXSHORT);
+            rectangles[i].width = CLAMP(rect.width, G_MINSHORT, G_MAXSHORT);
+            rectangles[i].height = CLAMP(rect.height, G_MINSHORT, G_MAXSHORT);
+        }
+        *rects = rectangles;
+        *n_rects = nrects;
+    }
+#endif
+}
+
+
+void
+ndkGC::gc_x11_flush()
+{
+    Display *xdisplay = get_xdisplay();
+    if (gc_dirty_mask & ndkGC_DIRTY_CLIP) {
+#ifdef NOTGTK3
+        GdkRegion *clip_region = get_clip_region();
+#else
+        cairo_region_t *clip_region = get_clip_region();
+#endif
+      
+        if (!clip_region)
+            XSetClipOrigin(xdisplay, gc_gc, gc_clip_x_origin, gc_clip_y_origin);
+        else {
+            XRectangle *rectangles;
+            int n_rects;
+            region_get_xrectangles(clip_region, gc_clip_x_origin,
+                gc_clip_y_origin, &rectangles, &n_rects);
+      
+            XSetClipRectangles(xdisplay, gc_gc, 0, 0, rectangles, n_rects,
+                YXBanded);
+            g_free(rectangles);
+        }
+    }
+
+    if (gc_dirty_mask & ndkGC_DIRTY_TS) {
+        XSetTSOrigin(xdisplay, gc_gc, gc_ts_x_origin, gc_ts_y_origin);
+    }
+    gc_dirty_mask = 0;
+}
+
+
+#ifdef NOTGTK3
+void
 ndkGC::gc_windowing_set_clip_region(const GdkRegion *region, bool reset_origin)
+#else
+void
+ndkGC::gc_windowing_set_clip_region(const cairo_region_t *region,
+    bool reset_origin)
+#endif
 {
     // Unset immediately, to make sure Xlib doesn't keep the XID of an
     // old clip mask cached.
@@ -1316,5 +1398,48 @@ ndkGC::gc_windowing_copy(ndkGC *dst_gc, ndkGC *src_gc)
 
 #endif  // WITH_X11
 
+#endif  // GDK_IMPORTS
+
 #endif  // NDKGC_H
 
+/*
+xxx(GdkColor *clr, GdkVisual &visual)
+{
+    // If bits not used for color are used for something other than padding,
+    // it's likely alpha, so we set them to 1s.
+    //
+  guint padding, unused;
+
+    // Shifting by >= width-of-type isn't defined in C.
+    int depth = gdk_visual_get_depth(visual);
+    unsigned int padding;
+    if (depth >= 32)
+        padding = 0;
+    else
+        padding = ((~(guint32)0)) << depth;
+  
+    unsigned int red_mask;
+    int red_shift;
+    int red_prec;
+    gdk_visual_get_red_pixel_details(visual, &red_mask, &red_shift, &red_prec);
+
+    unsigned int grn_mask;
+    int grn_shift;
+    int grn_prec;
+    gdk_visual_get_green_pixel_details(visual, &grn_mask, &grn_shift, &grn_prec);
+
+    unsigned int blu_mask;
+    int blu_shift;
+    int blu_prec;
+    gdk_visual_get_blue_pixel_details(visual, &blu_mask, &blu_shift, &blu_prec);
+
+    unused = ~ (gdk_visual_get_red_mask(visual) |
+        gdk_visual_get_green_mask(visual) | gdk_visual_get_blue_mask(visual) |
+        padding);
+  
+    clr->pixel = (unused +
+        ((clr->red >> (16 - red_prec)) << red_shift) +
+        ((clr->green >> (16 - green_prec)) << green_shift) +
+        ((clr->blue >> (16 - blue_prec)) << blue_shift));
+}
+*/

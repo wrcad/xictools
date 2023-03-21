@@ -204,8 +204,8 @@ GTKspinBtn::init(double val, double minv, double maxv, int numd)
         set_value(sb_value);
         return (sb_cont);
     }
-    GtkObject *adj = gtk_adjustment_new(val, minv, maxv, del, pgsz, 0);
-    sb_widget = gtk_spin_button_new(GTK_ADJUSTMENT(adj), climb_rate, numd);
+    GtkAdjustment *adj = gtk_adjustment_new(val, minv, maxv, del, pgsz, 0);
+    sb_widget = gtk_spin_button_new(adj, climb_rate, numd);
     gtk_widget_show(sb_widget);
     gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(sb_widget), true);
     return (sb_widget);
@@ -653,12 +653,12 @@ GTKspinBtn::sb_key_press_proc(GtkWidget *widget, GdkEventKey *event, void *arg)
 
     bool key_repeat = (event->time == sb->sb_ev_time);
 
-    if (key == GDK_Up || key == GDK_Down ||
-            key == GDK_Page_Up || key == GDK_Page_Down)
+    if (key == GDK_KEY_Up || key == GDK_KEY_Down ||
+            key == GDK_KEY_Page_Up || key == GDK_KEY_Page_Down)
         sb->set_value(atof(gtk_entry_get_text(GTK_ENTRY(sb->sb_entry))));
 
     switch (key) {
-    case GDK_Up:
+    case GDK_KEY_Up:
         if (gtk_widget_has_focus(widget)) {
             g_signal_stop_emission_by_name(G_OBJECT(widget),
                 "key_press_event");
@@ -682,7 +682,7 @@ GTKspinBtn::sb_key_press_proc(GtkWidget *widget, GdkEventKey *event, void *arg)
         }
         return (0);
 
-    case GDK_Down:
+    case GDK_KEY_Down:
         if (gtk_widget_has_focus(widget)) {
             g_signal_stop_emission_by_name(G_OBJECT(widget),
                 "key_press_event");
@@ -706,7 +706,7 @@ GTKspinBtn::sb_key_press_proc(GtkWidget *widget, GdkEventKey *event, void *arg)
         }
         return (0);
 
-    case GDK_Page_Up:
+    case GDK_KEY_Page_Up:
         if (event->state & GDK_CONTROL_MASK) {
             double diff = sb->sb_maxv - sb->sb_value;
             if (diff > 1e-5)
@@ -720,7 +720,7 @@ GTKspinBtn::sb_key_press_proc(GtkWidget *widget, GdkEventKey *event, void *arg)
         }
         return (1);
 
-    case GDK_Page_Down:
+    case GDK_KEY_Page_Down:
         if (event->state & GDK_CONTROL_MASK) {
             double diff = sb->sb_value - sb->sb_minv;
             if (diff > 1e-5)

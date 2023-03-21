@@ -63,8 +63,10 @@ namespace gtkinterf {
 
         static void trackFontChange(GtkWidget*, int);
         static void setupFont(GtkWidget*, int, bool);
+#ifdef NOTGTK3
         static char *fontNameFromFont(GdkFont*);
         static GdkFont *getWidgetFont(GtkWidget*);
+#endif
         static bool stringBounds(int, const char*, int*, int*);
         static int stringWidth(GtkWidget*, const char*);
         static int stringHeight(GtkWidget*, const char*);
@@ -91,10 +93,16 @@ namespace gtkinterf {
 
         struct sFrec
         {
+#ifdef NOTGTK3
             sFrec() { name = 0; font = 0; cbs = 0; }
+#else
+            sFrec() { name = 0; cbs = 0; }
+#endif
 
             const char *name;
+#ifdef NOTGTK3
             GdkFont *font;  // gtk1 only
+#endif
             FcbRec *cbs;
         } fonts[MAX_NUM_APP_FONTS];
 

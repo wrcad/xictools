@@ -85,7 +85,11 @@ ndkDrawable::set_window(GdkWindow *window)
         d_window = window;
         d_state = DW_WINDOW;
 #ifdef WITH_X11
+#ifdef NOTGTK3
         d_xid = gdk_x11_drawable_get_xid(d_window);
+#else
+        d_xid = gdk_x11_window_get_xid(d_window);
+#endif
 #endif
     }
     else {
@@ -124,13 +128,25 @@ ndkDrawable::set_pixmap(GdkWindow *window)
 void
 ndkDrawable::set_pixmap(ndkPixmap *pixmap)
 {
-    if (!pixmap)
-        return;
     if (d_pixmap)
         d_pixmap->dec_ref();
     d_pixmap = pixmap;
-    d_xid = d_pixmap->get_xid();
-    d_state = DW_PIXMAP;
+    if (pixmap) {
+        d_xid = d_pixmap->get_xid();
+        d_state = DW_PIXMAP;
+    }
+    else if (d_window) {
+#ifdef NOTGTK3
+        d_xid = gdk_x11_drawable_get_xid(d_window);
+#else
+        d_xid = gdk_x11_window_get_xid(d_window);
+#endif
+        d_state = DW_WINDOW;
+    }
+    else {
+        d_xid = None;
+        d_state = DW_NONE;
+    }
 }
 
 
@@ -139,7 +155,11 @@ ndkDrawable::set_draw_to_window()
 {
 #ifdef WITH_X11
     if (d_window) {
+#ifdef NOTGTK3
         d_xid = gdk_x11_drawable_get_xid(d_window);
+#else
+        d_xid = gdk_x11_window_get_xid(d_window);
+#endif
         d_state = DW_WINDOW;
     }
     else {
@@ -213,6 +233,7 @@ ndkDrawable::refresh(ndkGC *gc, GdkEventExpose *pev)
                 d_pixmap->get_width(), d_pixmap->get_height());
             return;
         }
+#ifdef NOTGTK3
         GdkRectangle *rects;
         int nrects;
         gdk_region_get_rectangles(pev->region, &rects, &nrects);
@@ -225,6 +246,17 @@ ndkDrawable::refresh(ndkGC *gc, GdkEventExpose *pev)
             r++;
         }
         g_free(rects);
+#else
+        int nrects = cairo_region_num_rectangles(pev->region);
+        if (nrects <= 0)
+            return;
+        cairo_rectangle_int_t r;
+        while (nrects--) {
+            cairo_region_get_rectangle(pev->region, nrects, &r);
+            d_pixmap->copy_to_window(d_window, gc, r.x, r.y, r.x, r.y,
+                r.width, r.height);
+        }
+#endif
     }
 }
 

@@ -54,18 +54,16 @@ namespace gtkinterf {
         return (gdk_x11_get_default_xdisplay());
     }
 
-
     inline int
     gr_x_screen()
     {
         return (gdk_x11_get_default_screen());
     }
 
-
     inline Window
     gr_x_window(GdkWindow *window)
     {
-        return (GDK_WINDOW_XWINDOW(window));
+        return (gdk_x11_window_get_xid(window));
     }
 
     inline Visual *
@@ -73,22 +71,6 @@ namespace gtkinterf {
     {
         return (GDK_VISUAL_XVISUAL(visual));
     }
-
-#ifdef XGCOK
-// No good with Cairo.
-    inline GC
-    gr_x_gc(GdkGC *gc)
-    {
-        return (gdk_x11_gc_get_xgc(gc));
-    }
-#endif
-
-    inline Colormap
-    gr_x_colormap(GdkColormap *cmap)
-    {
-        return (gdk_x11_colormap_get_xcolormap(cmap));
-    }
-
 
     inline Atom
     gr_x_atom_intern(const char *atom_name, bool only_if_exists)

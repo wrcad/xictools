@@ -509,8 +509,7 @@ gtkMenuConfig::updateDynamicMenus()
             check_separator(ent, submenu);
         }
         else {
-            // XXX a menu
-// Need to implement .scm support.
+            // XXX Need to implement .scm support.
         }
 
 /*XXX

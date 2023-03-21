@@ -444,6 +444,7 @@ void
 GTKedit::restore_backing(void *tw)
 {
 #ifdef NEW_NDK
+    (void)tw;
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, -1, -1);
 #else

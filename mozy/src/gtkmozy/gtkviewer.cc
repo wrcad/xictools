@@ -60,6 +60,8 @@
 #include <gdk/gdkprivate.h>
 #include <gdk/gdkkeysyms.h>
 
+#define NEW_OPT
+#define NEW_LIS
 
 //
 // HTML viewer component for the help viewer.  This contains the
@@ -1809,15 +1811,28 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             GtkWidget *scrolled_win = gtk_scrolled_window_new(0, 0);
             gtk_widget_show(scrolled_win);
 #ifdef NEW_LIS
+            GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
+            GtkWidget *list =
+                gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
+            gtk_tree_view_set_enable_search(GTK_TREE_VIEW(list), false);
+            GtkTreeViewColumn *tvcol = gtk_tree_view_column_new();
+            gtk_tree_view_append_column(GTK_TREE_VIEW(list), tvcol);
+            GtkCellRenderer *rnd = gtk_cell_renderer_text_new();
+            gtk_tree_view_column_pack_start(tvcol, rnd, true);
+            gtk_tree_view_column_add_attribute(tvcol, rnd, "text", 0);
+            GtkTreeSelection *sel =
+                gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
+            gtk_scrolled_window_add_with_viewport(
+                GTK_SCROLLED_WINDOW(scrolled_win), list);
 #else
 #ifdef XXX_DEPREC
             GtkWidget *list = gtk_list_new();
             gtk_scrolled_window_add_with_viewport(
                 GTK_SCROLLED_WINDOW(scrolled_win), list);
-            gtk_widget_show(list);
+#endif
+#endif
+            gtk_widget_show(GTK_WIDGET(list));
             gtk_object_set_user_data(GTK_OBJECT(scrolled_win), list);
-#endif
-#endif
             gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
                 GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
             if (entry->multiple)
@@ -2152,7 +2167,7 @@ gtk_viewer::tk_set_checked(htmForm *entry)
             for (htmForm *e = entry->options; e; e = e->next) {
                 if (e->selected) {
 #ifdef NEW_OPT
-                    gtk_combo_box_set_active(GTK_GOMBO_BOX(entry->widget),
+                    gtk_combo_box_set_active(GTK_COMBO_BOX(entry->widget),
                        cnt);
 #else
 #ifdef XXX_DEPREC
@@ -2274,7 +2289,7 @@ gtk_viewer::show_selection_box(int x, int y, bool nodraw)
         v_gc->draw_rectangle(gtk_widget_get_window(v_draw_area),
             false, xx, yy, w, h);
 #else
-        gdk_draw_rectangle(gtk_widget_get_window(v_draw_areaw)indow,
+        gdk_draw_rectangle(gtk_widget_get_window(v_draw_area),
             v_gc, false, xx, yy, w, h);
 #endif
     }

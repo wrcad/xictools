@@ -196,12 +196,25 @@ if test $enable_profiling = yes; then
 fi
 )
 
+gtklev=2
 dnl --enable-gtk2[=config_dir]
 dnl redundant except for giving pkg-config path
 AC_ARG_ENABLE(gtk2,  [  ]--enable-gtk2[[=config_dir]]           link with gtk2,
 if test $enable_gtk2 != yes -a $enable_gtk2 != no; then
     gtkloc="$enable_gtk2"
     gtklocd="$enable_gtk2/"
+fi
+)
+
+dnl --enable-gtk3[=config_dir]
+dnl redundant except for giving pkg-config path
+AC_ARG_ENABLE(gtk3,  [  ]--enable-gtk3[[=config_dir]]           link with gtk3,
+if test $enable_gtk3 != yes -a $enable_gtk3 != no; then
+    gtkloc="$enable_gtk3"
+    gtklocd="$enable_gtk3/"
+    gtklev=3
+elif test $enable_gtk3 == yes; then
+    gtklev=3
 fi
 )
 
@@ -661,31 +674,58 @@ dnl ***
 dnl *** Graphical interface configuration
 dnl ***
 
-dnl Don't need to filter with newer tools that win-builds.
+dnl Don't need to filter with newer tools than win-builds.
 AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
 if test $have_cfg = yes; then
-    ${gtklocd}pkg-config --exists gtk+-2.0
-    if test $? = 0; then
-        GRPREF=gtk
-        if test -n "$EXESUFFIX" -a $NEED_FILTER = yes; then
-dnl         # Filter needed in Windows, pkg-config adds ^M that chokes g++.
-            tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0 |sed -e s///g`"
-            tkl="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
+    if test $gtklev == 3; then
+        ${gtklocd}pkg-config --exists gtk+-3.0
+        if test $? = 0; then
+            GRPREF=gtk
+            if test -n "$EXESUFFIX" -a $NEED_FILTER = yes; then
+dnl             # Filter needed in Windows, pkg-config adds ^M that chokes g++.
+                tkcf="`${gtklocd}pkg-config --cflags gtk+-3.0 |sed -e s///g`"
+                tkl="`${gtklocd}pkg-config --libs gtk+-3.0 |sed -e s///g`"
+            else
+                tkcf="`${gtklocd}pkg-config --cflags gtk+-3.0`"
+                tkl="`${gtklocd}pkg-config --libs gtk+-3.0`"
+            fi
+            TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
+dnl            TOOLKITCFLAGS="-DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED \
+dnl     -DGTK_DISABLE_DEPRECATED \
+dnl     -DGSEAL_ENABLE"
+            if test $OSNAME = "Darwin" -a $with_quartz = yes; then
+                TOOLKITCFLAGS+="-DWITH_QUARTZ"
+            fi
+            TOOLKITLIBS="$tkl"
         else
-            tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0`"
-            tkl="`${gtklocd}pkg-config --libs gtk+-2.0`"
+            echo "gtk3 not found"
+            exit
         fi
-        TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
-dnl        TOOLKITCFLAGS="-DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED \
-dnl -DGTK_DISABLE_DEPRECATED \
-dnl -DGSEAL_ENABLE"
-        if test $OSNAME = "Darwin" -a $with_quartz = yes; then
-            TOOLKITCFLAGS+="-DWITH_QUARTZ"
-        fi
-        TOOLKITLIBS="$tkl"
+
     else
-        echo "gtk2 not found"
-        exit
+        ${gtklocd}pkg-config --exists gtk+-2.0
+        if test $? = 0; then
+            GRPREF=gtk
+            if test -n "$EXESUFFIX" -a $NEED_FILTER = yes; then
+dnl             # Filter needed in Windows, pkg-config adds ^M that chokes g++.
+                tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0 |sed -e s///g`"
+                tkl="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
+            else
+                tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0`"
+                tkl="`${gtklocd}pkg-config --libs gtk+-2.0`"
+            fi
+            TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
+dnl            TOOLKITCFLAGS="-DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED \
+dnl     -DGTK_DISABLE_DEPRECATED \
+dnl     -DGSEAL_ENABLE"
+            if test $OSNAME = "Darwin" -a $with_quartz = yes; then
+                TOOLKITCFLAGS+="-DWITH_QUARTZ"
+            fi
+            TOOLKITLIBS="$tkl"
+        else
+            echo "gtk2 not found"
+            exit
+        fi
     fi
 else
     echo "pkg-config not found"

@@ -154,7 +154,9 @@ GTKfont::setName(const char *name, int fnum)
 {
     if (fnum > 0 && fnum < num_app_fonts) {
         if (!name || !*name) {
+#ifdef NOTGTK3
             fonts[fnum].font = 0;
+#endif
             getFont(0, fnum);
         }
         else if (!fonts[fnum].name || strcmp(fonts[fnum].name, name)) {

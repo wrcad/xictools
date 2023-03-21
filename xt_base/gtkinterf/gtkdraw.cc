@@ -228,8 +228,15 @@ GTKdraw::Clear()
         return;
     if (gd_dw.get_state() == DW_WINDOW) {
         GdkWindow *window = gd_dw.get_window();
-        if (window)
+        if (window) {
+#ifdef NOTGTK3
             gdk_window_clear(window);
+#else
+        int w = gd_dw.get_width();
+        int h = gd_dw.get_height();
+        Box(0, 0, w, h);
+#endif
+        }
     }
     else if (gd_dw.get_state() == DW_PIXMAP) {
         int w = gd_dw.get_width();
@@ -1128,7 +1135,7 @@ GTKdraw::Text(const char *text, int x, int y, int xform, int, int)
 #ifdef NEW_NDK
     unsigned int bg_pixel = GC()->get_bg_pixel();
     ndkPixmap *p = new ndkPixmap(gd_dw.get_window(), wid, hei);
-    p->copy_from_pango_layout(GC(), lout);
+    p->copy_from_pango_layout(GC(), 0, 0, lout);
 #else
     /*
     gdk_draw_layout(gd_window, GC(), x, y, lout);
@@ -1528,10 +1535,13 @@ GTKdraw::DefineColor(int *pixel, int red, int green, int blue)
     newcolor.blue  = (blue  << 8);
     newcolor.pixel = *pixel;
 
+    //XXX problem FIXME
+#ifdef NOTGTK3
     if (gdk_colormap_alloc_color(GRX->Colormap(), &newcolor, false, true))
         *pixel = newcolor.pixel;
     else
         *pixel = 0;
+#endif
 #ifdef NEW_NDK
     if (gd_gbag && gd_gbag->get_gc())
         GC()->set_foreground(&newcolor);

@@ -330,13 +330,21 @@ ndkImage::ndkImage(GdkWindow *window, int src_x, int src_y,
 {
     im_type = ndkIMAGE_NORMAL;
     im_screen = gdk_window_get_screen(window);
+#ifdef NOTGTK3
     im_visual = gdk_drawable_get_visual(window); // could be NULL
+#else
+    im_visual = gdk_window_get_visual(window); // could be NULL
+#endif
     im_width = width;
     im_height = height;
     im_depth = gdk_visual_get_depth(im_visual);
   
     im_ximage = XGetImage(GDK_SCREEN_XDISPLAY(im_screen),
+#ifdef NOYGTK3
         gdk_x11_drawable_get_xid(window), src_x, src_y, width, height,
+#else
+        gdk_x11_window_get_xid(window), src_x, src_y, width, height,
+#endif
         AllPlanes, ZPixmap);
   
     if (!im_ximage) {
@@ -453,7 +461,11 @@ ndkImage::copy_to_window(GdkWindow *window, ndkGC *gc,
     }
 #endif
     XPutImage(GDK_SCREEN_XDISPLAY(im_screen), 
+#ifdef NOTGTK3
         gdk_x11_drawable_get_xid(window), gc->get_xgc(), im_ximage,
+#else
+        gdk_x11_window_get_xid(window), gc->get_xgc(), im_ximage,
+#endif
         xsrc, ysrc, xdest, ydest, width, height);
 }
 

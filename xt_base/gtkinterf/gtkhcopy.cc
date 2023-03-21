@@ -1013,7 +1013,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
             amin = MM(hcdesc->limits.minwidth);
             amax = MM(hcdesc->limits.maxwidth);
         }
-        GtkObject *adj = gtk_adjustment_new(hc->hc_wid_val, amin, amax, .1,
+        GtkAdjustment *adj = gtk_adjustment_new(hc->hc_wid_val, amin, amax, .1,
             1.0, 0.0);
         entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 2);
         gtk_widget_set_name(entry, "Width");
@@ -1486,28 +1486,28 @@ GTKprintPopup::hc_set_format(GTKbag *wb, int index, bool set_menu)
     hc->hc_resol = newhcdesc->defaults.defresol;
 
     if (hc->hc_wid) {
-        GtkAdjustment *adj = (GtkAdjustment*)gtk_adjustment_new(
+        GtkAdjustment *adj = gtk_adjustment_new(
             MM(newhcdesc->defaults.defwidth), MM(newhcdesc->limits.minwidth),
             MM(newhcdesc->limits.maxwidth), .1, 1.0, 0.0);
         gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON(hc->hc_wid), adj);
         gtk_adjustment_value_changed(adj);
     }
     if (hc->hc_hei) {
-        GtkAdjustment *adj = (GtkAdjustment*)gtk_adjustment_new(
+        GtkAdjustment *adj = gtk_adjustment_new(
             MM(newhcdesc->defaults.defheight), MM(newhcdesc->limits.minheight),
             MM(newhcdesc->limits.maxheight), .1, 1.0, 0.0);
         gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON(hc->hc_hei), adj);
         gtk_adjustment_value_changed(adj);
     }
     if (hc->hc_left) {
-        GtkAdjustment *adj = (GtkAdjustment*)gtk_adjustment_new(
+        GtkAdjustment *adj = gtk_adjustment_new(
             MM(newhcdesc->defaults.defxoff), MM(newhcdesc->limits.minxoff),
             MM(newhcdesc->limits.maxxoff), .1, 1.0, 0.0);
         gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON(hc->hc_left), adj);
         gtk_adjustment_value_changed(adj);
     }
     if (hc->hc_top) {
-        GtkAdjustment *adj = (GtkAdjustment*)gtk_adjustment_new(
+        GtkAdjustment *adj = gtk_adjustment_new(
             MM(newhcdesc->defaults.defyoff), MM(newhcdesc->limits.minyoff),
             MM(newhcdesc->limits.maxyoff), .1, 1.0, 0.0);
         gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON(hc->hc_top), adj);
@@ -1751,13 +1751,13 @@ GTKprintPopup::hc_metric_proc(GtkWidget *caller, void *client_data)
             GTK_SPIN_BUTTON(hc->hc_wid));
         if (wasmetric) {
             d /= MMPI;
-            adj = (GtkAdjustment*)gtk_adjustment_new(d,
+            adj = gtk_adjustment_new(d,
                 gtk_adjustment_get_lower(adj)/MMPI,
                 gtk_adjustment_get_upper(adj)/MMPI, .1, 1.0, 0.0);
         }
         else {
             d *= MMPI;
-            adj = (GtkAdjustment*)gtk_adjustment_new(d,
+            adj = gtk_adjustment_new(d,
                 gtk_adjustment_get_lower(adj)*MMPI,
                 gtk_adjustment_get_upper(adj)*MMPI, .1, 1.0, 0.0);
         }
@@ -1768,13 +1768,13 @@ GTKprintPopup::hc_metric_proc(GtkWidget *caller, void *client_data)
         adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(hc->hc_hei));
         if (wasmetric) {
             d /= MMPI;
-            adj = (GtkAdjustment*)gtk_adjustment_new(d,
+            adj = gtk_adjustment_new(d,
                 gtk_adjustment_get_lower(adj)/MMPI,
                 gtk_adjustment_get_upper(adj)/MMPI, .1, 1.0, 0.0);
         }
         else {
             d *= MMPI;
-            adj = (GtkAdjustment*)gtk_adjustment_new(d,
+            adj = gtk_adjustment_new(d,
                 gtk_adjustment_get_lower(adj)*MMPI,
                 gtk_adjustment_get_upper(adj)*MMPI, .1, 1.0, 0.0);
         }
@@ -1785,13 +1785,13 @@ GTKprintPopup::hc_metric_proc(GtkWidget *caller, void *client_data)
         adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(hc->hc_left));
         if (wasmetric) {
             d /= MMPI;
-            adj = (GtkAdjustment*)gtk_adjustment_new(d,
+            adj = gtk_adjustment_new(d,
                 gtk_adjustment_get_lower(adj)/MMPI,
                 gtk_adjustment_get_upper(adj)/MMPI, .1, 1.0, 0.0);
         }
         else {
             d *= MMPI;
-            adj = (GtkAdjustment*)gtk_adjustment_new(d,
+            adj = gtk_adjustment_new(d,
                 gtk_adjustment_get_lower(adj)*MMPI,
                 gtk_adjustment_get_upper(adj)*MMPI, .1, 1.0, 0.0);
         }
@@ -1802,13 +1802,13 @@ GTKprintPopup::hc_metric_proc(GtkWidget *caller, void *client_data)
         adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(hc->hc_top));
         if (wasmetric) {
             d /= MMPI;
-            adj = (GtkAdjustment*)gtk_adjustment_new(d,
+            adj = gtk_adjustment_new(d,
                 gtk_adjustment_get_lower(adj)*MMPI,
                 gtk_adjustment_get_upper(adj)*MMPI, .1, 1.0, 0.0);
         }
         else {
             d *= MMPI;
-            adj = (GtkAdjustment*)gtk_adjustment_new(d,
+            adj = gtk_adjustment_new(d,
                 gtk_adjustment_get_lower(adj)*MMPI,
                 gtk_adjustment_get_upper(adj)*MMPI, .1, 1.0, 0.0);
         }
@@ -2025,7 +2025,7 @@ GTKprintPopup::hc_key_hdlr(GtkWidget*, GdkEvent *ev, void *client_data)
 {
     GTKbag *wb = static_cast<GTKbag*>(client_data);
     GTKprintPopup *hc = wb->HC();
-    if (hc && ev->key.keyval == GDK_Return) {
+    if (hc && ev->key.keyval == GDK_KEY_Return) {
         hc->hc_go_proc(0, client_data);
         return (true);
     }

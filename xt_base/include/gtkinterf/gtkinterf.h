@@ -149,7 +149,9 @@ namespace gtkinterf {
         void RegisterBigWindow(GtkWidget *window);
         void RegisterBigForeignWindow(unsigned int);
 
+#ifdef NOTGTK3
         GdkColormap *Colormap()     { return (dv_cmap); }
+#endif
         GdkVisual *Visual()         { return (dv_visual); }
         bool IsTrueColor()          { return (dv_true_color); }
         int  LowerWinOffset()       { return (dv_lower_win_offset); }
@@ -182,7 +184,9 @@ namespace gtkinterf {
         int dv_loop_level;
         GTKbag *dv_main_wbag;
         GdkWindow *dv_default_focus_win;
+#ifdef NOTGTK3
         GdkColormap *dv_cmap;
+#endif
         GdkVisual *dv_visual;
         int dv_lower_win_offset;
         bool dv_dual_plane;  // color map has separate highlighting plane

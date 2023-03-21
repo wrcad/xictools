@@ -1468,6 +1468,7 @@ int
 sFpe::fp_redraw_edit_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
 #ifdef NEW_NDK
+    (void)event;
 #else
     if (Fpe->fp_pm_widget == Fpe->fp_editor) {
         GdkEventExpose *pev = (GdkEventExpose*)event;
@@ -1489,6 +1490,7 @@ int
 sFpe::fp_redraw_sample_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
 #ifdef NEW_NDK
+    (void)event;
 #else
     if (Fpe->fp_pm_widget == Fpe->fp_sample) {
         GdkEventExpose *pev = (GdkEventExpose*)event;
@@ -1511,6 +1513,7 @@ sFpe::fp_redraw_store_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 {
     int i = (intptr_t)arg;
 #ifdef NEW_NDK
+    (void)event;
 #else
     if (Fpe->fp_pm_widget == Fpe->fp_stores[i]) {
         GdkEventExpose *pev = (GdkEventExpose*)event;

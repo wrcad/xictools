@@ -320,7 +320,6 @@ sLpalette::update_info(CDl *ldesc)
     if (!GetDrawable()->get_window())
         return;
     int win_width = GetDrawable()->get_width();
-    int win_height = GetDrawable()->get_height();
     GetDrawable()->set_draw_to_pixmap();
 #else
     if (!gd_window)
@@ -335,7 +334,6 @@ sLpalette::update_info(CDl *ldesc)
         if (lp_pixmap)
             gdk_pixmap_unref(lp_pixmap);
         lp_pmap_width = win_width;
-        lp_pmap_height = win_height;
         lp_pixmap = gdk_pixmap_new(gd_window, lp_pmap_width, lp_pmap_height,
             gdk_visual_get_depth(GRX->Visual()));
         lp_pmap_dirty = true;

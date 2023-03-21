@@ -156,7 +156,8 @@ enum ndkGCsubwinMode
     ndkGC_INCLUDE_INFERIORS = 1
 };
 
-enum ndkGCvaluesMask
+typedef unsigned int ndkGCvaluesMask;
+enum
 {
     ndkGC_FOREGROUND    = 1 << 0,
     ndkGC_BACKGROUND    = 1 << 1,
@@ -211,7 +212,7 @@ struct ndkGCvalues
 
 struct ndkGC
 {
-    ndkGC(GdkWindow*, ndkGCvalues* =0, ndkGCvaluesMask =(ndkGCvaluesMask)0);
+    ndkGC(GdkWindow*, ndkGCvalues* =0, ndkGCvaluesMask =0);
     ~ndkGC();
 
     void set_values(ndkGCvalues*, ndkGCvaluesMask);
@@ -295,8 +296,7 @@ struct ndkGC
         ndkGCvalues values;
         values.v_ts_x_origin = x;
         values.v_ts_y_origin = y;
-        set_values(&values,
-            (ndkGCvaluesMask)(ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN));
+        set_values(&values, ndkGC_TS_X_ORIGIN | ndkGC_TS_Y_ORIGIN);
     }
 
 
@@ -309,8 +309,7 @@ struct ndkGC
         ndkGCvalues values;
         values.v_clip_x_origin = x;
         values.v_clip_y_origin = y;
-        set_values(&values,
-            (ndkGCvaluesMask)(ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN));
+        set_values(&values, ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN);
     }
 
     // Sets the clip mask for a graphics context from a bitmap.  The clip
@@ -333,11 +332,12 @@ struct ndkGC
     void set_clip_rectangle(const GdkRectangle *rectangle)
     {
         gc_remove_drawable_clip();
-        GdkRegion *region;
-        if (rectangle)
-            region = gdk_region_rectangle(rectangle);
-        else
-            region = 0;
+#ifdef NOTGDK3
+        GdkRegion *region = rectangle ? gdk_region_rectangle(rectangle) : 0;
+#else
+        cairo_region_t *region = rectangle ?
+            cairo_region_create_rectangle(rectangle) : 0;
+#endif
         gc_set_clip_region_real(region, true);
     }
 
@@ -345,6 +345,7 @@ struct ndkGC
     // The clip mask is interpreted relative to the clip origin.  (See
     // set_clip_origin()).
     //
+#ifdef NOTGTK3
     void set_clip_region(const GdkRegion *region)
     {
         gc_remove_drawable_clip();
@@ -357,6 +358,16 @@ struct ndkGC
     }
 
     GdkRegion *get_clip_region()    { return (gc_clip_region); }
+#else
+    void set_clip_region(const cairo_region_t *region)
+    {
+        gc_remove_drawable_clip();
+        cairo_region_t *copy = region ? cairo_region_copy(region) : 0;;
+        gc_set_clip_region_real(copy, true);
+    }
+
+    cairo_region_t *get_clip_region()    { return (gc_clip_region); }
+#endif
 
 
     // Sets how drawing with this GC on a window will affect child windows
@@ -410,9 +421,8 @@ struct ndkGC
         values.v_cap_style = cap_style;
         values.v_join_style = join_style;
 
-        set_values(&values,
-            (ndkGCvaluesMask)(ndkGC_LINE_WIDTH | ndkGC_LINE_STYLE |
-            ndkGC_CAP_STYLE | ndkGC_JOIN_STYLE));
+        set_values(&values, ndkGC_LINE_WIDTH | ndkGC_LINE_STYLE |
+            ndkGC_CAP_STYLE | ndkGC_JOIN_STYLE);
     }
 
     // dash_offset: the phase of the dash pattern.
@@ -473,6 +483,7 @@ struct ndkGC
     void draw_pango_layout(ndkPixmap *p, int x, int y, PangoLayout *lout)
         { draw_pango_layout(p->get_xid(), x, y, lout); }
 
+#ifdef NOTGTK3
     void draw_line(GdkWindow *d, int x1, int y1, int x2, int y2)
         { draw_line(gdk_x11_drawable_get_xid(d), x1, y1, x2, y2); }
     void draw_arc(GdkWindow *d, bool filled, int x, int y, int w, int h,
@@ -484,6 +495,19 @@ struct ndkGC
         { draw_polygon(gdk_x11_drawable_get_xid(d), filled, pts, npts); }
     void draw_pango_layout(GdkWindow *d, int x, int y, PangoLayout *lout)
         { draw_pango_layout(gdk_x11_drawable_get_xid(d), x, y, lout); }
+#else
+    void draw_line(GdkWindow *d, int x1, int y1, int x2, int y2)
+        { draw_line(gdk_x11_window_get_xid(d), x1, y1, x2, y2); }
+    void draw_arc(GdkWindow *d, bool filled, int x, int y, int w, int h,
+            int as, int ae)
+        { draw_arc(gdk_x11_window_get_xid(d), filled, x, y, w, h, as, ae); }
+    void draw_rectangle(GdkWindow *d, bool filled, int x, int y, int w, int h)
+        { draw_rectangle(gdk_x11_window_get_xid(d), filled, x, y, w, h); }
+    void draw_polygon(GdkWindow *d, bool filled, GdkPoint *pts, int npts)
+        { draw_polygon(gdk_x11_window_get_xid(d), filled, pts, npts); }
+    void draw_pango_layout(GdkWindow *d, int x, int y, PangoLayout *lout)
+        { draw_pango_layout(gdk_x11_window_get_xid(d), x, y, lout); }
+#endif
 
 private:
 #ifdef WITH_X11
@@ -492,22 +516,36 @@ private:
     void draw_rectangle(XID, bool, int, int, int, int);
     void draw_polygon(XID, bool, GdkPoint*, int);
     void draw_pango_layout(XID, int, int, PangoLayout*);
+
+    void gc_x11_set_values(ndkGCvalues*, ndkGCvaluesMask);
+    void gc_x11_get_values(ndkGCvalues*);
+    static void gc_values_to_xvalues(ndkGCvalues*, ndkGCvaluesMask, XGCValues*,
+        unsigned long*);
 #endif
 
+#define GDK_IMPORTS
+#ifdef GDK_IMPORTS
+#ifdef NOTGDK3
     void gc_set_clip_region_real(GdkRegion*, bool);
     void gc_set_clip_region_internal(GdkRegion*, bool);
-    void gc_add_drawable_clip(unsigned int, GdkRegion*, int, int);
+//    void gc_add_drawable_clip(unsigned int, GdkRegion*, int, int);
+#else
+    void gc_set_clip_region_real(cairo_region_t*, bool);
+    void gc_set_clip_region_internal(cairo_region_t*, bool);
+//    void gc_add_drawable_clip(unsigned int, cairo_region_t*, int, int);
+#endif
     void gc_remove_drawable_clip();
     void gc_update_context(cairo_t*, const GdkColor*, ndkPixmap*, bool,
         ndkDrawable*);
 #ifdef WITH_X11
     void gc_x11_flush();
-    void gc_x11_set_values(ndkGCvalues*, ndkGCvaluesMask);
-    void gc_x11_get_values(ndkGCvalues*);
-    static void gc_values_to_xvalues(ndkGCvalues*, ndkGCvaluesMask, XGCValues*,
-        unsigned long*);
+#ifdef NOTGDK3
     void gc_windowing_set_clip_region(const GdkRegion*, bool);
+#else
+    void gc_windowing_set_clip_region(const cairo_region_t*, bool);
+#endif
     static void gc_windowing_copy(ndkGC*, ndkGC*);
+#endif
 #endif
 
     int             gc_clip_x_origin;
@@ -515,8 +553,13 @@ private:
     int             gc_ts_x_origin;
     int             gc_ts_y_origin;
 
+#ifdef NOTGDK3
     GdkRegion       *gc_clip_region;
     GdkRegion       *gc_old_clip_region;
+#else
+    cairo_region_t  *gc_clip_region;
+    cairo_region_t  *gc_old_clip_region;
+#endif
 
     unsigned int    gc_region_tag_applied;
     int             gc_region_tag_offset_x;

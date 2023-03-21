@@ -85,7 +85,11 @@ ndkCursor::set_in_window(GdkWindow *window)
         return;
     Display *xdisplay = gdk_x11_display_get_xdisplay(
         gdk_window_get_display(window));
+#ifdef NOTGTK3
     XDefineCursor(xdisplay, gdk_x11_drawable_get_xid(window), c_xcursor);
+#else
+    XDefineCursor(xdisplay, gdk_x11_window_get_xid(window), c_xcursor);
+#endif
 }
 
 
@@ -96,7 +100,11 @@ ndkCursor::revert_in_window(GdkWindow *window)
         return;
     Display *xdisplay = gdk_x11_display_get_xdisplay(
         gdk_window_get_display(window));
+#ifdef NOTGTK3
     XDefineCursor(xdisplay, gdk_x11_drawable_get_xid(window), None);
+#else
+    XDefineCursor(xdisplay, gdk_x11_window_get_xid(window), None);
+#endif
     gdk_window_set_cursor(window, 0);
 }
 

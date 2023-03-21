@@ -662,8 +662,9 @@ GTKnumPopup::GTKnumPopup(GTKbag *owner, const char *prompt_str,
     pw_mind = mind;
     pw_maxd = maxd;
     pw_value = pw_tmp_value = initd;
-    GtkObject *adj = gtk_adjustment_new(initd, mind, maxd, del, pagesize, 0);
-    pw_text = gtk_spin_button_new(GTK_ADJUSTMENT(adj), climb_rate, numd);
+    GtkAdjustment *adj = gtk_adjustment_new(initd, mind, maxd, del,
+        pagesize, 0);
+    pw_text = gtk_spin_button_new(adj, climb_rate, numd);
     gtk_widget_show(pw_text);
     g_signal_connect(G_OBJECT(pw_text), "changed",
         G_CALLBACK(pw_numer_val_changed), this);
@@ -822,7 +823,7 @@ int
 GTKnumPopup::pw_numer_key_hdlr(GtkWidget*, GdkEvent *ev, void *client_data)
 {
     GTKnumPopup *p = static_cast<GTKnumPopup*>(client_data);
-    if (p && ev->key.keyval == GDK_Return) {
+    if (p && ev->key.keyval == GDK_KEY_Return) {
         gtk_button_clicked(GTK_BUTTON(p->pw_yes));
         return (true);
     }
@@ -1187,7 +1188,7 @@ int
 GTKledPopup::pw_editstr_key(GtkWidget*, GdkEvent *ev, void *client_data)
 {
     GTKledPopup *p = static_cast<GTKledPopup*>(client_data);
-    if (p && ev->key.keyval == GDK_Return) {
+    if (p && ev->key.keyval == GDK_KEY_Return) {
         p->button_hdlr(p->pw_yes);
         return (true);
     }
@@ -2452,16 +2453,12 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
         B1gc = new ndkGC(gr_default_root_window(), 0, (ndkGCvaluesMask)0);
         B1gc->set_subwindow(ndkGC_INCLUDE_INFERIORS);
 
-        GdkColor wp;
-        gdk_color_parse("white", &wp);
-        gdk_colormap_alloc_color(GRX->Colormap(), &wp, false, true);
         GdkColor bp;
-        gdk_color_parse("black", &bp);
-        gdk_colormap_alloc_color(GRX->Colormap(), &bp, false, true);
-        GdkColor clr;
-        clr.pixel = wp.pixel ^ bp.pixel;
-        gtk_QueryColor(&clr);
-        B1gc->set_foreground(&clr);
+        bp.pixel = 0;
+        GdkColor wp;
+        wp.pixel = 0xffffff;
+        B1gc->set_background(&bp);
+        B1gc->set_foreground(&wp);
         B1gc->set_function(ndkGC_XOR);
 #else
         B1hand_cursor = gdk_cursor_new(GDK_HAND2);
@@ -2493,7 +2490,11 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
     B1cf.height = shell_box.y - parent_box.y;
 
 #ifdef NEW_NDK
+#ifdef NOTGTK3
     Drawable xid = gdk_x11_drawable_get_xid(gr_default_root_window());
+#else
+    Drawable xid = gdk_x11_window_get_xid(gr_default_root_window());
+#endif
     int x1 = (int)event->button.x_root - B1box.x;
     int y1 = (int)event->button.y_root - B1box.y;
     int x2 = x1 + B1box.width;

@@ -292,7 +292,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
             break;
         }
 #ifdef NEW_NDK
-        pixmap->copy_from_pango_layout(gc, lout);
+        pixmap->copy_from_pango_layout(gc, tx, ty, lout);
 #else
         gdk_draw_layout(pixmap, gc, tx, ty, lout);
 #endif
@@ -315,7 +315,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
         break;
     }
 #ifdef NEW_NDK
-    pixmap->copy_from_pango_layout(gc, lout);
+    pixmap->copy_from_pango_layout(gc, tx, ty, lout);
 #else
     gdk_draw_layout(pixmap, gc, tx, ty, lout);
 #endif

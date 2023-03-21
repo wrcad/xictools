@@ -392,6 +392,7 @@ sDv::sDv(GRobject caller, stringlist *wl) : GTKdraw(XW_DEFAULT)
         gd_viewport = gtk_drawing_area_new();
         gtk_widget_show(gd_viewport);
         gtk_widget_set_size_request(gd_viewport, 40, CELL_SIZE);
+        gtk_widget_set_double_buffered(gd_viewport, false);
 
         GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);
 
@@ -761,9 +762,6 @@ void
 sDv::render_cell(int which, bool selected)
 {
     SetColor(selected ? dv_selec : dv_backg);
-    Box(dv_entries[which].x - dv_leftofst, SPA, dv_entries[which].width,
-        CELL_SIZE - 2*SPA);
-
     CDcbin cbin;
     if (OIfailed(CD()->OpenExisting(dv_entries[which].name, &cbin)))
         return;
@@ -779,7 +777,7 @@ sDv::render_cell(int which, bool selected)
     int y = (BB.bottom + BB.top)/2;
 
     int vp_height = CELL_SIZE - 2*SPA;
-    int vp_width = dv_entries[which].width - 2;
+    int vp_width = dv_entries[which].width + 2;
 
     WindowDesc wd;
     wd.Attrib()->set_display_labels(Electrical, SLupright);
@@ -798,7 +796,9 @@ sDv::render_cell(int which, bool selected)
     *wd.ClipRect() = wd.Viewport();
 
 #ifdef NEW_NDK
-    GetDrawable()->set_draw_to_pixmap();
+    ndkPixmap *pm = new ndkPixmap(GetDrawable()->get_window(), vp_width,
+        vp_height);
+    GetDrawable()->set_pixmap(pm);
 #else
     GdkPixmap *pm = gdk_pixmap_new(gd_window,  vp_width, vp_height,
         gdk_visual_get_depth(GRX->Visual()));
@@ -808,6 +808,7 @@ sDv::render_cell(int which, bool selected)
 #endif
 
     SetColor(selected ? dv_selec : dv_backg);
+    SetBackground(selected ? dv_selec : dv_backg);
     SetFillpattern(0);
     Box(0, 0, vp_width - 1, vp_height - 1);
 
@@ -857,10 +858,12 @@ sDv::render_cell(int which, bool selected)
     int yoff = SPA;
 
 #ifdef NEW_NDK
-    GetDrawable()->set_draw_to_window();
+    pm->copy_to_window(GetDrawable()->get_window(), GC(),
+        0, 0, xoff+1, yoff, vp_width, vp_height);
+    GetDrawable()->set_pixmap((ndkPixmap*)0);
 #else
     gdk_window_copy_area((GdkWindow*)window_bak, GC(),
-        xoff, yoff, (GdkWindow*)gd_window, 0, 0, vp_width, vp_height);
+        xoff+1, yoff, (GdkWindow*)gd_window, 0, 0, vp_width, vp_height);
 
     gd_window = (GdkWindow*)window_bak;
     gdk_pixmap_unref(pm);

@@ -121,7 +121,9 @@ GTKdev::GTKdev()
     dv_main_wbag = 0;
 
     dv_default_focus_win = 0;
+#ifdef NOTGTK3
     dv_cmap = 0;
+#endif
     dv_visual = 0;
     dv_lower_win_offset = 0;
     dv_dual_plane = false;
@@ -364,7 +366,9 @@ GTKdev::Init(int *argc, char **argv)
 bool
 GTKdev::InitColormap(int, int, bool)
 {
+#ifdef NOTGTK3
     dv_cmap = gdk_colormap_get_system();
+#endif
     dv_visual = gdk_visual_get_system();
 
     // Only true-color visuals are supported, colormaps are history.
@@ -462,7 +466,10 @@ GTKdev::AllocateColor(int *address, int red, int green, int blue)
     newcolor.red   = (red   * 256);
     newcolor.green = (green * 256);
     newcolor.blue  = (blue  * 256);
+//XXX HELP! FIXME
+#ifdef NOTGTK3
     gdk_colormap_alloc_color(dv_cmap, &newcolor, false, true);
+#endif
     *address = newcolor.pixel;
     return (true);
 }
@@ -1290,10 +1297,10 @@ namespace {
         // Don't propagate modifiers, these can cause focus change to
         // the main window in the GTK-2 in RHEL6.
         switch (event->keyval) {
-        case GDK_Shift_L:
-        case GDK_Shift_R:
-        case GDK_Control_L:
-        case GDK_Control_R:
+        case GDK_KEY_Shift_L:
+        case GDK_KEY_Shift_R:
+        case GDK_KEY_Control_L:
+        case GDK_KEY_Control_R:
             return (x);
         default:
             break;
@@ -1320,10 +1327,10 @@ namespace {
         int x = (*key_up_ev)(widget, event);
 
         switch (event->keyval) {
-        case GDK_Shift_L:
-        case GDK_Shift_R:
-        case GDK_Control_L:
-        case GDK_Control_R:
+        case GDK_KEY_Shift_L:
+        case GDK_KEY_Shift_R:
+        case GDK_KEY_Control_L:
+        case GDK_KEY_Control_R:
             return (x);
         default:
             break;
@@ -1415,7 +1422,10 @@ gtkinterf::gtk_NewPopup(GTKbag *w, const char *title,
 void
 gtkinterf::gtk_QueryColor(GdkColor *clr)
 {
+    //XXX FIXME
+#ifdef NOTGTK3
     gdk_colormap_query_color(GRX->Colormap(), clr->pixel, clr);
+#endif
 }
 
 
@@ -1445,9 +1455,12 @@ gtkinterf::gtk_ColorSet(GdkColor *clr, const char *cname)
         }
         else if (!gdk_color_parse(cname, clr))
             return (false);
+//XXX FIXME
+#ifdef NOTGTK3
         GdkColormap *cmap = GRX ? GRX->Colormap() : gdk_colormap_get_system();
         if (gdk_colormap_alloc_color(cmap, clr, false, true))
             return (true);
+#endif
     }
     return (false);
 }

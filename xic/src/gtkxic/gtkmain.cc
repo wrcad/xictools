@@ -1424,7 +1424,6 @@ void
 win_bag::DestroyPixmap()
 {
 #ifdef NEW_NDK
-    //XXX anything to do here?
 #else
     if (wib_window_bak) {
         gd_window = wib_window_bak;
@@ -2533,10 +2532,7 @@ win_bag::target_drag_leave(GtkWidget *widget, GdkDragContext*, guint)
     if (HaveDrag) {
         if (g_object_get_data(G_OBJECT(widget), "drag_hlite")) {
             gtk_drag_unhighlight(widget);
-//XXX does this work? FAILS IN gtkfillp.cc FIXME
-//XXX            gtk_object_remove_data(GTK_OBJECT(widget), "drag_hlite");
-            g_object_replace_data(G_OBJECT(widget), "drag_hlite",
-                0, 0, 0, 0);
+            g_object_set_data(G_OBJECT(widget), "drag_hlite");
         }
         DontRedrawMe = widget;
         HaveDrag = false;
