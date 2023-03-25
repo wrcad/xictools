@@ -485,7 +485,7 @@ int
 sExp::exp_key_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
 {
     sExp *exp = static_cast<sExp*>(client_data);
-    if (exp && event->key.keyval == GDK_Return) {
+    if (exp && event->key.keyval == GDK_KEY_Return) {
         g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
         const char *string = gtk_entry_get_text(GTK_ENTRY(exp->exp_text));
         if (!exp->p_caller || (exp->exp_callback &&

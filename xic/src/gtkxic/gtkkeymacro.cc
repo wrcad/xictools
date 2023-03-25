@@ -205,29 +205,29 @@ cKbMacro::getKeyToMap()
 bool
 cKbMacro::isModifier(unsigned key)
 {
-    return ((key >= GDK_Shift_L && key <= GDK_Hyper_R)
-           || key == GDK_Mode_switch || key == GDK_Num_Lock);
+    return ((key >= GDK_KEY_Shift_L && key <= GDK_KEY_Hyper_R)
+           || key == GDK_KEY_Mode_switch || key == GDK_KEY_Num_Lock);
 }
 
 
 bool
 cKbMacro::isControl(unsigned key)
 {
-    return (key == GDK_Control_L || key == GDK_Control_R);
+    return (key == GDK_KEY_Control_L || key == GDK_KEY_Control_R);
 }
 
 
 bool
 cKbMacro::isShift(unsigned key)
 {
-    return (key == GDK_Shift_L || key == GDK_Shift_R);
+    return (key == GDK_KEY_Shift_L || key == GDK_KEY_Shift_R);
 }
 
 
 bool
 cKbMacro::isAlt(unsigned key)
 {
-    return (key == GDK_Alt_L || key == GDK_Alt_R);
+    return (key == GDK_KEY_Alt_L || key == GDK_KEY_Alt_R);
 }
 
 
@@ -328,8 +328,8 @@ cKbMacro::notMappable(unsigned key, unsigned state)
     if (state)
         return (false);
     switch (key) {
-    case GDK_Return:
-    case GDK_Escape:
+    case GDK_KEY_Return:
+    case GDK_KEY_Escape:
         return (true);
     }
     return (false);
@@ -466,7 +466,7 @@ gtk_keyb::macro_event_handler(GdkEvent *ev, void *arg)
             KbMac()->SaveMacro(km, true);
             return;
         }
-        if (ev->key.keyval == GDK_BackSpace &&
+        if (ev->key.keyval == GDK_KEY_BackSpace &&
                 !(ev->key.state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
             return;
 
@@ -486,14 +486,14 @@ gtk_keyb::macro_event_handler(GdkEvent *ev, void *arg)
         if (km->lastkey == 13 &&
                 !(ev->key.state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
             return;
-        if (ev->key.keyval == GDK_Escape &&
+        if (ev->key.keyval == GDK_KEY_Escape &&
                 !(ev->key.state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))) {
             km->clear_response();
             gtkPkgIf()->RegisterEventHandler(0, 0);
             KbMac()->SaveMacro(km, false);
             return;
         }
-        if (ev->key.keyval == GDK_BackSpace &&
+        if (ev->key.keyval == GDK_KEY_BackSpace &&
                 !(ev->key.state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))) {
             if (!km->response)
                 return;

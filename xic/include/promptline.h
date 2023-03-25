@@ -325,6 +325,9 @@ public:
         // Return pixel width of rendering area, or width in chars
         // if arg is true.
 
+    virtual int win_height() = 0;
+        // Return pixel height of rendering area.
+
     virtual void set_focus() = 0;
         // Set keyboard focus to this.
 
@@ -416,7 +419,8 @@ protected:
     int pe_cwid;                // current cursor width in cols
     int pe_xpos, pe_ypos;       // lower left coords of string
     int pe_offset;              // drawing offset
-    int pe_fntwid;              // font size
+    int pe_fntwid;              // font width (assumed fixed)
+    int pe_fnthei;              // font height
     int pe_column;              // current cursor column
     bool pe_firstinsert;        // true before first insertion or cursor mvmt
     bool pe_indicating;         // true when editing

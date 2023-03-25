@@ -75,7 +75,11 @@ public:
 
 private:
     static int ltab_resize_hdlr(GtkWidget*, GdkEvent*, void*);
+#if GTK_CHECK_VERSION(3,0,0)
+    static int ltab_redraw_hdlr(GtkWidget*, cairo_t*, void*);
+#else
     static int ltab_redraw_hdlr(GtkWidget*, GdkEvent*, void*);
+#endif
     static int ltab_button_down_hdlr(GtkWidget*, GdkEvent*, void*);
     static int ltab_button_up_hdlr(GtkWidget*, GdkEvent*, void*);
     static int ltab_motion_hdlr(GtkWidget*, GdkEvent*, void*);

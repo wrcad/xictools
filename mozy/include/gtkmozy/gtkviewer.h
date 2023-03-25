@@ -254,7 +254,11 @@ namespace gtkinterf {
     protected:
         // event handlers
         void show_selection_box(int, int, bool);
+#if GTK_CHECK_VERSION(3,0,0)
+        bool expose_event_handler(cairo_t*);
+#else
         bool expose_event_handler(GdkEventExpose*);
+#endif
         bool resize_handler(GtkAllocation*);
         bool motion_event_handler(GdkEventMotion*);
         bool button_down_handler(GdkEventButton*);
@@ -267,7 +271,11 @@ namespace gtkinterf {
         void font_change_handler(int);
 
         // GTK signal handlers
+#if GTK_CHECK_VERSION(3,0,0)
+        static int v_expose_event_hdlr(GtkWidget*, cairo_t*, void*);
+#else
         static int v_expose_event_hdlr(GtkWidget*, GdkEvent*, void*);
+#endif
         static void v_resize_hdlr(GtkWidget*, GtkAllocation*, void*);
         static int v_motion_event_hdlr(GtkWidget*, GdkEvent*, void*);
         static int v_button_dn_hdlr(GtkWidget*, GdkEvent*, void*);
@@ -298,9 +306,7 @@ namespace gtkinterf {
         GdkPixmap *v_pixmap_bak;
         GdkGC *v_gc;
 #endif
-        void *v_font;
-            // This is a GdkFont when using X fonts (GTK-1.2), or a
-            // PangoFontDescription when using Pango in GTK-2
+        PangoFontDescription *v_font;
 
         Transaction *v_transact;    // pointer to download context
 #ifdef NEW_NDK

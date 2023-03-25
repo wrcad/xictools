@@ -2490,10 +2490,10 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
     B1cf.height = shell_box.y - parent_box.y;
 
 #ifdef NEW_NDK
-#ifdef NOTGTK3
-    Drawable xid = gdk_x11_drawable_get_xid(gr_default_root_window());
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     Drawable xid = gdk_x11_window_get_xid(gr_default_root_window());
+#else
+    Drawable xid = gdk_x11_drawable_get_xid(gr_default_root_window());
 #endif
     int x1 = (int)event->button.x_root - B1box.x;
     int y1 = (int)event->button.y_root - B1box.y;

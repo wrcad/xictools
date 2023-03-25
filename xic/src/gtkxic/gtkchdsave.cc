@@ -361,7 +361,7 @@ sCs::cs_change_proc(GtkWidget*, void*)
 int
 sCs::cs_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
 {
-    if (Cs && ev->key.keyval == GDK_Return) {
+    if (Cs && ev->key.keyval == GDK_KEY_Return) {
         Cs->button_hdlr(Cs->cs_apply);
         return (true);
     }

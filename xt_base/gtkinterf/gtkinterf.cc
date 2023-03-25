@@ -101,7 +101,11 @@ GTKdev::GTKdev()
         exit (1);
     }
     GRX = this;
+#if GTK_CHECK_VERSION(3,0,0)
+    name = "GTK3";
+#else
     name = "GTK2";
+#endif
     ident = _devGTK_;
     devtype = GRmultiWindow;
 
@@ -121,7 +125,8 @@ GTKdev::GTKdev()
     dv_main_wbag = 0;
 
     dv_default_focus_win = 0;
-#ifdef NOTGTK3
+#if GTK_CHECK_VERSION(3,0,0)
+#else
     dv_cmap = 0;
 #endif
     dv_visual = 0;
@@ -347,10 +352,7 @@ GTKdev::Init(int *argc, char **argv)
             orig_key_press_event = ks->key_press_event;
             ks->key_press_event = my_key_press_event;
         }
-        g_object_ref(entry);
-//XXX        gtk_object_ref(GTK_OBJECT(entry));
         gtk_widget_destroy(entry);
-        g_object_unref(entry);
     }
 
     // In GTK-2.10.4 (RHEL5), there is a spurious(?) g_print message
@@ -366,7 +368,8 @@ GTKdev::Init(int *argc, char **argv)
 bool
 GTKdev::InitColormap(int, int, bool)
 {
-#ifdef NOTGTK3
+#if GTK_CHECK_VERSION(3,0,0)
+#else
     dv_cmap = gdk_colormap_get_system();
 #endif
     dv_visual = gdk_visual_get_system();
@@ -384,10 +387,12 @@ GTKdev::InitColormap(int, int, bool)
     switch (gdk_visual_get_visual_type(dv_visual)) {
     case GDK_VISUAL_STATIC_GRAY:
         printf(msg, "static gray", gdk_visual_get_depth(dv_visual));
-        return (false);
+        dv_true_color = false;
+        break;
     case GDK_VISUAL_STATIC_COLOR:
         printf(msg, "static color", gdk_visual_get_depth(dv_visual));
-        return (false);
+        dv_true_color = false;
+        break;
     case GDK_VISUAL_GRAYSCALE:
         printf(msg, "grayscale", gdk_visual_get_depth(dv_visual));
         dv_true_color = false;
@@ -466,8 +471,9 @@ GTKdev::AllocateColor(int *address, int red, int green, int blue)
     newcolor.red   = (red   * 256);
     newcolor.green = (green * 256);
     newcolor.blue  = (blue  * 256);
-//XXX HELP! FIXME
-#ifdef NOTGTK3
+#if GTK_CHECK_VERSION(3,0,0)
+    ndkGC::query_pixel(&newcolor, GRX->Visual());
+#else
     gdk_colormap_alloc_color(dv_cmap, &newcolor, false, true);
 #endif
     *address = newcolor.pixel;
@@ -767,6 +773,7 @@ namespace {
     void toggle_btn_hdlr(GtkWidget *caller, void*)
     {
         g_signal_stop_emission_by_name(G_OBJECT(caller), "toggled");
+        g_signal_stop_emission_by_name(G_OBJECT(caller), "clicked");
         g_signal_handlers_disconnect_by_func(G_OBJECT(caller),
             (gpointer)toggle_btn_hdlr, 0);
     }
@@ -932,7 +939,8 @@ void
 GTKdev::PointerRootLoc(int *x, int *y)
 {
     GdkModifierType state;
-    gdk_window_get_pointer(0, x, y, &state);
+    GdkWindow *window = gdk_get_default_root_window();
+    gdk_window_get_pointer(window, x, y, &state);
 }
 
 
@@ -1422,8 +1430,9 @@ gtkinterf::gtk_NewPopup(GTKbag *w, const char *title,
 void
 gtkinterf::gtk_QueryColor(GdkColor *clr)
 {
-    //XXX FIXME
-#ifdef NOTGTK3
+#if GTK_CHECK_VERSION(3,0,0)
+    ndkGC::query_rgb(clr, GRX->Visual());
+#else
     gdk_colormap_query_color(GRX->Colormap(), clr->pixel, clr);
 #endif
 }
@@ -1455,8 +1464,10 @@ gtkinterf::gtk_ColorSet(GdkColor *clr, const char *cname)
         }
         else if (!gdk_color_parse(cname, clr))
             return (false);
-//XXX FIXME
-#ifdef NOTGTK3
+#if GTK_CHECK_VERSION(3,0,0)
+        ndkGC::query_pixel(clr, GRX->Visual());
+        return (true);
+#else
         GdkColormap *cmap = GRX ? GRX->Colormap() : gdk_colormap_get_system();
         if (gdk_colormap_alloc_color(cmap, clr, false, true))
             return (true);

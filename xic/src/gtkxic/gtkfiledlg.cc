@@ -209,8 +209,8 @@ sSFD::path_set(const char *path)
 void
 sSFD::go_cb(const char*, void*)
 {
-    XM()->SendKeyEvent(0, GDK_Return, 0, false);
-    XM()->SendKeyEvent(0, GDK_Return, 0, true);
+    XM()->SendKeyEvent(0, GDK_KEY_Return, 0, false);
+    XM()->SendKeyEvent(0, GDK_KEY_Return, 0, true);
 }
 // End of sSFD functions.
 

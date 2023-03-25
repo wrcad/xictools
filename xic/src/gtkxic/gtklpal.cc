@@ -248,9 +248,14 @@ sLpalette::sLpalette(GRobject caller) : GTKdraw(XW_LPAL)
     gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "configure-event",
         G_CALLBACK(lp_resize_hdlr), 0);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(gd_viewport), "draw",
+        G_CALLBACK(lp_redraw_hdlr), 0);
+#else
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
         G_CALLBACK(lp_redraw_hdlr), 0);
+#endif
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "button-press-event",
         G_CALLBACK(lp_button_down_hdlr), 0);
@@ -995,12 +1000,35 @@ sLpalette::lp_resize_hdlr(GtkWidget*, GdkEvent*, void*)
 // Static function.
 // Redraw the drawing area.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+sLpalette::lp_redraw_hdlr(GtkWidget*, cairo_t *cr, void*)
+#else
 int
 sLpalette::lp_redraw_hdlr(GtkWidget*, GdkEvent *event, void*)
+#endif
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    double x1, y1, x2, y2;
+    cairo_clip_extents(cr, &x1, &y1, &x2, &y2);
+    int ix1 = x1;
+    int iy1 = y1;
+    int ix2 = x2;
+    int iy2 = y2;
+    if (ix2 < ix1) {
+        int t = ix1; ix1 = ix2; ix2 = t;
+    }
+    if (iy2 < iy1) {
+        int t = iy1; iy1 = iy2; iy2 = t;
+    }
+    int wid = ix2 - ix1;
+    int hei = iy2 - iy1;
+    Lpal->refresh(ix1, iy1, wid, hei);
+#else
     GdkEventExpose *pev = (GdkEventExpose*)event;
     Lpal->refresh(pev->area.x, pev->area.y,
         pev->area.width, pev->area.height);
+#endif
     return (true);
 }
 

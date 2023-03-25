@@ -67,6 +67,7 @@ public:
     void flash_msg_here(int, int, const char*, ...);
     void save_line();
     int win_width(bool = false);
+    int win_height();
     void set_focus();
     void set_indicate();
     void show_lt_button(bool);
@@ -89,7 +90,13 @@ private:
     static void pe_s_menu_proc(GtkWidget*, void*);
     static int pe_keys_hdlr(GtkWidget*, GdkEvent*, void*);
     static int pe_redraw_idle(void*);
+    static int pe_map_hdlr(GtkWidget*, GdkEvent*, void*);
+    static int pe_resize_hdlr(GtkWidget*, GdkEvent*, void*);
+#if GTK_CHECK_VERSION(3,0,0)
+    static int pe_redraw_hdlr(GtkWidget*, cairo_t*, void*);
+#else
     static int pe_redraw_hdlr(GtkWidget*, GdkEvent*, void*);
+#endif
     static int pe_btn_hdlr(GtkWidget*, GdkEvent*, void*);
     static int pe_enter_hdlr(GtkWidget*, GdkEvent*, void*);
     static int pe_leave_hdlr(GtkWidget*, GdkEvent*, void*);

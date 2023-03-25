@@ -119,9 +119,14 @@ cParam::cParam() : GTKdraw(XW_TEXT)
         G_CALLBACK(readout_btn_hdlr), 0);
     g_signal_connect(G_OBJECT(Viewport()), "button-release-event",
         G_CALLBACK(readout_btn_hdlr), 0);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(Viewport()), "draw",
+        G_CALLBACK(readout_redraw), 0);
+#else
     gtk_widget_add_events(Viewport(), GDK_EXPOSURE_MASK);
     g_signal_connect(G_OBJECT(Viewport()), "expose-event",
         G_CALLBACK(readout_redraw), 0);
+#endif
     g_signal_connect(G_OBJECT(Viewport()), "style-set",
         G_CALLBACK(readout_font_change), 0);
     g_signal_connect(G_OBJECT(Viewport()), "motion-notify-event",
@@ -511,11 +516,19 @@ cParam::readout_motion_hdlr(GtkWidget*, GdkEvent *event, void*)
 // Static function.
 // Expose handler.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+cParam::readout_redraw(GtkWidget*, cairo_t *cr, void*)
+#else
 int
 cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
+#endif
 {
     if (!Param())
         return (false);
+#if GTK_CHECK_VERSION(3,0,0)
+    Param()->GetDrawable()->refresh(Param()->CpyGC(), cr);
+#else
     GdkEventExpose *pev = (GdkEventExpose*)event;
 #ifdef NEW_NDK
     Param()->GetDrawable()->refresh(Param()->CpyGC(), pev);
@@ -532,6 +545,7 @@ cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
         g_free(rects);
     }
 #endif
+#endif
 
     return (true);
 }
@@ -544,7 +558,7 @@ void
 cParam::readout_font_change(GtkWidget*, void*, void*)
 {
 #ifdef NEW_NDK
-    if (Param() && GDK_IS_DRAWABLE(Param()->GetDrawable()->get_window())) {
+    if (Param() && GDK_IS_WINDOW(Param()->GetDrawable()->get_window())) {
 #else
     if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
 #endif

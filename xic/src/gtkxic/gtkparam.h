@@ -175,7 +175,11 @@ private:
 
     static int readout_btn_hdlr(GtkWidget*, GdkEvent*, void*);
     static int readout_motion_hdlr(GtkWidget*, GdkEvent*, void*);
+#if GTK_CHECK_VERSION(3,0,0)
+    static int readout_redraw(GtkWidget*, cairo_t*, void*);
+#else
     static int readout_redraw(GtkWidget*, GdkEvent*, void*);
+#endif
     static void readout_font_change(GtkWidget*, void*, void*);
     static int readout_selection_clear(GtkWidget*, GdkEventSelection*, void*);
     static void readout_selection_get(GtkWidget*, GtkSelectionData*, guint,

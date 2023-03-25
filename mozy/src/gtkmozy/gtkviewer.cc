@@ -187,8 +187,13 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     g_signal_connect(G_OBJECT(v_draw_area), "selection-get",
         G_CALLBACK(v_selection_get_hdlr), this);
 
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(v_draw_area), "draw",
+        G_CALLBACK(v_expose_event_hdlr), this);
+#else
     g_signal_connect(G_OBJECT(v_draw_area), "expose-event",
         G_CALLBACK(v_expose_event_hdlr), this);
+#endif
     g_signal_connect(G_OBJECT(v_draw_area), "motion-notify-event",
         G_CALLBACK(v_motion_event_hdlr), this);
     g_signal_connect(G_OBJECT(v_draw_area), "button-press-event",
@@ -645,7 +650,6 @@ gtk_viewer::tk_set_anchor_cursor(bool set)
         return;
     if (!v_cursor) {
 #ifdef NEW_NDK
-        GdkColormap *colormap = gtk_widget_get_colormap(v_draw_area);
         GdkColor white, black;
         white.pixel = 0xffffff;
         black.pixel = 0;
@@ -755,6 +759,8 @@ gtk_viewer::tk_alloc_font(const char *family, int size, unsigned char style)
         strcpy(buf, f.get_family());
         family = buf;
     }
+//XXX
+fprintf(stderr, "alloc font %s\n", family);
 
     htmFont *font = new htmFont(this, family, size, style);
     PangoFontDescription *pfd = pango_font_description_from_string(family);
@@ -812,6 +818,7 @@ gtk_viewer::tk_alloc_font(const char *family, int size, unsigned char style)
     font->st_thickness = pm->strikethrough_thickness/PANGO_SCALE;
 
     pango_font_metrics_unref(pm);
+
     return (font);
 }
 
@@ -826,7 +833,7 @@ gtk_viewer::tk_release_font(void *f)
 void
 gtk_viewer::tk_set_font(htmFont *font)
 {
-    v_font = font->xfont;
+    v_font = (PangoFontDescription*)font->xfont;
     v_text_yoff = font->ascent;
 }
 
@@ -891,6 +898,8 @@ namespace {
 int
 gtk_viewer::tk_text_width(htmFont *font, const char *text, int len)
 {
+//XXX
+fprintf(stderr, "text width\n");
     gsize xlen;
     if (v_iso8859 || is_utf8((const unsigned char*)text, len)) {
         // Must convert to UTF-8.
@@ -905,12 +914,13 @@ gtk_viewer::tk_text_width(htmFont *font, const char *text, int len)
     pango_layout_set_font_description(pl, pfd);
     pango_layout_set_text(pl, text, xlen);
     if (v_iso8859) {
-        g_free((void*)text);
+//XXX        g_free((void*)text);
     }
 
     int tw, th;
     pango_layout_get_pixel_size(pl, &tw, &th);
     g_object_unref(pl);
+fprintf(stderr, "%s %d %d\n", text, tw, th);
     return (tw);
 }
 
@@ -946,6 +956,8 @@ gtk_viewer::tk_visual_depth()
 htmPixmap *
 gtk_viewer::tk_new_pixmap(int w, int h)
 {
+//xXX
+fprintf(stderr, "newpm %d %d\n", w, h);
 #ifdef NEW_NDK
     ndkPixmap *pm = new ndkPixmap(gtk_widget_get_window(v_draw_area), w, h);
 #else
@@ -1201,6 +1213,11 @@ gtk_viewer::tk_alloc_color(htmColor *clr)
     c.red = clr->red << 8;
     c.green = clr->green << 8;
     c.blue = clr->blue << 8;
+#if GTK_CHECK_VERSION(3,0,0)
+    ndkGC::query_pixel(&c, GRX->Visual());
+    clr->pixel = c.pixel;
+    return (true);
+#else
     bool ret = gdk_colormap_alloc_color(gtk_widget_get_colormap(v_draw_area),
         &c, false, true);
     if (ret) {
@@ -1208,6 +1225,7 @@ gtk_viewer::tk_alloc_color(htmColor *clr)
         return (true);
     }
     return (false);
+#endif
 }
 
 
@@ -1217,6 +1235,14 @@ gtk_viewer::tk_query_colors(htmColor *clrs, unsigned int sz)
     GdkColor *colors = new GdkColor[sz];
     for (unsigned int i = 0; i < sz; i++)
         colors[i].pixel = clrs[i].pixel;
+#if GTK_CHECK_VERSION(3,0,0)
+    for (unsigned int i = 0; i < sz; i++) {
+        ndkGC::query_rgb(colors + 1, GRX->Visual());
+        clrs[i].red   = colors[i].red >> 8;
+        clrs[i].green = colors[i].green >> 8;
+        clrs[i].blue  = colors[i].blue >> 8;
+    }
+#else
     GdkColormap *colormap = gtk_widget_get_colormap(v_draw_area);
     for (unsigned int i = 0; i < sz; i++) {
         gdk_colormap_query_color(colormap, colors[i].pixel, colors + i);
@@ -1224,6 +1250,7 @@ gtk_viewer::tk_query_colors(htmColor *clrs, unsigned int sz)
         clrs[i].green = colors[i].green >> 8;
         clrs[i].blue  = colors[i].blue >> 8;
     }
+#endif
     delete [] colors;
     return (sz);
 }
@@ -1232,6 +1259,10 @@ gtk_viewer::tk_query_colors(htmColor *clrs, unsigned int sz)
 void
 gtk_viewer::tk_free_colors(unsigned int *pixels, unsigned int sz)
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    (void)pixels;
+    (void)sz;
+#else
     if (!sz)
         return;
     GdkColor *c = new GdkColor[sz];
@@ -1239,6 +1270,7 @@ gtk_viewer::tk_free_colors(unsigned int *pixels, unsigned int sz)
         c[i].pixel = pixels[i];
     gdk_colormap_free_colors(gtk_widget_get_colormap(v_draw_area), c, sz);
     delete [] c;
+#endif
 }
 
 
@@ -1251,6 +1283,10 @@ gtk_viewer::tk_get_pixels(unsigned short *reds, unsigned short *greens,
         c.red = reds[i] << 8;
         c.green = greens[i] << 8;
         c.blue = blues[i] << 8;
+#if GTK_CHECK_VERSION(3,0,0)
+        ndkGC::query_pixel(&c, GRX->Visual());
+        pixels[i] = c.pixel;
+#else
         bool ret =
             gdk_colormap_alloc_color(gtk_widget_get_colormap(v_draw_area),
                 &c, false, true);
@@ -1259,6 +1295,7 @@ gtk_viewer::tk_get_pixels(unsigned short *reds, unsigned short *greens,
         else
             // can't happen
             pixels[i] = 0;
+#endif
     }
     return (true);
 }
@@ -1267,6 +1304,8 @@ gtk_viewer::tk_get_pixels(unsigned short *reds, unsigned short *greens,
 void
 gtk_viewer::tk_set_clip_mask(htmPixmap*, htmBitmap *bmap)
 {
+    //XXX
+    return;
 #ifdef NEW_NDK
     v_gc->set_clip_mask((ndkPixmap*)bmap);
 #else
@@ -1289,6 +1328,8 @@ gtk_viewer::tk_set_clip_origin(int x, int y)
 void
 gtk_viewer::tk_set_clip_rectangle(htmRect *r)
 {
+    //XXX
+    return;
 #ifdef NEW_NDK
     if (!r) {
         v_gc->set_clip_rectangle(0);
@@ -1322,7 +1363,8 @@ gtk_viewer::tk_draw_pixmap(int xs, int ys, htmPixmap *pm,
     int x, int y, int w, int h)
 {
 #ifdef NEW_NDK
-    ((ndkPixmap*)pm)->copy_to_pixmap(v_pixmap, v_gc, x, y, xs, ys, w, h);
+    ((ndkPixmap*)pm)->copy_to_pixmap(v_pixmap, v_gc, xs, ys, x, y, w, h);
+//    ((ndkPixmap*)pm)->copy_to_pixmap(v_pixmap, v_gc, x, y, xs, ys, w, h);
 #else
     gdk_window_copy_area(v_pixmap, v_gc, xs, ys, (GdkPixmap*)pm, x, y, w, h);
 #endif
@@ -1442,14 +1484,15 @@ gtk_viewer::tk_draw_line(int x1, int y1, int x2, int y2)
 void
 gtk_viewer::tk_draw_text(int x, int y, const char *text, int len)
 {
+//XXX
+fprintf(stderr, "draw text\n");
     if (v_iso8859 || is_utf8((const unsigned char*)text, len)) {
         // Must convert to UTF-8.
         gsize xlen;
         text = g_convert(text, len, "UTF-8", "ISO-8859-1", 0, &xlen, 0);
     }
 
-    PangoFontDescription *pfd = (PangoFontDescription*)v_font;
-    gtk_widget_modify_font(v_draw_area, pfd);
+    gtk_widget_modify_font(v_draw_area, v_font);
     PangoLayout *lout = gtk_widget_create_pango_layout(v_draw_area, text);
     if (v_iso8859) {
         g_free((void*)text);
@@ -1505,7 +1548,7 @@ namespace {
     input_key_hdlr(GtkWidget *widget, GdkEvent *event, htmForm *entry)
     {
         htmFormData *form = entry->parent;
-        if (event->key.keyval == GDK_Return) {
+        if (event->key.keyval == GDK_KEY_Return) {
             for (htmForm *e = entry->next; e; e = e->next) {
                 if (e->type == FORM_TEXT) {
                     // found next text entry, give it the focus
@@ -1832,7 +1875,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
 #endif
 #endif
             gtk_widget_show(GTK_WIDGET(list));
-            gtk_object_set_user_data(GTK_OBJECT(scrolled_win), list);
+            g_object_set_data(G_OBJECT(scrolled_win), "user", list);
             gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
                 GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
             if (entry->multiple)
@@ -2296,6 +2339,48 @@ gtk_viewer::show_selection_box(int x, int y, bool nodraw)
 }
 
 
+#if GTK_CHECK_VERSION(3,0,0)
+
+bool
+gtk_viewer::expose_event_handler(cairo_t *cr)
+{
+    if (!v_seen_expose && !v_pixmap) {
+        v_pixmap = new ndkPixmap(gtk_widget_get_window(v_draw_area),
+            v_width, v_height);
+        v_gc = new ndkGC(gtk_widget_get_window(v_draw_area));
+        htmColor c;
+        tk_parse_color("white", &c);
+        tk_set_foreground(c.pixel);
+        v_gc->draw_rectangle(v_pixmap, true, 0, 0, v_width, v_height);
+    }
+    setReady();
+
+    double x1, y1, x2, y2;
+    cairo_clip_extents(cr, &x1, &y1, &x2, &y2);
+fprintf(stderr, "%g %g %g %g\n", x1, y1, x2, y2);
+    int ix1 = x1;
+    int iy1 = y1;
+    int ix2 = x2;
+    int iy2 = y2;
+    if (ix2 < ix1) {
+        int t = ix1; ix1 = ix2; ix2 = t;
+    }
+    if (iy2 < iy1) {
+        int t = iy1; iy1 = iy2; iy2 = t;
+    }
+    int wid = ix2 - ix1;
+    int hei = iy2 - iy1;
+
+//XXX
+fprintf(stderr, "copy %d %d %d %d\n", ix1, iy1, wid, hei);
+    v_pixmap->copy_to_window(gtk_widget_get_window(v_draw_area), v_gc,
+        ix1, iy1, ix1, iy1, wid, hei);
+    v_seen_expose = true;
+    return (true);
+}
+
+#else
+
 bool
 gtk_viewer::expose_event_handler(GdkEventExpose *event)
 {
@@ -2331,6 +2416,7 @@ gtk_viewer::expose_event_handler(GdkEventExpose *event)
     v_seen_expose = true;
     return (true);
 }
+#endif
 
 
 bool
@@ -2346,9 +2432,9 @@ gtk_viewer::resize_handler(GtkAllocation *a)
     if (a->width != v_width || a->height != v_height) {
         v_width = a->width;
         v_height = a->height;
-//XXX
-    if (!gtk_widget_get_window(v_draw_area))
-        return true;
+
+        if (!gtk_widget_get_window(v_draw_area))
+            return true;
 
 #ifdef NEW_NDK
         ndkPixmap *pm = (ndkPixmap*)tk_new_pixmap(v_width, v_height);
@@ -2652,6 +2738,18 @@ gtk_viewer::v_scroll_event_hdlr(GtkWidget*, GdkEvent *event, void *vp)
 
 // Private static GTK signal handler.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+gtk_viewer::v_expose_event_hdlr(GtkWidget*, cairo_t *cr, void *vp)
+{
+    gtk_viewer *v = static_cast<gtk_viewer*>(vp);
+    if (v)
+        return (v->expose_event_handler(cr));
+    return (0);
+}
+
+#else
+
 int
 gtk_viewer::v_expose_event_hdlr(GtkWidget*, GdkEvent *event, void *vp)
 {
@@ -2660,6 +2758,7 @@ gtk_viewer::v_expose_event_hdlr(GtkWidget*, GdkEvent *event, void *vp)
         return (v->expose_event_handler((GdkEventExpose*)event));
     return (0);
 }
+#endif
 
 
 // Private static GTK signal handler.
@@ -2718,11 +2817,11 @@ gtk_viewer::v_key_dn_hdlr(GtkWidget*, GdkEvent *event, void *vp)
     if (!v)
         return (0);
     GdkEventKey *kev = (GdkEventKey*)event;
-    if (kev->keyval == GDK_Down || kev->keyval == GDK_Up) {
+    if (kev->keyval == GDK_KEY_Down || kev->keyval == GDK_KEY_Up) {
         if (v->v_vsb && v->v_vsba) {
             GtkAdjustment *adj = (GtkAdjustment*)v->v_vsba;
             double nval = gtk_adjustment_get_value(adj) +
-                ((kev->keyval == GDK_Up) ?
+                ((kev->keyval == GDK_KEY_Up) ?
                     -gtk_adjustment_get_page_increment(adj) / 4 :
                     gtk_adjustment_get_page_increment(adj) / 4);
             if (nval < gtk_adjustment_get_lower(adj))
@@ -2736,11 +2835,11 @@ gtk_viewer::v_key_dn_hdlr(GtkWidget*, GdkEvent *event, void *vp)
         }
         return (1);
     }
-    if (kev->keyval == GDK_Next || kev->keyval == GDK_Prior) {
+    if (kev->keyval == GDK_KEY_Next || kev->keyval == GDK_KEY_Prior) {
         if (v->v_vsb && v->v_vsba) {
             GtkAdjustment *adj = (GtkAdjustment*)v->v_vsba;
             double nval = gtk_adjustment_get_value(adj) +
-                ((kev->keyval == GDK_Prior) ?
+                ((kev->keyval == GDK_KEY_Prior) ?
                     -gtk_adjustment_get_page_increment(adj) :
                     gtk_adjustment_get_page_increment(adj));
             if (nval < gtk_adjustment_get_lower(adj))
@@ -2754,14 +2853,14 @@ gtk_viewer::v_key_dn_hdlr(GtkWidget*, GdkEvent *event, void *vp)
         }
         return (1);
     }
-    if (kev->keyval == GDK_Home) {
+    if (kev->keyval == GDK_KEY_Home) {
         if (v->v_vsb && v->v_vsba) {
             GtkAdjustment *adj = (GtkAdjustment*)v->v_vsba;
             gtk_adjustment_set_value(adj, gtk_adjustment_get_lower(adj));
         }
         return (1);
     }
-    if (kev->keyval == GDK_End) {
+    if (kev->keyval == GDK_KEY_End) {
         if (v->v_vsb && v->v_vsba) {
             GtkAdjustment *adj = (GtkAdjustment*)v->v_vsba;
             gtk_adjustment_set_value(adj, gtk_adjustment_get_upper(adj) -
@@ -2769,11 +2868,11 @@ gtk_viewer::v_key_dn_hdlr(GtkWidget*, GdkEvent *event, void *vp)
         }
         return (1);
     }
-    if (kev->keyval == GDK_Left || kev->keyval == GDK_Right) {
+    if (kev->keyval == GDK_KEY_Left || kev->keyval == GDK_KEY_Right) {
         if (v->v_hsb && v->v_hsba) {
             GtkAdjustment *adj = (GtkAdjustment*)v->v_hsba;
             double nval = gtk_adjustment_get_value(adj) +
-                ((kev->keyval == GDK_Left) ?
+                ((kev->keyval == GDK_KEY_Left) ?
                     -gtk_adjustment_get_page_increment(adj) / 4 :
                     gtk_adjustment_get_page_increment(adj) / 4);
             if (nval < gtk_adjustment_get_lower(adj))

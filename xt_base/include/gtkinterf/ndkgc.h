@@ -457,8 +457,6 @@ struct ndkGC
     GdkScreen *get_screen()         { return (gc_screen);}
 #endif
 
-    void offset(int, int);
-    static void copy(ndkGC*, ndkGC*);
     void draw_line(ndkDrawable *d, int x1, int y1, int x2, int y2)
         { draw_line(d->get_xid(), x1, y1, x2, y2); }
     void draw_arc(ndkDrawable *d, bool filled, int x, int y, int w, int h,
@@ -508,6 +506,16 @@ struct ndkGC
     void draw_pango_layout(GdkWindow *d, int x, int y, PangoLayout *lout)
         { draw_pango_layout(gdk_x11_window_get_xid(d), x, y, lout); }
 #endif
+
+    void offset(int, int);
+    static void copy(ndkGC*, ndkGC*);
+
+    //XXX for convenience, these can go somewhere else.
+    static void query_rgb(GdkColor*, GdkVisual*);
+    static void query_pixel(GdkColor*, GdkVisual*);
+
+    void clear(GdkWindow*);
+    void clear(ndkPixmap*);
 
 private:
 #ifdef WITH_X11

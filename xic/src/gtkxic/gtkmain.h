@@ -204,7 +204,11 @@ protected:
 
     static int map_hdlr(GtkWidget*, GdkEvent*, void*);
     static int resize_hdlr(GtkWidget*, GdkEvent*, void*);
+#if GTK_CHECK_VERSION(3,0,0)
+    static int redraw_hdlr(GtkWidget*, cairo_t*, void*);
+#else
     static int redraw_hdlr(GtkWidget*, GdkEvent*, void*);
+#endif
     static int key_dn_hdlr(GtkWidget*, GdkEvent*, void*);
     static int key_up_hdlr(GtkWidget*, GdkEvent*, void*);
     static int button_dn_hdlr(GtkWidget*, GdkEvent*, void*);
@@ -232,7 +236,6 @@ protected:
     GtkWidget *wib_keyspressed; // key press history
     int wib_keypos;             // index into keys
     char wib_keys[CBUFMAX + 3]; // keys pressed
-    bool wib_resized;           // window was just resized
 
 #ifdef NEW_NDK
 #else

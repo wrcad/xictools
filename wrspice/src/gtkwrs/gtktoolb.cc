@@ -3029,9 +3029,9 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
             gtk_box_pack_start(GTK_BOX(hbox), entry2, true, true, 2);
         }
         else {
-            GtkObject *adj = gtk_adjustment_new(val, kwstruct->min,
+            GtkAdjustment *adj = gtk_adjustment_new(val, kwstruct->min,
                 kwstruct->max, del, pgsize, 0);
-            entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), rate, numd);
+            entry = gtk_spin_button_new(adj, rate, numd);
             gtk_widget_show(entry);
             gtk_widget_set_size_request(entry, 80, -1);
             gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), true);
@@ -3039,7 +3039,7 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
             if (mode == KW_INT_2) {
                 adj = gtk_adjustment_new(val, kwstruct->min, kwstruct->max,
                     del, pgsize, 0);
-                entry2 = gtk_spin_button_new(GTK_ADJUSTMENT(adj), rate, numd);
+                entry2 = gtk_spin_button_new(adj, rate, numd);
                 gtk_widget_show(entry2);
                 gtk_widget_set_size_request(entry2, 80, -1);
                 gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry2), true);

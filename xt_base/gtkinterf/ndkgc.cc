@@ -161,11 +161,7 @@ ndkGC::ndkGC(GdkWindow *window, ndkGCvalues *values,
     if (!window)
         window = gdk_get_default_root_window();
     gc_screen = gdk_window_get_screen(window);
-#ifdef NOTGTK3
-    gc_depth = gdk_drawable_get_depth(window);
-#else
     gc_depth = gdk_visual_get_depth(gdk_window_get_visual(window));
-#endif
 
     gc_dirty_mask = 0;
     if (values_mask & (ndkGC_CLIP_X_ORIGIN | ndkGC_CLIP_Y_ORIGIN)) {
@@ -194,10 +190,10 @@ ndkGC::ndkGC(GdkWindow *window, ndkGCvalues *values,
     gc_values_to_xvalues(values, values_mask, &xvalues, &xvalues_mask);
 
     gc_gc = XCreateGC(get_xdisplay(),
-#ifdef NOTGTK3
-        gdk_x11_drawable_get_xid(window), xvalues_mask, &xvalues);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         gdk_x11_window_get_xid(window), xvalues_mask, &xvalues);
+#else
+        gdk_x11_drawable_get_xid(window), xvalues_mask, &xvalues);
 #endif
 #endif
 }
@@ -210,16 +206,16 @@ ndkGC::~ndkGC()
         XFreeGC(get_xdisplay(), gc_gc);
 #endif
 
-#if NOTGTK3
-    if (gc_clip_region)
-        gdk_region_destroy(gc_clip_region);
-    if (gc_old_clip_region)
-        gdk_region_destroy(gc_old_clip_region);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     if (gc_clip_region)
         cairo_region_destroy(gc_clip_region);
     if (gc_old_clip_region)
         cairo_region_destroy(gc_old_clip_region);
+#else
+    if (gc_clip_region)
+        gdk_region_destroy(gc_clip_region);
+    if (gc_old_clip_region)
+        gdk_region_destroy(gc_old_clip_region);
 #endif
     if (gc_clip_mask)
         gc_clip_mask->dec_ref();
@@ -263,10 +259,10 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
         }
       
         if (gc_clip_region) {
-#ifdef NOTGTK3
-            gdk_region_destroy(gc_clip_region);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
             cairo_region_destroy(gc_clip_region);
+#else
+            gdk_region_destroy(gc_clip_region);
 #endif
             gc_clip_region = 0;
         }
@@ -366,17 +362,17 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
     dst_gc->gc_ts_y_origin = src_gc->gc_ts_y_origin;
 
     if (dst_gc->gc_clip_region)
-#ifdef NOTGTK3
-        gdk_region_destroy(dst_gc->gc_clip_region);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         cairo_region_destroy(dst_gc->gc_clip_region);
+#else
+        gdk_region_destroy(dst_gc->gc_clip_region);
 #endif
 
     if (src_gc->gc_clip_region)
-#ifdef NOTGTK3
-        dst_gc->gc_clip_region = gdk_region_copy(src_gc->gc_clip_region);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         dst_gc->gc_clip_region = cairo_region_copy(src_gc->gc_clip_region);
+#else
+        dst_gc->gc_clip_region = gdk_region_copy(src_gc->gc_clip_region);
 #endif
     else
         dst_gc->gc_clip_region = 0;
@@ -384,18 +380,18 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
     dst_gc->gc_region_tag_applied = src_gc->gc_region_tag_applied;
   
     if (dst_gc->gc_old_clip_region)
-#ifdef NOTGTK3
-        gdk_region_destroy(dst_gc->gc_old_clip_region);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         cairo_region_destroy(dst_gc->gc_old_clip_region);
+#else
+        gdk_region_destroy(dst_gc->gc_old_clip_region);
 #endif
 
     if (src_gc->gc_old_clip_region) {
         dst_gc->gc_old_clip_region =
-#ifdef NOTGTK3
-            gdk_region_copy(src_gc->gc_old_clip_region);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
             cairo_region_copy(src_gc->gc_old_clip_region);
+#else
+            gdk_region_copy(src_gc->gc_old_clip_region);
 #endif
     }
     else
@@ -452,6 +448,99 @@ ndkGC::copy(ndkGC *dst_gc, ndkGC *src_gc)
     dst_gc->gc_bg_pixel = src_gc->gc_bg_pixel;
     dst_gc->gc_subwindow_mode = src_gc->gc_subwindow_mode;
     dst_gc->gc_exposures = src_gc->gc_exposures;
+}
+
+
+// Static function.
+// Fill in the colors, given the pixel.
+//
+void
+ndkGC::query_rgb(GdkColor *clr, GdkVisual *visual)
+{
+    int type = gdk_visual_get_visual_type(visual);
+    if (type != GDK_VISUAL_TRUE_COLOR && type != GDK_VISUAL_DIRECT_COLOR) {
+        clr->red = 0;
+        clr->green = 0;
+        clr->blue = 0;
+        return;
+    }
+
+    unsigned int mask;
+    int shift, prec;
+    gdk_visual_get_red_pixel_details(visual, &mask, &shift, &prec);
+    clr->red = 65535 * (double)((clr->pixel & mask) >> shift) /
+        ((1 << prec) - 1);
+
+    gdk_visual_get_green_pixel_details(visual, &mask, &shift, &prec);
+    clr->green = 65535 * (double)((clr->pixel & mask) >> shift) /
+        ((1 << prec) - 1);
+
+    gdk_visual_get_blue_pixel_details(visual, &mask, &shift, &prec);
+    clr->blue = 65535 * (double)((clr->pixel & mask) >> shift) /
+        ((1 << prec) - 1);
+}
+
+
+// Static function.
+// Find the pixel given the colors.
+//
+void
+ndkGC::query_pixel(GdkColor *clr, GdkVisual *visual)
+{
+    int type = gdk_visual_get_visual_type(visual);
+    if (type != GDK_VISUAL_TRUE_COLOR && type != GDK_VISUAL_DIRECT_COLOR) {
+        clr->pixel = 0;
+        return;
+    }
+
+    // Shifting by >= width-of-type isn't defined in C.
+    int depth = gdk_visual_get_depth(visual);
+    unsigned int padding = depth < 32 ? (~(guint32)0) << depth : 0;
+  
+    unsigned int mask;
+    int shift, prec;
+    gdk_visual_get_red_pixel_details(visual, &mask, &shift, &prec);
+    clr->pixel = ((clr->red >> (16 - prec)) << shift);
+    unsigned int unused = padding;
+    unused |= mask;
+
+    gdk_visual_get_green_pixel_details(visual, &mask, &shift, &prec);
+    clr->pixel += ((clr->green >> (16 - prec)) << shift);
+    unused |= mask;
+
+    gdk_visual_get_blue_pixel_details(visual, &mask, &shift, &prec);
+    clr->pixel += ((clr->blue >> (16 - prec)) << shift);
+    unused |= mask;
+
+    // If bits not used for color are used for something other than padding,
+    // it's likely alpha, so we set them to 1s.
+    //
+    unused = ~unused;
+    clr->pixel += unused;
+}
+
+
+void
+ndkGC::clear(GdkWindow *window)
+{
+    GdkColor clr;
+    clr.pixel = gc_bg_pixel;
+    set_foreground(&clr);
+    set_fill(ndkGC_SOLID);
+    draw_rectangle(window, true, 0, 0, gdk_window_get_width(window),
+        gdk_window_get_height(window));
+}
+
+
+void
+ndkGC::clear(ndkPixmap *pixmap)
+{
+    GdkColor clr;
+    clr.pixel = gc_bg_pixel;
+    set_foreground(&clr);
+    set_fill(ndkGC_SOLID);
+    draw_rectangle(pixmap, true, 0, 0, pixmap->get_width(),
+        pixmap->get_height());
 }
 // END of public methods.
 
@@ -940,12 +1029,12 @@ ndkGC::gc_values_to_xvalues(ndkGCvalues *values, ndkGCvaluesMask mask,
 
 // Takes ownership of passed-in region.
 //
-#ifdef NOTGTK3
-void
-ndkGC::gc_set_clip_region_real(GdkRegion *region, bool reset_origin)
-#else
+#if GTK_CHECK_VERSION(3,0,0)
 void
 ndkGC::gc_set_clip_region_real(cairo_region_t *region, bool reset_origin)
+#else
+void
+ndkGC::gc_set_clip_region_real(GdkRegion *region, bool reset_origin)
 #endif
 {
     if (gc_clip_mask) {
@@ -954,10 +1043,10 @@ ndkGC::gc_set_clip_region_real(cairo_region_t *region, bool reset_origin)
     }
   
     if (gc_clip_region)
-#ifdef NOTGTK3
-        gdk_region_destroy(gc_clip_region);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         cairo_region_destroy(gc_clip_region);
+#else
+        gdk_region_destroy(gc_clip_region);
 #endif
     gc_clip_region = region;
 
@@ -967,12 +1056,12 @@ ndkGC::gc_set_clip_region_real(cairo_region_t *region, bool reset_origin)
 
 // Doesn't copy region, allows not to reset origin.
 //
-#ifdef NOTGTK3
-void
-ndkGC::gc_set_clip_region_internal(GdkRegion *region, bool reset_origin)
-#else
+#if GTK_CHECK_VERSION(3,0,0)
 void
 ndkGC::gc_set_clip_region_internal(cairo_region_t *region, bool reset_origin)
+#else
+void
+ndkGC::gc_set_clip_region_internal(GdkRegion *region, bool reset_origin)
 #endif
 {
     gc_remove_drawable_clip();
@@ -1239,17 +1328,17 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
         return;
 
     cairo_reset_clip(cr);
-//XXX WTF?
+//XXX FIXME WTF?
     // The reset above resets the window clip rect, so we want to re-set
     // that.
     if (target_drawable && target_drawable->get_state() == DW_WINDOW) {
         GdkWindow *window = target_drawable->get_window();
-#ifdef NOTGTK3
-        if (window && GDK_DRAWABLE_GET_CLASS(window)->set_cairo_clip)
-            GDK_DRAWABLE_GET_CLASS(window)->set_cairo_clip(window, cr);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
 //        GdkWindowClass *wc = GDK_WINDOW_GET_CLASS(window);
 //        gdk_window_class_set_cairo_clip(window, cr);
+#else
+        if (window && GDK_DRAWABLE_GET_CLASS(window)->set_cairo_clip)
+            GDK_DRAWABLE_GET_CLASS(window)->set_cairo_clip(window, cr);
 #endif
     }
     if (gc_clip_region) {
@@ -1273,7 +1362,29 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
 namespace {
     // Adapted this from _gdk_region_get_xrectangles from GDK source.
     //
-#ifdef NOTGTK3
+#if GTK_CHECK_VERSION(3,0,0)
+    void region_get_xrectangles(const cairo_region_t *region,
+        int x_offset, int y_offset, XRectangle **rects, int *n_rects)
+    {
+        if (!region) {
+            *n_rects = 0;
+            *rects = 0;
+            return;
+        }
+        int nrects = cairo_region_num_rectangles(region);
+        XRectangle *rectangles = g_new(XRectangle, nrects);
+        cairo_rectangle_int_t rect;
+        for (int i = 0; i < nrects; i++) {
+            cairo_region_get_rectangle(region, i, &rect);
+            rectangles[i].x = CLAMP(rect.x + x_offset, G_MINSHORT, G_MAXSHORT);
+            rectangles[i].y = CLAMP(rect.y + y_offset, G_MINSHORT, G_MAXSHORT);
+            rectangles[i].width = CLAMP(rect.width, G_MINSHORT, G_MAXSHORT);
+            rectangles[i].height = CLAMP(rect.height, G_MINSHORT, G_MAXSHORT);
+        }
+        *rects = rectangles;
+        *n_rects = nrects;
+    }
+#else
     void region_get_xrectangles(const GdkRegion *region,
         int x_offset, int y_offset, XRectangle **rects, int *n_rects)
     {
@@ -1300,28 +1411,6 @@ namespace {
         *rects = rectangles;
         *n_rects = reg->numRects;
     }
-#else
-    void region_get_xrectangles(const cairo_region_t *region,
-        int x_offset, int y_offset, XRectangle **rects, int *n_rects)
-    {
-        if (!region) {
-            *n_rects = 0;
-            *rects = 0;
-            return;
-        }
-        int nrects = cairo_region_num_rectangles(region);
-        XRectangle *rectangles = g_new(XRectangle, nrects);
-        cairo_rectangle_int_t rect;
-        for (int i = 0; i < nrects; i++) {
-            cairo_region_get_rectangle(region, i, &rect);
-            rectangles[i].x = CLAMP(rect.x + x_offset, G_MINSHORT, G_MAXSHORT);
-            rectangles[i].y = CLAMP(rect.y + y_offset, G_MINSHORT, G_MAXSHORT);
-            rectangles[i].width = CLAMP(rect.width, G_MINSHORT, G_MAXSHORT);
-            rectangles[i].height = CLAMP(rect.height, G_MINSHORT, G_MAXSHORT);
-        }
-        *rects = rectangles;
-        *n_rects = nrects;
-    }
 #endif
 }
 
@@ -1331,10 +1420,10 @@ ndkGC::gc_x11_flush()
 {
     Display *xdisplay = get_xdisplay();
     if (gc_dirty_mask & ndkGC_DIRTY_CLIP) {
-#ifdef NOTGTK3
-        GdkRegion *clip_region = get_clip_region();
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         cairo_region_t *clip_region = get_clip_region();
+#else
+        GdkRegion *clip_region = get_clip_region();
 #endif
       
         if (!clip_region)
@@ -1358,13 +1447,13 @@ ndkGC::gc_x11_flush()
 }
 
 
-#ifdef NOTGTK3
-void
-ndkGC::gc_windowing_set_clip_region(const GdkRegion *region, bool reset_origin)
-#else
+#if GTK_CHECK_VERSION(3,0,0)
 void
 ndkGC::gc_windowing_set_clip_region(const cairo_region_t *region,
     bool reset_origin)
+#else
+void
+ndkGC::gc_windowing_set_clip_region(const GdkRegion *region, bool reset_origin)
 #endif
 {
     // Unset immediately, to make sure Xlib doesn't keep the XID of an
@@ -1402,44 +1491,3 @@ ndkGC::gc_windowing_copy(ndkGC *dst_gc, ndkGC *src_gc)
 
 #endif  // NDKGC_H
 
-/*
-xxx(GdkColor *clr, GdkVisual &visual)
-{
-    // If bits not used for color are used for something other than padding,
-    // it's likely alpha, so we set them to 1s.
-    //
-  guint padding, unused;
-
-    // Shifting by >= width-of-type isn't defined in C.
-    int depth = gdk_visual_get_depth(visual);
-    unsigned int padding;
-    if (depth >= 32)
-        padding = 0;
-    else
-        padding = ((~(guint32)0)) << depth;
-  
-    unsigned int red_mask;
-    int red_shift;
-    int red_prec;
-    gdk_visual_get_red_pixel_details(visual, &red_mask, &red_shift, &red_prec);
-
-    unsigned int grn_mask;
-    int grn_shift;
-    int grn_prec;
-    gdk_visual_get_green_pixel_details(visual, &grn_mask, &grn_shift, &grn_prec);
-
-    unsigned int blu_mask;
-    int blu_shift;
-    int blu_prec;
-    gdk_visual_get_blue_pixel_details(visual, &blu_mask, &blu_shift, &blu_prec);
-
-    unused = ~ (gdk_visual_get_red_mask(visual) |
-        gdk_visual_get_green_mask(visual) | gdk_visual_get_blue_mask(visual) |
-        padding);
-  
-    clr->pixel = (unused +
-        ((clr->red >> (16 - red_prec)) << red_shift) +
-        ((clr->green >> (16 - green_prec)) << green_shift) +
-        ((clr->blue >> (16 - blue_prec)) << blue_shift));
-}
-*/

@@ -682,7 +682,7 @@ sCgo::cgo_action(GtkWidget *caller, void*)
 int
 sCgo::cgo_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
 {
-    if (Cgo && ev->key.keyval == GDK_Return) {
+    if (Cgo && ev->key.keyval == GDK_KEY_Return) {
         const char *string;
         int pg = gtk_notebook_get_current_page(GTK_NOTEBOOK(Cgo->cgo_nbook));
         if (pg == 0) {

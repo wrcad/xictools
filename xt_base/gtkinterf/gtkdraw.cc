@@ -226,24 +226,9 @@ GTKdraw::Clear()
 #ifdef NEW_NDK
     if (gd_dw.get_state() == DW_NONE)
         return;
-    if (gd_dw.get_state() == DW_WINDOW) {
-        GdkWindow *window = gd_dw.get_window();
-        if (window) {
-#ifdef NOTGTK3
-            gdk_window_clear(window);
-#else
-        int w = gd_dw.get_width();
-        int h = gd_dw.get_height();
-        Box(0, 0, w, h);
-#endif
-        }
-    }
-    else if (gd_dw.get_state() == DW_PIXMAP) {
-        int w = gd_dw.get_width();
-        int h = gd_dw.get_height();
-        Box(0, 0, w, h);
-    }
-
+    SetColor(gd_backg);
+    SetFillpattern(0);
+    Box(0, 0, gd_dw.get_width(), gd_dw.get_height());
 #else
     if (!GDK_IS_PIXMAP(gd_window)) {
         // doesn't work for pixmaps
@@ -1529,25 +1514,27 @@ GTKdraw::QueryPointer(int *x, int *y, unsigned *state)
 void
 GTKdraw::DefineColor(int *pixel, int red, int green, int blue)
 {
+    if (!GC())
+        return;
     GdkColor newcolor;
     newcolor.red   = (red   << 8);
     newcolor.green = (green << 8);
     newcolor.blue  = (blue  << 8);
-    newcolor.pixel = *pixel;
-
-    //XXX problem FIXME
-#ifdef NOTGTK3
+    newcolor.pixel = 0;
+#ifdef NEW_NDK
+    GdkWindow *window = gd_dw.get_window();
+    if (!window)
+        window = gdk_get_default_root_window();
+    GdkVisual *visual = gdk_window_get_visual(window);
+    GC()->query_pixel(&newcolor, visual);
+    GC()->set_foreground(&newcolor);
+    *pixel = newcolor.pixel;
+#else
     if (gdk_colormap_alloc_color(GRX->Colormap(), &newcolor, false, true))
         *pixel = newcolor.pixel;
     else
         *pixel = 0;
-#endif
-#ifdef NEW_NDK
-    if (gd_gbag && gd_gbag->get_gc())
-        GC()->set_foreground(&newcolor);
-#else
-    if (gd_gbag && gd_gbag->get_gc())
-        gdk_gc_set_foreground(GC(), &newcolor);
+    gdk_gc_set_foreground(GC(), &newcolor);
 #endif
 }
 

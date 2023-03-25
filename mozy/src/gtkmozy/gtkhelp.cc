@@ -450,8 +450,9 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
 
         // set position
         if (xpos > 0 && ypos > 0) {
-            int x, y;
-            MonitorGeom(topw, &x, &y);
+            int x=0, y=0;
+            if (topw)
+                MonitorGeom(topw, &x, &y);
             gtk_window_move(GTK_WINDOW(wb_shell), xpos + x, ypos + y);
         }
 

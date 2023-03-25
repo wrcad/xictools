@@ -96,9 +96,14 @@ cCoord::cCoord() : GTKdraw(XW_TEXT)
     gtk_widget_add_events(Viewport(), GDK_BUTTON_PRESS_MASK);
     g_signal_connect(G_OBJECT(Viewport()), "button-press-event",
         G_CALLBACK(co_btn), 0);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(Viewport()), "draw",
+        G_CALLBACK(co_redraw), 0);
+#else
     gtk_widget_add_events(Viewport(), GDK_EXPOSURE_MASK);
     g_signal_connect(G_OBJECT(Viewport()), "expose-event",
         G_CALLBACK(co_redraw), 0);
+#endif
     g_signal_connect(G_OBJECT(Viewport()), "style-set",
         G_CALLBACK(co_font_change), 0);
 
@@ -335,11 +340,27 @@ cCoord::co_btn(GtkWidget*, GdkEvent *event, void*)
 }
 
 
-void
+#if GTK_CHECK_VERSION(3,0,0)
+int
+cCoord::co_redraw(GtkWidget*, cairo_t *cr, void*)
+#else
+int
 cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
+#endif
 {
     if (!Coord())
-        return;
+        return (false);
+#if GTK_CHECK_VERSION(3,0,0)
+    Coord()->GetDrawable()->refresh(Coord()->CpyGC(), cr);
+    if (!Coord()->GetDrawable()->get_pixmap()) {
+        int x, y;
+        EV()->Cursor().get_xy(&x, &y);
+        Coord()->print(x, y, COOR_BEGIN);
+        return (true);
+    }
+
+#else
+
 #ifdef NEW_NDK
     if (!ev || !Coord()->GetDrawable()->get_pixmap()) {
 #else
@@ -348,7 +369,7 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
         int x, y;
         EV()->Cursor().get_xy(&x, &y);
         Coord()->print(x, y, COOR_BEGIN);
-        return;
+        return (true);
     }
 
     GdkEventExpose *pev = (GdkEventExpose*)ev;
@@ -366,6 +387,7 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
         }
         g_free(rects);
     }
+#endif
 #endif
 }
 

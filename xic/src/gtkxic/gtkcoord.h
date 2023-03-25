@@ -75,7 +75,11 @@ private:
 
     static int print_idle(void*);
     static int co_btn(GtkWidget*, GdkEvent*, void*);
-    static void co_redraw(GtkWidget*, GdkEvent*, void*);
+#if GTK_CHECK_VERSION(3,0,0)
+    static int co_redraw(GtkWidget*, cairo_t*, void*);
+#else
+    static int co_redraw(GtkWidget*, GdkEvent*, void*);
+#endif
     static void co_font_change(GtkWidget*, void*, void*);
 
 #ifdef NEW_NDK

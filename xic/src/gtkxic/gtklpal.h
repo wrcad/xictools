@@ -72,7 +72,11 @@ private:
     static void lp_cancel_proc(GtkWidget*, void*);
     static void lp_help_proc(GtkWidget*, void*);
     static int lp_resize_hdlr(GtkWidget*, GdkEvent*, void*);
+#if GTK_CHECK_VERSION(3,0,0)
+    static int lp_redraw_hdlr(GtkWidget*, cairo_t*, void*);
+#else
     static int lp_redraw_hdlr(GtkWidget*, GdkEvent*, void*);
+#endif
     static int lp_button_down_hdlr(GtkWidget*, GdkEvent*, void*);
     static int lp_button_up_hdlr(GtkWidget*, GdkEvent*, void*);
     static int lp_motion_hdlr(GtkWidget*, GdkEvent*, void*);

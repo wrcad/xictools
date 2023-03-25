@@ -1116,34 +1116,34 @@ plot_bag::keypress(GtkWidget*, GdkEvent *event, void *client_data)
 
     // Make sure we catch backspace.
     if (keyval == GDK_KEY_h && kev->string && *kev->string == '\b')
-        keyval = GDK_BackSpace;
+        keyval = GDK_KEY_BackSpace;
 
     int code = 0;
     switch (keyval) {
-    case GDK_Escape:
-    case GDK_Tab:
+    case GDK_KEY_Escape:
+    case GDK_KEY_Tab:
         // Tab will switch focus.
         return (false);
 
-    case GDK_Up:
+    case GDK_KEY_Up:
         code = UP_KEY;
         break;
-    case GDK_Down:
+    case GDK_KEY_Down:
         code = DOWN_KEY;
         break;
-    case GDK_Left:
+    case GDK_KEY_Left:
         code = LEFT_KEY;
         break;
-    case GDK_Right:
+    case GDK_KEY_Right:
         code = RIGHT_KEY;
         break;
-    case GDK_Return:
+    case GDK_KEY_Return:
         code = ENTER_KEY;
         break;
-    case GDK_BackSpace:
+    case GDK_KEY_BackSpace:
         code = BSP_KEY;
         break;
-    case GDK_Delete:
+    case GDK_KEY_Delete:
         code = DELETE_KEY;
         break;
     }

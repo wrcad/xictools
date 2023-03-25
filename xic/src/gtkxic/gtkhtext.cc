@@ -149,9 +149,25 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
         g_signal_connect(G_OBJECT(mi), "activate",
             G_CALLBACK(pe_r_menu_proc), this);
     }
+
+#if GTK_CHECK_VERSION(3,0,0)
+    // Do some CSS magic to try and reduce the button height.
+    GtkCssProvider* css = gtk_css_provider_new();
+    gtk_style_context_add_provider_for_screen(GC()->get_screen(),
+        GTK_STYLE_PROVIDER(css), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    gtk_css_provider_load_from_data(css,
+        "button {padding-top: 0px; padding-bottom: 0px; margin-bottom: -1px;}",
+        -1, NULL);
+#endif
+                             
     pe_r_button = gtk_button_new_with_label("R");
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkStyleContext *context = gtk_widget_get_style_context(pe_r_button);
+    gtk_style_context_add_class(context, "data_btn");
+#else
     gtk_widget_set_size_request(pe_r_button, -1, 20);
-    gtk_widget_hide(pe_r_button);
+#endif
+
     gtk_widget_set_name(pe_r_button, "Recall");
     gtk_widget_set_tooltip_text(pe_r_button,
         "Recall edit string from a register.");
@@ -172,7 +188,13 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
             G_CALLBACK(pe_s_menu_proc), this);
     }
     pe_s_button = gtk_button_new_with_label("S");
+#if GTK_CHECK_VERSION(3,0,0)
+    context = gtk_widget_get_style_context(pe_s_button);
+    gtk_style_context_add_class(context, "data_btn");
+#else
     gtk_widget_set_size_request(pe_s_button, -1, 20);
+#endif
+
     gtk_widget_hide(pe_s_button);
     gtk_widget_set_name(pe_s_button, "Save");
     gtk_widget_set_tooltip_text(pe_s_button,
@@ -183,7 +205,14 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
 
     // L (long text) button
     pe_l_button = gtk_button_new_with_label("L");
+#if GTK_CHECK_VERSION(3,0,0)
+    context = gtk_widget_get_style_context(pe_l_button);
+    gtk_style_context_add_class(context, "data_btn");
+    g_object_unref(css);
+#else
     gtk_widget_set_size_request(pe_l_button, -1, 20);
+#endif
+
     gtk_widget_hide(pe_l_button);
     gtk_widget_set_name(pe_l_button, "LongText");
     gtk_widget_set_tooltip_text(pe_l_button,
@@ -204,9 +233,19 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
     gtk_container_add(GTK_CONTAINER(frame), gd_viewport);
     gtk_box_pack_start(GTK_BOX(pe_container), frame, true, true, 0);
 
+    gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
+    g_signal_connect(G_OBJECT(gd_viewport), "map-event",
+        G_CALLBACK(pe_map_hdlr), this);
+    g_signal_connect(G_OBJECT(gd_viewport), "configure-event",
+        G_CALLBACK(pe_resize_hdlr), this);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(gd_viewport), "draw",
+        G_CALLBACK(pe_redraw_hdlr), this);
+#else
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
         G_CALLBACK(pe_redraw_hdlr), this);
+#endif
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "button-press-event",
         G_CALLBACK(pe_btn_hdlr), this);
@@ -246,6 +285,15 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
 #endif
 
     // Set sizes
+#if GTK_CHECK_VERSION(3,0,0)
+    // We start with the button showing, so that the prompt line is
+    // given a matching height.  In the map handler, the minimum
+    // height for the prompt line is set, and the button is hidden. 
+    // The prompt line will retain the same height.
+
+    gtk_widget_show(pe_r_button);
+#else
+    gtk_widget_hide(pe_r_button);
     GtkRequisition r;
     gtk_widget_size_request(pe_r_button, &r);
     int height = GTKfont::stringHeight(gd_viewport, 0) + 4;
@@ -260,6 +308,7 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
     a.y = 0;
     gtk_widget_size_allocate(pe_keys, &a);
     gtk_widget_set_size_request(gd_viewport, prm_wid, height);
+#endif
 }
 
 
@@ -367,6 +416,15 @@ GTKedit::win_width(bool in_chars)
 }
 
 
+int
+GTKedit::win_height()
+{
+    if (!GRX || !mainBag())
+        return (14);
+    return (pe_hei);
+}
+
+
 // Set the keyboard focus to the main drawing window.
 //
 void
@@ -422,16 +480,16 @@ GTKedit::get_selection(bool clipb)
 
 
 void *
-GTKedit::setup_backing(bool clear)
+GTKedit::setup_backing(bool use_pm)
 {
     GdkWindow *tmp_window = 0;
 #ifdef NEW_NDK
-    if (clear) {
+    if (use_pm) {
         GetDrawable()->set_draw_to_pixmap();
         tmp_window = GetDrawable()->get_window();
     }
 #else
-    if (pe_pixmap && clear) {
+    if (pe_pixmap && use_pm) {
         tmp_window = gd_window;
         gd_window = pe_pixmap;
     }
@@ -444,9 +502,10 @@ void
 GTKedit::restore_backing(void *tw)
 {
 #ifdef NEW_NDK
-    (void)tw;
-    GetDrawable()->set_draw_to_window();
-    GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, -1, -1);
+    if (tw) {
+        GetDrawable()->set_draw_to_window();
+        GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, pe_wid, pe_hei);
+    }
 #else
     GdkWindow *tmp_window = (GdkWindow*)tw;
     if (tmp_window) {
@@ -467,6 +526,8 @@ GTKedit::init_window()
     if (GetDrawable()->get_window()) {
         SetWindowBackground(bg_pixel());
         Clear();
+        pe_wid = GetDrawable()->get_width();
+        pe_hei = GetDrawable()->get_height();
     }
 #else
     if (!gd_window)
@@ -474,6 +535,8 @@ GTKedit::init_window()
     if (gd_window) {
         SetWindowBackground(bg_pixel());
         Clear();
+        pe_wid = gtk_window_get_width(gd_window);
+        pe_hei = gtk_window_get_height(gd_window);
     }
 #endif
 }
@@ -559,7 +622,8 @@ GTKedit::init_selection(bool selected)
 namespace {
     // Move the mouse pointer into the prompt line area.  When
     // editing, the arrow keys will move the text carat rather than
-    // pan the main drawing window.
+    // pan the main drawing window if the pointer is in the prompt
+    // line area.
     //
     int warp_ptr(void *arg)
     {
@@ -712,13 +776,51 @@ GTKedit::pe_keys_hdlr(GtkWidget*, GdkEvent *event, void*)
 }
 
 
+int
+GTKedit::pe_map_hdlr(GtkWidget*, GdkEvent*, void*)
+{
+    // This sets the minimum height of the prompt line to match the
+    // buttons, so that it won't shrink when the buttons are hidden. 
+    // We had to wait until the widget was mapped to get the correct
+    // height.  Here we hide the button which was left un-hidden until
+    // now.  GTK-3 only.
+
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkAllocation a;
+    gtk_widget_get_allocation(ptr()->Viewport(), &a);
+    gtk_widget_set_size_request(ptr()->gd_viewport, -1, a.height);
+    gtk_widget_hide(ptr()->pe_r_button);
+#endif
+    return (true);
+}
+
+
+int
+GTKedit::pe_resize_hdlr(GtkWidget*, GdkEvent *event, void*)
+{
+    if (event->type == GDK_CONFIGURE && ptr() &&
+            ptr()->GetDrawable()->get_window()) {
+        ptr()->pe_wid = gdk_window_get_width(
+            ptr()->GetDrawable()->get_window());
+        ptr()->pe_hei = gdk_window_get_height(
+            ptr()->GetDrawable()->get_window());
+    }
+    return (true);
+}
+
+
 #ifdef WITH_QUARTZ
 
 // Static function.
 // Redraw callback.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+GTKedit::pe_redraw_hdlr(GtkWidget*, cairo_t*, void*)
+#else
 int
 GTKedit::pe_redraw_hdlr(GtkWidget*, GdkEvent*, void*)
+#endif
 {
     if (ptr())
         ptr()->redraw();
@@ -744,8 +846,13 @@ GTKedit::pe_redraw_idle(void *arg)
 // Static function.
 // Redraw callback.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+GTKedit::pe_redraw_hdlr(GtkWidget*, cairo_t*, void*)
+#else
 int
 GTKedit::pe_redraw_hdlr(GtkWidget*, GdkEvent*, void*)
+#endif
 {
     if (ptr()) {
         if (ptr()->pe_id)
@@ -923,6 +1030,9 @@ void
 GTKedit::pe_font_change_hdlr(GtkWidget*, void*, void*)
 {
     if (ptr()) {
+#if GTK_CHECK_VERSION(3,0,0)
+        //XXX probably need something here.
+#else
         if (ptr()->gd_viewport) {
             int fw, fh;
             ptr()->TextExtent(0, &fw, &fh);
@@ -933,6 +1043,7 @@ GTKedit::pe_font_change_hdlr(GtkWidget*, void*, void*)
                 ht = r.height;
             gtk_widget_set_size_request(ptr()->gd_viewport, -1, ht);
         }
+#endif
         ptr()->init();
     }
 }

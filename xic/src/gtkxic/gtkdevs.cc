@@ -252,7 +252,11 @@ namespace {
             static bool dv_comp_func(const char*, const char*);
 
             static int dv_redraw_idle(void*);
+#if GTK_CHECK_VERSION(3,0,0)
+            static int dv_redraw_hdlr(GtkWidget*, cairo_t*, void*);
+#else
             static int dv_redraw_hdlr(GtkWidget*, GdkEvent*, void*);
+#endif
             static int dv_btn_hdlr(GtkWidget*, GdkEvent*, void*);
             static int dv_motion_hdlr(GtkWidget*, GdkEvent*, void*);
             static int dv_enter_hdlr(GtkWidget*, GdkEvent*, void*);
@@ -418,9 +422,14 @@ sDv::sDv(GRobject caller, stringlist *wl) : GTKdraw(XW_DEFAULT)
         int width = init_sizes();
         gtk_window_set_default_size(GTK_WINDOW(wb_shell), width, -1);
 
+#if GTK_CHECK_VERSION(3,0,0)
+        g_signal_connect(G_OBJECT(gd_viewport), "draw",
+            G_CALLBACK(dv_redraw_hdlr), 0);
+#else
         gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
         g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
             G_CALLBACK(dv_redraw_hdlr), 0);
+#endif
         gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
         g_signal_connect_after(G_OBJECT(gd_viewport), "button-press-event",
             G_CALLBACK(dv_btn_hdlr), 0);
@@ -1088,8 +1097,13 @@ sDv::dv_redraw_idle(void*)
 // Static function.
 // Draw/redraw the toolbar.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+sDv::dv_redraw_hdlr(GtkWidget*, cairo_t*, void*)
+#else
 int
 sDv::dv_redraw_hdlr(GtkWidget*, GdkEvent*, void*)
+#endif
 {
     dspPkgIf()->RegisterIdleProc(dv_redraw_idle, 0);
     return (true);

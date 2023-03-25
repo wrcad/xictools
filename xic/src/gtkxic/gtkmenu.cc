@@ -127,6 +127,10 @@ GTKmenu::InitSideButtonMenus(bool horiz_buttons)
         else {
             pbox = gtk_vbox_new(true, 0);
 
+#if GTK_CHECK_VERSION(3,0,0)
+            // This appears unneeded on gtk3, plus it generates error
+            // messages indicating that a dimension is less than 0.
+#else
             // Override the class size allocation method with a local
             // version that does a better job keeping buttons the same
             // size.
@@ -134,6 +138,7 @@ GTKmenu::InitSideButtonMenus(bool horiz_buttons)
             if (ks)
                 ks->size_allocate = gtk_vbox_size_allocate;
             gtk_widget_set_size_request(pbox, 28, -1);
+#endif
         }
 
         for (int i = 1; pbtn_menu->menu[i].entry; i++) {
@@ -650,6 +655,10 @@ GTKmenu::new_popup_menu(GtkWidget *root, const char *const *list,
 }
 
 
+#if GTK_CHECK_VERSION(3,0,0)
+// Not needed and broken in gtk3.
+#else
+
 // Static function.
 // This was pulled from gtkvbox.c in the gtk 1.2.10 library, and
 // modified so that in homogeneous mode, the quantization error is
@@ -835,5 +844,7 @@ GTKmenu::gtk_vbox_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
     }
     g_list_free(children_list);
 }
+
+#endif
 // End of GTKmenu functions.
 

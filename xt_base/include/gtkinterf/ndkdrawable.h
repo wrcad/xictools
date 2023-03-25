@@ -73,7 +73,11 @@ struct ndkDrawable
     bool set_draw_to_pixmap();
     bool check_compatible_pixmap();
     void copy_pixmap_to_window(ndkGC*, int, int, int, int);
+#if GTK_CHECK_VERSION(3,0,0)
+    void refresh(ndkGC*, cairo_t*);
+#else
     void refresh(ndkGC*, GdkEventExpose*);
+#endif
     GdkScreen *get_screen();
     GdkVisual *get_visual();
     int get_width();

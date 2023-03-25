@@ -246,7 +246,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     c.pixel = 0xffffff;  // white
     gc->set_background(&c);
     gc->set_foreground(&c);
-    pixmap->fill(gc);
+    gc->clear(pixmap);
     c.pixel = 0;  // black
     gc->set_foreground(&c);
 #else

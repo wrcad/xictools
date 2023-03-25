@@ -131,9 +131,14 @@ GTKltab::GTKltab(bool nogr) : GTKdraw(XW_LTAB)
     gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "configure-event",
         G_CALLBACK(ltab_resize_hdlr), this);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(gd_viewport), "draw",
+        G_CALLBACK(ltab_redraw_hdlr), this);
+#else
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
         G_CALLBACK(ltab_redraw_hdlr), this);
+#endif
     gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "button-press-event",
         G_CALLBACK(ltab_button_down_hdlr), this);
@@ -155,7 +160,7 @@ GTKltab::GTKltab(bool nogr) : GTKdraw(XW_LTAB)
         G_CALLBACK(ltab_drag_data_received), this);
     g_signal_connect(G_OBJECT(gd_viewport), "style-set",
         G_CALLBACK(ltab_font_change_hdlr), this);
-    g_signal_connect(GTK_OBJECT(gd_viewport), "scroll-event",
+    g_signal_connect(G_OBJECT(gd_viewport), "scroll-event",
         G_CALLBACK(ltab_scroll_event_hdlr), this);
 
     GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);
@@ -854,9 +859,30 @@ GTKltab::refresh(int x, int y, int w, int h)
     if (lt_disabled)
         return;
 #ifdef NEW_NDK
+    if (!GetDrawable()->get_window())
+        GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
+    if (!GetDrawable()->get_window())
+        return;
+    int lt_win_width = GetDrawable()->get_width();
+    int lt_win_height = GetDrawable()->get_height();
+    ltab_pmap_dirty = GetDrawable()->set_draw_to_pixmap();
+    if (w <= 0)
+        w = lt_win_width;
+    if (h <= 0)
+        h = lt_win_height;
 #else
     if (!gd_window)
         gd_window = gtk_widget_get_window(gd_viewport);
+    if (!gd_window)
+        return;
+
+    int lt_win_width = gdk_window_get_width(gd_window);
+    int lt_win_height = gdk_window_get_height(gd_window);
+    if (w <= 0)
+        w = lt_win_width;
+    if (h <= 0)
+        h = lt_win_height;
+
     if (!ltab_pixmap || ltab_pmap_width != lt_win_width ||
             ltab_pmap_height != lt_win_height) {
         if (ltab_pixmap)
@@ -1075,14 +1101,41 @@ GTKltab::ltab_resize_hdlr(GtkWidget*, GdkEvent*, void *arg)
 // Static function.
 // Redraw the layer table.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+GTKltab::ltab_redraw_hdlr(GtkWidget*, cairo_t *cr, void *arg)
+#else
 int
 GTKltab::ltab_redraw_hdlr(GtkWidget*, GdkEvent *event, void *arg)
+#endif
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    GTKltab *lt = static_cast<GTKltab*>(arg);
+    if (lt) {
+        double x1, y1, x2, y2;
+        cairo_clip_extents(cr, &x1, &y1, &x2, &y2);
+        int ix1 = x1;
+        int iy1 = y1;
+        int ix2 = x2;
+        int iy2 = y2;
+        if (ix2 < ix1) {
+            int t = ix1; ix1 = ix2; ix2 = t;
+        }
+        if (iy2 < iy1) {
+            int t = iy1; iy1 = iy2; iy2 = t;
+        }
+        int wid = ix2 - ix1;
+        int hei = iy2 - iy1;
+        lt->refresh(ix1, iy1, wid, hei);
+    }
+#else
     GdkEventExpose *pev = (GdkEventExpose*)event;
     GTKltab *lt = static_cast<GTKltab*>(arg);
-    if (lt)
+    if (lt) {
         lt->refresh(pev->area.x, pev->area.y, pev->area.width,
             pev->area.height);
+    }
+#endif
     return (true);
 }
 

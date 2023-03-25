@@ -321,7 +321,11 @@ grbits::widget_print(const char *buf)
                     g_textbuf = lstring::copy(s);  // for expose
                 }
                 GdkWindow *win = gtk_widget_get_window(g_text_area);
+#if GTK_CHECK_VERSION(3,0,0)
+//XXX fixme                GC()->clear(win);
+#else
                 gdk_window_clear(win);
+#endif
 
 #if 1
                 cairo_t *cr = gdk_cairo_create(win);

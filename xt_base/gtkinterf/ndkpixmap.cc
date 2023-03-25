@@ -86,10 +86,10 @@ namespace {
 
 ndkPixmap::ndkPixmap(GdkWindow *window, int width, int height, bool bitmap)
 {
-#ifdef NOTGTK3
-    if (!window || GDK_WINDOW_DESTROYED(window))
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     if (!window || gdk_window_is_destroyed(window))
+#else
+    if (!window || GDK_WINDOW_DESTROYED(window))
 #endif
         window = gdk_screen_get_root_window(gdk_screen_get_default());
 
@@ -107,13 +107,13 @@ ndkPixmap::ndkPixmap(GdkWindow *window, int width, int height, bool bitmap)
     }
 
 #ifdef WITH_X11
-#ifdef NOTGTK3
-    pm_xid = XCreatePixmap(gdk_x11_drawable_get_xdisplay(window),
-        gdk_x11_drawable_get_xid(window), width, height, pm_depth);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     pm_xid = XCreatePixmap(
         gdk_x11_display_get_xdisplay(gdk_window_get_display(window)),
         gdk_x11_window_get_xid(window), width, height, pm_depth);
+#else
+    pm_xid = XCreatePixmap(gdk_x11_drawable_get_xdisplay(window),
+        gdk_x11_drawable_get_xid(window), width, height, pm_depth);
 #endif
 
     if (!pixmap_xid_tab) {
@@ -132,10 +132,10 @@ ndkPixmap::ndkPixmap(GdkWindow *window, int width, int height, bool bitmap)
 ndkPixmap::ndkPixmap(GdkWindow *window, const char *data,
     int width, int height)
 {
-#ifdef NOTGTK3
-    if (!window || GDK_WINDOW_DESTROYED(window))
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     if (!window || gdk_window_is_destroyed(window))
+#else
+    if (!window || GDK_WINDOW_DESTROYED(window))
 #endif
         window = gdk_screen_get_root_window(gdk_screen_get_default());
 
@@ -147,13 +147,13 @@ ndkPixmap::ndkPixmap(GdkWindow *window, const char *data,
     pm_depth = 1;
 
 #ifdef WITH_X11
-#ifdef NOTGTK3
-    pm_xid = XCreateBitmapFromData(gdk_x11_drawable_get_xdisplay(window),
-        gdk_x11_drawable_get_xid(window), (char *)data, width, height);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     pm_xid = XCreateBitmapFromData(
         gdk_x11_display_get_xdisplay(gdk_window_get_display(window)),
         gdk_x11_window_get_xid(window), (char *)data, width, height);
+#else
+    pm_xid = XCreateBitmapFromData(gdk_x11_drawable_get_xdisplay(window),
+        gdk_x11_drawable_get_xid(window), (char *)data, width, height);
 #endif
 
     if (!pixmap_xid_tab) {
@@ -172,10 +172,10 @@ ndkPixmap::ndkPixmap(GdkWindow *window, const char *data,
 ndkPixmap::ndkPixmap(GdkWindow *window, const char *data,
     int width, int height, const GdkColor *fg, const GdkColor *bg)
 {
-#ifdef NOTGTK3
-    if (!window || GDK_WINDOW_DESTROYED(window))
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     if (!window || gdk_window_is_destroyed(window))
+#else
+    if (!window || GDK_WINDOW_DESTROYED(window))
 #endif
         window = gdk_screen_get_root_window(gdk_screen_get_default());
   
@@ -187,23 +187,23 @@ ndkPixmap::ndkPixmap(GdkWindow *window, const char *data,
     pm_depth = gdk_visual_get_depth(pm_visual);
 
 #ifdef WITH_X11
-#ifdef NOTGTK3
-    pm_xid = XCreatePixmapFromBitmapData(gdk_x11_drawable_get_xdisplay(window),
-        gdk_x11_drawable_get_xid(window), (char *)data, width, height,
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     pm_xid = XCreatePixmapFromBitmapData(
         gdk_x11_display_get_xdisplay(gdk_window_get_display(window)),
         gdk_x11_window_get_xid(window), (char *)data, width, height,
+#else
+    pm_xid = XCreatePixmapFromBitmapData(gdk_x11_drawable_get_xdisplay(window),
+        gdk_x11_drawable_get_xid(window), (char *)data, width, height,
 #endif
         fg->pixel, bg->pixel, pm_depth);
 
-#ifdef NOTGTK3
-    pm_xid = XCreateBitmapFromData(gdk_x11_drawable_get_xdisplay(window),
-        gdk_x11_drawable_get_xid(window), (char *)data, width, height);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     pm_xid = XCreateBitmapFromData(
         gdk_x11_display_get_xdisplay(gdk_window_get_display(window)),
         gdk_x11_window_get_xid(window), (char *)data, width, height);
+#else
+    pm_xid = XCreateBitmapFromData(gdk_x11_drawable_get_xdisplay(window),
+        gdk_x11_drawable_get_xid(window), (char *)data, width, height);
 #endif
 
     if (!pixmap_xid_tab) {
@@ -299,24 +299,24 @@ ndkPixmap::copy_to_window(GdkWindow *window, ndkGC *gc, int xsrc, int ysrc,
         height = pm_height - ysrc;
   
     if (pm_depth == 1) {
-#ifdef NOTGTK3
-        XCopyArea(gc->get_xdisplay(), pm_xid, gdk_x11_drawable_get_xid(window),
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         XCopyArea(gc->get_xdisplay(), pm_xid, gdk_x11_window_get_xid(window),
+#else
+        XCopyArea(gc->get_xdisplay(), pm_xid, gdk_x11_drawable_get_xid(window),
 #endif
             gc->get_xgc(), xsrc, ysrc, width, height, xdest, ydest);
         return;
     }
-#ifdef NOTGTK3
-    int dest_depth = gdk_drawable_get_depth(window);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     int dest_depth = gdk_visual_get_depth(gdk_window_get_visual(window));
+#else
+    int dest_depth = gdk_drawable_get_depth(window);
 #endif
     if (dest_depth != 0 && pm_depth == dest_depth) {
-#ifdef NOTGTK3
-        XCopyArea(gc->get_xdisplay(), pm_xid, gdk_x11_drawable_get_xid(window),
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         XCopyArea(gc->get_xdisplay(), pm_xid, gdk_x11_window_get_xid(window),
+#else
+        XCopyArea(gc->get_xdisplay(), pm_xid, gdk_x11_drawable_get_xid(window),
 #endif
             gc->get_xgc(), xsrc, ysrc, width, height, xdest, ydest);
     }
@@ -355,20 +355,20 @@ ndkPixmap::copy_from_window(GdkWindow *window, ndkGC *gc, int xsrc, int ysrc,
   
     int src_depth = gdk_visual_get_depth(gdk_window_get_visual(window));
     if (src_depth == 1) {
-#ifdef NOTGTK3
-        XCopyArea(gc->get_xdisplay(), gdk_x11_drawable_get_xid(window),
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         XCopyArea(gc->get_xdisplay(), gdk_x11_window_get_xid(window),
+#else
+        XCopyArea(gc->get_xdisplay(), gdk_x11_drawable_get_xid(window),
 #endif
             pm_xid, gc->get_xgc(), xsrc, ysrc, width, height, xdest, ydest);
         return;
     }
     int dest_depth = pm_depth;
     if (dest_depth != 0 && src_depth == dest_depth) {
-#ifdef NOTGTK3
-        XCopyArea(gc->get_xdisplay(), gdk_x11_drawable_get_xid(window),
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         XCopyArea(gc->get_xdisplay(), gdk_x11_window_get_xid(window),
+#else
+        XCopyArea(gc->get_xdisplay(), gdk_x11_drawable_get_xid(window),
 #endif
             pm_xid, gc->get_xgc(), xsrc, ysrc, width, height, xdest, ydest);
     }
@@ -519,21 +519,6 @@ ndkPixmap::copy_from_pango_layout(ndkGC *gc, int x, int y, PangoLayout *lout)
     pango_cairo_show_layout(cr, lout);
     cairo_fill(cr);
     cairo_destroy(cr);
-}
-
-
-void
-ndkPixmap::fill(ndkGC *gc)
-{
-    if (!gc)
-        return;
-    int fg = gc->get_fg_pixel();
-    GdkColor clr;
-    clr.pixel = gc->get_bg_pixel();
-    gc->set_foreground(&clr);
-    gc->draw_rectangle(this, true, 0, 0, pm_width, pm_height);
-    clr.pixel = fg;
-    gc->set_foreground(&clr);
 }
 
 

@@ -213,7 +213,6 @@ sEC::sEC(stringlist *l)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    update(l);
     int ww = (ec_field + 6)*GTKfont::stringWidth(wb_textarea, 0);
     if (ww < 200)
         ww = 200;
@@ -222,6 +221,10 @@ sEC::sEC(stringlist *l)
     ww += 15;  // scrollbar
     int hh = 8*GTKfont::stringHeight(wb_textarea, 0);
     gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), ww, hh);
+
+    // GTK-3 can't set text until realized.
+    gtk_widget_realize(wb_shell);
+    update(l);
 }
 
 

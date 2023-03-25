@@ -85,10 +85,10 @@ ndkDrawable::set_window(GdkWindow *window)
         d_window = window;
         d_state = DW_WINDOW;
 #ifdef WITH_X11
-#ifdef NOTGTK3
-        d_xid = gdk_x11_drawable_get_xid(d_window);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         d_xid = gdk_x11_window_get_xid(d_window);
+#else
+        d_xid = gdk_x11_drawable_get_xid(d_window);
 #endif
 #endif
     }
@@ -136,10 +136,10 @@ ndkDrawable::set_pixmap(ndkPixmap *pixmap)
         d_state = DW_PIXMAP;
     }
     else if (d_window) {
-#ifdef NOTGTK3
-        d_xid = gdk_x11_drawable_get_xid(d_window);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         d_xid = gdk_x11_window_get_xid(d_window);
+#else
+        d_xid = gdk_x11_drawable_get_xid(d_window);
 #endif
         d_state = DW_WINDOW;
     }
@@ -155,10 +155,10 @@ ndkDrawable::set_draw_to_window()
 {
 #ifdef WITH_X11
     if (d_window) {
-#ifdef NOTGTK3
-        d_xid = gdk_x11_drawable_get_xid(d_window);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         d_xid = gdk_x11_window_get_xid(d_window);
+#else
+        d_xid = gdk_x11_drawable_get_xid(d_window);
 #endif
         d_state = DW_WINDOW;
     }
@@ -224,6 +224,38 @@ ndkDrawable::copy_pixmap_to_window(ndkGC *gc, int x, int y, int w, int h)
 }
 
 
+#if GTK_CHECK_VERSION(3,0,0)
+
+void
+ndkDrawable::refresh(ndkGC *gc, cairo_t *cr)
+{
+    if (d_window && d_pixmap) {
+        if (!cr) {
+            d_pixmap->copy_to_window(d_window, gc, 0, 0, 0, 0,
+                d_pixmap->get_width(), d_pixmap->get_height());
+            return;
+        }
+
+        cairo_rectangle_list_t *rlist = cairo_copy_clip_rectangle_list(cr);
+        if (rlist->status != CAIRO_STATUS_SUCCESS) {
+            cairo_rectangle_list_destroy(rlist);
+            return;
+        }
+        for (int i = 0; i < rlist->num_rectangles; i++) {
+            cairo_rectangle_int_t r;
+            r.x = rlist->rectangles[i].x;
+            r.y = rlist->rectangles[i].y;
+            r.width = rlist->rectangles[i].width;
+            r.height = rlist->rectangles[i].height;
+            d_pixmap->copy_to_window(d_window, gc, r.x, r.y, r.x, r.y,
+                r.width, r.height);
+        }
+        cairo_rectangle_list_destroy(rlist);
+    }
+}
+
+#else
+
 void
 ndkDrawable::refresh(ndkGC *gc, GdkEventExpose *pev)
 {
@@ -233,7 +265,17 @@ ndkDrawable::refresh(ndkGC *gc, GdkEventExpose *pev)
                 d_pixmap->get_width(), d_pixmap->get_height());
             return;
         }
-#ifdef NOTGTK3
+#if NEW_NDK
+        int nrects = cairo_region_num_rectangles(pev->region);
+        if (nrects <= 0)
+            return;
+        cairo_rectangle_int_t r;
+        while (nrects--) {
+            cairo_region_get_rectangle(pev->region, nrects, &r);
+            d_pixmap->copy_to_window(d_window, gc, r.x, r.y, r.x, r.y,
+                r.width, r.height);
+        }
+#else
         GdkRectangle *rects;
         int nrects;
         gdk_region_get_rectangles(pev->region, &rects, &nrects);
@@ -246,19 +288,11 @@ ndkDrawable::refresh(ndkGC *gc, GdkEventExpose *pev)
             r++;
         }
         g_free(rects);
-#else
-        int nrects = cairo_region_num_rectangles(pev->region);
-        if (nrects <= 0)
-            return;
-        cairo_rectangle_int_t r;
-        while (nrects--) {
-            cairo_region_get_rectangle(pev->region, nrects, &r);
-            d_pixmap->copy_to_window(d_window, gc, r.x, r.y, r.x, r.y,
-                r.width, r.height);
-        }
 #endif
     }
 }
+
+#endif
 
 
 GdkScreen *

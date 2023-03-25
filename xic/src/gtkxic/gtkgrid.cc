@@ -89,7 +89,11 @@ namespace gtkgrid {
         static void gd_cmult_change_proc(GtkWidget*, void*);
         static void gd_thresh_change_proc(GtkWidget*, void*);
         static void gd_crs_change_proc(GtkWidget*, void*);
+#if GTK_CHECK_VERSION(3,0,0)
+        static int gd_redraw_hdlr(GtkWidget*, cairo_t*, void*);
+#else
         static int gd_redraw_hdlr(GtkWidget*, GdkEvent*, void*);
+#endif
         static int gd_button_press_hdlr(GtkWidget*, GdkEvent*, void*);
         static int gd_button_release_hdlr(GtkWidget*, GdkEvent*, void*);
         static int gd_motion_hdlr(GtkWidget*, GdkEvent*, void*);
@@ -240,8 +244,13 @@ sGrd::sGrd(GTKbag *owner, WindowDesc *wd) : GTKdraw(XW_TEXT)
         return;
     gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
-    g_signal_connect(G_OBJECT(wb_shell), "expose-event",
-        G_CALLBACK(gd_redraw_hdlr), grid_pops + gd_win_num);
+#if GTK_CHECK_VERSION(3,0,0)
+        g_signal_connect(G_OBJECT(wb_shell), "draw",
+            G_CALLBACK(gd_redraw_hdlr), grid_pops + gd_win_num);
+#else
+        g_signal_connect(G_OBJECT(wb_shell), "expose-event",
+            G_CALLBACK(gd_redraw_hdlr), grid_pops + gd_win_num);
+#endif
 
     GtkWidget *topform = gtk_table_new(2, 1, false);
     gtk_widget_show(topform);
@@ -929,7 +938,7 @@ sGrd::gd_key_hdlr(GtkWidget*, GdkEvent *event, void *arg)
     // button, run the apply callback and set focus to the Dismiss
     // button.  A second Enter press will then dismiss the pop-up.
 
-    if (event->key.keyval == GDK_Return) {
+    if (event->key.keyval == GDK_KEY_Return) {
         GtkWidget *w = gtk_window_get_focus(GTK_WINDOW(grd->wb_shell));
         if (w != grd->gd_cancel) {
             grd->gd_apply_proc(0, arg);
@@ -1258,8 +1267,13 @@ sGrd::gd_crs_change_proc(GtkWidget*, void *arg)
 
 
 // Static function.
+#if GTK_CHECK_VERSION(3,0,0)
+int
+sGrd::gd_redraw_hdlr(GtkWidget*, cairo_t*, void *arg)
+#else
 int
 sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
+#endif
 {
     sGrd *grd = *(sGrd**)arg;
     if (!grd || !grd->gd_viewport)

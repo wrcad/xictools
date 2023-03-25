@@ -792,6 +792,7 @@ cPromptEdit::cPromptEdit()
     pe_xpos = pe_ypos = 0;
     pe_offset = 0;
     pe_fntwid = 0;
+    pe_fnthei = 0;
     pe_column = 0;
     pe_firstinsert = false;
     pe_indicating = false;
@@ -822,11 +823,10 @@ void
 cPromptEdit::init()
 {
     init_window();
-    int fw, fh;
-    TextExtent(0, &fw, &fh);
+    TextExtent(0, &pe_fntwid, &pe_fnthei);
     pe_xpos = 2;
-    pe_ypos = fh + 2;
-    pe_fntwid = fw;
+//    pe_ypos = pe_fnthei + 2;
+    pe_ypos = (win_height() + pe_fnthei)/2;
     Update();
 }
 
@@ -1688,10 +1688,11 @@ cPromptEdit::text(const char *str, int xpos)
 // logical column, if ncols is TOEND, show to end.
 //
 void
-cPromptEdit::draw_text(bool draw, int ncols, bool clear)
+cPromptEdit::draw_text(bool draw, int ncols, bool use_pm)
 {
     if (pe_disabled)
         return;
+    pe_ypos = (win_height() + pe_fnthei)/2;
     int realcol = 0, i;
     for (i = 0; i < pe_column; i++) {
         if (pe_buf.element(i)->type() == HLrefEnd)
@@ -1715,7 +1716,7 @@ cPromptEdit::draw_text(bool draw, int ncols, bool clear)
             tendcol = pe_buf.size()-1;
     }
 
-    void *tmp_window = setup_backing(clear);
+    void *tmp_window = setup_backing(use_pm);
 
     int endcol;
     bool pass2;
@@ -1732,10 +1733,10 @@ cPromptEdit::draw_text(bool draw, int ncols, bool clear)
     }
     SetLinestyle(0);
     SetFillpattern(0);
-    if (clear) {
+    if (use_pm) {
         SetColor(bg_pixel());
-        Clear();
         SetBackground(bg_pixel());
+        Clear();
     }
 
     sLstr lstr;
@@ -1841,6 +1842,7 @@ cPromptEdit::draw_cursor(bool draw)
 {
     if (pe_disabled)
         return;
+    pe_ypos = (win_height() + pe_fnthei)/2;
     int realcol = 0;
     bool at_end = false;
     for (int i = 0; i < pe_column; i++) {

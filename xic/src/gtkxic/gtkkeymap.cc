@@ -66,54 +66,54 @@ namespace {
     //  Mapping for key-down.
     //
     keymap kmap_dn[] = {
-        { GDK_Return,       RETURN_KEY,     0 },
-        { GDK_Escape,       ESCAPE_KEY,     0 },
-        { GDK_Tab,          TAB_KEY,        0 },
-        { GDK_ISO_Left_Tab, TAB_KEY,        0 },
-        { GDK_Break,        BREAK_KEY,      0 },
-        { GDK_Delete,       DELETE_KEY,     0 },
-        { GDK_BackSpace,    BSP_KEY,        0 },
-        { GDK_Left,         LEFT_KEY,       0 },
-        { GDK_Up,           UP_KEY,         0 },
-        { GDK_Right,        RIGHT_KEY,      0 },
-        { GDK_Down,         DOWN_KEY,       0 },
-        { GDK_Shift_L,      SHIFTDN_KEY,    0 },
-        { GDK_Shift_R,      SHIFTDN_KEY,    0 },
-        { GDK_Control_L,    CTRLDN_KEY,     0 },
-        { GDK_Control_R,    CTRLDN_KEY,     0 },
-        { GDK_Home,         HOME_KEY,       0 },
-        { GDK_KP_Add,       NUPLUS_KEY,     0 },
-        { GDK_KP_Subtract,  NUMINUS_KEY,    0 },
+        { GDK_KEY_Return,       RETURN_KEY,     0 },
+        { GDK_KEY_Escape,       ESCAPE_KEY,     0 },
+        { GDK_KEY_Tab,          TAB_KEY,        0 },
+        { GDK_KEY_ISO_Left_Tab, TAB_KEY,        0 },
+        { GDK_KEY_Break,        BREAK_KEY,      0 },
+        { GDK_KEY_Delete,       DELETE_KEY,     0 },
+        { GDK_KEY_BackSpace,    BSP_KEY,        0 },
+        { GDK_KEY_Left,         LEFT_KEY,       0 },
+        { GDK_KEY_Up,           UP_KEY,         0 },
+        { GDK_KEY_Right,        RIGHT_KEY,      0 },
+        { GDK_KEY_Down,         DOWN_KEY,       0 },
+        { GDK_KEY_Shift_L,      SHIFTDN_KEY,    0 },
+        { GDK_KEY_Shift_R,      SHIFTDN_KEY,    0 },
+        { GDK_KEY_Control_L,    CTRLDN_KEY,     0 },
+        { GDK_KEY_Control_R,    CTRLDN_KEY,     0 },
+        { GDK_KEY_Home,         HOME_KEY,       0 },
+        { GDK_KEY_KP_Add,       NUPLUS_KEY,     0 },
+        { GDK_KEY_KP_Subtract,  NUMINUS_KEY,    0 },
 #ifdef __APPLE__
         // Mappings for MacBook Pro keyboard: fn-Enter and fn-Right.
-        { GDK_KP_Enter,     NUPLUS_KEY,     0 },
-        { GDK_End,          NUMINUS_KEY,    0 },
+        { GDK_KEY_KP_Enter,     NUPLUS_KEY,     0 },
+        { GDK_KEY_End,          NUMINUS_KEY,    0 },
 #endif
-        { GDK_Next,         PAGEDN_KEY,     0 },
-        { GDK_Prior,        PAGEUP_KEY,     0 },
-        { GDK_F1,           FUNC_KEY,       0 },
-        { GDK_F2,           FUNC_KEY,       1 },
-        { GDK_F3,           FUNC_KEY,       2 },
-        { GDK_F4,           FUNC_KEY,       3 },
-        { GDK_F5,           FUNC_KEY,       4 },
-        { GDK_F6,           FUNC_KEY,       5 },
-        { GDK_F7,           FUNC_KEY,       6 },
-        { GDK_F8,           FUNC_KEY,       7 },
-        { GDK_F9,           FUNC_KEY,       8 },
-        { GDK_F10,          FUNC_KEY,       9 },
-        { GDK_F11,          FUNC_KEY,       10 },
-        { GDK_F12,          FUNC_KEY,       11 },
-        { 0,                NO_KEY,         0 }
+        { GDK_KEY_Next,         PAGEDN_KEY,     0 },
+        { GDK_KEY_Prior,        PAGEUP_KEY,     0 },
+        { GDK_KEY_F1,           FUNC_KEY,       0 },
+        { GDK_KEY_F2,           FUNC_KEY,       1 },
+        { GDK_KEY_F3,           FUNC_KEY,       2 },
+        { GDK_KEY_F4,           FUNC_KEY,       3 },
+        { GDK_KEY_F5,           FUNC_KEY,       4 },
+        { GDK_KEY_F6,           FUNC_KEY,       5 },
+        { GDK_KEY_F7,           FUNC_KEY,       6 },
+        { GDK_KEY_F8,           FUNC_KEY,       7 },
+        { GDK_KEY_F9,           FUNC_KEY,       8 },
+        { GDK_KEY_F10,          FUNC_KEY,       9 },
+        { GDK_KEY_F11,          FUNC_KEY,       10 },
+        { GDK_KEY_F12,          FUNC_KEY,       11 },
+        { 0,                    NO_KEY,         0 }
     };
 
     //  Mapping for key-up.
     //
     keymap kmap_up[] = {
-        { GDK_Shift_L,      SHIFTUP_KEY,    0 },
-        { GDK_Shift_R,      SHIFTUP_KEY,    0 },
-        { GDK_Control_L,    CTRLUP_KEY,     0 },
-        { GDK_Control_R,    CTRLUP_KEY,     0 },
-        { 0,                NO_KEY,         0 }
+        { GDK_KEY_Shift_L,      SHIFTUP_KEY,    0 },
+        { GDK_KEY_Shift_R,      SHIFTUP_KEY,    0 },
+        { GDK_KEY_Control_L,    CTRLUP_KEY,     0 },
+        { GDK_KEY_Control_R,    CTRLUP_KEY,     0 },
+        { 0,                    NO_KEY,         0 }
     };
 
     // Actions done before passing the keypress to the current command.
@@ -240,24 +240,24 @@ cKsMap::init()
     kmActionsPost = actions_post;
     kmSuppressChar = '`';
 
-    kmKeyTab[0] = sKsMapElt("Home", HOME_KEY, GDK_Home);
-#ifdef GDK_Page_Up
-    kmKeyTab[1] = sKsMapElt("Page Up", PAGEUP_KEY, GDK_Page_Up);
+    kmKeyTab[0] = sKsMapElt("Home", HOME_KEY, GDK_KEY_Home);
+#ifdef GDK_KEY_Page_Up
+    kmKeyTab[1] = sKsMapElt("Page Up", PAGEUP_KEY, GDK_KEY_Page_Up);
 #else
     kmKeyTab[1] = sKsMapElt("Page Up", PAGEUP_KEY, 0xffff);
 #endif
-#ifdef GDK_Page_Down
-    kmKeyTab[2] = sKsMapElt("Page Down", PAGEDN_KEY, GDK_Page_Down);
+#ifdef GDK_KEY_Page_Down
+    kmKeyTab[2] = sKsMapElt("Page Down", PAGEDN_KEY, GDK_KEY_Page_Down);
 #else
     kmKeyTab[2] = sKsMapElt("Page Down", PAGEDN_KEY, 0xffff);
 #endif
-#ifdef GDK_KP_Subtract
-    kmKeyTab[3] = sKsMapElt("Numeric Minus", NUMINUS_KEY, GDK_KP_Subtract);
+#ifdef GDK_KEY_KP_Subtract
+    kmKeyTab[3] = sKsMapElt("Numeric Minus", NUMINUS_KEY, GDK_KEY_KP_Subtract);
 #else
     kmKeyTab[3] = sKsMapElt("Numeric Minus", NUMINUS_KEY, 0xffff);
 #endif
-#ifdef GDK_KP_Add
-    kmKeyTab[4] = sKsMapElt("Numeric Plus", NUPLUS_KEY, GDK_KP_Add);
+#ifdef GDK_KEY_KP_Add
+    kmKeyTab[4] = sKsMapElt("Numeric Plus", NUPLUS_KEY, GDK_KEY_KP_Add);
 #else
     kmKeyTab[4] = sKsMapElt("Numeric Plus", NUPLUS_KEY, 0xffff);
 #endif
@@ -269,43 +269,43 @@ int
 cKsMap::filter_key(unsigned keysym)
 {
     switch (keysym) {
-    case GDK_Escape:
+    case GDK_KEY_Escape:
         return (-1);
-    case GDK_Return:
+    case GDK_KEY_Return:
         return (1);
-    case GDK_Shift_L:
-    case GDK_Shift_R:
-    case GDK_Control_L:
-    case GDK_Control_R:
-    case GDK_Caps_Lock:
-    case GDK_Shift_Lock:
-    case GDK_Meta_L:
-    case GDK_Meta_R:
-    case GDK_Alt_L:
-    case GDK_Alt_R:
-    case GDK_Super_L:
-    case GDK_Super_R:
-    case GDK_Hyper_L:
-    case GDK_Hyper_R:
-    case GDK_Tab:
-    case GDK_Break:
-    case GDK_Delete:
-    case GDK_Left:
-    case GDK_Up:
-    case GDK_Right:
-    case GDK_Down:
-    case GDK_F1:
-    case GDK_F2:
-    case GDK_F3:
-    case GDK_F4:
-    case GDK_F5:
-    case GDK_F6:
-    case GDK_F7:
-    case GDK_F8:
-    case GDK_F9:
-    case GDK_F10:
-    case GDK_F11:
-    case GDK_F12:
+    case GDK_KEY_Shift_L:
+    case GDK_KEY_Shift_R:
+    case GDK_KEY_Control_L:
+    case GDK_KEY_Control_R:
+    case GDK_KEY_Caps_Lock:
+    case GDK_KEY_Shift_Lock:
+    case GDK_KEY_Meta_L:
+    case GDK_KEY_Meta_R:
+    case GDK_KEY_Alt_L:
+    case GDK_KEY_Alt_R:
+    case GDK_KEY_Super_L:
+    case GDK_KEY_Super_R:
+    case GDK_KEY_Hyper_L:
+    case GDK_KEY_Hyper_R:
+    case GDK_KEY_Tab:
+    case GDK_KEY_Break:
+    case GDK_KEY_Delete:
+    case GDK_KEY_Left:
+    case GDK_KEY_Up:
+    case GDK_KEY_Right:
+    case GDK_KEY_Down:
+    case GDK_KEY_F1:
+    case GDK_KEY_F2:
+    case GDK_KEY_F3:
+    case GDK_KEY_F4:
+    case GDK_KEY_F5:
+    case GDK_KEY_F6:
+    case GDK_KEY_F7:
+    case GDK_KEY_F8:
+    case GDK_KEY_F9:
+    case GDK_KEY_F10:
+    case GDK_KEY_F11:
+    case GDK_KEY_F12:
         return (0);
     default:
         if (keysym >= 0xf000)

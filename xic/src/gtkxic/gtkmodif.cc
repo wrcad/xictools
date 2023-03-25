@@ -318,7 +318,6 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
     GtkWidget *contr;
     text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
 
-    refresh();
     gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
     g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
         G_CALLBACK(sc_btn_hdlr), 0);
@@ -362,6 +361,10 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
+
+    // GTK-3 can't set text until realized.
+    gtk_widget_realize(wb_shell);
+    refresh();
 }
 
 

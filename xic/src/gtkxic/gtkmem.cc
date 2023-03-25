@@ -80,7 +80,11 @@ namespace {
         private:
             static void mem_popdown(GtkWidget*, void*);
             static int mem_proc(void*);
-            static void mem_redraw(GtkWidget*, GdkEvent*, void*);
+#if GTK_CHECK_VERSION(3,0,0)
+            static int mem_redraw(GtkWidget*, cairo_t*, void*);
+#else
+            static int mem_redraw(GtkWidget*, GdkEvent*, void*);
+#endif
             static void mem_font_change(GtkWidget*, void*, void*);
         };
 
@@ -184,9 +188,14 @@ sMem::sMem() : GTKdraw(XW_TEXT)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 4, 2);
 
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(gd_viewport), "draw",
+        G_CALLBACK(mem_redraw), 0);
+#else
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
         G_CALLBACK(mem_redraw), 0);
+#endif
     g_signal_connect(G_OBJECT(gd_viewport), "style-set",
         G_CALLBACK(mem_font_change), 0);
 
@@ -352,10 +361,16 @@ sMem::update()
 
 
 // Static function.
-void
+#if GTK_CHECK_VERSION(3,0,0)
+int
+sMem::mem_redraw(GtkWidget*, cairo_t*, void*)
+#else
+int
 sMem::mem_redraw(GtkWidget*, GdkEvent*, void*)
+#endif
 {
     XM()->PopUpMemory(MODE_UPD);
+    return (true);
 }
 
 

@@ -105,7 +105,11 @@ private:
     static char *strip_accel(const char*);
     static GtkWidget *new_popup_menu(GtkWidget*, const char* const*,
         GCallback, void*);
+#if GTK_CHECK_VERSION(3,0,0)
+#else
+// Not needed and broken in gtk3.
     static void gtk_vbox_size_allocate(GtkWidget*, GtkAllocation*);
+#endif
 
     GtkWidget *mainMenu;
     GtkWidget *topButtonWidget;

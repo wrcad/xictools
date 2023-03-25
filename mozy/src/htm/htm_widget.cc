@@ -322,22 +322,29 @@ htmWidget::trySync()
 {
     if (!htm_ready)
         return;
+//XXX
+fprintf(stderr, "sync1\n");
     if (!htm_initialized)
         initialize();
+fprintf(stderr, "sync2\n");
     if (htm_parse_needed)
         parse();
+fprintf(stderr, "sync3\n");
 
     htm_frozen++;
     if (htm_reformat_needed)
         reformat();
+fprintf(stderr, "sync4\n");
     if (htm_layout_needed)
         layout();
     htm_frozen--;
+fprintf(stderr, "sync5\n");
 
     if (htm_frozen)
         return;
     if (htm_redraw_needed)
         redraw();
+fprintf(stderr, "sync6\n");
 }
 
 

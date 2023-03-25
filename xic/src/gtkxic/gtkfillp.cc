@@ -142,9 +142,15 @@ namespace {
             static void fp_target_drag_leave(GtkWidget*, GdkDragContext*,
                 guint);
             static int fp_config_hdlr(GtkWidget*, GdkEvent*, void*);
+#if GTK_CHECK_VERSION(3,0,0)
+            static int fp_redraw_edit_hdlr(GtkWidget*, cairo_t*, void*);
+            static int fp_redraw_sample_hdlr(GtkWidget*, cairo_t*, void*);
+            static int fp_redraw_store_hdlr(GtkWidget*, cairo_t*, void*);
+#else
             static int fp_redraw_edit_hdlr(GtkWidget*, GdkEvent*, void*);
             static int fp_redraw_sample_hdlr(GtkWidget*, GdkEvent*, void*);
             static int fp_redraw_store_hdlr(GtkWidget*, GdkEvent*, void*);
+#endif
             static int fp_button_press_hdlr(GtkWidget*, GdkEvent*, void*);
             static int fp_button_rel_hdlr(GtkWidget*, GdkEvent*, void*);
             static int fp_key_press_hdlr(GtkWidget*, GdkEvent*, void*);
@@ -344,8 +350,13 @@ sFpe::sFpe(GRobject c) : GTKdraw(XW_DRAWING)
     fp_connect_sigs(darea, false, true);
     g_signal_connect(G_OBJECT(darea), "enter-notify-event",
         G_CALLBACK(fp_enter_hdlr), 0);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(darea), "draw",
+        G_CALLBACK(fp_redraw_edit_hdlr), 0);
+#else
     g_signal_connect(G_OBJECT(darea), "expose-event",
         G_CALLBACK(fp_redraw_edit_hdlr), 0);
+#endif
 
     //
     // Pixel editor controls
@@ -477,8 +488,13 @@ sFpe::sFpe(GRobject c) : GTKdraw(XW_DRAWING)
     gtk_box_pack_start(GTK_BOX(vbox), fp_stoctrl, true, true, 0);
     gtk_box_pack_start(GTK_BOX(vbox), frame, true, true, 0);
     gtk_box_pack_start(GTK_BOX(row), vbox, true, true, 0);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(darea), "draw",
+        G_CALLBACK(fp_redraw_sample_hdlr), 0);
+#else
     g_signal_connect(G_OBJECT(darea), "expose-event",
         G_CALLBACK(fp_redraw_sample_hdlr), 0);
+#endif
 
     //
     // Patterns
@@ -506,8 +522,13 @@ sFpe::sFpe(GRobject c) : GTKdraw(XW_DRAWING)
             else
                 fp_connect_sigs(darea, true, true);
             gtk_box_pack_start(GTK_BOX(hbox), iframe, true, true, 0);
+#if GTK_CHECK_VERSION(3,0,0)
+            g_signal_connect(G_OBJECT(darea), "draw",
+                G_CALLBACK(fp_redraw_store_hdlr), (void*)(long)(i + j*3));
+#else
             g_signal_connect(G_OBJECT(darea), "expose-event",
                 G_CALLBACK(fp_redraw_store_hdlr), (void*)(long)(i + j*3));
+#endif
         }
         gtk_box_pack_start(GTK_BOX(vbox), hbox, true, true, 0);
     }
@@ -1464,9 +1485,17 @@ sFpe::fp_config_hdlr(GtkWidget*, GdkEvent*, void*)
 // Static function.
 // Redraw handler, editing window.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+sFpe::fp_redraw_edit_hdlr(GtkWidget*, cairo_t *cr, void*)
+#else
 int
 sFpe::fp_redraw_edit_hdlr(GtkWidget*, GdkEvent *event, void*)
+#endif
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    Fpe->redraw_edit();
+#else
 #ifdef NEW_NDK
     (void)event;
 #else
@@ -1479,6 +1508,7 @@ sFpe::fp_redraw_edit_hdlr(GtkWidget*, GdkEvent *event, void*)
     else
 #endif
         Fpe->redraw_edit();
+#endif
     return (true);
 }
 
@@ -1486,9 +1516,17 @@ sFpe::fp_redraw_edit_hdlr(GtkWidget*, GdkEvent *event, void*)
 // Static function.
 // Redraw handler, sample window.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+sFpe::fp_redraw_sample_hdlr(GtkWidget*, cairo_t*, void*)
+#else
 int
 sFpe::fp_redraw_sample_hdlr(GtkWidget*, GdkEvent *event, void*)
+#endif
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    Fpe->redraw_sample();
+#else
 #ifdef NEW_NDK
     (void)event;
 #else
@@ -1501,6 +1539,7 @@ sFpe::fp_redraw_sample_hdlr(GtkWidget*, GdkEvent *event, void*)
     else
 #endif
         Fpe->redraw_sample();
+#endif
     return (true);
 }
 
@@ -1508,10 +1547,18 @@ sFpe::fp_redraw_sample_hdlr(GtkWidget*, GdkEvent *event, void*)
 // Static function.
 // Redraw handler, store windows.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+sFpe::fp_redraw_store_hdlr(GtkWidget*, cairo_t*, void *arg)
+#else
 int
 sFpe::fp_redraw_store_hdlr(GtkWidget*, GdkEvent *event, void *arg)
+#endif
 {
     int i = (intptr_t)arg;
+#if GTK_CHECK_VERSION(3,0,0)
+    Fpe->redraw_store(i);
+#else
 #ifdef NEW_NDK
     (void)event;
 #else
@@ -1525,6 +1572,7 @@ sFpe::fp_redraw_store_hdlr(GtkWidget*, GdkEvent *event, void *arg)
     else
 #endif
         Fpe->redraw_store(i);
+#endif
     return (true);
 }
 
@@ -1658,7 +1706,7 @@ sFpe::fp_key_press_hdlr(GtkWidget*, GdkEvent *event, void*)
     int i, j;
     FPSETtype tmp;
     switch (event->key.keyval) {
-    case GDK_Right:
+    case GDK_KEY_Right:
         for (i = 0; i < Fpe->fp_ny; i++) {
             tmp = Fpe->get_pixel(i, 0);
             for (j = 1; j < Fpe->fp_nx; j++)
@@ -1668,7 +1716,7 @@ sFpe::fp_key_press_hdlr(GtkWidget*, GdkEvent *event, void*)
         Fpe->redraw_edit();
         Fpe->redraw_sample();
         break;
-    case GDK_Left:
+    case GDK_KEY_Left:
         for (i = 0; i < Fpe->fp_ny; i++) {
             tmp = Fpe->get_pixel(i, Fpe->fp_nx - 1);
             for (j = Fpe->fp_nx - 1; j >= 1; j--)
@@ -1678,7 +1726,7 @@ sFpe::fp_key_press_hdlr(GtkWidget*, GdkEvent *event, void*)
         Fpe->redraw_edit();
         Fpe->redraw_sample();
         break;
-    case GDK_Up:
+    case GDK_KEY_Up:
         for (j = 0; j < Fpe->fp_nx; j++) {
             tmp = Fpe->get_pixel(Fpe->fp_ny - 1, j);
             for (i = Fpe->fp_ny - 1; i >= 1; i--)
@@ -1688,7 +1736,7 @@ sFpe::fp_key_press_hdlr(GtkWidget*, GdkEvent *event, void*)
         Fpe->redraw_edit();
         Fpe->redraw_sample();
         break;
-    case GDK_Down:
+    case GDK_KEY_Down:
         for (j = 0; j < Fpe->fp_nx; j++) {
             tmp = Fpe->get_pixel(0, j);
             for (i = 1; i < Fpe->fp_ny; i++)

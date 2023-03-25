@@ -329,8 +329,8 @@ namespace {
 
     inline bool is_modifier_key(unsigned keysym)
     {
-        return ((keysym >= GDK_Shift_L && keysym <= GDK_Hyper_R) ||
-            keysym == GDK_Mode_switch || keysym == GDK_Num_Lock);
+        return ((keysym >= GDK_KEY_Shift_L && keysym <= GDK_KEY_Hyper_R) ||
+            keysym == GDK_KEY_Mode_switch || keysym == GDK_KEY_Num_Lock);
     }
 
     // When the application is busy, all button presses and all key
@@ -785,7 +785,7 @@ GTKpkg::GetMainWinIdentifier(char *buf)
 #ifdef WITH_X11
     if (mainBag() && mainBag()->Shell() &&
             gtk_widget_get_window(mainBag()->Shell())) {
-        sprintf(buf, "%ld", (long)gr_x_window(
+        snprintf(buf, 16, "%ld", (long)gr_x_window(
             gtk_widget_get_window(mainBag()->Shell())));
         return (true);
     }
@@ -1071,7 +1071,6 @@ win_bag::win_bag() : GTKdraw(XW_DRAWING)
     wib_keyspressed = 0;
     wib_keypos = 0;
     memset(wib_keys, 0, sizeof(wib_keys));
-    wib_resized = false;
 
 #ifdef NEW_NDK
 #else
@@ -1110,7 +1109,7 @@ win_bag::subw_initialize(int wnum)
 {
 
     char buf[32];
-    sprintf(buf, "%s %d", XM()->Product(), wnum);
+    snprintf(buf, 32, "%s %d", XM()->Product(), wnum);
     wb_shell = gtk_NewPopup(mainBag(), buf, subwin_cancel_proc,
         (void*)(intptr_t)wnum);
     gtk_widget_set_size_request(wb_shell, 500, 400);
@@ -1156,9 +1155,14 @@ win_bag::subw_initialize(int wnum)
     gtk_widget_show(gd_viewport);
 
     gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(gd_viewport), "draw",
+        G_CALLBACK(redraw_hdlr), this);
+#else
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
         G_CALLBACK(redraw_hdlr), this);
+#endif
     gtk_widget_add_events(gd_viewport, GDK_KEY_PRESS_MASK);
     g_signal_connect_after(G_OBJECT(gd_viewport), "key-press-event",
         G_CALLBACK(key_dn_hdlr), this);
@@ -1913,7 +1917,6 @@ win_bag::resize_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
         int width = gdk_window_get_width(gtk_widget_get_window(caller));
         int height = gdk_window_get_height(gtk_widget_get_window(caller));
         EV()->ResizeCallback(w->wib_windesc, width, height);
-        w->wib_resized = true;  // used in redraw_hdlr
     }
     return (true);
 }
@@ -1924,8 +1927,13 @@ win_bag::resize_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 // exposed rectangles to save time.  Call the application to
 // actually redraw the viewport.
 //
+#if GTK_CHECK_VERSION(3,0,0)
+int
+win_bag::redraw_hdlr(GtkWidget *widget, cairo_t *cr, void *client_data)
+#else
 int
 win_bag::redraw_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
+#endif
 {
     if (gtk_widget_get_parent(widget) == DontRedrawMe) {
         DontRedrawMe = 0;
@@ -1936,53 +1944,58 @@ win_bag::redraw_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
 
     win_bag *w = static_cast<win_bag*>(client_data);
 
-    GdkEventExpose *pev = (GdkEventExpose*)event;
     if (DSP()->NoPixmapStore() &&
             (!DSP()->CurCellName() || !XM()->IsAppReady())) {
         *w->wib_windesc->ClipRect() = w->wib_windesc->Viewport();
         w->wib_windesc->ShowGrid();
         XM()->SetAppReady(true);
+        return (true);
     }
-    else {
-        XM()->SetAppReady(true);
-        GdkRectangle *rects;
-        int nrects;
-        gdk_region_get_rectangles(pev->region, &rects, &nrects);
-        for (int i = 0; i < nrects; i++) {
-            GdkRectangle *r = rects + i;
-#ifdef WITH_QUARTZ
-            // The Update method updates a single pixel at 0,0, which
-            // triggers an expose event which is needed internally to
-            // show the rendering.  Here we filter and ignore this
-            // event.
-            //
-            // I have no clue why, but from viewports only, the
-            // 1-pixel area is followed by an apparently spurious
-            // region 2 pixels high along the entire bottom of the
-            // window.  We'll just break to avoid this.
 
-            if (r->x == 0 && r->y == 0 && r->width == 1 && r->height == 1)
-                break;
-#endif
-            BBox BB(r->x, r->y + r->height, r->x + r->width, r->y);
-#if GTK_CHECK_VERSION(2,20,0)
-            // RHEL6 and later
-            w->wib_windesc->Update(&BB, false);
+    XM()->SetAppReady(true);
+#if GTK_CHECK_VERSION(3,0,0)
+    cairo_rectangle_list_t *rlist = cairo_copy_clip_rectangle_list(cr);
+    if (rlist->status != CAIRO_STATUS_SUCCESS) {
+        cairo_rectangle_list_destroy(rlist);
+        return (true);
+    }
+    for (int i = 0; i < rlist->num_rectangles; i++) {
+        cairo_rectangle_int_t rect;
+        rect.x = rlist->rectangles[i].x;
+        rect.y = rlist->rectangles[i].y;
+        rect.width = rlist->rectangles[i].width;
+        rect.height = rlist->rectangles[i].height;
+        cairo_rectangle_int_t *r = &rect;;
 #else
-            // This did strange and not good things in OS X 10.9, the
-            // test restricts this to RHEL5 where it is supposedly
-            // needed.  It seems to have no effect in RHEL6.
-
-            w->wib_windesc->Update(&BB, w->wib_resized);
+    GdkEventExpose *pev = (GdkEventExpose*)event;
+    GdkRectangle *rects;
+    int nrects;
+    gdk_region_get_rectangles(pev->region, &rects, &nrects);
+    for (int i = 0; i < nrects; i++) {
+        GdkRectangle *r = rects + i;
 #endif
-        }
-        g_free(rects);
-    }
-    // wib_resized is set in the resize handler, If set above, run the
-    // redisplay queue immediately. This prevents some rather bad
-    // flickering in earlier GTK-2 releases (from RHEL 5).
+#ifdef WITH_QUARTZ
+        // The Update method updates a single pixel at 0,0, which
+        // triggers an expose event which is needed internally to
+        // show the rendering.  Here we filter and ignore this
+        // event.
+        //
+        // I have no clue why, but from viewports only, the
+        // 1-pixel area is followed by an apparently spurious
+        // region 2 pixels high along the entire bottom of the
+        // window.  We'll just break to avoid this.
 
-    w->wib_resized = false;
+        if (r->x == 0 && r->y == 0 && r->width == 1 && r->height == 1)
+            break;
+#endif
+        BBox BB(r->x, r->y + r->height, r->x + r->width, r->y);
+        w->wib_windesc->Update(&BB, false);
+    }
+#if GTK_CHECK_VERSION(3,0,0)
+    cairo_rectangle_list_destroy(rlist);
+#else
+    g_free(rects);
+#endif
     return (true);
 }
 
@@ -2022,8 +2035,9 @@ win_bag::key_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
     else if (KbMac()->MacroExpand(kev->keyval, kev->state, false))
         return (true);
 
-    if (kev->keyval == GDK_Shift_L || kev->keyval == GDK_Shift_R ||
-            kev->keyval == GDK_Control_L || kev->keyval == GDK_Control_R) {
+    if (kev->keyval == GDK_KEY_Shift_L || kev->keyval == GDK_KEY_Shift_R ||
+            kev->keyval == GDK_KEY_Control_L ||
+            kev->keyval == GDK_KEY_Control_R) {
         gdk_keyboard_grab(gtk_widget_get_window(caller), true, kev->time);
         grabbed_key = kev->keyval;
     }
@@ -2532,7 +2546,7 @@ win_bag::target_drag_leave(GtkWidget *widget, GdkDragContext*, guint)
     if (HaveDrag) {
         if (g_object_get_data(G_OBJECT(widget), "drag_hlite")) {
             gtk_drag_unhighlight(widget);
-            g_object_set_data(G_OBJECT(widget), "drag_hlite");
+            g_object_set_data(G_OBJECT(widget), "drag_hlite", 0);
         }
         DontRedrawMe = widget;
         HaveDrag = false;
@@ -2716,9 +2730,14 @@ main_bag::initialize()
     gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "configure-event",
         G_CALLBACK(resize_hdlr), this);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(gd_viewport), "draw",
+        G_CALLBACK(redraw_hdlr), this);
+#else
     gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
         G_CALLBACK(redraw_hdlr), this);
+#endif
     gtk_widget_add_events(gd_viewport, GDK_KEY_PRESS_MASK);
     g_signal_connect_after(G_OBJECT(gd_viewport), "key-press-event",
         G_CALLBACK(key_dn_hdlr), this);
@@ -2841,8 +2860,19 @@ main_bag::initialize()
     hbox = edit->container();
     PL()->SetEdit(edit);
 
+    /* XXX
+    GtkAllocation a;
+    a.x = 0;
+    a.y = 0;
+    a.width = 800;
+    a.height = 50;
+    gtk_widget_size_allocate(wb_textarea, &a);
+    */
+
+
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt + 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+//        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL ),
         (GtkAttachOptions)0, 0, 0);
     rowcnt++;
 
@@ -2961,10 +2991,17 @@ main_bag::initialize()
     SetWindowBackground(gd_backg);
     clr.pixel = DSP()->Color(PromptBackgroundColor);
     gtk_QueryColor(&clr);
+#if GTK_CHECK_VERSION(3,0,0)
+    gdk_window_set_background(gtk_widget_get_window(wb_textarea), &clr);
+    CpyGC()->clear(gtk_widget_get_window(wb_textarea));
+    gdk_window_set_background(gtk_widget_get_window(mb_readout), &clr);
+    CpyGC()->clear(gtk_widget_get_window(mb_readout));
+#else
     gdk_window_set_background(gtk_widget_get_window(wb_textarea), &clr);
     gdk_window_clear(gtk_widget_get_window(wb_textarea));
     gdk_window_set_background(gtk_widget_get_window(mb_readout), &clr);
     gdk_window_clear(gtk_widget_get_window(mb_readout));
+#endif
 
     // Set the I-beam cursor in the prompt and status text area.
 
@@ -3016,7 +3053,7 @@ main_bag::xrm_load_colors()
         passwd *pw = getpwuid(getuid());
         if (pw) {
             char buf[512];
-            sprintf(buf, "%s/%s", pw->pw_dir, XM()->Product());
+            snprintf(buf, 512, "%s/%s", pw->pw_dir, XM()->Product());
             if (access(buf, R_OK))
                 return;
             XrmDatabase rdb = XrmGetFileDatabase(buf);
@@ -3024,10 +3061,10 @@ main_bag::xrm_load_colors()
         }
     }
     char name[64], clss[64];
-    sprintf(name, "%s.", XM()->Product());
+    snprintf(name, 64, "%s.", XM()->Product());
     lstring::strtolower(name);
     char *tn = name + strlen(name);
-    sprintf(clss, "%s.", XM()->Product());
+    snprintf(clss, 64, "%s.", XM()->Product());
     char *tc = clss + strlen(clss);
     XrmDatabase db = XrmGetDatabase(gr_x_display());
     for (int i = 0; i < ColorTableEnd; i++) {
@@ -3253,7 +3290,7 @@ main_local::form_submit_hdlr(void *data)
                     !strcmp(cbs->components[i-1].name,
                     cbs->components[i].name)) {
                 char buf[64];
-                sprintf(buf, "%s_extra%d", cbs->components[i].name, scnt);
+                snprintf(buf, 64, "%s_extra%d", cbs->components[i].name, scnt);
                 delete [] v->name;
                 v->name = lstring::copy(buf);
                 scnt++;
