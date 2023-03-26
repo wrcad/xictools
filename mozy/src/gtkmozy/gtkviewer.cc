@@ -759,8 +759,6 @@ gtk_viewer::tk_alloc_font(const char *family, int size, unsigned char style)
         strcpy(buf, f.get_family());
         family = buf;
     }
-//XXX
-fprintf(stderr, "alloc font %s\n", family);
 
     htmFont *font = new htmFont(this, family, size, style);
     PangoFontDescription *pfd = pango_font_description_from_string(family);
@@ -898,8 +896,6 @@ namespace {
 int
 gtk_viewer::tk_text_width(htmFont *font, const char *text, int len)
 {
-//XXX
-fprintf(stderr, "text width\n");
     gsize xlen;
     if (v_iso8859 || is_utf8((const unsigned char*)text, len)) {
         // Must convert to UTF-8.
@@ -914,13 +910,12 @@ fprintf(stderr, "text width\n");
     pango_layout_set_font_description(pl, pfd);
     pango_layout_set_text(pl, text, xlen);
     if (v_iso8859) {
-//XXX        g_free((void*)text);
+        g_free((void*)text);
     }
 
     int tw, th;
     pango_layout_get_pixel_size(pl, &tw, &th);
     g_object_unref(pl);
-fprintf(stderr, "%s %d %d\n", text, tw, th);
     return (tw);
 }
 
@@ -1237,7 +1232,7 @@ gtk_viewer::tk_query_colors(htmColor *clrs, unsigned int sz)
         colors[i].pixel = clrs[i].pixel;
 #if GTK_CHECK_VERSION(3,0,0)
     for (unsigned int i = 0; i < sz; i++) {
-        ndkGC::query_rgb(colors + 1, GRX->Visual());
+        ndkGC::query_rgb(colors + i, GRX->Visual());
         clrs[i].red   = colors[i].red >> 8;
         clrs[i].green = colors[i].green >> 8;
         clrs[i].blue  = colors[i].blue >> 8;
@@ -1304,8 +1299,6 @@ gtk_viewer::tk_get_pixels(unsigned short *reds, unsigned short *greens,
 void
 gtk_viewer::tk_set_clip_mask(htmPixmap*, htmBitmap *bmap)
 {
-    //XXX
-    return;
 #ifdef NEW_NDK
     v_gc->set_clip_mask((ndkPixmap*)bmap);
 #else
@@ -1328,8 +1321,6 @@ gtk_viewer::tk_set_clip_origin(int x, int y)
 void
 gtk_viewer::tk_set_clip_rectangle(htmRect *r)
 {
-    //XXX
-    return;
 #ifdef NEW_NDK
     if (!r) {
         v_gc->set_clip_rectangle(0);
@@ -1484,8 +1475,6 @@ gtk_viewer::tk_draw_line(int x1, int y1, int x2, int y2)
 void
 gtk_viewer::tk_draw_text(int x, int y, const char *text, int len)
 {
-//XXX
-fprintf(stderr, "draw text\n");
     if (v_iso8859 || is_utf8((const unsigned char*)text, len)) {
         // Must convert to UTF-8.
         gsize xlen;
