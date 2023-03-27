@@ -662,8 +662,13 @@ GTKnumPopup::GTKnumPopup(GTKbag *owner, const char *prompt_str,
     pw_mind = mind;
     pw_maxd = maxd;
     pw_value = pw_tmp_value = initd;
+#if GTK_CHECK_VERSION(3,0,0)
     GtkAdjustment *adj = gtk_adjustment_new(initd, mind, maxd, del,
         pagesize, 0);
+#else
+    GtkAdjustment *adj = (GtkAdjustment*)gtk_adjustment_new(initd,
+        mind, maxd, del, pagesize, 0);
+#endif
     pw_text = gtk_spin_button_new(adj, climb_rate, numd);
     gtk_widget_show(pw_text);
     g_signal_connect(G_OBJECT(pw_text), "changed",

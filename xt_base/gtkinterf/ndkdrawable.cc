@@ -265,17 +265,6 @@ ndkDrawable::refresh(ndkGC *gc, GdkEventExpose *pev)
                 d_pixmap->get_width(), d_pixmap->get_height());
             return;
         }
-#if NEW_NDK
-        int nrects = cairo_region_num_rectangles(pev->region);
-        if (nrects <= 0)
-            return;
-        cairo_rectangle_int_t r;
-        while (nrects--) {
-            cairo_region_get_rectangle(pev->region, nrects, &r);
-            d_pixmap->copy_to_window(d_window, gc, r.x, r.y, r.x, r.y,
-                r.width, r.height);
-        }
-#else
         GdkRectangle *rects;
         int nrects;
         gdk_region_get_rectangles(pev->region, &rects, &nrects);
@@ -288,7 +277,6 @@ ndkDrawable::refresh(ndkGC *gc, GdkEventExpose *pev)
             r++;
         }
         g_free(rects);
-#endif
     }
 }
 

@@ -332,11 +332,11 @@ struct ndkGC
     void set_clip_rectangle(const GdkRectangle *rectangle)
     {
         gc_remove_drawable_clip();
-#ifdef NOTGDK3
-        GdkRegion *region = rectangle ? gdk_region_rectangle(rectangle) : 0;
-#else
+#if GTK_CHECK_VERSION(3,0,0)
         cairo_region_t *region = rectangle ?
             cairo_region_create_rectangle(rectangle) : 0;
+#else
+        GdkRegion *region = rectangle ? gdk_region_rectangle(rectangle) : 0;
 #endif
         gc_set_clip_region_real(region, true);
     }
@@ -345,7 +345,16 @@ struct ndkGC
     // The clip mask is interpreted relative to the clip origin.  (See
     // set_clip_origin()).
     //
-#ifdef NOTGTK3
+#if GTK_CHECK_VERSION(3,0,0)
+    void set_clip_region(const cairo_region_t *region)
+    {
+        gc_remove_drawable_clip();
+        cairo_region_t *copy = region ? cairo_region_copy(region) : 0;;
+        gc_set_clip_region_real(copy, true);
+    }
+
+    cairo_region_t *get_clip_region()    { return (gc_clip_region); }
+#else
     void set_clip_region(const GdkRegion *region)
     {
         gc_remove_drawable_clip();
@@ -358,15 +367,6 @@ struct ndkGC
     }
 
     GdkRegion *get_clip_region()    { return (gc_clip_region); }
-#else
-    void set_clip_region(const cairo_region_t *region)
-    {
-        gc_remove_drawable_clip();
-        cairo_region_t *copy = region ? cairo_region_copy(region) : 0;;
-        gc_set_clip_region_real(copy, true);
-    }
-
-    cairo_region_t *get_clip_region()    { return (gc_clip_region); }
 #endif
 
 
@@ -481,19 +481,7 @@ struct ndkGC
     void draw_pango_layout(ndkPixmap *p, int x, int y, PangoLayout *lout)
         { draw_pango_layout(p->get_xid(), x, y, lout); }
 
-#ifdef NOTGTK3
-    void draw_line(GdkWindow *d, int x1, int y1, int x2, int y2)
-        { draw_line(gdk_x11_drawable_get_xid(d), x1, y1, x2, y2); }
-    void draw_arc(GdkWindow *d, bool filled, int x, int y, int w, int h,
-            int as, int ae)
-        { draw_arc(gdk_x11_drawable_get_xid(d), filled, x, y, w, h, as, ae); }
-    void draw_rectangle(GdkWindow *d, bool filled, int x, int y, int w, int h)
-        { draw_rectangle(gdk_x11_drawable_get_xid(d), filled, x, y, w, h); }
-    void draw_polygon(GdkWindow *d, bool filled, GdkPoint *pts, int npts)
-        { draw_polygon(gdk_x11_drawable_get_xid(d), filled, pts, npts); }
-    void draw_pango_layout(GdkWindow *d, int x, int y, PangoLayout *lout)
-        { draw_pango_layout(gdk_x11_drawable_get_xid(d), x, y, lout); }
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     void draw_line(GdkWindow *d, int x1, int y1, int x2, int y2)
         { draw_line(gdk_x11_window_get_xid(d), x1, y1, x2, y2); }
     void draw_arc(GdkWindow *d, bool filled, int x, int y, int w, int h,
@@ -505,6 +493,18 @@ struct ndkGC
         { draw_polygon(gdk_x11_window_get_xid(d), filled, pts, npts); }
     void draw_pango_layout(GdkWindow *d, int x, int y, PangoLayout *lout)
         { draw_pango_layout(gdk_x11_window_get_xid(d), x, y, lout); }
+#else
+    void draw_line(GdkWindow *d, int x1, int y1, int x2, int y2)
+        { draw_line(gdk_x11_drawable_get_xid(d), x1, y1, x2, y2); }
+    void draw_arc(GdkWindow *d, bool filled, int x, int y, int w, int h,
+            int as, int ae)
+        { draw_arc(gdk_x11_drawable_get_xid(d), filled, x, y, w, h, as, ae); }
+    void draw_rectangle(GdkWindow *d, bool filled, int x, int y, int w, int h)
+        { draw_rectangle(gdk_x11_drawable_get_xid(d), filled, x, y, w, h); }
+    void draw_polygon(GdkWindow *d, bool filled, GdkPoint *pts, int npts)
+        { draw_polygon(gdk_x11_drawable_get_xid(d), filled, pts, npts); }
+    void draw_pango_layout(GdkWindow *d, int x, int y, PangoLayout *lout)
+        { draw_pango_layout(gdk_x11_drawable_get_xid(d), x, y, lout); }
 #endif
 
     void offset(int, int);
@@ -533,24 +533,24 @@ private:
 
 #define GDK_IMPORTS
 #ifdef GDK_IMPORTS
-#ifdef NOTGDK3
-    void gc_set_clip_region_real(GdkRegion*, bool);
-    void gc_set_clip_region_internal(GdkRegion*, bool);
-//    void gc_add_drawable_clip(unsigned int, GdkRegion*, int, int);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     void gc_set_clip_region_real(cairo_region_t*, bool);
     void gc_set_clip_region_internal(cairo_region_t*, bool);
 //    void gc_add_drawable_clip(unsigned int, cairo_region_t*, int, int);
+#else
+    void gc_set_clip_region_real(GdkRegion*, bool);
+    void gc_set_clip_region_internal(GdkRegion*, bool);
+//    void gc_add_drawable_clip(unsigned int, GdkRegion*, int, int);
 #endif
     void gc_remove_drawable_clip();
     void gc_update_context(cairo_t*, const GdkColor*, ndkPixmap*, bool,
         ndkDrawable*);
 #ifdef WITH_X11
     void gc_x11_flush();
-#ifdef NOTGDK3
-    void gc_windowing_set_clip_region(const GdkRegion*, bool);
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     void gc_windowing_set_clip_region(const cairo_region_t*, bool);
+#else
+    void gc_windowing_set_clip_region(const GdkRegion*, bool);
 #endif
     static void gc_windowing_copy(ndkGC*, ndkGC*);
 #endif
@@ -561,12 +561,12 @@ private:
     int             gc_ts_x_origin;
     int             gc_ts_y_origin;
 
-#ifdef NOTGDK3
-    GdkRegion       *gc_clip_region;
-    GdkRegion       *gc_old_clip_region;
-#else
+#if GTK_CHECK_VERSION(3,0,0)
     cairo_region_t  *gc_clip_region;
     cairo_region_t  *gc_old_clip_region;
+#else
+    GdkRegion       *gc_clip_region;
+    GdkRegion       *gc_old_clip_region;
 #endif
 
     unsigned int    gc_region_tag_applied;

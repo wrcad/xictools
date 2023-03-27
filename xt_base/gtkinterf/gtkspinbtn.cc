@@ -204,7 +204,12 @@ GTKspinBtn::init(double val, double minv, double maxv, int numd)
         set_value(sb_value);
         return (sb_cont);
     }
+#if GTK_CHECK_VERSION(3,0,0)
     GtkAdjustment *adj = gtk_adjustment_new(val, minv, maxv, del, pgsz, 0);
+#else
+    GtkAdjustment *adj = (GtkAdjustment*)gtk_adjustment_new(val, minv, maxv,
+        del, pgsz, 0);
+#endif
     sb_widget = gtk_spin_button_new(adj, climb_rate, numd);
     gtk_widget_show(sb_widget);
     gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(sb_widget), true);

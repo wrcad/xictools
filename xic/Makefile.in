@@ -303,6 +303,11 @@ distclean: eclean
 	done
 	-@rm -f bin/*.o Makefile
 
+grclean:
+	cd src/gtkxic; $(MAKE) clean
+	cd ../mozy/src/gtkmozy; $(MAKE) clean
+	cd ../xt_base/gtkinterf; $(MAKE) clean
+
 #######################################################################
 ####### Install programs into system location #########################
 

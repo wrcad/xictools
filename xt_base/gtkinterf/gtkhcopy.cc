@@ -61,6 +61,11 @@ using namespace mswinterf;
 
 #include <gdk/gdkkeysyms.h>
 
+#if GTK_CHECK_VERSION(3,0,0)
+#define GTK_ADJUSTMENT_NEW gtk_adjustment_new
+#else
+#define GTK_ADJUSTMENT_NEW (GtkAdjustment*)gtk_adjustment_new
+#endif
 
 /************************************************************************
  *
@@ -1013,9 +1018,9 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
             amin = MM(hcdesc->limits.minwidth);
             amax = MM(hcdesc->limits.maxwidth);
         }
-        GtkAdjustment *adj = gtk_adjustment_new(hc->hc_wid_val, amin, amax, .1,
+        GtkAdjustment *adj = GTK_ADJUSTMENT_NEW(hc->hc_wid_val, amin, amax, .1,
             1.0, 0.0);
-        entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 2);
+        entry = gtk_spin_button_new(adj, 1.0, 2);
         gtk_widget_set_name(entry, "Width");
         gtk_widget_show(entry);
         gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), true);
@@ -1042,8 +1047,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
             amin = MM(hcdesc->limits.minheight);
             amax = MM(hcdesc->limits.maxheight);
         }
-        adj = gtk_adjustment_new(hc->hc_hei_val, amin, amax, .1, 1.0, 0.0);
-        entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 2);
+        adj = GTK_ADJUSTMENT_NEW(hc->hc_hei_val, amin, amax, .1, 1.0, 0.0);
+        entry = gtk_spin_button_new(adj, 1.0, 2);
         gtk_widget_set_name(entry, "Height");
         gtk_widget_show(entry);
         gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), true);
@@ -1069,8 +1074,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
             amin = MM(hcdesc->limits.minxoff);
             amax = MM(hcdesc->limits.maxxoff);
         }
-        adj = gtk_adjustment_new(hc->hc_lft_val, amin, amax, .1, 1.0, 0.0);
-        entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 2);
+        adj = GTK_ADJUSTMENT_NEW(hc->hc_lft_val, amin, amax, .1, 1.0, 0.0);
+        entry = gtk_spin_button_new(adj, 1.0, 2);
         gtk_widget_set_name(entry, "Left");
         gtk_widget_show(entry);
         gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), true);
@@ -1097,8 +1102,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
             amin = MM(hcdesc->limits.minyoff);
             amax = MM(hcdesc->limits.maxyoff);
         }
-        adj = gtk_adjustment_new(hc->hc_top_val, amin, amax, .1, 1.0, 0.0);
-        entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 2);
+        adj = GTK_ADJUSTMENT_NEW(hc->hc_top_val, amin, amax, .1, 1.0, 0.0);
+        entry = gtk_spin_button_new(adj, 1.0, 2);
         gtk_widget_set_name(entry, "TopBot");
         gtk_widget_show(entry);
         gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), true);
@@ -1162,8 +1167,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
         hc->hc_linwlab = label;
 
-        adj = gtk_adjustment_new(0.0l, 0.0, 10.0, .1, 1.0, 0.0);
-        entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 2);
+        adj = GTK_ADJUSTMENT_NEW(0.0l, 0.0, 10.0, .1, 1.0, 0.0);
+        entry = gtk_spin_button_new(adj, 1.0, 2);
         gtk_widget_set_name(entry, "linewidth");
         gtk_widget_show(entry);
         gtk_widget_set_size_request(entry, 90, -1);
@@ -1486,28 +1491,28 @@ GTKprintPopup::hc_set_format(GTKbag *wb, int index, bool set_menu)
     hc->hc_resol = newhcdesc->defaults.defresol;
 
     if (hc->hc_wid) {
-        GtkAdjustment *adj = gtk_adjustment_new(
+        GtkAdjustment *adj = GTK_ADJUSTMENT_NEW(
             MM(newhcdesc->defaults.defwidth), MM(newhcdesc->limits.minwidth),
             MM(newhcdesc->limits.maxwidth), .1, 1.0, 0.0);
         gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON(hc->hc_wid), adj);
         gtk_adjustment_value_changed(adj);
     }
     if (hc->hc_hei) {
-        GtkAdjustment *adj = gtk_adjustment_new(
+        GtkAdjustment *adj = GTK_ADJUSTMENT_NEW(
             MM(newhcdesc->defaults.defheight), MM(newhcdesc->limits.minheight),
             MM(newhcdesc->limits.maxheight), .1, 1.0, 0.0);
         gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON(hc->hc_hei), adj);
         gtk_adjustment_value_changed(adj);
     }
     if (hc->hc_left) {
-        GtkAdjustment *adj = gtk_adjustment_new(
+        GtkAdjustment *adj = GTK_ADJUSTMENT_NEW(
             MM(newhcdesc->defaults.defxoff), MM(newhcdesc->limits.minxoff),
             MM(newhcdesc->limits.maxxoff), .1, 1.0, 0.0);
         gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON(hc->hc_left), adj);
         gtk_adjustment_value_changed(adj);
     }
     if (hc->hc_top) {
-        GtkAdjustment *adj = gtk_adjustment_new(
+        GtkAdjustment *adj = GTK_ADJUSTMENT_NEW(
             MM(newhcdesc->defaults.defyoff), MM(newhcdesc->limits.minyoff),
             MM(newhcdesc->limits.maxyoff), .1, 1.0, 0.0);
         gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON(hc->hc_top), adj);
@@ -1751,13 +1756,13 @@ GTKprintPopup::hc_metric_proc(GtkWidget *caller, void *client_data)
             GTK_SPIN_BUTTON(hc->hc_wid));
         if (wasmetric) {
             d /= MMPI;
-            adj = gtk_adjustment_new(d,
+            adj = GTK_ADJUSTMENT_NEW(d,
                 gtk_adjustment_get_lower(adj)/MMPI,
                 gtk_adjustment_get_upper(adj)/MMPI, .1, 1.0, 0.0);
         }
         else {
             d *= MMPI;
-            adj = gtk_adjustment_new(d,
+            adj = GTK_ADJUSTMENT_NEW(d,
                 gtk_adjustment_get_lower(adj)*MMPI,
                 gtk_adjustment_get_upper(adj)*MMPI, .1, 1.0, 0.0);
         }
@@ -1768,13 +1773,13 @@ GTKprintPopup::hc_metric_proc(GtkWidget *caller, void *client_data)
         adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(hc->hc_hei));
         if (wasmetric) {
             d /= MMPI;
-            adj = gtk_adjustment_new(d,
+            adj = GTK_ADJUSTMENT_NEW(d,
                 gtk_adjustment_get_lower(adj)/MMPI,
                 gtk_adjustment_get_upper(adj)/MMPI, .1, 1.0, 0.0);
         }
         else {
             d *= MMPI;
-            adj = gtk_adjustment_new(d,
+            adj = GTK_ADJUSTMENT_NEW(d,
                 gtk_adjustment_get_lower(adj)*MMPI,
                 gtk_adjustment_get_upper(adj)*MMPI, .1, 1.0, 0.0);
         }
@@ -1785,13 +1790,13 @@ GTKprintPopup::hc_metric_proc(GtkWidget *caller, void *client_data)
         adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(hc->hc_left));
         if (wasmetric) {
             d /= MMPI;
-            adj = gtk_adjustment_new(d,
+            adj = GTK_ADJUSTMENT_NEW(d,
                 gtk_adjustment_get_lower(adj)/MMPI,
                 gtk_adjustment_get_upper(adj)/MMPI, .1, 1.0, 0.0);
         }
         else {
             d *= MMPI;
-            adj = gtk_adjustment_new(d,
+            adj = GTK_ADJUSTMENT_NEW(d,
                 gtk_adjustment_get_lower(adj)*MMPI,
                 gtk_adjustment_get_upper(adj)*MMPI, .1, 1.0, 0.0);
         }
@@ -1802,13 +1807,13 @@ GTKprintPopup::hc_metric_proc(GtkWidget *caller, void *client_data)
         adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(hc->hc_top));
         if (wasmetric) {
             d /= MMPI;
-            adj = gtk_adjustment_new(d,
+            adj = GTK_ADJUSTMENT_NEW(d,
                 gtk_adjustment_get_lower(adj)*MMPI,
                 gtk_adjustment_get_upper(adj)*MMPI, .1, 1.0, 0.0);
         }
         else {
             d *= MMPI;
-            adj = gtk_adjustment_new(d,
+            adj = GTK_ADJUSTMENT_NEW(d,
                 gtk_adjustment_get_lower(adj)*MMPI,
                 gtk_adjustment_get_upper(adj)*MMPI, .1, 1.0, 0.0);
         }

@@ -146,7 +146,7 @@ cMain::createViewMenu()
         MenuEnt(&M_Zoom,     MenuZOOM,  ME_TOGGLE,   CMD_SAFE,
         MenuZOOM": Zoom, or set display window.");
     ViewMenu[viewMenuVport] =
-        MenuEnt(&M_SubWindow,MenuVPORT, ME_TOGGLE,   CMD_SAFE,
+        MenuEnt(&M_SubWindow,MenuVPORT, ME_VANILLA,  CMD_SAFE,
         MenuVPORT": Pop up another drawing window.");
     ViewMenu[viewMenuPeek] =
         MenuEnt(&M_Peek,     MenuPEEK,  ME_TOGGLE,   CMD_SAFE,

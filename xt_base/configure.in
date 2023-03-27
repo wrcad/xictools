@@ -678,6 +678,8 @@ dnl Don't need to filter with newer tools than win-builds.
 AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
 if test $have_cfg = yes; then
     if test $gtklev == 3; then
+        XLIBS="-lXrender -lXinerama -lXi -lXrandr -lXcursor -lXcomposite \
+-lXdamage -lXfixes -lX11 -lXext"
         ${gtklocd}pkg-config --exists gtk+-3.0
         if test $? = 0; then
             GRPREF=gtk
@@ -688,6 +690,7 @@ dnl             # Filter needed in Windows, pkg-config adds ^M that chokes g++.
             else
                 tkcf="`${gtklocd}pkg-config --cflags gtk+-3.0`"
                 tkl="`${gtklocd}pkg-config --libs gtk+-3.0`"
+                tkl="$tkl $XLIBS"
             fi
             TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
 dnl            TOOLKITCFLAGS="-DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED \
@@ -739,6 +742,7 @@ AC_SUBST(TOOLKITCFLAGS)
 AC_SUBST(TOOLKITLFLAGS)
 AC_SUBST(MOC)
 AC_SUBST(QTBASE)
+AC_SUBST(XLIBS)
 
 
 dnl ***

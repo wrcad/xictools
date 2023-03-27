@@ -515,9 +515,11 @@ GTKfontPopup::GTKfontPopup(GTKbag *owner, int indx, void *arg,
     gtk_widget_show(ft_fsel);
     gtk_box_pack_start(GTK_BOX(form), ft_fsel, true, true, 0);
 
+#if GTK_CHECK_VERSION(3,0,0)
     GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_widget_show(sep);
     gtk_box_pack_start(GTK_BOX(form), sep, false, false, 0);
+#endif
 
     GtkWidget *hbox = gtk_hbox_new(false, 2);
     gtk_widget_show(hbox);

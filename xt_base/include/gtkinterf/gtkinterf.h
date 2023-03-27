@@ -149,7 +149,8 @@ namespace gtkinterf {
         void RegisterBigWindow(GtkWidget *window);
         void RegisterBigForeignWindow(unsigned int);
 
-#ifdef NOTGTK3
+#if GTK_CHECK_VERSION(3,0,0)
+#else
         GdkColormap *Colormap()     { return (dv_cmap); }
 #endif
         GdkVisual *Visual()         { return (dv_visual); }
@@ -184,7 +185,8 @@ namespace gtkinterf {
         int dv_loop_level;
         GTKbag *dv_main_wbag;
         GdkWindow *dv_default_focus_win;
-#ifdef NOTGTK3
+#if GTK_CHECK_VERSION(3,0,0)
+#else
         GdkColormap *dv_cmap;
 #endif
         GdkVisual *dv_visual;

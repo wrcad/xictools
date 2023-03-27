@@ -63,7 +63,11 @@ namespace gtkinterf {
     inline Window
     gr_x_window(GdkWindow *window)
     {
+#if GTK_CHECK_VERSION(3,0,0)
         return (gdk_x11_window_get_xid(window));
+#else
+        return (GDK_WINDOW_XID(window));
+#endif
     }
 
     inline Visual *

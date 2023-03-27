@@ -101,7 +101,8 @@ struct ndkImage
     void put_pixel(int, int, unsigned int);
     unsigned int get_pixel(int, int);
 
-#ifdef NOTGDK3
+#if GTK_CHECK_VERSION(3,0,0)
+#else
     void set_colormap(GdkColormap*);
     GdkColormap *get_colormap();
 #endif
@@ -128,7 +129,8 @@ private:
     unsigned short  im_bpl;
     unsigned short  im_bits_per_pixel;
     gpointer        im_mem;
-#ifdef NOTGDK3
+#if GTK_CHECK_VERSION(3,0,0)
+#else
     GdkColormap     *im_colormap;
 #endif
 

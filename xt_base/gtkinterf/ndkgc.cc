@@ -1,4 +1,4 @@
-
+ 
 /*========================================================================*
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
@@ -629,7 +629,22 @@ ndkGC::draw_pango_layout(XID xid, int x, int y, PangoLayout *lout)
     if (wid <= 0 || hei <= 0)
         return;
     ndkPixmap *p = new ndkPixmap((GdkWindow*)0, wid, hei);
-    p->copy_from_pango_layout(this, x, y, lout);
+    p->copy_from_pango_layout(this, 0, 0, lout);
+
+    // Deal with transparency the hard way.
+    ndkImage *im = new ndkImage(p, 0, 0, wid, hei);
+    XCopyArea(get_xdisplay(), xid, p->get_xid(), get_xgc(),
+        x, y, wid, hei, 0, 0);
+    ndkImage *im1 = new ndkImage(p, 0, 0, wid, hei);
+    for (int i = 0; i < wid; i++) {
+        for (int j = 0; j < hei;  j++) {
+            unsigned int px = im->get_pixel(i, j);
+            if (px != gc_bg_pixel)
+                im1->put_pixel(i, j, px);
+        }
+    }
+    im1->copy_to_pixmap(p, this, 0, 0, 0, 0, wid, hei);
+
     XCopyArea(get_xdisplay(), p->get_xid(), xid, get_xgc(),
         0, 0, wid, hei, x, y);
     p->dec_ref();

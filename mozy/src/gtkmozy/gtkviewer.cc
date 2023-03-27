@@ -107,7 +107,10 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     htmWidget(this, d)
 {
     v_form = 0;
+#define USE_FIXED
+#ifdef USE_FIXED
     v_fixed = 0;
+#endif
     v_draw_area = 0;
     v_hsba = 0;
     v_vsba = 0;
@@ -138,17 +141,23 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     v_form = gtk_table_new(2, 2, false);
     gtk_widget_show(v_form);
 
+#ifdef USE_FIXED
+// This screws up GTK-3 rendering and seems like a fix to an ancient
+// problem that probably doesn't exist anymore.
     v_fixed = gtk_fixed_new();
     gtk_widget_show(v_fixed);
     // Without this, form widgets will render outside of the drawing
     // area.  This clips them to the drawing area.
-    gtk_widget_set_has_window(v_fixed, true);
+//    gtk_widget_set_has_window(v_fixed, true);
+#endif
 
     v_draw_area = gtk_drawing_area_new();
     gtk_widget_set_double_buffered(v_draw_area, false);  // we handle it
     gtk_widget_show(v_draw_area);
     gtk_widget_set_size_request(v_draw_area, v_width, v_height);
+#ifdef USE_FIXED
     gtk_fixed_put(GTK_FIXED(v_fixed), v_draw_area, 0, 0);
+#endif
 
     v_hsba = (GtkAdjustment*)gtk_adjustment_new(0.0, 0.0, v_width, 8.0,
         v_width/2, v_width);
@@ -172,7 +181,11 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
         | GDK_KEY_PRESS_MASK
         | GDK_KEY_RELEASE_MASK);
 
+#ifdef USE_FIXED
     g_signal_connect(G_OBJECT(v_fixed), "size-allocate",
+#else
+    g_signal_connect(G_OBJECT(v_draw_area), "size-allocate",
+#endif
         G_CALLBACK(v_resize_hdlr), this);
 
     g_signal_connect(G_OBJECT(v_vsba), "value-changed",
@@ -215,7 +228,11 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     g_signal_connect(G_OBJECT(v_draw_area), "scroll-event",
         G_CALLBACK(v_scroll_event_hdlr), this);
 
+#ifdef USE_FIXED
     gtk_table_attach(GTK_TABLE(v_form), v_fixed, 0, 1, 0, 1,
+#else
+    gtk_table_attach(GTK_TABLE(v_form), v_draw_area, 0, 1, 0, 1,
+#endif
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 0, 0);
 
@@ -540,7 +557,7 @@ gtk_viewer::tk_resize_area(int w, int h)
     }
 
     if (w > wid+8) {
-        // We can get by without a horizintal scrollbar if w is only
+        // We can get by without a horizontal scrollbar if w is only
         // slightly larger than wid.  The scrollbar can be annoying.
 
         double val = gtk_adjustment_get_value(v_hsba);
@@ -652,7 +669,9 @@ gtk_viewer::tk_set_anchor_cursor(bool set)
 #ifdef NEW_NDK
         GdkColor white, black;
         white.pixel = 0xffffff;
+        ndkGC::query_rgb(&white, GRX->Visual());
         black.pixel = 0;
+        ndkGC::query_rgb(&black, GRX->Visual());
         v_cursor = new ndkCursor(window, fingers_bits, fingers_m_bits,
             fingers_width, fingers_height, fingers_x_hot, fingers_y_hot,
             &white, &black);
@@ -760,6 +779,8 @@ gtk_viewer::tk_alloc_font(const char *family, int size, unsigned char style)
         family = buf;
     }
 
+//XXX
+fprintf(stderr, "fa %s %d %d\n", family, size, PANGO_SCALE);
     htmFont *font = new htmFont(this, family, size, style);
     PangoFontDescription *pfd = pango_font_description_from_string(family);
 
@@ -783,6 +804,8 @@ gtk_viewer::tk_alloc_font(const char *family, int size, unsigned char style)
     font->width = pm->approximate_char_width/PANGO_SCALE;
     font->lbearing = 0;
     font->rbearing = 0;
+//XXX
+//fprintf(stderr, "%d %d %d\n", font->height, font->ascent, font->descent);
 
     // normal interword spacing
     font->isp = font->width;
@@ -1355,7 +1378,6 @@ gtk_viewer::tk_draw_pixmap(int xs, int ys, htmPixmap *pm,
 {
 #ifdef NEW_NDK
     ((ndkPixmap*)pm)->copy_to_pixmap(v_pixmap, v_gc, xs, ys, x, y, w, h);
-//    ((ndkPixmap*)pm)->copy_to_pixmap(v_pixmap, v_gc, x, y, xs, ys, w, h);
 #else
     gdk_window_copy_area(v_pixmap, v_gc, xs, ys, (GdkPixmap*)pm, x, y, w, h);
 #endif
@@ -1480,9 +1502,15 @@ gtk_viewer::tk_draw_text(int x, int y, const char *text, int len)
         gsize xlen;
         text = g_convert(text, len, "UTF-8", "ISO-8859-1", 0, &xlen, 0);
     }
-
+#if GTK_CHECK_VERSION(3,0,0)
+    PangoContext *pcx = gtk_widget_get_pango_context(v_draw_area);
+    pango_context_set_font_description(pcx, v_font);
+    PangoLayout *lout = pango_layout_new(pcx);
+    pango_layout_set_text(lout, text, -1);
+#else
     gtk_widget_modify_font(v_draw_area, v_font);
     PangoLayout *lout = gtk_widget_create_pango_layout(v_draw_area, text);
+#endif
     if (v_iso8859) {
         g_free((void*)text);
     }
@@ -2434,7 +2462,9 @@ gtk_viewer::resize_handler(GtkAllocation *a)
         gdk_pixmap_unref(v_pixmap);
         v_pixmap = pm;
 #endif
+#ifdef USE_FIXED
         gtk_widget_set_size_request(v_draw_area, v_width, v_height);
+#endif
         int x = htm_viewarea.x;
         int y = htm_viewarea.y;
         htmWidget::resize();
