@@ -237,7 +237,7 @@ protected:
     int wib_keypos;             // index into keys
     char wib_keys[CBUFMAX + 3]; // keys pressed
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     GdkWindow *wib_window_bak;  // screen buffer
     GdkPixmap *wib_draw_pixmap; // backing pixmap

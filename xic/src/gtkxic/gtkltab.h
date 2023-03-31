@@ -106,7 +106,7 @@ private:
     GtkWidget *ltab_lsearch;
     GtkWidget *ltab_lsearchn;
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     GdkPixmap *ltab_pixmap;
 #endif

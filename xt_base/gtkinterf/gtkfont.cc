@@ -72,6 +72,9 @@ GRfont::fnt_t GRfont::app_fonts[] =
 int GRfont::num_app_fonts =
     sizeof(GRfont::app_fonts)/sizeof(GRfont::app_fonts[0]);
 
+#define DEF_FIXED_FACE "Courier New"
+#define DEF_PROP_FACE "Helvetica"
+
 
 // This sets the default font names and sizes.  It nust be called as
 // soon as GTK is initialized, and before any calls to the other font
@@ -94,9 +97,9 @@ GTKfont::initFonts()
 //    printf("Default font size %d.\n", def_size);
 
     char buf[80];
-    sprintf(buf, "Monospace %d", def_size);
+    snprintf(buf, 80, "%s %d", DEF_FIXED_FACE, def_size);
     char *def_fx_font_name = lstring::copy(buf);
-    sprintf(buf, "Sans %d", def_size);
+    snprintf(buf, 80, "%s %d", DEF_PROP_FACE, def_size);
     char *def_pr_font_name = lstring::copy(buf);
 
     // Poke in the names.
@@ -231,7 +234,6 @@ GTKfont::getFamilyName(int fnum)
 
 
 // Return the font associated with fnum, creating it if necessary.
-// Note that gtk-2 doesn't need this.
 //
 bool
 GTKfont::getFont(void *fontp, int)
@@ -574,10 +576,6 @@ GTKfontPopup::GTKfontPopup(GTKbag *owner, int indx, void *arg,
         gtk_widget_show(ft_label);
         gtk_box_pack_start(GTK_BOX(form), ft_label, true, true, 0);
     }
-//XXX
-//ft_fsel = 0;
-//fprintf(stderr, "here1\n");
-//return;
 
     g_idle_add((GSourceFunc)index_idle, this);
 }
@@ -635,6 +633,15 @@ GTKfontPopup::set_font_name(const char *fontname)
         return;
 
 #if GTK_CHECK_VERSION(3,0,0)
+    gtk_font_chooser_set_font(GTK_FONT_CHOOSER(ft_fsel), fontname);
+    char *nf = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(ft_fsel));
+    if (!nf) {
+        sLstr lstr;
+        lstr.add("Warning\nUnknown or invalid font name\n");
+        lstr.add(fontname);
+        PopUpMessage(lstr.string(), true);
+    }
+    else g_free(nf);
 #else
     if (!gtk_font_selection_set_font_name(GTK_FONT_SELECTION(ft_fsel),
             fontname)) {
@@ -695,9 +702,15 @@ GTKfontPopup::update_all(int fnum)
         if (!activeFontSels[i])
             continue;
         if (activeFontSels[i]->ft_index == fnum) {
+#if GTK_CHECK_VERSION(3,0,0)
+            gtk_font_chooser_set_font(
+                GTK_FONT_CHOOSER(activeFontSels[i]->ft_fsel),
+                gtk_font.getName(fnum));
+#else
             gtk_font_selection_set_font_name(
                 GTK_FONT_SELECTION(activeFontSels[i]->ft_fsel),
                 gtk_font.getName(fnum));
+#endif
         }
     }
 }
@@ -726,7 +739,7 @@ GTKfontPopup::ft_button_proc(GtkWidget *widget, void *client_data)
         const char *btname = gtk_widget_get_name(widget);
         const char *fontname =
 #if GTK_CHECK_VERSION(3,0,0)
-            0;
+            gtk_font_chooser_get_font(GTK_FONT_CHOOSER(sel->ft_fsel));
 #else
             gtk_font_selection_get_font_name(GTK_FONT_SELECTION(sel->ft_fsel));
 #endif
@@ -747,7 +760,7 @@ GTKfontPopup::ft_apply_proc(GtkWidget*, void *client_data)
     if (sel) {
         const char *fontname =
 #if GTK_CHECK_VERSION(3,0,0)
-            0;
+            gtk_font_chooser_get_font(GTK_FONT_CHOOSER(sel->ft_fsel));
 #else
             gtk_font_selection_get_font_name(GTK_FONT_SELECTION(sel->ft_fsel));
 #endif
@@ -766,9 +779,15 @@ GTKfontPopup::ft_apply_proc(GtkWidget*, void *client_data)
             if (!activeFontSels[i] || activeFontSels[i] == sel)
                 continue;
             if (activeFontSels[i]->ft_index == sel->ft_index) {
+#if GTK_CHECK_VERSION(3,0,0)
+                gtk_font_chooser_set_font(
+                    GTK_FONT_CHOOSER(activeFontSels[i]->ft_fsel),
+                    gtk_font.getName(sel->ft_index));
+#else
                 gtk_font_selection_set_font_name(
                     GTK_FONT_SELECTION(activeFontSels[i]->ft_fsel),
                     gtk_font.getName(sel->ft_index));
+#endif
             }
         }
     }
@@ -794,12 +813,21 @@ GTKfontPopup::ft_opt_menu_proc(GtkWidget *caller, void *client_data)
 // only.  Based on widget code from gtk source.
 
 namespace {
+#if GTK_CHECK_VERSION(3,0,0)
+    int filter_fixed(PangoFontFamily *family, const PangoFontFace*,
+        void*)
+    {
+        const char *name = pango_font_family_get_name(family);
+        return (is_fixed(name));
+    }
+#else
     int cmp_families(const void *a, const void *b)
     {
         const char *a_name = pango_font_family_get_name(*(PangoFontFamily**)a);
         const char *b_name = pango_font_family_get_name(*(PangoFontFamily**)b);
         return g_utf8_collate(a_name, b_name);
     }
+#endif
 }
 
 
@@ -820,6 +848,26 @@ void
 GTKfontPopup::show_available_fonts(bool fixed)
 {
 #if GTK_CHECK_VERSION(3,0,0)
+    GtkFontChooser *fsel = GTK_FONT_CHOOSER(ft_fsel);
+    if (fixed) {
+        gtk_font_chooser_set_filter_func(fsel,
+            (GtkFontFilterFunc)filter_fixed, 0, 0);
+    }
+    else
+        gtk_font_chooser_set_filter_func(fsel, 0, 0, 0);
+    if (ft_index == 5 || ft_index == 6) {
+        gtk_font_chooser_set_level(GTK_FONT_CHOOSER(ft_fsel),
+            GTK_FONT_CHOOSER_LEVEL_FAMILY);
+    }
+    else {
+        gtk_font_chooser_set_level(GTK_FONT_CHOOSER(ft_fsel),
+            (GtkFontChooserLevel)(GTK_FONT_CHOOSER_LEVEL_FAMILY |
+            GTK_FONT_CHOOSER_LEVEL_STYLE |
+            GTK_FONT_CHOOSER_LEVEL_SIZE |
+            GTK_FONT_CHOOSER_LEVEL_VARIATIONS |
+            GTK_FONT_CHOOSER_LEVEL_FEATURES));
+    }
+
 #else
     GtkFontSelection *fsel = GTK_FONT_SELECTION(ft_fsel);
     GtkListStore *model = GTK_LIST_STORE(

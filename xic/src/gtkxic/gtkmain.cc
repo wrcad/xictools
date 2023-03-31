@@ -429,7 +429,7 @@ GTKpkg::Initialize(GRwbag *wcp)
 
     // Initialize the application's GUI.
     //
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     int wid = w->GetDrawable()->get_width();
     int hei = w->GetDrawable()->get_height();
 #else
@@ -559,7 +559,7 @@ GTKpkg::CheckForInterrupt()
     lasttime = Timer()->elapsed_msec();
 
     if (dispatch_events) {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ndkGC *gc = mainBag()->GC();
         if (gc == mainBag()->XorGC())
             // If ghost-drawing, defer event processing, which may
@@ -585,7 +585,7 @@ GTKpkg::CheckForInterrupt()
         DSP()->SetSlowMode(b);
 
         // Reset the GC, these may have changed during event processing.
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         gc->set_foreground(&gcv.v_foreground);
         gc->set_fill(gcv.v_fill);
         gc->set_line_attributes(gcv.v_line_width, gcv.v_line_style,
@@ -1072,7 +1072,7 @@ win_bag::win_bag() : GTKdraw(XW_DRAWING)
     wib_keypos = 0;
     memset(wib_keys, 0, sizeof(wib_keys));
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     wib_window_bak = 0;
     wib_draw_pixmap = 0;
@@ -1091,7 +1091,7 @@ win_bag::~win_bag()
     PopUpExpand(0, MODE_OFF, 0, 0, 0, false);
     PopUpGrid(0, MODE_OFF);
     PopUpZoom(0, MODE_OFF);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     if (wib_draw_pixmap)
         gdk_pixmap_unref(wib_draw_pixmap);
@@ -1132,7 +1132,7 @@ win_bag::subw_initialize(int wnum)
     }
     else {
         GdkRectangle rect;
-        ShellGeometry(mainBag()->Shell(), &rect, 0);
+        gtk_ShellGeometry(mainBag()->Shell(), &rect, 0);
         rect.x += rect.width - 560;
         rect.y += (wnum-1)*40 + 60; // make room for device toolbar
         gtk_window_move(GTK_WINDOW(wb_shell), rect.x, rect.y);
@@ -1256,7 +1256,7 @@ win_bag::subw_initialize(int wnum)
     gtk_window_set_transient_for(GTK_WINDOW(wb_shell),
         GTK_WINDOW(mainBag()->Shell()));
     gtk_widget_show(wb_shell);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
 #else
     gd_window = gtk_widget_get_window(gd_viewport);
@@ -1269,7 +1269,7 @@ win_bag::subw_initialize(int wnum)
 
     // Application initialization callback.
     //
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     int wid = GetDrawable()->get_width();
     int hei = GetDrawable()->get_height();
 #else
@@ -1292,7 +1292,7 @@ void
 win_bag::pre_destroy(int wnum)
 {
     GdkRectangle rect, rect_d;
-    ShellGeometry(wb_shell, &rect, &rect_d);
+    gtk_ShellGeometry(wb_shell, &rect, &rect_d);
 
     // Save relative to corner of main window.  Absolute coords can
     // change if the main window is moved to a different monitor in
@@ -1320,7 +1320,7 @@ win_bag::SwitchToPixmap()
     if (!wib_windesc)
         return;
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_pixmap();
 #else
     if (wib_window_bak) {
@@ -1364,7 +1364,7 @@ void
 win_bag::SwitchFromPixmap(const BBox *BB)
 {
     // Note that the bounding values are included in the display.
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(CpyGC(), BB->left, BB->top,
         BB->width()+1, abs(BB->height())+1);
@@ -1389,7 +1389,7 @@ win_bag::SwitchFromPixmap(const BBox *BB)
 GRobject
 win_bag::DrawableReset()
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_window();
     return (0);
 #else
@@ -1407,7 +1407,7 @@ win_bag::DrawableReset()
 void
 win_bag::CopyPixmap(const BBox *BB)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(CpyGC(),
         BB->left, BB->top, BB->width() + 1, abs(BB->height()) + 1);
@@ -1427,7 +1427,7 @@ win_bag::CopyPixmap(const BBox *BB)
 void
 win_bag::DestroyPixmap()
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     if (wib_window_bak) {
         gd_window = wib_window_bak;
@@ -1452,7 +1452,7 @@ win_bag::PixmapOk()
         return (false);
     int vp_width = wib_windesc->ViewportWidth();
     int vp_height = wib_windesc->ViewportHeight();
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     return (GetDrawable()->get_pixmap() &&
         GetDrawable()->get_pixmap()->get_width() == vp_width &&
         GetDrawable()->get_pixmap()->get_height() == vp_height);
@@ -1479,7 +1479,7 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
     if (BB.right < BB.left || BB.bottom < BB.top)
         return (false);
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkPixmap *pm = 0;
 #else
     GdkPixmap *pm = 0;
@@ -1487,7 +1487,7 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
     bool native = false;
     int vp_width = wib_windesc->ViewportWidth();
     int vp_height = wib_windesc->ViewportHeight();
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (GetDrawable()->get_pixmap() &&
             GetDrawable()->get_pixmap()->get_width() == vp_width &&
             GetDrawable()->get_pixmap()->get_height() == vp_height) { 
@@ -1500,7 +1500,7 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
         native = true;
     }
     else {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         pm = new ndkPixmap(GetDrawable()->get_window(), vp_width, vp_height);
         if (!pm)
             return (false);
@@ -1540,7 +1540,7 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
     gdk_win32_hdc_release(gd_window, GC(), Win32GCvalues);
 #else
 #ifdef WITH_X11
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     Image *im = create_image_from_drawable(gr_x_display(),
         pm->get_xid(), BB.left, BB.top, BB.width() + 1, abs(BB.height()) + 1);
 #else
@@ -1552,12 +1552,12 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
 #ifdef WITH_QUARTZ
 //XXX Need equiv. code for Quartz.
     Image *im = 0;
-#endif
-#endif
-#endif
+#endif  // WITH_QUARTZ
+#endif  // WITH_X11
+#endif  // WIN32
 
     if (!native)
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         pm->dec_ref();
 #else
         gdk_pixmap_unref(pm);
@@ -2010,7 +2010,7 @@ namespace {
         GRX->PointerRootLoc(&x, &y);
         GtkWidget *w = mainBag()->TextArea();
         GdkRectangle r;
-        ShellGeometry(w, &r , 0);
+        gtk_ShellGeometry(w, &r , 0);
         return (x >= r.x && x <= r.x + r.width &&
             y >= r.y && y <= r.y + r.height);
     }
@@ -2932,7 +2932,7 @@ main_bag::initialize()
     // Realize
     //
     gtk_widget_show(wb_shell);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GdkWindow *window = gtk_widget_get_window(gd_viewport);
     GetDrawable()->set_window(window);
     GRX->SetDefaultFocusWin(window);
@@ -2943,7 +2943,7 @@ main_bag::initialize()
 
     // Make the GC's.
     //
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkGCvalues gcvalues;
     gcvalues.v_cap_style = ndkGC_CAP_BUTT;
     gcvalues.v_fill_rule = ndkGC_WINDING_RULE;
@@ -2970,7 +2970,7 @@ main_bag::initialize()
 
     GdkColor clr;
     clr.pixel = gd_backg;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     CpyGC()->set_background(&clr);
     XorGC()->set_background(&clr);
     clr.pixel = gd_foreg;

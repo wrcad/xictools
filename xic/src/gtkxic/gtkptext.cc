@@ -232,15 +232,10 @@ cEdit::polytext(const char *string, int psz, int x, int y)
 
     int wid, hei, numlines;
     polytextExtent(string, &wid, &hei, &numlines);
-#ifdef NEW_NDK
+
+#if GTK_CHECK_VERSION(3,0,0)
     GdkWindow *window = mainBag()->GetDrawable()->get_window();
     ndkPixmap *pixmap = new ndkPixmap(window, wid, hei);
-#else
-    GdkPixmap *pixmap = gdk_pixmap_new(mainBag()->Window(), wid, hei,
-        GRX->Visual()->depth);
-#endif
-
-#ifdef NEW_NDK
     ndkGC *gc = new ndkGC(window);
     GdkColor c;
     c.pixel = 0xffffff;  // white
@@ -250,6 +245,8 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     c.pixel = 0;  // black
     gc->set_foreground(&c);
 #else
+    GdkPixmap *pixmap = gdk_pixmap_new(mainBag()->Window(), wid, hei,
+        GRX->Visual()->depth);
     GdkGC *gc = gdk_gc_new(mainBag()->Window());
     GdkColor c;
     c.pixel = 0xffffff;  // white
@@ -291,7 +288,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
             tx += wid - len;
             break;
         }
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         pixmap->copy_from_pango_layout(gc, tx, ty, lout);
 #else
         gdk_draw_layout(pixmap, gc, tx, ty, lout);
@@ -314,7 +311,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
         tx += wid - len;
         break;
     }
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     pixmap->copy_from_pango_layout(gc, tx, ty, lout);
 #else
     gdk_draw_layout(pixmap, gc, tx, ty, lout);
@@ -324,7 +321,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     pango_font_description_free(pfd);
     y -= psz*(hei - fh);
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkImage *im = new ndkImage(pixmap, 0, 0, wid, hei);
     pixmap->dec_ref();
     delete gc;
@@ -337,7 +334,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     Zlist *z0 = 0;
     for (int i = 0; i < hei; i++) {
         for (int j = 0; j < wid;  j++) {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             int px = im->get_pixel(j, i);
 #else
             int px = gdk_image_get_pixel(im, j, i);
@@ -353,7 +350,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
             }
         }
     }
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     delete im;
 #else
     gdk_image_destroy(im);

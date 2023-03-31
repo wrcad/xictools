@@ -82,7 +82,7 @@ private:
 #endif
     static void co_font_change(GtkWidget*, void*, void*);
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     GdkWindow *co_win_bak;
     GdkPixmap *co_pm;

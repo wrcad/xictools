@@ -200,7 +200,7 @@ sMC::sMC(mitem_t *mi)
         return;
     }
     gtk_window_set_resizable(GTK_WINDOW(mc_popup), false);
-    BlackHoleFix(mc_popup);
+    gtk_BlackHoleFix(mc_popup);
 
     GtkWidget *form = gtk_table_new(3, 3, false);
     gtk_container_add(GTK_CONTAINER(mc_popup), form);

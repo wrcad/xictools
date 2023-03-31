@@ -107,10 +107,7 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     htmWidget(this, d)
 {
     v_form = 0;
-#define USE_FIXED
-#ifdef USE_FIXED
     v_fixed = 0;
-#endif
     v_draw_area = 0;
     v_hsba = 0;
     v_vsba = 0;
@@ -141,23 +138,22 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     v_form = gtk_table_new(2, 2, false);
     gtk_widget_show(v_form);
 
-#ifdef USE_FIXED
-// This screws up GTK-3 rendering and seems like a fix to an ancient
-// problem that probably doesn't exist anymore.
+    // Use a GtkFixed container to support placdement of the form
+    // widgets.
+    // The GtkLayout seems like it should be perfect for the job,
+    // however the placed widgets were never visible.  Never found
+    // the problem, reverted to GtkFixed + GtkDrawingArea.`
     v_fixed = gtk_fixed_new();
     gtk_widget_show(v_fixed);
     // Without this, form widgets will render outside of the drawing
     // area.  This clips them to the drawing area.
-//    gtk_widget_set_has_window(v_fixed, true);
-#endif
+    gtk_widget_set_has_window(v_fixed, true);
 
     v_draw_area = gtk_drawing_area_new();
     gtk_widget_set_double_buffered(v_draw_area, false);  // we handle it
     gtk_widget_show(v_draw_area);
     gtk_widget_set_size_request(v_draw_area, v_width, v_height);
-#ifdef USE_FIXED
     gtk_fixed_put(GTK_FIXED(v_fixed), v_draw_area, 0, 0);
-#endif
 
     v_hsba = (GtkAdjustment*)gtk_adjustment_new(0.0, 0.0, v_width, 8.0,
         v_width/2, v_width);
@@ -168,8 +164,27 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     v_vsb = gtk_vscrollbar_new(GTK_ADJUSTMENT(v_vsba));
     gtk_widget_hide(v_vsb);
 
+#if GTK_CHECK_VERSION(3,0,0)
+    v_pixmap = new ndkPixmap(gtk_widget_get_window(v_draw_area),
+        v_width, v_height);
+    v_gc = new ndkGC(gtk_widget_get_window(v_draw_area));
+    htmColor c;
+    tk_parse_color("white", &c);
+    tk_set_foreground(c.pixel);
+    v_gc->draw_rectangle(v_pixmap, true, 0, 0, v_width, v_height);
+#else
+    v_pixmap = gdk_pixmap_new(gtk_widget_get_window(v_draw_area),
+        v_width, v_height, tk_visual_depth());
+    v_gc = gdk_gc_new(v_pixmap);
+    htmColor c;
+    tk_parse_color("white", &c);
+    tk_set_foreground(c.pixel);
+    gdk_draw_rectangle(v_pixmap, v_gc, true, 0, 0, v_width, v_height);
+#endif
+
     int events = gtk_widget_get_events(v_draw_area);
     gtk_widget_set_events(v_draw_area, events
+        | GDK_SCROLL_MASK
         | GDK_EXPOSURE_MASK
         | GDK_STRUCTURE_MASK
         | GDK_FOCUS_CHANGE_MASK
@@ -181,11 +196,7 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
         | GDK_KEY_PRESS_MASK
         | GDK_KEY_RELEASE_MASK);
 
-#ifdef USE_FIXED
     g_signal_connect(G_OBJECT(v_fixed), "size-allocate",
-#else
-    g_signal_connect(G_OBJECT(v_draw_area), "size-allocate",
-#endif
         G_CALLBACK(v_resize_hdlr), this);
 
     g_signal_connect(G_OBJECT(v_vsba), "value-changed",
@@ -228,11 +239,7 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     g_signal_connect(G_OBJECT(v_draw_area), "scroll-event",
         G_CALLBACK(v_scroll_event_hdlr), this);
 
-#ifdef USE_FIXED
     gtk_table_attach(GTK_TABLE(v_form), v_fixed, 0, 1, 0, 1,
-#else
-    gtk_table_attach(GTK_TABLE(v_form), v_draw_area, 0, 1, 0, 1,
-#endif
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 0, 0);
 
@@ -261,7 +268,7 @@ gtk_viewer::~gtk_viewer()
 {
     g_signal_handlers_disconnect_by_func(G_OBJECT(v_draw_area),
         (gpointer)v_focus_event_hdlr, this);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_pixmap->dec_ref();
 #else
     gdk_pixmap_unref(v_pixmap);
@@ -586,7 +593,7 @@ gtk_viewer::tk_refresh_area(int x, int y, int w, int h)
 {
     GdkWindow *win = gtk_widget_get_window(v_draw_area);
     if (win)
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         v_pixmap->copy_to_window(win, v_gc, x, y, x, y, w, h);
 #else
         gdk_window_copy_area(win, v_gc, x, y, v_pixmap, x, y, w, h);
@@ -666,7 +673,7 @@ gtk_viewer::tk_set_anchor_cursor(bool set)
     if (!window)
         return;
     if (!v_cursor) {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         GdkColor white, black;
         white.pixel = 0xffffff;
         ndkGC::query_rgb(&white, GRX->Visual());
@@ -695,7 +702,7 @@ gtk_viewer::tk_set_anchor_cursor(bool set)
             &white, &black, fingers_x_hot, fingers_y_hot);
 #endif
     }
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (set)
         v_cursor->set_in_window(window);
     else
@@ -779,8 +786,6 @@ gtk_viewer::tk_alloc_font(const char *family, int size, unsigned char style)
         family = buf;
     }
 
-//XXX
-fprintf(stderr, "fa %s %d %d\n", family, size, PANGO_SCALE);
     htmFont *font = new htmFont(this, family, size, style);
     PangoFontDescription *pfd = pango_font_description_from_string(family);
 
@@ -790,7 +795,6 @@ fprintf(stderr, "fa %s %d %d\n", family, size, PANGO_SCALE);
         pango_font_description_set_style(pfd, PANGO_STYLE_ITALIC);
 
     pango_font_description_set_size(pfd, size*PANGO_SCALE);
-
     font->xfont = pfd;
 
     PangoContext *pc = gtk_widget_get_pango_context(v_draw_area);
@@ -804,8 +808,6 @@ fprintf(stderr, "fa %s %d %d\n", family, size, PANGO_SCALE);
     font->width = pm->approximate_char_width/PANGO_SCALE;
     font->lbearing = 0;
     font->rbearing = 0;
-//XXX
-//fprintf(stderr, "%d %d %d\n", font->height, font->ascent, font->descent);
 
     // normal interword spacing
     font->isp = font->width;
@@ -839,7 +841,6 @@ fprintf(stderr, "fa %s %d %d\n", family, size, PANGO_SCALE);
     font->st_thickness = pm->strikethrough_thickness/PANGO_SCALE;
 
     pango_font_metrics_unref(pm);
-
     return (font);
 }
 
@@ -974,9 +975,7 @@ gtk_viewer::tk_visual_depth()
 htmPixmap *
 gtk_viewer::tk_new_pixmap(int w, int h)
 {
-//xXX
-fprintf(stderr, "newpm %d %d\n", w, h);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkPixmap *pm = new ndkPixmap(gtk_widget_get_window(v_draw_area), w, h);
 #else
     GdkPixmap *pm = gdk_pixmap_new(0, w, h, tk_visual_depth());
@@ -984,7 +983,7 @@ fprintf(stderr, "newpm %d %d\n", w, h);
     htmColor c;
     tk_parse_color("white", &c);
     tk_set_foreground(c.pixel);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->draw_rectangle(pm, true, 0, 0, w, h);
 #else
     gdk_draw_rectangle(pm, v_gc, true, 0, 0, w, h);
@@ -997,7 +996,7 @@ void
 gtk_viewer::tk_release_pixmap(htmPixmap *pm)
 {
     if (pm)
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ((ndkPixmap*)pm)->dec_ref();
 #else
         gdk_pixmap_unref((GdkPixmap*)pm);
@@ -1012,7 +1011,7 @@ gtk_viewer::tk_pixmap_from_info(htmImage *image, htmImageInfo *info,
     unsigned int size = info->width * info->height;
 
     (void)image;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkImage *img = new ndkImage(ndkIMAGE_FASTEST,
         GRX->Visual(), info->width, info->height);
 #else
@@ -1036,7 +1035,7 @@ gtk_viewer::tk_pixmap_from_info(htmImage *image, htmImageInfo *info,
         *c2++ = *c1--;
         gdk_image_put_pixel(img, x, y, qpx);
 #else
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         img->put_pixel(x, y, px);
 #else
         gdk_image_put_pixel(img, x, y, px);
@@ -1044,7 +1043,7 @@ gtk_viewer::tk_pixmap_from_info(htmImage *image, htmImageInfo *info,
 #endif
     }
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkPixmap *pmap = new ndkPixmap(gtk_widget_get_window(v_draw_area),
         info->width, info->height);
     img->copy_to_pixmap(pmap, v_gc, 0, 0, 0, 0, info->width, info->height);
@@ -1065,7 +1064,7 @@ gtk_viewer::tk_set_draw_to_pixmap(htmPixmap *pm)
     if (pm) {
         if (!v_pixmap_bak) {
             v_pixmap_bak = v_pixmap;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             v_pixmap = (ndkPixmap*)pm;
 #else
             v_pixmap = (GdkPixmap*)pm;
@@ -1089,7 +1088,7 @@ gtk_viewer::tk_bitmap_from_data(int width, int height, unsigned char *data)
     GdkColor fg, bg;
     fg.pixel = 1;
     bg.pixel = 0;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkPixmap *pm = new ndkPixmap(gtk_widget_get_window(v_draw_area),
         (char*)data, width, height);
 #else
@@ -1104,7 +1103,7 @@ void
 gtk_viewer::tk_release_bitmap(htmBitmap *bmap)
 {
     if (bmap)
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ((ndkPixmap*)bmap)->dec_ref();
 #else
         gdk_pixmap_unref((GdkPixmap*)bmap);
@@ -1115,7 +1114,7 @@ gtk_viewer::tk_release_bitmap(htmBitmap *bmap)
 htmXImage *
 gtk_viewer::tk_new_image(int w, int h)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     return ((htmXImage*)new ndkImage(ndkIMAGE_FASTEST, GRX->Visual(), w, h));
 #else
     return ((htmXImage*)gdk_image_new(GDK_IMAGE_FASTEST, GRX->Visual(), w, h));
@@ -1127,7 +1126,7 @@ void
 gtk_viewer::tk_fill_image(htmXImage *ximage, unsigned char *data,
     unsigned int *color_map, int lo, int hi)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkImage *image = (ndkImage*)ximage;
     int wid = image->get_width();
 #else
@@ -1150,7 +1149,7 @@ gtk_viewer::tk_fill_image(htmXImage *ximage, unsigned char *data,
         *c2++ = *c1--;
         gdk_image_put_pixel(image, x, y, qpx);
 #else
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         image->put_pixel(x, y, px);
 #else
         gdk_image_put_pixel(image, x, y, px);
@@ -1164,8 +1163,8 @@ void
 gtk_viewer::tk_draw_image(int xs, int ys, htmXImage *image,
     int x, int y, int w, int h)
 {
-#ifdef NEW_NDK
-    ((ndkImage*)image)->copy_to_pixmap(v_pixmap, v_gc, xs, ys, x, y, w, h);
+#if GTK_CHECK_VERSION(3,0,0)
+    ((ndkImage*)image)->copy_to_pixmap(v_pixmap, v_gc, x, y, xs, ys, w, h);
 #else
     gdk_draw_image(v_pixmap, v_gc, (GdkImage*)image, xs, ys, x, y, w, h);
 #endif
@@ -1175,7 +1174,7 @@ gtk_viewer::tk_draw_image(int xs, int ys, htmXImage *image,
 void
 gtk_viewer::tk_release_image(htmXImage *image)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     delete (ndkImage*)image;
 #else
     gdk_image_destroy((GdkImage*)image);
@@ -1188,7 +1187,7 @@ gtk_viewer::tk_set_foreground(unsigned int pix)
 {
     GdkColor c;
     c.pixel = pix;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->set_foreground(&c);
 #else
     gdk_gc_set_foreground(v_gc, &c);
@@ -1201,7 +1200,7 @@ gtk_viewer::tk_set_background(unsigned int pix)
 {
     GdkColor c;
     c.pixel = pix;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->set_background(&c);
 #else
     gdk_gc_set_background(v_gc, &c);
@@ -1322,7 +1321,7 @@ gtk_viewer::tk_get_pixels(unsigned short *reds, unsigned short *greens,
 void
 gtk_viewer::tk_set_clip_mask(htmPixmap*, htmBitmap *bmap)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->set_clip_mask((ndkPixmap*)bmap);
 #else
     gdk_gc_set_clip_mask(v_gc, (GdkBitmap*)bmap);
@@ -1333,7 +1332,7 @@ gtk_viewer::tk_set_clip_mask(htmPixmap*, htmBitmap *bmap)
 void
 gtk_viewer::tk_set_clip_origin(int x, int y)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->set_clip_origin(x, y);
 #else
     gdk_gc_set_clip_origin(v_gc, x, y);
@@ -1344,7 +1343,7 @@ gtk_viewer::tk_set_clip_origin(int x, int y)
 void
 gtk_viewer::tk_set_clip_rectangle(htmRect *r)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!r) {
         v_gc->set_clip_rectangle(0);
         return;
@@ -1376,8 +1375,8 @@ void
 gtk_viewer::tk_draw_pixmap(int xs, int ys, htmPixmap *pm,
     int x, int y, int w, int h)
 {
-#ifdef NEW_NDK
-    ((ndkPixmap*)pm)->copy_to_pixmap(v_pixmap, v_gc, xs, ys, x, y, w, h);
+#if GTK_CHECK_VERSION(3,0,0)
+    ((ndkPixmap*)pm)->copy_to_pixmap(v_pixmap, v_gc, x, y, xs, ys, w, h);
 #else
     gdk_window_copy_area(v_pixmap, v_gc, xs, ys, (GdkPixmap*)pm, x, y, w, h);
 #endif
@@ -1388,7 +1387,7 @@ void
 gtk_viewer::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
     int x, int y, int w, int h)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!pm)
 #else
     if (!GDK_IS_PIXMAP(pm))
@@ -1434,7 +1433,7 @@ gtk_viewer::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
         ix += pw;
     }
 #else
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->set_fill(ndkGC_TILED);
     v_gc->set_tile((ndkPixmap*)pm);
     v_gc->set_ts_origin(org_x, org_y);
@@ -1454,7 +1453,7 @@ gtk_viewer::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
 void
 gtk_viewer::tk_draw_rectangle(bool fill, int x, int y, int w, int h)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->draw_rectangle(v_pixmap, fill, x, y, w, h);
 #else
     gdk_draw_rectangle(v_pixmap, v_gc, fill, x, y, w, h);
@@ -1465,7 +1464,7 @@ gtk_viewer::tk_draw_rectangle(bool fill, int x, int y, int w, int h)
 void
 gtk_viewer::tk_set_line_style(FillMode m)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (m == TILED)
         v_gc->set_line_attributes(1, ndkGC_LINE_DOUBLE_DASH,
             ndkGC_CAP_BUTT, ndkGC_JOIN_BEVEL);
@@ -1486,7 +1485,7 @@ gtk_viewer::tk_set_line_style(FillMode m)
 void
 gtk_viewer::tk_draw_line(int x1, int y1, int x2, int y2)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->draw_line(v_pixmap, x1, y1, x2, y2);
 #else
     gdk_draw_line(v_pixmap, v_gc, x1, y1, x2, y2);
@@ -1502,6 +1501,7 @@ gtk_viewer::tk_draw_text(int x, int y, const char *text, int len)
         gsize xlen;
         text = g_convert(text, len, "UTF-8", "ISO-8859-1", 0, &xlen, 0);
     }
+
 #if GTK_CHECK_VERSION(3,0,0)
     PangoContext *pcx = gtk_widget_get_pango_context(v_draw_area);
     pango_context_set_font_description(pcx, v_font);
@@ -1515,7 +1515,7 @@ gtk_viewer::tk_draw_text(int x, int y, const char *text, int len)
         g_free((void*)text);
     }
     y -= v_text_yoff;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->draw_pango_layout(v_pixmap, x, y, lout);
 #else
     gdk_draw_layout(v_pixmap, v_gc, x, y, lout);
@@ -1532,7 +1532,7 @@ gtk_viewer::tk_draw_polygon(bool fill, htmPoint *points, int numpts)
         gpts[i].x = points[i].x;
         gpts[i].y = points[i].y;
     }
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->draw_polygon(v_pixmap, fill, gpts, numpts);
 #else
     gdk_draw_polygon(v_pixmap, v_gc, fill, gpts, numpts);
@@ -1544,7 +1544,7 @@ gtk_viewer::tk_draw_polygon(bool fill, htmPoint *points, int numpts)
 void
 gtk_viewer::tk_draw_arc(bool fill, int x, int y, int w, int h, int as, int ae)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     v_gc->draw_arc(v_pixmap, fill, x, y, w, h, as, ae);
 #else
     gdk_draw_arc(v_pixmap, v_gc, fill, x, y, w, h, as, ae);
@@ -2345,7 +2345,7 @@ gtk_viewer::show_selection_box(int x, int y, bool nodraw)
         rnd.rand_seed(time(0));
         int j = rnd.rand_value();
         tk_set_foreground(j);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         v_gc->draw_rectangle(gtk_widget_get_window(v_draw_area),
             false, xx, yy, w, h);
 #else
@@ -2361,78 +2361,29 @@ gtk_viewer::show_selection_box(int x, int y, bool nodraw)
 bool
 gtk_viewer::expose_event_handler(cairo_t *cr)
 {
-    if (!v_seen_expose && !v_pixmap) {
-        v_pixmap = new ndkPixmap(gtk_widget_get_window(v_draw_area),
-            v_width, v_height);
-        v_gc = new ndkGC(gtk_widget_get_window(v_draw_area));
-        htmColor c;
-        tk_parse_color("white", &c);
-        tk_set_foreground(c.pixel);
-        v_gc->draw_rectangle(v_pixmap, true, 0, 0, v_width, v_height);
-    }
+    cairo_rectangle_int_t rect;
+    ndkDrawable::redraw_area(cr, &rect);
     setReady();
-
-    double x1, y1, x2, y2;
-    cairo_clip_extents(cr, &x1, &y1, &x2, &y2);
-fprintf(stderr, "%g %g %g %g\n", x1, y1, x2, y2);
-    int ix1 = x1;
-    int iy1 = y1;
-    int ix2 = x2;
-    int iy2 = y2;
-    if (ix2 < ix1) {
-        int t = ix1; ix1 = ix2; ix2 = t;
-    }
-    if (iy2 < iy1) {
-        int t = iy1; iy1 = iy2; iy2 = t;
-    }
-    int wid = ix2 - ix1;
-    int hei = iy2 - iy1;
-
-//XXX
-fprintf(stderr, "copy %d %d %d %d\n", ix1, iy1, wid, hei);
     v_pixmap->copy_to_window(gtk_widget_get_window(v_draw_area), v_gc,
-        ix1, iy1, ix1, iy1, wid, hei);
+        rect.x, rect.y, rect.x, rect.y, rect.width, rect.height);
     v_seen_expose = true;
     return (true);
 }
+
 
 #else
 
 bool
 gtk_viewer::expose_event_handler(GdkEventExpose *event)
 {
-    if (!v_seen_expose && !v_pixmap) {
-#ifdef NEW_NDK
-        v_pixmap = new ndkPixmap(gtk_widget_get_window(v_draw_area),
-            v_width, v_height);
-        v_gc = new ndkGC(gtk_widget_get_window(v_draw_area));
-#else
-        v_pixmap = gdk_pixmap_new(gtk_widget_get_window(v_draw_area),
-            v_width, v_height, tk_visual_depth());
-        v_gc = gdk_gc_new(v_pixmap);
-#endif
-        htmColor c;
-        tk_parse_color("white", &c);
-        tk_set_foreground(c.pixel);
-#ifdef NEW_NDK
-        v_gc->draw_rectangle(v_pixmap, true, 0, 0, v_width, v_height);
-#else
-        gdk_draw_rectangle(v_pixmap, v_gc, true, 0, 0, v_width, v_height);
-#endif
-    }
     setReady();
-#ifdef NEW_NDK
-    v_pixmap->copy_to_window(gtk_widget_get_window(v_draw_area), v_gc,
-        event->area.x, event->area.y, event->area.x, event->area.y,
-        event->area.width, event->area.height);
-#else
     gdk_window_copy_area(gtk_widget_get_window(v_draw_area), v_gc,
         event->area.x, event->area.y, v_pixmap, event->area.x, event->area.y,
         event->area.width, event->area.height);
-#endif
     v_seen_expose = true;
     return (true);
 }
+
 #endif
 
 
@@ -2450,10 +2401,12 @@ gtk_viewer::resize_handler(GtkAllocation *a)
         v_width = a->width;
         v_height = a->height;
 
-        if (!gtk_widget_get_window(v_draw_area))
+        if (!gtk_widget_get_window(v_draw_area)) {
+            gtk_widget_set_size_request(v_draw_area, v_width, v_height);
             return true;
+        }
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ndkPixmap *pm = (ndkPixmap*)tk_new_pixmap(v_width, v_height);
         v_pixmap->dec_ref();
         v_pixmap = pm;
@@ -2462,9 +2415,17 @@ gtk_viewer::resize_handler(GtkAllocation *a)
         gdk_pixmap_unref(v_pixmap);
         v_pixmap = pm;
 #endif
-#ifdef USE_FIXED
-        gtk_widget_set_size_request(v_draw_area, v_width, v_height);
-#endif
+        // GtkFixed doesn't resize children so have to do it ourselves.
+        /*XXX
+        GtkAllocation a;
+        a.x = 0;
+        a.y = 0;
+        a.width = v_width;
+        a.height = v_height;
+        gtk_widget_size_allocate(v_draw_area, &a);
+        */
+        gtk_widget_size_allocate(v_draw_area, a);
+
         int x = htm_viewarea.x;
         int y = htm_viewarea.y;
         htmWidget::resize();
@@ -2564,7 +2525,7 @@ gtk_viewer::vsb_change_handler(int newval)
         // scroll down
         int delta = newval - oldval;
         if (delta < v_height) {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             v_pixmap->copy_to_pixmap(v_pixmap, v_gc, 0, delta, 0, 0,
                 v_width, v_height - delta);
 #else
@@ -2582,7 +2543,7 @@ gtk_viewer::vsb_change_handler(int newval)
         // scroll up
         int delta = oldval - newval;
         if (delta < v_height) {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             v_pixmap->copy_to_pixmap(v_pixmap, v_gc, 0, 0, 0, delta,
                 v_width, v_height - delta);
 #else
@@ -2618,7 +2579,7 @@ gtk_viewer::hsb_change_handler(int newval)
         // scroll right
         int delta = newval - oldval;
         if (delta < v_width) {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             v_pixmap->copy_to_pixmap(v_pixmap, v_gc, delta, 0, 0, 0,
                 v_width - delta, v_height);
 #else
@@ -2636,7 +2597,7 @@ gtk_viewer::hsb_change_handler(int newval)
         // scroll left
         int delta = oldval - newval;
         if (delta < v_width) {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             v_pixmap->copy_to_pixmap(v_pixmap, v_gc, 0, 0, delta, 0,
                 v_width - delta, v_height);
 #else

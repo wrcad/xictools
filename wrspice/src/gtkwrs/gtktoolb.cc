@@ -874,7 +874,7 @@ ErrMsgBox::PopUpErr(const char *string)
     gtk_window_set_default(GTK_WINDOW(er_popup), cancel);
 
     int mwid, mhei;
-    MonitorGeom(0, 0, 0, &mwid, &mhei);
+    gtk_MonitorGeom(0, 0, 0, &mwid, &mhei);
 
     int wid = 400;
     int hei = 120;
@@ -896,7 +896,7 @@ ErrMsgBox::PopUpErr(const char *string)
         GtkWidget *plot = ((GTKbag*)GP.Cur()->dev())->Shell();
         if (plot) {
             GdkRectangle rect;
-            ShellGeometry(plot, 0, &rect);
+            gtk_ShellGeometry(plot, 0, &rect);
             if (er_y < rect.y + rect.height && er_y + hei > rect.y &&
                     er_x < rect.x + wid && er_x + wid > rect.x) {
                 if (mhei - (rect.y + rect.height) > rect.y)
@@ -912,7 +912,7 @@ ErrMsgBox::PopUpErr(const char *string)
 
     gtk_window_move(GTK_WINDOW(er_popup), er_x, er_y);
     gtk_widget_show(er_popup);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (TB()->context && TB()->context->GetDrawable()) {
 #else
     if (TB()->context && TB()->context->Window()) {
@@ -1092,7 +1092,7 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
     FixLoc(&x, &y);
     gtk_widget_realize(popup);
     int mwid, mhei;
-    MonitorGeom(0, 0, 0, &mwid, &mhei);
+    gtk_MonitorGeom(0, 0, 0, &mwid, &mhei);
     // make sure the label is fully on-screen
     GtkRequisition req;
     gtk_widget_get_requisition(popup, &req);
@@ -1108,7 +1108,7 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
 
     gtk_window_move(GTK_WINDOW(popup), x, y);
     gtk_widget_show(popup);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (TB()->context && TB()->context->GetDrawable()) {
 #else
     if (TB()->context && TB()->context->Window()) {
@@ -1150,7 +1150,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         ResPrint::get_elapsed(&elapsed, &user, &cpu);
         tb_elapsed_start = elapsed;
     }
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     else if (context && context->GetDrawable()->get_window()) {
         int wid = context->GetDrawable()->get_width();
         int hei = context->GetDrawable()->get_height();
@@ -1272,7 +1272,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             }
         }
         context->Update();
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         context->GetDrawable()->set_draw_to_window();
         context->GetDrawable()->copy_pixmap_to_window(
             context->CpyGC(), 0, 0, -1, -1);
@@ -1554,7 +1554,7 @@ GTKtoolbar::SetLoc(const char *str, GtkWidget *shell)
                 gdk_window_get_root_origin(gtk_widget_get_window(shell),
                     &tb->x, &tb->y);
                 int x, y;
-                MonitorGeom(shell, &x, &y);
+                gtk_MonitorGeom(shell, &x, &y);
                 tb->x -= x;
                 tb->y -= y;
                 return;
@@ -1572,7 +1572,7 @@ void
 GTKtoolbar::FixLoc(int *px, int *py)
 {
     int x, y;
-    MonitorGeom(toolbar, &x, &y);
+    gtk_MonitorGeom(toolbar, &x, &y);
     *px += x;
     *py += y;
 }
@@ -1607,7 +1607,7 @@ GTKtoolbar::ConfigString()
             if (tb->active) {
                 GtkWidget *wsh = GetShell(tb->name);
                 if (wsh)
-                    ShellGeometry(wsh, 0, &rect);
+                    gtk_ShellGeometry(wsh, 0, &rect);
             }
             sprintf(buf, fmt, tb->name, tb->active ? on : off, rect.x, rect.y);
             lstr.add(buf);
@@ -1767,7 +1767,11 @@ namespace {
     // Redraw the resource listing
     //
     int
+#if GTK_CHECK_VERSION(3,0,0)
+    expose_hdlr(GtkWidget*, cairo_t*, void*)
+#else
     expose_hdlr(GtkWidget*, GdkEvent*, void*)
+#endif
     {
         TB()->UpdateMain(RES_BEGIN);
         return (true);
@@ -2253,7 +2257,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_widget_show(hbox);
 
     // the WR logo button
-    GtkWidget *pixbtn = new_pixmap_button(tm30, "WR", false);
+    GtkWidget *pixbtn = gtk_NewPixmapButton(tm30, "WR", false);
     gtk_widget_show(pixbtn);
     tb_bug = pixbtn;
     g_signal_connect(G_OBJECT(pixbtn), "clicked",
@@ -2262,7 +2266,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_widget_set_tooltip_text(pixbtn, "Pop up email client");
 
     // the Run button
-    pixbtn = new_pixmap_button(run_xpm, "Run", false);
+    pixbtn = gtk_NewPixmapButton(run_xpm, "Run", false);
     gtk_widget_show(pixbtn);
     g_signal_connect(G_OBJECT(pixbtn), "clicked",
         G_CALLBACK(rs_btn_hdlr), 0);
@@ -2270,7 +2274,7 @@ GTKtoolbar::tbpop(bool up)
     gtk_widget_set_tooltip_text(pixbtn, "Run current circuit");
 
     // the Stop button
-    pixbtn = new_pixmap_button(stop_xpm, "Stop", false);
+    pixbtn = gtk_NewPixmapButton(stop_xpm, "Stop", false);
     gtk_widget_show(pixbtn);
     g_signal_connect(G_OBJECT(pixbtn), "clicked",
         G_CALLBACK(rs_btn_hdlr), (void*)1);
@@ -2307,8 +2311,13 @@ GTKtoolbar::tbpop(bool up)
     g_signal_connect(G_OBJECT(frame), "drag-motion",
         G_CALLBACK(target_drag_motion), 0);
 
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(w->Viewport()), "draw",
+        G_CALLBACK(expose_hdlr), w);
+#else
     g_signal_connect(G_OBJECT(w->Viewport()), "expose_event",
         G_CALLBACK(expose_hdlr), w);
+#endif
     g_signal_connect(G_OBJECT(w->Viewport()), "style_set",
         G_CALLBACK(font_change_hdlr), 0);
 
@@ -2330,7 +2339,7 @@ GTKtoolbar::tbpop(bool up)
     RevertFocus(toolbar);
 
     gtk_widget_show(toolbar);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     w->GetDrawable()->set_window(gtk_widget_get_window(w->Viewport()));
 #else
     w->SetWindow(w->Viewport()->window);
@@ -2342,7 +2351,7 @@ GTKtoolbar::tbpop(bool up)
     // set up initial xor color
     GdkColor clr;
     clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     w->XorGC()->set_foreground(&clr);
 #else
     gdk_gc_set_foreground(w->XorGC(), &clr);
@@ -2613,7 +2622,7 @@ GTKtoolbar::quit_proc(GtkWidget*, void*)
     if (CP.GetFlag(CP_NOTTYIO)) {
         // In server mode, just hide ourself.
         gtk_widget_hide(TB()->toolbar);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         TB()->context->GetDrawable()->set_window(0);
 #else
         TB()->context->SetWindow(0);
@@ -2803,9 +2812,9 @@ GTKtoolbar::about_proc(GtkWidget*, void*)
             }
             fclose(fp);
             GdkRectangle rect;
-            ShellGeometry(TB()->toolbar, 0, &rect);
+            gtk_ShellGeometry(TB()->toolbar, 0, &rect);
             int mwid, mhei;
-            MonitorGeom(0, 0, 0, &mwid, &mhei);
+            gtk_MonitorGeom(0, 0, 0, &mwid, &mhei);
             LWenum code;
             if (mhei - (rect.y + rect.height) < rect.y) {
                 if (mwid - (rect.x + rect.width) < rect.x)
@@ -2876,7 +2885,7 @@ GTKtoolbar::notes_proc(GtkWidget*, void*)
 // End of GTKtoolbar functions.
 
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
 
 void

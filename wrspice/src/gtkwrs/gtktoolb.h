@@ -69,14 +69,14 @@ struct tb_bag : public GTKbag, public GTKdraw
         {
             b_wid = 0;
             b_hei = 0;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
             b_pixmap = 0;
             b_winbak = 0;
 #endif
         }
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     void switch_to_pixmap();
     void switch_from_pixmap();
@@ -84,7 +84,7 @@ struct tb_bag : public GTKbag, public GTKdraw
 
     int b_wid;
     int b_hei;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     GdkPixmap *b_pixmap;
     GdkWindow *b_winbak;

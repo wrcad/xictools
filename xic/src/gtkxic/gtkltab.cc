@@ -101,7 +101,7 @@ GTKltab::GTKltab(bool nogr) : GTKdraw(XW_LTAB)
     ltab_sbtn = 0;
     ltab_lsearch = 0;
     ltab_lsearchn = 0;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     ltab_pixmap = 0;
 #endif
@@ -197,7 +197,7 @@ GTKltab::GTKltab(bool nogr) : GTKdraw(XW_LTAB)
     gtk_widget_show(hbox);
     ltab_search_container = hbox;
 
-    GtkWidget *button = new_pixmap_button(lsearch_xpm, 0, false);
+    GtkWidget *button = gtk_NewPixmapButton(lsearch_xpm, 0, false);
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(ltab_search_hdlr), this);
@@ -219,7 +219,7 @@ void
 GTKltab::setup_drawable()
 {
     // Make sure window is set.
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!GetDrawable()->get_window()) {
         GdkWindow *window = gtk_widget_get_window(gd_viewport);
         GetDrawable()->set_window(window);
@@ -430,7 +430,7 @@ namespace {
 
         ~blinker()
             {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
                 if (b_dim_pm)
                     b_dim_pm->dec_ref();
                 if (b_norm_pm)
@@ -452,7 +452,7 @@ namespace {
             {
                 if (!b_dim_pm)
                     return;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
                 b_dim_pm->copy_to_window(b_wbag->GetDrawable()->get_window(),
                     b_wbag->GC(), 0, 0, 0, 0, b_wid, b_hei);
 #else
@@ -466,7 +466,7 @@ namespace {
             {
                 if (!b_norm_pm)
                     return;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
                 b_norm_pm->copy_to_window(b_wbag->GetDrawable()->get_window(),
                     b_wbag->GC(), 0, 0, 0, 0, b_wid, b_hei);
 #else
@@ -478,7 +478,7 @@ namespace {
 
     private:
         win_bag *b_wbag;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ndkPixmap *b_dim_pm;
         ndkPixmap *b_norm_pm;
 #else
@@ -511,7 +511,7 @@ namespace {
         b_wid = 0;
         b_hei = 0;
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         if (!wb)
             return;
 
@@ -817,7 +817,7 @@ GTKltab::show(const CDl *ld)
 {
     if (lt_disabled)
         return;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_pixmap();
 #else
     if (!gd_window)
@@ -838,7 +838,7 @@ GTKltab::show(const CDl *ld)
 
     show_direct(ld);
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, lt_win_width,
         lt_win_height);
@@ -858,7 +858,7 @@ GTKltab::refresh(int x, int y, int w, int h)
 {
     if (lt_disabled)
         return;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
     if (!GetDrawable()->get_window())
@@ -902,7 +902,7 @@ GTKltab::refresh(int x, int y, int w, int h)
         show_direct();
         ltab_pmap_dirty = false;
     }
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(GC(), x, y, w, h);
 #else
@@ -917,7 +917,7 @@ GTKltab::refresh(int x, int y, int w, int h)
 void
 GTKltab::win_size(int *wid, int *hei)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (wid)
         *wid = GetDrawable()->get_width();
     if (hei)
@@ -1112,21 +1112,9 @@ GTKltab::ltab_redraw_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 #if GTK_CHECK_VERSION(3,0,0)
     GTKltab *lt = static_cast<GTKltab*>(arg);
     if (lt) {
-        double x1, y1, x2, y2;
-        cairo_clip_extents(cr, &x1, &y1, &x2, &y2);
-        int ix1 = x1;
-        int iy1 = y1;
-        int ix2 = x2;
-        int iy2 = y2;
-        if (ix2 < ix1) {
-            int t = ix1; ix1 = ix2; ix2 = t;
-        }
-        if (iy2 < iy1) {
-            int t = iy1; iy1 = iy2; iy2 = t;
-        }
-        int wid = ix2 - ix1;
-        int hei = iy2 - iy1;
-        lt->refresh(ix1, iy1, wid, hei);
+        cairo_rectangle_int_t rect;
+        ndkDrawable::redraw_area(cr, &rect);
+        lt->refresh(rect.x, rect.y, rect.width, rect.height);
     }
 #else
     GdkEventExpose *pev = (GdkEventExpose*)event;

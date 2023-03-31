@@ -42,8 +42,6 @@
 #define GTKDRAW_H
 
 
-#define NEW_NDK
-
 #ifndef WITH_QUARTZ
 #ifndef WIN32
 #define WITH_X11
@@ -53,7 +51,7 @@
 #ifdef WITH_X11
 #include "gtkinterf/gtkx11.h"
 #endif
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #include "gtkinterf/ndkpixmap.h"
 #include "gtkinterf/ndkdrawable.h"
 #include "gtkinterf/ndkimage.h"
@@ -129,7 +127,7 @@ namespace gtkinterf {
                     gb_gc = gb_gcbak;
             }
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ndkGC *main_gc()
 #else
         GdkGC *main_gc()
@@ -186,7 +184,7 @@ namespace gtkinterf {
                 gb_gdraw.set_ghost_func(f);
             }
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         void set_gc(ndkGC *gc)                  { gb_gc = gc; }
         ndkGC *get_gc()                         { return (gb_gc); }
         void set_xorgc(ndkGC *gc)               { gb_xorgc = gc; }
@@ -212,7 +210,7 @@ namespace gtkinterf {
         static sGbag *default_gbag(int = 0);
 
     private:
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ndkGC *gb_gc;
         ndkGC *gb_xorgc;
         ndkGC *gb_gcbak;
@@ -233,7 +231,7 @@ namespace gtkinterf {
         GTKdraw(int);
         virtual ~GTKdraw();
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         void SetViewport(GtkWidget*);
         void *WindowID();
 #else
@@ -288,7 +286,7 @@ namespace gtkinterf {
         double Resolution()     { return (1.0); }
 
         // non-overrides
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ndkGC *GC()         { return (gd_gbag ? gd_gbag->get_gc() : 0); }
         ndkGC *XorGC()      { return (gd_gbag ? gd_gbag->get_xorgc() : 0); }
         ndkGC *CpyGC()      { return (gd_gbag ? gd_gbag->main_gc() : 0); }
@@ -304,7 +302,7 @@ namespace gtkinterf {
         void SetGbag(sGbag *b)  { gd_gbag = b; }
 
         GtkWidget *Viewport()           { return (gd_viewport); }
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ndkDrawable *GetDrawable()      { return (&gd_dw); }
 #else
         void SetViewport(GtkWidget *w)  { gd_viewport = w; }
@@ -317,7 +315,7 @@ namespace gtkinterf {
 
     protected:
         GtkWidget *gd_viewport;         // drawing widget
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ndkDrawable gd_dw;              // drawing context
 #else
         GdkWindow *gd_window;           // drawing window

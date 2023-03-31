@@ -122,7 +122,7 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
         GTK_WINDOW(mainBag()->Shell()));
 
     int mwid;
-    MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
+    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
     GtkRequisition req;
     gtk_widget_get_requisition(Cs->shell(), &req);
     if (x + req.width > mwid)

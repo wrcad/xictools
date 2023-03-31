@@ -195,14 +195,14 @@ GTKsearchPopup::pop_up_search(int mode)
     //
     GtkWidget *hbox = gtk_hbox_new(false, 2);
     gtk_widget_show(hbox);
-    s_dn = new_pixmap_button(down_xpm, 0, false);
+    s_dn = gtk_NewPixmapButton(down_xpm, 0, false);
     gtk_widget_set_name(s_dn, "SearchDown");
     gtk_widget_show(s_dn);
     g_signal_connect(G_OBJECT(s_dn), "clicked",
         G_CALLBACK(search_action), this);
     gtk_box_pack_start(GTK_BOX(hbox), s_dn, true, true, 0);
 
-    s_up = new_pixmap_button(up_xpm, 0, false);
+    s_up = gtk_NewPixmapButton(up_xpm, 0, false);
     gtk_widget_set_name(s_up, "SearchUp");
     gtk_widget_show(s_up);
     g_signal_connect(G_OBJECT(s_up), "clicked",

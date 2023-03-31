@@ -367,7 +367,7 @@ sNM::sNM(GRobject caller, int node)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_box_pack_start(GTK_BOX(hbox), label, false, false, 0);
 
-    button = new_pixmap_button(lsearch_xpm, 0, false);
+    button = gtk_NewPixmapButton(lsearch_xpm, 0, false);
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(nm_search_hdlr), 0);

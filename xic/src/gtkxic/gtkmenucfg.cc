@@ -246,7 +246,7 @@ namespace {
 
     void set_btn(MenuEnt *ent, unsigned long ix, gpointer cb)
     {
-        GtkWidget *button = new_pixmap_button(ent->xpm, ent->menutext,
+        GtkWidget *button = gtk_NewPixmapButton(ent->xpm, ent->menutext,
             ent->is_toggle());
         g_object_set_data(G_OBJECT(button), MIDX, voidptr ix);
         if (ent->is_set())
@@ -2014,7 +2014,7 @@ gtkMenuConfig::instantiatePhysSideButtonMenu()
     set(ent, "Style", 0);
 
     const char **spm = get_style_pixmap();
-    GtkWidget *button = new_pixmap_button(spm, ent->menutext, false);
+    GtkWidget *button = gtk_NewPixmapButton(spm, ent->menutext, false);
     GtkWidget *menu = gtkMenu()->new_popup_menu(0,
         EditIf()->styleList(), G_CALLBACK(stmenu_proc), 0);
     if (menu) {
@@ -2091,7 +2091,7 @@ gtkMenuConfig::instantiateElecSideButtonMenu()
     ent = &mbox->menu[btnElecMenuShape];
     set(ent, "Shape", 0);
 
-    GtkWidget *button = new_pixmap_button(ent->xpm, ent->menutext, false);
+    GtkWidget *button = gtk_NewPixmapButton(ent->xpm, ent->menutext, false);
     GtkWidget *menu = gtkMenu()->new_popup_menu(0,
         ScedIf()->shapesList(), G_CALLBACK(shmenu_proc), 0);
     if (menu) {

@@ -185,7 +185,7 @@ private:
     static void readout_selection_get(GtkWidget*, GtkSelectionData*, guint,
         guint, gpointer);
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     GdkWindow *p_win_bak;
     GdkPixmap *p_pm;

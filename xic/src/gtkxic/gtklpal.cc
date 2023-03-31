@@ -143,7 +143,7 @@ sLpalette::sLpalette(GRobject caller) : GTKdraw(XW_LPAL)
     lp_remove = 0;
     memset(lp_history, 0, LP_PALETTE_COLS * sizeof(CDl*));
     memset(lp_user, 0, LP_PALETTE_COLS * LP_PALETTE_ROWS * sizeof(CDl*));
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     lp_pixmap = 0;
 #endif
@@ -306,7 +306,7 @@ sLpalette::~sLpalette()
         GRX->Deselect(lp_caller);
     if (lp_shell)
         gtk_widget_destroy(lp_shell);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     if (lp_pixmap)
         gdk_pixmap_unref(lp_pixmap);
@@ -319,7 +319,7 @@ sLpalette::~sLpalette()
 void
 sLpalette::update_info(CDl *ldesc)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
     if (!GetDrawable()->get_window())
@@ -447,7 +447,7 @@ sLpalette::update_info(CDl *ldesc)
             sprintf(buf, "%d (%02Xh)", d, d);
         Text(buf, x, y, 0);
     }
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, win_width, 5*fhei);
 #else
@@ -590,7 +590,7 @@ sLpalette::init_size()
 void
 sLpalette::redraw()
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     int win_width = GetDrawable()->get_width();
     int win_height = GetDrawable()->get_height();
 #else
@@ -742,7 +742,7 @@ sLpalette::redraw()
 void
 sLpalette::refresh(int x, int y, int w, int h)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
     if (!GetDrawable()->get_window())
@@ -788,7 +788,7 @@ sLpalette::refresh(int x, int y, int w, int h)
         lp_pmap_dirty = false;
     }
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(GC(), x, y, w, h);
 #else
@@ -982,7 +982,7 @@ sLpalette::lp_resize_hdlr(GtkWidget*, GdkEvent*, void*)
 {
     if (!Lpal)
         return (0);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!Lpal->GetDrawable()->get_window()) {
         GdkWindow *window = gtk_widget_get_window(Lpal->gd_viewport);
         Lpal->GetDrawable()->set_window(window);
@@ -1009,21 +1009,9 @@ sLpalette::lp_redraw_hdlr(GtkWidget*, GdkEvent *event, void*)
 #endif
 {
 #if GTK_CHECK_VERSION(3,0,0)
-    double x1, y1, x2, y2;
-    cairo_clip_extents(cr, &x1, &y1, &x2, &y2);
-    int ix1 = x1;
-    int iy1 = y1;
-    int ix2 = x2;
-    int iy2 = y2;
-    if (ix2 < ix1) {
-        int t = ix1; ix1 = ix2; ix2 = t;
-    }
-    if (iy2 < iy1) {
-        int t = iy1; iy1 = iy2; iy2 = t;
-    }
-    int wid = ix2 - ix1;
-    int hei = iy2 - iy1;
-    Lpal->refresh(ix1, iy1, wid, hei);
+    cairo_rectangle_int_t rect;
+    ndkDrawable::redraw_area(cr, &rect);
+    Lpal->refresh(rect.x, rect.y, rect.width, rect.height);
 #else
     GdkEventExpose *pev = (GdkEventExpose*)event;
     Lpal->refresh(pev->area.x, pev->area.y,

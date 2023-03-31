@@ -432,6 +432,8 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
     if (!h_is_frame) {
         h_params = new HLPparams(HLP()->no_file_fonts());
         wb_shell = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+        gtk_widget_set_size_request(wb_shell, HLP_DEF_WIDTH, HLP_DEF_HEIGHT);
+        gtk_window_set_resizable(GTK_WINDOW(wb_shell), true);
         gtk_window_set_wmclass(GTK_WINDOW(wb_shell), "Mozy", "mozy");
 
         char buf[128];
@@ -452,21 +454,18 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         if (xpos > 0 && ypos > 0) {
             int x=0, y=0;
             if (topw)
-                MonitorGeom(topw, &x, &y);
+                gtk_MonitorGeom(topw, &x, &y);
             gtk_window_move(GTK_WINDOW(wb_shell), xpos + x, ypos + y);
         }
-
-        gtk_window_set_default_size(GTK_WINDOW(wb_shell), HLP_DEF_WIDTH,
-            HLP_DEF_HEIGHT);
 
         wb_sens_set = h_sens_set;
 
         gtk_widget_add_events(wb_shell, GDK_VISIBILITY_NOTIFY_MASK);
         g_signal_connect(G_OBJECT(wb_shell), "visibility-notify-event",
-            G_CALLBACK(ToTop), 0);
+            G_CALLBACK(gtk_ToTop), 0);
         gtk_widget_add_events(wb_shell, GDK_BUTTON_PRESS_MASK);
         g_signal_connect_after(G_OBJECT(wb_shell), "button-press-event",
-            G_CALLBACK(Btn1MoveHdlr), 0);
+            G_CALLBACK(gtk_Btn1MoveHdlr), 0);
         g_object_set_data(G_OBJECT(wb_shell), MIDX, (gpointer)HA_CANCEL);
         g_signal_connect(G_OBJECT(wb_shell), "destroy",
             G_CALLBACK(h_menu_hdlr), this);
@@ -482,7 +481,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         GtkWidget *hbox = gtk_hbox_new(false, 2);
         gtk_widget_show(hbox);
 
-        GtkWidget *button = new_pixmap_button(backward_xpm, 0, false);
+        GtkWidget *button = gtk_NewPixmapButton(backward_xpm, 0, false);
         gtk_widget_set_name(button, "Back");
         gtk_widget_show(button);
         g_object_set_data(G_OBJECT(button), MIDX, (gpointer)HA_BACK);
@@ -492,7 +491,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         g_object_set_data(G_OBJECT(wb_shell), "back", button);
         gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
-        button = new_pixmap_button(forward_xpm, 0, false);
+        button = gtk_NewPixmapButton(forward_xpm, 0, false);
         gtk_widget_set_name(button, "Forward");
         gtk_widget_show(button);
         g_object_set_data(G_OBJECT(button), MIDX, (gpointer)HA_FORWARD);
@@ -513,7 +512,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
 
         gtk_box_pack_start(GTK_BOX(hbox), h_menubar, true, true, 0);
 
-        button = new_pixmap_button(stop_xpm, 0, false);
+        button = gtk_NewPixmapButton(stop_xpm, 0, false);
         gtk_widget_set_name(button, "Stop");
         gtk_widget_show(button);
         g_signal_connect(G_OBJECT(button), "clicked",
@@ -2182,7 +2181,7 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
                 x += 200;
                 y += 200;
                 int mwid;
-                MonitorGeom(0, 0, 0, &mwid, 0);
+                gtk_MonitorGeom(0, 0, 0, &mwid, 0);
                 GtkRequisition req;
                 gtk_widget_get_requisition(Clr->Shell(), &req);
                 if (x + req.width > mwid)

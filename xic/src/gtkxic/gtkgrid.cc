@@ -1285,7 +1285,7 @@ sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
         gtk_widget_show(grd->gd_viewport);
 
         if (gtk_widget_get_mapped(grd->gd_viewport)) {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             grd->GetDrawable()->set_window(
                 gtk_widget_get_window(grd->gd_viewport));
 #else
@@ -1295,7 +1295,7 @@ sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
             grd->Clear();
             grd->SetFillpattern(0);
             grd->SetColor(GRX->NameColor("blue"));
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             int wid = grd->GetDrawable()->get_width();
             int hei = grd->GetDrawable()->get_height();
 #else
@@ -1332,7 +1332,7 @@ sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
             grd->SetColor(style->bg[GTK_STATE_ACTIVE].pixel);
             grd->Box(os, 0, xs, hei);
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             grd->GetDrawable()->set_window(
                 gtk_widget_get_window(grd->gd_sample));
 #else
@@ -1363,7 +1363,7 @@ sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
             gtk_widget_hide(grd->gd_crs_frame);
 
         if (gtk_widget_get_mapped(grd->gd_viewport)) {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             grd->GetDrawable()->set_window(
                 gtk_widget_get_window(grd->gd_viewport));
 #else
@@ -1372,7 +1372,7 @@ sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
             GtkStyle *style = gtk_widget_get_style(grd->gd_viewport);
             grd->SetWindowBackground(style->bg[GTK_STATE_NORMAL].pixel);
             grd->Clear();
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             grd->GetDrawable()->set_window(
                 gtk_widget_get_window(grd->gd_sample));
 #else
@@ -1412,7 +1412,7 @@ sGrd::gd_button_press_hdlr(GtkWidget *widget, GdkEvent *event, void *arg)
     }
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {
         int x = (int)event->button.x;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         int wid = grd->GetDrawable()->get_width();
 #else
         int wid = gdk_window_get_width(grd->gd_window);
@@ -1460,7 +1460,7 @@ sGrd::gd_button_release_hdlr(GtkWidget *widget, GdkEvent *event, void *arg)
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {
 
         int x = (int)event->button.x;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         int wid = grd->GetDrawable()->get_width();
 #else
         int wid = gdk_window_get_width(grd->gd_window);

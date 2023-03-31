@@ -75,6 +75,7 @@ struct ndkDrawable
     void copy_pixmap_to_window(ndkGC*, int, int, int, int);
 #if GTK_CHECK_VERSION(3,0,0)
     void refresh(ndkGC*, cairo_t*);
+    static void redraw_area(cairo_t*, cairo_rectangle_int_t*);
 #else
     void refresh(ndkGC*, GdkEventExpose*);
 #endif

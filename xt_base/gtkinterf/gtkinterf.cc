@@ -1406,10 +1406,10 @@ gtkinterf::gtk_NewPopup(GTKbag *w, const char *title,
         }
         gtk_widget_add_events(popup, GDK_VISIBILITY_NOTIFY_MASK);
         g_signal_connect(G_OBJECT(popup), "visibility-notify-event",
-            G_CALLBACK(ToTop), w ? w->Shell() : 0);
+            G_CALLBACK(gtk_ToTop), w ? w->Shell() : 0);
         gtk_widget_add_events(popup, GDK_BUTTON_PRESS_MASK);
         g_signal_connect_after(G_OBJECT(popup), "button-press-event",
-            G_CALLBACK(Btn1MoveHdlr), 0);
+            G_CALLBACK(gtk_Btn1MoveHdlr), 0);
     }
     if (title)
         gtk_window_set_title(GTK_WINDOW(popup), title);
@@ -1422,6 +1422,29 @@ gtkinterf::gtk_NewPopup(GTKbag *w, const char *title,
             G_CALLBACK(quit_cb), arg ? arg : popup);
     }
     return (popup);
+}
+
+
+// Create a new button with an XPM image if xpm is not null.  The old
+// code mostly still works, except on Apple/Quartz, where the images
+// are munged (looks bad on CentOS 6.4 Gnome desktop, too).
+//
+GtkWidget *
+gtkinterf::gtk_NewPixmapButton(const char **xpm, const char *text, bool toggle)
+{
+    GtkWidget *button = 0;
+    if (xpm) {
+        button = toggle ? gtk_toggle_button_new() : gtk_button_new();
+        GdkPixbuf *pb = gdk_pixbuf_new_from_xpm_data(xpm);
+        GtkWidget *img = gtk_image_new_from_pixbuf(pb);
+        g_object_unref(pb);
+        gtk_widget_show(img);
+        gtk_container_add(GTK_CONTAINER(button), img);
+    }
+    else if (text) 
+        button = toggle ? gtk_toggle_button_new_with_label(text) :
+            gtk_button_new_with_label(text);
+    return (button);
 }
 
 

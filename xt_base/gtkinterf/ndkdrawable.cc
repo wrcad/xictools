@@ -102,6 +102,36 @@ ndkDrawable::set_window(GdkWindow *window)
 }
 
 
+#if GTK_CHECK_VERSION(3,0,0)
+
+// Static function.
+// This is for use in a draw signal handler.  It obtains the pixel area
+// to redraw from the cairo_t* provided to the handler.
+//
+void
+ndkDrawable::redraw_area(cairo_t *cr, cairo_rectangle_int_t *rect)
+{
+    double x1, y1, x2, y2;
+    cairo_clip_extents(cr, &x1, &y1, &x2, &y2);
+    int ix1 = x1;
+    int iy1 = y1;
+    int ix2 = x2;
+    int iy2 = y2;
+    if (ix2 < ix1) {
+        int t = ix1; ix1 = ix2; ix2 = t;
+    }
+    if (iy2 < iy1) {
+        int t = iy1; iy1 = iy2; iy2 = t;
+    }
+    rect->x = ix1;
+    rect->y = iy1;
+    rect->width = ix2 - ix1;
+    rect->height = iy2 - iy1;
+}
+
+#endif
+
+
 // Another way to use the interface, which is useful when you have a
 // lot of similar windows to manage, is to call this function before
 // drawing, then explicitly copy into the window with

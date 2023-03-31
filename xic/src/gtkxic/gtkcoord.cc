@@ -78,7 +78,7 @@ cCoord::cCoord() : GTKdraw(XW_TEXT)
 {
     instancePtr = this;
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     co_win_bak = 0;
     co_pm = 0;
@@ -162,7 +162,7 @@ cCoord::do_print(int xc, int yc, int update)
 {
     if (!DSP()->MainWdesc() || !EV()->CurrentWin())
         return;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
     GetDrawable()->set_draw_to_pixmap();
@@ -225,7 +225,7 @@ cCoord::do_print(int xc, int yc, int update)
         EV()->CurrentWin()->Snap(&xc, &yc);
     if (update == COOR_MOTION) {
         if (xc == co_lx && yc == co_ly) {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             GetDrawable()->set_draw_to_window();
 #else
             gd_window = co_win_bak;
@@ -317,7 +317,7 @@ cCoord::do_print(int xc, int yc, int update)
     SetColor(c2);
     Text(buf, x, y, 0);
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_window();
     GetDrawable()->copy_pixmap_to_window(CpyGC(), 0, 0, -1, -1);
 #else
@@ -360,12 +360,7 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
     }
 
 #else
-
-#ifdef NEW_NDK
-    if (!ev || !Coord()->GetDrawable()->get_pixmap()) {
-#else
     if (!ev || !Coord()->co_pm) {
-#endif
         int x, y;
         EV()->Cursor().get_xy(&x, &y);
         Coord()->print(x, y, COOR_BEGIN);
@@ -373,9 +368,6 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
     }
 
     GdkEventExpose *pev = (GdkEventExpose*)ev;
-#ifdef NEW_NDK
-    Coord()->GetDrawable()->refresh(Coord()->CpyGC(), pev);
-#else
     if (Coord() && GDK_IS_DRAWABLE(Coord()->gd_window)) {
         GdkRectangle *rects;
         int nrects;
@@ -388,14 +380,13 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
         g_free(rects);
     }
 #endif
-#endif
 }
 
 
 void
 cCoord::co_font_change(GtkWidget*, void*, void*)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (Coord() && Coord()->GetDrawable()->get_window()) {
         int fw, fh;
         Coord()->TextExtent(0, &fw, &fh);

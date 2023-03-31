@@ -106,7 +106,7 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
     pe_s_menu = 0;
     pe_id = 0;
     pe_wid = pe_hei = 0;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     pe_pixmap = 0;
 #endif
@@ -373,7 +373,7 @@ GTKedit::flash_msg_here(int x, int y, const char *msg, ...)
     gtk_container_add(GTK_CONTAINER(popup), label);
 
     int mwid, mhei;
-    MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, &mhei);
+    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, &mhei);
     GtkRequisition req;
     gtk_widget_get_requisition(popup, &req);
     if (x + req.width > mwid)
@@ -483,7 +483,7 @@ void *
 GTKedit::setup_backing(bool use_pm)
 {
     GdkWindow *tmp_window = 0;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (use_pm) {
         GetDrawable()->set_draw_to_pixmap();
         tmp_window = GetDrawable()->get_window();
@@ -501,7 +501,7 @@ GTKedit::setup_backing(bool use_pm)
 void
 GTKedit::restore_backing(void *tw)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (tw) {
         GetDrawable()->set_draw_to_window();
         GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, pe_wid, pe_hei);
@@ -520,7 +520,7 @@ GTKedit::restore_backing(void *tw)
 void
 GTKedit::init_window()
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
     if (GetDrawable()->get_window()) {
@@ -547,7 +547,7 @@ GTKedit::init_window()
 bool
 GTKedit::check_pixmap()
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     if (!gd_window)
         gd_window = gtk_widget_get_window(gd_viewport);

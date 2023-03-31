@@ -139,7 +139,7 @@ namespace {
     GdkCursor *left_cursor;
     GdkCursor *right_cursor;
     GdkCursor *busy_cursor;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkCursor *cross_cursor;
 #endif
 }
@@ -182,7 +182,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         // GTK default cursor.
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
                     cross_cursor->revert_in_window(
@@ -201,7 +201,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
                     cross_cursor->revert_in_window(
@@ -221,7 +221,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         // Legacy cross cursor.
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (!cross_cursor) {
                     GdkColor foreg, backg;
@@ -264,7 +264,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (!cross_cursor) {
                     GdkColor foreg, backg;
@@ -310,7 +310,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
             left_cursor = gdk_cursor_new(GDK_LEFT_PTR);
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
                     cross_cursor->revert_in_window(
@@ -330,7 +330,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
                     cross_cursor->revert_in_window(
@@ -353,7 +353,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
             right_cursor = gdk_cursor_new(GDK_RIGHT_PTR);
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
                     cross_cursor->revert_in_window(
@@ -373,7 +373,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
                     cross_cursor->revert_in_window(
@@ -396,7 +396,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
             busy_cursor = gdk_cursor_new(GDK_WATCH);
         if (wd) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
                     cross_cursor->revert_in_window(
@@ -416,7 +416,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
                     cross_cursor->revert_in_window(

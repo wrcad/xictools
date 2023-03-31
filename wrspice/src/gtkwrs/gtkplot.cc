@@ -109,7 +109,7 @@ struct plot_bag : public GTKbag,  public GTKdraw
             pb_bbox = 0;
             for (int i = 0; i < pbtn_NUMBTNS; i++)
                 pb_checkwins[i] = 0;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
             pb_pixmap = 0;
             pb_pmwid = pb_pmhei = 0;
@@ -121,7 +121,7 @@ struct plot_bag : public GTKbag,  public GTKdraw
 
     ~plot_bag()
         {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
             if (pb_pixmap)
                 gdk_pixmap_unref(pb_pixmap);
@@ -139,7 +139,11 @@ private:
     static void sens_set(GTKbag*, bool, int);
     static int resize(GtkWidget*, GdkEvent*, void*);
     static int redraw_timeout(void*);
+#if GTK_CHECK_VERSION(3,0,0)
+    static int redraw(GtkWidget*, cairo_t*, void*);
+#else
     static int redraw(GtkWidget*, GdkEvent*, void*);
+#endif
     static int motion(GtkWidget*, GdkEvent*, void*);
     static int motion_idle(void*);
     static int focus(GtkWidget*, GdkEvent*, void*);
@@ -169,7 +173,7 @@ private:
 
     GtkWidget *pb_bbox;             // frame containing button box
     GtkWidget *pb_checkwins[pbtn_NUMBTNS];  // button widget pointers
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     GdkPixmap *pb_pixmap;           // backing store
     int pb_pmwid, pb_pmhei;         // pixmap size
@@ -265,9 +269,14 @@ plot_bag::init(sGraph *gr)
     gtk_widget_add_events(Viewport(), GDK_STRUCTURE_MASK);
     g_signal_connect(G_OBJECT(Viewport()), "configure_event",
         G_CALLBACK(resize), gr);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(Viewport()), "draw",
+        G_CALLBACK(redraw), gr);
+#else
     gtk_widget_add_events(Viewport(), GDK_EXPOSURE_MASK);
     g_signal_connect(G_OBJECT(Viewport()), "expose_event",
         G_CALLBACK(redraw), gr);
+#endif
     gtk_widget_add_events(Viewport(), GDK_KEY_PRESS_MASK);
     g_signal_connect_after(G_OBJECT(Viewport()), "key_press_event",
         G_CALLBACK(keypress), gr);
@@ -331,13 +340,13 @@ plot_bag::init(sGraph *gr)
     gtk_window_move(GTK_WINDOW(Shell()), x, y);
     gtk_widget_add_events(Shell(), GDK_VISIBILITY_NOTIFY_MASK);
     g_signal_connect(G_OBJECT(Shell()), "visibility_notify_event",
-        G_CALLBACK(ToTop), 0);
+        G_CALLBACK(gtk_ToTop), 0);
 
     // MSW seems to need this before gtk_window_show.
     TB()->RevertFocus(Shell());
 
     gtk_widget_show(Shell());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
 #else
     SetWindow(gtk_widget_get_window(Viewport()));
@@ -359,7 +368,7 @@ plot_bag::init(sGraph *gr)
 
     // set up cursor
     GdkCursor *cursor = gdk_cursor_new(GDK_LEFT_PTR);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     GdkWindow *window = GetDrawable()->get_window();
     if (window) {
         gdk_window_set_cursor(window, cursor);
@@ -734,7 +743,7 @@ sGraph::gr_redraw()
         return;
     }
     plot_bag *wb = dynamic_cast<plot_bag*>(gr_dev);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkDrawable *dw = wb->GetDrawable();
     dw->set_draw_to_pixmap();
     int width = dw->get_width();
@@ -781,7 +790,7 @@ void
 sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
 {
     plot_bag *wb = dynamic_cast<plot_bag*>(gr_dev);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkDrawable *dw = wb->GetDrawable();
     int w = dw->get_width();
     int h = dw->get_height();
@@ -927,7 +936,7 @@ plot_bag::resize(GtkWidget *caller, GdkEvent*, void *client_data)
     sGraph *graph = static_cast<sGraph*>(client_data);
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!wb->GetDrawable()->get_window()) {
         GtkWidget *vp = wb->Viewport();
         if (gtk_widget_get_window(vp))
@@ -957,7 +966,7 @@ plot_bag::redraw_timeout(void *arg)
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
 
     wb->pb_rdid = 0;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkDrawable *dw = wb->GetDrawable();
     dw->set_draw_to_pixmap();
     wb->SetColor(graph->color(0).pixel);
@@ -985,13 +994,16 @@ plot_bag::redraw_timeout(void *arg)
 
 // Static function.
 int
+#if GTK_CHECK_VERSION(3,0,0)
+plot_bag::redraw(GtkWidget*, cairo_t *cr, void *client_data)
+#else
 plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
+#endif
 {
     sGraph *graph = static_cast<sGraph*>(client_data);
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
-    GdkEventExpose *pev = &event->expose;
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkDrawable *dw = wb->GetDrawable();
 
     bool dirty = dw->set_draw_to_pixmap();
@@ -1006,16 +1018,20 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         wb->pb_rdid = g_timeout_add(250, redraw_timeout, client_data);
     }
     else {
-        dw->copy_pixmap_to_window(wb->GC(), pev->area.x, pev->area.y,
-            pev->area.width, pev->area.height);
-        wb->GC()->set_clip_rectangle(&pev->area);
-        wb->XorGC()->set_clip_rectangle(&pev->area);
+        cairo_rectangle_int_t rect;
+        ndkDrawable::redraw_area(cr, &rect);
+
+        dw->copy_pixmap_to_window(wb->GC(), rect.x, rect.y,
+            rect.width, rect.height);
+        wb->GC()->set_clip_rectangle(&rect);
+        wb->XorGC()->set_clip_rectangle(&rect);
         graph->gr_redraw_keyed();
         wb->GC()->set_clip_rectangle(0);
         wb->XorGC()->set_clip_rectangle(0);
     }
 
 #else
+    GdkEventExpose *pev = &event->expose;
     // hack for Motif
     if (pev->window != wb->Window())
         return (false);

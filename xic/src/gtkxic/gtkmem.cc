@@ -140,7 +140,7 @@ cMain::PopUpMemory(ShowMode mode)
 
     GRX->SetPopupLocation(GRloc(), Mem->Shell(), mainBag()->Viewport());
     gtk_widget_show(Mem->Shell());
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     Mem->GetDrawable()->set_window(gtk_widget_get_window(Mem->Viewport()));
 #else
     Mem->SetWindow(gtk_widget_get_window(Mem->Viewport()));

@@ -204,6 +204,10 @@ ndkGC::~ndkGC()
 #ifdef HAVE_X11
     if (gc_gc)
         XFreeGC(get_xdisplay(), gc_gc);
+    if (gc_pango_renderer)
+        g_object_unref(gc_pango_renderer);
+    if (gc_xft_draw)
+        XftDrawDestroy(gc_xft_xraw);
 #endif
 
 #if GTK_CHECK_VERSION(3,0,0)
@@ -622,32 +626,22 @@ ndkGC::draw_polygon(XID xid, bool filled, GdkPoint *pts, int npts)
 
 
 void
-ndkGC::draw_pango_layout(XID xid, int x, int y, PangoLayout *lout)
+ndkGC::draw_pango_layout(XID xid, int wid, int hei, int x, int y,
+    PangoLayout *lout)
 {
-    int wid, hei;
-    pango_layout_get_pixel_size(lout, &wid, &hei);
-    if (wid <= 0 || hei <= 0)
-        return;
-    ndkPixmap *p = new ndkPixmap((GdkWindow*)0, wid, hei);
-    p->copy_from_pango_layout(this, 0, 0, lout);
-
-    // Deal with transparency the hard way.
-    ndkImage *im = new ndkImage(p, 0, 0, wid, hei);
-    XCopyArea(get_xdisplay(), xid, p->get_xid(), get_xgc(),
-        x, y, wid, hei, 0, 0);
-    ndkImage *im1 = new ndkImage(p, 0, 0, wid, hei);
-    for (int i = 0; i < wid; i++) {
-        for (int j = 0; j < hei;  j++) {
-            unsigned int px = im->get_pixel(i, j);
-            if (px != gc_bg_pixel)
-                im1->put_pixel(i, j, px);
-        }
-    }
-    im1->copy_to_pixmap(p, this, 0, 0, 0, 0, wid, hei);
-
-    XCopyArea(get_xdisplay(), p->get_xid(), xid, get_xgc(),
-        0, 0, wid, hei, x, y);
-    p->dec_ref();
+    cairo_surface_t *sfc = cairo_xlib_surface_create(get_xdisplay(),
+        xid, gdk_x11_visual_get_xvisual(GRX->Visual()), wid, hei);
+    cairo_t *cr = cairo_create(sfc);
+    cairo_surface_destroy(sfc);
+    GdkColor clr;
+    clr.pixel = gc_fg_pixel;
+    query_rgb(&clr, GRX->Visual());
+    cairo_set_source_rgb(cr, clr.red/65535.0, clr.green/65535.0,
+        clr.blue/65535.0);
+    cairo_move_to(cr, x, y);
+    pango_cairo_show_layout(cr, lout);
+    cairo_fill(cr);
+    cairo_destroy(cr);
 }
 
 

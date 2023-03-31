@@ -68,6 +68,7 @@
 #ifndef NDKGC_H
 #define NDKGC_H
 
+
 struct ndkPixmap;
 struct ndkDrawable;
 
@@ -445,6 +446,7 @@ struct ndkGC
     }
 
 
+    GdkScreen *get_screen()         { return (gc_screen); }
 #ifdef WITH_X11
     GC get_xgc() {
         if (gc_dirty_mask)
@@ -453,8 +455,8 @@ struct ndkGC
     }
 
     Display *get_xdisplay()         { return GDK_SCREEN_XDISPLAY(gc_screen); }
-
-    GdkScreen *get_screen()         { return (gc_screen);}
+    Screen *get_xscreen()           { return (gdk_x11_screen_get_xscreen(
+                                        gc_screen)); }
 #endif
 
     void draw_line(ndkDrawable *d, int x1, int y1, int x2, int y2)
@@ -467,7 +469,8 @@ struct ndkGC
     void draw_polygon(ndkDrawable *d, bool filled, GdkPoint *pts, int npts)
         { draw_polygon(d->get_xid(), filled, pts, npts); }
     void draw_pango_layout(ndkDrawable *d, int x, int y, PangoLayout *lout)
-        { draw_pango_layout(d->get_xid(), x, y, lout); }
+        { draw_pango_layout(d->get_xid(), d->get_width(), d->get_height(),
+            x, y, lout); }
 
     void draw_line(ndkPixmap *p, int x1, int y1, int x2, int y2)
         { draw_line(p->get_xid(), x1, y1, x2, y2); }
@@ -479,7 +482,8 @@ struct ndkGC
     void draw_polygon(ndkPixmap *p, bool filled, GdkPoint *pts, int npts)
         { draw_polygon(p->get_xid(), filled, pts, npts); }
     void draw_pango_layout(ndkPixmap *p, int x, int y, PangoLayout *lout)
-        { draw_pango_layout(p->get_xid(), x, y, lout); }
+        { draw_pango_layout(p->get_xid(), p->get_width(), p->get_height(),
+            x, y, lout); }
 
 #if GTK_CHECK_VERSION(3,0,0)
     void draw_line(GdkWindow *d, int x1, int y1, int x2, int y2)
@@ -492,19 +496,23 @@ struct ndkGC
     void draw_polygon(GdkWindow *d, bool filled, GdkPoint *pts, int npts)
         { draw_polygon(gdk_x11_window_get_xid(d), filled, pts, npts); }
     void draw_pango_layout(GdkWindow *d, int x, int y, PangoLayout *lout)
-        { draw_pango_layout(gdk_x11_window_get_xid(d), x, y, lout); }
+        { draw_pango_layout(gdk_x11_window_get_xid(d),
+            gdk_window_get_width(d), gdk_window_get_height(d),
+            x, y, lout); }
 #else
-    void draw_line(GdkWindow *d, int x1, int y1, int x2, int y2)
+    void draw_line(GdkDrawable *d, int x1, int y1, int x2, int y2)
         { draw_line(gdk_x11_drawable_get_xid(d), x1, y1, x2, y2); }
-    void draw_arc(GdkWindow *d, bool filled, int x, int y, int w, int h,
+    void draw_arc(GdkDrawable *d, bool filled, int x, int y, int w, int h,
             int as, int ae)
         { draw_arc(gdk_x11_drawable_get_xid(d), filled, x, y, w, h, as, ae); }
-    void draw_rectangle(GdkWindow *d, bool filled, int x, int y, int w, int h)
+    void draw_rectangle(GdkDrawable *d, bool filled, int x, int y, int w, int h)
         { draw_rectangle(gdk_x11_drawable_get_xid(d), filled, x, y, w, h); }
-    void draw_polygon(GdkWindow *d, bool filled, GdkPoint *pts, int npts)
+    void draw_polygon(GdkDrawable *d, bool filled, GdkPoint *pts, int npts)
         { draw_polygon(gdk_x11_drawable_get_xid(d), filled, pts, npts); }
-    void draw_pango_layout(GdkWindow *d, int x, int y, PangoLayout *lout)
-        { draw_pango_layout(gdk_x11_drawable_get_xid(d), x, y, lout); }
+    void draw_pango_layout(GdkDrawable *d, int x, int y, PangoLayout *lout)
+        { draw_pango_layout(gdk_x11_drawable_get_xid(d),
+            gdk_drawable_get_width(d), gdk_drawable_get_height(d),
+            x, y, lout); }
 #endif
 
     void offset(int, int);
@@ -523,7 +531,7 @@ private:
     void draw_arc(XID, bool, int, int, int, int, int, int);
     void draw_rectangle(XID, bool, int, int, int, int);
     void draw_polygon(XID, bool, GdkPoint*, int);
-    void draw_pango_layout(XID, int, int, PangoLayout*);
+    void draw_pango_layout(XID, int, int, int, int, PangoLayout*);
 
     void gc_x11_set_values(ndkGCvalues*, ndkGCvaluesMask);
     void gc_x11_get_values(ndkGCvalues*);
@@ -582,10 +590,10 @@ private:
     unsigned int    gc_bg_pixel;
     ndkGCfunction   gc_function;
 
+    GdkScreen       *gc_screen;
 #ifdef WITH_X11
     GC              gc_gc;
-    GdkScreen       *gc_screen;
-    unsigned short  gc_dirty_mask;
+    unsigned char   gc_dirty_mask;
     bool            gc_have_clip_region;
     bool            gc_have_clip_mask;
     unsigned char   gc_depth;

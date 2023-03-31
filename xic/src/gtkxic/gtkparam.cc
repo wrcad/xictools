@@ -94,7 +94,7 @@ cParam::cParam() : GTKdraw(XW_TEXT)
 {
     instancePtr = this;
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     p_win_bak = 0;
     p_pm = 0;
@@ -152,7 +152,7 @@ cParam::cParam() : GTKdraw(XW_TEXT)
 void
 cParam::print()
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
 #else
@@ -282,7 +282,7 @@ cParam::print()
 void
 cParam::display(int start, int end)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
     if (!GetDrawable()->get_window())
@@ -530,9 +530,6 @@ cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
     Param()->GetDrawable()->refresh(Param()->CpyGC(), cr);
 #else
     GdkEventExpose *pev = (GdkEventExpose*)event;
-#ifdef NEW_NDK
-    Param()->GetDrawable()->refresh(Param()->CpyGC(), pev);
-#else
     if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
         GdkRectangle *rects;
         int nrects;
@@ -545,7 +542,6 @@ cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
         g_free(rects);
     }
 #endif
-#endif
 
     return (true);
 }
@@ -557,7 +553,7 @@ cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
 void
 cParam::readout_font_change(GtkWidget*, void*, void*)
 {
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     if (Param() && GDK_IS_WINDOW(Param()->GetDrawable()->get_window())) {
 #else
     if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {

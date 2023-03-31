@@ -107,7 +107,7 @@ sSFD::SaveFileDlg(const char *prompt, const char *fnamein)
         gtk_window_set_transient_for(GTK_WINDOW(sfd_fsel),
             GTK_WINDOW(mainBag()->Shell()));
         gtk_widget_show(sfd_fsel);
-        BlackHoleFix(sfd_fsel);
+        gtk_BlackHoleFix(sfd_fsel);
     }
     char *in = PL()->EditPrompt(prompt, fname);
     in = lstring::strip_space(in);
@@ -146,7 +146,7 @@ sSFD::OpenFileDlg(const char *prompt, const char *fnamein)
         gtk_window_set_transient_for(GTK_WINDOW(sfd_fsel),
             GTK_WINDOW(mainBag()->Shell()));
         gtk_widget_show(sfd_fsel);
-        BlackHoleFix(sfd_fsel);
+        gtk_BlackHoleFix(sfd_fsel);
     }
 
     char *in = PL()->EditPrompt(prompt, fname);

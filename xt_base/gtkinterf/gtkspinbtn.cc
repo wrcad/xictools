@@ -182,7 +182,7 @@ GTKspinBtn::init(double val, double minv, double maxv, int numd)
         GtkWidget *vbox = gtk_vbox_new(true, 0);
         gtk_widget_show(vbox);
 
-        sb_up = new_pixmap_button(uparr_xpm, 0, false);  
+        sb_up = gtk_NewPixmapButton(uparr_xpm, 0, false);  
         gtk_widget_set_name(sb_up, "up");
         gtk_widget_show(sb_up);
         g_signal_connect(G_OBJECT(sb_up), "button-press-event",
@@ -191,7 +191,7 @@ GTKspinBtn::init(double val, double minv, double maxv, int numd)
             G_CALLBACK(sb_btnup_proc), this);
         gtk_box_pack_start(GTK_BOX(vbox), sb_up, true, true, 0);
 
-        sb_dn = new_pixmap_button(dnarr_xpm, 0, false);
+        sb_dn = gtk_NewPixmapButton(dnarr_xpm, 0, false);
         gtk_widget_set_name(sb_dn, "dn");
         gtk_widget_show(sb_dn);
         g_signal_connect(G_OBJECT(sb_dn), "button-press-event",

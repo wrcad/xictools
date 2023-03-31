@@ -297,7 +297,7 @@ namespace gtkinterf {
         GtkAdjustment *v_vsba;
         GtkWidget *v_hsb;
         GtkWidget *v_vsb;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ndkPixmap *v_pixmap;
         ndkPixmap *v_pixmap_bak;
         ndkGC *v_gc;
@@ -309,7 +309,7 @@ namespace gtkinterf {
         PangoFontDescription *v_font;
 
         Transaction *v_transact;    // pointer to download context
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         ndkCursor *v_cursor;        // transient anchor cursor
 #else
         GdkCursor *v_cursor;        // transient anchor cursor

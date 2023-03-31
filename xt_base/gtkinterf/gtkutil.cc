@@ -107,7 +107,7 @@ GTKdev::SetPopupLocation(GRloc loc, GtkWidget *sub, GtkWidget *parent)
         while (gtk_widget_get_parent(p) != 0)
             p = gtk_widget_get_parent(p);
         GdkRectangle rect, rect_d;
-        ShellGeometry(p, &rect, &rect_d);
+        gtk_ShellGeometry(p, &rect, &rect_d);
         dec_wd = rect_d.width - rect.width;
         dec_ht = rect_d.height - rect.height;
 #endif
@@ -214,7 +214,7 @@ GTKdev::ComputePopupLocation(GRloc loc, GtkWidget *sub, GtkWidget *parent,
     if (y < 0)
         y = 0;
     int mx, my, mwid, mhei;
-    MonitorGeom(parent, &mx, &my, &mwid, &mhei);
+    gtk_MonitorGeom(parent, &mx, &my, &mwid, &mhei);
     if (x + swidth > mx + mwid)
         x = mx + mwid - swidth;
     if (y + sheight > my + mhei)
@@ -230,7 +230,7 @@ void
 GTKdev::WidgetLocation(GtkWidget *w, int *x, int *y, int *wid, int *hei)
 {
     GdkRectangle rect;
-    if (gtk_widget_get_window(w) && ShellGeometry(w, 0, &rect)) {
+    if (gtk_widget_get_window(w) && gtk_ShellGeometry(w, 0, &rect)) {
         *x = rect.x;
         *y = rect.y;
         *wid = rect.width;
@@ -269,10 +269,62 @@ GTKdev::SetFocus(GtkWidget *window)
 // the cancel arg is the cancel button.
 
 namespace {
-    int dc_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-    int dc_leave_hdlr(GtkWidget*, GdkEvent*, void*);
-    int dc_spinbtn_hdlr(GtkWidget*, GdkEvent*, void*);
+    // This handler is called by button presses.  It prepares to
+    // double-click exit, or calls the exit callback.
+    //
+    // data set:
+    // caller           "pirate"            1
+    //
+    int
+    dc_btn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
+    {
+        GtkWidget *cancel = (GtkWidget*)client_data;
+        static GdkCursor *cursor;
+        if (event->button.button == 2) {
+            int dc_state =
+                (intptr_t)g_object_get_data(G_OBJECT(caller), "pirate");
+            if (dc_state) {
+                g_object_set_data(G_OBJECT(caller), "pirate", (void*)0);
+                if (GTK_IS_BUTTON(cancel))
+                    gtk_button_clicked(GTK_BUTTON(cancel));
+                else if (GTK_IS_MENU_ITEM(cancel))
+                    gtk_menu_item_activate(GTK_MENU_ITEM(cancel));
+            }
+            else {
+                if (!cursor)
+                    cursor = gdk_cursor_new(GDK_PIRATE);
+                gdk_window_set_cursor(gtk_widget_get_window(caller), cursor);
+                g_object_set_data(G_OBJECT(caller), "pirate", (void*)1);
+            }
+            return (true);
+        }
+        return (false);
+    }
+
+
+    // On leaving, exit double click exit mode.
+    //
+    int
+    dc_leave_hdlr(GtkWidget *caller, GdkEvent *event, void*)
+    {
+        int dc_state = (intptr_t)g_object_get_data(G_OBJECT(caller),
+            "pirate");
+        if (dc_state && event->crossing.mode == GDK_CROSSING_NORMAL) {
+            g_object_set_data(G_OBJECT(caller), "pirate", (void*)0);
+            gdk_window_set_cursor(gtk_widget_get_window(caller), 0);
+            return (true);
+        }
+        return (false);
+    }
+
+
+    int
+    dc_spinbtn_hdlr(GtkWidget*, GdkEvent*, void*)
+    {
+        return (true);
+    }
 }
+
 
 void
 GTKdev::SetDoubleClickExit(GtkWidget *widget, GtkWidget *cancel)
@@ -626,7 +678,7 @@ GTKnumPopup::GTKnumPopup(GTKbag *owner, const char *prompt_str,
         return;
     gtk_window_set_resizable(GTK_WINDOW(pw_shell), false);
     g_object_set_data(G_OBJECT(pw_shell), "numer_w", this);
-    BlackHoleFix(pw_shell);
+    gtk_BlackHoleFix(pw_shell);
 
     GtkWidget *form = gtk_table_new(1, 4, false);
     gtk_widget_show(form);
@@ -676,7 +728,7 @@ GTKnumPopup::GTKnumPopup(GTKbag *owner, const char *prompt_str,
     gtk_window_set_focus(GTK_WINDOW(pw_shell), pw_text);
     gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(pw_text), true);
 
-    gtk_table_attach(GTK_TABLE(form), DblClickSpinBtnContainer(pw_text),
+    gtk_table_attach(GTK_TABLE(form), gtk_DblClickSpinBtnContainer(pw_text),
         0, 1, 1, 2,
         (GtkAttachOptions)0,
         (GtkAttachOptions)0, 2, 2);
@@ -2289,7 +2341,7 @@ GTKbag::PopUpHelp(const char*)
 // in the widget hierarchy, instead of the spin button (argument).
 //
 GtkWidget *
-gtkinterf::DblClickSpinBtnContainer(GtkWidget *spinbtn)
+gtkinterf::gtk_DblClickSpinBtnContainer(GtkWidget *spinbtn)
 {
     // Need to grab and throw away button press events from the
     // spin button.
@@ -2322,7 +2374,7 @@ namespace {
 // *before* the operation is started or put in the idle queue.
 //
 void
-gtkinterf::BlackHoleFix(GtkWidget *widg)
+gtkinterf::gtk_BlackHoleFix(GtkWidget *widg)
 {
     g_signal_connect(G_OBJECT(widg), "destroy",
         G_CALLBACK(bh_proc), 0);
@@ -2335,7 +2387,7 @@ gtkinterf::BlackHoleFix(GtkWidget *widg)
 // top-level parent.
 //
 bool
-gtkinterf::ShellGeometry(GtkWidget *widget, GdkRectangle *widget_box,
+gtkinterf::gtk_ShellGeometry(GtkWidget *widget, GdkRectangle *widget_box,
     GdkRectangle *wmparent_box)
 {
     if (widget_box) {
@@ -2380,7 +2432,7 @@ namespace {
     GdkCursor *B1hand_cursor;
     GdkRectangle B1box;
     GdkRectangle B1cf;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkGC *B1gc;
 #else
     GdkGC *B1gc;
@@ -2402,7 +2454,7 @@ namespace {
     {
         if (gtk_widget_get_window(caller) != event->motion.window)
             return (false);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
         gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
             B1cf.x, B1cf.y, B1box.width, B1box.height);
@@ -2422,7 +2474,7 @@ namespace {
             return (false);
         if (event->button.button == 1) {
             gdk_pointer_ungrab(GDK_CURRENT_TIME);
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
             gdk_draw_rectangle(gr_default_root_window(), B1gc, false,
                 B1cf.x, B1cf.y, B1box.width, B1box.height);
@@ -2443,7 +2495,7 @@ namespace {
 
 
 int
-gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
+gtkinterf::gtk_Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
 {
     if (event->button.button != 1)
         return (false);
@@ -2453,7 +2505,7 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
         return (false);
     if (!B1hand_cursor) {
         // first call, create cursor and GC
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         B1hand_cursor = gdk_cursor_new(GDK_HAND2);
         B1gc = new ndkGC(gr_default_root_window(), 0, (ndkGCvaluesMask)0);
         B1gc->set_subwindow(ndkGC_INCLUDE_INFERIORS);
@@ -2483,7 +2535,7 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
     }
 
     GdkRectangle shell_box, parent_box;
-    if (!ShellGeometry(caller, &shell_box, &parent_box))
+    if (!gtk_ShellGeometry(caller, &shell_box, &parent_box))
         return (true);
     B1box.x = (int)event->button.x_root - parent_box.x;
     B1box.y = (int)event->button.y_root - parent_box.y;
@@ -2494,12 +2546,8 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
     B1cf.width = shell_box.x - parent_box.x;
     B1cf.height = shell_box.y - parent_box.y;
 
-#ifdef NEW_NDK
 #if GTK_CHECK_VERSION(3,0,0)
     Drawable xid = gdk_x11_window_get_xid(gr_default_root_window());
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gr_default_root_window());
-#endif
     int x1 = (int)event->button.x_root - B1box.x;
     int y1 = (int)event->button.y_root - B1box.y;
     int x2 = x1 + B1box.width;
@@ -2531,7 +2579,7 @@ gtkinterf::Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
 // Add this callback to popups that should always be visible.
 //
 int
-gtkinterf::ToTop(GtkWidget *caller, GdkEvent *event, void *client_data)
+gtkinterf::gtk_ToTop(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
 #ifdef WITH_X11
     // Warning, dragons here.  The parent widget (overshell) might have
@@ -2559,7 +2607,7 @@ gtkinterf::ToTop(GtkWidget *caller, GdkEvent *event, void *client_data)
                 GRX->BigWindowXid()) {
 
             GdkRectangle r;
-            ShellGeometry(caller, 0, &r);
+            gtk_ShellGeometry(caller, 0, &r);
             time_t t;
             time(&t);
             if (abs(r.x - tt_last.x) <= 2 && abs(r.y - tt_last.y) <= 2 &&
@@ -2598,7 +2646,7 @@ gtkinterf::ToTop(GtkWidget *caller, GdkEvent *event, void *client_data)
             // raising/lowering.
             //
             GdkRectangle r;
-            ShellGeometry(caller, 0, &r);
+            gtk_ShellGeometry(caller, 0, &r);
             time_t t;
             time(&t);
             if (abs(r.x - tt_last.x) <= 2 && abs(r.y - tt_last.y) <= 2 &&
@@ -2664,7 +2712,7 @@ gtkinterf::ToTop(GtkWidget *caller, GdkEvent *event, void *client_data)
 // Return true if the widget is currently iconic.
 //
 bool
-gtkinterf::IsIconic(GtkWidget *w)
+gtkinterf::gtk_IsIconic(GtkWidget *w)
 {
     return (gdk_window_get_state(gtk_widget_get_window(w)) &
         GDK_WINDOW_STATE_ICONIFIED);
@@ -2675,7 +2723,7 @@ gtkinterf::IsIconic(GtkWidget *w)
 // obtain the screen, if null the default screen is used.
 //
 int
-gtkinterf::MonitorGeom(GtkWidget *w, int *px, int *py, int *pw, int *ph)
+gtkinterf::gtk_MonitorGeom(GtkWidget *w, int *px, int *py, int *pw, int *ph)
 {
     GdkScreen *scrn = w ? gtk_widget_get_screen(w) : gdk_screen_get_default();
     int pmon;
@@ -2700,98 +2748,9 @@ gtkinterf::MonitorGeom(GtkWidget *w, int *px, int *py, int *pw, int *ph)
 }
 
 
-// The following functions enable a double-click to cancel feature for
-// pop-up widgets.  The widget arg is usually the shell, the cancel arg
-// is the cancel button.
-
-namespace {
-    // This handler is called by button presses.  It prepares to double-click
-    // exit, or calls the exit callback.
-    //
-    // data set:
-    // caller           "pirate"            1
-    //
-    int
-    dc_btn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
-    {
-        GtkWidget *cancel = (GtkWidget*)client_data;
-        static GdkCursor *cursor;
-        if (event->button.button == 2) {
-            int dc_state =
-                (intptr_t)g_object_get_data(G_OBJECT(caller), "pirate");
-            if (dc_state) {
-                g_object_set_data(G_OBJECT(caller), "pirate", (void*)0);
-                if (GTK_IS_BUTTON(cancel))
-                    gtk_button_clicked(GTK_BUTTON(cancel));
-                else if (GTK_IS_MENU_ITEM(cancel))
-                    gtk_menu_item_activate(GTK_MENU_ITEM(cancel));
-            }
-            else {
-                if (!cursor)
-                    cursor = gdk_cursor_new(GDK_PIRATE);
-                gdk_window_set_cursor(gtk_widget_get_window(caller), cursor);
-                g_object_set_data(G_OBJECT(caller), "pirate", (void*)1);
-            }
-            return (true);
-        }
-        return (false);
-    }
-
-
-    // On leaving, exit double click exit mode.
-    //
-    int
-    dc_leave_hdlr(GtkWidget *caller, GdkEvent *event, void*)
-    {
-        int dc_state = (intptr_t)g_object_get_data(G_OBJECT(caller),
-            "pirate");
-        if (dc_state && event->crossing.mode == GDK_CROSSING_NORMAL) {
-            g_object_set_data(G_OBJECT(caller), "pirate", (void*)0);
-            gdk_window_set_cursor(gtk_widget_get_window(caller), 0);
-            return (true);
-        }
-        return (false);
-    }
-
-
-    int
-    dc_spinbtn_hdlr(GtkWidget*, GdkEvent*, void*)
-    {
-        return (true);
-    }
-}
-
-
-//=========================================================================
 //
-// A collection of helper functions to simplify migration from gtk1 to
-// gtk2.
-//
-
-// Create a new button with an XPM image if xpm is not null.  The old
-// code mostly still works, except on Apple/Quartz, where the images
-// are munged (looks bad on CentOS 6.4 Gnome desktop, too).
-//
-GtkWidget *
-gtkinterf::new_pixmap_button(const char **xpm, const char *text, bool toggle)
-{
-    GtkWidget *button = 0;
-    if (xpm) {
-        button = toggle ? gtk_toggle_button_new() : gtk_button_new();
-        GdkPixbuf *pb = gdk_pixbuf_new_from_xpm_data(xpm);
-        GtkWidget *img = gtk_image_new_from_pixbuf(pb);
-        g_object_unref(pb);
-        gtk_widget_show(img);
-        gtk_container_add(GTK_CONTAINER(button), img);
-    }
-    else if (text) 
-        button = toggle ? gtk_toggle_button_new_with_label(text) :
-            gtk_button_new_with_label(text);
-    return (button);
-}
-
-
 //  ---  This group applies to text widgets (GtkText and GtkTextView).
+//
 
 namespace {
     bool

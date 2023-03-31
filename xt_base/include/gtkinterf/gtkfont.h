@@ -127,6 +127,7 @@ namespace gtkinterf {
         static void ft_quit_proc(GtkWidget*, void*);
         static void ft_button_proc(GtkWidget*, void*);
         static void ft_apply_proc(GtkWidget*, void*);
+        static void ft_font_activated_proc(GtkWidget*, const char*, void*);
         static void ft_opt_menu_proc(GtkWidget*, void*);
         static int index_idle(void*);
         void show_available_fonts(bool);

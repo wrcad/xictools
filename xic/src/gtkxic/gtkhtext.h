@@ -120,7 +120,7 @@ private:
 
     int pe_id;             // redraw idle function id
     int pe_wid, pe_hei;    // drawing area size
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     GdkPixmap *pe_pixmap;  // backing pixmap
 #endif

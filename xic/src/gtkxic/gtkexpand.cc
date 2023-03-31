@@ -145,7 +145,7 @@ sExp::sExp(GTKbag *owner, const char *string, bool nopeek, void *arg)
     if (!exp_popup)
         return;
     gtk_window_set_resizable(GTK_WINDOW(exp_popup), false);
-    BlackHoleFix(exp_popup);
+    gtk_BlackHoleFix(exp_popup);
 
     g_signal_connect(G_OBJECT(exp_popup), "key-press-event",
         G_CALLBACK(exp_key_hdlr), this);

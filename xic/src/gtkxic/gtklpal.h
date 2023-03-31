@@ -98,7 +98,7 @@ private:
     CDl *lp_history[LP_PALETTE_COLS];
     CDl *lp_user[LP_PALETTE_COLS * LP_PALETTE_ROWS];
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
 #else
     GdkPixmap *lp_pixmap;
 #endif

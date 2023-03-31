@@ -550,7 +550,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
                 // in graphics mode, leave popup alive but hidden if we can
                 if (hc->hc_textmode != HCgraphical ||
                         !gtk_widget_get_window(hc->hc_popup) ||
-                        IsIconic(hc->hc_popup)) {
+                        gtk_IsIconic(hc->hc_popup)) {
                     // window is 0 if "delete window" event
                     g_signal_handlers_disconnect_by_func(G_OBJECT(hc->hc_popup),
                         (gpointer)hc_cancel_proc, wb);
@@ -2819,7 +2819,7 @@ GTKprintPopup::hc_pop_message(GTKbag *wb)
         (GtkAttachOptions)0, 2, 2);
 
     GdkRectangle rect;
-    ShellGeometry(wb->HC()->hc_popup, 0, &rect);
+    gtk_ShellGeometry(wb->HC()->hc_popup, 0, &rect);
     gtk_window_move(GTK_WINDOW(GP->popup), rect.x + rect.width, rect.y);
     gtk_widget_show(GP->popup);
 

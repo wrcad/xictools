@@ -343,7 +343,7 @@ cSced::PopUpDevs(GRobject caller, ShowMode mode)
     GRX->SetPopupLocation(GRloc(LW_UL), Dv->Shell(), mainBag()->Viewport());
 
     if (Dv->Viewport())
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
         Dv->GetDrawable()->set_window(gtk_widget_get_window(Dv->Viewport()));
 #else
         Dv->SetWindow(gtk_widget_get_window(Dv->Viewport()));
@@ -452,7 +452,7 @@ sDv::sDv(GRobject caller, stringlist *wl) : GTKdraw(XW_DEFAULT)
         GtkWidget *vbox = gtk_vbox_new(false, 2);
         gtk_widget_show(vbox);
 
-        GtkWidget *button = new_pixmap_button(more_xpm, 0, false);
+        GtkWidget *button = gtk_NewPixmapButton(more_xpm, 0, false);
         gtk_widget_set_name(button, "More");
         dv_morebtn = button;
         // don't show unless needed
@@ -460,7 +460,7 @@ sDv::sDv(GRobject caller, stringlist *wl) : GTKdraw(XW_DEFAULT)
             G_CALLBACK(dv_more_proc), 0);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
 
-        button = new_pixmap_button(dd_xpm, 0, false);
+        button = gtk_NewPixmapButton(dd_xpm, 0, false);
         gtk_widget_set_name(button, "Drop");
         gtk_widget_show(button);
         g_signal_connect(G_OBJECT(button), "clicked",
@@ -532,7 +532,7 @@ sDv::sDv(GRobject caller, stringlist *wl) : GTKdraw(XW_DEFAULT)
         }
         stringlist::destroy(wl);
 
-        GtkWidget *button = new_pixmap_button(pict_xpm, 0, false);
+        GtkWidget *button = gtk_NewPixmapButton(pict_xpm, 0, false);
         gtk_widget_set_name(button, "Style");
         gtk_widget_show(button);
         g_signal_connect(G_OBJECT(button), "clicked",
@@ -645,7 +645,7 @@ sDv::sDv(GRobject caller, stringlist *wl) : GTKdraw(XW_DEFAULT)
         }
         stringlist::destroy(wl);
 
-        GtkWidget *button = new_pixmap_button(dda_xpm, 0, false);
+        GtkWidget *button = gtk_NewPixmapButton(dda_xpm, 0, false);
         gtk_widget_set_name(button, "Style");
         gtk_widget_show(button);
         g_signal_connect(G_OBJECT(button), "clicked",
@@ -804,7 +804,7 @@ sDv::render_cell(int which, bool selected)
     wd.InitViewport(vp_width, vp_height);
     *wd.ClipRect() = wd.Viewport();
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     ndkPixmap *pm = new ndkPixmap(GetDrawable()->get_window(), vp_width,
         vp_height);
     GetDrawable()->set_pixmap(pm);
@@ -866,7 +866,7 @@ sDv::render_cell(int which, bool selected)
     int xoff = dv_entries[which].x - dv_leftofst - 2;
     int yoff = SPA;
 
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     pm->copy_to_window(GetDrawable()->get_window(), GC(),
         0, 0, xoff+1, yoff, vp_width, vp_height);
     GetDrawable()->set_pixmap((ndkPixmap*)0);
@@ -1065,7 +1065,7 @@ int
 sDv::dv_redraw_idle(void*)
 {
     Dv->dv_leftofst = Dv->dv_entries[Dv->dv_leftindx].x - SPA;
-#ifdef NEW_NDK
+#if GTK_CHECK_VERSION(3,0,0)
     int width = Dv->GetDrawable()->get_width();
 #else
     int width = gdk_window_get_width(gtk_widget_get_window(Dv->gd_viewport));

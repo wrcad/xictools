@@ -142,7 +142,7 @@ cExt::PopUpPhysTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
         GTK_WINDOW(mainBag()->Shell()));
 
     int mwid, mhei;
-    MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, &mhei);
+    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, &mhei);
     GtkRequisition req;
     gtk_widget_get_requisition(TE->shell(), &req);
     if (x + req.width > mwid)

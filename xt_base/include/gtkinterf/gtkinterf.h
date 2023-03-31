@@ -401,20 +401,19 @@ namespace gtkinterf {
     // gtkinterf.cc
     GtkWidget *gtk_NewPopup(GTKbag*, const char*,
         void(*)(GtkWidget*, void*), void*);
+    GtkWidget *gtk_NewPixmapButton(const char**, const char*, bool);
     void gtk_QueryColor(GdkColor*);
     bool gtk_ColorSet(GdkColor*, const char*);
     GdkColor *gtk_PopupColor(GRattrColor);
 
     // gtkutil.cc
-    GtkWidget *DblClickSpinBtnContainer(GtkWidget*);
-    void BlackHoleFix(GtkWidget*);
-    bool ShellGeometry(GtkWidget*, GdkRectangle*, GdkRectangle*);
-    int Btn1MoveHdlr(GtkWidget*, GdkEvent*, void*);
-    int ToTop(GtkWidget*, GdkEvent*, void*);
-    bool IsIconic(GtkWidget*);
-    int MonitorGeom(GtkWidget*, int*, int*, int* = 0, int* = 0);
-
-    GtkWidget *new_pixmap_button(const char**, const char*, bool);
+    GtkWidget *gtk_DblClickSpinBtnContainer(GtkWidget*);
+    void gtk_BlackHoleFix(GtkWidget*);
+    bool gtk_ShellGeometry(GtkWidget*, GdkRectangle*, GdkRectangle*);
+    int gtk_Btn1MoveHdlr(GtkWidget*, GdkEvent*, void*);
+    int gtk_ToTop(GtkWidget*, GdkEvent*, void*);
+    bool gtk_IsIconic(GtkWidget*);
+    int gtk_MonitorGeom(GtkWidget*, int*, int*, int* = 0, int* = 0);
 
     void text_scrollable_new(GtkWidget**, GtkWidget**, int);
     void text_set_chars(GtkWidget*, const char*);

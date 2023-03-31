@@ -153,7 +153,7 @@ cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
         GTK_WINDOW(mainBag()->Shell()));
 
     int mwid;
-    MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
+    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
     GtkRequisition req;
     gtk_widget_get_requisition(Oas->shell(), &req);
     if (x + req.width > mwid)
