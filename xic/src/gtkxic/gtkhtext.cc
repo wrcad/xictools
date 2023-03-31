@@ -535,8 +535,8 @@ GTKedit::init_window()
     if (gd_window) {
         SetWindowBackground(bg_pixel());
         Clear();
-        pe_wid = gtk_window_get_width(gd_window);
-        pe_hei = gtk_window_get_height(gd_window);
+        pe_wid = gdk_window_get_width(gd_window);
+        pe_hei = gdk_window_get_height(gd_window);
     }
 #endif
 }
@@ -798,6 +798,7 @@ GTKedit::pe_map_hdlr(GtkWidget*, GdkEvent*, void*)
 int
 GTKedit::pe_resize_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
+#if GTK_CHECK_VERSION(3,0,0)
     if (event->type == GDK_CONFIGURE && ptr() &&
             ptr()->GetDrawable()->get_window()) {
         ptr()->pe_wid = gdk_window_get_width(
@@ -805,6 +806,13 @@ GTKedit::pe_resize_hdlr(GtkWidget*, GdkEvent *event, void*)
         ptr()->pe_hei = gdk_window_get_height(
             ptr()->GetDrawable()->get_window());
     }
+#else
+    if (event->type == GDK_CONFIGURE && ptr() &&
+            ptr()->Window()) {
+        ptr()->pe_wid = gdk_window_get_width(ptr()->Window());
+        ptr()->pe_hei = gdk_window_get_height(ptr()->Window());
+    }
+#endif
     return (true);
 }
 

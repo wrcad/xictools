@@ -352,7 +352,7 @@ gtkMenuConfig::instantiateSubwMenus(int wnum, GtkWidget *menubar,
 }
 
 
-#define USERDBG
+//#define USERDBG
 
 void
 gtkMenuConfig::updateDynamicMenus()
