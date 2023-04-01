@@ -186,9 +186,13 @@ public:
 
 namespace {
     grbits _monitor_;
-}
-namespace httpget {
-    http_monitor *Monitor = &_monitor_;
+
+    // Overwrite this stub pointer, enabling graphics.
+    struct http_init_t
+    {
+        http_init_t()   { httpget::Monitor = &_monitor_; }
+    };
+    http_init_t _http_;
 }
 
 

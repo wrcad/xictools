@@ -78,10 +78,20 @@
 #include <stdarg.h>
 
 
+namespace httpget {
+    http_monitor *Monitor;
+}
 using namespace httpget;
+
 
 namespace {
     http_monitor _monitor_;
+    struct http_init_t
+    {
+        http_init_t()   { if (!Monitor) Monitor = &_monitor_; }
+    };
+    http_init_t _http_;
+
 
     // This prints the debugging messages if enabled.  These always go to
     // stderr.

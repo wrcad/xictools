@@ -855,6 +855,7 @@ GTKfontPopup::show_available_fonts(bool fixed)
     }
     else
         gtk_font_chooser_set_filter_func(fsel, 0, 0, 0);
+/* This is GTK-4 feature.
     if (ft_index == 5 || ft_index == 6) {
         gtk_font_chooser_set_level(GTK_FONT_CHOOSER(ft_fsel),
             GTK_FONT_CHOOSER_LEVEL_FAMILY);
@@ -867,6 +868,7 @@ GTKfontPopup::show_available_fonts(bool fixed)
             GTK_FONT_CHOOSER_LEVEL_VARIATIONS |
             GTK_FONT_CHOOSER_LEVEL_FEATURES));
     }
+*/
 
 #else
     GtkFontSelection *fsel = GTK_FONT_SELECTION(ft_fsel);
