@@ -437,7 +437,7 @@ htmWidget::reformat()
 
 
 // Main layout algorithm.  Computes text layout and configures the
-// scrollbars.  Also does handles image recreation.
+// scrollbars.  Also handles image recreation.
 //
 void
 htmWidget::layout()

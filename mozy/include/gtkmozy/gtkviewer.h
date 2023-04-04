@@ -259,7 +259,10 @@ namespace gtkinterf {
 #else
         bool expose_event_handler(GdkEventExpose*);
 #endif
-        bool resize_handler(GtkAllocation*);
+        bool canvas_resize_handler(GtkAllocation*);
+#ifdef NEW_SC
+        bool form_resize_handler(GtkAllocation*);
+#endif
         bool motion_event_handler(GdkEventMotion*);
         bool button_down_handler(GdkEventButton*);
         bool button_up_handler(GdkEventButton*);
@@ -292,6 +295,9 @@ namespace gtkinterf {
 
         GtkWidget *v_form;
         GtkWidget *v_fixed;
+#ifdef NEW_SC
+        GtkWidget *v_scrwin;
+#endif
         GtkWidget *v_draw_area;
         GtkAdjustment *v_hsba;
         GtkAdjustment *v_vsba;
@@ -317,6 +323,10 @@ namespace gtkinterf {
         gtk_timer *v_timers;        // list of animation timers
         int v_width;                // viewport width
         int v_height;               // viewport height
+#ifdef NEW_SC
+        int v_da_width;             // drawing area width
+        int v_da_height;            // drawing area height
+#endif
         int v_timer_id_cnt;         // timer id counter
         int v_btn_x;                // button down x
         int v_btn_y;                // button down y

@@ -63,6 +63,19 @@
 #define NEW_OPT
 #define NEW_LIS
 
+// When set, we paint the entire area of the HTML page on a pixmap,
+// and copy from this when scrolling.  This is to provide smooth
+// scrolling for form widgets in GTK-3, which otherwise seems
+// impossible since the GtkFixed will always change size when a form
+// widget child is shown or hidden, making a mess of the display. 
+// Unfortunately this method doesn't work either, as the
+// GtkScrolledWindow refuses to change its idea of the size of the
+// scrollable area after this is changed.  If works great is this size
+// is set initially by a known value (before the value is actually
+// known).
+//
+//#define NEW_SC
+
 //
 // HTML viewer component for the help viewer.  This contains the
 // htmWidget, scroll bars, and drawing area.  The v_form (GtkTable)
@@ -108,6 +121,9 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
 {
     v_form = 0;
     v_fixed = 0;
+#ifdef NEW_SC
+    v_scrwin = 0;
+#endif
     v_draw_area = 0;
     v_hsba = 0;
     v_vsba = 0;
@@ -123,6 +139,10 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     v_timers = 0;
     v_width = wid;
     v_height = hei;
+#ifdef NEW_SC
+    v_da_width = 0;
+    v_da_height = 0;
+#endif
     v_timer_id_cnt = 1000;
     v_btn_x = 0;
     v_btn_y = 0;
@@ -154,6 +174,7 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     gtk_widget_show(v_draw_area);
     gtk_widget_set_size_request(v_draw_area, v_width, v_height);
     gtk_fixed_put(GTK_FIXED(v_fixed), v_draw_area, 0, 0);
+//gtk_container_set_resize_mode(GTK_CONTAINER(v_fixed), GTK_RESIZE_PARENT);
 
     v_hsba = (GtkAdjustment*)gtk_adjustment_new(0.0, 0.0, v_width, 8.0,
         v_width/2, v_width);
@@ -198,6 +219,10 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
 
     g_signal_connect(G_OBJECT(v_fixed), "size-allocate",
         G_CALLBACK(v_resize_hdlr), this);
+#ifdef NEW_SC
+//    g_signal_connect(G_OBJECT(v_form), "size-allocate",
+//        G_CALLBACK(v_resize_hdlr), this);
+#endif
 
     g_signal_connect(G_OBJECT(v_vsba), "value-changed",
         G_CALLBACK(v_vsb_change_hdlr), this);
@@ -239,7 +264,14 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     g_signal_connect(G_OBJECT(v_draw_area), "scroll-event",
         G_CALLBACK(v_scroll_event_hdlr), this);
 
+#ifdef NEW_SC
+    GtkWidget *v_scrwin = gtk_scrolled_window_new(0, 0);
+    gtk_widget_show(v_scrwin);
+    gtk_container_add(GTK_CONTAINER(v_scrwin), v_fixed);
+    gtk_table_attach(GTK_TABLE(v_form), v_scrwin, 0, 1, 0, 1,
+#else
     gtk_table_attach(GTK_TABLE(v_form), v_fixed, 0, 1, 0, 1,
+#endif
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 0, 0);
 
@@ -522,6 +554,12 @@ gtk_viewer::scroll_visible(int l, int t, int r, int b)
 void
 gtk_viewer::tk_resize_area(int w, int h)
 {
+#ifdef NEW_SC
+//XXX
+fprintf(stderr, "resize_area %d %d\n", w, h);
+v_da_width = w;
+v_da_height = h;
+#endif
     // This is called after formatting with the document size.
     int wid, hei;
     if (gtk_widget_get_mapped(v_draw_area)) {
@@ -559,7 +597,7 @@ gtk_viewer::tk_resize_area(int w, int h)
         if (v_width <= 1 || v_height <= 1) {
             GtkAllocation a;
             gtk_widget_get_allocation(v_form, &a);
-            resize_handler(&a);
+            canvas_resize_handler(&a);
         }
     }
 
@@ -591,6 +629,8 @@ gtk_viewer::tk_resize_area(int w, int h)
 void
 gtk_viewer::tk_refresh_area(int x, int y, int w, int h)
 {
+//XXX    if (gtk_widget_get_window(v_draw_area))
+//XXX        gtk_widget_queue_draw_area(v_draw_area, x, y, w, h);
     GdkWindow *win = gtk_widget_get_window(v_draw_area);
     if (win)
 #if GTK_CHECK_VERSION(3,0,0)
@@ -2388,18 +2428,24 @@ gtk_viewer::expose_event_handler(GdkEventExpose *event)
 
 
 bool
-gtk_viewer::resize_handler(GtkAllocation *a)
+gtk_viewer::canvas_resize_handler(GtkAllocation *a)
 {
-    // Ignore resize events until the initial expose event is fully
-    // handled.
-    // Don't do this, causes initial window to be empty in Ubuntu.  Why
-    // was this done anyway?
-    // if (!v_seen_expose)
-    //     return (true);
-
+#ifdef NEW_SC
+fprintf(stderr,  "%d %d %d %d %d %d\n", v_da_width, v_da_height,
+htm_viewarea.width, htm_viewarea.height, a->width, a->height);
+//if (a->width < v_da_width)
+//    a->width = v_da_width;
+if (a->height < v_da_height)
+//    a->height = v_da_height > 1500 ? v_da_height : 1500;
+a->height = v_da_height;
+//a->height = 1900;
+#endif
     if (a->width != v_width || a->height != v_height) {
         v_width = a->width;
         v_height = a->height;
+#ifdef NEW_SC
+fprintf(stderr, "new %d %d\n", v_width, v_height);
+#endif
 
         if (!gtk_widget_get_window(v_draw_area)) {
             gtk_widget_set_size_request(v_draw_area, v_width, v_height);
@@ -2416,15 +2462,36 @@ gtk_viewer::resize_handler(GtkAllocation *a)
         v_pixmap = pm;
 #endif
         // GtkFixed doesn't resize children so have to do it ourselves.
-        /*XXX
         GtkAllocation a;
         a.x = 0;
         a.y = 0;
         a.width = v_width;
         a.height = v_height;
         gtk_widget_size_allocate(v_draw_area, &a);
-        */
-        gtk_widget_size_allocate(v_draw_area, a);
+#ifdef NEW_SC
+gtk_widget_size_allocate(v_fixed, &a);
+gtk_widget_size_allocate(gtk_widget_get_parent(v_fixed), &a);
+
+fprintf(stderr, "sz %d %d\n",
+gdk_window_get_width(gtk_widget_get_window(v_fixed)),
+gdk_window_get_height(gtk_widget_get_window(v_fixed)));
+
+fprintf(stderr, "adj %g %g\n", gtk_adjustment_get_upper(ah),
+gtk_adjustment_get_upper(av));
+
+//gtk_scrolled_window_set_max_content_height(GTK_SCROLLED_WINDOW(v_scrwin),
+//    gdk_window_get_height(gtk_widget_get_window(v_fixed)));
+//gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(v_scrwin),
+//    gdk_window_get_height(gtk_widget_get_window(v_fixed)));
+gtk_adjustment_set_upper(av, 
+    gdk_window_get_height(gtk_widget_get_window(v_fixed)));
+fprintf(stderr, "adj %g %g\n", gtk_adjustment_get_upper(ah),
+gtk_adjustment_get_upper(av));
+
+GtkWidget *vsb = gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(v_scrwin));
+gtk_range_set_range(GTK_RANGE(vsb), 0.0, 
+    gdk_window_get_height(gtk_widget_get_window(v_fixed)));
+#endif
 
         int x = htm_viewarea.x;
         int y = htm_viewarea.y;
@@ -2446,6 +2513,34 @@ gtk_viewer::resize_handler(GtkAllocation *a)
     }
     return (true);
 }
+
+
+#ifdef NEW_SC
+
+bool
+gtk_viewer::form_resize_handler(GtkAllocation*)
+{
+    int x = htm_viewarea.x;
+    int y = htm_viewarea.y;
+    htmWidget::resize();
+#ifndef WIN32
+    // This hangs up badly in MSW for some reason.
+    if (gtk_widget_get_realized(v_draw_area)) {
+        // Flush the redraw queue.  If this isn't done, scrollbars
+        // sometimes leave gray areas.
+        do {
+            gtk_main_iteration_do(false);
+        } while (gtk_events_pending());
+    }
+#endif
+    set_scroll_position(x, true);
+    set_scroll_position(y, false);
+    if (!htm_in_layout && htm_initialized)
+        trySync();
+    return (true);
+}
+
+#endif
 
 
 bool
@@ -2471,24 +2566,6 @@ gtk_viewer::button_down_handler(GdkEventButton *event)
         int x = v_btn_x + scroll_position(true);
         int y = v_btn_y + scroll_position(false);
         extendStart((htmEvent*)event, event->button, x, y);
-        return (true);
-    }
-    // Handle mouse wheel events (gtk1 only)
-    if (event->button == 4 || event->button == 5) {
-        if (gtk_widget_get_mapped(v_vsb) && v_vsba) {
-            double nval = gtk_adjustment_get_value(v_vsba) +
-                ((event->button == 4) ?
-                    -gtk_adjustment_get_page_increment(v_vsba) / 4 :
-                    gtk_adjustment_get_page_increment(v_vsba) / 4);
-            if (nval < gtk_adjustment_get_lower(v_vsba))
-                nval = gtk_adjustment_get_lower(v_vsba);
-            else if (nval > gtk_adjustment_get_upper(v_vsba) -
-                    gtk_adjustment_get_page_size(v_vsba)) {
-                nval = gtk_adjustment_get_upper(v_vsba) -
-                    gtk_adjustment_get_page_size(v_vsba);
-            }
-            gtk_adjustment_set_value(v_vsba, nval);
-        }
         return (true);
     }
     return (false);
@@ -2706,6 +2783,11 @@ gtk_viewer::font_change_handler(int indx)
 int
 gtk_viewer::v_scroll_event_hdlr(GtkWidget*, GdkEvent *event, void *vp)
 {
+#ifdef __APPLE__
+    GdkEventScroll *sev = (GdkEventScroll*)event;
+    if (sev->direction != GDK_SCROLL_SMOOTH)
+        return (false);
+#endif
     gtk_viewer *v = static_cast<gtk_viewer*>(vp);
     if (v && gtk_widget_get_mapped(v->v_vsb))
         gtk_propagate_event(v->v_vsb, event);
@@ -2744,11 +2826,19 @@ gtk_viewer::v_expose_event_hdlr(GtkWidget*, GdkEvent *event, void *vp)
 // Private static GTK signal handler.
 //
 void
-gtk_viewer::v_resize_hdlr(GtkWidget*, GtkAllocation *a, void *vp)
+gtk_viewer::v_resize_hdlr(GtkWidget *w, GtkAllocation *a, void *vp)
 {
     gtk_viewer *v = static_cast<gtk_viewer*>(vp);
-    if (v)
-        v->resize_handler(a);
+    if (v) {
+#ifdef NEW_SC
+        if (v->v_fixed == w)
+            v->canvas_resize_handler(a);
+        else if (v->v_form == w)
+            v->form_resize_handler(a);
+#else
+        v->canvas_resize_handler(a);
+#endif
+    }
 }
 
 
