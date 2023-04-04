@@ -158,7 +158,7 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     v_form = gtk_table_new(2, 2, false);
     gtk_widget_show(v_form);
 
-    // Use a GtkFixed container to support placdement of the form
+    // Use a GtkFixed container to support placement of the form
     // widgets.
     // The GtkLayout seems like it should be perfect for the job,
     // however the placed widgets were never visible.  Never found
@@ -2447,10 +2447,12 @@ a->height = v_da_height;
 fprintf(stderr, "new %d %d\n", v_width, v_height);
 #endif
 
+/*XXXYYY
         if (!gtk_widget_get_window(v_draw_area)) {
             gtk_widget_set_size_request(v_draw_area, v_width, v_height);
             return true;
         }
+*/
 
 #if GTK_CHECK_VERSION(3,0,0)
         ndkPixmap *pm = (ndkPixmap*)tk_new_pixmap(v_width, v_height);
@@ -2462,12 +2464,21 @@ fprintf(stderr, "new %d %d\n", v_width, v_height);
         v_pixmap = pm;
 #endif
         // GtkFixed doesn't resize children so have to do it ourselves.
+// XXX Check this!  the allocation branch screws up in GTK2 causing a
+// screen mess when expanding the widget.  The set_size_request call,
+// if I remember correctly, becomes a minimum, and the window can't be
+// resized smaller in GTK3.
+#if GTK_CHECK_VERSION(3,0,0)
         GtkAllocation a;
         a.x = 0;
         a.y = 0;
         a.width = v_width;
         a.height = v_height;
         gtk_widget_size_allocate(v_draw_area, &a);
+#else
+        gtk_widget_set_size_request(v_draw_area, v_width, v_height);
+#endif
+
 #ifdef NEW_SC
 gtk_widget_size_allocate(v_fixed, &a);
 gtk_widget_size_allocate(gtk_widget_get_parent(v_fixed), &a);
@@ -2783,10 +2794,12 @@ gtk_viewer::font_change_handler(int indx)
 int
 gtk_viewer::v_scroll_event_hdlr(GtkWidget*, GdkEvent *event, void *vp)
 {
+#if GTK_CHECK_VERSION(3,0,0)
 #ifdef __APPLE__
     GdkEventScroll *sev = (GdkEventScroll*)event;
     if (sev->direction != GDK_SCROLL_SMOOTH)
         return (false);
+#endif
 #endif
     gtk_viewer *v = static_cast<gtk_viewer*>(vp);
     if (v && gtk_widget_get_mapped(v->v_vsb))
