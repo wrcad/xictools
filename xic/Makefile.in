@@ -44,14 +44,14 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 
 SUBDIRS = \
-  src/gtkxic src/cd src/display src/drc src/edit src/extract src/fileio \
+  src/$(GRPREF)xic src/cd src/display src/drc src/edit src/extract src/fileio \
   src/geom src/main src/parser src/sced src/wrspif src/sparse src/tech \
   $(OA_SUBDIR)
 SUBDIR_LIBS = \
-  src/gtkxic/gtkxic.a src/cd/cd.a src/display/display.a src/fileio/fileio.a \
-  src/geom/geom.a src/main/main.a src/parser/parser.a src/sparse/sparse.a \
-  src/wrspif/wrspif.a src/tech/tech.a src/edit/edit.a src/sced/sced.a \
-  src/drc/drc.a src/extract/extract.a
+  src/$(GRPREF)xic/$(GRPREF)xic.a src/cd/cd.a src/display/display.a \
+  src/fileio/fileio.a src/geom/geom.a src/main/main.a src/parser/parser.a \
+  src/sparse/sparse.a src/wrspif/wrspif.a src/tech/tech.a src/edit/edit.a \
+  src/sced/sced.a src/drc/drc.a src/extract/extract.a
 
 BASE = ../xt_base
 
@@ -65,7 +65,7 @@ endif
 
 ifeq ($(USEMOZY), yes)
 MOZY = ../mozy
-MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/gtkmozy.a
+MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/$(GRPREF)mozy.a
 MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a \
   $(MOZY)/lib/imsave.a
 endif
@@ -77,7 +77,7 @@ LOCAL_LIBS = \
   src/tech/tech.a \
   src/edit/edit.a \
   src/sced/sced.a \
-  src/gtkxic/gtkxic.a \
+  src/$(GRPREF)xic/$(GRPREF)xic.a \
   src/main/main.a \
   src/drc/drc.a \
   src/extract/extract.a \
@@ -93,7 +93,7 @@ LOCAL_LIBS = \
   src/wrspif/wrspif.a \
   $(SECURELIB) \
   $(MOZYLIBS1) \
-  $(BASE)/lib/gtkinterf.a  \
+  $(BASE)/lib/$(GRPREF)interf.a  \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZYLIBS2) \
@@ -118,7 +118,7 @@ $(TARGETS)::
 # a DLL, so that we can link plugins against the DLL.
 
 bin/$(DLL_XIC_PROG): bin/main.cc bin/xic.dll
-	$(CC) -o bin/xic bin/main.cc src/gtkxic/resource.o -Lbin -lxic
+	$(CC) -o bin/xic bin/main.cc src/$(GRPREF)xic/resource.o -Lbin -lxic
 
 bin/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
@@ -194,8 +194,8 @@ $(MALLOC)::
 $(BASE)/lib/ginterf.a::
 	cd $(BASE)/ginterf; $(MAKE)
 
-$(BASE)/lib/gtkinterf.a::
-	cd $(BASE)/gtkinterf; $(MAKE)
+$(BASE)/lib/$(GRPREF)interf.a::
+	cd $(BASE)/$(GRPREF)interf; $(MAKE)
 
 $(BASE)/lib/miscutil.a::
 	cd $(BASE)/miscutil; $(MAKE)
@@ -204,9 +204,9 @@ $(BASE)/lib/libregex.a::
 	cd $(BASE)/regex; $(MAKE)
 
 ifeq ($(USEMOZY), yes)
-$(MOZY)/lib/gtkmozy.a::
-	if [ -d $(MOZY)/src/gtkmozy ]; then \
-	    cd $(MOZY)/src/gtkmozy; $(MAKE); \
+$(MOZY)/lib/$(GRPREF)mozy.a::
+	if [ -d $(MOZY)/src/$(GRPREF)mozy ]; then \
+	    cd $(MOZY)/src/$(GRPREF)mozy; $(MAKE); \
 	fi
 
 $(MOZY)/lib/help.a::
@@ -304,9 +304,9 @@ distclean: eclean
 	-@rm -f bin/*.o Makefile
 
 grclean:
-	cd src/gtkxic; $(MAKE) clean
-	cd ../mozy/src/gtkmozy; $(MAKE) clean
-	cd ../xt_base/gtkinterf; $(MAKE) clean
+	cd src/$(GRPREF)xic; $(MAKE) clean
+	cd ../mozy/src/$(GRPREF)mozy; $(MAKE) clean
+	cd ../xt_base/$(GRPREF)interf; $(MAKE) clean
 
 #######################################################################
 ####### Install programs into system location #########################

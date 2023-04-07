@@ -1940,7 +1940,7 @@ namespace {
 
 
 #ifndef WIN32
-#if defined(HAVE_GTK1) || defined(HAVE_GTK2)
+#if defined(HAVE_GTK2) || defined(HAVE_GTK3)
 namespace {
     //
     // Some setup code for the GTK library.
@@ -1952,43 +1952,6 @@ namespace {
         // faults when our internal memory manager is used.  This seems to
         // fix the problem.
         putenv(lstring::copy("G_SLICE=always-malloc"));
-#endif
-
-#if defined(HAVE_GTK1) && !defined(DYNAMIC_LIBS)
-        // There is a portability problem with the statically-linked
-        // gtk when theme engines are imported.  In particular, libpng
-        // has very restrictive verson matching, and if an engine
-        // (such as eazel) tries to read a png image, and the shared
-        // code is compiled against a different libpng release than
-        // the one we supply, the application will exit.  Thus, we (by
-        // default) turn off themes generally, and supply our own,
-        // known to work.
-
-        if (getenv("XT_USE_GTK_THEMES"))
-            return;
-        char *rcp = pathlist::mk_path(
-            Global.StartupDir(), "default_theme/gtkrc");
-        if (!access(rcp, R_OK)) {
-
-            // We're going to check for gtkrc in default_theme and its
-            // parent dir, parent dir last so it has precedence.  If the
-            // user modifies gtkrc, it should be copied to the parent dir
-            // so it won't get clobbered by a software update.
-
-            char *v1 = new char[2*strlen(Global.StartupDir()) + 42];
-            sprintf(v1, "%s=%s/%s:%s/%s", "GTK_RC_FILES", Global.StartupDir(),
-                "default_theme/gtkrc", Global.StartupDir(), "gtkrc");
-            putenv(v1);
-
-            char *v2 = new char[strlen(Global.StartupDir()) + 32];
-            sprintf(v2, "%s=%s/%s", "GTK_EXE_PREFIX", Global.StartupDir(),
-                "default_theme");
-            putenv(v2);
-        }
-        else
-            // Don't read any gtkrc files, so no themes
-            putenv(lstring::copy("GTK_RC_FILES="));
-        delete [] rcp;
 #endif
     }
 }
@@ -2205,7 +2168,9 @@ sGlobal::initialize(const char *argv_0)
 
     g_mem_error = false;
 #ifndef WIN32
+#if defined(HAVE_GTK2) || defined(HAVE_GTK3)
     setup_gtk();
+#endif
 #endif
 }
 

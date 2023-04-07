@@ -60,12 +60,12 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 WDEMODIR = wrspice_ipc_demo
 
 SUBDIRS = \
-  src/cp src/fte src/analysis src/inp src/ckt src/sparse src/plot src/gtkwrs \
-  src/misc
+  src/cp src/fte src/analysis src/inp src/ckt src/sparse src/plot \
+  src/$(GRPREF)wrs src/misc
 SUBDIR_LIBS = \
   src/cp/cp.a src/fte/fte.a src/analysis/analysis.a src/inp/inp.a \
-  src/ckt/ckt.a src/sparse/sparse.a src/plot/plot.a src/gtkwrs/gtkwrs.a \
-  src/misc/misc.a
+  src/ckt/ckt.a src/sparse/sparse.a src/plot/plot.a \
+  src/$(GRPREF)wrs/$(GRPREF)wrs.a src/misc/misc.a
 
 BASE = ../xt_base
 VLOG = ../vl
@@ -80,7 +80,7 @@ endif
 
 ifeq ($(USEMOZY), yes)
 MOZY = ../mozy
-MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/gtkmozy.a
+MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/$(GRPREF)mozy.a
 MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a \
   $(MOZY)/lib/imsave.a
 endif
@@ -97,7 +97,7 @@ LOCAL_LIBS = \
   src/$(GRPREF)wrs/$(GRPREF)wrs.a \
   $(SECURELIB) \
   $(MOZYLIBS1) \
-  $(BASE)/lib/gtkinterf.a  \
+  $(BASE)/lib/$(GRPREF)interf.a  \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZYLIBS2) \
@@ -127,7 +127,8 @@ $(TARGETS)::
 # everything in a DLL, so that we can link plugins against the DLL.
 
 bin/$(DLL_SPICE_PROG): bin/main.cc bin/wrspice.dll
-	$(CC) -o bin/wrspice bin/main.cc src/gtkwrs/resource.o -Lbin -lwrspice
+	$(CC) -o bin/wrspice bin/main.cc src/$(GRPREF)wrs/resource.o -Lbin \
+  -lwrspice
 
 bin/wrspice.dll: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
@@ -187,8 +188,8 @@ $(MALLOC)::
 $(BASE)/lib/ginterf.a::
 	cd $(BASE)/ginterf; $(MAKE)
 
-$(BASE)/lib/gtkinterf.a::
-	cd $(BASE)/gtkinterf; $(MAKE)
+$(BASE)/lib/$(GRPREF)interf.a::
+	cd $(BASE)/$(GRPREF)interf; $(MAKE)
 
 $(BASE)/lib/miscutil.a::
 	cd $(BASE)/miscutil; $(MAKE)
@@ -197,9 +198,9 @@ $(BASE)/lib/libregex.a::
 	cd $(BASE)/regex; $(MAKE)
 
 ifeq ($(USEMOZY), yes)
-$(MOZY)/lib/gtkmozy.a::
-	if [ -d $(MOZY)/src/gtkmozy ]; then \
-	    cd $(MOZY)/src/gtkmozy; $(MAKE); \
+$(MOZY)/lib/$(GRPREF)mozy.a::
+	if [ -d $(MOZY)/src/$(GRPREF)mozy ]; then \
+	    cd $(MOZY)/src/$(GRPREF)mozy; $(MAKE); \
 	fi
 
 $(MOZY)/lib/help.a::

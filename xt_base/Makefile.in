@@ -5,6 +5,7 @@ LOCATION = xt_base
 DATE = @DATE@
 MALLOC = @MALLOC@
 REGEX = @REGEX@
+GRPREF = @GRPREF@
 
 ifdef MALLOC
 MALLOC_DIR = malloc
@@ -17,7 +18,7 @@ endif
 SUBDIRS = \
   miscutil \
   ginterf \
-  gtkinterf \
+  $(GRPREF)interf \
   util \
   $(MALLOC_DIR) \
   $(REGEX_DIR)

@@ -1,0 +1,176 @@
+#######################################################################
+# src/qtinterf/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.32 2009/01/13 07:10:41 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@
+DEPEND_PROG = @DEPEND_PROG@
+FILTER = @FILTER@
+INCLUDE = $(APPINCL) @TOOLKITINC@
+MOC = @MOC@
+
+HFILES = \
+    activity_w.h \
+    draw_gl_w.h \
+    draw_if.h \
+    draw_qt_w.h \
+    draw_x_w.h \
+    idle_proc.h \
+    interval_timer.h \
+    polysplit.h \
+    progress_d.h \
+    qtaffirm.h \
+    qredit.h \
+    qtfile.h \
+    qtfont.h \
+    qthcopy.h \
+    qtinput.h \
+    qtinterf.h \
+    qtlist.h \
+    qtmcol.h \
+    qtmsg.h \
+    qtnumer.h \
+    search_d.h
+
+CCFILES = \
+    activity_w.cc \
+    draw_if.cc \
+    draw_gl_w.cc \
+    draw_qt_w.cc \
+    draw_x_w.cc \
+    idle_proc.cc \
+    interval_timer.cc \
+    polysplit.cc \
+    progress_d.cc \
+    qtaffirm.cc \
+    qtedit.cc \
+    qtfile.cc \
+    qtfont.cc \
+    qthcopy.cc \
+    qtinput.cc \
+    qtinterf.cc \
+    qtlist.cc \
+    qtmcol.cc \
+    qtmsg.cc \
+    qtnumer.cc \
+    search_d.cc
+
+MOCFILES = \
+    moc_activity_w.cpp \
+    moc_affirm.cpp \
+    moc_draw_gl_w.cpp \
+    moc_draw_qt_w.cpp \
+    moc_draw_x_w.cpp \
+    moc_file.cpp \
+    moc_font.cpp \
+    moc_idle_proc.cpp \
+    moc_input.cpp \
+    moc_interval_timer.cpp \
+    moc_list.cpp \
+    moc_mcol.cpp \
+    moc_msg.cpp \
+    moc_numer.cpp \
+    moc_hcopy.cpp \
+    moc_progress_d.cpp \
+    moc_search_d.cpp \
+    moc_edit.cpp
+
+CCOBJS = $(CCFILES:.cc=.o)
+MOCOBJS = $(MOCFILES:.cpp=.o)
+LIBOBJS = $(CCOBJS) $(MOCOBJS)
+APPINCL = -I. -I.. -I../../miscutil
+
+stamp: $(LIBOBJS)
+	touch stamp
+
+.cpp.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+
+.cc.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+
+files::
+	@echo $(CCFILES) $(HFILES) NOTE Makefile.in
+
+subdirs::
+
+moc_activity_w.o: moc_activity_w.cpp  activity_w.h 
+moc_affirm.o: moc_affirm.cpp  qtaffirm.h 
+moc_draw_gl_w.o: moc_draw_gl_w.cpp  draw_gl_w.h 
+moc_draw_qt_w.o: moc_draw_qt_w.cpp  draw_qt_w.h 
+moc_draw_x_w.o: moc_draw_x_w.cpp  draw_x_w.h 
+moc_file.o: moc_file.cpp  qtfile.h 
+moc_font.o: moc_font.cpp  qtfont.h 
+moc_idle_proc.o: moc_idle_proc.cpp  idle_proc.h 
+moc_input.o: moc_input.cpp  qtinput.h 
+moc_interval_timer.o: moc_interval_timer.cpp  interval_timer.h 
+moc_list.o: moc_list.cpp  qtlist.h
+moc_mcol.o: moc_mcol.cpp  qtmcol.h
+moc_msg.o: moc_msg.cpp  qtmsg.h 
+moc_numer.o: moc_numer.cpp  qtnumer.h 
+moc_hcopy.o: moc_hcopy.cpp  qthcopy.h 
+moc_progress_d.o: moc_progress_d.cpp  progress_d.h 
+moc_search_d.o: moc_search_d.cpp  search_d.h 
+moc_edit.o: moc_edit.cpp  qtedit.h 
+
+moc_activity_w.cpp: $(MOC) activity_w.h
+	$(MOC) activity_w.h -o moc_activity_w.cpp
+moc_affirm.cpp: $(MOC) qtaffirm.h
+	$(MOC) qtaffirm.h -o moc_affirm.cpp
+moc_draw_gl_w.cpp: $(MOC) draw_gl_w.h
+	$(MOC) draw_gl_w.h -o moc_draw_gl_w.cpp
+moc_draw_qt_w.cpp: $(MOC) draw_qt_w.h
+	$(MOC) draw_qt_w.h -o moc_draw_qt_w.cpp
+moc_draw_x_w.cpp: $(MOC) draw_x_w.h
+	$(MOC) draw_x_w.h -o moc_draw_x_w.cpp
+moc_file.cpp: $(MOC) qtfile.h
+	$(MOC) qtfile.h -o moc_file.cpp
+moc_font.cpp: $(MOC) qtfont.h
+	$(MOC) qtfont.h -o moc_font.cpp
+moc_idle_proc.cpp: $(MOC) idle_proc.h
+	$(MOC) idle_proc.h -o moc_idle_proc.cpp
+moc_input.cpp: $(MOC) qtinput.h
+	$(MOC) qtinput.h -o moc_input.cpp
+moc_interval_timer.cpp: $(MOC) interval_timer.h
+	$(MOC) interval_timer.h -o moc_interval_timer.cpp
+moc_list.cpp: $(MOC) qtlist.h
+	$(MOC) qtlist.h -o moc_list.cpp
+moc_mcol.cpp: $(MOC) qtmcol.h
+	$(MOC) qtmcol.h -o moc_mcol.cpp
+moc_msg.cpp: $(MOC) qtmsg.h
+	$(MOC) qtmsg.h -o moc_msg.cpp
+moc_numer.cpp: $(MOC) qtnumer.h
+	$(MOC) qtnumer.h -o moc_numer.cpp
+moc_hcopy.cpp: $(MOC) qthcopy.h
+	$(MOC) qthcopy.h -o moc_hcopy.cpp
+moc_progress_d.cpp: $(MOC) progress_d.h
+	$(MOC) progress_d.h -o moc_progress_d.cpp
+moc_search_d.cpp: $(MOC) search_d.h
+	$(MOC) search_d.h -o moc_search_d.cpp
+moc_edit.cpp: $(MOC) qtedit.h
+	$(MOC) qtedit.h -o moc_edit.cpp
+
+mocclean:
+	-@rm -f $(MOCOBJS)
+	-@rm -f $(MOCFILES)
+
+clean: mocclean
+	-@rm -f $(CCOBJS) stamp
+
+distclean: clean
+	-@rm -f Makefile
+
+depend:
+	@echo depending in qtinterf
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(CFLAGS) $(INCLUDE) $(CCFILES) \
+  $(FILTER) >> Makefile; \
+	fi
+
+#######################################################################

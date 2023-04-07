@@ -196,27 +196,45 @@ if test $enable_profiling = yes; then
 fi
 )
 
-gtklev=2
+grpkg=""
+
+dnl --enable-qt5[=config_dir]
+dnl link with qt5
+AC_ARG_ENABLE(qt5,   [  ]--enable-qt5[[=config_dir]]            link with qt5,
+if test $enable_qt5 != yes -a $enable_qt5 != no; then
+    qtloc=$enable_qt5
+    qtlocd="$enable_qt5/"
+    grpkg="QT5"
+fi
+)
+
+if test -z $grpkg; then
 dnl --enable-gtk2[=config_dir]
 dnl redundant except for giving pkg-config path
 AC_ARG_ENABLE(gtk2,  [  ]--enable-gtk2[[=config_dir]]           link with gtk2,
 if test $enable_gtk2 != yes -a $enable_gtk2 != no; then
     gtkloc="$enable_gtk2"
     gtklocd="$enable_gtk2/"
+    grpkg="GTK2"
+elif test $enable_gtk2 == yes; then
+    grpkg="GTK2"
 fi
 )
+fi
 
+if test -z $grpkg; then
 dnl --enable-gtk3[=config_dir]
 dnl redundant except for giving pkg-config path
 AC_ARG_ENABLE(gtk3,  [  ]--enable-gtk3[[=config_dir]]           link with gtk3,
 if test $enable_gtk3 != yes -a $enable_gtk3 != no; then
     gtkloc="$enable_gtk3"
     gtklocd="$enable_gtk3/"
-    gtklev=3
+    grpkg="GTK3"
 elif test $enable_gtk3 == yes; then
-    gtklev=3
+    grpkg="GTK3"
 fi
 )
+fi
 
 dnl --enable-quartz
 dnl use OS X GTK-2 Quartz backend
@@ -227,7 +245,8 @@ if test $enable_quartz = yes; then
 fi
 )
 
-echo '#define HAVE_GTK2 1'>> confdefs.h
+#XXX fixme
+#echo '#define HAVE_GTK2 1'>> confdefs.h
 
 if test $nomozy = no; then
     echo '#define HAVE_MOZY 1'>> confdefs.h
@@ -674,10 +693,114 @@ dnl ***
 dnl *** Graphical interface configuration
 dnl ***
 
-dnl Don't need to filter with newer tools than win-builds.
-AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
-if test $have_cfg = yes; then
-    if test $gtklev == 3; then
+if test $grpkg = "QT5"; then
+    QTBASE=$qtloc
+
+    tmpdir="/tmp/__tmp__"
+    cwd=`pwd`
+    mkdir $tmpdir
+    cd $tmpdir
+    touch empty.cc
+    $QTBASE/bin/qmake -project
+    $QTBASE/bin/qmake "QT += xml opengl"
+    cd $cwd
+
+    has_qt=no
+    if test -f $tmpdir/Makefile; then
+        has_qt=yes
+
+        cf=`grep '^CXXFLAGS' $tmpdir/Makefile`
+        set $cf
+        while test x"$1" != x; do
+            y=`echo $1 |grep "^-D"`
+            if test x"$y" != x; then
+                QT_CFLAGS="$QT_CFLAGS $1"
+            fi
+            shift
+        done
+        echo "QT_CFLAGS=$QT_CFLAGS"
+
+        ip=`grep '^INCPATH' $tmpdir/Makefile`
+        set $ip
+        while test x"$1" != x; do
+            y=`echo $1 |grep "^-I"`
+            if test x"$y" != x -a $1 != "-I."; then
+                QT_INCL="$QT_INCL $1"
+            fi
+            shift
+        done
+        echo "QT_INCL=$QT_INCL"
+
+        lf=`grep '^LFLAGS' $tmpdir/Makefile`
+        set $lf
+        while test x"$1" != x; do
+            y=`echo $1 |grep "^-"`
+            if test x"$y" != x; then
+                QT_LFLAGS="$QT_LFLAGS $1"
+            fi
+            shift
+        done
+        echo "QT_LFLAGS=$QT_LFLAGS"
+
+        lb=`grep '^LIBS' $tmpdir/Makefile`
+        set $lb
+        while test x"$1" != x; do
+            y=`echo $1 |grep "^-"`
+            if test x"$y" != x; then
+                QT_LIBS="$QT_LIBS $1"
+            fi
+            shift
+        done
+        echo "QT_LIBS=$QT_LIBS"
+    fi
+    rm -rf $tmpdir
+
+    if test $has_qt = no; then
+        echo "Unable to determine QT setup info"
+        exit
+    fi
+
+    GRPREF=qt
+    MOC="$QTBASE/bin/moc"
+    TOOLKITINC="$QT_INCL"
+    TOOLKITLIBS="$QT_LIBS"
+    TOOLKITCFLAGS="$QT_CFLAGS"
+    TOOLKITLFLAGS="$QT_LFLAGS"
+
+elif test $grpkg == "GTK2"; then
+    AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
+    if test $have_cfg = yes; then
+        ${gtklocd}pkg-config --exists gtk+-2.0
+        if test $? = 0; then
+            GRPREF=gtk
+            if test -n "$EXESUFFIX" -a $NEED_FILTER = yes; then
+dnl             # Filter needed in Windows, pkg-config adds ^M that chokes g++.
+                tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0 |sed -e s///g`"
+                tkl="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
+            else
+                tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0`"
+                tkl="`${gtklocd}pkg-config --libs gtk+-2.0`"
+            fi
+            TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
+dnl            TOOLKITCFLAGS="-DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED \
+dnl     -DGTK_DISABLE_DEPRECATED \
+dnl     -DGSEAL_ENABLE"
+            if test $OSNAME = "Darwin" -a $with_quartz = yes; then
+                TOOLKITCFLAGS+="-DWITH_QUARTZ"
+            fi
+            TOOLKITLIBS="$tkl"
+        else
+            echo "gtk2 not found"
+            exit
+        fi
+    else
+        echo "pkg-config not found"
+        exit
+    fi
+
+elif test $grpkg == "GTK3"; then
+    AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
+    if test $have_cfg = yes; then
         XLIBS="-lXrender -lXinerama -lXi -lXrandr -lXcursor -lXcomposite \
 -lXdamage -lXfixes -lX11 -lXext"
         ${gtklocd}pkg-config --exists gtk+-3.0
@@ -704,35 +827,10 @@ dnl     -DGSEAL_ENABLE"
             echo "gtk3 not found"
             exit
         fi
-
     else
-        ${gtklocd}pkg-config --exists gtk+-2.0
-        if test $? = 0; then
-            GRPREF=gtk
-            if test -n "$EXESUFFIX" -a $NEED_FILTER = yes; then
-dnl             # Filter needed in Windows, pkg-config adds ^M that chokes g++.
-                tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0 |sed -e s///g`"
-                tkl="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
-            else
-                tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0`"
-                tkl="`${gtklocd}pkg-config --libs gtk+-2.0`"
-            fi
-            TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
-dnl            TOOLKITCFLAGS="-DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED \
-dnl     -DGTK_DISABLE_DEPRECATED \
-dnl     -DGSEAL_ENABLE"
-            if test $OSNAME = "Darwin" -a $with_quartz = yes; then
-                TOOLKITCFLAGS+="-DWITH_QUARTZ"
-            fi
-            TOOLKITLIBS="$tkl"
-        else
-            echo "gtk2 not found"
-            exit
-        fi
+        echo "pkg-config not found"
+        exit
     fi
-else
-    echo "pkg-config not found"
-    exit
 fi
 
 AC_SUBST(GRPREF)
@@ -1219,7 +1317,7 @@ if test -d ../secure; then
 fi
 if test -d ../mozy; then
     makefiles="$makefiles \
-        ../mozy/src/gtkmozy/Makefile \
+        ../mozy/src/${GRPREF}mozy/Makefile \
         ../mozy/src/help/Makefile \
         ../mozy/src/htm/Makefile \
         ../mozy/src/httpget/Makefile \

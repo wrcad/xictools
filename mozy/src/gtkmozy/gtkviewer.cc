@@ -1,5 +1,5 @@
 
-/*========================================================================*
+/*========================================================================
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
@@ -115,6 +115,7 @@ namespace {
     }
 }
 
+//#define NEW_DF
 
 gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     htmWidget(this, d)
@@ -164,17 +165,31 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     // however the placed widgets were never visible.  Never found
     // the problem, reverted to GtkFixed + GtkDrawingArea.`
     v_fixed = gtk_fixed_new();
+#ifdef NEW_DF
+    //XXX this does nothing
+    gtk_widget_set_app_paintable(v_fixed, true);
+#endif
     gtk_widget_show(v_fixed);
     // Without this, form widgets will render outside of the drawing
     // area.  This clips them to the drawing area.
     gtk_widget_set_has_window(v_fixed, true);
+gtk_widget_set_vexpand(v_fixed, false);
+gtk_widget_set_vexpand_set(v_fixed, true);
+gtk_widget_set_hexpand(v_fixed, false);
+gtk_widget_set_hexpand_set(v_fixed, true);
 
+#ifdef NEW_DF
+    v_draw_area = v_fixed;
+#else
     v_draw_area = gtk_drawing_area_new();
+#endif
     gtk_widget_set_double_buffered(v_draw_area, false);  // we handle it
     gtk_widget_show(v_draw_area);
     gtk_widget_set_size_request(v_draw_area, v_width, v_height);
+#ifdef NEW_DF
+#else
     gtk_fixed_put(GTK_FIXED(v_fixed), v_draw_area, 0, 0);
-//gtk_container_set_resize_mode(GTK_CONTAINER(v_fixed), GTK_RESIZE_PARENT);
+#endif
 
     v_hsba = (GtkAdjustment*)gtk_adjustment_new(0.0, 0.0, v_width, 8.0,
         v_width/2, v_width);
@@ -555,7 +570,6 @@ void
 gtk_viewer::tk_resize_area(int w, int h)
 {
 #ifdef NEW_SC
-//XXX
 fprintf(stderr, "resize_area %d %d\n", w, h);
 v_da_width = w;
 v_da_height = h;
@@ -2447,12 +2461,12 @@ a->height = v_da_height;
 fprintf(stderr, "new %d %d\n", v_width, v_height);
 #endif
 
-/*XXXYYY
+#if GTK_CHECK_VERSION(3,0,0)
         if (!gtk_widget_get_window(v_draw_area)) {
             gtk_widget_set_size_request(v_draw_area, v_width, v_height);
             return true;
         }
-*/
+#endif
 
 #if GTK_CHECK_VERSION(3,0,0)
         ndkPixmap *pm = (ndkPixmap*)tk_new_pixmap(v_width, v_height);
@@ -2463,11 +2477,19 @@ fprintf(stderr, "new %d %d\n", v_width, v_height);
         gdk_pixmap_unref(v_pixmap);
         v_pixmap = pm;
 #endif
+#ifdef NEW_DF
+#else
         // GtkFixed doesn't resize children so have to do it ourselves.
-// XXX Check this!  the allocation branch screws up in GTK2 causing a
-// screen mess when expanding the widget.  The set_size_request call,
-// if I remember correctly, becomes a minimum, and the window can't be
-// resized smaller in GTK3.
+        //
+        // Check this!  the allocation branch screws up in GTK2
+        // causing a screen mess when expanding the widget.  The
+        // set_size_request call, if I remember correctly, becomes a
+        // minimum, and the window can't be resized smaller in GTK3. 
+        //
+        // Checked.  Indeed true, the set_size_request call fixes the
+        // problem in GTK3, but also prevents the window from being
+        // made smaller by the user.
+
 #if GTK_CHECK_VERSION(3,0,0)
         GtkAllocation a;
         a.x = 0;
@@ -2477,6 +2499,7 @@ fprintf(stderr, "new %d %d\n", v_width, v_height);
         gtk_widget_size_allocate(v_draw_area, &a);
 #else
         gtk_widget_set_size_request(v_draw_area, v_width, v_height);
+#endif
 #endif
 
 #ifdef NEW_SC

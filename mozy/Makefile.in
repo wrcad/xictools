@@ -36,8 +36,8 @@ MOZY_VERSION := `./release.sh`
 LOCAL_LIBS = \
   lib/htm.a \
   lib/help.a \
-  lib/gtkmozy.a \
-  $(BASE)/lib/gtkinterf.a  \
+  lib/$(GRPREF)mozy.a \
+  $(BASE)/lib/$(GRPREF)interf.a  \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   lib/htm.a \
@@ -51,7 +51,7 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-SUBDIRS = src/gtkmozy src/help src/htm src/httpget src/imsave
+SUBDIRS = src/$(GRPREF)mozy src/help src/htm src/httpget src/imsave
 
 #######################################################################
 ####### Executable and related targets ################################
@@ -104,8 +104,8 @@ bin/xeditor.o: bin/xeditor.cc
 #######################################################################
 ####### Recursively generate libraries ################################
 
-lib/gtkmozy.a::
-	cd src/gtkmozy; $(MAKE)
+lib/$(GRPREF)mozy.a::
+	cd src/$(GRPREF)mozy; $(MAKE)
 
 lib/help.a::
 	cd src/help; $(MAKE)
@@ -122,8 +122,8 @@ lib/imsave.a::
 $(BASE)/lib/ginterf.a::
 	cd $(BASE)/ginterf; $(MAKE)
 
-$(BASE)/lib/gtkinterf.a::
-	cd $(BASE)/gtkinterf; $(MAKE)
+$(BASE)/lib/$(GRPREF)interf.a::
+	cd $(BASE)/$(GRPREF)interf; $(MAKE)
 
 $(BASE)/lib/miscutil.a::
 	cd $(BASE)/miscutil; $(MAKE)

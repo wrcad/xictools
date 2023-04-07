@@ -1,0 +1,122 @@
+#######################################################################
+# xic/qtxic/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.21 2009/01/13 07:10:48 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+INCLUDE = $(APPINCL) @TOOLKITINC@
+MOC = @MOC@
+
+LPATH = ../..
+LFLAGS = -rdynamic  -pthread -Wl,-rpath,/usr/local/Trolltech/Qt-4.0.1/lib
+LIBS = $(APPLIBS) -lncurses -L/usr/local/lib -L/usr/X11R6/lib  -lXpm -lpng -ltiff -ljpeg -lz  -L/usr/local/lib -L/usr/local/Trolltech/Qt-4.0.1/lib -L/usr/local/lib -L/usr1/stevew/qt-x11-opensource-src-4.0.1/lib -lQtGui_debug -L/usr/X11R6/lib -lSM -lICE -lXi -lXrender -lXrandr -lXcursor -lXinerama -lfreetype -lfontconfig -lXext -lX11 -lm -lQtCore_debug -lz -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic
+APPLIBS = $(LPATH)/ginterf/ginterf.a
+
+LIB_TARGET = qtxic.a
+HFILES = \
+    qtcoord.h \
+    qtexpand.h \
+    qthtext.h \
+    qtinlines.h \
+    qtltab.h \
+    qtmain.h \
+    qtmenu.h \
+    qtmenucfg.h
+CCFILES = \
+    qtclrtab.cc \
+    qtcoord.cc \
+    qtexpand.cc \
+    qtextfch.cc \
+    qtfiledlg.cc \
+    qthtext.cc \
+    qtkeyb.cc \
+    qtltab.cc \
+    qtltalias.cc \
+    qtltedit.cc \
+    qtmain.cc \
+    qtmenu.cc \
+    qtmenucfg.cc \
+    qtparam.cc \
+    qtptext.cc \
+    qtxdraw.cc \
+    qtxxx.cc
+MOCFILES = \
+    moc_main.cpp \
+    moc_coord.cpp \
+    moc_expand.cpp \
+    moc_ltab.cpp \
+    moc_menu.cpp \
+    moc_menucfg.cpp
+
+CCOBJS = $(CCFILES:.cc=.o)
+MOCOBJS = $(MOCFILES:.cpp=.o)
+LIBOBJS = $(CCOBJS) $(MOCOBJS)
+APPINCL = -I. -I../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
+  -I$(LPATH)/ginterf/qtinterf -I$(LPATH)/secure
+
+TARGET = xx
+
+$(LIB_TARGET): $(LIBOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(LIBOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+$(TARGET): $(APPLIBS) $(LIBOBJS) main.o mainwin.h
+	$(CXX) $(LFLAGS) -o $(TARGET) main.o $(LIBOBJS) $(LIBS)
+
+.cpp.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+
+.cc.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+
+moc_main.o: moc_main.cpp  qtmain.h
+moc_coord.o: moc_coord.cpp  qtcoord.h
+moc_expand.o: moc_expand.cpp  qtexpand.h
+moc_ltab.o: moc_ltab.cpp  qtltab.h
+moc_menu.o: moc_menu.cpp  qtmenu.h
+moc_menucfg.o: moc_menucfg.cpp  qtmenucfg.h
+
+moc_main.cpp: $(MOC) qtmain.h
+	$(MOC) qtmain.h -o moc_main.cpp
+moc_coord.cpp: $(MOC) qtcoord.h
+	$(MOC) qtcoord.h -o moc_coord.cpp
+moc_expand.cpp: $(MOC) qtexpand.h
+	$(MOC) qtexpand.h -o moc_expand.cpp
+moc_ltab.cpp: $(MOC) qtltab.h
+	$(MOC) qtltab.h -o moc_ltab.cpp
+moc_menu.cpp: $(MOC) qtmenu.h
+	$(MOC) qtmenu.h -o moc_menu.cpp
+moc_menucfg.cpp: $(MOC) qtmenucfg.h
+	$(MOC) qtmenucfg.h -o moc_menucfg.cpp
+
+mocclean:
+	-@rm -f $(MOCOBJS)
+	-@rm -f $(MOCFILES)
+
+clean: mocclean
+	-@rm -f $(CCOBJS) stamp
+
+distclean:
+	-@rm -f Makefile
+
+depend:
+	@echo depending in xic/qtxic
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+#######################################################################
