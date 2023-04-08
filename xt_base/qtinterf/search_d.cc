@@ -40,7 +40,7 @@
 
 #include "qtinterf.h"
 #include "search_d.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 #include <QAction>
 #include <QCheckBox>

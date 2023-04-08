@@ -40,7 +40,7 @@
 
 #include "qtmain.h"
 #include "qthtext.h"
-#include "qtfont.h"
+#include "qtinterf/qtfont.h"
 #include "cd_property.h"
 #include "dsp_inlines.h"
 #include "select.h"

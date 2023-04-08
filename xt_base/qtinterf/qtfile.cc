@@ -40,9 +40,9 @@
 
 #include "qtfile.h"
 #include "qtaffirm.h"
-#include "pathlist.h"
 #include "qtinput.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 #include <dirent.h>
 #include <stdlib.h>

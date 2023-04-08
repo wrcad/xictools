@@ -42,7 +42,7 @@
 #define QTCOORD_H
 
 #include <QWidget>
-#include "qtinterf.h"
+#include "qtinterf/qtinterf.h"
 
 class mainwin;
 

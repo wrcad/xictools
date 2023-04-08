@@ -44,10 +44,9 @@
 #include "qtinput.h"
 #include "qtmsg.h"
 #include "search_d.h"
-#include "encode.h"
-
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/encode.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 #include <unistd.h>
 

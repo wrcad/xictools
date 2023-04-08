@@ -44,10 +44,10 @@
 #include "ginterf/graphics.h"
 #include <string.h>
 #include <QEventLoop>
-#include "draw_if.h"
+#include "qtinterf/draw_if.h"
 
 //
-//  Main header for the QT-4 library
+//  Main header for the QT-5 library
 //
 
 class QCursor;

@@ -41,7 +41,7 @@
 #ifndef PROGRESS_D_H
 #define PROGRESS_D_H
 
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 #include <QVariant>
 #include <QDialog>

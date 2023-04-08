@@ -38,30 +38,69 @@
  $Id:$
  *========================================================================*/
 
-#ifndef NUMER_D_H
-#define NUMER_D_H
+#ifndef QTFONT_H
+#define QTFONT_H
 
-#include "graphics.h"
+#include "ginterf/graphics.h"
+#include "ginterf/fontutil.h"
 
 #include <QVariant>
 #include <QDialog>
 
+//
+// Font handling
+//
+
+class QFont;
+class QListWidget;
+class QListWidgetItem;
 class QTextEdit;
+class QFontDatabase;
 class QPushButton;
-class QDoubleSpinBox;
+class QComboBox;
 
 namespace qtinterf
 {
-    struct qt_bag;
+    struct QTfont : public GRfont
+    {
+        void setName(const char*, int);
+        const char *getName(int);
+        char *getFamilyName(int);
+        bool getFont(void*, int);
+        void registerCallback(void*, int);
+        void unregisterCallback(void*, int);
 
-    class QTnumPopup : public QDialog, public GRnumPopup
+    private:
+        QFont *new_font(const char*, bool);
+        void refresh(int);
+
+        struct FcbRec
+        {
+            FcbRec(QWidget *w, FcbRec *n) { widget = w; next = n; }
+
+            QWidget *widget;
+            FcbRec *next;
+        };
+
+        struct sFrec
+        {
+            sFrec() { name = 0; font = 0; cbs = 0; }
+
+            const char *name;
+            QFont *font;
+            FcbRec *cbs;
+        } fonts[MAX_NUM_APP_FONTS];
+    };
+
+    class qt_bag;
+
+    class QTfontPopup : public QDialog, public GRfontPopup
     {
         Q_OBJECT
 
     public:
-        QTnumPopup(qt_bag*, const char*, double, double, double, double,
-            int, void*);
-        ~QTnumPopup();
+        QTfontPopup(qt_bag*, int, void*);
+        ~QTfontPopup();
 
         // GRpopup overrides
         void set_visible(bool visib)
@@ -74,8 +113,18 @@ namespace qtinterf
                 else
                     hide();
             }
-        void register_caller(GRobject, bool, bool);
         void popdown();
+
+        // GRfontPopup overrides
+        void set_font_name(const char*);
+        void update_label(const char*);
+
+        void select_font(const QFont*);
+        QFont *current_selection();
+        char *current_face();
+        char *current_style();
+        int current_size();
+        void add_choice(const QFont*, const char*);
 
         // This widget will be deleted when closed with the title bar "X"
         // button.  Qt::WA_DeleteOnClose does not work - our destructor is
@@ -83,21 +132,27 @@ namespace qtinterf
         // of deleting it, which would likely be a core leak here.
         void closeEvent(QCloseEvent*) { quit_slot(); }
 
-        QSize sizeHint() const { return (QSize(300, 150)); }
-
     signals:
-        void affirm(bool, void*);
+        void select_action(int, const char*, void*);
+        void dismiss();
 
     private slots:
         void action_slot();
         void quit_slot();
+        void face_changed_slot(QListWidgetItem*, QListWidgetItem*);
+        void style_changed_slot(QListWidgetItem*, QListWidgetItem*);
+        void size_changed_slot(QListWidgetItem*, QListWidgetItem*);
+        void menu_choice_slot(int);
 
     private:
-        QTextEdit *label;
-        QDoubleSpinBox *spinbtn;
-        QPushButton *yesbtn;
-        QPushButton *nobtn;
-        bool pw_affirmed;
+        QListWidget *face_list;
+        QListWidget *style_list;
+        QListWidget *size_list;
+        QTextEdit *preview;
+        QPushButton *apply;
+        QPushButton *quit;
+        QComboBox *menu;
+        QFontDatabase *fdb;
     };
 }
 

@@ -46,10 +46,10 @@
 #define QTMAIN_H
 
 #include "main.h"
-#include "qtinterf.h"
-#include "qtfont.h"
+#include "qtinterf/qtinterf.h"
+#include "qtinterf/qtfont.h"
+#include "qtinterf/draw_qt_w.h"
 #include "dsp_tkif.h"
-#include "draw_qt_w.h"
 
 #include <QDialog>
 #include <QFontMetrics>

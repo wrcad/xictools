@@ -61,8 +61,8 @@
 #include "ext_menu.h"
 #include "user_menu.h"
 #include "help_menu.h"
-#include "psd_menu.h"
-#include "sced_menu.h"
+#include "pbtn_menu.h"
+#include "ebtn_menu.h"
 
 #include <QApplication>
 #include <QMenuBar>

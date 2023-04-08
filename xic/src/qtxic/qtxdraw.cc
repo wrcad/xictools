@@ -42,7 +42,7 @@
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "qtmain.h"
-#include "xdraw.h"
+#include "ginterf/xdraw.h"
 
 
 //-----------------------------------------------------------------------------

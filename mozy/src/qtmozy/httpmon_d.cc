@@ -47,7 +47,7 @@
 
 #include "httpmon_d.h"
 #include "httpget/transact.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 //
 // The monitor widget and functions for the httpget library and

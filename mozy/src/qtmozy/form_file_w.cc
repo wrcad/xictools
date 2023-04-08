@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "form_file_w.h"
-#include "qtfile.h"
+#include "qtinterf/qtfile.h"
 #include "htm/htm_widget.h"
 #include "htm/htm_form.h"
 

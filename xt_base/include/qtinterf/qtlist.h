@@ -38,69 +38,35 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTFONT_H
-#define QTFONT_H
+#ifndef LIST_D_H
+#define LIST_D_H
 
-#include "graphics.h"
-#include "fontutil.h"
+#include "qtinterf.h"
+#include "miscutil/lstring.h"
 
 #include <QVariant>
 #include <QDialog>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QItemDelegate>
 
-//
-// Font handling
-//
-
-class QFont;
-class QListWidget;
-class QListWidgetItem;
-class QTextEdit;
-class QFontDatabase;
+class QCloseEvent;
+class QLabel;
 class QPushButton;
-class QComboBox;
 
 namespace qtinterf
 {
-    struct QTfont : public GRfont
-    {
-        void setName(const char*, int);
-        const char *getName(int);
-        char *getFamilyName(int);
-        bool getFont(void*, int);
-        void registerCallback(void*, int);
-        void unregisterCallback(void*, int);
-
-    private:
-        QFont *new_font(const char*, bool);
-        void refresh(int);
-
-        struct FcbRec
-        {
-            FcbRec(QWidget *w, FcbRec *n) { widget = w; next = n; }
-
-            QWidget *widget;
-            FcbRec *next;
-        };
-
-        struct sFrec
-        {
-            sFrec() { name = 0; font = 0; cbs = 0; }
-
-            const char *name;
-            QFont *font;
-            FcbRec *cbs;
-        } fonts[MAX_NUM_APP_FONTS];
-    };
-
     class qt_bag;
+    class list_list_widget;
 
-    class QTfontPopup : public QDialog, public GRfontPopup
+    class QTlistPopup : public QDialog, public GRlistPopup, public qt_bag
     {
         Q_OBJECT
 
     public:
-        QTfontPopup(qt_bag*, int, void*);
-        ~QTfontPopup();
+        QTlistPopup(qt_bag*, stringlist*, const char*, const char*,
+            bool, void*);
+        ~QTlistPopup();
 
         // GRpopup overrides
         void set_visible(bool visib)
@@ -115,16 +81,12 @@ namespace qtinterf
             }
         void popdown();
 
-        // GRfontPopup overrides
-        void set_font_name(const char*);
-        void update_label(const char*);
+        // GRlistPopup override
+        void update(stringlist*, const char*, const char*);
+        void update(bool(*)(const char*));
+        void unselect_all();
 
-        void select_font(const QFont*);
-        QFont *current_selection();
-        char *current_face();
-        char *current_style();
-        int current_size();
-        void add_choice(const QFont*, const char*);
+        QList<QListWidgetItem*> get_items();
 
         // This widget will be deleted when closed with the title bar "X"
         // button.  Qt::WA_DeleteOnClose does not work - our destructor is
@@ -133,26 +95,16 @@ namespace qtinterf
         void closeEvent(QCloseEvent*) { quit_slot(); }
 
     signals:
-        void select_action(int, const char*, void*);
-        void dismiss();
+        void action_call(const char*, void*);
 
     private slots:
         void action_slot();
         void quit_slot();
-        void face_changed_slot(QListWidgetItem*, QListWidgetItem*);
-        void style_changed_slot(QListWidgetItem*, QListWidgetItem*);
-        void size_changed_slot(QListWidgetItem*, QListWidgetItem*);
-        void menu_choice_slot(int);
 
     private:
-        QListWidget *face_list;
-        QListWidget *style_list;
-        QListWidget *size_list;
-        QTextEdit *preview;
-        QPushButton *apply;
-        QPushButton *quit;
-        QComboBox *menu;
-        QFontDatabase *fdb;
+        QLabel *label;
+        list_list_widget *lbox;
+        QPushButton *b_cancel;
     };
 }
 

@@ -40,10 +40,10 @@
 
 #include "main.h"
 #include "qtmain.h"
-#include "qtfile.h"
+#include "qtinterf/qtfile.h"
 #include "qtinlines.h"
 #include "promptline.h"
-#include "pathlist.h"
+#include "miscutil/pathlist.h"
 
 
 // Save File Dialog - pop up a selectable directory tree, use the prompt

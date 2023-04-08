@@ -43,7 +43,7 @@
 
 #include <QVariant>
 #include <QWidget>
-#include "qtinterf.h"
+#include "qtinterf/qtinterf.h"
 
 #include "help/help_context.h"
 #include "htm/htm_widget.h"

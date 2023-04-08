@@ -38,35 +38,30 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTMCOL_H
-#define QTMCOL_H
+#ifndef NUMER_D_H
+#define NUMER_D_H
 
-#include "qtinterf.h"
-#include "lstring.h"
+#include "ginterf/graphics.h"
 
 #include <QVariant>
 #include <QDialog>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QItemDelegate>
 
-class QCloseEvent;
-class QLabel;
+class QTextEdit;
 class QPushButton;
+class QDoubleSpinBox;
 
 namespace qtinterf
 {
-    class qt_bag;
-    class mcol_list_widget;
+    struct qt_bag;
 
-    class QTmcolPopup : public QDialog, public GRmcolPopup, public qt_bag
+    class QTnumPopup : public QDialog, public GRnumPopup
     {
         Q_OBJECT
 
     public:
-        QTmcolPopup(qt_bag*, stringlist*, const char*, const char**,
+        QTnumPopup(qt_bag*, const char*, double, double, double, double,
             int, void*);
-        ~QTmcolPopup();
+        ~QTnumPopup();
 
         // GRpopup overrides
         void set_visible(bool visib)
@@ -79,14 +74,8 @@ namespace qtinterf
                 else
                     hide();
             }
+        void register_caller(GRobject, bool, bool);
         void popdown();
-
-        // GRmcolPopup override
-        void update(stringlist*, const char*);
-        char *get_selection();
-        void set_button_sens(int);
-
-        QList<QListWidgetItem*> get_items();
 
         // This widget will be deleted when closed with the title bar "X"
         // button.  Qt::WA_DeleteOnClose does not work - our destructor is
@@ -94,17 +83,21 @@ namespace qtinterf
         // of deleting it, which would likely be a core leak here.
         void closeEvent(QCloseEvent*) { quit_slot(); }
 
+        QSize sizeHint() const { return (QSize(300, 150)); }
+
     signals:
-        void action_call(const char*, void*);
+        void affirm(bool, void*);
 
     private slots:
         void action_slot();
         void quit_slot();
 
     private:
-        QLabel *label;
-        mcol_list_widget *lbox;
-        QPushButton *b_cancel;
+        QTextEdit *label;
+        QDoubleSpinBox *spinbtn;
+        QPushButton *yesbtn;
+        QPushButton *nobtn;
+        bool pw_affirmed;
     };
 }
 

@@ -42,7 +42,7 @@
 #include "edit.h"
 #include "geo_zlist.h"
 #include "qtmain.h"
-#include "qtfont.h"
+#include "qtinterf/qtfont.h"
 //#include "qtinlines.h"
 
 

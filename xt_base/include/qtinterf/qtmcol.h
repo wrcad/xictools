@@ -38,11 +38,11 @@
  $Id:$
  *========================================================================*/
 
-#ifndef LIST_D_H
-#define LIST_D_H
+#ifndef QTMCOL_H
+#define QTMCOL_H
 
 #include "qtinterf.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 #include <QVariant>
 #include <QDialog>
@@ -57,16 +57,16 @@ class QPushButton;
 namespace qtinterf
 {
     class qt_bag;
-    class list_list_widget;
+    class mcol_list_widget;
 
-    class QTlistPopup : public QDialog, public GRlistPopup, public qt_bag
+    class QTmcolPopup : public QDialog, public GRmcolPopup, public qt_bag
     {
         Q_OBJECT
 
     public:
-        QTlistPopup(qt_bag*, stringlist*, const char*, const char*,
-            bool, void*);
-        ~QTlistPopup();
+        QTmcolPopup(qt_bag*, stringlist*, const char*, const char**,
+            int, void*);
+        ~QTmcolPopup();
 
         // GRpopup overrides
         void set_visible(bool visib)
@@ -81,10 +81,10 @@ namespace qtinterf
             }
         void popdown();
 
-        // GRlistPopup override
-        void update(stringlist*, const char*, const char*);
-        void update(bool(*)(const char*));
-        void unselect_all();
+        // GRmcolPopup override
+        void update(stringlist*, const char*);
+        char *get_selection();
+        void set_button_sens(int);
 
         QList<QListWidgetItem*> get_items();
 
@@ -103,7 +103,7 @@ namespace qtinterf
 
     private:
         QLabel *label;
-        list_list_widget *lbox;
+        mcol_list_widget *lbox;
         QPushButton *b_cancel;
     };
 }

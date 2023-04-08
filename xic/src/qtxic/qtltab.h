@@ -45,8 +45,8 @@
 #include "dsp.h"
 #include "dsp_window.h"
 #include "layertab.h"
-#include "qtinterf.h"
-#include "draw_if.h"
+#include "qtinterf/qtinterf.h"
+#include "qtinterf/draw_if.h"
 
 #include <QWidget>
 

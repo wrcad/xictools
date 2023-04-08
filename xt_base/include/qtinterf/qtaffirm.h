@@ -38,31 +38,28 @@
  $Id:$
  *========================================================================*/
 
-#ifndef SEARCH_D_H
-#define SEARCH_D_H
+#ifndef AFFIRM_D_H
+#define AFFIRM_D_H
 
-#include "graphics.h"
+#include "ginterf/graphics.h"
+
 #include <QVariant>
 #include <QDialog>
-#include <QTimer>
 
-class QCheckBox;
-class QGroupBox;
-class QLabel;
-class QLineEdit;
+class QTextEdit;
 class QPushButton;
 
 namespace qtinterf
 {
-    class qt_bag;
+    struct qt_bag;
 
-    class search_d : public QDialog, public GRpopup
+    class QTaffirmPopup : public QDialog, public GRaffirmPopup
     {
         Q_OBJECT
 
     public:
-        search_d(qt_bag*, const char*);
-        ~search_d();
+        QTaffirmPopup(qt_bag*, const char*, void*);
+        ~QTaffirmPopup();
 
         // GRpopup overrides
         void set_visible(bool visib)
@@ -75,12 +72,8 @@ namespace qtinterf
                 else
                     hide();
             }
+        void register_caller(GRobject, bool, bool);
         void popdown();
-
-        void set_ign_case(bool);
-        void set_message(const char*);
-        void set_transient_message(const char*);
-        QString get_target();
 
         // This widget will be deleted when closed with the title bar "X"
         // button.  Qt::WA_DeleteOnClose does not work - our destructor is
@@ -88,27 +81,19 @@ namespace qtinterf
         // of deleting it, which would likely be a core leak here.
         void closeEvent(QCloseEvent*) { quit_slot(); }
 
+        QSize sizeHint() const { return (QSize(300, 100)); }
+
     signals:
-        void search_down();
-        void search_up();
-        void ignore_case(bool);
+        void affirm(bool, void*);
 
     private slots:
+        void action_slot();
         void quit_slot();
-        void down_slot();
-        void up_slot();
-        void ign_case_slot(bool);
-        void timeout_slot();
 
     private:
-        QLabel *label;
-        QLineEdit *edit;
-        QPushButton *b_up;
-        QPushButton *b_dn;
-        QCheckBox *b_nc;
-        QPushButton *b_cancel;
-        const char *label_string;
-        QTimer timer;
+        QTextEdit *label;
+        QPushButton *yesbtn;
+        QPushButton *nobtn;
     };
 }
 

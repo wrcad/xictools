@@ -39,13 +39,13 @@
  *========================================================================*/
 
 #include "qtviewer.h"
-#include "qtfont.h"
-#include "draw_qt_w.h"
 #include "form_button_w.h"
 #include "form_combo_w.h"
 #include "form_list_w.h"
 #include "form_file_w.h"
-#include "interval_timer.h"
+#include "qtinterf/interval_timer.h"
+#include "qtinterf/qtfont.h"
+#include "qtinterf/draw_qt_w.h"
 
 #include "help/help_startup.h"
 #include "htm/htm_format.h"

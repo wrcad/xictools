@@ -38,28 +38,30 @@
  $Id:$
  *========================================================================*/
 
-#ifndef AFFIRM_D_H
-#define AFFIRM_D_H
+#ifndef MESSAGE_D_H
+#define MESSAGE_D_H
 
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 #include <QVariant>
 #include <QDialog>
 
-class QTextEdit;
+class QGroupBox;
 class QPushButton;
+class QTextEdit;
 
 namespace qtinterf
 {
     struct qt_bag;
+    class text_box;
 
-    class QTaffirmPopup : public QDialog, public GRaffirmPopup
+    class QTmsgPopup : public QDialog, public GRtextPopup
     {
         Q_OBJECT
 
     public:
-        QTaffirmPopup(qt_bag*, const char*, void*);
-        ~QTaffirmPopup();
+        QTmsgPopup(qt_bag*, const char*, STYtype style, int, int);
+        ~QTmsgPopup();
 
         // GRpopup overrides
         void set_visible(bool visib)
@@ -72,8 +74,14 @@ namespace qtinterf
                 else
                     hide();
             }
-        void register_caller(GRobject, bool, bool);
         void popdown();
+
+        // GRtextPopup overrides
+        bool get_btn2_state() { return (false); }
+        void set_btn2_state(bool) { }
+
+        void setTitle(const char*);
+        void setText(const char*);
 
         // This widget will be deleted when closed with the title bar "X"
         // button.  Qt::WA_DeleteOnClose does not work - our destructor is
@@ -81,19 +89,14 @@ namespace qtinterf
         // of deleting it, which would likely be a core leak here.
         void closeEvent(QCloseEvent*) { quit_slot(); }
 
-        QSize sizeHint() const { return (QSize(300, 100)); }
-
-    signals:
-        void affirm(bool, void*);
-
     private slots:
-        void action_slot();
         void quit_slot();
 
     private:
-        QTextEdit *label;
-        QPushButton *yesbtn;
-        QPushButton *nobtn;
+        QGroupBox *gbox;
+        text_box *tx;
+        QPushButton *b_cancel;
+        STYtype display_style;
     };
 }
 

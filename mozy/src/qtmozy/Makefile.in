@@ -1,29 +1,24 @@
 #######################################################################
-# src/qtinterf/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.32 2009/01/13 07:10:41 stevew Exp $
+LOCATION =  mozy/src/qtmozy
 #######################################################################
 
 DATE = @DATE@
 
 CXX = @CXX@
 CC = @CC@
-CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@
-DEPEND_PROG = @DEPEND_PROG@
+CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @TOOLKITCFLAGS@
+AR = @AR@
+RANLIB = @RANLIB@
 FILTER = @FILTER@
-INCLUDE = $(APPINCL) @TOOLKITINC@
 MOC = @MOC@
 
-HFILES = \
-    form_button_w.h \
-    form_combo_w.h \
-    form_file_w.h \
-    form_list_w.h \
-    httpmon_d.h \
-    qthelp.h \
-    qtviewer.h \
-    queue_timer.h \
-    viewmon.h
+BASE = ../../../xt_base
+INCLUDE = -I../../include -I../../include/qtmozy -I$(BASE)/include \
+  @TOOLKITINC@
+MOC_INCLUDE = ../../incude/qtmozy
+
+LIB_TARGET = ../../lib/qtmozy.a
 
 CCFILES = \
     form_file_w.cc \
@@ -46,10 +41,11 @@ MOCFILES = \
 CCOBJS = $(CCFILES:.cc=.o)
 MOCOBJS = $(MOCFILES:.cpp=.o)
 LIBOBJS = $(CCOBJS) $(MOCOBJS)
-APPINCL = -I. -I.. -I../../miscutil
 
-stamp: $(LIBOBJS)
-	touch stamp
+$(LIB_TARGET): $(LIBOBJS)
+	-@rm -f $(LIB_TARGET);
+	$(AR) cr $(LIB_TARGET) $(LIBOBJS)
+	$(RANLIB) $(LIB_TARGET)
 
 .cpp.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
@@ -57,46 +53,41 @@ stamp: $(LIBOBJS)
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
 
-files::
-	@echo $(CCFILES) $(HFILES) NOTE Makefile.in
+moc_form_button_w.o: moc_form_button_w.cpp  $(MOC_INCLUDE)/form_button_w.h 
+moc_form_combo_w.o: moc_form_combo_w.cpp  $(MOC_INCLUDE)/form_combo_w.h 
+moc_form_file_w.o: moc_form_file_w.cpp  $(MOC_INCLUDE)/form_file_w.h 
+moc_form_list_w.o: moc_form_list_w.cpp  $(MOC_INCLUDE)/form_list_w.h 
+moc_help.o: moc_help.cpp  $(MOC_INCLUDE)/qthelp.h 
+moc_httpmon_d.o: moc_httpmon_d.cpp  $(MOC_INCLUDE)/httpmon_d.h 
+moc_queue_timer.o: moc_queue_timer.cpp  $(MOC_INCLUDE)/queue_timer.h 
+moc_viewer.o: moc_viewer.cpp  $(MOC_INCLUDE)/qtviewer.h 
+moc_viewmon.o: moc_viewmon.cpp  $(MOC_INCLUDE)/viewmon.h 
 
-subdirs::
-
-moc_form_button_w.o: moc_form_button_w.cpp  form_button_w.h 
-moc_form_combo_w.o: moc_form_combo_w.cpp  form_combo_w.h 
-moc_form_file_w.o: moc_form_file_w.cpp  form_file_w.h 
-moc_form_list_w.o: moc_form_list_w.cpp  form_list_w.h 
-moc_help.o: moc_help.cpp  qthelp.h 
-moc_httpmon_d.o: moc_httpmon_d.cpp  httpmon_d.h 
-moc_queue_timer.o: moc_queue_timer.cpp  queue_timer.h 
-moc_viewer.o: moc_viewer.cpp  qtviewer.h 
-moc_viewmon.o: moc_viewmon.cpp  viewmon.h 
-
-moc_form_button_w.cpp: $(MOC) form_button_w.h
-	$(MOC) form_button_w.h -o moc_form_button_w.cpp
-moc_form_combo_w.cpp: $(MOC) form_combo_w.h
-	$(MOC) form_combo_w.h -o moc_form_combo_w.cpp
-moc_form_file_w.cpp: $(MOC) form_file_w.h
-	$(MOC) form_file_w.h -o moc_form_file_w.cpp
-moc_form_list_w.cpp: $(MOC) form_list_w.h
-	$(MOC) form_list_w.h -o moc_form_list_w.cpp
-moc_help.cpp: $(MOC) qthelp.h
-	$(MOC) qthelp.h -o moc_help.cpp
-moc_httpmon_d.cpp: $(MOC) httpmon_d.h
-	$(MOC) httpmon_d.h -o moc_httpmon_d.cpp
-moc_queue_timer.cpp: $(MOC) queue_timer.h
-	$(MOC) queue_timer.h -o moc_queue_timer.cpp
-moc_viewer.cpp: $(MOC) qtviewer.h
-	$(MOC) qtviewer.h -o moc_viewer.cpp
-moc_viewmon.cpp: $(MOC) viewmon.h
-	$(MOC) viewmon.h -o moc_viewmon.cpp
+moc_form_button_w.cpp: $(MOC) $(MOC_INCLUDE)/form_button_w.h
+	$(MOC) $(MOC_INCLUDE)/form_button_w.h -o moc_form_button_w.cpp
+moc_form_combo_w.cpp: $(MOC) $(MOC_INCLUDE)/form_combo_w.h
+	$(MOC) $(MOC_INCLUDE)/form_combo_w.h -o moc_form_combo_w.cpp
+moc_form_file_w.cpp: $(MOC) $(MOC_INCLUDE)/form_file_w.h
+	$(MOC) $(MOC_INCLUDE)/form_file_w.h -o moc_form_file_w.cpp
+moc_form_list_w.cpp: $(MOC) $(MOC_INCLUDE)/form_list_w.h
+	$(MOC) $(MOC_INCLUDE)/form_list_w.h -o moc_form_list_w.cpp
+moc_help.cpp: $(MOC) $(MOC_INCLUDE)/qthelp.h
+	$(MOC) $(MOC_INCLUDE)/qthelp.h -o moc_help.cpp
+moc_httpmon_d.cpp: $(MOC) $(MOC_INCLUDE)/httpmon_d.h
+	$(MOC) $(MOC_INCLUDE)/httpmon_d.h -o moc_httpmon_d.cpp
+moc_queue_timer.cpp: $(MOC) $(MOC_INCLUDE)/queue_timer.h
+	$(MOC) $(MOC_INCLUDE)/queue_timer.h -o moc_queue_timer.cpp
+moc_viewer.cpp: $(MOC) $(MOC_INCLUDE)/qtviewer.h
+	$(MOC) $(MOC_INCLUDE)/qtviewer.h -o moc_viewer.cpp
+moc_viewmon.cpp: $(MOC) $(MOC_INCLUDE)/viewmon.h
+	$(MOC) $(MOC_INCLUDE)/viewmon.h -o moc_viewmon.cpp
 
 mocclean:
 	-@rm -f $(MOCOBJS)
 	-@rm -f $(MOCFILES)
 
 clean: mocclean
-	-@rm -f $(CCOBJS) stamp
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile
@@ -105,8 +96,11 @@ depend:
 	@echo depending in qtinterf
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(CFLAGS) $(INCLUDE) $(CCFILES) \
-  $(FILTER) >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
 	fi
+
+install:
+
+uninstall:
 
 #######################################################################

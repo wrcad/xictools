@@ -43,7 +43,7 @@
 
 #include "cd_hypertext.h"
 #include "promptline.h"
-#include "qtinterf.h"
+#include "qtinterf/qtinterf.h"
 
 class QTedit : public cPromptEdit, public qt_draw
 {

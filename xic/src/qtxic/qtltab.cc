@@ -42,7 +42,7 @@
 #include "qtmain.h"
 #include "qtltab.h"
 #include "qtmenu.h"
-#include "qtfont.h"
+#include "qtinterf/qtfont.h"
 #include "dsp_inlines.h"
 #include "select.h"
 #include "events.h"

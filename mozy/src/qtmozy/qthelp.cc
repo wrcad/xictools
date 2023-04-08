@@ -39,17 +39,17 @@
  *========================================================================*/
 
 #include "help/help_startup.h"
-#include "help/urlcache.h"
+#include "help/help_cache.h"
 #include "httpget/transact.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 #include "qthelp.h"
 #include "qtviewer.h"
-#include "qtfile.h"
-#include "qtfont.h"
-#include "qtinput.h"
-#include "qtlist.h"
+#include "qtinterf/qtfile.h"
+#include "qtinterf/qtfont.h"
+#include "qtinterf/qtinput.h"
+#include "qtinterf/qtlist.h"
 #include "queue_timer.h"
 
 #include <QApplication>

@@ -40,7 +40,10 @@
 
 #include "draw_x_w.h"
 
+ /*XXX
+ QX11Info is no longer available
 #include <QX11Info>
+ */
 #include <QColormap>
 #include <QPixmap>
 #include <QPainter>
@@ -66,7 +69,10 @@ draw_x_w::draw_x_w(bool use_common, QWidget *prnt) : QWidget(prnt)
     // GRmultiPt uses short integers.
     GRmultiPt::set_short_data(true);
 
+/*XXX
     da_display = x11Info().display();
+*/
+da_display =0;
     da_pixmap = 0;
     da_fore = 0;
     da_direct = false;

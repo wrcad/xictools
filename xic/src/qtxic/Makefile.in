@@ -1,7 +1,5 @@
 #######################################################################
-# xic/qtxic/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.21 2009/01/13 07:10:48 stevew Exp $
+LOCATION = xic/src/qtxic
 #######################################################################
 
 GFX_VERSION = @GFX_VERSION@
@@ -11,18 +9,27 @@ CXX = @CXX@
 CC = @CC@
 CFLAGS = @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@ @UFLAGS@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@
+WINDRES = @WINDRES@
 AR = @AR@
+LD = @LD@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
-INCLUDE = $(APPINCL) @TOOLKITINC@
+USEMOZY = @USEMOZY@
+TOOLKITINC = @TOOLKITINC@
+RESOURCE = @RESOURCE@
 MOC = @MOC@
 
-LPATH = ../..
-LFLAGS = -rdynamic  -pthread -Wl,-rpath,/usr/local/Trolltech/Qt-4.0.1/lib
-LIBS = $(APPLIBS) -lncurses -L/usr/local/lib -L/usr/X11R6/lib  -lXpm -lpng -ltiff -ljpeg -lz  -L/usr/local/lib -L/usr/local/Trolltech/Qt-4.0.1/lib -L/usr/local/lib -L/usr1/stevew/qt-x11-opensource-src-4.0.1/lib -lQtGui_debug -L/usr/X11R6/lib -lSM -lICE -lXi -lXrender -lXrandr -lXcursor -lXinerama -lfreetype -lfontconfig -lXext -lX11 -lm -lQtCore_debug -lz -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic
-APPLIBS = $(LPATH)/ginterf/ginterf.a
-
 LIB_TARGET = qtxic.a
+
+BASE = ../../../xt_base
+SECURE = ../../../secure
+INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include
+
+#LPATH = ../..
+#LFLAGS = -rdynamic  -pthread -Wl,-rpath,/usr/local/Trolltech/Qt-4.0.1/lib
+#LIBS = $(APPLIBS) -lncurses -L/usr/local/lib -L/usr/X11R6/lib  -lXpm -lpng -ltiff -ljpeg -lz  -L/usr/local/lib -L/usr/local/Trolltech/Qt-4.0.1/lib -L/usr/local/lib -L/usr1/stevew/qt-x11-opensource-src-4.0.1/lib -lQtGui_debug -L/usr/X11R6/lib -lSM -lICE -lXi -lXrender -lXrandr -lXcursor -lXinerama -lfreetype -lfontconfig -lXext -lX11 -lm -lQtCore_debug -lz -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic
+#APPLIBS = $(LPATH)/ginterf/ginterf.a
+
 HFILES = \
     qtcoord.h \
     qtexpand.h \
@@ -57,14 +64,9 @@ MOCFILES = \
     moc_ltab.cpp \
     moc_menu.cpp \
     moc_menucfg.cpp
-
-CCOBJS = $(CCFILES:.cc=.o)
+CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
 MOCOBJS = $(MOCFILES:.cpp=.o)
 LIBOBJS = $(CCOBJS) $(MOCOBJS)
-APPINCL = -I. -I../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
-  -I$(LPATH)/ginterf/qtinterf -I$(LPATH)/secure
-
-TARGET = xx
 
 $(LIB_TARGET): $(LIBOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
@@ -73,14 +75,20 @@ $(LIB_TARGET): $(LIBOBJS)
 	$(AR) cr $(LIB_TARGET) $(LIBOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
-$(TARGET): $(APPLIBS) $(LIBOBJS) main.o mainwin.h
-	$(CXX) $(LFLAGS) -o $(TARGET) main.o $(LIBOBJS) $(LIBS)
+ifeq ($(USEMOZY), yes)
+MOZY = ../../../mozy
+MOZYINC = -I$(MOZY)/include
+MOBJS = qtmain.o
+
+$(MOBJS):
+	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) -c $*.cc
+endif
 
 .cpp.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
 
 .cc.o:
-	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc
 
 moc_main.o: moc_main.cpp  qtmain.h
 moc_coord.o: moc_coord.cpp  qtcoord.h
@@ -102,21 +110,33 @@ moc_menu.cpp: $(MOC) qtmenu.h
 moc_menucfg.cpp: $(MOC) qtmenucfg.h
 	$(MOC) qtmenucfg.h -o moc_menucfg.cpp
 
+depend:
+	@echo depending in xic/qtxic
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) $(CCFILES) \
+  $(FILTER) >> Makefile; \
+	fi
+
 mocclean:
 	-@rm -f $(MOCOBJS)
 	-@rm -f $(MOCFILES)
 
 clean: mocclean
-	-@rm -f $(CCOBJS) stamp
+	-@rm -f *.o $(LIB_TARGET)
 
-distclean:
+distclean: clean
 	-@rm -f Makefile
 
-depend:
-	@echo depending in xic/qtxic
-	@if [ x$(DEPEND_DONE) = x ]; then \
-	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
-	fi
+resource.o: resource.cc xic.rc
+	vers=$(GFX_VERSION); \
+	IFS="$$IFS."; \
+	set $$vers; \
+	$(WINDRES) -DXIC_BIN_VERSION="0,$$1,$$2,$$3" \
+ -DXIC_FILE_VERSION=\\\"$$1.$$2.$$3\\\" \
+ -DXIC_PROG_VERSION=\\\"Xic-$$1.$$2.$$3\\\"  xic.rc resource_temp.o
+	$(CC) -c -o restmp.o resource.cc
+	$(LD) -r -o resource.o resource_temp.o restmp.o
+	rm -f resource_temp.o restmp.o
 
 #######################################################################

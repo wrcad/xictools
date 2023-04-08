@@ -40,8 +40,8 @@
 
 #include "qthcopy.h"
 #include "progress_d.h"
-#include "lstring.h"
-#include "filestat.h"
+#include "miscutil/lstring.h"
+#include "miscutil/filestat.h"
 
 #include <unistd.h>
 #include <QCheckBox>

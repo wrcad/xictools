@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "qtinput.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 #include <QAction>
 #include <QGroupBox>
