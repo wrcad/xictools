@@ -73,6 +73,20 @@ GRfont::fnt_t GRfont::app_fonts[] =
 int GRfont::num_app_fonts =
     sizeof(GRfont::app_fonts)/sizeof(GRfont::app_fonts[0]);
 
+//XXX
+void
+QTfont::initFonts()
+{
+}
+
+
+//XXX
+GRfontType
+QTfont::getType()
+{
+    return (GRfontQ);
+}
+
 
 // Set the name for the font fnum, invalidating any present font for
 // that index.
@@ -235,7 +249,7 @@ QTfont::new_font(const char *name, bool fixed)
         else if (!strcasecmp(s->string, "italic"))
             font->setItalic(true);
     }
-    style->free();
+    stringlist::destroy(style);
 
     // Reset the critical info in case there was not a perfect match.
     QFontInfo fi(*font);
@@ -542,7 +556,7 @@ QTfontPopup::current_face()
     if (!item)
         return (0);
     QString qface = item->text();
-    return (lstring::copy(qface.toAscii().constData()));
+    return (lstring::copy(qface.toLatin1().constData()));
 }
 
 
@@ -553,7 +567,7 @@ QTfontPopup::current_style()
     if (!item)
         return (0);
     QString qstyle = item->text();
-    return (lstring::copy(qstyle.toAscii().constData()));
+    return (lstring::copy(qstyle.toLatin1().constData()));
 }
 
 

@@ -266,33 +266,28 @@ draw_gl_w::draw_lines(GRmultiPt *p, int n)
 
 
 void
-draw_gl_w::define_fillpattern(GRfillType *fill)
+draw_gl_w::define_fillpattern(GRfillType *fillp)
 {
-    if (fill && fill->map) {
-        delete [] (unsigned char*)fill->xpixmap;
-        unsigned char *map = new unsigned char[32*4];
-        int k = fill->x == 8 ? 1 : 2;
-        for (int i = 0; i < 32; i++) {
-            int ii = i % fill->y;
-            for (int j = 0; j < 4; j++) {
-                int jj = (k == 1 ? 0 : j & 1);
-                map [i*4 + j] = fill->map[ii*k + jj];
-            }
-        }
-        fill->xpixmap = map;
+    if (!fillp)
+        return;
+    if (fillp->xPixmap()) {
+        delete [] fillp->xPixmap();
+        fillp->setXpixmap(0);
     }
+    if (fillp->hasMap())
+        fillp->setXpixmap(fillp->newBitmap());
 }
 
 
 void
-draw_gl_w::set_fillpattern(const GRfillType *fill)
+draw_gl_w::set_fillpattern(const GRfillType *fillp)
 {
     makeCurrent();
-    if (!fill || !fill->xpixmap)
+    if (!fillp || !fillp->xPixmap())
         glDisable(GL_POLYGON_STIPPLE);
     else {
         glEnable(GL_POLYGON_STIPPLE);
-        glPolygonStipple((GLubyte*)fill->xpixmap);
+        glPolygonStipple((GLubyte*)fillp->xPixmap());
     }
 }
 
@@ -339,7 +334,7 @@ draw_gl_w::draw_boxes(GRmultiPt *p, int n)
 // Draw a filled arc.
 //
 void
-draw_gl_w::draw_arc(int x0, int y0, int r, double a1, double a2)
+draw_gl_w::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 {
     /*
     if (a1 >= a2)

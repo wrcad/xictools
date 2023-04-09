@@ -220,10 +220,10 @@ QTledPopup::action_slot()
     char *text;
     if (multiline)
         text = lstring::copy(dynamic_cast<QTextEdit*>(edit)->
-            toPlainText().toAscii().constData());
+            toPlainText().toLatin1().constData());
     else
         text = lstring::copy(dynamic_cast<QLineEdit*>(edit)->
-            text().toAscii().constData());
+            text().toLatin1().constData());
 
     if (ign_ret) {
         if (p_callback)

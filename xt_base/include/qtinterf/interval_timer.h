@@ -45,7 +45,7 @@
 
 namespace qtinterf
 {
-    class interval_timer: protected QTimer
+    class interval_timer: public QTimer
     {
         Q_OBJECT
 

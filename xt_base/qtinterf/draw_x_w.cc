@@ -232,28 +232,29 @@ draw_x_w::draw_lines(GRmultiPt *p, int n)
 
 
 void
-draw_x_w::define_fillpattern(GRfillType *fill)
+draw_x_w::define_fillpattern(GRfillType *fillp)
 {
-    if (!fill)
+    if (!fillp)
         return;
-    if (fill->xpixmap) {
-        XFreePixmap(da_display, (Pixmap)fill->xpixmap);
-        fill->xpixmap = 0;
+    if (fillp->xPixmap()) {
+        XFreePixmap(da_display, (Pixmap)fillp->xPixmap());
+        fillp->setXpixmap(0);
     }
-    if (fill->map)
-        fill->xpixmap = (void*)(long)XCreateBitmapFromData(da_display,
-            winId(), (char*)fill->map, fill->x, fill->y);
+    if (fillp->hasMap()) {
+        fillp->setXpixmap((void*)(long)XCreateBitmapFromData(da_display,
+            winId(), (char*)fillp->map(), fillp->nX(), fillp->nY()));
+    }
 }
 
 
 void
-draw_x_w::set_fillpattern(const GRfillType *fill)
+draw_x_w::set_fillpattern(const GRfillType *fillp)
 {
-    if (!fill || !fill->xpixmap)
+    if (!fillp || !fillp->xPixmap())
         XSetFillStyle(da_display, da_gc, FillSolid);
     else {
         XSetFillStyle(da_display, da_gc, FillStippled);
-        XSetStipple(da_display, da_gc, (Pixmap)fill->xpixmap);
+        XSetStipple(da_display, da_gc, (Pixmap)fillp->xPixmap());
     }
 }
 
@@ -289,7 +290,7 @@ draw_x_w::draw_boxes(GRmultiPt *p, int n)
 // Draw a filled arc.
 //
 void
-draw_x_w::draw_arc(int x0, int y0, int radius, double theta1, double theta2)
+draw_x_w::draw_arc(int x0, int y0, int radius, int, double theta1, double theta2)
 {
     if (theta1 >= theta2)
         theta2 = 2 * M_PI + theta2;
@@ -352,6 +353,7 @@ draw_x_w::draw_image(const GRimage *image, int xx, int yy, int w, int h)
     // code, but does not use SHM.  I can't see any difference
     // with/without SHM anyway.
 
+/*XXX
     QX11Info info;
 
     XImage *im = XCreateImage(da_display, (Visual*)info.visual(),
@@ -377,7 +379,7 @@ draw_x_w::draw_image(const GRimage *image, int xx, int yy, int w, int h)
 
     XPutImage(da_display, da_fore, da_gc, im, 0, 0, xx, yy, w, h);
     XDestroyImage(im);
-
+*/
 }
 
 
@@ -429,7 +431,8 @@ draw_x_w::draw_text(int x0, int y0, const char *str, int len)
 {
     QPaintDevice *pd;
     if (da_direct) {
-        setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+//XXX        setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+// Apparently this attribute no longer exists.
         // This allows drawing outside of a paint event.
         // WARNING: doesn't work on OS X.
         pd = this;
@@ -449,8 +452,8 @@ draw_x_w::draw_text(int x0, int y0, const char *str, int len)
     pen.setColor(*da_fg);
     p.setPen(pen);
     p.drawText(x0, y0, qs);
-    if (da_direct)
-        setAttribute(Qt::WA_PaintOutsidePaintEvent, false);
+//    if (da_direct)
+//        setAttribute(Qt::WA_PaintOutsidePaintEvent, false);
 }
 
 
@@ -490,7 +493,9 @@ draw_x_w::resizeEvent(QResizeEvent *ev)
     // with a depth not equal to the screen depth.
 
     extern int qt_x11_preferred_pixmap_depth;
-    qt_x11_preferred_pixmap_depth = QX11Info::appDepth();
+//XXX
+//    qt_x11_preferred_pixmap_depth = QX11Info::appDepth();
+qt_x11_preferred_pixmap_depth = 24;
 
     if (!da_gc)
         da_gc = XCreateGC(da_display, winId(), 0, 0);

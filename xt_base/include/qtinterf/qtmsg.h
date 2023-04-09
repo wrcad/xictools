@@ -52,7 +52,7 @@ class QTextEdit;
 
 namespace qtinterf
 {
-    struct qt_bag;
+    class qt_bag;
     class text_box;
 
     class QTmsgPopup : public QDialog, public GRtextPopup

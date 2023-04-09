@@ -52,7 +52,7 @@ class QDoubleSpinBox;
 
 namespace qtinterf
 {
-    struct qt_bag;
+    class qt_bag;
 
     class QTnumPopup : public QDialog, public GRnumPopup
     {

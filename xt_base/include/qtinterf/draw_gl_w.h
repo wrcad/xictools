@@ -84,7 +84,7 @@ namespace qtinterf
         void set_fillpattern(const GRfillType*);
         void draw_box(int, int, int, int);
         void draw_boxes(GRmultiPt*, int);
-        void draw_arc(int, int, int, double, double);
+        void draw_arc(int, int, int, int, double, double);
         void draw_polygon(GRmultiPt*, int);
         void draw_zoid(int, int, int, int, int, int);
         void draw_image(const GRimage*, int, int, int, int);

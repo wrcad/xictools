@@ -349,6 +349,7 @@ namespace ginterf
         unsigned int nX()           const { return (ft_nx); }
         unsigned int nY()           const { return (ft_ny); }
         bool hasMap()               const { return (ft_map != 0); }
+        const unsigned int *map()   const { return (ft_map); }
 
         // This is for convenience when using X or similar, we can
         // hang the pixmap here.  User must manage this!
@@ -1628,6 +1629,7 @@ namespace ginterf
         virtual int LoopLevel()                                 = 0;
         virtual void BreakLoop()                                = 0;
         virtual void HCmessage(const char*)                     = 0;
+//XXX ridme
         virtual int UseSHM()                                    = 0;
     };
 }

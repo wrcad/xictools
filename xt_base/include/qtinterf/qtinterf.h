@@ -93,7 +93,7 @@ namespace qtinterf
         static sGbag *default_gbag();
 
         QCursor *cursor;
-        void (*drawghost)(int, int, int, int);
+        GhostDrawFunc drawghost;
         bool firstghost;
         bool showghost;
         bool noclear;
@@ -105,13 +105,14 @@ namespace qtinterf
         int lastlinestyle;
     };
 
-    struct qt_draw : virtual public GRdraw
+    class qt_draw : virtual public GRdraw
     {
+    public:
         qt_draw();
         virtual ~qt_draw() { }
 
         // GRdraw virtual overrides
-        unsigned long WindowID()                { return (0); }
+        void *WindowID()                { return (0); }
         virtual void Halt();
         void Clear()                    { if (viewport) viewport->clear(); }
         int SwathHeight(int*)                   { return (0); }
@@ -145,9 +146,9 @@ namespace qtinterf
         void TextExtent(const char *str, int *w, int *h)
             { if (viewport) viewport->text_extent(str, w, h); }
         void MovePointer(int, int, bool);
-        void SetGhost(void(*)(int, int, int, int), int, int);
-        void ShowGhost(int);
-        void UndrawGhost();
+        void SetGhost(GhostDrawFunc, int, int);
+        void ShowGhost(bool);
+        void UndrawGhost(bool = false);
         void DrawGhost(int, int);
         void QueryPointer(int*, int*, unsigned*);
         void DefineColor(int*, int, int, int);
@@ -182,8 +183,9 @@ namespace qtinterf
         draw_if *viewport;          // drawing area
     };
 
-    struct qt_bag : virtual public GRwbag
+    class qt_bag : virtual public GRwbag
     {
+    public:
         qt_bag(QWidget*);
         virtual ~qt_bag();
 
@@ -216,6 +218,8 @@ namespace qtinterf
         // printing
         void PopUpPrint(GRobject, HCcb*, HCmode, GRdraw* = 0);
         void HCupdate(HCcb*, GRobject);
+        void HCsetFormat(int);
+
         void HcopyDisableMsgs();
         bool HcopyLocate(int, int, int*, int*);
 
@@ -234,7 +238,7 @@ namespace qtinterf
 
         // list
         GRlistPopup *PopUpList(stringlist*, const char*, const char*,
-            void(*)(const char*, void*), void*, bool);
+            void(*)(const char*, void*), void*, bool, bool);
 
         // qtmcol.cc
         GRmcolPopup *PopUpMultiCol(stringlist*, const char*,
@@ -256,6 +260,8 @@ namespace qtinterf
             void(*)(const char*, void*), void*, int=0);
         GRmsgPopup *PopUpMessage(const char*, bool, bool = false,
             bool = false, GRloc = GRloc());
+        virtual int PopUpWarn(ShowMode, const char*,
+            STYtype = STY_NORM, GRloc = GRloc());
         int PopUpErr(ShowMode, const char*, STYtype = STY_NORM,
             GRloc = GRloc());
         GRtextPopup *PopUpErrText(const char*, STYtype = STY_NORM,
@@ -273,6 +279,7 @@ namespace qtinterf
         GRtextPopup *ActiveHtinfo();
         GRtextPopup *ActiveError();
         GRfontPopup *ActiveFontsel();
+        void SetErrorLogName(const char*);
 
         // QT-SPECIFIC
         QWidget *shell_widget() { return (shell); }
@@ -337,6 +344,8 @@ namespace qtinterf
         int LoopLevel()                     { return (loop_level); }
         void BreakLoop();
         void HCmessage(const char*);
+//XXX ridme
+        int UseSHM()                        { return (false); };
 
         // Remaining functions are unique to class.
 

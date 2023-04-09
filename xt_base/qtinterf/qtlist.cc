@@ -59,15 +59,18 @@
 // of each string (which are stripped):  if one in non-space, the open
 // icon is used.
 //
+// If use_apply is set, the list will have an Apply button, which will
+// call the callback with the selection and dismiss.
+//
 GRlistPopup *
 qt_bag::PopUpList(stringlist *symlist, const char *title,
     const char *header, void(*callback)(const char*, void*), void *arg,
-    bool usepix)
+    bool usepix, bool use_apply)
 {
-    static int list_count;
+    //XXX
+    (void)use_apply;
 
-    if (!this)
-        return (0);
+    static int list_count;
 
     QTlistPopup *list = new QTlistPopup(this, symlist, title, header,
         usepix, arg);
@@ -283,7 +286,7 @@ void
 QTlistPopup::action_slot()
 {
     if (lbox) {
-        QByteArray ba = lbox->currentItem()->text().toAscii();
+        QByteArray ba = lbox->currentItem()->text().toLatin1();
         if (p_callback)
             (*p_callback)(ba, p_cb_arg);
         emit action_call(ba, p_cb_arg);

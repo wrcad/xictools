@@ -354,23 +354,23 @@ draw_qt_w::draw_lines(GRmultiPt *p, int n)
 
 
 void
-draw_qt_w::define_fillpattern(GRfillType *fill)
+draw_qt_w::define_fillpattern(GRfillType *fillp)
 {
-    if (fill && fill->map) {
-        QBitmap bm = QBitmap::fromData(QSize(fill->x, fill->y), fill->map,
-            QImage::Format_Mono);
-        fill->xpixmap = new QBitmap(bm);
+    if (fillp && fillp->hasMap()) {
+        QBitmap bm = QBitmap::fromData(QSize(fillp->nX(), fillp->nY()),
+            (const unsigned char*)fillp->map(), QImage::Format_Mono);
+        fillp->setXpixmap(new QBitmap(bm));
     }
 }
 
 
 void
-draw_qt_w::set_fillpattern(const GRfillType *fill)
+draw_qt_w::set_fillpattern(const GRfillType *fillp)
 {
-    if (!fill || !fill->xpixmap)
+    if (!fillp || !fillp->xPixmap())
         da_brush.setStyle(Qt::SolidPattern);
     else
-        da_brush.setTexture(*(QBitmap*)fill->xpixmap);
+        da_brush.setTexture(*(QBitmap*)fillp->xPixmap());
     da_painter->setBrush(da_brush);
 }
 
@@ -415,7 +415,7 @@ draw_qt_w::draw_boxes(GRmultiPt *p, int n)
 // Draw a filled arc.
 //
 void
-draw_qt_w::draw_arc(int x0, int y0, int r, double a1, double a2)
+draw_qt_w::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 {
     if (a1 >= a2)
         a2 = 2 * M_PI + a2;

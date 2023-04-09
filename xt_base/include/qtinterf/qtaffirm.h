@@ -51,7 +51,7 @@ class QPushButton;
 
 namespace qtinterf
 {
-    struct qt_bag;
+    class qt_bag;
 
     class QTaffirmPopup : public QDialog, public GRaffirmPopup
     {

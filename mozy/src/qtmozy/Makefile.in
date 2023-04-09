@@ -16,7 +16,7 @@ MOC = @MOC@
 BASE = ../../../xt_base
 INCLUDE = -I../../include -I../../include/qtmozy -I$(BASE)/include \
   @TOOLKITINC@
-MOC_INCLUDE = ../../incude/qtmozy
+MOC_INCLUDE = ../../include/qtmozy
 
 LIB_TARGET = ../../lib/qtmozy.a
 

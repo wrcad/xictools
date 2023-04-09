@@ -484,7 +484,7 @@ qt_draw::MovePointer(int x, int y, bool absolute)
 // called with the current position and the x, y reference.
 //
 void
-qt_draw::SetGhost(void (*callback)(int, int, int, int), int x, int y)
+qt_draw::SetGhost(GhostDrawFunc callback, int x, int y)
 {
     if (callback) {
         xbag->drawghost = callback;
@@ -503,7 +503,7 @@ qt_draw::SetGhost(void (*callback)(int, int, int, int), int x, int y)
 //            GdkGC *tempgc = xbag->gc;
 //            xbag->gc = xbag->xorgc;
             (*xbag->drawghost)(xbag->lastx, xbag->lasty,
-                xbag->refx, xbag->refy);
+                xbag->refx, xbag->refy, false);
 //            xbag->gc = tempgc;
         }
         xbag->drawghost = 0;
@@ -514,7 +514,7 @@ qt_draw::SetGhost(void (*callback)(int, int, int, int), int x, int y)
 // Turn on/off display of ghosting.  Keep track of calls in ghostcxcnt.
 //
 void
-qt_draw::ShowGhost(int show)
+qt_draw::ShowGhost(bool show)
 {
     if (!show) {
         if (!xbag->ghostcxcnt) {
@@ -543,13 +543,13 @@ qt_draw::ShowGhost(int show)
 // Erase the last ghost.
 //
 void
-qt_draw::UndrawGhost()
+qt_draw::UndrawGhost(bool)
 {
     if (xbag->drawghost && xbag->showghost) {
         if (!xbag->firstghost) {
             viewport->set_xor_mode(true);
             (*xbag->drawghost)(xbag->lastx, xbag->lasty,
-                xbag->refx, xbag->refy);
+                xbag->refx, xbag->refy, false);
             viewport->set_xor_mode(false);
         }
     }
@@ -565,7 +565,7 @@ qt_draw::DrawGhost(int x, int y)
         xbag->lastx = x;
         xbag->lasty = y;
         viewport->set_xor_mode(true);
-        (*xbag->drawghost)(x, y, xbag->refx, xbag->refy);
+        (*xbag->drawghost)(x, y, xbag->refx, xbag->refy, false);
         xbag->firstghost = false;
         viewport->set_xor_mode(false);
     }
@@ -845,8 +845,6 @@ qt_bag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
 void
 qt_bag::PopUpPrint(GRobject, HCcb *cb, HCmode mode, GRdraw*)
 {
-    if (!this)
-        return;
     if (hc) {
         bool active = !hc->is_active();
         hc->set_active(active);

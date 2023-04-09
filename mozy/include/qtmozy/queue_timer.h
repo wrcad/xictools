@@ -41,6 +41,7 @@
 #ifndef QUEUE_TIMER_H
 #define QUEUE_TIMER_H
 
+#include "qtinterf/qtinterf.h"
 #include "help/help_context.h"
 #include <QObject>
 

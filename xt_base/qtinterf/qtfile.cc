@@ -369,7 +369,7 @@ file_tree_widget::dropEvent(QDropEvent *ev)
     if (it) {
         int proposed_action = ev->proposedAction();
         const QMimeData *md = ev->mimeData();
-        char *src = lstring::copy(md->text().toAscii().constData());
+        char *src = lstring::copy(md->text().toLatin1().constData());
         char *dst = fsel->get_dir(it);
 
         if (src && dst) {
@@ -538,7 +538,7 @@ file_list_widget::dropEvent(QDropEvent *ev)
 {
     int proposed_action = ev->proposedAction();
     const QMimeData *md = ev->mimeData();
-    char *src = lstring::copy(md->text().toAscii().constData());
+    char *src = lstring::copy(md->text().toLatin1().constData());
     char *dst = fsel->get_dir();
 
     if (src && dst) {
@@ -1032,7 +1032,7 @@ QTfilePopup::open_slot()
 {
     char *sel;
     if (entry)
-        sel = lstring::copy(entry->text().toAscii().constData());
+        sel = lstring::copy(entry->text().toLatin1().constData());
     else { 
         sel = get_selection(); 
         if (!sel && !no_disable_go) 
@@ -1261,7 +1261,7 @@ QTfilePopup::filter_choice_slot(int index)
 void
 QTfilePopup::filter_change_slot(const QString &qs)
 {
-    char *text = lstring::copy(qs.toAscii().constData());
+    char *text = lstring::copy(qs.toLatin1().constData());
     int i = filter->currentIndex();
     if (i > 1) {
         delete [] filter_options[i];
@@ -1341,7 +1341,7 @@ QTfilePopup::tree_select_slot(QTreeWidgetItem *cur, QTreeWidgetItem*)
     list_files_slot();
 
     if (entry) {
-        char *path = lstring::copy(entry->text().toAscii().constData());
+        char *path = lstring::copy(entry->text().toLatin1().constData());
         if (path && *path) {
             const char *fname = lstring::strip_path(path);
             dir = get_path(curnode, false);
@@ -1481,7 +1481,7 @@ QTfilePopup::list_files_slot()
     delete [] p;
     closedir(wdir);
     list->sortItems();
-    filt->free();
+    stringlist::destroy(filt);
 
     select_file(0);
 }
@@ -1491,7 +1491,7 @@ void
 QTfilePopup::list_select_slot(QListWidgetItem *cur, QListWidgetItem*)
 {
     if (cur) {
-        char *str = lstring::copy(cur->text().toAscii().constData());
+        char *str = lstring::copy(cur->text().toLatin1().constData());
         select_file(str);
         delete [] str;
     }
@@ -1504,7 +1504,7 @@ void
 QTfilePopup::list_double_clicked_slot(QListWidgetItem *item)
 {
     if (item) {
-        char *str = lstring::copy(item->text().toAscii().constData());
+        char *str = lstring::copy(item->text().toLatin1().constData());
         select_file(str);
         open_slot();
         delete [] str;
@@ -1634,10 +1634,10 @@ QTfilePopup::get_path(QTreeWidgetItem *node, bool noexpand)
         return (0);
 
     // construct the path
-    char *s = lstring::copy(node->text(0).toAscii().constData());
+    char *s = lstring::copy(node->text(0).toLatin1().constData());
     while (node->parent()) {
         node = node->parent();
-        char *c = lstring::copy(node->text(0).toAscii().constData());
+        char *c = lstring::copy(node->text(0).toLatin1().constData());
         char *t = new char[strlen(s) + strlen(c) + 2];
         strcpy(t, c);
         delete [] c;
@@ -1730,10 +1730,10 @@ QTfilePopup::add_dir(QTreeWidgetItem *prnt, char *dir)
                 s0 = new stringlist(lstring::copy(p), s0);
         }
         closedir(wdir);
-        s0->sort();
+        stringlist::sort(s0);
         for (stringlist *s = s0; s; s = s->next)
             insert_node(s->string, prnt);
-        s0->free();
+        stringlist::destroy(s0);
     }
     delete [] p;
 }
@@ -1911,7 +1911,7 @@ find_child(QTreeWidgetItem *node, char *name)
     int n = node->childCount();
     for (int i = 0; i < n; i++) {
         QTreeWidgetItem *child = node->child(i);
-        char *t = lstring::copy(child->text(0).toAscii().constData());
+        char *t = lstring::copy(child->text(0).toLatin1().constData());
         if (!strcmp(name, t)) {
             delete [] t;
             return (child);
@@ -1981,8 +1981,8 @@ QTfilePopup::check_slot()
                 insert_node(ndir, node);
                 delete [] ndir;
             }
-            sa->free();
-            sd->free();
+            stringlist::destroy(sa);
+            stringlist::destroy(sd);
         }
         delete [] dir;
     }
@@ -2001,7 +2001,7 @@ list_node_children(QTreeWidgetItem *node)
     int n = node->childCount();
     for (int i = 0; i < n; i++) {
         QTreeWidgetItem *child = node->child(i);
-        char *t = lstring::copy(child->text(0).toAscii().constData());
+        char *t = lstring::copy(child->text(0).toLatin1().constData());
         s0 = new stringlist(t, s0);
     }
     return (s0);

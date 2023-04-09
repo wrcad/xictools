@@ -50,6 +50,7 @@
 #include <QRubberBand>
 #include <QTimer>
 
+#include "qtinterf/qtinterf.h"
 #include "htm/htm_widget.h"
 #include "htm/htm_form.h"
 #include "htm/htm_frame.h"
@@ -68,7 +69,7 @@ struct htmColor;
 struct htmPoint;
 struct htmFont;
 struct htmForm;
-struct Transaction;
+class Transaction;
 
 namespace qtinterf
 {
@@ -151,8 +152,8 @@ namespace qtinterf
             { return (getPlainText()); }
         char *get_html_text()
             { return (getString()); }
-        void find_words(const char *target)
-            { findWords(target); }
+        void find_words(const char *target, bool up, bool case_insens)
+            { findWords(target, up, case_insens); }
         void set_html_warnings(bool set)
             { setBadHtmlWarnings(set); }
 
@@ -235,6 +236,7 @@ namespace qtinterf
         void tk_set_tile(htmPixmap*);
         void tk_set_ts_origin(int, int);
         void tk_draw_pixmap(int, int, htmPixmap*, int, int, int, int);
+        void tk_tile_draw_pixmap(int, int, htmPixmap*, int, int, int, int);
 
         void tk_draw_rectangle(bool, int, int, int, int);
         void tk_set_line_style(htmInterface::FillMode);

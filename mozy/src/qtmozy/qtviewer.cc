@@ -80,11 +80,11 @@ form_button_w::form_button_w(htmForm *entry, QWidget *prnt) :
             str = "X";
         else
             setText(QString(str));
-        entry->width = fm.width(QString(str)) + 4;
+        entry->width = fm.horizontalAdvance(QString(str)) + 4;
         entry->height = fm.height() + 4;
     }
     else {
-        entry->width = fm.width(QString("X")) + 4;
+        entry->width = fm.horizontalAdvance(QString("X")) + 4;
         entry->height = entry->width;
         setCheckable(true);
         setChecked(entry->checked);
@@ -154,7 +154,7 @@ form_combo_w::setSize()
     form_entry->height = form_entry->size * fm.height();
     form_entry->width = 0;
     for (htmForm *f = form_entry->options; f; f = f->next) {
-        unsigned int w = fm.width(QString(f->name));
+        unsigned int w = fm.horizontalAdvance(QString(f->name));
         if (w > form_entry->width)
             form_entry->width = w;
     }
@@ -177,7 +177,7 @@ form_list_w::setSize()
     form_entry->height = form_entry->size * fm.height();
     form_entry->width = 0;
     for (htmForm *f = form_entry->options; f; f = f->next) {
-        unsigned int w = fm.width(QString(f->name));
+        unsigned int w = fm.horizontalAdvance(QString(f->name));
         if (w > form_entry->width)
             form_entry->width = w;
     }
@@ -283,14 +283,14 @@ viewer_w::no_url_cache()
 int
 viewer_w::image_load_mode()
 {
-    return (HlpParams::LoadSync);
+    return (HLPparams::LoadSync);
 }
 
 
 int
 viewer_w::image_debug_mode()
 {
-    return (HlpParams::LInormal);
+    return (HLPparams::LInormal);
 }
 
 
@@ -504,12 +504,12 @@ viewer_w::tk_alloc_font(const char *family, int sz, unsigned char sty)
     fnt->ascent = fm.ascent();
     fnt->descent = fm.descent();
     fnt->width = fm.maxWidth();
-    fnt->lbearing = fm.width(QChar(' '));
+    fnt->lbearing = fm.horizontalAdvance(QChar(' '));
     fnt->rbearing = 0;
     fnt->height = fm.height();
     fnt->lineheight = fm.lineSpacing();
 
-    fnt->isp = fm.width(QChar(' '));
+    fnt->isp = fm.horizontalAdvance(QChar(' '));
     fnt->sup_yoffset = (int)(fnt->ascent  * -.4);
     fnt->sub_yoffset = (int)(fnt->descent * .8);
 
@@ -719,6 +719,7 @@ static void
 messageOutput(QtMsgType type, const char *msg)
 {
     switch (type) {
+    case QtInfoMsg:
     case QtDebugMsg:
     case QtWarningMsg:
         break;
@@ -739,9 +740,10 @@ bool
 viewer_w::tk_parse_color(const char *name, htmColor *c)
 {
     QColor q;
-    qInstallMsgHandler(messageOutput);
+// Update from qInstallMsgHandler
+//XXX    qInstallMessageHandler(messageOutput);
     q.setNamedColor(name);
-    qInstallMsgHandler(0);
+//XXX    qInstallMessageHandler(0);
     if (!q.isValid())
         return (false);
     c->red = q.red();
@@ -933,7 +935,7 @@ char_width(QWidget *w)
 {
     QFont f = w->font();
     QFontMetrics fm(f);
-    return (fm.width(QString("X")));
+    return (fm.horizontalAdvance(QString("X")));
 }
 
 inline int
@@ -1088,7 +1090,7 @@ viewer_w::tk_get_text(htmForm *entry)
         {
             QLineEdit *ed = (QLineEdit*)entry->widget;
             if (ed)
-                return (lstring::copy(ed->text().toAscii().constData()));
+                return (lstring::copy(ed->text().toLatin1().constData()));
         }
         break;
 
@@ -1097,7 +1099,7 @@ viewer_w::tk_get_text(htmForm *entry)
             form_file_w *fb = (form_file_w*)entry->widget;
             if (fb)
                 return (lstring::copy(
-                    fb->editor()->text().toAscii().constData()));
+                    fb->editor()->text().toLatin1().constData()));
         }
         break;
 
@@ -1106,7 +1108,7 @@ viewer_w::tk_get_text(htmForm *entry)
             QTextEdit *te = (QTextEdit*)entry->widget;
             if (te)
                 return (lstring::copy(
-                    te->toPlainText().toAscii().constData()));
+                    te->toPlainText().toLatin1().constData()));
         }
         break;
 

@@ -63,6 +63,8 @@ namespace qtinterf
 {
     struct QTfont : public GRfont
     {
+        void initFonts();
+        GRfontType getType();
         void setName(const char*, int);
         const char *getName(int);
         char *getFamilyName(int);

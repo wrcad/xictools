@@ -569,7 +569,7 @@ QTeditPopup::save_slot()
 
     if (p_callback) {
         char *st =
-            lstring::copy(text_editor->toPlainText().toAscii().constData());
+            lstring::copy(text_editor->toPlainText().toLatin1().constData());
         bool ret = (*p_callback)(st, p_cb_arg, XE_SAVE);
         delete [] st;
         if (ret)
@@ -734,7 +734,7 @@ QTeditPopup::send_slot()
         delete [] descname;
         return;
     }
-    char *s = lstring::copy(text_editor->toPlainText().toAscii().constData());
+    char *s = lstring::copy(text_editor->toPlainText().toLatin1().constData());
     fputs(s, descfp);
     delete [] s;
     fclose(descfp);
@@ -743,13 +743,13 @@ QTeditPopup::send_slot()
     state.outfname = filestat::make_temp("m2");
     char buf[256];
 
-    char *mailaddr = lstring::copy(to_entry->text().toAscii().constData());
+    char *mailaddr = lstring::copy(to_entry->text().toLatin1().constData());
     char *header = new char[strlen(mailaddr) + 8];
     strcpy(header, "To: ");
     strcat(header, mailaddr);
     strcat(header, "\n");
 
-    char *subject = lstring::copy(subj_entry->text().toAscii().constData());
+    char *subject = lstring::copy(subj_entry->text().toLatin1().constData());
     bool err = false;
     QList<QAction*> acts = menubar->actions();
     for (int i = 0; i < acts.size(); i++) {
@@ -757,7 +757,7 @@ QTeditPopup::send_slot()
         if (qs.isNull() || qs.isEmpty())
             continue;
         QAction *a = acts.at(i);
-        char *fname = lstring::copy(a->data().toString().toAscii().constData());
+        char *fname = lstring::copy(a->data().toString().toLatin1().constData());
         if (fname && *fname) {
             FILE *ifp = fopen(fname, "r");
             if (ifp) {
@@ -1101,7 +1101,7 @@ QTeditPopup::write_file(const char *fname, int startpos, int endpos)
     if (fp) {
         QString qs = text_editor->toPlainText();
         int length = qs.size();
-        char *buffer = lstring::copy(qs.toAscii().constData());
+        char *buffer = lstring::copy(qs.toLatin1().constData());
         if (endpos >= 0 && endpos < length)
             length = endpos;
         int start = startpos;
@@ -1159,7 +1159,7 @@ QTeditPopup::search_down_slot()
     QString target = searcher->get_target();
     if (!target.isNull() && !target.isEmpty()) {
         delete [] lastSearch;
-        lastSearch = lstring::copy(target.toAscii().constData());
+        lastSearch = lstring::copy(target.toLatin1().constData());
 
         QTextCursor c = text_editor->textCursor();
         QTextDocument *doc = text_editor->document();
@@ -1180,7 +1180,7 @@ QTeditPopup::search_up_slot()
     QString target = searcher->get_target();
     if (!target.isNull() && !target.isEmpty()) {
         delete [] lastSearch;
-        lastSearch = lstring::copy(target.toAscii().constData());
+        lastSearch = lstring::copy(target.toLatin1().constData());
 
         QTextCursor c = text_editor->textCursor();
         QTextDocument *doc = text_editor->document();

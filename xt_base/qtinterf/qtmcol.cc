@@ -267,7 +267,7 @@ QTmcolPopup::action_slot()
 {
 /*XXX
     if (lbox) {
-        QByteArray ba = lbox->currentItem()->text().toAscii();
+        QByteArray ba = lbox->currentItem()->text().toLatin1();
         if (p_callback)
             (*p_callback)(ba, p_cb_arg);
         emit action_call(ba, p_cb_arg);

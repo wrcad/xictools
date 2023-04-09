@@ -38,12 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#include "help/help_startup.h"
-#include "help/help_cache.h"
-#include "httpget/transact.h"
-#include "miscutil/pathlist.h"
-#include "miscutil/filestat.h"
-
 #include "qthelp.h"
 #include "qtviewer.h"
 #include "qtinterf/qtfile.h"
@@ -51,6 +45,13 @@
 #include "qtinterf/qtinput.h"
 #include "qtinterf/qtlist.h"
 #include "queue_timer.h"
+
+#include "help/help_startup.h"
+#include "help/help_cache.h"
+#include "help/help_topic.h"
+#include "httpget/transact.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 #include <QApplication>
 #include <QLayout>
@@ -78,7 +79,7 @@
 // the context field set.
 
 static queue_timer QueueTimer;
-QueueLoop &help_context::hcxImageQueueLoop = QueueTimer;
+QueueLoop &HLPcontext::hcxImageQueueLoop = QueueTimer;
 
 // Initiate queue processing.
 //
@@ -135,7 +136,7 @@ namespace qtinterf
     class action_item : public QAction
     {
     public:
-        action_item(bookmark_t *b, QObject *prnt) : QAction(prnt)
+        action_item(HLPbookMark *b, QObject *prnt) : QAction(prnt)
         {
             ai_bookmark = b;
             QString qs = QString(b->title);
@@ -150,11 +151,11 @@ namespace qtinterf
             delete ai_bookmark;
         }
 
-        void setBookmark(bookmark_t *b) { ai_bookmark = b; }
-        bookmark_t *bookmark() { return (ai_bookmark); }
+        void setBookmark(HLPbookMark *b) { ai_bookmark = b; }
+        HLPbookMark *bookmark() { return (ai_bookmark); }
 
     private:
-        bookmark_t *ai_bookmark;
+        HLPbookMark *ai_bookmark;
     };
 }
 
@@ -243,8 +244,6 @@ static const char * const stop_xpm[] = {
 bool
 qt_bag::PopUpHelp(const char *wordin)
 {
-    if (!this)
-        return (false);
     if (!HLP()->get_path(0)) {
         PopUpErr(MODE_ON, "Error: no path to database.");
         HLP()->context()->quitHelp();
@@ -260,14 +259,14 @@ qt_bag::PopUpHelp(const char *wordin)
             *s-- = '\0';
     }
 
-    topic *top = 0;
+    HLPtopic *top = 0;
     if (HLP()->context()->resolveKeyword(word, &top, 0, 0, 0, false, true))
         return (false);
     if (!top) {
         if (word && *word)
-            sprintf(buf, "Error: No such topic: %s\n", word);
+            snprintf(buf, 256, "Error: No such topic: %s\n", word);
         else
-            sprintf(buf, "Error: no top level topic\n");
+            snprintf(buf, 256, "Error: no top level topic\n");
         PopUpErr(MODE_ON, buf);
         return (false);
     }
@@ -277,11 +276,11 @@ qt_bag::PopUpHelp(const char *wordin)
 
 
 HelpWidget *
-HelpWidget::get_widget(topic *top)
+HelpWidget::get_widget(HLPtopic *top)
 {
     if (!top)
         return (0);
-    return (dynamic_cast<QThelpPopup*>(top->get_parent()->context()));
+    return (dynamic_cast<QThelpPopup*>(HLPtopic::get_parent(top)->context()));
 }
 
 
@@ -353,7 +352,7 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QWidget(prnt),
     vbox->addWidget(status_bar);
 
     if (!is_frame)
-        params = new HlpParams(HLP()->no_file_fonts());
+        params = new HLPparams(HLP()->no_file_fonts());
 
     html_viewer->freeze();
 
@@ -438,11 +437,11 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QWidget(prnt),
     connect(a_ProgressiveImages, SIGNAL(toggled(bool)),
         this, SLOT(progressive_images_slot(bool)));
     ag->addAction(a_ProgressiveImages);
-    if (params->LoadMode == HlpParams::LoadProgressive)
+    if (params->LoadMode == HLPparams::LoadProgressive)
         a_ProgressiveImages->setChecked(true);
-    else if (params->LoadMode == HlpParams::LoadDelayed)
+    else if (params->LoadMode == HLPparams::LoadDelayed)
         a_DelayedImages->setChecked(true);
-    else if (params->LoadMode == HlpParams::LoadSync)
+    else if (params->LoadMode == HLPparams::LoadSync)
         a_SyncImages->setChecked(true);
     else
         a_NoImages->setChecked(true);
@@ -529,7 +528,7 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QWidget(prnt),
     html_viewer->thaw();
 
     HLP()->context()->readBookmarks();
-    for (bookmark_t *b = HLP()->context()->bookmarks(); b; b = b->next) {
+    for (HLPbookMark *b = HLP()->context()->bookmarks(); b; b = b->next) {
         QString qs = QString(b->title);
         qs.truncate(32);
         main_menus[2]->addAction(
@@ -605,16 +604,19 @@ QThelpPopup::set_transaction(Transaction *t, const char *cookiedir)
 {
     html_viewer->set_transaction(t, cookiedir);
     if (t) {
-        t->t_timeout = params->Timeout;
-        t->t_retry = params->Retries;
-        t->t_http_port = params->HTTP_Port;
-        t->t_ftp_port = params->FTP_Port;
-        t->t_http_debug = params->DebugMode;
+        t->set_timeout(params->Timeout);
+        t->set_retries(params->Retries);
+        t->set_http_port(params->HTTP_Port);
+        t->set_ftp_port(params->FTP_Port);
+        t->set_http_debug(params->DebugMode);
         if (params->PrintTransact)
-            t->t_logfile = lstring::copy("stderr");
+            t->set_logfile("stderr");
         if (cookiedir && !params->NoCookies) {
-            t->t_cookiefile = new char [strlen(cookiedir) + 20];
-            sprintf(t->t_cookiefile, "%s/%s", cookiedir, "cookies");
+            int len = strlen(cookiedir) + 20;
+            char *cf = new char [len];
+            snprintf(cf, len,  "%s/%s", cookiedir, "cookies");
+            t->set_cookiefile(cf);
+            delete [] cf;
         }
     }
 }
@@ -745,7 +747,7 @@ QThelpPopup::get_widget_bag()
 // Link and display the new topic.
 //
 void
-QThelpPopup::link_new(topic *top)
+QThelpPopup::link_new(HLPtopic *top)
 {
     HLP()->context()->linkNewTopic(top);
     root_topic = top;
@@ -777,7 +779,7 @@ strip_html(char *buf)
 // Reuse the current display to show and possible link in newtop.
 //
 void
-QThelpPopup::reuse(topic *newtop, bool newlink)
+QThelpPopup::reuse(HLPtopic *newtop, bool newlink)
 {
     if (root_topic->lastborn()) {
         // in the forward/back operations, the new topic is stitched in
@@ -823,7 +825,7 @@ QThelpPopup::reuse(topic *newtop, bool newlink)
     if (!t || !*t)
         t = "Whiteley Research Inc.";
     char buf[256];
-    sprintf(buf, "%s -- %s", HLP()->get_name(), t);
+    snprintf(buf, 256, "%s -- %s", HLP()->get_name(), t);
     strip_html(buf);
     setWindowTitle(QString(buf));
     QueueTimer.start();
@@ -853,7 +855,7 @@ QThelpPopup::redisplay()
 }
 
 
-topic *
+HLPtopic *
 QThelpPopup::get_topic()
 {
     return (cur_topic);
@@ -889,15 +891,15 @@ QThelpPopup::show_cache(int mode)
         if (cache_list) {
             stringlist *s0 = HLP()->context()->listCache();
             cache_list->update(s0, "Cache Entries", 0);
-            s0->free();
+            stringlist::destroy(s0);
         }
         return;
     }
     if (cache_list)
         return;
     stringlist *s0 = HLP()->context()->listCache();
-    cache_list = PopUpList(s0, "Cache Entries", 0, 0, 0, false);
-    s0->free();
+    cache_list = PopUpList(s0, "Cache Entries", 0, 0, 0, false, false);
+    stringlist::destroy(s0);
     if (cache_list) {
         cache_list->register_usrptr((void**)&cache_list);
         QTlistPopup *list = dynamic_cast<QTlistPopup*>(cache_list);
@@ -982,7 +984,7 @@ QThelpPopup::image_resolve(const char *fname)
 int
 QThelpPopup::get_image_data(htmPLCStream *stream, void *buffer)
 {
-    sImageList *im = (sImageList*)stream->user_data;
+    HLPimageList *im = (HLPimageList*)stream->user_data;
     return (HLP()->context()->getImageData(im, stream, buffer));
 }
 
@@ -993,7 +995,7 @@ void
 QThelpPopup::end_image_data(htmPLCStream *stream, void*, int type, bool)
 {
     if (type == PLC_IMAGE) {
-        sImageList *im = (sImageList*)stream->user_data;
+        HLPimageList *im = (HLPimageList*)stream->user_data;
         HLP()->context()->inactivateImages(im);
     }
 }
@@ -1036,7 +1038,7 @@ QThelpPopup::get_topic_keys(char **pkw, char **ptitle)
         *pkw = 0;
     if (ptitle)
         *ptitle = 0;
-    topic *t = cur_topic;
+    HLPtopic *t = cur_topic;
     if (t) {
         if (pkw)
             *pkw = lstring::copy(t->keyword());
@@ -1140,9 +1142,9 @@ QThelpPopup::set_scroll_pos(int posn, bool horiz)
 void
 QThelpPopup::backward_slot()
 {
-    topic *top = root_topic;
+    HLPtopic *top = root_topic;
     if (top && top->lastborn()) {
-        topic *last = top->lastborn();
+        HLPtopic *last = top->lastborn();
         top->set_lastborn(last->sibling());
         last->set_sibling(top->next());
         top->set_next(last);
@@ -1158,9 +1160,9 @@ QThelpPopup::backward_slot()
 void
 QThelpPopup::forward_slot()
 {
-    topic *top = root_topic;
+    HLPtopic *top = root_topic;
     if (top && top->next()) {
-        topic *next = top->next();
+        HLPtopic *next = top->next();
         top->set_next(next->sibling());
         next->set_sibling(top->lastborn());
         top->set_lastborn(next);
@@ -1357,7 +1359,7 @@ QThelpPopup::no_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
-        params->LoadMode = HlpParams::LoadNone;
+        params->LoadMode = HLPparams::LoadNone;
     }
 }
 
@@ -1367,7 +1369,7 @@ QThelpPopup::sync_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
-        params->LoadMode = HlpParams::LoadSync;
+        params->LoadMode = HLPparams::LoadSync;
     }
 }
 
@@ -1377,7 +1379,7 @@ QThelpPopup::delayed_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
-        params->LoadMode = HlpParams::LoadDelayed;
+        params->LoadMode = HLPparams::LoadDelayed;
     }
 }
 
@@ -1387,7 +1389,7 @@ QThelpPopup::progressive_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
-        params->LoadMode = HlpParams::LoadProgressive;
+        params->LoadMode = HLPparams::LoadProgressive;
     }
 }
 
@@ -1467,7 +1469,7 @@ QThelpPopup::add_slot()
 {
     if (!cur_topic)
         return;
-    topic *tp = cur_topic;
+    HLPtopic *tp = cur_topic;
     const char *ptitle = tp->title();
     char *title;
     if (ptitle && *ptitle)
@@ -1484,7 +1486,7 @@ QThelpPopup::add_slot()
         delete [] title;
         title = lstring::copy(url);
     }
-    bookmark_t *b = HLP()->context()->bookmarkUpdate(title, url);
+    HLPbookMark *b = HLP()->context()->bookmarkUpdate(title, url);
     delete [] title;
     delete [] url;
 
@@ -1526,7 +1528,7 @@ QThelpPopup::bookmark_slot(QAction *action)
             PopUpAffirm(0, GRloc(), buf, yncb, ac);
         }
         else {
-            bookmark_t *b = ac->bookmark();
+            HLPbookMark *b = ac->bookmark();
             newtopic(b->url, false, false, true);
         }
     }
@@ -1585,7 +1587,7 @@ QThelpPopup::newtopic_slot(htmAnchorCallbackStruct *c)
         if (c->target) {
             if (!cur_topic->target() ||
                     strcmp(cur_topic->target(), c->target)) {
-                topic *t = HLP()->context()->findUrlTopic(c->target);
+                HLPtopic *t = HLP()->context()->findUrlTopic(c->target);
                 if (t) {
                     newtopic(c->href, false, false, false);
                     return;
@@ -1616,7 +1618,7 @@ QThelpPopup::newtopic_slot(htmAnchorCallbackStruct *c)
     newtopic(c->href, spawn, force_download, false);
 
     if (c->target && spawn) {
-        topic *t = HLP()->context()->findKeywordTopic(c->href);
+        HLPtopic *t = HLP()->context()->findKeywordTopic(c->href);
         if (t)
             t->set_target(c->target);
     }
@@ -1674,13 +1676,13 @@ QThelpPopup::frame_slot(htmFrameCallbackStruct *cbs)
 
             frame_array[i]->show();
 
-            topic *newtop;
+            HLPtopic *newtop;
             char hanchor[128];
             HLP()->context()->resolveKeyword(cbs->frames[i].src, &newtop,
                 hanchor, this, 0, false, false);
             if (!newtop) {
                 char buf[256];
-                sprintf(buf, "Unresolved link: %s.", cbs->frames[i].src);
+                snprintf(buf, 256, "Unresolved link: %s.", cbs->frames[i].src);
                 PopUpErr(MODE_ON, buf);
             }
 
@@ -1730,7 +1732,7 @@ QThelpPopup::do_open_slot(const char *name, void*)
             name++;
         if (*name) {
             char *url = 0;
-            char *t = strrchr(name, '.');
+            const char *t = strrchr(name, '.');
             if (t) {
                 t++;
                 if (lstring::cieq(t, "html") || lstring::cieq(t, "htm") ||
@@ -1739,8 +1741,9 @@ QThelpPopup::do_open_slot(const char *name, void*)
                     if (!lstring::is_rooted(name)) {
                         char *cwd = getcwd(0, 256);
                         if (cwd) {
-                            url = new char[strlen(cwd) + strlen(name) + 2];
-                            sprintf(url, "%s/%s", cwd, name);
+                            int len = strlen(cwd) + strlen(name) + 2;
+                            url = new char[len];
+                            snprintf(url, len, "%s/%s", cwd, name);
                             delete [] cwd;
                             if (access(url, R_OK)) {
                                 // no such file
@@ -1781,7 +1784,7 @@ QThelpPopup::do_save_slot(const char *fnamein, void*)
         char tbuf[256];
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
-        sprintf(tbuf, "Error: can't open file %s", fname);
+        snprintf(tbuf, 256, "Error: can't open file %s", fname);
         PopUpMessage(tbuf, true);
         delete [] fname;
         return;
@@ -1817,7 +1820,7 @@ void
 QThelpPopup::do_search_slot(const char *target, void*)
 {
     if (target && *target) {
-        topic *newtop = HLP()->search(target);
+        HLPtopic *newtop = HLP()->search(target);
         if (!newtop)
             PopUpErr(MODE_ON, "Unresolved link.");
         else
@@ -1832,7 +1835,7 @@ void
 QThelpPopup::do_find_text_slot(const char *target, void*)
 {
     if (target && *target)
-        html_viewer->find_words(target);
+        html_viewer->find_words(target, false, false);
 }
 
 
@@ -1845,14 +1848,14 @@ void
 QThelpPopup::newtopic(const char *href, bool spawn, bool force_download,
     bool nonrelative)
 {
-    topic *newtop;
+    HLPtopic *newtop;
     char hanchor[128];
     if (HLP()->context()->resolveKeyword(href, &newtop, hanchor, this,
             cur_topic, force_download, nonrelative))
         return;
     if (!newtop) {
         char buf[256];
-        sprintf(buf, "Unresolved link: %s.", href);
+        snprintf(buf, 256, "Unresolved link: %s.", href);
         PopUpErr(MODE_ON, buf);
         return;
     }
@@ -1867,7 +1870,7 @@ QThelpPopup::newtopic(const char *href, bool spawn, bool force_download,
 void
 QThelpPopup::stop_image_download()
 {
-    if (params->LoadMode == HlpParams::LoadProgressive)
+    if (params->LoadMode == HLPparams::LoadProgressive)
         html_viewer->progressive_kill();
     HLP()->context()->abortImageDownload(this);
 }

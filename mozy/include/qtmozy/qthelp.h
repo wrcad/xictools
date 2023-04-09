@@ -45,7 +45,9 @@
 #include <QWidget>
 #include "qtinterf/qtinterf.h"
 
+#include "help/help_defs.h"
 #include "help/help_context.h"
+//#include "help/help_topic.h"
 #include "htm/htm_widget.h"
 
 // This implements a help/html viewer dialog, providing menus and
@@ -64,9 +66,9 @@ struct htmImageInfo;
 struct htmPLCStream;
 struct htmRect;
 struct htm_if;
-struct topic;
-struct HlpParams;
-struct Transaction;
+struct HLPtopic;
+struct HLPparams;
+class Transaction;
 
 namespace qtinterf
 {
@@ -100,10 +102,10 @@ namespace qtinterf
         int image_load_mode();
         int image_debug_mode();
         GRwbag *get_widget_bag();
-        void link_new(topic*);
-        void reuse(topic*, bool);
+        void link_new(HLPtopic*);
+        void reuse(HLPtopic*, bool);
         void redisplay();
-        topic *get_topic();
+        HLPtopic *get_topic();
         void unset_halt_flag();
         void halt_images();
         void show_cache(int);
@@ -228,9 +230,9 @@ namespace qtinterf
         QAction *a_DeleteBookmark;
         QAction *a_Help;
 
-        HlpParams *params;          // default parameters
-        topic *root_topic;          // root (original) topic
-        topic *cur_topic;           // current topic
+        HLPparams *params;          // default parameters
+        HLPtopic *root_topic;       // root (original) topic
+        HLPtopic *cur_topic;        // current topic
         bool stop_btn_pressed;      // stop download flag
         bool is_frame;              // true for frames
         GRlistPopup *cache_list;    // hook for pop-up cache list
