@@ -93,11 +93,11 @@ msw::GetInstallData(const char *program, const char *keyword)
     unsigned int key_read = KEY_READ;
     HKEY key;
     char buf[1024];
-    sprintf(buf, keyfmt1, program);
+    snprintf(buf, sizeof(buf), keyfmt1, program);
 
     long ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
     if (ret != ERROR_SUCCESS) {
-        sprintf(buf, keyfmt2, program);
+        snprintf(buf, sizeof(buf), keyfmt2, program);
         ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
     }
     if (ret != ERROR_SUCCESS) {
@@ -106,10 +106,10 @@ msw::GetInstallData(const char *program, const char *keyword)
         // but presently this flag causes failure.
         //
         key_read |= KEY_WOW64_64KEY;
-        sprintf(buf, keyfmt1, program);
+        snprintf(buf, sizeof(buf), keyfmt1, program);
         ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
         if (ret != ERROR_SUCCESS) {
-            sprintf(buf, keyfmt2, program);
+            snprintf(buf, sizeof(buf), keyfmt2, program);
             ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
         }
         if (ret != ERROR_SUCCESS)
@@ -213,6 +213,7 @@ msw::GetProgramRoot(const char *program)
 bool
 msw::GetProductID(char *buf, FILE *fp)
 {
+//XXX pass the buffer length
     unsigned int key_read = KEY_READ;
     OSVERSIONINFO osv;
     osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -253,7 +254,7 @@ msw::GetProductID(char *buf, FILE *fp)
     sk = "SOFTWARE\\Microsoft";
     ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, sk, 0, key_read, &key);
     if (ret != ERROR_SUCCESS) {
-        sprintf(buf, "RegOpenKeyEx failed 1, ret= %ld", ret);
+        snprintf(buf, 64, "RegOpenKeyEx failed 1, ret= %ld", ret);
         return (false);
     }
     for (int i = 0; ; i++) {
@@ -271,7 +272,8 @@ msw::GetProductID(char *buf, FILE *fp)
             t++;
         if (!*t || isdigit(*t) || !strcasecmp(t, "nt")) {
 
-            sprintf(kn, "SOFTWARE\\Microsoft\\%s\\CurrentVersion", tbuf);
+            snprintf(kn, sizeof(kn), "SOFTWARE\\Microsoft\\%s\\CurrentVersion",
+                tbuf);
             HKEY subkey;
             ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, kn, 0, key_read, &subkey);
             if (ret != ERROR_SUCCESS) {
@@ -318,7 +320,7 @@ msw::GetProductID(char *buf, FILE *fp)
         }
     }
     RegCloseKey(key);
-    sprintf(buf, "not found");
+    snprintf(buf, 16, "not found");
     return (false);
 }
 
@@ -437,8 +439,9 @@ msw::NewProcess(const char *prog, const char *args, unsigned int flags,
             *s = '\\';
     }
     if (args && *args) {
-        char *t = new char[strlen(cmd) + strlen(args) + 2];
-        sprintf(t, "%s %s", cmd, args);
+        int len = strlen(cmd) + strlen(args) + 2;
+        char *t = new char[len];
+        snprintf(t, len,  "%s %s", cmd, args);
         delete [] cmd;
         cmd = t;
     }

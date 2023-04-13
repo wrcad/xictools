@@ -154,7 +154,7 @@ sSPnumber::printnum(double num, const char *unitstr, bool fix, int numd)
         if (c)
             strcpy(buf, c);
         else {
-            sprintf(buf, "e%d", mag);
+            snprintf(buf, sizeof(buf), "e%d", mag);
 
             // Add a units "cat char" if the units string conflicts
             // with scale factors.
@@ -181,10 +181,10 @@ sSPnumber::printnum(double num, const char *unitstr, bool fix, int numd)
                 if (tmp >= 100.0)
                     numd--;
             }
-            sprintf(t, "%.*f%s", numd, num, buf);
+            snprintf(t, SPN_BUFSIZ-2, "%.*f%s", numd, num, buf);
         }
         else
-            sprintf(t, "%.*g%s", numd+1, num, buf);
+            snprintf(t, SPN_BUFSIZ-2, "%.*g%s", numd+1, num, buf);
         return (fltbuf);
     }
 
@@ -202,7 +202,7 @@ const char *
 sSPnumber::print_exp(double d, int n)
 {
     char *fltbuf = newbuf();
-    sprintf(fltbuf, "%+.*e", n, d);
+    snprintf(fltbuf, SPN_BUFSIZ, "%+.*e", n, d);
     return (fixxp2(fltbuf));
 }
 

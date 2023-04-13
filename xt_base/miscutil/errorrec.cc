@@ -109,7 +109,8 @@ ErrRec::sys_error(const char *str)
                 !strcmp(t, "listen") || !strcmp(t, "select")  ||
                 lstring::prefix("gethost", t)) {
 
-            sprintf(buf, "%s: WSA error code %d.\n", str, WSAGetLastError());
+            snprintf(buf, sizeof(buf), "%s: WSA error code %d.\n", str,
+                WSAGetLastError());
             add_error(buf);
             return;
         }
@@ -136,10 +137,12 @@ ErrRec::sys_herror(const char *str)
 {
 #ifdef WIN32
     char buf[256];
-    if (str && *str)
-        sprintf(buf, "%s: WSA error code %d.\n", str, WSAGetLastError());
+    if (str && *str) {
+        snprintf(buf, sizeof(buf),  "%s: WSA error code %d.\n", str,
+            WSAGetLastError());
+    }
     else
-        sprintf(buf, "WSA error code %d.\n", WSAGetLastError());
+        snprintf(buf, sizeof(buf),  "WSA error code %d.\n", WSAGetLastError());
     add_error(buf);
 #else
 

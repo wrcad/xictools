@@ -308,7 +308,7 @@ xfd_t::xfd_t(const char *fontname)
         GRfont::parse_freeform_font_string(fontname, &family, 0, &sz);
         if (family) {
             pixsize = new char[16];
-            sprintf(pixsize, "%d", sz);
+            snprintf(pixsize, 16, "%d", sz);
             if (!strcasecmp(family, "Sans")) {
                 delete [] family;
                 family = lstring::copy("helvetica");
@@ -476,7 +476,7 @@ xfd_t::set_pixsize(int sz)
     delete [] pixsize;
     char buf[32];
     if (sz > 0) {
-        sprintf(buf, "%d", sz);
+        snprintf(buf, sizeof(buf), "%d", sz);
         delete [] pointsz;
         pointsz = lstring::copy("*");
     }
@@ -494,7 +494,7 @@ xfd_t::set_pointsz(int sz)
     delete [] pointsz;
     char buf[32];
     if (sz > 0) {
-        sprintf(buf, "%d", sz);
+        snprintf(buf, sizeof(buf), "%d", sz);
         delete [] pixsize;
         pixsize = lstring::copy("*");
     }
@@ -660,7 +660,7 @@ xfd_t::font_freeform()
         for ( ; *t; t++) ;
     }
     else
-        sprintf(t, "%d", 12);
+        snprintf(t, 8, "%d", 12);
     return (lstring::copy(buf));
 }
 
@@ -722,7 +722,7 @@ xfd_t::family_xfd(int *psz, bool append)
         if (psz)
             *psz = sz;
         if (append)
-            sprintf(t, "-%d", sz);
+            snprintf(t, 8, "-%d", sz);
     }
     return (lstring::copy(buf));
 }

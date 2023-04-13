@@ -1593,7 +1593,7 @@ gtkMenuConfig::instantiateConvertMenu()
     check_separator(ent, submenu);
 
     ent = &mbox->menu[cvrtMenuDiff];
-    item = miset(ent, "_Compare _Layouts", 0);
+    item = miset(ent, "_Compare Layouts", 0);
     g_object_set_data(G_OBJECT(item), MIDX, voidptr cvrtMenuDiff);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",

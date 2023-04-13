@@ -137,8 +137,9 @@ proxy::move_proxy(const char *token)
     if (!*token)
         f2 = pathlist::mk_path(home, PXFILE".bak");
     else {
-        f2 = new char[strlen(f1) + strlen(token) + 2];
-        sprintf(f2, "%s.%s", f1, token);
+        int len = strlen(f1) + strlen(token) + 2;
+        f2 = new char[len];
+        snprintf(f2, len, "%s.%s", f1, token);
     }
 
     bool ret;

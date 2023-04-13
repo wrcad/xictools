@@ -201,11 +201,12 @@ progress_d::set_info(const char *str)
                 return;
         }
         // Add a bullet and embolden "Warning:"
-        char *tbf = new char[strlen(str) + 30];
+        int len = strlen(str) + 30;
+        char *tbf = new char[len];
         if (!strncmp(str, "Warning:", 8))
-            sprintf(tbf, "%c <b>Warning:</b>%s", 176, str+8);
+            snprintf(tbf, len, "%c <b>Warning:</b>%s", 176, str+8);
         else
-            sprintf(tbf, "%c %s", 176, str);
+            snprintf(tbf, len, "%c %s", 176, str);
         te_info->append(QString(tbf));
         delete [] tbf;
         info_count++;

@@ -167,7 +167,8 @@ encode(struct MimeState *state, FILE *infile, const char *fname,
         }
         if (thispart > 1) {
             fclose(state->outfile);
-            sprintf(buf, "%s.%02d", state->outfname, state->nfiles - 1);
+            snprintf(buf, sizeof(buf), "%s.%02d", state->outfname,
+                state->nfiles - 1);
             state->outfile = fopen(buf, "w");
             if (!state->outfile)
                 perror(buf);
@@ -317,8 +318,9 @@ namespace {
             }
         }
 
-        char *result = new char[25 + strlen(hostname)];
-        sprintf(result, "%d.%d@%s", pid, (int)curtime++, hostname);
+        int len = 25 + strlen(hostname);
+        char *result = new char[len];
+        snprintf(result, len, "%d.%d@%s", pid, (int)curtime++, hostname);
         return (result);
     }
 }

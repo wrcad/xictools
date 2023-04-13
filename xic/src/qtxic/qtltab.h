@@ -38,6 +38,10 @@
  $Id:$
  *========================================================================*/
 
+//
+// Header for the layer table composite.
+//
+
 #ifndef QTLTAB_H
 #define QTLTAB_H
 
@@ -45,6 +49,7 @@
 #include "dsp.h"
 #include "dsp_window.h"
 #include "layertab.h"
+#include "events.h"
 #include "qtinterf/qtinterf.h"
 #include "qtinterf/draw_if.h"
 
@@ -56,10 +61,32 @@ class QHBoxLayout;
 class QMouseEvent;
 class QResizeEvent;
 
-struct QTltab : public cLtab, public qt_draw
+inline class QTltab *qtLtab();
+
+class QTltab : public cLtab, public qt_draw
 {
+    static QTltab *ptr() { return (instancePtr); }
+
+public:
+    friend inline QTltab *qtLtab() { return (QTltab::ptr()); }
+
     QTltab(bool, QWidget*);
 
+    void setup_drawable();
+    void blink(CDl*);
+    void show(const CDl* = 0);
+    void refresh(int, int, int, int);
+    void win_size(int*, int*);
+    void update();
+    void update_scrollbar();
+    void hide_layer_table(bool);
+    void set_layer();
+
+//    QWidget *container()        { return (ltab_container); }
+//    QWidget *scrollbar()        { return (ltab_scrollbar); }
+//    QWidget *searcher()         { return (ltab_search_container); }
+
+    /*
     void setup_drawable();
     void blink(CDl*);
     void refresh(int, int, int, int);
@@ -67,6 +94,10 @@ struct QTltab : public cLtab, public qt_draw
     void win_size(int*, int*);
     void update();
     void update_scrollbar();
+    */
+
+private:
+    static QTltab *instancePtr;
 };
 
 class layertab_w : public QWidget

@@ -384,7 +384,8 @@ GRpkg::Perror(const char *str)
                 !strcmp(str, "accept") || !strcmp(str, "bind") ||
                 !strcmp(str, "listen") || !strcmp(str, "select") ||
                 lstring::prefix("gethost", str)) {
-            sprintf(buf, "%s: WSA error code %d.\n", str, WSAGetLastError());
+            snprintf(buf, sizeof(buf),
+                "%s: WSA error code %d.\n", str, WSAGetLastError());
             ErrPrintf(ET_MSG, "%s\n", buf);
             return;
         }

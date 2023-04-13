@@ -143,9 +143,11 @@ sSFD::path_get()
 {
     if (SFD.sfd_dir_only)
         return (0);
-    hprlist *hp = PL()->Edit()->hyList();
-    char *s = hp->string(HYcvPlain, true);
-    hp->free();
+    hyList *hp = PL()->List();
+    if (!hp)
+        return (0);
+    char *s = hyList::string(hp, HYcvPlain, true);
+    hyList::destroy(hp);
     // remove any quoting
     char *t = s;
     char *path = lstring::getqtok(&t);
@@ -173,7 +175,7 @@ sSFD::path_set(const char *path)
                 break;
             }
         }
-        PL()->EditPrompt(0, path, true);
+        PL()->EditPrompt(0, path, PLedUpdate);
         delete [] path;
     }
 }

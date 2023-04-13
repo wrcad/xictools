@@ -587,7 +587,7 @@ void
 sLstr::add_g(double d)
 {
     char buf[64];
-    sprintf(buf, "%g", d);
+    snprintf(buf, sizeof(buf), "%g", d);
     add(buf);
 }
 
@@ -602,7 +602,7 @@ sLstr::add_e(double d, int prec)
         prec = 1;
     else if (prec > 20)
         prec = 20;
-    sprintf(buf, "%.*e", prec, d);
+    snprintf(buf, sizeof(buf), "%.*e", prec, d);
     add(buf);
 }
 

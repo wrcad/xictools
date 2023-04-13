@@ -74,6 +74,8 @@ public:
     void SetLabel(GRobject, const char*);
     void SetSensitive(GRobject, bool);
     bool IsSensitive(GRobject);
+    void SetVisible(GRobject, bool);
+    bool IsVisible(GRobject);
     void DestroyButton(GRobject);
     void SwitchMenu();
     void SwitchSubwMenu(int, DisplayMode);
@@ -82,7 +84,7 @@ public:
     void NewDDentry(GRobject, const char*);
     void NewDDmenu(GRobject, const char*const*);
     void UpdateUserMenu();
-    void HideSideMenu(bool);
+    void HideButtonMenu(bool);
     void DisableMainMenuItem(const char*, const char*, bool);
 };
 

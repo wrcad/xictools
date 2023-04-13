@@ -143,7 +143,7 @@ QTlistPopup::QTlistPopup(qt_bag *owner, stringlist *symlist, const char *title,
     const char *t;
     char buf[256];
     if (title && header) {
-        sprintf(buf, "%s\n%s", title, header);
+        snprintf(buf, sizeof(buf), "%s\n%s", title, header);
         t = buf;
     }
     else
@@ -223,7 +223,7 @@ QTlistPopup::update(stringlist *symlist, const char *title, const char *header)
     const char *t;
     char buf[256];
     if (title && header) {
-        sprintf(buf, "%s\n%s", title, header);
+        snprintf(buf, sizeof(buf), "%s\n%s", title, header);
         t = buf;
     }
     else

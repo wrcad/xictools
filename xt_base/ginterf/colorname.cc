@@ -879,7 +879,7 @@ GRcolorList::listColors()
     char tbuf[128];
     stringlist *s0 = 0, *se = 0;
     for (int i = 0; color_list[i].name; i++) {
-        snprintf(tbuf, 128, "%3d %3d %3d  %s",
+        snprintf(tbuf, sizeof(tbuf), "%3d %3d %3d  %s",
             color_list[i].red, color_list[i].green, color_list[i].blue,
             color_list[i].name);
         if (!s0)

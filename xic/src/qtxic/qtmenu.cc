@@ -227,14 +227,14 @@ QTmenu::GetLabel(GRobject obj)
             QPushButton *btn = dynamic_cast<QPushButton*>(o);
             if (btn) {
                 qs = btn->text();
-                return (qs.toAscii().constData());
+                return (qs.toLatin1().constData());
             }
         }
         else {
             QAction *a = dynamic_cast<QAction*>(o);
             if (a) {
                 qs = a->text();
-                return (qs.toAscii().constData());
+                return (qs.toLatin1().constData());
             }
         }
     }
@@ -297,6 +297,23 @@ QTmenu::IsSensitive(GRobject obj)
         }
     }
     return (false);
+}
+
+
+void
+QTmenu::SetVisible(GRobject obj, bool vis_state)
+{
+//XXX    if (GRX)
+//XXX        GRX->SetVisible(obj, vis_state);
+}
+
+
+bool
+QTmenu::IsVisible(GRobject obj)
+{
+//XXX    if (!GRX)
+        return (false);
+//XXX    return (GRX->IsVisible(obj));
 }
 
 
@@ -420,10 +437,10 @@ QTmenu::UpdateUserMenu()
 }
 
 
-// Hide or show the side menu.
+// Hide or show the side (button) menu.
 //
 void
-QTmenu::HideSideMenu(bool hide)
+QTmenu::HideButtonMenu(bool hide)
 {
     mainwin *main_win = mainBag();
     if (!main_win)

@@ -258,15 +258,26 @@ drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
 
 //-------------------------------
 
+hyList *QTedit::pe_stores[PE_NUMSTORES];
+
+QTedit *QTedit::instancePtr = 0;
+
 QTedit::QTedit(bool nogr, QWidget *parent)
 {
-    column = cwid = 0;
-    xpos = ypos = 0;
-    offset = 0;
-    fntwid = 0;
-    firstinsert = false;
-    indicating = false;
-    disabled = nogr;
+    if (instancePtr) {
+        fprintf(stderr, "Singleton class QTedit already instantiated.\n");
+        exit(1);
+    }
+    instancePtr = this;
+
+    pe_disabled = nogr;
+
+//    column = cwid = 0;
+//    xpos = ypos = 0;
+//    offset = 0;
+//    fntwid = 0;
+    pe_firstinsert = false;
+    pe_indicating = false;
     if (nogr)
         return;
 
@@ -360,29 +371,119 @@ QTedit::QTedit(bool nogr, QWidget *parent)
 }
 
 
+// Flash a message just above the prompt line for a couple of seconds.
+//
+void
+QTedit::flash_msg(const char *msg, ...)
+{
+    /*XXX
+    va_list args;
+    GtkWidget *popup = gtk_window_new(GTK_WINDOW_POPUP);
+    if (!popup)
+        return;
+
+    char buf[256];
+    va_start(args, msg);
+    vsnprintf(buf, 256, msg, args);
+    va_end(args);
+
+    GtkWidget *label = gtk_label_new(buf);
+    gtk_widget_show(label);
+    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
+    gtk_container_add(GTK_CONTAINER(popup), label);
+
+    GRX->SetPopupLocation(GRloc(LW_LL), popup, mainBag()->Viewport());
+    gtk_window_set_transient_for(GTK_WINDOW(popup),
+        GTK_WINDOW(mainBag()->Shell()));
+
+    gtk_widget_show(popup);
+
+    GRX->AddTimer(2000, fm_timeout, popup);
+    */
+}
+
+
+// As above, but user passes the location.
+//
+void
+QTedit::flash_msg_here(int x, int y, const char *msg, ...)
+{
+    /*XXX
+    va_list args;
+    GtkWidget *popup = gtk_window_new(GTK_WINDOW_POPUP);
+    if (!popup)
+        return;
+
+    char buf[256];
+    va_start(args, msg);
+    vsnprintf(buf, 256, msg, args);
+    va_end(args);
+
+    GtkWidget *label = gtk_label_new(buf);
+    gtk_widget_show(label);
+    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
+    gtk_container_add(GTK_CONTAINER(popup), label);
+
+    int mwid, mhei;
+    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, &mhei);
+    GtkRequisition req;
+    gtk_widget_get_requisition(popup, &req);
+    if (x + req.width > mwid)
+        x = mwid - req.width;
+    if (y + req.height > mhei)
+        y = mhei - req.height;
+    gtk_window_move(GTK_WINDOW(popup), x, y);
+    gtk_window_set_transient_for(GTK_WINDOW(popup),
+        GTK_WINDOW(mainBag()->Shell()));
+
+    gtk_widget_show(popup);
+
+    GRX->AddTimer(2000, fm_timeout, popup);
+    */
+}
+
+
+// Save text in register 0, called when editing finished.
+//
+void
+QTedit::save_line()
+{
+    hyList::destroy(pe_stores[0]);
+    pe_stores[0] = get_hyList(false);
+}
+
+
 // Return the pixel width of the drawing area.
 //
 int
-QTedit::hyWidth(bool in_chars)
+QTedit::win_width(bool in_chars)
 {
     return (viewport->widget()->width());
+}
+
+
+int
+QTedit::win_height()
+{
+//    if (!GRX || !mainBag())
+        return (14);
+//    return (pe_hei);
 }
 
 
 // Set the keyboard focus to the main drawing window.
 //
 void
-QTedit::hySetFocus()
+QTedit::set_focus()
 {
 //    GRX->RevertFocus();
 }
 
 
-// When the editor is active, paint a red "INPUT" in the main
-// keyspressed area as an indicator.
+// Display the R/S/L buttons, hide the keys area while editing.
 //
 void
-QTedit::hySetIndicate()
+QTedit::set_indicate()
 {
     /*
     static GdkGC *gc;
@@ -413,7 +514,7 @@ QTedit::hySetIndicate()
 
 
 void
-QTedit::hyShowLbutton(bool show)
+QTedit::show_lt_button(bool show)
 {
     (void)show;
     /*
@@ -428,36 +529,53 @@ QTedit::hyShowLbutton(bool show)
 
 
 void
-QTedit::hyGetSelection()
+QTedit::get_selection(bool)
 {
 }
 
 
 void *
-QTedit::hySetupBacking(bool clear)
+QTedit::setup_backing(bool use_pm)
 {
-    (void)clear;
+    (void)use_pm;
     return (0);
 }
 
 
 void
-QTedit::hyRestoreBacking(void *tw)
+QTedit::restore_backing(void *tw)
 {
     (void)tw;
 }
 
 
 void
-QTedit::hyInitWindow()
+QTedit::init_window()
 {
-    SetWindowBackground(hyBgPixel());
+    SetWindowBackground(bg_pixel());
     Clear();
 }
 
 
-void
-QTedit::hyCheckPixmap()
+bool
+QTedit::check_pixmap()
 {
+    return (true);
+}
+
+
+void
+QTedit::init_selection(bool selected)
+{
+}
+
+
+void
+QTedit::warp_pointer()
+{
+    // The pointer move must be in an idle proc, so it runs after
+    // prompt line reconfiguration.
+
+//    g_idle_add(warp_ptr, this);
 }
 

@@ -39,7 +39,7 @@
  *========================================================================*/
 
 //
-// Header for the layer table composite
+// Header for the layer table composite.
 //
 
 #ifndef GTKLTAB_H

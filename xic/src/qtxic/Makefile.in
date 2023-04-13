@@ -25,11 +25,6 @@ BASE = ../../../xt_base
 SECURE = ../../../secure
 INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include
 
-#LPATH = ../..
-#LFLAGS = -rdynamic  -pthread -Wl,-rpath,/usr/local/Trolltech/Qt-4.0.1/lib
-#LIBS = $(APPLIBS) -lncurses -L/usr/local/lib -L/usr/X11R6/lib  -lXpm -lpng -ltiff -ljpeg -lz  -L/usr/local/lib -L/usr/local/Trolltech/Qt-4.0.1/lib -L/usr/local/lib -L/usr1/stevew/qt-x11-opensource-src-4.0.1/lib -lQtGui_debug -L/usr/X11R6/lib -lSM -lICE -lXi -lXrender -lXrandr -lXcursor -lXinerama -lfreetype -lfontconfig -lXext -lX11 -lm -lQtCore_debug -lz -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic
-#APPLIBS = $(LPATH)/ginterf/ginterf.a
-
 HFILES = \
     qtcoord.h \
     qtexpand.h \
@@ -43,10 +38,12 @@ CCFILES = \
     qtclrtab.cc \
     qtcoord.cc \
     qtexpand.cc \
-    qtextfch.cc \
+    qtextfc.cc \
+    qtextfh.cc \
     qtfiledlg.cc \
     qthtext.cc \
-    qtkeyb.cc \
+    qtkeymacro.cc \
+    qtkeymap.cc \
     qtltab.cc \
     qtltalias.cc \
     qtltedit.cc \
@@ -85,7 +82,7 @@ $(MOBJS):
 endif
 
 .cpp.o:
-	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+	$(CXX) -c $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -o $@ $<
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc

@@ -193,7 +193,7 @@ cExt::preCurCellChangeCallback()
         if (gd)
             gd->parse_find_dev(0, ERASE);
     }
-    FC()->clearMarks();
+    FCif()->clearMarks();
 }
 
 

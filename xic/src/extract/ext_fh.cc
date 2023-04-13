@@ -284,15 +284,15 @@ cFH::fhRun(const char *infile, const char *outfile, const char *resfile,
     char *in_f = 0, *ot_f = 0, *lg_f = 0;
     if (run_foreg) {
         if (!infile || !*infile) {
-            in_f = FH()->getFileName(FH_INP_SFX);
+            in_f = FHif()->getFileName(FH_INP_SFX);
             infile = in_f;
         }
         if (!outfile || !*outfile) {
-            ot_f = FH()->getFileName("fh_out");
+            ot_f = FHif()->getFileName("fh_out");
             outfile = ot_f;
         }
         if (!resfile || !*resfile) {
-            lg_f = FH()->getFileName("fh_log");
+            lg_f = FHif()->getFileName("fh_log");
             resfile = lg_f;
         }
     }
@@ -314,7 +314,7 @@ cFH::fhRun(const char *infile, const char *outfile, const char *resfile,
         delete newjob;
         return;
     }
-    if (!nodump && !FH()->fhDump(newjob->infile())) {
+    if (!nodump && !FHif()->fhDump(newjob->infile())) {
         delete newjob;
         return;
     }

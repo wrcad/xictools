@@ -38,83 +38,96 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTMENUCFG_H
-#define QTMENUCFG_H
+#include "main.h"  
+#include "ext.h"
+#include "ext_fh.h"
+#include "ext_fxunits.h"
+#include "ext_fxjob.h"
+#include "dsp_inlines.h"
+#include "qtmain.h"
+#include "menu.h"  
+#include "select.h"
 
-#include "dsp.h"
-#include "dsp_window.h"
 
-#include <QObject>
-#include <QAction>
-
-
-struct MenuEnt;
-struct MenuList;
-
-inline class qtMenuConfig *qtCfg();
-
-class qtMenuConfig : public QObject
+// Pop up a panel to control the fastcap/fasthenry interface.
+//
+void
+cFH::PopUpExtIf(GRobject caller, ShowMode mode)
 {
-    Q_OBJECT
+(void)caller;
+(void)mode;
+/*
+    if (!GRX || !mainBag())
+        return;
+    if (mode == MODE_OFF) {
+        delete Fch;
+        return;
+    }
+    if (mode == MODE_UPD) {
+        if (Fch)
+            Fch->update();
+        return;
+    }
+    if (Fch)
+        return;
 
-public:
-    friend inline qtMenuConfig *qtCfg() { return (qtMenuConfig::ptr()); }
+    new sFch(caller);
+    if (!Fch->Shell()) {
+        delete Fch;
+        return;
+    }
 
-    qtMenuConfig();
-    void instantiateMainMenus();
-    void instantiateSideMenus();
-    void instantiateSubwMenus(int);
-    void updateDynamicMenus();
-    void switch_menu_mode(DisplayMode, int);
-    void set_main_global_sens(const MenuList*, bool);
+    gtk_window_set_transient_for(GTK_WINDOW(Fch->Shell()),
+        GTK_WINDOW(mainBag()->Shell()));
+    GRX->SetPopupLocation(GRloc(LW_LR), Fch->Shell(), mainBag()->viewport);
+    gtk_widget_show(Fch->Shell());
+    setPopUpVisible(true);
+*/
+}
 
-signals:
-    void exec_idle(MenuEnt*);
 
-private slots:
-    void file_menu_slot(QAction*);
-    void file_open_menu_slot(QAction*);
-    void edit_menu_slot(QAction*);
-    void modf_menu_slot(QAction*);
-    void view_menu_slot(QAction*);
-    void view_view_menu_slot(QAction*);
-    void attr_menu_slot(QAction*);
-    void cvrt_menu_slot(QAction*);
-    void drc_menu_slot(QAction*);
-    void ext_menu_slot(QAction*);
-    void user_menu_slot(QAction*);
-    void help_menu_slot(QAction*);
+void
+cFH::updateString()
+{
+/*
+    if (Fch) {
+        char *s = statusString();
+        gtk_label_set(GTK_LABEL(Fch->label), s);
+        delete [] s;
+    }
+*/
+}
 
-    void subwin_view_menu_slot(QAction*);
-    void subwin_view_view_menu_slot(QAction*);
-    void subwin_attr_menu_slot(QAction*);
-    void subwin_help_menu_slot(QAction*);
 
-    void idle_exec_slot(MenuEnt*);
-    void exec_slot(MenuEnt*);
-    void style_slot(MenuEnt*);
-    void shape_slot(MenuEnt*);
-
-    void style_menu_slot(QAction*);
-    void shape_menu_slot(QAction*);
-
-private:
-    const char **get_style_pixmap();
-
-    static qtMenuConfig *ptr()
-        {
-            if (!instancePtr)
-                on_null_ptr();
-            return (instancePtr);
+/*
+void
+cFCH::freezeParams(bool freeze, fx_params *params)
+{
+    if (Fch) {
+        if (freeze) {
+            Fch->frozen = true;
+            Fch->set_sens(false);
+            double val = MICRONS(params->fx_min_rect_size);
+            gtk_adjustment_set_value(GTK_ADJUSTMENT(Fch->fx_min_rect), val);
+            val = MICRONS(params->fx_plane_bloat);
+            gtk_adjustment_set_value(GTK_ADJUSTMENT(Fch->fx_plane_bloat), val);
+            val = MICRONS(params->fc_part_max);
+            gtk_adjustment_set_value(GTK_ADJUSTMENT(Fch->fc_part_max), val);
+            val = MICRONS(params->fc_edge_max);
+            gtk_adjustment_set_value(GTK_ADJUSTMENT(Fch->fc_edge_max), val);
+            val = MICRONS(params->fc_thin_edge);
+            gtk_adjustment_set_value(GTK_ADJUSTMENT(Fch->fc_thin_edge), val);
         }
-
-    static void on_null_ptr();
-
-    QMenu *style_menu;
-    QMenu *shape_menu;
-
-    static qtMenuConfig *instancePtr;
-};
-
-#endif
+        else {
+            Fch->frozen = false;
+            Fch->set_sens(true);
+            if (params)
+                params->set();
+            App->PopUpExtIf(0, MODE_UPD);
+        }
+    }
+(void)freeze;
+(void)params;
+}
+*/
 

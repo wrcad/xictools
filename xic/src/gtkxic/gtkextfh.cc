@@ -430,7 +430,7 @@ sFh::sFh(GRobject c)
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
             fh_units_strings[i]);
     }
-    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), FH()->getUnitsIndex(0));
+    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), FHif()->getUnitsIndex(0));
     g_signal_connect(G_OBJECT(entry), "changed",
         G_CALLBACK(fh_units_proc), 0);
     gtk_container_add(GTK_CONTAINER(frame), entry);
@@ -630,7 +630,7 @@ sFh::sFh(GRobject c)
     //
     // Status line and Dismiss button
     //
-    const char *s = FH()->statusString();
+    const char *s = FHif()->statusString();
     fh_label = gtk_label_new(s);
     delete [] s;
     gtk_widget_show(fh_label);
@@ -665,7 +665,7 @@ sFh::~sFh()
     Fh = 0;
     if (fh_caller)
         GRX->Deselect(fh_caller);
-    FH()->setPopUpVisible(false);
+    FHif()->setPopUpVisible(false);
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)sFh::fh_cancel_proc, wb_shell);
@@ -716,7 +716,7 @@ sFh::update()
     var = CDvdb()->getVariable(VA_FhUnits);
     if (!var)
         var = "";
-    int uoff = FH()->getUnitsIndex(var);
+    int uoff = FHif()->getUnitsIndex(var);
     int ucur = gtk_combo_box_get_active(GTK_COMBO_BOX(fh_units));
     if (uoff != ucur)
         gtk_combo_box_set_active(GTK_COMBO_BOX(fh_units), uoff);
@@ -790,7 +790,7 @@ sFh::update_jobs_list()
     double val = text_get_scroll_value(fh_jobs);
     text_set_chars(fh_jobs, "");
 
-    char *list = FH()->jobList();
+    char *list = FHif()->jobList();
     if (!list)
         text_insert_chars_at_point(fh_jobs, c1,
             "No background jobs running.", -1, -1);
@@ -1010,7 +1010,7 @@ sFh::fh_def_string(int id)
 void
 sFh::fh_cancel_proc(GtkWidget*, void*)
 {
-    FH()->PopUpExtIf(0, MODE_OFF);
+    FHif()->PopUpExtIf(0, MODE_OFF);
 }
 
 
@@ -1122,7 +1122,7 @@ sFh::fh_units_proc(GtkWidget *caller, void*)
     if (i < 0)
         return;
     const char *str = fh_units_strings[i];
-    str = FH()->getUnitsString(str);
+    str = FHif()->getUnitsString(str);
     if (str)
         CDvdb()->setVariable(VA_FhUnits, str);
     else
@@ -1147,7 +1147,7 @@ sFh::fh_dump_cb(const char *fname, void *client_data)
 {
     switch ((intptr_t)client_data) {
     case fhDump:
-        if (FH()->fhDump(fname)) {
+        if (FHif()->fhDump(fname)) {
             if (!Fh)
                 return;
             const char *fn = lstring::strip_path(fname);
@@ -1172,14 +1172,14 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
     const char *s;
     switch ((intptr_t)arg) {
     case fhRun:
-        FH()->fhRun(0, 0, 0);
+        FHif()->fhRun(0, 0, 0);
         break;
     case fhRunFile:
         s = gtk_entry_get_text(GTK_ENTRY(Fh->fh_file));
         {
             char *tok = lstring::getqtok(&s);
             if (tok) {
-                FH()->fhRun(tok, 0, 0, true);
+                FHif()->fhRun(tok, 0, 0, true);
                 delete [] tok;
             }
             else {
@@ -1189,7 +1189,7 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
         }
         break;
     case fhDump:
-        s = FH()->getFileName(FH_INP_SFX);
+        s = FHif()->getFileName(FH_INP_SFX);
         Fh->PopUpInput(0, s, "Dump", fh_dump_cb, (void*)fhDump);
         delete [] s;
         break;
@@ -1251,7 +1251,7 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
         {
             int pid = Fh->get_pid();
             if (pid > 0)
-                FH()->killProcess(pid);
+                FHif()->killProcess(pid);
         }
     }
 }

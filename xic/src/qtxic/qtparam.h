@@ -40,8 +40,9 @@
 
 // The status readout line
 //
-struct param_w : public QWidget, public qt_draw
+class param_w : public QWidget, public qt_draw
 {
+public:
     param_w(mainwin*);
     void print();
 };

@@ -242,7 +242,7 @@ expand_d::plus_slot()
 {
     QString qs = edit->text();
     if (!qs.isNull()) {
-        const char *t = qs.toAscii().constData();
+        const char *t = qs.toLatin1().constData();
         if (*t == '+') {
             qs = qs + QString("+");
             edit->setText(qs);
@@ -258,7 +258,7 @@ expand_d::minus_slot()
 {
     QString qs = edit->text();
     if (!qs.isNull()) {
-        const char *t = qs.toAscii().constData();
+        const char *t = qs.toLatin1().constData();
         if (*t == '-') {
             qs = qs + QString("-");
             edit->setText(qs);
@@ -328,7 +328,7 @@ expand_d::peek_slot()
 void
 expand_d::apply_slot()
 {
-    char *string = lstring::copy(edit->text().toAscii().constData());
+    char *string = lstring::copy(edit->text().toLatin1().constData());
     bool ret = false;
     if (p_callback)
         ret = (*p_callback)(string, p_cb_arg);

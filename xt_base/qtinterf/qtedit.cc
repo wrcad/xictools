@@ -453,7 +453,7 @@ QTeditPopup::load_file_slot(const char *fnamein, void*)
         char tbuf[256];
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
-        sprintf(tbuf, "Can't open %s!", fname);
+        snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
         status_bar->showMessage(QString(tbuf));
         delete [] fname;
         return;
@@ -525,7 +525,7 @@ QTeditPopup::read_file_slot(const char *fnamein, void*)
     if (!read_file(fname, false)) {
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
-        sprintf(tbuf, "Can't open %s!", fname);
+        snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
         status_bar->showMessage(QString(tbuf));
     }
     else {
@@ -533,7 +533,7 @@ QTeditPopup::read_file_slot(const char *fnamein, void*)
         text_editor->setReadOnly(false);
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
-        sprintf(tbuf, "Successfully read %s", fname);
+        snprintf(tbuf, sizeof(tbuf), "Successfully read %s", fname);
         status_bar->showMessage(QString(tbuf));
     }
     if (input)
@@ -773,8 +773,8 @@ QTeditPopup::send_slot()
                 fclose (ifp);
             }
             else {
-                sprintf(buf, "Error: can't open attachment file %s.",
-                    fname);
+                snprintf(buf, sizeof(buf),
+                    "Error: can't open attachment file %s.", fname);
                 PopUpMessage(buf, true);
                 err = true;
             }
@@ -789,14 +789,14 @@ QTeditPopup::send_slot()
 
     if (!err) {
         if (!state.nfiles) {
-            sprintf(buf, "mail -s \"%s\" %s < %s", subject, mailaddr,
-                descname);
+            snprintf(buf, sizeof(buf), "mail -s \"%s\" %s < %s", subject,
+                mailaddr, descname);
             system(buf);
         }
         else {
             for (int i = 0; i < state.nfiles; i++) {
                 // What is "-oi"?  took this from mpack
-                sprintf(buf, "sendmail -oi %s < %s", mailaddr,
+                snprintf(buf, sizeof(buf), "sendmail -oi %s < %s", mailaddr,
                     state.fnames[i]);
                 system(buf);
             }
@@ -959,7 +959,7 @@ QTeditPopup::attach_file_slot(const char *fnamein, void*)
         char tbuf[256];
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
-        sprintf(tbuf, "Can't open %s!", fname);
+        snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
         status_bar->showMessage(QString(tr(tbuf)));
         delete [] fname;
         return;

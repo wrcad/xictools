@@ -48,82 +48,113 @@
 //-----------------------------------------------------------------------------
 // Exports to the xdraw graphics package.
 
-// Struct to hold layer pixmaps, for SetupLayers()
-struct scx
-{
-    scx();
+namespace {
+    // Struct to hold layer pixmaps, for SetupLayers()
+    struct scx
+    {
+        scx();
 
-    void **phys_pms;
-    void **elec_pms;
-    int phys_alloc;
-    int elec_alloc;
-};
+        void **phys_pms;
+        void **elec_pms;
+        int phys_alloc;
+        int elec_alloc;
+    };
 
-scx::scx()
-{
-    phys_alloc = CD()->PhysLayers()->used();
-    phys_pms = new void*[phys_alloc];
-    memset(phys_pms, 0, phys_alloc);
-    elec_alloc = CD()->ElecLayers()->used();
-    elec_pms = new void*[elec_alloc];
-    memset(elec_pms, 0, elec_alloc);
+    scx::scx()
+    {
+        phys_alloc = CDldb()->layersUsed(Physical);
+        phys_pms = new void*[phys_alloc];
+        memset(phys_pms, 0, phys_alloc);
+        elec_alloc = CDldb()->layersUsed(Electrical);
+        elec_pms = new void*[elec_alloc];
+        memset(elec_pms, 0, elec_alloc);
+    }
 }
 
 
+// Swap the cached pixmap in layer descs for one consistent with the
+// present graphics package, and restore when finished.  For example,
+// the pixmap may be a GdkPixmap under GTK, but we need a native X
+// Pixmap within xdraw.  After setup, we can use our high-level
+// drawing functions with the xdraw drawable.
+//
 void *
-cMain::SetupLayers(void *dp, GRdraw *cx, void *dptr)
+cMain::SetupLayers(void *dp, GRdraw *cx, void *scxptr)
 {
-/*
-    if (!dptr) {
+    if (!scxptr) {
         // Save/set pixmaps
         FixupColors(dp);
         scx *c = new scx;
         for (int i = 0; i < c->phys_alloc; i++) {
-            CDl *ld = CD()->PhysLayers.layer(i);
+            CDl *ld = CDldb()->layer(i, Physical);
             if (ld) {
-                c->phys_pms[i] = ld->fill.xpixmap;
-                ld->fill.xpixmap = 0;
-                cx->DefineFillpattern(&ld->fill);
+                DspLayerParams *lp = dsp_prm(ld);
+                c->phys_pms[i] = lp->fill()->xPixmap();
+                lp->fill()->setXpixmap(0);
+                cx->DefineFillpattern(lp->fill());
             }
         }
         for (int i = 0; i < c->elec_alloc; i++) {
-            CDl *ld = CD()->ElecLayers.layer(i);
-            if (ld) {
-                c->elec_pms[i] = ld->fill.xpixmap;
-                ld->fill.xpixmap = 0;
-                cx->DefineFillpattern(&ld->fill);
+            // Note that layers can be in both lists, avoid the ones
+            // we've already seen.
+
+            CDl *ld = CDldb()->layer(i, Electrical);
+            if (ld && ld->physIndex() < 0) {
+                DspLayerParams *lp = dsp_prm(ld);
+                c->elec_pms[i] = lp->fill()->xPixmap();
+                lp->fill()->setXpixmap(0);
+                cx->DefineFillpattern(lp->fill());
             }
         }
         return (c);
     }
     else {
         // Put everything back
-        scx *c = (scx*)dptr;
-        Display *display = (Display*)dp;
+        scx *c = (scx*)scxptr;
         for (int i = 0; i < c->phys_alloc; i++) {
-            CDl *ld = CD()->PhysLayers.layer(i);
+            CDl *ld = CDldb()->layer(i, Physical);
             if (ld) {
-                if (ld->fill.xpixmap)
-                    XFreePixmap(display, (Pixmap)ld->fill.xpixmap);
-                ld->fill.xpixmap = c->phys_pms[i];
+                DspLayerParams *lp = dsp_prm(ld);
+#ifdef WITH_X11
+                if (lp->fill()->xPixmap())
+                    XFreePixmap((Display*)dp, (Pixmap)lp->fill()->xPixmap());
+#else
+#ifdef WIN32
+                if (lp->fill()->xPixmap())
+                    DeleteBitmap((HBITMAP)lp->fill()->xPixmap());
+#endif
+#ifdef WITH_QUARTZ
+//XXX Need equiv. code for Quartz.
+#endif
+#endif
+                lp->fill()->setXpixmap(c->phys_pms[i]);
             }
         }
         for (int i = 0; i < c->elec_alloc; i++) {
-            CDl *ld = CD()->ElecLayers.layer(i);
-            if (ld) {
-                if (ld->fill.xpixmap)
-                    XFreePixmap(display, (Pixmap)ld->fill.xpixmap);
-                ld->fill.xpixmap = c->elec_pms[i];
+            // Note that layers can be in both lists, avoid the ones
+            // we've already seen.
+
+            CDl *ld = CDldb()->layer(i, Electrical);
+            if (ld && ld->physIndex() < 0) {
+                DspLayerParams *lp = dsp_prm(ld);
+#ifdef WITH_X11
+                if (lp->fill()->xPixmap())
+                    XFreePixmap((Display*)dp, (Pixmap)lp->fill()->xPixmap());
+#else
+#ifdef WITH_QUARTZ
+//XXX Need equiv. code for Quartz.
+#endif
+#ifdef WIN32
+                if (lp->fill()->xPixmap())
+                    DeleteBitmap((HBITMAP)lp->fill()->xPixmap());
+#endif
+#endif
+                lp->fill()->setXpixmap(c->elec_pms[i]);
             }
         }
         delete c;
         return (0);
     }
-*/
-(void)dp;
-(void)cx;
-(void)dptr;
-return (0);
 }
 
 
@@ -133,49 +164,35 @@ bool
 cMain::DrawCallback(void *dp, GRdraw *cx, int l, int b, int r, int t,
     int w, int h)
 {
-/*
-    Display *display = (Display*)dp;
-    // Se we can use this when another graphics package is active, a lot of
+    // So we can use this when another graphics package is active, a lot of
     // state is saved - the viewport/window, and the pixmaps in the fill
-    // patterns
+    // patterns.
 
-    // Set attribute colors
-    FixupColors(display);
+    // Set attribute colors.
+    FixupColors(dp);
 
     // init the viewport and window
-    BBox vp = DSP()->windows[0]->w_viewport;
-    BBox wd = DSP()->windows[0]->w_window;
-    double ratio = DSP()->windows[0]->w_ratio;
-    GRdraw *tcx = DSP()->windows[0]->w_draw;
-    DSP()->windows[0]->w_draw = cx;
-    DSP()->windows[0]->w_viewport.left = 0;
-    DSP()->windows[0]->w_viewport.top = 0;
-    DSP()->windows[0]->w_viewport.right = w;
-    DSP()->windows[0]->w_viewport.bottom = h;
-    DSP()->windows[0]->InitWindow((l + r)/2, (b + t)/2, r - l);
+    int wid = DSP()->MainWdesc()->ViewportWidth();
+    int hei = DSP()->MainWdesc()->ViewportHeight();
+    BBox wd = *DSP()->MainWdesc()->Window();
+    double ratio = DSP()->MainWdesc()->Ratio();
+    GRdraw *tcx = DSP()->MainWdesc()->Wdraw();
+    DSP()->MainWdesc()->SetWdraw(cx);
+    DSP()->MainWdesc()->InitViewport(w, h);
+    DSP()->MainWdesc()->InitWindow((l + r)/2, (b + t)/2, r - l);
 
     // init the layers
-    void *c = SetupLayers(display, cx, 0);
+    void *c = SetupLayers(dp, cx, 0);
 
-    DSP()->windows[0]->RedisplayDirect();
+    DSP()->MainWdesc()->RedisplayDirect();
 
     // return layers to prev state
-    SetupLayers(display, cx, c);
+    SetupLayers(dp, cx, c);
 
-    DSP()->windows[0]->w_viewport = vp;
-    DSP()->windows[0]->w_window = wd;
-    DSP()->windows[0]->w_ratio = ratio;
-    DSP()->windows[0]->w_draw = tcx;
-*/
-(void)dp;
-(void)cx;
-(void)l;
-(void)b;
-(void)r;
-(void)t;
-(void)w;
-(void)h;
-
+    DSP()->MainWdesc()->InitViewport(wid, hei);
+    *DSP()->MainWdesc()->Window() = wd;
+    DSP()->MainWdesc()->SetRatio(ratio);
+    DSP()->MainWdesc()->SetWdraw(tcx);
     return (true);
 }
 

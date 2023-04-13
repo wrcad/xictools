@@ -293,13 +293,13 @@ struct sMacroMapTab : public sHtab
 
     void add(const char *name, int argc, const char *newname)
         {
-            sprintf(mmbuf, "%s:%d", name, argc);
+            snprintf(mmbuf, sizeof(mmbuf), "%s:%d", name, argc);
             sHtab::add(mmbuf, (void*)newname);
         }
 
     const char *get(const char *name, int argc)
         {
-            sprintf(mmbuf, "%s:%d", name, argc);
+            snprintf(mmbuf, sizeof(mmbuf), "%s:%d", name, argc);
             return ((const char*)sHtab::get(this, mmbuf));
         }
 

@@ -1010,7 +1010,7 @@ pathlist::ls_longform(const char *path, bool nl)
 #ifdef WIN32
     time_t ftime = st.st_mtime;
     char tbuf[64];
-    sprintf(tbuf, "%-12ld ", st.st_size);
+    snprintf(tbuf, sizeof(tbuf), "%-12ld ", st.st_size);
     lstr.add(tbuf);
     strftime(tbuf, sizeof(tbuf), "%c", localtime(&ftime));
     lstr.add(tbuf);
@@ -1073,14 +1073,14 @@ pathlist::ls_longform(const char *path, bool nl)
     if (pw)
         owner = pw->pw_name;
     else {
-        sprintf(obuf, "%u", (unsigned int)st.st_uid);
+        snprintf(obuf, sizeof(obuf), "%u", (unsigned int)st.st_uid);
         owner = obuf;
     }
     struct group *gp = getgrgid(st.st_gid);
     if (gp)
         group = gp->gr_name;
     else {
-        sprintf(gbuf, "%u", (unsigned int)st.st_gid);
+        snprintf(gbuf, sizeof(gbuf), "%u", (unsigned int)st.st_gid);
         group = gbuf;
     }
 
@@ -1120,7 +1120,7 @@ pathlist::ls_longform(const char *path, bool nl)
     lstr.add(group);
     lstr.add_c(' ');
     char tbuf[64];
-    sprintf(tbuf, "%-12lld ", (long long)st.st_size);
+    snprintf(tbuf, sizeof(tbuf), "%-12lld ", (long long)st.st_size);
     lstr.add(tbuf);
     strftime(tbuf, sizeof(tbuf), format, localtime(&ftime));
     lstr.add(tbuf);

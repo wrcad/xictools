@@ -428,7 +428,7 @@ filestat::make_temp(const char *id)
 #endif
 
     char buf[64], *fpath;
-    sprintf(buf, "%s%u-%d", id, pid, num);
+    snprintf(buf, sizeof(buf), "%s%u-%d", id, pid, num);
     if (!access(path, W_OK))
         fpath = pathlist::mk_path(path, buf);
     else
@@ -496,13 +496,14 @@ filestat::schedule_rm_file(const char *filename)
         return (0);
     if (!filename || !*filename)
         return (0);
-    char *buf = new char[strlen(filename) + 80];
+    int len = strlen(filename) + 80;
+    char *buf = new char[len];
     sLstr lstr;
-    sprintf(buf, "Scheduling %s for deletion in %d %s.\n", filename,
+    snprintf(buf, len, "Scheduling %s for deletion in %d %s.\n", filename,
         rm_file_minutes, rm_file_minutes > 1 ? "minutes" : "minute");
     lstr.add(buf);
 
-    sprintf(buf, "echo rm %s | at now + %d %s 2>&1\n", filename,
+    snprintf(buf, len, "echo rm %s | at now + %d %s 2>&1\n", filename,
         rm_file_minutes, rm_file_minutes > 1 ? "minutes" : "minute");
 
     FILE *fp = popen(buf, "r");

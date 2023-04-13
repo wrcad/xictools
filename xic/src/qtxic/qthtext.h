@@ -38,6 +38,10 @@
  $Id:$
  *========================================================================*/
 
+//
+// Header for the "hypertext" editor and related.
+//
+
 #ifndef QTHTEXT_H
 #define QTHTEXT_H
 
@@ -45,14 +49,45 @@
 #include "promptline.h"
 #include "qtinterf/qtinterf.h"
 
+// String storage registers, 0 is "last", 1-5 are general.
+#define PE_NUMSTORES 6
+
+inline class QTedit *qtEdit();
+
 class QTedit : public cPromptEdit, public qt_draw
 {
+    static QTedit *ptr() { return (instancePtr); }
+
 public:
+    friend inline QTedit *qtEdit() { return (QTedit::ptr()); }
+
     QTedit(bool, QWidget*);
 
     // the widgets are owned by the main window
-    virtual ~QTedit() { viewport = 0; }
+//XXX    virtual ~QTedit() { viewport = 0; }
 
+    // virtual overrides
+    void flash_msg(const char*, ...);
+    void flash_msg_here(int, int, const char*, ...);
+    void save_line();
+    int win_width(bool = false);
+    int win_height();
+    void set_focus();
+    void set_indicate();
+    void show_lt_button(bool);
+    void get_selection(bool);
+    void *setup_backing(bool);
+    void restore_backing(void*);
+    void init_window();
+    bool check_pixmap();
+    void init_selection(bool);
+    void warp_pointer();
+
+    QWidget *container()    { return (pe_container); }
+    QWidget *keys()         { return (pe_keys); }
+    int xpos()              { return (pe_colmin*pe_fntwid); }
+
+    /*
     // virtual overrides
     int hyWidth(bool = false);
     void hySetFocus();
@@ -63,6 +98,15 @@ public:
     void hyRestoreBacking(void*);
     void hyInitWindow();
     void hyCheckPixmap();
+    */
+
+private:
+    QWidget *pe_container;
+    QWidget *pe_keys;
+
+    static hyList *pe_stores[PE_NUMSTORES]; // Editor text string registers.
+
+    static QTedit *instancePtr;
 };
 
 #endif

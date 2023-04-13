@@ -691,7 +691,7 @@ PSparams::SetLinestyle(const GRlineType *lineptr)
         char *s = buf+1;
 
         for (int i = 0; i < lineptr->length; i++) {
-            sprintf(s, " %d", (int)lineptr->dashes[i]);
+            snprintf(s, 8, " %d", (int)lineptr->dashes[i]);
             while (*s) s++;
         }
         while (*s) s++;

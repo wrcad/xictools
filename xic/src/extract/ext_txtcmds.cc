@@ -573,7 +573,7 @@ void
 ext_bangcmds::fc(const char *s)
 {
     char *kw = lstring::gettok(&s);
-    FC()->doCmd(kw, s);
+    FCif()->doCmd(kw, s);
     delete [] kw;
 }
 
@@ -582,7 +582,7 @@ void
 ext_bangcmds::fh(const char *s)
 {
     char *kw = lstring::gettok(&s);
-    FH()->doCmd(kw, s);
+    FHif()->doCmd(kw, s);
     delete [] kw;
 }
 

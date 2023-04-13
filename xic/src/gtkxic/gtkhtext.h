@@ -39,7 +39,7 @@
  *========================================================================*/
  
 //
-// Header for the "hypertext" editor and related
+// Header for the "hypertext" editor and related.
 //
 
 #ifndef GTKHTEXT_H

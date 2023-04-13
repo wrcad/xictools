@@ -40,6 +40,9 @@
 
 #include "main.h"  
 #include "ext.h"
+#include "ext_fc.h"
+#include "ext_fxunits.h"
+#include "ext_fxjob.h"
 #include "dsp_inlines.h"
 #include "qtmain.h"
 #include "menu.h"  
@@ -49,7 +52,7 @@
 // Pop up a panel to control the fastcap/fasthenry interface.
 //
 void
-cFCH::PopUpExtIf(GRobject caller, ShowMode mode)
+cFC::PopUpExtIf(GRobject caller, ShowMode mode)
 {
 (void)caller;
 (void)mode;
@@ -84,7 +87,7 @@ cFCH::PopUpExtIf(GRobject caller, ShowMode mode)
 
 
 void
-cFCH::update()
+cFC::updateString()
 {
 /*
     if (Fch) {
@@ -97,9 +100,21 @@ cFCH::update()
 
 
 void
-cFCH::freezeParams(bool freeze, fx_params *params)
+cFC::updateMarks()
 {
+}
+
+
+void
+cFC::clearMarks()
+{
+}
+
+
 /*
+void
+cFC::freezeParams(bool freeze, fx_params *params)
+{
     if (Fch) {
         if (freeze) {
             Fch->frozen = true;
@@ -123,8 +138,8 @@ cFCH::freezeParams(bool freeze, fx_params *params)
             App->PopUpExtIf(0, MODE_UPD);
         }
     }
-*/
 (void)freeze;
 (void)params;
 }
+*/
 

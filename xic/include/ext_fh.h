@@ -479,7 +479,7 @@ private:
     bool fhl_zoids;                 // create zoids for debug
 };
 
-inline class cFH *FH();
+inline class cFH *FHif();
 
 // The exported interface to the Extract RL functionality.  This uses
 // FastHenry to compute inductance and resistance of structures.
@@ -496,7 +496,7 @@ class cFH : public fxGif
     static void on_null_ptr();
 
 public:
-    friend inline cFH *FH() { return (cFH::ptr()); }
+    friend inline cFH *FHif() { return (cFH::ptr()); }
 
     // ext_fh.cc
     cFH();

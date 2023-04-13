@@ -875,6 +875,13 @@ qt_bag::HCupdate(HCcb *cb, GRobject)
 
 
 void
+qt_bag::HCsetFormat(int)
+{
+    //XXX fixme
+}
+
+
+void
 qt_bag::HcopyDisableMsgs()
 {
     if (hc)
@@ -1060,6 +1067,34 @@ qt_bag::PopUpMessage(const char *string, bool err, bool desens,
 }
 
 
+//XXX
+int
+qt_bag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
+    GRloc loc)
+{
+    if (mode == MODE_OFF) {
+        delete error;
+        return (0);
+    }
+    if (mode == MODE_UPD) {
+        if (error)
+            return (err_cnt);
+        return (0);
+    }
+    if (error) {
+        error->setText(message_str);
+        error->set_visible(true);
+    }
+    else {
+        error = new QTtextPopup(this, message_str, style, 400, 100);
+        error->setTitle("Error");
+        error->set_visible(true);
+        GRX->SetPopupLocation(loc, error, shell);
+    }
+    return (err_cnt);
+}
+
+
 // The next few functions pop up and down error and info popups.  The
 // shell and text widgets are stored in the qt_bag struct, so there
 // can be only one of each type per qt_bag.  Additional calls to
@@ -1174,4 +1209,10 @@ GRtextPopup *qt_bag::ActiveInfo2()      { return (info2); }
 GRtextPopup *qt_bag::ActiveHtinfo()     { return (htinfo); }
 GRtextPopup *qt_bag::ActiveError()      { return (error); }
 GRfontPopup *qt_bag::ActiveFontsel()    { return (fontsel); }
+
+void
+qt_bag::SetErrorLogName(const char *fname)
+{
+//XXX    GTKtextPopup::set_error_log(fname);
+}
 

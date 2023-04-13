@@ -51,18 +51,19 @@
 #include "extif.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
-#include "nulldev.h"
+#include "ginterf/nulldev.h"
 #include "promptline.h"
-#include "techfile.h"
+#include "tech.h"
 #include "events.h"
 #include "select.h"
 #include "keymap.h"
+#include "keymacro.h"
 #include "errorlog.h"
 #include "ghost.h"
-#include "timer.h"
-#include "pathlist.h"
+#include "miscutil/timer.h"
+#include "miscutil/pathlist.h"
 #include "help/help_context.h"
-#include "idle_proc.h"
+#include "qtinterf/idle_proc.h"
 
 #include <QApplication>
 #include <QAction>
@@ -115,11 +116,14 @@ public:
     char *KeyBuf()                                          { return (0); }
     int KeyPos()                                            { return (0); }
 
+    // label
+    void SetLabelText(const char*)                                  { }
+
     // misc. pop-ups
     void PopUpGrid(GRobject, ShowMode)                              { }
-    void PopUpExpand(GRobject, ShowMode, int, int,
+    void PopUpExpand(GRobject, ShowMode,
         bool(*)(const char*, void*), void*, const char*, bool)      { }
-    void PopUpZoom(GRobject, ShowMode, int, int)                    { }
+    void PopUpZoom(GRobject, ShowMode)                              { }
 };
 
 // Main and subwindow class for null graphics.
@@ -130,6 +134,7 @@ struct null_bag : public DSPwbag, public NULLwbag,  NULLwinApp,
 };
 
 
+/* XXX
 // Command logic for GTKpkg::Point
 //
 struct PointState : public CmdState
@@ -169,6 +174,7 @@ PointState::~PointState()
     PointCmd = 0;
 }
 // End of PointState functions.
+*/
 
 
 
@@ -181,11 +187,11 @@ PointState::~PointState()
 GRwbag *
 QTpkg::NewGX()
 {
-    if (!Main)
+    if (!MainDev())
         return (0);
-    if (Main->ident == _devNULL_)
+    if (MainDev()->ident == _devNULL_)
         return (new null_bag);
-    if (Main->ident == _devQT_)
+    if (MainDev()->ident == _devQT_)
         return (new mainwin);
     return (0);
 }
@@ -214,10 +220,10 @@ messageOutput(QtMsgType type, const char *msg)
 int
 QTpkg::Initialize(GRwbag *wcp)
 {
-    if (!Main)
+    if (!MainDev())
         return (true);
-qInstallMsgHandler(messageOutput);
-    if (Main->ident == _devNULL_) {
+//XXXqInstallMsgHandler(messageOutput);
+    if (MainDev()->ident == _devNULL_) {
         static QTltab qt_lt(true, 0);
         static QTedit qt_hy(true, 0);
         LT()->SetLtab(&qt_lt);
@@ -236,10 +242,10 @@ qInstallMsgHandler(messageOutput);
         XM()->InitSignals(true);
         XM()->Rehash();
 
-        Kmap.Assert();
+//XXX        Kmap()->Assert();
         return (false);
     }
-    if (Main->ident != _devQT_)
+    if (MainDev()->ident != _devQT_)
         return (true);
 
     idle_control = new idle_proc();
@@ -263,14 +269,15 @@ qInstallMsgHandler(messageOutput);
 //    HLP()->context()->registerQuitHelpProc(quit_help);
 //    HLP()->context()->registerFormSubmitProc(form_submit_hdlr);
 
-    PL()->Edit()->hyInit();
+//    PL()->Edit()->hyInit();
+    qtEdit()->init();
 //    GRX->RegisterBigWindow(gr_x_window(w->shell->window));
 
     DSP()->ColorTab()->alloc();
     XM()->InitSignals(true);
     XM()->Rehash();
 
-    Kmap.Assert();
+//XXX    Kmap()->Assert();
     Gst()->SetGhost(GFnone);
     if (!mainBag())
         // Halt called
@@ -293,7 +300,7 @@ QTpkg::ReinitNoGraphics()
 void
 QTpkg::Halt()
 {
-    if (!Main || Main->ident != _devGTK_)
+    if (!MainDev() || MainDev()->ident != _devGTK_)
         return;
 //    GRX->RegisterBigWindow(0);
     EV()->InitCallback();
@@ -357,7 +364,7 @@ QTpkg::Iconify(int)
 bool
 QTpkg::SubwinInit(int wnum)
 {
-    if (!Main || Main->ident != _devQT_)
+    if (!MainDev() || MainDev()->ident != _devQT_)
         return (false);
     if (!mainBag())
         return (false);
@@ -423,7 +430,7 @@ QTpkg::SubwinInit(int wnum)
 void
 QTpkg::SubwinDestroy(int wnum)
 {
-    if (!Main || Main->ident != _devQT_)
+    if (!MainDev() || MainDev()->ident != _devQT_)
         return;
     WindowDesc *wdesc = DSP()->Window(wnum);
     if (!wdesc)
@@ -468,12 +475,12 @@ wait_cursor(bool waiting)
 bool
 QTpkg::SetWorking(bool busy)
 {
-    if (!Main || Main->ident != _devQT_)
+    if (!MainDev() || MainDev()->ident != _devQT_)
         return (false);
     bool ready = true;
     if (busy) {
         if (!app_busy) {
-            DSP()->SetInterrupt(false);
+            DSP()->SetInterrupt(DSPinterNone);
             if (!app_override_busy)
                 wait_cursor(true);
         }
@@ -494,7 +501,7 @@ QTpkg::SetWorking(bool busy)
 void
 QTpkg::SetOverrideBusy(bool ovr)
 {
-    if (!Main || Main->ident != _devQT_)
+    if (!MainDev() || MainDev()->ident != _devQT_)
         return;
     if (ovr) {
         if (app_busy)
@@ -543,11 +550,13 @@ QTpkg::CloseGraphicsConnection()
 // Write in buf the display string, making sure that it contains the
 // host name.
 //
+/*XXX
 bool
 QTpkg::GetDisplayString(const char*, char*)
 {
     return (false);
 }
+*/
 
 
 // Check if host which has data in hent has screen access to the local
@@ -577,7 +586,7 @@ QTpkg::RemoveIdleProc(int id)
 int
 QTpkg::RegisterTimeoutProc(int ms, int(*proc)(void*), void *arg)
 {
-    if (!Main || Main->ident != _devQT_)
+    if (!MainDev() || MainDev()->ident != _devQT_)
          return (0);
     return (GRX->AddTimer(ms, proc, arg));
 }
@@ -586,7 +595,7 @@ QTpkg::RegisterTimeoutProc(int ms, int(*proc)(void*), void *arg)
 bool
 QTpkg::RemoveTimeoutProc(int id)
 {
-    if (!Main || Main->ident != _devQT_)
+    if (!MainDev() || MainDev()->ident != _devQT_)
          return (false);
     GRX->RemoveTimer(id);
     return (true);
@@ -605,10 +614,12 @@ QTpkg::StartTimer(int, bool*)
 // Set the application fonts.  This should work for either Pango
 // or XFD font names.
 //
+/*XXX
 void
 QTpkg::SetFont(const char*, int)
 {
 }
+*/
 
 
 // Return the application font names.
@@ -633,11 +644,13 @@ QTpkg::GetFontFmt()
 // press (returns true) or an escape event (returns false).  This is used
 // in scripts as a wait loop for placing objects
 //
+/*XXX
 PTretType
 QTpkg::PointTo()
 {
     return (PTok);
 }
+*/
 // End of QTpkg functions
 
 
@@ -995,7 +1008,7 @@ subwin_d::PopUpGrid(GRobject, ShowMode)
 
 
 void
-subwin_d::PopUpExpand(GRobject caller, ShowMode mode, int, int,
+subwin_d::PopUpExpand(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, void*),
     void *arg, const char *string, bool nopeek)
 {
@@ -1020,7 +1033,7 @@ subwin_d::PopUpExpand(GRobject caller, ShowMode mode, int, int,
 
 
 void
-subwin_d::PopUpZoom(GRobject caller, ShowMode mode, int xx, int yy)
+subwin_d::PopUpZoom(GRobject caller, ShowMode mode)
 {
 /*
     if (!GRX || !mainBag())
@@ -1076,7 +1089,7 @@ subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
     // The X keysyms 0x20 - 0x7e match the ascii character
     int code = 0;
     if (up) {
-        for (keymap *k = Kmap.keymap_up(); k->keyval; k++) {
+        for (keymap *k = Kmap()->KeymapUp(); k->keyval; k++) {
             if (k->keyval == keyval) {
                 code = k->code;
                 break;
@@ -1088,7 +1101,7 @@ subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
     }
 
     int subcode = 0;
-    for (keymap *k = Kmap.keymap_down(); k->keyval; k++) {
+    for (keymap *k = Kmap()->KeymapDown(); k->keyval; k++) {
         if (k->keyval == keyval) {
             code = k->code;
             subcode = k->subcode;
@@ -1099,7 +1112,7 @@ subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
     if (code == FUNC_KEY) {
         char tbuf[CBUFMAX + 1];
         memset(tbuf, 0, sizeof(tbuf));
-        char *fstr = Tech()->GetFkey(subcode);
+        char *fstr = Tech()->GetFkey(subcode, 0);
         if (fstr)
             strncpy(tbuf, fstr, CBUFMAX);
         if (EV()->KeypressCallback(wdesc, code, tbuf, state))
@@ -1112,7 +1125,7 @@ subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
     if (code == 0 && keyval >= 0x20)
         code = keyval;
 
-    for (keyaction *k = Kmap.action_map_pre(); k->code; k++) {
+    for (keyaction *k = Kmap()->ActionMapPre(); k->code; k++) {
         if (k->code == code &&
                 (!k->state || k->state == (state & MODMASK))) {
             if (EV()->KeyActions(wdesc, k->action, &code))
@@ -1131,7 +1144,7 @@ subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
     if (state & GR_ALT_MASK)
         return (false);
 
-    for (keyaction *k = Kmap.action_map_post(); k->code; k++) {
+    for (keyaction *k = Kmap()->ActionMapPost(); k->code; k++) {
        if (k->code == code &&
                 (!k->state || k->state == (state & MODMASK))) {
             if (EV()->KeyActions(wdesc, k->action, &code))
@@ -1170,7 +1183,7 @@ subwin_d::button_down_slot(QMouseEvent *ev)
     else if (ev->button() == Qt::RightButton)
         button = 3;
 
-    button = Kmap.button_map(button);
+    button = Kmap()->ButtonMap(button);
 /*
     if (!GTK_WIDGET_SENSITIVE(GTKmenuPtr->mainMenu) && button == 1)
         // menu is insensitive, so ignore press
@@ -1211,7 +1224,7 @@ subwin_d::button_down_slot(QMouseEvent *ev)
             if (XM()->IsDoingHelp())
                 PopUpHelp("button4");
             else
-                EV()->Button4Callback(wdesc, ev->x(), ev->y(),
+                EV()->ButtonNopCallback(wdesc, ev->x(), ev->y(),
                     mod_state(state));
         }
         else if (wdesc)
@@ -1236,7 +1249,7 @@ subwin_d::button_down_slot(QMouseEvent *ev)
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button4");
         else
-            EV()->Button4Callback(wdesc, ev->x(), ev->y(), mod_state(state));
+            EV()->ButtonNopCallback(wdesc, ev->x(), ev->y(), mod_state(state));
         break;
     }
     if (showing_ghost)
@@ -1261,7 +1274,7 @@ subwin_d::button_up_slot(QMouseEvent *ev)
     else if (ev->button() == Qt::RightButton)
         button = 3;
 
-    button = Kmap.button_map(button);
+    button = Kmap()->ButtonMap(button);
 /*
     if (!GTK_WIDGET_SENSITIVE(GTKmenuPtr->mainMenu) && button == 1)
         // menu is insensitive, so ignore release
@@ -1296,7 +1309,7 @@ subwin_d::button_up_slot(QMouseEvent *ev)
     case 1:
 //        if (grabstate.check_simb4(false)) {
         if (0) {
-            EV()->Button4ReleaseCallback((in ? wdesc : 0),
+            EV()->ButtonNopReleaseCallback((in ? wdesc : 0),
                 ev->x(), ev->y(), mod_state(state));
         }
         else {
@@ -1313,7 +1326,7 @@ subwin_d::button_up_slot(QMouseEvent *ev)
             ev->x(), ev->y(), mod_state(state));
         break;
     default:
-        EV()->Button4ReleaseCallback((in ? wdesc : 0),
+        EV()->ButtonNopReleaseCallback((in ? wdesc : 0),
             ev->x(), ev->y(), mod_state(state));
         break;
     }
@@ -1335,13 +1348,13 @@ subwin_d::key_down_slot(QKeyEvent *ev)
     if (message)
         message->popdown();
 
-    const char *string = ev->text().toAscii().constData();
+    const char *string = ev->text().toLatin1().constData();
     int kpos = keys_pressed->key_pos();
     if (!is_modifier_key(ev->key()) && kpos &&
-            keys_pressed->key(kpos - 1) == Kmap.suppress_char)
+            keys_pressed->key(kpos - 1) == Kmap()->SuppressChar())
         keys_pressed->bsp_keys();
 /*
-    else if (Kmap.MacroExpand(kev->keyval, kev->state, false))
+    else if (Kmap()->MacroExpand(kev->keyval, kev->state, false))
         return (true);
 
     if (ev->key() == Qt::Key_Shift || ev->key() == Qt::Key_Control) {
@@ -1368,10 +1381,10 @@ subwin_d::key_up_slot(QKeyEvent *ev)
     }
     if (GApp->AppNotMapped)
         return( true);
-    if (Kmap.MacroExpand(kev->keyval, kev->state, true))
+    if (Kmap()->MacroExpand(kev->keyval, kev->state, true))
         return (true);
 */
-    const char *string = ev->text().toAscii().constData();
+    const char *string = ev->text().toLatin1().constData();
     if (keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
             true))
         ev->accept();
@@ -1386,7 +1399,7 @@ subwin_d::motion_slot(QMouseEvent *ev)
 {
     WindowDesc *wdesc = DSP()->Window(win_number);
     if (wdesc) {
-        EV()->MotionCallback(wdesc);
+        EV()->MotionCallback(wdesc, mod_state(ev->modifiers()));
         WindowDesc *worig = EV()->ZoomWin();
         if (!worig)
             worig = DSP()->Windesc(EV()->Cursor().get_window());
@@ -1460,7 +1473,8 @@ subwin_d::enter_slot(QEvent *ev)
     }
     */
 
-    EV()->MotionCallback(wdesc);
+//XXX    EV()->MotionCallback(wdesc, mod_state(ev->modifiers()));
+    EV()->MotionCallback(wdesc, mod_state(0));
     ev->setAccepted(true);
 }
 
@@ -1474,7 +1488,8 @@ subwin_d::leave_slot(QEvent *ev)
     WindowDesc *wdesc = DSP()->Window(win_number);
     if (!wdesc)
         return;
-    EV()->MotionCallback(wdesc);
+//XXX    EV()->MotionCallback(wdesc, mod_state(ev->modifiers()));
+    EV()->MotionCallback(wdesc, mod_state(0));
     UndrawGhost();
     xbag->firstghost = true;
     ev->setAccepted(true);

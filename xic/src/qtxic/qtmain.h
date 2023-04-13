@@ -59,7 +59,7 @@ class param_w;
 class layertab_w;
 class keys_w;
 class expand_d;
-struct idle_proc;
+class idle_proc;
 struct sKeyEvent;
 
 class QMenu;
@@ -103,16 +103,17 @@ public:
     bool IsDualPlane();
     bool IsTrueColor();
     void CloseGraphicsConnection();
-    bool GetDisplayString(const char*, char*);
+    const char *GetDisplayString();
     bool CheckScreenAccess(hostent*, const char*, const char*);
     int RegisterIdleProc(int(*)(void*), void*);
     bool RemoveIdleProc(int);
     int RegisterTimeoutProc(int, int(*)(void*), void*);
     bool RemoveTimeoutProc(int);
     int StartTimer(int, bool*);
-    void SetFont(const char*, int);
+    void SetFont(const char*, int, FNT_FMT = FNT_FMT_ANY);
     const char *GetFont(int);
-    PTretType PointTo();
+    FNT_FMT GetFontFmt();
+    bool UsingX11();
     // end of overrides
 
 /*
@@ -184,11 +185,14 @@ public:
     char *KeyBuf();
     int KeyPos();
 
+    // label
+    void SetLabelText(const char*);
+
     // misc pop-ups
     void PopUpGrid(GRobject, ShowMode);
-    void PopUpExpand(GRobject, ShowMode, int, int,
+    void PopUpExpand(GRobject, ShowMode,
         bool(*)(const char*, void*), void*, const char*, bool);
-    void PopUpZoom(GRobject, ShowMode, int, int);
+    void PopUpZoom(GRobject, ShowMode);
     //
     // End of cAppWinFuncs interface
 
@@ -281,7 +285,7 @@ char_width()
     QFont *f;
     if (FC.getFont(&f, FNT_FIXED)) {
         QFontMetrics fm(*f);
-        return (fm.width(QString("X")));
+        return (fm.horizontalAdvance(QString("X")));
     }
     return (8);
 }
@@ -293,7 +297,7 @@ any_string_width(QWidget*, const char *str)
     QFont *f;
     if (FC.getFont(&f, FNT_FIXED)) {
         QFontMetrics fm(*f);
-        return (fm.width(QString(str)));
+        return (fm.horizontalAdvance(QString(str)));
     }
     return (8*strlen(str));
 }

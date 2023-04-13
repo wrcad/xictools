@@ -176,7 +176,7 @@ namespace {
                 while (*t && !isspace(*t) && *t != '(')
                     *s++ = *t++;
                 *s++ = '(';
-                sprintf(s, "%d)", ac);
+                snprintf(s, 8,  "%d)", ac);
                 delete [] pname;
                 *namep = pn;
                 return (true);
@@ -798,8 +798,9 @@ sParamTab::evaluate(char **str) const
     int tc = 0;
     if (!pn || (tc = pn->checktree()) == 2) {
         // Major parse error or empty expression.
-        char *er = new char[strlen(msg) + strlen(*str) + 10];
-        sprintf(er, msg, *str);
+        int len = strlen(msg) + strlen(*str) + 10;
+        char *er = new char[len];
+        snprintf(er, len, msg, *str);
         delete [] errString;
         errString = er;
         sDataVec::set_temporary(false);
@@ -846,8 +847,9 @@ sParamTab::evaluate(char **str) const
     sDataVec *dv = Sp.Evaluate(pn);
     delete pn;
     if (!dv) {
-        char *er = new char[strlen(msg) + strlen(*str) + 10];
-        sprintf(er, msg, *str);
+        int len = strlen(msg) + strlen(*str) + 10;
+        char *er = new char[len];
+        snprintf(er, len, msg, *str);
         delete [] errString;
         errString = er;
         sDataVec::set_temporary(false);
@@ -863,8 +865,9 @@ sParamTab::evaluate(char **str) const
     const char *eptr = expr;
     double *dp = SCD()->evalExpr(&eptr);
     if (!dp) {
-        char *er = new char[strlen(msg) + strlen(*str) + 10];
-        sprintf(er, msg, *str);
+        int len = strlen(msg) + strlen(*str) + 10;
+        char *er = new char[len];
+        snprintf(er, len, msg, *str);
         delete [] errString;
         errString = er;
         delete [] expr;

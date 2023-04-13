@@ -121,15 +121,16 @@ miscutil::net_if_list()
                 (unsigned char*)ip->Address.lpSockaddr->sa_data + 2;
             if (ipa[0] || ipa[1] || ipa[2] || ipa[3]) {
                 ipaddr = new char[24];
-                sprintf(ipaddr, "%d.%d.%d.%d", ipa[0], ipa[1], ipa[2], ipa[3]);
+                snprintf(ipaddr, 24, "%d.%d.%d.%d", ipa[0], ipa[1],
+                    ipa[2], ipa[3]);
             }
         }
         char *hwaddr = 0;
         unsigned char *h = (unsigned char*)a->PhysicalAddress;
         if (h[0] || h[1] || h[2] || h[3] || h[4] || h[5]) {
             hwaddr = new char[24];
-            sprintf(hwaddr, "%02x:%02x:%02x:%02x:%02x:%02x", h[0], h[1], h[2],
-                h[3], h[4], h[5]);
+            snprintf(hwaddr, 24, "%02x:%02x:%02x:%02x:%02x:%02x",
+                h[0], h[1], h[2], h[3], h[4], h[5]);
         }
 
         if (ipaddr && hwaddr) {
@@ -212,7 +213,7 @@ miscutil::net_if_list()
                     &((sockaddr_in*)&req->ifr_addr)->sin_addr;
                 if (a[0] || a[1] || a[2] || a[3]) {
                     ipaddr = new char[24];
-                    sprintf(ipaddr, "%d.%d.%d.%d", a[0], a[1], a[2], a[3]);
+                    snprintf(ipaddr, 24, "%d.%d.%d.%d", a[0], a[1], a[2], a[3]);
                     for (ifc_t *ix = i0; ix; ix = ix->next()) {
                         if (ix->ip() && !strcmp(ix->ip(), ipaddr)) {
                             // Already have it.
@@ -230,7 +231,7 @@ miscutil::net_if_list()
                 unsigned char *a = (unsigned char*)req->ifr_hwaddr.sa_data;
                 if (a[0] || a[1] || a[2] || a[3] || a[4] || a[5]) {
                     hwaddr = new char[24];
-                    sprintf(hwaddr, "%02x:%02x:%02x:%02x:%02x:%02x",
+                    snprintf(hwaddr, 24, "%02x:%02x:%02x:%02x:%02x:%02x",
                         a[0], a[1], a[2], a[3], a[4], a[5]);
                     for (ifc_t *ix = i0; ix; ix = ix->next()) {
                         if (ix->hw() && !strcmp(ix->hw(), hwaddr)) {
@@ -282,7 +283,7 @@ miscutil::net_if_list()
                     &((sockaddr_in*)&ifc.ifc_req[i].ifr_addr)->sin_addr;
                 if (a[0] || a[1] || a[2] || a[3]) {
                     ipaddr = new char[24];
-                    sprintf(ipaddr, "%d.%d.%d.%d", a[0], a[1], a[2], a[3]);
+                    snprintf(ipaddr, 24, "%d.%d.%d.%d", a[0], a[1], a[2], a[3]);
                     for (ifc_t *ix = i0; ix; ix = ix->next()) {
                         if (ix->ip() && !strcmp(ix->ip(), ipaddr)) {
                             // Already have it.
@@ -301,7 +302,7 @@ miscutil::net_if_list()
                     (unsigned char*)ifc.ifc_req[i].ifr_hwaddr.sa_data;
                 if (a[0] || a[1] || a[2] || a[3] || a[4] || a[5]) {
                     hwaddr = new char[24];
-                    sprintf(hwaddr, "%02x:%02x:%02x:%02x:%02x:%02x",
+                    snprintf(hwaddr, 24, "%02x:%02x:%02x:%02x:%02x:%02x",
                         a[0], a[1], a[2], a[3], a[4], a[5]);
                     for (ifc_t *ix = i0; ix; ix = ix->next()) {
                         if (ix->hw() && !strcmp(ix->hw(), hwaddr)) {
@@ -365,8 +366,8 @@ miscutil::net_if_list()
         if (sdl->sdl_family == AF_LINK && sdl->sdl_alen == 6) {
             hwaddr = new char[24];
             unsigned char *a = (unsigned char*)sdl->sdl_data + sdl->sdl_nlen;
-            sprintf(hwaddr, "%02x:%02x:%02x:%02x:%02x:%02x", a[0], a[1], a[2],
-                a[3], a[4], a[5]);
+            snprintf(hwaddr, 24, "%02x:%02x:%02x:%02x:%02x:%02x",
+                a[0], a[1], a[2], a[3], a[4], a[5]);
         }
 
         // Get IP address;
@@ -375,7 +376,7 @@ miscutil::net_if_list()
         if (sin->sin_family == AF_INET) {
             ipaddr = new char[24];
             unsigned char *a = (unsigned char*) &sin->sin_addr;
-            sprintf(ipaddr, "%d.%d.%d.%d", a[0], a[1], a[2], a[3]);
+            snprintf(ipaddr, 24, "%d.%d.%d.%d", a[0], a[1], a[2], a[3]);
         }
 
         // Ignore the looback interface.
@@ -693,7 +694,7 @@ miscutil::new_release(const char *progname, const char *release)
 
     char *filerel = 0;
     char buf[256];
-    sprintf(buf, "%s/%s%s", dir, progname, RELSFX);
+    snprintf(buf, sizeof(buf), "%s/%s%s", dir, progname, RELSFX);
 
     FILE *fp = fopen(buf, "r");
     if (fp) {
@@ -723,7 +724,7 @@ miscutil::new_release(const char *progname, const char *release)
 #endif
 
     // Create or update the file.
-    sprintf(buf, "%s/%s%s", dir, progname, RELSFX);
+    snprintf(buf, sizeof(buf), "%s/%s%s", dir, progname, RELSFX);
     fp = fopen(buf, "w");
     if (fp) {
         fwrite(rel, strlen(rel), 1, fp);
@@ -803,7 +804,7 @@ miscutil::dump_backtrace(const char *program, const char *header,
 
     // Write the script that runs gdb.
     if (ok) {
-        sprintf(fnbuf, "%s/%s", logdir, GDB_XFILE);
+        snprintf(fnbuf, sizeof(fnbuf), "%s/%s", logdir, GDB_XFILE);
         fd = open(fnbuf, O_CREAT | O_WRONLY, 0644);
         if (fd < 0)
             ok = false;
@@ -814,37 +815,35 @@ miscutil::dump_backtrace(const char *program, const char *header,
         ok = write_text(fd, "@echo off\n");
 #endif
     if (ok) {
-        sprintf(buf, "echo Starting gdb %s %d\n", program, pid);
+        snprintf(buf, sizeof(buf), "echo Starting gdb %s %d\n", program, pid);
         ok = write_text(fd, buf);
     }
     if (ok) {
 #ifdef WIN32
         const char *gdb = "c:\\usr\\local\\gtk2-bundle\\bin\\gdb";
-        sprintf(buf, "%s -x %s/%s -q %s %d > %s\n", gdb,
+        snprintf(buf, sizeof(buf), "%s -x %s/%s -q %s %d > %s\n", gdb,
             logdir, GDB_SFILE, program, pid, GDB_OFILE);
 #else
-        sprintf(buf, "{ gdb -x %s/%s -q %s %d; } > %s 2>&1\n",
+        snprintf(buf, sizeof(buf), "{ gdb -x %s/%s -q %s %d; } > %s 2>&1\n",
             logdir, GDB_SFILE, program, pid, GDB_OFILE);
 #endif
         ok = write_text(fd, buf);
     }
     if (ok && header && *header) {
-        sprintf(buf, "echo \"%s\" >> %s\n", header, GDB_OFILE);
+        snprintf(buf, sizeof(buf), "echo \"%s\" >> %s\n", header, GDB_OFILE);
         ok = write_text(fd, buf);
     }
     if (ok) {
-        sprintf(buf, "echo \"%s  pid = %d\" >> %s\n", dateString(), pid,
-            GDB_OFILE);
+        snprintf(buf, sizeof(buf), "echo \"%s  pid = %d\" >> %s\n",
+            dateString(), pid, GDB_OFILE);
         ok = write_text(fd, buf);
     }
     if (ok) {
 #ifdef WIN32
-        sprintf(buf,
-            "echo Wrote '%s' file.\n"
+        snprintf(buf, sizeof(buf), "echo Wrote '%s' file.\n"
             "sleep 2\n", GDB_OFILE);
 #else
-        sprintf(buf,
-            "echo Wrote '%s' file.\n"
+        snprintf(buf, sizeof(buf), "echo Wrote '%s' file.\n"
             "kill -CONT %d\n"
             "sleep 2\n", GDB_OFILE, pid);
 #endif
@@ -855,9 +854,9 @@ miscutil::dump_backtrace(const char *program, const char *header,
 
     if (ok) {
 #ifdef WIN32
-        sprintf(buf, "cmd /c %s", fnbuf);
+        snprintf(buf, sizeof(buf), "cmd /c %s", fnbuf);
 #else
-        sprintf(buf, "/bin/sh %s", fnbuf);
+        snprintf(buf, sizeof(buf), "/bin/sh %s", fnbuf);
 #endif
         system(buf);
         here = false;
@@ -874,7 +873,7 @@ miscutil::dump_backtrace(const char *program, const char *header,
         "Also include a brief description of the operation "
         "that caused\nthe fault, and any log files.\n");
     fprintf(stderr, "Type `quit' to exit gdb.\n");
-    sprintf(buf, "gdb -q %s %d", program, pid);
+    snprintf(buf, sizeof(buf), "gdb -q %s %d", program, pid);
     system(buf);
 
 #else
@@ -906,11 +905,11 @@ miscutil::dump_backtrace(const char *program, const char *header,
     write_text(fd, s);
     write_text(fd, "  ");
     char buf[32];
-    sprintf(buf, "Pid = %d", pid);
+    snprintf(buf, sizeof(buf), "Pid = %d", pid);
     write_text(fd, buf);
     if (death_addr) {
         write_text(fd, "  ");
-        sprintf(buf, "DeathAddr = %p", death_addr);
+        snprintf(buf, sizeof(buf), "DeathAddr = %p", death_addr);
         write_text(fd, buf);
     }
 #ifdef WIN32

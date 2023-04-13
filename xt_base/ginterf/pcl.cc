@@ -207,8 +207,9 @@ PCLparams::dump()
         fprintf(fp,
             "\033E\033&l1O\033&l0E\033*t%dR\033*p%dX\033*p%dY\033*r1A",
             devdata()->resol, xoff + sz, yoff);
-        buf = new char [(dev->height - 1)/8 + 9];
-        sprintf(buf, "\033*b%dW", (dev->height - 1)/8 + 1);
+        int len = (dev->height - 1)/8 + 9;
+        buf = new char [len];
+        snprintf(buf, len, "\033*b%dW", (dev->height - 1)/8 + 1);
     }
     else {
         xoff = (int)(devdata()->xoff*300) - 75;
@@ -217,7 +218,7 @@ PCLparams::dump()
             "\033E\033&l0E\033*t%dR\033*p%dX\033*p%dY\033*r1A",
             devdata()->resol, xoff, yoff);
         buf = new char [bytpline + 8];
-        sprintf(buf, "\033*b%dW", bytpline);
+        snprintf(buf, bytpline + 8, "\033*b%dW", bytpline);
     }
 
     int len = strlen(buf);

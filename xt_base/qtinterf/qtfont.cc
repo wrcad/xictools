@@ -145,8 +145,9 @@ QTfont::getFamilyName(int fnum)
         int sz;
         parse_freeform_font_string(fonts[fnum].name, &family, 0, &sz, 0);
         if (family) {
-            char *str = new char[strlen(family) + 8];
-            sprintf(str, "%s %d", family, sz);
+            int len = strlen(family) + 8;
+            char *str = new char[len];
+            snprintf(str, len, "%s %d", family, sz);
             delete [] family;
             return (str);
         }
@@ -621,7 +622,7 @@ QTfontPopup::action_slot()
         delete [] sty;
     }
     *t++ = ' ';
-    sprintf(t, "%d", sz);
+    snprintf(t, 8, "%d", sz);
     int fnum = menu->currentIndex() + 1;
     FC.setName(spec, fnum);
     if (p_callback)

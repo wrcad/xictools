@@ -589,7 +589,7 @@ namespace {
     void
     post_fc(const char*)
     {
-        FC()->PopUpExtIf(0, MODE_UPD);
+        FCif()->PopUpExtIf(0, MODE_UPD);
     }
 
     bool
@@ -699,7 +699,7 @@ namespace {
     void
     post_fh(const char*)
     {
-        FH()->PopUpExtIf(0, MODE_UPD);
+        FHif()->PopUpExtIf(0, MODE_UPD);
     }
 
     bool

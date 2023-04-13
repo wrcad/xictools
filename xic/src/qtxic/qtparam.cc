@@ -46,6 +46,7 @@
 #include "editif.h"
 #include "select.h"
 #include "events.h"
+#include "pushpop.h"
 
 #include <QHBoxLayout>
 
@@ -89,8 +90,8 @@ param_w::print()
 
     int xx = 2;
     int yy = fhei - 4;
-    int selectno;
-    Selections.countQueue(&selectno, 0);
+    unsigned int selectno;
+    Selections.countQueue(CurCell(), &selectno, 0);
     char textbuf[256];
 
     const char *str;
@@ -110,7 +111,7 @@ param_w::print()
         Text(str, xx, yy, 0);
         xx += any_string_width(viewport->widget(), str) + spw;
         SetColor(c2);
-        str = (DSP()->CurSymname() ? NameString(DSP()->CurSymname()) : "none");
+        str = (DSP()->CurCellName() ? Tstring(DSP()->CurCellName()) : "none");
         Text(str, xx, yy, 0);
         xx += any_string_width(viewport->widget(), str) + 2*spw;
 
@@ -136,9 +137,9 @@ param_w::print()
     Text(str, xx, yy, 0);
     xx += any_string_width(viewport->widget(), str) + spw;
     SetColor(c2);
-    Attributes *a = DSP()->MainWdesc()->Attrib();
+    DSPattrib *a = DSP()->MainWdesc()->Attrib();
     sprintf(textbuf, "%g",
-        a ? MICRONS(a->grid(DSP()->CurMode())->resol()) : 1.0);
+        a ? MICRONS(a->grid(DSP()->CurMode())->spacing(DSP()->CurMode())) : 1.0);
     str = textbuf;
     Text(str, xx, yy, 0);
     xx += any_string_width(viewport->widget(), str) + 2*spw;
@@ -165,16 +166,16 @@ param_w::print()
         str = textbuf;
         Text(str, xx, yy, 0);
         xx += any_string_width(viewport->widget(), str) + spw;
-        CDc *cd = Selections.firstCall();
+        CDc *cd = (CDc*)Selections.firstObject(CurCell(), "c");
         if (cd) {
-            sprintf(textbuf, "(%s)", NameString(cd->cellname()));
+            sprintf(textbuf, "(%s)", Tstring(cd->cellname()));
             str = textbuf;
             Text(str, xx, yy, 0);
             xx += any_string_width(viewport->widget(), str) + spw;
         }
         xx += spw;
     }
-    int clev = EditIf()->cxLevel();
+    int clev = PP()->Level();
     if (clev) {
         SetColor(c1);
         str = "Push:";
@@ -188,14 +189,14 @@ param_w::print()
     }
 
     textbuf[0] = 0;
-    if (GEO()->curTx()->angle != 0)
-        sprintf(textbuf + strlen(textbuf), "R%d", GEO()->curTx()->angle);
-    if (GEO()->curTx()->reflectY)
+    if (GEO()->curTx()->angle() != 0)
+        sprintf(textbuf + strlen(textbuf), "R%d", GEO()->curTx()->angle());
+    if (GEO()->curTx()->reflectY())
         strcat(textbuf, "MY");
-    if (GEO()->curTx()->reflectX)
+    if (GEO()->curTx()->reflectX())
         strcat(textbuf, "MX");
-    if (GEO()->curTx()->magn != 1.0) {
-        sprintf(textbuf + strlen(textbuf), "M%.8f", GEO()->curTx()->magn);
+    if (GEO()->curTx()->magn() != 1.0) {
+        sprintf(textbuf + strlen(textbuf), "M%.8f", GEO()->curTx()->magn());
         char *t = textbuf + strlen(textbuf) - 1;
         int i = 0;
         while (*t == '0' && i < 7) {
@@ -214,14 +215,14 @@ param_w::print()
         xx += any_string_width(viewport->widget(), str) + 2*spw;
     }
 
-    str = EV()->CurCmd() ? EV()->CurCmd()->StateName : 0;
+    str = EV()->CurCmd() ? EV()->CurCmd()->Name() : 0;
     if (str) {
         SetColor(c1);
         str = "Mode:";
         Text(str, xx, yy, 0);
         xx += any_string_width(viewport->widget(), str) + spw;
         SetColor(c2);
-        str = EV()->CurCmd()->StateName;
+        str = EV()->CurCmd()->Name();
         Text(str, xx, yy, 0);
         xx += any_string_width(viewport->widget(), str) + 2*spw;
     }

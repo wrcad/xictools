@@ -260,7 +260,7 @@ private:
 };
 
 
-inline class cFC *FC();
+inline class cFC *FCif();
 
 // New interface to the FasterCap capacitance extraction program from
 // FastFieldSolvers.com.
@@ -277,7 +277,7 @@ class cFC : public fxGif
     static void on_null_ptr();
 
 public:
-    friend inline cFC *FC() { return (cFC::ptr()); }
+    friend inline cFC *FCif() { return (cFC::ptr()); }
 
     // ext_fc.cc
     cFC();

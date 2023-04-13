@@ -1222,7 +1222,8 @@ QTprintPopup::print_slot()
             }
             FILE *fp = fopen(filename, "w");
             if (!fp) {
-                sprintf(buf, "Error: can't open file %s", filename);
+                snprintf(buf, sizeof(buf), "Error: can't open file %s",
+                    filename);
                 pd_owner->PopUpMessage(buf, true);
                 delete [] filename;
                 if (pd_textfmt != HtmlText)
@@ -1295,8 +1296,8 @@ QTprintPopup::print_slot()
     if (GRpkgIf()->HCof(pd_fmt)->limits.resols)
         sscanf(GRpkgIf()->HCof(pd_fmt)->limits.resols[pd_resol], "%d",
             &resol);
-    sprintf(buf, GRpkgIf()->HCof(pd_fmt)->fmtstring, filename, resol,
-        w, h, xx, yy);
+    snprintf(buf, sizeof(buf), GRpkgIf()->HCof(pd_fmt)->fmtstring, filename,
+        resol, w, h, xx, yy);
     if (pd_orient & HClandscape)
         strcat(buf, " -l");
     char *cmdstr = lstring::copy(buf);
@@ -1309,7 +1310,7 @@ QTprintPopup::print_slot()
     if (err == HCSinhc)
         pd_owner->PopUpMessage("Internal error - aborted", true);
     else if (err == HCSnotfnd) {
-        sprintf(buf, "No hardcopy driver named %s available",
+        snprintf(buf, sizeof(buf), "No hardcopy driver named %s available",
             GRpkgIf()->HCof(pd_fmt)->drname);
         pd_owner->PopUpMessage(buf, true);
     }
@@ -1329,7 +1330,8 @@ QTprintPopup::print_slot()
                 ot |= HClandscape;
             if ((*pd_cb->hcgo)(ot, pd_legend, 0)) {
                 if (GRpkgIf()->HCaborted()) {
-                    sprintf(buf, "Terminated: %s.", GRpkgIf()->HCabortMsg());
+                    snprintf(buf, sizeof(buf), "Terminated: %s.",
+                        GRpkgIf()->HCabortMsg());
                     pd_owner->PopUpMessage(buf, true);
                 }
                 else
@@ -1392,7 +1394,7 @@ QTprintPopup::process_error_slot(QProcess::ProcessError err)
         }
         
         char buf[256];
-        sprintf(buf, "Error reported: code=%d (%s)", err, msg);
+        snprintf(buf, sizeof(buf), "Error reported: code=%d (%s)", err, msg);
         progress->set_etc(buf);
     }
 }
@@ -1405,8 +1407,10 @@ QTprintPopup::process_finished_slot(int code)
         char buf[256];
         if (code == 0)
             strcpy(buf, "Job completed successfully.");
-        else
-            sprintf(buf, "Job completed with exit status %d.", code);
+        else {
+            snprintf(buf, sizeof(buf), "Job completed with exit status %d.",
+                code);
+        }
         progress->set_etc(buf);
         progress->finished();
     }

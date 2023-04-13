@@ -871,6 +871,13 @@ viewer_w::tk_draw_pixmap(int xw, int yw, htmPixmap *pmap,
 }
 
 
+void
+viewer_w::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
+    int x, int y, int w, int h)
+{
+    //XXX fixme
+}
+
 // Draw a solid or open rectangle, or pixmap tiles.
 //
 void

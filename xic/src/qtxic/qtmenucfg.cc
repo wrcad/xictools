@@ -121,7 +121,7 @@ qtMenuConfig _cfg_;
 // Private static error exit.
 //
 void
-qtMenuConfig::nullptr()
+qtMenuConfig::on_null_ptr()
 {
     fprintf(stderr,
         "Singleton class qtMenuCfg used before instantiated.\n");
@@ -157,18 +157,20 @@ qtMenuConfig::instantiateMainMenus()
         menubar->addMenu(file_menu);
 
         set(mbox->menu[fileMenu], "&File", 0);
-        set(mbox->menu[fileMenuOpen], "&Open", 0);
         set(mbox->menu[fileMenuFsel], "F&ile Select", "Alt+O");
+        set(mbox->menu[fileMenuOpen], "&Open", 0);
         set(mbox->menu[fileMenuSave], "&Save", "Alt+S");
         set(mbox->menu[fileMenuSaveAs], "Save &As", "Ctrl+S");
+        set(mbox->menu[fileMenuSaveAsDev], "Save As &Device", 0);
         set(mbox->menu[fileMenuHcopy], "&Print", "Alt+N");
         set(mbox->menu[fileMenuFiles], "&Files List", 0);
         set(mbox->menu[fileMenuHier], "&Hierarchy Digests", 0);
         set(mbox->menu[fileMenuGeom], "&Geometry Digests", 0);
         set(mbox->menu[fileMenuLibs], "&Libraries List", 0);
-        set(mbox->menu[fileMenuStabs], "S&ymbol Tables", 0);
-        set(mbox->menu[fileMenuCells], "&Cells List", 0);
-        set(mbox->menu[fileMenuTree], "Show &Tree", 0);
+        set(mbox->menu[fileMenuOAlib], "Open&Access Libs", 0);
+//        set(mbox->menu[fileMenuStabs], "S&ymbol Tables", 0);
+//        set(mbox->menu[fileMenuCells], "&Cells List", 0);
+//        set(mbox->menu[fileMenuTree], "Show &Tree", 0);
         set(mbox->menu[fileMenuExit], "&Quit", "Ctrl+Q");
 
         // First elt is a dummy containing the menubar item.
@@ -182,7 +184,7 @@ qtMenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData(ent - mbox->menu);
+            action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -210,16 +212,24 @@ qtMenuConfig::instantiateMainMenus()
         menubar->addMenu(edit_menu);
 
         set(mbox->menu[editMenu], "&Edit", 0);
-        set(mbox->menu[editMenu45s], "Constrain &45", 0);
-        set(mbox->menu[editMenuMerge], "MergeBoxes", 0);
-        set(mbox->menu[editMenuXform], "Current &Transform", "Alt+T");
-        set(mbox->menu[editMenuPlace], "P&lace", "Alt+L");
-        set(mbox->menu[editMenuPush], "&Push", 0);
-        set(mbox->menu[editMenuPop], "P&op", 0);
-        set(mbox->menu[editMenuFlatn], "&Flatten", 0);
+        set(mbox->menu[editMenuCedit], "&Enable Editing", 0);
+        set(mbox->menu[editMenuEdSet], "&Setup", 0);
+        set(mbox->menu[editMenuPcctl], "PCell C&ontrol", 0);
         set(mbox->menu[editMenuCrcel], "Cre&ate Cell", 0);
+        set(mbox->menu[editMenuCrvia], "Create &Via", 0);
+        set(mbox->menu[editMenuFlatn], "&Flatten", 0);
+        set(mbox->menu[editMenuJoin], "&Join/Split", 0);
+        set(mbox->menu[editMenuLexpr], "&Layer Expression", 0);
         set(mbox->menu[editMenuPrpty], "Propert&ies", "Alt+P");
-        set(mbox->menu[editMenuCprop], "Cell Properties", 0);
+        set(mbox->menu[editMenuCprop], "&Cell Properties", 0);
+
+//        set(mbox->menu[editMenu45s], "Constrain &45", 0);
+//        set(mbox->menu[editMenuMerge], "MergeBoxes", 0);
+//        set(mbox->menu[editMenuXform], "Current &Transform", "Alt+T");
+//        set(mbox->menu[editMenuPlace], "P&lace", "Alt+L");
+//        set(mbox->menu[editMenuPush], "&Push", 0);
+//        set(mbox->menu[editMenuPop], "P&op", 0);
+//        set(mbox->menu[editMenuCrcel], "Cre&ate Cell", 0);
 
         // First elt is a dummy containing the menubar item.
         mbox->menu[0].cmd.caller = edit_menu;
@@ -232,7 +242,7 @@ qtMenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData(ent - mbox->menu);
+            action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -260,6 +270,7 @@ qtMenuConfig::instantiateMainMenus()
         set(mbox->menu[modfMenuCopy], "&Copy", 0);
         set(mbox->menu[modfMenuStrch], "&Stretch", 0);
         set(mbox->menu[modfMenuChlyr], "Change La&yer", "Ctrl+L");
+        set(mbox->menu[modfMenuMClcg], "Set &Layer Chg Mode", 0);
 
         // First elt is a dummy containing the menubar item.
         mbox->menu[0].cmd.caller = modf_menu;
@@ -272,7 +283,7 @@ qtMenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData(ent - mbox->menu);
+            action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -315,7 +326,7 @@ qtMenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData(ent - mbox->menu);
+            action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -351,14 +362,18 @@ qtMenuConfig::instantiateMainMenus()
         set(mbox->menu[attrMenu], "&Attributes", 0);
         set(mbox->menu[attrMenuUpdat], "Save &Tech", 0);
         set(mbox->menu[attrMenuKeymp], "&Key Map", 0);
-        set(mbox->menu[attrMenuFreez], "Freeze &Display", 0);
+        set(mbox->menu[attrMenuMacro], "Define &Macro", 0);
+        set(mbox->menu[attrMenuMainWin], "Main &Window", 0);
         set(mbox->menu[attrMenuAttr], "Set &Attributes", 0);
-        set(mbox->menu[attrMenuCursr], "&Set Cursor", 0);
+        set(mbox->menu[attrMenuDots], "Connection &Dots", 0);
+//        set(mbox->menu[attrMenuFreez], "Freeze &Display", 0);
+//        set(mbox->menu[attrMenuCursr], "&Set Cursor", 0);
         set(mbox->menu[attrMenuFont], "Set F&ont", 0);
-        set(mbox->menu[attrMenuGrid], "Set &Grid", 0);
+//        set(mbox->menu[attrMenuGrid], "Set &Grid", 0);
         set(mbox->menu[attrMenuColor], "Set &Color", 0);
         set(mbox->menu[attrMenuFill], "Set &Fill", 0);
         set(mbox->menu[attrMenuEdlyr], "&Edit Layers", 0);
+        set(mbox->menu[attrMenuLpedt], "Edit Tech &Params", 0);
 
         // First elt is a dummy containing the menubar item.
         mbox->menu[0].cmd.caller = attr_menu;
@@ -371,7 +386,7 @@ qtMenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData(ent - mbox->menu);
+            action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -391,15 +406,16 @@ qtMenuConfig::instantiateMainMenus()
         menubar->addMenu(cvrt_menu);
 
         set(mbox->menu[cvrtMenu], "&Convert", 0);
-        set(mbox->menu[cvrtMenuWrprm], "Set &Export Params", 0);
-        set(mbox->menu[cvrtMenuExprt], "&Write Layout File", 0);
-        set(mbox->menu[cvrtMenuRdprm], "Set &Import Params", 0);
-        set(mbox->menu[cvrtMenuImprt], "&Read Layout File", 0);
-        set(mbox->menu[cvrtMenuConvt], "&Conversion", 0);
-        set(mbox->menu[cvrtMenuAssem], "&Assemble", 0);
+//        set(mbox->menu[cvrtMenuWrprm], "Set &Export Params", 0);
+        set(mbox->menu[cvrtMenuExprt], "&Export Cell Data", 0);
+//        set(mbox->menu[cvrtMenuRdprm], "Set &Import Params", 0);
+        set(mbox->menu[cvrtMenuImprt], "&Import Cell Data", 0);
+        set(mbox->menu[cvrtMenuConvt], "&Format Conversion", 0);
+        set(mbox->menu[cvrtMenuAssem], "&Assemble Layout", 0);
+        set(mbox->menu[cvrtMenuDiff], "&Cpmpare Layouts", 0);
         set(mbox->menu[cvrtMenuCut], "C&ut and Export", 0);
         set(mbox->menu[cvrtMenuTxted], "&Text Edito&r", 0);
-        set(mbox->menu[cvrtMenuAdgds], "Edit &Parameters", 0);
+//        set(mbox->menu[cvrtMenuAdgds], "Edit &Parameters", 0);
 
         // First elt is a dummy containing the menubar item.
         mbox->menu[0].cmd.caller = cvrt_menu;
@@ -412,7 +428,7 @@ qtMenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData(ent - mbox->menu);
+            action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -432,18 +448,21 @@ qtMenuConfig::instantiateMainMenus()
         menubar->addMenu(drc_menu);
 
         set(mbox->menu[drcMenu], "&DRC", 0);
-        set(mbox->menu[drcMenuClear], "&Clear Errors", "Alt+R");
-        set(mbox->menu[drcMenuLimit], "&Set Defaults", 0);
+        set(mbox->menu[drcMenuLimit], "&Setup", 0);
         set(mbox->menu[drcMenuSflag], "Set Skip &Flags", 0);
         set(mbox->menu[drcMenuIntr], "Enable &Interactive", "Alt+I");
         set(mbox->menu[drcMenuNopop], "&No Pop-up Errors", 0);
-        set(mbox->menu[drcMenuCheck], "Check In Fo&reground", 0);
-        set(mbox->menu[drcMenuBgchk], "Check In Bac&kground", 0);
+        set(mbox->menu[drcMenuCheck], "&Batch Check", 0);
+//        set(mbox->menu[drcMenuBgchk], "Check In Bac&kground", 0);
         set(mbox->menu[drcMenuPoint], "Check In Re&gion", 0);
-        set(mbox->menu[drcMenuErdmp], "&Dump Error File", 0);
-        set(mbox->menu[drcMenuNext], "Show &Errors", 0);
+        set(mbox->menu[drcMenuClear], "&Clear Errors", "Alt+R");
         set(mbox->menu[drcMenuQuery], "&Query Errors", "Alt+Q");
-        set(mbox->menu[drcMenuDimen], "Edit R&ules", 0);
+        set(mbox->menu[drcMenuErdmp], "&Dump Error File", 0);
+        set(mbox->menu[drcMenuErupd], "&Update Hilighting", 0);
+        set(mbox->menu[drcMenuNext], "Show &Errors", 0);
+        set(mbox->menu[drcMenuErlyr], "Create &Layer", 0);
+        set(mbox->menu[drcMenuDredt], "Edit R&ules", 0);
+//        set(mbox->menu[drcMenuDimen], "Edit R&ules", 0);
 
         // First elt is a dummy containing the menubar item.
         mbox->menu[0].cmd.caller = drc_menu;
@@ -456,7 +475,7 @@ qtMenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData(ent - mbox->menu);
+            action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -476,23 +495,29 @@ qtMenuConfig::instantiateMainMenus()
         menubar->addMenu(ext_menu);
 
         set(mbox->menu[extMenu], "E&xtract", 0);
-        set(mbox->menu[extMenuViext], "&View Extraction", 0);
-        set(mbox->menu[extMenuQpath], "&Quick Paths", 0);
-        set(mbox->menu[extMenuPaths], "Show &Paths", 0);
-        set(mbox->menu[extMenuGroup], "Show &Groups", 0);
-        set(mbox->menu[extMenuNodes], "Show &Nodes", 0);
-        set(mbox->menu[extMenuTshow], "Show &Terminals", 0);
-        set(mbox->menu[extMenuTedit], "&Edit Terminals", 0);
-        set(mbox->menu[extMenuTfind], "&Find Terminals", 0);
+        set(mbox->menu[extMenuExcfg], "Set&up", 0);
+        set(mbox->menu[extMenuSel], "&Net Selections", 0);
+        set(mbox->menu[extMenuDvsel], "&Device Selections", 0);
         set(mbox->menu[extMenuSourc], "&Source SPICE", 0);
         set(mbox->menu[extMenuExset], "Source P&hysical", 0);
         set(mbox->menu[extMenuPnet], "Dump Ph&ys Netlist", 0);
         set(mbox->menu[extMenuEnet], "Dump E&lec Netlist", 0);
         set(mbox->menu[extMenuLvs], "Dump L&VS", 0);
-        set(mbox->menu[extMenuCmpar], "Compare &Devices", 0);
-        set(mbox->menu[extMenuCmput], "Compute Para&ms", 0);
-        set(mbox->menu[extMenuExrlc], "Extract &RLC", 0);
-        set(mbox->menu[extMenuAdelp], "Edit E&xtraction", 0);
+        set(mbox->menu[extMenuExC], "Extract &C", 0);
+        set(mbox->menu[extMenuExLR], "Extract L&R", 0);
+
+//        set(mbox->menu[extMenuViext], "&View Extraction", 0);
+//        set(mbox->menu[extMenuQpath], "&Quick Paths", 0);
+//        set(mbox->menu[extMenuPaths], "Show &Paths", 0);
+//        set(mbox->menu[extMenuGroup], "Show &Groups", 0);
+//        set(mbox->menu[extMenuNodes], "Show &Nodes", 0);
+//        set(mbox->menu[extMenuTshow], "Show &Terminals", 0);
+//        set(mbox->menu[extMenuTedit], "&Edit Terminals", 0);
+//        set(mbox->menu[extMenuTfind], "&Find Terminals", 0);
+//        set(mbox->menu[extMenuCmpar], "Compare &Devices", 0);
+//        set(mbox->menu[extMenuCmput], "Compute Para&ms", 0);
+//        set(mbox->menu[extMenuExrlc], "Extract &RLC", 0);
+//        set(mbox->menu[extMenuAdelp], "Edit E&xtraction", 0);
 
         // First elt is a dummy containing the menubar item.
         mbox->menu[0].cmd.caller = ext_menu;
@@ -505,7 +530,7 @@ qtMenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData(ent - mbox->menu);
+            action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -539,7 +564,7 @@ qtMenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData(ent - mbox->menu);
+            action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -577,7 +602,7 @@ qtMenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData(ent - mbox->menu);
+            action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -599,7 +624,7 @@ qtMenuConfig::instantiateSideMenus()
         return;
 
     QWidget *phys_button_box = main_win->PhysButtonBox();
-    MenuBox *mbox = Menu()->GetPhysSideMenu();
+    MenuBox *mbox = Menu()->GetPhysButtonMenu();
     if (phys_button_box && mbox && mbox->menu) {
 
         if (DSP()->CurMode() != Physical)
@@ -612,28 +637,30 @@ qtMenuConfig::instantiateSideMenus()
         phys_button_box->setMinimumWidth(30);
         phys_button_box->setMaximumWidth(30);
 
-        set(mbox->menu[sidePhysMenu], 0, 0);
-        set(mbox->menu[sidePhysMenuLabel], "Labels", 0);
-        set(mbox->menu[sidePhysMenuLogo], "Logo", 0);
-        set(mbox->menu[sidePhysMenuBox], "Boxes", 0);
-        set(mbox->menu[sidePhysMenuPolyg], "Polygons", 0);
-        set(mbox->menu[sidePhysMenuWire], "Wires", 0);
-        set(mbox->menu[sidePhysMenuStyle], "Style", 0);
-        set(mbox->menu[sidePhysMenuRound], "Round", 0);
-        set(mbox->menu[sidePhysMenuDonut], "Donut", 0);
-        set(mbox->menu[sidePhysMenuArc], "Arc", 0);
-        set(mbox->menu[sidePhysMenuSides], "Sides", 0);
-        set(mbox->menu[sidePhysMenuXor], "Xor", 0);
-        set(mbox->menu[sidePhysMenuBreak], "Break", 0);
-        set(mbox->menu[sidePhysMenuErase], "Erase", 0);
-        set(mbox->menu[sidePhysMenuPut], "Put", 0);
-        set(mbox->menu[sidePhysMenuSpin], "Spin", 0);
+        set(mbox->menu[btnPhysMenu], 0, 0);
+        set(mbox->menu[btnPhysMenuXform], "Xform", 0);
+        set(mbox->menu[btnPhysMenuPlace], "Place", 0);
+        set(mbox->menu[btnPhysMenuLabel], "Labels", 0);
+        set(mbox->menu[btnPhysMenuLogo], "Logo", 0);
+        set(mbox->menu[btnPhysMenuBox], "Boxes", 0);
+        set(mbox->menu[btnPhysMenuPolyg], "Polygons", 0);
+        set(mbox->menu[btnPhysMenuWire], "Wires", 0);
+        set(mbox->menu[btnPhysMenuStyle], "Style", 0);
+        set(mbox->menu[btnPhysMenuRound], "Round", 0);
+        set(mbox->menu[btnPhysMenuDonut], "Donut", 0);
+        set(mbox->menu[btnPhysMenuArc], "Arc", 0);
+        set(mbox->menu[btnPhysMenuSides], "Sides", 0);
+        set(mbox->menu[btnPhysMenuXor], "Xor", 0);
+        set(mbox->menu[btnPhysMenuBreak], "Break", 0);
+        set(mbox->menu[btnPhysMenuErase], "Erase", 0);
+        set(mbox->menu[btnPhysMenuPut], "Put", 0);
+        set(mbox->menu[btnPhysMenuSpin], "Spin", 0);
 
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
             menu_button *b = new menu_button(ent, phys_button_box);
             b->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
             ent->cmd.caller = b;
-            if (ent - mbox->menu == sidePhysMenuStyle) {
+            if (ent - mbox->menu == btnPhysMenuStyle) {
                 const char **spm = get_style_pixmap();
                 b->setIcon(QPixmap(spm));
             }
@@ -645,7 +672,7 @@ qtMenuConfig::instantiateSideMenus()
             ent->cmd.caller = b;
             ent->cmd.wdesc = DSP()->MainWdesc();
 
-            if (ent - mbox->menu == sidePhysMenuStyle) {
+            if (ent - mbox->menu == btnPhysMenuStyle) {
                 connect(b, SIGNAL(button_pressed(MenuEnt*)),
                     this, SLOT(style_slot(MenuEnt*)));
             }
@@ -665,7 +692,7 @@ qtMenuConfig::instantiateSideMenus()
     }
 
     QWidget *elec_button_box = main_win->ElecButtonBox();
-    mbox = Menu()->GetElecSideMenu();
+    mbox = Menu()->GetElecButtonMenu();
     if (elec_button_box && mbox && mbox->menu) {
 
         if (DSP()->CurMode() != Electrical)
@@ -678,22 +705,25 @@ qtMenuConfig::instantiateSideMenus()
         elec_button_box->setMinimumWidth(30);
         elec_button_box->setMaximumWidth(30);
 
-        set(mbox->menu[sideElecMenu], 0, 0);
-        set(mbox->menu[sideElecMenuDevs], "Devices", 0);
-        set(mbox->menu[sideElecMenuShape], "Shape", 0);
-        set(mbox->menu[sideElecMenuWire], "Wire", 0);
-        set(mbox->menu[sideElecMenuLabel], "Label", 0);
-        set(mbox->menu[sideElecMenuErase], "Erase", 0);
-        set(mbox->menu[sideElecMenuBreak], "Break", 0);
-        set(mbox->menu[sideElecMenuSymbl], "Symbolic", 0);
-        set(mbox->menu[sideElecMenuNodmp], "Node Map", 0);
-        set(mbox->menu[sideElecMenuSubct], "Subcircuit", 0);
-        set(mbox->menu[sideElecMenuTerms], "Show Terms", 0);
-        set(mbox->menu[sideElecMenuDots], "Show Dots", 0);
-        set(mbox->menu[sideElecMenuRun], "Run", 0);
-        set(mbox->menu[sideElecMenuDeck], "Dump Deck", 0);
-        set(mbox->menu[sideElecMenuPlot], "Plot", 0);
-        set(mbox->menu[sideElecMenuIplot], "Intr Plot", 0);
+        set(mbox->menu[btnElecMenu], 0, 0);
+        set(mbox->menu[btnElecMenuXform], "Xform", 0);
+        set(mbox->menu[btnElecMenuPlace], "Place", 0);
+        set(mbox->menu[btnElecMenuDevs], "Devices", 0);
+        set(mbox->menu[btnElecMenuShape], "Shape", 0);
+        set(mbox->menu[btnElecMenuWire], "Wire", 0);
+        set(mbox->menu[btnElecMenuLabel], "Label", 0);
+        set(mbox->menu[btnElecMenuErase], "Erase", 0);
+        set(mbox->menu[btnElecMenuBreak], "Break", 0);
+        set(mbox->menu[btnElecMenuSymbl], "Symbolic", 0);
+        set(mbox->menu[btnElecMenuNodmp], "Node Map", 0);
+        set(mbox->menu[btnElecMenuSubct], "Subcircuit", 0);
+        set(mbox->menu[btnElecMenuTerms], "Show Terms", 0);
+//        set(mbox->menu[btnElecMenuDots], "Show Dots", 0);
+        set(mbox->menu[btnElecMenuSpCmd], "Command", 0);
+        set(mbox->menu[btnElecMenuRun], "Run", 0);
+        set(mbox->menu[btnElecMenuDeck], "Dump Deck", 0);
+        set(mbox->menu[btnElecMenuPlot], "Plot", 0);
+        set(mbox->menu[btnElecMenuIplot], "Intr Plot", 0);
 
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
             menu_button *b = new menu_button(ent, elec_button_box);
@@ -705,7 +735,7 @@ qtMenuConfig::instantiateSideMenus()
             ent->cmd.caller = b;
             ent->cmd.wdesc = DSP()->MainWdesc();
 
-            if (ent - mbox->menu == sideElecMenuShape) {
+            if (ent - mbox->menu == btnElecMenuShape) {
                 connect(b, SIGNAL(button_pressed(MenuEnt*)),
                     this, SLOT(shape_slot(MenuEnt*)));
             }
@@ -773,7 +803,7 @@ qtMenuConfig::instantiateSubwMenus(int wnum)
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData((ent - mbox->menu) | wincode);
+            action(ent)->setData(((int)(ent - mbox->menu)) | wincode);
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -837,7 +867,7 @@ qtMenuConfig::instantiateSubwMenus(int wnum)
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData((ent - mbox->menu) | wincode);
+            action(ent)->setData(((int)(ent - mbox->menu)) | wincode);
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -873,7 +903,7 @@ qtMenuConfig::instantiateSubwMenus(int wnum)
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(QString(ent->description));
-            action(ent)->setData((ent - mbox->menu) | wincode);
+            action(ent)->setData(((int)(ent - mbox->menu)) | wincode);
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -1159,7 +1189,7 @@ qtMenuConfig::file_open_menu_slot(QAction *a)
         }
     }
 
-    const char *string = a->text().toAscii().constData();
+    const char *string = a->text().toLatin1().constData();
     if (!string || !*string)
         return;
 
@@ -1473,7 +1503,7 @@ qtMenuConfig::shape_slot(MenuEnt *ent)
 void
 qtMenuConfig::style_menu_slot(QAction *a)
 {
-    const char *string = a->text().toAscii().constData();
+    const char *string = a->text().toLatin1().constData();
     if (!string || !*string)
         return;
     if (!EditIf()->styleList())
@@ -1501,10 +1531,10 @@ qtMenuConfig::style_menu_slot(QAction *a)
 
     EditIf()->setWireAttribute((WsType)i);
 
-    MenuBox *mbox = Menu()->GetPhysSideMenu();
+    MenuBox *mbox = Menu()->GetPhysButtonMenu();
     if (mbox && mbox->menu) {
         menu_button *b =
-            (menu_button*)mbox->menu[sidePhysMenuStyle].cmd.caller;
+            (menu_button*)mbox->menu[btnPhysMenuStyle].cmd.caller;
         if (b) {
             const char **spm = get_style_pixmap();
             b->setIcon(QPixmap(spm));
@@ -1516,7 +1546,7 @@ qtMenuConfig::style_menu_slot(QAction *a)
 void
 qtMenuConfig::shape_menu_slot(QAction *a)
 {
-    const char *string = a->text().toAscii().constData();
+    const char *string = a->text().toLatin1().constData();
     if (!string || !*string)
         return;
     if (!ScedIf()->shapesList())

@@ -83,7 +83,7 @@ layertab_w::layertab_w(int ht, QWidget *prnt) : QWidget(prnt)
     lspec_btn = new QPushButton(this);
     lspec_btn->setAutoDefault(false);
     lspec_btn->setCheckable(true);
-    lspec_btn->setChecked(Selections.layer_specific);
+//XXX    lspec_btn->setChecked(Selections.layer_specific);
     lspec_btn->setText(QString("S"));
     QFontMetrics fm(lspec_btn->font());
     int bw = fm.width(lspec_btn->text()) + 6;
@@ -116,16 +116,18 @@ layertab_w::layertab_w(int ht, QWidget *prnt) : QWidget(prnt)
 void
 layertab_w::update_scrollbar()
 {
+    /*XXX
     if (ltab_sb) {
         int numents = CD()->LayersUsed(DSP()->CurMode()) - 1;
-        int nm = numents - LT()->Ltab()->columns();
+        int nm = numents - qtLtab()->columns();
         if (nm < 0)
             nm = 0;
         ltab_sb->setMaximum(nm);
         ltab_sb->setSingleStep(1);
-        ltab_sb->setPageStep(LT()->Ltab()->columns());
+        ltab_sb->setPageStep(qtLtab()->columns());
 //        emit valueChanged(ltab_sb->value());
     }
+    */
 }
 
 
@@ -150,7 +152,7 @@ layertab_w::button_press_slot(QMouseEvent *ev)
     else if (ev->button() == Qt::RightButton)
         button = 3;
 
-    button = Kmap.button_map(button);
+    button = Kmap()->ButtonMap(button);
     int state = ev->modifiers();
 
     if (XM()->IsDoingHelp() && (state & GR_SHIFT_MASK)) {
@@ -160,13 +162,13 @@ layertab_w::button_press_slot(QMouseEvent *ev)
 
     switch (button) {
     case 1:
-        LT()->Ltab()->b1_handler(ev->x(), ev->y(), state, true);
+        qtLtab()->b1_handler(ev->x(), ev->y(), state, true);
         break;
     case 2:
-        LT()->Ltab()->b2_handler(ev->x(), ev->y(), state, true);
+        qtLtab()->b2_handler(ev->x(), ev->y(), state, true);
         break;
     case 3:
-        LT()->Ltab()->b3_handler(ev->x(), ev->y(), state, true);
+        qtLtab()->b3_handler(ev->x(), ev->y(), state, true);
         break;
     }
     update();
@@ -184,7 +186,7 @@ layertab_w::button_release_slot(QMouseEvent *ev)
     else if (ev->button() == Qt::RightButton)
         button = 3;
 
-    button = Kmap.button_map(button);
+    button = Kmap()->ButtonMap(button);
     int state = ev->modifiers();
 
     if (XM()->IsDoingHelp() && (state & GR_SHIFT_MASK)) {
@@ -194,13 +196,13 @@ layertab_w::button_release_slot(QMouseEvent *ev)
 
     switch (button) {
     case 1:
-        LT()->Ltab()->b1_handler(ev->x(), ev->y(), state, false);
+        qtLtab()->b1_handler(ev->x(), ev->y(), state, false);
         break;
     case 2:
-        LT()->Ltab()->b2_handler(ev->x(), ev->y(), state, false);
+        qtLtab()->b2_handler(ev->x(), ev->y(), state, false);
         break;
     case 3:
-        LT()->Ltab()->b3_handler(ev->x(), ev->y(), state, false);
+        qtLtab()->b3_handler(ev->x(), ev->y(), state, false);
         break;
     }
 }
@@ -211,16 +213,16 @@ layertab_w::button_release_slot(QMouseEvent *ev)
 void
 layertab_w::s_btn_slot(bool set)
 {
-    LT()->SetLayerSpecific(set);
+//XXX    LT()->SetLayerSpecific(set);
 }
 
 
 void
 layertab_w::ltab_scroll_value_changed_slot(int val)
 {
-    if (val != LT()->Ltab()->first_visible()) {
-        LT()->Ltab()->set_first_visible(val);
-        LT()->Ltab()->show();
+    if (val != qtLtab()->first_visible()) {
+        qtLtab()->set_first_visible(val);
+        qtLtab()->show();
     }
 }
 // End of layertab_w functions
@@ -229,8 +231,16 @@ layertab_w::ltab_scroll_value_changed_slot(int val)
 //-----------------------------------------------------------------------------
 // QTltab functions
 
+QTltab *QTltab::instancePtr = 0;
+
 QTltab::QTltab(bool nogr, QWidget *parent)
 {
+    if (instancePtr) {
+        fprintf(stderr, "Singleton class QTltab already instantiated.\n");
+        exit(1);
+    }
+    instancePtr = this;
+
 //XXX
 //    disabled = nogr;
     if (nogr)
@@ -276,6 +286,12 @@ QTltab::blink(CDl *ld)
 }
 
 
+void
+QTltab::show(const CDl *ld)
+{
+}
+
+
 // Exposure redraw.
 //
 void
@@ -285,6 +301,7 @@ QTltab::refresh(int x, int y, int w, int h)
 }
 
 
+/*XXX
 // Update the layer-specific buttons.
 //
 void
@@ -296,6 +313,7 @@ QTltab::lspec_callback()
         mainBag()->layer_table()->ls_button()->setChecked(
             Selections.layer_specific);
 }
+*/
 
 
 // Return the drawing area size.
@@ -323,6 +341,18 @@ QTltab::update_scrollbar()
 {
     if (mainBag())
         mainBag()->layer_table()->update_scrollbar();
+}
+
+
+void
+QTltab::hide_layer_table(bool hide)
+{
+}
+
+
+void
+QTltab::set_layer()
+{
 }
 // End of QTltab functions.
 

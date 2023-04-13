@@ -700,8 +700,9 @@ QTfilePopup::QTfilePopup(qt_bag *owner, FsMode mode, void *arg,
                 const char *cwd = cwd_bak;
                 if (!cwd)
                     cwd = "";
-                fn = new char[strlen(cwd) + strlen(root_or_fname) + 2];
-                sprintf(fn, "%s/%s", cwd, root_or_fname);
+                int len = strlen(cwd) + strlen(root_or_fname) + 2;
+                fn = new char[len];
+                snprintf(fn, len, "%s/%s", cwd, root_or_fname);
             }
             else
                 fn = lstring::copy(root_or_fname);
@@ -1087,9 +1088,9 @@ QTfilePopup::delete_slot()
     }
     char buf[256];
     if (strlen(path) < 80)
-        sprintf(buf, "Delete %s?", path);
+        snprintf(buf, sizeof(buf), "Delete %s?", path);
     else
-        sprintf(buf, "Delete .../%s?", lstring::strip_path(path));
+        snprintf(buf, sizeof(buf), "Delete .../%s?", lstring::strip_path(path));
     GRaffirmPopup *a = PopUpAffirm(0, GRloc(), buf, 0, 0);
     QTaffirmPopup *affirm = dynamic_cast<QTaffirmPopup*>(a);
     if (a)
@@ -1130,7 +1131,8 @@ QTfilePopup::rename_slot()
         return;
     }
     char buf[256];
-    sprintf(buf, "Enter new name for %s?", lstring::strip_path(path));
+    snprintf(buf, sizeof(buf), "Enter new name for %s?",
+        lstring::strip_path(path));
     PopUpInput(buf, 0, "Rename", 0, 0);
     connect(input, SIGNAL(action_call(const char*, void*)),
         this, SLOT(rename_sb_slot(const char*, void*)));
@@ -1228,7 +1230,8 @@ QTfilePopup::new_cwd_cb_slot(const char *wd, void*)
         }
         else {
             char buf[256];
-            sprintf(buf, "Directory change failed:\n%s", strerror(errno));
+            snprintf(buf, sizeof(buf), "Directory change failed:\n%s",
+                strerror(errno));
             PopUpMessage(buf, true);
             delete [] nwd;
         }
@@ -1846,25 +1849,29 @@ DoFileAction(QTfilePopup *fs, const char *src, const char *dst,
         return;
 
     char *tbuf = 0, *err = 0;
+    int len;
     switch (action) {
     case A_NOOP:
         break;
     case A_COPY:
-        tbuf = new char[strlen(src) + strlen(dst) + 256];
+        len = strlen(src) + strlen(dst) + 256;
+        tbuf = new char[len];
         if (isdir)
-            sprintf(tbuf, "cp -R %s %s 2>&1", src, dst);
+            snprintf(tbuf, len, "cp -R %s %s 2>&1", src, dst);
         else
-            sprintf(tbuf, "cp %s %s 2>&1", src, dst);
+            snprintf(tbuf, len, "cp %s %s 2>&1", src, dst);
         err = doit(tbuf);
         break;
     case A_MOVE:
-        tbuf = new char[strlen(src) + strlen(dst) + 256];
-        sprintf(tbuf, "mv %s %s 2>&1", src, dst);
+        len = strlen(src) + strlen(dst) + 256;
+        tbuf = new char[len];
+        snprintf(tbuf, len, "mv %s %s 2>&1", src, dst);
         err = doit(tbuf);
         break;
     case A_LINK:
-        tbuf = new char[strlen(src) + strlen(dst) + 256];
-        sprintf(tbuf, "ln -s %s %s 2>&1", dst, src);
+        len = strlen(src) + strlen(dst) + 256;
+        tbuf = new char[len];
+        snprintf(tbuf, len, "ln -s %s %s 2>&1", dst, src);
         err = doit(tbuf);
         break;
     case A_ASK:

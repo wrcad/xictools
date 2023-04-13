@@ -567,7 +567,7 @@ void
 ext_menu::M_ExtractC(CmdDesc *cmd)
 {
     if (cmd && !Menu()->GetStatus(cmd->caller)) {
-        FC()->PopUpExtIf(0, MODE_OFF);
+        FCif()->PopUpExtIf(0, MODE_OFF);
         return;
     }
     Deselector ds(cmd);
@@ -577,7 +577,7 @@ ext_menu::M_ExtractC(CmdDesc *cmd)
         return;
     ds.clear();
 
-    FC()->PopUpExtIf(cmd ? cmd->caller : 0, MODE_ON);
+    FCif()->PopUpExtIf(cmd ? cmd->caller : 0, MODE_ON);
 }
 
 
@@ -590,7 +590,7 @@ void
 ext_menu::M_ExtractLR(CmdDesc *cmd)
 {
     if (cmd && !Menu()->GetStatus(cmd->caller)) {
-        FH()->PopUpExtIf(0, MODE_OFF);
+        FHif()->PopUpExtIf(0, MODE_OFF);
         return;
     }
     Deselector ds(cmd);
@@ -600,6 +600,6 @@ ext_menu::M_ExtractLR(CmdDesc *cmd)
         return;
     ds.clear();
 
-    FH()->PopUpExtIf(cmd ? cmd->caller : 0, MODE_ON);
+    FHif()->PopUpExtIf(cmd ? cmd->caller : 0, MODE_ON);
 }
 

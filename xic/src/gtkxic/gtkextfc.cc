@@ -458,7 +458,7 @@ sFc::sFc(GRobject c)
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
             units_strings[i]);
     }
-    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), FC()->getUnitsIndex(0));
+    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), FCif()->getUnitsIndex(0));
     g_signal_connect(G_OBJECT(entry), "changed",
         G_CALLBACK(fc_units_proc), 0);
     gtk_container_add(GTK_CONTAINER(frame), entry);
@@ -767,7 +767,7 @@ sFc::sFc(GRobject c)
     //
     // Status line and Dismiss button
     //
-    char *s = FC()->statusString();
+    char *s = FCif()->statusString();
     fc_label = gtk_label_new(s);
     delete [] s;
     gtk_widget_show(fc_label);
@@ -799,11 +799,11 @@ sFc::sFc(GRobject c)
 
 sFc::~sFc()
 {
-    FC()->showMarks(false);
+    FCif()->showMarks(false);
     Fc = 0;
     if (fc_caller)
         GRX->Deselect(fc_caller);
-    FC()->setPopUpVisible(false);
+    FCif()->setPopUpVisible(false);
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)sFc::fc_cancel_proc, wb_shell);
@@ -870,7 +870,7 @@ sFc::update()
     var = CDvdb()->getVariable(VA_FcUnits);
     if (!var)
         var = "";
-    int uoff = FC()->getUnitsIndex(var);
+    int uoff = FCif()->getUnitsIndex(var);
     int ucur = gtk_combo_box_get_active(GTK_COMBO_BOX(fc_units));
     if (uoff != ucur)
         gtk_combo_box_set_active(GTK_COMBO_BOX(fc_units), uoff);
@@ -935,7 +935,7 @@ sFc::update_jobs_list()
     double val = text_get_scroll_value(fc_jobs);
     text_set_chars(fc_jobs, "");
 
-    char *list = FC()->jobList();
+    char *list = FCif()->jobList();
     if (!list)
         text_insert_chars_at_point(fc_jobs, c1,
             "No background jobs running.", -1, -1);
@@ -960,7 +960,7 @@ void
 sFc::update_numbers()
 {
     if (GRX->GetStatus(fc_shownum))
-        FC()->showMarks(true);
+        FCif()->showMarks(true);
 }
 
 
@@ -1093,7 +1093,7 @@ sFc::fc_def_string(int id)
 void
 sFc::fc_cancel_proc(GtkWidget*, void*)
 {
-    FC()->PopUpExtIf(0, MODE_OFF);
+    FCif()->PopUpExtIf(0, MODE_OFF);
 }
 
 
@@ -1192,7 +1192,7 @@ sFc::fc_units_proc(GtkWidget *caller, void*)
     int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
     if (i < 0)
         return;
-    const char *str = FC()->getUnitsString(units_strings[i]);
+    const char *str = FCif()->getUnitsString(units_strings[i]);
     if (str)
         CDvdb()->setVariable(VA_FcUnits, str);
     else
@@ -1217,7 +1217,7 @@ sFc::fc_dump_cb(const char *fname, void *client_data)
 {
     switch ((intptr_t)client_data) {
     case FcDump:
-        if (FC()->fcDump(fname)) {
+        if (FCif()->fcDump(fname)) {
             if (!Fc)
                 return;
             const char *fn = lstring::strip_path(fname);
@@ -1241,14 +1241,14 @@ sFc::fc_btn_proc(GtkWidget *widget, void *arg)
         return;
     switch ((intptr_t)arg) {
     case FcRun:
-        FC()->fcRun(0, 0, 0);
+        FCif()->fcRun(0, 0, 0);
         break;
     case FcRunFile:
         {
             const char *s = gtk_entry_get_text(GTK_ENTRY(Fc->fc_file));
             char *tok = lstring::getqtok(&s);
             if (tok) {
-                FC()->fcRun(tok, 0, 0, true);
+                FCif()->fcRun(tok, 0, 0, true);
                 delete [] tok;
             }
             else {
@@ -1259,13 +1259,13 @@ sFc::fc_btn_proc(GtkWidget *widget, void *arg)
         break;
     case FcDump:
         {
-            char *s = FC()->getFileName(FC_LST_SFX);
+            char *s = FCif()->getFileName(FC_LST_SFX);
             Fc->PopUpInput(0, s, "Dump", fc_dump_cb, (void*)FcDump);
             delete [] s;
         }
         break;
     case ShowNums:
-        FC()->showMarks(GRX->GetStatus(widget));
+        FCif()->showMarks(GRX->GetStatus(widget));
         break;
     case Foreg:
         if (GRX->GetStatus(widget))
@@ -1300,7 +1300,7 @@ sFc::fc_btn_proc(GtkWidget *widget, void *arg)
         {
             int pid = Fc->get_pid();
             if (pid > 0)
-                FC()->killProcess(pid);
+                FCif()->killProcess(pid);
         }
     }
 }

@@ -176,7 +176,7 @@ mmDtoA(char *buf, double value, int prec, bool gstrip)
     // exponentials.  Anyone want to write code to replace this?
 
     if (fabs(value) > thres_max) {
-        sprintf(buf, "%.*e", prec, value);
+        snprintf(buf, 32, "%.*e", prec, value);
         return (strchr(buf, 0));
     }
 
