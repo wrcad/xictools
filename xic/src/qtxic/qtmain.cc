@@ -541,6 +541,17 @@ QTpkg::IsTrueColor()
 }
 
 
+bool
+QTpkg::UsingX11()
+{
+#ifdef WITH_X11
+    return (true);
+#else
+    return (false);
+#endif
+}
+
+
 void
 QTpkg::CloseGraphicsConnection()
 {
@@ -550,13 +561,11 @@ QTpkg::CloseGraphicsConnection()
 // Write in buf the display string, making sure that it contains the
 // host name.
 //
-/*XXX
-bool
-QTpkg::GetDisplayString(const char*, char*)
+const char*
+QTpkg::GetDisplayString()
 {
-    return (false);
+    return (0);
 }
-*/
 
 
 // Check if host which has data in hent has screen access to the local
@@ -614,12 +623,10 @@ QTpkg::StartTimer(int, bool*)
 // Set the application fonts.  This should work for either Pango
 // or XFD font names.
 //
-/*XXX
 void
-QTpkg::SetFont(const char*, int)
+QTpkg::SetFont(const char*, int, FNT_FMT)
 {
 }
-*/
 
 
 // Return the application font names.
@@ -998,6 +1005,12 @@ int
 subwin_d::KeyPos()
 {
     return (keys_pressed->key_pos());
+}
+
+
+void
+subwin_d::SetLabelText(const char*)
+{
 }
 
 

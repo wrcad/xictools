@@ -102,6 +102,7 @@ public:
 
     bool IsDualPlane();
     bool IsTrueColor();
+    bool UsingX11();
     void CloseGraphicsConnection();
     const char *GetDisplayString();
     bool CheckScreenAccess(hostent*, const char*, const char*);
@@ -113,7 +114,6 @@ public:
     void SetFont(const char*, int, FNT_FMT = FNT_FMT_ANY);
     const char *GetFont(int);
     FNT_FMT GetFontFmt();
-    bool UsingX11();
     // end of overrides
 
 /*

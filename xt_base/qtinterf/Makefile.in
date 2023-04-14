@@ -24,6 +24,7 @@ CCFILES = \
   idle_proc.cc interval_timer.cc polysplit.cc progress_d.cc \
   qtaffirm.cc qtedit.cc qtfile.cc qtfont.cc qthcopy.cc qtinput.cc \
   qtinterf.cc qtlist.cc qtmcol.cc qtmsg.cc qtnumer.cc search_d.cc \
+  qtxdraw.cc
 
 MOCFILES = \
     moc_activity_w.cpp \

@@ -44,6 +44,7 @@
 #include "sced.h"
 #include "drc.h"
 #include "ext.h"
+#include "oa_if.h"
 
 
 //XXX
@@ -142,6 +143,103 @@ cMain::SetCoordMode(COmode, int x, int y)
 {
 }
 
+void
+cMain::ShowParameters(const char*)
+{
+}
+
+void
+cMain::PopUpDebugFlags(GRobject, ShowMode)
+{
+}
+
+char *
+cMain::SaveFileDlg(const char*, const char*)
+{
+    return (0);
+}
+
+char *
+cMain::OpenFileDlg(const char*, const char*)
+{
+    return (0);
+}
+
+void
+cMain::PopUpFileSel(const char*, void(*)(const char*, void*), void*)
+{
+}
+
+void
+cMain::PopUpSelectInstances(CDol*)
+{
+}
+
+CDol *
+cMain::PopUpFilterInstances(CDol*)
+{
+    return (0);
+}
+
+void
+cMain::FixupColors(void*)
+{
+}
+
+void
+cMain::PopUpCellFilt(GRobject, ShowMode, DisplayMode,
+    void(*)(cfilter_t*, void*), void*)
+{
+}
+
+CursorType
+cMain::GetCursor()
+{
+    return ((CursorType)0);
+}
+
+void
+cMain::UpdateCursor(WindowDesc*, CursorType, bool)
+{
+}
+
+sLcb *
+cMain::PopUpLayerEditor(GRobject)
+{
+    return (0);
+}
+
+void
+cMain::PopUpLayerParamEditor(GRobject, ShowMode, const char*, const char*)
+{
+}
+
+void
+cMain::PopUpTechWrite(GRobject, ShowMode)
+{
+}
+
+bool
+cMain::SendButtonEvent(const char*, int, int, int, int, bool)
+{
+}
+
+bool
+cMain::SendKeyEvent(const char*, int, int, bool)
+{
+}
+
+void
+cMain::SetNoToTop(bool)
+{
+}
+
+void
+cMain::SetLowerWinOffset(int)
+{
+}
+
+
 // qtcv.cc
 
 void
@@ -157,6 +255,17 @@ cConvert::PopUpImport(GRobject caller, ShowMode mode,
     bool (*callback)(int, void*), void *arg)
 {
 }
+
+void
+cConvert::PopUpCompare(GRobject, ShowMode)
+{
+}
+
+void
+cConvert::PopUpPropertyFilter(GRobject, ShowMode)
+{
+}
+
 
 // qtcvout.cc
 
@@ -204,20 +313,6 @@ cMain::DisableDialogs()
 {
 }
 
-// qtdrc.cc
-
-void
-cDRC::PopUpRules(GRobject caller, ShowMode mode)
-{
-}
-
-// qtdrclim.cc
-
-void
-cDRC::PopUpDrcLimits(GRobject caller, ShowMode mode)
-{
-}
-
 // qtdvedit.cc
 
 void
@@ -235,9 +330,30 @@ cConvert::PopUpEmpties(stringlist *list)
 // qtextcmd.cc
 
 void
-cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
-    bool (*action_cb)(const char*, void*, bool, const char*, int, int),
-    void *action_arg, int depth)
+cExt::PopUpExtCmd(GRobject, ShowMode, sExtCmd*,
+    bool(*)(const char*, void*, bool, const char*, int, int),
+    void*, int)
+{
+}
+
+void
+cExt::PopUpExtSetup(GRobject, ShowMode)
+{
+}
+
+void
+cExt::PopUpSelections(GRobject, ShowMode)
+{
+}
+
+void
+cExt::PopUpDevices(GRobject, ShowMode)
+{
+}
+
+void
+cExt::PopUpPhysTermEdit(GRobject, ShowMode, TermEditInfo*,
+    void(*)(TermEditInfo*, CDsterm*), CDsterm*, int, int)
 {
 }
 
@@ -246,6 +362,16 @@ cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
 void
 cSced::PopUpTermEdit(GRobject, ShowMode mode, TermEditInfo *tinfo,
     void(*action)(TermEditInfo*, CDp*), CDp *prp, int x, int y)
+{
+}
+
+void
+cSced::PopUpSpiceIf(GRobject, ShowMode)
+{
+}
+
+void
+cSced::PopUpDots(GRobject, ShowMode)
 {
 }
 
@@ -271,9 +397,9 @@ cMain::FillLoadCallback(LayerFillData *dd, CDl *ld)
 // qtflatten.cc
 
 void
-cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
-    bool (*callback)(const char*, bool, const char*, void*),
-    void *arg, int depth, bool fmode)
+cEdit::PopUpFlatten(GRobject, ShowMode,
+        bool(*)(const char*, bool, const char*, void*),
+        void*, int, bool)
 {
 }
 
@@ -296,6 +422,11 @@ cEdit::PopUpLogo(GRobject caller, ShowMode mode)
 void
 cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
     CDl *ldesc)
+{
+}
+
+void
+cEdit::PopUpLayerChangeMode(ShowMode)
 {
 }
 
@@ -324,9 +455,20 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *list)
 // qtmodif.cc
 
 PMretType
-cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
+cEdit::PopUpModified(stringlist*, bool(*)(const char*))
 {
     return (PMok);
+}
+
+void
+cEdit::PopUpPCellCtrl(GRobject, ShowMode)
+{
+}
+
+bool
+cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*, const char*,
+    pcpMode)
+{
 }
 
 // qtnodmp.cc
@@ -357,12 +499,48 @@ cEdit::PopUpCellProperties(ShowMode mode)
 {
 }
 
+void
+cEdit::PopUpPolytextFont(GRobject, ShowMode)
+{
+}
+
+void
+cEdit::polytextExtent(const char*, int*, int*, int*)
+{
+}
+PolyList *
+cEdit::polytext(const char*, int, int, int)
+{
+    return (0);
+}
+
 // qtprpedit.cc
 
 void
 cEdit::PopUpProperties(CDo *odesc, ShowMode mode, PRPmode activ)
 {
 }
+
+void
+cEdit::PopUpStdVia(GRobject, ShowMode, CDc*)
+{
+}
+
+void
+cEdit::PopUpEditSetup(GRobject, ShowMode)
+{
+}
+
+void
+cEdit::PopUpJoin(GRobject, ShowMode)
+{
+}
+
+void
+cEdit::PopUpLayerExp(GRobject, ShowMode)
+{
+}
+
 
 PrptyText *
 cEdit::PropertyResolve(int code, int offset, CDo **odp)
@@ -438,6 +616,49 @@ cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
 void
 cEdit::PopUpTransform(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, bool, const char*, void*), void *arg)
+{
+}
+
+/* ----- */
+
+void
+cDRC::PopUpRules(GRobject, ShowMode)
+{
+}
+
+void
+cDRC::PopUpDrcLimits(GRobject, ShowMode)
+{
+}
+
+void
+cDRC::PopUpDrcRun(GRobject, ShowMode)
+{
+}
+
+void
+cDRC::PopUpRuleEdit(GRobject, ShowMode, DRCtype, const char*,
+    bool(*)(const char*, void*), void*, const DRCtestDesc*)
+{
+}
+
+void
+cOAif::PopUpOAlibraries(GRobject, ShowMode)
+{
+}
+
+void
+cOAif::GetSelection(const char**, const char**)
+{
+}
+
+void
+cOAif::PopUpOAtech(GRobject, ShowMode, int, int)
+{
+}
+
+void
+cOAif::PopUpOAdefs(GRobject, ShowMode, int, int)
 {
 }
 
