@@ -60,8 +60,6 @@
 #include <gdk/gdkprivate.h>
 #include <gdk/gdkkeysyms.h>
 
-#define NEW_OPT
-#define NEW_LIS
 
 // When set, we paint the entire area of the HTML page on a pixmap,
 // and copy from this when scrolling.  This is to provide smooth
@@ -173,10 +171,12 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     // Without this, form widgets will render outside of the drawing
     // area.  This clips them to the drawing area.
     gtk_widget_set_has_window(v_fixed, true);
-gtk_widget_set_vexpand(v_fixed, false);
-gtk_widget_set_vexpand_set(v_fixed, true);
-gtk_widget_set_hexpand(v_fixed, false);
-gtk_widget_set_hexpand_set(v_fixed, true);
+
+// For GTK-3, doesn't work.
+//gtk_widget_set_vexpand(v_fixed, false);
+//gtk_widget_set_vexpand_set(v_fixed, true);
+//gtk_widget_set_hexpand(v_fixed, false);
+//gtk_widget_set_hexpand_set(v_fixed, true);
 
 #ifdef NEW_DF
     v_draw_area = v_fixed;
@@ -1924,10 +1924,12 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             // multiple select or more than one item visible: it's a listbox
             GtkWidget *scrolled_win = gtk_scrolled_window_new(0, 0);
             gtk_widget_show(scrolled_win);
-#ifdef NEW_LIS
+            gtk_scrolled_window_set_shadow_type(
+                GTK_SCROLLED_WINDOW(scrolled_win), GTK_SHADOW_IN);
             GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
             GtkWidget *list =
                 gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
+            gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(list), false);
             gtk_tree_view_set_enable_search(GTK_TREE_VIEW(list), false);
             GtkTreeViewColumn *tvcol = gtk_tree_view_column_new();
             gtk_tree_view_append_column(GTK_TREE_VIEW(list), tvcol);
@@ -1936,30 +1938,16 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             gtk_tree_view_column_add_attribute(tvcol, rnd, "text", 0);
             GtkTreeSelection *sel =
                 gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
-            gtk_scrolled_window_add_with_viewport(
-                GTK_SCROLLED_WINDOW(scrolled_win), list);
-#else
-#ifdef XXX_DEPREC
-            GtkWidget *list = gtk_list_new();
-            gtk_scrolled_window_add_with_viewport(
-                GTK_SCROLLED_WINDOW(scrolled_win), list);
-#endif
-#endif
+            gtk_container_add(GTK_CONTAINER(scrolled_win), list);
             gtk_widget_show(GTK_WIDGET(list));
             g_object_set_data(G_OBJECT(scrolled_win), "user", list);
             gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
                 GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
             if (entry->multiple)
-#ifdef NEW_LIS
-#else
-#ifdef XXX_DEPREC
-                gtk_list_set_selection_mode(GTK_LIST(list),
-                    GTK_SELECTION_MULTIPLE);
-#endif
-#endif
-
+                gtk_tree_selection_set_mode(sel, GTK_SELECTION_MULTIPLE);
+            else
+                gtk_tree_selection_set_mode(sel, GTK_SELECTION_SINGLE);
             entry->widget = scrolled_win;
-            gtk_widget_show(scrolled_win);
             if (!gtk_widget_get_has_window(scrolled_win)) {
                 GtkWidget *b = gtk_event_box_new();
                 gtk_widget_show(b);
@@ -1970,57 +1958,34 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
                 add_widget(scrolled_win);
         }
         else {
-#ifdef NEW_OPT
             GtkWidget *option_menu = gtk_combo_box_text_new();
             entry->widget = option_menu;
             gtk_widget_show(option_menu);
+            if (!gtk_widget_get_has_window(option_menu)) {
+                GtkWidget *b = gtk_event_box_new();
+                gtk_widget_show(b);
+                gtk_container_add(GTK_CONTAINER(b), option_menu);
+                add_widget(b);
+            }
+            else
             add_widget(option_menu);
-#else
-#ifdef XXX_DEPREC
-            GtkWidget *option_menu = gtk_option_menu_new();
-            GtkWidget *menu = gtk_menu_new();
-            gtk_option_menu_set_menu(GTK_OPTION_MENU(option_menu), menu);
-            entry->widget = option_menu;
-            gtk_widget_show(option_menu);
-            add_widget(option_menu);
-#endif
-#endif
         }
         break;
 
     case FORM_OPTION:
         if (parent->multiple || parent->size > 1) {
             // scrolled_win/viewport/list
-#ifdef NEW_LIS
-#else
-#ifdef XXX_DEPREC
-            GtkList *list =
-                GTK_LIST(GTK_BIN(GTK_BIN(parent->widget)->child)->child);
-            // append item to bottom of list
-            GtkWidget *listitem =
-                gtk_list_item_new_with_label(entry->name);
-            gtk_widget_show(listitem);
-            gtk_container_add(GTK_CONTAINER(list), listitem);
-            entry->widget = listitem;
-#endif
-#endif
+            GtkWidget *list = gtk_bin_get_child(GTK_BIN(parent->widget));
+            GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(
+                GTK_TREE_VIEW(list)));
+            GtkTreeIter iter;
+            gtk_list_store_append(store, &iter);
+            gtk_list_store_set(store, &iter, 0, entry->name, -1);
         }
         else {
-#ifdef NEW_OPT
             GtkComboBoxText *txw = GTK_COMBO_BOX_TEXT(parent->widget);
             if (txw)
                 gtk_combo_box_text_append_text(txw, entry->name);
-#else
-#ifdef XXX_DEPREC
-            GtkWidget *menu = gtk_option_menu_get_menu(
-                GTK_OPTION_MENU(parent->widget));
-            GtkWidget *menu_entry =
-                gtk_menu_item_new_with_label(entry->name);
-            gtk_widget_show(menu_entry);
-            gtk_menu_append(GTK_MENU(menu), menu_entry);
-            entry->widget = menu_entry;
-#endif
-#endif
         }
         break;
 
@@ -2076,40 +2041,33 @@ gtk_viewer::tk_select_close(htmForm *entry)
 {
     if (entry->multiple || entry->size > 1) {
         // scrolled_win/viewport/list
-#ifdef NEW_LIS
-#else
-#ifdef XXX_DEPREC
-        GtkList *list =
-            GTK_LIST(GTK_BIN(GTK_BIN(entry->widget)->child)->child);
-        int ht = 0;
-        GtkRequisition req;
-        if (list->children) {
-            gtk_widget_size_request(GTK_WIDGET(list->children->data), &req);
-            ht = req.height * entry->size + PADVAL;
-        }
+        GtkWidget *list = gtk_bin_get_child(GTK_BIN(entry->widget));
+        int rowht = GTKfont::stringHeight(list, 0) + PADVAL;
+        int ht = rowht*entry->size;;
         if (ht < 40)
             ht = 40;
-        gtk_widget_size_request(GTK_BIN(GTK_BIN(entry->widget)->child)->child,
-            &req);
-        if (ht < req.height)
+        GtkRequisition req;
+        gtk_widget_size_request(list, &req);
+        if (ht < req.height + 4)
             req.width += 22;  // scrollbar compensation
         entry->width = req.width + PADVAL;
         entry->height = ht;
         gtk_widget_set_size_request(GTK_WIDGET(entry->widget), entry->width,
             entry->height);
-#endif
-#endif
 
         // set initial selections
-        int cnt = 0;
-        for (htmForm *e = entry->options; e; e = e->next, cnt++) {
-#ifdef NEW_LIS
-#else
-#ifdef XXX_DEPREC
+        GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(
+            GTK_TREE_VIEW(list)));
+        GtkTreeSelection *sel =
+            gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
+        GtkTreeIter iter;
+        gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter);
+        for (htmForm *e = entry->options; e; e = e->next) {
             if (e->selected)
-                gtk_list_select_item(list, cnt);
-#endif
-#endif
+                gtk_tree_selection_select_iter(sel, &iter);
+            else
+                gtk_tree_selection_unselect_iter(sel, &iter);
+            gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter);
         }
     }
     else {
@@ -2126,20 +2084,13 @@ gtk_viewer::tk_select_close(htmForm *entry)
             entry->options->selected = true;
             cnt = 0;
         }
-#ifdef NEW_OPT
-#else
-#ifdef XXX_DEPREC
-        GtkWidget *menu =
-            gtk_option_menu_get_menu(GTK_OPTION_MENU(option_menu));
         GtkRequisition req;
-        gtk_widget_size_request(menu, &req);
+        gtk_widget_size_request(option_menu, &req);
         entry->width = req.width + 24;
         entry->height = GTKfont::stringHeight(option_menu, 0) + PADVAL;
         gtk_widget_set_size_request(GTK_WIDGET(entry->widget), entry->width,
             entry->height);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(option_menu), cnt);
-#endif
-#endif
+        gtk_combo_box_set_active(GTK_COMBO_BOX(option_menu), cnt);
     }
 }
 
@@ -2231,16 +2182,10 @@ gtk_viewer::tk_get_checked(htmForm *entry)
             }
         }
         else {
-#ifdef NEW_OPT
-#else
-#ifdef XXX_DEPREC
-            GtkWidget *menu =
-                gtk_option_menu_get_menu(GTK_OPTION_MENU(entry->widget));
-            GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
+            int s = gtk_combo_box_get_active(GTK_COMBO_BOX(entry->widget));
+            int i = 0;
             for (htmForm *e = entry->options; e; e = e->next)
-                e->checked = (GTK_WIDGET(e->widget) == active);
-#endif
-#endif
+                e->checked = (i++ == s);
         }
         break;
     default:
@@ -2264,33 +2209,30 @@ gtk_viewer::tk_set_checked(htmForm *entry)
         break;
     case FORM_SELECT:
         if (entry->multiple || entry->size > 1) {
+            GtkWidget *list = gtk_bin_get_child(GTK_BIN(entry->widget));
+            GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(
+                GTK_TREE_VIEW(list)));
+            GtkTreeSelection *sel =
+                gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
+            GtkTreeIter iter;
+            gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter);
             for (htmForm *e = entry->options; e; e = e->next) {
-#ifdef NEW_LIS
-#else
-#ifdef XXX_DEPREC
                 if (e->selected)
-                    gtk_list_item_select(GTK_LIST_ITEM(e->widget));
+                    gtk_tree_selection_select_iter(sel, &iter);
                 else
-                    gtk_list_item_deselect(GTK_LIST_ITEM(e->widget));
-#endif
-#endif
+                    gtk_tree_selection_unselect_iter(sel, &iter);
+                gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter);
             }
         }
         else {
             int cnt = 0;
             for (htmForm *e = entry->options; e; e = e->next) {
                 if (e->selected) {
-#ifdef NEW_OPT
                     gtk_combo_box_set_active(GTK_COMBO_BOX(entry->widget),
                        cnt);
-#else
-#ifdef XXX_DEPREC
-                    gtk_option_menu_set_history(GTK_OPTION_MENU(entry->widget),
-                        cnt);
-#endif
-#endif
                     break;
                 }
+                cnt++;
             }
         }
         break;

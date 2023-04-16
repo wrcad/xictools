@@ -352,11 +352,21 @@ gtkMenuConfig::instantiateSubwMenus(int wnum, GtkWidget *menubar,
 }
 
 
-//#define USERDBG
-
 void
 gtkMenuConfig::updateDynamicMenus()
 {
+    struct submenu_list
+    {
+        submenu_list(GtkWidget *w, submenu_list *n)
+        {
+            submenu = w;
+            next = n;
+        }
+
+        GtkWidget *submenu;
+        submenu_list *next;
+    };
+
     MenuBox *mbox = Menu()->FindMainMenu(MMuser);
     if (!mbox || !mbox->menu || !mbox->isDynamic())
         return;
@@ -439,8 +449,8 @@ gtkMenuConfig::updateDynamicMenus()
         cnt++;
     }
 
-    stringlist *snew = 0;
-    stringlist *sold = 0;
+    submenu_list *submenu_stack = 0;
+    int lastnsep = 0;
 
     // Add the dynamic entries.
     for (ent = &mbox->menu[userMenu_END]; ent->entry; ent++) {
@@ -458,82 +468,67 @@ gtkMenuConfig::updateDynamicMenus()
         // the item path since these would be interpreted as
         // accelerator characters.
 
-        // Pop the stack until the old path is a prefix of the
-        // present path.
-        while (sold && !lstring::prefix(sold->string, ent->menutext)) {
-            stringlist *sx = sold;
-            sold = sold->next;
-            sx->next = 0;
-            stringlist::destroy(sx);
-            sx = snew;
-            snew = snew->next;
-            sx->next = 0;
-            stringlist::destroy(sx);
-        }
+// Strip '/User/' from the front of the menutext.
+#define STRIPNBITS 6
 
-        // Build the item factory path in buf.
-        if (!snew) {
-            strcpy(buf, ent->menutext);
-            char *t = strrchr(buf, '/');
+        strcpy(buf, ent->menutext);
+        char *t = strrchr(buf, '/');
+        if (t)
             *t = 0;
-        }
-        else
-            strcpy(buf, snew->string);
-        char *t = buf + strlen(buf);
+        t = buf + strlen(buf);
         *t++ = '/';
         strcpy(t, ent->entry);
-        // Strip out underscores.
+        // Strip out underscores (change them to hyphens).
         for ( ; *t; t++) {
             if (*t == '_')
                 *t = '-';
-        }
-        if (ent->is_menu()) {
-            // Push the stack.
-            sold = new stringlist(lstring::copy(ent->menutext), sold);
-            snew = new stringlist(lstring::copy(buf), snew);
         }
 
 #ifdef USERDBG
         fprintf(stderr, "%s\n", buf);
 #endif
-        const char *stpth = buf + 6;  // strip "/User/"
-        if (!strchr(stpth, '/')) {
-            // non-menu item
-// core leak
-            item = miset(ent, lstring::copy(stpth), ent->accel); 
-            g_object_set_data(G_OBJECT(item), MIDX,
-                voidptr (ent - mbox->menu));
-            gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_handler), mbox->menu);
-            check_separator(ent, submenu);
+        // Count the number of slashes, this is the "stack depth".
+        int nsep = 0;
+        for (t = buf + STRIPNBITS; *t; t++) {
+            if (*t == '/')
+                nsep++;
         }
-        else {
-            // XXX Need to implement .scm support.
+        while (nsep < lastnsep) {
+            // If the stack depth has decresed, pop until equality.
+            submenu_list *el = submenu_stack;
+            submenu_stack = el->next;
+            el->next = 0;
+            submenu = el->submenu;
+            delete el;
+            lastnsep--;
         }
+        const char *stpth = buf + STRIPNBITS;
+        const char *s = strrchr(stpth, '/');
+        if (s)
+            stpth = s+1;
 
-/*XXX
-        entry.path = buf;
-        entry.accelerator = (gchar*)ent->accel;
-        entry.item_type = (gchar*)ent->item;
-        if (!entry.item_type) {
-            entry.callback = HANDLER;
-            entry.callback_action = (ent - mbox->menu);
+        item = miset(ent, lstring::copy(stpth), ent->accel); 
+        if (s) {
+            // Bit of a hack here.  Strip the menu tokens from the
+            // displayed name, but put them back in ent->menutext as the
+            // evaluation logic requires it.
+
+            delete [] ent->menutext;
+            ent->menutext = lstring::copy(buf + STRIPNBITS);
         }
-        else {
-            entry.callback = 0;
-            entry.callback_action = 0;
+        g_object_set_data(G_OBJECT(item), MIDX, voidptr (ent - mbox->menu));
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(menu_handler), mbox->menu);
+        check_separator(ent, submenu);
+        if (ent->is_menu()) {
+            submenu_stack = new submenu_list(submenu, submenu_stack);
+            submenu = gtk_menu_new();
+            gtk_widget_show(submenu);
+            gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
         }
-        gtk_item_factory_create_item(item_factory, &entry,
-            mbox->menu, 2);
-        GtkWidget *btn = gtk_item_factory_get_widget(item_factory,
-            entry.path);
-        if (btn)
-            ent->cmd.caller = btn;
-*/
+        lastnsep = nsep;
     }
-    stringlist::destroy(snew);
-    stringlist::destroy(sold);
 }
 
 
@@ -2562,7 +2557,7 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data)
     }
     if (ent->is_dynamic()) {
         // script from user menu
-        if (!XM()->DbgLoad(ent)) {
+        if (!ent->is_menu() && !XM()->DbgLoad(ent)) {
 
             EV()->InitCallback();
             // Putting the call in a timeout proc allows the current
