@@ -48,7 +48,6 @@
 #include "keymap.h"
 #include "tech.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 #include <gdk/gdkkeysyms.h>
 
@@ -218,7 +217,7 @@ using namespace gtkfillp;
 void
 cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Fpe;
@@ -243,9 +242,10 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Fpe->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LR), Fpe->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LR), Fpe->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Fpe->Shell());
 }
 
@@ -1381,7 +1381,7 @@ sFpe::fp_source_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
 {
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(fillpattern_xpm);
     gtk_drag_set_icon_pixbuf(context, pixbuf, -2, -2);
-    win_bag::HaveDrag = true;
+    GTKsubwin::HaveDrag = true;
 }
 
 
@@ -1389,7 +1389,7 @@ sFpe::fp_source_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
 void
 sFpe::fp_source_drag_end(GtkWidget*, GdkDragContext*, gpointer)
 {
-    win_bag::HaveDrag = false;
+    GTKsubwin::HaveDrag = false;
 }
 
 

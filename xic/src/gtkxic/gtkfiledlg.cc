@@ -41,7 +41,6 @@
 #include "main.h"
 #include "promptline.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfile.h"
 #include "miscutil/pathlist.h"
 #include <gdk/gdkkeysyms.h>
@@ -84,7 +83,7 @@ sSFD::SaveFileDlg(const char *prompt, const char *fnamein)
 {
     if (sfd_fsel)
         return (0);
-    if (!mainBag())
+    if (!GTKmainwin::self())
         return (0);
     sfd_dir_only = true;
     char *fname = pathlist::expand_path(fnamein, true, true);
@@ -93,9 +92,10 @@ sSFD::SaveFileDlg(const char *prompt, const char *fnamein)
 
     // If popped from a button, this directs unswallowed key events to
     // the viewport instead of the button
-    gtk_window_set_focus(GTK_WINDOW(mainBag()->Shell()), mainBag()->Viewport());
+    gtk_window_set_focus(GTK_WINDOW(GTKmainwin::self()->Shell()),
+        GTKmainwin::self()->Viewport());
 
-    GTKfilePopup *fs = new GTKfilePopup(mainBag(), fsSAVE, 0, fname);
+    GTKfilePopup *fs = new GTKfilePopup(GTKmainwin::self(), fsSAVE, 0, fname);
     fs->register_callback(go_cb);
     fs->register_get_callback(path_get);
     fs->register_set_callback(path_set);
@@ -103,9 +103,10 @@ sSFD::SaveFileDlg(const char *prompt, const char *fnamein)
     fs->register_usrptr((void**)&sfd_fsel);
 
     if (sfd_fsel) {
-        GRX->SetPopupLocation(GRloc(LW_LL), sfd_fsel, mainBag()->Viewport());
+        GRX->SetPopupLocation(GRloc(LW_LL), sfd_fsel,
+            GTKmainwin::self()->Viewport());
         gtk_window_set_transient_for(GTK_WINDOW(sfd_fsel),
-            GTK_WINDOW(mainBag()->Shell()));
+            GTK_WINDOW(GTKmainwin::self()->Shell()));
         gtk_widget_show(sfd_fsel);
         gtk_BlackHoleFix(sfd_fsel);
     }
@@ -129,22 +130,24 @@ sSFD::OpenFileDlg(const char *prompt, const char *fnamein)
 {
     if (sfd_fsel)
         return (0);
-    if (!mainBag())
+    if (!GTKmainwin::self())
         return (0);
     char *fname = pathlist::expand_path(fnamein, true, true);
 
-    gtk_window_set_focus(GTK_WINDOW(mainBag()->Shell()), mainBag()->Viewport());
+    gtk_window_set_focus(GTK_WINDOW(GTKmainwin::self()->Shell()),
+        GTKmainwin::self()->Viewport());
 
-    GTKfilePopup *fs = new GTKfilePopup(mainBag(), fsOPEN, 0, fname);
+    GTKfilePopup *fs = new GTKfilePopup(GTKmainwin::self(), fsOPEN, 0, fname);
     fs->register_callback(go_cb);
     fs->register_set_callback(path_set);
     sfd_fsel = fs->Shell();
     fs->register_usrptr((void**)&sfd_fsel);
 
     if (sfd_fsel) {
-        GRX->SetPopupLocation(GRloc(LW_LL), sfd_fsel, mainBag()->Viewport());
+        GRX->SetPopupLocation(GRloc(LW_LL), sfd_fsel,
+            GTKmainwin::self()->Viewport());
         gtk_window_set_transient_for(GTK_WINDOW(sfd_fsel),
-            GTK_WINDOW(mainBag()->Shell()));
+            GTK_WINDOW(GTKmainwin::self()->Shell()));
         gtk_widget_show(sfd_fsel);
         gtk_BlackHoleFix(sfd_fsel);
     }
@@ -252,28 +255,28 @@ cMain::PopUpFileSel(const char *root, void(*cb)(const char*, void*), void *arg)
         return;
     static int posn_cnt;
 
-    GTKfilePopup *fs = new GTKfilePopup(mainBag(), fsSEL, arg, root);
+    GTKfilePopup *fs = new GTKfilePopup(GTKmainwin::self(), fsSEL, arg, root);
     fs->register_callback(cb);
     GtkWidget *fsel = fs->Shell();
 
     if (fsel) {
         gtk_window_set_transient_for(GTK_WINDOW(fsel),
-            GTK_WINDOW(mainBag()->Shell()));
+            GTK_WINDOW(GTKmainwin::self()->Shell()));
 
         int cnt = posn_cnt % 4;
         int xcnt = (posn_cnt/4) % 4;
         posn_cnt++;
 
         int x, y;
-        gdk_window_get_origin(gtk_widget_get_window(mainBag()->Viewport()),
-            &x, &y);
+        gdk_window_get_origin(gtk_widget_get_window(
+            GTKmainwin::self()->Viewport()), &x, &y);
         x += cnt*200 + xcnt*50;
         y += cnt*100;
         gtk_window_move(GTK_WINDOW(fsel), x, y);
         gtk_widget_show(fsel);
 
-        gtk_window_set_focus(GTK_WINDOW(mainBag()->Shell()),
-            mainBag()->Viewport());
+        gtk_window_set_focus(GTK_WINDOW(GTKmainwin::self()->Shell()),
+            GTKmainwin::self()->Viewport());
     }
 }
 

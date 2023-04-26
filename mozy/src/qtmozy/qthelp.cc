@@ -242,7 +242,7 @@ static const char * const stop_xpm[] = {
 // Return false if the topic is not found
 //
 bool
-qt_bag::PopUpHelp(const char *wordin)
+QTbag::PopUpHelp(const char *wordin)
 {
     if (!HLP()->get_path(0)) {
         PopUpErr(MODE_ON, "Error: no path to database.");
@@ -289,7 +289,7 @@ HelpWidget::new_widget(GRwbag **ptr, int, int)
 {
     QWidget *parent = 0;
     if (GRpkgIf()->MainWbag()) {
-        qt_bag *wb = dynamic_cast<qt_bag*>(GRpkgIf()->MainWbag());
+        QTbag *wb = dynamic_cast<QTbag*>(GRpkgIf()->MainWbag());
         if (wb)
             parent = wb->shell_widget();
     }
@@ -305,10 +305,10 @@ HelpWidget::new_widget(GRwbag **ptr, int, int)
 //-----------------------------------------------------------------------------
 // Constructor/destrucor
 
-static void sens_set(qt_bag*, bool);
+static void sens_set(QTbag*, bool);
 
-QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QWidget(prnt),
-    qt_bag(this)
+QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
+    QTbag(this)
 {
     // If has_menu is false, the widget will not have the menu or the
     // status bar visible.
@@ -325,9 +325,12 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QWidget(prnt),
 
     sens_set = ::sens_set;
 
-    menubar = new QMenuBar(this);
-    if (!has_menu)
-        menubar->hide();
+    if (!has_menu) {
+        // This is for Apple, when given it uses a per-window menubar
+        // like other systems.
+        menuBar()->setNativeMenuBar(false);
+        menuBar()->hide();
+    }
     else {
         int xx = 0, yy = 0;
         if (prnt) {
@@ -340,14 +343,15 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QWidget(prnt),
         setWindowFlags(Qt::Dialog);
         move(xx, yy);
     }
+    QWidget *cwidget = new QWidget;
     html_viewer = new viewer_w(500, 400, this, this);
+    setCentralWidget(cwidget);
     status_bar = new QStatusBar(this);
     if (!has_menu)
         status_bar->hide();
-    QVBoxLayout *vbox = new QVBoxLayout(this);
+    QVBoxLayout *vbox = new QVBoxLayout(cwidget);
     vbox->setMargin(4);
     vbox->setSpacing(2);
-    vbox->setMenuBar(menubar);
     vbox->addWidget(html_viewer);
     vbox->addWidget(status_bar);
 
@@ -356,83 +360,79 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QWidget(prnt),
 
     html_viewer->freeze();
 
-    a_Backward = menubar->addAction(QString("back"),
+    a_Backward = menuBar()->addAction(tr("back"),
         this, SLOT(backward_slot()));
     a_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
 
-    a_Forward = menubar->addAction(QString("forw"),
+    a_Forward = menuBar()->addAction(tr("forw"),
         this, SLOT(forward_slot()));
     a_Forward->setIcon(QIcon(QPixmap(forward_xpm)));
 
-    a_Stop = menubar->addAction(QString("stop"),
+    a_Stop = menuBar()->addAction(tr("stop"),
         this, SLOT(stop_slot()));
     a_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
 
-    main_menus[0] = new QMenu(this);
-    main_menus[0]->setTitle(tr("&File"));
-    menubar->addMenu(main_menus[0]);
-    a_Open = main_menus[0]->addAction(QString(tr("&Open")),
+    main_menus[0] = menuBar()->addMenu(tr("&File"));
+    a_Open = main_menus[0]->addAction(tr("&Open"),
         this, SLOT(open_slot()), Qt::CTRL+Qt::Key_O);
     a_OpenFile = main_menus[0]->addAction(QString(tr("Open &File")),
         this, SLOT(open_file_slot()), Qt::CTRL+Qt::Key_F);
-    a_Save = main_menus[0]->addAction(QString(tr("&Save")),
+    a_Save = main_menus[0]->addAction(tr("&Save"),
         this, SLOT(save_slot()), Qt::CTRL+Qt::Key_S);
-    a_Print = main_menus[0]->addAction(QString(tr("&Print")),
+    a_Print = main_menus[0]->addAction(tr("&Print"),
         this, SLOT(print_slot()), Qt::CTRL+Qt::Key_P);
-    a_Reload = main_menus[0]->addAction(QString(tr("&Reload")),
+    a_Reload = main_menus[0]->addAction(tr("&Reload"),
         this, SLOT(reload_slot()), Qt::CTRL+Qt::Key_R);
     main_menus[0]->addSeparator();
-    a_Quit = main_menus[0]->addAction(QString(tr("&Quit")),
+    a_Quit = main_menus[0]->addAction(tr("&Quit"),
         this, SLOT(quit_slot()), Qt::CTRL+Qt::Key_Q);
 
-    main_menus[1] = new QMenu(this);
-    main_menus[1]->setTitle(tr("&Options"));
-    menubar->addMenu(main_menus[1]);
-    a_Search = main_menus[1]->addAction(QString(tr("S&earch")),
+    main_menus[1] = menuBar()->addMenu(tr("&Options"));
+    a_Search = main_menus[1]->addAction(tr("S&earch"),
         this, SLOT(search_slot()));
-    a_FindText = main_menus[1]->addAction(QString(tr("Find Text")),
+    a_FindText = main_menus[1]->addAction(tr("Find Text"),
         this, SLOT(find_slot()));
-    a_SetFont = main_menus[1]->addAction(QString(tr("Set &Font")));
+    a_SetFont = main_menus[1]->addAction(tr("Set &Font"));
     a_SetFont->setCheckable(true);
     connect(a_SetFont, SIGNAL(toggled(bool)),
         this, SLOT(set_font_slot(bool)));
-    a_DontCache = main_menus[1]->addAction(QString(tr("&Don't Cache")));
+    a_DontCache = main_menus[1]->addAction(tr("&Don't Cache"));
     a_DontCache->setCheckable(true);
     connect(a_DontCache, SIGNAL(toggled(bool)),
         this, SLOT(dont_cache_slot(bool)));
     a_DontCache->setChecked(params->NoCache);
-    a_ClearCache = main_menus[1]->addAction(QString(tr("&Clear Cache")),
+    a_ClearCache = main_menus[1]->addAction(tr("&Clear Cache"),
         this, SLOT(clear_cache_slot()));
-    a_ReloadCache = main_menus[1]->addAction(QString(tr("&Reload Cache")),
+    a_ReloadCache = main_menus[1]->addAction(tr("&Reload Cache"),
         this, SLOT(reload_cache_slot()));
-    a_ShowCache = main_menus[1]->addAction(QString(tr("Show Cache")),
+    a_ShowCache = main_menus[1]->addAction(tr("Show Cache"),
         this, SLOT(show_cache_slot()));
     main_menus[1]->addSeparator();
-    a_NoCookies = main_menus[1]->addAction(QString(tr("No Cookies")));
+    a_NoCookies = main_menus[1]->addAction(tr("No Cookies"));
     a_NoCookies->setCheckable(true);
     connect(a_NoCookies, SIGNAL(toggled(bool)),
         this, SLOT(no_cookies_slot(bool)));
     a_NoCookies->setChecked(params->NoCookies);
 
     QActionGroup *ag = new QActionGroup(this);
-    a_NoImages = main_menus[1]->addAction(QString(tr("No Images")));
+    a_NoImages = main_menus[1]->addAction(tr("No Images"));
     a_NoImages->setCheckable(true);
     connect(a_NoImages, SIGNAL(toggled(bool)),
         this, SLOT(no_images_slot(bool)));
     ag->addAction(a_NoImages);
-    a_SyncImages = main_menus[1]->addAction(QString(tr("Sync Images")));
+    a_SyncImages = main_menus[1]->addAction(tr("Sync Images"));
     a_SyncImages->setCheckable(true);
     connect(a_SyncImages, SIGNAL(toggled(bool)),
         this, SLOT(sync_images_slot(bool)));
     ag->addAction(a_SyncImages);
     a_DelayedImages =
-        main_menus[1]->addAction(QString(tr("Delayed Images")));
+        main_menus[1]->addAction(tr("Delayed Images"));
     a_DelayedImages->setCheckable(true);
     connect(a_DelayedImages, SIGNAL(toggled(bool)),
         this, SLOT(delayed_images_slot(bool)));
     ag->addAction(a_DelayedImages);
     a_ProgressiveImages =
-        main_menus[1]->addAction(QString(tr("Progressive Images")));
+        main_menus[1]->addAction(tr("Progressive Images"));
     a_ProgressiveImages->setCheckable(true);
     connect(a_ProgressiveImages, SIGNAL(toggled(bool)),
         this, SLOT(progressive_images_slot(bool)));
@@ -449,19 +449,19 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QWidget(prnt),
     main_menus[1]->addSeparator();
 
     ag = new QActionGroup(this);
-    a_AnchorPlain = main_menus[1]->addAction(QString(tr("Anchor Plain")));
+    a_AnchorPlain = main_menus[1]->addAction(tr("Anchor Plain"));
     a_AnchorPlain->setCheckable(true);
     connect(a_AnchorPlain, SIGNAL(toggled(bool)),
         this, SLOT(anchor_plain_slot(bool)));
     ag->addAction(a_AnchorPlain);
     a_AnchorButtons =
-        main_menus[1]->addAction(QString(tr("Anchor Buttons")));
+        main_menus[1]->addAction(tr("Anchor Buttons"));
     a_AnchorButtons->setCheckable(true);
     connect(a_AnchorButtons, SIGNAL(toggled(bool)),
         this, SLOT(anchor_buttons_slot(bool)));
     ag->addAction(a_AnchorButtons);
     a_AnchorUnderline =
-        main_menus[1]->addAction(QString(tr("Anchor Underline")));
+        main_menus[1]->addAction(tr("Anchor Underline"));
     a_AnchorUnderline->setCheckable(true);
     connect(a_AnchorUnderline, SIGNAL(toggled(bool)),
         this, SLOT(anchor_underline_slot(bool)));
@@ -474,44 +474,40 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QWidget(prnt),
         a_AnchorPlain->setChecked(true);
 
     a_AnchorHighlight =
-        main_menus[1]->addAction(QString(tr("Anchor Highlight")));
+        main_menus[1]->addAction(tr("Anchor Highlight"));
     a_AnchorHighlight->setCheckable(true);
     connect(a_AnchorHighlight, SIGNAL(toggled(bool)),
         this, SLOT(anchor_highlight_slot(bool)));
     a_AnchorHighlight->setChecked(params->AnchorHighlight);
-    a_BadHTML = main_menus[1]->addAction(QString(tr("Bad HTML Warnings")));
+    a_BadHTML = main_menus[1]->addAction(tr("Bad HTML Warnings"));
     a_BadHTML->setCheckable(true);
     connect(a_BadHTML, SIGNAL(toggled(bool)),
         this, SLOT(bad_html_slot(bool)));
     a_BadHTML->setChecked(params->BadHTMLwarnings);
     a_FreezeAnimations =
-        main_menus[1]->addAction(QString(tr("Freeze Animations")));
+        main_menus[1]->addAction(tr("Freeze Animations"));
     a_FreezeAnimations->setCheckable(true);
     connect(a_FreezeAnimations, SIGNAL(toggled(bool)),
         this, SLOT(freeze_animations_slot(bool)));
     a_FreezeAnimations->setChecked(params->FreezeAnimations);
     a_LogTransactions =
-        main_menus[1]->addAction(QString(tr("Log Transactions")));
+        main_menus[1]->addAction(tr("Log Transactions"));
     a_LogTransactions->setCheckable(true);
     connect(a_LogTransactions, SIGNAL(toggled(bool)),
         this, SLOT(log_transactions_slot(bool)));
     a_LogTransactions->setChecked(params->PrintTransact);
 
-    main_menus[2] = new QMenu(this);
-    main_menus[2]->setTitle(tr("&Bookmarks"));
-    menubar->addMenu(main_menus[2]);
-    a_AddBookmark = main_menus[2]->addAction(QString(tr("Add")),
+    main_menus[2] = menuBar()->addMenu(tr("&Bookmarks"));
+    a_AddBookmark = main_menus[2]->addAction(tr("Add"),
         this, SLOT(add_slot()));
-    a_DeleteBookmark = main_menus[2]->addAction(QString(tr("Delete")),
+    a_DeleteBookmark = main_menus[2]->addAction(tr("Delete"),
         this, SLOT(delete_slot()));
     a_DeleteBookmark->setCheckable(true);
     main_menus[2]->addSeparator();
 
-    menubar->addSeparator();
-    main_menus[3] = new QMenu(this);
-    main_menus[3]->setTitle(tr("&Help"));
-    menubar->addMenu(main_menus[3]);
-    a_Help = main_menus[3]->addAction(QString(tr("&Help")),
+    menuBar()->addSeparator();
+    main_menus[3] = menuBar()->addMenu(tr("&Help"));
+    a_Help = main_menus[3]->addAction(tr("&Help"),
         this, SLOT(help_slot()), Qt::CTRL+Qt::Key_H);
 
     const char *fn = FC.getName(FNT_MOZY);
@@ -572,7 +568,7 @@ QThelpPopup::menu_sens_set(bool set)
 
 
 static void
-sens_set(qt_bag *wp, bool set)
+sens_set(QTbag *wp, bool set)
 {
     QThelpPopup *w = dynamic_cast<QThelpPopup*>(wp);
     if (w)
@@ -1079,7 +1075,7 @@ QThelpPopup::scroll_visible(int l, int t, int r, int b)
 
 
 //-----------------------------------------------------------------------------
-// qt_bag functions
+// QTbag functions
 
 char *
 QThelpPopup::GetPostscriptText(int font_family, const char *url,
@@ -1538,8 +1534,8 @@ QThelpPopup::bookmark_slot(QAction *action)
 void
 QThelpPopup::help_slot()
 {
-    if (GRX->main_frame())
-        GRX->main_frame()->PopUpHelp("helpsys");
+    if (GRX->MainFrame())
+        GRX->MainFrame()->PopUpHelp("helpsys");
     else
         PopUpHelp("helpsys");
 }

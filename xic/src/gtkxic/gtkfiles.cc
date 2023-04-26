@@ -49,7 +49,6 @@
 #include "events.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkmcol.h"
 #include "gtkinterf/gtkpfiles.h"
 #include "gtkinterf/gtkfont.h"
@@ -129,7 +128,7 @@ const char *sFL::files_msg =
 // Static function.
 //
 char *
-main_bag::get_file_selection()
+GTKmainwin::get_file_selection()
 {
     if (FL())
         return (FL()->get_selection());
@@ -141,7 +140,7 @@ main_bag::get_file_selection()
 // Called on crash to prevent updates.
 //
 void
-main_bag::files_panic()
+GTKmainwin::files_panic()
 {
     files_bag::panic();
 }
@@ -157,8 +156,9 @@ namespace {
         new sFL(caller);
 
         gtk_window_set_transient_for(GTK_WINDOW(FL()->Shell()),
-            GTK_WINDOW(mainBag()->Shell()));
-        GRX->SetPopupLocation(GRloc(), FL()->Shell(), mainBag()->Viewport());
+            GTK_WINDOW(GTKmainwin::self()->Shell()));
+        GRX->SetPopupLocation(GRloc(), FL()->Shell(),
+            GTKmainwin::self()->Viewport());
         gtk_widget_show(FL()->Shell());
 
         dspPkgIf()->SetWorking(false);
@@ -172,7 +172,7 @@ void
 cConvert::PopUpFiles(GRobject caller, ShowMode mode)
 {
     static bool lockout;
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         // Make sure we aren't reentered from destructor code.  This
@@ -201,15 +201,16 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
     new sFL(caller);
 
     gtk_window_set_transient_for(GTK_WINDOW(FL()->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
-    GRX->SetPopupLocation(GRloc(), FL()->Shell(), mainBag()->Viewport());
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    GRX->SetPopupLocation(GRloc(), FL()->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(FL()->Shell());
     ****/
 }
 
 
 sFL::sFL(GRobject c) :
-    files_bag(mainBag(), 0, 0, files_msg, fl_action_proc, fl_btn_proc,
+    files_bag(GTKmainwin::self(), 0, 0, files_msg, fl_action_proc, fl_btn_proc,
         fl_listing, fl_down_cb, fl_desel)
 {
     fl_selection = 0;

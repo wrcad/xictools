@@ -54,7 +54,7 @@ class QTextEdit;
 namespace qtinterf
 {
     class activity_w;
-    class qt_bag;
+    class QTbag;
 
     class progress_d : public QDialog, public GRpopup
     {
@@ -63,7 +63,7 @@ namespace qtinterf
     public:
         enum prgMode { prgPrint, prgFileop };
 
-        progress_d(qt_bag*, prgMode);
+        progress_d(QTbag*, prgMode);
         ~progress_d();
 
         // GRpopup overrides

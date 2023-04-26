@@ -53,7 +53,6 @@
 #include "promptline.h"
 #include "events.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include <gdk/gdkkeysyms.h>
 
@@ -160,7 +159,7 @@ void
 cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
     const char *string)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Lpe;
@@ -181,9 +180,10 @@ cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Lpe->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Lpe->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Lpe->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Lpe->shell());
 }
 

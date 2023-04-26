@@ -50,7 +50,6 @@
 #include "promptline.h"
 #include "events.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkutil.h"
 #include "gtkinterf/gtksearch.h"
@@ -296,7 +295,7 @@ using namespace gtkdebug;
 void
 cMain::PopUpDebug(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Dbg;
@@ -312,9 +311,10 @@ cMain::PopUpDebug(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Dbg->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Dbg->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Dbg->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Dbg->Shell());
 }
 
@@ -1409,7 +1409,7 @@ sDbg::monitor()
     }
     if (!db_vlist)
         return;
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
 
     db_vars_pop = new sDbV(&db_vars_pop);
@@ -1420,7 +1420,7 @@ sDbg::monitor()
 
     GRX->SetPopupLocation(GRloc(LW_LR), db_vars_pop->Shell(), wb_shell);
     gtk_window_set_transient_for(GTK_WINDOW(db_vars_pop->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
     gtk_widget_show(db_vars_pop->Shell());
 
     // Calling this from here avoids spontaneously selecting the first

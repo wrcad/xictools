@@ -88,7 +88,7 @@ sLcb *
 cMain::PopUpLayerEditor(GRobject c)
 {
     /*
-    if (!GRX || !mainBag())
+    if (!GRX || !QTmainwin::self())
         return (0);
     gtkLcb *cbs = new gtkLcb(c);
     if (!cbs->Shell()) {
@@ -97,8 +97,8 @@ cMain::PopUpLayerEditor(GRobject c)
     }
 
     gtk_window_set_transient_for(GTK_WINDOW(cbs->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
-    GRX->SetPopupLocation(GRloc(), cbs->Shell(), mainBag()->viewport);
+        GTK_WINDOW(QTmainwin::self()->Shell()));
+    GRX->SetPopupLocation(GRloc(), cbs->Shell(), QTmainwin::self()->viewport);
     gtk_widget_show(cbs->Shell());
     return (cbs);
     */

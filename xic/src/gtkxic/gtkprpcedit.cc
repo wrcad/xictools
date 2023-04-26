@@ -48,7 +48,6 @@
 #include "events.h"
 #include "promptline.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -136,7 +135,7 @@ sAddEnt sPc::pc_phys_addmenu[] = {
 void
 cEdit::PopUpCellProperties(ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Pc;
@@ -155,9 +154,10 @@ cEdit::PopUpCellProperties(ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Pc->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Pc->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), Pc->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Pc->Shell());
 }
 // End of cEdit functions.

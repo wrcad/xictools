@@ -133,7 +133,7 @@ namespace {
 #define MM(x) (pd_metric ? (x)*MMPI : (x))
 
 
-QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, qt_bag *wbag) :
+QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
     QDialog(wbag ? wbag->shell : 0)
 {
     pd_owner = wbag;
@@ -599,7 +599,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, qt_bag *wbag) :
         }
     }
 
-    // Success, link into owning qt_bag.
+    // Success, link into owning QTbag.
     if (pd_owner) {
         if (pd_owner->hc)
             delete pd_owner->hc;

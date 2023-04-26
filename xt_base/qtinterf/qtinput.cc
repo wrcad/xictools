@@ -50,7 +50,7 @@
 #include <QTextEdit>
 
 
-QTledPopup::QTledPopup(qt_bag *owner, const char *label_str,
+QTledPopup::QTledPopup(QTbag *owner, const char *label_str,
     const char *initial_str, const char *action_str, void *arg, bool mult) :
     QDialog(owner ? owner->shell : 0)
 {
@@ -119,7 +119,7 @@ QTledPopup::~QTledPopup()
         }
     }
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner) {
             owner->monitor.remove(this);
             if (owner->input == this) {
@@ -168,7 +168,7 @@ void
 QTledPopup::popdown()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }
@@ -182,7 +182,7 @@ void
 QTledPopup::update(const char *prompt_str, const char *init_str)
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }

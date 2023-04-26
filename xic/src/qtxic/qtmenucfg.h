@@ -62,7 +62,8 @@ public:
 
     qtMenuConfig();
     void instantiateMainMenus();
-    void instantiateSideMenus();
+    void instantiateTopButtonMenu();
+    void instantiateSideButtonMenus();
     void instantiateSubwMenus(int);
     void updateDynamicMenus();
     void switch_menu_mode(DisplayMode, int);
@@ -74,11 +75,14 @@ signals:
 private slots:
     void file_menu_slot(QAction*);
     void file_open_menu_slot(QAction*);
+    void cell_menu_slot(QAction*);
     void edit_menu_slot(QAction*);
     void modf_menu_slot(QAction*);
     void view_menu_slot(QAction*);
     void view_view_menu_slot(QAction*);
     void attr_menu_slot(QAction*);
+    void attr_main_win_menu_slot(QAction*);
+    void attr_main_win_obj_menu_slot(QAction*);
     void cvrt_menu_slot(QAction*);
     void drc_menu_slot(QAction*);
     void ext_menu_slot(QAction*);

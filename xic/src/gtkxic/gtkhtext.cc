@@ -48,7 +48,6 @@
 #include "errorlog.h"
 #include "gtkmain.h"
 #include "gtkhtext.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 #include <gdk/gdkkeysyms.h>
@@ -342,9 +341,9 @@ GTKedit::flash_msg(const char *msg, ...)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_container_add(GTK_CONTAINER(popup), label);
 
-    GRX->SetPopupLocation(GRloc(LW_LL), popup, mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), popup, GTKmainwin::self()->Viewport());
     gtk_window_set_transient_for(GTK_WINDOW(popup),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
     gtk_widget_show(popup);
 
@@ -373,7 +372,7 @@ GTKedit::flash_msg_here(int x, int y, const char *msg, ...)
     gtk_container_add(GTK_CONTAINER(popup), label);
 
     int mwid, mhei;
-    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, &mhei);
+    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, &mhei);
     GtkRequisition req;
     gtk_widget_get_requisition(popup, &req);
     if (x + req.width > mwid)
@@ -382,7 +381,7 @@ GTKedit::flash_msg_here(int x, int y, const char *msg, ...)
         y = mhei - req.height;
     gtk_window_move(GTK_WINDOW(popup), x, y);
     gtk_window_set_transient_for(GTK_WINDOW(popup),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
     gtk_widget_show(popup);
 
@@ -403,7 +402,7 @@ GTKedit::save_line()
 int
 GTKedit::win_width(bool in_chars)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return (in_chars ? 80 : 800);
     if (in_chars) {
         int cw, ch;
@@ -419,7 +418,7 @@ GTKedit::win_width(bool in_chars)
 int
 GTKedit::win_height()
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return (14);
     return (pe_hei);
 }
@@ -430,10 +429,10 @@ GTKedit::win_height()
 void
 GTKedit::set_focus()
 {
-    if (mainBag()) {
-        GRX->SetFocus(mainBag()->Shell());
-        gtk_window_set_focus(GTK_WINDOW(mainBag()->Shell()),
-            mainBag()->Viewport());
+    if (GTKmainwin::self()) {
+        GRX->SetFocus(GTKmainwin::self()->Shell());
+        gtk_window_set_focus(GTK_WINDOW(GTKmainwin::self()->Shell()),
+            GTKmainwin::self()->Viewport());
     }
 }
 
@@ -693,8 +692,8 @@ GTKedit::pe_popup_btn_proc(GtkWidget *w, GdkEvent *event, void*)
     else if (ptr() && w == ptr()->pe_s_button)
         gtk_menu_popup(GTK_MENU(ptr()->pe_s_menu), 0, 0, pos_func, w,
             event->button.button, event->button.time);
-    gtk_window_set_focus(GTK_WINDOW(mainBag()->Shell()),
-        mainBag()->Viewport());
+    gtk_window_set_focus(GTK_WINDOW(GTKmainwin::self()->Shell()),
+        GTKmainwin::self()->Viewport());
     return (true);
 }
 
@@ -714,8 +713,8 @@ GTKedit::pe_r_menu_proc(GtkWidget *w, void*)
     if (ix >= PE_NUMSTORES)
         return;
 
-    gtk_window_set_focus(GTK_WINDOW(mainBag()->Shell()),
-        mainBag()->Viewport());
+    gtk_window_set_focus(GTK_WINDOW(GTKmainwin::self()->Shell()),
+        GTKmainwin::self()->Viewport());
     for (hyList *hl = pe_stores[ix]; hl; hl = hl->next()) {
         if (hl->ref_type() == HLrefText || hl->ref_type() == HLrefLongText ||
                 hl->ref_type() == HLrefEnd)
@@ -758,8 +757,8 @@ GTKedit::pe_s_menu_proc(GtkWidget *w, void*)
     pe_stores[ix] = ptr()->get_hyList(false);
 
     ptr()->flash_msg("Edit line saved in register %d.", ix);
-    gtk_window_set_focus(GTK_WINDOW(mainBag()->Shell()),
-        mainBag()->Viewport());
+    gtk_window_set_focus(GTK_WINDOW(GTKmainwin::self()->Shell()),
+        GTKmainwin::self()->Viewport());
 }
 
 
@@ -770,7 +769,7 @@ int
 GTKedit::pe_keys_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
     if (XM()->IsDoingHelp() && event->type == GDK_BUTTON_PRESS &&
-            !is_shift_down())
+            !GTKmainwin::is_shift_down())
         DSPmainWbag(PopUpHelp("keyspresd"))
     return (true);
 }

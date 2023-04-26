@@ -63,7 +63,7 @@
 // call the callback with the selection and dismiss.
 //
 GRlistPopup *
-qt_bag::PopUpList(stringlist *symlist, const char *title,
+QTbag::PopUpList(stringlist *symlist, const char *title,
     const char *header, void(*callback)(const char*, void*), void *arg,
     bool usepix, bool use_apply)
 {
@@ -129,9 +129,9 @@ list_delegate::sizeHint(const QStyleOptionViewItem&,
 }
 
 
-QTlistPopup::QTlistPopup(qt_bag *owner, stringlist *symlist, const char *title,
+QTlistPopup::QTlistPopup(QTbag *owner, stringlist *symlist, const char *title,
     const char *header, bool usepix, void *arg) :
-    QDialog(owner ? owner->shell : 0), qt_bag(this)
+    QDialog(owner ? owner->shell : 0), QTbag(this)
 {
     p_parent = owner;
     p_cb_arg = arg;
@@ -188,7 +188,7 @@ QTlistPopup::~QTlistPopup()
     if (p_callback)
         (*p_callback)(0, p_cb_arg);
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->monitor.remove(this);
     }
@@ -201,7 +201,7 @@ void
 QTlistPopup::popdown()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }
@@ -215,7 +215,7 @@ void
 QTlistPopup::update(stringlist *symlist, const char *title, const char *header)
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }

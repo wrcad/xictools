@@ -42,7 +42,6 @@
 #include "edit.h"
 #include "geo_zlist.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -96,7 +95,7 @@ sPf::sPf(GRobject caller)
     pf_fontsel = 0;
     pf_font = 0;
 
-    pf_fontsel = new GTKfontPopup(mainBag(), -1, 0, pf_btns, "");
+    pf_fontsel = new GTKfontPopup(GTKmainwin::self(), -1, 0, pf_btns, "");
     pf_fontsel->register_caller(caller);
     pf_fontsel->register_callback(pf_cb);
     pf_fontsel->register_usrptr((void**)&pf_fontsel);
@@ -186,7 +185,7 @@ sPf::pf_upd_idle(void*)
 void
 cEdit::PopUpPolytextFont(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Pf;
@@ -205,9 +204,9 @@ cEdit::PopUpPolytextFont(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Pf->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Pf->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Pf->shell(), GTKmainwin::self()->Viewport());
     gtk_widget_show(Pf->shell());
 }
 
@@ -223,7 +222,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
         return (0);
     if (psz <= 0)
         return (0);
-    if (!mainBag())
+    if (!GTKmainwin::self())
         return (0);
     if (!sPf::font())
         sPf::init_font();
@@ -234,7 +233,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     polytextExtent(string, &wid, &hei, &numlines);
 
 #if GTK_CHECK_VERSION(3,0,0)
-    GdkWindow *window = mainBag()->GetDrawable()->get_window();
+    GdkWindow *window = GTKmainwin::self()->GetDrawable()->get_window();
     ndkPixmap *pixmap = new ndkPixmap(window, wid, hei);
     ndkGC *gc = new ndkGC(window);
     GdkColor c;
@@ -245,9 +244,9 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     c.pixel = 0;  // black
     gc->set_foreground(&c);
 #else
-    GdkPixmap *pixmap = gdk_pixmap_new(mainBag()->Window(), wid, hei,
+    GdkPixmap *pixmap = gdk_pixmap_new(GTKmainwin::self()->Window(), wid, hei,
         GRX->Visual()->depth);
-    GdkGC *gc = gdk_gc_new(mainBag()->Window());
+    GdkGC *gc = gdk_gc_new(GTKmainwin::self()->Window());
     GdkColor c;
     c.pixel = 0xffffff;  // white
     gdk_gc_set_background(gc, &c);
@@ -262,7 +261,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
 
     int fw, fh;
     PangoLayout *lout =
-        gtk_widget_create_pango_layout(mainBag()->Viewport(), "X");
+        gtk_widget_create_pango_layout(GTKmainwin::self()->Viewport(), "X");
     pango_layout_set_font_description(lout, pfd);
     pango_layout_get_pixel_size(lout, &fw, &fh);
     g_object_unref(lout);
@@ -275,7 +274,8 @@ cEdit::polytext(const char *string, int psz, int x, int y)
         char *ctmp = new char[s-t + 1];
         strncpy(ctmp, t, s-t);
         ctmp[s-t] = 0;
-        lout = gtk_widget_create_pango_layout(mainBag()->Viewport(), ctmp);
+        lout = gtk_widget_create_pango_layout(GTKmainwin::self()->Viewport(),
+            ctmp);
         delete [] ctmp;
         pango_layout_set_font_description(lout, pfd);
         int len, xx;
@@ -299,7 +299,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
         ty += fh;
     }
     int tx = 0;
-    lout = gtk_widget_create_pango_layout(mainBag()->Viewport(), t);
+    lout = gtk_widget_create_pango_layout(GTKmainwin::self()->Viewport(), t);
     pango_layout_set_font_description(lout, pfd);
     int len, xx;
     pango_layout_get_pixel_size(lout, &len, &xx);
@@ -368,7 +368,7 @@ void
 cEdit::polytextExtent(const char *string, int *width, int *height,
     int *numlines)
 {
-    if (XM()->RunMode() != ModeNormal || !mainBag()) {
+    if (XM()->RunMode() != ModeNormal || !GTKmainwin::self()) {
         *width = 0;
         *height = 0;
         *numlines = 1;
@@ -384,8 +384,8 @@ cEdit::polytextExtent(const char *string, int *width, int *height,
     }
     PangoFontDescription *pfd =
         pango_font_description_from_string(sPf::font());
-    PangoLayout *lout = gtk_widget_create_pango_layout(mainBag()->Viewport(),
-        string);
+    PangoLayout *lout = gtk_widget_create_pango_layout(
+        GTKmainwin::self()->Viewport(), string);
     pango_layout_set_font_description(lout, pfd);
     pango_layout_get_pixel_size(lout, width, height);
     g_object_unref(lout);

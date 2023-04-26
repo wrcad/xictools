@@ -48,7 +48,6 @@
 #include "events.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtklist.h"
 #include "gtkinterf/gtkmcol.h"
 #include "gtkinterf/gtkfont.h"
@@ -131,7 +130,7 @@ const char *sLB::nolibmsg = "There are no libraries found.";
 // Static function.
 //
 char *
-main_bag::get_lib_selection()
+GTKmainwin::get_lib_selection()
 {
     if (LB)
         return (LB->get_selection());
@@ -143,7 +142,7 @@ main_bag::get_lib_selection()
 // Called on crash to prevent updates.
 //
 void
-main_bag::libs_panic()
+GTKmainwin::libs_panic()
 {
     LB = 0;
 }
@@ -157,7 +156,7 @@ main_bag::libs_panic()
 void
 cConvert::PopUpLibraries(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete LB;
@@ -177,9 +176,10 @@ cConvert::PopUpLibraries(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(LB->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), LB->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), LB->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(LB->Shell());
 }
 

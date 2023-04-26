@@ -46,7 +46,6 @@
 #include "tech.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 
 #include <gdk/gdkkeysyms.h>
 #ifdef WITH_X11

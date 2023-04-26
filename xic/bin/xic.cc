@@ -258,9 +258,6 @@ namespace {
 }
 cSelections Selections;             // selections package
 
-#if defined(HAVE_GTK1) && !defined(DYNAMIC_LIBS)
-namespace { void setup_gtk() }
-#endif
 
 //-----------------------------------------------------------------------------
 // Main function
@@ -488,12 +485,8 @@ main(int argc, char **argv)
     unsigned int gmode;
     if (XM()->RunMode() != ModeNormal)
         gmode = GR_ALL_DRIVERS;
-    else {
+    else
         gmode = (GR_ALL_PKGS | GR_ALL_DRIVERS);
-#if defined(HAVE_GTK1) && !defined(DYNAMIC_LIBS)
-        setup_gtk();
-#endif
-    }
 
     if (GRpkgIf()->InitPkg(gmode, &argc, argv)) {
         PAUSE();
@@ -1826,80 +1819,4 @@ sCmdLine::process_args(int argc, char **argv, bool prep)
     NumArgs = argc;
     Args = argv;
 }
-
-
-#if defined(HAVE_GTK1) && !defined(DYNAMIC_LIBS)
-namespace {
-    // Some setup code for the GTK library (GTK-1 only!).
-    //
-    void setup_gtk()
-    {
-        // There is a portability problem with the statically-linked
-        // gtk when theme engines are imported.  In particular, libpng
-        // has very restrictive verson matching, and if an engine
-        // (such as eazel) tries to read a png image, and the shared
-        // code is compiled against a different libpng release than
-        // the one we supply, the application will exit.  Thus, we (by
-        // default) turn off themes generally, and supply our own,
-        // known to work.
-
-        if (getenv("XT_USE_GTK_THEMES"))
-            return;
-        const char *libpath = CDvdb()->getVariable(VA_LibPath);
-        if (!libpath)
-            return;
-        char *path;
-        FILE *fp = pathlist::open_path_file("default_theme/gtkrc", libpath,
-            "r", &path, true);
-        if (fp) {
-            fclose(fp);
-
-            // We're going to check for gtkrc in default_theme and its
-            // parent dir, parent dir last so it has precedence.  If the
-            // user modifies gtkrc, it should be copied to the parent dir
-            // so it won't get clobbered by a software update.
-
-            char *rcp = new char[2*strlen(path) + 2];
-            char *e = lstring::stpcpy(rcp, path);
-            char *ee = e;
-            *e++ = ':';
-            strcpy(e, path);
-            e = lstring::strrdirsep(ee);
-            if (e) {
-                char *fn = e + 1;
-                *e = 0;
-                e = lstring::strrdirsep(ee);
-                if (e) {
-                    e++;
-                    while ((*e = *fn++) != 0)
-                        e++;
-                }
-                else
-                    *ee = 0;
-            }
-            else
-                *ee = 0;
-
-            char *v1 = new char[strlen(rcp) + 16];
-            sprintf(v1, "%s=%s", "GTK_RC_FILES", rcp);
-            putenv(v1);
-            delete [] rcp;
-
-            e = lstring::strrdirsep(path);
-            if (e)
-                *e = 0;
-            else
-                *path = 0;
-            char *v2 = new char[strlen(path) + 18];
-            sprintf(v2, "%s=%s", "GTK_EXE_PREFIX", path);
-            putenv(v2);
-            delete [] path;
-        }
-        else
-            // Don't read any gtkrc files, so no themes
-            putenv(lstring::copy("GTK_RC_FILES="));
-        delete [] libpath;
-    }
-}
-#endif
 

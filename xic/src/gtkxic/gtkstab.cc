@@ -46,7 +46,6 @@
 #include "promptline.h"
 #include "events.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkcv.h"
 
 
@@ -97,7 +96,7 @@ using namespace gtkstab;
 void
 cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Tb;
@@ -117,9 +116,9 @@ cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Tb->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Tb->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Tb->Shell(), GTKmainwin::self()->Viewport());
     gtk_widget_show(Tb->Shell());
 }
 

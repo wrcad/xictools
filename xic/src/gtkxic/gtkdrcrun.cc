@@ -50,7 +50,6 @@
 #include "errorlog.h"
 #include "promptline.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 #ifdef WIN32
 #include "windows.h"
@@ -173,7 +172,7 @@ bool sDC::dc_use_chd = false;
 void
 cDRC::PopUpDrcRun(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete DC;
@@ -193,9 +192,9 @@ cDRC::PopUpDrcRun(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(DC->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), DC->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), DC->shell(), GTKmainwin::self()->Viewport());
     gtk_widget_show(DC->shell());
 }
 // End of cDRC functions.

@@ -54,14 +54,14 @@ class QPushButton;
 
 namespace qtinterf
 {
-    class qt_bag;
+    class QTbag;
 
     class search_d : public QDialog, public GRpopup
     {
         Q_OBJECT
 
     public:
-        search_d(qt_bag*, const char*);
+        search_d(QTbag*, const char*);
         ~search_d();
 
         // GRpopup overrides

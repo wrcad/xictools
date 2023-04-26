@@ -51,7 +51,6 @@
 #include "undolist.h"
 #include "promptline.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkcv.h"
 
 #define WID_DEF     0.1
@@ -200,7 +199,7 @@ namespace {
 void
 cEdit::PopUpStdVia(GRobject caller, ShowMode mode, CDc *cdvia)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Stv;
@@ -233,9 +232,10 @@ cEdit::PopUpStdVia(GRobject caller, ShowMode mode, CDc *cdvia)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Stv->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Stv->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), Stv->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Stv->shell());
 }
 

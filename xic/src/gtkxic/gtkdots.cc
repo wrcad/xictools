@@ -43,7 +43,6 @@
 #include "menu.h"
 #include "attr_menu.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 
 
 //-------------------------------------------------------------------------
@@ -81,7 +80,7 @@ using namespace gtkdots;
 void
 cSced::PopUpDots(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Dt;
@@ -101,9 +100,9 @@ cSced::PopUpDots(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Dt->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Dt->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Dt->shell(), GTKmainwin::self()->Viewport());
     gtk_widget_show(Dt->shell());
 }
 

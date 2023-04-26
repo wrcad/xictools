@@ -52,7 +52,7 @@ class QTextEdit;
 
 namespace qtinterf
 {
-    class qt_bag;
+    class QTbag;
     class text_box;
 
     class QTmsgPopup : public QDialog, public GRtextPopup
@@ -60,7 +60,7 @@ namespace qtinterf
         Q_OBJECT
 
     public:
-        QTmsgPopup(qt_bag*, const char*, STYtype style, int, int);
+        QTmsgPopup(QTbag*, const char*, STYtype style, int, int);
         ~QTmsgPopup();
 
         // GRpopup overrides

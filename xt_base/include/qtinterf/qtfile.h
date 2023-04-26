@@ -63,12 +63,12 @@ namespace qtinterf
     class file_tree_widget;
     class file_list_widget;
 
-    class QTfilePopup : public QDialog, public GRfilePopup, public qt_bag
+    class QTfilePopup : public QDialog, public GRfilePopup, public QTbag
     {
         Q_OBJECT
 
     public:
-        QTfilePopup(qt_bag*, FsMode, void*, const char*);
+        QTfilePopup(QTbag*, FsMode, void*, const char*);
         ~QTfilePopup();
 
         // GRpopup overrides

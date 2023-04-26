@@ -52,7 +52,6 @@
 #include "menu.h"
 #include "promptline.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkmcol.h"
 #include "gtkinterf/gtkfont.h"
 #include "miscutil/filestat.h"
@@ -136,7 +135,7 @@ using namespace gtkchdlist;
 void
 cConvert::PopUpHierarchies(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete CHL;
@@ -156,9 +155,10 @@ cConvert::PopUpHierarchies(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(CHL->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), CHL->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), CHL->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(CHL->Shell());
 }
 

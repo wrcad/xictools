@@ -47,7 +47,6 @@
 #include "menu.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -120,7 +119,7 @@ void
 cSced::PopUpTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
     void(*action)(TermEditInfo*, CDp*), CDp *prp, int x, int y)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete TE;
@@ -150,10 +149,10 @@ cSced::PopUpTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(TE->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
     int mwid, mhei;
-    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, &mhei);
+    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, &mhei);
     GtkRequisition req;
     gtk_widget_get_requisition(TE->shell(), &req);
     if (x + req.width > mwid)

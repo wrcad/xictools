@@ -40,7 +40,6 @@
 
 #include "main.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include <gdk/gdkkeysyms.h>
 
 
@@ -97,11 +96,11 @@ using namespace gtkexpand;
 
 
 void
-win_bag::PopUpExpand(GRobject caller, ShowMode mode,
+GTKsubwin::PopUpExpand(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, void*), void *arg,
     const char *string, bool nopeek)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         if (wib_expandpop)
@@ -299,7 +298,7 @@ sExp::sExp(GTKbag *owner, const char *string, bool nopeek, void *arg)
 sExp::~sExp()
 {
     if (p_parent) {
-        win_bag *owner = dynamic_cast<win_bag*>(p_parent);
+        GTKsubwin *owner = dynamic_cast<GTKsubwin*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
@@ -341,7 +340,7 @@ sExp::popdown()
 void
 sExp::initialize()
 {
-    win_bag *w = dynamic_cast<win_bag*>(p_parent);
+    GTKsubwin *w = dynamic_cast<GTKsubwin*>(p_parent);
     if (w && w->Shell()) {
         gtk_window_set_transient_for(GTK_WINDOW(exp_popup),
             GTK_WINDOW(w->Shell()));
@@ -426,8 +425,8 @@ sExp::action_proc(GtkWidget *widget)
         return;
     }
     if (!strcmp(name, "Help")) {
-        if (mainBag())
-            mainBag()->PopUpHelp("xic:expnd");
+        if (GTKmainwin::self())
+            GTKmainwin::self()->PopUpHelp("xic:expnd");
         return;
     }
     if (!strcmp(name, "apply")) {

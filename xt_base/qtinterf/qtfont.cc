@@ -305,7 +305,7 @@ namespace {
     };
 }
 
-QTfontPopup::QTfontPopup(qt_bag *owner, int indx, void *arg) :
+QTfontPopup::QTfontPopup(QTbag *owner, int indx, void *arg) :
     QDialog(owner ? owner->shell : 0)
 {
     p_parent = owner;
@@ -424,7 +424,7 @@ QTfontPopup::~QTfontPopup()
     if (p_callback)
         (*p_callback)(0, 0, p_cb_arg);
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner) {
             owner->monitor.remove(this);
             if (owner->fontsel == this)
@@ -440,7 +440,7 @@ void
 QTfontPopup::popdown()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }
@@ -454,7 +454,7 @@ void
 QTfontPopup::set_font_name(const char *fontname)
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }
@@ -472,7 +472,7 @@ void
 QTfontPopup::update_label(const char *text)
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }

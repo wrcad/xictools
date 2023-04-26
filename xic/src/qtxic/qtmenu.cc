@@ -41,7 +41,6 @@
 #include "qtmain.h"
 #include "qtmenu.h"
 #include "qtmenucfg.h"
-#include "qtinlines.h"
 #include "dsp_inlines.h"
 
 #include <QAction>
@@ -66,9 +65,16 @@ QTmenu::InitMainMenu()
 
 
 void
-QTmenu::InitSideMenu()
+QTmenu::InitTopButtonMenu()
 {
-    qtCfg()->instantiateSideMenus();
+    qtCfg()->instantiateTopButtonMenu();
+}
+
+
+void
+QTmenu::InitSideButtonMenus()
+{
+    qtCfg()->instantiateSideButtonMenus();
 }
 
 
@@ -220,22 +226,34 @@ QTmenu::PointerRootLoc(int *x, int *y)
 const char *
 QTmenu::GetLabel(GRobject obj)
 {
-    static QString qs;
+    static char buf[32];
     if (obj) {
         QObject *o = (QObject*)obj;
+        QString qs;
         if (o->isWidgetType()) {
             QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn) {
+            if (btn)
                 qs = btn->text();
-                return (qs.toLatin1().constData());
-            }
         }
         else {
             QAction *a = dynamic_cast<QAction*>(o);
-            if (a) {
+            if (a)
                 qs = a->text();
-                return (qs.toLatin1().constData());
+        }
+        int n = qs.size();
+        if (n > 0) {
+            // Need to strip the '&' if present.
+            QByteArray b = qs.toLatin1();
+            int i = 0;
+            for (int j = 0; j < n; j++) {
+                if (b[j] != '&') {
+                    buf[i++] = b[j];
+                    if (i == sizeof(buf)-1)
+                        break;
+                }
             }
+            buf[i] = 0;
+            return (buf);
         }
     }
     return (0);
@@ -442,7 +460,7 @@ QTmenu::UpdateUserMenu()
 void
 QTmenu::HideButtonMenu(bool hide)
 {
-    mainwin *main_win = mainBag();
+    QTmainwin *main_win = QTmainwin::self();
     if (!main_win)
         return;
     QWidget *phys_button_box = main_win->PhysButtonBox();

@@ -45,7 +45,6 @@
 #include "cvrt.h"
 #include "gtkmain.h"
 #include "gtkasm.h"
-#include "gtkinlines.h"
 #include "gtkcv.h"
 #include "gtkinterf/gtklist.h"
 #include "gtkinterf/gtkfont.h"
@@ -72,7 +71,7 @@ namespace {
 void
 cConvert::PopUpAssemble(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Asm;
@@ -92,9 +91,10 @@ cConvert::PopUpAssemble(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Asm->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Asm->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Asm->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Asm->Shell());
 }
 
@@ -1266,24 +1266,24 @@ namespace {
         else if (code == IFMSG_CNAME)
             sAsm::pop_up_monitor(MODE_UPD, buf, ASM_CNAME);
         else if (code == IFMSG_POP_ERR) {
-            if (mainBag())
-                mainBag()->PopUpErr(MODE_ON, buf);
+            if (GTKmainwin::self())
+                GTKmainwin::self()->PopUpErr(MODE_ON, buf);
         }
         else if (code == IFMSG_POP_WARN) {
-            if (mainBag())
-                mainBag()->PopUpWarn(MODE_ON, buf);
+            if (GTKmainwin::self())
+                GTKmainwin::self()->PopUpWarn(MODE_ON, buf);
         }
         else if (code == IFMSG_POP_INFO) {
-            if (mainBag())
-                mainBag()->PopUpInfo(MODE_ON, buf);
+            if (GTKmainwin::self())
+                GTKmainwin::self()->PopUpInfo(MODE_ON, buf);
         }
         else if (code == IFMSG_LOG_ERR) {
-            if (mainBag())
-                mainBag()->PopUpErr(MODE_ON, buf);
+            if (GTKmainwin::self())
+                GTKmainwin::self()->PopUpErr(MODE_ON, buf);
         }
         else if (code == IFMSG_LOG_WARN) {
-            if (mainBag())
-                mainBag()->PopUpWarn(MODE_ON, buf);
+            if (GTKmainwin::self())
+                GTKmainwin::self()->PopUpWarn(MODE_ON, buf);
         }
     }
 }
@@ -1314,7 +1314,7 @@ sAsm::asm_do_run(const char *fname)
 
     FILE *fp = fopen(fname, "r");
     if (!fp) {
-        (Asm ? (main_bag*)Asm : mainBag())->PopUpErr(
+        (Asm ? (GTKmainwin*)Asm : GTKmainwin::self())->PopUpErr(
             MODE_ON, "Unable to reopen temporary file.", STY_NORM);
         set_status_message("Terminated with error");
         return (false);
@@ -1323,7 +1323,7 @@ sAsm::asm_do_run(const char *fname)
     if (!job->parse(fp)) {
         Errs()->add_error("asm_do_run: processing failed.");
         Errs()->add_error("asm_do_run: keeping temp file %s.", fname);
-        (Asm ? (main_bag*)Asm : mainBag())->PopUpErr(
+        (Asm ? (GTKmainwin*)Asm : GTKmainwin::self())->PopUpErr(
             MODE_ON, Errs()->get_error(), STY_NORM);
         fclose(fp);
         delete job;
@@ -1342,7 +1342,7 @@ sAsm::asm_do_run(const char *fname)
         else {
             Errs()->add_error("asm_do_run: processing failed.");
             Errs()->add_error("asm_do_run: keeping temp file %s.", fname);
-            (Asm ? (main_bag*)Asm : mainBag())->PopUpErr(
+            (Asm ? (GTKmainwin*)Asm : GTKmainwin::self())->PopUpErr(
                 MODE_ON, Errs()->get_error(), STY_NORM);
             set_status_message("Terminated with error");
         }

@@ -48,7 +48,6 @@
 #include "gtkmain.h"
 #include "gtkltab.h"
 #include "gtkmenu.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include "miscutil/miscutil.h"
 #include "miscutil/timer.h"
@@ -244,7 +243,7 @@ namespace {
 
     struct blinker
     {
-        blinker(win_bag*, const CDl*);
+        blinker(GTKsubwin*, const CDl*);
 
         ~blinker()
             {
@@ -289,7 +288,7 @@ namespace {
             }
 
     private:
-        win_bag *b_wbag;
+        GTKsubwin *b_wbag;
         HDC b_dcMemDim;
         HDC b_dcMemNorm;
         HBITMAP b_bmapDim;
@@ -301,7 +300,7 @@ namespace {
     };
 
 
-    blinker::blinker(win_bag *wb, const CDl *ld)
+    blinker::blinker(GTKsubwin *wb, const CDl *ld)
     {
         b_wbag = wb;
         b_dcMemDim = 0;
@@ -336,13 +335,13 @@ namespace {
         HDC dc = gdk_win32_hdc_get(wb->Window(), wb->GC(), Win32GCvalues);
         struct dc_releaser
         {
-            dc_releaser(win_bag *wbg)  { wbag = wbg; }
+            dc_releaser(GTKsubwin *wbg)  { wbag = wbg; }
             ~dc_releaser()
             {
                 gdk_win32_hdc_release(wbag->Window(), wbag->GC(),
                     Win32GCvalues);
             }
-            win_bag *wbag;
+            GTKsubwin *wbag;
         } releaser(wb);
 
         // Create a pixmap backing the entire window.
@@ -426,7 +425,7 @@ namespace {
 namespace {
     struct blinker
     {
-        blinker(win_bag*, const CDl*);
+        blinker(GTKsubwin*, const CDl*);
 
         ~blinker()
             {
@@ -477,7 +476,7 @@ namespace {
             }
 
     private:
-        win_bag *b_wbag;
+        GTKsubwin *b_wbag;
 #if GTK_CHECK_VERSION(3,0,0)
         ndkPixmap *b_dim_pm;
         ndkPixmap *b_norm_pm;
@@ -503,7 +502,7 @@ namespace {
     }
 
 
-    blinker::blinker(win_bag *wb, const CDl *ld)
+    blinker::blinker(GTKsubwin *wb, const CDl *ld)
     {
         b_wbag = wb;
         b_dim_pm = 0;
@@ -735,7 +734,7 @@ namespace {
     bool button3_down()
     {
         unsigned state;
-        mainBag()->QueryPointer(0, 0, &state);
+        GTKmainwin::self()->QueryPointer(0, 0, &state);
         return (state & GDK_BUTTON3_MASK);
     }
 }
@@ -795,7 +794,7 @@ GTKltab::blink(CDl *ld)
         WindowDesc *wd = DSP()->Window(i);
         if (!wd)
             continue;
-        win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+        GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
         if (!w)
             continue;
         blinker *b = new blinker(w, ld);
@@ -1162,7 +1161,7 @@ GTKltab::ltab_button_down_hdlr(GtkWidget*, GdkEvent *event, void *arg)
     }
 
 
-    if (XM()->IsDoingHelp() && !is_shift_down()) {
+    if (XM()->IsDoingHelp() && !GTKmainwin::is_shift_down()) {
         DSPmainWbag(PopUpHelp("layertab"))
         return (true);
     }
@@ -1187,7 +1186,7 @@ GTKltab::ltab_button_up_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 
     GTKltab *lt = static_cast<GTKltab*>(arg);
 
-    if (XM()->IsDoingHelp() && !is_shift_down())
+    if (XM()->IsDoingHelp() && !GTKmainwin::is_shift_down())
         return (true);
 
     if (lt) {
@@ -1237,7 +1236,7 @@ GTKltab::ltab_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
 {
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(fillpattern_xpm);
     gtk_drag_set_icon_pixbuf(context, pixbuf, -2, -2);
-    win_bag::HaveDrag = true;
+    GTKsubwin::HaveDrag = true;
 }
 
 
@@ -1245,7 +1244,7 @@ GTKltab::ltab_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
 void
 GTKltab::ltab_drag_end(GtkWidget*, GdkDragContext*, gpointer)
 {
-    win_bag::HaveDrag = false;
+    GTKsubwin::HaveDrag = false;
 }
 
 
@@ -1281,7 +1280,7 @@ GTKltab::ltab_drag_data_received(GtkWidget*, GdkDragContext *context,
     //  R G B opacity
     GdkAtom a = gdk_atom_intern("fillpattern", true);
     if (gtk_selection_data_get_target(data) == a) {
-        if (mainBag())
+        if (GTKmainwin::self())
             XM()->FillLoadCallback(
                 (LayerFillData*)gtk_selection_data_get_data(data),
                 LT()->LayerAt(x, y));

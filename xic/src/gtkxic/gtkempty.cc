@@ -44,7 +44,6 @@
 #include "dsp_color.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -99,7 +98,7 @@ using namespace gtkempty;
 void
 cConvert::PopUpEmpties(stringlist *list)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (EC)
         return;
@@ -114,9 +113,10 @@ cConvert::PopUpEmpties(stringlist *list)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(EC->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), EC->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), EC->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(EC->Shell());
 }
 // End of cConvert functions.

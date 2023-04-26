@@ -51,7 +51,6 @@
 #include "layertab.h"
 #include "events.h"
 #include "qtinterf/qtinterf.h"
-#include "qtinterf/draw_if.h"
 
 #include <QWidget>
 
@@ -63,8 +62,10 @@ class QResizeEvent;
 
 inline class QTltab *qtLtab();
 
-class QTltab : public cLtab, public qt_draw
+class QTltab : public QWidget, public cLtab, public QTdraw
 {
+    Q_OBJECT
+
     static QTltab *ptr() { return (instancePtr); }
 
 public:
@@ -82,47 +83,31 @@ public:
     void hide_layer_table(bool);
     void set_layer();
 
-//    QWidget *container()        { return (ltab_container); }
-//    QWidget *scrollbar()        { return (ltab_scrollbar); }
-//    QWidget *searcher()         { return (ltab_search_container); }
-
-    /*
-    void setup_drawable();
-    void blink(CDl*);
-    void refresh(int, int, int, int);
-    void lspec_callback();
-    void win_size(int*, int*);
-    void update();
-    void update_scrollbar();
-    */
-
-private:
-    static QTltab *instancePtr;
-};
-
-class layertab_w : public QWidget
-{
-    Q_OBJECT
-
-public:
-    layertab_w(int, QWidget*);
-
-    draw_if *draw_area() { return (viewport); }
-    QPushButton *ls_button() { return (lspec_btn); }
-
-    void update_scrollbar();
+    QScrollBar *scrollbar()     { return (ltab_scrollbar); }
+    QWidget *searcher()         { return (ltab_search_container); }
 
 private slots:
     void button_press_slot(QMouseEvent*);
     void button_release_slot(QMouseEvent*);
     void resize_slot(QResizeEvent*);
-    void s_btn_slot(bool);
+//    void s_btn_slot(bool);
     void ltab_scroll_value_changed_slot(int);
 
 private:
-    draw_if *viewport;
-    QPushButton *lspec_btn;
-    QScrollBar *ltab_sb;
+    QScrollBar *ltab_scrollbar;
+    QWidget *ltab_search_container;
+    QWidget *ltab_entry;
+    QWidget *ltab_sbtn;
+    QWidget *ltab_lsearch;
+    QWidget *ltab_lsearchn;
+
+    char *ltab_search_str;
+    int ltab_last_index;
+    int ltab_last_mode;
+    int ltab_timer_id;
+    bool ltab_hidden;
+
+    static QTltab *instancePtr;
 };
 
 #endif

@@ -67,7 +67,7 @@ namespace qtinterf
     };
 }
 
-QTnumPopup::QTnumPopup(qt_bag *owner, const char *prompt_str, double initd,
+QTnumPopup::QTnumPopup(QTbag *owner, const char *prompt_str, double initd,
     double mind, double maxd, double del, int numd, void *arg) :
     QDialog(owner ? owner->shell : 0)
 {
@@ -140,7 +140,7 @@ QTnumPopup::~QTnumPopup()
         }
     }
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->monitor.remove(this);
     }
@@ -183,7 +183,7 @@ void
 QTnumPopup::popdown()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }

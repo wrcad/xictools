@@ -51,14 +51,14 @@ class QPushButton;
 
 namespace qtinterf
 {
-    class qt_bag;
+    class QTbag;
 
     class QTaffirmPopup : public QDialog, public GRaffirmPopup
     {
         Q_OBJECT
 
     public:
-        QTaffirmPopup(qt_bag*, const char*, void*);
+        QTaffirmPopup(QTbag*, const char*, void*);
         ~QTaffirmPopup();
 
         // GRpopup overrides

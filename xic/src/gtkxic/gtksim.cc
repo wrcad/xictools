@@ -42,7 +42,6 @@
 #include "sced.h"
 #include "sced_spiceipc.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include <signal.h>
 
 
@@ -88,7 +87,7 @@ namespace {
                 gtk_label_set_text(GTK_LABEL(label), msg);
                 if (!gtk_widget_get_mapped(shell)) {
                     GRX->SetPopupLocation(GRloc(LW_LL), shell,
-                        mainBag()->Viewport());
+                        GTKmainwin::self()->Viewport());
                     gtk_widget_show(shell);
                 }
             }
@@ -104,7 +103,7 @@ namespace {
 void
 cSced::PopUpSim(SpType status)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     Sim.control(status);
 }
@@ -152,7 +151,7 @@ sSim::control(SpType status)
         g_idle_add(label_set_idle, (void*)msg);
         return;
     }
-    main_bag *w = mainBag();
+    GTKmainwin *w = GTKmainwin::self();
     GtkWidget *popup = gtk_NewPopup(w, "SPICE Run", sp_destroy_proc, 0);
     gtk_window_set_resizable(GTK_WINDOW(popup), false);
     gtk_widget_set_size_request(popup, 200, -1);

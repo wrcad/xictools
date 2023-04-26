@@ -47,7 +47,6 @@
 #include "errorlog.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkmcol.h"
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkutil.h"
@@ -132,7 +131,7 @@ const char *sLBoa::nolibmsg = "There are no open libraries.";
 void
 cOAif::PopUpOAlibraries(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete LB;
@@ -152,9 +151,10 @@ cOAif::PopUpOAlibraries(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(LB->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), LB->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), LB->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(LB->Shell());
 }
 

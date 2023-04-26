@@ -118,9 +118,9 @@ static const char * const attach_xpm[] = {
 "                                "};
 
 
-QTeditPopup::QTeditPopup(qt_bag *owner, QTeditPopup::WidgetType type,
+QTeditPopup::QTeditPopup(QTbag *owner, QTeditPopup::WidgetType type,
     const char *file_or_string, bool with_source, void *arg) :
-    QDialog(owner ? owner->shell : 0), qt_bag(this)
+    QDialog(owner ? owner->shell : 0), QTbag(this)
 {
     p_parent = owner;
     p_cb_arg = arg;
@@ -319,7 +319,7 @@ QTeditPopup::~QTeditPopup()
         }
     }
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->monitor.remove(this);
     }
@@ -337,7 +337,7 @@ void
 QTeditPopup::popdown()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }

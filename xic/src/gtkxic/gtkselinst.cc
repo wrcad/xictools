@@ -45,7 +45,6 @@
 #include "dsp_inlines.h"
 #include "gtkmain.h"
 #include "gtkmenu.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -130,7 +129,7 @@ using namespace gtkselinst;
 void
 cMain::PopUpSelectInstances(CDol *list)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (RunMode() != ModeNormal)
         return;
@@ -147,9 +146,10 @@ cMain::PopUpSelectInstances(CDol *list)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(CI->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), CI->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), CI->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(CI->Shell());
 
     start_modal(CI->Shell());
@@ -165,7 +165,7 @@ cMain::PopUpSelectInstances(CDol *list)
 CDol *
 cMain::PopUpFilterInstances(CDol *list)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return (list);
     if (RunMode() != ModeNormal)
         return (list);
@@ -184,9 +184,10 @@ cMain::PopUpFilterInstances(CDol *list)
     CDol::destroy(list);
 
     gtk_window_set_transient_for(GTK_WINDOW(CI->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), CI->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), CI->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(CI->Shell());
 
     ci_return = 0;

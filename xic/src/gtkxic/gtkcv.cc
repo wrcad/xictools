@@ -44,7 +44,6 @@
 #include "dsp_inlines.h"
 #include "gtkmain.h"
 #include "gtkcv.h"
-#include "gtkinlines.h"
 
 
 //-------------------------------------------------------------------------
@@ -121,7 +120,7 @@ void
 cConvert::PopUpConvert(GRobject caller, ShowMode mode, int inp_type,
     bool(*callback)(int, void*), void *arg)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Cv;
@@ -141,9 +140,9 @@ cConvert::PopUpConvert(GRobject caller, ShowMode mode, int inp_type,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Cv->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Cv->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Cv->shell(), GTKmainwin::self()->Viewport());
     gtk_widget_show(Cv->shell());
 }
 

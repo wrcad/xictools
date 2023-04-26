@@ -44,7 +44,6 @@
 #include "geo_grid.h"
 #include "promptline.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -125,7 +124,7 @@ bool sLx::noclear = false;
 void
 cEdit::PopUpLayerExp(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Lx;
@@ -145,9 +144,10 @@ cEdit::PopUpLayerExp(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Lx->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Lx->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), Lx->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Lx->shell());
 }
 

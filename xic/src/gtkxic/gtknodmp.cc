@@ -55,7 +55,6 @@
 #include "promptline.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkutil.h"
 
 #include "bitmaps/lsearch.xpm"
@@ -237,7 +236,7 @@ using namespace gtknodmp;
 bool
 cSced::PopUpNodeMap(GRobject caller, ShowMode mode, int node)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return (false);
     if (mode == MODE_OFF) {
         delete NM;
@@ -259,9 +258,10 @@ cSced::PopUpNodeMap(GRobject caller, ShowMode mode, int node)
         return (false);
     }
     gtk_window_set_transient_for(GTK_WINDOW(NM->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), NM->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), NM->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(NM->Shell());
     return (true);
 }

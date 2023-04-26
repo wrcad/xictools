@@ -46,7 +46,6 @@
 #include "errorlog.h"
 #include "gtkmain.h"
 #include "gtkmenu.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 #include "spnumber/spnumber.h"
 
@@ -179,7 +178,7 @@ bool
 cEdit::PopUpPCellParams(GRobject caller, ShowMode mode, PCellParam *p,
     const char *dbname, pcpMode pmode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return (false);
     if (mode == MODE_OFF) {
         delete Pcp;
@@ -200,8 +199,9 @@ cEdit::PopUpPCellParams(GRobject caller, ShowMode mode, PCellParam *p,
     }
 
     gtk_window_set_transient_for(GTK_WINDOW(Pcp->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
-    GRX->SetPopupLocation(GRloc(LW_UR), Pcp->shell(), mainBag()->Viewport());
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    GRX->SetPopupLocation(GRloc(LW_UR), Pcp->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Pcp->shell());
 
     if (pmode == pcpEdit || pmode == pcpPlaceScr) {

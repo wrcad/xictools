@@ -45,7 +45,6 @@
 #include "select.h"
 #include "gtkmain.h"
 #include "gtkltab.h"
-#include "gtkinlines.h"
 
 
 //-----------------------------------------------------------------------------
@@ -100,7 +99,7 @@ using namespace gtksel;
 void
 cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Sel;
@@ -120,13 +119,15 @@ cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Sel->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Sel->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), Sel->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Sel->Shell());
 
     // Bug in OpenSuse 13.1 gtk-2.24.23
-    GRX->SetPopupLocation(GRloc(LW_LL), Sel->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), Sel->Shell(),
+        GTKmainwin::self()->Viewport());
 }
 // End of cMain functions.
 

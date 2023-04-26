@@ -29,7 +29,6 @@ HFILES = \
     qtcoord.h \
     qtexpand.h \
     qthtext.h \
-    qtinlines.h \
     qtltab.h \
     qtmain.h \
     qtmenu.h \

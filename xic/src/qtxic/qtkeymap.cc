@@ -39,7 +39,6 @@
  *========================================================================*/
 
 #include "qtmain.h"
-#include "qtinlines.h"
 #include "dsp_inlines.h"
 #include "events.h"
 #include "keymap.h"

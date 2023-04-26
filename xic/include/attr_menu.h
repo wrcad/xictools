@@ -80,10 +80,12 @@ enum
 
 enum
 {
-    objDpyB,
-    objDpyP,
-    objDpyW,
-    objDpy_END
+    objSubMenu,
+    objSubMenuBoxes,
+    objSubMenuPolys,
+    objSubMenuWires,
+    objSubMenuLabels,
+    objSubMenu_END
 };
 
 #define    MenuUPDAT    "updat"
@@ -114,6 +116,7 @@ enum
 #define    MenuDPYB     "dpyb"
 #define    MenuDPYP     "dpyp"
 #define    MenuDPYW     "dpyw"
+#define    MenuDPYL     "dpyl"
 
 #endif
 

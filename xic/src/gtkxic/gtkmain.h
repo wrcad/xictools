@@ -141,10 +141,11 @@ private:
 // Base class for drawing window, used for subwindows.  Pop-ups here
 // are associated with each drawing window, independently.
 //
-struct win_bag : virtual public DSPwbag, public GTKbag, public GTKdraw
+class GTKsubwin : virtual public DSPwbag, public GTKbag, public GTKdraw
 {
-    win_bag();
-    ~win_bag();
+public:
+    GTKsubwin();
+    ~GTKsubwin();
 
     void subw_initialize(int);
     void pre_destroy(int);
@@ -254,13 +255,32 @@ struct sKeyEvent;
 
 // Main window class.
 //
-struct main_bag : public win_bag
+class GTKmainwin : public GTKsubwin
 {
-    main_bag()
-        {
-            mb_readout = 0;
-            mb_auxw = 0;
+public:
+    GTKmainwin()
+    {
+        mb_readout = 0;
+        mb_auxw = 0;
+    }
+
+    static GTKmainwin *self()
+    {
+        if (DSP()->MainWdesc())
+            return (dynamic_cast<GTKmainwin*>(DSP()->MainWdesc()->Wbag()));
+        return (0);
+    }
+
+    static bool is_shift_down()
+    {
+        if (self()) {
+            unsigned state;
+            self()->QueryPointer(0, 0, &state);
+            if (state & GR_SHIFT_MASK)
+                return (true);
         }
+        return (false);
+    }
 
     // gtkmain.cc
     void initialize();

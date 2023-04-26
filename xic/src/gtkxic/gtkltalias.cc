@@ -42,7 +42,6 @@
 #include "cvrt_variables.h"
 #include "fio_layermap.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include <errno.h>
 #include <gdk/gdkkeysyms.h>
@@ -99,7 +98,7 @@ using namespace gtkltalias;
 void
 cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete LA;
@@ -122,9 +121,9 @@ cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(LA->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), LA->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), LA->Shell(), GTKmainwin::self()->Viewport());
     gtk_widget_show(LA->Shell());
 }
 

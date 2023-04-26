@@ -59,7 +59,8 @@ public:
     QTmenu();
 
     void InitMainMenu();
-    void InitSideMenu();
+    void InitTopButtonMenu();
+    void InitSideButtonMenus();
 
     // virtual functions from MenuClass
     void SetSensGlobal(bool);

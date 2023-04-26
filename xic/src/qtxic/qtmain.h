@@ -54,17 +54,26 @@
 #include <QDialog>
 #include <QFontMetrics>
 
-class coord_w;
-class param_w;
-class layertab_w;
-class keys_w;
-class expand_d;
+class cCoord;
+class cParam;
+class cKeys;
+class cExpand;
 class idle_proc;
 struct sKeyEvent;
+class QTltab;
 
 class QMenu;
 class QMenuBar;
 
+// Graphics contexgt classes for application windows.
+enum XIC_WINDOW_CLASS
+{
+    XW_DEFAULT, // Misc.
+    XW_TEXT,    // Prompt line and similar.
+    XW_DRAWING, // Main drawing area and viewports.
+    XW_LPAL,    // The layer palette.
+    XW_LTAB     // The layer table.
+};
 
 // Length of keypress buffer
 #define CBUFMAX 16
@@ -76,10 +85,10 @@ class QTpkg : public cGrPkg
 public:
     QTpkg()
         {
-            busy_popup = 0;
-            in_main_loop = false;
-            not_mapped = false;
-            idle_control = 0;
+            pkg_busy_popup      = 0;
+            pkg_idle_control    = 0;
+            pkg_in_main_loop    = false;
+            pkg_not_mapped      = false;
         }
 
     friend inline QTpkg *qtPkgIf()
@@ -116,28 +125,27 @@ public:
     FNT_FMT GetFontFmt();
     // end of overrides
 
-/*
-    void RegisterEventHandler(void(*)(GdkEvent*, void*), void*);
-    bool NotMapped() { return (not_mapped); }
-    GRobject BusyPopup() { return (busy_popup); }
-    void SetBusyPopup(GRobject w) { busy_popup = w; }
-*/
+    void RegisterEventHandler(void(*)(QEvent*, void*), void*);
+    bool NotMapped()                    { return (pkg_not_mapped); }
+    GRpopup *BusyPopup()                { return (pkg_busy_popup); }
+    void SetBusyPopup(GRpopup *w)       { pkg_busy_popup = w; }
+    void *BusyPopupHome()               { return (&pkg_busy_popup); }
 
 private:
-    GRpopup *busy_popup;        // busy indicator
-    bool in_main_loop;          // gtk_main called
-    bool not_mapped;            // true when iconic
-    idle_proc *idle_control;
+    GRpopup     *pkg_busy_popup;        // busy indicator
+    idle_proc   *pkg_idle_control;
+    bool        pkg_in_main_loop;       // gtk_main called
+    bool        pkg_not_mapped;         // true when iconic
 };
 
 
 // Length of keypress buffer
 #define CBUFMAX 16
 
-class keys_w : public draw_qt_w
+class cKeys : public draw_qt_w
 {
 public:
-    keys_w(int, QWidget*);
+    cKeys(int, QWidget*);
 
     void show_keys();
     void set_keys(const char*);
@@ -155,14 +163,17 @@ private:
     int win_number;
 };
 
-class subwin_d : public QDialog, virtual public DSPwbag, public qt_bag,
-    public qt_draw
+class QTsubwin : public QDialog, virtual public DSPwbag, public QTbag,
+    public QTdraw
 {
     Q_OBJECT
 
 public:
-    subwin_d(int, QWidget*);
-    ~subwin_d();
+    QTsubwin(int, QWidget*);
+    ~QTsubwin();
+
+    void subw_initialize(int);
+    void pre_destroy(int);
 
     // cAppWinFuncs interface
     //
@@ -181,6 +192,8 @@ public:
     void ShowKeys();
     void SetKeys(const char*);
     void BspKeys();
+    bool AddKey(int);
+    bool CheckBsp();
     void CheckExec(bool);
     char *KeyBuf();
     int KeyPos();
@@ -196,67 +209,94 @@ public:
     //
     // End of cAppWinFuncs interface
 
-    QMenuBar *MenuBar() { return (menubar); }
-    QWidget *Viewport() { return (viewport->widget()); }
+    QMenuBar *MenuBar()             { return (sw_menubar); }
+    QWidget *Viewport()             { return (gd_viewport->widget()); }
 
-    bool keypress_handler(unsigned int, unsigned int, const char*, bool);
 
-    keys_w *keys() { return (keys_pressed); }
+    cKeys *Keys()                   { return (sw_keys_pressed); }
+    void clear_expand()             { sw_expand = 0; }
 
-    static DrawType draw_type() { return (drawtype); }
+    static DrawType draw_type()     { return (sw_drawtype); }
 
-    QSize sizeHint() const { return (QSize(500, 400)); }
-    QSize minimumSizeHint() const { return (QSize(250, 200)); }
+    QSize sizeHint()                const { return (QSize(500, 400)); }
+    QSize minimumSizeHint()         const { return (QSize(250, 200)); }
+
+    bool keypress_handler(unsigned int, unsigned int, const char*, bool, bool);
 
 signals:
     void update_coords(int, int);
 
 protected slots:
+    void resize_slot(QResizeEvent*);
+    void new_painter_slot(QPainter*);
+    void paint_slot(QPaintEvent*);
     void button_down_slot(QMouseEvent*);
     void button_up_slot(QMouseEvent*);
+    void motion_slot(QMouseEvent*);
     void key_down_slot(QKeyEvent*);
     void key_up_slot(QKeyEvent*);
-    void motion_slot(QMouseEvent*);
     void enter_slot(QEvent*);
     void leave_slot(QEvent*);
-    void resize_slot(QResizeEvent*);
+    void drag_enter_slot(QDragEnterEvent*);
+    void drop_slot(QDropEvent*);
 
-public:
-    expand_d *expand;           // expand pop-up
 
 protected:
-    QMenuBar *menubar;
-    keys_w *keys_pressed;
-    int win_number;
+    QMenuBar    *sw_menubar;
+    cKeys       *sw_keys_pressed;
+    cExpand     *sw_expand;
+    WindowDesc  *sw_windesc;
+    int         sw_win_number;
 
 private:
-    static DrawType drawtype;
+    static DrawType sw_drawtype;
 };
 
 
-class mainwin : public subwin_d
+class QTmainwin : public QTsubwin
 {
     Q_OBJECT
 
 public:
+    static QTmainwin *self()
+    {
+        if (DSP()->MainWdesc())
+            return (dynamic_cast<QTmainwin*>(DSP()->MainWdesc()->Wbag()));
+        return (0);
+    }
+
     // qtmain.cc
-    mainwin();
+    QTmainwin();
     void initialize();
-    void set_coord_mode(int, int, bool, bool);
-    void show_parameters();
-    void set_focus(QWidget*);
-    void set_indicating(bool);
     void send_key_event(sKeyEvent*);
 
-    keys_w *keys() { return (keys_pressed); }
-    draw_if *prompt_line() { return (promptline); }
-    layertab_w *layer_table() { return (layertab); }
+    draw_if *PromptLine()       { return (mw_promptline); }
+    QTltab *LayerTable()        { return (mw_layertab); }
+    
+    /*
+    // qtcells.cc
+    static char *get_cell_selection();
+    static void cells_panic();
 
-    QSize sizeHint() const { return (QSize(800, 650)); }
-    QSize minimumSizeHint() const { return (QSize(800, 650)); }
+    // qtfiles.cc
+    static char *get_file_selection();
+    static void files_panic();
 
-    QWidget *PhysButtonBox() { return (phys_button_box); }
-    QWidget *ElecButtonBox() { return (elec_button_box); }
+    // qtlibs.cc
+    static char *get_lib_selection();
+    static void libs_panic();
+
+    // qttree.cc
+    static char *get_tree_selection();
+    static void tree_panic();
+    */
+
+    QSize sizeHint() const      { return (QSize(800, 650)); }
+    QSize minimumSizeHint()     const { return (QSize(800, 650)); }
+
+    QWidget *TopButtonBox()     { return (mw_top_button_box); }
+    QWidget *PhysButtonBox()    { return (mw_phys_button_box); }
+    QWidget *ElecButtonBox()    { return (mw_elec_button_box); }
 
 signals:
     void side_button_press(MenuEnt*);
@@ -266,13 +306,14 @@ private slots:
     void update_coords_slot(int, int);
 
 private:
-    QWidget *phys_button_box;
-    QWidget *elec_button_box;
+    QWidget     *mw_top_button_box;
+    QWidget     *mw_phys_button_box;
+    QWidget     *mw_elec_button_box;
 
-    draw_if *promptline;
-    coord_w *coords;
-    layertab_w *layertab;
-    param_w *status;
+    draw_if     *mw_promptline;
+    cCoord      *mw_coords;
+    QTltab      *mw_layertab;
+    cParam      *mw_status;
 };
 
 

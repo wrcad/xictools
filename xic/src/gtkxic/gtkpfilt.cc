@@ -43,7 +43,6 @@
 #include "cd_compare.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 
 
 //-----------------------------------------------------------------------------
@@ -88,7 +87,7 @@ using namespace gtkpfilt;
 void
 cConvert::PopUpPropertyFilter(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Pflt;
@@ -108,9 +107,10 @@ cConvert::PopUpPropertyFilter(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Pflt->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UR), Pflt->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UR), Pflt->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Pflt->shell());
 }
 

@@ -57,7 +57,7 @@ cFH::PopUpExtIf(GRobject caller, ShowMode mode)
 (void)caller;
 (void)mode;
 /*
-    if (!GRX || !mainBag())
+    if (!GRX || !QTmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Fch;

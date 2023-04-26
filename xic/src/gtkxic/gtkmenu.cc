@@ -370,7 +370,7 @@ GTKmenu::NewSubwMenu(int wnum)
 {
     if (wnum < 1 || wnum >= DSP_NUMWINS)
         return (0);
-    win_bag *w = dynamic_cast<win_bag*>(DSP()->Window(wnum)->Wbag());
+    GTKsubwin *w = dynamic_cast<GTKsubwin*>(DSP()->Window(wnum)->Wbag());
     if (!w)
         return (0);
 

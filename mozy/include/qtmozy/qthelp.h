@@ -42,7 +42,8 @@
 #define HTMLVIEW_D_H
 
 #include <QVariant>
-#include <QWidget>
+//#include <QWidget>
+#include <QMainWindow>
 #include "qtinterf/qtinterf.h"
 
 #include "help/help_defs.h"
@@ -52,7 +53,7 @@
 
 // This implements a help/html viewer dialog, providing menus and
 // interfaces to the viewer_wv iewing area.  This derives from QDialog
-// and the HelpWidget and qt_bag interfaces.
+// and the HelpWidget and QTbag interfaces.
 
 class QStatusBar;
 class QMenu;
@@ -74,8 +75,8 @@ namespace qtinterf
 {
     class viewer_w;
 
-    class QThelpPopup : public QWidget, public HelpWidget,
-        public htmDataInterface, public qt_bag
+    class QThelpPopup : public QMainWindow, public HelpWidget,
+        public htmDataInterface, public QTbag
     {
         Q_OBJECT
 
@@ -122,7 +123,7 @@ namespace qtinterf
         void get_topic_keys(char**, char**);
         void scroll_visible(int, int, int, int);
 
-        // qt_bag functions
+        // QTbag functions
         char *GetPostscriptText(int, const char*, const char*, bool, bool);
         char *GetPlainText();
         char *GetHtmlText();

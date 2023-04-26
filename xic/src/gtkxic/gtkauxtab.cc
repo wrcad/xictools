@@ -43,7 +43,6 @@
 #include "fio.h"
 #include "cd_celldb.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -120,7 +119,7 @@ using namespace gtkauxtab;
 void
 cConvert::PopUpAuxTab(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete AT;
@@ -140,9 +139,9 @@ cConvert::PopUpAuxTab(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(AT->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), AT->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), AT->Shell(), GTKmainwin::self()->Viewport());
     gtk_widget_show(AT->Shell());
 }
 

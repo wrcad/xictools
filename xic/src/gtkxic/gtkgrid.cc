@@ -44,7 +44,6 @@
 #include "errorlog.h"
 #include "tech.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 #include <gdk/gdkkeysyms.h>
 
@@ -160,7 +159,7 @@ using namespace gtkgrid;
 
 
 void
-win_bag::PopUpGrid(GRobject caller, ShowMode mode)
+GTKsubwin::PopUpGrid(GRobject caller, ShowMode mode)
 {
     if (mode == MODE_OFF) {
         delete wib_gridpop;
@@ -173,7 +172,7 @@ win_bag::PopUpGrid(GRobject caller, ShowMode mode)
     }
     if (wib_gridpop)
         return;
-    if (!mainBag())
+    if (!GTKmainwin::self())
         return;
 
     wib_gridpop = new sGrd(this, wib_windesc);
@@ -187,7 +186,7 @@ win_bag::PopUpGrid(GRobject caller, ShowMode mode)
     wib_gridpop->initialize();
     wib_gridpop->set_visible(true);
 }
-// End of win_bag functions.
+// End of GTKsubwin functions.
 
 
 sGrd::sGrd(GTKbag *owner, WindowDesc *wd) : GTKdraw(XW_TEXT)
@@ -786,7 +785,7 @@ sGrd::~sGrd()
         grid_pops[gd_win_num] = 0;
 
     if (p_parent) {
-        win_bag *owner = dynamic_cast<win_bag*>(p_parent);
+        GTKsubwin *owner = dynamic_cast<GTKsubwin*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
@@ -907,7 +906,7 @@ sGrd::update(bool skip_init)
 void
 sGrd::initialize()
 {
-    win_bag *w = dynamic_cast<win_bag*>(p_parent);
+    GTKsubwin *w = dynamic_cast<GTKsubwin*>(p_parent);
     if (w) {
         gtk_window_set_transient_for(GTK_WINDOW(wb_shell),
             GTK_WINDOW(w->Shell()));

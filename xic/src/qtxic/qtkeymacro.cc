@@ -47,7 +47,6 @@
 #include "tech.h"
 #include "errorlog.h"
 #include "qtmain.h"
-#include "qtinlines.h"
 
 #include <QKeyEvent>
 #include <QApplication>
@@ -290,10 +289,10 @@ cKbMacro::notMappable(unsigned key, unsigned state)
 bool
 cKbMacro::execKey(sKeyEvent *k)
 {
-    if (!mainBag())
+    if (!QTmainwin::self())
         return (false);
     if (!k->widget_name) {
-        mainBag()->send_key_event(k);
+        QTmainwin::self()->send_key_event(k);
         return (true);
     }
 

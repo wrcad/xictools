@@ -41,7 +41,6 @@
 #include "main.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -152,9 +151,9 @@ using namespace gtkattri;
 CursorType
 cMain::GetCursor()
 {
-    if (!mainBag())
+    if (!GTKmainwin::self())
         return (CursorDefault);
-    return ((CursorType)mainBag()->Gbag()->get_cursor_type());
+    return ((CursorType)GTKmainwin::self()->Gbag()->get_cursor_type());
 }
 
 
@@ -168,11 +167,12 @@ cMain::GetCursor()
 void
 cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
 {
-    if (!force && t == (CursorType)mainBag()->Gbag()->get_cursor_type() &&
+    if (!force && t ==
+            (CursorType)GTKmainwin::self()->Gbag()->get_cursor_type() &&
             t != CursorCross)
         return;
-    if (!wd && mainBag())
-        mainBag()->Gbag()->set_cursor_type(t);
+    if (!wd && GTKmainwin::self())
+        GTKmainwin::self()->Gbag()->set_cursor_type(t);
 
     // The cross cursor makes things complicated, as it requires
     // background and foreground colors per window, i.e., each window
@@ -181,7 +181,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
     if (t == CursorDefault) {
         // GTK default cursor.
         if (wd) {
-            win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
 #if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
@@ -200,7 +200,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
-            win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
 #if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
@@ -220,7 +220,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
     else if (t == CursorCross) {
         // Legacy cross cursor.
         if (wd) {
-            win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
 #if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (!cross_cursor) {
@@ -263,7 +263,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
-            win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
 #if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (!cross_cursor) {
@@ -309,7 +309,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         if (!left_cursor)
             left_cursor = gdk_cursor_new(GDK_LEFT_PTR);
         if (wd) {
-            win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
 #if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
@@ -329,7 +329,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
-            win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
 #if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
@@ -352,7 +352,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         if (!right_cursor)
             right_cursor = gdk_cursor_new(GDK_RIGHT_PTR);
         if (wd) {
-            win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
 #if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
@@ -372,7 +372,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
-            win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
 #if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
@@ -395,7 +395,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         if (!busy_cursor)
             busy_cursor = gdk_cursor_new(GDK_WATCH);
         if (wd) {
-            win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
 #if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
@@ -415,7 +415,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
-            win_bag *w = dynamic_cast<win_bag*>(wd->Wbag());
+            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
 #if GTK_CHECK_VERSION(3,0,0)
             if (w && w->GetDrawable()->get_window()) {
                 if (cross_cursor) {
@@ -444,7 +444,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
 void
 cMain::PopUpAttributes(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Attr;
@@ -464,9 +464,10 @@ cMain::PopUpAttributes(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Attr->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Attr->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Attr->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Attr->shell());
 }
 

@@ -45,7 +45,6 @@
 #include "promptline.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "miscutil/filestat.h"
 
 
@@ -89,7 +88,7 @@ using namespace gtktech;
 void
 cMain::PopUpTechWrite(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Tc;
@@ -109,9 +108,9 @@ cMain::PopUpTechWrite(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Tc->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Tc->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Tc->shell(), GTKmainwin::self()->Viewport());
     gtk_widget_show(Tc->shell());
 }
 

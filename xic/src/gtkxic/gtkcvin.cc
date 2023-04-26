@@ -45,7 +45,6 @@
 #include "oa_if.h"
 #include "gtkmain.h"
 #include "gtkcv.h"
-#include "gtkinlines.h"
 
 
 //--------------------------------------------------------------------
@@ -153,7 +152,7 @@ void
 cConvert::PopUpImport(GRobject caller, ShowMode mode,
     bool (*callback)(int, void*), void *arg)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Cvi;
@@ -173,9 +172,10 @@ cConvert::PopUpImport(GRobject caller, ShowMode mode,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Cvi->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Cvi->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), Cvi->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Cvi->shell());
 }
 

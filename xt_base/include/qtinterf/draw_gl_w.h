@@ -41,7 +41,7 @@
 #ifndef DRAW_GL_W_H
 #define DRAW_GL_W_H
 
-#include "draw_if.h"
+#include "qtdraw.h"
 #include <QGLWidget>
 #include <math.h>
 

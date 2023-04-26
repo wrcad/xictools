@@ -44,7 +44,6 @@
 #include "events.h"
 #include "gtkmain.h"
 #include "gtkcoord.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -334,7 +333,7 @@ int
 cCoord::co_btn(GtkWidget*, GdkEvent *event, void*)
 {
     if (Coord() && XM()->IsDoingHelp() && event->type == GDK_BUTTON_PRESS &&
-            !is_shift_down())
+            !GTKmainwin::is_shift_down())
         DSPmainWbag(PopUpHelp("coordline"))
     return (true);
 }

@@ -57,7 +57,7 @@ namespace qtinterf
         Q_OBJECT
 
     public:
-        QTledPopup(qt_bag*, const char*, const char*, const char*, void*,
+        QTledPopup(QTbag*, const char*, const char*, const char*, void*,
             bool);
         ~QTledPopup();
 

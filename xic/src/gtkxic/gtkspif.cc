@@ -44,7 +44,6 @@
 #include "cvrt_variables.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 
 
 //--------------------------------------------------------------------
@@ -101,7 +100,7 @@ using namespace gtkscd;
 void
 cSced::PopUpSpiceIf(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete SC;
@@ -121,9 +120,10 @@ cSced::PopUpSpiceIf(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(SC->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), SC->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), SC->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(SC->shell());
 }
 

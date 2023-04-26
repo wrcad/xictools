@@ -43,7 +43,6 @@
 #include "errorlog.h"
 #include "cfilter.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 
 
 //
@@ -136,7 +135,7 @@ void
 cMain::PopUpCellFilt(GRobject caller, ShowMode mode, DisplayMode dm,
     void(*cb)(cfilter_t*, void*), void *arg)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Cf;
@@ -156,9 +155,10 @@ cMain::PopUpCellFilt(GRobject caller, ShowMode mode, DisplayMode dm,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Cf->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Cf->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), Cf->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Cf->shell());
 }
 

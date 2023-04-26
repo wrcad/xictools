@@ -49,7 +49,6 @@
 #include "events.h"
 #include "promptline.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkprpty.h"
 
 
@@ -162,7 +161,7 @@ sAddEnt sPo::po_phys_addmenu[] = {
 void
 cEdit::PopUpProperties(CDo *odesc, ShowMode mode, PRPmode activ)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Po;
@@ -181,9 +180,10 @@ cEdit::PopUpProperties(CDo *odesc, ShowMode mode, PRPmode activ)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Po->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Po->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), Po->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Po->Shell());
 }
 
