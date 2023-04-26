@@ -42,7 +42,6 @@
 #include "edit.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 #include "ginterf/grfont.h"
 #include "miscutil/filestat.h"
@@ -120,7 +119,7 @@ double sLgo::lgo_defpixsz = 1.0;
 void
 cEdit::PopUpLogo(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Lgo;
@@ -140,9 +139,10 @@ cEdit::PopUpLogo(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Lgo->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Lgo->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), Lgo->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Lgo->Shell());
 }
 

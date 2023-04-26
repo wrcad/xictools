@@ -615,9 +615,9 @@ namespace {
     };
 }
 
-QTfilePopup::QTfilePopup(qt_bag *owner, FsMode mode, void *arg,
+QTfilePopup::QTfilePopup(QTbag *owner, FsMode mode, void *arg,
     const char *root_or_fname) :
-    QDialog(owner ? owner->shell : 0), qt_bag(this)
+    QDialog(owner ? owner->shell : 0), QTbag(this)
 {
     p_parent = owner;
     p_cb_arg = arg;
@@ -914,7 +914,7 @@ QTfilePopup::~QTfilePopup()
         }
     }
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->monitor.remove(this);
     } 
@@ -934,7 +934,7 @@ void
 QTfilePopup::popdown()
 {       
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }
@@ -949,7 +949,7 @@ char *
 QTfilePopup::get_selection()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return (0);
     }
@@ -1287,8 +1287,8 @@ QTfilePopup::quit_slot()
 void
 QTfilePopup::help_slot()
 {
-    if (GRX->main_frame())
-        GRX->main_frame()->PopUpHelp("filesel");
+    if (GRX->MainFrame())
+        GRX->MainFrame()->PopUpHelp("filesel");
     else
         PopUpHelp("filesel");
 }

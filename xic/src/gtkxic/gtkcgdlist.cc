@@ -55,7 +55,6 @@
 #include "cvrt_menu.h"
 #include "promptline.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtklist.h"
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkutil.h"
@@ -123,7 +122,7 @@ using namespace gtkcgdlist;
 void
 cConvert::PopUpGeometries(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete CGL;
@@ -143,9 +142,10 @@ cConvert::PopUpGeometries(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(CGL->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), CGL->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), CGL->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(CGL->Shell());
 }
 

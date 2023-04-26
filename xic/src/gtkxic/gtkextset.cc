@@ -52,7 +52,6 @@
 #include "tech.h"
 #include "tech_extract.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 #include "miscutil/filestat.h"
 
@@ -165,7 +164,7 @@ using namespace gtkextset;
 void
 cExt::PopUpExtSetup(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Es;
@@ -185,9 +184,10 @@ cExt::PopUpExtSetup(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Es->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LR), Es->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LR), Es->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Es->shell());
 }
 

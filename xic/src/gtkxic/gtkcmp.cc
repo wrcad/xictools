@@ -46,7 +46,6 @@
 #include "promptline.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -216,7 +215,7 @@ using namespace gtkcmp;
 void
 cConvert::PopUpCompare(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Cmp;
@@ -236,9 +235,10 @@ cConvert::PopUpCompare(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Cmp->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UR), Cmp->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UR), Cmp->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Cmp->shell());
 }
 

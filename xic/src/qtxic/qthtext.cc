@@ -262,7 +262,7 @@ hyList *QTedit::pe_stores[PE_NUMSTORES];
 
 QTedit *QTedit::instancePtr = 0;
 
-QTedit::QTedit(bool nogr, QWidget *parent)
+QTedit::QTedit(bool nogr, QWidget *parent) : QTdraw(XW_TEXT)
 {
     if (instancePtr) {
         fprintf(stderr, "Singleton class QTedit already instantiated.\n");
@@ -281,13 +281,13 @@ QTedit::QTedit(bool nogr, QWidget *parent)
     if (nogr)
         return;
 
-    mainwin *w = dynamic_cast<mainwin*>(parent);
+    QTmainwin *w = dynamic_cast<QTmainwin*>(parent);
     if (w)
-        viewport = w->prompt_line();
+        gd_viewport = w->PromptLine();
 
     QFont *font;
     if (FC.getFont(&font, FNT_SCREEN))
-        viewport->set_font(font);
+        gd_viewport->set_font(font);
 
 /*
     container = gtk_hbox_new(false, 0);
@@ -392,9 +392,9 @@ QTedit::flash_msg(const char *msg, ...)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_container_add(GTK_CONTAINER(popup), label);
 
-    GRX->SetPopupLocation(GRloc(LW_LL), popup, mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), popup, QTmainwin::self()->Viewport());
     gtk_window_set_transient_for(GTK_WINDOW(popup),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(QTmainwin::self()->Shell()));
 
     gtk_widget_show(popup);
 
@@ -425,7 +425,7 @@ QTedit::flash_msg_here(int x, int y, const char *msg, ...)
     gtk_container_add(GTK_CONTAINER(popup), label);
 
     int mwid, mhei;
-    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, &mhei);
+    gtk_MonitorGeom(QTmainwin::self()->Shell(), 0, 0, &mwid, &mhei);
     GtkRequisition req;
     gtk_widget_get_requisition(popup, &req);
     if (x + req.width > mwid)
@@ -434,7 +434,7 @@ QTedit::flash_msg_here(int x, int y, const char *msg, ...)
         y = mhei - req.height;
     gtk_window_move(GTK_WINDOW(popup), x, y);
     gtk_window_set_transient_for(GTK_WINDOW(popup),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(QTmainwin::self()->Shell()));
 
     gtk_widget_show(popup);
 
@@ -458,14 +458,14 @@ QTedit::save_line()
 int
 QTedit::win_width(bool in_chars)
 {
-    return (viewport->widget()->width());
+    return (gd_viewport->widget()->width());
 }
 
 
 int
 QTedit::win_height()
 {
-//    if (!GRX || !mainBag())
+//    if (!GRX || !QTmainwin::self())
         return (14);
 //    return (pe_hei);
 }
@@ -553,6 +553,7 @@ void
 QTedit::init_window()
 {
     SetWindowBackground(bg_pixel());
+    SetBackground(bg_pixel());
     Clear();
 }
 

@@ -65,7 +65,7 @@ namespace qtinterf
     };
 }
 
-QTaffirmPopup::QTaffirmPopup(qt_bag *owner, const char *question_str,
+QTaffirmPopup::QTaffirmPopup(QTbag *owner, const char *question_str,
     void *arg) : QDialog(owner ? owner->shell : 0)
 {
     p_parent = owner;
@@ -121,7 +121,7 @@ QTaffirmPopup::~QTaffirmPopup()
         }
     }
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->monitor.remove(this);
     }
@@ -164,7 +164,7 @@ void
 QTaffirmPopup::popdown()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }

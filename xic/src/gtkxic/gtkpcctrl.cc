@@ -44,7 +44,6 @@
 #include "cvrt_variables.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -99,7 +98,7 @@ using namespace gtkpcc;
 void
 cEdit::PopUpPCellCtrl(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete PCc;
@@ -119,9 +118,10 @@ cEdit::PopUpPCellCtrl(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(PCc->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), PCc->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), PCc->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(PCc->shell());
 }
 

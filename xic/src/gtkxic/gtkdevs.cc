@@ -52,7 +52,6 @@
 #include "ebtn_menu.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -290,7 +289,7 @@ using namespace gtkdevs;
 void
 cSced::PopUpDevs(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_ON) {
         if (Dv) {
@@ -333,14 +332,16 @@ cSced::PopUpDevs(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Dv->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Dv->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), Dv->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Dv->Shell());
 
     // GTK-2.20.1 needs this, the first call is ignored for some reason,
     // for the pictorial menu only.
-    GRX->SetPopupLocation(GRloc(LW_UL), Dv->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), Dv->Shell(),
+        GTKmainwin::self()->Viewport());
 
     if (Dv->Viewport())
 #if GTK_CHECK_VERSION(3,0,0)
@@ -381,7 +382,8 @@ sDv::sDv(GRobject caller, stringlist *wl) : GTKdraw(XW_DEFAULT)
 
     stringlist::sort(wl, dv_comp_func);
 
-    wb_shell = gtk_NewPopup(mainBag(), "Device Palette", dv_cancel_proc, 0);
+    wb_shell = gtk_NewPopup(GTKmainwin::self(), "Device Palette",
+        dv_cancel_proc, 0);
     if (!wb_shell)
         return;
 
@@ -683,7 +685,7 @@ sDv::activate(bool active)
         if (!dv_active) {
             int x, y;
             gdk_window_get_root_origin(
-                gtk_widget_get_window(mainBag()->Shell()), &x, &y);
+                gtk_widget_get_window(GTKmainwin::self()->Shell()), &x, &y);
             gtk_window_move(GTK_WINDOW(wb_shell), dv_px + x, dv_py + y);
             gtk_widget_show(wb_shell);
             dv_active = true;
@@ -695,7 +697,7 @@ sDv::activate(bool active)
                 &dv_px, &dv_py);
             int x, y;
             gdk_window_get_root_origin(
-                gtk_widget_get_window(mainBag()->Shell()), &x, &y);
+                gtk_widget_get_window(GTKmainwin::self()->Shell()), &x, &y);
             dv_px -= x;
             dv_py -= y;
             gtk_widget_hide(wb_shell);
@@ -750,11 +752,11 @@ sDv::init_sizes()
             dv_entries[i].width = sw;
         left += dv_entries[i].width + 2*SPA;
     }
-    if (!mainBag())
+    if (!GTKmainwin::self())
         return (0);
 
     int width = gdk_window_get_width(
-        gtk_widget_get_window(mainBag()->Viewport()));
+        gtk_widget_get_window(GTKmainwin::self()->Viewport()));
     left += 40 + SPA;  // Button width is approx 40.
     if (left < width)
         width = left;
@@ -1023,7 +1025,7 @@ sDv::dv_menu_proc(GtkWidget *caller, void*)
         DSPmainWbag(PopUpHelp(tbuf))
         return;
     }
-    GRX->SetFocus(mainBag()->Shell());  // give focus to main window
+    GRX->SetFocus(GTKmainwin::self()->Shell());  // give focus to main window
     EV()->InitCallback();
     if (!strcmp(string, MUT_DUMMY)) {
         CmdDesc cmd;

@@ -51,7 +51,6 @@
 #include "errorlog.h"
 #include "tech.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include "miscutil/filestat.h"
 #include <gdk/gdkkeysyms.h>
@@ -125,7 +124,7 @@ using namespace gtkdrcedit;
 void
 cDRC::PopUpRules(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Dim;
@@ -151,9 +150,10 @@ cDRC::PopUpRules(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Dim->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Dim->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Dim->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Dim->shell());
 }
 // End of cDRC functions.

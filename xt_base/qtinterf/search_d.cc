@@ -94,7 +94,7 @@ static const char * const down_xpm[] = {
 "                                ",
 "                                "};
 
-search_d::search_d(qt_bag *owner, const char *initstr) :
+search_d::search_d(QTbag *owner, const char *initstr) :
     QDialog(owner ? owner->shell : 0), timer(this)
 {
     p_parent = owner;
@@ -169,7 +169,7 @@ search_d::~search_d()
         }
     }
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->monitor.remove(this);
     }
@@ -183,7 +183,7 @@ void
 search_d::popdown()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }

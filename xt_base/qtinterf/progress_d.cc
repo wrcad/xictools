@@ -50,7 +50,7 @@
 #include "activity_w.h"
 
 
-progress_d::progress_d(qt_bag *owner, prgMode mode) :
+progress_d::progress_d(QTbag *owner, prgMode mode) :
     QDialog(owner ? owner->shell : 0)
 {
     p_parent = owner;
@@ -150,7 +150,7 @@ progress_d::~progress_d()
         }
     }
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->monitor.remove(this);
     }
@@ -163,7 +163,7 @@ void
 progress_d::popdown()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }

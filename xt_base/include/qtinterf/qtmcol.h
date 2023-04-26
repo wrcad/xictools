@@ -56,15 +56,15 @@ class QPushButton;
 
 namespace qtinterf
 {
-    class qt_bag;
+    class QTbag;
     class mcol_list_widget;
 
-    class QTmcolPopup : public QDialog, public GRmcolPopup, public qt_bag
+    class QTmcolPopup : public QDialog, public GRmcolPopup, public QTbag
     {
         Q_OBJECT
 
     public:
-        QTmcolPopup(qt_bag*, stringlist*, const char*, const char**,
+        QTmcolPopup(QTbag*, stringlist*, const char*, const char**,
             int, void*);
         ~QTmcolPopup();
 

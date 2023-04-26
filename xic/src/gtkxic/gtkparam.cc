@@ -48,7 +48,6 @@
 #include "gtkmain.h"
 #include "gtkparam.h"
 #include "gtkcoord.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -475,7 +474,7 @@ cParam::readout_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
     if (!Param())
         return (false);
     if (event->button.button == 1 && event->type == GDK_BUTTON_PRESS) {
-        if (XM()->IsDoingHelp() && !is_shift_down())
+        if (XM()->IsDoingHelp() && !GTKmainwin::is_shift_down())
             DSPmainWbag(PopUpHelp("statusline"))
         else {
             Param()->p_has_drag = true;

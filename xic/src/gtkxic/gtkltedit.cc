@@ -43,7 +43,6 @@
 #include "cd_strmdata.h"
 #include "layertab.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 
 
 //--------------------------------------------------------------------
@@ -97,7 +96,7 @@ const char *gtkLcb::initmsg = "Layer Editor -- add or remove layers.";
 sLcb *
 cMain::PopUpLayerEditor(GRobject c)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return (0);
     gtkLcb *cbs = new gtkLcb(c);
     if (!cbs->Shell()) {
@@ -105,9 +104,10 @@ cMain::PopUpLayerEditor(GRobject c)
         return (0);
     }
     gtk_window_set_transient_for(GTK_WINDOW(cbs->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), cbs->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), cbs->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(cbs->Shell());
     return (cbs);
 }
@@ -123,7 +123,8 @@ gtkLcb::gtkLcb(GRobject c)
     le_opmenu = 0;
     le_label = 0;
 
-    le_shell = gtk_NewPopup(mainBag(), "Layer Editor", le_popdown, this);
+    le_shell = gtk_NewPopup(GTKmainwin::self(), "Layer Editor", le_popdown,
+        this);
     if (!le_shell)
         return;
     gtk_window_set_resizable(GTK_WINDOW(le_shell), false);

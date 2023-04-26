@@ -46,134 +46,202 @@
 
 #include <QHBoxLayout>
 
-coord_w::coord_w(mainwin *prnt) : QWidget(prnt)
+
+cCoord *cCoord::instancePtr = 0;
+
+// Application interface to set abs/rel and redraw after color change.
+// The optional rx,ry are the reference in relative mode.
+//
+void
+cMain::SetCoordMode(COmode mode, int rx, int ry)
 {
+    if (!Coord())
+        return;
+    if (mode == CO_ABSOLUTE)
+        Coord()->set_mode(0, 0, false, true);
+    else if (mode == CO_RELATIVE)
+        Coord()->set_mode(rx, ry, true, true);
+    else if (mode == CO_REDRAW)
+        Coord()->redraw();
+}
+
+
+cCoord::cCoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
+{
+    instancePtr = this;
+
+    co_lx = co_ly = 0;
+    co_width = co_height = 0;
     co_x = co_y = 0;
     co_rel = false;
     co_snap = true;
 
-    viewport = draw_if::new_draw_interface(DrawNative, false, this);
+    gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setMargin(0);
     hbox->setSpacing(0);
-    hbox->addWidget(viewport->widget());
+    hbox->addWidget(gd_viewport->widget());
 
-    int wid = 34*char_width() + 4;
-    int hei = 3*line_height() + line_height()/2;
+    int wid = 600;
+    int hei = line_height() + 2;
     setFixedSize(wid, hei);
-    connect(viewport->widget(), SIGNAL(resize_event(QResizeEvent*)),
+    co_width = wid;
+    co_height = hei;
+    connect(gd_viewport->widget(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(redraw_slot()), Qt::QueuedConnection);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
-        viewport->set_font(fnt);
+        gd_viewport->set_font(fnt);
+}
+
+
+cCoord::~cCoord()
+{
+    instancePtr = 0;
 }
 
 
 void
-coord_w::print(int xc, int yc, int upd)
+cCoord::print(int xc, int yc, int upd)
 {
-    const char *fmt = "%12.3f";
-    static int lxc, lyc;
-    char buf[128];
-    unsigned c1 = DSP()->Color(PromptTextColor);
-    unsigned c2 = DSP()->Color(PromptEditTextColor);
+    const char *fmt;
+    DisplayMode mode = EV()->CurrentWin()->Mode();
+    if (mode == Physical && CDphysResolution != 1000)
+        fmt = "%.4f";
+    else
+        fmt = "%.3f";
 
-    int fwid, dy;
-    TextExtent(0, &fwid, &dy);
-    int yy = dy + 2;
-    int xx = 2;
+    if (CDvdb()->getVariable(VA_ScreenCoords)) {
+        EV()->CurrentWin()->LToP(xc, yc, xc, yc);
+        if (mode == Physical) {
+            xc *= CDphysResolution;
+            yc *= CDphysResolution;
+        }
+        else {
+            xc *= CDelecResolution;
+            yc *= CDelecResolution;
+        }
+    }
+    else {
+        WindowDesc *wd = EV()->CurrentWin();
+        if (wd) {
+            double ys = wd->YScale();
+            yc = mmRnd(yc/ys);
+        }
+    }
+
+    unsigned int c1 = DSP()->Color(PromptTextColor);
+    unsigned int c2 = DSP()->Color(PromptEditTextColor);
+    int fwid, fhei;
+    TextExtent(0, &fwid, &fhei);
+    int x = 2;
+//    int y = (co_height + fhei)/2;  // center justify
+// XXX The fhei is 16, co_height is 50, obviously something isn't consistent.
+int y = fhei-3;
 
     if (co_snap)
         EV()->CurrentWin()->Snap(&xc, &yc);
-    if (upd == COOR_BEGIN) {
-        SetWindowBackground(DSP()->Color(PromptBackgroundColor));
-        Clear();
-    }
-    else if (upd == COOR_MOTION) {
-        if (xc == lxc && yc == lyc)
+    if (upd == COOR_MOTION) {
+        if (xc == co_lx && yc == co_ly) {
             return;
-        lxc = xc;
-        lyc = yc;
-        viewport->clear_area(8*fwid+2, 4, 0, dy);
-        viewport->clear_area(8*fwid+2, 4 + 2*dy, 0, dy);
+        }
+        co_lx = xc;
+        co_ly = yc;
     }
     else if (upd == COOR_REL) {
-        viewport->clear_area(2, 4+dy, 0, dy);
-        viewport->clear_area(8*fwid+2, 4 + 2*dy, 0, dy);
-        xc = lxc;
-        yc = lyc;
+        xc = co_lx;
+        yc = co_ly;
     }
-    else
-        return;
 
+    QSize qs = gd_viewport->widget()->size();
+    co_width = qs.width();
+    co_height = qs.height();
+
+    SetColor(DSP()->Color(PromptBackgroundColor));
     SetFillpattern(0);
-    SetColor(c1);
-//    if (upd == COOR_BEGIN || upd == COOR_REL)
-    if (upd == COOR_BEGIN)
-        Text("point", xx, yy, 0);
-    if (upd != COOR_REL) {
-        xx += 8*fwid;
-        SetColor(c2);
-        sprintf(buf, fmt, MICRONS(xc));
-        Text(buf, xx, yy, 0);
-        xx += (strlen(buf))*fwid;
-        SetColor(c1);
-        Text(",", xx, yy, 0);
-        xx += 2*fwid;
-        SetColor(c2);
-        sprintf(buf, fmt, MICRONS(yc));
-        Text(buf, xx, yy, 0);
-    }
+    Box(0, co_height, co_width, 0);
+    SetBackground(DSP()->Color(PromptBackgroundColor));
 
-    xx = 2;
-    yy += dy;
+    char buf[128];
+    const char *str = "x,y";
+    SetColor(c1);
+    Text(str, x, y, 0);
+    x += (strlen(str) + 2)*fwid;
+
+    int xs = x;
+    snprintf(buf, sizeof(buf), fmt,
+        mode == Physical ? MICRONS(xc) : ELEC_MICRONS(xc));
+    SetColor(c2);
+    Text(buf, x, y, 0);
+    x += strlen(buf)*fwid;
+    SetColor(c1);
+    Text(",", x, y, 0);
+    x += 2*fwid;
+    snprintf(buf, sizeof(buf), fmt,
+        mode == Physical ? MICRONS(yc) : ELEC_MICRONS(yc));
+    SetColor(c2);
+    Text(buf, x, y, 0);
+
+    xs += 24*fwid;
+    x += (strlen(buf) + 4)*fwid;
+    if (x < xs)
+        x = xs;
+    str = "dx,dy";
+    SetColor(c1);
+    Text(str, x, y, 0);
+    x += (strlen(str) + 2)*fwid;
+
     int xr, yr;
     if (co_rel) {
         xr = co_x;
         yr = co_y;
     }
     else
-        EV()->Cursor().get_reference(&xr, &yr);
-    SetColor(c1);
-    if (upd == COOR_BEGIN || upd == COOR_REL) {
-        Text(co_rel ? "anchor" : "last", xx, yy, 0);
-        xx += 8*fwid;
-        SetColor(c2);
-        sprintf(buf, fmt, MICRONS(xr));
-        Text(buf, xx, yy, 0);
-        xx += (strlen(buf))*fwid;
-        SetColor(c1);
-        Text(",", xx, yy, 0);
-        xx += 2*fwid;
-        SetColor(c2);
-        sprintf(buf, fmt, MICRONS(yr));
-        Text(buf, xx, yy, 0);
-    }
+        EV()->GetReference(&xr, &yr);
 
-    xx = 2;
-    yy += dy;
-    SetColor(c1);
-    if (upd == COOR_BEGIN)
-        Text("dx, dy", xx, yy, 0);
-    xx += 8*fwid;
+    xs = x;
+    snprintf(buf, sizeof(buf), fmt,
+        mode == Physical ? MICRONS(xc - xr) : ELEC_MICRONS(xc - xr));
     SetColor(c2);
-    sprintf(buf, fmt, MICRONS(xc - xr));
-    Text(buf, xx, yy, 0);
-    xx += (strlen(buf))*fwid;
+    Text(buf, x, y, 0);
+    x += (strlen(buf))*fwid;
     SetColor(c1);
-    Text(",", xx, yy, 0);
-    xx += 2*fwid;
+    Text(",", x, y, 0);
+    x += 2*fwid;
+    snprintf(buf, sizeof(buf), fmt,
+        mode == Physical ? MICRONS(yc - yr) : ELEC_MICRONS(yc - yr));
     SetColor(c2);
-    sprintf(buf, fmt, MICRONS(yc - yr));
-    Text(buf, xx, yy, 0);
+    Text(buf, x, y, 0);
+
+    xs += 24*fwid;
+    x += (strlen(buf) + 4)*fwid;
+    if (x < xs)
+        x = xs;
+    str = co_rel ? "anchor" : "last";
+    SetColor(c1);
+    Text(str, x, y, 0);
+    x += (strlen(str) + 2)*fwid;
+
+    snprintf(buf, sizeof(buf),
+        fmt, mode == Physical ? MICRONS(xr) : ELEC_MICRONS(xr));
+    SetColor(c2);
+    Text(buf, x, y, 0);
+    x += strlen(buf)*fwid;
+    SetColor(c1);
+    Text(",", x, y, 0);
+    x += 2*fwid;
+    snprintf(buf, sizeof(buf),
+        fmt, mode == Physical ? MICRONS(yr) : ELEC_MICRONS(yr));
+    SetColor(c2);
+    Text(buf, x, y, 0);
 
     Update();
 }
 
 
 void
-coord_w::redraw_slot()
+cCoord::redraw_slot()
 {
     int xx, yy;
     EV()->Cursor().get_xy(&xx, &yy);

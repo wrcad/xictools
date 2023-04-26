@@ -50,7 +50,6 @@
 #include "tech.h"
 #include "tech_extract.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkutil.h"
 #include "gtkinterf/gtkspinbtn.h"
 
@@ -165,7 +164,7 @@ using namespace gtkextfc;
 void
 cFC::PopUpExtIf(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Fc;
@@ -185,9 +184,10 @@ cFC::PopUpExtIf(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Fc->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LR), Fc->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LR), Fc->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Fc->Shell());
     setPopUpVisible(true);
 }

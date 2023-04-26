@@ -90,6 +90,7 @@ namespace {
         MenuFunc  M_Boxes;
         MenuFunc  M_Polys;
         MenuFunc  M_Wires;
+        MenuFunc  M_Labels;
     }
 }
 
@@ -314,7 +315,7 @@ cMain::createSubwAttrMenu()
 
 namespace {
     MenuBox ObjMenuBox;
-    MenuEnt ObjMenu[objDpy_END + 1];
+    MenuEnt ObjMenu[objSubMenu_END + 1];
 
     void
     obj_post_switch_proc(int wnum, MenuEnt *menu)
@@ -328,14 +329,17 @@ namespace {
         if (!a)
             return;
 
-        MenuEnt *ent = &menu[objDpyB];
+        MenuEnt *ent = &menu[objSubMenuBoxes];
         ent->set_state(a->showing_boxes());
         Menu()->SetStatus(ent->cmd.caller, ent->is_set());
-        ent = &menu[objDpyP];
+        ent = &menu[objSubMenuPolys];
         ent->set_state(a->showing_polys());
         Menu()->SetStatus(ent->cmd.caller, ent->is_set());
-        ent = &menu[objDpyW];
+        ent = &menu[objSubMenuWires];
         ent->set_state(a->showing_wires());
+        Menu()->SetStatus(ent->cmd.caller, ent->is_set());
+        ent = &menu[objSubMenuLabels];
+        ent->set_state(a->showing_labels());
         Menu()->SetStatus(ent->cmd.caller, ent->is_set());
     }
 }
@@ -344,16 +348,22 @@ namespace {
 MenuBox *
 cMain::createObjSubMenu()
 {
-    ObjMenu[objDpyB] =
+    ObjMenu[objSubMenu] =
+        MenuEnt(&M_NoOp,    "",         ME_MENU,    CMD_SAFE,
+        0);
+    ObjMenu[objSubMenuBoxes] =
         MenuEnt(&M_Boxes,   MenuDPYB,   ME_TOGGLE,  CMD_SAFE,
         MenuDPYB": Show boxes in window display.");
-    ObjMenu[objDpyP] =
+    ObjMenu[objSubMenuPolys] =
         MenuEnt(&M_Polys,   MenuDPYP,   ME_TOGGLE,  CMD_SAFE,
         MenuDPYP": Show polygons in window display.");
-    ObjMenu[objDpyW] =
+    ObjMenu[objSubMenuWires] =
         MenuEnt(&M_Wires,   MenuDPYW,   ME_TOGGLE,  CMD_SAFE,
         MenuDPYW": Show wires in window display.");
-    ObjMenu[objDpy_END] =
+    ObjMenu[objSubMenuLabels] =
+        MenuEnt(&M_Labels,  MenuDPYL,   ME_TOGGLE,  CMD_SAFE,
+        MenuDPYL": Show labels in window display.");
+    ObjMenu[objSubMenu_END] =
         MenuEnt();
 
     ObjMenuBox.name = "Objects";
@@ -802,6 +812,16 @@ obj_menu::M_Wires(CmdDesc *cmd)
         return;
     bool state = Menu()->GetStatus(cmd->caller);
     cmd->wdesc->Attrib()->set_showing_wires(state);
+}
+
+
+void
+obj_menu::M_Labels(CmdDesc *cmd)
+{
+    if (!cmd || !cmd->wdesc || !cmd->caller)
+        return;
+    bool state = Menu()->GetStatus(cmd->caller);
+    cmd->wdesc->Attrib()->set_showing_labels(state);
 }
 
 

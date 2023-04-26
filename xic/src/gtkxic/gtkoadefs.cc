@@ -43,7 +43,6 @@
 #include "dsp_inlines.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 
 
 //
@@ -90,7 +89,7 @@ using namespace gtkoadefs;
 void
 cOAif::PopUpOAdefs(GRobject caller, ShowMode mode, int x, int y)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete OAdf;
@@ -112,10 +111,10 @@ cOAif::PopUpOAdefs(GRobject caller, ShowMode mode, int x, int y)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(OAdf->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
     int mwid;
-    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
+    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, 0);
     GtkRequisition req;
     gtk_widget_get_requisition(OAdf->shell(), &req);
     if (x + req.width > mwid)

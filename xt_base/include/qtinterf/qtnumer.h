@@ -52,14 +52,14 @@ class QDoubleSpinBox;
 
 namespace qtinterf
 {
-    class qt_bag;
+    class QTbag;
 
     class QTnumPopup : public QDialog, public GRnumPopup
     {
         Q_OBJECT
 
     public:
-        QTnumPopup(qt_bag*, const char*, double, double, double, double,
+        QTnumPopup(QTbag*, const char*, double, double, double, double,
             int, void*);
         ~QTnumPopup();
 

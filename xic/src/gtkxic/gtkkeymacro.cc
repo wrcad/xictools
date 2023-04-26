@@ -47,7 +47,6 @@
 #include "tech.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 
 #include <gdk/gdkkeysyms.h>
 #ifdef WITH_X11
@@ -306,9 +305,10 @@ cKbMacro::keyName(unsigned key, char *buf)
 bool
 cKbMacro::isModifierDown()
 {
-    if (mainBag()) {
+    if (GTKmainwin::self()) {
         int x, y, state;
-        gdk_window_get_pointer(gtk_widget_get_window(mainBag()->Viewport()),
+        gdk_window_get_pointer(gtk_widget_get_window(
+            GTKmainwin::self()->Viewport()),
             &x, &y, (GdkModifierType*)&state);
         if (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK))
             // modifier down
@@ -341,10 +341,10 @@ cKbMacro::notMappable(unsigned key, unsigned state)
 bool
 cKbMacro::execKey(sKeyEvent *k)
 {
-    if (!mainBag())
+    if (!GTKmainwin::self())
         return (false);
     if (!k->widget_name) {
-        mainBag()->send_key_event(k);
+        GTKmainwin::self()->send_key_event(k);
         return (true);
     }
 

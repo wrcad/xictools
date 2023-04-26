@@ -53,7 +53,7 @@
 
 using namespace qtinterf;
 
-extern Drawable qt_x11Handle(const QPaintDevice *pd);
+//XXXextern Drawable qt_x11Handle(const QPaintDevice *pd);
 
 GC draw_x_w::com_gc = 0;
 QColor draw_x_w::com_fg;
@@ -105,7 +105,7 @@ draw_x_w::draw_direct(bool direct)
         da_direct = true;
     }
     else if (da_pixmap) {
-        da_fore = qt_x11Handle(da_pixmap);
+//XXX        da_fore = qt_x11Handle(da_pixmap);
         da_direct = false;
     }
 }
@@ -492,10 +492,10 @@ draw_x_w::resizeEvent(QResizeEvent *ev)
     // remotely from Linux it was observed that the QPixmap is created
     // with a depth not equal to the screen depth.
 
-    extern int qt_x11_preferred_pixmap_depth;
+//XXX    extern int qt_x11_preferred_pixmap_depth;
 //XXX
 //    qt_x11_preferred_pixmap_depth = QX11Info::appDepth();
-qt_x11_preferred_pixmap_depth = 24;
+//XXXqt_x11_preferred_pixmap_depth = 24;
 
     if (!da_gc)
         da_gc = XCreateGC(da_display, winId(), 0, 0);
@@ -505,7 +505,7 @@ qt_x11_preferred_pixmap_depth = 24;
     draw_direct(da_direct);
     emit resize_event(ev);
 
-    qt_x11_preferred_pixmap_depth = 0;
+//XXX    qt_x11_preferred_pixmap_depth = 0;
 }
 
 

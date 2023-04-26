@@ -75,7 +75,7 @@ namespace qtinterf
         Q_OBJECT
 
     public:
-        QTprintPopup(HCcb*, HCmode, qt_bag* = 0);
+        QTprintPopup(HCcb*, HCmode, QTbag* = 0);
         ~QTprintPopup();
 
         void update(HCcb*);
@@ -117,7 +117,7 @@ namespace qtinterf
         void closeEvent(QCloseEvent*) { quit_slot(); }
 
     private:
-        qt_bag          *pd_owner;          // back pointer to owning set
+        QTbag           *pd_owner;          // back pointer to owning set
         HCcb            *pd_cb;             // parameter data struct
         const char      *pd_cmdtext;        // print command or file name
         const char      *pd_tofilename;     // file name

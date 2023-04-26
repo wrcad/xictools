@@ -44,7 +44,7 @@
 #include "ginterf/graphics.h"
 #include <string.h>
 #include <QEventLoop>
-#include "qtinterf/draw_if.h"
+#include "qtinterf/qtdraw.h"
 
 //
 //  Main header for the QT-5 library
@@ -73,121 +73,12 @@ namespace qtinterf
 
     typedef QTmsgPopup QTtextPopup;
 
-    // Graphical context, may be used by multiple windows
-    struct sGbag
-    {
-        sGbag() {
-            cursor = 0;
-            drawghost = 0;
-            firstghost = false;
-            showghost = false;
-            noclear = false;
-            ghostcxcnt = 0;
-            refx = refy = 0;
-            lastx = lasty = 0;
-            backg = 0;
-            foreg = 0;
-            lastlinestyle = 0;
-        }
 
-        static sGbag *default_gbag();
-
-        QCursor *cursor;
-        GhostDrawFunc drawghost;
-        bool firstghost;
-        bool showghost;
-        bool noclear;
-        int ghostcxcnt;
-        int refx, refy;
-        int lastx, lasty;
-        unsigned long backg;
-        unsigned long foreg;
-        int lastlinestyle;
-    };
-
-    class qt_draw : virtual public GRdraw
+    class QTbag : virtual public GRwbag
     {
     public:
-        qt_draw();
-        virtual ~qt_draw() { }
-
-        // GRdraw virtual overrides
-        void *WindowID()                { return (0); }
-        virtual void Halt();
-        void Clear()                    { if (viewport) viewport->clear(); }
-        int SwathHeight(int*)                   { return (0); }
-        void SetSwath(int, int)                 { }
-        void ResetViewport(int, int)            { }
-        void DefineViewport()                   { }
-        void Dump(int)                          { }
-
-        void Pixel(int x, int y)
-            { if (viewport) viewport->draw_pixel(x, y); }
-        void Pixels(GRmultiPt *p, int n)
-            { if (viewport) viewport->draw_pixels(p, n); }
-        void Line(int x1, int y1, int x2, int y2)
-            { if (viewport) viewport->draw_line(x1, y1, x2, y2); }
-        void PolyLine(GRmultiPt *p, int n)
-            { if (viewport) viewport->draw_polyline(p, n); }
-        void Lines(GRmultiPt *p, int n)
-            { if (viewport) viewport->draw_lines(p, n); }
-        void Box(int x1, int y1, int x2, int y2)
-            { if (viewport) viewport->draw_box(x1, y1, x2, y2); }
-        void Boxes(GRmultiPt *p, int n)
-            { if (viewport) viewport->draw_boxes(p, n); }
-        void Arc(int x, int y, int rx, int ry, double a1, double a2)
-            { if (viewport) viewport->draw_arc(x, y, rx, ry, a1, a2); }
-        void Polygon(GRmultiPt *p, int n)
-            { if (viewport) viewport->draw_polygon(p, n); }
-        void Zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
-            { if (viewport) viewport->draw_zoid(yl, yu, xll, xul, xlr, xur); }
-        void Text(const char *str, int x, int y, int, int = -1, int = -1)
-            { if (viewport) viewport->draw_text(x, y, str, -1); }
-        void TextExtent(const char *str, int *w, int *h)
-            { if (viewport) viewport->text_extent(str, w, h); }
-        void MovePointer(int, int, bool);
-        void SetGhost(GhostDrawFunc, int, int);
-        void ShowGhost(bool);
-        void UndrawGhost(bool = false);
-        void DrawGhost(int, int);
-        void QueryPointer(int*, int*, unsigned*);
-        void DefineColor(int*, int, int, int);
-        void SetBackground(int pix)
-            { if (viewport) viewport->set_background(pix); }
-        void SetWindowBackground(int pix)
-            { if (viewport) viewport->set_background(pix); }
-        void SetGhostColor(int); 
-        void SetColor(int pix)
-            { if (viewport) viewport->set_foreground(pix); }  
-        void SetLinestyle(const GRlineType *lt)
-            { if (viewport) viewport->set_linestyle(lt); }
-        void DefineLinestyle(GRlineType*)       { }
-        void DefineFillpattern(GRfillType *fp)
-            { if (viewport) viewport->define_fillpattern(fp); }
-        void SetFillpattern(const GRfillType *fp)
-            { if (viewport) viewport->set_fillpattern(fp); }
-        void Update()
-            { if (viewport) viewport->update(); }
-
-        void Input(int*, int*, int*, int*);
-        void SetXOR(int);
-        void ShowGlyph(int, int, int);
-        GRobject GetRegion(int, int, int, int);
-        void PutRegion(GRobject, int, int, int, int);
-        void FreeRegion(GRobject);
-        void DisplayImage(const GRimage *im, int x, int y, int w, int h)
-            { if (viewport) viewport->draw_image(im, x, y, w, h); }
-        double Resolution() { return (1.0); }
-
-        sGbag *xbag;                // graphics rendering context
-        draw_if *viewport;          // drawing area
-    };
-
-    class qt_bag : virtual public GRwbag
-    {
-    public:
-        qt_bag(QWidget*);
-        virtual ~qt_bag();
+        QTbag(QWidget*);
+        virtual ~QTbag();
 
         // QT-SPECIFIC
         QWidget *ItemFromTicket(GRobject);
@@ -297,7 +188,7 @@ namespace qtinterf
         QTprintPopup *hc;           // hard copy parameters and widget
         GRmonList monitor;          // certain popups use this
         void *call_data;            // internal data
-        void (*sens_set)(qt_bag*, bool);
+        void (*sens_set)(QTbag*, bool);
                                     // sensitivity change callback
         int err_cnt;                // counters for window id
         int info_cnt;
@@ -327,7 +218,7 @@ namespace qtinterf
 
         // virtual overrides
         // qtinterf.cc
-        virtual bool Init(int*, char**);
+        bool Init(int*, char**);
         bool InitColormap(int, int, bool);
         void RGBofPixel(int, int*, int*, int*);
         int AllocateColor(int*, int, int, int);
@@ -341,36 +232,56 @@ namespace qtinterf
         bool CheckForEvents();
         int Input(int, int, int*);
         void MainLoop(bool=false);
-        int LoopLevel()                     { return (loop_level); }
+        int LoopLevel()                     { return (dv_loop_level); }
         void BreakLoop();
-        void HCmessage(const char*);
 //XXX ridme
         int UseSHM()                        { return (false); };
+
+        // qthcopy.cc
+        void HCmessage(const char*);
 
         // Remaining functions are unique to class.
 
         // This can be set by the application to the main frame widget
         // bag, in which case certain pop-ups called from other pop-ups
         // will be rooted in the main window, rather than the pop-up's
-        // window
+        // window.
         //
-        void RegisterMainFrame(qt_bag *w) { main_bag = w; }
-        qt_bag *main_frame() { return (main_bag); }
+        void RegisterMainFrame(QTbag *w)    { dv_main_bag = w; }
+        QTbag *MainFrame()                  { return (dv_main_bag); }
+
+        // qtinterf.cc
+        int  ConnectFd();
+        void Deselect(GRobject);
+        void Select(GRobject);
+        bool GetStatus(GRobject);
+        void SetStatus(GRobject, bool);
+        void CallCallback(GRobject);
+        void Location(GRobject, int*, int*);
+        void PointerRootLoc(int*, int*);
+        const char *GetLabel(GRobject);
+        void SetLabel(GRobject, const char*);
+        void SetSensitive(GRobject, bool);
+        bool IsSensitive(GRobject);
+        void SetVisible(GRobject, bool);
+        bool IsVisible(GRobject);
+        void DestroyButton(GRobject);
 
         // qtinterf.cc
         void SetPopupLocation(GRloc, QWidget*, QWidget*);
         void ComputePopupLocation(GRloc, QWidget*, QWidget*, int*, int*);
 
     private:
-        int minx, miny;
-        int loop_level;             // loop level
-        event_loop *loop;           // event loop stack
-        qt_bag *main_bag;           // top level bag
-        interval_timer *timers;     // list of timers
+        event_loop      *dv_loop;       // event loop stack
+        QTbag           *dv_main_bag;   // top level bag
+        interval_timer  *dv_timers;     // list of timers
+        int             dv_minx;
+        int             dv_miny;
+        int             dv_loop_level;  // loop level
     };
 }
 
-// Global access, set in constructor
+// Global access, set in constructor.
 extern qtinterf::QTdev *GRX;
 
 #endif // GTKINTERF_H

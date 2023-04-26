@@ -54,7 +54,7 @@
 
 inline class QTedit *qtEdit();
 
-class QTedit : public cPromptEdit, public qt_draw
+class QTedit : public cPromptEdit, public QTdraw
 {
     static QTedit *ptr() { return (instancePtr); }
 

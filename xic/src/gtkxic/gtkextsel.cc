@@ -47,7 +47,6 @@
 #include "ext_pathfinder.h"
 #include "promptline.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -106,7 +105,7 @@ using namespace gtkextsel;
 void
 cExt::PopUpSelections(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete ES;
@@ -126,9 +125,10 @@ cExt::PopUpSelections(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(ES->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), ES->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), ES->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(ES->Shell());
 }
 

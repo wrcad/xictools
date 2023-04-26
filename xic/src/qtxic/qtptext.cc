@@ -43,7 +43,6 @@
 #include "geo_zlist.h"
 #include "qtmain.h"
 #include "qtinterf/qtfont.h"
-//#include "qtinlines.h"
 
 
 //-----------------------------------------------------------------------------

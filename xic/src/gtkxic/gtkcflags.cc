@@ -44,7 +44,6 @@
 #include "cd_celldb.h"
 #include "editif.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -118,7 +117,7 @@ void
 cMain::PopUpCellFlags(GRobject caller, ShowMode mode, const stringlist *list,
     int dmode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete CF;
@@ -140,9 +139,10 @@ cMain::PopUpCellFlags(GRobject caller, ShowMode mode, const stringlist *list,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(CF->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), CF->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), CF->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(CF->Shell());
 }
 // End of cMain functions.

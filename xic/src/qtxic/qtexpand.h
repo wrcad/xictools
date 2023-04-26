@@ -49,15 +49,15 @@ class QLabel;
 class QLineEdit;
 class QPushButton;
 
-class expand_d : public QDialog, public GRpopup
+class cExpand : public QDialog, public GRpopup
 {
     Q_OBJECT
 
 public:
     typedef bool(*ExpandCallback)(const char*, void*);
 
-    expand_d(qt_bag*, const char *, bool, void*);
-    ~expand_d();
+    cExpand(QTbag*, const char *, bool, void*);
+    ~cExpand();
 
     // GRpopup overrides
     void set_visible(bool visib)

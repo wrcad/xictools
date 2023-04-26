@@ -54,9 +54,9 @@ class QTextEdit;
 namespace qtinterf
 {
     class search_d;
-    class qt_bag;
+    class QTbag;
 
-    class QTeditPopup : public QDialog, public GReditPopup, public qt_bag
+    class QTeditPopup : public QDialog, public GReditPopup, public QTbag
     {
         Q_OBJECT
 
@@ -67,7 +67,7 @@ namespace qtinterf
         // widget configuration
         enum WidgetType { Editor, Browser, StringEditor, Mailer };
 
-        QTeditPopup(qt_bag*, QTeditPopup::WidgetType, const char*, bool,
+        QTeditPopup(QTbag*, QTeditPopup::WidgetType, const char*, bool,
             void*);
         ~QTeditPopup();
 

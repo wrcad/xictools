@@ -44,11 +44,12 @@
 #include <QWidget>
 #include "qtinterf/qtinterf.h"
 
-class mainwin;
+class QTmainwin;
 
+inline class cCoord *Coord();
 
 // The coordinate readout
-class coord_w : public QWidget, public qt_draw
+class cCoord : public QWidget, public QTdraw
 {
     Q_OBJECT
 
@@ -59,23 +60,38 @@ public:
     // update mode for cCoord::print()
     enum { COOR_BEGIN, COOR_MOTION, COOR_REL };
 
-    coord_w(mainwin*);
+    friend inline cCoord *Coord() { return (cCoord::instancePtr); }
+
+    cCoord(QTmainwin*);
+    ~cCoord();
+
     void print(int, int, int);
 
-    void set_mode(int xx, int yy, bool relative, bool snap)
+    void set_mode(int x, int y, bool relative, bool snap)
     {
-        co_x = xx;
-        co_y = yy;
+        co_x = x;
+        co_y = y;
         co_rel = relative;
         co_snap = snap;
         print(0, 0, COOR_REL);
     }
 
+    void redraw()
+    {
+        redraw_slot();
+    }
+
 private:
+    int co_width;
+    int co_height;
+    int co_lx;
+    int co_ly;
     int co_x;
     int co_y;
     bool co_rel;
     bool co_snap;
+
+    static cCoord *instancePtr;
 };
 
 #endif

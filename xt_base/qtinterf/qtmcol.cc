@@ -58,7 +58,7 @@
 // auxiliary toggle button button names.
 //
 GRmcolPopup *
-qt_bag::PopUpMultiCol(stringlist *symlist, const char *title,
+QTbag::PopUpMultiCol(stringlist *symlist, const char *title,
     void(*callback)(const char*, void*), void *arg,
     const char **buttons, int pgsize, bool no_dd)
 {
@@ -125,9 +125,9 @@ mcol_delegate::sizeHint(const QStyleOptionViewItem&,
 }
 
 
-QTmcolPopup::QTmcolPopup(qt_bag *owner, stringlist *symlist,
+QTmcolPopup::QTmcolPopup(QTbag *owner, stringlist *symlist,
     const char *title, const char **buttons, int pgsize, void *arg) :
-    QDialog(owner ? owner->shell : 0), qt_bag(this)
+    QDialog(owner ? owner->shell : 0), QTbag(this)
 {
     p_parent = owner;
     p_cb_arg = arg;
@@ -179,7 +179,7 @@ QTmcolPopup::~QTmcolPopup()
     if (p_callback)
         (*p_callback)(0, p_cb_arg);
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->monitor.remove(this);
     }
@@ -192,7 +192,7 @@ void
 QTmcolPopup::popdown()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }
@@ -206,7 +206,7 @@ void
 QTmcolPopup::update(stringlist *symlist, const char *title)
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }

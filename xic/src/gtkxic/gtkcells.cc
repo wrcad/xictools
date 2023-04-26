@@ -53,7 +53,6 @@
 #include "errorlog.h"
 #include "select.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkpfiles.h"
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkutil.h"
@@ -172,7 +171,7 @@ using namespace gtkcells;
 // Static function.
 //
 char *
-main_bag::get_cell_selection()
+GTKmainwin::get_cell_selection()
 {
     if (Cells)
         return (Cells->get_selection());
@@ -184,7 +183,7 @@ main_bag::get_cell_selection()
 // Called on crash to prevent updates.
 //
 void
-main_bag::cells_panic()
+GTKmainwin::cells_panic()
 {
     Cells = 0;
 }
@@ -193,7 +192,7 @@ main_bag::cells_panic()
 void
 cMain::PopUpCells(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Cells;
@@ -213,9 +212,10 @@ cMain::PopUpCells(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Cells->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Cells->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Cells->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Cells->Shell());
 }
 

@@ -67,7 +67,7 @@ namespace qtinterf
 }
 
 
-QTmsgPopup::QTmsgPopup(qt_bag *owner, const char *message_str, STYtype sty,
+QTmsgPopup::QTmsgPopup(QTbag *owner, const char *message_str, STYtype sty,
     int w, int h) : QDialog(owner ? owner->shell : 0)
 {
     p_parent = owner;
@@ -123,7 +123,7 @@ QTmsgPopup::~QTmsgPopup()
         }
     }
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner) {
             owner->monitor.remove(this);
             if (owner->message == this)
@@ -147,7 +147,7 @@ void
 QTmsgPopup::popdown()
 {
     if (p_parent) {
-        qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->monitor.is_active(this))
             return;
     }

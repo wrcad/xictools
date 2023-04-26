@@ -50,7 +50,7 @@
 #include <QPushButton>
 
 
-expand_d::expand_d(qt_bag *owner, const char *string, bool nopeek,
+cExpand::cExpand(QTbag *owner, const char *string, bool nopeek,
     void *arg) : QDialog(owner ? owner->shell : 0)
 {
     p_parent = owner;
@@ -179,7 +179,7 @@ expand_d::expand_d(qt_bag *owner, const char *string, bool nopeek,
 }
 
 
-expand_d::~expand_d()
+cExpand::~cExpand()
 {
     if (p_usrptr)
         *p_usrptr = 0;
@@ -197,10 +197,10 @@ expand_d::~expand_d()
         }
     }
     if (p_parent) {
-        subwin_d *owner = dynamic_cast<subwin_d*>(p_parent);
+        QTsubwin *owner = dynamic_cast<QTsubwin*>(p_parent);
         if (owner) {
             owner->monitor.remove(this);
-            owner->expand = 0;
+            owner->clear_expand();
         }
     }
     if (p_callback)
@@ -211,11 +211,11 @@ expand_d::~expand_d()
 // GRpopup override
 //
 void
-expand_d::popdown()
+cExpand::popdown()
 {
     if (!p_parent)
         return;
-    qt_bag *owner = dynamic_cast<qt_bag*>(p_parent);
+    QTbag *owner = dynamic_cast<QTbag*>(p_parent);
     if (!owner || !owner->monitor.is_active(this))
         return;
 
@@ -224,21 +224,21 @@ expand_d::popdown()
 
 
 void
-expand_d::update(const char *string)
+cExpand::update(const char *string)
 {
     edit->setText(QString(string));
 }
 
 
 void
-expand_d::help_slot()
+cExpand::help_slot()
 {
     DSPmainWbag(PopUpHelp("xic:expnd"))
 }
 
 
 void
-expand_d::plus_slot()
+cExpand::plus_slot()
 {
     QString qs = edit->text();
     if (!qs.isNull()) {
@@ -254,7 +254,7 @@ expand_d::plus_slot()
 
 
 void
-expand_d::minus_slot()
+cExpand::minus_slot()
 {
     QString qs = edit->text();
     if (!qs.isNull()) {
@@ -270,63 +270,63 @@ expand_d::minus_slot()
 
 
 void
-expand_d::all_slot()
+cExpand::all_slot()
 {
     edit->setText(QString(tr("all")));
 }
 
 
 void
-expand_d::b0_slot()
+cExpand::b0_slot()
 {
     edit->setText(QString("0"));
 }
 
 
 void
-expand_d::b1_slot()
+cExpand::b1_slot()
 {
     edit->setText(QString("1"));
 }
 
 
 void
-expand_d::b2_slot()
+cExpand::b2_slot()
 {
     edit->setText(QString("2"));
 }
 
 
 void
-expand_d::b3_slot()
+cExpand::b3_slot()
 {
     edit->setText(QString("3"));
 }
 
 
 void
-expand_d::b4_slot()
+cExpand::b4_slot()
 {
     edit->setText(QString("4"));
 }
 
 
 void
-expand_d::b5_slot()
+cExpand::b5_slot()
 {
     edit->setText(QString("5"));
 }
 
 
 void
-expand_d::peek_slot()
+cExpand::peek_slot()
 {
     edit->setText(QString("p"));
 }
 
 
 void
-expand_d::apply_slot()
+cExpand::apply_slot()
 {
     char *string = lstring::copy(edit->text().toLatin1().constData());
     bool ret = false;
@@ -339,7 +339,7 @@ expand_d::apply_slot()
 
 
 void
-expand_d::dismiss_slot()
+cExpand::dismiss_slot()
 {
     delete this;
 }

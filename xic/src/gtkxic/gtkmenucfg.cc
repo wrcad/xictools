@@ -68,7 +68,6 @@
 #include "gtkmain.h"
 #include "gtkmenu.h"
 #include "gtkmenucfg.h"
-#include "gtkinlines.h"
 #include "bitmaps/style_e.xpm"
 #include "bitmaps/style_f.xpm"
 #include "bitmaps/style_r.xpm"
@@ -1737,6 +1736,7 @@ gtkMenuConfig::instantiateDRCMenu()
         G_CALLBACK(menu_handler), mbox->menu);
     check_separator(ent, submenu);
 
+//XXX Erlyr to Crlyr?
     ent = &mbox->menu[drcMenuErlyr];
     item = miset(ent, "Create _Layer", 0);
     g_object_set_data(G_OBJECT(item), MIDX, voidptr drcMenuErlyr);
@@ -2603,11 +2603,11 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data)
             g_timeout_add(50, cmd_proc, ent);
         return;
     }
-    if (mainBag()) {
+    if (GTKmainwin::self()) {
         if (ent->action) {
-            mainBag()->ShowGhost(ERASE);
+            GTKmainwin::self()->ShowGhost(ERASE);
             (*ent->action)(&ent->cmd);
-            mainBag()->ShowGhost(DISPLAY);
+            GTKmainwin::self()->ShowGhost(DISPLAY);
         }
     }
 }
@@ -2683,11 +2683,11 @@ gtkMenuConfig::cmd_proc(void *arg)
         return (true);
     DSP()->SetInterrupt(DSPinterNone);
     MenuEnt *ent = (MenuEnt*)arg;
-    if (mainBag()) {
+    if (GTKmainwin::self()) {
         if (ent->action) {
-            mainBag()->ShowGhost(ERASE);
+            GTKmainwin::self()->ShowGhost(ERASE);
             (*ent->action)(&ent->cmd);
-            mainBag()->ShowGhost(DISPLAY);
+            GTKmainwin::self()->ShowGhost(DISPLAY);
         }
     }
     CmdState::SetExported(false);

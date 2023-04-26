@@ -115,6 +115,7 @@ struct DSPattrib
     bool showing_boxes()                const { return (a_show_boxes); }
     bool showing_polys()                const { return (a_show_polys); }
     bool showing_wires()                const { return (a_show_wires); }
+    bool showing_labels()               const { return (a_show_labels); }
 
     EdgeSnapMode edge_snapping()        const { return ((EdgeSnapMode)
                                                   a_edge_snapping); }
@@ -174,6 +175,7 @@ struct DSPattrib
     void set_showing_boxes(bool b)              { a_show_boxes = b; }
     void set_showing_polys(bool b)              { a_show_polys = b; }
     void set_showing_wires(bool b)              { a_show_wires = b; }
+    void set_showing_labels(bool b)             { a_show_labels = b; }
 
     void set_edge_snapping(EdgeSnapMode m)      { a_edge_snapping = m; }
     void set_edge_off_grid(bool b)              { a_edge_off_grid = b; }
@@ -223,6 +225,7 @@ private:
     bool a_show_boxes;
     bool a_show_polys;
     bool a_show_wires;
+    bool a_show_labels;
 
     // Edge snapping modes.
     char a_edge_snapping;

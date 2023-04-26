@@ -60,7 +60,6 @@
 #include "gtkparam.h"
 #include "gtkmenu.h"
 #include "gtkmenucfg.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkutil.h"
 #include "ginterf/nulldev.h"
@@ -357,9 +356,9 @@ namespace {
         const char *busy_msg =
             "Working...\nPress Control-C in main window to abort.";
 
-        if (!gtkPkgIf()->busy_popup && mainBag()) {
+        if (!gtkPkgIf()->busy_popup && GTKmainwin::self()) {
             gtkPkgIf()->busy_popup =
-                mainBag()->PopUpErrText(busy_msg, STY_NORM);
+                GTKmainwin::self()->PopUpErrText(busy_msg, STY_NORM);
             if (gtkPkgIf()->busy_popup)
                 gtkPkgIf()->busy_popup->
                     register_usrptr((void**)&gtkPkgIf()->busy_popup);
@@ -372,7 +371,7 @@ namespace {
 //-----------------------------------------------------------------------------
 // GTKpkg functions
 
-// Create a new main_bag.  This will be passed to GTKdev::New() for
+// Create a new GTKmainwin.  This will be passed to GTKdev::New() for
 // registration, then on to Initialize().
 //
 GRwbag *
@@ -383,13 +382,13 @@ GTKpkg::NewGX()
     if (MainDev()->ident == _devNULL_)
         return (new null_bag);
     if (MainDev()->ident == _devGTK_)
-        return (new main_bag);
+        return (new GTKmainwin);
     return (0);
 }
 
 
 // Initialization function for the main window.  The argument *must* be
-// a main_bag.
+// a GTKmainwin.
 //
 int
 GTKpkg::Initialize(GRwbag *wcp)
@@ -419,7 +418,7 @@ GTKpkg::Initialize(GRwbag *wcp)
     if (MainDev()->ident != _devGTK_)
         return (true);
 
-    main_bag *w = dynamic_cast<main_bag*>(wcp);
+    GTKmainwin *w = dynamic_cast<GTKmainwin*>(wcp);
     if (!w)
         return (true);
 
@@ -465,7 +464,7 @@ GTKpkg::Initialize(GRwbag *wcp)
     }
 
     Gst()->SetGhost(GFnone);
-    if (!mainBag())
+    if (!GTKmainwin::self())
         // Halt called
         return (true);
     return (false);
@@ -479,7 +478,7 @@ GTKpkg::ReinitNoGraphics()
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return;
-    if (!mainBag())
+    if (!GTKmainwin::self())
         return;
     DSPmainDraw(Halt());
     DSP()->MainWdesc()->SetWbag(0);
@@ -560,16 +559,16 @@ GTKpkg::CheckForInterrupt()
 
     if (dispatch_events) {
 #if GTK_CHECK_VERSION(3,0,0)
-        ndkGC *gc = mainBag()->GC();
-        if (gc == mainBag()->XorGC())
+        ndkGC *gc = GTKmainwin::self()->GC();
+        if (gc == GTKmainwin::self()->XorGC())
             // If ghost-drawing, defer event processing, which may
             // foul up the display.
             return (false);
         ndkGCvalues gcv;
         gc->get_values(&gcv);
 #else
-        GdkGC *gc = mainBag()->GC();
-        if (gc == mainBag()->XorGC())
+        GdkGC *gc = GTKmainwin::self()->GC();
+        if (gc == GTKmainwin::self()->XorGC())
             // If ghost-drawing, defer event processing, which may
             // foul up the display.
             return (false);
@@ -653,7 +652,7 @@ GTKpkg::Iconify(int state)
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return (false);
-    main_bag *w = mainBag();
+    GTKmainwin *w = GTKmainwin::self();
     if (!w)
         return (false);
     if (!state)
@@ -671,11 +670,11 @@ GTKpkg::SubwinInit(int wnum)
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return (false);
-    if (!mainBag())
+    if (!GTKmainwin::self())
         return (false);
     if (wnum < 1 || wnum >= DSP_NUMWINS)
         return (false);
-    win_bag *w = new win_bag;
+    GTKsubwin *w = new GTKsubwin;
     w->subw_initialize(wnum);
     return (true);
 }
@@ -691,7 +690,7 @@ GTKpkg::SubwinDestroy(int wnum)
     WindowDesc *wdesc = DSP()->Window(wnum);
     if (!wdesc)
         return;
-    win_bag *w = dynamic_cast<win_bag*>(wdesc->Wbag());
+    GTKsubwin *w = dynamic_cast<GTKsubwin*>(wdesc->Wbag());
     if (w) {
         wdesc->SetWbag(0);
         wdesc->SetWdraw(0);
@@ -783,10 +782,10 @@ GTKpkg::GetMainWinIdentifier(char *buf)
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return (false);
 #ifdef WITH_X11
-    if (mainBag() && mainBag()->Shell() &&
-            gtk_widget_get_window(mainBag()->Shell())) {
+    if (GTKmainwin::self() && GTKmainwin::self()->Shell() &&
+            gtk_widget_get_window(GTKmainwin::self()->Shell())) {
         snprintf(buf, 16, "%ld", (long)gr_x_window(
-            gtk_widget_get_window(mainBag()->Shell())));
+            gtk_widget_get_window(GTKmainwin::self()->Shell())));
         return (true);
     }
 #endif
@@ -1056,11 +1055,11 @@ GTKpkg::RegisterEventHandler(void(*handler)(GdkEvent*, void*), void *arg)
 
 
 //-----------------------------------------------------------------------------
-// win_bag functions
+// GTKsubwin functions
 
-bool win_bag::HaveDrag = false;
+bool GTKsubwin::HaveDrag = false;
 
-win_bag::win_bag() : GTKdraw(XW_DRAWING)
+GTKsubwin::GTKsubwin() : GTKdraw(XW_DRAWING)
 {
     wib_windesc = 0;
     wib_gridpop = 0;
@@ -1086,7 +1085,7 @@ win_bag::win_bag() : GTKdraw(XW_DRAWING)
 }
 
 
-win_bag::~win_bag()
+GTKsubwin::~GTKsubwin()
 {
     PopUpExpand(0, MODE_OFF, 0, 0, 0, false);
     PopUpGrid(0, MODE_OFF);
@@ -1105,12 +1104,12 @@ namespace { GdkRectangle LastPos[DSP_NUMWINS]; }
 // Function to initialize a subwindow.
 //
 void
-win_bag::subw_initialize(int wnum)
+GTKsubwin::subw_initialize(int wnum)
 {
 
     char buf[32];
-    snprintf(buf, 32, "%s %d", XM()->Product(), wnum);
-    wb_shell = gtk_NewPopup(mainBag(), buf, subwin_cancel_proc,
+    snprintf(buf, sizeof(buf), "%s %d", XM()->Product(), wnum);
+    wb_shell = gtk_NewPopup(GTKmainwin::self(), buf, subwin_cancel_proc,
         (void*)(intptr_t)wnum);
     gtk_widget_set_size_request(wb_shell, 500, 400);
 
@@ -1123,8 +1122,8 @@ win_bag::subw_initialize(int wnum)
         // multi-monitor safe.
 
         int x, y;
-        gdk_window_get_origin(gtk_widget_get_window(mainBag()->Shell()),
-            &x, &y);
+        gdk_window_get_origin(gtk_widget_get_window(
+            GTKmainwin::self()->Shell()), &x, &y);
         gtk_window_move(GTK_WINDOW(wb_shell),
             LastPos[wnum].x + x, LastPos[wnum].y + y);
         gtk_window_set_default_size(GTK_WINDOW(wb_shell),
@@ -1132,7 +1131,7 @@ win_bag::subw_initialize(int wnum)
     }
     else {
         GdkRectangle rect;
-        gtk_ShellGeometry(mainBag()->Shell(), &rect, 0);
+        gtk_ShellGeometry(GTKmainwin::self()->Shell(), &rect, 0);
         rect.x += rect.width - 560;
         rect.y += (wnum-1)*40 + 60; // make room for device toolbar
         gtk_window_move(GTK_WINDOW(wb_shell), rect.x, rect.y);
@@ -1254,7 +1253,7 @@ win_bag::subw_initialize(int wnum)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 0, 0);
 
     gtk_window_set_transient_for(GTK_WINDOW(wb_shell),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
     gtk_widget_show(wb_shell);
 #if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
@@ -1289,7 +1288,7 @@ win_bag::subw_initialize(int wnum)
 
 
 void
-win_bag::pre_destroy(int wnum)
+GTKsubwin::pre_destroy(int wnum)
 {
     GdkRectangle rect, rect_d;
     gtk_ShellGeometry(wb_shell, &rect, &rect_d);
@@ -1299,7 +1298,8 @@ win_bag::pre_destroy(int wnum)
     // multi-monitor setups.
 
     int x, y;
-    gdk_window_get_origin(gtk_widget_get_window(mainBag()->Shell()), &x, &y);
+    gdk_window_get_origin(gtk_widget_get_window(GTKmainwin::self()->Shell()),
+        &x, &y);
     LastPos[wnum].x = rect_d.x - x;
     LastPos[wnum].y = rect_d.y - y;
     LastPos[wnum].width = rect.width;
@@ -1315,7 +1315,7 @@ win_bag::pre_destroy(int wnum)
 // will create a pixmap and make it the current context drawable.
 //
 void
-win_bag::SwitchToPixmap()
+GTKsubwin::SwitchToPixmap()
 {
     if (!wib_windesc)
         return;
@@ -1361,7 +1361,7 @@ win_bag::SwitchToPixmap()
 // context drawable back to the screen.
 //
 void
-win_bag::SwitchFromPixmap(const BBox *BB)
+GTKsubwin::SwitchFromPixmap(const BBox *BB)
 {
     // Note that the bounding values are included in the display.
 #if GTK_CHECK_VERSION(3,0,0)
@@ -1387,7 +1387,7 @@ win_bag::SwitchFromPixmap(const BBox *BB)
 // reset the context to normal.
 //
 GRobject
-win_bag::DrawableReset()
+GTKsubwin::DrawableReset()
 {
 #if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_window();
@@ -1405,7 +1405,7 @@ win_bag::DrawableReset()
 // Copy out the BB area of the pixmap to the screen
 //
 void
-win_bag::CopyPixmap(const BBox *BB)
+GTKsubwin::CopyPixmap(const BBox *BB)
 {
 #if GTK_CHECK_VERSION(3,0,0)
     GetDrawable()->set_draw_to_window();
@@ -1425,7 +1425,7 @@ win_bag::CopyPixmap(const BBox *BB)
 // Destroy the pixmap (switching out first if necessary).
 //
 void
-win_bag::DestroyPixmap()
+GTKsubwin::DestroyPixmap()
 {
 #if GTK_CHECK_VERSION(3,0,0)
 #else
@@ -1445,7 +1445,7 @@ win_bag::DestroyPixmap()
 // Return true if the pixmap is alive and well.
 //
 bool
-win_bag::PixmapOk()
+GTKsubwin::PixmapOk()
 {
     // Note that the bounding values are included in the display.
     if (!wib_windesc)
@@ -1466,7 +1466,7 @@ win_bag::PixmapOk()
 // Function to dump a window to a file, not part of the hardcopy system.
 //
 bool
-win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
+GTKsubwin::DumpWindow(const char *filename, const BBox *AOI = 0)
 {
 #ifdef HAVE_MOZY
 // This uses the imsave package from mozy.
@@ -1586,7 +1586,7 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
 // Get the "keyspressed" in buf.
 //
 void
-win_bag::GetTextBuf(char *buf)
+GTKsubwin::GetTextBuf(char *buf)
 {
     for (int i = 0; i < wib_keypos; i++)
         buf[i] = wib_keys[i];
@@ -1597,7 +1597,7 @@ win_bag::GetTextBuf(char *buf)
 // Set the "keyspressed".
 //
 void
-win_bag::SetTextBuf(const char *buf)
+GTKsubwin::SetTextBuf(const char *buf)
 {
     SetKeys(buf);
     ShowKeys();
@@ -1605,7 +1605,7 @@ win_bag::SetTextBuf(const char *buf)
 
 
 void
-win_bag::ShowKeys()
+GTKsubwin::ShowKeys()
 {
     // Set the colors of the keys-pressed area in the main window. 
     // This is slightly tricky.  The keys-pressed label is parented by
@@ -1665,7 +1665,7 @@ win_bag::ShowKeys()
 
 
 void
-win_bag::SetKeys(const char *text)
+GTKsubwin::SetKeys(const char *text)
 {
     while (wib_keypos)
         wib_keys[--wib_keypos] = '\0';
@@ -1677,7 +1677,7 @@ win_bag::SetKeys(const char *text)
 
 
 void
-win_bag::BspKeys()
+GTKsubwin::BspKeys()
 {
     if (wib_keypos)
         wib_keys[--wib_keypos] = '\0';
@@ -1685,7 +1685,7 @@ win_bag::BspKeys()
 
 
 bool
-win_bag::AddKey(int c)
+GTKsubwin::AddKey(int c)
 {
     if (c > ' ' && c <= '~' && wib_keypos < CBUFMAX) {
         wib_keys[wib_keypos++] = c;
@@ -1700,7 +1700,7 @@ win_bag::AddKey(int c)
 
 
 bool
-win_bag::CheckBsp()
+GTKsubwin::CheckBsp()
 {
     if (wib_keypos > 0 && wib_keys[wib_keypos - 1] == Kmap()->SuppressChar()) {
         BspKeys();
@@ -1711,7 +1711,7 @@ win_bag::CheckBsp()
 
 
 void
-win_bag::CheckExec(bool exact)
+GTKsubwin::CheckExec(bool exact)
 {
     if (!wib_keypos)
         return;
@@ -1750,21 +1750,21 @@ win_bag::CheckExec(bool exact)
 
 
 char *
-win_bag::KeyBuf()
+GTKsubwin::KeyBuf()
 {
     return (wib_keys);
 }
 
 
 int
-win_bag::KeyPos()
+GTKsubwin::KeyPos()
 {
     return (wib_keypos);
 }
 
 
 void
-win_bag::SetLabelText(const char *text)
+GTKsubwin::SetLabelText(const char *text)
 {
     if (wib_menulabel) {
 #if GTK_CHECK_VERSION(2,16,0)
@@ -1788,7 +1788,7 @@ win_bag::SetLabelText(const char *text)
 // the appropriate command button, and clear the buffer.
 //
 bool
-win_bag::keypress_handler(unsigned keyval, unsigned state, char *keystring,
+GTKsubwin::keypress_handler(unsigned keyval, unsigned state, char *keystring,
     bool from_prline, bool up)
 {
     if (!wib_windesc)
@@ -1897,7 +1897,7 @@ win_bag::keypress_handler(unsigned keyval, unsigned state, char *keystring,
 
 // Static function.
 int
-win_bag::map_hdlr(GtkWidget*, GdkEvent*, void*)
+GTKsubwin::map_hdlr(GtkWidget*, GdkEvent*, void*)
 {
     // Nothing to do but handle this to avoid default action of
     // issuing expose event.
@@ -1910,9 +1910,9 @@ win_bag::map_hdlr(GtkWidget*, GdkEvent*, void*)
 // with the new size.
 //
 int
-win_bag::resize_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
+GTKsubwin::resize_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
-    win_bag *w = static_cast<win_bag*>(client_data);
+    GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
     if (event->type == GDK_CONFIGURE && w->wib_windesc) {
         int width = gdk_window_get_width(gtk_widget_get_window(caller));
         int height = gdk_window_get_height(gtk_widget_get_window(caller));
@@ -1929,10 +1929,10 @@ win_bag::resize_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 //
 #if GTK_CHECK_VERSION(3,0,0)
 int
-win_bag::redraw_hdlr(GtkWidget *widget, cairo_t *cr, void *client_data)
+GTKsubwin::redraw_hdlr(GtkWidget *widget, cairo_t *cr, void *client_data)
 #else
 int
-win_bag::redraw_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
+GTKsubwin::redraw_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
 #endif
 {
     if (gtk_widget_get_parent(widget) == DontRedrawMe) {
@@ -1942,7 +1942,7 @@ win_bag::redraw_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
     if (HaveDrag && DSP()->NoPixmapStore())
         return (false);
 
-    win_bag *w = static_cast<win_bag*>(client_data);
+    GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
 
     if (DSP()->NoPixmapStore() &&
             (!DSP()->CurCellName() || !XM()->IsAppReady())) {
@@ -2008,7 +2008,7 @@ namespace {
     {
         int x, y;
         GRX->PointerRootLoc(&x, &y);
-        GtkWidget *w = mainBag()->TextArea();
+        GtkWidget *w = GTKmainwin::self()->TextArea();
         GdkRectangle r;
         gtk_ShellGeometry(w, &r , 0);
         return (x >= r.x && x <= r.x + r.width &&
@@ -2021,11 +2021,11 @@ namespace {
 // Key press processing for the drawing windows
 //
 int
-win_bag::key_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
+GTKsubwin::key_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
-    if (!mainBag() || gtkPkgIf()->NotMapped())
+    if (!GTKmainwin::self() || gtkPkgIf()->NotMapped())
         return (true);
-    win_bag *w = static_cast<win_bag*>(client_data);
+    GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
     if (w->wb_message)
         w->wb_message->popdown();
 
@@ -2051,16 +2051,16 @@ win_bag::key_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 // Key release processing for the drawing windows
 //
 int
-win_bag::key_up_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
+GTKsubwin::key_up_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 {
     if (grabbed_key && grabbed_key == event->key.keyval) {
         grabbed_key = 0;
         gdk_keyboard_ungrab(event->key.time);
     }
-    if (!mainBag() || gtkPkgIf()->NotMapped())
+    if (!GTKmainwin::self() || gtkPkgIf()->NotMapped())
         return (true);
     GdkEventKey *kev = (GdkEventKey*)event;
-    win_bag *w = static_cast<win_bag*>(client_data);
+    GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
     if (KbMac()->MacroExpand(kev->keyval, kev->state, true))
         return (true);
     return (w->keypress_handler(kev->keyval, kev->state, kev->string, false,
@@ -2072,7 +2072,7 @@ win_bag::key_up_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 // Dispatch button press events to the application callbacks.
 //
 int
-win_bag::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
+GTKsubwin::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
     GdkEventButton *bev = (GdkEventButton*)event;
     int button = Kmap()->ButtonMap(bev->button);
@@ -2085,7 +2085,7 @@ win_bag::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
     if (bev->button < GS_NBTNS)
         button_state[bev->button] = true;
 
-    win_bag *w = static_cast<win_bag*>(client_data);
+    GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
     if (w->wb_message)
         w->wb_message->popdown();
 
@@ -2122,7 +2122,7 @@ win_bag::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
         break;
     case 2:
         // Pan operation
-        if (XM()->IsDoingHelp() && !is_shift_down())
+        if (XM()->IsDoingHelp() && !GTKmainwin::is_shift_down())
             DSPmainWbag(PopUpHelp("button2"))
         else if (w->wib_windesc)
             EV()->Button2Callback(w->wib_windesc, (int)bev->x, (int)bev->y,
@@ -2130,7 +2130,7 @@ win_bag::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
         break;
     case 3:
         // Zoom opertion
-        if (XM()->IsDoingHelp() && !is_shift_down())
+        if (XM()->IsDoingHelp() && !GTKmainwin::is_shift_down())
             DSPmainWbag(PopUpHelp("button3"))
         else if (w->wib_windesc)
             EV()->Button3Callback(w->wib_windesc, (int)bev->x, (int)bev->y,
@@ -2139,7 +2139,7 @@ win_bag::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 
     default:
         // No-op, update coordinates only.
-        if (XM()->IsDoingHelp() && !is_shift_down())
+        if (XM()->IsDoingHelp() && !GTKmainwin::is_shift_down())
             DSPmainWbag(PopUpHelp("noopbutton"))
         else if (w->wib_windesc)
             EV()->ButtonNopCallback(w->wib_windesc, (int)bev->x, (int)bev->y,
@@ -2156,7 +2156,7 @@ win_bag::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 // Dispatch button release events to the application callbacks.
 //
 int
-win_bag::button_up_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
+GTKsubwin::button_up_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 {
     GdkEventButton *bev = (GdkEventButton*)event;
     int button = Kmap()->ButtonMap(bev->button);
@@ -2166,7 +2166,7 @@ win_bag::button_up_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
     if (bev->button < GS_NBTNS)
         button_state[bev->button] = false;
 
-    win_bag *w = static_cast<win_bag*>(client_data);
+    GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
 
     if (!grabstate.is_armed(bev)) {
         grabstate.check_noop(false);
@@ -2221,9 +2221,9 @@ win_bag::button_up_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 // Mouse-wheel scroll handler for GTK-2.
 //
 int
-win_bag::scroll_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
+GTKsubwin::scroll_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 {
-    win_bag *w = static_cast<win_bag*>(client_data);
+    GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
     if (event->scroll.direction == GDK_SCROLL_UP) {
 
         if (event->scroll.state & GDK_CONTROL_MASK) {
@@ -2265,9 +2265,9 @@ win_bag::scroll_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 // commands, "ghost" XOR drawing is utilized.
 //
 int
-win_bag::motion_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
+GTKsubwin::motion_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 {
-    win_bag *w = static_cast<win_bag*>(client_data);
+    GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
     GdkEventMotion *mev = (GdkEventMotion*)event;
 #ifdef MOTION_IDLE
     if (w->wib_windesc) {
@@ -2308,9 +2308,9 @@ win_bag::motion_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 
 
 int
-win_bag::motion_idle(void *arg)
+GTKsubwin::motion_idle(void *arg)
 {
-    win_bag *w = static_cast<win_bag*>(arg);
+    GTKsubwin *w = static_cast<GTKsubwin*>(arg);
     w->wib_id = 0;
     if (w->windesc()) {
         EV()->MotionCallback(w->windesc(), w->wib_state);
@@ -2344,10 +2344,10 @@ win_bag::motion_idle(void *arg)
 // clean up.  This is for button up events that get 'lost'.
 //
 int
-win_bag::enter_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
+GTKsubwin::enter_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
     // pointer entered the drawing window
-    win_bag *w = static_cast<win_bag*>(client_data);
+    GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
 
 #ifdef MOTION_IDLE
     if (w->wib_id) {
@@ -2402,10 +2402,10 @@ win_bag::enter_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 // window.
 //
 int
-win_bag::leave_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
+GTKsubwin::leave_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 {
     // pointer left the drawing window
-    win_bag *w = static_cast<win_bag*>(client_data);
+    GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
 
     // Just ignore event if the window is not the current window, the
     // OS X back-end will do this.
@@ -2436,7 +2436,7 @@ win_bag::leave_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 
 // Static function.
 int
-win_bag::focus_hdlr(GtkWidget*, GdkEvent*, void*)
+GTKsubwin::focus_hdlr(GtkWidget*, GdkEvent*, void*)
 {
     // Nothing to do but handle this to avoid default action of
     // issuing expose event.
@@ -2480,7 +2480,7 @@ namespace {
 // Drag data received in drawing window - open the cell.
 //
 void
-win_bag::drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
+GTKsubwin::drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
     GtkSelectionData *data, guint, guint time)
 {
     bool success = false;
@@ -2540,7 +2540,7 @@ win_bag::drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
 
 // Static function.
 void
-win_bag::target_drag_leave(GtkWidget *widget, GdkDragContext*, guint)
+GTKsubwin::target_drag_leave(GtkWidget *widget, GdkDragContext*, guint)
 {
     // called on drop, too
     if (HaveDrag) {
@@ -2562,7 +2562,7 @@ win_bag::target_drag_leave(GtkWidget *widget, GdkDragContext*, guint)
 
 // Static function.
 gboolean
-win_bag::target_drag_motion(GtkWidget *widget, GdkDragContext*, gint, gint,
+GTKsubwin::target_drag_motion(GtkWidget *widget, GdkDragContext*, gint, gint,
     guint)
 {
     if (!HaveDrag) {
@@ -2577,7 +2577,7 @@ win_bag::target_drag_motion(GtkWidget *widget, GdkDragContext*, gint, gint,
 
 // Static function.
 void
-win_bag::subwin_cancel_proc(GtkWidget*, void *client_data)
+GTKsubwin::subwin_cancel_proc(GtkWidget*, void *client_data)
 {
     int wnum = (intptr_t)client_data;
     if (wnum > 0 && wnum < DSP_NUMWINS)
@@ -2589,22 +2589,22 @@ win_bag::subwin_cancel_proc(GtkWidget*, void *client_data)
 // Pop up info about the keys pressed area in help mode.
 //
 int
-win_bag::keys_hdlr(GtkWidget*, GdkEvent *event, void*)
+GTKsubwin::keys_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
     if (XM()->IsDoingHelp() && event->type == GDK_BUTTON_PRESS &&
-            !is_shift_down())
+            !GTKmainwin::is_shift_down())
         DSPmainWbag(PopUpHelp("keyspresd"))
     return (true);
 }
 
 
 //-----------------------------------------------------------------------------
-// main_bag functions
+// GTKmainwin functions
 
 // Setup function for main window.
 //
 void
-main_bag::initialize()
+GTKmainwin::initialize()
 {
 #if GTK_CHECK_VERSION(2,10,4)
 #ifdef WIN32
@@ -3012,7 +3012,7 @@ main_bag::initialize()
 
 
 void
-main_bag::send_key_event(sKeyEvent *k)
+GTKmainwin::send_key_event(sKeyEvent *k)
 {
     if (k->type == KEY_PRESS)
         keypress_handler(k->key, k->state, k->text, false, false);
@@ -3026,7 +3026,7 @@ main_bag::send_key_event(sKeyEvent *k)
 // when busy.
 //
 int
-main_bag::main_destroy_proc(GtkWidget*, GdkEvent*, void*)
+GTKmainwin::main_destroy_proc(GtkWidget*, GdkEvent*, void*)
 {
     if (gtkPkgIf()->IsBusy()) {
         pop_busy();
@@ -3042,7 +3042,7 @@ main_bag::main_destroy_proc(GtkWidget*, GdkEvent*, void*)
 // Load colors using the X resource mechanism.
 //
 void
-main_bag::xrm_load_colors()
+GTKmainwin::xrm_load_colors()
 {
 #ifdef WITH_X11
     // load string resource color names
@@ -3152,9 +3152,10 @@ sEventHdlr::main_event_handler(GdkEvent *event, void*)
             if (GTK_IS_DRAWING_AREA(evw))
                 return;
             GtkWidget *top = gtk_widget_get_toplevel(evw);
-            if (!top || !mainBag())
+            if (!top || !GTKmainwin::self())
                 return;
-            if (top != mainBag()->Shell() && top != gtkMenu()->GetModal())
+            if (top != GTKmainwin::self()->Shell() &&
+                    top != gtkMenu()->GetModal())
                 return;
         }
     }
@@ -3181,9 +3182,10 @@ sEventHdlr::main_event_handler(GdkEvent *event, void*)
                 if (GTK_IS_DRAWING_AREA(evw))
                     return;
                 GtkWidget *top = gtk_widget_get_toplevel(evw);
-                if (!top || !mainBag())
+                if (!top || !GTKmainwin::self())
                     return;
-                if (top != mainBag()->Shell() && top != gtkMenu()->GetModal())
+                if (top != GTKmainwin::self()->Shell() &&
+                        top != gtkMenu()->GetModal())
                     return;
             }
         }

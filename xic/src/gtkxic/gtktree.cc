@@ -48,7 +48,6 @@
 #include "events.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include "miscutil/timer.h"
 #include <algorithm>
@@ -140,7 +139,7 @@ using namespace gtktree;
 // Static function.
 //
 char *
-main_bag::get_tree_selection()
+GTKmainwin::get_tree_selection()
 {
     if (Tree)
         return (Tree->get_selection());
@@ -152,7 +151,7 @@ main_bag::get_tree_selection()
 // Called on crash to prevent updates.
 //
 void
-main_bag::tree_panic()
+GTKmainwin::tree_panic()
 {
     Tree = 0;
 }
@@ -166,7 +165,7 @@ void
 cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
     TreeUpdMode dmode, const char *oldroot)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Tree;
@@ -188,9 +187,10 @@ cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Tree->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Tree->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Tree->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Tree->Shell());
 }
 

@@ -45,7 +45,6 @@
 #include "menu.h"
 #include "view_menu.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #ifdef HAVE_LOCAL_ALLOCATOR
 #include "malloc/local_malloc.h"
@@ -117,7 +116,7 @@ using namespace gtkmem;
 void
 cMain::PopUpMemory(ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Mem;
@@ -136,9 +135,10 @@ cMain::PopUpMemory(ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Mem->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Mem->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Mem->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Mem->Shell());
 #if GTK_CHECK_VERSION(3,0,0)
     Mem->GetDrawable()->set_window(gtk_widget_get_window(Mem->Viewport()));
@@ -156,7 +156,8 @@ cMain::PopUpMemory(ShowMode mode)
 sMem::sMem() : GTKdraw(XW_TEXT)
 {
     Mem = this;
-    wb_shell = gtk_NewPopup(mainBag(), "Memory Monitor", mem_popdown, 0);
+    wb_shell = gtk_NewPopup(GTKmainwin::self(), "Memory Monitor",
+        mem_popdown, 0);
     if (!wb_shell)
         return;
     gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);

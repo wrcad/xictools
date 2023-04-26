@@ -46,7 +46,6 @@
 #include "fio_alias.h"
 #include "gtkmain.h"
 #include "gtkcv.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include <gdk/gdkkeysyms.h>
 
@@ -108,7 +107,7 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
     const char *init_idname, const char *init_str, int x, int y,
     bool(*callback)(const char*, const char*, int, void*), void *arg)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Co;
@@ -128,10 +127,10 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Co->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
     int mwid;
-    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
+    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, 0);
     GtkRequisition req;
     gtk_widget_get_requisition(Co->Shell(), &req);
     if (x + req.width > mwid)

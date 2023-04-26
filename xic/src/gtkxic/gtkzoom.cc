@@ -41,7 +41,6 @@
 #include "main.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 #include <gdk/gdkkeysyms.h>
 #include <math.h>
@@ -100,9 +99,9 @@ using namespace gtkzoom;
 
 
 void
-win_bag::PopUpZoom(GRobject caller, ShowMode mode)
+GTKsubwin::PopUpZoom(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         if (wib_zoompop)
@@ -339,7 +338,7 @@ sZm::sZm(GTKbag *owner, WindowDesc *w)
 sZm::~sZm()
 {
     if (p_parent) {
-        win_bag *owner = dynamic_cast<win_bag*>(p_parent);
+        GTKsubwin *owner = dynamic_cast<GTKsubwin*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
@@ -378,7 +377,7 @@ sZm::popdown()
 void
 sZm::initialize()
 {
-    win_bag *w = dynamic_cast<win_bag*>(p_parent);
+    GTKsubwin *w = dynamic_cast<GTKsubwin*>(p_parent);
     if (w && w->Shell()) {
         gtk_window_set_transient_for(GTK_WINDOW(zm_popup),
             GTK_WINDOW(w->Shell()));

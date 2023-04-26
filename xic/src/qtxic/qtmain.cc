@@ -47,7 +47,6 @@
 #include "qthtext.h"
 #include "qtinterf/qtfile.h"
 #include "qtinterf/qtmsg.h"
-#include "qtinlines.h"
 #include "extif.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
@@ -128,54 +127,189 @@ public:
 
 // Main and subwindow class for null graphics.
 //
-struct null_bag : public DSPwbag, public NULLwbag,  NULLwinApp,
+struct NULLwin : public DSPwbag, public NULLwbag,  NULLwinApp,
     public NULLdraw
 {
 };
 
 
-/* XXX
-// Command logic for GTKpkg::Point
-//
-struct PointState : public CmdState
-{
-    PointState();
-    virtual ~PointState();
-    static bool got_btn1;
-    static bool got_abort;
-private:
-    void b1down() { got_btn1 = true; }
-    void b1up() { if (got_btn1) esc(); }
-    void esc()
+#define GS_NBTNS 8
+
+namespace {
+    /* XXX
+    // Struct to hold state for button press grab action.  This overrides
+    // the "automatic grab" so that the cursor tracks the subwindow
+    // crossings.
+    //
+    struct grabstate_t
+    {
+        grabstate_t()
+            {
+                for (int i = 0; i < GS_NBTNS; i++) {
+                    caller[i] = 0;
+                    send_event[i] = false;
+                }
+                noopbtn = false;
+            }
+
+        void set(GtkWidget *w, GdkEventButton *be)
+            {
+                if (be->button >= GS_NBTNS)
+                    return;
+                gdk_pointer_grab(gtk_widget_get_window(w), true,
+                    GDK_BUTTON_RELEASE_MASK, 0, 0, be->time);
+                caller[be->button] = w;
+                send_event[be->button] = be->send_event;
+
+                if (be->send_event)
+                    gdk_pointer_ungrab(be->time);
+            }
+
+        bool is_armed(GdkEventButton *be)
+            { return (be->button < GS_NBTNS && caller[be->button] != 0); }
+
+        void clear(GdkEventButton *be)
+            {
+                if (be->button >= GS_NBTNS)
+                    return;
+                caller[be->button] = 0;
+                send_event[be->button] = false;
+                gdk_pointer_ungrab(be->time);
+            }
+
+        void clear(unsigned int btn, unsigned int time)
+            {
+                if (btn >= GS_NBTNS)
+                    return;
+                caller[btn] = 0;
+                send_event[btn] = false;
+                gdk_pointer_ungrab(time);
+            }
+
+        bool check_noop(bool n)
+            { bool x = noopbtn; noopbtn = n; return (x); }
+
+        GtkWidget *widget(int n) { return (n <= GS_NBTNS ? caller[n] : 0); }
+
+    private:
+        GtkWidget *caller[GS_NBTNS];    // target windows
+        bool send_event[GS_NBTNS];      // true if event was synthesized
+        bool noopbtn;                   // true when simulating no-op button
+    };
+
+    unsigned int grabbed_key;
+    grabstate_t grabstate;
+    */
+
+    /*
+    // Event handling.  This contains the main event handler, plus a queue
+    // for saving events for later dispatch.
+    //
+    struct sEventHdlr
+    {
+        // Event list element
+        //
+        struct evl_t
         {
-            got_abort = Abort;
-            if (GRX->LoopLevel() > 1)
-                GRX->BreakLoop();
-            EV()->PopCallback(this);
-            delete this;
+            evl_t(GdkEvent *e) { ev = e; next = 0; }
+            ~evl_t() { if (ev) gdk_event_free(ev); }
+
+            GdkEvent *ev;
+            evl_t *next;
+        };
+
+        sEventHdlr() { event_list = 0; }
+
+        bool has_saved_events() { return (event_list != 0); }
+
+        // Process and clear the event list.
+        //
+        void do_saved_events()
+            {
+                while (event_list) {
+                    evl_t *event = event_list;
+                    event_list = event->next;
+                    gtk_main_do_event(event->ev);
+                    delete event;
+                }
+            }
+
+        // Append an event to the list.
+        //
+        void save_event(GdkEvent *ev)
+            {
+                ev = gdk_event_copy(ev);
+                if (!event_list)
+                    event_list = new evl_t(ev);
+                else {
+                    evl_t *evl = event_list;
+                    while (evl->next)
+                        evl = evl->next;
+                    evl->next = new evl_t(ev);
+                }
+            }
+
+        static void main_event_handler(GdkEvent *event, void*);
+
+    private:
+        evl_t *event_list;
+    };
+
+    bool button_state[GS_NBTNS];
+    sEventHdlr event_hdlr;
+    */
+
+    namespace main_local {
+        void wait_cursor(bool);
+        int timer_cb(void*);
+#ifdef HAVE_MOZY
+        void quit_help(void*);
+        void form_submit_hdlr(void*);
+#endif
+    };
+
+    /* XXX
+    inline bool is_modifier_key(unsigned keysym)
+    {
+        return ((keysym >= GDK_KEY_Shift_L && keysym <= GDK_KEY_Hyper_R) ||
+            keysym == GDK_KEY_Mode_switch || keysym == GDK_KEY_Num_Lock);
+    }
+    */
+
+    // When the application is busy, all button presses and all key
+    // presses except for Ctrl-C are locked out, and upon receipt a
+    // pop-up appears telling the user to use Ctrl-C to abort.  The
+    // pop-up disappears in a few seconds.
+    //
+    // All other events are dispatched normally when busy.
+    //
+
+    // Timeout procedure for message pop-up.
+    //
+    int
+    busy_msg_timeout(void*)
+    {
+        if (qtPkgIf()->BusyPopup())
+            qtPkgIf()->BusyPopup()->popdown();
+        return (false);
+    }
+
+    void
+    pop_busy()
+    {
+        const char *busy_msg =
+            "Working...\nPress Control-C in main window to abort.";
+
+        if (!qtPkgIf()->BusyPopup() && QTmainwin::self()) {
+            qtPkgIf()->SetBusyPopup(
+                QTmainwin::self()->PopUpErrText(busy_msg, STY_NORM));
+            if (qtPkgIf()->BusyPopup())
+                qtPkgIf()->BusyPopup()->
+                    register_usrptr((void**)qtPkgIf()->BusyPopupHome());
+            qtPkgIf()->RegisterTimeoutProc(3000, busy_msg_timeout, 0);
         }
-};
-
-bool PointState::got_btn1;
-bool PointState::got_abort;
-
-namespace { PointState *PointCmd; }
-
-
-PointState::PointState()
-{
-    StateName = "POINT";
-    got_btn1 = false;
+    }
 }
-
-
-PointState::~PointState()
-{
-    PointCmd = 0;
-}
-// End of PointState functions.
-*/
-
 
 
 //-----------------------------------------------------------------------------
@@ -190,9 +324,9 @@ QTpkg::NewGX()
     if (!MainDev())
         return (0);
     if (MainDev()->ident == _devNULL_)
-        return (new null_bag);
+        return (new NULLwin);
     if (MainDev()->ident == _devQT_)
-        return (new mainwin);
+        return (new QTmainwin);
     return (0);
 }
 
@@ -202,6 +336,7 @@ messageOutput(QtMsgType type, const char *msg)
 {
     switch (type) {
     case QtDebugMsg:
+    case QtInfoMsg:
     case QtWarningMsg:
         break;
     case QtCriticalMsg:
@@ -229,7 +364,7 @@ QTpkg::Initialize(GRwbag *wcp)
         LT()->SetLtab(&qt_lt);
         PL()->SetEdit(&qt_hy);
 
-        null_bag *w = dynamic_cast<null_bag*>(wcp);
+        NULLwin *w = dynamic_cast<NULLwin*>(wcp);
         DSP()->SetWindow(0, new WindowDesc);
         EV()->SetCurrentWin(DSP()->MainWdesc());
         DSP()->MainWdesc()->SetWbag(w);
@@ -238,19 +373,17 @@ QTpkg::Initialize(GRwbag *wcp)
         DSP()->SetCurMode(XM()->InitialMode());
 
         DSP()->ColorTab()->init();
-        XM()->AppInit();
-        XM()->InitSignals(true);
-        XM()->Rehash();
+        DSP()->Initialize(600, 400, 0, true);
+        LT()->InitLayerTable();
 
-//XXX        Kmap()->Assert();
         return (false);
     }
     if (MainDev()->ident != _devQT_)
         return (true);
 
-    idle_control = new idle_proc();
+    pkg_idle_control = new idle_proc();
 
-    mainwin *w = dynamic_cast<mainwin*>(wcp);
+    QTmainwin *w = dynamic_cast<QTmainwin*>(wcp);
     if (!w)
         return (true);
 
@@ -262,27 +395,22 @@ QTpkg::Initialize(GRwbag *wcp)
     QSize qs = w->Viewport()->size();
     DSP()->Initialize(qs.width(), qs.height(), 0,
         (XM()->RunMode() != ModeNormal));
-
     LT()->InitLayerTable();
 
+#ifdef HAVE_MOZY
     // callback to tell application when quitting help
-//    HLP()->context()->registerQuitHelpProc(quit_help);
-//    HLP()->context()->registerFormSubmitProc(form_submit_hdlr);
+    HLP()->context()->registerQuitHelpProc(main_local::quit_help);
+    HLP()->context()->registerFormSubmitProc(main_local::form_submit_hdlr);
+#endif
 
-//    PL()->Edit()->hyInit();
+    PL()->Init();
     qtEdit()->init();
-//    GRX->RegisterBigWindow(gr_x_window(w->shell->window));
+//    GRX->RegisterBigWindow(w->Shell());
 
-    DSP()->ColorTab()->alloc();
-    XM()->InitSignals(true);
-    XM()->Rehash();
-
-//XXX    Kmap()->Assert();
     Gst()->SetGhost(GFnone);
-    if (!mainBag())
+    if (!QTmainwin::self())
         // Halt called
         return (true);
-    XM()->SetAppReady(true);  // XXX in expose handler?
     return (false);
 }
 
@@ -292,6 +420,23 @@ QTpkg::Initialize(GRwbag *wcp)
 void
 QTpkg::ReinitNoGraphics()
 {
+    if (!MainDev() || MainDev()->ident != _devQT_)
+        return;
+    if (!QTmainwin::self())
+        return;
+    DSPmainDraw(Halt());
+    DSP()->MainWdesc()->SetWbag(0);
+    DSP()->MainWdesc()->SetWdraw(0);
+    CloseGraphicsConnection();
+
+    PL()->SetNoGraphics();
+    LT()->SetNoGraphics();
+
+    GRpkgIf()->SetNullGraphics();
+    EV()->SetCurrentWin(DSP()->MainWdesc());
+    NULLwin *w = new NULLwin;
+    DSP()->MainWdesc()->SetWbag(w);
+    DSP()->MainWdesc()->SetWdraw(w);
 }
 
 
@@ -300,11 +445,10 @@ QTpkg::ReinitNoGraphics()
 void
 QTpkg::Halt()
 {
-    if (!MainDev() || MainDev()->ident != _devGTK_)
+    if (!MainDev() || MainDev()->ident != _devQT_)
         return;
 //    GRX->RegisterBigWindow(0);
     EV()->InitCallback();
-//    gtk_main_quit();
     if (DSP()->MainWdesc()) {
         DSP()->MainWdesc()->SetWbag(0);
         DSP()->MainWdesc()->SetWdraw(0);
@@ -318,8 +462,10 @@ QTpkg::Halt()
 void
 QTpkg::AppLoop()
 {
-//    RegisterEventHandler(0, 0);
-//    in_main_loop = true;
+    if (!MainDev() || MainDev()->ident != _devQT_)
+        return;
+    RegisterEventHandler(0, 0);
+    pkg_in_main_loop = true;
     GRX->MainLoop(true);
 }
 
@@ -366,63 +512,12 @@ QTpkg::SubwinInit(int wnum)
 {
     if (!MainDev() || MainDev()->ident != _devQT_)
         return (false);
-    if (!mainBag())
+    if (!QTmainwin::self())
         return (false);
-    subwin_d *w = new subwin_d(wnum, mainBag());
-
-    char buf[32];
-    sprintf(buf, "%s %d", XM()->Product(), wnum+1);
-    w->setWindowTitle(buf);
-
-    DSP()->Window(wnum)->SetWbag(w);
-    DSP()->Window(wnum)->SetWdraw(w);
-
-    // Create new menu, just copy template.
-    Menu()->CreateSubwinMenu(wnum);
-
-    w->connect(w, SIGNAL(update_coords(int, int)),
-        mainBag(), SLOT(update_coords_slot(int, int)));
-/*
-    int xpos, ypos;
-    if (LastPos[wnum].width) {
-        gtk_widget_set_uposition(w->shell, LastPos[wnum].x, LastPos[wnum].y);
-        gtk_window_set_default_size(GTK_WINDOW(w->shell), LastPos[wnum].width,
-            LastPos[wnum].height);
-        xpos = LastPos[wnum].x;
-        ypos = LastPos[wnum].y;
-    }
-    else {
-        GdkRectangle rect;
-        ShellGeometry(mainBag()->shell, &rect, 0);
-        rect.x += rect.width - 560;
-        rect.y += wnum*40 + 60; // make room for device toolbar
-        gtk_widget_set_uposition(w->shell, rect.x, rect.y);
-        xpos = rect.x;
-        ypos = rect.y;
-    }
-
-
-    // Set up double-click cancel on label event box.
-    //
-    for (MenuEnt *mx = GTKmenuPtr->Msubwins[wnum]->menu; mx->entry; mx++) {
-        if (!strcmp(mx->entry, MenuCANCL)) {
-            GRX->SetDoubleClickExit(ebox, (GtkWidget*)mx->cmd.caller);
-            break;
-        }
-    }
-*/
-
-    w->SetWindowBackground(w->xbag->backg);
-    w->Clear();
-
-    // Application initialization callback.
-    //
-    QSize qs = w->Viewport()->size();
-//XXX draws twice, first here than later from resize
-    DSP()->Initialize(qs.width(), qs.height(), wnum);
-    w->show();
-    w->raise();
-    w->activateWindow();
+    if (wnum < 1 || wnum >= DSP_NUMWINS)
+        return (false);
+    QTsubwin *w = new QTsubwin(wnum, QTmainwin::self());
+    w->subw_initialize(wnum);
     return (true);
 }
 
@@ -435,37 +530,14 @@ QTpkg::SubwinDestroy(int wnum)
     WindowDesc *wdesc = DSP()->Window(wnum);
     if (!wdesc)
         return;
-    subwin_d *w = dynamic_cast<subwin_d*>(wdesc->Wbag());
+    QTsubwin *w = dynamic_cast<QTsubwin*>(wdesc->Wbag());
     if (w) {
         wdesc->SetWbag(0);
         wdesc->SetWdraw(0);
-
-        Menu()->DestroySubwinMenu(wnum);
-
-    /*
-        GdkRectangle rect, rect_d;
-        ShellGeometry(w->shell, &rect, &rect_d);
-        LastPos[wnum].x = rect_d.x;
-        LastPos[wnum].y = rect_d.y;
-        LastPos[wnum].width = rect.width;
-        LastPos[wnum].height = rect.height;
-
-        gtk_signal_disconnect_by_func(GTK_OBJECT(w->shell),
-            GTK_SIGNAL_FUNC(subwin_cancel_proc), (void*)(long)(wnum+1));
-    */
-
+        w->pre_destroy(wnum);
         delete w;
     }
-}
-
-
-static void
-wait_cursor(bool waiting)
-{
-    if (waiting)
-        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-    else
-        QApplication::restoreOverrideCursor();
+    Menu()->DestroySubwinMenu(wnum);
 }
 
 
@@ -477,20 +549,36 @@ QTpkg::SetWorking(bool busy)
 {
     if (!MainDev() || MainDev()->ident != _devQT_)
         return (false);
+
+    // Have to be careful with reentrancy, specifically app_busy must
+    // have its final value before calling the functions (which can
+    // call back!).
+
     bool ready = true;
     if (busy) {
         if (!app_busy) {
             DSP()->SetInterrupt(DSPinterNone);
-            if (!app_override_busy)
-                wait_cursor(true);
+            if (!app_override_busy) {
+                app_busy++;
+                main_local::wait_cursor(true);
+                return (ready);
+            }
         }
         else
             ready = false;
         app_busy++;
     }
     else {
-        if (app_busy == 1)
-            wait_cursor(false);
+        if (app_busy == 1) {
+            app_busy--;
+            main_local::wait_cursor(false);
+            /*
+            if (event_hdlr.has_saved_events())
+                // dispatch saved events
+                RegisterIdleProc(saved_events_idle, 0);
+            */
+            return (ready);
+        }
         if (app_busy)
             app_busy--;
     }
@@ -505,12 +593,12 @@ QTpkg::SetOverrideBusy(bool ovr)
         return;
     if (ovr) {
         if (app_busy)
-            wait_cursor(false);
+            main_local::wait_cursor(false);
         app_override_busy = true;
     }
     else {
         if (app_busy)
-            wait_cursor(true);
+            main_local::wait_cursor(true);
         app_override_busy = false;
     }
 }
@@ -522,7 +610,9 @@ QTpkg::SetOverrideBusy(bool ovr)
 bool
 QTpkg::GetMainWinIdentifier(char *buf)
 {
-    (void)buf;
+    *buf = 0;
+//    if (!MainDev() || MainDev()->ident != _devQT_)
+//        return (false);
     return (false);
 }
 
@@ -544,17 +634,25 @@ QTpkg::IsTrueColor()
 bool
 QTpkg::UsingX11()
 {
+    /*
 #ifdef WITH_X11
     return (true);
 #else
+    */
     return (false);
-#endif
+//#endif
 }
 
 
 void
 QTpkg::CloseGraphicsConnection()
 {
+    if (!MainDev() || MainDev()->ident != _devQT_)
+        return;
+    if (GRX->ConnectFd() > 0) {
+//        gtk_main_quit();
+        close(GRX->ConnectFd());
+    }
 }
 
 
@@ -574,21 +672,25 @@ QTpkg::GetDisplayString()
 bool
 QTpkg::CheckScreenAccess(hostent*, const char*, const char*)
 {
-    return (false);
+    return (true);
 }
 
 
 int
 QTpkg::RegisterIdleProc(int(*cb)(void*), void *arg)
 {
-    return (idle_control->add(cb, arg));
+    if (!MainDev() || MainDev()->ident != _devQT_)
+         return (0);
+    return (pkg_idle_control->add(cb, arg));
 }
 
 
 bool
 QTpkg::RemoveIdleProc(int id)
 {
-    return (idle_control->remove(id));
+    if (!MainDev() || MainDev()->ident != _devQT_)
+         return (false);
+    return (pkg_idle_control->remove(id));
 }
 
 
@@ -614,9 +716,16 @@ QTpkg::RemoveTimeoutProc(int id)
 // int time;  milliseconds
 //
 int
-QTpkg::StartTimer(int, bool*)
+QTpkg::StartTimer(int time, bool *set)
 {
-    return (0);
+    if (!MainDev() || MainDev()->ident != _devQT_)
+         return (0);
+    int id = 0;
+    if (set)
+        *set = false;
+    if (time > 0)
+        id = GRX->AddTimer(time, main_local::timer_cb, set);
+    return (id);
 }
 
 
@@ -624,17 +733,27 @@ QTpkg::StartTimer(int, bool*)
 // or XFD font names.
 //
 void
-QTpkg::SetFont(const char*, int, FNT_FMT)
+QTpkg::SetFont(const char *fname, int fnum, FNT_FMT fmt)
 {
+    if (!MainDev() || MainDev()->ident != _devQT_)
+         return;
+
+    // Ignore XFDs, but anything else should be ok.
+    if (fmt == FNT_FMT_X)
+        return;
+
+    if (!xfd_t::is_xfd(fname))
+        FC.setName(fname, fnum);
 }
 
 
 // Return the application font names.
 //
 const char *
-QTpkg::GetFont(int)
+QTpkg::GetFont(int fnum)
 {
-    return (0);
+    // Valid for NULL graphics also.
+    return (FC.getName(fnum));
 }
 
 
@@ -647,24 +766,27 @@ QTpkg::GetFontFmt()
 }
 
 
-// This function pushes into a new call state and waits for a button 1
-// press (returns true) or an escape event (returns false).  This is used
-// in scripts as a wait loop for placing objects
+// Register an event handler, which is called for each event received
+// by the application.
 //
-/*XXX
-PTretType
-QTpkg::PointTo()
+void
+QTpkg::RegisterEventHandler(void(*handler)(QEvent*, void*), void *arg)
 {
-    return (PTok);
-}
+    (void)handler;
+/*XXX
+    if (handler)
+        gdk_event_handler_set(handler, arg, 0);
+    else
+        gdk_event_handler_set(event_hdlr.main_event_handler, 0, 0);
 */
+}
 // End of QTpkg functions
 
 
 //-----------------------------------------------------------------------------
-// keys_w functions
+// cKeys functions
 
-keys_w::keys_w(int wnum, QWidget *prnt) : draw_qt_w(false, prnt)
+cKeys::cKeys(int wnum, QWidget *prnt) : draw_qt_w(false, prnt)
 {
     keypos = 0;
     memset(keys, 0, CBUFMAX+1);
@@ -677,7 +799,7 @@ keys_w::keys_w(int wnum, QWidget *prnt) : draw_qt_w(false, prnt)
 
 
 void
-keys_w::show_keys()
+cKeys::show_keys()
 {
     char *s = keys + (keypos > 5 ? keypos - 5 : 0);
     clear();
@@ -688,7 +810,7 @@ keys_w::show_keys()
 
 
 void
-keys_w::set_keys(const char *text)
+cKeys::set_keys(const char *text)
 {
     while (keypos)
         keys[--keypos] = '\0';
@@ -700,7 +822,7 @@ keys_w::set_keys(const char *text)
 
 
 void
-keys_w::bsp_keys()
+cKeys::bsp_keys()
 {
     if (keypos)
         keys[--keypos] = '\0';
@@ -708,7 +830,7 @@ keys_w::bsp_keys()
 
 
 void
-keys_w::check_exec(bool exact)
+cKeys::check_exec(bool exact)
 {
     if (!keypos)
         return;
@@ -749,64 +871,76 @@ keys_w::check_exec(bool exact)
 
 
 //-----------------------------------------------------------------------------
-// subwin_d functions
+// QTsubwin functions
 
-DrawType subwin_d::drawtype = DrawX;
+DrawType QTsubwin::sw_drawtype = DrawNative;
 
-subwin_d::subwin_d(int wnum, QWidget *prnt) : QDialog(prnt), qt_bag(this)
+QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
+    QTdraw(XW_DRAWING)
 {
+    sw_windesc = 0;
+
     if (wnum < 0)
-        win_number = -1;
+        sw_win_number = -1;
     else
-        win_number = wnum;
-    expand = 0;
+        sw_win_number = wnum;
+    sw_expand = 0;
 
-    menubar = new QMenuBar(this);
+    sw_menubar = new QMenuBar(this);
 
-    if (win_number == 0) {
+    if (sw_win_number == 0) {
         const char *str = getenv("GR_SYSTEM");
         if (str) {
             if (!strcasecmp(str, "X"))
-                drawtype = DrawX;
+                sw_drawtype = DrawX;
             if (!strcasecmp(str, "GL"))
-                drawtype = DrawGL;
+                sw_drawtype = DrawGL;
             if (!strcasecmp(str, "QT") || !strcasecmp(str, "native"))
-                drawtype = DrawNative;
+                sw_drawtype = DrawNative;
         }
-        if (drawtype == DrawGL)
+        if (sw_drawtype == DrawGL)
             printf("Using OpenGL graphics system.\n");
-        else if (drawtype == DrawX)
+        else if (sw_drawtype == DrawX)
             printf("Using custom X-Windows graphics system.\n");
         else
             printf("Using QT native graphics system.\n");
     }
-    viewport = draw_if::new_draw_interface(drawtype, true, this);
+    gd_viewport = draw_if::new_draw_interface(sw_drawtype, true, this);
+    Gbag()->set_draw_if(gd_viewport);
     Viewport()->setFocusPolicy(Qt::StrongFocus);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
-        viewport->set_font(fnt);
+        gd_viewport->set_font(fnt);
 
-    keys_pressed = new keys_w(win_number, this);
+    sw_keys_pressed = new cKeys(sw_win_number, this);
 
+    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
+        this, SLOT(resize_slot(QResizeEvent*)));
+    connect(Viewport(), SIGNAL(new_painter(QPainter*)),
+        this, SLOT(new_painter_slot(QPainter*)));
+    connect(Viewport(), SIGNAL(paint_event(QPaintEvent*)),
+        this, SLOT(paint_slot(QPaintEvent*)));
     connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(button_down_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(button_up_slot(QMouseEvent*)));
+    connect(Viewport(), SIGNAL(move_event(QMouseEvent*)),
+        this, SLOT(motion_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_down_slot(QKeyEvent*)));
     connect(Viewport(), SIGNAL(key_release_event(QKeyEvent*)),
         this, SLOT(key_up_slot(QKeyEvent*)));
-    connect(Viewport(), SIGNAL(move_event(QMouseEvent*)),
-        this, SLOT(motion_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(enter_event(QEvent*)),
         this, SLOT(enter_slot(QEvent*)));
     connect(Viewport(), SIGNAL(leave_event(QEvent*)),
         this, SLOT(leave_slot(QEvent*)));
-    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
+    connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
+        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
+    connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
+        this, SLOT(drop_slot(QDropEvent*)));
 
-    if (win_number == 0)
+    if (sw_win_number == 0)
         // being subclassed for main window
         return;
 
@@ -814,18 +948,108 @@ subwin_d::subwin_d(int wnum, QWidget *prnt) : QDialog(prnt), qt_bag(this)
     vbox->setMargin(2);
     vbox->setSpacing(2);
 
-    keys_pressed->setFixedHeight(line_height() + 4);
-    keys_pressed->setFixedWidth(6*char_width());
-    keys_pressed->move(160, 2);
+    sw_keys_pressed->setFixedHeight(line_height() + 4);
+    sw_keys_pressed->setFixedWidth(6*char_width());
+    sw_keys_pressed->move(160, 2);
 
-    vbox->setMenuBar(menubar);
+    vbox->setMenuBar(sw_menubar);
     vbox->addWidget(Viewport());
 }
 
 
-subwin_d::~subwin_d()
+QTsubwin::~QTsubwin()
 {
+    PopUpExpand(0, MODE_OFF, 0, 0, 0, false);
     PopUpGrid(0, MODE_OFF);
+    PopUpZoom(0, MODE_OFF);
+}
+
+
+// Function to initialize a subwindow.
+//
+void
+QTsubwin::subw_initialize(int wnum)
+{
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%s %d", XM()->Product(), wnum);
+    setWindowTitle(buf);
+
+    sw_windesc = DSP()->Window(wnum);
+    DSP()->Window(wnum)->SetWbag(this);
+    DSP()->Window(wnum)->SetWdraw(this);
+
+    // Create new menu, just copy template.
+    Menu()->CreateSubwinMenu(wnum);
+
+    connect(this, SIGNAL(update_coords(int, int)),
+        QTmainwin::self(), SLOT(update_coords_slot(int, int)));
+/*XXX
+    int xpos, ypos;
+    if (LastPos[wnum].width) {
+        gtk_widget_set_uposition(w->shell, LastPos[wnum].x, LastPos[wnum].y);
+        gtk_window_set_default_size(GTK_WINDOW(w->shell), LastPos[wnum].width,
+            LastPos[wnum].height);
+        xpos = LastPos[wnum].x;
+        ypos = LastPos[wnum].y;
+    }
+    else {
+        GdkRectangle rect;
+        ShellGeometry(QTmainwin::self()->shell, &rect, 0);
+        rect.x += rect.width - 560;
+        rect.y += wnum*40 + 60; // make room for device toolbar
+        gtk_widget_set_uposition(w->shell, rect.x, rect.y);
+        xpos = rect.x;
+        ypos = rect.y;
+    }
+
+    // Set up double-click cancel on label event box.
+    //
+    for (MenuEnt *mx = GTKmenuPtr->Msubwins[wnum]->menu; mx->entry; mx++) {
+        if (!strcmp(mx->entry, MenuCANCL)) {
+            GRX->SetDoubleClickExit(ebox, (GtkWidget*)mx->cmd.caller);
+            break;
+        }
+    }
+*/
+
+    SetWindowBackground(0);
+    Clear();
+
+    // Application initialization callback.
+    //
+    QSize qs = Viewport()->size();
+//XXX draws twice, first here than later from resize
+    DSP()->Initialize(qs.width(), qs.height(), wnum);
+    show();
+    raise();
+    activateWindow();
+    XM()->UpdateCursor(sw_windesc, (CursorType)Gbag()->get_cursor_type(),
+        true);
+}
+
+
+void
+QTsubwin::pre_destroy(int wnum)
+{
+    /* XXX
+    GdkRectangle rect, rect_d;
+    gtk_ShellGeometry(wb_shell, &rect, &rect_d);
+
+    // Save relative to corner of main window.  Absolute coords can
+    // change if the main window is moved to a different monitor in
+    // multi-monitor setups.
+
+    int x, y;
+    gdk_window_get_origin(gtk_widget_get_window(GTKmainwin::self()->Shell()),
+        &x, &y);
+    LastPos[wnum].x = rect_d.x - x;
+    LastPos[wnum].y = rect_d.y - y;
+    LastPos[wnum].width = rect.width;
+    LastPos[wnum].height = rect.height;
+
+    g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
+        (gpointer)subwin_cancel_proc, (void*)(intptr_t)wnum);
+    */
 }
 
 
@@ -836,8 +1060,11 @@ subwin_d::~subwin_d()
 // will create a pixmap and make it the current context drawable.
 //
 void
-subwin_d::SwitchToPixmap()
+QTsubwin::SwitchToPixmap()
 {
+    if (!sw_windesc)
+        return;
+    // set draw to pixmap
 }
 
 
@@ -845,26 +1072,26 @@ subwin_d::SwitchToPixmap()
 // context drawable back to the screen.
 //
 void
-subwin_d::SwitchFromPixmap(const BBox *BB)
+QTsubwin::SwitchFromPixmap(const BBox *BB)
 {
     CopyPixmap(BB);
 }
 
 
 // Return the pixmap, set by a previous call to SwitchToPixmap(), and
-// reset the context to normal
+// reset the context to normal.
 //
 GRobject
-subwin_d::DrawableReset()
+QTsubwin::DrawableReset()
 {
     return (0);
 }
 
 
-// Copy out the BB area of the pixmap to the screen
+// Copy out the BB area of the pixmap to the screen.
 //
 void
-subwin_d::CopyPixmap(const BBox *BB)
+QTsubwin::CopyPixmap(const BBox *BB)
 {
     Viewport()->repaint(BB->left, BB->top, BB->right - BB->left + 1,
         BB->bottom - BB->top + 1);
@@ -877,204 +1104,304 @@ subwin_d::CopyPixmap(const BBox *BB)
 // Destroy the pixmap (switching out first if necessary).
 //
 void
-subwin_d::DestroyPixmap()
+QTsubwin::DestroyPixmap()
 {
 }
 
 
-// Function to dump a window to a file, not part of the hardcopy system
+// Return true if the pixmap is alive and well.
 //
 bool
-subwin_d::DumpWindow(const char *filename, const BBox *AOI = 0)
+QTsubwin::PixmapOk()
 {
-/*
-    if (Global.RunMode != ModeNormal)
+    return (true);
+}
+
+
+// Function to dump a window to a file, not part of the hardcopy system.
+//
+bool
+QTsubwin::DumpWindow(const char *filename, const BBox *AOI = 0)
+{
+#ifdef NOTDEF
+#ifdef HAVE_MOZY
+// This uses the imsave package from mozy.
+
+    // Note that the bounding values are included in the display.
+    if (!sw_windesc)
         return (false);
-    if (!AOI)
-        AOI = &w_viewport;
-    BBox BB = *AOI;
-    ViewportClip(BB, w_viewport);
+    BBox BB = AOI ? *AOI : sw_windesc->Viewport();
+    ViewportClip(BB, sw_windesc->Viewport());
     if (BB.right < BB.left || BB.bottom < BB.top)
         return (false);
+
+#if GTK_CHECK_VERSION(3,0,0)
+    ndkPixmap *pm = 0;
+#else
     GdkPixmap *pm = 0;
+#endif
     bool native = false;
-    if (w_pixmap && w_pxwidth == w_viewport.right - w_viewport.left &&
-            w_pxheight == w_viewport.bottom - w_viewport.top) {
-        pm = (GdkPixmap*)w_pixmap;
+    int vp_width = sw_windesc->ViewportWidth();
+    int vp_height = sw_windesc->ViewportHeight();
+#if GTK_CHECK_VERSION(3,0,0)
+    if (GetDrawable()->get_pixmap() &&
+            GetDrawable()->get_pixmap()->get_width() == vp_width &&
+            GetDrawable()->get_pixmap()->get_height() == vp_height) { 
+        pm = GetDrawable()->get_pixmap();
+#else
+    if (wib_draw_pixmap && wib_px_width == vp_width &&
+            wib_px_height == vp_height) {
+        pm = wib_draw_pixmap;
+#endif
         native = true;
     }
     else {
-        widget_bag *wb =
-            (this == DSP()->windows[0] ? GTKmainWin : (widget_bag*)w_draw);
-        pm = gdk_pixmap_new(wb->window, w_viewport.right - w_viewport.left + 1,
-            w_viewport.bottom - w_viewport.top + 1, GTKdev::visual->depth);
+#if GTK_CHECK_VERSION(3,0,0)
+        pm = new ndkPixmap(GetDrawable()->get_window(), vp_width, vp_height);
         if (!pm)
             return (false);
-        GdkWindow *tmpw = wb->window;
-        wb->window = pm;
-        RedisplayDirect();
-        wb->window = tmpw;
+        pm->inc_ref();
+        GetDrawable()->set_pixmap(pm);
+        wib_windesc->RedisplayDirect();
+        GetDrawable()->set_window(0);
+        GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
+#else
+        pm = gdk_pixmap_new(gd_window, vp_width, vp_height,
+            gdk_visual_get_depth(GRX->Visual()));
+        if (!pm)
+            return (false);
+        GdkWindow *tmpw = gd_window;
+        gd_window = pm;
+        wib_windesc->RedisplayDirect();
+        gd_window = tmpw;
+#endif
     }
+#ifdef WIN32
+    GdkGCValuesMask Win32GCvalues = (GdkGCValuesMask)(
+        GDK_GC_FOREGROUND |
+        GDK_GC_BACKGROUND);
+    HDC dc = gdk_win32_hdc_get(gd_window, GC(), Win32GCvalues);
+    if (GDK_IS_WINDOW(gd_window)) {
+        // Need this correction for windows without implementation.
 
+        int xoff, yoff;
+        gdk_window_get_internal_paint_info(gd_window, 0, &xoff, &yoff);
+        BB.left -= xoff;
+        BB.bottom -= yoff;
+        BB.right -= xoff;
+        BB.top -= yoff;
+    }
+    Image *im = create_image_from_drawable(dc, 0,
+        BB.left, BB.top, BB.width() + 1, abs(BB.height()) + 1);
+    gdk_win32_hdc_release(gd_window, GC(), Win32GCvalues);
+#else
+#ifdef WITH_X11
+#if GTK_CHECK_VERSION(3,0,0)
+    Image *im = create_image_from_drawable(gr_x_display(),
+        pm->get_xid(), BB.left, BB.top, BB.width() + 1, abs(BB.height()) + 1);
+#else
     Image *im = create_image_from_drawable(gr_x_display(),
         GDK_WINDOW_XWINDOW(pm),
-        BB.left - w_viewport.left, BB.top - w_viewport.top,
-        BB.right - BB.left, BB.bottom - BB.top);
+        BB.left, BB.top, BB.width() + 1, abs(BB.height()) + 1);
+#endif
+#else
+#ifdef WITH_QUARTZ
+//XXX Need equiv. code for Quartz.
+    Image *im = 0;
+#endif  // WITH_QUARTZ
+#endif  // WITH_X11
+#endif  // WIN32
+
     if (!native)
+#if GTK_CHECK_VERSION(3,0,0)
+        pm->dec_ref();
+#else
         gdk_pixmap_unref(pm);
-    if (!im) 
+#endif
+    if (!im)
         return (false);
     ImErrType ret = im->save_image(filename, 0);
-    if (ret == ImError)
-        XM()->PopUpErr("Image creation failed, internal error.");
-    else if (ret == ImNoSupport)
-        XM()->PopUpErr("Image creation failed, file type unsupported.");
+    if (ret == ImError) {
+        Log()->ErrorLog(mh::Internal,
+            "Image creation failed, internal error.");
+    }
+    else if (ret == ImNoSupport) {
+        Log()->ErrorLog(mh::Processing,
+            "Image creation failed, file type unsupported.");
+    }
     delete im;
     return (true);
-*/
+#else
+    (void)filename;
+    (void)AOI;
+    return (false);
+#endif
+#endif  // NOTDEF
 (void)filename;
 (void)AOI;
 return (false);
 }
 
 
-bool
-subwin_d::PixmapOk()
-{
-    return (true);
-}
-
-
 // Get the "keyspressed" in buf
 //
 void
-subwin_d::GetTextBuf(char *buf)
+QTsubwin::GetTextBuf(char *buf)
 {
-    for (int i = 0; i < keys_pressed->key_pos(); i++)
-        buf[i] = keys_pressed->key(i);
-    buf[keys_pressed->key_pos()] = 0;
+    for (int i = 0; i < sw_keys_pressed->key_pos(); i++)
+        buf[i] = sw_keys_pressed->key(i);
+    buf[sw_keys_pressed->key_pos()] = 0;
 }
 
 
-// Set the "keyspressed"
+// Set the "keyspressed".
 //
 void
-subwin_d::SetTextBuf(const char *buf)
+QTsubwin::SetTextBuf(const char *buf)
 {
-    keys_pressed->set_keys(buf);
-    keys_pressed->show_keys();
+    sw_keys_pressed->set_keys(buf);
+    sw_keys_pressed->show_keys();
 }
 
 
 void
-subwin_d::ShowKeys()
+QTsubwin::ShowKeys()
 {
-    keys_pressed->show_keys();
+    sw_keys_pressed->show_keys();
 }
 
 
 void
-subwin_d::SetKeys(const char *text)
+QTsubwin::SetKeys(const char *text)
 {
-    keys_pressed->set_keys(text);
+    sw_keys_pressed->set_keys(text);
 }
 
 
 void
-subwin_d::BspKeys()
+QTsubwin::BspKeys()
 {
-    keys_pressed->bsp_keys();
+    sw_keys_pressed->bsp_keys();
+}
+
+
+bool
+QTsubwin::AddKey(int c)
+{
+    int keypos = sw_keys_pressed->key_pos();
+    if (c > ' ' && c <= '~' && keypos < CBUFMAX) {
+        sw_keys_pressed->append(c);
+        return (true);
+    }
+    if (c == ' ' && keypos > 0 && keypos < CBUFMAX) {
+        sw_keys_pressed->append(c);
+        return (true);
+    }
+    return (false);
+}
+
+
+bool
+QTsubwin::CheckBsp()
+{
+    int keypos = sw_keys_pressed->key_pos();
+    if (keypos > 0 &&
+            sw_keys_pressed->key(keypos - 1) == Kmap()->SuppressChar()) {
+        BspKeys();
+        return (true);
+    }
+    return (false);
 }
 
 
 void
-subwin_d::CheckExec(bool exact)
+QTsubwin::CheckExec(bool exact)
 {
-    keys_pressed->check_exec(exact);
+    sw_keys_pressed->check_exec(exact);
 }
 
 
 char *
-subwin_d::KeyBuf()
+QTsubwin::KeyBuf()
 {
-    return (keys_pressed->key_buf());
+    return (sw_keys_pressed->key_buf());
 }
 
 
 int
-subwin_d::KeyPos()
+QTsubwin::KeyPos()
 {
-    return (keys_pressed->key_pos());
+    return (sw_keys_pressed->key_pos());
 }
 
 
 void
-subwin_d::SetLabelText(const char*)
-{
-}
-
-
-void
-subwin_d::PopUpGrid(GRobject, ShowMode)
+QTsubwin::SetLabelText(const char*)
 {
 }
 
 
 void
-subwin_d::PopUpExpand(GRobject caller, ShowMode mode,
+QTsubwin::PopUpGrid(GRobject, ShowMode)
+{
+}
+
+
+void
+QTsubwin::PopUpExpand(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, void*),
     void *arg, const char *string, bool nopeek)
 {
     if (mode == MODE_OFF) {
-        if (expand)
-            expand->popdown();
+        if (sw_expand)
+            sw_expand->popdown();
         return;
     }
     if (mode == MODE_UPD) {
-        if (expand)
-            expand->update(string);
+        if (sw_expand)
+            sw_expand->update(string);
         return;
     }
-    if (expand)
+    if (sw_expand)
         return;
 
-    expand = new expand_d(this, string, nopeek, arg);
-    expand->register_caller(caller);
-    expand->register_callback(callback);
-    expand->set_visible(true);
+    sw_expand = new cExpand(this, string, nopeek, arg);
+    sw_expand->register_caller(caller);
+    sw_expand->register_callback(callback);
+    sw_expand->set_visible(true);
 }
 
 
 void
-subwin_d::PopUpZoom(GRobject caller, ShowMode mode)
+QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
 {
 /*
-    if (!GRX || !mainBag())
+    if (!GRX || !QTmainwin::self())
         return;
     if (mode == MODE_OFF) {
-        if (wib_zoompop)
-            wib_zoompop->popdown();
+        if (sw_zoompop)
+            sw_zoompop->popdown();
         return;
     }
     if (mode == MODE_UPD) {
-        if (wib_zoompop)
-            wib_zoompop->update();
+        if (sw_zoompop)
+            sw_zoompop->update();
         return;
     }
-    if (wib_zoompop)
+    if (sw_zoompop)
         return;
 
-    wib_zoompop = new sZm(this, wib_windesc);
-    wib_zoompop->register_usrptr((void**)&wib_zoompop);
+    sw_zoompop = new sZm(this, wib_windesc);
+    sw_zoompop->register_usrptr((void**)&wib_zoompop);
     if (!wib_zoompop->shell()) {
-        delete wib_zoompop;
-        wib_zoompop = 0;
+        delete sw_zoompop;
+        sw_zoompop = 0;
         return;
     }
 
-    wib_zoompop->register_caller(caller);
-    wib_zoompop->initialize(x, y);
-    wib_zoompop->set_visible(true);
+    sw_zoompop->register_caller(caller);
+    sw_zoompop->initialize(x, y);
+    sw_zoompop->set_visible(true);
 */
 }
 // End of cAppWinFuncs interface
@@ -1089,17 +1416,18 @@ subwin_d::PopUpZoom(GRobject caller, ShowMode mode)
 // the appropriate command button, and clear the buffer.
 //
 bool
-subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
-    const char *keystring, bool up)
+QTsubwin::keypress_handler(unsigned int keyval, unsigned int state,
+    const char *keystring, bool from_prline, bool up)
 {
-    WindowDesc *wdesc = DSP()->Window(win_number);
-    if (!wdesc)
+    if (!sw_windesc)
         return (false);
+
+//XXX QT uses its own key codes FIXME!
 
     // The code: 0x00 - 0x16 are the KEYcode enum values.
     //           0x17 - 0x1f unused
     //           0x20 - 0xffff X keysym
-    // The X keysyms 0x20 - 0x7e match the ascii character
+    // The X keysyms 0x20 - 0x7e match the ascii character.
     int code = 0;
     if (up) {
         for (keymap *k = Kmap()->KeymapUp(); k->keyval; k++) {
@@ -1109,9 +1437,13 @@ subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
             }
         }
         if (code == SHIFTUP_KEY || code == CTRLUP_KEY)
-            EV()->KeypressCallback(wdesc, code, (char*)"", state);
+            EV()->KeypressCallback(sw_windesc, code, (char*)"", state);
         return (true);
     }
+
+    // Tell the application if the mouse is currently over the prompt
+    // area.  If so, we may want to handle some events differently.
+    EV()->SetFromPromptLine(from_prline);
 
     int subcode = 0;
     for (keymap *k = Kmap()->KeymapDown(); k->keyval; k++) {
@@ -1125,14 +1457,23 @@ subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
     if (code == FUNC_KEY) {
         char tbuf[CBUFMAX + 1];
         memset(tbuf, 0, sizeof(tbuf));
+
         char *fstr = Tech()->GetFkey(subcode, 0);
-        if (fstr)
+        if (fstr) {
+            if (*fstr == '!') {
+                XM()->TextCmd(fstr + 1, false);
+                delete [] fstr;
+                return (true);
+            }
             strncpy(tbuf, fstr, CBUFMAX);
-        if (EV()->KeypressCallback(wdesc, code, tbuf, state))
+            delete [] fstr;
+        }
+
+        if (EV()->KeypressCallback(sw_windesc, code, tbuf, state))
             return (true);
-        keys_pressed->set_keys(tbuf);
-        keys_pressed->show_keys();
-        keys_pressed->check_exec(true);
+        SetKeys(tbuf);
+        ShowKeys();
+        CheckExec(true);
         return (true);
     }
     if (code == 0 && keyval >= 0x20)
@@ -1141,7 +1482,7 @@ subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
     for (keyaction *k = Kmap()->ActionMapPre(); k->code; k++) {
         if (k->code == code &&
                 (!k->state || k->state == (state & MODMASK))) {
-            if (EV()->KeyActions(wdesc, k->action, &code))
+            if (EV()->KeyActions(sw_windesc, k->action, &code))
                 return (true);
             break;
         }
@@ -1151,7 +1492,7 @@ subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
     memset(tbuf, 0, sizeof(tbuf));
     if (keystring)
         strncpy(tbuf, keystring, CBUFMAX);
-    if (EV()->KeypressCallback(wdesc, code, tbuf, state))
+    if (EV()->KeypressCallback(sw_windesc, code, tbuf, state))
         return (true);
 
     if (state & GR_ALT_MASK)
@@ -1160,32 +1501,69 @@ subwin_d::keypress_handler(unsigned int keyval, unsigned int state,
     for (keyaction *k = Kmap()->ActionMapPost(); k->code; k++) {
        if (k->code == code &&
                 (!k->state || k->state == (state & MODMASK))) {
-            if (EV()->KeyActions(wdesc, k->action, &code))
+            if (EV()->KeyActions(sw_windesc, k->action, &code))
                 return (true);
             break;
         }
     }
-
-    bool exact = false;
-    if (*tbuf > ' ' && *tbuf <= '~' && keys_pressed->key_pos() < CBUFMAX)
-        keys_pressed->append(*tbuf);
-    else if (code == RETURN_KEY && keys_pressed->key_pos())
-        exact = true;
-    else
+    if (code == RETURN_KEY) {
+        if (sw_keys_pressed->key_pos() > 0) {
+            CheckExec(true);
+            return (true);
+        }
         return (false);
-    keys_pressed->show_keys();
-    keys_pressed->check_exec(exact);
+    }
+    if (!AddKey(*tbuf))
+        return (false);
+    ShowKeys();
+    CheckExec(false);
     return (true);
+}
+
+
+// QTsubwin slots.
+
+// Resize after the main or subwindow size change.  Call the application
+// with the new size.
+//
+void
+QTsubwin::resize_slot(QResizeEvent *ev)
+{
+    if (!sw_windesc)
+        return;
+    EV()->ResizeCallback(sw_windesc, ev->size().width(), ev->size().height());
+    sw_windesc->Redisplay(0);
+    ev->setAccepted(true);
+
+    if (DSP()->NoPixmapStore() &&
+            (!DSP()->CurCellName() || !XM()->IsAppReady())) {
+        *sw_windesc->ClipRect() = sw_windesc->Viewport();
+        sw_windesc->ShowGrid();
+    }
+    XM()->SetAppReady(true);
+}
+
+
+void
+QTsubwin::new_painter_slot(QPainter *p)
+{
+printf("new painter\n");
+}
+
+
+void
+QTsubwin::paint_slot(QPaintEvent *ev)
+{
+printf("paint event\n");
 }
 
 
 // Dispatch button press events to the application callbacks.
 //
 void
-subwin_d::button_down_slot(QMouseEvent *ev)
+QTsubwin::button_down_slot(QMouseEvent *ev)
 {
-    WindowDesc *wdesc = DSP()->Window(win_number);
-    if (!wdesc)
+    if (!sw_windesc)
         return;
 
     int button = 0;
@@ -1209,7 +1587,7 @@ subwin_d::button_down_slot(QMouseEvent *ev)
     if (message)
         message->popdown();
 
-    bool showing_ghost = xbag->showghost;
+    bool showing_ghost = gd_gbag->showing_ghost();
     if (showing_ghost)
         ShowGhost(ERASE);
 /*
@@ -1236,33 +1614,42 @@ subwin_d::button_down_slot(QMouseEvent *ev)
 //            grabstate.check_simb4(true);
             if (XM()->IsDoingHelp())
                 PopUpHelp("button4");
-            else
-                EV()->ButtonNopCallback(wdesc, ev->x(), ev->y(),
+            else {
+                EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(),
                     mod_state(state));
+            }
         }
-        else if (wdesc)
-            EV()->Button1Callback(wdesc, ev->x(), ev->y(), mod_state(state));
+        else {
+            EV()->Button1Callback(sw_windesc, ev->x(), ev->y(),
+                mod_state(state));
+        }
         break;
     case 2:
         // Pan operation
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button2");
-        else
-            EV()->Button2Callback(wdesc, ev->x(), ev->y(), mod_state(state));
+        else {
+            EV()->Button2Callback(sw_windesc, ev->x(), ev->y(),
+                mod_state(state));
+        }
         break;
     case 3:
         // Zoom opertion
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button3");
-        else
-            EV()->Button3Callback(wdesc, ev->x(), ev->y(), mod_state(state));
+        else {
+            EV()->Button3Callback(sw_windesc, ev->x(), ev->y(),
+                mod_state(state));
+        }
         break;
     default:
         // No-op, update coordinates
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button4");
-        else
-            EV()->ButtonNopCallback(wdesc, ev->x(), ev->y(), mod_state(state));
+        else {
+            EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(),
+                mod_state(state));
+        }
         break;
     }
     if (showing_ghost)
@@ -1273,10 +1660,9 @@ subwin_d::button_down_slot(QMouseEvent *ev)
 // Dispatch button release events to the application callbacks.
 //
 void
-subwin_d::button_up_slot(QMouseEvent *ev)
+QTsubwin::button_up_slot(QMouseEvent *ev)
 {
-    WindowDesc *wdesc = DSP()->Window(win_number);
-    if (!wdesc)
+    if (!sw_windesc)
         return;
 
     int button = 0;
@@ -1308,11 +1694,11 @@ subwin_d::button_up_slot(QMouseEvent *ev)
 
     // The point can be outside of the viewport, due to the grab.
     // Check for this.
-    const BBox *BB = &wdesc->Viewport();
+    const BBox *BB = &sw_windesc->Viewport();
     bool in = (ev->x() >= 0 && ev->x() < BB->right &&
         ev->y() >= 0 && ev->y() < BB->bottom);
 
-    bool showing_ghost = xbag->showghost;
+    bool showing_ghost = gd_gbag->showing_ghost();
     if (showing_ghost)
         ShowGhost(ERASE);
 
@@ -1322,24 +1708,24 @@ subwin_d::button_up_slot(QMouseEvent *ev)
     case 1:
 //        if (grabstate.check_simb4(false)) {
         if (0) {
-            EV()->ButtonNopReleaseCallback((in ? wdesc : 0),
+            EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
                 ev->x(), ev->y(), mod_state(state));
         }
         else {
-            EV()->Button1ReleaseCallback((in ? wdesc : 0),
+            EV()->Button1ReleaseCallback((in ? sw_windesc : 0),
                 ev->x(), ev->y(), mod_state(state));
         }
         break;
     case 2:
-        EV()->Button2ReleaseCallback((in ? wdesc : 0),
+        EV()->Button2ReleaseCallback((in ? sw_windesc : 0),
             ev->x(), ev->y(), mod_state(state));
         break;
     case 3:
-        EV()->Button3ReleaseCallback((in ? wdesc : 0),
+        EV()->Button3ReleaseCallback((in ? sw_windesc : 0),
             ev->x(), ev->y(), mod_state(state));
         break;
     default:
-        EV()->ButtonNopReleaseCallback((in ? wdesc : 0),
+        EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
             ev->x(), ev->y(), mod_state(state));
         break;
     }
@@ -1348,25 +1734,71 @@ subwin_d::button_up_slot(QMouseEvent *ev)
 }
 
 
+// Handle pointer motion in the main and subwindows.  In certain
+// commands, "ghost" XOR drawing is utilized.
+//
+void
+QTsubwin::motion_slot(QMouseEvent *ev)
+{
+    if (sw_windesc) {
+        EV()->MotionCallback(sw_windesc, mod_state(ev->modifiers()));
+        WindowDesc *worig = EV()->ZoomWin();
+        if (!worig)
+            worig = DSP()->Windesc(EV()->Cursor().get_window());
+        if (!worig)
+            worig = DSP()->MainWdesc();
+        if (sw_windesc->IsSimilar(worig)) {
+            UndrawGhost();
+            DrawGhost(ev->x(), ev->y());
+        }
+        int xx = ev->x();
+        int yy = ev->y();
+        sw_windesc->PToL(xx, yy, xx, yy);
+        emit update_coords(xx, yy);
+    }
+}
+
+
+namespace {
+    // Return true if the mouse pointer is currently over the prompt
+    // line area in the main window.
+    //
+    bool pointer_in_prompt_area()
+    {
+        /*XXX 
+        int x, y;
+        GRX->PointerRootLoc(&x, &y);
+        GtkWidget *w = GTKmainwin::self()->TextArea();
+        GdkRectangle r;
+        gtk_ShellGeometry(w, &r , 0);
+        return (x >= r.x && x <= r.x + r.width &&
+            y >= r.y && y <= r.y + r.height);
+        */
+        return (false);
+    }
+}
+
+
 // Key press processing for the drawing windows
 //
 void
-subwin_d::key_down_slot(QKeyEvent *ev)
+QTsubwin::key_down_slot(QKeyEvent *ev)
 {
     /*
-    if (!mainBag() || qtPkgIf()->NotMapped())
+    if (!QTmainwin::self() || qtPkgIf()->NotMapped())
         return (true);
     */
 
     if (message)
         message->popdown();
 
-    const char *string = ev->text().toLatin1().constData();
-    int kpos = keys_pressed->key_pos();
+    QString qs = ev->text().toLatin1();
+    const char *string = (const char*)qs.constData();
+    int kpos = sw_keys_pressed->key_pos();
     if (!is_modifier_key(ev->key()) && kpos &&
-            keys_pressed->key(kpos - 1) == Kmap()->SuppressChar())
-        keys_pressed->bsp_keys();
-/*
+            sw_keys_pressed->key(kpos - 1) == Kmap()->SuppressChar())
+        sw_keys_pressed->bsp_keys();
+/*XXX
     else if (Kmap()->MacroExpand(kev->keyval, kev->state, false))
         return (true);
 
@@ -1377,7 +1809,7 @@ subwin_d::key_down_slot(QKeyEvent *ev)
 */
 
     if (keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
-            false))
+            pointer_in_prompt_area(), false))
         ev->accept();
 }
 
@@ -1385,7 +1817,7 @@ subwin_d::key_down_slot(QKeyEvent *ev)
 // Key release processing for the drawing windows
 //
 void
-subwin_d::key_up_slot(QKeyEvent *ev)
+QTsubwin::key_up_slot(QKeyEvent *ev)
 {
 /*
     if (grabbed_key && grabbed_key == event->key.keyval) {
@@ -1399,34 +1831,8 @@ subwin_d::key_up_slot(QKeyEvent *ev)
 */
     const char *string = ev->text().toLatin1().constData();
     if (keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
-            true))
+            false, true))
         ev->accept();
-}
-
-
-// Handle pointer motion in the main and subwindows.  In certain
-// commands, "ghost" XOR drawing is utilized.
-//
-void
-subwin_d::motion_slot(QMouseEvent *ev)
-{
-    WindowDesc *wdesc = DSP()->Window(win_number);
-    if (wdesc) {
-        EV()->MotionCallback(wdesc, mod_state(ev->modifiers()));
-        WindowDesc *worig = EV()->ZoomWin();
-        if (!worig)
-            worig = DSP()->Windesc(EV()->Cursor().get_window());
-        if (!worig)
-            worig = DSP()->MainWdesc();
-        if (wdesc->IsSimilar(worig)) {
-            UndrawGhost();
-            DrawGhost(ev->x(), ev->y());
-        }
-        int xx = ev->x();
-        int yy = ev->y();
-        wdesc->PToL(xx, yy, xx, yy);
-        emit update_coords(xx, yy);
-    }
 }
 
 
@@ -1437,10 +1843,9 @@ subwin_d::motion_slot(QMouseEvent *ev)
 // clean up.  This is for button up events that get 'lost'.
 //
 void
-subwin_d::enter_slot(QEvent *ev)
+QTsubwin::enter_slot(QEvent *ev)
 {
-    WindowDesc *wdesc = DSP()->Window(win_number);
-    if (!wdesc)
+    if (!sw_windesc)
         return;
 
     /*
@@ -1486,8 +1891,8 @@ subwin_d::enter_slot(QEvent *ev)
     }
     */
 
-//XXX    EV()->MotionCallback(wdesc, mod_state(ev->modifiers()));
-    EV()->MotionCallback(wdesc, mod_state(0));
+//XXX    EV()->MotionCallback(sw_windesc, mod_state(ev->modifiers()));
+    EV()->MotionCallback(sw_windesc, mod_state(0));
     ev->setAccepted(true);
 }
 
@@ -1496,34 +1901,31 @@ subwin_d::enter_slot(QEvent *ev)
 // window.
 //
 void
-subwin_d::leave_slot(QEvent *ev)
+QTsubwin::leave_slot(QEvent *ev)
 {
-    WindowDesc *wdesc = DSP()->Window(win_number);
-    if (!wdesc)
+    if (!sw_windesc)
         return;
-//XXX    EV()->MotionCallback(wdesc, mod_state(ev->modifiers()));
-    EV()->MotionCallback(wdesc, mod_state(0));
+//XXX    EV()->MotionCallback(sw_windesc, mod_state(ev->modifiers()));
+    EV()->MotionCallback(sw_windesc, mod_state(0));
     UndrawGhost();
-    xbag->firstghost = true;
+    gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
     ev->setAccepted(true);
 }
 
 
-// Resize after the main or subwindow size change.  Call the application
-// with the new size.
-//
 void
-subwin_d::resize_slot(QResizeEvent *ev)
+QTsubwin::drag_enter_slot(QDragEnterEvent *ev)
 {
-    WindowDesc *wdesc = DSP()->Window(win_number);
-    if (!wdesc)
-        return;
-    EV()->ResizeCallback(wdesc, ev->size().width(), ev->size().height());
-    wdesc->Redisplay(0);
-    ev->setAccepted(true);
 }
 
+
+void
+QTsubwin::drop_slot(QDropEvent *ev)
+{
+}
+// End of QRsubwin slots.
  
+
 /*
 // Redraw the main or subwindow after an expose.  Break it up into
 // exposed rectangles to save time.  Call the application to
@@ -1619,26 +2021,53 @@ menu_button::menu_button(MenuEnt *ent, QWidget *prnt) : QPushButton(prnt)
 }
 
 
-mainwin::mainwin() : subwin_d(0, 0)
+//-----------------------------------------------------------------------------
+// GTKmainwin functions
+
+QTmainwin::QTmainwin() : QTsubwin(0, 0)
 {
-    QAction *a = menubar->addAction(QString("wr"));
+    mw_top_button_box = 0;
+    mw_phys_button_box = 0;
+    mw_elec_button_box = 0;
+
+    mw_promptline = 0;
+    mw_coords = 0;
+    mw_layertab = 0;
+    mw_status = 0;
+
+    QAction *a = sw_menubar->addAction(QString("wr"));
     a->setIcon(QIcon(QPixmap(wr_xpm)));
     connect(a, SIGNAL(triggered()), this, SLOT(wr_btn_slot()));
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);
     vbox->setSpacing(2);
-    vbox->setMenuBar(menubar);
+    // By default, this does nothiong in Apple, menus are set in the
+    // main display frame.
+    vbox->setMenuBar(sw_menubar);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    phys_button_box = new QWidget(this);
-    hbox->addWidget(phys_button_box);
-    elec_button_box = new QWidget(this);
-    hbox->addWidget(elec_button_box);
+    mw_top_button_box = new QWidget(this);
+    hbox->addWidget(mw_top_button_box);
+    mw_coords = new cCoord(this);
+    hbox->addWidget(mw_coords);
+    hbox->addWidget(new QWidget(this));  // Filler
+
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    mw_phys_button_box = new QWidget(this);
+    hbox->addWidget(mw_phys_button_box);
+    mw_elec_button_box = new QWidget(this);
+    hbox->addWidget(mw_elec_button_box);
+    mw_layertab = new QTltab(false, this);
+    hbox->addWidget(mw_layertab);
     hbox->addWidget(Viewport());
 
     hbox = new QHBoxLayout(0);
@@ -1648,37 +2077,19 @@ mainwin::mainwin() : subwin_d(0, 0)
 
     int w = char_width() * 7 + 4;
     int h = line_height() + 4;
-    keys_pressed->setFixedSize(w, h);
-    hbox->addWidget(keys_pressed);
+    sw_keys_pressed->setFixedSize(w, h);
+    hbox->addWidget(sw_keys_pressed);
 
-    promptline = draw_if::new_draw_interface(DrawNative, false, this);
-    promptline->widget()->setMinimumHeight(h);
-    promptline->widget()->setMaximumHeight(h);
-    hbox->addWidget(promptline->widget());
-
-    hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
-    hbox->setSpacing(2);
-    vbox->addLayout(hbox);
-
-    coords = new coord_w(this);
-    hbox->addWidget(coords);
-
-    QVBoxLayout *vb = new QVBoxLayout(0);
-    vb->setMargin(0);
-    vb->setSpacing(2);
-    hbox->addLayout(vb);
-
-    int bh = line_height();
-    bh += bh/2;
-    layertab = new layertab_w(bh, this);
-    vb->addWidget(layertab);
+    mw_promptline = draw_if::new_draw_interface(DrawNative, false, this);
+    mw_promptline->widget()->setMinimumHeight(h);
+    mw_promptline->widget()->setMaximumHeight(h);
+    hbox->addWidget(mw_promptline->widget());
 
     h = line_height();
-    status = new param_w(this);
-    status->setMinimumHeight(h);
-    status->setMaximumHeight(h);
-    vb->addWidget(status);
+    mw_status = new cParam(this);
+    mw_status->setMinimumHeight(h);
+    mw_status->setMaximumHeight(h);
+    vbox->addWidget(mw_status);
 
     connect(this, SIGNAL(update_coords(int, int)),
         this, SLOT(update_coords_slot(int, int)));
@@ -1686,12 +2097,16 @@ mainwin::mainwin() : subwin_d(0, 0)
 
 
 void
-mainwin::initialize()
+QTmainwin::initialize()
 {
     DSP()->SetWindow(0, new WindowDesc);
     EV()->SetCurrentWin(DSP()->MainWdesc());
-//wib_windesc = DSP()->MainWdesc();
+    sw_windesc = DSP()->MainWdesc();
 
+    // We use w_draw for rendering, as this pointer may point to a
+    // hard-copy context.  Rendering through w_wbag will always go
+    // to the screen.
+    //
     DSP()->MainWdesc()->SetWbag(this);
     DSP()->MainWdesc()->SetWdraw(this);
 
@@ -1702,50 +2117,16 @@ mainwin::initialize()
     DSP()->ColorTab()->init();
 
     qtMenu()->InitMainMenu();
-    qtMenu()->InitSideMenu();
+    qtMenu()->InitTopButtonMenu();
+    qtMenu()->InitSideButtonMenus();
 
     PL()->SetEdit(new QTedit(false, this));
-    LT()->SetLtab(new QTltab(false, this));
+    LT()->SetLtab(mw_layertab);
 }
 
 
 void
-mainwin::set_coord_mode(int x0, int y0, bool relative, bool snap)
-{
-    coords->set_mode(x0, y0, relative, snap);
-}
-
-
-void
-mainwin::show_parameters()
-{
-    status->print();
-    coords->print(0, 0, coord_w::COOR_REL);
-}
-
-
-// Move the keyboard focus to the given widget.
-//
-void
-mainwin::set_focus(QWidget *widget)
-{
-/*
-    GdkWindow *win = widget->window;
-    if (win)
-        XSetInputFocus(gr_x_display(), gr_x_window(win),
-            RevertToPointerRoot, CurrentTime);
-*/
-}
-
-
-void
-mainwin::set_indicating(bool)
-{
-}
-
-
-void
-mainwin::send_key_event(sKeyEvent *kev)
+QTmainwin::send_key_event(sKeyEvent *kev)
 {
     Qt::KeyboardModifiers mod = Qt::NoModifier;
     if (kev->state & GR_SHIFT_MASK)
@@ -1770,7 +2151,7 @@ mainwin::send_key_event(sKeyEvent *kev)
 // Handler from the "wr" button.
 //
 void
-mainwin::wr_btn_slot()
+QTmainwin::wr_btn_slot()
 {
     if (XM()->IsDoingHelp() && !is_shift_down()) {
         PopUpHelp("xic:wrbtn");
@@ -1783,12 +2164,168 @@ mainwin::wr_btn_slot()
 
 
 void
-mainwin::update_coords_slot(int xx, int yy)
+QTmainwin::update_coords_slot(int xx, int yy)
 {
-    coords->print(xx, yy, coord_w::COOR_MOTION);
+    mw_coords->print(xx, yy, cCoord::COOR_MOTION);
 }
 
-#ifdef notdef
+
+//-----------------------------------------------------------------------
+// Local functions
+
+/*
+void
+main_local::wait_cursor(bool waiting)
+{
+    static CursorType cursor_type;
+    if (waiting) {
+        if (XM()->GetCursor() != CursorBusy) {
+            cursor_type = XM()->GetCursor();
+            XM()->UpdateCursor(0, CursorBusy);
+        }
+    }
+    else
+        XM()->UpdateCursor(0, cursor_type);
+}
+*/
+
+void
+main_local::wait_cursor(bool waiting)
+{
+    if (waiting)
+        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+    else
+        QApplication::restoreOverrideCursor();
+}
+
+
+// Callback for general purpose timer.  Set *set true when time limit
+// reached.
+//
+int
+main_local::timer_cb(void *client_data)
+{
+    if (client_data)
+        *((bool*)client_data) = true;
+    return (false);
+}
+
+
+#ifdef HAVE_MOZY
+
+void
+main_local::quit_help(void*)
+{
+    XM()->QuitHelp();
+}
+
+
+//
+// This is the HTML form submission handler.  It sets the variables
+// from the form, and calls a script for processing.
+//
+
+// The form of the action string is the following token followed by the
+// name of the script (can be a path)
+//
+#define ACTION_TOKEN "action_local_xic"
+
+void
+main_local::form_submit_hdlr(void *data)
+{
+    static bool lock;  // the script interpreter isn't reentrant
+    htmFormCallbackStruct *cbs = (htmFormCallbackStruct*)data;
+
+    const char *t = cbs->action;
+    char *tok = lstring::getqtok(&t);
+    if (strcmp(tok, ACTION_TOKEN)) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "unknown action_local submission.\n");
+        delete [] tok;
+        return;
+    }
+    delete [] tok;
+    if (lock)
+        return;
+    lock = true;
+    char *script = lstring::getqtok(&t);
+
+    SIfile *sfp;
+    stringlist *wl;
+    XM()->OpenScript(script, &sfp, &wl);
+    if (!sfp && !wl) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "can't find action_local script.\n");
+        delete [] script;
+        lock = false;
+        return;
+    }
+
+    siVariable *variables = 0;
+    int scnt = 0;
+    for (int i = 0; i < cbs->ncomponents; i++) {
+        siVariable *v = new siVariable;
+        v->name = lstring::copy(cbs->components[i].name);
+        switch (cbs->components[i].type) {
+        case FORM_NONE:
+            delete v;
+            continue;
+        case FORM_SELECT:
+            // deal with multiple selections
+            if (i && cbs->components[i-1].type == FORM_SELECT &&
+                    !strcmp(cbs->components[i-1].name,
+                    cbs->components[i].name)) {
+                char buf[64];
+                snprintf(buf, 64, "%s_extra%d", cbs->components[i].name, scnt);
+                delete [] v->name;
+                v->name = lstring::copy(buf);
+                scnt++;
+            }
+            else
+                scnt = 0;
+            // fall through
+        case FORM_OPTION:
+        case FORM_PASSWD:
+        case FORM_TEXT:
+        case FORM_FILE:
+        case FORM_TEXTAREA:
+        case FORM_CHECK:
+        case FORM_RADIO:
+        case FORM_IMAGE:
+        case FORM_HIDDEN:
+        case FORM_RESET:
+        case FORM_SUBMIT:
+            v->type = TYP_STRING;
+            v->content.string = lstring::copy(cbs->components[i].value);
+            v->flags |= VF_ORIGINAL;
+            break;
+        }
+        v->next = variables;
+        variables = v;
+    }
+
+    EV()->InitCallback();
+    CDs *cursd = CurCell();
+    if (cursd) {
+
+        // Preset "#define SUBMIT" when calling script.
+        SImacroHandler *mh = new SImacroHandler;
+        mh->parse_macro("SUBMIT", true);
+
+        EditIf()->ulListCheck(script, cursd, false);
+        SIparse()->presetVariables(variables);
+        SI()->PresetMacros(mh);
+        SI()->Interpret(sfp, wl, 0, 0);
+        if (sfp)
+            delete sfp;
+        EditIf()->ulCommitChanges(true);
+    }
+    lock = false;
+}
+
+#endif // HAVE_MOZY
+
+
+
+#ifdef NOTDEF
 
 //-----------------------------------------------------------------------
 //  Event and signal handlers

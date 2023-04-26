@@ -136,18 +136,6 @@ cMain::ColorTimerInit()
 {
 }
 
-// qtcoord.cc
-
-void
-cMain::SetCoordMode(COmode, int x, int y)
-{
-}
-
-void
-cMain::ShowParameters(const char*)
-{
-}
-
 void
 cMain::PopUpDebugFlags(GRobject, ShowMode)
 {
@@ -219,15 +207,6 @@ cMain::PopUpTechWrite(GRobject, ShowMode)
 {
 }
 
-bool
-cMain::SendButtonEvent(const char*, int, int, int, int, bool)
-{
-}
-
-bool
-cMain::SendKeyEvent(const char*, int, int, bool)
-{
-}
 
 void
 cMain::SetNoToTop(bool)

@@ -63,6 +63,8 @@ cTech::cTech()
     instancePtr = this;
 
     tc_technology_name              = 0;
+    tc_vendor_name                  = 0;
+    tc_process_name                 = 0;
     tc_tech_ext                     = 0;
     tc_tech_filename                = 0;
     tc_kwbuf                        = 0;

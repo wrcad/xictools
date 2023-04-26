@@ -46,7 +46,6 @@
 #include "pbtn_menu.h"
 #include "gtkmain.h"
 #include "gtkmenu.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -157,7 +156,7 @@ iap_t sPlc::pl_iap;
 void
 cEdit::PopUpPlace(ShowMode mode, bool noprompt)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Plc;
@@ -179,11 +178,12 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Plc->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Plc->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), Plc->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Plc->shell());
-    GRX->SetFocus(mainBag()->Shell());  // give focus to main window
+    GRX->SetFocus(GTKmainwin::self()->Shell());  // give focus to main window
 }
 // End of cEdit functions.
 
@@ -678,10 +678,10 @@ sPlc::pl_array_set_proc(GtkWidget*, void *arg)
     else if (code == PL_DY)
         pl_iap.set_spy(INTERNAL_UNITS(Plc->sb_dy.get_value()));
 
-    if (mainBag()) {
-        mainBag()->ShowGhost(ERASE);
+    if (GTKmainwin::self()) {
+        GTKmainwin::self()->ShowGhost(ERASE);
         ED()->setArrayParams(pl_iap);
-        mainBag()->ShowGhost(DISPLAY);
+        GTKmainwin::self()->ShowGhost(DISPLAY);
     }
 }
 
@@ -749,7 +749,7 @@ sPlc::pl_new_cb(const char *string, void*)
         delete [] aname;
         delete [] cname;
     }
-    GRX->SetFocus(mainBag()->Shell());  // give focus to main window
+    GRX->SetFocus(GTKmainwin::self()->Shell());  // give focus to main window
     return (ESTR_DN);
 }
 

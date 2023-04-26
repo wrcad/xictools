@@ -58,19 +58,19 @@ cMain::GetCurFileSelection()
     if (tbuf)
         return (tbuf);
 
-    tbuf = main_bag::get_cell_selection();
+    tbuf = GTKmainwin::get_cell_selection();
     if (tbuf)
         return (tbuf);
 
-    tbuf = main_bag::get_file_selection();
+    tbuf = GTKmainwin::get_file_selection();
     if (tbuf)
         return (tbuf);
 
-    tbuf = main_bag::get_lib_selection();
+    tbuf = GTKmainwin::get_lib_selection();
     if (tbuf)
         return (tbuf);
 
-    tbuf = main_bag::get_tree_selection();
+    tbuf = GTKmainwin::get_tree_selection();
     if (tbuf)
         return (tbuf);
 
@@ -96,9 +96,9 @@ cMain::GetCurFileSelection()
 void
 cMain::DisableDialogs()
 {
-    main_bag::cells_panic();
-    main_bag::files_panic();
-    main_bag::libs_panic();
-    main_bag::tree_panic();
+    GTKmainwin::cells_panic();
+    GTKmainwin::files_panic();
+    GTKmainwin::libs_panic();
+    GTKmainwin::tree_panic();
 }
 

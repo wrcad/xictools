@@ -47,7 +47,6 @@
 #include "fio_cgd.h"
 #include "cd_digest.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 
 
 //-----------------------------------------------------------------------------
@@ -118,7 +117,7 @@ void
 cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
     const char *chdname, int x, int y)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Cfg;
@@ -138,10 +137,10 @@ cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Cfg->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
     int mwid;
-    gtk_MonitorGeom(mainBag()->Shell(), 0, 0, &mwid, 0);
+    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, 0);
     GtkRequisition req;
     gtk_widget_get_requisition(Cfg->Shell(), &req);
     if (x + req.width > mwid)

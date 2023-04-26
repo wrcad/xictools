@@ -51,7 +51,6 @@
 #include "gtkmain.h"
 #include "gtklpal.h"
 #include "gtkltab.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -104,7 +103,7 @@ void
 cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
     CDl *ldesc)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Lpal;
@@ -128,9 +127,10 @@ cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Lpal->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Lpal->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Lpal->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Lpal->shell());
 }
 
@@ -1033,7 +1033,7 @@ sLpalette::lp_button_down_hdlr(GtkWidget*, GdkEvent *event, void*)
     GdkEventButton *bev = (GdkEventButton*)event;
     int button = Kmap()->ButtonMap(bev->button);
 
-    if (XM()->IsDoingHelp() && !is_shift_down()) {
+    if (XM()->IsDoingHelp() && !GTKmainwin::is_shift_down()) {
         DSPmainWbag(PopUpHelp("xic:ltpal"))
         return (true);
     }
@@ -1063,7 +1063,7 @@ sLpalette::lp_button_up_hdlr(GtkWidget*, GdkEvent *event, void*)
     GdkEventButton *bev = (GdkEventButton*)event;
     int button = Kmap()->ButtonMap(bev->button);
 
-    if (XM()->IsDoingHelp() && !is_shift_down())
+    if (XM()->IsDoingHelp() && !GTKmainwin::is_shift_down())
         return (true);
 
     switch (button) {
@@ -1117,7 +1117,7 @@ sLpalette::lp_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
 {
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(fillpattern_xpm);
     gtk_drag_set_icon_pixbuf(context, pixbuf, -2, -2);
-    win_bag::HaveDrag = true;
+    GTKsubwin::HaveDrag = true;
 }
 
 
@@ -1125,7 +1125,7 @@ sLpalette::lp_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
 void
 sLpalette::lp_drag_end(GtkWidget*, GdkDragContext*, gpointer)
 {
-    win_bag::HaveDrag = false;
+    GTKsubwin::HaveDrag = false;
 }
 
 

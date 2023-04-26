@@ -515,9 +515,16 @@ draw_qt_w::draw_text(int x0, int y0, const char *str, int len)
 void
 draw_qt_w::set_xor_mode(bool set)
 {
+// XXX This doesn't work.  How to do xor drawing or similar?
     if (set) {
+da_painter->beginNativePainting();
+//        da_painter->setCompositionMode(QPainter::RasterOp_NotSourceXorDestination);
+//        da_painter->setCompositionMode(QPainter::RasterOp_SourceXorDestination);
+//        da_painter->setCompositionMode(QPainter::CompositionMode_Xor);
     }
     else {
+da_painter->endNativePainting();
+        da_painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
     }
 }
 
@@ -600,6 +607,8 @@ draw_qt_w::set_tile_origin(int x0, int y0)
 void
 draw_qt_w::draw_rectangle(bool filled, int x0, int y0, int w, int h)
 {
+//XXX
+printf("box\n");
     if (filled) {
         if (da_fill_mode) {
             if (da_tile_pixmap)
@@ -637,6 +646,8 @@ draw_qt_w::draw_arc(bool filled, int x0, int y0, int w, int h, int st, int sp)
 void
 draw_qt_w::draw_polygon(bool filled, QPoint *points, int numpts)
 {
+//XXX
+printf("poly\n");
     if (filled)
         da_painter->drawPolygon(points, numpts);
     else {

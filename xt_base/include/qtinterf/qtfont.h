@@ -94,14 +94,14 @@ namespace qtinterf
         } fonts[MAX_NUM_APP_FONTS];
     };
 
-    class qt_bag;
+    class QTbag;
 
     class QTfontPopup : public QDialog, public GRfontPopup
     {
         Q_OBJECT
 
     public:
-        QTfontPopup(qt_bag*, int, void*);
+        QTfontPopup(QTbag*, int, void*);
         ~QTfontPopup();
 
         // GRpopup overrides

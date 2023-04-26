@@ -51,7 +51,6 @@
 #include "gtkparam.h"
 #include "gtkcoord.h"
 #include "gtkhtext.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 #include "miscutil/pathlist.h"
 
@@ -187,7 +186,7 @@ using namespace gtkcolor;
 void
 cMain::PopUpColor(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Clr;
@@ -207,10 +206,10 @@ cMain::PopUpColor(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Clr->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
     GRX->SetPopupLocation(GRloc(LW_LL), Clr->shell(),
-        mainBag()->Viewport());
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Clr->shell());
 }
 
@@ -257,7 +256,7 @@ sClr::sClr(GRobject c)
     c_green = 0;
     c_blue = 0;
 
-    if (!mainBag())
+    if (!GTKmainwin::self())
         return;
 
     // In 256-color mode, the color selector's color display areas

@@ -44,7 +44,6 @@
 #include "geo_zlist.h"
 #include "errorlog.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -105,7 +104,7 @@ using namespace gtkjoin;
 void
 cEdit::PopUpJoin(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Jn;
@@ -125,9 +124,10 @@ cEdit::PopUpJoin(GRobject caller, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Jn->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Jn->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), Jn->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Jn->shell());
 }
 

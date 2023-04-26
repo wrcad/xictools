@@ -54,13 +54,13 @@
 #include "help/help_defs.h"
 
 #include <QApplication>
-#include <QPainter>
 
-// Global access
+
+// Global access pointer.
 QTdev *GRX;
 
 
-// Device-dependent setup
+// Device-dependent setup.
 //
 void
 GRpkg::DevDepInit(unsigned int cfg)
@@ -70,39 +70,26 @@ GRpkg::DevDepInit(unsigned int cfg)
 }
 
 
-// Graphics context storage.  The 0 element is the default.  See the note
-// in GTKdev::New()
-//
-#define NUMGCS 10
-static sGbag *app_gbags[NUMGCS];
-
-// Static method to create/return the default graphics context.
-//
-sGbag *
-sGbag::default_gbag()
-{
-    if (!app_gbags[0])
-        app_gbags[0] = new sGbag;
-    return (app_gbags[0]);
-}
-
-
 //-----------------------------------------------------------------------------
 // QTdev methods
 
 QTdev::QTdev()
 {
-    GRX = this;
-    name = "QT";
-    ident = _devQT_;
-    devtype = GRmultiWindow;
+    if (GRX) {
+        fprintf(stderr, "Singleton class QTdev is already instantiated.\n");
+        exit (1);
+    }
+    GRX             = this;
+    name            = "QT";
+    ident           = _devQT_;
+    devtype         = GRmultiWindow;
 
-    minx = 0;
-    miny = 0;
-    loop_level = 0;
-    loop = 0;
-    main_bag = 0;
-    timers = 0;
+    dv_loop         = 0;
+    dv_main_bag     = 0;
+    dv_timers       = 0;
+    dv_minx         = 0;
+    dv_miny         = 0;
+    dv_loop_level   = 0;
 }
 
 
@@ -121,6 +108,8 @@ QTdev::Init(int *argc, char **argv)
         new QApplication(ac, argv);
         *argc = ac;
     }
+
+    FC.initFonts();
 
     // set correct information
     width = 1;
@@ -183,6 +172,11 @@ QTdev::NameColor(const char *colorname)
         QColor c(colorname);
         if (c.isValid())
             return (c.rgb());
+        if (GRcolorList::lookupColor(colorname, &r, &g, &b)) {
+            // My list is much more complete.
+            QColor nc(r, g, b);
+            return (nc.rgb());
+        }
     }
     return (0);
 }
@@ -223,6 +217,14 @@ QTdev::NameToRGB(const char *colorname, int *indices)
             indices[2] = c.blue();
             return (true);
         }
+        if (GRcolorList::lookupColor(colorname, &r, &g, &b)) {
+            // My list is much more complete.
+            indices[0] = r;
+            indices[1] = g;
+            indices[2] = b;
+            return (true);
+        }
+        fprintf(stderr, "Color %s unknown, setting to black.\n", colorname);
     }
     return (false);
 }
@@ -231,15 +233,7 @@ QTdev::NameToRGB(const char *colorname, int *indices)
 GRdraw *
 QTdev::NewDraw(int apptype)
 {
-    qt_draw *w = new qt_draw();
-    if (apptype > 0 && apptype < NUMGCS) {
-        // Reset the w->xbag field to one specific to this apptype.
-        // The default value is used othewise.
-        if (!app_gbags[apptype])
-            app_gbags[apptype] = new sGbag;
-        w->xbag = app_gbags[apptype];
-    }
-    return (w);
+    return (new QTdraw(apptype));
 }
 
 
@@ -247,7 +241,7 @@ GRwbag *
 QTdev::NewWbag(const char*, GRwbag *reuse)
 {
     if (!reuse)
-        reuse = new qt_bag(0);
+        reuse = new QTbag(0);
     return (reuse);
 }
 
@@ -257,11 +251,11 @@ QTdev::NewWbag(const char*, GRwbag *reuse)
 int
 QTdev::AddTimer(int ms, int(*cb)(void*), void *arg)
 {
-    timers = new interval_timer(cb, arg, timers, 0);
-    timers->set_use_return(true);
-    timers->register_list(&timers);
-    timers->start(ms);
-    return (timers->id());
+    dv_timers = new interval_timer(cb, arg, dv_timers, 0);
+    dv_timers->set_use_return(true);
+    dv_timers->register_list(&dv_timers);
+    dv_timers->start(ms);
+    return (dv_timers->id());
 }
 
 
@@ -270,7 +264,7 @@ QTdev::AddTimer(int ms, int(*cb)(void*), void *arg)
 void
 QTdev::RemoveTimer(int id)
 {
-    for (interval_timer *t = timers; t; t = t->nextTimer()) {
+    for (interval_timer *t = dv_timers; t; t = t->nextTimer()) {
         if (t->id() == id) {
             delete t;
             return;
@@ -314,26 +308,26 @@ QTdev::Input(int, int, int*)
 void
 QTdev::MainLoop(bool)
 {
-    if (!loop_level) {
-        loop_level = 1;
+    if (!dv_loop_level) {
+        dv_loop_level = 1;
         QApplication::instance()->exec();
         return;
     }
-    loop_level++;
-    loop = new event_loop(loop);
-    loop->exec();
-    event_loop *tloop = loop;
-    loop = loop->next;
+    dv_loop_level++;
+    dv_loop = new event_loop(dv_loop);
+    dv_loop->exec();
+    event_loop *tloop = dv_loop;
+    dv_loop = dv_loop->next;
     delete tloop;
-    loop_level--;
+    dv_loop_level--;
 }
 
 
 void
 QTdev::BreakLoop()
 {
-    if (loop)
-        loop->exit();
+    if (dv_loop)
+        dv_loop->exit();
 }
 
 
@@ -344,7 +338,7 @@ void
 QTdev::HCmessage(const char *str)
 {
     if (GRpkgIf()->MainWbag()) {
-        qt_bag *w = dynamic_cast<qt_bag*>(GRpkgIf()->MainWbag());
+        QTbag *w = dynamic_cast<QTbag*>(GRpkgIf()->MainWbag());
         if (w && w->hc) {
             if (GRpkgIf()->CheckForEvents()) {
                 GRpkgIf()->HCabort("User aborted");
@@ -354,10 +348,318 @@ QTdev::HCmessage(const char *str)
         }
     }
 }
+// End of virtual overrides.
 
 
 // Remaining functions are unique to class.
 //
+
+// Return the connection file descriptor.
+//
+int
+QTdev::ConnectFd()
+{
+    return (-1);
+}
+
+
+// Set the state of btn to unselected, suppress the signal.
+//
+void
+QTdev::Deselect(GRobject btn)
+{
+    if (!btn)
+        return;
+    /*
+    if (GTK_IS_TOGGLE_BUTTON(btn)) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn))) {
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_btn_hdlr), (gpointer)0);
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), 0);
+        }
+    }
+    else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
+        if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn))) {
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_menu_hdlr), (gpointer)0);
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), 0);
+        }
+    }
+    */
+}
+
+
+// Set the state of btn to selected, suppress the signal.
+//
+void
+QTdev::Select(GRobject btn)
+{
+    if (!btn)
+        return;
+    /*
+    if (GTK_IS_TOGGLE_BUTTON(btn)) {
+        if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn))) {
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_btn_hdlr), (gpointer)0);
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), 1);
+        }
+    }
+    else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
+        if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn))) {
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_menu_hdlr), (gpointer)0);
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), 1);
+        }
+    }
+    */
+}
+
+
+// Return the status of btn.
+//
+bool
+QTdev::GetStatus(GRobject btn)
+{
+    /*
+    if (!btn)
+        return (false);
+    if (GTK_IS_TOGGLE_BUTTON(btn))
+        return (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn)));
+    if (GTK_IS_CHECK_MENU_ITEM(btn))
+        return (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn)));
+    */
+    return (true);
+}
+
+
+// Set the status of btn, suppress the signal.
+//
+void
+QTdev::SetStatus(GRobject btn, bool state)
+{
+    if (!btn)
+        return;
+    /*
+    if (GTK_IS_TOGGLE_BUTTON(btn)) {
+        bool cur = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+        if (cur != state) {
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_btn_hdlr), (gpointer)0);
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), state);
+        }
+    }
+    else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
+        bool cur = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn));
+        if (cur != state) {
+            g_signal_connect(G_OBJECT(btn), "toggled",
+                G_CALLBACK(toggle_menu_hdlr), (gpointer)0);
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), state);
+        }
+    }
+    */
+}
+
+
+void
+QTdev::CallCallback(GRobject obj)
+{
+    /*
+    if (!obj)
+        return;
+    if (!IsSensitive(obj))
+        return;
+    if (GTK_IS_BUTTON(obj) || GTK_IS_TOGGLE_BUTTON(obj) ||
+            GTK_IS_RADIO_BUTTON(obj))
+        gtk_button_clicked(GTK_BUTTON(obj));
+    else if (GTK_IS_MENU_ITEM(obj) || GTK_IS_CHECK_MENU_ITEM(obj) ||
+            GTK_IS_RADIO_MENU_ITEM(obj))
+        gtk_menu_item_activate(GTK_MENU_ITEM(obj));
+    */
+}
+
+
+// Return the root window coordinates x+width, y of obj.
+//
+void
+QTdev::Location(GRobject obj, int *x, int *y)
+{
+    *x = 0;
+    *y = 0;
+    /*
+    if (obj && gtk_widget_get_window(GTK_WIDGET(obj))) {
+        GdkWindow *wnd = gtk_widget_get_parent_window(GTK_WIDGET(obj));
+        int rx, ry;
+        gdk_window_get_origin(wnd, &rx, &ry);
+        GtkAllocation a;
+        gtk_widget_get_allocation(GTK_WIDGET(obj), &a);
+        *x = rx + a.x + a.width;
+        *y = ry + a.y;
+        return;
+    }
+    GtkWidget *w = GTK_WIDGET(obj);
+    while (w && gtk_widget_get_parent(w))
+        w = gtk_widget_get_parent(w);
+    if (gtk_widget_get_window(w)) {
+        int rx, ry;
+        gdk_window_get_origin(gtk_widget_get_window(w), &rx, &ry);
+        if (x)
+            *x = rx + 50;
+        if (y)
+            *y = ry + 50;
+        return;
+    }
+    if (dv_default_focus_win) {
+        int rx, ry;
+        gdk_window_get_origin(dv_default_focus_win, &rx, &ry);
+        if (x)
+            *x = rx + 100;
+        if (y)
+            *y = ry + 300;
+    }
+    */
+}
+
+
+// Return the pointer position in root window coordinates
+//
+void
+QTdev::PointerRootLoc(int *x, int *y)
+{
+    /*
+    GdkModifierType state;
+    GdkWindow *window = gdk_get_default_root_window();
+    gdk_window_get_pointer(window, x, y, &state);
+    */
+}
+
+
+// Return the label string of the button, accelerators stripped.  Do not
+// free the return.
+//
+const char *
+QTdev::GetLabel(GRobject btn)
+{
+    /*
+    if (!btn)
+        return (0);
+    const char *string = 0;
+    GtkWidget *child = gtk_bin_get_child(GTK_BIN(btn));
+    if (!child)
+        return (0);
+    if (GTK_IS_LABEL(child))
+        string = gtk_label_get_label(GTK_LABEL(child));
+    else if (GTK_IS_CONTAINER(child)) {
+        GList *stuff = gtk_container_get_children(GTK_CONTAINER(child));
+        for (GList *a = stuff; a; a = a->next) {
+            GtkWidget *item = (GtkWidget*)a->data;
+            if (GTK_IS_LABEL(item)) {
+                string = gtk_label_get_label(GTK_LABEL(item));
+                break;
+            }
+        }
+        g_list_free(stuff);
+    }
+    return (string);
+    */
+    return (0);
+}
+
+
+// Set the label of the button
+//
+void
+QTdev::SetLabel(GRobject btn, const char *text)
+{
+    /*
+    if (!btn)
+        return;
+    GtkWidget *child = gtk_bin_get_child(GTK_BIN(btn));
+    if (!child)
+        return;
+    if (GTK_IS_LABEL(child))
+        gtk_label_set_text(GTK_LABEL(child), text);
+    else if (GTK_IS_CONTAINER(child)) {
+        GList *stuff = gtk_container_get_children(GTK_CONTAINER(child));
+        for (GList *a = stuff; a; a = a->next) {
+            GtkWidget *item = (GtkWidget*)a->data;
+            if (GTK_IS_LABEL(item)) {
+                gtk_label_set_text(GTK_LABEL(item), text);
+                break;
+            }
+        }
+        g_list_free(stuff);
+    }
+    */
+}
+
+
+void
+QTdev::SetSensitive(GRobject obj, bool sens_state)
+{
+    /*
+    if (obj)
+        gtk_widget_set_sensitive((GtkWidget*)obj, sens_state);
+    */
+}
+
+
+bool
+QTdev::IsSensitive(GRobject obj)
+{
+    /*
+    if (!obj)
+        return (false);
+    GtkWidget *w = GTK_WIDGET(obj);
+    while (w) {
+        if (!gtk_widget_get_sensitive(w))
+            return (false);
+        w = gtk_widget_get_parent(w);
+    }
+    */
+    return (true);
+}
+
+
+void
+QTdev::SetVisible(GRobject obj, bool vis_state)
+{
+    /*
+    if (obj) {
+        if (vis_state)
+            gtk_widget_show((GtkWidget*)obj);
+        else
+            gtk_widget_hide((GtkWidget*)obj);
+    }
+    */
+}
+
+
+bool
+QTdev::IsVisible(GRobject obj)
+{
+    /*
+    if (!obj)
+        return (false);
+    GtkWidget *w = GTK_WIDGET(obj);
+    while (w) {
+        if (!gtk_widget_get_mapped(w))
+            return (false);
+        w = gtk_widget_get_parent(w);
+    }
+    */
+    return (true);
+}
+
+
+void
+QTdev::DestroyButton(GRobject obj)
+{
+    /*
+    if (obj)
+        gtk_widget_destroy(GTK_WIDGET(obj));
+    */
+}
+
 
 // Move widget into postions according to loc.  MUST be caled on
 // visible widget.
@@ -373,7 +675,7 @@ QTdev::SetPopupLocation(GRloc loc, QWidget *widget, QWidget *shell)
 }
 
 
-// Find the position of widget accordint to loc.  MUST be called on
+// Find the position of widget according to loc.  MUST be called on
 // visible widget.
 //
 void
@@ -449,219 +751,9 @@ QTdev::ComputePopupLocation(GRloc loc, QWidget *widget, QWidget *shell,
 
 
 //-----------------------------------------------------------------------------
-// qt_draw functions
+// QTbag methods
 
-qt_draw::qt_draw()
-{
-    xbag = sGbag::default_gbag();
-    viewport = 0;
-}
-
-
-void
-qt_draw::Halt()
-{
-}
-
-
-// Move the pointer by x, y relative to current position, if absolute
-// is false.  If true, move to given location.
-//
-void
-qt_draw::MovePointer(int x, int y, bool absolute)
-{
-    // Called with 0,0 this redraws ghost objects
-    if (absolute)
-        QCursor::setPos(x, y);
-    else {
-        QPoint qp = QCursor::pos();
-        QCursor::setPos(qp.x() + x, qp.y() + y);
-    }
-}
-
-
-// Set up ghost drawing.  Whenever the pointer moves, the callback is
-// called with the current position and the x, y reference.
-//
-void
-qt_draw::SetGhost(GhostDrawFunc callback, int x, int y)
-{
-    if (callback) {
-        xbag->drawghost = callback;
-        xbag->refx = x;
-        xbag->refy = y;
-        xbag->lastx = 0;
-        xbag->lasty = 0;
-        xbag->firstghost = true;
-        xbag->showghost = true;
-        xbag->ghostcxcnt = 0;
-        return;
-    }
-    if (xbag->drawghost) {
-        if (!xbag->firstghost) {
-            // undraw last
-//            GdkGC *tempgc = xbag->gc;
-//            xbag->gc = xbag->xorgc;
-            (*xbag->drawghost)(xbag->lastx, xbag->lasty,
-                xbag->refx, xbag->refy, false);
-//            xbag->gc = tempgc;
-        }
-        xbag->drawghost = 0;
-    }
-}
-
-
-// Turn on/off display of ghosting.  Keep track of calls in ghostcxcnt.
-//
-void
-qt_draw::ShowGhost(bool show)
-{
-    if (!show) {
-        if (!xbag->ghostcxcnt) {
-            UndrawGhost();
-            xbag->showghost = false;
-            xbag->firstghost = true;
-        }
-        xbag->ghostcxcnt++;
-    }
-    else {
-        if (xbag->ghostcxcnt)
-            xbag->ghostcxcnt--;
-        if (!xbag->ghostcxcnt) {
-            xbag->showghost = true;
-            // this redraws ghost objects
-            QPoint p = QCursor::pos();
-            p.setX(p.x() + 1);
-            QCursor::setPos(p);
-            p.setX(p.x() - 1);
-            QCursor::setPos(p);
-        }
-    }
-}
-
-
-// Erase the last ghost.
-//
-void
-qt_draw::UndrawGhost(bool)
-{
-    if (xbag->drawghost && xbag->showghost) {
-        if (!xbag->firstghost) {
-            viewport->set_xor_mode(true);
-            (*xbag->drawghost)(xbag->lastx, xbag->lasty,
-                xbag->refx, xbag->refy, false);
-            viewport->set_xor_mode(false);
-        }
-    }
-}
-
-
-// Draw a ghost at x, y.
-//
-void
-qt_draw::DrawGhost(int x, int y)
-{
-    if (xbag->drawghost && xbag->showghost) {
-        xbag->lastx = x;
-        xbag->lasty = y;
-        viewport->set_xor_mode(true);
-        (*xbag->drawghost)(x, y, xbag->refx, xbag->refy, false);
-        xbag->firstghost = false;
-        viewport->set_xor_mode(false);
-    }
-}
-
-
-void
-qt_draw::QueryPointer(int *x, int *y, unsigned *state)
-{
-    if (x)
-        *x = QCursor::pos().x();
-    if (y)
-        *y = QCursor::pos().y();
-    if (state) {
-        *state = 0;
-        int st = QApplication::keyboardModifiers();
-        if (st & Qt::ShiftModifier)
-            *state |= GR_SHIFT_MASK;
-        if (st & Qt::ControlModifier)
-            *state |= GR_CONTROL_MASK;
-        if (st & Qt::AltModifier)
-            *state |= GR_ALT_MASK;
-    }
-}
-
-
-void
-qt_draw::DefineColor(int *pixel, int r, int g, int b)
-{
-    *pixel = 0;
-    QColor c(r, g, b);
-    if (c.isValid())
-        *pixel = c.rgb();
-}
-
-
-void
-qt_draw::SetGhostColor(int pixel)
-{
-    viewport->set_ghost_color(pixel);
-}
-
-
-void
-qt_draw::Input(int*, int*, int*, int*)
-{
-}
-
-
-void
-qt_draw::SetXOR(int val)
-{
-    switch (val) {
-    case GRxNone:
-        viewport->set_xor_mode(false);
-        break;
-    case GRxXor:
-        viewport->set_xor_mode(true);
-        break;
-    case GRxHlite:
-    case GRxUnhlite:
-        break;
-    }
-}
-
-
-void
-qt_draw::ShowGlyph(int, int, int)
-{
-}
-
-
-GRobject
-qt_draw::GetRegion(int, int, int, int)
-{
-    return (0);
-}
-
-
-void
-qt_draw::PutRegion(GRobject, int, int, int, int)
-{
-}
-
-
-void
-qt_draw::FreeRegion(GRobject)
-{
-}
-// End of qt_draw functions
-
-
-//-----------------------------------------------------------------------------
-// qt_bag methods
-
-qt_bag::qt_bag(QWidget *w)
+QTbag::QTbag(QWidget *w)
 {
     shell = w;
     input = 0;
@@ -680,7 +772,7 @@ qt_bag::qt_bag(QWidget *w)
     htinfo_cnt = 1;
 }
 
-qt_bag::~qt_bag()
+QTbag::~QTbag()
 {
     ClearPopups();
     HcopyDisableMsgs();
@@ -688,14 +780,14 @@ qt_bag::~qt_bag()
 }
 
 // NOTE:
-// In QT, widgets that require qt_bag features inherit qt_bag, so that
+// In QT, widgets that require QTbag features inherit QTbag, so that
 // the shell field is always a pointer-to-self.  It is crucial that
-// widgets that subclass qt_bag set the shell pointer in the
+// widgets that subclass QTbag set the shell pointer in the
 // constructor.
 
 
 void
-qt_bag::Title(const char *title, const char *icontitle)
+QTbag::Title(const char *title, const char *icontitle)
 {
     if (title && shell)
         shell->setWindowTitle(QString(title));
@@ -705,12 +797,12 @@ qt_bag::Title(const char *title, const char *icontitle)
 
 
 // Pop up the editor.  If the resuse_ret arg is given, it should be a
-// pointer to a qt_bag returned from GTKdev::NewWbag(), which will be
+// pointer to a QTbag returned from QTdev::NewWbag(), which will be
 // used to set up a top-level window.  Otherwise, the editor is set
 // up normally, i.e., within an existing hierarchy.
 //
 GReditPopup *
-qt_bag::PopUpTextEditor(const char *fname,
+QTbag::PopUpTextEditor(const char *fname,
     bool (*editsave)(const char*, void*, XEtype), void *arg, bool source)
 {
     QTeditPopup *text = new QTeditPopup(this, QTeditPopup::Editor, fname,
@@ -725,7 +817,7 @@ qt_bag::PopUpTextEditor(const char *fname,
 // existing widget hierarchy.
 //
 GReditPopup *
-qt_bag::PopUpFileBrowser(const char *fname)
+QTbag::PopUpFileBrowser(const char *fname)
 {
 /*
     // If we happen to already have this file open, reread it.
@@ -758,7 +850,7 @@ qt_bag::PopUpFileBrowser(const char *fname)
 // string argument.
 //
 GReditPopup *
-qt_bag::PopUpStringEditor(const char *string,
+QTbag::PopUpStringEditor(const char *string,
     bool (*callback)(const char*, void*, XEtype), void *arg)
 {
 /*
@@ -791,7 +883,7 @@ qt_bag::PopUpStringEditor(const char *string,
 // recognized.
 //
 GReditPopup *
-qt_bag::PopUpMail(const char *subject, const char *mailaddr,
+QTbag::PopUpMail(const char *subject, const char *mailaddr,
     void(*downproc)(GReditPopup*), GRloc loc)
 {
     QTeditPopup *text = new QTeditPopup(this, QTeditPopup::Mailer, 0,
@@ -818,7 +910,7 @@ qt_bag::PopUpMail(const char *subject, const char *mailaddr,
 //  labeltext   Alternative text for label
 //
 void
-qt_bag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
+QTbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
     void(*)(const char*, const char*, void*), void *arg, int indx,
     const char**, const char*)
 {
@@ -843,7 +935,7 @@ qt_bag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
 // Printing support.  Caller is the initiating button, if any.
 //
 void
-qt_bag::PopUpPrint(GRobject, HCcb *cb, HCmode mode, GRdraw*)
+QTbag::PopUpPrint(GRobject, HCcb *cb, HCmode mode, GRdraw*)
 {
     if (hc) {
         bool active = !hc->is_active();
@@ -867,7 +959,7 @@ qt_bag::PopUpPrint(GRobject, HCcb *cb, HCmode mode, GRdraw*)
 // The HCcb struct is filled in with the present values.
 //
 void
-qt_bag::HCupdate(HCcb *cb, GRobject)
+QTbag::HCupdate(HCcb *cb, GRobject)
 {
     if (hc)
         hc->update(cb);
@@ -875,14 +967,14 @@ qt_bag::HCupdate(HCcb *cb, GRobject)
 
 
 void
-qt_bag::HCsetFormat(int)
+QTbag::HCsetFormat(int)
 {
     //XXX fixme
 }
 
 
 void
-qt_bag::HcopyDisableMsgs()
+QTbag::HcopyDisableMsgs()
 {
     if (hc)
         hc->disable_progress();
@@ -895,7 +987,7 @@ qt_bag::HcopyDisableMsgs()
 // entries are filled in upon return.
 //
 bool
-qt_bag::HcopyLocate(int x, int y, int *wid, int *hei)
+QTbag::HcopyLocate(int x, int y, int *wid, int *hei)
 {
     *wid = 0;
     *hei = 0;
@@ -910,7 +1002,7 @@ qt_bag::HcopyLocate(int x, int y, int *wid, int *hei)
 
 
 GRfilePopup *
-qt_bag::PopUpFileSelector(FsMode mode, GRloc loc,
+QTbag::PopUpFileSelector(FsMode mode, GRloc loc,
     void(*cb)(const char*, void*), void(*down_cb)(GRfilePopup*, void*),
     void *arg, const char *root_or_fname)
 {
@@ -928,7 +1020,7 @@ qt_bag::PopUpFileSelector(FsMode mode, GRloc loc,
 //
 
 void
-qt_bag::ClearPopups()
+QTbag::ClearPopups()
 {
     if (message)
         message->popdown();
@@ -949,7 +1041,7 @@ qt_bag::ClearPopups()
 
 
 GRaffirmPopup *
-qt_bag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
+QTbag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
     void(*action_callback)(bool, void*), void *action_arg)
 {
     QTaffirmPopup *affirm = new QTaffirmPopup(this, question_str, action_arg);
@@ -965,7 +1057,7 @@ qt_bag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
 // button.
 //
 GRnumPopup *
-qt_bag::PopUpNumeric(GRobject caller, GRloc loc, const char *prompt_str,
+QTbag::PopUpNumeric(GRobject caller, GRloc loc, const char *prompt_str,
     double initd, double mind, double maxd, double del, int numd,
     void(*action_callback)(double, bool, void*), void *action_arg)
 {
@@ -993,7 +1085,7 @@ qt_bag::PopUpNumeric(GRobject caller, GRloc loc, const char *prompt_str,
 // If x,y are both < 0, the popup will be centered on the calling shell.
 
 GRledPopup *
-qt_bag::PopUpEditString(GRobject caller, GRloc loc, const char *prompt_string,
+QTbag::PopUpEditString(GRobject caller, GRloc loc, const char *prompt_string,
     const char *init_str, ESret(*action_callback)(const char*, void*),
     void *action_arg, int textwidth, void(*downproc)(bool),
     bool multiline, const char *btnstr)
@@ -1014,10 +1106,10 @@ qt_bag::PopUpEditString(GRobject caller, GRloc loc, const char *prompt_string,
 
 // PopUpInput and PopUpMessage implement an input solicitation widget
 // with error reporting.  Only one of each widget is possible per
-// parent qt_bag as they set fields in the qt_bag struct.
+// parent QTbag as they set fields in the QTbag struct.
 
 void
-qt_bag::PopUpInput(const char *label_str, const char *initial_str,
+QTbag::PopUpInput(const char *label_str, const char *initial_str,
     const char *action_str, void(*action_callback)(const char*, void*),
     void *arg, int textwidth)
 {
@@ -1039,16 +1131,16 @@ qt_bag::PopUpInput(const char *label_str, const char *initial_str,
 
 // Pop up a message box If err is true, the popup will get the
 // resources of an error popup.  If multi is true, the widget will not
-// use the qt_bag::message field, so that there can be arbitrarily
+// use the QTbag::message field, so that there can be arbitrarily
 // many of these, but the user must keep track of them.  If desens is
-// true, then any popup pointed to by qt_bag::input is desensitized
+// true, then any popup pointed to by QTbag::input is desensitized
 // while the message is active.  This is done only if multi is false.
 // If code is LW_XY, the location will be at x, y otherwise the
-// location is set by code using qt_bag::shell.  The popup widget is
+// location is set by code using QTbag::shell.  The popup widget is
 // returned as a GRobject (void*).
 //
 GRmsgPopup *
-qt_bag::PopUpMessage(const char *string, bool err, bool desens,
+QTbag::PopUpMessage(const char *string, bool err, bool desens,
     bool multi, GRloc loc)
 {
     (void)desens;
@@ -1069,7 +1161,7 @@ qt_bag::PopUpMessage(const char *string, bool err, bool desens,
 
 //XXX
 int
-qt_bag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
+QTbag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
     GRloc loc)
 {
     if (mode == MODE_OFF) {
@@ -1096,8 +1188,8 @@ qt_bag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
 
 
 // The next few functions pop up and down error and info popups.  The
-// shell and text widgets are stored in the qt_bag struct, so there
-// can be only one of each type per qt_bag.  Additional calls to
+// shell and text widgets are stored in the QTbag struct, so there
+// can be only one of each type per QTbag.  Additional calls to
 // PopUpxxx() simply update the text.
 //
 // The functions return in integer index, which is incremented when
@@ -1106,7 +1198,7 @@ qt_bag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
 // the "same" window is still visible.
 
 int
-qt_bag::PopUpErr(ShowMode mode, const char *message_str, STYtype style,
+QTbag::PopUpErr(ShowMode mode, const char *message_str, STYtype style,
     GRloc loc)
 {
     if (mode == MODE_OFF) {
@@ -1133,7 +1225,7 @@ qt_bag::PopUpErr(ShowMode mode, const char *message_str, STYtype style,
 
 
 GRtextPopup *
-qt_bag::PopUpErrText(const char *message_str, STYtype style, GRloc loc)
+QTbag::PopUpErrText(const char *message_str, STYtype style, GRloc loc)
 {
     QTtextPopup *mesg = new QTtextPopup(this, message_str, style, 400, 100);
     mesg->setTitle("Error");
@@ -1144,7 +1236,7 @@ qt_bag::PopUpErrText(const char *message_str, STYtype style, GRloc loc)
 
 
 int
-qt_bag::PopUpInfo(ShowMode mode, const char *msg, STYtype style, GRloc loc)
+QTbag::PopUpInfo(ShowMode mode, const char *msg, STYtype style, GRloc loc)
 {
     if (mode == MODE_OFF) {
         delete info;
@@ -1170,7 +1262,7 @@ qt_bag::PopUpInfo(ShowMode mode, const char *msg, STYtype style, GRloc loc)
 
 
 int
-qt_bag::PopUpInfo2(ShowMode, const char*, bool(*)(bool, void*), void*,
+QTbag::PopUpInfo2(ShowMode, const char*, bool(*)(bool, void*), void*,
     STYtype, GRloc)
 {
     return (0);
@@ -1178,7 +1270,7 @@ qt_bag::PopUpInfo2(ShowMode, const char*, bool(*)(bool, void*), void*,
 
 
 int
-qt_bag::PopUpHTMLinfo(ShowMode mode, const char *msg, GRloc loc)
+QTbag::PopUpHTMLinfo(ShowMode mode, const char *msg, GRloc loc)
 {
     if (mode == MODE_OFF) {
         delete htinfo;
@@ -1202,16 +1294,16 @@ qt_bag::PopUpHTMLinfo(ShowMode mode, const char *msg, GRloc loc)
     return (htinfo_cnt);
 }
 
-GRledPopup *qt_bag::ActiveInput()       { return (input); }
-GRmsgPopup *qt_bag::ActiveMessage()     { return (message); }
-GRtextPopup *qt_bag::ActiveInfo()       { return (info); }
-GRtextPopup *qt_bag::ActiveInfo2()      { return (info2); }
-GRtextPopup *qt_bag::ActiveHtinfo()     { return (htinfo); }
-GRtextPopup *qt_bag::ActiveError()      { return (error); }
-GRfontPopup *qt_bag::ActiveFontsel()    { return (fontsel); }
+GRledPopup *QTbag::ActiveInput()       { return (input); }
+GRmsgPopup *QTbag::ActiveMessage()     { return (message); }
+GRtextPopup *QTbag::ActiveInfo()       { return (info); }
+GRtextPopup *QTbag::ActiveInfo2()      { return (info2); }
+GRtextPopup *QTbag::ActiveHtinfo()     { return (htinfo); }
+GRtextPopup *QTbag::ActiveError()      { return (error); }
+GRfontPopup *QTbag::ActiveFontsel()    { return (fontsel); }
 
 void
-qt_bag::SetErrorLogName(const char *fname)
+QTbag::SetErrorLogName(const char *fname)
 {
 //XXX    GTKtextPopup::set_error_log(fname);
 }

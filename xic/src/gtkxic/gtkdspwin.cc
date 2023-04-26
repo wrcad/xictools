@@ -41,7 +41,6 @@
 #include "main.h"
 #include "cvrt.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -90,7 +89,7 @@ void
 cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
     bool(*cb)(bool, const BBox*, void*), void *arg)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Dw;
@@ -113,8 +112,8 @@ cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
     Dw->update(BB);
 
     gtk_window_set_transient_for(GTK_WINDOW(Dw->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
-    GRX->SetPopupLocation(GRloc(), Dw->shell(), mainBag()->Viewport());
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    GRX->SetPopupLocation(GRloc(), Dw->shell(), GTKmainwin::self()->Viewport());
     gtk_widget_show(Dw->shell());
 }
 

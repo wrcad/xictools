@@ -46,7 +46,6 @@
 #include "cd_hypertext.h"
 #include "cd_propnum.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkprpty.h"
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkutil.h"
@@ -92,7 +91,7 @@ sPbase::prptyInfoPtr()
 void
 cEdit::PopUpPropertyInfo(CDo *odesc, ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Pi;
@@ -113,9 +112,10 @@ cEdit::PopUpPropertyInfo(CDo *odesc, ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Pi->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UR), Pi->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UR), Pi->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Pi->Shell());
 }
 

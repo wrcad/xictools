@@ -41,7 +41,7 @@
 #ifndef DRAW_X_W_H
 #define DRAW_X_W_H
 
-#include "draw_if.h"
+#include "qtdraw.h"
 #include <QWidget>
 #include <QResizeEvent>
 #include <math.h>

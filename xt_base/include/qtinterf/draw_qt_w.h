@@ -41,7 +41,7 @@
 #ifndef DRAW_QT_W_H
 #define DRAW_QT_W_H
 
-#include "draw_if.h"
+#include "qtdraw.h"
 #include <QWidget>
 #include <QBrush>
 #include <QPen>

@@ -43,7 +43,6 @@
 #include "drc_kwords.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -132,7 +131,7 @@ cDRC::PopUpRuleEdit(GRobject caller, ShowMode mode, DRCtype type,
     const char *username, bool (*callback)(const char*, void*),
     void *arg, const DRCtestDesc *rule)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Ru;
@@ -154,9 +153,10 @@ cDRC::PopUpRuleEdit(GRobject caller, ShowMode mode, DRCtype type,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Ru->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Ru->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_LL), Ru->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Ru->Shell());
 }
 

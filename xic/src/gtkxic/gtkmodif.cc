@@ -48,7 +48,6 @@
 #include "dsp_inlines.h"
 #include "gtkmain.h"
 #include "gtkmenu.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -154,7 +153,7 @@ PMretType sSC::sc_retval;
 PMretType
 cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return (PMok);
     if (SC)
         return (PMok);
@@ -171,9 +170,9 @@ cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
         return (PMerr);
     }
     gtk_window_set_transient_for(GTK_WINDOW(SC->Shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), SC->Shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), SC->Shell(), GTKmainwin::self()->Viewport());
     gtk_widget_show(SC->Shell());
 
     start_modal(SC->Shell());

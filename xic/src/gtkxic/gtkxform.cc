@@ -42,7 +42,6 @@
 #include "edit.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -108,7 +107,7 @@ void
 cEdit::PopUpTransform(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, bool, const char*, void*), void *arg)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Tfm;
@@ -128,9 +127,10 @@ cEdit::PopUpTransform(GRobject caller, ShowMode mode,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Tfm->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Tfm->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(LW_UL), Tfm->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Tfm->shell());
 }
 

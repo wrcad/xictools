@@ -38,12 +38,150 @@
  $Id:$
  *========================================================================*/
 
-// The status readout line
+#ifndef QTPARAM_H
+#define QTPARAM_H
+
+
+class QTmainwin;
+class cParam;
+
+// Represent a character to display.
 //
-class param_w : public QWidget, public qt_draw
+struct pchar_t
+{
+    char pc_char;               // ASCII code
+    unsigned char pc_width;     // pixel width
+    unsigned short pc_posn;     // pixel bounding box left
+    unsigned int pc_color;      // color value
+};
+
+// Container for displayed characters.
+//
+struct ptext_t
+{
+    ptext_t()
+    {
+        pt_end = 0;
+        pt_sel_start = 0;
+        pt_sel_end = 0;
+        pt_set = false;
+    }
+
+    void append_string(const char *str, unsigned int clr)
+    {
+        if (str) {
+            while (*str) {
+                append_char(*str, clr);
+                str++;
+            }
+        }
+    }
+
+    void append_char(char c, unsigned int clr)
+    {
+        if (pt_end < 255) {
+            pchar_t *pc = pt_chars + pt_end++;
+            pc->pc_char = c;
+            pc->pc_width = 0;
+            pc->pc_posn = 0;
+            pc->pc_color = clr;
+        }
+    }
+
+    void reset()
+    {
+        pt_end = 0;
+        pt_set = false;
+    }
+
+    char *get_sel()
+    {
+        if (pt_sel_end > pt_sel_start) {
+            char *str = new char[pt_sel_end - pt_sel_start + 1];
+            char *s = str;
+            unsigned int i = pt_sel_start;
+            while (i < pt_sel_end)
+                *s++ = pt_chars[i++].pc_char;
+            *s = 0;
+            return (str);
+        }
+        return (0);
+    }
+
+    bool has_sel(unsigned int *xmin, unsigned int *xmax)
+    {
+        if (pt_sel_end > pt_sel_start) {
+            if (xmin)
+                *xmin = pt_sel_start;
+            if (xmax)
+                *xmax = pt_sel_end;
+            return (true);
+        }
+        return (false);
+    }
+
+    void set_sel(unsigned int s, unsigned int e)
+    {
+        if (s < 256 && e < 256 && e >= s) {
+            pt_sel_start = s;
+            pt_sel_end = e;
+        }
+    }
+
+    void setup(cParam*);
+    void display(cParam*, unsigned int, unsigned int);
+    void display_c(cParam*, int, int);
+    bool select(int, int);
+    bool select_word(int);
+
+private:
+    unsigned char pt_end;           // string end (last char + 1)
+    unsigned char pt_sel_start;     // selecton start
+    unsigned char pt_sel_end;       // selection end (+ 1)
+    bool pt_set;                    // true if char widths set
+    pchar_t pt_chars[256];
+};
+
+
+inline class cParam *Param();
+
+// The status readout line.
+//
+class cParam : public QWidget, public QTdraw
 {
 public:
-    param_w(mainwin*);
+    friend inline cParam *Param() { return (cParam::instancePtr); }
+
+    cParam(QTmainwin*);
+    ~cParam();
+
     void print();
+    void display(int, int);
+
+    void redraw()           { print(); }
+
+    unsigned int xval()     { return (p_xval); }
+    unsigned int yval()     { return (p_yval); }
+    int width()             { return (p_width); }
+    int height()            { return (p_height); }
+
+private:
+    void select(int, int);
+    void select_word(int);
+    bool deselect();
+
+    int p_drag_x;
+    int p_drag_y;
+    bool p_has_drag;
+    bool p_dragged;
+    int p_xval;
+    int p_yval;
+    int p_width;
+    int p_height;
+    ptext_t p_text;
+
+    static cParam *instancePtr;
 };
+
+#endif
 

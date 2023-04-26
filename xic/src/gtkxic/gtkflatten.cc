@@ -42,7 +42,6 @@
 #include "edit.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "cvrt_variables.h"
 
 
@@ -97,7 +96,7 @@ cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, bool, const char*, void*),
     void *arg, int depth, bool fmode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Flt;
@@ -117,9 +116,10 @@ cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Flt->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Flt->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Flt->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Flt->shell());
 }
 // End of cEdit functions.

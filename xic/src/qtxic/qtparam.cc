@@ -40,207 +40,661 @@
 
 #include "qtmain.h"
 #include "qtparam.h"
-#include "qtinlines.h"
+#include "qtcoord.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
 #include "editif.h"
 #include "select.h"
+#include "tech.h"
 #include "events.h"
 #include "pushpop.h"
 
 #include <QHBoxLayout>
 
 
+// Display the parameter text in the parameter readout area.
+//
 void
 cMain::ShowParameters(const char*)
 {
-    if (mainBag())
-        mainBag()->show_parameters();
+    if (Param())
+        Param()->print();
 }
 
 
-param_w::param_w(mainwin *prnt) : QWidget(prnt)
+cParam *cParam::instancePtr = 0;
+
+cParam::cParam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 {
-    viewport = draw_if::new_draw_interface(DrawNative, false, this);
+    instancePtr = this;
+
+    gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setMargin(0);
     hbox->setSpacing(0);
-    hbox->addWidget(viewport->widget());
+    hbox->addWidget(gd_viewport->widget());
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
-        viewport->set_font(fnt);
+        gd_viewport->set_font(fnt);
+}
+
+
+cParam::~cParam()
+{
+    instancePtr = 0;
 }
 
 
 void
-param_w::print()
+cParam::print()
 {
     unsigned long c1 = DSP()->Color(PromptTextColor);
     unsigned long c2 = DSP()->Color(PromptEditTextColor);
-    SetWindowBackground(DSP()->Color(PromptBackgroundColor));
     int fwid, fhei;
     TextExtent(0, &fwid, &fhei);
-    SetFillpattern(0);
-    SetLinestyle(0);
-    Clear();
 
-    QSize qs = viewport->widget()->size();
-    int spw = any_string_width(viewport->widget(), " ");
+    p_xval = 2;
+    p_yval = fhei;
 
-    int xx = 2;
-    int yy = fhei - 4;
     unsigned int selectno;
     Selections.countQueue(CurCell(), &selectno, 0);
     char textbuf[256];
 
-    const char *str;
+    p_text.reset();
+
+    const char *str = Tech()->TechnologyName();
+    if (str && *str) {
+        p_text.append_string("Tech: ", c1);
+        p_text.append_string(str, c2);
+        p_text.append_string("  ", c2);
+    }
     if (DSP()->MainWdesc()->DbType() == WDchd) {
-        SetColor(c1);
-        str = "Hier:";
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + spw;
-        SetColor(c2);
         str = DSP()->MainWdesc()->DbName();
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + 2*spw;
+        p_text.append_string("Hier: ", c1);
+        p_text.append_string(str, c2);
+
+        if (DSP()->MainWdesc()->DbCellName()) {
+            str = DSP()->MainWdesc()->DbCellName();
+            p_text.append_string(" Cell: ", c1);
+            p_text.append_string(str, c2);
+        }
+        p_text.append_string("  ", c2);
     }
     else {
-        SetColor(c1);
-        str = "Cell:";
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + spw;
-        SetColor(c2);
         str = (DSP()->CurCellName() ? Tstring(DSP()->CurCellName()) : "none");
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + 2*spw;
+        p_text.append_string("Cell: ", c1);
+        p_text.append_string(str, c2);
 
         CDs *cursd = CurCell();
         if (cursd) {
-            if (cursd->isImmutable()) {
-                SetColor(DSP()->Color(PromptHighlightColor));
-                str = "RO";
-                Text(str, xx, yy, 0);
-                xx += any_string_width(viewport->widget(), str) + 2*spw;
-            }
-            else if (cursd->isModified()) {
-                SetColor(DSP()->Color(PromptHighlightColor));
-                str = "Mod";
-                Text(str, xx, yy, 0);
-                xx += any_string_width(viewport->widget(), str) + 2*spw;
-            }
+            if (cursd->isImmutable())
+                p_text.append_string(" RO", DSP()->Color(PromptHighlightColor));
+            else if (cursd->isModified())
+                p_text.append_string(" Mod",DSP()->Color(PromptHighlightColor));
         }
+        p_text.append_string("  ", c2);
     }
 
-    SetColor(c1);
-    str = "Grid:";
-    Text(str, xx, yy, 0);
-    xx += any_string_width(viewport->widget(), str) + spw;
-    SetColor(c2);
-    DSPattrib *a = DSP()->MainWdesc()->Attrib();
-    sprintf(textbuf, "%g",
-        a ? MICRONS(a->grid(DSP()->CurMode())->spacing(DSP()->CurMode())) : 1.0);
-    str = textbuf;
-    Text(str, xx, yy, 0);
-    xx += any_string_width(viewport->widget(), str) + 2*spw;
+    if (DSP()->PhysVisGridOrigin()->x || DSP()->PhysVisGridOrigin()->y) {
+        p_text.append_string("PhGridOffs: ",DSP()->Color(PromptHighlightColor));
+        p_text.append_string("  ", c2);
+    }
 
-    int snap = (a ? a->grid(DSP()->CurMode())->snap() : 1);
-    if (snap != 1) {
-        SetColor(c1);
-        str = "Snap:";
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + spw;
-        SetColor(c2);
-        sprintf(textbuf, "%d", snap);
-        str = textbuf;
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + 2*spw;
+    DSPattrib *a = DSP()->MainWdesc()->Attrib();
+    if (a) {
+        DisplayMode m = DSP()->CurMode();
+        GridDesc *g = a->grid(m);
+        double spa = g->spacing(m);
+        if (g->snap() < 0)
+            snprintf(textbuf, 24, "%g/%g", -spa/g->snap(), spa);
+        else
+            snprintf(textbuf, 24, "%g/%g", spa*g->snap(), spa);
+        p_text.append_string("Grid/Snap: ", c1);
+        p_text.append_string(textbuf, c2);
+        p_text.append_string("  ", c2);
     }
     if (selectno) {
-        SetColor(c1);
-        str = "Select:";
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + spw;
-        SetColor(c2);
-        sprintf(textbuf, "%d", selectno);
-        str = textbuf;
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + spw;
+        snprintf(textbuf, 12, "%d", selectno);
+        p_text.append_string("Select: ", c1);
+        p_text.append_string(textbuf, c2);
         CDc *cd = (CDc*)Selections.firstObject(CurCell(), "c");
         if (cd) {
-            sprintf(textbuf, "(%s)", Tstring(cd->cellname()));
-            str = textbuf;
-            Text(str, xx, yy, 0);
-            xx += any_string_width(viewport->widget(), str) + spw;
+            snprintf(textbuf, sizeof(textbuf), " (%s)", Tstring(cd->cellname()));
+            p_text.append_string(textbuf, c2);
         }
-        xx += spw;
+        p_text.append_string("  ", c2);
     }
     int clev = PP()->Level();
     if (clev) {
-        SetColor(c1);
-        str = "Push:";
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + spw;
-        SetColor(c2);
-        sprintf(textbuf, "%d", clev);
-        str = textbuf;
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + 2*spw;
+        snprintf(textbuf, 8, "%d", clev);
+        p_text.append_string("Push: ", c1);
+        p_text.append_string(textbuf, c2);
+        p_text.append_string("  ", c2);
     }
 
-    textbuf[0] = 0;
-    if (GEO()->curTx()->angle() != 0)
-        sprintf(textbuf + strlen(textbuf), "R%d", GEO()->curTx()->angle());
-    if (GEO()->curTx()->reflectY())
-        strcat(textbuf, "MY");
-    if (GEO()->curTx()->reflectX())
-        strcat(textbuf, "MX");
-    if (GEO()->curTx()->magn() != 1.0) {
-        sprintf(textbuf + strlen(textbuf), "M%.8f", GEO()->curTx()->magn());
-        char *t = textbuf + strlen(textbuf) - 1;
-        int i = 0;
-        while (*t == '0' && i < 7) {
-            *t-- = 0;
-            i++;
+    char *tfstring = GEO()->curTx()->tform_string();
+    if (tfstring) {
+        // Above returns empty string for identity transform.
+        if (*tfstring) {
+            p_text.append_string("Transf: ", c1);
+            p_text.append_string(tfstring, c2);
+            p_text.append_string("  ", c2);
         }
-    }
-    if (textbuf[0]) {
-        SetColor(c1);
-        str = "Transf:";
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + spw;
-        SetColor(c2);
-        str = textbuf;
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + 2*spw;
+        delete [] tfstring;
     }
 
     str = EV()->CurCmd() ? EV()->CurCmd()->Name() : 0;
     if (str) {
-        SetColor(c1);
-        str = "Mode:";
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + spw;
-        SetColor(c2);
-        str = EV()->CurCmd()->Name();
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + 2*spw;
+        p_text.append_string("Mode: ", c1);
+        p_text.append_string(str, c2);
+        p_text.append_string("  ", c2);
     }
     if (DSP()->CurMode() == Physical) {
         double dx = DSP()->MainWdesc()->ViewportWidth() /
             DSP()->MainWdesc()->Ratio()/CDphysResolution;
         double dy = DSP()->MainWdesc()->ViewportHeight() /
             DSP()->MainWdesc()->Ratio()/CDphysResolution;
-        SetColor(c1);
-        str = "Window:";
-        Text(str, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), str) + spw;
-        SetColor(c2);
-        char buf[64];
-        sprintf(buf, "%.1f X %.1f", dx, dy);
-        Text(buf, xx, yy, 0);
-        xx += any_string_width(viewport->widget(), buf) + 2*spw;
+        snprintf(textbuf, sizeof(textbuf), "%.2f X %.2f", dx, dy);
+        p_text.append_string("Window: ", c1);
+        p_text.append_string(textbuf, c2);
+        p_text.append_string("  ", c2);
     }
+
+    p_text.setup(this);
+    display(0, 256);
+
     Update();
+
+    if (Coord())
+        Coord()->print(0, 0, cCoord::COOR_REL);
+}
+
+
+void
+cParam::display(int start, int end)
+{
+    (void)start;
+    (void)end;
+#ifdef NOTDEF
+#if GTK_CHECK_VERSION(3,0,0)
+    if (!GetDrawable()->get_window())
+        GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
+    if (!GetDrawable()->get_window())
+        return;
+    GetDrawable()->set_draw_to_pixmap();
+
+    if (start == 0 && end == 256) {
+        SetWindowBackground(DSP()->Color(PromptBackgroundColor));
+        int wid = GetDrawable()->get_width();
+        int hei = GetDrawable()->get_width();
+        SetColor(DSP()->Color(PromptBackgroundColor));
+        Box(0, 0, wid, hei);
+        SetBackground(DSP()->Color(PromptBackgroundColor));
+    }
+    p_text.display(this, start, end);
+
+    GetDrawable()->set_draw_to_window();
+    GetDrawable()->copy_pixmap_to_window(CpyGC(), 0, 0, -1, -1);
+#else
+    gd_window = gtk_widget_get_window(gd_viewport);
+    if (!gd_window)
+        return;
+
+    int winw = gdk_window_get_width(gd_window);
+    int winh = gdk_window_get_height(gd_window);
+    if (winw != p_width || winh != p_height) {
+        if (p_pm)
+            g_object_unref(p_pm);
+        p_pm = gdk_pixmap_new(gd_window, winw, winh,
+            gdk_visual_get_depth(GRX->Visual()));
+        p_width = winw;
+        p_height = winh;
+        start = 0;
+        end = 256;
+    }
+    p_win_bak = gd_window;
+    gd_window = p_pm;
+    gd_viewport->window = gd_window;
+
+    if (start == 0 && end == 256) {
+        SetWindowBackground(DSP()->Color(PromptBackgroundColor));
+        SetColor(DSP()->Color(PromptBackgroundColor));
+        Box(0, 0, p_width, p_height);
+    }
+
+    p_text.display(this, start, end);
+
+    gdk_window_copy_area(p_win_bak, CpyGC(), 0, 0, gd_window,
+        0, 0, p_width, p_height);
+    gd_window = p_win_bak;
+    p_win_bak = 0;
+    gtk_widget_set_window(gd_viewport, gd_window);
+#endif
+#endif
+}
+
+
+// Select the chars that overlap the pixel coord range x1,x2.
+//
+void
+cParam::select(int x1, int x2)
+{
+    if (x2 < x1) {
+        int t = x2;
+        x2 = x1;
+        x1 = t;
+    }
+    unsigned int xo1 = 0, xo2 = 0;
+    bool was_sel = p_text.has_sel(&xo1, &xo2);
+    if (p_text.select(x1, x2)) {
+        unsigned int xstart, xend;
+        if (p_text.has_sel(&xstart, &xend)) {
+            if (was_sel) {
+                if (xo1 < xstart)
+                    xstart = xo1;
+                if (xo2 < xstart)
+                    xstart = xo2;
+                if (xo1 > xend)
+                    xend = xo1;
+                if (xo2 > xend)
+                    xend = xo2;
+            }
+#ifdef WIN32
+            // For some reason the owner_set code doesn't work in
+            // Windows.
+
+            char *str = Param()->p_text.get_sel();
+            if (str) {
+                GtkClipboard *cb = gtk_clipboard_get_for_display(
+                    gdk_display_get_default(), GDK_SELECTION_PRIMARY);
+                gtk_clipboard_set_with_owner(cb, targets, n_targets,
+                    primary_get_cb, primary_clear_cb, G_OBJECT(Viewport()));
+                delete [] str;
+                display(xstart, xend);
+            }
+#else
+            display(xstart, xend);
+//            gtk_selection_owner_set(Viewport(), GDK_SELECTION_PRIMARY,
+//                GDK_CURRENT_TIME);
+#endif
+        }
+    }
+    else if (was_sel) {
+        deselect();
+//        gtk_selection_owner_set(0, GDK_SELECTION_PRIMARY, GDK_CURRENT_TIME);
+    }
+}
+
+
+// Select the word at pixel coord x.
+//
+void
+cParam::select_word(int x)
+{
+    bool was_sel = deselect();
+    if (p_text.select_word(x)) {
+        unsigned int xstart, xend;
+        if (p_text.has_sel(&xstart, &xend)) {
+#ifdef WIN32
+            // For some reason the owner_set code doesn't work in
+            // Windows.
+
+            char *str = Param()->p_text.get_sel();
+            if (str) {
+                GtkClipboard *cb = gtk_clipboard_get_for_display(
+                    gdk_display_get_default(), GDK_SELECTION_PRIMARY);
+                gtk_clipboard_set_with_owner(cb, targets, n_targets,
+                    primary_get_cb, primary_clear_cb, G_OBJECT(Viewport()));
+                delete [] str;
+                display(xstart, xend);
+            }
+#else
+            display(xstart, xend);
+//            gtk_selection_owner_set(Viewport(), GDK_SELECTION_PRIMARY,
+//                GDK_CURRENT_TIME);
+#endif
+        }
+    }
+//    else if (was_sel)
+//        gtk_selection_owner_set(0, GDK_SELECTION_PRIMARY, GDK_CURRENT_TIME);
+}
+
+
+// Deselect text.
+//
+bool
+cParam::deselect()
+{
+    unsigned int xstart, xend;
+    if (p_text.has_sel(&xstart, &xend)) {
+        p_text.set_sel(0, 0);
+        display(xstart, xend);
+        return (true);
+    }
+    return (false);
+}
+
+
+#ifdef WIN32
+// Static function.
+void
+cParam::primary_get_cb(GtkClipboard*, GtkSelectionData *data,
+    unsigned int, void*)
+{
+    if (Param()) {
+        char *str = Param()->p_text.get_sel();
+        if (str) {
+            gtk_selection_data_set_text(data, str, -1);
+            delete [] str;
+        }
+    }
+}
+
+
+// Static function.
+void
+cParam::primary_clear_cb(GtkClipboard*, void*)
+{
+    if (Param())
+        Param()->deselect();
+}
+#endif
+
+
+#ifdef NOTDEF
+// Static function.
+// Pop up info about the parameter display area in help mode.
+//
+int
+cParam::readout_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
+{
+    if (!Param())
+        return (false);
+    if (event->button.button == 1 && event->type == GDK_BUTTON_PRESS) {
+        if (XM()->IsDoingHelp() && !is_shift_down())
+            DSPmainWbag(PopUpHelp("statusline"))
+        else {
+            Param()->p_has_drag = true;
+            Param()->p_dragged = false;
+            Param()->p_drag_x = (int)event->button.x;
+            Param()->p_drag_y = (int)event->button.y;
+        }
+        return (true);
+    }
+    if (event->button.button == 1 && event->type == GDK_BUTTON_RELEASE) {
+        if (Param()->p_has_drag && !Param()->p_dragged)
+            Param()->select_word(Param()->p_drag_x);
+        Param()->p_has_drag = false;
+        return (true);
+    }
+    return (false);
+}
+
+
+// Static functions.
+// Pointer motion handler.
+//
+int
+cParam::readout_motion_hdlr(GtkWidget*, GdkEvent *event, void*)
+{
+    if (!Param())
+        return (false);
+    if (Param()->p_has_drag) {
+        int mvx = (int)event->motion.x;
+        Param()->select(Param()->p_drag_x, mvx);
+        Param()->p_dragged = true;
+        return (true);
+    }   
+    return (false);
+}
+        
+
+// Static function.
+// Expose handler.
+//
+#if GTK_CHECK_VERSION(3,0,0)
+int
+cParam::readout_redraw(GtkWidget*, cairo_t *cr, void*)
+#else
+int
+cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
+#endif
+{
+    if (!Param())
+        return (false);
+#if GTK_CHECK_VERSION(3,0,0)
+    Param()->GetDrawable()->refresh(Param()->CpyGC(), cr);
+#else
+    GdkEventExpose *pev = (GdkEventExpose*)event;
+    if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
+        GdkRectangle *rects;
+        int nrects;
+        gdk_region_get_rectangles(pev->region, &rects, &nrects);
+        for (int i = 0; i < nrects; i++) {
+            gdk_window_copy_area(Param()->gd_window, Param()->CpyGC(),
+                rects[i].x, rects[i].y, Param()->p_pm,
+                rects[i].x, rects[i].y, rects[i].width, rects[i].height);
+        }
+        g_free(rects);
+    }
+#endif
+
+    return (true);
+}
+
+
+// Static function.
+// Font change handler.
+//
+void
+cParam::readout_font_change(GtkWidget*, void*, void*)
+{
+#if GTK_CHECK_VERSION(3,0,0)
+    if (Param() && GDK_IS_WINDOW(Param()->GetDrawable()->get_window())) {
+#else
+    if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
+#endif
+        int fw, fh;
+        Param()->TextExtent(0, &fw, &fh);
+        gtk_widget_set_size_request(Param()->gd_viewport, -1, fh + 2);
+        Param()->print();
+    }
+}
+
+
+// Static function.
+// Selection clear handler.
+//
+int
+cParam::readout_selection_clear(GtkWidget*, GdkEventSelection*, void*)
+{
+    if (Param())
+        Param()->deselect();
+    return (true);
+}
+
+
+void
+cParam::readout_selection_get(GtkWidget*, GtkSelectionData *data,
+    guint, guint, void*)
+{
+    if (gtk_selection_data_get_selection(data) != GDK_SELECTION_PRIMARY)
+        return;
+    if (!Param())
+        return;
+        
+    char *str = Param()->p_text.get_sel();
+    if (!str)
+        return;  // refuse
+    int length = strlen(str);
+
+    gtk_selection_data_set(data, GDK_SELECTION_TYPE_STRING,
+        8*sizeof(char), (unsigned char*)str, length);
+    delete [] str;
+}
+#endif  //NOTDEF
+// End of cParam functions.
+
+
+// Select the chars that overlap the pixel coord range xmin,xmax. 
+// Return true if success, false if out of range.
+//
+bool
+ptext_t::select(int xmin, int xmax)
+{
+    if (!pt_set)
+        return (false);
+
+    unsigned int xstart = pt_end - 1;
+    for (int i = pt_end - 1; i >= 0; i--) {
+        if (xmin >= pt_chars[i].pc_posn + pt_chars[i].pc_width)
+            break;
+        xstart = i;
+    }
+
+    unsigned int xend = 0;
+    for (unsigned int i = 0; i < pt_end; i++) {
+        if (xmax < pt_chars[i].pc_posn)
+            break;
+        xend = i;
+    }
+
+    if (xend >= xstart) {
+        set_sel(xstart, xend + 1);
+        return (true);
+    }
+    return (false);
+}
+
+
+// Select the word at pixel coord x.
+//
+bool
+ptext_t::select_word(int x)
+{
+    if (!pt_set)
+        return (false);
+
+    unsigned int xc = pt_end;
+    for (unsigned int i = 0; i < pt_end; i++) {
+        if (x < pt_chars[i].pc_posn)
+            break;
+        xc = i;
+    }
+    if (xc == pt_end || isspace(pt_chars[xc].pc_char))
+        return (false);
+
+    int xb = xc;
+    while (xb > 0) {
+        if (!isspace(pt_chars[xb-1].pc_char))
+            xb--;
+        else
+            break;
+    }
+
+    int xe = xc + 1;
+    while (xe < pt_end) {
+        if (!isspace(pt_chars[xe].pc_char))
+            xe++;
+        else
+            break;
+    }
+    set_sel(xb, xe);
+    return (true);
+}
+
+
+// Set up the character offsets and widths.
+//
+void
+ptext_t::setup(cParam *prm)
+{
+    char bf[2];
+    bf[1] = 0;
+    for (unsigned int i = 0; i < pt_end; i++) {
+        bf[0] = pt_chars[i].pc_char;
+        if (!i)
+            pt_chars[i].pc_posn = prm->xval();
+        else
+            pt_chars[i].pc_posn = pt_chars[i-1].pc_posn +
+                pt_chars[i-1].pc_width;
+//XXX fix this        pt_chars[i].pc_width = GTKfont::stringWidth(prm->Viewport(), bf);
+    }
+    pt_sel_start = 0;
+    pt_sel_end = 0;
+    pt_set = true;
+}
+
+
+// Display the chars in the index range fc through lc-1.
+//
+void
+ptext_t::display(cParam *prm, unsigned int fc, unsigned int lc)
+{
+    if (!pt_set)
+        return;
+    if (lc < fc) {
+        unsigned int t = lc;
+        lc = fc;
+        fc = t;
+    }
+    if (fc >= pt_end)
+        return;
+    if (lc > pt_end)
+        lc = pt_end;
+
+    prm->SetFillpattern(0);
+    prm->SetLinestyle(0);
+
+    prm->SetWindowBackground(DSP()->Color(PromptBackgroundColor));
+    prm->SetBackground(DSP()->Color(PromptBackgroundColor));
+    prm->SetColor(DSP()->Color(PromptBackgroundColor));
+    prm->Box(pt_chars[fc].pc_posn, 0,
+        pt_chars[lc-1].pc_posn + pt_chars[lc-1].pc_width - 1, prm->height());
+
+    char bf[2];
+    bf[1] = 0;
+    for (unsigned int i = fc; i < lc; i++) {
+        bf[0] = pt_chars[i].pc_char;
+        if (pt_sel_end > pt_sel_start && i >= pt_sel_start && i < pt_sel_end) {
+            prm->SetColor(DSP()->Color(PromptBackgroundColor) ^ -1);
+            prm->Box(pt_chars[i].pc_posn, 0,
+                pt_chars[i].pc_posn + pt_chars[i].pc_width - 1, prm->height());
+            prm->SetColor(DSP()->Color(PromptBackgroundColor));
+            prm->Text(bf, pt_chars[i].pc_posn, prm->yval(), 0);
+        }
+        else {
+            prm->SetColor(pt_chars[i].pc_color);
+            prm->Text(bf, pt_chars[i].pc_posn, prm->yval(), 0);
+        }
+    }
+}
+
+
+// Display the chars that overlap the pixel range xmin,xmax.
+//
+void
+ptext_t::display_c(cParam *prm, int xmin, int xmax)
+{
+    if (!pt_set)
+        return;
+
+    unsigned int xstart = pt_end - 1;
+    for (int i = pt_end - 1; i >= 0; i--) {
+        if (xmin >= pt_chars[i].pc_posn + pt_chars[i].pc_width)
+            break;
+        xstart = i;
+    }
+
+    unsigned int xend = 0;
+    for (unsigned int i = 0; i < pt_end; i++) {
+        if (xmax < pt_chars[i].pc_posn)
+            break;
+        xend = i;
+    }
+
+    if (xend >= xstart)
+        prm->display(xstart, xend + 1);
 }
 

@@ -45,7 +45,6 @@
 #include "menu.h"
 #include "modf_menu.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 
 
 //-------------------------------------------------------------------------
@@ -86,7 +85,7 @@ using namespace gtkmclchg;
 void
 cEdit::PopUpLayerChangeMode(ShowMode mode)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         Menu()->MenuButtonSet(MMmain, MenuMCLCG, false);
@@ -107,9 +106,10 @@ cEdit::PopUpLayerChangeMode(ShowMode mode)
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Lcg->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Lcg->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Lcg->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Lcg->shell());
 }
 

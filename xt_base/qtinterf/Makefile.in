@@ -20,18 +20,19 @@ MOC_INCLUDE = ../include/qtinterf
 LIB_TARGET = ../lib/qtinterf.a
 
 CCFILES = \
-  activity_w.cc draw_if.cc draw_gl_w.cc draw_qt_w.cc draw_x_w.cc \
-  idle_proc.cc interval_timer.cc polysplit.cc progress_d.cc \
-  qtaffirm.cc qtedit.cc qtfile.cc qtfont.cc qthcopy.cc qtinput.cc \
-  qtinterf.cc qtlist.cc qtmcol.cc qtmsg.cc qtnumer.cc search_d.cc \
-  qtxdraw.cc
+  activity_w.cc draw_gl_w.cc draw_qt_w.cc idle_proc.cc \
+  interval_timer.cc polysplit.cc progress_d.cc qtaffirm.cc qtdraw.cc \
+  qtedit.cc qtfile.cc qtfont.cc qthcopy.cc qtinput.cc qtinterf.cc \
+  qtlist.cc qtmcol.cc qtmsg.cc qtnumer.cc search_d.cc qtxdraw.cc
+
+# draw_x_w.cc
+#    moc_draw_x_w.cpp
 
 MOCFILES = \
     moc_activity_w.cpp \
     moc_affirm.cpp \
     moc_draw_gl_w.cpp \
     moc_draw_qt_w.cpp \
-    moc_draw_x_w.cpp \
     moc_file.cpp \
     moc_font.cpp \
     moc_idle_proc.cpp \

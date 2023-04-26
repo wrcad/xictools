@@ -42,7 +42,6 @@
 #include "ext.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
@@ -126,7 +125,7 @@ cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
     bool (*action_cb)(const char*, void*, bool, const char*, int, int),
     void *action_arg, int depth)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return;
     if (mode == MODE_OFF) {
         delete Cmd;
@@ -152,9 +151,10 @@ cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
         return;
     }
     gtk_window_set_transient_for(GTK_WINDOW(Cmd->shell()),
-        GTK_WINDOW(mainBag()->Shell()));
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Cmd->shell(), mainBag()->Viewport());
+    GRX->SetPopupLocation(GRloc(), Cmd->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Cmd->shell());
 }
 // End of cExt functions.

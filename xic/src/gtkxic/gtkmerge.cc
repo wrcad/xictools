@@ -46,7 +46,6 @@
 #include "cvrt.h"
 #include "gtkmain.h"
 #include "gtkmenu.h"
-#include "gtkinlines.h"
 
 
 //--------------------------------------------------------------------------
@@ -121,7 +120,7 @@ using namespace gtkmerge;
 bool
 cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
 {
-    if (!GRX || !mainBag())
+    if (!GRX || !GTKmainwin::self())
         return (true);
     if (mode == MODE_OFF) {
         if (MC && !MC->is_hidden()) {
@@ -157,9 +156,9 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
             return (true);
 
         gtk_window_set_transient_for(GTK_WINDOW(MC->shell()),
-            GTK_WINDOW(mainBag()->Shell()));
+            GTK_WINDOW(GTKmainwin::self()->Shell()));
         GRX->SetPopupLocation(GRloc(LW_LL), MC->shell(),
-            mainBag()->Viewport());
+            GTKmainwin::self()->Viewport());
         gtk_widget_show(MC->shell());
         start_modal(MC->shell());
     }

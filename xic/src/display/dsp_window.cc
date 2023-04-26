@@ -95,6 +95,7 @@ DSPattrib::DSPattrib()
     a_show_boxes                = true;
     a_show_polys                = true;
     a_show_wires                = true;
+    a_show_labels               = true;
 
     a_edge_snapping             = EdgeSnapSome;
     a_edge_off_grid             = false;
