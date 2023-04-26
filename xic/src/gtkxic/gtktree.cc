@@ -282,9 +282,7 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
             gtk_tree_view_column_new_with_attributes(0, rnd,
         "text", 0, NULL);
     gtk_tree_view_append_column(GTK_TREE_VIEW(t_tree), tvcol);
-#if GTK_CHECK_VERSION(2,12,0)
     gtk_tree_view_set_show_expanders(GTK_TREE_VIEW(t_tree), true);
-#endif
     gtk_tree_view_set_enable_tree_lines(GTK_TREE_VIEW(t_tree), true);
     gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(t_tree), false);
 

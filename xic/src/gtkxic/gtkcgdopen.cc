@@ -148,7 +148,6 @@ cConvert::PopUpCgdOpen(GRobject caller, ShowMode mode,
     gtk_widget_show(Cgo->Shell());
 
     // OpenSuse-13.1 gtk-2.24.23 bug
-//XXX
     gtk_window_move(GTK_WINDOW(Cgo->Shell()), x, y);
 }
 

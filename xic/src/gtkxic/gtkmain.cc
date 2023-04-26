@@ -1766,15 +1766,8 @@ win_bag::KeyPos()
 void
 win_bag::SetLabelText(const char *text)
 {
-    if (wib_menulabel) {
-#if GTK_CHECK_VERSION(2,16,0)
+    if (wib_menulabel)
         gtk_menu_item_set_label(GTK_MENU_ITEM(wib_menulabel), text);
-#else
-        GtkWidget *la = gtk_bin_get_child(GTK_BIN(wib_menulabel));
-        if (la)
-            gtk_label_set_text(GTK_LABEL(la), text);
-#endif
-    }
 }
 // End of cAppWinFuncs interface.
 
@@ -2606,7 +2599,6 @@ win_bag::keys_hdlr(GtkWidget*, GdkEvent *event, void*)
 void
 main_bag::initialize()
 {
-#if GTK_CHECK_VERSION(2,10,4)
 #ifdef WIN32
     // Icons are obtained from resources.
 #else
@@ -2626,7 +2618,6 @@ main_bag::initialize()
     delete g1;
 #endif
     gtk_window_set_default_icon_name("xic");
-#endif
     gtk_widget_set_name(wb_shell, "MainFrame");
 
     DSP()->SetWindow(0, new WindowDesc);
@@ -2860,18 +2851,7 @@ main_bag::initialize()
     hbox = edit->container();
     PL()->SetEdit(edit);
 
-    /* XXX
-    GtkAllocation a;
-    a.x = 0;
-    a.y = 0;
-    a.width = 800;
-    a.height = 50;
-    gtk_widget_size_allocate(wb_textarea, &a);
-    */
-
-
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt + 1,
-//        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL ),
         (GtkAttachOptions)0, 0, 0);
     rowcnt++;
@@ -2893,7 +2873,6 @@ main_bag::initialize()
     if (!XM()->Geometry() || !*XM()->Geometry()) {
         GdkScreen *screen = gtk_widget_get_screen(wb_shell);
 
-#if GTK_CHECK_VERSION(2,10,0)
         // In RHEL6.3, when the application is not started under
         // Gnome, the Monospace font displays incorrectly (M too
         // wide), and Liberation Mono is not detected as a mono font. 
@@ -2904,16 +2883,13 @@ main_bag::initialize()
         cairo_font_options_t *fo = cairo_font_options_create();
         cairo_font_options_set_hint_style(fo, CAIRO_HINT_STYLE_SLIGHT);
         gdk_screen_set_font_options(screen, fo);
-#endif
 
         int pmon = 0;
-#if GTK_CHECK_VERSION(2,20,0)
         {
             int xx, yy;
             GRX->PointerRootLoc(&xx, &yy);
             pmon = gdk_screen_get_monitor_at_point(screen, xx, yy);
         }
-#endif
         GdkRectangle r;
         gdk_screen_get_monitor_geometry(screen, pmon, &r);
         int w = (8*r.width)/10;

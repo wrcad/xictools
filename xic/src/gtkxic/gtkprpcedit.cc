@@ -248,10 +248,7 @@ sPc::sPc()
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
     const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
-#if GTK_CHECK_VERSION(2,8,0)
-        "paragraph-background", bclr,
-#endif
-        NULL);
+        "paragraph-background", bclr, NULL);
     gtk_widget_set_size_request(wb_textarea, 300, 200);
 
     // The font change pop-up uses this to redraw the widget

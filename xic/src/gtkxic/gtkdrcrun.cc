@@ -536,10 +536,7 @@ sDC::sDC(GRobject c)
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(dc_jobs));
     const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
-#if GTK_CHECK_VERSION(2,8,0)
-        "paragraph-background", bclr,
-#endif
-        NULL);
+        "paragraph-background", bclr, NULL);
 
     gtk_widget_set_size_request(dc_jobs, 200, 200);
 

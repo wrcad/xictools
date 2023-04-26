@@ -171,10 +171,7 @@ sPi::sPi(CDo *odesc)
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
     const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
-#if GTK_CHECK_VERSION(2,8,0)
-        "paragraph-background", bclr,
-#endif
-        NULL);
+        "paragraph-background", bclr, NULL);
 
     // for passing hypertext via selections, see gtkhtext.cc
     g_object_set_data(G_OBJECT(wb_textarea), "hyexport", (void*)2);
@@ -461,15 +458,8 @@ int
 sPbase::motion(GtkWidget *widget, GdkEvent *event, void*)
 {
     if (pi_dragging) {
-#if GTK_CHECK_VERSION(2,12,0)
         if (event->motion.is_hint)
             gdk_event_request_motions((GdkEventMotion*)event);
-#else
-        // Strange voodoo to "turn on" motion events, that are
-        // otherwise suppressed since GDK_POINTER_MOTION_HINT_MASK
-        // is set.  See GdkEventMask doc.
-        gdk_window_get_pointer(widget->window, 0, 0, 0);
-#endif
         if ((abs((int)event->motion.x - pi_drag_x) > 4 ||
                 abs((int)event->motion.y - pi_drag_y) > 4) &&
                 get_selection()) {

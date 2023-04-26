@@ -537,15 +537,8 @@ int
 sAT::motion_hdlr(GtkWidget *widget, GdkEvent *event)
 {
     if (at_dragging) {
-#if GTK_CHECK_VERSION(2,12,0)
         if (event->motion.is_hint)
             gdk_event_request_motions((GdkEventMotion*)event);
-#else
-        // Strange voodoo to "turn on" motion events, that are
-        // otherwise suppressed since GDK_POINTER_MOTION_HINT_MASK
-        // is set.  See GdkEventMask doc.
-        gdk_window_get_pointer(widget->window, 0, 0, 0);
-#endif
         if ((abs((int)event->motion.x - at_drag_x) > 4 ||
                 abs((int)event->motion.y - at_drag_y) > 4)) {
             at_dragging = false;
