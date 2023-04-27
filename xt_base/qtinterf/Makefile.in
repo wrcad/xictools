@@ -20,19 +20,16 @@ MOC_INCLUDE = ../include/qtinterf
 LIB_TARGET = ../lib/qtinterf.a
 
 CCFILES = \
-  activity_w.cc draw_gl_w.cc draw_qt_w.cc idle_proc.cc \
-  interval_timer.cc polysplit.cc progress_d.cc qtaffirm.cc qtdraw.cc \
-  qtedit.cc qtfile.cc qtfont.cc qthcopy.cc qtinput.cc qtinterf.cc \
-  qtlist.cc qtmcol.cc qtmsg.cc qtnumer.cc search_d.cc qtxdraw.cc
-
-# draw_x_w.cc
-#    moc_draw_x_w.cpp
+  activity_w.cc draw_qt_w.cc draw_x_w.cc idle_proc.cc interval_timer.cc \
+  polysplit.cc progress_d.cc qtaffirm.cc qtdraw.cc qtedit.cc qtfile.cc \
+  qtfont.cc qthcopy.cc qtinput.cc qtinterf.cc qtlist.cc qtmcol.cc \
+  qtmsg.cc qtnumer.cc search_d.cc qtxdraw.cc
 
 MOCFILES = \
     moc_activity_w.cpp \
     moc_affirm.cpp \
-    moc_draw_gl_w.cpp \
     moc_draw_qt_w.cpp \
+    moc_draw_x_w.cpp \
     moc_file.cpp \
     moc_font.cpp \
     moc_idle_proc.cpp \
@@ -64,7 +61,6 @@ $(LIB_TARGET): $(LIBOBJS)
 
 moc_activity_w.o: moc_activity_w.cpp  $(MOC_INCLUDE)/activity_w.h 
 moc_affirm.o: moc_affirm.cpp  $(MOC_INCLUDE)/qtaffirm.h 
-moc_draw_gl_w.o: moc_draw_gl_w.cpp  $(MOC_INCLUDE)/draw_gl_w.h 
 moc_draw_qt_w.o: moc_draw_qt_w.cpp  $(MOC_INCLUDE)/draw_qt_w.h 
 moc_draw_x_w.o: moc_draw_x_w.cpp  $(MOC_INCLUDE)/draw_x_w.h 
 moc_file.o: moc_file.cpp  $(MOC_INCLUDE)/qtfile.h 
@@ -85,8 +81,6 @@ moc_activity_w.cpp: $(MOC) $(MOC_INCLUDE)/activity_w.h
 	$(MOC) $(MOC_INCLUDE)/activity_w.h -o moc_activity_w.cpp
 moc_affirm.cpp: $(MOC) $(MOC_INCLUDE)/qtaffirm.h
 	$(MOC) $(MOC_INCLUDE)/qtaffirm.h -o moc_affirm.cpp
-moc_draw_gl_w.cpp: $(MOC) $(MOC_INCLUDE)/draw_gl_w.h
-	$(MOC) $(MOC_INCLUDE)/draw_gl_w.h -o moc_draw_gl_w.cpp
 moc_draw_qt_w.cpp: $(MOC) $(MOC_INCLUDE)/draw_qt_w.h
 	$(MOC) $(MOC_INCLUDE)/draw_qt_w.h -o moc_draw_qt_w.cpp
 moc_draw_x_w.cpp: $(MOC) $(MOC_INCLUDE)/draw_x_w.h

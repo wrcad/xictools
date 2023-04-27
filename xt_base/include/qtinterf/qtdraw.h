@@ -53,6 +53,11 @@ class QCursor;
 // Note that this is not a widget, but the widget pointer is available
 // through the widget() method.
 
+// The X11Extras don't seem to be available on MacPorts.
+#ifndef __APPLE__
+#define WITH_X11
+#endif
+
 namespace qtinterf
 {
     enum DrawType

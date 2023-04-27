@@ -39,9 +39,10 @@
  *========================================================================*/
 
 #include "qtdraw.h"
-#include "draw_gl_w.h"
 #include "draw_qt_w.h"
+#ifdef HAVE_X11
 #include "draw_x_w.h"
+#endif
 
 #include <QApplication>
 
@@ -51,15 +52,21 @@ using namespace qtinterf;
 draw_if *
 draw_if::new_draw_interface(DrawType type, bool use_common, QWidget *parent)
 {
-    /*XXX X is broken, GL is deprecated.
-    if (type == DrawGL)
-        return (new draw_gl_w(use_common, parent));
-    if (type == DrawX)
+    if (type == DrawGL) {
+        fprintf(stderr,
+            "GL is not currently supported, using native QT graphics.\n");
+        type = DrawNative;
+    }
+    if (type == DrawX) {
+#ifdef WITH_X11
         return (new draw_x_w(use_common, parent));
-    if (type == DrawNative)
-    */
-        return (new draw_qt_w(use_common, parent));
-    return (0);
+#else
+        fprintf(stderr,
+            "X11 is not currently supported, using native QT graphics.\n");
+        type = DrawNative;
+#endif
+    }
+    return (new draw_qt_w(use_common, parent));
 }
 
 
