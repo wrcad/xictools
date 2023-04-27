@@ -2672,7 +2672,7 @@ gtk_viewer::hsb_change_handler(int newval)
 
 
 bool
-gtk_viewer::selection_clear_handler(GtkWidget *widget,
+gtk_viewer::selection_clear_handler(GtkWidget*,
     GdkEventSelection *event)
 {
     if (event->selection == GDK_SELECTION_PRIMARY) {
@@ -2814,6 +2814,7 @@ gtk_viewer::v_resize_hdlr(GtkWidget *w, GtkAllocation *a, void *vp)
         else if (v->v_form == w)
             v->form_resize_handler(a);
 #else
+        (void)w;
         v->canvas_resize_handler(a);
 #endif
     }

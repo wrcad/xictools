@@ -379,6 +379,7 @@ cCoord::co_redraw(GtkWidget*, GdkEvent *ev, void*)
         g_free(rects);
     }
 #endif
+    return (true);
 }
 
 
