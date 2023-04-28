@@ -331,22 +331,25 @@ QTpkg::NewGX()
 }
 
 
-static void
-messageOutput(QtMsgType type, const char *msg)
-{
-    switch (type) {
-    case QtDebugMsg:
-    case QtInfoMsg:
-    case QtWarningMsg:
-        break;
-    case QtCriticalMsg:
-        fprintf(stderr, "Critical: %s\n", msg);
-        break;
-    case QtFatalMsg:
-        fprintf(stderr, "Fatal: %s\n", msg);
-        break;
+/*XXX
+namespace {
+    void messageOutput(QtMsgType type, const char *msg)
+    {
+        switch (type) {
+        case QtDebugMsg:
+        case QtInfoMsg:
+        case QtWarningMsg:
+            break;
+        case QtCriticalMsg:
+            fprintf(stderr, "Critical: %s\n", msg);
+            break;
+        case QtFatalMsg:
+            fprintf(stderr, "Fatal: %s\n", msg);
+            break;
+        }
     }
 }
+*/
 
 
 // Initialization function for the main window.  The argument *must* be
@@ -357,7 +360,7 @@ QTpkg::Initialize(GRwbag *wcp)
 {
     if (!MainDev())
         return (true);
-//XXXqInstallMsgHandler(messageOutput);
+//qInstallMsgHandler(messageOutput);
     if (MainDev()->ident == _devNULL_) {
         static QTltab qt_lt(true, 0);
         static QTedit qt_hy(true, 0);
@@ -773,6 +776,7 @@ void
 QTpkg::RegisterEventHandler(void(*handler)(QEvent*, void*), void *arg)
 {
     (void)handler;
+    (void)arg;
 /*XXX
     if (handler)
         gdk_event_handler_set(handler, arg, 0);
@@ -1031,6 +1035,7 @@ QTsubwin::subw_initialize(int wnum)
 void
 QTsubwin::pre_destroy(int wnum)
 {
+    (void)wnum;
     /* XXX
     GdkRectangle rect, rect_d;
     gtk_ShellGeometry(wb_shell, &rect, &rect_d);
@@ -1375,6 +1380,8 @@ QTsubwin::PopUpExpand(GRobject caller, ShowMode mode,
 void
 QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
 {
+    (void)caller;
+    (void)mode;
 /*
     if (!GRX || !QTmainwin::self())
         return;
@@ -1547,6 +1554,7 @@ QTsubwin::resize_slot(QResizeEvent *ev)
 void
 QTsubwin::new_painter_slot(QPainter *p)
 {
+    (void)p;
 printf("new painter\n");
 }
 
@@ -1554,6 +1562,7 @@ printf("new painter\n");
 void
 QTsubwin::paint_slot(QPaintEvent *ev)
 {
+    (void)ev;
 printf("paint event\n");
 }
 
@@ -1916,12 +1925,14 @@ QTsubwin::leave_slot(QEvent *ev)
 void
 QTsubwin::drag_enter_slot(QDragEnterEvent *ev)
 {
+    (void)ev;
 }
 
 
 void
 QTsubwin::drop_slot(QDropEvent *ev)
 {
+    (void)ev;
 }
 // End of QRsubwin slots.
  

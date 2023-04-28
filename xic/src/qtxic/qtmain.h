@@ -326,7 +326,11 @@ char_width()
     QFont *f;
     if (FC.getFont(&f, FNT_FIXED)) {
         QFontMetrics fm(*f);
-        return (fm.horizontalAdvance(QString("X")));
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        return (fm.horizontalAdvance("X"));
+#else
+        return (fm.width("X"));
+#endif
     }
     return (8);
 }
@@ -338,7 +342,11 @@ any_string_width(QWidget*, const char *str)
     QFont *f;
     if (FC.getFont(&f, FNT_FIXED)) {
         QFontMetrics fm(*f);
-        return (fm.horizontalAdvance(QString(str)));
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        return (fm.horizontalAdvance(str));
+#else
+        return (fm.width(str));
+#endif
     }
     return (8*strlen(str));
 }

@@ -87,7 +87,8 @@ private:
 sLcb *
 cMain::PopUpLayerEditor(GRobject c)
 {
-    /*
+    (void)c;
+    /*XXX
     if (!GRX || !QTmainwin::self())
         return (0);
     gtkLcb *cbs = new gtkLcb(c);

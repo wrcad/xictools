@@ -67,10 +67,10 @@ public:
 
     void print(int, int, int);
 
-    void set_mode(int x, int y, bool relative, bool snap)
+    void set_mode(int xx, int yy, bool relative, bool snap)
     {
-        co_x = x;
-        co_y = y;
+        co_x = xx;
+        co_y = yy;
         co_rel = relative;
         co_snap = snap;
         print(0, 0, COOR_REL);

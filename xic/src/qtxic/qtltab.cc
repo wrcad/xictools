@@ -133,9 +133,9 @@ QTltab::QTltab(bool nogr, QWidget *prnt) : QWidget(prnt), QTdraw(XW_LTAB)
     vb->addLayout(hbox);
     setMaximumWidth(160);
 
-    QFont *font;
-    if (FC.getFont(&font, FNT_SCREEN))
-        gd_viewport->set_font(font);
+    QFont *scfont;
+    if (FC.getFont(&scfont, FNT_SCREEN))
+        gd_viewport->set_font(scfont);
 
     connect(gd_viewport->widget(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
@@ -174,9 +174,9 @@ QTltab::show(const CDl *ld)
 // Exposure redraw.
 //
 void
-QTltab::refresh(int x, int y, int w, int h)
+QTltab::refresh(int xx, int yy, int w, int h)
 {
-    gd_viewport->widget()->repaint(x, y, w, h);
+    gd_viewport->widget()->repaint(xx, yy, w, h);
 }
 
 
@@ -219,7 +219,7 @@ QTltab::update_scrollbar()
 
 
 void
-QTltab::hide_layer_table(bool hide)
+QTltab::hide_layer_table(bool)
 {
 }
 

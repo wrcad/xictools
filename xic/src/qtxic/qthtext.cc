@@ -376,6 +376,7 @@ QTedit::QTedit(bool nogr, QWidget *parent) : QTdraw(XW_TEXT)
 void
 QTedit::flash_msg(const char *msg, ...)
 {
+    (void)msg;
     /*XXX
     va_list args;
     GtkWidget *popup = gtk_window_new(GTK_WINDOW_POPUP);
@@ -408,6 +409,9 @@ QTedit::flash_msg(const char *msg, ...)
 void
 QTedit::flash_msg_here(int x, int y, const char *msg, ...)
 {
+    (void)x;
+    (void)y;
+    (void)msg;
     /*XXX
     va_list args;
     GtkWidget *popup = gtk_window_new(GTK_WINDOW_POPUP);
@@ -456,7 +460,7 @@ QTedit::save_line()
 // Return the pixel width of the drawing area.
 //
 int
-QTedit::win_width(bool in_chars)
+QTedit::win_width(bool)
 {
     return (gd_viewport->widget()->width());
 }
@@ -566,7 +570,7 @@ QTedit::check_pixmap()
 
 
 void
-QTedit::init_selection(bool selected)
+QTedit::init_selection(bool)
 {
 }
 

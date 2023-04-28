@@ -321,17 +321,17 @@ QTmenu::IsSensitive(GRobject obj)
 void
 QTmenu::SetVisible(GRobject obj, bool vis_state)
 {
-//XXX    if (GRX)
-//XXX        GRX->SetVisible(obj, vis_state);
+    if (GRX)
+        GRX->SetVisible(obj, vis_state);
 }
 
 
 bool
 QTmenu::IsVisible(GRobject obj)
 {
-//XXX    if (!GRX)
+    if (!GRX)
         return (false);
-//XXX    return (GRX->IsVisible(obj));
+    return (GRX->IsVisible(obj));
 }
 
 

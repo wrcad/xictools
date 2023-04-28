@@ -330,10 +330,10 @@ cParam::select(int x1, int x2)
 // Select the word at pixel coord x.
 //
 void
-cParam::select_word(int x)
+cParam::select_word(int xx)
 {
-    bool was_sel = deselect();
-    if (p_text.select_word(x)) {
+//    bool was_sel = deselect();
+    if (p_text.select_word(xx)) {
         unsigned int xstart, xend;
         if (p_text.has_sel(&xstart, &xend)) {
 #ifdef WIN32
@@ -619,7 +619,7 @@ ptext_t::setup(cParam *prm)
         else
             pt_chars[i].pc_posn = pt_chars[i-1].pc_posn +
                 pt_chars[i-1].pc_width;
-//XXX fix this        pt_chars[i].pc_width = GTKfont::stringWidth(prm->Viewport(), bf);
+            pt_chars[i].pc_width = any_string_width(prm->Viewport(), bf);
     }
     pt_sel_start = 0;
     pt_sel_end = 0;

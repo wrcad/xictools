@@ -135,10 +135,10 @@ cCoord::print(int xc, int yc, int upd)
     unsigned int c2 = DSP()->Color(PromptEditTextColor);
     int fwid, fhei;
     TextExtent(0, &fwid, &fhei);
-    int x = 2;
-//    int y = (co_height + fhei)/2;  // center justify
+    int xx = 2;
+//    int yy = (co_height + fhei)/2;  // center justify
 // XXX The fhei is 16, co_height is 50, obviously something isn't consistent.
-int y = fhei-3;
+int yy = fhei-3;
 
     if (co_snap)
         EV()->CurrentWin()->Snap(&xc, &yc);
@@ -166,31 +166,31 @@ int y = fhei-3;
     char buf[128];
     const char *str = "x,y";
     SetColor(c1);
-    Text(str, x, y, 0);
-    x += (strlen(str) + 2)*fwid;
+    Text(str, xx, yy, 0);
+    xx += (strlen(str) + 2)*fwid;
 
-    int xs = x;
+    int xs = xx;
     snprintf(buf, sizeof(buf), fmt,
         mode == Physical ? MICRONS(xc) : ELEC_MICRONS(xc));
     SetColor(c2);
-    Text(buf, x, y, 0);
-    x += strlen(buf)*fwid;
+    Text(buf, xx, yy, 0);
+    xx += strlen(buf)*fwid;
     SetColor(c1);
-    Text(",", x, y, 0);
-    x += 2*fwid;
+    Text(",", xx, yy, 0);
+    xx += 2*fwid;
     snprintf(buf, sizeof(buf), fmt,
         mode == Physical ? MICRONS(yc) : ELEC_MICRONS(yc));
     SetColor(c2);
-    Text(buf, x, y, 0);
+    Text(buf, xx, yy, 0);
 
     xs += 24*fwid;
-    x += (strlen(buf) + 4)*fwid;
-    if (x < xs)
-        x = xs;
+    xx += (strlen(buf) + 4)*fwid;
+    if (xx < xs)
+        xx = xs;
     str = "dx,dy";
     SetColor(c1);
-    Text(str, x, y, 0);
-    x += (strlen(str) + 2)*fwid;
+    Text(str, xx, yy, 0);
+    xx += (strlen(str) + 2)*fwid;
 
     int xr, yr;
     if (co_rel) {
@@ -200,41 +200,41 @@ int y = fhei-3;
     else
         EV()->GetReference(&xr, &yr);
 
-    xs = x;
+    xs = xx;
     snprintf(buf, sizeof(buf), fmt,
         mode == Physical ? MICRONS(xc - xr) : ELEC_MICRONS(xc - xr));
     SetColor(c2);
-    Text(buf, x, y, 0);
-    x += (strlen(buf))*fwid;
+    Text(buf, xx, yy, 0);
+    xx += (strlen(buf))*fwid;
     SetColor(c1);
-    Text(",", x, y, 0);
-    x += 2*fwid;
+    Text(",", xx, yy, 0);
+    xx += 2*fwid;
     snprintf(buf, sizeof(buf), fmt,
         mode == Physical ? MICRONS(yc - yr) : ELEC_MICRONS(yc - yr));
     SetColor(c2);
-    Text(buf, x, y, 0);
+    Text(buf, xx, yy, 0);
 
     xs += 24*fwid;
-    x += (strlen(buf) + 4)*fwid;
-    if (x < xs)
-        x = xs;
+    xx += (strlen(buf) + 4)*fwid;
+    if (xx < xs)
+        xx = xs;
     str = co_rel ? "anchor" : "last";
     SetColor(c1);
-    Text(str, x, y, 0);
-    x += (strlen(str) + 2)*fwid;
+    Text(str, xx, yy, 0);
+    xx += (strlen(str) + 2)*fwid;
 
     snprintf(buf, sizeof(buf),
         fmt, mode == Physical ? MICRONS(xr) : ELEC_MICRONS(xr));
     SetColor(c2);
-    Text(buf, x, y, 0);
-    x += strlen(buf)*fwid;
+    Text(buf, xx, yy, 0);
+    xx += strlen(buf)*fwid;
     SetColor(c1);
-    Text(",", x, y, 0);
-    x += 2*fwid;
+    Text(",", xx, yy, 0);
+    xx += 2*fwid;
     snprintf(buf, sizeof(buf),
         fmt, mode == Physical ? MICRONS(yr) : ELEC_MICRONS(yr));
     SetColor(c2);
-    Text(buf, x, y, 0);
+    Text(buf, xx, yy, 0);
 
     Update();
 }

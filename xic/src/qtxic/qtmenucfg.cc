@@ -1242,6 +1242,8 @@ qtMenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
 void
 qtMenuConfig::set_main_global_sens(const MenuList *list, bool sens)
 {
+    (void)list;
+    (void)sens;
     /*
     GtkItemFactory *item_factory = gtkMenu()->itemFactory;
     if (!item_factory)

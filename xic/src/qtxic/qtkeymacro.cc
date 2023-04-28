@@ -220,6 +220,7 @@ cKbMacro::keyText(unsigned key, unsigned state)
     static char text[4];
     text[0] = 0;
 
+    (void)state;
 /*  XXX This doesn't work.  F'n QT doesn't seem to have a way to
  * do this.
     Qt::KeyboardModifiers mod = Qt::NoModifier;
