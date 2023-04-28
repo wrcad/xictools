@@ -2085,7 +2085,6 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     mw_promptline->widget()->setMaximumHeight(h);
     hbox->addWidget(mw_promptline->widget());
 
-    h = line_height();
     mw_status = new cParam(this);
     mw_status->setMinimumHeight(h);
     mw_status->setMaximumHeight(h);
