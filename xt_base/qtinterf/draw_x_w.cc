@@ -40,10 +40,8 @@
 
 #include "draw_x_w.h"
 
- /*XXX
- QX11Info is no longer available
+#ifdef WITH_X11
 #include <QX11Info>
- */
 #include <QColormap>
 #include <QPixmap>
 #include <QPainter>
@@ -53,7 +51,7 @@
 
 using namespace qtinterf;
 
-//XXXextern Drawable qt_x11Handle(const QPaintDevice *pd);
+extern Drawable qt_x11Handle(const QPaintDevice *pd);
 
 GC draw_x_w::com_gc = 0;
 QColor draw_x_w::com_fg;
@@ -69,10 +67,7 @@ draw_x_w::draw_x_w(bool use_common, QWidget *prnt) : QWidget(prnt)
     // GRmultiPt uses short integers.
     GRmultiPt::set_short_data(true);
 
-/*XXX
     da_display = x11Info().display();
-*/
-da_display =0;
     da_pixmap = 0;
     da_fore = 0;
     da_direct = false;
@@ -105,7 +100,7 @@ draw_x_w::draw_direct(bool direct)
         da_direct = true;
     }
     else if (da_pixmap) {
-//XXX        da_fore = qt_x11Handle(da_pixmap);
+        da_fore = qt_x11Handle(da_pixmap);
         da_direct = false;
     }
 }
@@ -353,7 +348,6 @@ draw_x_w::draw_image(const GRimage *image, int xx, int yy, int w, int h)
     // code, but does not use SHM.  I can't see any difference
     // with/without SHM anyway.
 
-/*XXX
     QX11Info info;
 
     XImage *im = XCreateImage(da_display, (Visual*)info.visual(),
@@ -379,7 +373,6 @@ draw_x_w::draw_image(const GRimage *image, int xx, int yy, int w, int h)
 
     XPutImage(da_display, da_fore, da_gc, im, 0, 0, xx, yy, w, h);
     XDestroyImage(im);
-*/
 }
 
 
@@ -591,4 +584,6 @@ draw_x_w::dropEvent(QDropEvent *ev)
 {
     emit drop_event(ev);
 }
+
+#endif
 

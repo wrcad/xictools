@@ -862,8 +862,8 @@ GTKltab::refresh(int x, int y, int w, int h)
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
     if (!GetDrawable()->get_window())
         return;
-    int lt_win_width = GetDrawable()->get_width();
-    int lt_win_height = GetDrawable()->get_height();
+    lt_win_width = GetDrawable()->get_width();
+    lt_win_height = GetDrawable()->get_height();
     ltab_pmap_dirty = GetDrawable()->set_draw_to_pixmap();
     if (w <= 0)
         w = lt_win_width;
@@ -875,8 +875,8 @@ GTKltab::refresh(int x, int y, int w, int h)
     if (!gd_window)
         return;
 
-    int lt_win_width = gdk_window_get_width(gd_window);
-    int lt_win_height = gdk_window_get_height(gd_window);
+    lt_win_width = gdk_window_get_width(gd_window);
+    lt_win_height = gdk_window_get_height(gd_window);
     if (w <= 0)
         w = lt_win_width;
     if (h <= 0)

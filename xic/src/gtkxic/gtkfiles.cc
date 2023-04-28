@@ -166,7 +166,6 @@ namespace {
     }
 }
 
-bool lockout;
 
 void
 cConvert::PopUpFiles(GRobject caller, ShowMode mode)

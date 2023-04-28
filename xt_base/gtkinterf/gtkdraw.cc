@@ -1828,6 +1828,177 @@ GTKdraw::DisplayImage(const GRimage *image, int x, int y,
     }
     im->copy_to_drawable(&gd_dw, CpyGC(), 0, 0, x, y, width, height);
     delete im;
+#else
+    // GTK-2 only
+#ifdef WITH_X11
+#ifdef USE_XSHM
+#ifdef HAVE_SHMGET
+    // Use MIT-SHM if available.  If an error occurs, fall through and
+    // use normal processing.
+
+    if (image->shmid()) {
+        XShmSegmentInfo shminfo;
+        XImage *im = XShmCreateImage(gr_x_display(),
+            gr_x_visual(GRX->Visual()), GRX->Visual()->depth, ZPixmap,
+            0, &shminfo, image->width(), image->height());
+        if (!im)
+            goto normal;
+        shminfo.shmid = image->shmid();
+        shminfo.shmaddr = im->data = (char*)image->data();
+        shminfo.readOnly = False;
+        if (XShmAttach(gr_x_display(), &shminfo) != True) {
+            im->data = 0;
+            XDestroyImage(im);
+            goto normal;
+        }
+        XShmPutImage(gr_x_display(), gr_x_window(gd_window), gr_x_gc(GC()),
+            im, x, y, x, y, width, height, True);
+        XShmDetach(gr_x_display(), &shminfo);
+        im->data = 0;
+        XDestroyImage(im);
+        return;
+    }
+normal:
+#endif
+#endif
+
+/****** NOT USED
+    // Variation that uses normal memory in the GRimage and does all
+    // SHM stuff here.
+
+    if (GRpkgIf()->UseSHM() > 0) {
+        XShmSegmentInfo shminfo;
+        XImage *im = XShmCreateImage(gr_x_display(),
+            gr_x_visual(GRX->Visual()), GRX->Visual()->depth, ZPixmap,
+            0, &shminfo, width, height);
+        if (!im)
+            return;
+        shminfo.shmid = shmget(IPC_PRIVATE, im->bytes_per_line * im->height,
+            IPC_CREAT | 0777);
+        if (shminfo.shmid == -1) {
+            perror("shmget");
+            return;
+        }
+        shminfo.shmaddr = im->data = (char*)shmat(shminfo.shmid, 0, 0);
+        shminfo.readOnly = False;
+        if (XShmAttach(gr_x_display(), &shminfo) != True)
+            return;
+
+        for (int i = 0; i < height; i++) {
+            int yd = i + y;
+            if (yd < 0)
+                continue;
+            if ((unsigned int)yd >= image->height())
+                break;
+            unsigned int *lptr = image->data() + yd*image->width();
+            for (int j = 0; j < width; j++) {
+                int xd = j + x;
+                if (xd < 0)
+                    continue;
+                if ((unsigned int)xd >= image->width())
+                    break;
+                XPutPixel(im, j, i, lptr[xd]);
+            }
+        }
+        XShmPutImage(gr_x_display(), gr_x_window(gd_window), gr_x_gc(GC()),
+            im, 0, 0, x, y, width, height, True);
+        XShmDetach(gr_x_display(), &shminfo);
+        XDestroyImage(im);
+        shmdt(shminfo.shmaddr);
+        shmctl(shminfo.shmid, IPC_RMID, 0);
+    }
+******/
+
+    if (GRX->ImageCode() == 0) {
+        // Pure-X version, may have slightly less overhead than the gtk
+        // code, but does not use SHM.  I can't see any difference
+        // with/without SHM anyway.
+        //
+        // Why allocate a new map and copy with XPutPixel?  The pixel
+        // was obtained from X for the present dieplay/visual, so there
+        // shouldn't need to be a format change.  The bit padding is 32,
+        // same as ours.  Maybe there is an endian issue?  Anyway, this
+        // code seems to work, and avoids the copy overhead.
+
+        XImage *im = XCreateImage(gr_x_display(),
+            gr_x_visual(GRX->Visual()), GRX->Visual()->depth, ZPixmap,
+            0, 0, image->width(), image->height(), 32, 0);
+        im->data = (char*)image->data();
+        XPutImage(gr_x_display(), gr_x_window(gd_window),
+            gdk_x11_gc_get_xgc(GC()), im, x, y, x, y, width, height);
+        im->data = 0;
+        XDestroyImage(im);
+        return;
+    }
+    if (GRX->ImageCode() == 1) {
+        // Pure-X version, may have slightly less overhead than the gtk
+        // code, but does not use SHM.  I can't see any difference
+        // with/without SHM anyway.
+
+        XImage *im = XCreateImage(gr_x_display(),
+            gr_x_visual(GRX->Visual()), GRX->Visual()->depth, ZPixmap,
+            0, 0, width, height, 32, 0);
+        im->data = (char*)malloc(im->bytes_per_line * im->height);
+
+        for (int i = 0; i < height; i++) {
+            int yd = i + y;
+            if (yd < 0)
+                continue;
+            if ((unsigned int)yd >= image->height())
+                break;
+            unsigned int *lptr = image->data() + yd*image->width();
+            for (int j = 0; j < width; j++) {
+                int xd = j + x;
+                if (xd < 0)
+                    continue;
+                if ((unsigned int)xd >= image->width())
+                    break;
+                XPutPixel(im, j, i, lptr[xd]);
+            }
+        }
+        XPutImage(gr_x_display(), gr_x_window(gd_window),
+            gdk_x11_gc_get_xgc(GC()), im, 0, 0, x, y, width, height);
+        XDestroyImage(im);
+        return;
+    }
+#endif
+
+    // Gdk version.
+
+    GdkImage *im = gdk_image_new(GDK_IMAGE_FASTEST, GRX->Visual(),
+        width, height);
+
+    for (int i = 0; i < height; i++) {
+        int yd = i + y;
+        if (yd < 0)
+            continue;
+        if ((unsigned int)yd >= image->height())
+            break;
+        for (int j = 0; j < width; j++) {
+            int xd = j + x;
+            if (xd < 0)
+                continue;
+            if ((unsigned int)xd >= image->width())
+                break;
+            unsigned int px = image->data()[xd + yd*image->width()];
+#ifdef WITH_QUARTZ
+            // Hmmmm, seems that Quartz requires byte reversal.
+            unsigned int qpx;
+            unsigned char *c1 = ((unsigned char*)&px) + 3;
+            unsigned char *c2 = (unsigned char*)&qpx;
+            *c2++ = *c1--;
+            *c2++ = *c1--;
+            *c2++ = *c1--;
+            *c2++ = *c1--;
+            gdk_image_put_pixel(im, j, i, qpx);
+#else
+            gdk_image_put_pixel(im, j, i, px);
+#endif
+        }
+    }
+
+    gdk_draw_image(gd_window, GC(), im, 0, 0, x, y, width, height);
+    gdk_image_destroy(im);
 
 #endif
 }

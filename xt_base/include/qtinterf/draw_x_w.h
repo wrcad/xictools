@@ -42,6 +42,8 @@
 #define DRAW_X_W_H
 
 #include "qtdraw.h"
+
+#ifdef WITH_X11
 #include <QWidget>
 #include <QResizeEvent>
 #include <math.h>
@@ -149,5 +151,6 @@ namespace qtinterf
     };
 }
 
+#endif
 #endif
 
