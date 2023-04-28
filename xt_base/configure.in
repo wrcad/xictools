@@ -720,7 +720,11 @@ elif test $grpkg == QT5 -o $grpkg == QT6 ; then
     cd $tmpdir
     touch empty.cc
     $QTBASE/bin/qmake -project
-    $QTBASE/bin/qmake "QT += widgets xml opengl printsupport"
+    if test $OSNAME == Darwin; then
+        $QTBASE/bin/qmake "QT += widgets xml opengl printsupport"
+    else
+        $QTBASE/bin/qmake "QT += widgets xml opengl printsupport x11extras"
+    fi
     cd $cwd
 
     has_qt=no
@@ -757,13 +761,16 @@ elif test $grpkg == QT5 -o $grpkg == QT6 ; then
 dnl MacPorts, needed to find X11.
             QT_INCLUDE="$QT_INCLUDE -I/opt/local/include"
         fi
-        while test x"$1" != x; do
-            y=`echo $1 |grep "^-I"`
-            if test x"$y" != x -a $1 != "-I."; then
-                QT_INCLUDE="$QT_INCLUDE $1"
-            fi
-            shift
-        done
+        shift
+        shift
+        QT_INCLUDE="$QT_INCLUDE $*"
+dnl        while test x"$1" != x; do
+dnl            y=`echo $1 |grep "^-I"`
+dnl            if test x"$y" != x -a $1 != "-I."; then
+dnl                QT_INCLUDE="$QT_INCLUDE $1"
+dnl            fi
+dnl            shift
+dnl        done
         echo "QT_INCLUDE=$QT_INCLUDE"
 
         lflags=`grep '^LFLAGS' $tmpdir/Makefile`

@@ -141,22 +141,6 @@ cMain::PopUpDebugFlags(GRobject, ShowMode)
 {
 }
 
-char *
-cMain::SaveFileDlg(const char*, const char*)
-{
-    return (0);
-}
-
-char *
-cMain::OpenFileDlg(const char*, const char*)
-{
-    return (0);
-}
-
-void
-cMain::PopUpFileSel(const char*, void(*)(const char*, void*), void*)
-{
-}
 
 void
 cMain::PopUpSelectInstances(CDol*)
@@ -167,11 +151,6 @@ CDol *
 cMain::PopUpFilterInstances(CDol*)
 {
     return (0);
-}
-
-void
-cMain::FixupColors(void*)
-{
 }
 
 void
@@ -189,12 +168,6 @@ cMain::GetCursor()
 void
 cMain::UpdateCursor(WindowDesc*, CursorType, bool)
 {
-}
-
-sLcb *
-cMain::PopUpLayerEditor(GRobject)
-{
-    return (0);
 }
 
 void

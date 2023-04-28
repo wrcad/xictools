@@ -321,6 +321,7 @@ namespace qtinterf
 
         sGbag *Gbag()           { return (gd_gbag); }
         void SetGbag(sGbag *b)  { gd_gbag = b; }
+        draw_if *Viewport()     { return (gd_viewport); }
 
 protected:
         sGbag   *gd_gbag;       // graphics rendering context

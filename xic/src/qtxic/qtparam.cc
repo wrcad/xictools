@@ -95,7 +95,8 @@ cParam::print()
     TextExtent(0, &fwid, &fhei);
 
     p_xval = 2;
-    p_yval = fhei;
+//XXX
+    p_yval = fhei - 3;
 
     unsigned int selectno;
     Selections.countQueue(CurCell(), &selectno, 0);
@@ -204,8 +205,6 @@ cParam::print()
     p_text.setup(this);
     display(0, 256);
 
-    Update();
-
     if (Coord())
         Coord()->print(0, 0, cCoord::COOR_REL);
 }
@@ -214,64 +213,19 @@ cParam::print()
 void
 cParam::display(int start, int end)
 {
-    (void)start;
-    (void)end;
-#ifdef NOTDEF
-#if GTK_CHECK_VERSION(3,0,0)
-    if (!GetDrawable()->get_window())
-        GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
-    if (!GetDrawable()->get_window())
-        return;
-    GetDrawable()->set_draw_to_pixmap();
-
     if (start == 0 && end == 256) {
         SetWindowBackground(DSP()->Color(PromptBackgroundColor));
+        /*
         int wid = GetDrawable()->get_width();
         int hei = GetDrawable()->get_width();
         SetColor(DSP()->Color(PromptBackgroundColor));
         Box(0, 0, wid, hei);
+        */
         SetBackground(DSP()->Color(PromptBackgroundColor));
+        Clear();
     }
     p_text.display(this, start, end);
-
-    GetDrawable()->set_draw_to_window();
-    GetDrawable()->copy_pixmap_to_window(CpyGC(), 0, 0, -1, -1);
-#else
-    gd_window = gtk_widget_get_window(gd_viewport);
-    if (!gd_window)
-        return;
-
-    int winw = gdk_window_get_width(gd_window);
-    int winh = gdk_window_get_height(gd_window);
-    if (winw != p_width || winh != p_height) {
-        if (p_pm)
-            g_object_unref(p_pm);
-        p_pm = gdk_pixmap_new(gd_window, winw, winh,
-            gdk_visual_get_depth(GRX->Visual()));
-        p_width = winw;
-        p_height = winh;
-        start = 0;
-        end = 256;
-    }
-    p_win_bak = gd_window;
-    gd_window = p_pm;
-    gd_viewport->window = gd_window;
-
-    if (start == 0 && end == 256) {
-        SetWindowBackground(DSP()->Color(PromptBackgroundColor));
-        SetColor(DSP()->Color(PromptBackgroundColor));
-        Box(0, 0, p_width, p_height);
-    }
-
-    p_text.display(this, start, end);
-
-    gdk_window_copy_area(p_win_bak, CpyGC(), 0, 0, gd_window,
-        0, 0, p_width, p_height);
-    gd_window = p_win_bak;
-    p_win_bak = 0;
-    gtk_widget_set_window(gd_viewport, gd_window);
-#endif
-#endif
+    Update();
 }
 
 
@@ -619,7 +573,7 @@ ptext_t::setup(cParam *prm)
         else
             pt_chars[i].pc_posn = pt_chars[i-1].pc_posn +
                 pt_chars[i-1].pc_width;
-            pt_chars[i].pc_width = any_string_width(prm->Viewport(), bf);
+        pt_chars[i].pc_width = any_string_width(prm->Viewport()->widget(), bf);
     }
     pt_sel_start = 0;
     pt_sel_end = 0;

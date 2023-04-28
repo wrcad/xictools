@@ -80,11 +80,19 @@ form_button_w::form_button_w(htmForm *entry, QWidget *prnt) :
             str = "X";
         else
             setText(QString(str));
-        entry->width = fm.horizontalAdvance(QString(str)) + 4;
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        entry->width = fm.horizontalAdvance(str) + 4;
+#else
+        entry->width = fm.width(str) + 4;
+#endif
         entry->height = fm.height() + 4;
     }
     else {
-        entry->width = fm.horizontalAdvance(QString("X")) + 4;
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        entry->width = fm.horizontalAdvance("X") + 4;
+#else
+        entry->width = fm.width("X") + 4;
+#endif
         entry->height = entry->width;
         setCheckable(true);
         setChecked(entry->checked);
@@ -154,7 +162,11 @@ form_combo_w::setSize()
     form_entry->height = form_entry->size * fm.height();
     form_entry->width = 0;
     for (htmForm *f = form_entry->options; f; f = f->next) {
-        unsigned int w = fm.horizontalAdvance(QString(f->name));
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        unsigned int w = fm.horizontalAdvance(f->name);
+#else
+        unsigned int w = fm.width(f->name);
+#endif
         if (w > form_entry->width)
             form_entry->width = w;
     }
@@ -177,7 +189,11 @@ form_list_w::setSize()
     form_entry->height = form_entry->size * fm.height();
     form_entry->width = 0;
     for (htmForm *f = form_entry->options; f; f = f->next) {
-        unsigned int w = fm.horizontalAdvance(QString(f->name));
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        unsigned int w = fm.horizontalAdvance(f->name);
+#else
+        unsigned int w = fm.width(f->name);
+#endif
         if (w > form_entry->width)
             form_entry->width = w;
     }
@@ -504,12 +520,20 @@ viewer_w::tk_alloc_font(const char *family, int sz, unsigned char sty)
     fnt->ascent = fm.ascent();
     fnt->descent = fm.descent();
     fnt->width = fm.maxWidth();
-    fnt->lbearing = fm.horizontalAdvance(QChar(' '));
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+    fnt->lbearing = fm.horizontalAdvance(' ');
+#else
+    fnt->lbearing = fm.width(' ');
+#endif
     fnt->rbearing = 0;
     fnt->height = fm.height();
     fnt->lineheight = fm.lineSpacing();
 
-    fnt->isp = fm.horizontalAdvance(QChar(' '));
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+    fnt->isp = fm.horizontalAdvance(' ');
+#else
+    fnt->isp = fm.width(' ');
+#endif
     fnt->sup_yoffset = (int)(fnt->ascent  * -.4);
     fnt->sub_yoffset = (int)(fnt->descent * .8);
 
@@ -942,7 +966,11 @@ char_width(QWidget *w)
 {
     QFont f = w->font();
     QFontMetrics fm(f);
-    return (fm.horizontalAdvance(QString("X")));
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+    return (fm.horizontalAdvance("X"));
+#else
+    return (fm.width("X"));
+#endif
 }
 
 inline int

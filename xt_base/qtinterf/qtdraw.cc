@@ -40,7 +40,7 @@
 
 #include "qtdraw.h"
 #include "draw_qt_w.h"
-#ifdef HAVE_X11
+#ifdef WITH_X11
 #include "draw_x_w.h"
 #endif
 
