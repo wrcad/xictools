@@ -882,15 +882,12 @@ DrawType QTsubwin::sw_drawtype = DrawNative;
 QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     QTdraw(XW_DRAWING)
 {
-    sw_windesc = 0;
-
-    if (wnum < 0)
-        sw_win_number = -1;
-    else
-        sw_win_number = wnum;
-    sw_expand = 0;
-
+    sw_pixmap = 0;
     sw_menubar = new QMenuBar(this);
+    sw_keys_pressed = 0;
+    sw_expand = 0;
+    sw_windesc = 0;
+    sw_win_number = wnum < 0 ? -1 : wnum;
 
     if (sw_win_number == 0) {
         const char *str = getenv("GR_SYSTEM");
@@ -917,8 +914,6 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     if (FC.getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
 
-    sw_keys_pressed = new cKeys(sw_win_number, this);
-
     connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
     connect(Viewport(), SIGNAL(new_painter(QPainter*)),
@@ -944,6 +939,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
         this, SLOT(drop_slot(QDropEvent*)));
 
+    sw_keys_pressed = new cKeys(sw_win_number, this);
+
     if (sw_win_number == 0)
         // being subclassed for main window
         return;
@@ -954,9 +951,14 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
 
     sw_keys_pressed->setFixedHeight(line_height() + 4);
     sw_keys_pressed->setFixedWidth(6*char_width());
-    sw_keys_pressed->move(160, 2);
 
-    vbox->setMenuBar(sw_menubar);
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    hbox->setMenuBar(sw_menubar);
+    hbox->addWidget(sw_keys_pressed);
+    vbox->addLayout(hbox);
     vbox->addWidget(Viewport());
 }
 
@@ -1067,9 +1069,17 @@ QTsubwin::pre_destroy(int wnum)
 void
 QTsubwin::SwitchToPixmap()
 {
+    /* XXX - Not needed.
     if (!sw_windesc)
         return;
     // set draw to pixmap
+    QSize qs = Viewport()->size();
+    if (!sw_pixmap || sw_pixmap->size() != qs) {
+        delete sw_pixmap;
+        sw_pixmap = new QPixmap(qs);
+    }
+    gd_viewport->set_draw_to_pixmap(sw_pixmap);
+    */
 }
 
 
@@ -1079,7 +1089,16 @@ QTsubwin::SwitchToPixmap()
 void
 QTsubwin::SwitchFromPixmap(const BBox *BB)
 {
-    CopyPixmap(BB);
+    /* XXX - Not needed.
+    gd_viewport->set_draw_to_pixmap(0);
+    int xx = BB->left;
+    int yy = BB->top;
+    int wid = BB->right - BB->left + 1;
+    int hei = BB->bottom - BB->top + 1;
+    gd_viewport->draw_pixmap(xx, yy, sw_pixmap, xx, yy, wid, hei);
+    QSize qs = sw_pixmap->size();
+    Viewport()->repaint(0, 0, qs.width(), qs.height());
+    */
 }
 
 
@@ -1089,6 +1108,9 @@ QTsubwin::SwitchFromPixmap(const BBox *BB)
 GRobject
 QTsubwin::DrawableReset()
 {
+    /* XXX - Not needed.
+    gd_viewport->set_draw_to_pixmap(0);
+    */
     return (0);
 }
 
@@ -1100,9 +1122,6 @@ QTsubwin::CopyPixmap(const BBox *BB)
 {
     Viewport()->repaint(BB->left, BB->top, BB->right - BB->left + 1,
         BB->bottom - BB->top + 1);
-    /*
-        */
-//Update();
 }
 
 
@@ -1111,6 +1130,11 @@ QTsubwin::CopyPixmap(const BBox *BB)
 void
 QTsubwin::DestroyPixmap()
 {
+    /* XXX - Not needed.
+    gd_viewport->set_draw_to_pixmap(0);
+    delete sw_pixmap;
+    sw_pixmap = 0;
+    */
 }
 
 
@@ -1119,7 +1143,16 @@ QTsubwin::DestroyPixmap()
 bool
 QTsubwin::PixmapOk()
 {
-    return (true);
+    /* XXX - Not needed.
+    if (sw_pixmap) {
+        QSize qs = sw_pixmap->size();
+        int vp_width = sw_windesc->ViewportWidth();
+        int vp_height = sw_windesc->ViewportHeight();
+        if (qs.width() == vp_width && qs.height() == vp_height)
+            return (true);
+    }
+    */
+    return (false);
 }
 
 
@@ -1563,7 +1596,7 @@ void
 QTsubwin::paint_slot(QPaintEvent *ev)
 {
     (void)ev;
-printf("paint event\n");
+//printf("paint event\n");
 }
 
 
@@ -1768,26 +1801,6 @@ QTsubwin::motion_slot(QMouseEvent *ev)
 }
 
 
-namespace {
-    // Return true if the mouse pointer is currently over the prompt
-    // line area in the main window.
-    //
-    bool pointer_in_prompt_area()
-    {
-        /*XXX 
-        int x, y;
-        GRX->PointerRootLoc(&x, &y);
-        GtkWidget *w = GTKmainwin::self()->TextArea();
-        GdkRectangle r;
-        gtk_ShellGeometry(w, &r , 0);
-        return (x >= r.x && x <= r.x + r.width &&
-            y >= r.y && y <= r.y + r.height);
-        */
-        return (false);
-    }
-}
-
-
 // Key press processing for the drawing windows
 //
 void
@@ -1800,6 +1813,9 @@ QTsubwin::key_down_slot(QKeyEvent *ev)
 
     if (message)
         message->popdown();
+
+//XXX
+printf("%x %x %x\n", ev->key(), ev->nativeScanCode(), ev->nativeVirtualKey());
 
     QString qs = ev->text().toLatin1();
     const char *string = (const char*)qs.constData();
@@ -1818,7 +1834,7 @@ QTsubwin::key_down_slot(QKeyEvent *ev)
 */
 
     if (keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
-            pointer_in_prompt_area(), false))
+            QTmainwin::self()->PromptLine()->widget()->underMouse(), false))
         ev->accept();
 }
 
@@ -2155,6 +2171,19 @@ QTmainwin::send_key_event(sKeyEvent *kev)
         QKeyEvent ev(QEvent::KeyRelease, kev->key, mod, QString(kev->text));
         QCoreApplication::sendEvent(Viewport(), &ev);
     }
+}
+
+
+void
+QTmainwin::closeEvent(QCloseEvent *ev)
+{
+    if (qtPkgIf()->IsBusy()) {
+        pop_busy();
+        ev->ignore();
+    }
+    if (!qtMenu()->IsGlobalInsensitive())
+        XM()->Exit(ExitCheckMod);
+    ev->ignore();
 }
 
 

@@ -86,6 +86,9 @@ public:
     QScrollBar *scrollbar()     { return (ltab_scrollbar); }
     QWidget *searcher()         { return (ltab_search_container); }
 
+signals:
+    void valueChanged(int);
+
 private slots:
     void button_press_slot(QMouseEvent*);
     void button_release_slot(QMouseEvent*);

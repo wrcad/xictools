@@ -210,8 +210,6 @@ public:
     // End of cAppWinFuncs interface
 
     QMenuBar *MenuBar()             { return (sw_menubar); }
-    QWidget *Viewport()             { return (gd_viewport->widget()); }
-
 
     cKeys *Keys()                   { return (sw_keys_pressed); }
     void clear_expand()             { sw_expand = 0; }
@@ -240,8 +238,8 @@ protected slots:
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);
 
-
 protected:
+    QPixmap     *sw_pixmap;
     QMenuBar    *sw_menubar;
     cKeys       *sw_keys_pressed;
     cExpand     *sw_expand;
@@ -306,6 +304,9 @@ private slots:
     void update_coords_slot(int, int);
 
 private:
+    // QWidget virtual overrides
+    void closeEvent(QCloseEvent*);
+
     QWidget     *mw_top_button_box;
     QWidget     *mw_phys_button_box;
     QWidget     *mw_elec_button_box;

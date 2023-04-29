@@ -105,28 +105,11 @@ QTltab::QTltab(bool nogr, QWidget *prnt) : QWidget(prnt), QTdraw(XW_LTAB)
     hbox->setMargin(0);
     hbox->setSpacing(2);
 
-    /*
-    lspec_btn = new QPushButton(this);
-    lspec_btn->setAutoDefault(false);
-    lspec_btn->setCheckable(true);
-//XXX    lspec_btn->setChecked(Selections.layer_specific);
-    lspec_btn->setText(QString("S"));
-    QFontMetrics fm(lspec_btn->font());
-    int bw = fm.width(lspec_btn->text()) + 6;
-    lspec_btn->setFixedSize(bw, ht);
-    hbox->addWidget(lspec_btn);
-    */
-
     ltab_scrollbar = new QScrollBar(Qt::Vertical, this);
-//    ltab_scrollbar->setMinimumWidth(20);
-//    ltab_scrollbar->setMaximumWidth(20);
     hbox->addWidget(ltab_scrollbar);
 
     gd_viewport = draw_if::new_draw_interface(QTmainwin::draw_type(),
         true, this);
-    gd_viewport->widget()->setMinimumHeight(600);
-    gd_viewport->widget()->setMaximumHeight(600);
-//    gd_viewport->widget()->setMinimumWidth(200);
     gd_viewport->widget()->setMaximumWidth(160);
     hbox->addWidget(gd_viewport->widget());
 
@@ -211,9 +194,8 @@ QTltab::update_scrollbar()
             nm = 0;
         ltab_scrollbar->setMaximum(nm);
         ltab_scrollbar->setSingleStep(1);
-//        ltab_scrollbar->setPageStep(qtLtab()->columns());
         ltab_scrollbar->setPageStep(nm);
-//        emit valueChanged(ltab_scrollbar->value());
+        emit valueChanged(ltab_scrollbar->value());
     }
 }
 
@@ -233,8 +215,8 @@ QTltab::set_layer()
 void
 QTltab::resize_slot(QResizeEvent*)
 {
-    LT()->InitLayerTable();
-    LT()->ShowLayerTable();
+    init();
+    show();
 }
 
 

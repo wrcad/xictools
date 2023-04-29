@@ -124,18 +124,6 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
 {
 }
 
-// qtcolor.cc
-
-void
-cMain::PopUpColor(GRobject caller, ShowMode mode)
-{
-}
-
-void
-cMain::ColorTimerInit()
-{
-}
-
 void
 cMain::PopUpDebugFlags(GRobject, ShowMode)
 {
@@ -428,6 +416,7 @@ cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*, const char*,
 bool
 cSced::PopUpNodeMap(GRobject caller, ShowMode mode, int node)
 {
+    return (false);
 }
 
 // qtoasis.h

@@ -63,7 +63,7 @@ draw_qt_w::draw_qt_w(bool, QWidget *prnt) : QWidget(prnt)
     da_tile_x = 0;
     da_tile_y = 0;
     da_fill_mode = false;
-    da_line_mode = false;
+    da_line_mode = 0;
     da_pen.setStyle(Qt::NoPen);
     da_line_style = 0;
     initialize();
@@ -84,7 +84,15 @@ draw_qt_w::~draw_qt_w()
 void
 draw_qt_w::draw_direct(bool direct)
 {
-    (void)direct;
+    if (direct) {
+        da_painter_temp = da_painter;
+        da_painter = new QPainter(widget());
+        initialize();
+    }
+    else {
+        delete da_painter;
+        da_painter = da_painter_temp;
+    }
 }
 
 
@@ -152,6 +160,7 @@ draw_qt_w::set_background(unsigned int pix)
 void
 draw_qt_w::draw_pixel(int x0, int y0)
 {
+    da_pen.setStyle(Qt::SolidLine);
     da_painter->drawPoint(x0, y0);
 }
 
@@ -163,6 +172,7 @@ draw_qt_w::draw_pixels(GRmultiPt *p, int n)
 {
     QPolygon poly;
     poly.setPoints(n, (int*)p->data());
+    da_pen.setStyle(Qt::SolidLine);
     da_painter->drawPoints(poly);
 }
 
@@ -196,7 +206,7 @@ draw_qt_w::draw_line_prv(int x1, int y1, int x2, int y2)
         dy = -dy;
     int dy2 = dy;
 
-    // Set up linestyle mask from dash data
+    // Set up linestyle mask from dash data.
     unsigned int linestyle = 0;
     unsigned int bit = 1;
     bool on = true;
@@ -210,6 +220,8 @@ draw_qt_w::draw_line_prv(int x1, int y1, int x2, int y2)
         }
         on = !on;
     }
+
+    da_pen.setStyle(Qt::SolidLine);
 
     if (da_line_style->offset) {
         int os = da_line_style->offset;
@@ -230,7 +242,7 @@ draw_qt_w::draw_line_prv(int x1, int y1, int x2, int y2)
         bit = 1 << (y1 % len);
     else
         bit = 1;
-            
+
     // Spit out the pixels
     int sn = y2 > y1 ? 1 : -1;
     int errterm = 0;
@@ -239,7 +251,9 @@ draw_qt_w::draw_line_prv(int x1, int y1, int x2, int y2)
         if (errterm <= 0) {
             if (bit & linestyle) {
                 if (pcnt == 2048) {
-                    draw_pixels(&pts, pcnt);
+                    QPolygon poly;
+                    poly.setPoints(pcnt, (int*)pts.data());
+                    da_painter->drawPoints(poly);
                     pcnt = 0;
                 }
                 pts.assign(pcnt, x1, y1);
@@ -253,7 +267,9 @@ draw_qt_w::draw_line_prv(int x1, int y1, int x2, int y2)
         while (errterm > 0 && x1 != x2) {
             if (bit & linestyle) {
                 if (pcnt == 2048) {
-                    draw_pixels(&pts, pcnt);
+                    QPolygon poly;
+                    poly.setPoints(pcnt, (int*)pts.data());
+                    da_painter->drawPoints(poly);
                     pcnt = 0;
                 }
                 pts.assign(pcnt, x1, y1);
@@ -269,8 +285,11 @@ draw_qt_w::draw_line_prv(int x1, int y1, int x2, int y2)
         if (bit >= end)
             bit = 1;
     }
-    if (pcnt)
-        draw_pixels(&pts, pcnt);
+    if (pcnt) {
+        QPolygon poly;
+        poly.setPoints(pcnt, (int*)pts.data());
+        da_painter->drawPoints(poly);
+    }
 }
 
 
@@ -515,15 +534,11 @@ draw_qt_w::draw_text(int x0, int y0, const char *str, int len)
 void
 draw_qt_w::set_xor_mode(bool set)
 {
-// XXX This doesn't work.  How to do xor drawing or similar?
     if (set) {
-//da_painter->beginNativePainting();
-//        da_painter->setCompositionMode(QPainter::RasterOp_NotSourceXorDestination);
         da_painter->setCompositionMode(QPainter::RasterOp_SourceXorDestination);
-//        da_painter->setCompositionMode(QPainter::CompositionMode_Xor);
     }
     else {
-//da_painter->endNativePainting();
+        update();
         da_painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
     }
 }
@@ -607,8 +622,6 @@ draw_qt_w::set_tile_origin(int x0, int y0)
 void
 draw_qt_w::draw_rectangle(bool filled, int x0, int y0, int w, int h)
 {
-//XXX
-printf("box\n");
     if (filled) {
         if (da_fill_mode) {
             if (da_tile_pixmap)
@@ -646,8 +659,6 @@ draw_qt_w::draw_arc(bool filled, int x0, int y0, int w, int h, int st, int sp)
 void
 draw_qt_w::draw_polygon(bool filled, QPoint *points, int numpts)
 {
-//XXX
-printf("poly\n");
     if (filled)
         da_painter->drawPolygon(points, numpts);
     else {

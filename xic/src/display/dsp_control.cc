@@ -482,6 +482,13 @@ WindowDesc::RedisplayHighlighting(const BBox *AOI, bool bbflag)
             ShowBox(&wd->w_window, CDL_OUTLINED, 0);
         }
     }
+    /* XXX
+    w_draw->Update();
+        for (int i = 1; i < DSP_NUMWINS; i++) {
+            WindowDesc *wd = DSP()->Window(i);
+                wd->Update();
+        }
+        */
 }
 
 

@@ -47,6 +47,8 @@
 class QWidget;
 class QFont;
 class QCursor;
+class QPixmap;
+class QImage;
 
 // This is an abstract class for a simple but efficient drawing area.
 // New instances are intended to be obtained from new_draw_interface().
@@ -111,6 +113,10 @@ namespace qtinterf
 
         virtual void set_xor_mode(bool) = 0;
         virtual void set_ghost_color(unsigned int) = 0;
+
+        virtual void set_draw_to_pixmap(QPixmap*) = 0;
+        virtual void draw_pixmap(int, int, QPixmap*, int, int, int, int) = 0;
+        virtual void draw_image(int, int, QImage*, int, int, int, int) = 0;
     };
 
     // Encapsulation of the window ghost-drawing capability.
@@ -321,7 +327,7 @@ namespace qtinterf
 
         sGbag *Gbag()           { return (gd_gbag); }
         void SetGbag(sGbag *b)  { gd_gbag = b; }
-        draw_if *Viewport()     { return (gd_viewport); }
+        QWidget *Viewport()     { return (gd_viewport->widget()); }
 
 protected:
         sGbag   *gd_gbag;       // graphics rendering context

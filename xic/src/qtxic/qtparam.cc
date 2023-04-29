@@ -573,7 +573,7 @@ ptext_t::setup(cParam *prm)
         else
             pt_chars[i].pc_posn = pt_chars[i-1].pc_posn +
                 pt_chars[i-1].pc_width;
-        pt_chars[i].pc_width = any_string_width(prm->Viewport()->widget(), bf);
+        pt_chars[i].pc_width = any_string_width(prm->Viewport(), bf);
     }
     pt_sel_start = 0;
     pt_sel_end = 0;

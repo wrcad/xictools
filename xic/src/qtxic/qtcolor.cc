@@ -39,9 +39,68 @@
  *========================================================================*/
 
 #include "main.h"
+#include "select.h"
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "qtmain.h"
+
+
+// Menu function to display, update, or destroy the color popup.
+//
+void
+cMain::PopUpColor(GRobject caller, ShowMode mode)
+{
+    if (!GRX || !QTmainwin::self())
+        return;
+    if (mode == MODE_OFF) {
+//        delete Clr;
+        return;
+    }
+    if (mode == MODE_UPD) {
+//        if (Clr)
+//            Clr->update();
+        return;
+    }
+    /*
+    if (Clr)
+        return;
+
+    new sClr(caller);
+    if (!Clr->shell()) {
+        delete Clr;
+        return;
+    }
+    gtk_window_set_transient_for(GTK_WINDOW(Clr->shell()),
+        GTK_WINDOW(GTKmainwin::self()->Shell()));
+
+    GRX->SetPopupLocation(GRloc(LW_LL), Clr->shell(),
+        GTKmainwin::self()->Viewport());
+    gtk_widget_show(Clr->shell());
+    */
+}
+
+
+// The following functions periodically alter the colormap to implement
+// blinking layers and selection boundary.
+
+namespace { int colortimer(void*); }
+
+// Allocate a private color for the selection borders, and set the
+// initial timer.
+//
+void
+cMain::ColorTimerInit()
+{
+    if (!GRX)
+        return;
+    int pixel = DSP()->Color(SelectColor1);
+    int red, green, blue;
+    GRX->RGBofPixel(pixel, &red, &green, &blue);
+    int sp = DSP()->SelectPixel();
+    GRX->AllocateColor(&sp, red, green, blue);
+    DSP()->SetSelectPixel(sp);
+    GRX->AddTimer(500, colortimer, 0);
+}
 
 
 inline int
@@ -142,5 +201,55 @@ cMain::FixupColors(void *dp)
         XCloseDisplay(display);
 */
 (void)dp;
+}
+
+
+namespace {
+    int idle_id;
+
+    // Idle function to redraw highlighting.
+    //
+    int
+    idlefunc(void*)
+    {
+        static int on;
+        if (!dspPkgIf()->IsBusy()) {
+            if (dspPkgIf()->IsTrueColor()) {
+                WindowDesc *wd;
+                WDgen wgen(WDgen::MAIN, WDgen::ALL);
+                while ((wd = wgen.next()) != 0) {
+                    if (!on)
+                        DSP()->SetSelectPixel(
+                            DSP()->Color(SelectColor1, wd->Mode()));
+                    else
+                        DSP()->SetSelectPixel(
+                            DSP()->Color(SelectColor2, wd->Mode()));
+
+                    if (wd->DbType() == WDcddb) {
+                        if (Selections.blinking())
+                            Selections.show(wd);
+                    }
+                    wd->ShowHighlighting();
+                }
+                DSP()->SetSelectPixel(DSP()->Color(SelectColor1));
+            }
+        }
+        on ^= true;
+        idle_id = 0;
+        return (false);
+    }
+
+
+    // Timer callback.  This self-regenerates the timing interval, and
+    // switches the colors of all flashing layers and the selection
+    // boundary.
+    //
+    int
+    colortimer(void*)
+    {
+        if (!idle_id)
+            idle_id = qtPkgIf()->RegisterIdleProc(idlefunc, 0);
+        return (true);
+    }
 }
 

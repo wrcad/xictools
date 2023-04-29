@@ -102,9 +102,11 @@ namespace qtinterf
         void set_xor_mode(bool);
         void set_ghost_color(unsigned int);
 
-        // extra functions
-        QPainter *cur_painter() { return (da_painter); }
         void set_draw_to_pixmap(QPixmap*);
+        void draw_pixmap(int, int, QPixmap*, int, int, int, int);
+        void draw_image(int, int, QImage*, int, int, int, int);
+
+        // extra functions
         void set_line_mode(int);
         void set_fill(bool);
         void set_tile(QPixmap*);
@@ -112,8 +114,8 @@ namespace qtinterf
         void draw_rectangle(bool, int, int, int, int);
         void draw_arc(bool, int, int, int, int, int, int);
         void draw_polygon(bool, QPoint*, int);
-        void draw_pixmap(int, int, QPixmap*, int, int, int, int);
-        void draw_image(int, int, QImage*, int, int, int, int);
+
+        QPainter *cur_painter() { return (da_painter); }
 
     signals:
         void resize_event(QResizeEvent*);
@@ -159,7 +161,7 @@ namespace qtinterf
         int da_tile_x;              // tile origin x
         int da_tile_y;              // tile origin y
         bool da_fill_mode;          // true when tiling
-        bool da_line_mode;          // true when using internal textured
+        int da_line_mode;           // true when using internal textured
                                     //  lines (Qt::PenStyle - 1)
                                     //  1: dashes separated by a few pixels
                                     //  2: dots separated by a few pixels

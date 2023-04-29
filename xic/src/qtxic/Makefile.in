@@ -34,7 +34,7 @@ HFILES = \
     qtmenu.h \
     qtmenucfg.h
 CCFILES = \
-    qtclrtab.cc \
+    qtcolor.cc \
     qtcoord.cc \
     qtexpand.cc \
     qtextfc.cc \
