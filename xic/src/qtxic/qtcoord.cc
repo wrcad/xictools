@@ -47,8 +47,6 @@
 #include <QHBoxLayout>
 
 
-cCoord *cCoord::instancePtr = 0;
-
 // Application interface to set abs/rel and redraw after color change.
 // The optional rx,ry are the reference in relative mode.
 //
@@ -66,6 +64,8 @@ cMain::SetCoordMode(COmode mode, int rx, int ry)
 }
 
 
+cCoord *cCoord::instancePtr = 0;
+
 cCoord::cCoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 {
     instancePtr = this;
@@ -82,9 +82,11 @@ cCoord::cCoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     hbox->setSpacing(0);
     hbox->addWidget(gd_viewport->widget());
 
-    int wid = 600;
-    int hei = line_height() + 2;
-    setFixedSize(wid, hei);
+    int wid = 90*QTfont::stringWidth(0, FNT_SCREEN);
+    int hei = QTfont::lineHeight(FNT_SCREEN) + 2;
+    setMinimumWidth(wid);
+    setMinimumHeight(hei);
+    setMaximumHeight(hei);
     co_width = wid;
     co_height = hei;
     connect(gd_viewport->widget(), SIGNAL(resize_event(QResizeEvent*)),
@@ -93,6 +95,7 @@ cCoord::cCoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
+    FC.registerCallback(Viewport(), FNT_SCREEN);
 }
 
 
@@ -136,9 +139,7 @@ cCoord::print(int xc, int yc, int upd)
     int fwid, fhei;
     TextExtent(0, &fwid, &fhei);
     int xx = 2;
-//    int yy = (co_height + fhei)/2;  // center justify
-// XXX The fhei is 16, co_height is 50, obviously something isn't consistent.
-int yy = fhei-3;
+    int yy = fhei-2;
 
     if (co_snap)
         EV()->CurrentWin()->Snap(&xc, &yc);

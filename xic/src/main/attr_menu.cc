@@ -516,12 +516,19 @@ namespace {
 void
 attr_menu::M_Font(CmdDesc *cmd)
 {
+    if (cmd && Menu()->GetStatus(cmd->caller))
+        DSPmainWbag(PopUpFontSel(cmd->caller, GRloc(), MODE_ON, font_cb,
+            cmd->caller, FNT_FIXED, btn_names))
+    else
+        DSPmainWbag(PopUpFontSel(cmd->caller, GRloc(), MODE_OFF, 0, 0, 0))
 
+/*XXX for GTK, why is panel hidden not destroyed?
     if (cmd && Menu()->GetStatus(cmd->caller))
         DSPmainWbag(PopUpFontSel(0, GRloc(), MODE_ON, font_cb,
             cmd->caller, FNT_FIXED, btn_names))
     else
         DSPmainWbag(PopUpFontSel(0, GRloc(), MODE_OFF, 0, 0, 0))
+*/
 }
 
 

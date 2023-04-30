@@ -321,49 +321,6 @@ private:
 //-----------------------------------------------------------------------------
 // Utilities
 
-inline int
-char_width()
-{
-    QFont *f;
-    if (FC.getFont(&f, FNT_FIXED)) {
-        QFontMetrics fm(*f);
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-        return (fm.horizontalAdvance("X"));
-#else
-        return (fm.width("X"));
-#endif
-    }
-    return (8);
-}
-
-
-inline int
-any_string_width(QWidget*, const char *str)
-{
-    QFont *f;
-    if (FC.getFont(&f, FNT_FIXED)) {
-        QFontMetrics fm(*f);
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-        return (fm.horizontalAdvance(str));
-#else
-        return (fm.width(str));
-#endif
-    }
-    return (8*strlen(str));
-}
-  
-
-inline int
-line_height()
-{
-    QFont *f;
-    if (FC.getFont(&f, FNT_FIXED)) {
-        QFontMetrics fm(*f);
-        return (fm.height());
-    }
-    return (16);
-}
-
 
 inline unsigned int
 mod_state(int qtstate)

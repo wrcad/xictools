@@ -476,7 +476,7 @@ draw_qt_w::draw_image(const GRimage*, int, int, int, int)
 void
 draw_qt_w::set_font(QFont *fnt)
 {
-    da_painter->setFont(*fnt);
+    widget()->setFont(*fnt);
 }
 
 
@@ -523,6 +523,7 @@ draw_qt_w::draw_text(int x0, int y0, const char *str, int len)
 
     // This changed between 4.0.1 and 4.1.2, the pen style can't be
     // Qt::NoPen or text will not be rendered.
+    da_painter->setFont(font());
     da_pen.setStyle(Qt::SolidLine);
     da_painter->setPen(da_pen);
     da_painter->drawText(x0, y0, qs);

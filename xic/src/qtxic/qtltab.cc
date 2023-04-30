@@ -119,6 +119,7 @@ QTltab::QTltab(bool nogr, QWidget *prnt) : QWidget(prnt), QTdraw(XW_LTAB)
     QFont *scfont;
     if (FC.getFont(&scfont, FNT_SCREEN))
         gd_viewport->set_font(scfont);
+    FC.registerCallback(Viewport(), FNT_SCREEN);
 
     connect(gd_viewport->widget(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));

@@ -288,6 +288,7 @@ QTedit::QTedit(bool nogr, QWidget *parent) : QTdraw(XW_TEXT)
     QFont *font;
     if (FC.getFont(&font, FNT_SCREEN))
         gd_viewport->set_font(font);
+    FC.registerCallback(Viewport(), FNT_SCREEN);
 
 /*
     container = gtk_hbox_new(false, 0);

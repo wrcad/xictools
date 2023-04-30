@@ -72,6 +72,13 @@ namespace qtinterf
         void registerCallback(void*, int);
         void unregisterCallback(void*, int);
 
+        static bool stringBounds(const char*, int, int*, int*);
+        static bool stringBounds(const char*, const QWidget*, int*, int*);
+        static int stringWidth(const char*, int);
+        static int stringWidth(const char*, const QWidget*);
+        static int lineHeight(int);
+        static int lineHeight(const QWidget*);
+
     private:
         QFont *new_font(const char*, bool);
         void refresh(int);
@@ -115,6 +122,7 @@ namespace qtinterf
                 else
                     hide();
             }
+        void register_caller(GRobject, bool, bool);
         void popdown();
 
         // GRfontPopup overrides

@@ -77,6 +77,7 @@ cParam::cParam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
+    FC.registerCallback(Viewport(), FNT_SCREEN);
 }
 
 
@@ -573,7 +574,7 @@ ptext_t::setup(cParam *prm)
         else
             pt_chars[i].pc_posn = pt_chars[i-1].pc_posn +
                 pt_chars[i-1].pc_width;
-        pt_chars[i].pc_width = any_string_width(prm->Viewport(), bf);
+        pt_chars[i].pc_width = QTfont::stringWidth(bf, prm->Viewport());
     }
     pt_sel_start = 0;
     pt_sel_end = 0;

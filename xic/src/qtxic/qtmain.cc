@@ -799,6 +799,7 @@ cKeys::cKeys(int wnum, QWidget *prnt) : draw_qt_w(false, prnt)
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
         set_font(fnt);
+    FC.registerCallback(widget(), FNT_SCREEN);
 }
 
 
@@ -807,7 +808,7 @@ cKeys::show_keys()
 {
     char *s = keys + (keypos > 5 ? keypos - 5 : 0);
     clear();
-    int yy = line_height();
+    int yy = QTfont::lineHeight(FNT_SCREEN);
     draw_text(2, yy, s, -1);
     update();
 }
@@ -850,7 +851,7 @@ cKeys::check_exec(bool exact)
             else
                 DSP()->MainWdesc()->SetView("full");
             clear();
-            int yy = line_height();
+            int yy = QTfont::lineHeight(FNT_SCREEN);
             draw_text(2, yy, MenuVIEW, -1);
             update();
         }
@@ -863,7 +864,7 @@ cKeys::check_exec(bool exact)
             if (n < 0)
                 n = 0;
             clear();
-            int yy = line_height();
+            int yy = QTfont::lineHeight(FNT_SCREEN);
             draw_text(2, yy, buf + n, -1);
             update();
             if (ent->cmd.caller)
@@ -913,6 +914,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
+    FC.registerCallback(Viewport(), FNT_SCREEN);
 
     connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
@@ -949,8 +951,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     vbox->setMargin(2);
     vbox->setSpacing(2);
 
-    sw_keys_pressed->setFixedHeight(line_height() + 4);
-    sw_keys_pressed->setFixedWidth(6*char_width());
+    sw_keys_pressed->setFixedHeight(QTfont::lineHeight(FNT_SCREEN) + 4);
+    sw_keys_pressed->setFixedWidth(6*QTfont::stringWidth(0, FNT_SCREEN));
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
@@ -2102,8 +2104,8 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    int w = char_width() * 7 + 4;
-    int h = line_height() + 4;
+    int w = QTfont::stringWidth(0, FNT_SCREEN) * 7 + 4;
+    int h = QTfont::lineHeight(FNT_SCREEN) + 4;
     sw_keys_pressed->setFixedSize(w, h);
     hbox->addWidget(sw_keys_pressed);
 

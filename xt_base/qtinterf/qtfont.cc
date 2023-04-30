@@ -62,21 +62,48 @@ GRfont &FC = _qt_font_;
 GRfont::fnt_t GRfont::app_fonts[] =
 {
     fnt_t( 0, 0, false, false ),  // not used
-    fnt_t( "Fixed Pitch Text Window Font",    "Monospace 10", true, false ),
-    fnt_t( "Proportional Text Window Font",   "Sans Serif 9", false, false ),
-    fnt_t( "Fixed Pitch Drawing Window Font", "Monospace 8", true, false ),
-    fnt_t( "Text Editor Font",                "Monospace 8", false, false ),
-    fnt_t( "HTML Viewer Proportional Font",   "Sans Serif 10", false, true ),
-    fnt_t( "HTML Viewer Fixed Pitch Font",    "Monospace 10", true, false )
+    fnt_t( "Fixed Pitch Text Window Font",    0, true, false ),
+    fnt_t( "Proportional Text Window Font",   0, false, false ),
+    fnt_t( "Fixed Pitch Drawing Window Font", 0, true, false ),
+    fnt_t( "Text Editor Font",                0, false, false ),
+    fnt_t( "HTML Viewer Proportional Font",   0, false, true ),
+    fnt_t( "HTML Viewer Fixed Pitch Font",    0, true, false )
 };
 
 int GRfont::num_app_fonts =
     sizeof(GRfont::app_fonts)/sizeof(GRfont::app_fonts[0]);
 
-//XXX
+//#define DEF_FIXED_FACE "Courier New"
+//#define DEF_PROP_FACE "Helvetica"
+#define DEF_FIXED_FACE "Andale Mono"
+#define DEF_PROP_FACE "Menlo"
+
+
+// This sets the default font names and sizes.
+//
 void
 QTfont::initFonts()
 {
+    // Just call this once.
+    if (app_fonts[0].default_fontname != 0)
+        return;
+
+    //XXX
+    int def_size = 11;
+
+    char buf[80];
+    snprintf(buf, 80, "%s %d", DEF_FIXED_FACE, def_size);
+    char *def_fx_font_name = lstring::copy(buf);
+    snprintf(buf, 80, "%s %d", DEF_PROP_FACE, def_size);
+    char *def_pr_font_name = lstring::copy(buf);
+
+    // Poke in the names.
+    for (int i = 0; i < num_app_fonts; i++) {
+        if (app_fonts[i].fixed)
+            app_fonts[i].default_fontname = def_fx_font_name;
+        else
+            app_fonts[i].default_fontname = def_pr_font_name;
+    }
 }
 
 
@@ -138,9 +165,7 @@ QTfont::getName(int fnum)
 char *
 QTfont::getFamilyName(int fnum)
 {
-/* XXX
     if (fnum > 0 && fnum < num_app_fonts) {
-#if GTK_CHECK_VERSION(1,3,15)
         char *family;
         int sz;
         parse_freeform_font_string(fonts[fnum].name, &family, 0, &sz, 0);
@@ -151,14 +176,7 @@ QTfont::getFamilyName(int fnum)
             delete [] family;
             return (str);
         }
-#else
-        xfd_t f(fonts[fnum].name);
-        if (!f.get_family())
-            return (0);
-        return (f.family_xfd(0, true));
-#endif
     }
-*/
     return (0);
 }
 
@@ -224,6 +242,147 @@ QTfont::unregisterCallback(void *pwidget, int fnum)
 }
 
 
+/*XXX
+// Static function.
+// Call this to track font changes.
+//
+void
+QTfont::trackFontChange(GtkWidget *widget, int fnum)
+{
+}
+
+
+// Static function.
+// Set the default font for the widget to the index (FNT_???).  If
+// track is true, the widget font can be updated from the font
+// selection pop-up.
+//
+void
+QTfont::setupFont(GtkWidget *widget, int font_index, bool track)
+{
+}
+*/
+
+
+// Static function.
+// Return the string width/height for the font index provided.
+//
+bool
+QTfont::stringBounds(const char *string, int fnum, int *w, int *h)
+{
+    QFont *f;
+    if (FC.getFont(&f, fnum)) {
+        QFontMetrics fm(*f);
+        if (!string)
+            string = "X";
+        if (w)
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+            *w = fm.horizontalAdvance(string);
+#else
+            *w = fm.width(string);
+#endif
+        if (h)
+            *h = fm.height();
+        return (true);
+    }
+    return (false);
+}
+
+
+// Static function.
+// Return the string width/height for the widget provided.
+//
+bool
+QTfont::stringBounds(const char *string, const QWidget *widget, int *w, int *h)
+{
+    if (widget) {
+        QFontMetrics fm = widget->fontMetrics();
+        if (!string)
+            string = "X";
+        if (w)
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+            *w = fm.horizontalAdvance(string);
+#else
+            *w = fm.width(string);
+#endif
+        if (h)
+            *h = fm.height();
+        return (true);
+    }
+    return (false);
+}
+
+
+// Static function.
+// Return the string width for the font index provided.
+//
+int
+QTfont::stringWidth(const char *string, int fnum)
+{
+    QFont *f;
+    if (FC.getFont(&f, fnum)) {
+        QFontMetrics fm(*f);
+        if (!string)
+            string = "X";
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        return (fm.horizontalAdvance(string));
+#else
+        return (fm.width(string));
+#endif
+    }
+    return (8*strlen(string));
+}
+
+
+// Static function.
+// Return the string width for the widget provided.
+//
+int
+QTfont::stringWidth(const char *string, const QWidget *widget)
+{
+    if (widget) {
+        if (!string)
+            string = "X";
+        QFontMetrics fm = widget->fontMetrics();
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        return (fm.horizontalAdvance(string));
+#else
+        return (fm.width(string));
+#endif
+    }
+    return (8*strlen(string));
+}
+
+
+// Static function.
+// Return the line height for the font index provided.
+//
+int
+QTfont::lineHeight(int fnum)
+{
+    QFont *f;
+    if (FC.getFont(&f, fnum)) {
+        QFontMetrics fm(*f);
+        return (fm.height());
+    }
+    return (16);
+}
+
+
+// Static function.
+// Return the line height for the widget provided.
+//
+int
+QTfont::lineHeight(const QWidget *widget)
+{
+    if (widget) {
+        QFontMetrics fm = widget->fontMetrics();
+        return (fm.height());
+    }
+    return (16);
+}
+
+
 // Create a font for the string given in name, which has the form
 // "family [style keywords] [size]".
 //
@@ -260,15 +419,17 @@ QTfont::new_font(const char *name, bool fixed)
 }
 
 
-// Refresh the text widgets.
+// Private function to refresh the text widgets.
 //
 void
 QTfont::refresh(int fnum)
 {
     if (getFont(0, fnum)) {
-        for (FcbRec *f = fonts[fnum].cbs; f; f = f->next)
-            if (fonts[fnum].font)
+        for (FcbRec *f = fonts[fnum].cbs; f; f = f->next) {
+            if (fonts[fnum].font) {
                 f->widget->setFont(*fonts[fnum].font);
+            }
+        }
     }
 }
 
@@ -429,6 +590,36 @@ QTfontPopup::~QTfontPopup()
             owner->monitor.remove(this);
             if (owner->fontsel == this)
                 owner->fontsel = 0;
+        }
+    }
+}
+
+
+// GRpopup override
+// Register the calling button, and set up:
+//  1.  whether or not the caller is deselected on popdwon.
+//  2.  whether or not deselecting the caller causes popdown.
+//
+void
+QTfontPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
+{
+    p_caller = c;
+    p_no_desel = no_dsl;
+    if (handle_popdn) {
+        QObject *o = (QObject*)c;
+        if (o) {
+            if (o->isWidgetType()) {
+                QPushButton *btn = dynamic_cast<QPushButton*>(o);
+                if (btn)
+                    connect(btn, SIGNAL(clicked()),
+                        this, SLOT(quit_slot()));
+            }
+            else {
+                QAction *a = dynamic_cast<QAction*>(o);
+                if (a)
+                    connect(a, SIGNAL(triggered()),
+                        this, SLOT(quit_slot()));
+            }
         }
     }
 }
