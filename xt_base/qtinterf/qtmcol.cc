@@ -62,11 +62,6 @@ QTbag::PopUpMultiCol(stringlist *symlist, const char *title,
     void(*callback)(const char*, void*), void *arg,
     const char **buttons, int pgsize, bool no_dd)
 {
-    static int mcol_count;
-
-    if (!this)
-        return (0);
-
     QTmcolPopup *mcol = new QTmcolPopup(this, symlist, title,
         buttons, pgsize, arg);
     mcol->register_callback(callback);
@@ -121,7 +116,12 @@ mcol_delegate::sizeHint(const QStyleOptionViewItem&,
 {
     QListWidgetItem *item = widget->item_of(index);
     QFontMetrics fm(item->font());
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+    return (QSize(fm.horizontalAdvance(item->text()) + COLUMN_SPACING,
+        fm.height()));
+#else
     return (QSize(fm.width(item->text()) + COLUMN_SPACING, fm.height()));
+#endif
 }
 
 

@@ -60,18 +60,14 @@ class QHBoxLayout;
 class QMouseEvent;
 class QResizeEvent;
 
-inline class QTltab *qtLtab();
 
 class QTltab : public QWidget, public cLtab, public QTdraw
 {
     Q_OBJECT
 
-    static QTltab *ptr() { return (instancePtr); }
-
 public:
-    friend inline QTltab *qtLtab() { return (QTltab::ptr()); }
-
-    QTltab(bool, QWidget*);
+    QTltab(bool);
+    ~QTltab();
 
     void setup_drawable();
     void blink(CDl*);
@@ -86,6 +82,15 @@ public:
     QScrollBar *scrollbar()     { return (ltab_scrollbar); }
     QWidget *searcher()         { return (ltab_search_container); }
 
+    static QTltab *self()
+    {
+        if (!instancePtr)
+            on_null_ptr();
+        return (instancePtr);
+    }
+
+    QSize sizeHint()            const { return (QSize(160, -1)); }
+
 signals:
     void valueChanged(int);
 
@@ -95,8 +100,11 @@ private slots:
     void resize_slot(QResizeEvent*);
 //    void s_btn_slot(bool);
     void ltab_scroll_value_changed_slot(int);
+    void font_changed(int);
 
 private:
+    static void on_null_ptr();
+
     QScrollBar *ltab_scrollbar;
     QWidget *ltab_search_container;
     QWidget *ltab_entry;

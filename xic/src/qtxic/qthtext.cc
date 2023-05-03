@@ -38,7 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#include "qtmain.h"
 #include "qthtext.h"
 #include "qtinterf/qtfont.h"
 #include "cd_property.h"
@@ -262,7 +261,7 @@ hyList *QTedit::pe_stores[PE_NUMSTORES];
 
 QTedit *QTedit::instancePtr = 0;
 
-QTedit::QTedit(bool nogr, QWidget *parent) : QTdraw(XW_TEXT)
+QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
 {
     if (instancePtr) {
         fprintf(stderr, "Singleton class QTedit already instantiated.\n");
@@ -281,16 +280,21 @@ QTedit::QTedit(bool nogr, QWidget *parent) : QTdraw(XW_TEXT)
     if (nogr)
         return;
 
-    QTmainwin *w = dynamic_cast<QTmainwin*>(parent);
-    if (w)
-        gd_viewport = w->PromptLine();
+    gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
 
     QFont *font;
     if (FC.getFont(&font, FNT_SCREEN))
         gd_viewport->set_font(font);
-    FC.registerCallback(Viewport(), FNT_SCREEN);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed(int)), Qt::QueuedConnection);
 
-/*
+/* XXX deal with this
+The class should derive from QWidget, with a HBox layout that contains
+the keys-pressed, save, recall, and long-text buttons, and te promptline.
+The main window can instantiate the whold thing above the status line.
+The control logic, i.e., visibility, will be part of this.
+
+
     container = gtk_hbox_new(false, 0);
     gtk_widget_show(container);
 
@@ -372,6 +376,22 @@ QTedit::QTedit(bool nogr, QWidget *parent) : QTdraw(XW_TEXT)
 }
 
 
+QTedit::~QTedit()
+{
+    instancePtr = 0;
+}
+
+
+// Private static error exit.
+//
+void
+QTedit::on_null_ptr()
+{
+    fprintf(stderr, "Singleton class QTedit used before instantiated.\n");
+    exit(1);
+}
+
+
 // Flash a message just above the prompt line for a couple of seconds.
 //
 void
@@ -394,13 +414,14 @@ QTedit::flash_msg(const char *msg, ...)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_container_add(GTK_CONTAINER(popup), label);
 
-    GRX->SetPopupLocation(GRloc(LW_LL), popup, QTmainwin::self()->Viewport());
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), popup,
+        QTmainwin::self()->Viewport());
     gtk_window_set_transient_for(GTK_WINDOW(popup),
         GTK_WINDOW(QTmainwin::self()->Shell()));
 
     gtk_widget_show(popup);
 
-    GRX->AddTimer(2000, fm_timeout, popup);
+    QTdev::self()->AddTimer(2000, fm_timeout, popup);
     */
 }
 
@@ -443,7 +464,7 @@ QTedit::flash_msg_here(int x, int y, const char *msg, ...)
 
     gtk_widget_show(popup);
 
-    GRX->AddTimer(2000, fm_timeout, popup);
+    QTdev::self()->AddTimer(2000, fm_timeout, popup);
     */
 }
 
@@ -470,7 +491,7 @@ QTedit::win_width(bool)
 int
 QTedit::win_height()
 {
-//    if (!GRX || !QTmainwin::self())
+//    if (!QTdev::exists() || !QTmainwin::exists())
         return (14);
 //    return (pe_hei);
 }
@@ -481,7 +502,7 @@ QTedit::win_height()
 void
 QTedit::set_focus()
 {
-//    GRX->RevertFocus();
+//    QTdev::self()->RevertFocus();
 }
 
 
@@ -583,5 +604,17 @@ QTedit::warp_pointer()
     // prompt line reconfiguration.
 
 //    g_idle_add(warp_ptr, this);
+}
+
+
+void
+QTedit::font_changed(int fnum)
+{
+    if (fnum == FNT_SCREEN) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_SCREEN))
+            gd_viewport->set_font(fnt);
+        //XXX redraw
+    }
 }
 

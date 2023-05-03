@@ -72,6 +72,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QResizeEvent>
+#include <QSplitter>
 
 #include "file_menu.h"
 #include "view_menu.h"
@@ -362,8 +363,8 @@ QTpkg::Initialize(GRwbag *wcp)
         return (true);
 //qInstallMsgHandler(messageOutput);
     if (MainDev()->ident == _devNULL_) {
-        static QTltab qt_lt(true, 0);
-        static QTedit qt_hy(true, 0);
+        static QTltab qt_lt(true);
+        static QTedit qt_hy(true);
         LT()->SetLtab(&qt_lt);
         PL()->SetEdit(&qt_hy);
 
@@ -390,7 +391,7 @@ QTpkg::Initialize(GRwbag *wcp)
     if (!w)
         return (true);
 
-    GRX->RegisterMainFrame(w);
+    QTdev::self()->RegisterMainFrame(w);
     GRpkgIf()->RegisterMainWbag(w);
     w->initialize();
     w->show();
@@ -407,8 +408,8 @@ QTpkg::Initialize(GRwbag *wcp)
 #endif
 
     PL()->Init();
-    qtEdit()->init();
-//    GRX->RegisterBigWindow(w->Shell());
+    QTedit::self()->init();
+//    QTdev::self()->RegisterBigWindow(w->Shell());
 
     Gst()->SetGhost(GFnone);
     if (!QTmainwin::self())
@@ -450,7 +451,7 @@ QTpkg::Halt()
 {
     if (!MainDev() || MainDev()->ident != _devQT_)
         return;
-//    GRX->RegisterBigWindow(0);
+//    QTdev::self()->RegisterBigWindow(0);
     EV()->InitCallback();
     if (DSP()->MainWdesc()) {
         DSP()->MainWdesc()->SetWbag(0);
@@ -469,7 +470,7 @@ QTpkg::AppLoop()
         return;
     RegisterEventHandler(0, 0);
     pkg_in_main_loop = true;
-    GRX->MainLoop(true);
+    QTdev::self()->MainLoop(true);
 }
 
 
@@ -652,9 +653,9 @@ QTpkg::CloseGraphicsConnection()
 {
     if (!MainDev() || MainDev()->ident != _devQT_)
         return;
-    if (GRX->ConnectFd() > 0) {
+    if (QTdev::self()->ConnectFd() > 0) {
 //        gtk_main_quit();
-        close(GRX->ConnectFd());
+        close(QTdev::self()->ConnectFd());
     }
 }
 
@@ -702,7 +703,7 @@ QTpkg::RegisterTimeoutProc(int ms, int(*proc)(void*), void *arg)
 {
     if (!MainDev() || MainDev()->ident != _devQT_)
          return (0);
-    return (GRX->AddTimer(ms, proc, arg));
+    return (QTdev::self()->AddTimer(ms, proc, arg));
 }
 
 
@@ -711,7 +712,7 @@ QTpkg::RemoveTimeoutProc(int id)
 {
     if (!MainDev() || MainDev()->ident != _devQT_)
          return (false);
-    GRX->RemoveTimer(id);
+    QTdev::self()->RemoveTimer(id);
     return (true);
 }
 
@@ -727,7 +728,7 @@ QTpkg::StartTimer(int time, bool *set)
     if (set)
         *set = false;
     if (time > 0)
-        id = GRX->AddTimer(time, main_local::timer_cb, set);
+        id = QTdev::self()->AddTimer(time, main_local::timer_cb, set);
     return (id);
 }
 
@@ -799,7 +800,8 @@ cKeys::cKeys(int wnum, QWidget *prnt) : draw_qt_w(false, prnt)
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
         set_font(fnt);
-    FC.registerCallback(widget(), FNT_SCREEN);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed(int)), Qt::QueuedConnection);
 }
 
 
@@ -875,6 +877,18 @@ cKeys::check_exec(bool exact)
 }
 
 
+void
+cKeys::font_changed(int fnum)
+{
+    if (fnum == FNT_SCREEN) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_SCREEN))
+            set_font(fnt);
+        //XXX
+    }
+}
+
+
 //-----------------------------------------------------------------------------
 // QTsubwin functions
 
@@ -914,7 +928,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
-    FC.registerCallback(Viewport(), FNT_SCREEN);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed(int)), Qt::QueuedConnection);
 
     connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
@@ -1014,7 +1029,7 @@ QTsubwin::subw_initialize(int wnum)
     //
     for (MenuEnt *mx = GTKmenuPtr->Msubwins[wnum]->menu; mx->entry; mx++) {
         if (!strcmp(mx->entry, MenuCANCL)) {
-            GRX->SetDoubleClickExit(ebox, (GtkWidget*)mx->cmd.caller);
+            QTdev::self()->SetDoubleClickExit(ebox, (GtkWidget*)mx->cmd.caller);
             break;
         }
     }
@@ -1207,7 +1222,7 @@ QTsubwin::DumpWindow(const char *filename, const BBox *AOI = 0)
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
 #else
         pm = gdk_pixmap_new(gd_window, vp_width, vp_height,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(QTdev::self()->Visual()));
         if (!pm)
             return (false);
         GdkWindow *tmpw = gd_window;
@@ -1418,7 +1433,7 @@ QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
     (void)caller;
     (void)mode;
 /*
-    if (!GRX || !QTmainwin::self())
+    if (!QTdev::exists || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         if (sw_zoompop)
@@ -1836,7 +1851,7 @@ printf("%x %x %x\n", ev->key(), ev->nativeScanCode(), ev->nativeVirtualKey());
 */
 
     if (keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
-            QTmainwin::self()->PromptLine()->widget()->underMouse(), false))
+            QTmainwin::self()->PromptLine()->underMouse(), false))
         ev->accept();
 }
 
@@ -1952,6 +1967,18 @@ QTsubwin::drop_slot(QDropEvent *ev)
 {
     (void)ev;
 }
+
+
+void
+QTsubwin::font_changed(int fnum)
+{
+    if (fnum == FNT_SCREEN) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_SCREEN))
+            gd_viewport->set_font(fnt);
+        //XXX
+    }
+}
 // End of QRsubwin slots.
  
 
@@ -2040,16 +2067,6 @@ static const char * const wr_xpm[] = {
     "                              ",
     "                              "};
 
-menu_button::menu_button(MenuEnt *ent, QWidget *prnt) : QPushButton(prnt)
-{
-    setAutoDefault(false);
-    if (ent->is_toggle())
-        setCheckable(true);
-    entry = ent;
-    connect(this, SIGNAL(clicked()), this, SLOT(pressed_slot()));
-}
-
-
 //-----------------------------------------------------------------------------
 // GTKmainwin functions
 
@@ -2064,14 +2081,14 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     mw_layertab = 0;
     mw_status = 0;
 
-    QAction *a = sw_menubar->addAction(QString("wr"));
+    QAction *a = sw_menubar->addAction(tr("wr"));
     a->setIcon(QIcon(QPixmap(wr_xpm)));
     connect(a, SIGNAL(triggered()), this, SLOT(wr_btn_slot()));
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);
     vbox->setSpacing(2);
-    // By default, this does nothiong in Apple, menus are set in the
+    // By default, this does nothing in Apple, menus are set in the
     // main display frame.
     vbox->setMenuBar(sw_menubar);
 
@@ -2089,30 +2106,45 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
     hbox->setSpacing(2);
-    vbox->addLayout(hbox);
 
     mw_phys_button_box = new QWidget(this);
     hbox->addWidget(mw_phys_button_box);
     mw_elec_button_box = new QWidget(this);
     hbox->addWidget(mw_elec_button_box);
-    mw_layertab = new QTltab(false, this);
+    mw_layertab = new QTltab(false);
     hbox->addWidget(mw_layertab);
-    hbox->addWidget(Viewport());
+    QWidget *qw = new QWidget();
+    qw->setLayout(hbox);
+    LT()->SetLtab(mw_layertab);
+
+    QSplitter *qs = new QSplitter();
+    qs->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    qs->addWidget(qw);
+    qs->addWidget(Viewport());
+
+    // This sets the handle is a sensible place, not easy!
+    int wd = sizeHint().width();
+    int w = QTfont::stringWidth(0, FNT_SCREEN);
+    qs->setSizes(QList<int>() << 90 + 10*w << wd);
+
+    vbox->addWidget(qs);
 
     hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    int w = QTfont::stringWidth(0, FNT_SCREEN) * 7 + 4;
+    w *= 7;
+    w += 4;
     int h = QTfont::lineHeight(FNT_SCREEN) + 4;
     sw_keys_pressed->setFixedSize(w, h);
     hbox->addWidget(sw_keys_pressed);
 
-    mw_promptline = draw_if::new_draw_interface(DrawNative, false, this);
-    mw_promptline->widget()->setMinimumHeight(h);
-    mw_promptline->widget()->setMaximumHeight(h);
-    hbox->addWidget(mw_promptline->widget());
+    PL()->SetEdit(new QTedit(false));
+    mw_promptline = QTedit::self()->Viewport();
+    mw_promptline->setMinimumHeight(h);
+    mw_promptline->setMaximumHeight(h);
+    hbox->addWidget(mw_promptline);
 
     mw_status = new cParam(this);
     mw_status->setMinimumHeight(h);
@@ -2144,12 +2176,9 @@ QTmainwin::initialize()
 //    xrm_load_colors();
     DSP()->ColorTab()->init();
 
-    qtMenu()->InitMainMenu();
-    qtMenu()->InitTopButtonMenu();
-    qtMenu()->InitSideButtonMenus();
-
-    PL()->SetEdit(new QTedit(false, this));
-    LT()->SetLtab(mw_layertab);
+    QTmenu::self()->InitMainMenu();
+    QTmenu::self()->InitTopButtonMenu();
+    QTmenu::self()->InitSideButtonMenus();
 }
 
 
@@ -2183,7 +2212,7 @@ QTmainwin::closeEvent(QCloseEvent *ev)
         pop_busy();
         ev->ignore();
     }
-    if (!qtMenu()->IsGlobalInsensitive())
+    if (!QTmenu::self()->IsGlobalInsensitive())
         XM()->Exit(ExitCheckMod);
     ev->ignore();
 }
@@ -2199,7 +2228,8 @@ QTmainwin::wr_btn_slot()
         return;
     }
     char buf[128];
-    sprintf(buf, "%s-%s bug", XM()->Product(), XM()->VersionString());
+    snprintf(buf, sizeof(buf), "%s-%s bug", XM()->Product(),
+        XM()->VersionString());
     PopUpMail(buf, Log()->MailAddress());
 }
 

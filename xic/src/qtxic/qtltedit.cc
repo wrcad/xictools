@@ -89,7 +89,7 @@ cMain::PopUpLayerEditor(GRobject c)
 {
     (void)c;
     /*XXX
-    if (!GRX || !QTmainwin::self())
+    if (!QTsdev::exists() || !QTmainwin::exists())
         return (0);
     gtkLcb *cbs = new gtkLcb(c);
     if (!cbs->Shell()) {
@@ -99,7 +99,8 @@ cMain::PopUpLayerEditor(GRobject c)
 
     gtk_window_set_transient_for(GTK_WINDOW(cbs->Shell()),
         GTK_WINDOW(QTmainwin::self()->Shell()));
-    GRX->SetPopupLocation(GRloc(), cbs->Shell(), QTmainwin::self()->viewport);
+    QTdev::self()->SetPopupLocation(GRloc(), cbs->Shell(),
+        QTmainwin::self()->viewport);
     gtk_widget_show(cbs->Shell());
     return (cbs);
     */
@@ -149,7 +150,7 @@ qtLcb::layername()
         (GtkWidget*)gtk_object_get_data(GTK_OBJECT(shell), "label");
     char *string = get_lname(text, label);
     if (!string) {
-        GRX->Deselect(add);
+        QTdev::self()->Deselect(add);
         add_cb(false);
         return (0);
     }

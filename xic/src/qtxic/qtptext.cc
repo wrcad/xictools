@@ -54,7 +54,7 @@
 void
 polytext_update_label()
 {
-/*
+/* XXX
     if (fsel_label) {
         char *str = "internal vector";
         if (GetVariable(VA_LogoPretty))
@@ -62,7 +62,7 @@ polytext_update_label()
         else if (GetVariable(VA_LogoManhattan))
             str = "Manhattan";
         char buf[256];
-        sprintf(buf, "Logo command will use %s font.", str);
+        snprintf(buf, sizeof(buf), "Logo command will use %s font.", str);
         gtk_label_set(GTK_LABEL(fsel_label), buf);
     }
 */

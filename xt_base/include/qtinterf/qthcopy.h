@@ -128,7 +128,7 @@ namespace qtinterf
         HClegType       pd_legend;          // use legend
         HCorientFlags   pd_orient;          // portrait or landscape
         bool            pd_tofile;          // print to file
-        bool            pd_tofbak;          // backup value
+        unsigned char   pd_tofbak;          // backup value
         bool            pd_active;          // pop-up is visible
         bool            pd_metric;          // dimensions are metric
         int             pd_drvrmask;        // available drivers

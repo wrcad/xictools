@@ -111,7 +111,7 @@ GTKapp::PopUpLayerAliases(int mode, GRobject caller)
     if (mode == MODE_OFF) {
         if (LA) {
             if (LA->calling_btn)
-                GRX->Deselect(LA->calling_btn);
+                QTdev::self()->Deselect(LA->calling_btn);
             GtkWidget *widg = LA->shell;
             LA->shell = 0;
             delete LA;
@@ -127,7 +127,7 @@ GTKapp::PopUpLayerAliases(int mode, GRobject caller)
     }
     if (LA) {
         if (caller)
-            GRX->Deselect(caller);
+            QTdev::self()->Deselect(caller);
         return;
     }
     LA = new sLA(caller);
@@ -220,7 +220,7 @@ GTKapp::PopUpLayerAliases(int mode, GRobject caller)
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(la_cancel_proc), 0);
     gtk_window_set_focus(GTK_WINDOW(LA->shell), button);
-    GRX->SetDoubleClickExit(LA->shell, button);
+    QTdev::self()->SetDoubleClickExit(LA->shell, button);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 3, 4,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -228,7 +228,7 @@ GTKapp::PopUpLayerAliases(int mode, GRobject caller)
 
     gtk_window_set_transient_for(GTK_WINDOW(LA->shell),
         GTK_WINDOW(GTKmainWin->shell));
-    GRX->SetPopupLocation(GRloc(), LA->shell, GTKmainWin->shell);
+    QTdev::self()->SetPopupLocation(GRloc(), LA->shell, GTKmainWin->shell);
     LA->update();
     gtk_widget_show(LA->shell);
 }
@@ -249,7 +249,8 @@ str_cb(const char *str, void *arg)
             char buf[256];
             FILE *fp = fopen(str, "r");
             if (!fp) {
-                sprintf(buf, "Failed to open file\n%s", strerror(errno));
+                snprintf(buf, sizeof(buf), "Failed to open file\n%s",
+                    strerror(errno));
                 LA->PopUpMessage(buf, true, false, true);
             }
             else {
@@ -266,7 +267,8 @@ str_cb(const char *str, void *arg)
             char buf[256];
             FILE *fp = fopen(str, "w");
             if (!fp) {
-                sprintf(buf, "Failed to open file\n%s", strerror(errno));
+                snprintf(buf, sizeof(buf), "Failed to open file\n%s",
+                    strerror(errno));
                 LA->PopUpMessage(buf, true, false, true);
             }
             else {
@@ -337,13 +339,13 @@ la_action_proc(GtkWidget *caller, void *client_data, unsigned code)
             gtk_clist_get_text(GTK_CLIST(LA->viewport), LA->row, 0, &n);
             gtk_clist_get_text(GTK_CLIST(LA->viewport), LA->row, 1, &a);
             char buf[128];
-            sprintf(buf, "%s %s", n, a);
+            snprintf(buf, sizeof(buf), "%s %s", n, a);
             LA->PopUpEditString(0, loc, "Enter layer name and alias", buf,
                 str_cb, (void*)EditCode, 200, &LA->str_cancel, 0, false, 0);
         }
     }
     else if (code == DecCode) {
-        LA->show_dec = GRX->GetStatus(caller);
+        LA->show_dec = QTdev::self()->GetStatus(caller);
         LA->update();
     }
     else if (code == HelpCode)

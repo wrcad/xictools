@@ -56,10 +56,6 @@
 #include <QApplication>
 
 
-// Global access pointer.
-QTdev *GRX;
-
-
 // Device-dependent setup.
 //
 void
@@ -73,13 +69,15 @@ GRpkg::DevDepInit(unsigned int cfg)
 //-----------------------------------------------------------------------------
 // QTdev methods
 
+QTdev * QTdev::instancePtr = 0;
+
 QTdev::QTdev()
 {
-    if (GRX) {
+    if (instancePtr) {
         fprintf(stderr, "Singleton class QTdev is already instantiated.\n");
         exit (1);
     }
-    GRX             = this;
+    instancePtr     = this;
     name            = "QT";
     ident           = _devQT_;
     devtype         = GRmultiWindow;
@@ -95,9 +93,18 @@ QTdev::QTdev()
 
 QTdev::~QTdev()
 {
-    GRX = 0;
+    instancePtr = 0;
 }
 
+
+// Private static error exit.
+//
+void
+QTdev::on_null_ptr()
+{
+    fprintf(stderr, "Singleton class QTdev used before insgtantiated.\n");
+    exit(1);
+}
 
 bool
 QTdev::Init(int *argc, char **argv)
@@ -894,7 +901,7 @@ QTbag::PopUpMail(const char *subject, const char *mailaddr,
         text->set_mailaddr(mailaddr);
     text->register_quit_callback(downproc);
     text->set_visible(true);
-    GRX->SetPopupLocation(loc, text, shell);
+    QTdev::self()->SetPopupLocation(loc, text, shell);
     return (text);
 }
 
@@ -922,7 +929,7 @@ QTbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
         fontsel->show();
         fontsel->raise();
         fontsel->activateWindow();
-        GRX->SetPopupLocation(loc, fontsel, shell);
+        QTdev::self()->SetPopupLocation(loc, fontsel, shell);
     }
     else {
         if (!fontsel)
@@ -1010,7 +1017,7 @@ QTbag::PopUpFileSelector(FsMode mode, GRloc loc,
     fsel->register_callback(cb);
     fsel->register_quit_callback(down_cb);
     fsel->set_visible(true);
-    GRX->SetPopupLocation(loc, fsel, shell);
+    QTdev::self()->SetPopupLocation(loc, fsel, shell);
     return (fsel);
 }
 
@@ -1048,7 +1055,7 @@ QTbag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
     affirm->register_caller(caller, false, true);
     affirm->register_callback(action_callback);
     affirm->set_visible(true);
-    GRX->SetPopupLocation(loc, affirm, shell);
+    QTdev::self()->SetPopupLocation(loc, affirm, shell);
     return (affirm);
 }
 
@@ -1066,7 +1073,7 @@ QTbag::PopUpNumeric(GRobject caller, GRloc loc, const char *prompt_str,
     numer->register_caller(caller, false, true);
     numer->register_callback(action_callback);
     numer->set_visible(true);
-    GRX->SetPopupLocation(loc, numer, shell);
+    QTdev::self()->SetPopupLocation(loc, numer, shell);
     return (numer);
 }
 
@@ -1099,7 +1106,7 @@ QTbag::PopUpEditString(GRobject caller, GRloc loc, const char *prompt_string,
         textwidth = 150;
     inp->setMinimumWidth(textwidth);
     inp->set_visible(true);
-    GRX->SetPopupLocation(loc, inp, shell);
+    QTdev::self()->SetPopupLocation(loc, inp, shell);
     return (inp);
 }
 
@@ -1154,7 +1161,7 @@ QTbag::PopUpMessage(const char *string, bool err, bool desens,
         message = mesg;
     mesg->setTitle(err ? "Error" : "Message");
     mesg->set_visible(true);
-    GRX->SetPopupLocation(loc, message, shell);
+    QTdev::self()->SetPopupLocation(loc, message, shell);
     return (multi ? mesg : 0);
 }
 
@@ -1181,7 +1188,7 @@ QTbag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
         error = new QTtextPopup(this, message_str, style, 400, 100);
         error->setTitle("Error");
         error->set_visible(true);
-        GRX->SetPopupLocation(loc, error, shell);
+        QTdev::self()->SetPopupLocation(loc, error, shell);
     }
     return (err_cnt);
 }
@@ -1218,7 +1225,7 @@ QTbag::PopUpErr(ShowMode mode, const char *message_str, STYtype style,
         error = new QTtextPopup(this, message_str, style, 400, 100);
         error->setTitle("Error");
         error->set_visible(true);
-        GRX->SetPopupLocation(loc, error, shell);
+        QTdev::self()->SetPopupLocation(loc, error, shell);
     }
     return (err_cnt);
 }
@@ -1230,7 +1237,7 @@ QTbag::PopUpErrText(const char *message_str, STYtype style, GRloc loc)
     QTtextPopup *mesg = new QTtextPopup(this, message_str, style, 400, 100);
     mesg->setTitle("Error");
     mesg->set_visible(true);
-    GRX->SetPopupLocation(loc, mesg, shell);
+    QTdev::self()->SetPopupLocation(loc, mesg, shell);
     return (mesg);
 }
 
@@ -1255,7 +1262,7 @@ QTbag::PopUpInfo(ShowMode mode, const char *msg, STYtype style, GRloc loc)
         info = new QTtextPopup(this, msg, style, 400, 200);
         info->setTitle("Info");
         info->set_visible(true);
-        GRX->SetPopupLocation(loc, info, shell);
+        QTdev::self()->SetPopupLocation(loc, info, shell);
     }
     return (info_cnt);
 }
@@ -1289,7 +1296,7 @@ QTbag::PopUpHTMLinfo(ShowMode mode, const char *msg, GRloc loc)
         htinfo = new QTtextPopup(this, msg, STY_HTML, 400, 200);
         htinfo->setTitle("Info");
         htinfo->set_visible(true);
-        GRX->SetPopupLocation(loc, info, shell);
+        QTdev::self()->SetPopupLocation(loc, info, shell);
     }
     return (htinfo_cnt);
 }

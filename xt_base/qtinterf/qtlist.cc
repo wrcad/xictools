@@ -125,7 +125,12 @@ list_delegate::sizeHint(const QStyleOptionViewItem&,
 {
     QListWidgetItem *item = widget->item_of(index);
     QFontMetrics fm(item->font());
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+    return (QSize(fm.horizontalAdvance(item->text()) + COLUMN_SPACING,
+        fm.height()));
+#else
     return (QSize(fm.width(item->text()) + COLUMN_SPACING, fm.height()));
+#endif
 }
 
 

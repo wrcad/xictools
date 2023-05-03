@@ -57,7 +57,7 @@ cFH::PopUpExtIf(GRobject caller, ShowMode mode)
 (void)caller;
 (void)mode;
 /*
-    if (!GRX || !QTmainwin::self())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Fch;
@@ -79,7 +79,8 @@ cFH::PopUpExtIf(GRobject caller, ShowMode mode)
 
     gtk_window_set_transient_for(GTK_WINDOW(Fch->Shell()),
         GTK_WINDOW(mainBag()->Shell()));
-    GRX->SetPopupLocation(GRloc(LW_LR), Fch->Shell(), mainBag()->viewport);
+    QTdev::self()->SetPopupLocation(GRloc(LW_LR), Fch->Shell(),
+        mainBag()->viewport);
     gtk_widget_show(Fch->Shell());
     setPopUpVisible(true);
 */

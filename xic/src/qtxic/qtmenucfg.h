@@ -51,16 +51,14 @@
 struct MenuEnt;
 struct MenuList;
 
-inline class qtMenuConfig *qtCfg();
-
-class qtMenuConfig : public QObject
+class QTmenuConfig : public QObject
 {
     Q_OBJECT
 
 public:
-    friend inline qtMenuConfig *qtCfg() { return (qtMenuConfig::ptr()); }
+    QTmenuConfig();
+    ~QTmenuConfig();
 
-    qtMenuConfig();
     void instantiateMainMenus();
     void instantiateTopButtonMenu();
     void instantiateSideButtonMenus();
@@ -68,6 +66,13 @@ public:
     void updateDynamicMenus();
     void switch_menu_mode(DisplayMode, int);
     void set_main_global_sens(const MenuList*, bool);
+
+    static QTmenuConfig *self()
+    {
+        if (!instancePtr)
+            on_null_ptr();
+        return (instancePtr);
+    }
 
 signals:
     void exec_idle(MenuEnt*);
@@ -104,20 +109,12 @@ private slots:
 
 private:
     const char **get_style_pixmap();
-
-    static qtMenuConfig *ptr()
-        {
-            if (!instancePtr)
-                on_null_ptr();
-            return (instancePtr);
-        }
-
     static void on_null_ptr();
 
     QMenu *style_menu;
     QMenu *shape_menu;
 
-    static qtMenuConfig *instancePtr;
+    static QTmenuConfig *instancePtr;
 };
 
 #endif

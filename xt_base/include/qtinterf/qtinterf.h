@@ -271,13 +271,29 @@ namespace qtinterf
         void SetPopupLocation(GRloc, QWidget*, QWidget*);
         void ComputePopupLocation(GRloc, QWidget*, QWidget*, int*, int*);
 
+        static QTdev *self()
+        {
+            if (!instancePtr)
+                on_null_ptr();
+            return (instancePtr);
+        }
+
+        static bool exists()
+        {
+            return (instancePtr != 0);
+        }
+
     private:
+        static void on_null_ptr();
+
         event_loop      *dv_loop;       // event loop stack
         QTbag           *dv_main_bag;   // top level bag
         interval_timer  *dv_timers;     // list of timers
         int             dv_minx;
         int             dv_miny;
         int             dv_loop_level;  // loop level
+
+        static QTdev    *instancePtr;
     };
 }
 

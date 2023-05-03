@@ -61,8 +61,14 @@ class QComboBox;
 
 namespace qtinterf
 {
-    struct QTfont : public GRfont
+    class QTfont : public QObject, public GRfont
     {
+        Q_OBJECT
+
+    public:
+        QTfont();
+        ~QTfont();
+
         void initFonts();
         GRfontType getType();
         void setName(const char*, int);
@@ -79,9 +85,20 @@ namespace qtinterf
         static int lineHeight(int);
         static int lineHeight(const QWidget*);
 
+        static QTfont *self()
+        {
+            if (!instancePtr)
+                on_null_ptr();
+            return (instancePtr);
+        }
+
+    signals:
+        void fontChanged(int);
+
     private:
         QFont *new_font(const char*, bool);
         void refresh(int);
+        static void on_null_ptr();
 
         struct FcbRec
         {
@@ -99,6 +116,8 @@ namespace qtinterf
             QFont *font;
             FcbRec *cbs;
         } fonts[MAX_NUM_APP_FONTS];
+
+        static QTfont *instancePtr;
     };
 
     class QTbag;

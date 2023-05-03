@@ -76,7 +76,7 @@ sSFD::SaveFileDlg(const char *prompt, const char *fnamein)
 {
     if (sfd_fsel)
         return (0);
-    if (!QTmainwin::self())
+    if (!QTmainwin::exists())
         return (0);
     sfd_dir_only = true;
     char *fname = pathlist::expand_path(fnamein, true, true);
@@ -90,7 +90,8 @@ sSFD::SaveFileDlg(const char *prompt, const char *fnamein)
     sfd_fsel = fs;
     fs->register_usrptr((void**)&sfd_fsel);
 
-    GRX->SetPopupLocation(GRloc(LW_LL), fs, QTmainwin::self()->Viewport());
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), fs,
+        QTmainwin::self()->Viewport());
     fs->show();
 
     char *in = PL()->EditPrompt(prompt, fname);
@@ -112,7 +113,7 @@ sSFD::OpenFileDlg(const char *prompt, const char *fnamein)
 {
     if (sfd_fsel)
         return (0);
-    if (!QTmainwin::self())
+    if (!QTmainwin::exists())
         return (0);
     char *fname = pathlist::expand_path(fnamein, true, true);
 
@@ -122,7 +123,8 @@ sSFD::OpenFileDlg(const char *prompt, const char *fnamein)
     sfd_fsel = fs;
     fs->register_usrptr((void**)&sfd_fsel);
 
-    GRX->SetPopupLocation(GRloc(LW_LL), fs, QTmainwin::self()->Viewport());
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), fs,
+        QTmainwin::self()->Viewport());
     fs->show();
 
     char *in = PL()->EditPrompt(prompt, fname);
@@ -196,7 +198,7 @@ sSFD::go_cb(const char*, void*)
 char *
 cMain::SaveFileDlg(const char *prompt, const char *fnamein)
 {
-    if (!GRX)
+    if (!QTdev::exists())
         return (0);
     xm_htext_cnames_only = true;
     char *ret = SFD.SaveFileDlg(prompt, fnamein);
@@ -210,7 +212,7 @@ cMain::SaveFileDlg(const char *prompt, const char *fnamein)
 char *
 cMain::OpenFileDlg(const char *prompt, const char *fnamein)
 {
-    if (!GRX)
+    if (!QTdev::exists())
         return (0);
     xm_htext_cnames_only = true;
     char *ret = SFD.OpenFileDlg(prompt, fnamein);
@@ -224,7 +226,7 @@ cMain::OpenFileDlg(const char *prompt, const char *fnamein)
 void
 cMain::PopUpFileSel(const char *root, void(*cb)(const char*, void*), void *arg)
 {
-    if (!GRX)
+    if (!QTdev::exists())
         return;
     static int posn_cnt;
 

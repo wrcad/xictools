@@ -45,26 +45,23 @@
 #ifndef QTHTEXT_H
 #define QTHTEXT_H
 
+#include "qtmain.h"
 #include "cd_hypertext.h"
 #include "promptline.h"
 #include "qtinterf/qtinterf.h"
+#include <QWidget>
 
 // String storage registers, 0 is "last", 1-5 are general.
 #define PE_NUMSTORES 6
 
-inline class QTedit *qtEdit();
 
-class QTedit : public cPromptEdit, public QTdraw
+class QTedit : public QWidget, public cPromptEdit, public QTdraw
 {
-    static QTedit *ptr() { return (instancePtr); }
+    Q_OBJECT
 
 public:
-    friend inline QTedit *qtEdit() { return (QTedit::ptr()); }
-
-    QTedit(bool, QWidget*);
-
-    // the widgets are owned by the main window
-//XXX    virtual ~QTedit() { viewport = 0; }
+    QTedit(bool);
+    ~QTedit();
 
     // virtual overrides
     void flash_msg(const char*, ...);
@@ -100,12 +97,23 @@ public:
     void hyCheckPixmap();
     */
 
+    static QTedit *self()
+    {
+        if (!instancePtr)
+            on_null_ptr();
+        return (instancePtr);
+    }
+
+private slots:
+    void font_changed(int);
+
 private:
+    static void on_null_ptr();
+
     QWidget *pe_container;
     QWidget *pe_keys;
 
     static hyList *pe_stores[PE_NUMSTORES]; // Editor text string registers.
-
     static QTedit *instancePtr;
 };
 

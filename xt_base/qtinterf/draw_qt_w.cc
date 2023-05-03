@@ -487,7 +487,11 @@ int
 draw_qt_w::text_width(QFont *fnt, const char *str, int len)
 {
     QFontMetrics fm(*fnt);
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+    return (fm.horizontalAdvance(QString(str), len));
+#else
     return (fm.width(QString(str), len));
+#endif
 }
 
 
@@ -506,7 +510,11 @@ draw_qt_w::text_extent(const char *str, int *w, int *h)
     const QFont &f = font();
     QFontMetrics fm(f);
     if (w)
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        *w = fm.horizontalAdvance(QString(str));
+#else
         *w = fm.width(QString(str));
+#endif
     if (h)
         *h = fm.height();
 }
@@ -697,7 +705,6 @@ draw_qt_w::draw_image(int xw, int yw, QImage *image,
 void
 draw_qt_w::resizeEvent(QResizeEvent *ev)
 {
-    QWidget::resizeEvent(ev);
     if (da_painter)
         da_painter->end();
     QFont fnt = da_painter->font();

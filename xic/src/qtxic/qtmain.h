@@ -144,6 +144,8 @@ private:
 
 class cKeys : public draw_qt_w
 {
+    Q_OBJECT
+
 public:
     cKeys(int, QWidget*);
 
@@ -156,6 +158,9 @@ public:
     int key(int k)      { return (keys[k]); }
     char *key_buf()     { return (keys); }
     void append(char c) { keys[keypos++] = c; }
+
+private slots:
+    void font_changed(int);
 
 private:
     int keypos;
@@ -237,6 +242,7 @@ protected slots:
     void leave_slot(QEvent*);
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);
+    void font_changed(int);
 
 protected:
     QPixmap     *sw_pixmap;
@@ -263,12 +269,19 @@ public:
         return (0);
     }
 
+    static bool exists()
+    {
+        if (DSP()->MainWdesc())
+            return (dynamic_cast<QTmainwin*>(DSP()->MainWdesc()->Wbag()) != 0);
+        return (false);
+    }
+
     // qtmain.cc
     QTmainwin();
     void initialize();
     void send_key_event(sKeyEvent*);
 
-    draw_if *PromptLine()       { return (mw_promptline); }
+    QWidget *PromptLine()       { return (mw_promptline); }
     QTltab *LayerTable()        { return (mw_layertab); }
     
     /*
@@ -311,7 +324,7 @@ private:
     QWidget     *mw_phys_button_box;
     QWidget     *mw_elec_button_box;
 
-    draw_if     *mw_promptline;
+    QWidget     *mw_promptline;
     cCoord      *mw_coords;
     QTltab      *mw_layertab;
     cParam      *mw_status;

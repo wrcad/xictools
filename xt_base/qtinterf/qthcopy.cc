@@ -147,7 +147,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
     pd_legend = HClegOff;
     pd_orient = 0;
     pd_tofile = false;
-    pd_tofbak = false;
+    pd_tofbak = 0;
     pd_active = false;
     pd_metric = false;
     pd_drvrmask = 0;

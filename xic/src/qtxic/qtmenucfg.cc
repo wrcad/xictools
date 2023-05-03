@@ -96,14 +96,19 @@ cMain::MenuItemLocation(int, int*, int*)
 //  shapes:XXX (XXX is shape code)
 //  user:XXX (XXX is user code)
 
+namespace {
+    // Instantiate
+    QTmenuConfig _cfg_;
+}
 
-qtMenuConfig *qtMenuConfig::instancePtr = 0;
 
-qtMenuConfig::qtMenuConfig()
+QTmenuConfig *QTmenuConfig::instancePtr = 0;
+
+QTmenuConfig::QTmenuConfig()
 {
     if (instancePtr) {
         fprintf(stderr,
-            "Singleton class qtMenuConfig already instantiated.\n");
+            "Singleton class QTmenuConfig already instantiated.\n");
         exit(1);
     }
     instancePtr = this;
@@ -115,17 +120,20 @@ qtMenuConfig::qtMenuConfig()
         this, SLOT(idle_exec_slot(MenuEnt*)), Qt::QueuedConnection);
 }
 
-// Instantiate
-qtMenuConfig _cfg_;
+
+QTmenuConfig::~QTmenuConfig()
+{
+    instancePtr = 0;
+}
 
 
 // Private static error exit.
 //
 void
-qtMenuConfig::on_null_ptr()
+QTmenuConfig::on_null_ptr()
 {
     fprintf(stderr,
-        "Singleton class qtMenuCfg used before instantiated.\n");
+        "Singleton class QTmenuConfig used before instantiated.\n");
     exit(1);
 }
 
@@ -141,7 +149,7 @@ namespace {
 
 
 void
-qtMenuConfig::instantiateMainMenus()
+QTmenuConfig::instantiateMainMenus()
 {
     QTmainwin *main_win = QTmainwin::self();
     if (!main_win)
@@ -711,19 +719,18 @@ qtMenuConfig::instantiateMainMenus()
 // Horizontal button line at top of main window.
 //
 void
-qtMenuConfig::instantiateTopButtonMenu()
+QTmenuConfig::instantiateTopButtonMenu()
 {
-    QTmainwin *main_win = QTmainwin::self();
-    if (!main_win)
+    if (!QTmainwin::exists())
         return;
+    QTmainwin *main_win = QTmainwin::self();
+
     QWidget *top_button_box = main_win->TopButtonBox();
     MenuBox *mbox = Menu()->GetMiscMenu();
     if (top_button_box && mbox && mbox->menu) {
         QHBoxLayout *hbox = new QHBoxLayout(top_button_box);
         hbox->setMargin(2);
         hbox->setSpacing(2);
-//        top_button_box->setMinimumHeight(14);
-//        top_button_box->setMaximumHeight(14);
 
         set(mbox->menu[miscMenu], 0, 0);
         set(mbox->menu[miscMenuMail], "Mail", 0);
@@ -734,8 +741,10 @@ qtMenuConfig::instantiateTopButtonMenu()
         set(mbox->menu[miscMenuRdraw], "Rdraw", 0);
 
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
-            menu_button *b = new menu_button(ent, top_button_box);
+            QTmenuButton *b = new QTmenuButton(ent, top_button_box);
             b->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            b->setMaximumWidth(40);
+            b->setToolTip(tr(ent->description));
             ent->cmd.caller = b;
             if (ent->xpm)
                 b->setIcon(QPixmap(ent->xpm));
@@ -751,11 +760,13 @@ qtMenuConfig::instantiateTopButtonMenu()
 
 
 void
-qtMenuConfig::instantiateSideButtonMenus()
+QTmenuConfig::instantiateSideButtonMenus()
 {
-    QTmainwin *main_win = QTmainwin::self();
-    if (!main_win)
+    if (!QTmainwin::exists())
         return;
+    QTmainwin *main_win = QTmainwin::self();
+
+    const int side_btn_width = 42;
 
     QWidget *phys_button_box = main_win->PhysButtonBox();
     MenuBox *mbox = Menu()->GetPhysButtonMenu();
@@ -768,8 +779,7 @@ qtMenuConfig::instantiateSideButtonMenus()
         QVBoxLayout *vbox = new QVBoxLayout(phys_button_box);
         vbox->setMargin(2);
         vbox->setSpacing(2);
-        phys_button_box->setMinimumWidth(30);
-        phys_button_box->setMaximumWidth(30);
+        phys_button_box->setMaximumWidth(side_btn_width + 4);
 
         set(mbox->menu[btnPhysMenu], 0, 0);
         set(mbox->menu[btnPhysMenuXform], "Xform", 0);
@@ -791,8 +801,10 @@ qtMenuConfig::instantiateSideButtonMenus()
         set(mbox->menu[btnPhysMenuSpin], "Spin", 0);
 
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
-            menu_button *b = new menu_button(ent, phys_button_box);
+            QTmenuButton *b = new QTmenuButton(ent, phys_button_box);
             b->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+            b->setMaximumWidth(side_btn_width);
+            b->setToolTip(tr(ent->description));
             ent->cmd.caller = b;
             if (ent - mbox->menu == btnPhysMenuStyle) {
                 const char **spm = get_style_pixmap();
@@ -836,8 +848,7 @@ qtMenuConfig::instantiateSideButtonMenus()
         QVBoxLayout *vbox = new QVBoxLayout(elec_button_box);
         vbox->setMargin(2);
         vbox->setSpacing(2);
-        elec_button_box->setMinimumWidth(30);
-        elec_button_box->setMaximumWidth(30);
+        elec_button_box->setMaximumWidth(side_btn_width + 4);
 
         set(mbox->menu[btnElecMenu], 0, 0);
         set(mbox->menu[btnElecMenuXform], "Xform", 0);
@@ -859,8 +870,10 @@ qtMenuConfig::instantiateSideButtonMenus()
         set(mbox->menu[btnElecMenuIplot], "Intr Plot", 0);
 
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
-            menu_button *b = new menu_button(ent, elec_button_box);
+            QTmenuButton *b = new QTmenuButton(ent, elec_button_box);
             b->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+            b->setMaximumWidth(side_btn_width);
+            b->setToolTip(tr(ent->description));
             ent->cmd.caller = b;
             if (ent->xpm)
                 b->setIcon(QPixmap(ent->xpm));
@@ -890,7 +903,7 @@ qtMenuConfig::instantiateSideButtonMenus()
 
 
 void
-qtMenuConfig::instantiateSubwMenus(int wnum)
+QTmenuConfig::instantiateSubwMenus(int wnum)
 {
     WindowDesc *wdesc = DSP()->Window(wnum);
     if (!wdesc)
@@ -1053,7 +1066,7 @@ qtMenuConfig::instantiateSubwMenus(int wnum)
 
 
 void
-qtMenuConfig::updateDynamicMenus()
+QTmenuConfig::updateDynamicMenus()
 {
     /*
     GtkItemFactory *item_factory = gtkMenu()->itemFactory;
@@ -1166,7 +1179,7 @@ qtMenuConfig::updateDynamicMenus()
 
 
 void
-qtMenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
+QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
 {
     if (wnum == 0) {
         QTmainwin *main_win = QTmainwin::self();
@@ -1240,7 +1253,7 @@ qtMenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
 // Turn on/off sensitivity of all menus in the main window.
 //
 void
-qtMenuConfig::set_main_global_sens(const MenuList *list, bool sens)
+QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
 {
     (void)list;
     (void)sens;
@@ -1300,7 +1313,7 @@ qtMenuConfig::set_main_global_sens(const MenuList *list, bool sens)
 // File Menu slot.
 //
 void
-qtMenuConfig::file_menu_slot(QAction *a)
+QTmenuConfig::file_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("file");
@@ -1315,7 +1328,7 @@ qtMenuConfig::file_menu_slot(QAction *a)
 // File/Edit submenu slot.
 //
 void
-qtMenuConfig::file_open_menu_slot(QAction *a)
+QTmenuConfig::file_open_menu_slot(QAction *a)
 {
     if (XM()->IsDoingHelp()) {
         int mstate = QApplication::keyboardModifiers();
@@ -1337,7 +1350,7 @@ qtMenuConfig::file_open_menu_slot(QAction *a)
 // Cell Menu slot.
 //
 void
-qtMenuConfig::cell_menu_slot(QAction *a)
+QTmenuConfig::cell_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("cell");
@@ -1352,7 +1365,7 @@ qtMenuConfig::cell_menu_slot(QAction *a)
 // Edit Menu slot.
 //
 void
-qtMenuConfig::edit_menu_slot(QAction *a)
+QTmenuConfig::edit_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("edit");
@@ -1367,7 +1380,7 @@ qtMenuConfig::edit_menu_slot(QAction *a)
 // Modify Menu slot.
 //
 void
-qtMenuConfig::modf_menu_slot(QAction *a)
+QTmenuConfig::modf_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("mod");
@@ -1382,7 +1395,7 @@ qtMenuConfig::modf_menu_slot(QAction *a)
 // View Menu slot.
 //
 void
-qtMenuConfig::view_menu_slot(QAction *a)
+QTmenuConfig::view_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("view");
@@ -1397,7 +1410,7 @@ qtMenuConfig::view_menu_slot(QAction *a)
 // View/View submenu slot.
 //
 void
-qtMenuConfig::view_view_menu_slot(QAction *a)
+QTmenuConfig::view_view_menu_slot(QAction *a)
 {
     if (XM()->IsDoingHelp()) {
         int mstate = QApplication::keyboardModifiers();
@@ -1416,7 +1429,7 @@ qtMenuConfig::view_view_menu_slot(QAction *a)
 // Attributes Menu slot.
 //
 void
-qtMenuConfig::attr_menu_slot(QAction *a)
+QTmenuConfig::attr_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("attr");
@@ -1431,7 +1444,7 @@ qtMenuConfig::attr_menu_slot(QAction *a)
 // Attributes Menu Main Window submenu slot.
 //
 void
-qtMenuConfig::attr_main_win_menu_slot(QAction *a)
+QTmenuConfig::attr_main_win_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->GetAttrSubMenu();
@@ -1446,7 +1459,7 @@ qtMenuConfig::attr_main_win_menu_slot(QAction *a)
 // Attributes Menu Main Window Objects subsubmenu slot.
 //
 void
-qtMenuConfig::attr_main_win_obj_menu_slot(QAction *a)
+QTmenuConfig::attr_main_win_obj_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->GetObjSubMenu();
@@ -1461,7 +1474,7 @@ qtMenuConfig::attr_main_win_obj_menu_slot(QAction *a)
 // Convert Menu slot.
 //
 void
-qtMenuConfig::cvrt_menu_slot(QAction *a)
+QTmenuConfig::cvrt_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("conv");
@@ -1476,7 +1489,7 @@ qtMenuConfig::cvrt_menu_slot(QAction *a)
 // DRC Menu slot.
 //
 void
-qtMenuConfig::drc_menu_slot(QAction *a)
+QTmenuConfig::drc_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("drc");
@@ -1491,7 +1504,7 @@ qtMenuConfig::drc_menu_slot(QAction *a)
 // Extract Menu slot.
 //
 void
-qtMenuConfig::ext_menu_slot(QAction *a)
+QTmenuConfig::ext_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("ext");
@@ -1506,7 +1519,7 @@ qtMenuConfig::ext_menu_slot(QAction *a)
 // Debug Menu slot.
 //
 void
-qtMenuConfig::user_menu_slot(QAction *a)
+QTmenuConfig::user_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("user");
@@ -1521,7 +1534,7 @@ qtMenuConfig::user_menu_slot(QAction *a)
 // Help Menu slot.
 //
 void
-qtMenuConfig::help_menu_slot(QAction *a)
+QTmenuConfig::help_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     MenuBox *mbox = Menu()->FindMainMenu("help");
@@ -1536,7 +1549,7 @@ qtMenuConfig::help_menu_slot(QAction *a)
 // Subwindow View Menu slot.
 //
 void
-qtMenuConfig::subwin_view_menu_slot(QAction *a)
+QTmenuConfig::subwin_view_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     int wnum = i >> 16;  // Decode window number.
@@ -1557,7 +1570,7 @@ qtMenuConfig::subwin_view_menu_slot(QAction *a)
 // Subwindow View/View submenu slot.
 //
 void
-qtMenuConfig::subwin_view_view_menu_slot(QAction *a)
+QTmenuConfig::subwin_view_view_menu_slot(QAction *a)
 {
     if (XM()->IsDoingHelp()) {
         int mstate = QApplication::keyboardModifiers();
@@ -1584,7 +1597,7 @@ qtMenuConfig::subwin_view_view_menu_slot(QAction *a)
 // Subwindow Attributes Menu slot.
 //
 void
-qtMenuConfig::subwin_attr_menu_slot(QAction *a)
+QTmenuConfig::subwin_attr_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     int wnum = i >> 16;  // Decode window number.
@@ -1601,7 +1614,7 @@ qtMenuConfig::subwin_attr_menu_slot(QAction *a)
 // Subwindow Help Menu slot.
 //
 void
-qtMenuConfig::subwin_help_menu_slot(QAction *a)
+QTmenuConfig::subwin_help_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
     int wnum = i >> 16;  // Decode window number.
@@ -1616,7 +1629,7 @@ qtMenuConfig::subwin_help_menu_slot(QAction *a)
 
 
 void
-qtMenuConfig::idle_exec_slot(MenuEnt *ent)
+QTmenuConfig::idle_exec_slot(MenuEnt *ent)
 {
     if (ent->action) {
         QTmainwin::self()->ShowGhost(ERASE);
@@ -1627,7 +1640,7 @@ qtMenuConfig::idle_exec_slot(MenuEnt *ent)
 
 
 void
-qtMenuConfig::exec_slot(MenuEnt *ent)
+QTmenuConfig::exec_slot(MenuEnt *ent)
 {
     if (ent->type == CMD_NOTSAFE) {
         // hack for the "run" button
@@ -1654,7 +1667,7 @@ qtMenuConfig::exec_slot(MenuEnt *ent)
 
 
 void
-qtMenuConfig::style_slot(MenuEnt *ent)
+QTmenuConfig::style_slot(MenuEnt *ent)
 {
     if (style_menu) {
         QWidget *btn = (QWidget*)ent->cmd.caller;
@@ -1668,7 +1681,7 @@ qtMenuConfig::style_slot(MenuEnt *ent)
 
 
 void
-qtMenuConfig::shape_slot(MenuEnt *ent)
+QTmenuConfig::shape_slot(MenuEnt *ent)
 {
     if (style_menu) {
         QWidget *btn = (QWidget*)ent->cmd.caller;
@@ -1682,7 +1695,7 @@ qtMenuConfig::shape_slot(MenuEnt *ent)
 
 
 void
-qtMenuConfig::style_menu_slot(QAction *a)
+QTmenuConfig::style_menu_slot(QAction *a)
 {
     const char *string = a->text().toLatin1().constData();
     if (!string || !*string)
@@ -1714,8 +1727,8 @@ qtMenuConfig::style_menu_slot(QAction *a)
 
     MenuBox *mbox = Menu()->GetPhysButtonMenu();
     if (mbox && mbox->menu) {
-        menu_button *b =
-            (menu_button*)mbox->menu[btnPhysMenuStyle].cmd.caller;
+        QTmenuButton *b =
+            (QTmenuButton*)mbox->menu[btnPhysMenuStyle].cmd.caller;
         if (b) {
             const char **spm = get_style_pixmap();
             b->setIcon(QPixmap(spm));
@@ -1725,7 +1738,7 @@ qtMenuConfig::style_menu_slot(QAction *a)
 
 
 void
-qtMenuConfig::shape_menu_slot(QAction *a)
+QTmenuConfig::shape_menu_slot(QAction *a)
 {
     const char *string = a->text().toLatin1().constData();
     if (!string || !*string)
@@ -1737,7 +1750,7 @@ qtMenuConfig::shape_menu_slot(QAction *a)
         int mstate = QApplication::keyboardModifiers();
         if (!(mstate & Qt::ShiftModifier)) {
             char buf[64];
-            sprintf(buf, "shapes:%s", string);
+            snprintf(buf, sizeof(buf), "shapes:%s", string);
             DSPmainWbag(PopUpHelp(buf))
             return;
         }
@@ -1761,7 +1774,7 @@ qtMenuConfig::shape_menu_slot(QAction *a)
 
 // Static function.
 const char **
-qtMenuConfig::get_style_pixmap()
+QTmenuConfig::get_style_pixmap()
 {
     if (EditIf()->getWireStyle() == CDWIRE_FLUSH)
         return (style_f_xpm);
@@ -1810,7 +1823,7 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data,
 
         const char *s;
         if (ent->is_dynamic()) {
-            sprintf(buf, "user:%s", ent->entry);
+            snprintf(buf, sizeof(buf), "user:%s", ent->entry);
             s = buf;
         }
         else {
@@ -1820,7 +1833,7 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data,
                 XM()->QuitHelp();
                 return;
             }
-            sprintf(buf, "xic:%s", s);
+            snprintf(buf, sizeof(buf), "xic:%s", s);
             s = buf;
         }
         if (!(mstate & GDK_SHIFT_MASK)) {
@@ -1904,7 +1917,7 @@ gtkMenuConfig::user_cmd_proc(void *arg)
     if (lstring::strdirsep(entry)) {
         // from submenu, add a distinguishing prefix to avoid confusion with
         // file path
-        sprintf(buf, "%s%s", SCR_LIBCODE, entry);
+        snprintf(buf, sizeof(buf), "%s%s", SCR_LIBCODE, entry);
         entry = buf;
     }
     SIfile *sfp;

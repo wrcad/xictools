@@ -77,7 +77,8 @@ cParam::cParam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
-    FC.registerCallback(Viewport(), FNT_SCREEN);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed(int)), Qt::QueuedConnection);
 }
 
 
@@ -489,6 +490,18 @@ cParam::readout_selection_get(GtkWidget*, GtkSelectionData *data,
     delete [] str;
 }
 #endif  //NOTDEF
+
+
+void
+cParam::font_changed(int fnum)
+{
+    if (fnum == FNT_SCREEN) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_SCREEN))
+            gd_viewport->set_font(fnt);
+        print();
+    }
+}
 // End of cParam functions.
 
 

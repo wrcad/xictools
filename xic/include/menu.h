@@ -302,6 +302,7 @@ struct MenuList
 #define MMsub3      "sub3"
 #define MMsub4      "sub4"
 
+//XXX Rid this for self()
 inline class MenuMain *Menu();
 
 // The main menu class.  This contains information about the

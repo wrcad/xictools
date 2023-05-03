@@ -50,7 +50,7 @@
 void
 cMain::PopUpColor(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !QTmainwin::self())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
 //        delete Clr;
@@ -73,7 +73,7 @@ cMain::PopUpColor(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Clr->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Clr->shell(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), Clr->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Clr->shell());
     */
@@ -91,15 +91,15 @@ namespace { int colortimer(void*); }
 void
 cMain::ColorTimerInit()
 {
-    if (!GRX)
+    if (!QTdev::exists())
         return;
     int pixel = DSP()->Color(SelectColor1);
     int red, green, blue;
-    GRX->RGBofPixel(pixel, &red, &green, &blue);
+    QTdev::self()->RGBofPixel(pixel, &red, &green, &blue);
     int sp = DSP()->SelectPixel();
-    GRX->AllocateColor(&sp, red, green, blue);
+    QTdev::self()->AllocateColor(&sp, red, green, blue);
     DSP()->SetSelectPixel(sp);
-    GRX->AddTimer(500, colortimer, 0);
+    QTdev::self()->AddTimer(500, colortimer, 0);
 }
 
 

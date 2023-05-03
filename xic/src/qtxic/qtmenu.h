@@ -47,16 +47,13 @@
 
 class QAction;
 
-inline class QTmenu *qtMenu();
 
 class QTmenu : public MenuMain
 {
 public:
-    friend inline QTmenu *qtMenu()
-        { return (static_cast<QTmenu*>(Menu())); }
-    friend class qtMenuConfig;
+    friend class QTmenuConfig;
 
-    QTmenu();
+    // No constructor/destructor, nothing to do here.
 
     void InitMainMenu();
     void InitTopButtonMenu();
@@ -87,14 +84,16 @@ public:
     void UpdateUserMenu();
     void HideButtonMenu(bool);
     void DisableMainMenuItem(const char*, const char*, bool);
+
+    static QTmenu *self() { return (dynamic_cast<QTmenu*>(Menu())); }
 };
 
-class menu_button : public QPushButton
+class QTmenuButton : public QPushButton
 {
     Q_OBJECT
 
 public:
-    menu_button(MenuEnt*, QWidget*);
+    QTmenuButton(MenuEnt*, QWidget*);
 
 signals:
     void button_pressed(MenuEnt*);

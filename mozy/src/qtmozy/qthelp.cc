@@ -1534,8 +1534,8 @@ QThelpPopup::bookmark_slot(QAction *action)
 void
 QThelpPopup::help_slot()
 {
-    if (GRX->MainFrame())
-        GRX->MainFrame()->PopUpHelp("helpsys");
+    if (QTdev::self()->MainFrame())
+        QTdev::self()->MainFrame()->PopUpHelp("helpsys");
     else
         PopUpHelp("helpsys");
 }

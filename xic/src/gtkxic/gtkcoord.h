@@ -70,6 +70,9 @@ public:
             co_redraw(0, 0, 0);
         }
 
+private slots:
+    void font_change(int);
+
 private:
     void do_print(int, int, int);
 

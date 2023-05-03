@@ -79,6 +79,24 @@ int GRfont::num_app_fonts =
 #define DEF_PROP_FACE "Menlo"
 
 
+QTfont *QTfont::instancePtr = 0;
+
+QTfont::QTfont()
+{
+    if (instancePtr) {
+        fprintf(stderr, "Singleton class QTfont already instantiated.\n");
+        exit(1);
+    }
+    instancePtr = this;
+}
+
+
+QTfont::~QTfont()
+{
+    instancePtr = 0;
+}
+
+
 // This sets the default font names and sizes.
 //
 void
@@ -88,7 +106,7 @@ QTfont::initFonts()
     if (app_fonts[0].default_fontname != 0)
         return;
 
-    //XXX
+    //XXX do better thN THIS
     int def_size = 11;
 
     char buf[80];
@@ -107,7 +125,7 @@ QTfont::initFonts()
 }
 
 
-//XXX
+//XXX is this used?
 GRfontType
 QTfont::getType()
 {
@@ -130,6 +148,7 @@ QTfont::setName(const char *name, int fnum)
                     isFixed(fnum));
                 delete fonts[fnum].font;
                 fonts[fnum].font = newfont;
+                emit fontChanged(fnum);
             }
         }
         else if (!fonts[fnum].name || strcmp(fonts[fnum].name, name)) {
@@ -139,9 +158,9 @@ QTfont::setName(const char *name, int fnum)
                 fonts[fnum].name = lstring::copy(name);
                 delete fonts[fnum].font;
                 fonts[fnum].font = newfont;
+                emit fontChanged(fnum);
             }
         }
-        refresh(fnum);
     }
 }
 
@@ -210,10 +229,14 @@ QTfont::getFont(void *fontp, int fnum)
 void
 QTfont::registerCallback(void *pwidget, int fnum)
 {
+    /* unused
     QWidget *widget = (QWidget*)pwidget;
     if (fnum < 1 || fnum >= num_app_fonts)
         return;
     fonts[fnum].cbs = new FcbRec(widget, fonts[fnum].cbs);
+    */
+    //XXX
+    printf("unused register called\n");
 }
 
 
@@ -223,6 +246,7 @@ QTfont::registerCallback(void *pwidget, int fnum)
 void
 QTfont::unregisterCallback(void *pwidget, int fnum)
 {
+    /* unused
     QWidget *widget = (QWidget*)pwidget;
     if (fnum < 1 || fnum >= num_app_fonts)
         return;
@@ -239,29 +263,10 @@ QTfont::unregisterCallback(void *pwidget, int fnum)
         }
         fp = f;
     }
+    */
+    //XXX
+    printf("unused unregister called\n");
 }
-
-
-/*XXX
-// Static function.
-// Call this to track font changes.
-//
-void
-QTfont::trackFontChange(GtkWidget *widget, int fnum)
-{
-}
-
-
-// Static function.
-// Set the default font for the widget to the index (FNT_???).  If
-// track is true, the widget font can be updated from the font
-// selection pop-up.
-//
-void
-QTfont::setupFont(GtkWidget *widget, int font_index, bool track)
-{
-}
-*/
 
 
 // Static function.
@@ -424,20 +429,24 @@ QTfont::new_font(const char *name, bool fixed)
 void
 QTfont::refresh(int fnum)
 {
-    if (getFont(0, fnum)) {
-        for (FcbRec *f = fonts[fnum].cbs; f; f = f->next) {
-            if (fonts[fnum].font) {
-                f->widget->setFont(*fonts[fnum].font);
-            }
-        }
-    }
+    // not used
+}
+
+
+// Private static error exit.
+//
+void
+QTfont::on_null_ptr()
+{
+    fprintf(stderr, "Singleton class QTfont used before instantiated.\n");
+    exit(1);
 }
 
 
 //-----------------------------------------------------------------------------
 // Font Selection Dialog
 
-#define PREVIEW_STRING "abcdefghijk ABCDEFGHIJK"
+#define PREVIEW_STRING "abcdefghijk ABCDEFGHIJK 0123456789"
 
 namespace {
     class font_list_widget : public QListWidget
@@ -927,8 +936,13 @@ QTfontPopup::menu_choice_slot(int indx)
 
         QFont f(families.at(i), 10);
         QFontMetrics fm(f);
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        int w1 = fm.horizontalAdvance(QChar('i'));
+        int w2 = fm.horizontalAdvance(QChar('m'));
+#else
         int w1 = fm.width(QChar('i'));
         int w2 = fm.width(QChar('m'));
+#endif
         bool fixed = (w1 >= w2);
 
         if (!FC.isFixed(indx) || fixed)

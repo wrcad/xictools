@@ -48,13 +48,11 @@ class QTmainwin;
 
 inline class cCoord *Coord();
 
-// The coordinate readout
+// The coordinate readout.
+//
 class cCoord : public QWidget, public QTdraw
 {
     Q_OBJECT
-
-private slots:
-    void redraw_slot();
 
 public:
     // update mode for cCoord::print()
@@ -80,6 +78,10 @@ public:
     {
         redraw_slot();
     }
+
+private slots:
+    void redraw_slot();
+    void font_changed(int);
 
 private:
     int co_width;

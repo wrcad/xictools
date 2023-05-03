@@ -70,7 +70,7 @@
 
 QTltab *QTltab::instancePtr = 0;
 
-QTltab::QTltab(bool nogr, QWidget *prnt) : QWidget(prnt), QTdraw(XW_LTAB)
+QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
 {
     if (instancePtr) {
         fprintf(stderr, "Singleton class QTltab already instantiated.\n");
@@ -103,23 +103,22 @@ QTltab::QTltab(bool nogr, QWidget *prnt) : QWidget(prnt), QTdraw(XW_LTAB)
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
-    hbox->setSpacing(2);
+    hbox->setSpacing(0);
 
     ltab_scrollbar = new QScrollBar(Qt::Vertical, this);
     hbox->addWidget(ltab_scrollbar);
 
     gd_viewport = draw_if::new_draw_interface(QTmainwin::draw_type(),
         true, this);
-    gd_viewport->widget()->setMaximumWidth(160);
     hbox->addWidget(gd_viewport->widget());
 
     vb->addLayout(hbox);
-    setMaximumWidth(160);
 
     QFont *scfont;
     if (FC.getFont(&scfont, FNT_SCREEN))
         gd_viewport->set_font(scfont);
-    FC.registerCallback(Viewport(), FNT_SCREEN);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed(int)), Qt::QueuedConnection);
 
     connect(gd_viewport->widget(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
@@ -131,6 +130,20 @@ QTltab::QTltab(bool nogr, QWidget *prnt) : QWidget(prnt), QTdraw(XW_LTAB)
 //        this, SLOT(s_btn_slot(bool)));
     connect(ltab_scrollbar, SIGNAL(valueChanged(int)),
         this, SLOT(ltab_scroll_value_changed_slot(int)));
+}
+
+
+QTltab::~QTltab()
+{
+    instancePtr = 0;
+}
+
+
+void
+QTltab::on_null_ptr()
+{
+    fprintf(stderr, "Singleton class QTltab used before instantiated.\n");
+    exit(1);
 }
 
 
@@ -169,8 +182,7 @@ QTltab::refresh(int xx, int yy, int w, int h)
 void
 QTltab::win_size(int *w, int *h)
 {
-//    QSize qs = gd_viewport->widget()->size();
-    QSize qs = size();
+    QSize qs = gd_viewport->widget()->size();
     *w = qs.width();
     *h = qs.height();
 }
@@ -296,6 +308,18 @@ QTltab::ltab_scroll_value_changed_slot(int val)
     if (val != first_visible()) {
         set_first_visible(val);
         show();
+    }
+}
+
+
+void
+QTltab::font_changed(int fnum)
+{
+    if (fnum == FNT_SCREEN) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_SCREEN))
+            gd_viewport->set_font(fnt);
+        //XXX redraw
     }
 }
 

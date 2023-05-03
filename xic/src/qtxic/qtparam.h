@@ -41,6 +41,8 @@
 #ifndef QTPARAM_H
 #define QTPARAM_H
 
+#include <QWidget>
+#include "qtinterf/qtinterf.h"
 
 class QTmainwin;
 class cParam;
@@ -149,6 +151,8 @@ inline class cParam *Param();
 //
 class cParam : public QWidget, public QTdraw
 {
+    Q_OBJECT
+
 public:
     friend inline cParam *Param() { return (cParam::instancePtr); }
 
@@ -164,6 +168,9 @@ public:
     unsigned int yval()     { return (p_yval); }
     int width()             { return (p_width); }
     int height()            { return (p_height); }
+
+private slots:
+    void font_changed(int);
 
 private:
     void select(int, int);

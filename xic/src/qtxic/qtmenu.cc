@@ -48,33 +48,30 @@
 #include <QMenu>
 
 
-// Instantiate the menus.
-namespace { QTmenu _qt_menu_; }
-
-
-QTmenu::QTmenu()
-{
+namespace {
+    // Instantiate the menus.
+    QTmenu _qt_menu_;
 }
 
 
 void
 QTmenu::InitMainMenu()
 {
-    qtCfg()->instantiateMainMenus();
+    QTmenuConfig::self()->instantiateMainMenus();
 }
 
 
 void
 QTmenu::InitTopButtonMenu()
 {
-    qtCfg()->instantiateTopButtonMenu();
+    QTmenuConfig::self()->instantiateTopButtonMenu();
 }
 
 
 void
 QTmenu::InitSideButtonMenus()
 {
-    qtCfg()->instantiateSideButtonMenus();
+    QTmenuConfig::self()->instantiateSideButtonMenus();
 }
 
 
@@ -321,17 +318,17 @@ QTmenu::IsSensitive(GRobject obj)
 void
 QTmenu::SetVisible(GRobject obj, bool vis_state)
 {
-    if (GRX)
-        GRX->SetVisible(obj, vis_state);
+    if (QTdev::exists())
+        QTdev::self()->SetVisible(obj, vis_state);
 }
 
 
 bool
 QTmenu::IsVisible(GRobject obj)
 {
-    if (!GRX)
+    if (!QTdev::exists())
         return (false);
-    return (GRX->IsVisible(obj));
+    return (QTdev::self()->IsVisible(obj));
 }
 
 
@@ -345,7 +342,7 @@ QTmenu::DestroyButton(GRobject obj)
 void
 QTmenu::SwitchMenu()
 {
-    qtCfg()->switch_menu_mode(DSP()->CurMode(), 0);
+    QTmenuConfig::self()->switch_menu_mode(DSP()->CurMode(), 0);
 }
 
 
@@ -353,7 +350,7 @@ void
 QTmenu::SwitchSubwMenu(int wnum, DisplayMode mode)
 {
     if (wnum > 0)   
-        qtCfg()->switch_menu_mode(mode, wnum);
+        QTmenuConfig::self()->switch_menu_mode(mode, wnum);
 }
 
 
@@ -362,7 +359,7 @@ QTmenu::NewSubwMenu(int wnum)
 {
     if (wnum < 1 || wnum >= DSP_NUMWINS)
         return (0);
-    qtCfg()->instantiateSubwMenus(wnum);
+    QTmenuConfig::self()->instantiateSubwMenus(wnum);
     return (0);
 }
 
@@ -451,7 +448,7 @@ QTmenu::NewDDmenu(GRobject button, const char* const *list)
 void
 QTmenu::UpdateUserMenu()
 {
-    qtCfg()->updateDynamicMenus();
+    QTmenuConfig::self()->updateDynamicMenus();
 }
 
 
@@ -460,9 +457,10 @@ QTmenu::UpdateUserMenu()
 void
 QTmenu::HideButtonMenu(bool hide)
 {
-    QTmainwin *main_win = QTmainwin::self();
-    if (!main_win)
+    if (!QTmainwin::exists())
         return;
+    QTmainwin *main_win = QTmainwin::self();
+
     QWidget *phys_button_box = main_win->PhysButtonBox();
     QWidget *elec_button_box = main_win->ElecButtonBox();
     if (hide) {
@@ -510,5 +508,16 @@ QTmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
             }
         }
     }
+}
+// End of QTmenu functions.
+
+
+QTmenuButton::QTmenuButton(MenuEnt *ent, QWidget *prnt) : QPushButton(prnt)
+{
+    setAutoDefault(false);
+    if (ent->is_toggle())
+        setCheckable(true);
+    entry = ent;
+    connect(this, SIGNAL(clicked()), this, SLOT(pressed_slot()));
 }
 

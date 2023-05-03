@@ -77,7 +77,7 @@
 // PARM:  Param property labels
 // SPTX:  Labels will be included in SPICE text
 
-// Default text field with, chars.
+// Default text field width, chars.
 #define TEXT_WIDTH 9
 
 // Define to enable selectable icons below table.

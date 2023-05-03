@@ -464,7 +464,12 @@ file_delegate::sizeHint(const QStyleOptionViewItem&,
 {
     QListWidgetItem *item = widget->item_of(index);
     QFontMetrics fm(item->font());
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+    return (QSize(fm.horizontalAdvance(item->text()) + COLUMN_SPACING,
+        fm.height()));
+#else
     return (QSize(fm.width(item->text()) + COLUMN_SPACING, fm.height()));
+#endif
 }
 // End of file_delegate functions (for file_list_widget).
 
@@ -1287,8 +1292,8 @@ QTfilePopup::quit_slot()
 void
 QTfilePopup::help_slot()
 {
-    if (GRX->MainFrame())
-        GRX->MainFrame()->PopUpHelp("filesel");
+    if (QTdev::self()->MainFrame())
+        QTdev::self()->MainFrame()->PopUpHelp("filesel");
     else
         PopUpHelp("filesel");
 }
