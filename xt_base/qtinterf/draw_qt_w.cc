@@ -50,10 +50,8 @@ using namespace qtinterf;
 draw_qt_w::draw_qt_w(bool, QWidget *prnt) : QWidget(prnt)
 {
     setMouseTracking(true);
-    setMinimumWidth(50);
-    setMinimumHeight(50);
 
-    da_pixmap = new QPixmap(50, 50);
+    da_pixmap = new QPixmap(1, 1);
     da_painter = new QPainter(da_pixmap);
     da_bg.setNamedColor(QString("white"));
     da_fg.setNamedColor(QString("black"));

@@ -956,11 +956,11 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
         this, SLOT(drop_slot(QDropEvent*)));
 
-    sw_keys_pressed = new cKeys(sw_win_number, this);
-
     if (sw_win_number == 0)
         // being subclassed for main window
         return;
+
+    sw_keys_pressed = new cKeys(sw_win_number, this);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);
@@ -2134,17 +2134,22 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
+/*XXX
     w *= 7;
     w += 4;
     int h = QTfont::lineHeight(FNT_SCREEN) + 4;
     sw_keys_pressed->setFixedSize(w, h);
     hbox->addWidget(sw_keys_pressed);
+*/
+
+    int h = QTfont::lineHeight(FNT_SCREEN) + 4;
 
     PL()->SetEdit(new QTedit(false));
     mw_promptline = QTedit::self()->Viewport();
     mw_promptline->setMinimumHeight(h);
     mw_promptline->setMaximumHeight(h);
-    hbox->addWidget(mw_promptline);
+    sw_keys_pressed = QTedit::self()->keys();
+    hbox->addWidget(QTedit::self());
 
     mw_status = new cParam(this);
     mw_status->setMinimumHeight(h);

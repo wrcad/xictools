@@ -62,6 +62,8 @@ INDdev::acLoad(sGENmodel *genmod, sCKT *ckt)
             *(inst->INDibrPosptr) += 1;
             *(inst->INDibrNegptr) -= 1;
             *(inst->INDibrIbrptr +1) -= val;
+            if (inst->INDresGiven)
+                *(inst->INDibrIbrptr) -= inst->INDres;
         }
     }
     return (OK);

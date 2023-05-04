@@ -81,7 +81,7 @@ public:
     void warp_pointer();
 
     QWidget *container()    { return (pe_container); }
-    QWidget *keys()         { return (pe_keys); }
+    cKeys *keys()           { return (pe_keys); }
     int xpos()              { return (pe_colmin*pe_fntwid); }
 
     /*
@@ -111,7 +111,7 @@ private:
     static void on_null_ptr();
 
     QWidget *pe_container;
-    QWidget *pe_keys;
+    cKeys *pe_keys;
 
     static hyList *pe_stores[PE_NUMSTORES]; // Editor text string registers.
     static QTedit *instancePtr;

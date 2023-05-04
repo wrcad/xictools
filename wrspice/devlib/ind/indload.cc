@@ -86,7 +86,7 @@ INDdev::load(sGENinstance *in_inst, sCKT *ckt)
 
     if (ckt->CKTmode & MODEDC) {
 #ifdef NEWJJDC
-        if (ckt->CKTjjDCphase) {
+        if (!inst->INDresGiven && ckt->CKTjjDCphase) {
             // The voltage across the inductor is taken as the
             // inductor phase.  This is for use when doing DC analysis
             // when Josephson junctions are present.  See jjload.cc.
@@ -95,6 +95,8 @@ INDdev::load(sGENinstance *in_inst, sCKT *ckt)
             ckt->ldadd(inst->INDibrIbrptr, -res);
         }
 #ifndef USE_PRELOAD
+        if (inst->INDresGiven)
+            ckt->ldadd(inst->INDibrIbrptr, -inst->INDres);
         if (inst->INDposNode) {
             ckt->ldset(inst->INDposIbrptr, 1.0);
             ckt->ldset(inst->INDibrPosptr, 1.0);
@@ -133,6 +135,8 @@ INDdev::load(sGENinstance *in_inst, sCKT *ckt)
         ckt->rhsadd(inst->INDbrEq, inst->INDveq);
         ckt->ldadd(inst->INDibrIbrptr, -inst->INDreq);
 #ifndef USE_PRELOAD
+        if (inst->INDresGiven)
+            ckt->ldadd(inst->INDibrIbrptr, -inst->INDres);
         if (inst->INDposNode) {
             ckt->ldset(inst->INDposIbrptr, 1.0);
             ckt->ldset(inst->INDibrPosptr, 1.0);
@@ -173,6 +177,8 @@ INDdev::load(sGENinstance *in_inst, sCKT *ckt)
         inst->INDprevFlux = 0;
         *(ckt->CKTstate0 + inst->INDflux) = 0;
 #ifndef USE_PRELOAD
+        if (inst->INDresGiven)
+            ckt->ldadd(inst->INDibrIbrptr, -inst->INDres);
         if (inst->INDposNode) {
             ckt->ldset(inst->INDposIbrptr, 1.0);
             ckt->ldset(inst->INDibrPosptr, 1.0);
@@ -241,6 +247,8 @@ INDdev::load(sGENinstance *in_inst, sCKT *ckt)
         ckt->rhsadd(inst->INDbrEq, inst->INDveq);
         ckt->ldadd(inst->INDibrIbrptr, -inst->INDreq);
 #ifndef USE_PRELOAD
+        if (inst->INDresGiven)
+            ckt->ldadd(inst->INDibrIbrptr, -inst->INDres);
         if (inst->INDposNode) {
             ckt->ldset(inst->INDposIbrptr, 1.0);
             ckt->ldset(inst->INDibrPosptr, 1.0);

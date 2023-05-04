@@ -102,7 +102,7 @@ INDdev::setup(sGENmodel *genmod, sCKT *ckt, int* states)
                 inst->INDbrEq = node->number();
             }
 #ifdef NEWJJDC
-            if (ckt->CKTjjDCphase) {
+            if (!inst->INDresGiven && ckt->CKTjjDCphase) {
                 // The nodes that connect to inductors have the
                 // "phase" flag set, for use in phase-mode DC analysis
                 // with Josephson junctions.
@@ -131,6 +131,8 @@ INDdev::setup(sGENmodel *genmod, sCKT *ckt, int* states)
             if (ckt->CKTpreload) {
                 // preload constants
 
+                if (inst->INDresGiven)
+                    ckt->preldadd(inst->INDibrIbrptr, -inst->INDres);
                 if (inst->INDposNode) {
                     ckt->preldset(inst->INDposIbrptr, 1.0);
                     ckt->preldset(inst->INDibrPosptr, 1.0);

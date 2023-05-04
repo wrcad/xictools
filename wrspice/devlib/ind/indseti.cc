@@ -58,6 +58,7 @@ INDdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         &&L_IND_IND,
         &&L_IND_IC,
         &&L_IND_M,
+        &&L_IND_RES,
         &&L_IND_POLY};
         // &&L_IND_FLUX,
         // &&L_IND_VOLT,
@@ -122,6 +123,10 @@ INDdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->INDm = value->rValue;
         inst->INDmGiven = true;
         return (OK);
+    L_IND_RES:
+        inst->INDres = value->rValue;
+        inst->INDresGiven = true;
+        return (OK);
     L_IND_POLY:
         {
             int nv = value->v.numValue;
@@ -175,6 +180,10 @@ INDdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     case IND_M:
         inst->INDm = value->rValue;
         inst->INDmGiven = true;
+        break;
+    case IND_RES:
+        inst->INDres = value->rValue;
+        inst->INDresGiven = true;
         break;
     case IND_POLY:
         {

@@ -46,6 +46,9 @@
 #include "menu.h"
 #include "events.h"
 #include "keymap.h"
+#include <QLayout>
+#include <QPushButton>
+#include <QMenu>
 
 // Help keywords:
 //  promptline
@@ -280,99 +283,71 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     if (nogr)
         return;
 
+    QHBoxLayout *hbox = new QHBoxLayout(this);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    int w = QTfont::stringWidth(0, FNT_SCREEN);
+    int h = QTfont::lineHeight(FNT_SCREEN) + 4;
+    pe_keys = new cKeys(0, 0);
+    pe_keys->setMaximumWidth(5*w + 4);
+    pe_keys->setMaximumHeight(h);
+    pe_keys->setMinimumHeight(h);
+    pe_keys->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    hbox->addWidget(pe_keys);
+
+    // Recall button and menu.
+    QPushButton *rcl = new QPushButton("R");
+    rcl->setAutoDefault(false);
+    rcl->setMaximumWidth(7*w + 4);
+    rcl->setToolTip(tr("Recall edit string from a register."));
+    hbox->addWidget(rcl);
+
+    char buf[4];
+    QMenu *rcl_menu = new QMenu();
+    for (int i = 0; i < PE_NUMSTORES; i++) {
+        buf[0] = '0' + i;
+        buf[1] = 0;
+        rcl_menu->addAction(buf);
+    }
+    rcl->setMenu(rcl_menu);
+
+    // Store button and menu.
+    QPushButton *sto = new QPushButton("S");
+    sto->setAutoDefault(false);
+    sto->setMaximumWidth(7*w + 4);
+    sto->setToolTip(tr("Save edit string to a register."));
+    hbox->addWidget(sto);
+
+    QMenu *sto_menu = new QMenu();
+    for (int i = 0; i < PE_NUMSTORES; i++) {
+        buf[0] = '0' + i;
+        buf[1] = 0;
+        sto_menu->addAction(buf);
+    }
+    sto->setMenu(sto_menu);
+
+    // Long Text button.
+    QPushButton *lt = new QPushButton("L");
+    lt->setAutoDefault(false);
+    lt->setMaximumWidth(6*w + 4);
+    lt->setToolTip(tr(
+        "Associate a block of text with the label - pop up an editor."));
+    hbox->addWidget(lt);
+
     gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
+    hbox->addWidget(Viewport());
 
     QFont *font;
-    if (FC.getFont(&font, FNT_SCREEN))
+    if (FC.getFont(&font, FNT_SCREEN)) {
         gd_viewport->set_font(font);
+        sto->setFont(*font);
+        rcl->setFont(*font);
+        lt->setFont(*font);
+    }
+
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed(int)), Qt::QueuedConnection);
-
-/* XXX deal with this
-The class should derive from QWidget, with a HBox layout that contains
-the keys-pressed, save, recall, and long-text buttons, and te promptline.
-The main window can instantiate the whold thing above the status line.
-The control logic, i.e., visibility, will be part of this.
-
-
-    container = gtk_hbox_new(false, 0);
-    gtk_widget_show(container);
-
-    // key press display
-    keys = gtk_label_new("");
-    gtk_widget_show(keys);
-    GtkWidget *ebox = gtk_event_box_new();
-    gtk_widget_show(ebox);
-    gtk_widget_add_events(ebox, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(ebox), "button_press_event",
-        GTK_SIGNAL_FUNC(keys_hdlr), 0);
-    gtk_container_add(GTK_CONTAINER(ebox), keys);
-
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), ebox);
-    gtk_box_pack_start(GTK_BOX(container), frame, false, false, 0);
-
-    Lbutton = gtk_button_new();
-    gtk_widget_show(Lbutton);
-    gtk_widget_set_name(Lbutton, "LongText");
-    GtkTooltips *tt = gtk_NewTooltip();
-    gtk_tooltips_set_tip(tt, Lbutton,
-        "Associate a block of text with the label - pop up an editor.", "");
-    gtk_signal_connect(GTK_OBJECT(Lbutton), "clicked",
-        GTK_SIGNAL_FUNC(l_btn_hdlr), 0);
-    gtk_box_pack_start(GTK_BOX(container), Lbutton, false, false, 0);
-
-    GtkStyle *style = gtk_style_copy(Lbutton->style);
-    gtk_widget_set_style(Lbutton, style);
-#if GTK_CHECK_VERSION(1,3,15)
-    style->xthickness = 1;
-    style->ythickness = 1;
-#endif
-    GdkPixmap *pmask, *pixmap =
-        gdk_pixmap_colormap_create_from_xpm_d(0, GTKdev::cmap,
-        &pmask, &style->bg[GTK_STATE_NORMAL], (gchar**)L_xpm);
-    GtkWidget *pixwidg = gtk_pixmap_new(pixmap, pmask);
-    gtk_widget_show(pixwidg);
-    gtk_container_add(GTK_CONTAINER(Lbutton), pixwidg);
-
-    // the prompt line
-    viewport = gtk_drawing_area_new();
-    gtk_widget_set_name(viewport, "PromptLine");
-    gtk_widget_show(viewport);
-
-    any_font_setup(viewport, FNT_SCREEN, true);
-
-    frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), viewport);
-    gtk_box_pack_start(GTK_BOX(container), frame, true, true, 0);
-
-    gtk_widget_add_events(viewport, GDK_EXPOSURE_MASK);
-    gtk_signal_connect(GTK_OBJECT(viewport), "expose_event",
-        GTK_SIGNAL_FUNC(redraw_hdlr), 0);
-    gtk_widget_add_events(viewport, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(viewport), "button_press_event",
-        GTK_SIGNAL_FUNC(btn_hdlr), 0);
-    gtk_signal_connect(GTK_OBJECT(viewport), "selection_received",
-        GTK_SIGNAL_FUNC(selection_proc), 0);
-    gtk_signal_connect(GTK_OBJECT(viewport), "style_set",
-        GTK_SIGNAL_FUNC(font_change_hdlr), 0);
-
-    // prompt line drop site
-    gtk_drag_dest_set(frame,
-        GTK_DEST_DEFAULT_ALL, pl_targets, n_pl_targets, GDK_ACTION_COPY);
-    gtk_signal_connect(GTK_OBJECT(frame),
-        "drag_data_received", GTK_SIGNAL_FUNC(drag_data_received), 0);
-
-    // Set sizes
-    int height = any_string_height(viewport, 0) + 4;
-    int prm_wid = 800;
-    int keys_wid = any_string_width(keys, "INPUT") + 6;
-    gtk_widget_set_usize(keys, keys_wid, -1);
-    gtk_widget_set_usize(Lbutton, -1, height);
-    gtk_drawing_area_size(GTK_DRAWING_AREA(viewport), prm_wid, height);
-*/
 }
 
 

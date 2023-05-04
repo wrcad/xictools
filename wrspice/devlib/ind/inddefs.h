@@ -118,6 +118,7 @@ struct sINDinstancePOD
     double INDveq;        // storage for veq
     double INDreq;        // storage for req
     double INDprevFlux;   // previous total flux
+    double INDres;        // linear series resistance
 
     // For parse tree support
     IFparseTree *INDtree; // large signal inductance expression
@@ -142,6 +143,7 @@ struct sINDinstancePOD
     unsigned INDindGiven : 1;   // inductance was specified
     unsigned INDicGiven  : 1;   // init. cond. was specified
     unsigned INDmGiven   : 1;   // device multiplier was specified
+    unsigned INDresGiven : 1;   // resistance was given
 };
 
 struct sINDinstance : sGENinstance, sINDinstancePOD
@@ -249,6 +251,7 @@ enum {
     IND_IND = 1,
     IND_IC,
     IND_M,
+    IND_RES,
     IND_POLY,
     IND_FLUX,
     IND_VOLT,
