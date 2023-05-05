@@ -703,8 +703,7 @@ draw_qt_w::draw_image(int xw, int yw, QImage *image,
 void
 draw_qt_w::resizeEvent(QResizeEvent *ev)
 {
-    if (da_painter)
-        da_painter->end();
+    da_painter->end();
     QFont fnt = da_painter->font();
     delete da_painter;
     delete da_pixmap;
@@ -712,8 +711,15 @@ draw_qt_w::resizeEvent(QResizeEvent *ev)
     da_painter = new QPainter(da_pixmap);
     da_painter->setFont(fnt);
     initialize();
-    emit new_painter(da_painter);
+//    emit new_painter(da_painter);
     emit resize_event(ev);
+}
+
+
+void
+draw_qt_w::initPainter(QPainter*)
+{
+    printf("new paintrer\n");
 }
 
 

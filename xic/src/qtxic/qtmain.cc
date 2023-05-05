@@ -793,37 +793,55 @@ QTpkg::RegisterEventHandler(void(*handler)(QEvent*, void*), void *arg)
 
 cKeys::cKeys(int wnum, QWidget *prnt) : draw_qt_w(false, prnt)
 {
-    keypos = 0;
-    memset(keys, 0, CBUFMAX+1);
-    win_number = wnum;
+    k_keypos = 0;
+    memset(k_keys, 0, CBUFMAX+1);
+    k_win_number = wnum;
+    k_cmd = 0;
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
         set_font(fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed(int)), Qt::QueuedConnection);
+    connect(this, SIGNAL(paint_event(QPaintEvent*)),
+        this, SLOT(paint_slot(QPaintEvent*)), Qt::QueuedConnection);
+    connect(this, SIGNAL(resize_event(QResizeEvent*)),
+        this, SLOT(resize_slot(QResizeEvent*)), Qt::QueuedConnection);
+}
+
+QSize
+cKeys::sizeHint() const
+{
+    int h = QTfont::lineHeight(FNT_SCREEN) + 4;
+    int w = QTfont::stringWidth(0, FNT_SCREEN);
+    int n = k_cmd ? strlen(k_cmd) : strlen(k_keys);
+    if (n > 5)
+        n = 5;
+    return (QSize(n*w + 4, h));
 }
 
 
 void
 cKeys::show_keys()
 {
-    char *s = keys + (keypos > 5 ? keypos - 5 : 0);
-    clear();
-    int yy = QTfont::lineHeight(FNT_SCREEN);
-    draw_text(2, yy, s, -1);
-    update();
+    if (k_cmd) {
+        delete [] k_cmd;
+        k_cmd = 0;
+    }
+    int w = QTfont::stringWidth(0, FNT_SCREEN);
+    resize(strlen(k_keys)*w, -1);
+    updateGeometry();
 }
 
 
 void
 cKeys::set_keys(const char *text)
 {
-    while (keypos)
-        keys[--keypos] = '\0';
+    while (k_keypos)
+        k_keys[--k_keypos] = '\0';
     if (text) {
-        strncpy(keys, text, CBUFMAX);
-        keypos = strlen(keys);
+        strncpy(k_keys, text, CBUFMAX);
+        k_keypos = strlen(k_keys);
     }
 }
 
@@ -831,17 +849,17 @@ cKeys::set_keys(const char *text)
 void
 cKeys::bsp_keys()
 {
-    if (keypos)
-        keys[--keypos] = '\0';
+    if (k_keypos)
+        k_keys[--k_keypos] = '\0';
 }
 
 
 void
 cKeys::check_exec(bool exact)
 {
-    if (!keypos)
+    if (!k_keypos)
         return;
-    MenuEnt *ent = Menu()->MatchEntry(keys, keypos, win_number, exact);
+    MenuEnt *ent = Menu()->MatchEntry(k_keys, k_keypos, k_win_number, exact);
     if (ent) {
         if (ent->is_dynamic() && ent->is_menu())
             // Ignore the submenu buttons in the User menu
@@ -852,10 +870,8 @@ cKeys::check_exec(bool exact)
                 ent->cmd.wdesc->SetView("full");
             else
                 DSP()->MainWdesc()->SetView("full");
-            clear();
-            int yy = QTfont::lineHeight(FNT_SCREEN);
-            draw_text(2, yy, MenuVIEW, -1);
-            update();
+            k_cmd = lstring::copy(MenuVIEW);
+            updateGeometry();
         }
         else if (ent->cmd.caller) {
             // simulate a button press
@@ -865,10 +881,8 @@ cKeys::check_exec(bool exact)
             int n = strlen(buf) - 5;
             if (n < 0)
                 n = 0;
-            clear();
-            int yy = QTfont::lineHeight(FNT_SCREEN);
-            draw_text(2, yy, buf + n, -1);
-            update();
+            k_cmd = lstring::copy(buf + n);
+            updateGeometry();
             if (ent->cmd.caller)
                 Menu()->CallCallback(ent->cmd.caller);
         }
@@ -886,6 +900,25 @@ cKeys::font_changed(int fnum)
             set_font(fnt);
         //XXX
     }
+}
+
+
+void
+cKeys::paint_slot(QPaintEvent*)
+{
+    update();
+}
+
+
+void
+cKeys::resize_slot(QResizeEvent*)
+{
+    const char *s = k_cmd;
+    if (!s)
+        s = k_keys + (k_keypos > 5 ? k_keypos - 5 : 0);
+    clear();
+    int yy = QTfont::lineHeight(FNT_SCREEN);
+    draw_text(2, yy, s, -1);
 }
 
 
@@ -966,8 +999,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     vbox->setMargin(2);
     vbox->setSpacing(2);
 
-    sw_keys_pressed->setFixedHeight(QTfont::lineHeight(FNT_SCREEN) + 4);
-    sw_keys_pressed->setFixedWidth(6*QTfont::stringWidth(0, FNT_SCREEN));
+//XXX    sw_keys_pressed->setFixedHeight(QTfont::lineHeight(FNT_SCREEN) + 4);
+//XXX    sw_keys_pressed->setFixedWidth(6*QTfont::stringWidth(0, FNT_SCREEN));
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setMargin(0);

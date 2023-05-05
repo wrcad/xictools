@@ -290,10 +290,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     int w = QTfont::stringWidth(0, FNT_SCREEN);
     int h = QTfont::lineHeight(FNT_SCREEN) + 4;
     pe_keys = new cKeys(0, 0);
-    pe_keys->setMaximumWidth(5*w + 4);
-    pe_keys->setMaximumHeight(h);
-    pe_keys->setMinimumHeight(h);
-    pe_keys->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    pe_keys->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     hbox->addWidget(pe_keys);
 
     // Recall button and menu.

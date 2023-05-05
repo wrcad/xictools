@@ -75,8 +75,6 @@ enum XIC_WINDOW_CLASS
     XW_LTAB     // The layer table.
 };
 
-// Length of keypress buffer
-#define CBUFMAX 16
 
 inline class QTpkg *qtPkgIf();
 
@@ -139,8 +137,8 @@ private:
 };
 
 
-// Length of keypress buffer
-#define CBUFMAX 16
+// Length of keypress buffer.
+#define CBUFMAX 15
 
 class cKeys : public draw_qt_w
 {
@@ -149,23 +147,28 @@ class cKeys : public draw_qt_w
 public:
     cKeys(int, QWidget*);
 
+    QSize sizeHint() const;
     void show_keys();
     void set_keys(const char*);
     void bsp_keys();
     void check_exec(bool);
 
-    int key_pos()       { return (keypos); }
-    int key(int k)      { return (keys[k]); }
-    char *key_buf()     { return (keys); }
-    void append(char c) { keys[keypos++] = c; }
+    int key_pos()       { return (k_keypos); }
+    int key(int k)      { return (k_keys[k]); }
+    char *key_buf()     { return (k_keys); }
+    void append(char c) { k_keys[k_keypos++] = c; }
+
 
 private slots:
     void font_changed(int);
+    void paint_slot(QPaintEvent*);
+    void resize_slot(QResizeEvent*);
 
 private:
-    int keypos;
-    char keys[CBUFMAX + 1];
-    int win_number;
+    int k_keypos;
+    int k_win_number;
+    char k_keys[CBUFMAX + 1];
+    const char *k_cmd;
 };
 
 class QTsubwin : public QDialog, virtual public DSPwbag, public QTbag,
