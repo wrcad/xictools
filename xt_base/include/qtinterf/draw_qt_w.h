@@ -133,7 +133,6 @@ namespace qtinterf
 
     protected:
         void resizeEvent(QResizeEvent*);
-        void initPainter(QPainter*);
         void paintEvent(QPaintEvent*);
         void mousePressEvent(QMouseEvent*);
         void mouseReleaseEvent(QMouseEvent*);

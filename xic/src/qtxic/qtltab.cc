@@ -47,6 +47,8 @@
 #include "select.h"
 #include "events.h"
 #include "keymap.h"
+#include "bitmaps/lsearch.xpm"
+#include "bitmaps/lsearchn.xpm"
 
 #include <unistd.h>
 #include <errno.h>
@@ -56,6 +58,7 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QScrollBar>
+#include <QLineEdit>
 
 // help keywords used:
 //  layertab
@@ -79,7 +82,6 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
     instancePtr = this;
 
     ltab_scrollbar = 0;
-    ltab_search_container = 0;
     ltab_entry = 0;
     ltab_sbtn = 0;
     ltab_lsearch = 0;
@@ -126,8 +128,6 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
         this, SLOT(button_press_slot(QMouseEvent*)));
     connect(gd_viewport->widget(), SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(button_release_slot(QMouseEvent*)));
-//    connect(lspec_btn, SIGNAL(toggled(bool)),
-//        this, SLOT(s_btn_slot(bool)));
     connect(ltab_scrollbar, SIGNAL(valueChanged(int)),
         this, SLOT(ltab_scroll_value_changed_slot(int)));
 }
@@ -157,6 +157,7 @@ QTltab::setup_drawable()
 void
 QTltab::blink(CDl *ld)
 {
+    //XXX FIXME
 (void)ld;
 }
 
@@ -216,12 +217,89 @@ QTltab::update_scrollbar()
 void
 QTltab::hide_layer_table(bool)
 {
+    /*XXX
+    // Reparenting does not seem to work, always get fatal errors.
+    // We just move the slider to cover the layer table here.
+
+    static int last_wid;
+    if (hide) {
+        last_wid = gtk_paned_get_position(
+            GTK_PANED(gtk_widget_get_parent(ltab_container)));
+        if (gtk_widget_get_mapped(ltab_scrollbar)) {
+            GtkRequisition req;
+            gtk_widget_get_requisition(ltab_scrollbar, &req);
+            int ww = req.width;
+            if (getenv("XIC_MENU_RIGHT"))
+                ww = -ww;
+            last_wid += ww;
+        }
+
+        gtk_widget_hide(ltab_container);
+        gtk_widget_hide(ltab_scrollbar);
+        gtk_paned_set_position(
+            GTK_PANED(gtk_widget_get_parent(ltab_container)), 0);
+        ltab_hidden = true;
+    }
+    else {
+        if (lt_vis_entries <= CDldb()->layersUsed(DSP()->CurMode()) - 1) {
+            gtk_widget_show(ltab_scrollbar);
+            GtkRequisition req;
+            gtk_widget_get_requisition(ltab_scrollbar, &req);
+            int ww = req.width;
+            if (getenv("XIC_MENU_RIGHT"))
+                ww = -ww;
+            last_wid -= ww;
+        }
+        gtk_widget_show(ltab_container);
+        gtk_paned_set_position(GTK_PANED(gtk_widget_get_parent(ltab_container)),
+            last_wid);
+        ltab_hidden = false;
+    }
+    */
 }
 
 
 void
 QTltab::set_layer()
 {
+    CDl *ld = LT()->CurLayer();
+    if (ld)
+        ltab_entry->setText(tr(ld->name()));
+    else {
+        ltab_entry->setText("");
+        return;
+    }
+
+    int pos = ld->index(DSP()->CurMode()) - 1;
+    if (pos >= first_visible() && pos < first_visible() + vis_entries())
+        show();
+    else {
+        int nt = CDldb()->layersUsed(DSP()->CurMode()) - 1;
+        nt -= vis_entries();
+        pos -= vis_entries()/2;
+        if (pos < 0)
+            pos = 0;
+        else if (pos > nt)
+            pos = nt;
+        lt_first_visible = pos;
+        update_scrollbar();
+        show();
+    }
+}
+
+
+void
+QTltab::set_search_widgets(QPushButton *p, QLineEdit *e)
+{
+    if (!p || !e)
+        return;
+    ltab_sbtn = p;
+    ltab_entry = e;
+
+    ltab_sbtn->setToolTip(tr("Search layer table for layer."));
+    ltab_lsearch = new QPixmap(lsearch_xpm);
+    ltab_sbtn->setIcon(*ltab_lsearch);
+    connect(ltab_sbtn, SIGNAL(clicked()), this, SLOT(pressed_slot()));
 }
 
 
@@ -324,6 +402,55 @@ QTltab::font_changed(int fnum)
 }
 
 
+void
+QTltab::pressed_slot()
+{
+    if (!ltab_search_str)
+        ltab_search_str =
+            lstring::copy(ltab_entry->text().toLatin1());
+    if (!ltab_search_str)
+        return;
+    CDl *ld = CDldb()->search(DSP()->CurMode(), ltab_last_index + 1,
+        ltab_search_str);
+    ltab_last_index = 0;
+    if (!ld) {
+        delete [] ltab_search_str;
+        ltab_search_str = 0;
+        return;
+    }
+
+    ltab_last_index = ld->index(DSP()->CurMode());
+    LT()->SetCurLayer(ld);
+
+    if (!ltab_lsearchn)
+        ltab_lsearchn = new QPixmap(lsearchn_xpm);
+    ltab_sbtn->setIcon(*ltab_lsearchn);
+
+    if (ltab_timer_id)
+        QTdev::self()->RemoveTimer(ltab_timer_id);
+    ltab_timer_id = QTdev::self()->AddTimer(3000, ltab_ent_timer, this);
+}
+
+
+// Static function.
+int
+QTltab::ltab_ent_timer(void *arg)
+{
+    QTltab *lt = static_cast<QTltab*>(arg);
+    if (lt) {
+        lt->ltab_last_index = 0;
+        delete [] lt->ltab_search_str;
+        lt->ltab_search_str = 0;
+        lt->ltab_sbtn->setIcon(*lt->ltab_lsearch);
+        if (LT()->CurLayer())
+            lt->ltab_entry->setText(tr(LT()->CurLayer()->name()));
+        lt->ltab_timer_id = 0;
+    }
+    return (0);
+}
+// End of QTltab functions.
+
+
 /*
 static unsigned int
 revbytes(unsigned bits, int nb)
@@ -338,6 +465,4 @@ revbytes(unsigned bits, int nb)
     return (bits);
 }
 */
-
-// End of QTltab functions.
 

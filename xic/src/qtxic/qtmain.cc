@@ -73,6 +73,8 @@
 #include <QKeyEvent>
 #include <QResizeEvent>
 #include <QSplitter>
+#include <QPushButton>
+#include <QLineEdit>
 
 #include "file_menu.h"
 #include "view_menu.h"
@@ -828,8 +830,9 @@ cKeys::show_keys()
         delete [] k_cmd;
         k_cmd = 0;
     }
+    int h = QTfont::lineHeight(FNT_SCREEN) + 4;
     int w = QTfont::stringWidth(0, FNT_SCREEN);
-    resize(strlen(k_keys)*w, -1);
+    resize(strlen(k_keys)*w + 4, h);
     updateGeometry();
 }
 
@@ -1466,7 +1469,7 @@ QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
     (void)caller;
     (void)mode;
 /*
-    if (!QTdev::exists || !QTmainwin::exists())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         if (sw_zoompop)
@@ -1511,8 +1514,6 @@ QTsubwin::keypress_handler(unsigned int keyval, unsigned int state,
 {
     if (!sw_windesc)
         return (false);
-
-//XXX QT uses its own key codes FIXME!
 
     // The code: 0x00 - 0x16 are the KEYcode enum values.
     //           0x17 - 0x1f unused
@@ -1638,7 +1639,7 @@ void
 QTsubwin::new_painter_slot(QPainter *p)
 {
     (void)p;
-printf("new painter\n");
+//printf("new painter\n");
 }
 
 
@@ -1856,40 +1857,40 @@ QTsubwin::motion_slot(QMouseEvent *ev)
 void
 QTsubwin::key_down_slot(QKeyEvent *ev)
 {
-    /*
     if (!QTmainwin::self() || qtPkgIf()->NotMapped())
-        return (true);
-    */
+        return;
 
     if (message)
         message->popdown();
 
 //XXX
-printf("%x %x %x\n", ev->key(), ev->nativeScanCode(), ev->nativeVirtualKey());
+//printf("%x %x %x\n", ev->key(), ev->nativeScanCode(), ev->nativeVirtualKey());
 
     QString qs = ev->text().toLatin1();
     const char *string = (const char*)qs.constData();
-    int kpos = sw_keys_pressed->key_pos();
-    if (!is_modifier_key(ev->key()) && kpos &&
-            sw_keys_pressed->key(kpos - 1) == Kmap()->SuppressChar())
-        sw_keys_pressed->bsp_keys();
-/*XXX
-    else if (Kmap()->MacroExpand(kev->keyval, kev->state, false))
-        return (true);
 
+    if (!is_modifier_key(ev->key()) && CheckBsp())
+        ;
+    else if (KbMac()->MacroExpand(ev->key(), mod_state(ev->modifiers()),
+            false)) {
+        ev->accept();
+        return;
+    }
+
+/*XXX
     if (ev->key() == Qt::Key_Shift || ev->key() == Qt::Key_Control) {
         gdk_keyboard_grab(caller->window, true, kev->time);
         grabbed_key = kev->keyval;
     }
 */
 
-    if (keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
-            QTmainwin::self()->PromptLine()->underMouse(), false))
-        ev->accept();
+    keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
+        QTmainwin::self()->PromptLine()->underMouse(), false);
+    ev->accept();
 }
 
 
-// Key release processing for the drawing windows
+// Key release processing for the drawing windows.
 //
 void
 QTsubwin::key_up_slot(QKeyEvent *ev)
@@ -1899,15 +1900,17 @@ QTsubwin::key_up_slot(QKeyEvent *ev)
         grabbed_key = 0;
         gdk_keyboard_ungrab(event->key.time);
     }
-    if (GApp->AppNotMapped)
-        return( true);
-    if (Kmap()->MacroExpand(kev->keyval, kev->state, true))
-        return (true);
 */
+
+    if (!QTmainwin::self() || qtPkgIf()->NotMapped())
+        return;
+    if (KbMac()->MacroExpand(ev->key(), mod_state(ev->modifiers()), true))
+        return;
+
     const char *string = ev->text().toLatin1().constData();
-    if (keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
-            false, true))
-        ev->accept();
+    keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
+        false, true);
+    ev->accept();
 }
 
 
@@ -2130,6 +2133,16 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
+    // Search button and entry, used with layer table.
+    QPushButton *ltab_sbtn = new QPushButton();
+    ltab_sbtn->setAutoDefault(false);
+    ltab_sbtn->setMaximumWidth(40);
+    hbox->addWidget(ltab_sbtn);
+
+    QLineEdit *ltab_entry = new QLineEdit();
+    ltab_entry->setMinimumWidth(120);
+    hbox->addWidget(ltab_entry);
+
     mw_top_button_box = new QWidget(this);
     hbox->addWidget(mw_top_button_box);
     mw_coords = new cCoord(this);
@@ -2150,6 +2163,8 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     qw->setLayout(hbox);
     LT()->SetLtab(mw_layertab);
 
+    mw_layertab->set_search_widgets(ltab_sbtn, ltab_entry);
+
     QSplitter *qs = new QSplitter();
     qs->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     qs->addWidget(qw);
@@ -2166,14 +2181,6 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     hbox->setMargin(0);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
-
-/*XXX
-    w *= 7;
-    w += 4;
-    int h = QTfont::lineHeight(FNT_SCREEN) + 4;
-    sw_keys_pressed->setFixedSize(w, h);
-    hbox->addWidget(sw_keys_pressed);
-*/
 
     int h = QTfont::lineHeight(FNT_SCREEN) + 4;
 
@@ -2217,6 +2224,8 @@ QTmainwin::initialize()
     QTmenu::self()->InitMainMenu();
     QTmenu::self()->InitTopButtonMenu();
     QTmenu::self()->InitSideButtonMenus();
+
+    Viewport()->setFocus();
 }
 
 

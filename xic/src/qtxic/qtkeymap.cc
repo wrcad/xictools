@@ -74,6 +74,13 @@ static keymap kmap_dn[] = {
 /* XXX how to get *numeric* +/-? */
     { Qt::Key_Plus,         NUPLUS_KEY,     0 },
     { Qt::Key_Minus,        NUMINUS_KEY,    0 },
+/*
+#ifdef __APPLE__
+        // Mappings for MacBook Pro keyboard: fn-Enter and fn-Right.
+        { GDK_KEY_KP_Enter,     NUPLUS_KEY,     0 },
+        { GDK_KEY_End,          NUMINUS_KEY,    0 },
+#endif
+*/
 
     { Qt::Key_PageDown,     PAGEDN_KEY,     0 },
     { Qt::Key_PageUp,       PAGEUP_KEY,     0 },
@@ -157,6 +164,7 @@ static keyaction actions_post[] = {
     { 'u',         GR_CONTROL_MASK,                 ClearKeys_action },
     { 'v',         GR_CONTROL_MASK,                 Version_action },
     { '!',         0,                               Command_action },
+    { '?',         0,                               Help_action },
     { LEFT_KEY,    GR_SHIFT_MASK | GR_CONTROL_MASK, SetNextView_action },
     { LEFT_KEY,    GR_CONTROL_MASK,                 DecRot_action },
     { LEFT_KEY,    GR_SHIFT_MASK,                   PanLeftFine_action },

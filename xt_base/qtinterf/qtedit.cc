@@ -255,7 +255,8 @@ QTeditPopup::QTeditPopup(QTbag *owner, QTeditPopup::WidgetType type,
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_EDITOR))
         text_editor->setFont(*fnt);
-    FC.registerCallback(text_editor, FNT_EDITOR);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     if (widget_type == Editor || widget_type == Browser) {
         if (widget_type == Browser)
@@ -323,7 +324,6 @@ QTeditPopup::~QTeditPopup()
         if (owner)
             owner->monitor.remove(this);
     }
-    FC.unregisterCallback(this, FNT_EDITOR);
     delete [] savedAs;
     delete [] sourceFile;
     delete [] dropFile;
@@ -1200,5 +1200,16 @@ void
 QTeditPopup::ignore_case_slot(bool set)
 {
     ignCase = set;
+}
+
+
+void
+QTeditPopup::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_EDITOR) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_EDITOR))
+            text_editor->setFont(*fnt);
+    }
 }
 

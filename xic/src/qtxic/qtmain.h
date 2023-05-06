@@ -64,6 +64,8 @@ class QTltab;
 
 class QMenu;
 class QMenuBar;
+class QLineEdit;
+class QPushButton;
 
 // Graphics contexgt classes for application windows.
 enum XIC_WINDOW_CLASS

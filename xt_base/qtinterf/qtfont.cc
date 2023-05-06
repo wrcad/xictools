@@ -75,8 +75,9 @@ int GRfont::num_app_fonts =
 
 //#define DEF_FIXED_FACE "Courier New"
 //#define DEF_PROP_FACE "Helvetica"
-#define DEF_FIXED_FACE "Andale Mono"
-#define DEF_PROP_FACE "Menlo"
+#define DEF_FIXED_FACE "Menlo"
+#define DEF_PROP_FACE "Ariel"
+#define DEF_SIZE 11
 
 
 QTfont *QTfont::instancePtr = 0;
@@ -106,8 +107,8 @@ QTfont::initFonts()
     if (app_fonts[0].default_fontname != 0)
         return;
 
-    //XXX do better thN THIS
-    int def_size = 11;
+    //XXX do better than this?
+    int def_size = DEF_SIZE;
 
     char buf[80];
     snprintf(buf, 80, "%s %d", DEF_FIXED_FACE, def_size);
@@ -225,28 +226,25 @@ QTfont::getFont(void *fontp, int fnum)
 
 
 // Register a font-change callback.
+// DO NOT USE, connect to the fontChanged signal instead.
 //
 void
 QTfont::registerCallback(void *pwidget, int fnum)
 {
-    /* unused
     QWidget *widget = (QWidget*)pwidget;
     if (fnum < 1 || fnum >= num_app_fonts)
         return;
     fonts[fnum].cbs = new FcbRec(widget, fonts[fnum].cbs);
-    */
-    //XXX
-    printf("unused register called\n");
 }
 
 
 // Unregister a font-change callback.  The widget is the dialog parent of
 // the text widget recorded.
+// DO NOT USE, connect to the fontChanged signal instead.
 //
 void
 QTfont::unregisterCallback(void *pwidget, int fnum)
 {
-    /* unused
     QWidget *widget = (QWidget*)pwidget;
     if (fnum < 1 || fnum >= num_app_fonts)
         return;
@@ -263,9 +261,6 @@ QTfont::unregisterCallback(void *pwidget, int fnum)
         }
         fp = f;
     }
-    */
-    //XXX
-    printf("unused unregister called\n");
 }
 
 
@@ -429,6 +424,7 @@ QTfont::new_font(const char *name, bool fixed)
 void
 QTfont::refresh(int fnum)
 {
+    (void)fnum;
     // not used
 }
 
@@ -716,8 +712,6 @@ QTfontPopup::select_font(const QFont *fnt)
     list = style_list->findItems(sty, Qt::MatchExactly);
     if (list.size() > 0)
         style_list->setCurrentItem(list.at(0));
-    else
-        return;
     int sz = fnt->pointSize();
     if (sz < 0)
         sz = fnt->pixelSize();

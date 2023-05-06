@@ -227,7 +227,7 @@ cKsMap::SetButtonMap(int ix, int b)
 }
 
 
-// Dump a file containing the key mapping and action ampping info.
+// Dump a file containing the key mapping and action mapping info.
 //
 bool
 cKsMap::SaveMapFile(const char *fname)

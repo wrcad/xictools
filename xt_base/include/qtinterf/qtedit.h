@@ -134,6 +134,7 @@ namespace qtinterf
         void search_down_slot();
         void search_up_slot();
         void ignore_case_slot(bool);
+        void font_changed_slot(int);
 
     private:
         bool read_file(const char*, bool);
