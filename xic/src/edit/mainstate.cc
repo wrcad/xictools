@@ -230,6 +230,8 @@ MainState::b1down()
             if (dtime > 1000)
                 dtime = 1000;
         }
+//XXX
+printf("fpp\n");
         Id = GRpkgIf()->AddTimer(dtime, timeout1, 0);
     }
     else {
@@ -1107,6 +1109,8 @@ MainState::set_op(ActionType op)
 int
 MainState::timeout1(void*)
 {
+//XXX
+fprintf(stderr, "here\n");
     if (Mcmd()->Id) {
         Mcmd()->Id = 0;
 

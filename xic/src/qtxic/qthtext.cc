@@ -50,6 +50,7 @@
 #include <QPushButton>
 #include <QMenu>
 #include <QMouseEvent>
+#include <QEnterEvent>
 
 // Help keywords:
 //  promptline
@@ -148,12 +149,12 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
     hbox->addWidget(Viewport());
 
-    QFont *font;
-    if (FC.getFont(&font, FNT_SCREEN)) {
-        gd_viewport->set_font(font);
-        pe_rcl_btn->setFont(*font);
-        pe_sto_btn->setFont(*font);
-        pe_ltx_btn->setFont(*font);
+    QFont *tfont;
+    if (FC.getFont(&tfont, FNT_SCREEN)) {
+        gd_viewport->set_font(tfont);
+        pe_rcl_btn->setFont(*tfont);
+        pe_sto_btn->setFont(*tfont);
+        pe_ltx_btn->setFont(*tfont);
     }
 
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
@@ -163,8 +164,8 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
         this, SLOT(resize_slot(QResizeEvent*)), Qt::QueuedConnection);
     connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(press_slot(QMouseEvent*)), Qt::QueuedConnection);
-    connect(Viewport(), SIGNAL(enter_event(QEvent*)),
-        this, SLOT(enter_slot(QEvent*)), Qt::QueuedConnection);
+    connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
+        this, SLOT(enter_slot(QEntervent*)), Qt::QueuedConnection);
     connect(Viewport(), SIGNAL(leave_event(QEvent*)),
         this, SLOT(leave_slot(QEvent*)), Qt::QueuedConnection);
     connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
@@ -230,10 +231,10 @@ QTedit::flash_msg(const char *msg, ...)
 // As above, but user passes the location.
 //
 void
-QTedit::flash_msg_here(int x, int y, const char *msg, ...)
+QTedit::flash_msg_here(int xx, int yy, const char *msg, ...)
 {
-    (void)x;
-    (void)y;
+    (void)xx;
+    (void)yy;
     va_list args;
 
     char buf[256];
@@ -329,10 +330,10 @@ QTedit::set_indicate()
 
 
 void
-QTedit::show_lt_button(bool show)
+QTedit::show_lt_button(bool show_btn)
 {
     if (!pe_disabled) {
-        if (show)
+        if (show_btn)
             pe_ltx_btn->show();
         else
             pe_ltx_btn->hide();
@@ -540,7 +541,7 @@ QTedit::press_slot(QMouseEvent *ev)
 
 
 void
-QTedit::enter_slot(QEvent*)
+QTedit::enter_slot(QEnterEvent*)
 {
     pe_entered = true;
     redraw();

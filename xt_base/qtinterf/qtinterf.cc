@@ -258,6 +258,8 @@ QTdev::NewWbag(const char*, GRwbag *reuse)
 int
 QTdev::AddTimer(int ms, int(*cb)(void*), void *arg)
 {
+//XXX
+printf("new timer\n");
     dv_timers = new interval_timer(cb, arg, dv_timers, 0);
     dv_timers->set_use_return(true);
     dv_timers->register_list(&dv_timers);

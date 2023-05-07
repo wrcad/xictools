@@ -43,6 +43,7 @@
 #include <QPaintEvent>
 #include <QBitmap>
 #include <QPainter>
+#include <QEnterEvent>
 
 
 using namespace qtinterf;
@@ -61,6 +62,7 @@ draw_qt_w::draw_qt_w(bool, QWidget *prnt) : QWidget(prnt)
     da_tile_x = 0;
     da_tile_y = 0;
     da_fill_mode = false;
+    da_xor_mode = false;
     da_line_mode = 0;
     da_pen.setStyle(Qt::NoPen);
     da_line_style = 0;
@@ -159,6 +161,7 @@ void
 draw_qt_w::draw_pixel(int x0, int y0)
 {
     da_pen.setStyle(Qt::SolidLine);
+    da_painter->setPen(da_pen);
     da_painter->drawPoint(x0, y0);
 }
 
@@ -171,6 +174,7 @@ draw_qt_w::draw_pixels(GRmultiPt *p, int n)
     QPolygon poly;
     poly.setPoints(n, (int*)p->data());
     da_pen.setStyle(Qt::SolidLine);
+    da_painter->setPen(da_pen);
     da_painter->drawPoints(poly);
 }
 
@@ -296,11 +300,17 @@ draw_qt_w::draw_line_prv(int x1, int y1, int x2, int y2)
 void
 draw_qt_w::draw_line(int x1, int y1, int x2, int y2)
 {
+    if (da_xor_mode) {
+        bb_add(x1, y1);
+        bb_add(x2, y2);
+    }
     if (da_line_mode)
         da_pen.setStyle((Qt::PenStyle)(da_line_mode + 1));
     else if (!da_line_style || da_line_style->length <= 1)
         da_pen.setStyle(Qt::SolidLine);
     else {
+        da_pen.setStyle(Qt::SolidLine);
+        da_painter->setPen(da_pen);
         draw_line_prv(x1, y1, x2, y2);
         return;
     }
@@ -318,11 +328,25 @@ draw_qt_w::draw_polyline(GRmultiPt *p, int n)
 {
     if (n < 2)
         return;
+
+    if (da_xor_mode) {
+        p->data_ptr_init();
+        int nn = n;
+        while (nn--) {
+            int xx = p->data_ptr_x();
+            int yy = p->data_ptr_y();
+            bb_add(xx, yy);
+            p->data_ptr_inc();
+        }
+    }
+
     if (da_line_mode)
         da_pen.setStyle((Qt::PenStyle)(da_line_mode + 1));
     else if (!da_line_style || da_line_style->length <= 1)
         da_pen.setStyle(Qt::SolidLine);
     else {
+        da_pen.setStyle(Qt::SolidLine);
+        da_painter->setPen(da_pen);
         p->data_ptr_init();
         while (n--) {
             int xx = p->data_ptr_x();
@@ -348,11 +372,29 @@ draw_qt_w::draw_lines(GRmultiPt *p, int n)
 {
     if (n < 1)
         return;
+
+    if (da_xor_mode) {
+        p->data_ptr_init();
+        int nn = n;
+        while (nn--) {
+            int xx = p->data_ptr_x();
+            int yy = p->data_ptr_y();
+            bb_add(xx, yy);
+            p->data_ptr_inc();
+            xx = p->data_ptr_x();
+            yy = p->data_ptr_y();
+            bb_add(xx, yy);
+            p->data_ptr_inc();
+        }
+    }
+
     if (da_line_mode)
         da_pen.setStyle((Qt::PenStyle)(da_line_mode + 1));
     else if (!da_line_style || da_line_style->length <= 1)
         da_pen.setStyle(Qt::SolidLine);
     else {
+        da_pen.setStyle(Qt::SolidLine);
+        da_painter->setPen(da_pen);
         p->data_ptr_init();
         while (n--) {
             int xx = p->data_ptr_x();
@@ -373,11 +415,59 @@ draw_qt_w::draw_lines(GRmultiPt *p, int n)
 void
 draw_qt_w::define_fillpattern(GRfillType *fillp)
 {
-    if (fillp && fillp->hasMap()) {
-        QBitmap bm = QBitmap::fromData(QSize(fillp->nX(), fillp->nY()),
-            (const unsigned char*)fillp->map(), QImage::Format_Mono);
-        fillp->setXpixmap(new QBitmap(bm));
+    if (!fillp)
+        return;
+#if defined(WIN32) && defined(DIRECT_TO_GDI)
+    if (fillp->xPixmap()) {
+        DeleteBitmap((HBITMAP)fillp->xPixmap());
+        fillp->setXpixmap(0);
     }
+    if (fillp->hasMap()) {
+        // 0 -> text fg color, 1 -> text bg color, so invert map pixels
+        int bpl = (fillp->nX() + 7)/8;
+        unsigned char *map = fillp->newBitmap();
+        unsigned short *invmap =
+            new unsigned short[fillp->nY()*(bpl > 2 ? 2:1)];
+        if (fillp->nX() <= 16) {
+            for (unsigned int i = 0; i < fillp->nY(); i++) {
+                unsigned short c = revnotbits(map[i*bpl]);
+                if (bpl > 1)
+                    c |= revnotbits(map[i*bpl + 1]) << 8;
+                invmap[i] = c;
+            }
+        }
+        else {
+            for (unsigned int i = 0; i < fillp->nY(); i++) {
+                unsigned short c = revnotbits(map[i*bpl]);
+                c |= revnotbits(map[i*bpl + 1]) << 8;
+                invmap[2*i] = c;
+                c = revnotbits(map[i*bpl + 2]);
+                if (bpl > 3)
+                    c |= revnotbits(map[i*bpl + 3]) << 8;
+                invmap[2*i + 1] = c;
+            }
+        }
+        fillp->setXpixmap((GRfillData)CreateBitmap(fillp->nX(), fillp->nY(),
+            1, 1, invmap));
+        delete [] invmap;
+        delete [] map;
+    }
+#else
+
+    if (fillp->xPixmap()) {
+        delete (QPixmap*)fillp->xPixmap();
+        fillp->setXpixmap(0);
+    }
+    if (fillp->hasMap()) {
+        unsigned char *map = fillp->newBitmap();
+        QBitmap *bmp = new QBitmap(QBitmap::fromData(
+            QSize(fillp->nX(), fillp->nY()),
+            (unsigned char*)map, QImage::Format_Mono));
+        fillp->setXpixmap((GRfillData)bmp);
+        delete [] map;
+    }
+
+#endif
 }
 
 
@@ -397,6 +487,10 @@ draw_qt_w::set_fillpattern(const GRfillType *fillp)
 void
 draw_qt_w::draw_box(int x1, int y1, int x2, int y2)
 {
+    if (da_xor_mode) {
+        bb_add(x1, y1);
+        bb_add(x2, y2);
+    }
     if (x1 > x2) {
         int temp = x1;
         x1 = x2;
@@ -424,6 +518,12 @@ draw_qt_w::draw_boxes(GRmultiPt *p, int n)
         int yy = p->data_ptr_y();
         p->data_ptr_inc();
         da_painter->drawRect(xx, yy, p->data_ptr_x() - 1, p->data_ptr_y() - 1);
+        if (da_xor_mode) {
+            bb_add(xx, yy);
+            xx += p->data_ptr_x() - 1;
+            yy += p->data_ptr_y() - 1;
+            bb_add(xx, yy);
+        }
         p->data_ptr_inc();
     }
 }
@@ -434,6 +534,10 @@ draw_qt_w::draw_boxes(GRmultiPt *p, int n)
 void
 draw_qt_w::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 {
+    if (da_xor_mode) {
+        bb_add(x0-r, y0-r);
+        bb_add(x0+r, y0+r);
+    }
     if (a1 >= a2)
         a2 = 2 * M_PI + a2;
     int t1 = (int)(16 * (180.0 / M_PI) * a1);
@@ -450,14 +554,50 @@ draw_qt_w::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 void
 draw_qt_w::draw_polygon(GRmultiPt *p, int n)
 {
+    if (da_xor_mode) {
+        p->data_ptr_init();
+        while (n--) {
+            int xx = p->data_ptr_x();
+            int yy = p->data_ptr_y();
+            bb_add(xx, yy);
+            p->data_ptr_inc();
+        }
+    }
     da_painter->drawPolygon((QPoint*)p->data(), n, Qt::WindingFill);
 }
 
 
 void
-draw_qt_w::draw_zoid(int, int, int, int, int, int)
-// draw_gl_w::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
+draw_qt_w::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 {
+    if (da_xor_mode) {
+        bb_add(xll, yl);
+        bb_add(xul, yu);
+        bb_add(xlr, yl);
+        bb_add(xur, yu);
+    }
+    QPoint pts[5];
+    int n = 0;
+    pts[n].setX(xll);
+    pts[n].setY(yl);
+    n++;
+    pts[n].setX(xul);
+    pts[n].setY(yu);
+    if (xul != xur) {
+        n++;
+        pts[n].setX(xur);
+        pts[n].setY(yu);
+    }
+    n++;
+    pts[n].setX(xlr);
+    pts[n].setY(yl);
+    if (xll != xlr) {
+        n++;
+        pts[n].setX(xll);
+        pts[n].setY(yl);
+    }
+    da_painter->drawPolygon(pts, n+1, Qt::WindingFill);
+
 }
 
 
@@ -542,11 +682,14 @@ void
 draw_qt_w::set_xor_mode(bool set)
 {
     if (set) {
+        da_xor_mode = true;
+        bb_init();
         da_painter->setCompositionMode(QPainter::RasterOp_SourceXorDestination);
     }
     else {
-        update();
+        repaint(da_xb1, da_yb1, da_xb2-da_xb1+1, da_yb2-da_yb1+1);
         da_painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+        da_xor_mode = false;
     }
 }
 
@@ -726,6 +869,10 @@ draw_qt_w::paintEvent(QPaintEvent *ev)
     for (int i  = 0; i < rects.size(); i++) {
         QRect r = rects.at(i);
         p.drawPixmap(r, *da_pixmap, r);
+//XXX
+//static int f;
+//printf("%d %d %d %d %d\n", f, r.x(), r.y(), r.width(), r.height());
+//f++;
     }
 
     // The application can handle this to draw highlighting that is
@@ -773,7 +920,7 @@ draw_qt_w::keyReleaseEvent(QKeyEvent *ev)
 
 
 void
-draw_qt_w::enterEvent(QEvent *ev)
+draw_qt_w::enterEvent(QEnterEvent *ev)
 {
     emit enter_event(ev);
 }
@@ -806,5 +953,6 @@ draw_qt_w::initialize()
     da_painter->setBrush(da_brush);
     da_painter->setPen(da_pen);
     clear();
+    bb_init();
 }
 

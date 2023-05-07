@@ -50,6 +50,7 @@
 void
 cMain::PopUpColor(GRobject caller, ShowMode mode)
 {
+    (void)caller;
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
@@ -230,6 +231,10 @@ namespace {
                             Selections.show(wd);
                     }
                     wd->ShowHighlighting();
+
+                    //XXX This updates the entire drawing windows every
+                    // half second.
+                    wd->Wdraw()->Update();
                 }
                 DSP()->SetSelectPixel(DSP()->Color(SelectColor1));
             }

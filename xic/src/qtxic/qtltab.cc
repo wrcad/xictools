@@ -270,18 +270,18 @@ QTltab::set_layer()
         return;
     }
 
-    int pos = ld->index(DSP()->CurMode()) - 1;
-    if (pos >= first_visible() && pos < first_visible() + vis_entries())
+    int posn = ld->index(DSP()->CurMode()) - 1;
+    if (posn >= first_visible() && posn < first_visible() + vis_entries())
         show();
     else {
         int nt = CDldb()->layersUsed(DSP()->CurMode()) - 1;
         nt -= vis_entries();
-        pos -= vis_entries()/2;
-        if (pos < 0)
-            pos = 0;
-        else if (pos > nt)
-            pos = nt;
-        lt_first_visible = pos;
+        posn -= vis_entries()/2;
+        if (posn < 0)
+            posn = 0;
+        else if (posn > nt)
+            posn = nt;
+        lt_first_visible = posn;
         update_scrollbar();
         show();
     }

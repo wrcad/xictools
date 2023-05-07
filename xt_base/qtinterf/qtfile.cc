@@ -880,12 +880,14 @@ QTfilePopup::QTfilePopup(QTbag *owner, FsMode mode, void *arg,
     connect(
         tree, SIGNAL(itemExpanded(QTreeWidgetItem*)),
         this, SLOT(tree_expand_slot(QTreeWidgetItem*)));
-    connect(
-        list, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
-        this, SLOT(list_select_slot(QListWidgetItem*, QListWidgetItem*)));
-    connect(
-        list, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-        this, SLOT(list_double_clicked_slot(QListWidgetItem*)));
+    if (list) {
+        connect(list,
+            SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+            this, SLOT(list_select_slot(QListWidgetItem*, QListWidgetItem*)));
+        connect(list,
+            SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+            this, SLOT(list_double_clicked_slot(QListWidgetItem*)));
+    }
     init();
 
     timer = new QTimer(this);
@@ -1558,7 +1560,8 @@ is_root(const char *str)
 void
 QTfilePopup::init()
 {
-    list->clear();
+    if (list)
+        list->clear();
     tree->clear();
     select_dir(0);
     select_file(0);

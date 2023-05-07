@@ -733,14 +733,21 @@ QTmenuConfig::instantiateTopButtonMenu()
         hbox->setSpacing(2);
 
         set(mbox->menu[miscMenu], 0, 0);
+#ifdef __APPLE__
+        // With Apple the WR button goes here, since there is no menu bar.
         set(mbox->menu[miscMenuMail], "Mail", 0);
+#endif
         set(mbox->menu[miscMenuLtvis], "LTvisib", 0);
         set(mbox->menu[miscMenuLpal], "Palette", 0);
         set(mbox->menu[miscMenuSetcl], "SetCL", 0);
         set(mbox->menu[miscMenuSelcp], "SelCP", 0);
         set(mbox->menu[miscMenuRdraw], "Rdraw", 0);
 
+#ifdef __APPLE__
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
+#else
+        for (MenuEnt *ent = mbox->menu + 2; ent->entry; ent++) {
+#endif
             QTmenuButton *b = new QTmenuButton(ent, top_button_box);
             b->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
             b->setMaximumWidth(40);

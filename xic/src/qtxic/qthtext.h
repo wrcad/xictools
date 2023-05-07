@@ -51,6 +51,8 @@
 #include "qtinterf/qtinterf.h"
 #include <QWidget>
 
+class QEnterEvent;
+
 // String storage registers, 0 is "last", 1-5 are general.
 #define PE_NUMSTORES 6
 
@@ -97,7 +99,7 @@ private slots:
     void long_text_slot();
     void resize_slot(QResizeEvent*);
     void press_slot(QMouseEvent*);
-    void enter_slot(QEvent*);
+    void enter_slot(QEnterEvent*);
     void leave_slot(QEvent*);
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);

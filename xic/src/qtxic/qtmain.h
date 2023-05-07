@@ -54,18 +54,19 @@
 #include <QDialog>
 #include <QFontMetrics>
 
+struct sKeyEvent;
 class cCoord;
 class cParam;
 class cKeys;
 class cExpand;
 class idle_proc;
-struct sKeyEvent;
 class QTltab;
 
 class QMenu;
 class QMenuBar;
 class QLineEdit;
 class QPushButton;
+class QEnterEvent;
 
 // Graphics contexgt classes for application windows.
 enum XIC_WINDOW_CLASS
@@ -163,8 +164,6 @@ public:
 
 private slots:
     void font_changed(int);
-    void paint_slot(QPaintEvent*);
-    void resize_slot(QResizeEvent*);
 
 private:
     int k_keypos;
@@ -243,7 +242,7 @@ protected slots:
     void motion_slot(QMouseEvent*);
     void key_down_slot(QKeyEvent*);
     void key_up_slot(QKeyEvent*);
-    void enter_slot(QEvent*);
+    void enter_slot(QEnterEvent*);
     void leave_slot(QEvent*);
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);

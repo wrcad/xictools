@@ -56,6 +56,7 @@ class QPaintEvent;
 class QKeyEvent;
 class QDragEnterEvent;
 class QDragEvent;
+class QEnterEvent;
 
 namespace qtinterf
 {
@@ -67,7 +68,8 @@ namespace qtinterf
         draw_qt_w(bool, QWidget *parent);
         ~draw_qt_w();
 
-        QWidget *widget() { return (this); }
+        QWidget *widget()           { return (this); }
+        QPixmap *pixmap()           { return (da_pixmap); }
 
         void draw_direct(bool);
         void update();
@@ -95,7 +97,7 @@ namespace qtinterf
         void draw_image(const GRimage*, int, int, int, int);
 
         void set_font(QFont*);
-        int text_width(QFont*, const char*, int);
+        int  text_width(QFont*, const char*, int);
         void text_extent(const char*, int*, int*);
         void draw_text(int, int, const char*, int);
 
@@ -126,7 +128,7 @@ namespace qtinterf
         void move_event(QMouseEvent*);
         void key_press_event(QKeyEvent*);
         void key_release_event(QKeyEvent*);
-        void enter_event(QEvent*);
+        void enter_event(QEnterEvent*);
         void leave_event(QEvent*);
         void drag_enter_event(QDragEnterEvent*);
         void drop_event(QDropEvent*);
@@ -139,37 +141,66 @@ namespace qtinterf
         void mouseMoveEvent(QMouseEvent*);
         void keyPressEvent(QKeyEvent*);
         void keyReleaseEvent(QKeyEvent*);
-        void enterEvent(QEvent*);
+        void enterEvent(QEnterEvent*);
         void leaveEvent(QEvent*);
         void dragEnterEvent(QDragEnterEvent*);
         void dropEvent(QDropEvent*);
 
     private:
+
+        // Init a bounding box for refreshing.                                 
+        void bb_init()
+        {
+            da_xb1 = size().width();
+            da_yb1 = size().height();
+            da_xb2 = 0;
+            da_yb2 = 0;
+        }
+
+        // Add a vertex to the bounding box.
+        void bb_add(int xx, int yy)
+        {
+            if (xx < da_xb1)
+                da_xb1 = xx;
+            if (yy < da_yb1)
+                da_yb1 = yy;
+            if (xx > da_xb2)
+                da_xb2 = xx;
+            if (yy > da_yb2)
+                da_yb2 = yy;
+        }
+
         void draw_line_prv(int, int, int, int);
         void initialize();
 
-        QPixmap *da_pixmap;         // main pixmap
-        QPixmap *da_tile_pixmap;    // tiling pixmap;
-        QPainter *da_painter;       // main paint engine
-        QPainter *da_painter_temp;  // temp painter for pixmap switch
-        QColor da_fg;               // foreground color
-        QColor da_bg;               // background color
-        QColor da_ghost;            // ghost color
-        QColor da_ghost_fg;         // ghost color ^ background
-        QBrush da_brush;            // solid fill brush 
-        QPen da_pen;                // min width pen
-        int da_tile_x;              // tile origin x
-        int da_tile_y;              // tile origin y
-        bool da_fill_mode;          // true when tiling
-        int da_line_mode;           // true when using internal textured
-                                    //  lines (Qt::PenStyle - 1)
-                                    //  1: dashes separated by a few pixels
-                                    //  2: dots separated by a few pixels
-                                    //  3: alternate dots and dashes
-                                    //  4: one dash, two dots, one dash,
-                                    //     two dots
-        const GRlineType *da_line_style; // set for user-defined texture,
-                                         //  da_line_mode = 0 in this case
+        QPixmap     *da_pixmap;         // main pixmap
+        QPixmap     *da_tile_pixmap;    // tiling pixmap;
+        QPainter    *da_painter;        // main paint engine
+        QPainter    *da_painter_temp;   // temp painter for pixmap switch
+        QColor      da_fg;              // foreground color
+        QColor      da_bg;              // background color
+        QColor      da_ghost;           // ghost color
+        QColor      da_ghost_fg;        // ghost color ^ background
+        QBrush      da_brush;           // solid fill brush 
+        QPen        da_pen;             // min width pen
+        int         da_tile_x;          // tile origin x
+        int         da_tile_y;          // tile origin y
+        bool        da_fill_mode;       // true when tiling
+        bool        da_xor_mode;        // true in XOR mode
+        int         da_line_mode;       // true when using internal textured
+                                        //  lines (Qt::PenStyle - 1)
+                                        //  1: dashes separated by a few pixels
+                                        //  2: dots separated by a few pixels
+                                        //  3: alternate dots and dashes
+                                        //  4: one dash, two dots, one dash,
+                                        //     two dots
+        const
+        GRlineType *da_line_style;      // set for user-defined texture,
+                                        //  da_line_mode = 0 in this case
+
+        // Keep a bounding box for refreshing.                                 
+        int         da_xb1, da_yb1;
+        int         da_xb2, da_yb2;
     };
 }
 
