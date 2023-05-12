@@ -909,7 +909,7 @@ namespace {
                 }
 
                 EV()->InitCallback();
-                dspPkgIf()->SetWorking(true);
+                DSPpkg::self()->SetWorking(true);
                 PL()->ShowPrompt("Working...");
                 char *fn = lstring::strip_path(fname);
                 CDcbin cbin(DSP()->CurCellName());
@@ -918,7 +918,7 @@ namespace {
                     PL()->ShowPrompt("LVS not run, error in association.");
                     delete [] fname;
                     fclose(fp);
-                    dspPkgIf()->SetWorking(false);
+                    DSPpkg::self()->SetWorking(false);
                     return (true);
                 }
 
@@ -941,7 +941,7 @@ namespace {
 
                 delete [] fname;
                 fclose(fp);
-                dspPkgIf()->SetWorking(false);
+                DSPpkg::self()->SetWorking(false);
                 return (false);
             }
             else {

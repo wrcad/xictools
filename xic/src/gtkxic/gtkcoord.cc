@@ -178,7 +178,7 @@ cCoord::do_print(int xc, int yc, int update)
         if (co_pm)
             gdk_pixmap_unref(co_pm);
         co_pm = gdk_pixmap_new(gd_window, winw, winh,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         co_width = winw;
         co_height = winh;
     }

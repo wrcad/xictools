@@ -85,7 +85,7 @@ using namespace gtkmclchg;
 void
 cEdit::PopUpLayerChangeMode(ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         Menu()->MenuButtonSet(MMmain, MenuMCLCG, false);
@@ -108,7 +108,7 @@ cEdit::PopUpLayerChangeMode(ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Lcg->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Lcg->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Lcg->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Lcg->shell());
 }
@@ -229,19 +229,19 @@ sLcg::update()
 {
     const char *v = CDvdb()->getVariable(VA_LayerChangeMode);
     if (!v) {
-        GRX->SetStatus(lcg_none, true);
-        GRX->SetStatus(lcg_cur, false);
-        GRX->SetStatus(lcg_all, false);
+        GTKdev::SetStatus(lcg_none, true);
+        GTKdev::SetStatus(lcg_cur, false);
+        GTKdev::SetStatus(lcg_all, false);
     }
     else if (*v == 'a' || *v == 'A') {
-        GRX->SetStatus(lcg_none, false);
-        GRX->SetStatus(lcg_cur, false);
-        GRX->SetStatus(lcg_all, true);
+        GTKdev::SetStatus(lcg_none, false);
+        GTKdev::SetStatus(lcg_cur, false);
+        GTKdev::SetStatus(lcg_all, true);
     }
     else {
-        GRX->SetStatus(lcg_none, false);
-        GRX->SetStatus(lcg_cur, true);
-        GRX->SetStatus(lcg_all, false);
+        GTKdev::SetStatus(lcg_none, false);
+        GTKdev::SetStatus(lcg_cur, true);
+        GTKdev::SetStatus(lcg_all, false);
     }
 }
 
@@ -268,7 +268,7 @@ sLcg::lcg_action(GtkWidget *caller, void*)
 {
     if (!Lcg)
         return;
-    if (!GRX->GetStatus(caller))
+    if (!GTKdev::GetStatus(caller))
         return;
     if (caller == Lcg->lcg_none)
         CDvdb()->clearVariable(VA_LayerChangeMode);

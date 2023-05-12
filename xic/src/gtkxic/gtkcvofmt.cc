@@ -218,7 +218,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fmt_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_NoGdsMapOk));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_NoGdsMapOk));
     fmt_gdsmap = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 2, rcnt, rcnt+1,
@@ -235,7 +235,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fmt_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_GdsTruncateLongStrings));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_GdsTruncateLongStrings));
     gtk_box_pack_start(GTK_BOX(row), button, false, false, 0);
     fmt_gdscut = button;
 
@@ -303,7 +303,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fmt_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_NoGdsMapOk));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_NoGdsMapOk));
     fmt_oasmap = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 2, rcnt, rcnt+1,
@@ -316,7 +316,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fmt_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_OasWriteCompressed));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_OasWriteCompressed));
     fmt_oascmp = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 1, rcnt, rcnt+1,
@@ -328,7 +328,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fmt_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_OasWriteRep));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_OasWriteRep));
     fmt_oasrep = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, rcnt, rcnt+1,
@@ -341,7 +341,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fmt_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_OasWriteNameTab));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_OasWriteNameTab));
     fmt_oastab = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 1, rcnt, rcnt+1,
@@ -353,7 +353,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fmt_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_OasWriteChecksum));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_OasWriteChecksum));
     fmt_oassum = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, rcnt, rcnt+1,
@@ -535,7 +535,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fmt_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_GdsTruncateLongStrings));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_GdsTruncateLongStrings));
     fmt_cgxcut = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 1, 2, 3,
@@ -576,7 +576,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fmt_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_OasPrintOffset));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_OasPrintOffset));
     fmt_oasoff = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 1, rcnt, rcnt+1,
@@ -588,7 +588,7 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fmt_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_OasPrintNoWrap));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_OasPrintNoWrap));
     fmt_oasnwp = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, rcnt, rcnt+1,
@@ -694,8 +694,8 @@ cvofmt_t::cvofmt_t(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
 cvofmt_t::~cvofmt_t()
 {
-    if (fmt_oasadv && GRX->GetStatus(fmt_oasadv))
-        GRX->CallCallback(fmt_oasadv);
+    if (fmt_oasadv && GTKdev::GetStatus(fmt_oasadv))
+        GTKdev::CallCallback(fmt_oasadv);
 
     // This prevents the handler from being called after this is
     // deleted, which can happen when the widgets are destroyed.
@@ -708,21 +708,21 @@ cvofmt_t::~cvofmt_t()
 void
 cvofmt_t::update()
 {
-    GRX->SetStatus(fmt_gdsmap,
+    GTKdev::SetStatus(fmt_gdsmap,
         CDvdb()->getVariable(VA_NoGdsMapOk));
-    GRX->SetStatus(fmt_gdscut,
+    GTKdev::SetStatus(fmt_gdscut,
         CDvdb()->getVariable(VA_GdsTruncateLongStrings));
-    GRX->SetStatus(fmt_cgxcut,
+    GTKdev::SetStatus(fmt_cgxcut,
         CDvdb()->getVariable(VA_GdsTruncateLongStrings));
-    GRX->SetStatus(fmt_oasmap,
+    GTKdev::SetStatus(fmt_oasmap,
         CDvdb()->getVariable(VA_NoGdsMapOk));
-    GRX->SetStatus(fmt_oascmp,
+    GTKdev::SetStatus(fmt_oascmp,
         CDvdb()->getVariable(VA_OasWriteCompressed));
-    GRX->SetStatus(fmt_oastab,
+    GTKdev::SetStatus(fmt_oastab,
         CDvdb()->getVariable(VA_OasWriteNameTab));
-    GRX->SetStatus(fmt_oasrep,
+    GTKdev::SetStatus(fmt_oasrep,
         CDvdb()->getVariable(VA_OasWriteRep));
-    GRX->SetStatus(fmt_oassum,
+    GTKdev::SetStatus(fmt_oassum,
         CDvdb()->getVariable(VA_OasWriteChecksum));
     gtk_combo_box_set_active(GTK_COMBO_BOX(fmt_level), FIO()->GdsOutLevel());
 #ifdef FMT_WITH_DIGESTS
@@ -771,9 +771,9 @@ cvofmt_t::update()
             break;
         }
     }
-    GRX->SetStatus(fmt_oasoff,
+    GTKdev::SetStatus(fmt_oasoff,
         CDvdb()->getVariable(VA_OasPrintOffset));
-    GRX->SetStatus(fmt_oasnwp,
+    GTKdev::SetStatus(fmt_oasnwp,
         CDvdb()->getVariable(VA_OasPrintNoWrap));
 }
 
@@ -927,9 +927,9 @@ cvofmt_t::fmt_action(GtkWidget *caller, void*)
 {
     const char *name = gtk_widget_get_name(caller);
     if (!strcmp(name, "Advanced")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             int x, y;
-            GRX->Location(caller, &x, &y);
+            GTKdev::self()->Location(caller, &x, &y);
             Cvt()->PopUpOasAdv(caller, MODE_ON, x, y);
         }
         else
@@ -937,49 +937,49 @@ cvofmt_t::fmt_action(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "gdsmap")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoGdsMapOk, 0);
         else
             CDvdb()->clearVariable(VA_NoGdsMapOk);
         return;
     }
     if (!strcmp(name, "gdscut")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_GdsTruncateLongStrings, 0);
         else
             CDvdb()->clearVariable(VA_GdsTruncateLongStrings);
         return;
     }
     if (!strcmp(name, "cgxcut")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_GdsTruncateLongStrings, 0);
         else
             CDvdb()->clearVariable(VA_GdsTruncateLongStrings);
         return;
     }
     if (!strcmp(name, "oasmap")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoGdsMapOk, 0);
         else
             CDvdb()->clearVariable(VA_NoGdsMapOk);
         return;
     }
     if (!strcmp(name, "oascmp")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OasWriteCompressed, 0);
         else
             CDvdb()->clearVariable(VA_OasWriteCompressed);
         return;
     }
     if (!strcmp(name, "oastab")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OasWriteNameTab, 0);
         else
             CDvdb()->clearVariable(VA_OasWriteNameTab);
         return;
     }
     if (!strcmp(name, "oasrep")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             if (!rep_string())
                 set_rep_string(lstring::copy(""));
             CDvdb()->setVariable(VA_OasWriteRep, rep_string());
@@ -989,21 +989,21 @@ cvofmt_t::fmt_action(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "oassum")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OasWriteChecksum, 0);
         else
             CDvdb()->clearVariable(VA_OasWriteChecksum);
         return;
     }
     if (!strcmp(name, "oasoff")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OasPrintOffset, 0);
         else
             CDvdb()->clearVariable(VA_OasPrintOffset);
         return;
     }
     if (!strcmp(name, "oasnwp")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OasPrintNoWrap, 0);
         else
             CDvdb()->clearVariable(VA_OasPrintNoWrap);
@@ -1051,7 +1051,7 @@ cvofmt_t::fmt_flags_proc(GtkWidget *caller, void *client_data)
     for (int i = 0; cif_extensions[i].name; i++) {
         if (strcmp(s, cif_extensions[i].name))
             continue;
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             if (fmt->fmt_strip)
                 FIO()->CifStyle().set_flag_export(cif_extensions[i].code);
             else

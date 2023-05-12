@@ -152,7 +152,7 @@ namespace {
             void update_map();
 
             void clear_cmd() { nm_cmd = 0; }
-            void desel_point_btn() { GRX->Deselect(nm_point_btn); }
+            void desel_point_btn() { GTKdev::Deselect(nm_point_btn); }
 
         private:
             void enable_point(bool);
@@ -236,7 +236,7 @@ using namespace gtknodmp;
 bool
 cSced::PopUpNodeMap(GRobject caller, ShowMode mode, int node)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return (false);
     if (mode == MODE_OFF) {
         delete NM;
@@ -260,7 +260,7 @@ cSced::PopUpNodeMap(GRobject caller, ShowMode mode, int node)
     gtk_window_set_transient_for(GTK_WINDOW(NM->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), NM->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), NM->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(NM->Shell());
     return (true);
@@ -557,7 +557,7 @@ sNM::~sNM()
     NM = 0;
     if (nm_cmd)
         nm_cmd->esc();
-    bool state = GRX->GetStatus(nm_rename);
+    bool state = GTKdev::GetStatus(nm_rename);
     if (state)
         EV()->InitCallback();
 
@@ -570,7 +570,7 @@ sNM::~sNM()
     if (nm_join_affirm)
         nm_join_affirm->popdown();
     if (nm_caller)
-        GRX->SetStatus(nm_caller, false);
+        GTKdev::SetStatus(nm_caller, false);
     if (wb_shell) {
         int wid = gdk_window_get_width(gtk_widget_get_window(wb_shell));
         int hei = gdk_window_get_height(gtk_widget_get_window(wb_shell));
@@ -641,14 +641,14 @@ sNM::update(int node)
     }
     update_map();
 
-    GRX->SetStatus(nm_usex_btn, nm_use_extract);
-    GRX->SetStatus(nm_use_np, SCD()->includeNoPhys());
+    GTKdev::SetStatus(nm_usex_btn, nm_use_extract);
+    GTKdev::SetStatus(nm_use_np, SCD()->includeNoPhys());
     if (nm_use_extract) {
-        GRX->SetStatus(nm_point_btn,
+        GTKdev::SetStatus(nm_point_btn,
             Menu()->MenuButtonStatus(MMext, MenuEXSEL));
     }
     else
-        GRX->SetStatus(nm_point_btn, (nm_cmd != 0));
+        GTKdev::SetStatus(nm_point_btn, (nm_cmd != 0));
     return (true);
 }
 
@@ -1133,7 +1133,7 @@ sNM::nm_use_np_proc(GtkWidget*, void*)
 {
     if (!NM)
         return;
-    int state = GRX->GetStatus(NM->nm_use_np);
+    int state = GTKdev::GetStatus(NM->nm_use_np);
     SCD()->setIncludeNoPhys(state);
     SCD()->connect(CurCell(Electrical, true));
 }
@@ -1243,7 +1243,7 @@ sNM::nm_rename_proc(GtkWidget *caller, void*)
 {
     if (!NM)
         return;
-    int state = GRX->GetStatus(NM->nm_rename);
+    int state = GTKdev::GetStatus(NM->nm_rename);
     if (!state) {
         if (NM->wb_input)
             NM->wb_input->popdown();
@@ -1251,7 +1251,7 @@ sNM::nm_rename_proc(GtkWidget *caller, void*)
     }
     if (NM->nm_showing_row < 0) {
         NM->PopUpMessage("No selected node to name/rename.", true);
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         return;
     }
 
@@ -1259,31 +1259,31 @@ sNM::nm_rename_proc(GtkWidget *caller, void*)
     int node = nm_node_of_row(NM->nm_showing_row);
     if (node < 0) {
         NM->PopUpMessage("Error, unknown or bad node.", true);
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         return;
     }
     if (node == 0) {
         NM->PopUpMessage("Can't rename the ground node.", true);
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         return;
     }
 
     CDs *cursde = CurCell(Electrical, true);
     if (!cursde) {
         NM->PopUpMessage("No currrent cell.", true);
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         return;
     }
 
     cNodeMap *map = cursde->nodes();
     if (!map) {
         NM->PopUpMessage("Internal error: no map.", true);
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         return;
     }
     if (map->isGlobal(node)) {
         NM->PopUpMessage("Node is global, can't set name.", true);
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         return;
     }
 
@@ -1339,7 +1339,7 @@ sNM::nm_rm_cb(bool yes, void*)
 void
 sNM::nm_remove_proc(GtkWidget *caller, void*)
 {
-    if (!GRX->GetStatus(caller)) {
+    if (!GTKdev::GetStatus(caller)) {
         if (NM && NM->nm_rm_affirm)
             NM->nm_rm_affirm->popdown();
         return;
@@ -1372,7 +1372,7 @@ sNM::nm_remove_proc(GtkWidget *caller, void*)
         }
     }
     NM->PopUpMessage("No name/node link found.", false);
-    GRX->Deselect(caller);
+    GTKdev::Deselect(caller);
 }
 
 
@@ -1384,7 +1384,7 @@ sNM::nm_point_proc(GtkWidget *caller, void*)
 {
     if (!NM)
         return;
-    int state = GRX->GetStatus(caller);
+    int state = GTKdev::GetStatus(caller);
     if (sNM::nm_use_extract) {
         bool st = Menu()->MenuButtonStatus(MMext, MenuEXSEL);
         if (st != state)
@@ -1398,7 +1398,7 @@ sNM::nm_point_proc(GtkWidget *caller, void*)
                 if (!EV()->PushCallback(NM->nm_cmd)) {
                     delete NM->nm_cmd;
                     NM->nm_cmd = 0;
-                    GRX->Deselect(caller);
+                    GTKdev::Deselect(caller);
                     return;
                 }
             }
@@ -1420,7 +1420,7 @@ sNM::nm_usex_proc(GtkWidget *caller, void*)
 {
     if (!NM)
         return;
-    sNM::nm_use_extract = GRX->GetStatus(caller);
+    sNM::nm_use_extract = GTKdev::GetStatus(caller);
     if (NM->nm_cmd)
         NM->nm_cmd->esc();
     NM->update(0);
@@ -1499,7 +1499,7 @@ sNM::nm_activate_proc(GtkWidget*, void*)
 {
     if (!NM)
         return;
-    GRX->CallCallback(NM->nm_srch_btn);
+    GTKdev::CallCallback(NM->nm_srch_btn);
 }
 
 
@@ -1522,7 +1522,7 @@ sNM::do_search(int *pindx, int *ptindx)
         return;
     }
 
-    if (GRX->GetStatus(nm_srch_nodes)) {
+    if (GTKdev::GetStatus(nm_srch_nodes)) {
         for (int i = nm_showing_row + 1; ; i++) {
             char *text = list_get_text(nm_node_list, i, 1);
             if (!text)

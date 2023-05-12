@@ -117,7 +117,7 @@ void
 cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
     const char *chdname, int x, int y)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Cfg;
@@ -376,7 +376,7 @@ sCfg::~sCfg()
     delete [] cf_chdname;
     delete [] cf_cgdname;
     if (cf_caller)
-        GRX->Deselect(cf_caller);
+        GTKdev::Deselect(cf_caller);
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)cf_cancel_proc, wb_shell);
@@ -406,7 +406,7 @@ sCfg::update(const char *chdname)
         if (cgdname) {
             gtk_entry_set_text(GTK_ENTRY(cf_cgdentry), cgdname);
             gtk_editable_set_editable(GTK_EDITABLE(cf_cgdentry), false);
-            GRX->SetStatus(cf_newcgd, false);
+            GTKdev::SetStatus(cf_newcgd, false);
         }
         else {
             gtk_entry_set_text(GTK_ENTRY(cf_cgdentry),
@@ -519,7 +519,7 @@ sCfg::button_hdlr(GtkWidget *widget)
         cf_cgdname = lstring::copy(str);
         cCGD *cgd = CDcgd()->cgdRecall(cf_cgdname, false);
         if (!cgd) {
-            if (GRX->GetStatus(cf_newcgd)) {
+            if (GTKdev::GetStatus(cf_newcgd)) {
                 int xo, yo;
                 gdk_window_get_root_origin(gtk_widget_get_window(Shell()),
                     &xo, &yo);

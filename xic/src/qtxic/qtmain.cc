@@ -294,8 +294,8 @@ namespace {
     int
     busy_msg_timeout(void*)
     {
-        if (qtPkgIf()->BusyPopup())
-            qtPkgIf()->BusyPopup()->popdown();
+        if (QTpkg::self()->BusyPopup())
+            QTpkg::self()->BusyPopup()->popdown();
         return (false);
     }
 
@@ -305,13 +305,13 @@ namespace {
         const char *busy_msg =
             "Working...\nPress Control-C in main window to abort.";
 
-        if (!qtPkgIf()->BusyPopup() && QTmainwin::self()) {
-            qtPkgIf()->SetBusyPopup(
+        if (!QTpkg::self()->BusyPopup() && QTmainwin::exists()) {
+            QTpkg::self()->SetBusyPopup(
                 QTmainwin::self()->PopUpErrText(busy_msg, STY_NORM));
-            if (qtPkgIf()->BusyPopup())
-                qtPkgIf()->BusyPopup()->
-                    register_usrptr((void**)qtPkgIf()->BusyPopupHome());
-            qtPkgIf()->RegisterTimeoutProc(3000, busy_msg_timeout, 0);
+            if (QTpkg::self()->BusyPopup())
+                QTpkg::self()->BusyPopup()->
+                    register_usrptr((void**)QTpkg::self()->BusyPopupHome());
+            QTpkg::self()->RegisterTimeoutProc(3000, busy_msg_timeout, 0);
         }
     }
 }
@@ -396,7 +396,7 @@ QTpkg::Initialize(GRwbag *wcp)
         return (true);
 
     QTdev::self()->RegisterMainFrame(w);
-    GRpkgIf()->RegisterMainWbag(w);
+    QTpkg::self()->RegisterMainWbag(w);
     w->initialize();
     w->show();
 
@@ -440,7 +440,7 @@ QTpkg::ReinitNoGraphics()
     PL()->SetNoGraphics();
     LT()->SetNoGraphics();
 
-    GRpkgIf()->SetNullGraphics();
+    QTpkg::self()->SetNullGraphics();
     EV()->SetCurrentWin(DSP()->MainWdesc());
     NULLwin *w = new NULLwin;
     DSP()->MainWdesc()->SetWbag(w);
@@ -657,9 +657,9 @@ QTpkg::CloseGraphicsConnection()
 {
     if (!MainDev() || MainDev()->ident != _devQT_)
         return;
-    if (QTdev::self()->ConnectFd() > 0) {
+    if (QTdev::ConnectFd() > 0) {
 //        gtk_main_quit();
-        close(QTdev::self()->ConnectFd());
+        close(QTdev::ConnectFd());
     }
 }
 
@@ -881,7 +881,6 @@ cKeys::check_exec(bool exact)
             else
                 DSP()->MainWdesc()->SetView("full");
             k_cmd = lstring::copy(MenuVIEW);
-            updateGeometry();
         }
         else if (ent->cmd.caller) {
             // simulate a button press
@@ -892,11 +891,16 @@ cKeys::check_exec(bool exact)
             if (n < 0)
                 n = 0;
             k_cmd = lstring::copy(buf + n);
-            updateGeometry();
-            if (ent->cmd.caller)
-                Menu()->CallCallback(ent->cmd.caller);
         }
+        resize(sizeHint().width(), sizeHint().height());
+        clear();
+        int yy = QTfont::lineHeight(FNT_SCREEN);
+        draw_text(2, yy, k_cmd, -1);
+        updateGeometry();
+        update();
         set_keys(0);
+        if (ent->cmd.caller)
+            Menu()->CallCallback(ent->cmd.caller);
     }
 }
 
@@ -919,9 +923,10 @@ cKeys::font_changed(int fnum)
 
 DrawType QTsubwin::sw_drawtype = DrawNative;
 
-QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
+QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     QTdraw(XW_DRAWING)
 {
+    wb_shell = this;
     sw_pixmap = 0;
     sw_menubar = new QMenuBar(this);
     sw_keys_pressed = 0;
@@ -1535,8 +1540,8 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         return (true);
     xic_bag *w = static_cast<xic_bag*>(client_data);
 */
-    if (message)
-        message->popdown();
+    if (wb_message)
+        wb_message->popdown();
 
     bool showing_ghost = gd_gbag->showing_ghost();
     if (showing_ghost)
@@ -1727,7 +1732,7 @@ QTsubwin::motion_slot(QMouseEvent *ev)
 void
 QTsubwin::key_down_slot(QKeyEvent *ev)
 {
-    if (!QTmainwin::self() || qtPkgIf()->NotMapped()) {
+    if (!QTmainwin::self() || QTpkg::self()->NotMapped()) {
         ev->ignore();
         return;
     }
@@ -1737,8 +1742,8 @@ QTsubwin::key_down_slot(QKeyEvent *ev)
     }
     ev->accept();
 
-    if (message)
-        message->popdown();
+    if (wb_message)
+        wb_message->popdown();
 
 //XXX
 //printf("%x %x %x\n", ev->key(), ev->nativeScanCode(), ev->nativeVirtualKey());
@@ -1770,7 +1775,7 @@ QTsubwin::key_down_slot(QKeyEvent *ev)
 void
 QTsubwin::key_up_slot(QKeyEvent *ev)
 {
-    if (!QTmainwin::self() || qtPkgIf()->NotMapped()) {
+    if (!QTmainwin::self() || QTpkg::self()->NotMapped()) {
         ev->ignore();
         return;
     }
@@ -1787,7 +1792,7 @@ QTsubwin::key_up_slot(QKeyEvent *ev)
     }
 */
 
-    if (!QTmainwin::self() || qtPkgIf()->NotMapped())
+    if (!QTmainwin::self() || QTpkg::self()->NotMapped())
         return;
     if (KbMac()->MacroExpand(ev->key(), mod_state(ev->modifiers()), true))
         return;
@@ -2115,7 +2120,7 @@ QTmainwin::send_key_event(sKeyEvent *kev)
 void
 QTmainwin::closeEvent(QCloseEvent *ev)
 {
-    if (qtPkgIf()->IsBusy()) {
+    if (QTpkg::self()->IsBusy()) {
         pop_busy();
         ev->ignore();
     }
@@ -2217,7 +2222,8 @@ main_local::form_submit_hdlr(void *data)
     const char *t = cbs->action;
     char *tok = lstring::getqtok(&t);
     if (strcmp(tok, ACTION_TOKEN)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "unknown action_local submission.\n");
+        QTpkg::self()->ErrPrintf(ET_ERROR,
+            "unknown action_local submission.\n");
         delete [] tok;
         return;
     }
@@ -2231,7 +2237,8 @@ main_local::form_submit_hdlr(void *data)
     stringlist *wl;
     XM()->OpenScript(script, &sfp, &wl);
     if (!sfp && !wl) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't find action_local script.\n");
+        QTpkg::self()->ErrPrintf(ET_ERROR,
+            "can't find action_local script.\n");
         delete [] script;
         lock = false;
         return;

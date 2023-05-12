@@ -391,7 +391,7 @@ GTKtoolbar::PopDownDebugDefs()
     TB()->PopDownTBhelp(TBH_DB);
     SetLoc(ntb_debug, db_shell);
 
-    GRX->Deselect(tb_debug);
+    GTKdev::Deselect(tb_debug);
     g_signal_handlers_disconnect_by_func(G_OBJECT(db_shell),
         (gpointer)dbg_cancel_proc, db_shell);
 
@@ -456,7 +456,7 @@ namespace {
     dbg_help_proc(GtkWidget *caller, void *client_data)
     {
         GtkWidget *parent = static_cast<GtkWidget*>(client_data);
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state)
             TB()->PopUpTBhelp(parent, caller, TBH_DB);
         else
@@ -468,7 +468,7 @@ namespace {
     dbg_debug_proc(GtkWidget *caller, void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
-        bool isset = GRX->GetStatus(caller);
+        bool isset = GTKdev::GetStatus(caller);
         variable v;
         if (!isset) {
             v.set_boolean(false);
@@ -478,7 +478,7 @@ namespace {
             int i, j;
             for (j = 0, i = 0; KW.dbargs(i)->word; i++) {
                 xKWent *k = static_cast<xKWent*>(KW.dbargs(i));
-                if (GRX->GetStatus(k->ent->active))
+                if (GTKdev::GetStatus(k->ent->active))
                    j++;
             }
             if (j == i || j == 0) {
@@ -488,7 +488,7 @@ namespace {
             else if (j == 1) {
                 for (i = 0; KW.dbargs(i)->word; i++) {
                     xKWent *k = static_cast<xKWent*>(KW.dbargs(i));
-                    if (GRX->GetStatus(k->ent->active)) {
+                    if (GTKdev::GetStatus(k->ent->active)) {
                         v.set_string(k->word);
                         break;
                     }
@@ -499,7 +499,7 @@ namespace {
                 variable *vl = 0, *vl0 = 0;
                 for (i = 0; KW.dbargs(i)->word; i++) {
                     xKWent *k = static_cast<xKWent*>(KW.dbargs(i));
-                    if (GRX->GetStatus(k->ent->active)) {
+                    if (GTKdev::GetStatus(k->ent->active)) {
                         if (!vl)
                             vl = vl0 = new variable;
                         else {
@@ -520,24 +520,24 @@ namespace {
     dbg_upd_proc(GtkWidget *caller, void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
-        bool state = GRX->GetStatus(entry->ent->active);
+        bool state = GTKdev::GetStatus(entry->ent->active);
         if (!state) {
-            state = GRX->GetStatus(caller);
+            state = GTKdev::GetStatus(caller);
             if (state)
-                GRX->SetStatus(entry->ent->active, true);
+                GTKdev::SetStatus(entry->ent->active, true);
         }
         else {
             bool st = false;
             for (int i = 0; KW.dbargs(i)->word; i++) {
                 xKWent *k = static_cast<xKWent*>(KW.dbargs(i));
-                st = GRX->GetStatus(k->ent->active);
+                st = GTKdev::GetStatus(k->ent->active);
                 if (st)
                    break;
             }
             if (!st) {
                 variable v;
                 v.set_boolean(false);
-                GRX->SetStatus(entry->ent->active, false);
+                GTKdev::SetStatus(entry->ent->active, false);
                 entry->callback(false, &v);
                 return;
             }

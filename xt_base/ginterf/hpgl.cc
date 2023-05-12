@@ -127,7 +127,7 @@ HPdev::NewDraw(int)
     else
         return (0);
     if (!plotfp) {
-        GRpkgIf()->Perror(data->filename);
+        GRpkg::self()->Perror(data->filename);
         return (0);
     }
     HPparams *hpgl = new HPparams;
@@ -564,7 +564,7 @@ HPparams::SetFillpattern(const GRfillType *fillp)
 void
 HPparams::DisplayImage(const GRimage*, int, int, int, int)
 {
-    GRpkgIf()->HCabort("HPGL driver doesn't suppport image mode.");
+    GRpkg::self()->HCabort("HPGL driver doesn't suppport image mode.");
 }
 
 

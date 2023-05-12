@@ -298,7 +298,7 @@ cKbMacro::execKey(sKeyEvent *k)
     }
 
     /*
-    dspPkgIf()->CheckForInterrupt();
+    QTpkg::self()->CheckForInterrupt();
     GtkWidget *w = gtk_keyb::name_to_widget(k->widget_name);
     if (w && !w->window)
         gtk_widget_realize(w);
@@ -329,7 +329,7 @@ cKbMacro::execBtn(sBtnEvent *b)
 {
     /*
     if (b->type == BUTTON_PRESS)
-        dspPkgIf()->CheckForInterrupt();
+        QTpkg::self()->CheckForInterrupt();
     GtkWidget *w = gtk_keyb::name_to_widget(b->widget_name);
     if (w && !w->window)
         gtk_widget_realize(w);

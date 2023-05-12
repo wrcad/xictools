@@ -120,8 +120,9 @@ static const char * const attach_xpm[] = {
 
 QTeditPopup::QTeditPopup(QTbag *owner, QTeditPopup::WidgetType type,
     const char *file_or_string, bool with_source, void *arg) :
-    QDialog(owner ? owner->shell : 0), QTbag(this)
+    QDialog(owner ? owner->Shell() : 0), QTbag()
 {
+wb_shell = this;
     p_parent = owner;
     p_cb_arg = arg;
     widget_type = type;
@@ -145,7 +146,7 @@ QTeditPopup::QTeditPopup(QTbag *owner, QTeditPopup::WidgetType type,
     a_HelpMenu = 0;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
 
     menubar = new QMenuBar(this);
     main_menus[0] = new QMenu(this);
@@ -322,7 +323,7 @@ QTeditPopup::~QTeditPopup()
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
-            owner->monitor.remove(this);
+            owner->MonitorRemove(this);
     }
     delete [] savedAs;
     delete [] sourceFile;
@@ -338,7 +339,7 @@ QTeditPopup::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     delete this;
@@ -395,8 +396,8 @@ QTeditPopup::file_selection_slot(const char *fname, void*)
 {
     delete [] dropFile;
     dropFile = lstring::copy(fname);
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
     a_Load->activate(QAction::Trigger);
 }
 
@@ -447,8 +448,8 @@ QTeditPopup::load_file_slot(const char *fnamein, void*)
     bool ok = read_file(fname, true);
     if (widget_type != Browser)
         text_editor->setReadOnly(false);
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
     if (!ok) {
         char tbuf[256];
         if (strlen(fname) > 64)
@@ -484,8 +485,8 @@ QTeditPopup::load_slot()
                 "Text has been modified.  Press Load again to load", false);
             return;
         }
-        if (message)
-            message->popdown();
+        if (wb_message)
+            wb_message->popdown();
     }
     char buf[512];
     *buf = '\0';
@@ -496,10 +497,10 @@ QTeditPopup::load_slot()
     }
     else if (p_callback)
         (*p_callback)(buf, p_cb_arg, XE_LOAD);
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
     PopUpInput(0, buf, "Load File", 0, 0);
-    connect(input, SIGNAL(action_call(const char*, void*)),
+    connect(wb_input, SIGNAL(action_call(const char*, void*)),
         this, SLOT(load_file_slot(const char*, void*)));
 }
 
@@ -536,8 +537,8 @@ QTeditPopup::read_file_slot(const char *fnamein, void*)
         snprintf(tbuf, sizeof(tbuf), "Successfully read %s", fname);
         status_bar->showMessage(QString(tbuf));
     }
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
     delete [] fname;
 }
 
@@ -555,7 +556,7 @@ QTeditPopup::read_slot()
         dropFile = 0;
     }
     PopUpInput(0, buf, "Read File", 0, 0);
-    connect(input, SIGNAL(action_call(const char*, void*)),
+    connect(wb_input, SIGNAL(action_call(const char*, void*)),
         this, SLOT(read_file_slot(const char*, void*)));
 }
 
@@ -677,8 +678,8 @@ QTeditPopup::save_file_as_slot(const char *fnamein, void*)
         }
         mesg = "Block saved";
     }
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
     status_bar->showMessage(QString(mesg));
     delete [] fname;
 }
@@ -690,8 +691,8 @@ void
 QTeditPopup::save_as_slot()
 {
     lastEvent = SAVEAS;
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
 
     QTextCursor c = text_editor->textCursor();
     int start = c.anchor();
@@ -701,12 +702,12 @@ QTeditPopup::save_as_slot()
         if (widget_type == Mailer)
             fname = "";
         PopUpInput(0, fname, "Save File", 0, 0);
-        connect(input, SIGNAL(action_call(const char*, void*)),
+        connect(wb_input, SIGNAL(action_call(const char*, void*)),
             this, SLOT(save_file_as_slot(const char*, void*)));
     }
     else {
         PopUpInput(0, "", "Save Block", 0, 0);
-        connect(input, SIGNAL(action_call(const char*, void*)),
+        connect(wb_input, SIGNAL(action_call(const char*, void*)),
             this, SLOT(save_file_as_slot(const char*, void*)));
     }
 }
@@ -988,8 +989,8 @@ QTeditPopup::attach_file_slot(const char *fnamein, void*)
         this, SLOT(unattach_slot(QAction*)));
 
     delete [] fname;
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
 }
 
 
@@ -1006,7 +1007,7 @@ QTeditPopup::attach_slot()
         dropFile = 0;
     }
     PopUpInput(0, buf, "Attach File", 0, 0);
-    connect(input, SIGNAL(action_call(const char*, void*)),
+    connect(wb_input, SIGNAL(action_call(const char*, void*)),
         this, SLOT(attach_file_slot(const char*, void*)));
 }
 
@@ -1037,8 +1038,8 @@ QTeditPopup::font_slot()
 void
 QTeditPopup::help_slot()
 {
-    if (GRpkgIf()->MainWbag())
-        GRpkgIf()->MainWbag()->PopUpHelp(
+    if (GRpkg::self()->MainWbag())
+        GRpkg::self()->MainWbag()->PopUpHelp(
             widget_type == Mailer ? "mailclient" : "xeditor");
     else
         PopUpHelp(widget_type == Mailer ? "mailclient" : "xeditor");
@@ -1054,8 +1055,8 @@ QTeditPopup::text_changed_slot()
         return;
     lastEvent = TEXTMOD;
     status_bar->showMessage(QString(""));
-    if (message)
-        message->popdown();
+    if (wb_message)
+        wb_message->popdown();
     if (textChanged)
         return;
     textChanged = true;

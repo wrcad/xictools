@@ -124,7 +124,7 @@ using namespace gtkdrcedit;
 void
 cDRC::PopUpRules(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Dim;
@@ -152,7 +152,7 @@ cDRC::PopUpRules(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Dim->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Dim->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Dim->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Dim->shell());
 }
@@ -551,7 +551,7 @@ sDim::sDim(GRobject c)
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(dim_text));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr, NULL);
 
     gtk_widget_set_size_request(dim_text, DEF_WIDTH, DEF_HEIGHT);
@@ -576,7 +576,7 @@ sDim::~sDim()
     if (ed_text_input)
         PL()->AbortEdit();
     if (dim_caller)
-        GRX->Deselect(dim_caller);
+        GTKdev::Deselect(dim_caller);
 
     if (dim_popup)
         gtk_widget_destroy(dim_popup);
@@ -1026,8 +1026,8 @@ sDim::dim_rule_menu_proc(GtkWidget *caller, void *client_data)
         return;
     }
     DRCtest *tst = (DRCtest*)client_data;
-    if (GRX->GetStatus(Dim->dim_delblk)) {
-        GRX->Deselect(Dim->dim_delblk);
+    if (GTKdev::GetStatus(Dim->dim_delblk)) {
+        GTKdev::Deselect(Dim->dim_delblk);
         if (tst) {
             DRCtest *tp = 0;
             for (DRCtest *tx = DRC()->userTests(); tx; tx = tx->next()) {

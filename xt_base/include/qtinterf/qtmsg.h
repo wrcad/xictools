@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef MESSAGE_D_H
-#define MESSAGE_D_H
+#ifndef QTMSG_H
+#define QTMSG_H
 
 #include "ginterf/graphics.h"
 
@@ -74,12 +74,14 @@ namespace qtinterf
                 else
                     hide();
             }
-        void popdown();
+        void set_desens()           { pw_desens = true; }
+        bool is_desens()            { return (pw_desens); }
 
         // GRtextPopup overrides
-        bool get_btn2_state() { return (false); }
-        void set_btn2_state(bool) { }
+        bool get_btn2_state()       { return (false); }
+        void set_btn2_state(bool)   { }
 
+        void popdown();
         void setTitle(const char*);
         void setText(const char*);
 
@@ -97,6 +99,7 @@ namespace qtinterf
         text_box *tx;
         QPushButton *b_cancel;
         STYtype display_style;
+        bool pw_desens;             // If true, parent->wb_inout is disabled.
     };
 }
 

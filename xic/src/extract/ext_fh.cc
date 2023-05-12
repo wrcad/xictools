@@ -44,6 +44,7 @@
 #include "ext_fh.h"
 #include "dsp_layer.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 #include "geo_zgroup.h"
 #include "promptline.h"
 #include "errorlog.h"
@@ -319,7 +320,7 @@ cFH::fhRun(const char *infile, const char *outfile, const char *resfile,
         return;
     }
     if (!filestat::create_bak(newjob->outfile())) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         delete newjob;
         return;
     }

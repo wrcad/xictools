@@ -1103,7 +1103,7 @@ GTKtoolbar::PopDownSimDefs()
     TB()->PopDownTBhelp(TBH_SD);
     SetLoc(ntb_simdefs, sd_shell);
 
-    GRX->Deselect(tb_simdefs);
+    GTKdev::Deselect(tb_simdefs);
     g_signal_handlers_disconnect_by_func(G_OBJECT(sd_shell),
         (gpointer)si_cancel_proc, sd_shell);
 
@@ -1148,7 +1148,7 @@ namespace {
     si_help_proc(GtkWidget *caller, void *client_data)
     {
         GtkWidget *parent = static_cast<GtkWidget*>(client_data);
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state)
             TB()->PopUpTBhelp(parent, caller, TBH_SD);
         else
@@ -1160,7 +1160,7 @@ namespace {
     si_choice_hdlr(GtkWidget *caller, GdkEvent*, void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
-        if (GRX->GetStatus(entry->ent->active))
+        if (GTKdev::GetStatus(entry->ent->active))
             return (true);
         int i;
         if (!strcmp(entry->word, spkw_method)) {
@@ -1170,8 +1170,8 @@ namespace {
                 if (!strcmp(string, KW.method(i)->word))
                     break;
             if (!KW.method(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad method found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad method found: %s.\n", string);
                 i = 0;
             }
             else {
@@ -1200,8 +1200,8 @@ namespace {
                 if (!strcmp(string, KW.optmerge(i)->word))
                     break;
             if (!KW.optmerge(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad optmerge key found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad optmerge key found: %s.\n", string);
                 i = 0;
             }
             else {
@@ -1230,8 +1230,8 @@ namespace {
                 if (!strcmp(string, KW.parhier(i)->word))
                     break;
             if (!KW.parhier(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad parhier key found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad parhier key found: %s.\n", string);
                 i = 0;
             }
             else {
@@ -1260,8 +1260,8 @@ namespace {
                 if (!strcmp(string, KW.step(i)->word))
                     break;
             if (!KW.step(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad steptype found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad steptype found: %s.\n", string);
                 i = 0;
             }
             else {

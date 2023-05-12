@@ -730,9 +730,9 @@ gtk_viewer::tk_set_anchor_cursor(bool set)
 #if GTK_CHECK_VERSION(3,0,0)
         GdkColor white, black;
         white.pixel = 0xffffff;
-        ndkGC::query_rgb(&white, GRX->Visual());
+        ndkGC::query_rgb(&white, GTKdev::self()->Visual());
         black.pixel = 0;
-        ndkGC::query_rgb(&black, GRX->Visual());
+        ndkGC::query_rgb(&black, GTKdev::self()->Visual());
         v_cursor = new ndkCursor(window, fingers_bits, fingers_m_bits,
             fingers_width, fingers_height, fingers_x_hot, fingers_y_hot,
             &white, &black);
@@ -1001,7 +1001,7 @@ gtk_viewer::tk_text_width(htmFont *font, const char *text, int len)
 CCXmode
 gtk_viewer::tk_visual_mode()
 {
-    GdkVisual *vs = GRX->Visual();
+    GdkVisual *vs = GTKdev::self()->Visual();
     switch (gdk_visual_get_visual_type(vs)) {
     case GDK_VISUAL_STATIC_GRAY:
         return (MODE_BW);
@@ -1022,7 +1022,7 @@ gtk_viewer::tk_visual_mode()
 int
 gtk_viewer::tk_visual_depth()
 {
-    return (gdk_visual_get_depth(GRX->Visual()));
+    return (gdk_visual_get_depth(GTKdev::self()->Visual()));
 }
 
 
@@ -1067,10 +1067,10 @@ gtk_viewer::tk_pixmap_from_info(htmImage *image, htmImageInfo *info,
     (void)image;
 #if GTK_CHECK_VERSION(3,0,0)
     ndkImage *img = new ndkImage(ndkIMAGE_FASTEST,
-        GRX->Visual(), info->width, info->height);
+        GTKdev::self()->Visual(), info->width, info->height);
 #else
     GdkImage *img = gdk_image_new(GDK_IMAGE_FASTEST,
-        GRX->Visual(), info->width, info->height);
+        GTKdev::self()->Visual(), info->width, info->height);
 #endif
 
     int wid = info->width;
@@ -1169,9 +1169,11 @@ htmXImage *
 gtk_viewer::tk_new_image(int w, int h)
 {
 #if GTK_CHECK_VERSION(3,0,0)
-    return ((htmXImage*)new ndkImage(ndkIMAGE_FASTEST, GRX->Visual(), w, h));
+    return ((htmXImage*)new ndkImage(ndkIMAGE_FASTEST,
+        GTKdev::self()->Visual(), w, h));
 #else
-    return ((htmXImage*)gdk_image_new(GDK_IMAGE_FASTEST, GRX->Visual(), w, h));
+    return ((htmXImage*)gdk_image_new(GDK_IMAGE_FASTEST,
+        GTKdev::self()->Visual(), w, h));
 #endif
 }
 
@@ -1285,7 +1287,7 @@ gtk_viewer::tk_alloc_color(htmColor *clr)
     c.green = clr->green << 8;
     c.blue = clr->blue << 8;
 #if GTK_CHECK_VERSION(3,0,0)
-    ndkGC::query_pixel(&c, GRX->Visual());
+    ndkGC::query_pixel(&c, GTKdev::self()->Visual());
     clr->pixel = c.pixel;
     return (true);
 #else
@@ -1308,7 +1310,7 @@ gtk_viewer::tk_query_colors(htmColor *clrs, unsigned int sz)
         colors[i].pixel = clrs[i].pixel;
 #if GTK_CHECK_VERSION(3,0,0)
     for (unsigned int i = 0; i < sz; i++) {
-        ndkGC::query_rgb(colors + i, GRX->Visual());
+        ndkGC::query_rgb(colors + i, GTKdev::self()->Visual());
         clrs[i].red   = colors[i].red >> 8;
         clrs[i].green = colors[i].green >> 8;
         clrs[i].blue  = colors[i].blue >> 8;
@@ -1355,7 +1357,7 @@ gtk_viewer::tk_get_pixels(unsigned short *reds, unsigned short *greens,
         c.green = greens[i] << 8;
         c.blue = blues[i] << 8;
 #if GTK_CHECK_VERSION(3,0,0)
-        ndkGC::query_pixel(&c, GRX->Visual());
+        ndkGC::query_pixel(&c, GTKdev::self()->Visual());
         pixels[i] = c.pixel;
 #else
         bool ret =

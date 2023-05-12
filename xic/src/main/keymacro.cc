@@ -382,7 +382,7 @@ cKbMacro::MacroExpand(unsigned keysym, unsigned state, bool up)
                 sMqueue *m0 = new sMqueue(keysym, state, kl);
                 if (!km_mqueue) {
                     km_mqueue = m0;
-                    dspPkgIf()->RegisterIdleProc(do_macro, 0);
+                    DSPpkg::self()->RegisterIdleProc(do_macro, 0);
                 }
                 else {
                     sMqueue *m = km_mqueue;
@@ -468,7 +468,7 @@ void
 cKbMacro::MacroFileUpdate(const char *filename)
 {
     if (!filename || !*filename) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        DSPpkg::self()->ErrPrintf(ET_ERROR,
             "MacroFileUpdate:  null or empty file name.");
         return;
     }
@@ -480,8 +480,10 @@ cKbMacro::MacroFileUpdate(const char *filename)
         if (!access(tbf, F_OK)) {
             if (filestat::create_bak(tbf))
                 fp = fopen(tbf, "w");
-            else
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            else {
+                DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
+                    filestat::error_msg());
+            }
         }
         if (!fp) {
             const char *home = XM()->HomeDir();
@@ -490,9 +492,10 @@ cKbMacro::MacroFileUpdate(const char *filename)
                 if (!access(pth, F_OK)) {
                     if (filestat::create_bak(pth))
                         fp = fopen(pth, "w");
-                    else
-                        GRpkgIf()->ErrPrintf(ET_ERROR, "%s",
+                    else {
+                        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
                             filestat::error_msg());
+                    }
                 }
                 delete [] pth;
             }
@@ -503,8 +506,10 @@ cKbMacro::MacroFileUpdate(const char *filename)
         if (!access(filename, F_OK)) {
             if (filestat::create_bak(filename))
                 fp = fopen(filename, "w");
-            else
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            else {
+                DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
+                    filestat::error_msg());
+            }
         }
         if (!fp) {
             const char *home = XM()->HomeDir();
@@ -513,9 +518,10 @@ cKbMacro::MacroFileUpdate(const char *filename)
                 if (!access(pth, F_OK)) {
                     if (filestat::create_bak(pth))
                         fp = fopen(pth, "w");
-                    else
-                        GRpkgIf()->ErrPrintf(ET_ERROR, "%s",
+                    else {
+                        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
                             filestat::error_msg());
+                    }
                 }
                 delete [] pth;
             }

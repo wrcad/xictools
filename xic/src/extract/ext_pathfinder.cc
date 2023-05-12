@@ -65,7 +65,7 @@ namespace {
     {
         if (Timer()->check_interval(check_time)) {
             if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
             return (XM()->ConfirmAbort());
         }
         return (false);
@@ -604,7 +604,7 @@ pathfinder::show_path(WindowDesc *wdesc, bool d_or_e)
         EX()->setBlinkSelections(false);
 
         if (d_or_e == ERASE) {
-            if (!blink && dspPkgIf()->IsDualPlane())
+            if (!blink && DSPpkg::self()->IsDualPlane())
                 wdesc->Wdraw()->SetXOR(d_or_e ? GRxHlite : GRxUnhlite);
             else {
                 BBox BB(CDnullBB);
@@ -628,7 +628,7 @@ pathfinder::show_path(WindowDesc *wdesc, bool d_or_e)
 
         if (blink)
             wdesc->Wdraw()->SetColor(DSP()->SelectPixel());
-        else if (!dspPkgIf()->IsDualPlane())
+        else if (!DSPpkg::self()->IsDualPlane())
             wdesc->Wdraw()->SetColor(
                 DSP()->Color(HighlightingColor, Physical));
 
@@ -639,7 +639,7 @@ pathfinder::show_path(WindowDesc *wdesc, bool d_or_e)
                 wdesc->DisplaySelected(od);
         }
 
-        if (!blink && dspPkgIf()->IsDualPlane())
+        if (!blink && DSPpkg::self()->IsDualPlane())
             wdesc->Wdraw()->SetXOR(GRxNone);
         else if (LT()->CurLayer())
             wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());

@@ -172,7 +172,7 @@ WindowDesc::~WindowDesc()
     ClearSpecial();
 
     if (wnum > 0)
-        dspPkgIf()->SubwinDestroy(wnum);
+        DSPpkg::self()->SubwinDestroy(wnum);
 
     FlushCache();
     DestroyPixmap();
@@ -261,7 +261,7 @@ WindowDesc::ShowTitle()
         return;
     which_wins[win] = true;
     if (!id)
-        id = dspPkgIf()->RegisterIdleProc(title_idle, 0);
+        id = DSPpkg::self()->RegisterIdleProc(title_idle, 0);
 }
 
 

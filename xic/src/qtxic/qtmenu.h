@@ -59,7 +59,7 @@ public:
     void InitTopButtonMenu();
     void InitSideButtonMenus();
 
-    // virtual functions from MenuClass
+    // Virtual functions from MenuMain.
     void SetSensGlobal(bool);
     void Deselect(GRobject);
     void Select(GRobject);

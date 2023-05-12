@@ -260,12 +260,6 @@ cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
 {
 }
 
-// qtempty.cc
-
-void
-cConvert::PopUpEmpties(stringlist *list)
-{
-}
 
 // qtextcmd.cc
 

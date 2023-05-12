@@ -67,21 +67,17 @@ using namespace mswinterf;
 #endif
 
 
-// Global access pointer.
-GTKdev *GRX;
-
-
 // Device-dependent setup
 //
 void
 GRpkg::DevDepInit(unsigned int cfg)
 {
     if (cfg & _devGTK_)
-        GRpkgIf()->RegisterDevice(new GTKdev);
+        GRpkg::self()->RegisterDevice(new GTKdev);
 #ifdef WIN32
     if (cfg && _devMSP_) {
-        GRpkgIf()->RegisterDevice(new MSPdev);
-        GRpkgIf()->RegisterHcopyDesc(&MSPdesc);
+        GRpkg::self()->RegisterDevice(new MSPdev);
+        GRpkg::self()->RegisterHcopyDesc(&MSPdesc);
     }
 #endif
 }
@@ -94,13 +90,15 @@ GTKdev::sColorAlloc GTKdev::ColorAlloc;
 //-----------------------------------------------------------------------------
 // GTKdev methods
 
+GTKdev *GTKdev::instancePtr = 0;
+
 GTKdev::GTKdev()
 {
-    if (GRX) {
+    if (instancePtr) {
         fprintf(stderr, "Singleton class GTKdev is already instantiated.\n");
         exit (1);
     }
-    GRX = this;
+    instancePtr = this;
 #if GTK_CHECK_VERSION(3,0,0)
     name = "GTK3";
 #else
@@ -148,7 +146,17 @@ GTKdev::GTKdev()
 
 GTKdev::~GTKdev()
 {
-    GRX = 0;
+    instancePtr = 0;
+}
+
+
+// Private static error exit.
+//
+void
+GTKdev::on_null_ptr()
+{
+    fprintf(stderr, "Singleton class GTKdev used before insgtantiated.\n");
+    exit(1);
 }
 
 
@@ -171,7 +179,7 @@ namespace {
     {
         static int tm_err_cnt;
         if (error->error_code) {
-            if (x_error_warnings && !GRX->IsSilenceErrs()) {
+            if (x_error_warnings && !GTKdev::self()->IsSilenceErrs()) {
                 char buf[64];
                 XGetErrorText(display, error->error_code, buf, 63);
                 fprintf(stderr, "X-ERROR **: %s\n  serial %ld error_code %d "
@@ -182,7 +190,7 @@ namespace {
                         error->error_code == BadWindow) {
                     tm_err_cnt++;
                     if (tm_err_cnt == 2)
-                        GRpkgIf()->ErrPrintf(ET_MSG,
+                        GRpkg::self()->ErrPrintf(ET_MSG,
             "It appears that \"trusted\" X11 forwarding is not enabled.\n"
             "This application will not work reliably in this case, as\n"
             "requests for mouse position and other information will fail,\n"
@@ -472,7 +480,7 @@ GTKdev::AllocateColor(int *address, int red, int green, int blue)
     newcolor.green = (green * 256);
     newcolor.blue  = (blue  * 256);
 #if GTK_CHECK_VERSION(3,0,0)
-    ndkGC::query_pixel(&newcolor, GRX->Visual());
+    ndkGC::query_pixel(&newcolor, GTKdev::self()->Visual());
 #else
     gdk_colormap_alloc_color(dv_cmap, &newcolor, false, true);
 #endif
@@ -701,11 +709,11 @@ GTKdev::Input(int fd1, int fd2, int *keyret)
         }
 #endif
         if (fd1 >= 0 && FD_ISSET(fd1, &readfds)) {
-            *keyret = GRpkgIf()->GetChar(fd1);
+            *keyret = GRpkg::self()->GetChar(fd1);
             return (fd1);
         }
         else if (fd2 >= 0 && FD_ISSET(fd2, &readfds)) {
-            *keyret = GRpkgIf()->GetChar(fd2);
+            *keyret = GRpkg::self()->GetChar(fd2);
             return (fd2);
         }
     }
@@ -756,18 +764,310 @@ GTKdev::UseSHM()
 // End of virtual overrides.
 
 
-// Return the connection file descriptor.
+// Return the root window coordinates x+width, y of obj.
 //
-int
-GTKdev::ConnectFd()
+void
+GTKdev::Location(GRobject obj, int *x, int *y)
 {
-#ifdef WITH_X11
-    if (gr_x_display())
-        return (ConnectionNumber(gr_x_display()));
-#endif
-    return (-1);
+    *x = 0;
+    *y = 0;
+    if (obj && gtk_widget_get_window(GTK_WIDGET(obj))) {
+        GdkWindow *wnd = gtk_widget_get_parent_window(GTK_WIDGET(obj));
+        int rx, ry;
+        gdk_window_get_origin(wnd, &rx, &ry);
+        GtkAllocation a;
+        gtk_widget_get_allocation(GTK_WIDGET(obj), &a);
+        *x = rx + a.x + a.width;
+        *y = ry + a.y;
+        return;
+    }
+    GtkWidget *w = GTK_WIDGET(obj);
+    while (w && gtk_widget_get_parent(w))
+        w = gtk_widget_get_parent(w);
+    if (gtk_widget_get_window(w)) {
+        int rx, ry;
+        gdk_window_get_origin(gtk_widget_get_window(w), &rx, &ry);
+        if (x)
+            *x = rx + 50;
+        if (y)
+            *y = ry + 50;
+        return;
+    }
+    if (dv_default_focus_win) {
+        int rx, ry;
+        gdk_window_get_origin(dv_default_focus_win, &rx, &ry);
+        if (x)
+            *x = rx + 100;
+        if (y)
+            *y = ry + 300;
+    }
 }
 
+
+// WARNING:  don't use gtk_window_move on a mapped window, also
+// gdk_window_move and gtk_set_uposition.  These functions are f'ed up
+// big-time presently (10/12/15) on El Capitan X11.  Windows are moved
+// off screen instead of to the given location.  The calls are ok if
+
+// the window is not presently mapped.  We used to set a handler for
+// new pop-ups to readjust the positioning once the pop-up was mapped. 
+// This is no longer done, we try and set the positioning once only. 
+// This works well except for Windows, where the positioning is off by
+// a bit, but acceptable.
+
+// Locate the sub widget over the parent, positioned according to code.
+//
+void
+GTKdev::SetPopupLocation(GRloc loc, GtkWidget *sub, GtkWidget *parent)
+{
+    int x, y;
+    ComputePopupLocation(loc, sub, parent, &x, &y);
+    // This computes the location assuming that the widget is not
+    // decorated.  On the first call, find the top-level shell and
+    // obtain the decoration dimensions for location compensation.
+
+    static int dec_ht = 0;
+    static int dec_wd = 0;
+    if (dec_ht == 0) {
+#ifdef WIN32
+        // The code below gives 16,43 for the values, which are not
+        // good visually.  The following values look about right for
+        // Windows 10.
+
+        dec_wd = 5;
+        dec_ht = 28;
+#else
+        GtkWidget *p = parent;
+        while (gtk_widget_get_parent(p) != 0)
+            p = gtk_widget_get_parent(p);
+        GdkRectangle rect, rect_d;
+        gtk_ShellGeometry(p, &rect, &rect_d);
+        dec_wd = rect_d.width - rect.width;
+        dec_ht = rect_d.height - rect.height;
+#endif
+    }
+
+    // The dv_lower_win_offset tweaks the vertical position of windows
+    // that abut the lower edge of the viewport.  In "plasma"
+    // displays, we may want to move this windows up to avoid the
+    // "shadow" falling over a text input line (as in Xic).
+
+#ifdef WITH_QUARTZ
+    if (loc.code == LW_LL)
+        y -= dv_lower_win_offset;
+    else if (loc.code == LW_UL)
+        y += dec_ht;
+    else if (loc.code == LW_LR) {
+        x -= dec_wd;
+        y -= dv_lower_win_offset;
+    }
+    else if (loc.code == LW_UR) {
+        x -= dec_wd;
+        y += dec_ht;
+    }
+    else if (loc.code == LW_CENTER) {
+        x -= dec_wd/2;
+        y += dec_ht/2;
+    }
+#else
+    if (loc.code == LW_LL)
+        y -= (dec_ht + dv_lower_win_offset);
+    else if (loc.code == LW_LR) {
+        x -= dec_wd;
+        y -= (dec_ht + dv_lower_win_offset);
+    }
+    else if (loc.code == LW_UR)
+        x -= dec_wd;
+    else if (loc.code == LW_CENTER) {
+        x -= dec_wd/2;
+        y -= dec_ht/2;
+    }
+#endif
+    gtk_window_move(GTK_WINDOW(sub), x, y);
+}
+
+
+// Return screen coordinates xpos, ypos where the widget is to be
+// located according to loc.
+//
+void
+GTKdev::ComputePopupLocation(GRloc loc, GtkWidget *sub, GtkWidget *parent,
+    int *xpos, int *ypos)
+{
+    int x, y;
+    GdkWindow *win = gtk_widget_get_window(parent);
+    gdk_window_get_origin(win, &x, &y);
+    int mwidth = gdk_window_get_width(win);
+    int mheight = gdk_window_get_height(win);
+
+#ifdef WIN32
+    // There seems to be a GTK bug that causes a difference in
+    // placement of resizable vs non-resizable windows.
+    
+    if (gtk_window_get_resizable(GTK_WINDOW(sub))) {
+        x -= 5;
+        y -= 5;
+    }
+#endif
+
+    int swidth = 0, sheight;
+    GtkRequisition req;
+    gtk_widget_size_request(sub, &req);
+    swidth = req.width;
+    sheight = req.height;
+
+    switch (loc.code) {
+    case LW_CENTER:
+    default:
+        x += (mwidth - swidth)/2;
+        y += (mheight - sheight)/2;
+        break;
+    case LW_LL:
+        y += mheight - sheight;
+        break;
+    case LW_LR:
+        y += mheight - sheight;
+        x += mwidth - swidth;
+        break;
+    case LW_UL:
+        break;
+    case LW_UR:
+        x += mwidth - swidth;
+        break;
+    case LW_XYR:
+        x += loc.xpos;
+        y += loc.ypos;
+        break;
+    case LW_XYA:
+        x = loc.xpos;
+        y = loc.ypos;
+        break;
+    }
+    if (x < 0)
+        x = 0;
+    if (y < 0)
+        y = 0;
+    int mx, my, mwid, mhei;
+    gtk_MonitorGeom(parent, &mx, &my, &mwid, &mhei);
+    if (x + swidth > mx + mwid)
+        x = mx + mwid - swidth;
+    if (y + sheight > my + mhei)
+        y = my + mhei - sheight;
+    *xpos = x;
+    *ypos = y;
+}
+
+
+// Find the position and size of the *decorated* widget.
+//
+void
+GTKdev::WidgetLocation(GtkWidget *w, int *x, int *y, int *wid, int *hei)
+{
+    GdkRectangle rect;
+    if (gtk_widget_get_window(w) && gtk_ShellGeometry(w, 0, &rect)) {
+        *x = rect.x;
+        *y = rect.y;
+        *wid = rect.width;
+        *hei = rect.height;
+    }
+    else {
+        *x = 0;
+        *y = 0;
+        *wid = 0;
+        *hei = 0;
+    }
+}
+
+
+// The following function enables a (button 2) double-click-to-cancel
+// feature for pop-up widgets.  The widget arg is usually the shell,
+// the cancel arg is the cancel button.
+
+namespace {
+    // This handler is called by button presses.  It prepares to
+    // double-click exit, or calls the exit callback.
+    //
+    // data set:
+    // caller           "pirate"            1
+    //
+    int
+    dc_btn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
+    {
+        GtkWidget *cancel = (GtkWidget*)client_data;
+        static GdkCursor *cursor;
+        if (event->button.button == 2) {
+            int dc_state =
+                (intptr_t)g_object_get_data(G_OBJECT(caller), "pirate");
+            if (dc_state) {
+                g_object_set_data(G_OBJECT(caller), "pirate", (void*)0);
+                if (GTK_IS_BUTTON(cancel))
+                    gtk_button_clicked(GTK_BUTTON(cancel));
+                else if (GTK_IS_MENU_ITEM(cancel))
+                    gtk_menu_item_activate(GTK_MENU_ITEM(cancel));
+            }
+            else {
+                if (!cursor)
+                    cursor = gdk_cursor_new(GDK_PIRATE);
+                gdk_window_set_cursor(gtk_widget_get_window(caller), cursor);
+                g_object_set_data(G_OBJECT(caller), "pirate", (void*)1);
+            }
+            return (true);
+        }
+        return (false);
+    }
+
+
+    // On leaving, exit double click exit mode.
+    //
+    int
+    dc_leave_hdlr(GtkWidget *caller, GdkEvent *event, void*)
+    {
+        int dc_state = (intptr_t)g_object_get_data(G_OBJECT(caller),
+            "pirate");
+        if (dc_state && event->crossing.mode == GDK_CROSSING_NORMAL) {
+            g_object_set_data(G_OBJECT(caller), "pirate", (void*)0);
+            gdk_window_set_cursor(gtk_widget_get_window(caller), 0);
+            return (true);
+        }
+        return (false);
+    }
+}
+
+
+void
+GTKdev::SetDoubleClickExit(GtkWidget *widget, GtkWidget *cancel)
+{
+    gtk_widget_add_events(widget, GDK_BUTTON_PRESS_MASK);
+    g_signal_connect(G_OBJECT(widget), "button-press-event",
+        G_CALLBACK(dc_btn_hdlr), cancel);
+    gtk_widget_add_events(widget, GDK_LEAVE_NOTIFY_MASK);
+    g_signal_connect(G_OBJECT(widget), "leave-notify-event",
+        G_CALLBACK(dc_leave_hdlr), 0);
+}
+
+
+void
+GTKdev::RegisterBigWindow(GtkWidget *window)
+{
+#ifdef WITH_X11
+    dv_big_window_xid = 0;
+    if (window && gtk_widget_get_window(window))
+        dv_big_window_xid = gr_x_window(gtk_widget_get_window(window));
+#else
+    (void)window;
+#endif
+}
+
+
+void
+GTKdev::RegisterBigForeignWindow(unsigned int xid)
+{
+#ifdef WITH_X11
+    dv_big_window_xid = xid;
+#else
+    (void)xid;
+#endif
+}
 
 namespace {
     void toggle_btn_hdlr(GtkWidget *caller, void*)
@@ -893,57 +1193,6 @@ GTKdev::CallCallback(GRobject obj)
 }
 
 
-// Return the root window coordinates x+width, y of obj.
-//
-void
-GTKdev::Location(GRobject obj, int *x, int *y)
-{
-    *x = 0;
-    *y = 0;
-    if (obj && gtk_widget_get_window(GTK_WIDGET(obj))) {
-        GdkWindow *wnd = gtk_widget_get_parent_window(GTK_WIDGET(obj));
-        int rx, ry;
-        gdk_window_get_origin(wnd, &rx, &ry);
-        GtkAllocation a;
-        gtk_widget_get_allocation(GTK_WIDGET(obj), &a);
-        *x = rx + a.x + a.width;
-        *y = ry + a.y;
-        return;
-    }
-    GtkWidget *w = GTK_WIDGET(obj);
-    while (w && gtk_widget_get_parent(w))
-        w = gtk_widget_get_parent(w);
-    if (gtk_widget_get_window(w)) {
-        int rx, ry;
-        gdk_window_get_origin(gtk_widget_get_window(w), &rx, &ry);
-        if (x)
-            *x = rx + 50;
-        if (y)
-            *y = ry + 50;
-        return;
-    }
-    if (dv_default_focus_win) {
-        int rx, ry;
-        gdk_window_get_origin(dv_default_focus_win, &rx, &ry);
-        if (x)
-            *x = rx + 100;
-        if (y)
-            *y = ry + 300;
-    }
-}
-
-
-// Return the pointer position in root window coordinates
-//
-void
-GTKdev::PointerRootLoc(int *x, int *y)
-{
-    GdkModifierType state;
-    GdkWindow *window = gdk_get_default_root_window();
-    gdk_window_get_pointer(window, x, y, &state);
-}
-
-
 // Return the label string of the button, accelerators stripped.  Do not
 // free the return.
 //
@@ -1055,6 +1304,49 @@ GTKdev::DestroyButton(GRobject obj)
     if (obj)
         gtk_widget_destroy(GTK_WIDGET(obj));
 }
+
+
+// Give the focus to the passed GtkWindow.
+//
+void
+GTKdev::SetFocus(GtkWidget *window)
+{
+    if (window && gtk_widget_get_window(window)) {
+#ifdef WITH_X11
+        XSetInputFocus(gr_x_display(),
+            gr_x_window(gtk_widget_get_window(window)),
+            RevertToPointerRoot, CurrentTime);
+#else
+#ifdef WIN32
+        ::SetFocus((HWND)GDK_WINDOW_HWND(gtk_widget_get_window(window)));
+#endif
+#endif
+    }
+}
+
+
+// Return the connection file descriptor.
+//
+int
+GTKdev::ConnectFd()
+{
+#ifdef WITH_X11
+    if (gr_x_display())
+        return (ConnectionNumber(gr_x_display()));
+#endif
+    return (-1);
+}
+
+
+// Return the pointer position in root window coordinates
+//
+void
+GTKdev::PointerRootLoc(int *x, int *y)
+{
+    GdkModifierType state;
+    GdkWindow *window = gdk_get_default_root_window();
+    gdk_window_get_pointer(window, x, y, &state);
+}
 // End of GTKdev functions
 
 
@@ -1152,8 +1444,8 @@ GTKbag::~GTKbag()
         wb_hc->pop_down_print(this);
     if (wb_shell)
         gtk_widget_destroy(wb_shell);
-    if (this == GRX->MainFrame())
-        GRX->RegisterMainFrame(0);
+    if (this == GTKdev::self()->MainFrame())
+        GTKdev::self()->RegisterMainFrame(0);
 
 }
 // End of GTKbag functions.
@@ -1189,12 +1481,14 @@ namespace {
 
         if (g_object_get_data(G_OBJECT(widget), "no_prop_key"))
             return (x);
-        if (!x && GRX->MainFrame() && widget != GRX->MainFrame()->Shell()) {
-            gtk_propagate_event(GRX->MainFrame()->Shell(), (GdkEvent*)event);
+        if (!x && GTKdev::self()->MainFrame() &&
+                widget != GTKdev::self()->MainFrame()->Shell()) {
+            gtk_propagate_event(GTKdev::self()->MainFrame()->Shell(),
+                (GdkEvent*)event);
 
             // Revert focus to main window.  Terminating Enter press will
             // then go to main window.
-            GRX->SetFocus(GRX->MainFrame()->Shell());
+            GTKdev::self()->SetFocus(GTKdev::self()->MainFrame()->Shell());
 
             return (1);
         }
@@ -1219,8 +1513,10 @@ namespace {
 
         if (g_object_get_data(G_OBJECT(widget), "no_prop_key"))
             return (x);
-        if (!x && GRX->MainFrame() && widget != GRX->MainFrame()->Shell()) {
-            gtk_propagate_event(GRX->MainFrame()->Shell(), (GdkEvent*)event);
+        if (!x && GTKdev::self()->MainFrame() &&
+                widget != GTKdev::self()->MainFrame()->Shell()) {
+            gtk_propagate_event(GTKdev::self()->MainFrame()->Shell(),
+                (GdkEvent*)event);
             return (1);
         }
         return (x);
@@ -1269,7 +1565,7 @@ gtkinterf::gtk_NewPopup(GTKbag *w, const char *title,
         // This will send unhandled key events to the main application
         // window.
         static bool keyprop_init;
-        if (GRX->MainFrame() && !keyprop_init) {
+        if (GTKdev::self()->MainFrame() && !keyprop_init) {
             GtkWidgetClass *ks = GTK_WIDGET_GET_CLASS(popup);
             key_dn_ev = ks->key_press_event;
             ks->key_press_event = key_down_event;
@@ -1327,9 +1623,9 @@ void
 gtkinterf::gtk_QueryColor(GdkColor *clr)
 {
 #if GTK_CHECK_VERSION(3,0,0)
-    ndkGC::query_rgb(clr, GRX->Visual());
+    ndkGC::query_rgb(clr, GTKdev::self()->Visual());
 #else
-    gdk_colormap_query_color(GRX->Colormap(), clr->pixel, clr);
+    gdk_colormap_query_color(GTKdev::self()->Colormap(), clr->pixel, clr);
 #endif
 }
 
@@ -1361,10 +1657,11 @@ gtkinterf::gtk_ColorSet(GdkColor *clr, const char *cname)
         else if (!gdk_color_parse(cname, clr))
             return (false);
 #if GTK_CHECK_VERSION(3,0,0)
-        ndkGC::query_pixel(clr, GRX->Visual());
+        ndkGC::query_pixel(clr, GTKdev::self()->Visual());
         return (true);
 #else
-        GdkColormap *cmap = GRX ? GRX->Colormap() : gdk_colormap_get_system();
+        GdkColormap *cmap = GTKdev::exists() ? GTKdev::self()->Colormap() :
+            gdk_colormap_get_system();
         if (gdk_colormap_alloc_color(cmap, clr, false, true))
             return (true);
 #endif
@@ -1380,7 +1677,7 @@ gtkinterf::gtk_PopupColor(GRattrColor c)
 {
     static GdkColor pop_colors[GRattrColorEnd + 1];
 
-    const char *colorname = GRpkgIf()->GetAttrColor(c);
+    const char *colorname = GRpkg::self()->GetAttrColor(c);
     if (gtk_ColorSet(pop_colors + c, colorname))
         return (pop_colors + c);
 

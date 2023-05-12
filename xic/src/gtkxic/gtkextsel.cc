@@ -105,7 +105,7 @@ using namespace gtkextsel;
 void
 cExt::PopUpSelections(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete ES;
@@ -127,7 +127,7 @@ cExt::PopUpSelections(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(ES->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), ES->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), ES->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(ES->Shell());
 }
@@ -427,16 +427,16 @@ sES::sES(GRobject caller)
 
 sES::~sES()
 {
-    if (GRX->GetStatus(es_gnsel))
-        GRX->CallCallback(es_gnsel);
-    else if (GRX->GetStatus(es_paths))
-        GRX->CallCallback(es_paths);
-    else if (GRX->GetStatus(es_qpath))
-        GRX->CallCallback(es_qpath);
+    if (GTKdev::GetStatus(es_gnsel))
+        GTKdev::CallCallback(es_gnsel);
+    else if (GTKdev::GetStatus(es_paths))
+        GTKdev::CallCallback(es_paths);
+    else if (GTKdev::GetStatus(es_qpath))
+        GTKdev::CallCallback(es_qpath);
 
     ES = 0;
     if (es_caller)
-        GRX->Deselect(es_caller);
+        GTKdev::Deselect(es_caller);
     // Needed to unset the Click-Select Mode button.
     SCD()->PopUpNodeMap(0, MODE_UPD);
 
@@ -452,29 +452,29 @@ sES::update()
 {
     gtk_combo_box_set_active(GTK_COMBO_BOX(es_gpmnu),
         EX()->quickPathMode());
-    GRX->SetStatus(es_qpconn, EX()->isQuickPathUseConductor());
-    GRX->SetStatus(es_blink, EX()->isBlinkSelections());
-    if (GRX->GetStatus(es_gnsel))
-        GRX->SetStatus(es_paths, EX()->isGNShowPath());
+    GTKdev::SetStatus(es_qpconn, EX()->isQuickPathUseConductor());
+    GTKdev::SetStatus(es_blink, EX()->isBlinkSelections());
+    if (GTKdev::GetStatus(es_gnsel))
+        GTKdev::SetStatus(es_paths, EX()->isGNShowPath());
     else
-        GRX->SetStatus(es_subpath, EX()->isSubpathEnabled());
+        GTKdev::SetStatus(es_subpath, EX()->isSubpathEnabled());
     sb_depth.set_value(EX()->pathDepth());
     set_sens();
 
     const char *vstr = CDvdb()->getVariable(VA_PathFileVias);
     if (!vstr) {
-        GRX->SetStatus(es_vias, false);
-        GRX->SetStatus(es_vtree, false);
+        GTKdev::SetStatus(es_vias, false);
+        GTKdev::SetStatus(es_vtree, false);
         gtk_widget_set_sensitive(es_vtree, false);
     }
     else if (!*vstr) {
-        GRX->SetStatus(es_vias, true);
-        GRX->SetStatus(es_vtree, false);
+        GTKdev::SetStatus(es_vias, true);
+        GTKdev::SetStatus(es_vtree, false);
         gtk_widget_set_sensitive(es_vtree, true);
     }
     else {
-        GRX->SetStatus(es_vias, true);
-        GRX->SetStatus(es_vtree, true);
+        GTKdev::SetStatus(es_vias, true);
+        GTKdev::SetStatus(es_vtree, true);
         gtk_widget_set_sensitive(es_vtree, true);
     }
 }
@@ -486,8 +486,9 @@ sES::set_sens()
     pathfinder *pf = EX()->pathFinder(cExt::PFget);
     bool has_path = (pf && !pf->is_empty());
 
-    if (has_path && (GRX->GetStatus(es_gnsel) || GRX->GetStatus(es_paths) ||
-            GRX->GetStatus(es_qpath))) {
+    if (has_path && (GTKdev::GetStatus(es_gnsel) ||
+            GTKdev::GetStatus(es_paths) ||
+            GTKdev::GetStatus(es_qpath))) {
         gtk_widget_set_sensitive(es_zoid, true);
         gtk_widget_set_sensitive(es_tofile, true);
         gtk_widget_set_sensitive(es_rlab, true);
@@ -506,14 +507,15 @@ sES::set_sens()
         gtk_widget_set_sensitive(es_terms, false);
         gtk_widget_set_sensitive(es_meas, false);
     }
-    if (!GRX->GetStatus(es_gnsel) && GRX->GetStatus(es_paths))
+    if (!GTKdev::GetStatus(es_gnsel) &&
+            GTKdev::GetStatus(es_paths))
         gtk_widget_set_sensitive(es_antenna, true);
     else
         gtk_widget_set_sensitive(es_antenna, false);
 
     if (DSP()->CurMode() == Electrical) {
         gtk_widget_set_sensitive(es_qpath, false);
-        if (!GRX->GetStatus(es_gnsel))
+        if (!GTKdev::GetStatus(es_gnsel))
             gtk_widget_set_sensitive(es_paths, false);
 
     }
@@ -571,23 +573,23 @@ sES::es_action_proc(GtkWidget *caller, void*)
         return;
     if (!strcmp(name, "gnsel")) {
         EX()->selectGroupNode(caller);
-        if (GRX->GetStatus(caller)) {
-            GRX->Deselect(ES->es_subpath);
+        if (GTKdev::GetStatus(caller)) {
+            GTKdev::Deselect(ES->es_subpath);
             gtk_widget_set_sensitive(ES->es_subpath, false);
             gtk_widget_set_sensitive(ES->es_paths, true);
         }
         else {
-            GRX->SetStatus(ES->es_subpath, EX()->isSubpathEnabled());
+            GTKdev::SetStatus(ES->es_subpath, EX()->isSubpathEnabled());
             gtk_widget_set_sensitive(ES->es_subpath, true);
-            GRX->Deselect(ES->es_paths);
+            GTKdev::Deselect(ES->es_paths);
             if (DSP()->CurMode() == Electrical)
                 gtk_widget_set_sensitive(ES->es_paths, false);
         }
         ES->set_sens();
     }
     else if (!strcmp(name, "paths")) {
-        if (GRX->GetStatus(ES->es_gnsel))
-            EX()->selectShowPath(GRX->GetStatus(caller));
+        if (GTKdev::GetStatus(ES->es_gnsel))
+            EX()->selectShowPath(GTKdev::GetStatus(caller));
         else
             EX()->selectPath(caller);
         ES->set_sens();
@@ -603,13 +605,13 @@ sES::es_action_proc(GtkWidget *caller, void*)
     else if (!strcmp(name, "all"))
         ES->sb_depth.set_value(CDMAXCALLDEPTH);
     else if (!strcmp(name, "QPCndr")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_QpathUseConductor, "");
         else
             CDvdb()->clearVariable(VA_QpathUseConductor);
     }
     else if (!strcmp(name, "blink")) {
-        EX()->setBlinkSelections(GRX->GetStatus(caller));
+        EX()->setBlinkSelections(GTKdev::GetStatus(caller));
         pathfinder *pf = EX()->pathFinder(cExt::PFget);
         if (pf) {
             pf->show_path(0, ERASE);
@@ -617,7 +619,7 @@ sES::es_action_proc(GtkWidget *caller, void*)
         }
     }
     else if (!strcmp(name, "subpath"))
-        EX()->setSubpathEnabled(GRX->GetStatus(caller));
+        EX()->setSubpathEnabled(GTKdev::GetStatus(caller));
     else if (!strcmp(name, "antenna"))
         EX()->getAntennaPath();
     else if (!strcmp(name, "zoid")) {
@@ -642,18 +644,18 @@ sES::es_action_proc(GtkWidget *caller, void*)
             PL()->ShowPrompt("No current path!");
     }
     else if (!strcmp(name, "vias")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             CDvdb()->setVariable(VA_PathFileVias, "");
             gtk_widget_set_sensitive(ES->es_vtree, true);
         }
         else {
             CDvdb()->clearVariable(VA_PathFileVias);
-            GRX->SetStatus(ES->es_vtree, false);
+            GTKdev::SetStatus(ES->es_vtree, false);
             gtk_widget_set_sensitive(ES->es_vtree, false);
         }
     }
     else if (!strcmp(name, "vtree")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_PathFileVias, "check");
         else
             CDvdb()->setVariable(VA_PathFileVias, "");
@@ -675,9 +677,10 @@ sES::es_action_proc(GtkWidget *caller, void*)
 int
 sES::es_redraw_idle(void *)
 {
-    if (GRX->GetStatus(ES->es_gnsel))
+    if (GTKdev::GetStatus(ES->es_gnsel))
         EX()->selectRedrawPath();
-    else if (GRX->GetStatus(ES->es_paths) || GRX->GetStatus(ES->es_qpath))
+    else if (GTKdev::GetStatus(ES->es_paths) ||
+            GTKdev::GetStatus(ES->es_qpath))
         EX()->redrawPath();
     return (0);
 }
@@ -694,7 +697,7 @@ sES::es_val_changed(GtkWidget*, void*)
 
     // Redraw the path in an idle proc, otherwise spin button
     // behaves strangely.
-    dspPkgIf()->RegisterIdleProc(es_redraw_idle, 0);
+    GTKpkg::self()->RegisterIdleProc(es_redraw_idle, 0);
 }
 
 

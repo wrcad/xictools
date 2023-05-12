@@ -311,7 +311,7 @@ cParam::display(int start, int end)
         if (p_pm)
             g_object_unref(p_pm);
         p_pm = gdk_pixmap_new(gd_window, winw, winh,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         p_width = winw;
         p_height = winh;
         start = 0;

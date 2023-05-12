@@ -47,6 +47,7 @@
 #include "dsp_color.h"
 #include "dsp_layer.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 #include "cd_layer.h"
 #include "cd_celldb.h"
 #include "fio.h"
@@ -4747,8 +4748,10 @@ bool
 misc1_funcs::IFhcListDrivers(Variable *res, Variable*, void*)
 {
     stringlist *s0 = 0;
-    for (int i = 0; GRpkgIf()->HCof(i); i++)
-        s0 = new stringlist(lstring::copy(GRpkgIf()->HCof(i)->keyword), s0);
+    for (int i = 0; DSPpkg::self()->HCof(i); i++) {
+        s0 = new stringlist(lstring::copy(DSPpkg::self()->HCof(i)->keyword),
+            s0);
+    }
     stringlist::sort(s0);
     sHdl *hdl = new sHdlString(s0);
     res->type = TYP_HANDLE;
@@ -4773,9 +4776,9 @@ misc1_funcs::IFhcSetDriver(Variable *res, Variable *args, void*)
     res->type = TYP_SCALAR;
     res->content.value = 0;
     if (drvr) {
-        HCdesc *hcdesc = GRpkgIf()->FindHCdesc(drvr);
+        HCdesc *hcdesc = DSPpkg::self()->FindHCdesc(drvr);
         if (hcdesc) {
-            HCstate.set_desc(hcdesc, GRpkgIf()->FindHCindex(drvr));
+            HCstate.set_desc(hcdesc, DSPpkg::self()->FindHCindex(drvr));
             res->content.value = 1;
         }
     }
@@ -5477,7 +5480,8 @@ misc1_funcs::IFhcDump(Variable *res, Variable *args, void*)
     }
 #endif
 
-    HCswitchErr err = GRpkgIf()->SwitchDev(HCstate.desc->drname, &argc, argv);
+    HCswitchErr err = DSPpkg::self()->SwitchDev(HCstate.desc->drname,
+        &argc, argv);
     if (err == HCSinhc)
         HCstate.errmsg = lstring::copy("Internal error - aborted.");
     else if (err == HCSnotfnd)
@@ -5498,11 +5502,11 @@ misc1_funcs::IFhcDump(Variable *res, Variable *args, void*)
             ot |= HClandscape;
 
         int drnum = 0;
-        for ( ; GRpkgIf()->HCof(drnum); drnum++) {
-            if (GRpkgIf()->HCof(drnum) == HCstate.desc)
+        for ( ; DSPpkg::self()->HCof(drnum); drnum++) {
+            if (DSPpkg::self()->HCof(drnum) == HCstate.desc)
                 break;
         }
-        if (GRpkgIf()->HCof(drnum) != HCstate.desc) {
+        if (DSPpkg::self()->HCof(drnum) != HCstate.desc) {
             // "can't happen"
             HCstate.errmsg = lstring::copy("Driver not available.");
             return (OK);
@@ -5517,7 +5521,7 @@ misc1_funcs::IFhcDump(Variable *res, Variable *args, void*)
             ok = false;
             unlink(fname);
         }
-        GRpkgIf()->SwitchDev(0, 0, 0);
+        DSPpkg::self()->SwitchDev(0, 0, 0);
         if (ok) {
             ret = 0;
             if (cmd && *cmd)

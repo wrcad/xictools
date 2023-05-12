@@ -65,12 +65,12 @@ cExt::lvs(FILE *fp, CDcbin *cbin, int depth)
 {
     if (!cbin || !cbin->elec())
         return (LVSap);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
 
     SymTab *tab = new SymTab(false, false);
     if (!associate(cbin->phys())) {
         delete tab;
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return (LVSerror);
     }
 
@@ -89,7 +89,7 @@ cExt::lvs(FILE *fp, CDcbin *cbin, int depth)
     setParamCx(0);
     delete pcx;
 
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (ret);
 }
 

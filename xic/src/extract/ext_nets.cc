@@ -1440,11 +1440,11 @@ cExt::makeElec(CDs *sdesc, int depth, int modeflag)
         b[2].set(true);
     if (dumpPhysNetlist(fp, sdesc, &opts)) {
         rewind(fp);
-        dspPkgIf()->CheckForInterrupt();
+        DSPpkg::self()->CheckForInterrupt();
         if (!DSP()->Interrupt()) {
-            dspPkgIf()->SetWorking(true);
+            DSPpkg::self()->SetWorking(true);
             SCD()->extractFromSpice(cbin.elec(), fp, modeflag & EFS_MASK);
-            dspPkgIf()->SetWorking(false);
+            DSPpkg::self()->SetWorking(false);
         }
         DSP()->SetInterrupt(DSPinterNone);
     }

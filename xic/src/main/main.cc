@@ -277,9 +277,9 @@ namespace {
     //
     int v_proc(void *ptr)
     {
-        GRpkgIf()->ErrPrintf(ET_ERROR, (char*)ptr);
+        DSPpkg::self()->ErrPrintf(ET_ERROR, (char*)ptr);
         delete [] (char*)ptr;
-        dspPkgIf()->RegisterTimeoutProc(AC_LIFETIME_MINUTES*60*1000,
+        DSPpkg::self()->RegisterTimeoutProc(AC_LIFETIME_MINUTES*60*1000,
             die_timeout, 0);
         return (0);
     }
@@ -314,13 +314,13 @@ namespace {
         if (XM()->MemError()) {
             XM()->SetMemError(false);
             if (XM()->RunMode() == ModeNormal)
-                dspPkgIf()->RegisterIdleProc(m_proc, 0);
+                DSPpkg::self()->RegisterIdleProc(m_proc, 0);
         }
 #ifdef HAVE_SECURE
         char *s = XM()->Auth()->periodicTest(Timer()->elapsed_msec()); 
         if (s) {
             if (XM()->RunMode() == ModeNormal)
-                dspPkgIf()->RegisterIdleProc(v_proc, s);
+                DSPpkg::self()->RegisterIdleProc(v_proc, s);
             else {
                 delete [] s;
                 die_when = Timer()->elapsed_msec() + 

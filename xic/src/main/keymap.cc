@@ -42,6 +42,7 @@
 #include "keymap.h"
 #include "menu.h"
 #include "promptline.h"
+#include "dsp_tkif.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
 
@@ -233,7 +234,7 @@ bool
 cKsMap::SaveMapFile(const char *fname)
 {
     if (!filestat::create_bak(fname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         return (false);
     }
     FILE *fp = fopen(fname, "w");

@@ -116,7 +116,7 @@ using namespace gtkmem;
 void
 cMain::PopUpMemory(ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Mem;
@@ -137,7 +137,7 @@ cMain::PopUpMemory(ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Mem->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Mem->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Mem->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Mem->Shell());
 #if GTK_CHECK_VERSION(3,0,0)
@@ -145,7 +145,7 @@ cMain::PopUpMemory(ShowMode mode)
 #else
     Mem->SetWindow(gtk_widget_get_window(Mem->Viewport()));
 #endif
-    Mem->SetWindowBackground(GRX->NameColor("white"));
+    Mem->SetWindowBackground(GTKdev::self()->NameColor("white"));
 }
 // End of cMain functions.
 
@@ -213,7 +213,7 @@ sMem::sMem() : GTKdraw(XW_TEXT)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    gtkPkgIf()->RegisterTimeoutProc(5000, mem_proc, 0);
+    GTKpkg::self()->RegisterTimeoutProc(5000, mem_proc, 0);
 }
 
 
@@ -234,7 +234,7 @@ sMem::update()
     unsigned long c1 = DSP()->Color(PromptTextColor);
     unsigned long c2 = DSP()->Color(PromptEditTextColor);
     int fwid, fhei;
-    SetWindowBackground(GRX->NameColor("white"));
+    SetWindowBackground(GTKdev::self()->NameColor("white"));
     TextExtent(0, &fwid, &fhei);
     SetFillpattern(0);
     SetLinestyle(0);

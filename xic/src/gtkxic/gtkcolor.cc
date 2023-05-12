@@ -186,7 +186,7 @@ using namespace gtkcolor;
 void
 cMain::PopUpColor(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Clr;
@@ -208,7 +208,7 @@ cMain::PopUpColor(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Clr->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Clr->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Clr->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Clr->shell());
 }
@@ -225,15 +225,15 @@ namespace { int colortimer(void*); }
 void
 cMain::ColorTimerInit()
 {
-    if (!GRX)
+    if (!GTKdev::exists())
         return;
     int pixel = DSP()->Color(SelectColor1);
     int red, green, blue;
-    GRX->RGBofPixel(pixel, &red, &green, &blue);
+    GTKdev::self()->RGBofPixel(pixel, &red, &green, &blue);
     int sp = DSP()->SelectPixel();
-    GRX->AllocateColor(&sp, red, green, blue);
+    GTKdev::self()->AllocateColor(&sp, red, green, blue);
     DSP()->SetSelectPixel(sp);
-    GRX->AddTimer(500, colortimer, 0);
+    GTKdev::self()->AddTimer(500, colortimer, 0);
 }
 
 
@@ -263,7 +263,7 @@ sClr::sClr(GRobject c)
     // are gibberish unless it is read-only.  We go through some
     // hoops here to replace the color wheel and sample areas with
     // our own sample area.
-    bool fix256 = !dspPkgIf()->IsTrueColor();
+    bool fix256 = !GTKpkg::self()->IsTrueColor();
 
     c_shell = gtk_NewPopup(0, "Color Selection", c_cancel_proc, 0);
     if (!c_shell)
@@ -453,7 +453,7 @@ sClr::~sClr()
 {
     Clr = 0;
     if (c_caller)
-        GRX->Deselect(c_caller);
+        GTKdev::Deselect(c_caller);
     if (c_listpop)
         c_listpop->popdown();
     if (c_shell)
@@ -856,7 +856,7 @@ sClr::c_list_callback(const char *string, void*)
         }
     }
     else if (Clr) {
-        GRX->SetStatus(Clr->c_listbtn, false);
+        GTKdev::SetStatus(Clr->c_listbtn, false);
         Clr->c_listpop = 0;
     }
 }
@@ -869,11 +869,11 @@ void
 sClr::c_list_btn_proc(GtkWidget *btn, void*)
 {
     if (Clr) {
-        bool state = GRX->GetStatus(btn);
+        bool state = GTKdev::GetStatus(btn);
         if (!Clr->c_listpop && state) {
             stringlist *list = GRcolorList::listColors();
             if (!list) {
-                GRX->SetStatus(btn, false);
+                GTKdev::SetStatus(btn, false);
                 return;
             }
             Clr->c_listpop = DSPmainWbagRet(PopUpList(list, "Colors",
@@ -898,8 +898,8 @@ namespace {
     idlefunc(void*)
     {
         static int on;
-        if (!dspPkgIf()->IsBusy()) {
-            if (dspPkgIf()->IsTrueColor()) {
+        if (!GTKpkg::self()->IsBusy()) {
+            if (GTKpkg::self()->IsTrueColor()) {
                 WindowDesc *wd;
                 WDgen wgen(WDgen::MAIN, WDgen::ALL);
                 while ((wd = wgen.next()) != 0) {
@@ -926,7 +926,8 @@ namespace {
                     colorcell.pixel = DSP()->Color(SelectColor2);
 
                 int red, green, blue;
-                GRX->RGBofPixel(colorcell.pixel, &red, &green, &blue);
+                GTKdev::self()->RGBofPixel(colorcell.pixel,
+                    &red, &green, &blue);
                 colorcell.red = red << 8;
                 colorcell.green = green << 8;
                 colorcell.blue = blue << 8;

@@ -61,9 +61,9 @@ namespace {
     void
     start_modal(GtkWidget *w)
     {
-        gtkMenu()->SetSensGlobal(false);
-        gtkMenu()->SetModal(w);
-        dspPkgIf()->SetOverrideBusy(true);
+        GTKmenu::self()->SetSensGlobal(false);
+        GTKmenu::self()->SetModal(w);
+        GTKpkg::self()->SetOverrideBusy(true);
         DSPmainDraw(ShowGhost(ERASE))
     }
 
@@ -71,9 +71,9 @@ namespace {
     void
     end_modal()
     {
-        gtkMenu()->SetModal(0);
-        gtkMenu()->SetSensGlobal(true);
-        dspPkgIf()->SetOverrideBusy(false);
+        GTKmenu::self()->SetModal(0);
+        GTKmenu::self()->SetSensGlobal(true);
+        GTKpkg::self()->SetOverrideBusy(false);
         DSPmainDraw(ShowGhost(DISPLAY))
     }
 
@@ -153,7 +153,7 @@ PMretType sSC::sc_retval;
 PMretType
 cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return (PMok);
     if (SC)
         return (PMok);
@@ -172,11 +172,12 @@ cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
     gtk_window_set_transient_for(GTK_WINDOW(SC->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), SC->Shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), SC->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(SC->Shell());
 
     start_modal(SC->Shell());
-    GRX->MainLoop();  // wait for user's response
+    GTKdev::self()->MainLoop();  // wait for user's response
     end_modal();
 
     return (sSC::retval());
@@ -436,8 +437,8 @@ sSC::sc_cancel_proc(GtkWidget*, void *arg)
                 SC->sc_saveproc = 0;
             }
         }
-        if (GRX->LoopLevel() > 1)
-            GRX->BreakLoop();
+        if (GTKdev::self()->LoopLevel() > 1)
+            GTKdev::self()->BreakLoop();
         delete SC;
     }
 }

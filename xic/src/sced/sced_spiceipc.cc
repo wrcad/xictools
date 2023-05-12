@@ -210,7 +210,7 @@ cSpiceIPC::InitSpice()
         // Send over the Xic window id.
         char tbuf[128];
         strcpy(tbuf, "winid ");
-        if (dspPkgIf()->GetMainWinIdentifier(tbuf + strlen(tbuf))) {
+        if (DSPpkg::self()->GetMainWinIdentifier(tbuf + strlen(tbuf))) {
             char *tbf = send_to_spice(tbuf, 120);
             delete [] tbf;
         }
@@ -523,13 +523,13 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
         return (false);
     }
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     stringlist *deck = SCD()->makeSpiceListing(cursde);
     if (!deck) {
         PL()->ShowPromptV(
             "Unknown error: no SPICE listing available for %s.",
             Tstring(cursde->cellname()));
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return (false);
     }
     if (!expand_includes(&deck, "decksource")) {
@@ -537,12 +537,12 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
         if (Errs()->has_error())
             Log()->ErrorLog(SpiceIPC, Errs()->get_error());
         stringlist::destroy(deck);
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return (false);
     }
     char *outbuf;
     bool ok = deck_to_spice(deck, &outbuf);
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     if (outbuf) {
         // Dump any stdout/stderr from WRspice to console.
         fprintf(stderr, "%s\n", outbuf);
@@ -1211,8 +1211,8 @@ cSpiceIPC::init_remote(const char *c_spice_host)
 #ifdef DEMO_EXPORT
     // The demo app is command-line driven.
 #else
-    if (has_graphics && dspPkgIf()->UsingX11()) {
-        const char *ds = dspPkgIf()->GetDisplayString();
+    if (has_graphics && DSPpkg::self()->UsingX11()) {
+        const char *ds = DSPpkg::self()->GetDisplayString();
         if (ds) {
             if (ipc_display_name)
                 strcpy(display_string, ipc_display_name);
@@ -1269,7 +1269,8 @@ cSpiceIPC::init_remote(const char *c_spice_host)
     // Check screen access for remote host.  Skip this if we provided
     // the display name.
     if (has_graphics && !ipc_display_name &&
-            !dspPkgIf()->CheckScreenAccess(hent, spice_host, display_string)) {
+            !DSPpkg::self()->CheckScreenAccess(hent, spice_host,
+            display_string)) {
         has_graphics = false;
 #ifndef DEMO_EXPORT
         Log()->WarningLogV(SpiceIPC,
@@ -1484,8 +1485,8 @@ cSpiceIPC::init_local()
 #ifdef DEMO_EXPORT
     // The demo app is command-line driven.
 #else
-    if (has_graphics && dspPkgIf()->UsingX11()) {
-        display_string = dspPkgIf()->GetDisplayString();
+    if (has_graphics && DSPpkg::self()->UsingX11()) {
+        display_string = DSPpkg::self()->GetDisplayString();
         if (!display_string)
             has_graphics = false;
     }
@@ -1650,7 +1651,7 @@ cSpiceIPC::init_local()
         return (-1);
     }
     if (!pid) {
-        dspPkgIf()->CloseGraphicsConnection();
+        DSPpkg::self()->CloseGraphicsConnection();
         dup2(ipc_stdout_skt2, fileno(stdout));
         dup2(ipc_stdout_skt2, fileno(stderr));
         if (has_graphics && *display_string) {
@@ -1749,10 +1750,10 @@ cSpiceIPC::runnit(const char *what)
 {
     ipc_sigint_back = signal(SIGINT, interrupt_hdlr);
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     SCD()->PopUpSim(SpBusy);
     if (!write_msg(what, ipc_msg_skt)) {
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return (false);
     }
 
@@ -1777,7 +1778,7 @@ cSpiceIPC::runnit(const char *what)
         if (!set_async(ipc_msg_skt, true))
             Log()->WarningLog(SpiceIPC, Errs()->get_error());
     }
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (true);
 }
 
@@ -1870,7 +1871,7 @@ cSpiceIPC::isready(int fd, int timeout_ms, bool silent)
         }
         if (i == 0) {
             if (waitmode) {
-                if (dspPkgIf()->CheckForInterrupt()) {
+                if (DSPpkg::self()->CheckForInterrupt()) {
                     // ^C was typed in Xic graphics window.
                     if (fd == ipc_msg_skt)
                         InterruptSpice();
@@ -2045,7 +2046,7 @@ cSpiceIPC::read_cmd_return(char **msgbuf,  char **outbuf,
             }
         }
         if (i == 0) {
-            if (dspPkgIf()->CheckForInterrupt()) {
+            if (DSPpkg::self()->CheckForInterrupt()) {
                 // ^C was typed in Xic graphics window.
                 InterruptSpice();
             }
@@ -2689,7 +2690,7 @@ cSpiceIPC::child_thread_proc(void *arg)
 #ifndef DEMO_EXPORT
         // Can't pop up a window in this thread!  It dies when the
         // thread dies.
-        dspPkgIf()->RegisterIdleProc(msg_proc, lstring::copy(buf));
+        DSPpkg::self()->RegisterIdleProc(msg_proc, lstring::copy(buf));
 #endif
         SCD()->spif()->close_all();
     }

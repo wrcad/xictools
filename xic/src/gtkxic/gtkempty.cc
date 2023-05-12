@@ -98,7 +98,7 @@ using namespace gtkempty;
 void
 cConvert::PopUpEmpties(stringlist *list)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (EC)
         return;
@@ -115,7 +115,7 @@ cConvert::PopUpEmpties(stringlist *list)
     gtk_window_set_transient_for(GTK_WINDOW(EC->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), EC->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), EC->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(EC->Shell());
 }

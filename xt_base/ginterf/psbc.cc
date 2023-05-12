@@ -165,7 +165,7 @@ PSBCdev::NewDraw(int)
     else
         return (0);
     if (!plotfp) {
-        GRpkgIf()->Perror(data->filename);
+        GRpkg::self()->Perror(data->filename);
         return (0);
     }
     PSBCparams *psbc = new PSBCparams;
@@ -203,7 +203,7 @@ PSBCdev::NewDraw(int)
         size = psbc->bytpline;
     psbc->base = (unsigned char*)malloc(size);
     if (!psbc->base) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "Insufficient memory.");
+        GRpkg::self()->ErrPrintf(ET_WARN, "Insufficient memory.");
         return (0);
     }
     memset(psbc->base, 0, size);
@@ -216,7 +216,8 @@ namespace {
         { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
 }
 
-// Dump bitmap in postscript format.  Sets GRpkgIf()->HCabort if a write fails.
+// Dump bitmap in postscript format.  Sets GRpkg::self()->HCabort if a
+// write fails.
 //
 void
 PSBCparams::dump()
@@ -281,14 +282,14 @@ PSBCparams::dump()
         fprintf(fp,
             "{currentfile pixbuf readhexstring pop}\nfalse 3\ncolorimage\n");
     if (ferror(fp)) {
-        GRpkgIf()->HCabort("File write error");
+        GRpkg::self()->HCabort("File write error");
         return;
     }
     // write data
     if (devdata()->encode) {
         if (PS_rll85dump(fp, base, bytpline, dev->height - 1,
                 devdata()->doRLE)) {
-            GRpkgIf()->HCabort("File write error");
+            GRpkg::self()->HCabort("File write error");
             return;
         }
         fprintf(fp, "\n~>\n");
@@ -310,7 +311,7 @@ PSBCparams::dump()
             }
             ptr -= bytpline << 1;
             if (ferror(fp)) {
-                GRpkgIf()->HCabort("File write error");
+                GRpkg::self()->HCabort("File write error");
                 return;
             }
         }
@@ -373,7 +374,7 @@ PSBCparams::dump()
         fprintf(fp, "(%s) show\n", tbuf);
         fprintf(fp, "grestore\n");
         if (ferror(fp)) {
-            GRpkgIf()->HCabort("File write error");
+            GRpkg::self()->HCabort("File write error");
             return;
         }
     }
@@ -419,7 +420,7 @@ PSBCparams::ResetViewport(int wid, int hei)
         size = bytpline;
     base = (unsigned char*)malloc(size);
     if (!base) {
-        GRpkgIf()->HCabort("Insufficient memory");
+        GRpkg::self()->HCabort("Insufficient memory");
         return;
     }
     memset(base, 0, size);

@@ -329,7 +329,7 @@ MSPdev::NewDraw(int)
 namespace {
     BOOL CALLBACK AbortFunc(HDC, int)
     {
-        if (GRX->CheckForEvents()) {
+        if (GTKdev::self()->CheckForEvents()) {
             GRpkgIf()->HCabort("User aborted");
             return (FALSE);
         }

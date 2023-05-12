@@ -1020,7 +1020,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
     bool ret = true;
     PL()->ShowPrompt(msg1);
     Errs()->init_error();
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
 
     // Finalize the cell before save.  The undo list is retained,
     // so recent changes can be undone after the save.  However,
@@ -1175,7 +1175,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
             if (!silent_errors)
                 Log()->ErrorLog(save_file, Errs()->get_error());
             XM()->ShowParameters();
-            dspPkgIf()->SetWorking(false);
+            DSPpkg::self()->SetWorking(false);
             return (false);
         }
         // Assign internal properties to the top level cell.
@@ -1324,7 +1324,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
     }
 
     XM()->ShowParameters();
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (ret);
 }
 

@@ -124,7 +124,7 @@ bool sLx::noclear = false;
 void
 cEdit::PopUpLayerExp(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Lx;
@@ -146,7 +146,7 @@ cEdit::PopUpLayerExp(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Lx->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Lx->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), Lx->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Lx->shell());
 }
@@ -498,33 +498,33 @@ sLx::sLx(GRobject c)
         gtk_entry_set_text(GTK_ENTRY(lx_lexpr), last_lexpr);
     gtk_combo_box_set_active(GTK_COMBO_BOX(lx_depth), depth_hst);
     if (create_mode == CLdefault) {
-        GRX->SetStatus(lx_deflt, true);
-        GRX->SetStatus(lx_join, false);
-        GRX->SetStatus(lx_split_h, false);
-        GRX->SetStatus(lx_split_v, false);
+        GTKdev::SetStatus(lx_deflt, true);
+        GTKdev::SetStatus(lx_join, false);
+        GTKdev::SetStatus(lx_split_h, false);
+        GTKdev::SetStatus(lx_split_v, false);
     }
     else if (create_mode == CLsplitH) {
-        GRX->SetStatus(lx_deflt, false);
-        GRX->SetStatus(lx_join, false);
-        GRX->SetStatus(lx_split_h, true);
-        GRX->SetStatus(lx_split_v, false);
+        GTKdev::SetStatus(lx_deflt, false);
+        GTKdev::SetStatus(lx_join, false);
+        GTKdev::SetStatus(lx_split_h, true);
+        GTKdev::SetStatus(lx_split_v, false);
     }
     else if (create_mode == CLsplitV) {
-        GRX->SetStatus(lx_deflt, false);
-        GRX->SetStatus(lx_join, false);
-        GRX->SetStatus(lx_split_h, false);
-        GRX->SetStatus(lx_split_v, true);
+        GTKdev::SetStatus(lx_deflt, false);
+        GTKdev::SetStatus(lx_join, false);
+        GTKdev::SetStatus(lx_split_h, false);
+        GTKdev::SetStatus(lx_split_v, true);
     }
     else {
-        GRX->SetStatus(lx_deflt, false);
-        GRX->SetStatus(lx_join, true);
-        GRX->SetStatus(lx_split_h, false);
-        GRX->SetStatus(lx_split_v, false);
+        GTKdev::SetStatus(lx_deflt, false);
+        GTKdev::SetStatus(lx_join, true);
+        GTKdev::SetStatus(lx_split_h, false);
+        GTKdev::SetStatus(lx_split_v, false);
     }
-    GRX->SetStatus(lx_fast, fast_mode);
-    GRX->SetStatus(lx_merge, use_merge);
-    GRX->SetStatus(lx_recurse, do_recurse);
-    GRX->SetStatus(lx_noclear, noclear);
+    GTKdev::SetStatus(lx_fast, fast_mode);
+    GTKdev::SetStatus(lx_merge, use_merge);
+    GTKdev::SetStatus(lx_recurse, do_recurse);
+    GTKdev::SetStatus(lx_noclear, noclear);
     update();
 }
 
@@ -538,7 +538,7 @@ sLx::~sLx()
     delete [] sLx::last_lexpr;
     sLx::last_lexpr = lstring::copy(s);
     if (lx_caller)
-        GRX->Deselect(lx_caller);
+        GTKdev::Deselect(lx_caller);
     if (lx_save_menu) {
         g_object_unref(lx_save_menu);
         gtk_widget_destroy(lx_save_menu);
@@ -560,17 +560,17 @@ sLx::update()
     if (s) {
         double d = atof(s);
         if (d == 0.0) {
-            GRX->SetStatus(lx_none, true);
+            GTKdev::SetStatus(lx_none, true);
             sb_part.set_sensitive(false, true);
         }
         else {
-            GRX->SetStatus(lx_none, false);
+            GTKdev::SetStatus(lx_none, false);
             sb_part.set_sensitive(true);
             sb_part.set_value(d);
         }
     }
     else {
-        GRX->SetStatus(lx_none, false);
+        GTKdev::SetStatus(lx_none, false);
         sb_part.set_sensitive(true);
         sb_part.set_value(DEF_GRD_PART_SIZE);
     }
@@ -606,7 +606,7 @@ sLx::lx_action(GtkWidget *caller, void*)
     if (!strcmp(name, "Help"))
         DSPmainWbag(PopUpHelp("xic:lexpr"))
     else if (!strcmp(name, "None")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             Lx->lx_last_part_size = Lx->sb_part.get_value();
             CDvdb()->setVariable(VA_PartitionSize, "0");
         }
@@ -614,29 +614,29 @@ sLx::lx_action(GtkWidget *caller, void*)
             Lx->sb_part.set_value(Lx->lx_last_part_size);
     }
     else if (!strcmp(name, "Recurse"))
-        do_recurse = GRX->GetStatus(caller);
+        do_recurse = GTKdev::GetStatus(caller);
     else if (!strcmp(name, "NoClear"))
-        noclear = GRX->GetStatus(caller);
+        noclear = GTKdev::GetStatus(caller);
     else if (!strcmp(name, "Default")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             create_mode = CLdefault;
     }
     else if (!strcmp(name, "Join")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             create_mode = CLjoin;
     }
     else if (!strcmp(name, "SplitH")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             create_mode = CLsplitH;
     }
     else if (!strcmp(name, "SplitV")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             create_mode = CLsplitV;
     }
     else if (!strcmp(name, "Merge"))
-        use_merge = GRX->GetStatus(caller);
+        use_merge = GTKdev::GetStatus(caller);
     else if (!strcmp(name, "Fast"))
-        fast_mode = GRX->GetStatus(caller);
+        fast_mode = GTKdev::GetStatus(caller);
     else if (!strcmp(name, "Evaluate")) {
         const char *s = gtk_entry_get_text(GTK_ENTRY(Lx->lx_tolayer));
         char *lname = lstring::gettok(&s);
@@ -723,7 +723,7 @@ namespace {
     {
         *pushin = true;
         GtkWidget *btn = GTK_WIDGET(data);
-        GRX->Location(btn, x, y);
+        GTKdev::self()->Location(btn, x, y);
     }
 }
 

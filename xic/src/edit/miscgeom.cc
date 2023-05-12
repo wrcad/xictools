@@ -72,7 +72,7 @@ cEdit::createLayerCmd(const char *expr, int depth, int flags)
         return;
     }
     Tdbg()->start_timing("create_layer");
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     PL()->ShowPrompt("Working...");
     if (undoable)
         Ulist()->ListCheck("layer", cursd, false);
@@ -85,7 +85,7 @@ cEdit::createLayerCmd(const char *expr, int depth, int flags)
     }
     else if (ret == XIbad)
         PL()->ShowPrompt("Operation FAILED.");
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     Tdbg()->print_accum(TDB_ALL_ACCUM);
     Tdbg()->stop_timing("create_layer");
 }

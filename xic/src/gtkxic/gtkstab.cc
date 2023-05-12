@@ -96,7 +96,7 @@ using namespace gtkstab;
 void
 cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Tb;
@@ -118,7 +118,8 @@ cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Tb->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Tb->Shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), Tb->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Tb->Shell());
 }
 
@@ -238,7 +239,7 @@ sTb::~sTb()
     Tb = 0;
     stringlist::destroy(tb_namelist);
     if (tb_caller)
-        GRX->Deselect(tb_caller);
+        GTKdev::Deselect(tb_caller);
 }
 
 

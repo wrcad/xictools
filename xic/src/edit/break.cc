@@ -331,7 +331,7 @@ BreakState::undo()
                 SetLevel2(true);
                 return;
             }
-            dspPkgIf()->RegisterTimeoutProc(1500, MsgTimeout, 0);
+            DSPpkg::self()->RegisterTimeoutProc(1500, MsgTimeout, 0);
         }
     }
     else {
@@ -368,7 +368,7 @@ BreakState::redo()
         }
         else {
             cEventHdlr::sel_redo();
-            dspPkgIf()->RegisterTimeoutProc(1500, MsgTimeout, 0);
+            DSPpkg::self()->RegisterTimeoutProc(1500, MsgTimeout, 0);
         }
     }
     else {

@@ -98,7 +98,7 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
     const char *chdname, int x, int y,
     bool(*callback)(const char*, bool, void*), void *arg)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Cs;
@@ -275,7 +275,7 @@ sCs::~sCs()
     Cs = 0;
     delete cs_llist;
     if (cs_caller)
-        GRX->Deselect(cs_caller);
+        GTKdev::Deselect(cs_caller);
     if (cs_popup)
         gtk_widget_destroy(cs_popup);
 }
@@ -301,9 +301,10 @@ sCs::button_hdlr(GtkWidget *widget)
 {
     int ret = true;
     if (cs_callback && widget == cs_apply) {
-        GRX->Deselect(widget);
+        GTKdev::Deselect(widget);
         char *string = gtk_editable_get_chars(GTK_EDITABLE(cs_text), 0, -1);
-        ret = (*cs_callback)(string, GRX->GetStatus(cs_geom), cs_arg);
+        ret = (*cs_callback)(string, GTKdev::GetStatus(cs_geom),
+            cs_arg);
         free(string);
     }
     if (ret)
@@ -334,7 +335,7 @@ sCs::cs_action(GtkWidget *caller, void*)
         Cs->button_hdlr(caller);
     else if (!strcmp(name, "Geom"))
         gtk_widget_set_sensitive(Cs->cs_llist->frame(),
-            GRX->GetStatus(caller));
+            GTKdev::GetStatus(caller));
 }
 
 

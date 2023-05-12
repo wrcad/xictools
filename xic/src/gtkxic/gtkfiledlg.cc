@@ -103,7 +103,7 @@ sSFD::SaveFileDlg(const char *prompt, const char *fnamein)
     fs->register_usrptr((void**)&sfd_fsel);
 
     if (sfd_fsel) {
-        GRX->SetPopupLocation(GRloc(LW_LL), sfd_fsel,
+        GTKdev::self()->SetPopupLocation(GRloc(LW_LL), sfd_fsel,
             GTKmainwin::self()->Viewport());
         gtk_window_set_transient_for(GTK_WINDOW(sfd_fsel),
             GTK_WINDOW(GTKmainwin::self()->Shell()));
@@ -144,7 +144,7 @@ sSFD::OpenFileDlg(const char *prompt, const char *fnamein)
     fs->register_usrptr((void**)&sfd_fsel);
 
     if (sfd_fsel) {
-        GRX->SetPopupLocation(GRloc(LW_LL), sfd_fsel,
+        GTKdev::self()->SetPopupLocation(GRloc(LW_LL), sfd_fsel,
             GTKmainwin::self()->Viewport());
         gtk_window_set_transient_for(GTK_WINDOW(sfd_fsel),
             GTK_WINDOW(GTKmainwin::self()->Shell()));
@@ -223,7 +223,7 @@ sSFD::go_cb(const char*, void*)
 char *
 cMain::SaveFileDlg(const char *prompt, const char *fnamein)
 {
-    if (!GRX)
+    if (!GTKdev::exists())
         return (0);
     xm_htext_cnames_only = true;
     char *ret = SFD.SaveFileDlg(prompt, fnamein);
@@ -237,7 +237,7 @@ cMain::SaveFileDlg(const char *prompt, const char *fnamein)
 char *
 cMain::OpenFileDlg(const char *prompt, const char *fnamein)
 {
-    if (!GRX)
+    if (!GTKdev::exists())
         return (0);
     xm_htext_cnames_only = true;
     char *ret = SFD.OpenFileDlg(prompt, fnamein);
@@ -251,7 +251,7 @@ cMain::OpenFileDlg(const char *prompt, const char *fnamein)
 void
 cMain::PopUpFileSel(const char *root, void(*cb)(const char*, void*), void *arg)
 {
-    if (!GRX)
+    if (!GTKdev::exists())
         return;
     static int posn_cnt;
 

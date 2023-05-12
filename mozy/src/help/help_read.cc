@@ -623,7 +623,7 @@ cHelp::open(const char *keyword, HLPent **pb)
     if (bb) {
         fp = fopen(bb->filename, "rb");
         if (!fp) {
-            GRpkgIf()->Perror(bb->filename);
+            GRpkg::self()->Perror(bb->filename);
             return (0);
         }
         *pb = bb;
@@ -918,7 +918,7 @@ HLPdirList::init()
 {
     DIR *wdir;
     if (!(wdir = opendir(hd_dir))) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "can't open help database directory %s.\n", hd_dir);
         return;
     }
@@ -968,7 +968,7 @@ HLPdirList::read_file(const char *fnamein)
     char *fname = hd_files->string;
     FILE *fp = fopen(fname, "rb");
     if (!fp) {
-        GRpkgIf()->Perror(fnamein);
+        GRpkg::self()->Perror(fnamein);
         return;
     }
     if (!hd_base) {
@@ -1065,7 +1065,7 @@ HLPdirList::read_file(const char *fnamein)
                     if (!strcmp(okw, bb->keyword))
                         break;
                 if (bb) {
-                    GRpkgIf()->ErrPrintf(ET_WARN,
+                    GRpkg::self()->ErrPrintf(ET_WARN,
                         "help database keyword clash for %s.\n", okw);
                     delete [] okw;
                     delete [] nkw;
@@ -1081,7 +1081,7 @@ HLPdirList::read_file(const char *fnamein)
                     if (!strcmp(okw, h->key))
                         break;
                 if (h) {
-                    GRpkgIf()->ErrPrintf(ET_WARN,
+                    GRpkg::self()->ErrPrintf(ET_WARN,
                         "help database keyword clash for %s.\n", okw);
                     delete [] okw;
                     delete [] nkw;
@@ -1148,7 +1148,7 @@ HLPdirList::read_file(const char *fnamein)
                         if (!strcmp(s, bb->keyword))
                             break;
                     if (bb) {
-                        GRpkgIf()->ErrPrintf(ET_WARN,
+                        GRpkg::self()->ErrPrintf(ET_WARN,
                             "help database keyword clash for %s.\n", s);
                         delete [] s;
                         continue;

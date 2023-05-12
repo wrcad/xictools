@@ -712,9 +712,9 @@ namespace {
                     delete [] cellname;
                     return (true);
                 }
-                dspPkgIf()->SetWorking(true);
+                DSPpkg::self()->SetWorking(true);
                 chd = chd_in.read(infile, sCHDin::get_default_cgd_type());
-                dspPkgIf()->SetWorking(false);
+                DSPpkg::self()->SetWorking(false);
                 if (!chd) {
                     PL()->ShowPrompt("Read error occurred.");
                     delete [] infile;

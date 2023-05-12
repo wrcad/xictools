@@ -157,11 +157,11 @@ namespace {
 
         gtk_window_set_transient_for(GTK_WINDOW(FL()->Shell()),
             GTK_WINDOW(GTKmainwin::self()->Shell()));
-        GRX->SetPopupLocation(GRloc(), FL()->Shell(),
+        GTKdev::self()->SetPopupLocation(GRloc(), FL()->Shell(),
             GTKmainwin::self()->Viewport());
         gtk_widget_show(FL()->Shell());
 
-        dspPkgIf()->SetWorking(false);
+        GTKpkg::self()->SetWorking(false);
         return (0);
     }
 }
@@ -171,7 +171,7 @@ void
 cConvert::PopUpFiles(GRobject caller, ShowMode mode)
 {
     static bool lockout;
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         // Make sure we aren't reentered from destructor code.  This
@@ -193,7 +193,7 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
         return;
 
     // This is needed to reliable show the busy cursor.
-    dspPkgIf()->SetWorking(true);
+    GTKpkg::self()->SetWorking(true);
     g_timeout_add(500, msw_timeout, caller);
 
     /****
@@ -201,7 +201,7 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
 
     gtk_window_set_transient_for(GTK_WINDOW(FL()->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
-    GRX->SetPopupLocation(GRloc(), FL()->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), FL()->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(FL()->Shell());
     ****/
@@ -233,7 +233,7 @@ sFL::~sFL()
     if (fl_caller) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(fl_caller),
             (gpointer)fl_down_cb, this);
-        GRX->Deselect(fl_caller);
+        GTKdev::Deselect(fl_caller);
     }
     if (fl_content_pop)
         fl_content_pop->popdown();
@@ -309,12 +309,12 @@ void
 sFL::action_hdlr(GtkWidget *caller)
 {
     if (!wb_textarea) {
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         return;
     }
     const char *wname = gtk_widget_get_name(caller);
     if (!wname) {
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         return;
     }
 
@@ -323,7 +323,7 @@ sFL::action_hdlr(GtkWidget *caller)
     // cells.
     //
     if (!strcmp(wname, FB_OPEN)) {
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         if (fl_selection) {
             fl_noupdate = 1;
             EV()->InitCallback();
@@ -338,7 +338,7 @@ sFL::action_hdlr(GtkWidget *caller)
         }
     }
     else if (!strcmp(wname, FB_PLACE)) {
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         if (fl_selection) {
             fl_noupdate = 1;
             EV()->InitCallback();
@@ -353,11 +353,11 @@ sFL::action_hdlr(GtkWidget *caller)
         }
     }
     else if (!strcmp(wname, FB_CONTENT)) {
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         show_content();
     }
     else if (!strcmp(wname, FB_HELP)) {
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         DSPmainWbag(PopUpHelp("filespanel"))
     }
 }
@@ -665,10 +665,10 @@ sFL::set_sensitive(const char *bname, bool state)
 sPathList *
 sFL::fl_listing(int cols)
 {
-    dspPkgIf()->SetWorking(true);
+    GTKpkg::self()->SetWorking(true);
     sPathList *l = new sPathList(FIO()->PGetPath(), fl_is_symfile, nofiles_msg,
         0, 0, cols, false);
-    dspPkgIf()->SetWorking(false);
+    GTKpkg::self()->SetWorking(false);
     return (l);
 }
 

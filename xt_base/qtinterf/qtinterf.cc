@@ -46,6 +46,7 @@
 #include "qtlist.h"
 #include "qtfont.h"
 #include "qtmsg.h"
+#include "qttext.h"
 #include "qtnumer.h"
 #include "qthcopy.h"
 #include "qtedit.h"
@@ -54,6 +55,8 @@
 #include "help/help_defs.h"
 
 #include <QApplication>
+#include <QAction>
+#include <QPushButton>
 
 
 // Device-dependent setup.
@@ -62,14 +65,14 @@ void
 GRpkg::DevDepInit(unsigned int cfg)
 {
     if (cfg & _devQT_)
-        GRpkgIf()->RegisterDevice(new QTdev);
+        GRpkg::self()->RegisterDevice(new QTdev);
 }
 
 
 //-----------------------------------------------------------------------------
 // QTdev methods
 
-QTdev * QTdev::instancePtr = 0;
+QTdev *QTdev::instancePtr = 0;
 
 QTdev::QTdev()
 {
@@ -105,6 +108,7 @@ QTdev::on_null_ptr()
     fprintf(stderr, "Singleton class QTdev used before insgtantiated.\n");
     exit(1);
 }
+
 
 bool
 QTdev::Init(int *argc, char **argv)
@@ -248,7 +252,7 @@ GRwbag *
 QTdev::NewWbag(const char*, GRwbag *reuse)
 {
     if (!reuse)
-        reuse = new QTbag(0);
+        reuse = new QTbag();
     return (reuse);
 }
 
@@ -258,8 +262,6 @@ QTdev::NewWbag(const char*, GRwbag *reuse)
 int
 QTdev::AddTimer(int ms, int(*cb)(void*), void *arg)
 {
-//XXX
-printf("new timer\n");
     dv_timers = new interval_timer(cb, arg, dv_timers, 0);
     dv_timers->set_use_return(true);
     dv_timers->register_list(&dv_timers);
@@ -346,14 +348,14 @@ QTdev::BreakLoop()
 void
 QTdev::HCmessage(const char *str)
 {
-    if (GRpkgIf()->MainWbag()) {
-        QTbag *w = dynamic_cast<QTbag*>(GRpkgIf()->MainWbag());
-        if (w && w->hc) {
-            if (GRpkgIf()->CheckForEvents()) {
-                GRpkgIf()->HCabort("User aborted");
+    if (GRpkg::self()->MainWbag()) {
+        QTbag *w = dynamic_cast<QTbag*>(GRpkg::self()->MainWbag());
+        if (w && w->HC()) {
+            if (GRpkg::self()->CheckForEvents()) {
+                GRpkg::self()->HCabort("User aborted");
                 str = "ABORTED";
             }
-            w->hc->set_message(str);
+            w->HC()->set_message(str);
         }
     }
 }
@@ -363,310 +365,33 @@ QTdev::HCmessage(const char *str)
 // Remaining functions are unique to class.
 //
 
-// Return the connection file descriptor.
-//
-int
-QTdev::ConnectFd()
-{
-    return (-1);
-}
-
-
-// Set the state of btn to unselected, suppress the signal.
-//
-void
-QTdev::Deselect(GRobject btn)
-{
-    if (!btn)
-        return;
-    /*
-    if (GTK_IS_TOGGLE_BUTTON(btn)) {
-        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn))) {
-            g_signal_connect(G_OBJECT(btn), "toggled",
-                G_CALLBACK(toggle_btn_hdlr), (gpointer)0);
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), 0);
-        }
-    }
-    else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
-        if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn))) {
-            g_signal_connect(G_OBJECT(btn), "toggled",
-                G_CALLBACK(toggle_menu_hdlr), (gpointer)0);
-            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), 0);
-        }
-    }
-    */
-}
-
-
-// Set the state of btn to selected, suppress the signal.
-//
-void
-QTdev::Select(GRobject btn)
-{
-    if (!btn)
-        return;
-    /*
-    if (GTK_IS_TOGGLE_BUTTON(btn)) {
-        if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn))) {
-            g_signal_connect(G_OBJECT(btn), "toggled",
-                G_CALLBACK(toggle_btn_hdlr), (gpointer)0);
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), 1);
-        }
-    }
-    else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
-        if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn))) {
-            g_signal_connect(G_OBJECT(btn), "toggled",
-                G_CALLBACK(toggle_menu_hdlr), (gpointer)0);
-            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), 1);
-        }
-    }
-    */
-}
-
-
-// Return the status of btn.
-//
-bool
-QTdev::GetStatus(GRobject btn)
-{
-    /*
-    if (!btn)
-        return (false);
-    if (GTK_IS_TOGGLE_BUTTON(btn))
-        return (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn)));
-    if (GTK_IS_CHECK_MENU_ITEM(btn))
-        return (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn)));
-    */
-    return (true);
-}
-
-
-// Set the status of btn, suppress the signal.
-//
-void
-QTdev::SetStatus(GRobject btn, bool state)
-{
-    if (!btn)
-        return;
-    /*
-    if (GTK_IS_TOGGLE_BUTTON(btn)) {
-        bool cur = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
-        if (cur != state) {
-            g_signal_connect(G_OBJECT(btn), "toggled",
-                G_CALLBACK(toggle_btn_hdlr), (gpointer)0);
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), state);
-        }
-    }
-    else if (GTK_IS_CHECK_MENU_ITEM(btn)) {
-        bool cur = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn));
-        if (cur != state) {
-            g_signal_connect(G_OBJECT(btn), "toggled",
-                G_CALLBACK(toggle_menu_hdlr), (gpointer)0);
-            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), state);
-        }
-    }
-    */
-}
-
-
-void
-QTdev::CallCallback(GRobject obj)
-{
-    /*
-    if (!obj)
-        return;
-    if (!IsSensitive(obj))
-        return;
-    if (GTK_IS_BUTTON(obj) || GTK_IS_TOGGLE_BUTTON(obj) ||
-            GTK_IS_RADIO_BUTTON(obj))
-        gtk_button_clicked(GTK_BUTTON(obj));
-    else if (GTK_IS_MENU_ITEM(obj) || GTK_IS_CHECK_MENU_ITEM(obj) ||
-            GTK_IS_RADIO_MENU_ITEM(obj))
-        gtk_menu_item_activate(GTK_MENU_ITEM(obj));
-    */
-}
-
-
 // Return the root window coordinates x+width, y of obj.
 //
 void
-QTdev::Location(GRobject obj, int *x, int *y)
+QTdev::Location(GRobject obj, int *xx, int *yy)
 {
-    *x = 0;
-    *y = 0;
-    /*
-    if (obj && gtk_widget_get_window(GTK_WIDGET(obj))) {
-        GdkWindow *wnd = gtk_widget_get_parent_window(GTK_WIDGET(obj));
-        int rx, ry;
-        gdk_window_get_origin(wnd, &rx, &ry);
-        GtkAllocation a;
-        gtk_widget_get_allocation(GTK_WIDGET(obj), &a);
-        *x = rx + a.x + a.width;
-        *y = ry + a.y;
-        return;
-    }
-    GtkWidget *w = GTK_WIDGET(obj);
-    while (w && gtk_widget_get_parent(w))
-        w = gtk_widget_get_parent(w);
-    if (gtk_widget_get_window(w)) {
-        int rx, ry;
-        gdk_window_get_origin(gtk_widget_get_window(w), &rx, &ry);
-        if (x)
-            *x = rx + 50;
-        if (y)
-            *y = ry + 50;
-        return;
-    }
-    if (dv_default_focus_win) {
-        int rx, ry;
-        gdk_window_get_origin(dv_default_focus_win, &rx, &ry);
-        if (x)
-            *x = rx + 100;
-        if (y)
-            *y = ry + 300;
-    }
-    */
-}
-
-
-// Return the pointer position in root window coordinates
-//
-void
-QTdev::PointerRootLoc(int *x, int *y)
-{
-    /*
-    GdkModifierType state;
-    GdkWindow *window = gdk_get_default_root_window();
-    gdk_window_get_pointer(window, x, y, &state);
-    */
-}
-
-
-// Return the label string of the button, accelerators stripped.  Do not
-// free the return.
-//
-const char *
-QTdev::GetLabel(GRobject btn)
-{
-    /*
-    if (!btn)
-        return (0);
-    const char *string = 0;
-    GtkWidget *child = gtk_bin_get_child(GTK_BIN(btn));
-    if (!child)
-        return (0);
-    if (GTK_IS_LABEL(child))
-        string = gtk_label_get_label(GTK_LABEL(child));
-    else if (GTK_IS_CONTAINER(child)) {
-        GList *stuff = gtk_container_get_children(GTK_CONTAINER(child));
-        for (GList *a = stuff; a; a = a->next) {
-            GtkWidget *item = (GtkWidget*)a->data;
-            if (GTK_IS_LABEL(item)) {
-                string = gtk_label_get_label(GTK_LABEL(item));
-                break;
-            }
-        }
-        g_list_free(stuff);
-    }
-    return (string);
-    */
-    return (0);
-}
-
-
-// Set the label of the button
-//
-void
-QTdev::SetLabel(GRobject btn, const char *text)
-{
-    /*
-    if (!btn)
-        return;
-    GtkWidget *child = gtk_bin_get_child(GTK_BIN(btn));
-    if (!child)
-        return;
-    if (GTK_IS_LABEL(child))
-        gtk_label_set_text(GTK_LABEL(child), text);
-    else if (GTK_IS_CONTAINER(child)) {
-        GList *stuff = gtk_container_get_children(GTK_CONTAINER(child));
-        for (GList *a = stuff; a; a = a->next) {
-            GtkWidget *item = (GtkWidget*)a->data;
-            if (GTK_IS_LABEL(item)) {
-                gtk_label_set_text(GTK_LABEL(item), text);
-                break;
-            }
-        }
-        g_list_free(stuff);
-    }
-    */
-}
-
-
-void
-QTdev::SetSensitive(GRobject obj, bool sens_state)
-{
-    /*
-    if (obj)
-        gtk_widget_set_sensitive((GtkWidget*)obj, sens_state);
-    */
-}
-
-
-bool
-QTdev::IsSensitive(GRobject obj)
-{
-    /*
-    if (!obj)
-        return (false);
-    GtkWidget *w = GTK_WIDGET(obj);
-    while (w) {
-        if (!gtk_widget_get_sensitive(w))
-            return (false);
-        w = gtk_widget_get_parent(w);
-    }
-    */
-    return (true);
-}
-
-
-void
-QTdev::SetVisible(GRobject obj, bool vis_state)
-{
-    /*
     if (obj) {
-        if (vis_state)
-            gtk_widget_show((GtkWidget*)obj);
-        else
-            gtk_widget_hide((GtkWidget*)obj);
+        QObject *o = (QObject*)obj;
+        if (o->isWidgetType()) {
+            QPushButton *btn = dynamic_cast<QPushButton*>(o);
+            if (btn) {
+                QPoint pt = btn->mapToGlobal(QPoint(0, 0));
+                *xx = pt.x() + btn->width();
+                *yy = pt.y();
+                return;
+            }
+        }
+        else {
+            /*
+            QAction *a = dynamic_cast<QAction*>(o);
+            if (a)
+                a->activate(QAction::Trigger);
+            */
+            // How to get menu item position?
+        }
     }
-    */
-}
-
-
-bool
-QTdev::IsVisible(GRobject obj)
-{
-    /*
-    if (!obj)
-        return (false);
-    GtkWidget *w = GTK_WIDGET(obj);
-    while (w) {
-        if (!gtk_widget_get_mapped(w))
-            return (false);
-        w = gtk_widget_get_parent(w);
-    }
-    */
-    return (true);
-}
-
-
-void
-QTdev::DestroyButton(GRobject obj)
-{
-    /*
-    if (obj)
-        gtk_widget_destroy(GTK_WIDGET(obj));
-    */
+    *xx = 0;
+    *yy = 0;
 }
 
 
@@ -756,36 +481,331 @@ QTdev::ComputePopupLocation(GRloc loc, QWidget *widget, QWidget *shell,
         *py = loc.ypos;
     }
 }
+
+
+// Static function.
+// Set the state of obj to unselected, suppress the signal.
+//
+void
+QTdev::Deselect(GRobject obj)
+{
+    QObject *o = (QObject*)obj;
+    if (!o)
+        return;
+    if (o->isWidgetType()) {
+        QPushButton *btn = dynamic_cast<QPushButton*>(o);
+        if (btn && btn->isCheckable())
+            btn->setChecked(false);
+    }
+    else {
+        QAction *a = dynamic_cast<QAction*>(o);
+        if (a && a->isCheckable())
+            a->setChecked(false);
+    }
+}
+
+
+// Static function.
+// Set the state of obj to selected, suppress the signal.
+//
+void
+QTdev::Select(GRobject obj)
+{
+    QObject *o = (QObject*)obj;
+    if (!o)
+        return;
+    if (o->isWidgetType()) {
+        QPushButton *btn = dynamic_cast<QPushButton*>(o);
+        if (btn && btn->isCheckable())
+            btn->setChecked(true);
+    }
+    else {
+        QAction *a = dynamic_cast<QAction*>(o);
+        if (a && a->isCheckable())
+            a->setChecked(true);
+    }
+}
+
+
+// Static function.
+// Return the status of obj.
+//
+bool
+QTdev::GetStatus(GRobject obj)
+{
+    QObject *o = (QObject*)obj;
+    if (o) {
+        if (o->isWidgetType()) {
+            QPushButton *btn = dynamic_cast<QPushButton*>(o);
+            if (btn && btn->isCheckable())
+                return (btn->isChecked());
+        }
+        else {
+            QAction *a = dynamic_cast<QAction*>(o);
+            if (a && a->isCheckable())
+                return (a->isChecked());
+        }
+    }
+    return (false);
+}
+
+
+// Static function.
+// Set the status of obj, suppress the signal.
+//
+void
+QTdev::SetStatus(GRobject obj, bool state)
+{
+    QObject *o = (QObject*)obj;
+    if (!o)
+        return;
+    if (o->isWidgetType()) {
+        QPushButton *btn = dynamic_cast<QPushButton*>(o);
+        if (btn && btn->isCheckable())
+            btn->setChecked(state);
+    }
+    else {
+        QAction *a = dynamic_cast<QAction*>(o);
+        if (a && a->isCheckable())
+            a->setChecked(state);
+    }
+}
+
+
+// Static function.
+void
+QTdev::CallCallback(GRobject obj)
+{
+    QObject *o = (QObject*)obj;
+    if (!o)
+        return;
+    if (!IsSensitive(obj))
+        return;
+    if (o->isWidgetType()) {
+        QPushButton *btn = dynamic_cast<QPushButton*>(o);
+        if (btn)
+            btn->click();
+    }
+    else {
+        QAction *a = dynamic_cast<QAction*>(o);
+        if (a)
+            a->trigger();
+    }
+}
+
+
+// Static function.
+// Return the label string of the button, accelerators stripped.  Do not
+// free the return.
+//
+const char *
+QTdev::GetLabel(GRobject obj)
+{
+    static char buf[32];
+    if (obj) {
+        QObject *o = (QObject*)obj;
+        QString qs;
+        if (o->isWidgetType()) {
+            QPushButton *btn = dynamic_cast<QPushButton*>(o);
+            if (btn)
+                qs = btn->text();
+        }
+        else {
+            QAction *a = dynamic_cast<QAction*>(o);
+            if (a)
+                qs = a->text();
+        }
+        int n = qs.size();
+        if (n > 0) {
+            // Need to strip the '&' if present.
+            QByteArray b = qs.toLatin1();
+            int i = 0;
+            for (int j = 0; j < n; j++) {
+                if (b[j] != '&') {
+                    buf[i++] = b[j];
+                    if (i == sizeof(buf)-1)
+                        break;
+                }
+            }
+            buf[i] = 0;
+            return (buf);
+        }
+    }
+    return (0);
+}
+
+
+// Static function.
+// Set the label of the button
+//
+void
+QTdev::SetLabel(GRobject obj, const char *text)
+{
+    QObject *o = (QObject*)obj;
+    if (!o)
+        return;
+    if (o->isWidgetType()) {
+        QPushButton *btn = dynamic_cast<QPushButton*>(o);
+        if (btn)
+            btn->setText(text);
+    }
+    else {
+        QAction *a = dynamic_cast<QAction*>(o);
+        if (a)
+            a->setText(text);
+    }
+}
+
+
+// Static function.
+void
+QTdev::SetSensitive(GRobject obj, bool sens_state)
+{
+    QObject *o = (QObject*)obj;
+    if (!o)
+        return;
+    if (o->isWidgetType()) {
+        QPushButton *btn = dynamic_cast<QPushButton*>(o);
+        if (btn)
+            btn->setEnabled(sens_state);
+    }
+    else {
+        QAction *a = dynamic_cast<QAction*>(o);
+        if (a)
+            a->setEnabled(sens_state);
+    }
+}
+
+
+// Static function.
+bool
+QTdev::IsSensitive(GRobject obj)
+{
+    QObject *o = (QObject*)obj;
+    if (!o)
+        return (false);
+    if (o->isWidgetType()) {
+        QPushButton *btn = dynamic_cast<QPushButton*>(o);
+        if (btn)
+            return (btn->isEnabled());
+    }
+    else {
+        QAction *a = dynamic_cast<QAction*>(o);
+        if (a)
+            return (a->isEnabled());
+    }
+    return (false);
+}
+
+
+// Static function.
+void
+QTdev::SetVisible(GRobject obj, bool vis_state)
+{
+    QObject *o = (QObject*)obj;
+    if (!o)
+        return;
+    if (o->isWidgetType()) {
+        QPushButton *btn = dynamic_cast<QPushButton*>(o);
+        if (btn) {
+            if (vis_state)
+                btn->show();
+            else
+                btn->hide();
+        }
+    }
+    else {
+        QAction *a = dynamic_cast<QAction*>(o);
+        if (a)
+            a->setVisible(vis_state);
+    }
+}
+
+
+// Static function.
+bool
+QTdev::IsVisible(GRobject obj)
+{
+    QObject *o = (QObject*)obj;
+    if (!o)
+        return (false);
+    if (o->isWidgetType()) {
+        QPushButton *btn = dynamic_cast<QPushButton*>(o);
+        if (btn)
+            return (btn->isVisible());
+    }
+    else {
+        QAction *a = dynamic_cast<QAction*>(o);
+        if (a)
+            return (a->isVisible());
+    }
+    return (false);
+}
+
+
+// Static function.
+void
+QTdev::DestroyButton(GRobject obj)
+{
+    QObject *o = (QObject*)obj;
+    delete o;
+}
+
+
+// Static function.
+// Return the connection file descriptor.
+//
+int
+QTdev::ConnectFd()
+{
+    return (-1);
+}
+
+
+// Static function.
+// Return the pointer position in root window coordinates
+//
+void
+QTdev::PointerRootLoc(int *xx, int *yy)
+{
+    QPoint ptg(QCursor::pos());
+    if (xx)
+        *xx = ptg.x();
+    if (yy)
+        *yy = ptg.y();
+}
 // End of QTdev functions.
 
 
 //-----------------------------------------------------------------------------
 // QTbag methods
 
-QTbag::QTbag(QWidget *w)
+QTbag::QTbag()
 {
-    shell = w;
-    input = 0;
-    message = 0;
-    info = 0;
-    info2 = 0;
-    htinfo = 0;
-    error = 0;
-    fontsel = 0;
-    hc = 0;
-    call_data = 0;
-    sens_set = 0;
-    err_cnt = 1;
-    info_cnt = 1;
-    info2_cnt = 1;
-    htinfo_cnt = 1;
+    wb_shell = 0;
+    wb_input = 0;
+    wb_message = 0;
+    wb_info = 0;
+    wb_info2 = 0;
+    wb_htinfo = 0;
+    wb_warning = 0;
+    wb_error = 0;
+    wb_fontsel = 0;
+    wb_hc = 0;
+    wb_call_data = 0;
+    wb_sens_set = 0;
+    wb_warn_cnt = 1;
+    wb_err_cnt = 1;
+    wb_info_cnt = 1;
+    wb_info2_cnt = 1;
+    wb_htinfo_cnt = 1;
 }
 
 QTbag::~QTbag()
 {
     ClearPopups();
     HcopyDisableMsgs();
-    delete hc;
+    delete wb_hc;
 }
 
 // NOTE:
@@ -798,10 +818,10 @@ QTbag::~QTbag()
 void
 QTbag::Title(const char *title, const char *icontitle)
 {
-    if (title && shell)
-        shell->setWindowTitle(QString(title));
-    if (icontitle && shell)
-        shell->setWindowIconText(QString(icontitle));
+    if (title && wb_shell)
+        wb_shell->setWindowTitle(QString(title));
+    if (icontitle && wb_shell)
+        wb_shell->setWindowIconText(QString(icontitle));
 }
 
 
@@ -903,7 +923,7 @@ QTbag::PopUpMail(const char *subject, const char *mailaddr,
         text->set_mailaddr(mailaddr);
     text->register_quit_callback(downproc);
     text->set_visible(true);
-    QTdev::self()->SetPopupLocation(loc, text, shell);
+    QTdev::self()->SetPopupLocation(loc, text, wb_shell);
     return (text);
 }
 
@@ -924,19 +944,19 @@ QTbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
     const char**, const char*)
 {
     if (mode == MODE_ON) {
-        if (fontsel)
+        if (wb_fontsel)
             return;
-        fontsel = new QTfontPopup(this, indx, arg);
-        fontsel->register_caller(caller, false, true);
-        fontsel->show();
-        fontsel->raise();
-        fontsel->activateWindow();
-        QTdev::self()->SetPopupLocation(loc, fontsel, shell);
+        wb_fontsel = new QTfontPopup(this, indx, arg);
+        wb_fontsel->register_caller(caller, false, true);
+        wb_fontsel->show();
+        wb_fontsel->raise();
+        wb_fontsel->activateWindow();
+        QTdev::self()->SetPopupLocation(loc, wb_fontsel, wb_shell);
     }
     else {
-        if (!fontsel)
+        if (!wb_fontsel)
             return;
-        delete fontsel;
+        delete wb_fontsel;
     }
 }
 
@@ -946,21 +966,21 @@ QTbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
 void
 QTbag::PopUpPrint(GRobject, HCcb *cb, HCmode mode, GRdraw*)
 {
-    if (hc) {
-        bool active = !hc->is_active();
-        hc->set_active(active);
-        if (hc->callbacks() && hc->callbacks()->hcsetup)
-            (*hc->callbacks()->hcsetup)(active, hc->format_index(), false, 0);
+    if (wb_hc) {
+        bool active = !wb_hc->is_active();
+        wb_hc->set_active(active);
+        if (wb_hc->callbacks() && wb_hc->callbacks()->hcsetup)
+            (*wb_hc->callbacks()->hcsetup)(active, wb_hc->format_index(), false, 0);
         return;
     }
 
     // This will set this->hc if successful,
     QTprintPopup *pd = new QTprintPopup(cb, mode, this);
 
-    if (!hc)
+    if (!wb_hc)
         delete pd;
     else
-        hc->show();
+        wb_hc->show();
 }
 
 
@@ -970,8 +990,8 @@ QTbag::PopUpPrint(GRobject, HCcb *cb, HCmode mode, GRdraw*)
 void
 QTbag::HCupdate(HCcb *cb, GRobject)
 {
-    if (hc)
-        hc->update(cb);
+    if (wb_hc)
+        wb_hc->update(cb);
 }
 
 
@@ -985,11 +1005,12 @@ QTbag::HCsetFormat(int)
 void
 QTbag::HcopyDisableMsgs()
 {
-    if (hc)
-        hc->disable_progress();
+    if (wb_hc)
+        wb_hc->disable_progress();
 }
 
 
+//XXX rid?
 // This function is called if the main application window is
 // reconfigured.  If the popup is active, true is returned, otherwise
 // false.  The x, y entries set the location, and the wid and hei
@@ -1000,10 +1021,10 @@ QTbag::HcopyLocate(int x, int y, int *wid, int *hei)
 {
     *wid = 0;
     *hei = 0;
-    if (hc && hc->is_active()) {
-        *wid = hc->width();
-        *hei = hc->height();
-        hc->move(x, y);
+    if (wb_hc && wb_hc->is_active()) {
+        *wid = wb_hc->width();
+        *hei = wb_hc->height();
+        wb_hc->move(x, y);
         return (true);
     }
     return (false);
@@ -1019,7 +1040,7 @@ QTbag::PopUpFileSelector(FsMode mode, GRloc loc,
     fsel->register_callback(cb);
     fsel->register_quit_callback(down_cb);
     fsel->set_visible(true);
-    QTdev::self()->SetPopupLocation(loc, fsel, shell);
+    QTdev::self()->SetPopupLocation(loc, fsel, wb_shell);
     return (fsel);
 }
 
@@ -1031,21 +1052,65 @@ QTbag::PopUpFileSelector(FsMode mode, GRloc loc,
 void
 QTbag::ClearPopups()
 {
-    if (message)
-        message->popdown();
-    if (input)
-        input->popdown();
-    if (error)
-        error->popdown();
-    if (info)
-        info->popdown();
-    if (info2)
-        info2->popdown();
-    if (htinfo)
-        htinfo->popdown();
+    if (wb_message)
+        wb_message->popdown();
+    if (wb_input)
+        wb_input->popdown();
+    if (wb_warning)
+        wb_warning->popdown();
+    if (wb_error)
+        wb_error->popdown();
+    if (wb_info)
+        wb_info->popdown();
+    if (wb_info2)
+        wb_info2->popdown();
+    if (wb_htinfo)
+        wb_htinfo->popdown();
     GRpopup *p;
-    while ((p = monitor.first_object()) != 0)
+    while ((p = wb_monitor.first_object()) != 0)
         p->popdown();
+}
+
+
+// Clean up after a pop-up is destroyed, called from destructors.
+//
+void
+QTbag::ClearPopup(GRpopup *popup)
+{
+    MonitorRemove(popup);
+    if (popup == wb_input) {
+        wb_input = 0;
+        if (wb_sens_set)
+            (*wb_sens_set)(this, true, 0);
+    }
+    else if (popup == wb_message) {
+        if (wb_message->is_desens() && wb_input)
+            wb_input->setEnabled(true);
+        wb_message = 0;
+    }
+    else if (popup == wb_info) {
+        wb_info = 0;
+        wb_info_cnt++;
+    }
+    else if (popup == wb_info2) {
+        wb_info2 = 0;
+        wb_info2_cnt++;
+    }
+    else if (popup == wb_htinfo) {
+        wb_htinfo = 0;
+        wb_htinfo_cnt++;
+    }
+    else if (popup == wb_warning) {
+        wb_warning = 0;
+        wb_warn_cnt++;
+    }
+    else if (popup == wb_error) {
+        wb_error = 0;
+        wb_err_cnt++;
+    }
+    else if (popup == wb_fontsel) {
+        wb_fontsel = 0;
+    }
 }
 
 
@@ -1057,7 +1122,7 @@ QTbag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
     affirm->register_caller(caller, false, true);
     affirm->register_callback(action_callback);
     affirm->set_visible(true);
-    QTdev::self()->SetPopupLocation(loc, affirm, shell);
+    QTdev::self()->SetPopupLocation(loc, affirm, wb_shell);
     return (affirm);
 }
 
@@ -1075,7 +1140,7 @@ QTbag::PopUpNumeric(GRobject caller, GRloc loc, const char *prompt_str,
     numer->register_caller(caller, false, true);
     numer->register_callback(action_callback);
     numer->set_visible(true);
-    QTdev::self()->SetPopupLocation(loc, numer, shell);
+    QTdev::self()->SetPopupLocation(loc, numer, wb_shell);
     return (numer);
 }
 
@@ -1108,7 +1173,7 @@ QTbag::PopUpEditString(GRobject caller, GRloc loc, const char *prompt_string,
         textwidth = 150;
     inp->setMinimumWidth(textwidth);
     inp->set_visible(true);
-    QTdev::self()->SetPopupLocation(loc, inp, shell);
+    QTdev::self()->SetPopupLocation(loc, inp, wb_shell);
     return (inp);
 }
 
@@ -1122,48 +1187,47 @@ QTbag::PopUpInput(const char *label_str, const char *initial_str,
     const char *action_str, void(*action_callback)(const char*, void*),
     void *arg, int textwidth)
 {
-    if (input)
-        delete input;
-    input = new QTledPopup(this, label_str, initial_str, action_str, arg,
+    if (wb_input)
+        delete wb_input;
+    wb_input = new QTledPopup(this, label_str, initial_str, action_str, arg,
         false);
-    input->register_callback((GRledPopup::GRledCallback)action_callback);
-    input->set_ignore_return(true);
+    wb_input->register_callback((GRledPopup::GRledCallback)action_callback);
+    wb_input->set_ignore_return(true);
     if (textwidth < 150)
         textwidth = 150;
-    input->setMinimumWidth(textwidth);
-    if (sens_set)
+    wb_input->setMinimumWidth(textwidth);
+    if (wb_sens_set)
         // Handle desentizing widgets while pop-up is active.
-        (*sens_set)(this, false);
-    input->set_visible(true);
+        (*wb_sens_set)(this, false, 0);
+    wb_input->set_visible(true);
 }
 
 
-// Pop up a message box If err is true, the popup will get the
+// Pop up a message box. If err is true, the popup will get the
 // resources of an error popup.  If multi is true, the widget will not
 // use the QTbag::message field, so that there can be arbitrarily
 // many of these, but the user must keep track of them.  If desens is
 // true, then any popup pointed to by QTbag::input is desensitized
 // while the message is active.  This is done only if multi is false.
-// If code is LW_XY, the location will be at x, y otherwise the
-// location is set by code using QTbag::shell.  The popup widget is
-// returned as a GRobject (void*).
 //
 GRmsgPopup *
 QTbag::PopUpMessage(const char *string, bool err, bool desens,
     bool multi, GRloc loc)
 {
-    (void)desens;
-    // XXX NOT HANDLED: desens
-
-    if (!multi && message)
-        message->popdown();
+    if (!multi && wb_message)
+        wb_message->popdown();
 
     QTmsgPopup *mesg = new QTmsgPopup(this, string, STY_NORM, 300, 76);
     if (!multi)
-        message = mesg;
+        wb_message = mesg;
     mesg->setTitle(err ? "Error" : "Message");
+    QTdev::self()->SetPopupLocation(loc, wb_message, wb_shell);
+
+    if (desens && !multi && wb_input) {
+        mesg->set_desens();
+        wb_input->setEnabled(false);
+    }
     mesg->set_visible(true);
-    QTdev::self()->SetPopupLocation(loc, message, shell);
     return (multi ? mesg : 0);
 }
 
@@ -1174,25 +1238,25 @@ QTbag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
     GRloc loc)
 {
     if (mode == MODE_OFF) {
-        delete error;
+        delete wb_error;
         return (0);
     }
     if (mode == MODE_UPD) {
-        if (error)
-            return (err_cnt);
+        if (wb_error)
+            return (wb_err_cnt);
         return (0);
     }
-    if (error) {
-        error->setText(message_str);
-        error->set_visible(true);
+    if (wb_error) {
+        wb_error->setText(message_str);
+        wb_error->set_visible(true);
     }
     else {
-        error = new QTtextPopup(this, message_str, style, 400, 100);
-        error->setTitle("Error");
-        error->set_visible(true);
-        QTdev::self()->SetPopupLocation(loc, error, shell);
+        wb_error = new QTtextPopup(this, message_str, style, 400, 100);
+        wb_error->setTitle("Error");
+        wb_error->set_visible(true);
+        QTdev::self()->SetPopupLocation(loc, wb_error, wb_shell);
     }
-    return (err_cnt);
+    return (wb_err_cnt);
 }
 
 
@@ -1211,25 +1275,25 @@ QTbag::PopUpErr(ShowMode mode, const char *message_str, STYtype style,
     GRloc loc)
 {
     if (mode == MODE_OFF) {
-        delete error;
+        delete wb_error;
         return (0);
     }
     if (mode == MODE_UPD) {
-        if (error)
-            return (err_cnt);
+        if (wb_error)
+            return (wb_err_cnt);
         return (0);
     }
-    if (error) {
-        error->setText(message_str);
-        error->set_visible(true);
+    if (wb_error) {
+        wb_error->setText(message_str);
+        wb_error->set_visible(true);
     }
     else {
-        error = new QTtextPopup(this, message_str, style, 400, 100);
-        error->setTitle("Error");
-        error->set_visible(true);
-        QTdev::self()->SetPopupLocation(loc, error, shell);
+        wb_error = new QTtextPopup(this, message_str, style, 400, 100);
+        wb_error->setTitle("Error");
+        wb_error->set_visible(true);
+        QTdev::self()->SetPopupLocation(loc, wb_error, wb_shell);
     }
-    return (err_cnt);
+    return (wb_err_cnt);
 }
 
 
@@ -1239,7 +1303,7 @@ QTbag::PopUpErrText(const char *message_str, STYtype style, GRloc loc)
     QTtextPopup *mesg = new QTtextPopup(this, message_str, style, 400, 100);
     mesg->setTitle("Error");
     mesg->set_visible(true);
-    QTdev::self()->SetPopupLocation(loc, mesg, shell);
+    QTdev::self()->SetPopupLocation(loc, mesg, wb_shell);
     return (mesg);
 }
 
@@ -1248,25 +1312,25 @@ int
 QTbag::PopUpInfo(ShowMode mode, const char *msg, STYtype style, GRloc loc)
 {
     if (mode == MODE_OFF) {
-        delete info;
+        delete wb_info;
         return (0);
     }
     if (mode == MODE_UPD) {
-        if (info)
-            return (info_cnt);
+        if (wb_info)
+            return (wb_info_cnt);
         return (0);
     }
-    if (info) {
-        info->setText(msg);
-        info->set_visible(true);
+    if (wb_info) {
+        wb_info->setText(msg);
+        wb_info->set_visible(true);
     }
     else {
-        info = new QTtextPopup(this, msg, style, 400, 200);
-        info->setTitle("Info");
-        info->set_visible(true);
-        QTdev::self()->SetPopupLocation(loc, info, shell);
+        wb_info = new QTtextPopup(this, msg, style, 400, 200);
+        wb_info->setTitle("Info");
+        wb_info->set_visible(true);
+        QTdev::self()->SetPopupLocation(loc, wb_info, wb_shell);
     }
-    return (info_cnt);
+    return (wb_info_cnt);
 }
 
 
@@ -1282,38 +1346,39 @@ int
 QTbag::PopUpHTMLinfo(ShowMode mode, const char *msg, GRloc loc)
 {
     if (mode == MODE_OFF) {
-        delete htinfo;
+        delete wb_htinfo;
         return (0);
     }
     if (mode == MODE_UPD) {
-        if (htinfo)
-            return (htinfo_cnt);
+        if (wb_htinfo)
+            return (wb_htinfo_cnt);
         return (0);
     }
-    if (htinfo) {
-        htinfo->setText(msg);
-        htinfo->set_visible(true);
+    if (wb_htinfo) {
+        wb_htinfo->setText(msg);
+        wb_htinfo->set_visible(true);
     }
     else {
-        htinfo = new QTtextPopup(this, msg, STY_HTML, 400, 200);
-        htinfo->setTitle("Info");
-        htinfo->set_visible(true);
-        QTdev::self()->SetPopupLocation(loc, info, shell);
+        wb_htinfo = new QTtextPopup(this, msg, STY_HTML, 400, 200);
+        wb_htinfo->setTitle("Info");
+        wb_htinfo->set_visible(true);
+        QTdev::self()->SetPopupLocation(loc, wb_htinfo, wb_shell);
     }
-    return (htinfo_cnt);
+    return (wb_htinfo_cnt);
 }
 
-GRledPopup *QTbag::ActiveInput()       { return (input); }
-GRmsgPopup *QTbag::ActiveMessage()     { return (message); }
-GRtextPopup *QTbag::ActiveInfo()       { return (info); }
-GRtextPopup *QTbag::ActiveInfo2()      { return (info2); }
-GRtextPopup *QTbag::ActiveHtinfo()     { return (htinfo); }
-GRtextPopup *QTbag::ActiveError()      { return (error); }
-GRfontPopup *QTbag::ActiveFontsel()    { return (fontsel); }
+GRledPopup *QTbag::ActiveInput()       { return (wb_input); }
+GRmsgPopup *QTbag::ActiveMessage()     { return (wb_message); }
+GRtextPopup *QTbag::ActiveInfo()       { return (wb_info); }
+GRtextPopup *QTbag::ActiveInfo2()      { return (wb_info2); }
+GRtextPopup *QTbag::ActiveHtinfo()     { return (wb_htinfo); }
+GRtextPopup *QTbag::ActiveError()      { return (wb_error); }
+GRtextPopup *QTbag::ActiveWarn()       { return (wb_warning); }
+GRfontPopup *QTbag::ActiveFontsel()    { return (wb_fontsel); }
 
 void
 QTbag::SetErrorLogName(const char *fname)
 {
-//XXX    GTKtextPopup::set_error_log(fname);
+    QTtextPopup::set_error_log(fname);
 }
 

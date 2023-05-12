@@ -269,7 +269,7 @@ cDisplay::OpenSubwin(const BBox *AOI, WDdbType type, const char *sdb_name,
 
         if (type != WDcddb)
             wdesc->SetSpecial(type, sdb_name, sdb_free);
-        if (dspPkgIf()->SubwinInit(i)) {
+        if (DSPpkg::self()->SubwinInit(i)) {
             wdesc->ShowTitle();
             return (i);
         }
@@ -325,7 +325,7 @@ cDisplay::OpenSubwin(const CDs *sdesc, const hyEnt *ent, bool no_top_sym)
             wdesc->Attrib()->set_no_elec_symbolic(true);
         wdesc->SetProxy(ent);
 
-        if (dspPkgIf()->SubwinInit(i)) {
+        if (DSPpkg::self()->SubwinInit(i)) {
             wdesc->ShowTitle();
             wdesc->UpdateProxy();
             wdesc->CenterFullView();

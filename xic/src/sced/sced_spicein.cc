@@ -46,6 +46,7 @@
 #include "ext.h"
 #include "ext_extract.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 #include "cd_terminal.h"
 #include "cd_lgen.h"
 #include "cd_celldb.h"
@@ -1849,13 +1850,13 @@ cSpiceBuilder::dump_models(const char *cname)
         strcpy(e, "models.inc");
     }
     if (!filestat::create_bak(fname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         delete [] fname;
         return (false);
     }
     FILE *fp = fopen(fname, "w");
     if (!fp) {
-        GRpkgIf()->Perror(fname);
+        DSPpkg::self()->Perror(fname);
         delete [] fname;
         return (false);
     }

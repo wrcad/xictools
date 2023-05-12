@@ -703,10 +703,10 @@ HLPcontext::resolveKeyword(const char *hrefin, HLPtopic **ptop, char *hanchor,
                 if (w && w->get_widget_bag())
                     w->get_widget_bag()->PopUpMail("", addr, 0,
                         GRloc(LW_XYR, 50, 50));
-                else if (GRpkgIf()->MainWbag())
-                    GRpkgIf()->MainWbag()->PopUpMail("", addr);
+                else if (GRpkg::self()->MainWbag())
+                    GRpkg::self()->MainWbag()->PopUpMail("", addr);
                 else
-                    GRpkgIf()->ErrPrintf(ET_WARN,
+                    GRpkg::self()->ErrPrintf(ET_WARN,
                         "can't do mailto, no graphics.");
             }
             delete [] protocol;
@@ -723,10 +723,10 @@ HLPcontext::resolveKeyword(const char *hrefin, HLPtopic **ptop, char *hanchor,
             sprintf(buf, "Can't handle %s protocol.", protocol);
             if (w && w->get_widget_bag())
                 w->get_widget_bag()->PopUpErr(MODE_ON, buf);
-            else if (GRpkgIf()->MainWbag())
-                GRpkgIf()->MainWbag()->PopUpErr(MODE_ON, buf);
+            else if (GRpkg::self()->MainWbag())
+                GRpkg::self()->MainWbag()->PopUpErr(MODE_ON, buf);
             else
-                GRpkgIf()->ErrPrintf(ET_ERROR, buf);
+                GRpkg::self()->ErrPrintf(ET_ERROR, buf);
             delete [] protocol;
             return (true);
         }
@@ -884,10 +884,10 @@ namespace {
         ViewerWidget *w = (ViewerWidget*)t->user_data1();
         if (w && w->get_widget_bag())
             w->get_widget_bag()->PopUpErr(MODE_ON, msg);
-        else if (GRpkgIf()->MainWbag())
-            GRpkgIf()->MainWbag()->PopUpErr(MODE_ON, msg);
+        else if (GRpkg::self()->MainWbag())
+            GRpkg::self()->MainWbag()->PopUpErr(MODE_ON, msg);
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR, msg);
+            GRpkg::self()->ErrPrintf(ET_ERROR, msg);
     }
 
 
@@ -1188,7 +1188,7 @@ namespace {
 
         // parse command line
         if (trn.parse_cmd(lstr.string(), 0)) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "internal error, parse failed.");
+            GRpkg::self()->ErrPrintf(ET_WARN, "internal error, parse failed.");
             return;
         }
         trn.transact();
@@ -1237,14 +1237,14 @@ HLPcontext::download(ViewerWidget *w, char *url)
         w->get_widget_bag()->PopUpFileSelector(fsDOWNLOAD, loc,
             dl_cb, dl_down, arg, uinfo.filename);
     }
-    else if (GRpkgIf()->MainWbag()) {
+    else if (GRpkg::self()->MainWbag()) {
 
         dl_arg *arg = new dl_arg(0, url);
-        GRpkgIf()->MainWbag()->PopUpFileSelector(fsDOWNLOAD, loc,
+        GRpkg::self()->MainWbag()->PopUpFileSelector(fsDOWNLOAD, loc,
             dl_cb, dl_down, arg, uinfo.filename);
     }
     else
-        GRpkgIf()->ErrPrintf(ET_WARN, "download aborted, no graphics.");
+        GRpkg::self()->ErrPrintf(ET_WARN, "download aborted, no graphics.");
 }
 
 
@@ -1286,7 +1286,8 @@ namespace {
 
             // parse command line
             if (trn.parse_cmd(lstr.string(), 0)) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "internal error, parse failed.");
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "internal error, parse failed.");
                 return;
             }
             trn.transact();
@@ -1383,8 +1384,8 @@ HLPcontext::download(ViewerWidget *w, stringlist *list, unsigned int install)
     GRloc loc(LW_CENTER);
     if (w && !w->get_widget_bag())
         w = 0;
-    if (!w && !GRpkgIf()->MainWbag()) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "download aborted, no graphics.");
+    if (!w && !GRpkg::self()->MainWbag()) {
+        GRpkg::self()->ErrPrintf(ET_WARN, "download aborted, no graphics.");
         return;
     }
 
@@ -1439,7 +1440,7 @@ HLPcontext::download(ViewerWidget *w, stringlist *list, unsigned int install)
                 loc, dl_list_cb, cb, a0, msg);
         }
         else {
-            a0->fsel = GRpkgIf()->MainWbag()->PopUpFileSelector(fsDOWNLOAD,
+            a0->fsel = GRpkg::self()->MainWbag()->PopUpFileSelector(fsDOWNLOAD,
                 loc, dl_list_cb, cb, a0, msg);
         }
     }
@@ -2233,10 +2234,10 @@ HLPcontext::formProcess(htmFormCallbackStruct *cbs, HelpWidget *w)
                 sprintf(buf, "Can't create temp file %s.", formfname);
                 if (w->get_widget_bag())
                     w->get_widget_bag()->PopUpErr(MODE_ON, buf);
-                else if (GRpkgIf()->MainWbag())
-                    GRpkgIf()->MainWbag()->PopUpErr(MODE_ON, buf);
+                else if (GRpkg::self()->MainWbag())
+                    GRpkg::self()->MainWbag()->PopUpErr(MODE_ON, buf);
                 else
-                    GRpkgIf()->ErrPrintf(ET_ERROR, buf);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, buf);
                 delete [] formfname;
                 return;
             }
@@ -2370,11 +2371,11 @@ HLPcontext::formProcess(htmFormCallbackStruct *cbs, HelpWidget *w)
             if (w->get_widget_bag())
                 w->get_widget_bag()->PopUpErr(MODE_ON,
                     "Unsupported method in form action.");
-            else if (GRpkgIf()->MainWbag())
-                GRpkgIf()->MainWbag()->PopUpErr(MODE_ON,
+            else if (GRpkg::self()->MainWbag())
+                GRpkg::self()->MainWbag()->PopUpErr(MODE_ON,
                     "Unsupported method in form action.");
             else
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "Unsupported method in form action.");
         }
     }

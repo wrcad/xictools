@@ -818,7 +818,7 @@ PolyState::undo()
                 v_op->next = RedoList;
                 RedoList = v_op;
                 // Draw after update, or marks get clipped.
-                dspPkgIf()->RegisterIdleProc(mark_idle, 0);
+                DSPpkg::self()->RegisterIdleProc(mark_idle, 0);
             }
             else {
                 // hit the end of the (truncated) undo list
@@ -888,7 +888,7 @@ PolyState::redo()
             UndoList = v_op;
         }
         // Draw after update, or marks get clipped.
-        dspPkgIf()->RegisterIdleProc(mark_idle, 0);
+        DSPpkg::self()->RegisterIdleProc(mark_idle, 0);
         return;
     }
 

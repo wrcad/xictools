@@ -104,7 +104,7 @@ cDRC::runDRCregion(const BBox *AOI)
 {
     if (!DSP()->CurCellName())
         return;
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     PL()->ShowPrompt("Working...");
 
     // clear existing errors
@@ -133,7 +133,7 @@ cDRC::runDRCregion(const BBox *AOI)
     }
     Log()->PopUpErrEx(lstr.string() ? lstr.string() : "No errors", false,
         LW_LR);
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 }
 
 
@@ -264,7 +264,7 @@ cDRC::runDRC(const BBox *AOI, bool backg, cCHD *chd, const char *cellname,
         if (filestat::create_bak(errfile))
             setErrFilePtr(fopen(errfile, "w"));
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         if (!errFilePtr()) {
             cTimer::milli_sleep(250);
             // xlib connection screws up without this
@@ -278,7 +278,7 @@ cDRC::runDRC(const BBox *AOI, bool backg, cCHD *chd, const char *cellname,
         if (filestat::create_bak(errfile))
             setErrFilePtr(fopen(errfile, "w"));
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         if (!errFilePtr()) {
             PL()->ShowPrompt("DRC aborted.");
             return;
@@ -288,7 +288,7 @@ cDRC::runDRC(const BBox *AOI, bool backg, cCHD *chd, const char *cellname,
     Tdbg()->start_timing("DRCcheck");
 
     if (XM()->RunMode() == ModeNormal) {
-        dspPkgIf()->SetWorking(true);
+        DSPpkg::self()->SetWorking(true);
         PL()->ShowPrompt("Working...");
     }
 
@@ -318,7 +318,7 @@ cDRC::runDRC(const BBox *AOI, bool backg, cCHD *chd, const char *cellname,
             while ((wd = wgen.next()) != 0)
                 showCurError(wd, DISPLAY);
         }
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         delete [] errfile;
     }
     else {
@@ -1358,7 +1358,7 @@ cDRC::forkToBackground()
 
     // halt graphics
     XM()->SetRunMode(ModeBackground);
-    dspPkgIf()->ReinitNoGraphics();
+    DSPpkg::self()->ReinitNoGraphics();
 
     // go to bg
     for (int i = 0; i < 10; i++)
@@ -1681,7 +1681,7 @@ cDRC::check_interrupt(bool force)
         drc_check_time = 0;
     if (Timer()->check_interval(drc_check_time)) {
         if (drc_num_checked) {
-            dspPkgIf()->CheckForInterrupt();
+            DSPpkg::self()->CheckForInterrupt();
             if (DSP()->Interrupt() && drc_doing_inter) {
                 DSP()->SetInterrupt(DSPinterNone);
                 PL()->ShowPrompt("Interrupted!");

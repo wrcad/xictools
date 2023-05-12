@@ -52,7 +52,7 @@
 
 QTledPopup::QTledPopup(QTbag *owner, const char *label_str,
     const char *initial_str, const char *action_str, void *arg, bool mult) :
-    QDialog(owner ? owner->shell : 0)
+    QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
     p_cb_arg = arg;
@@ -60,7 +60,7 @@ QTledPopup::QTledPopup(QTbag *owner, const char *label_str,
     quit_flag = false;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
 
     setWindowTitle(tr("Text Entry"));
 
@@ -101,34 +101,26 @@ QTledPopup::QTledPopup(QTbag *owner, const char *label_str,
 
 QTledPopup::~QTledPopup()
 {
+    if (p_parent) {
+        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
+        if (owner) {
+            owner->ClearPopup(this);
+            /*XXX
+            owner->MonitorRemove(this);
+            if (owner->wb_input == this) {
+                owner->wb_input = 0;
+                if (owner && owner->wb_sens_set)
+                    (*owner->wb_sens_set)(owner, true);
+            }
+            */
+        }
+    }
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_cancel)
         (*p_cancel)(quit_flag);
-    if (p_caller && !p_no_desel) {
-        QObject *o = (QObject*)p_caller;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn)
-                btn->setChecked(false);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->setChecked(false);
-        }
-    }
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner) {
-            owner->monitor.remove(this);
-            if (owner->input == this) {
-                owner->input = 0;
-                if (owner && owner->sens_set)
-                    (*owner->sens_set)(owner, true);
-            }
-        }
-    }
+    if (p_caller && !p_no_desel)
+        QTdev::Deselect(p_caller);
 }
 
 
@@ -169,7 +161,7 @@ QTledPopup::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     delete this;
@@ -183,7 +175,7 @@ QTledPopup::update(const char *prompt_str, const char *init_str)
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     if (prompt_str)

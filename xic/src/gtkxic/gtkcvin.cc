@@ -152,7 +152,7 @@ void
 cConvert::PopUpImport(GRobject caller, ShowMode mode,
     bool (*callback)(int, void*), void *arg)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Cvi;
@@ -174,7 +174,7 @@ cConvert::PopUpImport(GRobject caller, ShowMode mode,
     gtk_window_set_transient_for(GTK_WINDOW(Cvi->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Cvi->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), Cvi->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Cvi->shell());
 }
@@ -606,7 +606,7 @@ sCvi::~sCvi()
 {
     Cvi = 0;
     if (cvi_caller)
-        GRX->Deselect(cvi_caller);
+        GTKdev::Deselect(cvi_caller);
     delete cvi_cnmap;
     delete cvi_llist;
     delete cvi_wnd;
@@ -620,23 +620,35 @@ sCvi::~sCvi()
 void
 sCvi::update()
 {
-    GRX->SetStatus(cvi_nonpc, CDvdb()->getVariable(VA_NoEvalNativePCells));
-    GRX->SetStatus(cvi_yesoapc, CDvdb()->getVariable(VA_EvalOaPCells));
-    GRX->SetStatus(cvi_nolyr, CDvdb()->getVariable(VA_NoCreateLayer));
+    GTKdev::SetStatus(cvi_nonpc,
+        CDvdb()->getVariable(VA_NoEvalNativePCells));
+    GTKdev::SetStatus(cvi_yesoapc,
+        CDvdb()->getVariable(VA_EvalOaPCells));
+    GTKdev::SetStatus(cvi_nolyr,
+        CDvdb()->getVariable(VA_NoCreateLayer));
     int overval = (FIO()->IsNoOverwritePhys() ? 2 : 0) +
         (FIO()->IsNoOverwriteElec() ? 1 : 0);
     if (CDvdb()->getVariable(VA_AutoRename))
         overval = 4;
     gtk_combo_box_set_active(GTK_COMBO_BOX(cvi_over), overval);
-    GRX->SetStatus(cvi_replace, CDvdb()->getVariable(VA_NoAskOverwrite));
-    GRX->SetStatus(cvi_merge, CDvdb()->getVariable(VA_MergeInput));
-    GRX->SetStatus(cvi_polys, CDvdb()->getVariable(VA_NoPolyCheck));
-    GRX->SetStatus(cvi_empties, CDvdb()->getVariable(VA_NoCheckEmpties));
-    GRX->SetStatus(cvi_dtypes, CDvdb()->getVariable(VA_NoMapDatatypes));
-    GRX->SetStatus(cvi_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
-    GRX->SetStatus(cvi_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
-    GRX->SetStatus(cvi_nofllbs, CDvdb()->getVariable(VA_NoFlattenLabels));
-    GRX->SetStatus(cvi_nolabels, CDvdb()->getVariable(VA_NoReadLabels));
+    GTKdev::SetStatus(cvi_replace,
+        CDvdb()->getVariable(VA_NoAskOverwrite));
+    GTKdev::SetStatus(cvi_merge,
+        CDvdb()->getVariable(VA_MergeInput));
+    GTKdev::SetStatus(cvi_polys,
+        CDvdb()->getVariable(VA_NoPolyCheck));
+    GTKdev::SetStatus(cvi_empties,
+        CDvdb()->getVariable(VA_NoCheckEmpties));
+    GTKdev::SetStatus(cvi_dtypes,
+        CDvdb()->getVariable(VA_NoMapDatatypes));
+    GTKdev::SetStatus(cvi_noflvias,
+        CDvdb()->getVariable(VA_NoFlattenStdVias));
+    GTKdev::SetStatus(cvi_noflpcs,
+        CDvdb()->getVariable(VA_NoFlattenPCells));
+    GTKdev::SetStatus(cvi_nofllbs,
+        CDvdb()->getVariable(VA_NoFlattenLabels));
+    GTKdev::SetStatus(cvi_nolabels,
+        CDvdb()->getVariable(VA_NoReadLabels));
 
     int hst = 1;
     const char *str = CDvdb()->getVariable(VA_DupCheckMode);
@@ -695,97 +707,97 @@ sCvi::cvi_action(GtkWidget *caller, void*)
         return;
     const char *name = gtk_widget_get_name(caller);
     if (!strcmp(name, "nonpc")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoEvalNativePCells, 0);
         else
             CDvdb()->clearVariable(VA_NoEvalNativePCells);
         return;
     }
     if (!strcmp(name, "yesoapc")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_EvalOaPCells, 0);
         else
             CDvdb()->clearVariable(VA_EvalOaPCells);
         return;
     }
     if (!strcmp(name, "nolyr")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoCreateLayer, 0);
         else
             CDvdb()->clearVariable(VA_NoCreateLayer);
         return;
     }
     if (!strcmp(name, "replace")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoAskOverwrite, 0);
         else
             CDvdb()->clearVariable(VA_NoAskOverwrite);
         return;
     }
     if (!strcmp(name, "merge")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_MergeInput, 0);
         else
             CDvdb()->clearVariable(VA_MergeInput);
         return;
     }
     if (!strcmp(name, "polys")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoPolyCheck, 0);
         else
             CDvdb()->clearVariable(VA_NoPolyCheck);
         return;
     }
     if (!strcmp(name, "empties")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoCheckEmpties, 0);
         else
             CDvdb()->clearVariable(VA_NoCheckEmpties);
         return;
     }
     if (!strcmp(name, "dtypes")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoMapDatatypes, 0);
         else
             CDvdb()->clearVariable(VA_NoMapDatatypes);
         return;
     }
     if (!strcmp(name, "noflvias")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoFlattenStdVias, 0);
         else
             CDvdb()->clearVariable(VA_NoFlattenStdVias);
         return;
     }
     if (!strcmp(name, "noflpcs")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoFlattenPCells, 0);
         else
             CDvdb()->clearVariable(VA_NoFlattenPCells);
         return;
     }
     if (!strcmp(name, "nofllbs")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoFlattenLabels, 0);
         else
             CDvdb()->clearVariable(VA_NoFlattenLabels);
         return;
     }
     if (!strcmp(name, "nolabels")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoReadLabels, 0);
         else
             CDvdb()->clearVariable(VA_NoReadLabels);
         return;
     }
     if (!strcmp(name, "luse")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_UseLayerList, 0);
         else
             CDvdb()->clearVariable(VA_UseLayerList);
     }
     if (!strcmp(name, "lskip")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_UseLayerList, "n");
         else
             CDvdb()->clearVariable(VA_UseLayerList);

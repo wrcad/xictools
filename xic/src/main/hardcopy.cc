@@ -189,7 +189,7 @@ cMain::HCdrawFrame(int display)
     WindowDesc *wdesc = DSP()->MainWdesc();
     if (!wdesc->Wdraw())
         return;
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(display ? GRxHlite : GRxUnhlite);
     else {
         if (display)
@@ -213,7 +213,7 @@ cMain::HCdrawFrame(int display)
     wdesc->SetClipRect(tBB);
 
     wdesc->Wdraw()->SetLinestyle(0);
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(GRxNone);
     else if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
@@ -289,26 +289,26 @@ int
 sHcImage::xichcgo(HCorientFlags orient, HClegType showleg, GRdraw*)
 {
     bool found_index = false;
-    for (int i = 0; GRpkgIf()->HCof(i); i++) {
+    for (int i = 0; DSPpkg::self()->HCof(i); i++) {
         if (HCimg.DriverIndex == i) {
             if (DSP()->MainWdesc()->DbType() == WDchd &&
-                    GRpkgIf()->HCof(i)->line_draw) {
-                GRpkgIf()->HCabort(
+                    DSPpkg::self()->HCof(i)->line_draw) {
+                DSPpkg::self()->HCabort(
                     "Can't use line-draw driver to render CHD image.");
-                return (GRpkgIf()->HCaborted());
+                return (DSPpkg::self()->HCaborted());
             }
             found_index = true;
         }
     }
     if (!found_index) {
-        GRpkgIf()->HCabort("Internal error, bad driver index");
-        return (GRpkgIf()->HCaborted());
+        DSPpkg::self()->HCabort("Internal error, bad driver index");
+        return (DSPpkg::self()->HCaborted());
     }
 
     if (!DSP()->CurCellName())
         return (true);
     HCimg.TmpWin = *DSP()->MainWdesc()->Window();
-    GRdraw *drawptr = GRpkgIf()->NewDraw();
+    GRdraw *drawptr = DSPpkg::self()->NewDraw();
     if (!drawptr) {
         HCimg.InGo = false;
         return (true);
@@ -340,12 +340,12 @@ sHcImage::xichcgo(HCorientFlags orient, HClegType showleg, GRdraw*)
     // insufficient space.
     int leg_ht = 0;
     if (HCimg.set_window(&whc, drawptr, orient, &showleg, &leg_ht) &&
-            !GRpkgIf()->HCaborted()) {
+            !DSPpkg::self()->HCaborted()) {
 
         // This is a noop, or dumps the viewport info to the file.
         drawptr->DefineViewport();
 
-        if (!GRpkgIf()->HCaborted()) {
+        if (!DSPpkg::self()->HCaborted()) {
             // Render the layout.
             WindowDesc *tmpw = DSP()->MainWdesc();
             DSP()->SetWindow(0, &whc);
@@ -356,9 +356,9 @@ sHcImage::xichcgo(HCorientFlags orient, HClegType showleg, GRdraw*)
         if (showleg == HClegOn)
             HCimg.legend(&whc, false);
 
-        if (!GRpkgIf()->HCaborted())
+        if (!DSPpkg::self()->HCaborted())
             // Dump all accumulated output, or no-op for some drivers.
-            drawptr->Dump(GRpkgIf()->CurDev()->height);
+            drawptr->Dump(DSPpkg::self()->CurDev()->height);
     }
 
     // put back the stored context transform
@@ -377,7 +377,7 @@ sHcImage::xichcgo(HCorientFlags orient, HClegType showleg, GRdraw*)
     drawptr->Halt();
     FrameState::FrameBox = BBtmp;
 
-    HCimg.DidCopy = !GRpkgIf()->HCaborted();
+    HCimg.DidCopy = !DSPpkg::self()->HCaborted();
     FrameCmd->suppress_frame_draw(false);
     HCimg.InGo = false;
     if (HCimg.CallReset)
@@ -388,7 +388,7 @@ sHcImage::xichcgo(HCorientFlags orient, HClegType showleg, GRdraw*)
     // Avoid losing the backing pixmap!
     whc.SetWbag(0);
 
-    return (GRpkgIf()->HCaborted());
+    return (DSPpkg::self()->HCaborted());
 }
 
 
@@ -656,7 +656,7 @@ sHcImage::set_window(WindowDesc *whc, GRdraw *drawptr, HCorientFlags orient,
             frame.top += dw;
         }
         else {
-            GRpkgIf()->HCabort("Window has no content");
+            DSPpkg::self()->HCabort("Window has no content");
             return (false);
         }
     }
@@ -665,11 +665,11 @@ sHcImage::set_window(WindowDesc *whc, GRdraw *drawptr, HCorientFlags orient,
     int leg_ht = 0;
     int data_w = 0;
     int data_h = 0;
-    if (GRpkgIf()->CurDev()->height == 0) {
+    if (DSPpkg::self()->CurDev()->height == 0) {
         // When height is set to zero, the height is automagically
         // set to the minimum given the width.
-        if (GRpkgIf()->CurDev()->width <= 0) {
-            GRpkgIf()->HCabort("Width too small");
+        if (DSPpkg::self()->CurDev()->width <= 0) {
+            DSPpkg::self()->HCabort("Width too small");
             return (false);
         }
         // In auto-height mode, the legend is always on the bottom.  The
@@ -696,14 +696,14 @@ sHcImage::set_window(WindowDesc *whc, GRdraw *drawptr, HCorientFlags orient,
         data_h = (int)(data_w/af);
 
         leg_ht = (*showleg == HClegOn ? legend(whc, true) : 0);
-        drawptr->ResetViewport(GRpkgIf()->CurDev()->width,
-            (int)(GRpkgIf()->CurDev()->width/af) + leg_ht);
+        drawptr->ResetViewport(DSPpkg::self()->CurDev()->width,
+            (int)(DSPpkg::self()->CurDev()->width/af) + leg_ht);
     }
-    else if (GRpkgIf()->CurDev()->width == 0) {
+    else if (DSPpkg::self()->CurDev()->width == 0) {
         // When width is set to zero, the width is automagically
         // set to the minimum given the height.
-        if (GRpkgIf()->CurDev()->height <= 0) {
-            GRpkgIf()->HCabort("Height too small");
+        if (DSPpkg::self()->CurDev()->height <= 0) {
+            DSPpkg::self()->HCabort("Height too small");
             return (false);
         }
 
@@ -726,34 +726,34 @@ sHcImage::set_window(WindowDesc *whc, GRdraw *drawptr, HCorientFlags orient,
         data_w = frame.width();
         data_h = (int)(data_w/af);
 
-        drawptr->ResetViewport((int)(GRpkgIf()->CurDev()->height*af),
-            GRpkgIf()->CurDev()->height);
+        drawptr->ResetViewport((int)(DSPpkg::self()->CurDev()->height*af),
+            DSPpkg::self()->CurDev()->height);
         leg_ht = (*showleg == HClegOn ? legend(whc, true) : 0);
-        if (leg_ht > GRpkgIf()->CurDev()->height/2) {
+        if (leg_ht > DSPpkg::self()->CurDev()->height/2) {
             leg_ht = 0;
             *showleg = HClegOff;
         }
 
         // Note that the legend adds to the specified height.
         if (leg_ht)
-            drawptr->ResetViewport(GRpkgIf()->CurDev()->width,
-                GRpkgIf()->CurDev()->height + leg_ht);
+            drawptr->ResetViewport(DSPpkg::self()->CurDev()->width,
+                DSPpkg::self()->CurDev()->height + leg_ht);
     }
     else {
         // The viewport is already specified, this will contain all drawing.
-        if (GRpkgIf()->CurDev()->height <= 0 ||
-                GRpkgIf()->CurDev()->width <= 0) {
-            GRpkgIf()->HCabort("Area too small");
+        if (DSPpkg::self()->CurDev()->height <= 0 ||
+                DSPpkg::self()->CurDev()->width <= 0) {
+            DSPpkg::self()->HCabort("Area too small");
             return (false);
         }
         leg_ht = (*showleg == HClegOn ? legend(whc, true) : 0);
-        if (leg_ht > GRpkgIf()->CurDev()->height/2) {
+        if (leg_ht > DSPpkg::self()->CurDev()->height/2) {
             leg_ht = 0;
             *showleg = HClegOff;
         }
 
-        double av = ((double)GRpkgIf()->CurDev()->width)/
-            (GRpkgIf()->CurDev()->height - leg_ht);
+        double av = ((double)DSPpkg::self()->CurDev()->width)/
+            (DSPpkg::self()->CurDev()->height - leg_ht);
         double af = frame.aspect();
 
         bool rr = false;
@@ -782,7 +782,8 @@ sHcImage::set_window(WindowDesc *whc, GRdraw *drawptr, HCorientFlags orient,
         }
     }
 
-    whc->InitViewport(GRpkgIf()->CurDev()->width, GRpkgIf()->CurDev()->height);
+    whc->InitViewport(DSPpkg::self()->CurDev()->width,
+        DSPpkg::self()->CurDev()->height);
 
     int x = (frame.left + frame.right)/2;
     int y = (frame.bottom + frame.top)/2;
@@ -822,7 +823,7 @@ sHcImage::legend(WindowDesc *wdesc, bool nodraw)
         if (!ld->isInvisible())
             num_visible++;
 
-    int ncols = (GRpkgIf()->CurDev()->width - 1 + xspace -
+    int ncols = (DSPpkg::self()->CurDev()->width - 1 + xspace -
         (margin*2))/(entry_wd + xspace);
     if (ncols <= 1)
         // don't show legend
@@ -837,7 +838,7 @@ sHcImage::legend(WindowDesc *wdesc, bool nodraw)
     if (nodraw)
         return (legheight);
 
-    int maxy = GRpkgIf()->CurDev()->height - 1;
+    int maxy = DSPpkg::self()->CurDev()->height - 1;
     int ypos = maxy - (legheight - yspace - fth);
 
     const BBox *vp = &wdesc->Viewport();

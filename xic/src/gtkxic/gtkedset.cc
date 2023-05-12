@@ -109,7 +109,7 @@ using namespace gtkedset;
 void
 cEdit::PopUpEditSetup(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Ed;
@@ -131,7 +131,8 @@ cEdit::PopUpEditSetup(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Ed->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Ed->shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), Ed->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Ed->shell());
 }
 
@@ -342,7 +343,7 @@ sEd::~sEd()
 {
     Ed = 0;
     if (ed_caller)
-        GRX->Deselect(ed_caller);
+        GTKdev::Deselect(ed_caller);
     if (ed_popup)
         gtk_widget_destroy(ed_popup);
 }
@@ -351,10 +352,14 @@ sEd::~sEd()
 void
 sEd::update()
 {
-    GRX->SetStatus(ed_cons45, CDvdb()->getVariable(VA_Constrain45));
-    GRX->SetStatus(ed_merge, !CDvdb()->getVariable(VA_NoMergeObjects));
-    GRX->SetStatus(ed_noply, CDvdb()->getVariable(VA_NoMergePolys));
-    GRX->SetStatus(ed_prompt, CDvdb()->getVariable(VA_AskSaveNative));
+    GTKdev::SetStatus(ed_cons45,
+        CDvdb()->getVariable(VA_Constrain45));
+    GTKdev::SetStatus(ed_merge,
+        !CDvdb()->getVariable(VA_NoMergeObjects));
+    GTKdev::SetStatus(ed_noply,
+        CDvdb()->getVariable(VA_NoMergePolys));
+    GTKdev::SetStatus(ed_prompt,
+        CDvdb()->getVariable(VA_AskSaveNative));
 
     int n;
     const char *s = sb_ulen.get_string();
@@ -366,10 +371,12 @@ sEd::update()
             (unsigned int)n != EGst()->maxGhostObjects())
         sb_ulen.set_value(EGst()->maxGhostObjects());
 
-    GRX->SetStatus(ed_noww, CDvdb()->getVariable(VA_NoWireWidthMag));
-    GRX->SetStatus(ed_crcovr, CDvdb()->getVariable(VA_CrCellOverwrite));
+    GTKdev::SetStatus(ed_noww,
+        CDvdb()->getVariable(VA_NoWireWidthMag));
+    GTKdev::SetStatus(ed_crcovr,
+        CDvdb()->getVariable(VA_CrCellOverwrite));
 
-    gtk_widget_set_sensitive(ed_noply, GRX->GetStatus(ed_merge));
+    gtk_widget_set_sensitive(ed_noply, GTKdev::GetStatus(ed_merge));
 
     int hst = 0;
     const char *str = CDvdb()->getVariable(VA_MaxGhostDepth);
@@ -400,37 +407,37 @@ sEd::ed_action(GtkWidget *caller, void*)
         DSPmainWbag(PopUpHelp("xic:edset"))
     }
     else if (!strcmp(name, "cons45")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_Constrain45, "");
         else
             CDvdb()->clearVariable(VA_Constrain45);
     }
     else if (!strcmp(name, "merge")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->clearVariable(VA_NoMergeObjects);
         else
             CDvdb()->setVariable(VA_NoMergeObjects, "");
     }
     else if (!strcmp(name, "noply")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoMergePolys, "");
         else
             CDvdb()->clearVariable(VA_NoMergePolys);
     }
     else if (!strcmp(name, "prompt")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_AskSaveNative, "");
         else
             CDvdb()->clearVariable(VA_AskSaveNative);
     }
     else if (!strcmp(name, "noww")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoWireWidthMag, "");
         else
             CDvdb()->clearVariable(VA_NoWireWidthMag);
     }
     else if (!strcmp(name, "crcovr")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_CrCellOverwrite, "");
         else
             CDvdb()->clearVariable(VA_CrCellOverwrite);

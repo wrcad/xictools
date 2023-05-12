@@ -164,7 +164,7 @@ using namespace gtkextfc;
 void
 cFC::PopUpExtIf(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Fc;
@@ -186,7 +186,7 @@ cFC::PopUpExtIf(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Fc->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LR), Fc->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LR), Fc->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Fc->Shell());
     setPopUpVisible(true);
@@ -737,7 +737,7 @@ sFc::sFc(GRobject c)
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(fc_jobs));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
         "paragraph-background", bclr, NULL);
 
@@ -802,7 +802,7 @@ sFc::~sFc()
     FCif()->showMarks(false);
     Fc = 0;
     if (fc_caller)
-        GRX->Deselect(fc_caller);
+        GTKdev::Deselect(fc_caller);
     FCif()->setPopUpVisible(false);
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
@@ -818,8 +818,8 @@ sFc::update()
     fc_no_reset = true;
 
     // Run page
-    GRX->SetStatus(fc_foreg, CDvdb()->getVariable(VA_FcForeg));
-    GRX->SetStatus(fc_out, CDvdb()->getVariable(VA_FcMonitor));
+    GTKdev::SetStatus(fc_foreg, CDvdb()->getVariable(VA_FcForeg));
+    GTKdev::SetStatus(fc_out, CDvdb()->getVariable(VA_FcMonitor));
 
     var = CDvdb()->getVariable(VA_FcArgs);
     if (!var)
@@ -880,7 +880,7 @@ sFc::update()
     if (sb_fc_panel_target.is_valid(var)) {
         sb_fc_panel_target.set_value(atof(var));
         sb_fc_panel_target.set_sensitive(true);
-        GRX->SetStatus(fc_enab, true);
+        GTKdev::SetStatus(fc_enab, true);
         fcpt_bak = sb_fc_panel_target.get_value();
     }
     else {
@@ -889,30 +889,30 @@ sFc::update()
         if (fcpt_bak > 0.0)
             sb_fc_panel_target.set_value(fcpt_bak);
         sb_fc_panel_target.set_sensitive(false);
-        GRX->SetStatus(fc_enab, false);
+        GTKdev::SetStatus(fc_enab, false);
     }
 
     // Debug page
-    GRX->SetStatus(fc_dbg_zoids, CDvdb()->getVariable(VA_FcZoids));
-    GRX->SetStatus(fc_dbg_vrbo, CDvdb()->getVariable(VA_FcVerboseOut));
-    GRX->SetStatus(fc_dbg_nm, CDvdb()->getVariable(VA_FcNoMerge));
+    GTKdev::SetStatus(fc_dbg_zoids, CDvdb()->getVariable(VA_FcZoids));
+    GTKdev::SetStatus(fc_dbg_vrbo, CDvdb()->getVariable(VA_FcVerboseOut));
+    GTKdev::SetStatus(fc_dbg_nm, CDvdb()->getVariable(VA_FcNoMerge));
 
     unsigned int flgs = MRG_ALL;
     const char *s = CDvdb()->getVariable(VA_FcMergeFlags);
     if (s)
         flgs = Tech()->GetInt(s) & MRG_ALL;
-    GRX->SetStatus(fc_dbg_czbot, (flgs & MRG_C_ZBOT));
-    GRX->SetStatus(fc_dbg_dzbot, (flgs & MRG_D_ZBOT));
-    GRX->SetStatus(fc_dbg_cztop, (flgs & MRG_C_ZTOP));
-    GRX->SetStatus(fc_dbg_dztop, (flgs & MRG_D_ZTOP));
-    GRX->SetStatus(fc_dbg_cyl, (flgs & MRG_C_YL));
-    GRX->SetStatus(fc_dbg_dyl, (flgs & MRG_D_YL));
-    GRX->SetStatus(fc_dbg_cyu, (flgs & MRG_C_YU));
-    GRX->SetStatus(fc_dbg_dyu, (flgs & MRG_D_YU));
-    GRX->SetStatus(fc_dbg_cleft, (flgs & MRG_C_LEFT));
-    GRX->SetStatus(fc_dbg_dleft, (flgs & MRG_D_LEFT));
-    GRX->SetStatus(fc_dbg_cright, (flgs & MRG_C_RIGHT));
-    GRX->SetStatus(fc_dbg_dright, (flgs & MRG_D_RIGHT));
+    GTKdev::SetStatus(fc_dbg_czbot, (flgs & MRG_C_ZBOT));
+    GTKdev::SetStatus(fc_dbg_dzbot, (flgs & MRG_D_ZBOT));
+    GTKdev::SetStatus(fc_dbg_cztop, (flgs & MRG_C_ZTOP));
+    GTKdev::SetStatus(fc_dbg_dztop, (flgs & MRG_D_ZTOP));
+    GTKdev::SetStatus(fc_dbg_cyl, (flgs & MRG_C_YL));
+    GTKdev::SetStatus(fc_dbg_dyl, (flgs & MRG_D_YL));
+    GTKdev::SetStatus(fc_dbg_cyu, (flgs & MRG_C_YU));
+    GTKdev::SetStatus(fc_dbg_dyu, (flgs & MRG_D_YU));
+    GTKdev::SetStatus(fc_dbg_cleft, (flgs & MRG_C_LEFT));
+    GTKdev::SetStatus(fc_dbg_dleft, (flgs & MRG_D_LEFT));
+    GTKdev::SetStatus(fc_dbg_cright, (flgs & MRG_C_RIGHT));
+    GTKdev::SetStatus(fc_dbg_dright, (flgs & MRG_D_RIGHT));
 
     // Jobs page
     update_jobs_list();
@@ -959,7 +959,7 @@ sFc::update_label(const char *s)
 void
 sFc::update_numbers()
 {
-    if (GRX->GetStatus(fc_shownum))
+    if (GTKdev::GetStatus(fc_shownum))
         FCif()->showMarks(true);
 }
 
@@ -967,7 +967,7 @@ sFc::update_numbers()
 void
 sFc::clear_numbers()
 {
-    GRX->SetStatus(fc_shownum, false);
+    GTKdev::SetStatus(fc_shownum, false);
 }
 
 
@@ -1265,22 +1265,22 @@ sFc::fc_btn_proc(GtkWidget *widget, void *arg)
         }
         break;
     case ShowNums:
-        FCif()->showMarks(GRX->GetStatus(widget));
+        FCif()->showMarks(GTKdev::GetStatus(widget));
         break;
     case Foreg:
-        if (GRX->GetStatus(widget))
+        if (GTKdev::GetStatus(widget))
             CDvdb()->setVariable(VA_FcForeg, "");
         else
             CDvdb()->clearVariable(VA_FcForeg);
         break;
     case ToCons:
-        if (GRX->GetStatus(widget))
+        if (GTKdev::GetStatus(widget))
             CDvdb()->setVariable(VA_FcMonitor, "");
         else
             CDvdb()->clearVariable(VA_FcMonitor);
         break;
     case Enable:
-        if (GRX->GetStatus(widget)) {
+        if (GTKdev::GetStatus(widget)) {
             const char *s = Fc->sb_fc_panel_target.get_string();
             if (!check_num(s, FC_MIN_TARG_PANELS, FC_MAX_TARG_PANELS))
                 CDvdb()->setVariable(VA_FcPanelTarget, s);
@@ -1367,7 +1367,7 @@ sFc::fc_dbg_btn_proc(GtkWidget *widget, void*)
     const char *name = gtk_widget_get_name(widget);
     if (!name)
         return;
-    bool state = GRX->GetStatus(widget);
+    bool state = GTKdev::GetStatus(widget);
         
     if (!strcmp(name, "NoMerge")) {
         if (state)

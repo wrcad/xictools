@@ -95,12 +95,12 @@ static const char * const down_xpm[] = {
 "                                "};
 
 search_d::search_d(QTbag *owner, const char *initstr) :
-    QDialog(owner ? owner->shell : 0), timer(this)
+    QDialog(owner ? owner->Shell() : 0), timer(this)
 {
     p_parent = owner;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Search")));
 
@@ -171,7 +171,7 @@ search_d::~search_d()
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
-            owner->monitor.remove(this);
+            owner->MonitorRemove(this);
     }
     delete [] label_string;
 }
@@ -184,7 +184,7 @@ search_d::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     delete this;

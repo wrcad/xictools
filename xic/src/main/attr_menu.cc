@@ -486,10 +486,10 @@ namespace {
                 DSPmainWbag(PopUpMessage("Label font dumped to file.", false));
             }
             else
-                GRpkgIf()->Perror(lstring::strip_path(tok));
+                DSPpkg::self()->Perror(lstring::strip_path(tok));
         }
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         delete [] tok;
         GRledPopup *ledpop = DSPmainWbagRet(ActiveInput());
         if (ledpop)

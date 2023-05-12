@@ -87,7 +87,7 @@ void *
 ShmCtl::allocate(int *retid, unsigned int sz)
 {
 #ifdef HAVE_SHMGET
-    if (GRpkgIf()->UseSHM()) {
+    if (GRpkg::self()->UseSHM()) {
         if (!instance) {
             fprintf(stderr, "Class ShmCtl used before allocated.\n");
             exit (1);

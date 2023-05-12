@@ -161,7 +161,7 @@ sAddEnt sPo::po_phys_addmenu[] = {
 void
 cEdit::PopUpProperties(CDo *odesc, ShowMode mode, PRPmode activ)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Po;
@@ -182,7 +182,7 @@ cEdit::PopUpProperties(CDo *odesc, ShowMode mode, PRPmode activ)
     gtk_window_set_transient_for(GTK_WINDOW(Po->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Po->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Po->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Po->Shell());
 }
@@ -359,7 +359,7 @@ sPo::sPo(CDo *odesc, PRPmode activ)
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
         "paragraph-background", bclr, NULL);
 
@@ -446,16 +446,16 @@ sPo::update(CDo *odesc, PRPmode activ)
     if (activ == PRPnochange)
         return;
     if (activ == PRPinactive) {
-        if (GRX->GetStatus(po_activ) == true) {
-            GRX->SetStatus(po_activ, false);
+        if (GTKdev::GetStatus(po_activ) == true) {
+            GTKdev::SetStatus(po_activ, false);
             activate(false);
         }
-        GRX->SetStatus(po_info, false);
-        GRX->SetStatus(po_global, false);
+        GTKdev::SetStatus(po_info, false);
+        GTKdev::SetStatus(po_global, false);
     }
     else if (activ == PRPactive) {
-        if (GRX->GetStatus(po_activ) == false) {
-            GRX->SetStatus(po_activ, true);
+        if (GTKdev::GetStatus(po_activ) == false) {
+            GTKdev::SetStatus(po_activ, true);
             activate(true);
         }
     }
@@ -673,7 +673,7 @@ sPo::po_cancel_proc(GtkWidget*, void*)
 void
 sPo::po_action_proc(GtkWidget *caller, void *client_data)
 {
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
     if (client_data == (void*)GlobCode) {
         ED()->prptySetGlobal(state);
         if (Po->po_name_btn)
@@ -694,8 +694,8 @@ sPo::po_action_proc(GtkWidget *caller, void *client_data)
                 Menu()->MenuButtonPress(MMedit, MenuPRPTY);
         }
         else {
-            GRX->SetStatus(Po->po_info, false);
-            GRX->SetStatus(Po->po_global, false);
+            GTKdev::SetStatus(Po->po_info, false);
+            GTKdev::SetStatus(Po->po_global, false);
             if (Menu()->MenuButtonStatus(MMedit, MenuPRPTY) == 1)
                 Menu()->MenuButtonPress(MMedit, MenuPRPTY);
         }
@@ -706,26 +706,26 @@ sPo::po_action_proc(GtkWidget *caller, void *client_data)
        return;
 
     if (caller != Po->po_edit)
-        GRX->Deselect(Po->po_edit);
+        GTKdev::Deselect(Po->po_edit);
     if (caller != Po->po_del)
-        GRX->Deselect(Po->po_del);
+        GTKdev::Deselect(Po->po_del);
 
     if (DSP()->CurMode() == Physical) {
         if (Po->po_add && caller != Po->po_add)
-            GRX->Deselect(Po->po_add);
+            GTKdev::Deselect(Po->po_add);
     }
 
     if (client_data == (void*)EditCode) {
         PrptyText *p = Po->get_selection();
         Po->call_prpty_edit(p);
         if (Po)
-            GRX->Deselect(caller);
+            GTKdev::Deselect(caller);
     }
     else if (client_data == (void*)DeleteCode) {
         PrptyText *p = Po->get_selection();
         Po->call_prpty_del(p);
         if (Po)
-            GRX->Deselect(caller);
+            GTKdev::Deselect(caller);
     }
 }
 
@@ -741,7 +741,7 @@ sPo::po_menu_proc(GtkWidget *caller, void *client_data)
     sAddEnt *ae = (sAddEnt*)client_data;
     Po->call_prpty_add(ae->value);
     if (Po)
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
 }
 
 
@@ -756,8 +756,8 @@ sPo::po_button_press(GtkWidget *widget, GdkEvent *event)
 {
     GtkWidget *menu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(widget));
     if (event->type == GDK_BUTTON_PRESS) {
-        GRX->Deselect(Po->po_edit);
-        GRX->Deselect(Po->po_del);
+        GTKdev::Deselect(Po->po_edit);
+        GTKdev::Deselect(Po->po_del);
         GdkEventButton *bevent = (GdkEventButton*)event;
         gtk_menu_popup(GTK_MENU(menu), 0, 0, 0, 0, bevent->button,
             bevent->time);

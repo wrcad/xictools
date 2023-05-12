@@ -396,7 +396,7 @@ ProfState::b1down()
             sv_x2 = x;
             sv_y2 = y;
             sv_last = CurCell()->cellname();
-            dspPkgIf()->RegisterIdleProc(action_idle, 0);
+            DSPpkg::self()->RegisterIdleProc(action_idle, 0);
         }
     }
 }
@@ -420,7 +420,7 @@ ProfState::b1up()
                 sv_x2 = x;
                 sv_y2 = y;
                 sv_last = CurCell()->cellname();
-                dspPkgIf()->RegisterIdleProc(action_idle, 0);
+                DSPpkg::self()->RegisterIdleProc(action_idle, 0);
                 return;
             }
         }
@@ -522,11 +522,11 @@ ProfState::show_cross_section(int x1, int y1, int x2, int y2)
     BBox BB(p1.x, p1.y, p2.x, p2.y);
     BB.fix();
     BB.bloat(2);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     if (!ldb.init_cross_sect(cursdp, &BB)) {
         Errs()->add_error("Error building 3-d database.");
         Log()->ErrorLog(mh::Initialization, Errs()->get_error());
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return;
     }
     Blist **boxes = ldb.line_scan(&p1, &p2);
@@ -549,7 +549,7 @@ ProfState::show_cross_section(int x1, int y1, int x2, int y2)
         lnum++;
     }
     delete [] boxes;
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     static int xs_count;
     char buf[64];

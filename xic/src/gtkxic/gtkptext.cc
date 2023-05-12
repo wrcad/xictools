@@ -102,7 +102,7 @@ sPf::sPf(GRobject caller)
 
     // The GTK-2 font widget needs to be initialized with an idle
     // proc, fix this sometime.
-    dspPkgIf()->RegisterIdleProc(pf_upd_idle, 0);
+    GTKpkg::self()->RegisterIdleProc(pf_upd_idle, 0);
 }
 
 
@@ -126,7 +126,7 @@ sPf::update()
     if (Pf && Pf->pf_fontsel) {
         Pf->pf_fontsel->set_font_name(fn);
         Pf->pf_fontsel->update_label("Pretty font updated.");
-        GRpkgIf()->AddTimer(1000, pf_updlabel, 0);
+        GTKpkg::self()->AddTimer(1000, pf_updlabel, 0);
     }
 }
 
@@ -185,7 +185,7 @@ sPf::pf_upd_idle(void*)
 void
 cEdit::PopUpPolytextFont(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Pf;
@@ -206,7 +206,8 @@ cEdit::PopUpPolytextFont(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Pf->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Pf->shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), Pf->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Pf->shell());
 }
 
@@ -245,7 +246,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     gc->set_foreground(&c);
 #else
     GdkPixmap *pixmap = gdk_pixmap_new(GTKmainwin::self()->Window(), wid, hei,
-        GRX->Visual()->depth);
+        GTKdev::self()->Visual()->depth);
     GdkGC *gc = gdk_gc_new(GTKmainwin::self()->Window());
     GdkColor c;
     c.pixel = 0xffffff;  // white
@@ -342,7 +343,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
             // Many fonts are anti-aliased, the code below does a
             // semi-reasonable job of filtering the pixels.
             int r, g, b;
-            GRX->RGBofPixel(px, &r, &g, &b);
+            GTKdev::self()->RGBofPixel(px, &r, &g, &b);
             if (r + g + b <= 512) {
                 Zoid Z(x + j*psz, x + (j+1)*psz, y + (hei-i-1)*psz,
                     x + j*psz, x + (j+1)*psz, y + (hei-i)*psz);

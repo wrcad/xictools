@@ -102,7 +102,7 @@ using namespace gtkdbgflg;
 void
 cMain::PopUpDebugFlags(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete DF;
@@ -124,7 +124,8 @@ cMain::PopUpDebugFlags(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(DF->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), DF->shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), DF->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(DF->shell());
 }
 
@@ -415,7 +416,7 @@ sDbgFlg::~sDbgFlg()
 {
     DF = 0;
     if (df_caller)
-        GRX->Deselect(df_caller);
+        GTKdev::Deselect(df_caller);
     if (df_popup)
         gtk_widget_destroy(df_popup);
 }
@@ -425,42 +426,42 @@ void
 sDbgFlg::update()
 {
     unsigned int flags = XM()->DebugFlags();
-    GRX->SetStatus(df_sel, flags & DBG_SELECT);
-    GRX->SetStatus(df_undo, flags & DBG_UNDOLIST);
-    GRX->SetStatus(df_ldb3d, Ldb3d::logging());
+    GTKdev::SetStatus(df_sel, flags & DBG_SELECT);
+    GTKdev::SetStatus(df_undo, flags & DBG_UNDOLIST);
+    GTKdev::SetStatus(df_ldb3d, Ldb3d::logging());
     if (ExtIf()->hasExtract()) {
-        GRX->SetStatus(df_rlsolv, ExtIf()->rlsolverMsgs());
+        GTKdev::SetStatus(df_rlsolv, ExtIf()->rlsolverMsgs());
     }
 
     const char *fn = XM()->DebugFile();
     if (!fn)
         fn = "";
     gtk_entry_set_text(GTK_ENTRY(df_fname), fn);
-    GRX->SetStatus(df_lisp, cLispEnv::is_logging());
-    GRX->SetStatus(df_connect, ScedIf()->logConnect());
+    GTKdev::SetStatus(df_lisp, cLispEnv::is_logging());
+    GTKdev::SetStatus(df_connect, ScedIf()->logConnect());
     if (ExtIf()->hasExtract()) {
-        GRX->SetStatus(df_rlsolvlog, ExtIf()->logRLsolver());
-        GRX->SetStatus(df_group, ExtIf()->logGrouping());
-        GRX->SetStatus(df_extract, ExtIf()->logExtracting());
-        GRX->SetStatus(df_assoc, ExtIf()->logAssociating());
-        GRX->SetStatus(df_verbose, ExtIf()->logVerbose());
+        GTKdev::SetStatus(df_rlsolvlog, ExtIf()->logRLsolver());
+        GTKdev::SetStatus(df_group, ExtIf()->logGrouping());
+        GTKdev::SetStatus(df_extract, ExtIf()->logExtracting());
+        GTKdev::SetStatus(df_assoc, ExtIf()->logAssociating());
+        GTKdev::SetStatus(df_verbose, ExtIf()->logVerbose());
     }
     if (OAif()->hasOA()) {
         const char *str = OAif()->set_debug_flags(0, 0);
         const char *s = strstr(str, "load=");
         if (s) {
             s += 5;
-            GRX->SetStatus(df_load, *s != '0');
+            GTKdev::SetStatus(df_load, *s != '0');
         }
         s = strstr(str, "net=");
         if (s) {
             s += 4;
-            GRX->SetStatus(df_net, *s != '0');
+            GTKdev::SetStatus(df_net, *s != '0');
         }
         s = strstr(str, "pcell=");
         if (s) {
             s += 6;
-            GRX->SetStatus(df_pcell, *s != '0');
+            GTKdev::SetStatus(df_pcell, *s != '0');
         }
     }
 }
@@ -487,7 +488,7 @@ sDbgFlg::df_action(GtkWidget *caller, void*)
         DSPmainWbag(PopUpHelp("xic:dblog"))
     else if (!strcmp(name, "sel")) {
         unsigned int f = XM()->DebugFlags();
-        if (GRX->GetStatus(DF->df_sel))
+        if (GTKdev::GetStatus(DF->df_sel))
             f |= DBG_SELECT;
         else
             f &= ~DBG_SELECT;
@@ -495,54 +496,54 @@ sDbgFlg::df_action(GtkWidget *caller, void*)
     }
     else if (!strcmp(name, "undo")) {
         unsigned int f = XM()->DebugFlags();
-        if (GRX->GetStatus(DF->df_undo))
+        if (GTKdev::GetStatus(DF->df_undo))
             f |= DBG_UNDOLIST;
         else
             f &= ~DBG_UNDOLIST;
         XM()->SetDebugFlags(f);
     }
     else if (!strcmp(name, "ldb3d")) {
-        Ldb3d::set_logging(GRX->GetStatus(caller));
+        Ldb3d::set_logging(GTKdev::GetStatus(caller));
     }
     else if (!strcmp(name, "rlsolv")) {
-        ExtIf()->setRLsolverMsgs(GRX->GetStatus(caller));
+        ExtIf()->setRLsolverMsgs(GTKdev::GetStatus(caller));
     }
 
     else if (!strcmp(name, "lisp")) {
-        cLispEnv::set_logging(GRX->GetStatus(caller));
+        cLispEnv::set_logging(GTKdev::GetStatus(caller));
     }
     else if (!strcmp(name, "connect")) {
-        ScedIf()->setLogConnect(GRX->GetStatus(caller));
+        ScedIf()->setLogConnect(GTKdev::GetStatus(caller));
     }
     else if (!strcmp(name, "rlsolvlog")) {
-        ExtIf()->setLogRLsolver(GRX->GetStatus(caller));
+        ExtIf()->setLogRLsolver(GTKdev::GetStatus(caller));
     }
     else if (!strcmp(name, "group")) {
-        ExtIf()->setLogGrouping(GRX->GetStatus(caller));
+        ExtIf()->setLogGrouping(GTKdev::GetStatus(caller));
     }
     else if (!strcmp(name, "extract")) {
-        ExtIf()->setLogExtracting(GRX->GetStatus(caller));
+        ExtIf()->setLogExtracting(GTKdev::GetStatus(caller));
     }
     else if (!strcmp(name, "assoc")) {
-        ExtIf()->setLogAssociating(GRX->GetStatus(caller));
+        ExtIf()->setLogAssociating(GTKdev::GetStatus(caller));
     }
     else if (!strcmp(name, "verbose")) {
-        ExtIf()->setLogVerbose(GRX->GetStatus(caller));
+        ExtIf()->setLogVerbose(GTKdev::GetStatus(caller));
     }
     else if (!strcmp(name, "load")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             OAif()->set_debug_flags("l", 0);
         else
             OAif()->set_debug_flags(0, "l");
     }
     else if (!strcmp(name, "net")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             OAif()->set_debug_flags("n", 0);
         else
             OAif()->set_debug_flags(0, "n");
     }
     else if (!strcmp(name, "pcell")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             OAif()->set_debug_flags("p", 0);
         else
             OAif()->set_debug_flags(0, "p");

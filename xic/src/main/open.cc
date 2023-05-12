@@ -121,7 +121,7 @@ cMain::EditCell(const char *file_or_cell_name, bool noask,
                     cellname = Tstring(p->get_name());
             }
             if (chd->loadCell(cellname) != OIok) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s", Errs()->get_error());
+                DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", Errs()->get_error());
                 inhere = false;
                 return (EditFailed);
             }
@@ -284,7 +284,7 @@ cMain::EditCell(const char *file_or_cell_name, bool noask,
         delete [] fcname;
         if (!DSP()->CurCellName()) {
             fprintf(stderr, "Can not open cell, unknown error, exiting.\n");
-            dspPkgIf()->Halt();
+            DSPpkg::self()->Halt();
             inhere = false;
             return (EditFailed);
         }
@@ -384,17 +384,17 @@ cMain::Load(WindowDesc *wdesc, const char *file_or_cell_name,
         if (!dbname)
             dbname = wdesc->DbName();
         else if (strcmp(dbname, wdesc->DbName())) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "CHD name does not match %s.",
+            DSPpkg::self()->ErrPrintf(ET_ERROR, "CHD name does not match %s.",
                 wdesc->DbName());
             return (EditFailed);
         }
         cCHD *tchd = CDchd()->chdRecall(dbname, false);
         if (!tchd) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "unknown CHD %s.", dbname);
+            DSPpkg::self()->ErrPrintf(ET_ERROR, "unknown CHD %s.", dbname);
             return (EditFailed);
         }
         if (!tchd->findSymref(cname, wdesc->Mode(), true)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "cell name unknown in CHD %s.",
+            DSPpkg::self()->ErrPrintf(ET_ERROR, "cell name unknown in CHD %s.",
                 dbname);
             return (EditFailed);
         }
@@ -431,7 +431,7 @@ cMain::Load(WindowDesc *wdesc, const char *file_or_cell_name,
                     cellname = Tstring(p->get_name());
             }
             if (chd->loadCell(cellname) != OIok) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s", Errs()->get_error());
+                DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", Errs()->get_error());
                 return (EditFailed);
             }
             Cvt()->PopUpAuxTab(0, MODE_UPD);
@@ -466,7 +466,7 @@ cMain::Load(WindowDesc *wdesc, const char *file_or_cell_name,
                     }
                 }
                 else {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "%s",
+                    DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
                         filestat::error_msg());
                     noedit = true;
                 }

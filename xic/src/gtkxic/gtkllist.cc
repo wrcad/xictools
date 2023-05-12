@@ -115,8 +115,8 @@ llist_t::llist_t()
 
 llist_t::~llist_t()
 {
-    if (ll_aledit && GRX->GetStatus(ll_aledit))
-        GRX->CallCallback(ll_aledit);
+    if (ll_aledit && GTKdev::GetStatus(ll_aledit))
+        GTKdev::CallCallback(ll_aledit);
 }
 
 
@@ -126,17 +126,17 @@ llist_t::update()
     const char *use = CDvdb()->getVariable(VA_UseLayerList);
     if (use) {
         if (*use == 'n' || *use == 'N') {
-            GRX->SetStatus(ll_lskip, true);
-            GRX->SetStatus(ll_luse, false);
+            GTKdev::SetStatus(ll_lskip, true);
+            GTKdev::SetStatus(ll_luse, false);
         }
         else {
-            GRX->SetStatus(ll_lskip, false);
-            GRX->SetStatus(ll_luse, true);
+            GTKdev::SetStatus(ll_lskip, false);
+            GTKdev::SetStatus(ll_luse, true);
         }
     }
     else {
-        GRX->SetStatus(ll_lskip, false);
-        GRX->SetStatus(ll_luse, false);
+        GTKdev::SetStatus(ll_lskip, false);
+        GTKdev::SetStatus(ll_luse, false);
     }
     const char *list = CDvdb()->getVariable(VA_LayerList);
     if (!list)
@@ -146,12 +146,13 @@ llist_t::update()
         l = "";
     if (strcmp(list, l))
         gtk_entry_set_text(GTK_ENTRY(ll_laylist), list);
-    if (GRX->GetStatus(ll_luse) || GRX->GetStatus(ll_lskip))
+    if (GTKdev::GetStatus(ll_luse) ||
+            GTKdev::GetStatus(ll_lskip))
         gtk_widget_set_sensitive(ll_laylist, true);
     else
         gtk_widget_set_sensitive(ll_laylist, false);
 
-    GRX->SetStatus(ll_aluse, CDvdb()->getVariable(VA_UseLayerAlias));
+    GTKdev::SetStatus(ll_aluse, CDvdb()->getVariable(VA_UseLayerAlias));
 }
 
 
@@ -176,7 +177,7 @@ llist_t::action(GtkWidget *caller)
 {
     const char *name = gtk_widget_get_name(caller);
     if (!strcmp(name, "luse")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             CDvdb()->setVariable(VA_UseLayerList, 0);
             // Give the list entry the focus.
             GtkWidget *parent = gtk_widget_get_parent(ll_frame);
@@ -190,7 +191,7 @@ llist_t::action(GtkWidget *caller)
             CDvdb()->clearVariable(VA_UseLayerList);
     }
     if (!strcmp(name, "lskip")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             CDvdb()->setVariable(VA_UseLayerList, "n");
             GtkWidget *parent = gtk_widget_get_parent(ll_frame);
             if (parent) {
@@ -203,13 +204,13 @@ llist_t::action(GtkWidget *caller)
             CDvdb()->clearVariable(VA_UseLayerList);
     }
     if (!strcmp(name, "aluse")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_UseLayerAlias, 0);
         else
             CDvdb()->clearVariable(VA_UseLayerAlias);
     }
     if (!strcmp(name, "aledit")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             XM()->PopUpLayerAliases(ll_aledit, MODE_ON);
         else
             XM()->PopUpLayerAliases(0, MODE_OFF);

@@ -135,7 +135,7 @@ using namespace gtkchdlist;
 void
 cConvert::PopUpHierarchies(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete CHL;
@@ -157,7 +157,7 @@ cConvert::PopUpHierarchies(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(CHL->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), CHL->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), CHL->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(CHL->Shell());
 }
@@ -282,7 +282,7 @@ sCHL::sCHL(GRobject c)
     rowcnt++;
 
     if (DSP()->MainWdesc()->DbType() == WDchd)
-        GRX->SetStatus(chl_dspbtn, true);
+        GTKdev::SetStatus(chl_dspbtn, true);
 
     //
     // scrolled list
@@ -448,11 +448,11 @@ sCHL::~sCHL()
     delete [] chl_contlib;
 
     if (chl_caller)
-        GRX->Deselect(chl_caller);
+        GTKdev::Deselect(chl_caller);
     Cvt()->PopUpChdOpen(0, MODE_OFF, 0, 0, 0, 0, 0, 0);
     Cvt()->PopUpChdSave(0, MODE_OFF, 0, 0, 0, 0, 0);
     Cvt()->PopUpChdConfig(0, MODE_OFF, 0, 0, 0);
-    if (GRX->GetStatus(chl_showtab))
+    if (GTKdev::GetStatus(chl_showtab))
         Cvt()->PopUpAuxTab(0, MODE_OFF);
     if (chl_cnt_pop)
         chl_cnt_pop->popdown();
@@ -475,10 +475,14 @@ sCHL::update()
     if (!CHL)
         return;
 
-    GRX->SetStatus(chl_loadtop, CDvdb()->getVariable(VA_ChdLoadTopOnly));
-    GRX->SetStatus(chl_rename, CDvdb()->getVariable(VA_RefCellAutoRename));
-    GRX->SetStatus(chl_usetab, CDvdb()->getVariable(VA_UseCellTab));
-    GRX->SetStatus(chl_failres, CDvdb()->getVariable(VA_ChdFailOnUnresolved));
+    GTKdev::SetStatus(chl_loadtop,
+        CDvdb()->getVariable(VA_ChdLoadTopOnly));
+    GTKdev::SetStatus(chl_rename,
+        CDvdb()->getVariable(VA_RefCellAutoRename));
+    GTKdev::SetStatus(chl_usetab,
+        CDvdb()->getVariable(VA_UseCellTab));
+    GTKdev::SetStatus(chl_failres,
+        CDvdb()->getVariable(VA_ChdFailOnUnresolved));
 
     // Since the enum is defined elsewhere, don't assume that the values
     // are the same as the menu order.
@@ -580,7 +584,7 @@ sCHL::update()
 void
 sCHL::recolor()
 {
-    const char *sclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *sclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     if (DSP()->MainWdesc()->DbType() == WDchd) {
         GtkTreeIter iter;
         GtkListStore *store =
@@ -638,7 +642,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
         if (chl_selection) {
             cCHD *chd = CDchd()->chdRecall(chl_selection, false);
             if (chd) {
-                dspPkgIf()->SetWorking(true);
+                GTKpkg::self()->SetWorking(true);
                 char *string = chd->prInfo(0, DSP()->CurMode(), 0);
 
                 char buf[256];
@@ -651,7 +655,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
 
                 PopUpInfo(MODE_ON, string, STY_FIXED);
                 delete [] string;
-                dspPkgIf()->SetWorking(false);
+                GTKpkg::self()->SetWorking(false);
             }
         }
         return;
@@ -763,7 +767,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
         return;
     }
 
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
 
     if (client_data == (void*)CHLadd) {
         if (state) {
@@ -783,7 +787,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
         if (state) {
             if (chl_del_pop)
                 chl_del_pop->popdown();
-            GRX->Deselect(chl_delbtn);
+            GTKdev::Deselect(chl_delbtn);
             if (chl_selection) {
                 int xo, yo;
                 gdk_window_get_root_origin(gtk_widget_get_window(Shell()),
@@ -792,7 +796,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
                     xo + 20, yo + 100, chl_sav_cb, 0);
             }
             else
-                GRX->Deselect(chl_savbtn);
+                GTKdev::Deselect(chl_savbtn);
         }
         else
             Cvt()->PopUpChdSave(0, MODE_OFF, 0, 0, 0, 0, 0);
@@ -803,7 +807,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
             chl_del_pop->popdown();
         if (state) {
             Cvt()->PopUpChdSave(0, MODE_OFF, 0, 0, 0, 0, 0);
-            GRX->Deselect(chl_savbtn);
+            GTKdev::Deselect(chl_savbtn);
             if (chl_selection) {
                 chl_del_pop = PopUpAffirm(chl_delbtn, GRloc(),
                     "Confirm - delete selected digest?", chl_del_cb,
@@ -812,7 +816,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
                     chl_del_pop->register_usrptr((void**)&chl_del_pop);
             }
             else
-                GRX->Deselect(chl_delbtn);
+                GTKdev::Deselect(chl_delbtn);
         }
         return;
     }
@@ -831,12 +835,12 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
     if (client_data == (void*)CHLdsp) {
         if (state) {
             if (!chl_selection) {
-                GRX->Deselect(chl_dspbtn);
+                GTKdev::Deselect(chl_dspbtn);
                 return;
             }
             cCHD *chd = CDchd()->chdRecall(chl_selection, false);
             if (!chd) {
-                GRX->Deselect(chl_dspbtn);
+                GTKdev::Deselect(chl_dspbtn);
                 return;
             }
             symref_t *p = chd->findSymref(0, Physical, true);
@@ -867,7 +871,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
             chl_cel_pop->popdown();
         if (state) {
             if (!chl_selection) {
-                GRX->Deselect(chl_celbtn);
+                GTKdev::Deselect(chl_celbtn);
                 return;
             }
             const char *cname = 0;
@@ -875,7 +879,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
             if (chd)
                 cname = chd->defaultCell(Physical);
             else {
-                GRX->Deselect(chl_celbtn);
+                GTKdev::Deselect(chl_celbtn);
                 return;
             }
             chl_cel_pop = PopUpEditString(chl_celbtn, GRloc(),
@@ -894,7 +898,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
         return;
     }
     if (client_data == (void*)CHLrenam) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_RefCellAutoRename, "");
         else
             CDvdb()->clearVariable(VA_RefCellAutoRename);
@@ -1072,14 +1076,14 @@ sCHL::chl_add_cb(const char *idname, const char *fname, int mode, void*)
             delete [] realname;
             return (false);
         }
-        dspPkgIf()->SetWorking(true);
+        GTKpkg::self()->SetWorking(true);
         ChdCgdType tp = CHD_CGDmemory;
         if (mode == 1)
             tp = CHD_CGDfile;
         else if (mode == 2)
             tp = CHD_CGDnone;
         chd = chd_in.read(realname, tp);
-        dspPkgIf()->SetWorking(false);
+        GTKpkg::self()->SetWorking(false);
         if (!chd) {
             CHL->err_message("Read digest file failed:\n%s");
             delete [] realname;
@@ -1138,10 +1142,10 @@ sCHL::chl_sav_cb(const char *fname, bool with_geom, void*)
         return (false);
     }
 
-    dspPkgIf()->SetWorking(true);
+    GTKpkg::self()->SetWorking(true);
     sCHDout chd_out(chd);
     bool ok = chd_out.write(fname, with_geom ? CHD_WITH_GEOM : 0);
-    dspPkgIf()->SetWorking(false);
+    GTKpkg::self()->SetWorking(false);
     if (!ok) {
         CHL->err_message("Error occurred when writing digest file:\n%s");
         return (false);
@@ -1163,7 +1167,7 @@ sCHL::chl_del_cb(bool yn, void *arg)
         delete chd;
         if (DSP()->MainWdesc()->DbType() == WDchd &&
                 !strcmp(dbname, DSP()->MainWdesc()->DbName())) {
-            GRX->Deselect(CHL->chl_dspbtn);
+            GTKdev::Deselect(CHL->chl_dspbtn);
             XM()->SetHierDisplayMode(0, 0, 0);
         }
         CHL->update();
@@ -1197,11 +1201,11 @@ sCHL::chl_display_cb(bool working, const BBox *BB, void*)
     // selected, but will revert to proper colors if, e.g., the mouse
     // cursor crosses the button area.
 
-    GRX->Deselect(CHL->chl_dspbtn);
+    GTKdev::Deselect(CHL->chl_dspbtn);
     gtk_widget_set_sensitive(CHL->wb_shell, true);
     if (DSP()->MainWdesc()->DbType() == WDchd) {
         CHL->recolor();
-        GRX->Select(CHL->chl_dspbtn);
+        GTKdev::Select(CHL->chl_dspbtn);
     }
     return (true);
 }
@@ -1231,7 +1235,7 @@ sCHL::chl_cnt_cb(const char *cellname, void*)
         delete [] listsel;
         if (!p)
             return;
-        dspPkgIf()->SetWorking(true);
+        GTKpkg::self()->SetWorking(true);
         stringlist *sl = new stringlist(
             lstring::copy(Tstring(p->get_name())), 0);
         int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
@@ -1239,7 +1243,7 @@ sCHL::chl_cnt_cb(const char *cellname, void*)
         char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);
         stringlist::destroy(sl);
         CHL->PopUpInfo(MODE_ON, str, STY_FIXED);
-        dspPkgIf()->SetWorking(false);
+        GTKpkg::self()->SetWorking(false);
     }
     else if (!strcmp(cellname, OPEN_BTN)) {
         char *sel = CHL->chl_cnt_pop->get_selection();

@@ -89,26 +89,25 @@ namespace gtkinterf {
 
         // virtual overrides
         // gtkinterf.cc
-        virtual bool Init(int*, char**);
-        bool InitColormap(int, int, bool);
-        void RGBofPixel(int, int*, int*, int*);
-        int AllocateColor(int*, int, int, int);
-        int NameColor(const char*);
-        bool NameToRGB(const char*, int*);
-        GRdraw *NewDraw(int);
-        GRwbag *NewWbag(const char*, GRwbag*);
-        int AddTimer(int, int(*)(void*), void*);
-        void RemoveTimer(int);
+        bool        Init(int*, char**);
+        bool        InitColormap(int, int, bool);
+        void        RGBofPixel(int, int*, int*, int*);
+        int         AllocateColor(int*, int, int, int);
+        int         NameColor(const char*);
+        bool        NameToRGB(const char*, int*);
+        GRdraw      *NewDraw(int);
+        GRwbag      *NewWbag(const char*, GRwbag*);
+        int         AddTimer(int, int(*)(void*), void*);
+        void        RemoveTimer(int);
         GRsigintHdlr RegisterSigintHdlr(GRsigintHdlr);
-        bool CheckForEvents();
-        int Input(int, int, int*);
-        void MainLoop(bool=false);
-        int LoopLevel()             { return (dv_loop_level); }
-        void BreakLoop()            { gtk_main_quit(); }
-        int UseSHM();
-
+        bool        CheckForEvents();
+        int         Input(int, int, int*);
+        void        MainLoop(bool=false);
+        int         LoopLevel()             { return (dv_loop_level); }
+        void        BreakLoop()             { gtk_main_quit(); }
+        int         UseSHM();
         // virtual override, gtkhcopy.cc
-        void HCmessage(const char*);
+        void        HCmessage(const char*);
 
         // Remaining functions are unique to class.
 
@@ -122,32 +121,6 @@ namespace gtkinterf {
 
         // Which image transfer code block to use.
         int ImageCode()             { return (dv_image_code); }
-
-        // gtkinterf.cc
-        int  ConnectFd();
-        void Deselect(GRobject);
-        void Select(GRobject);
-        bool GetStatus(GRobject);
-        void SetStatus(GRobject, bool);
-        void CallCallback(GRobject);
-        void Location(GRobject, int*, int*);
-        void PointerRootLoc(int*, int*);
-        const char *GetLabel(GRobject);
-        void SetLabel(GRobject, const char*);
-        void SetSensitive(GRobject, bool);
-        bool IsSensitive(GRobject);
-        void SetVisible(GRobject, bool);
-        bool IsVisible(GRobject);
-        void DestroyButton(GRobject);
-
-        // gtkutil.cc
-        void SetPopupLocation(GRloc, GtkWidget*, GtkWidget*);
-        void ComputePopupLocation(GRloc, GtkWidget*, GtkWidget*, int*, int*);
-        void WidgetLocation(GtkWidget*, int*, int*, int*, int*);
-        void SetFocus(GtkWidget*);
-        void SetDoubleClickExit(GtkWidget*, GtkWidget*);
-        void RegisterBigWindow(GtkWidget *window);
-        void RegisterBigForeignWindow(unsigned int);
 
 #if GTK_CHECK_VERSION(3,0,0)
 #else
@@ -168,8 +141,8 @@ namespace gtkinterf {
         unsigned int ConsoleXid()   { return (dv_console_xid); }
         unsigned int BigWindowXid() { return (dv_big_window_xid); }
 #else
-        void SetSilenceErrs(bool) { }
-        bool IsSilenceErrs() { return (false); }
+        void SetSilenceErrs(bool)   { }
+        bool IsSilenceErrs()        { return (false); }
 #endif
 
 #ifdef WIN32
@@ -178,31 +151,71 @@ namespace gtkinterf {
         void SetCRLFtermination(bool b) { dv_crlf_terminate = b; }
 #endif
 
+        static GTKdev *self()
+        {
+            if (!instancePtr)
+                on_null_ptr();
+            return (instancePtr);
+        }
+
+        static bool exists()
+        {
+            return (instancePtr != 0);
+        }
+
+        // gtkinterf.cc
+        void Location(GRobject, int*, int*);
+        void SetPopupLocation(GRloc, GtkWidget*, GtkWidget*);
+        void ComputePopupLocation(GRloc, GtkWidget*, GtkWidget*, int*, int*);
+        void WidgetLocation(GtkWidget*, int*, int*, int*, int*);
+        void SetDoubleClickExit(GtkWidget*, GtkWidget*);
+        void RegisterBigWindow(GtkWidget *window);
+        void RegisterBigForeignWindow(unsigned int);
+
+        static void Deselect(GRobject);
+        static void Select(GRobject);
+        static bool GetStatus(GRobject);
+        static void SetStatus(GRobject, bool);
+        static void CallCallback(GRobject);
+        static const char *GetLabel(GRobject);
+        static void SetLabel(GRobject, const char*);
+        static void SetSensitive(GRobject, bool);
+        static bool IsSensitive(GRobject);
+        static void SetVisible(GRobject, bool);
+        static bool IsVisible(GRobject);
+        static void DestroyButton(GRobject);
+        static void SetFocus(GtkWidget*);
+        static int  ConnectFd();
+        static void PointerRootLoc(int*, int*);
+
     private:
-        int dv_minx;
-        int dv_miny;
-        int dv_image_code;
-        int dv_loop_level;
-        GTKbag *dv_main_wbag;
-        GdkWindow *dv_default_focus_win;
+        static void on_null_ptr();
+
+        int             dv_minx;
+        int             dv_miny;
+        int             dv_image_code;
+        int             dv_loop_level;
+        GTKbag          *dv_main_wbag;
+        GdkWindow *     dv_default_focus_win;
 #if GTK_CHECK_VERSION(3,0,0)
 #else
-        GdkColormap *dv_cmap;
+        GdkColormap     *dv_cmap;
 #endif
-        GdkVisual *dv_visual;
-        int dv_lower_win_offset;
-        bool dv_dual_plane;  // color map has separate highlighting plane
-        bool dv_true_color;  // not pseudo-color visual
+        GdkVisual       *dv_visual;
+        int             dv_lower_win_offset;
+        bool            dv_dual_plane;  // color map has separate highlighting plane
+        bool            dv_true_color;  // not pseudo-color visual
 #ifdef WITH_X11
-        bool dv_silence_xerrors;
-        bool dv_no_to_top;
-        int dv_screen;
-        unsigned int dv_console_xid;
-        unsigned int dv_big_window_xid;
+        bool            dv_silence_xerrors;
+        bool            dv_no_to_top;
+        int             dv_screen;
+        unsigned int    dv_console_xid;
+        unsigned int    dv_big_window_xid;
 #endif
 #ifdef WIN32
-        bool dv_crlf_terminate;
+        bool            dv_crlf_terminate;
 #endif
+        static GTKdev   *instancePtr;
     };
 
     struct GTKfontPopup;
@@ -442,9 +455,6 @@ namespace gtkinterf {
         void*, bool);
     void text_realize_proc(GtkWidget*, void*);
 }
-
-// Global access, set in constructor
-extern gtkinterf::GTKdev *GRX;
 
 #endif // GTKINTERF_H
 

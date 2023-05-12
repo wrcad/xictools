@@ -42,6 +42,7 @@
 #include "dsp_window.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 
 
 // Called from constructor.
@@ -260,7 +261,7 @@ sColorTab::init()
     for (int i = GUIcolorBase; i < ColorTableEnd; i++) {
         sColorTabEnt *c = colors + i;
         if (c->attr_index() >= 0) {
-            GRpkgIf()->SetAttrColor((GRattrColor)c->attr_index(),
+            DSPpkg::self()->SetAttrColor((GRattrColor)c->attr_index(),
                 c->get_defclr());
         }
     }
@@ -325,7 +326,7 @@ sColorTab::set_index_color(int cindex, const char *colorin)
         *t-- = 0;
 
     int rgb[3];
-    if (!GRpkgIf()->NameToRGB(clr, rgb)) {
+    if (!DSPpkg::self()->NameToRGB(clr, rgb)) {
         delete [] clr;
         return (false);
     }
@@ -335,7 +336,7 @@ sColorTab::set_index_color(int cindex, const char *colorin)
     if (cindex >= GUIcolorBase) {
         sColorTabEnt *c = colors + cindex;
         if (c->attr_index() >= 0) {
-            GRpkgIf()->SetAttrColor((GRattrColor)c->attr_index(),
+            DSPpkg::self()->SetAttrColor((GRattrColor)c->attr_index(),
                 c->get_defclr());
         }
         return (true);
@@ -667,8 +668,8 @@ void
 sColorTab::sColorTabEnt::set_dark()
 {
     int p = DSP()->ContextDarkPcnt();
-    GRpkgIf()->AllocateColor(&te_dark_pixel, (p*te_red)/100, (p*te_green)/100,
-        (p*te_blue/100));
+    DSPpkg::self()->AllocateColor(&te_dark_pixel, (p*te_red)/100,
+        (p*te_green)/100, (p*te_blue/100));
 }
 
 

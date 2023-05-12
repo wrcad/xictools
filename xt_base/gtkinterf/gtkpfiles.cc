@@ -609,7 +609,7 @@ files_bag::create_page(sDirList *dl)
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(nbtext));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GRpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary",
         "background", bclr, NULL);
     gtk_table_attach(GTK_TABLE(vtab), contr, 0, 1, rowcnt, rowcnt+1,

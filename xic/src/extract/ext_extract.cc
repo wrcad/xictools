@@ -114,7 +114,7 @@ cExt::extract(CDs *sdesc)
     if (!group(sdesc, CDMAXCALLDEPTH))
         return (false);
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     if (EX()->isVerbosePromptline())
         PL()->PushPrompt("Extracting: ");
     else
@@ -156,7 +156,7 @@ cExt::extract(CDs *sdesc)
     }
     else
         PL()->ShowPrompt("Extraction aborted.");
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     return (ret == XIok);
 }

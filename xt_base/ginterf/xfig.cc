@@ -130,7 +130,7 @@ XFdev::NewDraw(int)
     else
         return (0);
     if (!plotfp) {
-        GRpkgIf()->Perror(data->filename);
+        GRpkg::self()->Perror(data->filename);
         return (0);
     }
     XFparams *xf = new XFparams;
@@ -675,7 +675,7 @@ XFparams::SetFillpattern(const GRfillType *fillp)
 void
 XFparams::DisplayImage(const GRimage*, int, int, int, int)
 {
-    GRpkgIf()->HCabort("HPGL driver doesn't suppport image mode.");
+    GRpkg::self()->HCabort("HPGL driver doesn't suppport image mode.");
 }
 
 

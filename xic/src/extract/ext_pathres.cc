@@ -218,7 +218,7 @@ cExt::showTerminals(WindowDesc *wdesc, bool d_or_e)
     if (!wdesc->IsSimilar(Physical, DSP()->MainWdesc()))
         return;
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(d_or_e ? GRxHlite : GRxUnhlite);
     else {
         if (d_or_e)
@@ -255,7 +255,7 @@ cExt::showTerminals(WindowDesc *wdesc, bool d_or_e)
         tnum++;
     }
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(GRxNone);
     else if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());

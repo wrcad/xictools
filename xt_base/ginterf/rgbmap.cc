@@ -465,7 +465,7 @@ RGBparams::SetColor(int pixel)
     if (pixel == GRappIf()->BackgroundPixel())
         r = g = b = 0;
     else
-        GRpkgIf()->RGBofPixel(pixel, &r, &g, &b);
+        GRpkg::self()->RGBofPixel(pixel, &r, &g, &b);
     if (invert_colors) {
         red = 255 - r;
         green = 255 - g;
@@ -512,7 +512,7 @@ RGBparams::put_pixel(unsigned int pixel, int x, int y)
     if (pixel == (unsigned int)GRappIf()->BackgroundPixel())
         r = g = b = 255;
     else {
-        GRpkgIf()->RGBofPixel(pixel, &r, &g, &b);
+        GRpkg::self()->RGBofPixel(pixel, &r, &g, &b);
         // map pure white to black & vice-versa
         if (r == 255 && g == 255 && b == 255)
             r = g = b = 0;

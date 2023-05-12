@@ -58,9 +58,9 @@ namespace {
     void
     start_modal(GtkWidget *w)
     {
-        gtkMenu()->SetSensGlobal(false);
-        gtkMenu()->SetModal(w);
-        dspPkgIf()->SetOverrideBusy(true);
+        GTKmenu::self()->SetSensGlobal(false);
+        GTKmenu::self()->SetModal(w);
+        GTKpkg::self()->SetOverrideBusy(true);
         DSPmainDraw(ShowGhost(ERASE))
     }
 
@@ -68,9 +68,9 @@ namespace {
     void
     end_modal()
     {
-        gtkMenu()->SetModal(0);
-        gtkMenu()->SetSensGlobal(true);
-        dspPkgIf()->SetOverrideBusy(false);
+        GTKmenu::self()->SetModal(0);
+        GTKmenu::self()->SetSensGlobal(true);
+        GTKpkg::self()->SetOverrideBusy(false);
         DSPmainDraw(ShowGhost(DISPLAY))
     }
 }
@@ -120,12 +120,12 @@ using namespace gtkmerge;
 bool
 cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return (true);
     if (mode == MODE_OFF) {
         if (MC && !MC->is_hidden()) {
-            if (GRX->LoopLevel() > 1)
-                GRX->BreakLoop();
+            if (GTKdev::self()->LoopLevel() > 1)
+                GTKdev::self()->BreakLoop();
             end_modal();
         }
         delete MC;
@@ -136,8 +136,8 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
         // widget and break out of modality.
 
         if (MC && MC->set_apply_to_all()) {
-            if (GRX->LoopLevel() > 1)
-                GRX->BreakLoop();
+            if (GTKdev::self()->LoopLevel() > 1)
+                GTKdev::self()->BreakLoop();
             end_modal();
         }
         return (true);
@@ -157,13 +157,13 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
 
         gtk_window_set_transient_for(GTK_WINDOW(MC->shell()),
             GTK_WINDOW(GTKmainwin::self()->Shell()));
-        GRX->SetPopupLocation(GRloc(LW_LL), MC->shell(),
+        GTKdev::self()->SetPopupLocation(GRloc(LW_LL), MC->shell(),
             GTKmainwin::self()->Viewport());
         gtk_widget_show(MC->shell());
         start_modal(MC->shell());
     }
 
-    GRX->MainLoop();  // wait for user's response
+    GTKdev::self()->MainLoop();  // wait for user's response
 
     if (MC)
         MC->query(mi);
@@ -334,14 +334,14 @@ sMC::mc_btn_proc(GtkWidget *caller, void *client_data)
         return;
     int mode = (intptr_t)client_data;
     if (mode == MC_apply) {
-        if (GRX->LoopLevel() > 1)
-            GRX->BreakLoop();
+        if (GTKdev::self()->LoopLevel() > 1)
+            GTKdev::self()->BreakLoop();
     }
     else if (mode == MC_abort)
         Cvt()->PopUpMergeControl(MODE_UPD, 0);
     else if (mode == MC_readP)
-        MC->mc_do_phys = GRX->GetStatus(caller);
+        MC->mc_do_phys = GTKdev::GetStatus(caller);
     else if (mode == MC_readE)
-        MC->mc_do_elec = GRX->GetStatus(caller);
+        MC->mc_do_elec = GTKdev::GetStatus(caller);
 }
 

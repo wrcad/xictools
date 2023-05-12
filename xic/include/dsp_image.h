@@ -84,7 +84,7 @@ struct bnd_draw_t
             bd_numgeom++;
             if (!(bd_numgeom & 0xff)) {
                 // check every 256 objects for efficiency
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
                 if (DSP()->Interrupt()) {
                     DSP()->SetInterrupt(DSPinterNone);
                     bd_abort = true;

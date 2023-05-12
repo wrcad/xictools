@@ -156,8 +156,8 @@ void
 GTKdev::HCmessage(const char *str)
 {
     if (GP) {
-        if (GRpkgIf()->CheckForEvents()) {
-            GRpkgIf()->HCabort("User aborted");
+        if (GRpkg::self()->CheckForEvents()) {
+            GRpkg::self()->HCabort("User aborted");
             str = "ABORTED";
         }
         gtk_label_set_text(GTK_LABEL(GP->label), str);
@@ -525,7 +525,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
                 if (cb)
                     wb->HCsetFormat(cb->format);
                 if (wb->PositionReferenceWidget()) {
-                    GRX->SetPopupLocation(
+                    GTKdev::self()->SetPopupLocation(
                         GRloc(hc->hc_textmode == HCgraphical ?
                         LW_UL : LW_CENTER), hc->hc_popup,
                         wb->PositionReferenceWidget());
@@ -540,7 +540,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         else {
             hc->hc_active = false;
             if (hc->hc_caller)
-                GRX->Deselect(hc->hc_caller);
+                GTKdev::Deselect(hc->hc_caller);
             if (hc->hc_popup) {
                 gtk_widget_hide(hc->hc_popup);
                 if (hc->hc_cb && hc->hc_cb->hcsetup)
@@ -561,7 +561,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
                         hc->hc_top_val = gtk_spin_button_get_value(
                             GTK_SPIN_BUTTON(hc->hc_top));
                     if (hc->hc_wid) {
-                        if (hc->hc_wlabel && GRX->GetStatus(hc->hc_wlabel))
+                        if (hc->hc_wlabel &&
+                                GTKdev::GetStatus(hc->hc_wlabel))
                             hc->hc_wid_val = 0.0;
                         else
                             hc->hc_wid_val =
@@ -569,7 +570,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
                                     GTK_SPIN_BUTTON(hc->hc_wid));
                     }
                     if (hc->hc_hei) {
-                        if (hc->hc_hlabel && GRX->GetStatus(hc->hc_hlabel))
+                        if (hc->hc_hlabel &&
+                                GTKdev::GetStatus(hc->hc_hlabel))
                             hc->hc_hei_val = 0.0;
                         else
                             hc->hc_hei_val =
@@ -579,7 +581,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
                     if (hc->hc_cmdtxtbox) {
                         const char *s =
                             gtk_entry_get_text(GTK_ENTRY(hc->hc_cmdtxtbox));
-                        if (GRX->GetStatus(hc->hc_tofbtn)) {
+                        if (GTKdev::GetStatus(hc->hc_tofbtn)) {
                             delete hc->hc_tofilename;
                             hc->hc_tofilename = lstring::copy(s);
                         }
@@ -603,23 +605,23 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
             hc->hc_drvrmask = cb->drvrmask;
             hc->hc_fmt = cb->format;
             int i;
-            for (i = 0; GRpkgIf()->HCof(i); i++) ;
+            for (i = 0; GRpkg::self()->HCof(i); i++) ;
             if (hc->hc_fmt >= i || (hc->hc_drvrmask & (1 << hc->hc_fmt))) {
-                for (i = 0; GRpkgIf()->HCof(i); i++) {
+                for (i = 0; GRpkg::self()->HCof(i); i++) {
                     if (!(hc->hc_drvrmask & (1 << i)))
                         break;
                 }
-                if (GRpkgIf()->HCof(i))
+                if (GRpkg::self()->HCof(i))
                     hc->hc_fmt = i;
                 else if (textmode == HCgraphical) {
                     hc_pop_up_text(wb, "No hardcopy drivers available.", true);
                     if (hc->hc_caller)
-                        GRX->Deselect(hc->hc_caller);
+                        GTKdev::Deselect(hc->hc_caller);
                     delete hc;
                     return;
                 }
             }
-            HCdesc *hcdesc = GRpkgIf()->HCof(hc->hc_fmt);
+            HCdesc *hcdesc = GRpkg::self()->HCof(hc->hc_fmt);
             if (hcdesc) {
                 hc->hc_resol = hcdesc->defaults.defresol;
                 if (hcdesc->limits.resols)
@@ -664,7 +666,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         }
 
         if (textmode == HCgraphical) {
-            HCdesc *hcdesc = GRpkgIf()->HCof(hc->hc_fmt);
+            HCdesc *hcdesc = GRpkg::self()->HCof(hc->hc_fmt);
             if (hcdesc) {
                 hc->hc_wid_val = MM(hcdesc->defaults.defwidth);
                 hc->hc_hei_val = MM(hcdesc->defaults.defheight);
@@ -836,7 +838,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(hc_tofile_proc), wb);
     if (hc->hc_tofile)
-        GRX->Select(button);
+        GTKdev::Select(button);
     hc->hc_tofbtn = button;
 
     GtkWidget *frame = gtk_frame_new(0);
@@ -931,10 +933,10 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         gtk_widget_show(entry);
         hc->hc_fmtmenu = entry;
 
-        for (int i = 0; GRpkgIf()->HCof(i); i++) {
+        for (int i = 0; GRpkg::self()->HCof(i); i++) {
             if (hc->hc_drvrmask & (1 << i))
                 continue;
-            HCdesc *hcdesc = GRpkgIf()->HCof(i);
+            HCdesc *hcdesc = GRpkg::self()->HCof(i);
             gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
                 hcdesc->descr);
         }
@@ -963,8 +965,8 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         gtk_widget_show(entry);
         hc->hc_resmenu = entry;
 
-        const char **s = GRpkgIf()->HCof(hc->hc_fmt) ?
-            GRpkgIf()->HCof(hc->hc_fmt)->limits.resols : 0;
+        const char **s = GRpkg::self()->HCof(hc->hc_fmt) ?
+            GRpkg::self()->HCof(hc->hc_fmt)->limits.resols : 0;
         if (s && *s) {
             for (int i = 0; s[i]; i++) {
                 gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
@@ -992,7 +994,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         //
         // size labels and text widgets
         //
-        HCdesc *hcdesc = GRpkgIf()->HCof(hc->hc_fmt);
+        HCdesc *hcdesc = GRpkg::self()->HCof(hc->hc_fmt);
         hc_checklims(hcdesc);
         row = gtk_hbox_new(false, 2);
         gtk_widget_show(row);
@@ -1087,7 +1089,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         gtk_widget_show(vbox);
 
         label = gtk_label_new(
-            (GRpkgIf()->HCof(hc->hc_fmt)->limits.flags & HCtopMargin) ?
+            (GRpkg::self()->HCof(hc->hc_fmt)->limits.flags & HCtopMargin) ?
                 "Top" : "Bottom");
         gtk_widget_show(label);
         gtk_misc_set_alignment(GTK_MISC(label), 0.5, 0.5);
@@ -1227,7 +1229,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         (*cb->hcsetup)(true, hc->hc_fmt, false, hc->hc_context);
 
     if (textmode == HCgraphical) {
-        HCdesc *hcdesc = GRpkgIf()->HCof(hc->hc_fmt);
+        HCdesc *hcdesc = GRpkg::self()->HCof(hc->hc_fmt);
         if (hcdesc) {
             hc_set_sens(hc, hcdesc->limits.flags);
             if (!(hcdesc->limits.flags & HCdontCareWidth) &&
@@ -1237,7 +1239,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
                     hcdesc->defaults.defwidth = hcdesc->limits.minwidth;
                 }
                 else {
-                    GRX->Select(hc->hc_wlabel);
+                    GTKdev::Select(hc->hc_wlabel);
                     float tmp = hcdesc->last_w;
                     hc_auto_proc(hc->hc_wlabel, wb);
                     hcdesc->last_w = tmp;
@@ -1250,7 +1252,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
                     hcdesc->defaults.defheight = hcdesc->limits.minheight;
                 }
                 else {
-                    GRX->Select(hc->hc_hlabel);
+                    GTKdev::Select(hc->hc_hlabel);
                     float tmp = hcdesc->last_h;
                     hc_auto_proc(hc->hc_hlabel, wb);
                     hcdesc->last_h = tmp;
@@ -1287,7 +1289,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
     gtk_window_set_transient_for(GTK_WINDOW(hc->hc_popup),
         GTK_WINDOW(wb->Shell()));
     if (wb->PositionReferenceWidget()) {
-        GRX->SetPopupLocation(
+        GTKdev::self()->SetPopupLocation(
             GRloc(textmode == HCgraphical ? LW_UL : LW_CENTER),
             hc->hc_popup, wb->PositionReferenceWidget());
     }
@@ -1373,7 +1375,7 @@ GTKprintPopup::hc_set_printer(GTKbag *wb)
     else
         MSPdesc.limits.flags |= HCnoCanRotate;
 
-    HCdesc *hcdesc = GRpkgIf()->HCof(hc->hc_fmt);
+    HCdesc *hcdesc = GRpkg::self()->HCof(hc->hc_fmt);
     if (!hcdesc)
         return;
     if (hc->hc_textmode == HCgraphical && hcdesc == &MSPdesc) {
@@ -1382,7 +1384,7 @@ GTKprintPopup::hc_set_printer(GTKbag *wb)
             if (!(hcdesc->limits.flags & HCdontCareWidth) &&
                     hcdesc->defaults.defwidth == 0.0 &&
                     hcdesc->limits.minwidth > 0.0) {
-                GRX->Select(hc->hc_wlabel);
+                GTKdev::Select(hc->hc_wlabel);
                 hc_auto_proc(hc->hc_wlabel, wb);
             }
         }
@@ -1390,7 +1392,7 @@ GTKprintPopup::hc_set_printer(GTKbag *wb)
             if (!(hcdesc->limits.flags & HCdontCareHeight) &&
                     hcdesc->defaults.defheight == 0.0 &&
                     hcdesc->limits.minheight > 0.0) {
-                GRX->Select(hc->hc_hlabel);
+                GTKdev::Select(hc->hc_hlabel);
                 hc_auto_proc(hc->hc_hlabel, wb);
             }
         }
@@ -1409,10 +1411,10 @@ GTKprintPopup::hc_set_format(GTKbag *wb, int index, bool set_menu)
     if (!hc || !hc->hc_active)
         return;
 
-    if (GRX->GetStatus(hc->hc_wlabel))
-        GRX->SetStatus(hc->hc_wlabel, false);
-    if (GRX->GetStatus(hc->hc_hlabel))
-        GRX->SetStatus(hc->hc_hlabel, false);
+    if (GTKdev::GetStatus(hc->hc_wlabel))
+        GTKdev::SetStatus(hc->hc_wlabel, false);
+    if (GTKdev::GetStatus(hc->hc_hlabel))
+        GTKdev::SetStatus(hc->hc_hlabel, false);
 
     if (index < 0 || index > 100)
         // sanity check
@@ -1422,8 +1424,8 @@ GTKprintPopup::hc_set_format(GTKbag *wb, int index, bool set_menu)
         return;;
     int ofmt = hc->hc_fmt;
     hc->hc_fmt = index;
-    HCdesc *oldhcdesc = GRpkgIf()->HCof(ofmt);
-    HCdesc *newhcdesc = GRpkgIf()->HCof(index);
+    HCdesc *oldhcdesc = GRpkg::self()->HCof(ofmt);
+    HCdesc *newhcdesc = GRpkg::self()->HCof(index);
     if (!oldhcdesc || !newhcdesc)
         return;
 
@@ -1533,7 +1535,7 @@ GTKprintPopup::hc_set_format(GTKbag *wb, int index, bool set_menu)
         if (newhcdesc->limits.flags & HCnoAutoWid)
             newhcdesc->defaults.defwidth = newhcdesc->limits.minwidth;
         else if (hc->hc_wlabel) {
-            GRX->Select(hc->hc_wlabel);
+            GTKdev::Select(hc->hc_wlabel);
             hc_auto_proc(hc->hc_wlabel, wb);
         }
     }
@@ -1543,7 +1545,7 @@ GTKprintPopup::hc_set_format(GTKbag *wb, int index, bool set_menu)
         if (newhcdesc->limits.flags & HCnoAutoHei)
             newhcdesc->defaults.defheight = newhcdesc->limits.minheight;
         else if (hc->hc_ylabel) {
-            GRX->SetStatus(hc->hc_hlabel, true);
+            GTKdev::SetStatus(hc->hc_hlabel, true);
             hc_auto_proc(hc->hc_hlabel, wb);
         }
     }
@@ -1871,7 +1873,7 @@ GTKprintPopup::hc_port_proc(GtkWidget*, void *client_data)
             hc->hc_orient |= HClandscape;
 
         // See if we should swap the margin label.
-        HCdesc *hcdesc = GRpkgIf()->HCof(hc->hc_fmt);
+        HCdesc *hcdesc = GRpkg::self()->HCof(hc->hc_fmt);
         if (hcdesc && (hcdesc->limits.flags & HClandsSwpYmarg)) {
             const char *str = gtk_label_get_text(GTK_LABEL(hc->hc_ylabel));
             if (!strcmp(str, "Top"))
@@ -1959,11 +1961,11 @@ GTKprintPopup::hc_auto_proc(GtkWidget *btn, void *client_data)
     GTKprintPopup *hc = static_cast<GTKbag*>(client_data)->HC();
     if (!hc)
         return;
-    HCdesc *hcdesc = GRpkgIf()->HCof(hc->hc_fmt);
+    HCdesc *hcdesc = GRpkg::self()->HCof(hc->hc_fmt);
     if (!hcdesc)
         return;
     if (btn == hc->hc_wlabel) {
-        if (GRX->GetStatus(btn)) {
+        if (GTKdev::GetStatus(btn)) {
             hcdesc->last_w = gtk_spin_button_get_value(
                 GTK_SPIN_BUTTON(hc->hc_wid));
             if (hc->hc_metric)
@@ -1972,8 +1974,8 @@ GTKprintPopup::hc_auto_proc(GtkWidget *btn, void *client_data)
             gtk_widget_set_sensitive(hc->hc_wid, false);
             gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(hc->hc_wid), false);
             gtk_entry_set_text(GTK_ENTRY(hc->hc_wid), "auto");
-            if (GRX->GetStatus(hc->hc_hlabel)) {
-                GRX->Deselect(hc->hc_hlabel);
+            if (GTKdev::GetStatus(hc->hc_hlabel)) {
+                GTKdev::Deselect(hc->hc_hlabel);
                 gtk_widget_set_sensitive(hc->hc_hei, true);
                 gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(hc->hc_hei), true);
                 double h = hcdesc->last_h;
@@ -1992,7 +1994,7 @@ GTKprintPopup::hc_auto_proc(GtkWidget *btn, void *client_data)
         }
     }
     else if (btn == hc->hc_hlabel) {
-        if (GRX->GetStatus(btn)) {
+        if (GTKdev::GetStatus(btn)) {
             hcdesc->last_h = gtk_spin_button_get_value(
                 GTK_SPIN_BUTTON(hc->hc_hei));
             if (hc->hc_metric)
@@ -2001,8 +2003,8 @@ GTKprintPopup::hc_auto_proc(GtkWidget *btn, void *client_data)
             gtk_widget_set_sensitive(hc->hc_hei, false);
             gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(hc->hc_hei), false);
             gtk_entry_set_text(GTK_ENTRY(hc->hc_hei), "auto");
-            if (GRX->GetStatus(hc->hc_wlabel)) {
-                GRX->Deselect(hc->hc_wlabel);
+            if (GTKdev::GetStatus(hc->hc_wlabel)) {
+                GTKdev::Deselect(hc->hc_wlabel);
                 gtk_widget_set_sensitive(hc->hc_wid, true);
                 gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(hc->hc_wid), true);
                 double w = hcdesc->last_w;
@@ -2046,9 +2048,9 @@ GTKprintPopup::hc_go_proc(GtkWidget*, void *client_data)
 {
     GTKbag *wb = static_cast<GTKbag*>(client_data);
     GTKprintPopup *hc = wb->HC();
-    GRpkgIf()->HCabort(0);
-    if (GRpkgIf()->HCof(hc->hc_fmt) &&
-            (GRpkgIf()->HCof(hc->hc_fmt)->limits.flags & HCconfirmGo))
+    GRpkg::self()->HCabort(0);
+    if (GRpkg::self()->HCof(hc->hc_fmt) &&
+            (GRpkg::self()->HCof(hc->hc_fmt)->limits.flags & HCconfirmGo))
         hc_pop_message(wb);
     else
         hc_do_go(wb);
@@ -2254,12 +2256,12 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
     }
     in_do_go = true;
 
-    HCdesc *hcdesc = GRpkgIf()->HCof(hc->hc_fmt);
+    HCdesc *hcdesc = GRpkg::self()->HCof(hc->hc_fmt);
     if (!hcdesc)
         return;
     double w = 0.0;
     if (!(hcdesc->limits.flags & HCdontCareWidth)) {
-        if (!GRX->GetStatus(hc->hc_wlabel)) {
+        if (!GTKdev::GetStatus(hc->hc_wlabel)) {
             w = gtk_spin_button_get_value(GTK_SPIN_BUTTON(hc->hc_wid));
             if (hc->hc_metric)
                 w /= MMPI;
@@ -2267,7 +2269,7 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
     }
     double h = 0.0;
     if (!(hcdesc->limits.flags & HCdontCareHeight)) {
-        if (!GRX->GetStatus(hc->hc_hlabel)) {
+        if (!GTKdev::GetStatus(hc->hc_hlabel)) {
             h = gtk_spin_button_get_value(GTK_SPIN_BUTTON(hc->hc_hei));
             if (hc->hc_metric)
                 h /= MMPI;
@@ -2318,7 +2320,7 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
     int argc;
     hc_mkargv(&argc, argv, cmdstr);
 
-    HCswitchErr err = GRpkgIf()->SwitchDev(hcdesc->drname, &argc, argv);
+    HCswitchErr err = GRpkg::self()->SwitchDev(hcdesc->drname, &argc, argv);
     if (err == HCSinhc)
         hc_pop_up_text(wb, "Internal error - aborted", true);
     else if (err == HCSnotfnd) {
@@ -2346,8 +2348,9 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
                     (hcdesc->limits.flags & HCnoCanRotate))
                 ot |= HClandscape;
             if ((*hc->hc_cb->hcgo)(ot, hc->hc_legend, hc->hc_context)) {
-                if (GRpkgIf()->HCaborted()) {
-                    sprintf(buf, "Terminated: %s.", GRpkgIf()->HCabortMsg());
+                if (GRpkg::self()->HCaborted()) {
+                    sprintf(buf, "Terminated: %s.",
+                        GRpkg::self()->HCabortMsg());
                     hc_pop_up_text(wb, buf, true);
                 }
                 else
@@ -2358,7 +2361,7 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
                 unlink(filename);
             }
         }
-        GRpkgIf()->SwitchDev(0, 0, 0);
+        GRpkg::self()->SwitchDev(0, 0, 0);
         if (ok) {
             if (!tofile) {
                 int pid = hc_printit(cmd, filename, wb);
@@ -2450,7 +2453,7 @@ GTKprintPopup::hc_printit(const char *str, const char *filename, GTKbag *wb)
     }
     if (gtk_main_level())
         gtk_main_quit();  // exit graphics in child
-    close(GRX->ConnectFd());
+    close(GTKdev::ConnectFd());
     execl("/bin/sh", "sh", "-c", buf, (char*)0);
     _exit(127);
 #endif
@@ -2537,8 +2540,8 @@ GTKprintPopup::hc_resol_proc(GtkWidget*, void *client_data)
 void
 GTKprintPopup::hc_help_proc(GtkWidget*, void *client_data)
 {
-    if (GRX->MainFrame())
-        GRX->MainFrame()->PopUpHelp("hcopypanel");
+    if (GTKdev::self()->MainFrame())
+        GTKdev::self()->MainFrame()->PopUpHelp("hcopypanel");
     else {
         GTKbag *w = static_cast<GTKbag*>(client_data);
         w->PopUpHelp("hcopypanel");
@@ -2859,8 +2862,8 @@ void
 GTKprintPopup::hc_go_abort_proc(GtkWidget*, void*)
 {
     if (GP) {
-        GRX->HCmessage("ABORTED");
-        GRpkgIf()->HCabort("User aborted");
+        GTKdev::self()->HCmessage("ABORTED");
+        GRpkg::self()->HCabort("User aborted");
     }
 }
 

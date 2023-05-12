@@ -291,7 +291,7 @@ cGroupDesc::show_objects(WindowDesc *wdesc, const CDl *ldesc)
                     if (!(numgeom & 0xff)) {
                         // check every 256 objects for efficiency
                         if (numgeom) {
-                            dspPkgIf()->CheckForInterrupt();
+                            DSPpkg::self()->CheckForInterrupt();
                             if (DSP()->Interrupt())
                                 return (numgeom);
                         }
@@ -321,7 +321,7 @@ cGroupDesc::show_objects(WindowDesc *wdesc, const CDl *ldesc)
             // Test for user interrupt
             if (!(numgeom & 0xff)) {
                 // Check every 256 objects for efficiency.
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
                 if (DSP()->Interrupt())
                     return (numgeom);
                 wdesc->Wdraw()->SetColor(dsp_prm(ldesc)->pixel());
@@ -354,7 +354,7 @@ cGroupDesc::show_objects(WindowDesc *wdesc, const CDl *ldesc)
                     // Test for user interrupt
                     if (!(numgeom & 0xff)) {
                         // Check every 256 objects for efficiency.
-                        dspPkgIf()->CheckForInterrupt();
+                        DSPpkg::self()->CheckForInterrupt();
                         if (DSP()->Interrupt()) {
                             DSP()->TPop();
                             return (numgeom);
@@ -387,7 +387,7 @@ cGroupDesc::show_groups(WindowDesc *wdesc, bool d_or_e)
     if (!wdesc->IsSimilar(Physical, DSP()->MainWdesc()))
         return;
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(d_or_e == DISPLAY ? GRxHlite : GRxUnhlite);
     else {
         if (d_or_e == DISPLAY)
@@ -409,7 +409,7 @@ cGroupDesc::show_groups(WindowDesc *wdesc, bool d_or_e)
         if (gd_groups[i].net() && gd_groups[i].displayed())
             gd_groups[i].show(wdesc);
     }
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(GRxNone);
     else if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());

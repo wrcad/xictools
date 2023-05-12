@@ -433,7 +433,7 @@ sGrd::sGrd(GTKbag *owner, WindowDesc *wd) : GTKdraw(XW_TEXT)
     gtk_widget_set_name(button, "Show");
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
-    GRX->SetStatus(button, gd_grid.displayed());
+    GTKdev::SetStatus(button, gd_grid.displayed());
     gd_showbtn = button;
     rcnt = 0;
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rcnt, rcnt+1,
@@ -445,7 +445,7 @@ sGrd::sGrd(GTKbag *owner, WindowDesc *wd) : GTKdraw(XW_TEXT)
     gtk_widget_set_name(button, "OnTop");
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
-    GRX->SetStatus(button, gd_grid.show_on_top());
+    GTKdev::SetStatus(button, gd_grid.show_on_top());
     gd_topbtn = button;
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -792,7 +792,7 @@ sGrd::~sGrd()
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_caller)
-        GRX->Deselect(p_caller);
+        GTKdev::Deselect(p_caller);
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)gd_cancel_proc, grid_pops + gd_win_num);
@@ -843,25 +843,25 @@ sGrd::update(bool skip_init)
         strcpy(buf, "MfgGrid: unset");
     gtk_label_set_text(GTK_LABEL(gd_mfglabel), buf);
     if (gd_grid.snap() < 0) {
-        GRX->SetStatus(gd_snapbtn, true);
+        GTKdev::SetStatus(gd_snapbtn, true);
         gtk_frame_set_label(GTK_FRAME(gd_snapbox), "GridPerSnap");
     }
     else {
-        GRX->SetStatus(gd_snapbtn, false);
+        GTKdev::SetStatus(gd_snapbtn, false);
         gtk_frame_set_label(GTK_FRAME(gd_snapbox), "SnapPerGrid");
     }
 
     gtk_combo_box_set_active(GTK_COMBO_BOX(gd_edge),
         wd->Attrib()->edge_snapping());
-    GRX->SetStatus(gd_off_grid, wd->Attrib()->edge_off_grid());
-    GRX->SetStatus(gd_use_nm_edge, wd->Attrib()->edge_non_manh());
-    GRX->SetStatus(gd_wire_edge, wd->Attrib()->edge_wire_edge());
-    GRX->SetStatus(gd_wire_path, wd->Attrib()->edge_wire_path());
+    GTKdev::SetStatus(gd_off_grid, wd->Attrib()->edge_off_grid());
+    GTKdev::SetStatus(gd_use_nm_edge, wd->Attrib()->edge_non_manh());
+    GTKdev::SetStatus(gd_wire_edge, wd->Attrib()->edge_wire_edge());
+    GTKdev::SetStatus(gd_wire_path, wd->Attrib()->edge_wire_path());
 
     // Style page
 
-    GRX->SetStatus(gd_showbtn, gd_grid.displayed());
-    GRX->SetStatus(gd_topbtn, gd_grid.show_on_top());
+    GTKdev::SetStatus(gd_showbtn, gd_grid.displayed());
+    GTKdev::SetStatus(gd_topbtn, gd_grid.show_on_top());
     if (gd_grid.axes() == AxesNone)
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_noaxesbtn), true);
     else if (gd_grid.axes() == AxesPlain)
@@ -885,7 +885,7 @@ sGrd::update(bool skip_init)
 
     sb_cmult.set_value(gd_grid.coarse_mult());
 
-    GRX->SetStatus(gd_nocoarse, DSP()->GridNoCoarseOnly());
+    GTKdev::SetStatus(gd_nocoarse, DSP()->GridNoCoarseOnly());
     sb_thresh.set_value(DSP()->GridThreshold());
 
     gd_mask_bak = 0;
@@ -910,7 +910,7 @@ sGrd::initialize()
     if (w) {
         gtk_window_set_transient_for(GTK_WINDOW(wb_shell),
             GTK_WINDOW(w->Shell()));
-        GRX->SetPopupLocation(GRloc(), wb_shell, w->Viewport());
+        GTKdev::self()->SetPopupLocation(GRloc(), wb_shell, w->Viewport());
     }
 }
 
@@ -1002,7 +1002,7 @@ sGrd::gd_snap_proc(GtkWidget *widget, void *arg)
     sGrd *grd = *(sGrd**)arg;
     if (!grd)
         return;
-    if (GRX->GetStatus(widget)) {
+    if (GTKdev::GetStatus(widget)) {
         gtk_frame_set_label(GTK_FRAME(grd->gd_snapbox), "GridPerSnap");
         int sn = grd->sb_snap.get_value_as_int();
         grd->gd_grid.set_snap(-sn);
@@ -1039,7 +1039,7 @@ sGrd::gd_snap_change_proc(GtkWidget*, void *arg)
 {
     sGrd *grd = *(sGrd**)arg;
     if (grd) {
-        bool neg = GRX->GetStatus(grd->gd_snapbtn);
+        bool neg = GTKdev::GetStatus(grd->gd_snapbtn);
         int sn = grd->sb_snap.get_value_as_int();
         grd->gd_grid.set_snap(neg ? -sn : sn);
     }
@@ -1087,7 +1087,7 @@ sGrd::gd_btn_proc(GtkWidget *widget, void *arg)
         return;
     }
 
-    bool state = GRX->GetStatus(widget);
+    bool state = GTKdev::GetStatus(widget);
     if (widget == grd->gd_off_grid)
         wd->Attrib()->set_edge_off_grid(state);
     else if (widget == grd->gd_use_nm_edge)
@@ -1097,11 +1097,11 @@ sGrd::gd_btn_proc(GtkWidget *widget, void *arg)
     else if (widget == grd->gd_wire_path)
         wd->Attrib()->set_edge_wire_path(state);
     else if (widget == grd->gd_showbtn)
-        grd->gd_grid.set_displayed(GRX->GetStatus(widget));
+        grd->gd_grid.set_displayed(GTKdev::GetStatus(widget));
     else if (widget == grd->gd_topbtn)
-        grd->gd_grid.set_show_on_top(GRX->GetStatus(widget));
+        grd->gd_grid.set_show_on_top(GTKdev::GetStatus(widget));
     else if (widget == grd->gd_nocoarse) {
-        if (GRX->GetStatus(widget))
+        if (GTKdev::GetStatus(widget))
             CDvdb()->setVariable(VA_GridNoCoarseOnly, "");
         else
             CDvdb()->clearVariable(VA_GridNoCoarseOnly);
@@ -1187,7 +1187,7 @@ sGrd::gd_axes_proc(GtkWidget *widget, void *arg)
     WindowDesc *wd = DSP()->Window(grd->gd_win_num);
     if (!wd)
         return;
-    if (GRX->GetStatus(widget) && wd->Mode() == Physical) {
+    if (GTKdev::GetStatus(widget) && wd->Mode() == Physical) {
         grd->gd_grid.set_axes((AxesType)(intptr_t)
             g_object_get_data(G_OBJECT(widget), "axes"));
     }
@@ -1199,7 +1199,7 @@ void
 sGrd::gd_lst_proc(GtkWidget *widget, void *arg)
 {
     sGrd *grd = *(sGrd**)arg;
-    if (grd && GRX->GetStatus(widget)) {
+    if (grd && GTKdev::GetStatus(widget)) {
         int lst = (intptr_t)g_object_get_data(G_OBJECT(widget), "lst");
         if (lst == LstSolid) {
             if (!grd->gd_mask_bak && grd->gd_grid.linestyle().mask != 0 &&
@@ -1290,10 +1290,10 @@ sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
 #else
             grd->gd_window = gtk_widget_get_window(grd->gd_viewport);
 #endif
-            grd->SetWindowBackground(GRX->NameColor("white"));
+            grd->SetWindowBackground(GTKdev::self()->NameColor("white"));
             grd->Clear();
             grd->SetFillpattern(0);
-            grd->SetColor(GRX->NameColor("blue"));
+            grd->SetColor(GTKdev::self()->NameColor("blue"));
 #if GTK_CHECK_VERSION(3,0,0)
             int wid = grd->GetDrawable()->get_width();
             int hei = grd->GetDrawable()->get_height();
@@ -1337,14 +1337,14 @@ sGrd::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
 #else
             grd->gd_window = gtk_widget_get_window(grd->gd_sample);
 #endif
-            grd->SetWindowBackground(GRX->NameColor("black"));
+            grd->SetWindowBackground(GTKdev::self()->NameColor("black"));
             grd->Clear();
             if (grd->gd_grid.linestyle().mask) {
                 // DefineLinestyle will convert 1,3,7,... to -1.
                 unsigned ltmp = grd->gd_grid.linestyle().mask;
                 grd->defineLinestyle(&grd->gd_grid.linestyle(), ltmp);
                 grd->gd_grid.linestyle().mask = ltmp;
-                grd->SetColor(GRX->NameColor("white"));
+                grd->SetColor(GTKdev::self()->NameColor("white"));
                 grd->SetFillpattern(0);
                 grd->Line(os+2, 5, os+tw-2, 5);
             }

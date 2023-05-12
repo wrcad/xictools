@@ -51,6 +51,7 @@
 #include "dsp_inlines.h"
 #include "dsp_layer.h"
 #include "dsp_color.h"
+#include "dsp_tkif.h"
 #include "miscutil/filestat.h"
 
 //
@@ -281,7 +282,7 @@ cFC::fcRun(const char *infile, const char *outfile, const char *resfile,
     if (!nodump && newjob->if_type() == fxJobMIT) {
         // The original FastCap from MIT is not supported currently,
         // as it does not have the unified list file support.
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        DSPpkg::self()->ErrPrintf(ET_ERROR,
     "\nThe FastCap program found is not supported.  This interface requires\n"
     "either the FasterCap program from FastFieldSolvers.com, or the free\n"
     "Whiteley Research FastCap program from wrcad.com.  Other FastCap\n"
@@ -294,7 +295,7 @@ cFC::fcRun(const char *infile, const char *outfile, const char *resfile,
         const char *s = CDvdb()->getVariable(VA_FcPanelTarget);
         if (s && sscanf(s, "%lf", &d) == 1 && d >= FC_MIN_TARG_PANELS &&
                 d <= FC_MAX_TARG_PANELS)
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            DSPpkg::self()->ErrPrintf(ET_WARN,
     "\nYou appear to be running FasterCap while performing panel refinement\n"
     "using the FcPanelTarget variable.  FasterCap does its own refinement\n"
     "and using refinement here is redundant at best.  I'll continue but\n"
@@ -306,7 +307,7 @@ cFC::fcRun(const char *infile, const char *outfile, const char *resfile,
         return;
     }
     if (!filestat::create_bak(newjob->outfile())) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         delete newjob;
         return;
     }

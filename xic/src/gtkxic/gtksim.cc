@@ -86,7 +86,7 @@ namespace {
             if (label) {
                 gtk_label_set_text(GTK_LABEL(label), msg);
                 if (!gtk_widget_get_mapped(shell)) {
-                    GRX->SetPopupLocation(GRloc(LW_LL), shell,
+                    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), shell,
                         GTKmainwin::self()->Viewport());
                     gtk_widget_show(shell);
                 }
@@ -103,7 +103,7 @@ namespace {
 void
 cSced::PopUpSim(SpType status)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     Sim.control(status);
 }
@@ -135,12 +135,12 @@ sSim::control(SpType status)
     case SpPause:
         msg = "Paused";
         sp_status = SpPause;
-        GRX->AddTimer(2000, sp_down_timer, 0);
+        GTKdev::self()->AddTimer(2000, sp_down_timer, 0);
         break;
     case SpDone:
         msg = "Analysis Complete";
         sp_status = SpDone;
-        GRX->AddTimer(2000, sp_down_timer, 0);
+        GTKdev::self()->AddTimer(2000, sp_down_timer, 0);
         break;
     case SpError:
         msg = "Error: connection broken";
@@ -212,7 +212,7 @@ sSim::control(SpType status)
 
     sp_shell = popup;
     gtk_window_set_transient_for(GTK_WINDOW(popup), GTK_WINDOW(w->Shell()));
-    GRX->SetPopupLocation(GRloc(LW_LL), popup, w->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), popup, w->Viewport());
     gtk_widget_show(popup);
 }
 

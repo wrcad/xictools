@@ -51,7 +51,7 @@
 
 
 progress_d::progress_d(QTbag *owner, prgMode mode) :
-    QDialog(owner ? owner->shell : 0)
+    QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
     gb_in = 0;
@@ -69,7 +69,7 @@ progress_d::progress_d(QTbag *owner, prgMode mode) :
     info_count = 0;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
 
     setWindowTitle(tr("Progress"));
     QVBoxLayout *form = new QVBoxLayout(this);
@@ -152,7 +152,7 @@ progress_d::~progress_d()
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
-            owner->monitor.remove(this);
+            owner->MonitorRemove(this);
     }
 }
 
@@ -164,7 +164,7 @@ progress_d::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     delete this;

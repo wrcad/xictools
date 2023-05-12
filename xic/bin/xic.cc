@@ -488,14 +488,14 @@ main(int argc, char **argv)
     else
         gmode = (GR_ALL_PKGS | GR_ALL_DRIVERS);
 
-    if (GRpkgIf()->InitPkg(gmode, &argc, argv)) {
+    if (DSPpkg::self()->InitPkg(gmode, &argc, argv)) {
         PAUSE();
         return (1);
     }
 
     cmdLine.process_args(argc, argv, false);
 
-    if (GRpkgIf()->InitColormap(48,
+    if (DSPpkg::self()->InitColormap(48,
             (cmdLine.CmapSaver == 2 ? -1 : 64), !cmdLine.CmapSaver)) {
         PAUSE();
         return (1);
@@ -512,9 +512,9 @@ main(int argc, char **argv)
     }
 
     XM()->InitSignals(false);
-    GRpkgIf()->RegisterSigintHdlr(&cMain::InterruptHandler);
+    DSPpkg::self()->RegisterSigintHdlr(&cMain::InterruptHandler);
 
-    GRwbag *gx = GRpkgIf()->NewWbag("Xic", dspPkgIf()->NewGX());
+    GRwbag *gx = DSPpkg::self()->NewWbag("Xic", DSPpkg::self()->NewGX());
     if (!gx) {
 #ifdef HAVE_SECURE
         XM()->Auth()->closeValidation();
@@ -534,7 +534,7 @@ main(int argc, char **argv)
     // Start Tcl/Tk interface.
     _tk_ = XM()->openTclTk();
 
-    if (dspPkgIf()->Initialize(gx)) {
+    if (DSPpkg::self()->Initialize(gx)) {
 #ifdef HAVE_SECURE
         XM()->Auth()->closeValidation();
 #endif
@@ -577,8 +577,8 @@ main(int argc, char **argv)
     }
 
     if (XM()->RunMode() == ModeNormal) {
-        dspPkgIf()->RegisterIdleProc(&xic_main::start_proc, 0);
-        dspPkgIf()->AppLoop();
+        DSPpkg::self()->RegisterIdleProc(&xic_main::start_proc, 0);
+        DSPpkg::self()->AppLoop();
         return (0);
     }
 
@@ -638,7 +638,7 @@ xic_main::start_proc(void*)
         }
     }
     Timer()->start(getenv("XIC_NOTIMER") ? 0 : 200);
-    dspPkgIf()->RegisterIdleProc(xic_main::read_cell_proc, 0);
+    DSPpkg::self()->RegisterIdleProc(xic_main::read_cell_proc, 0);
 
 #ifdef NOTDEF
 #ifdef HAVE_MOZY

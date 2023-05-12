@@ -36,6 +36,7 @@ HFILES = \
 CCFILES = \
     qtcolor.cc \
     qtcoord.cc \
+    qtempty.cc \
     qtexpand.cc \
     qtextfc.cc \
     qtextfh.cc \
@@ -49,6 +50,7 @@ CCFILES = \
     qtmain.cc \
     qtmenu.cc \
     qtmenucfg.cc \
+    qtmodif.cc \
     qtparam.cc \
     qtptext.cc \
     qtxdraw.cc \

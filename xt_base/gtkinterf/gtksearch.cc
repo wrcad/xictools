@@ -152,7 +152,7 @@ GTKsearchPopup::pop_up_search(int mode)
             s_timer_id = 0;
         }
         if (s_caller)
-            GRX->Deselect(s_caller);
+            GTKdev::Deselect(s_caller);
         gtk_widget_destroy(s_popup);
         s_popup = 0;
         return;
@@ -231,7 +231,7 @@ GTKsearchPopup::pop_up_search(int mode)
     while (gtk_widget_get_parent(parent))
         parent = gtk_widget_get_parent(parent);
     gtk_window_set_transient_for(GTK_WINDOW(s_popup), GTK_WINDOW(parent));
-    GRX->SetPopupLocation(GRloc(), s_popup, s_searchwin);
+    GTKdev::self()->SetPopupLocation(GRloc(), s_popup, s_searchwin);
     gtk_widget_show(s_popup);
 }
 
@@ -264,7 +264,7 @@ GTKsearchPopup::search_action(GtkWidget *caller, void *client_data)
             w->s_last_search = lstring::copy(target);
             if (w->s_cb) {
                 if (!(*w->s_cb)(w->s_last_search, false,
-                        GRX->GetStatus(w->s_igncase), w->s_arg)) {
+                        GTKdev::GetStatus(w->s_igncase), w->s_arg)) {
                     gtk_label_set_text(GTK_LABEL(w->s_label), "Not found");
                     w->s_timer_id = g_timeout_add(3000,
                         (GSourceFunc)fix_label_timeout, w);
@@ -283,7 +283,7 @@ GTKsearchPopup::search_action(GtkWidget *caller, void *client_data)
 
             char *err;
             int end;
-            bool ign_case = GRX->GetStatus(w->s_igncase);
+            bool ign_case = GTKdev::GetStatus(w->s_igncase);
             int nst = scan_text(s, target, ign_case, &err, &end);
             if (nst >= 0) {
                 text_scroll_to_pos(w->s_searchwin, start + end);
@@ -316,7 +316,7 @@ GTKsearchPopup::search_action(GtkWidget *caller, void *client_data)
             w->s_last_search = lstring::copy(target);
             if (w->s_cb) {
                 if (!(*w->s_cb)(w->s_last_search, true,
-                        GRX->GetStatus(w->s_igncase), w->s_arg)) {
+                        GTKdev::GetStatus(w->s_igncase), w->s_arg)) {
                     gtk_label_set_text(GTK_LABEL(w->s_label), "Not found");
                     w->s_timer_id = g_timeout_add(3000,
                         (GSourceFunc)fix_label_timeout, w);
@@ -333,7 +333,7 @@ GTKsearchPopup::search_action(GtkWidget *caller, void *client_data)
             }
             char *s = text_get_chars(w->s_searchwin, 0, start);
 
-            bool ign_case = GRX->GetStatus(w->s_igncase);
+            bool ign_case = GTKdev::GetStatus(w->s_igncase);
             int last_nst = -1;
             int last_os = 0, last_end = 0;
             char *t = s;

@@ -23,13 +23,14 @@ CCFILES = \
   activity_w.cc draw_qt_w.cc draw_x_w.cc idle_proc.cc interval_timer.cc \
   polysplit.cc progress_d.cc qtaffirm.cc qtdraw.cc qtedit.cc qtfile.cc \
   qtfont.cc qthcopy.cc qtinput.cc qtinterf.cc qtlist.cc qtmcol.cc \
-  qtmsg.cc qtnumer.cc search_d.cc qtxdraw.cc
+  qtmsg.cc qtnumer.cc search_d.cc qttext.cc qtxdraw.cc
 
 MOCFILES = \
     moc_activity_w.cpp \
     moc_affirm.cpp \
     moc_draw_qt_w.cpp \
     moc_draw_x_w.cpp \
+    moc_edit.cpp \
     moc_file.cpp \
     moc_font.cpp \
     moc_idle_proc.cpp \
@@ -42,7 +43,7 @@ MOCFILES = \
     moc_hcopy.cpp \
     moc_progress_d.cpp \
     moc_search_d.cpp \
-    moc_edit.cpp
+    moc_text.cpp
 
 CCOBJS = $(CCFILES:.cc=.o)
 MOCOBJS = $(MOCFILES:.cpp=.o)
@@ -63,6 +64,7 @@ moc_activity_w.o: moc_activity_w.cpp  $(MOC_INCLUDE)/activity_w.h
 moc_affirm.o: moc_affirm.cpp  $(MOC_INCLUDE)/qtaffirm.h 
 moc_draw_qt_w.o: moc_draw_qt_w.cpp  $(MOC_INCLUDE)/draw_qt_w.h 
 moc_draw_x_w.o: moc_draw_x_w.cpp  $(MOC_INCLUDE)/draw_x_w.h 
+moc_edit.o: moc_edit.cpp  $(MOC_INCLUDE)/qtedit.h 
 moc_file.o: moc_file.cpp  $(MOC_INCLUDE)/qtfile.h 
 moc_font.o: moc_font.cpp  $(MOC_INCLUDE)/qtfont.h 
 moc_idle_proc.o: moc_idle_proc.cpp  $(MOC_INCLUDE)/idle_proc.h 
@@ -75,7 +77,7 @@ moc_numer.o: moc_numer.cpp  $(MOC_INCLUDE)/qtnumer.h
 moc_hcopy.o: moc_hcopy.cpp  $(MOC_INCLUDE)/qthcopy.h 
 moc_progress_d.o: moc_progress_d.cpp  $(MOC_INCLUDE)/progress_d.h 
 moc_search_d.o: moc_search_d.cpp  $(MOC_INCLUDE)/search_d.h 
-moc_edit.o: moc_edit.cpp  $(MOC_INCLUDE)/qtedit.h 
+moc_text.o: moc_text.cpp  $(MOC_INCLUDE)/qttext.h 
 
 moc_activity_w.cpp: $(MOC) $(MOC_INCLUDE)/activity_w.h
 	$(MOC) $(MOC_INCLUDE)/activity_w.h -o moc_activity_w.cpp
@@ -85,6 +87,8 @@ moc_draw_qt_w.cpp: $(MOC) $(MOC_INCLUDE)/draw_qt_w.h
 	$(MOC) $(MOC_INCLUDE)/draw_qt_w.h -o moc_draw_qt_w.cpp
 moc_draw_x_w.cpp: $(MOC) $(MOC_INCLUDE)/draw_x_w.h
 	$(MOC) $(MOC_INCLUDE)/draw_x_w.h -o moc_draw_x_w.cpp
+moc_edit.cpp: $(MOC) $(MOC_INCLUDE)/qtedit.h
+	$(MOC) $(MOC_INCLUDE)/qtedit.h -o moc_edit.cpp
 moc_file.cpp: $(MOC) $(MOC_INCLUDE)/qtfile.h
 	$(MOC) $(MOC_INCLUDE)/qtfile.h -o moc_file.cpp
 moc_font.cpp: $(MOC) $(MOC_INCLUDE)/qtfont.h
@@ -109,8 +113,8 @@ moc_progress_d.cpp: $(MOC) $(MOC_INCLUDE)/progress_d.h
 	$(MOC) $(MOC_INCLUDE)/progress_d.h -o moc_progress_d.cpp
 moc_search_d.cpp: $(MOC) $(MOC_INCLUDE)/search_d.h
 	$(MOC) $(MOC_INCLUDE)/search_d.h -o moc_search_d.cpp
-moc_edit.cpp: $(MOC) $(MOC_INCLUDE)/qtedit.h
-	$(MOC) $(MOC_INCLUDE)/qtedit.h -o moc_edit.cpp
+moc_text.cpp: $(MOC) $(MOC_INCLUDE)/qttext.h
+	$(MOC) $(MOC_INCLUDE)/qttext.h -o moc_text.cpp
 
 mocclean:
 	-@rm -f $(MOCOBJS)

@@ -470,7 +470,8 @@ GTKbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
 
     gtk_window_set_transient_for(GTK_WINDOW(wb_fontsel->wb_shell),
         GTK_WINDOW(wb_shell));
-    GRX->SetPopupLocation(loc, wb_fontsel->wb_shell, PositionReferenceWidget());
+    GTKdev::self()->SetPopupLocation(loc, wb_fontsel->wb_shell,
+        PositionReferenceWidget());
 
     wb_fontsel->set_visible(true);
 }
@@ -599,7 +600,7 @@ GTKfontPopup::~GTKfontPopup()
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_caller)
-        GRX->Deselect(p_caller);
+        GTKdev::Deselect(p_caller);
     g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
         (gpointer)ft_quit_proc, this);
 }

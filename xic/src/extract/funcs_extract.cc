@@ -52,6 +52,7 @@
 #include "sced.h"
 #include "dsp_layer.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 #include "geo_zgroup.h"
 #include "si_parsenode.h"
 // regex.h must come before si_handle.h to enable regex handle.
@@ -864,7 +865,7 @@ extract_funcs::IFdumpPhysNetlist(Variable *res, Variable *args, void*)
         }
     }
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
     if (!fnset)
         delete [] fname;
     delete opts;
@@ -962,7 +963,7 @@ extract_funcs::IFdumpElecNetlist(Variable *res, Variable *args, void*)
         }
     }
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
     if (!fnset)
         delete [] fname;
     delete opts;

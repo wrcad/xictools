@@ -165,7 +165,7 @@ using namespace gtkdvedit;
 void
 cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete DE;
@@ -208,7 +208,8 @@ cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(DE->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), DE->shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), DE->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(DE->shell());
 }
 // End of cSced functions.
@@ -388,7 +389,7 @@ sDE::sDE(GRobject caller)
         de_xref = pb->pos_x();
         de_yref = pb->pos_y();
 
-        GRX->SetStatus(de_toggle, true);
+        GTKdev::SetStatus(de_toggle, true);
         de_branch_proc(de_toggle, 0);
     }
 
@@ -403,7 +404,7 @@ sDE::sDE(GRobject caller)
 
     CDp *pnp = cursde ? cursde->prpty(P_NOPHYS) : 0;
     if (pnp)
-        GRX->SetStatus(de_nophys, true);
+        GTKdev::SetStatus(de_nophys, true);
 
     button = gtk_button_new_with_label("Save in Library");
     gtk_widget_set_name(button, "save_lib");
@@ -438,7 +439,7 @@ sDE::~sDE()
 {
     DE = 0;
     if (de_caller)
-        GRX->SetStatus(de_caller, false);
+        GTKdev::SetStatus(de_caller, false);
     if (Bcmd)
         Bcmd->esc();
     if (de_shell)
@@ -451,7 +452,7 @@ sDE::set_ref(int x, int y)
 {
     de_xref = x;
     de_yref = y;
-    GRX->SetStatus(de_branch, false);
+    GTKdev::SetStatus(de_branch, false);
 }
 
 
@@ -652,7 +653,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
         }
     }
 
-    if (GRX->GetStatus(DE->de_toggle) && !is_sc) {
+    if (GTKdev::GetStatus(DE->de_toggle) && !is_sc) {
         CDp_branch *pb = (CDp_branch*)cursde->prpty(P_BRANCH);
         if (!pb) {
             pb = new CDp_branch;
@@ -694,7 +695,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
         }
     }
 
-    if (GRX->GetStatus(DE->de_nophys)) {
+    if (GTKdev::GetStatus(DE->de_nophys)) {
         CDp *p = cursde->prpty(P_NOPHYS);
         if (!p) {
             p = new CDp(P_NOPHYS);
@@ -714,7 +715,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
     if (!ent.prefix) {
         // This is only possible for a ground terminal.
         if (nodecnt == 1 && !ent.model && !ent.value && !ent.param &&
-                !GRX->GetStatus(DE->de_toggle)) {
+                !GTKdev::GetStatus(DE->de_toggle)) {
             CDp_sname *pn = (CDp_sname*)cursde->prpty(P_NAME);
             if (pn) {
                 cursde->prptyUnlink(pn);
@@ -761,7 +762,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
 void
 sDE::de_branch_proc(GtkWidget *caller, void*)
 {
-    if (GRX->GetStatus(caller)) {
+    if (GTKdev::GetStatus(caller)) {
         if (!Bcmd && DE) {
             Bcmd = new sBstate("brloc", "devedit#hspot");
             Bcmd->setXY(DE->de_xref, DE->de_yref);

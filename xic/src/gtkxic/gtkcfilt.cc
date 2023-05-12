@@ -135,7 +135,7 @@ void
 cMain::PopUpCellFilt(GRobject caller, ShowMode mode, DisplayMode dm,
     void(*cb)(cfilter_t*, void*), void *arg)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Cf;
@@ -157,7 +157,7 @@ cMain::PopUpCellFilt(GRobject caller, ShowMode mode, DisplayMode dm,
     gtk_window_set_transient_for(GTK_WINDOW(Cf->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Cf->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Cf->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Cf->shell());
 }
@@ -639,7 +639,7 @@ sCf::~sCf()
 {
     Cf = 0;
     if (cf_caller)
-        GRX->Deselect(cf_caller);
+        GTKdev::Deselect(cf_caller);
     if (cf_popup)
         gtk_widget_destroy(cf_popup);
 }
@@ -685,36 +685,36 @@ sCf::setup(const cfilter_t *cf)
     if ((f & CF_NOTFTYPE) && (f & CF_FTYPE))
         f &= ~(CF_NOTFTYPE | CF_FTYPE);
 
-    GRX->SetStatus(cf_nimm, f & CF_NOTIMMUTABLE);
-    GRX->SetStatus(cf_imm,  f & CF_IMMUTABLE);
-    GRX->SetStatus(cf_nvsm, f & CF_NOTVIASUBM);
-    GRX->SetStatus(cf_vsm,  f & CF_VIASUBM);
-    GRX->SetStatus(cf_nlib, f & CF_NOTLIBRARY);
-    GRX->SetStatus(cf_lib,  f & CF_LIBRARY);
-    GRX->SetStatus(cf_npsm, f & CF_NOTPCELLSUBM);
-    GRX->SetStatus(cf_psm,  f & CF_PCELLSUBM);
-    GRX->SetStatus(cf_ndev, f & CF_NOTDEVICE);
-    GRX->SetStatus(cf_dev,  f & CF_DEVICE);
-    GRX->SetStatus(cf_nspr, f & CF_NOTPCELLSUPR);
-    GRX->SetStatus(cf_spr,  f & CF_PCELLSUPR);
-    GRX->SetStatus(cf_ntop, f & CF_NOTTOPLEV);
-    GRX->SetStatus(cf_top,  f & CF_TOPLEV);
-    GRX->SetStatus(cf_nmod, f & CF_NOTMODIFIED);
-    GRX->SetStatus(cf_mod,  f & CF_MODIFIED);
-    GRX->SetStatus(cf_nalt, f & CF_NOTWITHALT);
-    GRX->SetStatus(cf_alt,  f & CF_WITHALT);
-    GRX->SetStatus(cf_nref, f & CF_NOTREFERENCE);
-    GRX->SetStatus(cf_ref,  f & CF_REFERENCE);
-    GRX->SetStatus(cf_npcl, f & CF_NOTPARENT);
-    GRX->SetStatus(cf_pcl,  f & CF_PARENT);
-    GRX->SetStatus(cf_nscl, f & CF_NOTSUBCELL);
-    GRX->SetStatus(cf_scl,  f & CF_SUBCELL);
-    GRX->SetStatus(cf_nlyr, f & CF_NOTLAYER);
-    GRX->SetStatus(cf_lyr,  f & CF_LAYER);
-    GRX->SetStatus(cf_nflg, f & CF_NOTFLAG);
-    GRX->SetStatus(cf_flg,  f & CF_FLAG);
-    GRX->SetStatus(cf_nftp, f & CF_NOTFTYPE);
-    GRX->SetStatus(cf_ftp,  f & CF_FTYPE);
+    GTKdev::SetStatus(cf_nimm, f & CF_NOTIMMUTABLE);
+    GTKdev::SetStatus(cf_imm,  f & CF_IMMUTABLE);
+    GTKdev::SetStatus(cf_nvsm, f & CF_NOTVIASUBM);
+    GTKdev::SetStatus(cf_vsm,  f & CF_VIASUBM);
+    GTKdev::SetStatus(cf_nlib, f & CF_NOTLIBRARY);
+    GTKdev::SetStatus(cf_lib,  f & CF_LIBRARY);
+    GTKdev::SetStatus(cf_npsm, f & CF_NOTPCELLSUBM);
+    GTKdev::SetStatus(cf_psm,  f & CF_PCELLSUBM);
+    GTKdev::SetStatus(cf_ndev, f & CF_NOTDEVICE);
+    GTKdev::SetStatus(cf_dev,  f & CF_DEVICE);
+    GTKdev::SetStatus(cf_nspr, f & CF_NOTPCELLSUPR);
+    GTKdev::SetStatus(cf_spr,  f & CF_PCELLSUPR);
+    GTKdev::SetStatus(cf_ntop, f & CF_NOTTOPLEV);
+    GTKdev::SetStatus(cf_top,  f & CF_TOPLEV);
+    GTKdev::SetStatus(cf_nmod, f & CF_NOTMODIFIED);
+    GTKdev::SetStatus(cf_mod,  f & CF_MODIFIED);
+    GTKdev::SetStatus(cf_nalt, f & CF_NOTWITHALT);
+    GTKdev::SetStatus(cf_alt,  f & CF_WITHALT);
+    GTKdev::SetStatus(cf_nref, f & CF_NOTREFERENCE);
+    GTKdev::SetStatus(cf_ref,  f & CF_REFERENCE);
+    GTKdev::SetStatus(cf_npcl, f & CF_NOTPARENT);
+    GTKdev::SetStatus(cf_pcl,  f & CF_PARENT);
+    GTKdev::SetStatus(cf_nscl, f & CF_NOTSUBCELL);
+    GTKdev::SetStatus(cf_scl,  f & CF_SUBCELL);
+    GTKdev::SetStatus(cf_nlyr, f & CF_NOTLAYER);
+    GTKdev::SetStatus(cf_lyr,  f & CF_LAYER);
+    GTKdev::SetStatus(cf_nflg, f & CF_NOTFLAG);
+    GTKdev::SetStatus(cf_flg,  f & CF_FLAG);
+    GTKdev::SetStatus(cf_nftp, f & CF_NOTFTYPE);
+    GTKdev::SetStatus(cf_ftp,  f & CF_FTYPE);
 
     char *s = 0;
     if (f & CF_NOTPARENT)
@@ -810,50 +810,50 @@ sCf::new_filter()
 {
     cfilter_t *cf = new cfilter_t(cf_mode);
     unsigned int f = 0;
-    if (GRX->GetStatus(cf_imm))
+    if (GTKdev::GetStatus(cf_imm))
         f |= CF_IMMUTABLE;
-    else if (GRX->GetStatus(cf_nimm))
+    else if (GTKdev::GetStatus(cf_nimm))
         f |= CF_NOTIMMUTABLE;
-    if (GRX->GetStatus(cf_vsm))
+    if (GTKdev::GetStatus(cf_vsm))
         f |= CF_VIASUBM;
-    else if (GRX->GetStatus(cf_nvsm))
+    else if (GTKdev::GetStatus(cf_nvsm))
         f |= CF_NOTVIASUBM;
-    if (GRX->GetStatus(cf_lib))
+    if (GTKdev::GetStatus(cf_lib))
         f |= CF_LIBRARY;
-    else if (GRX->GetStatus(cf_nlib))
+    else if (GTKdev::GetStatus(cf_nlib))
         f |= CF_NOTLIBRARY;
-    if (GRX->GetStatus(cf_psm))
+    if (GTKdev::GetStatus(cf_psm))
         f |= CF_PCELLSUBM;
-    else if (GRX->GetStatus(cf_npsm))
+    else if (GTKdev::GetStatus(cf_npsm))
         f |= CF_NOTPCELLSUBM;
-    if (GRX->GetStatus(cf_dev))
+    if (GTKdev::GetStatus(cf_dev))
         f |= CF_DEVICE;
-    else if (GRX->GetStatus(cf_ndev))
+    else if (GTKdev::GetStatus(cf_ndev))
         f |= CF_NOTDEVICE;
-    if (GRX->GetStatus(cf_spr))
+    if (GTKdev::GetStatus(cf_spr))
         f |= CF_PCELLSUPR;
-    else if (GRX->GetStatus(cf_nspr))
+    else if (GTKdev::GetStatus(cf_nspr))
         f |= CF_NOTPCELLSUPR;
-    if (GRX->GetStatus(cf_top))
+    if (GTKdev::GetStatus(cf_top))
         f |= CF_TOPLEV;
-    else if (GRX->GetStatus(cf_ntop))
+    else if (GTKdev::GetStatus(cf_ntop))
         f |= CF_NOTTOPLEV;
-    if (GRX->GetStatus(cf_mod))
+    if (GTKdev::GetStatus(cf_mod))
         f |= CF_MODIFIED;
-    else if (GRX->GetStatus(cf_nmod))
+    else if (GTKdev::GetStatus(cf_nmod))
         f |= CF_NOTMODIFIED;
-    if (GRX->GetStatus(cf_alt))
+    if (GTKdev::GetStatus(cf_alt))
         f |= CF_WITHALT;
-    else if (GRX->GetStatus(cf_nalt))
+    else if (GTKdev::GetStatus(cf_nalt))
         f |= CF_NOTWITHALT;
-    if (GRX->GetStatus(cf_ref))
+    if (GTKdev::GetStatus(cf_ref))
         f |= CF_REFERENCE;
-    else if (GRX->GetStatus(cf_nref))
+    else if (GTKdev::GetStatus(cf_nref))
         f |= CF_NOTREFERENCE;
 
-    if (GRX->GetStatus(cf_pcl)) {
+    if (GTKdev::GetStatus(cf_pcl)) {
         const char *s = gtk_entry_get_text(GTK_ENTRY(cf_pclent));
-        if (GRX->GetStatus(cf_npcl)) {
+        if (GTKdev::GetStatus(cf_npcl)) {
             f |= CF_NOTPARENT;
             cf->parse_parent(true, s, 0);
         }
@@ -862,9 +862,9 @@ sCf::new_filter()
             cf->parse_parent(false, s, 0);
         }
     }
-    if (GRX->GetStatus(cf_scl)) {
+    if (GTKdev::GetStatus(cf_scl)) {
         const char *s = gtk_entry_get_text(GTK_ENTRY(cf_sclent));
-        if (GRX->GetStatus(cf_nscl)) {
+        if (GTKdev::GetStatus(cf_nscl)) {
             f |= CF_NOTSUBCELL;
             cf->parse_subcell(true, s, 0);
         }
@@ -873,9 +873,9 @@ sCf::new_filter()
             cf->parse_subcell(false, s, 0);
         }
     }
-    if (GRX->GetStatus(cf_lyr)) {
+    if (GTKdev::GetStatus(cf_lyr)) {
         const char *s = gtk_entry_get_text(GTK_ENTRY(cf_lyrent));
-        if (GRX->GetStatus(cf_nlyr)) {
+        if (GTKdev::GetStatus(cf_nlyr)) {
             f |= CF_NOTLAYER;
             cf->parse_layers(true, s, 0);
         }
@@ -884,9 +884,9 @@ sCf::new_filter()
             cf->parse_layers(false, s, 0);
         }
     }
-    if (GRX->GetStatus(cf_flg)) {
+    if (GTKdev::GetStatus(cf_flg)) {
         const char *s = gtk_entry_get_text(GTK_ENTRY(cf_flgent));
-        if (GRX->GetStatus(cf_nflg)) {
+        if (GTKdev::GetStatus(cf_nflg)) {
             f |= CF_NOTFLAG;
             cf->parse_flags(true, s, 0);
         }
@@ -895,9 +895,9 @@ sCf::new_filter()
             cf->parse_flags(false, s, 0);
         }
     }
-    if (GRX->GetStatus(cf_ftp)) {
+    if (GTKdev::GetStatus(cf_ftp)) {
         const char *s = gtk_entry_get_text(GTK_ENTRY(cf_ftpent));
-        if (GRX->GetStatus(cf_nftp)) {
+        if (GTKdev::GetStatus(cf_nftp)) {
             f |= CF_NOTFTYPE;
             cf->parse_ftypes(true, s, 0);
         }
@@ -947,126 +947,126 @@ sCf::cf_radio(GtkWidget *caller, void*)
 {
     if (!Cf)
         return;
-    if (!GRX->GetStatus(caller))
+    if (!GTKdev::GetStatus(caller))
         return;
     if (caller == Cf->cf_nimm) {
-        GRX->SetStatus(Cf->cf_imm, false);
+        GTKdev::SetStatus(Cf->cf_imm, false);
         return;
     }
     if (caller == Cf->cf_imm) {
-        GRX->SetStatus(Cf->cf_nimm, false);
+        GTKdev::SetStatus(Cf->cf_nimm, false);
         return;
     }
     if (caller == Cf->cf_nvsm) {
-        GRX->SetStatus(Cf->cf_vsm, false);
+        GTKdev::SetStatus(Cf->cf_vsm, false);
         return;
     }
     if (caller == Cf->cf_vsm) {
-        GRX->SetStatus(Cf->cf_nvsm, false);
+        GTKdev::SetStatus(Cf->cf_nvsm, false);
         return;
     }
     if (caller == Cf->cf_nlib) {
-        GRX->SetStatus(Cf->cf_lib, false);
+        GTKdev::SetStatus(Cf->cf_lib, false);
         return;
     }
     if (caller == Cf->cf_lib) {
-        GRX->SetStatus(Cf->cf_nlib, false);
+        GTKdev::SetStatus(Cf->cf_nlib, false);
         return;
     }
     if (caller == Cf->cf_npsm) {
-        GRX->SetStatus(Cf->cf_psm, false);
+        GTKdev::SetStatus(Cf->cf_psm, false);
         return;
     }
     if (caller == Cf->cf_psm) {
-        GRX->SetStatus(Cf->cf_npsm, false);
+        GTKdev::SetStatus(Cf->cf_npsm, false);
         return;
     }
     if (caller == Cf->cf_ndev) {
-        GRX->SetStatus(Cf->cf_dev, false);
+        GTKdev::SetStatus(Cf->cf_dev, false);
         return;
     }
     if (caller == Cf->cf_dev) {
-        GRX->SetStatus(Cf->cf_ndev, false);
+        GTKdev::SetStatus(Cf->cf_ndev, false);
         return;
     }
     if (caller == Cf->cf_nspr) {
-        GRX->SetStatus(Cf->cf_spr, false);
+        GTKdev::SetStatus(Cf->cf_spr, false);
         return;
     }
     if (caller == Cf->cf_spr) {
-        GRX->SetStatus(Cf->cf_nspr, false);
+        GTKdev::SetStatus(Cf->cf_nspr, false);
         return;
     }
     if (caller == Cf->cf_ntop) {
-        GRX->SetStatus(Cf->cf_top, false);
+        GTKdev::SetStatus(Cf->cf_top, false);
         return;
     }
     if (caller == Cf->cf_top) {
-        GRX->SetStatus(Cf->cf_ntop, false);
+        GTKdev::SetStatus(Cf->cf_ntop, false);
         return;
     }
     if (caller == Cf->cf_nmod) {
-        GRX->SetStatus(Cf->cf_mod, false);
+        GTKdev::SetStatus(Cf->cf_mod, false);
         return;
     }
     if (caller == Cf->cf_mod) {
-        GRX->SetStatus(Cf->cf_nmod, false);
+        GTKdev::SetStatus(Cf->cf_nmod, false);
         return;
     }
     if (caller == Cf->cf_nalt) {
-        GRX->SetStatus(Cf->cf_alt, false);
+        GTKdev::SetStatus(Cf->cf_alt, false);
         return;
     }
     if (caller == Cf->cf_alt) {
-        GRX->SetStatus(Cf->cf_nalt, false);
+        GTKdev::SetStatus(Cf->cf_nalt, false);
         return;
     }
     if (caller == Cf->cf_nref) {
-        GRX->SetStatus(Cf->cf_ref, false);
+        GTKdev::SetStatus(Cf->cf_ref, false);
         return;
     }
     if (caller == Cf->cf_ref) {
-        GRX->SetStatus(Cf->cf_nref, false);
+        GTKdev::SetStatus(Cf->cf_nref, false);
         return;
     }
     if (caller == Cf->cf_npcl) {
-        GRX->SetStatus(Cf->cf_pcl, false);
+        GTKdev::SetStatus(Cf->cf_pcl, false);
         return;
     }
     if (caller == Cf->cf_pcl) {
-        GRX->SetStatus(Cf->cf_npcl, false);
+        GTKdev::SetStatus(Cf->cf_npcl, false);
         return;
     }
     if (caller == Cf->cf_nscl) {
-        GRX->SetStatus(Cf->cf_scl, false);
+        GTKdev::SetStatus(Cf->cf_scl, false);
         return;
     }
     if (caller == Cf->cf_scl) {
-        GRX->SetStatus(Cf->cf_nscl, false);
+        GTKdev::SetStatus(Cf->cf_nscl, false);
         return;
     }
     if (caller == Cf->cf_nlyr) {
-        GRX->SetStatus(Cf->cf_lyr, false);
+        GTKdev::SetStatus(Cf->cf_lyr, false);
         return;
     }
     if (caller == Cf->cf_lyr) {
-        GRX->SetStatus(Cf->cf_nlyr, false);
+        GTKdev::SetStatus(Cf->cf_nlyr, false);
         return;
     }
     if (caller == Cf->cf_nflg) {
-        GRX->SetStatus(Cf->cf_flg, false);
+        GTKdev::SetStatus(Cf->cf_flg, false);
         return;
     }
     if (caller == Cf->cf_flg) {
-        GRX->SetStatus(Cf->cf_nflg, false);
+        GTKdev::SetStatus(Cf->cf_nflg, false);
         return;
     }
     if (caller == Cf->cf_nftp) {
-        GRX->SetStatus(Cf->cf_ftp, false);
+        GTKdev::SetStatus(Cf->cf_ftp, false);
         return;
     }
     if (caller == Cf->cf_ftp) {
-        GRX->SetStatus(Cf->cf_nftp, false);
+        GTKdev::SetStatus(Cf->cf_nftp, false);
         return;
     }
 }

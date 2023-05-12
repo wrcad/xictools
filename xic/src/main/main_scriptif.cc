@@ -147,7 +147,7 @@ namespace {
     {
         if (Timer()->check_interval(check_time)) {
             if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
             return (XM()->ConfirmAbort(msg));
         }
         return (false);

@@ -262,11 +262,11 @@ ext_bangcmds::antenna(const char *s)
     fprintf(fp, "MinRatio: %.6e\n", apf.limit());
     fprintf(fp, "-----------------------------\n");
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
 
     bool ret = apf.find_antennae(sdesc);
 
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     fprintf(fp, "-----------------------------\n");
     fprintf(fp, "End of Report.  Run returned %s.\n",

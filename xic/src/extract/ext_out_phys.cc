@@ -79,7 +79,7 @@ cExt::dumpPhysNetlist(FILE *fp, CDs *sdesc, sDumpOpts *opts)
             return (true);
     }
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     XM()->OpenFormatLib(EX_PNET_FORMAT);
     SymTab *tab = new SymTab(false, false);
     bool ret = false;
@@ -107,7 +107,7 @@ cExt::dumpPhysNetlist(FILE *fp, CDs *sdesc, sDumpOpts *opts)
         }
     }
     delete tab;
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (ret);
 }
 

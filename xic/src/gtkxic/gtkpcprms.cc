@@ -60,18 +60,18 @@
 namespace {
     void start_modal(GtkWidget *w)
     {
-        gtkMenu()->SetSensGlobal(false);
-        gtkMenu()->SetModal(w);
-        dspPkgIf()->SetOverrideBusy(true);
+        GTKmenu::self()->SetSensGlobal(false);
+        GTKmenu::self()->SetModal(w);
+        GTKpkg::self()->SetOverrideBusy(true);
         DSPmainDraw(ShowGhost(ERASE))
     }
 
 
     void end_modal()
     {
-        gtkMenu()->SetModal(0);
-        gtkMenu()->SetSensGlobal(true);
-        dspPkgIf()->SetOverrideBusy(false);
+        GTKmenu::self()->SetModal(0);
+        GTKmenu::self()->SetSensGlobal(true);
+        GTKpkg::self()->SetOverrideBusy(false);
         DSPmainDraw(ShowGhost(DISPLAY))
     }
 
@@ -178,7 +178,7 @@ bool
 cEdit::PopUpPCellParams(GRobject caller, ShowMode mode, PCellParam *p,
     const char *dbname, pcpMode pmode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return (false);
     if (mode == MODE_OFF) {
         delete Pcp;
@@ -200,14 +200,14 @@ cEdit::PopUpPCellParams(GRobject caller, ShowMode mode, PCellParam *p,
 
     gtk_window_set_transient_for(GTK_WINDOW(Pcp->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
-    GRX->SetPopupLocation(GRloc(LW_UR), Pcp->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UR), Pcp->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Pcp->shell());
 
     if (pmode == pcpEdit || pmode == pcpPlaceScr) {
         return_flag = false;
         start_modal(Pcp->shell());
-        GRX->MainLoop();  // wait for user's response
+        GTKdev::self()->MainLoop();  // wait for user's response
         end_modal();
         if (return_flag) {
             return_flag = false;
@@ -329,14 +329,14 @@ sPcp::~sPcp()
 {
     Pcp = 0;
     if (pcp_caller)
-        GRX->Deselect(pcp_caller);
+        GTKdev::Deselect(pcp_caller);
     if (pcp_popup)
         gtk_widget_destroy(pcp_popup);
     sbsv::destroy(pcp_sbsave);
     PCellParam::destroy(pcp_params_bak);
     if (pcp_mode == pcpEdit || pcp_mode == pcpPlaceScr) {
-        if (GRX->LoopLevel() > 1)
-            GRX->BreakLoop();
+        if (GTKdev::self()->LoopLevel() > 1)
+            GTKdev::self()->BreakLoop();
     }
 }
 
@@ -457,7 +457,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
     if (p->type() == PCPbool) {
         GtkWidget *w = gtk_check_button_new();
         gtk_widget_show(w);
-        GRX->SetStatus(w, p->boolVal());
+        GTKdev::SetStatus(w, p->boolVal());
         g_signal_connect(G_OBJECT(w), "clicked",
             G_CALLBACK(pcp_bool_proc), p);
         return (w);
@@ -804,7 +804,7 @@ void
 sPcp::pcp_bool_proc(GtkWidget *w, void *arg)
 {
     PCellParam *p = (PCellParam*)arg;
-    bool state = GRX->GetStatus(w);
+    bool state = GTKdev::GetStatus(w);
     if (state != p->boolVal())
         p->setBoolVal(state);
 }

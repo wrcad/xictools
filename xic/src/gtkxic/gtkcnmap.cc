@@ -150,24 +150,26 @@ cnmap_t::update()
             s = "";
         if (strcmp(str, s))
             gtk_entry_set_text(GTK_ENTRY(cn_suffix), str);
-        GRX->SetStatus(cn_to_lower, CDvdb()->getVariable(VA_OutToLower));
-        GRX->SetStatus(cn_to_upper, CDvdb()->getVariable(VA_OutToUpper));
+        GTKdev::SetStatus(cn_to_lower,
+            CDvdb()->getVariable(VA_OutToLower));
+        GTKdev::SetStatus(cn_to_upper,
+            CDvdb()->getVariable(VA_OutToUpper));
         str = CDvdb()->getVariable(VA_OutUseAlias);
         if (!str) {
-            GRX->SetStatus(cn_rd_alias, false);
-            GRX->SetStatus(cn_wr_alias, false);
+            GTKdev::SetStatus(cn_rd_alias, false);
+            GTKdev::SetStatus(cn_wr_alias, false);
         }
         else if (*str == 'r' || *str == 'R') {
-            GRX->SetStatus(cn_rd_alias, true);
-            GRX->SetStatus(cn_wr_alias, false);
+            GTKdev::SetStatus(cn_rd_alias, true);
+            GTKdev::SetStatus(cn_wr_alias, false);
         }
         else if (*str == 'w' || *str == 'W' || *str == 's' || *str == 'S') {
-            GRX->SetStatus(cn_rd_alias, false);
-            GRX->SetStatus(cn_wr_alias, true);
+            GTKdev::SetStatus(cn_rd_alias, false);
+            GTKdev::SetStatus(cn_wr_alias, true);
         }
         else {
-            GRX->SetStatus(cn_rd_alias, true);
-            GRX->SetStatus(cn_wr_alias, true);
+            GTKdev::SetStatus(cn_rd_alias, true);
+            GTKdev::SetStatus(cn_wr_alias, true);
         }
     }
     else {
@@ -187,24 +189,26 @@ cnmap_t::update()
             s = "";
         if (strcmp(str, s))
             gtk_entry_set_text(GTK_ENTRY(cn_suffix), str);
-        GRX->SetStatus(cn_to_lower, CDvdb()->getVariable(VA_InToLower));
-        GRX->SetStatus(cn_to_upper, CDvdb()->getVariable(VA_InToUpper));
+        GTKdev::SetStatus(cn_to_lower,
+            CDvdb()->getVariable(VA_InToLower));
+        GTKdev::SetStatus(cn_to_upper,
+            CDvdb()->getVariable(VA_InToUpper));
         str = CDvdb()->getVariable(VA_InUseAlias);
         if (!str) {
-            GRX->SetStatus(cn_rd_alias, false);
-            GRX->SetStatus(cn_wr_alias, false);
+            GTKdev::SetStatus(cn_rd_alias, false);
+            GTKdev::SetStatus(cn_wr_alias, false);
         }
         else if (*str == 'r' || *str == 'R') {
-            GRX->SetStatus(cn_rd_alias, true);
-            GRX->SetStatus(cn_wr_alias, false);
+            GTKdev::SetStatus(cn_rd_alias, true);
+            GTKdev::SetStatus(cn_wr_alias, false);
         }
         else if (*str == 'w' || *str == 'W' || *str == 's' || *str == 'S') {
-            GRX->SetStatus(cn_rd_alias, false);
-            GRX->SetStatus(cn_wr_alias, true);
+            GTKdev::SetStatus(cn_rd_alias, false);
+            GTKdev::SetStatus(cn_wr_alias, true);
         }
         else {
-            GRX->SetStatus(cn_rd_alias, true);
-            GRX->SetStatus(cn_wr_alias, true);
+            GTKdev::SetStatus(cn_rd_alias, true);
+            GTKdev::SetStatus(cn_wr_alias, true);
         }
     }
 }
@@ -262,20 +266,20 @@ cnmap_t::action(GtkWidget *caller)
     const char *name = gtk_widget_get_name(caller);
     if (cn_output) {
         if (!strcmp(name, "tolower")) {
-            if (GRX->GetStatus(caller))
+            if (GTKdev::GetStatus(caller))
                 CDvdb()->setVariable(VA_OutToLower, 0);
             else
                 CDvdb()->clearVariable(VA_OutToLower);
         }
         else if (!strcmp(name, "toupper")) {
-            if (GRX->GetStatus(caller))
+            if (GTKdev::GetStatus(caller))
                 CDvdb()->setVariable(VA_OutToUpper, 0);
             else
                 CDvdb()->clearVariable(VA_OutToUpper);
         }
         else if (!strcmp(name, "rdalias") || !strcmp(name, "wralias")) {
-            bool rd = GRX->GetStatus(cn_rd_alias);
-            bool wr = GRX->GetStatus(cn_wr_alias);
+            bool rd = GTKdev::GetStatus(cn_rd_alias);
+            bool wr = GTKdev::GetStatus(cn_wr_alias);
             if (rd) {
                 if (wr)
                     CDvdb()->setVariable(VA_OutUseAlias, 0);
@@ -292,22 +296,22 @@ cnmap_t::action(GtkWidget *caller)
     }
     else {
         if (!strcmp(name, "tolower")) {
-            if (GRX->GetStatus(caller))
+            if (GTKdev::GetStatus(caller))
                 CDvdb()->setVariable(VA_InToLower, 0);
             else
                 CDvdb()->clearVariable(VA_InToLower);
             return;
         }
         else if (!strcmp(name, "toupper")) {
-            if (GRX->GetStatus(caller))
+            if (GTKdev::GetStatus(caller))
                 CDvdb()->setVariable(VA_InToUpper, 0);
             else
                 CDvdb()->clearVariable(VA_InToUpper);
             return;
         }
         else if (!strcmp(name, "rdalias") || !strcmp(name, "wralias")) {
-            bool rd = GRX->GetStatus(cn_rd_alias);
-            bool wr = GRX->GetStatus(cn_wr_alias);
+            bool rd = GTKdev::GetStatus(cn_rd_alias);
+            bool wr = GTKdev::GetStatus(cn_wr_alias);
             if (rd) {
                 if (wr)
                     CDvdb()->setVariable(VA_InUseAlias, 0);

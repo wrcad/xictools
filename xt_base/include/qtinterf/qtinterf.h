@@ -70,24 +70,33 @@ namespace qtinterf
     class QTledPopup;
     class QTmsgPopup;
     class QTprintPopup;
-
-    typedef QTmsgPopup QTtextPopup;
-
+    class QTtextPopup;
 
     class QTbag : virtual public GRwbag
     {
     public:
-        QTbag(QWidget*);
+        QTbag();
         virtual ~QTbag();
 
         // QT-SPECIFIC
         QWidget *ItemFromTicket(GRobject);
 
+        // misc. access to protected members
+
+        void MonitorAdd(GRpopup *w)     { wb_monitor.add(w); }
+        void MonitorRemove(GRpopup *w)  { wb_monitor.remove(w); }
+        bool MonitorActive(GRpopup *w)  { return (wb_monitor.is_active(w)); }
+
+        QWidget *Shell()                { return (wb_shell); }
+        QTprintPopup *HC()              { return (wb_hc); }
+        void SetHC(QTprintPopup *p)     { wb_hc = p; }
+        QWidget *TextArea()             { return (wb_textarea); }
+
         // Pass a title for the window and icon.
         //
         void Title(const char*, const char*);
 
-        // editor
+        // qtedit.cc
         GReditPopup *PopUpTextEditor(const char*,
             bool(*)(const char*, void*, XEtype), void*, bool);
         GReditPopup *PopUpFileBrowser(const char*);
@@ -96,38 +105,36 @@ namespace qtinterf
         GReditPopup *PopUpMail(const char*, const char*,
             void(*)(GReditPopup*) = 0, GRloc = GRloc());
 
-        // file selection
+        // qtfile.cc
         GRfilePopup *PopUpFileSelector(FsMode, GRloc,
             void(*)(const char*, void*),
             void(*)(GRfilePopup*, void*), void*, const char*);
 
-        // font selector
+        // qtfont.cc
         void PopUpFontSel(GRobject, GRloc, ShowMode,
             void(*)(const char*, const char*, void*),
             void*, int, const char** = 0, const char* = 0);
 
-        // printing
+        // qthcopy.cc
         void PopUpPrint(GRobject, HCcb*, HCmode, GRdraw* = 0);
         void HCupdate(HCcb*, GRobject);
         void HCsetFormat(int);
-
         void HcopyDisableMsgs();
+//XXX
         bool HcopyLocate(int, int, int*, int*);
 
         // Override these when printing support for a widget collection
         // is needed.
-        virtual char *GetPostscriptText(int, const char*, const char*, bool,
-            bool)
-            { return (0); }  // see htm/htm_text.cc
-        virtual char *GetPlainText()
-            { return (0); }
-        virtual char *GetHtmlText()
-            { return (0); }
+        virtual char *GetPostscriptText(int, const char*, const char*,
+            bool, bool)
+                                        { return (0); } // see htm/htm_text.cc
+        virtual char *GetPlainText()    { return (0); }
+        virtual char *GetHtmlText()     { return (0); }
 
-        // help
+        // qthelp.cc
         bool PopUpHelp(const char*);
 
-        // list
+        // qtlist.cc
         GRlistPopup *PopUpList(stringlist*, const char*, const char*,
             void(*)(const char*, void*), void*, bool, bool);
 
@@ -138,6 +145,7 @@ namespace qtinterf
 
         // utilities
         void ClearPopups();
+        void ClearPopup(GRpopup*);
 
         GRaffirmPopup *PopUpAffirm(GRobject, GRloc, const char*,
             void(*)(bool, void*), void*);
@@ -151,8 +159,8 @@ namespace qtinterf
             void(*)(const char*, void*), void*, int=0);
         GRmsgPopup *PopUpMessage(const char*, bool, bool = false,
             bool = false, GRloc = GRloc());
-        virtual int PopUpWarn(ShowMode, const char*,
-            STYtype = STY_NORM, GRloc = GRloc());
+        int PopUpWarn(ShowMode, const char*, STYtype = STY_NORM,
+            GRloc = GRloc());
         int PopUpErr(ShowMode, const char*, STYtype = STY_NORM,
             GRloc = GRloc());
         GRtextPopup *PopUpErrText(const char*, STYtype = STY_NORM,
@@ -163,37 +171,41 @@ namespace qtinterf
             void*, STYtype = STY_NORM, GRloc = GRloc(LW_LL));
         int PopUpHTMLinfo(ShowMode, const char*, GRloc = GRloc(LW_LL));
 
-        GRledPopup *ActiveInput();
-        GRmsgPopup *ActiveMessage();
-        GRtextPopup *ActiveInfo();
-        GRtextPopup *ActiveInfo2();
-        GRtextPopup *ActiveHtinfo();
-        GRtextPopup *ActiveError();
-        GRfontPopup *ActiveFontsel();
-        void SetErrorLogName(const char*);
+        GRledPopup      *ActiveInput();
+        GRmsgPopup      *ActiveMessage();
+        GRtextPopup     *ActiveInfo();
+        GRtextPopup     *ActiveInfo2();
+        GRtextPopup     *ActiveHtinfo();
+        GRtextPopup     *ActiveWarn();
+        GRtextPopup     *ActiveError();
+        GRfontPopup     *ActiveFontsel();
+
+        void            SetErrorLogName(const char*);
 
         // QT-SPECIFIC
-        QWidget *shell_widget() { return (shell); }
+        QWidget *shell_widget()         { return (wb_shell); }
 
-    public:
-        QWidget *shell;             // top level widget
-        QTledPopup *input;          // dialog input popup
-        QTmsgPopup *message;        // message popup
-        QTmsgPopup *info;           // info popup
-        QTmsgPopup *info2;          // two button info popup
-        QTmsgPopup *htinfo;         // html info popup
-        QTmsgPopup *error;          // error popup
-        QTfontPopup *fontsel;       // font select popup
-
-        QTprintPopup *hc;           // hard copy parameters and widget
-        GRmonList monitor;          // certain popups use this
-        void *call_data;            // internal data
-        void (*sens_set)(QTbag*, bool);
-                                    // sensitivity change callback
-        int err_cnt;                // counters for window id
-        int info_cnt;
-        int info2_cnt;
-        int htinfo_cnt;
+    protected:
+        QWidget         *wb_shell;      // top level widget
+        QWidget         *wb_textarea;   // text widget
+        QTledPopup      *wb_input;      // dialog input popup
+        QTmsgPopup      *wb_message;    // message popup
+        QTtextPopup     *wb_info;       // info popup
+        QTtextPopup     *wb_info2;      // two button info popup
+        QTtextPopup     *wb_htinfo;     // html info popup
+        QTtextPopup     *wb_warning;    // warning popup
+        QTtextPopup     *wb_error;      // error popup
+        QTfontPopup     *wb_fontsel;    // font select popup
+        QTprintPopup    *wb_hc;         // hard copy parameters
+        GRmonList       wb_monitor;     // certain popups use this
+        void            *wb_call_data;  // internal data
+        void            (*wb_sens_set)(QTbag*, bool, int);
+                                        // sensitivity change callback
+        int             wb_warn_cnt;    // counters for window id
+        int             wb_err_cnt;
+        int             wb_info_cnt;
+        int             wb_info2_cnt;
+        int             wb_htinfo_cnt;
     };
 
     // An event loop that can be linked into a list.
@@ -218,26 +230,25 @@ namespace qtinterf
 
         // virtual overrides
         // qtinterf.cc
-        bool Init(int*, char**);
-        bool InitColormap(int, int, bool);
-        void RGBofPixel(int, int*, int*, int*);
-        int AllocateColor(int*, int, int, int);
-        int NameColor(const char*);
-        bool NameToRGB(const char*, int*);
-        GRdraw *NewDraw(int);
-        GRwbag *NewWbag(const char*, GRwbag*);
-        int AddTimer(int, int(*)(void*), void*);
-        void RemoveTimer(int);
-        void (* RegisterSigintHdlr(void(*)()) )();
-        bool CheckForEvents();
-        int Input(int, int, int*);
-        void MainLoop(bool=false);
-        int LoopLevel()                     { return (dv_loop_level); }
-        void BreakLoop();
+        bool        Init(int*, char**);
+        bool        InitColormap(int, int, bool);
+        void        RGBofPixel(int, int*, int*, int*);
+        int         AllocateColor(int*, int, int, int);
+        int         NameColor(const char*);
+        bool        NameToRGB(const char*, int*);
+        GRdraw      *NewDraw(int);
+        GRwbag      *NewWbag(const char*, GRwbag*);
+        int         AddTimer(int, int(*)(void*), void*);
+        void        RemoveTimer(int);
+        GRsigintHdlr RegisterSigintHdlr(GRsigintHdlr);
+        bool        CheckForEvents();
+        int         Input(int, int, int*);
+        void        MainLoop(bool=false);
+        int         LoopLevel()             { return (dv_loop_level); }
+        void        BreakLoop();
 //XXX ridme
         int UseSHM()                        { return (false); };
-
-        // qthcopy.cc
+        // virtual override, qthcopy.cc
         void HCmessage(const char*);
 
         // Remaining functions are unique to class.
@@ -250,27 +261,6 @@ namespace qtinterf
         void RegisterMainFrame(QTbag *w)    { dv_main_bag = w; }
         QTbag *MainFrame()                  { return (dv_main_bag); }
 
-        // qtinterf.cc
-        int  ConnectFd();
-        void Deselect(GRobject);
-        void Select(GRobject);
-        bool GetStatus(GRobject);
-        void SetStatus(GRobject, bool);
-        void CallCallback(GRobject);
-        void Location(GRobject, int*, int*);
-        void PointerRootLoc(int*, int*);
-        const char *GetLabel(GRobject);
-        void SetLabel(GRobject, const char*);
-        void SetSensitive(GRobject, bool);
-        bool IsSensitive(GRobject);
-        void SetVisible(GRobject, bool);
-        bool IsVisible(GRobject);
-        void DestroyButton(GRobject);
-
-        // qtinterf.cc
-        void SetPopupLocation(GRloc, QWidget*, QWidget*);
-        void ComputePopupLocation(GRloc, QWidget*, QWidget*, int*, int*);
-
         static QTdev *self()
         {
             if (!instancePtr)
@@ -282,6 +272,27 @@ namespace qtinterf
         {
             return (instancePtr != 0);
         }
+
+        // qtinterf.cc
+        void Location(GRobject, int*, int*);
+        void SetPopupLocation(GRloc, QWidget*, QWidget*);
+        void ComputePopupLocation(GRloc, QWidget*, QWidget*, int*, int*);
+
+        static void Deselect(GRobject);
+        static void Select(GRobject);
+        static bool GetStatus(GRobject);
+        static void SetStatus(GRobject, bool);
+        static void CallCallback(GRobject);
+        static const char *GetLabel(GRobject);
+        static void SetLabel(GRobject, const char*);
+        static void SetSensitive(GRobject, bool);
+        static bool IsSensitive(GRobject);
+        static void SetVisible(GRobject, bool);
+        static bool IsVisible(GRobject);
+        static void DestroyButton(GRobject);
+        //static void SetFocus(GtkWidget*);
+        static int  ConnectFd();
+        static void PointerRootLoc(int*, int*);
 
     private:
         static void on_null_ptr();
@@ -296,9 +307,6 @@ namespace qtinterf
         static QTdev    *instancePtr;
     };
 }
-
-// Global access, set in constructor.
-extern qtinterf::QTdev *GRX;
 
 #endif // GTKINTERF_H
 

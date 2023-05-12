@@ -335,7 +335,7 @@ sAsmTf::set_sens(bool has_selection, bool has_toplev)
     gtk_widget_set_sensitive(tf_sc_label, sens);
     sb_scale.set_sensitive(sens);
     if (sens)
-        sens = GRX->GetStatus(tf_use_win);
+        sens = GTKdev::GetStatus(tf_use_win);
     gtk_widget_set_sensitive(tf_do_clip, sens);
     sb_win_l.set_sensitive(sens);
     sb_win_b.set_sensitive(sens);
@@ -354,14 +354,14 @@ sAsmTf::reset()
     sb_placement_x.set_value(0.0);
     sb_placement_y.set_value(0.0);
     gtk_combo_box_set_active(GTK_COMBO_BOX(tf_angle), 0);
-    GRX->Deselect(tf_mirror);
+    GTKdev::Deselect(tf_mirror);
     sb_magnification.set_value(1.0);
-    GRX->Deselect(tf_ecf_pre);
-    GRX->Deselect(tf_ecf_post);
-    GRX->Deselect(tf_use_win);
-    GRX->Deselect(tf_do_clip);
-    GRX->Deselect(tf_do_flatn);
-    GRX->Deselect(tf_no_hier);
+    GTKdev::Deselect(tf_ecf_pre);
+    GTKdev::Deselect(tf_ecf_post);
+    GTKdev::Deselect(tf_use_win);
+    GTKdev::Deselect(tf_do_clip);
+    GTKdev::Deselect(tf_do_flatn);
+    GTKdev::Deselect(tf_no_hier);
     sb_win_l.set_value(0.0);
     sb_win_b.set_value(0.0);
     sb_win_r.set_value(0.0);
@@ -385,20 +385,20 @@ sAsmTf::get_tx_params(tlinfo *tl)
     tl->scale = sb_scale.get_value();
     if (tl->scale < CDSCALEMIN || tl->scale > CDSCALEMAX)
         tl->scale = 1.0;
-    tl->mirror_y = GRX->GetStatus(tf_mirror);
+    tl->mirror_y = GTKdev::GetStatus(tf_mirror);
     tl->ecf_level = ECFnone;
-    if (GRX->GetStatus(tf_ecf_pre)) {
-        if (GRX->GetStatus(tf_ecf_post))
+    if (GTKdev::GetStatus(tf_ecf_pre)) {
+        if (GTKdev::GetStatus(tf_ecf_post))
             tl->ecf_level = ECFall;
         else
             tl->ecf_level = ECFpre;
     }
-    else if (GRX->GetStatus(tf_ecf_post))
+    else if (GTKdev::GetStatus(tf_ecf_post))
         tl->ecf_level = ECFpost;
-    tl->use_win = GRX->GetStatus(tf_use_win);
-    tl->clip = GRX->GetStatus(tf_do_clip);
-    tl->flatten = GRX->GetStatus(tf_do_flatn);
-    tl->no_hier = GRX->GetStatus(tf_no_hier);
+    tl->use_win = GTKdev::GetStatus(tf_use_win);
+    tl->clip = GTKdev::GetStatus(tf_do_clip);
+    tl->flatten = GTKdev::GetStatus(tf_do_flatn);
+    tl->no_hier = GTKdev::GetStatus(tf_no_hier);
     tl->winBB.left = INTERNAL_UNITS(sb_win_l.get_value());
     tl->winBB.bottom = INTERNAL_UNITS(sb_win_b.get_value());
     tl->winBB.right = INTERNAL_UNITS(sb_win_r.get_value());
@@ -434,15 +434,15 @@ sAsmTf::set_tx_params(tlinfo *tl)
     gtk_combo_box_set_active(GTK_COMBO_BOX(tf_angle), tf_angle_ix);
     sb_magnification.set_value(tl->magn);
     sb_scale.set_value(tl->scale);
-    GRX->SetStatus(tf_mirror, tl->mirror_y);
-    GRX->SetStatus(tf_ecf_pre, tl->ecf_level == ECFall ||
+    GTKdev::SetStatus(tf_mirror, tl->mirror_y);
+    GTKdev::SetStatus(tf_ecf_pre, tl->ecf_level == ECFall ||
         tl->ecf_level == ECFpre);
-    GRX->SetStatus(tf_ecf_post, tl->ecf_level == ECFall ||
+    GTKdev::SetStatus(tf_ecf_post, tl->ecf_level == ECFall ||
         tl->ecf_level == ECFpost);
-    GRX->SetStatus(tf_use_win, tl->use_win);
-    GRX->SetStatus(tf_do_clip, tl->clip);
-    GRX->SetStatus(tf_do_flatn, tl->flatten);
-    GRX->SetStatus(tf_no_hier, tl->no_hier);
+    GTKdev::SetStatus(tf_use_win, tl->use_win);
+    GTKdev::SetStatus(tf_do_clip, tl->clip);
+    GTKdev::SetStatus(tf_do_flatn, tl->flatten);
+    GTKdev::SetStatus(tf_no_hier, tl->no_hier);
     sb_win_l.set_digits(ndgt);
     sb_win_l.set_value(MICRONS(tl->winBB.left));
     sb_win_b.set_digits(ndgt);

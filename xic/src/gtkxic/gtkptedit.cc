@@ -108,7 +108,7 @@ void
 cExt::PopUpPhysTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
     void(*action)(TermEditInfo*, CDsterm*), CDsterm *term, int x, int y)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete TE;
@@ -364,7 +364,7 @@ sTE::~sTE()
 {
     TE = 0;
     if (te_caller)
-        GRX->SetStatus(te_caller, false);
+        GTKdev::SetStatus(te_caller, false);
     if (te_action)
         (*te_action)(0, te_term);
     if (te_popup)
@@ -432,7 +432,7 @@ sTE::update(TermEditInfo *tinfo, CDsterm *term)
         lstr.add("none");
     gtk_label_set_text(GTK_LABEL(te_flags), lstr.string());
 
-    GRX->SetStatus(te_fixed, tinfo->has_flag(TE_FIXED));
+    GTKdev::SetStatus(te_fixed, tinfo->has_flag(TE_FIXED));
     CDp_snode *ps0 = (CDp_snode*)CurCell(Electrical)->prpty(P_NODE);
     for (CDp_snode *ps = ps0; ps; ps = ps->next()) {
         if (ps->cell_terminal() == term) {
@@ -466,7 +466,7 @@ sTE::te_action_proc(GtkWidget *caller, void*)
     if (!strcmp(name, "Apply")) {
         if (TE->te_action) {
             unsigned int f = 0;
-            if (GRX->GetStatus(TE->te_fixed))
+            if (GTKdev::GetStatus(TE->te_fixed))
                 f |= TE_FIXED;
             CDp_snode *ps = TE->te_term->node_prpty();
             if (!ps)

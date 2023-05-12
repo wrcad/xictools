@@ -493,7 +493,8 @@ namespace {
             DWORD status;
             GetExitCodeProcess(h, &status);
             if (!status) {
-                dspPkgIf()->RegisterIdleProc(exec_idle, (void*)(uintptr_t)pid);
+                DSPpkg::self()->RegisterIdleProc(exec_idle,
+                    (void*)(uintptr_t)pid);
                 CloseHandle(h);
                 return;
             }
@@ -505,7 +506,8 @@ namespace {
             if (j->if_type() == fxJobMIT) {
                 // MIT FastCap (at least) does not return anything
                 // useful.
-                dspPkgIf()->RegisterIdleProc(exec_idle, (void*)(uintptr_t)pid);
+                DSPpkg::self()->RegisterIdleProc(exec_idle,
+                    (void*)(uintptr_t)pid);
                 CloseHandle(h);
                 return;
             }
@@ -520,14 +522,14 @@ namespace {
                 snprintf(buf, 128,
                     "Child process %d exited with error status %ld.",
                     pid, status);
-                dspPkgIf()->RegisterTimeoutProc(100, badexit_idle, buf);
+                DSPpkg::self()->RegisterTimeoutProc(100, badexit_idle, buf);
             }
             else if (j->if_type() == fxJobNEW) {
                 // FasterCap 5.0.2 and later only.
                 snprintf(buf, 128,
                 "FasterCap process %d exited with error status %ld\n(%s).",
                     pid, status, faster_cap_error(status));
-                dspPkgIf()->RegisterTimeoutProc(100, badexit_idle, buf);
+                DSPpkg::self()->RegisterTimeoutProc(100, badexit_idle, buf);
             }
             delete j;
         }
@@ -542,7 +544,7 @@ namespace {
         if (WIFEXITED(status)) {
             if (!WEXITSTATUS(status)) {
                 // Successful return.
-                dspPkgIf()->RegisterIdleProc(exec_idle, (void*)(long)pid);
+                DSPpkg::self()->RegisterIdleProc(exec_idle, (void*)(long)pid);
                 return;
             }
             fxJob *j = fxJob::find(pid);
@@ -551,14 +553,15 @@ namespace {
             if (j->if_type() == fxJobMIT) {
                 // MIT FastCap (at least) does not return anything
                 // useful.
-                dspPkgIf()->RegisterIdleProc(exec_idle, (void*)(long)pid);
+                DSPpkg::self()->RegisterIdleProc(exec_idle, (void*)(long)pid);
                 return;
             }
             if (j->if_type() == fxJobWR) {
                 sprintf(buf,
                     "Child process %d exited with error status %d.",
                     pid, WEXITSTATUS(status));
-                dspPkgIf()->RegisterIdleProc(badexit_idle, lstring::copy(buf));
+                DSPpkg::self()->RegisterIdleProc(badexit_idle,
+                    lstring::copy(buf));
             }
             else if (j->if_type() == fxJobNEW) {
                 // FasterCap 5.0.2 and later only.
@@ -566,7 +569,8 @@ namespace {
                 "FasterCap process %d exited with error status %d\n(%s).",
                     pid, WEXITSTATUS(status),
                     faster_cap_error(WEXITSTATUS(status)));
-                dspPkgIf()->RegisterIdleProc(badexit_idle, lstring::copy(buf));
+                DSPpkg::self()->RegisterIdleProc(badexit_idle,
+                    lstring::copy(buf));
             }
             delete j;
             return;
@@ -574,7 +578,7 @@ namespace {
         else if (WIFSIGNALED(status)) {
             sprintf(buf, "Child process %d exited on signal %d.", pid,
                 WIFSIGNALED(status));
-            dspPkgIf()->RegisterIdleProc(badexit_idle, lstring::copy(buf));
+            DSPpkg::self()->RegisterIdleProc(badexit_idle, lstring::copy(buf));
         }
         fxJob *j = fxJob::find(pid);
         delete j;
@@ -757,7 +761,7 @@ fxJob::run(bool run_foreg, bool monitor)
         return (false);
     }
     if (!pid) {
-        dspPkgIf()->CloseGraphicsConnection();
+        DSPpkg::self()->CloseGraphicsConnection();
         if (!monitor || !tee(j_outfile)) {
             int fd = open(j_outfile, (O_CREAT | O_WRONLY | O_TRUNC), 0644);
             dup2(fd, 1);
@@ -888,7 +892,7 @@ fxJob::fc_post_process()
         j_resfile = lstring::copy(buf);
     }
     if (!filestat::create_bak(j_resfile)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         return;
     }
     FILE *fp = filestat::open_file(j_resfile, "w");
@@ -1005,7 +1009,7 @@ fxJob::fh_post_process()
         j_resfile = lstring::copy(buf);
     }
     if (!filestat::create_bak(j_resfile)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         return;
     }
     FILE *fp = filestat::open_file(j_resfile, "w");

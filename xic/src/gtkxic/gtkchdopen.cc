@@ -107,7 +107,7 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
     const char *init_idname, const char *init_str, int x, int y,
     bool(*callback)(const char*, const char*, int, void*), void *arg)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Co;
@@ -362,19 +362,19 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
 
     switch (sCHDin::get_default_cgd_type()) {
     case CHD_CGDmemory:
-        GRX->SetStatus(co_p2_mem, true);
-        GRX->SetStatus(co_p2_file, false);
-        GRX->SetStatus(co_p2_none, false);
+        GTKdev::SetStatus(co_p2_mem, true);
+        GTKdev::SetStatus(co_p2_file, false);
+        GTKdev::SetStatus(co_p2_none, false);
         break;
     case CHD_CGDfile:
-        GRX->SetStatus(co_p2_mem, false);
-        GRX->SetStatus(co_p2_file, true);
-        GRX->SetStatus(co_p2_none, false);
+        GTKdev::SetStatus(co_p2_mem, false);
+        GTKdev::SetStatus(co_p2_file, true);
+        GTKdev::SetStatus(co_p2_none, false);
         break;
     case CHD_CGDnone:
-        GRX->SetStatus(co_p2_mem, false);
-        GRX->SetStatus(co_p2_file, false);
-        GRX->SetStatus(co_p2_none, true);
+        GTKdev::SetStatus(co_p2_mem, false);
+        GTKdev::SetStatus(co_p2_file, false);
+        GTKdev::SetStatus(co_p2_none, true);
         break;
     }
 
@@ -449,7 +449,7 @@ sCo::~sCo()
     Co = 0;
     delete co_p1_cnmap;
     if (co_caller)
-        GRX->Deselect(co_caller);
+        GTKdev::Deselect(co_caller);
 }
 
 
@@ -498,7 +498,7 @@ sCo::apply_proc(GtkWidget *widget)
 {
     int ret = true;
     if (co_callback && widget == co_apply) {
-        GRX->Deselect(widget);
+        GTKdev::Deselect(widget);
         char *string;
         int m = 0;
         int pg = gtk_notebook_get_current_page(GTK_NOTEBOOK(co_nbook));
@@ -506,9 +506,9 @@ sCo::apply_proc(GtkWidget *widget)
             string = gtk_editable_get_chars(GTK_EDITABLE(co_p1_text), 0, -1);
         else {
             string = gtk_editable_get_chars(GTK_EDITABLE(co_p2_text), 0, -1);
-            if (GRX->GetStatus(co_p2_file))
+            if (GTKdev::GetStatus(co_p2_file))
                 m = 1;
-            else if (GRX->GetStatus(co_p2_none))
+            else if (GTKdev::GetStatus(co_p2_none))
                 m = 2;
         }
         if (!string || !*string) {

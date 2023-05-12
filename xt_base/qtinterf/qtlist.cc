@@ -136,13 +136,14 @@ list_delegate::sizeHint(const QStyleOptionViewItem&,
 
 QTlistPopup::QTlistPopup(QTbag *owner, stringlist *symlist, const char *title,
     const char *header, bool usepix, void *arg) :
-    QDialog(owner ? owner->shell : 0), QTbag(this)
+    QDialog(owner ? owner->Shell() : 0), QTbag()
 {
+wb_shell = this;
     p_parent = owner;
     p_cb_arg = arg;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
 
     setWindowTitle(tr("Listing"));
     const char *t;
@@ -195,7 +196,7 @@ QTlistPopup::~QTlistPopup()
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
-            owner->monitor.remove(this);
+            owner->MonitorRemove(this);
     }
 }
 
@@ -207,7 +208,7 @@ QTlistPopup::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     delete this;
@@ -221,7 +222,7 @@ QTlistPopup::update(stringlist *symlist, const char *title, const char *header)
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
 

@@ -96,7 +96,7 @@ cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, bool, const char*, void*),
     void *arg, int depth, bool fmode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Flt;
@@ -118,7 +118,7 @@ cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
     gtk_window_set_transient_for(GTK_WINDOW(Flt->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Flt->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Flt->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Flt->shell());
 }
@@ -250,7 +250,7 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     button = gtk_check_button_new_with_label("Use fast mode, NOT UNDOABLE");
     gtk_widget_set_name(button, "Mode");
     gtk_widget_show(button);
-    GRX->SetStatus(button, fmode);
+    GTKdev::SetStatus(button, fmode);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fl_action_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
@@ -303,7 +303,7 @@ sFlt::~sFlt()
 {
     Flt = 0;
     if (fl_caller)
-        GRX->Deselect(fl_caller);
+        GTKdev::Deselect(fl_caller);
     if (fl_callback)
         (*fl_callback)(0, false, 0, fl_arg);
     if (fl_popup)
@@ -314,9 +314,12 @@ sFlt::~sFlt()
 void
 sFlt::update()
 {
-    GRX->SetStatus(fl_novias, CDvdb()->getVariable(VA_NoFlattenStdVias));
-    GRX->SetStatus(fl_nopcells, CDvdb()->getVariable(VA_NoFlattenPCells));
-    GRX->SetStatus(fl_nolabels, CDvdb()->getVariable(VA_NoFlattenLabels));
+    GTKdev::SetStatus(fl_novias,
+        CDvdb()->getVariable(VA_NoFlattenStdVias));
+    GTKdev::SetStatus(fl_nopcells,
+        CDvdb()->getVariable(VA_NoFlattenPCells));
+    GTKdev::SetStatus(fl_nolabels,
+        CDvdb()->getVariable(VA_NoFlattenLabels));
 }
 
 
@@ -338,31 +341,31 @@ sFlt::fl_action_proc(GtkWidget *caller, void*)
     if (!strcmp(name, "Help"))
         DSPmainWbag(PopUpHelp("xic:flatn"))
     else if (!strcmp(name, "StdVias")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoFlattenStdVias, "");
         else
             CDvdb()->clearVariable(VA_NoFlattenStdVias);
     }
     else if (!strcmp(name, "PCells")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoFlattenPCells, "");
         else
             CDvdb()->clearVariable(VA_NoFlattenPCells);
     }
     else if (!strcmp(name, "Labels")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoFlattenLabels, "");
         else
             CDvdb()->clearVariable(VA_NoFlattenLabels);
     }
     else if (!strcmp(name, "Mode")) {
         if (Flt->fl_callback)
-            (*Flt->fl_callback)("mode", GRX->GetStatus(caller), 0,
+            (*Flt->fl_callback)("mode", GTKdev::GetStatus(caller), 0,
                 Flt->fl_arg);
     }
     else if (!strcmp(name, "Merge")) {
         if (Flt->fl_callback)
-            (*Flt->fl_callback)("merge", GRX->GetStatus(caller), 0,
+            (*Flt->fl_callback)("merge", GTKdev::GetStatus(caller), 0,
                 Flt->fl_arg);
     }
     else if (!strcmp(name, "Flatten")) {

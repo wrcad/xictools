@@ -538,7 +538,7 @@ RotState::undo()
                 SetLevel4();
                 return;
             }
-            dspPkgIf()->RegisterTimeoutProc(1500, MsgTimeout, 0);
+            DSPpkg::self()->RegisterTimeoutProc(1500, MsgTimeout, 0);
         }
     }
     else if (Level == 2) {
@@ -575,7 +575,7 @@ RotState::redo()
         //
         if (Ulist()->HasRedo() && (!Ulist()->HasOneRedo() || State < 4)) {
             cEventHdlr::sel_redo();
-            dspPkgIf()->RegisterTimeoutProc(1500, MsgTimeout, 0);
+            DSPpkg::self()->RegisterTimeoutProc(1500, MsgTimeout, 0);
         }
         else if (State == 1 || State == 2 || State == 3 || State == 5) {
             Selections.insertList(CurCell(), OrigObjs);
@@ -584,7 +584,7 @@ RotState::redo()
         }
         else {
             cEventHdlr::sel_redo();
-            dspPkgIf()->RegisterTimeoutProc(1500, MsgTimeout, 0);
+            DSPpkg::self()->RegisterTimeoutProc(1500, MsgTimeout, 0);
         }
     }
     else if (Level == 2) {

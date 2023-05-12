@@ -341,8 +341,8 @@ namespace {
                 if (ld)
                     LT()->SetCurLayer(ld);
                 if (TimerId)
-                    dspPkgIf()->RemoveTimeoutProc(TimerId);
-                TimerId = dspPkgIf()->RegisterTimeoutProc(3000,
+                    DSPpkg::self()->RemoveTimeoutProc(TimerId);
+                TimerId = DSPpkg::self()->RegisterTimeoutProc(3000,
                     esc_timeout, 0);
                 if (ld) {
                     PL()->ShowPromptV(
@@ -1226,7 +1226,7 @@ cLtab::b3_handler(int x, int y, int state, bool down)
             else if (ctrl && shft)
                 Menu()->MenuButtonPress(MMmain, MenuLPEDT);
         }
-        else if (dspPkgIf()->IsTrueColor()) {
+        else if (DSPpkg::self()->IsTrueColor()) {
             int entry = entry_of_xy(x, y);
             if (entry <= last_entry()) {
                 CDl *ld = CDldb()->layer(entry + lt_first_visible + 1,

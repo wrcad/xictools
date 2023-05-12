@@ -235,7 +235,7 @@ cMain::ApplyHelpInput(const char *name)
     if (e) {
         if (!strcmp(e, ".scr")) {
             // reference to a script to execute
-            dspPkgIf()->RegisterIdleProc(script_idle_proc,
+            DSPpkg::self()->RegisterIdleProc(script_idle_proc,
                 lstring::copy(name));
             return (true);
         }
@@ -282,10 +282,10 @@ cMain::ListPixels()
     if (mode == Electrical ||
             !DSP()->MainWdesc()->Attrib()->grid(mode)->show_on_top()) {
         pix = DSP()->Color(FineGridColor);
-        GRpkgIf()->MainDev()->RGBofPixel(pix, &r, &g, &b);
+        DSPpkg::self()->MainDev()->RGBofPixel(pix, &r, &g, &b);
         p = p0 = new pix_list(pix, r, g, b);
         pix = DSP()->Color(CoarseGridColor);
-        GRpkgIf()->MainDev()->RGBofPixel(pix, &r, &g, &b);
+        DSPpkg::self()->MainDev()->RGBofPixel(pix, &r, &g, &b);
         p->next = new pix_list(pix, r, g, b);
         p = p->next;
     }
@@ -303,7 +303,7 @@ cMain::ListPixels()
         }
     }
     pix = DSP()->Color(InstanceBBColor);
-    GRpkgIf()->MainDev()->RGBofPixel(pix, &r, &g, &b);
+    DSPpkg::self()->MainDev()->RGBofPixel(pix, &r, &g, &b);
     if (!p0)
         p = p0 = new pix_list(pix, r, g, b);
     else {
@@ -311,30 +311,30 @@ cMain::ListPixels()
         p = p->next;
     }
     pix = DSP()->Color(InstanceNameColor);
-    GRpkgIf()->MainDev()->RGBofPixel(pix, &r, &g, &b);
+    DSPpkg::self()->MainDev()->RGBofPixel(pix, &r, &g, &b);
     p->next = new pix_list(pix, r, g, b);
     p = p->next;
     pix = DSP()->Color(InstanceSizeColor);
-    GRpkgIf()->MainDev()->RGBofPixel(pix, &r, &g, &b);
+    DSPpkg::self()->MainDev()->RGBofPixel(pix, &r, &g, &b);
     p->next = new pix_list(pix, r, g, b);
     p = p->next;
     if (!(mode == Electrical ||
             !DSP()->MainWdesc()->Attrib()->grid(mode)->show_on_top())) {
         pix = DSP()->Color(FineGridColor);
-        GRpkgIf()->MainDev()->RGBofPixel(pix, &r, &g, &b);
+        DSPpkg::self()->MainDev()->RGBofPixel(pix, &r, &g, &b);
         p->next = new pix_list(pix, r, g, b);
         p = p->next;
         pix = DSP()->Color(CoarseGridColor);
-        GRpkgIf()->MainDev()->RGBofPixel(pix, &r, &g, &b);
+        DSPpkg::self()->MainDev()->RGBofPixel(pix, &r, &g, &b);
         p->next = new pix_list(pix, r, g, b);
         p = p->next;
     }
     pix = DSP()->Color(MarkerColor);
-    GRpkgIf()->MainDev()->RGBofPixel(pix, &r, &g, &b);
+    DSPpkg::self()->MainDev()->RGBofPixel(pix, &r, &g, &b);
     p->next = new pix_list(pix, r, g, b);
     p = p->next;
     pix = DSP()->Color(HighlightingColor);
-    GRpkgIf()->MainDev()->RGBofPixel(pix, &r, &g, &b);
+    DSPpkg::self()->MainDev()->RGBofPixel(pix, &r, &g, &b);
     p->next = new pix_list(pix, r, g, b);
     p = p->next;
 

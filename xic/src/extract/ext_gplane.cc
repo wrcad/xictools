@@ -194,7 +194,7 @@ cExt::invertGroundPlane(CDs *sdesc, int mode, const char *gpiname,
     // For library gates, forget about the ground plane.
     if (EX()->skipExtract(sdesc))
         return (XIok);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     if (EX()->isVerbosePromptline())
         PL()->PushPromptV("Inverting ground plane in %s: ",
             Tstring(sdesc->cellname()));
@@ -254,7 +254,7 @@ cExt::invertGroundPlane(CDs *sdesc, int mode, const char *gpiname,
     }
     if (EX()->isVerbosePromptline())
         PL()->PopPrompt();
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (ret);
 }
 // End ground plane functions.

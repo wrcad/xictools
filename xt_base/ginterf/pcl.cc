@@ -135,7 +135,7 @@ PCLdev::NewDraw(int)
     else
         return (0);
     if (!plotfp) {
-        GRpkgIf()->Perror(data->filename);
+        GRpkg::self()->Perror(data->filename);
         return (0);
     }
     PCLparams *pcl = new PCLparams;
@@ -174,7 +174,7 @@ PCLdev::NewDraw(int)
         size = pcl->bytpline;
     pcl->base = (unsigned char*)malloc(size);
     if (!pcl->base) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "Insufficient memory.");
+        GRpkg::self()->ErrPrintf(ET_WARN, "Insufficient memory.");
         return (0);
     }
     memset(pcl->base, 0, size);
@@ -250,7 +250,7 @@ PCLparams::dump()
                 ybyte++;
             }
             if ((int)fwrite(buf, 1, ybyte+len, fp) != ybyte + len) {
-                GRpkgIf()->HCabort("File write error");
+                GRpkg::self()->HCabort("File write error");
                 break;
             }
         }
@@ -262,7 +262,7 @@ PCLparams::dump()
 
             if ((int)fwrite(buf, 1, bytpline+len, fp)
                     != bytpline + len) {
-                GRpkgIf()->HCabort("File write error");
+                GRpkg::self()->HCabort("File write error");
                 break;
             }
         }
@@ -332,7 +332,7 @@ PCLparams::ResetViewport(int wid, int hei)
         free(base);
     base = (unsigned char*)malloc(dev->height*bytpline);
     if (!base) {
-        GRpkgIf()->HCabort("Insufficient memory");
+        GRpkg::self()->HCabort("Insufficient memory");
         return;
     }
     memset(base, 0, dev->height*bytpline);

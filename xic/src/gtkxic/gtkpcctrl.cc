@@ -98,7 +98,7 @@ using namespace gtkpcc;
 void
 cEdit::PopUpPCellCtrl(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete PCc;
@@ -120,7 +120,7 @@ cEdit::PopUpPCellCtrl(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(PCc->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), PCc->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), PCc->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(PCc->shell());
 }
@@ -271,7 +271,7 @@ sPCc::~sPCc()
 {
     PCc = 0;
     if (pcc_caller)
-        GRX->Deselect(pcc_caller);
+        GTKdev::Deselect(pcc_caller);
     if (pcc_popup)
         gtk_widget_destroy(pcc_popup);
 }
@@ -288,9 +288,12 @@ sPCc::update()
     else
         gtk_combo_box_set_active(GTK_COMBO_BOX(pcc_abut), 1);
 
-    GRX->SetStatus(pcc_hidestr, CDvdb()->getVariable(VA_PCellHideGrips));
-    GRX->SetStatus(pcc_listsm, CDvdb()->getVariable(VA_PCellListSubMasters));
-    GRX->SetStatus(pcc_allwarn, CDvdb()->getVariable(VA_PCellShowAllWarnings));
+    GTKdev::SetStatus(pcc_hidestr,
+        CDvdb()->getVariable(VA_PCellHideGrips));
+    GTKdev::SetStatus(pcc_listsm,
+        CDvdb()->getVariable(VA_PCellListSubMasters));
+    GTKdev::SetStatus(pcc_allwarn,
+        CDvdb()->getVariable(VA_PCellShowAllWarnings));
 
     int d;
     const char *str = CDvdb()->getVariable(VA_PCellGripInstSize);
@@ -322,7 +325,7 @@ sPCc::pcc_action(GtkWidget *caller, void*)
         return;
     }
 
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
     if (!strcmp(name, "hidestr")) {
         if (state)
             CDvdb()->setVariable(VA_PCellHideGrips, "");

@@ -257,10 +257,12 @@ QTdraw::MovePointer(int x, int y, bool absolute)
 void
 QTdraw::QueryPointer(int *x, int *y, unsigned *state)
 {
+    QPoint ptg(QCursor::pos());
+    QPoint ptw = Viewport()->mapFromGlobal(ptg);
     if (x)
-        *x = QCursor::pos().x();
+        *x = ptw.x();
     if (y)
-        *y = QCursor::pos().y();
+        *y = ptw.y();
     if (state) {
         *state = 0;
         int st = QApplication::keyboardModifiers();

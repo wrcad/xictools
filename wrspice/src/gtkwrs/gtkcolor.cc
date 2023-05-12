@@ -150,7 +150,7 @@ GTKtoolbar::PopDownColors()
         return;
     SetLoc(ntb_colors, co_shell);
 
-    GRX->Deselect(tb_colors);
+    GTKdev::Deselect(tb_colors);
     g_signal_handlers_disconnect_by_func(G_OBJECT(co_shell),
         (gpointer)clr_cancel_proc, co_shell);
 
@@ -212,7 +212,8 @@ GTKtoolbar::UpdateColors(const char *s)
                 if (i >= 0 || i < NUMPLOTCOLORS) {
                     xKWent *entry = static_cast<xKWent*>(KW.color(i));
                     if (entry->ent && entry->ent->active) {
-                        bool state = GRX->GetStatus(entry->ent->active);;
+                        bool state =
+                            GTKdev::GetStatus(entry->ent->active);;
                         if (!state)
                             gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),
                                 buf);
@@ -349,7 +350,7 @@ CommandTab::com_setrdb(wordlist *wl)
 {
 #ifdef WITH_X11
     if (!CP.Display()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "X system not available.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "X system not available.\n");
         return;
     }
     char *str = wordlist::flatten(wl);
@@ -359,7 +360,7 @@ CommandTab::com_setrdb(wordlist *wl)
     TB()->UpdateColors(str);
     delete [] str;
 #else
-    GRpkgIf()->ErrPrintf(ET_ERROR, "X system not available.\n");
+    GRpkg::self()->ErrPrintf(ET_ERROR, "X system not available.\n");
     (void)wl;
 #endif
 }

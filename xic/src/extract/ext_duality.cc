@@ -122,7 +122,7 @@ cExt::associate(CDs *sdesc)
     // Electrical connectivity ignores shorted NOPHYS devices.
     SCD()->setIncludeNoPhys(false);
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
 
     bool ttmp = DSP()->ShowTerminals();
     if (ttmp)
@@ -194,7 +194,7 @@ cExt::associate(CDs *sdesc)
     // We're done with this.
     updateReferenceTable(0);
 
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (ret == XIok);
 }
 
@@ -3361,7 +3361,7 @@ cGroupDesc::solve_duals() THROW_XIrt
 
                 if (Timer()->check_interval(check_time)) {
                     if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-                        dspPkgIf()->CheckForInterrupt();
+                        DSPpkg::self()->CheckForInterrupt();
                     if (XM()->ConfirmAbort())
                         throw (XIintr);
                 }

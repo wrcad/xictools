@@ -79,9 +79,7 @@ enum XIC_WINDOW_CLASS
 };
 
 
-inline class QTpkg *qtPkgIf();
-
-class QTpkg : public cGrPkg
+class QTpkg : public DSPpkg
 {
 public:
     QTpkg()
@@ -92,10 +90,9 @@ public:
             pkg_not_mapped      = false;
         }
 
-    friend inline QTpkg *qtPkgIf()
-        { return (dynamic_cast<QTpkg*>(GRpkgIf())); }
+    static QTpkg *self() { return (dynamic_cast<QTpkg*>(DSPpkg::self())); }
 
-    // cGrPkg virtual overrides
+    // DSPpkg virtual overrides
     GRwbag *NewGX();
     int Initialize(GRwbag*);
     void ReinitNoGraphics();

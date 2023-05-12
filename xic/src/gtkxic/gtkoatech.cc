@@ -90,7 +90,7 @@ using namespace gtkoatech;
 void
 cOAif::PopUpOAtech(GRobject caller, ShowMode mode, int x, int y)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete OAtc;
@@ -271,7 +271,7 @@ sOAtc::~sOAtc()
 {
     OAtc = 0;
     if (ot_caller)
-        GRX->Deselect(ot_caller);
+        GTKdev::Deselect(ot_caller);
     if (ot_popup)
         gtk_widget_destroy(ot_popup);
     delete [] ot_attachment;

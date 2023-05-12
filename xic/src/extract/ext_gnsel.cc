@@ -169,7 +169,7 @@ cExt::selectGroupNode(GRobject caller)
     // Launch the state in an idle proc, so present command (if any)
     // will exit cleanly.
 
-    dspPkgIf()->RegisterIdleProc(exec_idle, caller);
+    DSPpkg::self()->RegisterIdleProc(exec_idle, caller);
 }
 
 

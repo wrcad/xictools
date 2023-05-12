@@ -693,7 +693,7 @@ GTKtoolbar::PopDownPlotDefs()
     TB()->PopDownTBhelp(TBH_PD);
     SetLoc(ntb_plotdefs, pd_shell);
 
-    GRX->Deselect(tb_plotdefs);
+    GTKdev::Deselect(tb_plotdefs);
     g_signal_handlers_disconnect_by_func(G_OBJECT(pd_shell),
         (gpointer)pl_cancel_proc, pd_shell);
 
@@ -738,7 +738,7 @@ namespace {
     pl_help_proc(GtkWidget *caller, void *client_data)
     {
         GtkWidget *parent = static_cast<GtkWidget*>(client_data);
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state)
             TB()->PopUpTBhelp(parent, caller, TBH_PD);
         else
@@ -750,7 +750,7 @@ namespace {
     pl_choice_hdlr(GtkWidget *caller, GdkEvent*, void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
-        if (GRX->GetStatus(entry->ent->active))
+        if (GTKdev::GetStatus(entry->ent->active))
             return (true);
         int i;
         if (!strcmp(entry->word, kw_plotstyle)) {
@@ -760,8 +760,8 @@ namespace {
                 if (!strcmp(string, KW.pstyles(i)->word))
                     break;
             if (!KW.pstyles(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad plotstyle found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad plotstyle found: %s.\n", string);
                 i = 0;
             }
             else {
@@ -789,8 +789,8 @@ namespace {
                 if (!strcmp(string, KW.gstyles(i)->word))
                     break;
             if (!KW.gstyles(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad gridstyle found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad gridstyle found: %s.\n", string);
                 i = 0;
             }
             else {
@@ -818,8 +818,8 @@ namespace {
                 if (!strcmp(string, KW.scale(i)->word))
                     break;
             if (!KW.scale(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad scaletype found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad scaletype found: %s.\n", string);
                 i = 0;
             }
             else {
@@ -842,7 +842,7 @@ namespace {
         else if (!strcmp(entry->word, kw_hcopydriver)) {
             const char *string =
                 gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
-            i = GRpkgIf()->FindHCindex(string);
+            i = GRpkg::self()->FindHCindex(string);
             if (i < 0)
                 i = wrsHCcb.format;
             else {
@@ -850,18 +850,19 @@ namespace {
                     i--;
                     if (i < 0) {
                         i = 0;
-                        while (GRpkgIf()->HCof(i) && GRpkgIf()->HCof(i+1))
+                        while (GRpkg::self()->HCof(i) &&
+                                GRpkg::self()->HCof(i+1))
                             i++;
                     }
                 }
                 else {
                     i++;
-                    if (!GRpkgIf()->HCof(i))
+                    if (!GRpkg::self()->HCof(i))
                        i = 0;
                 }
             }
             gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),
-                GRpkgIf()->HCof(i)->keyword);
+                GRpkg::self()->HCof(i)->keyword);
         }
         return (true);
     }

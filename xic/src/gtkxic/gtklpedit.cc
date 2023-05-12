@@ -159,7 +159,7 @@ void
 cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
     const char *string)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Lpe;
@@ -182,7 +182,7 @@ cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
     gtk_window_set_transient_for(GTK_WINDOW(Lpe->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Lpe->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Lpe->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Lpe->shell());
 }
@@ -812,7 +812,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(lp_text));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr, NULL);
 
     gtk_widget_set_size_request(lp_text, DEF_WIDTH, DEF_HEIGHT);
@@ -864,7 +864,7 @@ sLpe::~sLpe()
             PL()->AbortEdit();
     }
     if (lp_caller)
-        GRX->Deselect(lp_caller);
+        GTKdev::Deselect(lp_caller);
     if (lp_popup)
         gtk_widget_destroy(lp_popup);
 }

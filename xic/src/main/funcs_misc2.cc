@@ -5954,8 +5954,8 @@ namespace {
         void esc()
             {
                 got_abort = Abort;
-                if (GRpkgIf()->LoopLevel() > 1)
-                    GRpkgIf()->BreakLoop();
+                if (DSPpkg::self()->LoopLevel() > 1)
+                    DSPpkg::self()->BreakLoop();
                 EV()->PopCallback(this);
                 delete this;
             }
@@ -5972,7 +5972,8 @@ namespace {
     //
     PTretType pointTo()
     {
-        if (!GRpkgIf()->MainDev() || GRpkgIf()->MainDev()->ident != _devGTK_)
+        if (!DSPpkg::self()->MainDev() ||
+                DSPpkg::self()->MainDev()->ident != _devGTK_)
              return (PTesc);
         PointCmd = new PointState("POINT", "Point");
         PL()->SavePrompt();
@@ -5984,7 +5985,7 @@ namespace {
         }
         PL()->RestorePrompt();
         Gst()->RestoreGhost();
-        GRpkgIf()->MainLoop();
+        DSPpkg::self()->MainLoop();
 
         if (PointState::got_abort) {
             PointState::got_abort = false;
@@ -6090,8 +6091,8 @@ namespace {
         void esc()
             {
                 got_abort = Abort;
-                if (GRpkgIf()->LoopLevel() > 1)
-                    GRpkgIf()->BreakLoop();
+                if (DSPpkg::self()->LoopLevel() > 1)
+                    DSPpkg::self()->BreakLoop();
                 EV()->PopCallback(this);
                 delete this;
             }
@@ -6133,7 +6134,7 @@ misc2_funcs::IFselection(Variable *res, Variable*, void*)
     }
     PL()->RestorePrompt();
     Gst()->RestoreGhost();
-    GRpkgIf()->MainLoop();
+    DSPpkg::self()->MainLoop();
 
     if (SelectState::got_abort) {
         SelectState::got_abort = false;
@@ -6177,8 +6178,8 @@ namespace {
     InpState::esc()
     {
         GRledPopup *p = widget;
-        if (GRpkgIf()->LoopLevel() > 1)
-            GRpkgIf()->BreakLoop();
+        if (DSPpkg::self()->LoopLevel() > 1)
+            DSPpkg::self()->BreakLoop();
         EV()->PopCallback(this);
         delete this;
         if (p)
@@ -6249,7 +6250,7 @@ misc2_funcs::IFpopUpInput(Variable *res, Variable *args, void*)
     InpCmd->widget = 
     DSPmainWbagRet(PopUpEditString(0, GRloc(), msg, def, InpState::inp_cb, 0,
         0, InpState::inp_dn, multiline, btn));
-    GRpkgIf()->MainLoop();
+    DSPpkg::self()->MainLoop();
 
     res->type = TYP_STRING;
     res->content.string = InpState::ret_string;
@@ -6288,8 +6289,8 @@ namespace {
     AfState::esc()
     {
         GRaffirmPopup *p = widget;
-        if (GRpkgIf()->LoopLevel() > 1)
-            GRpkgIf()->BreakLoop();
+        if (DSPpkg::self()->LoopLevel() > 1)
+            DSPpkg::self()->BreakLoop();
         EV()->PopCallback(this);
         delete this;
         if (p)
@@ -6330,7 +6331,7 @@ misc2_funcs::IFpopUpAffirm(Variable *res, Variable *args, void*)
     }
     AfCmd->widget = 
     DSPmainWbagRet(PopUpAffirm(0, GRloc(), msg, AfState::af_cb, 0));
-    GRpkgIf()->MainLoop();
+    DSPpkg::self()->MainLoop();
 
     res->type = TYP_SCALAR;
     if (AfState::ret_value) {
@@ -6371,8 +6372,8 @@ namespace {
     NuState::esc()
     {
         GRnumPopup *p = widget;
-        if (GRpkgIf()->LoopLevel() > 1)
-            GRpkgIf()->BreakLoop();
+        if (DSPpkg::self()->LoopLevel() > 1)
+            DSPpkg::self()->BreakLoop();
         EV()->PopCallback(this);
         delete this;
         if (p)
@@ -6434,7 +6435,7 @@ misc2_funcs::IFpopUpNumeric(Variable *res, Variable *args, void*)
     NuCmd->widget = 
     DSPmainWbagRet(PopUpNumeric(0, GRloc(), msg, initd, mind, maxd, del,
         numd, NuState::nu_cb, 0));
-    GRpkgIf()->MainLoop();
+    DSPpkg::self()->MainLoop();
 
     res->type = TYP_SCALAR;
     res->content.value =  NuState::ret_value;
@@ -6607,8 +6608,8 @@ namespace {
     {
         if (Abort)
             keyret = ESCAPE_KEY;
-        if (GRpkgIf()->LoopLevel() > 1)
-            GRpkgIf()->BreakLoop();
+        if (DSPpkg::self()->LoopLevel() > 1)
+            DSPpkg::self()->BreakLoop();
         EV()->PopCallback(this);
         delete this;
     }
@@ -6639,7 +6640,7 @@ misc2_funcs::IFgetKey(Variable *res, Variable*, void*)
         delete KCmd;
         return (BAD);
     }
-    GRpkgIf()->MainLoop();
+    DSPpkg::self()->MainLoop();
     res->type = TYP_SCALAR;
     res->content.value = KState::keyret;
     return (OK);

@@ -544,9 +544,12 @@ namespace {
 
         // im->visual = 0 from pixmap
         unsigned int red_mask, green_mask, blue_mask;
-        gdk_visual_get_red_pixel_details(GRX->Visual(), &red_mask, 0, 0);
-        gdk_visual_get_green_pixel_details(GRX->Visual(), &green_mask, 0, 0);
-        gdk_visual_get_blue_pixel_details(GRX->Visual(), &blue_mask, 0, 0);
+        gdk_visual_get_red_pixel_details(GTKdev::self()->Visual(),
+            &red_mask, 0, 0);
+        gdk_visual_get_green_pixel_details(GTKdev::self()->Visual(),
+            &green_mask, 0, 0);
+        gdk_visual_get_blue_pixel_details(GTKdev::self()->Visual(),
+            &blue_mask, 0, 0);
 
         int r = (pix & red_mask);
         r = (((r * DIMPIXVAL)/10) & red_mask);
@@ -571,7 +574,7 @@ namespace {
             return;
 
         pm = new ndkPixmap(window, b_wid, b_hei,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         if (!pm)
             return;
         pm->copy_from_window(window, wb->GC(), 0, 0, 0, 0, b_wid, b_hei);
@@ -623,7 +626,7 @@ namespace {
             return;
 
         GdkPixmap *pm = gdk_pixmap_new(wb->Window(), 1, 1,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         if (!pm)
             return;
         GdkWindow *bk = wb->Window();
@@ -653,9 +656,9 @@ namespace {
         gdk_image_destroy(im);
 
         // im->visual = 0 from pixmap
-        unsigned red_mask = GRX->Visual()->red_mask;
-        unsigned green_mask = GRX->Visual()->green_mask;
-        unsigned blue_mask = GRX->Visual()->blue_mask;
+        unsigned red_mask = GTKdev::self()->Visual()->red_mask;
+        unsigned green_mask = GTKdev::self()->Visual()->green_mask;
+        unsigned blue_mask = GTKdev::self()->Visual()->blue_mask;
         int r = (pix & red_mask);
         r = (((r * DIMPIXVAL)/10) & red_mask);
         int g = (pix & green_mask);
@@ -677,7 +680,8 @@ namespace {
         if (b_wid < 0 || b_hei < 0 || (!b_wid && !b_hei))
             return;
 
-        pm = gdk_pixmap_new(wb->Window(), b_wid, b_hei, GRX->Visual()->depth);
+        pm = gdk_pixmap_new(wb->Window(), b_wid, b_hei,
+            GTKdev::self()->Visual()->depth);
         if (!pm)
             return;
         gdk_window_copy_area(pm, wb->GC(), 0, 0, wb->Window(), 0, 0,
@@ -715,7 +719,7 @@ namespace {
             }
         }
         pm = gdk_pixmap_new(wb->Window(), b_wid, b_hei,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         if (!pm) {
             gdk_image_destroy(im);
             gdk_pixmap_unref(b_norm_pm);
@@ -828,7 +832,7 @@ GTKltab::show(const CDl *ld)
         ltab_pmap_width = lt_win_width;
         ltab_pmap_height = lt_win_height;
         ltab_pixmap = gdk_pixmap_new(gd_window, ltab_pmap_width,
-            ltab_pmap_height, gdk_visual_get_depth(GRX->Visual()));
+            ltab_pmap_height, gdk_visual_get_depth(GTKdev::self()->Visual()));
     }
 
     GdkWindow *win = gd_window;
@@ -889,7 +893,7 @@ GTKltab::refresh(int x, int y, int w, int h)
         ltab_pmap_width = lt_win_width;
         ltab_pmap_height = lt_win_height;
         ltab_pixmap = gdk_pixmap_new(gd_window, ltab_pmap_width,
-            ltab_pmap_height, gdk_visual_get_depth(GRX->Visual()));
+            ltab_pmap_height, gdk_visual_get_depth(GTKdev::self()->Visual()));
         ltab_pmap_dirty = true;
     }
 
@@ -1307,7 +1311,7 @@ GTKltab::ltab_drag_data_received(GtkWidget*, GdkDragContext *context,
             CDldb()->layer(entry + lt->first_visible() + 1, DSP()->CurMode());
 
         LT()->SetLayerColor(layer, vals[0] >> 8, vals[1] >> 8, vals[2] >> 8);
-        if (dspPkgIf()->IsTrueColor()) {
+        if (GTKpkg::self()->IsTrueColor()) {
             // update the colors
             LT()->ShowLayerTable(layer);
             XM()->PopUpFillEditor(0, MODE_UPD);
@@ -1436,6 +1440,6 @@ GTKltab::ltab_activate_proc(GtkWidget*, void *arg)
     GTKltab *lt = static_cast<GTKltab*>(arg);
     if (!lt)
         return;
-    GRX->CallCallback(lt->ltab_sbtn);
+    GTKdev::CallCallback(lt->ltab_sbtn);
 }
 

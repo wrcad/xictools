@@ -134,7 +134,7 @@ namespace {
 
 
 QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
-    QDialog(wbag ? wbag->shell : 0)
+    QDialog(wbag ? wbag->Shell() : 0)
 {
     pd_owner = wbag;
     pd_cb = cb;
@@ -193,25 +193,25 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         pd_drvrmask = cb->drvrmask;
         pd_fmt = cb->format;
         int i;
-        for (i = 0; GRpkgIf()->HCof(i); i++) ;
+        for (i = 0; GRpkg::self()->HCof(i); i++) ;
         if (pd_fmt >= i || (pd_drvrmask & (1 << pd_fmt))) {
-            for (i = 0; GRpkgIf()->HCof(i); i++) {
+            for (i = 0; GRpkg::self()->HCof(i); i++) {
                 if (!(pd_drvrmask & (1 << i)))
                     break;
             }
-            if (GRpkgIf()->HCof(i))
+            if (GRpkg::self()->HCof(i))
                 pd_fmt = i;
             else if (pd_textmode == HCgraphical) {
                 if (pd_owner)
                     pd_owner->PopUpMessage(
                         "No hardcopy drivers available.", true);
-                else if (GRpkgIf()->MainWbag())
-                    GRpkgIf()->MainWbag()->PopUpMessage(
+                else if (GRpkg::self()->MainWbag())
+                    GRpkg::self()->MainWbag()->PopUpMessage(
                         "No hardcopy drivers available.", true);
                 return;
             }
         }
-        HCdesc *hcdesc = GRpkgIf()->HCof(pd_fmt);
+        HCdesc *hcdesc = GRpkg::self()->HCof(pd_fmt);
         if (hcdesc) {
             pd_resol = hcdesc->defaults.defresol;
             if (hcdesc->limits.resols)
@@ -257,7 +257,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         pd_drvrmask = 0;
     }
     if (pd_textmode == HCgraphical) {
-        HCdesc *desc = GRpkgIf()->HCof(pd_fmt);
+        HCdesc *desc = GRpkg::self()->HCof(pd_fmt);
         pd_wid_val = MM(desc->defaults.defwidth);
         pd_hei_val = MM(desc->defaults.defheight);
         pd_lft_val = MM(desc->defaults.defxoff);
@@ -417,10 +417,10 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         vb->addWidget(gb);
 
         fmtmenu = new QComboBox(this);
-        for (int i = 0; GRpkgIf()->HCof(i); i++) {
+        for (int i = 0; GRpkg::self()->HCof(i); i++) {
             if (pd_drvrmask & (1 << i))
                 continue;
-            fmtmenu->addItem(QString(GRpkgIf()->HCof(i)->descr));
+            fmtmenu->addItem(QString(GRpkg::self()->HCof(i)->descr));
         }
         fmtmenu->setCurrentIndex(pd_fmt);
         connect(fmtmenu, SIGNAL(activated(int)), this, SLOT(format_slot(int)));
@@ -439,7 +439,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         vb->addWidget(gb);
 
         resmenu = new QComboBox(this);
-        const char **s = GRpkgIf()->HCof(pd_fmt)->limits.resols;
+        const char **s = GRpkg::self()->HCof(pd_fmt)->limits.resols;
         if (s && *s) {
             for (int i = 0; s[i]; i++)
                 resmenu->addItem(QString(s[i]));
@@ -456,7 +456,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         hbox->setMargin(0);
         hbox->setSpacing(2);
 
-        HCdesc *desc = GRpkgIf()->HCof(pd_fmt);
+        HCdesc *desc = GRpkg::self()->HCof(pd_fmt);
         vb = new QVBoxLayout(0);
         gb = new QGroupBox(this);
         hb = new QHBoxLayout(gb);
@@ -571,7 +571,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         (*pd_cb->hcsetup)(true, pd_fmt, false, 0);
 
     if (pd_textmode == HCgraphical) {
-        HCdesc *desc = GRpkgIf()->HCof(pd_fmt);
+        HCdesc *desc = GRpkg::self()->HCof(pd_fmt);
         set_sens(desc->limits.flags);
         if (!(desc->limits.flags & HCdontCareWidth) && pd_wid_val == 0.0 &&
                 desc->limits.minwidth > 0.0) {
@@ -601,9 +601,9 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
 
     // Success, link into owning QTbag.
     if (pd_owner) {
-        if (pd_owner->hc)
-            delete pd_owner->hc;
-        pd_owner->hc = this;
+        if (pd_owner->HC())
+            delete pd_owner->HC();
+        pd_owner->SetHC(this);
     }
 }
 
@@ -611,7 +611,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
 QTprintPopup::~QTprintPopup()
 {
     if (pd_owner)
-        pd_owner->hc = 0;
+        pd_owner->SetHC(0);
 }
 
 
@@ -715,38 +715,38 @@ QTprintPopup::format_slot(int indx)
     int i = pd_fmt;
     pd_fmt = indx;
     // set the current defaults to the current values
-    if (GRpkgIf()->HCof(i)->defaults.command)
-        delete [] GRpkgIf()->HCof(i)->defaults.command;
+    if (GRpkg::self()->HCof(i)->defaults.command)
+        delete [] GRpkg::self()->HCof(i)->defaults.command;
     if (!pd_tofile)
-        GRpkgIf()->HCof(i)->defaults.command =
+        GRpkg::self()->HCof(i)->defaults.command =
             lstring::copy(cmdtxtbox->text().toLatin1().constData());
     else
-        GRpkgIf()->HCof(i)->defaults.command = lstring::copy(pd_cmdtext);
-    GRpkgIf()->HCof(i)->defaults.defresol = pd_resol;
+        GRpkg::self()->HCof(i)->defaults.command = lstring::copy(pd_cmdtext);
+    GRpkg::self()->HCof(i)->defaults.defresol = pd_resol;
 
-    GRpkgIf()->HCof(i)->defaults.legend = pd_legend;
-    pd_legend = GRpkgIf()->HCof(pd_fmt)->defaults.legend;
-    GRpkgIf()->HCof(i)->defaults.orient = pd_orient;
-    pd_orient = GRpkgIf()->HCof(pd_fmt)->defaults.orient;
+    GRpkg::self()->HCof(i)->defaults.legend = pd_legend;
+    pd_legend = GRpkg::self()->HCof(pd_fmt)->defaults.legend;
+    GRpkg::self()->HCof(i)->defaults.orient = pd_orient;
+    pd_orient = GRpkg::self()->HCof(pd_fmt)->defaults.orient;
 
     double w = wid->value();
     if (pd_metric)
         w /= MMPI;
-    GRpkgIf()->HCof(i)->defaults.defwidth = w;
+    GRpkg::self()->HCof(i)->defaults.defwidth = w;
     double h = hei->value();
     if (pd_metric)
         h /= MMPI;
-    GRpkgIf()->HCof(i)->defaults.defheight = h;
+    GRpkg::self()->HCof(i)->defaults.defheight = h;
     double xx = left->value();
     if (pd_metric)
         xx /= MMPI;
-    GRpkgIf()->HCof(i)->defaults.defxoff = xx;
+    GRpkg::self()->HCof(i)->defaults.defxoff = xx;
     double yy = top->value();
     if (pd_metric)
         yy /= MMPI;
-    GRpkgIf()->HCof(i)->defaults.defyoff = yy;
+    GRpkg::self()->HCof(i)->defaults.defyoff = yy;
 
-    HCdesc *desc = GRpkgIf()->HCof(pd_fmt);
+    HCdesc *desc = GRpkg::self()->HCof(pd_fmt);
     checklims(desc);
 
     // set the new values
@@ -971,7 +971,7 @@ QTprintPopup::portrait_slot(bool set)
             return;
         pd_orient &= ~HClandscape;
         // See if we should swap the margin label
-        if (GRpkgIf()->HCof(pd_fmt)->limits.flags & HClandsSwpYmarg) {
+        if (GRpkg::self()->HCof(pd_fmt)->limits.flags & HClandsSwpYmarg) {
             const char *str = ylabel->text().toLatin1().constData();
             if (!strcmp(str, "Top"))
                 ylabel->setText(QString("Bottom"));
@@ -994,7 +994,7 @@ QTprintPopup::landscape_slot(bool set)
             return;
         pd_orient |= HClandscape;
         // See if we should swap the margin label
-        if (GRpkgIf()->HCof(pd_fmt)->limits.flags & HClandsSwpYmarg) {
+        if (GRpkg::self()->HCof(pd_fmt)->limits.flags & HClandsSwpYmarg) {
             const char *str = ylabel->text().toLatin1().constData();
             if (!strcmp(str, "Top"))
                 ylabel->setText(QString("Bottom"));
@@ -1056,28 +1056,28 @@ void
 QTprintPopup::auto_width_slot(bool set)
 {
     if (set) {
-        GRpkgIf()->HCof(pd_fmt)->last_w = wid->value();
+        GRpkg::self()->HCof(pd_fmt)->last_w = wid->value();
         if (pd_metric)
-            GRpkgIf()->HCof(pd_fmt)->last_w /= MMPI;
-        GRpkgIf()->HCof(pd_fmt)->defaults.defwidth = 0;
+            GRpkg::self()->HCof(pd_fmt)->last_w /= MMPI;
+        GRpkg::self()->HCof(pd_fmt)->defaults.defwidth = 0;
         wid->setEnabled(false);
         wid->setPrefix(QString("Auto"));
         wid->clear();
         if (hlabel->isChecked()) {
             hlabel->setChecked(false);
             hei->setEnabled(true);
-            double h = GRpkgIf()->HCof(pd_fmt)->last_h;
+            double h = GRpkg::self()->HCof(pd_fmt)->last_h;
             if (h == 0.0)
-                h = GRpkgIf()->HCof(pd_fmt)->limits.minheight;
+                h = GRpkg::self()->HCof(pd_fmt)->limits.minheight;
             hei->setValue(MM(h));
         }
     }
     else {
         wid->setPrefix(QString());
         wid->setEnabled(true);
-        double w = GRpkgIf()->HCof(pd_fmt)->last_w;
+        double w = GRpkg::self()->HCof(pd_fmt)->last_w;
         if (w == 0.0)
-            w = GRpkgIf()->HCof(pd_fmt)->limits.minwidth;
+            w = GRpkg::self()->HCof(pd_fmt)->limits.minwidth;
         wid->setValue(MM(w));
     }
 }
@@ -1087,28 +1087,28 @@ void
 QTprintPopup::auto_height_slot(bool set)
 {
     if (set) {
-        GRpkgIf()->HCof(pd_fmt)->last_h = hei->value();
+        GRpkg::self()->HCof(pd_fmt)->last_h = hei->value();
         if (pd_metric)
-            GRpkgIf()->HCof(pd_fmt)->last_h /= MMPI;
-        GRpkgIf()->HCof(pd_fmt)->defaults.defheight = 0;
+            GRpkg::self()->HCof(pd_fmt)->last_h /= MMPI;
+        GRpkg::self()->HCof(pd_fmt)->defaults.defheight = 0;
         hei->setEnabled(false);
         hei->setPrefix(QString("Auto"));
         hei->clear();
         if (wlabel->isChecked()) {
             wlabel->setChecked(false);
             wid->setEnabled(true);
-            double w = GRpkgIf()->HCof(pd_fmt)->last_w;
+            double w = GRpkg::self()->HCof(pd_fmt)->last_w;
             if (w == 0.0)
-                w = GRpkgIf()->HCof(pd_fmt)->limits.minwidth;
+                w = GRpkg::self()->HCof(pd_fmt)->limits.minwidth;
             wid->setValue(MM(w));
         }
     }
     else {
         hei->setPrefix(QString());
         hei->setEnabled(true);
-        double h = GRpkgIf()->HCof(pd_fmt)->last_h;
+        double h = GRpkg::self()->HCof(pd_fmt)->last_h;
         if (h == 0.0)
-            h = GRpkgIf()->HCof(pd_fmt)->limits.minheight;
+            h = GRpkg::self()->HCof(pd_fmt)->limits.minheight;
         hei->setValue(MM(h));
     }
 }
@@ -1122,8 +1122,8 @@ QTprintPopup::help_slot()
 {
     if (pd_owner)
         pd_owner->PopUpHelp("hcopypanel");
-    else if (GRpkgIf()->MainWbag())
-        GRpkgIf()->MainWbag()->PopUpHelp("hcopypanel");
+    else if (GRpkg::self()->MainWbag())
+        GRpkg::self()->MainWbag()->PopUpHelp("hcopypanel");
 }
 
 
@@ -1134,7 +1134,7 @@ QTprintPopup::help_slot()
 void
 QTprintPopup::print_slot()
 {
-    GRpkgIf()->HCabort(0);
+    GRpkg::self()->HCabort(0);
     if (!pd_owner)
         return;
 
@@ -1261,7 +1261,7 @@ QTprintPopup::print_slot()
     printer_busy = true;
 
     double w = 0.0;
-    if (!(GRpkgIf()->HCof(pd_fmt)->limits.flags & HCdontCareWidth)) {
+    if (!(GRpkg::self()->HCof(pd_fmt)->limits.flags & HCdontCareWidth)) {
         if (!wlabel->isChecked()) {
             w = wid->value();
             if (pd_metric)
@@ -1269,7 +1269,7 @@ QTprintPopup::print_slot()
         }
     }
     double h = 0.0;
-    if (!(GRpkgIf()->HCof(pd_fmt)->limits.flags & HCdontCareHeight)) {
+    if (!(GRpkg::self()->HCof(pd_fmt)->limits.flags & HCdontCareHeight)) {
         if (!hlabel->isChecked()) {
             h = hei->value();
             if (pd_metric)
@@ -1277,13 +1277,13 @@ QTprintPopup::print_slot()
         }
     }
     double xx = 0.0;
-    if (!(GRpkgIf()->HCof(pd_fmt)->limits.flags & HCdontCareXoff)) {
+    if (!(GRpkg::self()->HCof(pd_fmt)->limits.flags & HCdontCareXoff)) {
         xx = left->value();
         if (pd_metric)
             xx /= MMPI;
     }
     double yy = 0.0;
-    if (!(GRpkgIf()->HCof(pd_fmt)->limits.flags & HCdontCareYoff)) {
+    if (!(GRpkg::self()->HCof(pd_fmt)->limits.flags & HCdontCareYoff)) {
         yy = top->value();
         if (pd_metric)
             yy /= MMPI;
@@ -1293,11 +1293,11 @@ QTprintPopup::print_slot()
     else
         filename = lstring::copy(str);
     int resol = 0;
-    if (GRpkgIf()->HCof(pd_fmt)->limits.resols)
-        sscanf(GRpkgIf()->HCof(pd_fmt)->limits.resols[pd_resol], "%d",
+    if (GRpkg::self()->HCof(pd_fmt)->limits.resols)
+        sscanf(GRpkg::self()->HCof(pd_fmt)->limits.resols[pd_resol], "%d",
             &resol);
-    snprintf(buf, sizeof(buf), GRpkgIf()->HCof(pd_fmt)->fmtstring, filename,
-        resol, w, h, xx, yy);
+    snprintf(buf, sizeof(buf), GRpkg::self()->HCof(pd_fmt)->fmtstring,
+        filename, resol, w, h, xx, yy);
     if (pd_orient & HClandscape)
         strcat(buf, " -l");
     char *cmdstr = lstring::copy(buf);
@@ -1306,12 +1306,13 @@ QTprintPopup::print_slot()
     mkargv(&argc, argv, cmdstr);
 
     HCswitchErr err =
-        GRpkgIf()->SwitchDev(GRpkgIf()->HCof(pd_fmt)->drname, &argc, argv);
+        GRpkg::self()->SwitchDev(GRpkg::self()->HCof(pd_fmt)->drname,
+        &argc, argv);
     if (err == HCSinhc)
         pd_owner->PopUpMessage("Internal error - aborted", true);
     else if (err == HCSnotfnd) {
         snprintf(buf, sizeof(buf), "No hardcopy driver named %s available",
-            GRpkgIf()->HCof(pd_fmt)->drname);
+            GRpkg::self()->HCof(pd_fmt)->drname);
         pd_owner->PopUpMessage(buf, true);
     }
     else if (err == HCSinit)
@@ -1326,12 +1327,12 @@ QTprintPopup::print_slot()
             HCorientFlags ot = pd_orient & HCbest;
             // pass the landscape flag only if the driver can't rotate
             if ((pd_orient & HClandscape) &&
-                    (GRpkgIf()->HCof(pd_fmt)->limits.flags & HCnoCanRotate))
+                    (GRpkg::self()->HCof(pd_fmt)->limits.flags & HCnoCanRotate))
                 ot |= HClandscape;
             if ((*pd_cb->hcgo)(ot, pd_legend, 0)) {
-                if (GRpkgIf()->HCaborted()) {
+                if (GRpkg::self()->HCaborted()) {
                     snprintf(buf, sizeof(buf), "Terminated: %s.",
-                        GRpkgIf()->HCabortMsg());
+                        GRpkg::self()->HCabortMsg());
                     pd_owner->PopUpMessage(buf, true);
                 }
                 else
@@ -1342,7 +1343,7 @@ QTprintPopup::print_slot()
                 unlink(filename);
             }
         }
-        GRpkgIf()->SwitchDev(0, 0, 0);
+        GRpkg::self()->SwitchDev(0, 0, 0);
         if (ok) {
             if (!tofile)
                 fork_and_submit(cmd, filename);

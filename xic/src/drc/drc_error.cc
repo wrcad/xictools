@@ -81,7 +81,7 @@ cDRC::showCurError(WindowDesc *wdesc, bool display)
 
     if (!drc_err_list)
         return;
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(display ? GRxHlite : GRxUnhlite);
     else {
         if (display)
@@ -111,7 +111,7 @@ cDRC::showCurError(WindowDesc *wdesc, bool display)
     }
     DSP()->TPop();
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(GRxNone);
     else if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
@@ -132,7 +132,7 @@ cDRC::showError(WindowDesc *wdesc, bool display, DRCerrList *el)
     if (!wdesc->IsSimilar(Physical, DSP()->MainWdesc()))
         return;
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(display ? GRxHlite : GRxUnhlite);
     else {
         if (display)
@@ -151,7 +151,7 @@ cDRC::showError(WindowDesc *wdesc, bool display, DRCerrList *el)
     }
     el->showbad(wdesc);
     el->showfailed(wdesc);
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(GRxNone);
     else if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
@@ -175,7 +175,7 @@ cDRC::eraseErrors(const BBox *AOI)
     BBox tBB = *AOI;
     stk.TBB(&tBB, 0);
     stk.TPop();
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         DSPmainDraw(SetXOR(GRxUnhlite))
     else
         DSPmainDraw(SetColor(dsp_prm(CellLayer())->pixel()))
@@ -204,7 +204,7 @@ cDRC::eraseErrors(const BBox *AOI)
                 wd->Refresh(&BB);
         }
     }
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         DSPmainDraw(SetXOR(GRxNone))
     else if (LT()->CurLayer())
         DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
@@ -220,7 +220,7 @@ cDRC::eraseListError(const op_change_t *list, bool doadd)
 {
     if (!list || !drc_err_list)
         return;
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         DSPmainDraw(SetXOR(GRxUnhlite))
     else
         DSPmainDraw(SetColor(dsp_prm(CellLayer())->pixel()))
@@ -299,7 +299,7 @@ cDRC::eraseListError(const op_change_t *list, bool doadd)
     }
     stk.TPop();
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         DSPmainDraw(SetXOR(GRxNone))
     else if (LT()->CurLayer())
         DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
@@ -367,7 +367,7 @@ cDRC::dumpCurError(const char *fname)
     if (!fname || !*fname)
         return (-1);
     if (!filestat::create_bak(fname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         return (-1);
     }
     FILE *fp = fopen(fname, "w");

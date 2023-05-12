@@ -215,7 +215,7 @@ using namespace gtkcmp;
 void
 cConvert::PopUpCompare(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Cmp;
@@ -237,7 +237,7 @@ cConvert::PopUpCompare(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Cmp->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UR), Cmp->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UR), Cmp->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Cmp->shell());
 }
@@ -516,12 +516,12 @@ sCmp::sCmp(GRobject c)
 
 sCmp::~sCmp()
 {
-    if (GRX->GetStatus(cmp_p1_setup))
-        GRX->CallCallback(cmp_p1_setup);
+    if (GTKdev::GetStatus(cmp_p1_setup))
+        GTKdev::CallCallback(cmp_p1_setup);
     cmp_storage.save();
     Cmp = 0;
     if (cmp_caller)
-        GRX->Deselect(cmp_caller);
+        GTKdev::Deselect(cmp_caller);
     if (cmp_p3_s_menu) {
         g_object_unref(cmp_p3_s_menu);
         gtk_widget_destroy(cmp_p3_s_menu);
@@ -970,11 +970,11 @@ namespace {
 void
 sCmp::p1_sens()
 {
-    bool b_ok = GRX->GetStatus(cmp_p1_boxes);
-    bool p_ok = GRX->GetStatus(cmp_p1_polys);
-    bool w_ok = GRX->GetStatus(cmp_p1_wires);
-    bool l_ok = GRX->GetStatus(cmp_p1_labels);
-    bool c_ok = GRX->GetStatus(cmp_p1_insta);
+    bool b_ok = GTKdev::GetStatus(cmp_p1_boxes);
+    bool p_ok = GTKdev::GetStatus(cmp_p1_polys);
+    bool w_ok = GTKdev::GetStatus(cmp_p1_wires);
+    bool l_ok = GTKdev::GetStatus(cmp_p1_labels);
+    bool c_ok = GTKdev::GetStatus(cmp_p1_insta);
 
     gtk_widget_set_sensitive(cmp_p1_boxes_prp, b_ok);
     gtk_widget_set_sensitive(cmp_p1_polys_prp, p_ok);
@@ -1025,20 +1025,21 @@ sCmp::compose_arglist()
         delete [] tok;
     }
 
-    if (GRX->GetStatus(cmp_layer_use) || GRX->GetStatus(cmp_layer_skip)) {
+    if (GTKdev::GetStatus(cmp_layer_use) ||
+            GTKdev::GetStatus(cmp_layer_skip)) {
         s = gtk_entry_get_text(GTK_ENTRY(cmp_layer_list));
         tok = strip_sp(s);
         if (tok) {
             lstr.add(" -l \"");
             lstr.add(tok);
             lstr.add_c('"');
-            if (GRX->GetStatus(cmp_layer_skip))
+            if (GTKdev::GetStatus(cmp_layer_skip))
                 lstr.add(" -s");
             delete [] tok;
         }
     }
 
-    if (GRX->GetStatus(cmp_diff_only))
+    if (GTKdev::GetStatus(cmp_diff_only))
         lstr.add(" -d");
 
     s = sb_max_errs.get_string();
@@ -1053,15 +1054,15 @@ sCmp::compose_arglist()
 
     int page = gtk_notebook_get_current_page(GTK_NOTEBOOK(cmp_mode));
     if (page == 0) {
-        if (GRX->GetStatus(cmp_p1_recurse))
+        if (GTKdev::GetStatus(cmp_p1_recurse))
             lstr.add(" -h");
-        if (GRX->GetStatus(cmp_p1_expand_arrays))
+        if (GTKdev::GetStatus(cmp_p1_expand_arrays))
             lstr.add(" -x");
-        if (GRX->GetStatus(cmp_p1_elec))
+        if (GTKdev::GetStatus(cmp_p1_elec))
             lstr.add(" -e");
-        if (GRX->GetStatus(cmp_p1_slop))
+        if (GTKdev::GetStatus(cmp_p1_slop))
             lstr.add(" -b");
-        if (GRX->GetStatus(cmp_p1_dups))
+        if (GTKdev::GetStatus(cmp_p1_dups))
             lstr.add(" -n");
 
         bool has_b = false;
@@ -1072,23 +1073,23 @@ sCmp::compose_arglist()
 
         char typ[8];
         int cnt = 0;
-        if (GRX->GetStatus(cmp_p1_boxes)) {
+        if (GTKdev::GetStatus(cmp_p1_boxes)) {
             typ[cnt++] = 'b';
             has_b = true;
         }
-        if (GRX->GetStatus(cmp_p1_polys)) {
+        if (GTKdev::GetStatus(cmp_p1_polys)) {
             typ[cnt++] = 'p';
             has_p = true;
         }
-        if (GRX->GetStatus(cmp_p1_wires)) {
+        if (GTKdev::GetStatus(cmp_p1_wires)) {
             typ[cnt++] = 'w';
             has_w = true;
         }
-        if (GRX->GetStatus(cmp_p1_labels)) {
+        if (GTKdev::GetStatus(cmp_p1_labels)) {
             typ[cnt++] = 'l';
             has_l = true;
         }
-        if (GRX->GetStatus(cmp_p1_insta)) {
+        if (GTKdev::GetStatus(cmp_p1_insta)) {
             typ[cnt++] = 'c';
             has_c = true;
         }
@@ -1106,17 +1107,17 @@ sCmp::compose_arglist()
         }
 
         cnt = 0;
-        if (has_b && GRX->GetStatus(cmp_p1_boxes_prp))
+        if (has_b && GTKdev::GetStatus(cmp_p1_boxes_prp))
             typ[cnt++] = 'b';
-        if (has_p && GRX->GetStatus(cmp_p1_polys_prp))
+        if (has_p && GTKdev::GetStatus(cmp_p1_polys_prp))
             typ[cnt++] = 'p';
-        if (has_w && GRX->GetStatus(cmp_p1_wires_prp))
+        if (has_w && GTKdev::GetStatus(cmp_p1_wires_prp))
             typ[cnt++] = 'w';
-        if (has_l && GRX->GetStatus(cmp_p1_labels_prp))
+        if (has_l && GTKdev::GetStatus(cmp_p1_labels_prp))
             typ[cnt++] = 'l';
-        if (has_c && GRX->GetStatus(cmp_p1_insta_prp))
+        if (has_c && GTKdev::GetStatus(cmp_p1_insta_prp))
             typ[cnt++] = 'c';
-        if (GRX->GetStatus(cmp_p1_cell_prp))
+        if (GTKdev::GetStatus(cmp_p1_cell_prp))
             typ[cnt++] = 's';
         if (cmp_p1_fltr_mode == PrpFltCstm)
             typ[cnt++] = 'u';
@@ -1132,16 +1133,16 @@ sCmp::compose_arglist()
     }
     else if (page == 1) {
         lstr.add(" -g");
-        if (GRX->GetStatus(cmp_p2_recurse))
+        if (GTKdev::GetStatus(cmp_p2_recurse))
             lstr.add(" -h");
-        if (GRX->GetStatus(cmp_p2_expand_arrays))
+        if (GTKdev::GetStatus(cmp_p2_expand_arrays))
             lstr.add(" -x");
-        if (GRX->GetStatus(cmp_p2_insta))
+        if (GTKdev::GetStatus(cmp_p2_insta))
             lstr.add(" -t c");
     }
     else if (page == 2) {
         lstr.add(" -f");
-        if (GRX->GetStatus(cmp_p3_aoi_use)) {
+        if (GTKdev::GetStatus(cmp_p3_aoi_use)) {
             s = sb_p3_aoi_left.get_string();
             char *tokl = lstring::gettok(&s);
             s = sb_p3_aoi_bottom.get_string();
@@ -1272,9 +1273,9 @@ sCmp::cmp_action(GtkWidget *caller, void*)
             delete [] str;
             return;
         }
-        dspPkgIf()->SetWorking(true);
+        GTKpkg::self()->SetWorking(true);
         DFtype df = cmp.compare();
-        dspPkgIf()->SetWorking(false);
+        GTKpkg::self()->SetWorking(false);
 
         if (df == DFabort)
             PL()->ShowPrompt("Comparison aborted.");
@@ -1301,28 +1302,28 @@ sCmp::cmp_action(GtkWidget *caller, void*)
         return;
     }
     if (caller == Cmp->cmp_layer_use) {
-        if (GRX->GetStatus(caller))
-            GRX->SetStatus(Cmp->cmp_layer_skip, false);
+        if (GTKdev::GetStatus(caller))
+            GTKdev::SetStatus(Cmp->cmp_layer_skip, false);
 
-        if (GRX->GetStatus(Cmp->cmp_layer_use) ||
-                GRX->GetStatus(Cmp->cmp_layer_skip))
+        if (GTKdev::GetStatus(Cmp->cmp_layer_use) ||
+                GTKdev::GetStatus(Cmp->cmp_layer_skip))
             gtk_widget_set_sensitive(Cmp->cmp_layer_list, true);
         else
             gtk_widget_set_sensitive(Cmp->cmp_layer_list, false);
         return;
     }
     if (caller == Cmp->cmp_layer_skip) {
-        if (GRX->GetStatus(caller))
-            GRX->SetStatus(Cmp->cmp_layer_use, false);
-        if (GRX->GetStatus(Cmp->cmp_layer_use) ||
-                GRX->GetStatus(Cmp->cmp_layer_skip))
+        if (GTKdev::GetStatus(caller))
+            GTKdev::SetStatus(Cmp->cmp_layer_use, false);
+        if (GTKdev::GetStatus(Cmp->cmp_layer_use) ||
+                GTKdev::GetStatus(Cmp->cmp_layer_skip))
             gtk_widget_set_sensitive(Cmp->cmp_layer_list, true);
         else
             gtk_widget_set_sensitive(Cmp->cmp_layer_list, false);
         return;
     }
     if (caller == Cmp->cmp_p3_aoi_use) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             Cmp->sb_p3_aoi_left.set_sensitive(true);
             Cmp->sb_p3_aoi_bottom.set_sensitive(true);
             Cmp->sb_p3_aoi_right.set_sensitive(true);
@@ -1344,7 +1345,7 @@ sCmp::cmp_p1_action(GtkWidget *caller, void *arg)
 {
     if (Cmp) {
         if (arg == (void*)1L) {
-            if (GRX->GetStatus(caller))
+            if (GTKdev::GetStatus(caller))
                 Cvt()->PopUpPropertyFilter(caller, MODE_ON);
             else
                 Cvt()->PopUpPropertyFilter(caller, MODE_OFF);
@@ -1379,7 +1380,7 @@ namespace {
     {
         *pushin = true;
         GtkWidget *btn = GTK_WIDGET(data);
-        GRX->Location(btn, x, y);
+        GTKdev::self()->Location(btn, x, y);
     }
 }
 
@@ -1569,39 +1570,40 @@ sCmp_store::save()
     cs_layers = lstring::copy(
         gtk_entry_get_text(GTK_ENTRY(Cmp->cmp_layer_list)));
     cs_mode = gtk_notebook_get_current_page(GTK_NOTEBOOK(Cmp->cmp_mode));
-    cs_layer_only = GRX->GetStatus(Cmp->cmp_layer_use);
-    cs_layer_skip = GRX->GetStatus(Cmp->cmp_layer_skip);
-    cs_differ = GRX->GetStatus(Cmp->cmp_diff_only);
+    cs_layer_only = GTKdev::GetStatus(Cmp->cmp_layer_use);
+    cs_layer_skip = GTKdev::GetStatus(Cmp->cmp_layer_skip);
+    cs_differ = GTKdev::GetStatus(Cmp->cmp_diff_only);
     cs_max_errs = Cmp->sb_max_errs.get_value_as_int();
 
     if (Cmp->cmp_p1_recurse) {
-        cs_p1_recurse = GRX->GetStatus(Cmp->cmp_p1_recurse);
-        cs_p1_expand_arrays = GRX->GetStatus(Cmp->cmp_p1_expand_arrays);
-        cs_p1_slop = GRX->GetStatus(Cmp->cmp_p1_slop);
-        cs_p1_dups = GRX->GetStatus(Cmp->cmp_p1_dups);
-        cs_p1_boxes = GRX->GetStatus(Cmp->cmp_p1_boxes);
-        cs_p1_polys = GRX->GetStatus(Cmp->cmp_p1_polys);
-        cs_p1_wires = GRX->GetStatus(Cmp->cmp_p1_wires);
-        cs_p1_labels = GRX->GetStatus(Cmp->cmp_p1_labels);
-        cs_p1_insta = GRX->GetStatus(Cmp->cmp_p1_insta);
-        cs_p1_boxes_prp = GRX->GetStatus(Cmp->cmp_p1_boxes_prp);
-        cs_p1_polys_prp = GRX->GetStatus(Cmp->cmp_p1_polys_prp);
-        cs_p1_wires_prp = GRX->GetStatus(Cmp->cmp_p1_wires_prp);
-        cs_p1_labels_prp = GRX->GetStatus(Cmp->cmp_p1_labels_prp);
-        cs_p1_insta_prp = GRX->GetStatus(Cmp->cmp_p1_insta_prp);
-        cs_p1_elec = GRX->GetStatus(Cmp->cmp_p1_elec);
-        cs_p1_cell_prp = GRX->GetStatus(Cmp->cmp_p1_cell_prp);
+        cs_p1_recurse = GTKdev::GetStatus(Cmp->cmp_p1_recurse);
+        cs_p1_expand_arrays = GTKdev::GetStatus(Cmp->cmp_p1_expand_arrays);
+        cs_p1_slop = GTKdev::GetStatus(Cmp->cmp_p1_slop);
+        cs_p1_dups = GTKdev::GetStatus(Cmp->cmp_p1_dups);
+        cs_p1_boxes = GTKdev::GetStatus(Cmp->cmp_p1_boxes);
+        cs_p1_polys = GTKdev::GetStatus(Cmp->cmp_p1_polys);
+        cs_p1_wires = GTKdev::GetStatus(Cmp->cmp_p1_wires);
+        cs_p1_labels = GTKdev::GetStatus(Cmp->cmp_p1_labels);
+        cs_p1_insta = GTKdev::GetStatus(Cmp->cmp_p1_insta);
+        cs_p1_boxes_prp = GTKdev::GetStatus(Cmp->cmp_p1_boxes_prp);
+        cs_p1_polys_prp = GTKdev::GetStatus(Cmp->cmp_p1_polys_prp);
+        cs_p1_wires_prp = GTKdev::GetStatus(Cmp->cmp_p1_wires_prp);
+        cs_p1_labels_prp = GTKdev::GetStatus(Cmp->cmp_p1_labels_prp);
+        cs_p1_insta_prp = GTKdev::GetStatus(Cmp->cmp_p1_insta_prp);
+        cs_p1_elec = GTKdev::GetStatus(Cmp->cmp_p1_elec);
+        cs_p1_cell_prp = GTKdev::GetStatus(Cmp->cmp_p1_cell_prp);
         cs_p1_fltr = Cmp->cmp_p1_fltr_mode;
     }
 
     if (Cmp->cmp_p2_recurse) {
-        cs_p2_recurse = GRX->GetStatus(Cmp->cmp_p2_recurse);
-        cs_p2_expand_arrays = GRX->GetStatus(Cmp->cmp_p2_expand_arrays);
-        cs_p2_insta = GRX->GetStatus(Cmp->cmp_p2_insta);
+        cs_p2_recurse = GTKdev::GetStatus(Cmp->cmp_p2_recurse);
+        cs_p2_expand_arrays =
+            GTKdev::GetStatus(Cmp->cmp_p2_expand_arrays);
+        cs_p2_insta = GTKdev::GetStatus(Cmp->cmp_p2_insta);
     }
 
     if (Cmp->cmp_p3_aoi_use) {
-        cs_p3_use_window = GRX->GetStatus(Cmp->cmp_p3_aoi_use);
+        cs_p3_use_window = GTKdev::GetStatus(Cmp->cmp_p3_aoi_use);
         cs_p3_left = Cmp->sb_p3_aoi_left.get_value();
         cs_p3_bottom = Cmp->sb_p3_aoi_bottom.get_value();
         cs_p3_right = Cmp->sb_p3_aoi_right.get_value();
@@ -1628,9 +1630,9 @@ sCmp_store::recall()
     gtk_entry_set_text(GTK_ENTRY(Cmp->cmp_layer_list),
         cs_layers ? cs_layers : "");
     gtk_notebook_set_current_page(GTK_NOTEBOOK(Cmp->cmp_mode), cs_mode);
-    GRX->SetStatus(Cmp->cmp_layer_use, cs_layer_only);
-    GRX->SetStatus(Cmp->cmp_layer_skip, cs_layer_skip);
-    GRX->SetStatus(Cmp->cmp_diff_only, cs_differ);
+    GTKdev::SetStatus(Cmp->cmp_layer_use, cs_layer_only);
+    GTKdev::SetStatus(Cmp->cmp_layer_skip, cs_layer_skip);
+    GTKdev::SetStatus(Cmp->cmp_diff_only, cs_differ);
     Cmp->sb_max_errs.set_value(cs_max_errs);
     gtk_widget_set_sensitive(Cmp->cmp_layer_list,
         cs_layer_only || cs_layer_skip);
@@ -1643,23 +1645,24 @@ sCmp_store::recall_p1()
     if (!Cmp)
         return;
     if (Cmp->cmp_p1_recurse) {
-        GRX->SetStatus(Cmp->cmp_p1_recurse, cs_p1_recurse);
-        GRX->SetStatus(Cmp->cmp_p1_expand_arrays, cs_p1_expand_arrays);
-        GRX->SetStatus(Cmp->cmp_p1_slop, cs_p1_slop);
-        GRX->SetStatus(Cmp->cmp_p1_dups, cs_p1_dups);
-        GRX->SetStatus(Cmp->cmp_p1_boxes, cs_p1_boxes);
-        GRX->SetStatus(Cmp->cmp_p1_polys, cs_p1_polys);
-        GRX->SetStatus(Cmp->cmp_p1_wires, cs_p1_wires);
-        GRX->SetStatus(Cmp->cmp_p1_labels, cs_p1_labels);
-        GRX->SetStatus(Cmp->cmp_p1_insta, cs_p1_insta);
-        GRX->SetStatus(Cmp->cmp_p1_boxes_prp, cs_p1_boxes_prp);
-        GRX->SetStatus(Cmp->cmp_p1_polys_prp, cs_p1_polys_prp);
-        GRX->SetStatus(Cmp->cmp_p1_wires_prp, cs_p1_wires_prp);
-        GRX->SetStatus(Cmp->cmp_p1_labels_prp, cs_p1_labels_prp);
-        GRX->SetStatus(Cmp->cmp_p1_insta_prp, cs_p1_insta_prp);
-        GRX->SetStatus(Cmp->cmp_p1_phys, !cs_p1_elec);
-        GRX->SetStatus(Cmp->cmp_p1_elec, cs_p1_elec);
-        GRX->SetStatus(Cmp->cmp_p1_cell_prp, cs_p1_cell_prp);
+        GTKdev::SetStatus(Cmp->cmp_p1_recurse, cs_p1_recurse);
+        GTKdev::SetStatus(Cmp->cmp_p1_expand_arrays,
+            cs_p1_expand_arrays);
+        GTKdev::SetStatus(Cmp->cmp_p1_slop, cs_p1_slop);
+        GTKdev::SetStatus(Cmp->cmp_p1_dups, cs_p1_dups);
+        GTKdev::SetStatus(Cmp->cmp_p1_boxes, cs_p1_boxes);
+        GTKdev::SetStatus(Cmp->cmp_p1_polys, cs_p1_polys);
+        GTKdev::SetStatus(Cmp->cmp_p1_wires, cs_p1_wires);
+        GTKdev::SetStatus(Cmp->cmp_p1_labels, cs_p1_labels);
+        GTKdev::SetStatus(Cmp->cmp_p1_insta, cs_p1_insta);
+        GTKdev::SetStatus(Cmp->cmp_p1_boxes_prp, cs_p1_boxes_prp);
+        GTKdev::SetStatus(Cmp->cmp_p1_polys_prp, cs_p1_polys_prp);
+        GTKdev::SetStatus(Cmp->cmp_p1_wires_prp, cs_p1_wires_prp);
+        GTKdev::SetStatus(Cmp->cmp_p1_labels_prp, cs_p1_labels_prp);
+        GTKdev::SetStatus(Cmp->cmp_p1_insta_prp, cs_p1_insta_prp);
+        GTKdev::SetStatus(Cmp->cmp_p1_phys, !cs_p1_elec);
+        GTKdev::SetStatus(Cmp->cmp_p1_elec, cs_p1_elec);
+        GTKdev::SetStatus(Cmp->cmp_p1_cell_prp, cs_p1_cell_prp);
         gtk_combo_box_set_active(GTK_COMBO_BOX(Cmp->cmp_p1_fltr),
             cs_p1_fltr);
     }
@@ -1672,9 +1675,9 @@ sCmp_store::recall_p2()
     if (!Cmp)
         return;
     if (Cmp->cmp_p2_recurse) {
-        GRX->SetStatus(Cmp->cmp_p2_recurse, cs_p2_recurse);
-        GRX->SetStatus(Cmp->cmp_p2_expand_arrays, cs_p2_expand_arrays);
-        GRX->SetStatus(Cmp->cmp_p2_insta, cs_p2_insta);
+        GTKdev::SetStatus(Cmp->cmp_p2_recurse, cs_p2_recurse);
+        GTKdev::SetStatus(Cmp->cmp_p2_expand_arrays, cs_p2_expand_arrays);
+        GTKdev::SetStatus(Cmp->cmp_p2_insta, cs_p2_insta);
     }
 }
 
@@ -1685,7 +1688,7 @@ sCmp_store::recall_p3()
     if (!Cmp)
         return;
     if (Cmp->cmp_p3_aoi_use) {
-        GRX->SetStatus(Cmp->cmp_p3_aoi_use, cs_p3_use_window);
+        GTKdev::SetStatus(Cmp->cmp_p3_aoi_use, cs_p3_use_window);
         Cmp->sb_p3_aoi_left.set_value(cs_p3_left);
         Cmp->sb_p3_aoi_bottom.set_value(cs_p3_bottom);
         Cmp->sb_p3_aoi_right.set_value(cs_p3_right);

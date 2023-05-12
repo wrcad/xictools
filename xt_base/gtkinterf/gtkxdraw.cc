@@ -446,20 +446,20 @@ Xparams::Halt()
         ImErrType ret = im->save_image(dev->data->filename, 0);
         if (ret == ImError) {
             fprintf(stderr, "Image creation failed, internal error.\n");
-            GRpkgIf()->HCabort("Image creation error");
+            GRpkg::self()->HCabort("Image creation error");
         }
         else if (ret == ImNoSupport) {
             fprintf(stderr, "Image creation failed, file type unsupported.\n");
-            GRpkgIf()->HCabort("Image format unsupported");
+            GRpkg::self()->HCabort("Image format unsupported");
         }
         delete im;
     }
     else
-        GRpkgIf()->HCabort("Internal error");
+        GRpkg::self()->HCabort("Internal error");
 #else
     XFreePixmap(display, window);
     fprintf(stderr, "Image creation failed, package not available.\n");
-    GRpkgIf()->HCabort("Image format unsupported");
+    GRpkg::self()->HCabort("Image format unsupported");
 #endif
 
     // Put back original pixmaps in layer descs.
@@ -490,7 +490,7 @@ Xparams::DefineViewport()
     Pixmap pm = XCreatePixmap(display, window, dev->width, dev->height,
         DefaultDepth(display, DefaultScreen(display)));
     if (!pm) {
-        GRpkgIf()->HCabort("Internal error");
+        GRpkg::self()->HCabort("Internal error");
         return;
     }
     window = pm;
@@ -1425,12 +1425,12 @@ Xparams::Halt()
                 if (ret == ImError) {
                     fprintf(stderr,
                         "Image creation failed, internal error.\n");
-                    GRpkgIf()->HCabort("Image creation error");
+                    GRpkg::self()->HCabort("Image creation error");
                 }
                 else if (ret == ImNoSupport) {
                     fprintf(stderr,
                         "Image creation failed, file type unsupported.\n");
-                    GRpkgIf()->HCabort("Image format unsupported");
+                    GRpkg::self()->HCabort("Image format unsupported");
                 }
                 delete im;
                 GRappIf()->SetupLayers(0, this, lcx);
@@ -1439,7 +1439,7 @@ Xparams::Halt()
             }
         }
     }
-    GRpkgIf()->HCabort("Internal error");
+    GRpkg::self()->HCabort("Internal error");
     GRappIf()->SetupLayers(0, this, lcx);
     delete this;
 }
@@ -1466,13 +1466,13 @@ Xparams::DefineViewport()
     InitDC(dcRoot);
     HDC dcMem = CreateCompatibleDC(dcRoot);
     if (!dcMem) {
-        GRpkgIf()->HCabort("Internal error");
+        GRpkg::self()->HCabort("Internal error");
         return;
     }
     HBITMAP pm = CreateCompatibleBitmap(dcRoot, dev->width, dev->height);
     if (!pm) {
         DeleteDC(dcMem);
-        GRpkgIf()->HCabort("Internal error");
+        GRpkg::self()->HCabort("Internal error");
         return;
     }
     SelectBitmap(dcMem, pm);

@@ -327,7 +327,7 @@ GTKbag::PopUpFileSelector(FsMode mode, GRloc loc,
 
     gtk_window_set_transient_for(GTK_WINDOW(fs->wb_shell),
         GTK_WINDOW(wb_shell));
-    GRX->SetPopupLocation(loc, fs->wb_shell, wb_shell);
+    GTKdev::self()->SetPopupLocation(loc, fs->wb_shell, wb_shell);
     gtk_widget_show(fs->wb_shell);
 
     return (fs);
@@ -801,9 +801,9 @@ GTKfilePopup::GTKfilePopup(GTKbag *owner, FsMode mode, void *arg,
             gtk_widget_show(item);
             gtk_menu_shell_append(GTK_MENU_SHELL(listMenu), item);
             if (fs_type == fsSEL)
-                GRX->SetStatus(item, fs_sel_show_label);
+                GTKdev::SetStatus(item, fs_sel_show_label);
             else if (fs_type == fsOPEN)
-                    GRX->SetStatus(item, fs_open_show_label);
+                    GTKdev::SetStatus(item, fs_open_show_label);
             g_signal_connect(G_OBJECT(item), "activate",
                 G_CALLBACK(fs_menu_proc), this);
             gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_b,
@@ -1017,7 +1017,7 @@ GTKfilePopup::GTKfilePopup(GTKbag *owner, FsMode mode, void *arg,
 
         GtkTextBuffer *textbuf =
             gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-        const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+        const char *bclr = GRpkg::self()->GetAttrColor(GRattrColorLocSel);
         gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
             NULL);
     }
@@ -1114,7 +1114,7 @@ GTKfilePopup::~GTKfilePopup()
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_caller)
-        GRX->Deselect(p_caller);
+        GTKdev::Deselect(p_caller);
     if (fs_curnode)
         gtk_tree_path_free(fs_curnode);
     if (fs_drag_node)
@@ -1256,7 +1256,7 @@ void
 GTKfilePopup::monitor_setup()
 {
     if (!fs_timer_tag)
-        fs_timer_tag = GRX->AddTimer(500, fs_files_timer, this);
+        fs_timer_tag = GTKdev::self()->AddTimer(500, fs_files_timer, this);
 }
 
 
@@ -1963,7 +1963,7 @@ GTKfilePopup::menu_handler(GtkWidget *widget, int code)
     }
     else if (code == fsFilt) {
         if (fs_filter) {
-            if (GRX->GetStatus(widget))
+            if (GTKdev::GetStatus(widget))
                 gtk_widget_show(fs_filter);
             else
                 gtk_widget_hide(fs_filter);
@@ -1972,12 +1972,12 @@ GTKfilePopup::menu_handler(GtkWidget *widget, int code)
     else if (code == fsRelist)
         list_files();
     else if (code == fsMtime) {
-        fs_mtime_sort = GRX->GetStatus(widget);
+        fs_mtime_sort = GTKdev::GetStatus(widget);
         list_files();
     }
     else if (code == fsLabel) {
         if (fs_label_frame) {
-            if (GRX->GetStatus(widget)) {
+            if (GTKdev::GetStatus(widget)) {
                 gtk_widget_show(fs_label_frame);
                 if (fs_type == fsSEL)
                     fs_sel_show_label = true;
@@ -1994,8 +1994,8 @@ GTKfilePopup::menu_handler(GtkWidget *widget, int code)
         }
     }
     else if (code == fsHelp) {
-        if (GRX->MainFrame())
-            GRX->MainFrame()->PopUpHelp("filesel");
+        if (GTKdev::self()->MainFrame())
+            GTKdev::self()->MainFrame()->PopUpHelp("filesel");
         else
             PopUpHelp("filesel");
     }
@@ -2190,8 +2190,11 @@ GTKfilePopup::fs_quit_proc(GtkWidget*, void *client_data)
 int
 GTKfilePopup::fs_focus_hdlr(GtkWidget *widget, GdkEvent*, void*)
 {
-    if (GRX->MainFrame() && GRX->MainFrame()->PositionReferenceWidget())
-        GRX->SetFocus(GRX->MainFrame()->PositionReferenceWidget());
+    if (GTKdev::self()->MainFrame() &&
+            GTKdev::self()->MainFrame()->PositionReferenceWidget()) {
+        GTKdev::SetFocus(
+            GTKdev::self()->MainFrame()->PositionReferenceWidget());
+    }
     g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
         (gpointer)fs_focus_hdlr, 0);
     return (0);
@@ -2701,7 +2704,7 @@ GTKfilePopup::fs_dir_drag_motion(GtkWidget *widget, GdkDragContext*, int x,
         gtk_tree_path_free(fs->fs_cset_node);
         fs->fs_cset_node = p;
         gtk_tree_model_get_iter(store, &iter, p);
-        const char *c = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+        const char *c = GRpkg::self()->GetAttrColor(GRattrColorLocSel);
         gtk_tree_store_set(GTK_TREE_STORE(store), &iter, COL_BG, c, -1);
     }
     return (true);
@@ -3455,7 +3458,7 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
     gtk_widget_set_size_request(popup, 400, -1);
     if (shell) {
         gtk_window_set_transient_for(GTK_WINDOW(popup), GTK_WINDOW(shell));
-        GRX->SetPopupLocation(GRloc(), popup, shell);
+        GTKdev::self()->SetPopupLocation(GRloc(), popup, shell);
     }
     gtk_widget_show(popup);
 }
@@ -3544,7 +3547,7 @@ gtkinterf::gtk_Progress(GtkWidget *shell, const char *msg)
 
     if (shell) {
         gtk_window_set_transient_for(GTK_WINDOW(popup), GTK_WINDOW(shell));
-        GRX->SetPopupLocation(GRloc(), popup, shell);
+        GTKdev::self()->SetPopupLocation(GRloc(), popup, shell);
     }
     gtk_widget_show(popup);
     gdk_flush();
@@ -3618,7 +3621,7 @@ gtkinterf::gtk_Message(GtkWidget *shell, bool failed, const char *msg)
 
     if (shell) {
         gtk_window_set_transient_for(GTK_WINDOW(popup), GTK_WINDOW(shell));
-        GRX->SetPopupLocation(GRloc(), popup, shell);
+        GTKdev::self()->SetPopupLocation(GRloc(), popup, shell);
     }
     gtk_widget_show(popup);
 }

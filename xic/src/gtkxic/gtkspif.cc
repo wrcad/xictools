@@ -100,7 +100,7 @@ using namespace gtkscd;
 void
 cSced::PopUpSpiceIf(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete SC;
@@ -122,7 +122,7 @@ cSced::PopUpSpiceIf(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(SC->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), SC->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), SC->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(SC->shell());
 }
@@ -397,7 +397,7 @@ sSC::~sSC()
 {
     SC = 0;
     if (sc_caller)
-        GRX->Deselect(sc_caller);
+        GTKdev::Deselect(sc_caller);
     if (sc_popup)
         gtk_widget_destroy(sc_popup);
 }
@@ -406,9 +406,12 @@ sSC::~sSC()
 void
 sSC::update()
 {
-    GRX->SetStatus(sc_listall, CDvdb()->getVariable(VA_SpiceListAll));
-    GRX->SetStatus(sc_checksol, CDvdb()->getVariable(VA_CheckSolitary));
-    GRX->SetStatus(sc_notools, CDvdb()->getVariable(VA_NoSpiceTools));
+    GTKdev::SetStatus(sc_listall,
+        CDvdb()->getVariable(VA_SpiceListAll));
+    GTKdev::SetStatus(sc_checksol,
+        CDvdb()->getVariable(VA_CheckSolitary));
+    GTKdev::SetStatus(sc_notools,
+        CDvdb()->getVariable(VA_NoSpiceTools));
 
     const char *s = CDvdb()->getVariable(VA_SpiceAlias);
     const char *t = gtk_entry_get_text(GTK_ENTRY(sc_alias));
@@ -416,7 +419,7 @@ sSC::update()
         gtk_entry_set_text(GTK_ENTRY(sc_alias), s);
     bool set = (s != 0);
     gtk_widget_set_sensitive(sc_alias, !set);
-    GRX->SetStatus(sc_alias_b, set);
+    GTKdev::SetStatus(sc_alias_b, set);
 
     s = CDvdb()->getVariable(VA_SpiceHost);
     t = gtk_entry_get_text(GTK_ENTRY(sc_hostname));
@@ -424,7 +427,7 @@ sSC::update()
         gtk_entry_set_text(GTK_ENTRY(sc_hostname), s);
     set = (s != 0);
     gtk_widget_set_sensitive(sc_hostname, !set);
-    GRX->SetStatus(sc_hostname_b, set);
+    GTKdev::SetStatus(sc_hostname_b, set);
 
     s = CDvdb()->getVariable(VA_SpiceHostDisplay);
     t = gtk_entry_get_text(GTK_ENTRY(sc_dispname));
@@ -432,7 +435,7 @@ sSC::update()
         gtk_entry_set_text(GTK_ENTRY(sc_dispname), s);
     set = (s != 0);
     gtk_widget_set_sensitive(sc_dispname, !set);
-    GRX->SetStatus(sc_dispname_b, set);
+    GTKdev::SetStatus(sc_dispname_b, set);
 
     s = CDvdb()->getVariable(VA_SpiceProg);
     t = gtk_entry_get_text(GTK_ENTRY(sc_progname));
@@ -440,7 +443,7 @@ sSC::update()
         gtk_entry_set_text(GTK_ENTRY(sc_progname), s);
     set = (s != 0);
     gtk_widget_set_sensitive(sc_progname, !set);
-    GRX->SetStatus(sc_progname_b, set);
+    GTKdev::SetStatus(sc_progname_b, set);
 
     s = CDvdb()->getVariable(VA_SpiceExecDir);
     t = gtk_entry_get_text(GTK_ENTRY(sc_execdir));
@@ -452,7 +455,7 @@ sSC::update()
         gtk_entry_set_text(GTK_ENTRY(sc_execdir), XM()->ExecDirectory());
     set = (s != 0);
     gtk_widget_set_sensitive(sc_execdir, !set);
-    GRX->SetStatus(sc_execdir_b, set);
+    GTKdev::SetStatus(sc_execdir_b, set);
 
     s = CDvdb()->getVariable(VA_SpiceExecName);
     t = gtk_entry_get_text(GTK_ENTRY(sc_execname));
@@ -464,7 +467,7 @@ sSC::update()
         gtk_entry_set_text(GTK_ENTRY(sc_execname), XM()->SpiceExecName());
     set = (s != 0);
     gtk_widget_set_sensitive(sc_execname, !set);
-    GRX->SetStatus(sc_execname_b, set);
+    GTKdev::SetStatus(sc_execname_b, set);
 
     s = CDvdb()->getVariable(VA_SpiceSubcCatchar);
     t = gtk_entry_get_text(GTK_ENTRY(sc_catchar));
@@ -480,7 +483,7 @@ sSC::update()
     }
     set = (s != 0);
     gtk_widget_set_sensitive(sc_catchar, !set);
-    GRX->SetStatus(sc_catchar_b, set);
+    GTKdev::SetStatus(sc_catchar_b, set);
 
     s = CDvdb()->getVariable(VA_SpiceSubcCatmode);
     int h = gtk_combo_box_get_active(GTK_COMBO_BOX(sc_catmode));;
@@ -506,7 +509,7 @@ sSC::update()
             gtk_combo_box_set_active(GTK_COMBO_BOX(sc_catmode), 1);
     }
     gtk_widget_set_sensitive(sc_catmode, !set);
-    GRX->SetStatus(sc_catmode_b, set);
+    GTKdev::SetStatus(sc_catmode_b, set);
 }
 
 
@@ -530,7 +533,7 @@ sSC::sc_action(GtkWidget *caller, void*)
         return;
     }
 
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
     if (!strcmp(name, "listall")) {
         if (state)
             CDvdb()->setVariable(VA_SpiceListAll, "");

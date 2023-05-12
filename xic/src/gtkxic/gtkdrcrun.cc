@@ -172,7 +172,7 @@ bool sDC::dc_use_chd = false;
 void
 cDRC::PopUpDrcRun(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete DC;
@@ -194,7 +194,8 @@ cDRC::PopUpDrcRun(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(DC->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), DC->shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), DC->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(DC->shell());
 }
 // End of cDRC functions.
@@ -533,7 +534,7 @@ sDC::sDC(GRobject c)
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(dc_jobs));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
         "paragraph-background", bclr, NULL);
 
@@ -592,7 +593,7 @@ sDC::~sDC()
     DC = 0;
     dc_region_quit();
     if (dc_caller)
-        GRX->Deselect(dc_caller);
+        GTKdev::Deselect(dc_caller);
     if (dc_popup)
         gtk_widget_destroy(dc_popup);
 }
@@ -623,7 +624,7 @@ sDC::update()
     if (s) {
         double d = atof(s);
         if (d >= DRC_PART_MIN && d <= DRC_PART_MAX) {
-            GRX->SetStatus(dc_none, false);
+            GTKdev::SetStatus(dc_none, false);
             sb_part.set_sensitive(true);
             sb_part.set_value(d);
         }
@@ -633,18 +634,18 @@ sDC::update()
         }
     }
     else {
-        GRX->SetStatus(dc_none, true);
+        GTKdev::SetStatus(dc_none, true);
         sb_part.set_sensitive(false, true);
     }
 
-    GRX->SetStatus(dc_use, dc_use_chd);
+    GTKdev::SetStatus(dc_use, dc_use_chd);
 
     sb_left.set_value(dc_l_val);
     sb_bottom.set_value(dc_b_val);
     sb_right.set_value(dc_r_val);
     sb_top.set_value(dc_t_val);
 
-    GRX->SetStatus(dc_wind, dc_use_win);
+    GTKdev::SetStatus(dc_wind, dc_use_win);
     gtk_widget_set_sensitive(dc_l_label, dc_use_win);
     DC->sb_left.set_sensitive(dc_use_win);
     gtk_widget_set_sensitive(dc_b_label, dc_use_win);
@@ -654,7 +655,7 @@ sDC::update()
     gtk_widget_set_sensitive(dc_t_label, dc_use_win);
     DC->sb_top.set_sensitive(dc_use_win);
 
-    GRX->SetStatus(dc_flat, dc_flatten);
+    GTKdev::SetStatus(dc_flat, dc_flatten);
     gtk_widget_set_sensitive(dc_flat, dc_use_chd);
 
     update_jobs_list();
@@ -814,11 +815,11 @@ sDC::dc_action_proc(GtkWidget *caller, void*)
     if (!strcmp(name, "Help"))
         DSPmainWbag(PopUpHelp("xic:check"))
     else if (!strcmp(name, "use")) {
-        dc_use_chd = GRX->GetStatus(caller);
+        dc_use_chd = GTKdev::GetStatus(caller);
         gtk_widget_set_sensitive(DC->dc_flat, dc_use_chd);
     }
     else if (!strcmp(name, "none")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             DC->dc_last_part_size = DC->sb_part.get_value();
             CDvdb()->clearVariable(VA_DrcPartitionSize);
         }
@@ -829,7 +830,7 @@ sDC::dc_action_proc(GtkWidget *caller, void*)
         }
     }
     else if (!strcmp(name, "wind")) {
-        dc_use_win = GRX->GetStatus(caller);
+        dc_use_win = GTKdev::GetStatus(caller);
         gtk_widget_set_sensitive(DC->dc_l_label, dc_use_win);
         DC->sb_left.set_sensitive(dc_use_win);
         gtk_widget_set_sensitive(DC->dc_b_label, dc_use_win);
@@ -840,17 +841,17 @@ sDC::dc_action_proc(GtkWidget *caller, void*)
         DC->sb_top.set_sensitive(dc_use_win);
     }
     else if (!strcmp(name, "flat")) {
-        dc_flatten = GRX->GetStatus(caller);
+        dc_flatten = GTKdev::GetStatus(caller);
     }
     else if (!strcmp(name, "set")) {
         DC->dc_region();
     }
     else if (!strcmp(name, "check") || (bg = !strcmp(name, "checkbg"))) {
-        if (!GRX->GetStatus(caller)) {
+        if (!GTKdev::GetStatus(caller)) {
             if (!bg) {
                 DSP()->SetInterrupt(DSPinterUser);
                 if (!XM()->ConfirmAbort())
-                    GRX->SetStatus(caller, true);
+                    GTKdev::SetStatus(caller, true);
                 else
                     DRC()->setAbort(true);
                 DSP()->SetInterrupt(DSPinterNone);
@@ -862,7 +863,7 @@ sDC::dc_action_proc(GtkWidget *caller, void*)
             cCHD *chd = find_chd(cname);
             if (!chd) {
                 Log()->ErrorLog("DRC", "DRC aborted, CHD not found.");
-                GRX->Deselect(caller);
+                GTKdev::Deselect(caller);
                 return;
             }
             const char *cellname = 0;
@@ -883,7 +884,7 @@ sDC::dc_action_proc(GtkWidget *caller, void*)
         else {
             CDs *cursdp = CurCell(Physical);
             if (!cursdp) {
-                GRX->Deselect(caller);
+                GTKdev::Deselect(caller);
                 return;
             }
             if (DC->dc_use_win) {
@@ -898,7 +899,7 @@ sDC::dc_action_proc(GtkWidget *caller, void*)
         }
 
         if (DC)
-            GRX->Deselect(caller);
+            GTKdev::Deselect(caller);
         DRC()->setAbort(false);
     }
     else if (!strcmp(name, "abort")) {
@@ -1181,7 +1182,7 @@ WinState::esc()
     EV()->PopCallback(this);
     XM()->SetCoordMode(CO_ABSOLUTE);
     if (DC)
-        GRX->Deselect(DC->dc_set);
+        GTKdev::Deselect(DC->dc_set);
     delete this;
 }
 

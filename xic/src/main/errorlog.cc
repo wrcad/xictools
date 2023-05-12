@@ -498,8 +498,10 @@ cErrLog::OpenLog(const char *name, const char *mode, bool sizetest)
             char *bak = new char[strlen(path) + 3];
             strcpy(bak, path);
             strcat(bak, ".0");
-            if (!filestat::move_file_local(bak, path))
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            if (!filestat::move_file_local(bak, path)) {
+                DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
+                    filestat::error_msg());
+            }
             delete [] bak;
             FILE *fp = fopen(path, "w");
             if (fp)
@@ -510,15 +512,17 @@ cErrLog::OpenLog(const char *name, const char *mode, bool sizetest)
     }
     if (*mode == 'w') {
         if (!filestat::create_bak(path)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
             return (0);
         }
         char *bak = new char[strlen(path) + 3];
         strcpy(bak, path);
         strcat(bak, ".0");
         if (!access(bak, F_OK)) {
-            if (!filestat::create_bak(bak))
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            if (!filestat::create_bak(bak)) {
+                DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
+                    filestat::error_msg());
+            }
             unlink(bak);
         }
         delete [] bak;

@@ -774,7 +774,7 @@ cGroupDesc::show_devs(WindowDesc *wdesc, bool d_or_e)
         return (0);
 
     int cnt = 0;
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(d_or_e == DISPLAY ? GRxHlite : GRxUnhlite);
     else {
         if (d_or_e == DISPLAY)
@@ -808,7 +808,7 @@ cGroupDesc::show_devs(WindowDesc *wdesc, bool d_or_e)
             }
         }
     }
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(GRxNone);
     else if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
@@ -4092,7 +4092,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
     for (int i = 0; i < g->num; i++) {
         if (Timer()->check_interval(check_time)) {
             if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
             if (XM()->ConfirmAbort()) {
                 delete g;
                 *dlist = d0;  // partial list

@@ -202,7 +202,7 @@ namespace {
     ifCheckInterrupt(const char *msg)
     {
         if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-            dspPkgIf()->CheckForInterrupt();
+            DSPpkg::self()->CheckForInterrupt();
         return (XM()->ConfirmAbort(msg));
     }
 

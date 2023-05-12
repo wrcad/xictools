@@ -131,7 +131,7 @@ const char *sLBoa::nolibmsg = "There are no open libraries.";
 void
 cOAif::PopUpOAlibraries(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete LB;
@@ -153,7 +153,7 @@ cOAif::PopUpOAlibraries(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(LB->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), LB->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), LB->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(LB->Shell());
 }
@@ -421,7 +421,7 @@ sLBoa::~sLBoa()
     delete [] lb_tempstr;
 
     if (lb_caller)
-        GRX->Deselect(lb_caller);
+        GTKdev::Deselect(lb_caller);
     if (lb_content_pop)
         lb_content_pop->popdown();
 
@@ -470,24 +470,24 @@ sLBoa::update()
 {
     const char *s = CDvdb()->getVariable(VA_OaUseOnly);
     if (s && ((s[0] == '1' && s[1] == 0) || s[0] == 'p' || s[0] == 'P')) {
-        if (!GRX->GetStatus(lb_phys)) {
-            GRX->SetStatus(lb_phys, true);
-            GRX->SetStatus(lb_both, false);
-            GRX->SetStatus(lb_elec, false);
+        if (!GTKdev::GetStatus(lb_phys)) {
+            GTKdev::SetStatus(lb_phys, true);
+            GTKdev::SetStatus(lb_both, false);
+            GTKdev::SetStatus(lb_elec, false);
         }
     }
     else if (s && ((s[0] == '2' && s[1] == 0) || s[0] == 'e' || s[0] == 'E')) {
-        if (!GRX->GetStatus(lb_elec)) {
-            GRX->SetStatus(lb_elec, true);
-            GRX->SetStatus(lb_both, false);
-            GRX->SetStatus(lb_phys, false);
+        if (!GTKdev::GetStatus(lb_elec)) {
+            GTKdev::SetStatus(lb_elec, true);
+            GTKdev::SetStatus(lb_both, false);
+            GTKdev::SetStatus(lb_phys, false);
         }
     }
     else {
-        if (!GRX->GetStatus(lb_both)) {
-            GRX->SetStatus(lb_both, true);
-            GRX->SetStatus(lb_phys, false);
-            GRX->SetStatus(lb_elec, false);
+        if (!GTKdev::GetStatus(lb_both)) {
+            GTKdev::SetStatus(lb_both, true);
+            GTKdev::SetStatus(lb_phys, false);
+            GTKdev::SetStatus(lb_elec, false);
         }
     }
 
@@ -840,18 +840,18 @@ sLBoa::lb_action_proc(GtkWidget *caller, void *client_data)
         LB->PopUpInput("New library name? ", "", "Create", LB->lb_lib_cb, 0);
     }
     else if (client_data == (void*)LBdefs) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             int x, y;
-            GRX->Location(caller, &x, &y);
+            GTKdev::self()->Location(caller, &x, &y);
             OAif()->PopUpOAdefs(caller, MODE_ON, x - 100, y + 50);
         }
         else
             OAif()->PopUpOAdefs(0, MODE_OFF, 0, 0);
     }
     else if (client_data == (void*)LBtech) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             int x, y;
-            GRX->Location(caller, &x, &y);
+            GTKdev::self()->Location(caller, &x, &y);
             OAif()->PopUpOAtech(caller, MODE_ON, x + 100, y + 50);
         }
         else
@@ -894,15 +894,15 @@ sLBoa::lb_action_proc(GtkWidget *caller, void *client_data)
             LB->lb_dest_cb, lstr.string_trim());
     }
     else if (client_data == (void*)LBboth) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->clearVariable(VA_OaUseOnly);
     }
     else if (client_data == (void*)LBphys) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OaUseOnly, "Physical");
     }
     else if (client_data == (void*)LBelec) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OaUseOnly, "Electrical");
     }
 }

@@ -98,7 +98,7 @@ using namespace gtkltalias;
 void
 cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete LA;
@@ -111,7 +111,7 @@ cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
     }
     if (LA) {
         if (caller && caller != LA->call_btn())
-            GRX->Deselect(caller);
+            GTKdev::Deselect(caller);
         return;
     }
 
@@ -123,7 +123,8 @@ cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(LA->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), LA->Shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), LA->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(LA->Shell());
 }
 
@@ -350,7 +351,7 @@ sLA::~sLA()
 {
     LA = 0;
     if (la_calling_btn)
-        GRX->Deselect(la_calling_btn);
+        GTKdev::Deselect(la_calling_btn);
 }
 
 
@@ -573,7 +574,7 @@ sLA::la_action_proc(GtkWidget *caller, void*)
         }
     }
     else if (code == DecCode) {
-        LA->la_show_dec = GRX->GetStatus(caller);
+        LA->la_show_dec = GTKdev::GetStatus(caller);
         LA->update();
     }
     else if (code == HelpCode)

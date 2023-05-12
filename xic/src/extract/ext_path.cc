@@ -235,7 +235,7 @@ cExt::selectPath(GRobject caller)
     // Launch the state in an idle proc, so present command (if any)
     // will exit cleanly.
 
-    dspPkgIf()->RegisterIdleProc(exec_p_idle, caller);
+    DSPpkg::self()->RegisterIdleProc(exec_p_idle, caller);
 }
 
 
@@ -263,7 +263,7 @@ cExt::selectPathQuick(GRobject caller)
     // Launch the state in an idle proc, so present command (if any)
     // will exit cleanly.
 
-    dspPkgIf()->RegisterIdleProc(exec_q_idle, caller);
+    DSPpkg::self()->RegisterIdleProc(exec_q_idle, caller);
 }
 
 
@@ -457,7 +457,7 @@ sPcmd::b1up()
                 PL()->ShowPrompt("Finding sub-path...");
                 BB2 = AOI;
                 Level = 0;
-                dspPkgIf()->SetWorking(true);
+                DSPpkg::self()->SetWorking(true);
                 pf->show_path(0, ERASE);
                 pf_ordered_path *path = pf->extract_subpath(&BB1, &BB2);
                 if (path) {
@@ -470,7 +470,7 @@ sPcmd::b1up()
                 else
                     PL()->ShowPrompt(Errs()->get_error());
                 pf->show_path(0, DISPLAY);
-                dspPkgIf()->SetWorking(false);
+                DSPpkg::self()->SetWorking(false);
             }
             return;
         }
@@ -596,7 +596,7 @@ sPcmd::new_path(BBox *AOI)
     if (!pf)
         return;
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     pf->clear();
     pf->set_depth(EX()->pathDepth());
     pf->find_path(AOI);
@@ -609,7 +609,7 @@ sPcmd::new_path(BBox *AOI)
             ndgt, MICRONS(AOI->left), ndgt, MICRONS(AOI->bottom),
             ndgt, MICRONS(AOI->right), ndgt, MICRONS(AOI->top));
     }
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 }
 // End of sPcmd functions
 
@@ -633,7 +633,7 @@ QpathState::QpathState(const char *nm, const char *hk) : sPcmd(nm, hk)
 {
     UseGroups = false;
     EX()->pathFinder(cExt::PFinitQuick);
-    dspPkgIf()->RegisterIdleProc(work_proc, 0);
+    DSPpkg::self()->RegisterIdleProc(work_proc, 0);
 }
 
 

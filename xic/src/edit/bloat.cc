@@ -151,7 +151,7 @@ cEdit::bloatQueue(int width, int mode)
     CDs *cursd = CurCell(Physical);
     if (!cursd)
         return (XIbad);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     PL()->ShowPrompt("Working...");
     int ocnt = 0;
     sSelGen sg(Selections, cursd, "bpw");
@@ -164,7 +164,7 @@ cEdit::bloatQueue(int width, int mode)
     }
     if (!ocnt) {
         PL()->ErasePrompt();
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return (XIok);
     }
 
@@ -209,7 +209,7 @@ cEdit::bloatQueue(int width, int mode)
                     OPlist::destroy(l0);
                     PL()->ErasePrompt();
                     XM()->ShowParameters();
-                    dspPkgIf()->SetWorking(false);
+                    DSPpkg::self()->SetWorking(false);
                     return (ret);
                 }
                 l0 = new OPlist(od, Zlist::to_poly_list(zlist), l0);
@@ -232,7 +232,7 @@ cEdit::bloatQueue(int width, int mode)
                         delete [] zheads;
                         PL()->ErasePrompt();
                         XM()->ShowParameters();
-                        dspPkgIf()->SetWorking(false);
+                        DSPpkg::self()->SetWorking(false);
                         return (ret);
                     }
 
@@ -261,7 +261,7 @@ cEdit::bloatQueue(int width, int mode)
     }
     PL()->ErasePrompt();
     XM()->ShowParameters();
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (XIok);
 }
 

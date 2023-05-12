@@ -1913,7 +1913,7 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data,
 int
 gtkMenuConfig::user_cmd_proc(void *arg)
 {
-    if (dspPkgIf()->IsBusy())
+    if (QTpkg::self()->IsBusy())
         return (true);
     DSP()->SetInterrupt(false);
     MenuEnt *ent = (MenuEnt*)arg;
@@ -1952,7 +1952,7 @@ gtkMenuConfig::user_cmd_proc(void *arg)
 int
 gtkMenuConfig::cmd_proc(void *arg)
 {
-    if (dspPkgIf()->IsBusy())
+    if (QTpkg::self()->IsBusy())
         return (true);
     DSP()->SetInterrupt(false);
     MenuEnt *ent = (MenuEnt*)arg;

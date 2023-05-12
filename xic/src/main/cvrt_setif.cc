@@ -79,7 +79,7 @@ namespace {
     void
     ifSetWorking(bool b)
     {
-        dspPkgIf()->SetWorking(b);
+        DSPpkg::self()->SetWorking(b);
     }
 
     // Process an informational message.  These messages would generally
@@ -182,8 +182,10 @@ namespace {
             if (XM()->RunMode() == ModeBatch) {
                 if (filestat::create_bak(fname))
                     fp = fopen(fname, "w");
-                else
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+                else {
+                    DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
+                        filestat::error_msg());
+                }
             }
             else
                 fp = Log()->OpenLog(fname, "w");
@@ -193,7 +195,7 @@ namespace {
                 PL()->ShowPrompt(
                     "Warning: Can't open log file.  Continuing anyway.");
         }
-        dspPkgIf()->SetWorking(true);
+        DSPpkg::self()->SetWorking(true);
         Cvt()->SetLogFp(fp);
         Cvt()->SetShowLog(false);
         setup_two_col_msgs(true);
@@ -244,7 +246,7 @@ namespace {
     {
         setup_two_col_msgs(false);
         Cvt()->SetLogFp(0);
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         if (!fp) {
             Cvt()->SetShowLog(false);
             return;

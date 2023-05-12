@@ -63,14 +63,15 @@ DspLayerParams::DspLayerParams(CDl *ld)
     else if (ld->layerType() == CDLinternal) {
         defaultColor();
         // internal layer, these share a colormap pixel
-        if (internal_pixel == 0 || !dspPkgIf()->IsDualPlane())
-            GRpkgIf()->AllocateColor(&internal_pixel,
+        if (internal_pixel == 0 || !DSPpkg::self()->IsDualPlane())
+            DSPpkg::self()->AllocateColor(&internal_pixel,
                 lp_red, lp_green, lp_blue);
         lp_pixel = internal_pixel;
     }
     else {
         defaultColor();
-        GRpkgIf()->AllocateColor((int*)&lp_pixel, lp_red, lp_green, lp_blue);
+        DSPpkg::self()->AllocateColor((int*)&lp_pixel, lp_red, lp_green,
+            lp_blue);
     }
     lp_dim_pixel = 0;
     lp_xsect_thickness = 0;
@@ -108,7 +109,7 @@ DspLayerParams::setColor(int r, int g, int b)
     lp_red = r;
     lp_green = g;
     lp_blue = b;
-    GRpkgIf()->AllocateColor((int*)&lp_pixel, lp_red, lp_green, lp_blue);
+    DSPpkg::self()->AllocateColor((int*)&lp_pixel, lp_red, lp_green, lp_blue);
 }
 
 

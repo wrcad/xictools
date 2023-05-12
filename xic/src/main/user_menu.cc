@@ -194,6 +194,6 @@ namespace {
 void
 user_menu::M_Rehash(CmdDesc*)
 {
-    dspPkgIf()->RegisterIdleProc(user_menu_update_idle_proc, 0);
+    DSPpkg::self()->RegisterIdleProc(user_menu_update_idle_proc, 0);
 }
 

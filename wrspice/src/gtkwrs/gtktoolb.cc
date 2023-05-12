@@ -168,7 +168,7 @@ CommandTab::com_tbsetup(wordlist *wl)
 
         tbent *ent = TB()->FindEnt(word);
         if (!ent) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "tbsetup: bad keyword %s ignored.\n", word);
             if (!wl)
                 break;
@@ -192,7 +192,7 @@ void
 CommandTab::com_tbupdate(wordlist*)
 {
     if (!CP.Display()) {
-        GRpkgIf()->ErrPrintf(ET_MSG, "No update needed.\n");
+        GRpkg::self()->ErrPrintf(ET_MSG, "No update needed.\n");
         return;
     }
     char buf[512];
@@ -286,7 +286,8 @@ CommandTab::com_tbupdate(wordlist*)
     delete [] bkfile;
     return;
 bad:
-    GRpkgIf()->ErrPrintf(ET_WARN, "could not update %s.\n", startup_filename);
+    GRpkg::self()->ErrPrintf(ET_WARN, "could not update %s.\n",
+        startup_filename);
     delete [] startup_filename;
     delete [] bkfile;
 }
@@ -458,7 +459,7 @@ GTKtoolbar::PopUpBugRpt(int x, int y)
         return;
     if (!tb_mailer) {
         if (!Global.BugAddr()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "no IP address set for bug reports.");
             return;
         }
@@ -493,7 +494,7 @@ namespace {
             TB()->SetLoc(TB()->ntb_font, TB()->ft_shell);
             TB()->SetActive(TB()->ntb_font, false);
             TB()->ft_shell = 0;
-            GRX->SetStatus(TB()->tb_font, false);
+            GTKdev::SetStatus(TB()->tb_font, false);
             return;
         }
     }
@@ -522,7 +523,7 @@ GTKtoolbar::PopDownFont()
     context->ActiveFontsel()->popdown();
     ft_shell = 0;
     SetActive(ntb_font, false);
-    GRX->SetStatus(tb_font, false);
+    GTKdev::SetStatus(tb_font, false);
 }
 
 
@@ -741,7 +742,7 @@ sTBhelp::th_cancel_proc(GtkWidget*, void *client_data)
     GtkWidget *caller = (GtkWidget*)g_object_get_data(G_OBJECT(popup),
         "caller");
     if (caller)
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
     int type = (intptr_t)g_object_get_data(G_OBJECT(popup), "tbtype");
     TB()->PopDownTBhelp((TBH_type)type);
 }
@@ -855,7 +856,7 @@ ErrMsgBox::PopUpErr(const char *string)
     gtk_widget_show(wrap);
     g_signal_connect(G_OBJECT(wrap), "clicked",
         G_CALLBACK(er_wrap_proc), 0);
-    GRX->SetStatus(wrap, er_wrap);
+    GTKdev::SetStatus(wrap, er_wrap);
     gtk_box_pack_start(GTK_BOX(hbox), wrap, false, false, 0);
 
     GtkWidget *cancel = gtk_button_new_with_label("Dismiss");
@@ -869,7 +870,7 @@ ErrMsgBox::PopUpErr(const char *string)
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    GRX->SetDoubleClickExit(er_popup, cancel);
+    GTKdev::self()->SetDoubleClickExit(er_popup, cancel);
     gtk_widget_set_can_default(cancel, true);
     gtk_window_set_default(GTK_WINDOW(er_popup), cancel);
 
@@ -890,7 +891,7 @@ ErrMsgBox::PopUpErr(const char *string)
     // a new error popup, ad infinitum.
     //
     hei += 20;  // for title bar
-    if (GRpkgIf()->CurDev()->devtype == GRmultiWindow && GP.Cur() &&
+    if (GRpkg::self()->CurDev()->devtype == GRmultiWindow && GP.Cur() &&
             GP.Cur()->apptype() == GR_PLOT) {
         // can't do this in hardcopy context
         GtkWidget *plot = ((GTKbag*)GP.Cur()->dev())->Shell();
@@ -986,7 +987,7 @@ void
 ErrMsgBox::er_wrap_proc(GtkWidget *btn, void*)
 {
     if (MB.er_popup && MB.er_text) {
-        MB.er_wrap = GRX->GetStatus(btn);
+        MB.er_wrap = GTKdev::GetStatus(btn);
         gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(MB.er_text),
             MB.er_wrap ? GTK_WRAP_WORD_CHAR : GTK_WRAP_NONE);
     }
@@ -1012,7 +1013,7 @@ GTKtoolbar::PopUpSpiceErr(bool to_stdout, const char *string)
 {
     if (!string || !*string)
         return;
-    if (!CP.Display() || !GRpkgIf()->CurDev())
+    if (!CP.Display() || !GRpkg::self()->CurDev())
         to_stdout = true;
     if (Sp.GetFlag(FT_NOERRWIN))
         to_stdout = true;
@@ -1052,7 +1053,7 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
 {
     if (!CP.Display())
         return;
-    if (!GRpkgIf()->CurDev())
+    if (!GRpkg::self()->CurDev())
         return;
     if (!string || !*string)
         return;
@@ -1087,7 +1088,7 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
     gtk_table_attach(GTK_TABLE(form), cancel, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    GRX->SetDoubleClickExit(popup, cancel);
+    GTKdev::self()->SetDoubleClickExit(popup, cancel);
 
     FixLoc(&x, &y);
     gtk_widget_realize(popup);
@@ -1286,15 +1287,15 @@ GTKtoolbar::UpdateMain(ResUpdType update)
 void
 GTKtoolbar::CloseGraphicsConnection()
 {
-    if (GRX && GRX->ConnectFd() > 0)
-        close(GRX->ConnectFd());
+    if (GTKdev::exists() && GTKdev::self()->ConnectFd() > 0)
+        close(GTKdev::ConnectFd());
 }
 
 
 int
 GTKtoolbar::RegisterIdleProc(int(*proc)(void*), void *arg)
 {
-    if (GRX)
+    if (GTKdev::exists())
         return (g_idle_add(proc, arg));
     return (0);
 }
@@ -1303,7 +1304,7 @@ GTKtoolbar::RegisterIdleProc(int(*proc)(void*), void *arg)
 bool
 GTKtoolbar::RemoveIdleProc(int id)
 {
-    if (GRX)
+    if (GTKdev::exists())
         g_source_remove(id);
     return (true);
 }
@@ -1312,8 +1313,8 @@ GTKtoolbar::RemoveIdleProc(int id)
 int
 GTKtoolbar::RegisterTimeoutProc(int ms, int(*proc)(void*), void *arg)
 {
-    if (GRX)
-        return (GRX->AddTimer(ms, proc, arg));
+    if (GTKdev::exists())
+        return (GTKdev::self()->AddTimer(ms, proc, arg));
     return (0);
 }
 
@@ -1321,8 +1322,8 @@ GTKtoolbar::RegisterTimeoutProc(int ms, int(*proc)(void*), void *arg)
 bool
 GTKtoolbar::RemoveTimeoutProc(int id)
 {
-    if (GRX)
-        GRX->RemoveTimer(id);
+    if (GTKdev::exists())
+        GTKdev::self()->RemoveTimer(id);
     return (true);
 }
 
@@ -1330,8 +1331,8 @@ GTKtoolbar::RemoveTimeoutProc(int id)
 void
 GTKtoolbar::RegisterBigForeignWindow(unsigned int w)
 {
-    if (GRX)
-        GRX->RegisterBigForeignWindow(w);
+    if (GTKdev::exists())
+        GTKdev::self()->RegisterBigForeignWindow(w);
 }
 
 
@@ -1368,7 +1369,7 @@ namespace {
             // Cocoa terminal.
 #ifdef __APPLE__
 #ifdef WITH_X11
-            if (GRX->ConsoleXid() == 0)
+            if (GTKdev::self()->ConsoleXid() == 0)
 #endif
                 system(
             "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
@@ -1383,9 +1384,11 @@ namespace {
         }
 #ifdef WITH_X11
         // This is probably crap.
-        if (GRX->ConsoleXid() && Sp.GetVar("wmfocusfix", VTYP_BOOL, 0)) {
-            XSetInputFocus(gdk_x11_get_default_xdisplay(), GRX->ConsoleXid(),
-                RevertToPointerRoot, CurrentTime);
+        if (GTKdev::self()->ConsoleXid() &&
+                Sp.GetVar("wmfocusfix", VTYP_BOOL, 0)) {
+            XSetInputFocus(gdk_x11_get_default_xdisplay(),
+                GTKdev::self()->ConsoleXid(), RevertToPointerRoot,
+                CurrentTime);
         }
 #endif
         return (false);
@@ -1814,7 +1817,7 @@ GTKtoolbar::tbpop(bool up)
     if (!up || toolbar)
         return;
     tb_bag *w = new tb_bag(GR_TB);
-    GRpkgIf()->NewWbag(GR_TBstr, w);
+    GRpkg::self()->NewWbag(GR_TBstr, w);
     context = w;
     toolbar = w->Shell();
 
@@ -2201,55 +2204,55 @@ GTKtoolbar::tbpop(bool up)
             continue;  // in WR button
         else if (tb->name == ntb_circuits) {
             if (tb_circuits)
-                GRX->SetStatus(tb_circuits, tb->active);
+                GTKdev::SetStatus(tb_circuits, tb->active);
         }
         else if (tb->name == ntb_colors) {
             if (tb_colors)
-                GRX->SetStatus(tb_colors, tb->active);
+                GTKdev::SetStatus(tb_colors, tb->active);
         }
         else if (tb->name == ntb_commands) {
             if (tb_commands)
-                GRX->SetStatus(tb_commands, tb->active);
+                GTKdev::SetStatus(tb_commands, tb->active);
         }
         else if (tb->name == ntb_debug) {
             if (tb_debug)
-                GRX->SetStatus(tb_debug, tb->active);
+                GTKdev::SetStatus(tb_debug, tb->active);
         }
         else if (tb->name == ntb_files) {
             if (tb_files)
-                GRX->SetStatus(tb_files, tb->active);
+                GTKdev::SetStatus(tb_files, tb->active);
         }
         else if (tb->name == ntb_font) {
             if (tb_font)
-                GRX->SetStatus(tb_font, tb->active);
+                GTKdev::SetStatus(tb_font, tb->active);
         }
         else if (tb->name == ntb_plotdefs) {
             if (tb_plotdefs)
-                GRX->SetStatus(tb_plotdefs, tb->active);
+                GTKdev::SetStatus(tb_plotdefs, tb->active);
         }
         else if (tb->name == ntb_plots) {
             if (tb_plots)
-                GRX->SetStatus(tb_plots, tb->active);
+                GTKdev::SetStatus(tb_plots, tb->active);
         }
         else if (tb->name == ntb_shell) {
             if (tb_shell)
-                GRX->SetStatus(tb_shell, tb->active);
+                GTKdev::SetStatus(tb_shell, tb->active);
         }
         else if (tb->name == ntb_simdefs) {
             if (tb_simdefs)
-                GRX->SetStatus(tb_simdefs, tb->active);
+                GTKdev::SetStatus(tb_simdefs, tb->active);
         }
         else if (tb->name == ntb_trace) {
             if (tb_trace)
-                GRX->SetStatus(tb_trace, tb->active);
+                GTKdev::SetStatus(tb_trace, tb->active);
         }
         else if (tb->name == ntb_variables) {
             if (tb_variables)
-                GRX->SetStatus(tb_variables, tb->active);
+                GTKdev::SetStatus(tb_variables, tb->active);
         }
         else if (tb->name == ntb_vectors) {
             if (tb_vectors)
-                GRX->SetStatus(tb_vectors, tb->active);
+                GTKdev::SetStatus(tb_vectors, tb->active);
         }
     }
 
@@ -2361,19 +2364,19 @@ GTKtoolbar::tbpop(bool up)
     const char *s = XRMgetFromDb("fgcolor1");
     if (!s)
         s = "sienna";
-    tb_clr_1 = GRX->NameColor(s);
+    tb_clr_1 = GTKdev::self()->NameColor(s);
     s = XRMgetFromDb("fgcolor2");
     if (!s)
         s = "black";
-    tb_clr_2 = GRX->NameColor(s);
+    tb_clr_2 = GTKdev::self()->NameColor(s);
     s = XRMgetFromDb("fgcolor3");
     if (!s)
         s = "red";
-    tb_clr_3 = GRX->NameColor(s);
+    tb_clr_3 = GTKdev::self()->NameColor(s);
     s = XRMgetFromDb("fgcolor4");
     if (!s)
         s = "blue";
-    tb_clr_4 = GRX->NameColor(s);
+    tb_clr_4 = GTKdev::self()->NameColor(s);
 
     w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
     w->SetBackground(SpGrPkg::DefColors[0].pixel);
@@ -2900,7 +2903,7 @@ tb_bag::switch_to_pixmap()
         b_wid = w;
         b_hei = h;
         pm = gdk_pixmap_new(gd_window, w, h,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         if (pm)
             b_pixmap = pm;
         else {
@@ -2971,7 +2974,8 @@ namespace {
     {
         xKWent *kwent = (xKWent*)client_data;
         xEnt *ent = kwent->ent;
-        if (ent->defstr && ent->active && !GRX->GetStatus(ent->active)) {
+        if (ent->defstr && ent->active &&
+                !GTKdev::GetStatus(ent->active)) {
             const char *str = gtk_entry_get_text(GTK_ENTRY(ent->entry));
             const char *str2 = 0;
             if (ent->entry2)
@@ -3038,16 +3042,16 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
             gtk_box_pack_start(GTK_BOX(hbox), entry2, true, true, 2);
         }
         else {
-            GtkAdjustment *adj = gtk_adjustment_new(val, kwstruct->min,
-                kwstruct->max, del, pgsize, 0);
+            GtkAdjustment *adj = (GtkAdjustment*)gtk_adjustment_new(val,
+                kwstruct->min, kwstruct->max, del, pgsize, 0);
             entry = gtk_spin_button_new(adj, rate, numd);
             gtk_widget_show(entry);
             gtk_widget_set_size_request(entry, 80, -1);
             gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), true);
             gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 2);
             if (mode == KW_INT_2) {
-                adj = gtk_adjustment_new(val, kwstruct->min, kwstruct->max,
-                    del, pgsize, 0);
+                adj = (GtkAdjustment*)gtk_adjustment_new(val, kwstruct->min,
+                    kwstruct->max, del, pgsize, 0);
                 entry2 = gtk_spin_button_new(adj, rate, numd);
                 gtk_widget_show(entry2);
                 gtk_widget_set_size_request(entry2, 80, -1);
@@ -3165,7 +3169,7 @@ void
 xEnt::set_state(bool state)
 {
     if (active)
-        GRX->SetStatus(active, state);
+        GTKdev::SetStatus(active, state);
     if (deflt) {
         if (state)
             gtk_widget_set_sensitive(deflt, false);
@@ -3192,8 +3196,8 @@ xEnt::set_state(bool state)
 namespace {
     void error_pr(const char *which, const char *minmax, const char *what)
     {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad %s%s value, must be %s.\n", which,
-            minmax ? minmax : "", what);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad %s%s value, must be %s.\n",
+            which, minmax ? minmax : "", what);
     }
 }
 
@@ -3205,9 +3209,9 @@ xEnt::handler(void *data)
 {
     xKWent *kwstruct = (xKWent*)data;
     variable v;
-    bool state = GRX->GetStatus(active);
+    bool state = GTKdev::GetStatus(active);
     // reset button temporarily, final status is set by callback()
-    GRX->SetStatus(active, !state);
+    GTKdev::SetStatus(active, !state);
 
     if (kwstruct->type == VTYP_BOOL) {
         v.set_boolean(state);
@@ -3284,7 +3288,7 @@ xEnt::handler(void *data)
                 return;
             }
         }
-        GRpkgIf()->ErrPrintf(ET_ERROR, "parse error in string for %s.\n",
+        GRpkg::self()->ErrPrintf(ET_ERROR, "parse error in string for %s.\n",
             kwstruct->word);
     }
 }

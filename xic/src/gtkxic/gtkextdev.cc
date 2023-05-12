@@ -106,7 +106,7 @@ const char *sED::nodevmsg = "No devices found.";
 void
 cExt::PopUpDevices(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete ED;
@@ -128,7 +128,7 @@ cExt::PopUpDevices(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(ED->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UR), ED->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UR), ED->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(ED->shell());
 }
@@ -383,12 +383,12 @@ sED::sED(GRobject caller)
 sED::~sED()
 {
     // Must do this before zeroing pointer!
-    if (GRX->GetStatus(ed_measbox))  
-        GRX->CallCallback(ed_measbox);
+    if (GTKdev::GetStatus(ed_measbox))  
+        GTKdev::CallCallback(ed_measbox);
 
     ED = 0;
     if (ed_caller)
-        GRX->Deselect(ed_caller);
+        GTKdev::Deselect(ed_caller);
 
     CDs *cursdp = CurCell(Physical);
     if (cursdp) {
@@ -397,8 +397,8 @@ sED::~sED()
             gd->parse_find_dev(0, false);
     }
 
-    if (ed_select && GRX->GetStatus(ed_select)) {
-        GRX->SetStatus(ed_select, false);
+    if (ed_select && GTKdev::GetStatus(ed_select)) {
+        GTKdev::SetStatus(ed_select, false);
         EX()->selectDevices(ed_select);
     }
 
@@ -416,7 +416,7 @@ void
 sED::update()
 {
 
-    if (!GRX->GetStatus(ed_select)) {
+    if (!GTKdev::GetStatus(ed_select)) {
         gtk_widget_set_sensitive(ed_compute, false);
         gtk_widget_set_sensitive(ed_compare, false);
     }
@@ -439,7 +439,7 @@ sED::update()
         gtk_widget_set_sensitive(ed_show_all, false);
         gtk_widget_set_sensitive(ed_erase_all, false);
     }
-    if (!GRX->GetStatus(ed_measbox))
+    if (!GTKdev::GetStatus(ed_measbox))
         gtk_widget_set_sensitive(ed_paint, false);
     if (DSP()->CurMode() == Electrical)
         gtk_widget_set_sensitive(ed_measbox, false);
@@ -616,9 +616,9 @@ sED::ed_action_proc(GtkWidget *caller, void*)
         DSPmainWbag(PopUpHelp("xic:dvsel"))
     }
     else if (!strcmp(name, "Select")) {
-        if (GRX->GetStatus(ED->ed_select)) {
+        if (GTKdev::GetStatus(ED->ed_select)) {
             if (!EX()->selectDevices(caller)) {
-                GRX->Deselect(caller);
+                GTKdev::Deselect(caller);
                 return;
             }
             gtk_widget_set_sensitive(ED->ed_compute, true);
@@ -626,8 +626,8 @@ sED::ed_action_proc(GtkWidget *caller, void*)
         }
         else {
             EX()->selectDevices(caller);
-            GRX->SetStatus(ED->ed_compute, false);
-            GRX->SetStatus(ED->ed_compare, false);
+            GTKdev::SetStatus(ED->ed_compute, false);
+            GTKdev::SetStatus(ED->ed_compare, false);
             gtk_widget_set_sensitive(ED->ed_compute, false);
             gtk_widget_set_sensitive(ED->ed_compare, false);
             EX()->setDevselCompute(false);
@@ -635,13 +635,13 @@ sED::ed_action_proc(GtkWidget *caller, void*)
         }
     }
     else if (!strcmp(name, "Compute"))
-        EX()->setDevselCompute(GRX->GetStatus(caller));
+        EX()->setDevselCompute(GTKdev::GetStatus(caller));
     else if (!strcmp(name, "Compare"))
-        EX()->setDevselCompare(GRX->GetStatus(caller));
+        EX()->setDevselCompare(GTKdev::GetStatus(caller));
     else if (!strcmp(name, "MeasBox")) {
-        if (GRX->GetStatus(ED->ed_measbox)) {
+        if (GTKdev::GetStatus(ED->ed_measbox)) {
             if (!EX()->measureLayerElectrical(caller)) {
-                GRX->Deselect(caller);
+                GTKdev::Deselect(caller);
                 return;
             }
             gtk_widget_set_sensitive(ED->ed_paint, true);

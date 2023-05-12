@@ -567,7 +567,7 @@ cMain::System(const char *cmd)
 
     int pid = fork();
     if (pid == 0) {
-        dspPkgIf()->CloseGraphicsConnection();
+        DSPpkg::self()->CloseGraphicsConnection();
         signal(SIGINT, tmpi);
         signal(SIGQUIT, tmpq);
         sigprocmask(SIG_SETMASK, &oldsigblock, 0);

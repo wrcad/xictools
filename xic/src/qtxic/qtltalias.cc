@@ -111,7 +111,7 @@ GTKapp::PopUpLayerAliases(int mode, GRobject caller)
     if (mode == MODE_OFF) {
         if (LA) {
             if (LA->calling_btn)
-                QTdev::self()->Deselect(LA->calling_btn);
+                QTdev::Deselect(LA->calling_btn);
             GtkWidget *widg = LA->shell;
             LA->shell = 0;
             delete LA;
@@ -127,7 +127,7 @@ GTKapp::PopUpLayerAliases(int mode, GRobject caller)
     }
     if (LA) {
         if (caller)
-            QTdev::self()->Deselect(caller);
+            QTdev::Deselect(caller);
         return;
     }
     LA = new sLA(caller);
@@ -345,7 +345,7 @@ la_action_proc(GtkWidget *caller, void *client_data, unsigned code)
         }
     }
     else if (code == DecCode) {
-        LA->show_dec = QTdev::self()->GetStatus(caller);
+        LA->show_dec = QTdev::GetStatus(caller);
         LA->update();
     }
     else if (code == HelpCode)

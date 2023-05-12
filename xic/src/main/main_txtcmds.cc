@@ -1191,7 +1191,7 @@ bangcmds::assemble(const char *s)
         PL()->ShowPrompt("Usage:  !assemble configfile | argument_list");
         return;
     }
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     Errs()->init_error();
     PL()->ShowPrompt("Working...");
     bool ret = FIO()->AssembleArchive(s);
@@ -1202,7 +1202,7 @@ bangcmds::assemble(const char *s)
         if (Errs()->has_error())
             Log()->ErrorLog("!assemble", Errs()->get_error());
     }
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 }
 
 
@@ -1218,7 +1218,7 @@ bangcmds::splwrite(const char *s)
             "[-cl] [-e]");
         return;
     }
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     Errs()->init_error();
     PL()->ShowPrompt("Working...");
     bool ret = FIO()->SplitArchive(s);
@@ -1229,7 +1229,7 @@ bangcmds::splwrite(const char *s)
         if (Errs()->has_error())
             Log()->ErrorLog("!splwrite", Errs()->get_error());
     }
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 }
 
 
@@ -1988,7 +1988,7 @@ bangcmds::fileinfo(const char *s)
         outname = lstring::copy("xic_fileinfo.log");
 
     if (!filestat::create_bak(outname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         PL()->ShowPrompt("Error: file write error.");
         delete [] fname;
         delete [] outname;
@@ -2075,7 +2075,7 @@ bangcmds::summary(const char *s)
     if (!fname)
         fname = lstring::copy("xic_summary.log");
     if (!filestat::create_bak(fname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         PL()->ShowPrompt("Error: file write error.");
         delete [] fname;
         return;
@@ -2141,9 +2141,9 @@ bangcmds::compare(const char *string)
         PL()->ShowPromptV("Error: %s", Errs()->get_error());
         return;
     }
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     DFtype df = cmp.compare();
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     if (df == DFabort)
         PL()->ShowPrompt("Comparison aborted.");
@@ -2450,7 +2450,8 @@ namespace {
             fp = stdout;
         else {
             if (!filestat::create_bak(fname)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+                DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
+                    filestat::error_msg());
                 PL()->ShowPromptV("Can't move \"%s\" to \"%s.bak\".", fname,
                     fname);
                 goto bad;
@@ -2462,13 +2463,13 @@ namespace {
             goto bad;
         }
 
-        dspPkgIf()->SetWorking(true);
+        DSPpkg::self()->SetWorking(true);
         PL()->ShowPrompt("Working...");
         ret = CD()->CheckGrid(cursd, spacing, use_bb ? &BB : 0, layer_list,
             skip, types, depth, fp);
         if (fp != stdout)
             fclose(fp);
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
 
         if (ret)
             PL()->ShowPromptV("Done, results in file \"%s\".", fname);
@@ -3402,7 +3403,7 @@ bangcmds::mklib(const char *s)
 
     if (!append) {
         if (!filestat::create_bak(m.libfile))
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
     }
     FILE *fp = fopen(m.libfile, append ? "a" : "w");
     if (fp) {
@@ -4263,7 +4264,7 @@ bangcmds::mkscript(const char *s)
         fname = lstring::copy("mkscript.scr");
 
     if (!filestat::create_bak(fname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         PL()->ShowPrompt("Error: file write error.");
         delete [] fname;
         return;
@@ -4588,7 +4589,7 @@ namespace {
     {
         ssh_pill_t *p = (ssh_pill_t*)arg;
         if (p->idle_id) {
-            dspPkgIf()->RemoveIdleProc(p->idle_id);
+            DSPpkg::self()->RemoveIdleProc(p->idle_id);
             p->reset();
         }
         delete p;
@@ -4825,7 +4826,7 @@ bangcmds::ssh(const char *s)
 
     if (port > 0) {
         ssh_pill_t *p = new ssh_pill_t(::time(0), skt);
-        int id = dspPkgIf()->RegisterIdleProc(&ssh_idle_proc, p);
+        int id = DSPpkg::self()->RegisterIdleProc(&ssh_idle_proc, p);
         p->idle_id = id;
 
         // We can't do this with gnome-terminal and possibly others. 

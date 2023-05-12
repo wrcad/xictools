@@ -214,8 +214,8 @@ namespace {
     idlefunc(void*)
     {
         static int on;
-        if (!dspPkgIf()->IsBusy()) {
-            if (dspPkgIf()->IsTrueColor()) {
+        if (!QTpkg::self()->IsBusy()) {
+            if (QTpkg::self()->IsTrueColor()) {
                 WindowDesc *wd;
                 WDgen wgen(WDgen::MAIN, WDgen::ALL);
                 while ((wd = wgen.next()) != 0) {
@@ -253,7 +253,7 @@ namespace {
     colortimer(void*)
     {
         if (!idle_id)
-            idle_id = qtPkgIf()->RegisterIdleProc(idlefunc, 0);
+            idle_id = QTpkg::self()->RegisterIdleProc(idlefunc, 0);
         return (true);
     }
 }
