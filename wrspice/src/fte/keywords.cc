@@ -188,8 +188,8 @@ namespace {
     inline void error_pr(const char *which, const char *minmax,
         const char *what)
     {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad %s%s value, must be %s.\n", which,
-            minmax ? minmax : "", what);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad %s%s value, must be %s.\n",
+            which, minmax ? minmax : "", what);
     }
 
 
@@ -337,7 +337,7 @@ struct KWent_colorN : public KWent
     void callback(bool isset, variable*)
     {
         if (isset)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
     }
 };
 
@@ -351,7 +351,7 @@ struct KWent_curanalysis : public KWent
     void callback(bool isset, variable*)
     {
         if (isset)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
     }
 };
 
@@ -385,7 +385,7 @@ struct KWent_curplotdate : public KWent
     void callback(bool isset, variable*)
     {
         if (isset)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
     }
 };
 
@@ -399,7 +399,7 @@ struct KWent_curplotname : public KWent
     void callback(bool isset, variable*)
     {
         if (isset)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
     }
 };
 
@@ -413,7 +413,7 @@ struct KWent_curplottitle : public KWent
     void callback(bool isset, variable*)
     {
         if (isset)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
     }
 };
 
@@ -488,14 +488,14 @@ struct KWent_gridstyle : public KWent
         int i = 0;
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad gridstyle value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad gridstyle value.\n");
                 return;
             }
             for (i = 0; KW.gstyles(i)->word; i++)
                 if (lstring::cieq(v->string(), KW.gstyles(i)->word))
                     break;
             if (!KW.gstyles(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad gridstyle keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad gridstyle keyword.\n");
                 return;
             }
         }
@@ -515,14 +515,14 @@ struct KWent_hcopydriver : public KWent
     {
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad hcopydriver value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad hcopydriver value.\n");
                 return;
             }
-            HCdesc *hcdesc = GRpkgIf()->FindHCdesc(v->string());
+            HCdesc *hcdesc = GRpkg::self()->FindHCdesc(v->string());
             if (!hcdesc) {
-                if (GRpkgIf()->HCof(0))
+                if (GRpkg::self()->HCof(0))
                     // No error if no drivers available (batch mode).
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "bad hcopydriver keyword.\n");
                 return;
             }
@@ -847,7 +847,8 @@ struct KWent_plotgeom : public KWent
             else if (v->type() == VTYP_LIST) {
                 variable *vx = v->list();
                 if (!vx || !vx->next()) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "bad list for plotgeom.\n");
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "bad list for plotgeom.\n");
                     return;
                 }
                 if (vx->type() == VTYP_REAL && vx->real() >= 100.0 &&
@@ -873,7 +874,8 @@ struct KWent_plotgeom : public KWent
                 }
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad plotgeom set syntax.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad plotgeom set syntax.\n");
                 return;
             }
         }
@@ -892,7 +894,7 @@ struct KWent_plotposnN : public KWent
     void callback(bool isset, variable*)
     {
         if (isset)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
     }
 };
 
@@ -906,7 +908,7 @@ struct KWent_plots : public KWent
     void callback(bool isset, variable*)
     {
         if (isset)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s is read only.\n", word);
     }
 };
 
@@ -936,14 +938,14 @@ struct KWent_plotstyle : public KWent
         int i = 0;
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad plotstyle value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad plotstyle value.\n");
                 return;
             }
             for (i = 0; KW.pstyles(i)->word; i++)
                 if (lstring::cieq(v->string(), KW.pstyles(i)->word))
                     break;
             if (!KW.pstyles(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad plotstyle keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad plotstyle keyword.\n");
                 return;
             }
         }
@@ -1069,14 +1071,14 @@ struct KWent_scaletype : public KWent
         int i = 0;
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad scaletype value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad scaletype value.\n");
                 return;
             }
             for (i = 0; KW.scale(i)->word; i++)
                 if (lstring::cieq(v->string(), KW.scale(i)->word))
                     break;
             if (!KW.scale(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad scaletype keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad scaletype keyword.\n");
                 return;
             }
         }
@@ -1253,7 +1255,8 @@ struct KWent_xindices : public KWent
             else if (v->type() == VTYP_LIST) {
                 variable *vx = v->list();
                 if (!vx || !vx->next()) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "bad list for xindices.\n");
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "bad list for xindices.\n");
                     return;
                 }
                 if (vx->type() == VTYP_REAL && vx->real() >= 0.0) {
@@ -1275,7 +1278,8 @@ struct KWent_xindices : public KWent
                 }
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad xindices set syntax.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad xindices set syntax.\n");
                 return;
             }
         }
@@ -1333,7 +1337,8 @@ struct KWent_xlimit : public KWent
             else if (v->type() == VTYP_LIST) {
                 variable *vx = v->list();
                 if (!vx || !vx->next()) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "bad list for %s.\n", word);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "bad list for %s.\n",
+                        word);
                     return;
                 }
                 if (vx->type() == VTYP_NUM) {
@@ -1355,7 +1360,7 @@ struct KWent_xlimit : public KWent
                 }
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad set syntax for %s.\n",
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad set syntax for %s.\n",
                     word);
                 return;
             }
@@ -1439,7 +1444,8 @@ struct KWent_ylimit : public KWent
             else if (v->type() == VTYP_LIST) {
                 variable *vx = v->list();
                 if (!vx || !vx->next()) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "bad list for %s.\n", word);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "bad list for %s.\n",
+                        word);
                     return;
                 }
                 if (vx->type() == VTYP_NUM) {
@@ -1461,7 +1467,7 @@ struct KWent_ylimit : public KWent
                 }
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad set syntax for %s.\n",
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad set syntax for %s.\n",
                     word);
                 return;
             }
@@ -1572,7 +1578,7 @@ struct KWent_color : public KWent
     {
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "bad %s value, must be a string.\n", word);
                 return;
             }
@@ -1743,7 +1749,7 @@ struct KWent_debug : public KWent
                     CP.RawVarSet(word, true, v);
                 }
                 else {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "unknown debug keyword %s.\n", v->string());
                     return;
                 }
@@ -1760,7 +1766,7 @@ struct KWent_debug : public KWent
                             continue;
                     }
                     // delete the bad entry
-                    GRpkgIf()->ErrPrintf(ET_WARN,
+                    GRpkg::self()->ErrPrintf(ET_WARN,
                         "debug list contains bad entry %s, ignored.\n",
                             tv->string());
                     if (lv)
@@ -1783,7 +1789,7 @@ struct KWent_debug : public KWent
                 CP.RawVarSet(word, true, v);
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad debug keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad debug keyword.\n");
                 return;
             }
         }
@@ -1806,7 +1812,7 @@ struct KWent_display : public KWent
     void callback(bool isset, variable*)
     {
         if (isset)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "display is read only.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "display is read only.\n");
     }
 };
 
@@ -1853,7 +1859,7 @@ struct KWent_program : public KWent
     {
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "bad %s value, must be a string.\n", word);
                 return;
             }
@@ -2113,7 +2119,7 @@ struct KWent_term : public KWent
     {
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "bad %s value, must be a string.\n", word);
                 return;
             }
@@ -2174,7 +2180,7 @@ struct KWent_fpemode : public KWent
             }
 #ifdef WIN32
             if (v->integer() > 1) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "FPE signals are not available under Windows.\n");
                 return;
             }
@@ -2541,14 +2547,14 @@ struct KWent_filetype : public KWent
         int i = 0;
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad filetype value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad filetype value.\n");
                 return;
             }
             for (i = 0; KW.ft(i)->word; i++)
                 if (lstring::cieq(v->string(), KW.ft(i)->word))
                     break;
             if (!KW.ft(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad filetype keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad filetype keyword.\n");
                 return;
             }
         }
@@ -2708,14 +2714,14 @@ struct KWent_level : public KWent
         int i = 0;
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad level value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad level value.\n");
                 return;
             }
             for (i = 0; KW.level(i)->word; i++)
                 if (lstring::cieq(v->string(), KW.level(i)->word))
                     break;
             if (!KW.level(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad level keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad level keyword.\n");
                 return;
             }
         }
@@ -3127,14 +3133,14 @@ struct KWent_specwindow : public KWent
         int i = 0;
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad specwindow value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad specwindow value.\n");
                 return;
             }
             for (i = 0; KW.spec(i)->word; i++)
                 if (lstring::cieq(v->string(), KW.spec(i)->word))
                     break;
             if (!KW.spec(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad specwindow keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad specwindow keyword.\n");
                 return;
             }
         }
@@ -3215,14 +3221,14 @@ struct KWent_units : public KWent
         int i = 0;
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad units value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad units value.\n");
                 return;
             }
             for (i = 0; KW.units(i)->word; i++)
                 if (lstring::cieq(v->string(), KW.units(i)->word))
                     break;
             if (!KW.units(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad units keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad units keyword.\n");
                 return;
             }
             if (i == 1)
@@ -3667,7 +3673,7 @@ struct KWent_unixcom : public KWent
             if (s)
                 CP.Rehash(s, !CP.GetFlag(CP_NOCC));
             else
-                GRpkgIf()->ErrPrintf(ET_WARN, "no PATH in environment.\n");
+                GRpkg::self()->ErrPrintf(ET_WARN, "no PATH in environment.\n");
         }
         else
             Cmds.CcSetup();
@@ -3810,7 +3816,7 @@ namespace {
             for (variable *tv = OP.curPlot()->environment(); tv;
                     tv = tv->next()) {
                 if (lstring::cieq(tv->name(), name)) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
             "can't set %s, it is in the current plot environment.\n", name);
                     return (true);
                 }
@@ -5214,14 +5220,14 @@ struct KWent_method : public KWent
         int i = 0;
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad method value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad method value.\n");
                 return;
             }
             for (i = 0; KW.method(i)->word; i++)
                 if (lstring::cieq(v->string(), KW.method(i)->word))
                     break;
             if (!KW.method(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad method keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad method keyword.\n");
                 return;
             }
         }
@@ -5256,14 +5262,14 @@ struct KWent_optmerge : public KWent
         int i = 0;
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad optmerge value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad optmerge value.\n");
                 return;
             }
             for (i = 0; KW.optmerge(i)->word; i++)
                 if (lstring::cieq(v->string(), KW.optmerge(i)->word))
                     break;
             if (!KW.optmerge(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad optmerge keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad optmerge keyword.\n");
                 return;
             }
         }
@@ -5340,14 +5346,14 @@ struct KWent_steptype : public KWent
         int i = 0;
         if (isset) {
             if (v->type() != VTYP_STRING) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad steptype value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad steptype value.\n");
                 return;
             }
             for (i = 0; KW.step(i)->word; i++)
                 if (lstring::cieq(v->string(), KW.step(i)->word))
                     break;
             if (!KW.step(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad steptype keyword.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad steptype keyword.\n");
                 return;
             }
         }

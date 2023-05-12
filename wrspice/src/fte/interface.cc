@@ -295,7 +295,8 @@ IFparm::p_to_v(const IFvalue *pv, int type)
         err = true;
 
     if (err) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't handle data type %d.\n", type);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "can't handle data type %d.\n",
+            type);
         delete vv;
         return (0);
     }
@@ -479,8 +480,8 @@ IFspecial::evaluate(const char *string, sCKT *ckt, IFdata *data, int list_ind)
         }
     }
     if (sp_error) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "evaluation error for %s %s.\n", string,
-            Sp.ErrorShort(sp_error));
+        GRpkg::self()->ErrPrintf(ET_WARN, "evaluation error for %s %s.\n",
+            string, Sp.ErrorShort(sp_error));
         return (sp_error);
     }
 

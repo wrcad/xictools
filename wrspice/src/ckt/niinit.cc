@@ -139,7 +139,7 @@ sCKT::NIreinit()
     int size = CKTmatrix->spGetSize(1);
     int nsize = CKTnodeTab.numNodes() - 1;
     if (size < nsize) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "node table and matrix sizes are inconsistent (%d, %d).\n"
             "Something is wrong with the circuit topology.\n", nsize, size);
         return (E_BADMATRIX);

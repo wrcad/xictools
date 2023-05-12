@@ -218,12 +218,12 @@ IFsimulator::CheckSpace()
 #endif
     if (cur > rld.rlim_max * 0.9) {
         if (cur > lastmax)
-            GRpkgIf()->ErrPrintf(ET_WARN, msg1, cur, (long)rld.rlim_max);
+            GRpkg::self()->ErrPrintf(ET_WARN, msg1, cur, (long)rld.rlim_max);
         lastmax = cur;
     }
     else if (cur > rld.rlim_cur * 0.9) {
         if (cur > lastmax)
-            GRpkgIf()->ErrPrintf(ET_WARN, msg1, cur, (long)rld.rlim_cur);
+            GRpkg::self()->ErrPrintf(ET_WARN, msg1, cur, (long)rld.rlim_cur);
         lastmax = cur;
     }
 #else
@@ -239,7 +239,7 @@ IFsimulator::CheckSpace()
 #endif
     if (cur > lim * 0.9) {
         if (cur > lastmax)
-            GRpkgIf()->ErrPrintf(ET_WARN, msg1, (long)hi, (long)lim);
+            GRpkg::self()->ErrPrintf(ET_WARN, msg1, (long)hi, (long)lim);
         lastmax = cur;
     }
 #endif
@@ -343,7 +343,7 @@ IFsimulator::ShowOption(wordlist *wl, char **retstr)
         delete plstr;
     }
     else
-        GRpkgIf()->ErrPrintf(ET_WARN, "no active circuit available.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "no active circuit available.\n");
 }
 // End of IFsimulator functions.
 
@@ -702,7 +702,7 @@ ResPrint::print_stat(const char *name, sLstr *plstr)
         return;
     if (name) {
         if (!v) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "unknown stat keyword %s.\n",
+            GRpkg::self()->ErrPrintf(ET_WARN, "unknown stat keyword %s.\n",
                 name);
         }
         else {
@@ -767,7 +767,7 @@ ResPrint::print_opt(const char *name, sLstr *plstr)
         variable::destroy(v);
     }
     else if (name)
-        GRpkgIf()->ErrPrintf(ET_WARN, "no such option %s.\n", name);
+        GRpkg::self()->ErrPrintf(ET_WARN, "no such option %s.\n", name);
 }
 
 

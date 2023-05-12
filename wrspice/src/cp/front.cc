@@ -269,7 +269,7 @@ struct ControlStack
     void reset_control()
         {
             if (cs_cend[cs_stackp] && cs_cend[cs_stackp]->parent())
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "EOF before block terminated.\n");
             for (cs_stackp = 0; cs_stackp < CS_SIZE; cs_stackp++) {
                 if (!cs_control[cs_stackp])
@@ -284,10 +284,10 @@ struct ControlStack
     void push_control()
         {
             if (CP.GetFlag(CP_DEBUG))
-                GRpkgIf()->ErrPrintf(ET_MSGS, "push: stackp: %d -> %d\n",
+                GRpkg::self()->ErrPrintf(ET_MSGS, "push: stackp: %d -> %d\n",
                     cs_stackp, cs_stackp + 1);
             if (cs_stackp > CS_SIZE - 2) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "stack overflow -- max depth = %d.\n", CS_SIZE);
                 cs_stackp = 0;
             }
@@ -301,11 +301,14 @@ struct ControlStack
 
     void pop_control()
         {
-            if (CP.GetFlag(CP_DEBUG))
-                GRpkgIf()->ErrPrintf(ET_MSGS, "pop: stackp: %d -> %d\n",
+            if (CP.GetFlag(CP_DEBUG)) {
+                GRpkg::self()->ErrPrintf(ET_MSGS, "pop: stackp: %d -> %d\n",
                     cs_stackp, cs_stackp - 1);
-            if (cs_stackp < 1)
-                GRpkgIf()->ErrPrintf(ET_INTERR, "PopControl: stack empty.\n");
+            }
+            if (cs_stackp < 1) {
+                GRpkg::self()->ErrPrintf(ET_INTERR,
+                    "PopControl: stack empty.\n");
+            }
             else
                 cs_stackp--;
         }
@@ -349,7 +352,8 @@ CommandTab::com_codeblock(wordlist *wl)
             if (*wl->wl_word != '-')
                 continue;
             if (!wl->wl_word[1]) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "syntax, missing options.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "syntax, missing options.\n");
                 wordlist::destroy(wl);
                 return;
             }
@@ -370,7 +374,7 @@ CommandTab::com_codeblock(wordlist *wl)
                 else if (*s == 'c')
                     listblks = true;
                 else {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "unknown option character %c.\n", *s);
                     wordlist::destroy(wl);
                     return;
@@ -435,7 +439,7 @@ CommandTab::com_codeblock(wordlist *wl)
     if (print && !add) {
         b = (block*)sHtab::get(CS.block_tab(), fname);
         if (!b) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "codeblock %s not found.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "codeblock %s not found.\n",
                 fname);
             return;
         }
@@ -453,14 +457,15 @@ CommandTab::com_codeblock(wordlist *wl)
         CS.set_no_exec(false);
         if (success)
             CS.add_block(fname);
-        else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s not found, no block added.\n",
-                fname);
+        else {
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "%s not found, no block added.\n", fname);
+        }
     }
     if (print && add) {
         b = (block*)sHtab::get(CS.block_tab(), fname);
         if (!b) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "codeblock %s not found.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "codeblock %s not found.\n",
                 fname);
             return;
         }
@@ -518,7 +523,7 @@ CshPar::ExecBlock(const char *name)
         if (CS.block_tab())
             b = (block*)sHtab::get(CS.block_tab(), name);
         if (!b) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "named block %s not found.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "named block %s not found.\n",
                 name);
             CS.pop_stack();
             return;
@@ -622,7 +627,7 @@ CshPar::EvLoop(const char *string)
         // Just a check...
         for (wordlist *ww = wlist; ww; ww = ww->wl_next) {
             if (!ww->wl_word) {
-                GRpkgIf()->ErrPrintf(ET_INTERR,
+                GRpkg::self()->ErrPrintf(ET_INTERR,
                     "EvLoop: null word pointer.\n");
                 continue;
             }
@@ -748,22 +753,23 @@ CshPar::SetAltPrompt()
 wordlist *
 CshPar::GetCommand(const char *string)
 {
-    if (cp_flags[CP_DEBUG])
-        GRpkgIf()->ErrPrintf(ET_MSGS, "calling GetCommand: (%s)\n",
+    if (cp_flags[CP_DEBUG]) {
+        GRpkg::self()->ErrPrintf(ET_MSGS, "calling GetCommand: (%s)\n",
             string ? string : "stdin");
+    }
     SetAltPrompt();
     cp_flags[CP_CWAIT] = true;
     wordlist *wlist = Parse(string);
     cp_flags[CP_CWAIT] = false;
     if (cp_flags[CP_DEBUG]) {
-        GRpkgIf()->ErrPrintf(ET_MSGS, "GetCommand: ");
+        GRpkg::self()->ErrPrintf(ET_MSGS, "GetCommand: ");
         for (wordlist *wl = wlist; wl; wl = wl->wl_next) {
             char *s = lstring::copy(wl->wl_word);
             Strip(s);
-            GRpkgIf()->ErrPrintf(ET_MSGS, "%s ", s);
+            GRpkg::self()->ErrPrintf(ET_MSGS, "%s ", s);
             delete s;
         }
-        GRpkgIf()->ErrPrintf(ET_MSGS, "\n");
+        GRpkg::self()->ErrPrintf(ET_MSGS, "\n");
     }
     return (wlist);
 }
@@ -777,14 +783,14 @@ void
 CshPar::DoCommand(wordlist *wlist)
 {
     if (cp_flags[CP_DEBUG]) {
-        GRpkgIf()->ErrPrintf(ET_MSGS, "DoCommand: ");
+        GRpkg::self()->ErrPrintf(ET_MSGS, "DoCommand: ");
         for (wordlist *wl = wlist; wl; wl = wl->wl_next) {
             char *s = lstring::copy(wl->wl_word);
             Strip(s);
-            GRpkgIf()->ErrPrintf(ET_MSGS, "%s ", s);
+            GRpkg::self()->ErrPrintf(ET_MSGS, "%s ", s);
             delete [] s;
         }
-        GRpkgIf()->ErrPrintf(ET_MSGS, "\n");
+        GRpkg::self()->ErrPrintf(ET_MSGS, "\n");
     }
 
     // Do periodic sorts of things.
@@ -876,7 +882,7 @@ CshPar::DoCommand(wordlist *wlist)
                 if (!command) {
                     if (!Sp.ImplicitCommand(wlist) &&
                             !(cp_flags[CP_DOUNIXCOM] && UnixCom(wlist)))
-                        GRpkgIf()->ErrPrintf(ET_MSG,
+                        GRpkg::self()->ErrPrintf(ET_MSG,
                             "%s: no such command available in %s.\n", 
                             wlist->wl_word, cp_program);
                 }
@@ -893,13 +899,15 @@ CshPar::DoCommand(wordlist *wlist)
                         if (nargs < command->co_minargs) {
                             if (command->co_argfn)
                                 (*command->co_argfn) (wlist->wl_next, command);
-                            else
-                                GRpkgIf()->ErrPrintf(ET_MSG,
+                            else {
+                                GRpkg::self()->ErrPrintf(ET_MSG,
                                     "%s: too few args.\n", wlist->wl_word);
+                            }
                         }
-                        else if (nargs > command->co_maxargs)
-                            GRpkgIf()->ErrPrintf(ET_MSG,
+                        else if (nargs > command->co_maxargs) {
+                            GRpkg::self()->ErrPrintf(ET_MSG,
                                 "%s: too many args.\n", wlist->wl_word);
+                        }
                         else
                             (*command->co_func) (wlist->wl_next);
                     }
@@ -964,7 +972,7 @@ ControlStack::add_block(const char *name)
     if (!name || !*name)
         return;
     if (!cs_control[cs_stackp+1]) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "block is empty, not added.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "block is empty, not added.\n");
         return;
     }
 
@@ -1020,7 +1028,7 @@ sControl::set_block(wordlist *wl)
         cur->co_type = CO_WHILE;
         cur->co_cond = wordlist::copy(wl->wl_next);
         if (!cur->co_cond) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "missing while condition.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "missing while condition.\n");
         }
         cur = cur->newblock();
     }
@@ -1028,7 +1036,7 @@ sControl::set_block(wordlist *wl)
         cur->co_type = CO_DOWHILE;
         cur->co_cond = wordlist::copy(wl->wl_next);
         if (!cur->co_cond) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "missing dowhile condition.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "missing dowhile condition.\n");
         }
         cur = cur->newblock();
     }
@@ -1044,14 +1052,14 @@ sControl::set_block(wordlist *wl)
             double *dd = SPnum.parse(&s, false);
             if (dd) {
                 if (*dd < 0) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "can't repeat a negative number of times.\n");
                     *dd = 0.0;
                 }
                 cur->co_numtimes = (int) *dd;
             }
             else
-                GRpkgIf()->ErrPrintf(ET_ERROR, 
+                GRpkg::self()->ErrPrintf(ET_ERROR, 
                     "bad repeat argument %s.\n", s ? s : "");
             if (ww)
                 wordlist::destroy(ww);
@@ -1066,7 +1074,7 @@ sControl::set_block(wordlist *wl)
         cur->co_type = CO_IF;
         cur->co_cond = wordlist::copy(wl->wl_next);
         if (!cur->co_cond)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "missing if condition.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "missing if condition.\n");
         cur = cur->newblock();
     }
     else if (lstring::eq(wl->wl_word, "foreach")) {
@@ -1078,7 +1086,7 @@ sControl::set_block(wordlist *wl)
             ww = ww->wl_next;
         }
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "missing foreach variable.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "missing foreach variable.\n");
         ww = wordlist::copy(ww);
         CP.DoGlob(&ww);
         cur->co_text = ww;
@@ -1089,11 +1097,11 @@ sControl::set_block(wordlist *wl)
         if (wl->wl_next) {
             cur->co_text = wordlist::copy(wl->wl_next);
             if (wl->wl_next->wl_next)
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "ignored extra junk after label.\n");
         }
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "missing label.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "missing label.\n");
     }
     else if (lstring::eq(wl->wl_word, "goto")) {
         // Incidentally, this won't work if the values 1 and
@@ -1103,21 +1111,23 @@ sControl::set_block(wordlist *wl)
         cur->co_type = CO_GOTO;
         if (wl->wl_next) {
             cur->co_text = wordlist::copy(wl->wl_next);
-            if (wl->wl_next->wl_next)
-                GRpkgIf()->ErrPrintf(ET_WARN,
+            if (wl->wl_next->wl_next) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "ignored extra junk after goto.\n");
+            }
         }
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "missing label.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "missing label.\n");
     }
     else if (lstring::eq(wl->wl_word, "continue")) {
         cur->co_type = CO_CONTINUE;
         if (wl->wl_next) {
             cur->co_numtimes = lstring::scannum(wl->wl_next->wl_word);
-            if (wl->wl_next->wl_next)
-                GRpkgIf()->ErrPrintf(ET_WARN,
+            if (wl->wl_next->wl_next) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "ignored extra junk after continue %d.\n", 
                     cur->co_numtimes);
+            }
         }
         else
             cur->co_numtimes = 1;
@@ -1126,10 +1136,11 @@ sControl::set_block(wordlist *wl)
         cur->co_type = CO_BREAK;
         if (wl->wl_next) {
             cur->co_numtimes = lstring::scannum(wl->wl_next->wl_word);
-            if (wl->wl_next->wl_next)
-                GRpkgIf()->ErrPrintf(ET_WARN,
+            if (wl->wl_next->wl_next) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "ignored extra junk after break %d.\n", 
                     cur->co_numtimes);
+            }
         }
         else
             cur->co_numtimes = 1;
@@ -1137,7 +1148,7 @@ sControl::set_block(wordlist *wl)
     else if (lstring::eq(wl->wl_word, "end")) {
         // Throw away this thing
         if (!cur->co_parent) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "no block to end.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "no block to end.\n");
             cur->co_type = CO_UNFILLED;
         }
         else if (cur->co_prev) {
@@ -1156,7 +1167,7 @@ sControl::set_block(wordlist *wl)
     else if (lstring::eq(wl->wl_word, "else")) {
         if (!cur->co_parent ||
                 (cur->co_parent->co_type != CO_IF)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "misplaced else.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "misplaced else.\n");
             cur->co_type = CO_UNFILLED;
         }
         else {
@@ -1194,19 +1205,19 @@ sControl::eval_block(sControl *x)
                 break;
 
             case BROKEN:
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "break not in loop or too many break levels given.\n");
                 break;
 
             case CONTINUED:
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                 "continue not in loop or too many continue levels given.\n");
                 break;
 
             case LABEL:
                 x = sControl::find_label(CS.cur_control(), ri.label());
                 if (!x)
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "label %s not found.\n",
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "label %s not found.\n",
                         ri.label());
                 ri.set_label(0);
                 break;
@@ -1534,7 +1545,7 @@ sControl::doblock(retinfo *info)
             info->set_type(BROKEN);
             return;
         }
-        GRpkgIf()->ErrPrintf(ET_WARN, "break %d a no-op.\n", co_numtimes);
+        GRpkg::self()->ErrPrintf(ET_WARN, "break %d a no-op.\n", co_numtimes);
         break;
 
     case CO_CONTINUE:
@@ -1543,7 +1554,7 @@ sControl::doblock(retinfo *info)
             info->set_type(CONTINUED);
             return;
         }
-        GRpkgIf()->ErrPrintf(ET_WARN, "continue %d a no-op.\n",
+        GRpkg::self()->ErrPrintf(ET_WARN, "continue %d a no-op.\n",
             co_numtimes);
         break;
 
@@ -1575,13 +1586,16 @@ sControl::doblock(retinfo *info)
             const char *wp = str;
             pnode *nn = Sp.GetPnode(&wp, true);
             if (!nn) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n", str);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "evaluation failed: %s.\n", str);
                 return;
             }
             sDataVec *t = Sp.Evaluate(nn);
             delete nn;
-            if (!t)
-                GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n", str);
+            if (!t) {
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "evaluation failed: %s.\n", str);
+            }
             else
                 CP.SetReturnVal(t->realval(0));
         }
@@ -1589,11 +1603,11 @@ sControl::doblock(retinfo *info)
 
     case CO_UNFILLED:
         // There was probably an error here...
-        GRpkgIf()->ErrPrintf(ET_WARN, "ignoring previous error.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "ignoring previous error.\n");
         break;
 
     default:
-        GRpkgIf()->ErrPrintf(ET_INTERR, "doblock: bad block type %d.\n", 
+        GRpkg::self()->ErrPrintf(ET_INTERR, "doblock: bad block type %d.\n", 
             co_type);
     }
     info->set_type(NORMAL);

@@ -389,7 +389,7 @@ IFparseTree::eval(double *result, double *vals, double *dvs, int *docomma)
                 vals, 0);
             if (err != OK) {
                 char *nstr = pt_tree->p_left->get_string(96);
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "Argument evaluation failed\n  node:  %s\n%s\n",
                     nstr, Errs()->get_error());
                 delete [] nstr;
@@ -399,7 +399,7 @@ IFparseTree::eval(double *result, double *vals, double *dvs, int *docomma)
                 vals, 0);
             if (err != OK) {
                 char *nstr = pt_tree->p_right->get_string(96);
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "Argument evaluation failed\n  node:  %s\n%s\n",
                     nstr, Errs()->get_error());
                 delete [] nstr;
@@ -412,7 +412,7 @@ IFparseTree::eval(double *result, double *vals, double *dvs, int *docomma)
             int err = (pt_tree->*pt_tree->p_evfunc)(result, vals, 0);
             if (err != OK) {
                 char *nstr = pt_tree->get_string(96);
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "expression evaluation failed\n  node:  %s\n%s\n",
                     nstr, Errs()->get_error());
                 delete [] nstr;
@@ -435,7 +435,7 @@ IFparseTree::eval(double *result, double *vals, double *dvs, int *docomma)
                         lstr.add_c(' ');
                     }
                 }
-                GRpkgIf()->ErrPrintf(ET_WARN, "%s\n", lstr.string());
+                GRpkg::self()->ErrPrintf(ET_WARN, "%s\n", lstr.string());
             }
         }
         if (dvs) {
@@ -447,7 +447,7 @@ IFparseTree::eval(double *result, double *vals, double *dvs, int *docomma)
                     vals, 0);
                 if (err != OK) {
                     char *nstr = pt_tree->get_string(96);
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                 "derivative evaluation for %s failed\n  node:  %s\n%s\n",
                         nstr, Errs()->get_error());
                     delete [] nstr;
@@ -461,7 +461,7 @@ IFparseTree::eval(double *result, double *vals, double *dvs, int *docomma)
                     char *nstr = pt_tree->get_string(96);
                     lstr.add(nstr);
                     delete [] nstr;
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "%s\n", lstr.string());
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "%s\n", lstr.string());
                 }
             }
         }

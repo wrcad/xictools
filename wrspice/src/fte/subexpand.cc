@@ -341,7 +341,7 @@ sFtCirc::expandSubckts()
     // Now check to see if there are still subckt instances undefined...
     for (sLine *c = ll; c; c = c->next()) {
         if (SPcx.kwMatchSubinvoke(c->line())) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "%s\nSubcircuit expansion, unknown subcircuit.\n", c->line());
             sLine::destroy(ll);
             return (false);
@@ -425,7 +425,7 @@ sScGlobal::cache_setup(const char *cache_name, sParamTab **pptab, cUdf **pudf)
     if (cache_name) {
         sCblk *blk = SPcache.get(cache_name);
         if (!blk) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't find cache block named %s.\n", cache_name);
             return (false);
         }
@@ -498,7 +498,7 @@ sScGlobal::expand_and_replace(sLine *deck, const sParamTab *s_ptab,
         char *subname, *instname, *args, *params;
         parse_call(c->line(), &args, &subname, &instname, &params);
         if (!subname || !instname) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "%s\n%Subcircuit expansion, syntax error.\n", c->line());
             sLine::destroy(deck);
             deck = 0;
@@ -533,7 +533,7 @@ sScGlobal::expand_and_replace(sLine *deck, const sParamTab *s_ptab,
                     }
                 }
                 if (!found) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "%s\nSubcircuit expansion, unknown subcircuit %s.\n", 
                         c->line(), subname);
                     wordlist *w = new wordlist(subname, 0);
@@ -542,7 +542,7 @@ sScGlobal::expand_and_replace(sLine *deck, const sParamTab *s_ptab,
                 }
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "%s\nSubcircuit expansion, empty subcircuit %s ignored.\n",
                     c->line(), sss->su_name);
             }
@@ -659,7 +659,7 @@ sScGlobal::expand_and_replace(sLine *deck, const sParamTab *s_ptab,
         }
 
         if (sg_stack_ptr == SUB_STK_DEPTH - 1) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "%s\nSubcircuit expansion, max call depth %d exceeded.\n",
                 c->line(), SUB_STK_DEPTH);
             sLine::destroy(deck);
@@ -756,16 +756,16 @@ sScGlobal::extract_cache_block(sLine **deckp, char **namep, sLine **blkp)
         if (lstring::cimatch(CACHE_KW, li->line())) {
             if (bname) {
                 // error: can't nest cache blocks.
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s\nMissing %s line.\n",
-                    li->line(), ENDCACHE_KW);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "%s\nMissing %s line.\n", li->line(), ENDCACHE_KW);
                 delete [] bname;
                 sLine::destroy(b0);
                 return (false);
             }
             if (found) {
                 // error: for now, there is one block max
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s\nExtra %s line.\n",
-                    li->line(), CACHE_KW);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "%s\nExtra %s line.\n", li->line(), CACHE_KW);
                 delete [] bname;
                 sLine::destroy(b0);
                 return (false);
@@ -776,8 +776,8 @@ sScGlobal::extract_cache_block(sLine **deckp, char **namep, sLine **blkp)
             bname = IP.getTok(&t, true);
             if (!bname) {
                 // error; name missing
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s\nMissing name in %s line.\n",
-                    li->line(), CACHE_KW);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "%s\nMissing name in %s line.\n", li->line(), CACHE_KW);
                 delete [] bname;
                 sLine::destroy(b0);
                 return (false);
@@ -811,7 +811,7 @@ sScGlobal::extract_cache_block(sLine **deckp, char **namep, sLine **blkp)
     }
     if (bname) {
         // no block end found
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Missing %s line.\n", ENDCACHE_KW);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "Missing %s line.\n", ENDCACHE_KW);
         delete [] bname;
         sLine::destroy(b0);
         return (false);
@@ -828,7 +828,7 @@ sScGlobal::extract_subckts(sLine **deckp)
         if (SPcx.kwMatchSubend(last->line())) {
             const char *s = last->line();
             char *t = IP.getTok(&s, true);
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "%s\nSubcircuit expansion, misplaced %s card.\n",
                 last->line(), t);
             delete [] t;
@@ -840,14 +840,14 @@ sScGlobal::extract_subckts(sLine **deckp)
             if (!*sname) {
                 sname = last->line();
                 char *t = IP.getTok(&sname, true);
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "%s\nSubcircuit expansion, no name given for %s.\n",
                     last->line(), t);
                 delete [] t;
                 return (false);
             }
             if (!last->next()) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "%s\nSubcircuit exapnsion, missing %s or .eom card.\n",
                      last->line(), SPcx.sbend());
                 return (false);
@@ -867,7 +867,7 @@ sScGlobal::extract_subckts(sLine **deckp)
                     nest++;
             }
             if (!c) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "%s\nSubcircuit exapnsion, missing %s or .eom card.\n",
                      last->line(), SPcx.sbend());
                 return (false);
@@ -1136,7 +1136,7 @@ sScGlobal::param_expand(sLine *deck, const sParamTab *ptab)
     // must have a fixed number of nodes.
 
     if (devs > 0 && min_nodes != max_nodes) {
-        GRpkgIf()->ErrPrintf(ET_INTERR,
+        GRpkg::self()->ErrPrintf(ET_INTERR,
             "device key %c has device references and optional nodes.\n", ch);
         max_nodes = min_nodes;
     }
@@ -1177,7 +1177,7 @@ sScGlobal::param_expand(sLine *deck, const sParamTab *ptab)
     // node list ends by recognizing the model name.
 
     if (min_nodes != max_nodes && !has_mod) {
-        GRpkgIf()->ErrPrintf(ET_INTERR,
+        GRpkg::self()->ErrPrintf(ET_INTERR,
             "device key %c has optional nodes and no model.\n", ch);
         // Optional nodes won't be translated.
         max_nodes = min_nodes;
@@ -1559,7 +1559,7 @@ sScGlobal::translate(sLine *deck, const char *formal, const char *actual,
         // must have a fixed number of nodes.
 
         if (devs > 0 && min_nodes != max_nodes) {
-            GRpkgIf()->ErrPrintf(ET_INTERR,
+            GRpkg::self()->ErrPrintf(ET_INTERR,
                 "device key %c has device references and optional nodes.\n",
                 ch);
             max_nodes = min_nodes;
@@ -1624,7 +1624,7 @@ sScGlobal::translate(sLine *deck, const char *formal, const char *actual,
         // node list ends by recognizing the model name.
 
         if (min_nodes != max_nodes && !has_mod) {
-            GRpkgIf()->ErrPrintf(ET_INTERR,
+            GRpkg::self()->ErrPrintf(ET_INTERR,
                 "device key %c has optional nodes and no model.\n", ch);
             // Optional nodes won't be translated.
             max_nodes = min_nodes;
@@ -1765,7 +1765,7 @@ sScGlobal::translate(sLine *deck, const char *formal, const char *actual,
             // We never found the model.  This is fatal with optional
             // nodes.
 
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "%s\nSubcircuit expansion, unknown model.\n", c->line());
 
             delete [] table;
@@ -1876,8 +1876,8 @@ sScGlobal::cache_add(const char *name, sLine **linep, const sParamTab *ptab,
     for (sLine *l = lm0; l; l = l->next()) {
         IP.parseMod(l);
         if (l->error()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s\nSubcircuit expansion, %s.\n",
-                l->line(), l->error());
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "%s\nSubcircuit expansion, %s.\n", l->line(), l->error());
             l->clear_error();
         }
     }
@@ -2154,13 +2154,13 @@ sScGlobal::settrans(const char *formal, const char *actual, const char *instr)
         table[i].set_neww(IP.getTok(&actual, true));
 
         if (table[i].neww() && !table[i].oldw()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "%s\nSubcircuit expansion, too many arguments.\n", instr);
             delete [] table;
             return (0);    // Too few formal / too many actual
         }
         else if (table[i].oldw() && !table[i].neww()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "%s\nSubcircuit expansion, too few arguments.\n", instr);
             delete [] table;
             return (0);    // Too few actual / too many formal

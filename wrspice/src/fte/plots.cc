@@ -118,17 +118,18 @@ CommandTab::com_setdim(wordlist *wl)
 
     sPlot *p = OP.curPlot();
     if (!p) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no current plot!");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no current plot!");
         return;
     }
 
     if (!p->scale()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "current plot has no scale.");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "current plot has no scale.");
         return;
     }
     int len = p->scale()->length();
     if (len <= 1) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "current plot has no dimensionality.");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "current plot has no dimensionality.");
         return;
     }
 
@@ -153,7 +154,7 @@ CommandTab::com_setdim(wordlist *wl)
     for (wordlist *w = wl; w; w = w->wl_next) {
         int n;
         if (sscanf(w->wl_word, "%d", &n) < 1 || n < 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "bad input, non-negative integer expected.");
             return;
         }
@@ -168,7 +169,7 @@ CommandTab::com_setdim(wordlist *wl)
                 return;
             }
             if (n > MAXDIMS) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "too many dimensions given, maximum %d.", MAXDIMS);
                 return;
             }
@@ -176,7 +177,7 @@ CommandTab::com_setdim(wordlist *wl)
         }
         else {
             if (n < 2) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "bad dimension, must be two or larger.");
                 return;
             }
@@ -185,11 +186,11 @@ CommandTab::com_setdim(wordlist *wl)
         cnt++;
     }
     if (cnt < numdims) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "too few values given.");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "too few values given.");
         return;
     }
     else if (cnt > numdims)
-        GRpkgIf()->ErrPrintf(ET_WARN, "extra values given, ignored.");
+        GRpkg::self()->ErrPrintf(ET_WARN, "extra values given, ignored.");
 
     int n = 1;
     for (int i = 0; i < numdims - 1; i++)
@@ -207,19 +208,19 @@ void
 CommandTab::com_combine(wordlist*)
 {
     if (!OP.plotList()) {
-        GRpkgIf()->ErrPrintf(ET_INTERR, "no plots in list!\n");
+        GRpkg::self()->ErrPrintf(ET_INTERR, "no plots in list!\n");
         return;
     }
     if (OP.plotList() == OP.constants()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't combine constants plot.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "can't combine constants plot.\n");
         return;
     }
     if (!OP.plotList()->next_plot()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no plot to combine.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no plot to combine.\n");
         return;
     }
     if (OP.plotList()->next_plot() == OP.constants()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't combine constants plot.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "can't combine constants plot.\n");
         return;
     }
 
@@ -228,12 +229,12 @@ CommandTab::com_combine(wordlist*)
         OP.plotList()->destroy();
     else {
         if (*errstr) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, 
+            GRpkg::self()->ErrPrintf(ET_ERROR, 
                 "%s,\nincompatible plots, can't combine.\n", errstr);
             delete [] errstr;
         }
         else {
-            GRpkgIf()->ErrPrintf(ET_ERROR, 
+            GRpkg::self()->ErrPrintf(ET_ERROR, 
                 "incompatible plots, can't combine.\n");
         }
     }
@@ -257,7 +258,7 @@ CommandTab::com_destroy(wordlist *wl)
             if (pl)
                 OP.removePlot(pl);
             else
-                GRpkgIf()->ErrPrintf(ET_ERROR, "no such plot %s.\n",
+                GRpkg::self()->ErrPrintf(ET_ERROR, "no such plot %s.\n",
                     wl->wl_word);
             wl = wl->wl_next;
         }
@@ -408,7 +409,7 @@ IFoutput::setCurPlot(const char *name)
     else {
         sPlot *pl = findPlot(name);
         if (!pl) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "can't find plot named %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "can't find plot named %s.\n",
                 name);
             return;
         }
@@ -498,7 +499,7 @@ IFoutput::removePlot(const char *name, bool all_for_cir)
                 pl->destroy();
         }
         if (active)
-            GRpkgIf()->ErrPrintf(ET_WARN, "Active plot(s) not deleted.\n");
+            GRpkg::self()->ErrPrintf(ET_WARN, "Active plot(s) not deleted.\n");
         setCurPlot(o_constants);
     }
     else  {
@@ -507,7 +508,7 @@ IFoutput::removePlot(const char *name, bool all_for_cir)
             for (sPlot *pl = o_plot_list; pl; pl = pl->next_plot()) {
                 if (lstring::eq(pl->type_name(), name)) {
                     if (pl == o_constants) {
-                        GRpkgIf()->ErrPrintf(ET_WARN,
+                        GRpkg::self()->ErrPrintf(ET_WARN,
                             "Constants plot not deleted.\n");
                         return;
                     }
@@ -528,7 +529,7 @@ IFoutput::removePlot(const char *name, bool all_for_cir)
                     }
                 }
                 if (active) {
-                    GRpkgIf()->ErrPrintf(ET_WARN,
+                    GRpkg::self()->ErrPrintf(ET_WARN,
                         "Active plot(s) not deleted.\n");
                 }
                 delete [] cname;
@@ -542,10 +543,14 @@ IFoutput::removePlot(const char *name, bool all_for_cir)
             }
             if (pl && !pl->active() && pl != o_constants)
                 pl->destroy();
-            else if (pl && pl->active())
-                GRpkgIf()->ErrPrintf(ET_WARN, "Active plot not deleted.\n");
-            else if (pl == o_constants)
-                GRpkgIf()->ErrPrintf(ET_WARN, "Constants plot not deleted.\n");
+            else if (pl && pl->active()) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "Active plot not deleted.\n");
+            }
+            else if (pl == o_constants) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "Constants plot not deleted.\n");
+            }
         }
     }
     ToolBar()->UpdatePlots(1);
@@ -556,12 +561,12 @@ void
 IFoutput::removePlot(sPlot *plot)
 {
     if (plot->active()) {
-        GRpkgIf()->ErrPrintf(ET_MSG,
+        GRpkg::self()->ErrPrintf(ET_MSG,
             "Can't delete active plot, reset analysis first.\n");
         return;
     }
     if (plot == o_constants) {
-        GRpkgIf()->ErrPrintf(ET_MSG, "Can't delete constants plot.\n");
+        GRpkg::self()->ErrPrintf(ET_MSG, "Can't delete constants plot.\n");
         return;
     }
     plot->destroy();
@@ -642,7 +647,7 @@ IFoutput::loadFile(const char **fnameptr, bool written)
     if (!printfmt && !ncols) {
         FILE *fp = Sp.PathOpen(file, "rb");
         if (!fp) {
-            GRpkgIf()->Perror(file);
+            GRpkg::self()->Perror(file);
             TTY.printf("Warning: no data read.\n");
             return;
         }
@@ -1013,11 +1018,11 @@ sPlot::remove_vec(const char *vname)
     const char *msg = "can't remove %s from %s plot.\n";
     if (lstring::cieq(vname, "all")) {
         if (this == OP.constants()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, msg, vname, "constants");
+            GRpkg::self()->ErrPrintf(ET_ERROR, msg, vname, "constants");
             return;
         }
         if (pl_active) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, msg, vname, "active");
+            GRpkg::self()->ErrPrintf(ET_ERROR, msg, vname, "active");
             return;
         }
 
@@ -1052,11 +1057,11 @@ sPlot::remove_vec(const char *vname)
     if (!v)
         return;
     if (this == OP.constants() && (v->flags() & VF_READONLY)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, msg, vname, "constants");
+        GRpkg::self()->ErrPrintf(ET_ERROR, msg, vname, "constants");
         return;
     }
     if (pl_active) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, msg, vname, "active");
+        GRpkg::self()->ErrPrintf(ET_ERROR, msg, vname, "active");
         return;
     }
     pl_hashtab->remove(vname);
@@ -1289,7 +1294,8 @@ sPlot::destroy()
         return;
 
     if (this == OP.constants()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't destroy the constants plot.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "can't destroy the constants plot.\n");
         return;
     }
     sPlot *pl = OP.plotList();
@@ -1297,7 +1303,7 @@ sPlot::destroy()
         if (pl == this)
             break;
     if (!pl)
-        GRpkgIf()->ErrPrintf(ET_INTERR, "plot_delete: not in list.\n");
+        GRpkg::self()->ErrPrintf(ET_INTERR, "plot_delete: not in list.\n");
 
     delete this;
     ToolBar()->UpdatePlots(0);
@@ -1345,7 +1351,7 @@ sPlot::set_dims(int ndims, const int *dims)
 {
 
     if (!pl_scale) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "plot has no scale.");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "plot has no scale.");
         return (false);
     }
     int len = pl_scale->length();
@@ -1354,7 +1360,7 @@ sPlot::set_dims(int ndims, const int *dims)
     for (int i = 1; i < ndims; i++)
         d *= dims[i-1];
     if (len % d) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "dimensions are not compatible with point count.");
         return (false);
     }

@@ -101,8 +101,8 @@ CommandTab::com_xgraph(wordlist *wl)
 void
 CommandTab::com_plot(wordlist *wl)
 {
-    if (!GRpkgIf()->CurDev() || GRpkgIf()->CurDev()->devtype == GRnodev ||
-            GRpkgIf()->CurDev()->devtype == GRhardcopy) {
+    if (!GRpkg::self()->CurDev() || GRpkg::self()->CurDev()->devtype == GRnodev ||
+            GRpkg::self()->CurDev()->devtype == GRhardcopy) {
         // Do an ascii plot.
         GP.Plot(wl, 0, 0, "lpr", GR_PLOT);
         return;
@@ -151,12 +151,12 @@ CommandTab::com_plotwin(wordlist *wl)
             }
         }
         else {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "plotwin kill: unrecognized input.\n");
         }
     }
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "plotwin: unrecognized input.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "plotwin: unrecognized input.\n");
 }
 
 
@@ -195,7 +195,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
     const char *devname, int)
 {
     if (Sp.GetVar(kw_dontplot, VTYP_BOOL, 0)) {
-        GRpkgIf()->ErrPrintf(ET_MSG,
+        GRpkg::self()->ErrPrintf(ET_MSG,
             "No plotting when \"dontplot\" is set.\n");
         return (true);
     }
@@ -207,7 +207,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
     if (!fromgraph) {
         if (!wl) {
             if (!wlast) {
-                GRpkgIf()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
+                GRpkg::self()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
                 return (false);
             }
             wl = wlast;
@@ -220,7 +220,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
                 if (lstring::eq(ww->wl_word, ".")) {
                     wordlist *wx = Sp.ExtractPlotCmd(0, 0);
                     if (!wx) {
-                        GRpkgIf()->ErrPrintf(ET_ERRORS,
+                        GRpkg::self()->ErrPrintf(ET_ERRORS,
                             "no vectors found for '.'.\n");
                         return (false);
                     }
@@ -244,7 +244,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
                     int n = atoi(ww->wl_word + 2);
                     wordlist *wx = Sp.ExtractPlotCmd(n ? n-1 : n, 0);
                     if (!wx) {
-                        GRpkgIf()->ErrPrintf(ET_ERRORS,
+                        GRpkg::self()->ErrPrintf(ET_ERRORS,
                             "no vectors found for '.@%d'.\n", n);
                         return (false);
                     }
@@ -414,7 +414,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
         pnlist *pl0 = Sp.GetPtree(plotcmd, false);
         wordlist::destroy(plotcmd);
         if (pl0 == 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "Bad syntax: %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "Bad syntax: %s.\n",
                 ls_plot.string());
             return (false);
         }
@@ -431,7 +431,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
             if (!d) {
                 // only from "vs"
                 if (!tl || !dn) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "misplaced vs arg.\n");
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "misplaced vs arg.\n");
                     sDvList::destroy(dl0);
                     return (false);
                 }
@@ -444,7 +444,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
             }
         }
         if (scale && !scale->length()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s: no such vector.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s: no such vector.\n",
                 scale->name());
             sDvList::destroy(dl0);
             return (false);
@@ -457,12 +457,13 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
             sDataVec *d = dl->dl_dvec;
             if (!d) {
                 // only from "vs", can only have one such, already found
-                GRpkgIf()->ErrPrintf(ET_ERROR, "only one \"vs\" allowed.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "only one \"vs\" allowed.\n");
                 sDvList::destroy(dl0);
                 return (false);
             }
             if (!d->length()) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s: no such vector.\n",
+                GRpkg::self()->ErrPrintf(ET_ERROR, "%s: no such vector.\n",
                     d->name());
                 sDvList::destroy(dl0);
                 return (false);
@@ -633,8 +634,8 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
     if (fromgraph)
         graph->gr_update_keyed(fromgraph, true);
 
-    if (GRpkgIf()->CurDev()->devtype == GRfullScreen ||
-            GRpkgIf()->CurDev()->devtype == GRhardcopy) {
+    if (GRpkg::self()->CurDev()->devtype == GRfullScreen ||
+            GRpkg::self()->CurDev()->devtype == GRhardcopy) {
         graph->gr_end();
         graph->halt();
         DestroyGraph(graph->id());
@@ -691,7 +692,7 @@ namespace {
             sPoly po(1);
             if (!po.interp(d->realvec(), newdata, 
                     d->scale()->realvec(), d->length(), newscale, newlen)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "can't interpolate %s.\n", d->name());
                 return(false);
             }

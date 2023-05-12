@@ -131,7 +131,7 @@ sGraph::gr_fixgrid()
 
     if ((gr_datawin.xmin > gr_datawin.xmax)
             || (gr_datawin.ymin > gr_datawin.ymax)) {
-        GRpkgIf()->ErrPrintf(ET_INTERR,
+        GRpkg::self()->ErrPrintf(ET_INTERR,
             "gr_fixgrid: bad limits: %g, %g, %g, %g.\n", 
             gr_datawin.xmin, gr_datawin.xmax, 
             gr_datawin.ymin, gr_datawin.xmax);
@@ -410,7 +410,7 @@ sGraph::drawlingrid(Axis axis, bool dosetup)
     if (axis == x_axis) {
         double delta = gr_xdelta;
         if (delta < 0.0) {
-            GRpkgIf()->ErrPrintf(ET_WARN, msg, 'x');
+            GRpkg::self()->ErrPrintf(ET_WARN, msg, 'x');
             delta = 0.0;
         }
         if (delta == 0.0)
@@ -437,7 +437,7 @@ sGraph::drawlingrid(Axis axis, bool dosetup)
     else {
         double delta = gr_ydelta;
         if (delta < 0.0) {
-            GRpkgIf()->ErrPrintf(ET_WARN, msg, 'y');
+            GRpkg::self()->ErrPrintf(ET_WARN, msg, 'y');
             delta = 0.0;
         }
         if (delta == 0.0)
@@ -1300,7 +1300,7 @@ sGraph::drawsmithgrid()
         kr[k-1] = rr[k];
         k++;
         if (k == CMAX) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "smith grid too complex\n");
+            GRpkg::self()->ErrPrintf(ET_WARN, "smith grid too complex\n");
             break;
         }
     }
@@ -1345,7 +1345,7 @@ sGraph::drawsmithgrid()
             gr_xaxis.circular.center + zheight, &xplace);
     }
     if (mag == 20) {
-        GRpkgIf()->ErrPrintf(ET_INTERR, " smithgrid: screwed up!\n");
+        GRpkg::self()->ErrPrintf(ET_INTERR, " smithgrid: screwed up!\n");
         return;
     }
 

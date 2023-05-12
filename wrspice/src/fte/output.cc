@@ -424,8 +424,8 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
             if (*h->name() != Sp.SpecCatchar())
                 continue;
             if (!parseSpecial(h->name(), depbuf)) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "can't parse '%s': ignored.\n",
-                    h->name());
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "can't parse '%s': ignored.\n", h->name());
                 continue;
             }
             // Now, if there's a dep variable, do we already have it?
@@ -451,7 +451,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                                 run->addSpecialDesc(h->name(), j, false);
                             }
                             else {
-                                GRpkgIf()->ErrPrintf(ET_WARN,
+                                GRpkg::self()->ErrPrintf(ET_WARN,
                                     "can't find '%s': value '%s' ignored.\n", 
                                     depbuf, h->name());
                             }
@@ -581,7 +581,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
         run->setupSegments(segfilebase, segwidth, outd);
 
     if (run->rd() && hasIplot()) {
-        GRpkgIf()->ErrPrintf(ET_WARN,
+        GRpkg::self()->ErrPrintf(ET_WARN,
             "no iplots will be produced in this mode.\n");
     }
 
@@ -623,7 +623,7 @@ IFoutput::appendData(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
             VTvalue vv;
             if (Sp.GetVar("maxdata", VTYP_REAL, &vv, run->circuit()))
                 maxdata = vv.get_real();
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "stored plot data size exceeds the maximum %gKB.\n"
                 "Set \"maxdata\" to alter limit.\n", maxdata);
         }
@@ -679,7 +679,7 @@ IFoutput::insertData(sCKT *ckt, sRunDesc *run, IFvalue *refValue,
         VTvalue vv;
         if (Sp.GetVar("maxdata", VTYP_REAL, &vv, run->circuit()))
             maxdata = vv.get_real();
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "stored plot data size exceeds the maximum %gKB.\n"
             "Set \"maxdata\" to alter limit.\n", maxdata);
     }
@@ -757,7 +757,7 @@ IFoutput::setDims(sRunDesc *run, int *dims, int numDims, bool looping)
                         lstr.add_c(' ');
                     }
                     lstr.add("}\n");
-                    GRpkgIf()->ErrPrintf(ET_MSGS, lstr.string());
+                    GRpkg::self()->ErrPrintf(ET_MSGS, lstr.string());
                 }
 
                 if (run->data(i)->numbasedims() == 0) {
@@ -995,7 +995,7 @@ IFoutput::error(ERRtype flag, const char *fmt, ...)
 
     if (lstr.string() && lstr.string()[strlen(lstr.string()) - 1] != '\n')
         lstr.add_c('\n');
-    GRpkgIf()->ErrPrintf(ET_MSG, lstr.string());
+    GRpkg::self()->ErrPrintf(ET_MSG, lstr.string());
     return (OK);
 }
 // End of IFoutput functions.

@@ -158,14 +158,14 @@ CshPar::UnixCom(wordlist *wl)
     char *name = wl->wl_word;
     char **argv = wordlist::mkvec(wl);
     if (cp_flags[CP_DEBUG]) {
-        GRpkgIf()->ErrPrintf(ET_MSGS, "name: %s, argv: ", name);
+        GRpkg::self()->ErrPrintf(ET_MSGS, "name: %s, argv: ", name);
         for (wordlist *ww = wl; ww; ww = ww->wl_next) {
             char *s = lstring::copy(ww->wl_word);
             Strip(s);
-            GRpkgIf()->ErrPrintf(ET_MSGS, "%s ", s);
+            GRpkg::self()->ErrPrintf(ET_MSGS, "%s ", s);
             delete [] s;
         }
-        GRpkgIf()->ErrPrintf(ET_MSGS, "\n");
+        GRpkg::self()->ErrPrintf(ET_MSGS, "\n");
     }
     bool ret;
     if (lstring::strdirsep(name))

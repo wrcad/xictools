@@ -117,7 +117,7 @@ namespace {
         sGraph *tempgraph = graph->gr_copy();
         GP.PushGraphContext(graph);
         // Context is pushed during New() for ListPixels().
-        GRdraw *w = GRpkgIf()->NewDraw();
+        GRdraw *w = GRpkg::self()->NewDraw();
         GP.PopGraphContext();
         if (!w) {
             GP.DestroyGraph(tempgraph->id());
@@ -126,22 +126,22 @@ namespace {
         w->SetUserData(tempgraph);
         tempgraph->set_dev(w);
         tempgraph->set_fontsize();
-        tempgraph->area().set_height(GRpkgIf()->CurDev()->height);
-        tempgraph->area().set_width(GRpkgIf()->CurDev()->width);
-        tempgraph->area().set_left(GRpkgIf()->CurDev()->xoff);
-        tempgraph->area().set_bottom(GRpkgIf()->CurDev()->yoff);
+        tempgraph->area().set_height(GRpkg::self()->CurDev()->height);
+        tempgraph->area().set_width(GRpkg::self()->CurDev()->width);
+        tempgraph->area().set_left(GRpkg::self()->CurDev()->xoff);
+        tempgraph->area().set_bottom(GRpkg::self()->CurDev()->yoff);
         // accommodate "auto scale"
         if (tempgraph->area().width() == 0) {
             tempgraph->area().set_width(
                 (tempgraph->area().height()*graph->area().width())/
                 graph->area().height());
-            GRpkgIf()->CurDev()->width = tempgraph->area().width();
+            GRpkg::self()->CurDev()->width = tempgraph->area().width();
         }
         else if (tempgraph->area().height() == 0) {
             tempgraph->area().set_height(
                 (tempgraph->area().width()*graph->area().height())/
                 graph->area().width());
-            GRpkgIf()->CurDev()->height = tempgraph->area().height();
+            GRpkg::self()->CurDev()->height = tempgraph->area().height();
         }
         tempgraph->dev()->DefineViewport();
         tempgraph->gr_redraw();
@@ -255,7 +255,7 @@ CommandTab::com_hardcopy(wordlist *wl)
                 fail = true;
             }
             if (fail) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "hardcopy: bad option syntax.\n");
                 return;
             }
@@ -270,14 +270,14 @@ CommandTab::com_hardcopy(wordlist *wl)
 
     HCdesc *hcdesc = 0;
     if (!driver) {
-        hcdesc = GRpkgIf()->HCof(wrsHCcb.format);
+        hcdesc = GRpkg::self()->HCof(wrsHCcb.format);
         if (!hcdesc)
             return;
     }
     else {
-        hcdesc = GRpkgIf()->FindHCdesc(driver);
+        hcdesc = GRpkg::self()->FindHCdesc(driver);
         if (!hcdesc) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "hardcopy: no such driver %s.\n", driver);
             return;
         }
@@ -289,7 +289,7 @@ CommandTab::com_hardcopy(wordlist *wl)
         if (!command && Sp.GetVar(kw_hcopycommand, VTYP_STRING, &vv))
             command = lstring::copy(vv.get_string());
         if (!command)
-            GRpkgIf()->ErrPrintf(ET_WARN, "hardcopy: no print command.\n");
+            GRpkg::self()->ErrPrintf(ET_WARN, "hardcopy: no print command.\n");
     }
     else {
         filename = lstring::copy(filename);
@@ -351,10 +351,10 @@ CommandTab::com_hardcopy(wordlist *wl)
     int argc;
     char *cmdstr = lstring::copy(buf);
     mkargv(&argc, argv, cmdstr);
-    if (GRpkgIf()->SwitchDev(hcdesc->drname, &argc, argv) == HCSok) {
+    if (GRpkg::self()->SwitchDev(hcdesc->drname, &argc, argv) == HCSok) {
         if (GP.Plot(wl, 0, 0, 0, GR_PLOT))
             spool(filename, driver, command, 0);
-        GRpkgIf()->SwitchDev(0, 0, 0);
+        GRpkg::self()->SwitchDev(0, 0, 0);
     }
     delete [] cmdstr;
     delete [] driver;
@@ -377,14 +377,14 @@ sGraph::gr_hardcopy()
 
     HCdesc *hcdesc = 0;
     if (!driver) {
-        hcdesc = GRpkgIf()->HCof(wrsHCcb.format);
+        hcdesc = GRpkg::self()->HCof(wrsHCcb.format);
         if (!hcdesc)
             return;
     }
     else {
-        hcdesc = GRpkgIf()->FindHCdesc(driver);
+        hcdesc = GRpkg::self()->FindHCdesc(driver);
         if (!hcdesc) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "hardcopy: no such driver %s.\n", driver);
             return;
         }
@@ -463,7 +463,7 @@ sGraph::gr_hardcopy()
         if (cmd)
             cmd = lstring::copy(cmd);
         else {
-            GRpkgIf()->ErrPrintf(ET_WARN, "hardcopy: no print command.\n");
+            GRpkg::self()->ErrPrintf(ET_WARN, "hardcopy: no print command.\n");
             delete [] driver;
             return;
         }
@@ -480,10 +480,10 @@ sGraph::gr_hardcopy()
         mkargv(&argc, argv, cmdstr);
         delete [] cmdstr;
     }
-    if (!GRpkgIf()->SwitchDev(hcdesc->drname, &argc, argv)) {
+    if (!GRpkg::self()->SwitchDev(hcdesc->drname, &argc, argv)) {
         if (GP.Plot(gr_command, this, 0, 0, GR_PLOT))
             spool(fname, driver, cmd, 0);
-        GRpkgIf()->SwitchDev(0, 0, 0);
+        GRpkg::self()->SwitchDev(0, 0, 0);
     }
     delete [] driver;
     delete [] fname;

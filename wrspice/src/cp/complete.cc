@@ -93,7 +93,7 @@ CshPar::Complete(wordlist *wlist, const char *buf, bool esc)
         const char *first = wlist->wl_word;
         sTrie **commands = CP.CcClass(CT_COMMANDS);
         if (!commands) {
-            GRpkgIf()->ErrPrintf(ET_INTERR, msg1, CT_COMMANDS);
+            GRpkg::self()->ErrPrintf(ET_INTERR, msg1, CT_COMMANDS);
             return;
         }
         // First look for aliases. Just interested in the first word... 
@@ -107,7 +107,7 @@ CshPar::Complete(wordlist *wlist, const char *buf, bool esc)
             first = al->name();
         }
         if (ntries == 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "alias loop.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "alias loop.\n");
             return;
         }
         sTrie *cc = (*commands)->lookup(first, false, false);
@@ -215,7 +215,7 @@ CshPar::AddKeyword(int kclass, const char *word)
         return;
     sTrie **kw = CcClass(kclass);
     if (!kw) {
-        GRpkgIf()->ErrPrintf(ET_INTERR, msg1, kclass);
+        GRpkg::self()->ErrPrintf(ET_INTERR, msg1, kclass);
         return;
     }
     if (!*kw) {
@@ -240,7 +240,7 @@ CshPar::AddCommand(const char *word, unsigned *bits)
         return;
     sTrie **commands = CcClass(CT_COMMANDS);
     if (!commands) {
-        GRpkgIf()->ErrPrintf(ET_INTERR, msg1, CT_COMMANDS);
+        GRpkg::self()->ErrPrintf(ET_INTERR, msg1, CT_COMMANDS);
         return;
     }
     if (!*commands) {
@@ -267,7 +267,7 @@ CshPar::RemKeyword(int kclass, const char *word)
 {
     sTrie **kw = CcClass(kclass);
     if (!kw) {
-        GRpkgIf()->ErrPrintf(ET_INTERR, msg1, kclass);
+        GRpkg::self()->ErrPrintf(ET_INTERR, msg1, kclass);
         return;
     }
     if (!*kw)

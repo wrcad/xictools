@@ -270,11 +270,11 @@ CommandTab::com_shift(wordlist *wl)
 
     variable *v = CP.RawVarGet(word);
     if (!v) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s: no such variable.\n", word);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "%s: no such variable.\n", word);
         return;
     }
     if (v->type() != VTYP_LIST) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s not of type list.\n", word);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "%s not of type list.\n", word);
         return;
     }
 
@@ -285,7 +285,8 @@ CommandTab::com_shift(wordlist *wl)
     }
 
     if (num) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "variable %s not long enough.\n", word);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "variable %s not long enough.\n",
+            word);
         return;
     }
 
@@ -453,7 +454,7 @@ CshPar::VarSubst(wordlist **list)
                 }
                 else {
                     char *str = wordlist::flatten(wlist);
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "unbalanced parentheses or brackets.\n  %s\n", str);
                     delete [] str;
                     delete [] tbuf;
@@ -654,7 +655,7 @@ top:
             int up, low;
             const char *s = range->wl_word;
             if (!isdigit(*s) && *s != '-')
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "nonparseable range specified, %s[%s.\n", v->name(), s);
 
             for (low = 0; isdigit(*s); s++)
@@ -946,7 +947,7 @@ CshPar::VarEval(const char *cstring)
     if ((s = getenv(string)) != 0)
         return (new wordlist(s, 0));
 
-    GRpkgIf()->ErrPrintf(ET_ERROR, "%s: no such variable.\n", string);
+    GRpkg::self()->ErrPrintf(ET_ERROR, "%s: no such variable.\n", string);
     return (0);
 }
 
@@ -1000,8 +1001,8 @@ CshPar::RawVarSet(const char *vname, bool isset, variable *v)
         alreadythere = true;
     else {
         if (rng.index >= 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s is not set, length unknown.\n",
-                rng.name);
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "%s is not set, length unknown.\n", rng.name);
             return;
         }
     }
@@ -1016,14 +1017,14 @@ CshPar::RawVarSet(const char *vname, bool isset, variable *v)
     if (alreadythere) {
         if (rng.index >= 0) {
             if (vv->type() != VTYP_LIST) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s is not a list.\n",
+                GRpkg::self()->ErrPrintf(ET_ERROR, "%s is not a list.\n",
                     rng.name);
                 return;
             }
             vv = vv->list();
             for (int i = rng.index; vv && i; vv = vv->next(), i--) ;
             if (!vv) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "%d out of range for %s.\n", rng.index, rng.name);
                 return;
             }
@@ -1052,7 +1053,7 @@ CshPar::RawVarSet(const char *vname, bool isset, variable *v)
         v->zero_list();
         break;
     default:
-        GRpkgIf()->ErrPrintf(ET_INTERR,
+        GRpkg::self()->ErrPrintf(ET_INTERR,
             "RawVarSet: bad variable type %d.\n", v->type());
         return;
     }
@@ -1119,7 +1120,8 @@ CshPar::ParseSet(wordlist *wl)
             *s = '\0';
             if (*val == '\0') {
                 if (wl == 0) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "%s equals what?.\n", name);
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "%s equals what?.\n", name);
                     goto bad;
                 }
                 val = wl->wl_word;
@@ -1184,7 +1186,7 @@ CshPar::ParseSet(wordlist *wl)
     }
     return (vars);
 bad:
-    GRpkgIf()->ErrPrintf(ET_ERROR, "bad set form.\n");
+    GRpkg::self()->ErrPrintf(ET_ERROR, "bad set form.\n");
     delete [] name;
     variable::destroy(vars);
     return (0);
@@ -1290,7 +1292,7 @@ CshPar::PushArg(wordlist *wl)
         }
         stackp++;
         if (stackp == DEPTH) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "stack overflow.\n");
+            GRpkg::self()->ErrPrintf(ET_WARN, "stack overflow.\n");
             stackp--;
             return;
         }

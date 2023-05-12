@@ -68,12 +68,13 @@ sPoly::interp(double *data, double *ndata, double *oscale, int olen,
     double *nscale, int nlen)
 {
     if (olen < 2 || nlen < 2) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "lengths too small to interpolate.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "lengths too small to interpolate.\n");
         return (false);
     }
     if (pc_degree < 1 || pc_degree > olen) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "degree is %d, can't interpolate.\n",
-            pc_degree);
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "degree is %d, can't interpolate.\n", pc_degree);
         return (false);
     }
 
@@ -89,7 +90,7 @@ sPoly::interp(double *data, double *ndata, double *oscale, int olen,
         // If it doesn't work this time, bump the interpolation.
         // degree down by one.
         if (--pc_degree == 0) {
-            GRpkgIf()->ErrPrintf(ET_INTERR, "sPoly::interp: #1.\n");
+            GRpkg::self()->ErrPrintf(ET_INTERR, "sPoly::interp: #1.\n");
             delete [] result;
             return (false);
         }
@@ -136,7 +137,7 @@ sPoly::interp(double *data, double *ndata, double *oscale, int olen,
 
         while (!polyfit(xdata, ydata, result)) {
             if (--pc_degree == 0) {
-                GRpkgIf()->ErrPrintf(ET_INTERR, "sPoly::interp: #2.\n");
+                GRpkg::self()->ErrPrintf(ET_INTERR, "sPoly::interp: #2.\n");
                 delete [] result;
                 return (false);
             }
@@ -254,7 +255,7 @@ sPoly::polyfit(double *xdata, double *ydata, double *result)
     // Now write the stuff into the result vector.
     for (i = 0; i < n; i++) {
         result[i] = mat2[i]/mat1[i*n + i];
-        // GRpkgIf()->ErrPrintf(ET_MSGS, "result[%d] = %G\n", i, result[i]);
+        // GRpkg::self()->ErrPrintf(ET_MSGS, "result[%d] = %G\n", i, result[i]);
     }
 
 #define ABS_TOL 0.001
@@ -267,7 +268,7 @@ sPoly::polyfit(double *xdata, double *ydata, double *result)
         double d = peval(xdata[i], result);
         if (fabs(d - ydata[i]) > ABS_TOL) {
 #ifdef INTERP_DEBUG
-            GRpkgIf()->ErrPrintf(ET_MSGS,
+            GRpkg::self()->ErrPrintf(ET_MSGS,
                 "Error: polyfit: x = %le, y = %le, int = %le\n",
                 xdata[i], ydata[i], d);
             printmat("mat1", mat1, n, n);
@@ -278,7 +279,7 @@ sPoly::polyfit(double *xdata, double *ydata, double *result)
         else if (fabs(d - ydata[i]) / (fabs(d) > ABS_TOL ? fabs(d) :
                 ABS_TOL) > REL_TOL) {
 #ifdef INTERP_DEBUG
-            GRpkgIf()->ErrPrintf(ET_MSGS,
+            GRpkg::self()->ErrPrintf(ET_MSGS,
                 "Error: polyfit: x = %le, y = %le, int = %le\n",
                 xdata[i], ydata[i], d);
             printmat("mat1", mat1, n, n);

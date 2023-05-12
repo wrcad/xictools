@@ -135,11 +135,11 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
     yrange[1] = gr->ylims[1];
 
     if (maxx <= 0) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "no points to plot.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "no points to plot.\n");
         return;
     }
     else if (maxx < 2) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "asciiplot can't handle scale with length < 2.\n");
         return;
     }
@@ -171,7 +171,7 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
 
     // The following is similar to the stuff in grid.cc
     if ((xrange[0] > xrange[1]) || (yrange[0] > yrange[1])) {
-        GRpkgIf()->ErrPrintf(ET_INTERR,
+        GRpkg::self()->ErrPrintf(ET_INTERR,
             "ft_agraf: bad limits %g, %g, %g, %g.\n", 
             xrange[0], xrange[1], yrange[0], yrange[1]);
         return;
@@ -268,7 +268,7 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
         double x1 = xscale->realval(lower);
         double x2 = xscale->realval(upper);
         if (x1 > x2) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "X scale (%s) not monotonic.\n", 
+            GRpkg::self()->ErrPrintf(ET_ERROR, "X scale (%s) not monotonic.\n", 
                 xscale->name());
             return;
         }

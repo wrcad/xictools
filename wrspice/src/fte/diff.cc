@@ -97,7 +97,7 @@ CommandTab::com_diff(wordlist *wl)
     if (!wl || !wl->wl_next) {
         p1 = OP.curPlot();
         if (p1 == OP.constants()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "invalid current plot (constants).\n");
             return;
         }
@@ -109,7 +109,7 @@ CommandTab::com_diff(wordlist *wl)
         for (p2 = p1->next_plot(); p2 && !lstring::eq(p1->name(), p2->name());
             p2 = p2->next_plot()) ;
         if (!p2) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "no previous similar plot.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "no previous similar plot.\n");
             return;
         }
         TTY.printf("Plots are \"%s\" and \"%s\"\n",
@@ -123,7 +123,7 @@ CommandTab::com_diff(wordlist *wl)
                 p2 = p2->next_plot()) ;
 
         if (!p2 || p2 == OP.constants()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "invalid plot \"%s\".\n", wl->wl_word);
             return;
         }
@@ -137,7 +137,7 @@ CommandTab::com_diff(wordlist *wl)
                 break;
         }
         if (!p1) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, msg1, wl->wl_word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, msg1, wl->wl_word);
             return;
         }
         wl = wl->wl_next;
@@ -147,7 +147,7 @@ CommandTab::com_diff(wordlist *wl)
                 break;
         }
         if (!p2) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, msg1, wl->wl_word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, msg1, wl->wl_word);
             return;
         }
         wl = wl->wl_next;
@@ -160,11 +160,11 @@ CommandTab::com_diff(wordlist *wl)
     // same type, etc.
     //
     if (!lstring::eq(p1->name(), p2->name())) {
-        GRpkgIf()->ErrPrintf(ET_WARN, msg2,
+        GRpkg::self()->ErrPrintf(ET_WARN, msg2,
             p1->type_name(), p2->type_name(), "of different types");
     }
     if (!lstring::eq(p1->title(), p2->title())) {
-        GRpkgIf()->ErrPrintf(ET_WARN, msg2,
+        GRpkg::self()->ErrPrintf(ET_WARN, msg2,
             p1->type_name(), p2->type_name(), "from different circuits");
     }
 
@@ -263,7 +263,7 @@ CommandTab::com_diff(wordlist *wl)
             dl->d2_dv2 = v2;
         }
         else {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "vector %s type mismatch.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "vector %s type mismatch.\n",
                 wl1->wl_word);
         }
     }

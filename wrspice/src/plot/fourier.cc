@@ -144,7 +144,7 @@ CommandTab::com_fourier(wordlist *wl)
     sprintf(xbuf, "%1.1e", 0.0);
     int shift = strlen(xbuf) - 7;
     if (!OP.curPlot() || !OP.curPlot()->scale()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no vectors loaded.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no vectors loaded.\n");
         return;
     }
 
@@ -163,13 +163,13 @@ CommandTab::com_fourier(wordlist *wl)
 
     sDataVec *time = OP.curPlot()->scale();
     if (!time->isreal()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "fourier needs real scale type.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "fourier needs real scale type.\n");
         return;
     }
     const char *s = wl->wl_word;
     double *ff;
     if (!(ff = SPnum.parse(&s, false)) || (*ff <= 0.0)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad fundamental frequency %s.\n",
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad fundamental frequency %s.\n",
             wl->wl_word);
         return;
     }
@@ -191,7 +191,7 @@ CommandTab::com_fourier(wordlist *wl)
         // Now get the last fund freq...
         double d = 1.0/fundfreq;   // The wavelength...
         if (dp[1] - dp[0] < d) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "wavelength longer than time span.\n");
             return;
         }
@@ -223,12 +223,14 @@ CommandTab::com_fourier(wordlist *wl)
     for (dl = dl0; dl; dl = dl->dl_next) {
         sDataVec *vec = dl->dl_dvec;
         if (vec->length() != time->length()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "lengths don't match: %d, %d.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "lengths don't match: %d, %d.\n",
                 vec->length(), time->length());
             continue;
         }
         if (!vec->isreal()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s isn't real!.\n", vec->name());
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "%s isn't real!.\n", vec->name());
             continue;
         }
 
@@ -237,7 +239,7 @@ CommandTab::com_fourier(wordlist *wl)
             sPoly po(polydegree);
             if (!po.interp(vec->realvec(), stuff, time->realvec(),
                     vec->length(), grid, fourgridsize)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "can't interpolate.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "can't interpolate.\n");
                 break;
             }
         }
@@ -382,7 +384,8 @@ namespace {
             }
         }
         else {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "Unknown window type %s.\n", window);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "Unknown window type %s.\n",
+                window);
             delete [] win;
             return (0);
         }
@@ -398,12 +401,13 @@ void
 CommandTab::com_spec(wordlist *wl)
 {
     if (!OP.curPlot() || !OP.curPlot()->scale()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Error: no vectors loaded.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "Error: no vectors loaded.\n");
         return;
     }
     if (!OP.curPlot()->scale()->isreal() || 
             !(*OP.curPlot()->scale()->units() == UU_TIME)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Error: spec needs real time scale.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "Error: spec needs real time scale.\n");
         return;
     }
 
@@ -411,7 +415,7 @@ CommandTab::com_spec(wordlist *wl)
     const char *s = wl->wl_word;
     int tlen = (OP.curPlot()->scale())->length();
     if (!(freq = SPnum.parse(&s, false)) || (*freq < 0.0)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Error: bad start freq %s.\n",
+        GRpkg::self()->ErrPrintf(ET_ERROR, "Error: bad start freq %s.\n",
             wl->wl_word);
         return;
     }
@@ -420,7 +424,7 @@ CommandTab::com_spec(wordlist *wl)
     wl = wl->wl_next;
     s = wl->wl_word;
     if (!(freq = SPnum.parse(&s, false)) || (*freq <= startf)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Error: bad stop freq %s.\n",
+        GRpkg::self()->ErrPrintf(ET_ERROR, "Error: bad stop freq %s.\n",
             wl->wl_word);
         return;
     }
@@ -429,7 +433,7 @@ CommandTab::com_spec(wordlist *wl)
     wl = wl->wl_next;
     s = wl->wl_word;
     if (!(freq = SPnum.parse(&s, false)) || !(*freq <= (stopf-startf))) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Error: bad step freq. %s\n",
+        GRpkg::self()->ErrPrintf(ET_ERROR, "Error: bad step freq. %s\n",
             wl->wl_word);
         return;
     }
@@ -439,7 +443,7 @@ CommandTab::com_spec(wordlist *wl)
     double *time = OP.curPlot()->scale()->realvec();
     double span = time[tlen-1] - time[0];
     if (stopf > 0.5*tlen/span) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "Error: nyquist limit exceeded, try stop freq less than %e Hz.\n",
             tlen/2/span);
         return;
@@ -454,7 +458,7 @@ CommandTab::com_spec(wordlist *wl)
             fpts++;
     }
     else {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "Error: time span limits step freq to %1.1e Hz.\n",
             1/(time[tlen-1] - time[0]));
         return;
@@ -474,14 +478,14 @@ CommandTab::com_spec(wordlist *wl)
             for (sDvList *dll = vec->link(); dll; dll = dll->dl_next) {
                 vec = dll->dl_dvec;
                 if (vec->length() != tlen) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "Error: lengths don't match: %d, %d\n",
                         vec->length(), tlen);
                     continue;
                 }
                 if (!vec->isreal()) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "Error: %s isn't real!\n", 
-                        vec->name());
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "Error: %s isn't real!\n", vec->name());
                     continue;
                 }
                 if (*vec->units() == UU_TIME)
@@ -498,13 +502,13 @@ CommandTab::com_spec(wordlist *wl)
         }
         else {
             if (vec->length() != tlen) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "Error: lengths don't match: %d, %d\n",
                     vec->length(), tlen);
                 continue;
             }
             if (!vec->isreal()) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "Error: %s isn't real!\n", 
+                GRpkg::self()->ErrPrintf(ET_ERROR, "Error: %s isn't real!\n", 
                     vec->name());
                 continue;
             }

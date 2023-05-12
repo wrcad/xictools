@@ -89,8 +89,8 @@ extern double erfc(double);
 // happen.
 
 #define rcheck(cond, name) if (!(cond)) { \
-    GRpkgIf()->ErrPrintf(ET_WARN, "argument out of range for %s.\n", name); \
-    delete res; return (0); }
+  GRpkg::self()->ErrPrintf(ET_WARN, "argument out of range for %s.\n", name); \
+   delete res; return (0); }
 
 #define cxabs(d) (((d) < 0.0) ? - (d) : (d))
 
@@ -136,7 +136,7 @@ sDataVec::v_rms()
         return (res);
     }
     if (os->v_length != v_length) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "cx_rms: vector/scale length mismatch.\n");
         return (0);
     }
@@ -1256,7 +1256,7 @@ sDataVec::v_norm()
         }
     }
     if (largest == 0.0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't normalize a 0 vector.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "can't normalize a 0 vector.\n");
         return (0);
     }
 
@@ -1582,32 +1582,32 @@ sDataVec::v_interpolate(sDataVec *ns, bool silent)
         ns = OP.curPlot()->scale();
     if (!os) {
         if (!silent)
-            GRpkgIf()->ErrPrintf(ET_INTERR, "%s is null.\n", oldscale);
+            GRpkg::self()->ErrPrintf(ET_INTERR, "%s is null.\n", oldscale);
         return (0);
     }
     if (!ns) {
         if (!silent)
-            GRpkgIf()->ErrPrintf(ET_INTERR, "%s is null.\n", newscale);
+            GRpkg::self()->ErrPrintf(ET_INTERR, "%s is null.\n", newscale);
         return (0);
     }
     if (os->iscomplex()) {
         if (!silent)
-            GRpkgIf()->ErrPrintf(ET_ERROR, msg1, oldscale);
+            GRpkg::self()->ErrPrintf(ET_ERROR, msg1, oldscale);
         return (0);
     }
     if (ns->iscomplex()) {
         if (!silent)
-            GRpkgIf()->ErrPrintf(ET_ERROR, msg1, newscale);
+            GRpkg::self()->ErrPrintf(ET_ERROR, msg1, newscale);
         return (0);
     }
     if (iscomplex()) {
         if (!silent)
-            GRpkgIf()->ErrPrintf(ET_ERROR, msg1, "vector");
+            GRpkg::self()->ErrPrintf(ET_ERROR, msg1, "vector");
         return (0);
     }
     if (v_length != os->v_length) {
         if (!silent)
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "old scale and vector lengths don't match.\n");
         return (0);
     }
@@ -1618,15 +1618,18 @@ sDataVec::v_interpolate(sDataVec *ns, bool silent)
     int ond = os->v_numdims > 1 ? os->v_numdims : 1;
     int nnd = ns->v_numdims > 1 ? ns->v_numdims : 1;
     if (ond != nnd) {
-        if (!silent)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "scale dimensions don't match.\n");
+        if (!silent) {
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "scale dimensions don't match.\n");
+        }
         return (0);
     }
     int dnd = v_numdims > 1 ? v_numdims : 1;
     if (dnd != ond) {
-        if (!silent)
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+        if (!silent) {
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "old scale and vector dimensions don't match.\n");
+        }
         return (0);
     }
     if (ond > 1) {
@@ -1634,26 +1637,31 @@ sDataVec::v_interpolate(sDataVec *ns, bool silent)
         // if all is well.
 
         if (os->v_length != ns->v_length) {
-            if (!silent)
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+            if (!silent) {
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "incompatible scale, old and new lengths differ.\n");
+            }
             return (0);
         }
         if (os->v_dims[ond-1] != ns->v_dims[ond-1]) {
-            if (!silent)
-                GRpkgIf()->ErrPrintf(ET_ERROR, "scale blocksize mismatch.\n");
+            if (!silent) {
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "scale blocksize mismatch.\n");
+            }
             return (0);
         }
         if (v_dims[ond-1] != os->v_dims[ond-1]) {
-            if (!silent)
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+            if (!silent) {
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "old scale and vector blocksize mismatch.\n");
+            }
             return (0);
         }
         if (!check_same(os->v_data.real, ns->v_data.real, v_length)) {
-            if (!silent)
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+            if (!silent) {
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "incompatible scale, old and new values differ.\n");
+            }
             return (0);
         }
         sDataVec *res = new sDataVec(0, 0, ns->v_length, &v_units);
@@ -1669,10 +1677,11 @@ sDataVec::v_interpolate(sDataVec *ns, bool silent)
     if (os->v_length == ns->v_length) {
         if (!check_mono(os->v_data.real, ns->v_data.real, os->v_length)) {
             if (!check_same(os->v_data.real, ns->v_data.real, os->v_length)) {
-                if (!silent)
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                if (!silent) {
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                        "incompatible scale, non-monotonic and old/new "
                        "values differ.\n");
+                }
                 return (0);
             }
             // Scales aren't monotonic, but the same.  Return copied data.
@@ -1691,7 +1700,7 @@ sDataVec::v_interpolate(sDataVec *ns, bool silent)
         for (int i = 0; i < len; i++) {
             if ((d[0] < d[1]) != oinc) {
                 if (!silent)
-                    GRpkgIf()->ErrPrintf(ET_ERROR, msg2, oldscale);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, msg2, oldscale);
                 return (0);
             }
             d++;
@@ -1702,15 +1711,16 @@ sDataVec::v_interpolate(sDataVec *ns, bool silent)
         for (int i = 0; i < len; i++) {
             if ((d[0] < d[1]) != ninc) {
                 if (!silent)
-                    GRpkgIf()->ErrPrintf(ET_ERROR, msg2, newscale);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, msg2, newscale);
                 return (0);
             }
             d++;
         }
         if (oinc != ninc) {
-            if (!silent)
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+            if (!silent) {
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "incompatible scale, old and new monotinicity differ.\n");
+            }
             return (0);
         }
     }
@@ -1752,7 +1762,7 @@ sDataVec::v_deriv()
     if (!os && v_plot)
         os = v_plot->scale();
     if (!os) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "cx_deriv: vector has no scale.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "cx_deriv: vector has no scale.\n");
         return (0);
     }
 
@@ -1797,7 +1807,7 @@ sDataVec::v_deriv()
             int j;
             if (!po.polyfit(
                     tscale + i - degree, r_vec + i - degree, r_coefs)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg1, i);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg1, i);
                 delete [] i_vec;
                 delete [] r_vec;
                 delete [] i_coefs;
@@ -1816,7 +1826,7 @@ sDataVec::v_deriv()
             // imag
             if (!po.polyfit(
                     tscale + i - degree, i_vec + i - degree, i_coefs)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg1, i);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg1, i);
                 delete [] i_vec;
                 delete [] r_vec;
                 delete [] i_coefs;
@@ -1870,7 +1880,7 @@ sDataVec::v_deriv()
         int i, k = 0;
         for (i = degree; i < v_length; i++) {
             if (!po.polyfit(tscale + i - degree, indata + i - degree, coefs)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg1, i);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg1, i);
                 delete [] coefs;
                 if (scnew)
                     delete [] tscale;
@@ -1902,16 +1912,16 @@ sDataVec::v_integ()
     if (!os && v_plot)
         os = v_plot->scale();
     if (!os) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "cx_integ: vector has no scale.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "cx_integ: vector has no scale.\n");
         return (0);
     }
     if (os->v_length != v_length) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "cx_integ: vector/scale length mismatch.\n");
         return (0);
     }
     if (os->v_length <= 1) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "cx_integ: can't integrate scalar data.\n");
         return (0);
     }

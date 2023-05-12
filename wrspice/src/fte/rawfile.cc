@@ -96,9 +96,10 @@ cRawOut::file_write(const char *filename, bool app)
             ascii = false;
         else if (lstring::cieq(vv.get_string(), "ascii"))
             ascii = true;
-        else
-            GRpkgIf()->ErrPrintf(ET_WARN, "strange file type %s (ignored).\n",
-                vv.get_string());
+        else {
+            GRpkg::self()->ErrPrintf(ET_WARN,
+                "strange file type %s (ignored).\n", vv.get_string());
+        }
     }
     if (ascii) {
         if (!file_open(filename, app ? "a" : "w", false))
@@ -129,7 +130,7 @@ cRawOut::file_open(const char *filename, const char *mode, bool binary)
     FILE *fp = 0;
     if (filename && *filename) {
         if (!(fp = fopen(filename, mode))) {
-            GRpkgIf()->Perror(filename);
+            GRpkg::self()->Perror(filename);
             return (false);
         }
     }
@@ -471,7 +472,7 @@ cRawIn::raw_read(const char *name)
 {
     ri_fp = Sp.PathOpen(name, "rb");
     if (!ri_fp) {
-        GRpkgIf()->Perror(name);
+        GRpkg::self()->Perror(name);
         return (0);
     }
 
@@ -539,8 +540,10 @@ cRawIn::raw_read(const char *name)
                     raw_padded = false;
                 else if (lstring::cieq(buf2, "padded"))
                     raw_padded = true;
-                else
-                    GRpkgIf()->ErrPrintf(ET_WARN, "unknown flag %s.\n", buf2);
+                else {
+                    GRpkg::self()->ErrPrintf(ET_WARN,
+                        "unknown flag %s.\n", buf2);
+                }
             }
             (void)raw_padded;  // unused
         }
@@ -560,7 +563,7 @@ cRawIn::raw_read(const char *name)
             char *s = buf;
             skip(&s);
             if (atodims(s, dims, &numdims)) { // Something's wrong
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "syntax error in dimensions, ignored.\n");
                 numdims = 0;
                 continue;
@@ -577,7 +580,7 @@ cRawIn::raw_read(const char *name)
                 i *= dims[j];
 
             if (npoints && i != npoints) {
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                 "dimensions inconsistent with number of points, ignored.\n");
                 numdims = 0;
             }
@@ -595,8 +598,10 @@ cRawIn::raw_read(const char *name)
                     curpl->commands()->wl_prev = wl;
                 curpl->set_commands(wl);
             }
-            else
-                GRpkgIf()->ErrPrintf(ET_ERROR, "misplaced Command: line.\n");
+            else {
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "misplaced Command: line.\n");
+            }
             // Now execute the command if we can
             CP.EvLoop(s);
         }
@@ -615,13 +620,15 @@ cRawIn::raw_read(const char *name)
                     curpl->set_environment(CP.ParseSet(wl));
                 wordlist::destroy(wl);
             }
-            else
-                GRpkgIf()->ErrPrintf(ET_ERROR, "misplaced Command: line.\n");
+            else {
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "misplaced Command: line.\n");
+            }
         }
         else if (lstring::ciprefix("variables:", buf)) {
             // We reverse the dvec list eventually...
             if (!curpl) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "no plot name given.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "no plot name given.\n");
                 plots = 0;
                 break;
             }
@@ -661,9 +668,10 @@ cRawIn::raw_read(const char *name)
                     v->set_name(t);
                     delete [] t;
                 }
-                else
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "bad variable line %s.\n",
-                        buf);
+                else {
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "bad variable line %s.\n", buf);
+                }
                 char *olds = s;
                 t = lstring::gettok(&s); // The units
                 if (t) {
@@ -683,9 +691,10 @@ cRawIn::raw_read(const char *name)
                 while (lstring::copytok(buf2,&s)) {
                     if (lstring::ciprefix("min=", buf2)) {
                         double ms;
-                        if (sscanf(buf2 + 4, "%lf", &ms) != 1)
-                            GRpkgIf()->ErrPrintf(ET_ERROR, "bad arg %s.\n",
+                        if (sscanf(buf2 + 4, "%lf", &ms) != 1) {
+                            GRpkg::self()->ErrPrintf(ET_ERROR, "bad arg %s.\n",
                                 buf2);
+                        }
                         else {
                             v->set_minsignal(ms);
                             v->set_flags(v->flags() | VF_MINGIVEN);
@@ -693,9 +702,10 @@ cRawIn::raw_read(const char *name)
                     }
                     else if (lstring::ciprefix("max=", buf2)) {
                         double ms;
-                        if (sscanf(buf2 + 4, "%lf", &ms) != 1)
-                            GRpkgIf()->ErrPrintf(ET_ERROR, "bad arg %s.\n",
+                        if (sscanf(buf2 + 4, "%lf", &ms) != 1) {
+                            GRpkg::self()->ErrPrintf(ET_ERROR, "bad arg %s.\n",
                                 buf2);
+                        }
                         else {
                             v->set_maxsignal(ms);
                             v->set_flags(v->flags() | VF_MAXGIVEN);
@@ -718,8 +728,8 @@ cRawIn::raw_read(const char *name)
                         fixdims(v, buf2 + 5);
                     }
                     else {
-                        GRpkgIf()->ErrPrintf(ET_WARN, "bad var param %s.\n",
-                            buf2);
+                        GRpkg::self()->ErrPrintf(ET_WARN,
+                            "bad var param %s.\n", buf2);
                     }
                 }
 
@@ -752,7 +762,7 @@ cRawIn::raw_read(const char *name)
         else if (lstring::ciprefix("values:", buf) || 
                 lstring::ciprefix("binary:", buf)) {
             if (!curpl) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "no plot name given.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "no plot name given.\n");
                 plots = 0;
                 break;
             }
@@ -787,7 +797,7 @@ cRawIn::raw_read(const char *name)
             char *s = buf;
             skip(&s);
             if (*s) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "strange line in rawfile -- load aborted.\n");
                 while (plots) {
                     curpl = plots->next_plot();
@@ -858,17 +868,17 @@ cRawIn::read_data(bool isbin, sPlot *curpl)
                 if (v->isreal()) {
                     if (fread((char*)&val1, sizeof(double), 1, ri_fp) != 1) {
                         if (v != curpl->tempvecs())
-                            GRpkgIf()->ErrPrintf(ET_ERROR, errbr);
+                            GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
                         return;
                     }
                 }
                 else {
                     if (fread((char*)&val1, sizeof (double), 1, ri_fp) != 1) {
-                        GRpkgIf()->ErrPrintf(ET_ERROR, errbr);
+                        GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
                         return;
                     }
                     if (fread((char*)&val2, sizeof (double), 1, ri_fp) != 1) {
-                        GRpkgIf()->ErrPrintf(ET_ERROR, errbr);
+                        GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
                         return;
                     }
                 }
@@ -886,13 +896,13 @@ cRawIn::read_data(bool isbin, sPlot *curpl)
                 double val1, val2 = 0.0;
                 if (v->isreal()) {
                     if (fscanf(ri_fp, " %lf", &val1) != 1) {
-                        GRpkgIf()->ErrPrintf(ET_ERROR, errbr);
+                        GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
                         return;
                     }
                 }
                 else {
                     if (fscanf(ri_fp, " %lf, %lf", &val1, &val2) != 2) {
-                        GRpkgIf()->ErrPrintf(ET_ERROR, errbr);
+                        GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
                         return;
                     }
                 }
@@ -928,7 +938,7 @@ cRawIn::fixdims(sDataVec *v, const char *s)
     int ndims = 0;
     if (atodims(s, dims, &ndims)) {
         // Something's wrong
-        GRpkgIf()->ErrPrintf(ET_WARN,
+        GRpkg::self()->ErrPrintf(ET_WARN,
             "syntax error in dimensions, ignored.\n");
         return;
     }
@@ -985,7 +995,7 @@ cRawIn::atodims(const char *p, int *data, int *outlength)
         case 0: // p just at or before a number
             if (length >= MAXDIMS) {
                 if (length == MAXDIMS)
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "maximum of %d dimensions allowed.\n", MAXDIMS);
                 length += 1;
             }

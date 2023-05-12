@@ -165,9 +165,9 @@ void
 SPgraphics::HaltFullScreenGraphics()
 {
     // halt graphics if not windowed
-    if (!GRpkgIf()->CurDev())
+    if (!GRpkg::self()->CurDev())
         return;
-    if (GRpkgIf()->CurDev()->devtype == GRfullScreen && GP.Cur() &&
+    if (GRpkg::self()->CurDev()->devtype == GRfullScreen && GP.Cur() &&
             (GP.Cur()->apptype() == GR_PLOT ||
             GP.Cur()->apptype() == GR_MPLT)) {
         GP.Cur()->halt();
@@ -183,7 +183,8 @@ SPgraphics::HaltFullScreenGraphics()
 int
 SPgraphics::PopUpXterm(const char *string)
 {
-    if (GRpkgIf()->CurDev() && GRpkgIf()->CurDev()->devtype == GRmultiWindow) {
+    if (GRpkg::self()->CurDev() &&
+            GRpkg::self()->CurDev()->devtype == GRmultiWindow) {
         int pid = miscutil::fork_terminal(string);
         return (pid > 0 ? 0 : -1);
     }
@@ -198,7 +199,7 @@ namespace {
     {
         if (request->option == char_option) {
             int key = EOF;
-            int fd = GRpkgIf()->Input(request->fd, request->socket , &key);
+            int fd = GRpkg::self()->Input(request->fd, request->socket , &key);
             if (key == 3) // ^C
                Sp.SetFlag(FT_INTERRUPT, true);
             if (response) {
@@ -208,7 +209,7 @@ namespace {
             }
         }
         else if (request->option == checkup_option) {
-            if (GRpkgIf()->CheckForEvents())
+            if (GRpkg::self()->CheckForEvents())
                 // ^C typed
                Sp.SetFlag(FT_INTERRUPT, true);
         }
@@ -235,7 +236,7 @@ namespace {
             }
         }
         else {
-            GRpkgIf()->ErrPrintf(ET_INTERR,
+            GRpkg::self()->ErrPrintf(ET_INTERR,
                 "Input: unrecognized input type.\n");
             if (response)
                 response->option = error_option;

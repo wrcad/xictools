@@ -142,7 +142,7 @@ sDataVec::newtemp(sPlot *pl)
         pl = OP.curPlot();
 #ifdef FTEDEBUG
     if (Sp.ft_vecdb)
-        GRpkgIf()->ErrPrintf(ET_MSGS, "new temporary vector %s\n", v_name);
+        GRpkg::self()->ErrPrintf(ET_MSGS, "new temporary vector %s\n", v_name);
 #endif
     v_flags &= ~VF_PERMANENT;
     if (v_temporary)
@@ -165,7 +165,7 @@ sDataVec::newperm(sPlot *pl)
         v_name = lstring::copy("unnamed");
 #ifdef FTEDEBUG
     if (Sp.ft_vecdb)
-        GRpkgIf()->ErrPrintf(ET_MSGS, "new permanent vector %s\n", v_name);
+        GRpkg::self()->ErrPrintf(ET_MSGS, "new permanent vector %s\n", v_name);
 #endif
     v_flags |= VF_PERMANENT;
     v_plot = pl;

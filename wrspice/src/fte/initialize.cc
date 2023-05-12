@@ -300,7 +300,7 @@ IFsimulator::PostInit()
         wordlist::destroy(wl);
     }
     else
-        GRpkgIf()->ErrPrintf(ET_WARN, "system scripts path not set.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "system scripts path not set.\n");
 }
 
 
@@ -503,7 +503,7 @@ IFsimulator::SetCircuitFPEmode()
                     SetFPEmode(FPEdebug);
                     break;
                 default:
-                    GRpkgIf()->ErrPrintf(ET_WARN, 
+                    GRpkg::self()->ErrPrintf(ET_WARN, 
                         "option %s bad value, ignored.", kw_fpemode);
                 }
                 break;
@@ -546,7 +546,7 @@ CommandTab::com_setcase(wordlist *wl)
         return;
     }
     if (post_init_done) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
         "case sensitivity can be set with setcase only in startup files.\n");
         return;
     }

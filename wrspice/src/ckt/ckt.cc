@@ -1473,7 +1473,7 @@ sCKT::newTask(const char *what, const char *args, sTASK **pt)
         // If a line does not start with "Warning" assume a fatal error.
         while (s && *s) {
             if (!lstring::ciprefix("Warning", s)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s\n", cdeck.error());
+                GRpkg::self()->ErrPrintf(ET_ERROR, "%s\n", cdeck.error());
                 delete task;
                 return (E_PANIC);
             }
@@ -1483,7 +1483,7 @@ sCKT::newTask(const char *what, const char *args, sTASK **pt)
                     s++;
             }
         }
-        GRpkgIf()->ErrPrintf(ET_MSG, "%s\n", cdeck.error());
+        GRpkg::self()->ErrPrintf(ET_MSG, "%s\n", cdeck.error());
     }
     *pt = task;
     return (OK);

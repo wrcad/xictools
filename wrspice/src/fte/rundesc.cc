@@ -339,7 +339,7 @@ sRunDesc::addPointToPlot(IFvalue *refValue, IFvalue *valuePtr, bool inc)
             else if (rd_data[i].type() == IF_COMPLEX)
                 rd_data[i].addComplexValue(val.cValue, inc);
             else 
-                GRpkgIf()->ErrPrintf(ET_INTERR,
+                GRpkg::self()->ErrPrintf(ET_INTERR,
                     "unsupported data type in plot.\n");
         }
     }
@@ -379,7 +379,7 @@ sRunDesc::pushPointToPlot(sCKT *ckt, IFvalue *refValue, IFvalue *valuePtr,
             else if (rd_data[i].type() == IF_COMPLEX)
                 rd_data[i].pushComplexValue(val.cValue, indx);
             else 
-                GRpkgIf()->ErrPrintf(ET_INTERR,
+                GRpkg::self()->ErrPrintf(ET_INTERR,
                     "unsupported data type in plot.\n");
         }
     }
@@ -476,7 +476,7 @@ sRunDesc::datasize()
         maxdata = vv.get_real();
 
     if (mysize > maxdata) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "analysis would use %.1fKB which exceeds the maximum %gKB.\n"
             "Set \"maxdata\" to alter limit.\n", mysize, maxdata);
         return (true);

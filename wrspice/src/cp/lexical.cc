@@ -273,9 +273,10 @@ sKmap::km_mapkey(wordlist *wl)
                 i++;
             }
             printf("\n");
-            if (i >= MAX_RSP)
-                GRpkgIf()->ErrPrintf(ET_WARN, "%s map too long, truncated\n",
-                    km_word(map->to));
+            if (i >= MAX_RSP) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "%s map too long, truncated\n", km_word(map->to));
+            }
             km_set(lstring::copy(cbuf), map->to);
         }
         return;
@@ -287,7 +288,7 @@ sKmap::km_mapkey(wordlist *wl)
         FILE *fp = fopen(path, "w");
         delete [] path;
         if (!fp) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "can't open %s.\n", fname);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "can't open %s.\n", fname);
             return;
         }
         dump_kmaps(fp);
@@ -308,7 +309,7 @@ sKmap::km_mapkey(wordlist *wl)
             }
         }
         if (!fp) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "can't open %s.\n", fname);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "can't open %s.\n", fname);
             return;
         }
         read_kmaps(fp);
@@ -319,11 +320,11 @@ sKmap::km_mapkey(wordlist *wl)
     // Map one key.
     int code = km_code(wl->wl_word);
     if (!code) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "unknown key %s.\n", wl->wl_word);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "unknown key %s.\n", wl->wl_word);
         return;
     }
     if (!wl->wl_next) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no mapping given.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no mapping given.\n");
         return;
     }
     char cbuf[MAX_RSP + 1];
@@ -331,7 +332,7 @@ sKmap::km_mapkey(wordlist *wl)
     for (wl = wl->wl_next; wl; wl = wl->wl_next) {
         int x;
         if (sscanf(wl->wl_word, "%x", &x) != 1 || x < 0 || x > 255) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "bad mapping given.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "bad mapping given.\n");
             return;
         }
         cbuf[n++] = x;
@@ -532,7 +533,7 @@ CommandTab::com_mapkey(wordlist *wl)
 {
 #ifdef WIN32
     (void)wl;
-    GRpkgIf()->ErrPrintf(ET_ERROR,
+    GRpkg::self()->ErrPrintf(ET_ERROR,
         "The mapkey commamd is not available under Windows.\n");
 #else
     Kmap.km_mapkey(wl);
@@ -651,11 +652,11 @@ CshPar::Lexer(const char *string)
                 if ((c != EOF) && (c != ESCAPE) && (c != 4))
                     linebuf[j++] = c;
                 if (i >= LEX_MAXWORD) {
-                    GRpkgIf()->ErrPrintf(ET_WARN, "word too long.\n");
+                    GRpkg::self()->ErrPrintf(ET_WARN, "word too long.\n");
                     c = ' ';
                 }
                 if (j >= LEX_MAXLINE) {
-                    GRpkgIf()->ErrPrintf(ET_WARN, "line too long.\n");
+                    GRpkg::self()->ErrPrintf(ET_WARN, "line too long.\n");
                     if (cp_bqflag)
                         c = EOF;
                     else
@@ -1046,7 +1047,7 @@ CshPar::Getchar(int fd, bool literal, bool drain)
     if (drain)
         return (0);
     if (literal && !cp_flags[CP_RAWMODE] && fd >= 0)
-        return (GRpkgIf()->GetChar(fd));
+        return (GRpkg::self()->GetChar(fd));
     HANDLE h = GetStdHandle(STD_INPUT_HANDLE);
     int c = 0;
     for (;;) {
@@ -1101,7 +1102,7 @@ CshPar::Getchar(int fd, bool literal, bool drain)
                         FD_ISSET(cp_acct_sock, &readfds)) {
                     cp_mesg_sock = accept(cp_acct_sock, 0, 0);
                     if (cp_mesg_sock < 0)
-                        GRpkgIf()->Perror("accept");
+                        GRpkg::self()->Perror("accept");
                 }
             }
         }
@@ -1269,7 +1270,7 @@ CshPar::Getchar(int fd, bool literal, bool drain)
                     &readfds)) {
                 cp_mesg_sock = accept(cp_acct_sock, 0, 0);
                 if (cp_mesg_sock < 0)
-                    GRpkgIf()->Perror("accept");
+                    GRpkg::self()->Perror("accept");
             }
             if (fd >= 0 && FD_ISSET(fd, &readfds)) {
                 i = read(fd, cbuf + ofs, MAX_RSP - ofs);

@@ -108,7 +108,7 @@ SPinput::logError(sLine *l, const char *fmt, ...)
     if (l)
         l->errcat(buf);
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s\n", buf);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "%s\n", buf);
 }
 
 
@@ -125,7 +125,7 @@ SPinput::logError(sLine *l, int type, const char *badone)
         if (l)
             l->errcat(s);
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s\n", s);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s\n", s);
         delete [] s;
         return;
     }
@@ -144,7 +144,7 @@ SPinput::logError(sLine *l, int type, const char *badone)
     if (l)
         l->errcat(buf);
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s\n", buf);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "%s\n", buf);
 }
 
 

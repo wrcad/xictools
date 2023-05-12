@@ -84,7 +84,8 @@ CommandTab::com_setcirc(wordlist *wl)
         "Type the name of the desired circuit: ";
     char buf[BSIZE_SP];
     if (Sp.CircuitList() == 0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "there aren't any circuits loaded.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "there aren't any circuits loaded.\n");
         return;
     }
     if (wl == 0) {
@@ -124,7 +125,7 @@ void
 CommandTab::com_pz(wordlist *wl)
 {
     if (Sp.CurCircuit() && Sp.CurCircuit()->check()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "operating range or Monte Carlo run is paused but active,\n"
             "can't do analysis, use \"check -c\" to clear.\n");
         return;
@@ -137,7 +138,7 @@ void
 CommandTab::com_op(wordlist *wl)
 {
     if (Sp.CurCircuit() && Sp.CurCircuit()->check()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "operating range or Monte Carlo run is paused but active,\n"
             "can't do analysis, use \"check -c\" to clear.\n");
         return;
@@ -150,7 +151,7 @@ void
 CommandTab::com_dc(wordlist *wl)
 {
     if (Sp.CurCircuit() && Sp.CurCircuit()->check()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "operating range or Monte Carlo run is paused but active,\n"
             "can't do analysis, use \"check -c\" to clear.\n");
         return;
@@ -163,7 +164,7 @@ void
 CommandTab::com_ac(wordlist *wl)
 {
     if (Sp.CurCircuit() && Sp.CurCircuit()->check()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "operating range or Monte Carlo run is paused but active,\n"
             "can't do analysis, use \"check -c\" to clear.\n");
         return;
@@ -176,7 +177,7 @@ void
 CommandTab::com_tf(wordlist *wl)
 {
     if (Sp.CurCircuit() && Sp.CurCircuit()->check()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "operating range or Monte Carlo run is paused but active,\n"
             "can't do analysis, use \"check -c\" to clear.\n");
         return;
@@ -189,7 +190,7 @@ void
 CommandTab::com_tran(wordlist *wl)
 {
     if (Sp.CurCircuit() && Sp.CurCircuit()->check()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "operating range or Monte Carlo run is paused but active,\n"
             "can't do analysis, use \"check -c\" to clear.\n");
         return;
@@ -202,7 +203,7 @@ void
 CommandTab::com_sens(wordlist *wl)
 {
     if (Sp.CurCircuit() && Sp.CurCircuit()->check()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "operating range or Monte Carlo run is paused but active,\n"
             "can't do analysis, use \"check -c\" to clear.\n");
         return;
@@ -215,7 +216,7 @@ void
 CommandTab::com_disto(wordlist *wl)
 {
     if (Sp.CurCircuit() && Sp.CurCircuit()->check()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "operating range or Monte Carlo run is paused but active,\n"
             "can't do analysis, use \"check -c\" to clear.\n");
         return;
@@ -228,7 +229,7 @@ void
 CommandTab::com_noise(wordlist *wl)
 {
     if (Sp.CurCircuit() && Sp.CurCircuit()->check()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "operating range or Monte Carlo run is paused but active,\n"
             "can't do analysis, use \"check -c\" to clear.\n");
         return;
@@ -253,7 +254,7 @@ void
 CommandTab::com_run(wordlist *wl)
 {
     if (Sp.CurCircuit() && Sp.CurCircuit()->check()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "operating range or Monte Carlo run is paused but active,\n"
             "can't do analysis, use \"check -c\" to clear.\n");
         return;
@@ -272,7 +273,7 @@ void
 CommandTab::com_reset(wordlist *wl)
 {
     if (Sp.CurCircuit() == 0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "there is no circuit loaded.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "there is no circuit loaded.\n");
         return;
     }
     bool save_loop = false;
@@ -322,7 +323,7 @@ CommandTab::com_free(wordlist *wl)
 
     if (circuits) {
         if (!Sp.CurCircuit()) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "no circuit to delete.\n");
+            GRpkg::self()->ErrPrintf(ET_WARN, "no circuit to delete.\n");
             return;
         }
         else {
@@ -343,7 +344,7 @@ CommandTab::com_free(wordlist *wl)
     if (plots) {
         if (!OP.curPlot()) {
             // shouldn't happen
-            GRpkgIf()->ErrPrintf(ET_WARN, "no plot to delete.\n");
+            GRpkg::self()->ErrPrintf(ET_WARN, "no plot to delete.\n");
             return;
         }
         if (all) {
@@ -384,7 +385,7 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
                 return;
             }
             if (ft_flags[FT_SIMDB])
-                GRpkgIf()->ErrPrintf(ET_MSGS, "resume: run starting.\n");
+                GRpkg::self()->ErrPrintf(ET_MSGS, "resume: run starting.\n");
             what = SIMrun;
         }
         else
@@ -392,12 +393,12 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
     }
     if (!resume) {
         if (!ft_curckt) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "there aren't any circuits loaded.\n");
             return;
         }
         if (!ft_curckt->deck()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "current circuit is not initialized.\n");
             return;
         }
@@ -418,9 +419,10 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
                         OP.getOutDesc()->set_outBinary(true);
                     else if (lstring::cieq(vv.get_string(), "ascii"))
                         OP.getOutDesc()->set_outBinary(false);
-                    else
-                        GRpkgIf()->ErrPrintf(ET_WARN,
+                    else {
+                        GRpkg::self()->ErrPrintf(ET_WARN,
                             "unknown file type %s.\n", vv.get_string());
+                    }
                 }
                 if (GetFlag(FT_SERVERMODE)) {
                     // Server mode sends everything to stdout.
@@ -450,7 +452,7 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
                         FILE *fp = fopen(ofile,
                             OP.getOutDesc()->outBinary() ? "wb" : "w");
                         if (!fp) {
-                            GRpkgIf()->Perror(ofile);
+                            GRpkg::self()->Perror(ofile);
                             return;
                         }
                         OP.getOutDesc()->set_outFp(fp);
@@ -458,7 +460,7 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
                     else if (OP.getOutDesc()->outFtype() == OutFcsdf) {
                         FILE *fp = fopen(ofile, "w");
                         if (!fp) {
-                            GRpkgIf()->Perror(ofile);
+                            GRpkg::self()->Perror(ofile);
                             return;
                         }
                         OP.getOutDesc()->set_outFp(fp);
@@ -613,7 +615,7 @@ sFtCirc::run(SIMtype what, wordlist *args)
     }
     else if (what == SIMresume) {
         if (!ci_runckt) {
-            GRpkgIf()->ErrPrintf(ET_INTERR, "no analysis to resume.\n");
+            GRpkg::self()->ErrPrintf(ET_INTERR, "no analysis to resume.\n");
             return (E_PANIC);
         }
 
@@ -639,7 +641,7 @@ sFtCirc::run(const char *anstr, wordlist *args)
 {
     int i = analysisType(anstr);
     if (i < 0) {
-        GRpkgIf()->ErrPrintf(ET_INTERR, "unknown run type %s.\n", anstr);
+        GRpkg::self()->ErrPrintf(ET_INTERR, "unknown run type %s.\n", anstr);
         return (E_PANIC);
     }
     return (run((SIMtype)i, args));

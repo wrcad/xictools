@@ -192,7 +192,7 @@ CshPar::GlobMatch(const char *p, const char *s)
                 }
             }
             if (bc == '\0') {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "missing ].\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "missing ].\n");
                 return (false);
             }
             continue;
@@ -350,7 +350,7 @@ nextcomp:
             if (cp_flags[CP_NONOMATCH])
                 wl  = new wordlist(string, 0);
             else
-                GRpkgIf()->ErrPrintf(ET_MSG, "%s: no match.\n", string);
+                GRpkg::self()->ErrPrintf(ET_MSG, "%s: no match.\n", string);
             delete [] string;
             return (wl);
         }
@@ -363,7 +363,7 @@ nextcomp:
                     if (!poss[j])
                         break;
                 if (j == MAXWORDS) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "too many arguments.\n");
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "too many arguments.\n");
                     for (i = 0; i < MAXWORDS; i++)
                         delete [] poss[i];
                     delete [] string;
@@ -388,7 +388,7 @@ nextcomp:
             if (cp_flags[CP_NONOMATCH])
                 wl  = new wordlist(string, 0);
             else
-                GRpkgIf()->ErrPrintf(ET_MSG, "%s: no match.\n", string);
+                GRpkg::self()->ErrPrintf(ET_MSG, "%s: no match.\n", string);
             delete [] string;
             return (wl);
         }
@@ -420,7 +420,7 @@ nextcomp:
         if (cp_flags[CP_NONOMATCH])
             wlist = new wordlist(string, 0);
         else
-            GRpkgIf()->ErrPrintf(ET_MSG, "%s: no match.\n", string);
+            GRpkg::self()->ErrPrintf(ET_MSG, "%s: no match.\n", string);
     }
     else {
         // Now, sort the stuff and make it into wordlists
@@ -484,7 +484,7 @@ CshPar::brac1(const char *string)
                 if (*s == cp_ccurl)
                     nb--;
                 if (*s == '\0') {   // {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "missing }.\n");
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "missing }.\n");
                     wordlist::destroy(words);
                     return (0);
                 }
@@ -539,7 +539,7 @@ CshPar::brac2(const char *string)
             if (*s == cp_ccurl)
                 nb--;
             if (*s == '\0') {       // {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "missing }.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "missing }.\n");
                 wordlist::destroy(wlist);
                 delete [] buf;
                 return (0);

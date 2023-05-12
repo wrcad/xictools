@@ -95,7 +95,7 @@ CshPar::InitIPC()
     if (cp_acct_sock < 0) {
         int sd = socket(AF_INET, SOCK_STREAM, 0);
         if (sd < 0) {
-            GRpkgIf()->Perror("socket");
+            GRpkg::self()->Perror("socket");
             return (true);
         }
         struct sockaddr_in skt;
@@ -103,7 +103,7 @@ CshPar::InitIPC()
         skt.sin_addr.s_addr = INADDR_ANY;
         skt.sin_port = 0;
         if (bind(sd, (struct sockaddr*)&skt, sizeof(skt))) {
-            GRpkgIf()->Perror("bind");
+            GRpkg::self()->Perror("bind");
             return (true);
         }
 #if 1
@@ -112,7 +112,7 @@ CshPar::InitIPC()
         int len = sizeof(skt);
 #endif
         if (getsockname(sd, (struct sockaddr*)&skt, &len)) {
-            GRpkgIf()->Perror("getsockname");
+            GRpkg::self()->Perror("getsockname");
             return (true);
         }
         listen(sd, 1);
@@ -128,7 +128,7 @@ CshPar::InitIPCmessage()
 {
     int msg = accept(cp_acct_sock, 0, 0);
     if (msg < 0) {
-        GRpkgIf()->Perror("accept");
+        GRpkg::self()->Perror("accept");
         return (true);
     }
 #ifdef F_SETOWN
@@ -157,7 +157,7 @@ namespace {
         for (;;) {
             int i = send(fd, str, len - bytes, 0);
             if (i == -1) {
-                GRpkgIf()->Perror("send");
+                GRpkg::self()->Perror("send");
                 return (false);
             }
             bytes += i;
@@ -184,7 +184,7 @@ namespace {
         for (;;) {
             int i = send(fd, buf, len - bytes, 0);
             if (i == -1) {
-                GRpkgIf()->Perror("send");
+                GRpkg::self()->Perror("send");
                 return (false);
             }
             bytes += i;
@@ -256,7 +256,7 @@ CshPar::MessageHandler(int fc)
             if (i < 0) {
                 if (errno == EINTR)
                     continue;
-                GRpkgIf()->Perror("recv");
+                GRpkg::self()->Perror("recv");
             }
             return (false);
         }
@@ -572,7 +572,7 @@ namespace {
             DWORD status;
             GetExitCodeProcess(info->hProcess, &status);
             if (status)
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "process %ld exited with status %ld.\n",
                     info->dwProcessId, status);
             if (netdbg()) {
@@ -590,11 +590,11 @@ namespace {
     void sigchild(int pid, int status, void*)
     {
         if (WIFEXITED(status) && WEXITSTATUS(status))
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "process %d exited with status %d.\n",
                 pid, WEXITSTATUS(status));
         else if (WIFSIGNALED(status))
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "process %d terminated by signal %d.\n",
                 pid, WIFSIGNALED(status));
         XicIsAlive = false;
@@ -613,7 +613,7 @@ CommandTab::com_sced(wordlist *wl)
 {
     extern char **environ;
     if (!CP.Display()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no X display available.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no X display available.\n");
         return;
     }
     if (XicIsAlive) {
@@ -697,7 +697,7 @@ CommandTab::com_sced(wordlist *wl)
 #else
     int i = fork();
     if (i < 0) {
-        GRpkgIf()->Perror("fork");
+        GRpkg::self()->Perror("fork");
         CLOSESOCKET(CP.AcctSocket());
         CP.SetAcctSocket(-1);
         return;
@@ -741,7 +741,7 @@ CommandTab::com_sced(wordlist *wl)
                 continue;
             CLOSESOCKET(CP.AcctSocket());
             CP.SetAcctSocket(-1);
-            GRpkgIf()->ErrPrintf(ET_ERROR, "Connection broken.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "Connection broken.\n");
             break;
         }
         if (FD_ISSET(CP.AcctSocket(), &ready)) {
@@ -749,7 +749,7 @@ CommandTab::com_sced(wordlist *wl)
             if (msg >= 0)
                 CP.SetMesgSocket(msg);
             else {
-                GRpkgIf()->Perror("accept");
+                GRpkg::self()->Perror("accept");
                 CLOSESOCKET(CP.AcctSocket());
                 CP.SetAcctSocket(-1);
             }
@@ -757,7 +757,7 @@ CommandTab::com_sced(wordlist *wl)
         }
         CLOSESOCKET(CP.AcctSocket());
         CP.SetAcctSocket(-1);
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Connection timed out.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "Connection timed out.\n");
         break;
     }
     XicIsAlive = true;

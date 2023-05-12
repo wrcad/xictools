@@ -622,7 +622,7 @@ CommandTab::com_print(wordlist *wl)
 
     if (!wl) {
         if (!wlast) {
-            GRpkgIf()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
+            GRpkg::self()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
             return;
         }
         wl = wlast;
@@ -630,7 +630,7 @@ CommandTab::com_print(wordlist *wl)
     else if (!wl->wl_next && *wl->wl_word == '/') {
         // Nothing but a format.  Get the vectors from wlast.
         if (!wlast) {
-            GRpkgIf()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
+            GRpkg::self()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
             return;
         }
         if (*wlast->wl_word == '/') {
@@ -652,7 +652,7 @@ CommandTab::com_print(wordlist *wl)
             if (lstring::eq(ww->wl_word, ".")) {
                 wordlist *wx = Sp.ExtractPrintCmd(0);
                 if (!wx) {
-                    GRpkgIf()->ErrPrintf(ET_ERRORS,
+                    GRpkg::self()->ErrPrintf(ET_ERRORS,
                         "no vectors found for '.'.\n");
                     return;
                 }
@@ -668,7 +668,7 @@ CommandTab::com_print(wordlist *wl)
                 int n = atoi(ww->wl_word + 2);
                 wordlist *wx = Sp.ExtractPrintCmd(n ? n-1 : n);
                 if (!wx) {
-                    GRpkgIf()->ErrPrintf(ET_ERRORS,
+                    GRpkg::self()->ErrPrintf(ET_ERRORS,
                         "no vectors found for '.@%d'.\n", n);
                     return;
                 }
@@ -800,7 +800,8 @@ CommandTab::com_write(wordlist *wl)
     if (!wl) {
         // just dump the current plot
         if (OP.curPlot()->num_perm_vecs() == 0) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "plot is empty, nothing written.\n");
+            GRpkg::self()->ErrPrintf(ET_WARN,
+                "plot is empty, nothing written.\n");
             return;
         }
         do_write(file, OP.curPlot(), appendwrite);
@@ -945,7 +946,7 @@ sPlot::write(sDvList *dl0, bool appendwrite, const char *file)
     }
 
     if (sHtab::empty(newplot.pl_hashtab))
-        GRpkgIf()->ErrPrintf(ET_WARN, "plot is empty, nothing written.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "plot is empty, nothing written.\n");
     else
         do_write(file, &newplot, appendwrite);
 
@@ -1008,7 +1009,7 @@ void
 CommandTab::com_dumpnodes(wordlist*)
 {
     if (!Sp.CurCircuit() || !Sp.CurCircuit()->runckt()) {
-        GRpkgIf()->ErrPrintf(ET_ERRORS, "no current circuit nodes.\n");
+        GRpkg::self()->ErrPrintf(ET_ERRORS, "no current circuit nodes.\n");
         return;
     }
     sCKTnodeVal *nvs;
@@ -1036,7 +1037,7 @@ void
 CommandTab::com_dumpopts(wordlist*)
 {
     if (!Sp.CurCircuit()) {
-        GRpkgIf()->ErrPrintf(ET_ERRORS, "no current circuit.\n");
+        GRpkg::self()->ErrPrintf(ET_ERRORS, "no current circuit.\n");
         return;
     }
     if (Sp.CurCircuit()->runckt())

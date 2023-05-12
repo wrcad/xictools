@@ -179,8 +179,8 @@ CommandTab::com_shell(wordlist *wl)
     char buf[256];
     char *shellpth = get_shell();
     if (!wl) {
-        if (GRpkgIf()->CurDev() &&
-                GRpkgIf()->CurDev()->devtype == GRmultiWindow)
+        if (GRpkg::self()->CurDev() &&
+                GRpkg::self()->CurDev()->devtype == GRmultiWindow)
             miscutil::fork_terminal(shellpth);
         else
             CP.System(shellpth);
@@ -206,8 +206,8 @@ CommandTab::com_shell(wordlist *wl)
         shtype = 2;
 #endif
     if (shtype == 0 || shtype == 1) {
-        if (GRpkgIf()->CurDev() &&
-                GRpkgIf()->CurDev()->devtype == GRmultiWindow) {
+        if (GRpkg::self()->CurDev() &&
+                GRpkg::self()->CurDev()->devtype == GRmultiWindow) {
             char *tf = filestat::make_temp("xx");
             FILE *fp = fopen(tf, "wb");
             if (fp) {
@@ -255,14 +255,14 @@ void
 CommandTab::com_rehash(wordlist*)
 {
     if (!CP.GetFlag(CP_DOUNIXCOM)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "unixcom not set.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "unixcom not set.\n");
         return;
     }
     char *s = getenv("PATH");
     if (s)
         CP.Rehash(s, !CP.GetFlag(CP_NOCC));
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no PATH in environment.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no PATH in environment.\n");
 }
 
 
@@ -278,7 +278,7 @@ CommandTab::com_cd(wordlist *wl)
         if (!s) {
             passwd *pw = getpwuid(getuid());
             if (pw == 0) {
-                GRpkgIf()->Perror("getpwuid");
+                GRpkg::self()->Perror("getpwuid");
                 return;
             }           
             s = pw->pw_dir;
@@ -290,7 +290,7 @@ CommandTab::com_cd(wordlist *wl)
                 delete [] s;
             }
             else
-                GRpkgIf()->Perror("getcwd");
+                GRpkg::self()->Perror("getcwd");
             return;
         }
         if (!s) {
@@ -306,7 +306,7 @@ CommandTab::com_cd(wordlist *wl)
     }
 
     if (*s && chdir(s) == -1)
-        GRpkgIf()->Perror(s);
+        GRpkg::self()->Perror(s);
 
     if (copied)
         delete [] s;
@@ -315,7 +315,7 @@ CommandTab::com_cd(wordlist *wl)
     if (CP.GetFlag(CP_DOUNIXCOM))
         CP.Rehash(0, !CP.GetFlag(CP_NOCC));
 #else
-    GRpkgIf()->ErrPrintf(ET_ERROR, "'chdir' not available.\n");
+    GRpkg::self()->ErrPrintf(ET_ERROR, "'chdir' not available.\n");
 #endif
 }
 
@@ -329,7 +329,7 @@ CommandTab::com_pwd(wordlist*)
         delete [] s;
     }
     else
-        GRpkgIf()->Perror("getcwd");
+        GRpkg::self()->Perror("getcwd");
 }
 
 
@@ -590,13 +590,14 @@ CshPar::Redirect(wordlist **list)
         if (*w->wl_word == cp_lt) {
             wordlist *bt = w;
             if (gotinput) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "ambiguous input redirect.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "ambiguous input redirect.\n");
                 goto error;
             }
             gotinput = true;
             w = w->wl_next;
             if (w == 0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "missing name for input.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "missing name for input.\n");
                 goto error;
             }
             if (*w->wl_word == cp_lt) {
@@ -608,7 +609,7 @@ CshPar::Redirect(wordlist **list)
                 FILE *tmpfp = fopen(t, "r");
                 delete [] t;
                 if (!tmpfp) {
-                    GRpkgIf()->Perror(w->wl_word);
+                    GRpkg::self()->Perror(w->wl_word);
                     goto error;
                 }
                 else
@@ -616,7 +617,7 @@ CshPar::Redirect(wordlist **list)
             }
 #ifdef CPDEBUG
             if (cp_debug)
-                GRpkgIf()->ErrPrintf(ET_MSGS, "Input file is %s...\n",
+                GRpkg::self()->ErrPrintf(ET_MSGS, "Input file is %s...\n",
                     w->wl_word);
 #endif
             bt->wl_prev->wl_next = w->wl_next;
@@ -630,20 +631,22 @@ CshPar::Redirect(wordlist **list)
         else if (*w->wl_word == cp_gt) {
             wordlist *bt = w;
             if (gotoutput) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "ambiguous output redirect.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "ambiguous output redirect.\n");
                 goto error;
             }
             gotoutput = true;
             w = w->wl_next;
             if (w == 0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "missing name for output.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "missing name for output.\n");
                 goto error;
             }
             if (*w->wl_word == cp_gt) {
                 app = true;
                 w = w->wl_next;
                 if (w == 0) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "missing name for output.\n");
                     goto error;
                 }
@@ -651,14 +654,14 @@ CshPar::Redirect(wordlist **list)
             if (*w->wl_word == cp_amp) {
                 erralso = true;
                 if (goterror) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "ambiguous error redirect.\n");
                     goto error;
                 }
                 goterror = true;
                 w = w->wl_next;
                 if (w == 0) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "missing name for output.\n");
                     goto error;
                 }
@@ -666,7 +669,7 @@ CshPar::Redirect(wordlist **list)
             char *s = lstring::copy(w->wl_word);
             Unquote(s);
             if (cp_flags[CP_NOCLOBBER] && fileexists(s)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s: file exists.\n", s);
+                GRpkg::self()->ErrPrintf(ET_ERROR, "%s: file exists.\n", s);
                 delete [] s;
                 s = 0;
                 goto error;
@@ -679,14 +682,14 @@ CshPar::Redirect(wordlist **list)
             delete [] s;
             s = 0;
             if (!tmpfp) {
-                GRpkgIf()->Perror(w->wl_word);
+                GRpkg::self()->Perror(w->wl_word);
                 goto error;
             }
             else
                 TTY.ioRedirect(0, tmpfp, 0);
 #ifdef CPDEBUG
             if (cp_debug)
-                GRpkgIf()->ErrPrintf(ET_MSGS, "Output file is %s... %s\n", 
+                GRpkg::self()->ErrPrintf(ET_MSGS, "Output file is %s... %s\n", 
                     w->wl_word, app ? "(append)" : "");
 #endif
             bt->wl_prev->wl_next = w->wl_next;
@@ -735,13 +738,13 @@ CshPar::pwlist(wordlist *wlist, const char *name)
 {
     if (!CP.cp_flags[CP_DEBUG])
         return;
-    GRpkgIf()->ErrPrintf(ET_MSGS, "%s : [ ", name);
+    GRpkg::self()->ErrPrintf(ET_MSGS, "%s : [ ", name);
     for (wordlist *wl = wlist; wl; wl = wl->wl_next) {
         char *word = lstring::copy(wl->wl_word);
         CP.Strip(word);
-        GRpkgIf()->ErrPrintf(ET_MSGS, "%s ", word);
+        GRpkg::self()->ErrPrintf(ET_MSGS, "%s ", word);
         delete [] word;
     }
-    GRpkgIf()->ErrPrintf(ET_MSGS, "]\n");
+    GRpkg::self()->ErrPrintf(ET_MSGS, "]\n");
 }
 

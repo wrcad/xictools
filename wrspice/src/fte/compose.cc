@@ -177,12 +177,12 @@ CommandTab::com_compose(wordlist *wl)
         // compatible with everything...
         //
         if (sc.stepgiven && (sc.step == 0.0)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "step cannot be 0.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "step cannot be 0.\n");
             return;
         }
         if (sc.lingiven + sc.loggiven + sc.decgiven +
             sc.randmgiven + sc.gaussgiven > 1) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can have at most one of (lin, log, dec, random, gauss).\n");
             return;
         }
@@ -192,7 +192,7 @@ CommandTab::com_compose(wordlist *wl)
             if (sc.startgiven && sc.stopgiven && sc.stepgiven)
                 sc.sssgiven = true;
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                 "either one of (lin, log, dec, random, gauss) must be given,\n"
                 "or all of (start, stop, and step) must be given.\n");
                 return;
@@ -232,8 +232,8 @@ CommandTab::com_compose(wordlist *wl)
     else
         n = OP.vecGet(resname, 0);
     if (n && (n->flags() & VF_READONLY)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "specified vector %s is read-only.\n",
-            resname);
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "specified vector %s is read-only.\n", resname);
         delete [] resname;
         return;
     }
@@ -281,7 +281,7 @@ sCompose::cmp_parse(wordlist *wl)
                 wl = wl->wl_next;
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg1);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg1);
                 return (true);
             }
         }
@@ -292,7 +292,7 @@ sCompose::cmp_parse(wordlist *wl)
             if (wl) {
                 val = wl->wl_word;
                 if (*val != '=') {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, msg1);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, msg1);
                     return (true);
                 }
                 val++;
@@ -302,14 +302,14 @@ sCompose::cmp_parse(wordlist *wl)
                         val = wl->wl_word;
                     }
                     else {
-                        GRpkgIf()->ErrPrintf(ET_ERROR, msg1);
+                        GRpkg::self()->ErrPrintf(ET_ERROR, msg1);
                         return (true);
                     }
                 }
                 wl = wl->wl_next;
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg1);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg1);
                 return (true);
             }
         }
@@ -318,7 +318,7 @@ sCompose::cmp_parse(wordlist *wl)
         if (lstring::cieq(var, "start")) {
             startgiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             start = *td;
@@ -326,7 +326,7 @@ sCompose::cmp_parse(wordlist *wl)
         else if (lstring::cieq(var, "stop")) {
             stopgiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             stop = *td;
@@ -334,7 +334,7 @@ sCompose::cmp_parse(wordlist *wl)
         else if (lstring::cieq(var, "step")) {
             stepgiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             step = *td;
@@ -342,7 +342,7 @@ sCompose::cmp_parse(wordlist *wl)
         else if (lstring::cieq(var, "center")) {
             centergiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             center = *td;
@@ -350,7 +350,7 @@ sCompose::cmp_parse(wordlist *wl)
         else if (lstring::cieq(var, "span")) {
             spangiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             span = *td;
@@ -358,7 +358,7 @@ sCompose::cmp_parse(wordlist *wl)
         else if (lstring::cieq(var, "mean")) {
             meangiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             mean = *td;
@@ -366,7 +366,7 @@ sCompose::cmp_parse(wordlist *wl)
         else if (lstring::cieq(var, "sd")) {
             sdgiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             sd = *td;
@@ -375,65 +375,65 @@ sCompose::cmp_parse(wordlist *wl)
                 lstring::cieq(var, "length")) {
             lingiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             lin = (int)*td;
             if (lin < 1) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
         }
         else if (lstring::cieq(var, "log")) {
             loggiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             log = (int)*td;
             if (log < 1) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
         }
         else if (lstring::cieq(var, "dec")) {
             decgiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             dec = (int)*td;
             if (dec < 1) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
         }
         else if (lstring::cieq(var, "gauss")) {
             gaussgiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             gauss = (int)*td;
             if (gauss < 1) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
         }
         else if (lstring::cieq(var, "random")) {
             randmgiven = true;
             if (!(td = SPnum.parse(&val, false))) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
             randm = (int)*td;
             if (randm < 1) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, msg2, var, val);
+                GRpkg::self()->ErrPrintf(ET_ERROR, msg2, var, val);
                 return (true);
             }
         }
         else {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "unknown keyword \"%s\".\n", var);
             return (true);
         }
@@ -479,7 +479,7 @@ sCompose::cmp_pattern(wordlist *wl, int *length, double **datap)
         pbitList *list = pbitList::parse(&ps, &errs);
         delete [] pspec;
         if (!list && errs) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s.\n", errs);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s.\n", errs);
             delete [] errs;
             return (true);
         }
@@ -487,7 +487,7 @@ sCompose::cmp_pattern(wordlist *wl, int *length, double **datap)
         pa.add(list);
         pbitList::destroy(list);
         if (pa.count() == 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "pattern has zero length.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "pattern has zero length.\n");
             return (true);
         }
 
@@ -507,7 +507,7 @@ sCompose::cmp_pattern(wordlist *wl, int *length, double **datap)
         *datap = data;
     }
     else {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "expecting bstring, not found.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "expecting bstring, not found.\n");
         return (true);
     }
     return (false);
@@ -523,14 +523,14 @@ sCompose::cmp_linsweep(int *length, double **datap)
         if (lin) {
             double tstep = (stop - start)/lin;
             if (step != tstep) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "bad step -- should be %g.\n",
+                GRpkg::self()->ErrPrintf(ET_WARN, "bad step -- should be %g.\n",
                     tstep);
                 stepgiven = false;
             }
         }
         else {
             if ((int)((stop - start)/step) < 1) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad step value.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad step value.\n");
                 return (true);
             }
         }
@@ -588,19 +588,19 @@ bool
 sCompose::cmp_logsweep(int *length, double **datap)
 {
     if (!startgiven) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "start value is required.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "start value is required.\n");
         return (true);
     }
     if (start <= 0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "start value must be positive.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "start value must be positive.\n");
         return (true);
     }
     if (!stopgiven) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "stop value is required.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "stop value is required.\n");
         return (true);
     }
     if (stop <= 0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "stop value must be positive.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "stop value must be positive.\n");
         return (true);
     }
 
@@ -768,7 +768,7 @@ namespace {
         if (dim < 2)
             dim = 0;
         if (dim >= MAXDIMS) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "max dimensionality is %d.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "max dimensionality is %d.\n",
                 MAXDIMS);
             sDvList::destroy(dl0);
             return (true);
@@ -789,7 +789,7 @@ namespace {
             else
                 len++;
             if (i != dim) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "all vectors must be of the same dimensionality.\n");
                 sDvList::destroy(dl0);
                 return (true);

@@ -100,7 +100,7 @@ IFoutput::TraceCmd(wordlist *wl)
             for (sRunopTrace *td = o_runops->traces(); td;
                     ld = td, td = td->next()) {
                 if (lstring::eq(td->string(), d->string())) {
-                    GRpkgIf()->ErrPrintf(ET_WARN, msg, td->string());
+                    GRpkg::self()->ErrPrintf(ET_WARN, msg, td->string());
                     d->destroy();
                     o_runops->decrement_count();
                     return;
@@ -118,7 +118,7 @@ IFoutput::TraceCmd(wordlist *wl)
             for (sRunopTrace *td = runop->traces(); td;
                     ld = td, td = td->next()) {
                 if (lstring::eq(td->string(), d->string())) {
-                    GRpkgIf()->ErrPrintf(ET_WARN, msg, td->string());
+                    GRpkg::self()->ErrPrintf(ET_WARN, msg, td->string());
                     d->destroy();
                     o_runops->decrement_count();
                     return;
@@ -139,7 +139,7 @@ void
 IFoutput::iplotCmd(wordlist *wl)
 {
     if (!wl) {
-        GRpkgIf()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
+        GRpkg::self()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
         return;
     }
     wl = wordlist::copy(wl);
@@ -147,7 +147,7 @@ IFoutput::iplotCmd(wordlist *wl)
         if (lstring::eq(ww->wl_word, ".")) {
             wordlist *wx = Sp.ExtractPlotCmd(0, "tran");
             if (!wx) {
-                GRpkgIf()->ErrPrintf(ET_ERRORS,
+                GRpkg::self()->ErrPrintf(ET_ERRORS,
                     "no vectors found for '.'.\n");
                 wordlist::destroy(wl);
                 return;
@@ -162,7 +162,7 @@ IFoutput::iplotCmd(wordlist *wl)
             int n = atoi(ww->wl_word + 2);
             wordlist *wx = Sp.ExtractPlotCmd(n ? n-1 : n, "tran");
             if (!wx) {
-                GRpkgIf()->ErrPrintf(ET_ERRORS,
+                GRpkg::self()->ErrPrintf(ET_ERRORS,
                     "no vectors found for '.@%d'.\n", n);
                 wordlist::destroy(wl);
                 return;
@@ -214,7 +214,7 @@ namespace {
         wordlist *wl = CP.LexStringSub(rc->string());
         if (!wl) {
             rc->set_bad(true);
-            GRpkgIf()->ErrPrintf(ET_INTERR, msg, 1);
+            GRpkg::self()->ErrPrintf(ET_INTERR, msg, 1);
             return;
         }
         run->scalarizeVecs();
@@ -234,7 +234,7 @@ namespace {
         Sp.SetCurCircuit(circ);
         if (!dl0) {
             rc->set_bad(true);
-            GRpkgIf()->ErrPrintf(ET_INTERR, msg, 2);
+            GRpkg::self()->ErrPrintf(ET_INTERR, msg, 2);
             run->unscalarizeVecs();
             return;
         }
@@ -245,7 +245,7 @@ namespace {
                 // only from "vs"
                 *vs_flag = true;
                 if (!dp || !dn) {
-                    GRpkgIf()->ErrPrintf(ET_INTERR, msg, 3);
+                    GRpkg::self()->ErrPrintf(ET_INTERR, msg, 3);
                     sDvList::destroy(dl0);
                     rc->set_bad(true);
                     return;
@@ -266,7 +266,7 @@ namespace {
             if (vt->isreal()) {
                 if (!vf->isreal()) {
                     rc->set_bad(true);
-                    GRpkgIf()->ErrPrintf(ET_INTERR, msg, 3);
+                    GRpkg::self()->ErrPrintf(ET_INTERR, msg, 3);
                     break;
                 }
                 if (vt->length() >= vt->allocated()) {
@@ -286,7 +286,7 @@ namespace {
             else {
                 if (vf->isreal()) {
                     rc->set_bad(true);
-                    GRpkgIf()->ErrPrintf(ET_INTERR, msg, 4);
+                    GRpkg::self()->ErrPrintf(ET_INTERR, msg, 4);
                     break;
                 }
                 if (vt->length() >= vt->allocated()) {
@@ -310,7 +310,7 @@ namespace {
         }
         if (dl || dd) {
             rc->set_bad(true);
-            GRpkgIf()->ErrPrintf(ET_INTERR, msg, 5);
+            GRpkg::self()->ErrPrintf(ET_INTERR, msg, 5);
         }
         sDataVec *scale = dvl->dl_dvec->scale();
         // is it already updated?
@@ -322,7 +322,7 @@ namespace {
             if (xs->isreal()) {
                 if (!scale->isreal()) {
                     rc->set_bad(true);
-                    GRpkgIf()->ErrPrintf(ET_INTERR, msg, 6);
+                    GRpkg::self()->ErrPrintf(ET_INTERR, msg, 6);
                 }
                 if (scale->length() >= scale->allocated()) {
                     double *tv = new double[scale->length() + 1];
@@ -336,7 +336,7 @@ namespace {
             else {
                 if (scale->isreal()) {
                     rc->set_bad(true);
-                    GRpkgIf()->ErrPrintf(ET_INTERR, msg, 7);
+                    GRpkg::self()->ErrPrintf(ET_INTERR, msg, 7);
                 }
                 if (scale->length() >= scale->allocated()) {
                     complex *cv = new complex[scale->length() + 1];
@@ -444,7 +444,7 @@ IFoutput::iplot(sRunopIplot *rc, sRunDesc *run)
     if (!run || !rc || rc->bad())
         return;
     if (Sp.GetFlag(FT_GRDB)) {
-        GRpkgIf()->ErrPrintf(ET_MSGS, "Entering iplot, len = %d\n\r",
+        GRpkg::self()->ErrPrintf(ET_MSGS, "Entering iplot, len = %d\n\r",
             run->pointCount());
     }
 
@@ -495,7 +495,7 @@ IFoutput::iplot(sRunopIplot *rc, sRunDesc *run)
             if (!dl->dl_dvec) {
                 // only from "vs"
                 if (!dp || !dn) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "misplaced vs arg.\n");
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "misplaced vs arg.\n");
                     sDvList::destroy(dl0);
                     dl0 = 0;
                     rc->set_bad(true);
@@ -549,8 +549,8 @@ IFoutput::iplot(sRunopIplot *rc, sRunDesc *run)
         }
 
         // push graph for possible use by err/interrupt handlers
-        if (GRpkgIf()->CurDev() &&
-                GRpkgIf()->CurDev()->devtype == GRfullScreen)
+        if (GRpkg::self()->CurDev() &&
+                GRpkg::self()->CurDev()->devtype == GRfullScreen)
             GP.PushGraphContext(graph);
 
         // extend the vectors to the length of the scale
@@ -618,7 +618,7 @@ IFoutput::iplot(sRunopIplot *rc, sRunDesc *run)
     // First see if we have to make the screen bigger
     double val = xs->realval(len - 1);
     if (Sp.GetFlag(FT_GRDB))
-        GRpkgIf()->ErrPrintf(ET_MSGS, "x = %G\n\r", val);
+        GRpkg::self()->ErrPrintf(ET_MSGS, "x = %G\n\r", val);
 
     // hack to keep from overshooting range
     double start, stop;
@@ -667,7 +667,8 @@ IFoutput::iplot(sRunopIplot *rc, sRunDesc *run)
             graph->rawdata().xmin = graph->datawin().xmin;
             do {
                 if (Sp.GetFlag(FT_GRDB)) {
-                    GRpkgIf()->ErrPrintf(ET_MSGS, "resize: xlo %G -> %G\n\r", 
+                    GRpkg::self()->ErrPrintf(ET_MSGS,
+                        "resize: xlo %G -> %G\n\r", 
                         graph->datawin().xmin, graph->datawin().xmin -
                         (graph->datawin().xmax -
                         graph->datawin().xmin)*FACTOR);
@@ -716,7 +717,8 @@ IFoutput::iplot(sRunopIplot *rc, sRunDesc *run)
             graph->rawdata().xmax = graph->datawin().xmax;
             do {
                 if (Sp.GetFlag(FT_GRDB)) {
-                    GRpkgIf()->ErrPrintf(ET_MSGS, "resize: xhi %G -> %G\n\r", 
+                    GRpkg::self()->ErrPrintf(ET_MSGS,
+                        "resize: xhi %G -> %G\n\r", 
                         graph->datawin().xmax, graph->datawin().xmax +
                         (graph->datawin().xmax -
                         graph->datawin().xmin)*FACTOR);
@@ -743,7 +745,7 @@ IFoutput::iplot(sRunopIplot *rc, sRunDesc *run)
         v = dl->dl_dvec;
         val = v->realval(len - 1);
         if (Sp.GetFlag(FT_GRDB))
-            GRpkgIf()->ErrPrintf(ET_MSGS, "y = %G\n\r", val);
+            GRpkg::self()->ErrPrintf(ET_MSGS, "y = %G\n\r", val);
         if (val < graph->rawdata().ymin)
             graph->rawdata().ymin = val;
         else if (val > graph->rawdata().ymax)
@@ -823,8 +825,8 @@ IFoutput::endIplot(sRunDesc *run)
         return;
     sRunopDb *db = run->circuit() ? &run->circuit()->runops() : 0;
     if (o_runops->iplots() || (db && db->iplots())) {
-        if (GRpkgIf()->CurDev() &&
-                GRpkgIf()->CurDev()->devtype == GRfullScreen) {
+        if (GRpkg::self()->CurDev() &&
+                GRpkg::self()->CurDev()->devtype == GRfullScreen) {
             // redraw
             GP.PopGraphContext();
         }

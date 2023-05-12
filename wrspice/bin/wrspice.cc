@@ -257,7 +257,7 @@ operator new(size_t size)
         throw 127;
     }
     if (!v) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "virtual memory limit exceeded.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "virtual memory limit exceeded.\n");
         if (Sp.GetFlag(FT_SIMFLAG)) {
             if (Sp.CurCircuit())
                 Sp.CurCircuit()->set_inprogress(false);
@@ -733,7 +733,7 @@ namespace {
         else {
             passwd *pw = getpwuid(getuid());
             if (pw == 0) {
-                GRpkgIf()->Perror("getpwuid");
+                GRpkg::self()->Perror("getpwuid");
                 char *cwd = getcwd(0, 0);
                 fpath = pathlist::mk_path(cwd, ff);
                 delete [] cwd;
@@ -2441,7 +2441,7 @@ IFsimulator::SigHdlr(int sig)
         else if (fetestexcept(FE_INVALID))
             msg = "invalid floating point operation";
         feclearexcept(FE_ALL_EXCEPT);
-        GRpkgIf()->ErrPrintf(ET_ERROR, "math error, %s.\n", msg);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "math error, %s.\n", msg);
 #else
         siginfo_t *info = (siginfo_t*)si;
         Sp.FPexception(info->si_code);

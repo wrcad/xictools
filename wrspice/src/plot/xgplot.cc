@@ -100,7 +100,7 @@ SPgraphics::Xgraph(sDvList *dl0, sGrInit *gr)
     // Open the output file
     FILE *file = fopen(gr->hcopy, "w");
     if (!file) {
-        GRpkgIf()->Perror(gr->hcopy);
+        GRpkg::self()->Perror(gr->hcopy);
         return;
     }
 

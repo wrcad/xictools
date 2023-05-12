@@ -129,7 +129,7 @@ cCSDFout::file_open(const char *filename, const char *mode, bool)
     FILE *fp = 0;
     if (filename && *filename) {
         if (!(fp = fopen(filename, mode))) {
-            GRpkgIf()->Perror(filename);
+            GRpkg::self()->Perror(filename);
             return (false);
         }
     }
@@ -148,7 +148,7 @@ bool
 cCSDFout::file_head()
 {
     if (!co_plot) {
-        GRpkgIf()->ErrPrintf(ET_INTERR,
+        GRpkg::self()->ErrPrintf(ET_INTERR,
             "null plot data pointer encountered.\n");
         return (false);
     }
@@ -179,7 +179,7 @@ cCSDFout::file_head()
         anal[1] = 'C';
     }
     if (strcmp(anal, "TR") && strcmp(anal, "AC") && strcmp(anal, "DC")) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "plot data type not supported in CSDF format.\n");
         return (false);
     }
@@ -391,7 +391,7 @@ cCSDFin::csdf_read(const char *name)
 {
     ci_fp = Sp.PathOpen(name, "rb");
     if (!ci_fp) {
-        GRpkgIf()->Perror(name);
+        GRpkg::self()->Perror(name);
         return (0);
     }
 
@@ -467,7 +467,7 @@ cCSDFin::parse_plot()
         return (0);
 
     if (t[0] != '#' || t[1] != 'H') {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "incorrect file format.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "incorrect file format.\n");
         return (0);
     }
 
@@ -640,7 +640,7 @@ cCSDFin::parse_header()
         }
     }
     if (!s || s[1] != 'N') {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "file syntax error, name list not found.\n");
         return (false);
     }
@@ -676,7 +676,7 @@ cCSDFin::parse_header()
         else {
             s = fgets(ci_buffer, CSDF_BSIZE,  ci_fp);
             if (!s) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "premature end of file.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "premature end of file.\n");
                 return (false);
             }
             while (isspace(*s))
@@ -748,12 +748,13 @@ cCSDFin::parse_rec(sPlot *pl, int ix)
             if (!*s) {
                 // empty line
                 if (!fgets(ci_buffer, CSDF_BSIZE, ci_fp)) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "premature end of file.\n");
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "premature end of file.\n");
                     return (false);
                 }
                 continue;
             }
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "file syntax error, missing data record.\n");
             return (false);
         }
@@ -766,7 +767,7 @@ cCSDFin::parse_rec(sPlot *pl, int ix)
     // First, the scale value.
     double d;
     if (!get_float(&s, &d)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, msg);
+        GRpkg::self()->ErrPrintf(ET_ERROR, msg);
         return (false);
     }
     sDataVec *v = pl->scale();
@@ -787,13 +788,13 @@ cCSDFin::parse_rec(sPlot *pl, int ix)
                 // line ended
                 s = fgets(ci_buffer, CSDF_BSIZE, ci_fp);
                 if (!s) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, msg);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, msg);
                     return (false);
                 }
                 while (isspace(*s))
                     s++;
                 if (!get_float(&s, &d, true)) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, msg);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, msg);
                     return (false);
                 }
             }
@@ -802,13 +803,13 @@ cCSDFin::parse_rec(sPlot *pl, int ix)
                 // line ended
                 s = fgets(ci_buffer, CSDF_BSIZE, ci_fp);
                 if (!s) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, msg);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, msg);
                     return (false);
                 }
                 while (isspace(*s))
                     s++;
                 if (!get_float(&s, &d, true)) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, msg);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, msg);
                     return (false);
                 }
             }
@@ -821,13 +822,13 @@ cCSDFin::parse_rec(sPlot *pl, int ix)
                 // line ended
                 s = fgets(ci_buffer, CSDF_BSIZE, ci_fp);
                 if (!s) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, msg);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, msg);
                     return (false);
                 }
                 while (isspace(*s))
                     s++;
                 if (!get_float(&s, &d)) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, msg);
+                    GRpkg::self()->ErrPrintf(ET_ERROR, msg);
                     return (false);
                 }
             }
@@ -837,7 +838,7 @@ cCSDFin::parse_rec(sPlot *pl, int ix)
 
     // Read the first line of the next record;
     if (!fgets(ci_buffer, CSDF_BSIZE, ci_fp)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "premature end of file.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "premature end of file.\n");
         return (false);
     }
     return (true);

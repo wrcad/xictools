@@ -66,7 +66,7 @@ cPrintIn::read(const char *fname)
 {
     FILE *fp = Sp.PathOpen(fname, "r");
     if (!fp) {
-        GRpkgIf()->Perror(fname);
+        GRpkg::self()->Perror(fname);
         return (0);
     }
 
@@ -132,7 +132,7 @@ namespace {
     bool get_num(char *tok, double *d, int linecnt)
     {
         if (sscanf(tok, "%le", d) != 1) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
             "Error: line %d, expected floating point number, parse failed.\n",
                 linecnt);
             return (false);
@@ -189,7 +189,7 @@ cPrintIn::parse_print(FILE *fp)
             if (tcnt == 1) {
                 int n;
                 if (sscanf(tok, "%d", &n) != 1) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "Error: line %d, expected integer, parse failed.\n",
                         linecnt);
                     delete [] tok;
@@ -275,7 +275,7 @@ cPrintIn::parse_print(FILE *fp)
                     pointcnt = 0;
                 }
                 else if (n != pointcnt) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "Error: line %d, index not monotonic.\n", linecnt);
                     delete pl;
                     return (0);
@@ -402,13 +402,14 @@ sPlot *
 cColIn::read(const char *fname, int ncols, int xcols)
 {
     if (ncols < 1) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Column count is zero or negative.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "Column count is zero or negative.\n");
         return (0);
     }
 
     FILE *fp = Sp.PathOpen(fname, "r");
     if (!fp) {
-        GRpkgIf()->Perror(fname);
+        GRpkg::self()->Perror(fname);
         return (0);
     }
 

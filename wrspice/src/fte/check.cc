@@ -80,12 +80,13 @@ void
 CommandTab::com_mctrial(wordlist*)
 {
     if (!Sp.CurCircuit()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "No current circuit.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "No current circuit.\n");
         return;
     }
     sCHECKprms *cj = Sp.CurCircuit()->check();
     if (!cj) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "The check command is not running.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "The check command is not running.\n");
         return;
     }
     Sp.SetFlag(FT_MONTE, true);
@@ -103,12 +104,13 @@ void
 CommandTab::com_findrange(wordlist *wl)
 {
     if (!Sp.CurCircuit()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "No current circuit.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "No current circuit.\n");
         return;
     }
     sCHECKprms *cj = Sp.CurCircuit()->check();
     if (!cj) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "The check command is not running.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "The check command is not running.\n");
         return;
     }
     cj->find_oprange(wl);
@@ -119,12 +121,13 @@ void
 CommandTab::com_findupper(wordlist *wl)
 {
     if (!Sp.CurCircuit()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "No current circuit.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "No current circuit.\n");
         return;
     }
     sCHECKprms *cj = Sp.CurCircuit()->check();
     if (!cj) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "The check command is not running.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "The check command is not running.\n");
         return;
     }
     cj->find_oprange(wl, false);
@@ -135,12 +138,13 @@ void
 CommandTab::com_findlower(wordlist *wl)
 {
     if (!Sp.CurCircuit()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "No current circuit.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "No current circuit.\n");
         return;
     }
     sCHECKprms *cj = Sp.CurCircuit()->check();
     if (!cj) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "The check command is not running.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "The check command is not running.\n");
         return;
     }
     cj->find_oprange(wl, true, false);
@@ -226,7 +230,7 @@ void
 IFsimulator::MargAnalysis(wordlist *wl)
 {
     if (!ft_curckt) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no circuit loaded.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no circuit loaded.\n");
         return;
     }
 
@@ -335,7 +339,7 @@ sFtCirc::checkCodeblocks()
             if (controlBlk().text()) {
                 controlBlk().set_tree(CP.MakeControl(controlBlk().text()));
                 if (!controlBlk().tree()) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "control statements parse failed.\n");
                     return(E_FAILED);
                 }
@@ -344,8 +348,8 @@ sFtCirc::checkCodeblocks()
     }
     else {
         if (!CP.IsBlockDef(controlBlk().name())) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "control codeblock %s not found.\n", 
-                controlBlk().name());
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "control codeblock %s not found.\n", controlBlk().name());
             return (E_NOTFOUND);
         }
     }
@@ -358,7 +362,7 @@ sFtCirc::checkCodeblocks()
             if (execBlk().text()) {
                 execBlk().set_tree(CP.MakeControl(execBlk().text()));
                 if (!execBlk().tree()) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "exec statements parse failed.\n");
                     return(E_FAILED);
                 }
@@ -367,8 +371,8 @@ sFtCirc::checkCodeblocks()
     }
     else {
         if (!CP.IsBlockDef(execBlk().name())) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "exec codeblock %s not found.\n", 
-                execBlk().name());
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "exec codeblock %s not found.\n", execBlk().name());
             return (E_NOTFOUND);
         }
     }
@@ -388,13 +392,14 @@ sFtCirc::setAnalysis(wordlist **pwl)
     if (!wl || !wl->wl_word || !*wl->wl_word) {
         wordlist *wn = getAnalysisFromDeck();
         if (wn == 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "no analysis specified in deck.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "no analysis specified in deck.\n");
             wordlist::destroy(wl);
             *pwl = 0;
             return (E_NOTFOUND);
         }
         if (wn->wl_next) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "more than one analysis specified in deck.\n");
             wordlist::destroy(wl);
             *pwl = 0;
@@ -478,7 +483,7 @@ checkargs::parse(wordlist **pwl, const char **pe, const char **po)
                 else if (*c == 'e') {
                     // the "find edge" function
                     if (!wl->wl_next || !wl->wl_next->wl_next) {
-                        GRpkgIf()->ErrPrintf(ET_ERROR,
+                        GRpkg::self()->ErrPrintf(ET_ERROR,
                 "operating and external vector names must be given.\n");
                         wordlist::destroy(wl);
                         return (E_SYNTAX);
@@ -787,7 +792,8 @@ sCHECKprms::setup(checkargs &args, wordlist *wl)
 
     int err = parseRange(&wl);
     if (err != OK) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "syntax error in check command line.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "syntax error in check command line.\n");
         wordlist::destroy(wl);
         out_plot->destroy();
         out_plot = 0;
@@ -852,7 +858,7 @@ sCHECKprms::resetup(wordlist **pwl)
 
     int err = parseRange(pwl);
     if (err != OK) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "syntax error in findrange command line.\n");
         return (err);
     }
@@ -1105,7 +1111,7 @@ sCHECKprms::initRange()
         }
     }
     if (ch_delta1 < 0.0) {
-        GRpkgIf()->ErrPrintf(ET_WARN,
+        GRpkg::self()->ErrPrintf(ET_WARN,
             "negative delta1, absolute value used.\n");
         ch_delta1 = -ch_delta1;
     }
@@ -1117,7 +1123,7 @@ sCHECKprms::initRange()
         }
     }
     if (ch_step1 < 0) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "negative step1 value, set to 0.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "negative step1 value, set to 0.\n");
         ch_step1 = 0;
     }
     if (!ch_gotval2) {
@@ -1135,7 +1141,7 @@ sCHECKprms::initRange()
         }
     }
     if (ch_delta2 < 0.0) {
-        GRpkgIf()->ErrPrintf(ET_WARN,
+        GRpkg::self()->ErrPrintf(ET_WARN,
             "negative delta2, absolute value used.\n");
         ch_delta2 = -ch_delta2;
     }
@@ -1147,7 +1153,7 @@ sCHECKprms::initRange()
         }
     }
     if (ch_step2 < 0) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "negative step2 value, set to 0.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "negative step2 value, set to 0.\n");
         ch_step2 = 0;
     }
     if (ch_monte) {
@@ -1193,7 +1199,7 @@ sCHECKprms::initNames()
                         ch_prms2 = p2;
                     }
                     else {
-                        GRpkgIf()->ErrPrintf(ET_WARN,
+                        GRpkg::self()->ErrPrintf(ET_WARN,
                             "parse failed for device,param list for value2.\n");
                         wordlist::destroy(d1);
                         wordlist::destroy(p1);
@@ -1204,7 +1210,7 @@ sCHECKprms::initNames()
                 else {
                     if (ch_names->value2()) {
                         // Error: both names should be dev/prm, or neither.
-                        GRpkgIf()->ErrPrintf(ET_WARN,
+                        GRpkg::self()->ErrPrintf(ET_WARN,
                             "did not find device,param list for value2.\n");
                         wordlist::destroy(d1);
                         wordlist::destroy(p1);
@@ -1217,7 +1223,7 @@ sCHECKprms::initNames()
             }
             else {
                 // Syntax error, need a dev and a prm.
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "parse failed for device,param list for value1.\n");
                 wordlist::destroy(d1);
                 wordlist::destroy(p1);
@@ -1239,7 +1245,7 @@ sCHECKprms::initOutFile()
     char code = ch_monte ? 'm' : 'd';
     ch_op = df_open(code, &ch_tmpoutname, &ch_tmpout, ch_names);
     if (!ch_op) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Can't open data output file.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "Can't open data output file.\n");
         return (E_FAILED);
     }
     return (OK);
@@ -1404,7 +1410,7 @@ sCHECKprms::initial(bool no_output)
 
         if (ch_iterno < 0 || ch_iterno > 10) {
             ch_iterno = 0;
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "bad value for checkiterate, ignored.\n");
         }
         if (ch_iterno)
@@ -1471,7 +1477,7 @@ sCHECKprms::loop()
     int num1 = 2*ch_step1 + 1;
     int num2 = 2*ch_step2 + 1;
     if (num1*num2 > 10000) {
-        GRpkgIf()->ErrPrintf(ET_WARN,
+        GRpkg::self()->ErrPrintf(ET_WARN,
         "evaluating more than 10000 points, hope that was intended!\n");
     }
     if (!ch_flags) {
@@ -1775,7 +1781,7 @@ void
 sCHECKprms::findEdge(const char *po, const char *pc)
 {
     if (!ch_names) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "find edge function requires a \"values\" vector.");
         return;
     }
@@ -1787,28 +1793,28 @@ sCHECKprms::findEdge(const char *po, const char *pc)
     if (ch_iterno < DEF_checkiterate_MIN ||
             ch_iterno > DEF_checkiterate_MAX) {
         ch_iterno = DEF_checkiterate;
-        GRpkgIf()->ErrPrintf(ET_WARN,
+        GRpkg::self()->ErrPrintf(ET_WARN,
             "bad value for checkiterate, set to %d.\n", DEF_checkiterate);
     }
     sDataVec *vo = out_plot->find_vec(po);
     if (!vo) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't find vector %s.\n", po);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "can't find vector %s.\n", po);
         return;
     }
     sDataVec *vc = out_plot->find_vec(pc);
     if (!vc) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't find vector %s.\n", pc);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "can't find vector %s.\n", pc);
         return;
     }
     sDataVec *value = out_plot->find_vec(ch_names->value());
     if (!value) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't find vector %s.\n",
+        GRpkg::self()->ErrPrintf(ET_ERROR, "can't find vector %s.\n",
             ch_names->value());
         return;
     }
     int len = value->length();
     if (len < vo->length() || len < vc->length()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "vector lengths are incompatible.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "vector lengths are incompatible.\n");
         return;
     }
     double *delta = new double[len];
@@ -1883,13 +1889,13 @@ sCHECKprms::findRange(bool dolower, bool doupper)
 {
     if (ch_fail) {
         // center point bad
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "central point bad, range not found.\n");
         ch_nogo = true;
         return (true);
     }
     if (ch_doall && !ch_names) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
         "find range with \"all\" flag set requires a \"values\" vector.");
         return (true);
     }
@@ -1902,7 +1908,7 @@ sCHECKprms::findRange(bool dolower, bool doupper)
 
         if (ch_iterno < 0 || ch_iterno > 10) {
             ch_iterno = 0;
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "bad value for checkiterate, ignored.\n");
             return (false);
         }
@@ -2163,7 +2169,7 @@ sCHECKprms::df_open(int c, char **rdname, FILE **rdfp, sNames *tnames)
     }
     FILE *fp = fopen(buf1, "w");
     if (!fp) {
-        GRpkgIf()->Perror(buf1);
+        GRpkg::self()->Perror(buf1);
         return (0);
     }
     const char *filename = Sp.CurCircuit()->filename();
@@ -2320,7 +2326,7 @@ sCHECKprms::processReturn(const char *fname)
 {
     FILE *fp = fopen(fname, "r");
     if (!fp) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't open %s.\n", fname);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "can't open %s.\n", fname);
         return (true);
     }
 
@@ -2529,7 +2535,7 @@ sCHECKprms::find_upper1(double val, int offset)
             }
         }
         if (i == SPAN) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "could not find upper v1 limit.\n");
             d->set_realval(offset, 0.0);
         }
@@ -2569,7 +2575,7 @@ sCHECKprms::find_lower1(double val, int offset)
             }
         }
         if (i == SPAN) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "could not find lower v1 limit.\n");
             d->set_realval(offset, 0.0);
         }
@@ -2609,7 +2615,7 @@ sCHECKprms::find_upper2(double val, int offset)
             }
         }
         if (i == SPAN) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "could not find upper v2 limit.\n");
             d->set_realval(offset, 0.0);
         }
@@ -2649,7 +2655,7 @@ sCHECKprms::find_lower2(double val, int offset)
             }
         }
         if (i == SPAN) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "could not find lower v2 limit.\n");
             d->set_realval(offset, 0.0);
         }

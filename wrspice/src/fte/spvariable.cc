@@ -100,11 +100,11 @@ IFsimulator::SetVar(const char *varname)
     CP.Unquote(vname);
     if (*vname == '&') {
         if (!vname[1])
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "attempt to set a variable named \"&\".  Maybe a backslash\n"
                 "is needed to hide this character from the shell.\n");
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't set a vector as a boolean.\n");
     }
     else {
@@ -133,7 +133,7 @@ IFsimulator::SetVar(const char *varname, int value)
     CP.Unquote(vname);
     if (*vname == '&') {
         if (!vname[1])
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "attempt to set a variable named \"&\".  Maybe a backslash\n"
                 "is needed to hide this character from the shell.\n");
         else {
@@ -168,7 +168,7 @@ IFsimulator::SetVar(const char *varname, double value)
     CP.Unquote(vname);
     if (*vname == '&') {
         if (!vname[1])
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "attempt to set a variable named \"&\".  Maybe a backslash\n"
                 "is needed to hide this character from the shell.\n");
         else {
@@ -203,11 +203,11 @@ IFsimulator::SetVar(const char *varname, const char *value)
     CP.Unquote(vname);
     if (*vname == '&') {
         if (!vname[1])
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "attempt to set a variable named \"&\".  Maybe a backslash\n"
                 "is needed to hide this character from the shell.\n");
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't set a vector as a string.\n");
     }
     else {
@@ -236,11 +236,11 @@ IFsimulator::SetVar(const char *varname, variable *value)
     CP.Unquote(vname);
     if (*vname == '&') {
         if (!vname[1])
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "attempt to set a variable named \"&\".  Maybe a backslash\n"
                 "is needed to hide this character from the shell.\n");
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't set a vector as a list.\n");
     }
     else {
@@ -440,7 +440,7 @@ IFsimulator::GetVar(const char *name, VTYPenum type, VTvalue *retval,
             retval->set_list(v->list());
             break;
         default:
-            GRpkgIf()->ErrPrintf(ET_INTERR, "getvar: bad var type %d.\n",
+            GRpkg::self()->ErrPrintf(ET_INTERR, "getvar: bad var type %d.\n",
                 type);
             break;
         }
@@ -855,7 +855,7 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
             // an expression
             tt = strrchr(word,')');
             if (tt == 0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "closing ')' not found.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "closing ')' not found.\n");
                 return (0);
             }
             r = range = strrchr(tt, '[');
@@ -870,9 +870,10 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
             //
             if (*word != SpecCatchar() || r != strchr(word, '[')) {
                 r++;
-                if (!isdigit(*r) && *r != '-')
-                    GRpkgIf()->ErrPrintf(ET_WARN,
+                if (!isdigit(*r) && *r != '-') {
+                    GRpkg::self()->ErrPrintf(ET_WARN,
                         "nonparseable range specified, %s[%s.\n", word, r);
+                }
                 for (low = 0; isdigit(*r); r++)
                     low = low * 10 + *r - '0';
                 if ((*r == '-') && isdigit(r[1]))
@@ -894,7 +895,7 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
             const char *stmp = word_strp;
             pnode *pn = GetPnode(&stmp, true);
             if (pn == 0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "parse failed.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "parse failed.\n");
                 return (0);
             }
             d = Evaluate(pn);
@@ -923,7 +924,7 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
         variable *vv = 0;
         if (d) {
             if (d->link()) {
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "only one vector may be accessed with the $& notation.\n");
                 d = d->link()->dl_dvec;
             }

@@ -110,9 +110,10 @@ cPSFout::file_write(const char *dirname, bool append)
             ascii = false;
         else if (lstring::cieq(vv.get_string(), "ascii"))
             ascii = true;
-        else
-            GRpkgIf()->ErrPrintf(ET_WARN, "strange file type %s (ignored).\n",
-                vv.get_string());
+        else {
+            GRpkg::self()->ErrPrintf(ET_WARN,
+                "strange file type %s (ignored).\n", vv.get_string());
+        }
     }
 
     if (!file_open(dirname, "w", !ascii))
@@ -155,7 +156,7 @@ cPSFout::file_open(const char *dirname, const char *mode, bool binary)
     return (true);
 #else
     (void)dirname;
-    GRpkgIf()->ErrPrintf(ET_ERROR,
+    GRpkg::self()->ErrPrintf(ET_ERROR,
         "PSF format is not supportred in this binary.");
     return (false);
 #endif

@@ -472,7 +472,7 @@ IFsimulator::GetUserFuncTree(const char *name, const pnode *args)
     while ((udfdb = gen.next()) != 0) {
         sUdFunc *udf = udfdb->find(name, -1);
         if (udf) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "the user-defined function %s has %d args.\n",
                 udf->name(), udf->argc());
             break;
@@ -627,7 +627,7 @@ cUdf::parse(wordlist *wlist, char **plhs, char **pbody) const
             if (pcnt > 0)
                 continue;
             if (pcnt < 0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "bad parentheses nesting in call template.\n", buf);
                 delete [] buf;
                 return (false);
@@ -639,7 +639,7 @@ cUdf::parse(wordlist *wlist, char **plhs, char **pbody) const
                 continue;
             }
         }
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "bad character '%c' found in call template.\n", buf);
         delete [] buf;
         return (false);
@@ -701,7 +701,8 @@ cUdf::define(const char *fname, const char *body)
         }
     }
     if (Sp.CheckFuncName(buf)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s is a predefined function.\n", buf);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "%s is a predefined function.\n",
+            buf);
         return (false);
     }
 

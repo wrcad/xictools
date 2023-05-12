@@ -264,7 +264,7 @@ sCKT::va_simparam(const char *tok, double retval, bool rvgiven,
 
     // Spec says this is an error, which arguably means non-fatal.
     // Not sure how to cause a halt from here anyway.
-    GRpkgIf()->ErrPrintf(ET_ERROR,
+    GRpkg::self()->ErrPrintf(ET_ERROR,
         "unknown keyword %s passed to $simparam.", tok);
     return (0.0);
 }

@@ -182,7 +182,7 @@ IFsimulator::SetCircuit(const char *name)
         if (lstring::eq(name, p->name()))
             break;
     if (p == 0) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "no such circuit \"%s\".\n", name);
+        GRpkg::self()->ErrPrintf(ET_WARN, "no such circuit \"%s\".\n", name);
         return;
     }
     SetCurCircuit(p);
@@ -220,7 +220,7 @@ IFsimulator::Bind(const char *name, bool exec)
             ft_curckt->controlBlk().set_name(name);
     }
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no current circuit.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no current circuit.\n");
 }
 
 
@@ -310,7 +310,7 @@ IFsimulator::SetOption(bool isset, const char *word, IFdata *val)
                 lstring::eq(word, spkw_itl5) ||
                 lstring::eq(word, spkw_lvltim) ||
                 lstring::eq(word, spkw_cptime)) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "option %s is currently unsupported.\n", word);
             return;
         }
@@ -318,7 +318,7 @@ IFsimulator::SetOption(bool isset, const char *word, IFdata *val)
                 lstring::eq(word, spkw_limtim) ||
                 lstring::eq(word, spkw_lvlcod) ||
                 lstring::eq(word, spkw_nomod)) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "option %s is obsolete.\n", word);
+            GRpkg::self()->ErrPrintf(ET_WARN, "option %s is obsolete.\n", word);
             return;
         }
         return;
@@ -357,7 +357,7 @@ IFsimulator::SetOption(bool isset, const char *word, IFdata *val)
         else if (pval.type == IF_STRING)
             badtype = true;
         else
-            GRpkgIf()->ErrPrintf(ET_INTERR,
+            GRpkg::self()->ErrPrintf(ET_INTERR,
                 "ci_setOption: bad option type %d.\n", pval.type);
     }
     else {
@@ -402,10 +402,10 @@ IFsimulator::SetOption(bool isset, const char *word, IFdata *val)
     else
         s = "unknown";
 
-    GRpkgIf()->ErrPrintf(ET_ERROR,
+    GRpkg::self()->ErrPrintf(ET_ERROR,
         "%s type given for option %s, expected %s.\n", s1, word, s);
     if ((val->type & IF_VARTYPES) == IF_FLAG)
-        GRpkgIf()->ErrPrintf(ET_MSG,
+        GRpkg::self()->ErrPrintf(ET_MSG,
         "Note that you must use an = to separate option name and value.\n");
 }
 
@@ -584,7 +584,7 @@ sFtCirc::~sFtCirc()
     if (!cc) {
         if (Sp.CurCircuit() == this)
             Sp.SetCurCircuit(0);
-        GRpkgIf()->ErrPrintf(ET_INTERR, "deleted circuit not in list.\n");
+        GRpkg::self()->ErrPrintf(ET_INTERR, "deleted circuit not in list.\n");
     }
     else if (Sp.CurCircuit() == cc) {
         if (cc->ci_next)

@@ -259,7 +259,7 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
         bool isfifo;
         FILE *fp = Sp.PathOpen(ww->wl_word, "r", &isfifo);
         if (!fp) {
-            GRpkgIf()->Perror(ww->wl_word);
+            GRpkg::self()->Perror(ww->wl_word);
             file_elt::destroy(f0);
             return (0);
         }
@@ -269,7 +269,7 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
             tempfile = filestat::make_temp("sp");
             FILE *outfp = Sp.PathOpen(tempfile, "w");
             if (!outfp) {
-                GRpkgIf()->Perror(tempfile);
+                GRpkg::self()->Perror(tempfile);
                 delete [] tempfile;
                 file_elt::destroy(f0);
                 return (0);
@@ -288,14 +288,14 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
             fclose(outfp);
             fp = Sp.PathOpen(tempfile, "r");
             if (!fp) {
-                GRpkgIf()->Perror(tempfile);
+                GRpkg::self()->Perror(tempfile);
                 delete [] tempfile;
                 file_elt::destroy(f0);
                 return (0);
             }
         }
         if (!check_file(fp)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "file %s is not valid input.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "file %s is not valid input.\n",
                 ww->wl_word);
             delete [] tempfile;
             fclose(fp);
@@ -363,7 +363,7 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
         char *tempfile = filestat::make_temp("sp");
         FILE *outfp = Sp.PathOpen(tempfile, "w");
         if (!outfp) {
-            GRpkgIf()->Perror(tempfile);
+            GRpkg::self()->Perror(tempfile);
             file_elt::destroy(f0);
             file_elt::destroy(f1);
             return (0);
@@ -379,7 +379,7 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
         // Open (first) source file, set offset.
         FILE *infp = Sp.PathOpen(fstart->fe_filename, "r");
         if (!infp) {
-            GRpkgIf()->Perror(fstart->fe_filename);
+            GRpkg::self()->Perror(fstart->fe_filename);
             file_elt::destroy(f0);
             file_elt::destroy(f1);
             fclose(outfp);
@@ -416,7 +416,7 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
             // Reopen infp.
             infp = Sp.PathOpen(fx->fe_filename, "r");
             if (!infp) {
-                GRpkgIf()->Perror(fx->fe_filename);
+                GRpkg::self()->Perror(fx->fe_filename);
                 file_elt::destroy(f0);
                 file_elt::destroy(f1);
                 fclose(outfp);
@@ -465,7 +465,7 @@ CommandTab::com_source(wordlist *wl)
         if (*wl->wl_word != '-')
             continue;
         if (!wl->wl_word[1]) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "syntax, missing options.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "syntax, missing options.\n");
             wordlist::destroy(ww);
             return;
         }
@@ -477,7 +477,7 @@ CommandTab::com_source(wordlist *wl)
             else if (*s == 'r')
                 reuse = true;
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "unknown option character %c.\n", *s);
                 wordlist::destroy(ww);
                 return;
@@ -495,7 +495,7 @@ CommandTab::com_source(wordlist *wl)
     wl = ww;
 
     if (!wl) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no files given!\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no files given!\n");
         return;
     }
 
@@ -557,7 +557,7 @@ IFsimulator::Source(file_elt *f0, bool nospice, bool nocmds, bool reuse)
 
         FILE *fp = PathOpen(f->filename(), "r");
         if (!fp) {
-            GRpkgIf()->Perror(f->filename());
+            GRpkg::self()->Perror(f->filename());
             return;
         }
         bool inter = CP.GetFlag(CP_INTERACTIVE);
@@ -600,7 +600,7 @@ IFsimulator::EditSource(const char *filename, bool permfile, bool reuse)
     CP.SetFlag(CP_INTERACTIVE, false);
     FILE *fp = PathOpen(filename, "r");
     if (!fp)
-        GRpkgIf()->Perror(filename);
+        GRpkg::self()->Perror(filename);
     else {
         if (reuse)
             delete ft_curckt;
@@ -671,7 +671,7 @@ IFsimulator::SpSource(FILE *fp, bool nospice, bool nocmds,
     for (char *t = title; *t; t++) {
         if (*t & 0x80) {
             delete [] title;
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "source is not valid input - binary?\n");
             return (true);
         }
@@ -889,7 +889,7 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
         nospice, noexec, &bad_deck);
     tv.stop();
     if (ft_flags[FT_SIMDB])
-        GRpkgIf()->ErrPrintf(ET_MSGS, "Total time to source input: %g.\n",
+        GRpkg::self()->ErrPrintf(ET_MSGS, "Total time to source input: %g.\n",
             tv.realTime());
     if (!bad_deck && ct) {
         if (monte)
@@ -1132,10 +1132,10 @@ IFsimulator::ReadLine(FILE *fp, bool *err)
                         if (errno == EINTR)
                             continue;
 #ifdef WIN32
-                        GRpkgIf()->ErrPrintf(ET_ERROR, "recv: WSA code %d.",
+                        GRpkg::self()->ErrPrintf(ET_ERROR, "recv: WSA code %d.",
                             WSAGetLastError());
 #else
-                        GRpkgIf()->Perror("recv");
+                        GRpkg::self()->Perror("recv");
 #endif
                     }
                     *err = true;
@@ -1316,7 +1316,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
         else if ((buffer = ReadLine(fp, err)) == 0) {
             if (*err) {
                 if (filename) {
-                    GRpkgIf()->ErrPrintf(ET_MSG,
+                    GRpkg::self()->ErrPrintf(ET_MSG,
                         "Error while reading file %s.\n", filename);
                 }
                 sLine::destroy(deck);
@@ -1432,11 +1432,11 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                 char *cwd = getcwd(0, 0);
                 if (path) {
                     if (chdir(path) < 0) {
-                        GRpkgIf()->Perror(path);
-                        GRpkgIf()->ErrPrintf(ET_ERROR,
+                        GRpkg::self()->Perror(path);
+                        GRpkg::self()->ErrPrintf(ET_ERROR,
                             "Failed to chdir to %s.\n", path);
                         if (filename) {
-                            GRpkgIf()->ErrPrintf(ET_MSG,
+                            GRpkg::self()->ErrPrintf(ET_MSG,
                                 "Error while reading file %s.\n", filename);
                         }
                         *err = true;
@@ -1460,7 +1460,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                     fclose(newfp);
                     if (*err) {
                         if (filename) {
-                            GRpkgIf()->ErrPrintf(ET_MSG,
+                            GRpkg::self()->ErrPrintf(ET_MSG,
                                 "From file %s.\n", filename);
                         }
                         sLine::destroy(deck);
@@ -1496,11 +1496,11 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                         end->set_line_num(line++);
                 }
                 else {
-                    GRpkgIf()->Perror(file);
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->Perror(file);
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "Failed to open included file %s.\n", file);
                     if (filename) {
-                        GRpkgIf()->ErrPrintf(ET_MSG,
+                        GRpkg::self()->ErrPrintf(ET_MSG,
                             "Error while reading file %s.\n", filename);
                     }
                     *err = true;
@@ -1520,10 +1520,10 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                 delete [] cwd;
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "filename missing from %s.\n",
-                    init_tok);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "filename missing from %s.\n", init_tok);
                 if (filename) {
-                    GRpkgIf()->ErrPrintf(ET_MSG,
+                    GRpkg::self()->ErrPrintf(ET_MSG,
                         "Error while reading file %s.\n", filename);
                 }
                 *err = true;
@@ -1573,11 +1573,11 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                 char *cwd = getcwd(0, 0);
                 if (path) {
                     if (chdir(path) < 0) {
-                        GRpkgIf()->Perror(path);
-                        GRpkgIf()->ErrPrintf(ET_ERROR,
+                        GRpkg::self()->Perror(path);
+                        GRpkg::self()->ErrPrintf(ET_ERROR,
                             "Failed to chdir to %s.\n", path);
                         if (filename) {
-                            GRpkgIf()->ErrPrintf(ET_MSG,
+                            GRpkg::self()->ErrPrintf(ET_MSG,
                                 "Error while reading file %s.\n", filename);
                         }
                         *err = true;
@@ -1592,10 +1592,10 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                 }
                 intptr_t offs = LibMap->find(file, name);
                 if (offs == LM_NO_NAME) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "block %s not found in library %s.\n", name, file);
                     if (filename) {
-                        GRpkgIf()->ErrPrintf(ET_MSG,
+                        GRpkg::self()->ErrPrintf(ET_MSG,
                             "Error while reading file %s.\n", filename);
                     }
                     *err = true;
@@ -1612,11 +1612,11 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
 
                 FILE *newfp;
                 if (offs == LM_NO_FILE || (newfp = fopen(file, "r")) == 0) {
-                    GRpkgIf()->Perror(file);
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->Perror(file);
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "Failed to open library file %s.\n", file);
                     if (filename) {
-                        GRpkgIf()->ErrPrintf(ET_MSG,
+                        GRpkg::self()->ErrPrintf(ET_MSG,
                             "Error while reading file %s.\n", filename);
                     }
                     *err = true;
@@ -1632,11 +1632,11 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                 }
 
                 if (fseek(newfp, offs, SEEK_SET) < 0) {
-                    GRpkgIf()->Perror(file);
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->Perror(file);
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "Seek failed in library file %s.\n", file);
                     if (filename) {
-                        GRpkgIf()->ErrPrintf(ET_MSG,
+                        GRpkg::self()->ErrPrintf(ET_MSG,
                             "Error while reading file %s.\n", filename);
                     }
                     *err = true;
@@ -1659,7 +1659,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                 fclose(newfp);
                 if (*err) {
                     if (filename) {
-                        GRpkgIf()->ErrPrintf(ET_MSG,
+                        GRpkg::self()->ErrPrintf(ET_MSG,
                             "From file %s.\n", filename);
                     }
                     sLine::destroy(deck);
@@ -1703,23 +1703,23 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
             }
             else {
                 if (!path) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "file name missing from %s call.\n", init_tok);
                     if (filename) {
-                        GRpkgIf()->ErrPrintf(ET_MSG,
+                        GRpkg::self()->ErrPrintf(ET_MSG,
                             "Error while reading file %s.\n", filename);
                     }
                 }
                 else {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "file or block name missing from %s call.\n",
                         init_tok);
                     if (filename) {
-                        GRpkgIf()->ErrPrintf(ET_MSG,
+                        GRpkg::self()->ErrPrintf(ET_MSG,
                             "Error while reading file %s.\n", filename);
                     }
                     if (path == lstring::strip_path(path))
-                        GRpkgIf()->ErrPrintf(ET_MSG,
+                        GRpkg::self()->ErrPrintf(ET_MSG,
     "This appears to be library block definition for \"%s\".\n"
     "Files containing library definitions can not be read as WRspice input\n"
     "except through .lib calls.\n", path);
@@ -1907,7 +1907,7 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
                 if (ptab) {
                     ptab->param_subst_options(&value);
                     if (ptab->errString) {
-                        GRpkgIf()->ErrPrintf(ET_WARN, "line %d : %s\n\%s\n",
+                        GRpkg::self()->ErrPrintf(ET_WARN, "line %d : %s\n\%s\n",
                             dd->line_num(), dd->line(), ptab->errString);
                         delete [] ptab->errString;
                         ptab->errString = 0;
@@ -2017,7 +2017,7 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
     IP.parseOptions(ci_options, ci_defOpt);
     for (sLine *dd = ci_options; dd; dd = dd->next()) {
         if (dd->error()) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "line %d : %s\n%s\n", 
+            GRpkg::self()->ErrPrintf(ET_WARN, "line %d : %s\n%s\n", 
                 dd->line_num(), dd->line(), dd->error());
         }
     }
@@ -2043,7 +2043,7 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
     tv.stop();
 
     if (Sp.GetFlag(FT_SIMDB)) {
-        GRpkgIf()->ErrPrintf(ET_MSGS,
+        GRpkg::self()->ErrPrintf(ET_MSGS,
         "Parameter and variable substitution: params=%d lines=%d time=%g.\n",
             ptab ? ptab->allocated() : 0, lcnt, tv.realTime());
     }
@@ -2072,7 +2072,7 @@ sFtCirc::expand(sLine *realdeck, bool *err)
     if (!ci_deck->next()) {
         if (err)
             *err = true;
-        GRpkgIf()->ErrPrintf(ET_WARN, "no lines in input.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "no lines in input.\n");
         sLine::destroy(realdeck);
         return (false);
     }
@@ -2089,13 +2089,13 @@ sFtCirc::expand(sLine *realdeck, bool *err)
         expandSubckts();
         tv.stop();
         if (Sp.GetFlag(FT_SIMDB))
-            GRpkgIf()->ErrPrintf(ET_MSGS,
+            GRpkg::self()->ErrPrintf(ET_MSGS,
                 "Subcircuit expansion time: %g.\n", tv.realTime());
 
         if (!ci_deck->next()) {
             if (err)
                 *err = true;
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "subcircuit expansion failed, circuit not loaded.\n");
             sLine::destroy(realdeck);
             return (false);
@@ -2176,7 +2176,7 @@ sFtCirc::expand(sLine *realdeck, bool *err)
             // comment character here.
 
             int xx = (*dd->line() == '*');
-            GRpkgIf()->ErrPrintf(ET_WARN, "line %d : %s\n%s\n", 
+            GRpkg::self()->ErrPrintf(ET_WARN, "line %d : %s\n%s\n", 
                 dd->line_num(), dd->line() + xx, dd->error());
             dd->set_error(0);
         }
@@ -2205,7 +2205,7 @@ sFtCirc::newCKT(sCKT **cktp, sTASK **taskp)
         // We get here from .exec blocks, haven't processed the deck
         // yet.
 
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "newCKT: can't build circuit object before text expansion.\n");
         return (E_FAILED);
     }
@@ -2242,7 +2242,7 @@ sFtCirc::newCKT(sCKT **cktp, sTASK **taskp)
 
             int xx = (*dd->line() == '*');
             if (ercnt < MAX_LINES) {
-                GRpkgIf()->ErrPrintf(ET_MSG, "Line %d : %s\n%s\n", 
+                GRpkg::self()->ErrPrintf(ET_MSG, "Line %d : %s\n%s\n", 
                     dd->line_num(), dd->line() + xx, dd->error());
             }
             ercnt++;
@@ -2250,7 +2250,7 @@ sFtCirc::newCKT(sCKT **cktp, sTASK **taskp)
         }
     }
     if (ercnt >=  MAX_LINES)
-        GRpkgIf()->ErrPrintf(ET_MSG, "...  More errors were detected.\n");
+        GRpkg::self()->ErrPrintf(ET_MSG, "...  More errors were detected.\n");
 
 #ifdef TIME_DEBUG
     tend = OP.seconds();
@@ -2455,8 +2455,10 @@ sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat)
             lstring::advtok(&str);
             blkname = lstring::gettok(&str);
 
-            if (allcmds || commands)
-                GRpkgIf()->ErrPrintf(ET_WARN, "redundant %s card.\n", cmdkey);
+            if (allcmds || commands) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "redundant %s card.\n",
+                    cmdkey);
+            }
             ld->li_next = dd->li_next;
             delete dd;
             commands = true;
@@ -2464,8 +2466,10 @@ sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat)
         else if (lstring::cimatch(altkey1, dd->li_line)) {
             if (oldformat)
                 break;
-            if (allcmds || altcmds1)
-                GRpkgIf()->ErrPrintf(ET_WARN, "redundant %s card.\n", altkey1);
+            if (allcmds || altcmds1) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "redundant %s card.\n",
+                    altkey1);
+            }
             if (allcmds) {
                 ld->li_next = dd->li_next;
                 delete dd;
@@ -2477,8 +2481,10 @@ sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat)
         else if (lstring::cimatch(altkey2, dd->li_line)) {
             if (oldformat)
                 break;
-            if (allcmds || altcmds2)
-                GRpkgIf()->ErrPrintf(ET_WARN, "redundant %s card.\n", altkey2);
+            if (allcmds || altcmds2) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "redundant %s card.\n",
+                    altkey2);
+            }
             if (allcmds) {
                 ld->li_next = dd->li_next;
                 delete dd;
@@ -2504,7 +2510,7 @@ sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat)
                 altcmds2 = false;
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_WARN, "misplaced %s card.\n",
+                GRpkg::self()->ErrPrintf(ET_WARN, "misplaced %s card.\n",
                     ENDC_KW);
                 ld->li_next = dd->li_next;
                 delete dd;
