@@ -115,19 +115,19 @@ HLPtopic::load_text()
         body_added = true;
         lstr.add("<body ");
         if (BGimage && *BGimage) {
-            sprintf(tbuf, "background=\"%s\" ", BGimage);
+            snprintf(tbuf, sizeof(tbuf), "background=\"%s\" ", BGimage);
             lstr.add(tbuf);
         }
         else if (BGcolor && *BGcolor) {
-            sprintf(tbuf, "bgcolor=\"%s\" ", BGcolor);
+            snprintf(tbuf, sizeof(tbuf), "bgcolor=\"%s\" ", BGcolor);
             lstr.add(tbuf);
         }
         if (FGcolor && *FGcolor) {
-            sprintf(tbuf, "text=\"%s\" ", FGcolor);
+            snprintf(tbuf, sizeof(tbuf), "text=\"%s\" ", FGcolor);
             lstr.add(tbuf);
         }
         if (LNcolor && *LNcolor) {
-            sprintf(tbuf, "link=\"%s\" ", LNcolor);
+            snprintf(tbuf, sizeof(tbuf), "link=\"%s\" ", LNcolor);
             lstr.add(tbuf);
         }
         lstr.add(">\n");
@@ -151,7 +151,7 @@ HLPtopic::load_text()
                 lstr.add(hdr);
         }
         if (tp_title && *tp_title && !did_title) {
-            sprintf(tbuf, "<H1>%s</H1>\n", tp_title);
+            snprintf(tbuf, sizeof(tbuf), "<H1>%s</H1>\n", tp_title);
             lstr.add(tbuf);
         }
         if (tp_tag && HLP()->get_main_tag() &&
@@ -195,7 +195,7 @@ HLPtopic::load_text()
                 tl->set_buttontext(tl->description());
                 if (!tl->buttontext())
                     tl->set_buttontext("<unknown>");
-                sprintf(tbuf, "<A HREF=\"%s\">%s</A><BR>\n",
+                snprintf(tbuf, sizeof(tbuf), "<A HREF=\"%s\">%s</A><BR>\n",
                     tl->keyword(), tl->buttontext());
                 lstr.add(tbuf);
             }
@@ -206,7 +206,7 @@ HLPtopic::load_text()
                 tl->set_buttontext(tl->description());
                 if (!tl->buttontext())
                     tl->set_buttontext("<unknown>");
-                sprintf(tbuf, "<A HREF=\"%s\">%s</A><BR>\n",
+                snprintf(tbuf, sizeof(tbuf), "<A HREF=\"%s\">%s</A><BR>\n",
                     tl->keyword(), tl->buttontext());
                 lstr.add(tbuf);
             }
@@ -495,7 +495,7 @@ sHelp2html::process_dir(char *dir)
     while ((de = readdir(wdir)) != 0) {
         char *s;
         if ((s = strrchr(de->d_name, '.')) && !strcmp(s+1, "hlp")) {
-            sprintf(buf, "%s/%s", dir, de->d_name);
+            snprintf(buf, sizeof(buf), "%s/%s", dir, de->d_name);
             process_file(buf);
         }
     }

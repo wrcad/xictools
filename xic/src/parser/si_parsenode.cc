@@ -919,7 +919,7 @@ ParseNode::checkCellsInTree(BBox *BB)
                     }
                     if (cellname) {
                         int len = strlen(stname) + strlen(cellname) + 2;
-                        char *t = new char[le ];
+                        char *t = new char[len];
                         snprintf(t, len, "%s.%s", stname, cellname);
                         delete [] cellname;
                         delete [] stname;

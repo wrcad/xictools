@@ -278,12 +278,14 @@ SRCdev::parse(int type, sCKT *ckt, sLine *current)
             // makeSnode() in inpptree.cc will not try to evaluate strings
             // starting with '\\', so if we have a node named "c" it won't
             // be replaced with "2299792500", for example.
-            if (!cieq(nname3, groundname) && !cieq(nname4, groundname))
-                sprintf(buf, "v(\"\\%s\", \"\\%s\")", nname3, nname4);
+            if (!cieq(nname3, groundname) && !cieq(nname4, groundname)) {
+                snprintf(buf, sizeof(buf), "v(\"\\%s\", \"\\%s\")",
+                    nname3, nname4);
+            }
             else if (!cieq(nname3, groundname))
-                sprintf(buf, "v(\"\\%s\")", nname3);
+                snprintf(buf, sizeof(buf), "v(\"\\%s\")", nname3);
             else if (!cieq(nname4, groundname))
-                sprintf(buf, "(-v(\"\\%s\"))", nname4);
+                snprintf(buf, sizeof(buf), "(-v(\"\\%s\"))", nname4);
 
             if (strlen(buf))
                 xalias = buf;
@@ -330,8 +332,10 @@ SRCdev::parse(int type, sCKT *ckt, sLine *current)
 
             // set alias for "x" in function
             *buf = '\0';
-            if (error == OK)
-                sprintf(buf, "i(\"\\%s\")", (char*)data.v.uValue);
+            if (error == OK) {
+                snprintf(buf, sizeof(buf), "i(\"\\%s\")",
+                    (char*)data.v.uValue);
+            }
             xalias = buf;
         }
         delete [] nm;
@@ -550,7 +554,7 @@ SRCdev::src_parse(
                 if (leadcnt) {
                     if (cieq(leadname, "dc")) {
                         char tbuf[64];
-                        sprintf(tbuf, "%g", leadvals[0]);
+                        snprintf(tbuf, sizeof(tbuf), "%g", leadvals[0]);
                         IP.logError(current, "Ambiguous DC value, using %s",
                             tbuf);
                     }
@@ -601,7 +605,7 @@ SRCdev::src_parse(
                 if (leadcnt) {
                     if (cieq(leadname, "dc")) {
                         char tbuf[64];
-                        sprintf(tbuf, "%g", leadvals[0]);
+                        snprintf(tbuf, sizeof(tbuf), "%g", leadvals[0]);
                         IP.logError(current, "Ambiguous DC value, using %s",
                             tbuf);
                     }
@@ -735,7 +739,7 @@ namespace {
                     IP.logError(current, mesg);
                     return;
                 }
-                sprintf(buf, "%s#branch", node1);
+                snprintf(buf, sizeof(buf), "%s#branch", node1);
                 delete [] node1;
                 tok[i] = copy(buf);
             }
@@ -751,11 +755,11 @@ namespace {
                     return;
                 }
                 if (cieq(node2, groundname))
-                    sprintf(buf, "v(%s)", node1);
+                    snprintf(buf, sizeof(buf), "v(%s)", node1);
                 else if (cieq(node1, groundname))
-                    sprintf(buf, "(-v(%s))", node2);
+                    snprintf(buf, sizeof(buf), "(-v(%s))", node2);
                 else
-                    sprintf(buf, "v(%s,%s)", node1, node2);
+                    snprintf(buf, sizeof(buf), "v(%s,%s)", node1, node2);
                 delete [] node1;
                 delete [] node2;
                 tok[i] = copy(buf);
@@ -805,26 +809,37 @@ namespace {
                 if (v != 0.0) {
                     if (string) {
                         if (v > 0)
-                            sprintf(buf, " + %s*", vals[i]);
+                            snprintf(buf, sizeof(buf), " + %s*", vals[i]);
                         else
-                            sprintf(buf, " - %s*", vals[i]+1);
+                            snprintf(buf, sizeof(buf), " - %s*", vals[i]+1);
                     }
                     else
-                        sprintf(buf, "%s*", vals[i]);
+                        snprintf(buf, sizeof(buf), "%s*", vals[i]);
                     int first = 1;
                     for (int j = 0; j < numargs; ++j) {
                         if (exp[j] == 1) {
-                            if (!first)
-                                sprintf(buf + strlen(buf), "*");
+                            if (!first) {
+                                int len = strlen(buf);
+                                snprintf(buf + len, sizeof(buf) - len, "*");
+                            }
                             first = 0;
-                            sprintf(buf + strlen(buf), "%s", args[j]);
+                            int len = strlen(buf);
+                            snprintf(buf + len, sizeof(buf) - len, "%s",
+                                args[j]);
                         }
                         else if (exp[j]) {
-                            if (!first)
-                                sprintf(buf + strlen(buf), "*");
-                            sprintf(buf + strlen(buf), "%s", args[j]);
-                            for (int k = 1; k < exp[j]; k++)
-                                sprintf(buf + strlen(buf), "*%s", args[j]);
+                            if (!first) {
+                                int len = strlen(buf);
+                                snprintf(buf + len, sizeof(buf) - len, "*");
+                            }
+                            int len = strlen(buf);
+                            snprintf(buf + len, sizeof(buf) - len, "%s",
+                                args[j]);
+                            for (int k = 1; k < exp[j]; k++) {
+                                len = strlen(buf);
+                                snprintf(buf + len, sizeof(buf) - len, "*%s",
+                                    args[j]);
+                            }
                             first = 0;
                         }
                     }
@@ -835,7 +850,7 @@ namespace {
         }
         if (numvals == 1 && numargs == 1 && string) {
             // if one coeff and one dimension, assume linear coeff
-            sprintf(buf, "*%s", args[0]);
+            snprintf(buf, sizeof(buf), "*%s", args[0]);
             string = build_str(string, buf);
         }
         if (!string)

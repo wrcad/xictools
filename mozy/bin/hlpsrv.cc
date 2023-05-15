@@ -149,19 +149,19 @@ HLPtopic::load_text()
         body_added = true;
         lstr.add("<body ");
         if (BGimage && *BGimage) {
-            sprintf(tbuf, "background=\"%s\" ", BGimage);
+            snprintf(tbuf, sizeof(tbuf), "background=\"%s\" ", BGimage);
             lstr.add(tbuf);
         }
         else if (BGcolor && *BGcolor) {
-            sprintf(tbuf, "bgcolor=\"%s\" ", BGcolor);
+            snprintf(tbuf, sizeof(tbuf), "bgcolor=\"%s\" ", BGcolor);
             lstr.add(tbuf);
         }
         if (FGcolor && *FGcolor) {
-            sprintf(tbuf, "text=\"%s\" ", FGcolor);
+            snprintf(tbuf, sizeof(tbuf), "text=\"%s\" ", FGcolor);
             lstr.add(tbuf);
         }
         if (LNcolor && *LNcolor) {
-            sprintf(tbuf, "link=\"%s\" ", LNcolor);
+            snprintf(tbuf, sizeof(tbuf), "link=\"%s\" ", LNcolor);
             lstr.add(tbuf);
         }
         lstr.add(">\n");
@@ -185,7 +185,7 @@ HLPtopic::load_text()
                 lstr.add(hdr);
         }
         if (tp_title && *tp_title && !did_title) {
-            sprintf(tbuf, "<H1>%s</H1>\n", tp_title);
+            snprintf(tbuf, sizeof(tbuf), "<H1>%s</H1>\n", tp_title);
             lstr.add(tbuf);
         }
         if (tp_tag && HLP()->get_main_tag() &&
@@ -229,7 +229,7 @@ HLPtopic::load_text()
                 tl->set_buttontext(tl->description());
                 if (!tl->buttontext())
                     tl->set_buttontext("<unknown>");
-                sprintf(tbuf, "<A HREF=\"%s\">%s</A><BR>\n",
+                snprintf(tbuf, sizeof(tbuf), "<A HREF=\"%s\">%s</A><BR>\n",
                     tl->keyword(), tl->buttontext());
                 lstr.add(tbuf);
             }
@@ -240,7 +240,7 @@ HLPtopic::load_text()
                 tl->set_buttontext(tl->description());
                 if (!tl->buttontext())
                     tl->set_buttontext("<unknown>");
-                sprintf(tbuf, "<A HREF=\"%s\">%s</A><BR>\n",
+                snprintf(tbuf, sizeof(tbuf), "<A HREF=\"%s\">%s</A><BR>\n",
                     tl->keyword(), tl->buttontext());
                 lstr.add(tbuf);
             }
@@ -499,8 +499,9 @@ main(int argc, char **argv)
                 if (!lstring::is_rooted(t)) {
                     char *cwd = getcwd(0, 256);
                     if (cwd) {
-                        url = new char[strlen(cwd) + strlen(t) + 2];
-                        sprintf(url, "%s/%s", cwd, t);
+                        int len = strlen(cwd) + strlen(t) + 2;
+                        url = new char[len];
+                        snprintf(url, len,  "%s/%s", cwd, t);
                         delete [] cwd;
                         if (access(url, R_OK)) {
                             // no such file
@@ -525,10 +526,10 @@ main(int argc, char **argv)
     if (err) {
         HLP()->word(".");
         if (HLP()->error_msg()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s", HLP()->error_msg());
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s", HLP()->error_msg());
             exit (1);
         }
-        GRpkgIf()->ErrPrintf(ET_WARN, "%s", err);
+        GRpkg::self()->ErrPrintf(ET_WARN, "%s", err);
         return (1);
     }
     return (0);

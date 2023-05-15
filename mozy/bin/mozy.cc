@@ -158,7 +158,7 @@ namespace {
         sLstr lstr; 
         passwd *pw = getpwuid(getuid());
         if (pw == 0)
-            GRpkgIf()->Perror("getpwuid");
+            GRpkg::self()->Perror("getpwuid");
         else {
             lstr.add(pw->pw_dir);
             lstr.add_c('/');
@@ -294,9 +294,9 @@ int main(int argc, char **argv)
     }
 #endif
 
-    if (GRpkgIf()->InitPkg(GR_CONFIG, &argc, argv))
+    if (GRpkg::self()->InitPkg(GR_CONFIG, &argc, argv))
         return (1);
-    GRpkgIf()->InitColormap(0, 0, false);
+    GRpkg::self()->InitColormap(0, 0, false);
 
     char *path = get_default_path(do_xic, do_wrs);
     HLP()->set_path(path, false);
@@ -330,8 +330,9 @@ int main(int argc, char **argv)
             if (!lstring::is_rooted(argv[1])) {
                 char *cwd = getcwd(0, 0);
                 if (cwd) {
-                    char *t = new char[strlen(cwd) + strlen(argv[1]) + 2];
-                    sprintf(t, "%s/%s", cwd, argv[1]);
+                    int len = strlen(cwd) + strlen(argv[1]) + 2;
+                    char *t = new char[len];
+                    snprintf(t, len, "%s/%s", cwd, argv[1]);
                     delete [] cwd;
                     url = t;
                 }
@@ -355,13 +356,13 @@ int main(int argc, char **argv)
     if (err) {
         HLP()->word(".");
         if (HLP()->error_msg()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s", HLP()->error_msg());
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s", HLP()->error_msg());
             exit (1);
         }
-        GRpkgIf()->ErrPrintf(ET_WARN, "%s", err);
+        GRpkg::self()->ErrPrintf(ET_WARN, "%s", err);
     }
 
-    GRpkgIf()->MainLoop();
+    GRpkg::self()->MainLoop();
     return (0);
 }
 
@@ -422,14 +423,15 @@ namespace {
             string = msw::GetProgramRoot("Mozy");
             if (string) {
                 string = enquote(string);
-                sprintf(buf, "%s/help", string);
+                snprintf(buf, sizeof(buf), "%s/help", string);
                 delete [] string;
                 string = buf;
             }
         }
 #endif
         if (!string) {
-            sprintf(buf, "%s/%s/%s/help", prefix, TOOLS_ROOT, APP_ROOT);
+            snprintf(buf, sizeof(buf), "%s/%s/%s/help", prefix,
+                TOOLS_ROOT, APP_ROOT);
             string = buf;
         }
         if (string && *string) {
@@ -451,14 +453,15 @@ namespace {
                 string = msw::GetProgramRoot("Xic");
                 if (string) {
                     string = enquote(string);
-                    sprintf(buf, "%s/help", string);
+                    snprintf(buf, sizeof(buf), "%s/help", string);
                     delete [] string;
                     string = buf;
                 }
             }
 #endif
             if (!string) {
-                sprintf(buf, "%s/%s/%s/help", prefix, TOOLS_ROOT, "xic");
+                snprintf(buf, sizeof(buf), "%s/%s/%s/help", prefix,
+                    TOOLS_ROOT, "xic");
                 string = buf;
             }   
             if (string && *string) {
@@ -481,14 +484,15 @@ namespace {
                 string = msw::GetProgramRoot("WRspice");
                 if (string) {
                     string = enquote(string);
-                    sprintf(buf, "%s/help", string);
+                    snprintf(buf, sizeof(buf), "%s/help", string);
                     delete [] string;
                     string = buf;
                 }
             }
 #endif
             if (!string) {
-                sprintf(buf, "%s/%s/%s/help", prefix, TOOLS_ROOT, "wrspice");
+                snprintf(buf, sizeof(buf), "%s/%s/%s/help", prefix,
+                    TOOLS_ROOT, "wrspice");
                 string = buf;
             }   
             if (string && *string) {
