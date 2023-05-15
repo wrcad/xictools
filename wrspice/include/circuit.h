@@ -633,6 +633,7 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_gminFirst           false
 #define DEF_hspice              false
 #define DEF_jjaccel             false
+#define DEF_nodcop              false
 #define DEF_noiter              false
 #define DEF_nojjtp              false
 #define DEF_noKLU               false
@@ -712,6 +713,7 @@ struct sOPTIONS : public sJOB
             OPTgminfirst    = DEF_gminFirst;
             OPThspice       = DEF_hspice;
             OPTjjaccel      = DEF_jjaccel;
+            OPTnodcop       = DEF_nodcop;
             OPTnoiter       = DEF_noiter;
             OPTnojjtp       = DEF_nojjtp;
             OPTnoklu        = DEF_noKLU;
@@ -781,6 +783,7 @@ struct sOPTIONS : public sJOB
             OPTgminfirst_given      = 0;
             OPThspice_given         = 0;
             OPTjjaccel_given        = 0;
+            OPTnodcop_given         = 0;
             OPTnoiter_given         = 0;
             OPTnojjtp_given         = 0;
             OPTnoklu_given          = 0;
@@ -861,6 +864,7 @@ struct sOPTIONS : public sJOB
     bool OPTgminfirst;
     bool OPThspice;
     bool OPTjjaccel;
+    bool OPTnodcop;
     bool OPTnoiter;
     bool OPTnojjtp;
     bool OPTnoklu;
@@ -930,6 +934,7 @@ struct sOPTIONS : public sJOB
     unsigned int OPTgminfirst_given:1;
     unsigned int OPThspice_given:1;
     unsigned int OPTjjaccel_given:1;
+    unsigned int OPTnodcop_given:1;
     unsigned int OPTnoiter_given:1;
     unsigned int OPTnojjtp_given:1;
     unsigned int OPTnoklu_given:1;
@@ -1036,6 +1041,7 @@ struct sTASK : public cBase
 #define TSKgminFirst        TSKopts.OPTgminfirst
 #define TSKhspice           TSKopts.OPThspice
 #define TSKjjaccel          TSKopts.OPTjjaccel
+#define TSKnodcop           TSKopts.OPTnodcop
 #define TSKnoiter           TSKopts.OPTnoiter
 #define TSKnojjtp           TSKopts.OPTnojjtp
 #define TSKnoKLU            TSKopts.OPTnoklu

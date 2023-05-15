@@ -80,7 +80,6 @@ ACanalysis::anFunc(sCKT *ckt, int restart)
         ckt->CKTcurrentAnalysis &= ~DOING_AC;
         return (error);
     }
-
     OP.endPlot(job->JOBrun, false);
     ckt->CKTcurrentAnalysis &= ~DOING_AC;
     return (error);
@@ -96,10 +95,12 @@ ACanalysis::ac_dcoperation(sCKT *ckt, int restart)
     if (error)
         return (error);
 
-    error = ckt->op(MODEDCOP | MODEINITJCT, 
-        MODEDCOP | MODEINITFLOAT, ckt->CKTcurTask->TSKdcMaxIter);
-    if (error)
-        return (error);
+    if (!ckt->CKTcurTask->TSKnodcop) {
+        error = ckt->op(MODEDCOP | MODEINITJCT, 
+            MODEDCOP | MODEINITFLOAT, ckt->CKTcurTask->TSKdcMaxIter);
+        if (error)
+            return (error);
+    }
 
     ckt->CKTmode = MODEDCOP | MODEINITSMSIG;
     error = ckt->load();
