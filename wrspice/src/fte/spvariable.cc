@@ -138,7 +138,7 @@ IFsimulator::SetVar(const char *varname, int value)
                 "is needed to hide this character from the shell.\n");
         else {
             char buf[64];
-            sprintf(buf, "%d", value);
+            snprintf(buf, sizeof(buf), "%d", value);
             OP.vecSet(vname+1, buf, false);
         }
     }
@@ -173,7 +173,7 @@ IFsimulator::SetVar(const char *varname, double value)
                 "is needed to hide this character from the shell.\n");
         else {
             char buf[64];
-            sprintf(buf, "%.16e", value);
+            snprintf(buf, sizeof(buf), "%.16e", value);
             OP.vecSet(vname+1, buf, false);
         }
     }
@@ -458,12 +458,12 @@ IFsimulator::GetVar(const char *name, VTYPenum type, VTvalue *retval,
             return (true);
         }
         if (type == VTYP_STRING && v->type() == VTYP_NUM) {
-            sprintf(buf, "%d", v->integer());
+            snprintf(buf, sizeof(buf), "%d", v->integer());
             retval->set_string(lstring::copy(buf));
             return (true);
         }
         if (type == VTYP_STRING && v->type() == VTYP_REAL) {
-            sprintf(buf, "%g", v->real());
+            snprintf(buf, sizeof(buf), "%g", v->real());
             retval->set_string(lstring::copy(buf));
             return (true);
         }
@@ -473,15 +473,15 @@ IFsimulator::GetVar(const char *name, VTYPenum type, VTvalue *retval,
             for (variable *vv = v->list(); vv; vv = vv->next()) {
                 switch (vv->type()) {
                 case VTYP_NUM:
-                    sprintf(buf, " %d", vv->integer());
+                    snprintf(buf, sizeof(buf), " %d", vv->integer());
                     lstr.add(buf);
                     break;
                 case VTYP_REAL:
-                    sprintf(buf, " %g", vv->real());
+                    snprintf(buf, sizeof(buf), " %g", vv->real());
                     lstr.add(buf);
                     break;
                 case VTYP_STRING:
-                    sprintf(buf, " %s", vv->string());
+                    snprintf(buf, sizeof(buf), " %s", vv->string());
                     lstr.add(buf);
                     break;
                 default:
@@ -622,7 +622,7 @@ IFsimulator::VarPrint(sLstr *plstr)
             if (!plstr)
                 TTY.printf(fmt, vars[j].x_char, v->name());
             else {
-                sprintf(buf, fmt, vars[j].x_char, v->name());
+                snprintf(buf, sizeof(buf), fmt, vars[j].x_char, v->name());
                 plstr->add(buf);
             }
         }
@@ -631,7 +631,8 @@ IFsimulator::VarPrint(sLstr *plstr)
             if (!plstr) 
                 TTY.printf("%c %-18s", vars[j].x_char, v->name());
             else {
-                sprintf(buf, "%c %-18s", vars[j].x_char, v->name());
+                snprintf(buf, sizeof(buf), "%c %-18s", vars[j].x_char,
+                    v->name());
                 plstr->add(buf);
             }
 
@@ -643,7 +644,7 @@ IFsimulator::VarPrint(sLstr *plstr)
                 if (!plstr)
                     TTY.printf(fmt, s);
                 else {
-                    sprintf(buf, fmt, s);
+                    snprintf(buf, sizeof(buf), fmt, s);
                     plstr->add(buf);
                 }
             }
@@ -651,7 +652,7 @@ IFsimulator::VarPrint(sLstr *plstr)
                 if (!plstr)
                     TTY.printf("%s\n", s);
                 else {
-                    sprintf(buf, "%s\n", s);
+                    snprintf(buf, sizeof(buf), "%s\n", s);
                     plstr->add(buf);
                 }
             }

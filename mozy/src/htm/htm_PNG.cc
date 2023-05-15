@@ -237,7 +237,8 @@ htmImageManager::readPNG(ImageBuffer *ib)
         // check anyway.
 
         if (ncolors > 256) {
-            sprintf(msg, "PNG_COLOR_TYPE_PALETTE: %i colors reported "
+            snprintf(msg, sizeof(msg),
+                "PNG_COLOR_TYPE_PALETTE: %i colors reported "
                 "while max is 256.", ncolors);
             my_png_error(png_ptr, msg);
         }
@@ -358,7 +359,7 @@ htmImageManager::readPNG(ImageBuffer *ib)
         break;
 
     default:
-        sprintf(msg, "bad PNG image: unknown color type (%d)",
+        snprintf(msg, sizeof(msg), "bad PNG image: unknown color type (%d)",
             png_get_color_type(png_ptr, info_ptr));
         my_png_error(png_ptr, msg);
         break;

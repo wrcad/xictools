@@ -468,13 +468,13 @@ sSWEEPprms::setInput()
 
     char nbuf[32];
     if (devs[0]) {
-        sprintf(nbuf, "%.15e", state[0]);
+        snprintf(nbuf, sizeof(nbuf), "%.15e", state[0]);
         for (wordlist *wd = devs[0]; wd; wd = wd->wl_next) {
             for (wordlist *wp = prms[0]; wp; wp = wp->wl_next)
                 out_cir->addDeferred(wd->wl_word, wp->wl_word, nbuf);
         }
         if (devs[1]) {
-            sprintf(nbuf, "%.15e", state[1]);
+            snprintf(nbuf, sizeof(nbuf), "%.15e", state[1]);
             for (wordlist *wd = devs[1]; wd; wd = wd->wl_next) {
                 for (wordlist *wp = prms[1]; wp; wp = wp->wl_next)
                     out_cir->addDeferred(wd->wl_word, wp->wl_word, nbuf);

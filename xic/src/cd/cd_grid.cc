@@ -191,7 +191,6 @@ cCD::CheckGrid(CDs *sdesc, int spacing, const BBox *BB, const char *layer_list,
         fprintf(fp, "Layers: all\n");
     fprintf(fp, "Types: %s\n", types && *types ? types : "bpw");
 
-    char buf[256];
     CDl *ld;
     CDlgen lgen(Physical);
     while ((ld = lgen.next()) != 0) {
@@ -247,7 +246,9 @@ cCD::CheckGrid(CDs *sdesc, int spacing, const BBox *BB, const char *layer_list,
                 return (false);
             }
         }
-        sprintf(buf, "Off grid vertices on layer %s:", ld->name());
+        char buf[64];
+        snprintf(buf, sizeof(buf), "Off grid vertices on layer %s:",
+            ld->name());
         gc.dump(fp, buf);
     }
     return (true);

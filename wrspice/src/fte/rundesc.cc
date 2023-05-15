@@ -280,7 +280,7 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
             else if (dd->regular()) {
                 if (!strrchr(dd->dname(), '(')) {
                     v->units()->set(UU_VOLTAGE);
-                    sprintf(buf, "v(%s)", dd->dname());
+                    snprintf(buf, sizeof(buf), "v(%s)", dd->dname());
                     v->set_name(buf);
                 }
             }
@@ -411,7 +411,8 @@ sRunDesc::dumpSegment()
     if (rd_pointCount) {
         if (rd_segfilebase && !rd_rd) {
             char buf[128];
-            sprintf(buf, "%s.s%02d", rd_segfilebase, rd_segindex);
+            snprintf(buf, sizeof(buf), "%s.s%02d", rd_segfilebase,
+                rd_segindex);
             bool use_csdf = false;
             if (use_csdf) {
                 cCSDFout csdf(rd_runPlot);

@@ -140,7 +140,7 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
     pe_r_menu = gtk_menu_new();
     gtk_widget_set_name(pe_r_menu, "Rmenu");
     for (int i = 0; i < PE_NUMSTORES; i++) {
-        sprintf(buf, "%d", i);
+        snprintf(buf, sizeof(buf), "%d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -178,7 +178,7 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
     pe_s_menu = gtk_menu_new();
     gtk_widget_set_name(pe_s_menu, "Smenu");
     for (int i = 1; i < PE_NUMSTORES; i++) {
-        sprintf(buf, "%d", i);
+        snprintf(buf, sizeof(buf), "%d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);

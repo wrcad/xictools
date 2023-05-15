@@ -170,7 +170,7 @@ sCs::sCs(GRobject caller, bool(*callback)(const char*, bool, void*),
     // Label in frame plus help button.
     //
     char buf[256];
-    sprintf(buf, "Saving %s, enter pathname for file:",
+    snprintf(buf, sizeof(buf), "Saving %s, enter pathname for file:",
         chdname ? chdname : "");
     GtkWidget *hbox = gtk_hbox_new(false, 2);
     gtk_widget_show(hbox);
@@ -287,7 +287,7 @@ sCs::update(const char *chdname)
     if (!chdname)
         return;
     char buf[256];
-    sprintf(buf, "Saving %s, enter pathname for file:", chdname);
+    snprintf(buf, sizeof(buf), "Saving %s, enter pathname for file:", chdname);
     gtk_label_set_text(GTK_LABEL(cs_label), buf);
     cs_llist->update();
 }

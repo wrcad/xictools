@@ -716,18 +716,20 @@ sCHECKprms::find_oprange(wordlist *wl, bool dolower, bool doupper)
 
     char *lo1 = 0, *hi1 = 0, *lo2 = 0, *hi2 = 0;
     if (name1) {
-        lo1 = new char[strlen(name1) + 5];
-        hi1 = new char[strlen(name1) + 5];
-        sprintf(lo1, "%s_min", name1);
-        sprintf(hi1, "%s_max", name1);
+        int len = strlen(name1) + 5;
+        lo1 = new char[len];
+        hi1 = new char[len];
+        snprintf(lo1, len, "%s_min", name1);
+        snprintf(hi1, len, "%s_max", name1);
         OPLO1 = lo1;
         OPHI1 = hi1;
     }
     if (name2) {
-        lo2 = new char[strlen(name2) + 5];
-        hi2 = new char[strlen(name2) + 5];
-        sprintf(lo2, "%s_min", name2);
-        sprintf(hi2, "%s_max", name2);
+        int len = strlen(name2) + 5;
+        lo2 = new char[len];
+        hi2 = new char[len];
+        snprintf(lo2, len, "%s_min", name2);
+        snprintf(hi2, len, "%s_max", name2);
         OPLO2 = lo2;
         OPHI2 = hi2;
     }
@@ -1315,13 +1317,13 @@ sCHECKprms::initInput(double value1, double value2)
     else {
         char nbuf[32];
         if (ch_devs1) {
-            sprintf(nbuf, "%.15e", value1);
+            snprintf(nbuf, sizeof(nbuf), "%.15e", value1);
             for (wordlist *wd = ch_devs1; wd; wd = wd->wl_next) {
                 for (wordlist *wp = ch_prms1; wp; wp = wp->wl_next)
                     out_cir->addDeferred(wd->wl_word, wp->wl_word, nbuf);
             }
             if (ch_devs2) {
-                sprintf(nbuf, "%.15e", value2);
+                snprintf(nbuf, sizeof(nbuf), "%.15e", value2);
                 for (wordlist *wd = ch_devs2; wd; wd = wd->wl_next) {
                     for (wordlist *wp = ch_prms2; wp; wp = wp->wl_next)
                         out_cir->addDeferred(wd->wl_word, wp->wl_word, nbuf);
@@ -1395,11 +1397,11 @@ sCHECKprms::initial(bool no_output)
         }
         if (ch_op) {
             if (ch_monte) {
-                sprintf(buf, "[DATA] %3d %3d trial %3d",
+                snprintf(buf, sizeof(buf), "[DATA] %3d %3d trial %3d",
                     -ch_step1, -ch_step2, 1);
             }
             else {
-                sprintf(buf, "[DATA] %3d %3d %12g %12g", 
+                snprintf(buf, sizeof(buf), "[DATA] %3d %3d %12g %12g", 
                     -ch_step1, -ch_step2, value1, value2);
             }
         }
@@ -1675,8 +1677,10 @@ sCHECKprms::trial(int i, int j, double value1, double value2, bool no_output)
             int num = (j + ch_step2)*(2*ch_step1 + 1) + i + ch_step1 + 1;
             if (GP.MpWhere(ch_graphid, i, j) && !ch_batchmode)
                 TTY.printf_force("%3d %3d run %3d\n", i, j, num);
-            if (ch_op)
-                sprintf(buf, "[DATA] %3d %3d trial %3d", i, j, num);
+            if (ch_op) {
+                snprintf(buf, sizeof(buf),"[DATA] %3d %3d trial %3d", i, j,
+                    num);
+            }
         }
     }
     else {
@@ -1685,7 +1689,7 @@ sCHECKprms::trial(int i, int j, double value1, double value2, bool no_output)
             if (GP.MpWhere(ch_graphid, i, j) && !ch_batchmode)
                 TTY.printf_force("%3d %3d %12g %12g\n", i, j, value1, value2);
             if (ch_op) {
-                sprintf(buf, "[DATA] %3d %3d %12g %12g",
+                snprintf(buf, sizeof(buf), "[DATA] %3d %3d %12g %12g",
                     i, j, value1, value2);
             }
         }
@@ -1924,7 +1928,7 @@ sCHECKprms::findRange(bool dolower, bool doupper)
         sDataVec *d = out_plot->find_vec(ch_names->value());
         if (d && d->isreal()) {
             char maskbuf[64];
-            sprintf(maskbuf, "%s_mask", ch_names->value());
+            snprintf(maskbuf, sizeof(maskbuf), "%s_mask", ch_names->value());
             sDataVec *vm = out_plot->find_vec(maskbuf);
             set_vec(OPLO1, 0.0);
             set_vec(OPHI1, 0.0);
@@ -2026,7 +2030,7 @@ sCHECKprms::set_vec(const char *name, double val)
     lstr.add_c(Sp.PlotCatchar());
     lstr.add(name);
     char buf[64];
-    sprintf(buf, "%.12g", val);
+    snprintf(buf, sizeof(buf), "%.12g", val);
     OP.vecSet(lstr.string(), buf);
 }
 
@@ -2043,9 +2047,9 @@ sCHECKprms::set_opvec(int n1, int n2)
     }
     else {
         n1 += n1;
-        sprintf(buf, "%s[%d]", OPLO1, n1);
+        snprintf(buf, sizeof(buf), "%s[%d]", OPLO1, n1);
         set_vec(buf, 0.0);
-        sprintf(buf, "%s[%d]", OPHI1, n1);
+        snprintf(buf, sizeof(buf), "%s[%d]", OPHI1, n1);
         set_vec(buf, 0.0);
     }
     if (n2 < 0) {
@@ -2054,9 +2058,9 @@ sCHECKprms::set_opvec(int n1, int n2)
     }
     else {
         n2 += n2;
-        sprintf(buf, "%s[%d]", OPLO2, n2);
+        snprintf(buf, sizeof(buf), "%s[%d]", OPLO2, n2);
         set_vec(buf, 0.0);
-        sprintf(buf, "%s[%d]", OPHI2, n2);
+        snprintf(buf, sizeof(buf), "%s[%d]", OPHI2, n2);
         set_vec(buf, 0.0);
     }
 }
@@ -2159,13 +2163,14 @@ sCHECKprms::df_open(int c, char **rdname, FILE **rdfp, sNames *tnames)
     if ((s = strrchr(buf1, '.')) != 0)
         *s = '\0';
     char extn[8];
-    sprintf(extn, ".%c00", c);
+    snprintf(extn, sizeof(extn), ".%c00", c);
     strcat(buf1, extn);
     s = strchr(buf1, '.') + 2;
     int i;
     for (i = 1; ; i++) {
-        if (access(buf1, 0)) break;
-        sprintf(s, "%02d", i);
+        if (access(buf1, 0))
+            break;
+        snprintf(s, 4, "%02d", i);
     }
     FILE *fp = fopen(buf1, "w");
     if (!fp) {
@@ -2198,14 +2203,18 @@ sCHECKprms::df_open(int c, char **rdname, FILE **rdfp, sNames *tnames)
                 sDataVec *n2 = out_plot->find_vec(tnames->n2());
                 if (n2 && n2->isreal()) {
                     int ii = (int)n2->realval(0);
-                    if (ii >= 0 && ii < len)
-                        sprintf(param1, "%s[%d]", tnames->value(), ii);
+                    if (ii >= 0 && ii < len) {
+                        snprintf(param1, sizeof(param1), "%s[%d]",
+                            tnames->value(), ii);
+                    }
                 }
                 // N1 has precedence if N1 = N2
                 if (n1 && n1->isreal()) {
                     int ii = (int)n1->realval(0);
-                    if (ii >= 0 && ii < len)
-                        sprintf(param2, "%s[%d]", tnames->value(), ii);
+                    if (ii >= 0 && ii < len) {
+                        snprintf(param2, sizeof(param2), "%s[%d]",
+                            tnames->value(), ii);
+                    }
                 }
             }
             if (!*param1)
@@ -2344,7 +2353,7 @@ sCHECKprms::processReturn(const char *fname)
                 pf = 0;
             bool mcrun = false;
             if (lstring::eq(string1, "run")) {
-                sprintf(string2, "%d", 
+                snprintf(string2, sizeof(string2), "%d", 
                     (d2 + ch_step2)*(2*ch_step1 + 1) + d1 + ch_step1);
                 mcrun = true;
             }

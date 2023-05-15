@@ -540,13 +540,13 @@ SIparser::evaluate(const char *line, char *buf, int nchars)
         if ((*p->evfunc)(p, &v, &cx) == OK) {
             switch (v.type) {
             case TYP_SCALAR:
-                sprintf(buf, "%g", v.content.value);
+                snprintf(buf, 32, "%g", v.content.value);
                 break;
             case TYP_ARRAY:
                 if (!v.content.a || !v.content.a->values())
                     err = BAD;
                 else
-                    sprintf(buf, "%g", v.content.a->values()[0]);
+                    snprintf(buf, 32, "%g", v.content.a->values()[0]);
                 break;
             case TYP_NOTYPE:
             case TYP_STRING:

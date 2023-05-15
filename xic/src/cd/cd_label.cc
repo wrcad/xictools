@@ -340,7 +340,7 @@ CDla::link(CDs *sdesc, CDo *odesc, CDp *pdesc)
         }
 
         if (!prf) {
-            sprintf(buf, "%d %d %d", x, y, pval);
+            snprintf(buf, sizeof(buf), "%d %d %d", x, y, pval);
             if (!prptyAdd(P_LABRF, buf, Electrical))
                 return (false);
             prf = (CDp_lref*)prpty(P_LABRF);

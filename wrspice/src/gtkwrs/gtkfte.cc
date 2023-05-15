@@ -202,10 +202,10 @@ GTKtoolbar::PopUpPlots(int x, int y)
     for (sPlot *p = OP.plotList(); p; p = p->next_plot()) {
         char buf[256];
         if (OP.curPlot() == p)
-            sprintf(buf, "Current %-11s%-20s (%s)\n",
+            snprintf(buf, sizeof(buf), "Current %-11s%-20s (%s)\n",
             p->type_name(), p->title(), p->name());
         else
-            sprintf(buf,"        %-11s%-20s (%s)\n",
+            snprintf(buf, sizeof(buf), "        %-11s%-20s (%s)\n",
                 p->type_name(), p->title(), p->name());
         lstr.add(buf);
     }
@@ -270,11 +270,11 @@ GTKtoolbar::UpdatePlots(int lev)
     sLstr lstr;
     for (sPlot *p = OP.plotList(); p; p = p->next_plot()) {
         if (OP.curPlot() == p) {
-            sprintf(buf, "Current %-11s%-20s (%s)\n",
+            snprintf(buf, sizeof(buf), "Current %-11s%-20s (%s)\n",
             p->type_name(), p->title(), p->name());
         }
         else {
-            sprintf(buf,"        %-11s%-20s (%s)\n",
+            snprintf(buf, sizeof(buf), "        %-11s%-20s (%s)\n",
                 p->type_name(), p->title(), p->name());
         }
         lstr.add(buf);
@@ -665,10 +665,14 @@ sCircuits::ci_str()
     sLstr lstr;
     for (sFtCirc *p = Sp.CircuitList(); p; p = p->next()) {
         char buf[512];
-        if (Sp.CurCircuit() == p)
-            sprintf(buf, "Current %-6s %s\n", p->name(), p->descr());
-        else
-            sprintf(buf, "        %-6s %s\n", p->name(), p->descr());
+        if (Sp.CurCircuit() == p) {
+            snprintf(buf, sizeof(buf), "Current %-6s %s\n", p->name(),
+                p->descr());
+        }
+        else {
+            snprintf(buf, sizeof(buf), "        %-6s %s\n", p->name(),
+                p->descr());
+        }
         lstr.add(buf);
     }
     return (lstr.string_trim());

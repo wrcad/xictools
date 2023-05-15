@@ -734,7 +734,7 @@ sCells::clear(const char *name)
         if (!cbin.isSubcell()) {
             EV()->InitCallback();
             char buf[256];
-            sprintf(buf,
+            snprintf(buf, sizeof(buf),
                 "This will clear %s and all its\n"
                 "subcells from the database.  Continue?", name);
             if (c_clear_pop)
@@ -1219,7 +1219,7 @@ sCells::cell_list(int cols)
             int tmpmax = (i+1)*pagesz;
             if (tmpmax > cnt)
                 tmpmax = cnt;
-            sprintf(buf, "%d - %d", i*pagesz, tmpmax);
+            snprintf(buf, sizeof(buf), "%d - %d", i*pagesz, tmpmax);
             gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c_page_combo),
                 buf);
         }
@@ -1726,25 +1726,29 @@ ListState::label_text()
             if (chd) {
                 symref_t *p = chd->findSymref(DSP()->MainWdesc()->DbCellName(),
                     DSP()->CurMode(), true);
-                sprintf(buf, "Cells under %s",
+                snprintf(buf, sizeof(buf), "Cells under %s",
                     p ? Tstring(p->get_name()) : "<unknown>");
             }
         }
-        else
-            sprintf(buf, "Cells under %s", Tstring(DSP()->CurCellName()));
+        else {
+            snprintf(buf, sizeof(buf), "Cells under %s",
+                Tstring(DSP()->CurCellName()));
+        }
     }
     else {
         if (CDvdb()->getVariable(VA_InfoInternal))
-            sprintf(buf, "Cells intersecting (%d,%d %d,%d)",
+            snprintf(buf, sizeof(buf), "Cells intersecting (%d,%d %d,%d)",
                 lsAOI.left, lsAOI.bottom, lsAOI.right, lsAOI.top);
         else if (DSP()->CurMode() == Physical) {
             int ndgt = CD()->numDigits();
-            sprintf(buf, "Cells intersecting (%.*f,%.*f %.*f,%.*f)",
+            snprintf(buf, sizeof(buf),
+                "Cells intersecting (%.*f,%.*f %.*f,%.*f)",
                 ndgt, MICRONS(lsAOI.left), ndgt, MICRONS(lsAOI.bottom),
                 ndgt, MICRONS(lsAOI.right), ndgt, MICRONS(lsAOI.top));
         }
         else {
-            sprintf(buf, "Cells intersecting (%.3f,%.3f %.3f,%.3f)",
+            snprintf(buf, sizeof(buf),
+                "Cells intersecting (%.3f,%.3f %.3f,%.3f)",
                 ELEC_MICRONS(lsAOI.left), ELEC_MICRONS(lsAOI.bottom),
                 ELEC_MICRONS(lsAOI.right), ELEC_MICRONS(lsAOI.top));
         }

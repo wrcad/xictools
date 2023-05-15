@@ -867,15 +867,17 @@ sFh::update_fh_freq()
         if (!smax)
             smax = lstring::copy("");
         sdec = lstring::gettok(&sdec);
-        if (sdec)
-            sprintf(buf, "fmin=%s fmax=%s ndec=%s", smin, smax, sdec);
+        if (sdec) {
+            snprintf(buf, sizeof(buf), "fmin=%s fmax=%s ndec=%s",
+                smin, smax, sdec);
+        }
         else {
             if (!strcmp(smin, fh_def_string(fhFreq)) &&
                     !strcmp(smax, fh_def_string(fhFreq))) {
                 CDvdb()->clearVariable(VA_FhFreq);
                 return;
             }
-            sprintf(buf, "fmin=%s fmax=%s", smin, smax);
+            snprintf(buf, sizeof(buf), "fmin=%s fmax=%s", smin, smax);
         }
         CDvdb()->setVariable(VA_FhFreq, buf);
     }
@@ -979,19 +981,19 @@ sFh::fh_def_string(int id)
     static char tbuf[16];
     switch (id) {
     case fhManhGridCnt:
-        sprintf(tbuf, "%.*f", 0, FH_DEF_MANH_GRID_CNT);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", 0, FH_DEF_MANH_GRID_CNT);
         return (tbuf);
     case fhNhinc:
-        sprintf(tbuf, "%d", DEF_FH_NHINC);
+        snprintf(tbuf, sizeof(tbuf), "%d", DEF_FH_NHINC);
         return (tbuf);
     case fhRh:
-        sprintf(tbuf, "%.*f", 3, DEF_FH_RH);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", 3, DEF_FH_RH);
         return (tbuf);
     case fhVolElMin:
-        sprintf(tbuf, "%.*f", 2, FH_DEF_VOLEL_MIN);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", 2, FH_DEF_VOLEL_MIN);
         return (tbuf);
     case fhVolElTarg:
-        sprintf(tbuf, "%.*f", 0, FH_DEF_VOLEL_TARG);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", 0, FH_DEF_VOLEL_TARG);
         return (tbuf);
     case fhPath:
         return (fxJob::fh_default_path());
@@ -1151,7 +1153,8 @@ sFh::fh_dump_cb(const char *fname, void *client_data)
                 return;
             const char *fn = lstring::strip_path(fname);
             char tbuf[256];
-            sprintf(tbuf, "FastHenry input is in file %s.  View file? ", fn);
+            snprintf(tbuf, sizeof(tbuf),
+                "FastHenry input is in file %s.  View file? ", fn);
             Fh->PopUpAffirm(0, GRloc(LW_UL), tbuf, fh_p_cb,
                 lstring::copy(fname));
         }
@@ -1211,7 +1214,7 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
                 CDvdb()->setVariable(VA_FhVolElTarget, s);
             else {
                 char tbf[32];
-                sprintf(tbf, "%.1e", FH_DEF_VOLEL_TARG);
+                snprintf(tbf, sizeof(tbf), "%.1e", FH_DEF_VOLEL_TARG);
                 CDvdb()->setVariable(VA_FhVolElTarget, tbf);
             }
             Fh->sb_fh_volel_target.set_sensitive(true);
@@ -1220,7 +1223,7 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
                 CDvdb()->setVariable(VA_FhVolElMin, s);
             else {
                 char tbf[32];
-                sprintf(tbf, "%.1e", FH_DEF_VOLEL_MIN);
+                snprintf(tbf,sizeof(tbf), "%.1e", FH_DEF_VOLEL_MIN);
                 CDvdb()->setVariable(VA_FhVolElMin, tbf);
             }
             Fh->sb_fh_volel_min.set_sensitive(true);

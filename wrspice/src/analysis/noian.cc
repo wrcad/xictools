@@ -394,12 +394,13 @@ sNdata::noise (sCKT *ckt, int mode, int operation)
                 s++;
         }
         *s++ = ':';
+        *s = 0;
 
         Realloc(&namelist, numPlots+2, numPlots);
         if (mode == N_DENS) {
             strcpy(s, "dens");
             ckt->newUid(&namelist[numPlots++], 0, buf, UID_OTHER);
-            sprintf(s, "dens@%s", job->Ninput);
+            snprintf(s, sizeof(buf) - (s-buf), "dens@%s", job->Ninput);
             ckt->newUid(&namelist[numPlots++], 0, buf, UID_OTHER);
 
             // we've added two more plots
@@ -409,7 +410,7 @@ sNdata::noise (sCKT *ckt, int mode, int operation)
         if (mode == INT_NOIZ) {
             strcpy(s, "tot");
             ckt->newUid(&namelist[numPlots++], 0, buf, UID_OTHER);
-            sprintf(s, "tot@%s", job->Ninput);
+            snprintf(s, sizeof(buf) - (s-buf), "tot@%s", job->Ninput);
             ckt->newUid(&namelist[numPlots++], 0, buf, UID_OTHER);
 
             // we've added two more plots
@@ -450,8 +451,9 @@ sNdata::noise (sCKT *ckt, int mode, int operation)
             "noise values aren't good.";
         if (mode == N_DENS) {
             if (job->NdataPtr && job->NdataPtr->gainLimit) {
-                char *tmp = new char[strlen(nmsg) + 20];
-                sprintf(tmp, nmsg, N_MINGAIN);
+                int len = strlen(nmsg) + 20;
+                char *tmp = new char[len];
+                snprintf(tmp, len, nmsg, N_MINGAIN);
                 OP.addPlotNote(job->JOBrun, tmp);
                 delete [] tmp;
             }
@@ -464,8 +466,9 @@ sNdata::noise (sCKT *ckt, int mode, int operation)
         }
         if (mode == INT_NOIZ) {
             if (job->IdataPtr && job->IdataPtr->gainLimit) {
-                char *tmp = new char[strlen(nmsg) + 20];
-                sprintf(tmp, nmsg, N_MINGAIN);
+                int len = strlen(nmsg) + 20;
+                char *tmp = new char[len];
+                snprintf(tmp, len, nmsg, N_MINGAIN);
                 OP.addPlotNote(job->Irun, tmp);
                 delete [] tmp;
             }

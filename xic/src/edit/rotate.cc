@@ -987,9 +987,9 @@ cEditGhost::showGhostRotate(int map_x, int map_y, int ref_x, int ref_y,
                     wdesc->Wdraw()->SetLinestyle(0);
                 }
                 else if (ShowDegrees)
-                    sprintf(buf, "%.5f", 180.0*ang/M_PI);
+                    snprintf(buf, sizeof(buf), "%.5f", 180.0*ang/M_PI);
                 else
-                    sprintf(buf, "%.5f", ang);
+                    snprintf(buf, sizeof(buf), "%.5f", ang);
                 int x = 4;
                 int y = wdesc->ViewportHeight() - 5;
                 if (erase) {

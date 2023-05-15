@@ -944,7 +944,7 @@ void
 sDim::dim_show_msg(const char *name)
 {
     char buf[512];
-    sprintf(buf,
+    snprintf(buf, sizeof(buf),
         "Existing instances of %s have been inhibited.  These\n"
         "implement the old rule so must be recreated for the new rule to\n"
         "have effect.  Old rules are found on:", name);

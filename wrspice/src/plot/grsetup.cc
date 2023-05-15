@@ -154,7 +154,7 @@ SpGrPkg::SetDefaultColors()
     } 
     for (int i = 1; i < GRpkg::self()->MainDev()->numcolors; i++) { 
         char buf[16]; 
-        sprintf(buf, "color%d", i); 
+        snprintf(buf, sizeof(buf), "color%d", i); 
         colorstring = DefColorNames[i]; 
         if (Sp.GetVar(buf, VTYP_STRING, &vv)) 
             colorstring = vv.get_string();
@@ -454,9 +454,9 @@ SPgraphics::Setup(sGrInit *gr, sDvList **dlptr, const char *attrs,
                 }
                 delete [] data;
                 char buf[256];
-                sprintf(buf, "re:%s", vr->name());
+                snprintf(buf, sizeof(buf), "re:%s", vr->name());
                 vr->set_name(buf);
-                sprintf(buf, "im:%s", vi->name());
+                snprintf(buf, sizeof(buf), "im:%s", vi->name());
                 vi->set_name(buf);
 
                 sDvList *dx = new sDvList;
@@ -494,9 +494,10 @@ SPgraphics::Setup(sGrInit *gr, sDvList **dlptr, const char *attrs,
     else
         gr->title = OP.curPlot()->name();
 
-    char *tpn = new char[strlen(OP.curPlot()->type_name()) +
-        strlen(OP.curPlot()->title()) + 3];
-    sprintf(tpn, "%s: %s", OP.curPlot()->type_name(),
+    int len = strlen(OP.curPlot()->type_name()) +
+        strlen(OP.curPlot()->title()) + 3;
+    char *tpn = new char[len];
+    snprintf(tpn, len, "%s: %s", OP.curPlot()->type_name(),
         OP.curPlot()->title());
     gr->plotname = tpn;
 
@@ -1417,7 +1418,7 @@ grAttributes::getnum(const char *name, int nargs)
 {
     static double dd[2];
     char buf[32];
-    sprintf(buf, "_temp_%s", name);
+    snprintf(buf, sizeof(buf), "_temp_%s", name);
     if (nargs == 1) {
         VTvalue vv;
         if (Sp.GetVar(buf, VTYP_REAL, &vv)) {
@@ -1495,7 +1496,7 @@ bool
 grAttributes::getflag(const char *name)
 {
     char buf1[32];
-    sprintf(buf1, "_temp_%s", name);
+    snprintf(buf1, sizeof(buf1), "_temp_%s", name);
     if (Sp.GetVar(buf1, VTYP_BOOL, 0))
         return (true);
     if (Sp.GetVar(name, VTYP_BOOL, 0, Sp.CurCircuit()))
@@ -1509,7 +1510,7 @@ char *
 grAttributes::getword(const char *name)
 {
     char buf1[64];
-    sprintf(buf1, "_temp_%s", name);
+    snprintf(buf1, sizeof(buf1), "_temp_%s", name);
     VTvalue vv;
     if (Sp.GetVar(buf1, VTYP_STRING, &vv))
         return (lstring::copy(vv.get_string()));

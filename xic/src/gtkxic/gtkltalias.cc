@@ -404,7 +404,8 @@ sLA::str_cb(const char *str, void *arg)
             char buf[256];
             FILE *fp = fopen(str, "r");
             if (!fp) {
-                sprintf(buf, "Failed to open file\n%s", strerror(errno));
+                snprintf(buf, sizeof(buf), "Failed to open file\n%s",
+                    strerror(errno));
                 LA->PopUpMessage(buf, true, false, true);
             }
             else {
@@ -424,7 +425,8 @@ sLA::str_cb(const char *str, void *arg)
             char buf[256];
             FILE *fp = fopen(str, "w");
             if (!fp) {
-                sprintf(buf, "Failed to open file\n%s", strerror(errno));
+                snprintf(buf, sizeof(buf), "Failed to open file\n%s",
+                    strerror(errno));
                 LA->PopUpMessage(buf, true, false, true);
             }
             else {
@@ -558,7 +560,7 @@ sLA::la_action_proc(GtkWidget *caller, void*)
 
             if (n && a) {
                 char buf[128];
-                sprintf(buf, "%s %s", n, a);
+                snprintf(buf, sizeof(buf), "%s %s", n, a);
                 if (LA->la_line_edit)
                     LA->la_line_edit->popdown();
                 LA->la_line_edit = LA->PopUpEditString(0, loc,

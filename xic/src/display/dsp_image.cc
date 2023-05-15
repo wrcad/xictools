@@ -294,7 +294,7 @@ error:
     if (!strstr(s, "intersection area")) {
         int len = 64 + (s ? strlen(s) : 0);
         char *t = new char[len];
-        sprintf(t, "Error occurred when reading image data:\n%s", s);
+        snprintf(t, len, "Error occurred when reading image data:\n%s", s);
         DSP()->show_message(t, true);
         delete [] t;
     }

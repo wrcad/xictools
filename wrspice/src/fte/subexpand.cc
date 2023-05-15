@@ -726,8 +726,9 @@ sScGlobal::do_submapping(sLine *c)
                 str = lstring::copy(c->line()+ninv);
             else {
                 int n = strlen(s->string) + ninv;
-                str = new char[strlen(c->line()) - n + strlen(s->value) + 1];
-                sprintf(str, "%s%s", s->value, c->line() + n);
+                int len = strlen(c->line()) - n + strlen(s->value) + 1;
+                str = new char[len];
+                snprintf(str, len, "%s%s", s->value, c->line() + n);
             }
             c->set_line(str);
             delete [] str;
@@ -1946,14 +1947,12 @@ sScGlobal::parse_call(const char *str, char **aargs, char **subname,
 
     const char *args = str;
     t = tn = 0;
-    int nargs = 0;
     while (*str) {
         t = str;
         atok(&str);
         tn = str;
         if (*tn == '=')
             break;
-        nargs++;
     }
     const char *pars = 0;
     if (tn && *tn == '=') {
@@ -2062,10 +2061,7 @@ sScGlobal::finishLine(sLstr *lstr, const char *src, const char *instname,
                 src++;
 
             sLstr tstr;
-            int i;
-            for (i = 0;
-                    *src && !isspace(*src) && *src != ',' && (*src != ')');
-                    i++)
+            while (*src && !isspace(*src) && *src != ',' && *src != ')')
                 tstr.add_c(*src++);
 
             if (which == 'v' || which == 'V')
@@ -2107,7 +2103,7 @@ sScGlobal::finishLine(sLstr *lstr, const char *src, const char *instname,
                 while (*src && (isspace(*src) || *src == ','))
                     src++;
                 if (*src && *src != ')') {
-                    for (i = 0; *src && !isspace(*src) && (*src != ')'); i++)
+                    while (*src && !isspace(*src) && *src != ')')
                         tstr.add_c(*src++);
                     s = gettrans(tstr.string(), table);
                     lstr->add_c(',');
@@ -2389,11 +2385,11 @@ sSubc::check_args(const char *args, int nargs)
     for (wordlist *w1 = w0; w1; w1 = w1->wl_next) {
         for (wordlist *w2 = w1->wl_next; w2; w2 = w2->wl_next) {
             if (sScGlobal::name_eq(w1->wl_word, w2->wl_word)) {
-                sprintf(buf, NODE_FMT, count);
+                snprintf(buf, sizeof(buf), NODE_FMT, count);
                 delete [] w2->wl_word;
                 w2->wl_word = lstring::copy(buf);
-                sprintf(buf, VS_FMT" %s %s", su_name, count, w1->wl_word,
-                    w2->wl_word);
+                snprintf(buf, sizeof(buf), VS_FMT" %s %s", su_name,
+                    count, w1->wl_word, w2->wl_word);
                 sLine *l = new sLine;
                 l->set_line(buf);
                 l->set_next(su_body);
@@ -2484,7 +2480,7 @@ sCblkTab::dump_wl(const char *tag)
         sCblk *blk = (sCblk*)get(this, tag);
         if (!blk)
             return (0);
-        sprintf(buf, "TAG:  %s", tag);
+        snprintf(buf, sizeof(buf), "TAG:  %s", tag);
         wordlist *tl = new wordlist(buf, 0);
         blk->to_wl(tl);
         return (tl);
@@ -2494,7 +2490,7 @@ sCblkTab::dump_wl(const char *tag)
     sHent *h;
     wordlist *w0 = 0, *tl = 0;
     while ((h = gen.next()) != 0) {
-        sprintf(buf, "TAG:  %s", h->name());
+        snprintf(buf, sizeof(buf), "TAG:  %s", h->name());
         if (!w0)
             w0 = tl = new wordlist(buf, 0);
         else {

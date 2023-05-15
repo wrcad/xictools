@@ -1495,7 +1495,7 @@ sLpe::lp_attr_proc(GtkWidget *caller, void*)
         return;
     char tbuf[64];
     if (type == lpBoxLineStyle) {
-        sprintf(tbuf, "0x%x", DSP()->BoxLinestyle()->mask);
+        snprintf(tbuf, sizeof(tbuf), "0x%x", DSP()->BoxLinestyle()->mask);
         char *in = Lpe->lp_ext_kw.prompt(
             "Enter highlighting box linestyle mask: ", tbuf);
         if (in) {
@@ -1507,7 +1507,7 @@ sLpe::lp_attr_proc(GtkWidget *caller, void*)
         }
     }
     else if (type == lpLayerReorderMode) {
-        sprintf(tbuf, "%d", Tech()->ReorderMode());
+        snprintf(tbuf, sizeof(tbuf), "%d", Tech()->ReorderMode());
         char *in = Lpe->lp_ext_kw.prompt(
             "Enter Via layer reordering mode (integer 0-2): ", tbuf);
         unsigned int d;
@@ -1541,7 +1541,8 @@ sLpe::lp_attr_proc(GtkWidget *caller, void*)
         }
     }
     else if (type == lpAntennaTotal) {
-        sprintf(tbuf, "%g", Tech()->AntennaTotal());
+        snprintf(tbuf, sizeof(tbuf), "%g",
+            Tech()->AntennaTotal());
         char *in = Lpe->lp_ext_kw.prompt(
             "Enter total net antenna ratio limit: ", tbuf);
         double d;
@@ -1558,7 +1559,7 @@ sLpe::lp_attr_proc(GtkWidget *caller, void*)
         }
     }
     else if (type == lpSubstrateEps) {
-        sprintf(tbuf, "%g", Tech()->SubstrateEps());
+        snprintf(tbuf, sizeof(tbuf), "%g", Tech()->SubstrateEps());
         char *in = Lpe->lp_ext_kw.prompt(
             "Enter substrate relative dielectric constant: ", tbuf);
         double d;
@@ -1577,7 +1578,7 @@ sLpe::lp_attr_proc(GtkWidget *caller, void*)
         }
     }
     else if (type == lpSubstrateThickness) {
-        sprintf(tbuf, "%g", Tech()->SubstrateThickness());
+        snprintf(tbuf, sizeof(tbuf), "%g", Tech()->SubstrateThickness());
         char *in = Lpe->lp_ext_kw.prompt(
             "Enter substrate thickness in microns: ", tbuf);
         double d;

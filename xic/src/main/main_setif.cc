@@ -316,7 +316,7 @@ namespace {
             MenuEnt *ent = Menu()->FindEntOfWin(wd, MenuVIEW);
             if (ent) {
                 char buf[8];
-                sprintf(buf, "%c    ", 'A'+indx);
+                snprintf(buf, sizeof(buf), "%c    ", 'A'+indx);
                 Menu()->NewDDentry(ent->cmd.caller, buf);
             }
             PL()->ShowPromptV("Current view assigned to: %s",

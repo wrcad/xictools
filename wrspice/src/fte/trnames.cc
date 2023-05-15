@@ -84,11 +84,11 @@ sNames::set_names()
     if (vv && vv->type() == VTYP_STRING)
         n->set_n1(vv->string());
     else if (vv && vv->type() == VTYP_NUM) {
-        sprintf(buf, "%d", vv->integer());
+        snprintf(buf, sizeof(buf), "%d", vv->integer());
         n->set_n1(buf);
     }
     else if (vv && vv->type() == VTYP_REAL) {
-        sprintf(buf, "%d", rnd(vv->real()));
+        snprintf(buf, sizeof(buf), "%d", rnd(vv->real()));
         n->set_n1(buf);
     }
     else
@@ -98,11 +98,11 @@ sNames::set_names()
     if (vv && vv->type() == VTYP_STRING)
         n->set_n2(vv->string());
     else if (vv && vv->type() == VTYP_NUM) {
-        sprintf(buf, "%d", vv->integer());
+        snprintf(buf, sizeof(buf), "%d", vv->integer());
         n->set_n2(buf);
     }
     else if (vv && vv->type() == VTYP_REAL) {
-        sprintf(buf, "%d", rnd(vv->real()));
+        snprintf(buf, sizeof(buf), "%d", rnd(vv->real()));
         n->set_n2(buf);
     }
     else
@@ -203,16 +203,16 @@ sNames::setup_newplot(sFtCirc *out_cir, sPlot *out_plot)
     OP.setCurPlot(plt);
     if (dvalue && dvalue->isreal() && dvalue->plot()) {
         char buf[BSIZE_SP];
-        sprintf(buf, "%s%c%s", dvalue->plot()->type_name(),
+        snprintf(buf, sizeof(buf), "%s%c%s", dvalue->plot()->type_name(),
             Sp.PlotCatchar(), n_value);
         OP.vecSet(n_value, buf);
         if (dn1 && dn1->isreal() && dn1->plot()) {
-            sprintf(buf, "%s%c%s", dn1->plot()->type_name(),
+            snprintf(buf, sizeof(buf), "%s%c%s", dn1->plot()->type_name(),
                 Sp.PlotCatchar(), n_n1);
             OP.vecSet(n_n1, buf);
         }
         if (dn2 && dn2->isreal() && dn2->plot()) {
-            sprintf(buf, "%s%c%s", dn2->plot()->type_name(),
+            snprintf(buf, sizeof(buf), "%s%c%s", dn2->plot()->type_name(),
                 Sp.PlotCatchar(), n_n2);
             OP.vecSet(n_n2, buf);
         }

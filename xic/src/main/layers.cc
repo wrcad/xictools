@@ -553,7 +553,7 @@ ProfState::show_cross_section(int x1, int y1, int x2, int y2)
 
     static int xs_count;
     char buf[64];
-    sprintf(buf, "CrossSection-%d", xs_count);
+    snprintf(buf, sizeof(buf), "CrossSection-%d", xs_count);
     xs_count++;
 
     cSDB *sdb = new cSDB(buf, tab, sdbBdb);

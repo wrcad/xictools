@@ -238,7 +238,7 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
         GtkWidget *menu = gtk_menu_new();
         gtk_widget_set_name(menu, "StMenu");
         for (int i = 1; i < NUMREGS; i++) {
-            sprintf(buf, "reg%d", i);
+            snprintf(buf, sizeof(buf), "reg%d", i);
             GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
             gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
@@ -263,7 +263,7 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
         GtkWidget *menu = gtk_menu_new();
         gtk_widget_set_name(menu, "StMenu");
         for (int i = 1; i < NUMREGS; i++) {
-            sprintf(buf, "reg%d", i);
+            snprintf(buf, sizeof(buf), "reg%d", i);
             GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
             gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);

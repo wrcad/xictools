@@ -182,7 +182,7 @@ sLpalette::sLpalette(GRobject caller) : GTKdraw(XW_LPAL)
     gtk_widget_set_name(recall_menu, "Recall");
     for (int i = 1; i < 8; i++) {
         char buf[16];
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -202,7 +202,7 @@ sLpalette::sLpalette(GRobject caller) : GTKdraw(XW_LPAL)
     gtk_widget_set_name(save_menu, "Save");
     for (int i = 1; i < 8; i++) {
         char buf[16];
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -435,16 +435,16 @@ sLpalette::update_info(CDl *ldesc)
         x += GTKfont::stringWidth(gd_viewport, str);
 
         if (l > 255 || d > 255)
-            sprintf(buf, "%d (%04Xh) / ", l, l);
+            snprintf(buf, sizeof(buf), "%d (%04Xh) / ", l, l);
         else
-            sprintf(buf, "%d (%02Xh) / ", l, l);
+            snprintf(buf, sizeof(buf), "%d (%02Xh) / ", l, l);
         SetColor(c2);
         Text(buf, x, y, 0);
         x += GTKfont::stringWidth(gd_viewport, buf);
         if (l > 255 || d > 255)
-            sprintf(buf, "%d (%04Xh)", d, d);
+            snprintf(buf, sizeof(buf), "%d (%04Xh)", d, d);
         else
-            sprintf(buf, "%d (%02Xh)", d, d);
+            snprintf(buf, sizeof(buf), "%d (%02Xh)", d, d);
         Text(buf, x, y, 0);
     }
 #if GTK_CHECK_VERSION(3,0,0)
@@ -709,7 +709,7 @@ sLpalette::redraw()
             int y_text_fudge = 2;
             int yt = y + lp_box_dimension + y_text_fudge;
             int xt = x + lp_box_dimension + lp_box_text_spacing + 2;
-            sprintf(buf, "%d", ld->index(DSP()->CurMode()));
+            snprintf(buf, sizeof(buf), "%d", ld->index(DSP()->CurMode()));
             Text(buf, xt, yt, 0);
 
             SetColor(DSP()->Color(PromptCursorColor));

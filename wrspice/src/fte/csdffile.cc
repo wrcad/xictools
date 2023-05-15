@@ -500,8 +500,9 @@ cCSDFin::parse_plot()
         }
     }
     if (date && time) {
-        t = new char[strlen(date) + strlen(time) + 2];
-        sprintf(t, "%s %s", date, time);
+        int len = strlen(date) + strlen(time) + 2;
+        t = new char[len];
+        snprintf(t, len, "%s %s", date, time);
         delete [] date;
         delete [] time;
         date = t;
@@ -562,8 +563,9 @@ cCSDFin::parse_plot()
             delete [] analysis;
             analysis = lstring::copy("TRAN");
         }
-        t = new char[strlen(analysis) + 15];
-        sprintf(t, "CSDF %s import", analysis);
+        int len = strlen(analysis) + 15;
+        t = new char[len];
+        snprintf(t, len, "CSDF %s import", analysis);
         p->set_name(t);
         delete [] t;
         delete [] analysis;

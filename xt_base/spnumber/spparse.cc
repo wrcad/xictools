@@ -752,9 +752,10 @@ Parser::lexer()
         handle_string();
         prsr_el->token = TT_VALUE;
 #ifdef WRSPICE
-        if (Debug)
-            GRpkgIf()->ErrPrintf(ET_MSGS, "lexer: string %s\n",
+        if (Debug) {
+            GRpkg::self()->ErrPrintf(ET_MSGS, "lexer: string %s\n",
                 prsr_el->vu.string);
+        }
 #endif
         finish();
         return (prsr_el);
@@ -784,9 +785,10 @@ Parser::lexer()
             handle_string();
             prsr_el->token = TT_VALUE;
 #ifdef WRSPICE
-            if (Debug)
-                GRpkgIf()->ErrPrintf(ET_MSGS, "lexer: string %s\n",
+            if (Debug) {
+                GRpkg::self()->ErrPrintf(ET_MSGS, "lexer: string %s\n",
                     prsr_el->vu.string);
+            }
 #endif
             finish();
             return (prsr_el);
@@ -805,9 +807,10 @@ Parser::lexer()
             prsr_el->token = TT_VALUE;
             prsr_sptr = (char*)ss;
 #ifdef WRSPICE
-            if (Debug)
-                GRpkgIf()->ErrPrintf(ET_MSGS,
+            if (Debug) {
+                GRpkg::self()->ErrPrintf(ET_MSGS,
                     "lexer: double %G\n", prsr_el->vu.real);
+            }
 #endif
         }
         finish();
@@ -884,9 +887,10 @@ Parser::lexer()
             handle_string();
         prsr_el->token = TT_VALUE;
 #ifdef WRSPICE
-        if (Debug)
-            GRpkgIf()->ErrPrintf(ET_MSGS, "lexer: string %s\n",
+        if (Debug) {
+            GRpkg::self()->ErrPrintf(ET_MSGS, "lexer: string %s\n",
                 prsr_el->vu.string);
+        }
 #endif
 
         // Set a flag if the is the start of a "source function" call.
@@ -922,9 +926,10 @@ Parser::finish()
     prsr_lastToken = prsr_el->token;
     prsr_lastType = prsr_el->type;
 #ifdef WRSPICE
-    if (Debug)
-        GRpkgIf()->ErrPrintf(ET_MSGS, "lexer: token %d (%s)\n",
+    if (Debug) {
+        GRpkg::self()->ErrPrintf(ET_MSGS, "lexer: token %d (%s)\n",
             prsr_el->token, token_string(prsr_el->token));
+    }
 #endif
 }
 

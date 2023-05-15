@@ -249,7 +249,7 @@ sMem::update()
     const char *str = "Cells:";
     Text(str, x, y, 0);
     x += 7 * spw;
-    sprintf(buf, "phys=%d elec=%d", CDcdb()->cellCount(Physical),
+    snprintf(buf, sizeof(buf), "phys=%d elec=%d", CDcdb()->cellCount(Physical),
         CDcdb()->cellCount(Electrical));
     str = buf;
     SetColor(c2);
@@ -264,10 +264,10 @@ sMem::update()
 #else
     double v = chk_val(coresize(), &b);
 #endif
-    sprintf(buf, "Current Datasize (%cB):", b);
+    snprintf(buf, sizeof(buf), "Current Datasize (%cB):", b);
     Text(buf, x, y, 0);
     x += 24 * spw;
-    sprintf(buf, "%.3f", v);
+    snprintf(buf, sizeof(buf), "%.3f", v);
     SetColor(c2);
     Text(buf, x, y, 0);
 
@@ -289,10 +289,10 @@ sMem::update()
     y += fhei;
     if (rl.rlim_cur != RLIM_INFINITY && rl2.rlim_cur != RLIM_INFINITY &&
             (v = chk_val(0.001 * (rl.rlim_cur + rl2.rlim_cur), &b)) > 0) {
-        sprintf(buf, "Soft (%cB):", b);
+        snprintf(buf, sizeof(buf), "Soft (%cB):", b);
         Text(buf, x, y, 0);
         x += 24*spw;
-        sprintf(buf, "%.1f", v);
+        snprintf(buf, sizeof(buf), "%.1f", v);
         SetColor(c2);
         Text(buf, x, y, 0);
     }
@@ -311,10 +311,10 @@ sMem::update()
 
     if (rl.rlim_max != RLIM_INFINITY && rl2.rlim_max != RLIM_INFINITY &&
             (v = chk_val(0.001 * (rl.rlim_max + rl2.rlim_max), &b)) > 0) {
-        sprintf(buf, "Hard (%cB):", b);
+        snprintf(buf, sizeof(buf), "Hard (%cB):", b);
         Text(buf, x, y, 0);
         x += 24*spw;
-        sprintf(buf, "%.1f", v);
+        snprintf(buf, sizeof(buf), "%.1f", v);
         SetColor(c2);
         Text(buf, x, y, 0);
     }
@@ -338,22 +338,22 @@ sMem::update()
     x = 2;
     y += fhei;
     v = chk_val(0.001 * avail, &b);
-    sprintf(buf, "Available Memory (%cB):", b);
+    snprintf(buf, sizeof(buf), "Available Memory (%cB):", b);
     SetColor(c1);
     Text(buf, x, y, 0);
     x += 24 * spw;
-    sprintf(buf, "%.1f", v);
+    snprintf(buf, sizeof(buf), "%.1f", v);
     SetColor(c2);
     Text(buf, x, y, 0);
 
     x = 2;
     y += fhei;
     v = chk_val(0.001 * total, &b);
-    sprintf(buf, "Total Memory (%cB):", b);
+    snprintf(buf, sizeof(buf), "Total Memory (%cB):", b);
     SetColor(c1);
     Text(buf, x, y, 0);
     x += 24 * spw;
-    sprintf(buf, "%.1f", v);
+    snprintf(buf, sizeof(buf), "%.1f", v);
     SetColor(c2);
     Text(buf, x, y, 0);
 #endif

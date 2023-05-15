@@ -1398,8 +1398,9 @@ IFoutput::vecPrintList(wordlist *wl, sLstr *plstr)
     }
     if (!Sp.GetVar(kw_nosort, VTYP_BOOL, 0))
         wordlist::sort(tl0);
-    sprintf(buf, "Title: %s\n",  curPlot()->title());
-    sprintf(buf + strlen(buf), "Name: %s (%s)\nDate: %s\n\n", 
+    snprintf(buf, sizeof(buf), "Title: %s\n",  curPlot()->title());
+    int len = strlen(buf);
+    snprintf(buf + len, sizeof(buf) - len, "Name: %s (%s)\nDate: %s\n\n", 
         curPlot()->type_name(), curPlot()->name(), curPlot()->date());
     if (plstr)
         plstr->add(buf);

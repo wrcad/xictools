@@ -268,7 +268,7 @@ sGraph::lingrid(double *nscale, Axis axis)
         }
         else {
             if (mag != 0)
-                sprintf(gr_xaxis.lin.units, "e%d", mag);
+                snprintf(gr_xaxis.lin.units, 6, "e%d", mag);
             else
                 gr_xaxis.lin.units[0] = 0;
             if (s && *s)
@@ -289,7 +289,7 @@ sGraph::lingrid(double *nscale, Axis axis)
         }
         else {
             if (mag != 0)
-                sprintf(gr_yaxis.lin.units, "e%d", mag);
+                snprintf(gr_yaxis.lin.units, 6, "e%d", mag);
             else
                 gr_yaxis.lin.units[0] = 0;
             if (s && *s)
@@ -313,7 +313,7 @@ sGraph::lingrid(double *nscale, Axis axis)
                 // fix numerical problem when val ~ 0
                 if (fabs(val) < 1e-7*dval)
                     val = 0;
-                sprintf(buf, "%g", val*mult);
+                snprintf(buf, sizeof(buf), "%g", val*mult);
                 int len = strlen(buf);
                 if (len > slen)
                     slen = len;
@@ -380,7 +380,7 @@ namespace {
         for (double val = lmt; val < hmt; val += dval) {
             if (fabs(val) < 1e-7*dval)
                 val = 0.0;
-            sprintf(buf, "%.10f", val*sc);
+            snprintf(buf, sizeof(buf), "%.10f", val*sc);
             char *t = buf + strlen(buf) - 1;
             while (*t == '0')
                 t--;
@@ -538,7 +538,7 @@ sGraph::drawlingrid(Axis axis, bool dosetup)
     char buf[64];
     // fudge the right boundary to keep the scale factor visible
     if (axis == x_axis) {
-        sprintf(buf, "%.*f", xf, hmt*scale);
+        snprintf(buf, sizeof(buf), "%.*f", xf, hmt*scale);
         int len = strlen(buf);
         i = len - 7;
         if (i > 0) {
@@ -591,7 +591,7 @@ sGraph::drawlingrid(Axis axis, bool dosetup)
         // fix numerical problem when val ~ 0
         if (fabs(val) < 1e-7*dval)
             val = 0.0;
-        sprintf(buf, "%.*f", xf, val*scale);
+        snprintf(buf, sizeof(buf), "%.*f", xf, val*scale);
         if (axis == x_axis)
             gr_dev->Text(buf, gr_vport.left() + i - (gr_fontwid*strlen(buf))/2, 
                 yinv(gr_vport.bottom() - gr_fonthei - gr_fonthei/2), 0);
@@ -638,13 +638,12 @@ sGraph::loggrid(double *nscale, Axis axis)
         int j, slen = 0;
         for (j = lmt; j <= hmt; j += pp) {
             char buf[16];
-            sprintf(buf, "%d", j);
+            snprintf(buf, sizeof(buf), "%d", j);
             int len = strlen(buf);
             if (len > slen)
                 slen = len;
         }
         gr_scalewidth = slen + 1;
-
     }
 }
 
@@ -822,7 +821,7 @@ sGraph::drawloggrid(Axis axis, bool dosetup)
                     yinv(gr_vport.bottom() + i));
         }
         char buf[16];
-        sprintf(buf, "%d", j);
+        snprintf(buf, sizeof(buf), "%d", j);
         if (axis == x_axis)
             gr_dev->Text(buf, gr_vport.left() + i - strlen(buf) / 2, 
                 yinv(gr_vport.bottom() - gr_fonthei - gr_fonthei/2), 0);
@@ -1136,7 +1135,7 @@ sGraph::drawpolargrid()
         }
     }
 
-    sprintf(buf, "e%d", mag);
+    snprintf(buf, sizeof(buf), "e%d", mag);
     gr_save_text(buf, gr_xaxis.circular.center + gr_xaxis.circular.radius, 
         gr_yaxis.circular.center - gr_xaxis.circular.radius, LAxunits, 1, 0);
     gr_dev->Update();
@@ -1246,7 +1245,7 @@ sGraph::drawsmithgrid()
         dphi[k] = 2.0 * atan(rnrm[k]);
         ir[k] = pixperunit * (1 + cos(dphi[k])) / sin(dphi[k]);
         rr[k] = pixperunit * 0.5 * (((1 - rnrm[k]) / (1 + rnrm[k])) + 1);
-        sprintf(plab, "%g", rnrm[k]);
+        snprintf(plab, sizeof(plab), "%g", rnrm[k]);
         plen = strlen(plab);
 
         // See if the label will fit on the upper xaxis.
@@ -1335,8 +1334,8 @@ sGraph::drawsmithgrid()
 
 #define RAD_TO_DEG (180/M_PI)
     for (ki[k] = kr[k] = (double) 0; k > 0; k--) {
-        sprintf(plab, "%g", rnrm[k]);
-        sprintf(nlab, "-%g", rnrm[k]);
+        snprintf(plab, sizeof(plab), "%g", rnrm[k]);
+        snprintf(nlab, sizeof(nlab), "-%g", rnrm[k]);
         arc_set(rr[k], kr[k], ir[k], ki[k], pixperunit,
             xoff, yoff, plab, nlab,
             (int) (0.5 + RAD_TO_DEG * (M_PI - dphi[k])),
@@ -1593,7 +1592,7 @@ sGraph::add_deg_label(int deg, int x, int y, int cx, int cy, int lx, int ly)
     if (sqrt((double) (x - cx)*(x - cx) + (y - cy)*(y - cy)) < MINDIST)
         return;
     char buf[32];
-    sprintf(buf, "%d", deg);
+    snprintf(buf, sizeof(buf), "%d", deg);
     int w = gr_fontwid*(strlen(buf) + 1);
     int h = (int)(gr_fonthei*1.5);
     double angle = atan2((double)(y - ly), (double)(x - lx));
@@ -1616,7 +1615,7 @@ void
 sGraph::add_rad_label(int lab, double theta, int x, int y)
 {
     char buf[32];
-    sprintf(buf, "%d", lab);
+    snprintf(buf, sizeof(buf), "%d", lab);
     int fw = strlen(buf) * gr_fontwid + 2;
     int fh = gr_fonthei + 2;
     theta += M_PI;

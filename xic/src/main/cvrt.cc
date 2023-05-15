@@ -659,7 +659,8 @@ CutState::cut_doit(int x, int y)
         Cvt()->SetupWriteCut(&AOI);
         if (Menu()->MenuButtonStatus(MMconv, MenuEXPRT) == 0)
             Menu()->MenuButtonPress(MMconv, MenuEXPRT);
-        sprintf(namebuf, "%s-cut", Tstring(DSP()->CurCellName()));
+        snprintf(namebuf, sizeof(namebuf), "%s-cut",
+            Tstring(DSP()->CurCellName()));
         Cvt()->SetWriteFilename(namebuf);
         Cvt()->PopUpExport(0, MODE_UPD, 0, 0);
     }

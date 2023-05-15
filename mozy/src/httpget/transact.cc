@@ -441,7 +441,7 @@ Transaction::emit_error(const char *msg, int error)
                 strcpy(s, htm1);
                 char *t = s + strlen(s);
                 if (error)
-                    sprintf(t, "HTTP/1.X Error: %d\n", error);
+                    snprintf(t, 32, "HTTP/1.X Error: %d\n", error);
                 else
                     strcpy(t, "Error\n");
                 t += strlen(t);
@@ -566,7 +566,8 @@ Transaction::do_transaction()
         }
         else {
             char buf[128];
-            sprintf(buf, "Unsupported protocol %s requested.", proto);
+            snprintf(buf, sizeof(buf),
+                "Unsupported protocol %s requested.", proto);
             delete [] proto;
             emit_error(buf, 0);
             return;
@@ -759,10 +760,11 @@ Transaction::do_transaction()
             int error = (int)t_response.status;
             char msg[1024];
             if (t_use_graphics && t_gcontext)
-                sprintf(msg, "%s", t_response.errorString());
-            else
-                sprintf(msg, "%s: %s", t_request.url,
+                snprintf(msg, sizeof(msg), "%s", t_response.errorString());
+            else {
+                snprintf(msg, sizeof(msg), "%s: %s", t_request.url,
                     t_response.errorString());
+            }
             emit_error(msg, error);
         }
         return;
@@ -778,9 +780,10 @@ Transaction::do_transaction()
         }
         if (t_use_graphics && t_gcontext)
             http_printf(this, "%s\n", t_response.errorString());
-        else
+        else {
             http_printf(this, "%s: %s\n", t_request.url,
                 t_response.errorString());
+        }
     }
 }
 

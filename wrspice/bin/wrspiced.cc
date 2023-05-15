@@ -289,9 +289,9 @@ smktemp(const char *id)
 
     char buf[512];
     if (!access(path, W_OK))
-        sprintf(buf, "%s/%s%d", path, id, num);
+        snprintf(buf, sizeof(buf), "%s/%s%d", path, id, num);
     else
-        sprintf(buf, "%s%d", id, num);
+        snprintf(buf, sizeof(buf), "%s%d", id, num);
     return (lstring::copy(buf));
 }
 
@@ -469,7 +469,9 @@ main(int, char **av)
             char *cmdstr = GetCommandLine();
             while (*cmdstr && !isspace(*cmdstr))
                 cmdstr++;
-            sprintf(cmdline + strlen(cmdline), "%s -winbg", cmdstr);
+            int len = strlen(cmdline);
+            snprintf(cmdline + len, sizeof(cmdline) - len, "%s -winbg",
+                cmdstr);
 
 //XXX handle .bat file?
             PROCESS_INFORMATION *info = msw::NewProcess(0, cmdline,
@@ -620,9 +622,9 @@ again:
             }
             else {
                 // Add the path.
-                char *t =
-                    new char[strlen(program) + strlen(Spice_Exec_Dir) + 2];
-                sprintf(t, "%s/%s", Spice_Exec_Dir, program);
+                int len = strlen(program) + strlen(Spice_Exec_Dir) + 2;
+                char *t = new char[len];
+                snprintf(t, len, "%s/%s", Spice_Exec_Dir, program);
                 delete [] program;
                 program = t;
             }
@@ -861,8 +863,9 @@ namespace {
         }
 #endif
         if (string == 0) {
-            char *s = new char[strlen(prefix) + strlen(TOOLS_ROOT) + 10];
-            sprintf(s, "%s/%s/bin", prefix, TOOLS_ROOT);
+            int len = strlen(prefix) + strlen(TOOLS_ROOT) + 10;
+            char *s = new char[len];
+            snprintf(s, len, "%s/%s/bin", prefix, TOOLS_ROOT);
             string = s;
         }
         Spice_Exec_Dir = string;
@@ -954,8 +957,8 @@ namespace {
         // Write a log entry
         char buf[BUFSIZ];
 #ifdef HAVE_GETRUSAGE
-        sprintf(buf, "%d:%d.%06d", (int)ru.ru_utime.tv_sec / 60,
-                (int)ru.ru_utime.tv_sec % 60, (int)ru.ru_utime.tv_usec);
+        snprintf(buf, sizeof(buf), "%d:%d.%06d", (int)ru.ru_utime.tv_sec / 60,
+            (int)ru.ru_utime.tv_sec % 60, (int)ru.ru_utime.tv_usec);
         char *t;
         for (t = buf; *t; t++) ;
         for (t--; *t == '0'; *t-- = '\0') ;

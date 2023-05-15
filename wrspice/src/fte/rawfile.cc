@@ -684,7 +684,7 @@ cRawIn::raw_read(const char *name)
                 
                 // Fix the name...
                 if (isdigit(*v->name())) {
-                    sprintf(buf2, "v(%s)", v->name());
+                    snprintf(buf2, sizeof(buf2), "v(%s)", v->name());
                     v->set_name(buf2);
                 }
                 // Now come the strange options...

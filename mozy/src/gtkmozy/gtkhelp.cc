@@ -437,7 +437,8 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         gtk_window_set_wmclass(GTK_WINDOW(wb_shell), "Mozy", "mozy");
 
         char buf[128];
-        sprintf(buf, "%s -- Whiteley Research Inc.",  HLP()->get_name());
+        snprintf(buf, sizeof(buf), "%s -- Whiteley Research Inc.",
+            HLP()->get_name());
         gtk_window_set_title(GTK_WINDOW(wb_shell), buf);
 
         GtkWidget *topw = 0;
@@ -1040,8 +1041,9 @@ GTKhelpPopup::set_transaction(Transaction *t, const char *cookiedir)
         if (h_params->PrintTransact)
             t->set_logfile("stderr");
         if (cookiedir && !h_params->NoCookies) {
-            char *cf = new char [strlen(cookiedir) + 20];
-            sprintf(cf, "%s/%s", cookiedir, "cookies");
+            int len = strlen(cookiedir) + 20;
+            char *cf = new char[len];
+            snprintf(cf, len, "%s/%s", cookiedir, "cookies");
             t->set_cookiefile(cf);
             delete [] cf;
         }
@@ -1620,7 +1622,7 @@ GTKhelpPopup::newtopic(const char *href, bool spawn, bool force_download,
         return (GTKhelpPopup::NThandled);
     if (!newtop) {
         char buf[256];
-        sprintf(buf, "Unresolved link: %s.", href);
+        snprintf(buf, sizeof(buf), "Unresolved link: %s.", href);
         PopUpErr(MODE_ON, buf);
         return (GTKhelpPopup::NTnone);
     }
@@ -1921,7 +1923,8 @@ GTKhelpPopup::frame_signal_handler(htmFrameCallbackStruct *cbs)
                 hanchor, this, h_cur_topic, false, false);
             if (!newtop) {
                 char buf[256];
-                sprintf(buf, "Unresolved link: %s.", cbs->frames[i].src);
+                snprintf(buf, sizeof(buf), "Unresolved link: %s.",
+                    cbs->frames[i].src);
                 PopUpErr(MODE_ON, buf);
             }
             else {
@@ -2394,8 +2397,9 @@ GTKhelpPopup::h_open_cb(const char *name, void *hlpptr)
                     if (!lstring::is_rooted(name)) {
                         char *cwd = getcwd(0, 256);
                         if (cwd) {
-                            url = new char[strlen(cwd) + strlen(name) + 2];
-                            sprintf(url, "%s/%s", cwd, name);
+                            int len = strlen(cwd) + strlen(name) + 2;
+                            url = new char[len];
+                            snprintf(url, len, "%s/%s", cwd, name);
                             free(cwd);
                             if (access(url, R_OK)) {
                                 // no such file
@@ -2583,7 +2587,7 @@ GTKhelpPopup::h_do_save_proc(const char *fnamein, void *hlpptr)
             char tbuf[256];
             if (strlen(fname) > 64)
                 strcpy(fname + 60, "...");
-            sprintf(tbuf, "Error: can't open file %s", fname);
+            snprintf(tbuf, sizeof(tbuf), "Error: can't open file %s", fname);
             w->PopUpMessage(tbuf, true);
             delete [] fname;
             return;

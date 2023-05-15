@@ -229,7 +229,7 @@ sLx::sLx(GRobject c)
         if (i == DMAX)
             strcpy(buf, "all");
         else
-            sprintf(buf, "%d", i);
+            snprintf(buf, sizeof(buf), "%d", i);
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(lx_depth), buf);
     }
     gtk_combo_box_set_active(GTK_COMBO_BOX(lx_depth), 0);
@@ -396,7 +396,7 @@ sLx::sLx(GRobject c)
     g_object_ref(lx_recall_menu);
     for (int i = 0; i < ED_LEXPR_STORES; i++) {
         char buf[16];
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -417,7 +417,7 @@ sLx::sLx(GRobject c)
     g_object_ref(lx_save_menu);
     for (int i = 0; i < ED_LEXPR_STORES; i++) {
         char buf[16];
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -699,7 +699,7 @@ sLx::lx_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_Threads);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_Threads, buf);
             }
         }

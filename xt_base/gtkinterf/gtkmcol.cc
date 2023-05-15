@@ -363,7 +363,7 @@ GTKmcolPopup::relist()
             int tmpmax = (i+1)*mc_pagesize;
             if (tmpmax > cnt)
                 tmpmax = cnt;
-            sprintf(buf, "%d - %d", i*mc_pagesize + 1, tmpmax);
+            snprintf(buf, sizeof(buf), "%d - %d", i*mc_pagesize + 1, tmpmax);
             gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(mc_pagesel),
                 buf);
         }

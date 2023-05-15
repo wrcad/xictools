@@ -591,8 +591,9 @@ GTKfilePopup::GTKfilePopup(GTKbag *owner, FsMode mode, void *arg,
                 const char *cwd = fs_cwd_bak;
                 if (!cwd)
                     cwd = "";
-                fn = new char[strlen(cwd) + strlen(root_or_fname) + 2];
-                sprintf(fn, "%s/%s", cwd, root_or_fname);
+                int len = strlen(cwd) + strlen(root_or_fname) + 2;
+                fn = new char[len];
+                snprintf(fn, len, "%s/%s", cwd, root_or_fname);
             }
             else
                 fn = lstring::copy(root_or_fname);
@@ -1794,8 +1795,9 @@ GTKfilePopup::set_label()
         const char *cwd = fs_cwd_bak;
         if (!cwd)
             cwd = "";
-        char *tmpc = new char[strlen(cwd) + strlen(fs_rootdir) + 20];
-        sprintf(tmpc, "Root: %s\nCwd: %s", fs_rootdir, cwd);
+        int len = strlen(cwd) + strlen(fs_rootdir) + 20;
+        char *tmpc = new char[len];
+        snprintf(tmpc, len, "Root: %s\nCwd: %s", fs_rootdir, cwd);
         gtk_label_set_text(GTK_LABEL(fs_label), tmpc);
         delete [] tmpc;
     }
@@ -1934,9 +1936,11 @@ GTKfilePopup::menu_handler(GtkWidget *widget, int code)
         }
         char buf[256];
         if (strlen(path) < 80)
-            sprintf(buf, "Delete %s?", path);
-        else
-            sprintf(buf, "Delete .../%s?", lstring::strip_path(path));
+            snprintf(buf, sizeof(buf), "Delete %s?", path);
+        else {
+            snprintf(buf, sizeof(buf), "Delete .../%s?",
+                lstring::strip_path(path));
+        }
         fs_data *data = new fs_data(this, path);
         PopUpAffirm(0, GRloc(LW_XYR, 50, 100), buf, fs_delete_cb, data);
     }
@@ -1949,7 +1953,8 @@ GTKfilePopup::menu_handler(GtkWidget *widget, int code)
             return;
         }
         char buf[256];
-        sprintf(buf, "Enter new name for %s?", lstring::strip_path(path));
+        snprintf(buf, sizeof(buf), "Enter new name for %s?",
+            lstring::strip_path(path));
         fs_data *data = new fs_data(this, path);
         PopUpInput(buf, 0, "Rename", fs_rename_cb, data);
     }
@@ -3001,7 +3006,8 @@ GTKfilePopup::fs_cwd_cb(const char *wd, void *fsp)
             }
             else {
                 char buf[256];
-                sprintf(buf, "Directory change failed:\n%s", strerror(errno));
+                snprintf(buf, sizeof(buf), "Directory change failed:\n%s",
+                    strerror(errno));
                 fs->PopUpMessage(buf, true);
                 delete [] nwd;
             }
@@ -3032,12 +3038,14 @@ GTKfilePopup::fs_make_dir(const char *parent_dir, const char *cur_dir)
             strcpy(dir+1, cur_dir);
             return (dir);
         }
-        dir = new char[strlen(parent_dir) + strlen(cur_dir) + 2];
-        sprintf(dir, "%s/%s", parent_dir, cur_dir);
+        int len = strlen(parent_dir) + strlen(cur_dir) + 2;
+        dir = new char[len];
+        snprintf(dir, len, "%s/%s", parent_dir, cur_dir);
     }
     else {
-        dir = new char[cur_dir ? strlen(cur_dir) + 2 : 2];
-        sprintf(dir, "/%s", cur_dir ? cur_dir : "");
+        int len = cur_dir ? strlen(cur_dir) + 2 : 2;
+        dir = new char[len];
+        snprintf(dir, len, "/%s", cur_dir ? cur_dir : "");
     }
     return (dir);
 }

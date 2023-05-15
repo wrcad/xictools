@@ -87,8 +87,8 @@ cPSFout::cPSFout(sPlot *pl)
     ps_binary = false;
 
 #ifdef WITH_PSFILE
-    sprintf(VersionIdent, "1.0");
-    sprintf(SubVersion, "1.0");
+    strcpy(VersionIdent, "1.0");
+    strcpy(SubVersion, "1.0");
 #endif
 }
 

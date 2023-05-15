@@ -377,8 +377,8 @@ gtkLcb::le_get_lname(GtkWidget *text, GtkWidget *label)
     if (CDldb()->findLayer(lname, DSP()->CurMode())) {
         if (label) {
             char buf[256];
-            sprintf(buf, "A layer %s already exists.  Enter a new name:",
-                lname);
+            snprintf(buf, sizeof(buf),
+                "A layer %s already exists.  Enter a new name:", lname);
             gtk_label_set_text(GTK_LABEL(label), buf);
         }
         delete [] lname;

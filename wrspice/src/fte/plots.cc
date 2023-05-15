@@ -796,7 +796,7 @@ sPlot::sPlot(const char *n)
                     plot_num = num+1;
             }
         }
-        sprintf(buf, "%s%d", s, plot_num);
+        snprintf(buf, sizeof(buf), "%s%d", s, plot_num);
         pl_typename = lstring::copy(buf);
         set_date(datestring());
         set_name(n);
@@ -1142,7 +1142,7 @@ sPlot::add_plot()
                 plot_num = n+1;
         }
     }
-    sprintf(buf, "%s%d", s, plot_num);
+    snprintf(buf, sizeof(buf), "%s%d", s, plot_num);
     pl_typename = lstring::copy(buf);
     new_plot();
     OP.setCurPlot(pl_typename);

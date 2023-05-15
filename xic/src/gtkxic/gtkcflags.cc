@@ -397,14 +397,14 @@ sCF::refresh(bool check_cc)
                 cf->immutable = cursdesc->isImmutable();
                 cf->library = cursdesc->isLibrary();
             }
-            sprintf(buf, "%-*s  ", cf_field, Tstring(cf->name));
+            snprintf(buf, sizeof(buf), "%-*s  ", cf_field, Tstring(cf->name));
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
             const char *yn = cf->immutable ? "yes" : "no";
-            sprintf(buf, "%-3s  ", yn);
+            snprintf(buf, sizeof(buf), "%-3s  ", yn);
             text_insert_chars_at_point(wb_textarea, *yn == 'y' ? yc : nc,
                 buf, -1, -1);
             yn = cf->library ? "yes" : "no";
-            sprintf(buf, "%-3s\n", yn);
+            snprintf(buf, sizeof(buf), "%-3s\n", yn);
             text_insert_chars_at_point(wb_textarea, *yn == 'y' ? yc : nc, buf,
                 -1, -1);
         }

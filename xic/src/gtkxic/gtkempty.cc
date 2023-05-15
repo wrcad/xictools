@@ -315,9 +315,9 @@ sEC::refresh()
         double val = text_get_scroll_value(wb_textarea);
         text_set_chars(wb_textarea, "");
         for (e_item *s = ec_list; s->name; s++) {
-            sprintf(buf, "%-*s  ", ec_field, s->name);
+            snprintf(buf, sizeof(buf), "%-*s  ", ec_field, s->name);
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
-            sprintf(buf, "%-3s\n", s->del ? "yes" : "no");
+            snprintf(buf, sizeof(buf), "%-3s\n", s->del ? "yes" : "no");
             text_insert_chars_at_point(wb_textarea, s->del ? yc : nc, buf,
                 -1, -1);
         }

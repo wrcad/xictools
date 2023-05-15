@@ -1381,8 +1381,8 @@ GTKeditPopup::ed_mail_proc(GtkWidget*, void *client_data)
                         fclose(descfp);
                 }
                 else {
-                    sprintf(buf, "Error: can't open attachment file %s.",
-                        fname);
+                    snprintf(buf, sizeof(buf),
+                        "Error: can't open attachment file %s.", fname);
                     w->PopUpMessage(buf, true, false, false, loc);
                     err = true;
                 }
@@ -1399,14 +1399,14 @@ GTKeditPopup::ed_mail_proc(GtkWidget*, void *client_data)
 
     if (!err) {
         if (!state.nfiles) {
-            sprintf(buf, "mail -s \"%s\" %s < %s", subject, mailaddr,
-                descname);
+            snprintf(buf, sizeof(buf),
+                "mail -s \"%s\" %s < %s", subject, mailaddr, descname);
             system(buf);
         }
         else {
             for (int i = 0; i < state.nfiles; i++) {
                 // What is "-oi"?  took this from mpack
-                sprintf(buf, "sendmail -oi %s < %s", mailaddr,
+                snprintf(buf, sizeof(buf), "sendmail -oi %s < %s", mailaddr,
                     state.fnames[i]);
                 system(buf);
             }
@@ -1700,7 +1700,7 @@ GTKeditPopup::ed_do_attach_proc(const char *fnamein, void *client_data)
         char tbuf[256];
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
-        sprintf(tbuf, "Can't open %s!", fname);
+        snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
         gtk_label_set_text(GTK_LABEL(w->ed_msg), tbuf);
         delete [] fname;
         return;
@@ -1882,7 +1882,7 @@ GTKeditPopup::ed_do_load_proc(const char *fnamein, void *client_data)
             char tbuf[256];
             if (strlen(fname) > 64)
                 strcpy(fname + 60, "...");
-            sprintf(tbuf, "Can't open %s!", fname);
+            snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
             gtk_label_set_text(GTK_LABEL(w->ed_msg), tbuf);
             delete [] fname;
             return;
@@ -1935,7 +1935,7 @@ GTKeditPopup::ed_do_read_proc(const char *fnamein, void *client_data)
         if (!w->read_file(fname, false)) {
             if (strlen(fname) > 64)
                 strcpy(fname + 60, "...");
-            sprintf(tbuf, "Can't open %s!", fname);
+            snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
             gtk_label_set_text(GTK_LABEL(w->ed_msg), tbuf);
         }
         else {
@@ -1943,7 +1943,7 @@ GTKeditPopup::ed_do_read_proc(const char *fnamein, void *client_data)
             text_set_editable(w->wb_textarea, true);
             if (strlen(fname) > 64)
                 strcpy(fname + 60, "...");
-            sprintf(tbuf, "Successfully read %s", fname);
+            snprintf(tbuf, sizeof(tbuf), "Successfully read %s", fname);
             gtk_label_set_text(GTK_LABEL(w->ed_msg), tbuf);
         }
         if (w->wb_input)

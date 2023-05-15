@@ -71,7 +71,7 @@ text_help::display(HLPtopic *t)
             // Create a new window...
             HLPtopic *newtop;
             if (!(newtop = HLP()->read(res->keyword()))) {
-                GRpkgIf()->ErrPrintf(ET_INTERR, "tdisplay: bad link.\n");
+                GRpkg::self()->ErrPrintf(ET_INTERR, "tdisplay: bad link.\n");
                 continue;
             }
             newtop->set_sibling(parent->lastborn());
@@ -250,7 +250,7 @@ text_help::putlist(HLPtopic *t, HLPtopList *tl, int base)
     }
     int ncols = width / maxwidth;
     if (!ncols) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "selection title too long.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "selection title too long.\n");
         return (0);
     }
     if (ncols > nbuts)

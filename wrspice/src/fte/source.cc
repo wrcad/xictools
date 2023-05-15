@@ -2679,8 +2679,9 @@ namespace {
     inline void err_msg(sLine *dd, const char *what)
     {
         dd->comment_out();
-        char *err = new char[strlen(what) + 32];
-        sprintf(err, "Warning: misplaced \"%s\".", what);
+        int len = strlen(what) + 32;
+        char *err = new char[len];
+        snprintf(err, len, "Warning: misplaced \"%s\".", what);
         dd->set_error(err);
         delete [] err;
     }

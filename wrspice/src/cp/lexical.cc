@@ -548,7 +548,7 @@ CshPar::PromptUser(const char *string)
     if (cp_flags[CP_NOTTYIO])
         return (0);
     char buf1[128];
-    sprintf(buf1,  "%s: ",  string);
+    snprintf(buf1, sizeof(buf1),  "%s: ",  string);
     char buf[LEX_MAXLINE];
     if (TTY.prompt_for_input(buf, sizeof(buf), buf1) == 0)
         return (0);
@@ -914,13 +914,14 @@ CshPar::Prompt()
     char buf[BSIZE_SP];
     *buf = '\0';
     while (*ps) {
+        int len = strlen(buf);
         switch (STRIP(*ps)) {
         case '!':
-            sprintf(buf + strlen(buf), "%d", cp_event);
+            snprintf(buf + len, sizeof(buf) - len, "%d", cp_event);
             break;
         case '\\':
             if (*(ps + 1)) {
-                char *t = buf + strlen(buf);
+                char *t = buf + len;
                 *t++ = STRIP(*++ps);
                 *t = '\0';
             }
@@ -931,7 +932,7 @@ CshPar::Prompt()
             if (*(ps+1) == 'p') {
                 char *c = getcwd(0, 128);
                 if (c) {
-                    strcpy(buf + strlen(buf), c);
+                    strcpy(buf + len, c);
                     delete [] c;
                 }
                 ps++;
@@ -939,7 +940,7 @@ CshPar::Prompt()
             }
             // fallthrough
         default:
-            char *t = buf + strlen(buf);
+            char *t = buf + len;
             *t++ = *ps;
             *t = '\0';
             break;

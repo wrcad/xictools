@@ -205,7 +205,7 @@ cMain::IdString()
     time_t tloc = time(0);
     struct tm now = *gmtime(&tloc);
     const char *s = lstring::strip_path(Program());
-    sprintf(buf, "%s %s%s %s %s %02d/%02d/%04d %02d:%02d GMT", s,
+    snprintf(buf, sizeof(buf), "%s %s%s %s %s %02d/%02d/%04d %02d:%02d GMT", s,
         VersionString(), sr, OSname(), Arch(), now.tm_mon + 1, now.tm_mday,
         now.tm_year + 1900, now.tm_hour, now.tm_min);
     return (buf);
@@ -224,7 +224,8 @@ namespace {
         char *app_id_string()
             {
                 char buf[128];
-                sprintf(buf, "%s-%s", XM()->Product(), XM()->VersionString());
+                snprintf(buf, sizeof(buf), "%s-%s", XM()->Product(),
+                    XM()->VersionString());
                 return (lstring::copy(buf));
             }
 

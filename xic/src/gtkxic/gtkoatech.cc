@@ -292,9 +292,9 @@ sOAtc::update()
         return;
     }
     if (branded)
-        sprintf(buf, "Set technology for library %s", libname);
+        snprintf(buf, sizeof(buf), "Set technology for library %s", libname);
     else
-        sprintf(buf, "Technology for library %s", libname);
+        snprintf(buf, sizeof(buf), "Technology for library %s", libname);
     gtk_label_set_text(GTK_LABEL(ot_label), buf);
     char *attachlib;
     if (!OAif()->has_attached_tech(libname, &attachlib)) {
@@ -304,7 +304,8 @@ sOAtc::update()
     if (attachlib) {
         delete [] ot_attachment;
         ot_attachment = lstring::copy(attachlib);
-        sprintf(buf, "Tech status: attached library %s", attachlib);
+        snprintf(buf, sizeof(buf), "Tech status: attached library %s",
+            attachlib);
         gtk_label_set_text(GTK_LABEL(ot_status), buf);
         delete [] attachlib;
         gtk_widget_set_sensitive(ot_unat, branded);

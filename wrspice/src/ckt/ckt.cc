@@ -2399,20 +2399,25 @@ sCKT::trouble(const char *optmsg)
     char msg_buf[513];
     if (!optmsg)
         optmsg = "";
-    if (CKTtroubleNode)
-        sprintf(msg_buf, "%s%sTime: %g, Timestep %g: trouble with %s\n",
+    if (CKTtroubleNode) {
+        snprintf(msg_buf, sizeof(msg_buf),
+            "%s%sTime: %g, Timestep %g: trouble with %s\n",
             optmsg, optmsg && *optmsg ? "; " : "",
             CKTtime, CKTdelta, (char*)nodeName(CKTtroubleNode));
-    else if (CKTtroubleElt)
-        sprintf(msg_buf, "Time: %g, Timestep %g: trouble with %s:%s:%s\n",
+    }
+    else if (CKTtroubleElt) {
+        snprintf(msg_buf, sizeof(msg_buf),
+            "Time: %g, Timestep %g: trouble with %s:%s:%s\n",
             CKTtime, CKTdelta,
             DEV.device(CKTtroubleElt->GENmodPtr->GENmodType)->name(),
                 (char*)CKTtroubleElt->GENmodPtr->GENmodName,
                 (char*)CKTtroubleElt->GENname);
-    else
-        sprintf(msg_buf,
+    }
+    else {
+        snprintf(msg_buf, sizeof(msg_buf),
             "Time: %g, Timestep %g: Non convergence problem detected.\n",
             CKTtime, CKTdelta);
+    }
 
     char *emsg = new char[strlen(msg_buf)+1];
     strcpy(emsg, msg_buf);
@@ -2469,7 +2474,7 @@ sCKT::find_macro(const char *name, int numargs)
         return (0);
 
     char buf[256];
-    sprintf(buf, "%s:%d", name, numargs);
+    snprintf(buf, sizeof(buf), "%s:%d", name, numargs);
     return ((IFmacro*)sHtab::get(CKTmacroTab, buf));
 }
 
@@ -2480,7 +2485,7 @@ sCKT::save_macro(IFmacro *macro)
     if (!macro)
         return;
     char buf[256];
-    sprintf(buf, "%s:%d", macro->name(), macro->numargs());
+    snprintf(buf, sizeof(buf), "%s:%d", macro->name(), macro->numargs());
     if (!CKTmacroTab)
         CKTmacroTab = new sHtab(true);
     CKTmacroTab->add(buf, macro);

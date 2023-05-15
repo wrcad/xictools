@@ -98,8 +98,9 @@ namespace {
     HLPtopic *
     new_image_topic(const char *fname)
     {
-        char *buf = new char [strlen(fname) + 15];
-        sprintf(buf, "<img src=\"%s\">", fname);
+        int len = strlen(fname) + 15;
+        char *buf = new char[len];
+        snprintf(buf, len, "<img src=\"%s\">", fname);
         HLPtopic *top = new HLPtopic(fname, "");
         top->get_string(buf);
         top->set_need_body(true);

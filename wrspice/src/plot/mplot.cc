@@ -263,16 +263,16 @@ sGraph::mp_bdown_hdlr(int button, int x, int y)
                 if (p->type == MDdimens && p->delta2 > 1 && !p->flat) {
                     int d1 = (p->delta1 - 1)/2;
                     int d2 = (p->delta2 - 1)/2;
-                    sprintf(buf, "%d", p->v2[j]+d2);
+                    snprintf(buf, sizeof(buf), "%d", p->v2[j]+d2);
                     int w, h;
                     gr_dev->TextExtent(buf, &w, &h);
                     gr_dev->Text(buf, x2 + 2, yinv(y2 + (p->d - h)/2), 0);
-                    sprintf(buf, "%d", p->v1[j]+d1);
+                    snprintf(buf, sizeof(buf), "%d", p->v1[j]+d1);
                     gr_dev->TextExtent(buf, &w, &h);
                     gr_dev->Text(buf, x2 + (p->d - w)/2, yinv(y2 + 2), 0);
                 }
                 else {
-                    sprintf(buf, "%d", j);
+                    snprintf(buf, sizeof(buf), "%d", j);
                     int w, h;
                     gr_dev->TextExtent(buf, &w, &h);
                     gr_dev->Text(buf, x2 + (p->d - w)/2, yinv(y2 + 2), 0);
@@ -404,7 +404,7 @@ sGraph::mp_redraw()
     if (p->type != MDmonte) {
         if (param1) {
             if (dd1)
-                sprintf(buf, "%s   delta: %g", param1,
+                snprintf(buf, sizeof(buf), "%s   delta: %g", param1,
                     (p->maxv1-p->minv1)/(p->delta1-1));
             else
                 strcpy(buf, param1);
@@ -424,9 +424,10 @@ sGraph::mp_redraw()
             }
         }
         if (param2) {
-            if (dd2)
-                sprintf(buf, "%s   delta: %g", param2,
+            if (dd2) {
+                snprintf(buf, sizeof(buf), "%s   delta: %g", param2,
                     (p->maxv2-p->minv2)/(p->delta2-1));
+            }
             else
                 strcpy(buf, param2);
             int y = yb - gr_fonthei - gr_fonthei/2;
@@ -457,16 +458,16 @@ sGraph::mp_redraw()
     }
     if (p->filename) {
         if (p->type == MDdimens)
-            sprintf(buf, "Vector: %s", p->filename);
+            snprintf(buf, sizeof(buf), "Vector: %s", p->filename);
         else
-            sprintf(buf, "Circuit file: %s", p->filename);
+            snprintf(buf, sizeof(buf), "Circuit file: %s", p->filename);
         gr_save_text(buf, xx, yy, LAname, 1, 0);
         yy -= gr_fonthei;
     }
     else {
         VTvalue vv;
         if (Sp.GetVar(kw_mplot_cur, VTYP_STRING, &vv)) {
-            sprintf(buf, "Output file: %s", vv.get_string());
+            snprintf(buf, sizeof(buf), "Output file: %s", vv.get_string());
             gr_save_text(buf, xx, yy, LAname, 1, 0);
             yy -= gr_fonthei;
         }
@@ -513,16 +514,16 @@ sGraph::mp_redraw()
                 if (p->type == MDdimens && p->delta2 > 1 && !p->flat) {
                     int d1 = (p->delta1 - 1)/2;
                     int d2 = (p->delta2 - 1)/2;
-                    sprintf(buf, "%d", p->v2[j]+d2);
+                    snprintf(buf, sizeof(buf), "%d", p->v2[j]+d2);
                     int ww, hh;
                     gr_dev->TextExtent(buf, &ww, &hh);
                     gr_dev->Text(buf, x + 2, yinv(y + (p->d - hh)/2), 0);
-                    sprintf(buf, "%d", p->v1[j]+d1);
+                    snprintf(buf, sizeof(buf), "%d", p->v1[j]+d1);
                     gr_dev->TextExtent(buf, &ww, &hh);
                     gr_dev->Text(buf, x + (p->d - ww)/2, yinv(y + hh/4), 0);
                 }
                 else {
-                    sprintf(buf, "%d", j);
+                    snprintf(buf, sizeof(buf), "%d", j);
                     int ww, hh;
                     gr_dev->TextExtent(buf, &ww, &hh);
                     gr_dev->Text(buf, x + (p->d - ww)/2, yinv(y + hh/4), 0);
@@ -621,7 +622,7 @@ void
 sGraph::mp_writeg(double d, int x, int y, int j)
 {
     char t[20];
-    sprintf(t, "%g", d);
+    snprintf(t, sizeof(t), "%g", d);
     char *tt;
     if ((tt = strchr(t, 'e')) != 0) {
         tt += 1;
@@ -643,7 +644,7 @@ sGraph::mp_writeg(double d, int x, int y, int j)
                 return;
             }       
         }
-        sprintf(tt, "%02d", xp);
+        snprintf(tt, 2, "%02d", xp);
     }           
     if (j == 'r')
         gr_dev->Text(t, x - (int)strlen(t)*gr_fontwid, yinv(y), 0);

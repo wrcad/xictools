@@ -98,7 +98,7 @@ cKbMacro::GetMacro()
     if (!nkey)
         return;
     char string[64];
-    SprintKey(string, nkey->key, nkey->state, nkey->text);
+    SprintKey(string, sizeof(string), nkey->key, nkey->state, nkey->text);
     nkey->begin_recording(string);
 }
 
@@ -474,9 +474,9 @@ cKbMacro::MacroFileUpdate(const char *filename)
     }
     FILE *fp = 0;
     if (Tech()->TechExtension() && *Tech()->TechExtension()) {
-        char *tbf = new char[strlen(filename) +
-            strlen(Tech()->TechExtension()) + 2];
-        sprintf(tbf, "%s.%s", filename, Tech()->TechExtension());
+        int len = strlen(filename) + strlen(Tech()->TechExtension()) + 2;
+        char *tbf = new char[len];
+        snprintf(tbf, len, "%s.%s", filename, Tech()->TechExtension());
         if (!access(tbf, F_OK)) {
             if (filestat::create_bak(tbf))
                 fp = fopen(tbf, "w");
@@ -542,41 +542,28 @@ cKbMacro::MacroFileUpdate(const char *filename)
 // Print a representation of the key event.
 //
 void
-cKbMacro::SprintKey(char *buf, unsigned key, unsigned state, const char *text)
+cKbMacro::SprintKey(char *buf, int bsz, unsigned int key, unsigned int state,
+    const char *text)
 {
     if (isModifier(key))
         return;
-    if (state & GR_ALT_MASK) {
-        *buf++ = 'A';
-        *buf++ = 'l';
-        *buf++ = 't';
-        *buf++ = '-';
-    }
-    if (state & GR_CONTROL_MASK) {
-        *buf++ = 'C';
-        *buf++ = 't';
-        *buf++ = 'r';
-        *buf++ = 'l';
-        *buf++ = '-';
-    }
+    sLstr lstr;
+    if (state & GR_ALT_MASK)
+        lstr.add("Alt-");
+    if (state & GR_CONTROL_MASK)
+        lstr.add("Ctrl-");
     if (text && isprint(*text) && !isspace(*text)) {
         if (ispunct(*text)) {
-            *buf++ = *text;
-            if (*text == '%')  // PL()->ShowPrompt() uses sprintf()
-                *buf++ = *text;
+            lstr.add_c(*text);
+            if (*text == '%')  // PL()->ShowPrompt() uses snprintf()
+                lstr.add_c(*text);
         }
         else if (isupper(*text) && (state & (GR_CONTROL_MASK | GR_ALT_MASK))) {
-            *buf++ = 'S';
-            *buf++ = 'h';
-            *buf++ = 'i';
-            *buf++ = 'f';
-            *buf++ = 't';
-            *buf++ = '-';
-            *buf++ = tolower(*text);
+            lstr.add("Shift-");
+            lstr.add_c(tolower(*text));
         }
         else
-            *buf++ = *text;
-        *buf++ = 0;
+            lstr.add_c(*text);
     }
     else {
         char tbuf[32];
@@ -591,39 +578,30 @@ cKbMacro::SprintKey(char *buf, unsigned key, unsigned state, const char *text)
                     if (isupper(*tbuf))
                         *tbuf = tolower(*tbuf);
                 }
-                sprintf(buf, "%s", tbuf);
+                lstr.add(tbuf);
             }
             else {
-                if (state & GR_SHIFT_MASK) {
-                    *buf++ = 'S';
-                    *buf++ = 'h';
-                    *buf++ = 'i';
-                    *buf++ = 'f';
-                    *buf++ = 't';
-                    *buf++ = '-';
-                }
-                sprintf(buf, "%s", tbuf);
+                if (state & GR_SHIFT_MASK)
+                    lstr.add("Shift-");
+                lstr.add(tbuf);
             }
         }
         else {
-            if (state & GR_SHIFT_MASK) {
-                *buf++ = 'S';
-                *buf++ = 'h';
-                *buf++ = 'i';
-                *buf++ = 'f';
-                *buf++ = 't';
-                *buf++ = '-';
-            }
-            sprintf(buf, "<%s>", tbuf);
+            if (state & GR_SHIFT_MASK)
+                lstr.add("Shift-");
+            lstr.add_c('<');
+            lstr.add(tbuf);
+            lstr.add_c('>');
         }
     }
+    snprintf(buf, bsz, "%s", lstr.string());
 }
 
 
 // Print a representation of the button event.
 //
 void
-cKbMacro::SprintBtn(char *buf, int btn, unsigned state)
+cKbMacro::SprintBtn(char *buf, int bsz, int btn, unsigned state)
 {
     char tbuf[32];
     char *s = tbuf;
@@ -634,7 +612,7 @@ cKbMacro::SprintBtn(char *buf, int btn, unsigned state)
     if (state & GR_CONTROL_MASK)
         *s++ = '^';
     strcpy(s, "btn");
-    sprintf(buf, "<%s%d>", tbuf, btn);
+    snprintf(buf, bsz, "<%s%d>", tbuf, btn);
 }
 // End of cKbMacro functions.
 
@@ -662,31 +640,29 @@ sKeyEvent::print(FILE *fp)
 
 
 void
-sKeyEvent::print(char *buf)
+sKeyEvent::print(char *buf, int bsz)
 {
-    char *s = buf;
+    sLstr lstr;
     if (type == KEY_RELEASE)
-        strcpy(s, "up ");
+        lstr.add("up ");
     else
-        strcpy(s, "down ");
-    s += strlen(s);
+        lstr.add("down ");
+    char tbuf[64];
     if (KbMac()->isModifier(key)) {
-        if (KbMac()->isControl(key)) {
-            strcpy(s, "ctrl ");
-            s += 5;
-        }
-        if (KbMac()->isShift(key)) {
-            strcpy(s, "shift ");
-            s += 6;
-        }
-        if (KbMac()->isAlt(key)) {
-            strcpy(s, "alt ");
-            s += 4;
-        }
+        if (KbMac()->isControl(key))
+            lstr.add("ctrl ");
+        if (KbMac()->isShift(key))
+            lstr.add("shift ");
+        if (KbMac()->isAlt(key))
+            lstr.add("alt ");
     }
-    else
-        KbMac()->SprintKey(s, key, state, text);
-    sprintf(buf + strlen(buf), " %x", state);
+    else {
+        KbMac()->SprintKey(tbuf, sizeof(tbuf), key, state, text);
+        lstr.add(tbuf);
+    }
+    snprintf(tbuf, sizeof(tbuf), " %x", state);
+    lstr.add(tbuf);
+    snprintf(buf, bsz, "%s", lstr.string());
 }
 
 
@@ -731,9 +707,9 @@ sBtnEvent::print(FILE *fp)
 
 
 void
-sBtnEvent::print(char *buf)
+sBtnEvent::print(char *buf, int bsz)
 {
-    KbMac()->SprintBtn(buf, button, state);
+    KbMac()->SprintBtn(buf, bsz, button, state);
 }
 
 
@@ -765,15 +741,20 @@ void
 sKeyMap::show()
 {
     char buf[256];
-    sprintf(buf, "Record actions for %s, Enter to complete: ", forstr);
+    snprintf(buf, sizeof(buf), "Record actions for %s, Enter to complete: ",
+        forstr);
     for (sEvent *r = response; r; r = r->next) {
         if (r->type == KEY_PRESS) {
             sKeyEvent *rk = (sKeyEvent*)r;
-            KbMac()->SprintKey(buf + strlen(buf), rk->key, rk->state, rk->text);
+            int len = strlen(buf);
+            KbMac()->SprintKey(buf + len, sizeof(buf) - len, rk->key,
+                rk->state, rk->text);
         }
         else if (r->type ==  BUTTON_PRESS) {
             sBtnEvent *rb = (sBtnEvent*)r;
-            KbMac()->SprintBtn(buf + strlen(buf), rb->button, rb->state);
+            int len = strlen(buf);
+            KbMac()->SprintBtn(buf + len, sizeof(buf) - len, rb->button,
+                rb->state);
         }
     }
     PL()->ShowPrompt(buf);
@@ -796,16 +777,19 @@ void
 sKeyMap::print_macro_text(FILE *fp)
 {
     char buf[256];
-    KbMac()->SprintKey(buf, key, state, 0);
+    KbMac()->SprintKey(buf, sizeof(buf), key, state, 0);
     strcat(buf, " : ");
     for (sEvent *r = response; r; r = r->next) {
+        int len = strlen(buf);
         if (r->type == KEY_PRESS) {
             sKeyEvent *rk = (sKeyEvent*)r;
-            KbMac()->SprintKey(buf + strlen(buf), rk->key, rk->state, rk->text);
+            KbMac()->SprintKey(buf + len, sizeof(buf) - len, rk->key,
+                rk->state, rk->text);
         }
         else if (r->type ==  BUTTON_PRESS) {
             sBtnEvent *rb = (sBtnEvent*)r;
-            KbMac()->SprintBtn(buf + strlen(buf), rb->button, rb->state);
+            KbMac()->SprintBtn(buf + len, sizeof(buf) - len, rb->button,
+                rb->state);
         }
     }
     fprintf(fp, "# %s\n", buf);

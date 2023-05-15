@@ -1106,7 +1106,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_PhysPropTextSize);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_PhysPropTextSize, buf);
             }
         }
@@ -1143,7 +1143,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_CellThreshold);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_CellThreshold, buf);
             }
         }
@@ -1157,7 +1157,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_ContextDarkPcnt);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_ContextDarkPcnt, buf);
             }
         }
@@ -1171,7 +1171,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_LowerWinOffset);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_LowerWinOffset, buf);
             }
         }
@@ -1185,7 +1185,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_LabelDefHeight);
             else {
                 char buf[32];
-                sprintf(buf, "%.2f", d);
+                snprintf(buf, sizeof(buf), "%.2f", d);
                 CDvdb()->setVariable(VA_LabelDefHeight, buf);
             }
         }
@@ -1200,7 +1200,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_LabelMaxLen);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_LabelMaxLen, buf);
             }
         }
@@ -1216,7 +1216,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 if (d > DSP_MAX_MAX_LABEL_LINES)
                     d = DSP_MAX_MAX_LABEL_LINES;
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_LabelMaxLines, buf);
             }
         }

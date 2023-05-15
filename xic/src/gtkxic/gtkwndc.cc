@@ -102,7 +102,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_s_menu = gtk_menu_new();
     gtk_widget_set_name(wnd_s_menu, "Smenu");
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -194,7 +194,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_r_menu = gtk_menu_new();
     gtk_widget_set_name(wnd_r_menu, "Rmenu");
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);

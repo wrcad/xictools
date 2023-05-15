@@ -605,7 +605,8 @@ namespace {
                 for ( ; d; d = d->GENnextInstance)
                     cnt++;
                 if (cnt) {
-                    sprintf(buf, "%-14s %d", (const char*)dm->GENmodName, cnt);
+                    snprintf(buf, sizeof(buf), "%-14s %d",
+                        (const char*)dm->GENmodName, cnt);
                     char *t = buf + strlen(buf);
                     while (t - buf < 28)
                         *t++ = ' ';
@@ -2091,7 +2092,7 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
     if (!device)
         return (true);
     if (dwl) {
-        sprintf(buf, "device: %s (%s)", device->description(),
+        snprintf(buf, sizeof(buf), "device: %s (%s)", device->description(),
             device->name());
         wordlist *wl0 = new wordlist;
         wordlist *ww = wl0;
@@ -2102,16 +2103,24 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
             if (!k)
                 break;
             if (k->maxTerms <= 0)
-                sprintf(buf, "key: %c", k->key);
+                snprintf(buf, sizeof(buf), "key: %c", k->key);
             else {
-                sprintf(buf, "key: %c  terminals:", k->key);
-                for (int i = 0; i < k->minTerms; i++)
-                    sprintf(buf + strlen(buf), " %s", k->termNames[i]);
+                snprintf(buf, sizeof(buf), "key: %c  terminals:", k->key);
+                for (int i = 0; i < k->minTerms; i++) {
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, " %s",
+                        k->termNames[i]);
+                }
                 if (k->minTerms != k->maxTerms) {
-                    sprintf(buf + strlen(buf), " %s", "[");
-                    for (int i = k->minTerms; i < k->maxTerms; i++)
-                        sprintf(buf + strlen(buf), " %s", k->termNames[i]);
-                    sprintf(buf + strlen(buf), " %s", "]");
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, " %s", "[");
+                    for (int i = k->minTerms; i < k->maxTerms; i++) {
+                        len = strlen(buf);
+                        snprintf(buf + len, sizeof(buf) - len, " %s",
+                            k->termNames[i]);
+                    }
+                    len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, " %s", "]");
                 }
             }
             ww->wl_next = new wordlist;
@@ -2124,7 +2133,7 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
                 IFparm *opt = device->instanceParm(i);
                 if (!opt)
                     break;
-                sprintf(buf, "%-18s ", opt->keyword);
+                snprintf(buf, sizeof(buf), "%-18s ", opt->keyword);
                 if (!(opt->dataType & IF_ASK))
                     strcat(buf, "NR ");
                 else if (!(opt->dataType & IF_SET))
@@ -2154,7 +2163,7 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
         if (device->description())
             ww->wl_word = lstring::copy(device->description());
         else {
-            sprintf(buf, "%s model", device->name());
+            snprintf(buf, sizeof(buf), "%s model", device->name());
             ww->wl_word = lstring::copy(buf);
         }
         ww->wl_next = new wordlist;
@@ -2166,12 +2175,14 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
                 if (device->level(lcnt) == 0)
                     break;
             }
-            sprintf(buf, "%s %s:", device->name(),
+            snprintf(buf, sizeof(buf), "%s %s:", device->name(),
                 lcnt > 1 ? "levels" : "level");
             for (lcnt = 0; ; lcnt++) {
                 if (device->level(lcnt) == 0)
                     break;
-                sprintf(buf + strlen(buf), " %d", device->level(lcnt));
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " %d",
+                    device->level(lcnt));
             }
         }
         else 
@@ -2184,13 +2195,15 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
             ncnt++;
         }
         if (ncnt) {
-            sprintf(buf + strlen(buf), "  model %s:",
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "  model %s:",
                 ncnt > 1 ? "names" : "name");
             for (int i = 0; ; i++) {
                 const char *kstr = device->modelKey(i);
                 if (!kstr)
                     break;
-                sprintf(buf + strlen(buf), " %s", kstr);
+                len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " %s", kstr);
             }
         }
         ww->wl_word = lstring::copy(buf);
@@ -2200,7 +2213,7 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
                 IFparm *opt = device->modelParm(i);
                 if (!opt)
                     break;
-                sprintf(buf, "%-18s ", opt->keyword);
+                snprintf(buf, sizeof(buf), "%-18s ", opt->keyword);
                 if (!(opt->dataType & IF_ASK))
                     strcat(buf, "NR ");
                 else if (!(opt->dataType & IF_SET))

@@ -825,7 +825,7 @@ sDC::dc_action_proc(GtkWidget *caller, void*)
         }
         else {
             char buf[32];
-            sprintf(buf, "%.2f", DC->dc_last_part_size);
+            snprintf(buf, sizeof(buf), "%.2f", DC->dc_last_part_size);
             CDvdb()->setVariable(VA_DrcPartitionSize, buf);
         }
     }

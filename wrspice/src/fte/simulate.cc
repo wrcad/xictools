@@ -576,12 +576,12 @@ sFtCirc::run(SIMtype what, wordlist *args)
         char buf[256];
         char *uname = pathlist::get_user_name(false);
 #ifdef WIN32
-        sprintf(buf, "wrspice: plot %s\n", uname);
+        snprintf(buf, sizeof(buf), "wrspice: plot %s\n", uname);
         delete [] uname;
         msw::MapiSend(Global.BugAddr(), 0, buf, 0, 0);
         raise(SIGTERM);
 #else
-        sprintf(buf, "mail %s", Global.BugAddr());
+        snprintf(buf, sizeof(buf), "mail %s", Global.BugAddr());
         FILE *fp = popen(buf, "w");
         if (fp) {
             fprintf(fp, "wrspice: plot %s\n", uname);

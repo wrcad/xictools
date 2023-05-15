@@ -549,7 +549,7 @@ sRu::update(DRCtype type, const char *username, const DRCtestDesc *rule)
     type = ru_rule;
 
     char buf[256];
-    sprintf(buf, "Set Design Rule parameters for %s",
+    snprintf(buf, sizeof(buf), "Set Design Rule parameters for %s",
         type == drUserDefinedRule ? ru_username : DRCtestDesc::ruleName(type));
     gtk_label_set_text(GTK_LABEL(ru_label), buf);
 
@@ -986,10 +986,10 @@ sRu::update(DRCtype type, const char *username, const DRCtestDesc *rule)
                 break;
         }
         if (tst)
-            sprintf(buf, "User-defined rule arguments (%d required)",
-                tst->argc());
+            snprintf(buf, sizeof(buf),
+                "User-defined rule arguments (%d required)", tst->argc());
         else
-            sprintf(buf,
+            snprintf(buf, sizeof(buf),
                 "User-defined rule arguments (warning: unknown rule)");
         gtk_label_set_text(GTK_LABEL(ru_user_la), buf);
         show_widget(ru_region_la,   true);

@@ -100,7 +100,7 @@ IFanalysis::parseDC(sLine *current, sCKT *ckt, const char **line, sJOB *job,
     ptemp.type = IF_INSTANCE;
 #endif
     char buf[32];
-    sprintf(buf, "name%d", index);
+    snprintf(buf, sizeof(buf), "name%d", index);
     int error = job->setParam(buf, &ptemp);
     IP.logError(current, error);
 #ifdef ALLPRMS
@@ -113,7 +113,7 @@ IFanalysis::parseDC(sLine *current, sCKT *ckt, const char **line, sJOB *job,
     if (IP.getValue(line, &data, 0)) {
         // vstart
         startval = data.v.rValue;
-        sprintf(buf, "start%d", index);
+        snprintf(buf, sizeof(buf), "start%d", index);
         error = job->setParam(buf, &data);
         IP.logError(current, error);
     }
@@ -125,20 +125,20 @@ IFanalysis::parseDC(sLine *current, sCKT *ckt, const char **line, sJOB *job,
 
     if (IP.getValue(line, &data, 0)) {
         // vstop
-        sprintf(buf, "stop%d", index);
+        snprintf(buf, sizeof(buf), "stop%d", index);
         error = job->setParam(buf, &data);
         IP.logError(current, error);
     }
     else {
         data.v.rValue = startval;
-        sprintf(buf, "stop%d", index);
+        snprintf(buf, sizeof(buf), "stop%d", index);
         error = job->setParam(buf, &data);
         IP.logError(current, error);
     }
 
     if (IP.getValue(line, &data, 0)) {
         // vstep
-        sprintf(buf, "step%d", index);
+        snprintf(buf, sizeof(buf), "step%d", index);
         error = job->setParam(buf, &data);
         IP.logError(current, error);
     }

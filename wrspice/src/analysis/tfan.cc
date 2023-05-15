@@ -111,12 +111,13 @@ TFanalysis::anFunc(sCKT *ckt, int restart)
             ckt->newUid(&uids[2], job->TFoutSrc, "Zo", UID_OTHER);
         }
         else {
-            char *nm = new char[strlen(job->TFoutName) + 22];
+            int len = strlen(job->TFoutName) + 22;
+            char *nm = new char[len];
             const char *s = strchr(job->TFoutName, '(');
             if (s)
-                sprintf(nm, "Zo%s", s);
+                snprintf(nm, len, "Zo%s", s);
             else
-                sprintf(nm, "Zo(%s)", job->TFoutName);
+                snprintf(nm, len, "Zo(%s)", job->TFoutName);
             ckt->newUid(&uids[2], 0, nm, UID_OTHER);
         }
 

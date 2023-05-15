@@ -542,8 +542,9 @@ sCHL::update()
                 const char *cn = chd->defaultCell(Physical);
                 if (!cn)
                     cn = "";
-                strings[2] = new char[strlen(fn) + strlen(cn) + 10];
-                sprintf(strings[2], "%s  %s", fn, cn);
+                int s2len = strlen(fn) + strlen(cn) + 10;
+                strings[2] = new char[s2len];
+                snprintf(strings[2], s2len, "%s  %s", fn, cn);
                 gtk_list_store_append(store, &iter);
                 gtk_list_store_set(store, &iter, 0, strings[0], 1, strings[1],
                     2, strings[2], 3, NULL, 4, NULL, -1);
@@ -646,7 +647,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
                 char *string = chd->prInfo(0, DSP()->CurMode(), 0);
 
                 char buf[256];
-                sprintf(buf, "CHD name: %s\n", chl_selection);
+                snprintf(buf, sizeof(buf), "CHD name: %s\n", chl_selection);
                 char *tmp = new char[strlen(buf) + strlen(string) + 1];
                 char *e = lstring::stpcpy(tmp, buf);
                 strcpy(e, string);
@@ -935,7 +936,7 @@ sCHL::err_message(const char *fmt)
     const char *s = Errs()->get_error();
     int len = strlen(fmt) + (s ? strlen(s) : 0) + 10;
     char *t = new char[len];
-    sprintf(t, fmt, s);
+    snprintf(t, len, fmt, s);
     PopUpMessage(t, true);
     delete [] t;
 }
@@ -1059,7 +1060,8 @@ sCHL::chl_add_cb(const char *idname, const char *fname, int mode, void*)
         return (false);
     }
     if (idname && *idname && CDchd()->chdRecall(idname, false)) {
-        sprintf(buf, "Access name %s is already in use.", idname);
+        snprintf(buf, sizeof(buf), "Access name %s is already in use.",
+            idname);
         CHL->PopUpMessage(buf, true);
         return (false);
     }
@@ -1112,8 +1114,8 @@ sCHL::chl_add_cb(const char *idname, const char *fname, int mode, void*)
     if (!CDchd()->chdStore(idname, chd)) {
         // Should never happen.
         char *n = CDchd()->newChdName();
-        sprintf(buf, "Access name %s is in use, using new name %s.",
-            idname, n);
+        snprintf(buf, sizeof(buf),
+            "Access name %s is in use, using new name %s.", idname, n);
         CHL->PopUpMessage(buf, false);
         CDchd()->chdStore(n, chd);
         delete [] n;
@@ -1288,7 +1290,8 @@ sCHL::chl_cel_cb(const char *cname, void*)
             return (ESTR_IGN);
         }
         char buf[256];
-        sprintf(buf, "Reference cell named %s created in memory.", cname);
+        snprintf(buf, sizeof(buf),
+            "Reference cell named %s created in memory.", cname);
         CHL->PopUpMessage(buf, false);
     }
     return (ESTR_DN);

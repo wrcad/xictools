@@ -451,9 +451,9 @@ sSaveList::list_vecs(pnode *pn)
     else if (pn->func()) {
         if (!pn->func()->func()) {
             if (*pn->func()->name() == 'v')
-                sprintf(buf, "v(%s)", pn->left()->token_string());
+                snprintf(buf, sizeof(buf), "v(%s)", pn->left()->token_string());
             else
-                sprintf(buf, "%s", pn->left()->token_string());
+                snprintf(buf, sizeof(buf), "%s", pn->left()->token_string());
             add_save(buf);
         }
         else

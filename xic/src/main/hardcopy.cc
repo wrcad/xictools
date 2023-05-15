@@ -847,10 +847,14 @@ sHcImage::legend(WindowDesc *wdesc, bool nodraw)
 
     char buf1[80];
     drawptr->SetColor(DSP()->Color(HighlightingColor));
-    if (DSP()->CurMode() == Electrical)
-        sprintf(buf1, "circuit: %s", Tstring(DSP()->CurCellName()));
-    else
-        sprintf(buf1, "cell: %s", Tstring(DSP()->CurCellName()));
+    if (DSP()->CurMode() == Electrical) {
+        snprintf(buf1, sizeof(buf1), "circuit: %s",
+            Tstring(DSP()->CurCellName()));
+    }
+    else {
+        snprintf(buf1, sizeof(buf1),  "cell: %s",
+            Tstring(DSP()->CurCellName()));
+    }
     drawptr->Text(buf1, vp->left + cwidth, ypos, 0);
     if (DSP()->CurMode() == Physical) {
         char *s = buf1;
@@ -861,24 +865,25 @@ sHcImage::legend(WindowDesc *wdesc, bool nodraw)
                 spa /= -snap;
             else
                 spa *= snap;
-            sprintf(buf1, "grid: %g  ", spa);
+            snprintf(buf1, sizeof(buf1), "grid: %g  ", spa);
             s = buf1 + strlen(buf1);
         }
-        sprintf(s, "frame: w=%g h=%g um",
+        int len = strlen(s);
+        snprintf(s, sizeof(buf1) - len, "frame: w=%g h=%g um",
             MICRONS(wd->width()), MICRONS(wd->height()));
         drawptr->Text(buf1, vp->right - cwidth, ypos, TXTF_HJR);
     }
     ypos += entry_ht;
 
-    sprintf(buf1, "Whiteley Research Inc. %s-%s", XM()->Product(),
-        XM()->VersionString());
+    snprintf(buf1, sizeof(buf1), "Whiteley Research Inc. %s-%s",
+        XM()->Product(), XM()->VersionString());
     drawptr->Text(buf1, vp->left + cwidth, ypos, 0);
 
     time_t secs;
     time(&secs);
     tm *t = localtime(&secs);
-    sprintf(buf1, "%02d-%02d-%02d %02d:%02d", t->tm_mon+1, t->tm_mday,
-        t->tm_year%100, t->tm_hour, t->tm_min);
+    snprintf(buf1, sizeof(buf1), "%02d-%02d-%02d %02d:%02d", t->tm_mon+1,
+        t->tm_mday, t->tm_year%100, t->tm_hour, t->tm_min);
     drawptr->Text(buf1, vp->right - cwidth, ypos, TXTF_HJR);
 
     ypos += 2*yspace;

@@ -167,16 +167,17 @@ SENSanalysis::anFunc(sCKT *ckt, int restart)
         sg = new sgen(ckt, is_dc);
         for (i = 0, sg = sg->next(); sg; i++, sg = sg->next()) {
             if (!sg->sg_is_instparam) {
-                sprintf(namebuf, "%s:%s",
+                snprintf(namebuf, sizeof(namebuf), "%s:%s",
                     (const char*)sg->sg_instance->GENname,
                     sg->sg_ptable[sg->sg_param].keyword);
             }
             else if ((sg->sg_ptable[sg->sg_param].dataType & IF_PRINCIPAL) &&
                     sg->sg_is_principle) {
-                sprintf(namebuf, "%s", (char*)sg->sg_instance->GENname);
+                snprintf(namebuf, sizeof(namebuf), "%s",
+                    (char*)sg->sg_instance->GENname);
             }
             else {
-                sprintf(namebuf, "%s.%s",
+                snprintf(namebuf, sizeof(namebuf), "%s.%s",
                     (const char*)sg->sg_instance->GENname,
                     sg->sg_ptable[sg->sg_param].keyword);
             }

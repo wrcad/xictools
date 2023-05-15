@@ -59,7 +59,7 @@ struct sEvent
 
     virtual ~sEvent() { delete [] widget_name; }
     virtual void print(FILE*) = 0;
-    virtual void print(char*) = 0;
+    virtual void print(char*, int) = 0;
     virtual bool exec() = 0;
 
     char *widget_name;
@@ -73,7 +73,7 @@ struct sKeyEvent : public sEvent
     sKeyEvent(char*, unsigned int, unsigned int, unsigned int);
 
     void print(FILE*);
-    void print(char*);
+    void print(char*, int);
     void set_text();
     bool exec();
 
@@ -86,7 +86,7 @@ struct sBtnEvent : public sEvent
     sBtnEvent(char*, unsigned int, unsigned int, unsigned int, int, int);
 
     void print(FILE*);
-    void print(char*);
+    void print(char*, int);
     bool exec();
 
     unsigned int button;
@@ -183,8 +183,8 @@ public:
     bool MacroPush(sEvent*);
     bool MacroPop();
     void MacroFileUpdate(const char*);
-    void SprintKey(char*, unsigned int, unsigned int, const char*);
-    void SprintBtn(char*, int, unsigned int);
+    void SprintKey(char*, int, unsigned int, unsigned int, const char*);
+    void SprintBtn(char*, int, int, unsigned int);
 
     // These are provided by the graphics package.
     sKeyMap *getKeyToMap();

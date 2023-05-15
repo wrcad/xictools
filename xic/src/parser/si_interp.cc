@@ -235,8 +235,9 @@ namespace {
     {
         if (name && *name) {
             if (value && *value) {
-                char *str = new char[strlen(name) + strlen(value) + 4];
-                sprintf(str, "%s = %s", name, value);
+                int len = strlen(name) + strlen(value) + 4;
+                char *str = new char[len];
+                snprintf(str, len, "%s = %s", name, value);
                 return (str);
             }
             return (lstring::copy(name));
@@ -286,8 +287,9 @@ step_again:
             siDefines = new SImacroHandler;
         if (sfp && sfp->filename) {
             // add:  #define THIS_SCRIPT filename
-            char *s = new char[strlen(sfp->filename) + 20];
-            sprintf(s, "THIS_SCRIPT %s", sfp->filename);
+            int len = strlen(sfp->filename) + 20;
+            char *s = new char[len];
+            snprintf(s, len, "THIS_SCRIPT %s", sfp->filename);
             siDefines->parse_macro(s, true);
             delete [] s;
         }

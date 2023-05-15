@@ -90,7 +90,7 @@ cDRC::jobs()
     sLstr lstr;
     char buf[256];
     for (DRCjob *j = drc_job_list; j; j = j->next()) {
-        sprintf(buf, "%-6u %s\n", j->pid(), j->cellname());
+        snprintf(buf, sizeof(buf), "%-6u %s\n", j->pid(), j->cellname());
         lstr.add(buf);
     }
     return (lstr.string_trim());
@@ -147,13 +147,15 @@ namespace {
             DWORD status;
             GetExitCodeProcess(info->hProcess, &status);
             char buf[256];
-            if (status)
-                sprintf(buf,
+            if (status) {
+                snprintf(buf, sizeof(buf),
                     "Background DRC job %ld exited with error status %ld.",
                     info->dwProcessId, status);
-            else
-                sprintf(buf, "Background DRC job %ld done.",
+            }
+            else {
+                snprintf(buf, sizeof(buf), "Background DRC job %ld done.",
                     info->dwProcessId);
+            }
             DRC()->removeJob(info->dwProcessId);
 
             // Can't use PopUpMessage() here, needs to be modal.
@@ -215,20 +217,24 @@ cDRC::runDRC(const BBox *AOI, bool backg, cCHD *chd, const char *cellname,
 
         char cmdline[512];
         GetModuleFileName(0, cmdline, 512);
-        if (Tech()->TechExtension() && *Tech()->TechExtension())
-            sprintf(cmdline + strlen(cmdline), " -T%s",
+        if (Tech()->TechExtension() && *Tech()->TechExtension()) {
+            int len = strlen(cmdline);
+            snprintf(cmdline + len, sizeof(cmdline) - len, " -T%s",
                 Tech()->TechExtension());
+        }
         // The new process will delete the temp file when done (@d directive).
         if (AOI) {
-            sprintf(cmdline + strlen(cmdline),
+            int len = strlen(cmdline);
+            snprintf(cmdline + len, sizeof(cmdline) - len,
                 " -B-drc@w=%.3f,%.3f,%.3f,%.3f@m=%d@r=%d@d %s",
                 MICRONS(AOI->left), MICRONS(AOI->bottom),
                 MICRONS(AOI->right), MICRONS(AOI->top),
                 maxErrors(), errorLevel(), tf);
         }
         else {
-            sprintf(cmdline + strlen(cmdline), " -B-drc@m=%d@r=%d@d %s",
-                maxErrors(), errorLevel(), tf);
+            int len = strlen(cmdline);
+            snprintf(cmdline + len, sizeof(cmdline) - len,
+                " -B-drc@m=%d@r=%d@d %s", maxErrors(), errorLevel(), tf);
         }
         delete [] tf;
 
@@ -714,8 +720,8 @@ cDRC::gridBatchTest(const BBox *AOI, FILE *outfp)
                 coarse_cBB.top = coarseBB.top;
 
             char fbbuf[64];
-            sprintf(fbbuf, "Checking region %d of %d  ", ic*nxc + jc + 1,
-                nvals);
+            snprintf(fbbuf, sizeof(fbbuf), "Checking region %d of %d  ",
+                ic*nxc + jc + 1, nvals);
             PL()->ShowPromptV("Starting %d of %d.", ic*nxc + jc + 1, nvals);
 
             BBox tcBB(coarse_cBB);
@@ -853,8 +859,8 @@ cDRC::chdGridBatchTest(cCHD *chd, const char *cellname, const BBox *AOI,
                 coarse_cBB.top = coarseBB.top;
 
             char fbbuf[64];
-            sprintf(fbbuf, "Checking region %d of %d  ", ic*nxc + jc + 1,
-                nvals);
+            snprintf(fbbuf, sizeof(fbbuf), "Checking region %d of %d  ",
+                ic*nxc + jc + 1, nvals);
             PL()->ShowPromptV("Starting %d of %d.", ic*nxc + jc + 1, nvals);
 
             BBox tcBB(coarse_cBB);
@@ -1320,10 +1326,12 @@ namespace {
         *buf = '\0';
         if (WIFEXITED(status)) {
             DRC()->removeJob(pid);
-            sprintf(buf, "Process %d exited ", pid);
-            if (WEXITSTATUS(status))
-                sprintf(buf + strlen(buf), "with error status %d.",
-                    WEXITSTATUS(status));
+            snprintf(buf, sizeof(buf), "Process %d exited ", pid);
+            if (WEXITSTATUS(status)) {
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len,
+                    "with error status %d.", WEXITSTATUS(status));
+            }
             else {
                 strcat(buf, "normally.");
                 DRC()->errReset(0, pid);
@@ -1332,8 +1340,8 @@ namespace {
         }
         else if (WIFSIGNALED(status)) {
             DRC()->removeJob(pid);
-            sprintf(buf, "Process %d exited on signal %d.", pid,
-                WIFSIGNALED(status));
+            snprintf(buf, sizeof(buf),  "Process %d exited on signal %d.",
+                pid, WIFSIGNALED(status));
             DRC()->PopUpDrcRun(0, MODE_UPD);
         }
         if (*buf)
@@ -1582,7 +1590,7 @@ cDRC::handle_errors(DRCerrRet *er, sPF *gen, const CDo *odesc, BBox *errBB,
         char *s = er->errmsg(odesc);
         if (drc_doing_inter && !isIntrNoErrMsg()) {
             if (gen) {
-                sprintf(buf, "In instance of %s:\n",
+                snprintf(buf, sizeof(buf), "In instance of %s:\n",
                     Tstring(sdesc->cellname()));
                 char *str = lstring::copy(buf);
                 str = lstring::build_str(str, s);
@@ -1594,8 +1602,8 @@ cDRC::handle_errors(DRCerrRet *er, sPF *gen, const CDo *odesc, BBox *errBB,
         }
         else if (fp || lstr ||
                 (XM()->RunMode() == ModeNormal && !isIntrNoErrMsg())) {
-            sprintf(buf, "DRC error %d in cell %s:\n", drc_err_count,
-                Tstring(sdesc->cellname()));
+            snprintf(buf, sizeof(buf), "DRC error %d in cell %s:\n",
+                drc_err_count, Tstring(sdesc->cellname()));
             char *str = lstring::copy(buf);
             str = lstring::build_str(str, s);
             if (fp)
@@ -1610,7 +1618,7 @@ cDRC::handle_errors(DRCerrRet *er, sPF *gen, const CDo *odesc, BBox *errBB,
         }
 
         if (XM()->RunMode() == ModeNormal && !drc_with_chd) {
-            sprintf(buf, "In %s: ", Tstring(sdesc->cellname()));
+            snprintf(buf, sizeof(buf), "In %s: ", Tstring(sdesc->cellname()));
             char *str = lstring::copy(buf);
             str = lstring::build_str(str, s);
             delete [] s;

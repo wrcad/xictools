@@ -460,7 +460,7 @@ void
 sJobc::register_job(sCHECKprms *job)
 {
     char buf[128];
-    sprintf(buf, "%s %s", job->out_cir->name(),
+    snprintf(buf, sizeof(buf), "%s %s", job->out_cir->name(),
         job->monte() ? "Monte Carlo" : "Operating Range");
     rjob_t *rj = new rjob_t(buf, job);
     rj->set_next(jc_jobs);
@@ -613,9 +613,9 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
             *t = '_';
     }
     if (*program)
-        sprintf(buf, "%s %s %s", user, localhost, program);
+        snprintf(buf, sizeof(buf), "%s %s %s", user, localhost, program);
     else
-        sprintf(buf, "%s %s", user, localhost);
+        snprintf(buf, sizeof(buf), "%s %s", user, localhost);
     delete [] user;
     send(sfd, buf, strlen(buf) + 1, 0);      // Get the trailing \0
     if (recv(sfd, buf, BSIZE_SP, 0) <= 0) {
@@ -648,7 +648,7 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
             CLOSESOCKET(sfd);
             return (true);
         }
-        sprintf(buf, "%s: ", hostname);
+        snprintf(buf, sizeof(buf), "%s: ", hostname);
         char *t = buf + strlen(buf);
         if (!fgets(t, BSIZE_SP, inp)) {
             GRpkg::self()->ErrPrintf(ET_ERROR, "bad deck %s.\n", deck);
@@ -664,7 +664,8 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
         while ((i = fread(buf, 1, BSIZE_SP, inp)) > 0)
             send(sfd, buf, i, 0);
         if (analysis) {
-            sprintf(buf, "%s\n%s\n%s\n", CONT_KW, analysis, ENDC_KW);
+            snprintf(buf, sizeof(buf), "%s\n%s\n%s\n", CONT_KW, analysis,
+                ENDC_KW);
             send(sfd, buf, strlen(buf), 0);
         }
         send(sfd, "@\n", 3, 0);
@@ -678,7 +679,7 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
             
         // We have to make a FILE struct for the socket
         deck = cir->name();
-        sprintf(buf, "%s: %s", hostname, cir->deck()->line());
+        snprintf(buf, sizeof(buf), "%s: %s", hostname, cir->deck()->line());
         name = lstring::copy(buf);
         FILE *inp = fdopen(sfd, "w");
         if (rj) {
@@ -939,11 +940,11 @@ sJobc::submit_local(const char *program, const char *analysis,
         if (!wd)
             wd = lstring::copy("c:");
         wd[2] = 0;
-        sprintf(cmdline, "%s%s -S -r %s", wd, program, raw);
+        snprintf(cmdline, sizeof(cmdline), "%s%s -S -r %s", wd, program, raw);
         delete [] wd;
     }
     else
-        sprintf(cmdline, "%s -S -r %s", program, raw);
+        snprintf(cmdline, sizeof(cmdline), "%s -S -r %s", program, raw);
 
     int pid;
     PROCESS_INFORMATION *info =

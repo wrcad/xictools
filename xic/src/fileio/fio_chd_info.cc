@@ -116,7 +116,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
     if (dflags & FIO_INFO_FILENAME) {
         char *s = prFilename(0);
         if (s) {
-            sprintf(buf, "%-16s %s\n", "FileName", s);
+            snprintf(buf, sizeof(buf), "%-16s %s\n", "FileName", s);
             delete [] s;
             if (fp)
                 fputs(buf, fp);
@@ -128,7 +128,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
     if (dflags & FIO_INFO_FILETYPE) {
         char *s = prFiletype(0);
         if (s) {
-            sprintf(buf, "%-16s %s\n", "FileType", s);
+            snprintf(buf, sizeof(buf), "%-16s %s\n", "FileType", s);
             delete [] s;
             if (fp)
                 fputs(buf, fp);
@@ -140,7 +140,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
     if (dflags & FIO_INFO_UNIT) {
         char *s = prUnit(0, mode);
         if (s) {
-            sprintf(buf, "%-16s %s\n", "Unit", s);
+            snprintf(buf, sizeof(buf), "%-16s %s\n", "Unit", s);
             delete [] s;
             if (fp)
                 fputs(buf, fp);
@@ -152,7 +152,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
     if (dflags & FIO_INFO_ALIAS) {
         char *s = prAlias(0);
         if (s) {
-            sprintf(buf, "%-16s %s\n", "Aliasing", s);
+            snprintf(buf, sizeof(buf), "%-16s %s\n", "Aliasing", s);
             delete [] s;
             if (fp)
                 fputs(buf, fp);
@@ -225,7 +225,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
     if (dflags & FIO_INFO_ESTSIZE) {
         char *s = prEstSize(0);
         if (s) {
-            sprintf(buf, "%-16s %s Mb\n", "EstSize", s);
+            snprintf(buf, sizeof(buf), "%-16s %s Mb\n", "EstSize", s);
             delete [] s;
             if (fp)
                 fputs(buf, fp);
@@ -237,7 +237,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
     if (dflags & FIO_INFO_ESTCXSIZE) {
         char *s = prEstCxSize(0);
         if (s) {
-            sprintf(buf, "%-16s %s Kb\n", "EstCxSize", s);
+            snprintf(buf, sizeof(buf), "%-16s %s Kb\n", "EstCxSize", s);
             delete [] s;
             if (fp)
                 fputs(buf, fp);
@@ -246,7 +246,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
             nametab_t *ntab = nameTab(mode);
             if (ntab->has_compression()) {
                 s = prCmpStats(0, mode);
-                sprintf(buf, "%-16s (%s)\n", "", s);
+                snprintf(buf, sizeof(buf), "%-16s (%s)\n", "", s);
                 delete [] s;
                 if (fp)
                     fputs(buf, fp);
@@ -267,7 +267,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
             }
 
             bool needs_dump = false;
-            sprintf(buf, "%-16s", "Layers");
+            snprintf(buf, sizeof(buf), "%-16s", "Layers");
             char *ls = s;
             char *tok;
             while ((tok = lstring::gettok(&ls)) != 0) {
@@ -285,7 +285,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                         lstr.add(buf);
                         lstr.add_c('\n');
                     }
-                    sprintf(buf, "%-16s", "");
+                    snprintf(buf, sizeof(buf), "%-16s", "");
                     e = buf + strlen(buf);
                     *e++ = ' ';
                     strcpy(e, tok);
@@ -322,7 +322,8 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                 lstr.add("Unresolved Cells:\n");
             syrlist_t::sort(sy0, false);
             for (syrlist_t *sy = sy0; sy; sy = sy->next) {
-                sprintf(buf, "%-16s\n", Tstring(sy->symref->get_name()));
+                snprintf(buf, sizeof(buf), "%-16s\n",
+                    Tstring(sy->symref->get_name()));
                 if (fp)
                     fputs(buf, fp);
                 else
@@ -375,7 +376,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                     lstr.add("All Cells:\n");
             }
             if (!sy->symref->get_defseen()) {
-                sprintf(buf, "%-16s   (UNRESOLVED)\n",
+                snprintf(buf, sizeof(buf), "%-16s   (UNRESOLVED)\n",
                     Tstring(sy->symref->get_name()));
                 if (fp)
                     fputs(buf, fp);
@@ -461,7 +462,7 @@ cCHD::prCell(FILE *fp, DisplayMode mode, int dflags, const char *cname)
     char buf[256];
     symref_t *p = findSymref(CD()->CellNameTableFind(cname), mode);
     if (!p) {
-        sprintf(buf, "%-16s  ERROR, cell not found.\n", cname);
+        snprintf(buf, sizeof(buf), "%-16s  ERROR, cell not found.\n", cname);
         if (fp)
             fputs(buf, fp);
         else
@@ -469,7 +470,7 @@ cCHD::prCell(FILE *fp, DisplayMode mode, int dflags, const char *cname)
         return (lstr.string_trim());
     }
     if (!p->get_defseen()) {
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "%-16s  WARNING, cell referenced but not defined in file.\n",
             cname);
         if (fp)
@@ -503,14 +504,15 @@ cCHD::prCell(FILE *fp, symref_t *p, int dflags)
 
     sLstr lstr;
     char buf[256];
-    sprintf(buf, "Name: %s\n", Tstring(p->get_name()));
+    snprintf(buf, sizeof(buf), "Name: %s\n", Tstring(p->get_name()));
     if (fp)
         fputs(buf, fp);
     else
         lstr.add(buf);
 
     if (show_offs) {
-        sprintf(buf, "Offset: %lld\n", (long long)p->get_offset());
+        snprintf(buf, sizeof(buf),
+            "Offset: %lld\n", (long long)p->get_offset());
         if (fp)
             fputs(buf, fp);
         else
@@ -521,7 +523,7 @@ cCHD::prCell(FILE *fp, symref_t *p, int dflags)
         const BBox *bbp = p->get_bb();
         if (bbp) {
             int ndgt = CD()->numDigits();
-            sprintf(buf, "Bounding Box: %.*f,%.*f %.*f,%.*f\n",
+            snprintf(buf, sizeof(buf), "Bounding Box: %.*f,%.*f %.*f,%.*f\n",
                 ndgt, MICRONS(bbp->left), ndgt, MICRONS(bbp->bottom),
                 ndgt, MICRONS(bbp->right), ndgt, MICRONS(bbp->top));
             if (fp)
@@ -549,7 +551,7 @@ cCHD::prCell(FILE *fp, symref_t *p, int dflags)
         const cref_o_t *c;
         while ((c = gen.next()) != 0) {
             symref_t *cp = ntab->find_symref(c->srfptr);
-            sprintf(buf, "Subcell:  %-14s\n",
+            snprintf(buf, sizeof(buf), "Subcell:  %-14s\n",
                 cp ? Tstring(cp->get_name()) : "UNRESOLVED");
             if (fp)
                 fputs(buf, fp);
@@ -558,7 +560,7 @@ cCHD::prCell(FILE *fp, symref_t *p, int dflags)
 
             if (show_bbs) {
                 int ndgt = CD()->numDigits();
-                sprintf(buf, "  Origin: %.*f,%.*f\n",
+                snprintf(buf, sizeof(buf), "  Origin: %.*f,%.*f\n",
                     ndgt, MICRONS(c->tx), ndgt, MICRONS(c->ty));
                 if (fp)
                     fputs(buf, fp);
@@ -580,17 +582,21 @@ cCHD::prCell(FILE *fp, symref_t *p, int dflags)
                         e = lstring::stpcpy(e, " ");
 
                     if (at.ax != 1 || at.ay != 0) {
-                        sprintf(e, "R%d,%d", at.ax, at.ay);
+                        int len = strlen(e);
+                        snprintf(e, sizeof(buf) - len, "R%d,%d", at.ax, at.ay);
                         while (*e)
                             e++;
                     }
                     if (at.magn != 1.0) {
-                        sprintf(e, "M%.6e", at.magn);
+                        int len = strlen(e);
+                        snprintf(e, sizeof(buf) - len, "M%.6e", at.magn);
                         while (*e)
                             e++;
                     }
                     if (at.nx > 1 || at.ny > 1) {
-                        sprintf(e, "A%d,%d,%.*f,%.*f", at.nx, at.ny,
+                        int len = strlen(e);
+                        snprintf(e, sizeof(buf) - len, "A%d,%d,%.*f,%.*f",
+                            at.nx, at.ny,
                             ndgt, MICRONS(at.dx), ndgt, MICRONS(at.dy));
                         while (*e)
                             e++;
@@ -622,8 +628,9 @@ cCHD::prDepthCounts(FILE *fp, DisplayMode mode, bool sort_by_offset)
     for (syrlist_t *s = s0; s; s = s->next) {
         if (!depthCounts(s->symref, array)) {
             const char *errstr = Errs()->get_error();
-            char *msg = new char[strlen(errstr) + 20];
-            sprintf(msg, "ERROR: %s\n\n", errstr);
+            int len = strlen(errstr) + 20;
+            char *msg = new char[len];
+            snprintf(msg, len, "ERROR: %s\n\n", errstr);
             if (fp)
                 fputs(msg, fp);
             else
@@ -642,15 +649,15 @@ cCHD::prDepthCounts(FILE *fp, DisplayMode mode, bool sort_by_offset)
         }
         else {
             char buf[256];
-            sprintf(buf, tfmt, s->symref->get_name());
+            snprintf(buf, sizeof(buf), tfmt, s->symref->get_name());
             lstr.add(buf);
             unsigned long tcnt = 0;
             for (int i = 0; array[i]; i++) {
-                sprintf(buf, ifmt, i, array[i]);
+                snprintf(buf, sizeof(buf), ifmt, i, array[i]);
                 lstr.add(buf);
                 tcnt += array[i];
             }
-            sprintf(buf, "Total Instance Count: %ld\n\n", tcnt);
+            snprintf(buf, sizeof(buf), "Total Instance Count: %ld\n\n", tcnt);
             lstr.add(buf);
         }
     }
@@ -672,8 +679,9 @@ cCHD::prDepthCounts(FILE *fp, symref_t *p)
     const char *tfmt = "Cell Instance Depth Counts, under %s:\n";
     if (!depthCounts(p, array)) {
         const char *errstr = Errs()->get_error();
-        char *msg = new char[strlen(errstr) + 20];
-        sprintf(msg, "ERROR: %s\n", errstr);
+        int len = strlen(errstr) + 20;
+        char *msg = new char[len];
+        snprintf(msg, len, "ERROR: %s\n", errstr);
         if (fp) {
             fputs(msg, fp);
             delete [] msg;
@@ -692,15 +700,15 @@ cCHD::prDepthCounts(FILE *fp, symref_t *p)
     }
     else {
         char buf[256];
-        sprintf(buf, tfmt, p->get_name());
+        snprintf(buf, sizeof(buf), tfmt, p->get_name());
         lstr.add(buf);
         unsigned long tcnt = 0;
         for (int i = 0; array[i]; i++) {
-            sprintf(buf, ifmt, i, array[i]);
+            snprintf(buf, sizeof(buf), ifmt, i, array[i]);
             lstr.add(buf);
             tcnt += array[i];
         }
-        sprintf(buf, "Total Instance Count: %ld\n", tcnt);
+        snprintf(buf, sizeof(buf), "Total Instance Count: %ld\n", tcnt);
         lstr.add(buf);
         return (lstr.string_trim());
     }
@@ -729,8 +737,9 @@ cCHD::prInstanceCounts(FILE *fp, DisplayMode mode, bool print)
     if (!tab) {
         syrlist_t::destroy(s0);
         const char *errstr = Errs()->get_error();
-        char *msg = new char[strlen(errstr) + 20];
-        sprintf(msg, "ERROR: %s\n", errstr);
+        int len = strlen(errstr) + 20;
+        char *msg = new char[len];
+        snprintf(msg, len, "ERROR: %s\n", errstr);
         if (fp) {
             fputs(msg, fp);
             delete [] msg;
@@ -748,7 +757,7 @@ cCHD::prInstanceCounts(FILE *fp, DisplayMode mode, bool print)
         if (fp)
             fprintf(fp, "Total Instances: %ld\n", totcnt);
         else
-            sprintf(buf, "Total Instances: %ld\n", totcnt);
+            snprintf(buf, sizeof(buf), "Total Instances: %ld\n", totcnt);
     }
     if (!print) {
         delete tab;
@@ -775,8 +784,8 @@ cCHD::prInstanceCounts(FILE *fp, DisplayMode mode, bool print)
     else
         lstr.add("Instantiation Counts:\n");
     for (int i = 0; i < n; i++) {
-        sprintf(buf, "%-26s %ld\n", Tstring(ary[i].symref->get_name()),
-            ary[i].cnt);
+        snprintf(buf, sizeof(buf), "%-26s %ld\n",
+            Tstring(ary[i].symref->get_name()), ary[i].cnt);
         if (fp)
             fputs(buf, fp);
         else
@@ -881,7 +890,7 @@ cCHD::prUnit(FILE *fp, DisplayMode)
         return (0);
     }
     char buf[256];
-    sprintf(buf, "%.5e", u);
+    snprintf(buf, sizeof(buf), "%.5e", u);
     return (lstring::copy(buf));
 }
 
@@ -916,7 +925,7 @@ cCHD::prCmpStats(FILE *fp, DisplayMode mode)
     nametab_t *ntab = nameTab(mode);
     ntab->cref_count(&ncrefs, &br);
     char buf[80];
-    sprintf(buf, "Compression: refs=%d  bytes=%llu  ratio=%.3f",
+    snprintf(buf, sizeof(buf), "Compression: refs=%d  bytes=%llu  ratio=%.3f",
         ncrefs, (unsigned long long)br, br/(double)(16*ncrefs));
     if (fp) {
         fputs(buf, fp);
@@ -931,7 +940,7 @@ cCHD::prEstCxSize(FILE *fp)
 {
     size_t sz = memuse();
     char buf[64];
-    sprintf(buf, "%.2f", sz/1000.0);
+    snprintf(buf, sizeof(buf), "%.2f", sz/1000.0);
     if (fp) {
         fputs(buf, fp);
         return (0);
@@ -983,7 +992,7 @@ cCHD::prEstSize(FILE *fp)
         sz += nobjs * .3 * sizeof(RTelem);
     }
     char buf[64];
-    sprintf(buf, "%.2f", sz*1e-6);
+    snprintf(buf, sizeof(buf), "%.2f", sz*1e-6);
     if (fp) {
         fputs(buf, fp);
         return (0);

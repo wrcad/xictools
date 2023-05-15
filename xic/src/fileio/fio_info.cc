@@ -54,9 +54,9 @@ namespace {
     const char *count_format = "%-8s %12lld %12lld %12lld %10.3lf\n";
 #endif
 
-    void HEADER(char *buf)
+    void HEADER(char *buf, int bsz)
         {
-            sprintf(buf, "%-8s %12s %12s %12s %10s\n", "Layer", "Boxes",
+            snprintf(buf, bsz, "%-8s %12s %12s %12s %10s\n", "Layer", "Boxes",
                 "Polys", "Wires", "Avg Verts");
         }
 }
@@ -469,27 +469,27 @@ cv_info::format_totals()
 
     const char *format = "%-16s %lld\n";
 
-    sprintf(buf, format, "Records", total_records());
+    snprintf(buf, sizeof(buf), format, "Records", total_records());
     lstr.add(buf);
-    sprintf(buf, format, "Cells", total_cells());
+    snprintf(buf, sizeof(buf), format, "Cells", total_cells());
     lstr.add(buf);
-    sprintf(buf, format, "Labels", total_labels());
+    snprintf(buf, sizeof(buf), format, "Labels", total_labels());
     lstr.add(buf);
-    sprintf(buf, format, "Srefs", total_srefs());
+    snprintf(buf, sizeof(buf), format, "Srefs", total_srefs());
     lstr.add(buf);
-    sprintf(buf, format, "Arefs", total_arefs());
+    snprintf(buf, sizeof(buf), format, "Arefs", total_arefs());
     lstr.add(buf);
 
     if (enable_per_layer) {
         lstr.add_c('\n');
-        HEADER(buf);
+        HEADER(buf, sizeof(buf));
         lstr.add(buf);
 
         stringlist *s0 = layers();
         for (stringlist *s = s0; s; s = s->next) {
             pl_data *pld = pldata->find(lname_tab.find(s->string));
             if (pld) {
-                pld->print_counts(buf, s->string);
+                pld->print_counts(buf, sizeof(buf), s->string);
                 lstr.add(buf);
             }
         }
@@ -498,15 +498,15 @@ cv_info::format_totals()
         lstr.add("\nTotals:\n");
     }
 
-    sprintf(buf, format, "Boxes", total_boxes());
+    snprintf(buf, sizeof(buf), format, "Boxes", total_boxes());
     lstr.add(buf);
-    sprintf(buf, format, "Polygons", total_polys());
+    snprintf(buf, sizeof(buf), format, "Polygons", total_polys());
     lstr.add(buf);
-    sprintf(buf, format, "Wires", total_wires());
+    snprintf(buf, sizeof(buf), format, "Wires", total_wires());
 
     lstr.add(buf);
     double tv = (double)(total_polys() + total_wires());
-    sprintf(buf, "%-16s %.3f\n", "Avg Verts",
+    snprintf(buf, sizeof(buf), "%-16s %.3f\n", "Avg Verts",
         tv == 0.0 ? 0.0 : total_vertices()/tv);
     lstr.add(buf);
 
@@ -526,20 +526,20 @@ cv_info::format_counts(const symref_t *p)
     char buf[256];
     pc_data *pcd = pcdata->find(Tstring(p->get_name()));
     if (pcd && pcd->data_tab()) {
-        HEADER(buf);
+        HEADER(buf, sizeof(buf));
         lstr.add(buf);
 
         stringlist *s0 = layers();
         for (stringlist *s = s0; s; s = s->next) {
             pl_data *pld = pcd->data_tab()->find(lname_tab.find(s->string));
             if (pld) {
-                pld->print_counts(buf, s->string);
+                pld->print_counts(buf, sizeof(buf), s->string);
                 lstr.add(buf);
             }
         }
         stringlist::destroy(s0);
 
-        pcd->print_totals(buf);
+        pcd->print_totals(buf, sizeof(buf));
         lstr.add(buf);
     }
     return (lstr.string_trim());
@@ -704,7 +704,7 @@ cv_info::memuse()
 
 
 void
-pl_data::print_counts(char *buf, const char *lstring) const
+pl_data::print_counts(char *buf, int bsz, const char *lstring) const
 {
     int64_t boxes = box_count();
     int64_t polys = poly_count();
@@ -713,7 +713,7 @@ pl_data::print_counts(char *buf, const char *lstring) const
     double va = 0.0;
     if (polys + wires)
         va = ((double)verts)/(polys + wires);
-    sprintf(buf, count_format, lstring, boxes, polys, wires, va);
+    snprintf(buf, bsz, count_format, lstring, boxes, polys, wires, va);
 }
 // End of pl_data functions.
 
@@ -820,11 +820,11 @@ pc_data::total_vertices() const
 
 
 void
-pc_data::print_totals(char *buf) const
+pc_data::print_totals(char *buf, int bsz) const
 {
     if (!item_tab) {
-        // note: sprintf bug work-around
-        sprintf(buf, count_format, "Totals:", (uint64_t)0, (uint64_t)0,
+        // note: printf bug work-around
+        snprintf(buf, bsz, count_format, "Totals:", (uint64_t)0, (uint64_t)0,
             (uint64_t)0, 0.0);
         return;
     }
@@ -844,7 +844,7 @@ pc_data::print_totals(char *buf) const
     double va = 0.0;
     if (polys + wires)
         va = ((double)verts)/(polys + wires);
-    sprintf(buf, count_format, "Totals:", boxes, polys, wires, va);
+    snprintf(buf, bsz, count_format, "Totals:", boxes, polys, wires, va);
 }
 // End of pc_data functions.
 

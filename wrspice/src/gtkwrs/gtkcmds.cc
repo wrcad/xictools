@@ -74,7 +74,7 @@ namespace {
 
     inline void dblpr(char *buf, int n, double d, bool ex)
     {
-        sprintf(buf, ex ? "%.*e" : "%.*f", n, d);
+        snprintf(buf, 32, ex ? "%.*e" : "%.*f", n, d);
     }
 }
 
@@ -585,7 +585,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     entrycount++;
     entry = KWGET(kw_helpinitxpos);
     if (entry) {
-        sprintf(tbuf, "%d", HLP()->get_init_x());
+        snprintf(tbuf, sizeof(tbuf), "%d", HLP()->get_init_x());
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(HLP()->get_init_x(), 1.0, 0.0, 0.0, 0);
         entry->ent->create_widgets(entry, tbuf);
@@ -598,7 +598,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
 
     entry = KWGET(kw_helpinitypos);
     if (entry) {
-        sprintf(tbuf, "%d", HLP()->get_init_y());
+        snprintf(tbuf, sizeof(tbuf), "%d", HLP()->get_init_y());
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(HLP()->get_init_y(), 1.0, 0.0, 0.0, 0);
         entry->ent->create_widgets(entry, tbuf);

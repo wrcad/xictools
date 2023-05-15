@@ -464,7 +464,7 @@ GTKtoolbar::PopUpBugRpt(int x, int y)
             return;
         }
         char buf[128];
-        sprintf(buf, "WRspice %s bug", Global.Version());
+        snprintf(buf, sizeof(buf), "WRspice %s bug", Global.Version());
         FixLoc(&x, &y);
         tb_mailer = context->PopUpMail(buf, Global.BugAddr(), mail_destroy_cb,
             GRloc(LW_XYA, x, y));
@@ -1188,10 +1188,13 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         context->SetColor(tb_clr_2);
         *buf = 0;
         if (hours)
-            sprintf(buf + strlen(buf), "%d:", hours);
-        if (minutes || hours)
-            sprintf(buf + strlen(buf), "%d:", minutes);
-        sprintf(buf + strlen(buf), "%.2f", secs);
+            snprintf(buf, sizeof(buf), "%d:", hours);
+        if (minutes || hours) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "%d:", minutes);
+        }
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, "%.2f", secs);
         context->Text(buf, ux, y, 0);
         if (Sp.GetFlag(FT_SIMFLAG)) {
             strcpy(buf, "running");
@@ -1208,7 +1211,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         if (Sp.GetFlag(FT_SIMFLAG) && Sp.CurCircuit()) {
             double pct = Sp.CurCircuit()->getPctDone();
             if (pct > 0.0) {
-                sprintf(buf, "%.1f%%", pct);
+                snprintf(buf, sizeof(buf), "%.1f%%", pct);
                 context->Text(buf, vx, y, 0);
             }
         }
@@ -1219,10 +1222,13 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             context->SetColor(tb_clr_2);
             *buf = 0;
             if (hours)
-                sprintf(buf + strlen(buf), "%d:", hours);
-            if (minutes || hours)
-                sprintf(buf + strlen(buf), "%d:", minutes);
-            sprintf(buf + strlen(buf), "%.2f", secs);
+                snprintf(buf, sizeof(buf), "%d:", hours);
+            if (minutes || hours) {
+                len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, "%d:", minutes);
+            }
+            len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "%.2f", secs);
             context->Text(buf, ux, y, 0);
             y += dy;
         }
@@ -1233,10 +1239,13 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             context->SetColor(tb_clr_2);
             *buf = 0;
             if (hours)
-                sprintf(buf + strlen(buf), "%d:", hours);
-            if (minutes || hours)
-                sprintf(buf + strlen(buf), "%d:", minutes);
-            sprintf(buf + strlen(buf), "%.2f", secs);
+                snprintf(buf, sizeof(buf), "%d:", hours);
+            if (minutes || hours) {
+                len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, "%d:", minutes);
+            }
+            len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "%.2f", secs);
             context->Text(buf, ux, y, 0);
             y += dy;
         }
@@ -1246,7 +1255,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             context->SetColor(tb_clr_1);
             context->Text("data size", x, y, 0);
             context->SetColor(tb_clr_2);
-            sprintf(buf, "%d", data/1024);
+            snprintf(buf, sizeof(buf), "%d", data/1024);
             context->Text(buf, ux, y, 0);
             y += dy;
 
@@ -1257,7 +1266,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             context->SetColor(tb_clr_1);
             context->Text("program limit", x, y, 0);
             context->SetColor(tb_clr_2);
-            sprintf(buf, "%d", (int)val);
+            snprintf(buf, sizeof(buf), "%d", (int)val);
             context->Text(buf, ux, y, 0);
             y += dy;
 
@@ -1267,7 +1276,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
                 context->SetColor(tb_clr_1);
                 context->Text("system limit", x, y, 0);
                 context->SetColor(tb_clr_2);
-                sprintf(buf, "%d", hlimit/1024);
+                snprintf(buf, sizeof(buf), "%d", hlimit/1024);
                 context->Text(buf, ux, y, 0);
                 y += dy;
             }
@@ -1598,7 +1607,7 @@ GTKtoolbar::ConfigString()
         if (gtk_widget_get_window(toolbar)) {
             int x, y;
             gdk_window_get_root_origin(gtk_widget_get_window(toolbar), &x, &y);
-            sprintf(buf, fmt, "toolbar", "on", x, y);
+            snprintf(buf, sizeof(buf), fmt, "toolbar", "on", x, y);
             lstr.add(buf);
         }
         for (tbent *tb = entries; tb && tb->name; tb++) {
@@ -1612,7 +1621,8 @@ GTKtoolbar::ConfigString()
                 if (wsh)
                     gtk_ShellGeometry(wsh, 0, &rect);
             }
-            sprintf(buf, fmt, tb->name, tb->active ? on : off, rect.x, rect.y);
+            snprintf(buf, sizeof(buf), fmt, tb->name, tb->active ? on : off,
+                rect.x, rect.y);
             lstr.add(buf);
         }
     }
@@ -1621,32 +1631,32 @@ GTKtoolbar::ConfigString()
     // Add the fonts
     const char *fn = FC.getName(FNT_FIXED);
     if (fn) {
-        sprintf(buf, "setfont 1 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 1 %s\n", fn);
         lstr.add(buf);
     }
     fn = FC.getName(FNT_PROP);
     if (fn) {
-        sprintf(buf, "setfont 2 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 2 %s\n", fn);
         lstr.add(buf);
     }
     fn = FC.getName(FNT_SCREEN);
     if (fn) {
-        sprintf(buf, "setfont 3 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 3 %s\n", fn);
         lstr.add(buf);
     }
     fn = FC.getName(FNT_EDITOR);
     if (fn) {
-        sprintf(buf, "setfont 4 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 4 %s\n", fn);
         lstr.add(buf);
     }
     fn = FC.getName(FNT_MOZY);
     if (fn) {
-        sprintf(buf, "setfont 5 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 5 %s\n", fn);
         lstr.add(buf);
     }
     fn = FC.getName(FNT_MOZY_FIXED);
     if (fn) {
-        sprintf(buf, "setfont 6 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 6 %s\n", fn);
         lstr.add(buf);
     }
     return (lstr.string_trim());
@@ -2348,7 +2358,7 @@ GTKtoolbar::tbpop(bool up)
     w->SetWindow(w->Viewport()->window);
 #endif
     char tbuf[28];
-    sprintf(tbuf, "WRspice-%s", Global.Version());
+    snprintf(tbuf, sizeof(tbuf), "WRspice-%s", Global.Version());
     w->Title(tbuf, "WRspice");
 
     // set up initial xor color
@@ -2794,7 +2804,8 @@ GTKtoolbar::about_proc(GtkWidget*, void*)
 {
     char buf[256];
     if (Global.StartupDir() && *Global.StartupDir()) {
-        sprintf(buf, "%s/%s", Global.StartupDir(), "wrspice_mesg");
+        snprintf(buf, sizeof(buf), "%s/%s", Global.StartupDir(),
+            "wrspice_mesg");
         FILE *fp = fopen(buf, "r");
         if (fp) {
             bool didsub = false;
@@ -2864,7 +2875,7 @@ GTKtoolbar::notes_proc(GtkWidget*, void*)
     }
 
     char buf[256];
-    sprintf(buf, "%s/wrs%s", docspath, Global.Version());
+    snprintf(buf, sizeof(buf), "%s/wrs%s", docspath, Global.Version());
 
     // Remove last component of version, file name is like "wrs3.0".
     char *t = strrchr(buf, '.');
@@ -2877,8 +2888,9 @@ GTKtoolbar::notes_proc(GtkWidget*, void*)
         return;
     }
     if (ret == NO_EXIST) {
-        char *tt = new char[strlen(buf) + 64];
-        sprintf(tt, "Can't find file %s.", buf);
+        int len = strlen(buf) + 64;
+        char *tt = new char[len];
+        snprintf(tt, len, "Can't find file %s.", buf);
         TB()->context->PopUpMessage(tt, true);
         delete [] tt;
         return;
@@ -3255,7 +3267,7 @@ xEnt::handler(void *data)
                 return;
             }
             char buf[256];
-            sprintf(buf, "%s %s", string, string2);
+            snprintf(buf, sizeof(buf), "%s %s", string, string2);
             v.set_string(buf);
             kwstruct->callback(state, &v);
             return;
@@ -3321,7 +3333,7 @@ kw_int_func(bool isset, variable *v, xEnt *ent)
         }
         else {
             char buf[64];
-            sprintf(buf, "%d", v->integer());
+            snprintf(buf, sizeof(buf), "%d", v->integer());
             gtk_entry_set_text(GTK_ENTRY(ent->entry), buf);
         }
     }
@@ -3342,11 +3354,11 @@ kw_real_func(bool isset, variable *v, xEnt *ent)
         else {
             char buf[64];
             if (ent->mode == KW_NO_SPIN)
-                sprintf(buf, "%g", v->real());
+                snprintf(buf, sizeof(buf), "%g", v->real());
             else if (ent->mode == KW_FLOAT)
-                sprintf(buf, "%.*e", ent->numd, v->real());
+                snprintf(buf, sizeof(buf), "%.*e", ent->numd, v->real());
             else
-                sprintf(buf, "%.*f", ent->numd, v->real());
+                snprintf(buf, sizeof(buf), "%.*f", ent->numd, v->real());
             gtk_entry_set_text(GTK_ENTRY(ent->entry), buf);
         }
     }
@@ -3405,7 +3417,7 @@ namespace {
         else if (d < entry->min)
             d = entry->min;
         char buf[128];
-        sprintf(buf, "%.*e", entry->ent->numd, d);
+        snprintf(buf, sizeof(buf), "%.*e", entry->ent->numd, d);
         gtk_entry_set_text(GTK_ENTRY(entry->ent->entry), buf);
     }
 

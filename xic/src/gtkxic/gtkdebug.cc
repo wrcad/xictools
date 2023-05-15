@@ -841,7 +841,7 @@ sDbg::load_from_menu(MenuEnt *ent)
         if (lstring::strdirsep(entry)) {
             // from submenu, add a distinguishing prefix to avoid
             // confusion with file path
-            sprintf(buf, "%s%s", SCR_LIBCODE, entry);
+            snprintf(buf, sizeof(buf), "%s%s", SCR_LIBCODE, entry);
             entry = buf;
         }
         char *scrfile = XM()->FindScript(entry);
@@ -1175,7 +1175,7 @@ sDbg::check_save(int code)
         }
         if (db_last_code != code) {
             db_last_code = code;
-            sprintf(buf, "Text has been modified.  %s", str);
+            snprintf(buf, sizeof(buf), "Text has been modified.  %s", str);
             PopUpMessage(buf, false);
             return (true);
         }
@@ -2312,7 +2312,7 @@ sDbV::dv_select_proc(GtkTreeSelection*, GtkTreeModel *store,
             gtk_tree_model_get(store, &iter, 0, &var, 1, &val, -1);
         if (var && val) {
             char buf[128];
-            sprintf(buf, "assign %s = ", var);
+            snprintf(buf, sizeof(buf), "assign %s = ", var);
 
             bool busy;
             const char *in = Dbg->var_prompt(val, buf, &busy);

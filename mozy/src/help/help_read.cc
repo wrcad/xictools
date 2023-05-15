@@ -444,7 +444,7 @@ cHelp::read(const char *keyword)
                     }
                 }
                 if (hlp_debug) {
-                    sprintf(tbuf, "unknown: %s", s);
+                    snprintf(tbuf, sizeof(tbuf), "unknown: %s", s);
                     if (seealso)
                         top->add_seealso(tbuf, s);
                     else if (subtopics)
@@ -556,7 +556,8 @@ cHelp::search(const char *target)
     int i;
     HLPtopList *tl;
     for (i = 0, tl = top->seealso(); tl; i++, tl = tl->next()) ;
-    sprintf(buf, "Keyword search for %s : %d entries found.", target, i);
+    snprintf(buf, sizeof(buf), "Keyword search for %s : %d entries found.",
+        target, i);
     top->set_words(new HLPwords(buf, 0));
     top->register_word(buf);
     return (top);

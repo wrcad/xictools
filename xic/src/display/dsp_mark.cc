@@ -615,7 +615,7 @@ cDisplay::ShowCells(const char *name)
             Errs()->get_error();
             return;
         }
-        sprintf(buf, "Marked %d instances of %s.",
+        snprintf(buf, sizeof(buf), "Marked %d instances of %s.",
             CurMode() == Electrical ?
                 Blist::length(MK.elec_show) : Blist::length(MK.phys_show),
             name);
@@ -638,8 +638,8 @@ cDisplay::ShowCells(const char *name)
             return;
         }
         MK.phys_show = b0;
-        sprintf(buf, "Marked %d instances of %s.", Blist::length(b0),
-            Tstring(pref->get_name()));
+        snprintf(buf, sizeof(buf), "Marked %d instances of %s.",
+            Blist::length(b0), Tstring(pref->get_name()));
         show_message(buf);
     }
     // actual display is in WindowDesc::ShowHighlighting()
@@ -5079,52 +5079,52 @@ hlite_t::print()
 {
     char buf[256];
     if (hl_type == hlLine) {
-        sprintf(buf, "l %.4f %.4f %.4f %.4f %d",
+        snprintf(buf, sizeof(buf), "l %.4f %.4f %.4f %.4f %d",
             MICRONS(hl_u.line.x1), MICRONS(hl_u.line.y1),
             MICRONS(hl_u.line.x2), MICRONS(hl_u.line.y2), hl_attr);
         return (lstring::copy(buf));
     }
     if (hl_type == hlBox) {
-        sprintf(buf, "b %.4f %.4f %.4f %.4f %d",
+        snprintf(buf, sizeof(buf), "b %.4f %.4f %.4f %.4f %d",
             MICRONS(hl_u.box.l), MICRONS(hl_u.box.b),
             MICRONS(hl_u.box.r), MICRONS(hl_u.box.t), hl_attr);
         return (lstring::copy(buf));
     }
     if (hl_type == hlVtriang) {
-        sprintf(buf, "u %.4f %.4f %.4f %.4f %d",
+        snprintf(buf, sizeof(buf), "u %.4f %.4f %.4f %.4f %d",
             MICRONS(hl_u.vtriang.xl), MICRONS(hl_u.vtriang.xr),
             MICRONS(hl_u.vtriang.yb), MICRONS(hl_u.vtriang.yt), hl_attr);
         return (lstring::copy(buf));
     }
     if (hl_type == hlHtriang) {
-        sprintf(buf, "t %.4f %.4f %.4f %.4f %d",
+        snprintf(buf, sizeof(buf), "t %.4f %.4f %.4f %.4f %d",
             MICRONS(hl_u.htriang.yl), MICRONS(hl_u.htriang.yu),
             MICRONS(hl_u.htriang.xb), MICRONS(hl_u.htriang.xt), hl_attr);
         return (lstring::copy(buf));
     }
     if (hl_type == hlCircle) {
-        sprintf(buf, "c %.4f %.4f %.4f %d",
+        snprintf(buf, sizeof(buf), "c %.4f %.4f %.4f %d",
             MICRONS(hl_u.circle.xc), MICRONS(hl_u.circle.yc),
             MICRONS(hl_u.circle.rad), hl_attr);
         return (lstring::copy(buf));
     }
     if (hl_type == hlEllipse) {
-        sprintf(buf, "e %.4f %.4f %.4f %.4f %d",
+        snprintf(buf, sizeof(buf), "e %.4f %.4f %.4f %.4f %d",
             MICRONS(hl_u.ellipse.xc), MICRONS(hl_u.ellipse.yc),
             MICRONS(hl_u.ellipse.rx), MICRONS(hl_u.ellipse.ry), hl_attr);
         return (lstring::copy(buf));
     }
     if (hl_type == hlPoly) {
-        sprintf(buf, "p %d", hl_u.poly.numpts);
+        snprintf(buf, sizeof(buf), "p %d", hl_u.poly.numpts);
         sLstr lstr;
         lstr.add(buf);
         for (int i = 0; i < hl_u.poly.numpts; i++) {
-            sprintf(buf, " %.4f %.4f",
+            snprintf(buf, sizeof(buf), " %.4f %.4f",
                 MICRONS(hl_u.poly.points[i].x),
                 MICRONS(hl_u.poly.points[i].y));
             lstr.add(buf);
         }
-        sprintf(buf, " %d", hl_attr);
+        snprintf(buf, sizeof(buf), " %d", hl_attr);
         lstr.add(buf);
         return (lstr.string_trim());
     }
@@ -5133,7 +5133,7 @@ hlite_t::print()
         lstr.add("s \"");
         lstr.add(hl_u.text.label);
         lstr.add("\" ");
-        sprintf(buf, "%.4f %.4f %.4f %.4f %d %d",
+        snprintf(buf, sizeof(buf), "%.4f %.4f %.4f %.4f %d %d",
             MICRONS(hl_u.text.x), MICRONS(hl_u.text.y),
             MICRONS(hl_u.text.wid), MICRONS(hl_u.text.hei),
             hl_u.text.xform, hl_attr);
@@ -5502,7 +5502,7 @@ sMK::dump_user_marks(const char *fname, const CDs *sd)
 
     char buf[256];
     if (!fname || !*fname) {
-        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
+        snprintf(buf, sizeof(buf), "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         fname = buf;
     }
@@ -5771,7 +5771,7 @@ cDisplay::ReadUserMarks(const char *fname)
             Errs()->add_error("ReadUserMarks: no current cell!");
             return (-1);
         }
-        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
+        snprintf(buf, sizeof(buf), "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         fname = buf;
     }

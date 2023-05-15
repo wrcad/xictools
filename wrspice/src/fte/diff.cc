@@ -353,12 +353,12 @@ namespace {
             return (true);
         char buf1[BSIZE_SP];
         if (isdigit(*n1))
-            sprintf(buf1, "v(%s)", n1);
+            snprintf(buf1, sizeof(buf1), "v(%s)", n1);
         else
             strcpy(buf1, n1);
         char buf2[BSIZE_SP];
         if (isdigit(*n2))
-            sprintf(buf2, "v(%s)", n2);
+            snprintf(buf2, sizeof(buf2), "v(%s)", n2);
         else
             strcpy(buf2, n2);
         int i;

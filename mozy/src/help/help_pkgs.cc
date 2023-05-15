@@ -446,7 +446,8 @@ pkgs::avail_pkgs()
             if (!vrs)
                 break;
             *vrs++ = 0;
-            sprintf(buf, "xictools_%s-%s-%s-%s", t, osn, vrs, arch);
+            snprintf(buf, sizeof(buf), "xictools_%s-%s-%s-%s",
+                t, osn, vrs, arch);
             list = new stringlist(lstring::copy(buf), list);
             delete [] t;
         }
@@ -470,7 +471,7 @@ pkgs::local_pkgs()
         char *vrs = msw::GetInstallData(prog, "DisplayVersion");
         if (!vrs)
             continue;
-        sprintf(buf, "xictools_%s-Win32-%s-i386", prog, vrs);
+        snprintf(buf, sizeof(buf), "xictools_%s-Win32-%s-i386", prog, vrs);
         delete [] vrs;
         list = new stringlist(lstring::copy(buf), list);
     }
@@ -494,7 +495,8 @@ pkgs::local_pkgs()
             if (vers) {
                 vers++;
                 char *v = lstring::copy(vers);
-                sprintf(vers, "Darwin-%s-x86_64", v);
+                int len = vers - buf;
+                snprintf(vers, sizeof(buf) - len, "Darwin-%s-x86_64", v);
                 delete [] v;
             }
             else {
@@ -518,7 +520,8 @@ pkgs::local_pkgs()
                     v = "4.3.1";
                 else
                     continue;  // WTF? can't happen
-                sprintf(s + strlen(s), "-Darwin-%s-x86_64", v);
+                int len = strlen(s);
+                snprintf(s + len, sizeof(buf) - len, "-Darwin-%s-x86_64", v);
             }
             list = new stringlist(lstring::copy(s), list);
         }
@@ -559,7 +562,7 @@ pkgs::local_pkgs()
                 }
                 *os++ = 0;
                 *os = toupper(*os);
-                sprintf(buf, "%s-Linux%s-%s", pname, os, vers);
+                snprintf(buf, sizeof(buf), "%s-Linux%s-%s", pname, os, vers);
                 delete [] pname;
                 delete [] vers;
                 list = new stringlist(lstring::copy(buf), list);

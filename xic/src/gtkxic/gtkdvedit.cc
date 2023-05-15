@@ -501,8 +501,9 @@ sDE::load(entries_t *e)
     if (*e->prefix == 'X' || *e->prefix == 'x') {
         char *tmp = e->prefix;
         char *tok = lstring::gettok(&tmp);
-        tmp = new char[strlen(tok) + 7];
-        sprintf(tmp, "%s macro", tok);
+        int len = strlen(tok) + 7;
+        tmp = new char[len];
+        snprintf(tmp, len, "%s macro", tok);
         delete [] tok;
         delete [] e->prefix;
         e->prefix = tmp;

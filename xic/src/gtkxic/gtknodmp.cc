@@ -767,7 +767,7 @@ sNM::update_map()
     int sz = map->countNodes();
     for (int i = 0; i < sz; i++) {
         char buf1[32], buf2[4];
-        sprintf(buf1, "%d", i);
+        snprintf(buf1, sizeof(buf1), "%d", i);
         buf2[0] = 0;
         buf2[1] = 0;
         buf2[2] = 0;

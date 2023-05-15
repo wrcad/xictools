@@ -465,7 +465,7 @@ sGrd::sGrd(GTKbag *owner, WindowDesc *wd) : GTKdraw(XW_TEXT)
         menu = gtk_menu_new();
         gtk_widget_set_name(menu, "StMenu");
         for (int i = 1; i < TECH_NUM_GRIDS; i++) {
-            sprintf(buf, "reg%d", i);
+            snprintf(buf, sizeof(buf), "reg%d", i);
             GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
             gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
@@ -510,7 +510,7 @@ sGrd::sGrd(GTKbag *owner, WindowDesc *wd) : GTKdraw(XW_TEXT)
         gtk_widget_show(menu_item);
 
         for (int i = 1; i < TECH_NUM_GRIDS; i++) {
-            sprintf(buf, "reg%d", i);
+            snprintf(buf, sizeof(buf), "reg%d", i);
             menu_item = gtk_menu_item_new_with_label(buf);
             gtk_widget_set_name(menu_item, buf);
             gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
@@ -838,7 +838,7 @@ sGrd::update(bool skip_init)
     char buf[64];
     del = GridDesc::mfg_grid(wd->Mode());
     if (del > 0.0)
-        sprintf(buf, "MfgGrid: %.4f", del);
+        snprintf(buf, sizeof(buf), "MfgGrid: %.4f", del);
     else
         strcpy(buf, "MfgGrid: unset");
     gtk_label_set_text(GTK_LABEL(gd_mfglabel), buf);
@@ -1246,7 +1246,7 @@ sGrd::gd_thresh_change_proc(GtkWidget*, void *arg)
         int n = grd->sb_thresh.get_value_as_int();
         if (n < DSP_MIN_GRID_THRESHOLD || n > DSP_MAX_GRID_THRESHOLD)
             return;
-        sprintf(buf, "%d", n);
+        snprintf(buf, sizeof(buf), "%d", n);
         if (n != DSP_DEF_GRID_THRESHOLD)
             CDvdb()->setVariable(VA_GridThreshold, buf);
         else
@@ -1546,7 +1546,7 @@ sGrd::gd_drag_data_get(GtkWidget*, GdkDragContext*,
         return;
 
     char buf[64];
-    sprintf(buf, "0x%x", grd->gd_grid.linestyle().mask);
+    snprintf(buf, sizeof(buf), "0x%x", grd->gd_grid.linestyle().mask);
     gtk_selection_data_set(data, gtk_selection_data_get_target(data),
         8, (unsigned char*)buf, strlen(buf)+1);
 }

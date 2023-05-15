@@ -151,9 +151,10 @@ RuState::message()
     char buf[256];
     if (Level == 1) {
         if (SegLen > 0.0) {
-            sprintf(buf, msg1, snap ? "on" : "off");
-            sprintf(buf + strlen(buf), "  Last ruler length is %.4f microns.",
-                SegLen);
+            snprintf(buf, sizeof(buf), msg1, snap ? "on" : "off");
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len,
+                "  Last ruler length is %.4f microns.", SegLen);
             PL()->ShowPrompt(buf);
         }
         else

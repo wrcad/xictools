@@ -568,7 +568,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     entrycount++;
     entry = KWGET(kw_hcopywidth);
     if (entry) {
-        sprintf(tbuf, "%g", wrsHCcb.width);
+        snprintf(tbuf, sizeof(tbuf), "%g", wrsHCcb.width);
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, tbuf);
 
@@ -580,7 +580,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
 
     entry = KWGET(kw_hcopyheight);
     if (entry) {
-        sprintf(tbuf, "%g", wrsHCcb.height);
+        snprintf(tbuf, sizeof(tbuf), "%g", wrsHCcb.height);
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, tbuf);
 
@@ -593,7 +593,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     entrycount++;
     entry = KWGET(kw_hcopyxoff);
     if (entry) {
-        sprintf(tbuf, "%g", wrsHCcb.left);
+        snprintf(tbuf, sizeof(tbuf), "%g", wrsHCcb.left);
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, tbuf);
 
@@ -605,7 +605,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
 
     entry = KWGET(kw_hcopyyoff);
     if (entry) {
-        sprintf(tbuf, "%g", wrsHCcb.top);
+        snprintf(tbuf, sizeof(tbuf), "%g", wrsHCcb.top);
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, tbuf);
 
@@ -891,11 +891,11 @@ namespace {
                     val2 = vx->integer();
                 }
                 char buf[64];
-                sprintf(buf, "%d", val1);
+                snprintf(buf, sizeof(buf), "%d", val1);
                 gtk_entry_set_text(GTK_ENTRY(ent->entry), buf);
 
                 if (ent->entry2) {
-                    sprintf(buf, "%d", val2);
+                    snprintf(buf, sizeof(buf), "%d", val2);
                     gtk_entry_set_text(GTK_ENTRY(ent->entry2), buf);
                     gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), false);
                     gtk_widget_set_sensitive(ent->entry2, false);
@@ -934,11 +934,11 @@ namespace {
                     dval2 = vx->real();
                 }
                 char buf[64];
-                sprintf(buf, "%g", dval1);
+                snprintf(buf, sizeof(buf), "%g", dval1);
                 gtk_entry_set_text(GTK_ENTRY(ent->entry), buf);
 
                 if (ent->entry2) {
-                    sprintf(buf, "%g", dval2);
+                    snprintf(buf, sizeof(buf), "%g", dval2);
                     gtk_entry_set_text(GTK_ENTRY(ent->entry2), buf);
                     gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), false);
                     gtk_widget_set_sensitive(ent->entry2, false);

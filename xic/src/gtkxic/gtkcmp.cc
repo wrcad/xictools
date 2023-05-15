@@ -772,7 +772,7 @@ sCmp::flat_geom_page()
     gtk_widget_set_name(cmp_p3_s_menu, "Smenu");
     g_object_ref(cmp_p3_s_menu);
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -831,7 +831,7 @@ sCmp::flat_geom_page()
     gtk_widget_set_name(cmp_p3_r_menu, "Rmenu");
     g_object_ref(cmp_p3_r_menu);
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -1284,12 +1284,14 @@ sCmp::cmp_action(GtkWidget *caller, void*)
         else {
             char buf[256];
             if (df == DFsame) {
-                sprintf(buf, "No differences found, see file \"%s\".",
+                snprintf(buf, sizeof(buf),
+                    "No differences found, see file \"%s\".",
                     DIFF_LOG_FILE);
                 PL()->ShowPrompt(buf);
             }
             else {
-                sprintf(buf, "Differences found, data written to "
+                snprintf(buf, sizeof(buf),
+                    "Differences found, data written to "
                     "file \"%s\", view file? [y] ", DIFF_LOG_FILE);
                 char *in = PL()->EditPrompt(buf, "y");
                 in = lstring::strip_space(in);

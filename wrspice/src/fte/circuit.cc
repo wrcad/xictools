@@ -548,7 +548,7 @@ sFtCirc::sFtCirc()
         count = 1;
 
     char buf[32];
-    sprintf(buf, "CKT%d", count);
+    snprintf(buf, sizeof(buf), "CKT%d", count);
     ci_name = lstring::copy(buf);
     ci_next = Sp.CircuitList();
     Sp.SetCircuitList(this);
@@ -839,8 +839,8 @@ sFtCirc::getSaves(sSaveList *saved, const sCKT *ckt)
                             inst = inst->GENnextInstance) {
                         for (wordlist *w = wl; w; w = w->wl_next) {
                             char buf[128];
-                            sprintf(buf, "@%s[%s]", (char*)inst->GENname,
-                                w->wl_word);
+                            snprintf(buf, sizeof(buf), "@%s[%s]",
+                                (char*)inst->GENname, w->wl_word);
                             saved->add_save(buf);
                         }
                     }

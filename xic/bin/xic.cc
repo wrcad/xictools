@@ -1076,7 +1076,8 @@ xic_main::do_batch_commands()
                 DRC()->setErrorLevel((DRClevelType)args.ba_method);
 
             char buf[256];
-            sprintf(buf, "drcerror.log.%s.%d", args.ba_name, (int)getpid());
+            snprintf(buf, sizeof(buf), "drcerror.log.%s.%d", args.ba_name,
+                (int)getpid());
             FILE *fp = fopen(buf, "w");
             if (!fp) {
                 fprintf(stderr, "Could not open file %s.\n", buf);
@@ -1565,14 +1566,14 @@ cMain::ReleaseNotePath()
     char buf[256];
     const char *docspath = CDvdb()->getVariable(VA_DocsDir);
     if (!docspath) {
-        sprintf(buf, "No path to docs (DocsDir not set).");
+        snprintf(buf, sizeof(buf), "No path to docs (DocsDir not set).");
         DSPmainWbag(PopUpMessage(buf, true))
         return (0);
     }
 
     // Remove quotes.
     char *path = pathlist::expand_path(docspath, false, true);
-    sprintf(buf, "%s%s", RELNOTE_BASE, XM()->VersionString());
+    snprintf(buf, sizeof(buf), "%s%s", RELNOTE_BASE, XM()->VersionString());
 
     // The version string is in the form generation.major.minor, strip
     // off the minor part.
@@ -1580,8 +1581,9 @@ cMain::ReleaseNotePath()
     if (t)
         *t = 0;
 
-    t = new char[strlen(path) + strlen(buf) + 2];
-    sprintf(t, "%s/%s", path, buf);
+    int len = strlen(path) + strlen(buf) + 2;
+    t = new char[len];
+    snprintf(t, len, "%s/%s", path, buf);
     delete [] path;
     return (t);
 }

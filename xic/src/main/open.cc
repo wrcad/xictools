@@ -843,13 +843,14 @@ cMain::NewCellName()
     char buf[256];
     time_t t = time(0);
     tm *tm = gmtime(&t);
-    sprintf(buf, "$%02d%02d%02d%02d%02d%02d",
+    snprintf(buf, sizeof(buf), "$%02d%02d%02d%02d%02d%02d",
         tm->tm_min+1, tm->tm_mday, tm->tm_year-100,
         tm->tm_hour, tm->tm_min, tm->tm_sec);
-    char *e = buf + strlen(buf);
+    int len = strlen(buf);
+    char *e = buf + len;
     int cnt = 1;
     while (CDcdb()->findSymbol(buf)) {
-        sprintf(e, "_%d", cnt);
+        snprintf(e, sizeof(buf) - len, "_%d", cnt);
         cnt++;
     }
     return (lstring::copy(buf));

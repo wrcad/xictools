@@ -1361,7 +1361,7 @@ GTKprintPopup::hc_set_printer(GTKbag *wb)
         MSPdesc.limits.resols = new const char*[ret+1];
         char buf[64];
         for (int i = 0; i < 2*ret; i += 2) {
-            sprintf(buf, "%ld", resols[i]);
+            snprintf(buf, sizeof(buf), "%ld", resols[i]);
             MSPdesc.limits.resols[i/2] = lstring::copy(buf);
         }
         MSPdesc.limits.resols[ret] = 0;
@@ -2207,7 +2207,8 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
             }
             FILE *fp = fopen(filename, "w");
             if (!fp) {
-                sprintf(buf, "Error: can't open file %s", filename);
+                snprintf(buf, sizeof(buf), "Error: can't open file %s",
+                    filename);
                 hc_pop_up_text(wb, buf, true);
                 delete [] filename;
                 if (hc->hc_textfmt != HtmlText)
@@ -2297,11 +2298,13 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
     int resol = 0;
     if (hcdesc->limits.resols)
         sscanf(hcdesc->limits.resols[hc->hc_resol], "%d", &resol);
-    sprintf(buf, hcdesc->fmtstring, filename, resol, w, h, x, y);
+    snprintf(buf, sizeof(buf), hcdesc->fmtstring, filename, resol,
+        w, h, x, y);
     if (hcdesc->line_width) {
         double d = gtk_spin_button_get_value(
             GTK_SPIN_BUTTON(hc->hc_linwent));
-        sprintf(buf + strlen(buf), " -p %g", d);
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, " -p %g", d);
     }
     if (hc->hc_orient & HClandscape)
         strcat(buf, " -l");
@@ -2310,8 +2313,9 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
     int media = gtk_option_menu_get_history(GTK_OPTION_MENU(hc->hc_pgsmenu));
     int prnt = gtk_option_menu_get_history(GTK_OPTION_MENU(hc->hc_prntmenu));
     if (!strcmp(hcdesc->keyword, "windows_native")) {
-        sprintf(buf + strlen(buf), " -nat %s %d", hc->hc_printers[prnt],
-            media);
+        int len = strlen(buf);
+        sbprintf(buf + len, sizeof(buf) - len, " -nat %s %d",
+            hc->hc_printers[prnt], media);
     }
 #endif
 
@@ -2324,7 +2328,7 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
     if (err == HCSinhc)
         hc_pop_up_text(wb, "Internal error - aborted", true);
     else if (err == HCSnotfnd) {
-        sprintf(buf, "No hardcopy driver named %s available",
+        snprintf(buf, sizeof(buf), "No hardcopy driver named %s available",
             hcdesc->drname);
         hc_pop_up_text(wb, buf, true);
     }
@@ -2349,7 +2353,7 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
                 ot |= HClandscape;
             if ((*hc->hc_cb->hcgo)(ot, hc->hc_legend, hc->hc_context)) {
                 if (GRpkg::self()->HCaborted()) {
-                    sprintf(buf, "Terminated: %s.",
+                    snprintf(buf, sizeof(buf), "Terminated: %s.",
                         GRpkg::self()->HCabortMsg());
                     hc_pop_up_text(wb, buf, true);
                 }
@@ -2406,11 +2410,11 @@ GTKprintPopup::hc_printit(const char *str, const char *filename, GTKbag *wb)
     const char *err = msw::RawFileToPrinter(str, filename);
     char buf[256];
     if (err) {
-        sprintf(buf, "Print spooler reported error:\n%s.", err);
+        snprintf(buf, sizeof(buf), "Print spooler reported error:\n%s.", err);
         hc_pop_up_text(wb, buf, true);
     }
     else {
-        sprintf(buf, "Print job submitted, no errors.");
+        snprintf(buf, sizeof(buf), "Print job submitted, no errors.");
         hc_pop_up_text(wb, buf, false);
     }
 #ifndef KEEP_TMPFILE
@@ -2487,9 +2491,10 @@ GTKprintPopup::hc_proc_hdlr(int pid, int status, void*)
     char buf[128];
     *buf = '\0';
     if (WIFEXITED(status)) {
-        sprintf(buf, "Command exited ");
+        snprintf(buf, sizeof(buf), "Command exited ");
         if (WEXITSTATUS(status)) {
-            sprintf(buf + strlen(buf), "with error status %d.",
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "with error status %d.",
                 WEXITSTATUS(status));
             err = true;
         }
@@ -2497,7 +2502,7 @@ GTKprintPopup::hc_proc_hdlr(int pid, int status, void*)
             strcat(buf, "normally.");
     }
     else if (WIFSIGNALED(status)) {
-        sprintf(buf, "Command exited on signal %d.",
+        snprintf(buf, sizeof(buf), "Command exited on signal %d.",
             WIFSIGNALED(status));
         err = true;
     }

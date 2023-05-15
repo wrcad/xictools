@@ -344,7 +344,7 @@ CommandTab::com_hardcopy(wordlist *wl)
     resol = 0;
 
     char buf[BSIZE_SP];
-    sprintf(buf, hcdesc->fmtstring, filename, r, w, h, x, y);
+    snprintf(buf, sizeof(buf), hcdesc->fmtstring, filename, r, w, h, x, y);
     if (lands)
         strcat(buf, " -l");
     char *argv[20];
@@ -470,7 +470,7 @@ sGraph::gr_hardcopy()
         fname = filestat::make_temp("hc");
     }
 
-    sprintf(buf, hcdesc->fmtstring, fname, r, w, h, x, y);
+    snprintf(buf, sizeof(buf), hcdesc->fmtstring, fname, r, w, h, x, y);
     if (lands)
         strcat(buf, " -l");
     char *argv[20];
@@ -498,20 +498,24 @@ namespace {
     {
         char buf[BSIZE_SP];
         if (command && *command) {
-            sprintf(buf, "Spooling %s using %s.", filename, devtype);
+            snprintf(buf, sizeof(buf), "Spooling %s using %s.", filename,
+                devtype);
             message(buf, mesg);
 
             const char *s;
             if ((s = strchr(command, '%')) != 0 && *(s+1) == 's') {
                 strcpy(buf, command);
                 buf[s - command] = 0;
-                sprintf(buf + strlen(buf), "%s%s", filename, s+2);
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, "%s%s", filename, s+2);
             }
             else
-                sprintf(buf, "%s %s", command, filename);
+                snprintf(buf, sizeof(buf), "%s %s", command, filename);
             int i;
             if ((i = CP.System(buf)) != 0) {
-                sprintf(buf + strlen(buf), ": error status %d returned", i);
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len,
+                    ": error status %d returned", i);
                 message(buf, mesg);
             }
             else
@@ -522,7 +526,7 @@ namespace {
             }
 
         }
-        sprintf(buf, "Data saved in file \"%s\", in %s format.",
+        snprintf(buf, sizeof(buf), "Data saved in file \"%s\", in %s format.",
             filename, devtype);
         message(buf, mesg);
         return (0);

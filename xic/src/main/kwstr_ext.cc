@@ -135,19 +135,23 @@ extKWstruct::insert_keyword_text(const char *str, const char *l1,
         if (!isexcl(str)) {
             const char *msg = "\"%s\" is already implied by \"%s\".";
             if (inlist(exRouting)) {
-                sprintf(buf, msg, Ekw.Conductor(), Ekw.Routing());
+                snprintf(buf, sizeof(buf), msg, Ekw.Conductor(),
+                    Ekw.Routing());
                 return (lstring::copy(buf));
             }
             if (inlist(exGroundPlane)) {
-                sprintf(buf, msg, Ekw.Conductor(), Ekw.GroundPlane());
+                snprintf(buf, sizeof(buf), msg, Ekw.Conductor(),
+                    Ekw.GroundPlane());
                 return (lstring::copy(buf));
             }
             if (inlist(exGroundPlaneClear)) {
-                sprintf(buf, msg, Ekw.Conductor(), Ekw.GroundPlaneClear());
+                snprintf(buf, sizeof(buf), msg, Ekw.Conductor(),
+                    Ekw.GroundPlaneClear());
                 return (lstring::copy(buf));
             }
             if (inlist(exContact)) {
-                sprintf(buf, msg, Ekw.Conductor(), Ekw.Contact());
+                snprintf(buf, sizeof(buf), msg, Ekw.Conductor(),
+                    Ekw.Contact());
                 return (lstring::copy(buf));
             }
         }
@@ -227,15 +231,18 @@ extKWstruct::insert_keyword_text(const char *str, const char *l1,
         remove_keyword_text(exDarkField);
         const char *msg = "\"%s\" is already implied by \"%s\".";
         if (inlist(exGroundPlaneClear)) {
-            sprintf(buf, msg, Ekw.DarkField(), Ekw.GroundPlaneClear());
+            snprintf(buf, sizeof(buf), msg, Ekw.DarkField(),
+                Ekw.GroundPlaneClear());
             return (lstring::copy(buf));
         }
         if (inlist(exVia)) {
-            sprintf(buf, msg, Ekw.DarkField(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, Ekw.DarkField(),
+                Ekw.Via());
             return (lstring::copy(buf));
         }
         if (inlist(exViaCut)) {
-            sprintf(buf, msg, Ekw.DarkField(), Ekw.ViaCut());
+            snprintf(buf, sizeof(buf), msg, Ekw.DarkField(),
+                Ekw.ViaCut());
             return (lstring::copy(buf));
         }
     }
@@ -457,8 +464,10 @@ extKWstruct::get_string_for(int type, const char *orig)
         if (!in)
             return (0);
         in = lstring::strip_space(in);
-        if (*in)
-            sprintf(buf, "%s %s %s", Ekw.Conductor(), Ekw.Exclude(), in);
+        if (*in) {
+            snprintf(buf, sizeof(buf), "%s %s %s", Ekw.Conductor(),
+                Ekw.Exclude(), in);
+        }
         else
             strcpy(buf, Ekw.Conductor());
         break;
@@ -470,7 +479,7 @@ extKWstruct::get_string_for(int type, const char *orig)
             return (0);
         in = lstring::strip_space(in);
         if (*in)
-            sprintf(buf, "%s %s", Ekw.Routing(), in);
+            snprintf(buf, sizeof(buf), "%s %s", Ekw.Routing(), in);
         else
             strcpy(buf, Ekw.Routing());
         break;
@@ -507,11 +516,13 @@ extKWstruct::get_string_for(int type, const char *orig)
             in = lstring::strip_space(in);
             if (*in == '1' || *in == '2') {
                 in[1] = 0;
-                sprintf(buf, "%s %s %s", Ekw.GroundPlaneClear(),
+                snprintf(buf, sizeof(buf), "%s %s %s", Ekw.GroundPlaneClear(),
                     Ekw.MultiNet(), in);
             }
-            else
-                sprintf(buf, "%s %s", Ekw.GroundPlaneClear(), Ekw.MultiNet());
+            else {
+                snprintf(buf, sizeof(buf), "%s %s", Ekw.GroundPlaneClear(),
+                    Ekw.MultiNet());
+            }
         }
         else
             strcpy(buf, Ekw.GroundPlaneClear());
@@ -526,7 +537,7 @@ extKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             char *tok = lstring::gettok(&in);
             if (tok) {
-                sprintf(buf, "%s %s", Ekw.Contact(), tok);
+                snprintf(buf, sizeof(buf), "%s %s", Ekw.Contact(), tok);
                 delete [] tok;
                 break;
             }
@@ -541,8 +552,10 @@ extKWstruct::get_string_for(int type, const char *orig)
         if (!in)
             return (0);
         in = lstring::strip_space(in);
-        if (*in)
-            sprintf(buf + strlen(buf), " %s", in);
+        if (*in) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, " %s", in);
+        }
         break;
 
     case exVia:
@@ -554,7 +567,7 @@ extKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             char *tok = lstring::gettok(&in);
             if (tok) {
-                sprintf(buf, "%s %s", Ekw.Via(), tok);
+                snprintf(buf, sizeof(buf), "%s %s", Ekw.Via(), tok);
                 delete [] tok;
                 break;
             }
@@ -569,7 +582,8 @@ extKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             char *tok = lstring::gettok(&in);
             if (tok) {
-                sprintf(buf + strlen(buf), " %s", tok);
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " %s", tok);
                 delete [] tok;
                 break;
             }
@@ -584,8 +598,10 @@ extKWstruct::get_string_for(int type, const char *orig)
         if (!in)
             return (0);
         in = lstring::strip_space(in);
-        if (*in)
-            sprintf(buf + strlen(buf), " %s", in);
+        if (*in) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, " %s", in);
+        }
         break;
 
     case exViaCut:
@@ -597,7 +613,7 @@ extKWstruct::get_string_for(int type, const char *orig)
             return (0);
         in = lstring::strip_space(in);
         if (*in)
-            sprintf(buf, "%s %s", Ekw.ViaCut(), in);
+            snprintf(buf, sizeof(buf), "%s %s", Ekw.ViaCut(), in);
         break;
 
     case exDielectric:
@@ -667,8 +683,8 @@ extKWstruct::get_settings(const CDl *ld)
     if (ld->isVia()) {
         for (sVia *v = tech_prm(ld)->via_list(); v; v = v->next()) {
             if (v->layer1() && v->layer2()) {
-                sprintf(buf, "%s %s %s ", Ekw.Via(), v->layername1(),
-                    v->layername2());
+                snprintf(buf, sizeof(buf), "%s %s %s ", Ekw.Via(),
+                    v->layername1(), v->layername2());
                 lstr.add(buf);
                 if (v->tree())
                     v->tree()->string(lstr);
@@ -731,7 +747,8 @@ extKWstruct::get_settings(const CDl *ld)
     else if (ld->isInContact()) {
         for (sVia *v = tech_prm(ld)->via_list(); v; v = v->next()) {
             if (v->layer1()) {
-                sprintf(buf, "%s %s ", Ekw.Contact(), v->layername1());
+                snprintf(buf, sizeof(buf), "%s %s ", Ekw.Contact(),
+                    v->layername1());
                 lstr.add(buf);
                 if (v->tree())
                     v->tree()->string(lstr);
@@ -1154,7 +1171,7 @@ extKWstruct::set_settings(CDl *ld, const char *string)
                 }
                 else
                     msg = "Retry: unknown keyword line %d";
-                sprintf(buf, msg, linecnt);
+                snprintf(buf, sizeof(buf), msg, linecnt);
 
                 esbak.revert();
 

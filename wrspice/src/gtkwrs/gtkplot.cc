@@ -358,8 +358,8 @@ plot_bag::init(sGraph *gr)
             anam = GR_PLOTstr;
         else if (gr->apptype() == GR_MPLT)
             anam = GR_MPLTstr;
-        sprintf(buf1, "%s %s %d", CP.Program(), anam, gr->id());
-        sprintf(buf2, "%s%d", anam, gr->id());
+        snprintf(buf1, sizeof(buf1), "%s %s %d", CP.Program(), anam, gr->id());
+        snprintf(buf2, sizeof(buf2), "%s%d", anam, gr->id());
         Title(buf1, buf2);
     }
 

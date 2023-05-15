@@ -2740,7 +2740,7 @@ gtk_viewer::font_change_handler(int indx)
         FC.parse_freeform_font_string(fixedname, &family, 0, &sz2, 0);
         if (sz1 != sz2) {
             char buf[256];
-            sprintf(buf, "%s %d", family, sz1);
+            snprintf(buf, sizeof(buf), "%s %d", family, sz1);
             FC.setName(buf, FNT_MOZY_FIXED);
             GTKfontPopup::update_all(FNT_MOZY_FIXED);
         }

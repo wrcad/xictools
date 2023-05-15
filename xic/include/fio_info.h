@@ -94,7 +94,7 @@ struct pl_data
     int64_t wire_count()          const { return (wire_cnt); }
     int64_t vertex_count()        const { return (vtex_cnt); }
     const char *layer_name()      const { return (lname); }
-    void print_counts(char*, const char*) const;
+    void print_counts(char*, int, const char*) const;
 
     // set data
     void set_box_count(int64_t n)       { box_cnt = n; }
@@ -148,7 +148,7 @@ struct pc_data
     int64_t total_polys() const;
     int64_t total_wires() const;
     int64_t total_vertices() const;
-    void print_totals(char*) const;
+    void print_totals(char*, int) const;
 
     inline pl_data *get_pldata(const char*, cv_info*);
 

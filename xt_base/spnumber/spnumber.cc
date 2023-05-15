@@ -541,9 +541,10 @@ sSPnumber::parse(const char **line, bool whole, bool gobble, sUnits **units)
     }
     *line = here;
 #ifdef WRSPICE
-    if (Parser::Debug)
-        GRpkgIf()->ErrPrintf(ET_MSGS, "numparse: got %e, left = %s\n", np_num,
-            here);
+    if (Parser::Debug) {
+        GRpkg::self()->ErrPrintf(ET_MSGS, "numparse: got %e, left = %s\n",
+            np_num, here);
+    }
 #endif
     return (&np_num);
 }

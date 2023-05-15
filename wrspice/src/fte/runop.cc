@@ -1029,7 +1029,7 @@ sRunopSave::print(sLstr *plstr)
             kw_save,  ro_string);
     }
     else {
-        sprintf(buf, msg0, ro_active ? ' ' : 'I', ro_number,
+        snprintf(buf, sizeof(buf), msg0, ro_active ? ' ' : 'I', ro_number,
             kw_save,  ro_string);
         plstr->add(buf);
     }
@@ -1054,7 +1054,7 @@ sRunopTrace::print(sLstr *plstr)
             kw_trace,  ro_string ? ro_string : "");
     }
     else {
-        sprintf(buf, msg0, ro_active ? ' ' : 'I', ro_number,
+        snprintf(buf, sizeof(buf), msg0, ro_active ? ' ' : 'I', ro_number,
             kw_trace,  ro_string ? ro_string : "");
         plstr->add(buf);
     }
@@ -1144,8 +1144,8 @@ sRunopIplot::print(sLstr *plstr)
             ro_string);
     }
     else {
-        sprintf(buf, msg2, ro_active ? ' ' : 'I', ro_number, kw_iplot,
-            ro_string);
+        snprintf(buf, sizeof(buf), msg2, ro_active ? ' ' : 'I',
+            ro_number, kw_iplot, ro_string);
         plstr->add(buf);
     }
 }

@@ -3436,12 +3436,12 @@ namespace {
                 lstr.add_c('\\');
                 if (val <= 0xffff) {
                     lstr.add_c('u');
-                    sprintf(buf, "%04x", val);
+                    snprintf(buf, sizeof(buf), "%04x", val);
                     lstr.add(buf);
                 }
                 else {
                     lstr.add_c('U');
-                    sprintf(buf, "%08x", val);
+                    snprintf(buf, sizeof(buf), "%08x", val);
                     lstr.add(buf);
                 }
             }

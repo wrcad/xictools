@@ -1604,9 +1604,11 @@ misc1_funcs::IFfileName(Variable *res, Variable*, void*)
         CDcbin cbin(DSP()->CurCellName());
         if (cbin.fileType() == Fnative) {
             if (cbin.fileName()) {
-                char *s = new char[strlen(cbin.fileName()) +
-                    strlen(Tstring(cbin.cellname())) + 2];
-                sprintf(s, "%s/%s", cbin.fileName(), Tstring(cbin.cellname()));
+                int len = strlen(cbin.fileName()) +
+                    strlen(Tstring(cbin.cellname())) + 2;
+                char *s = new char[len];
+                snprintf(s, len, "%s/%s", cbin.fileName(),
+                    Tstring(cbin.cellname()));
                 res->content.string = s;
             }
         }
@@ -1820,7 +1822,7 @@ misc1_funcs::IFupdateNative(Variable *res, Variable *args, void*)
     if (DSP()->CurCellName()) {
         CDcbin cbin(DSP()->CurCellName());
         if (cbin.isModified()) {
-            sprintf(buf, "%s/%s", dir, Tstring(cbin.cellname()));
+            snprintf(buf, sizeof(buf), "%s/%s", dir, Tstring(cbin.cellname()));
             if (!FIO()->WriteNative(&cbin, buf))
                 return (BAD);
             ccnt++;
@@ -1831,7 +1833,8 @@ misc1_funcs::IFupdateNative(Variable *res, Variable *args, void*)
         CDcbin tcbin;
         while (sgen.next(&tcbin, &err)) {
             if (tcbin.isModified()) {
-                sprintf(buf, "%s/%s", dir, Tstring(tcbin.cellname()));
+                snprintf(buf, sizeof(buf), "%s/%s", dir,
+                    Tstring(tcbin.cellname()));
                 if (!FIO()->WriteNative(&tcbin, buf))
                     return (BAD);
                 ccnt++;
@@ -2503,9 +2506,11 @@ misc1_funcs::IFlistTopFilesInMem(Variable *res, Variable*, void*)
         if (!cbin.fileName())
             continue;
         if (cbin.fileType() == Fnative) {
-            char *s = new char[strlen(cbin.fileName()) +
-                strlen(Tstring(cbin.cellname())) + 2];
-            sprintf(s, "%s/%s", cbin.fileName(), Tstring(cbin.cellname()));
+            int len = strlen(cbin.fileName()) +
+                strlen(Tstring(cbin.cellname())) + 2;
+            char *s = new char[len];
+            snprintf(s, len,  "%s/%s", cbin.fileName(),
+                Tstring(cbin.cellname()));
             s0 = new stringlist(s, s0);
         }
         else if (FIO()->IsSupportedArchiveFormat(cbin.fileType())) {
@@ -3167,7 +3172,7 @@ misc1_funcs::IFdumpMarks(Variable *res, Variable *args, void*)
         return (OK);
     char buf[256];
     if (!fname || !*fname) {
-        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
+        snprintf(buf, sizeof(buf), "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         fname = buf;
     }
@@ -3200,7 +3205,7 @@ misc1_funcs::IFreadMarks(Variable *res, Variable *args, void*)
         return (OK);
     char buf[256];
     if (!fname || !*fname) {
-        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
+        snprintf(buf, sizeof(buf), "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         fname = buf;
     }
@@ -5453,7 +5458,7 @@ misc1_funcs::IFhcDump(Variable *res, Variable *args, void*)
     }
 
     char buf[256];
-    sprintf(buf, HCstate.desc->fmtstring, fname, HCstate.resol,
+    snprintf(buf, sizeof(buf), HCstate.desc->fmtstring, fname, HCstate.resol,
         HCstate.w, HCstate.h, HCstate.x, HCstate.y);
     if (HCstate.landscape)
         strcat(buf, " -l");
@@ -5527,7 +5532,8 @@ misc1_funcs::IFhcDump(Variable *res, Variable *args, void*)
             if (cmd && *cmd)
                 ret = printit(cmd, fname);
             if (ret) {
-                sprintf(buf, "Print command returned error status %d.", ret);
+                snprintf(buf, sizeof(buf),
+                    "Print command returned error status %d.", ret);
                 HCstate.errmsg = lstring::copy(buf);
             }
             else

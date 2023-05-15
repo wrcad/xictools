@@ -107,7 +107,7 @@ sPlot::linearize(wordlist *wl)
 
     sDataVec *oldtime = scale();
     sPlot *newp = new sPlot("transient");
-    sprintf(buf, "%s (linearized)", name());
+    snprintf(buf, sizeof(buf), "%s (linearized)", name());
     newp->set_name(buf);
     newp->set_title(title());
     newp->set_date(date());

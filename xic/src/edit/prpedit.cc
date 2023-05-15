@@ -172,7 +172,7 @@ namespace {
 
         private:
             void prp_showselect(bool);
-            bool prp_get_prompt(bool, CDo*, char*);
+            bool prp_get_prompt(bool, CDo*, char*, int);
             void prp_updtext(sSel*);
             void prp_add_elec(PrptyText*, int, bool);
             void prp_add_elec_noglob();
@@ -1019,7 +1019,7 @@ PrptyState::prp_showselect(bool show)
 // If true is returned, don't prompt but use string in buf.
 //
 bool
-PrptyState::prp_get_prompt(bool global, CDo *odesc, char *buf)
+PrptyState::prp_get_prompt(bool global, CDo *odesc, char *buf, int szbuf)
 {
     const char *glmsg = "Global %s? ";
     if (DSP()->CurMode() == Electrical) {
@@ -1027,31 +1027,31 @@ PrptyState::prp_get_prompt(bool global, CDo *odesc, char *buf)
         switch (Value) {
         case P_NAME:
             if (global)
-                sprintf(buf, glmsg, "name");
+                snprintf(buf, szbuf, glmsg, "name");
             else
                 strcpy(buf, "Name? ");
             break;
         case P_MODEL:
             if (global)
-                sprintf(buf, glmsg, "model");
+                snprintf(buf, szbuf, glmsg, "model");
             else
                 strcpy(buf, "Model name? ");
             break;
         case P_VALUE:
             if (global)
-                sprintf(buf, glmsg, "value");
+                snprintf(buf, szbuf, glmsg, "value");
             else
                 strcpy(buf, "Value? ");
             break;
         case P_PARAM:
             if (global)
-                sprintf(buf, glmsg, "parameter string");
+                snprintf(buf, szbuf, glmsg, "parameter string");
             else
                 strcpy(buf, "Parameter string? ");
             break;
         case P_OTHER:
             if (global)
-                sprintf(buf, glmsg, "string");
+                snprintf(buf, szbuf, glmsg, "string");
             else
                 strcpy(buf, "Property string? ");
             break;
@@ -1066,26 +1066,26 @@ PrptyState::prp_get_prompt(bool global, CDo *odesc, char *buf)
             return (true);
         case P_RANGE:
             if (global)
-                sprintf(buf, glmsg, "range");
+                snprintf(buf, szbuf, glmsg, "range");
             else
                 strcpy(buf, "Range? (2 unsigned integers, begin and end) ");
             break;
         case P_DEVREF:
             if (global)
-                sprintf(buf, glmsg, "reference device string");
+                snprintf(buf, szbuf, glmsg, "reference device string");
             else
                 strcpy(buf, "Reference device String? ");
             break;
         default:
             Value = P_MODEL;
-            return (prp_get_prompt(global, odesc, buf));
+            return (prp_get_prompt(global, odesc, buf, szbuf));
         }
     }
     else {
         if (global)
-            sprintf(buf, "Global property %d string? ", Value);
+            snprintf(buf, szbuf, "Global property %d string? ", Value);
         else
-            sprintf(buf, "Property %d string? ", Value);
+            snprintf(buf, szbuf, "Property %d string? ", Value);
     }
     return (false);
 }
@@ -1102,7 +1102,7 @@ PrptyState::prp_updtext(sSel *sl)
     CDs *cursd = CurCell();
     if (!cursd)
         return;
-    prp_get_prompt(false, sl->pointer, buf);
+    prp_get_prompt(false, sl->pointer, buf, sizeof(buf));
     CDp *pdesc = SelPrp;
     if (pdesc && pdesc->value() != Value)
         // shouldn't happen
@@ -1772,7 +1772,7 @@ PrptyState::prp_get_add_type(bool global)
     char tbuf[64];
     *tbuf = '\0';
     if (!global && Value >= 0)
-        sprintf(tbuf, "%d", Value);
+        snprintf(tbuf, sizeof(tbuf), "%d", Value);
     Value = -1;
     char *in = PL()->EditPrompt(msg, (global || !*tbuf) ? 0 : tbuf);
     for (;;) {
@@ -1821,14 +1821,14 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
     }
 
     char tbuf[256];
-    bool immut = prp_get_prompt(global, Scur->pointer, tbuf);
+    bool immut = prp_get_prompt(global, Scur->pointer, tbuf, sizeof(tbuf));
     Udata.string = 0;
     Udata.hyl = 0;
     if (allow_switch && !immut) {
         const char *fs = "(Up/down arrows to select)  %s";
         if (strlen(tbuf) + strlen(fs) - 2  < 256) {
             char *tt = lstring::copy(tbuf);
-            sprintf(tbuf, fs, tt);
+            snprintf(tbuf, sizeof(tbuf), fs, tt);
             delete [] tt;
         }
     }
@@ -2451,7 +2451,7 @@ cEdit::editPhysPrpty()
     sPrpPointer PP;
     if (PP.point_at_prpty(wdesc, x, y, &odesc, &pdesc)) {
         char tbuf[64];
-        sprintf(tbuf, "%d", pdesc->value());
+        snprintf(tbuf, sizeof(tbuf), "%d", pdesc->value());
         PL()->RegisterCtrlDCallback(PP.ctrl_d_cb);
         char *in = PL()->EditPrompt("Edit number: ", tbuf);
         PL()->RegisterCtrlDCallback(0);
@@ -2558,7 +2558,7 @@ namespace {
                     int w, h, nl;
                     {
                         char buf[32];
-                        sprintf(buf, "%d ", pdesc->value());
+                        snprintf(buf, sizeof(buf), "%d ", pdesc->value());
                         sLstr lstr;
                         lstr.add(buf);
                         lstr.add(pdesc->string());
@@ -2599,7 +2599,7 @@ namespace {
                         int w, h, nl;
                         {
                             char buf[32];
-                            sprintf(buf, "%d ", pdesc->value());
+                            snprintf(buf, sizeof(buf), "%d ", pdesc->value());
                             sLstr lstr;
                             lstr.add(buf);
                             lstr.add(pdesc->string());

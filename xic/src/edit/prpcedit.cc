@@ -152,9 +152,9 @@ namespace {
 
 
     void
-    c_prompt(char *buf, int which)
+    c_prompt(char *buf, int szbuf, int which)
     {
-        sprintf(buf, "Property %d string? ", which);
+        snprintf(buf, szbuf, "Property %d string? ", which);
         switch (which) {
         case P_PARAM:
             if (DSP()->CurMode() != Physical)
@@ -301,7 +301,7 @@ cEdit::cellPrptyAdd(int which)
     *tbuf = '\0';
     if (!is_fixed(which)) {
         if (which >= 0)
-            sprintf(tbuf, "%d", which);
+            snprintf(tbuf, sizeof(tbuf), "%d", which);
         which = -1;
         char *in = PL()->EditPrompt("Property number? ", tbuf);
         PL()->ErasePrompt();
@@ -419,7 +419,7 @@ cEdit::cellPrptyAdd(int which)
             return;
         }
     }
-    c_prompt(tbuf, which);
+    c_prompt(tbuf, sizeof(tbuf), which);
 
     c_ltobj *lt = new c_ltobj(cursd, pdesc, which);
     hyList *hnew = PL()->EditHypertextPrompt(tbuf, hp, true, PLedStart,
@@ -513,7 +513,7 @@ cEdit::cellPrptyEdit(PrptyText *line)
 
     hyList *hp = pdesc->hpstring(cursd);
     char tbuf[64];
-    c_prompt(tbuf, pdesc->value());
+    c_prompt(tbuf, sizeof(tbuf), pdesc->value());
     c_ltobj *lt = new c_ltobj(cursd, pdesc, pdesc->value());
     hyList *hnew = PL()->EditHypertextPrompt(tbuf, hp, true, PLedStart,
         PLedNormal, c_ltcb, lt);

@@ -141,7 +141,7 @@ void
 CommandTab::com_fourier(wordlist *wl)
 {
     char xbuf[20];
-    sprintf(xbuf, "%1.1e", 0.0);
+    snprintf(xbuf, sizeof(xbuf), "%1.1e", 0.0);
     int shift = strlen(xbuf) - 7;
     if (!OP.curPlot() || !OP.curPlot()->scale()) {
         GRpkg::self()->ErrPrintf(ET_ERROR, "no vectors loaded.\n");

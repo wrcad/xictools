@@ -112,7 +112,7 @@ GTKtoolbar::PopUpShellDefs(int x, int y)
     xKWent *entry = KWGET(kw_history);
     if (entry) {
         char tbuf[64];
-        sprintf(tbuf, "%d", CP_DefHistLen);
+        snprintf(tbuf, sizeof(tbuf), "%d", CP_DefHistLen);
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(CP_DefHistLen, 1.0, 0, 0, 0);
         entry->ent->create_widgets(entry, tbuf);
@@ -138,7 +138,7 @@ GTKtoolbar::PopUpShellDefs(int x, int y)
     entry = KWGET(kw_width);
     if (entry) {
         char tbuf[64];
-        sprintf(tbuf, "%d", DEF_WIDTH);
+        snprintf(tbuf, sizeof(tbuf), "%d", DEF_WIDTH);
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_WIDTH, 1.0, 0.0, 0.0, 0);
         entry->ent->create_widgets(entry, tbuf);
@@ -152,7 +152,7 @@ GTKtoolbar::PopUpShellDefs(int x, int y)
     entry = KWGET(kw_height);
     if (entry) {
         char tbuf[64];
-        sprintf(tbuf, "%d", DEF_HEIGHT);
+        snprintf(tbuf, sizeof(tbuf), "%d", DEF_HEIGHT);
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_HEIGHT, 1.0, 0.0, 0.0, 0);
         entry->ent->create_widgets(entry, tbuf);

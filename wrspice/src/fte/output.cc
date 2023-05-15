@@ -295,7 +295,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
             t++;
         if (*t) {
             char buf[256];
-            sprintf(buf, "%s: %s",
+            snprintf(buf, sizeof(buf), "%s: %s",
                 IFanalysis::analysis(outd->analysisPtr->JOBtype)->description,
                 t);
             run->set_title(buf);
@@ -521,12 +521,12 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
         char namebuf[256];
         char *uname = pathlist::get_user_name(false);
 #ifdef WIN32
-        sprintf(namebuf, "wrspice: run %s\n", uname);
+        snprintf(namebuf, sizeof(namebuf), "wrspice: run %s\n", uname);
         delete [] uname;
         msw::MapiSend(Global.BugAddr(), 0, namebuf, 0, 0);
         raise(SIGTERM);
 #else
-        sprintf(namebuf, "mail %s", Global.BugAddr());
+        snprintf(namebuf, sizeof(namebuf), "mail %s", Global.BugAddr());
         FILE *fp = popen(namebuf, "w");
         if (fp) {
             fprintf(fp, "wrspice: run %s\n", uname);

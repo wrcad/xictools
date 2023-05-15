@@ -111,7 +111,7 @@ sAsmTf::sAsmTf(sAsmPage *src)
     tf_angle_ix = 0;
     for (int i = 0; i < 8; i++) {
         char buf[32];
-        sprintf(buf, "%d", i*45);
+        snprintf(buf, sizeof(buf), "%d", i*45);
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(tf_angle), buf);
     }
     gtk_combo_box_set_active(GTK_COMBO_BOX(tf_angle), tf_angle_ix);

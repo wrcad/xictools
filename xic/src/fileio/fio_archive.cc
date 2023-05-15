@@ -582,8 +582,9 @@ namespace {
         if (!access(outfile, F_OK)) {
             if (FIO()->IsKeepBadArchive()) {
                 // Keep the file for diagnostics, but give it a ".BAD" suffix
-                char *tfn = new char[strlen(outfile) + 5];
-                sprintf(tfn, "%s.BAD", outfile);
+                int len = strlen(outfile) + 5;
+                char *tfn = new char[len];
+                snprintf(tfn, len, "%s.BAD", outfile);
                 filestat::move_file_local(tfn, outfile);
                 FIO()->ifPrintCvLog(IFLOG_INFO,
                     "Moving %s to %s", outfile, tfn);
@@ -1084,8 +1085,9 @@ cFIO::DefaultFilename(CDcbin *cbin, FileType ft)
         else if (ft == Fnative) {
             const char *path = cbin->fileName();  // source directory
             const char *cn = Tstring(cbin->cellname());
-            char *fn = new char[strlen(path) + strlen(cn) + 2];
-            sprintf(fn, "%s/%s", path, cn);
+            int len = strlen(path) + strlen(cn) + 2;
+            char *fn = new char[len];
+            snprintf(fn, len, "%s/%s", path, cn);
             return (fn);
         }
     }

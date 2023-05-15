@@ -854,7 +854,7 @@ CDp::elec_prp_name(int num)
 {
     static char buf[32];
     if (num < 1 || num > P_MAX_PRP_NUM) {
-        sprintf(buf, "%d", num);
+        snprintf(buf, sizeof(buf), "%d", num);
         return (buf);
     }
     return (prpty_name[num]);
@@ -1400,7 +1400,7 @@ CDp_range::print_nodes(const CDc *cdesc, FILE *fp, sLstr *lstr) const
                     fprintf(fp, " %-4d", px->enode());
                 else {
                     char buf[32];
-                    sprintf(buf, " %-4d", px->enode());
+                    snprintf(buf, sizeof(buf), " %-4d", px->enode());
                     lstr->add(buf);
                 }
             }

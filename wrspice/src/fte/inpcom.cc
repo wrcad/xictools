@@ -289,7 +289,7 @@ IFsimulator::Edit(const char *filename,
     }
     *usex = false;
     char buf[BSIZE_SP];
-    sprintf(buf, "%s %s", editor, filename);
+    snprintf(buf, sizeof(buf), "%s %s", editor, filename);
     if (!(CP.Display() && GRpkg::self()->CurDev()) ||
             Sp.GetVar("noeditwin", VTYP_BOOL, 0)) {
         int i = CP.System(buf);

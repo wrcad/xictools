@@ -257,9 +257,9 @@ pnode::apply_func() const
         }
         char buf[256];
         if (*pn_func->name() == 'v')
-            sprintf(buf, "v(%s)", pn_left->pn_string);
+            snprintf(buf, sizeof(buf), "v(%s)", pn_left->pn_string);
         else
-            sprintf(buf, "%s", pn_left->pn_string);
+            snprintf(buf, sizeof(buf), "%s", pn_left->pn_string);
 
         // If the vector is "special" we must use VecGet, otherwise
         // it should be in the current plot.
@@ -580,8 +580,9 @@ namespace {
                 len++;
         }
 
-        char *bf = new char[strlen(v->name()) + strlen(ind->name()) + 5];
-        sprintf(bf, "%s[[%s]]", v->name(), ind->name());
+        int bflen = strlen(v->name()) + strlen(ind->name()) + 5;
+        char *bf = new char[bflen];
+        snprintf(bf, bflen, "%s[[%s]]", v->name(), ind->name());
         sDataVec *res = new sDataVec(bf, v->flags() & VF_COPYMASK,
             len, v->units());
         res->set_gridtype(v->gridtype());
@@ -710,8 +711,9 @@ namespace {
         }
 
         // Make up the new vector
-        char *bf = new char[strlen(v->name()) + strlen(ind->name()) + 3];
-        sprintf(bf, "%s[%s]", v->name(), ind->name());
+        int len = strlen(v->name()) + strlen(ind->name()) + 3;
+        char *bf = new char[len];
+        snprintf(bf, len, "%s[%s]", v->name(), ind->name());
         sDataVec *res = new sDataVec(bf, v->flags() & VF_COPYMASK,
             length, v->units());
         res->set_defcolor(v->defcolor());
@@ -785,9 +787,9 @@ namespace {
                         func->fu_name, v->v_name, res->length(), res->flags());
             }
 #endif
-            char *bf =
-                new char[strlen(func->name()) + strlen(v[0]->name()) + 3];
-            sprintf(bf, "%s(%s)", func->name(), v[0]->name());
+            int len = strlen(func->name()) + strlen(v[0]->name()) + 3;
+            char *bf = new char[len];
+            snprintf(bf, len, "%s(%s)", func->name(), v[0]->name());
             res->set_name(bf);
             delete [] bf;
 
@@ -968,7 +970,7 @@ namespace {
 
             int ix = t->plot() ? t->plot()->fftsc_ix() : 0;
             char *bf = new char[16];
-            sprintf(bf, "fft%d_scale", ix);
+            snprintf(bf, 16, "fft%d_scale", ix);
             if (t->plot())
                 t->plot()->set_fftsc_ix(++ix);
             t->set_name(bf);

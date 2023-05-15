@@ -237,9 +237,9 @@ sTfm::sTfm(GRobject c,
     sb_mag.connect_changed((GCallback)tf_val_changed, 0);
 
     char buf[64];
-    sprintf(buf, "%.*f", TFM_NUMD, TFM_MAXD);
+    snprintf(buf, sizeof(buf), "%.*f", TFM_NUMD, TFM_MAXD);
     int wid = sb_mag.width_for_string(buf);
-    sprintf(buf, "%.*f", TFM_NUMD, TFM_MIND);
+    snprintf(buf, sizeof(buf), "%.*f", TFM_NUMD, TFM_MIND);
     int wid1 = sb_mag.width_for_string(buf);
     if (wid1 > wid)
         wid = wid1;
@@ -399,7 +399,7 @@ sTfm::update()
         GTK_COMBO_BOX(tf_ang))));
 
     while (d < 360) {
-        sprintf(buf, "%d", d);
+        snprintf(buf, sizeof(buf), "%d", d);
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(tf_ang), buf);
         d += da;
     }

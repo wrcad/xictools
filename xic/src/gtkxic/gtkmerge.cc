@@ -208,7 +208,7 @@ sMC::sMC(mitem_t *mi)
     GtkWidget *frame = gtk_frame_new(0);
     gtk_widget_show(frame);
     char buf[256];
-    sprintf(buf, "Cell: %s", mi->name);
+    snprintf(buf, sizeof(buf), "Cell: %s", mi->name);
     mc_label = gtk_label_new(buf);
     gtk_widget_show(mc_label);
     gtk_container_add(GTK_CONTAINER(frame), mc_label);
@@ -312,7 +312,7 @@ sMC::refresh(mitem_t *mi)
         return (true);
     }
     char buf[256];
-    sprintf(buf, "Cell: %s", mi->name);
+    snprintf(buf, sizeof(buf), "Cell: %s", mi->name);
     gtk_label_set_text(GTK_LABEL(mc_label), buf);
     return (false);
 }

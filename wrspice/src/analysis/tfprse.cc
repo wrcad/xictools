@@ -100,8 +100,9 @@ TFanalysis::parse(sLine *current, sCKT *ckt, int which, const char **line,
             error = job->setParam("outneg", &ptemp);
             IP.logError(current, error);
 
-            char *cp = new char[5 + strlen(nname1) + strlen(nname2)];
-            sprintf(cp, "v(%s, %s)", nname1, nname2);
+            int len = 5 + strlen(nname1) + strlen(nname2);
+            char *cp = new char[len];
+            snprintf(cp, len, "v(%s, %s)", nname1, nname2);
             ptemp.v.sValue = cp;
             ptemp.type = IF_STRING;
             error = job->setParam("outname", &ptemp);
@@ -114,8 +115,9 @@ TFanalysis::parse(sLine *current, sCKT *ckt, int which, const char **line,
             error = job->setParam("outneg", &ptemp);
             IP.logError(current, error);
 
-            char *cp = new char[4 + strlen(nname1)];
-            sprintf(cp, "v(%s)", nname1);
+            int len = 4 + strlen(nname1);
+            char *cp = new char[len];
+            snprintf(cp, len, "v(%s)", nname1);
             ptemp.v.sValue = cp;
             ptemp.type = IF_STRING;
             error = job->setParam("outname", &ptemp);

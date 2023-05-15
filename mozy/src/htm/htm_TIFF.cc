@@ -120,7 +120,7 @@ htmImageManager::readTIFF(ImageBuffer *ib)
     if (!path)
         path = "/tmp";
     char buf[256];
-    sprintf(buf, "%s/moz%d-%s.tmp", path, getpid(), "tiff");
+    snprintf(buf, sizeof(buf), "%s/moz%d-%s.tmp", path, getpid(), "tiff");
     FILE *fp = fopen(buf, "wb");
     if (!fp)
         return (0);
@@ -129,7 +129,7 @@ htmImageManager::readTIFF(ImageBuffer *ib)
     fclose(fp);
     char *tiffile = strdup(buf);
 
-    sprintf(buf, "%s/moz%d-%s.tmp", path, getpid(), "png");
+    snprintf(buf, sizeof(buf), "%s/moz%d-%s.tmp", path, getpid(), "png");
     fp = fopen(buf, "wb");
     if (fp) {
         bool ret = tiffns::tiff_to_png(tiffile, fp);

@@ -375,7 +375,7 @@ sPCc::pcc_val_changed(GtkWidget*, void*)
             CDvdb()->clearVariable(VA_PCellGripInstSize);
         else {
             char buf[32];
-            sprintf(buf, "%d", d);
+            snprintf(buf, sizeof(buf), "%d", d);
             CDvdb()->setVariable(VA_PCellGripInstSize, buf);
         }
     }

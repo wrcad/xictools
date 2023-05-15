@@ -213,8 +213,8 @@ cMain::Exit(ExitType exit_type)
     }
     else if (exit_type == ExitDebugger) {
         char header[256];
-        sprintf(header, "%s-%s %s (%s)", Product(), VersionString(),
-            OSname(), TagString());
+        snprintf(header, sizeof(header), "%s-%s %s (%s)", Product(),
+            VersionString(), OSname(), TagString());
 
         const char *logdir = Log()->LogDirectory();
         extern void* DeathAddr;

@@ -312,12 +312,13 @@ namespace {
             0644);
         if (fd >= 0) {
             char buf[256];
-            sprintf(buf, "%s %s\n", Global.Version(), datestring());
+            snprintf(buf, sizeof(buf), "%s %s\n", Global.Version(),
+                datestring());
             write(fd, buf, strlen(buf));
-            sprintf(buf, "%s 0x%lx\n", what, (long)chunk);
+            snprintf(buf, sizeof(buf), "%s 0x%lx\n", what, (long)chunk);
             write(fd, buf, strlen(buf));
             for (int i = 0; i < stsz; i++) {
-                sprintf(buf, "#%d 0x%lx\n", i, stack[i]);
+                snprintf(buf, sizeof(buf), "#%d 0x%lx\n", i, stack[i]);
                 write(fd, buf, strlen(buf));
             }
             close(fd);
@@ -355,7 +356,7 @@ wrs_if::GetPrintCmd()
     if (!prname || !*prname)
         return (lstring::copy("lpr -h"));
     char buf[128];
-    sprintf(buf, "lpr -P%s -h", prname);
+    snprintf(buf, sizeof(buf), "lpr -P%s -h", prname);
     return (lstring::copy(buf));
 }
 
@@ -696,13 +697,13 @@ namespace {
 #ifdef WIN32
         char buf[256];
         ff = lstring::strip_path(ff);
-        snprintf(buf, BSIZE_SP - 4, "\\\\.\\pipe\\%s", ff);
+        snprintf(buf, sizeof(buf) - 6, "\\\\.\\pipe\\%s", ff);
         char *t = buf + strlen(buf);
         int cnt = 1;
         for (;;) {
             if (access(buf, F_OK) < 0)
                 break;
-            sprintf(t, "%d", cnt);
+            snprintf(t, 6, "%d", cnt);
         }
         SECURITY_DESCRIPTOR sd;
         InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
@@ -753,7 +754,7 @@ namespace {
                 delete [] fpath;
                 fpath = tt;
             }
-            sprintf(t, "%d", cnt);
+            snprintf(t, 6, "%d", cnt);
             cnt++;
         }
         int ret = mkfifo(fpath, 0666);
@@ -1200,11 +1201,11 @@ main(int argc, char **argv)
 #ifdef WIN32
         // Set up a thread and a semaphore to enable passing SIGINT.
         char tbuf[64];
-        sprintf(tbuf, "wrspice.sigint.%d", getpid());
+        snprintf(tbuf, sizeof(tbuf), "wrspice.sigint.%d", getpid());
         HANDLE hintr = CreateSemaphore(0, 0, 1, tbuf);
         _beginthread(intr_proc, 0, hintr);
         // Set up a thread and a semaphore to enable passing SIGTERM.
-        sprintf(tbuf, "wrspice.sigterm.%d", getpid());
+        snprintf(tbuf, sizeof(tbuf), "wrspice.sigterm.%d", getpid());
         HANDLE hterm = CreateSemaphore(0, 0, 1, tbuf);
         _beginthread(term_proc, 0, hterm);
 #endif
@@ -1914,7 +1915,7 @@ namespace {
     {
         expiring = true;
         char header[256];
-        sprintf(header, "%s-%s %s (%s)", Global.Product(),
+        snprintf(header, sizeof(header), "%s-%s %s (%s)", Global.Product(),
             Global.Version(), Global.OSname(), Global.TagString());
 
         miscutil::dump_backtrace(CP.Program(), header, 0, DeathAddr);

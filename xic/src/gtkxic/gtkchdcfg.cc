@@ -420,7 +420,7 @@ sCfg::update(const char *chdname)
 
         char buf[256];
         if (has_name || chd->hasCgd()) {
-            sprintf(buf, "CHD %s is configured with ", chdname);
+            snprintf(buf, sizeof(buf), "CHD %s is configured with ", chdname);
             int xx = 0;
             if (has_name) {
                 strcat(buf, "Cell");
@@ -435,7 +435,7 @@ sCfg::update(const char *chdname)
             strcat(buf, ".");
         }
         else
-            sprintf(buf, "CHD %s is not configured.", chdname);
+            snprintf(buf, sizeof(buf), "CHD %s is not configured.", chdname);
         gtk_label_set_text(GTK_LABEL(cf_label), buf);
 
         gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(cf_apply_tc))),
@@ -538,9 +538,10 @@ sCfg::button_hdlr(GtkWidget *widget)
                 char buf[256];
                 if (!cf_cgdname || !*cf_cgdname)
                     strcpy(buf, "No CGD access name given.");
-                else
-                    sprintf(buf, "No CGD with access name %s "
+                else {
+                    snprintf(buf, sizeof(buf), "No CGD with access name %s "
                         "currently exists.", cf_cgdname);
+                }
                 PopUpMessage(buf, false);
             }
         }
@@ -574,7 +575,7 @@ sCfg::cf_new_cgd_cb(const char *idname, const char *string, int mode,
             const char *s = Errs()->get_error();
             int len = strlen(fmt) + (s ? strlen(s) : 0) + 10;
             char *t = new char[len];
-            sprintf(t, fmt, s);
+            snprintf(t, len, fmt, s);
             Cfg->PopUpMessage(t, true);
             delete [] t;
         }

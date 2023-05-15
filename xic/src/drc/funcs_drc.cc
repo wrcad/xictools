@@ -496,7 +496,7 @@ drc_funcs::IFdrcSetLimits(Variable *res, Variable *args, void*)
         if (bcnt == DRC_MAX_ERRS_DEF)
             CDvdb()->clearVariable(VA_DrcMaxErrors);
         else {
-            sprintf(buf, "%d", bcnt);
+            snprintf(buf, sizeof(buf), "%d", bcnt);
             CDvdb()->setVariable(VA_DrcMaxErrors, buf);
         }
     }
@@ -504,7 +504,7 @@ drc_funcs::IFdrcSetLimits(Variable *res, Variable *args, void*)
         if (icnt == DRC_INTR_MAX_OBJS_DEF)
             CDvdb()->clearVariable(VA_DrcInterMaxObjs);
         else {
-            sprintf(buf, "%d", icnt);
+            snprintf(buf, sizeof(buf), "%d", icnt);
             CDvdb()->setVariable(VA_DrcInterMaxObjs, buf);
         }
     }
@@ -512,7 +512,7 @@ drc_funcs::IFdrcSetLimits(Variable *res, Variable *args, void*)
         if (itime == DRC_INTR_MAX_TIME_DEF)
             CDvdb()->clearVariable(VA_DrcInterMaxTime);
         else {
-            sprintf(buf, "%d", itime);
+            snprintf(buf, sizeof(buf), "%d", itime);
             CDvdb()->setVariable(VA_DrcInterMaxTime, buf);
         }
     }
@@ -581,7 +581,7 @@ drc_funcs::IFdrcSetMaxErrors(Variable *res, Variable *args, void*)
     if (val == DRC_MAX_ERRS_DEF)
         CDvdb()->clearVariable(VA_DrcMaxErrors);
     else {
-        sprintf(buf, "%d", val);
+        snprintf(buf, sizeof(buf), "%d", val);
         CDvdb()->setVariable(VA_DrcMaxErrors, buf);
     }
     return (OK);
@@ -625,7 +625,7 @@ drc_funcs::IFdrcSetInterMaxObjs(Variable *res, Variable *args, void*)
     if (val == DRC_INTR_MAX_OBJS_DEF)
         CDvdb()->clearVariable(VA_DrcInterMaxObjs);
     else {
-        sprintf(buf, "%d", val);
+        snprintf(buf, sizeof(buf), "%d", val);
         CDvdb()->setVariable(VA_DrcInterMaxObjs, buf);
     }
     return (OK);
@@ -671,7 +671,7 @@ drc_funcs::IFdrcSetInterMaxTime(Variable *res, Variable *args, void*)
     if (val == DRC_INTR_MAX_TIME_DEF)
         CDvdb()->clearVariable(VA_DrcInterMaxTime);
     else {
-        sprintf(buf, "%d", val);
+        snprintf(buf, sizeof(buf), "%d", val);
         CDvdb()->setVariable(VA_DrcInterMaxTime, buf);
     }
     return (OK);
@@ -717,7 +717,7 @@ drc_funcs::IFdrcSetInterMaxErrors(Variable *res, Variable *args, void*)
     if (val == DRC_INTR_MAX_ERRS_DEF)
         CDvdb()->clearVariable(VA_DrcInterMaxErrors);
     else {
-        sprintf(buf, "%d", val);
+        snprintf(buf, sizeof(buf), "%d", val);
         CDvdb()->setVariable(VA_DrcInterMaxErrors, buf);
     }
     return (OK);
@@ -803,7 +803,7 @@ drc_funcs::IFdrcSetLevel(Variable *res, Variable *args, void*)
         CDvdb()->clearVariable(VA_DrcLevel);
     else {
         char buf[32];
-        sprintf(buf, "%d", level);
+        snprintf(buf, sizeof(buf), "%d", level);
         CDvdb()->setVariable(VA_DrcLevel, buf);
     }
     return (OK);

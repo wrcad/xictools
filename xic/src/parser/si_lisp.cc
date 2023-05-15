@@ -173,23 +173,26 @@ namespace {
         if (*err) {
             char *t = *err;
             if (word) {
-                *err = new char[strlen(msg) + strlen(word) + strlen(t) + 1];
-                sprintf(*err, msg, word);
+                int len = strlen(msg) + strlen(word) + strlen(t) + 1;
+                *err = new char[len];
+                snprintf(*err, len, msg, word);
                 strcat(*err, "\n");
                 strcat(*err, t);
                 delete [] t;
             }
             else {
-                *err = new char[strlen(msg) + strlen(t)];
-                sprintf(*err, msg, t);
+                int len = strlen(msg) + strlen(t);
+                *err = new char[len];
+                snprintf(*err, len, msg, t);
                 delete [] t;
             }
         }
         else {
             if (!word)
                 word = "unknown error";
-            *err = new char[strlen(msg) + strlen(word)];
-            sprintf(*err, msg, word);
+            int len = strlen(msg) + strlen(word);
+            *err = new char[len];
+            snprintf(*err, len, msg, word);
         }
     }
 }

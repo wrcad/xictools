@@ -120,7 +120,7 @@ GTKtoolbar::PopUpColors(int x, int y)
         char buf[64];
         xKWent *entry = static_cast<xKWent*>(KW.color(i));
         if (entry) {
-            sprintf(buf, "color%d", i);
+            snprintf(buf, sizeof(buf), "color%d", i);
             VTvalue vv;
             if (!Sp.GetVar(buf, VTYP_STRING, &vv)) {
                 const char *s = TB()->XRMgetFromDb(buf);
@@ -261,9 +261,9 @@ GTKtoolbar::LoadResourceColors()
         passwd *pw = getpwuid(getuid());
         if (pw) {
             char buf[512];
-            sprintf(buf, "%s/%s", pw->pw_dir, "WRspice");
+            snprintf(buf, sizeof(buf), "%s/%s", pw->pw_dir, "WRspice");
             if (access(buf, R_OK)) {
-                sprintf(buf, "%s/%s", pw->pw_dir, "Wrspice");
+                snprintf(buf, sizeof(buf), "%s/%s", pw->pw_dir, "Wrspice");
                 if (access(buf, R_OK))
                     return;
             }
@@ -278,16 +278,16 @@ GTKtoolbar::LoadResourceColors()
         s++;
     else
         s = CP.Program();
-    sprintf(name, "%s.color", s);
-    sprintf(clss, "%s.Color", s);
+    snprintf(name, sizeof(name), "%s.color", s);
+    snprintf(clss, sizeof(clss), "%s.Color", s);
     if (islower(*clss))
         *clss = toupper(*clss);
     char *n = name + strlen(name);
     char *c = clss + strlen(clss);
     XrmDatabase db = XrmGetDatabase(gr_x_display());
     for (int i = 0; i < NUMPLOTCOLORS; i++) {
-        sprintf(n, "%d", i);
-        sprintf(c, "%d", i);
+        snprintf(n, 4, "%d", i);
+        snprintf(c, 4, "%d", i);
         char *ss;
         XrmValue v;
         if (XrmGetResource(db, name, clss, &ss, &v))
@@ -297,8 +297,8 @@ GTKtoolbar::LoadResourceColors()
         // might as well let "WRspice" work, too
         clss[1] = 'R';
         for (int i = 0; i < NUMPLOTCOLORS; i++) {
-            sprintf(n, "%d", i);
-            sprintf(c, "%d", i);
+            snprintf(n, 4, "%d", i);
+            snprintf(c, 4, "%d", i);
             char *ss;
             XrmValue v;
             if (XrmGetResource(db, name, clss, &ss, &v))
@@ -322,8 +322,9 @@ GTKtoolbar::XRMgetFromDb(const char *rname)
     else
         s = CP.Program();
     char name[64], clss[64];
-    sprintf(name, "%s.%s", s, rname);
-    sprintf(clss, "%c%s.%c%s", toupper(*s), s+1, toupper(*rname), rname+1);
+    snprintf(name, sizeof(name), "%s.%s", s, rname);
+    snprintf(clss, sizeof(clss), "%c%s.%c%s", toupper(*s), s+1,
+        toupper(*rname), rname+1);
     char *type;
     XrmValue value;
     if (XrmGetResource(database, name, clss, &type, &value))

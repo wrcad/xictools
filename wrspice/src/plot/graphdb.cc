@@ -297,7 +297,7 @@ SPgraphics::PlotPosition(int *x, int *y)
     int i = count;
     count++;
     i %= NUMGBUCKETS;
-    sprintf(name, "plotposn%d", i);
+    snprintf(name, sizeof(name), "plotposn%d", i);
     variable *v = Sp.GetRawVar(name);
     if (!v) {
         default_position(i, x, y);

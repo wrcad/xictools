@@ -141,22 +141,24 @@ sCore::memory_error_log(const char *what, void *chunk, long *stack, int stsz)
         new_err_handler();
 
     char buf[1024];
-    if (Log()->LogDirectory())
-        sprintf(buf, "%s/%s", Log()->LogDirectory(), Log()->MemErrLogName());
+    if (Log()->LogDirectory()) {
+        snprintf(buf, sizeof(buf), "%s/%s", Log()->LogDirectory(),
+            Log()->MemErrLogName());
+    }
     else if (Log()->MemErrLogName())
         strcpy(buf, Log()->MemErrLogName());
     else
         strcpy(buf, "xic_memory_errors");
     int fd = open(buf, O_CREAT|O_WRONLY|O_APPEND, 0644);
     if (fd) {
-        sprintf(buf, "%s-%s %s (%s) %s\n", XM()->Product(),
+        snprintf(buf, sizeof(buf), "%s-%s %s (%s) %s\n", XM()->Product(),
             XM()->VersionString(), XM()->OSname(),
             XM()->TagString(), miscutil::dateString());
         write(fd, buf, strlen(buf));
-        sprintf(buf, "%s 0x%lx\n", what, (unsigned long)chunk);
+        snprintf(buf, sizeof(buf), "%s 0x%lx\n", what, (unsigned long)chunk);
         write(fd, buf, strlen(buf));
         for (int i = 0; i < stsz; i++) {
-            sprintf(buf, "#%d 0x%lx\n", i, stack[i]);
+            snprintf(buf, sizeof(buf), "#%d 0x%lx\n", i, stack[i]);
             write(fd, buf, strlen(buf));
         }
         close(fd);

@@ -1258,7 +1258,7 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
                         int sid = graph->gr_id;
 
                         char buf[BSIZE_SP];
-                        sprintf(buf, "%d:%s", sid, t);
+                        snprintf(buf,sizeof(buf), "%d:%s", sid, t);
                         nv->set_name(buf);
 
                         sDvList *ndvl = new sDvList;
@@ -3482,7 +3482,7 @@ sGraph::dv_legend(int plotno, sDataVec *dv)
             gr_dev->SetColor(gr_colors[dv->color()].pixel);
             if (PointChars) {
                 char buf[16];
-                sprintf(buf, "%c ", PointChars[dv->linestyle()]);
+                snprintf(buf, sizeof(buf), "%c ", PointChars[dv->linestyle()]);
                 gr_dev->Text(buf, scrx, yinv(scry), 0);
             }
             else
@@ -3697,7 +3697,7 @@ sGraph::dv_set_trace(sDataVec *v, sDataVec *xs, int plotno)
             if (gr_sel_flat) {
                 if (i >= gr_cpage*numdtab && i < (gr_cpage+1)*numdtab) {
                     int j = i - gr_cpage*numdtab;
-                    sprintf(buf, "%d", i);
+                    snprintf(buf, sizeof(buf), "%d", i);
                     if (!show_trace)
                         gr_dev->SetColor(gr_colors[1].pixel);
                     gr_dev->Text(buf, x, yinv(y - j*gr_fonthei), 0);
@@ -3720,7 +3720,7 @@ sGraph::dv_set_trace(sDataVec *v, sDataVec *xs, int plotno)
                             ypos -= gr_cpage*numdtab;
                     }
                     if (!skip) {
-                        sprintf(buf, "%d", dims[k]);
+                        snprintf(buf, sizeof(buf), "%d", dims[k]);
                         if (k == xs->numdims() - 2 &&
                                 (gr_numtraces == 1 || gr_ysep)) {
                             if (enabled[k])
@@ -4447,7 +4447,7 @@ sGraph::dv_pl_environ(double x0, double x1, double y0, double y1, bool unset)
     if (unset)
         Sp.RemVar(s);
     else {
-        sprintf(buf, "%.12e, %.12e", x0, x1);
+        snprintf(buf, sizeof(buf), "%.12e, %.12e", x0, x1);
         Sp.SetVar(s, buf);
     }
 
@@ -4455,7 +4455,7 @@ sGraph::dv_pl_environ(double x0, double x1, double y0, double y1, bool unset)
     if (unset)
         Sp.RemVar(s);
     else {
-        sprintf(buf, "%.12e, %.12e", y0, y1);
+        snprintf(buf, sizeof(buf), "%.12e, %.12e", y0, y1);
         Sp.SetVar(s, buf);
     }
 

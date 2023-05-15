@@ -460,7 +460,7 @@ sCHDout::magic_string(unsigned int flags)
     if (flags == CHD_NO_GZIP) {
         // No compression, no geometry: MAGIC 5.
         co_magic = 5;
-        sprintf(buf, "%s%d", MAGIC_STRING, 5);
+        snprintf(buf, sizeof(buf), "%s%d", MAGIC_STRING, 5);
     }
     else {
         // MAGIC 6
@@ -468,9 +468,9 @@ sCHDout::magic_string(unsigned int flags)
         if (flags & CHD_WITH_GEOM)
             // Add a suffix "+1", the integer may be used
             // as a geometry revision code in future releases.
-            sprintf(buf, "%s%d+1", MAGIC_STRING, 6);
+            snprintf(buf, sizeof(buf), "%s%d+1", MAGIC_STRING, 6);
         else
-            sprintf(buf, "%s%d", MAGIC_STRING, 6);
+            snprintf(buf, sizeof(buf), "%s%d", MAGIC_STRING, 6);
     }
     return (buf);
 }

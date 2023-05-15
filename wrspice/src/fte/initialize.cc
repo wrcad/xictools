@@ -162,8 +162,9 @@ IFsimulator::PreInit()
     else
         s = CP.Program();
 
-    char *bf = new char[strlen(s) + 10];
-    sprintf(bf, "%s ! -> ", s);
+    int len = strlen(s) + 10;
+    char *bf = new char[len];
+    snprintf(bf, len, "%s ! -> ", s);
     // Capitalize one or two prefix characters ahead of "spice"
     if (islower(bf[0]) && bf[0] != 's')
         bf[0] = toupper(bf[0]);
@@ -290,8 +291,9 @@ IFsimulator::PostInit()
 
     // Add the scripts directory to the path.
     if (Global.InputPath() && *Global.InputPath()) {
-        char *bf = new char[strlen(Global.InputPath()) + 32];
-        sprintf(bf, "%s = %s", kw_sourcepath, Global.InputPath());
+        int len = strlen(Global.InputPath()) + 32;
+        char *bf = new char[len];
+        snprintf(bf, len, "%s = %s", kw_sourcepath, Global.InputPath());
         wordlist *wl = CP.Lexer(bf);
         delete [] bf;
         CP.DoGlob(&wl);

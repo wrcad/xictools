@@ -1073,16 +1073,16 @@ sFc::fc_def_string(int id)
     case FcArgs:
         return ("");
     case FcPlaneBloat:
-        sprintf(tbuf, "%.*f", ndgt, FC_PLANE_BLOAT_DEF);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", ndgt, FC_PLANE_BLOAT_DEF);
         return (tbuf);
     case SubstrateThickness:
-        sprintf(tbuf, "%.*f", ndgt, SUBSTRATE_THICKNESS);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", ndgt, SUBSTRATE_THICKNESS);
         return (tbuf);
     case SubstrateEps:
-        sprintf(tbuf, "%.*f", 3, SUBSTRATE_EPS);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", 3, SUBSTRATE_EPS);
         return (tbuf);
     case FcPanelTarget:
-        sprintf(tbuf, "%.*e", 1, FC_DEF_TARG_PANELS);
+        snprintf(tbuf, sizeof(tbuf), "%.*e", 1, FC_DEF_TARG_PANELS);
         return (tbuf);
     }
     return ("");
@@ -1222,7 +1222,8 @@ sFc::fc_dump_cb(const char *fname, void *client_data)
                 return;
             const char *fn = lstring::strip_path(fname);
             char tbuf[256];
-            sprintf(tbuf, "Input is in file %s.  View file? ", fn);
+            snprintf(tbuf, sizeof(tbuf),
+                "Input is in file %s.  View file? ", fn);
             Fc->PopUpAffirm(0, GRloc(LW_UL), tbuf, fc_p_cb,
                 lstring::copy(fname));
         }
@@ -1286,7 +1287,7 @@ sFc::fc_btn_proc(GtkWidget *widget, void *arg)
                 CDvdb()->setVariable(VA_FcPanelTarget, s);
             else {
                 char tbf[32];
-                sprintf(tbf, "%.1e", FC_DEF_TARG_PANELS);
+                snprintf(tbf, sizeof(tbf), "%.1e", FC_DEF_TARG_PANELS);
                 CDvdb()->setVariable(VA_FcPanelTarget, tbf);
             }
             Fc->sb_fc_panel_target.set_sensitive(true);
@@ -1473,7 +1474,7 @@ sFc::fc_dbg_btn_proc(GtkWidget *widget, void*)
             CDvdb()->clearVariable(VA_FcMergeFlags);
         else {
             char buf[32];
-            sprintf(buf, "0x%x", mrgflgs);
+            snprintf(buf, sizeof(buf), "0x%x", mrgflgs);
             CDvdb()->setVariable(VA_FcMergeFlags, buf);
         }
     }

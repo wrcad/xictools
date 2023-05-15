@@ -751,7 +751,7 @@ sOas::set_repvar()
         int mval;
         if (sscanf(str, "%d", &mval) == 1 &&
                 mval > REP_RUN_MIN && mval <= REP_RUN_MAX) {
-            sprintf(buf, "m=%d", mval);
+            snprintf(buf, sizeof(buf), "m=%d", mval);
             if (lstr.length())
                 lstr.add_c(' ');
             lstr.add(buf);
@@ -766,7 +766,7 @@ sOas::set_repvar()
             int aval;
             if (sscanf(str, "%d", &aval) == 1 &&
                     aval > REP_ARRAY_MIN && aval <= REP_ARRAY_MAX) {
-                sprintf(buf, "a=%d", aval);
+                snprintf(buf, sizeof(buf), "a=%d", aval);
                 if (lstr.length())
                     lstr.add_c(' ');
                 lstr.add(buf);
@@ -784,7 +784,7 @@ sOas::set_repvar()
         if (sscanf(str, "%d", &tval) == 1 &&
                 tval >= REP_MAX_REPS_MIN && tval <= REP_MAX_REPS_MAX &&
                 tval != REP_MAX_REPS) {
-            sprintf(buf, "t=%d", tval);
+            snprintf(buf, sizeof(buf), "t=%d", tval);
             if (lstr.length())
                 lstr.add_c(' ');
             lstr.add(buf);
@@ -796,7 +796,7 @@ sOas::set_repvar()
     if (sscanf(str, "%d", &xval) == 1 &&
             xval >= REP_MAX_ITEMS_MIN && xval <= REP_MAX_ITEMS_MAX &&
             xval != REP_MAX_ITEMS) {
-        sprintf(buf, "x=%d", xval);
+        snprintf(buf, sizeof(buf), "x=%d", xval);
         if (lstr.length())
             lstr.add_c(' ');
         lstr.add(buf);

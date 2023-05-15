@@ -1106,7 +1106,7 @@ gds_out::write_text(const Text *ctext)
     // Add a property to store label size, etc.
     if (!FIO()->IsStripForExport() && text.width > 0 && text.height > 0) {
         char tbuf[80];
-        sprintf(tbuf, "width %d height %d", scale(text.width),
+        snprintf(tbuf, sizeof(tbuf), "width %d height %d", scale(text.width),
             scale(text.height));
         // Add electrical property display flags.
         if (out_mode == Electrical) {

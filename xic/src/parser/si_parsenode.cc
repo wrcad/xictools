@@ -902,8 +902,9 @@ ParseNode::checkCellsInTree(BBox *BB)
                 // This triggers use of a named database.
                 cSDB *sdb = CDsdb()->findDB(cellname);
                 if (!sdb) {
-                    char *t = new char[strlen(cellname) + 16];
-                    sprintf(t, "(database) %s", cellname+1);
+                    int len = strlen(cellname) + 16;
+                    char *t = new char[len];
+                    snprintf(t, len, "(database) %s", cellname+1);
                     delete [] cellname;
                     delete [] stname;
                     return (t);
@@ -917,16 +918,17 @@ ParseNode::checkCellsInTree(BBox *BB)
                         return (cellname);
                     }
                     if (cellname) {
-                        char *t =
-                            new char[strlen(stname) + strlen(cellname) + 2];
-                        sprintf(t, "%s.%s", stname, cellname);
+                        int len = strlen(stname) + strlen(cellname) + 2;
+                        char *t = new char[le ];
+                        snprintf(t, len, "%s.%s", stname, cellname);
                         delete [] cellname;
                         delete [] stname;
                         return (t);
                     }
                     else {
-                        char *t = new char[strlen(stname) + 2];
-                        sprintf(t, "%s.NULL", stname);
+                        int len = strlen(stname) + 2;
+                        char *t = new char[len];
+                        snprintf(t, len, "%s.NULL", stname);
                         delete [] stname;
                         return (t);
                     }

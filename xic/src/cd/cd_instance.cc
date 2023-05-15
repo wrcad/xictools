@@ -512,8 +512,9 @@ CDc::getElecInstName(unsigned int ix) const
         n = pr->beg_range() - ix;
     else
         n = pr->beg_range() + ix;
-    sprintf(buf + strlen(buf), "%c%d%c", cTnameTab::subscr_open(), n,
-        cTnameTab::subscr_close());
+    int len = strlen(buf);
+    snprintf(buf + len, sizeof(buf) - len, "%c%d%c", cTnameTab::subscr_open(),
+        n, cTnameTab::subscr_close());
     return (lstring::copy(buf));
 }
 
@@ -538,9 +539,10 @@ CDc::getPhysInstName() const
     const char *nm = Tstring(sd->cellname());
 
     char tbf[32];
-    sprintf(tbf, "%d", index());
-    char *str = new char[strlen(nm) + strlen(tbf) + 2];
-    sprintf(str, "%s%c%s", nm, CD_INST_NAME_SEP, tbf);
+    snprintf(tbf, sizeof(tbf), "%d", index());
+    int len = strlen(nm) + strlen(tbf) + 2;
+    char *str = new char[len];
+    snprintf(str, len, "%s%c%s", nm, CD_INST_NAME_SEP, tbf);
     return (str);
 }
 

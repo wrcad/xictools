@@ -220,10 +220,10 @@ rng_t::eval_range(const char *cstring)
             }
             else
                 i = 0;
-            sprintf(buf, "%d", i);
+            snprintf(buf, sizeof(buf), "%d", i);
         }
         else
-            sprintf(buf, "%s", tok1);
+            snprintf(buf, sizeof(buf), "%s", tok1);
     }
     if (tokd)
         strcat(buf, "-");
@@ -240,10 +240,13 @@ rng_t::eval_range(const char *cstring)
             }
             else
                 i = 0;
-            sprintf(buf + strlen(buf), "%d", i);
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "%d", i);
         }
-        else
-            sprintf(buf + strlen(buf), "%s", tok2);
+        else {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "%s", tok2);
+        }
 
     }
     strcat(buf, "]");
@@ -741,7 +744,7 @@ CshPar::VarEval(const char *cstring)
         return (new wordlist("$", 0));
     }
     if (*string == '$') {
-        sprintf(buf, "%d", (int)getpid());
+        snprintf(buf, sizeof(buf), "%d", (int)getpid());
         wordlist::destroy(range);
         return (new wordlist(buf, 0));
     }
@@ -795,9 +798,9 @@ CshPar::VarEval(const char *cstring)
                 else {
                     // Sp.EnqVectorVar() takes care of range
                     if (range) {
-                        char *ts = new char[strlen(s) +
-                            strlen(range->wl_word) + 2];
-                        sprintf(ts, "%s[%s", s, range->wl_word);
+                        int len = strlen(s) + strlen(range->wl_word) + 2;
+                        char *ts = new char[len];
+                        snprintf(ts, len, "%s[%s", s, range->wl_word);
                         v = Sp.EnqVectorVar(ts, true);
                         delete [] ts;
                     }
@@ -816,7 +819,7 @@ CshPar::VarEval(const char *cstring)
             // Return the global return value, which was presumably
             // just set by another script or function.
 
-            sprintf(buf, "%12g", cp_return_val);
+            snprintf(buf, sizeof(buf), "%12g", cp_return_val);
             wl->wl_word = lstring::copy(buf);
         }
         wordlist::destroy(range);
@@ -850,8 +853,9 @@ CshPar::VarEval(const char *cstring)
             else {
                 // Sp.EnqVectorVar() takes care of range
                 if (range) {
-                    char *ts = new char[strlen(s) + strlen(range->wl_word) + 2];
-                    sprintf(ts, "%s[%s", s, range->wl_word);
+                    int len = strlen(s) + strlen(range->wl_word) + 2;
+                    char *ts = new char[len];
+                    snprintf(ts, len, "%s[%s", s, range->wl_word);
                     v = Sp.EnqVectorVar(ts, true);
                     delete [] ts;
                 }
@@ -868,7 +872,7 @@ CshPar::VarEval(const char *cstring)
                 }
             }
         }
-        sprintf(buf, "%d", cnt);
+        snprintf(buf, sizeof(buf), "%d", cnt);
         wl = new wordlist;
         wl->wl_word = lstring::copy(buf);
         wordlist::destroy(range);
@@ -908,8 +912,9 @@ CshPar::VarEval(const char *cstring)
 
     // Sp.EnqVectorVar() takes care of range
     if (range) {
-        char *ts = new char[strlen(string) + strlen(range->wl_word) + 2];
-        sprintf(ts, "%s[%s", string, range->wl_word);
+        int len = strlen(string) + strlen(range->wl_word) + 2;
+        char *ts = new char[len];
+        snprintf(ts, len, "%s[%s", string, range->wl_word);
 
         // take care of forms like v($something)
         if (*ts == '&' && lstring::ciinstr("vi", *(ts+1)) &&

@@ -688,25 +688,25 @@ sFL::fl_is_symfile(const char *fname)
     // *** The GDSII test MUST come first
     if (FIO()->IsGDSII(fp)) {
         // GDSII
-        sprintf(buf, "G %s", fname);
+        snprintf(buf, sizeof(buf), "G %s", fname);
         fclose(fp);
         return (lstring::copy(buf));
     }
     if (FIO()->IsCGX(fp)) {
         // CGX
-        sprintf(buf, "B %s", fname);
+        snprintf(buf, sizeof(buf), "B %s", fname);
         fclose(fp);
         return (lstring::copy(buf));
     }
     if (FIO()->IsOASIS(fp)) {
         // OASIS
-        sprintf(buf, "O %s", fname);
+        snprintf(buf, sizeof(buf), "O %s", fname);
         fclose(fp);
         return (lstring::copy(buf));
     }
     if (FIO()->IsLibrary(fp)) {
         // Library
-        sprintf(buf, "L %s", fname);
+        snprintf(buf, sizeof(buf), "L %s", fname);
         fclose(fp);
         return (lstring::copy(buf));
     }
@@ -714,7 +714,7 @@ sFL::fl_is_symfile(const char *fname)
     bool issced;
     if (FIO()->IsCIF(fp, &type, &issced)) {
         // CIF, XIC
-        sprintf(buf, "  %s", fname);
+        snprintf(buf, sizeof(buf), "  %s", fname);
         if (type == CFnative)
             buf[0] = 'X';
         else

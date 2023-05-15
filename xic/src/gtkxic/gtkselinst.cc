@@ -378,7 +378,8 @@ sCI::refresh()
         double val = text_get_scroll_value(wb_textarea);
         text_set_chars(wb_textarea, "");
         for (ci_item *s = ci_list; s->name; s++) {
-            sprintf(buf, "%s%c%d", s->name, CD_INST_NAME_SEP, s->index);
+            snprintf(buf, sizeof(buf), "%s%c%d", s->name, CD_INST_NAME_SEP,
+                s->index);
             int len = strlen(buf);
             char *e = buf + len;
             while (len <= ci_field) {
@@ -389,7 +390,7 @@ sCI::refresh()
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
             if (!ci_filt)
                 s->sel = (s->cdesc->state() == CDobjSelected);
-            sprintf(buf, "%-3s\n", s->sel ? "yes" : "no");
+            snprintf(buf, sizeof(buf), "%-3s\n", s->sel ? "yes" : "no");
             text_insert_chars_at_point(wb_textarea, s->sel ? yc : nc, buf,
                 -1, -1);
         }

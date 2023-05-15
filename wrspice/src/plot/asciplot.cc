@@ -99,7 +99,7 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
     char buf[BSIZE_SP];
     int margin = MARGIN_BASE;
     int omargin = margin;
-    sprintf(buf, "%1.1e", 0.0);        // expect 0.0e+00
+    snprintf(buf, sizeof(buf), "%1.1e", 0.0);        // expect 0.0e+00
     int shift = strlen(buf) - 7;
     margin += shift;
 
@@ -228,9 +228,9 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
         for (int k = 0; k < maxx; k++)
             field[k*omaxy + i] = LCHAR;
         line1[i + margin + 2*shift] = '|';
-        sprintf(buf, "%.2e", j*pow(10.0, (double)mag));
+        snprintf(buf, sizeof(buf), "%.2e", j*pow(10.0, (double)mag));
         memcpy(&line2[i + margin - ((j < 0) ? 2 : 1) - shift], buf,
-                strlen(buf));
+            strlen(buf));
     }
     line1[i - spacing + margin + 1] = '\0';
 
@@ -305,7 +305,7 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
     TTY.send(buf);
     TTY.send("\n");
     curline++;
-    sprintf(buf, "%s %s", plot->name(), plot->date());
+    snprintf(buf, sizeof(buf), "%s %s", plot->name(), plot->date());
     buf[maxy + margin] = '\0';
     i = (omaxy + margin - strlen(buf)) / 2;
     while (i-- > 0)

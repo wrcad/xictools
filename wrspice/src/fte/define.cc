@@ -213,7 +213,7 @@ namespace {
             if (name && *name) {
                 sUdFunc *udf = (sUdFunc*)sHtab::get(udfdb->table(), name);
                 for (sUdFunc *u = udf; u; u = u->next()) {
-                    sprintf(buf, "%s:%d", name, u->argc());
+                    snprintf(buf, sizeof(buf), "%s:%d", name, u->argc());
                     udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                     if (otxt)
                         continue;
@@ -226,7 +226,8 @@ namespace {
                 sHent *h;
                 while ((h = hgen.next()) != 0) {
                     for (sUdFunc *u = (sUdFunc*)h->data(); u; u = u->next()) {
-                        sprintf(buf, "%s:%d", h->name(), u->argc());
+                        snprintf(buf, sizeof(buf), "%s:%d", h->name(),
+                            u->argc());
                         udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                         if (otxt)
                             continue;
@@ -240,7 +241,7 @@ namespace {
             if (name && *name) {
                 sUdFunc *udf = (sUdFunc*)sHtab::get(shell_udf.table(), name);
                 for (sUdFunc *u = udf; u; u = u->next()) {
-                    sprintf(buf, "%s:%dS", name, u->argc());
+                    snprintf(buf, sizeof(buf), "%s:%dS", name, u->argc());
                     udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                     if (otxt)
                         continue;
@@ -254,7 +255,8 @@ namespace {
                 sHent *h;
                 while ((h = hgen.next()) != 0) {
                     for (sUdFunc *u = (sUdFunc*)h->data(); u; u = u->next()) {
-                        sprintf(buf, "%s:%dS", h->name(), u->argc());
+                        snprintf(buf, sizeof(buf), "%s:%dS", h->name(),
+                            u->argc());
                         udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                         if (otxt)
                             continue;
@@ -1025,7 +1027,7 @@ cUdf::new_unique_name(const char **namep)
     char *t = lstring::stpcpy(buf, *namep);
     *t++ = UNIQUE_SEP;
     for (int i = 1; ; i++) {
-        sprintf(t, "%d", i);
+        snprintf(t, 6, "%d", i);
         if (!sHtab::get(ud_tab, buf))
             break;
     }

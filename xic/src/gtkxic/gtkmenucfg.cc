@@ -2541,7 +2541,7 @@ GTKmenuConfig::menu_handler(GtkWidget *caller, void *client_data)
 
         const char *s;
         if (ent->is_dynamic()) {
-            sprintf(buf, "user:%s", ent->entry);
+            snprintf(buf, sizeof(buf), "user:%s", ent->entry);
             s = buf;
         }
         else {
@@ -2551,7 +2551,7 @@ GTKmenuConfig::menu_handler(GtkWidget *caller, void *client_data)
                 XM()->QuitHelp();
                 return;
             }
-            sprintf(buf, "xic:%s", s);
+            snprintf(buf, sizeof(buf), "xic:%s", s);
             s = buf;
         }
         if (!(mstate & GDK_SHIFT_MASK)) {
@@ -2645,7 +2645,7 @@ GTKmenuConfig::user_cmd_proc(void *arg)
     if (lstring::strdirsep(entry)) {
         // from submenu, add a distinguishing prefix to avoid confusion with
         // file path
-        sprintf(buf, "%s%s", SCR_LIBCODE, entry);
+        snprintf(buf, sizeof(buf), "%s%s", SCR_LIBCODE, entry);
         entry = buf;
     }
     SIfile *sfp;
@@ -2827,7 +2827,7 @@ GTKmenuConfig::shmenu_proc(GtkWidget *caller, void*)
             &mstate);
         if (!(mstate & GDK_SHIFT_MASK)) {
             char buf[64];
-            sprintf(buf, "shapes:%s", string);
+            snprintf(buf, sizeof(buf), "shapes:%s", string);
             DSPmainWbag(PopUpHelp(buf))
             return;
         }

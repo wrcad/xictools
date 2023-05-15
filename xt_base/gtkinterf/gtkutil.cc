@@ -606,10 +606,10 @@ GTKnumPopup::pw_numer_button(GtkWidget *widget, void *client_data)
         // If the last two values are the same to the precision, the
         // pw_tmp_value must be the truncated version.
         char b1[64], b2[64];
-        sprintf(b1, "%0.*f",
+        snprintf(b1, sizeof(b1), "%0.*f",
             (int)gtk_spin_button_get_digits(GTK_SPIN_BUTTON(p->pw_text)),
             p->pw_value);
-        sprintf(b2, "%0.*f",
+        snprintf(b2, sizeof(b2), "%0.*f",
             (int)gtk_spin_button_get_digits(GTK_SPIN_BUTTON(p->pw_text)),
             p->pw_tmp_value);
         double d;

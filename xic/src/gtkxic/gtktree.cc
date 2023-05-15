@@ -442,11 +442,13 @@ sTree::update(const char *root, const char *oldroot, TreeUpdMode dmode)
 
     char buf[128];
     if (DSP()->MainWdesc()->DbType() == WDchd) {
-        sprintf(buf, "%s cells from saved hierarchy named %s",
+        snprintf(buf, sizeof(buf), "%s cells from saved hierarchy named %s",
             DisplayModeName(t_mode), DSP()->MainWdesc()->DbName());
     }
-    else
-        sprintf(buf, "%s cells from memory", DisplayModeName(t_mode));
+    else {
+        snprintf(buf, sizeof(buf), "%s cells from memory",
+            DisplayModeName(t_mode));
+    }
     gtk_label_set_text(GTK_LABEL(t_label), buf);
 
     gtk_label_set_text(GTK_LABEL(wb_textarea),
@@ -475,7 +477,7 @@ sTree::check_fb()
     t_ucount++;
     if (!(t_ucount & t_udel)) {
         char buf[256];
-        sprintf(buf, "%s:  %u", "Nodes processed", t_ucount);
+        snprintf(buf, sizeof(buf), "%s:  %u", "Nodes processed", t_ucount);
         gtk_label_set_text(GTK_LABEL(wb_textarea), buf);
     }
     if (Timer()->check_interval(t_check_time)) {
@@ -531,8 +533,8 @@ sTree::build_tree(CDs *sdesc)
     if (Tree && GTK_IS_TREE_VIEW(t_tree)) {
         char buf[256];
         if (ret)
-            sprintf(buf, "Total Nodes: %u   Max Depth: %d", t_ucount,
-                t_mdepth+1);
+            snprintf(buf, sizeof(buf), "Total Nodes: %u   Max Depth: %d",
+                t_ucount, t_mdepth+1);
         else
             strcpy(buf, "Aborted, content incomplete.");
         gtk_label_set_text(GTK_LABEL(wb_textarea), buf);
@@ -562,8 +564,8 @@ sTree::build_tree(cCHD *chd, symref_t *p)
     if (Tree && GTK_IS_TREE_VIEW(t_tree)) {
         char buf[256];
         if (ret)
-            sprintf(buf, "Total Nodes: %u   Max Depth: %d", t_ucount,
-                t_mdepth+1);
+            snprintf(buf, sizeof(buf), "Total Nodes: %u   Max Depth: %d",
+                t_ucount, t_mdepth+1);
         else
             strcpy(buf, "Aborted, content incomplete.");
         gtk_label_set_text(GTK_LABEL(wb_textarea), buf);

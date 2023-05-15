@@ -1021,7 +1021,7 @@ sDv::dv_menu_proc(GtkWidget *caller, void*)
     char *string = (char*)g_object_get_data(G_OBJECT(caller), "user");
     if (XM()->IsDoingHelp()) {
         char tbuf[128];
-        sprintf(tbuf, "dev:%s", string);
+        snprintf(tbuf, sizeof(tbuf), "dev:%s", string);
         DSPmainWbag(PopUpHelp(tbuf))
         return;
     }
@@ -1128,7 +1128,7 @@ sDv::dv_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
         Dv->dv_curdev = n;
         if (XM()->IsDoingHelp()) {
             char tbuf[128];
-            sprintf(tbuf, "dev:%s", Dv->dv_entries[n].name);
+            snprintf(tbuf, sizeof(tbuf), "dev:%s", Dv->dv_entries[n].name);
             DSPmainWbag(PopUpHelp(tbuf))
             return (true);
         }

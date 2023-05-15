@@ -193,10 +193,10 @@ sTc::sTc(GRobject caller)
 
     char string[256];
     if (Tech()->TechExtension() && *Tech()->TechExtension())
-        sprintf(string, "./%s.%s",
+        snprintf(string, sizeof(string), "./%s.%s",
             XM()->TechFileBase(), Tech()->TechExtension());
     else
-        sprintf(string, "./%s", XM()->TechFileBase());
+        snprintf(string, sizeof(string), "./%s", XM()->TechFileBase());
 
     tc_entry = gtk_entry_new();
     gtk_widget_show(tc_entry);

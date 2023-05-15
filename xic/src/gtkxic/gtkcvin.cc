@@ -881,7 +881,7 @@ sCvi::cvi_force_menu_proc(GtkWidget *caller, void*)
     FIO()->CifStyle().set_lread_type(forcevals[i].code);
     if (FIO()->CifStyle().lread_type() != EXTlreadDef) {
         char buf[32];
-        sprintf(buf, "%d", FIO()->CifStyle().lread_type());
+        snprintf(buf, sizeof(buf), "%d", FIO()->CifStyle().lread_type());
         CDvdb()->setVariable(VA_CifLayerMode, buf);
     }
     else

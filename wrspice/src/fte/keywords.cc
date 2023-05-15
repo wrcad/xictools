@@ -176,7 +176,8 @@ sKW::print(sLstr *plstr)
 {
     char buf[256];
     const char *fmt = "%-18s %s %s\n";
-    sprintf(buf, fmt, word, ((variable*)0)->typeString(type), descr);
+    snprintf(buf, sizeof(buf), fmt, word, ((variable*)0)->typeString(type),
+        descr);
     if (!plstr)
         TTY.send(buf);
     else
@@ -197,14 +198,14 @@ namespace {
 
     inline char *pr_integer(int min, int max)
     {
-        sprintf(tmp_buf, "an integer %d-%d", min, max);
+        snprintf(tmp_buf, sizeof(tmp_buf), "an integer %d-%d", min, max);
         return (tmp_buf);
     }
 
 
     inline char *pr_real(float min, float max)
     {
-        sprintf(tmp_buf, "a real %g-%g", min, max);
+        snprintf(tmp_buf, sizeof(tmp_buf), "a real %g-%g", min, max);
         return (tmp_buf);
     }
 
@@ -475,7 +476,8 @@ struct KWent_gridstyle : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.gstyles(i)->word; i++) {
-            sprintf(buf, fmt2, KW.gstyles(i)->word, KW.gstyles(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.gstyles(i)->word,
+                KW.gstyles(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -590,11 +592,11 @@ struct KWent_hcopywidth : public KWent
         if (isset) {
             char buf[64];
             if (v->type() == VTYP_NUM) {
-                sprintf(buf, "%d", v->integer());
+                snprintf(buf, sizeof(buf), "%d", v->integer());
                 v->set_string(buf);
             }
             else if (v->type() == VTYP_REAL) {
-                sprintf(buf, "%g", v->real());
+                snprintf(buf, sizeof(buf), "%g", v->real());
                 v->set_string(buf);
             }
             else if (v->type() != VTYP_STRING) {
@@ -619,11 +621,11 @@ struct KWent_hcopyheight : public KWent
         if (isset) {
             char buf[64];
             if (v->type() == VTYP_NUM) {
-                sprintf(buf, "%d", v->integer());
+                snprintf(buf, sizeof(buf), "%d", v->integer());
                 v->set_string(buf);
             }
             else if (v->type() == VTYP_REAL) {
-                sprintf(buf, "%g", v->real());
+                snprintf(buf, sizeof(buf), "%g", v->real());
                 v->set_string(buf);
             }
             else if (v->type() != VTYP_STRING) {
@@ -648,11 +650,11 @@ struct KWent_hcopyxoff : public KWent
         if (isset) {
             char buf[64];
             if (v->type() == VTYP_NUM) {
-                sprintf(buf, "%d", v->integer());
+                snprintf(buf, sizeof(buf), "%d", v->integer());
                 v->set_string(buf);
             }
             else if (v->type() == VTYP_REAL) {
-                sprintf(buf, "%g", v->real());
+                snprintf(buf, sizeof(buf), "%g", v->real());
                 v->set_string(buf);
             }
             else if (v->type() != VTYP_STRING) {
@@ -677,11 +679,11 @@ struct KWent_hcopyyoff : public KWent
         if (isset) {
             char buf[64];
             if (v->type() == VTYP_NUM) {
-                sprintf(buf, "%d", v->integer());
+                snprintf(buf, sizeof(buf), "%d", v->integer());
                 v->set_string(buf);
             }
             else if (v->type() == VTYP_REAL) {
-                sprintf(buf, "%g", v->real());
+                snprintf(buf, sizeof(buf), "%g", v->real());
                 v->set_string(buf);
             }
             else if (v->type() != VTYP_STRING) {
@@ -925,7 +927,8 @@ struct KWent_plotstyle : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.pstyles(i)->word; i++) {
-            sprintf(buf, fmt2, KW.pstyles(i)->word, KW.pstyles(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.pstyles(i)->word,
+                KW.pstyles(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -1058,7 +1061,8 @@ struct KWent_scaletype : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.scale(i)->word; i++) {
-            sprintf(buf, fmt2, KW.scale(i)->word, KW.scale(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.scale(i)->word,
+                KW.scale(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -1726,7 +1730,8 @@ struct KWent_debug : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.dbargs(i)->word; i++) {
-            sprintf(buf, fmt2, KW.dbargs(i)->word, KW.dbargs(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.dbargs(i)->word,
+                KW.dbargs(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -1894,8 +1899,9 @@ namespace {
     // Replace %c with c in new string.
     const char *cpystr(const char *s, char c)
     {
-        char *n = new char[strlen(s)];
-        sprintf(n, s, c);
+        int len = strlen(s);
+        char *n = new char[len];
+        snprintf(n, len, s, c);
         return (n);
     }
 }
@@ -2534,7 +2540,8 @@ struct KWent_filetype : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.ft(i)->word; i++) {
-            sprintf(buf, fmt2, KW.ft(i)->word, KW.ft(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.ft(i)->word,
+                KW.ft(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -2701,7 +2708,8 @@ struct KWent_level : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.level(i)->word; i++) {
-            sprintf(buf, fmt2, KW.level(i)->word, KW.level(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.level(i)->word,
+                KW.level(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -3120,7 +3128,8 @@ struct KWent_specwindow : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.spec(i)->word; i++) {
-            sprintf(buf, fmt2, KW.spec(i)->word, KW.spec(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.spec(i)->word,
+                KW.spec(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -3208,7 +3217,8 @@ struct KWent_units : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.units(i)->word; i++) {
-            sprintf(buf, fmt2, KW.units(i)->word, KW.units(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.units(i)->word,
+                KW.units(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -5207,7 +5217,8 @@ struct KWent_method : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.method(i)->word; i++) {
-            sprintf(buf, fmt2, KW.method(i)->word, KW.method(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.method(i)->word,
+                KW.method(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -5249,7 +5260,8 @@ struct KWent_optmerge : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.optmerge(i)->word; i++) {
-            sprintf(buf, fmt2, KW.optmerge(i)->word, KW.optmerge(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.optmerge(i)->word,
+                KW.optmerge(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -5291,7 +5303,8 @@ struct KWent_parhier : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.parhier(i)->word; i++) {
-            sprintf(buf, fmt2, KW.parhier(i)->word, KW.parhier(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.parhier(i)->word,
+                KW.parhier(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -5333,7 +5346,8 @@ struct KWent_steptype : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.step(i)->word; i++) {
-            sprintf(buf, fmt2, KW.step(i)->word, KW.step(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.step(i)->word,
+                KW.step(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else
@@ -5487,7 +5501,8 @@ struct KWent_submaps : public KWent
         sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.parhier(i)->word; i++) {
-            sprintf(buf, fmt2, KW.parhier(i)->word, KW.parhier(i)->descr);
+            snprintf(buf, sizeof(buf), fmt2, KW.parhier(i)->word,
+                KW.parhier(i)->descr);
             if (!plstr)
                 TTY.send(buf);
             else

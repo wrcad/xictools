@@ -1066,7 +1066,7 @@ cvofmt_t::fmt_flags_proc(GtkWidget *caller, void *client_data)
         if (FIO()->CifStyle().flags() != 0xfff ||
                 FIO()->CifStyle().flags_export() != 0) {
             char buf[64];
-            sprintf(buf, "%d %d", FIO()->CifStyle().flags(),
+            snprintf(buf, sizeof(buf), "%d %d", FIO()->CifStyle().flags(),
                 FIO()->CifStyle().flags_export());
             CDvdb()->setVariable(VA_CifOutExtensions, buf);
         }

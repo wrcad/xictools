@@ -469,7 +469,7 @@ sLgo::lgo_es_menu_proc(GtkWidget *caller, void*)
     char buf[32];
     int es = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
     if (es >= 0 && es <= 2 && es != DEF_LOGO_END_STYLE) {
-        sprintf(buf, "%d", es);
+        snprintf(buf, sizeof(buf), "%d", es);
         CDvdb()->setVariable(VA_LogoEndStyle, buf);
     }
     else
@@ -486,7 +486,7 @@ sLgo::lgo_pw_menu_proc(GtkWidget *caller, void*)
     char buf[32];
     int pw = 1 + gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
     if (pw >= 1 && pw <= 5 && pw != DEF_LOGO_PATH_WIDTH) {
-        sprintf(buf, "%d", pw);
+        snprintf(buf, sizeof(buf), "%d", pw);
         CDvdb()->setVariable(VA_LogoPathWidth, buf);
     }
     else

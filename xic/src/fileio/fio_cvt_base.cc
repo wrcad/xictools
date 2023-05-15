@@ -193,7 +193,7 @@ cFIO::GdsParamSet(double *angle, double *magn, int *ax, int *ay)
             *ay = 0;
         }
         char *buf = new char[256];
-        sprintf(buf, "angle %g unacceptable, set to %g", oldang, *angle);
+        snprintf(buf, 256, "angle %g unacceptable, set to %g", oldang, *angle);
         return (buf);
     }
     return (0);

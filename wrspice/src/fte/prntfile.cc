@@ -502,7 +502,7 @@ cColIn::parse_cols(FILE *fp, int ncols, int xcols)
             sDataVec *vend = vec;
             for (i = 1; i < ncols; i++) {
                 char tbf[32];
-                sprintf(tbf, "column_%d", i);
+                snprintf(tbf, sizeof(tbf), "column_%d", i);
                 vec = new sDataVec(UU_NOTYPE);
                 vec->set_plot(pl);
                 vec->set_name(tbf);
@@ -512,7 +512,7 @@ cColIn::parse_cols(FILE *fp, int ncols, int xcols)
             if (xcols > 0) {
                 for (i = ncols; i < ncols + xcols; i++) {
                     char tbf[16];
-                    sprintf(tbf, "column_%d", i);
+                    snprintf(tbf, sizeof(tbf), "column_%d", i);
                     vec = new sDataVec(UU_NOTYPE);
                     vec->set_plot(pl);
                     vec->set_name(tbf);

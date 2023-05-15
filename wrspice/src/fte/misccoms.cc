@@ -284,7 +284,7 @@ CommandTab::com_bug(wordlist*)
     char buf[BSIZE_SP];
     if (GRpkg::self()->CurDev()) {
         TTY.printf(msg);
-        sprintf(buf, "WRspice %s bug report", Sp.Version());
+        snprintf(buf, sizeof(buf), "WRspice %s bug report", Sp.Version());
         GRwbag *cx = GRpkg::self()->MainDev()->NewWbag("mail", 0);
         cx->SetCreateTopLevel();
         cx->PopUpMail(buf, Global.BugAddr());
@@ -297,7 +297,7 @@ CommandTab::com_bug(wordlist*)
     "You are in the mail program.  Type your message, end with \".\"\n"
     "on its own line.\n\n");
 
-        sprintf(buf, SYSTEM_MAIL, Sp.Simulator(), Sp.Version(),
+        snprintf(buf, sizeof(buf), SYSTEM_MAIL, Sp.Simulator(), Sp.Version(),
             Global.BugAddr());
         CP.System(buf);
         TTY.printf("Bug report sent.  Thank you.\n");

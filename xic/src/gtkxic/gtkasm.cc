@@ -508,7 +508,7 @@ sAsm::dump_file(FILE *fp, bool check)
 
     for (unsigned int i = 0; i < asm_pages; i++) {
         char page[32];
-        sprintf(page, "Source %d", i+1);
+        snprintf(page, sizeof(page), "Source %d", i+1);
         sAsmPage *src = asm_sources[i];
         char *str = strip_sp(gtk_entry_get_text(GTK_ENTRY(src->pg_path)));
         if (check && !strchk(str, path_to_source_string, page)) {
@@ -697,7 +697,7 @@ sAsm::notebook_append()
 
     sAsmPage *src = new sAsmPage(this);
     asm_sources[index] = src;
-    sprintf(buf, "Source %d", index+1);
+    snprintf(buf, sizeof(buf), "Source %d", index+1);
     src->pg_tablabel = gtk_label_new(buf);
     gtk_widget_show(src->pg_tablabel);
     gtk_notebook_insert_page(GTK_NOTEBOOK(asm_notebook), src->pg_form,
@@ -715,7 +715,7 @@ sAsm::notebook_remove(int index)
     sAsmPage *src = asm_sources[index];
     for (unsigned int i = index; i < asm_pages-1; i++) {
         asm_sources[i] = asm_sources[i+1];
-        sprintf(buf, "source %d", i+1);
+        snprintf(buf, sizeof(buf), "source %d", i+1);
         gtk_label_set_text(GTK_LABEL(asm_sources[i]->pg_tablabel), buf);
     }
     asm_pages--;
@@ -1109,7 +1109,7 @@ sAsm::asm_save_cb(const char *fname, void*)
     if (fname && *fname) {
         if (!filestat::create_bak(fname, 0)) {
             char buf[512];
-            sprintf(buf,
+            snprintf(buf, sizeof(buf),
                 "Error: %s/ncould not back up existing file, save aborted.",
                 Errs()->get_error());
             Asm->PopUpErr(MODE_ON, buf, STY_NORM);
@@ -1128,8 +1128,9 @@ sAsm::asm_save_cb(const char *fname, void*)
         }
         Errs()->init_error();
         if (Asm->dump_file(fp, false)) {
-            char *s = new char[strlen(fname) + 100];
-            sprintf(s, "State saved in file %s", fname);
+            int len = strlen(fname) + 100;
+            char *s = new char[len];
+            snprintf(s, len, "State saved in file %s", fname);
             set_status_message(s);
             delete [] s;
             if (Asm->wb_input)
@@ -1167,8 +1168,9 @@ sAsm::asm_recall_cb(const char *fname, void*)
         }
         Errs()->init_error();
         if (Asm->read_file(fp)) {
-            char *s = new char[strlen(fname) + 100];
-            sprintf(s, "State restored from file %s", fname);
+            int len = strlen(fname) + 100;
+            char *s = new char[len];
+            snprintf(s, len, "State restored from file %s", fname);
             set_status_message(s);
             delete [] s;
             if (Asm->wb_input)

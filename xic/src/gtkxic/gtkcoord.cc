@@ -254,14 +254,16 @@ cCoord::do_print(int xc, int yc, int update)
     x += (strlen(str) + 2)*fwid;
 
     int xs = x;
-    sprintf(buf, fmt, mode == Physical ? MICRONS(xc) : ELEC_MICRONS(xc));
+    snprintf(buf, sizeof(buf), fmt,
+        mode == Physical ? MICRONS(xc) : ELEC_MICRONS(xc));
     SetColor(c2);
     Text(buf, x, y, 0);
     x += strlen(buf)*fwid;
     SetColor(c1);
     Text(",", x, y, 0);
     x += 2*fwid;
-    sprintf(buf, fmt, mode == Physical ? MICRONS(yc) : ELEC_MICRONS(yc));
+    snprintf(buf, sizeof(buf), fmt,
+        mode == Physical ? MICRONS(yc) : ELEC_MICRONS(yc));
     SetColor(c2);
     Text(buf, x, y, 0);
 
@@ -283,7 +285,7 @@ cCoord::do_print(int xc, int yc, int update)
         EV()->GetReference(&xr, &yr);
 
     xs = x;
-    sprintf(buf, fmt,
+    snprintf(buf, sizeof(buf), fmt,
         mode == Physical ? MICRONS(xc - xr) : ELEC_MICRONS(xc - xr));
     SetColor(c2);
     Text(buf, x, y, 0);
@@ -291,7 +293,7 @@ cCoord::do_print(int xc, int yc, int update)
     SetColor(c1);
     Text(",", x, y, 0);
     x += 2*fwid;
-    sprintf(buf, fmt,
+    snprintf(buf, sizeof(buf), fmt,
         mode == Physical ? MICRONS(yc - yr) : ELEC_MICRONS(yc - yr));
     SetColor(c2);
     Text(buf, x, y, 0);
@@ -305,14 +307,16 @@ cCoord::do_print(int xc, int yc, int update)
     Text(str, x, y, 0);
     x += (strlen(str) + 2)*fwid;
 
-    sprintf(buf, fmt, mode == Physical ? MICRONS(xr) : ELEC_MICRONS(xr));
+    snprintf(buf, sizeof(buf), fmt,
+        mode == Physical ? MICRONS(xr) : ELEC_MICRONS(xr));
     SetColor(c2);
     Text(buf, x, y, 0);
     x += strlen(buf)*fwid;
     SetColor(c1);
     Text(",", x, y, 0);
     x += 2*fwid;
-    sprintf(buf, fmt, mode == Physical ? MICRONS(yr) : ELEC_MICRONS(yr));
+    snprintf(buf, sizeof(buf), fmt,
+        mode == Physical ? MICRONS(yr) : ELEC_MICRONS(yr));
     SetColor(c2);
     Text(buf, x, y, 0);
 

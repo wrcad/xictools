@@ -452,7 +452,7 @@ HLPtopic::load_text()
                 lstr.add(hdr);
         }
         if (tp_title && *tp_title && !did_title) {
-            sprintf(tbuf, "<H1>%s</H1>\n", tp_title);
+            snprintf(tbuf, sizeof(tbuf), "<H1>%s</H1>\n", tp_title);
             lstr.add(tbuf);
         }
         if (tp_tag && HLP()->get_main_tag() &&
@@ -496,7 +496,7 @@ HLPtopic::load_text()
                 tl->set_buttontext(tl->description());
                 if (!tl->buttontext())
                     tl->set_buttontext("<unknown>");
-                sprintf(tbuf, "<A HREF=\"%s\">%s</A><BR>\n",
+                snprintf(tbuf, sizeof(tbuf), "<A HREF=\"%s\">%s</A><BR>\n",
                     tl->keyword(), tl->buttontext());
                 lstr.add(tbuf);
             }
@@ -507,7 +507,7 @@ HLPtopic::load_text()
                 tl->set_buttontext(tl->description());
                 if (!tl->buttontext())
                     tl->set_buttontext("<unknown>");
-                sprintf(tbuf, "<A HREF=\"%s\">%s</A><BR>\n",
+                snprintf(tbuf, sizeof(tbuf), "<A HREF=\"%s\">%s</A><BR>\n",
                     tl->keyword(), tl->buttontext());
                 lstr.add(tbuf);
             }

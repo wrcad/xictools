@@ -174,19 +174,19 @@ CshPar::UnixCom(wordlist *wl)
         char buf[BSIZE_SP];
         char *path = (char*)sHtab::get(hashtabp, name);
         if (path) {
-            sprintf(buf, "%s/%s", path, name);
+            snprintf(buf, sizeof(buf),"%s/%s", path, name);
             ret = ShellExec(buf, argv);
         }
         else {
             path = (char*)sHtab::get(hashtabc, name);
             if (path) {
-                sprintf(buf, "%s", name);
+                snprintf(buf, sizeof(buf), "%s", name);
                 ret = ShellExec(buf, argv);
             }
             else {
                 path = (char*)sHtab::get(hashtabs, name);
                 if (path) {
-                    sprintf(buf, "%s/%s", path, name);
+                    snprintf(buf, sizeof(buf), "%s/%s", path, name);
                     ret = ShellExec(buf, argv);
                 }
                 else

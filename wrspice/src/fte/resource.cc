@@ -362,7 +362,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         long realt;
 
         realt = times(&ruse);
-        sprintf(buf, fmtf, kw_totaltime,
+        snprintf(buf, sizeof(buf), fmtf, kw_totaltime,
             (double)(realt - origsec)/HZ +
             (double)((realt - origsec)%HZ)/HZ,
             "Total elapsed seconds");
@@ -371,7 +371,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         else
             TTY.send(buf);
 
-        sprintf(buf, fmtf, "",
+        snprintf(buf, sizeof(buf), fmtf, "",
             (double)ruse.tms_utime/HZ +
             (double)(ruse.tms_utime%HZ)/HZ,
             "Total user cpu seconds");
@@ -380,7 +380,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         else
             TTY.send(buf);
 
-        sprintf(buf, fmtf, "",
+        snprintf(buf, sizeof(buf), fmtf, "",
             (double)ruse.tms_stime/HZ +
             (double)(ruse.tms_stime%HZ)/HZ,
             "Total system cpu seconds");
@@ -394,7 +394,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         struct timezone tz;
 
         gettimeofday(&tv, &tz);
-        sprintf(buf, fmtf, kw_totaltime,
+        snprintf(buf, sizeof(buf), fmtf, kw_totaltime,
             (double)(tv.tv_sec - origsec) +
             (double)(tv.tv_usec - origusec)/1.0e6,
             "Total elapsed seconds");
@@ -406,7 +406,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
 #ifdef HAVE_GETRUSAGE
         struct rusage ruse;
         getrusage(RUSAGE_SELF, &ruse);
-        sprintf(buf, fmtf,
+        snprintf(buf, sizeof(buf), fmtf,
 #ifndef HAVE_GETTIMEOFDAY
             kw_totaltime,
 #else
@@ -420,7 +420,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         else
             TTY.send(buf);
 
-        sprintf(buf, fmtf, "",
+        snprintf(buf, sizeof(buf), fmtf, "",
             (double)ruse.ru_stime.tv_sec +
             (double)ruse.ru_stime.tv_usec/1.0e6,
             "Total system cpu seconds");
@@ -440,7 +440,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         long realt;
 
         realt = times(&ruse);
-        sprintf(buf, fmtf, kw_elapsed,
+        snprintf(buf, sizeof(buf), fmtf, kw_elapsed,
             (double)(realt - lastsec)/HZ +
             (double)((realt - lastsec)%HZ)/HZ,
             "Seconds since last call");
@@ -449,7 +449,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         else
             TTY.send(buf);
 
-        sprintf(buf, fmtf, "",
+        snprintf(buf, sizeof(buf), fmtf, "",
             (double)(ruse.tms_utime - lastusrsec)/HZ +
             (double)((ruse.tms_utime - lastusrsec)%HZ)/HZ,
             "User cpu seconds since last call");
@@ -458,7 +458,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         else
             TTY.send(buf);
 
-        sprintf(buf, fmtf, "",
+        snprintf(buf, sizeof(buf), fmtf, "",
             (double)(ruse.tms_stime - lastsyssec)/HZ +
             (double)((ruse.tms_stime - lastsyssec)%HZ)/HZ,
             "System cpu seconds since last call");
@@ -475,7 +475,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         struct timezone tz;
 
         gettimeofday(&tv, &tz);
-        sprintf(buf, fmtf, kw_elapsed,
+        snprintf(buf, sizeof(buf), fmtf, kw_elapsed,
             (double)(tv.tv_sec - lastsec) +
             (double)(tv.tv_usec - lastusec)/1.0e6,
             "Seconds since last call");
@@ -489,7 +489,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
 #ifdef HAVE_GETRUSAGE
         struct rusage ruse;
         getrusage(RUSAGE_SELF, &ruse);
-        sprintf(buf, fmtf,
+        snprintf(buf, sizeof(buf), fmtf,
 #ifndef HAVE_GETTIMEOFDAY
             kw_elapsed,
 #else
@@ -505,7 +505,7 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         lastusrsec = ruse.ru_utime.tv_sec;
         lastusrusec = ruse.ru_utime.tv_usec;
 
-        sprintf(buf, fmtf, "",
+        snprintf(buf, sizeof(buf), fmtf, "",
             (double)(ruse.ru_stime.tv_sec - lastsyssec) +
             (double)(ruse.ru_stime.tv_usec - lastsysusec)/1.0e6,
             "System cpu seconds since last call");
@@ -532,14 +532,16 @@ ResPrint::print_res(const char *name, sLstr *plstr)
 #else
         double szkb = coresize();
 #endif
-        sprintf(buf, fmtg, kw_space, szkb, "Current data size KB");
+        snprintf(buf, sizeof(buf), fmtg, kw_space, szkb,
+            "Current data size KB");
         if (plstr)
             plstr->add(buf);
         else
             TTY.send(buf);
 
         if (rld.rlim_max != RLIM_INFINITY) {
-            sprintf(buf, fmtd, "", (unsigned)rld.rlim_max, "Hard data limit");
+            snprintf(buf, sizeof(buf), fmtd, "", (unsigned)rld.rlim_max,
+                "Hard data limit");
             if (plstr)
                 plstr->add(buf);
             else
@@ -547,7 +549,8 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         }
 
         if (rld.rlim_cur != RLIM_INFINITY) {
-            sprintf(buf, fmtd, "", (unsigned)rld.rlim_cur, "Soft data limit");
+            snprintf(buf, sizeof(buf), fmtd, "", (unsigned)rld.rlim_cur,
+                "Soft data limit");
             if (plstr)
                 plstr->add(buf);
             else
@@ -563,13 +566,14 @@ ResPrint::print_res(const char *name, sLstr *plstr)
 #else
         double szkb = coresize();
 #endif
-        sprintf(buf, fmtg, kw_space, szkb, "Current data size KB");
+        snprintf(buf, sizeof(buf), fmtg, kw_space, szkb,
+            "Current data size KB");
         if (plstr)
             plstr->add(buf);
         else
             TTY.send(buf);
 
-        sprintf(buf, fmtd, "", lim, "Data limit");
+        snprintf(buf, sizeof(buf), fmtd, "", lim, "Data limit");
         if (plstr)
             plstr->add(buf);
         else
@@ -585,15 +589,16 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         struct rusage ruse;
 
         getrusage(RUSAGE_SELF, &ruse);
-        sprintf(buf, fmtd, kw_faults, ruse.ru_majflt, "Page Faults");
+        snprintf(buf, sizeof(buf), fmtd, kw_faults, ruse.ru_majflt,
+            "Page Faults");
         if (plstr)
             plstr->add(buf);
         else
             TTY.send(buf);
 
-        sprintf(buf, "%-15s%-14ld%s (vol %ld + invol %ld)\n", "",
-            ruse.ru_nvcsw + ruse.ru_nivcsw,
-            "Context switches", ruse.ru_nvcsw, ruse.ru_nivcsw);
+        snprintf(buf, sizeof(buf), "%-15s%-14ld%s (vol %ld + invol %ld)\n",
+            "", ruse.ru_nvcsw + ruse.ru_nivcsw, "Context switches",
+            ruse.ru_nvcsw, ruse.ru_nivcsw);
         if (plstr)
             plstr->add(buf);
         else

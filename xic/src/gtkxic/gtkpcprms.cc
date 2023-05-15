@@ -480,12 +480,12 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                     sl->string);
                 char buf[64];
                 if (p->type() == PCPint) {
-                    sprintf(buf, "%ld", p->intVal());
+                    snprintf(buf, sizeof(buf), "%ld", p->intVal());
                     if (!strcmp(buf, sl->string))
                         hstv = i;
                 }
                 else if (p->type() == PCPtime) {
-                    sprintf(buf, "%ld", (long)p->timeVal());
+                    snprintf(buf, sizeof(buf), "%ld", (long)p->timeVal());
                     if (!strcmp(buf, sl->string))
                         hstv = i;
                 }
@@ -723,7 +723,7 @@ sPcp::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
 
             if (pc->scale_factor() != 0.0) {
                 char buf[64];
-                sprintf(buf, "scale: %s", pc->scale());
+                snprintf(buf, sizeof(buf), "scale: %s", pc->scale());
                 *ltext = lstring::copy(buf);
             }
             return (w);

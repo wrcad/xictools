@@ -524,7 +524,7 @@ sCGL::err_message(const char *fmt)
     const char *s = Errs()->get_error();
     int len = strlen(fmt) + (s ? strlen(s) : 0) + 10;
     char *t = new char[len];
-    sprintf(t, fmt, s);
+    snprintf(t, len, fmt, s);
     PopUpMessage(t, true);
     delete [] t;
 }
@@ -688,7 +688,7 @@ sCGL::cgl_cnt_cb(const char *cellname, void*)
         char *listsel = CGL->cgl_cnt_pop->get_selection();
         stringlist *s0 = cgd->layer_info_list(listsel);
         char buf[256];
-        sprintf(buf, "Layers found in %s", listsel);
+        snprintf(buf, sizeof(buf), "Layers found in %s", listsel);
         delete [] listsel;
         if (CGL->cgl_inf_pop)
             CGL->cgl_inf_pop->update(s0, buf);

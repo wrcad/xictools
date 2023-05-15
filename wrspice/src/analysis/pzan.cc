@@ -181,11 +181,11 @@ PZanalysis::pz_dcoperation(sCKT *ckt, int restart)
         int i, j = 0;
         char name[50];
         for (i = 0; i < pzan->PZnPoles; i++) {
-            sprintf(name, "pole(%-u)", i+1);
+            snprintf(name, sizeof(name), "pole(%-u)", i+1);
             ckt->newUid(&namelist[j++], 0, name, UID_OTHER);
         }
         for (i = 0; i < pzan->PZnZeros; i++) {
-            sprintf(name, "zero(%-u)", i+1);
+            snprintf(name, sizeof(name), "zero(%-u)", i+1);
             ckt->newUid(&namelist[j++], 0, name, UID_OTHER);
         }
         outd->numNames = pzan->PZnPoles + pzan->PZnZeros;

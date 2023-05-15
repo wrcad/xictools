@@ -5935,9 +5935,9 @@ cvrt_funcs::IFcgdContents(Variable *res, Variable *args, void*)
                 return (BAD);
             if (data) {
                 char buf[64];
-                sprintf(buf, "%u", (unsigned int)usz);
+                snprintf(buf, sizeof(buf), "%u", (unsigned int)usz);
                 s0 = new stringlist(lstring::copy(buf), s0);
-                sprintf(buf, "%u", (unsigned int)csz);
+                snprintf(buf, sizeof(buf), "%u", (unsigned int)csz);
                 s0 = new stringlist(lstring::copy(buf), s0);
             }
         }

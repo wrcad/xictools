@@ -324,7 +324,7 @@ sCmd::sCmd(GRobject c, sExtCmd *cmd,
             if (i == DMAX)
                 strcpy(buf, "all");
             else
-                sprintf(buf, "%d", i);
+                snprintf(buf, sizeof(buf), "%d", i);
             gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), buf);
         }
         gtk_combo_box_set_active(GTK_COMBO_BOX(entry), depth);

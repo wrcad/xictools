@@ -390,7 +390,7 @@ namespace {
         FILE *fp = fopen(cname, "w");
         if (!fp)
             return;
-        sprintf(buf, "Symbol %s", lstring::strip_path(cname));
+        snprintf(buf, sizeof(buf), "Symbol %s", lstring::strip_path(cname));
         Gen.Comment(fp, buf);
         Gen.Comment(fp, "PHYSICAL");
         Gen.Comment(fp, "RESOLUTION 1000");
@@ -624,8 +624,9 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
                 continue;
             prms.set_window(&bl->BB);
             FileType ft = iprms->filetype();
-            char *tbuf = new char[strlen(bname) + 32];
-            sprintf(tbuf, "%s%d%s", bname, cnt, ext);
+            int len = strlen(bname) + 32;
+            char *tbuf = new char[len];
+            snprintf(tbuf, len, "%s%d%s", bname, cnt, ext);
             if (do_gz && (ft == Fgds || ft == Fcgx))
                 strcat(tbuf, ".gz");
             prms.set_destination(tbuf, ft);
@@ -661,10 +662,11 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
             if (prms.flatten()) {
                 if (flat_map) {
                     const char *cn = Tstring(ptop->get_name());
-                    tbuf = new char[strlen(cn) + 32];
-                    sprintf(tbuf, "%s_%d", cn, cnt);
-                    out_alias->set_alias(cn, tbuf);
-                    delete [] tbuf;
+                    int len1 = strlen(cn) + 32;
+                    char *tbuf1 = new char[len1];
+                    snprintf(tbuf1, len1, "%s_%d", cn, cnt);
+                    out_alias->set_alias(cn, tbuf1);
+                    delete [] tbuf1;
                 }
                 oiret = flatten(ptop, in, max_flat_depth, &prms);
             }
@@ -702,8 +704,9 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
 
                 prms.set_window(&gBB);
                 FileType ft = iprms->filetype();
-                char *tbuf = new char[strlen(bname) + 32];
-                sprintf(tbuf, "%s_%d_%d%s", bname, jc, ic, ext);
+                int len = strlen(bname) + 32;
+                char *tbuf = new char[len];
+                snprintf(tbuf, len, "%s_%d_%d%s", bname, jc, ic, ext);
                 if (do_gz && (ft == Fgds || ft == Fcgx))
                     strcat(tbuf, ".gz");
                 prms.set_destination(tbuf, ft);
@@ -739,10 +742,11 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
                 if (prms.flatten()) {
                     if (flat_map) {
                         const char *cn = Tstring(ptop->get_name());
-                        tbuf = new char[strlen(cn) + 32];
-                        sprintf(tbuf, "%s_%d", cn, cnt);
-                        out_alias->set_alias(cn, tbuf);
-                        delete [] tbuf;
+                        int len1 = strlen(cn) + 32;
+                        char *tbuf1 = new char[len1];
+                        snprintf(tbuf1, len1, "%s_%d", cn, cnt);
+                        out_alias->set_alias(cn, tbuf1);
+                        delete [] tbuf1;
                     }
                     oiret = flatten(ptop, in, max_flat_depth, &prms);
                 }
@@ -1295,10 +1299,8 @@ cCHD::write_multi_hier(symref_t *ptop, const FIOcvtPrms *prms,
         wmc.nvals = Blist::length(blist);
         wmc.ctab = new cCVtab(false, wmc.nvals);
 
-        int cnt = 0;
         int chcnt = 0;
         for (const Blist *bl = blist; bl; bl = bl->next) {
-            cnt++;
             if (bl->BB == CDnullBB)
                 continue;
 
@@ -1376,7 +1378,7 @@ cCHD::write_multi_hier(symref_t *ptop, const FIOcvtPrms *prms,
             cnt++;
             if (bl->BB == CDnullBB)
                 continue;
-            sprintf(fend, "%d%s", cnt, ext);
+            snprintf(fend, 20, "%d%s", cnt, ext);
             if (do_gz)
                 strcat(fend, ".gz");
 
@@ -1401,7 +1403,7 @@ cCHD::write_multi_hier(symref_t *ptop, const FIOcvtPrms *prms,
         for (int ic = 0; ic < nyc; ic++) {
             for (int jc = 0; jc < nxc; jc++) {
 
-                sprintf(fend, "_%d_%d%s", jc, ic, ext);
+                snprintf(fend, 20, "_%d_%d%s", jc, ic, ext);
                 if (do_gz)
                     strcat(fend, ".gz");
 
@@ -2007,7 +2009,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
             gBB.bloat(bloatval);
             wmc.bnds[chcnt] = gBB;
 
-            sprintf(fend, "%d%s", cnt, ext);
+            snprintf(fend, 20, "%d%s", cnt, ext);
             if (do_gz)
                 strcat(fend, ".gz");
 
@@ -2025,8 +2027,9 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
             wmc.channels[chcnt]->assign_alias(out_alias);
             if (flat_map) {
                 const char *cn = Tstring(ptop->get_name());
-                char *tbuf = new char[strlen(cn) + 32];
-                sprintf(tbuf, "%s_%d", cn, cnt);
+                int len = strlen(cn) + 32;
+                char *tbuf = new char[len];
+                snprintf(tbuf, len, "%s_%d", cn, cnt);
                 out_alias->set_alias(cn, tbuf);
                 delete [] tbuf;
             }
@@ -2055,7 +2058,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
                 gBB.bloat(bloatval);
                 wmc.bnds[cnt] = gBB;
 
-                sprintf(fend, "_%d_%d%s", jc, ic, ext);
+                snprintf(fend, 20, "_%d_%d%s", jc, ic, ext);
                 if (do_gz)
                     strcat(fend, ".gz");
 
@@ -2074,8 +2077,9 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
                 wmc.channels[cnt]->assign_alias(out_alias);
                 if (flat_map) {
                     const char *cn = Tstring(ptop->get_name());
-                    char *tbuf = new char[strlen(cn) + 32];
-                    sprintf(tbuf, "%s_%d", cn, cnt);
+                    int len = strlen(cn) + 32;
+                    char *tbuf = new char[len];
+                    snprintf(tbuf, len, "%s_%d", cn, cnt);
                     out_alias->set_alias(cn, tbuf);
                     delete [] tbuf;
                 }

@@ -4047,12 +4047,12 @@ geom1_funcs::IFsetObjectBB(Variable *res, Variable *args, void*)
             return (OK);
         char buf[256];
         if (sdesc->isElectrical()) {
-            sprintf(buf, "%d,%d %d,%d",
+            snprintf(buf, sizeof(buf), "%d,%d %d,%d",
                 ELEC_INTERNAL_UNITS(vals[0]), ELEC_INTERNAL_UNITS(vals[1]),
                 ELEC_INTERNAL_UNITS(vals[2]), ELEC_INTERNAL_UNITS(vals[3]));
         }
         else {
-            sprintf(buf, "%d,%d %d,%d",
+            snprintf(buf, sizeof(buf), "%d,%d %d,%d",
                 INTERNAL_UNITS(vals[0]), INTERNAL_UNITS(vals[1]),
                 INTERNAL_UNITS(vals[2]), INTERNAL_UNITS(vals[3]));
         }
@@ -4209,11 +4209,14 @@ geom1_funcs::IFsetObjectXY(Variable *res, Variable *args, void*)
         if (!sdesc)
             return (OK);
         char buf[64];
-        if (sdesc->isElectrical())
-            sprintf(buf, "%d,%d",
+        if (sdesc->isElectrical()) {
+            snprintf(buf, sizeof(buf), "%d,%d",
                 ELEC_INTERNAL_UNITS(x), ELEC_INTERNAL_UNITS(y));
-        else
-            sprintf(buf, "%d,%d", INTERNAL_UNITS(x), INTERNAL_UNITS(y));
+        }
+        else {
+            snprintf(buf, sizeof(buf), "%d,%d", INTERNAL_UNITS(x),
+                INTERNAL_UNITS(y));
+        }
         if (ED()->acceptPseudoProp(ol->odesc, sdesc, XprpXY, buf))
             res->content.value = 1;
     }
@@ -4817,7 +4820,7 @@ geom1_funcs::IFsetObjectMagn(Variable *res, Variable *args, void*)
     if (ol && ol->odesc) {
         CDs *sdesc = ((sHdlObject*)hdl)->sdesc;
         char buf[64];
-        sprintf(buf, "%.15f", magn);
+        snprintf(buf, sizeof(buf), "%.15f", magn);
         if (ED()->acceptPseudoProp(ol->odesc, sdesc, XprpMagn, buf))
             res->content.value = 1;
     }
@@ -4879,7 +4882,7 @@ geom1_funcs::IFsetWireWidth(Variable *res, Variable *args, void*)
         if (!sdesc || sdesc->isElectrical())
             return (OK);
         char buf[64];
-        sprintf(buf, "%d", INTERNAL_UNITS(width));
+        snprintf(buf, sizeof(buf), "%d", INTERNAL_UNITS(width));
         if (ED()->acceptPseudoProp(ol->odesc, sdesc, XprpWwidth, buf))
             res->content.value = 1;
     }
@@ -4956,7 +4959,7 @@ geom1_funcs::IFsetWireStyle(Variable *res, Variable *args, void*)
         if (!sdesc || sdesc->isElectrical())
             return (OK);
         char buf[64];
-        sprintf(buf, "%d", style);
+        snprintf(buf, strlen(buf), "%d", style);
         if (ED()->acceptPseudoProp(ol->odesc, sdesc, XprpWstyle, buf))
             res->content.value = 1;
     }
@@ -5213,7 +5216,7 @@ geom1_funcs::IFsetLabelFlags(Variable *res, Variable *args, void*)
     if (ol && ol->odesc && ol->odesc->type() == CDLABEL) {
         CDs *sdesc = ((sHdlObject*)hdl)->sdesc;
         char buf[64];
-        sprintf(buf, "%x", xform);
+        snprintf(buf, sizeof(buf), "%x", xform);
         if (ED()->acceptPseudoProp(ol->odesc, sdesc, XprpXform, buf))
             res->content.value = 1;
     }
@@ -5308,7 +5311,7 @@ geom1_funcs::IFsetInstanceArray(Variable *res, Variable *args, void*)
                 dx = ol->odesc->oBB().width();
             if (dy == 0)
                 dy = ol->odesc->oBB().height();
-            sprintf(buf, "%d,%d %d,%d", nx, ny, dx, dy);
+            snprintf(buf, sizeof(buf), "%d,%d %d,%d", nx, ny, dx, dy);
             if (ED()->acceptPseudoProp(ol->odesc, sdesc, XprpArray, buf))
                 res->content.value = 1;
         }
@@ -5493,10 +5496,13 @@ geom1_funcs::IFsetInstanceXformA(Variable *res, Variable *args, void*)
             buf[0] = 0;
             if (to_boolean(vals[0]))
                 strcpy(buf, " MY");
-            if (to_boolean(vals[1]))
-                sprintf(buf + strlen(buf), " R %d", (int)vals[1]);
-            sprintf(buf + strlen(buf), " T %d %d", INTERNAL_UNITS(vals[2]),
-                INTERNAL_UNITS(vals[3]));
+            if (to_boolean(vals[1])) {
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " R %d", (int)vals[1]);
+            }
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, " T %d %d",
+                INTERNAL_UNITS(vals[2]), INTERNAL_UNITS(vals[3]));
             if (ED()->acceptPseudoProp(ol->odesc, sdesc, XprpTransf, buf+1))
                 res->content.value = 1;
         }
@@ -5665,7 +5671,7 @@ geom1_funcs::IFgetInstanceName(Variable *res, Variable *args, void*)
                     parent->numberInstances();
 
                 char buf[256];
-                sprintf(buf, "%s%c%d", Tstring(msd->cellname()),
+                snprintf(buf, sizeof(buf), "%s%c%d", Tstring(msd->cellname()),
                     CD_INST_NAME_SEP, cd->index());
                 res->content.string = lstring::copy(buf);
                 res->flags |= VF_ORIGINAL;
@@ -5777,7 +5783,7 @@ geom1_funcs::IFgetInstanceAltName(Variable *res, Variable *args, void*)
                 CDelecCellType tp = msd->elecCellType();
                 if (tp == CDelecMacro || tp == CDelecSubc) {
                     char buf[16];
-                    sprintf(buf, "%d", pna->scindex());
+                    snprintf(buf, sizeof(buf), "%d", pna->scindex());
                     char *nm = new char[strlen(Tstring(msd->cellname())) +
                         strlen(buf) + 2];
                     char *e = lstring::stpcpy(nm, Tstring(msd->cellname()));

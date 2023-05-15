@@ -68,7 +68,7 @@ namespace {
     inline void
     dblpr(char *buf, int n, double d, bool ex)
     {
-        sprintf(buf, ex ? "%.*e" : "%.*f", n, d);
+        snprintf(buf, 32, ex ? "%.*e" : "%.*f", n, d);
     }
 }
 
@@ -801,7 +801,7 @@ GTKtoolbar::PopUpSimDefs(int x, int y)
     entrycount++;
     entry = KWGET(spkw_defad);
     if (entry) {
-        sprintf(tbuf, "%g", DEF_defaultMosAD);
+        snprintf(tbuf, sizeof(tbuf), "%g", DEF_defaultMosAD);
         entry->ent = new xEnt(kw_real_func);
         entry->ent->setup(DEF_defaultMosAD, 0.1, 0.0, 0.0, 2);
         entry->ent->mode = KW_NO_SPIN;
@@ -815,7 +815,7 @@ GTKtoolbar::PopUpSimDefs(int x, int y)
 
     entry = KWGET(spkw_defas);
     if (entry) {
-        sprintf(tbuf, "%g", DEF_defaultMosAS);
+        snprintf(tbuf, sizeof(tbuf), "%g", DEF_defaultMosAS);
         entry->ent = new xEnt(kw_real_func);
         entry->ent->setup(DEF_defaultMosAS, 0.1, 0.0, 0.0, 2);
         entry->ent->mode = KW_NO_SPIN;
@@ -830,7 +830,7 @@ GTKtoolbar::PopUpSimDefs(int x, int y)
     entrycount++;
     entry = KWGET(spkw_defl);
     if (entry) {
-        sprintf(tbuf, "%g", DEF_defaultMosL);
+        snprintf(tbuf, sizeof(tbuf), "%g", DEF_defaultMosL);
         entry->ent = new xEnt(kw_real_func);
         entry->ent->setup(DEF_defaultMosL, 0.1, 0.0, 0.0, 2);
         entry->ent->mode = KW_NO_SPIN;
@@ -844,7 +844,7 @@ GTKtoolbar::PopUpSimDefs(int x, int y)
 
     entry = KWGET(spkw_defw);
     if (entry) {
-        sprintf(tbuf, "%g", DEF_defaultMosW);
+        snprintf(tbuf, sizeof(tbuf), "%g", DEF_defaultMosW);
         entry->ent = new xEnt(kw_real_func);
         entry->ent->setup(DEF_defaultMosW, 0.1, 0.0, 0.0, 2);
         entry->ent->mode = KW_NO_SPIN;
@@ -859,7 +859,7 @@ GTKtoolbar::PopUpSimDefs(int x, int y)
     entrycount++;
     entry = KWGET(spkw_bypass);
     if (entry) {
-        sprintf(tbuf, "%d", DEF_bypass);
+        snprintf(tbuf, sizeof(tbuf), "%d", DEF_bypass);
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(1.0, 1.0, 0.0, 0.0, 0);
         entry->ent->create_widgets(entry, tbuf);

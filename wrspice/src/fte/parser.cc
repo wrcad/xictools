@@ -685,7 +685,7 @@ namespace {
     char *printG(double d)
     {
         char buf[64];
-        sprintf(buf, "%G", d);
+        snprintf(buf, sizeof(buf), "%G", d);
         return (lstring::copy(buf));
     }
 }

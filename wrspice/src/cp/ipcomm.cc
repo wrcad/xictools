@@ -385,10 +385,11 @@ CshPar::MessageHandler(int fc)
             sDataVec *dv = OP.vecGet(s, ckt);
             if (dv) {
                 if (dv->isreal())
-                    sprintf(buf, "ok%15e", dv->realval(0));
-                else 
-                    sprintf(buf, "ok%15e,%15e", dv->realval(0),
+                    snprintf(buf, sizeof(buf), "ok%15e", dv->realval(0));
+                else  {
+                    snprintf(buf, sizeof(buf), "ok%15e,%15e", dv->realval(0),
                         dv->imagval(0));
+                }
                 write_msg(buf);
                 wrote = true;
             }
@@ -419,7 +420,7 @@ CshPar::MessageHandler(int fc)
                 // Header: "okdr" or "okdc", 4B len in network byte order.
                 datalen += 8;
 
-                sprintf(buf, "data %d", datalen);
+                snprintf(buf, sizeof(buf), "data %d", datalen);
                 write_msg(buf);
 
                 char *dbuf = new char[datalen];
@@ -510,10 +511,12 @@ CshPar::MessageHandler(int fc)
                 continue;
             }
         }
-        if (modeset)
-            sprintf(buf, "ok%c%c", Sp.SubcCatchar(), '0' + Sp.SubcCatmode());
+        if (modeset) {
+            snprintf(buf, sizeof(buf), "ok%c%c", Sp.SubcCatchar(),
+                '0' + Sp.SubcCatmode());
+        }
         else
-            sprintf(buf, "ok%c", Sp.SubcCatchar());
+            snprintf(buf, sizeof(buf), "ok%c", Sp.SubcCatchar());
         write_msg(buf);
     }
     else {
@@ -680,7 +683,7 @@ CommandTab::com_sced(wordlist *wl)
 
 #ifdef WIN32
     char buf[256];
-    sprintf(buf, " -E -P%d:%d", CP.Port(), (int)pid);
+    snprintf(buf, sizeof(buf), " -E -P%d:%d", CP.Port(), (int)pid);
     xpstr.add(buf);
     for ( ; wl; wl = wl->wl_next)
         xpstr.append(" ", wl->wl_word);
@@ -710,7 +713,7 @@ CommandTab::com_sced(wordlist *wl)
         dup2(fileno(stderr), fileno(stdout));
 
         char portarg[32];
-        sprintf(portarg, "-P%d:%d", CP.Port(), (int)pid);
+        snprintf(portarg, sizeof(portarg), "-P%d:%d", CP.Port(), (int)pid);
         int ac = wordlist::length(wl) + 3;
         char **av = new char*[ac+1];
         av[0] = xpstr.string_trim();

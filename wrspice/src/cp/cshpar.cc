@@ -217,7 +217,7 @@ CommandTab::com_shell(wordlist *wl)
                     "#! %s\n%s\necho press Enter to exit\n$<\nrm -f %s",
                     shellpth, com, tf);
                 fclose(fp);
-                sprintf(buf, "%s %s", shellpth, tf);
+                snprintf(buf, sizeof(buf), "%s %s", shellpth, tf);
                 miscutil::fork_terminal(buf);
             }
             delete [] tf;

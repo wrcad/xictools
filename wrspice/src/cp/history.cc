@@ -96,7 +96,8 @@ CshPar::HistSubst(wordlist **list)
     cp_didhsubst = false;
     char buf[BSIZE_SP];
     if (*wlist->wl_word == cp_hat) {
-        sprintf(buf, "%c%c:s%s", cp_bang, cp_bang, wlist->wl_word);
+        snprintf(buf, sizeof(buf), "%c%c:s%s", cp_bang, cp_bang,
+            wlist->wl_word);
         delete [] wlist->wl_word;
         wlist->wl_word = lstring::copy(buf);
     }
@@ -113,7 +114,7 @@ CshPar::HistSubst(wordlist **list)
                     return;
                 }
                 if (k) {
-                    sprintf(buf, "%.*s%s", k, b, n->wl_word);
+                    snprintf(buf, sizeof(buf), "%.*s%s", k, b, n->wl_word);
                     delete [] n->wl_word;
                     n->wl_word = lstring::copy(buf);
                 }
@@ -269,7 +270,7 @@ CshPar::dohsubst(char *string)
         return (0);
     if (*string) {
         for (wl = nwl; wl->wl_next; wl = wl->wl_next) ;
-        sprintf(buf, "%s%s", wl->wl_word, string);
+        snprintf(buf, sizeof(buf), "%s%s", wl->wl_word, string);
         delete [] wl->wl_word;
         wl->wl_word = lstring::copy(buf);
     }

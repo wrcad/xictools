@@ -177,7 +177,8 @@ GTKfont::setName(const char *name, int fnum)
                 *s++ = ' ';
                 s = lstring::stpcpy(s, sl->string);
             }
-            sprintf(s, " %d", sz);
+            int len = strlen(s);
+            snprintf(s, sizeof(buf) - len, " %d", sz);
             delete family;
             stringlist::destroy(style);
             name = buf;
@@ -223,8 +224,9 @@ GTKfont::getFamilyName(int fnum)
             return (0);
         parse_freeform_font_string(fname, &family, 0, &sz, 0);
         if (family) {
-            char *str = new char[strlen(family) + 8];
-            sprintf(str, "%s %d", family, sz);
+            int len = strlen(family) + 8;
+            char *str = new char[len];
+            snprintf(str, len, "%s %d", family, sz);
             delete [] family;
             return (str);
         }
@@ -772,7 +774,7 @@ GTKfontPopup::ft_apply_proc(GtkWidget*, void *client_data)
             gtk_font.setName(fontname, sel->ft_index);
         if (sel->p_callback) {
             char buf[32];
-            sprintf(buf, "%d", sel->ft_index);
+            snprintf(buf, sizeof(buf), "%d", sel->ft_index);
             (*sel->p_callback)(buf, gtk_font.getName(sel->ft_index),
                 sel->p_cb_arg);
         }
@@ -894,7 +896,7 @@ GTKfontPopup::show_available_fonts(bool fixed)
                 continue;
             // Bah! The function above lies sometimes.
             char buf[256];
-            sprintf(buf, "%s 10", name);
+            snprintf(buf, sizeof(buf), "%s 10", name);
             if (!is_fixed(buf))
                 continue;
         }

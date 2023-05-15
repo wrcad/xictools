@@ -1172,7 +1172,7 @@ IFparseTree::newFnode(const char *string, IFparseNode *arg)
             arg->p_valname = 0;
         }
         else if (arg->p_type == PT_CONSTANT)
-            sprintf(name, "%d", (int)arg->v.constant);
+            snprintf(name, 128, "%d", (int)arg->v.constant);
         else if (arg->p_type != PT_COMMA) {
             Errs()->add_error("badly formed node voltage");
             delete [] name;
@@ -1235,7 +1235,7 @@ IFparseTree::newFnode(const char *string, IFparseNode *arg)
             arg->p_valname = 0;
         }
         else if (arg->p_type == PT_CONSTANT)
-            sprintf(name, "%d", (int)arg->v.constant);
+            snprintf(name, 128, "%d", (int)arg->v.constant);
         else {
             Errs()->add_error("badly formed branch current");
             delete [] name;

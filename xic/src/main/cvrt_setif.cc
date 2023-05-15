@@ -90,7 +90,7 @@ namespace {
     // error logging functions.
     //
     void
-    infoMsgBackend(int code, char *buf, const char *loghdr)
+    infoMsgBackend(int code, char *buf, int szbuf, const char *loghdr)
     {
         if (code == IFMSG_INFO)
             PL()->ShowPrompt(buf);
@@ -99,7 +99,7 @@ namespace {
                 delete [] read_msg;
                 read_msg = lstring::copy(buf);
                 if (write_msg)
-                    sprintf(buf, "%-20s %s", read_msg, write_msg);
+                    snprintf(buf, szbuf, "%-20s %s", read_msg, write_msg);
             }
             PL()->ShowPrompt(buf);
         }
@@ -108,7 +108,7 @@ namespace {
                 delete [] write_msg;
                 write_msg = lstring::copy(buf);
                 if (read_msg)
-                    sprintf(buf, "%-20s %s", read_msg, write_msg);
+                    snprintf(buf, szbuf, "%-20s %s", read_msg, write_msg);
             }
             PL()->ShowPrompt(buf);
         }
@@ -139,7 +139,8 @@ namespace {
         if (!string)
             string = "";
         vsnprintf(buf, 512, string, args);
-        infoMsgBackend(code, buf, "main database and script processing");
+        infoMsgBackend(code, buf, sizeof(buf),
+            "main database and script processing");
     }
 
     // Message handler for FIO.
@@ -151,7 +152,7 @@ namespace {
         if (!string)
             string = "";
         vsnprintf(buf, 512, string, args);
-        infoMsgBackend(code, buf, "layout file i/o");
+        infoMsgBackend(code, buf, sizeof(buf), "layout file i/o");
     }
 
     // Message handler for GEO.
@@ -163,7 +164,7 @@ namespace {
         if (!string)
             string = "";
         vsnprintf(buf, 512, string, args);
-        infoMsgBackend(code, buf, "geometry engine");
+        infoMsgBackend(code, buf, sizeof(buf), "geometry engine");
     }
 
     // Called before i/o operation starts, set up the log file and
@@ -261,7 +262,8 @@ namespace {
                 !CDvdb()->getVariable(VA_NoPopUpLog)) {
             char buf[256];
             if (Log()->LogDirectory() && *Log()->LogDirectory()) {
-                sprintf(buf, "%s/%s", Log()->LogDirectory(), fname);
+                snprintf(buf, sizeof(buf), "%s/%s", Log()->LogDirectory(),
+                    fname);
                 fname = buf;
             }
             DSPmainWbag(PopUpFileBrowser(fname))

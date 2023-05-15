@@ -516,8 +516,10 @@ sDataVec::mkfamily()
     for (dl = dl0, j = 0; j < numvecs; j++, dl = dl->dl_next) {
         sDataVec *d = dl->dl_dvec;
         strcpy(buf, v_name);
-        for (i = 0; i < v_numdims - 1; i++)
-            sprintf(buf + strlen(buf), "[%d]", count[i]);
+        for (i = 0; i < v_numdims - 1; i++) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "[%d]", count[i]);
+        }
         d->v_name = lstring::copy(buf);
         d->v_flags = v_flags;
         d->v_minsignal = v_minsignal;
@@ -593,99 +595,106 @@ sDataVec::extend(int len)
 void
 sDataVec::print(sLstr *plstr)
 {
-    char buf[BSIZE_SP], buf2[BSIZE_SP];
+    char buf[BSIZE_SP];
     char ubuf[64];
     char *tt = v_units.unitstr();
     strcpy(ubuf, tt);
     delete [] tt;
     tt = ubuf;
-    sprintf(buf, "%c %-20s %s[%d]", (v_flags & VF_SELECTED) ?
+    snprintf(buf, sizeof(buf), "%c %-20s %s[%d]", (v_flags & VF_SELECTED) ?
         '>' : ' ', v_name, isreal() ? "real" : "cplx", v_length);
     if (*tt) {
-        sprintf(buf2,  ", %s", tt);
-        strcat(buf, buf2);
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, ", %s", tt);
     }
     /* old format
-    sprintf(buf, "%c   %-20s : %s %s, %d long", (v_flags & VF_SELECTED) ?
+    snprintf(buf, "%c   %-20s : %s %s, %d long", (v_flags & VF_SELECTED) ?
         '>' : ' ', v_name, tt, isreal() ? "real" : "complex", v_length);
     */
     if (v_flags & VF_MINGIVEN) {
-        sprintf(buf2, ", min=%g", v_minsignal);
-        strcat(buf, buf2);
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, ", min=%g", v_minsignal);
     }
     if (v_flags & VF_MAXGIVEN) {
-        sprintf(buf2, ", max=%g", v_maxsignal);
-        strcat(buf, buf2);
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, ", max=%g", v_maxsignal);
     }
 
+    const char *gridname = 0;
     switch (v_gridtype) {
     case GRID_LIN:
         break;
-
     case GRID_LOGLOG:
-        strcat(buf, ", grid=loglog");
+        gridname = "loglog";
         break;
-
     case GRID_XLOG:
-        strcat(buf, ", grid=xlog");
+        gridname = "xlog";
         break;
-
     case GRID_YLOG:
-        strcat(buf, ", grid=ylog");
+        gridname = "ylog";
         break;
-
     case GRID_POLAR:
-        strcat(buf, ", grid=polar");
+        gridname = "polar";
         break;
-
     case GRID_SMITH:
-        strcat(buf, ", grid=smith");
+        gridname = "smith";
         break;
-
     case GRID_SMITHGRID:
-        strcat(buf, ", grid=smithgrid");
+        gridname = "smithgrid";
         break;
     }
 
+    if (gridname) {
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, ", grid=%s", gridname);
+    }
+
+    const char *plottypename = 0;
     switch (v_plottype) {
     case PLOT_LIN:
         break;
-
     case PLOT_COMB:
-            strcat(buf, ", plot=comb");
+        plottypename = "comb";
         break;
-
     case PLOT_POINT:
-        strcat(buf, ", plot=point");
+        plottypename = "point";
         break;
-
     }
+
+    if (plottypename) {
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, ", plot=%s", plottypename);
+    }
+
     if (v_defcolor) {
-        sprintf(buf2, ", color=%s", v_defcolor);
-        strcat(buf, buf2);
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, ", color=%s", v_defcolor);
     }
     if (v_scale) {
-        if (v_plot && v_scale->v_plot && v_plot != v_scale->v_plot)
-            sprintf(buf2, ", scale=%s.%s", v_scale->v_plot->type_name(),
+        int len = strlen(buf);
+        if (v_plot && v_scale->v_plot && v_plot != v_scale->v_plot) {
+            snprintf(buf + len, sizeof(buf) - len, ", scale=%s.%s",
+                v_scale->v_plot->type_name(), v_scale->v_name);
+        }
+        else {
+            snprintf(buf + len, sizeof(buf) - len, ", scale=%s",
                 v_scale->v_name);
-        else
-            sprintf(buf2, ", scale=%s", v_scale->v_name);
-        strcat(buf, buf2);
-    }
-    if (v_numdims > 1) {
-        sprintf(buf2, ", dims=[");
-        strcat(buf, buf2);
-        int i;
-        for (i = 0; i < v_numdims; i++) {
-            sprintf(buf2, "%d%s", v_dims[i],
-                (i < v_numdims - 1) ? "," : "]");
-            strcat(buf, buf2);
         }
     }
-    if (v_plot && v_plot->scale() == this)
-        strcat(buf, " [default scale]\n");
-    else
-        strcat(buf, "\n");
+    if (v_numdims > 1) {
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, ", dims=[");
+
+        for (int i = 0; i < v_numdims; i++) {
+            len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "%d%s", v_dims[i],
+                (i < v_numdims - 1) ? "," : "]");
+        }
+    }
+    int len = strlen(buf);
+    snprintf(buf + len, sizeof(buf) - len, "%s",
+        (v_plot && v_plot->scale() == this) ? " [default scale]\n" : "\n");
+
     if (plstr)
         plstr->add(buf);
     else

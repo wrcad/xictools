@@ -906,7 +906,8 @@ CDs::checkInstances()
                         what = "removed";
                     }
                     char tbf[256];
-                    sprintf(tbf, "coincident instance of %s (%s)",
+                    snprintf(tbf, sizeof(tbf),
+                        "coincident instance of %s (%s)",
                         Tstring(mdesc->cellname()), what);
                     CD()->ifPrintCvLog(IFLOG_WARN, "%s [%s %d,%d].", tbf,
                         Tstring(cellname()), c->oBB().left, c->oBB().top);
@@ -3327,8 +3328,9 @@ CDs::prptyApplyList(CDo *odesc, CDp **pplist)
     for (CDp *pd = *pplist; pd; pd = pn) {
         pn = pd->next_prp();
         if (prpty_reserved(pd->value()) || prpty_pseudo(pd->value())) {
-            char *tbuf = new char[strlen(msg1) + 16];
-            sprintf(tbuf, msg1, pd->value());
+            int len = strlen(msg1) + 16;
+            char *tbuf = new char[len];
+            snprintf(tbuf, len, msg1, pd->value());
             s0 = new stringlist(tbuf, s0);
             if (!pp)
                 *pplist = pn;
@@ -3374,8 +3376,9 @@ CDs::prptyApplyList(CDo *odesc, CDp **pplist)
             odesc->prptyAdd(pd->value(), pd->string(), displayMode()) :
             prptyAdd(pd->value(), pd->string());
         if (!ret) {
-            char *tbuf = new char[strlen(msg2) + 16];
-            sprintf(tbuf, msg2, pd->value());
+            int len = strlen(msg2) + 16;
+            char *tbuf = new char[len];
+            snprintf(tbuf, len, msg2, pd->value());
             s0 = new stringlist(tbuf, s0);
             if (Errs()->has_error()) {
                 char *tt = lstring::copy(Errs()->get_error());

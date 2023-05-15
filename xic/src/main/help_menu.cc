@@ -289,8 +289,9 @@ help_menu::M_RelNotes(CmdDesc*)
         return;
     }
     if (ret == NO_EXIST) {
-        char *tbuf = new char[strlen(notefile) + 100];
-        sprintf(tbuf, "Can't find file %s.", notefile);
+        int len = strlen(notefile) + 100;
+        char *tbuf = new char[len];
+        snprintf(tbuf, len, "Can't find file %s.", notefile);
         DSPmainWbag(PopUpMessage(tbuf, true))
         delete [] tbuf;
         delete [] notefile;

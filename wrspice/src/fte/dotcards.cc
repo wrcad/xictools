@@ -122,7 +122,7 @@ IFsimulator::GetDotOpts(sLine *deck)
         // Add a dummy option to the front of the list.
 
         char buf[256];
-        sprintf(buf, ".options temp=%s", dummytemp);
+        snprintf(buf, sizeof(buf), ".options temp=%s", dummytemp);
         delete [] dummytemp;
         sLine *dd = new sLine;
         dd->set_line(buf);
@@ -527,8 +527,11 @@ namespace {
                         return;
                     }
                     double d2 = *d;
-                    sprintf(buf, "set xlimit = ( %s", SPnum.printnum(d1)); 
-                    sprintf(buf + strlen(buf), "%s )", SPnum.printnum(d2));
+                    snprintf(buf, sizeof(buf), "set xlimit = ( %s",
+                        SPnum.printnum(d1)); 
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, "%s )",
+                        SPnum.printnum(d2));
                     CP.EvLoop(buf);
                 }
             }

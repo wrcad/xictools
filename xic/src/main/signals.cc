@@ -413,7 +413,8 @@ namespace {
         else {
             if (XM()->RunMode() == ModeBackground) {
                 char buf[64];
-                sprintf(buf, "Received signal %d, (ignored)\n", sig);
+                snprintf(buf, sizeof(buf),
+                    "Received signal %d, (ignored)\n", sig);
                 DrcIf()->fileMessage(buf);
             }
             else {

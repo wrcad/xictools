@@ -933,8 +933,8 @@ cComm::comm_read_buf_to_file(int d, size_t *len, size_t max, FILE *fp,
     }
 
     char tbuf[256];
-    sprintf(tbuf, "\nREAD BUFFER TO FILE\n%ld bytes transferred\n",
-        (long)*len);
+    snprintf(tbuf, sizeof(tbuf),
+        "\nREAD BUFFER TO FILE\n%ld bytes transferred\n", (long)*len);
     comm_log_print(tbuf, 0, 0);
     if (errcode == CommOK)
         return (true);
@@ -1263,8 +1263,9 @@ reissue_request:
         char *formStr = (request->form_data ?
             comm_http_encode_form_data(request->form_data) : 0);
         char *authStr = auth(uinfo.username, uinfo.password);
-        char *hostStr = new char[strlen(uinfo.hostname) + 10];
-        sprintf(hostStr, "Host: %s\r\n", uinfo.hostname);
+        int len = strlen(uinfo.hostname) + 10;
+        char *hostStr = new char[len];
+        snprintf(hostStr, len, "Host: %s\r\n", uinfo.hostname);
 
         char *reqStr = build_str(0, GET_METHOD);
         reqStr = build_str(reqStr, uinfo.filename);
@@ -1308,8 +1309,9 @@ reissue_request:
     else if (request->method == HTTPPOST) {
         char *formStr = (request->form_data ?
             comm_http_encode_form_data(request->form_data) : 0);
-        char *hostStr = new char[strlen(uinfo.hostname) + 10];
-        sprintf(hostStr, "Host: %s\r\n", uinfo.hostname);
+        int len = strlen(uinfo.hostname) + 10;
+        char *hostStr = new char[len];
+        snprintf(hostStr, len, "Host: %s\r\n", uinfo.hostname);
 
         char *reqStr = build_str(0, POST_METHOD);
         reqStr = build_str(reqStr, uinfo.filename);
@@ -1322,8 +1324,9 @@ reissue_request:
         if (cookie)
             reqStr = build_str(reqStr, cookie);
         reqStr = build_str(reqStr, CONTENT_LEN);
-        sprintf(hostStr, "%ld\r\n", formStr ? (long)strlen(formStr) : 0);
-        reqStr = build_str(reqStr, hostStr);
+        char tbuf[32];
+        snprintf(tbuf, 32, "%ld\r\n", formStr ? (long)strlen(formStr) : 0);
+        reqStr = build_str(reqStr, tbuf);
         reqStr = build_str(reqStr, POST_CONTENT_TYPE);
         reqStr = build_str(reqStr, NEWLINE);
         reqStr = build_str(reqStr, NEWLINE);
@@ -1346,8 +1349,9 @@ reissue_request:
         delete [] reqStr;
     }
     else if (request->method == HTTPHEAD) {
-        char *hostStr = new char[strlen(uinfo.hostname) + 10];
-        sprintf(hostStr, "Host: %s\r\n", uinfo.hostname);
+        int len = strlen(uinfo.hostname) + 10;
+        char *hostStr = new char[len];
+        snprintf(hostStr, len, "Host: %s\r\n", uinfo.hostname);
 
         char *reqStr = build_str(0, HEAD_METHOD);
         reqStr = build_str(reqStr, uinfo.filename);
@@ -1557,7 +1561,7 @@ namespace {
         // Sun, 06 Nov 1994 08:49:37 GMT    ; RFC 822, updated by RFC 1123
         char buf[256];
         struct tm *tm = gmtime(&tval);
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "If-Modified-Since: %s, %02d %s %4d %02d:%02d:%02d GMT\r\n",
             days[tm->tm_wday], tm->tm_mday, mons[tm->tm_mon],
             tm->tm_year + 1900, tm->tm_hour, tm->tm_min, tm->tm_sec);
@@ -1789,7 +1793,7 @@ cComm::comm_ftp_request(sURL *uinfo, FILE *fp, const char *destination)
     char buf[256];
     if (!uinfo->username || !*uinfo->username)
         uinfo->username = copy("ftp");
-    sprintf(buf, "USER %s\r\n", uinfo->username);
+    snprintf(buf, sizeof(buf), "USER %s\r\n", uinfo->username);
     if (comm_ftp_soak(s, buf, &emsg) >= 400) {
         comm_close(s);
         errmsg = emsg;
@@ -1802,7 +1806,7 @@ cComm::comm_ftp_request(sURL *uinfo, FILE *fp, const char *destination)
     //
     if (!uinfo->password || !*uinfo->password)
         uinfo->password = copy("nobody@nowhere.com");
-    sprintf(buf, "PASS %s\r\n", uinfo->password);
+    snprintf(buf, sizeof(buf), "PASS %s\r\n", uinfo->password);
     if (comm_ftp_soak(s, buf, &emsg) >= 400) {
         comm_close(s);
         errmsg = emsg;
@@ -1842,7 +1846,7 @@ cComm::comm_ftp_request(sURL *uinfo, FILE *fp, const char *destination)
     delete [] emsg;
 
     char data_hostname[48];
-    sprintf(data_hostname, "%d.%d.%d.%d", h0, h1, h2, h3);
+    snprintf(data_hostname, 48, "%d.%d.%d.%d", h0, h1, h2, h3);
 
     // Open a data connection
     //
@@ -1854,7 +1858,7 @@ cComm::comm_ftp_request(sURL *uinfo, FILE *fp, const char *destination)
         return (FTP_ERR);
     }
 
-    sprintf(buf, "SIZE %s\r\n", uinfo->filename);
+    snprintf(buf, sizeof(buf), "SIZE %s\r\n", uinfo->filename);
     if (comm_ftp_soak(s, buf, &emsg) == 999) {
         comm_close(s);
         comm_close(d);
@@ -1871,7 +1875,7 @@ cComm::comm_ftp_request(sURL *uinfo, FILE *fp, const char *destination)
 
     // Try to retrieve the file
     //
-    sprintf(buf, "RETR %s\r\n", uinfo->filename);
+    snprintf(buf, sizeof(buf), "RETR %s\r\n", uinfo->filename);
     if ((reply = comm_ftp_soak(s, buf, &emsg)) == 999) {    
         comm_close(s);
         comm_close(d);
@@ -1887,7 +1891,7 @@ cComm::comm_ftp_request(sURL *uinfo, FILE *fp, const char *destination)
     if (reply >= 400) {
         // Try to read the file as a directory.
         //
-        sprintf(buf, "CWD %s\r\n", uinfo->filename);
+        snprintf(buf, sizeof(buf), "CWD %s\r\n", uinfo->filename);
         if (comm_ftp_soak(s, buf, &emsg) >= 400) {
             comm_close(d);
             comm_close(s);
@@ -2065,7 +2069,7 @@ cComm::comm_ftp_dir(int d, char *hostname, int, char *filename)
 
     char *f = new char[flen];
     char *e = f;
-    sprintf(e, header, filename, hostname, filename);
+    snprintf(e, flen, header, filename, hostname, filename);
     while (*e) e++;
 
     if (*filename == '/')
@@ -2074,10 +2078,12 @@ cComm::comm_ftp_dir(int d, char *hostname, int, char *filename)
         strcpy(e, "<ul>\n");
         while (*e) e++;
         for (int i = 0; i < count; i++) {
-            if (*filename)
-                sprintf(e, entry, hostname, filename, sa[i], sa[i]);
+            if (*filename) {
+                snprintf(e, flen - (e-f), entry, hostname, filename, sa[i],
+                    sa[i]);
+            }
             else
-                sprintf(e, entryrt, hostname, sa[i], sa[i]);
+                snprintf(e, flen - (e-f), entryrt, hostname, sa[i], sa[i]);
             while (*e) e++;
             delete [] sa[i];
         }
@@ -2538,13 +2544,15 @@ HTTPCookieList::makeCookie()
     // this URL).  This IS an ASSUMPTION (the spec says that it is allowable
     // to send two cookies of different versions, but is this likely ?
     // 
-    if (cookie->version == 0)
-        sprintf(cbuf,
+    if (cookie->version == 0) {
+        snprintf(cbuf, sizeof(cbuf),
             "Cookie2: $Version=\"1\"\r\nCookie: $Version=\"%d\"; ",
             cookie->version);
-    else
-        sprintf(cbuf,
+    }
+    else {
+        snprintf(cbuf, sizeof(cbuf),
             "Cookie: $Version=\"%d\"; ", cookie->version);
+    }
 
     HTTPCookieList *cl = this;
     while (cl) {

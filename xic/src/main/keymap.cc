@@ -478,7 +478,7 @@ namespace {
             buf[3] = 0;
             return (buf);
         }
-        sprintf(buf, "%x", code);
+        snprintf(buf, sizeof(buf), "%x", code);
         return (buf);
     }
 }
@@ -557,7 +557,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "misplaced \"end\", line %d.", linecnt);
+                snprintf(buf, sizeof(buf), "misplaced \"end\", line %d.",
+                    linecnt);
                 return (lstring::copy(buf));
             }
             cnt = 0;
@@ -570,7 +571,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "misplaced \"keymap\", line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "misplaced \"keymap\", line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             int sz = atoi(s);
@@ -578,7 +580,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "bad keymap size, line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "bad keymap size, line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             kmap = new keymap[sz+1];
@@ -592,7 +595,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "misplaced \"actions-pre\", line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "misplaced \"actions-pre\", line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             int sz = atoi(s);
@@ -600,7 +604,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "bad actions-pre size, line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "bad actions-pre size, line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             ka_pre = new keyaction[sz+1];
@@ -614,7 +619,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "misplaced \"actions-post\", line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "misplaced \"actions-post\", line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             int sz = atoi(s);
@@ -622,7 +628,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "bad actions-post size, line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "bad actions-post size, line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             ka_post = new keyaction[sz+1];
@@ -641,7 +648,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "bad macro-inhibit char, line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "bad macro-inhibit char, line %d.", linecnt);
                 delete [] tok;
                 return (lstring::copy(buf));
             }
@@ -669,7 +677,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "unknown keysym %s, line %d.", tok, linecnt);
+                snprintf(buf, sizeof(buf),
+                    "unknown keysym %s, line %d.", tok, linecnt);
                 delete [] tok;
                 return (lstring::copy(buf));
             }
@@ -679,7 +688,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "syntax error, line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "syntax error, line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             kmap[cnt].code = strcode(tok);
@@ -687,7 +697,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "unknown keycode %s, line %d.", tok, linecnt);
+                snprintf(buf, sizeof(buf),
+                    "unknown keycode %s, line %d.", tok, linecnt);
                 delete [] tok;
                 return (lstring::copy(buf));
             }
@@ -702,7 +713,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "unknown keycode %s, line %d.", tok, linecnt);
+                snprintf(buf, sizeof(buf),
+                    "unknown keycode %s, line %d.", tok, linecnt);
                 delete [] tok;
                 return (lstring::copy(buf));
             }
@@ -712,7 +724,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "syntax error, line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "syntax error, line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             ka_pre[cnt].state = strstate(tok);
@@ -722,7 +735,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "syntax error, line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "syntax error, line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             ka_pre[cnt].action = straction(tok);
@@ -730,7 +744,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "unknown action %s, line %d.", tok, linecnt);
+                snprintf(buf, sizeof(buf),
+                    "unknown action %s, line %d.", tok, linecnt);
                 delete [] tok;
                 return (lstring::copy(buf));
             }
@@ -744,7 +759,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "unknown keycode %s, line %d.", tok, linecnt);
+                snprintf(buf, sizeof(buf),
+                    "unknown keycode %s, line %d.", tok, linecnt);
                 delete [] tok;
                 return (lstring::copy(buf));
             }
@@ -754,7 +770,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "syntax error, line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "syntax error, line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             ka_post[cnt].state = strstate(tok);
@@ -764,7 +781,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "syntax error, line %d.", linecnt);
+                snprintf(buf, sizeof(buf),
+                    "syntax error, line %d.", linecnt);
                 return (lstring::copy(buf));
             }
             ka_post[cnt].action = straction(tok);
@@ -772,7 +790,8 @@ cKsMap::ReadMapFile(const char *fname)
                 delete [] kmap;
                 delete [] ka_pre;
                 delete [] ka_post;
-                sprintf(buf, "unknown action %s, line %d.", tok, linecnt);
+                snprintf(buf, sizeof(buf),
+                    "unknown action %s, line %d.", tok, linecnt);
                 delete [] tok;
                 return (lstring::copy(buf));
             }

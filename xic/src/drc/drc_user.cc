@@ -349,7 +349,7 @@ DRCtestCnd::init()
     double g = 0.0;
     if (tok) {
         if (sscanf(tok, "%lf", &g) != 1 || g <= 0.0) {
-            sprintf(buf, "bad dimension %s", tok);
+            snprintf(buf, sizeof(buf), "bad dimension %s", tok);
             delete [] tstr;
             delete [] tok;
             return (lstring::copy(buf));
@@ -368,7 +368,7 @@ DRCtestCnd::init()
     if (tc_lspec.lname()) {
         CDl *sld = CDldb()->findLayer(tc_lspec.lname(), Physical);
         if (!sld) {
-            sprintf(buf, "unknown layer %s", tc_lspec.lname());
+            snprintf(buf, sizeof(buf), "unknown layer %s", tc_lspec.lname());
             return (lstring::copy(buf));
         }
         tc_lspec.set_ldesc(sld);
@@ -376,7 +376,7 @@ DRCtestCnd::init()
     else if (tc_lspec.tree()) {
         char *bad = tc_lspec.tree()->checkLayersInTree();
         if (bad) {
-            sprintf(buf, "unknown layer %s", bad);
+            snprintf(buf, sizeof(buf), "unknown layer %s", bad);
             delete [] bad;
             return (lstring::copy(buf));
         }

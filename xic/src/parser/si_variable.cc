@@ -1390,7 +1390,7 @@ namespace {
     print_var__scalar(Variable *v, rvals *rv, char *buf)
     {
         if (!rv)
-            sprintf(buf, "%g", v->content.value);
+            snprintf(buf, 32, "%g", v->content.value);
         else
             strcpy(buf, "range error");
     }

@@ -125,8 +125,10 @@ cMRio::emitErrMesg(const char *msg)
     if (!err_fp) {
         char buf[32];
         char *e = lstring::stpcpy(buf, LOGBASE);
-        if (io_num > 0)
-            sprintf(e, "-%d", io_num);
+        if (io_num > 0) {
+            int len = e - buf;
+            snprintf(e, sizeof(buf) - len, "-%d", io_num);
+        }
         strcat(e, ".errs");
         err_fp = Log()->OpenLog(buf, "w");
         if (!err_fp)
@@ -150,8 +152,10 @@ cMRio::emitMesg(const char *msg)
     if (!log_fp) {
         char buf[32];
         char *e = lstring::stpcpy(buf, LOGBASE);
-        if (io_num > 0)
-            sprintf(e, "-%d", io_num);
+        if (io_num > 0) {
+            int len = e - buf;
+            snprintf(e, sizeof(buf) - len, "-%d", io_num);
+        }
         strcat(e, ".log");
         log_fp = Log()->OpenLog(buf, "w");
         if (!log_fp)

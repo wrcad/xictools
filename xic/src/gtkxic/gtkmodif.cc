@@ -210,9 +210,10 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
 
             itm->name = lstring::copy(l->string);
             if (cbin.fileType() == Fnative && cbin.fileName()) {
-                itm->path = new char[strlen(cbin.fileName()) +
-                    strlen(Tstring(cbin.cellname())) + 2];
-                sprintf(itm->path, "%s/%s", cbin.fileName(),
+                int len = strlen(cbin.fileName()) +
+                    strlen(Tstring(cbin.cellname())) + 2;
+                itm->path = new char[len];
+                snprintf(itm->path, len, "%s/%s", cbin.fileName(),
                     Tstring(cbin.cellname()));
             }
             else if (FIO()->IsSupportedArchiveFormat(cbin.fileType()))
@@ -393,16 +394,16 @@ sSC::refresh()
         double val = text_get_scroll_value(wb_textarea);
         text_set_chars(wb_textarea, "");
         for (s_item *s = sc_list; s->name; s++) {
-            sprintf(buf, "%-*s  ", sc_field, s->name);
+            snprintf(buf, sizeof(buf), "%-*s  ", sc_field, s->name);
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
-            sprintf(buf, "%-3s  ", s->save ? "yes" : "no");
+            snprintf(buf, sizeof(buf), "%-3s  ", s->save ? "yes" : "no");
             text_insert_chars_at_point(wb_textarea, s->save ? yc : nc, buf,
                 -1, -1);
-            sprintf(buf, "%c ", *s->ft);
+            snprintf(buf, sizeof(buf), "%c ", *s->ft);
             text_insert_chars_at_point(wb_textarea,
                 *buf == 'X' || *buf == 'A' || *buf == 'P' ? c1 : c2,
                 buf, -1, -1);
-            sprintf(buf, "%s\n", s->path);
+            snprintf(buf, sizeof(buf), "%s\n", s->path);
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
         }
         text_set_scroll_value(wb_textarea, val);

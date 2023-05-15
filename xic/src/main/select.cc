@@ -224,7 +224,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
             char *uname = pathlist::get_user_name(false);
             char tbuf[256];
 
-            sprintf(tbuf, "xic: select %s\n", uname);
+            snprintf(tbuf, sizeof(tbuf), "xic: select %s\n", uname);
             miscutil::send_mail(Log()->MailAddress(), "SecurityReport:App1",
                 tbuf);
             delete [] uname;
@@ -812,7 +812,6 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
         CDol *c0 = 0;
         CDol *cp = 0, *cn;
         int nsel = 0;
-        int nusel = 0;
         {
             CDol *ce = 0;
             for (CDol *c = list; c; c = cn) {
@@ -820,8 +819,6 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
                 if (c->odesc->type() == CDINSTANCE) {
                     if (c->odesc->state() == CDobjSelected)
                         nsel++;
-                    else
-                        nusel++;
                     if (!cp)
                         list = cn;
                     else
