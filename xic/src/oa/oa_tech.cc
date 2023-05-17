@@ -1906,7 +1906,7 @@ cOaTechIf::printCdsConstraintGroupMem(const oaConstraintGroupMem *member,
                 oaPurpose *prp = oaPurpose::find(if_tech, cs->getPurpose2());
                 oaString pname;
                 prp->getName(pname);
-                snprintf(buf, sizeof(buf) "(\"%s\" \"%s\")",
+                snprintf(buf, sizeof(buf), "(\"%s\" \"%s\")",
                     (const char*)lname, (const char*)pname);
             }
             else {
