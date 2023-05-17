@@ -322,13 +322,13 @@ DvselState::handle_selection(const BBox *AOI)
                 lstr.add(" (");
                 int cnt = di->count_sections();
                 if (cnt > 1) {
-                    sprintf(buf, "%d sects, ", cnt);
+                    snprintf(buf, sizeof(buf), "%d sects, ", cnt);
                     lstr.add(buf);
                 }
                 for (sDevContactInst *c = di->contacts(); c; c = c->next()) {
                     lstr.add(Tstring(c->cont_name()));
                     lstr.add_c(':');
-                    sprintf(buf, "%d", c->group());
+                    snprintf(buf, sizeof(buf), "%d", c->group());
                     lstr.add(buf);
                     lstr.add_c(c->next() ? ' ' : ')');
                 }
@@ -358,7 +358,7 @@ DvselState::handle_selection(const BBox *AOI)
                 }
                 sLstr lstr;
                 char *instname = di->dual()->instance_name();
-                sprintf(buf, "Device %s %d --- %s (%s)\n",
+                snprintf(buf, sizeof(buf), "Device %s %d --- %s (%s)\n",
                     TstringNN(di->desc()->name()), di->index(), instname,
                     TstringNN(di->dual()->cdesc()->cellname()));
                 delete [] instname;
@@ -368,7 +368,7 @@ DvselState::handle_selection(const BBox *AOI)
                 DSPmainWbag(PopUpInfo(MODE_ON, lstr.string()))
             }
             else {
-                sprintf(buf, "Device %s %d is not associated.",
+                snprintf(buf, sizeof(buf), "Device %s %d is not associated.",
                     TstringNN(di->desc()->name()), di->index());
                 DSPmainWbag(PopUpInfo(MODE_ON, buf))
             }
@@ -762,7 +762,7 @@ cExt::showElectrical(int width, int height)
     bool found = false;
     double rsh = cTech::GetLayerRsh(ld);
     if (rsh > 0.0) {
-        sprintf(tbuf, "Resistance: %g (L to R), %g (B to T)\n",
+        snprintf(tbuf, sizeof(tbuf), "Resistance: %g (L to R), %g (B to T)\n",
             rsh*wid/hei, rsh*hei/wid);
         lstr.add(tbuf);
         found = true;
@@ -770,7 +770,8 @@ cExt::showElectrical(int width, int height)
     double cpa = tech_prm(ld)->cap_per_area();
     double cpp = tech_prm(ld)->cap_per_perim();
     if (cpa > 0.0 || cpp > 0.0) {
-        sprintf(tbuf, "Capacitance: %g\n", cpa*wid*hei + cpp*2.0*(wid+hei));
+        snprintf(tbuf, sizeof(tbuf), "Capacitance: %g\n",
+            cpa*wid*hei + cpp*2.0*(wid+hei));
         lstr.add(tbuf);
         found = true;
     }
@@ -796,14 +797,15 @@ cExt::showElectrical(int width, int height)
             c = 'Y';
         }
         sline(params, o);
-        sprintf(tbuf, "Along %c: L=%g  C=%g  Z=%g  T=%g\n",
+        snprintf(tbuf, sizeof(tbuf), "Along %c: L=%g  C=%g  Z=%g  T=%g\n",
             c, o[0], o[1], o[2], o[3]);
         lstr.add(tbuf);
         found = true;
     }
-    if (!found)
+    if (!found) {
         lstr.add("No resistance, capacitance, or transmission line\n"
             "parameters defined for layer.\n");
+    }
     DSPmainWbag(PopUpInfo(MODE_ON, lstr.string()))
 }
 
@@ -871,14 +873,15 @@ cExtGhost::showGhostMeasure(int map_x, int map_y, int ref_x, int ref_y,
     char tbuf[256];
     double rsh = cTech::GetLayerRsh(ld);
     if (rsh > 0.0) {
-        sprintf(tbuf, "Resistance: %g (L to R), %g (B to T) ",
+        snprintf(tbuf, sizeof(tbuf), "Resistance: %g (L to R), %g (B to T) ",
             rsh*wid/hei, rsh*hei/wid);
         lstr.add(tbuf);
     }
     double cpa = tech_prm(ld)->cap_per_area();
     double cpp = tech_prm(ld)->cap_per_perim();
     if (cpa > 0.0 || cpp > 0.0) {
-        sprintf(tbuf, "Capacitance: %g ", cpa*wid*hei + cpp*2.0*(wid+hei));
+        snprintf(tbuf, sizeof(tbuf), "Capacitance: %g ",
+            cpa*wid*hei + cpp*2.0*(wid+hei));
         lstr.add(tbuf);
     }
     double params[8];
@@ -903,7 +906,7 @@ cExtGhost::showGhostMeasure(int map_x, int map_y, int ref_x, int ref_y,
             c = 'Y';
         }
         sline(params, o);
-        sprintf(tbuf, "Tline along %c: L=%g  C=%g  Z=%g  T=%g",
+        snprintf(tbuf, sizeof(tbuf), "Tline along %c: L=%g  C=%g  Z=%g  T=%g",
             c, o[0], o[1], o[2], o[3]);
         lstr.add(tbuf);
     }

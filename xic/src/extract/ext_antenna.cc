@@ -250,7 +250,7 @@ ant_pathfinder::process(const sDevContactInst *cx)
         double a = Zlist::area(zl);
         Zlist::destroy(zl);
         char *s = new char[32];
-        sprintf(s, "%.6e", a);
+        snprintf(s, 32, "%.6e", a);
         h->stData = s;
     }
 
@@ -260,7 +260,8 @@ ant_pathfinder::process(const sDevContactInst *cx)
     int ndgt = CD()->numDigits();
     sLstr lstr;
     char buf[256];
-    sprintf(buf, "net %-7d (ref %.*f,%.*f %.*f,%.*f)\n", pf_netcnt,
+    snprintf(buf, sizeof(buf),
+        "net %-7d (ref %.*f,%.*f %.*f,%.*f)\n", pf_netcnt,
         ndgt, MICRONS(cBB.left), ndgt, MICRONS(cBB.bottom),
         ndgt, MICRONS(cBB.right), ndgt, MICRONS(cBB.top));
     lstr.add(buf);
@@ -270,10 +271,11 @@ ant_pathfinder::process(const sDevContactInst *cx)
         int len = abl_t::length(gt->bbs);
         double a = abl_t::farea(gt->bbs);
         gate_area += a;
-        sprintf(buf, "  gate=%s sect=%d area=%.6e\n", gt->pathname, len, a);
+        snprintf(buf, sizeof(buf),
+            "  gate=%s sect=%d area=%.6e\n", gt->pathname, len, a);
         lstr.add(buf);
     }
-    sprintf(buf, "  total_gate_area=%.6e\n", gate_area);
+    snprintf(buf, sizeof(buf), "  total_gate_area=%.6e\n", gate_area);
     lstr.add(buf);
 
     bool show_me = (!specs() && limit() == 0.0);
@@ -283,7 +285,8 @@ ant_pathfinder::process(const sDevContactInst *cx)
         const char *lname = ((CDl*)h->stTag)->name();
         double a = atof((char*)h->stData);
         double lratio = a/gate_area;
-        sprintf(buf, "  layer=%s area=%s norm_to_gate=%.6e\n", lname,
+        snprintf(buf, sizeof(buf),
+            "  layer=%s area=%s norm_to_gate=%.6e\n", lname,
             (char*)h->stData, lratio);
         lstr.add(buf);
         tot_net_area += a;
@@ -296,8 +299,8 @@ ant_pathfinder::process(const sDevContactInst *cx)
         }
     }
     double ratio = tot_net_area/gate_area;
-    sprintf(buf, "  tot_net_area=%.6e norm_to_gate=%.6e\n", tot_net_area,
-        ratio);
+    snprintf(buf, sizeof(buf),
+        "  tot_net_area=%.6e norm_to_gate=%.6e\n", tot_net_area, ratio);
     lstr.add(buf);
     if (!show_me && limit() > 0 && ratio > limit())
         show_me = true;
@@ -326,7 +329,7 @@ ant_pathfinder::read_file(int *pnetnum, BBox *pnetBB)
     }
 
     char buf[256];
-    sprintf(buf, "%s.antenna.log", Tstring(sdesc->cellname()));
+    snprintf(buf, sizeof(buf), "%s.antenna.log", Tstring(sdesc->cellname()));
 
     FILE *fp = fopen(buf, "r");
     if (!fp) {

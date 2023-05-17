@@ -439,7 +439,7 @@ sDevDesc::parse_device_line()
         char *tok;
         while ((tok = lstring::getqtok(&line)) != 0) {
             ac++;
-            sprintf(buf, VFMT, ac);
+            snprintf(buf, sizeof(buf), VFMT, ac);
             Tech()->SetTechVariable(buf, tok);
             delete [] tok;
         }
@@ -485,7 +485,7 @@ sDevDesc::parse_device_line()
 
         // Unset temporary variables.
         for (int i = 1; i <= ac; i++) {
-            sprintf(buf, VFMT, i);
+            snprintf(buf, sizeof(buf), VFMT, i);
             Tech()->ClearTechVariable(buf);
         }
 

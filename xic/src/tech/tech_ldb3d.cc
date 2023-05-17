@@ -232,7 +232,7 @@ Ldb3d::layer_dump(FILE *fp) const
 
     char tbuf[32];
     if (db3_substhick > 0.0)
-        sprintf(tbuf, "%.3f", db3_substhick);
+        snprintf(tbuf, sizeof(tbuf), "%.3f", db3_substhick);
     if (has_planar) {
         fprintf(fp, "* %-9s %-6s %-12s %-12s %s\n", "Layers", "",
             "Plane", "Thickness", "EpsRel");
@@ -1026,7 +1026,7 @@ bool
 Layer3d::add_db()
 {
     char buf[64];
-    sprintf(buf, "%s:ldb3d", layer_desc()->name());
+    snprintf(buf, sizeof(buf), "%s:ldb3d", layer_desc()->name());
     CDl *ld = CDldb()->newLayer(buf, Physical);
     bool undoable = true;
     bool use_merge = false;

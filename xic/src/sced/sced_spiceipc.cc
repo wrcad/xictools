@@ -402,7 +402,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
     //   [-sc<catchar>][ ][-sm<mode>] 
     // where <mode> is a digit character ('0' plus the enum value).
 
-    sprintf(tbuf, "ping -sc%c-sm%c", CD()->GetSubcCatchar(),
+    snprintf(tbuf, sizeof(tbuf), "ping -sc%c-sm%c", CD()->GetSubcCatchar(),
         '0' + CD()->GetSubcCatmode());
     char *tbf = send_to_spice(tbuf, 10);
     if (!tbf) {
@@ -571,7 +571,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
 
     // Delete the last circuit created here, if still around.
     if (ipc_last_cir && strcmp(ipc_last_cir, "none")) {
-        sprintf(tbuf, "freecir %s", ipc_last_cir);
+        snprintf(tbuf, sizeof(tbuf), "freecir %s", ipc_last_cir);
         tbf = send_to_spice(tbuf, 120);
         if (!tbf) {
             PL()->ShowPrompt(msg);
@@ -590,7 +590,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
 
     // Delete the last plot generated here, if still around.
     if (ipc_last_plot && strcmp(ipc_last_plot, "none")) {
-        sprintf(tbuf, "freeplot %s", ipc_last_plot);
+        snprintf(tbuf, sizeof(tbuf), "freeplot %s", ipc_last_plot);
         tbf = send_to_spice(tbuf, 120);
         if (!tbf) {
             PL()->ShowPrompt(msg);
@@ -873,7 +873,7 @@ cSpiceIPC::SetIplot(bool no_intr)
     char *s = SCD()->getIplotCmd(false);
     if (s) {
         char buf[1024];
-        sprintf(buf, "iplot %s", s);
+        snprintf(buf, sizeof(buf), "iplot %s", s);
         delete [] s;
         if (ipc_in_spice) {
             PL()->ShowPrompt("WRspice analysis in progress, please wait.");
@@ -947,7 +947,7 @@ cSpiceIPC::InterruptSpice()
 #else
 #ifdef WIN32
     char buf[64];
-    sprintf(buf, "wrspice.sigint.%d", pid);
+    snprintf(buf, sizeof(buf),"wrspice.sigint.%d", pid);
     HANDLE hs = OpenSemaphore(SEMAPHORE_MODIFY_STATE, false, buf);
     if (hs) {
         long pv;
@@ -970,7 +970,7 @@ cSpiceIPC::CloseSpice()
         char buf[64];
         if (ipc_parent_sp_pid) {
             // Tell WRspice parent that we are about to terminate.
-            sprintf(buf, "close %d", (int)getpid());
+            snprintf(buf, sizeof(buf), "close %d", (int)getpid());
             write_msg(buf, ipc_msg_skt);
         }
         else if (ipc_child_sp_pid) {
@@ -1350,20 +1350,22 @@ cSpiceIPC::init_remote(const char *c_spice_host)
     char buf[256];
     if (use_old_protocol) {
         if (has_graphics)
-            sprintf(buf, "%s %s", ipc_no_toolbar ? "xic_user_nt" : "xic_user",
-                display_string);
+            snprintf(buf, sizeof(buf), "%s %s",
+                ipc_no_toolbar ? "xic_user_nt" : "xic_user", display_string);
         else
-            sprintf(buf, "%s %s", "xic_user_nt", "none");
+            snprintf(buf, sizeof(buf), "%s %s", "xic_user_nt", "none");
     }
     else {
         if (has_graphics)
-            sprintf(buf, "%s:%s %s", user, ipc_no_toolbar ? "-t" : "+t",
-                display_string);
+            snprintf(buf, sizeof(buf), "%s:%s %s", user,
+                ipc_no_toolbar ? "-t" : "+t", display_string);
         else
-            sprintf(buf, "%s:-t %s", user, xic_host);
+            snprintf(buf, sizeof(buf), "%s:-t %s", user, xic_host);
     }
-    if (ipc_host_prog && *ipc_host_prog)
-        sprintf(buf + strlen(buf), " %s", ipc_host_prog);
+    if (ipc_host_prog && *ipc_host_prog) {
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, " %s", ipc_host_prog);
+    }
 
     if (!write_msg(buf, sd))
         return (-1);
@@ -2558,7 +2560,7 @@ cSpiceIPC::terminate_spice(int pid)
 #else
 #ifdef WIN32
     char buf[64];
-    sprintf(buf, "wrspice.sigterm.%d", pid);
+    snprintf(buf, sizeof(buf), "wrspice.sigterm.%d", pid);
     HANDLE hs = OpenSemaphore(SEMAPHORE_MODIFY_STATE, false, buf);
     if (hs) {
         long pv;
@@ -2681,9 +2683,12 @@ cSpiceIPC::child_thread_proc(void *arg)
         DWORD status;
         GetExitCodeProcess(h, &status);
         char buf[128];
-        sprintf(buf, "Child process %d exited ", pid);
-        if (status)
-            sprintf(buf + strlen(buf), "with error status %ld.", status);
+        snprintf(buf, sizeof(buf), "Child process %d exited ", pid);
+        if (status) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "with error status %ld.",
+                status);
+        }
         else
             strcat(buf, "normally.");
 
@@ -2708,16 +2713,19 @@ cSpiceIPC::child_hdlr(int pid, int status, void*)
     char buf[128];
     *buf = '\0';
     if (WIFEXITED(status)) {
-        sprintf(buf, "Child process %d exited ", pid);
-        if (WEXITSTATUS(status))
-            sprintf(buf + strlen(buf), "with error status %d.",
+        snprintf(buf, sizeof(buf), "Child process %d exited ", pid);
+        if (WEXITSTATUS(status)) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "with error status %d.",
                 WEXITSTATUS(status));
+        }
         else
             strcat(buf, "normally.");
     }
-    else if (WIFSIGNALED(status))
-        sprintf(buf, "Child process %d exited on signal %d.", pid,
-            WIFSIGNALED(status));
+    else if (WIFSIGNALED(status)) {
+        snprintf(buf, sizeof(buf), "Child process %d exited on signal %d.",
+            pid, WIFSIGNALED(status));
+    }
     if (*buf) {
         DSPmainWbag(PopUpMessage(buf, false))
         SCD()->spif()->close_all();

@@ -1285,6 +1285,8 @@ namespace {
 
 //---- End bop_look_ahead ----
 
+// The print functions are passed a buffer of length 256.
+
 namespace {
     void
     print_var__string(Variable *v, rvals *rv, char *buf)
@@ -1399,12 +1401,16 @@ namespace {
     print_var__array(Variable *v, rvals *rv, char *buf)
     {
         if (!rv) {
+            int bsz = 256;
             int len = v->content.a->length();
-            if (len > 5)
+            if (len > 5) {
                 len = 5;
+                bsz = 252;
+            }
             char *s = buf;
             for (int j = 0; j < len; j++) {
-                sprintf(s, "%g ", v->content.a->values()[j]);
+                int slen = (s - buf);
+                snprintf(s, bsz - slen, "%g ", v->content.a->values()[j]);
                 while (*s)
                     s++;
             }
@@ -1453,7 +1459,8 @@ namespace {
                                 strcpy(s, "...");
                                 break;
                             }
-                            sprintf(s, "%g ", vals[j]);
+                            int len = (s - buf);
+                            snprintf(s, 252 - len, "%g ", vals[j]);
                             while (*s)
                                 s++;
                             i++;
@@ -1473,7 +1480,8 @@ namespace {
                                 strcpy(s, "...");
                                 break;
                             }
-                            sprintf(s, "%g ", vals[j]);
+                            int len = (s - buf);
+                            snprintf(s, 252 - len, "%g ", vals[j]);
                             while (*s)
                                 s++;
                             i++;
@@ -1494,14 +1502,15 @@ namespace {
                             strcpy(s, "...");
                             return;
                         }
-                        sprintf(s, "%g ", vals[j]);
+                        int len = (s - buf);
+                        snprintf(s, 252 - len, "%g ", vals[j]);
                         while (*s)
                             s++;
                         i++;
                     }
                 }
                 else
-                    sprintf(buf, "%g", vals[rv->rmin]);
+                    snprintf(buf, 32, "%g", vals[rv->rmin]);
             }
             else if (rv->rmax >= 0 && rv->minus) {
                 if (rv->rmax > dims[0] - 1)
@@ -1513,7 +1522,8 @@ namespace {
                         strcpy(s, "...");
                         return;
                     }
-                    sprintf(s, "%g ", vals[j]);
+                    int len = (s - buf);
+                    snprintf(s, 252 - len, "%g ", vals[j]);
                     while (*s)
                         s++;
                     i++;
@@ -1527,8 +1537,10 @@ namespace {
     void
     print_var__cmplx(Variable *v, rvals *rv, char *buf)
     {
-        if (!rv)
-            sprintf(buf, "(%g,%g)", v->content.cx.real, v->content.cx.imag);
+        if (!rv) {
+            snprintf(buf, 64,  "(%g,%g)", v->content.cx.real,
+                v->content.cx.imag);
+        }
         else
             strcpy(buf, "range error");
     }
@@ -1537,7 +1549,7 @@ namespace {
     print_var__handle(Variable *v, rvals *rv, char *buf)
     {
         if (!rv)
-            sprintf(buf, "%g", v->content.value);
+            snprintf(buf, 32, "%g", v->content.value);
         else
             strcpy(buf, "range error");
     }
@@ -1698,7 +1710,8 @@ namespace {
                 if (ss == 1)
                     v->content.a->values()[i] = dval;
                 else {
-                    sprintf(buf, "Bad vector data, index %d.", i);
+                    snprintf(buf, sizeof(buf),
+                        "Bad vector data, index %d.", i);
                     return (lstring::copy(buf));
                 }
                 i++;
@@ -1751,7 +1764,8 @@ namespace {
                         if (ss == 1)
                             vals[i] = dval;
                         else {
-                            sprintf(buf, "Bad vector data, index %d.", i);
+                            snprintf(buf, sizeof(buf),
+                                "Bad vector data, index %d.", i);
                             return (lstring::copy(buf));
                         }
                         i++;
@@ -1777,7 +1791,8 @@ namespace {
                         if (ss == 1)
                             vals[i] = dval;
                         else {
-                            sprintf(buf, "Bad vector data, index %d.", i);
+                            snprintf(buf, sizeof(buf),
+                                "Bad vector data, index %d.", i);
                             return (lstring::copy(buf));
                         }
                         i--;
@@ -1802,7 +1817,8 @@ namespace {
                         if (ss == 1)
                             vals[i] = dval;
                         else {
-                            sprintf(buf, "Bad vector data, index %d.", i);
+                            snprintf(buf, sizeof(buf),
+                                "Bad vector data, index %d.", i);
                             return (lstring::copy(buf));
                         }
                         i++;
@@ -1835,7 +1851,8 @@ namespace {
                     if (ss == 1)
                         vals[i] = dval;
                     else {
-                        sprintf(buf, "Bad vector data, index %d.", i);
+                        snprintf(buf, sizeof(buf),
+                            "Bad vector data, index %d.", i);
                         return (lstring::copy(buf));
                     }
                     i++;

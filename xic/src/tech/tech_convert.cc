@@ -75,9 +75,9 @@ cTech::ParseCvtLayerBlock()
         }
         char buf[32];
         if (dtyp >= 0)
-            sprintf(buf, "%d, %d", lnum, dtyp);
+            snprintf(buf, sizeof(buf), "%d, %d", lnum, dtyp);
         else
-            sprintf(buf, "%d", lnum);
+            snprintf(buf, sizeof(buf), "%d", lnum);
         if (!tc_last_layer->setStrmIn(buf)) {
             return (SaveError(
                 "%s: failed to set input mapping, unknown error.",
@@ -159,7 +159,8 @@ cTech::PrintCvtLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld,
 
     // StreamOut
     for (strm_odata *so = ld->strmOut(); so; so = so->next()) {
-        sprintf(buf, "%s %d %d\n", Tkw.StreamOut(), so->layer(), so->dtype());
+        snprintf(buf, sizeof(buf), "%s %d %d\n", Tkw.StreamOut(),
+            so->layer(), so->dtype());
         PutStr(fp, lstr, buf);
     }
     if (cmts)
@@ -168,7 +169,7 @@ cTech::PrintCvtLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld,
     // NoDrcDataType
     if (mode == Physical) {
         if (ld->isNoDRC()) {
-            sprintf(buf, "%s %d\n", Tkw.NoDrcDataType(),
+            snprintf(buf, sizeof(buf), "%s %d\n", Tkw.NoDrcDataType(),
                 ld->datatype(CDNODRC_DT));
             PutStr(fp, lstr, buf);
         }

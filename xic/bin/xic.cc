@@ -323,7 +323,9 @@ main(int argc, char **argv)
             char *cmdstr = GetCommandLine();
             while (*cmdstr && !isspace(*cmdstr))
                 cmdstr++;
-            sprintf(cmdline + strlen(cmdline), "%s --WinBg", cmdstr);
+            int len = strlen(cmdline);
+            snprintf(cmdline + len, sizeof(cmdline) - len, "%s --WinBg",
+                cmdstr);
 
             const char *logdir  = getenv("XIC_LOG_DIR");
             if (!logdir || !*logdir)
@@ -332,12 +334,13 @@ main(int argc, char **argv)
                 logdir = getenv("TMPDIR");
             if (!logdir || !*logdir)
                 logdir = "/tmp";
-            char *fname = new char[strlen(logdir) + 30];
+            len = strlen(logdir) + 30;
+            char *fname = new char[len];
             mkdir(logdir);
-            sprintf(fname, "%s/%s", logdir, "daemon_out.log");
+            snprintf(fname, len, "%s/%s", logdir, "daemon_out.log");
             HANDLE hlog = CreateFile(fname, GENERIC_WRITE, 0, 0, CREATE_ALWAYS,
                 FILE_ATTRIBUTE_NORMAL, 0);
-            sprintf(fname, "%s/%s", logdir, "daemon_err.log");
+            snprintf(fname, len, "%s/%s", logdir, "daemon_err.log");
             HANDLE herr = CreateFile(fname, GENERIC_WRITE, 0, 0, CREATE_ALWAYS,
                 FILE_ATTRIBUTE_NORMAL, 0);
             delete [] fname;

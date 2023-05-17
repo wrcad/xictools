@@ -150,7 +150,8 @@ namespace {
         }
 
         char fname[256];
-        sprintf(fname, "%s.physnet", Tstring(DSP()->CurCellName()));
+        snprintf(fname, sizeof(fname), "%s.physnet",
+            Tstring(DSP()->CurCellName()));
         delete [] pnet_cmd.filename();
         pnet_cmd.set_filename(lstring::copy(fname));
 
@@ -391,7 +392,7 @@ namespace {
                 if (EX()->dumpPhysNetlist(fp, cursdp, opts)) {
                     char *fn = lstring::strip_path(fname);
                     char tbuf[256];
-                    sprintf(tbuf,
+                    snprintf(tbuf, sizeof(tbuf),
                         "Physical netlist is in file %s.  View file? ", fn);
                     DSPmainWbag(PopUpAffirm(0, GRloc(LW_XYA, x, y), tbuf, p_cb,
                         lstring::copy(fname)))
@@ -541,7 +542,8 @@ namespace {
         }
 
         char fname[256];
-        sprintf(fname, "%s.elecnet", Tstring(DSP()->CurCellName()));
+        snprintf(fname, sizeof(fname), "%s.elecnet",
+            Tstring(DSP()->CurCellName()));
         delete [] enet_cmd.filename();
         enet_cmd.set_filename(lstring::copy(fname));
 
@@ -720,7 +722,7 @@ namespace {
                 if (EX()->dumpElecNetlist(fp, cursde, opts)) {
                     char *fn = lstring::strip_path(fname);
                     char tbuf[128];
-                    sprintf(tbuf,
+                    snprintf(tbuf, sizeof(tbuf),
                         "Electrical netlist is in file %s.  View file? ", fn);
                     DSPmainWbag(PopUpAffirm(0, GRloc(LW_XYA, x, y), tbuf, e_cb,
                         lstring::copy(fname)))
@@ -830,7 +832,8 @@ namespace {
         }
 
         char fname[256];
-        sprintf(fname, "%s.lvs", Tstring(DSP()->CurCellName()));
+        snprintf(fname, sizeof(fname), "%s.lvs",
+            Tstring(DSP()->CurCellName()));
         delete [] lvs_cmd.filename();
         lvs_cmd.set_filename(lstring::copy(fname));
 
@@ -924,16 +927,16 @@ namespace {
 
                 char tbuf[128];
                 if (ret == LVSclean)
-                    sprintf(tbuf,
+                    snprintf(tbuf, sizeof(tbuf),
                         "LVS CLEAN.  View file %s? ", fn);
                 else if (ret == LVSap)
-                    sprintf(tbuf,
+                    snprintf(tbuf, sizeof(tbuf),
                         "LVS PASSED - AMBIGUITY.  View file %s? ", fn);
                 else if (ret == LVStopok)
-                    sprintf(tbuf,
+                    snprintf(tbuf, sizeof(tbuf),
                         "LVS PASSED - PARAM DIFFS.  View file %s? ", fn);
                 else
-                    sprintf(tbuf,
+                    snprintf(tbuf, sizeof(tbuf),
                         "LVS FAILED.  View file %s? ", fn);
                 DSPmainWbag(PopUpAffirm(0, GRloc(LW_XYA, x, y), tbuf, l_cb,
                     lstring::copy(fname)))

@@ -335,9 +335,9 @@ cFC::getFileName(const char *ext, int pid)
     char buf[128];
     const char *s = Tstring(CurCell(Physical)->cellname());
     if (pid > 0)
-        sprintf(buf, "%s-%d.%s", s, pid, ext);
+        snprintf(buf, sizeof(buf), "%s-%d.%s", s, pid, ext);
     else
-        sprintf(buf, "%s.%s", s, ext);
+        snprintf(buf, sizeof(buf), "%s.%s", s, ext);
     return (lstring::copy(buf));
 }
 
@@ -376,7 +376,7 @@ cFC::statusString()
 {
     int njobs = fxJob::num_jobs();
     char buf[128];
-    sprintf(buf, "Running Jobs: %d", njobs);
+    snprintf(buf, sizeof(buf), "Running Jobs: %d", njobs);
     return (lstring::copy(buf));
 }
 
@@ -392,7 +392,7 @@ cFC::showMarks(bool display)
     }
     for (int i = 0; i < fc_ngroups; i++) {
         char buf[16];
-        sprintf(buf, "%d", i);
+        snprintf(buf, sizeof(buf), "%d", i);
         DSP()->ShowCrossMark(display, fc_groups[i].x, fc_groups[i].y,
             HighlightingColor, 20, Physical, 1, buf,
             fc_groups[i].layer_desc->name());
@@ -603,7 +603,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
             fprintf(fp, "* Group %d zbot\n", i);
             int pc = 0;
             for (fcCpanel *p = panels; p; p = p->next) {
-                sprintf(nbuf, "g%dzbot%d", i, pc);
+                snprintf(nbuf, sizeof(nbuf), "g%dzbot%d", i, pc);
                 p->print_c(fp, nbuf, unit);
                 p->print_c_term(fp, true);
                 pc++;
@@ -620,7 +620,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
             fprintf(fp, "* Group %d ztop\n", i);
             pc = 0;
             for (fcCpanel *p = panels; p; p = p->next) {
-                sprintf(nbuf, "g%dztop%d", i, pc);
+                snprintf(nbuf, sizeof(nbuf), "g%dztop%d", i, pc);
                 p->print_c(fp, nbuf, unit);
                 p->print_c_term(fp, true);
                 pc++;
@@ -637,7 +637,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
             fprintf(fp, "* Group %d yl\n", i);
             pc = 0;
             for (fcCpanel *p = panels; p; p = p->next) {
-                sprintf(nbuf, "g%dyl%d", i, pc);
+                snprintf(nbuf, sizeof(nbuf), "g%dyl%d", i, pc);
                 p->print_c(fp, nbuf, unit);
                 p->print_c_term(fp, true);
                 pc++;
@@ -654,7 +654,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
             fprintf(fp, "* Group %d yu\n", i);
             pc = 0;
             for (fcCpanel *p = panels; p; p = p->next) {
-                sprintf(nbuf, "g%dyu%d", i, pc);
+                snprintf(nbuf, sizeof(nbuf), "g%dyu%d", i, pc);
                 p->print_c(fp, nbuf, unit);
                 p->print_c_term(fp, true);
                 pc++;
@@ -671,7 +671,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
             fprintf(fp, "* Group %d left\n", i);
             pc = 0;
             for (fcCpanel *p = panels; p; p = p->next) {
-                sprintf(nbuf, "g%dleft%d", i, pc);
+                snprintf(nbuf, sizeof(nbuf), "g%dleft%d", i, pc);
                 p->print_c(fp, nbuf, unit);
                 p->print_c_term(fp, true);
                 pc++;
@@ -688,7 +688,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
             fprintf(fp, "* Group %d right\n", i);
             pc = 0;
             for (fcCpanel *p = panels; p; p = p->next) {
-                sprintf(nbuf, "g%dright%d", i, pc);
+                snprintf(nbuf, sizeof(nbuf), "g%dright%d", i, pc);
                 p->print_c(fp, nbuf, unit);
                 p->print_c_term(fp, (p->next));
                 pc++;
@@ -748,7 +748,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
 
                 // Output the p0 list, free, and set it to px for the next
                 // iteration.
-                sprintf(nbuf, "g%dpnls%d", i, pc);
+                snprintf(nbuf, sizeof(nbuf), "g%dpnls%d", i, pc);
                 pc++;
                 p0->print_c(fp, nbuf, unit);
                 p0->print_c_term(fp, (px != 0));
@@ -793,33 +793,33 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
         }
 
         fcDpanel *p0 = panelize_dielectric_zbot(l);
-        sprintf(nbuf, "%szbot", l->layer_desc()->name());
-        write_d_panels(fp, tfp, p0, nbuf, xo, yo, unit);
+        snprintf(nbuf, sizeof(nbuf), "%szbot", l->layer_desc()->name());
+        write_d_panels(fp, tfp, p0, nbuf, sizeof(nbuf), xo, yo, unit);
         TPRINT(".");
 
         p0 = panelize_dielectric_ztop(l);
-        sprintf(nbuf, "%sztop", l->layer_desc()->name());
-        write_d_panels(fp, tfp, p0, nbuf, xo, yo, unit);
+        snprintf(nbuf, sizeof(nbuf), "%sztop", l->layer_desc()->name());
+        write_d_panels(fp, tfp, p0, nbuf, sizeof(nbuf), xo, yo, unit);
         TPRINT(".");
 
         p0 = panelize_dielectric_yl(l);
-        sprintf(nbuf, "%syl", l->layer_desc()->name());
-        write_d_panels(fp, tfp, p0, nbuf, xo, yo, unit);
+        snprintf(nbuf, sizeof(nbuf), "%syl", l->layer_desc()->name());
+        write_d_panels(fp, tfp, p0, nbuf, sizeof(nbuf), xo, yo, unit);
         TPRINT(".");
 
         p0 = panelize_dielectric_yu(l);
-        sprintf(nbuf, "%syu", l->layer_desc()->name());
-        write_d_panels(fp, tfp, p0, nbuf, xo, yo, unit);
+        snprintf(nbuf, sizeof(nbuf), "%syu", l->layer_desc()->name());
+        write_d_panels(fp, tfp, p0, nbuf, sizeof(nbuf), xo, yo, unit);
         TPRINT(".");
 
         p0 = panelize_dielectric_left(l);
-        sprintf(nbuf, "%sleft", l->layer_desc()->name());
-        write_d_panels(fp, tfp, p0, nbuf, xo, yo, unit);
+        snprintf(nbuf, sizeof(nbuf), "%sleft", l->layer_desc()->name());
+        write_d_panels(fp, tfp, p0, nbuf, sizeof(nbuf), xo, yo, unit);
         TPRINT(".");
 
         p0 = panelize_dielectric_right(l);
-        sprintf(nbuf, "%sright", l->layer_desc()->name());
-        write_d_panels(fp, tfp, p0, nbuf, xo, yo, unit);
+        snprintf(nbuf, sizeof(nbuf), "%sright", l->layer_desc()->name());
+        write_d_panels(fp, tfp, p0, nbuf, sizeof(nbuf), xo, yo, unit);
         TPRINT(". done\n");
     }
     fprintf(fp, "End\n\n");
@@ -942,13 +942,15 @@ fcLayout::write_subs_panels(FILE *fp, FILE *tfp, int xo, int yo, e_unit unit)
 //
 void
 fcLayout::write_d_panels(FILE *fp, FILE *tfp, fcDpanel *p0, char *bname,
-    int xo, int yo, e_unit unit)
+    int bsz, int xo, int yo, e_unit unit)
 {
-    char *e = bname + strlen(bname);
+    int len = strlen(bname);
+    char *e = bname + len;
+    bsz -= len;
     int pc = 0;
     if (fcl_verbose_out) {
         for (fcDpanel *p = p0; p; p = p->next) {
-            sprintf(e, "%d", pc);
+            snprintf(e, bsz, "%d", pc);
             pc++;
             p->print_d(fp, bname, unit);
             p->print_panel_begin(tfp, bname);
@@ -978,7 +980,7 @@ fcLayout::write_d_panels(FILE *fp, FILE *tfp, fcDpanel *p0, char *bname,
             }
             pp = p;
         }
-        sprintf(e, "%d", pc);
+        snprintf(e, bsz, "%d", pc);
         pc++;
         p0->print_d(fp, bname, unit);
         p0->print_panel_begin(tfp, bname);
@@ -1190,7 +1192,7 @@ namespace {
     void save_dbg_zlist(Zlist *zl, const char *s1, const char *s2, int i)
     {
         char buf[64];
-        sprintf(buf, "%s%s%d", s1, s2, i);
+        snprintf(buf, sizeof(buf), "%s%s%d", s1, s2, i);
         bool there = false;
         for (stringlist *sl = dbg_layers; sl; sl = sl->next) {
             if (!strcmp(sl->string, buf)) {
@@ -1210,7 +1212,7 @@ namespace {
     void save_dbg_zlist(Zlist *zl, int g, const char *s2, int i)
     {
         char buf[64];
-        sprintf(buf, "g%d%s%d", g, s2, i);
+        snprintf(buf, sizeof(buf), "g%d%s%d", g, s2, i);
         bool there = false;
         for (stringlist *sl = dbg_layers; sl; sl = sl->next) {
             if (!strcmp(sl->string, buf)) {
@@ -3568,17 +3570,17 @@ fcDpanel::print_d(FILE *fp, const char *name, e_unit unit,
         fprintf(fp, "D %s %.3e %.3e 0.0 0.0 0.0 ", name,
             outperm*esc, inperm*esc);
         char buf[64];
-        sprintf(buf, ffmt, sc*ipref->x);
+        snprintf(buf, sizeof(buf), ffmt, sc*ipref->x);
         char *s = buf + strlen(buf) - 1;
         while (isspace(*s))
             *s-- = 0;
         fprintf(fp, "%s ", buf);
-        sprintf(buf, ffmt, sc*ipref->y);
+        snprintf(buf, sizeof(buf), ffmt, sc*ipref->y);
         s = buf + strlen(buf) - 1;
         while (isspace(*s))
             *s-- = 0;
         fprintf(fp, "%s ", buf);
-        sprintf(buf, ffmt, sc*ipref->z);
+        snprintf(buf, sizeof(buf), ffmt, sc*ipref->z);
         s = buf + strlen(buf) - 1;
         while (isspace(*s))
             *s-- = 0;

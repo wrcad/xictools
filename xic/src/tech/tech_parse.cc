@@ -152,8 +152,10 @@ cTech::InitPostParse()
             sLspec *excl = new sLspec;
             if (npoly == ppoly)
                 strcpy(buf, npoly->name());
-            else if (npoly && ppoly)
-                sprintf(buf, "%s|%s", npoly->name(), ppoly->name());
+            else if (npoly && ppoly) {
+                snprintf(buf, sizeof(buf), "%s|%s", npoly->name(),
+                    ppoly->name());
+            }
             else if (npoly)
                 strcpy(buf, npoly->name());
             else
@@ -934,7 +936,7 @@ cTech::SaveError(const char *fmt, ...) const
     buf[0] = 0;
     int line = tc_no_line_num ? -1 : LineCount();
     if (line > 0)
-        sprintf(buf, "(Line %d) ", line);
+        snprintf(buf, sizeof(buf), "(Line %d) ", line);
     int ofs = strlen(buf);
 
     va_start(args, fmt);

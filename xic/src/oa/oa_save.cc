@@ -1710,9 +1710,9 @@ oa_save::save_cell_properties(CDs *sdesc, oaObject *object)
                 h->stData = (void*)(long)(ix+1);
             }
             if (ix == 0)
-                sprintf(buf, "%s%d", OA_XICP_PFX, num);
+                snprintf(buf, strlen(buf), "%s%d", OA_XICP_PFX, num);
             else
-                sprintf(buf, "%s%d_%d", OA_XICP_PFX, num, ix);
+                snprintf(buf, strlen(buf), "%s%d_%d", OA_XICP_PFX, num, ix);
 
             if (out_mode == Electrical) {
                 if (num == P_SYMBLC) {
@@ -1792,9 +1792,11 @@ oa_save::save_obj_properties(const CDo *odesc, oaObject *object)
                     h->stData = (void*)(long)(ix+1);
                 }
                 if (ix == 0)
-                    sprintf(buf, "%s%d", OA_XICP_PFX, num);
-                else
-                    sprintf(buf, "%s%d_%d", OA_XICP_PFX, num, ix);
+                    snprintf(buf, sizeof(buf), "%s%d", OA_XICP_PFX, num);
+                else {
+                    snprintf(buf, sizeof(buf), "%s%d_%d", OA_XICP_PFX,
+                        num, ix);
+                }
 
                 oaStringProp::create(object, buf, string);
                 delete [] string;
@@ -1806,7 +1808,7 @@ oa_save::save_obj_properties(const CDo *odesc, oaObject *object)
         // Add the NODRC property if necessary
         if (out_mode == Physical && odesc->type() != CDINSTANCE &&
                 odesc->type() != CDLABEL && odesc->has_flag(CDnoDRC)) {
-            sprintf(buf, "%s%d", OA_XICP_PFX, XICP_NODRC);
+            snprintf(buf, sizeof(buf), "%s%d", OA_XICP_PFX, XICP_NODRC);
             oaStringProp::create(object, buf, "NODRC");
         }
     }

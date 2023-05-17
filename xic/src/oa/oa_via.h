@@ -132,7 +132,7 @@ struct ViaDesc
     char *cellname(const char *basename, const ViaItem *vi)
         {
             char buf[256];
-            sprintf(buf, "%s_%u", basename, vi->vi_index);
+            snprintf(buf, sizeof(buf), "%s_%u", basename, vi->vi_index);
             return (lstring::copy(buf));
         }
 

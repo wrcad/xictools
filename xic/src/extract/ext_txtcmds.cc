@@ -154,11 +154,11 @@ ext_bangcmds::antenna(const char *s)
         sLstr lstr;
         char buf[64];
         for (ant_lyr *a = al0; a; a = a->next) {
-            sprintf(buf, " %s %g", a->ldesc->name(), a->ratio);
+            snprintf(buf, sizeof(buf), " %s %g", a->ldesc->name(), a->ratio);
             lstr.add(buf);
         }
         if (totlim > 0.0) {
-            sprintf(buf, " %g", totlim);
+            snprintf(buf, sizeof(buf), " %g", totlim);
             lstr.add(buf);
         }
         if (lstr.length()) {
@@ -239,7 +239,7 @@ ext_bangcmds::antenna(const char *s)
     apf.set_lim(totlim);
 
     char buf[256];
-    sprintf(buf, "%s.antenna.log", Tstring(sdesc->cellname()));
+    snprintf(buf, sizeof(buf), "%s.antenna.log", Tstring(sdesc->cellname()));
     if (!filestat::create_bak(buf)) {
         PL()->ShowPrompt(
             "Can't backup existing log file in current directory.");

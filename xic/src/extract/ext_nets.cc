@@ -883,7 +883,7 @@ namespace {
                     double *d = SCD()->evalExpr(&xp);
                     if (d) {
                         char buf[64];
-                        sprintf(buf, "%.6e", *d);
+                        snprintf(buf, sizeof(buf), "%.6e", *d);
                         lstr.add(buf);
                         tab.add(oexpr, lstring::copy(buf), false);
                         scnt++;

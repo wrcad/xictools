@@ -273,7 +273,7 @@ cGroupDesc::print_groups(FILE *fp, sDumpOpts *opts)
 
         char buf[256];
         if (g.capac() != 0.0) {
-            sprintf(buf, "Capacitance %1.3e", g.capac());
+            snprintf(buf, sizeof(buf), "Capacitance %1.3e", g.capac());
             Gen.Comment(fp, buf);
         }
         if (g.net()) {
@@ -329,7 +329,8 @@ cGroupDesc::print_groups(FILE *fp, sDumpOpts *opts)
                         area += p->po.area();
                         perim += MICRONS(p->po.perim());
                     }
-                    sprintf(buf, "%s: area=%1.3e perim=%1.3e", ld->name(),
+                    snprintf(buf, sizeof(buf),
+                        "%s: area=%1.3e perim=%1.3e", ld->name(),
                         area, perim);
                     Gen.Comment(fp, buf);
                     PolyList::destroy(p0);
@@ -543,7 +544,8 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
                         if (gd_groups[i].netname() == nm) {
                             if (opts->isset(opt_atom_labels)) {
                                 fprintf(fp, " %d", i);
-                                sprintf(buf, "* %d %s\n", i, Tstring(nm));
+                                snprintf(buf, sizeof(buf), "* %d %s\n",
+                                    i, Tstring(nm));
                                 lstr.add(buf);
                             }
                             else

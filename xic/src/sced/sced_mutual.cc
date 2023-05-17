@@ -86,7 +86,7 @@ cSced::setMutParam(const char *name, int type, const char *string)
         if (pm->assigned_name())
             dname = pm->assigned_name();
         else {
-            sprintf(buf, "%s%d", MUT_CODE, pm->index());
+            snprintf(buf, sizeof(buf), "%s%d", MUT_CODE, pm->index());
             dname = buf;
         }
         if (strcmp(name, dname))
@@ -129,14 +129,14 @@ cSced::getMutParam(const char *name, int type)
         if (pm->assigned_name())
             dname = pm->assigned_name();
         else {
-            sprintf(buf, "%s%d", MUT_CODE, pm->index());
+            snprintf(buf, sizeof(buf), "%s%d", MUT_CODE, pm->index());
             dname = buf;
         }
         if (strcmp(name, dname))
             continue;
 
         if (type == P_VALUE) {
-            sprintf(buf, "%s", pm->coeff_str());
+            snprintf(buf, sizeof(buf), "%s", pm->coeff_str());
             return (lstring::copy(buf));
         }
         else
@@ -809,7 +809,7 @@ MutState::change_mutual()
         }
     }
     else {
-        sprintf(coefstr, "%f", ((CDp_mut*)pdesc)->coeff());
+        snprintf(coefstr, sizeof(coefstr), "%f", ((CDp_mut*)pdesc)->coeff());
         char *s;
         do {
             s = PL()->EditPrompt("Enter SPICE coupling factor: k = ", coefstr);
@@ -854,7 +854,7 @@ cSced::mutToNewMut(CDs *sdesc)
                 delete pd;
                 continue;
             }
-            sprintf(buf, "%g", ((CDp_mut*)pd)->coeff());
+            snprintf(buf, sizeof(buf), "%g", ((CDp_mut*)pd)->coeff());
             if (!sdesc->prptyMutualAdd(odesc1, odesc2, buf, 0))
                 Log()->ErrorLog(mh::EditOperation, Errs()->get_error());
             sdesc->prptyUnlink(pd);

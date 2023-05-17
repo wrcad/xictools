@@ -278,7 +278,7 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
                     if (!pr || rbeg != pr->beg_range() ||
                             rend != pr->end_range()) {
                         char trange[64];
-                        sprintf(trange, "%u %u", rbeg, rend);
+                        snprintf(trange, sizeof(trange), "%u %u", rbeg, rend);
                         prptyModify(cdesc, pr, P_RANGE, trange, 0);
                         new_range = true;
                     }

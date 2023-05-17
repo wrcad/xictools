@@ -159,7 +159,7 @@ cSced::checkElectrical(CDcbin *cbin)
     if (fn && !CDvdb()->getVariable(VA_NoPopUpLog)) {
         char buf[256];
         if (Log()->LogDirectory() && *Log()->LogDirectory()) {
-            sprintf(buf, "%s/%s", Log()->LogDirectory(), fn);
+            snprintf(buf, sizeof(buf), "%s/%s", Log()->LogDirectory(), fn);
             fn = buf;
         }
         DSPmainWbag(PopUpFileBrowser(fn))
@@ -685,7 +685,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
         if (pm->assigned_name())
             mname = pm->assigned_name();
         else {
-            sprintf(tbuf, "%s%d", MUT_CODE, pm->index());
+            snprintf(tbuf, sizeof(tbuf), "%s%d", MUT_CODE, pm->index());
             mname = tbuf;
         }
         lstr.add("Deleting mutual inductor ");

@@ -796,7 +796,6 @@ SubcState::order_bterm_bits()
         else
             continue;
 
-        int cnt = 0;
         int node = -1;
         CDp_snode *pn = 0;
         for (int i = 0; i < Nodesize; i++) {
@@ -809,7 +808,6 @@ SubcState::order_bterm_bits()
                 if (!CDnetex::parse_bit(Tstring(ps->get_term_name()),
                         &tnm, &tn)) {
                     Errs()->get_error();
-                    cnt++;
                     continue;
                 }
                 if (nm == tnm && n == tn) {
@@ -818,7 +816,6 @@ SubcState::order_bterm_bits()
                     break;
                 }
             }
-            cnt++;
         }
         if (!pn) {
             pn = new CDp_snode;
@@ -876,10 +873,8 @@ SubcState::bterm_bits_flags(bool set, int flag)
     CDnetexGen ngen(pb);
     CDnetName nm;
     int n;
-    unsigned int indx = 0;
     while (ngen.next(&nm, &n)) {
 
-        int cnt = 0;
         for (int i = 0; i < Nodesize; i++) {
             if (!Nodes[i])
                 continue;
@@ -890,7 +885,6 @@ SubcState::bterm_bits_flags(bool set, int flag)
                 if (!CDnetex::parse_bit(Tstring(ps->get_term_name()),
                         &tnm, &tn)) {
                     Errs()->get_error();
-                    cnt++;
                     continue;
                 }
                 if (nm == tnm && n == tn) {
@@ -901,9 +895,7 @@ SubcState::bterm_bits_flags(bool set, int flag)
                     break;
                 }
             }
-            cnt++;
         }
-        indx++;
     }
     show_terms(DISPLAY, -1);
     show_bterms(DISPLAY);
@@ -2063,7 +2055,7 @@ SubcState::insert_terminal(int x, int y)
     char tbuf[128];
     unsigned int flgs = TE_UNINIT << 8;
     // 5 10 node index ex,, ey,, [flgs.ttype name px py lname]
-    sprintf(tbuf, "-1 %d %d %d 0x%x", last, x, y, flgs);
+    snprintf(tbuf, sizeof(tbuf), "-1 %d %d %d 0x%x", last, x, y, flgs);
     cursde->prptyAdd(P_NODE, tbuf);
     Changed = true;
     Nodes[last] = (CDp_snode*)cursde->prptyList();  // new one
@@ -2482,7 +2474,6 @@ SubcState::te_cb(TermEditInfo *tinfo, CDp *prp)
             }
         }
 
-        int cnt = 0;
         int index = 0;
         for (int i = 0; i < SubcCmd->Nodesize; i++) {
             if (!SubcCmd->Nodes[i])
@@ -2491,7 +2482,6 @@ SubcState::te_cb(TermEditInfo *tinfo, CDp *prp)
                 index = i;
                 break;
             }
-            cnt++;
         }
         SubcCmd->change_index(ps, tinfo->index());
         int newindex = ps->index();
@@ -2667,7 +2657,7 @@ SubcState::insert_bterm(int x, int y)
     }
 
     char tbuf[128];
-    sprintf(tbuf, "%d %d %d %d %d", ix, 0, 0, x, y);
+    snprintf(tbuf, sizeof(tbuf), "%d %d %d %d %d", ix, 0, 0, x, y);
     cursde->prptyAdd(P_BNODE, tbuf);
     Changed = true;
     pb  = (CDp_bsnode*)cursde->prptyList();  // new one

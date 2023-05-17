@@ -217,7 +217,7 @@ struct fcLayout : public Ldb3d
 
 private:
     void write_subs_panels(FILE*, FILE*, int, int, e_unit);
-    void write_d_panels(FILE*, FILE*, fcDpanel*, char*, int, int, e_unit);
+    void write_d_panels(FILE*, FILE*, fcDpanel*, char*, int, int, int, e_unit);
     fcCpanel *panelize_group_zbot(const glZlistRef3d*) const;
     fcCpanel *panelize_group_ztop(const glZlistRef3d*) const;
     fcCpanel *panelize_group_yl(const glZlistRef3d*) const;

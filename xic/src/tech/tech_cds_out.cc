@@ -580,7 +580,7 @@ cTechCdsOut::dump_techLayerProperties()
             continue;
         const char *pname = CDldb()->getOApurposeName(ld->oaPurposeNum());
         if (pname)
-            snprintf(buf, 256, "( %s %s )", lname, pname);
+            snprintf(buf, sizeof(buf), "( %s %s )", lname, pname);
         else
             strcpy(buf, lname);
 
@@ -732,28 +732,28 @@ cTechCdsOut::dump_viaDefs()
         fprintf(tco_fp, "      (%d %d (%g %g))\n",
             sv->via_rows(), sv->via_cols(),
             MICRONS(sv->via_spa_x()), MICRONS(sv->via_spa_y()));
-        sprintf(buf, "(%g %g)",
+        snprintf(buf, sizeof(buf), "(%g %g)",
             MICRONS(sv->bot_enc_x()), MICRONS(sv->bot_enc_y()));
         fprintf(tco_fp, "      %-12s", buf);
-        sprintf(buf, "(%g %g)",
+        snprintf(buf, sizeof(buf), "(%g %g)",
             MICRONS(sv->top_enc_x()), MICRONS(sv->top_enc_y()));
         fprintf(tco_fp, " %-12s", buf);
-        sprintf(buf, "(%g %g)",
+        snprintf(buf, sizeof(buf), "(%g %g)",
             MICRONS(sv->bot_off_x()), MICRONS(sv->bot_off_y()));
         fprintf(tco_fp, " %-12s", buf);
-        sprintf(buf, "(%g %g)",
+        snprintf(buf, sizeof(buf), "(%g %g)",
             MICRONS(sv->top_off_x()), MICRONS(sv->top_off_y()));
         fprintf(tco_fp, " %-12s", buf);
-        sprintf(buf, "(%g %g)",
+        snprintf(buf, sizeof(buf), "(%g %g)",
             MICRONS(sv->org_off_x()), MICRONS(sv->org_off_y()));
         fprintf(tco_fp, " %-12s", buf);
         if (sv->implant1()) {
-            sprintf(buf, "(%g %g)",
+            snprintf(buf, sizeof(buf), "(%g %g)",
                 MICRONS(sv->imp1_enc_x()), MICRONS(sv->imp1_enc_y()));
             fprintf(tco_fp, "\n      %-16s %12s",
                 sv->implant1()->name(), buf);
             if (sv->implant2()) {
-                sprintf(buf, "(%g %g)",
+                snprintf(buf, sizeof(buf), "(%g %g)",
                     MICRONS(sv->imp2_enc_x()),
                     MICRONS(sv->imp2_enc_y()));
                 fprintf(tco_fp, "\n      %-16s %12s",
@@ -1085,7 +1085,7 @@ cTechCdsOut::dump_drDefinePacket()
         dspstrings(ld, &line, &fill, &stipplename);
         char *packetname = mk_packetname(colorname, fill, line);
         if (SymTab::get(tab, packetname) == ST_NIL) {
-            snprintf(buf, 256, "  ( display %s %s %s %s %s )\n",
+            snprintf(buf, sizeof(buf), "  ( display %s %s %s %s %s )\n",
                 packetname, fill, line, colorname, colorname);
             tab->add(packetname, lstring::copy(buf), false);
         }
@@ -1102,7 +1102,7 @@ cTechCdsOut::dump_drDefinePacket()
         dspstrings(ld, &line, &fill, &stipplename);
         char *packetname = mk_packetname(colorname, fill, line);
         if (SymTab::get(tab, packetname) == ST_NIL) {
-            snprintf(buf, 256, "  ( display %s %s %s %s %s )\n",
+            snprintf(buf, sizeof(buf), "  ( display %s %s %s %s %s )\n",
                 packetname, fill, line, colorname, colorname);
             tab->add(packetname, lstring::copy(buf), false);
         }
@@ -1175,7 +1175,8 @@ cTechCdsOut::mk_colorname(const CDl *ld)
         return (lstring::copy(c->name()));
 
     char buf[32];
-    snprintf(buf, 32,  "c%02x%02x%02x", lp->red(), lp->green(), lp->blue());
+    snprintf(buf, sizeof(buf),  "c%02x%02x%02x", lp->red(), lp->green(),
+        lp->blue());
     return (lstring::copy(buf));
 }
 
@@ -1194,7 +1195,7 @@ cTechCdsOut::mk_stipplename(const CDl *ld)
     // patterns that were not read from an external drf file.
 
     char buf[32];
-    sprintf(buf, "stp_%d", tco_stip_cnt);
+    snprintf(buf, sizeof(buf), "stp_%d", tco_stip_cnt);
 
     unsigned char *map = fill->newBitmap();
     DrfIn()->add_stipple(new sDrfStipple(buf, fill->nX(), fill->nY(), map));

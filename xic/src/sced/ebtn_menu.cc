@@ -593,8 +593,8 @@ ebtn_menu::M_SpiceDeck(CmdDesc*)
     }
     char *filename = pathlist::expand_path(in, false, true);
     if (SCD()->dumpSpiceFile(filename)) {
-        sprintf(tbuf, "Spice listing saved in file %s, view file? ",
-            filename);
+        snprintf(tbuf, sizeof(tbuf),
+            "Spice listing saved in file %s, view file? ", filename);
         in = PL()->EditPrompt(tbuf, "n");
         in = lstring::strip_space(in);
         if (in && (*in == 'y' || *in == 'Y'))

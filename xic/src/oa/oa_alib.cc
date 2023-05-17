@@ -280,8 +280,8 @@ cAlibFixup::alib_vpwl(sLstr &lstr)
     txx[0] = 't';
     vxx[0] = 'v';
     for (int i = 1; i <= tvp; i++) {
-        sprintf(txx+1, "%d", i);
-        sprintf(vxx+1, "%d", i);
+        snprintf(txx+1, sizeof(txx)-1, "%d", i);
+        snprintf(vxx+1, sizeof(vxx)-1, "%d", i);
         PCellParam *p = PCellParam::find(prms, txx);
         lstr.add_c(' ');
         lstr.add(p ? p->stringVal() : "0");
@@ -393,8 +393,8 @@ cAlibFixup::alib_ipwl(sLstr &lstr)
     txx[0] = 't';
     ixx[0] = 'i';
     for (int i = 1; i <= tvp; i++) {
-        sprintf(txx+1, "%d", i);
-        sprintf(ixx+1, "%d", i);
+        snprintf(txx+1, sizeof(txx)-1, "%d", i);
+        snprintf(ixx+1, sizeof(ixx)-1, "%d", i);
         PCellParam *p = PCellParam::find(prms, txx);
         lstr.add_c(' ');
         lstr.add(p ? p->stringVal() : "0");

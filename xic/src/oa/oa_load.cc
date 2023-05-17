@@ -1980,7 +1980,8 @@ oa_in::getViaName(const oaViaHeader *hdr)
         header->getParams(params);
 
         char buf[256];
-        sprintf(buf, "%s/%s", (const char*)libname, (const char*)vianame);
+        snprintf(buf, sizeof(buf), "%s/%s", (const char*)libname,
+            (const char*)vianame);
 
         if (!in_via_tab)
             in_via_tab = new SymTab(false, false);

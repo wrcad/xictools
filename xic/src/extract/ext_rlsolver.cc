@@ -203,7 +203,7 @@ RLsolver::setupR()
         return (false);
     }
     char buf[64];
-    sprintf(buf, "%s-thickness", rl_ld->name());
+    snprintf(buf, sizeof(buf), "%s-thickness", rl_ld->name());
     spt_t *thick_mods = spt_t::findSpatialParameterTable(buf);
 
     FILE *fp = 0;

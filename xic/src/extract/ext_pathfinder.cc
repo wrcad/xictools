@@ -263,7 +263,7 @@ pathfinder::find_path(BBox *AOI)
             char buf[256];
             int x = (AOI->left + AOI->right)/2;
             int y = (AOI->bottom + AOI->top)/2;
-            sprintf(buf, "%.4f_%.4f", MICRONS(x), MICRONS(y));
+            snprintf(buf, sizeof(buf), "%.4f_%.4f", MICRONS(x), MICRONS(y));
             // Encode characters which shouldn't be used in GDSII
             // cell names.
             for (char *s = buf; *s; s++) {
@@ -366,7 +366,7 @@ pathfinder::find_path(const CDo *odesc)
                 x = odesc->oBB().left;
                 y = odesc->oBB().bottom;
             }
-            sprintf(buf, "%.4f_%.4f", MICRONS(x), MICRONS(y));
+            snprintf(buf, sizeof(buf), "%.4f_%.4f", MICRONS(x), MICRONS(y));
             // Encode characters which shouldn't be used in GDSII
             // cell names.
             for (char *s = buf; *s; s++) {
@@ -375,7 +375,7 @@ pathfinder::find_path(const CDo *odesc)
                 else if (*s == '.')
                     *s = 'p';
             }
-            sprintf(buf, "%d", odesc->group());
+            snprintf(buf, sizeof(buf), "%d", odesc->group());
             pf_pathname = lstring::copy(buf);
             if (EX()->pathFinder(cExt::PFget) == this)
                 EX()->PopUpSelections(0, MODE_UPD);
@@ -1452,7 +1452,7 @@ grp_pathfinder::find_path(BBox *AOI)
         char buf[256];
         int x = (AOI->left + AOI->right)/2;
         int y = (AOI->bottom + AOI->top)/2;
-        sprintf(buf, "%.4f_%.4f", MICRONS(x), MICRONS(y));
+        snprintf(buf, sizeof(buf), "%.4f_%.4f", MICRONS(x), MICRONS(y));
         // Encode characters which shouldn't be used in GDSII
         // cell names.
         for (char *s = buf; *s; s++) {
@@ -1499,7 +1499,7 @@ grp_pathfinder::find_path(const CDo *odesc)
 
     if (pf_tab) {
         char buf[32];
-        sprintf(buf, "%d", odesc->group());
+        snprintf(buf, sizeof(buf), "%d", odesc->group());
         pf_pathname = lstring::copy(buf);
         if (EX()->pathFinder(cExt::PFget) == this)
             EX()->PopUpSelections(0, MODE_UPD);

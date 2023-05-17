@@ -349,7 +349,7 @@ cTech::PrintLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld,
     DspLayerParams *lp = dsp_prm(ld);
 
     // RGB
-    sprintf(buf, "%s %d %d %d\n", Tkw.kwRGB(),
+    snprintf(buf, sizeof(buf), "%s %d %d %d\n", Tkw.kwRGB(),
         lp->red(), lp->green(), lp->blue());
     PutStr(fp, lstr, buf);
     if (cmts)
@@ -432,7 +432,7 @@ cTech::PrintLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld,
 
     // WireWidth
     if (lp->wire_width() > 0) {
-        sprintf(buf, "%s %.4f\n", Tkw.WireWidth(),
+        snprintf(buf, sizeof(buf), "%s %.4f\n", Tkw.WireWidth(),
             MICRONS(lp->wire_width()));
         PutStr(fp, lstr, buf);
     }
@@ -442,7 +442,7 @@ cTech::PrintLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld,
     if (mode == Physical) {
         // CrossThick
         if (lp->xsect_thickness() > 0) {
-            sprintf(buf, "%s %.4f\n", Tkw.CrossThick(),
+            snprintf(buf, sizeof(buf), "%s %.4f\n", Tkw.CrossThick(),
                 MICRONS(lp->xsect_thickness()));
             PutStr(fp, lstr, buf);
         }
@@ -494,17 +494,19 @@ cTech::PrintPmap(FILE *fp, sLstr *lstr, unsigned char *map, int nx, int ny)
         if (no_pmap) {
             if (i == 0) {
                 if ((nx != 8 && nx != 16) || (ny != 8 && ny != 16)) {
-                    sprintf(bp, " x=%d y=%d\\\n", nx, ny);
+                    int len = bp - buf;
+                    snprintf(bp, sizeof(buf) - len, " x=%d y=%d\\\n", nx, ny);
                     while (*bp)
                         bp++;
                 }
             }
+            int len = bp - buf;
             if (nx <= 8)
-                sprintf(bp, " %02x", d);
+                snprintf(bp, sizeof(buf) - len, " %02x", d);
             else if (nx <= 16)
-                sprintf(bp, " %04x", d);
+                snprintf(bp, sizeof(buf) - len, " %04x", d);
             else
-                sprintf(bp, " %x", d);
+                snprintf(bp, sizeof(buf) - len, " %x", d);
             if ((i == 7 || i == 15 || i == 23) && i != ny-1) {
                 while (*bp)
                     bp++;
@@ -523,10 +525,11 @@ cTech::PrintPmap(FILE *fp, sLstr *lstr, unsigned char *map, int nx, int ny)
             *bp++ = '|';
             *bp++ = ' ';
             *bp++ = ' ';
+            int len = bp - buf;
             if (i == ny-1)
-                sprintf(bp, "(0x%x)", d);
+                snprintf(bp, sizeof(buf) - len, "(0x%x)", d);
             else
-                sprintf(bp, "(0x%x) \\\n", d);
+                snprintf(bp, sizeof(buf) - len, "(0x%x) \\\n", d);
         }
         PutStr(fp, lstr, buf);
     }

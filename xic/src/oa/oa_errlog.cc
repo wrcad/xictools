@@ -79,8 +79,8 @@ cOA::set_debug_flags(const char *on, const char *off)
                 OAerrLog.set_debug_net(false);
         }
     }
-    sprintf(buf, "load=%d net=%d pcell=%d", OAerrLog.debug_load(),
-        OAerrLog.debug_net(), OAerrLog.debug_pcell());
+    snprintf(buf, sizeof(buf), "load=%d net=%d pcell=%d",
+        OAerrLog.debug_load(), OAerrLog.debug_net(), OAerrLog.debug_pcell());
     return (buf);
 }
 // End of cOA functions.
@@ -200,7 +200,7 @@ cOAerrLog::add_err(int err_type, const char *fmt, ...)
         if (err_type == IFLOG_WARN || err_type == IFLOG_FATAL)
             el_errcnt++;
         char buf[2048];
-        sprintf(buf, "In %s: ", el_name);
+        snprintf(buf, sizeof(buf), "In %s: ", el_name);
         int n = strlen(buf);
         va_list args;
         va_start(args, fmt);

@@ -734,7 +734,8 @@ cGroupDesc::list_devs()
                 if (di->index() > maxidx)
                     maxidx = di->index();
             }
-            sprintf(buf, "%s %s %d-%d", Tstring(p->devs()->desc()->name()), 
+            snprintf(buf, sizeof(buf), "%s %s %d-%d",
+                Tstring(p->devs()->desc()->name()), 
                 p->devs()->desc()->prefix() ?
                     p->devs()->desc()->prefix() : EXT_NONE_TOK, 0, maxidx);
             s0 = new stringlist(lstring::copy(buf), s0);
@@ -1688,29 +1689,29 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
         char buf[128];
         if (ptab) {
             if (ptab->get("M")) {
-                sprintf(buf, "'%d*M'", esects);
+                snprintf(buf, sizeof(buf), "'%d*M'", esects);
                 char *str = lstring::copy(buf);
                 ptab->param_subst_all_collapse(&str);
-                sprintf(buf, "M=%s", str);
+                snprintf(buf, sizeof(buf), "M=%s", str);
                 delete [] str;
                 sParamTab::extract_params(ptab, buf);
             }
             else if (EX()->paramCx() && EX()->paramCx()->has_param("M")) {
-                sprintf(buf, "'%d*M'", esects);
+                snprintf(buf, sizeof(buf), "'%d*M'", esects);
                 char *str = lstring::copy(buf);
                 EX()->paramCx()->update(&str);
-                sprintf(buf, "M=%s", str);
+                snprintf(buf, sizeof(buf), "M=%s", str);
                 delete [] str;
                 sParamTab::extract_params(ptab, buf);
             }
             else {
-                sprintf(buf, "M=%d", esects);
+                snprintf(buf, sizeof(buf), "M=%d", esects);
                 sParamTab::extract_params(ptab, buf);
             }
         }
         else {
             ptab = new sParamTab;
-            sprintf(buf, "M=%d", esects);
+            snprintf(buf, sizeof(buf), "M=%d", esects);
             sParamTab::extract_params(ptab, buf);
         }
     }
@@ -1851,19 +1852,19 @@ sDevContactDesc::checkEquiv(const sDevContactDesc *cref)
         return (0);
     char buf[256];
     if (c_name != cref->c_name) {
-        snprintf(buf, 256, "contact name is %s, expecting %s",
+        snprintf(buf, sizeof(buf), "contact name is %s, expecting %s",
             c_name ? Tstring(c_name) : "null",
             cref->c_name ? Tstring(cref->c_name) : "null");
         return (lstring::copy(buf));
     }
     if (c_bulk != cref->c_bulk) {
-        snprintf(buf, 256, "%s contact %s, expecting %s",
+        snprintf(buf, sizeof(buf), "%s contact %s, expecting %s",
             c_bulk ? "bulk" : "non-bulk", c_name ? Tstring(c_name) : "null",
             cref->c_bulk ? "bulk" : "non-bulk");
         return (lstring::copy(buf));
     }
     if (c_multiple != cref->c_multiple) {
-        snprintf(buf, 256, "%s contact %s, expecting %s",
+        snprintf(buf, sizeof(buf), "%s contact %s, expecting %s",
             c_multiple ? "multiple" : "non-multiple",
             c_name ? Tstring(c_name) : "null",
             cref->c_multiple ? "multiple" : "non-multiple");
@@ -1969,7 +1970,7 @@ sDevContactDesc::parse_contact(const char **line, sDevDesc *d)
         }
     }
     if (!c->c_name_gvn || !c->c_lname) {
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "Syntax error, no contact name, contact spec in Device %s "
             "block,\nline %d.\n", TstringNN(d->name()), Tech()->LineCount());
         delete c;
@@ -1977,7 +1978,7 @@ sDevContactDesc::parse_contact(const char **line, sDevDesc *d)
     }
     if (!c->c_lspec.parseExpr(line)) {
         sLstr lstr;
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "Layer expression parse error, contact spec in Device %s "
             "block,\nline %d:\n", TstringNN(d->name()),
             Tech()->LineCount());
@@ -1990,7 +1991,7 @@ sDevContactDesc::parse_contact(const char **line, sDevDesc *d)
 
     if (lstring::prefix("...", *line)) {
         if (!d->contacts()) {
-            sprintf(buf,
+            snprintf(buf, sizeof(buf),
                 "Error, contact spec in Device %s block, \"...\" "
                 "found in first contact,\nline %d.\n",
                 TstringNN(d->name()), Tech()->LineCount());
@@ -2046,7 +2047,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
     sDevContactDesc *c = new sDevContactDesc;
     c->c_name_gvn = lstring::gettok(line);
     if (!c->c_name_gvn) {
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "Error, missing terminal name in Device %s block, line %d.\n",
             TstringNN(d->name()), Tech()->LineCount());
         delete c;
@@ -2056,7 +2057,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
 
     char *tok = lstring::gettok(line);
     if (!tok) {
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "Error, missing text in bulk contact spec in "
             "Device %s block, line %d.\n",
             TstringNN(d->name()), Tech()->LineCount());
@@ -2078,7 +2079,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
         if (c->c_level == BC_skip || c->c_level == BC_defer) {
             tok = lstring::gettok(line);
             if (!tok) {
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "Error, missing net name in bulk contact spec in "
                     "Device %s block, line %d.\n",
                     TstringNN(d->name()), Tech()->LineCount());
@@ -2092,7 +2093,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
 
         tok = lstring::gettok(line);
         if (!tok) {
-            sprintf(buf,
+            snprintf(buf, sizeof(buf),
                 "Error, missing bloat value in bulk contact spec in "
                 "Device %s block, line %d.\n",
                 TstringNN(d->name()), Tech()->LineCount());
@@ -2104,7 +2105,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
     // The tok should be a bloat number.
     if (sscanf(tok, "%f", &c->c_bulk_bloat) != 1 ||
             c->c_bulk_bloat < 0.0) {
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "Error, bad bloat value in bulk contact spec in "
             "Device %s block, line %d.\n",
             TstringNN(d->name()), Tech()->LineCount());
@@ -2124,7 +2125,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
         }
     }
     if (!c->c_lname) {
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "Syntax error, no layer name, contact spec in Device %s block,\n"
             "line %d.\n", TstringNN(d->name()), Tech()->LineCount());
         delete c;
@@ -2132,7 +2133,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
     }
     if (!c->c_lspec.parseExpr(line)) {
         sLstr lstr;
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "Syntax error, no layer name, contact spec in Device %s block,\n"
             "line %d:\n", TstringNN(d->name()), Tech()->LineCount());
         lstr.add(buf);
@@ -2464,8 +2465,8 @@ sMeasure::print_compare(sLstr *lstr, const double *leadval, sParamTab *ptab,
 
         char tbuf[256], nbuf[64];
         if (d)
-            sprintf(nbuf, "%1.6e", *d);
-        sprintf(tbuf, msg, m_name, a, d ? nbuf : nf);
+            snprintf(nbuf, sizeof(nbuf), "%1.6e", *d);
+        snprintf(tbuf, sizeof(tbuf), msg, m_name, a, d ? nbuf : nf);
         lstr->add(tbuf);
         if (d && !tcmp(a, *d, m_precision)) {
             lstr->add("  ** differ\n");
@@ -3513,7 +3514,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
     while (c && cr) {
         char *s = c->checkEquiv(cr);
         if (s) {
-            snprintf(buf, 256, "Device %s, prefix %s:  %s",
+            snprintf(buf, sizeof(buf), "Device %s, prefix %s:  %s",
             Tstring(d_name), d_prefix ? d_prefix : "null", s);
             delete [] s;
             return (lstring::copy(buf));
@@ -3522,7 +3523,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
         cr = cr->next();
     }
     if (c) {
-        snprintf(buf, 256,
+        snprintf(buf, sizeof(buf),
             "Device %s, prefix %s:  extra contact %s not found in reference\n"
             "device with the same name.", Tstring(d_name),
             d_prefix ? d_prefix : "null",
@@ -3530,7 +3531,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
         return (lstring::copy(buf));
     }
     if (cr) {
-        snprintf(buf, 256,
+        snprintf(buf, sizeof(buf),
             "Device %s, prefix %s:  missing contact %s found in reference\n"
             "devices with the same name.", Tstring(d_name),
             d_prefix ? d_prefix : "null",
@@ -3566,7 +3567,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
                     (seq(p1, pr2) && seq(p2, pr1)))
                 ;
             else {
-                snprintf(buf, 256,
+                snprintf(buf, sizeof(buf),
                     "Device %s, prefix %s:  permutes %s, %s differ "
                     "from %s, %s\n"
                     "found in reference device with the same name.",
@@ -3578,7 +3579,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
         }
     }
     else if (d_prmconts) {
-        snprintf(buf, 256,
+        snprintf(buf, sizeof(buf),
             "Device %s, prefix %s:  permutes are inconsistent with\n"
             "reference device with the same name.",
             Tstring(d_name), d_prefix ? d_prefix : "null");
@@ -3595,7 +3596,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
         d_flags = dref->d_flags;
     }
     if (dref->d_flags != d_flags) {
-        snprintf(buf, 256,
+        snprintf(buf, sizeof(buf),
             "Device %s, prefix %s:  merging (%s} differs from \n"
             "(%s) found in reference device with the same name.",
             d_name->string(), d_prefix ? d_prefix : "null",

@@ -4735,7 +4735,7 @@ extract_funcs::IFsetEdevProperty(Variable *res, Variable *args, void*)
         return (BAD);
     res->type = TYP_SCALAR;
     char buf[128];
-    sprintf(buf, "%s.%s", dname, prpty);
+    snprintf(buf, sizeof(buf), "%s.%s", dname, prpty);
     res->content.value = SCD()->setDevicePrpty(buf, string);
     return (OK);
 }
@@ -4765,7 +4765,7 @@ extract_funcs::IFgetEdevProperty(Variable *res, Variable *args, void*)
         return (BAD);
     res->type = TYP_STRING;
     char buf[128];
-    sprintf(buf, "%s.%s", dname, prpty);
+    snprintf(buf, sizeof(buf), "%s.%s", dname, prpty);
     res->content.string = SCD()->getDevicePrpty(buf);
     if (res->content.string)
         res->flags |= VF_ORIGINAL;

@@ -202,11 +202,13 @@ cOAnameTab::getNewName(CDcellName name)
     // a clash with an Xic library device name.
 
     const char *oldname = Tstring(name);
-    char *tbuf = new char[strlen(oldname) + 20];
+    int len = strlen(oldname) + 20;
+    char *tbuf = new char[len];
     char *e = lstring::stpcpy(tbuf, oldname);
     *e++ = '_';
+    len -= (e - tbuf);
     for (int i = 1; ; i++) {
-        sprintf(e, "%d", i);
+        snprintf(e, len, "%d", i);
         CDcellName nn = CD()->CellNameTableAdd(tbuf);
         if (SymTab::get(nt_cname_tab, (unsigned long)nn) == ST_NIL) {
             delete [] tbuf;
