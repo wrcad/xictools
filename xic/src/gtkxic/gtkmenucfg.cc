@@ -2515,10 +2515,11 @@ GTKmenuConfig::menu_handler(GtkWidget *caller, void *client_data)
         return;
 
     ent += action;
-    if (ent->alt_caller)
+    if (ent->alt_caller) {
         // Spurious call from menu pop-up.  This handler should only
         // be called through the alt_caller.
         return;
+    }
 
     ent->cmd.caller = caller;  // should already be set
     if (!ent->cmd.wdesc)
@@ -2607,7 +2608,7 @@ GTKmenuConfig::menu_handler(GtkWidget *caller, void *client_data)
             g_timeout_add(50, cmd_proc, ent);
         return;
     }
-    if (GTKmainwin::self()) {
+    if (GTKmainwin::exists()) {
         if (ent->action) {
             GTKmainwin::self()->ShowGhost(ERASE);
             (*ent->action)(&ent->cmd);

@@ -110,7 +110,7 @@ namespace {
         char ft[4];                         // file type code
     };
 
-    namespace gtkmodif {
+    namespace qtmodif {
         struct sSC : public QTbag
         {
             sSC(stringlist*, bool(*)(const char*));
@@ -143,7 +143,7 @@ namespace {
     }
 }
 
-using namespace gtkmodif;
+using namespace qtmodif;
 
 PMretType sSC::sc_retval;
 

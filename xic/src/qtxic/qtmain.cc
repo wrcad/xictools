@@ -870,6 +870,8 @@ cKeys::check_exec(bool exact)
     if (!k_keypos)
         return;
     MenuEnt *ent = Menu()->MatchEntry(k_keys, k_keypos, k_win_number, exact);
+//XXX
+fprintf(stderr, "%s %p\n", k_keys, ent);
     if (ent) {
         if (ent->is_dynamic() && ent->is_menu())
             // Ignore the submenu buttons in the User menu
@@ -1320,41 +1322,6 @@ QTsubwin::PopUpExpand(GRobject caller, ShowMode mode,
     sw_expand->set_visible(true);
 }
 
-
-void
-QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
-{
-    (void)caller;
-    (void)mode;
-/*
-    if (!QTdev::exists() || !QTmainwin::exists())
-        return;
-    if (mode == MODE_OFF) {
-        if (sw_zoompop)
-            sw_zoompop->popdown();
-        return;
-    }
-    if (mode == MODE_UPD) {
-        if (sw_zoompop)
-            sw_zoompop->update();
-        return;
-    }
-    if (sw_zoompop)
-        return;
-
-    sw_zoompop = new sZm(this, wib_windesc);
-    sw_zoompop->register_usrptr((void**)&wib_zoompop);
-    if (!wib_zoompop->shell()) {
-        delete sw_zoompop;
-        sw_zoompop = 0;
-        return;
-    }
-
-    sw_zoompop->register_caller(caller);
-    sw_zoompop->initialize(x, y);
-    sw_zoompop->set_visible(true);
-*/
-}
 // End of cAppWinFuncs interface
 
 

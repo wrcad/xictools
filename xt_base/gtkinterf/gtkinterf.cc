@@ -1147,6 +1147,7 @@ GTKdev::GetStatus(GRobject btn)
         return (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn)));
     if (GTK_IS_CHECK_MENU_ITEM(btn))
         return (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(btn)));
+    // Return true if not a toggle.
     return (true);
 }
 

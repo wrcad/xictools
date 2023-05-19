@@ -59,6 +59,7 @@ class cCoord;
 class cParam;
 class cKeys;
 class cExpand;
+class cZoom;
 class idle_proc;
 class QTltab;
 
@@ -250,6 +251,7 @@ protected:
     QMenuBar    *sw_menubar;
     cKeys       *sw_keys_pressed;
     cExpand     *sw_expand;
+    cZoom       *sw_zoom;
     WindowDesc  *sw_windesc;
     int         sw_win_number;
 

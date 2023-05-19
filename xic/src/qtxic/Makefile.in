@@ -53,7 +53,12 @@ CCFILES = \
     qtmodif.cc \
     qtparam.cc \
     qtptext.cc \
+    qtsel.cc \
+    qtstab.cc \
+    qttree.cc \
     qtxdraw.cc \
+    qtxform.cc \
+    qtzoom.cc \
     qtxxx.cc
 MOCFILES = \
     moc_main.cpp \

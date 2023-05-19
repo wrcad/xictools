@@ -546,7 +546,8 @@ QTdev::GetStatus(GRobject obj)
                 return (a->isChecked());
         }
     }
-    return (false);
+    // Return true if not a toggle.
+    return (true);
 }
 
 

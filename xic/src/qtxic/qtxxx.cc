@@ -517,12 +517,6 @@ cEdit::PropertyInfoPurge(CDo *odold, CDo *odnew)
 {
 }
 
-// qtsel.cc
-
-void
-cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
-{
-}
 
 // qtsim.cc
 
@@ -531,28 +525,6 @@ cSced::PopUpSim(SpType status)
 {
 }
 
-// qtstab.cc
-
-void
-cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
-{
-}
-
-// qttree.cc
-
-void
-cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
-    TreeUpdMode dmode, const char *oldroot)
-{
-}
-
-// qtxform.cc
-
-void
-cEdit::PopUpTransform(GRobject caller, ShowMode mode,
-    bool (*callback)(const char*, bool, const char*, void*), void *arg)
-{
-}
 
 /* ----- */
 

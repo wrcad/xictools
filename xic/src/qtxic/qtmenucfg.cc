@@ -49,6 +49,7 @@
 #include "si_interp.h"
 #include "select.h"
 #include "events.h"
+#include "errorlog.h"
 
 #include "file_menu.h"
 #include "cell_menu.h"
@@ -1638,7 +1639,65 @@ QTmenuConfig::subwin_help_menu_slot(QAction *a)
 void
 QTmenuConfig::idle_exec_slot(MenuEnt *ent)
 {
-    if (ent->action) {
+    // XXX Old GTK message, don't know if it still applies.
+    // The two functions below initiate commands.  They are called
+    // from a timeout rather than an idle loop to avoid problems like
+    // the following:  Assume that the previous command's esc
+    // procedure calls redisplay, so there is a redisplay idle
+    // pending.  The new command would add a second idle proc.  During
+    // the redisplay, the CheckForInterrupt calls will start the
+    // second idle proc, before drawing is complete.  If the second
+    // idle proc starts a command like Edit, which blocks, then we are
+    // stuck in "busy" mode with no way out.
+    //
+    // Below, we wait until the drawing is complete ("not busy")
+    // before allowing the command to be launched.
+
+    if (ent->is_dynamic()) {
+        if (QTpkg::self()->IsBusy())
+            return;
+        DSP()->SetInterrupt(DSPinterNone);
+        const char *entry = ent->menutext;
+        // entry is the same as m->entry, but contains the menu path
+        // for submenu items
+        char buf[128];
+        if (lstring::strdirsep(entry)) {
+            // From submenu, add a distinguishing prefix to avoid
+            // confusion with file path.
+
+            snprintf(buf, sizeof(buf), "%s%s", SCR_LIBCODE, entry);
+            entry = buf;
+        }
+        SIfile *sfp;
+        stringlist *wl;
+        XM()->OpenScript(entry, &sfp, &wl);
+        if (sfp || wl) {
+            // Make sure that there is a current cell before calling the
+            // script.  If we create a cell and it remains empty and
+            // unconnected, we will delete it.
+
+            bool cell_created = false;
+            CDs *cursd = CurCell();
+            if (!cursd) {
+                if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
+                        DSP()->CurMode())) {
+                    Log()->ErrorLog(mh::Processing, Errs()->get_error());
+                    return;
+                }
+                cell_created = true;
+                cursd = CurCell();
+            }
+            EditIf()->ulListCheck(ent->entry, cursd, false);
+            SI()->Interpret(sfp, wl, 0, 0);
+            if (sfp)
+                delete sfp;
+            EditIf()->ulCommitChanges(true);
+            if (cell_created && cursd->isEmpty() && !cursd->isSubcell())
+                delete cursd;
+        }
+        return;
+    }
+    if (ent->action && QTmainwin::exists() && !QTpkg::self()->IsBusy()) {
         QTmainwin::self()->ShowGhost(ERASE);
         (*ent->action)(&ent->cmd);
         QTmainwin::self()->ShowGhost(DISPLAY);
@@ -1649,7 +1708,103 @@ QTmenuConfig::idle_exec_slot(MenuEnt *ent)
 void
 QTmenuConfig::exec_slot(MenuEnt *ent)
 {
+    if (ent->alt_caller) {
+        // Spurious call from menu pop-up.  This handler should only
+        // be called through the alt_caller.
+printf("exec_slot alt_caller\n");
+        return;
+    }
+
+    if (!ent->cmd.wdesc)
+        ent->cmd.wdesc = DSP()->MainWdesc();
+
+/*XXX
+    // If a modifier key is down, the key will be grabbed, and if text
+    // editing mode is entered somehow the up event is lost.  E.g,
+    // press Shift and click logo.  Windows can't be moved until Shift
+    // is pressed and released.  Call gtk_keyboard_ungrab to avoid
+    // this.
+    gdk_keyboard_ungrab(0);
+*/
+
+    if (XM()->IsDoingHelp()) {
+        int mstate = QApplication::keyboardModifiers();
+        bool state = Menu()->GetStatus(ent->cmd.caller);
+
+        char buf[128];
+        const char *s;
+        if (ent->is_dynamic()) {
+            snprintf(buf, sizeof(buf), "user:%s", ent->entry);
+            s = buf;
+        }
+        else {
+            s = ent->entry;
+            if (!strcmp(s, MenuHELP)) {
+                // quit help
+                XM()->QuitHelp();
+                return;
+            }
+            snprintf(buf, sizeof(buf), "xic:%s", s);
+            s = buf;
+        }
+        if (!(mstate & Qt::ShiftModifier)) {
+            DSPmainWbag(PopUpHelp(s))
+            if (ent->flags & ME_TOGGLE) {
+                // put the button back the way it was
+                state = !state;
+                Menu()->SetStatus(ent->cmd.caller, state);
+            }
+            return;
+        }
+    }
+    if (ent->is_dynamic()) {
+        // script from user menu
+        if (!ent->is_menu() && !XM()->DbgLoad(ent)) {
+
+            EV()->InitCallback();
+
+            // Putting the call in a timeout proc allows the current
+            // command to return and finish before the new one starts
+            // (see below).
+            emit exec_idle(ent);
+        }
+        return;
+    }
+
+    bool call_on_up;
+    if (!Menu()->SetupCommand(ent, &call_on_up))
+        return;
+
     if (ent->type == CMD_NOTSAFE) {
+
+        // Terminate present command state.
+        // We enable the coordinate export here.  This is a
+        // convenience feature that allows the same ghost box to be
+        // used in the next command.  Suppose you set up a box to
+        // erase, perhaps with panning/zooming, but then click to
+        // finish the operation.  Oops, we were in the boxes command,
+        // so undo, then press the erase button.  The erase command
+        // will have the same rectangle anchor already set.
+
+        CmdState::SetEnableExport(true);
+        EV()->InitCallback();
+        CmdState::SetEnableExport(false);
+        Selections.check(); // consistency check
+
+        // Putting the call in a timeout proc allows the current
+        // command to return and finish before the new one starts.
+
+        if (Menu()->GetStatus(ent->cmd.caller))
+            emit exec_idle(ent);
+        else if (call_on_up)
+            emit exec_idle(ent);
+        return;
+    }
+    idle_exec_slot(ent);
+
+    /*
+    if (ent->type == CMD_NOTSAFE) {
+printf("x1\n");
         // hack for the "run" button
         if (!strcmp(ent->entry, MenuRUN) && ScedIf()->simulationActive()) {
             (*ent->action)(&ent->cmd);
@@ -1663,13 +1818,15 @@ QTmenuConfig::exec_slot(MenuEnt *ent)
         EV()->InitCallback();
         // consistency check
         Selections.check();
-        if (state)
+        if (state) {
             // putting the call in an idle proc allows the current command
             // function to return before the new one starts
             emit exec_idle(ent);
+        }
         return;
     }
-    idle_exec_slot(ent);
+    */
+printf("x2\n");
 }
 
 
@@ -1793,179 +1950,6 @@ QTmenuConfig::get_style_pixmap()
 
 
 #ifdef notdef
-
-// Static function.
-// This callback controls the dispatching of application
-// commands from the menus.
-//
-void
-gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data,
-    unsigned int action)
-{
-    // sanity check
-    if (!client_data)
-        return;
-    MenuEnt *ent = static_cast<MenuEnt*>(client_data);
-    if (Menu()->IsMainMenu(ent) || Menu()->IsSideMenu(ent) ||
-            Menu()->IsSubwMenu(ent)) {
-        unsigned i;
-        for (i = 0; ent[i].entry; i++);
-        if (action >= i)
-            return;
-    }
-    else
-        return;
-
-    ent += action;
-    ent->cmd.caller = caller;
-    if (!ent->cmd.wdesc)
-        ent->cmd.wdesc = DSP()->MainWdesc();
-
-    char buf[128];
-    if (XM()->IsDoingHelp()) {
-        int x, y;
-        GdkModifierType mstate;
-        gdk_window_get_pointer(GTKdev::DefaultFocusWin(), &x, &y, &mstate);
-        bool state = Menu()->GetStatus(caller);
-
-        const char *s;
-        if (ent->is_dynamic()) {
-            snprintf(buf, sizeof(buf), "user:%s", ent->entry);
-            s = buf;
-        }
-        else {
-            s = ent->entry;
-            if (!strcmp(s, MenuHELP)) {
-                // quit help
-                XM()->QuitHelp();
-                return;
-            }
-            snprintf(buf, sizeof(buf), "xic:%s", s);
-            s = buf;
-        }
-        if (!(mstate & GDK_SHIFT_MASK)) {
-            DSPmainWbag(PopUpHelp(s))
-            // put the button back the way it was
-            state = !state;
-            Menu()->SetStatus(caller, state);
-            return;
-        }
-    }
-    if (ent->is_dynamic()) {
-        // script from user menu
-        if (!XM()->DbgLoad(ent)) {
-            EV()->InitCallback();
-            // Putting the call in a timeout proc allows the current
-            // command to return and finish before the new one starts
-            // (see below).
-            gtk_timeout_add(50, user_cmd_proc, ent);
-        }
-        return;
-    }
-
-    if (ent->type == CMD_NOTSAFE) {
-        // hack for the "run" button
-        if (!strcmp(ent->entry, MenuRUN) && ScedIf()->simulationActive()) {
-            if (ent->action)
-                (*ent->action)(&ent->cmd);
-            return;
-        }
-
-        // Terminate present command state.
-        EV()->InitCallback();
-        Selections.check(); // consistency check
-
-        // Putting the call in a timeout proc allows the current
-        // command to return and finish before the new one starts (see
-        // below).
-
-        if (Menu()->GetStatus((GtkWidget*)ent->cmd.caller))
-            gtk_timeout_add(50, cmd_proc, ent);
-        else if (!strcmp(ent->entry, MenuIPLOT))
-            // Hack for the "iplot" button
-            gtk_timeout_add(50, cmd_proc, ent);
-        return;
-    }
-    if (QTmainwin::self()) {
-        if (ent->action) {
-            QTmainwin::self()->ShowGhost(ERASE);
-            (*ent->action)(&ent->cmd);
-            QTmainwin::self()->ShowGhost(DISPLAY);
-        }
-    }
-}
-
-
-// The two functions below initiate commands.  They are called from a
-// timeout rather than an idle loop to avoid problems like the
-// following:  Assume that the previous command's esc procedure calls
-// redisplay, so there is a redisplay idle pending.  The new command
-// would add a second idle proc.  During the redisplay, the
-// CheckForInterrupt calls will start the second idle proc, before
-// drawing is complete.  If the second idle proc starts a command like
-// Edit, which blocks, then we are stuck in "busy" mode with no way
-// out.
-//
-// Below, we wait until the drawing is complete ("not busy") before
-// allowing the command to be launched.
-
-// Static function.
-int
-gtkMenuConfig::user_cmd_proc(void *arg)
-{
-    if (QTpkg::self()->IsBusy())
-        return (true);
-    DSP()->SetInterrupt(false);
-    MenuEnt *ent = (MenuEnt*)arg;
-    const char *entry = ent->menutext + strlen("/User/");
-    // entry is the same as m->entry, but contains the menu path
-    // for submenu items
-    char buf[128];
-    if (lstring::strdirsep(entry)) {
-        // from submenu, add a distinguishing prefix to avoid confusion with
-        // file path
-        snprintf(buf, sizeof(buf), "%s%s", SCR_LIBCODE, entry);
-        entry = buf;
-    }
-    SIfile *sfp;
-    stringlist *wl;
-    XM()->OpenScript(entry, &sfp, &wl);
-    if (sfp || wl) {
-        CDs *cursd = CurCell();
-        if (cursd) {
-            EditIf()->ulListCheck(ent->entry, cursd, false);
-            SI()->Interpret(sfp, wl, 0, 0);
-            if (sfp)
-                delete sfp;
-            if (EditIf()->ulHasChanged()) {
-                BBox BB;
-                if (EditIf()->ulCommitChanges(false, &BB, false))
-                    DSP()->RedisplayArea(&BB);
-            }
-        }
-    }
-    return (false);
-}
-
-
-// Static function.
-int
-gtkMenuConfig::cmd_proc(void *arg)
-{
-    if (QTpkg::self()->IsBusy())
-        return (true);
-    DSP()->SetInterrupt(false);
-    MenuEnt *ent = (MenuEnt*)arg;
-    if (QTmainwin::self()) {
-        if (ent->action) {
-            QTmainwin::self()->ShowGhost(ERASE);
-            (*ent->action)(&ent->cmd);
-            QTmainwin::self()->ShowGhost(DISPLAY);
-        }
-    }
-    return (false);
-}
-
 
 // Static function.
 // Add a set of entries the the item factory, extracting the just-added
