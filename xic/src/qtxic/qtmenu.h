@@ -85,6 +85,22 @@ public:
     void HideButtonMenu(bool);
     void DisableMainMenuItem(const char*, const char*, bool);
 
+    // Non-virtual.
+
+    /* XXX needed?
+    GtkWidget *FindMainMenuWidget(const char*, const char*);
+
+    void SetModal(GtkWidget *w) { modalShell = w; }
+    GtkWidget *GetModal()       { return (modalShell); }
+
+    GtkWidget *MainMenu()       { return (mainMenu); }
+    GtkWidget *TopButtonMenu()  { return (topButtonWidget); }
+    GtkWidget *ButtonMenu(DisplayMode m)
+    {
+        return (m == Physical ? btnPhysMenuWidget : btnElecMenuWidget);
+    }
+    */
+
     static QTmenu *self() { return (dynamic_cast<QTmenu*>(Menu())); }
 };
 

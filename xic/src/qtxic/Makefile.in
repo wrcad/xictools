@@ -50,8 +50,10 @@ CCFILES = \
     qtmain.cc \
     qtmenu.cc \
     qtmenucfg.cc \
+    qtmerge.cc \
     qtmodif.cc \
     qtparam.cc \
+    qtplace.cc \
     qtptext.cc \
     qtsel.cc \
     qtstab.cc \

@@ -378,55 +378,6 @@ cMain::PopUpMemory(ShowMode mode)
 {
 }
 
-// qtmerge.cc
-
-bool
-cConvert::PopUpMergeControl(ShowMode mode, mitem_t *list)
-{
-    return (false);
-}
-
-// qtmodif.cc
-
-PMretType
-cEdit::PopUpModified(stringlist*, bool(*)(const char*))
-{
-    return (PMok);
-}
-
-void
-cEdit::PopUpPCellCtrl(GRobject, ShowMode)
-{
-}
-
-bool
-cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*, const char*,
-    pcpMode)
-{
-}
-
-// qtnodmp.cc
-
-bool
-cSced::PopUpNodeMap(GRobject caller, ShowMode mode, int node)
-{
-    return (false);
-}
-
-// qtoasis.h
-
-void
-cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
-{
-}
-
-// qtplace.cc
-
-void
-cEdit::PopUpPlace(ShowMode mode, bool noprompt)
-{
-}
-
 // qtprpcedit.cc
 
 void
