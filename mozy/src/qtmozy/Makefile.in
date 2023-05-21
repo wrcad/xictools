@@ -21,19 +21,19 @@ MOC_INCLUDE = ../../include/qtmozy
 LIB_TARGET = ../../lib/qtmozy.a
 
 CCFILES = \
-    form_file_w.cc \
-    httpmon_d.cc \
+    qtform_file.cc \
     qthelp.cc \
+    qthttpmon.cc \
     qtviewer.cc \
-    viewmon.cc
+    qtviewmon.cc
 
 MOCFILES = \
-    moc_form_button_w.cpp \
-    moc_form_combo_w.cpp \
-    moc_form_file_w.cpp \
-    moc_form_list_w.cpp \
+    moc_form_button.cpp \
+    moc_form_combo.cpp \
+    moc_form_file.cpp \
+    moc_form_list.cpp \
     moc_help.cpp \
-    moc_httpmon_d.cpp \
+    moc_httpmon.cpp \
     moc_queue_timer.cpp \
     moc_viewer.cpp \
     moc_viewmon.cpp
@@ -53,34 +53,34 @@ $(LIB_TARGET): $(LIBOBJS)
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
 
-moc_form_button_w.o: moc_form_button_w.cpp  $(MOC_INCLUDE)/form_button_w.h 
-moc_form_combo_w.o: moc_form_combo_w.cpp  $(MOC_INCLUDE)/form_combo_w.h 
-moc_form_file_w.o: moc_form_file_w.cpp  $(MOC_INCLUDE)/form_file_w.h 
-moc_form_list_w.o: moc_form_list_w.cpp  $(MOC_INCLUDE)/form_list_w.h 
+moc_form_button.o: moc_form_button.cpp  $(MOC_INCLUDE)/qtform_button.h 
+moc_form_combo.o: moc_form_combo.cpp  $(MOC_INCLUDE)/qtform_combo.h 
+moc_form_file.o: moc_form_file.cpp  $(MOC_INCLUDE)/qtform_file.h 
+moc_form_list.o: moc_form_list.cpp  $(MOC_INCLUDE)/qtform_list.h 
 moc_help.o: moc_help.cpp  $(MOC_INCLUDE)/qthelp.h 
-moc_httpmon_d.o: moc_httpmon_d.cpp  $(MOC_INCLUDE)/httpmon_d.h 
+moc_httpmon.o: moc_httpmon.cpp  $(MOC_INCLUDE)/qthttpmon.h 
 moc_queue_timer.o: moc_queue_timer.cpp  $(MOC_INCLUDE)/queue_timer.h 
 moc_viewer.o: moc_viewer.cpp  $(MOC_INCLUDE)/qtviewer.h 
-moc_viewmon.o: moc_viewmon.cpp  $(MOC_INCLUDE)/viewmon.h 
+moc_viewmon.o: moc_viewmon.cpp  $(MOC_INCLUDE)/qtviewmon.h 
 
-moc_form_button_w.cpp: $(MOC) $(MOC_INCLUDE)/form_button_w.h
-	$(MOC) $(MOC_INCLUDE)/form_button_w.h -o moc_form_button_w.cpp
-moc_form_combo_w.cpp: $(MOC) $(MOC_INCLUDE)/form_combo_w.h
-	$(MOC) $(MOC_INCLUDE)/form_combo_w.h -o moc_form_combo_w.cpp
-moc_form_file_w.cpp: $(MOC) $(MOC_INCLUDE)/form_file_w.h
-	$(MOC) $(MOC_INCLUDE)/form_file_w.h -o moc_form_file_w.cpp
-moc_form_list_w.cpp: $(MOC) $(MOC_INCLUDE)/form_list_w.h
-	$(MOC) $(MOC_INCLUDE)/form_list_w.h -o moc_form_list_w.cpp
+moc_form_button.cpp: $(MOC) $(MOC_INCLUDE)/qtform_button.h
+	$(MOC) $(MOC_INCLUDE)/qtform_button.h -o moc_form_button.cpp
+moc_form_combo.cpp: $(MOC) $(MOC_INCLUDE)/qtform_combo.h
+	$(MOC) $(MOC_INCLUDE)/qtform_combo.h -o moc_form_combo.cpp
+moc_form_file.cpp: $(MOC) $(MOC_INCLUDE)/qtform_file.h
+	$(MOC) $(MOC_INCLUDE)/qtform_file.h -o moc_form_file.cpp
+moc_form_list.cpp: $(MOC) $(MOC_INCLUDE)/qtform_list.h
+	$(MOC) $(MOC_INCLUDE)/qtform_list.h -o moc_form_list.cpp
 moc_help.cpp: $(MOC) $(MOC_INCLUDE)/qthelp.h
 	$(MOC) $(MOC_INCLUDE)/qthelp.h -o moc_help.cpp
-moc_httpmon_d.cpp: $(MOC) $(MOC_INCLUDE)/httpmon_d.h
-	$(MOC) $(MOC_INCLUDE)/httpmon_d.h -o moc_httpmon_d.cpp
+moc_httpmon.cpp: $(MOC) $(MOC_INCLUDE)/qthttpmon.h
+	$(MOC) $(MOC_INCLUDE)/qthttpmon.h -o moc_httpmon.cpp
 moc_queue_timer.cpp: $(MOC) $(MOC_INCLUDE)/queue_timer.h
 	$(MOC) $(MOC_INCLUDE)/queue_timer.h -o moc_queue_timer.cpp
 moc_viewer.cpp: $(MOC) $(MOC_INCLUDE)/qtviewer.h
 	$(MOC) $(MOC_INCLUDE)/qtviewer.h -o moc_viewer.cpp
-moc_viewmon.cpp: $(MOC) $(MOC_INCLUDE)/viewmon.h
-	$(MOC) $(MOC_INCLUDE)/viewmon.h -o moc_viewmon.cpp
+moc_viewmon.cpp: $(MOC) $(MOC_INCLUDE)/qtviewmon.h
+	$(MOC) $(MOC_INCLUDE)/qtviewmon.h -o moc_viewmon.cpp
 
 mocclean:
 	-@rm -f $(MOCOBJS)

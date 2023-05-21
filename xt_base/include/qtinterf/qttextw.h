@@ -32,96 +32,37 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Xic Integrated Circuit Layout and Schematic Editor                     *
+ * QtInterf Graphical Interface Library                                   *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef QTMENU_H
-#define QTMENU_H
+#ifndef QTTEXTW_H
+#define QTTEXTW_H
 
-#include "main.h"
-#include "menu.h"
-#include <QPushButton>
+#include <QTextEdit>
+#include <QMouseEvent>
 
-class QAction;
+// Derive a new class to expose the button press override.
 
-
-class QTmenu : public MenuMain
-{
-public:
-    friend class QTmenuConfig;
-
-    QTmenu()
-    {
-        modalShell = 0;
-    }
-
-    void InitMainMenu();
-    void InitTopButtonMenu();
-    void InitSideButtonMenus();
-
-    // Virtual functions from MenuMain.
-    void SetSensGlobal(bool);
-    void Deselect(GRobject);
-    void Select(GRobject);
-    bool GetStatus(GRobject);
-    void SetStatus(GRobject, bool);
-    void CallCallback(GRobject);
-    void Location(GRobject, int*, int*);
-    void PointerRootLoc(int*, int*);
-    const char *GetLabel(GRobject);
-    void SetLabel(GRobject, const char*);
-    void SetSensitive(GRobject, bool);
-    bool IsSensitive(GRobject);
-    void SetVisible(GRobject, bool);
-    bool IsVisible(GRobject);
-    void DestroyButton(GRobject);
-    void SwitchMenu();
-    void SwitchSubwMenu(int, DisplayMode);
-    GRobject NewSubwMenu(int);
-    void SetDDentry(GRobject, int, const char*);
-    void NewDDentry(GRobject, const char*);
-    void NewDDmenu(GRobject, const char*const*);
-    void UpdateUserMenu();
-    void HideButtonMenu(bool);
-    void DisableMainMenuItem(const char*, const char*, bool);
-
-    // Non-virtual.
-
-    void SetModal(QDialog *w)   { modalShell = w; }
-    QDialog *GetModal()         { return (modalShell); }
-
-    static QTmenu *self() { return (dynamic_cast<QTmenu*>(Menu())); }
-
-private:
-    QDialog     *modalShell;
-};
-
-class QTmenuButton : public QPushButton
+class QTtextEdit : public QTextEdit
 {
     Q_OBJECT
 
 public:
-    QTmenuButton(MenuEnt*, QWidget*);
+    QTtextEdit(QWidget *prnt = 0) : QTextEdit(prnt) { }
+
 
 signals:
-    void button_pressed(MenuEnt*);
+    void press_event(QMouseEvent*);
 
-private slots:
-    void pressed_slot() { emit button_pressed(entry); }
-
-private:
-    MenuEnt *entry;
+protected:
+    void mousePressEvent(QMouseEvent *ev)
+    {
+        emit press_event(ev);
+    }
 };
-
-
-inline QAction *
-action(MenuEnt *ent)
-{
-    return (static_cast<QAction*>(ent->user_action));
-}
 
 #endif
 

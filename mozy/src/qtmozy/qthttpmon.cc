@@ -45,7 +45,7 @@
 #include <QPushButton>
 #include <QTimer>
 
-#include "httpmon_d.h"
+#include "qthttpmon.h"
 #include "httpget/transact.h"
 #include "miscutil/lstring.h"
 
@@ -84,7 +84,7 @@ http_monitor::setup_comm(sComm*)
 void
 http_monitor::start(Transaction *t)
 {
-    httpmon_d *dl = new httpmon_d(0);
+    QThttpmon *dl = new QThttpmon(0);
     t->t_gcontext = dl;
     dl->set_transaction(t);
 
@@ -105,7 +105,7 @@ http_monitor::start(Transaction *t)
 //-----------------------------------------------------------------------------
 // The download monitor widget
 
-httpmon_d::httpmon_d(QWidget *prnt) : QDialog(prnt)
+QThttpmon::QThttpmon(QWidget *prnt) : QDialog(prnt)
 {
     transaction = 0;
     g_textbuf = 0;
@@ -146,7 +146,7 @@ httpmon_d::httpmon_d(QWidget *prnt) : QDialog(prnt)
 }
 
 
-httpmon_d::~httpmon_d()
+QThttpmon::~QThttpmon()
 {
     if (transaction)
         transaction->set_gr(0);
@@ -160,7 +160,7 @@ httpmon_d::~httpmon_d()
 // realized.
 //
 bool
-httpmon_d::widget_print(const char *buf)
+QThttpmon::widget_print(const char *buf)
 {
     char *str = lstring::copy(buf ? buf : g_textbuf);
     if (str) {
@@ -188,7 +188,7 @@ httpmon_d::widget_print(const char *buf)
 
 
 void
-httpmon_d::abort()
+QThttpmon::abort()
 {
     // Have to use setjmp/longjmp, since exceptions won't propagate
     // through qt for some reason.
@@ -200,7 +200,7 @@ httpmon_d::abort()
 
 
 void
-httpmon_d::run(Transaction *t)
+QThttpmon::run(Transaction *t)
 {
     g_jbuf_set = true;
     http_monitor::run(t);
@@ -217,7 +217,7 @@ httpmon_d::run(Transaction *t)
 
 
 void
-httpmon_d::run_slot()
+QThttpmon::run_slot()
 {
     if (transaction)
         run (transaction);
@@ -225,21 +225,21 @@ httpmon_d::run_slot()
 
 
 void
-httpmon_d::abort_slot()
+QThttpmon::abort_slot()
 {
     abort();
 }
 
 
 void
-httpmon_d::quit_slot()
+QThttpmon::quit_slot()
 {
     delete this;
 }
 
 
 bool
-httpmon_d::event(QEvent *ev)
+QThttpmon::event(QEvent *ev)
 {
     if (ev->type() == QEvent::Close || ev->type() == QEvent::Destroy) {
         // If the user closes the window, hide the display and

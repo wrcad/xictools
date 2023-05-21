@@ -1,5 +1,5 @@
 
-/*========================================================================
+/*========================================================================*
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
@@ -32,88 +32,85 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Qt MOZY help viewer.
+ * QtInterf Graphical Interface Library                                   *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "form_file_w.h"
-#include "qtinterf/qtfile.h"
-#include "htm/htm_widget.h"
-#include "htm/htm_form.h"
+#ifndef PROGRESS_D_H
+#define PROGRESS_D_H
 
-#include <QLineEdit>
-#include <QPushButton>
-#include <QLayout>
-#include <QFont>
-#include <QFontMetrics>
+#include "ginterf/graphics.h"
 
-//
-// The file entry widget for forms, consists of an entry field and
-// browse button.  Pressing the browse button pops up the file
-// selection panel.  Making a selection from this panel enters the
-// path into the entry area.
-//
+#include <QVariant>
+#include <QDialog>
 
+class QGroupBox;
+class QLabel;
+class QPushButton;
+class QTextEdit;
 
-using namespace qtinterf;
-
-inline int
-char_width(QWidget *w)
+namespace qtinterf
 {
-    QFont f = w->font();
-    QFontMetrics fm(f);
-    return (fm.width(QString("X")));
+    class QTactivity;
+    class QTbag;
+
+    class QTprogress : public QDialog, public GRpopup
+    {
+        Q_OBJECT
+
+    public:
+        enum prgMode { prgPrint, prgFileop };
+
+        QTprogress(QTbag*, prgMode);
+        ~QTprogress();
+
+        // GRpopup overrides
+        void set_visible(bool visib)
+            {
+                if (visib) {
+                    show();
+                    raise();
+                    activateWindow();
+                }
+                else
+                    hide();
+            }
+        void popdown();
+
+        void set_input(const char*);
+        void set_output(const char*);
+        void set_info(const char*);
+        void set_etc(const char*);
+        void start();
+        void finished();
+
+        void set_info_limit(int n) { info_limit = n; info_count = 0; }
+
+    signals:
+        void abort();
+
+    private slots:
+        void quit_slot();
+        void abort_slot();
+
+    private:
+        QGroupBox *gb_in;
+        QLabel *label_in;
+        QGroupBox *gb_out;
+        QLabel *label_out;
+        QGroupBox *gb_info;
+        QTextEdit *te_info;
+        QGroupBox *gb_etc;
+        QLabel *label_etc;
+        QPushButton *b_abort;
+        QPushButton *b_cancel;
+        QTactivity *pbar;
+        int info_limit;
+        int info_count;
+    };
 }
 
-inline int
-line_height(QWidget *w)
-{
-    QFont f = w->font();
-    QFontMetrics fm(f);
-    return (fm.height());
-}
-
-form_file_w::form_file_w(htmForm *entry, QWidget *prnt) : QWidget(prnt)
-{
-    fsel = 0;
-    edit = new QLineEdit(this);
-    int wd = entry->size * char_width(edit) + 4;
-    int ht = line_height(edit);
-    edit->resize(wd, ht);
-    browse = new QPushButton(this);
-    browse->setText(QString("Browse..."));
-    browse->setMaximumHeight(ht);
-    QHBoxLayout *hbox = new QHBoxLayout(this);
-    hbox->setMargin(0);
-    hbox->setSpacing(4);
-    hbox->addWidget(edit);
-    hbox->addWidget(browse);
-    QSize qs = size();
-    entry->width = qs.width();
-    entry->height = ht + 4;
-    connect(browse, SIGNAL(clicked()), this, SLOT(browse_btn_slot()));
-}
-
-
-void
-form_file_w::browse_btn_slot()
-{
-    if (!fsel) {
-        fsel = new QTfilePopup(0, fsSEL, 0, 0);
-        fsel->register_usrptr((void**)&fsel);
-        connect(fsel, SIGNAL(file_selected(const char*, void*)),
-            this, SLOT(file_selected_slot(const char*, void*)));
-    }
-    fsel->set_visible(true);
-}
-
-
-void
-form_file_w::file_selected_slot(const char *fname, void*)
-{
-    if (fname && *fname)
-        edit->setText(QString(fname));
-}
+#endif
 

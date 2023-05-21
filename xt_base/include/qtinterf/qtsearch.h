@@ -56,13 +56,13 @@ namespace qtinterf
 {
     class QTbag;
 
-    class search_d : public QDialog, public GRpopup
+    class QTsearch : public QDialog, public GRpopup
     {
         Q_OBJECT
 
     public:
-        search_d(QTbag*, const char*);
-        ~search_d();
+        QTsearch(QTbag*, const char*);
+        ~QTsearch();
 
         // GRpopup overrides
         void set_visible(bool visib)

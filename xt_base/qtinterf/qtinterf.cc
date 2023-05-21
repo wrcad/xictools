@@ -50,7 +50,7 @@
 #include "qtnumer.h"
 #include "qthcopy.h"
 #include "qtedit.h"
-#include "interval_timer.h"
+#include "qttimer.h"
 
 #include "help/help_defs.h"
 
@@ -262,7 +262,7 @@ QTdev::NewWbag(const char*, GRwbag *reuse)
 int
 QTdev::AddTimer(int ms, int(*cb)(void*), void *arg)
 {
-    dv_timers = new interval_timer(cb, arg, dv_timers, 0);
+    dv_timers = new QTtimer(cb, arg, dv_timers, 0);
     dv_timers->set_use_return(true);
     dv_timers->register_list(&dv_timers);
     dv_timers->start(ms);
@@ -275,7 +275,7 @@ QTdev::AddTimer(int ms, int(*cb)(void*), void *arg)
 void
 QTdev::RemoveTimer(int id)
 {
-    for (interval_timer *t = dv_timers; t; t = t->nextTimer()) {
+    for (QTtimer *t = dv_timers; t; t = t->nextTimer()) {
         if (t->id() == id) {
             delete t;
             return;
@@ -1368,18 +1368,59 @@ QTbag::PopUpHTMLinfo(ShowMode mode, const char *msg, GRloc loc)
     return (wb_htinfo_cnt);
 }
 
-GRledPopup *QTbag::ActiveInput()       { return (wb_input); }
-GRmsgPopup *QTbag::ActiveMessage()     { return (wb_message); }
-GRtextPopup *QTbag::ActiveInfo()       { return (wb_info); }
-GRtextPopup *QTbag::ActiveInfo2()      { return (wb_info2); }
-GRtextPopup *QTbag::ActiveHtinfo()     { return (wb_htinfo); }
-GRtextPopup *QTbag::ActiveError()      { return (wb_error); }
-GRtextPopup *QTbag::ActiveWarn()       { return (wb_warning); }
-GRfontPopup *QTbag::ActiveFontsel()    { return (wb_fontsel); }
+
+// Can probably put this in the header file, but then have to globally
+// include a lot of stuff.
+GRledPopup      *QTbag::ActiveInput()       { return (wb_input); }
+GRmsgPopup      *QTbag::ActiveMessage()     { return (wb_message); }
+GRtextPopup     *QTbag::ActiveInfo()        { return (wb_info); }
+GRtextPopup     *QTbag::ActiveInfo2()       { return (wb_info2); }
+GRtextPopup     *QTbag::ActiveHtinfo()      { return (wb_htinfo); }
+GRtextPopup     *QTbag::ActiveWarn()        { return (wb_warning); }
+GRtextPopup     *QTbag::ActiveError()       { return (wb_error); }
+GRfontPopup     *QTbag::ActiveFontsel()     { return (wb_fontsel); }
+
 
 void
 QTbag::SetErrorLogName(const char *fname)
 {
     QTtextPopup::set_error_log(fname);
+}
+
+
+// Static function.
+// Return a QColor, initialized with the given attr color.  Used
+// with the QTbag popups, main color functions are in QTdev.
+//
+QColor
+QTbag::PopupColor(GRattrColor c)
+{
+    static QColor pop_colors[GRattrColorEnd + 1];
+
+    const char *colorname = GRpkg::self()->GetAttrColor(c);
+    if (colorname && *colorname) {
+        int r, g, b;
+        if (sscanf(colorname, "%d %d %d", &r, &g, &b) == 3) {
+            if (r >= 0 && r <= 255 && g >= 0 && g <= 255 &&
+                    b >= 0 && b <= 255) {
+                return (QColor(r, g, b));
+            }
+            else if (r >= 0 && r <= 65535 && g >= 0 && g <= 65535 &&
+                    b >= 0 && b <= 65535) {
+                return (QColor(r/256, g/256, b/256));
+            }
+            else
+                return (QColor("black"));
+        }
+        QColor c(colorname);
+        if (c.isValid())
+            return (c);
+        if (GRcolorList::lookupColor(colorname, &r, &g, &b)) {
+            // My list is much more complete.
+            QColor nc(r, g, b);
+            return (nc);
+        }
+    }
+    return (QColor("black"));
 }
 

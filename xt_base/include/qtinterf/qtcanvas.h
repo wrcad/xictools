@@ -38,16 +38,16 @@
  $Id:$
  *========================================================================*/
 
-#ifndef DRAW_X_W_H
-#define DRAW_X_W_H
+#ifndef DRAW_QT_W_H
+#define DRAW_QT_W_H
 
 #include "qtdraw.h"
-
-#ifdef WITH_X11
 #include <QWidget>
-#include <QResizeEvent>
+#include <QBrush>
+#include <QPen>
+#include <QPixmap>
+#include <QPaintEngine>
 #include <math.h>
-#include <X11/Xlib.h>
 
 class QEvent;
 class QMouseEvent;
@@ -56,17 +56,20 @@ class QPaintEvent;
 class QKeyEvent;
 class QDragEnterEvent;
 class QDragEvent;
+class QEnterEvent;
 
 namespace qtinterf
 {
-    class draw_x_w : public QWidget, public draw_if
+    class QTcanvas : public QWidget, public draw_if
     {
         Q_OBJECT
 
     public:
-        draw_x_w(bool, QWidget *parent);
+        QTcanvas(bool, QWidget *parent);
+        ~QTcanvas();
 
-        QWidget *widget() { return (this); }
+        QWidget *widget()           { return (this); }
+        QPixmap *pixmap()           { return (da_pixmap); }
 
         void draw_direct(bool);
         void update();
@@ -94,22 +97,38 @@ namespace qtinterf
         void draw_image(const GRimage*, int, int, int, int);
 
         void set_font(QFont*);
-        int text_width(QFont*, const char*, int);
+        int  text_width(QFont*, const char*, int);
         void text_extent(const char*, int*, int*);
         void draw_text(int, int, const char*, int);
 
         void set_xor_mode(bool);
         void set_ghost_color(unsigned int);
 
+        void set_draw_to_pixmap(QPixmap*);
+        void draw_pixmap(int, int, QPixmap*, int, int, int, int);
+        void draw_image(int, int, QImage*, int, int, int, int);
+
+        // extra functions
+        void set_line_mode(int);
+        void set_fill(bool);
+        void set_tile(QPixmap*);
+        void set_tile_origin(int, int);
+        void draw_rectangle(bool, int, int, int, int);
+        void draw_arc(bool, int, int, int, int, int, int);
+        void draw_polygon(bool, QPoint*, int);
+
+        QPainter *cur_painter() { return (da_painter); }
+
     signals:
         void resize_event(QResizeEvent*);
+        void new_painter(QPainter*);
         void paint_event(QPaintEvent*);
         void press_event(QMouseEvent*);
         void release_event(QMouseEvent*);
         void move_event(QMouseEvent*);
         void key_press_event(QKeyEvent*);
         void key_release_event(QKeyEvent*);
-        void enter_event(QEvent*);
+        void enter_event(QEnterEvent*);
         void leave_event(QEvent*);
         void drag_enter_event(QDragEnterEvent*);
         void drop_event(QDropEvent*);
@@ -128,29 +147,62 @@ namespace qtinterf
         void dropEvent(QDropEvent*);
 
     private:
-        QColor *da_fg;              // foreground color pointer
-        QColor *da_bg;              // background color pointer
-        QColor *da_ghost;           // ghost color pointer
-        QColor da_ghost_fg;         // ghost color ^ background
 
-        QColor da_fg_bak;           // foreground color
-        QColor da_bg_bak;           // background color
-        QColor da_ghost_bak;        // ghost color
+        // Init a bounding box for refreshing.                                 
+        void bb_init()
+        {
+            da_xb1 = size().width();
+            da_yb1 = size().height();
+            da_xb2 = 0;
+            da_yb2 = 0;
+        }
 
-        static QColor com_fg;       // common foreground color
-        static QColor com_bg;       // common background color
-        static QColor com_ghost;    // common ghost color
+        // Add a vertex to the bounding box.
+        void bb_add(int xx, int yy)
+        {
+            if (xx < da_xb1)
+                da_xb1 = xx;
+            if (yy < da_yb1)
+                da_yb1 = yy;
+            if (xx > da_xb2)
+                da_xb2 = xx;
+            if (yy > da_yb2)
+                da_yb2 = yy;
+        }
 
-        QPixmap *da_pixmap;         // pixmap for drawing
-        Drawable da_fore;           // current drawable
-        Display *da_display;        // the display
-        GC da_gc;                   // GC
-        bool da_direct;             // using direct draw
+        void draw_line_prv(int, int, int, int);
+        void initialize();
 
-        static GC com_gc;           // common GC
+        QPixmap     *da_pixmap;         // main pixmap
+        QPixmap     *da_tile_pixmap;    // tiling pixmap;
+        QPainter    *da_painter;        // main paint engine
+        QPainter    *da_painter_temp;   // temp painter for pixmap switch
+        QColor      da_fg;              // foreground color
+        QColor      da_bg;              // background color
+        QColor      da_ghost;           // ghost color
+        QColor      da_ghost_fg;        // ghost color ^ background
+        QBrush      da_brush;           // solid fill brush 
+        QPen        da_pen;             // min width pen
+        int         da_tile_x;          // tile origin x
+        int         da_tile_y;          // tile origin y
+        bool        da_fill_mode;       // true when tiling
+        bool        da_xor_mode;        // true in XOR mode
+        int         da_line_mode;       // true when using internal textured
+                                        //  lines (Qt::PenStyle - 1)
+                                        //  1: dashes separated by a few pixels
+                                        //  2: dots separated by a few pixels
+                                        //  3: alternate dots and dashes
+                                        //  4: one dash, two dots, one dash,
+                                        //     two dots
+        const
+        GRlineType *da_line_style;      // set for user-defined texture,
+                                        //  da_line_mode = 0 in this case
+
+        // Keep a bounding box for refreshing.                                 
+        int         da_xb1, da_yb1;
+        int         da_xb2, da_yb2;
     };
 }
 
-#endif
 #endif
 

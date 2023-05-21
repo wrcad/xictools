@@ -43,7 +43,7 @@
 #include "qtfont.h"
 #include "qtinput.h"
 #include "qtmsg.h"
-#include "search_d.h"
+#include "qtsearch.h"
 #include "miscutil/encode.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
@@ -893,7 +893,7 @@ void
 QTeditPopup::search_slot()
 {
     if (!searcher) {
-        searcher = new search_d(this, lastSearch);
+        searcher = new QTsearch(this, lastSearch);
         searcher->register_usrptr((void**)&searcher);
         searcher->set_visible(true);
 

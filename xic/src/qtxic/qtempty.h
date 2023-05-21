@@ -32,36 +32,67 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef IDLE_PROC_H
-#define IDLE_PROC_H
+#ifndef QTEMPTY_H
+#define QTEMPTY_H
 
-#include <QTimer>
+#include "main.h"
+#include "qtmain.h"
+#include "qtinterf/qttextw.h"
+#include <QDialog>
 
-struct idle_procs;
+class QLabel;
+class QMouseEvent;
 
-class idle_proc : public QTimer
+
+class cEmpty : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    idle_proc();
 
-    int add(int(*)(void*), void*);
-    bool remove(int);
+    // List element for empty cells.
+    //
+    struct e_item
+    {
+        e_item() { name = 0; del = false; }
+
+        const char *name;                   // cell name
+        bool del;                           // deletion flag
+    };
+
+    cEmpty(stringlist*);
+    ~cEmpty();
+
+    QSize sizeHint() const;
+    void update(stringlist*);
+
+    static cEmpty *self()           { return (instPtr); }
 
 private slots:
-    void run_slot();
+    void delete_btn_slot();
+    void skip_btn_slot();
+    void apply_btn_slot();
+    void dismiss_btn_slot();
+    void font_changed_slot(int);
+    void mouse_press_slot(QMouseEvent*);
 
 private:
-    idle_procs *idle_proc_list;
-    int idle_id_cnt;
-    bool running;
+    void refresh();
+
+    e_item *ec_list;                    // list of cells
+    SymTab *ec_tab;                     // table of checked cells
+    QLabel *ec_label;                   // label widget
+    QTtextEdit *ec_text;                // text area
+    int ec_field;                       // max cell name length
+    bool ec_changed;
+
+    static cEmpty *instPtr;
 };
 
 #endif

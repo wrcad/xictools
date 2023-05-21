@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "qthcopy.h"
-#include "progress_d.h"
+#include "qtprogress.h"
 #include "miscutil/lstring.h"
 #include "miscutil/filestat.h"
 
@@ -1525,7 +1525,7 @@ QTprintPopup::fork_and_submit(const char *str, const char *filename)
     else
         *t = '\0';
 
-    progress = new progress_d(pd_owner, progress_d::prgPrint);
+    progress = new QTprogress(pd_owner, QTprogress::prgPrint);
     progress->register_usrptr((void**)&progress);
     progress->set_visible(true);
 

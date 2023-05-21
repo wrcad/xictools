@@ -53,7 +53,7 @@ class QTextEdit;
 
 namespace qtinterf
 {
-    class search_d;
+    class QTsearch;
     class QTbag;
 
     class QTeditPopup : public QDialog, public GReditPopup, public QTbag
@@ -167,7 +167,7 @@ namespace qtinterf
         bool textChanged;
         bool ignCase;
         bool ignChange;
-        search_d *searcher;
+        QTsearch *searcher;
     };
 }
 

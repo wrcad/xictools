@@ -1,5 +1,5 @@
 
-/*========================================================================
+/*========================================================================*
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
@@ -32,47 +32,102 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Qt MOZY help viewer.
+ * QtInterf Graphical Interface Library                                   *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef FORM_FILE_W_H
-#define FORM_FILE_W_H
+#include "qtidleproc.h"
 
-#include <QWidget>
 
-class QLineEdit;
-class QPushButton;
-
-struct htmForm;
-
-namespace qtinterf
+QTidleproc::QTidleproc() : QTimer(0)
 {
-    class QTfilePopup;
-
-    // Container for the FORM_FILE element
-    //
-    class form_file_w : public QWidget
-    {
-        Q_OBJECT
-
-    public:
-        form_file_w(htmForm*, QWidget*);
-
-        QLineEdit *editor() { return (edit); }
-
-    private slots:
-        void browse_btn_slot();
-        void file_selected_slot(const char*, void*);
-
-    private:
-        QLineEdit *edit;
-        QPushButton *browse;
-        QTfilePopup *fsel;
-    };
+    idle_proc_list = 0;
+    idle_id_cnt = 1000;
+    running = false;
+    connect(this, SIGNAL(timeout()), this, SLOT(run_slot()));
 }
 
-#endif
+
+// Add an idle function callback.  The function will be called repeatedly
+// until 0 is returned, at which point it will be removed from the list.
+// An id for the callback is returned.
+//
+int
+QTidleproc::add(int(*cb)(void*), void *arg)
+{
+    idle_procs *ip = new idle_procs(cb, arg);
+    if (!idle_proc_list)
+        idle_proc_list = ip;
+    else {
+        idle_procs *p = idle_proc_list;
+        while (p->next)
+            p = p->next;
+        p->next = ip;
+    }
+    idle_proc_list->id = idle_id_cnt++;
+    if (!running) {
+        start();
+        running = true;
+    }
+    return (idle_proc_list->id);
+}
+
+
+// Remove an idle function callback from the list.  The argument is
+// the return value obtained when the callback was added.  Return
+// true if a removal was done.
+//
+bool
+QTidleproc::remove(int iid)
+{
+    idle_procs *p = 0;
+    for (idle_procs *ip = idle_proc_list; ip; ip = ip->next) {
+        if (ip->id == iid) {
+            if (p)
+                p->next = ip->next;
+            else
+                idle_proc_list = ip->next;
+            delete ip;
+            return (true);
+        }
+        p = ip;
+    }
+    return (false);
+}
+
+
+// Slot to run the idle queue.  The first callback is popped off and
+// run.  If the callback returns true, the callback is appended to the
+// end of the list, otherwise it is deleted.
+//
+void
+QTidleproc::run_slot()
+{
+    if (idle_proc_list) {
+        idle_procs *ip = idle_proc_list;
+        idle_proc_list = ip->next;
+        ip->next = 0;
+
+        int ret = (*ip->proc)(ip->arg);
+        if (ret) {
+            if (!idle_proc_list)
+                idle_proc_list = ip;
+            else {
+                idle_procs *p = idle_proc_list;
+                while (p->next)
+                    p = p->next;
+                p->next = ip;
+            }
+        }
+        else
+            delete ip;
+    }
+
+    if (!idle_proc_list) {
+        stop();
+        running = false;
+    }
+}
 

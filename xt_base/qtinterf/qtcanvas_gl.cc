@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "draw_gl_w.h"
+#include "qtcanvas_gl.h"
 #include "polysplit.h"
 
 

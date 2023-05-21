@@ -102,40 +102,6 @@
 //using namespace qtzoom;
 
 
-void
-QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
-{
-    if (!QTdev::exists() || !QTmainwin::exists())
-        return;
-    if (mode == MODE_OFF) {
-        if (sw_zoom)
-            sw_zoom->popdown();
-        return;
-    }
-    if (mode == MODE_UPD) {
-        if (sw_zoom)
-            sw_zoom->update();
-        return;
-    }
-    if (sw_zoom)
-        return;
-
-        /*
-    sw_zoom = new cZoom(this, wib_windesc);
-    sw_zoom->register_usrptr((void**)&sw_zoom);
-    if (!wib_zoom->shell()) {
-        delete sw_zoom;
-        sw_zoom = 0;
-        return;
-    }
-
-    sw_zoom->register_caller(caller);
-    sw_zoom->initialize();
-    sw_zoom->set_visible(true);
-    */
-}
-
-
 cZoom::cZoom(QTbag *owner, WindowDesc *w)
 {
 #ifdef notdef

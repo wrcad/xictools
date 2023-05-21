@@ -46,11 +46,11 @@
 #include <QTextEdit>
 
 #include "qtinterf.h"
-#include "progress_d.h"
-#include "activity_w.h"
+#include "qtprogress.h"
+#include "qtactivity.h"
 
 
-progress_d::progress_d(QTbag *owner, prgMode mode) :
+QTprogress::QTprogress(QTbag *owner, prgMode mode) :
     QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
@@ -124,7 +124,7 @@ progress_d::progress_d(QTbag *owner, prgMode mode) :
     hbox->addWidget(b_abort);
     b_cancel = new QPushButton("Dismiss", this);
     hbox->addWidget(b_cancel);
-    pbar = new activity_w(this);
+    pbar = new QTactivity(this);
     hbox->addWidget(pbar);
 
     connect(b_abort, SIGNAL(clicked()), this, SLOT(abort_slot()));
@@ -132,7 +132,7 @@ progress_d::progress_d(QTbag *owner, prgMode mode) :
 }
 
 
-progress_d::~progress_d()
+QTprogress::~QTprogress()
 {
     if (p_usrptr)
         *p_usrptr = 0;
@@ -160,7 +160,7 @@ progress_d::~progress_d()
 // GRpopup override
 //
 void
-progress_d::popdown()
+QTprogress::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -172,7 +172,7 @@ progress_d::popdown()
 
 
 void
-progress_d::set_input(const char *str)
+QTprogress::set_input(const char *str)
 {
     if (label_in)
         label_in->setText(str);
@@ -180,7 +180,7 @@ progress_d::set_input(const char *str)
 
 
 void
-progress_d::set_output(const char *str)
+QTprogress::set_output(const char *str)
 {
     if (label_out)
         label_out->setText(str);
@@ -188,7 +188,7 @@ progress_d::set_output(const char *str)
 
 
 void
-progress_d::set_info(const char *str)
+QTprogress::set_info(const char *str)
 {
     if (te_info && str && *str) {
         if (info_limit > 0) {
@@ -215,7 +215,7 @@ progress_d::set_info(const char *str)
 
 
 void
-progress_d::set_etc(const char *str)
+QTprogress::set_etc(const char *str)
 {
     if (label_etc)
         label_etc->setText(str);
@@ -223,7 +223,7 @@ progress_d::set_etc(const char *str)
 
 
 void
-progress_d::start()
+QTprogress::start()
 {
     if (pbar)
         pbar->start();
@@ -231,7 +231,7 @@ progress_d::start()
 
 
 void
-progress_d::finished()
+QTprogress::finished()
 {
     if (pbar)
         pbar->stop();
@@ -239,14 +239,14 @@ progress_d::finished()
 
 
 void
-progress_d::quit_slot()
+QTprogress::quit_slot()
 {
     delete this;
 }
 
 
 void
-progress_d::abort_slot()
+QTprogress::abort_slot()
 {
     emit abort();
 }

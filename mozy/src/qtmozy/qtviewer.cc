@@ -39,13 +39,13 @@
  *========================================================================*/
 
 #include "qtviewer.h"
-#include "form_button_w.h"
-#include "form_combo_w.h"
-#include "form_list_w.h"
-#include "form_file_w.h"
-#include "qtinterf/interval_timer.h"
+#include "qtform_button.h"
+#include "qtform_combo.h"
+#include "qtform_list.h"
+#include "qtform_file.h"
+#include "qtinterf/qttimer.h"
 #include "qtinterf/qtfont.h"
-#include "qtinterf/draw_qt_w.h"
+#include "qtinterf/qtcanvas.h"
 
 #include "help/help_startup.h"
 #include "htm/htm_format.h"
@@ -67,7 +67,7 @@ using namespace qtinterf;
 //-----------------------------------------------------------------------------
 // Special widgets for forms
 
-form_button_w::form_button_w(htmForm *entry, QWidget *prnt) :
+QTform_button::QTform_button(htmForm *entry, QWidget *prnt) :
     QPushButton(prnt)
 {
     form_entry = entry;
@@ -105,7 +105,7 @@ form_button_w::form_button_w(htmForm *entry, QWidget *prnt) :
 
 
 void
-form_button_w::pressed_slot()
+QTform_button::pressed_slot()
 {
     if (form_entry->type == FORM_RADIO) {
         // get start of this radiobox
@@ -124,7 +124,7 @@ form_button_w::pressed_slot()
             if (tmp->type == FORM_RADIO && tmp != form_entry) {
                 if (!strcasecmp(tmp->name, form_entry->name)) {
                     // same group, unset it
-                    form_button_w *btn = (form_button_w*)tmp->widget;
+                    QTform_button *btn = (QTform_button*)tmp->widget;
                     btn->setChecked(false);
                 }
                 else
@@ -140,14 +140,14 @@ form_button_w::pressed_slot()
 
 
 void
-form_button_w::released_slot()
+QTform_button::released_slot()
 {
     if (form_entry->type == FORM_RADIO)
         setChecked(true);
 }
 
 
-form_combo_w::form_combo_w(htmForm *entry, QWidget *prnt) :
+QTform_combo::QTform_combo(htmForm *entry, QWidget *prnt) :
     QComboBox(prnt)
 {
     form_entry = entry;
@@ -156,7 +156,7 @@ form_combo_w::form_combo_w(htmForm *entry, QWidget *prnt) :
 
 
 void
-form_combo_w::setSize()
+QTform_combo::setSize()
 {
     QFontMetrics fm(font());
     form_entry->height = form_entry->size * fm.height();
@@ -175,7 +175,7 @@ form_combo_w::setSize()
 }
 
 
-form_list_w::form_list_w(htmForm *entry, QWidget *prnt) :
+QTform_list::QTform_list(htmForm *entry, QWidget *prnt) :
     QListWidget(prnt)
 {
     form_entry = entry;
@@ -183,7 +183,7 @@ form_list_w::form_list_w(htmForm *entry, QWidget *prnt) :
 
 
 void
-form_list_w::setSize()
+QTform_list::setSize()
 {
     QFontMetrics fm(font());
     form_entry->height = form_entry->size * fm.height();
@@ -205,12 +205,12 @@ form_list_w::setSize()
 //-----------------------------------------------------------------------------
 // The viewer widget, public methods
 
-viewer_w::viewer_w(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
+QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
     QScrollArea(prnt), htmWidget(this, dta), btn_timer(this)
 {
     width_hint = wid;
     height_hint = hei;
-    darea = new draw_qt_w(false, this);
+    darea = new QTcanvas(false, this);
     rband = 0;
     transact = 0;
     setWidget(darea);
@@ -237,40 +237,40 @@ viewer_w::viewer_w(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
 // General interface (ViewerWidget function implementations)
 
 void
-viewer_w::set_transaction(Transaction *t, const char*)
+QTviewer::set_transaction(Transaction *t, const char*)
 {
     transact = t;
 }
 
 
 Transaction *
-viewer_w::get_transaction()
+QTviewer::get_transaction()
 {
     return (transact);
 }
 
 
 bool
-viewer_w::check_halt_processing(bool)
+QTviewer::check_halt_processing(bool)
 {
     return (false);
 }
 
 
 void
-viewer_w::set_halt_proc_sens(bool)
+QTviewer::set_halt_proc_sens(bool)
 {
 }
 
 
 void
-viewer_w::set_status_line(const char*)
+QTviewer::set_status_line(const char*)
 {
 }
 
 
 htmImageInfo *
-viewer_w::new_image_info(const char *url, bool progressive)
+QTviewer::new_image_info(const char *url, bool progressive)
 {
     htmImageInfo *image = new htmImageInfo();
     if (progressive)
@@ -283,35 +283,35 @@ viewer_w::new_image_info(const char *url, bool progressive)
 
 
 const char *
-viewer_w::get_url()
+QTviewer::get_url()
 {
     return (0);
 }
 
 
 bool
-viewer_w::no_url_cache()
+QTviewer::no_url_cache()
 {
     return (true);
 }
 
 
 int
-viewer_w::image_load_mode()
+QTviewer::image_load_mode()
 {
     return (HLPparams::LoadSync);
 }
 
 
 int
-viewer_w::image_debug_mode()
+QTviewer::image_debug_mode()
 {
     return (HLPparams::LInormal);
 }
 
 
 GRwbag *
-viewer_w::get_widget_bag()
+QTviewer::get_widget_bag()
 {
     return (0);
 }
@@ -324,7 +324,7 @@ viewer_w::get_widget_bag()
 // "face [style keywords] [size]".  The style keywords are ignored. 
 //
 void
-viewer_w::set_font(const char *fontspec)
+QTviewer::set_font(const char *fontspec)
 {
     char *family;
     int sz;
@@ -335,7 +335,7 @@ viewer_w::set_font(const char *fontspec)
 
 
 void
-viewer_w::set_fixed_font(const char *fontspec)
+QTviewer::set_fixed_font(const char *fontspec)
 {
     char *family;
     int sz;
@@ -346,7 +346,7 @@ viewer_w::set_fixed_font(const char *fontspec)
 
 
 void
-viewer_w::hide_drawing_area(bool hd)
+QTviewer::hide_drawing_area(bool hd)
 {
     if (hd) {
         darea->hide();
@@ -368,7 +368,7 @@ viewer_w::hide_drawing_area(bool hd)
 // Resize the drawing area.
 //
 void
-viewer_w::tk_resize_area(int wid, int hei)
+QTviewer::tk_resize_area(int wid, int hei)
 {
     QRect r = contentsRect();
     if (wid < r.width())
@@ -395,7 +395,7 @@ viewer_w::tk_resize_area(int wid, int hei)
 // Blit the area from the pixmap.
 //
 void
-viewer_w::tk_refresh_area(int xx, int yy, int w, int h)
+QTviewer::tk_refresh_area(int xx, int yy, int w, int h)
 {
     darea->repaint(xx, yy, w, h);
 }
@@ -406,7 +406,7 @@ viewer_w::tk_refresh_area(int xx, int yy, int w, int h)
 // size.
 //
 void
-viewer_w::tk_window_size(htmInterface::WinRetMode mode,
+QTviewer::tk_window_size(htmInterface::WinRetMode mode,
     unsigned int *wp, unsigned int *hp)
 {
     if (mode == htmInterface::VIEWABLE) {
@@ -431,7 +431,7 @@ viewer_w::tk_window_size(htmInterface::WinRetMode mode,
 
 
 unsigned int
-viewer_w::tk_scrollbar_width()
+QTviewer::tk_scrollbar_width()
 {
     QScrollBar *sb = verticalScrollBar();
     if (sb)
@@ -443,7 +443,7 @@ viewer_w::tk_scrollbar_width()
 // Set/unset a special cursor when the pointer is over an anchor.
 //
 void
-viewer_w::tk_set_anchor_cursor(bool set)
+QTviewer::tk_set_anchor_cursor(bool set)
 {
     if (set)
         darea->setCursor(QCursor(Qt::PointingHandCursor));
@@ -455,9 +455,9 @@ viewer_w::tk_set_anchor_cursor(bool set)
 // Create a new timer.
 //
 unsigned int
-viewer_w::tk_add_timer(int(*cb)(void*), void *arg)
+QTviewer::tk_add_timer(int(*cb)(void*), void *arg)
 {
-    timers = new interval_timer(cb, arg, timers, this);
+    timers = new QTtimer(cb, arg, timers, this);
     timers->register_list(&timers);
     return (timers->id());
 }
@@ -466,9 +466,9 @@ viewer_w::tk_add_timer(int(*cb)(void*), void *arg)
 // Remove a timer.
 //
 void
-viewer_w::tk_remove_timer(int id)
+QTviewer::tk_remove_timer(int id)
 {
-    for (interval_timer *t = timers; t; t = t->nextTimer()) {
+    for (QTtimer *t = timers; t; t = t->nextTimer()) {
         if (t->id() == id) {
             delete t;
             break;
@@ -481,9 +481,9 @@ viewer_w::tk_remove_timer(int id)
 // once only, but can be restarted.
 //
 void
-viewer_w::tk_start_timer(unsigned int id, int msec)
+QTviewer::tk_start_timer(unsigned int id, int msec)
 {
-    for (interval_timer *t = timers; t; t = t->nextTimer()) {
+    for (QTtimer *t = timers; t; t = t->nextTimer()) {
         if (t->id() == (int)id) {
             t->start(msec);
         }
@@ -492,7 +492,7 @@ viewer_w::tk_start_timer(unsigned int id, int msec)
 
 
 void
-viewer_w::tk_claim_selection(const char*)
+QTviewer::tk_claim_selection(const char*)
 {
 }
 
@@ -500,7 +500,7 @@ viewer_w::tk_claim_selection(const char*)
 // Allocate a new font.  The "family" is a QT face name.
 //
 htmFont *
-viewer_w::tk_alloc_font(const char *family, int sz, unsigned char sty)
+QTviewer::tk_alloc_font(const char *family, int sz, unsigned char sty)
 {
     QFont *xfont = new QFont(QString(family), sz);
     if (sty & FONT_FIXED)
@@ -549,7 +549,7 @@ viewer_w::tk_alloc_font(const char *family, int sz, unsigned char sty)
 // Delete a font.
 //
 void
-viewer_w::tk_release_font(void *fntp)
+QTviewer::tk_release_font(void *fntp)
 {
     QFont *fnt = (QFont*)fntp;
     delete fnt;
@@ -559,7 +559,7 @@ viewer_w::tk_release_font(void *fntp)
 // Set the font used for rendering in the drawing area.
 //
 void
-viewer_w::tk_set_font(htmFont *fnt)
+QTviewer::tk_set_font(htmFont *fnt)
 {
     darea->set_font((QFont*)fnt->xfont);
 }
@@ -569,7 +569,7 @@ viewer_w::tk_set_font(htmFont *fnt)
 // the given font.
 //
 int
-viewer_w::tk_text_width(htmFont *fnt, const char *str, int len)
+QTviewer::tk_text_width(htmFont *fnt, const char *str, int len)
 {
     return (darea->text_width((QFont*)fnt->xfont, str, len));
 }
@@ -578,7 +578,7 @@ viewer_w::tk_text_width(htmFont *fnt, const char *str, int len)
 // Return a code specifying the type of visual.
 //
 CCXmode
-viewer_w::tk_visual_mode()
+QTviewer::tk_visual_mode()
 {
     QColormap::Mode m = QColormap::instance().mode();
     if (m == QColormap::Direct)
@@ -598,7 +598,7 @@ viewer_w::tk_visual_mode()
 // Return the color depth in use.
 //
 int
-viewer_w::tk_visual_depth()
+QTviewer::tk_visual_depth()
 {
     return (darea->depth());
 }
@@ -607,7 +607,7 @@ viewer_w::tk_visual_depth()
 // Create and return a new pixmap.
 //
 htmPixmap *
-viewer_w::tk_new_pixmap(int w, int h)
+QTviewer::tk_new_pixmap(int w, int h)
 {
     return ((htmPixmap*)new QPixmap(w, h));
 }
@@ -616,7 +616,7 @@ viewer_w::tk_new_pixmap(int w, int h)
 // Destroy a pixmap.
 //
 void
-viewer_w::tk_release_pixmap(htmPixmap *pmap)
+QTviewer::tk_release_pixmap(htmPixmap *pmap)
 {
     QPixmap *p = (QPixmap*)pmap;
     delete p;
@@ -626,7 +626,7 @@ viewer_w::tk_release_pixmap(htmPixmap *pmap)
 // Create a pixmap, possibly with a masking bitmap, from the image info.
 //
 htmPixmap *
-viewer_w::tk_pixmap_from_info(htmImage*, htmImageInfo *info,
+QTviewer::tk_pixmap_from_info(htmImage*, htmImageInfo *info,
     unsigned int *color_map)
 {
     image_t image(info->width, info->height);
@@ -646,7 +646,7 @@ viewer_w::tk_pixmap_from_info(htmImage*, htmImageInfo *info,
 // main pixmap if 0 is passed.
 //
 void
-viewer_w::tk_set_draw_to_pixmap(htmPixmap *pixmap)
+QTviewer::tk_set_draw_to_pixmap(htmPixmap *pixmap)
 {
     darea->set_draw_to_pixmap((QPixmap*)pixmap);
 }
@@ -655,7 +655,7 @@ viewer_w::tk_set_draw_to_pixmap(htmPixmap *pixmap)
 // Return a bitmap created from the supplied data.
 //
 htmPixmap *
-viewer_w::tk_bitmap_from_data(int w, int h, unsigned char *dta)
+QTviewer::tk_bitmap_from_data(int w, int h, unsigned char *dta)
 {
     if (!dta)
         return (0);
@@ -668,7 +668,7 @@ viewer_w::tk_bitmap_from_data(int w, int h, unsigned char *dta)
 // Free the bitmap.
 //
 void
-viewer_w::tk_release_bitmap(htmBitmap *bitmap)
+QTviewer::tk_release_bitmap(htmBitmap *bitmap)
 {
     QBitmap *qbm = (QBitmap*)bitmap;
     delete qbm;
@@ -678,7 +678,7 @@ viewer_w::tk_release_bitmap(htmBitmap *bitmap)
 // Return a new image struct.
 //
 htmXImage *
-viewer_w::tk_new_image(int w, int h)
+QTviewer::tk_new_image(int w, int h)
 {
     return ((htmXImage*)(new image_t(w, h)));
 }
@@ -688,7 +688,7 @@ viewer_w::tk_new_image(int w, int h)
 // supplied colormap.
 //
 void
-viewer_w::tk_fill_image(htmXImage *ximage, unsigned char *dta,
+QTviewer::tk_fill_image(htmXImage *ximage, unsigned char *dta,
     unsigned int *color_map, int lo, int hi)
 {
     image_t *image = (image_t*)ximage;
@@ -703,7 +703,7 @@ viewer_w::tk_fill_image(htmXImage *ximage, unsigned char *dta,
 // Draw the xi,yi,wi,hi rectangle in the image at xw,yw.
 //
 void
-viewer_w::tk_draw_image(int xw, int yw, htmXImage *image, int xi, int yi,
+QTviewer::tk_draw_image(int xw, int yw, htmXImage *image, int xi, int yi,
     int wi, int hi)
 {
     darea->draw_image(xw, yw, (QImage*)image, xi, yi, wi, hi);
@@ -711,7 +711,7 @@ viewer_w::tk_draw_image(int xw, int yw, htmXImage *image, int xi, int yi,
 
 
 void
-viewer_w::tk_release_image(htmXImage *image)
+QTviewer::tk_release_image(htmXImage *image)
 {
     image_t *im = (image_t*)image;
     delete im;
@@ -721,7 +721,7 @@ viewer_w::tk_release_image(htmXImage *image)
 // Set the foreground rendering color.
 //
 void
-viewer_w::tk_set_foreground(unsigned int pix)
+QTviewer::tk_set_foreground(unsigned int pix)
 {
     darea->set_foreground(pix);
 }
@@ -730,7 +730,7 @@ viewer_w::tk_set_foreground(unsigned int pix)
 // Set the background rendering color.
 //
 void
-viewer_w::tk_set_background(unsigned int pix)
+QTviewer::tk_set_background(unsigned int pix)
 {
     darea->set_background(pix);
 }
@@ -761,7 +761,7 @@ messageOutput(QtMsgType type, const char *msg)
 // rgb components and pixel value in c.
 //
 bool
-viewer_w::tk_parse_color(const char *name, htmColor *c)
+QTviewer::tk_parse_color(const char *name, htmColor *c)
 {
     QColor q;
 // Update from qInstallMsgHandler
@@ -782,7 +782,7 @@ viewer_w::tk_parse_color(const char *name, htmColor *c)
 // This isn't needed in true-color displays.
 //
 bool
-viewer_w::tk_alloc_color(htmColor *c)
+QTviewer::tk_alloc_color(htmColor *c)
 {
     QColor q(c->red, c->green, c->blue);
     c->pixel = q.rgba();
@@ -794,7 +794,7 @@ viewer_w::tk_alloc_color(htmColor *c)
 // c is an array of num structs.
 //
 int
-viewer_w::tk_query_colors(htmColor *c, unsigned int num)
+QTviewer::tk_query_colors(htmColor *c, unsigned int num)
 {
     for (unsigned int i = 0; i < num; i++) {
         QColor q(c[i].pixel);
@@ -814,7 +814,7 @@ viewer_w::tk_query_colors(htmColor *c, unsigned int num)
 
 
 void
-viewer_w::tk_free_colors(unsigned int*, unsigned int)
+QTviewer::tk_free_colors(unsigned int*, unsigned int)
 {
 }
 
@@ -823,7 +823,7 @@ viewer_w::tk_free_colors(unsigned int*, unsigned int)
 // r,g,b arrays.
 //
 bool
-viewer_w::tk_get_pixels(unsigned short *r, unsigned short *g,
+QTviewer::tk_get_pixels(unsigned short *r, unsigned short *g,
     unsigned short *b, unsigned int num, unsigned int *pixels)
 {
     for (unsigned int i = 0; i < num; i++) {
@@ -838,7 +838,7 @@ viewer_w::tk_get_pixels(unsigned short *r, unsigned short *g,
 // have to worry setting origins, etc.
 
 void
-viewer_w::tk_set_clip_mask(htmPixmap *pix, htmBitmap *bits)
+QTviewer::tk_set_clip_mask(htmPixmap *pix, htmBitmap *bits)
 {
     if (pix && bits)
         ((QPixmap*)pix)->setMask(*(QBitmap*)bits);
@@ -846,13 +846,13 @@ viewer_w::tk_set_clip_mask(htmPixmap *pix, htmBitmap *bits)
 
 
 void
-viewer_w::tk_set_clip_origin(int, int)
+QTviewer::tk_set_clip_origin(int, int)
 {
 }
 
 
 void
-viewer_w::tk_set_clip_rectangle(htmRect*)
+QTviewer::tk_set_clip_rectangle(htmRect*)
 {
 }
 
@@ -861,7 +861,7 @@ viewer_w::tk_set_clip_rectangle(htmRect*)
 // with tk_draw_rectangle(true, ...).
 //
 void
-viewer_w::tk_set_fill(htmInterface::FillMode mode)
+QTviewer::tk_set_fill(htmInterface::FillMode mode)
 {
     darea->set_fill((mode == htmInterface::TILED));
 }
@@ -870,7 +870,7 @@ viewer_w::tk_set_fill(htmInterface::FillMode mode)
 // Set the pixmap for use in tiling (see tk_set_fill).
 //
 void
-viewer_w::tk_set_tile(htmPixmap *pixmap)
+QTviewer::tk_set_tile(htmPixmap *pixmap)
 {
     darea->set_tile((QPixmap*)pixmap);
 }
@@ -879,7 +879,7 @@ viewer_w::tk_set_tile(htmPixmap *pixmap)
 // Set the origin used when drawing tiled pixmaps.
 //
 void
-viewer_w::tk_set_ts_origin(int xx, int yy)
+QTviewer::tk_set_ts_origin(int xx, int yy)
 {
     darea->set_tile_origin(xx, yy);
 }
@@ -888,7 +888,7 @@ viewer_w::tk_set_ts_origin(int xx, int yy)
 // Copy out the part of a pixmap (xp,yp,wp,hp) to xw,yw.
 //
 void
-viewer_w::tk_draw_pixmap(int xw, int yw, htmPixmap *pmap,
+QTviewer::tk_draw_pixmap(int xw, int yw, htmPixmap *pmap,
     int xp, int yp, int wp, int hp)
 {
     darea->draw_pixmap(xw, yw, (QPixmap*)pmap, xp, yp, wp, hp);
@@ -896,7 +896,7 @@ viewer_w::tk_draw_pixmap(int xw, int yw, htmPixmap *pmap,
 
 
 void
-viewer_w::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
+QTviewer::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
     int x, int y, int w, int h)
 {
     //XXX fixme
@@ -905,7 +905,7 @@ viewer_w::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
 // Draw a solid or open rectangle, or pixmap tiles.
 //
 void
-viewer_w::tk_draw_rectangle(bool filled, int xx, int yy, int w, int h)
+QTviewer::tk_draw_rectangle(bool filled, int xx, int yy, int w, int h)
 {
     darea->draw_rectangle(filled, xx, yy, w, h);
 }
@@ -914,7 +914,7 @@ viewer_w::tk_draw_rectangle(bool filled, int xx, int yy, int w, int h)
 // Switch between solid or dashed lines.
 //
 void
-viewer_w::tk_set_line_style(htmInterface::FillMode styleid)
+QTviewer::tk_set_line_style(htmInterface::FillMode styleid)
 {
     darea->set_line_mode((styleid == htmInterface::TILED));
 }
@@ -923,7 +923,7 @@ viewer_w::tk_set_line_style(htmInterface::FillMode styleid)
 // Draw a line.
 //
 void
-viewer_w::tk_draw_line(int x1, int y1, int x2, int y2)
+QTviewer::tk_draw_line(int x1, int y1, int x2, int y2)
 {
     darea->draw_line(x1, y1, x2, y2);
 }
@@ -932,7 +932,7 @@ viewer_w::tk_draw_line(int x1, int y1, int x2, int y2)
 // Draw text, at most len characters from str.
 //
 void
-viewer_w::tk_draw_text(int xx, int yy, const char *str, int len)
+QTviewer::tk_draw_text(int xx, int yy, const char *str, int len)
 {
     darea->draw_text(xx, yy, str, len);
 }
@@ -941,7 +941,7 @@ viewer_w::tk_draw_text(int xx, int yy, const char *str, int len)
 // Draw a solid or open polygon.
 //
 void
-viewer_w::tk_draw_polygon(bool filled, htmPoint *points, int numpts)
+QTviewer::tk_draw_polygon(bool filled, htmPoint *points, int numpts)
 {
     darea->draw_polygon(filled, (QPoint*)points, numpts);
 }
@@ -950,7 +950,7 @@ viewer_w::tk_draw_polygon(bool filled, htmPoint *points, int numpts)
 // Draw an arc or pie-slice.
 //
 void
-viewer_w::tk_draw_arc(bool filled, int xx, int yy, int w, int h, int st,
+QTviewer::tk_draw_arc(bool filled, int xx, int yy, int w, int h, int st,
     int sp)
 {
     darea->draw_arc(filled, xx, yy, w, h, st, sp);
@@ -986,7 +986,7 @@ line_height(QWidget *w)
 // width and height must be set/determined here.
 //
 void
-viewer_w::tk_add_widget(htmForm *entry, htmForm *prnt)
+QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
 {
     if (entry->type == FORM_IMAGE || entry->type == FORM_HIDDEN)
         return;
@@ -1015,19 +1015,19 @@ viewer_w::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_CHECK:
     case FORM_RADIO:
         {
-            QPushButton *cb = new form_button_w(entry, darea);
+            QPushButton *cb = new QTform_button(entry, darea);
             entry->widget = cb;
         }
         break;
 
     case FORM_FILE:
-        entry->widget = new form_file_w(entry, darea);
+        entry->widget = new QTform_file(entry, darea);
         break;
         
     case FORM_RESET:
     case FORM_SUBMIT:
         {
-            QPushButton *btn = new form_button_w(entry, darea);
+            QPushButton *btn = new QTform_button(entry, darea);
             entry->widget = btn;
 
             if (entry->type == FORM_SUBMIT)
@@ -1042,11 +1042,11 @@ viewer_w::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_SELECT:
         // multiple select or more than one item visible: it's a listbox
         if (entry->multiple || entry->size > 1) {
-            form_list_w *lb = new form_list_w(entry, darea);
+            QTform_list *lb = new QTform_list(entry, darea);
             entry->widget = lb;
         }
         else {
-            form_combo_w *cb = new form_combo_w(entry, darea);
+            QTform_combo *cb = new QTform_combo(entry, darea);
             entry->widget = cb;
         }
         break;
@@ -1054,7 +1054,7 @@ viewer_w::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_OPTION:
         // list box selection
         if (prnt->multiple || prnt->size > 1) {
-            form_list_w *lb = (form_list_w*)prnt->widget;
+            QTform_list *lb = (QTform_list*)prnt->widget;
             if (!lb)
                 return;
             lb->addItem(QString(entry->name));
@@ -1065,7 +1065,7 @@ viewer_w::tk_add_widget(htmForm *entry, htmForm *prnt)
                 lb->setItemSelected(lb->item(prnt->maxlength), true);
         }
         else {
-            form_combo_w *cb = (form_combo_w*)prnt->widget;
+            QTform_combo *cb = (QTform_combo*)prnt->widget;
             if (!cb)
                 return;
             cb->addItem(QString(entry->name));
@@ -1097,16 +1097,16 @@ viewer_w::tk_add_widget(htmForm *entry, htmForm *prnt)
 // Take care of sizing FORM_SELECT menus.
 //
 void
-viewer_w::tk_select_close(htmForm *entry)
+QTviewer::tk_select_close(htmForm *entry)
 {
     if (entry->multiple || entry->size > 1) {
-        form_list_w *lb = (form_list_w*)entry->widget;
+        QTform_list *lb = (QTform_list*)entry->widget;
         if (!lb)
             return;
         lb->setSize();
     }
     else {
-        form_combo_w *cb = (form_combo_w*)entry->widget;
+        QTform_combo *cb = (QTform_combo*)entry->widget;
         if (!cb)
             return;
         cb->setSize();
@@ -1117,7 +1117,7 @@ viewer_w::tk_select_close(htmForm *entry)
 // Return the text entered into the text entry area.
 //
 char *
-viewer_w::tk_get_text(htmForm *entry)
+QTviewer::tk_get_text(htmForm *entry)
 {
     switch (entry->type) {
     case FORM_PASSWD:
@@ -1131,7 +1131,7 @@ viewer_w::tk_get_text(htmForm *entry)
 
     case FORM_FILE:
         {
-            form_file_w *fb = (form_file_w*)entry->widget;
+            QTform_file *fb = (QTform_file*)entry->widget;
             if (fb)
                 return (lstring::copy(
                     fb->editor()->text().toLatin1().constData()));
@@ -1157,7 +1157,7 @@ viewer_w::tk_get_text(htmForm *entry)
 // Set the text in the text entry area.
 //
 void
-viewer_w::tk_set_text(htmForm *entry, const char *string)
+QTviewer::tk_set_text(htmForm *entry, const char *string)
 {
     switch (entry->type) {
     case FORM_PASSWD:
@@ -1171,7 +1171,7 @@ viewer_w::tk_set_text(htmForm *entry, const char *string)
 
     case FORM_FILE:
         {
-            form_file_w *fb = (form_file_w*)entry->widget;
+            QTform_file *fb = (QTform_file*)entry->widget;
             if (fb)
                 fb->editor()->setText(QString(string));
         }
@@ -1195,7 +1195,7 @@ viewer_w::tk_set_text(htmForm *entry, const char *string)
 // checked field in the entries of seleted items.
 //
 bool
-viewer_w::tk_get_checked(htmForm *entry)
+QTviewer::tk_get_checked(htmForm *entry)
 {
     switch (entry->type) {
     case FORM_CHECK:
@@ -1208,7 +1208,7 @@ viewer_w::tk_get_checked(htmForm *entry)
         break;
     case FORM_SELECT:
         if (entry->multiple || entry->size > 1) { 
-            form_list_w *lb = (form_list_w*)entry->widget;
+            QTform_list *lb = (QTform_list*)entry->widget;
             if (!lb)
                 return (false);
             int cnt = 0;
@@ -1216,7 +1216,7 @@ viewer_w::tk_get_checked(htmForm *entry)
                 f->checked = lb->isItemSelected(lb->item(cnt++));
         }
         else {
-            form_combo_w *cb = (form_combo_w*)entry->widget;
+            QTform_combo *cb = (QTform_combo*)entry->widget;
             if (!cb)
                 return (false);
             int cnt = 0;
@@ -1235,7 +1235,7 @@ viewer_w::tk_get_checked(htmForm *entry)
 // state of each entry according to the selected field.
 //
 void
-viewer_w::tk_set_checked(htmForm *entry)
+QTviewer::tk_set_checked(htmForm *entry)
 {
     switch (entry->type) {
     case FORM_CHECK:
@@ -1247,7 +1247,7 @@ viewer_w::tk_set_checked(htmForm *entry)
         break;
     case FORM_SELECT:
         if (entry->multiple || entry->size > 1) { 
-            form_list_w *lb = (form_list_w*)entry->widget;
+            QTform_list *lb = (QTform_list*)entry->widget;
             if (!lb)
                 return;
             int cnt = 0;
@@ -1257,7 +1257,7 @@ viewer_w::tk_set_checked(htmForm *entry)
             }
         }
         else {
-            form_combo_w *cb = (form_combo_w*)entry->widget;
+            QTform_combo *cb = (QTform_combo*)entry->widget;
             if (!cb)
                 return;
             int cnt = 0;
@@ -1277,7 +1277,7 @@ viewer_w::tk_set_checked(htmForm *entry)
 // Set the widget locations and visibility.
 //
 void
-viewer_w::tk_position_and_show(htmForm *entry, bool shw)
+QTviewer::tk_position_and_show(htmForm *entry, bool shw)
 {
     if (entry->widget) {
         if (shw) {
@@ -1305,7 +1305,7 @@ viewer_w::tk_position_and_show(htmForm *entry, bool shw)
 // Destroy the form widget, this removes it from the screen.
 //
 void
-viewer_w::tk_form_destroy(htmForm *entry)
+QTviewer::tk_form_destroy(htmForm *entry)
 {
     if (entry->widget) {
         QWidget *w = (QWidget*)entry->widget;
@@ -1316,10 +1316,10 @@ viewer_w::tk_form_destroy(htmForm *entry)
 
 
 //-----------------------------------------------------------------------------
-// viewer_w slots
+// QTviewer slots
 
 void
-viewer_w::press_event_slot(QMouseEvent *ev)
+QTviewer::press_event_slot(QMouseEvent *ev)
 {
     switch (ev->button()) {
     case Qt::LeftButton:
@@ -1340,7 +1340,7 @@ viewer_w::press_event_slot(QMouseEvent *ev)
 
 
 void
-viewer_w::release_event_slot(QMouseEvent *ev)
+QTviewer::release_event_slot(QMouseEvent *ev)
 {
     delete rband;
     rband = 0;
@@ -1373,7 +1373,7 @@ viewer_w::release_event_slot(QMouseEvent *ev)
 
 
 void
-viewer_w::move_event_slot(QMouseEvent *ev)
+QTviewer::move_event_slot(QMouseEvent *ev)
 {
     QRect r = contentsRect();
     QScrollBar *sb = horizontalScrollBar();
@@ -1415,7 +1415,7 @@ viewer_w::move_event_slot(QMouseEvent *ev)
 // the mouse button is still down.
 //
 void
-viewer_w::btn_timer_slot()
+QTviewer::btn_timer_slot()
 {
     if (btn_pressed)
         rband = new QRubberBand(QRubberBand::Rectangle, this);
@@ -1424,24 +1424,24 @@ viewer_w::btn_timer_slot()
 
 
 void
-viewer_w::form_submit_slot(htmForm *entry)
+QTviewer::form_submit_slot(htmForm *entry)
 {
     formActivate(0, entry);
 }
 
 
 void
-viewer_w::form_reset_slot(htmForm *entry)
+QTviewer::form_reset_slot(htmForm *entry)
 {
     formReset(entry);
 }
 
 
 //-----------------------------------------------------------------------------
-// viewer_w protected handler functions
+// QTviewer protected handler functions
 
 void
-viewer_w::resizeEvent(QResizeEvent *ev)
+QTviewer::resizeEvent(QResizeEvent *ev)
 {
     QScrollArea::resizeEvent(ev);
 

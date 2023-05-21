@@ -38,47 +38,30 @@
  $Id:$
  *========================================================================*/
 
-#ifndef VIEWMON_H
-#define VIEWMON_H
+#ifndef FORM_COMBO_W_H
+#define FORM_COMBO_W_H
 
-#include <QObject>
-#include "qtinterf/qtinterf.h"
+#include <QComboBox>
 
-struct htmCallbackInfo;
-struct htmAnchorCallbackStruct;
-struct htmVisitedCallbackStruct;
-struct htmDocumentCallbackStruct;
-struct htmLinkCallbackStruct;
-struct htmFrameCallbackStruct;
-struct htmFormCallbackStruct;
-struct htmImagemapCallbackStruct;
-struct htmEventCallbackStruct;
+struct htmForm;
 
 namespace qtinterf
 {
-    class viewer_w;
-
-    class viewmon : public QObject
+    class QTform_combo : public QComboBox
     {
         Q_OBJECT
 
     public:
-        viewmon(viewer_w*);
+        QTform_combo(htmForm*, QWidget*);
+
+        void setSize();
+
+    signals:
 
     private slots:
-        void arm_slot(htmCallbackInfo*);
-        void activate_slot(htmAnchorCallbackStruct*);
-        void anchor_track_slot(htmAnchorCallbackStruct*);
-        void anchor_visited_slot(htmVisitedCallbackStruct*);
-        void document_slot(htmDocumentCallbackStruct*);
-        void link_slot(htmLinkCallbackStruct*);
-        void frame_slot(htmFrameCallbackStruct*);
-        void form_slot(htmFormCallbackStruct*);
-        void imagemap_slot(htmImagemapCallbackStruct*);
-        void html_event_slot(htmEventCallbackStruct*);
-
+      
     private:
-        viewer_w *html_viewer;
+        htmForm *form_entry;
     };
 }
 

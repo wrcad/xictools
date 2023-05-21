@@ -61,7 +61,7 @@ using namespace qtinterf;
 
 namespace qtinterf
 {
-    class interval_timer;
+    class QTtimer;
     class QTfilePopup;
     class QTfontPopup;
     class QTlistPopup;
@@ -90,7 +90,7 @@ namespace qtinterf
         QWidget *Shell()                { return (wb_shell); }
         QTprintPopup *HC()              { return (wb_hc); }
         void SetHC(QTprintPopup *p)     { wb_hc = p; }
-        QWidget *TextArea()             { return (wb_textarea); }
+        QTextEdit *TextArea()           { return (wb_textarea); }
 
         // Pass a title for the window and icon.
         //
@@ -183,11 +183,12 @@ namespace qtinterf
         void            SetErrorLogName(const char*);
 
         // QT-SPECIFIC
-        QWidget *shell_widget()         { return (wb_shell); }
+        QWidget         *shell_widget()      { return (wb_shell); }
+        static QColor   PopupColor(GRattrColor);
 
     protected:
         QWidget         *wb_shell;      // top level widget
-        QWidget         *wb_textarea;   // text widget
+        QTextEdit       *wb_textarea;   // text widget
         QTledPopup      *wb_input;      // dialog input popup
         QTmsgPopup      *wb_message;    // message popup
         QTtextPopup     *wb_info;       // info popup
@@ -299,7 +300,7 @@ namespace qtinterf
 
         event_loop      *dv_loop;       // event loop stack
         QTbag           *dv_main_bag;   // top level bag
-        interval_timer  *dv_timers;     // list of timers
+        QTtimer         *dv_timers;     // list of timers
         int             dv_minx;
         int             dv_miny;
         int             dv_loop_level;  // loop level

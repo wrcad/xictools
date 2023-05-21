@@ -56,7 +56,7 @@ class QProcess;
 
 namespace qtinterf
 {
-    class progress_d;
+    class QTprogress;
 
     // values for textfmt
     enum HCtextType
@@ -168,7 +168,7 @@ namespace qtinterf
         QPushButton *printbtn;
         QPushButton *dismissbtn;
         QProcess *process;
-        progress_d *progress;
+        QTprogress *progress;
 
         bool printer_busy;
     };

@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "draw_x_w.h"
+#include "qtcanvas_x.h"
 
 #ifdef WITH_X11
 #include <QX11Info>
@@ -53,12 +53,12 @@ using namespace qtinterf;
 
 //XXXextern Drawable qt_x11Handle(const QPaintDevice *pd);
 
-GC draw_x_w::com_gc = 0;
-QColor draw_x_w::com_fg;
-QColor draw_x_w::com_bg;
-QColor draw_x_w::com_ghost;
+GC QTcanvas_x::com_gc = 0;
+QColor QTcanvas_x::com_fg;
+QColor QTcanvas_x::com_bg;
+QColor QTcanvas_x::com_ghost;
 
-draw_x_w::draw_x_w(bool use_common, QWidget *prnt) : QWidget(prnt)
+QTcanvas_x::QTcanvas_x(bool use_common, QWidget *prnt) : QWidget(prnt)
 {
     setMouseTracking(true);
     setMinimumWidth(50);
@@ -94,7 +94,7 @@ draw_x_w::draw_x_w(bool use_common, QWidget *prnt) : QWidget(prnt)
 //
 
 void
-draw_x_w::draw_direct(bool direct)
+QTcanvas_x::draw_direct(bool direct)
 {
     if (direct) {
         da_fore = winId();
@@ -110,7 +110,7 @@ draw_x_w::draw_direct(bool direct)
 // Paint the screen window from the pixmap.
 //
 void
-draw_x_w::update()
+QTcanvas_x::update()
 {
     repaint(0, 0, width(), height());
 }
@@ -119,7 +119,7 @@ draw_x_w::update()
 // Flood with the background color.
 //
 void
-draw_x_w::clear()
+QTcanvas_x::clear()
 {
     XSetForeground(da_display, da_gc, QColormap::instance().pixel(*da_bg));
     XFillRectangle(da_display, da_fore, da_gc, 0, 0, width(), height());
@@ -127,7 +127,7 @@ draw_x_w::clear()
 
 
 void
-draw_x_w::clear_area(int x0, int y0, int w, int h)
+QTcanvas_x::clear_area(int x0, int y0, int w, int h)
 {
     if (w <= 0)
         w = width() - x0;
@@ -141,7 +141,7 @@ draw_x_w::clear_area(int x0, int y0, int w, int h)
 // Set the foreground rendering color.
 //
 void
-draw_x_w::set_foreground(unsigned int pix)
+QTcanvas_x::set_foreground(unsigned int pix)
 {
     da_fg->setRgb(pix);
     XSetForeground(da_display, da_gc, QColormap::instance().pixel(*da_fg));
@@ -151,7 +151,7 @@ draw_x_w::set_foreground(unsigned int pix)
 // Set the background rendering color.
 //
 void
-draw_x_w::set_background(unsigned int pix)
+QTcanvas_x::set_background(unsigned int pix)
 {
     da_bg->setRgb(pix);
     XSetBackground(da_display, da_gc, QColormap::instance().pixel(*da_bg));
@@ -161,7 +161,7 @@ draw_x_w::set_background(unsigned int pix)
 // Draw one pixel.
 //
 void
-draw_x_w::draw_pixel(int x0, int y0)
+QTcanvas_x::draw_pixel(int x0, int y0)
 {
     XDrawPoint(da_display, da_fore, da_gc, x0, y0);
 }
@@ -170,7 +170,7 @@ draw_x_w::draw_pixel(int x0, int y0)
 // Draw multiple pixels.
 //
 void
-draw_x_w::draw_pixels(GRmultiPt *p, int n)
+QTcanvas_x::draw_pixels(GRmultiPt *p, int n)
 {
     XDrawPoints(da_display, da_fore, da_gc, (XPoint*)p->data(), n,
         CoordModeOrigin);
@@ -180,7 +180,7 @@ draw_x_w::draw_pixels(GRmultiPt *p, int n)
 // Set the current line texture, used when da_line_mode = 0;
 //
 void
-draw_x_w::set_linestyle(const GRlineType *lineptr)
+QTcanvas_x::set_linestyle(const GRlineType *lineptr)
 {
     if (!lineptr || !lineptr->mask || lineptr->mask == -1) {
         XSetLineAttributes(da_display, da_gc, 0, LineSolid,
@@ -198,7 +198,7 @@ draw_x_w::set_linestyle(const GRlineType *lineptr)
 // Draw a line.
 //
 void
-draw_x_w::draw_line(int x1, int y1, int x2, int y2)
+QTcanvas_x::draw_line(int x1, int y1, int x2, int y2)
 {
     XDrawLine(da_display, da_fore, da_gc, x1, y1, x2, y2);
 }
@@ -207,7 +207,7 @@ draw_x_w::draw_line(int x1, int y1, int x2, int y2)
 // Draw a connected line set.
 //
 void
-draw_x_w::draw_polyline(GRmultiPt *p, int n)
+QTcanvas_x::draw_polyline(GRmultiPt *p, int n)
 {
     if (n < 2)
         return;
@@ -219,7 +219,7 @@ draw_x_w::draw_polyline(GRmultiPt *p, int n)
 // Draw multiple lines.
 //
 void
-draw_x_w::draw_lines(GRmultiPt *p, int n)
+QTcanvas_x::draw_lines(GRmultiPt *p, int n)
 {
     if (n < 1)
         return;
@@ -228,7 +228,7 @@ draw_x_w::draw_lines(GRmultiPt *p, int n)
 
 
 void
-draw_x_w::define_fillpattern(GRfillType *fillp)
+QTcanvas_x::define_fillpattern(GRfillType *fillp)
 {
     if (!fillp)
         return;
@@ -244,7 +244,7 @@ draw_x_w::define_fillpattern(GRfillType *fillp)
 
 
 void
-draw_x_w::set_fillpattern(const GRfillType *fillp)
+QTcanvas_x::set_fillpattern(const GRfillType *fillp)
 {
     if (!fillp || !fillp->xPixmap())
         XSetFillStyle(da_display, da_gc, FillSolid);
@@ -258,7 +258,7 @@ draw_x_w::set_fillpattern(const GRfillType *fillp)
 // Draw a box, using current fill.
 //
 void
-draw_x_w::draw_box(int x1, int y1, int x2, int y2)
+QTcanvas_x::draw_box(int x1, int y1, int x2, int y2)
 {
     if (x1 > x2) {
         int temp = x1;
@@ -277,7 +277,7 @@ draw_x_w::draw_box(int x1, int y1, int x2, int y2)
 // Draw multiple boxes, using current fill.
 //
 void
-draw_x_w::draw_boxes(GRmultiPt *p, int n)
+QTcanvas_x::draw_boxes(GRmultiPt *p, int n)
 {
     XFillRectangles(da_display, da_fore, da_gc, (XRectangle*)p->data(), n);
 }
@@ -286,7 +286,7 @@ draw_x_w::draw_boxes(GRmultiPt *p, int n)
 // Draw a filled arc.
 //
 void
-draw_x_w::draw_arc(int x0, int y0, int radius, int, double theta1, double theta2)
+QTcanvas_x::draw_arc(int x0, int y0, int radius, int, double theta1, double theta2)
 {
     if (theta1 >= theta2)
         theta2 = 2 * M_PI + theta2;
@@ -303,7 +303,7 @@ draw_x_w::draw_arc(int x0, int y0, int radius, int, double theta1, double theta2
 // Draw a filled polygon.
 //
 void
-draw_x_w::draw_polygon(GRmultiPt *p, int n)
+QTcanvas_x::draw_polygon(GRmultiPt *p, int n)
 {
     XFillPolygon(da_display, da_fore, da_gc, (XPoint*)p->data(), n, Complex,
         CoordModeOrigin);
@@ -311,7 +311,7 @@ draw_x_w::draw_polygon(GRmultiPt *p, int n)
 
 
 void
-draw_x_w::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
+QTcanvas_x::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 {
     if (yl >= yu)
         return;
@@ -343,7 +343,7 @@ draw_x_w::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 
 
 void
-draw_x_w::draw_image(const GRimage *image, int xx, int yy, int w, int h)
+QTcanvas_x::draw_image(const GRimage *image, int xx, int yy, int w, int h)
 {
     // Pure-X version, may have slightly less overhead than the gtk
     // code, but does not use SHM.  I can't see any difference
@@ -382,7 +382,7 @@ draw_x_w::draw_image(const GRimage *image, int xx, int yy, int w, int h)
 // Set the font used for rendering in the drawing area.
 //
 void
-draw_x_w::set_font(QFont *fnt)
+QTcanvas_x::set_font(QFont *fnt)
 {
     setFont(*fnt);
 }
@@ -392,7 +392,7 @@ draw_x_w::set_font(QFont *fnt)
 // the given font.
 //
 int
-draw_x_w::text_width(QFont *fnt, const char *str, int len)
+QTcanvas_x::text_width(QFont *fnt, const char *str, int len)
 {
     QFontMetrics fm(*fnt);
     return (fm.width(QString(str), len));
@@ -403,7 +403,7 @@ draw_x_w::text_width(QFont *fnt, const char *str, int len)
 // current font.
 //
 void
-draw_x_w::text_extent(const char *str, int *w, int *h)
+QTcanvas_x::text_extent(const char *str, int *w, int *h)
 {
     if (!str)
         str = "x";
@@ -423,7 +423,7 @@ draw_x_w::text_extent(const char *str, int *w, int *h)
 // Draw text, at most len characters from str if len >= 0.
 //
 void
-draw_x_w::draw_text(int x0, int y0, const char *str, int len)
+QTcanvas_x::draw_text(int x0, int y0, const char *str, int len)
 {
     QPaintDevice *pd;
     if (da_direct) {
@@ -454,7 +454,7 @@ draw_x_w::draw_text(int x0, int y0, const char *str, int len)
 
 
 void
-draw_x_w::set_xor_mode(bool set)
+QTcanvas_x::set_xor_mode(bool set)
 {
     if (set) {
         da_ghost_fg.setRgb(da_ghost->rgb() ^ da_bg->rgb());
@@ -473,7 +473,7 @@ draw_x_w::set_xor_mode(bool set)
 
 
 void
-draw_x_w::set_ghost_color(unsigned int pixel)
+QTcanvas_x::set_ghost_color(unsigned int pixel)
 {
     da_ghost->setRgb(pixel);
 }
@@ -481,7 +481,7 @@ draw_x_w::set_ghost_color(unsigned int pixel)
 
 
 void
-draw_x_w::resizeEvent(QResizeEvent *ev)
+QTcanvas_x::resizeEvent(QResizeEvent *ev)
 {
     // This is an (undocumented?) hook in qpixmap_x11.cpp that forces
     // the XPixmap to a certain depth.  Without this, when running
@@ -506,7 +506,7 @@ draw_x_w::resizeEvent(QResizeEvent *ev)
 
 
 void
-draw_x_w::paintEvent(QPaintEvent *ev)
+QTcanvas_x::paintEvent(QPaintEvent *ev)
 {
     if (!da_pixmap)
         return;
@@ -527,63 +527,63 @@ draw_x_w::paintEvent(QPaintEvent *ev)
 
 
 void
-draw_x_w::mousePressEvent(QMouseEvent *ev)
+QTcanvas_x::mousePressEvent(QMouseEvent *ev)
 {
     emit press_event(ev);
 }
 
 
 void
-draw_x_w::mouseReleaseEvent(QMouseEvent *ev)
+QTcanvas_x::mouseReleaseEvent(QMouseEvent *ev)
 {
     emit release_event(ev);
 }
 
 
 void
-draw_x_w::mouseMoveEvent(QMouseEvent *ev)
+QTcanvas_x::mouseMoveEvent(QMouseEvent *ev)
 {
     emit move_event(ev);
 }
 
 
 void
-draw_x_w::keyPressEvent(QKeyEvent *ev)
+QTcanvas_x::keyPressEvent(QKeyEvent *ev)
 {
     emit key_press_event(ev);
 }
 
 
 void
-draw_x_w::keyReleaseEvent(QKeyEvent *ev)
+QTcanvas_x::keyReleaseEvent(QKeyEvent *ev)
 {
     emit key_release_event(ev);
 }
 
 
 void
-draw_x_w::enterEvent(QEvent *ev)
+QTcanvas_x::enterEvent(QEvent *ev)
 {
     emit enter_event(ev);
 }
 
 
 void
-draw_x_w::leaveEvent(QEvent *ev)
+QTcanvas_x::leaveEvent(QEvent *ev)
 {
     emit leave_event(ev);
 }
 
 
 void
-draw_x_w::dragEnterEvent(QDragEnterEvent *ev)
+QTcanvas_x::dragEnterEvent(QDragEnterEvent *ev)
 {
     emit drag_enter_event(ev);
 }
 
 
 void
-draw_x_w::dropEvent(QDropEvent *ev)
+QTcanvas_x::dropEvent(QDropEvent *ev)
 {
     emit drop_event(ev);
 }

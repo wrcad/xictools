@@ -1,5 +1,5 @@
 
-/*========================================================================*
+/*========================================================================
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
@@ -32,48 +32,42 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Qt MOZY help viewer.
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef ACTIVITY_W_H
-#define ACTIVITY_W_H
+#ifndef FORM_BUTTON_W_H
+#define FORM_BUTTON_W_H
 
-#include <QWidget>
-#include <QTimer>
+#include <QPushButton>
 
-class QPaintEvent;
-class QPixmap;
+struct htmForm;
 
 namespace qtinterf
 {
-    class activity_w : public QWidget
+    // Subclass QPushButton for use in forms.
+    //
+    class QTform_button : public QPushButton
     {
         Q_OBJECT
 
     public:
-        activity_w(QWidget*);
-        ~activity_w();
+        QTform_button(htmForm*, QWidget*);
 
-        void start();
-        void stop();
-
-        void paintEvent(QPaintEvent*);
+    signals:
+        void pressed(htmForm*);
+        void released(htmForm*);
 
     private slots:
-        void increment_slot();
+        void pressed_slot();
+        void released_slot();
 
     private:
-        QTimer timer;
-
-        QPixmap *image;
-        int pos_x;
-        int vel_x;
-        int rad;
-        bool active;
+        htmForm *form_entry;
     };
 }
 
 #endif
+

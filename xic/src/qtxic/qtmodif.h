@@ -32,85 +32,75 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef PROGRESS_D_H
-#define PROGRESS_D_H
+#ifndef QTMODIF_H
+#define QTMODIF_H
 
-#include "ginterf/graphics.h"
-
-#include <QVariant>
+#include "main.h"
+#include "qtmain.h"
+#include "editif.h"
 #include <QDialog>
 
-class QGroupBox;
 class QLabel;
-class QPushButton;
-class QTextEdit;
+class QMouseEvent;
+class QTtextEdit;
 
-namespace qtinterf
+
+class cModif : public QDialog, public QTbag
 {
-    class activity_w;
-    class QTbag;
+    Q_OBJECT
 
-    class progress_d : public QDialog, public GRpopup
+public:
+
+    // List element for modified cells.
+    //
+    struct s_item
     {
-        Q_OBJECT
+        s_item() { name = 0; path = 0; save = true; ft[0] = 0; }
+        ~s_item() { delete [] name; delete [] path; }
 
-    public:
-        enum prgMode { prgPrint, prgFileop };
-
-        progress_d(QTbag*, prgMode);
-        ~progress_d();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void popdown();
-
-        void set_input(const char*);
-        void set_output(const char*);
-        void set_info(const char*);
-        void set_etc(const char*);
-        void start();
-        void finished();
-
-        void set_info_limit(int n) { info_limit = n; info_count = 0; }
-
-    signals:
-        void abort();
-
-    private slots:
-        void quit_slot();
-        void abort_slot();
-
-    private:
-        QGroupBox *gb_in;
-        QLabel *label_in;
-        QGroupBox *gb_out;
-        QLabel *label_out;
-        QGroupBox *gb_info;
-        QTextEdit *te_info;
-        QGroupBox *gb_etc;
-        QLabel *label_etc;
-        QPushButton *b_abort;
-        QPushButton *b_cancel;
-        activity_w *pbar;
-        int info_limit;
-        int info_count;
+        char *name;                         // cell name
+        char *path;                         // full path name
+        bool save;                          // save flag
+        char ft[4];                         // file type code
     };
-}
+
+    cModif(stringlist*, bool(*)(const char*));
+    ~cModif();
+
+    QSize sizeHint() const;
+
+    bool is_empty()             { return (!m_field || !m_width); }
+    static PMretType retval()   { return (m_retval); }
+    static cModif *self()       { return (instPtr); }
+
+private slots:
+    void save_all_slot();
+    void skip_all_slot();
+    void help_slot();
+    void apply_slot();
+    void abort_slot();
+    void font_changed_slot(int);
+    void mouse_press_slot(QMouseEvent*);
+
+private:
+    void refresh();
+
+    s_item *m_list;                    // list of cells
+    bool (*m_saveproc)(const char*);   // save callback
+    int m_field;                       // max cell name length
+    int m_width;                       // max total string length
+    QLabel *m_label;
+    QTtextEdit *m_text;
+
+    static PMretType m_retval;         // return flag
+    static cModif *instPtr;
+};
 
 #endif
 

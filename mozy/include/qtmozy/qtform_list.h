@@ -1,5 +1,5 @@
 
-/*========================================================================*
+/*========================================================================
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
@@ -32,95 +32,37 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Xic Integrated Circuit Layout and Schematic Editor                     *
+ * Qt MOZY help viewer.
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef QTMENU_H
-#define QTMENU_H
+#ifndef FORM_LIST_W_H
+#define FORM_LIST_W_H
 
-#include "main.h"
-#include "menu.h"
-#include <QPushButton>
+#include <QListWidget>
 
-class QAction;
+struct htmForm;
 
-
-class QTmenu : public MenuMain
+namespace qtinterf
 {
-public:
-    friend class QTmenuConfig;
-
-    QTmenu()
+    class QTform_list : public QListWidget
     {
-        modalShell = 0;
-    }
+        Q_OBJECT
 
-    void InitMainMenu();
-    void InitTopButtonMenu();
-    void InitSideButtonMenus();
+    public:
+        QTform_list(htmForm*, QWidget*);
 
-    // Virtual functions from MenuMain.
-    void SetSensGlobal(bool);
-    void Deselect(GRobject);
-    void Select(GRobject);
-    bool GetStatus(GRobject);
-    void SetStatus(GRobject, bool);
-    void CallCallback(GRobject);
-    void Location(GRobject, int*, int*);
-    void PointerRootLoc(int*, int*);
-    const char *GetLabel(GRobject);
-    void SetLabel(GRobject, const char*);
-    void SetSensitive(GRobject, bool);
-    bool IsSensitive(GRobject);
-    void SetVisible(GRobject, bool);
-    bool IsVisible(GRobject);
-    void DestroyButton(GRobject);
-    void SwitchMenu();
-    void SwitchSubwMenu(int, DisplayMode);
-    GRobject NewSubwMenu(int);
-    void SetDDentry(GRobject, int, const char*);
-    void NewDDentry(GRobject, const char*);
-    void NewDDmenu(GRobject, const char*const*);
-    void UpdateUserMenu();
-    void HideButtonMenu(bool);
-    void DisableMainMenuItem(const char*, const char*, bool);
+        void setSize();
 
-    // Non-virtual.
+    signals:
 
-    void SetModal(QDialog *w)   { modalShell = w; }
-    QDialog *GetModal()         { return (modalShell); }
-
-    static QTmenu *self() { return (dynamic_cast<QTmenu*>(Menu())); }
-
-private:
-    QDialog     *modalShell;
-};
-
-class QTmenuButton : public QPushButton
-{
-    Q_OBJECT
-
-public:
-    QTmenuButton(MenuEnt*, QWidget*);
-
-signals:
-    void button_pressed(MenuEnt*);
-
-private slots:
-    void pressed_slot() { emit button_pressed(entry); }
-
-private:
-    MenuEnt *entry;
-};
-
-
-inline QAction *
-action(MenuEnt *ent)
-{
-    return (static_cast<QAction*>(ent->user_action));
+    private slots:
+      
+    private:
+        htmForm *form_entry;
+    };
 }
 
 #endif

@@ -354,7 +354,7 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
         move(xx, yy);
     }
     QWidget *cwidget = new QWidget;
-    html_viewer = new viewer_w(500, 400, this, this);
+    html_viewer = new QTviewer(500, 400, this, this);
     setCentralWidget(cwidget);
     status_bar = new QStatusBar(this);
     if (!has_menu)
@@ -910,7 +910,7 @@ QThelpPopup::show_cache(int mode)
 //-----------------------------------------------------------------------------
 // htmDataInterface methods
 
-// All viewer_w "signals" are dispatched from here.
+// All QTviewer "signals" are dispatched from here.
 //
 void
 QThelpPopup::emit_signal(SignalID id, void *payload)

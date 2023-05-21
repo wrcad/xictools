@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "viewmon.h"
+#include "qtviewmon.h"
 #include "qtviewer.h"
 #include "htm/htm_widget.h"
 #include "htm/htm_callback.h"
@@ -46,7 +46,7 @@
 
 using namespace qtinterf;
 
-viewmon::viewmon(viewer_w *prnt) : QObject(prnt)
+QTviewmon::QTviewmon(QTviewer *prnt) : QObject(prnt)
 {
     html_viewer = prnt;
 
@@ -74,56 +74,56 @@ viewmon::viewmon(viewer_w *prnt) : QObject(prnt)
 
 
 void
-viewmon::arm_slot(htmCallbackInfo*)
+QTviewmon::arm_slot(htmCallbackInfo*)
 {
     printf("arm called\n");
 }
 
 
 void
-viewmon::activate_slot(htmAnchorCallbackStruct*)
+QTviewmon::activate_slot(htmAnchorCallbackStruct*)
 {
     printf("activate called\n");
 }
 
 
 void
-viewmon::anchor_track_slot(htmAnchorCallbackStruct*)
+QTviewmon::anchor_track_slot(htmAnchorCallbackStruct*)
 {
     printf("anchor_track called\n");
 }
 
 
 void
-viewmon::anchor_visited_slot(htmVisitedCallbackStruct*)
+QTviewmon::anchor_visited_slot(htmVisitedCallbackStruct*)
 {
     printf("anchor_visited called\n");
 }
 
 
 void
-viewmon::document_slot(htmDocumentCallbackStruct*)
+QTviewmon::document_slot(htmDocumentCallbackStruct*)
 {
     printf("document called\n");
 }
 
 
 void
-viewmon::link_slot(htmLinkCallbackStruct*)
+QTviewmon::link_slot(htmLinkCallbackStruct*)
 {
     printf("link called\n");
 }
 
 
 void
-viewmon::frame_slot(htmFrameCallbackStruct*)
+QTviewmon::frame_slot(htmFrameCallbackStruct*)
 {
     printf("frame called\n");
 }
 
 
 void
-viewmon::form_slot(htmFormCallbackStruct *cbs)
+QTviewmon::form_slot(htmFormCallbackStruct *cbs)
 {
     printf("form called\n");
     printf("action: %s\n", cbs->action ? cbs->action : "null");
@@ -140,14 +140,14 @@ viewmon::form_slot(htmFormCallbackStruct *cbs)
 
 
 void
-viewmon::imagemap_slot(htmImagemapCallbackStruct*)
+QTviewmon::imagemap_slot(htmImagemapCallbackStruct*)
 {
     printf("imagemap called\n");
 }
 
 
 void
-viewmon::html_event_slot(htmEventCallbackStruct*)
+QTviewmon::html_event_slot(htmEventCallbackStruct*)
 {
     printf("event called\n");
 }

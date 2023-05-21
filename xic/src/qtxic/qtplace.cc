@@ -74,7 +74,7 @@ namespace {
     guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
     */
 
-    namespace gtkplace {
+    namespace qtplace {
         // Spin button code.
         enum { PL_NX, PL_NY, PL_DX, PL_DY };
 
@@ -149,7 +149,7 @@ namespace {
     }
 }
 
-using namespace gtkplace;
+using namespace qtplace;
 
 iap_t sPlc::pl_iap;
 
@@ -516,18 +516,17 @@ sPlc::update()
 }
 
 
-#ifdef notdef
 void
 sPlc::desel_placebtn()
 {
-    GTKdev::Deselect(pl_placebtn);
+//    GTKdev::Deselect(pl_placebtn);
 }
 
 
 bool
 sPlc::smash_mode()
 {
-    return (GTKdev::GetStatus(pl_smshbtn));
+//    return (GTKdev::GetStatus(pl_smshbtn));
 }
 
 
@@ -536,6 +535,7 @@ sPlc::smash_mode()
 void
 sPlc::rebuild_menu()
 {
+    /*
     if (!pl_masterbtn)
         return;
     g_signal_handlers_disconnect_by_func(G_OBJECT(pl_masterbtn),
@@ -554,8 +554,10 @@ sPlc::rebuild_menu()
         gtk_combo_box_set_active(GTK_COMBO_BOX(pl_masterbtn), 0);
     g_signal_connect(G_OBJECT(pl_masterbtn), "changed",
         G_CALLBACK(pl_menu_proc), 0);
+        */
 }
 
+#ifdef notdef
 
 // Set the sensitivity of the array parameter entry widgets
 //

@@ -1,5 +1,5 @@
 
-/*========================================================================*
+/*========================================================================
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
@@ -32,69 +32,65 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Qt MOZY help viewer.
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "interval_timer.h"
+#ifndef HTTPMON_D_H
+#define HTTPMON_D_H
+ 
+#include <QVariant>
+#include <QDialog>
+#include <setjmp.h>
+#include "httpget/transact.h"
 
+//
+// Definition of the QT download widget.
+//
+ 
+class QApplication;
+class QGroupBox;
+class QLabel;
+class QPushButton;
 
-using namespace qtinterf;
-
-interval_timer::interval_timer(int(*cb)(void*), void *a,
-    interval_timer *n, QObject *p) : QTimer(p)
+namespace qtinterf
 {
-    // QT's timerId returns -1 unless the timer is active, so we need
-    // our own id generator.
-    static int id_cntr = 1;
+    class QThttpmon : public QDialog, public http_monitor
+    {
+        Q_OBJECT
 
-    callback = cb;
-    arg = a;
-    next = n;
-    msec = 0;
-    list = 0;
-    timer_id = id_cntr++;
-    deleted = false;
-    use_cb_ret = false;
-    connect(this, SIGNAL(timeout()), this, SLOT(timeout_slot()));
+    public:
+        QThttpmon(QWidget*);
+        ~QThttpmon();
+
+        bool widget_print(const char*);     // print to monitor
+        void abort();                       // abort transmission
+        void run(Transaction*);             // start transfer
+
+        void set_transaction(Transaction *t) { transaction = t; }
+
+    private slots:
+        void run_slot();
+        void abort_slot();
+        void quit_slot();
+
+    private:
+        bool event(QEvent*);
+
+        QGroupBox *gb;
+        QLabel *label;
+        QPushButton *b_cancel;
+
+        Transaction *transaction;
+
+        char *g_textbuf;
+        bool g_jbuf_set;
+    public:
+        jmp_buf g_jbuf;
+    };
 }
 
-
-interval_timer::~interval_timer()
-{
-    deleted = true;  // Make sure that no timeouts are delivered after
-                     // the timer is destroyed.
-    if (list) {
-        interval_timer *tp = 0;
-        for (interval_timer *t = *list; t; t = t->next) {
-            if (t == this) {
-                if (tp)
-                    tp->next = t->next;
-                else
-                    *list = t->next;
-                break;
-            }
-            tp = t;
-        }
-    }
-    emit destroy(this);
-}
-
-
-void
-interval_timer::timeout_slot()
-{
-    stop();
-    if (!deleted && callback) {
-        bool r = (*callback)(arg);
-        if (use_cb_ret) {
-            if (r)
-                start(msec);
-            else
-                delete this;
-        }
-    }
-}
+#endif
 

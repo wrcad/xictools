@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "qtinterf.h"
-#include "search_d.h"
+#include "qtsearch.h"
 #include "miscutil/lstring.h"
 
 #include <QAction>
@@ -94,7 +94,7 @@ static const char * const down_xpm[] = {
 "                                ",
 "                                "};
 
-search_d::search_d(QTbag *owner, const char *initstr) :
+QTsearch::QTsearch(QTbag *owner, const char *initstr) :
     QDialog(owner ? owner->Shell() : 0), timer(this)
 {
     p_parent = owner;
@@ -151,7 +151,7 @@ search_d::search_d(QTbag *owner, const char *initstr) :
 }
 
 
-search_d::~search_d()
+QTsearch::~QTsearch()
 {
     if (p_usrptr)
         *p_usrptr = 0;
@@ -180,7 +180,7 @@ search_d::~search_d()
 // GRpopup override
 //
 void
-search_d::popdown()
+QTsearch::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -192,14 +192,14 @@ search_d::popdown()
 
 
 void
-search_d::set_ign_case(bool set)
+QTsearch::set_ign_case(bool set)
 {
     b_nc->setChecked(set);
 }
 
 
 void
-search_d::set_message(const char *msg)
+QTsearch::set_message(const char *msg)
 {
     if (msg) {
         delete [] label_string;
@@ -210,7 +210,7 @@ search_d::set_message(const char *msg)
 
 
 void
-search_d::set_transient_message(const char *msg)
+QTsearch::set_transient_message(const char *msg)
 {
     if (msg) {
         label->setText(QString(msg));
@@ -220,42 +220,42 @@ search_d::set_transient_message(const char *msg)
 
 
 QString
-search_d::get_target()
+QTsearch::get_target()
 {
     return (edit->text());
 }
 
 
 void
-search_d::quit_slot()
+QTsearch::quit_slot()
 {
     delete this;
 }
 
 
 void
-search_d::down_slot()
+QTsearch::down_slot()
 {
     emit search_down();
 }
 
 
 void
-search_d::up_slot()
+QTsearch::up_slot()
 {
     emit search_up();
 }
 
 
 void
-search_d::ign_case_slot(bool set)
+QTsearch::ign_case_slot(bool set)
 {
     emit ignore_case(set);
 }
 
 
 void
-search_d::timeout_slot()
+QTsearch::timeout_slot()
 {
     timer.stop();
     label->setText(QString(label_string));

@@ -62,7 +62,7 @@
 #include "miscutil/timer.h"
 #include "miscutil/pathlist.h"
 #include "help/help_context.h"
-#include "qtinterf/idle_proc.h"
+#include "qtinterf/qtidleproc.h"
 #include "bitmaps/wr.xpm"
 
 #include <QApplication>
@@ -389,7 +389,7 @@ QTpkg::Initialize(GRwbag *wcp)
     if (MainDev()->ident != _devQT_)
         return (true);
 
-    pkg_idle_control = new idle_proc();
+    pkg_idle_control = new QTidleproc();
 
     QTmainwin *w = dynamic_cast<QTmainwin*>(wcp);
     if (!w)
@@ -795,7 +795,7 @@ QTpkg::RegisterEventHandler(void(*handler)(QEvent*, void*), void *arg)
 //-----------------------------------------------------------------------------
 // cKeys functions
 
-cKeys::cKeys(int wnum, QWidget *prnt) : draw_qt_w(false, prnt)
+cKeys::cKeys(int wnum, QWidget *prnt) : QTcanvas(false, prnt)
 {
     k_keypos = 0;
     memset(k_keys, 0, CBUFMAX+1);
@@ -870,8 +870,6 @@ cKeys::check_exec(bool exact)
     if (!k_keypos)
         return;
     MenuEnt *ent = Menu()->MatchEntry(k_keys, k_keypos, k_win_number, exact);
-//XXX
-fprintf(stderr, "%s %p\n", k_keys, ent);
     if (ent) {
         if (ent->is_dynamic() && ent->is_menu())
             // Ignore the submenu buttons in the User menu
@@ -917,7 +915,6 @@ cKeys::font_changed(int fnum)
         show_keys();
     }
 }
-
 
 
 //-----------------------------------------------------------------------------
@@ -997,9 +994,6 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);
     vbox->setSpacing(2);
-
-//XXX    sw_keys_pressed->setFixedHeight(QTfont::lineHeight(FNT_SCREEN) + 4);
-//XXX    sw_keys_pressed->setFixedWidth(6*QTfont::stringWidth(0, FNT_SCREEN));
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
@@ -1320,6 +1314,40 @@ QTsubwin::PopUpExpand(GRobject caller, ShowMode mode,
     sw_expand->register_caller(caller);
     sw_expand->register_callback(callback);
     sw_expand->set_visible(true);
+}
+
+
+void
+QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
+{
+    if (!QTdev::exists() || !QTmainwin::exists())
+        return;
+    if (mode == MODE_OFF) {
+//        if (sw_zoom)
+//            sw_zoom->popdown();
+        return;
+    }
+    if (mode == MODE_UPD) {
+//        if (sw_zoom)
+//            sw_zoom->update();
+        return;
+    }
+    if (sw_zoom)
+        return;
+
+        /*
+    sw_zoom = new cZoom(this, wib_windesc);
+    sw_zoom->register_usrptr((void**)&sw_zoom);
+    if (!wib_zoom->shell()) {
+        delete sw_zoom;
+        sw_zoom = 0;
+        return;
+    }
+
+    sw_zoom->register_caller(caller);
+    sw_zoom->initialize();
+    sw_zoom->set_visible(true);
+    */
 }
 
 // End of cAppWinFuncs interface

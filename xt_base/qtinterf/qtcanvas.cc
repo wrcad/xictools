@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "draw_qt_w.h"
+#include "qtcanvas.h"
 #include <QResizeEvent>
 #include <QPaintEvent>
 #include <QBitmap>
@@ -48,7 +48,7 @@
 
 using namespace qtinterf;
 
-draw_qt_w::draw_qt_w(bool, QWidget *prnt) : QWidget(prnt)
+QTcanvas::QTcanvas(bool, QWidget *prnt) : QWidget(prnt)
 {
     setMouseTracking(true);
 
@@ -70,7 +70,7 @@ draw_qt_w::draw_qt_w(bool, QWidget *prnt) : QWidget(prnt)
 }
 
 
-draw_qt_w::~draw_qt_w()
+QTcanvas::~QTcanvas()
 {
     delete da_painter;
     delete da_pixmap;
@@ -82,7 +82,7 @@ draw_qt_w::~draw_qt_w()
 //
 
 void
-draw_qt_w::draw_direct(bool direct)
+QTcanvas::draw_direct(bool direct)
 {
     if (direct) {
         da_painter_temp = da_painter;
@@ -99,7 +99,7 @@ draw_qt_w::draw_direct(bool direct)
 // Paint the screen window from the pixmap.
 //
 void
-draw_qt_w::update()
+QTcanvas::update()
 {
     repaint(0, 0, width(), height());
 }
@@ -108,7 +108,7 @@ draw_qt_w::update()
 // Flood with the background color.
 //
 void
-draw_qt_w::clear()
+QTcanvas::clear()
 {
     da_brush.setColor(da_bg);
     da_brush.setStyle(Qt::SolidPattern);
@@ -119,7 +119,7 @@ draw_qt_w::clear()
 
 
 void
-draw_qt_w::clear_area(int x0, int y0, int w, int h)
+QTcanvas::clear_area(int x0, int y0, int w, int h)
 {
     if (w <= 0)
         w = width() - x0;
@@ -136,7 +136,7 @@ draw_qt_w::clear_area(int x0, int y0, int w, int h)
 // Set the foreground rendering color.
 //
 void
-draw_qt_w::set_foreground(unsigned int pix)
+QTcanvas::set_foreground(unsigned int pix)
 {
     da_fg.setRgb(pix);
     da_brush.setColor(da_fg);
@@ -149,7 +149,7 @@ draw_qt_w::set_foreground(unsigned int pix)
 // Set the background rendering color.
 //
 void
-draw_qt_w::set_background(unsigned int pix)
+QTcanvas::set_background(unsigned int pix)
 {
     da_bg.setRgb(pix);
 }
@@ -158,7 +158,7 @@ draw_qt_w::set_background(unsigned int pix)
 // Draw one pixel.
 //
 void
-draw_qt_w::draw_pixel(int x0, int y0)
+QTcanvas::draw_pixel(int x0, int y0)
 {
     da_pen.setStyle(Qt::SolidLine);
     da_painter->setPen(da_pen);
@@ -169,7 +169,7 @@ draw_qt_w::draw_pixel(int x0, int y0)
 // Draw multiple pixels.
 //
 void
-draw_qt_w::draw_pixels(GRmultiPt *p, int n)
+QTcanvas::draw_pixels(GRmultiPt *p, int n)
 {
     QPolygon poly;
     poly.setPoints(n, (int*)p->data());
@@ -182,7 +182,7 @@ draw_qt_w::draw_pixels(GRmultiPt *p, int n)
 // Set the current line texture, used when da_line_mode = 0;
 //
 void
-draw_qt_w::set_linestyle(const GRlineType *lstyle)
+QTcanvas::set_linestyle(const GRlineType *lstyle)
 {
     da_line_style = lstyle;
 }
@@ -193,7 +193,7 @@ draw_qt_w::set_linestyle(const GRlineType *lstyle)
 // one pixel at a time.  It is faster than I expected.
 //
 void
-draw_qt_w::draw_line_prv(int x1, int y1, int x2, int y2)
+QTcanvas::draw_line_prv(int x1, int y1, int x2, int y2)
 {
     GRmultiPt pts(2048);
     int pcnt = 0;
@@ -298,7 +298,7 @@ draw_qt_w::draw_line_prv(int x1, int y1, int x2, int y2)
 // Draw a line.
 //
 void
-draw_qt_w::draw_line(int x1, int y1, int x2, int y2)
+QTcanvas::draw_line(int x1, int y1, int x2, int y2)
 {
     if (da_xor_mode) {
         bb_add(x1, y1);
@@ -324,7 +324,7 @@ draw_qt_w::draw_line(int x1, int y1, int x2, int y2)
 // Draw a connected line set.
 //
 void
-draw_qt_w::draw_polyline(GRmultiPt *p, int n)
+QTcanvas::draw_polyline(GRmultiPt *p, int n)
 {
     if (n < 2)
         return;
@@ -368,7 +368,7 @@ draw_qt_w::draw_polyline(GRmultiPt *p, int n)
 // Draw multiple lines.
 //
 void
-draw_qt_w::draw_lines(GRmultiPt *p, int n)
+QTcanvas::draw_lines(GRmultiPt *p, int n)
 {
     if (n < 1)
         return;
@@ -413,7 +413,7 @@ draw_qt_w::draw_lines(GRmultiPt *p, int n)
 
 
 void
-draw_qt_w::define_fillpattern(GRfillType *fillp)
+QTcanvas::define_fillpattern(GRfillType *fillp)
 {
     if (!fillp)
         return;
@@ -472,7 +472,7 @@ draw_qt_w::define_fillpattern(GRfillType *fillp)
 
 
 void
-draw_qt_w::set_fillpattern(const GRfillType *fillp)
+QTcanvas::set_fillpattern(const GRfillType *fillp)
 {
     if (!fillp || !fillp->xPixmap())
         da_brush.setStyle(Qt::SolidPattern);
@@ -485,7 +485,7 @@ draw_qt_w::set_fillpattern(const GRfillType *fillp)
 // Draw a box, using current fill.
 //
 void
-draw_qt_w::draw_box(int x1, int y1, int x2, int y2)
+QTcanvas::draw_box(int x1, int y1, int x2, int y2)
 {
     if (da_xor_mode) {
         bb_add(x1, y1);
@@ -508,7 +508,7 @@ draw_qt_w::draw_box(int x1, int y1, int x2, int y2)
 // Draw multiple boxes, using current fill.
 //
 void
-draw_qt_w::draw_boxes(GRmultiPt *p, int n)
+QTcanvas::draw_boxes(GRmultiPt *p, int n)
 {
     if (n < 1)
         return;
@@ -532,7 +532,7 @@ draw_qt_w::draw_boxes(GRmultiPt *p, int n)
 // Draw a filled arc.
 //
 void
-draw_qt_w::draw_arc(int x0, int y0, int r, int, double a1, double a2)
+QTcanvas::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 {
     if (da_xor_mode) {
         bb_add(x0-r, y0-r);
@@ -552,7 +552,7 @@ draw_qt_w::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 // Draw a filled polygon.
 //
 void
-draw_qt_w::draw_polygon(GRmultiPt *p, int n)
+QTcanvas::draw_polygon(GRmultiPt *p, int n)
 {
     if (da_xor_mode) {
         p->data_ptr_init();
@@ -568,7 +568,7 @@ draw_qt_w::draw_polygon(GRmultiPt *p, int n)
 
 
 void
-draw_qt_w::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
+QTcanvas::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 {
     if (da_xor_mode) {
         bb_add(xll, yl);
@@ -602,7 +602,7 @@ draw_qt_w::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 
 
 void
-draw_qt_w::draw_image(const GRimage*, int, int, int, int)
+QTcanvas::draw_image(const GRimage*, int, int, int, int)
 //draw_gl_w::draw_image(const GRimage *image, int x, int y,
 //    int width, int height)
 {
@@ -612,7 +612,7 @@ draw_qt_w::draw_image(const GRimage*, int, int, int, int)
 // Set the font used for rendering in the drawing area.
 //
 void
-draw_qt_w::set_font(QFont *fnt)
+QTcanvas::set_font(QFont *fnt)
 {
     widget()->setFont(*fnt);
 }
@@ -622,7 +622,7 @@ draw_qt_w::set_font(QFont *fnt)
 // the given font.
 //
 int
-draw_qt_w::text_width(QFont *fnt, const char *str, int len)
+QTcanvas::text_width(QFont *fnt, const char *str, int len)
 {
     QFontMetrics fm(*fnt);
 #if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
@@ -637,7 +637,7 @@ draw_qt_w::text_width(QFont *fnt, const char *str, int len)
 // current font.
 //
 void
-draw_qt_w::text_extent(const char *str, int *w, int *h)
+QTcanvas::text_extent(const char *str, int *w, int *h)
 {
     if (!str)
         str = "x";
@@ -661,7 +661,7 @@ draw_qt_w::text_extent(const char *str, int *w, int *h)
 // Draw text, at most len characters from str if len >= 0.
 //
 void
-draw_qt_w::draw_text(int x0, int y0, const char *str, int len)
+QTcanvas::draw_text(int x0, int y0, const char *str, int len)
 {
     QString qs(str);
     if (len >= 0)
@@ -679,7 +679,7 @@ draw_qt_w::draw_text(int x0, int y0, const char *str, int len)
 
 
 void
-draw_qt_w::set_xor_mode(bool set)
+QTcanvas::set_xor_mode(bool set)
 {
     if (set) {
         da_xor_mode = true;
@@ -695,7 +695,7 @@ draw_qt_w::set_xor_mode(bool set)
 
 
 void
-draw_qt_w::set_ghost_color(unsigned int pixel)
+QTcanvas::set_ghost_color(unsigned int pixel)
 {
     da_ghost.setRgb(pixel);
     da_ghost_fg.setRgb(pixel ^ da_bg.rgb());
@@ -707,7 +707,7 @@ draw_qt_w::set_ghost_color(unsigned int pixel)
 // main pixmap if 0 is passed.
 //
 void
-draw_qt_w::set_draw_to_pixmap(QPixmap *pixmap)
+QTcanvas::set_draw_to_pixmap(QPixmap *pixmap)
 {
     if (pixmap) {
         if (da_painter_temp)
@@ -732,7 +732,7 @@ draw_qt_w::set_draw_to_pixmap(QPixmap *pixmap)
 // line will be solid or use da_line_style if set.
 //
 void
-draw_qt_w::set_line_mode(int pattern_index)
+QTcanvas::set_line_mode(int pattern_index)
 {
     da_line_mode = pattern_index;
 }
@@ -742,7 +742,7 @@ draw_qt_w::set_line_mode(int pattern_index)
 // with draw_rectangle(true, ...).
 //
 void
-draw_qt_w::set_fill(bool tiling)
+QTcanvas::set_fill(bool tiling)
 {
     da_fill_mode = tiling;
 }
@@ -751,7 +751,7 @@ draw_qt_w::set_fill(bool tiling)
 // Set the pixmap for use in tiling (see set_fill).
 //
 void
-draw_qt_w::set_tile(QPixmap *pixmap)
+QTcanvas::set_tile(QPixmap *pixmap)
 {
     da_tile_pixmap = pixmap;
 }
@@ -760,7 +760,7 @@ draw_qt_w::set_tile(QPixmap *pixmap)
 // Set the origin used when drawing tiled pixmaps.
 //
 void
-draw_qt_w::set_tile_origin(int x0, int y0)
+QTcanvas::set_tile_origin(int x0, int y0)
 {
     da_tile_x = x0;
     da_tile_y = y0;
@@ -770,7 +770,7 @@ draw_qt_w::set_tile_origin(int x0, int y0)
 // Draw a filled or open rectangle, or pixmap tiles.
 //
 void
-draw_qt_w::draw_rectangle(bool filled, int x0, int y0, int w, int h)
+QTcanvas::draw_rectangle(bool filled, int x0, int y0, int w, int h)
 {
     if (filled) {
         if (da_fill_mode) {
@@ -795,7 +795,7 @@ draw_qt_w::draw_rectangle(bool filled, int x0, int y0, int w, int h)
 // Draw an arc or pie-slice.
 //
 void
-draw_qt_w::draw_arc(bool filled, int x0, int y0, int w, int h, int st, int sp)
+QTcanvas::draw_arc(bool filled, int x0, int y0, int w, int h, int st, int sp)
 {
     if (filled)
         da_painter->drawPie(x0, y0, w, h, st/4, sp/4);
@@ -807,7 +807,7 @@ draw_qt_w::draw_arc(bool filled, int x0, int y0, int w, int h, int st, int sp)
 // Draw a filled or open polygon.
 //
 void
-draw_qt_w::draw_polygon(bool filled, QPoint *points, int numpts)
+QTcanvas::draw_polygon(bool filled, QPoint *points, int numpts)
 {
     if (filled)
         da_painter->drawPolygon(points, numpts);
@@ -825,7 +825,7 @@ draw_qt_w::draw_polygon(bool filled, QPoint *points, int numpts)
 // Copy out the part of a pixmap (xp,yp,wp,hp) to xw,yw.
 //
 void
-draw_qt_w::draw_pixmap(int xw, int yw, QPixmap *pmap,
+QTcanvas::draw_pixmap(int xw, int yw, QPixmap *pmap,
     int xp, int yp, int wp, int hp)
 {
     da_painter->drawPixmap(xw, yw, wp, hp, *pmap, xp, yp, wp, hp);
@@ -835,7 +835,7 @@ draw_qt_w::draw_pixmap(int xw, int yw, QPixmap *pmap,
 // Copy out the part of a pixmap (xp,yp,wp,hp) to xw,yw.
 //
 void
-draw_qt_w::draw_image(int xw, int yw, QImage *image,
+QTcanvas::draw_image(int xw, int yw, QImage *image,
     int xp, int yp, int wp, int hp)
 {
     da_painter->drawImage(xw, yw, *image, xp, yp, wp, hp);
@@ -844,7 +844,7 @@ draw_qt_w::draw_image(int xw, int yw, QImage *image,
 
 
 void
-draw_qt_w::resizeEvent(QResizeEvent *ev)
+QTcanvas::resizeEvent(QResizeEvent *ev)
 {
     QFont fnt = da_painter->font();
     da_painter->end();
@@ -860,7 +860,7 @@ draw_qt_w::resizeEvent(QResizeEvent *ev)
 
 
 void
-draw_qt_w::paintEvent(QPaintEvent *ev)
+QTcanvas::paintEvent(QPaintEvent *ev)
 {
     if (!da_pixmap)
         return;
@@ -885,70 +885,71 @@ draw_qt_w::paintEvent(QPaintEvent *ev)
 
 
 void
-draw_qt_w::mousePressEvent(QMouseEvent *ev)
+QTcanvas::mousePressEvent(QMouseEvent *ev)
 {
     emit press_event(ev);
 }
 
 
 void
-draw_qt_w::mouseReleaseEvent(QMouseEvent *ev)
+QTcanvas::mouseReleaseEvent(QMouseEvent *ev)
 {
     emit release_event(ev);
 }
 
 
 void
-draw_qt_w::mouseMoveEvent(QMouseEvent *ev)
+QTcanvas::mouseMoveEvent(QMouseEvent *ev)
 {
     emit move_event(ev);
 }
 
 
 void
-draw_qt_w::keyPressEvent(QKeyEvent *ev)
+QTcanvas::keyPressEvent(QKeyEvent *ev)
 {
     emit key_press_event(ev);
 }
 
 
 void
-draw_qt_w::keyReleaseEvent(QKeyEvent *ev)
+QTcanvas::keyReleaseEvent(QKeyEvent *ev)
 {
     emit key_release_event(ev);
 }
 
 
 void
-draw_qt_w::enterEvent(QEnterEvent *ev)
+QTcanvas::enterEvent(QEvent *ev)
 {
-    emit enter_event(ev);
+    QEnterEvent *eve = dynamic_cast<QEnterEvent*>(ev);
+    emit enter_event(eve);
 }
 
 
 void
-draw_qt_w::leaveEvent(QEvent *ev)
+QTcanvas::leaveEvent(QEvent *ev)
 {
     emit leave_event(ev);
 }
 
 
 void
-draw_qt_w::dragEnterEvent(QDragEnterEvent *ev)
+QTcanvas::dragEnterEvent(QDragEnterEvent *ev)
 {
     emit drag_enter_event(ev);
 }
 
 
 void
-draw_qt_w::dropEvent(QDropEvent *ev)
+QTcanvas::dropEvent(QDropEvent *ev)
 {
     emit drop_event(ev);
 }
 
 
 void
-draw_qt_w::initialize()
+QTcanvas::initialize()
 {
     da_painter->setBrush(da_brush);
     da_painter->setPen(da_pen);

@@ -1,5 +1,5 @@
 
-/*========================================================================
+/*========================================================================*
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
@@ -32,38 +32,48 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Qt MOZY help viewer.
+ * QtInterf Graphical Interface Library                                   *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef FORM_COMBO_W_H
-#define FORM_COMBO_W_H
+#ifndef ACTIVITY_W_H
+#define ACTIVITY_W_H
 
-#include <QComboBox>
+#include <QWidget>
+#include <QTimer>
 
-struct htmForm;
+class QPaintEvent;
+class QPixmap;
 
 namespace qtinterf
 {
-    class form_combo_w : public QComboBox
+    class QTactivity : public QWidget
     {
         Q_OBJECT
 
     public:
-        form_combo_w(htmForm*, QWidget*);
+        QTactivity(QWidget*);
+        ~QTactivity();
 
-        void setSize();
+        void start();
+        void stop();
 
-    signals:
+        void paintEvent(QPaintEvent*);
 
     private slots:
-      
+        void increment_slot();
+
     private:
-        htmForm *form_entry;
+        QTimer timer;
+
+        QPixmap *image;
+        int pos_x;
+        int vel_x;
+        int rad;
+        bool active;
     };
 }
 
 #endif
-

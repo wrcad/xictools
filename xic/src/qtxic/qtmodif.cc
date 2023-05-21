@@ -38,7 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtmodif.h"
+#include "qtmenu.h"
 #include "edit.h"
 #include "cvrt_variables.h"
 #include "fio.h"
@@ -46,9 +47,15 @@
 #include "dsp_color.h"
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
-#include "qtmain.h"
-#include "qtmenu.h"
 #include "qtinterf/qtfont.h"
+#include "qtinterf/qttextw.h"
+
+#include <QWidget>
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QMouseEvent>
+#include <QScrollBar>
 
 
 //--------------------------------------------------------------------------
@@ -59,10 +66,10 @@
 
 namespace {
     void
-    start_modal(QWidget *w)
+    start_modal(QDialog *w)
     {
         QTmenu::self()->SetSensGlobal(false);
-//        QTmenu::self()->SetModal(w);
+        QTmenu::self()->SetModal(w);
         QTpkg::self()->SetOverrideBusy(true);
         DSPmainDraw(ShowGhost(ERASE))
     }
@@ -71,15 +78,14 @@ namespace {
     void
     end_modal()
     {
-//        QTmenu::self()->SetModal(0);
+        QTmenu::self()->SetModal(0);
         QTmenu::self()->SetSensGlobal(true);
         QTpkg::self()->SetOverrideBusy(false);
         DSPmainDraw(ShowGhost(DISPLAY))
     }
 
 
-    const char *
-    file_type_str(FileType ft)
+    const char *file_type_str(FileType ft)
     {
         if (ft == Fnative || ft == Fnone)
             return ("X");
@@ -95,57 +101,8 @@ namespace {
             return ("A");
         return ("");
     }
-
-
-    // List element for modified cells.
-    //
-    struct s_item
-    {
-        s_item() { name = 0; path = 0; save = true; ft[0] = 0; }
-        ~s_item() { delete [] name; delete [] path; }
-
-        char *name;                         // cell name
-        char *path;                         // full path name
-        bool save;                          // save flag
-        char ft[4];                         // file type code
-    };
-
-    namespace qtmodif {
-        struct sSC : public QTbag
-        {
-            sSC(stringlist*, bool(*)(const char*));
-            ~sSC();
-
-            bool is_empty()             { return (!sc_field || !sc_width); }
-            static PMretType retval()   { return (sc_retval); }
-
-        private:
-            void refresh();
-
-            /*
-            static void sc_font_changed();
-            static void sc_cancel_proc(GtkWidget*, void*);
-            static void sc_btn_proc(GtkWidget*, void*);
-            static int sc_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-            */
-
-            s_item *sc_list;                    // list of cells
-            bool (*sc_saveproc)(const char*);   // save callback
-            int sc_field;                       // max cell name length
-            int sc_width;                       // max total string length
-
-            static PMretType sc_retval;         // return flag
-        };
-
-        sSC *SC;
-
-        enum { sc_nil, sc_save, sc_skip, sc_help };
-    }
 }
 
-using namespace qtmodif;
-
-PMretType sSC::sc_retval;
 
 
 // Pop-up to list modified cells, allowing the user to choose which to
@@ -157,46 +114,46 @@ cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
 {
     if (!QTdev::self() || !QTmainwin::self())
         return (PMok);
-    if (SC)
+    if (cModif::self())
         return (PMok);
     if (!list)
         return (PMok);
 
-    new sSC(list, saveproc);
-    if (SC->is_empty()) {
-        delete SC;
+    new cModif(list, saveproc);
+    if (cModif::self()->is_empty()) {
+        delete cModif::self();
         return (PMok);
     }
-    if (!SC->Shell()) {
-        delete SC;
+    if (!cModif::self()->Shell()) {
+        delete cModif::self();
         return (PMerr);
     }
-/*
-    gtk_window_set_transient_for(GTK_WINDOW(SC->Shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    QTdev::self()->SetPopupLocation(GRloc(), cModif::self(),
+        QTmainwin::self()->Viewport());
 
-    GRX->SetPopupLocation(GRloc(), SC->Shell(), GTKmainwin::self()->Viewport());
-    gtk_widget_show(SC->Shell());
-
-    start_modal(SC->Shell());
-    GRX->MainLoop();  // wait for user's response
+    cModif::self()-> show();
+    start_modal(cModif::self());
+    QTdev::self()->MainLoop();  // wait for user's response
     end_modal();
-*/
 
-    return (sSC::retval());
+    return (cModif::retval());
 }
 // End of cEdit functions.
 
 
-sSC::sSC(stringlist *l, bool(*s)(const char*))
+PMretType cModif::m_retval;
+cModif *cModif::instPtr;
+
+cModif::cModif(stringlist *l, bool(*s)(const char*))
 {
-    SC = this;
+    instPtr = this;
+    wb_shell = this;
     stringlist::sort(l);
     int sz = stringlist::length(l);
-    sc_list = new s_item[sz+1];
-    sc_field = 0;
-    sc_width = 0;
-    s_item *itm = sc_list;
+    m_list = new s_item[sz+1];
+    m_field = 0;
+    m_width = 0;
+    s_item *itm = m_list;
     bool ptoo = FIO()->IsListPCellSubMasters();
     bool vtoo = FIO()->IsListViaSubMasters();
     while (l) {
@@ -227,12 +184,12 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
                 itm->path = lstring::copy("(in current directory)");
             strcpy(itm->ft, file_type_str(cbin.fileType()));
             int w = strlen(itm->name);
-            if (w > sc_field)
-                sc_field = w;
+            if (w > m_field)
+                m_field = w;
             w += strlen(itm->path);
             w += 9;
-            if (w > sc_width)
-                sc_width = w;
+            if (w > m_width)
+                m_width = w;
             if (cbin.phys() && cbin.phys()->isPCellSubMaster()) {
                 itm->save = false;
                 itm->ft[0] = 'P';
@@ -247,312 +204,284 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
         }
         l = l->next;
     }
-    sc_saveproc = s;
-    sc_retval = PMok;
-    if (!sc_field || !sc_width) {
+    m_saveproc = s;
+    m_retval = PMok;
+    if (!m_field || !m_width) {
         wb_shell = 0;
         return;
     }
 
-/*
-    wb_shell = gtk_NewPopup(0, "Modified Cells", sc_cancel_proc, 0);
-    if (!wb_shell)
-        return;
-    GtkWidget *form = gtk_table_new(2, 4, false);
-    gtk_container_add(GTK_CONTAINER(wb_shell), form);
-    gtk_widget_show(form);
+    setWindowTitle(tr("Modified Cells"));
 
-    GtkWidget *button = gtk_button_new_with_label("Save All");
-    gtk_widget_set_name(button, "SaveAll");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(sc_btn_proc), (void*)sc_save);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    int rowcnt = 0;
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt + 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    button = gtk_button_new_with_label("Skip All");
-    gtk_widget_set_name(button, "SkipAll");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(sc_btn_proc), (void*)sc_skip);
+    QPushButton *btn = new QPushButton();
+    btn->setText(tr("Save All"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(save_all_slot()));
 
-    gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt + 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    btn = new QPushButton();
+    btn->setText(tr("Skip All"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(skip_all_slot()));
 
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
 
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    char lab[256];
-    strcpy(lab, "Modified Cells            Click on yes/no \n");
-    char *t = lab + strlen(lab);
-    for (int i = 0; i <= sc_field + 1; i++)
-        *t++ = ' ';
-    strcpy(t, "Save?");
-    GtkWidget *label = gtk_label_new(lab);
-    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-    gtk_misc_set_padding(GTK_MISC(label), 4, 2);
-    gtk_widget_show(label);
-    gtk_container_add(GTK_CONTAINER(frame), label);
+    QGroupBox *gb = new QGroupBox(this);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    m_label = new QLabel(gb);
+
+    hb->addWidget(m_label);
+    hbox->addWidget(gb);
+
+    btn = new QPushButton();
+    btn->setText(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_slot()));
+    vbox->addLayout(hbox);
+
+    m_text = new QTtextEdit();
+    m_text->setReadOnly(true);
+    m_text->setMouseTracking(true);
+    vbox->addWidget(m_text);
+    connect(m_text, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(mouse_press_slot(QMouseEvent*)));
+
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    btn = new QPushButton();
+    btn->setText(tr("Apply - Continue"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(apply_slot()));
+    btn = new QPushButton();
+    btn->setText(tr("ABORT"));
+    hbox->addWidget(btn);
+    vbox->addLayout(hbox);
+    connect(btn, SIGNAL(clicked()), this, SLOT(abort_slot()));
 
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
-    GTKfont::setupFont(label, FNT_FIXED, true);
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED)) {
+        m_text->setFont(*fnt);
+        m_label->setFont(*fnt);
+    }
 
-    gtk_box_pack_start(GTK_BOX(hbox), frame, true, true, 0);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(sc_btn_proc), (void*)sc_help);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
+    refresh();
+}
 
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt,  rowcnt + 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
 
-    GtkWidget *contr;
-    text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
+cModif::~cModif()
+{
+    instPtr = 0;
+    delete [] m_list;
+}
 
-    gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
-    g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
-        G_CALLBACK(sc_btn_hdlr), 0);
-    g_signal_connect_after(G_OBJECT(wb_textarea), "realize",
-        G_CALLBACK(text_realize_proc), 0);
 
-    int ww = sc_width*GTKfont::stringWidth(wb_textarea, 0);
+QSize
+cModif::sizeHint() const
+{
+    int ww = m_width*QTfont::stringWidth(0, m_text);
     if (ww < 200)
         ww = 200;
     else if (ww > 600)
         ww = 600;
     ww += 15;  // scrollbar
-    int hh = 8*GTKfont::stringHeight(wb_textarea, 0);
-    gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), ww, hh);
-
-    // The font change pop-up uses this to redraw the widget
-    g_object_set_data(G_OBJECT(wb_textarea), "font_changed",
-        (void*)sc_font_changed);
-
-    gtk_table_attach(GTK_TABLE(form), contr, 0, 2, rowcnt, rowcnt + 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
-    rowcnt++;
-
-    button = gtk_button_new_with_label("Apply - Continue");
-    gtk_widget_set_name(button, "Apply");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(sc_cancel_proc), 0);
-
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt + 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    button = gtk_button_new_with_label("ABORT");
-    gtk_widget_set_name(button, "Abort");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(sc_cancel_proc), (void*)1);
-
-    gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt + 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    // GTK-3 can't set text until realized.
-    gtk_widget_realize(wb_shell);
-    refresh();
-*/
-}
-
-
-sSC::~sSC()
-{
-    SC = 0;
-    delete [] sc_list;
-    /*
-    if (wb_shell) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
-            (gpointer)sc_cancel_proc, wb_shell);
-    }
-    */
+    int hh = 8*QTfont::lineHeight(m_text);
+    return (QSize(ww, hh));
 }
 
 
 // Redraw the text area.
 //
 void
-sSC::refresh()
+cModif::refresh()
 {
-    /*
-    if (SC) {
-        char buf[256];
-        GdkColor *nc = gtk_PopupColor(GRattrColorNo);
-        GdkColor *yc = gtk_PopupColor(GRattrColorYes);
-        GdkColor *c1 = gtk_PopupColor(GRattrColorHl2);
-        GdkColor *c2 = gtk_PopupColor(GRattrColorHl3);
-        double val = text_get_scroll_value(wb_textarea);
-        text_set_chars(wb_textarea, "");
-        for (s_item *s = sc_list; s->name; s++) {
-            snprintf(buf, sizeof(buf), "%-*s  ", sc_field, s->name);
-            text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
-            snprintf(buf, sizeof(buf), "%-3s  ", s->save ? "yes" : "no");
-            text_insert_chars_at_point(wb_textarea, s->save ? yc : nc, buf,
-                -1, -1);
-            snprintf(buf, sizeof(buf), "%c ", *s->ft);
-            text_insert_chars_at_point(wb_textarea,
-                *buf == 'X' || *buf == 'A' || *buf == 'P' ? c1 : c2,
-                buf, -1, -1);
-            snprintf(buf, sizeof(buf), "%s\n", s->path);
-            text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
-        }
-        text_set_scroll_value(wb_textarea, val);
+    char buf[256];
+    QColor nc = QTbag::PopupColor(GRattrColorNo);
+    QColor yc = QTbag::PopupColor(GRattrColorYes);
+    QColor c1 = QTbag::PopupColor(GRattrColorHl2);
+    QColor c2 = QTbag::PopupColor(GRattrColorHl3);
+    QScrollBar *vsb = m_text->verticalScrollBar();
+    double val = 0.0;
+    if (vsb)
+        val = vsb->value();
+    m_text->clear();
+    for (s_item *s = m_list; s->name; s++) {
+        snprintf(buf, sizeof(buf), "%-*s  ", m_field, s->name);
+        m_text->setTextColor(QColor("black"));
+        m_text->insertPlainText(tr(buf));
+
+        snprintf(buf, sizeof(buf), "%-3s  ", s->save ? "yes" : "no");
+        m_text->setTextColor(s->save ? yc : nc);
+        m_text->insertPlainText(tr(buf));
+
+        snprintf(buf, sizeof(buf), "%c ", *s->ft);
+        m_text->setTextColor(
+            *buf == 'X' || *buf == 'A' || *buf == 'P' ? c1 : c2);
+        m_text->insertPlainText(tr(buf));
+
+        snprintf(buf, sizeof(buf), "%s\n", s->path);
+        m_text->setTextColor(QColor("black"));
+        m_text->insertPlainText(tr(buf));
     }
-    */
+    if (vsb)
+        vsb->setValue(val);
+
+    char lab[256];
+    strcpy(lab, "Modified Cells            Click on yes/no \n");
+    char *t = lab + strlen(lab);
+    for (int i = 0; i <= m_field + 1; i++)
+        *t++ = ' ';
+    strcpy(t, "Save?");
+    m_label->setText(tr(lab));
 }
 
 
-#ifdef notdef
-// Static function.
-// This is called when the font is changed.
-//
 void
-sSC::sc_font_changed()
+cModif::save_all_slot()
 {
-    if (SC)
-        SC->refresh();
+    for (s_item *s = instPtr->m_list; s->name; s++)
+        s->save = true;
+    refresh();
 }
 
 
-// Static function.
 void
-sSC::sc_cancel_proc(GtkWidget*, void *arg)
+cModif::skip_all_slot()
 {
-    if (SC) {
-        if (arg == (void*)1)
-            SC->sc_retval = PMabort;
-        else {
-            if (SC->sc_saveproc) {
-                for (s_item *s = SC->sc_list; s->name; s++) {
-                    if (s->save && !(*SC->sc_saveproc)(s->name))
-                        SC->sc_retval = PMerr;
-                }
-                SC->sc_saveproc = 0;
-            }
+    for (s_item *s = instPtr->m_list; s->name; s++)
+        s->save = false;
+    refresh();
+}
+
+
+void
+cModif::help_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:sv"))
+}
+
+
+void
+cModif::apply_slot()
+{
+    if (m_saveproc) {
+        for (s_item *s = m_list; s->name; s++) {
+            if (s->save && !(*m_saveproc)(s->name))
+                m_retval = PMerr;
         }
-        if (GRX->LoopLevel() > 1)
-            GRX->BreakLoop();
-        delete SC;
+        m_saveproc = 0;
+    }
+    if (QTdev::self()->LoopLevel() > 1)
+        QTdev::self()->BreakLoop();
+    delete instPtr;
+}
+
+
+void
+cModif::abort_slot()
+{
+    m_retval = PMabort;
+    if (QTdev::self()->LoopLevel() > 1)
+        QTdev::self()->BreakLoop();
+    delete instPtr;
+}
+
+
+void
+cModif::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_FIXED)) {
+            m_text->setFont(*fnt);
+            m_label->setFont(*fnt);
+        }
+        refresh();
     }
 }
 
-// Static function.
+
 void
-sSC::sc_btn_proc(GtkWidget*, void *client_data)
+cModif::mouse_press_slot(QMouseEvent *ev)
 {
-    if (!SC)
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
         return;
-    int mode = (intptr_t)client_data;
-    if (mode == sc_save) {
-        for (s_item *s = SC->sc_list; s->name; s++)
-            s->save = true;
-        SC->refresh();
     }
-    else if (mode == sc_skip) {
-        for (s_item *s = SC->sc_list; s->name; s++)
-            s->save = false;
-        SC->refresh();
+    ev->accept();
+    cModif::self()->mousePressEvent(ev);
+
+    const char *str = lstring::copy(
+        (const char*)m_text->toPlainText().toLatin1());
+    int x = (int)ev->x();
+    int y = (int)ev->y();
+    QTextCursor cur = m_text->cursorForPosition(QPoint(x, y));
+    int pos = cur.position();
+    
+    if (isspace(str[pos])) {
+        // Clicked on white space.
+        delete [] str;
+        return;
     }
-    else if (mode == sc_skip) {
-        DSPmainWbag(PopUpHelp("xic:sv"))
-    }
-}
 
-
-// Static function.
-// Handle button presses in the text area.
-//
-int
-sSC::sc_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
-{
-    if (!SC)
-        return (true);
-    if (event->type != GDK_BUTTON_PRESS)
-        return (true);
-
-    char *string = text_get_chars(caller, 0, -1);
-    int x = (int)event->button.x;
-    int y = (int)event->button.y;
-    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
-        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
-    GtkTextIter ihere, iline;
-    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(caller), &ihere, x, y);
-    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
-    char *line_start = string + gtk_text_iter_get_offset(&iline);
-    x = gtk_text_iter_get_offset(&ihere) - gtk_text_iter_get_offset(&iline);
-
-    int start = 0;
-    for ( ; start < x; start++) {
-        if (line_start[start] == '\n') {
-            // pointing to right of line end
-            delete [] string;
-            return (true);
+    const char *lineptr = str;
+    for (int i = 0; i <= pos; i++) {
+        if (str[i] == '\n') {
+            if (i == pos) {
+                // Clicked to  right of line.
+                delete [] str;
+                return;
+            }
+            lineptr = str + i+1;
         }
     }
-    if (isspace(line_start[start])) {
-        // pointing at white space
-        delete [] string;
-        return (true);
-    }
-    int end = start;
-    while (start > 0 && !isspace(line_start[start]))
+
+    const char *start = str + pos;
+    const char *end = start;
+    while (start > lineptr && !isspace(*start))
         start--;
-    if (isspace(line_start[start]))
+    if (isspace(*start))
         start++;
-    if (start == 0) {
-        // pointing at first word (cell name)
-        delete [] string;
-        return (true);
+    if (start == lineptr) {
+        // Pointing at first word (cell name).
+        delete [] str;
+        return;
     }
-    while (line_start[end] && !isspace(line_start[end]))
+    while (*end && !isspace(*end))
         end++;
 
-    char buf[256];
-    strncpy(buf, line_start, end);
-    buf[end] = 0;
-
-    const char *yn = 0;
-    if (buf[start] == 'y')
-        yn = "no ";
-    else if (buf[start] == 'n')
-        yn = "yes";
-    if (yn) {
-        start += (line_start - string);
-        GdkColor *c = gtk_PopupColor(
-            *yn == 'n' ? GRattrColorNo : GRattrColorYes);
-        text_replace_chars(caller, c, yn, start, start+3);
-        char *cname = lstring::gettok(&line_start);
-        if (cname) {
-            for (s_item *s = SC->sc_list; s->name; s++) {
-                if (!strcmp(s->name, cname)) {
-                    s->save = (*yn != 'n');
-                    break;
-                }
-            }
-            delete cname;
-        }
+    if (end - start > 3) {
+        delete [] str;
+        return;
     }
-    delete [] string;
 
-    return (true);
+    m_text->setTextCursor(cur);
+    m_text->moveCursor(QTextCursor::StartOfWord, QTextCursor::MoveAnchor);
+    m_text->moveCursor(QTextCursor::EndOfWord,QTextCursor::KeepAnchor);
+    if (!strncmp(start, "yes", 3)) {
+        m_text->setTextColor(QTbag::PopupColor(GRattrColorNo));
+        m_text->textCursor().insertText("no ");
+    }
+    else if (!strncmp(start, "no ", 3)) {
+        m_text->moveCursor(QTextCursor::Right,QTextCursor::KeepAnchor);
+        m_text->setTextColor(QTbag::PopupColor(GRattrColorYes));
+        m_text->textCursor().insertText("yes");
+    }
+    delete [] str;
 }
-#endif
+// End of cModif definitions.
 

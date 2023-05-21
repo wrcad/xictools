@@ -38,106 +38,59 @@
  $Id:$
  *========================================================================*/
 
-#include "idle_proc.h"
+#ifndef INTERVAL_TIMER_H
+#define INTERVAL_TIMER_H
 
-struct idle_procs
+#include <QTimer>
+
+namespace qtinterf
 {
-    idle_procs(int(*c)(void*), void *a) { proc = c; arg = a; next = 0; }
+    class QTtimer: public QTimer
+    {
+        Q_OBJECT
 
-    int (*proc)(void*);
-    void *arg;
-    int id;
-    idle_procs *next;
-};
+    public:
+        QTtimer(int(*)(void*), void*, QTtimer*, QObject*);
+        ~QTtimer();
 
+        // Manage external list of timers.
+        QTtimer *nextTimer() { return next; }
+        void setNextTimer(QTtimer *t) { next = t; }
 
-idle_proc::idle_proc() : QTimer(0)
-{
-    idle_proc_list = 0;
-    idle_id_cnt = 1000;
-    running = false;
-    connect(this, SIGNAL(timeout()), this, SLOT(run_slot()));
+        // Register the timer list head address.  The timer will
+        // be removed from this list when destroyed.
+        void register_list(QTtimer **l) { list = l; }
+
+        // Start timer, nothing happens until this is called.
+        void start(int ms) { msec = ms; QTimer::start(ms); }
+
+        // Return unique id.
+        int id() { return (timer_id); }
+
+        // Set mode.  If unset (the default) the callback return is
+        // ignored.  The timer will stop after timout, and can be
+        // restarted by calling start.  If set, the callback will
+        // restart the timer by returning true, or destroy the timer
+        // by returning false.
+        //
+        void set_use_return(bool b) { use_cb_ret = b; }
+
+    signals:
+        void destroy(QTtimer*);
+
+    private slots:
+        void timeout_slot();
+
+    private:
+        int (*callback)(void*);
+        void *arg;
+        QTtimer *next;
+        int timer_id;
+        int msec;
+        QTtimer **list;
+        bool deleted;
+        bool use_cb_ret;
+    };
 }
 
-
-// Add an idle function callback.  The function will be called repeatedly
-// until 0 is returned, at which point it will be removed from the list.
-// An id for the callback is returned.
-//
-int
-idle_proc::add(int(*cb)(void*), void *arg)
-{
-    idle_procs *ip = new idle_procs(cb, arg);
-    if (!idle_proc_list)
-        idle_proc_list = ip;
-    else {
-        idle_procs *p = idle_proc_list;
-        while (p->next)
-            p = p->next;
-        p->next = ip;
-    }
-    idle_proc_list->id = idle_id_cnt++;
-    if (!running) {
-        start();
-        running = true;
-    }
-    return (idle_proc_list->id);
-}
-
-
-// Remove an idle function callback from the list.  The argument is
-// the return value obtained when the callback was added.  Return
-// true if a removal was done.
-//
-bool
-idle_proc::remove(int iid)
-{
-    idle_procs *p = 0;
-    for (idle_procs *ip = idle_proc_list; ip; ip = ip->next) {
-        if (ip->id == iid) {
-            if (p)
-                p->next = ip->next;
-            else
-                idle_proc_list = ip->next;
-            delete ip;
-            return (true);
-        }
-        p = ip;
-    }
-    return (false);
-}
-
-
-// Slot to run the idle queue.  The first callback is popped off and
-// run.  If the callback returns true, the callback is appended to the
-// end of the list, otherwise it is deleted.
-//
-void
-idle_proc::run_slot()
-{
-    if (idle_proc_list) {
-        idle_procs *ip = idle_proc_list;
-        idle_proc_list = ip->next;
-        ip->next = 0;
-
-        int ret = (*ip->proc)(ip->arg);
-        if (ret) {
-            if (!idle_proc_list)
-                idle_proc_list = ip;
-            else {
-                idle_procs *p = idle_proc_list;
-                while (p->next)
-                    p = p->next;
-                p->next = ip;
-            }
-        }
-        else
-            delete ip;
-    }
-
-    if (!idle_proc_list) {
-        stop();
-        running = false;
-    }
-}
-
+#endif

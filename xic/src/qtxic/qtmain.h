@@ -48,7 +48,7 @@
 #include "main.h"
 #include "qtinterf/qtinterf.h"
 #include "qtinterf/qtfont.h"
-#include "qtinterf/draw_qt_w.h"
+#include "qtinterf/qtcanvas.h"
 #include "dsp_tkif.h"
 
 #include <QDialog>
@@ -60,7 +60,7 @@ class cParam;
 class cKeys;
 class cExpand;
 class cZoom;
-class idle_proc;
+class QTidleproc;
 class QTltab;
 
 class QMenu;
@@ -132,7 +132,7 @@ public:
 
 private:
     GRpopup     *pkg_busy_popup;        // busy indicator
-    idle_proc   *pkg_idle_control;
+    QTidleproc  *pkg_idle_control;
     bool        pkg_in_main_loop;       // gtk_main called
     bool        pkg_not_mapped;         // true when iconic
 };
@@ -141,7 +141,7 @@ private:
 // Length of keypress buffer.
 #define CBUFMAX 15
 
-class cKeys : public draw_qt_w
+class cKeys : public QTcanvas
 {
     Q_OBJECT
 

@@ -60,67 +60,65 @@ phony_balogna()
 // Exported function to pop up/down the tool.
 //
 void
-cConvert::PopUpAssemble(GRobject caller, ShowMode mode)
+cConvert::PopUpAssemble(GRobject, ShowMode)
 {
 }
 
 // qtattri.cc
 
 void
-cMain::PopUpAttributes(GRobject caller, ShowMode mode)
+cMain::PopUpAttributes(GRobject, ShowMode)
 {
 }
 
 // qtauxtab.cc
 
 void
-cConvert::PopUpAuxTab(GRobject caller, ShowMode mode)
+cConvert::PopUpAuxTab(GRobject, ShowMode)
 {
 }
 
 // qtcells.cc
 
 void
-cMain::PopUpCells(GRobject caller, ShowMode mode)
+cMain::PopUpCells(GRobject, ShowMode)
 {
 }
 
 // qtcflags.cc
 
 void
-cMain::PopUpCellFlags(GRobject caller, ShowMode mode, const stringlist *list,
-    int dmode)
+cMain::PopUpCellFlags(GRobject, ShowMode, const stringlist*, int)
 {
 }
 
 // qtcgdlist.cc
 
 void
-cConvert::PopUpGeometries(GRobject caller, ShowMode mode)
+cConvert::PopUpGeometries(GRobject, ShowMode)
 {
 }
 
 // qtchdcfg.cc
 
 void
-cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
-    const char *chdname, int x, int y)
+cConvert::PopUpChdConfig(GRobject, ShowMode, const char*, int, int)
 {
 }
 
 // qtchdlist.cc
 
 void
-cConvert::PopUpHierarchies(GRobject caller, ShowMode mode)
+cConvert::PopUpHierarchies(GRobject, ShowMode)
 {
 }
 
 // qtchdopen.cc
 
 void
-cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
-    const char *prompt_str, const char *init_str, int x, int y,
-    bool(*callback)(const char*, const char*, int, void*), void *arg)
+cConvert::PopUpChdOpen(GRobject, ShowMode,
+    const char*, const char*, int, int,
+    bool(*)(const char*, const char*, int, void*), void*)
 {
 }
 
@@ -183,16 +181,16 @@ cMain::SetLowerWinOffset(int)
 // qtcv.cc
 
 void
-cConvert::PopUpConvert(GRobject caller, ShowMode mode, int inp_type,
-    bool(*callback)(int, void*), void *arg)
+cConvert::PopUpConvert(GRobject, ShowMode, int,
+    bool(*)(int, void*), void*)
 {
 }
 
 // qtcvin.cc
 
 void
-cConvert::PopUpImport(GRobject caller, ShowMode mode,
-    bool (*callback)(int, void*), void *arg)
+cConvert::PopUpImport(GRobject, ShowMode,
+    bool (*)(int, void*), void*)
 {
 }
 
@@ -210,20 +208,20 @@ cConvert::PopUpPropertyFilter(GRobject, ShowMode)
 // qtcvout.cc
 
 void
-cConvert::PopUpExport(GRobject caller, ShowMode mode, 
-    bool (*callback)(FileType, bool, void*), void *arg)
+cConvert::PopUpExport(GRobject, ShowMode, 
+    bool (*)(FileType, bool, void*), void*)
 {
 }
 
 // qtdebug.cc
 
 void
-cMain::PopUpDebug(GRobject caller, ShowMode mode)
+cMain::PopUpDebug(GRobject, ShowMode)
 {
 }
 
 bool
-cMain::DbgLoad(MenuEnt *ent)
+cMain::DbgLoad(MenuEnt*)
 {
     return (false);
 }
@@ -231,7 +229,7 @@ cMain::DbgLoad(MenuEnt *ent)
 // qtdevs.cc
 
 void
-cSced::PopUpDevs(GRobject caller, ShowMode mode)
+cSced::PopUpDevs(GRobject, ShowMode)
 {
 }
 
@@ -256,7 +254,7 @@ cMain::DisableDialogs()
 // qtdvedit.cc
 
 void
-cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
+cSced::PopUpDevEdit(GRobject, ShowMode)
 {
 }
 
@@ -294,8 +292,8 @@ cExt::PopUpPhysTermEdit(GRobject, ShowMode, TermEditInfo*,
 // qtextterm.cc
 
 void
-cSced::PopUpTermEdit(GRobject, ShowMode mode, TermEditInfo *tinfo,
-    void(*action)(TermEditInfo*, CDp*), CDp *prp, int x, int y)
+cSced::PopUpTermEdit(GRobject, ShowMode, TermEditInfo*,
+    void(*)(TermEditInfo*, CDp*), CDp*, int, int)
 {
 }
 
@@ -312,21 +310,10 @@ cSced::PopUpDots(GRobject, ShowMode)
 // qtfiles.cc
 
 void
-cConvert::PopUpFiles(GRobject caller, ShowMode mode)
+cConvert::PopUpFiles(GRobject, ShowMode)
 {
 }
 
-// qtfillp.cc
-
-void
-cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
-{
-}
-
-void
-cMain::FillLoadCallback(LayerFillData *dd, CDl *ld)
-{
-}
 
 // qtflatten.cc
 
@@ -340,22 +327,21 @@ cEdit::PopUpFlatten(GRobject, ShowMode,
 // qtlibs.cc
 
 void
-cConvert::PopUpLibraries(GRobject caller, ShowMode mode)
+cConvert::PopUpLibraries(GRobject, ShowMode)
 {
 }
 
 // qtlogo.cc
 
 void
-cEdit::PopUpLogo(GRobject caller, ShowMode mode)
+cEdit::PopUpLogo(GRobject, ShowMode)
 {
 }
 
 // qtlpal.cc
 
 void
-cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
-    CDl *ldesc)
+cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*)
 {
 }
 
@@ -367,21 +353,21 @@ cEdit::PopUpLayerChangeMode(ShowMode)
 // atltalias.cc
 
 void
-cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
+cMain::PopUpLayerAliases(GRobject, ShowMode)
 {
 }
 
 // qtmem.cc
 
 void
-cMain::PopUpMemory(ShowMode mode)
+cMain::PopUpMemory(ShowMode)
 {
 }
 
 // qtprpcedit.cc
 
 void
-cEdit::PopUpCellProperties(ShowMode mode)
+cEdit::PopUpCellProperties(ShowMode)
 {
 }
 
@@ -403,7 +389,7 @@ cEdit::polytext(const char*, int, int, int)
 // qtprpedit.cc
 
 void
-cEdit::PopUpProperties(CDo *odesc, ShowMode mode, PRPmode activ)
+cEdit::PopUpProperties(CDo*, ShowMode, PRPmode)
 {
 }
 
@@ -429,42 +415,42 @@ cEdit::PopUpLayerExp(GRobject, ShowMode)
 
 
 PrptyText *
-cEdit::PropertyResolve(int code, int offset, CDo **odp)
+cEdit::PropertyResolve(int, int, CDo**)
 {
     return (0);
 }
 
 void
-cEdit::PropertyPurge(CDo *odold, CDo *odnew)
+cEdit::PropertyPurge(CDo*, CDo*)
 {
 }
 
 PrptyText *
-cEdit::PropertySelect(int which)
+cEdit::PropertySelect(int)
 {
     return (0);
 }
 
 PrptyText *
-cEdit::PropertyCycle(CDp *pd, bool (*checkfunc)(const CDp*), bool rev)
+cEdit::PropertyCycle(CDp*, bool (*)(const CDp*), bool)
 {
     return (0);
 }
 
 void
-cEdit::RegisterPrptyBtnCallback(int(*cb)(PrptyText*))
+cEdit::RegisterPrptyBtnCallback(int(*)(PrptyText*))
 {
 }
 
 // qtprpinfo.cc
 
 void
-cEdit::PopUpPropertyInfo(CDo *odesc, ShowMode mode)
+cEdit::PopUpPropertyInfo(CDo*, ShowMode)
 {
 }
 
 void
-cEdit::PropertyInfoPurge(CDo *odold, CDo *odnew)
+cEdit::PropertyInfoPurge(CDo*, CDo*)
 {
 }
 
@@ -472,7 +458,7 @@ cEdit::PropertyInfoPurge(CDo *odold, CDo *odnew)
 // qtsim.cc
 
 void
-cSced::PopUpSim(SpType status)
+cSced::PopUpSim(SpType)
 {
 }
 
@@ -520,3 +506,24 @@ cOAif::PopUpOAdefs(GRobject, ShowMode, int, int)
 {
 }
 
+bool
+cSced::PopUpNodeMap(GRobject, ShowMode, int)
+{
+}
+
+void
+cConvert::PopUpOasAdv(GRobject, ShowMode, int, int)
+{
+}
+
+void
+cEdit::PopUpPCellCtrl(GRobject, ShowMode)
+{
+}
+
+struct PCellParam;
+bool
+cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*,
+    const char*, pcpMode)
+{
+}

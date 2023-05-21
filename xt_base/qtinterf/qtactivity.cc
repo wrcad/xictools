@@ -38,59 +38,110 @@
  $Id:$
  *========================================================================*/
 
-#ifndef INTERVAL_TIMER_H
-#define INTERVAL_TIMER_H
+#include "qtactivity.h"
 
-#include <QTimer>
+#include <QPainter>
+#include <QBrush>
+#include <QPixmap>
 
-namespace qtinterf
+//
+// Activity Indicator Widget
+//
+// When active, translates a smiley back and forth.
+//
+
+
+using namespace qtinterf;
+
+// XPM
+static const char * const smile_xpm[] = {
+// columns rows colors chars-per-pixel
+"15 15 5 1",
+"  c black",
+". c gray75",
+"x c yellow",
+"o c black",
+"O c None",
+/* pixels */
+"OOOOO     OOOOO",
+"OOO  xxxxx  OOO",
+"OO xxxxxxxxx OO",
+"O xxxxxxxxxxx O",
+"O xx  xxx  xx O",
+" xxx  xxx  xxx ",
+" xxxxxxxxxxxxx ",
+" xxxxxxxxxxxxx ",
+" xxxxxxxxxxxxx ",
+" xx xxxxxxx xx ",
+"O xx xxxxx xx O",
+"O xxx     xxx O",
+"OO xxxxxxxxx OO",
+"OOO  xxxxx  OOO",
+"OOOOO     OOOOO"
+};
+
+
+QTactivity::QTactivity(QWidget *prnt) : QWidget(prnt)
 {
-    class interval_timer: public QTimer
-    {
-        Q_OBJECT
-
-    public:
-        interval_timer(int(*)(void*), void*, interval_timer*, QObject*);
-        ~interval_timer();
-
-        // Manage external list of timers.
-        interval_timer *nextTimer() { return next; }
-        void setNextTimer(interval_timer *t) { next = t; }
-
-        // Register the timer list head address.  The timer will
-        // be removed from this list when destroyed.
-        void register_list(interval_timer **l) { list = l; }
-
-        // Start timer, nothing happens until this is called.
-        void start(int ms) { msec = ms; QTimer::start(ms); }
-
-        // Return unique id.
-        int id() { return (timer_id); }
-
-        // Set mode.  If unset (the default) the callback return is
-        // ignored.  The timer will stop after timout, and can be
-        // restarted by calling start.  If set, the callback will
-        // restart the timer by returning true, or destroy the timer
-        // by returning false.
-        //
-        void set_use_return(bool b) { use_cb_ret = b; }
-
-    signals:
-        void destroy(interval_timer*);
-
-    private slots:
-        void timeout_slot();
-
-    private:
-        int (*callback)(void*);
-        void *arg;
-        interval_timer *next;
-        int timer_id;
-        int msec;
-        interval_timer **list;
-        bool deleted;
-        bool use_cb_ret;
-    };
+    pos_x = 0;
+    vel_x = 4;
+    rad = 8;  // half image size
+    active = false;
+    image = new QPixmap(smile_xpm);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(increment_slot()));
 }
 
-#endif
+
+QTactivity::~QTactivity()
+{
+    delete image;
+}
+
+
+void
+QTactivity::start()
+{
+    pos_x = 0;
+    vel_x = 4;
+    timer.start(100);
+    active = true;
+}
+
+void
+QTactivity::stop()
+{
+    timer.stop();
+    active = false;
+    increment_slot();
+}
+
+
+void
+QTactivity::paintEvent(QPaintEvent*)
+{
+    QPainter p(this);
+    p.eraseRect(0, 0, size().width(), size().height());
+    if (active)
+        p.drawPixmap(pos_x, size().height()/2 - rad, *image);
+    else
+        p.drawText(rad, size().height()/2 + rad, QString("idle"));
+    p.end();
+}
+
+
+void
+QTactivity::increment_slot()
+{
+    int nx = pos_x + vel_x;
+    if (nx + 2*rad > size().width()) {
+        vel_x = -vel_x;
+        nx += (size().width() - nx - 2*rad);
+    }
+    if (nx < 0) {
+        vel_x = -vel_x;
+        nx = - nx;
+    }
+    pos_x = nx;
+    repaint(0, 0, size().width(), size().height());
+}
+

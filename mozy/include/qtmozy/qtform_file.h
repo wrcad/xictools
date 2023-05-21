@@ -38,30 +38,39 @@
  $Id:$
  *========================================================================*/
 
-#ifndef FORM_LIST_W_H
-#define FORM_LIST_W_H
+#ifndef FORM_FILE_W_H
+#define FORM_FILE_W_H
 
-#include <QListWidget>
+#include <QWidget>
+
+class QLineEdit;
+class QPushButton;
 
 struct htmForm;
 
 namespace qtinterf
 {
-    class form_list_w : public QListWidget
+    class QTfilePopup;
+
+    // Container for the FORM_FILE element
+    //
+    class QTform_file : public QWidget
     {
         Q_OBJECT
 
     public:
-        form_list_w(htmForm*, QWidget*);
+        QTform_file(htmForm*, QWidget*);
 
-        void setSize();
-
-    signals:
+        QLineEdit *editor() { return (edit); }
 
     private slots:
-      
+        void browse_btn_slot();
+        void file_selected_slot(const char*, void*);
+
     private:
-        htmForm *form_entry;
+        QLineEdit *edit;
+        QPushButton *browse;
+        QTfilePopup *fsel;
     };
 }
 

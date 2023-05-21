@@ -1,5 +1,5 @@
 
-/*========================================================================*
+/*========================================================================
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
@@ -32,116 +32,88 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Qt MOZY help viewer.
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "activity_w.h"
+#include "qtform_file.h"
+#include "qtinterf/qtfile.h"
+#include "htm/htm_widget.h"
+#include "htm/htm_form.h"
 
-#include <QPainter>
-#include <QBrush>
-#include <QPixmap>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QLayout>
+#include <QFont>
+#include <QFontMetrics>
 
 //
-// Activity Indicator Widget
-//
-// When active, translates a smiley back and forth.
+// The file entry widget for forms, consists of an entry field and
+// browse button.  Pressing the browse button pops up the file
+// selection panel.  Making a selection from this panel enters the
+// path into the entry area.
 //
 
 
 using namespace qtinterf;
 
-// XPM
-static const char * const smile_xpm[] = {
-// columns rows colors chars-per-pixel
-"15 15 5 1",
-"  c black",
-". c gray75",
-"x c yellow",
-"o c black",
-"O c None",
-/* pixels */
-"OOOOO     OOOOO",
-"OOO  xxxxx  OOO",
-"OO xxxxxxxxx OO",
-"O xxxxxxxxxxx O",
-"O xx  xxx  xx O",
-" xxx  xxx  xxx ",
-" xxxxxxxxxxxxx ",
-" xxxxxxxxxxxxx ",
-" xxxxxxxxxxxxx ",
-" xx xxxxxxx xx ",
-"O xx xxxxx xx O",
-"O xxx     xxx O",
-"OO xxxxxxxxx OO",
-"OOO  xxxxx  OOO",
-"OOOOO     OOOOO"
-};
-
-
-activity_w::activity_w(QWidget *prnt) : QWidget(prnt)
+inline int
+char_width(QWidget *w)
 {
-    pos_x = 0;
-    vel_x = 4;
-    rad = 8;  // half image size
-    active = false;
-    image = new QPixmap(smile_xpm);
-    connect(&timer, SIGNAL(timeout()), this, SLOT(increment_slot()));
+    QFont f = w->font();
+    QFontMetrics fm(f);
+    return (fm.width(QString("X")));
 }
 
-
-activity_w::~activity_w()
+inline int
+line_height(QWidget *w)
 {
-    delete image;
+    QFont f = w->font();
+    QFontMetrics fm(f);
+    return (fm.height());
+}
+
+QTform_file::QTform_file(htmForm *entry, QWidget *prnt) : QWidget(prnt)
+{
+    fsel = 0;
+    edit = new QLineEdit(this);
+    int wd = entry->size * char_width(edit) + 4;
+    int ht = line_height(edit);
+    edit->resize(wd, ht);
+    browse = new QPushButton(this);
+    browse->setText(QString("Browse..."));
+    browse->setMaximumHeight(ht);
+    QHBoxLayout *hbox = new QHBoxLayout(this);
+    hbox->setMargin(0);
+    hbox->setSpacing(4);
+    hbox->addWidget(edit);
+    hbox->addWidget(browse);
+    QSize qs = size();
+    entry->width = qs.width();
+    entry->height = ht + 4;
+    connect(browse, SIGNAL(clicked()), this, SLOT(browse_btn_slot()));
 }
 
 
 void
-activity_w::start()
+QTform_file::browse_btn_slot()
 {
-    pos_x = 0;
-    vel_x = 4;
-    timer.start(100);
-    active = true;
-}
-
-void
-activity_w::stop()
-{
-    timer.stop();
-    active = false;
-    increment_slot();
-}
-
-
-void
-activity_w::paintEvent(QPaintEvent*)
-{
-    QPainter p(this);
-    p.eraseRect(0, 0, size().width(), size().height());
-    if (active)
-        p.drawPixmap(pos_x, size().height()/2 - rad, *image);
-    else
-        p.drawText(rad, size().height()/2 + rad, QString("idle"));
-    p.end();
-}
-
-
-void
-activity_w::increment_slot()
-{
-    int nx = pos_x + vel_x;
-    if (nx + 2*rad > size().width()) {
-        vel_x = -vel_x;
-        nx += (size().width() - nx - 2*rad);
+    if (!fsel) {
+        fsel = new QTfilePopup(0, fsSEL, 0, 0);
+        fsel->register_usrptr((void**)&fsel);
+        connect(fsel, SIGNAL(file_selected(const char*, void*)),
+            this, SLOT(file_selected_slot(const char*, void*)));
     }
-    if (nx < 0) {
-        vel_x = -vel_x;
-        nx = - nx;
-    }
-    pos_x = nx;
-    repaint(0, 0, size().width(), size().height());
+    fsel->set_visible(true);
+}
+
+
+void
+QTform_file::file_selected_slot(const char *fname, void*)
+{
+    if (fname && *fname)
+        edit->setText(QString(fname));
 }
 

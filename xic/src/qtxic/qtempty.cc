@@ -38,205 +38,128 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtmain.h"
+#include "qtempty.h"
 #include "cvrt.h"
 #include "cd_celldb.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
-#include "qtmain.h"
 #include "qtinterf/qtfont.h"
+
+#include <QLayout>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QLabel>
+#include <QScrollBar>
 
 
 //--------------------------------------------------------------------------
 //
-// Pop up to allow the user to delete empty cells from a hierarchy
+// Pop up to allow the user to delete empty cells from a hierarchy.
 //
-
-namespace {
-    // List element for empty cells
-    //
-    struct e_item
-    {
-        e_item() { name = 0; del = false; }
-
-        const char *name;                   // cell name
-        bool del;                           // deletion flag
-    };
-
-    namespace gtkempty {
-        struct sEC : public QTbag
-        {
-            sEC(stringlist*);
-            ~sEC();
-
-            void update(stringlist*);
-
-        private:
-            void refresh();
-
-            /*
-            static void ec_font_changed();
-            static void ec_cancel_proc(GtkWidget*, void*);
-            static void ec_btn_proc(GtkWidget*, void*);
-            static int ec_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-            */
-
-            e_item *ec_list;                    // list of cells
-            SymTab *ec_tab;                     // table of checked cells
-            //GtkWidget *ec_label;                // label widget
-            int ec_field;                       // max cell name length
-            bool ec_changed;
-        };
-
-        sEC *EC;
-
-        enum { EC_nil, EC_apply, EC_delete, EC_skip };
-    }
-}
-
-using namespace gtkempty;
-
 
 void
 cConvert::PopUpEmpties(stringlist *list)
 {
     if (!QTdev::exists() || !QTmainwin::self())
         return;
-    if (EC)
+    if (cEmpty::self())
         return;
     if (XM()->RunMode() != ModeNormal)
         return;
     if (!list)
         return;
 
-    new sEC(list);
-    /*
-    if (!EC->Shell()) {
-        delete EC;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(EC->Shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new cEmpty(list);
 
-    GRX->SetPopupLocation(GRloc(LW_LL), EC->Shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(EC->Shell());
-    */
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cEmpty::self(),
+        QTmainwin::self()->Viewport());
+    cEmpty::self()->show();
 }
 // End of cConvert functions.
 
 
-sEC::sEC(stringlist *l)
+cEmpty *cEmpty::instPtr;
+
+cEmpty::cEmpty(stringlist *l)
 {
-    EC = this;
+    instPtr = this;
     ec_list = 0;
     ec_tab = 0;
-//    ec_label = 0;
+    ec_label = 0;
+    ec_text = 0;
     ec_field = 0;
     ec_changed = false;
 
-/*
-    wb_shell = gtk_NewPopup(0, "Empty Cells", ec_cancel_proc, 0);
-    if (!wb_shell)
-        return;
-    GtkWidget *form = gtk_table_new(2, 4, false);
-    gtk_container_add(GTK_CONTAINER(wb_shell), form);
-    gtk_widget_show(form);
+    setWindowTitle(tr("Empty Cells"));
 
-    GtkWidget *button = gtk_button_new_with_label("Delete All");
-    gtk_widget_set_name(button, "DeleteAll");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(ec_btn_proc), (void*)EC_delete);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    button = gtk_button_new_with_label("Skip All");
-    gtk_widget_set_name(button, "SkipAll");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(ec_btn_proc), (void*)EC_skip);
+    QPushButton *btn = new QPushButton();
+    btn->setText(tr("Delete All"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(delete_btn_slot()));
 
-    gtk_table_attach(GTK_TABLE(form), button, 1, 2, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    btn = new QPushButton();
+    btn->setText(tr("Skip All"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(skip_btn_slot()));
 
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
 
-    ec_label = gtk_label_new("");
-    gtk_label_set_justify(GTK_LABEL(ec_label), GTK_JUSTIFY_LEFT);
-    gtk_misc_set_alignment(GTK_MISC(ec_label), 0, 0.5);
-    gtk_misc_set_padding(GTK_MISC(ec_label), 4, 2);
-    gtk_widget_show(ec_label);
-    gtk_container_add(GTK_CONTAINER(frame), ec_label);
+    QGroupBox *gb = new QGroupBox(this);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    ec_label = new QLabel(gb);
+
+    hb->addWidget(ec_label);
+    hbox->addWidget(gb);
+    vbox->addLayout(hbox);
+
+    ec_text = new QTtextEdit();
+    ec_text->setReadOnly(true);
+    ec_text->setMouseTracking(true);
+    vbox->addWidget(ec_text);
+    connect(ec_text, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(mouse_press_slot(QMouseEvent*)));
+
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    btn = new QPushButton();
+    btn->setText(tr("Apply"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    btn = new QPushButton();
+    btn->setText(tr("Dismiss"));
+    hbox->addWidget(btn);
+    vbox->addLayout(hbox);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
-    GTKfont::setupFont(ec_label, FNT_FIXED, true);
-
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 2, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    GtkWidget *contr;
-    text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
-
-    gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
-    g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
-        G_CALLBACK(ec_btn_hdlr), 0);
-    g_signal_connect_after(G_OBJECT(wb_textarea), "realize",
-        G_CALLBACK(text_realize_proc), 0);
-
-    // The font change pop-up uses this to redraw the widget
-    g_object_set_data(G_OBJECT(wb_textarea), "font_changed",
-        (void*)ec_font_changed);
-
-    gtk_table_attach(GTK_TABLE(form), contr, 0, 2, 2, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
-
-    button = gtk_button_new_with_label("Apply");
-    gtk_widget_set_name(button, "Apply");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(ec_btn_proc), (void*)EC_apply);
-
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, 3, 4,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(ec_cancel_proc), 0);
-
-    gtk_table_attach(GTK_TABLE(form), button, 1, 2, 3, 4,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    int ww = (ec_field + 6)*GTKfont::stringWidth(wb_textarea, 0);
-    if (ww < 200)
-        ww = 200;
-    else if (ww > 600)
-        ww = 600;
-    ww += 15;  // scrollbar
-    int hh = 8*GTKfont::stringHeight(wb_textarea, 0);
-    gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), ww, hh);
-
-    // GTK-3 can't set text until realized.
-    gtk_widget_realize(wb_shell);
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED)) {
+        ec_text->setFont(*fnt);
+        ec_label->setFont(*fnt);
+    }
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
     update(l);
-*/
+
 }
 
 
-sEC::~sEC()
+cEmpty::~cEmpty()
 {
-    EC = 0;
+    instPtr = 0;
     if (ec_changed) {
         CDcbin cbin(DSP()->CurCellName());
         cbin.fixBBs();
@@ -246,17 +169,25 @@ sEC::~sEC()
     }
     delete [] ec_list;
     delete ec_tab;
-/*
-    if (wb_shell) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
-            (gpointer)ec_cancel_proc, wb_shell);
-    }
-*/
+}
+
+
+QSize
+cEmpty::sizeHint() const
+{
+    int ww = (ec_field + 6)*QTfont::stringWidth(0, ec_text);
+    if (ww < 200)
+        ww = 200;
+    else if (ww > 600)
+        ww = 600;
+    ww += 15;  // scrollbar
+    int hh = 8*QTfont::lineHeight(ec_text);
+    return (QSize(ww, hh));
 }
 
 
 void
-sEC::update(stringlist *sl)
+cEmpty::update(stringlist *sl)
 {
     stringlist *s0 = 0;
     if (!ec_tab)
@@ -270,7 +201,7 @@ sEC::update(stringlist *sl)
         s0 = sl;
     }
     if (!sl) {
-//XXX        ec_cancel_proc(0, 0);
+        delete this;
         return;
     }
     delete [] ec_list;
@@ -295,9 +226,38 @@ sEC::update(stringlist *sl)
 
     if (itm == ec_list) {
         // No new items.
-//XXX        ec_cancel_proc(0, 0);
+        delete this;
         return;
     }
+
+    refresh();
+}
+
+
+// Redraw the text area.
+//
+void
+cEmpty::refresh()
+{
+    char buf[256];
+    QColor nc = QTbag::PopupColor(GRattrColorNo);
+    QColor yc = QTbag::PopupColor(GRattrColorYes);
+    QScrollBar *vsb = ec_text->verticalScrollBar();
+    double val = 0.0;
+    if (vsb)
+        val = vsb->value();
+    ec_text->clear();
+    for (e_item *s = ec_list; s->name; s++) {
+        snprintf(buf, sizeof(buf), "%-*s  ", ec_field, s->name);
+        ec_text->setTextColor(QColor("black"));
+        ec_text->insertPlainText(tr(buf));
+
+        snprintf(buf, sizeof(buf), "%-3s\n", s->del ? "yes" : "no");
+        ec_text->setTextColor(s->del ? yc : nc);
+        ec_text->insertPlainText(tr(buf));
+    }
+    if (vsb)
+        vsb->setValue(val);
 
     char lab[256];
     strcpy(lab, "Empty Cells            Click on yes/no\n");
@@ -305,173 +265,157 @@ sEC::update(stringlist *sl)
     for (int i = 0; i <= ec_field; i++)
         *t++ = ' ';
     strcpy(t, "Delete?");
+    ec_label->setText(lab);
+}
 
-//    gtk_label_set_text(GTK_LABEL(ec_label), lab);
+
+void
+cEmpty::delete_btn_slot()
+{
+    for (e_item *s = ec_list; s->name; s++)
+        s->del = true;
     refresh();
 }
 
 
-#ifdef notdef
-// Redraw the text area.
-//
 void
-sEC::refresh()
+cEmpty::skip_btn_slot()
 {
-    if (EC && ec_list) {
-        char buf[256];
-        GdkColor *nc = gtk_PopupColor(GRattrColorNo);
-        GdkColor *yc = gtk_PopupColor(GRattrColorYes);
-        double val = text_get_scroll_value(wb_textarea);
-        text_set_chars(wb_textarea, "");
-        for (e_item *s = ec_list; s->name; s++) {
-            snprintf(buf, sizeof(buf), "%-*s  ", ec_field, s->name);
-            text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
-            snprintf(buf, sizeof(buf), "%-3s\n", s->del ? "yes" : "no");
-            text_insert_chars_at_point(wb_textarea, s->del ? yc : nc, buf,
-                -1, -1);
-        }
-        text_set_scroll_value(wb_textarea, val);
-    }
+    for (e_item *s = ec_list; s->name; s++)
+        s->del = false;
+    refresh();
 }
 
 
-// Static function.
-// This is called when the font is changed.
-//
 void
-sEC::ec_font_changed()
+cEmpty::apply_btn_slot()
 {
-    if (EC)
-        EC->refresh();
-}
-
-
-// Static function.
-void
-sEC::ec_cancel_proc(GtkWidget*, void*)
-{
-    delete EC;
-}
-
-
-// Static function.
-void
-sEC::ec_btn_proc(GtkWidget*, void *client_data)
-{
-    if (!EC)
-        return;
-    int mode = (intptr_t)client_data;
-    if (mode == EC_apply) {
-        bool didone = false;
-        bool leftone = false;
-        for (e_item *s = EC->ec_list; s->name; s++) {
-            if (s->del) {
-                CDcbin cbin;
-                if (CDcdb()->findSymbol(s->name, &cbin)) {
-                    if (cbin.deleteCells())
-                        didone = true;
-                    continue;
-                }
+    bool didone = false;
+    bool leftone = false;
+    for (e_item *s = ec_list; s->name; s++) {
+        if (s->del) {
+            CDcbin cbin;
+            if (CDcdb()->findSymbol(s->name, &cbin)) {
+                if (cbin.deleteCells())
+                    didone = true;
+                continue;
             }
-            leftone = true;
         }
-        if (didone)
-            EC->ec_changed = true;
-        if (didone && !leftone)
-            EC->update(0);
-        else
-            ec_cancel_proc(0, 0);
+        leftone = true;
     }
-    else if (mode == EC_delete) {
-        for (e_item *s = EC->ec_list; s->name; s++)
-            s->del = true;
-        EC->refresh();
-    }
-    else if (mode == EC_skip) {
-        for (e_item *s = EC->ec_list; s->name; s++)
-            s->del = false;
-        EC->refresh();
+    if (didone)
+        ec_changed = true;
+    if (didone && !leftone)
+        update(0);
+    else
+        delete this;
+}
+
+
+void
+cEmpty::dismiss_btn_slot()
+{
+    delete this;
+}
+
+
+void
+cEmpty::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_FIXED)) {
+            ec_text->setFont(*fnt);
+            ec_label->setFont(*fnt);
+        }
+        refresh();
     }
 }
 
 
-// Static function.
-// Handle button presses in the text area.
-//
-int
-sEC::ec_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
+void
+cEmpty::mouse_press_slot(QMouseEvent *ev)
 {
-    if (!EC)
-        return (true);
-    if (event->type != GDK_BUTTON_PRESS)
-        return (true);
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
 
-    char *string = text_get_chars(caller, 0, -1);
-    int x = (int)event->button.x;
-    int y = (int)event->button.y;
-    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
-        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
-    GtkTextIter ihere, iline;
-    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(caller), &ihere, x, y);
-    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
-    char *line_start = string + gtk_text_iter_get_offset(&iline);
-    x = gtk_text_iter_get_offset(&ihere) - gtk_text_iter_get_offset(&iline);
+    if (!instPtr)
+        return;
 
-    int start = 0;
-    for ( ; start < x; start++) {
-        if (line_start[start] == '\n') {
-            // pointing to right of line end
-            delete [] string;
-            return (true);
+    const char *str = lstring::copy(
+        (const char*)ec_text->toPlainText().toLatin1());
+    int x = (int)ev->x();
+    int y = (int)ev->y();
+    QTextCursor cur = ec_text->cursorForPosition(QPoint(x, y));
+    int pos = cur.position();
+    
+    if (isspace(str[pos])) {
+        // Clicked on white space.
+        delete [] str;
+        return;
+    }
+
+    const char *lineptr = str;
+    for (int i = 0; i <= pos; i++) {
+        if (str[i] == '\n') {
+            if (i == pos) {
+                // Clicked to  right of line.
+                delete [] str;
+                return;
+            }
+            lineptr = str + i+1;
         }
     }
-    if (isspace(line_start[start])) {
-        // pointing at white space
-        delete [] string;
-        return (true);
-    }
-    int end = start;
-    while (start > 0 && !isspace(line_start[start]))
+
+    const char *start = str + pos;
+    const char *end = start;
+    while (start > lineptr && !isspace(*start))
         start--;
-    if (isspace(line_start[start]))
+    if (isspace(*start))
         start++;
-    if (start == 0) {
-        // pointing at first word (cell name)
-        delete [] string;
-        return (true);
+    if (start == lineptr) {
+        // Pointing at first word (cell name).
+        delete [] str;
+        return;
     }
-    while (line_start[end] && !isspace(line_start[end]))
+    while (*end && !isspace(*end))
         end++;
 
-    char buf[256];
-    strncpy(buf, line_start, end);
-    buf[end] = 0;
+    if (end - start > 3) {
+        delete [] str;
+        return;
+    }
 
-    const char *yn = 0;
-    if (buf[start] == 'y')
-        yn = "no ";
-    else if (buf[start] == 'n')
-        yn = "yes";
-    if (yn) {
-        start += (line_start - string);
-        GdkColor *c = gtk_PopupColor(
-            *yn == 'n' ? GRattrColorNo : GRattrColorYes);
-        text_replace_chars(caller, c, yn, start, start+3);
-        char *cname = lstring::gettok(&line_start);
-        if (cname) {
-            for (e_item *s = EC->ec_list; s->name; s++) {
-                if (!strcmp(s->name, cname)) {
-                    s->del = (*yn != 'n');
-                    break;
-                }
+    ec_text->setTextCursor(cur);
+    ec_text->moveCursor(QTextCursor::StartOfWord, QTextCursor::MoveAnchor);
+    ec_text->moveCursor(QTextCursor::EndOfWord,QTextCursor::KeepAnchor);
+    e_item *scur = 0;
+    char *cname = lstring::gettok(&lineptr);
+    if (cname) {
+        for (e_item *s = ec_list; s->name; s++) {
+            if (!strcmp(s->name, cname)) {
+                scur = s;
+                break;
             }
-            delete cname;
         }
     }
-    delete [] string;
-
-    return (true);
+    if (!strncmp(start, "yes", 3)) {
+        ec_text->setTextColor(QTbag::PopupColor(GRattrColorNo));
+        ec_text->textCursor().insertText("no ");
+        if (scur)
+            scur->del = false;
+    }
+    else if (!strncmp(start, "no ", 3)) {
+        ec_text->moveCursor(QTextCursor::Right,QTextCursor::KeepAnchor);
+        ec_text->setTextColor(QTbag::PopupColor(GRattrColorYes));
+        ec_text->textCursor().insertText("yes");
+        if (scur)
+            scur->del = true;
+    }
+    delete [] cname;
+    delete [] str;
 }
-
-#endif
 

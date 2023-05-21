@@ -38,34 +38,47 @@
  $Id:$
  *========================================================================*/
 
-#ifndef FORM_BUTTON_W_H
-#define FORM_BUTTON_W_H
+#ifndef VIEWMON_H
+#define VIEWMON_H
 
-#include <QPushButton>
+#include <QObject>
+#include "qtinterf/qtinterf.h"
 
-struct htmForm;
+struct htmCallbackInfo;
+struct htmAnchorCallbackStruct;
+struct htmVisitedCallbackStruct;
+struct htmDocumentCallbackStruct;
+struct htmLinkCallbackStruct;
+struct htmFrameCallbackStruct;
+struct htmFormCallbackStruct;
+struct htmImagemapCallbackStruct;
+struct htmEventCallbackStruct;
 
 namespace qtinterf
 {
-    // Subclass QPushButton for use in forms.
-    //
-    class form_button_w : public QPushButton
+    class QTviewer;
+
+    class QTviewmon : public QObject
     {
         Q_OBJECT
 
     public:
-        form_button_w(htmForm*, QWidget*);
-
-    signals:
-        void pressed(htmForm*);
-        void released(htmForm*);
+        QTviewmon(QTviewer*);
 
     private slots:
-        void pressed_slot();
-        void released_slot();
+        void arm_slot(htmCallbackInfo*);
+        void activate_slot(htmAnchorCallbackStruct*);
+        void anchor_track_slot(htmAnchorCallbackStruct*);
+        void anchor_visited_slot(htmVisitedCallbackStruct*);
+        void document_slot(htmDocumentCallbackStruct*);
+        void link_slot(htmLinkCallbackStruct*);
+        void frame_slot(htmFrameCallbackStruct*);
+        void form_slot(htmFormCallbackStruct*);
+        void imagemap_slot(htmImagemapCallbackStruct*);
+        void html_event_slot(htmEventCallbackStruct*);
 
     private:
-        htmForm *form_entry;
+        QTviewer *html_viewer;
     };
 }
 
