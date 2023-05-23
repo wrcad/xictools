@@ -102,7 +102,7 @@ cMain::createFileMenu()
         MenuEnt(M_SelectFile, MenuFSEL,ME_VANILLA,  CMD_SAFE,
         MenuFSEL": Pop up a file browser panel.");
     FileMenu[fileMenuOpen] =
-        MenuEnt(&M_NoOp,    MenuOPEN,  ME_VANILLA,  CMD_NOTSAFE,
+        MenuEnt(&M_NoOp,    MenuOPEN,  ME_MENU,     CMD_NOTSAFE,
         MenuOPEN": Open new cell or file.");
     FileMenu[fileMenuSave] =
         MenuEnt(M_Save,     MenuSV,    ME_VANILLA,  CMD_PROMPT,

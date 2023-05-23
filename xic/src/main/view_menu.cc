@@ -131,7 +131,7 @@ cMain::createViewMenu()
         MenuEnt(&M_NoOp,     "",        ME_MENU,     CMD_SAFE,
         0);
     ViewMenu[viewMenuView] =
-        MenuEnt(&M_NoOp,     MenuVIEW,  ME_VANILLA,  CMD_SAFE,
+        MenuEnt(&M_NoOp,     MenuVIEW,  ME_MENU,     CMD_SAFE,
         MenuVIEW": Set the displayed cell view.");
     ViewMenu[viewMenuSced] =
         MenuEnt(&M_SwitchMode,MenuSCED, ME_VANILLA,  CMD_NOTSAFE,

@@ -121,11 +121,11 @@ cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
 
     new cModif(list, saveproc);
     if (cModif::self()->is_empty()) {
-        delete cModif::self();
+        cModif::self()->deleteLater();
         return (PMok);
     }
     if (!cModif::self()->Shell()) {
-        delete cModif::self();
+        cModif::self()->deleteLater();
         return (PMerr);
     }
     QTdev::self()->SetPopupLocation(GRloc(), cModif::self(),
@@ -387,7 +387,7 @@ cModif::apply_slot()
     }
     if (QTdev::self()->LoopLevel() > 1)
         QTdev::self()->BreakLoop();
-    delete instPtr;
+    instPtr->deleteLater();
 }
 
 
@@ -397,7 +397,7 @@ cModif::abort_slot()
     m_retval = PMabort;
     if (QTdev::self()->LoopLevel() > 1)
         QTdev::self()->BreakLoop();
-    delete instPtr;
+    instPtr->deleteLater();
 }
 
 
@@ -442,7 +442,7 @@ cModif::mouse_press_slot(QMouseEvent *ev)
     for (int i = 0; i <= pos; i++) {
         if (str[i] == '\n') {
             if (i == pos) {
-                // Clicked to  right of line.
+                // Clicked to right of line.
                 delete [] str;
                 return;
             }

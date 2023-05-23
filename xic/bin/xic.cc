@@ -640,7 +640,7 @@ xic_main::start_proc(void*)
             exit (ret);
         }
     }
-    Timer()->start(getenv("XIC_NOTIMER") ? 0 : 200);
+    miscutil::Timer()->start(getenv("XIC_NOTIMER") ? 0 : 200);
     DSPpkg::self()->RegisterIdleProc(xic_main::read_cell_proc, 0);
 
 #ifdef NOTDEF

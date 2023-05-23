@@ -47,14 +47,6 @@
 #include "oa_if.h"
 
 
-//XXX
-extern bool load_qtmain;
-void
-phony_balogna()
-{
-    load_qtmain = true;
-}
-
 // qtasm.cc
 
 // Exported function to pop up/down the tool.

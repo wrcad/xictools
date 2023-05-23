@@ -32,82 +32,68 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Misc. Utilities Library                                                *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef QTZOOM_H
+#define QTZOOM_H
 
-#include <stdint.h>
+#include "main.h"
+#include "qtmain.h"
+#include <QDialog>
 
+class QLayout;
+class QLabel;
+class QPushButton;
+class QDoubleSpinBox;
+class QCheckBox;
 
-// If defined, include test for use of main class before initialized.
-//#define TIMER_TEST_NULL
+//-----------------------------------------------------------------------------
+//  Pop-up for the Zoom command
+//
+// Help system keywords used:
+//  xic:zoom
 
-namespace miscutil {
+class cZoom : public QDialog, public GRpopup
+{
+    Q_OBJECT
 
-    inline class cTimer *Timer();
+public:
+    cZoom(QTbag*, WindowDesc*);
+    ~cZoom();
 
-    class cTimer
-    {
-#ifdef TIMER_TEST_NULL
-        static cTimer *ptr()
-            {
-                if (!instancePtr)
-                    on_null_ptr();
-                return (instancePtr);
-            }
+    // GRpopup overrides
+    void set_visible(bool visib)
+        {
+            if (visib)
+                show();
+            else
+                hide();
+        }
 
-        static void on_null_ptr();
-#endif
+    void popdown();
+    void initialize();
+    void update();
 
-    public:
-#ifdef TIMER_TEST_NULL
-        friend inline cTimer *Timer()       { return (cTimer::ptr()); }
-#else
-        friend inline cTimer *Timer()       { return (instancePtr); }
-#endif
+private slots:
+    void help_btn_slot();
+    void y_apply_btn_slot();
+    void z_apply_btn_slot();
+    void window_apply_btn_slot();
+    void dismiss_btn_slot();
 
-        cTimer();
-        void start(int);
-
-        uint64_t elapsed_msec()             { return (t_elapsed_time); }
-
-        bool check_interval(uint64_t &check_time)
-            {
-                if (t_elapsed_time > check_time) {
-                    check_time = t_elapsed_time;
-                    return (true);
-                }
-                return (false);
-            }
-
-        void register_callback(void(*cb)()) { t_callback = cb; }
-        static void milli_sleep(int);
-
-    private:
-#ifdef WIN32
-        static void timer_thread_cb(void*);
-#else
-#ifdef USE_PTHREAD
-        static void *timer_thread_cb(void *);
-#else
-        static void alarm_hdlr(int);
-#endif
-#endif
-
-        uint64_t t_elapsed_time;
-        void(*t_callback)();
-        int t_period;
-        bool t_started;
-
-        static cTimer *instancePtr;
-    };
-}
-using namespace miscutil;
+private:
+    WindowDesc *zm_window;
+    QCheckBox *zm_autoy;
+    QDoubleSpinBox *zm_yscale;
+    QDoubleSpinBox *zm_zoom;
+    QDoubleSpinBox *zm_x;
+    QDoubleSpinBox *zm_y;
+    QDoubleSpinBox *zm_wid;
+};
 
 #endif
 

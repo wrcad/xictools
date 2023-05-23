@@ -45,6 +45,7 @@
 #include "qtexpand.h"
 #include "qtltab.h"
 #include "qthtext.h"
+#include "qtzoom.h"
 #include "qtinterf/qtfile.h"
 #include "qtinterf/qtmsg.h"
 #include "extif.h"
@@ -59,7 +60,6 @@
 #include "keymacro.h"
 #include "errorlog.h"
 #include "ghost.h"
-#include "miscutil/timer.h"
 #include "miscutil/pathlist.h"
 #include "help/help_context.h"
 #include "qtinterf/qtidleproc.h"
@@ -78,11 +78,13 @@
 #include <QLineEdit>
 #include <QEnterEvent>
 
+// Name clash with QT avoided with this placement.
+#include "miscutil/timer.h"
+
 #include "file_menu.h"
 #include "view_menu.h"
+#include "attr_menu.h"
 
-// XXX
-bool load_qtmain;
 
 //-----------------------------------------------------------------------------
 // Main Window
@@ -869,39 +871,53 @@ cKeys::check_exec(bool exact)
 {
     if (!k_keypos)
         return;
+
     MenuEnt *ent = Menu()->MatchEntry(k_keys, k_keypos, k_win_number, exact);
-    if (ent) {
-        if (ent->is_dynamic() && ent->is_menu())
-            // Ignore the submenu buttons in the User menu
-            return;
-        if (!strcmp(ent->entry, MenuVIEW)) {
-            // do something reasonable for the "view" command
+    if (!ent || !ent->cmd.caller)
+        return;
+
+    if (ent->is_dynamic() && ent->is_menu())
+        // Ignore the submenu buttons in the User menu
+        return;
+
+    char buf[CBUFMAX + 1];
+    strncpy(buf, ent->entry, CBUFMAX);
+    buf[CBUFMAX] = 0;
+    int n = strlen(buf) - 5;
+    if (n < 0)
+        n = 0;
+    k_cmd = lstring::copy(buf + n);
+
+    resize(sizeHint().width(), sizeHint().height());
+    clear();
+    int yy = QTfont::lineHeight(FNT_SCREEN);
+    draw_text(2, yy, k_cmd, -1);
+    updateGeometry();
+    update();
+    set_keys(0);
+    if (ent->is_menu()) {
+        // Opening a menu is pointless, but intercept these commands
+        // and perhaps do something sensible.
+
+        if (!strcmp(ent->entry, MenuOPEN)) {
+            // Open a new file/cell, as for the "new" submenu button.
+            XM()->HandleOpenCellMenu("new", false);
+        }
+        else if (!strcmp(ent->entry, MenuVIEW)) {
+            // Centered full window display.
             if (ent->cmd.wdesc)
                 ent->cmd.wdesc->SetView("full");
             else
                 DSP()->MainWdesc()->SetView("full");
-            k_cmd = lstring::copy(MenuVIEW);
         }
-        else if (ent->cmd.caller) {
-            // simulate a button press
-            char buf[CBUFMAX + 1];
-            strncpy(buf, ent->entry, CBUFMAX);
-            buf[CBUFMAX] = 0;
-            int n = strlen(buf) - 5;
-            if (n < 0)
-                n = 0;
-            k_cmd = lstring::copy(buf + n);
+        else if (!strcmp(ent->entry, MenuMAINW)) {
+            // What to do here?  Ignore for now.
         }
-        resize(sizeHint().width(), sizeHint().height());
-        clear();
-        int yy = QTfont::lineHeight(FNT_SCREEN);
-        draw_text(2, yy, k_cmd, -1);
-        updateGeometry();
-        update();
-        set_keys(0);
-        if (ent->cmd.caller)
-            Menu()->CallCallback(ent->cmd.caller);
+        return;
     }
+
+    // Do the command.
+    Menu()->CallCallback(ent->cmd.caller);
 }
 
 
@@ -1323,31 +1339,23 @@ QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-//        if (sw_zoom)
-//            sw_zoom->popdown();
+        if (sw_zoom)
+            sw_zoom->popdown();
         return;
     }
     if (mode == MODE_UPD) {
-//        if (sw_zoom)
-//            sw_zoom->update();
+        if (sw_zoom)
+            sw_zoom->update();
         return;
     }
     if (sw_zoom)
         return;
 
-        /*
-    sw_zoom = new cZoom(this, wib_windesc);
+    sw_zoom = new cZoom(this, sw_windesc);
     sw_zoom->register_usrptr((void**)&sw_zoom);
-    if (!wib_zoom->shell()) {
-        delete sw_zoom;
-        sw_zoom = 0;
-        return;
-    }
-
     sw_zoom->register_caller(caller);
     sw_zoom->initialize();
     sw_zoom->set_visible(true);
-    */
 }
 
 // End of cAppWinFuncs interface

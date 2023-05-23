@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "qtmerge.h"
 #include "main.h"
 #include "fio.h"
 #include "fio_cvt_base.h"
@@ -47,6 +48,11 @@
 #include "qtmain.h"
 #include "qtmenu.h"
 
+#include <QLayout>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QGroupBox>
+#include <QLabel>
 
 //--------------------------------------------------------------------------
 // This variation handles the cells one at a time.  The return value
@@ -54,10 +60,9 @@
 // Call with mode = MODE_OFF after all processing to finish up.
 //
 
-/*
 namespace {
     void
-    start_modal(QWidget *w)
+    start_modal(QDialog *w)
     {
         QTmenu::self()->SetSensGlobal(false);
         QTmenu::self()->SetModal(w);
@@ -75,43 +80,6 @@ namespace {
         DSPmainDraw(ShowGhost(DISPLAY))
     }
 }
-*/
-
-
-namespace {
-    namespace qtmerge {
-        struct sMC
-        {
-            sMC(mitem_t*);
-            ~sMC();
-
-            //GtkWidget *shell() { return (mc_popup); }
-            bool is_hidden() { return (mc_allflag); }
-
-            void query(mitem_t*);
-            bool set_apply_to_all();
-            bool refresh(mitem_t*);
-
-        private:
-            //static void mc_cancel_proc(GtkWidget*, void*);
-            //static void mc_btn_proc(GtkWidget*, void*);
-
-            //GtkWidget *mc_popup;
-            //GtkWidget *mc_label;
-            SymTab *mc_names;
-            bool mc_allflag;        // user pressed "apply to all"
-            bool mc_do_phys;
-            bool mc_do_elec;
-        };
-
-        sMC *MC;
-
-        enum { MC_nil, MC_apply, MC_abort, MC_readP, MC_readE, MC_skipP,
-            MC_skipE };
-    }
-}
-
-using namespace qtmerge;
 
 
 // MODE_ON:   Pop up the dialog, and desensitize application.
@@ -125,27 +93,28 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
     if (!QTdev::exists() || !QTmainwin::exists())
         return (true);
     if (mode == MODE_OFF) {
-        if (MC && !MC->is_hidden()) {
+        if (cMerge::self() && !cMerge::self()->is_hidden()) {
             if (QTdev::self()->LoopLevel() > 1)
                 QTdev::self()->BreakLoop();
-//            end_modal();
+            end_modal();
         }
-        delete MC;
+        if (cMerge::self())
+            cMerge::self()->deleteLater();
         return (true);
     }
     if (mode == MODE_UPD) {
         // We get here when the user presses "apply to all".  Hide the
         // widget and break out of modality.
 
-        if (MC && MC->set_apply_to_all()) {
+        if (cMerge::self() && cMerge::self()->set_apply_to_all()) {
             if (QTdev::self()->LoopLevel() > 1)
                 QTdev::self()->BreakLoop();
-//            end_modal();
+            end_modal();
         }
         return (true);
     }
-    if (MC) {
-        if (MC->refresh(mi))
+    if (cMerge::self()) {
+        if (cMerge::self()->refresh(mi))
             return (true);
     }
     else {
@@ -153,32 +122,37 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
             // If the popup is not enabled, return the default.
             return (true);
 
-        new sMC(mi);
-        if (MC->is_hidden())
+        new cMerge(mi);
+        if (cMerge::self()->is_hidden())
             return (true);
 
-//        QTdev::self()->SetPopupLocation(GRloc(LW_LL), MC->shell(),
-//            QTmainwin::self()->Viewport());
-//        start_modal(MC->shell());
+        QTdev::self()->SetPopupLocation(GRloc(LW_LL), cMerge::self(),
+            QTmainwin::self()->Viewport());
+        start_modal(cMerge::self());
     }
 
-    QTdev::self()->MainLoop();  // wait for user's response
+    QTdev::self()->MainLoop();  // Wait for user's response.
 
-    if (MC)
-        MC->query(mi);
+    if (cMerge::self())
+        cMerge::self()->query(mi);
     return (true);
 }
 
 
-sMC::sMC(mitem_t *mi)
+cMerge *cMerge::instPtr;
+
+cMerge::cMerge(mitem_t *mi)
 {
-    MC = this;
-//    mc_popup = 0;
-//    mc_label = 0;
+    instPtr = this;
+    mc_label = 0;
+    mc_ophys = 0;
+    mc_oelec = 0;
     mc_names = new SymTab(true, false);
     mc_allflag = false;
     mc_do_phys = false;
     mc_do_elec = false;
+
+    setWindowTitle(tr("Symbol Merge"));
 
     mc_names->add(lstring::copy(mi->name), (void*)1, false);
 
@@ -190,95 +164,78 @@ sMC::sMC(mitem_t *mi)
         query(mi);
         return;
     }
+printf("x1\n");
 
-/*
-    mc_popup = gtk_NewPopup(0, "Symbol Merge", mc_cancel_proc, 0);
-    if (!mc_popup) {
-        mc_allflag = true;
-        query(mi);
-        return;
-    }
-    gtk_window_set_resizable(GTK_WINDOW(mc_popup), false);
-    gtk_BlackHoleFix(mc_popup);
+//    gtk_window_set_resizable(GTK_WINDOW(mc_popup), false);
+//    gtk_BlackHoleFix(mc_popup);
 
-    GtkWidget *form = gtk_table_new(3, 3, false);
-    gtk_container_add(GTK_CONTAINER(mc_popup), form);
-    gtk_widget_show(form);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    QGroupBox *gb = new QGroupBox(this);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    mc_label = new QLabel(gb);
     char buf[256];
     snprintf(buf, sizeof(buf), "Cell: %s", mi->name);
-    mc_label = gtk_label_new(buf);
-    gtk_widget_show(mc_label);
-    gtk_container_add(GTK_CONTAINER(frame), mc_label);
+    mc_label->setText(tr(buf));
 
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 2, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    hb->addWidget(mc_label);
+    hbox->addWidget(gb);
+    vbox->addLayout(hbox);
 
-    GtkWidget *vbox = gtk_vbox_new(false, 2);
-    gtk_widget_show(vbox);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    vbox->addLayout(hbox);
+    
+    QCheckBox *cb = new QCheckBox();
+    hbox->addWidget(cb);
+    cb->setText(tr("Overwrite Physical"));
+    connect(cb, SIGNAL(checked(bool)), this, SLOT(phys_check_box_slot(bool)));
+    cb->setChecked(mc_do_elec);
 
-    GtkWidget *button =
-        gtk_check_button_new_with_label("Overwrite Physical");
-    gtk_widget_set_name(button, "OverwritePhysical");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(mc_btn_proc), (void*)MC_readP);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), mc_do_phys);
-    gtk_box_pack_start(GTK_BOX(vbox), button, false, false, 0);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    vbox->addLayout(hbox);
 
-    button = gtk_check_button_new_with_label("Overwrite Electrical");
-    gtk_widget_set_name(button, "ReadAllElectrical");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(mc_btn_proc), (void*)MC_readE);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
-        mc_do_elec);
-    gtk_box_pack_start(GTK_BOX(vbox), button, false, false, 0);
+    cb = new QCheckBox();
+    hbox->addWidget(cb);
+    cb->setText(tr("Overwrite Electrical"));
+    connect(cb, SIGNAL(checked(bool)), this, SLOT(elec_check_box_slot(bool)));
+    cb->setChecked(mc_do_elec);
 
-    gtk_table_attach(GTK_TABLE(form), vbox, 0, 1, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    vbox->addLayout(hbox);
 
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
+    QPushButton *btn = new QPushButton();
+    btn->setText(tr("Apply"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    btn = new QPushButton();
+    btn->setText(tr("Apply To Rest"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(apply_to_all_btn_slot()));
 
-    button = gtk_button_new_with_label("Apply");
-    gtk_widget_set_name(button, "Apply");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(mc_btn_proc), (void*)MC_apply);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-
-    button = gtk_button_new_with_label("Apply To Rest");
-    gtk_widget_set_name(button, "ApplyToRest");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(mc_btn_proc), (void*)MC_abort);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, 2, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    // Constrain overall widget width so title text isn't truncated.
-    gtk_widget_set_size_request(mc_popup, 220, -1);
-*/
+    show();
 }
 
 
-sMC::~sMC()
+cMerge::~cMerge()
 {
-    MC = 0;
+    instPtr = 0;
     delete mc_names;
-//    delete mc_popup;
 }
 
 
 void
-sMC::query(mitem_t *mi)
+cMerge::query(mitem_t *mi)
 {
     mi->overwrite_phys = mc_do_phys;
     mi->overwrite_elec = mc_do_elec;
@@ -286,11 +243,11 @@ sMC::query(mitem_t *mi)
 
 
 bool
-sMC::set_apply_to_all()
+cMerge::set_apply_to_all()
 {
     if (!mc_allflag) {
         mc_allflag = true;
-//        gtk_widget_hide(mc_popup);
+        hide();
         return (true);
     }
     return (false);
@@ -298,10 +255,10 @@ sMC::set_apply_to_all()
 
 
 bool
-sMC::refresh(mitem_t *mi)
+cMerge::refresh(mitem_t *mi)
 {
     if (SymTab::get(mc_names, mi->name) != ST_NIL) {
-        // we've seen this cell before
+        // We've seen this cell before.
         mi->overwrite_phys = false;
         mi->overwrite_elec = false;
         return (true);
@@ -313,37 +270,47 @@ sMC::refresh(mitem_t *mi)
     }
     char buf[256];
     snprintf(buf, sizeof(buf), "Cell: %s", mi->name);
-//    gtk_label_set_text(GTK_LABEL(mc_label), buf);
+    mc_label->setText(tr(buf));
     return (false);
+}
+
+
+void
+cMerge::apply_btn_slot()
+{
+    if (QTdev::self()->LoopLevel() > 1)
+        QTdev::self()->BreakLoop();
+}
+
+
+void
+cMerge::apply_to_all_btn_slot()
+{
+    Cvt()->PopUpMergeControl(MODE_UPD, 0);
+}
+
+
+void
+cMerge::phys_check_box_slot(bool checked)
+{
+    mc_do_phys = checked;
+}
+
+
+void
+cMerge::elec_check_box_slot(bool checked)
+{
+    mc_do_elec = checked;
 }
 
 
 /*
 // Static function.
 void
-sMC::mc_cancel_proc(GtkWidget*, void*)
+cMerge::mc_cancel_proc(GtkWidget*, void*)
 {
     Cvt()->PopUpMergeControl(MODE_UPD, 0);
 }
 
-
-// Static function.
-void
-sMC::mc_btn_proc(GtkWidget *caller, void *client_data)
-{
-    if (!MC)
-        return;
-    int mode = (intptr_t)client_data;
-    if (mode == MC_apply) {
-        if (GTKdev::self()->LoopLevel() > 1)
-            GTKdev::self()->BreakLoop();
-    }
-    else if (mode == MC_abort)
-        Cvt()->PopUpMergeControl(MODE_UPD, 0);
-    else if (mode == MC_readP)
-        MC->mc_do_phys = GTKdev::GetStatus(caller);
-    else if (mode == MC_readE)
-        MC->mc_do_elec = GTKdev::GetStatus(caller);
-}
 */
 

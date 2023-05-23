@@ -198,7 +198,7 @@ QTmenuConfig::instantiateMainMenus()
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = DSP()->MainWdesc();
  
-            // Edit sub-menu.
+            // Open sub-menu.
             if (ent - mbox->menu == fileMenuOpen) {
                 Menu()->NewDDmenu(ent->user_action, XM()->OpenCellMenuList());
                 QMenu *submenu = action(ent)->menu();
@@ -1346,12 +1346,17 @@ QTmenuConfig::file_open_menu_slot(QAction *a)
         }
     }
 
-    const char *string = a->text().toLatin1().constData();
-    if (!string || !*string)
+    const char *str = lstring::copy((const char*)a->text().toLatin1());
+    if (!str)
         return;
+    if (!*str) {
+        delete [] str;
+        return;
+    }
 
     int mstate = QApplication::keyboardModifiers();
-    XM()->HandleOpenCellMenu(string, (mstate & Qt::ShiftModifier));
+    XM()->HandleOpenCellMenu(str, (mstate & Qt::ShiftModifier));
+    delete [] str;
 }
 
 
@@ -1801,32 +1806,6 @@ printf("exec_slot alt_caller\n");
         return;
     }
     idle_exec_slot(ent);
-
-    /*
-    if (ent->type == CMD_NOTSAFE) {
-printf("x1\n");
-        // hack for the "run" button
-        if (!strcmp(ent->entry, MenuRUN) && ScedIf()->simulationActive()) {
-            (*ent->action)(&ent->cmd);
-            return;
-        }
-        bool state = Menu()->GetStatus(ent->cmd.caller);
-        // If the state is false, then we have reentered the command,
-        // terminate it and exit.  Otherwise, a new command was
-        // selected.  Terminate the present command, and call the
-        // new one.
-        EV()->InitCallback();
-        // consistency check
-        Selections.check();
-        if (state) {
-            // putting the call in an idle proc allows the current command
-            // function to return before the new one starts
-            emit exec_idle(ent);
-        }
-        return;
-    }
-    */
-printf("x2\n");
 }
 
 

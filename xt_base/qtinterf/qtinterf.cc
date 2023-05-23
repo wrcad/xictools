@@ -57,6 +57,7 @@
 #include <QApplication>
 #include <QAction>
 #include <QPushButton>
+#include <QMenu>
 
 
 // Device-dependent setup.
@@ -647,8 +648,10 @@ QTdev::SetLabel(GRobject obj, const char *text)
         return;
     if (o->isWidgetType()) {
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
-        if (btn)
+        if (btn) {
             btn->setText(text);
+            return;
+        }
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
@@ -667,8 +670,13 @@ QTdev::SetSensitive(GRobject obj, bool sens_state)
         return;
     if (o->isWidgetType()) {
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
-        if (btn)
+        if (btn) {
             btn->setEnabled(sens_state);
+            return;
+        }
+        QMenu *menu = dynamic_cast<QMenu*>(o);
+        if (menu)
+            menu->setEnabled(sens_state);
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
@@ -689,6 +697,9 @@ QTdev::IsSensitive(GRobject obj)
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
         if (btn)
             return (btn->isEnabled());
+        QMenu *menu = dynamic_cast<QMenu*>(o);
+        if (menu)
+            return (menu->isEnabled());
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
@@ -713,6 +724,14 @@ QTdev::SetVisible(GRobject obj, bool vis_state)
                 btn->show();
             else
                 btn->hide();
+            return;
+        }
+        QMenu *menu = dynamic_cast<QMenu*>(o);
+        if (menu) {
+            if (vis_state)
+                menu->show();
+            else
+                menu->hide();
         }
     }
     else {
@@ -734,6 +753,9 @@ QTdev::IsVisible(GRobject obj)
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
         if (btn)
             return (btn->isVisible());
+        QMenu *menu = dynamic_cast<QMenu*>(o);
+        if (menu)
+            return (menu->isVisible());
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
@@ -749,7 +771,25 @@ void
 QTdev::DestroyButton(GRobject obj)
 {
     QObject *o = (QObject*)obj;
-    delete o;
+    if (!o)
+        return;
+    if (o->isWidgetType()) {
+        QPushButton *btn = dynamic_cast<QPushButton*>(o);
+        if (btn) {
+            delete btn;
+            return;
+        }
+        QMenu *menu = dynamic_cast<QMenu*>(o);
+        if (menu) {
+            delete menu;
+            return;
+        }
+    }
+    else {
+        QAction *a = dynamic_cast<QAction*>(o);
+        if (a)
+            delete a;
+    }
 }
 
 

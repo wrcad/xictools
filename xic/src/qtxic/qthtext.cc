@@ -165,7 +165,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(press_slot(QMouseEvent*)), Qt::QueuedConnection);
     connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
-        this, SLOT(enter_slot(QEntervent*)), Qt::QueuedConnection);
+        this, SLOT(enter_slot(QEnterEvent*)), Qt::QueuedConnection);
     connect(Viewport(), SIGNAL(leave_event(QEvent*)),
         this, SLOT(leave_slot(QEvent*)), Qt::QueuedConnection);
     connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),

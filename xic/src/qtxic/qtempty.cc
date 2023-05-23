@@ -201,7 +201,7 @@ cEmpty::update(stringlist *sl)
         s0 = sl;
     }
     if (!sl) {
-        delete this;
+        deleteLater();
         return;
     }
     delete [] ec_list;
@@ -226,7 +226,7 @@ cEmpty::update(stringlist *sl)
 
     if (itm == ec_list) {
         // No new items.
-        delete this;
+        deleteLater();
         return;
     }
 
@@ -308,14 +308,14 @@ cEmpty::apply_btn_slot()
     if (didone && !leftone)
         update(0);
     else
-        delete this;
+        deleteLater();
 }
 
 
 void
 cEmpty::dismiss_btn_slot()
 {
-    delete this;
+    deleteLater();
 }
 
 

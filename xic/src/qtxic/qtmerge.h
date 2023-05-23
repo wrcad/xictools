@@ -32,82 +32,59 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Misc. Utilities Library                                                *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef QTMERGE_H
+#define QTMERGE_H
 
-#include <stdint.h>
+#include "main.h"
+#include "fio.h"
+#include "fio_cvt_base.h"
+#include "dsp_tkif.h"
+#include "dsp_inlines.h"
+#include "cvrt.h"
+#include "qtmain.h"
+#include "qtmenu.h"
 
+class QLabel;
+class QCheckBox;
 
-// If defined, include test for use of main class before initialized.
-//#define TIMER_TEST_NULL
+class cMerge : public QDialog
+{
+    Q_OBJECT
 
-namespace miscutil {
+public:
+    cMerge(mitem_t*);
+    ~cMerge();
 
-    inline class cTimer *Timer();
+    bool is_hidden()                { return (mc_allflag); }
+    static cMerge *self()           { return (instPtr); }
 
-    class cTimer
-    {
-#ifdef TIMER_TEST_NULL
-        static cTimer *ptr()
-            {
-                if (!instancePtr)
-                    on_null_ptr();
-                return (instancePtr);
-            }
+    void query(mitem_t*);
+    bool set_apply_to_all();
+    bool refresh(mitem_t*);
 
-        static void on_null_ptr();
-#endif
+private slots:
+    void apply_btn_slot();
+    void apply_to_all_btn_slot();
+    void phys_check_box_slot(bool);
+    void elec_check_box_slot(bool);
 
-    public:
-#ifdef TIMER_TEST_NULL
-        friend inline cTimer *Timer()       { return (cTimer::ptr()); }
-#else
-        friend inline cTimer *Timer()       { return (instancePtr); }
-#endif
+private:
+    QLabel *mc_label;
+    QCheckBox *mc_ophys;
+    QCheckBox *mc_oelec;
+    SymTab *mc_names;
+    bool mc_allflag;        // user pressed "apply to all"
+    bool mc_do_phys;
+    bool mc_do_elec;
 
-        cTimer();
-        void start(int);
-
-        uint64_t elapsed_msec()             { return (t_elapsed_time); }
-
-        bool check_interval(uint64_t &check_time)
-            {
-                if (t_elapsed_time > check_time) {
-                    check_time = t_elapsed_time;
-                    return (true);
-                }
-                return (false);
-            }
-
-        void register_callback(void(*cb)()) { t_callback = cb; }
-        static void milli_sleep(int);
-
-    private:
-#ifdef WIN32
-        static void timer_thread_cb(void*);
-#else
-#ifdef USE_PTHREAD
-        static void *timer_thread_cb(void *);
-#else
-        static void alarm_hdlr(int);
-#endif
-#endif
-
-        uint64_t t_elapsed_time;
-        void(*t_callback)();
-        int t_period;
-        bool t_started;
-
-        static cTimer *instancePtr;
-    };
-}
-using namespace miscutil;
+    static cMerge *instPtr;
+};
 
 #endif
 

@@ -219,7 +219,7 @@ cExpand::popdown()
     if (!owner || !owner->MonitorActive(this))
         return;
 
-    delete this;
+    deleteLater();
 }
 
 
@@ -341,6 +341,6 @@ cExpand::apply_slot()
 void
 cExpand::dismiss_slot()
 {
-    delete this;
+    deleteLater();
 }
 
