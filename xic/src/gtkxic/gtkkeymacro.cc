@@ -88,7 +88,7 @@ bool
 cMain::SendKeyEvent(const char *widget_name, int keysym, int state,
     bool up)
 {
-    if (!GRX)
+    if (!GTKdev::exists())
         return (false);
     sKeyEvent ev(lstring::copy(widget_name), state,
         up ? KEY_RELEASE : KEY_PRESS, keysym);
@@ -104,7 +104,7 @@ bool
 cMain::SendButtonEvent(const char *widget_name, int state, int num, int x,
     int y, bool up)
 {
-    if (!GRX)
+    if (!GTKdev::exists())
         return (false);
     sBtnEvent ev(lstring::copy(widget_name), state,
         up ? BUTTON_RELEASE : BUTTON_PRESS, num, x, y);
@@ -348,7 +348,7 @@ cKbMacro::execKey(sKeyEvent *k)
         return (true);
     }
 
-    dspPkgIf()->CheckForInterrupt();
+    GTKpkg::self()->CheckForInterrupt();
     GtkWidget *w = gtk_keyb::name_to_widget(k->widget_name);
     if (w && !gtk_widget_get_window(w))
         gtk_widget_realize(w);
@@ -377,7 +377,7 @@ bool
 cKbMacro::execBtn(sBtnEvent *b)
 {
     if (b->type == BUTTON_PRESS)
-        dspPkgIf()->CheckForInterrupt();
+        GTKpkg::self()->CheckForInterrupt();
     GtkWidget *w = gtk_keyb::name_to_widget(b->widget_name);
     if (w && !gtk_widget_get_window(w))
         gtk_widget_realize(w);
@@ -446,7 +446,7 @@ sKeyMap::begin_recording(char *str)
     lastkey = 0;
     grabber = 0;
 
-    gtkPkgIf()->RegisterEventHandler(gtk_keyb::macro_event_handler, this);
+    GTKpkg::self()->RegisterEventHandler(gtk_keyb::macro_event_handler, this);
 }
 // End of sKeyMap functions.
 
@@ -462,7 +462,7 @@ gtk_keyb::macro_event_handler(GdkEvent *ev, void *arg)
         if (km->lastkey == 13 &&
                 !(ev->key.state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))) {
             km->fix_modif();
-            gtkPkgIf()->RegisterEventHandler(0, 0);
+            GTKpkg::self()->RegisterEventHandler(0, 0);
             KbMac()->SaveMacro(km, true);
             return;
         }
@@ -489,7 +489,7 @@ gtk_keyb::macro_event_handler(GdkEvent *ev, void *arg)
         if (ev->key.keyval == GDK_KEY_Escape &&
                 !(ev->key.state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))) {
             km->clear_response();
-            gtkPkgIf()->RegisterEventHandler(0, 0);
+            GTKpkg::self()->RegisterEventHandler(0, 0);
             KbMac()->SaveMacro(km, false);
             return;
         }

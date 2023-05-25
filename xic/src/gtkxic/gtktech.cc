@@ -88,7 +88,7 @@ using namespace gtktech;
 void
 cMain::PopUpTechWrite(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Tc;
@@ -110,7 +110,8 @@ cMain::PopUpTechWrite(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Tc->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Tc->shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), Tc->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Tc->shell());
 }
 
@@ -192,10 +193,10 @@ sTc::sTc(GRobject caller)
 
     char string[256];
     if (Tech()->TechExtension() && *Tech()->TechExtension())
-        sprintf(string, "./%s.%s",
+        snprintf(string, sizeof(string), "./%s.%s",
             XM()->TechFileBase(), Tech()->TechExtension());
     else
-        sprintf(string, "./%s", XM()->TechFileBase());
+        snprintf(string, sizeof(string), "./%s", XM()->TechFileBase());
 
     tc_entry = gtk_entry_new();
     gtk_widget_show(tc_entry);
@@ -242,7 +243,7 @@ sTc::~sTc()
 {
     Tc = 0;
     if (tc_caller)
-        GRX->Deselect(tc_caller);
+        GTKdev::Deselect(tc_caller);
     if (tc_popup)
         gtk_widget_destroy(tc_popup);
 }
@@ -253,19 +254,19 @@ sTc::update()
 {
     const char *v = CDvdb()->getVariable(VA_TechPrintDefaults);
     if (!v) {
-        GRX->SetStatus(tc_none, true);
-        GRX->SetStatus(tc_cmt, false);
-        GRX->SetStatus(tc_use, false);
+        GTKdev::SetStatus(tc_none, true);
+        GTKdev::SetStatus(tc_cmt, false);
+        GTKdev::SetStatus(tc_use, false);
     }
     else if (!*v) {
-        GRX->SetStatus(tc_none, false);
-        GRX->SetStatus(tc_cmt, true);
-        GRX->SetStatus(tc_use, false);
+        GTKdev::SetStatus(tc_none, false);
+        GTKdev::SetStatus(tc_cmt, true);
+        GTKdev::SetStatus(tc_use, false);
     }
     else {
-        GRX->SetStatus(tc_none, false);
-        GRX->SetStatus(tc_cmt, false);
-        GRX->SetStatus(tc_use, true);
+        GTKdev::SetStatus(tc_none, false);
+        GTKdev::SetStatus(tc_cmt, false);
+        GTKdev::SetStatus(tc_use, true);
     }
 }
 
@@ -289,7 +290,7 @@ sTc::tc_action(GtkWidget *caller, void*)
         DSPmainWbag(PopUpHelp("xic:updat"))
         return;
     }
-    if (!GRX->GetStatus(caller))
+    if (!GTKdev::GetStatus(caller))
         return;
     if (caller == Tc->tc_none)
         CDvdb()->clearVariable(VA_TechPrintDefaults);
@@ -312,7 +313,7 @@ sTc::tc_action(GtkWidget *caller, void*)
 
         // make a backup of the present file
         if (!filestat::create_bak(string)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            GTKpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
             PL()->ShowPromptV("Update of %s failed.", string);
             return;
         }

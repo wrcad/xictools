@@ -172,7 +172,7 @@ WindowDesc::~WindowDesc()
     ClearSpecial();
 
     if (wnum > 0)
-        dspPkgIf()->SubwinDestroy(wnum);
+        DSPpkg::self()->SubwinDestroy(wnum);
 
     FlushCache();
     DestroyPixmap();
@@ -213,16 +213,16 @@ WindowDesc::ShowTitleDirect()
     char buf[256];
     buf[0] = 0;
     if (DbType() == WDcddb)
-        sprintf(buf, "[cell: %s]",
+        snprintf(buf, sizeof(buf), "[cell: %s]",
             CurCellName() ? Tstring(CurCellName()) : "<none>");
     else if (DbType() == WDchd)
-        sprintf(buf, "[chd: %s cell: %s]",
+        snprintf(buf, sizeof(buf), "[chd: %s cell: %s]",
             DbName() ? DbName() : "<none>",
             DbCellName() ? DbCellName() : "<default>");
     else if (DbType() == WDblist)
-        sprintf(buf, "[cross section]");
+        snprintf(buf, sizeof(buf), "[cross section]");
     else if (DbType() == WDsdb)
-        sprintf(buf, "[db: %s]", DbName() ? DbName() : "<none>");
+        snprintf(buf, sizeof(buf), "[db: %s]", DbName() ? DbName() : "<none>");
     lstr.add(buf);
 
     Wbag()->Title(lstr.string(), strshort);
@@ -261,7 +261,7 @@ WindowDesc::ShowTitle()
         return;
     which_wins[win] = true;
     if (!id)
-        id = dspPkgIf()->RegisterIdleProc(title_idle, 0);
+        id = DSPpkg::self()->RegisterIdleProc(title_idle, 0);
 }
 
 

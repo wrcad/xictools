@@ -50,7 +50,6 @@
 
 struct hostent;
 
-inline class cGrPkg *dspPkgIf();
 
 // Type of font description string, for SetFont.
 enum FNT_FMT
@@ -64,30 +63,28 @@ enum FNT_FMT
 
 // The graphics package class.
 //
-class cGrPkg : public GRpkg
+class DSPpkg : public GRpkg
 {
 public:
-    cGrPkg()
-        {
-            app_busy = 0;
-            app_override_busy = false;
-            dispatch_events = true;
-        }
+    DSPpkg()
+    {
+        app_busy = 0;
+        app_override_busy = false;
+        dispatch_events = true;
+    }
 
-    virtual ~cGrPkg() { }
+    virtual ~DSPpkg() { }
 
-    friend inline cGrPkg *dspPkgIf()
-        { return (dynamic_cast<cGrPkg*>(GRpkgIf())); }
+    static DSPpkg *self()   { return (dynamic_cast<DSPpkg*>(GRpkg::self())); }
 
-    bool IsBusy()
-        { return (app_busy && !app_override_busy); }
+    bool IsBusy()   { return (app_busy && !app_override_busy); }
 
     bool CheckForInterruptDispatch(bool set)
-        {
-            bool tmp = dispatch_events;
-            dispatch_events = set;
-            return (tmp);
-        }
+    {
+        bool tmp = dispatch_events;
+        dispatch_events = set;
+        return (tmp);
+    }
 
     // Misc globals
     virtual GRwbag *NewGX() = 0;

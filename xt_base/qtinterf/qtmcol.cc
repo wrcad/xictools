@@ -127,13 +127,14 @@ mcol_delegate::sizeHint(const QStyleOptionViewItem&,
 
 QTmcolPopup::QTmcolPopup(QTbag *owner, stringlist *symlist,
     const char *title, const char **buttons, int pgsize, void *arg) :
-    QDialog(owner ? owner->shell : 0), QTbag(this)
+    QDialog(owner ? owner->Shell() : 0), QTbag()
 {
+wb_shell = this;
     p_parent = owner;
     p_cb_arg = arg;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
 
     setWindowTitle(tr("Listing"));
     label = new QLabel(QString(title), this);
@@ -181,7 +182,7 @@ QTmcolPopup::~QTmcolPopup()
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
-            owner->monitor.remove(this);
+            owner->MonitorRemove(this);
     }
 }
 
@@ -193,7 +194,7 @@ QTmcolPopup::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     delete this;
@@ -207,7 +208,7 @@ QTmcolPopup::update(stringlist *symlist, const char *title)
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
 

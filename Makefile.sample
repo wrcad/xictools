@@ -46,7 +46,35 @@ ITOPOK = --enable-itopok=no
 #
 #32BIT = --enable-force32=yes
 
-# OpenAccess support, Linux only, OS X experimental.
+# Graphics package.  The programs can build with GTK-2, GTK-3, QT-5,
+# and QT-6.  GTK-2 is the production graphics system and is strongly
+# recommended for actual work.  GTK-3 has numerous issues:  primarily
+# the Cairo graphics is not suitable for a program like Xic (or any
+# EDA tool with performance requirements) thus has to be worked
+# around, which is a challenge.  Presently, only X-Windows is
+# supported in GTK-3, using direct X calls.  Native Windows is not
+# supported, and if support is ever provided under GTK-3 for Windows
+# it will require an X server, same for Apple.  It is unlikely that
+# further effort will be directed toward GTK.  QT support is just
+# getting started but will eventually replace GTK.  Most of the
+# dialogs have not been implemented but much of the core functionality
+# is available.  Help implementing the dialogs would be greatly
+# appreciated!
+#
+# This variable must be set, there is no default.  Most of the time it
+# can be set to something like "--enable-gtk2=yes", which should
+# always be true for GTK if the pkg-config utility is working.  If can
+# be set to the directory containing pkg-config for GTK.  Otherwise,
+# the value can be the installation location for QT-5/6.  If the qmake
+# program is in your search path "yes" should work here as well.
+#
+#GFXLOC = --enable-gtk2=/mingw64/bin
+#GFXLOC = --enable-qt5=/opt/local/libexec/qt5
+#GFXLOC = --enable-qt5=/usr/lib64/qt5
+#GFXLOC = --enable-qt5=yes
+GFXLOC = --enable-gtk2=yes
+
+# OpenAccess support, Linux only.
 # If you have an OpenAccess source tree, specify its location in this
 # variable and uncomment.  This enables OpenAccess support in Xic.
 #
@@ -54,10 +82,9 @@ ITOPOK = --enable-itopok=no
 
 # If enabled and set to the installed location of the PyCellStudio
 # from Synopsys, the Python plug-in will link to the Python supplied
-# with PyCellStudio, version 2.6.2 support only at present. 
-# OpenAccess above must point to a version "close to" that provided in
-# PyCellStudio, but we need the source for the include files not
-# provided with PyCellStudio.
+# with PyCellStudio.  OpenAccess above must point to a version "close
+# to" that provided in PyCellStudio, but we need the source for the
+# include files not provided with PyCellStudio.
 #
 #CNILOC = \
 #  --enable-cni=/global/apps/customcompiler_2021.09-2/linux64/PyCellStudio
@@ -68,15 +95,10 @@ ITOPOK = --enable-itopok=no
 #
 #KITLOC = --enable-psf=/home/stevew/cadence/oasis-kit/tools.lnx86
 
-# Windows setup.  This uses the win-builds tool chain and gtk2
-# libraries.  The libraries are packaged into a "gtk2-bundle"
-# distribution, which may be obtained and used.  This must be provided
-# to the user.  Alternatively the user can install and link to the
-# libraries directly.  In any case, these valiables must be given when
-# building under Mingw or similar on Windows.
+# Windows setup.  Currently, the programs are built under the MINGW
+# X64 environment in MSYS2.  Set this to the mingw64 root and uncomment.
 #
-#MINGW  = --enable-mingw=/usr/local/win-builds
-#GTKLOC = --enable-gtk2=/usr/local/gtk2-bundle/bin
+#MINGW  = --enable-mingw=/mingw64
 
 # If you don't want to build all the tools, you can choose what to
 # build below.  The xt_base is required for everything, other
@@ -97,7 +119,7 @@ SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 
 #######################################################################
 CFARGS = $(PREFIX) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) $(OALOC) \
-  $(KITLOC) $(MINGW) $(GTKLOC)
+  $(KITLOC) $(MINGW) $(GFXLOC)
 
 FLAGFILE = .configured
 

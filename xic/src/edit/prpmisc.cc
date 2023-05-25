@@ -119,7 +119,7 @@ cEdit::assignGlobalProperties(CDcbin *cbin)
                     }
                 }
                 else {
-                    sprintf(buf, "grid %d %d", res, snap);
+                    snprintf(buf, sizeof(buf), "grid %d %d", res, snap);
                     if (pdesc)
                         pdesc->set_string(buf);
                     else

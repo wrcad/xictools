@@ -43,66 +43,71 @@
 
 #include <stdint.h>
 
+
 // If defined, include test for use of main class before initialized.
 //#define TIMER_TEST_NULL
 
-inline class cTimer *Timer();
+namespace miscutil {
 
-class cTimer
-{
+    inline class cTimer *Timer();
+
+    class cTimer
+    {
 #ifdef TIMER_TEST_NULL
-    static cTimer *ptr()
-        {
-            if (!instancePtr)
-                on_null_ptr();
-            return (instancePtr);
-        }
-
-    static void on_null_ptr();
-#endif
-
-public:
-#ifdef TIMER_TEST_NULL
-    friend inline cTimer *Timer()       { return (cTimer::ptr()); }
-#else
-    friend inline cTimer *Timer()       { return (instancePtr); }
-#endif
-
-    cTimer();
-    void start(int);
-
-    uint64_t elapsed_msec()             { return (t_elapsed_time); }
-
-    bool check_interval(uint64_t &check_time)
-        {
-            if (t_elapsed_time > check_time) {
-                check_time = t_elapsed_time;
-                return (true);
+        static cTimer *ptr()
+            {
+                if (!instancePtr)
+                    on_null_ptr();
+                return (instancePtr);
             }
-            return (false);
-        }
 
-    void register_callback(void(*cb)()) { t_callback = cb; }
-    static void milli_sleep(int);
+        static void on_null_ptr();
+#endif
 
-private:
+    public:
+#ifdef TIMER_TEST_NULL
+        friend inline cTimer *Timer()       { return (cTimer::ptr()); }
+#else
+        friend inline cTimer *Timer()       { return (instancePtr); }
+#endif
+
+        cTimer();
+        void start(int);
+
+        uint64_t elapsed_msec()             { return (t_elapsed_time); }
+
+        bool check_interval(uint64_t &check_time)
+            {
+                if (t_elapsed_time > check_time) {
+                    check_time = t_elapsed_time;
+                    return (true);
+                }
+                return (false);
+            }
+
+        void register_callback(void(*cb)()) { t_callback = cb; }
+        static void milli_sleep(int);
+
+    private:
 #ifdef WIN32
-    static void timer_thread_cb(void*);
+        static void timer_thread_cb(void*);
 #else
 #ifdef USE_PTHREAD
-    static void *timer_thread_cb(void *);
+        static void *timer_thread_cb(void *);
 #else
-    static void alarm_hdlr(int);
+        static void alarm_hdlr(int);
 #endif
 #endif
 
-    uint64_t t_elapsed_time;
-    void(*t_callback)();
-    int t_period;
-    bool t_started;
+        uint64_t t_elapsed_time;
+        void(*t_callback)();
+        int t_period;
+        bool t_started;
 
-    static cTimer *instancePtr;
-};
+        static cTimer *instancePtr;
+    };
+}
+using namespace miscutil;
 
 #endif
 

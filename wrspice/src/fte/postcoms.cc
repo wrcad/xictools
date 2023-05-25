@@ -96,7 +96,7 @@ namespace {
     {
         if (!format || !*format)
             return (SPnum.printnum(num));
-        sprintf(buf, format, num);
+        snprintf(buf, 64, format, num);
         return (buf);
     }
 
@@ -110,11 +110,11 @@ namespace {
             strcpy(e, SPnum.printnum(im));
         }
         else {
-            sprintf(buf, format, re);
+            snprintf(buf, 64, format, re);
             char *e = buf + strlen(buf);
             *e++ = ',';
             *e++ = ' ';
-            sprintf(e, format, im);
+            snprintf(e, 64 - (e-buf), format, im);
         }
         return (buf);
     }
@@ -191,7 +191,7 @@ namespace {
                 if (!fc)
                     fc = 'e';
                 // Width must be less than 2 tabs!
-                sprintf(fmt_buf, "%%-15.%d%c", n, fc);
+                snprintf(fmt_buf, sizeof(fmt_buf), "%%-15.%d%c", n, fc);
                 format = fmt_buf;
             }
         }
@@ -207,7 +207,7 @@ namespace {
             sDataVec *v = dl->dl_dvec;
             char *s = v->basename();
             if (plotnames)
-                sprintf(buf, "%s.%s", v->plot()->type_name(), s);
+                snprintf(buf, sizeof(buf), "%s.%s", v->plot()->type_name(), s);
             else
                 strcpy(buf, s);
             delete [] s;
@@ -222,7 +222,7 @@ namespace {
                 if (v->isreal()) {
                     const char *bb = b;
                     double *d = SPnum.parse(&bb, false);
-                    sprintf(buf, "%s", 
+                    snprintf(buf, sizeof(buf), "%s", 
                         format ? numprint(v->realval(0), format, buf2) :
                         SPnum.printnum(v->realval(0), v->units(), false));
                     if (strcmp(b, buf) && (!d || *d != v->realval(0)))
@@ -231,7 +231,7 @@ namespace {
                         TTY.printf("%s\n", buf);
                 }
                 else {
-                    sprintf(buf, "%s,%s", 
+                    snprintf(buf, sizeof(buf), "%s,%s", 
                         format ? numprint(v->realval(0), format, buf2) :
                         SPnum.printnum(v->realval(0), "", false),
                         format ? numprint(v->imagval(0), format, buf2) :
@@ -399,7 +399,7 @@ namespace {
                 if (!fc)
                     fc = 'e';
                 // Width must be less than 2 tabs!
-                sprintf(fmt_buf, "%%.%d%c", ndgt, fc);
+                snprintf(fmt_buf, sizeof(fmt_buf), "%%.%d%c", ndgt, fc);
                 format = fmt_buf;
             }
         }
@@ -508,9 +508,11 @@ namespace {
                     sDataVec *v = tl->dl_dvec;
                     int fw = colwid((xl.dl_dvec == v), fc == 'f', ndgt);
                     if (v->isreal())
-                        sprintf(buf2, "%-*s", fw+2, v->name());
-                    else
-                        sprintf(buf2, "%-*s", fw+fw+4, v->name());
+                        snprintf(buf2, sizeof(buf2), "%-*s", fw+2, v->name());
+                    else {
+                        snprintf(buf2, sizeof(buf2), "%-*s", fw+fw+4,
+                            v->name());
+                    }
                     e = lstring::stpcpy(e, buf2);   
                 }
                 *e++ = '\n';
@@ -622,7 +624,7 @@ CommandTab::com_print(wordlist *wl)
 
     if (!wl) {
         if (!wlast) {
-            GRpkgIf()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
+            GRpkg::self()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
             return;
         }
         wl = wlast;
@@ -630,7 +632,7 @@ CommandTab::com_print(wordlist *wl)
     else if (!wl->wl_next && *wl->wl_word == '/') {
         // Nothing but a format.  Get the vectors from wlast.
         if (!wlast) {
-            GRpkgIf()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
+            GRpkg::self()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
             return;
         }
         if (*wlast->wl_word == '/') {
@@ -652,7 +654,7 @@ CommandTab::com_print(wordlist *wl)
             if (lstring::eq(ww->wl_word, ".")) {
                 wordlist *wx = Sp.ExtractPrintCmd(0);
                 if (!wx) {
-                    GRpkgIf()->ErrPrintf(ET_ERRORS,
+                    GRpkg::self()->ErrPrintf(ET_ERRORS,
                         "no vectors found for '.'.\n");
                     return;
                 }
@@ -668,7 +670,7 @@ CommandTab::com_print(wordlist *wl)
                 int n = atoi(ww->wl_word + 2);
                 wordlist *wx = Sp.ExtractPrintCmd(n ? n-1 : n);
                 if (!wx) {
-                    GRpkgIf()->ErrPrintf(ET_ERRORS,
+                    GRpkg::self()->ErrPrintf(ET_ERRORS,
                         "no vectors found for '.@%d'.\n", n);
                     return;
                 }
@@ -800,7 +802,8 @@ CommandTab::com_write(wordlist *wl)
     if (!wl) {
         // just dump the current plot
         if (OP.curPlot()->num_perm_vecs() == 0) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "plot is empty, nothing written.\n");
+            GRpkg::self()->ErrPrintf(ET_WARN,
+                "plot is empty, nothing written.\n");
             return;
         }
         do_write(file, OP.curPlot(), appendwrite);
@@ -945,7 +948,7 @@ sPlot::write(sDvList *dl0, bool appendwrite, const char *file)
     }
 
     if (sHtab::empty(newplot.pl_hashtab))
-        GRpkgIf()->ErrPrintf(ET_WARN, "plot is empty, nothing written.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "plot is empty, nothing written.\n");
     else
         do_write(file, &newplot, appendwrite);
 
@@ -1008,7 +1011,7 @@ void
 CommandTab::com_dumpnodes(wordlist*)
 {
     if (!Sp.CurCircuit() || !Sp.CurCircuit()->runckt()) {
-        GRpkgIf()->ErrPrintf(ET_ERRORS, "no current circuit nodes.\n");
+        GRpkg::self()->ErrPrintf(ET_ERRORS, "no current circuit nodes.\n");
         return;
     }
     sCKTnodeVal *nvs;
@@ -1036,7 +1039,7 @@ void
 CommandTab::com_dumpopts(wordlist*)
 {
     if (!Sp.CurCircuit()) {
-        GRpkgIf()->ErrPrintf(ET_ERRORS, "no current circuit.\n");
+        GRpkg::self()->ErrPrintf(ET_ERRORS, "no current circuit.\n");
         return;
     }
     if (Sp.CurCircuit()->runckt())

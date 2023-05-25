@@ -240,7 +240,7 @@ pnlist *
 IFsimulator::GetPtree(wordlist *wl, bool check)
 {
     if (!wl) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "null arithmetic expression.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "null arithmetic expression.\n");
         return (0);
     }
     sCKT *ckt = ft_curckt ? ft_curckt->runckt() : 0;
@@ -264,9 +264,10 @@ IFsimulator::GetPtree(wordlist *wl, bool check)
                         plend->set_next(pl);
                     }
                 }
-                else
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n",
-                        xsbuf);
+                else {
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "evaluation failed: %s.\n", xsbuf);
+                }
                 delete [] xsbuf;
                 xsbuf = 0;
             }
@@ -290,9 +291,10 @@ IFsimulator::GetPtree(wordlist *wl, bool check)
                     plend->set_next(pl);
                 }
             }
-            else
-                GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n",
+            else {
+                GRpkg::self()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n",
                     xsbuf);
+            }
             delete [] xsbuf;
             xsbuf = 0;
         }
@@ -331,8 +333,10 @@ IFsimulator::GetPtree(wordlist *wl, bool check)
                 plend->set_next(pl);
             }
         }
-        else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n", xsbuf);
+        else {
+            GRpkg::self()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n",
+                xsbuf);
+        }
         delete [] xsbuf;
         xsbuf = 0;
     }
@@ -366,7 +370,7 @@ IFsimulator::GetPtree(const char *xsbuf, bool check)
         if (!p) {
             // parse error
             const char *errmsg = P.getErrMesg();
-            GRpkgIf()->ErrPrintf(ET_ERROR, "parser returned error: %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "parser returned error: %s.\n",
                 errmsg);
             return (0);
         }
@@ -537,13 +541,14 @@ spElement::makeBnode(pnode *arg1, pnode *arg2, void*)
             break;
     }
     if (!o->name()) {
-        GRpkgIf()->ErrPrintf(ET_INTERR, "makeBnode: no such op num %d.\n",
+        GRpkg::self()->ErrPrintf(ET_INTERR, "makeBnode: no such op num %d.\n",
             token);
         return (0);
     }
     if (token == TT_COND) {
         if (!arg2 || !arg2->oper() || arg2->oper()->optype() != TT_COLON) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "'?' conditional syntax error.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "'?' conditional syntax error.\n");
             return (0);
         }
     }
@@ -562,7 +567,7 @@ spElement::makeUnode(pnode *arg, void*)
     else if (token == TT_NOT)
         p = new pnode(ft_uops+1, arg);
     else {
-        GRpkgIf()->ErrPrintf(ET_INTERR, "makeUnode: no such op num %d.\n",
+        GRpkg::self()->ErrPrintf(ET_INTERR, "makeUnode: no such op num %d.\n",
             token);
         return (0);
     }
@@ -670,7 +675,7 @@ spElement::makeFnode(pnode *arg, void*)
     }
 
     // Well, too bad
-    GRpkgIf()->ErrPrintf(ET_ERROR, "unknown function %s.\n", string);
+    GRpkg::self()->ErrPrintf(ET_ERROR, "unknown function %s.\n", string);
     delete [] string;
     return (0);
 }
@@ -680,7 +685,7 @@ namespace {
     char *printG(double d)
     {
         char buf[64];
-        sprintf(buf, "%G", d);
+        snprintf(buf, sizeof(buf), "%G", d);
         return (lstring::copy(buf));
     }
 }
@@ -744,9 +749,10 @@ pnode::checkvalid() const
             sCKT *ckt = Sp.CurCircuit() ? Sp.CurCircuit()->runckt() : 0;
             sDataVec *d = OP.vecGet(pn_string, ckt);
             if (!d || (d->length() == 0 && !lstring::eq(d->name(), "list"))) {
-                if (lstring::eq(pn_string, "all"))
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                if (lstring::eq(pn_string, "all")) {
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "no matching vectors.\n", pn_string);
+                }
                 else
                     Sp.Error(E_NOVEC, 0, pn_string);
                 return (false);
@@ -764,7 +770,7 @@ pnode::checkvalid() const
             return (false);
     }
     else {
-        GRpkgIf()->ErrPrintf(ET_INTERR, "checkvalid: bad node.\n");
+        GRpkg::self()->ErrPrintf(ET_INTERR, "checkvalid: bad node.\n");
         return (false);
     }
     return (true);
@@ -1411,7 +1417,7 @@ pnode::copy(const char *args, const pnode *nn) const
         return (new pnode(pn_op, pn_left->copy(args, nn),
             (pn_op->argc() == 2 ? pn_right->copy(args, nn) : 0)));
 
-    GRpkgIf()->ErrPrintf(ET_INTERR, "copy: bad parse node.\n");
+    GRpkg::self()->ErrPrintf(ET_INTERR, "copy: bad parse node.\n");
     return (0);
 }
 

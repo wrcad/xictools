@@ -61,9 +61,9 @@ namespace {
     void
     start_modal(GtkWidget *w)
     {
-        gtkMenu()->SetSensGlobal(false);
-        gtkMenu()->SetModal(w);
-        dspPkgIf()->SetOverrideBusy(true);
+        GTKmenu::self()->SetSensGlobal(false);
+        GTKmenu::self()->SetModal(w);
+        GTKpkg::self()->SetOverrideBusy(true);
         DSPmainDraw(ShowGhost(ERASE))
     }
 
@@ -71,9 +71,9 @@ namespace {
     void
     end_modal()
     {
-        gtkMenu()->SetModal(0);
-        gtkMenu()->SetSensGlobal(true);
-        dspPkgIf()->SetOverrideBusy(false);
+        GTKmenu::self()->SetModal(0);
+        GTKmenu::self()->SetSensGlobal(true);
+        GTKpkg::self()->SetOverrideBusy(false);
         DSPmainDraw(ShowGhost(DISPLAY))
     }
 
@@ -153,7 +153,7 @@ PMretType sSC::sc_retval;
 PMretType
 cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return (PMok);
     if (SC)
         return (PMok);
@@ -172,11 +172,12 @@ cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
     gtk_window_set_transient_for(GTK_WINDOW(SC->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), SC->Shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), SC->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(SC->Shell());
 
     start_modal(SC->Shell());
-    GRX->MainLoop();  // wait for user's response
+    GTKdev::self()->MainLoop();  // wait for user's response
     end_modal();
 
     return (sSC::retval());
@@ -209,9 +210,10 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
 
             itm->name = lstring::copy(l->string);
             if (cbin.fileType() == Fnative && cbin.fileName()) {
-                itm->path = new char[strlen(cbin.fileName()) +
-                    strlen(Tstring(cbin.cellname())) + 2];
-                sprintf(itm->path, "%s/%s", cbin.fileName(),
+                int len = strlen(cbin.fileName()) +
+                    strlen(Tstring(cbin.cellname())) + 2;
+                itm->path = new char[len];
+                snprintf(itm->path, len, "%s/%s", cbin.fileName(),
                     Tstring(cbin.cellname()));
             }
             else if (FIO()->IsSupportedArchiveFormat(cbin.fileType()))
@@ -392,16 +394,16 @@ sSC::refresh()
         double val = text_get_scroll_value(wb_textarea);
         text_set_chars(wb_textarea, "");
         for (s_item *s = sc_list; s->name; s++) {
-            sprintf(buf, "%-*s  ", sc_field, s->name);
+            snprintf(buf, sizeof(buf), "%-*s  ", sc_field, s->name);
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
-            sprintf(buf, "%-3s  ", s->save ? "yes" : "no");
+            snprintf(buf, sizeof(buf), "%-3s  ", s->save ? "yes" : "no");
             text_insert_chars_at_point(wb_textarea, s->save ? yc : nc, buf,
                 -1, -1);
-            sprintf(buf, "%c ", *s->ft);
+            snprintf(buf, sizeof(buf), "%c ", *s->ft);
             text_insert_chars_at_point(wb_textarea,
                 *buf == 'X' || *buf == 'A' || *buf == 'P' ? c1 : c2,
                 buf, -1, -1);
-            sprintf(buf, "%s\n", s->path);
+            snprintf(buf, sizeof(buf), "%s\n", s->path);
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
         }
         text_set_scroll_value(wb_textarea, val);
@@ -436,8 +438,8 @@ sSC::sc_cancel_proc(GtkWidget*, void *arg)
                 SC->sc_saveproc = 0;
             }
         }
-        if (GRX->LoopLevel() > 1)
-            GRX->BreakLoop();
+        if (GTKdev::self()->LoopLevel() > 1)
+            GTKdev::self()->BreakLoop();
         delete SC;
     }
 }

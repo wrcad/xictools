@@ -51,6 +51,8 @@
 #include "qtinterf/qtinterf.h"
 #include <QWidget>
 
+class QEnterEvent;
+
 // String storage registers, 0 is "last", 1-5 are general.
 #define PE_NUMSTORES 6
 
@@ -80,22 +82,8 @@ public:
     void init_selection(bool);
     void warp_pointer();
 
-    QWidget *container()    { return (pe_container); }
     cKeys *keys()           { return (pe_keys); }
     int xpos()              { return (pe_colmin*pe_fntwid); }
-
-    /*
-    // virtual overrides
-    int hyWidth(bool = false);
-    void hySetFocus();
-    void hySetIndicate();
-    void hyShowLbutton(bool);
-    void hyGetSelection();
-    void *hySetupBacking(bool);
-    void hyRestoreBacking(void*);
-    void hyInitWindow();
-    void hyCheckPixmap();
-    */
 
     static QTedit *self()
     {
@@ -106,12 +94,24 @@ public:
 
 private slots:
     void font_changed(int);
+    void recall_menu_slot(QAction*);
+    void store_menu_slot(QAction*);
+    void long_text_slot();
+    void resize_slot(QResizeEvent*);
+    void press_slot(QMouseEvent*);
+    void enter_slot(QEnterEvent*);
+    void leave_slot(QEvent*);
+    void drag_enter_slot(QDragEnterEvent*);
+    void drop_slot(QDropEvent*);
+    void keys_press_slot(QMouseEvent*);
 
 private:
     static void on_null_ptr();
 
-    QWidget *pe_container;
     cKeys *pe_keys;
+    QPushButton *pe_rcl_btn;
+    QPushButton *pe_sto_btn;
+    QPushButton *pe_ltx_btn;
 
     static hyList *pe_stores[PE_NUMSTORES]; // Editor text string registers.
     static QTedit *instancePtr;

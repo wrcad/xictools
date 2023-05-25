@@ -322,12 +322,10 @@ cFIO::ListToNative(CDol *olist, const char *xic_fname)
         nogo = true;
     }
     if (!nogo) {
-        int lindex = 0;
         CDlgen lgen(FIO()->ifCurrentDisplayMode(), CDlgen::BotToTopWithCells);
         CDl *ld;
         while ((ld = lgen.next()) != 0 && !nogo) {
             ld->setTmpSkip(false);
-            lindex++;
 
             cvLchk lchk = cvLneedCheck;
             for (CDol *o = olist; o; o = o->next) {
@@ -417,12 +415,10 @@ cFIO::TabToNative(SymTab *tab, const char *xic_fname)
         nogo = true;
     }
     if (!nogo) {
-        int lindex = 0;
         CDlgen lgen(Physical);
         CDl *ld;
         while ((ld = lgen.next()) != 0 && !nogo) {
             ld->setTmpSkip(false);
-            lindex++;
 
             CDol *ol0 = (CDol*)SymTab::get(tab, (uintptr_t)ld);
             if (ol0 == (CDol*)ST_NIL)
@@ -1126,7 +1122,7 @@ xic_out::write_info(Attribute *at, const char *propfile)
     //
     char buf[256];
     if (out_destdir)
-        sprintf(buf, "%s/%s", out_destdir, propfile);
+        snprintf(buf, sizeof(buf), "%s/%s", out_destdir, propfile);
     else
         strcpy(buf, propfile);
     if (!filestat::create_bak(buf)) {
@@ -1181,7 +1177,7 @@ void
 xic_out::write_dummy(const char *cellname, DisplayMode mode)
 {
     char tbuf[256];
-    sprintf(tbuf, "Symbol %s", cellname);
+    snprintf(tbuf, sizeof(tbuf), "Symbol %s", cellname);
     Gen.Comment(out_symfp, tbuf);
     if (out_infilename) {
         time_t now = time(0);
@@ -1190,12 +1186,13 @@ xic_out::write_dummy(const char *cellname, DisplayMode mode)
         char *s = strchr(gm, '\n');
         if (s)
             *s = 0;
-        sprintf(tbuf, "Translated from %s, %.24s GMT", out_infilename, gm);
+        snprintf(tbuf, sizeof(tbuf), "Translated from %s, %.24s GMT",
+            out_infilename, gm);
         delete [] gm;
         Gen.Comment(out_symfp, tbuf);
     }
     if (mode == Physical) {
-        sprintf(tbuf, "%cId:%c", '$', '$');
+        snprintf(tbuf, sizeof(tbuf), "%cId:%c", '$', '$');
         Gen.Comment(out_symfp, tbuf);
         Gen.Comment(out_symfp, "PHYSICAL");
     }
@@ -1366,7 +1363,7 @@ xic_out::fopen_tof(const char *name, const char *mode)
 
     char buf[512];
     if (out_destdir)
-        sprintf(buf, "%s/%s", out_destdir, name);
+        snprintf(buf, sizeof(buf), "%s/%s", out_destdir, name);
     else if (out_destpath)
         strcpy(buf, out_destpath);
     else

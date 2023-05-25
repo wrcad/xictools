@@ -39,9 +39,9 @@
  *========================================================================*/
 
 #include "qtdraw.h"
-#include "draw_qt_w.h"
+#include "qtcanvas.h"
 #ifdef WITH_X11
-#include "draw_x_w.h"
+#include "qtcanvas_x.h"
 #endif
 
 #include <QApplication>
@@ -66,7 +66,7 @@ draw_if::new_draw_interface(DrawType type, bool use_common, QWidget *parent)
         type = DrawNative;
 #endif
     }
-    return (new draw_qt_w(use_common, parent));
+    return (new QTcanvas(use_common, parent));
 }
 
 
@@ -257,10 +257,12 @@ QTdraw::MovePointer(int x, int y, bool absolute)
 void
 QTdraw::QueryPointer(int *x, int *y, unsigned *state)
 {
+    QPoint ptg(QCursor::pos());
+    QPoint ptw = Viewport()->mapFromGlobal(ptg);
     if (x)
-        *x = QCursor::pos().x();
+        *x = ptw.x();
     if (y)
-        *y = QCursor::pos().y();
+        *y = ptw.y();
     if (state) {
         *state = 0;
         int st = QApplication::keyboardModifiers();

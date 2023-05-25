@@ -3092,7 +3092,7 @@ geom2_funcs::IFsides(Variable *res, Variable *args, void*)
                 CDvdb()->clearVariable(VA_ElecRoundFlashSides);
             else {
                 char buf[32];
-                sprintf(buf, "%d", sides);
+                snprintf(buf, sizeof(buf), "%d", sides);
                 CDvdb()->setVariable(VA_ElecRoundFlashSides, buf);
             }
         }
@@ -3101,7 +3101,7 @@ geom2_funcs::IFsides(Variable *res, Variable *args, void*)
                 CDvdb()->clearVariable(VA_RoundFlashSides);
             else {
                 char buf[32];
-                sprintf(buf, "%d", sides);
+                snprintf(buf, sizeof(buf), "%d", sides);
                 CDvdb()->setVariable(VA_RoundFlashSides, buf);
             }
         }

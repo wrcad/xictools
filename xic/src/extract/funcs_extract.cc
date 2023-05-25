@@ -52,6 +52,7 @@
 #include "sced.h"
 #include "dsp_layer.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 #include "geo_zgroup.h"
 #include "si_parsenode.h"
 // regex.h must come before si_handle.h to enable regex handle.
@@ -864,7 +865,7 @@ extract_funcs::IFdumpPhysNetlist(Variable *res, Variable *args, void*)
         }
     }
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
     if (!fnset)
         delete [] fname;
     delete opts;
@@ -962,7 +963,7 @@ extract_funcs::IFdumpElecNetlist(Variable *res, Variable *args, void*)
         }
     }
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
     if (!fnset)
         delete [] fname;
     delete opts;
@@ -4734,7 +4735,7 @@ extract_funcs::IFsetEdevProperty(Variable *res, Variable *args, void*)
         return (BAD);
     res->type = TYP_SCALAR;
     char buf[128];
-    sprintf(buf, "%s.%s", dname, prpty);
+    snprintf(buf, sizeof(buf), "%s.%s", dname, prpty);
     res->content.value = SCD()->setDevicePrpty(buf, string);
     return (OK);
 }
@@ -4764,7 +4765,7 @@ extract_funcs::IFgetEdevProperty(Variable *res, Variable *args, void*)
         return (BAD);
     res->type = TYP_STRING;
     char buf[128];
-    sprintf(buf, "%s.%s", dname, prpty);
+    snprintf(buf, sizeof(buf), "%s.%s", dname, prpty);
     res->content.string = SCD()->getDevicePrpty(buf);
     if (res->content.string)
         res->flags |= VF_ORIGINAL;

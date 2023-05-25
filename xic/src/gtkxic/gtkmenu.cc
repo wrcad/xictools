@@ -77,7 +77,7 @@ GTKmenu::InitMainMenu(GtkWidget *window)
     gtk_window_add_accel_group(GTK_WINDOW(window), accelGroup);
     mainMenu = gtk_menu_bar_new();
     gtk_widget_show(mainMenu);
-    gtkCfg()->instantiateMainMenus();
+    GTKmenuConfig::self()->instantiateMainMenus();
 }
 
 
@@ -86,7 +86,7 @@ GTKmenu::InitMainMenu(GtkWidget *window)
 void
 GTKmenu::InitTopButtonMenu()
 {
-    gtkCfg()->instantiateTopButtonMenu();
+    GTKmenuConfig::self()->instantiateTopButtonMenu();
 
     // Top horizontal buttons.
     MenuBox *btn_menu = GetMiscMenu();
@@ -116,7 +116,7 @@ GTKmenu::InitTopButtonMenu()
 void
 GTKmenu::InitSideButtonMenus(bool horiz_buttons)
 {
-    gtkCfg()->instantiateSideButtonMenus();
+    GTKmenuConfig::self()->instantiateSideButtonMenus();
 
     // Physical vertical buttons
     MenuBox *pbtn_menu = GetPhysButtonMenu();
@@ -175,7 +175,7 @@ GTKmenu::InitSideButtonMenus(bool horiz_buttons)
 
 
 //
-// Virtual function overrides
+// Virtual function overrides.
 //
 
 // Set the sensitivity of all menus.
@@ -184,9 +184,9 @@ void
 GTKmenu::SetSensGlobal(bool sens)
 {
     mm_insensitive = !sens;
-    gtkCfg()->set_main_global_sens(sens);
+    GTKmenuConfig::self()->set_main_global_sens(sens);
     if (sens)
-        dspPkgIf()->CheckForInterrupt();
+        GTKpkg::self()->CheckForInterrupt();
 }
 
 
@@ -195,8 +195,8 @@ GTKmenu::SetSensGlobal(bool sens)
 void
 GTKmenu::Deselect(GRobject obj)
 {
-    if (GRX)
-        GRX->Deselect(obj);
+    if (GTKdev::exists())
+        GTKdev::Deselect(obj);
 }
 
 
@@ -205,8 +205,8 @@ GTKmenu::Deselect(GRobject obj)
 void
 GTKmenu::Select(GRobject obj)
 {
-    if (GRX)
-        GRX->Select(obj);
+    if (GTKdev::exists())
+        GTKdev::Select(obj);
 }
 
 
@@ -215,9 +215,9 @@ GTKmenu::Select(GRobject obj)
 bool
 GTKmenu::GetStatus(GRobject obj)
 {
-    if (!GRX)
+    if (!GTKdev::exists())
         return (false);
-    return (GRX->GetStatus(obj));
+    return (GTKdev::GetStatus(obj));
 }
 
 
@@ -226,8 +226,8 @@ GTKmenu::GetStatus(GRobject obj)
 void
 GTKmenu::SetStatus(GRobject obj, bool state)
 {
-    if (GRX)
-        GRX->SetStatus(obj, state);
+    if (GTKdev::exists())
+        GTKdev::SetStatus(obj, state);
 }
 
 
@@ -236,8 +236,8 @@ GTKmenu::SetStatus(GRobject obj, bool state)
 void
 GTKmenu::CallCallback(GRobject obj)
 {
-    if (GRX)
-        GRX->CallCallback(obj);
+    if (GTKdev::exists())
+        GTKdev::CallCallback(obj);
 }
 
 
@@ -245,13 +245,13 @@ GTKmenu::CallCallback(GRobject obj)
 // object.
 //
 void
-GTKmenu::Location(GRobject obj, int *x, int *y)
+GTKmenu::Location(GRobject obj, int *xx, int *yy)
 {
-    if (GRX)
-        GRX->Location(obj, x, y);
+    if (GTKdev::exists())
+        GTKdev::self()->Location(obj, xx, yy);
     else {
-        *x = 0;
-        *y = 0;
+        *xx = 0;
+        *yy = 0;
     }
 }
 
@@ -259,13 +259,13 @@ GTKmenu::Location(GRobject obj, int *x, int *y)
 // Return screen coordinates of pointer.
 //
 void
-GTKmenu::PointerRootLoc(int *x, int *y)
+GTKmenu::PointerRootLoc(int *xx, int *yy)
 {
-    if (GRX)
-        GRX->PointerRootLoc(x, y);
+    if (GTKdev::exists())
+        GTKdev::PointerRootLoc(xx, yy);
     else {
-        *x = 0;
-        *y = 0;
+        *xx = 0;
+        *yy = 0;
     }
 }
 
@@ -275,7 +275,9 @@ GTKmenu::PointerRootLoc(int *x, int *y)
 const char *
 GTKmenu::GetLabel(GRobject obj)
 {
-    return (GRX ? GRX->GetLabel(obj) : "");
+    if (!GTKdev::exists())
+        return ("");
+    return (GTKdev::GetLabel(obj));
 }
 
 
@@ -284,8 +286,8 @@ GTKmenu::GetLabel(GRobject obj)
 void
 GTKmenu::SetLabel(GRobject obj, const char *text)
 {
-    if (GRX)
-        GRX->SetLabel(obj, text);
+    if (GTKdev::exists())
+        GTKdev::SetLabel(obj, text);
 }
 
 
@@ -294,8 +296,8 @@ GTKmenu::SetLabel(GRobject obj, const char *text)
 void
 GTKmenu::SetSensitive(GRobject obj, bool sens_state)
 {
-    if (GRX)
-        GRX->SetSensitive(obj, sens_state);
+    if (GTKdev::exists())
+        GTKdev::SetSensitive(obj, sens_state);
 }
 
 
@@ -304,9 +306,9 @@ GTKmenu::SetSensitive(GRobject obj, bool sens_state)
 bool
 GTKmenu::IsSensitive(GRobject obj)
 {
-    if (!GRX)
+    if (!GTKdev::exists())
         return (false);
-    return (GRX->IsSensitive(obj));
+    return (GTKdev::IsSensitive(obj));
 }
 
 
@@ -315,8 +317,8 @@ GTKmenu::IsSensitive(GRobject obj)
 void
 GTKmenu::SetVisible(GRobject obj, bool vis_state)
 {
-    if (GRX)
-        GRX->SetVisible(obj, vis_state);
+    if (GTKdev::exists())
+        GTKdev::SetVisible(obj, vis_state);
 }
 
 
@@ -325,17 +327,17 @@ GTKmenu::SetVisible(GRobject obj, bool vis_state)
 bool
 GTKmenu::IsVisible(GRobject obj)
 {
-    if (!GRX)
+    if (!GTKdev::exists())
         return (false);
-    return (GRX->IsVisible(obj));
+    return (GTKdev::IsVisible(obj));
 }
 
 
 void
 GTKmenu::DestroyButton(GRobject obj)
 {
-    if (GRX)
-        GRX->DestroyButton(obj);
+    if (GTKdev::exists())
+        GTKdev::DestroyButton(obj);
 }
 
 
@@ -344,7 +346,7 @@ GTKmenu::DestroyButton(GRobject obj)
 void
 GTKmenu::SwitchMenu()
 {
-    gtkCfg()->switch_menu_mode(DSP()->CurMode(), 0);
+    GTKmenuConfig::self()->switch_menu_mode(DSP()->CurMode(), 0);
 }
 
 
@@ -354,7 +356,7 @@ void
 GTKmenu::SwitchSubwMenu(int wnum, DisplayMode mode)
 {
     if (wnum > 0)
-        gtkCfg()->switch_menu_mode(mode, wnum);
+        GTKmenuConfig::self()->switch_menu_mode(mode, wnum);
 }
 
 
@@ -378,7 +380,7 @@ GTKmenu::NewSubwMenu(int wnum)
     gtk_window_add_accel_group(GTK_WINDOW(w->Shell()), accel_group);
     GtkWidget *menubar = gtk_menu_bar_new();
     gtk_widget_show(menubar);
-    gtkCfg()->instantiateSubwMenus(wnum, menubar, accel_group);
+    GTKmenuConfig::self()->instantiateSubwMenus(wnum, menubar, accel_group);
 
     return (menubar);
 }
@@ -514,7 +516,7 @@ GTKmenu::NewDDmenu(GRobject button, const char *const *list)
 void
 GTKmenu::UpdateUserMenu()
 {
-    gtkCfg()->updateDynamicMenus();
+    GTKmenuConfig::self()->updateDynamicMenus();
 }
 
 
@@ -596,6 +598,7 @@ GTKmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
     }
 #endif
 }
+// End of virtual function overrides.
 
 
 // Static function.

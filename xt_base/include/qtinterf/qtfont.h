@@ -182,6 +182,8 @@ namespace qtinterf
         QPushButton *quit;
         QComboBox *menu;
         QFontDatabase *fdb;
+
+        static QTfontPopup *activeFontSels[4];
     };
 }
 

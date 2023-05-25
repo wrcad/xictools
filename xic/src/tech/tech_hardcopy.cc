@@ -43,6 +43,7 @@
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 #include "cd_lgen.h"
 #include "tech.h"
 #include "tech_kwords.h"
@@ -96,7 +97,7 @@ cTech::ParseHardcopy(FILE *techfp)
         // Set the default hardcopy driver, both physical and
         // electrical modes.
         //
-        int i = GRpkgIf()->FindHCindex(tc_inbuf);
+        int i = DSPpkg::self()->FindHCindex(tc_inbuf);
         if (i >= 0) {
             tc_hccb.drvrmask &= ~(1 << i);  // enable driver
             tc_phys_hc_format = i;
@@ -109,7 +110,7 @@ cTech::ParseHardcopy(FILE *techfp)
         // Set the default hardcopy driver used in electrical
         // mode.
         //
-        int i = GRpkgIf()->FindHCindex(tc_inbuf);
+        int i = DSPpkg::self()->FindHCindex(tc_inbuf);
         if (i >= 0) {
             tc_hccb.drvrmask &= ~(1 << i);  // enable driver
             tc_elec_hc_format = i;
@@ -121,7 +122,7 @@ cTech::ParseHardcopy(FILE *techfp)
         // Set the default hardcopy driver used in physical
         // mode.
         //
-        int i = GRpkgIf()->FindHCindex(tc_inbuf);
+        int i = DSPpkg::self()->FindHCindex(tc_inbuf);
         if (i >= 0) {
             tc_hccb.drvrmask &= ~(1 << i);  // enable driver
             tc_phys_hc_format = i;
@@ -182,7 +183,7 @@ cTech::read_driver(FILE *techfp)
         ac = 0;
         la = 0;
 
-        int i = GRpkgIf()->FindHCindex(drvr);
+        int i = DSPpkg::self()->FindHCindex(drvr);
         if (i >= 0) {
             curdrvr = i;
             if (disable && (lstring::cieq(disable, "off") ||
@@ -194,8 +195,8 @@ cTech::read_driver(FILE *techfp)
             ac = GetAttrContext(curdrvr, true);
         }
         else {
-            if (GRpkgIf()->MainDev() &&
-                    GRpkgIf()->MainDev()->ident != _devNULL_) {
+            if (DSPpkg::self()->MainDev() &&
+                    DSPpkg::self()->MainDev()->ident != _devNULL_) {
                 // Don't whine about drivers in non-graphics mode.
                 if (drvr
 #ifndef WIN32
@@ -273,7 +274,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         while (isspace(*ip))
             ip++;
         if (curdrvr >= 0) {
-            HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+            HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
             if (hcdesc)
                 hcdesc->defaults.command = lstring::copy(ip);
         }
@@ -281,7 +282,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
     }
     if (Matching(Tkw.HardCopyResol())) {
         if (curdrvr >= 0) {
-            HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+            HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
             if (hcdesc && !(hcdesc->limits.flags & HCfixedResol)) {
                 const char *ip = tc_inbuf;
                 int i;
@@ -306,7 +307,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
     }
     if (Matching(Tkw.HardCopyDefResol())) {
         if (curdrvr >= 0) {
-            HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+            HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
             if (hcdesc && !(hcdesc->limits.flags & HCfixedResol)) {
                 int i = GetInt(tc_inbuf);
                 if (i < 0)
@@ -318,7 +319,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
     }
     if (Matching(Tkw.HardCopyLegend())) {
         if (curdrvr >= 0) {
-            HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+            HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
             if (hcdesc) {
                 int i = GetInt(tc_inbuf);
                 if (i < 0 || i > 2)
@@ -330,7 +331,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
     }
     if (Matching(Tkw.HardCopyOrient())) {
         if (curdrvr >= 0) {
-            HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+            HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
             if (hcdesc) {
                 int i = GetInt(tc_inbuf);
                 if (i < 0 || i > 2)
@@ -344,7 +345,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->defaults.defwidth = d;
             }
@@ -359,7 +360,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->defaults.defheight = d;
             }
@@ -374,7 +375,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->defaults.defxoff = d;
             }
@@ -389,7 +390,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->defaults.defyoff = d;
             }
@@ -404,7 +405,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->limits.minwidth = d;
             }
@@ -419,7 +420,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->limits.minheight = d;
             }
@@ -434,7 +435,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->limits.minxoff = d;
             }
@@ -449,7 +450,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->limits.minyoff = d;
             }
@@ -464,7 +465,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->limits.maxwidth = d;
             }
@@ -479,7 +480,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->limits.maxheight = d;
             }
@@ -494,7 +495,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->limits.maxxoff = d;
             }
@@ -509,7 +510,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
         if (curdrvr >= 0) {
             double d;
             if (get_float(tc_inbuf, &d)) {
-                HCdesc *hcdesc = GRpkgIf()->HCof(curdrvr);
+                HCdesc *hcdesc = DSPpkg::self()->HCof(curdrvr);
                 if (hcdesc)
                     hcdesc->limits.maxyoff = d;
             }
@@ -577,7 +578,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
     if (Matching(Tkw.HpglFilled())) {
         // HP-GL fill specification for layer.
         if (curdrvr >= 0) {
-            if (curdrvr != GRpkgIf()->FindHCindex("hpgl")) {
+            if (curdrvr != DSPpkg::self()->FindHCindex("hpgl")) {
                 return (SaveError(
                     "Keyword %s misplaced, applicable only to HPGL driver.",
                      Tkw.HpglFilled()));
@@ -606,7 +607,7 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
     }
     if (Matching(Tkw.XfigFilled())) {
         if (curdrvr > 0) {
-            if (curdrvr != GRpkgIf()->FindHCindex("xfig")) {
+            if (curdrvr != DSPpkg::self()->FindHCindex("xfig")) {
                 return (SaveError(
                     "Keyword %s misplaced, applicable only to Xfig driver.",
                     Tkw.XfigFilled()));
@@ -642,7 +643,7 @@ void
 cTech::PrintHardcopy(FILE *techfp)
 {
     if (tc_phys_hc_format == tc_elec_hc_format) {
-        HCdesc *hcdesc = GRpkgIf()->HCof(tc_phys_hc_format);
+        HCdesc *hcdesc = DSPpkg::self()->HCof(tc_phys_hc_format);
         if (hcdesc)
             fprintf(techfp, "%s %s\n", Tkw.DefaultDriver(), hcdesc->keyword);
         CommentDump(techfp, 0, tBlkNone, 0, Tkw.DefaultDriver());
@@ -655,7 +656,7 @@ cTech::PrintHardcopy(FILE *techfp)
         CommentDump(techfp, 0, tBlkNone, 0, Tkw.PhysAltDriver());
     }
     else {
-        HCdesc *hcdesc = GRpkgIf()->HCof(tc_elec_hc_format);
+        HCdesc *hcdesc = DSPpkg::self()->HCof(tc_elec_hc_format);
         if (hcdesc)
             fprintf(techfp, "%s %s\n", Tkw.ElecDefaultDriver(),
                 hcdesc->keyword);
@@ -664,7 +665,7 @@ cTech::PrintHardcopy(FILE *techfp)
         CommentDump(techfp, 0, tBlkNone, 0, Tkw.AltDriver());
         CommentDump(techfp, 0, tBlkNone, 0, Tkw.AltElecDriver());
         CommentDump(techfp, 0, tBlkNone, 0, Tkw.ElecAltDriver());
-        hcdesc = GRpkgIf()->HCof(tc_phys_hc_format);
+        hcdesc = DSPpkg::self()->HCof(tc_phys_hc_format);
         if (hcdesc)
             fprintf(techfp, "%s %s\n", Tkw.PhysDefaultDriver(),
                 hcdesc->keyword);
@@ -676,8 +677,8 @@ cTech::PrintHardcopy(FILE *techfp)
 
     // the hardcopy driver info
     fprintf(techfp, "\n");
-    for (int i = 0; GRpkgIf()->HCof(i); i++) {
-        HCdesc *hcdesc = GRpkgIf()->HCof(i);
+    for (int i = 0; DSPpkg::self()->HCof(i); i++) {
+        HCdesc *hcdesc = DSPpkg::self()->HCof(i);
         if (tc_hccb.drvrmask & (1 << i))
             fprintf(techfp, "%s %s disable\n\n", Tkw.HardCopyDevice(),
                 hcdesc->keyword);
@@ -856,9 +857,9 @@ cTech::print_driver_layer_block(FILE *techfp, const HCdesc *hcdesc,
             fill_diff = true;
     }
 
-    bool is_hp = (hcdesc == GRpkgIf()->FindHCdesc("hpgl"));
+    bool is_hp = (hcdesc == DSPpkg::self()->FindHCdesc("hpgl"));
     bool hp_diff = (is_hp && la->hpgl_fill(0));
-    bool is_xf = (hcdesc == GRpkgIf()->FindHCdesc("xfig"));
+    bool is_xf = (hcdesc == DSPpkg::self()->FindHCdesc("xfig"));
     bool xf_diff = (is_xf && la->misc_fill(0));
 
     if (!clr_diff && !vis_diff && !fill_diff && !hp_diff && !xf_diff)
@@ -941,7 +942,7 @@ sAttrContext *
 cTech::GetAttrContext(int drvr, bool create)
 {
 #define ATTR_SIZE_INCR 16
-    if (!GRpkgIf()->HCof(drvr))
+    if (!DSPpkg::self()->HCof(drvr))
         return (0);
     if (!tc_attr_array) {
         if (!create)

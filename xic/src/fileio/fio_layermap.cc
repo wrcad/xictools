@@ -503,7 +503,7 @@ FIOlayerAliasTab::dumpFile(FILE *fp)
     tgen_t<al_t> gen(at_table);
     al_t *e;
     while ((e = gen.next()) != 0) {
-        sprintf(buf, "%s=%s", e->tab_name(), e->tab_alias());
+        snprintf(buf, sizeof(buf), "%s=%s", e->tab_name(), e->tab_alias());
         s0 = new stringlist(lstring::copy(buf), s0);
     }
     stringlist::sort(s0);

@@ -184,7 +184,7 @@ VerilogBlock::VerilogBlock(sLine *lines)
     char *ftmp = filestat::make_temp("vl");
     FILE *fp = fopen(ftmp, "w");
     if (!fp) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "can't open termporary verilog file.\n");
         return;
     }
@@ -193,7 +193,7 @@ VerilogBlock::VerilogBlock(sLine *lines)
     fclose(fp);
     fp = fopen(ftmp, "r");
     if (!fp) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "can't open termporary verilog file.\n");
         return;
     }

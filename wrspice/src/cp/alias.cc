@@ -171,7 +171,7 @@ CshPar::DoAlias(wordlist **list)
         }
 
         if (!ntries) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "alias loop.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "alias loop.\n");
             wordlist::destroy(wlist);
             *list = 0;
             return;
@@ -212,7 +212,7 @@ void
 CshPar::SetAlias(const char *word, wordlist *wlist)
 {
     if (lstring::eq(word, "*")) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't alias \"*\".");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "can't alias \"*\".");
         return;
     }
     Unalias(word);

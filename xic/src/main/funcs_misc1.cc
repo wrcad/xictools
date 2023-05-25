@@ -47,6 +47,7 @@
 #include "dsp_color.h"
 #include "dsp_layer.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 #include "cd_layer.h"
 #include "cd_celldb.h"
 #include "fio.h"
@@ -1603,9 +1604,11 @@ misc1_funcs::IFfileName(Variable *res, Variable*, void*)
         CDcbin cbin(DSP()->CurCellName());
         if (cbin.fileType() == Fnative) {
             if (cbin.fileName()) {
-                char *s = new char[strlen(cbin.fileName()) +
-                    strlen(Tstring(cbin.cellname())) + 2];
-                sprintf(s, "%s/%s", cbin.fileName(), Tstring(cbin.cellname()));
+                int len = strlen(cbin.fileName()) +
+                    strlen(Tstring(cbin.cellname())) + 2;
+                char *s = new char[len];
+                snprintf(s, len, "%s/%s", cbin.fileName(),
+                    Tstring(cbin.cellname()));
                 res->content.string = s;
             }
         }
@@ -1819,7 +1822,7 @@ misc1_funcs::IFupdateNative(Variable *res, Variable *args, void*)
     if (DSP()->CurCellName()) {
         CDcbin cbin(DSP()->CurCellName());
         if (cbin.isModified()) {
-            sprintf(buf, "%s/%s", dir, Tstring(cbin.cellname()));
+            snprintf(buf, sizeof(buf), "%s/%s", dir, Tstring(cbin.cellname()));
             if (!FIO()->WriteNative(&cbin, buf))
                 return (BAD);
             ccnt++;
@@ -1830,7 +1833,8 @@ misc1_funcs::IFupdateNative(Variable *res, Variable *args, void*)
         CDcbin tcbin;
         while (sgen.next(&tcbin, &err)) {
             if (tcbin.isModified()) {
-                sprintf(buf, "%s/%s", dir, Tstring(tcbin.cellname()));
+                snprintf(buf, sizeof(buf), "%s/%s", dir,
+                    Tstring(tcbin.cellname()));
                 if (!FIO()->WriteNative(&tcbin, buf))
                     return (BAD);
                 ccnt++;
@@ -2502,9 +2506,11 @@ misc1_funcs::IFlistTopFilesInMem(Variable *res, Variable*, void*)
         if (!cbin.fileName())
             continue;
         if (cbin.fileType() == Fnative) {
-            char *s = new char[strlen(cbin.fileName()) +
-                strlen(Tstring(cbin.cellname())) + 2];
-            sprintf(s, "%s/%s", cbin.fileName(), Tstring(cbin.cellname()));
+            int len = strlen(cbin.fileName()) +
+                strlen(Tstring(cbin.cellname())) + 2;
+            char *s = new char[len];
+            snprintf(s, len,  "%s/%s", cbin.fileName(),
+                Tstring(cbin.cellname()));
             s0 = new stringlist(s, s0);
         }
         else if (FIO()->IsSupportedArchiveFormat(cbin.fileType())) {
@@ -3166,7 +3172,7 @@ misc1_funcs::IFdumpMarks(Variable *res, Variable *args, void*)
         return (OK);
     char buf[256];
     if (!fname || !*fname) {
-        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
+        snprintf(buf, sizeof(buf), "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         fname = buf;
     }
@@ -3199,7 +3205,7 @@ misc1_funcs::IFreadMarks(Variable *res, Variable *args, void*)
         return (OK);
     char buf[256];
     if (!fname || !*fname) {
-        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
+        snprintf(buf, sizeof(buf), "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         fname = buf;
     }
@@ -4747,8 +4753,10 @@ bool
 misc1_funcs::IFhcListDrivers(Variable *res, Variable*, void*)
 {
     stringlist *s0 = 0;
-    for (int i = 0; GRpkgIf()->HCof(i); i++)
-        s0 = new stringlist(lstring::copy(GRpkgIf()->HCof(i)->keyword), s0);
+    for (int i = 0; DSPpkg::self()->HCof(i); i++) {
+        s0 = new stringlist(lstring::copy(DSPpkg::self()->HCof(i)->keyword),
+            s0);
+    }
     stringlist::sort(s0);
     sHdl *hdl = new sHdlString(s0);
     res->type = TYP_HANDLE;
@@ -4773,9 +4781,9 @@ misc1_funcs::IFhcSetDriver(Variable *res, Variable *args, void*)
     res->type = TYP_SCALAR;
     res->content.value = 0;
     if (drvr) {
-        HCdesc *hcdesc = GRpkgIf()->FindHCdesc(drvr);
+        HCdesc *hcdesc = DSPpkg::self()->FindHCdesc(drvr);
         if (hcdesc) {
-            HCstate.set_desc(hcdesc, GRpkgIf()->FindHCindex(drvr));
+            HCstate.set_desc(hcdesc, DSPpkg::self()->FindHCindex(drvr));
             res->content.value = 1;
         }
     }
@@ -5450,7 +5458,7 @@ misc1_funcs::IFhcDump(Variable *res, Variable *args, void*)
     }
 
     char buf[256];
-    sprintf(buf, HCstate.desc->fmtstring, fname, HCstate.resol,
+    snprintf(buf, sizeof(buf), HCstate.desc->fmtstring, fname, HCstate.resol,
         HCstate.w, HCstate.h, HCstate.x, HCstate.y);
     if (HCstate.landscape)
         strcat(buf, " -l");
@@ -5477,7 +5485,8 @@ misc1_funcs::IFhcDump(Variable *res, Variable *args, void*)
     }
 #endif
 
-    HCswitchErr err = GRpkgIf()->SwitchDev(HCstate.desc->drname, &argc, argv);
+    HCswitchErr err = DSPpkg::self()->SwitchDev(HCstate.desc->drname,
+        &argc, argv);
     if (err == HCSinhc)
         HCstate.errmsg = lstring::copy("Internal error - aborted.");
     else if (err == HCSnotfnd)
@@ -5498,11 +5507,11 @@ misc1_funcs::IFhcDump(Variable *res, Variable *args, void*)
             ot |= HClandscape;
 
         int drnum = 0;
-        for ( ; GRpkgIf()->HCof(drnum); drnum++) {
-            if (GRpkgIf()->HCof(drnum) == HCstate.desc)
+        for ( ; DSPpkg::self()->HCof(drnum); drnum++) {
+            if (DSPpkg::self()->HCof(drnum) == HCstate.desc)
                 break;
         }
-        if (GRpkgIf()->HCof(drnum) != HCstate.desc) {
+        if (DSPpkg::self()->HCof(drnum) != HCstate.desc) {
             // "can't happen"
             HCstate.errmsg = lstring::copy("Driver not available.");
             return (OK);
@@ -5517,13 +5526,14 @@ misc1_funcs::IFhcDump(Variable *res, Variable *args, void*)
             ok = false;
             unlink(fname);
         }
-        GRpkgIf()->SwitchDev(0, 0, 0);
+        DSPpkg::self()->SwitchDev(0, 0, 0);
         if (ok) {
             ret = 0;
             if (cmd && *cmd)
                 ret = printit(cmd, fname);
             if (ret) {
-                sprintf(buf, "Print command returned error status %d.", ret);
+                snprintf(buf, sizeof(buf),
+                    "Print command returned error status %d.", ret);
                 HCstate.errmsg = lstring::copy(buf);
             }
             else

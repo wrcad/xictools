@@ -58,8 +58,8 @@ Authors: 1985 Wayne A. Christopher
 
 
 #define rcheck(cond, name) if (!(cond)) { \
-    GRpkgIf()->ErrPrintf(ET_WARN, "argument out of range for %s.\n", name); \
-    delete res; return (0); }
+  GRpkg::self()->ErrPrintf(ET_WARN, "argument out of range for %s.\n", name); \
+  delete res; return (0); }
 
 
 // Calling methods for these functions are:

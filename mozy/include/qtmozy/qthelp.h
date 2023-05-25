@@ -52,7 +52,7 @@
 #include "htm/htm_widget.h"
 
 // This implements a help/html viewer dialog, providing menus and
-// interfaces to the viewer_wv iewing area.  This derives from QDialog
+// interfaces to the QTviewer viewing area.  This derives from QDialog
 // and the HelpWidget and QTbag interfaces.
 
 class QStatusBar;
@@ -73,7 +73,7 @@ class Transaction;
 
 namespace qtinterf
 {
-    class viewer_w;
+    class QTviewer;
 
     class QThelpPopup : public QMainWindow, public HelpWidget,
         public htmDataInterface, public QTbag
@@ -192,7 +192,7 @@ namespace qtinterf
         void newtopic(const char*, bool, bool, bool);
         void stop_image_download();
 
-        viewer_w *html_viewer;
+        QTviewer *html_viewer;
 
         QMenuBar *menubar;
         QMenu *main_menus[4];

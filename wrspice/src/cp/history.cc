@@ -96,7 +96,8 @@ CshPar::HistSubst(wordlist **list)
     cp_didhsubst = false;
     char buf[BSIZE_SP];
     if (*wlist->wl_word == cp_hat) {
-        sprintf(buf, "%c%c:s%s", cp_bang, cp_bang, wlist->wl_word);
+        snprintf(buf, sizeof(buf), "%c%c:s%s", cp_bang, cp_bang,
+            wlist->wl_word);
         delete [] wlist->wl_word;
         wlist->wl_word = lstring::copy(buf);
     }
@@ -113,7 +114,7 @@ CshPar::HistSubst(wordlist **list)
                     return;
                 }
                 if (k) {
-                    sprintf(buf, "%.*s%s", k, b, n->wl_word);
+                    snprintf(buf, sizeof(buf), "%.*s%s", k, b, n->wl_word);
                     delete [] n->wl_word;
                     n->wl_word = lstring::copy(buf);
                 }
@@ -137,7 +138,7 @@ void
 CshPar::AddHistEnt(int event, wordlist *wlist)
 {
     if (cp_lastone && !cp_lastone->text())
-        GRpkgIf()->ErrPrintf(ET_INTERR, "bad history list.\n");
+        GRpkg::self()->ErrPrintf(ET_INTERR, "bad history list.\n");
     if (cp_lastone == 0)
         cp_lastone = new sHistEnt(event, wlist);
     else {
@@ -196,7 +197,7 @@ CshPar::dohsubst(char *string)
             string++;
         }
         else {
-            GRpkgIf()->ErrPrintf(ET_MSG, "0: event not found.\n");
+            GRpkg::self()->ErrPrintf(ET_MSG, "0: event not found.\n");
             return (0);
         }
     }
@@ -261,7 +262,7 @@ CshPar::dohsubst(char *string)
         }
     }
     if (wl == 0) {   // Shouldn't happen
-        GRpkgIf()->ErrPrintf(ET_MSG, "Event not found.\n");
+        GRpkg::self()->ErrPrintf(ET_MSG, "Event not found.\n");
         return (0);
     }
     wordlist *nwl = dohmod(&string, wordlist::copy(wl));
@@ -269,7 +270,7 @@ CshPar::dohsubst(char *string)
         return (0);
     if (*string) {
         for (wl = nwl; wl->wl_next; wl = wl->wl_next) ;
-        sprintf(buf, "%s%s", wl->wl_word, string);
+        snprintf(buf, sizeof(buf), "%s%s", wl->wl_word, string);
         delete [] wl->wl_word;
         wl->wl_word = lstring::copy(buf);
     }
@@ -283,7 +284,7 @@ wordlist *
 CshPar::hpattern(const char *buf)
 {
     if (*buf == '\0') {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad pattern specification.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad pattern specification.\n");
         return (0);
     }
     for (sHistEnt *hi = cp_lastone; hi; hi = hi->prev()) {
@@ -291,7 +292,7 @@ CshPar::hpattern(const char *buf)
             if (lstring::substring(buf, wl->wl_word))
                 return (hi->text());
     }
-    GRpkgIf()->ErrPrintf(ET_MSG, "%s: event not found.\n", buf);
+    GRpkg::self()->ErrPrintf(ET_MSG, "%s: event not found.\n", buf);
     return (0);
 }
 
@@ -300,14 +301,14 @@ wordlist *
 CshPar::hprefix(const char *buf)
 {
     if (*buf == '\0') {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad pattern specification.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad pattern specification.\n");
         return (0);
     }
     for (sHistEnt *hi = cp_lastone; hi; hi = hi->prev()) {
         if (hi->text() && lstring::prefix(buf, hi->text()->wl_word))
             return (hi->text());
     }
-    GRpkgIf()->ErrPrintf(ET_MSG, "%s: event not found.\n", buf);
+    GRpkg::self()->ErrPrintf(ET_MSG, "%s: event not found.\n", buf);
     return (0);
 }
 
@@ -324,7 +325,7 @@ CshPar::getevent(int num)
             break;
     }
     if (hi == 0) {
-        GRpkgIf()->ErrPrintf(ET_MSG, "%d: event not found.\n", num);
+        GRpkg::self()->ErrPrintf(ET_MSG, "%d: event not found.\n", num);
         return (0);
     }
     return (hi->text());
@@ -364,7 +365,7 @@ CshPar::freehist(int num)
         }
     }
     else
-        GRpkgIf()->ErrPrintf(ET_INTERR, "history list mangled.\n");
+        GRpkg::self()->ErrPrintf(ET_INTERR, "history list mangled.\n");
 }
 
 
@@ -440,7 +441,8 @@ namespace {
                         }
                     }
                     if (!didsub) {
-                        GRpkgIf()->ErrPrintf(ET_ERROR, "modifier failed.\n");
+                        GRpkg::self()->ErrPrintf(ET_ERROR,
+                            "modifier failed.\n");
                         wordlist::destroy(wl);
                         return (0);
                     }
@@ -448,14 +450,15 @@ namespace {
                 break;
             default:
                 if (!isdigit(**string)) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "%s: bad modifier.\n", 
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "%s: bad modifier.\n", 
                         *string);
                     wordlist::destroy(wl);
                     return (0);
                 }
                 int i = lstring::scannum(*string);
                 if (i > eventhi) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "bad event number %d\n", i);
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "bad event number %d\n", i);
                     wordlist::destroy(wl);
                     return (0);
                 }
@@ -496,7 +499,7 @@ namespace {
         char schar = *pat++;
         char *s = strchr(pat, schar);
         if (s == 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "bad substitute.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "bad substitute.\n");
             return (0);
         }
         *s++ = '\0';

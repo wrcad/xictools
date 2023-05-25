@@ -401,7 +401,7 @@ MoveState::undo()
                 SetLevel3();
                 return;
             }
-            dspPkgIf()->RegisterTimeoutProc(1500, MsgTimeout, 0);
+            DSPpkg::self()->RegisterTimeoutProc(1500, MsgTimeout, 0);
         }
     }
     else if (Level == 2) {
@@ -436,7 +436,7 @@ MoveState::redo()
         }
         else {
             cEventHdlr::sel_redo();
-            dspPkgIf()->RegisterTimeoutProc(1500, MsgTimeout, 0);
+            DSPpkg::self()->RegisterTimeoutProc(1500, MsgTimeout, 0);
         }
     }
     else if (Level == 2) {

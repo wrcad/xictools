@@ -99,7 +99,7 @@ using namespace gtksel;
 void
 cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Sel;
@@ -121,12 +121,12 @@ cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Sel->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Sel->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Sel->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Sel->Shell());
 
     // Bug in OpenSuse 13.1 gtk-2.24.23
-    GRX->SetPopupLocation(GRloc(LW_LL), Sel->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Sel->Shell(),
         GTKmainwin::self()->Viewport());
 }
 // End of cMain functions.
@@ -368,7 +368,7 @@ sSel::~sSel()
 {
     Sel = 0;
     if (sl_caller)
-        GRX->Deselect(sl_caller);
+        GTKdev::Deselect(sl_caller);
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)sl_cancel_proc, wb_shell);
@@ -380,74 +380,74 @@ void
 sSel::update()
 {
     if (Selections.ptrMode() == PTRnormal) {
-        GRX->Select(sl_pm_norm);
-        GRX->Deselect(sl_pm_sel);
-        GRX->Deselect(sl_pm_mod);
+        GTKdev::Select(sl_pm_norm);
+        GTKdev::Deselect(sl_pm_sel);
+        GTKdev::Deselect(sl_pm_mod);
     }
     else if (Selections.ptrMode() == PTRselect) {
-        GRX->Deselect(sl_pm_norm);
-        GRX->Select(sl_pm_sel);
-        GRX->Deselect(sl_pm_mod);
+        GTKdev::Deselect(sl_pm_norm);
+        GTKdev::Select(sl_pm_sel);
+        GTKdev::Deselect(sl_pm_mod);
     }
     else if (Selections.ptrMode() == PTRmodify) {
-        GRX->Deselect(sl_pm_norm);
-        GRX->Deselect(sl_pm_sel);
-        GRX->Select(sl_pm_mod);
+        GTKdev::Deselect(sl_pm_norm);
+        GTKdev::Deselect(sl_pm_sel);
+        GTKdev::Select(sl_pm_mod);
     }
 
     if (Selections.areaMode() == ASELnormal) {
-        GRX->Select(sl_am_norm);
-        GRX->Deselect(sl_am_enc);
-        GRX->Deselect(sl_am_all);
+        GTKdev::Select(sl_am_norm);
+        GTKdev::Deselect(sl_am_enc);
+        GTKdev::Deselect(sl_am_all);
     }
     else if (Selections.areaMode() == ASELenclosed) {
-        GRX->Deselect(sl_am_norm);
-        GRX->Select(sl_am_enc);
-        GRX->Deselect(sl_am_all);
+        GTKdev::Deselect(sl_am_norm);
+        GTKdev::Select(sl_am_enc);
+        GTKdev::Deselect(sl_am_all);
     }
     else if (Selections.areaMode() == ASELall) {
-        GRX->Deselect(sl_am_norm);
-        GRX->Deselect(sl_am_enc);
-        GRX->Select(sl_am_all);
+        GTKdev::Deselect(sl_am_norm);
+        GTKdev::Deselect(sl_am_enc);
+        GTKdev::Select(sl_am_all);
     }
 
     if (Selections.selMode() == SELnormal) {
-        GRX->Select(sl_sel_norm);
-        GRX->Deselect(sl_sel_togl);
-        GRX->Deselect(sl_sel_add);
-        GRX->Deselect(sl_sel_rem);
+        GTKdev::Select(sl_sel_norm);
+        GTKdev::Deselect(sl_sel_togl);
+        GTKdev::Deselect(sl_sel_add);
+        GTKdev::Deselect(sl_sel_rem);
     }
     if (Selections.selMode() == SELtoggle) {
-        GRX->Deselect(sl_sel_norm);
-        GRX->Select(sl_sel_togl);
-        GRX->Deselect(sl_sel_add);
-        GRX->Deselect(sl_sel_rem);
+        GTKdev::Deselect(sl_sel_norm);
+        GTKdev::Select(sl_sel_togl);
+        GTKdev::Deselect(sl_sel_add);
+        GTKdev::Deselect(sl_sel_rem);
     }
     if (Selections.selMode() == SELselect) {
-        GRX->Deselect(sl_sel_norm);
-        GRX->Deselect(sl_sel_togl);
-        GRX->Select(sl_sel_add);
-        GRX->Deselect(sl_sel_rem);
+        GTKdev::Deselect(sl_sel_norm);
+        GTKdev::Deselect(sl_sel_togl);
+        GTKdev::Select(sl_sel_add);
+        GTKdev::Deselect(sl_sel_rem);
     }
     if (Selections.selMode() == SELdesel) {
-        GRX->Deselect(sl_sel_norm);
-        GRX->Deselect(sl_sel_togl);
-        GRX->Deselect(sl_sel_add);
-        GRX->Select(sl_sel_rem);
+        GTKdev::Deselect(sl_sel_norm);
+        GTKdev::Deselect(sl_sel_togl);
+        GTKdev::Deselect(sl_sel_add);
+        GTKdev::Select(sl_sel_rem);
     }
 
-    GRX->SetStatus(sl_cell,
+    GTKdev::SetStatus(sl_cell,
         (strchr(Selections.selectTypes(), CDINSTANCE) != 0));
-    GRX->SetStatus(sl_box,
+    GTKdev::SetStatus(sl_box,
         (strchr(Selections.selectTypes(), CDBOX) != 0));
-    GRX->SetStatus(sl_poly,
+    GTKdev::SetStatus(sl_poly,
         (strchr(Selections.selectTypes(), CDPOLYGON) != 0));
-    GRX->SetStatus(sl_wire,
+    GTKdev::SetStatus(sl_wire,
         (strchr(Selections.selectTypes(), CDWIRE) != 0));
-    GRX->SetStatus(sl_label,
+    GTKdev::SetStatus(sl_label,
         (strchr(Selections.selectTypes(), CDLABEL) != 0));
 
-    GRX->SetStatus(sl_upbtn, Selections.layerSearchUp());
+    GTKdev::SetStatus(sl_upbtn, Selections.layerSearchUp());
 }
 
 
@@ -463,7 +463,7 @@ sSel::sl_cancel_proc(GtkWidget*, void*)
 void
 sSel::sl_ptr_mode_proc(GtkWidget *widget, void *arg)
 {
-    if (GRX->GetStatus(widget))
+    if (GTKdev::GetStatus(widget))
         Selections.setPtrMode((PTRmode)(intptr_t)(arg));
 }
 
@@ -472,7 +472,7 @@ sSel::sl_ptr_mode_proc(GtkWidget *widget, void *arg)
 void
 sSel::sl_area_mode_proc(GtkWidget *widget, void *arg)
 {
-    if (GRX->GetStatus(widget))
+    if (GTKdev::GetStatus(widget))
         Selections.setAreaMode((ASELmode)(intptr_t)(arg));
 }
 
@@ -481,7 +481,7 @@ sSel::sl_area_mode_proc(GtkWidget *widget, void *arg)
 void
 sSel::sl_add_mode_proc(GtkWidget *widget, void *arg)
 {
-    if (GRX->GetStatus(widget))
+    if (GTKdev::GetStatus(widget))
         Selections.setSelMode((SELmode)(intptr_t)(arg));
 }
 
@@ -491,7 +491,7 @@ void
 sSel::sl_obj_proc(GtkWidget *widget, void *arg)
 {
     char c = (intptr_t)arg;
-    bool state = GRX->GetStatus(widget);
+    bool state = GTKdev::GetStatus(widget);
     Selections.setSelectType(c, state);
 }
 
@@ -502,7 +502,7 @@ sSel::sl_btn_proc(GtkWidget *widget, void *arg)
 {
     if (arg == (void*)0) {
         // search up
-        XM()->SetLayerSearchUpSelections(GRX->GetStatus(widget));
+        XM()->SetLayerSearchUpSelections(GTKdev::GetStatus(widget));
     }
     else if (arg == (void*)1) {
         // help

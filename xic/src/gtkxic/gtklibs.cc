@@ -156,7 +156,7 @@ GTKmainwin::libs_panic()
 void
 cConvert::PopUpLibraries(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete LB;
@@ -178,7 +178,7 @@ cConvert::PopUpLibraries(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(LB->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), LB->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), LB->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(LB->Shell());
 }
@@ -333,7 +333,7 @@ sLB::~sLB()
     delete [] lb_contlib;
 
     if (lb_caller)
-        GRX->Deselect(lb_caller);
+        GTKdev::Deselect(lb_caller);
     if (lb_content_pop)
         lb_content_pop->popdown();
 
@@ -373,7 +373,8 @@ sLB::get_selection()
 void
 sLB::update()
 {
-    GRX->SetStatus(lb_noovr, CDvdb()->getVariable(VA_NoOverwriteLibCells));
+    GTKdev::SetStatus(lb_noovr,
+        CDvdb()->getVariable(VA_NoOverwriteLibCells));
 
     stringlist *liblist = lb_pathlibs();
     if (!liblist)
@@ -627,7 +628,7 @@ sLB::lb_action_proc(GtkWidget *caller, void *client_data)
         return;
     }
 
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
 
     if (client_data == (void*)LBovr) {
         if (state)

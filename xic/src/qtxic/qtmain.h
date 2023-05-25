@@ -48,22 +48,26 @@
 #include "main.h"
 #include "qtinterf/qtinterf.h"
 #include "qtinterf/qtfont.h"
-#include "qtinterf/draw_qt_w.h"
+#include "qtinterf/qtcanvas.h"
 #include "dsp_tkif.h"
 
 #include <QDialog>
 #include <QFontMetrics>
 
+struct sKeyEvent;
 class cCoord;
 class cParam;
 class cKeys;
 class cExpand;
-class idle_proc;
-struct sKeyEvent;
+class cZoom;
+class QTidleproc;
 class QTltab;
 
 class QMenu;
 class QMenuBar;
+class QLineEdit;
+class QPushButton;
+class QEnterEvent;
 
 // Graphics contexgt classes for application windows.
 enum XIC_WINDOW_CLASS
@@ -75,12 +79,8 @@ enum XIC_WINDOW_CLASS
     XW_LTAB     // The layer table.
 };
 
-// Length of keypress buffer
-#define CBUFMAX 16
 
-inline class QTpkg *qtPkgIf();
-
-class QTpkg : public cGrPkg
+class QTpkg : public DSPpkg
 {
 public:
     QTpkg()
@@ -91,10 +91,9 @@ public:
             pkg_not_mapped      = false;
         }
 
-    friend inline QTpkg *qtPkgIf()
-        { return (dynamic_cast<QTpkg*>(GRpkgIf())); }
+    static QTpkg *self() { return (dynamic_cast<QTpkg*>(DSPpkg::self())); }
 
-    // cGrPkg virtual overrides
+    // DSPpkg virtual overrides
     GRwbag *NewGX();
     int Initialize(GRwbag*);
     void ReinitNoGraphics();
@@ -133,39 +132,42 @@ public:
 
 private:
     GRpopup     *pkg_busy_popup;        // busy indicator
-    idle_proc   *pkg_idle_control;
+    QTidleproc  *pkg_idle_control;
     bool        pkg_in_main_loop;       // gtk_main called
     bool        pkg_not_mapped;         // true when iconic
 };
 
 
-// Length of keypress buffer
-#define CBUFMAX 16
+// Length of keypress buffer.
+#define CBUFMAX 15
 
-class cKeys : public draw_qt_w
+class cKeys : public QTcanvas
 {
     Q_OBJECT
 
 public:
     cKeys(int, QWidget*);
 
+    QSize sizeHint() const;
     void show_keys();
     void set_keys(const char*);
     void bsp_keys();
     void check_exec(bool);
 
-    int key_pos()       { return (keypos); }
-    int key(int k)      { return (keys[k]); }
-    char *key_buf()     { return (keys); }
-    void append(char c) { keys[keypos++] = c; }
+    int key_pos()       { return (k_keypos); }
+    int key(int k)      { return (k_keys[k]); }
+    char *key_buf()     { return (k_keys); }
+    void append(char c) { k_keys[k_keypos++] = c; }
+
 
 private slots:
     void font_changed(int);
 
 private:
-    int keypos;
-    char keys[CBUFMAX + 1];
-    int win_number;
+    int k_keypos;
+    int k_win_number;
+    char k_keys[CBUFMAX + 1];
+    const char *k_cmd;
 };
 
 class QTsubwin : public QDialog, virtual public DSPwbag, public QTbag,
@@ -238,7 +240,7 @@ protected slots:
     void motion_slot(QMouseEvent*);
     void key_down_slot(QKeyEvent*);
     void key_up_slot(QKeyEvent*);
-    void enter_slot(QEvent*);
+    void enter_slot(QEnterEvent*);
     void leave_slot(QEvent*);
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);
@@ -249,6 +251,7 @@ protected:
     QMenuBar    *sw_menubar;
     cKeys       *sw_keys_pressed;
     cExpand     *sw_expand;
+    cZoom       *sw_zoom;
     WindowDesc  *sw_windesc;
     int         sw_win_number;
 

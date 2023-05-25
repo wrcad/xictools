@@ -199,7 +199,7 @@ namespace {
 void
 cEdit::PopUpStdVia(GRobject caller, ShowMode mode, CDc *cdvia)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Stv;
@@ -234,7 +234,7 @@ cEdit::PopUpStdVia(GRobject caller, ShowMode mode, CDc *cdvia)
     gtk_window_set_transient_for(GTK_WINDOW(Stv->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Stv->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Stv->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Stv->shell());
 }
@@ -553,7 +553,7 @@ sStv::~sStv()
 {
     Stv = 0;
     if (stv_caller)
-        GRX->Deselect(stv_caller);
+        GTKdev::Deselect(stv_caller);
     if (stv_popup)
         gtk_widget_destroy(stv_popup);
 }

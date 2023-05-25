@@ -248,7 +248,7 @@ cNodeMap::findNode(CDnetName name)
     for (int i = 0; i < nm_size; i++) {
         CDnetName n = nm_nmap[i];
         if (!n) {
-            sprintf(buf, "%d", i);
+            snprintf(buf, sizeof(buf), "%d", i);
             n = CDnetex::name_tab_add(buf);
             nm_nmap[i] = n;
         }

@@ -156,7 +156,7 @@ htmFrameWidget::new_frame(int current_frame, const char *attributes)
     // get frame name, default to _frame if not present
     if ((frame->fr_name = htmTagGetValue(attributes, "name")) == 0) {
         char buf[24];
-        sprintf(buf, "_frame%i", current_frame);
+        snprintf(buf, sizeof(buf), "_frame%i", current_frame);
         frame->fr_name = lstring::copy(buf);
     }
 

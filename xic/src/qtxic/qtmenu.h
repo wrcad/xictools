@@ -53,13 +53,16 @@ class QTmenu : public MenuMain
 public:
     friend class QTmenuConfig;
 
-    // No constructor/destructor, nothing to do here.
+    QTmenu()
+    {
+        modalShell = 0;
+    }
 
     void InitMainMenu();
     void InitTopButtonMenu();
     void InitSideButtonMenus();
 
-    // virtual functions from MenuClass
+    // Virtual functions from MenuMain.
     void SetSensGlobal(bool);
     void Deselect(GRobject);
     void Select(GRobject);
@@ -85,7 +88,15 @@ public:
     void HideButtonMenu(bool);
     void DisableMainMenuItem(const char*, const char*, bool);
 
+    // Non-virtual.
+
+    void SetModal(QDialog *w)   { modalShell = w; }
+    QDialog *GetModal()         { return (modalShell); }
+
     static QTmenu *self() { return (dynamic_cast<QTmenu*>(Menu())); }
+
+private:
+    QDialog     *modalShell;
 };
 
 class QTmenuButton : public QPushButton

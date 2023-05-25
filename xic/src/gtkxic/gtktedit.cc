@@ -119,7 +119,7 @@ void
 cSced::PopUpTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
     void(*action)(TermEditInfo*, CDp*), CDp *prp, int x, int y)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete TE;
@@ -535,7 +535,7 @@ sTE::~sTE()
 {
     TE = 0;
     if (te_caller)
-        GRX->SetStatus(te_caller, false);
+        GTKdev::SetStatus(te_caller, false);
     if (te_action)
         (*te_action)(0, te_prp);
     if (te_popup)
@@ -603,8 +603,8 @@ sTE::update(TermEditInfo *tinfo, CDp *prp)
                 gtk_widget_set_sensitive(te_ordbits, false);
             }
         }
-        GRX->SetStatus(te_scinvis, tinfo->has_flag(TE_SCINVIS));
-        GRX->SetStatus(te_syinvis, tinfo->has_flag(TE_SYINVIS));
+        GTKdev::SetStatus(te_scinvis, tinfo->has_flag(TE_SCINVIS));
+        GTKdev::SetStatus(te_syinvis, tinfo->has_flag(TE_SYINVIS));
     }
     else {
         gtk_label_set_text(GTK_LABEL(te_top_lab),
@@ -639,11 +639,11 @@ sTE::update(TermEditInfo *tinfo, CDp *prp)
             set_layername(0);
         }
 
-        GRX->SetStatus(te_fixed, tinfo->has_flag(TE_FIXED));
-        GRX->SetStatus(te_phys, tinfo->has_phys());
-        GRX->SetStatus(te_byname, tinfo->has_flag(TE_BYNAME));
-        GRX->SetStatus(te_scinvis, tinfo->has_flag(TE_SCINVIS));
-        GRX->SetStatus(te_syinvis, tinfo->has_flag(TE_SYINVIS));
+        GTKdev::SetStatus(te_fixed, tinfo->has_flag(TE_FIXED));
+        GTKdev::SetStatus(te_phys, tinfo->has_phys());
+        GTKdev::SetStatus(te_byname, tinfo->has_flag(TE_BYNAME));
+        GTKdev::SetStatus(te_scinvis, tinfo->has_flag(TE_SCINVIS));
+        GTKdev::SetStatus(te_syinvis, tinfo->has_flag(TE_SYINVIS));
         gtk_widget_set_sensitive(te_physgrp, tinfo->has_phys());
     }
     te_prp = prp;
@@ -676,9 +676,9 @@ sTE::te_action_proc(GtkWidget *caller, void*)
             if (TE->te_bterm) {
                 const char *netex = gtk_entry_get_text(GTK_ENTRY(TE->te_netex));
                 unsigned int f = 0;
-                if (GRX->GetStatus(TE->te_scinvis))
+                if (GTKdev::GetStatus(TE->te_scinvis))
                     f |= TE_SCINVIS;
-                if (GRX->GetStatus(TE->te_syinvis))
+                if (GTKdev::GetStatus(TE->te_syinvis))
                     f |= TE_SYINVIS;
 
                 TermEditInfo tinfo(name, ix, f, netex);
@@ -687,17 +687,17 @@ sTE::te_action_proc(GtkWidget *caller, void*)
             }
             else {
                 unsigned int f = 0;
-                if (GRX->GetStatus(TE->te_fixed))
+                if (GTKdev::GetStatus(TE->te_fixed))
                     f |= TE_FIXED;
-                if (GRX->GetStatus(TE->te_byname))
+                if (GTKdev::GetStatus(TE->te_byname))
                     f |= TE_BYNAME;
-                if (GRX->GetStatus(TE->te_scinvis))
+                if (GTKdev::GetStatus(TE->te_scinvis))
                     f |= TE_SCINVIS;
-                if (GRX->GetStatus(TE->te_syinvis))
+                if (GTKdev::GetStatus(TE->te_syinvis))
                     f |= TE_SYINVIS;
 
                 TermEditInfo tinfo(name, TE->te_lname, ix, f,
-                    GRX->GetStatus(TE->te_phys));
+                    GTKdev::GetStatus(TE->te_phys));
                 (*TE->te_action)(&tinfo, TE->te_prp);
                 SCD()->PopUpTermEdit(0, MODE_UPD, &tinfo, 0, TE->te_prp, 0, 0);
             }
@@ -707,7 +707,7 @@ sTE::te_action_proc(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "phys")) {
-        bool state = GRX->GetStatus(TE->te_phys);
+        bool state = GTKdev::GetStatus(TE->te_phys);
         gtk_widget_set_sensitive(TE->te_physgrp, state);
     }
     if (!strcmp(name, "Prev")) {

@@ -867,7 +867,7 @@ cPromptEdit::set_prompt(char *buf)
         // idle proc is one is already pending.
 
         if (!prompt_idle_id)
-            prompt_idle_id = dspPkgIf()->RegisterIdleProc(prompt_idle,
+            prompt_idle_id = DSPpkg::self()->RegisterIdleProc(prompt_idle,
                 lstring::copy(buf));
         return;
     }
@@ -937,7 +937,7 @@ cPromptEdit::edit_plain_text(const char *prompt, const char *string,
     const char *stuff_text, PLedType update, PLedMode emode)
 {
     // Can't edit when busy, hangs program!
-    if (dspPkgIf()->IsBusy())
+    if (DSPpkg::self()->IsBusy())
         return (0);
 
     if (update == PLedStart) {
@@ -948,13 +948,13 @@ cPromptEdit::edit_plain_text(const char *prompt, const char *string,
             PL()->ShowPromptV("%s%s", prompt ? prompt : "", stuff_text);
             return (pe_buf.set_plain_text(stuff_text));
         }
-        if (dspPkgIf()->IsBusy()) {
+        if (DSPpkg::self()->IsBusy()) {
             // If the Busy flag is set, then entering the editor will
             // hang the program.  Run the event queue and if still set
             // bail out.
 
-            dspPkgIf()->CheckForInterrupt();
-            if (dspPkgIf()->IsBusy()) {
+            DSPpkg::self()->CheckForInterrupt();
+            if (DSPpkg::self()->IsBusy()) {
                 Log()->ErrorLog(mh::Internal,
                     "Busy flag set, edit aborted.");
                 return (0);
@@ -1054,7 +1054,7 @@ cPromptEdit::edit_hypertext(const char *prompt, hyList *h,
         pe_lt_popup->popdown();
 
     // Can't edit when busy, hangs program!
-    if (dspPkgIf()->IsBusy())
+    if (DSPpkg::self()->IsBusy())
         return (0);
 
     set_long_text_mode(use_long_text);
@@ -1071,13 +1071,13 @@ cPromptEdit::edit_hypertext(const char *prompt, hyList *h,
             pe_buf.set_ent(0, 0, i);
             return (get_hyList());
         }
-        if (dspPkgIf()->IsBusy()) {
+        if (DSPpkg::self()->IsBusy()) {
             // If the Busy flag is set, then entering the editor will
             // hang the program.  Run the event queue and if still set
             // bail out.
 
-            dspPkgIf()->CheckForInterrupt();
-            if (dspPkgIf()->IsBusy()) {
+            DSPpkg::self()->CheckForInterrupt();
+            if (DSPpkg::self()->IsBusy()) {
                 Log()->ErrorLog(mh::Initialization,
                     "Busy flag set, edit aborted.");
                 return (0);
@@ -1227,7 +1227,7 @@ cPromptEdit::editor()
     warp_pointer();
 
     if (!KbMac()->MacroPush(0))
-        GRpkgIf()->MainLoop();
+        DSPpkg::self()->MainLoop();
 
     Menu()->SetUndoSens(true);
     indicate(false);
@@ -1288,8 +1288,8 @@ cPromptEdit::finish(bool esc_entered)
     EV()->PopCallback(EditCmd);
     show_lt_button(false);
     if (!KbMac()->MacroPop()) {
-        if (GRpkgIf()->LoopLevel() > 1)
-            GRpkgIf()->BreakLoop();
+        if (DSPpkg::self()->LoopLevel() > 1)
+            DSPpkg::self()->BreakLoop();
     }
 }
 
@@ -2381,7 +2381,7 @@ cPromptEdit::button1_handler(bool up)
             pe_pill *p = new pe_pill(pe_pxdesc, pe_pxent);
             pe_pxdesc = 0;
             pe_pxent = 0;
-            dspPkgIf()->RegisterIdleProc(subw_idle, p);
+            DSPpkg::self()->RegisterIdleProc(subw_idle, p);
         }
         else if (pe_in_select) {
             // Select labels only, this accelerates changing property
@@ -3436,12 +3436,12 @@ namespace {
                 lstr.add_c('\\');
                 if (val <= 0xffff) {
                     lstr.add_c('u');
-                    sprintf(buf, "%04x", val);
+                    snprintf(buf, sizeof(buf), "%04x", val);
                     lstr.add(buf);
                 }
                 else {
                     lstr.add_c('U');
-                    sprintf(buf, "%08x", val);
+                    snprintf(buf, sizeof(buf), "%08x", val);
                     lstr.add(buf);
                 }
             }

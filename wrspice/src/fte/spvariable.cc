@@ -100,11 +100,11 @@ IFsimulator::SetVar(const char *varname)
     CP.Unquote(vname);
     if (*vname == '&') {
         if (!vname[1])
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "attempt to set a variable named \"&\".  Maybe a backslash\n"
                 "is needed to hide this character from the shell.\n");
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't set a vector as a boolean.\n");
     }
     else {
@@ -133,12 +133,12 @@ IFsimulator::SetVar(const char *varname, int value)
     CP.Unquote(vname);
     if (*vname == '&') {
         if (!vname[1])
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "attempt to set a variable named \"&\".  Maybe a backslash\n"
                 "is needed to hide this character from the shell.\n");
         else {
             char buf[64];
-            sprintf(buf, "%d", value);
+            snprintf(buf, sizeof(buf), "%d", value);
             OP.vecSet(vname+1, buf, false);
         }
     }
@@ -168,12 +168,12 @@ IFsimulator::SetVar(const char *varname, double value)
     CP.Unquote(vname);
     if (*vname == '&') {
         if (!vname[1])
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "attempt to set a variable named \"&\".  Maybe a backslash\n"
                 "is needed to hide this character from the shell.\n");
         else {
             char buf[64];
-            sprintf(buf, "%.16e", value);
+            snprintf(buf, sizeof(buf), "%.16e", value);
             OP.vecSet(vname+1, buf, false);
         }
     }
@@ -203,11 +203,11 @@ IFsimulator::SetVar(const char *varname, const char *value)
     CP.Unquote(vname);
     if (*vname == '&') {
         if (!vname[1])
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "attempt to set a variable named \"&\".  Maybe a backslash\n"
                 "is needed to hide this character from the shell.\n");
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't set a vector as a string.\n");
     }
     else {
@@ -236,11 +236,11 @@ IFsimulator::SetVar(const char *varname, variable *value)
     CP.Unquote(vname);
     if (*vname == '&') {
         if (!vname[1])
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "attempt to set a variable named \"&\".  Maybe a backslash\n"
                 "is needed to hide this character from the shell.\n");
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't set a vector as a list.\n");
     }
     else {
@@ -440,7 +440,7 @@ IFsimulator::GetVar(const char *name, VTYPenum type, VTvalue *retval,
             retval->set_list(v->list());
             break;
         default:
-            GRpkgIf()->ErrPrintf(ET_INTERR, "getvar: bad var type %d.\n",
+            GRpkg::self()->ErrPrintf(ET_INTERR, "getvar: bad var type %d.\n",
                 type);
             break;
         }
@@ -458,12 +458,12 @@ IFsimulator::GetVar(const char *name, VTYPenum type, VTvalue *retval,
             return (true);
         }
         if (type == VTYP_STRING && v->type() == VTYP_NUM) {
-            sprintf(buf, "%d", v->integer());
+            snprintf(buf, sizeof(buf), "%d", v->integer());
             retval->set_string(lstring::copy(buf));
             return (true);
         }
         if (type == VTYP_STRING && v->type() == VTYP_REAL) {
-            sprintf(buf, "%g", v->real());
+            snprintf(buf, sizeof(buf), "%g", v->real());
             retval->set_string(lstring::copy(buf));
             return (true);
         }
@@ -473,15 +473,15 @@ IFsimulator::GetVar(const char *name, VTYPenum type, VTvalue *retval,
             for (variable *vv = v->list(); vv; vv = vv->next()) {
                 switch (vv->type()) {
                 case VTYP_NUM:
-                    sprintf(buf, " %d", vv->integer());
+                    snprintf(buf, sizeof(buf), " %d", vv->integer());
                     lstr.add(buf);
                     break;
                 case VTYP_REAL:
-                    sprintf(buf, " %g", vv->real());
+                    snprintf(buf, sizeof(buf), " %g", vv->real());
                     lstr.add(buf);
                     break;
                 case VTYP_STRING:
-                    sprintf(buf, " %s", vv->string());
+                    snprintf(buf, sizeof(buf), " %s", vv->string());
                     lstr.add(buf);
                     break;
                 default:
@@ -622,7 +622,7 @@ IFsimulator::VarPrint(sLstr *plstr)
             if (!plstr)
                 TTY.printf(fmt, vars[j].x_char, v->name());
             else {
-                sprintf(buf, fmt, vars[j].x_char, v->name());
+                snprintf(buf, sizeof(buf), fmt, vars[j].x_char, v->name());
                 plstr->add(buf);
             }
         }
@@ -631,7 +631,8 @@ IFsimulator::VarPrint(sLstr *plstr)
             if (!plstr) 
                 TTY.printf("%c %-18s", vars[j].x_char, v->name());
             else {
-                sprintf(buf, "%c %-18s", vars[j].x_char, v->name());
+                snprintf(buf, sizeof(buf), "%c %-18s", vars[j].x_char,
+                    v->name());
                 plstr->add(buf);
             }
 
@@ -643,7 +644,7 @@ IFsimulator::VarPrint(sLstr *plstr)
                 if (!plstr)
                     TTY.printf(fmt, s);
                 else {
-                    sprintf(buf, fmt, s);
+                    snprintf(buf, sizeof(buf), fmt, s);
                     plstr->add(buf);
                 }
             }
@@ -651,7 +652,7 @@ IFsimulator::VarPrint(sLstr *plstr)
                 if (!plstr)
                     TTY.printf("%s\n", s);
                 else {
-                    sprintf(buf, "%s\n", s);
+                    snprintf(buf, sizeof(buf), "%s\n", s);
                     plstr->add(buf);
                 }
             }
@@ -855,7 +856,7 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
             // an expression
             tt = strrchr(word,')');
             if (tt == 0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "closing ')' not found.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "closing ')' not found.\n");
                 return (0);
             }
             r = range = strrchr(tt, '[');
@@ -870,9 +871,10 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
             //
             if (*word != SpecCatchar() || r != strchr(word, '[')) {
                 r++;
-                if (!isdigit(*r) && *r != '-')
-                    GRpkgIf()->ErrPrintf(ET_WARN,
+                if (!isdigit(*r) && *r != '-') {
+                    GRpkg::self()->ErrPrintf(ET_WARN,
                         "nonparseable range specified, %s[%s.\n", word, r);
+                }
                 for (low = 0; isdigit(*r); r++)
                     low = low * 10 + *r - '0';
                 if ((*r == '-') && isdigit(r[1]))
@@ -894,7 +896,7 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
             const char *stmp = word_strp;
             pnode *pn = GetPnode(&stmp, true);
             if (pn == 0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "parse failed.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "parse failed.\n");
                 return (0);
             }
             d = Evaluate(pn);
@@ -923,7 +925,7 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
         variable *vv = 0;
         if (d) {
             if (d->link()) {
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "only one vector may be accessed with the $& notation.\n");
                 d = d->link()->dl_dvec;
             }

@@ -367,7 +367,7 @@ htmWidget::formSelectAddOption(htmForm *entry, const char *attributes,
     // value, use id if none given
     if ((item->value = htmTagGetValue(attributes, "value")) == 0) {
         char dummy[32];  // 2^32 possible entries...
-        sprintf(dummy, "%d", entry->maxlength);
+        snprintf(dummy, sizeof(dummy), "%d", entry->maxlength);
         item->value = lstring::copy(dummy);
     }
 
@@ -575,8 +575,8 @@ htmWidget::formActivate(htmEvent *event, htmForm *comp)
 
                 char *xloc = new char[16];
                 char *yloc = new char[16];
-                sprintf(xloc, "%d", htm_press_x - comp->data->area.x);
-                sprintf(yloc, "%d", htm_press_y - comp->data->area.y);
+                snprintf(xloc, 16, "%d", htm_press_x - comp->data->area.x);
+                snprintf(yloc, 16, "%d", htm_press_y - comp->data->area.y);
 
                 components[ncomp].name  = xname;    // override
                 components[ncomp].value = xloc;

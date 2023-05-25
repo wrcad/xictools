@@ -122,7 +122,7 @@ cExt::associate(CDs *sdesc)
     // Electrical connectivity ignores shorted NOPHYS devices.
     SCD()->setIncludeNoPhys(false);
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
 
     bool ttmp = DSP()->ShowTerminals();
     if (ttmp)
@@ -194,7 +194,7 @@ cExt::associate(CDs *sdesc)
     // We're done with this.
     updateReferenceTable(0);
 
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (ret == XIok);
 }
 
@@ -1775,7 +1775,7 @@ cGroupDesc::set_duality()
                 char buf[256];
                 for (sEinstList *el = dv->edevs(); el; el = el->next()) {
                     char *instname = el->instance_name();
-                    sprintf(buf, "  %-16s", instname);
+                    snprintf(buf, sizeof(buf), "  %-16s", instname);
                     delete [] instname;
                     CDp_cnode *pc = (CDp_cnode*)el->cdesc()->prpty(P_NODE);
                     for ( ; pc; pc = pc->next()) {
@@ -1787,7 +1787,8 @@ cGroupDesc::set_duality()
                                 pc1 = pr->node(0, el->cdesc_index(),
                                     pc->index());
                         }
-                        sprintf(buf + strlen(buf), " %8s %3d",
+                        int len = strlen(buf);
+                        snprintf(buf + len, sizeof(buf) - len, " %8s %3d",
                             Tstring(pc->term_name()),
                             pc1 ? pc1->enode() : pc->enode());
                     }
@@ -3361,7 +3362,7 @@ cGroupDesc::solve_duals() THROW_XIrt
 
                 if (Timer()->check_interval(check_time)) {
                     if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-                        dspPkgIf()->CheckForInterrupt();
+                        DSPpkg::self()->CheckForInterrupt();
                     if (XM()->ConfirmAbort())
                         throw (XIintr);
                 }
@@ -3604,7 +3605,7 @@ cGroupDesc::check_split()
                 g.set_split_group(gchk);
                 if (ExtErrLog.log_associating()) {
                     char buf[256];
-                    sprintf(buf, 
+                    snprintf(buf, sizeof(buf),
                         "Unassociated group %d looks like split of group "
                         "%d (node %d).",
                         i, gchk, node);
@@ -3852,7 +3853,7 @@ cGroupDesc::check_associations(int grp)
         sLstr lstr;
         lstr.add("  Elec Subc:");
         for (int i = 0; i < tcnt; i++) {
-            sprintf(buf, " %s:%s:%d",
+            snprintf(buf, sizeof(buf), " %s:%s:%d",
                 Tstring(terms[i]->instance()->cellname()),
                 TstringNN(terms[i]->master_name()), terms[i]->master_group());
             lstr.add(buf);
@@ -3861,7 +3862,7 @@ cGroupDesc::check_associations(int grp)
         for (sSubcContactList *sc = g->subc_contacts(); sc; sc = sc->next()) {
             sSubcContactInst *ci = sc->contact();
             sEinstList *el = ci->subc()->dual();
-            sprintf(buf, " %s:%d:%d",
+            snprintf(buf, sizeof(buf), " %s:%d:%d",
                 el ? Tstring(el->cdesc()->cellname()) : "",
                 ci->parent_group(), ci->subc_group());
             lstr.add(buf);

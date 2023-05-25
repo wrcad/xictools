@@ -1133,11 +1133,11 @@ sGrip::show_ghost(int map_x, int map_y, bool erase)
 
             char buf[128];
             if (grip2) {
-                sprintf(buf, "%s %.5f   %s %.5f", gd_param, dnew,
-                    grip2->gd_param, dnew2);
+                snprintf(buf, sizeof(buf), "%s %.5f   %s %.5f", gd_param,
+                    dnew, grip2->gd_param, dnew2);
             }
             else
-                sprintf(buf, "%s %.5f", gd_param, dnew);
+                snprintf(buf, sizeof(buf), "%s %.5f", gd_param, dnew);
             int x = 4;
             int y = wdesc->ViewportHeight() - 5;
             if (erase) {

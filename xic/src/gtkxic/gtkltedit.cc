@@ -96,7 +96,7 @@ const char *gtkLcb::initmsg = "Layer Editor -- add or remove layers.";
 sLcb *
 cMain::PopUpLayerEditor(GRobject c)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return (0);
     gtkLcb *cbs = new gtkLcb(c);
     if (!cbs->Shell()) {
@@ -106,7 +106,7 @@ cMain::PopUpLayerEditor(GRobject c)
     gtk_window_set_transient_for(GTK_WINDOW(cbs->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), cbs->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), cbs->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(cbs->Shell());
     return (cbs);
@@ -249,7 +249,7 @@ gtkLcb::layername()
     char *string = le_get_lname(text, le_label);
 
     if (!string) {
-        GRX->Deselect(le_add);
+        GTKdev::Deselect(le_add);
         add_cb(false);
     }
     return (string);
@@ -261,7 +261,7 @@ gtkLcb::layername()
 void
 gtkLcb::desel_rem()
 {
-    GRX->Deselect(le_rem);
+    GTKdev::Deselect(le_rem);
 }
 
 
@@ -284,7 +284,7 @@ gtkLcb::le_popdown(GtkWidget*, void *client_data)
     if (!cbs)
         return;
     if (cbs->le_caller)
-        GRX->Deselect(cbs->le_caller);
+        GTKdev::Deselect(cbs->le_caller);
     if (cbs->le_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(cbs->le_shell),
             (gpointer)le_popdown, cbs);
@@ -308,18 +308,18 @@ gtkLcb::le_btn_proc(GtkWidget *caller, void *client_data)
         GtkWidget *label = cbs->le_label;
         if (!label)
             return;
-        if (!GRX->GetStatus(caller)) {
+        if (!GTKdev::GetStatus(caller)) {
             gtk_label_set_text(GTK_LABEL(label), initmsg);
             cbs->add_cb(false);
             return;
         }
-        GRX->Deselect(cbs->le_rem);
+        GTKdev::Deselect(cbs->le_rem);
         GtkWidget *text = gtk_bin_get_child(GTK_BIN(cbs->le_opmenu));
         if (!text)
             return;
         char *string = le_get_lname(text, label);
         if (!string) {
-            GRX->Deselect(caller);
+            GTKdev::Deselect(caller);
             return;
         }
         delete [] string;
@@ -331,7 +331,7 @@ gtkLcb::le_btn_proc(GtkWidget *caller, void *client_data)
         GtkWidget *label = cbs->le_label;
         if (!label)
             return;
-        if (!GRX->GetStatus(caller)) {
+        if (!GTKdev::GetStatus(caller)) {
             gtk_label_set_text(GTK_LABEL(label), initmsg);
             cbs->rem_cb(false);
             return;
@@ -343,10 +343,10 @@ gtkLcb::le_btn_proc(GtkWidget *caller, void *client_data)
             state = (CDldb()->layer(1, Physical) != 0);
         if (!state) {
             gtk_label_set_text(GTK_LABEL(label), "No removable layers left.");
-            GRX->Deselect(cbs->le_rem);
+            GTKdev::Deselect(cbs->le_rem);
             return;
         }
-        GRX->Deselect(cbs->le_add);
+        GTKdev::Deselect(cbs->le_add);
         gtk_label_set_text(GTK_LABEL(label), "Click on layers to remove.");
         cbs->rem_cb(true);
     }
@@ -377,8 +377,8 @@ gtkLcb::le_get_lname(GtkWidget *text, GtkWidget *label)
     if (CDldb()->findLayer(lname, DSP()->CurMode())) {
         if (label) {
             char buf[256];
-            sprintf(buf, "A layer %s already exists.  Enter a new name:",
-                lname);
+            snprintf(buf, sizeof(buf),
+                "A layer %s already exists.  Enter a new name:", lname);
             gtk_label_set_text(GTK_LABEL(label), buf);
         }
         delete [] lname;

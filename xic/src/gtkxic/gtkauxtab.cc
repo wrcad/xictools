@@ -119,7 +119,7 @@ using namespace gtkauxtab;
 void
 cConvert::PopUpAuxTab(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete AT;
@@ -141,7 +141,8 @@ cConvert::PopUpAuxTab(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(AT->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), AT->Shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), AT->Shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(AT->Shell());
 }
 
@@ -288,7 +289,7 @@ sAT::sAT(GRobject c)
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr, NULL);
 
     gtk_table_attach(GTK_TABLE(form), contr, 0, 4, rowcnt, rowcnt + 1,
@@ -328,7 +329,7 @@ sAT::~sAT()
 {
     AT = 0;
     if (at_caller)
-        GRX->Deselect(at_caller);
+        GTKdev::Deselect(at_caller);
     if (at_add_pop)
         at_add_pop->popdown();
     if (at_remove_pop)
@@ -363,12 +364,12 @@ sAT::update()
         text_set_chars(wb_textarea, "");
 
     if (CDvdb()->getVariable(VA_SkipOverrideCells)) {
-        GRX->SetStatus(at_over, false);
-        GRX->SetStatus(at_skip, true);
+        GTKdev::SetStatus(at_over, false);
+        GTKdev::SetStatus(at_skip, true);
     }
     else {
-        GRX->SetStatus(at_over, true);
-        GRX->SetStatus(at_skip, false);
+        GTKdev::SetStatus(at_over, true);
+        GTKdev::SetStatus(at_skip, false);
     }
     check_sens();
 }
@@ -383,7 +384,7 @@ sAT::action_hdlr(GtkWidget *caller, void*)
         return;
     }
 
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
 
     if (!strcmp(name, "Add")) {
         if (at_add_pop)
@@ -422,7 +423,7 @@ sAT::action_hdlr(GtkWidget *caller, void*)
                 delete [] string;
             }
             else
-                GRX->Deselect(at_rembtn);
+                GTKdev::Deselect(at_rembtn);
         }
         return;
     }

@@ -69,14 +69,14 @@ namespace qtinterf
 
 QTnumPopup::QTnumPopup(QTbag *owner, const char *prompt_str, double initd,
     double mind, double maxd, double del, int numd, void *arg) :
-    QDialog(owner ? owner->shell : 0)
+    QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
     p_cb_arg = arg;
     pw_affirmed = false;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Numeric Entry")));
 
@@ -142,7 +142,7 @@ QTnumPopup::~QTnumPopup()
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
-            owner->monitor.remove(this);
+            owner->MonitorRemove(this);
     }
 }
 
@@ -184,7 +184,7 @@ QTnumPopup::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     delete this;

@@ -153,7 +153,7 @@ using namespace gtkextfh;
 void
 cFH::PopUpExtIf(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Fh;
@@ -175,7 +175,7 @@ cFH::PopUpExtIf(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Fh->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LR), Fh->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LR), Fh->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Fh->Shell());
     setPopUpVisible(true);
@@ -597,7 +597,7 @@ sFh::sFh(GRobject c)
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(fh_jobs));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
         "paragraph-background", bclr, NULL);
 
@@ -661,7 +661,7 @@ sFh::~sFh()
 {
     Fh = 0;
     if (fh_caller)
-        GRX->Deselect(fh_caller);
+        GTKdev::Deselect(fh_caller);
     FHif()->setPopUpVisible(false);
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
@@ -677,8 +677,8 @@ sFh::update()
     fh_no_reset = true;
 
     // Run page
-    GRX->SetStatus(fh_foreg, CDvdb()->getVariable(VA_FhForeg));
-    GRX->SetStatus(fh_out, CDvdb()->getVariable(VA_FhMonitor));
+    GTKdev::SetStatus(fh_foreg, CDvdb()->getVariable(VA_FhForeg));
+    GTKdev::SetStatus(fh_out, CDvdb()->getVariable(VA_FhMonitor));
 
     var = CDvdb()->getVariable(VA_FhArgs);
     if (!var)
@@ -745,8 +745,10 @@ sFh::update()
         sb_fh_rh.set_value(DEF_FH_RH);
     }
 
-    GRX->SetStatus(fh_nhinc_ovr, CDvdb()->getVariable(VA_FhOverride));
-    GRX->SetStatus(fh_nhinc_fh, CDvdb()->getVariable(VA_FhUseFilament));
+    GTKdev::SetStatus(fh_nhinc_ovr,
+        CDvdb()->getVariable(VA_FhOverride));
+    GTKdev::SetStatus(fh_nhinc_fh,
+        CDvdb()->getVariable(VA_FhUseFilament));
 
     var = CDvdb()->getVariable(VA_FhVolElMin);
     if (sb_fh_volel_min.is_valid(var))
@@ -865,15 +867,17 @@ sFh::update_fh_freq()
         if (!smax)
             smax = lstring::copy("");
         sdec = lstring::gettok(&sdec);
-        if (sdec)
-            sprintf(buf, "fmin=%s fmax=%s ndec=%s", smin, smax, sdec);
+        if (sdec) {
+            snprintf(buf, sizeof(buf), "fmin=%s fmax=%s ndec=%s",
+                smin, smax, sdec);
+        }
         else {
             if (!strcmp(smin, fh_def_string(fhFreq)) &&
                     !strcmp(smax, fh_def_string(fhFreq))) {
                 CDvdb()->clearVariable(VA_FhFreq);
                 return;
             }
-            sprintf(buf, "fmin=%s fmax=%s", smin, smax);
+            snprintf(buf, sizeof(buf), "fmin=%s fmax=%s", smin, smax);
         }
         CDvdb()->setVariable(VA_FhFreq, buf);
     }
@@ -977,19 +981,19 @@ sFh::fh_def_string(int id)
     static char tbuf[16];
     switch (id) {
     case fhManhGridCnt:
-        sprintf(tbuf, "%.*f", 0, FH_DEF_MANH_GRID_CNT);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", 0, FH_DEF_MANH_GRID_CNT);
         return (tbuf);
     case fhNhinc:
-        sprintf(tbuf, "%d", DEF_FH_NHINC);
+        snprintf(tbuf, sizeof(tbuf), "%d", DEF_FH_NHINC);
         return (tbuf);
     case fhRh:
-        sprintf(tbuf, "%.*f", 3, DEF_FH_RH);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", 3, DEF_FH_RH);
         return (tbuf);
     case fhVolElMin:
-        sprintf(tbuf, "%.*f", 2, FH_DEF_VOLEL_MIN);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", 2, FH_DEF_VOLEL_MIN);
         return (tbuf);
     case fhVolElTarg:
-        sprintf(tbuf, "%.*f", 0, FH_DEF_VOLEL_TARG);
+        snprintf(tbuf, sizeof(tbuf), "%.*f", 0, FH_DEF_VOLEL_TARG);
         return (tbuf);
     case fhPath:
         return (fxJob::fh_default_path());
@@ -1149,7 +1153,8 @@ sFh::fh_dump_cb(const char *fname, void *client_data)
                 return;
             const char *fn = lstring::strip_path(fname);
             char tbuf[256];
-            sprintf(tbuf, "FastHenry input is in file %s.  View file? ", fn);
+            snprintf(tbuf, sizeof(tbuf),
+                "FastHenry input is in file %s.  View file? ", fn);
             Fh->PopUpAffirm(0, GRloc(LW_UL), tbuf, fh_p_cb,
                 lstring::copy(fname));
         }
@@ -1191,25 +1196,25 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
         delete [] s;
         break;
     case fhForeg:
-        if (GRX->GetStatus(widget))
+        if (GTKdev::GetStatus(widget))
             CDvdb()->setVariable(VA_FhForeg, "");
         else
             CDvdb()->clearVariable(VA_FhForeg);
         break;
     case fhMonitor:
-        if (GRX->GetStatus(widget))
+        if (GTKdev::GetStatus(widget))
             CDvdb()->setVariable(VA_FhMonitor, "");
         else
             CDvdb()->clearVariable(VA_FhMonitor);
         break;
     case fhEnable:
-        if (GRX->GetStatus(widget)) {
+        if (GTKdev::GetStatus(widget)) {
             s = Fh->sb_fh_volel_target.get_string();
             if (!check_num(s, FH_MIN_VOLEL_TARG, FH_MAX_VOLEL_TARG))
                 CDvdb()->setVariable(VA_FhVolElTarget, s);
             else {
                 char tbf[32];
-                sprintf(tbf, "%.1e", FH_DEF_VOLEL_TARG);
+                snprintf(tbf, sizeof(tbf), "%.1e", FH_DEF_VOLEL_TARG);
                 CDvdb()->setVariable(VA_FhVolElTarget, tbf);
             }
             Fh->sb_fh_volel_target.set_sensitive(true);
@@ -1218,7 +1223,7 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
                 CDvdb()->setVariable(VA_FhVolElMin, s);
             else {
                 char tbf[32];
-                sprintf(tbf, "%.1e", FH_DEF_VOLEL_MIN);
+                snprintf(tbf,sizeof(tbf), "%.1e", FH_DEF_VOLEL_MIN);
                 CDvdb()->setVariable(VA_FhVolElMin, tbf);
             }
             Fh->sb_fh_volel_min.set_sensitive(true);
@@ -1233,13 +1238,13 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
         }
         break;
     case fhOverrd:
-        if (GRX->GetStatus(widget))
+        if (GTKdev::GetStatus(widget))
             CDvdb()->setVariable(VA_FhOverride, "");
         else
             CDvdb()->clearVariable(VA_FhOverride);
         break;
     case fhFlmt:
-        if (GRX->GetStatus(widget))
+        if (GTKdev::GetStatus(widget))
             CDvdb()->setVariable(VA_FhUseFilament, "");
         else
             CDvdb()->clearVariable(VA_FhUseFilament);

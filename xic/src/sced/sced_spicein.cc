@@ -46,6 +46,7 @@
 #include "ext.h"
 #include "ext_extract.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 #include "cd_terminal.h"
 #include "cd_lgen.h"
 #include "cd_celldb.h"
@@ -419,8 +420,9 @@ cSced::extractFromSpice(CDs *sdesc, FILE *fp, int modeflag)
         // The file was created successfully (there were models).  Add
         // an include label for the file.
 
-        char *tmp = new char[strlen(pr.modfile_name()) + 12];
-        sprintf(tmp, ".include %s", pr.modfile_name());
+        int len = strlen(pr.modfile_name()) + 12;
+        char *tmp = new char[len];
+        snprintf(tmp, len, ".include %s", pr.modfile_name());
         if (!dotcards)
             dotcards = new stringlist(tmp, 0);
         else {
@@ -841,7 +843,7 @@ cSpiceBuilder::make_subc(const char *cname, int modeflag)
     sSubcLink *s = findsc(cname);
     if (!s) {
         /*
-        sprintf(tbuf, "can't find subcircuit %s.", cname);
+        snprintf(tbuf, sizeof(tbuf), "can't find subcircuit %s.", cname);
         record_error(tbuf);
         */
         return;
@@ -961,17 +963,18 @@ cSpiceBuilder::make_subc(const char *cname, int modeflag)
                     }
                 }
                 if (numeric)
-                    sprintf(tbuf, "n%s", n->node);
+                    snprintf(tbuf, sizeof(tbuf), "n%s", n->node);
                 else
                     strcpy(tbuf, n->node);
                 SCD()->prptyModify(tcd, 0, P_NAME, tbuf, 0);
             }
             else {
-                sprintf(tbuf, "instance creation failed for %s.",
-                    sb_term_name);
+                snprintf(tbuf, sizeof(tbuf),
+                    "instance creation failed for %s.", sb_term_name);
                 record_error(tbuf);
             }
-            sprintf(tbuf, "0 %d %d %d _%d 0 0 %d", cnt, x, y, cnt, TE_UNINIT);
+            snprintf(tbuf, sizeof(tbuf), "0 %d %d %d _%d 0 0 %d",
+                cnt, x, y, cnt, TE_UNINIT);
             sdesc->prptyAdd(P_NODE, tbuf);
             x += spTX2;
             cnt++;
@@ -1047,7 +1050,7 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
 
         if (!nx) {
             // Error, the subckt wasn't found.
-            sprintf(tbuf,
+            snprintf(tbuf, sizeof(tbuf),
                 "no subckt found for %s in %s, saved as spicetext label.",
                 sb_name, Tstring(sdesc->cellname()));
             record_error(tbuf);
@@ -1135,7 +1138,8 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
         const sKey *which = sb_keydb->find_key(key);
         cname = devname(which);
         if (!cname) {
-            sprintf(tbuf, "can't resolve device %s in %s.  No model?",
+            snprintf(tbuf, sizeof(tbuf),
+                "can't resolve device %s in %s.  No model?",
                 sb_name, Tstring(sdesc->cellname()));
             record_error(tbuf);
         }
@@ -1161,7 +1165,7 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
                 esdesc = CDcdb()->insertCell(cname, Electrical);
             if (esdesc->isEmpty()) {
                 if (!fix_empty_cell(esdesc)) {
-                    sprintf(tbuf,
+                    snprintf(tbuf, sizeof(tbuf),
                         "Attempt to fix empty instance of %s in %s failed.",
                         cname, Tstring(sdesc->cellname()));
                     record_error(tbuf);
@@ -1186,7 +1190,8 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
                 sb_cdesc = 0;
             }
             else {
-                sprintf(tbuf, "instance creation failed for %s in %s.",
+                snprintf(tbuf, sizeof(tbuf),
+                    "instance creation failed for %s in %s.",
                     cname, Tstring(sdesc->cellname()));
                 record_error(tbuf);
             }
@@ -1273,7 +1278,7 @@ cSpiceBuilder::add_glob(const char *nname, const char *cname)
     }
     char buf[64];
     if (numeric) {
-        sprintf(buf, "n%s", nname);
+        snprintf(buf, sizeof(buf), "n%s", nname);
         nname = buf;
     }
     for (sGlobNode *n = sb_globs; n; n = n->next) {
@@ -1327,7 +1332,8 @@ cSpiceBuilder::sub_glob(CDs *sdesc)
         for (sGlobNode *gg = g->next; gg; gg = gg->next) {
             if (!strcmp(g->subst, gg->subst)) {
                 char buf[128];
-                sprintf(buf, "ambiguous mapping for %s (%s and %s) in %s.",
+                snprintf(buf, sizeof(buf),
+                    "ambiguous mapping for %s (%s and %s) in %s.",
                     g->subst, g->nname, gg->nname, Tstring(sdesc->cellname()));
                 record_error(buf);
             }
@@ -1433,13 +1439,14 @@ cSpiceBuilder::apply_terms(CDs *sdesc)
                             }
                         }
                         if (numeric)
-                            sprintf(buf, "n%s", nname);
+                            snprintf(buf, sizeof(buf), "n%s", nname);
                         else
                             strcpy(buf, nname);
                         SCD()->prptyModify(tcd, 0, P_NAME, buf, 0);
                     }
                     else {
-                        sprintf(buf, "instance creation failed for %s in %s.",
+                        snprintf(buf, sizeof(buf),
+                            "instance creation failed for %s in %s.",
                             sb_term_name, Tstring(sdesc->cellname()));
                         record_error(buf);
                     }
@@ -1462,7 +1469,8 @@ cSpiceBuilder::apply_terms(CDs *sdesc)
                     GEO()->setCurTx(ct);
                     if (!ED()->makeInstance(sdesc, sb_gnd_name, x, y)) {
                         char buf[128];
-                        sprintf(buf, "instance creation failed for %s in %s.",
+                        snprintf(buf, sizeof(buf),
+                            "instance creation failed for %s in %s.",
                             sb_gnd_name, Tstring(sdesc->cellname()));
                         record_error(buf);
                     }
@@ -1714,12 +1722,14 @@ cSpiceBuilder::process_muts(CDs *sdesc)
             }
             char buf[256];
             if (!cdesc1) {
-                sprintf(buf, "can't find %s for mutual pair in %s.",
+                snprintf(buf, sizeof(buf),
+                    "can't find %s for mutual pair in %s.",
                     m->ind1, Tstring(sdesc->cellname()));
                 record_error(buf);
             }
             else if (!cdesc2) {
-                sprintf(buf, "can't find %s for mutual pair in %s.",
+                snprintf(buf, sizeof(buf),
+                    "can't find %s for mutual pair in %s.",
                     m->ind2, Tstring(sdesc->cellname()));
                 record_error(buf);
             }
@@ -1849,13 +1859,13 @@ cSpiceBuilder::dump_models(const char *cname)
         strcpy(e, "models.inc");
     }
     if (!filestat::create_bak(fname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         delete [] fname;
         return (false);
     }
     FILE *fp = fopen(fname, "w");
     if (!fp) {
-        GRpkgIf()->Perror(fname);
+        DSPpkg::self()->Perror(fname);
         delete [] fname;
         return (false);
     }
@@ -1977,7 +1987,7 @@ cSpiceBuilder::setnp(const sKey *dev, char *mname, bool noerr)
         return (dev->k_pdev);
     if (!noerr) {
         char buf[128];
-        sprintf(buf, "strange model %s.", mname);
+        snprintf(buf, sizeof(buf), "strange model %s.", mname);
         record_error(buf);
     }
     return (0);

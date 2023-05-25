@@ -104,7 +104,7 @@ using namespace gtkjoin;
 void
 cEdit::PopUpJoin(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Jn;
@@ -126,7 +126,7 @@ cEdit::PopUpJoin(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Jn->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Jn->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), Jn->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Jn->shell());
 }
@@ -358,7 +358,7 @@ sJn::~sJn()
 {
     Jn = 0;
     if (jn_caller)
-        GRX->Deselect(jn_caller);
+        GTKdev::Deselect(jn_caller);
     if (jn_popup)
         gtk_widget_destroy(jn_popup);
 }
@@ -367,11 +367,13 @@ sJn::~sJn()
 void
 sJn::update()
 {
-    GRX->SetStatus(jn_clean, CDvdb()->getVariable(VA_JoinBreakClean) != 0);
-    GRX->SetStatus(jn_wires, CDvdb()->getVariable(VA_JoinSplitWires) != 0);
+    GTKdev::SetStatus(jn_clean,
+        CDvdb()->getVariable(VA_JoinBreakClean) != 0);
+    GTKdev::SetStatus(jn_wires,
+        CDvdb()->getVariable(VA_JoinSplitWires) != 0);
 
     if (Zlist::JoinMaxVerts || Zlist::JoinMaxGroup || Zlist::JoinMaxQueue) {
-        GRX->SetStatus(jn_nolimit, false);
+        GTKdev::SetStatus(jn_nolimit, false);
         set_sens(true);
 
         const char *s = sb_mverts.get_string();
@@ -389,7 +391,7 @@ sJn::update()
 
     }
     else {
-        GRX->SetStatus(jn_nolimit, true);
+        GTKdev::SetStatus(jn_nolimit, true);
         sb_mverts.set_value(0);
         sb_mgroup.set_value(0);
         sb_mqueue.set_value(0);
@@ -431,7 +433,7 @@ sJn::jn_action(GtkWidget *caller, void*)
     if (!strcmp(name, "Help"))
         DSPmainWbag(PopUpHelp("xic:join"))
     else if (!strcmp(name, "NoLimit")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             Jn->jn_last_mverts = Jn->sb_mverts.get_value_as_int();
             Jn->jn_last_mgroup = Jn->sb_mgroup.get_value_as_int();
             Jn->jn_last_mqueue = Jn->sb_mqueue.get_value_as_int();
@@ -455,13 +457,13 @@ sJn::jn_action(GtkWidget *caller, void*)
         }
     }
     else if (!strcmp(name, "BreakClean")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_JoinBreakClean, "");
         else
             CDvdb()->clearVariable(VA_JoinBreakClean);
     }
     else if (!strcmp(name, "Wires")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_JoinSplitWires, "");
         else
             CDvdb()->clearVariable(VA_JoinSplitWires);

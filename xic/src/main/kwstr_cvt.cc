@@ -278,7 +278,8 @@ cvtKWstruct::get_string_for(int type, const char *orig)
             }
             if (!bad && hasdigit) {
                 if (checklist(in, GDS_MAX_LAYERS)) {
-                    sprintf(buf + strlen(buf), " %s", in);
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, " %s", in);
                     break;
                 }
             }
@@ -302,7 +303,8 @@ cvtKWstruct::get_string_for(int type, const char *orig)
             }
             if (!bad && hasdigit) {
                 if (checklist(in, GDS_MAX_DTYPES)) {
-                    sprintf(buf + strlen(buf), ", %s", in);
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, ", %s", in);
                     break;
                 }
             }
@@ -328,7 +330,8 @@ cvtKWstruct::get_string_for(int type, const char *orig)
             if (hasdigit) {
                 int d = atoi(in);
                 if (d >= 0 && d < GDS_MAX_LAYERS) {
-                    sprintf(buf + strlen(buf), " %s", in);
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, " %s", in);
                     break;
                 }
             }
@@ -351,7 +354,8 @@ cvtKWstruct::get_string_for(int type, const char *orig)
             if (hasdigit) {
                 int d = atoi(in);
                 if (d >= 0 && d < GDS_MAX_DTYPES) {
-                    sprintf(buf + strlen(buf), " %s", in);
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, " %s", in);
                     break;
                 }
             }
@@ -378,7 +382,8 @@ cvtKWstruct::get_string_for(int type, const char *orig)
             if (hasdigit) {
                 int d = atoi(in);
                 if (d >= 0 && d < GDS_MAX_DTYPES) {
-                    sprintf(buf + strlen(buf), " %s", in);
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, " %s", in);
                     break;
                 }
             }
@@ -593,7 +598,7 @@ cvtKWstruct::set_settings(CDl *ld, const char *string)
                 cvbak.revert();
 
                 char buf[256];
-                sprintf(buf, "Retry: error on line %d", linecnt);
+                snprintf(buf, sizeof(buf), "Retry: error on line %d", linecnt);
                 return (lstring::copy(buf));
             }
             linecnt++;

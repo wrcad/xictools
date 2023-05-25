@@ -870,7 +870,7 @@ namespace {
 
         lstr.add(pre);
         lstr.add("( ");
-        sprintf(buf, "%-22s", name);
+        snprintf(buf, sizeof(buf), "%-22s", name);
         lstr.add(buf);
         lstr.add_c(' ');
 
@@ -1166,8 +1166,8 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
 {
     char *s, buf[1024];
     if (use_orig && td_origstring) {
-        sprintf(buf,  "%c %s %s\n", td_inhibit ? 'I' : ' ', ruleName(),
-            td_origstring);
+        snprintf(buf, sizeof(buf),  "%c %s %s\n", td_inhibit ? 'I' : ' ',
+            ruleName(), td_origstring);
         putstr(fp, lstr, show_inh ? buf : buf+2);
         if (cmts && ldesc)
             Tech()->CommentDump(fp, lstr, tBlkPlyr, ldesc->name(), ruleName());
@@ -1178,13 +1178,15 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
     if (td_type != drExist) {
         char *rstr = regionString();
         if (rstr) {
-            sprintf(buf, "%c %s Region %s", td_inhibit ? 'I' : ' ', ruleName(),
-                rstr);
+            snprintf(buf, sizeof(buf), "%c %s Region %s",
+                td_inhibit ? 'I' : ' ', ruleName(), rstr);
             delete [] rstr;
         }
     }
-    if (!buf[0])
-        sprintf(buf, "%c %s", td_inhibit ? 'I' : ' ', ruleName());
+    if (!buf[0]) {
+        snprintf(buf, sizeof(buf), "%c %s", td_inhibit ? 'I' : ' ',
+            ruleName());
+    }
 
     switch (td_type) {
     case drNoRule:
@@ -1200,11 +1202,11 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
     case drNoHoles:
         putstr(fp, lstr, show_inh ? buf : buf+2);
         if (area() > 0.0) {
-            sprintf(buf, " %s %.4e", Dkw.MinArea(), area());
+            snprintf(buf, sizeof(buf), " %s %.4e", Dkw.MinArea(), area());
             putstr(fp, lstr, buf);
         }
         if (hasValue(0)) {
-            sprintf(buf, " %s %.4f", Dkw.MinWidth(),
+            snprintf(buf, sizeof(buf), " %s %.4f", Dkw.MinWidth(),
                 MICRONS(value(0)));
             putstr(fp, lstr, buf);
         }
@@ -1236,7 +1238,7 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
     case drMinArea:
     case drMaxArea:
         putstr(fp, lstr, show_inh ? buf : buf+2);
-        sprintf(buf, " %.4e", area());
+        snprintf(buf, sizeof(buf), " %.4e", area());
         putstr(fp, lstr, buf);
         printComment(fp, lstr);
         putchr(fp, lstr, '\n');
@@ -1264,7 +1266,7 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
         s = td_target.string();
         putstr(fp, lstr, s);
         delete [] s;
-        sprintf(buf, " %.4f", MICRONS(dimen()));
+        snprintf(buf, sizeof(buf), " %.4f", MICRONS(dimen()));
         putstr(fp, lstr, buf);
         printComment(fp, lstr);
         putchr(fp, lstr, '\n');
@@ -1288,7 +1290,7 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
             putstr(fp, lstr, s);
             delete [] s;
         }
-        sprintf(buf, " %.4f", MICRONS(dimen()));
+        snprintf(buf, sizeof(buf), " %.4f", MICRONS(dimen()));
         putstr(fp, lstr, buf);
         printComment(fp, lstr);
         putchr(fp, lstr, '\n');
@@ -1312,12 +1314,12 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
             putstr(fp, lstr, s);
             delete [] s;
         }
-        sprintf(buf, " %.4f", MICRONS(dimen()));
+        snprintf(buf, sizeof(buf), " %.4f", MICRONS(dimen()));
         putstr(fp, lstr, buf);
         if (hasValue(0)) {
             putchr(fp, lstr, ' ');
             putstr(fp, lstr, Dkw.Diagonal());
-            sprintf(buf, " %.4f", MICRONS(value(0)));
+            snprintf(buf, sizeof(buf), " %.4f", MICRONS(value(0)));
             putstr(fp, lstr, buf);
         }
         printComment(fp, lstr);
@@ -1355,19 +1357,19 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
             putchr(fp, lstr, ' ');
         }
         else {
-            sprintf(buf, " %.4f", MICRONS(dimen()));
+            snprintf(buf, sizeof(buf), " %.4f", MICRONS(dimen()));
             putstr(fp, lstr, buf);
         }
         if (hasValue(0)) {
             putchr(fp, lstr, ' ');
             putstr(fp, lstr, Dkw.Diagonal());
-            sprintf(buf, " %.4f", MICRONS(value(0)));
+            snprintf(buf, sizeof(buf), " %.4f", MICRONS(value(0)));
             putstr(fp, lstr, buf);
         }
         if (hasValue(1)) {
             putchr(fp, lstr, ' ');
             putstr(fp, lstr, Dkw.SameNet());
-            sprintf(buf, " %.4f", MICRONS(value(1)));
+            snprintf(buf, sizeof(buf), " %.4f", MICRONS(value(1)));
             putstr(fp, lstr, buf);
         }
         printComment(fp, lstr);
@@ -1396,18 +1398,19 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
         s = td_target.string();
         putstr(fp, lstr, s);
         delete [] s;
-        sprintf(buf, " %.4f", MICRONS(dimen()));
+        snprintf(buf, sizeof(buf), " %.4f", MICRONS(dimen()));
         putstr(fp, lstr, buf);
         if (hasValue(0)) {
             putchr(fp, lstr, ' ');
             putstr(fp, lstr, Dkw.Enclosed());
-            sprintf(buf, " %.4f", MICRONS(value(0)));
+            snprintf(buf, sizeof(buf), " %.4f", MICRONS(value(0)));
             putstr(fp, lstr, buf);
         }
         if (hasValue(1) || hasValue(2)) {
             putchr(fp, lstr, ' ');
             putstr(fp, lstr, Dkw.Opposite());
-            sprintf(buf, " %.4f %.4f", MICRONS(value(1)), MICRONS(value(2)));
+            snprintf(buf, sizeof(buf), " %.4f %.4f", MICRONS(value(1)),
+                MICRONS(value(2)));
             putstr(fp, lstr, buf);
         }
         printComment(fp, lstr);
@@ -1436,7 +1439,7 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
         s = td_target.string();
         putstr(fp, lstr, s);
         delete [] s;
-        sprintf(buf, " %.4f", MICRONS(dimen()));
+        snprintf(buf, sizeof(buf), " %.4f", MICRONS(dimen()));
         putstr(fp, lstr, buf);
         printComment(fp, lstr);
         putchr(fp, lstr, '\n');
@@ -1464,7 +1467,7 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
         s = td_target.string();
         putstr(fp, lstr, s);
         delete [] s;
-        sprintf(buf, " %.4f", MICRONS(dimen()));
+        snprintf(buf, sizeof(buf), " %.4f", MICRONS(dimen()));
         putstr(fp, lstr, buf);
         printComment(fp, lstr);
         putchr(fp, lstr, '\n');
@@ -2241,7 +2244,7 @@ DRCtestDesc::parseRegion(const char **string_ptr)
             if (strcmp(s, td_objlayer->name())) {
                 // If region name same as source layer name, not a
                 // "real" region!
-                sprintf(buf, "(%s)&(%s)", td_objlayer->name(), s);
+                snprintf(buf, sizeof(buf), "(%s)&(%s)", td_objlayer->name(), s);
                 const char *t = buf;
                 ParseNode *p = SIparse()->getLexprTree(&t);
                 if (!p) {

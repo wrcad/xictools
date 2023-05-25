@@ -93,7 +93,7 @@ namespace {
     {
         if (Timer()->check_interval(check_time)) {
             if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
             return (XM()->ConfirmAbort());
         }
         return (false);
@@ -203,7 +203,7 @@ RLsolver::setupR()
         return (false);
     }
     char buf[64];
-    sprintf(buf, "%s-thickness", rl_ld->name());
+    snprintf(buf, sizeof(buf), "%s-thickness", rl_ld->name());
     spt_t *thick_mods = spt_t::findSpatialParameterTable(buf);
 
     FILE *fp = 0;

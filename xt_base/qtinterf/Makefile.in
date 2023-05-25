@@ -20,29 +20,31 @@ MOC_INCLUDE = ../include/qtinterf
 LIB_TARGET = ../lib/qtinterf.a
 
 CCFILES = \
-  activity_w.cc draw_qt_w.cc draw_x_w.cc idle_proc.cc interval_timer.cc \
-  polysplit.cc progress_d.cc qtaffirm.cc qtdraw.cc qtedit.cc qtfile.cc \
-  qtfont.cc qthcopy.cc qtinput.cc qtinterf.cc qtlist.cc qtmcol.cc \
-  qtmsg.cc qtnumer.cc search_d.cc qtxdraw.cc
+  polysplit.cc qtactivity.cc qtaffirm.cc qtcanvas.cc qtcanvas_x.cc \
+  qtdraw.cc qtedit.cc qtfile.cc qtfont.cc qthcopy.cc qtidleproc.cc \
+  qtinput.cc qtinterf.cc qtlist.cc qtmcol.cc qtmsg.cc qtnumer.cc \
+  qtprogress.cc qtsearch.cc qttext.cc qttimer.cc qtxdraw.cc
 
 MOCFILES = \
-    moc_activity_w.cpp \
+    moc_activity.cpp \
     moc_affirm.cpp \
-    moc_draw_qt_w.cpp \
-    moc_draw_x_w.cpp \
+    moc_canvas.cpp \
+    moc_canvas_x.cpp \
+    moc_edit.cpp \
     moc_file.cpp \
     moc_font.cpp \
-    moc_idle_proc.cpp \
+    moc_hcopy.cpp \
+    moc_idleproc.cpp \
     moc_input.cpp \
-    moc_interval_timer.cpp \
     moc_list.cpp \
     moc_mcol.cpp \
     moc_msg.cpp \
     moc_numer.cpp \
-    moc_hcopy.cpp \
-    moc_progress_d.cpp \
-    moc_search_d.cpp \
-    moc_edit.cpp
+    moc_progress.cpp \
+    moc_search.cpp \
+    moc_text.cpp \
+    moc_textw.cpp \
+    moc_timer.cpp
 
 CCOBJS = $(CCFILES:.cc=.o)
 MOCOBJS = $(MOCFILES:.cpp=.o)
@@ -59,42 +61,44 @@ $(LIB_TARGET): $(LIBOBJS)
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
 
-moc_activity_w.o: moc_activity_w.cpp  $(MOC_INCLUDE)/activity_w.h 
+moc_activity.o: moc_activity.cpp  $(MOC_INCLUDE)/qtactivity.h 
 moc_affirm.o: moc_affirm.cpp  $(MOC_INCLUDE)/qtaffirm.h 
-moc_draw_qt_w.o: moc_draw_qt_w.cpp  $(MOC_INCLUDE)/draw_qt_w.h 
-moc_draw_x_w.o: moc_draw_x_w.cpp  $(MOC_INCLUDE)/draw_x_w.h 
+moc_canvas.o: moc_canvas.cpp  $(MOC_INCLUDE)/qtcanvas.h 
+moc_canvas_x.o: moc_canvas_x.cpp  $(MOC_INCLUDE)/qtcanvas_x.h 
+moc_edit.o: moc_edit.cpp  $(MOC_INCLUDE)/qtedit.h 
 moc_file.o: moc_file.cpp  $(MOC_INCLUDE)/qtfile.h 
 moc_font.o: moc_font.cpp  $(MOC_INCLUDE)/qtfont.h 
-moc_idle_proc.o: moc_idle_proc.cpp  $(MOC_INCLUDE)/idle_proc.h 
+moc_hcopy.o: moc_hcopy.cpp  $(MOC_INCLUDE)/qthcopy.h 
+moc_idleproc.o: moc_idleproc.cpp  $(MOC_INCLUDE)/qtidleproc.h 
 moc_input.o: moc_input.cpp  $(MOC_INCLUDE)/qtinput.h 
-moc_interval_timer.o: moc_interval_timer.cpp  $(MOC_INCLUDE)/interval_timer.h 
 moc_list.o: moc_list.cpp  $(MOC_INCLUDE)/qtlist.h
 moc_mcol.o: moc_mcol.cpp  $(MOC_INCLUDE)/qtmcol.h
 moc_msg.o: moc_msg.cpp  $(MOC_INCLUDE)/qtmsg.h 
 moc_numer.o: moc_numer.cpp  $(MOC_INCLUDE)/qtnumer.h 
-moc_hcopy.o: moc_hcopy.cpp  $(MOC_INCLUDE)/qthcopy.h 
-moc_progress_d.o: moc_progress_d.cpp  $(MOC_INCLUDE)/progress_d.h 
-moc_search_d.o: moc_search_d.cpp  $(MOC_INCLUDE)/search_d.h 
-moc_edit.o: moc_edit.cpp  $(MOC_INCLUDE)/qtedit.h 
+moc_progress.o: moc_progress.cpp  $(MOC_INCLUDE)/qtprogress.h 
+moc_search.o: moc_search.cpp  $(MOC_INCLUDE)/qtsearch.h 
+moc_text.o: moc_text.cpp  $(MOC_INCLUDE)/qttext.h 
+moc_textw.o: moc_textw.cpp  $(MOC_INCLUDE)/qttextw.h 
+moc_timer.o: moc_timer.cpp  $(MOC_INCLUDE)/qttimer.h 
 
-moc_activity_w.cpp: $(MOC) $(MOC_INCLUDE)/activity_w.h
-	$(MOC) $(MOC_INCLUDE)/activity_w.h -o moc_activity_w.cpp
+moc_activity.cpp: $(MOC) $(MOC_INCLUDE)/qtactivity.h
+	$(MOC) $(MOC_INCLUDE)/qtactivity.h -o moc_activity.cpp
 moc_affirm.cpp: $(MOC) $(MOC_INCLUDE)/qtaffirm.h
 	$(MOC) $(MOC_INCLUDE)/qtaffirm.h -o moc_affirm.cpp
-moc_draw_qt_w.cpp: $(MOC) $(MOC_INCLUDE)/draw_qt_w.h
-	$(MOC) $(MOC_INCLUDE)/draw_qt_w.h -o moc_draw_qt_w.cpp
-moc_draw_x_w.cpp: $(MOC) $(MOC_INCLUDE)/draw_x_w.h
-	$(MOC) $(MOC_INCLUDE)/draw_x_w.h -o moc_draw_x_w.cpp
+moc_canvas.cpp: $(MOC) $(MOC_INCLUDE)/qtcanvas.h
+	$(MOC) $(MOC_INCLUDE)/qtcanvas.h -o moc_canvas.cpp
+moc_canvas_x.cpp: $(MOC) $(MOC_INCLUDE)/qtcanvas_x.h
+	$(MOC) $(MOC_INCLUDE)/qtcanvas_x.h -o moc_canvas_x.cpp
+moc_edit.cpp: $(MOC) $(MOC_INCLUDE)/qtedit.h
+	$(MOC) $(MOC_INCLUDE)/qtedit.h -o moc_edit.cpp
 moc_file.cpp: $(MOC) $(MOC_INCLUDE)/qtfile.h
 	$(MOC) $(MOC_INCLUDE)/qtfile.h -o moc_file.cpp
 moc_font.cpp: $(MOC) $(MOC_INCLUDE)/qtfont.h
 	$(MOC) $(MOC_INCLUDE)/qtfont.h -o moc_font.cpp
-moc_idle_proc.cpp: $(MOC) $(MOC_INCLUDE)/idle_proc.h
-	$(MOC) $(MOC_INCLUDE)/idle_proc.h -o moc_idle_proc.cpp
+moc_idleproc.cpp: $(MOC) $(MOC_INCLUDE)/qtidleproc.h
+	$(MOC) $(MOC_INCLUDE)/qtidleproc.h -o moc_idleproc.cpp
 moc_input.cpp: $(MOC) $(MOC_INCLUDE)/qtinput.h
 	$(MOC) $(MOC_INCLUDE)/qtinput.h -o moc_input.cpp
-moc_interval_timer.cpp: $(MOC) $(MOC_INCLUDE)/interval_timer.h
-	$(MOC) $(MOC_INCLUDE)/interval_timer.h -o moc_interval_timer.cpp
 moc_list.cpp: $(MOC) $(MOC_INCLUDE)/qtlist.h
 	$(MOC) $(MOC_INCLUDE)/qtlist.h -o moc_list.cpp
 moc_mcol.cpp: $(MOC) $(MOC_INCLUDE)/qtmcol.h
@@ -105,12 +109,16 @@ moc_numer.cpp: $(MOC) $(MOC_INCLUDE)/qtnumer.h
 	$(MOC) $(MOC_INCLUDE)/qtnumer.h -o moc_numer.cpp
 moc_hcopy.cpp: $(MOC) $(MOC_INCLUDE)/qthcopy.h
 	$(MOC) $(MOC_INCLUDE)/qthcopy.h -o moc_hcopy.cpp
-moc_progress_d.cpp: $(MOC) $(MOC_INCLUDE)/progress_d.h
-	$(MOC) $(MOC_INCLUDE)/progress_d.h -o moc_progress_d.cpp
-moc_search_d.cpp: $(MOC) $(MOC_INCLUDE)/search_d.h
-	$(MOC) $(MOC_INCLUDE)/search_d.h -o moc_search_d.cpp
-moc_edit.cpp: $(MOC) $(MOC_INCLUDE)/qtedit.h
-	$(MOC) $(MOC_INCLUDE)/qtedit.h -o moc_edit.cpp
+moc_progress.cpp: $(MOC) $(MOC_INCLUDE)/qtprogress.h
+	$(MOC) $(MOC_INCLUDE)/qtprogress.h -o moc_progress.cpp
+moc_search.cpp: $(MOC) $(MOC_INCLUDE)/qtsearch.h
+	$(MOC) $(MOC_INCLUDE)/qtsearch.h -o moc_search.cpp
+moc_text.cpp: $(MOC) $(MOC_INCLUDE)/qttext.h
+	$(MOC) $(MOC_INCLUDE)/qttext.h -o moc_text.cpp
+moc_textw.cpp: $(MOC) $(MOC_INCLUDE)/qttextw.h
+	$(MOC) $(MOC_INCLUDE)/qttextw.h -o moc_textw.cpp
+moc_timer.cpp: $(MOC) $(MOC_INCLUDE)/qttimer.h
+	$(MOC) $(MOC_INCLUDE)/qttimer.h -o moc_timer.cpp
 
 mocclean:
 	-@rm -f $(MOCOBJS)

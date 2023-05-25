@@ -130,7 +130,8 @@ namespace {
         FileType tp = FIO()->TypeExt(s);
         if (tp != Fnone && tp != dst_ft) {
             char buf[128];
-            sprintf(buf, "Warning: writing %s format with an extension "
+            snprintf(buf, sizeof(buf),
+                "Warning: writing %s format with an extension "
                 "reserved for %s.  Continue? ",
                 FIO()->TypeName(dst_ft), FIO()->TypeName(tp));
             char *in = PL()->EditPrompt(buf, "n");
@@ -712,9 +713,9 @@ namespace {
                     delete [] cellname;
                     return (true);
                 }
-                dspPkgIf()->SetWorking(true);
+                DSPpkg::self()->SetWorking(true);
                 chd = chd_in.read(infile, sCHDin::get_default_cgd_type());
-                dspPkgIf()->SetWorking(false);
+                DSPpkg::self()->SetWorking(false);
                 if (!chd) {
                     PL()->ShowPrompt("Read error occurred.");
                     delete [] infile;
@@ -964,9 +965,10 @@ cvrt_menu::M_TextEdit(CmdDesc*)
             FileType ft = cbin.fileType();
             if (ft == Fnative) {
                 if (cbin.fileName()) {
-                    fn = new char[strlen(cbin.fileName()) +
-                        strlen(Tstring(cbin.cellname())) + 2];
-                    sprintf(fn, "%s/%s", cbin.fileName(),
+                    int len = strlen(cbin.fileName()) +
+                        strlen(Tstring(cbin.cellname())) + 2;
+                    fn = new char[len];
+                    snprintf(fn, len, "%s/%s", cbin.fileName(),
                         Tstring(cbin.cellname()));
                 }
             }

@@ -83,7 +83,7 @@ namespace {
 
             char *get_selection() { return (text_get_selection(wb_textarea)); }
 
-            void end_search() { GRX->Deselect(c_searchbtn); }
+            void end_search() { GTKdev::Deselect(c_searchbtn); }
 
         private:
             void clear(const char*);
@@ -192,7 +192,7 @@ GTKmainwin::cells_panic()
 void
 cMain::PopUpCells(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Cells;
@@ -214,7 +214,7 @@ cMain::PopUpCells(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Cells->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Cells->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Cells->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Cells->Shell());
 }
@@ -469,7 +469,7 @@ sCells::sCells(GRobject c)
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr, NULL);
 
     gtk_box_pack_start(GTK_BOX(vbox), contr, true, true, 0);
@@ -542,11 +542,11 @@ sCells::~sCells()
     if (c_caller) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(c_caller),
             (gpointer)c_cancel, 0);
-        GRX->Deselect(c_caller);
+        GTKdev::Deselect(c_caller);
     }
     if (ListCmd)
         ListCmd->esc();
-    if (GRX->GetStatus(c_showbtn))
+    if (GTKdev::GetStatus(c_showbtn))
         // erase highlighting
         DSP()->ShowCells(0);
     XM()->PopUpCellFlags(0, MODE_OFF, 0, 0);
@@ -578,7 +578,7 @@ void
 sCells::update()
 {
     select_range(0, 0);
-    if (GRX->GetStatus(c_showbtn))
+    if (GTKdev::GetStatus(c_showbtn))
         DSP()->ShowCells(0);
     XM()->PopUpCellFlags(0, MODE_OFF, 0, 0);
     if (DSP()->MainWdesc()->DbType() == WDchd) {
@@ -591,7 +591,7 @@ sCells::update()
         if (c_rename_pop)
             c_rename_pop->popdown();
 
-        GRX->Deselect(c_showbtn);
+        GTKdev::Deselect(c_showbtn);
 
         gtk_widget_set_sensitive(c_clearbtn, false);
         gtk_widget_set_sensitive(c_openbtn, false);
@@ -643,7 +643,7 @@ sCells::update()
         update_text(s);
         delete [] s;
     }
-    if (GRX->GetStatus(c_searchbtn) && ListCmd) {
+    if (GTKdev::GetStatus(c_searchbtn) && ListCmd) {
         char *s = ListCmd->label_text();
         gtk_label_set_text(GTK_LABEL(c_label), s);
         delete [] s;
@@ -661,7 +661,7 @@ sCells::update()
             gtk_label_set_text(GTK_LABEL(c_label), ecells_msg);
     }
 
-    if (GRX->GetStatus(c_searchbtn)) {
+    if (GTKdev::GetStatus(c_searchbtn)) {
         DisplayMode oldm = c_mode;
         c_mode = DSP()->CurMode();
         if (oldm != c_mode)
@@ -734,7 +734,7 @@ sCells::clear(const char *name)
         if (!cbin.isSubcell()) {
             EV()->InitCallback();
             char buf[256];
-            sprintf(buf,
+            snprintf(buf, sizeof(buf),
                 "This will clear %s and all its\n"
                 "subcells from the database.  Continue?", name);
             if (c_clear_pop)
@@ -959,7 +959,7 @@ sCells::action_hdlr(GtkWidget *caller, void *client_data)
             XM()->SetTreeCaptive(true);
 
             if (widg)
-                GRX->Select(widg);
+                GTKdev::Select(widg);
         }
     }
     else if (client_data == (void*)OpenCode) {
@@ -987,7 +987,7 @@ sCells::action_hdlr(GtkWidget *caller, void *client_data)
         rename_cell(cname);
     }
     else if (client_data == (void*)SearchCode) {
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state)
             EV()->InitCallback();
         ListState::show_search(state);
@@ -1022,14 +1022,14 @@ sCells::action_hdlr(GtkWidget *caller, void *client_data)
             XM()->ShowCellInfo(cname, true, c_mode);
     }
     else if (client_data == (void*)ShowCode) {
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state)
             DSP()->ShowCells(cname);
         else
             DSP()->ShowCells(0);
     }
     else if (client_data == (void*)FltrCode) {
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state)
             XM()->PopUpCellFilt(caller, MODE_ON, c_mode, c_filter_cb, 0);
         else
@@ -1099,7 +1099,7 @@ sCells::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
     if (ppgs)
         *ppgs = 0;
     stringlist *s0 = 0;
-    if (GRX->GetStatus(Cells->c_searchbtn) && ListCmd)
+    if (GTKdev::GetStatus(Cells->c_searchbtn) && ListCmd)
         s0 = ListCmd->cell_list(nomark);
     else {
         if (DSP()->MainWdesc()->DbType() == WDchd) {
@@ -1219,7 +1219,7 @@ sCells::cell_list(int cols)
             int tmpmax = (i+1)*pagesz;
             if (tmpmax > cnt)
                 tmpmax = cnt;
-            sprintf(buf, "%d - %d", i*pagesz, tmpmax);
+            snprintf(buf, sizeof(buf), "%d - %d", i*pagesz, tmpmax);
             gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c_page_combo),
                 buf);
         }
@@ -1253,7 +1253,7 @@ sCells::check_sens()
 {
     bool has_sel = text_has_selection(wb_textarea);
     if (!has_sel) {
-        if (GRX->GetStatus(c_showbtn))
+        if (GTKdev::GetStatus(c_showbtn))
             DSP()->ShowCells(0);
         gtk_widget_set_sensitive(c_treebtn, false);
         gtk_widget_set_sensitive(c_openbtn, false);
@@ -1276,7 +1276,7 @@ sCells::check_sens()
                 gtk_widget_set_sensitive(c_renamebtn, ed_ok);
             }
         }
-        if (GRX->GetStatus(c_showbtn)) {
+        if (GTKdev::GetStatus(c_showbtn)) {
             char *cn = text_get_selection(wb_textarea);
             DSP()->ShowCells(cn);
             delete [] cn;
@@ -1309,7 +1309,7 @@ sCells::c_copy_cb(const char *newname, void *arg)
         CDcbin cbin;
         if (CDcdb()->findSymbol(newname, &cbin)) {
             // select new cell
-            dspPkgIf()->RegisterIdleProc(c_highlight_idle,
+            GTKpkg::self()->RegisterIdleProc(c_highlight_idle,
                 (void*)cbin.cellname());
         }
         return (ESTR_DN);
@@ -1371,7 +1371,7 @@ sCells::c_rename_cb(const char *newname, void *arg)
         CDcbin cbin;
         if (CDcdb()->findSymbol(newname, &cbin))
             // select renamed cell
-            dspPkgIf()->RegisterIdleProc(c_highlight_idle,
+            GTKpkg::self()->RegisterIdleProc(c_highlight_idle,
                 (void*)cbin.cellname());
 
         WindowDesc *wd;
@@ -1600,7 +1600,7 @@ sCells::c_cancel(GtkWidget*, void*)
 void
 sCells::c_save_btn_hdlr(GtkWidget *widget, void *arg)
 {
-    if (GRX->GetStatus(widget)) {
+    if (GTKdev::GetStatus(widget)) {
         sCells *cp = (sCells*)arg;
         if (cp->c_save_pop)
             return;
@@ -1613,7 +1613,7 @@ sCells::c_save_btn_hdlr(GtkWidget *widget, void *arg)
 
         gtk_window_set_transient_for(GTK_WINDOW(cp->c_save_pop->pw_shell),
             GTK_WINDOW(cp->wb_shell));
-        GRX->SetPopupLocation(GRloc(), cp->c_save_pop->pw_shell,
+        GTKdev::self()->SetPopupLocation(GRloc(), cp->c_save_pop->pw_shell,
             cp->wb_shell);
         cp->c_save_pop->set_visible(true);
     }
@@ -1659,7 +1659,7 @@ sCells::c_save_cb(const char *string, void *arg)
         cp->c_msg_pop->register_usrptr((void**)&cp->c_msg_pop);
         gtk_window_set_transient_for(GTK_WINDOW(cp->c_msg_pop->pw_shell),
             GTK_WINDOW(cp->wb_shell));
-        GRX->SetPopupLocation(GRloc(), cp->c_msg_pop->pw_shell,
+        GTKdev::self()->SetPopupLocation(GRloc(), cp->c_msg_pop->pw_shell,
             cp->wb_shell);
         cp->c_msg_pop->set_visible(true);
         g_timeout_add(2000, c_timeout, cp);
@@ -1726,25 +1726,29 @@ ListState::label_text()
             if (chd) {
                 symref_t *p = chd->findSymref(DSP()->MainWdesc()->DbCellName(),
                     DSP()->CurMode(), true);
-                sprintf(buf, "Cells under %s",
+                snprintf(buf, sizeof(buf), "Cells under %s",
                     p ? Tstring(p->get_name()) : "<unknown>");
             }
         }
-        else
-            sprintf(buf, "Cells under %s", Tstring(DSP()->CurCellName()));
+        else {
+            snprintf(buf, sizeof(buf), "Cells under %s",
+                Tstring(DSP()->CurCellName()));
+        }
     }
     else {
         if (CDvdb()->getVariable(VA_InfoInternal))
-            sprintf(buf, "Cells intersecting (%d,%d %d,%d)",
+            snprintf(buf, sizeof(buf), "Cells intersecting (%d,%d %d,%d)",
                 lsAOI.left, lsAOI.bottom, lsAOI.right, lsAOI.top);
         else if (DSP()->CurMode() == Physical) {
             int ndgt = CD()->numDigits();
-            sprintf(buf, "Cells intersecting (%.*f,%.*f %.*f,%.*f)",
+            snprintf(buf, sizeof(buf),
+                "Cells intersecting (%.*f,%.*f %.*f,%.*f)",
                 ndgt, MICRONS(lsAOI.left), ndgt, MICRONS(lsAOI.bottom),
                 ndgt, MICRONS(lsAOI.right), ndgt, MICRONS(lsAOI.top));
         }
         else {
-            sprintf(buf, "Cells intersecting (%.3f,%.3f %.3f,%.3f)",
+            snprintf(buf, sizeof(buf),
+                "Cells intersecting (%.3f,%.3f %.3f,%.3f)",
                 ELEC_MICRONS(lsAOI.left), ELEC_MICRONS(lsAOI.bottom),
                 ELEC_MICRONS(lsAOI.right), ELEC_MICRONS(lsAOI.top));
         }

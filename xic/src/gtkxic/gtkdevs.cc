@@ -289,7 +289,7 @@ using namespace gtkdevs;
 void
 cSced::PopUpDevs(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_ON) {
         if (Dv) {
@@ -334,13 +334,13 @@ cSced::PopUpDevs(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Dv->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Dv->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), Dv->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Dv->Shell());
 
     // GTK-2.20.1 needs this, the first call is ignored for some reason,
     // for the pictorial menu only.
-    GRX->SetPopupLocation(GRloc(LW_UL), Dv->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), Dv->Shell(),
         GTKmainwin::self()->Viewport());
 
     if (Dv->Viewport())
@@ -666,7 +666,7 @@ sDv::~sDv()
 {
     Dv = 0;
     if (dv_caller)
-        GRX->SetStatus(dv_caller, false);
+        GTKdev::SetStatus(dv_caller, false);
     delete [] dv_entries;
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
@@ -703,7 +703,7 @@ sDv::activate(bool active)
             gtk_widget_hide(wb_shell);
             dv_active = false;
             if (dv_caller)
-                GRX->SetStatus(dv_caller, false);
+                GTKdev::SetStatus(dv_caller, false);
         }
     }
 }
@@ -812,7 +812,7 @@ sDv::render_cell(int which, bool selected)
     GetDrawable()->set_pixmap(pm);
 #else
     GdkPixmap *pm = gdk_pixmap_new(gd_window,  vp_width, vp_height,
-        gdk_visual_get_depth(GRX->Visual()));
+        gdk_visual_get_depth(GTKdev::self()->Visual()));
     // swap in the pixmap
     GRobject window_bak = gd_window;
     gd_window = pm;
@@ -1021,11 +1021,12 @@ sDv::dv_menu_proc(GtkWidget *caller, void*)
     char *string = (char*)g_object_get_data(G_OBJECT(caller), "user");
     if (XM()->IsDoingHelp()) {
         char tbuf[128];
-        sprintf(tbuf, "dev:%s", string);
+        snprintf(tbuf, sizeof(tbuf), "dev:%s", string);
         DSPmainWbag(PopUpHelp(tbuf))
         return;
     }
-    GRX->SetFocus(GTKmainwin::self()->Shell());  // give focus to main window
+    // give focus to main window
+    GTKdev::SetFocus(GTKmainwin::self()->Shell());
     EV()->InitCallback();
     if (!strcmp(string, MUT_DUMMY)) {
         CmdDesc cmd;
@@ -1107,7 +1108,7 @@ int
 sDv::dv_redraw_hdlr(GtkWidget*, GdkEvent*, void*)
 #endif
 {
-    dspPkgIf()->RegisterIdleProc(dv_redraw_idle, 0);
+    GTKpkg::self()->RegisterIdleProc(dv_redraw_idle, 0);
     return (true);
 }
 
@@ -1127,7 +1128,7 @@ sDv::dv_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
         Dv->dv_curdev = n;
         if (XM()->IsDoingHelp()) {
             char tbuf[128];
-            sprintf(tbuf, "dev:%s", Dv->dv_entries[n].name);
+            snprintf(tbuf, sizeof(tbuf), "dev:%s", Dv->dv_entries[n].name);
             DSPmainWbag(PopUpHelp(tbuf))
             return (true);
         }

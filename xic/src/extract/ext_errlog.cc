@@ -440,7 +440,7 @@ cExtErrLog::open_files()
         }
     }
     if (lstr_errs.string())
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", lstr_errs.string());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", lstr_errs.string());
 }
 
 

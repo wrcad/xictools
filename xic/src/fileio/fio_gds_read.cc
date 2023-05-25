@@ -342,7 +342,8 @@ gds_info::pr_records(FILE *fp)
     sLstr lstr;
     for (int i = 0; i < GDS_NUM_REC_TYPES; i++) {
         if (rec_counts[i]) {
-            sprintf(buf, "%-16s %d\n", gds_record_names[i], rec_counts[i]);
+            snprintf(buf, sizeof(buf), "%-16s %d\n", gds_record_names[i],
+                rec_counts[i]);
             if (fp)
                 fputs(buf, fp);
             else
@@ -1579,9 +1580,9 @@ gds_in::warning(const char *str, int x, int y)
 {
     char tbf[64];
     if (in_layer < 256 && in_dtype < 256)
-        sprintf(tbf, "%02X%02X", in_layer, in_dtype);
+        snprintf(tbf, sizeof(tbf), "%02X%02X", in_layer, in_dtype);
     else
-        sprintf(tbf, "%04X%04X", in_layer, in_dtype);
+        snprintf(tbf, sizeof(tbf), "%04X%04X", in_layer, in_dtype);
 
     FIO()->ifPrintCvLog(IFLOG_WARN, "%s [%s %d,%d %s %llu]", str,
         in_cellname, x, y, tbf, 
@@ -1919,7 +1920,7 @@ gds_in::check_layer_cvt()
             if (!in_undef_layers)
                 in_undef_layers = new SymTab(true, false);
             if (SymTab::get(in_undef_layers, in_layer_name) == ST_NIL) {
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "no mapping for layer %d datatype %d (naming layer %s)",
                     in_curlayer, in_curdtype, in_layer_name);
                 in_undef_layers->add(lstring::copy(in_layer_name), 0, false);
@@ -2016,7 +2017,8 @@ gds_in::unsup()
                     Unsup[i].name, (unsigned long long)in_offset);
             }
             else {
-                sprintf(buf, "unsupported record type %s", Unsup[i].name);
+                snprintf(buf, sizeof(buf), "unsupported record type %s",
+                    Unsup[i].name);
                 warning(buf);
             }
             return (true);
@@ -2027,7 +2029,7 @@ gds_in::unsup()
             in_rectype, (unsigned long long)in_offset);
     }
     else {
-        sprintf(buf, "unknown record type %d", in_rectype);
+        snprintf(buf, sizeof(buf), "unknown record type %d", in_rectype);
         warning(buf);
     }
     return (true);
@@ -2065,7 +2067,8 @@ gds_in::nop()
                     Ignored[i].name, (unsigned long long)in_offset);
             }
             else {
-                sprintf(buf, "ignored record type %s", Ignored[i].name);
+                snprintf(buf, sizeof(buf), "ignored record type %s",
+                    Ignored[i].name);
                 warning(buf);
             }
             return (true);
@@ -2076,7 +2079,7 @@ gds_in::nop()
             in_rectype, (unsigned long long)in_offset);
     }
     else {
-        sprintf(buf, "ignored record type %d", in_rectype);
+        snprintf(buf, sizeof(buf), "ignored record type %d", in_rectype);
         warning(buf);
     }
     return (true);
@@ -2098,8 +2101,8 @@ gds_in::a_header()
         return (true);
     char buf1[64], buf2[64];
     in_version = shortval(in_cbuf);
-    sprintf(buf1, "%d", in_version);
-    sprintf(buf2, "( VERSION %d )", in_version);
+    snprintf(buf1, sizeof(buf1), "%d", in_version);
+    snprintf(buf2, sizeof(buf2), "( VERSION %d )", in_version);
     Attribute *h = new Attribute(GDSII_PROPERTY_BASE + II_HEADER, buf1, buf2);
     if (!in_sprops)
         in_sprops = h;
@@ -2125,8 +2128,9 @@ gds_in::a_libname()
 {
     if (in_mode == Electrical)
         return (true);
-    char *tbf = new char[strlen(in_cbuf) + 16];
-    sprintf(tbf, "( LIBNAME %s )", in_cbuf);
+    int len = strlen(in_cbuf) + 16;
+    char *tbf = new char[len];
+    snprintf(tbf, len, "( LIBNAME %s )", in_cbuf);
     Attribute *h =
         new Attribute(GDSII_PROPERTY_BASE + II_LIBNAME, in_cbuf, tbf);
     delete [] tbf;
@@ -2616,7 +2620,7 @@ gds_in::a_path()
         in_ptype = 0;
     }
     else if (in_ptype != 0 && in_ptype != 1 && in_ptype != 2) {
-        sprintf(in_cbuf, "unknown pathtype %d set to 0", in_ptype);
+        snprintf(in_cbuf, 64, "unknown pathtype %d set to 0", in_ptype);
         warning(in_cbuf, in_points->x, in_points->y);
         in_ptype = 0;
     }
@@ -3367,8 +3371,8 @@ gds_in::a_generations()
     if (in_ignore_prop)
         return (true);
     char buf1[256], buf2[256];
-    sprintf(buf1, "%d", shortval(in_cbuf));
-    sprintf(buf2, "( GENERATIONS %d )", shortval(in_cbuf));
+    snprintf(buf1, sizeof(buf1), "%d", shortval(in_cbuf));
+    snprintf(buf2, sizeof(buf2), "( GENERATIONS %d )", shortval(in_cbuf));
     Attribute *h = new Attribute(GDSII_PROPERTY_BASE + II_GENERATIONS, buf1,
         buf2);
     if (!in_sprops)
@@ -3390,8 +3394,9 @@ gds_in::a_attrtable()
         return (true);
     if (in_ignore_prop)
         return (true);
-    char *tbf = new char[strlen(in_cbuf) + 22];
-    sprintf(tbf, "( ATTRIBUTE TABLE %s )", in_cbuf);
+    int len = strlen(in_cbuf) + 22;
+    char *tbf = new char[len];
+    snprintf(tbf, len, "( ATTRIBUTE TABLE %s )", in_cbuf);
     Attribute *h =
         new Attribute(GDSII_PROPERTY_BASE + II_ATTRTABLE, in_cbuf, tbf);
     delete [] tbf;
@@ -3831,7 +3836,7 @@ gds_in::ac_path()
         in_ptype = 0;
     }
     else if (in_ptype != 0 && in_ptype != 1 && in_ptype != 2) {
-        sprintf(in_cbuf, "unknown pathtype %d set to 0", in_ptype);
+        snprintf(in_cbuf, 64, "unknown pathtype %d set to 0", in_ptype);
         warning(in_cbuf, in_points->x, in_points->y);
         in_ptype = 0;
     }

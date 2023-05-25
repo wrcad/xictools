@@ -169,7 +169,7 @@ PSdev::NewDraw(int)
     else
         return (0);
     if (!plotfp) {
-        GRpkgIf()->Perror(data->filename);
+        GRpkg::self()->Perror(data->filename);
         return (0);
     }
     PSparams *ps = new PSparams;
@@ -642,7 +642,7 @@ PSparams::SetColor(int pixel)
     if (pixel == GRappIf()->BackgroundPixel())
         r = g = b = 255;
     else {
-        GRpkgIf()->RGBofPixel(pixel, &r, &g, &b);
+        GRpkg::self()->RGBofPixel(pixel, &r, &g, &b);
         // map pure white to black
         if (r == 255 && g == 255 && b == 255)
             r = g = b = 0;
@@ -764,7 +764,7 @@ PSparams::SetFillpattern(const GRfillType *fillp)
 void
 PSparams::DisplayImage(const GRimage*, int, int, int, int)
 {
-    GRpkgIf()->HCabort("PS line-draw driver doesn't suppport image mode.");
+    GRpkg::self()->HCabort("PS line-draw driver doesn't suppport image mode.");
 }
 
 

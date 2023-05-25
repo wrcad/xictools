@@ -193,6 +193,9 @@ sOPTIONS::dump()
     askOpt(OPT_JJACCEL, &value, &notset);
     if (!notset)
         TTY.printf(ifmt, spkw_jjaccel, value.iValue);
+    askOpt(OPT_NODCOP, &value, &notset);
+    if (!notset)
+        TTY.printf(ifmt, spkw_nodcop, value.iValue);
     askOpt(OPT_NOITER, &value, &notset);
     if (!notset)
         TTY.printf(ifmt, spkw_noiter, value.iValue);
@@ -524,6 +527,12 @@ sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
     case OPT_JJACCEL:
         if (opt && OPTjjaccel_given)
             value->iValue = OPTjjaccel;
+        else
+            *notset = 1;
+        break;
+    case OPT_NODCOP:
+        if (opt && OPTnodcop_given)
+            value->iValue = OPTnodcop;
         else
             *notset = 1;
         break;
@@ -897,6 +906,10 @@ OPTanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         break;
     case OPT_JJACCEL:
         value->iValue = task->TSKjjaccel;
+        data->type = IF_FLAG;
+        break;
+    case OPT_NODCOP:
+        value->iValue = task->TSKnodcop;
         data->type = IF_FLAG;
         break;
     case OPT_NOITER:

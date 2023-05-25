@@ -131,7 +131,7 @@ CommandTab::com_deftype(wordlist *wl)
             (!wl->wl_word[1] || isspace(wl->wl_word[1]))) {
         wl = wl->wl_next;
         if (!wl) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "missing name argument.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "missing name argument.\n");
             return;
         }
         char *name = wl->wl_word;
@@ -153,13 +153,13 @@ CommandTab::com_deftype(wordlist *wl)
             (!wl->wl_word[1] || isspace(wl->wl_word[1]))) {
         wl = wl->wl_next;
         if (!wl) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "missing name argument.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "missing name argument.\n");
             return;
         }
         char *name = wl->wl_word;
         wl = wl->wl_next;
         if (!wl) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "missing pattern argument.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "missing pattern argument.\n");
             return;
         }
         while (wl) {
@@ -173,7 +173,7 @@ CommandTab::com_deftype(wordlist *wl)
         }
     }
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "missing 'p' or 'v' argument.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "missing 'p' or 'v' argument.\n");
 }
 
 
@@ -193,7 +193,7 @@ CommandTab::com_settype(wordlist *wl)
         u.set(t->t_type);
     else {
         if (!u.set(tpname)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "could not recognize type or units in '%s'.\n", tpname);
             return;
         }

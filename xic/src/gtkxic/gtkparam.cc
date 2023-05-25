@@ -216,27 +216,28 @@ cParam::print()
         GridDesc *g = a->grid(m);
         double spa = g->spacing(m);
         if (g->snap() < 0)
-            sprintf(textbuf, "%g/%g", -spa/g->snap(), spa);
+            snprintf(textbuf, sizeof(textbuf), "%g/%g", -spa/g->snap(), spa);
         else
-            sprintf(textbuf, "%g/%g", spa*g->snap(), spa);
+            snprintf(textbuf, sizeof(textbuf), "%g/%g", spa*g->snap(), spa);
         p_text.append_string("Grid/Snap: ", c1);
         p_text.append_string(textbuf, c2);
         p_text.append_string("  ", c2);
     }
     if (selectno) {
-        sprintf(textbuf, "%d", selectno);
+        snprintf(textbuf, sizeof(textbuf), "%d", selectno);
         p_text.append_string("Select: ", c1);
         p_text.append_string(textbuf, c2);
         CDc *cd = (CDc*)Selections.firstObject(CurCell(), "c");
         if (cd) {
-            sprintf(textbuf, " (%s)", Tstring(cd->cellname()));
+            snprintf(textbuf, sizeof(textbuf), " (%s)",
+                Tstring(cd->cellname()));
             p_text.append_string(textbuf, c2);
         }
         p_text.append_string("  ", c2);
     }
     int clev = PP()->Level();
     if (clev) {
-        sprintf(textbuf, "%d", clev);
+        snprintf(textbuf, sizeof(textbuf), "%d", clev);
         p_text.append_string("Push: ", c1);
         p_text.append_string(textbuf, c2);
         p_text.append_string("  ", c2);
@@ -264,7 +265,7 @@ cParam::print()
             DSP()->MainWdesc()->Ratio()/CDphysResolution;
         double dy = DSP()->MainWdesc()->ViewportHeight() /
             DSP()->MainWdesc()->Ratio()/CDphysResolution;
-        sprintf(textbuf, "%.2f X %.2f", dx, dy);
+        snprintf(textbuf, sizeof(textbuf), "%.2f X %.2f", dx, dy);
         p_text.append_string("Window: ", c1);
         p_text.append_string(textbuf, c2);
         p_text.append_string("  ", c2);
@@ -311,7 +312,7 @@ cParam::display(int start, int end)
         if (p_pm)
             g_object_unref(p_pm);
         p_pm = gdk_pixmap_new(gd_window, winw, winh,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         p_width = winw;
         p_height = winh;
         start = 0;

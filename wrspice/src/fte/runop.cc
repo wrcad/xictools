@@ -129,7 +129,7 @@ IFoutput::measureCmd(wordlist *wl)
     char *errstr = 0;
     sRunopMeas *m = new sRunopMeas(str, &errstr);
     if (errstr) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Measure: %s\n", errstr);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "Measure: %s\n", errstr);
         delete [] errstr;
         delete m;
     }
@@ -169,7 +169,7 @@ IFoutput::stopCmd(wordlist *wl)
     char *errstr = 0;
     sRunopStop *m = new sRunopStop(str, &errstr);
     if (errstr) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Stop: %s\n", errstr);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "Stop: %s\n", errstr);
         delete [] errstr;
         delete m;
     }
@@ -351,15 +351,15 @@ IFoutput::deleteCmd(wordlist *wl)
         // look for range n1-n2
         if ((s = strchr(wl->wl_word, '-')) != 0) {
             if (s == wl->wl_word || !*(s+1)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "badly formed range %s.\n",
+                GRpkg::self()->ErrPrintf(ET_ERROR, "badly formed range %s.\n",
                     wl->wl_word);
                 continue;
             }
             char *t;
             for (t = wl->wl_word; *t; t++) {
                 if (!isdigit(*t) && *t != '-') {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "badly formed range %s.\n",
-                        wl->wl_word);
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "badly formed range %s.\n", wl->wl_word);
                     break;
                 }
             }
@@ -382,8 +382,8 @@ IFoutput::deleteCmd(wordlist *wl)
                 
         for (s = wl->wl_word; *s; s++) {
             if (!isdigit(*s)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s isn't a runops number.\n",
-                    wl->wl_word);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "%s isn't a runops number.\n", wl->wl_word);
                 break;
             }
         }
@@ -873,8 +873,9 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                 for (sRunopIplot *d = igen.next(); d; d = igen.next()) {
                     if (d->type() == RO_IPLOT) {
                         iplot(d, run);
-                        if (GRpkgIf()->CurDev() &&
-                                GRpkgIf()->CurDev()->devtype == GRfullScreen) {
+                        if (GRpkg::self()->CurDev() &&
+                                GRpkg::self()->CurDev()->devtype ==
+                                GRfullScreen) {
                             break;
                         }
                     }
@@ -1028,7 +1029,7 @@ sRunopSave::print(sLstr *plstr)
             kw_save,  ro_string);
     }
     else {
-        sprintf(buf, msg0, ro_active ? ' ' : 'I', ro_number,
+        snprintf(buf, sizeof(buf), msg0, ro_active ? ' ' : 'I', ro_number,
             kw_save,  ro_string);
         plstr->add(buf);
     }
@@ -1053,7 +1054,7 @@ sRunopTrace::print(sLstr *plstr)
             kw_trace,  ro_string ? ro_string : "");
     }
     else {
-        sprintf(buf, msg0, ro_active ? ' ' : 'I', ro_number,
+        snprintf(buf, sizeof(buf), msg0, ro_active ? ' ' : 'I', ro_number,
             kw_trace,  ro_string ? ro_string : "");
         plstr->add(buf);
     }
@@ -1090,7 +1091,7 @@ sRunopTrace::print_trace(sPlot *plot, bool *flag, int pnt)
             return (false);
         wordlist *wl = CP.LexStringSub(ro_string);
         if (!wl) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, Msg, ro_string);
+            GRpkg::self()->ErrPrintf(ET_ERROR, Msg, ro_string);
             ro_bad = true;
             return (false);
         }
@@ -1101,7 +1102,7 @@ sRunopTrace::print_trace(sPlot *plot, bool *flag, int pnt)
         if (pl)
             dvl = Sp.DvList(pl);
         if (!dvl) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, Msg, ro_string);
+            GRpkg::self()->ErrPrintf(ET_ERROR, Msg, ro_string);
             ro_bad = true;
             return (false);
         }
@@ -1111,7 +1112,7 @@ sRunopTrace::print_trace(sPlot *plot, bool *flag, int pnt)
                 continue;
             if (v1->length() <= 0) {
                 if (pnt == 1)
-                    GRpkgIf()->ErrPrintf(ET_WARN, Msg, v1->name());
+                    GRpkg::self()->ErrPrintf(ET_WARN, Msg, v1->name());
                 continue;
             }
             if (v1->isreal()) {
@@ -1143,8 +1144,8 @@ sRunopIplot::print(sLstr *plstr)
             ro_string);
     }
     else {
-        sprintf(buf, msg2, ro_active ? ' ' : 'I', ro_number, kw_iplot,
-            ro_string);
+        snprintf(buf, sizeof(buf), msg2, ro_active ? ' ' : 'I',
+            ro_number, kw_iplot, ro_string);
         plstr->add(buf);
     }
 }

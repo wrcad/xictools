@@ -425,14 +425,14 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
                 gdk_window_set_cursor(w->GetDrawable()->get_window(),
                     busy_cursor);
                 // Force immediate display of busy cursor.
-                dspPkgIf()->CheckForInterrupt();
+                GTKpkg::self()->CheckForInterrupt();
             }
 #else
             if (w && w->Window()) {
                 if (!GDK_IS_PIXMAP(w->Window())) {
                     gdk_window_set_cursor(w->Window(), busy_cursor);
                     // Force immediate display of busy cursor.
-                    dspPkgIf()->CheckForInterrupt();
+                    GTKpkg::self()->CheckForInterrupt();
                 }
             }
 #endif
@@ -444,7 +444,7 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
 void
 cMain::PopUpAttributes(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Attr;
@@ -466,7 +466,7 @@ cMain::PopUpAttributes(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Attr->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Attr->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Attr->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Attr->shell());
 }
@@ -908,7 +908,7 @@ sAttr::~sAttr()
 {
     Attr = 0;
     if (at_caller)
-        GRX->Deselect(at_caller);
+        GTKdev::Deselect(at_caller);
     if (at_popup)
         gtk_widget_destroy(at_popup);
 }
@@ -917,9 +917,12 @@ sAttr::~sAttr()
 void
 sAttr::update()
 {
-    GRX->SetStatus(at_minst, CDvdb()->getVariable(VA_MarkInstanceOrigin));
-    GRX->SetStatus(at_mcntr, CDvdb()->getVariable(VA_MarkObjectCentroid));
-    GRX->SetStatus(at_ebprop, CDvdb()->getVariable(VA_EraseBehindProps));
+    GTKdev::SetStatus(at_minst,
+        CDvdb()->getVariable(VA_MarkInstanceOrigin));
+    GTKdev::SetStatus(at_mcntr,
+        CDvdb()->getVariable(VA_MarkObjectCentroid));
+    GTKdev::SetStatus(at_ebprop,
+        CDvdb()->getVariable(VA_EraseBehindProps));
 
     int d;
     const char *str = CDvdb()->getVariable(VA_PhysPropTextSize);
@@ -1027,28 +1030,28 @@ sAttr::at_action(GtkWidget *caller, void*)
     }
 
     if (!strcmp(name, "fullscr")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_FullWinCursor, 0);
         else
             CDvdb()->clearVariable(VA_FullWinCursor);
         return;
     }
     if (!strcmp(name, "mark")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_MarkInstanceOrigin, "");
         else
             CDvdb()->clearVariable(VA_MarkInstanceOrigin);
         return;
     }
     if (!strcmp(name, "centr")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_MarkObjectCentroid, "");
         else
             CDvdb()->clearVariable(VA_MarkObjectCentroid);
         return;
     }
     if (!strcmp(name, "ebprop")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_EraseBehindProps, "");
         else
             CDvdb()->clearVariable(VA_EraseBehindProps);
@@ -1103,7 +1106,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_PhysPropTextSize);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_PhysPropTextSize, buf);
             }
         }
@@ -1140,7 +1143,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_CellThreshold);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_CellThreshold, buf);
             }
         }
@@ -1154,7 +1157,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_ContextDarkPcnt);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_ContextDarkPcnt, buf);
             }
         }
@@ -1168,7 +1171,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_LowerWinOffset);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_LowerWinOffset, buf);
             }
         }
@@ -1182,7 +1185,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_LabelDefHeight);
             else {
                 char buf[32];
-                sprintf(buf, "%.2f", d);
+                snprintf(buf, sizeof(buf), "%.2f", d);
                 CDvdb()->setVariable(VA_LabelDefHeight, buf);
             }
         }
@@ -1197,7 +1200,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 CDvdb()->clearVariable(VA_LabelMaxLen);
             else {
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_LabelMaxLen, buf);
             }
         }
@@ -1213,7 +1216,7 @@ sAttr::at_val_changed(GtkWidget *caller, void*)
                 if (d > DSP_MAX_MAX_LABEL_LINES)
                     d = DSP_MAX_MAX_LABEL_LINES;
                 char buf[32];
-                sprintf(buf, "%d", d);
+                snprintf(buf, sizeof(buf), "%d", d);
                 CDvdb()->setVariable(VA_LabelMaxLines, buf);
             }
         }

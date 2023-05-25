@@ -166,7 +166,7 @@ cEdit::joinAllCmd()
 
     EV()->InitCallback();
     Ulist()->ListCheck("JOINALL", cursd, false);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     PL()->ShowPrompt("Working...");
 
     bool incl_wires = DSP()->CurMode() == Physical && Zlist::JoinSplitWires;
@@ -206,7 +206,7 @@ cEdit::joinAllCmd()
         XIrt ret = j_list::join(j0, cursd, ld, false);
         if (ret != XIok) {
             XM()->ShowParameters();
-            dspPkgIf()->SetWorking(false);
+            DSPpkg::self()->SetWorking(false);
             if (ret == XIbad)
                 Errs()->add_error("FAILED: internal error.");
             else if (ret == XIintr)
@@ -215,7 +215,7 @@ cEdit::joinAllCmd()
         }
     }
     XM()->ShowParameters();
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     Ulist()->CommitChanges(true);
     return (true);
@@ -249,7 +249,7 @@ cEdit::joinLyrCmd()
 
     EV()->InitCallback();
     Ulist()->ListCheck("JOINLYR", cursd, false);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     PL()->ShowPrompt("Working...");
 
     bool incl_wires = DSP()->CurMode() == Physical && Zlist::JoinSplitWires;
@@ -279,7 +279,7 @@ cEdit::joinLyrCmd()
     XIrt ret = j_list::join(j0, cursd, ld, false);
     if (ret != XIok) {
         XM()->ShowParameters();
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         if (ret == XIbad)
             Errs()->add_error("FAILED: internal error.");
         else if (ret == XIintr)
@@ -287,7 +287,7 @@ cEdit::joinLyrCmd()
         return (false);
     }
     XM()->ShowParameters();
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     Ulist()->CommitChanges(true);
     return (true);
@@ -373,7 +373,7 @@ cEdit::joinQueue()
     CDs *cursd = CurCell();
     if (!cursd)
         return (XIbad);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     PL()->ShowPrompt("Working...");
     bool incl_wires = DSP()->CurMode() == Physical && Zlist::JoinSplitWires;
 
@@ -415,7 +415,7 @@ cEdit::joinQueue()
             XIrt ret = j_list::join(j0, cursd, ld, true);
             if (ret != XIok) {
                 XM()->ShowParameters();
-                dspPkgIf()->SetWorking(false);
+                DSPpkg::self()->SetWorking(false);
                 CDol::destroy(olst);
                 return (ret);
             }
@@ -424,7 +424,7 @@ cEdit::joinQueue()
 
     PL()->ErasePrompt();
     XM()->ShowParameters();
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (XIok);
 }
 

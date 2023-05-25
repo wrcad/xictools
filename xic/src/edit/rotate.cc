@@ -538,7 +538,7 @@ RotState::undo()
                 SetLevel4();
                 return;
             }
-            dspPkgIf()->RegisterTimeoutProc(1500, MsgTimeout, 0);
+            DSPpkg::self()->RegisterTimeoutProc(1500, MsgTimeout, 0);
         }
     }
     else if (Level == 2) {
@@ -575,7 +575,7 @@ RotState::redo()
         //
         if (Ulist()->HasRedo() && (!Ulist()->HasOneRedo() || State < 4)) {
             cEventHdlr::sel_redo();
-            dspPkgIf()->RegisterTimeoutProc(1500, MsgTimeout, 0);
+            DSPpkg::self()->RegisterTimeoutProc(1500, MsgTimeout, 0);
         }
         else if (State == 1 || State == 2 || State == 3 || State == 5) {
             Selections.insertList(CurCell(), OrigObjs);
@@ -584,7 +584,7 @@ RotState::redo()
         }
         else {
             cEventHdlr::sel_redo();
-            dspPkgIf()->RegisterTimeoutProc(1500, MsgTimeout, 0);
+            DSPpkg::self()->RegisterTimeoutProc(1500, MsgTimeout, 0);
         }
     }
     else if (Level == 2) {
@@ -987,9 +987,9 @@ cEditGhost::showGhostRotate(int map_x, int map_y, int ref_x, int ref_y,
                     wdesc->Wdraw()->SetLinestyle(0);
                 }
                 else if (ShowDegrees)
-                    sprintf(buf, "%.5f", 180.0*ang/M_PI);
+                    snprintf(buf, sizeof(buf), "%.5f", 180.0*ang/M_PI);
                 else
-                    sprintf(buf, "%.5f", ang);
+                    snprintf(buf, sizeof(buf), "%.5f", ang);
                 int x = 4;
                 int y = wdesc->ViewportHeight() - 5;
                 if (erase) {

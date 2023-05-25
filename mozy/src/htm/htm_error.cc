@@ -86,7 +86,7 @@ htmWidget::warning(const char *fn, const char *fmt, ...)
     va_start(arg_list, fmt);
 
     if (fn) {
-        sprintf(buf, "Warning: in %s\n", fn);
+        snprintf(buf, sizeof(buf), "Warning: in %s\n", fn);
         int len = strlen(buf);
         vsnprintf(buf + len, 1024 - len, fmt, arg_list);
     }

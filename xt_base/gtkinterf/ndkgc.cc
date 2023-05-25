@@ -630,12 +630,12 @@ ndkGC::draw_pango_layout(XID xid, int wid, int hei, int x, int y,
     PangoLayout *lout)
 {
     cairo_surface_t *sfc = cairo_xlib_surface_create(get_xdisplay(),
-        xid, gdk_x11_visual_get_xvisual(GRX->Visual()), wid, hei);
+        xid, gdk_x11_visual_get_xvisual(GTKdev::self()->Visual()), wid, hei);
     cairo_t *cr = cairo_create(sfc);
     cairo_surface_destroy(sfc);
     GdkColor clr;
     clr.pixel = gc_fg_pixel;
-    query_rgb(&clr, GRX->Visual());
+    query_rgb(&clr, GTKdev::self()->Visual());
     cairo_set_source_rgb(cr, clr.red/65535.0, clr.green/65535.0,
         clr.blue/65535.0);
     cairo_move_to(cr, x, y);
@@ -1286,7 +1286,8 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
         break;
     case ndkGC_TILED:
         tile_surface = cairo_xlib_surface_create(get_xdisplay(),
-            gc_tile->get_xid(), gdk_x11_visual_get_xvisual(GRX->Visual()),
+            gc_tile->get_xid(),
+            gdk_x11_visual_get_xvisual(GTKdev::self()->Visual()),
             gc_tile->get_width(), gc_tile->get_height());
         break;
     case ndkGC_STIPPLED:

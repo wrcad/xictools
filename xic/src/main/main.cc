@@ -205,7 +205,7 @@ cMain::IdString()
     time_t tloc = time(0);
     struct tm now = *gmtime(&tloc);
     const char *s = lstring::strip_path(Program());
-    sprintf(buf, "%s %s%s %s %s %02d/%02d/%04d %02d:%02d GMT", s,
+    snprintf(buf, sizeof(buf), "%s %s%s %s %s %02d/%02d/%04d %02d:%02d GMT", s,
         VersionString(), sr, OSname(), Arch(), now.tm_mon + 1, now.tm_mday,
         now.tm_year + 1900, now.tm_hour, now.tm_min);
     return (buf);
@@ -224,7 +224,8 @@ namespace {
         char *app_id_string()
             {
                 char buf[128];
-                sprintf(buf, "%s-%s", XM()->Product(), XM()->VersionString());
+                snprintf(buf, sizeof(buf), "%s-%s", XM()->Product(),
+                    XM()->VersionString());
                 return (lstring::copy(buf));
             }
 
@@ -277,9 +278,9 @@ namespace {
     //
     int v_proc(void *ptr)
     {
-        GRpkgIf()->ErrPrintf(ET_ERROR, (char*)ptr);
+        DSPpkg::self()->ErrPrintf(ET_ERROR, (char*)ptr);
         delete [] (char*)ptr;
-        dspPkgIf()->RegisterTimeoutProc(AC_LIFETIME_MINUTES*60*1000,
+        DSPpkg::self()->RegisterTimeoutProc(AC_LIFETIME_MINUTES*60*1000,
             die_timeout, 0);
         return (0);
     }
@@ -314,13 +315,13 @@ namespace {
         if (XM()->MemError()) {
             XM()->SetMemError(false);
             if (XM()->RunMode() == ModeNormal)
-                dspPkgIf()->RegisterIdleProc(m_proc, 0);
+                DSPpkg::self()->RegisterIdleProc(m_proc, 0);
         }
 #ifdef HAVE_SECURE
         char *s = XM()->Auth()->periodicTest(Timer()->elapsed_msec()); 
         if (s) {
             if (XM()->RunMode() == ModeNormal)
-                dspPkgIf()->RegisterIdleProc(v_proc, s);
+                DSPpkg::self()->RegisterIdleProc(v_proc, s);
             else {
                 delete [] s;
                 die_when = Timer()->elapsed_msec() + 

@@ -204,7 +204,7 @@ sRuler::show(bool d_or_e, bool ghost_erase)
     DSP()->TPoint(&x1, &y1);
     DSP()->TPoint(&x2, &y2);
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(d_or_e ? GRxHlite : GRxUnhlite);
     else {
         if (d_or_e) {
@@ -316,7 +316,7 @@ sRuler::show(bool d_or_e, bool ghost_erase)
             }
         }
     }
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(GRxNone);
 }
 

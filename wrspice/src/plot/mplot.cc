@@ -89,7 +89,7 @@ CommandTab::com_mplot(wordlist *wl)
             }
         }
         if (!fp) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "no current data file.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "no current data file.\n");
             return;
         }
     }
@@ -100,7 +100,7 @@ CommandTab::com_mplot(wordlist *wl)
         if (d) {
             p0 = get_fromvec(d);
             if (!p0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "not a multi-dimensional vector.\n");
                 return;
             }
@@ -127,7 +127,7 @@ CommandTab::com_mplot(wordlist *wl)
         }    
         fp = fopen(ww->wl_word, "r");
         if (!fp) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "data file \"%s\" not found.\n", ww->wl_word);
             continue;
         }
@@ -137,7 +137,7 @@ CommandTab::com_mplot(wordlist *wl)
     }
     if (!p0) {
         if (d)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "nothing in file to plot.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "nothing in file to plot.\n");
         return;
     }
     if (c) combin(p0);
@@ -148,7 +148,7 @@ CommandTab::com_mplot(wordlist *wl)
 
         sGraph *graph = GP.NewGraph(GR_MPLT, GR_MPLTstr);
         if (!graph) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, errmsg_gralloc);
+            GRpkg::self()->ErrPrintf(ET_ERROR, errmsg_gralloc);
             for (; p; p = p0) {
                 p0 = p->next;
                 delete p;
@@ -158,15 +158,15 @@ CommandTab::com_mplot(wordlist *wl)
         graph->set_plotdata(p);
 
         if (graph->gr_dev_init()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, errmsg_newvp);
+            GRpkg::self()->ErrPrintf(ET_ERROR, errmsg_newvp);
             graph->halt();
             GP.DestroyGraph(graph->id());
             continue;
         }
 
-        if (GRpkgIf()->CurDev()->devtype != GRmultiWindow) {
+        if (GRpkg::self()->CurDev()->devtype != GRmultiWindow) {
             graph->gr_redraw();
-            if (GRpkgIf()->CurDev()->devtype == GRfullScreen)
+            if (GRpkg::self()->CurDev()->devtype == GRfullScreen)
                 graph->mp_prompt(p);
             graph->halt();
             GP.DestroyGraph(graph->id());
@@ -263,16 +263,16 @@ sGraph::mp_bdown_hdlr(int button, int x, int y)
                 if (p->type == MDdimens && p->delta2 > 1 && !p->flat) {
                     int d1 = (p->delta1 - 1)/2;
                     int d2 = (p->delta2 - 1)/2;
-                    sprintf(buf, "%d", p->v2[j]+d2);
+                    snprintf(buf, sizeof(buf), "%d", p->v2[j]+d2);
                     int w, h;
                     gr_dev->TextExtent(buf, &w, &h);
                     gr_dev->Text(buf, x2 + 2, yinv(y2 + (p->d - h)/2), 0);
-                    sprintf(buf, "%d", p->v1[j]+d1);
+                    snprintf(buf, sizeof(buf), "%d", p->v1[j]+d1);
                     gr_dev->TextExtent(buf, &w, &h);
                     gr_dev->Text(buf, x2 + (p->d - w)/2, yinv(y2 + 2), 0);
                 }
                 else {
-                    sprintf(buf, "%d", j);
+                    snprintf(buf, sizeof(buf), "%d", j);
                     int w, h;
                     gr_dev->TextExtent(buf, &w, &h);
                     gr_dev->Text(buf, x2 + (p->d - w)/2, yinv(y2 + 2), 0);
@@ -404,7 +404,7 @@ sGraph::mp_redraw()
     if (p->type != MDmonte) {
         if (param1) {
             if (dd1)
-                sprintf(buf, "%s   delta: %g", param1,
+                snprintf(buf, sizeof(buf), "%s   delta: %g", param1,
                     (p->maxv1-p->minv1)/(p->delta1-1));
             else
                 strcpy(buf, param1);
@@ -424,9 +424,10 @@ sGraph::mp_redraw()
             }
         }
         if (param2) {
-            if (dd2)
-                sprintf(buf, "%s   delta: %g", param2,
+            if (dd2) {
+                snprintf(buf, sizeof(buf), "%s   delta: %g", param2,
                     (p->maxv2-p->minv2)/(p->delta2-1));
+            }
             else
                 strcpy(buf, param2);
             int y = yb - gr_fonthei - gr_fonthei/2;
@@ -457,16 +458,16 @@ sGraph::mp_redraw()
     }
     if (p->filename) {
         if (p->type == MDdimens)
-            sprintf(buf, "Vector: %s", p->filename);
+            snprintf(buf, sizeof(buf), "Vector: %s", p->filename);
         else
-            sprintf(buf, "Circuit file: %s", p->filename);
+            snprintf(buf, sizeof(buf), "Circuit file: %s", p->filename);
         gr_save_text(buf, xx, yy, LAname, 1, 0);
         yy -= gr_fonthei;
     }
     else {
         VTvalue vv;
         if (Sp.GetVar(kw_mplot_cur, VTYP_STRING, &vv)) {
-            sprintf(buf, "Output file: %s", vv.get_string());
+            snprintf(buf, sizeof(buf), "Output file: %s", vv.get_string());
             gr_save_text(buf, xx, yy, LAname, 1, 0);
             yy -= gr_fonthei;
         }
@@ -502,7 +503,7 @@ sGraph::mp_redraw()
                 gr_dev->Box(x, yinv(y), x+p->d, yinv(y+p->d));
             }
             else {
-                if (GRpkgIf()->CurDev()->numcolors == 2)
+                if (GRpkg::self()->CurDev()->numcolors == 2)
                     invclr = true;
                     // all colors except 0 are black, use reverse video
                     // in this cell
@@ -513,16 +514,16 @@ sGraph::mp_redraw()
                 if (p->type == MDdimens && p->delta2 > 1 && !p->flat) {
                     int d1 = (p->delta1 - 1)/2;
                     int d2 = (p->delta2 - 1)/2;
-                    sprintf(buf, "%d", p->v2[j]+d2);
+                    snprintf(buf, sizeof(buf), "%d", p->v2[j]+d2);
                     int ww, hh;
                     gr_dev->TextExtent(buf, &ww, &hh);
                     gr_dev->Text(buf, x + 2, yinv(y + (p->d - hh)/2), 0);
-                    sprintf(buf, "%d", p->v1[j]+d1);
+                    snprintf(buf, sizeof(buf), "%d", p->v1[j]+d1);
                     gr_dev->TextExtent(buf, &ww, &hh);
                     gr_dev->Text(buf, x + (p->d - ww)/2, yinv(y + hh/4), 0);
                 }
                 else {
-                    sprintf(buf, "%d", j);
+                    snprintf(buf, sizeof(buf), "%d", j);
                     int ww, hh;
                     gr_dev->TextExtent(buf, &ww, &hh);
                     gr_dev->Text(buf, x + (p->d - ww)/2, yinv(y + hh/4), 0);
@@ -621,7 +622,7 @@ void
 sGraph::mp_writeg(double d, int x, int y, int j)
 {
     char t[20];
-    sprintf(t, "%g", d);
+    snprintf(t, sizeof(t), "%g", d);
     char *tt;
     if ((tt = strchr(t, 'e')) != 0) {
         tt += 1;
@@ -643,7 +644,7 @@ sGraph::mp_writeg(double d, int x, int y, int j)
                 return;
             }       
         }
-        sprintf(tt, "%02d", xp);
+        snprintf(tt, 2, "%02d", xp);
     }           
     if (j == 'r')
         gr_dev->Text(t, x - (int)strlen(t)*gr_fontwid, yinv(y), 0);
@@ -697,7 +698,7 @@ SPgraphics::MpInit(int delta1, int delta2, double v1min, double v1max,
         return (0);
     sGraph *graph = NewGraph(GR_MPLT, GR_MPLTstr);
     if (!graph) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, errmsg_gralloc);
+        GRpkg::self()->ErrPrintf(ET_ERROR, errmsg_gralloc);
         return (0);
     }
     sChkPts *p0 = new sChkPts;
@@ -715,7 +716,7 @@ SPgraphics::MpInit(int delta1, int delta2, double v1min, double v1max,
     graph->set_apptype(GR_MPLT);
  
     if (graph->gr_dev_init()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, errmsg_newvp);
+        GRpkg::self()->ErrPrintf(ET_ERROR, errmsg_newvp);
         graph->halt();
         DestroyGraph(graph->id());
         return (0);
@@ -724,7 +725,7 @@ SPgraphics::MpInit(int delta1, int delta2, double v1min, double v1max,
     // Show a logo on the plot.
     graph->gr_show_logo();
     
-    if (GRpkgIf()->CurDev()->devtype != GRmultiWindow)
+    if (GRpkg::self()->CurDev()->devtype != GRmultiWindow)
         graph->gr_redraw_direct();
     spg_echogr = graph;
 
@@ -773,7 +774,7 @@ SPgraphics::MpDone(int id)
     if (!spg_mplotOn || !id)
         return (1);
     sGraph *graph = FindGraph(id);
-    if (GRpkgIf()->CurDev()->devtype == GRmultiWindow) {
+    if (GRpkg::self()->CurDev()->devtype == GRmultiWindow) {
         if (graph)
             graph->gr_redraw();  // for backing store
         return (0);
@@ -781,7 +782,7 @@ SPgraphics::MpDone(int id)
     if (!graph)
         return (1);
     sChkPts *p = static_cast<sChkPts*>(graph->plotdata());
-    if (GRpkgIf()->CurDev()->devtype == GRfullScreen)
+    if (GRpkg::self()->CurDev()->devtype == GRfullScreen)
         graph->mp_prompt(p);
     graph->halt();
     DestroyGraph(id);
@@ -897,7 +898,8 @@ namespace {
             i++;
     rewind(fp);
     if (!i) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no data points in file %s.\n", fname);
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "no data points in file %s.\n", fname);
         return;
     }
 
@@ -1012,7 +1014,7 @@ namespace {
     sChkPts *p;
     for (p = p0; p; p = p->next) {
         if (p->type == MDmonte) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't combine Monte Carlo data.\n");
             return;
         }
@@ -1025,7 +1027,7 @@ namespace {
         double maxv1 = (p->maxv1 - p->minv1)/(p->delta1 - 1);
         double maxv2 = (p->maxv2 - p->minv2)/(p->delta2 - 1);
         if (fabs((d1-maxv1)/(d1+maxv1)) + fabs((d2-maxv2)/(d2+maxv2)) > 1e-6) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't combine, incompatible data.\n");
             getchar();
             q = p->next;

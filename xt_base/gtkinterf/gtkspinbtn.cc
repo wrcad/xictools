@@ -528,9 +528,9 @@ void
 GTKspinBtn::printnum(char *buf, int numd, double value)
 {
     if (sb_mode == sbModeE)
-        sprintf(buf, "%.*e", numd, value);
+        snprintf(buf, 32, "%.*e", numd, value);
     else
-        sprintf(buf, "%.*f", numd, value);
+        snprintf(buf, 32, "%.*f", numd, value);
 }
 
 

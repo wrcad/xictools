@@ -152,8 +152,9 @@ fxJob::fc_default_path()
 #else
     const char *prg = "/bin/fastcap";
 #endif
-    char *t = new char[strlen(prefix) + strlen(toolsroot) + strlen(prg) + 2];
-    sprintf(t, "%s/%s%s", prefix, toolsroot, prg); 
+    int len = strlen(prefix) + strlen(toolsroot) + strlen(prg) + 2;
+    char *t = new char[len];
+    snprintf(t, len, "%s/%s%s", prefix, toolsroot, prg); 
     j_fc_def_path = t;
     return (t);
 }
@@ -182,8 +183,9 @@ fxJob::fh_default_path()
 #else
     const char *prg = "/bin/fasthenry";
 #endif
-    char *t = new char[strlen(prefix) + strlen(toolsroot) + strlen(prg) + 2];
-    sprintf(t, "%s/%s%s", prefix, toolsroot, prg); 
+    int len = strlen(prefix) + strlen(toolsroot) + strlen(prg) + 2;
+    char *t = new char[len];
+    snprintf(t, len, "%s/%s%s", prefix, toolsroot, prg); 
     j_fh_def_path = t;
     return (t);
 }
@@ -493,7 +495,8 @@ namespace {
             DWORD status;
             GetExitCodeProcess(h, &status);
             if (!status) {
-                dspPkgIf()->RegisterIdleProc(exec_idle, (void*)(uintptr_t)pid);
+                DSPpkg::self()->RegisterIdleProc(exec_idle,
+                    (void*)(uintptr_t)pid);
                 CloseHandle(h);
                 return;
             }
@@ -505,7 +508,8 @@ namespace {
             if (j->if_type() == fxJobMIT) {
                 // MIT FastCap (at least) does not return anything
                 // useful.
-                dspPkgIf()->RegisterIdleProc(exec_idle, (void*)(uintptr_t)pid);
+                DSPpkg::self()->RegisterIdleProc(exec_idle,
+                    (void*)(uintptr_t)pid);
                 CloseHandle(h);
                 return;
             }
@@ -517,17 +521,17 @@ namespace {
 
             static char buf[128];
             if (j->if_type() == fxJobWR) {
-                snprintf(buf, 128,
+                snprintf(buf, sizeof(buf),
                     "Child process %d exited with error status %ld.",
                     pid, status);
-                dspPkgIf()->RegisterTimeoutProc(100, badexit_idle, buf);
+                DSPpkg::self()->RegisterTimeoutProc(100, badexit_idle, buf);
             }
             else if (j->if_type() == fxJobNEW) {
                 // FasterCap 5.0.2 and later only.
-                snprintf(buf, 128,
+                snprintf(buf, sizeof(buf),
                 "FasterCap process %d exited with error status %ld\n(%s).",
                     pid, status, faster_cap_error(status));
-                dspPkgIf()->RegisterTimeoutProc(100, badexit_idle, buf);
+                DSPpkg::self()->RegisterTimeoutProc(100, badexit_idle, buf);
             }
             delete j;
         }
@@ -542,7 +546,7 @@ namespace {
         if (WIFEXITED(status)) {
             if (!WEXITSTATUS(status)) {
                 // Successful return.
-                dspPkgIf()->RegisterIdleProc(exec_idle, (void*)(long)pid);
+                DSPpkg::self()->RegisterIdleProc(exec_idle, (void*)(long)pid);
                 return;
             }
             fxJob *j = fxJob::find(pid);
@@ -551,30 +555,33 @@ namespace {
             if (j->if_type() == fxJobMIT) {
                 // MIT FastCap (at least) does not return anything
                 // useful.
-                dspPkgIf()->RegisterIdleProc(exec_idle, (void*)(long)pid);
+                DSPpkg::self()->RegisterIdleProc(exec_idle, (void*)(long)pid);
                 return;
             }
             if (j->if_type() == fxJobWR) {
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "Child process %d exited with error status %d.",
                     pid, WEXITSTATUS(status));
-                dspPkgIf()->RegisterIdleProc(badexit_idle, lstring::copy(buf));
+                DSPpkg::self()->RegisterIdleProc(badexit_idle,
+                    lstring::copy(buf));
             }
             else if (j->if_type() == fxJobNEW) {
                 // FasterCap 5.0.2 and later only.
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                 "FasterCap process %d exited with error status %d\n(%s).",
                     pid, WEXITSTATUS(status),
                     faster_cap_error(WEXITSTATUS(status)));
-                dspPkgIf()->RegisterIdleProc(badexit_idle, lstring::copy(buf));
+                DSPpkg::self()->RegisterIdleProc(badexit_idle,
+                    lstring::copy(buf));
             }
             delete j;
             return;
         }
         else if (WIFSIGNALED(status)) {
-            sprintf(buf, "Child process %d exited on signal %d.", pid,
+            snprintf(buf, sizeof(buf),
+                "Child process %d exited on signal %d.", pid,
                 WIFSIGNALED(status));
-            dspPkgIf()->RegisterIdleProc(badexit_idle, lstring::copy(buf));
+            DSPpkg::self()->RegisterIdleProc(badexit_idle, lstring::copy(buf));
         }
         fxJob *j = fxJob::find(pid);
         delete j;
@@ -757,7 +764,7 @@ fxJob::run(bool run_foreg, bool monitor)
         return (false);
     }
     if (!pid) {
-        dspPkgIf()->CloseGraphicsConnection();
+        DSPpkg::self()->CloseGraphicsConnection();
         if (!monitor || !tee(j_outfile)) {
             int fd = open(j_outfile, (O_CREAT | O_WRONLY | O_TRUNC), 0644);
             dup2(fd, 1);
@@ -884,11 +891,11 @@ fxJob::fc_post_process()
         return;
     }
     if (!j_resfile) {
-        sprintf(buf, "%s-%d.fc_log", j_dataset, j_pid);
+        snprintf(buf, sizeof(buf), "%s-%d.fc_log", j_dataset, j_pid);
         j_resfile = lstring::copy(buf);
     }
     if (!filestat::create_bak(j_resfile)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         return;
     }
     FILE *fp = filestat::open_file(j_resfile, "w");
@@ -905,7 +912,7 @@ fxJob::fc_post_process()
 
     fprintf(fp, "\nSelf Capacitance (%sfarads):\n", scale_str(units));
     for (int i = 0; i < size; i++) {
-        sprintf(buf, "C.%s", names[i]);
+        snprintf(buf, sizeof(buf), "C.%s", names[i]);
         fprintf(fp, " %-12s%.3g\n", buf, selfcap(i, mat, size));
     }
     if (size > 1) {
@@ -913,7 +920,7 @@ fxJob::fc_post_process()
             "\nMutual Capacitance (%sfarads):\n", scale_str(units));
         for (int i = 0; i < size; i++) {
             for (int j = i+1; j < size; j++) {
-                sprintf(buf, "C.%s.%s", names[i], names[j]);
+                snprintf(buf, sizeof(buf), "C.%s.%s", names[i], names[j]);
                 fprintf(fp, " %-12s%.3g\n", buf, mutcap(i, j, mat));
             }
         }
@@ -1001,11 +1008,11 @@ fxJob::fh_post_process()
 {
     char buf[256];
     if (!j_resfile) {
-        sprintf(buf, "%s-%d.fh_log", j_dataset, j_pid);
+        snprintf(buf, sizeof(buf), "%s-%d.fh_log", j_dataset, j_pid);
         j_resfile = lstring::copy(buf);
     }
     if (!filestat::create_bak(j_resfile)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         return;
     }
     FILE *fp = filestat::open_file(j_resfile, "w");
@@ -1021,7 +1028,7 @@ fxJob::fh_post_process()
     fprintf(fp, "Command: %s\n\n", j_command);
 
     char zcmat[64];
-    sprintf(zcmat, "Zc.%s-%d.mat", j_dataset, j_num);
+    snprintf(zcmat, sizeof(zcmat), "Zc.%s-%d.mat", j_dataset, j_num);
     FILE *zp = fopen(zcmat, "r");
     if (!zp) {
         // FastHenry lower-cases the suffix!?
@@ -1068,7 +1075,8 @@ fxJob::fh_post_process()
             if (freq == 0) {
                 fprintf(fp, " Resistance (ohms):\n");
                 for (int i = 0; i < zm->size; i++) {
-                    sprintf(buf, "R.%s", rowtok(zm->row_strings[i]));
+                    snprintf(buf, sizeof(buf), "R.%s",
+                        rowtok(zm->row_strings[i]));
                     fprintf(fp,
                         " %-12s%12.3f\n", buf, zm->matrix[i][i].re);
                 }
@@ -1077,7 +1085,8 @@ fxJob::fh_post_process()
                 fprintf(fp,
                     " Self Resistance/Inductance (ohms/henries):\n");
                 for (int i = 0; i < zm->size; i++) {
-                    sprintf(buf, "RL.%s", rowtok(zm->row_strings[i]));
+                    snprintf(buf, sizeof(buf), "RL.%s",
+                        rowtok(zm->row_strings[i]));
                     fprintf(fp, " %-12s%12.3e %12.3e\n", buf,
                         zm->matrix[i][i].re, zm->matrix[i][i].im/freq);
                 }
@@ -1085,7 +1094,7 @@ fxJob::fh_post_process()
                     fprintf(fp, " Mutual Inductance (henries):\n");
                     for (int i = 0; i < zm->size; i++) {
                         for (int j = i+1; j < zm->size; j++) {
-                            sprintf(buf, "L.%s.%s",
+                            snprintf(buf, sizeof(buf), "L.%s.%s",
                                 rowtok(zm->row_strings[i]),
                                 rowtok(zm->row_strings[j]));
                             fprintf(fp, " %-12s%12.3e\n", buf,
@@ -1142,7 +1151,8 @@ fxJob::pid_string(sLstr &lstr)
         prg = j_mode == fxIndMode ? "FastHenry" : "FasterCap";
         break;
     }
-    sprintf(buf, "%-6d %-12s %02d/%02d/%4d %02d:%02d:%02d\n", j_pid,
+    snprintf(buf, sizeof(buf),
+        "%-6d %-12s %02d/%02d/%4d %02d:%02d:%02d\n", j_pid,
         prg, t->tm_mon+1, t->tm_mday, t->tm_year + 1900, t->tm_hour,
         t->tm_min, t->tm_sec);
     lstr.add(buf);
@@ -1245,7 +1255,7 @@ fxJob::fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
     char buf[256];
     FILE *fp = fopen(fname, "r");
     if (!fp) {
-        sprintf(buf, "can't open file %s.", fname);
+        snprintf(buf, sizeof(buf), "can't open file %s.", fname);
         return (lstring::copy(buf));
     }
 
@@ -1286,7 +1296,8 @@ fxJob::fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
     }
     if (!str) {
         fclose(fp);
-        sprintf(buf, "can't find matrix data in file %s.", fname);
+        snprintf(buf, sizeof(buf), "can't find matrix data in file %s.",
+            fname);
         return (lstring::copy(buf));
     }
     fseek(fp, posn, SEEK_SET);
@@ -1302,7 +1313,8 @@ fxJob::fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
     for (;;) {
         if ((str = getline(fp)) == 0) {
             fclose(fp);
-            sprintf(buf, "read error or premature EOF, file %s.", fname);
+            snprintf(buf, sizeof(buf),
+                "read error or premature EOF, file %s.", fname);
             return (lstring::copy(buf));
         }
         if (lstring::ciprefix("demo", str)) {
@@ -1338,7 +1350,7 @@ fxJob::fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
 
     if (!matsz) {
         fclose(fp);
-        sprintf(buf, "matrix data has no size, file %s.", fname);
+        snprintf(buf, sizeof(buf), "matrix data has no size, file %s.", fname);
         return (lstring::copy(buf));
     }
     float **matrix = new float*[matsz];
@@ -1350,7 +1362,8 @@ fxJob::fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
             for (int k = 0; k < i; i++)
                 delete [] matrix[k];
             delete [] matrix;
-            sprintf(buf, "read error or premature EOF, file %s.", fname);
+            snprintf(buf, sizeof(buf),
+                "read error or premature EOF, file %s.", fname);
             return (lstring::copy(buf));
         }
         matrix[i] = new float[matsz];
@@ -1379,7 +1392,7 @@ fxJob::fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
                 for (int k = 0; k <= i; i++)
                     delete [] matrix[k];
                 delete [] matrix;
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "read error or premature EOF, file %s.", fname);
                 return (lstring::copy(buf));
             }

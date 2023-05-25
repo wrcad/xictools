@@ -469,8 +469,9 @@ cCGD::cCGD(const char *hostname, int port)
     if (port < 0)
         port = XIC_PORT;
 
-    cg_sourcename = new char[strlen(hostname) + 10];
-    sprintf(cg_sourcename, "%s:%d", hostname, port);
+    int slen = strlen(hostname) + 10;
+    cg_sourcename = new char[slen];
+    snprintf(cg_sourcename, slen, "%s:%d", hostname, port);
     cg_table = 0;
     cg_chd_out = 0;
     cg_cur_stream = 0;
@@ -587,7 +588,7 @@ cCGD::cells_list()
         }
 
         char buf[256];
-        sprintf(buf, "geom %s\r\n", cg_cgdname);
+        snprintf(buf, sizeof(buf), "geom %s\r\n", cg_cgdname);
         if (send(cg_skt, buf, strlen(buf), 0) < 0) {
             Errs()->add_error("cells_list: socket write error.");
             return (0);
@@ -633,7 +634,7 @@ cCGD::cell_test(const char *cname)
         return (false);
 
     char buf[256];
-    sprintf(buf, "geom %s ? %s\r\n", cg_cgdname, cname);
+    snprintf(buf, sizeof(buf), "geom %s ? %s\r\n", cg_cgdname, cname);
     if (send(cg_skt, buf, strlen(buf), 0) < 0)
         return (false);
 
@@ -720,7 +721,7 @@ cCGD::layer_list(const char *cname)
         }
 
         char buf[256];
-        sprintf(buf, "geom %s %s\r\n", cg_cgdname, cname);
+        snprintf(buf, sizeof(buf), "geom %s %s\r\n", cg_cgdname, cname);
         if (send(cg_skt, buf, strlen(buf), 0) < 0) {
             Errs()->add_error("layer_list: socket write error.");
             return (0);
@@ -771,7 +772,8 @@ cCGD::layer_test(const char *cname, const char *lname)
         return (false);
 
     char buf[256];
-    sprintf(buf, "geom %s %s ? %s\r\n", cg_cgdname, cname, lname);
+    snprintf(buf, sizeof(buf), "geom %s %s ? %s\r\n", cg_cgdname,
+        cname, lname);
     if (send(cg_skt, buf, strlen(buf), 0) < 0)
         return (false);
 
@@ -824,7 +826,7 @@ cCGD::remove_cell(const char *cname)
         return (false);
 
     char buf[256];
-    sprintf(buf, "geom %s - %s\r\n", cg_cgdname, cname);
+    snprintf(buf, sizeof(buf), "geom %s - %s\r\n", cg_cgdname, cname);
     if (send(cg_skt, buf, strlen(buf), 0) < 0)
         return (false);
 
@@ -863,7 +865,7 @@ cCGD::unlisted_list()
             return (0);
 
         char buf[256];
-        sprintf(buf, "geom %s -?\r\n", cg_cgdname);
+        snprintf(buf, sizeof(buf), "geom %s -?\r\n", cg_cgdname);
         if (send(cg_skt, buf, strlen(buf), 0) < 0)
             return (0);
 
@@ -907,7 +909,7 @@ cCGD::unlisted_test(const char *cname)
         return (false);
 
     char buf[256];
-    sprintf(buf, "geom %s -? %s\r\n", cg_cgdname, cname);
+    snprintf(buf, sizeof(buf), "geom %s -? %s\r\n", cg_cgdname, cname);
     if (send(cg_skt, buf, strlen(buf), 0) < 0)
         return (false);
 
@@ -982,7 +984,8 @@ cCGD::get_byte_stream(const char *cname, const char *lname,
         }
 
         char buf[256];
-        sprintf(buf, "geom %s %s %s\r\n", cg_cgdname, cname, lname);
+        snprintf(buf, sizeof(buf), "geom %s %s %s\r\n", cg_cgdname,
+            cname, lname);
         if (send(cg_skt, buf, strlen(buf), 0) < 0) {
             Errs()->sys_error("get_byte_stream/send");
             return (false);
@@ -1016,9 +1019,9 @@ cCGD::get_byte_stream(const char *cname, const char *lname,
 
 
 namespace {
-    inline char *format(char *buf, const char *n)
+    inline char *format(char *buf, int bsz, const char *n)
     {
-        sprintf(buf, "%-20s: ", n);
+        snprintf(buf, bsz, "%-20s: ", n);
         return (buf);
     }
 }
@@ -1056,12 +1059,12 @@ cCGD::info(bool quick)
     sLstr lstr;
 
     if (cg_dbname) {
-        lstr.add(format(buf, "Access Name"));
+        lstr.add(format(buf, sizeof(buf), "Access Name"));
         lstr.add(cg_dbname);
         lstr.add_c('\n');
     }
 
-    lstr.add(format(buf, "Type"));
+    lstr.add(format(buf, sizeof(buf), "Type"));
     if (cg_remote)
         lstr.add("REMOTE");
     else if (cg_fp)
@@ -1071,38 +1074,38 @@ cCGD::info(bool quick)
     lstr.add_c('\n');
     
     if (cg_sourcename) {
-        lstr.add(format(buf, "Source"));
+        lstr.add(format(buf, sizeof(buf), "Source"));
         lstr.add(cg_sourcename);
         lstr.add_c('\n');
     }
 
-    lstr.add(format(buf, "References"));
+    lstr.add(format(buf, sizeof(buf), "References"));
     lstr.add_i(cg_refcnt);
     lstr.add_c('\n');
 
-    lstr.add(format(buf, "Destroy on Unlink"));
+    lstr.add(format(buf, sizeof(buf), "Destroy on Unlink"));
     lstr.add(cg_free_on_unlink ? "TRUE" : "FALSE");
     lstr.add_c('\n');
 
     if (cg_remote) {
-        lstr.add(format(buf, "Host"));
+        lstr.add(format(buf, sizeof(buf), "Host"));
         lstr.add(cg_hostname ? cg_hostname : "");
         lstr.add_c('\n');
-        lstr.add(format(buf, "Port"));
+        lstr.add(format(buf, sizeof(buf), "Port"));
         lstr.add_i(cg_port);
         lstr.add_c('\n');
-        lstr.add(format(buf, "Id Name"));
+        lstr.add(format(buf, sizeof(buf), "Id Name"));
         lstr.add(cg_cgdname ? cg_cgdname : "");
         lstr.add_c('\n');
-        lstr.add(format(buf, "Socket"));
+        lstr.add(format(buf, sizeof(buf), "Socket"));
         lstr.add_i(cg_skt);
         lstr.add_c('\n');
     }
     else {
-        lstr.add(format(buf, "Cells"));
+        lstr.add(format(buf, sizeof(buf), "Cells"));
         lstr.add_i(cg_table ? cg_table->allocated() : 0);
         lstr.add_c('\n');
-        lstr.add(format(buf, "Removed Cells"));
+        lstr.add(format(buf, sizeof(buf), "Removed Cells"));
         lstr.add_i(cg_unlisted ? cg_unlisted->allocated() : 0);
         lstr.add_c('\n');
 
@@ -1122,11 +1125,11 @@ cCGD::info(bool quick)
                 tot += sz;
             }
         }
-        lstr.add(format(buf, "Memory Use"));
-        sprintf(buf, "%.3fKb\n", mem*1e-3);
+        lstr.add(format(buf, sizeof(buf), "Memory Use"));
+        snprintf(buf, sizeof(buf), "%.3fKb\n", mem*1e-3);
         lstr.add(buf);
-        lstr.add(format(buf, "Total Size"));
-        sprintf(buf, "%.3fKb\n", tot*1e-3);
+        lstr.add(format(buf, sizeof(buf), "Total Size"));
+        snprintf(buf, sizeof(buf), "%.3fKb\n", tot*1e-3);
         lstr.add(buf);
     }
     return (lstr.string_trim());
@@ -1197,7 +1200,8 @@ cCGD::find_block(const char *cname, const char *lname,
         }
 
         char buf[256];
-        sprintf(buf, "geom %s %s %s\r\n", cg_cgdname, cname, lname);
+        snprintf(buf, sizeof(buf), "geom %s %s %s\r\n", cg_cgdname, cname,
+            lname);
         if (send(cg_skt, buf, strlen(buf), 0) < 0) {
             Errs()->sys_error("find_block/send");
             return (false);
@@ -1242,7 +1246,7 @@ cCGD::set_remote_cgd_name(const char *cgdname)
     }
 
     char buf[256];
-    sprintf(buf, "geom ? %s\r\n", cgdname);
+    snprintf(buf, sizeof(buf), "geom ? %s\r\n", cgdname);
     if (send(cg_skt, buf, strlen(buf), 0) < 0) {
         Errs()->add_error("set_remote_cgd_name: socket write error.");
         return (false);
@@ -1502,7 +1506,7 @@ cCGD::layer_info_list(const char *cname)
     stringlist *s0 = 0;
     char buf[256];
     while ((lyr = gen.next()) != 0) {
-        sprintf(buf, "%-4s c=%-5u u=%-5u", lyr->lname,
+        snprintf(buf, sizeof(buf), "%-4s c=%-5u u=%-5u", lyr->lname,
             (unsigned int)lyr->get_csize(), (unsigned int)lyr->get_usize());
         s0 = new stringlist(lstring::copy(buf), s0);
     }

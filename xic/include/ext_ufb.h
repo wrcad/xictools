@@ -104,7 +104,7 @@ namespace ext_group {
                     }
                     if (Timer()->check_interval(u_check_time)) {
                         if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-                            dspPkgIf()->CheckForInterrupt();
+                            DSPpkg::self()->CheckForInterrupt();
                         return (XM()->ConfirmAbort());
                     }
                 }

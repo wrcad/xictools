@@ -76,7 +76,8 @@ GTKbag::PopUpList(stringlist *symlist, const char *title,
     gtk_window_set_transient_for(GTK_WINDOW(list->Shell()),
         GTK_WINDOW(wb_shell));
     int x, y;
-    GRX->ComputePopupLocation(GRloc(), list->Shell(), wb_shell, &x, &y);
+    GTKdev::self()->ComputePopupLocation(GRloc(), list->Shell(), wb_shell,
+        &x, &y);
     x += list_count*50 - 150;
     y += list_count*50 - 150;
     list_count++;
@@ -223,7 +224,7 @@ GTKlistPopup::~GTKlistPopup()
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_caller)
-        GRX->Deselect(p_caller);
+        GTKdev::Deselect(p_caller);
 
     g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
         (gpointer)ls_quit_proc, this);

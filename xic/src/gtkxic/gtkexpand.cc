@@ -100,7 +100,7 @@ GTKsubwin::PopUpExpand(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, void*), void *arg,
     const char *string, bool nopeek)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         if (wib_expandpop)
@@ -305,7 +305,7 @@ sExp::~sExp()
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_caller && !p_no_desel)
-        GRX->Deselect(p_caller);
+        GTKdev::Deselect(p_caller);
     if (exp_popup) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(exp_popup),
             (gpointer)exp_cancel_proc, this);
@@ -326,7 +326,7 @@ sExp::popdown()
         return;
     GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
     if (owner)
-        GRX->SetFocus(owner->Shell());
+        GTKdev::SetFocus(owner->Shell());
     if (!owner || !owner->MonitorActive(this))
         return;
 
@@ -344,7 +344,7 @@ sExp::initialize()
     if (w && w->Shell()) {
         gtk_window_set_transient_for(GTK_WINDOW(exp_popup),
             GTK_WINDOW(w->Shell()));
-        GRX->SetPopupLocation(GRloc(), exp_popup, w->Viewport());
+        GTKdev::self()->SetPopupLocation(GRloc(), exp_popup, w->Viewport());
     }
 }
 

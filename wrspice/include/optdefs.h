@@ -105,6 +105,7 @@ enum OPTtype
     OPT_GMINFIRST,
     OPT_HSPICE,
     OPT_JJACCEL,
+    OPT_NODCOP,
     OPT_NOITER,
     OPT_NOJJTP,
     OPT_NOKLU,

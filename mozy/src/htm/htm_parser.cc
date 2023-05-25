@@ -1023,8 +1023,9 @@ htmParser::parseIMAGE()
     char *input = p_source;
 
     // create a temporary HTML source text for this image
-    char *tmpPtr = new char[(strlen(content_image) + p_len + 1)*sizeof(char)];
-    sprintf(tmpPtr, content_image, p_source);
+    int len = strlen(content_image) + p_len + 1;
+    char *tmpPtr = new char[len];
+    snprintf(tmpPtr, len, content_image, p_source);
 
     // set it
     p_source = tmpPtr;
@@ -1390,20 +1391,23 @@ htmParser::warning(htmlEnum id, htmlEnum current, parserError error)
         p_html32 = false;
         if (!(p_warn & HTML_OPEN_ELEMENT))
             return;
-        sprintf(msg, "Unbalanced terminator: got %s while %s is "
+        snprintf(msg, sizeof(msg),
+            "Unbalanced terminator: got %s while %s is "
             "required.", html_tokens[id], html_tokens[current]);
         break;
     case HTML_BAD:
         p_html32 = false;
         if (!(p_warn & HTML_BAD))
             return;
-        sprintf(msg, "Removing element %s which is invalid.", html_tokens[id]);
+        snprintf(msg, sizeof(msg),
+            "Removing element %s which is invalid.", html_tokens[id]);
         break;
     case HTML_OPEN_BLOCK:
         p_html32 = false;
         if (!(p_warn & HTML_OPEN_BLOCK))
             return;
-        sprintf(msg, "A new block level element (%s) was encountered "
+        snprintf(msg, sizeof(msg),
+            "A new block level element (%s) was encountered "
             "while %s is still open.", html_tokens[id],
             html_tokens[current]);
         break;
@@ -1411,7 +1415,8 @@ htmParser::warning(htmlEnum id, htmlEnum current, parserError error)
         p_html32 = false;
         if (!(p_warn & HTML_CLOSE_BLOCK))
             return;
-        sprintf(msg, "A closing block level element (%s) was encountered "
+        snprintf(msg, sizeof(msg),
+            "A closing block level element (%s) was encountered "
             "while it was\n    never opened.  This has been removed.",
             html_tokens[id]);
         break;
@@ -1419,18 +1424,20 @@ htmParser::warning(htmlEnum id, htmlEnum current, parserError error)
         p_html32 = false;
         if (!(p_warn & HTML_NESTED))
             return;
-        sprintf(msg, "Improperly nested element: %s may not be nested",
+        snprintf(msg, sizeof(msg),
+            "Improperly nested element: %s may not be nested",
             html_tokens[id]);
         break;
     case HTML_VIOLATION:
         p_html32 = false;
         if (!(p_warn & HTML_VIOLATION))
             return;
-        sprintf(msg, "HTML Violation: %s may not occur inside %s",
+        snprintf(msg, sizeof(msg),
+            "HTML Violation: %s may not occur inside %s",
             html_tokens[id], html_tokens[current]);
         break;
     case HTML_INTERNAL:
-        sprintf(msg, "Internal parser error!");
+        snprintf(msg, sizeof(msg), "Internal parser error!");
         break;
     case HTML_NOTIFY:   // not reached
     case HTML_NONE:
@@ -2925,7 +2932,7 @@ htmParser::warning(const char *fn, const char *fmt, ...)
     va_start(arg_list, fmt);
 
     if (fn) {
-        sprintf(buf, "Warning: in %s\n", fn);
+        snprintf(buf, sizeof(buf), "Warning: in %s\n", fn);
         int len = strlen(buf);
         vsnprintf(buf + len, 1024 - len, fmt, arg_list);
     }

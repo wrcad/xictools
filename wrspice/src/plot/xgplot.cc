@@ -100,7 +100,7 @@ SPgraphics::Xgraph(sDvList *dl0, sGrInit *gr)
     // Open the output file
     FILE *file = fopen(gr->hcopy, "w");
     if (!file) {
-        GRpkgIf()->Perror(gr->hcopy);
+        GRpkg::self()->Perror(gr->hcopy);
         return;
     }
 
@@ -161,7 +161,7 @@ SPgraphics::Xgraph(sDvList *dl0, sGrInit *gr)
     }
     fclose(file);
     char buf[BSIZE_SP];
-    sprintf(buf, "xgraph %s &", gr->hcopy);
+    snprintf(buf, sizeof(buf), "xgraph %s &", gr->hcopy);
     CP.System(buf);
 }
 

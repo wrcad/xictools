@@ -600,7 +600,7 @@ namespace {
             SymTabGen gen(spt_tables);
             SymTabEnt *h;
             while ((h = gen.next()) != 0) {
-                sprintf(buf, "%s.spt", h->stTag);
+                snprintf(buf, sizeof(buf), "%s.spt", h->stTag);
                 if (ret && !spt_t::writeSpatialParameterTable(h->stTag, buf)) {
                     Errs()->add_error(
                         "finalize: error writing parameter table file %s.",

@@ -213,7 +213,7 @@ namespace {
             if (name && *name) {
                 sUdFunc *udf = (sUdFunc*)sHtab::get(udfdb->table(), name);
                 for (sUdFunc *u = udf; u; u = u->next()) {
-                    sprintf(buf, "%s:%d", name, u->argc());
+                    snprintf(buf, sizeof(buf), "%s:%d", name, u->argc());
                     udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                     if (otxt)
                         continue;
@@ -226,7 +226,8 @@ namespace {
                 sHent *h;
                 while ((h = hgen.next()) != 0) {
                     for (sUdFunc *u = (sUdFunc*)h->data(); u; u = u->next()) {
-                        sprintf(buf, "%s:%d", h->name(), u->argc());
+                        snprintf(buf, sizeof(buf), "%s:%d", h->name(),
+                            u->argc());
                         udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                         if (otxt)
                             continue;
@@ -240,7 +241,7 @@ namespace {
             if (name && *name) {
                 sUdFunc *udf = (sUdFunc*)sHtab::get(shell_udf.table(), name);
                 for (sUdFunc *u = udf; u; u = u->next()) {
-                    sprintf(buf, "%s:%dS", name, u->argc());
+                    snprintf(buf, sizeof(buf), "%s:%dS", name, u->argc());
                     udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                     if (otxt)
                         continue;
@@ -254,7 +255,8 @@ namespace {
                 sHent *h;
                 while ((h = hgen.next()) != 0) {
                     for (sUdFunc *u = (sUdFunc*)h->data(); u; u = u->next()) {
-                        sprintf(buf, "%s:%dS", h->name(), u->argc());
+                        snprintf(buf, sizeof(buf), "%s:%dS", h->name(),
+                            u->argc());
                         udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                         if (otxt)
                             continue;
@@ -472,7 +474,7 @@ IFsimulator::GetUserFuncTree(const char *name, const pnode *args)
     while ((udfdb = gen.next()) != 0) {
         sUdFunc *udf = udfdb->find(name, -1);
         if (udf) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "the user-defined function %s has %d args.\n",
                 udf->name(), udf->argc());
             break;
@@ -627,7 +629,7 @@ cUdf::parse(wordlist *wlist, char **plhs, char **pbody) const
             if (pcnt > 0)
                 continue;
             if (pcnt < 0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "bad parentheses nesting in call template.\n", buf);
                 delete [] buf;
                 return (false);
@@ -639,7 +641,7 @@ cUdf::parse(wordlist *wlist, char **plhs, char **pbody) const
                 continue;
             }
         }
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "bad character '%c' found in call template.\n", buf);
         delete [] buf;
         return (false);
@@ -701,7 +703,8 @@ cUdf::define(const char *fname, const char *body)
         }
     }
     if (Sp.CheckFuncName(buf)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s is a predefined function.\n", buf);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "%s is a predefined function.\n",
+            buf);
         return (false);
     }
 
@@ -1024,7 +1027,7 @@ cUdf::new_unique_name(const char **namep)
     char *t = lstring::stpcpy(buf, *namep);
     *t++ = UNIQUE_SEP;
     for (int i = 1; ; i++) {
-        sprintf(t, "%d", i);
+        snprintf(t, 6, "%d", i);
         if (!sHtab::get(ud_tab, buf))
             break;
     }

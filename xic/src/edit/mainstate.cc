@@ -230,7 +230,7 @@ MainState::b1down()
             if (dtime > 1000)
                 dtime = 1000;
         }
-        Id = GRpkgIf()->AddTimer(dtime, timeout1, 0);
+        Id = DSPpkg::self()->AddTimer(dtime, timeout1, 0);
     }
     else {
         // Complete the move/copy.
@@ -362,7 +362,7 @@ MainState::b1up()
         if (Id) {
             // user clicked
             clicked = true;
-            GRpkgIf()->RemoveTimer(Id);
+            DSPpkg::self()->RemoveTimer(Id);
             Id = 0;
         }
         CDs *cursd = CurCell();
@@ -458,7 +458,7 @@ click:
                             ent->set_proxy(wdesc->ProxyList());
                         }
                         ms_pill *p = new ms_pill(msd, ent);
-                        dspPkgIf()->RegisterIdleProc(subw_idle, p);
+                        DSPpkg::self()->RegisterIdleProc(subw_idle, p);
                     }
                 }
                 else if (ctrl && sl) {
@@ -704,7 +704,7 @@ MainState::b1up_altw()
             ent->set_proxy(wdesc->ProxyList());
         }
         ms_pill *p = new ms_pill(msd, ent);
-        dspPkgIf()->RegisterIdleProc(subw_idle, p);
+        DSPpkg::self()->RegisterIdleProc(subw_idle, p);
     }
 }
 
@@ -716,7 +716,7 @@ MainState::esc()
 {
     SetLevel1();
     if (Id) {
-        GRpkgIf()->RemoveTimer(Id);
+        DSPpkg::self()->RemoveTimer(Id);
         Id = 0;
     }
     Corner = 0;

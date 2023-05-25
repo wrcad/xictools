@@ -59,6 +59,7 @@ class QScrollBar;
 class QHBoxLayout;
 class QMouseEvent;
 class QResizeEvent;
+class QLineEdit;
 
 
 class QTltab : public QWidget, public cLtab, public QTdraw
@@ -79,8 +80,10 @@ public:
     void hide_layer_table(bool);
     void set_layer();
 
+    // Instantiated in main window.
+    void set_search_widgets(QPushButton*, QLineEdit*);
+
     QScrollBar *scrollbar()     { return (ltab_scrollbar); }
-    QWidget *searcher()         { return (ltab_search_container); }
 
     static QTltab *self()
     {
@@ -98,25 +101,25 @@ private slots:
     void button_press_slot(QMouseEvent*);
     void button_release_slot(QMouseEvent*);
     void resize_slot(QResizeEvent*);
-//    void s_btn_slot(bool);
     void ltab_scroll_value_changed_slot(int);
     void font_changed(int);
+    void pressed_slot();
 
 private:
     static void on_null_ptr();
+    static int  ltab_ent_timer(void*);
 
-    QScrollBar *ltab_scrollbar;
-    QWidget *ltab_search_container;
-    QWidget *ltab_entry;
-    QWidget *ltab_sbtn;
-    QWidget *ltab_lsearch;
-    QWidget *ltab_lsearchn;
+    QScrollBar  *ltab_scrollbar;
+    QLineEdit   *ltab_entry;
+    QPushButton *ltab_sbtn;
+    QPixmap     *ltab_lsearch;
+    QPixmap     *ltab_lsearchn;
 
-    char *ltab_search_str;
-    int ltab_last_index;
-    int ltab_last_mode;
-    int ltab_timer_id;
-    bool ltab_hidden;
+    char        *ltab_search_str;
+    int         ltab_last_index;
+    int         ltab_last_mode;
+    int         ltab_timer_id;
+    bool        ltab_hidden;
 
     static QTltab *instancePtr;
 };

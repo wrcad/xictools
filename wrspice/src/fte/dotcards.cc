@@ -122,7 +122,7 @@ IFsimulator::GetDotOpts(sLine *deck)
         // Add a dummy option to the front of the list.
 
         char buf[256];
-        sprintf(buf, ".options temp=%s", dummytemp);
+        snprintf(buf, sizeof(buf), ".options temp=%s", dummytemp);
         delete [] dummytemp;
         sLine *dd = new sLine;
         dd->set_line(buf);
@@ -184,9 +184,10 @@ IFsimulator::SaveDotArgs()
             lstring::advtok(&s);
             lstring::advtok(&s);
             wordlist *w = CP.LexString(s);
-            if (!w)
-                GRpkgIf()->ErrPrintf(ET_WARN, "no nodes given: %s.\n",
+            if (!w) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "no nodes given: %s.\n",
                     iline->wl_word);
+            }
             else
                 wl = wordlist::append(wl, w);
         }
@@ -198,9 +199,10 @@ IFsimulator::SaveDotArgs()
             wordlist::destroy(wl);
         }
     }
-    else
-        GRpkgIf()->ErrPrintf(ET_WARN,
+    else {
+        GRpkg::self()->ErrPrintf(ET_WARN,
             "no .print, .plot, or .four lines in input.\n");
+    }
 }
 
 
@@ -510,8 +512,8 @@ namespace {
                     while (isspace(*c))
                         c++;
                     if (*c != ',' || !d) {
-                        GRpkgIf()->ErrPrintf(ET_WARN, "bad limits \"%s\".\n",
-                            buf);
+                        GRpkg::self()->ErrPrintf(ET_WARN,
+                            "bad limits \"%s\".\n", buf);
                         return;
                     }
                     double d1 = *d;
@@ -520,13 +522,16 @@ namespace {
                         c++;
                     d = SPnum.parse(&c, false);
                     if (!d) {
-                        GRpkgIf()->ErrPrintf(ET_ERROR, "bad limits \"%s\".\n",
-                            buf);
+                        GRpkg::self()->ErrPrintf(ET_ERROR,
+                            "bad limits \"%s\".\n", buf);
                         return;
                     }
                     double d2 = *d;
-                    sprintf(buf, "set xlimit = ( %s", SPnum.printnum(d1)); 
-                    sprintf(buf + strlen(buf), "%s )", SPnum.printnum(d2));
+                    snprintf(buf, sizeof(buf), "set xlimit = ( %s",
+                        SPnum.printnum(d1)); 
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, "%s )",
+                        SPnum.printnum(d2));
                     CP.EvLoop(buf);
                 }
             }

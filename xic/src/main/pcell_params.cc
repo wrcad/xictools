@@ -477,27 +477,27 @@ PCellParam::set(const PCellParam *p)
             char buf[64];
             switch (p->type()) {
             case PCPbool:
-                sprintf(buf, "%d", p->boolVal());
+                snprintf(buf, sizeof(buf), "%d", p->boolVal());
                 if (!stringVal() || strcmp(stringVal(), buf))
                     setStringVal(buf);
                 return (true);
             case PCPint:
-                sprintf(buf, "%ld", p->intVal());
+                snprintf(buf, sizeof(buf), "%ld", p->intVal());
                 if (!stringVal() || strcmp(stringVal(), buf))
                     setStringVal(buf);
                 return (true);
             case PCPtime:
-                sprintf(buf, "%ld", (long)p->timeVal());
+                snprintf(buf, sizeof(buf), "%ld", (long)p->timeVal());
                 if (!stringVal() || strcmp(stringVal(), buf))
                     setStringVal(buf);
                 return (true);
             case PCPfloat:
-                sprintf(buf, "%.9g", p->floatVal());
+                snprintf(buf, sizeof(buf), "%.9g", p->floatVal());
                 if (!stringVal() || strcmp(stringVal(), buf))
                     setStringVal(buf);
                 return (true);
             case PCPdouble:
-                sprintf(buf, "%.15lg", p->doubleVal());
+                snprintf(buf, sizeof(buf), "%.15lg", p->doubleVal());
                 if (!stringVal() || strcmp(stringVal(), buf))
                     setStringVal(buf);
                 return (true);
@@ -713,7 +713,7 @@ PCellParam::setValue(const char *prm_name, double prm_value,
     }
     else if (p->type() == PCPstring) {
         char buf[128];
-        sprintf(buf, "%.15g", prm_value);
+        snprintf(buf, sizeof(buf), "%.15g", prm_value);
         if (strcmp(buf, p->stringVal() ? p->stringVal() : "")) {
             p->setStringVal(buf);
             return (true);
@@ -809,23 +809,23 @@ PCellParam::getValue() const
 
     char buf[64];
     if (type() == PCPbool) {
-        sprintf(buf, "%s", boolVal() ? "1" : "0");
+        snprintf(buf, sizeof(buf), "%s", boolVal() ? "1" : "0");
         return (lstring::copy(buf));
     }
     if (type() == PCPint) {
-        sprintf(buf, "%ld", intVal());
+        snprintf(buf, sizeof(buf), "%ld", intVal());
         return (lstring::copy(buf));
     }
     if (type() == PCPtime) {
-        sprintf(buf, "%ld", intVal());
+        snprintf(buf, sizeof(buf), "%ld", intVal());
         return (lstring::copy(buf));
     }
     if (type() == PCPfloat) {
-        sprintf(buf, "%.9g", floatVal());
+        snprintf(buf, sizeof(buf), "%.9g", floatVal());
         return (lstring::copy(buf));
     }
     if (type() == PCPdouble) {
-        sprintf(buf, "%.15lg", doubleVal());
+        snprintf(buf, sizeof(buf), "%.15lg", doubleVal());
         return (lstring::copy(buf));
     }
     return (0);
@@ -2197,7 +2197,7 @@ PCellDesc::cellname(const char *basename, const PCellItem *pi) const
         delete [] dgn;
     }
     else
-        sprintf(s, "$$%u", pi->index());
+        snprintf(s, 12, "$$%u", pi->index());
     return (cname);
 }
 

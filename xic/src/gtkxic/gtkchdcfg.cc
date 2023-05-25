@@ -117,7 +117,7 @@ void
 cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
     const char *chdname, int x, int y)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Cfg;
@@ -376,7 +376,7 @@ sCfg::~sCfg()
     delete [] cf_chdname;
     delete [] cf_cgdname;
     if (cf_caller)
-        GRX->Deselect(cf_caller);
+        GTKdev::Deselect(cf_caller);
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)cf_cancel_proc, wb_shell);
@@ -406,7 +406,7 @@ sCfg::update(const char *chdname)
         if (cgdname) {
             gtk_entry_set_text(GTK_ENTRY(cf_cgdentry), cgdname);
             gtk_editable_set_editable(GTK_EDITABLE(cf_cgdentry), false);
-            GRX->SetStatus(cf_newcgd, false);
+            GTKdev::SetStatus(cf_newcgd, false);
         }
         else {
             gtk_entry_set_text(GTK_ENTRY(cf_cgdentry),
@@ -420,7 +420,7 @@ sCfg::update(const char *chdname)
 
         char buf[256];
         if (has_name || chd->hasCgd()) {
-            sprintf(buf, "CHD %s is configured with ", chdname);
+            snprintf(buf, sizeof(buf), "CHD %s is configured with ", chdname);
             int xx = 0;
             if (has_name) {
                 strcat(buf, "Cell");
@@ -435,7 +435,7 @@ sCfg::update(const char *chdname)
             strcat(buf, ".");
         }
         else
-            sprintf(buf, "CHD %s is not configured.", chdname);
+            snprintf(buf, sizeof(buf), "CHD %s is not configured.", chdname);
         gtk_label_set_text(GTK_LABEL(cf_label), buf);
 
         gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(cf_apply_tc))),
@@ -519,7 +519,7 @@ sCfg::button_hdlr(GtkWidget *widget)
         cf_cgdname = lstring::copy(str);
         cCGD *cgd = CDcgd()->cgdRecall(cf_cgdname, false);
         if (!cgd) {
-            if (GRX->GetStatus(cf_newcgd)) {
+            if (GTKdev::GetStatus(cf_newcgd)) {
                 int xo, yo;
                 gdk_window_get_root_origin(gtk_widget_get_window(Shell()),
                     &xo, &yo);
@@ -538,9 +538,10 @@ sCfg::button_hdlr(GtkWidget *widget)
                 char buf[256];
                 if (!cf_cgdname || !*cf_cgdname)
                     strcpy(buf, "No CGD access name given.");
-                else
-                    sprintf(buf, "No CGD with access name %s "
+                else {
+                    snprintf(buf, sizeof(buf), "No CGD with access name %s "
                         "currently exists.", cf_cgdname);
+                }
                 PopUpMessage(buf, false);
             }
         }
@@ -574,7 +575,7 @@ sCfg::cf_new_cgd_cb(const char *idname, const char *string, int mode,
             const char *s = Errs()->get_error();
             int len = strlen(fmt) + (s ? strlen(s) : 0) + 10;
             char *t = new char[len];
-            sprintf(t, fmt, s);
+            snprintf(t, len, fmt, s);
             Cfg->PopUpMessage(t, true);
             delete [] t;
         }

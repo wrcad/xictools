@@ -66,13 +66,13 @@ namespace qtinterf
 }
 
 QTaffirmPopup::QTaffirmPopup(QTbag *owner, const char *question_str,
-    void *arg) : QDialog(owner ? owner->shell : 0)
+    void *arg) : QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
     p_cb_arg = arg;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Yes or No?")));
 
@@ -123,7 +123,7 @@ QTaffirmPopup::~QTaffirmPopup()
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
-            owner->monitor.remove(this);
+            owner->MonitorRemove(this);
     }
 }
 
@@ -165,7 +165,7 @@ QTaffirmPopup::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     delete this;

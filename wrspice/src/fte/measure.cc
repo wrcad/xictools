@@ -653,7 +653,8 @@ namespace {
         if (!*errstr) {
             if (string) {
                 char buf[128];
-                sprintf(buf, "syntax error after \'%s\'.", string);
+                snprintf(buf, sizeof(buf), "syntax error after \'%s\'.",
+                    string);
                 *errstr = lstring::copy(buf);
             }
             else
@@ -1526,7 +1527,8 @@ sRunopMeas::print(sLstr *plstr)
 {
     const char *msg1 = "%c %-4d %s";
     char buf[64];
-    sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number, kw_measure);
+    snprintf(buf, sizeof(buf), msg1, ro_active ? ' ' : 'I', ro_number,
+        kw_measure);
     bool tostdout = (plstr == 0);
     sLstr lstr;
     if (!plstr)
@@ -2064,7 +2066,7 @@ sRunopMeas::update_plot(sDataVec *dv0, int count)
             nv->newperm(pl);
 
             char scname[128];
-            sprintf(scname, "%s_scale", ro_result);
+            snprintf(scname, sizeof(scname), "%s_scale", ro_result);
             sDataVec *ns = new sDataVec(*xs->units());
             ns->set_name(scname);
             ns->set_flags(VF_NOSXZE);
@@ -2152,7 +2154,7 @@ sRunopMeas::print_meas()
     sLstr lstr;
     char buf[BSIZE_SP];
     if (ro_print_flag > 1) {
-        sprintf(buf, "measure: %s\n", ro_result);
+        snprintf(buf, sizeof(buf), "measure: %s\n", ro_result);
         lstr.add(buf);
     }
     if (ro_start.ready()) {
@@ -2164,18 +2166,19 @@ sRunopMeas::print_meas()
                         ro_cktptr->runplot()->scale()) {
                     const char *zz = ro_cktptr->runplot()->scale()->name();
                     if (zz && *zz) {
-                        sprintf(buf, " %s\n", zz);
+                        snprintf(buf, sizeof(buf), " %s\n", zz);
                         lstr.add(buf);
                     }
                 }
-                sprintf(buf, "    start: %-16g end: %-16g delta: %g\n",
+                snprintf(buf, sizeof(buf),
+                    "    start: %-16g end: %-16g delta: %g\n",
                     ro_start.found(), ro_end.found(),
                     ro_end.found() - ro_start.found());
                 lstr.add(buf);
             }
             for (sMfunc *ff = ro_funcs; ff; ff = ff->next()) {
                 if (ro_print_flag > 1) {
-                    sprintf(buf, " %s\n", ff->expr());
+                    snprintf(buf, sizeof(buf), " %s\n", ff->expr());
                     lstr.add(buf);
                 }
                 const char *str = "???";
@@ -2194,18 +2197,24 @@ sRunopMeas::print_meas()
                 else if (ff->type() == Mrft)
                     str = mkw_rt;
                 if (ro_print_flag > 1) {
-                    if (ff->error())
-                        sprintf(buf, "    %s: (error occurred)\n", str);
-                    else
-                        sprintf(buf, "    %s: %g\n", str, ff->val());
+                    if (ff->error()) {
+                        snprintf(buf, sizeof(buf),
+                            "    %s: (error occurred)\n", str);
+                    }
+                    else {
+                        snprintf(buf, sizeof(buf),
+                            "    %s: %g\n", str, ff->val());
+                    }
                 }
                 else {
                     if (ff->error()) {
-                        sprintf(buf, "%s %s: (error occurred)\n", ro_result,
-                            str);
+                        snprintf(buf, sizeof(buf),
+                            "%s %s: (error occurred)\n", ro_result, str);
                     }
-                    else
-                        sprintf(buf, "%s %s: %g\n", ro_result, str, ff->val());
+                    else {
+                        snprintf(buf, sizeof(buf), "%s %s: %g\n",
+                            ro_result, str, ff->val());
+                    }
                 }
                 lstr.add(buf);
             }
@@ -2217,33 +2226,35 @@ sRunopMeas::print_meas()
                         ro_cktptr->runplot()->scale()) {
                     const char *zz = ro_cktptr->runplot()->scale()->name();
                     if (zz && *zz) {
-                        sprintf(buf, " %s\n", zz);
+                        snprintf(buf, sizeof(buf), " %s\n", zz);
                         lstr.add(buf);
                     }
                 }
-                sprintf(buf, "    start: %g\n", ro_start.found());
+                snprintf(buf, sizeof(buf),
+                    "    start: %g\n", ro_start.found());
                 lstr.add(buf);
             }
         }
         for (sMfunc *ff = ro_finds; ff; ff = ff->next()) {
             if (ro_print_flag > 1) {
                 if (ff->error()) {
-                    sprintf(buf, " %s %s = (error occurred)\n", ftype,
-                        ff->expr());
+                    snprintf(buf, sizeof(buf),
+                        " %s %s = (error occurred)\n", ftype, ff->expr());
                 }
                 else {
-                    sprintf(buf, " %s %s = %g\n", ftype, ff->expr(),
-                        ff->val());
+                    snprintf(buf, sizeof(buf), " %s %s = %g\n", ftype,
+                        ff->expr(), ff->val());
                 }
             }
             else {
                 if (ff->error()) {
-                    sprintf(buf, "%s %s %s = (error occurred)\n", ro_result,
+                    snprintf(buf, sizeof(buf),
+                        "%s %s %s = (error occurred)\n", ro_result,
                         ftype, ff->expr());
                 }
                 else {
-                    sprintf(buf, "%s %s %s = %g\n", ro_result, ftype,
-                        ff->expr(), ff->val());
+                    snprintf(buf, sizeof(buf), "%s %s %s = %g\n",
+                        ro_result, ftype, ff->expr(), ff->val());
                 }
             }
             lstr.add(buf);
@@ -2362,7 +2373,7 @@ sRunopStop::print(sLstr *plstr)
     }
     else {
         char buf[64];
-        sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number);
+        snprintf(buf, sizeof(buf), msg1, ro_active ? ' ' : 'I', ro_number);
         plstr->add(buf);
         print_cond(plstr, true);
     }

@@ -795,7 +795,7 @@ WireState::undo()
                 v_op->next = RedoList;
                 RedoList = v_op;
                 // Draw after update, or marks get clipped.
-                dspPkgIf()->RegisterIdleProc(mark_idle, 0);
+                DSPpkg::self()->RegisterIdleProc(mark_idle, 0);
             }
             else {
                 // hit the end of the (truncated) undo list
@@ -868,7 +868,7 @@ WireState::redo()
             UndoList = v_op;
         }
         // Draw after update, or marks get clipped.
-        dspPkgIf()->RegisterIdleProc(mark_idle, 0);
+        DSPpkg::self()->RegisterIdleProc(mark_idle, 0);
         return;
     }
 
@@ -1462,7 +1462,7 @@ cEdit::execWireWidth()
             // There is a wire selected
             int width = 0;
             for (;;) {
-                sprintf(buf, "%.*f", ndgt,
+                snprintf(buf, sizeof(buf), "%.*f", ndgt,
                     MICRONS(dsp_prm(LT()->CurLayer())->wire_width()));
                 strcpy(tbuf, "Enter new width for selected wires: ");
                 width_state = WWchange;
@@ -1538,7 +1538,7 @@ cEdit::execWireWidth()
 
     strcpy(tbuf, "Wire width for current layer: ");
     for (;;) {
-        sprintf(buf, "%.*f", ndgt,
+        snprintf(buf,sizeof(buf), "%.*f", ndgt,
             MICRONS(dsp_prm(LT()->CurLayer())->wire_width()));
         width_state = WWset;
         char *in = PL()->EditPrompt(tbuf, buf);
@@ -1577,7 +1577,7 @@ cEdit::widthCallback()
     char buf[128], tbuf[256];
     if (width_state != WWnone) {
         int ndgt = CD()->numDigits();
-        sprintf(buf, "%.*f", ndgt,
+        snprintf(buf, sizeof(buf), "%.*f", ndgt,
             MICRONS(dsp_prm(LT()->CurLayer())->wire_width()));
         if (width_state == WWchange)
             strcpy(tbuf, "CHANGE WIDTH of selected wires to: ");

@@ -115,7 +115,7 @@ cConvert::PopUpCgdOpen(GRobject caller, ShowMode mode,
     const char *init_idname, const char *init_str, int x, int y,
     bool(*callback)(const char*, const char*, int, void*), void *arg)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Cgo;
@@ -481,7 +481,7 @@ sCgo::~sCgo()
     delete cgo_p1_llist;
     delete cgo_p1_cnmap;
     if (cgo_caller)
-        GRX->Deselect(cgo_caller);
+        GTKdev::Deselect(cgo_caller);
 }
 
 
@@ -511,7 +511,7 @@ sCgo::apply_proc(GtkWidget *widget)
 {
     int ret = true;
     if (cgo_callback && widget == cgo_apply) {
-        GRX->Deselect(widget);
+        GTKdev::Deselect(widget);
         char *string;
         int pg = gtk_notebook_get_current_page(GTK_NOTEBOOK(cgo_nbook));
         if (pg == 0) {

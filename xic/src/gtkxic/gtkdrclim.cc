@@ -100,7 +100,7 @@ using namespace gtkdrclim;
 void
 cDRC::PopUpDrcLimits(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete DL;
@@ -122,7 +122,7 @@ cDRC::PopUpDrcLimits(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(DL->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UR), DL->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UR), DL->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(DL->shell());
 }
@@ -436,7 +436,7 @@ sDL::~sDL()
 {
     DL = 0;
     if (dl_caller)
-        GRX->Deselect(dl_caller);
+        GTKdev::Deselect(dl_caller);
     if (dl_popup)
         gtk_widget_destroy(dl_popup);
 }
@@ -448,17 +448,17 @@ sDL::update()
     const char *s = CDvdb()->getVariable(VA_DrcUseLayerList);
     if (s) {
         if (*s == 'n' || *s == 'N') {
-            GRX->SetStatus(dl_lskip, true);
-            GRX->SetStatus(dl_luse, false);
+            GTKdev::SetStatus(dl_lskip, true);
+            GTKdev::SetStatus(dl_luse, false);
         }
         else {
-            GRX->SetStatus(dl_lskip, false);
-            GRX->SetStatus(dl_luse, true);
+            GTKdev::SetStatus(dl_lskip, false);
+            GTKdev::SetStatus(dl_luse, true);
         }
     }
     else {
-        GRX->SetStatus(dl_lskip, false);
-        GRX->SetStatus(dl_luse, false);
+        GTKdev::SetStatus(dl_lskip, false);
+        GTKdev::SetStatus(dl_luse, false);
     }
 
     s = CDvdb()->getVariable(VA_DrcLayerList);
@@ -469,7 +469,8 @@ sDL::update()
         l = "";
     if (strcmp(s, l))
         gtk_entry_set_text(GTK_ENTRY(dl_llist), s);
-    if (GRX->GetStatus(dl_luse) || GRX->GetStatus(dl_lskip))
+    if (GTKdev::GetStatus(dl_luse) ||
+            GTKdev::GetStatus(dl_lskip))
         gtk_widget_set_sensitive(dl_llist, true);
     else
         gtk_widget_set_sensitive(dl_llist, false);
@@ -477,17 +478,17 @@ sDL::update()
     s = CDvdb()->getVariable(VA_DrcUseRuleList);
     if (s) {
         if (*s == 'n' || *s == 'N') {
-            GRX->SetStatus(dl_rskip, true);
-            GRX->SetStatus(dl_ruse, false);
+            GTKdev::SetStatus(dl_rskip, true);
+            GTKdev::SetStatus(dl_ruse, false);
         }
         else {
-            GRX->SetStatus(dl_rskip, false);
-            GRX->SetStatus(dl_ruse, true);
+            GTKdev::SetStatus(dl_rskip, false);
+            GTKdev::SetStatus(dl_ruse, true);
         }
     }
     else {
-        GRX->SetStatus(dl_rskip, false);
-        GRX->SetStatus(dl_ruse, false);
+        GTKdev::SetStatus(dl_rskip, false);
+        GTKdev::SetStatus(dl_ruse, false);
     }
 
     s = CDvdb()->getVariable(VA_DrcRuleList);
@@ -498,7 +499,8 @@ sDL::update()
         l = "";
     if (strcmp(s, l))
         gtk_entry_set_text(GTK_ENTRY(dl_rlist), s);
-    if (GRX->GetStatus(dl_ruse) || GRX->GetStatus(dl_rskip))
+    if (GTKdev::GetStatus(dl_ruse) ||
+            GTKdev::GetStatus(dl_rskip))
         gtk_widget_set_sensitive(dl_rlist, true);
     else
         gtk_widget_set_sensitive(dl_rlist, false);
@@ -515,21 +517,21 @@ sDL::update()
     if (DRC()->intrMaxErrors() > DRC_INTR_MAX_ERRS_MAX)
         DRC()->setIntrMaxErrors(DRC_INTR_MAX_ERRS_MAX);
     sb_imax_errs.set_value(DRC()->intrMaxErrors());
-    GRX->SetStatus(dl_skip, DRC()->isIntrSkipInst());
+    GTKdev::SetStatus(dl_skip, DRC()->isIntrSkipInst());
     if (DRC()->errorLevel() == DRCone_err) {
-        GRX->SetStatus(dl_b1, true);
-        GRX->SetStatus(dl_b2, false);
-        GRX->SetStatus(dl_b3, false);
+        GTKdev::SetStatus(dl_b1, true);
+        GTKdev::SetStatus(dl_b2, false);
+        GTKdev::SetStatus(dl_b3, false);
     }
     else if (DRC()->errorLevel() == DRCone_type) {
-        GRX->SetStatus(dl_b1, false);
-        GRX->SetStatus(dl_b2, true);
-        GRX->SetStatus(dl_b3, false);
+        GTKdev::SetStatus(dl_b1, false);
+        GTKdev::SetStatus(dl_b2, true);
+        GTKdev::SetStatus(dl_b3, false);
     }
     else {
-        GRX->SetStatus(dl_b1, false);
-        GRX->SetStatus(dl_b2, false);
-        GRX->SetStatus(dl_b3, true);
+        GTKdev::SetStatus(dl_b1, false);
+        GTKdev::SetStatus(dl_b2, false);
+        GTKdev::SetStatus(dl_b3, true);
     }
 }
 
@@ -553,7 +555,7 @@ sDL::dl_action_proc(GtkWidget *caller, void*)
     if (!strcmp(name, "Help"))
         DSPmainWbag(PopUpHelp("xic:limit"))
     else if (!strcmp(name, "luse")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             CDvdb()->setVariable(VA_DrcUseLayerList, 0);
             // Give the list entry the focus.
             gtk_window_set_focus(GTK_WINDOW(DL->dl_popup), DL->dl_llist);
@@ -562,7 +564,7 @@ sDL::dl_action_proc(GtkWidget *caller, void*)
             CDvdb()->clearVariable(VA_DrcUseLayerList);
     }
     else if (!strcmp(name, "lskip")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             CDvdb()->setVariable(VA_DrcUseLayerList, "n");
             // Give the list entry the focus.
             gtk_window_set_focus(GTK_WINDOW(DL->dl_popup), DL->dl_llist);
@@ -571,7 +573,7 @@ sDL::dl_action_proc(GtkWidget *caller, void*)
             CDvdb()->clearVariable(VA_DrcUseLayerList);
     }
     else if (!strcmp(name, "ruse")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             CDvdb()->setVariable(VA_DrcUseRuleList, 0);
             // Give the list entry the focus.
             gtk_window_set_focus(GTK_WINDOW(DL->dl_popup), DL->dl_rlist);
@@ -580,7 +582,7 @@ sDL::dl_action_proc(GtkWidget *caller, void*)
             CDvdb()->clearVariable(VA_DrcUseRuleList);
     }
     else if (!strcmp(name, "rskip")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             CDvdb()->setVariable(VA_DrcUseRuleList, "n");
             // Give the list entry the focus.
             gtk_window_set_focus(GTK_WINDOW(DL->dl_popup), DL->dl_rlist);
@@ -589,21 +591,21 @@ sDL::dl_action_proc(GtkWidget *caller, void*)
             CDvdb()->clearVariable(VA_DrcUseRuleList);
     }
     else if (!strcmp(name, "skip_cells_intr")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_DrcInterSkipInst, "");
         else
             CDvdb()->clearVariable(VA_DrcInterSkipInst);
     }
     else if (!strcmp(name, "one_err")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->clearVariable(VA_DrcLevel);
     }
     else if (!strcmp(name, "one_type")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_DrcLevel, "1");
     }
     else if (!strcmp(name, "all_errs")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_DrcLevel, "2");
     }
 }

@@ -65,20 +65,20 @@ void
 CommandTab::com_linearize(wordlist *wl)
 {
     if (!OP.curPlot()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no current plot.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no current plot.\n");
         return;
     }
     if (!OP.curPlot()->scale()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "current plot has no scale.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "current plot has no scale.\n");
         return;
     }
     if (!OP.curPlot()->scale()->isreal()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "non-real scale for %s\n", 
+        GRpkg::self()->ErrPrintf(ET_ERROR, "non-real scale for %s\n", 
             OP.curPlot()->type_name());
         return;
     }
     if (!lstring::ciprefix("tran", OP.curPlot()->type_name())) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "plot must be from transient analysis.\n");
         return;
     }
@@ -99,7 +99,7 @@ sPlot::linearize(wordlist *wl)
     char buf[BSIZE_SP];
 
     if (((tstop - tstart) * tstep <= 0.0) || ((tstop - tstart) < tstep)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
            "bad parameters -- start = %G, stop = %G, step = %G.\n", 
             tstart, tstop, tstep);
         return;
@@ -107,7 +107,7 @@ sPlot::linearize(wordlist *wl)
 
     sDataVec *oldtime = scale();
     sPlot *newp = new sPlot("transient");
-    sprintf(buf, "%s (linearized)", name());
+    snprintf(buf, sizeof(buf), "%s (linearized)", name());
     newp->set_name(buf);
     newp->set_title(title());
     newp->set_date(date());
@@ -158,7 +158,7 @@ sPlot::lincopy(sDataVec *ov, double *newscale, int newlen, sPlot *oldplot)
     if ((!ov->scale() || ov->scale() == oldscale) &&
             ov->length() == oldscale->length()) {
         if (!ov->isreal()) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "%s is not real.\n", ov->name());
+            GRpkg::self()->ErrPrintf(ET_WARN, "%s is not real.\n", ov->name());
             return;
         }
         sDataVec *v = new sDataVec(
@@ -167,7 +167,7 @@ sPlot::lincopy(sDataVec *ov, double *newscale, int newlen, sPlot *oldplot)
         sPoly po(1);
         if (!po.interp(ov->realvec(), nd, oldscale->realvec(), 
                 oldscale->length(), newscale, newlen)) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "can't interpolate %s.\n",
+            GRpkg::self()->ErrPrintf(ET_WARN, "can't interpolate %s.\n",
                 ov->name());
             delete v;
             return;

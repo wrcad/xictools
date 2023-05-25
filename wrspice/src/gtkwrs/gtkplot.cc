@@ -358,8 +358,8 @@ plot_bag::init(sGraph *gr)
             anam = GR_PLOTstr;
         else if (gr->apptype() == GR_MPLT)
             anam = GR_MPLTstr;
-        sprintf(buf1, "%s %s %d", CP.Program(), anam, gr->id());
-        sprintf(buf2, "%s%d", anam, gr->id());
+        snprintf(buf1, sizeof(buf1), "%s %s %d", CP.Program(), anam, gr->id());
+        snprintf(buf2, sizeof(buf2), "%s%d", anam, gr->id());
         Title(buf1, buf2);
     }
 
@@ -700,7 +700,7 @@ sGraph::gr_pkg_init_colors()
         w->SetBackground(SpGrPkg::DefColors[0].pixel);
         w->Clear();
     }
-    for (int i = 0; i < GRpkgIf()->MainDev()->numcolors; i++)
+    for (int i = 0; i < GRpkg::self()->MainDev()->numcolors; i++)
         gr_colors[i] = SpGrPkg::DefColors[i];
 }
 
@@ -741,7 +741,7 @@ sGraph::gr_check_plot_events()
 void
 sGraph::gr_redraw()
 {
-    if (GRpkgIf()->CurDev()->devtype == GRhardcopy) {
+    if (GRpkg::self()->CurDev()->devtype == GRhardcopy) {
         gr_redraw_direct();
         gr_redraw_keyed();
         return;
@@ -771,7 +771,7 @@ sGraph::gr_redraw()
         if (wb->pb_pixmap)
             gdk_pixmap_unref(wb->pb_pixmap);
         wb->pb_pixmap = gdk_pixmap_new(wb->Window(), width, height,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         wb->pb_pmwid = width;
         wb->pb_pmhei = height;
     }
@@ -1049,7 +1049,8 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         if (wb->pb_pixmap)
             gdk_pixmap_unref(wb->pb_pixmap);
         wb->pb_pixmap = gdk_pixmap_new(wb->Window(), graph->area().width(),
-            graph->area().height(), gdk_visual_get_depth(GRX->Visual()));
+            graph->area().height(),
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         wb->pb_pmwid = graph->area().width();
         wb->pb_pmhei = graph->area().height();
         graph->set_dirty(true);
@@ -1190,7 +1191,7 @@ plot_bag::keypress(GtkWidget*, GdkEvent *event, void *client_data)
 int
 plot_bag::buttonpress(GtkWidget *widget, GdkEvent *event, void *client_data)
 {
-    if (GRpkgIf()->CurDev()->devtype == GRhardcopy)
+    if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
         return (false);
     GdkEventButton *buttonev = &event->button;
     sGraph *graph = static_cast<sGraph*>(client_data);
@@ -1227,7 +1228,7 @@ plot_bag::buttonpress(GtkWidget *widget, GdkEvent *event, void *client_data)
 int
 plot_bag::buttonup(GtkWidget*, GdkEvent *event, void *client_data)
 {
-    if (GRpkgIf()->CurDev()->devtype == GRhardcopy)
+    if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
         return (false);
     GdkEventButton *buttonev = &event->button;
     sGraph *graph = static_cast<sGraph*>(client_data);
@@ -1327,7 +1328,7 @@ plot_bag::b_help(GtkWidget *caller, void *client_data)
 {
     sGraph *graph = static_cast<sGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
     if (state)
         w->PopUpHelp(graph->apptype() == GR_PLOT ? "plotpanel" : "mplotpanel");
 }
@@ -1448,19 +1449,19 @@ plot_bag::b_points(GtkWidget *caller, void *client_data)
     GtkWidget *cmb = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
         "combplot");
     if (pts && cmb) {
-        bool ptson = GRX->GetStatus(pts);
-        bool cmbon = GRX->GetStatus(cmb);
+        bool ptson = GTKdev::GetStatus(pts);
+        bool cmbon = GTKdev::GetStatus(cmb);
 
         if (!ptson && !cmbon)
             graph->set_plottype(PLOT_LIN);
         else if (caller == pts) {
             if (cmbon)
-                GRX->SetStatus(cmb, false);
+                GTKdev::SetStatus(cmb, false);
             graph->set_plottype(PLOT_POINT);
         }
         else {
             if (ptson)
-                GRX->SetStatus(pts, false);
+                GTKdev::SetStatus(pts, false);
             graph->set_plottype(PLOT_COMB);
         }
         graph->dev()->Clear();
@@ -1478,10 +1479,10 @@ plot_bag::b_logx(GtkWidget *caller, void *client_data)
     if (graph->rawdata().xmin <= 0) {
         w->PopUpErr(MODE_ON,
             "The X-axis scale must be greater than zero for log plot.");
-        GRX->SetStatus(caller, false);
+        GTKdev::SetStatus(caller, false);
         return;
     }
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
     if (state) {
         if (graph->gridtype() == GRID_YLOG)
             graph->set_gridtype(GRID_LOGLOG);
@@ -1510,10 +1511,10 @@ plot_bag::b_logy(GtkWidget *caller, void *client_data)
     if (graph->rawdata().ymin <= 0) {
         w->PopUpErr(MODE_ON,
             "The Y-axis scale must be greater than zero for log plot.");
-        GRX->SetStatus(caller, false);
+        GTKdev::SetStatus(caller, false);
         return;
     }
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
     if (state) {
         if (graph->gridtype() == GRID_XLOG)
             graph->set_gridtype(GRID_LOGLOG);
@@ -1543,10 +1544,10 @@ plot_bag::b_marker(GtkWidget *caller, void *client_data)
     if (!graph->xmonotonic() && graph->yseparate()) {
         w->PopUpErr(MODE_ON,
 "Marker is not available in separate trace mode with nonmonotonic scale.");
-        GRX->SetStatus(caller, false);
+        GTKdev::SetStatus(caller, false);
         return;
     }
-    if (GRX->GetStatus(caller)) {
+    if (GTKdev::GetStatus(caller)) {
         if (!graph->reference().mark) {
             graph->reference().mark = true;
             graph->gr_mark();
@@ -1570,7 +1571,7 @@ plot_bag::b_separate(GtkWidget *caller, void *client_data)
         w->PopUpErr(MODE_ON,
 "Can't enter separate trace mode with nonmonotonic scale when\n\
 marker is active.");
-        GRX->SetStatus(caller, false);
+        GTKdev::SetStatus(caller, false);
         return;
     }
     if (graph->yseparate())
@@ -1609,19 +1610,19 @@ plot_bag::b_multiscale(GtkWidget *caller, void *client_data)
     GtkWidget *grp =  (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
         "grpscale");
     if (one && grp) {
-        bool oneon = GRX->GetStatus(one);
-        bool grpon = GRX->GetStatus(grp);
+        bool oneon = GTKdev::GetStatus(one);
+        bool grpon = GTKdev::GetStatus(grp);
 
         if (!oneon && !grpon)
             graph->set_format(FT_MULTI);
         else if (caller == one) {
             if (grpon)
-                GRX->SetStatus(grp, false);
+                GTKdev::SetStatus(grp, false);
             graph->set_format(FT_SINGLE);
         }
         else {
             if (oneon)
-                GRX->SetStatus(one, false);
+                GTKdev::SetStatus(one, false);
             graph->set_format(FT_GROUP);
         }
         graph->dev()->Clear();
@@ -1644,14 +1645,14 @@ plot_bag::set_hccb(HCcb *cb)
     HCdesc *hcdesc = 0;
     variable *v = Sp.GetRawVar(kw_hcopydriver);
     if (v && v->type() == VTYP_STRING) {
-        int i = GRpkgIf()->FindHCindex(v->string());
+        int i = GRpkg::self()->FindHCindex(v->string());
         if (i >= 0) {
-            hcdesc = GRpkgIf()->HCof(i);
+            hcdesc = GRpkg::self()->HCof(i);
             cb->format = i;
         }
     }
     if (!hcdesc)
-        hcdesc = GRpkgIf()->HCof(cb->format);
+        hcdesc = GRpkg::self()->HCof(cb->format);
     if (!hcdesc)
         return;
 

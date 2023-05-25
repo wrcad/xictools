@@ -106,7 +106,7 @@ cDisplay::ShowOdescPhysProperties(CDo *odesc, int display)
             continue;
 
         int delta = wdesc->LogScale(d_phys_prop_size);
-        if (dspPkgIf()->IsDualPlane())
+        if (DSPpkg::self()->IsDualPlane())
             wdesc->Wdraw()->SetXOR(display ? GRxHlite : GRxUnhlite);
         else {
             if (display)
@@ -172,24 +172,24 @@ cDisplay::ShowOdescPhysProperties(CDo *odesc, int display)
                 h = mmRnd(hd);
                 y -= h - delta;
                 if (erase && display) {
-                    if (dspPkgIf()->IsDualPlane())
+                    if (DSPpkg::self()->IsDualPlane())
                         wdesc->Wdraw()->SetXOR(GRxNone);
                     wdesc->Wdraw()->SetColor(DSP()->Color(BackgroundColor,
                         Physical));
                     BBox BB(x, y, x + w, y + h);
                     wdesc->ShowBox(&BB, CDL_FILLED, 0);
-                    if (dspPkgIf()->IsDualPlane())
+                    if (DSPpkg::self()->IsDualPlane())
                         wdesc->Wdraw()->SetXOR(GRxHlite);
                     wdesc->Wdraw()->SetColor(Color(HighlightingColor,
                         Physical));
                 }
                 wdesc->ShowLabel(lstr.string(), x, y, w, h, 0);
                 if (erase && !display) {
-                    if (dspPkgIf()->IsDualPlane())
+                    if (DSPpkg::self()->IsDualPlane())
                         wdesc->Wdraw()->SetXOR(GRxNone);
                     BBox BB(x, y, x + w, y + h);
                     wdesc->Redisplay(&BB);
-                    if (dspPkgIf()->IsDualPlane())
+                    if (DSPpkg::self()->IsDualPlane())
                         wdesc->Wdraw()->SetXOR(GRxUnhlite);
                     wdesc->Wdraw()->SetColor(Color(HighlightingColor,
                         Physical));
@@ -198,7 +198,7 @@ cDisplay::ShowOdescPhysProperties(CDo *odesc, int display)
             }
         }
         *wdesc->ClipRect() = tBB;
-        if (dspPkgIf()->IsDualPlane())
+        if (DSPpkg::self()->IsDualPlane())
             wdesc->Wdraw()->SetXOR(GRxNone);
     }
 }
@@ -232,7 +232,7 @@ WindowDesc::ShowPhysProperties(const BBox *AOI, int display)
     if (!sdesc)
         return;
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         w_draw->SetXOR(display ? GRxHlite : GRxUnhlite);
     else {
         if (display)
@@ -363,25 +363,25 @@ WindowDesc::ShowPhysProperties(const BBox *AOI, int display)
                 h = mmRnd(hd);
                 y -= h - delta;
                 if (erase && display) {
-                    if (dspPkgIf()->IsDualPlane())
+                    if (DSPpkg::self()->IsDualPlane())
                         w_draw->SetXOR(GRxNone);
                     w_draw->SetColor(DSP()->Color(BackgroundColor, Physical));
                     BBox BB(x, y, x + w, y + h);
                     ShowBox(&BB, CDL_FILLED, 0);
-                    if (dspPkgIf()->IsDualPlane())
+                    if (DSPpkg::self()->IsDualPlane())
                         w_draw->SetXOR(GRxHlite);
                     w_draw->SetColor(DSP()->Color(HighlightingColor,
                         Physical));
                 }
                 ShowLabel(lstr.string(), x, y, w, h, 0);
                 if (erase && !display) {
-                    if (dspPkgIf()->IsDualPlane())
+                    if (DSPpkg::self()->IsDualPlane())
                         w_draw->SetXOR(GRxNone);
                     BBox BB(x, y, x + w, y + h);
                     PPgoaway = true;
                     Redisplay(&BB);
                     PPgoaway = false;
-                    if (dspPkgIf()->IsDualPlane())
+                    if (DSPpkg::self()->IsDualPlane())
                         w_draw->SetXOR(GRxUnhlite);
                     w_draw->SetColor(DSP()->Color(HighlightingColor,
                         Physical));
@@ -431,26 +431,26 @@ WindowDesc::ShowPhysProperties(const BBox *AOI, int display)
                     h = mmRnd(hd);
                     y -= h - delta;
                     if (erase && display) {
-                        if (dspPkgIf()->IsDualPlane())
+                        if (DSPpkg::self()->IsDualPlane())
                             w_draw->SetXOR(GRxNone);
                         w_draw->SetColor(DSP()->Color(BackgroundColor,
                             Physical));
                         BBox BB(x, y, x + w, y + h);
                         ShowBox(&BB, CDL_FILLED, 0);
-                        if (dspPkgIf()->IsDualPlane())
+                        if (DSPpkg::self()->IsDualPlane())
                             w_draw->SetXOR(GRxHlite);
                         w_draw->SetColor(DSP()->Color(HighlightingColor,
                             Physical));
                     }
                     ShowLabel(lstr.string(), x, y, w, h, 0);
                     if (erase && !display) {
-                        if (dspPkgIf()->IsDualPlane())
+                        if (DSPpkg::self()->IsDualPlane())
                             w_draw->SetXOR(GRxNone);
                         BBox BB(x, y, x + w, y + h);
                         PPgoaway = true;
                         Redisplay(&BB);
                         PPgoaway = false;
-                        if (dspPkgIf()->IsDualPlane())
+                        if (DSPpkg::self()->IsDualPlane())
                             w_draw->SetXOR(GRxUnhlite);
                         w_draw->SetColor(DSP()->Color(HighlightingColor,
                             Physical));
@@ -461,7 +461,7 @@ WindowDesc::ShowPhysProperties(const BBox *AOI, int display)
             w_clip_rect = tBB;
         }
     }
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         w_draw->SetXOR(GRxNone);
 }
 // End of WindowDesc functions.

@@ -1315,7 +1315,7 @@ cPCellDb::md5Digest(const char *path)
     char tbf[4];
     sLstr lstr;
     for (int i = 0; i < 16; i++) {
-        sprintf(tbf, "%02x", digest[i]);
+        snprintf(tbf, sizeof(tbf), "%02x", digest[i]);
         lstr.add(tbf);
     }
     return (lstr.string_trim());

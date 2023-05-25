@@ -165,7 +165,7 @@ void
 cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
     TreeUpdMode dmode, const char *oldroot)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Tree;
@@ -189,7 +189,7 @@ cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
     gtk_window_set_transient_for(GTK_WINDOW(Tree->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Tree->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Tree->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Tree->Shell());
 }
@@ -392,7 +392,7 @@ sTree::~sTree()
     if (t_caller) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(t_caller),
             (gpointer)t_cancel, 0);
-        GRX->Deselect(t_caller);
+        GTKdev::Deselect(t_caller);
     }
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
@@ -427,7 +427,7 @@ sTree::update(const char *root, const char *oldroot, TreeUpdMode dmode)
     }
 
     if (t_caller)
-        GRX->Select(t_caller);
+        GTKdev::Select(t_caller);
     delete [] t_selection;
     t_selection = 0;
     if (Tree->t_curnode)
@@ -442,16 +442,18 @@ sTree::update(const char *root, const char *oldroot, TreeUpdMode dmode)
 
     char buf[128];
     if (DSP()->MainWdesc()->DbType() == WDchd) {
-        sprintf(buf, "%s cells from saved hierarchy named %s",
+        snprintf(buf, sizeof(buf), "%s cells from saved hierarchy named %s",
             DisplayModeName(t_mode), DSP()->MainWdesc()->DbName());
     }
-    else
-        sprintf(buf, "%s cells from memory", DisplayModeName(t_mode));
+    else {
+        snprintf(buf, sizeof(buf), "%s cells from memory",
+            DisplayModeName(t_mode));
+    }
     gtk_label_set_text(GTK_LABEL(t_label), buf);
 
     gtk_label_set_text(GTK_LABEL(wb_textarea),
         "Adding nodes, please wait...");
-    dspPkgIf()->RegisterTimeoutProc(200, t_build_proc, 0);
+    GTKpkg::self()->RegisterTimeoutProc(200, t_build_proc, 0);
     check_sens();
 }
 
@@ -475,12 +477,12 @@ sTree::check_fb()
     t_ucount++;
     if (!(t_ucount & t_udel)) {
         char buf[256];
-        sprintf(buf, "%s:  %u", "Nodes processed", t_ucount);
+        snprintf(buf, sizeof(buf), "%s:  %u", "Nodes processed", t_ucount);
         gtk_label_set_text(GTK_LABEL(wb_textarea), buf);
     }
     if (Timer()->check_interval(t_check_time)) {
         if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-            dspPkgIf()->CheckForInterrupt();
+            GTKpkg::self()->CheckForInterrupt();
         return (XM()->ConfirmAbort());
     }
     return (false);
@@ -518,7 +520,7 @@ sTree::check_sens()
 void
 sTree::build_tree(CDs *sdesc)
 {
-    dspPkgIf()->SetWorking(true);
+    GTKpkg::self()->SetWorking(true);
     t_ucount = 0;
     t_udel = (1 << 10) - 1;
     t_mdepth = 0;
@@ -531,8 +533,8 @@ sTree::build_tree(CDs *sdesc)
     if (Tree && GTK_IS_TREE_VIEW(t_tree)) {
         char buf[256];
         if (ret)
-            sprintf(buf, "Total Nodes: %u   Max Depth: %d", t_ucount,
-                t_mdepth+1);
+            snprintf(buf, sizeof(buf), "Total Nodes: %u   Max Depth: %d",
+                t_ucount, t_mdepth+1);
         else
             strcpy(buf, "Aborted, content incomplete.");
         gtk_label_set_text(GTK_LABEL(wb_textarea), buf);
@@ -540,7 +542,7 @@ sTree::build_tree(CDs *sdesc)
         gtk_tree_view_expand_row(GTK_TREE_VIEW(t_tree), p, false);
         gtk_tree_path_free(p);
     }
-    dspPkgIf()->SetWorking(false);
+    GTKpkg::self()->SetWorking(false);
 }
 
 
@@ -549,7 +551,7 @@ sTree::build_tree(CDs *sdesc)
 void
 sTree::build_tree(cCHD *chd, symref_t *p)
 {
-    dspPkgIf()->SetWorking(true);
+    GTKpkg::self()->SetWorking(true);
     t_ucount = 0;
     t_udel = (1 << 10) - 1;
     t_mdepth = 0;
@@ -562,13 +564,13 @@ sTree::build_tree(cCHD *chd, symref_t *p)
     if (Tree && GTK_IS_TREE_VIEW(t_tree)) {
         char buf[256];
         if (ret)
-            sprintf(buf, "Total Nodes: %u   Max Depth: %d", t_ucount,
-                t_mdepth+1);
+            snprintf(buf, sizeof(buf), "Total Nodes: %u   Max Depth: %d",
+                t_ucount, t_mdepth+1);
         else
             strcpy(buf, "Aborted, content incomplete.");
         gtk_label_set_text(GTK_LABEL(wb_textarea), buf);
     }
-    dspPkgIf()->SetWorking(false);
+    GTKpkg::self()->SetWorking(false);
 }
 
 

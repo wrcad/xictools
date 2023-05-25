@@ -97,7 +97,7 @@ SImacroHandler::handle_keyword(FILE *fp, char *buf, const char *name,
             char *sm = macro_expand(t);
             if (!sm) {
                 if (errmsg) {
-                    sprintf(tbf, "%s %s", define_kw, eval_kw);
+                    snprintf(tbf, sizeof(tbf), "%s %s", define_kw, eval_kw);
                     *errmsg = compose_msg(tbf, "expansion failed", fname,
                         line_cnt);
                 }
@@ -107,7 +107,7 @@ SImacroHandler::handle_keyword(FILE *fp, char *buf, const char *name,
             char *dname = lstring::getqtok(&t);
             if (!dname) {
                 if (errmsg) {
-                    sprintf(tbf, "%s %s", define_kw, eval_kw);
+                    snprintf(tbf, sizeof(tbf), "%s %s", define_kw, eval_kw);
                     *errmsg = compose_msg(tbf, "syntax error", fname,
                         line_cnt);
                 }
@@ -118,14 +118,14 @@ SImacroHandler::handle_keyword(FILE *fp, char *buf, const char *name,
             *p++ = ' ';
             if (SIparse()->evaluate(t, p, MACRO_BUFSIZE - (p-buf)) != OK) {
                 if (errmsg) {
-                    sprintf(tbf, "%s %s", define_kw, eval_kw);
+                    snprintf(tbf, sizeof(tbf), "%s %s", define_kw, eval_kw);
                     *errmsg = compose_msg(tbf, "evaluation failed",
                         fname, line_cnt);
                 }
             }
             else if (!parse_macro(buf, false)) {
                 if (errmsg) {
-                    sprintf(tbf, "%s %s", define_kw, eval_kw);
+                    snprintf(tbf, sizeof(tbf), "%s %s", define_kw, eval_kw);
                     *errmsg = compose_msg(tbf, "post-eval parse failed",
                         fname, line_cnt);
                 }

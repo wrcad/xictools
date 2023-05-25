@@ -74,7 +74,7 @@ namespace {
             if (DSP()->CurMode() == Electrical) {
                 if (n != DEF_RoundFlashSides) {
                     char buf[32];
-                    sprintf(buf, "%d", n);
+                    snprintf(buf, sizeof(buf), "%d", n);
                     CDvdb()->setVariable(VA_ElecRoundFlashSides, buf);
                 }
                 else
@@ -83,7 +83,7 @@ namespace {
             else {
                 if (n != DEF_RoundFlashSides) {
                     char buf[32];
-                    sprintf(buf, "%d", n);
+                    snprintf(buf, sizeof(buf), "%d", n);
                     CDvdb()->setVariable(VA_RoundFlashSides, buf);
                 }
                 else
@@ -818,7 +818,7 @@ PolyState::undo()
                 v_op->next = RedoList;
                 RedoList = v_op;
                 // Draw after update, or marks get clipped.
-                dspPkgIf()->RegisterIdleProc(mark_idle, 0);
+                DSPpkg::self()->RegisterIdleProc(mark_idle, 0);
             }
             else {
                 // hit the end of the (truncated) undo list
@@ -888,7 +888,7 @@ PolyState::redo()
             UndoList = v_op;
         }
         // Draw after update, or marks get clipped.
-        dspPkgIf()->RegisterIdleProc(mark_idle, 0);
+        DSPpkg::self()->RegisterIdleProc(mark_idle, 0);
         return;
     }
 
@@ -2520,9 +2520,11 @@ cEditGhost::showGhostDisk(int x, int y, int cen_x, int cen_y, bool erase)
         if (Gst()->ShowingGhostInWindow(wdesc)) {
             char buf[128];
             if (rx == ry)
-                sprintf(buf, "%.4f", MICRONS(rx));
-            else
-                sprintf(buf, "%.4f %.4f", MICRONS(rx), MICRONS(ry));
+                snprintf(buf, sizeof(buf), "%.4f", MICRONS(rx));
+            else {
+                snprintf(buf, sizeof(buf), "%.4f %.4f", MICRONS(rx),
+                    MICRONS(ry));
+            }
             int xo = 4;
             int yo = wdesc->ViewportHeight() - 5;
             if (erase) {
@@ -2582,9 +2584,11 @@ cEditGhost::showGhostDonut(int x, int y, int cen_x, int cen_y, bool erase)
         if (Gst()->ShowingGhostInWindow(wdesc)) {
             char buf[128];
             if (rx == ry)
-                sprintf(buf, "%.4f", MICRONS(rx));
-            else
-                sprintf(buf, "%.4f %.4f", MICRONS(rx), MICRONS(ry));
+                snprintf(buf, sizeof(buf), "%.4f", MICRONS(rx));
+            else {
+                snprintf(buf, sizeof(buf), "%.4f %.4f", MICRONS(rx),
+                    MICRONS(ry));
+            }
             int xo = 4;
             int yo = wdesc->ViewportHeight() - 5;
             if (erase) {
@@ -2636,7 +2640,7 @@ cEditGhost::showGhostArc(int x, int y, int cen_x, int cen_y, bool erase)
     while ((wdesc = wgen.next()) != 0) {
         if (Gst()->ShowingGhostInWindow(wdesc)) {
             char buf[128];
-            sprintf(buf, "%.5f", 180.0*a/M_PI);
+            snprintf(buf, sizeof(buf), "%.5f", 180.0*a/M_PI);
             int xo = 4;
             int yo = wdesc->ViewportHeight() - 5;
             if (erase) {

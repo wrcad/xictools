@@ -94,7 +94,7 @@ cMain::AppInit()
         char *uname = pathlist::get_user_name(false);
         char tbuf[256];
 
-        sprintf(tbuf, "xic: box %s\n", uname);
+        snprintf(tbuf, sizeof(tbuf), "xic: box %s\n", uname);
         miscutil::send_mail(Log()->MailAddress(), "SecurityReport:App2", tbuf);
         delete [] uname;
         raise(SIGTERM);
@@ -157,17 +157,22 @@ cMain::AppInit()
 
         // Now read the technology file.
         char buf[64];
-        if (Tech()->TechExtension() && *Tech()->TechExtension())
-            sprintf(buf, "%s.%s", TechFileBase(), Tech()->TechExtension());
+        if (Tech()->TechExtension() && *Tech()->TechExtension()) {
+            snprintf(buf, sizeof(buf), "%s.%s", TechFileBase(),
+                Tech()->TechExtension());
+        }
         else
             strcpy(buf, TechFileBase());
 
         char *cwd = pathlist::expand_path(".", true, false);
-        char *tpath = new char[strlen(cwd) + strlen(buf) + 16];
+        int tplen = strlen(cwd) + strlen(buf) + 16;
+        char *tpath = new char[tplen];
         strcpy(tpath, cwd);
         delete [] cwd;
-        char *e = tpath + strlen(tpath);
-        sprintf(e, "/%s", buf);
+        int ltp = strlen(tpath);
+        char *e = tpath + ltp;
+        tplen -= ltp;
+        snprintf(e, tplen, "/%s", buf);
 
         // First check in the CWD.
         FILE *fp = fopen(tpath, "r");
@@ -181,8 +186,9 @@ cMain::AppInit()
             const char *dpath = getenv("XIC_TECH_DIR");
             if (dpath && *dpath) {
                 if (lstring::is_rooted(dpath)) {
-                    char *tt = new char[strlen(dpath) + strlen(buf) + 2];
-                    sprintf(tt, "%s/%s", dpath, buf);
+                    int len = strlen(dpath) + strlen(buf) + 2;
+                    char *tt = new char[len];
+                    snprintf(tt, len, "%s/%s", dpath, buf);
                     fp = fopen(tt, "r");
                     if (fp) {
                         delete [] tpath;
@@ -192,7 +198,7 @@ cMain::AppInit()
                         delete [] tt;
                 }
                 else {
-                    sprintf(e, "/%s/%s", dpath, buf);
+                    snprintf(e, tplen, "/%s/%s", dpath, buf);
                     fp = fopen(tpath, "r");
                 }
             }
@@ -204,7 +210,7 @@ cMain::AppInit()
 
         // Next, try a subdirectory named "techfiles".
         if (!fp) {
-            sprintf(e, "/techfiles/%s", buf);
+            snprintf(e, tplen, "/techfiles/%s", buf);
             fp = fopen(tpath, "r");
             if (fp) {
                 realname = tpath;
@@ -286,7 +292,7 @@ cMain::ExecStartupScript(const char *filename)
     SIfile *sfp = 0;
     char buf[256];
     if (Tech()->TechExtension() && *Tech()->TechExtension()) {
-        sprintf(buf, "%s.%s", filename, Tech()->TechExtension());
+        snprintf(buf, sizeof(buf), "%s.%s", filename, Tech()->TechExtension());
         sfp = SIfile::create(buf, 0, 0);
         if (!sfp) {
             if (HomeDir()) {
@@ -520,7 +526,7 @@ cMain::LegalMsg()
     lstr.add("</b><br>\n");
     lstr.add("</font>\n");
 
-    sprintf(buf, copyright_msg, BuildYear());
+    snprintf(buf, sizeof(buf), copyright_msg, BuildYear());
     lstr.add(buf);
     for (int i = 0; about_msg[i]; i++)
         lstr.add(about_msg[i]);
@@ -567,7 +573,7 @@ cMain::System(const char *cmd)
 
     int pid = fork();
     if (pid == 0) {
-        dspPkgIf()->CloseGraphicsConnection();
+        DSPpkg::self()->CloseGraphicsConnection();
         signal(SIGINT, tmpi);
         signal(SIGQUIT, tmpq);
         sigprocmask(SIG_SETMASK, &oldsigblock, 0);

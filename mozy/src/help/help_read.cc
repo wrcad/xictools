@@ -444,7 +444,7 @@ cHelp::read(const char *keyword)
                     }
                 }
                 if (hlp_debug) {
-                    sprintf(tbuf, "unknown: %s", s);
+                    snprintf(tbuf, sizeof(tbuf), "unknown: %s", s);
                     if (seealso)
                         top->add_seealso(tbuf, s);
                     else if (subtopics)
@@ -556,7 +556,8 @@ cHelp::search(const char *target)
     int i;
     HLPtopList *tl;
     for (i = 0, tl = top->seealso(); tl; i++, tl = tl->next()) ;
-    sprintf(buf, "Keyword search for %s : %d entries found.", target, i);
+    snprintf(buf, sizeof(buf), "Keyword search for %s : %d entries found.",
+        target, i);
     top->set_words(new HLPwords(buf, 0));
     top->register_word(buf);
     return (top);
@@ -623,7 +624,7 @@ cHelp::open(const char *keyword, HLPent **pb)
     if (bb) {
         fp = fopen(bb->filename, "rb");
         if (!fp) {
-            GRpkgIf()->Perror(bb->filename);
+            GRpkg::self()->Perror(bb->filename);
             return (0);
         }
         *pb = bb;
@@ -918,7 +919,7 @@ HLPdirList::init()
 {
     DIR *wdir;
     if (!(wdir = opendir(hd_dir))) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "can't open help database directory %s.\n", hd_dir);
         return;
     }
@@ -968,7 +969,7 @@ HLPdirList::read_file(const char *fnamein)
     char *fname = hd_files->string;
     FILE *fp = fopen(fname, "rb");
     if (!fp) {
-        GRpkgIf()->Perror(fnamein);
+        GRpkg::self()->Perror(fnamein);
         return;
     }
     if (!hd_base) {
@@ -1065,7 +1066,7 @@ HLPdirList::read_file(const char *fnamein)
                     if (!strcmp(okw, bb->keyword))
                         break;
                 if (bb) {
-                    GRpkgIf()->ErrPrintf(ET_WARN,
+                    GRpkg::self()->ErrPrintf(ET_WARN,
                         "help database keyword clash for %s.\n", okw);
                     delete [] okw;
                     delete [] nkw;
@@ -1081,7 +1082,7 @@ HLPdirList::read_file(const char *fnamein)
                     if (!strcmp(okw, h->key))
                         break;
                 if (h) {
-                    GRpkgIf()->ErrPrintf(ET_WARN,
+                    GRpkg::self()->ErrPrintf(ET_WARN,
                         "help database keyword clash for %s.\n", okw);
                     delete [] okw;
                     delete [] nkw;
@@ -1148,7 +1149,7 @@ HLPdirList::read_file(const char *fnamein)
                         if (!strcmp(s, bb->keyword))
                             break;
                     if (bb) {
-                        GRpkgIf()->ErrPrintf(ET_WARN,
+                        GRpkg::self()->ErrPrintf(ET_WARN,
                             "help database keyword clash for %s.\n", s);
                         delete [] s;
                         continue;

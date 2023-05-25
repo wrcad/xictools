@@ -81,7 +81,7 @@ void
 IFsimulator::SweepAnalysis(wordlist *wl)
 {
     if (!ft_curckt) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no current circuit.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no current circuit.\n");
         return;
     }
     if (wl && *wl->wl_word == '-' && *(wl->wl_word+1) == 'c') {
@@ -102,14 +102,15 @@ IFsimulator::SweepAnalysis(wordlist *wl)
     }
     else {
         if (!ft_curckt->deck()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "no current circuit initialization.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "no current circuit initialization.\n");
             return;
         }
 
         sweep = new sSWEEPprms;
         int error = sweep->sweepParse(&wl);
         if (error) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "syntax.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "syntax.\n");
             delete sweep;
             return;
         }
@@ -117,12 +118,12 @@ IFsimulator::SweepAnalysis(wordlist *wl)
         if (!wl || !wl->wl_word || *wl->wl_word == '\0') {
             wl = ft_curckt->getAnalysisFromDeck();
             if (wl == 0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "no analysis specified.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "no analysis specified.\n");
                 delete sweep;
                 return;
             }
             if (wl->wl_next) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "more than one analysis specified.\n");
                 wordlist::destroy(wl);
                 delete sweep;
@@ -467,13 +468,13 @@ sSWEEPprms::setInput()
 
     char nbuf[32];
     if (devs[0]) {
-        sprintf(nbuf, "%.15e", state[0]);
+        snprintf(nbuf, sizeof(nbuf), "%.15e", state[0]);
         for (wordlist *wd = devs[0]; wd; wd = wd->wl_next) {
             for (wordlist *wp = prms[0]; wp; wp = wp->wl_next)
                 out_cir->addDeferred(wd->wl_word, wp->wl_word, nbuf);
         }
         if (devs[1]) {
-            sprintf(nbuf, "%.15e", state[1]);
+            snprintf(nbuf, sizeof(nbuf), "%.15e", state[1]);
             for (wordlist *wd = devs[1]; wd; wd = wd->wl_next) {
                 for (wordlist *wp = prms[1]; wp; wp = wp->wl_next)
                     out_cir->addDeferred(wd->wl_word, wp->wl_word, nbuf);

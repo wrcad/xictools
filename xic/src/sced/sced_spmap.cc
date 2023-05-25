@@ -137,8 +137,9 @@ sLibMap::append_file_rc(stringlist *se, const char *line, bool hs_compat,
 
     // line has no leading white space
     if (lstring::cimatch(".inc", line) || lstring::cimatch(".include", line)) {
-        char *tbf = new char[strlen(line) + 8];
-        sprintf(tbf, "* %s", line);
+        int len = strlen(line) + 8;
+        char *tbf = new char[len];
+        snprintf(tbf, len, "* %s", line);
         se->next = new stringlist(tbf, 0);
         se = se->next;
 
@@ -230,8 +231,9 @@ sLibMap::append_file_rc(stringlist *se, const char *line, bool hs_compat,
         se = se->next;
     }
     else if (lstring::cimatch(".lib", line)) {
-        char *tbf = new char[strlen(line) + 8];
-        sprintf(tbf, "* %s", line);
+        int len = strlen(line) + 8;
+        char *tbf = new char[len];
+        snprintf(tbf, len, "* %s", line);
         se->next = new stringlist(tbf, 0);
         se = se->next;
 

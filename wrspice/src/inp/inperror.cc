@@ -108,7 +108,7 @@ SPinput::logError(sLine *l, const char *fmt, ...)
     if (l)
         l->errcat(buf);
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s\n", buf);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "%s\n", buf);
 }
 
 
@@ -125,18 +125,18 @@ SPinput::logError(sLine *l, int type, const char *badone)
         if (l)
             l->errcat(s);
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s\n", s);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "%s\n", s);
         delete [] s;
         return;
     }
     char buf[BSIZE_SP];
     switch (type) {
     default:
-        sprintf(buf, unknownError, type);
+        snprintf(buf, sizeof(buf), unknownError, type);
         break;
     case E_SYNTAX:
         if (badone)
-            sprintf(buf, "%s: %s", syntax, badone);
+            snprintf(buf, sizeof(buf), "%s: %s", syntax, badone);
         else
             strcpy(buf, syntax);
         break;
@@ -144,7 +144,7 @@ SPinput::logError(sLine *l, int type, const char *badone)
     if (l)
         l->errcat(buf);
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s\n", buf);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "%s\n", buf);
 }
 
 
@@ -170,28 +170,28 @@ SPinput::errMesg(int code, const char *badone)
         strcpy(buf, nockt);
         break;
     case E_NODEV:
-        sprintf(buf, nodev, badone ? badone : "");
+        snprintf(buf, sizeof(buf), nodev, badone ? badone : "");
         break;
     case E_NOMOD:
-        sprintf(buf, nomod, badone ? badone : "");
+        snprintf(buf, sizeof(buf), nomod, badone ? badone : "");
         break;
     case E_NOANAL:
-        sprintf(buf, noanal, badone ? badone : "");
+        snprintf(buf, sizeof(buf), noanal, badone ? badone : "");
         break;
     case E_NOTERM:
         strcpy(buf, noterm);
         break;
     case E_NOVEC:
-        sprintf(buf, novec, badone ? badone : "found");
+        snprintf(buf, sizeof(buf), novec, badone ? badone : "found");
         break;
     case E_NOTFOUND:
         strcpy(buf, notfound);
         break;
     case E_BADPARM:
-        sprintf(buf, badparm, badone ? badone : "given");
+        snprintf(buf, sizeof(buf), badparm, badone ? badone : "given");
         break;
     case E_PARMVAL:
-        sprintf(buf, parmval, badone ? badone : "");
+        snprintf(buf, sizeof(buf), parmval, badone ? badone : "");
         break;
     case E_UNSUPP:
         strcpy(buf, unsupp);

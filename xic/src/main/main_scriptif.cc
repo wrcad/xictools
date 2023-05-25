@@ -147,7 +147,7 @@ namespace {
     {
         if (Timer()->check_interval(check_time)) {
             if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
             return (XM()->ConfirmAbort(msg));
         }
         return (false);
@@ -209,7 +209,7 @@ namespace {
     macro_predefs(MacroHandler *mh)
     {
         char buf[256];
-        sprintf(buf, "RELEASE %d", XIC_RELEASE_NUM);
+        snprintf(buf, sizeof(buf), "RELEASE %d", XIC_RELEASE_NUM);
         mh->parse_macro(buf, true);
 
         // XIC_RELEASE_NUM is gxyy0
@@ -220,45 +220,46 @@ namespace {
         n /= 10;
         int minor = n;
 
-        sprintf(buf, "GENERATION %d", gen);
+        snprintf(buf, sizeof(buf), "GENERATION %d", gen);
         mh->parse_macro(buf, true);
-        sprintf(buf, "MAJOR %d", major);
+        snprintf(buf, sizeof(buf), "MAJOR %d", major);
         mh->parse_macro(buf, true);
-        sprintf(buf, "MINOR %d", minor);
+        snprintf(buf, sizeof(buf), "MINOR %d", minor);
         mh->parse_macro(buf, true);
 
 #ifdef WIN32
-        sprintf(buf, "OSTYPE \"%s\"", "Windows");
+        snprintf(buf, sizeof(buf), "OSTYPE \"%s\"", "Windows");
 #else
 #ifdef __linux
-        sprintf(buf, "OSTYPE \"%s\"", "Linux");
+        snprintf(buf, sizeof(buf), "OSTYPE \"%s\"", "Linux");
 #else
 #ifdef __APPLE__
-        sprintf(buf, "OSTYPE \"%s\"", "OSX");
+        snprintf(buf, sizeof(buf), "OSTYPE \"%s\"", "OSX");
 #else
 #ifdef __FreeBSD__
-        sprintf(buf, "OSTYPE \"%s\"", "UNIX");
+        snprintf(buf, sizeof(buf), "OSTYPE \"%s\"", "UNIX");
 #else
-        sprintf(buf, "OSTYPE \"%s\"", "UNKNOWN");
+        snprintf(buf, sizeof(buf), "OSTYPE \"%s\"", "UNKNOWN");
 #endif
 #endif
 #endif
 #endif
         mh->parse_macro(buf, true);
 
-        sprintf(buf, "OSNAME \"%s\"", XM()->OSname());
+        snprintf(buf, sizeof(buf), "OSNAME \"%s\"", XM()->OSname());
         mh->parse_macro(buf, true);
 
         if (sizeof(void*) == 8)
-            sprintf(buf, "OSBITS %d", 64);
+            snprintf(buf, sizeof(buf), "OSBITS %d", 64);
         else
-            sprintf(buf, "OSBITS %d", 32);
+            snprintf(buf, sizeof(buf), "OSBITS %d", 32);
         mh->parse_macro(buf, true);
 
-        sprintf(buf, "XTROOT \"%s/%s\"", XM()->Prefix(), XM()->ToolsRoot());
+        snprintf(buf, sizeof(buf), "XTROOT \"%s/%s\"", XM()->Prefix(),
+            XM()->ToolsRoot());
         mh->parse_macro(buf, true);
 
-        sprintf(buf, "PROGROOT \"%s\"", XM()->ProgramRoot());
+        snprintf(buf, sizeof(buf), "PROGROOT \"%s\"", XM()->ProgramRoot());
         mh->parse_macro(buf, true);
 
         const char *t = XM()->Product();
@@ -266,32 +267,32 @@ namespace {
             mh->parse_macro(t, true, true);   // No substitution.
 
         if (ExtIf()->hasExtract()) {
-            sprintf(buf, "FEATURESET \"%s\"", "FULL");
+            snprintf(buf, sizeof(buf), "FEATURESET \"%s\"", "FULL");
             mh->parse_macro(buf, true);
         }
         else if (EditIf()->hasEdit()) {
-            sprintf(buf, "FEATURESET \"%s\"", "EDITOR");
+            snprintf(buf, sizeof(buf), "FEATURESET \"%s\"", "EDITOR");
             mh->parse_macro(buf, true);
         }
         else {
-            sprintf(buf, "FEATURESET \"%s\"", "VIEWER");
+            snprintf(buf, sizeof(buf), "FEATURESET \"%s\"", "VIEWER");
             mh->parse_macro(buf, true);
         }
 
         t = Tech()->TechnologyName();
         if (t && *t) {
             mh->parse_macro(t, true, true);   // No substitution.
-            sprintf(buf, "TECHNOLOGY \"%s\"", t);
+            snprintf(buf, sizeof(buf), "TECHNOLOGY \"%s\"", t);
             mh->parse_macro(buf, true);
         }
         t = Tech()->VendorName();
         if (t && *t) {
-            sprintf(buf, "VENDOR \"%s\"", t);
+            snprintf(buf, sizeof(buf), "VENDOR \"%s\"", t);
             mh->parse_macro(buf, true);
         }
         t = Tech()->ProcessName();
         if (t && *t) {
-            sprintf(buf, "PROCESS \"%s\"", t);
+            snprintf(buf, sizeof(buf), "PROCESS \"%s\"", t);
             mh->parse_macro(buf, true);
         }
     }

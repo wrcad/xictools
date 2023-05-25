@@ -187,7 +187,7 @@ namespace {
                 return (true);
             }
             if (!strcmp(name, "flatten")) {
-                dspPkgIf()->RegisterIdleProc(f_idle, arg);
+                DSPpkg::self()->RegisterIdleProc(f_idle, arg);
                 return (false);
             }
         }
@@ -253,7 +253,7 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
     CDs *cursd = CurCell();
     if (!cursd || cursd->isSymbolic())
         return;
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     CDtf mtf;
     tstk->TCurrent(&mtf);
     if (!fastmode)
@@ -276,7 +276,7 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
     }
     if (icnt == 0) {
         PL()->ShowPrompt("No flattenable instances are selected.");
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return;
     }
 
@@ -391,7 +391,7 @@ quit:
     PL()->ErasePrompt();
     XM()->ShowParameters();
     ExtIf()->setInvGroundPlaneImmutable(tmp_exgp);
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 }
 
 
@@ -820,7 +820,7 @@ cEdit::flatten_cell_recurse(cTfmStack *tstk, CDs *sdesc, int depth,
             if (!odesc->is_normal())
                 continue;
             if (Timer()->check_interval(check_time)) {
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
                 if (DSP()->Interrupt()) {
                     tstk->TPush();
                     tstk->TLoadCurrent(mtf);
@@ -828,7 +828,7 @@ cEdit::flatten_cell_recurse(cTfmStack *tstk, CDs *sdesc, int depth,
                     tstk->TPop();
                     if (ret)
                         return (false);
-                    dspPkgIf()->CheckForInterrupt();
+                    DSPpkg::self()->CheckForInterrupt();
                 }
             }
             if (!promote_object(tstk, odesc, cursd, mtf, &tfcur, use_merge,

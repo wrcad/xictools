@@ -107,7 +107,7 @@ void
 cEdit::PopUpTransform(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, bool, const char*, void*), void *arg)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Tfm;
@@ -129,7 +129,7 @@ cEdit::PopUpTransform(GRobject caller, ShowMode mode,
     gtk_window_set_transient_for(GTK_WINDOW(Tfm->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Tfm->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), Tfm->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Tfm->shell());
 }
@@ -237,9 +237,9 @@ sTfm::sTfm(GRobject c,
     sb_mag.connect_changed((GCallback)tf_val_changed, 0);
 
     char buf[64];
-    sprintf(buf, "%.*f", TFM_NUMD, TFM_MAXD);
+    snprintf(buf, sizeof(buf), "%.*f", TFM_NUMD, TFM_MAXD);
     int wid = sb_mag.width_for_string(buf);
-    sprintf(buf, "%.*f", TFM_NUMD, TFM_MIND);
+    snprintf(buf, sizeof(buf), "%.*f", TFM_NUMD, TFM_MIND);
     int wid1 = sb_mag.width_for_string(buf);
     if (wid1 > wid)
         wid = wid1;
@@ -376,7 +376,7 @@ sTfm::~sTfm()
 {
     Tfm = 0;
     if (tf_caller)
-        GRX->Deselect(tf_caller);
+        GTKdev::Deselect(tf_caller);
     if (tf_callback)
         (*tf_callback)(0, false, 0, tf_arg);
     if (tf_popup)
@@ -387,8 +387,8 @@ sTfm::~sTfm()
 void
 sTfm::update()
 {
-    GRX->SetStatus(tf_rflx, GEO()->curTx()->reflectX());
-    GRX->SetStatus(tf_rfly, GEO()->curTx()->reflectY());
+    GTKdev::SetStatus(tf_rflx, GEO()->curTx()->reflectX());
+    GTKdev::SetStatus(tf_rfly, GEO()->curTx()->reflectY());
     bool has_tf = GEO()->curTx()->reflectX();
     has_tf |= GEO()->curTx()->reflectY();
     char buf[32];
@@ -399,7 +399,7 @@ sTfm::update()
         GTK_COMBO_BOX(tf_ang))));
 
     while (d < 360) {
-        sprintf(buf, "%d", d);
+        snprintf(buf, sizeof(buf), "%d", d);
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(tf_ang), buf);
         d += da;
     }
@@ -498,7 +498,8 @@ sTfm::tf_action_proc(GtkWidget *widget, void*)
             ED()->recallCurTransform(5);
             return;
         }
-        (*Tfm->tf_callback)(name, GRX->GetStatus(widget), 0, Tfm->tf_arg);
+        (*Tfm->tf_callback)(name, GTKdev::GetStatus(widget), 0,
+            Tfm->tf_arg);
     }
 }
 

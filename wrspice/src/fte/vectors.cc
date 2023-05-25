@@ -127,14 +127,14 @@ CommandTab::com_let(wordlist *wl)
         while (*q <= ' ' && q >= lhs)
            *q-- = '\0';
         if (lhs > q) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "no vector to assign.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "no vector to assign.\n");
             delete [] p;
             return;
         }
         while (isspace(*rhs))
             rhs++;
         if (!*rhs) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "no right hand side in assignment to %s.\n", lhs);
             delete [] p;
             return;
@@ -145,7 +145,7 @@ CommandTab::com_let(wordlist *wl)
 
         for (char *t = lhs; *t; t++) {
             if (*t <= ' ' || strchr(badchrs, *t)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "the name %s contains unaccepted character \'%c\'.\n",
                     lhs, *t);
                 delete [] p;
@@ -219,12 +219,12 @@ CommandTab::com_cross(wordlist *wl)
     const char *s = wl->wl_word;
     double *d;
     if (!(d = SPnum.parse(&s, false))) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad number %s.\n", wl->wl_word);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad number %s.\n", wl->wl_word);
         return;
     }
     int ind;
     if ((ind = (int)*d) < 0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad index %d.\n", ind);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad index %d.\n", ind);
         return;
     }
     wl = wl->wl_next;
@@ -309,24 +309,24 @@ CommandTab::com_pick(wordlist *wl)
     const char *s = wl->wl_word;
     double *d;
     if (!(d = SPnum.parse(&s, false))) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad offset %s.\n", wl->wl_word);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad offset %s.\n", wl->wl_word);
         return;
     }
     int offset;
     if ((offset = (int)*d) < 0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad offset %d.\n", offset);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad offset %d.\n", offset);
         return;
     }
     wl = wl->wl_next;
 
     s = wl->wl_word;
     if (!(d = SPnum.parse(&s, false))) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad period %s.\n", wl->wl_word);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad period %s.\n", wl->wl_word);
         return;
     }
     int period;
     if ((period = (int)*d) < 1) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad period %d.\n", period);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad period %d.\n", period);
         return;
     }
     wl = wl->wl_next;
@@ -429,7 +429,7 @@ CommandTab::com_setscale(wordlist *wl)
             ToolBar()->UpdateVectors(0);
             return;
         }
-        GRpkgIf()->ErrPrintf(ET_ERROR, errm, wl->wl_word);
+        GRpkg::self()->ErrPrintf(ET_ERROR, errm, wl->wl_word);
         return;
     }
 
@@ -447,7 +447,7 @@ CommandTab::com_setscale(wordlist *wl)
                     ToolBar()->UpdateVectors(0);
                 return;
             }
-            GRpkgIf()->ErrPrintf(ET_ERROR, errm, sl->wl_word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, errm, sl->wl_word);
             return;
         }
     }
@@ -457,7 +457,7 @@ CommandTab::com_setscale(wordlist *wl)
             !lstring::cieq(sl->wl_word, "default")) {
         sc = pl->find_vec(sl->wl_word);
         if (!sc) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, errm, sl->wl_word);
+            GRpkg::self()->ErrPrintf(ET_ERROR, errm, sl->wl_word);
             return;
         }
         if (sc == pl->scale())
@@ -466,7 +466,7 @@ CommandTab::com_setscale(wordlist *wl)
     for ( ; wl != sl; wl = wl->wl_next) {
         sDataVec *v = pl->find_vec(wl->wl_word);
         if (!v) {
-            GRpkgIf()->ErrPrintf(ET_WARN, errm, wl->wl_word);
+            GRpkg::self()->ErrPrintf(ET_WARN, errm, wl->wl_word);
             continue;
         }
         v->set_scale(sc);
@@ -497,7 +497,7 @@ IFoutput::vecGet(const char *word, const sCKT *ckt, bool silent)
 {
     if (!word || !*word) {
         if (!silent) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "vecGet, null or empty vector name encountered.\n");
         }
         return (0);
@@ -546,7 +546,7 @@ IFoutput::vecGet(const char *word, const sCKT *ckt, bool silent)
         }
         if (!dl0) {
             if (!silent)
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "plot wildcard (name %s) matches nothing.\n", word);
             return (0);
         }
@@ -631,7 +631,7 @@ IFoutput::vecGet(const char *word, const sCKT *ckt, bool silent)
         }
         if (err) {
             if (!silent)
-                GRpkgIf()->ErrPrintf(ET_ERROR, "could not evaluate %s.\n",
+                GRpkg::self()->ErrPrintf(ET_ERROR, "could not evaluate %s.\n",
                     word);
             delete [] name;
             return (0);
@@ -763,9 +763,10 @@ IFoutput::vecGet(const char *word, const sCKT *ckt, bool silent)
         d->set_flags(d->flags() | VF_STRING);
     }
     else {
-        if (!silent)
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+        if (!silent) {
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "non-numeric data type for %s.\n", word);
+        }
         return (0);
     }
     return (d);
@@ -883,13 +884,13 @@ namespace {
         const char *wrd = *wordp;
         pnode *nn = Sp.GetPnode(wordp, true);
         if (!nn) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n", wrd);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n", wrd);
             return (0);
         }
         sDataVec *t = Sp.Evaluate(nn);
         delete nn;
         if (!t)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n", wrd);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n", wrd);
         return (t);
     }
 }
@@ -914,12 +915,12 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
 
     // sanity check
     if (lstring::cieq(lhs, "all") || lstring::ciprefix("all.", lhs)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't set \"all\".\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "can't set \"all\".\n");
         return;
     }
     if (*lhs == Sp.SpecCatchar()) {
         // Specials, at least @device[param], can be set now.
-        // GRpkgIf()->ErrPrintf(ET_ERROR, "%s is read-only.\n", lhs);
+        // GRpkg::self()->ErrPrintf(ET_ERROR, "%s is read-only.\n", lhs);
         // return;
 
         char *name = lstring::copy(lhs);
@@ -934,19 +935,19 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
         else
             param = 0;
         if (!*(name+1)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "no device or model name given for %s.\n", lhs);
             delete [] name;
             return;
         }
         if (!param || !*param) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "no parameter name given for %s.\n", lhs);
             delete [] name;
             return;
         }
         if (!Sp.CurCircuit()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't set parameter, no current circuit.\n");
             delete [] name;
             return;
@@ -986,7 +987,7 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
     sPlot *pl = stripplot(&lhs, &allflag);
     if (!pl) {
         if (allflag) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "\"all\" not valid in this context.\n");
             return;
         }
@@ -1014,7 +1015,7 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
             }
 
             if (depth != 0 || !*q) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "bad syntax specifying index.\n");
                 return;
             }
@@ -1034,13 +1035,13 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
 
             if (!t->isreal() || t->link() || t->length() != 1 ||
                     !t->realvec()) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "index is not a scalar.\n");
+                GRpkg::self()->ErrPrintf(ET_ERROR, "index is not a scalar.\n");
                 return;
             }
 
             int j = (int)t->realval(0); // ignore sanity checks for now
             if (j < 0) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "negative index (%d) is not allowed.\n", j);
                 return;
             }
@@ -1058,7 +1059,7 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
         *rhsend = rhs;
 
     if (t->link()) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "extra wildcard values ignored.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "extra wildcard values ignored.\n");
         t = t->link()->dl_dvec;
     }
 
@@ -1068,7 +1069,7 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
         t->set_dims(0, t->length());
     }
     if (numdims + t->numdims() > MAXDIMS) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "too many dimensions.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "too many dimensions.\n");
         return;
     }
 
@@ -1078,8 +1079,8 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
     else
         n = vecGet(lhs, 0);
     if (n && (n->flags() & VF_READONLY)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "specified vector %s is read-only.\n",
-            lhs);
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "specified vector %s is read-only.\n", lhs);
         return;
     }
     if (!n) {
@@ -1144,7 +1145,7 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
         int offset = size - rsize;
 
         if (offset < 0 || rsize < t->length()) {
-            GRpkgIf()->ErrPrintf(ET_INTERR, "bad vector length.\n");
+            GRpkg::self()->ErrPrintf(ET_INTERR, "bad vector length.\n");
             pl->remove_vec(n->name());
         }
         else {
@@ -1202,13 +1203,13 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
     //
 
     if (numdims > n->numdims() || t->numdims() > n->numdims()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't set %s to higher dimension.\n",
-            n->name());
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "can't set %s to higher dimension.\n", n->name());
         return;
     }
     for (int i = 0; i < numdims-1; i++) {
         if (indices[i] >= n->dims(i)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "dimension spec. out of range for %s.\n", n->name());
             return;
         }
@@ -1217,7 +1218,7 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
         int i, j;
         for (i = numdims, j = 1; j < t->numdims(); i++,j++) {
             if (i >= n->numdims() || n->dims(i) != t->dims(j)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, 
+                GRpkg::self()->ErrPrintf(ET_ERROR, 
                     "subdimension of %s is incompatible with %s.\n",
                     n->name(), t->name());
                 return;
@@ -1226,7 +1227,8 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
     }
     else if (n->numdims() > 1) {
         if (n->numdims() - numdims > 1) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "too few dimensions specified.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "too few dimensions specified.\n");
             return;
         }
 
@@ -1238,7 +1240,7 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
             i = 0;
 
         if (t->dims(0) + i > n->dims(n->numdims()-1)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "operation would overflow block in %s.\n", n->name());
             return;
         }
@@ -1257,7 +1259,7 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
         rsize *= t->dims(i);
     // rsize should be t->length(), but maybe not...
     if (rsize < t->length()) {
-        GRpkgIf()->ErrPrintf(ET_INTERR, "bad vector length #2.\n");
+        GRpkg::self()->ErrPrintf(ET_INTERR, "bad vector length #2.\n");
         return;
     }
 
@@ -1301,7 +1303,7 @@ IFoutput::vecGc(bool purge_temp)
 
             if (!purge_temp || (d->flags() & VF_TEMPORARY)) {
                 if (Sp.GetFlag(FT_VECDB)) {
-                    GRpkgIf()->ErrPrintf(ET_MSGS,
+                    GRpkg::self()->ErrPrintf(ET_MSGS,
                         "VecGc: throwing away %s.%s\n",
                         pl->type_name(), d->name());
                 }
@@ -1379,7 +1381,7 @@ IFoutput::vecPrintList(wordlist *wl, sLstr *plstr)
         wl = wl->wl_next;
     }
     if (!curPlot()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no current plot.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no current plot.\n");
         return;
     }
 
@@ -1396,8 +1398,9 @@ IFoutput::vecPrintList(wordlist *wl, sLstr *plstr)
     }
     if (!Sp.GetVar(kw_nosort, VTYP_BOOL, 0))
         wordlist::sort(tl0);
-    sprintf(buf, "Title: %s\n",  curPlot()->title());
-    sprintf(buf + strlen(buf), "Name: %s (%s)\nDate: %s\n\n", 
+    snprintf(buf, sizeof(buf), "Title: %s\n",  curPlot()->title());
+    int len = strlen(buf);
+    snprintf(buf + len, sizeof(buf) - len, "Name: %s (%s)\nDate: %s\n\n", 
         curPlot()->type_name(), curPlot()->name(), curPlot()->date());
     if (plstr)
         plstr->add(buf);

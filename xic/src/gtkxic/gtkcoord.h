@@ -57,21 +57,18 @@ public:
     void print(int, int, int);
 
     void set_mode(int x, int y, bool relative, bool snap)
-        {
-            co_x = x;
-            co_y = y;
-            co_rel = relative;
-            co_snap = snap;
-            print(0, 0, COOR_REL);
-        }
+    {
+        co_x = x;
+        co_y = y;
+        co_rel = relative;
+        co_snap = snap;
+        print(0, 0, COOR_REL);
+    }
 
     void redraw()
-        {
-            co_redraw(0, 0, 0);
-        }
-
-private slots:
-    void font_change(int);
+    {
+        co_redraw(0, 0, 0);
+    }
 
 private:
     void do_print(int, int, int);

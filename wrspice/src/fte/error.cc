@@ -127,7 +127,7 @@ IFsimulator::FPexception(int c)
         // We may be about to die, so print to the console.
         fprintf(stderr, "Warning: math error, %s.\n", msg);
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "math error, %s.\n", msg);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "math error, %s.\n", msg);
 #endif
 }
 
@@ -141,11 +141,11 @@ IFsimulator::Error(int code, const char *mess, const char *badone)
     if (s) {
         if (isupper(*s))
             *s = tolower(*s);
-        GRpkgIf()->ErrPrintf(ET_MSG, "%s: %s.\n", mess ? mess : "Error", s);
+        GRpkg::self()->ErrPrintf(ET_MSG, "%s: %s.\n", mess ? mess : "Error", s);
         delete [] s;
         return;
     }
-    GRpkgIf()->ErrPrintf(ET_MSG,
+    GRpkg::self()->ErrPrintf(ET_MSG,
         "%s: %s.\n", mess ? mess : "Error", errmsg(code));
 }
 

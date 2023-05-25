@@ -126,7 +126,7 @@ using namespace gtkoasis;
 void
 cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Oas;
@@ -139,7 +139,7 @@ cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
     }
     if (Oas) {
         if (caller && caller != Oas->call_btn())
-            GRX->Deselect(caller);
+            GTKdev::Deselect(caller);
         return;
     }
 
@@ -500,7 +500,7 @@ sOas::~sOas()
 {
     Oas = 0;
     if (oas_caller)
-        GRX->Deselect(oas_caller);
+        GTKdev::Deselect(oas_caller);
     if (oas_popup)
         gtk_widget_destroy(oas_popup);
 }
@@ -540,11 +540,16 @@ namespace {
 void
 sOas::update()
 {
-    GRX->SetStatus(oas_notrap, CDvdb()->getVariable(VA_OasWriteNoTrapezoids));
-    GRX->SetStatus(oas_wtob, CDvdb()->getVariable(VA_OasWriteWireToBox));
-    GRX->SetStatus(oas_rwtop, CDvdb()->getVariable(VA_OasWriteRndWireToPoly));
-    GRX->SetStatus(oas_nogcd, CDvdb()->getVariable(VA_OasWriteNoGCDcheck));
-    GRX->SetStatus(oas_oldsort, CDvdb()->getVariable(VA_OasWriteUseFastSort));
+    GTKdev::SetStatus(oas_notrap,
+        CDvdb()->getVariable(VA_OasWriteNoTrapezoids));
+    GTKdev::SetStatus(oas_wtob,
+        CDvdb()->getVariable(VA_OasWriteWireToBox));
+    GTKdev::SetStatus(oas_rwtop,
+        CDvdb()->getVariable(VA_OasWriteRndWireToPoly));
+    GTKdev::SetStatus(oas_nogcd,
+        CDvdb()->getVariable(VA_OasWriteNoGCDcheck));
+    GTKdev::SetStatus(oas_oldsort,
+        CDvdb()->getVariable(VA_OasWriteUseFastSort));
 
     const char *str = CDvdb()->getVariable(VA_OasWritePrptyMask);
     int nn;
@@ -641,40 +646,40 @@ sOas::update()
         rp.lf = (rp.oflgs & OAS_CR_LAB);
     }
 
-    GRX->SetStatus(oas_objc, rp.cf);
-    GRX->SetStatus(oas_objb, rp.bf);
-    GRX->SetStatus(oas_objp, rp.pf);
-    GRX->SetStatus(oas_objw, rp.wf);
-    GRX->SetStatus(oas_objl, rp.lf);
+    GTKdev::SetStatus(oas_objc, rp.cf);
+    GTKdev::SetStatus(oas_objb, rp.bf);
+    GTKdev::SetStatus(oas_objp, rp.pf);
+    GTKdev::SetStatus(oas_objw, rp.wf);
+    GTKdev::SetStatus(oas_objl, rp.lf);
     if (rp.mnone) {
-        GRX->SetStatus(oas_noruns, true);
+        GTKdev::SetStatus(oas_noruns, true);
         sb_entm.set_sensitive(false, true);
         sb_enta.set_sensitive(false, true);
-        GRX->SetStatus(oas_noarrs, true);
+        GTKdev::SetStatus(oas_noarrs, true);
         gtk_widget_set_sensitive(oas_noarrs, false);
     }
     else {
-        GRX->SetStatus(oas_noruns, false);
+        GTKdev::SetStatus(oas_noruns, false);
         sb_entm.set_sensitive(true);
         sb_entm.set_value(rp.mval);
         gtk_widget_set_sensitive(oas_noarrs, true);
         if (rp.anone) {
-            GRX->SetStatus(oas_noarrs, true);
+            GTKdev::SetStatus(oas_noarrs, true);
             sb_enta.set_sensitive(false, true);
         }
         else {
-            GRX->SetStatus(oas_noarrs, false);
+            GTKdev::SetStatus(oas_noarrs, false);
             sb_enta.set_sensitive(true);
             sb_enta.set_value(rp.aval);
         }
     }
     sb_entx.set_value(rp.xval);
     if (rp.tnone) {
-        GRX->SetStatus(oas_nosim, true);
+        GTKdev::SetStatus(oas_nosim, true);
         sb_entt.set_sensitive(false, true);
     }
     else {
-        GRX->SetStatus(oas_nosim, false);
+        GTKdev::SetStatus(oas_nosim, false);
         sb_entt.set_sensitive(true);
         sb_entt.set_value(rp.tval);
     }
@@ -684,15 +689,15 @@ sOas::update()
 void
 sOas::restore_defaults()
 {
-    GRX->SetStatus(oas_objc, true);
-    GRX->SetStatus(oas_objb, true);
-    GRX->SetStatus(oas_objp, true);
-    GRX->SetStatus(oas_objw, true);
-    GRX->SetStatus(oas_objl, true);
+    GTKdev::SetStatus(oas_objc, true);
+    GTKdev::SetStatus(oas_objb, true);
+    GTKdev::SetStatus(oas_objp, true);
+    GTKdev::SetStatus(oas_objw, true);
+    GTKdev::SetStatus(oas_objl, true);
 
-    GRX->SetStatus(oas_noruns, false);
-    GRX->SetStatus(oas_noarrs, false);
-    GRX->SetStatus(oas_nosim, false);
+    GTKdev::SetStatus(oas_noruns, false);
+    GTKdev::SetStatus(oas_noarrs, false);
+    GTKdev::SetStatus(oas_nosim, false);
     gtk_widget_set_sensitive(oas_noruns, true);
     gtk_widget_set_sensitive(oas_noarrs, true);
     gtk_widget_set_sensitive(oas_nosim, true);
@@ -715,11 +720,11 @@ void
 sOas::set_repvar()
 {
     sLstr lstr;
-    bool cv = GRX->GetStatus(oas_objc);
-    bool bv = GRX->GetStatus(oas_objb);
-    bool pv = GRX->GetStatus(oas_objp);
-    bool wv = GRX->GetStatus(oas_objw);
-    bool lv = GRX->GetStatus(oas_objl);
+    bool cv = GTKdev::GetStatus(oas_objc);
+    bool bv = GTKdev::GetStatus(oas_objb);
+    bool pv = GTKdev::GetStatus(oas_objp);
+    bool wv = GTKdev::GetStatus(oas_objw);
+    bool lv = GTKdev::GetStatus(oas_objl);
     if (cv && bv && pv && wv && lv)
         ;
     else {
@@ -736,7 +741,7 @@ sOas::set_repvar()
     }
 
     char buf[64];
-    if (GRX->GetStatus(oas_noruns)) {
+    if (GTKdev::GetStatus(oas_noruns)) {
         if (lstr.length())
             lstr.add_c(' ');
         lstr.add("r");
@@ -746,12 +751,12 @@ sOas::set_repvar()
         int mval;
         if (sscanf(str, "%d", &mval) == 1 &&
                 mval > REP_RUN_MIN && mval <= REP_RUN_MAX) {
-            sprintf(buf, "m=%d", mval);
+            snprintf(buf, sizeof(buf), "m=%d", mval);
             if (lstr.length())
                 lstr.add_c(' ');
             lstr.add(buf);
         }
-        if (GRX->GetStatus(oas_noarrs)) {
+        if (GTKdev::GetStatus(oas_noarrs)) {
             if (lstr.length())
                 lstr.add_c(' ');
             lstr.add("a=0");
@@ -761,14 +766,14 @@ sOas::set_repvar()
             int aval;
             if (sscanf(str, "%d", &aval) == 1 &&
                     aval > REP_ARRAY_MIN && aval <= REP_ARRAY_MAX) {
-                sprintf(buf, "a=%d", aval);
+                snprintf(buf, sizeof(buf), "a=%d", aval);
                 if (lstr.length())
                     lstr.add_c(' ');
                 lstr.add(buf);
             }
         }
     }
-    if (GRX->GetStatus(oas_nosim)) {
+    if (GTKdev::GetStatus(oas_nosim)) {
         if (lstr.length())
             lstr.add_c(' ');
         lstr.add("t=0");
@@ -779,7 +784,7 @@ sOas::set_repvar()
         if (sscanf(str, "%d", &tval) == 1 &&
                 tval >= REP_MAX_REPS_MIN && tval <= REP_MAX_REPS_MAX &&
                 tval != REP_MAX_REPS) {
-            sprintf(buf, "t=%d", tval);
+            snprintf(buf, sizeof(buf), "t=%d", tval);
             if (lstr.length())
                 lstr.add_c(' ');
             lstr.add(buf);
@@ -791,7 +796,7 @@ sOas::set_repvar()
     if (sscanf(str, "%d", &xval) == 1 &&
             xval >= REP_MAX_ITEMS_MIN && xval <= REP_MAX_ITEMS_MAX &&
             xval != REP_MAX_ITEMS) {
-        sprintf(buf, "x=%d", xval);
+        snprintf(buf, sizeof(buf), "x=%d", xval);
         if (lstr.length())
             lstr.add_c(' ');
         lstr.add(buf);
@@ -827,35 +832,35 @@ sOas::oas_action(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "notrap")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OasWriteNoTrapezoids, 0);
         else
             CDvdb()->clearVariable(VA_OasWriteNoTrapezoids);
         return;
     }
     if (!strcmp(name, "wtob")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OasWriteWireToBox, 0);
         else
             CDvdb()->clearVariable(VA_OasWriteWireToBox);
         return;
     }
     if (!strcmp(name, "rwtop")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OasWriteRndWireToPoly, 0);
         else
             CDvdb()->clearVariable(VA_OasWriteRndWireToPoly);
         return;
     }
     if (!strcmp(name, "nogcd")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OasWriteNoGCDcheck, 0);
         else
             CDvdb()->clearVariable(VA_OasWriteNoGCDcheck);
         return;
     }
     if (!strcmp(name, "oldsort")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OasWriteUseFastSort, 0);
         else
             CDvdb()->clearVariable(VA_OasWriteUseFastSort);
@@ -869,7 +874,7 @@ sOas::oas_action(GtkWidget *caller, void*)
     }
 
     if (caller == Oas->oas_noruns) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             const char *str = Oas->sb_entm.get_string();
             int mval;
             if (sscanf(str, "%d", &mval) == 1 &&
@@ -883,7 +888,7 @@ sOas::oas_action(GtkWidget *caller, void*)
 
             Oas->sb_entm.set_sensitive(false, true);
             Oas->sb_enta.set_sensitive(false, true);
-            GRX->SetStatus(Oas->oas_noarrs, true);
+            GTKdev::SetStatus(Oas->oas_noarrs, true);
             gtk_widget_set_sensitive(Oas->oas_noarrs, false);
         }
         else {
@@ -895,7 +900,7 @@ sOas::oas_action(GtkWidget *caller, void*)
         return;
     }
     if (caller == Oas->oas_noarrs) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             const char *str = Oas->sb_enta.get_string();
             int aval;
             if (sscanf(str, "%d", &aval) == 1 &&
@@ -913,7 +918,7 @@ sOas::oas_action(GtkWidget *caller, void*)
     }
     if (caller == Oas->oas_nosim) {
 
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             const char *str = Oas->sb_entt.get_string();
             int tval;
             if (sscanf(str, "%d", &tval) == 1 &&

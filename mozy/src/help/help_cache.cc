@@ -172,7 +172,7 @@ HLPcache::add(const char *url, bool nocache)
             const char *fn = &CACHE_DIR[1];
             ix = tagcnt % cache_size;
             char buf[256];
-            sprintf(buf, "%s/%s%d", dirname, fn, ix);
+            snprintf(buf, sizeof(buf), "%s/%s%d", dirname, fn, ix);
             if (entries[ix]) {
                 tab_remove(entries[ix]->url);
                 delete entries[ix];
@@ -231,7 +231,7 @@ HLPcache::add_ext(const char *url, bool nocache)
             const char *fn = &CACHE_DIR[1];
             ix = tagcnt % cache_size;
             char buf[256];
-            sprintf(buf, "%s/%s%d", dirname, fn, ix);
+            snprintf(buf, sizeof(buf), "%s/%s%d", dirname, fn, ix);
             if (entries[ix]) {
                 // slot has prior entry, delete it, no need to delete
                 // file since it is done anyway
@@ -398,7 +398,7 @@ HLPcache::dump()
 {
     char buf[256];
     if (dirname) {
-        sprintf(buf, "%s/%s", dirname, "directory");
+        snprintf(buf, sizeof(buf), "%s/%s", dirname, "directory");
         FILE *fp = fopen(buf, "w");
         if (fp) {
             fprintf(fp, "%s %d\n", &CACHE_DIR[1], tagcnt % cache_size);
@@ -423,7 +423,7 @@ HLPcache::load()
     set_dir();
     if (dirname) {
         const char *fn = &CACHE_DIR[1];
-        sprintf(buf, "%s/%s", dirname, "directory");
+        snprintf(buf, sizeof(buf), "%s/%s", dirname, "directory");
         FILE *fp = fopen(buf, "r");
         if (fp) {
             int tc = 0;
@@ -442,7 +442,7 @@ HLPcache::load()
             clear();
             tagcnt = tc;
             char tbuf[256];
-            sprintf(tbuf, "%s/%s", dirname, &CACHE_DIR[1]);
+            snprintf(tbuf, sizeof(tbuf), "%s/%s", dirname, &CACHE_DIR[1]);
             int fend = strlen(tbuf);
             while (fgets(buf, 256, fp) != 0) {
                 char *s = buf;
@@ -582,7 +582,7 @@ HLPcache::list_entries()
         if (entries[i] && entries[i]->get_status() == DLok) {
             int len = strlen(entries[i]->url);
             char *buf = new char[len + 12];
-            sprintf(buf, "%-*d %s", c1, i, entries[i]->url);
+            snprintf(buf, len+12, "%-*d %s", c1, i, entries[i]->url);
             stringlist *s = new stringlist(buf, 0);
             if (s0) {
                 se->next = s;

@@ -117,7 +117,7 @@ NOISEanalysis::parse(sLine *current, sCKT *ckt, int which, const char **line,
             IP.logError(current, "Syntax error: missing source name");
             return (OK);
         }
-        sprintf(buf, "%s#branch", token);
+        snprintf(buf, sizeof(buf), "%s#branch", token);
         delete [] token;
         token = lstring::copy(buf);
 
@@ -128,7 +128,7 @@ NOISEanalysis::parse(sLine *current, sCKT *ckt, int which, const char **line,
     }
     else {
         if (!lstring::substring("#branch", token)) {
-            sprintf(buf, "%s#branch", token);
+            snprintf(buf, sizeof(buf), "%s#branch", token);
             delete [] token;
             token = lstring::copy(buf);
         }

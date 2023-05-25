@@ -156,7 +156,7 @@ iap_t sPlc::pl_iap;
 void
 cEdit::PopUpPlace(ShowMode mode, bool noprompt)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Plc;
@@ -180,10 +180,11 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
     gtk_window_set_transient_for(GTK_WINDOW(Plc->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), Plc->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), Plc->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Plc->shell());
-    GRX->SetFocus(GTKmainwin::self()->Shell());  // give focus to main window
+    // give focus to main window
+    GTKdev::SetFocus(GTKmainwin::self()->Shell());
 }
 // End of cEdit functions.
 
@@ -404,7 +405,7 @@ sPlc::sPlc(bool noprompt)
         gtk_widget_set_name(button, "Place");
         gtk_widget_show(button);
         pl_placebtn = button;
-        bool status = GRX->GetStatus(pl_menu_placebtn);
+        bool status = GTKdev::GetStatus(pl_menu_placebtn);
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), status);
         g_signal_connect(G_OBJECT(button), "clicked",
             G_CALLBACK(pl_place_proc), 0);
@@ -443,20 +444,20 @@ sPlc::sPlc(bool noprompt)
 
     if (!ED()->plMenu() && !noprompt)
         // Positioning is incorrect unless an idle proc is used here.
-        dspPkgIf()->RegisterIdleProc(pl_pop_idle, 0);
+        GTKpkg::self()->RegisterIdleProc(pl_pop_idle, 0);
 }
 
 
 sPlc::~sPlc()
 {
     Plc = 0;
-    if (GRX->GetStatus(pl_placebtn))
+    if (GTKdev::GetStatus(pl_placebtn))
         // exit Place mode
-        GRX->CallCallback(pl_menu_placebtn);
+        GTKdev::CallCallback(pl_menu_placebtn);
     // Turn off the replace and array functions
     ED()->setReplacing(false);
     ED()->setUseArray(false);
-    int state = GRX->GetStatus(pl_arraybtn);
+    int state = GTKdev::GetStatus(pl_arraybtn);
     if (state)
         ED()->setArrayParams(iap_t());
     if (pl_str_editor)
@@ -486,14 +487,14 @@ sPlc::update()
         sb_dy.set_value(0.0);
         pl_iap = iaptmp;
         ED()->setArrayParams(iap_t());
-        GRX->SetStatus(pl_arraybtn, false);
+        GTKdev::SetStatus(pl_arraybtn, false);
         gtk_widget_set_sensitive(pl_arraybtn, false);
         set_sens(false);
     }
     else {
         pl_iap = ED()->arrayParams();
         gtk_widget_set_sensitive(pl_arraybtn, true);
-        if (GRX->GetStatus(pl_arraybtn)) {
+        if (GTKdev::GetStatus(pl_arraybtn)) {
             sb_nx.set_value(pl_iap.nx());
             sb_ny.set_value(pl_iap.ny());
             sb_dx.set_value(MICRONS(pl_iap.spx()));
@@ -506,14 +507,14 @@ sPlc::update()
 void
 sPlc::desel_placebtn()
 {
-    GRX->Deselect(pl_placebtn);
+    GTKdev::Deselect(pl_placebtn);
 }
 
 
 bool
 sPlc::smash_mode()
 {
-    return (GRX->GetStatus(pl_smshbtn));
+    return (GTKdev::GetStatus(pl_smshbtn));
 }
 
 
@@ -586,11 +587,11 @@ sPlc::pl_cancel_proc(GtkWidget*, void*)
 void
 sPlc::pl_replace_proc(GtkWidget *caller, void*)
 {
-    if (GRX->GetStatus(caller)) {
+    if (GTKdev::GetStatus(caller)) {
         ED()->setReplacing(true);
         PL()->ShowPrompt("Select subcells to replace, press Esc to quit.");
         if (Plc) {
-            GRX->SetStatus(Plc->pl_smshbtn, false);
+            GTKdev::SetStatus(Plc->pl_smshbtn, false);
             gtk_widget_set_sensitive(Plc->pl_smshbtn, false);
         }
     }
@@ -714,10 +715,10 @@ sPlc::pl_place_proc(GtkWidget*, void*)
 {
     if (!Plc)
         return;
-    bool status = GRX->GetStatus(Plc->pl_placebtn);
-    bool mbstatus = GRX->GetStatus(Plc->pl_menu_placebtn);
+    bool status = GTKdev::GetStatus(Plc->pl_placebtn);
+    bool mbstatus = GTKdev::GetStatus(Plc->pl_menu_placebtn);
     if (status != mbstatus)
-        GRX->CallCallback(Plc->pl_menu_placebtn);
+        GTKdev::CallCallback(Plc->pl_menu_placebtn);
 }
 
 
@@ -727,11 +728,11 @@ sPlc::pl_menu_place_proc(GtkWidget*, void*)
 {
     if (!Plc)
         return;
-    bool status = GRX->GetStatus(Plc->pl_menu_placebtn);
+    bool status = GTKdev::GetStatus(Plc->pl_menu_placebtn);
     if (status)
-        GRX->Select(Plc->pl_placebtn);
+        GTKdev::Select(Plc->pl_placebtn);
     else
-        GRX->Deselect(Plc->pl_placebtn);
+        GTKdev::Deselect(Plc->pl_placebtn);
 }
 
 
@@ -749,7 +750,8 @@ sPlc::pl_new_cb(const char *string, void*)
         delete [] aname;
         delete [] cname;
     }
-    GRX->SetFocus(GTKmainwin::self()->Shell());  // give focus to main window
+    // give focus to main window
+    GTKdev::SetFocus(GTKmainwin::self()->Shell());
     return (ESTR_DN);
 }
 
@@ -767,8 +769,8 @@ sPlc::pl_menu_proc(GtkWidget *caller, void*)
             return;
     }
     if (i == 0) {
-        if (GRX->GetStatus(Plc->pl_placebtn))
-            GRX->CallCallback(Plc->pl_menu_placebtn);
+        if (GTKdev::GetStatus(Plc->pl_placebtn))
+            GTKdev::CallCallback(Plc->pl_menu_placebtn);
         char *dfile = Plc->pl_dropfile;
         Plc->pl_dropfile = 0;
         GCarray<char*> gc_dfile(dfile);
@@ -784,7 +786,7 @@ sPlc::pl_menu_proc(GtkWidget *caller, void*)
         if (Plc->pl_str_editor)
             Plc->pl_str_editor->popdown();
         int x, y;
-        GRX->Location(Plc->pl_masterbtn, &x, &y);
+        GTKdev::self()->Location(Plc->pl_masterbtn, &x, &y);
         Plc->pl_str_editor = DSPmainWbagRet(PopUpEditString(0,
             GRloc(LW_XYA, x - 200, y), "File or cell name of cell to place?",
             defname, pl_new_cb, 0, 200, 0));

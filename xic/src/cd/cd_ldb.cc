@@ -265,14 +265,14 @@ cCDldb::getValidName(const char *name)
 char *
 cCDldb::newLayerName(unsigned int *lnum)
 {
-    char buf[16];
     unsigned int n = newLayerNum();
     for (;;) {
         if (ldb_oalnum_tab && ldb_oalnum_tab->find(n)) {
             n++;
             continue;
         }
-        sprintf(buf, "%c%03X", 'L', n);
+        char buf[16];
+        snprintf(buf, sizeof(buf), "%c%03X", 'L', n);
         if (!ldb_oalname_tab || !ldb_oalname_tab->find(buf)) {
             if (lnum)
                 *lnum = n;

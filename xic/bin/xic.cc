@@ -323,7 +323,9 @@ main(int argc, char **argv)
             char *cmdstr = GetCommandLine();
             while (*cmdstr && !isspace(*cmdstr))
                 cmdstr++;
-            sprintf(cmdline + strlen(cmdline), "%s --WinBg", cmdstr);
+            int len = strlen(cmdline);
+            snprintf(cmdline + len, sizeof(cmdline) - len, "%s --WinBg",
+                cmdstr);
 
             const char *logdir  = getenv("XIC_LOG_DIR");
             if (!logdir || !*logdir)
@@ -332,12 +334,13 @@ main(int argc, char **argv)
                 logdir = getenv("TMPDIR");
             if (!logdir || !*logdir)
                 logdir = "/tmp";
-            char *fname = new char[strlen(logdir) + 30];
+            len = strlen(logdir) + 30;
+            char *fname = new char[len];
             mkdir(logdir);
-            sprintf(fname, "%s/%s", logdir, "daemon_out.log");
+            snprintf(fname, len, "%s/%s", logdir, "daemon_out.log");
             HANDLE hlog = CreateFile(fname, GENERIC_WRITE, 0, 0, CREATE_ALWAYS,
                 FILE_ATTRIBUTE_NORMAL, 0);
-            sprintf(fname, "%s/%s", logdir, "daemon_err.log");
+            snprintf(fname, len, "%s/%s", logdir, "daemon_err.log");
             HANDLE herr = CreateFile(fname, GENERIC_WRITE, 0, 0, CREATE_ALWAYS,
                 FILE_ATTRIBUTE_NORMAL, 0);
             delete [] fname;
@@ -488,14 +491,14 @@ main(int argc, char **argv)
     else
         gmode = (GR_ALL_PKGS | GR_ALL_DRIVERS);
 
-    if (GRpkgIf()->InitPkg(gmode, &argc, argv)) {
+    if (DSPpkg::self()->InitPkg(gmode, &argc, argv)) {
         PAUSE();
         return (1);
     }
 
     cmdLine.process_args(argc, argv, false);
 
-    if (GRpkgIf()->InitColormap(48,
+    if (DSPpkg::self()->InitColormap(48,
             (cmdLine.CmapSaver == 2 ? -1 : 64), !cmdLine.CmapSaver)) {
         PAUSE();
         return (1);
@@ -512,9 +515,9 @@ main(int argc, char **argv)
     }
 
     XM()->InitSignals(false);
-    GRpkgIf()->RegisterSigintHdlr(&cMain::InterruptHandler);
+    DSPpkg::self()->RegisterSigintHdlr(&cMain::InterruptHandler);
 
-    GRwbag *gx = GRpkgIf()->NewWbag("Xic", dspPkgIf()->NewGX());
+    GRwbag *gx = DSPpkg::self()->NewWbag("Xic", DSPpkg::self()->NewGX());
     if (!gx) {
 #ifdef HAVE_SECURE
         XM()->Auth()->closeValidation();
@@ -534,7 +537,7 @@ main(int argc, char **argv)
     // Start Tcl/Tk interface.
     _tk_ = XM()->openTclTk();
 
-    if (dspPkgIf()->Initialize(gx)) {
+    if (DSPpkg::self()->Initialize(gx)) {
 #ifdef HAVE_SECURE
         XM()->Auth()->closeValidation();
 #endif
@@ -577,8 +580,8 @@ main(int argc, char **argv)
     }
 
     if (XM()->RunMode() == ModeNormal) {
-        dspPkgIf()->RegisterIdleProc(&xic_main::start_proc, 0);
-        dspPkgIf()->AppLoop();
+        DSPpkg::self()->RegisterIdleProc(&xic_main::start_proc, 0);
+        DSPpkg::self()->AppLoop();
         return (0);
     }
 
@@ -637,8 +640,8 @@ xic_main::start_proc(void*)
             exit (ret);
         }
     }
-    Timer()->start(getenv("XIC_NOTIMER") ? 0 : 200);
-    dspPkgIf()->RegisterIdleProc(xic_main::read_cell_proc, 0);
+    miscutil::Timer()->start(getenv("XIC_NOTIMER") ? 0 : 200);
+    DSPpkg::self()->RegisterIdleProc(xic_main::read_cell_proc, 0);
 
 #ifdef NOTDEF
 #ifdef HAVE_MOZY
@@ -1076,7 +1079,8 @@ xic_main::do_batch_commands()
                 DRC()->setErrorLevel((DRClevelType)args.ba_method);
 
             char buf[256];
-            sprintf(buf, "drcerror.log.%s.%d", args.ba_name, (int)getpid());
+            snprintf(buf, sizeof(buf), "drcerror.log.%s.%d", args.ba_name,
+                (int)getpid());
             FILE *fp = fopen(buf, "w");
             if (!fp) {
                 fprintf(stderr, "Could not open file %s.\n", buf);
@@ -1565,14 +1569,14 @@ cMain::ReleaseNotePath()
     char buf[256];
     const char *docspath = CDvdb()->getVariable(VA_DocsDir);
     if (!docspath) {
-        sprintf(buf, "No path to docs (DocsDir not set).");
+        snprintf(buf, sizeof(buf), "No path to docs (DocsDir not set).");
         DSPmainWbag(PopUpMessage(buf, true))
         return (0);
     }
 
     // Remove quotes.
     char *path = pathlist::expand_path(docspath, false, true);
-    sprintf(buf, "%s%s", RELNOTE_BASE, XM()->VersionString());
+    snprintf(buf, sizeof(buf), "%s%s", RELNOTE_BASE, XM()->VersionString());
 
     // The version string is in the form generation.major.minor, strip
     // off the minor part.
@@ -1580,8 +1584,9 @@ cMain::ReleaseNotePath()
     if (t)
         *t = 0;
 
-    t = new char[strlen(path) + strlen(buf) + 2];
-    sprintf(t, "%s/%s", path, buf);
+    int len = strlen(path) + strlen(buf) + 2;
+    t = new char[len];
+    snprintf(t, len, "%s/%s", path, buf);
     delete [] path;
     return (t);
 }

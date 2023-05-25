@@ -210,7 +210,7 @@ cSpiceIPC::InitSpice()
         // Send over the Xic window id.
         char tbuf[128];
         strcpy(tbuf, "winid ");
-        if (dspPkgIf()->GetMainWinIdentifier(tbuf + strlen(tbuf))) {
+        if (DSPpkg::self()->GetMainWinIdentifier(tbuf + strlen(tbuf))) {
             char *tbf = send_to_spice(tbuf, 120);
             delete [] tbf;
         }
@@ -402,7 +402,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
     //   [-sc<catchar>][ ][-sm<mode>] 
     // where <mode> is a digit character ('0' plus the enum value).
 
-    sprintf(tbuf, "ping -sc%c-sm%c", CD()->GetSubcCatchar(),
+    snprintf(tbuf, sizeof(tbuf), "ping -sc%c-sm%c", CD()->GetSubcCatchar(),
         '0' + CD()->GetSubcCatmode());
     char *tbf = send_to_spice(tbuf, 10);
     if (!tbf) {
@@ -523,13 +523,13 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
         return (false);
     }
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     stringlist *deck = SCD()->makeSpiceListing(cursde);
     if (!deck) {
         PL()->ShowPromptV(
             "Unknown error: no SPICE listing available for %s.",
             Tstring(cursde->cellname()));
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return (false);
     }
     if (!expand_includes(&deck, "decksource")) {
@@ -537,12 +537,12 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
         if (Errs()->has_error())
             Log()->ErrorLog(SpiceIPC, Errs()->get_error());
         stringlist::destroy(deck);
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return (false);
     }
     char *outbuf;
     bool ok = deck_to_spice(deck, &outbuf);
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     if (outbuf) {
         // Dump any stdout/stderr from WRspice to console.
         fprintf(stderr, "%s\n", outbuf);
@@ -571,7 +571,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
 
     // Delete the last circuit created here, if still around.
     if (ipc_last_cir && strcmp(ipc_last_cir, "none")) {
-        sprintf(tbuf, "freecir %s", ipc_last_cir);
+        snprintf(tbuf, sizeof(tbuf), "freecir %s", ipc_last_cir);
         tbf = send_to_spice(tbuf, 120);
         if (!tbf) {
             PL()->ShowPrompt(msg);
@@ -590,7 +590,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
 
     // Delete the last plot generated here, if still around.
     if (ipc_last_plot && strcmp(ipc_last_plot, "none")) {
-        sprintf(tbuf, "freeplot %s", ipc_last_plot);
+        snprintf(tbuf, sizeof(tbuf), "freeplot %s", ipc_last_plot);
         tbf = send_to_spice(tbuf, 120);
         if (!tbf) {
             PL()->ShowPrompt(msg);
@@ -873,7 +873,7 @@ cSpiceIPC::SetIplot(bool no_intr)
     char *s = SCD()->getIplotCmd(false);
     if (s) {
         char buf[1024];
-        sprintf(buf, "iplot %s", s);
+        snprintf(buf, sizeof(buf), "iplot %s", s);
         delete [] s;
         if (ipc_in_spice) {
             PL()->ShowPrompt("WRspice analysis in progress, please wait.");
@@ -947,7 +947,7 @@ cSpiceIPC::InterruptSpice()
 #else
 #ifdef WIN32
     char buf[64];
-    sprintf(buf, "wrspice.sigint.%d", pid);
+    snprintf(buf, sizeof(buf),"wrspice.sigint.%d", pid);
     HANDLE hs = OpenSemaphore(SEMAPHORE_MODIFY_STATE, false, buf);
     if (hs) {
         long pv;
@@ -970,7 +970,7 @@ cSpiceIPC::CloseSpice()
         char buf[64];
         if (ipc_parent_sp_pid) {
             // Tell WRspice parent that we are about to terminate.
-            sprintf(buf, "close %d", (int)getpid());
+            snprintf(buf, sizeof(buf), "close %d", (int)getpid());
             write_msg(buf, ipc_msg_skt);
         }
         else if (ipc_child_sp_pid) {
@@ -1211,8 +1211,8 @@ cSpiceIPC::init_remote(const char *c_spice_host)
 #ifdef DEMO_EXPORT
     // The demo app is command-line driven.
 #else
-    if (has_graphics && dspPkgIf()->UsingX11()) {
-        const char *ds = dspPkgIf()->GetDisplayString();
+    if (has_graphics && DSPpkg::self()->UsingX11()) {
+        const char *ds = DSPpkg::self()->GetDisplayString();
         if (ds) {
             if (ipc_display_name)
                 strcpy(display_string, ipc_display_name);
@@ -1269,7 +1269,8 @@ cSpiceIPC::init_remote(const char *c_spice_host)
     // Check screen access for remote host.  Skip this if we provided
     // the display name.
     if (has_graphics && !ipc_display_name &&
-            !dspPkgIf()->CheckScreenAccess(hent, spice_host, display_string)) {
+            !DSPpkg::self()->CheckScreenAccess(hent, spice_host,
+            display_string)) {
         has_graphics = false;
 #ifndef DEMO_EXPORT
         Log()->WarningLogV(SpiceIPC,
@@ -1349,20 +1350,22 @@ cSpiceIPC::init_remote(const char *c_spice_host)
     char buf[256];
     if (use_old_protocol) {
         if (has_graphics)
-            sprintf(buf, "%s %s", ipc_no_toolbar ? "xic_user_nt" : "xic_user",
-                display_string);
+            snprintf(buf, sizeof(buf), "%s %s",
+                ipc_no_toolbar ? "xic_user_nt" : "xic_user", display_string);
         else
-            sprintf(buf, "%s %s", "xic_user_nt", "none");
+            snprintf(buf, sizeof(buf), "%s %s", "xic_user_nt", "none");
     }
     else {
         if (has_graphics)
-            sprintf(buf, "%s:%s %s", user, ipc_no_toolbar ? "-t" : "+t",
-                display_string);
+            snprintf(buf, sizeof(buf), "%s:%s %s", user,
+                ipc_no_toolbar ? "-t" : "+t", display_string);
         else
-            sprintf(buf, "%s:-t %s", user, xic_host);
+            snprintf(buf, sizeof(buf), "%s:-t %s", user, xic_host);
     }
-    if (ipc_host_prog && *ipc_host_prog)
-        sprintf(buf + strlen(buf), " %s", ipc_host_prog);
+    if (ipc_host_prog && *ipc_host_prog) {
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, " %s", ipc_host_prog);
+    }
 
     if (!write_msg(buf, sd))
         return (-1);
@@ -1484,8 +1487,8 @@ cSpiceIPC::init_local()
 #ifdef DEMO_EXPORT
     // The demo app is command-line driven.
 #else
-    if (has_graphics && dspPkgIf()->UsingX11()) {
-        display_string = dspPkgIf()->GetDisplayString();
+    if (has_graphics && DSPpkg::self()->UsingX11()) {
+        display_string = DSPpkg::self()->GetDisplayString();
         if (!display_string)
             has_graphics = false;
     }
@@ -1650,7 +1653,7 @@ cSpiceIPC::init_local()
         return (-1);
     }
     if (!pid) {
-        dspPkgIf()->CloseGraphicsConnection();
+        DSPpkg::self()->CloseGraphicsConnection();
         dup2(ipc_stdout_skt2, fileno(stdout));
         dup2(ipc_stdout_skt2, fileno(stderr));
         if (has_graphics && *display_string) {
@@ -1749,10 +1752,10 @@ cSpiceIPC::runnit(const char *what)
 {
     ipc_sigint_back = signal(SIGINT, interrupt_hdlr);
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     SCD()->PopUpSim(SpBusy);
     if (!write_msg(what, ipc_msg_skt)) {
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return (false);
     }
 
@@ -1777,7 +1780,7 @@ cSpiceIPC::runnit(const char *what)
         if (!set_async(ipc_msg_skt, true))
             Log()->WarningLog(SpiceIPC, Errs()->get_error());
     }
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (true);
 }
 
@@ -1870,7 +1873,7 @@ cSpiceIPC::isready(int fd, int timeout_ms, bool silent)
         }
         if (i == 0) {
             if (waitmode) {
-                if (dspPkgIf()->CheckForInterrupt()) {
+                if (DSPpkg::self()->CheckForInterrupt()) {
                     // ^C was typed in Xic graphics window.
                     if (fd == ipc_msg_skt)
                         InterruptSpice();
@@ -2045,7 +2048,7 @@ cSpiceIPC::read_cmd_return(char **msgbuf,  char **outbuf,
             }
         }
         if (i == 0) {
-            if (dspPkgIf()->CheckForInterrupt()) {
+            if (DSPpkg::self()->CheckForInterrupt()) {
                 // ^C was typed in Xic graphics window.
                 InterruptSpice();
             }
@@ -2557,7 +2560,7 @@ cSpiceIPC::terminate_spice(int pid)
 #else
 #ifdef WIN32
     char buf[64];
-    sprintf(buf, "wrspice.sigterm.%d", pid);
+    snprintf(buf, sizeof(buf), "wrspice.sigterm.%d", pid);
     HANDLE hs = OpenSemaphore(SEMAPHORE_MODIFY_STATE, false, buf);
     if (hs) {
         long pv;
@@ -2680,16 +2683,19 @@ cSpiceIPC::child_thread_proc(void *arg)
         DWORD status;
         GetExitCodeProcess(h, &status);
         char buf[128];
-        sprintf(buf, "Child process %d exited ", pid);
-        if (status)
-            sprintf(buf + strlen(buf), "with error status %ld.", status);
+        snprintf(buf, sizeof(buf), "Child process %d exited ", pid);
+        if (status) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "with error status %ld.",
+                status);
+        }
         else
             strcat(buf, "normally.");
 
 #ifndef DEMO_EXPORT
         // Can't pop up a window in this thread!  It dies when the
         // thread dies.
-        dspPkgIf()->RegisterIdleProc(msg_proc, lstring::copy(buf));
+        DSPpkg::self()->RegisterIdleProc(msg_proc, lstring::copy(buf));
 #endif
         SCD()->spif()->close_all();
     }
@@ -2707,16 +2713,19 @@ cSpiceIPC::child_hdlr(int pid, int status, void*)
     char buf[128];
     *buf = '\0';
     if (WIFEXITED(status)) {
-        sprintf(buf, "Child process %d exited ", pid);
-        if (WEXITSTATUS(status))
-            sprintf(buf + strlen(buf), "with error status %d.",
+        snprintf(buf, sizeof(buf), "Child process %d exited ", pid);
+        if (WEXITSTATUS(status)) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "with error status %d.",
                 WEXITSTATUS(status));
+        }
         else
             strcat(buf, "normally.");
     }
-    else if (WIFSIGNALED(status))
-        sprintf(buf, "Child process %d exited on signal %d.", pid,
-            WIFSIGNALED(status));
+    else if (WIFSIGNALED(status)) {
+        snprintf(buf, sizeof(buf), "Child process %d exited on signal %d.",
+            pid, WIFSIGNALED(status));
+    }
     if (*buf) {
         DSPmainWbag(PopUpMessage(buf, false))
         SCD()->spif()->close_all();

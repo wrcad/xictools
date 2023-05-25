@@ -227,30 +227,34 @@ gzip(const char *infile, const char *outfile, GZIPmode mode)
     if (mode == GZIPcompress) {
         FILE *fp = fopen(outfile, "wb");
         if (!fp) {
-            char *str = new char[strlen(msg1) + strlen(outfile)];
-            sprintf(str, msg1, outfile);
+            int len = strlen(msg1) + strlen(outfile);
+            char *str = new char[len];
+            snprintf(str, len, msg1, outfile);
             return (str);
         }
         zio_stream *out = zio_stream::zio_open(fp, "w");
         if (!out) {
             fclose(fp);
-            char *str = new char[strlen(msg2) + strlen(outfile)];
-            sprintf(str, msg2, outfile);
+            int len = strlen(msg2) + strlen(outfile);
+            char *str = new char[len];
+            snprintf(str, len, msg2, outfile);
             return (str);
         }
         if (!out->zio_gzinit()) {
             delete out;
             fclose(fp);
-            char *str = new char[strlen(msg3) + strlen(outfile)];
-            sprintf(str, msg3, outfile);
+            int len = strlen(msg3) + strlen(outfile);
+            char *str = new char[len];
+            snprintf(str, len, msg3, outfile);
             return (str);
         }
         FILE *in = fopen(infile, "rb");
         if (!in) {
             delete out;
             fclose(fp);
-            char *str = new char[strlen(msg1) + strlen(infile)];
-            sprintf(str, msg1, infile);
+            int len = strlen(msg1) + strlen(infile);
+            char *str = new char[len];
+            snprintf(str, len, msg1, infile);
             return (str);
         }
         int c;
@@ -270,31 +274,35 @@ gzip(const char *infile, const char *outfile, GZIPmode mode)
     else if (mode == GZIPuncompress) {
         FILE *out = fopen(outfile, "wb");
         if (!out) {
-            char *str = new char[strlen(msg1) + strlen(outfile)];
-            sprintf(str, msg1, outfile);
+            int len = strlen(msg1) + strlen(outfile);
+            char *str = new char[len];
+            snprintf(str, len, msg1, outfile);
             return (str);
         }
         FILE *fp = fopen(infile, "rb");
         if (!fp) {
             fclose(out);
-            char *str = new char[strlen(msg1) + strlen(infile)];
-            sprintf(str, msg1, infile);
+            int len = strlen(msg1) + strlen(infile);
+            char *str = new char[len];
+            snprintf(str, len, msg1, infile);
             return (str);
         }
         zio_stream *in = zio_stream::zio_open(fp, "r");
         if (!in) {
             fclose(out);
             fclose(fp);
-            char *str = new char[strlen(msg2) + strlen(infile)];
-            sprintf(str, msg2, infile);
+            int len = strlen(msg2) + strlen(infile);
+            char *str = new char[len];
+            snprintf(str, len, msg2, infile);
             return (str);
         }
         if (!in->zio_gzinit()) {
             fclose(out);
             delete in;
             fclose(fp);
-            char *str = new char[strlen(msg3) + strlen(infile)];
-            sprintf(str, msg3, infile);
+            int len = strlen(msg3) + strlen(infile);
+            char *str = new char[len];
+            snprintf(str, len, msg3, infile);
             return (str);
         }
         int c;
@@ -314,15 +322,17 @@ gzip(const char *infile, const char *outfile, GZIPmode mode)
     else {
         FILE *out = fopen(outfile, "wb");
         if (!out) {
-            char *str = new char[strlen(msg1) + strlen(outfile)];
-            sprintf(str, msg1, outfile);
+            int len = strlen(msg1) + strlen(outfile);
+            char *str = new char[len];
+            snprintf(str, len, msg1, outfile);
             return (str);
         }
         FILE *in = fopen(infile, "rb");
         if (!in) {
             fclose(out);
-            char *str = new char[strlen(msg1) + strlen(infile)];
-            sprintf(str, msg1, infile);
+            int len = strlen(msg1) + strlen(infile);
+            char *str = new char[len];
+            snprintf(str, len, msg1, infile);
             return (str);
         }
         int c;

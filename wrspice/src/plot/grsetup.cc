@@ -123,45 +123,45 @@ void
 SpGrPkg::SetDefaultColors()
 {
     ToolBar()->LoadResourceColors();  // toolkit-specific, loads DefColorNames
-    if (GRpkgIf()->MainDev()->numcolors > NUMPLOTCOLORS)
-        GRpkgIf()->MainDev()->numcolors = NUMPLOTCOLORS;
+    if (GRpkg::self()->MainDev()->numcolors > NUMPLOTCOLORS)
+        GRpkg::self()->MainDev()->numcolors = NUMPLOTCOLORS;
     const char *colorstring = DefColorNames[0];
     VTvalue vv;
     if (Sp.GetVar("color0", VTYP_STRING, &vv))
         colorstring = vv.get_string();
 
-    unsigned b_pixel = GRpkgIf()->MainDev()->NameColor(colorstring);
+    unsigned b_pixel = GRpkg::self()->MainDev()->NameColor(colorstring);
     // note that the pixel and color values are 0 - 255
     int r, g, b;
-    GRpkgIf()->GRpkg::RGBofPixel(b_pixel, &r, &g, &b);
+    GRpkg::self()->GRpkg::RGBofPixel(b_pixel, &r, &g, &b);
     DefColors[0].pixel = b_pixel;
     DefColors[0].red = r;
     DefColors[0].green = g;
     DefColors[0].blue = b;
 
     unsigned f_pixel;
-    if (b_pixel == (unsigned)GRpkgIf()->MainDev()->NameColor("white"))
-        f_pixel = GRpkgIf()->MainDev()->NameColor("black");
+    if (b_pixel == (unsigned)GRpkg::self()->MainDev()->NameColor("white"))
+        f_pixel = GRpkg::self()->MainDev()->NameColor("black");
     else
-        f_pixel = GRpkgIf()->MainDev()->NameColor("white");
-    if (GRpkgIf()->MainDev()->numcolors <= 2) {
-        GRpkgIf()->GRpkg::RGBofPixel(f_pixel, &r, &g, &b);
+        f_pixel = GRpkg::self()->MainDev()->NameColor("white");
+    if (GRpkg::self()->MainDev()->numcolors <= 2) {
+        GRpkg::self()->GRpkg::RGBofPixel(f_pixel, &r, &g, &b);
         DefColors[1].pixel = b_pixel;
         DefColors[1].red = r;
         DefColors[1].green = g;
         DefColors[1].blue = b;
         return; 
     } 
-    for (int i = 1; i < GRpkgIf()->MainDev()->numcolors; i++) { 
+    for (int i = 1; i < GRpkg::self()->MainDev()->numcolors; i++) { 
         char buf[16]; 
-        sprintf(buf, "color%d", i); 
+        snprintf(buf, sizeof(buf), "color%d", i); 
         colorstring = DefColorNames[i]; 
         if (Sp.GetVar(buf, VTYP_STRING, &vv)) 
             colorstring = vv.get_string();
-        DefColors[i].pixel = GRpkgIf()->MainDev()->NameColor(colorstring);
+        DefColors[i].pixel = GRpkg::self()->MainDev()->NameColor(colorstring);
         if (DefColors[i].pixel == b_pixel)
             DefColors[i].pixel = f_pixel;
-        GRpkgIf()->GRpkg::RGBofPixel(DefColors[i].pixel, &r, &g, &b);
+        GRpkg::self()->GRpkg::RGBofPixel(DefColors[i].pixel, &r, &g, &b);
         DefColors[i].red = r;
         DefColors[i].green = g;
         DefColors[i].blue = b;
@@ -359,7 +359,7 @@ SPgraphics::Setup(sGrInit *gr, sDvList **dlptr, const char *attrs,
         sDataVec *d = dl->dl_dvec;
         if (((d->flags() & VF_POLE) || (d->flags() & VF_ZERO)) !=
                 oneval ? 1 : 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
         "plot must be either all pole-zero or contain no poles or zeros.\n");
             return (false);
         }
@@ -454,9 +454,9 @@ SPgraphics::Setup(sGrInit *gr, sDvList **dlptr, const char *attrs,
                 }
                 delete [] data;
                 char buf[256];
-                sprintf(buf, "re:%s", vr->name());
+                snprintf(buf, sizeof(buf), "re:%s", vr->name());
                 vr->set_name(buf);
-                sprintf(buf, "im:%s", vi->name());
+                snprintf(buf, sizeof(buf), "im:%s", vi->name());
                 vi->set_name(buf);
 
                 sDvList *dx = new sDvList;
@@ -494,9 +494,10 @@ SPgraphics::Setup(sGrInit *gr, sDvList **dlptr, const char *attrs,
     else
         gr->title = OP.curPlot()->name();
 
-    char *tpn = new char[strlen(OP.curPlot()->type_name()) +
-        strlen(OP.curPlot()->title()) + 3];
-    sprintf(tpn, "%s: %s", OP.curPlot()->type_name(),
+    int len = strlen(OP.curPlot()->type_name()) +
+        strlen(OP.curPlot()->title()) + 3;
+    char *tpn = new char[len];
+    snprintf(tpn, len, "%s: %s", OP.curPlot()->type_name(),
         OP.curPlot()->title());
     gr->plotname = tpn;
 
@@ -553,13 +554,14 @@ SPgraphics::Init(sDvList *dl0, sGrInit *gr, sGraph *graph)
     graph->setup(dl0, gr);
 
     if (!reuse && graph->gr_dev_init()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't init viewport for graphics.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "can't init viewport for graphics.\n");
         DestroyGraph(graph->id());
         return (0);
     }
-    if (GRpkgIf()->CurDev()->devtype != GRmultiWindow) {    
+    if (GRpkg::self()->CurDev()->devtype != GRmultiWindow) {    
         graph->dev()->Clear();
-       if (GRpkgIf()->CurDev()->devtype == GRhardcopy)
+       if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
             graph->dev()->DefineViewport();
         graph->gr_redraw();
     }
@@ -742,8 +744,10 @@ grAttributes::grAttributes()
     int i;
     for (i = 0; i < NumGrTypes; i++) {
         if (getflag(*gtypes[i].name)) {
-            if (gtypeset)
-                GRpkgIf()->ErrPrintf(ET_WARN, "too many grid types given.\n");
+            if (gtypeset) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "too many grid types given.\n");
+            }
             else {
                 gtype = (GridType)gtypes[i].type;
                 gtypeset = true;
@@ -760,8 +764,8 @@ grAttributes::grAttributes()
                 }
             }
             if (i == NumGrTypes) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "strange grid type %s.\n",
-                    vv.get_string());
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "strange grid type %s.\n", vv.get_string());
                 gtype = GRID_LIN;
             }
             gtypeset = true;
@@ -774,8 +778,10 @@ grAttributes::grAttributes()
     ptypeset = false;
     for (i = 0; i < NumPlTypes; i++) {
         if (getflag(*ptypes[i].name)) {
-            if (ptypeset)
-                GRpkgIf()->ErrPrintf(ET_WARN, "too many plot types given.\n");
+            if (ptypeset) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "too many plot types given.\n");
+            }
             else {
                 ptype = (PlotType)ptypes[i].type;
                 ptypeset = true;
@@ -792,8 +798,8 @@ grAttributes::grAttributes()
                 }
             }
             if (i == NumPlTypes) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "strange plot type %s.\n",
-                    vv.get_string());
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "strange plot type %s.\n", vv.get_string());
                 ptype = PLOT_LIN;
             }
             ptypeset = true;
@@ -806,8 +812,10 @@ grAttributes::grAttributes()
     formatset = false;
     for (i = 0; i < NumScTypes; i++) {
         if (getflag(*stypes[i].name)) {
-            if (formatset)
-                GRpkgIf()->ErrPrintf(ET_WARN, "too many scale types given.\n");
+            if (formatset) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "too many scale types given.\n");
+            }
             else {
                 format = (ScaleType)stypes[i].type;
                 formatset = true;
@@ -824,7 +832,7 @@ grAttributes::grAttributes()
                 }
             }
             if (i == NumScTypes) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "strange scale type %s.\n",
+                GRpkg::self()->ErrPrintf(ET_WARN, "strange scale type %s.\n",
                     vv.get_string());
                 format = FT_MULTI;
             }
@@ -951,9 +959,10 @@ grAttributes::setup(const char *attr)
                     }
                 }
             }
-            if (!ok)
-                GRpkgIf()->ErrPrintf(ET_WARN, "parse error for %s.\n",
+            if (!ok) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "parse error for %s.\n",
                     kw_xlimit);
+            }
         }
         else if (lstring::cieq(tok, kw_ylimit)) {
             delete [] tok;
@@ -987,9 +996,10 @@ grAttributes::setup(const char *attr)
                     }
                 }
             }
-            if (!ok)
-                GRpkgIf()->ErrPrintf(ET_WARN, "parse error for %s.\n",
+            if (!ok) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "parse error for %s.\n",
                     kw_ylimit);
+            }
         }
         else if (lstring::cieq(tok, kw_xcompress)) {
             delete [] tok;
@@ -1004,9 +1014,10 @@ grAttributes::setup(const char *attr)
                     ok = true;
                 }
             }
-            if (!ok)
-                GRpkgIf()->ErrPrintf(ET_WARN, "parse error for %s.\n",
+            if (!ok) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "parse error for %s.\n",
                     kw_xcompress);
+            }
         }
         else if (lstring::cieq(tok, kw_xindices)) {
             delete [] tok;
@@ -1040,9 +1051,10 @@ grAttributes::setup(const char *attr)
                     }
                 }
             }
-            if (!ok)
-                GRpkgIf()->ErrPrintf(ET_WARN, "parse error for %s.\n",
+            if (!ok) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "parse error for %s.\n",
                     kw_xindices);
+            }
         }
         else if (lstring::cieq(tok, kw_xdelta)) {
             delete [] tok;
@@ -1057,9 +1069,10 @@ grAttributes::setup(const char *attr)
                     ok = true;
                 }
             }
-            if (!ok)
-                GRpkgIf()->ErrPrintf(ET_WARN, "parse error for %s.\n",
+            if (!ok) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "parse error for %s.\n",
                     kw_xdelta);
+            }
         }
         else if (lstring::cieq(tok, kw_ydelta)) {
             delete [] tok;
@@ -1074,9 +1087,10 @@ grAttributes::setup(const char *attr)
                     ok = true;
                 }
             }
-            if (!ok)
-                GRpkgIf()->ErrPrintf(ET_WARN, "parse error for %s.\n",
+            if (!ok) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "parse error for %s.\n",
                     kw_ydelta);
+            }
         }
         else if (lstring::cieq(tok, kw_xlabel)) {
             delete [] tok;
@@ -1086,9 +1100,10 @@ grAttributes::setup(const char *attr)
                 ylabel = tok;
                 tok = 0;
             }
-            else
-                GRpkgIf()->ErrPrintf(ET_WARN, "parse error for %s.\n",
+            else {
+                GRpkg::self()->ErrPrintf(ET_WARN, "parse error for %s.\n",
                     kw_xlabel);
+            }
         }
         else if (lstring::cieq(tok, kw_ylabel)) {
             delete [] tok;
@@ -1098,9 +1113,10 @@ grAttributes::setup(const char *attr)
                 xlabel = tok;
                 tok = 0;
             }
-            else
-                GRpkgIf()->ErrPrintf(ET_WARN, "parse error for %s.\n",
+            else {
+                GRpkg::self()->ErrPrintf(ET_WARN, "parse error for %s.\n",
                     kw_ylabel);
+            }
         }
         else if (lstring::cieq(tok, kw_title)) {
             delete [] tok;
@@ -1110,9 +1126,10 @@ grAttributes::setup(const char *attr)
                 title = tok;
                 tok = 0;
             }
-            else
-                GRpkgIf()->ErrPrintf(ET_WARN, "parse error for %s.\n",
+            else {
+                GRpkg::self()->ErrPrintf(ET_WARN, "parse error for %s.\n",
                     kw_title);
+            }
         }
         else if (lstring::cieq(tok, kw_nointerp))
             nointerp = true;
@@ -1236,12 +1253,12 @@ grAttributes::fixlimits(sDvList *dl0, double *xlims, double *ylims,
     }
 
     if ((gtype == GRID_XLOG || gtype == GRID_LOGLOG) && xlims[0] < 0.0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "X values must be >= 0 for log scale.\n");
         return (false);
     }
     if ((gtype == GRID_YLOG || gtype == GRID_LOGLOG) && ylims[0] < 0.0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "Y values must be >= 0 for log scale.\n");
         return (false);
     }
@@ -1281,7 +1298,7 @@ grAttributes::fixlimits(sDvList *dl0, double *xlims, double *ylims,
                     xlims[1] < -1.01 || xlims[1] > 1.01 ||
                     ylims[0] < -1.01 || ylims[0] > 1.01 ||
                     ylims[1] < -1.01 || ylims[1] > 1.01)
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "Smith data out of range [-1, 1], clipped.\n");
             if (xlims[1] > 1.0)
                 xlims[1] = 1.0;
@@ -1401,7 +1418,7 @@ grAttributes::getnum(const char *name, int nargs)
 {
     static double dd[2];
     char buf[32];
-    sprintf(buf, "_temp_%s", name);
+    snprintf(buf, sizeof(buf), "_temp_%s", name);
     if (nargs == 1) {
         VTvalue vv;
         if (Sp.GetVar(buf, VTYP_REAL, &vv)) {
@@ -1424,16 +1441,16 @@ grAttributes::getnum(const char *name, int nargs)
             const char *s = v->string();
             double *d = SPnum.parse(&s, false);
             if (!d) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad min value for %s.\n",
-                    name);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad min value for %s.\n", name);
                 return (0);
             }
             dd[0] = *d;
             while (*s && !isdigit(*s) && *s != '-' && *s != '+') s++;
             d = SPnum.parse(&s, false);
             if (!d) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad max value for %s.\n",
-                    name);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad max value for %s.\n", name);
                 return (0);
             }
             dd[1] = *d;
@@ -1442,7 +1459,8 @@ grAttributes::getnum(const char *name, int nargs)
         if (v->type() == VTYP_LIST) {
             v = v->list();
             if (!v || !v->next()) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad list for %s.\n", name);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad list for %s.\n", name);
                 return (0);
             }
             if (v->type() == VTYP_NUM)
@@ -1450,8 +1468,8 @@ grAttributes::getnum(const char *name, int nargs)
             else if (v->type() == VTYP_REAL)
                 dd[0] = v->real();
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad min list value for %s.\n",
-                    name);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad min list value for %s.\n", name);
                 return (0);
             }
             v = v->next();
@@ -1460,14 +1478,14 @@ grAttributes::getnum(const char *name, int nargs)
             else if (v->type() == VTYP_REAL)
                 dd[1] = v->real();
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad max list value for %s.\n",
-                    name);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad max list value for %s.\n", name);
                 return (0);
             }
             return (dd);
         }
         else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "bad type for %s.\n", name);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "bad type for %s.\n", name);
     }
     return (0);
 }
@@ -1478,7 +1496,7 @@ bool
 grAttributes::getflag(const char *name)
 {
     char buf1[32];
-    sprintf(buf1, "_temp_%s", name);
+    snprintf(buf1, sizeof(buf1), "_temp_%s", name);
     if (Sp.GetVar(buf1, VTYP_BOOL, 0))
         return (true);
     if (Sp.GetVar(name, VTYP_BOOL, 0, Sp.CurCircuit()))
@@ -1492,7 +1510,7 @@ char *
 grAttributes::getword(const char *name)
 {
     char buf1[64];
-    sprintf(buf1, "_temp_%s", name);
+    snprintf(buf1, sizeof(buf1), "_temp_%s", name);
     VTvalue vv;
     if (Sp.GetVar(buf1, VTYP_STRING, &vv))
         return (lstring::copy(vv.get_string()));

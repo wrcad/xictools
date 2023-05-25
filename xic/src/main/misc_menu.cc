@@ -122,7 +122,8 @@ void
 misc_menu::M_Mail(CmdDesc*)
 {
     char buf[128];
-    sprintf(buf, "%s-%s bug", XM()->Product(), XM()->VersionString());
+    snprintf(buf, sizeof(buf), "%s-%s bug", XM()->Product(),
+        XM()->VersionString());
     DSPmainWbag(PopUpMail(buf, Log()->MailAddress()))
 }
 

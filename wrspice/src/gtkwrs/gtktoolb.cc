@@ -168,7 +168,7 @@ CommandTab::com_tbsetup(wordlist *wl)
 
         tbent *ent = TB()->FindEnt(word);
         if (!ent) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "tbsetup: bad keyword %s ignored.\n", word);
             if (!wl)
                 break;
@@ -192,7 +192,7 @@ void
 CommandTab::com_tbupdate(wordlist*)
 {
     if (!CP.Display()) {
-        GRpkgIf()->ErrPrintf(ET_MSG, "No update needed.\n");
+        GRpkg::self()->ErrPrintf(ET_MSG, "No update needed.\n");
         return;
     }
     char buf[512];
@@ -286,7 +286,8 @@ CommandTab::com_tbupdate(wordlist*)
     delete [] bkfile;
     return;
 bad:
-    GRpkgIf()->ErrPrintf(ET_WARN, "could not update %s.\n", startup_filename);
+    GRpkg::self()->ErrPrintf(ET_WARN, "could not update %s.\n",
+        startup_filename);
     delete [] startup_filename;
     delete [] bkfile;
 }
@@ -458,12 +459,12 @@ GTKtoolbar::PopUpBugRpt(int x, int y)
         return;
     if (!tb_mailer) {
         if (!Global.BugAddr()) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "no IP address set for bug reports.");
             return;
         }
         char buf[128];
-        sprintf(buf, "WRspice %s bug", Global.Version());
+        snprintf(buf, sizeof(buf), "WRspice %s bug", Global.Version());
         FixLoc(&x, &y);
         tb_mailer = context->PopUpMail(buf, Global.BugAddr(), mail_destroy_cb,
             GRloc(LW_XYA, x, y));
@@ -493,7 +494,7 @@ namespace {
             TB()->SetLoc(TB()->ntb_font, TB()->ft_shell);
             TB()->SetActive(TB()->ntb_font, false);
             TB()->ft_shell = 0;
-            GRX->SetStatus(TB()->tb_font, false);
+            GTKdev::SetStatus(TB()->tb_font, false);
             return;
         }
     }
@@ -522,7 +523,7 @@ GTKtoolbar::PopDownFont()
     context->ActiveFontsel()->popdown();
     ft_shell = 0;
     SetActive(ntb_font, false);
-    GRX->SetStatus(tb_font, false);
+    GTKdev::SetStatus(tb_font, false);
 }
 
 
@@ -741,7 +742,7 @@ sTBhelp::th_cancel_proc(GtkWidget*, void *client_data)
     GtkWidget *caller = (GtkWidget*)g_object_get_data(G_OBJECT(popup),
         "caller");
     if (caller)
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
     int type = (intptr_t)g_object_get_data(G_OBJECT(popup), "tbtype");
     TB()->PopDownTBhelp((TBH_type)type);
 }
@@ -855,7 +856,7 @@ ErrMsgBox::PopUpErr(const char *string)
     gtk_widget_show(wrap);
     g_signal_connect(G_OBJECT(wrap), "clicked",
         G_CALLBACK(er_wrap_proc), 0);
-    GRX->SetStatus(wrap, er_wrap);
+    GTKdev::SetStatus(wrap, er_wrap);
     gtk_box_pack_start(GTK_BOX(hbox), wrap, false, false, 0);
 
     GtkWidget *cancel = gtk_button_new_with_label("Dismiss");
@@ -869,7 +870,7 @@ ErrMsgBox::PopUpErr(const char *string)
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    GRX->SetDoubleClickExit(er_popup, cancel);
+    GTKdev::self()->SetDoubleClickExit(er_popup, cancel);
     gtk_widget_set_can_default(cancel, true);
     gtk_window_set_default(GTK_WINDOW(er_popup), cancel);
 
@@ -890,7 +891,7 @@ ErrMsgBox::PopUpErr(const char *string)
     // a new error popup, ad infinitum.
     //
     hei += 20;  // for title bar
-    if (GRpkgIf()->CurDev()->devtype == GRmultiWindow && GP.Cur() &&
+    if (GRpkg::self()->CurDev()->devtype == GRmultiWindow && GP.Cur() &&
             GP.Cur()->apptype() == GR_PLOT) {
         // can't do this in hardcopy context
         GtkWidget *plot = ((GTKbag*)GP.Cur()->dev())->Shell();
@@ -986,7 +987,7 @@ void
 ErrMsgBox::er_wrap_proc(GtkWidget *btn, void*)
 {
     if (MB.er_popup && MB.er_text) {
-        MB.er_wrap = GRX->GetStatus(btn);
+        MB.er_wrap = GTKdev::GetStatus(btn);
         gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(MB.er_text),
             MB.er_wrap ? GTK_WRAP_WORD_CHAR : GTK_WRAP_NONE);
     }
@@ -1012,7 +1013,7 @@ GTKtoolbar::PopUpSpiceErr(bool to_stdout, const char *string)
 {
     if (!string || !*string)
         return;
-    if (!CP.Display() || !GRpkgIf()->CurDev())
+    if (!CP.Display() || !GRpkg::self()->CurDev())
         to_stdout = true;
     if (Sp.GetFlag(FT_NOERRWIN))
         to_stdout = true;
@@ -1052,7 +1053,7 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
 {
     if (!CP.Display())
         return;
-    if (!GRpkgIf()->CurDev())
+    if (!GRpkg::self()->CurDev())
         return;
     if (!string || !*string)
         return;
@@ -1087,7 +1088,7 @@ GTKtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
     gtk_table_attach(GTK_TABLE(form), cancel, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    GRX->SetDoubleClickExit(popup, cancel);
+    GTKdev::self()->SetDoubleClickExit(popup, cancel);
 
     FixLoc(&x, &y);
     gtk_widget_realize(popup);
@@ -1187,10 +1188,13 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         context->SetColor(tb_clr_2);
         *buf = 0;
         if (hours)
-            sprintf(buf + strlen(buf), "%d:", hours);
-        if (minutes || hours)
-            sprintf(buf + strlen(buf), "%d:", minutes);
-        sprintf(buf + strlen(buf), "%.2f", secs);
+            snprintf(buf, sizeof(buf), "%d:", hours);
+        if (minutes || hours) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "%d:", minutes);
+        }
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, "%.2f", secs);
         context->Text(buf, ux, y, 0);
         if (Sp.GetFlag(FT_SIMFLAG)) {
             strcpy(buf, "running");
@@ -1207,7 +1211,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         if (Sp.GetFlag(FT_SIMFLAG) && Sp.CurCircuit()) {
             double pct = Sp.CurCircuit()->getPctDone();
             if (pct > 0.0) {
-                sprintf(buf, "%.1f%%", pct);
+                snprintf(buf, sizeof(buf), "%.1f%%", pct);
                 context->Text(buf, vx, y, 0);
             }
         }
@@ -1218,10 +1222,13 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             context->SetColor(tb_clr_2);
             *buf = 0;
             if (hours)
-                sprintf(buf + strlen(buf), "%d:", hours);
-            if (minutes || hours)
-                sprintf(buf + strlen(buf), "%d:", minutes);
-            sprintf(buf + strlen(buf), "%.2f", secs);
+                snprintf(buf, sizeof(buf), "%d:", hours);
+            if (minutes || hours) {
+                len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, "%d:", minutes);
+            }
+            len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "%.2f", secs);
             context->Text(buf, ux, y, 0);
             y += dy;
         }
@@ -1232,10 +1239,13 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             context->SetColor(tb_clr_2);
             *buf = 0;
             if (hours)
-                sprintf(buf + strlen(buf), "%d:", hours);
-            if (minutes || hours)
-                sprintf(buf + strlen(buf), "%d:", minutes);
-            sprintf(buf + strlen(buf), "%.2f", secs);
+                snprintf(buf, sizeof(buf), "%d:", hours);
+            if (minutes || hours) {
+                len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, "%d:", minutes);
+            }
+            len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "%.2f", secs);
             context->Text(buf, ux, y, 0);
             y += dy;
         }
@@ -1245,7 +1255,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             context->SetColor(tb_clr_1);
             context->Text("data size", x, y, 0);
             context->SetColor(tb_clr_2);
-            sprintf(buf, "%d", data/1024);
+            snprintf(buf, sizeof(buf), "%d", data/1024);
             context->Text(buf, ux, y, 0);
             y += dy;
 
@@ -1256,7 +1266,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
             context->SetColor(tb_clr_1);
             context->Text("program limit", x, y, 0);
             context->SetColor(tb_clr_2);
-            sprintf(buf, "%d", (int)val);
+            snprintf(buf, sizeof(buf), "%d", (int)val);
             context->Text(buf, ux, y, 0);
             y += dy;
 
@@ -1266,7 +1276,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
                 context->SetColor(tb_clr_1);
                 context->Text("system limit", x, y, 0);
                 context->SetColor(tb_clr_2);
-                sprintf(buf, "%d", hlimit/1024);
+                snprintf(buf, sizeof(buf), "%d", hlimit/1024);
                 context->Text(buf, ux, y, 0);
                 y += dy;
             }
@@ -1286,15 +1296,15 @@ GTKtoolbar::UpdateMain(ResUpdType update)
 void
 GTKtoolbar::CloseGraphicsConnection()
 {
-    if (GRX && GRX->ConnectFd() > 0)
-        close(GRX->ConnectFd());
+    if (GTKdev::exists() && GTKdev::self()->ConnectFd() > 0)
+        close(GTKdev::ConnectFd());
 }
 
 
 int
 GTKtoolbar::RegisterIdleProc(int(*proc)(void*), void *arg)
 {
-    if (GRX)
+    if (GTKdev::exists())
         return (g_idle_add(proc, arg));
     return (0);
 }
@@ -1303,7 +1313,7 @@ GTKtoolbar::RegisterIdleProc(int(*proc)(void*), void *arg)
 bool
 GTKtoolbar::RemoveIdleProc(int id)
 {
-    if (GRX)
+    if (GTKdev::exists())
         g_source_remove(id);
     return (true);
 }
@@ -1312,8 +1322,8 @@ GTKtoolbar::RemoveIdleProc(int id)
 int
 GTKtoolbar::RegisterTimeoutProc(int ms, int(*proc)(void*), void *arg)
 {
-    if (GRX)
-        return (GRX->AddTimer(ms, proc, arg));
+    if (GTKdev::exists())
+        return (GTKdev::self()->AddTimer(ms, proc, arg));
     return (0);
 }
 
@@ -1321,8 +1331,8 @@ GTKtoolbar::RegisterTimeoutProc(int ms, int(*proc)(void*), void *arg)
 bool
 GTKtoolbar::RemoveTimeoutProc(int id)
 {
-    if (GRX)
-        GRX->RemoveTimer(id);
+    if (GTKdev::exists())
+        GTKdev::self()->RemoveTimer(id);
     return (true);
 }
 
@@ -1330,8 +1340,8 @@ GTKtoolbar::RemoveTimeoutProc(int id)
 void
 GTKtoolbar::RegisterBigForeignWindow(unsigned int w)
 {
-    if (GRX)
-        GRX->RegisterBigForeignWindow(w);
+    if (GTKdev::exists())
+        GTKdev::self()->RegisterBigForeignWindow(w);
 }
 
 
@@ -1368,7 +1378,7 @@ namespace {
             // Cocoa terminal.
 #ifdef __APPLE__
 #ifdef WITH_X11
-            if (GRX->ConsoleXid() == 0)
+            if (GTKdev::self()->ConsoleXid() == 0)
 #endif
                 system(
             "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
@@ -1383,9 +1393,11 @@ namespace {
         }
 #ifdef WITH_X11
         // This is probably crap.
-        if (GRX->ConsoleXid() && Sp.GetVar("wmfocusfix", VTYP_BOOL, 0)) {
-            XSetInputFocus(gdk_x11_get_default_xdisplay(), GRX->ConsoleXid(),
-                RevertToPointerRoot, CurrentTime);
+        if (GTKdev::self()->ConsoleXid() &&
+                Sp.GetVar("wmfocusfix", VTYP_BOOL, 0)) {
+            XSetInputFocus(gdk_x11_get_default_xdisplay(),
+                GTKdev::self()->ConsoleXid(), RevertToPointerRoot,
+                CurrentTime);
         }
 #endif
         return (false);
@@ -1595,7 +1607,7 @@ GTKtoolbar::ConfigString()
         if (gtk_widget_get_window(toolbar)) {
             int x, y;
             gdk_window_get_root_origin(gtk_widget_get_window(toolbar), &x, &y);
-            sprintf(buf, fmt, "toolbar", "on", x, y);
+            snprintf(buf, sizeof(buf), fmt, "toolbar", "on", x, y);
             lstr.add(buf);
         }
         for (tbent *tb = entries; tb && tb->name; tb++) {
@@ -1609,7 +1621,8 @@ GTKtoolbar::ConfigString()
                 if (wsh)
                     gtk_ShellGeometry(wsh, 0, &rect);
             }
-            sprintf(buf, fmt, tb->name, tb->active ? on : off, rect.x, rect.y);
+            snprintf(buf, sizeof(buf), fmt, tb->name, tb->active ? on : off,
+                rect.x, rect.y);
             lstr.add(buf);
         }
     }
@@ -1618,32 +1631,32 @@ GTKtoolbar::ConfigString()
     // Add the fonts
     const char *fn = FC.getName(FNT_FIXED);
     if (fn) {
-        sprintf(buf, "setfont 1 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 1 %s\n", fn);
         lstr.add(buf);
     }
     fn = FC.getName(FNT_PROP);
     if (fn) {
-        sprintf(buf, "setfont 2 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 2 %s\n", fn);
         lstr.add(buf);
     }
     fn = FC.getName(FNT_SCREEN);
     if (fn) {
-        sprintf(buf, "setfont 3 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 3 %s\n", fn);
         lstr.add(buf);
     }
     fn = FC.getName(FNT_EDITOR);
     if (fn) {
-        sprintf(buf, "setfont 4 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 4 %s\n", fn);
         lstr.add(buf);
     }
     fn = FC.getName(FNT_MOZY);
     if (fn) {
-        sprintf(buf, "setfont 5 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 5 %s\n", fn);
         lstr.add(buf);
     }
     fn = FC.getName(FNT_MOZY_FIXED);
     if (fn) {
-        sprintf(buf, "setfont 6 %s\n", fn);
+        snprintf(buf, sizeof(buf), "setfont 6 %s\n", fn);
         lstr.add(buf);
     }
     return (lstr.string_trim());
@@ -1814,7 +1827,7 @@ GTKtoolbar::tbpop(bool up)
     if (!up || toolbar)
         return;
     tb_bag *w = new tb_bag(GR_TB);
-    GRpkgIf()->NewWbag(GR_TBstr, w);
+    GRpkg::self()->NewWbag(GR_TBstr, w);
     context = w;
     toolbar = w->Shell();
 
@@ -2201,55 +2214,55 @@ GTKtoolbar::tbpop(bool up)
             continue;  // in WR button
         else if (tb->name == ntb_circuits) {
             if (tb_circuits)
-                GRX->SetStatus(tb_circuits, tb->active);
+                GTKdev::SetStatus(tb_circuits, tb->active);
         }
         else if (tb->name == ntb_colors) {
             if (tb_colors)
-                GRX->SetStatus(tb_colors, tb->active);
+                GTKdev::SetStatus(tb_colors, tb->active);
         }
         else if (tb->name == ntb_commands) {
             if (tb_commands)
-                GRX->SetStatus(tb_commands, tb->active);
+                GTKdev::SetStatus(tb_commands, tb->active);
         }
         else if (tb->name == ntb_debug) {
             if (tb_debug)
-                GRX->SetStatus(tb_debug, tb->active);
+                GTKdev::SetStatus(tb_debug, tb->active);
         }
         else if (tb->name == ntb_files) {
             if (tb_files)
-                GRX->SetStatus(tb_files, tb->active);
+                GTKdev::SetStatus(tb_files, tb->active);
         }
         else if (tb->name == ntb_font) {
             if (tb_font)
-                GRX->SetStatus(tb_font, tb->active);
+                GTKdev::SetStatus(tb_font, tb->active);
         }
         else if (tb->name == ntb_plotdefs) {
             if (tb_plotdefs)
-                GRX->SetStatus(tb_plotdefs, tb->active);
+                GTKdev::SetStatus(tb_plotdefs, tb->active);
         }
         else if (tb->name == ntb_plots) {
             if (tb_plots)
-                GRX->SetStatus(tb_plots, tb->active);
+                GTKdev::SetStatus(tb_plots, tb->active);
         }
         else if (tb->name == ntb_shell) {
             if (tb_shell)
-                GRX->SetStatus(tb_shell, tb->active);
+                GTKdev::SetStatus(tb_shell, tb->active);
         }
         else if (tb->name == ntb_simdefs) {
             if (tb_simdefs)
-                GRX->SetStatus(tb_simdefs, tb->active);
+                GTKdev::SetStatus(tb_simdefs, tb->active);
         }
         else if (tb->name == ntb_trace) {
             if (tb_trace)
-                GRX->SetStatus(tb_trace, tb->active);
+                GTKdev::SetStatus(tb_trace, tb->active);
         }
         else if (tb->name == ntb_variables) {
             if (tb_variables)
-                GRX->SetStatus(tb_variables, tb->active);
+                GTKdev::SetStatus(tb_variables, tb->active);
         }
         else if (tb->name == ntb_vectors) {
             if (tb_vectors)
-                GRX->SetStatus(tb_vectors, tb->active);
+                GTKdev::SetStatus(tb_vectors, tb->active);
         }
     }
 
@@ -2345,7 +2358,7 @@ GTKtoolbar::tbpop(bool up)
     w->SetWindow(w->Viewport()->window);
 #endif
     char tbuf[28];
-    sprintf(tbuf, "WRspice-%s", Global.Version());
+    snprintf(tbuf, sizeof(tbuf), "WRspice-%s", Global.Version());
     w->Title(tbuf, "WRspice");
 
     // set up initial xor color
@@ -2361,19 +2374,19 @@ GTKtoolbar::tbpop(bool up)
     const char *s = XRMgetFromDb("fgcolor1");
     if (!s)
         s = "sienna";
-    tb_clr_1 = GRX->NameColor(s);
+    tb_clr_1 = GTKdev::self()->NameColor(s);
     s = XRMgetFromDb("fgcolor2");
     if (!s)
         s = "black";
-    tb_clr_2 = GRX->NameColor(s);
+    tb_clr_2 = GTKdev::self()->NameColor(s);
     s = XRMgetFromDb("fgcolor3");
     if (!s)
         s = "red";
-    tb_clr_3 = GRX->NameColor(s);
+    tb_clr_3 = GTKdev::self()->NameColor(s);
     s = XRMgetFromDb("fgcolor4");
     if (!s)
         s = "blue";
-    tb_clr_4 = GRX->NameColor(s);
+    tb_clr_4 = GTKdev::self()->NameColor(s);
 
     w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
     w->SetBackground(SpGrPkg::DefColors[0].pixel);
@@ -2791,7 +2804,8 @@ GTKtoolbar::about_proc(GtkWidget*, void*)
 {
     char buf[256];
     if (Global.StartupDir() && *Global.StartupDir()) {
-        sprintf(buf, "%s/%s", Global.StartupDir(), "wrspice_mesg");
+        snprintf(buf, sizeof(buf), "%s/%s", Global.StartupDir(),
+            "wrspice_mesg");
         FILE *fp = fopen(buf, "r");
         if (fp) {
             bool didsub = false;
@@ -2861,7 +2875,7 @@ GTKtoolbar::notes_proc(GtkWidget*, void*)
     }
 
     char buf[256];
-    sprintf(buf, "%s/wrs%s", docspath, Global.Version());
+    snprintf(buf, sizeof(buf), "%s/wrs%s", docspath, Global.Version());
 
     // Remove last component of version, file name is like "wrs3.0".
     char *t = strrchr(buf, '.');
@@ -2874,8 +2888,9 @@ GTKtoolbar::notes_proc(GtkWidget*, void*)
         return;
     }
     if (ret == NO_EXIST) {
-        char *tt = new char[strlen(buf) + 64];
-        sprintf(tt, "Can't find file %s.", buf);
+        int len = strlen(buf) + 64;
+        char *tt = new char[len];
+        snprintf(tt, len, "Can't find file %s.", buf);
         TB()->context->PopUpMessage(tt, true);
         delete [] tt;
         return;
@@ -2900,7 +2915,7 @@ tb_bag::switch_to_pixmap()
         b_wid = w;
         b_hei = h;
         pm = gdk_pixmap_new(gd_window, w, h,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         if (pm)
             b_pixmap = pm;
         else {
@@ -2971,7 +2986,8 @@ namespace {
     {
         xKWent *kwent = (xKWent*)client_data;
         xEnt *ent = kwent->ent;
-        if (ent->defstr && ent->active && !GRX->GetStatus(ent->active)) {
+        if (ent->defstr && ent->active &&
+                !GTKdev::GetStatus(ent->active)) {
             const char *str = gtk_entry_get_text(GTK_ENTRY(ent->entry));
             const char *str2 = 0;
             if (ent->entry2)
@@ -3165,7 +3181,7 @@ void
 xEnt::set_state(bool state)
 {
     if (active)
-        GRX->SetStatus(active, state);
+        GTKdev::SetStatus(active, state);
     if (deflt) {
         if (state)
             gtk_widget_set_sensitive(deflt, false);
@@ -3192,8 +3208,8 @@ xEnt::set_state(bool state)
 namespace {
     void error_pr(const char *which, const char *minmax, const char *what)
     {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "bad %s%s value, must be %s.\n", which,
-            minmax ? minmax : "", what);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "bad %s%s value, must be %s.\n",
+            which, minmax ? minmax : "", what);
     }
 }
 
@@ -3205,9 +3221,9 @@ xEnt::handler(void *data)
 {
     xKWent *kwstruct = (xKWent*)data;
     variable v;
-    bool state = GRX->GetStatus(active);
+    bool state = GTKdev::GetStatus(active);
     // reset button temporarily, final status is set by callback()
-    GRX->SetStatus(active, !state);
+    GTKdev::SetStatus(active, !state);
 
     if (kwstruct->type == VTYP_BOOL) {
         v.set_boolean(state);
@@ -3251,7 +3267,7 @@ xEnt::handler(void *data)
                 return;
             }
             char buf[256];
-            sprintf(buf, "%s %s", string, string2);
+            snprintf(buf, sizeof(buf), "%s %s", string, string2);
             v.set_string(buf);
             kwstruct->callback(state, &v);
             return;
@@ -3284,7 +3300,7 @@ xEnt::handler(void *data)
                 return;
             }
         }
-        GRpkgIf()->ErrPrintf(ET_ERROR, "parse error in string for %s.\n",
+        GRpkg::self()->ErrPrintf(ET_ERROR, "parse error in string for %s.\n",
             kwstruct->word);
     }
 }
@@ -3317,7 +3333,7 @@ kw_int_func(bool isset, variable *v, xEnt *ent)
         }
         else {
             char buf[64];
-            sprintf(buf, "%d", v->integer());
+            snprintf(buf, sizeof(buf), "%d", v->integer());
             gtk_entry_set_text(GTK_ENTRY(ent->entry), buf);
         }
     }
@@ -3338,11 +3354,11 @@ kw_real_func(bool isset, variable *v, xEnt *ent)
         else {
             char buf[64];
             if (ent->mode == KW_NO_SPIN)
-                sprintf(buf, "%g", v->real());
+                snprintf(buf, sizeof(buf), "%g", v->real());
             else if (ent->mode == KW_FLOAT)
-                sprintf(buf, "%.*e", ent->numd, v->real());
+                snprintf(buf, sizeof(buf), "%.*e", ent->numd, v->real());
             else
-                sprintf(buf, "%.*f", ent->numd, v->real());
+                snprintf(buf, sizeof(buf), "%.*f", ent->numd, v->real());
             gtk_entry_set_text(GTK_ENTRY(ent->entry), buf);
         }
     }
@@ -3401,7 +3417,7 @@ namespace {
         else if (d < entry->min)
             d = entry->min;
         char buf[128];
-        sprintf(buf, "%.*e", entry->ent->numd, d);
+        snprintf(buf, sizeof(buf), "%.*e", entry->ent->numd, d);
         gtk_entry_set_text(GTK_ENTRY(entry->ent->entry), buf);
     }
 

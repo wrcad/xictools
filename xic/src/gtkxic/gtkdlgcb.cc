@@ -50,7 +50,7 @@
 char *
 cMain::GetCurFileSelection()
 {
-    if (!GRX)
+    if (!GTKdev::exists())
         return (0);
     static char *tbuf;
     delete [] tbuf;

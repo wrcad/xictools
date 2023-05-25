@@ -589,11 +589,12 @@ namespace {
             delete [] fp;
             return (0);
         }
-        char *fp = new char[strlen(prog) + 20];
-        sprintf(fp, "\\cygwin\\bin\\%s", prog);
+        int len = strlen(prog) + 20;
+        char *fp = new char[len];
+        snprintf(fp, len, "\\cygwin\\bin\\%s", prog);
         if (!access(fp, X_OK))
             return (fp);
-        sprintf(fp, "\\bin\\%s", prog);
+        snprintf(fp, len, "\\bin\\%s", prog);
         if (!access(fp, X_OK))
             return (fp);
         delete [] fp;
@@ -903,7 +904,8 @@ bangcmds::pop_up_list(LStype type)
                 lstr.add("<td valign=top>");
                 for (int j = 0; j < nc; j++) {
                     if (s) {
-                        sprintf(buf, "<a href=\"!%s\"><b>!%s</b></a><br>\n",
+                        snprintf(buf, sizeof(buf),
+                            "<a href=\"!%s\"><b>!%s</b></a><br>\n",
                             s->string, s->string);
                         s = s->next;
                         lstr.add(buf);
@@ -937,7 +939,8 @@ bangcmds::pop_up_list(LStype type)
                 lstr.add("<td valign=top>");
                 for (int j = 0; j < nc; j++) {
                     if (s) {
-                        sprintf(buf, "<a href=\"%s\"><b>%s</b></a><br>\n",
+                        snprintf(buf, sizeof(buf),
+                            "<a href=\"%s\"><b>%s</b></a><br>\n",
                             s->string, s->string);
                         s = s->next;
                         lstr.add(buf);
@@ -962,7 +965,8 @@ bangcmds::pop_up_list(LStype type)
                 lstr.add("<td valign=top>");
                 for (int j = 0; j < nc; j++) {
                     if (s) {
-                        sprintf(buf, "<a href=\"%s\"><b>%s</b></a><br>\n",
+                        snprintf(buf, sizeof(buf),
+                            "<a href=\"%s\"><b>%s</b></a><br>\n",
                             s->string, s->string);
                         s = s->next;
                         lstr.add(buf);
@@ -995,7 +999,8 @@ bangcmds::pop_up_list(LStype type)
                 lstr.add("<td valign=top>");
                 for (int j = 0; j < nc; j++) {
                     if (s) {
-                        sprintf(buf, "<a href=\"%s\"><b>%s</b></a><br>\n",
+                        snprintf(buf, sizeof(buf),
+                            "<a href=\"%s\"><b>%s</b></a><br>\n",
                             s->string, s->string);
                         s = s->next;
                         lstr.add(buf);
@@ -1191,7 +1196,7 @@ bangcmds::assemble(const char *s)
         PL()->ShowPrompt("Usage:  !assemble configfile | argument_list");
         return;
     }
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     Errs()->init_error();
     PL()->ShowPrompt("Working...");
     bool ret = FIO()->AssembleArchive(s);
@@ -1202,7 +1207,7 @@ bangcmds::assemble(const char *s)
         if (Errs()->has_error())
             Log()->ErrorLog("!assemble", Errs()->get_error());
     }
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 }
 
 
@@ -1218,7 +1223,7 @@ bangcmds::splwrite(const char *s)
             "[-cl] [-e]");
         return;
     }
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     Errs()->init_error();
     PL()->ShowPrompt("Working...");
     bool ret = FIO()->SplitArchive(s);
@@ -1229,7 +1234,7 @@ bangcmds::splwrite(const char *s)
         if (Errs()->has_error())
             Log()->ErrorLog("!splwrite", Errs()->get_error());
     }
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 }
 
 
@@ -1655,7 +1660,7 @@ bangcmds::sg(const char *s)
         if (isdigit(*s) && (indx = atoi(s)) >= 0 && indx < TECH_NUM_GRIDS) ;
         else {
             char buf[256];
-            sprintf(buf, "Bad grid register, 0-%d are valid.",
+            snprintf(buf, sizeof(buf), "Bad grid register, 0-%d are valid.",
                 TECH_NUM_GRIDS-1);
             PL()->ShowPrompt(buf);
             return;
@@ -1677,7 +1682,7 @@ bangcmds::rg(const char *s)
         if (isdigit(*s) && (indx = atoi(s)) >= 0 && indx < TECH_NUM_GRIDS) ;
         else {
             char buf[256];
-            sprintf(buf, "Bad grid register, 0-%d are valid.",
+            snprintf(buf, sizeof(buf), "Bad grid register, 0-%d are valid.",
                 TECH_NUM_GRIDS-1);
             PL()->ShowPrompt(buf);
             return;
@@ -1988,7 +1993,7 @@ bangcmds::fileinfo(const char *s)
         outname = lstring::copy("xic_fileinfo.log");
 
     if (!filestat::create_bak(outname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         PL()->ShowPrompt("Error: file write error.");
         delete [] fname;
         delete [] outname;
@@ -2037,8 +2042,8 @@ bangcmds::fileinfo(const char *s)
     delete [] realname;
 
     char buf[256];
-    sprintf(buf, "Done, info written to file \"%s\", view file? [n] ",
-        outname);
+    snprintf(buf, sizeof(buf),
+        "Done, info written to file \"%s\", view file? [n] ", outname);
     char *in = PL()->EditPrompt(buf, "n");
     in = lstring::strip_space(in);
     if (in && (*in == 'y' || *in == 'Y'))
@@ -2075,7 +2080,7 @@ bangcmds::summary(const char *s)
     if (!fname)
         fname = lstring::copy("xic_summary.log");
     if (!filestat::create_bak(fname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         PL()->ShowPrompt("Error: file write error.");
         delete [] fname;
         return;
@@ -2117,8 +2122,8 @@ bangcmds::summary(const char *s)
     fclose(fp);
 
     char buf[256];
-    sprintf(buf, "Done, summary written to file \"%s\", view file? [n] ",
-        fname);
+    snprintf(buf, sizeof(buf),
+        "Done, summary written to file \"%s\", view file? [n] ", fname);
     char *in = PL()->EditPrompt(buf, "n");
     in = lstring::strip_space(in);
     if (in && (*in == 'y' || *in == 'Y'))
@@ -2141,9 +2146,9 @@ bangcmds::compare(const char *string)
         PL()->ShowPromptV("Error: %s", Errs()->get_error());
         return;
     }
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     DFtype df = cmp.compare();
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     if (df == DFabort)
         PL()->ShowPrompt("Comparison aborted.");
@@ -2151,7 +2156,7 @@ bangcmds::compare(const char *string)
         PL()->ShowPromptV("Comparison failed: %s.", Errs()->get_error());
     else {
         char buf[256];
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "Comparison data written to file \"%s\", view file? [n] ",
             DIFF_LOG_FILE);
         char *in = PL()->EditPrompt(buf, "n");
@@ -2442,7 +2447,8 @@ namespace {
         }
         if (!fname) {
             char buf[256];
-            sprintf(buf, "%s_vertices.log", Tstring(cursd->cellname()));
+            snprintf(buf, sizeof(buf), "%s_vertices.log",
+                Tstring(cursd->cellname()));
             fname = lstring::copy(buf);
         }
         FILE *fp;
@@ -2450,7 +2456,8 @@ namespace {
             fp = stdout;
         else {
             if (!filestat::create_bak(fname)) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+                DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
+                    filestat::error_msg());
                 PL()->ShowPromptV("Can't move \"%s\" to \"%s.bak\".", fname,
                     fname);
                 goto bad;
@@ -2462,13 +2469,13 @@ namespace {
             goto bad;
         }
 
-        dspPkgIf()->SetWorking(true);
+        DSPpkg::self()->SetWorking(true);
         PL()->ShowPrompt("Working...");
         ret = CD()->CheckGrid(cursd, spacing, use_bb ? &BB : 0, layer_list,
             skip, types, depth, fp);
         if (fp != stdout)
             fclose(fp);
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
 
         if (ret)
             PL()->ShowPromptV("Done, results in file \"%s\".", fname);
@@ -3066,13 +3073,15 @@ bangcmds::setflag(const char *s)
         char buf[256];
         CDs *cursd = CurCell(true);
         if (cursd) {
-            sprintf(buf, "Flag status in current cell, %s mode\n",
+            snprintf(buf, sizeof(buf),
+                "Flag status in current cell, %s mode\n",
                 DisplayModeNameLC(DSP()->CurMode()));
             lstr.add(buf);
             lstr.add("* --> user settable, name value description:\n");
             const char *format = "%c %-12s%c  %s\n";
             for (FlagDef *f = SdescFlags; f->name; f++) {
-                sprintf(buf, format, f->user_settable ? '*' : ' ',
+                snprintf(buf, sizeof(buf),
+                    format, f->user_settable ? '*' : ' ',
                     f->name, (cursd->getFlags() & f->value) ? '1' : '0',
                     f->desc);
                 lstr.add(buf);
@@ -3229,12 +3238,12 @@ bangcmds::mklib(const char *s)
     char buf[256];
     if (!dodir) {
         if (!m.arcfile && FIO()->IsSupportedArchiveFormat(cbin.fileType())) {
-            sprintf(buf, "%s%s", Tstring(DSP()->CurCellName()),
+            snprintf(buf, sizeof(buf), "%s%s", Tstring(DSP()->CurCellName()),
                 FIO()->GetTypeExt(cbin.fileType()));
             char mbuf[256];
             const char *msg =
         "Enter reference %s file name, or blank for native cell references: ";
-            sprintf(mbuf, msg,
+            snprintf(mbuf, sizeof(mbuf), msg,
                 FIO()->TypeName(cbin.fileType()));
             char *in = PL()->EditPrompt(mbuf, buf);
             in = lstring::strip_space(in);
@@ -3402,7 +3411,7 @@ bangcmds::mklib(const char *s)
 
     if (!append) {
         if (!filestat::create_bak(m.libfile))
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
     }
     FILE *fp = fopen(m.libfile, append ? "a" : "w");
     if (fp) {
@@ -3537,7 +3546,7 @@ namespace {
         if (!sd)
             return;  // can't happen
         char buf[256];
-        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
+        snprintf(buf, sizeof(buf), "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         const char *in = PL()->EditPrompt("Filename for saved marks? ", buf);
         if (!in) {
@@ -3575,7 +3584,7 @@ namespace {
         if (!sd)
             return;  // can't happen
         char buf[256];
-        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
+        snprintf(buf, sizeof(buf), "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         const char *in = PL()->EditPrompt("Marks file to read? ", buf);
         if (!in) {
@@ -4263,7 +4272,7 @@ bangcmds::mkscript(const char *s)
         fname = lstring::copy("mkscript.scr");
 
     if (!filestat::create_bak(fname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         PL()->ShowPrompt("Error: file write error.");
         delete [] fname;
         return;
@@ -4500,8 +4509,9 @@ bangcmds::shell(const char *cmd)
                 "#! %s\n%s\necho press Enter to exit\n$<\nrm -f %s",
                 shellpath, cmd, tf);
             fclose(fp);
-            char *t = new char[strlen(shellpath) + strlen(tf) + 2];
-            sprintf(t, "%s %s", shellpath, tf);
+            int len = strlen(shellpath) + strlen(tf) + 2;
+            char *t = new char[len];
+            snprintf(t, len, "%s %s", shellpath, tf);
             miscutil::fork_terminal(t);
             delete [] t;
         }
@@ -4588,7 +4598,7 @@ namespace {
     {
         ssh_pill_t *p = (ssh_pill_t*)arg;
         if (p->idle_id) {
-            dspPkgIf()->RemoveIdleProc(p->idle_id);
+            DSPpkg::self()->RemoveIdleProc(p->idle_id);
             p->reset();
         }
         delete p;
@@ -4773,7 +4783,8 @@ bangcmds::ssh(const char *s)
         Log()->WarningLogV("!ssh", emsg, Errs()->get_error());
     }
 
-    char *cmd = new char[strlen(ssh_path) + 1024];
+    int clen = strlen(ssh_path) + 1024;
+    char *cmd = new char[clen];
     if (port > 0) {
         // For ssh:
         // -X  Turns on X forwarding.
@@ -4785,7 +4796,7 @@ bangcmds::ssh(const char *s)
         /******
         // Note the /dev/tcp/host/port construct, this is a bash feature,
         // /dev/tcp is not a real device.
-        sprintf(cmd, "%s -Y -R %d:%s:%d -t %s "
+        snprintf(cmd, clen, "%s -Y -R %d:%s:%d -t %s "
             "'echo \"$DISPLAY\" > /dev/tcp/localhost/%d; bash;'",
             ssh_path, port, hostname, port, host, port);
         *******/
@@ -4794,17 +4805,17 @@ bangcmds::ssh(const char *s)
         // fine for Linux/FreeBSD/OS X.  RHEL3 ssh doesn't have -Y, no
         // good way to test for lack of -Y in ssh.
 #ifdef WIN32
-        sprintf(cmd, "%s -Y -R %d:%s:%d -t %s "
+        snprintf(cmd, clen, "%s -Y -R %d:%s:%d -t %s "
             "'echo \"$DISPLAY\" | nc -w 1 localhost %d; $SHELL;'",
             ssh_path, port, hostname, port, host, port);
 #else
-        sprintf(cmd, "%s -X -R %d:%s:%d -t %s "
+        snprintf(cmd, clen, "%s -X -R %d:%s:%d -t %s "
             "'echo \"$DISPLAY\" | nc -w 1 localhost %d; $SHELL;'",
             ssh_path, port, hostname, port, host, port);
 #endif
     }
     else
-        sprintf(cmd, "%s -Y %s", ssh_path, host);
+        snprintf(cmd, clen, "%s -Y %s", ssh_path, host);
     delete [] host;
 
     // Now fork a terminal with the ssh shell.  The user can enter a
@@ -4825,7 +4836,7 @@ bangcmds::ssh(const char *s)
 
     if (port > 0) {
         ssh_pill_t *p = new ssh_pill_t(::time(0), skt);
-        int id = dspPkgIf()->RegisterIdleProc(&ssh_idle_proc, p);
+        int id = DSPpkg::self()->RegisterIdleProc(&ssh_idle_proc, p);
         p->idle_id = id;
 
         // We can't do this with gnome-terminal and possibly others. 

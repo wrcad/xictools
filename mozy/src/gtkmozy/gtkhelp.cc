@@ -437,7 +437,8 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         gtk_window_set_wmclass(GTK_WINDOW(wb_shell), "Mozy", "mozy");
 
         char buf[128];
-        sprintf(buf, "%s -- Whiteley Research Inc.",  HLP()->get_name());
+        snprintf(buf, sizeof(buf), "%s -- Whiteley Research Inc.",
+            HLP()->get_name());
         gtk_window_set_title(GTK_WINDOW(wb_shell), buf);
 
         GtkWidget *topw = 0;
@@ -607,7 +608,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
         gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_m,
             GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
         if (HLP()->fifo_start()) {
-            GRX->SetStatus(item, true);
+            GTKdev::SetStatus(item, true);
             register_fifo(0);
         }
 
@@ -1003,8 +1004,8 @@ HelpWidget *
 HelpWidget::new_widget(GRwbag **ptr, int xpos, int ypos)
 {
     GtkWidget *parent = 0;
-    if (GRX->MainFrame())
-        parent = GRX->MainFrame()->Shell();
+    if (GTKdev::self()->MainFrame())
+        parent = GTKdev::self()->MainFrame()->Shell();
 
     GTKhelpPopup *w = new GTKhelpPopup(true, xpos, ypos, parent);
     if (ptr)
@@ -1040,8 +1041,9 @@ GTKhelpPopup::set_transaction(Transaction *t, const char *cookiedir)
         if (h_params->PrintTransact)
             t->set_logfile("stderr");
         if (cookiedir && !h_params->NoCookies) {
-            char *cf = new char [strlen(cookiedir) + 20];
-            sprintf(cf, "%s/%s", cookiedir, "cookies");
+            int len = strlen(cookiedir) + 20;
+            char *cf = new char[len];
+            snprintf(cf, len, "%s/%s", cookiedir, "cookies");
             t->set_cookiefile(cf);
             delete [] cf;
         }
@@ -1294,7 +1296,7 @@ GTKhelpPopup::reuse_display()
         int cnt = 0;
         while (!h_viewer->is_ready() && cnt < 20) {
             cTimer::milli_sleep(50);
-            GRX->CheckForEvents();
+            GTKdev::self()->CheckForEvents();
             cnt++;
         }
         set_scroll_position(h_viewer->anchor_position(anchor), false);
@@ -1350,7 +1352,7 @@ GTKhelpPopup::redisplay()
     h_viewer->set_source(h_root_topic->get_cur_text());
 
     // Process events to avoid scroll position error.
-    GRX->CheckForEvents();
+    GTKdev::self()->CheckForEvents();
 }
 
 
@@ -1620,7 +1622,7 @@ GTKhelpPopup::newtopic(const char *href, bool spawn, bool force_download,
         return (GTKhelpPopup::NThandled);
     if (!newtop) {
         char buf[256];
-        sprintf(buf, "Unresolved link: %s.", href);
+        snprintf(buf, sizeof(buf), "Unresolved link: %s.", href);
         PopUpErr(MODE_ON, buf);
         return (GTKhelpPopup::NTnone);
     }
@@ -1680,23 +1682,23 @@ GTKhelpPopup::set_defaults()
     GtkWidget *btn;
     if (h_params->LoadMode == HLPparams::LoadProgressive) {
         btn = find_item(list, HA_PGIMG);
-        if (btn && !GRX->GetStatus(btn))
+        if (btn && !GTKdev::GetStatus(btn))
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), true);
     }
     else if (h_params->LoadMode == HLPparams::LoadDelayed) {
         btn = find_item(list, HA_DLIMG);
-        if (btn && !GRX->GetStatus(btn))
+        if (btn && !GTKdev::GetStatus(btn))
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), true);
     }
     else if (h_params->LoadMode == HLPparams::LoadSync) {
         btn = find_item(list, HA_SYIMG);
-        if (btn && !GRX->GetStatus(btn))
+        if (btn && !GTKdev::GetStatus(btn))
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), true);
     }
     else {
         h_params->LoadMode = HLPparams::LoadNone;
         btn = find_item(list, HA_NOIMG);
-        if (btn && !GRX->GetStatus(btn))
+        if (btn && !GTKdev::GetStatus(btn))
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), true);
     }
 
@@ -1709,42 +1711,42 @@ GTKhelpPopup::set_defaults()
 
     if (h_params->AnchorButtons) {
         btn = find_item(list, HA_ABUT);
-        if (btn && !GRX->GetStatus(btn))
+        if (btn && !GTKdev::GetStatus(btn))
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), true);
     }
     else if (h_params->AnchorUnderlined) {
         btn = find_item(list, HA_AUND);
-        if (btn && !GRX->GetStatus(btn))
+        if (btn && !GTKdev::GetStatus(btn))
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), true);
     }
     else {
         btn = find_item(list, HA_APLN);
-        if (btn && !GRX->GetStatus(btn))
+        if (btn && !GTKdev::GetStatus(btn))
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(btn), true);
     }
 
     btn = find_item(list, HA_HLITE);
     if (btn)
-        GRX->SetStatus(btn, h_params->AnchorHighlight);
+        GTKdev::SetStatus(btn, h_params->AnchorHighlight);
 
     btn = find_item(list, HA_COMM);
     if (btn)
-        GRX->SetStatus(btn, h_params->PrintTransact);
+        GTKdev::SetStatus(btn, h_params->PrintTransact);
 
     btn = find_item(list, HA_WARN);
     if (btn)
-        GRX->SetStatus(btn, h_params->BadHTMLwarnings);
+        GTKdev::SetStatus(btn, h_params->BadHTMLwarnings);
 
     btn = find_item(list, HA_FREEZ);
     if (btn)
-        GRX->SetStatus(btn, h_params->FreezeAnimations);
+        GTKdev::SetStatus(btn, h_params->FreezeAnimations);
 
     btn = find_item(list, HA_NOCACHE);
     if (btn)
-        GRX->SetStatus(btn, h_params->NoCache);
+        GTKdev::SetStatus(btn, h_params->NoCache);
     btn = find_item(list, HA_NOCKS);
     if (btn)
-        GRX->SetStatus(btn, h_params->NoCookies);
+        GTKdev::SetStatus(btn, h_params->NoCookies);
 
     g_list_free(list);
 
@@ -1921,7 +1923,8 @@ GTKhelpPopup::frame_signal_handler(htmFrameCallbackStruct *cbs)
                 hanchor, this, h_cur_topic, false, false);
             if (!newtop) {
                 char buf[256];
-                sprintf(buf, "Unresolved link: %s.", cbs->frames[i].src);
+                snprintf(buf, sizeof(buf), "Unresolved link: %s.",
+                    cbs->frames[i].src);
                 PopUpErr(MODE_ON, buf);
             }
             else {
@@ -2028,7 +2031,7 @@ GTKhelpPopup::h_stop_proc(GtkWidget *btn, void *hlpptr)
 void
 GTKhelpPopup::h_fontsel(GTKbag *w, GtkWidget *caller)
 {
-    if (GRX->GetStatus(caller))
+    if (GTKdev::GetStatus(caller))
         w->PopUpFontSel(0, GRloc(), MODE_ON, h_font_cb, caller, FNT_MOZY);
     else
         w->PopUpFontSel(0, GRloc(), MODE_OFF, 0, 0, 0);
@@ -2135,7 +2138,7 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
         if (!w->h_find_text)
             w->h_find_text = new GTKsearchPopup(caller, w->wb_shell,
                 h_find_text_proc, w);
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             w->h_find_text->pop_up_search(MODE_ON);
         else
             w->h_find_text->pop_up_search(MODE_OFF);
@@ -2157,10 +2160,10 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
         }
     }
     else if (activate == HA_ISO8859) {
-        w->h_viewer->set_iso8859_source(GRX->GetStatus(caller));
+        w->h_viewer->set_iso8859_source(GTKdev::GetStatus(caller));
     }
     else if (activate == HA_MKFIFO) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             if (w->register_fifo(0)) {
                 sLstr tstr;
                 tstr.add("Listening for input on pipe named\n");
@@ -2172,11 +2175,11 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
             w->unregister_fifo();
     }
     else if (activate == HA_COLORS) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             if (!Clr) {
                 new sClr(caller);
                 int x, y;
-                GRX->ComputePopupLocation(GRloc(LW_UL), w->Shell(),
+                GTKdev::self()->ComputePopupLocation(GRloc(LW_UL), w->Shell(),
                     w->h_viewer->top_widget(), &x, &y);
                 x += 200;
                 y += 200;
@@ -2202,7 +2205,7 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
     else if (activate == HA_FONT)
         h_fontsel(w, caller);
     else if (activate == HA_NOCACHE)
-        w->h_params->NoCache = GRX->GetStatus(caller);
+        w->h_params->NoCache = GTKdev::GetStatus(caller);
     else if (activate == HA_CLRCACHE)
         HLP()->context()->clearCache();
     else if (activate == HA_LDCACHE)
@@ -2210,39 +2213,39 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
     else if (activate == HA_SHCACHE)
         w->show_cache(MODE_ON);
     else if (activate == HA_HELP) {
-        if (GRX->MainFrame())
-            GRX->MainFrame()->PopUpHelp("helpview");
+        if (GTKdev::self()->MainFrame())
+            GTKdev::self()->MainFrame()->PopUpHelp("helpview");
         else
             w->PopUpHelp("helpview");
     }
     else if (activate == HA_NOCKS)
-        w->h_params->NoCookies = GRX->GetStatus(caller);
+        w->h_params->NoCookies = GTKdev::GetStatus(caller);
     else if (activate == HA_NOIMG) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             w->stop_image_download();
             w->h_params->LoadMode = HLPparams::LoadNone;
         }
     }
     else if (activate == HA_SYIMG) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             w->stop_image_download();
             w->h_params->LoadMode = HLPparams::LoadSync;
         }
     }
     else if (activate == HA_DLIMG) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             w->stop_image_download();
             w->h_params->LoadMode = HLPparams::LoadDelayed;
         }
     }
     else if (activate == HA_PGIMG) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             w->stop_image_download();
             w->h_params->LoadMode = HLPparams::LoadProgressive;
         }
     }
     else if (activate == HA_APLN) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             int position = w->scroll_position(false);
             w->h_params->AnchorButtons = false;
             w->h_params->AnchorUnderlined = false;
@@ -2252,7 +2255,7 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
         }
     }
     else if (activate == HA_ABUT) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             int position = w->scroll_position(false);
             w->h_params->AnchorButtons = true;
             w->h_params->AnchorUnderlined = false;
@@ -2261,7 +2264,7 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
         }
     }
     else if (activate == HA_AUND) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             int position = w->scroll_position(false);
             w->h_params->AnchorButtons = false;
             w->h_params->AnchorUnderlined = true;
@@ -2270,19 +2273,19 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
         }
     }
     else if (activate == HA_HLITE) {
-        w->h_params->AnchorHighlight = GRX->GetStatus(caller);
+        w->h_params->AnchorHighlight = GTKdev::GetStatus(caller);
         w->h_viewer->set_anchor_highlighting(w->h_params->AnchorHighlight);
     }
     else if (activate == HA_WARN) {
-        w->h_params->BadHTMLwarnings = GRX->GetStatus(caller);
+        w->h_params->BadHTMLwarnings = GTKdev::GetStatus(caller);
         w->h_viewer->set_html_warnings(w->h_params->BadHTMLwarnings);
     }
     else if (activate == HA_FREEZ) {
-        w->h_params->FreezeAnimations = GRX->GetStatus(caller);
+        w->h_params->FreezeAnimations = GTKdev::GetStatus(caller);
         w->h_viewer->set_freeze_animations(w->h_params->FreezeAnimations);
     }
     else if (activate == HA_COMM)
-        w->h_params->PrintTransact = GRX->GetStatus(caller);
+        w->h_params->PrintTransact = GTKdev::GetStatus(caller);
     else if (activate == HA_BMADD) {
         HLPtopic *tp = w->h_cur_topic;
         const char *ptitle = tp->title();
@@ -2315,7 +2318,7 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
     }
     else if (activate == HA_BMDEL) {
         g_object_set_data(G_OBJECT(w->Shell()), "bm_delete",
-            (void*)GRX->GetStatus(caller) ? caller : 0);
+            (void*)GTKdev::GetStatus(caller) ? caller : 0);
     }
 }
 
@@ -2394,8 +2397,9 @@ GTKhelpPopup::h_open_cb(const char *name, void *hlpptr)
                     if (!lstring::is_rooted(name)) {
                         char *cwd = getcwd(0, 256);
                         if (cwd) {
-                            url = new char[strlen(cwd) + strlen(name) + 2];
-                            sprintf(url, "%s/%s", cwd, name);
+                            int len = strlen(cwd) + strlen(name) + 2;
+                            url = new char[len];
+                            snprintf(url, len, "%s/%s", cwd, name);
                             free(cwd);
                             if (access(url, R_OK)) {
                                 // no such file
@@ -2583,7 +2587,7 @@ GTKhelpPopup::h_do_save_proc(const char *fnamein, void *hlpptr)
             char tbuf[256];
             if (strlen(fname) > 64)
                 strcpy(fname + 60, "...");
-            sprintf(tbuf, "Error: can't open file %s", fname);
+            snprintf(tbuf, sizeof(tbuf), "Error: can't open file %s", fname);
             w->PopUpMessage(tbuf, true);
             delete [] fname;
             return;
@@ -2650,7 +2654,7 @@ GTKhelpPopup::h_font_cb(const char *btn, const char *fname, void *arg)
 {
     if (!btn && !fname) {
         GtkWidget *caller = GTK_WIDGET(arg);
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
     }
 }
 
@@ -2677,8 +2681,8 @@ GTKhelpPopup::h_ntop_timeout(void *data)
     ntop *n = (ntop*)data;
     HLPtopic *newtop = HLP()->search(n->kw);
     if (!newtop) {
-        if (GRX->MainFrame())
-            GRX->MainFrame()->PopUpErr(MODE_ON, "Unresolved link.");
+        if (GTKdev::self()->MainFrame())
+            GTKdev::self()->MainFrame()->PopUpErr(MODE_ON, "Unresolved link.");
     }
     else
         newtop->link_new_and_show(false, n->parent);
@@ -2745,7 +2749,7 @@ GTKhelpPopup::register_fifo(const char *fname)
     sLstr lstr;
     passwd *pw = getpwuid(getuid());
     if (pw == 0) {
-        GRpkgIf()->Perror("getpwuid");
+        GRpkg::self()->Perror("getpwuid");
         char *cwd = getcwd(0, 0);
         lstr.add(cwd);
         if (strcmp(cwd, "/"))
@@ -3161,7 +3165,7 @@ sClr::~sClr()
 {
     Clr = 0;
     if (clr_caller)
-        GRX->Deselect(clr_caller);
+        GTKdev::Deselect(clr_caller);
     delete [] clr_selection;
 }
 
@@ -3324,11 +3328,11 @@ sClr::clr_action_proc(GtkWidget *caller, void*)
         }
     }
     else if (!strcmp(name, "Colors")) {
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (!Clr->clr_listpop && state) {
             stringlist *list = GRcolorList::listColors();
             if (!list) {
-                GRX->SetStatus(caller, false);
+                GTKdev::SetStatus(caller, false);
                 return;
             }
             Clr->clr_listpop = Clr->PopUpList(list, "Colors",
@@ -3361,7 +3365,7 @@ sClr::clr_list_callback(const char *string, void*)
         gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_PRIMARY));
     }
     else if (Clr) {
-        GRX->SetStatus(Clr->clr_listbtn, false);
+        GTKdev::SetStatus(Clr->clr_listbtn, false);
         Clr->clr_listpop = 0;
     }
 }

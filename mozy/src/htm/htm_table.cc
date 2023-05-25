@@ -221,8 +221,9 @@ htmWidget::tableCheckProperties(const char *attributes,
     if ((chPtr = htmTagGetValue(attributes, "background"))) {
 
         // kludge so htmNewImage recognizes it
-        char *buf = new char[strlen(chPtr) + 7];
-        sprintf(buf, "src=\"%s\"", chPtr);
+        int len = strlen(chPtr) + 7;
+        char *buf = new char[len];
+        snprintf(buf, len, "src=\"%s\"", chPtr);
 
         // load it
         htmImage *image;

@@ -1691,7 +1691,7 @@ cOAelecInfo::parse_parameters(lispnode *p)
                 if (q->type == LN_STRING || q->type == LN_QSTRING)
                     value = q->string;
                 else if (q->type == LN_NUMERIC) {
-                    sprintf(buf, "%g", q->value);
+                    snprintf(buf, sizeof(buf), "%g", q->value);
                     value = buf;
 
                 }

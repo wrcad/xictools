@@ -245,23 +245,23 @@ cMain::Info(CDs *sdesc, int level)
         return (0);
     sLstr lstr;
     char buf[512];
-    sprintf(buf, "%s Cell: %s\n", DisplayModeName(sdesc->displayMode()),
-        Tstring(sdesc->cellname()));
+    snprintf(buf, sizeof(buf), "%s Cell: %s\n",
+        DisplayModeName(sdesc->displayMode()), Tstring(sdesc->cellname()));
     lstr.add(buf);
     const BBox *tBB = sdesc->BB();
     bool printint = (CDvdb()->getVariable(VA_InfoInternal) != 0);
     int ndgt = CD()->numDigits();
     if (printint) {
-        sprintf(buf, "Bounding box: %d,%d %d,%d\n", tBB->left,
+        snprintf(buf, sizeof(buf), "Bounding box: %d,%d %d,%d\n", tBB->left,
             tBB->bottom, tBB->right, tBB->top);
     }
     else if (sdesc->isElectrical()) {
-        sprintf(buf, "Bounding box: %.3f,%.3f %.3f,%.3f\n",
+        snprintf(buf, sizeof(buf), "Bounding box: %.3f,%.3f %.3f,%.3f\n",
             ELEC_MICRONS(tBB->left), ELEC_MICRONS(tBB->bottom),
             ELEC_MICRONS(tBB->right), ELEC_MICRONS(tBB->top));
     }
     else {
-        sprintf(buf, "Bounding box: %.*f,%.*f %.*f,%.*f\n",
+        snprintf(buf, sizeof(buf),  "Bounding box: %.*f,%.*f %.*f,%.*f\n",
             ndgt, MICRONS(tBB->left), ndgt, MICRONS(tBB->bottom),
             ndgt, MICRONS(tBB->right), ndgt, MICRONS(tBB->top));
     }
@@ -285,7 +285,7 @@ cMain::Info(CDs *sdesc, int level)
         lstr.add(fn);
         lstr.add("\n");
 
-        sprintf(buf, "Flags:  (%x hex)", sdesc->getFlags());
+        snprintf(buf, sizeof(buf), "Flags:  (%x hex)", sdesc->getFlags());
         if (!sdesc->getFlags()) {
             strcat(buf, "none\n");
             lstr.add(buf);
@@ -295,7 +295,7 @@ cMain::Info(CDs *sdesc, int level)
             lstr.add("\n");
             for (FlagDef *f = SdescFlags; f->name; f++) {
                 if (sdesc->getFlags() & f->value) {
-                    sprintf(buf, "  %s (%s)\n", f->name, f->desc);
+                    snprintf(buf, sizeof(buf), "  %s (%s)\n", f->name, f->desc);
                     lstr.add(buf);
                 }
             }
@@ -319,8 +319,8 @@ cMain::Info(CDs *sdesc, int level)
                     stringnumlist::destroy(liste);
                     break;
                 }
-                sprintf(buf, "  %-24s %6d %6d\n", list->string, list->num,
-                    liste->num);
+                snprintf(buf, sizeof(buf), "  %-24s %6d %6d\n", list->string,
+                    list->num, liste->num);
                 lstr.add(buf);
                 stringnumlist *x = list;
                 list = list->next;
@@ -332,15 +332,14 @@ cMain::Info(CDs *sdesc, int level)
                 delete x;
             }
         }
-        sprintf(buf, "Total instantiations: %d  elements: %d\n", count,
-            counte);
+        snprintf(buf, sizeof(buf),
+            "Total instantiations: %d  elements: %d\n", count, counte);
     }
     else {
         int count = sdesc->listParents(0, false);
         int counte = sdesc->listParents(0, true);
-        sprintf(buf, "Instantiation count: %d\n", count);
-        sprintf(buf, "Total instantiations: %d  elements: %d\n", count,
-            counte);
+        snprintf(buf, sizeof(buf),
+            "Total instantiations: %d  elements: %d\n", count, counte);
     }
     lstr.add(buf);
     if (level > 0) {
@@ -361,8 +360,8 @@ cMain::Info(CDs *sdesc, int level)
                     stringnumlist::destroy(liste);
                     break;
                 }
-                sprintf(buf, "  %-24s %6d %6d\n", list->string, list->num,
-                    liste->num);
+                snprintf(buf, sizeof(buf), "  %-24s %6d %6d\n", list->string,
+                    list->num, liste->num);
                 lstr.add(buf);
                 stringnumlist *x = list;
                 list = list->next;
@@ -374,12 +373,14 @@ cMain::Info(CDs *sdesc, int level)
                 delete x;
             }
         }
-        sprintf(buf, "Instances: %d  elements: %d\n", count, counte);
+        snprintf(buf, sizeof(buf), "Instances: %d  elements: %d\n", count,
+            counte);
     }
     else {
         int count = sdesc->listSubcells(0, false);
         int counte = sdesc->listSubcells(0, true);
-        sprintf(buf, "Instances: %d  elements: %d\n", count, counte);
+        snprintf(buf, sizeof(buf), "Instances: %d  elements: %d\n", count,
+            counte);
     }
     lstr.add(buf);
 
@@ -411,13 +412,13 @@ cMain::Info(CDs *sdesc, int level)
         }
     }
 
-    sprintf(buf, "Boxes: %d\n", boxcnt);
+    snprintf(buf, sizeof(buf), "Boxes: %d\n", boxcnt);
     lstr.add(buf);
-    sprintf(buf, "Wires: %d\n", wirecnt);
+    snprintf(buf, sizeof(buf), "Wires: %d\n", wirecnt);
     lstr.add(buf);
-    sprintf(buf, "Polygons: %d\n", polycnt);
+    snprintf(buf, sizeof(buf), "Polygons: %d\n", polycnt);
     lstr.add(buf);
-    sprintf(buf, "Labels: %d\n", labelcnt);
+    snprintf(buf, sizeof(buf), "Labels: %d\n", labelcnt);
     lstr.add(buf);
 
     CDcbin cbin(sdesc);
@@ -427,25 +428,28 @@ cMain::Info(CDs *sdesc, int level)
     for ( ; ps; ps = ps->next())
         tcnt++;
     if (tcnt) {
-        sprintf(buf, "Cell Terminals: %d\n", tcnt);
+        snprintf(buf, sizeof(buf), "Cell Terminals: %d\n", tcnt);
         lstr.add(buf);
         if (level > 0) {
             ps = (CDp_snode*)cbin.elec()->prpty(P_NODE);
             for ( ; ps; ps = ps->next()) {
-                sprintf(buf, "  Name: %s\n", Tstring(ps->term_name()));
+                snprintf(buf, sizeof(buf), "  Name: %s\n",
+                    Tstring(ps->term_name()));
                 lstr.add(buf);
                 FlagDef *f;
                 for (f = TermTypes; f->name; f++) {
                     if (f->value == (unsigned int)ps->termtype())
                         break;
                 }
-                sprintf(buf, "    Type: %s\n", f->name ? f->name : "bogus!");
+                snprintf(buf, sizeof(buf), "    Type: %s\n",
+                    f->name ? f->name : "bogus!");
                 lstr.add(buf);
                 bool fnd = false;
                 unsigned int flgs = ps->term_flags();
                 for (f = TermFlags; f->name; f++) {
                     if (flgs & f->value) {
-                        sprintf(buf, "      %s (%s)\n", f->name, f->desc);
+                        snprintf(buf, sizeof(buf), "      %s (%s)\n",
+                            f->name, f->desc);
                         if (!fnd) {
                             fnd = true;
                             lstr.add("    Flags:\n");
@@ -455,18 +459,20 @@ cMain::Info(CDs *sdesc, int level)
                 }
                 CDsterm *t = sdesc->isElectrical() ? 0 : ps->cell_terminal();
                 if (t) {
-                    if (printint)
-                        sprintf(buf, "    Location: %d,%d\n", t->lx(), t->ly());
+                    if (printint) {
+                        snprintf(buf, sizeof(buf), "    Location: %d,%d\n",
+                            t->lx(), t->ly());
+                    }
                     else {
-                        sprintf(buf, "    Location: %.*f,%.*f\n",
+                        snprintf(buf, sizeof(buf), "    Location: %.*f,%.*f\n",
                             ndgt, MICRONS(t->lx()), ndgt, MICRONS(t->ly()));
                     }
                     lstr.add(buf);
-                    sprintf(buf, "    Group: %d\n", t->group());
+                    snprintf(buf, sizeof(buf), "    Group: %d\n", t->group());
                     lstr.add(buf);
                     CDl *tld = t->layer();
                     const char *lname = tld ? tld->name() : "none";
-                    sprintf(buf, "    Layer: %s\n", lname);
+                    snprintf(buf, sizeof(buf), "    Layer: %s\n", lname);
                     lstr.add(buf);
                 }
             }
@@ -479,7 +485,7 @@ cMain::Info(CDs *sdesc, int level)
     for ( ; pbs; pbs = pbs->next())
         tcnt++;
     if (tcnt) {
-        sprintf(buf, "Cell Bus Connections: %d\n", tcnt);
+        snprintf(buf, sizeof(buf), "Cell Bus Connections: %d\n", tcnt);
         lstr.add(buf);
         if (level > 0) {
             pbs = (CDp_bsnode*)cbin.elec()->prpty(P_BNODE);
@@ -503,7 +509,8 @@ cMain::Info(CDs *sdesc, int level)
                 unsigned int flgs = pbs->flags();
                 for (FlagDef *f = TermFlags; f->name; f++) {
                     if (flgs & f->value) {
-                        sprintf(buf, "      %s (%s)\n", f->name, f->desc);
+                        snprintf(buf, sizeof(buf), "      %s (%s)\n",
+                            f->name, f->desc);
                         if (!fnd) {
                             fnd = true;
                             lstr.add("    Flags:\n");
@@ -519,21 +526,22 @@ cMain::Info(CDs *sdesc, int level)
         int cnt = 0;
         for (CDp *pdesc = sdesc->prptyList(); pdesc; pdesc = pdesc->next_prp())
             cnt++;
-        sprintf(buf, "Properties: %d\n", cnt);
+        snprintf(buf, sizeof(buf), "Properties: %d\n", cnt);
         lstr.add(buf);
         if (level > 0) {
             for (CDp *pdesc = sdesc->prptyList(); pdesc;
                     pdesc = pdesc->next_prp()) {
                 char *s;
                 if (pdesc->string(&s)) {
-                    sprintf(buf, "  %d ", pdesc->value());
+                    snprintf(buf, sizeof(buf), "  %d ", pdesc->value());
                     lstr.add(buf);
                     lstr.add(s);
                     lstr.add_c('\n');
                     delete [] s;
                 }
                 else {
-                    sprintf(buf, "  %d (printing error!)\n", pdesc->value());
+                    snprintf(buf, sizeof(buf), "  %d (printing error!)\n",
+                        pdesc->value());
                     lstr.add(buf);
                 }
             }
@@ -544,8 +552,8 @@ cMain::Info(CDs *sdesc, int level)
 
 
 namespace {
-    void print_inst_terms(const CDc *ecdesc, int vecix, sLstr &lstr, char *buf,
-        bool printint, int ndgt)
+    void print_inst_terms(const CDc *ecdesc, int vecix, sLstr &lstr,
+        char *buf, int szbuf, bool printint, int ndgt)
     {
         if (!ecdesc)
             return;
@@ -555,7 +563,7 @@ namespace {
         for ( ; pc; pc = pc->next())
             tcnt++;
         if (tcnt) {
-            sprintf(buf, "Instance Terminals: %d\n", tcnt);
+            snprintf(buf, szbuf, "Instance Terminals: %d\n", tcnt);
             lstr.add(buf);
             CDp_cnode *pct = (CDp_cnode*)ecdesc->prpty(P_NODE);
             for ( ; pct; pct = pct->next()) {
@@ -564,22 +572,24 @@ namespace {
                 else
                     pc = pct;
 
-                sprintf(buf, "  Name %s\n", Tstring(pc->term_name()));
+                snprintf(buf, szbuf, "  Name %s\n", Tstring(pc->term_name()));
                 lstr.add(buf);
-                sprintf(buf, "  Node %d\n", pc->enode());
+                snprintf(buf, szbuf, "  Node %d\n", pc->enode());
                 lstr.add(buf);
                 FlagDef *f;
                 for (f = TermTypes; f->name; f++) {
                     if (f->value == (unsigned int)pc->termtype())
                         break;
                 }
-                sprintf(buf, "    Type %s\n", f->name ? f->name : "bogus!");
+                snprintf(buf, szbuf, "    Type %s\n",
+                    f->name ? f->name : "bogus!");
                 lstr.add(buf);
                 unsigned int flgs = pc->term_flags();
                 bool fnd = false;
                 for (f = TermFlags; f->name; f++) {
                     if (flgs & f->value) {
-                        sprintf(buf, "      %s (%s)\n", f->name, f->desc);
+                        snprintf(buf, szbuf, "      %s (%s)\n", f->name,
+                            f->desc);
                         if (!fnd) {
                             fnd = true;
                             lstr.add("    Flags:\n");
@@ -589,19 +599,21 @@ namespace {
                 }
                 CDcterm *t = pc->inst_terminal();
                 if (t) {
-                    if (printint)
-                        sprintf(buf, "    Location %d,%d\n", t->lx(),
+                    if (printint) {
+                        snprintf(buf, szbuf, "    Location %d,%d\n", t->lx(),
                             t->ly());
-                    else
-                        sprintf(buf, "    Location %.*f,%.*f\n",
+                    }
+                    else {
+                        snprintf(buf, szbuf, "    Location %.*f,%.*f\n",
                             ndgt, MICRONS(t->lx()),
                             ndgt, MICRONS(t->ly()));
+                    }
                     lstr.add(buf);
-                    sprintf(buf, "    Group %d\n", t->group());
+                    snprintf(buf, szbuf, "    Group %d\n", t->group());
                     lstr.add(buf);
                     CDl *tld = t->layer();
                     const char *lname = tld ? tld->name() : "none";
-                    sprintf(buf, "    Layer %s\n", lname);
+                    snprintf(buf, szbuf, "    Layer %s\n", lname);
                     lstr.add(buf);
                 }
             }
@@ -612,12 +624,12 @@ namespace {
         for ( ; pbc; pbc = pbc->next())
             tcnt++;
         if (tcnt) {
-            sprintf(buf, "Instance Bus Connections: %d\n", tcnt);
+            snprintf(buf, szbuf, "Instance Bus Connections: %d\n", tcnt);
             lstr.add(buf);
             pbc = (CDp_bcnode*)ecdesc->prpty(P_BNODE);
             for ( ; pbc; pbc = pbc->next()) {
-                sprintf(buf, "  Index %d,  Range %d-%d\n", pbc->index(),
-                    pbc->beg_range(), pbc->end_range());
+                snprintf(buf, szbuf, "  Index %d,  Range %d-%d\n",
+                    pbc->index(), pbc->beg_range(), pbc->end_range());
                 lstr.add(buf);
             }
         }
@@ -672,30 +684,39 @@ cMain::Info(const CDo *odesc)
         if (ocpy && ocpy->type() != odesc->type())
             ocpy = 0;
         if (CDvdb()->getVariable(VA_InfoInternal)) {
-            if (ocpy)
-                sprintf(buf, "Width: %d  (at top level: %d)\n",
+            if (ocpy) {
+                snprintf(buf, sizeof(buf),"Width: %d  (at top level: %d)\n",
                     ((CDw*)odesc)->wire_width(), ((CDw*)ocpy)->wire_width());
-            else
-                sprintf(buf, "Width: %d\n", ((CDw*)odesc)->wire_width());
+            }
+            else {
+                snprintf(buf, sizeof(buf), "Width: %d\n",
+                    ((CDw*)odesc)->wire_width());
+            }
         }
         else {
             if (dmode == Physical) {
-                if (ocpy)
-                    sprintf(buf, "Width: %.*f  (at top level: %.*f) \n",
+                if (ocpy) {
+                    snprintf(buf, sizeof(buf),
+                        "Width: %.*f  (at top level: %.*f) \n",
                         ndgt, MICRONS(((CDw*)odesc)->wire_width()),
                         ndgt, MICRONS(((CDw*)ocpy)->wire_width()));
-                else
-                    sprintf(buf, "Width: %.*f\n",
+                }
+                else {
+                    snprintf(buf, sizeof(buf), "Width: %.*f\n",
                         ndgt, MICRONS(((CDw*)odesc)->wire_width()));
+                }
             }
             else {
-                if (ocpy)
-                    sprintf(buf, "Width: %.*f  (at top level: %.*f) \n",
+                if (ocpy) {
+                    snprintf(buf, sizeof(buf),
+                        "Width: %.*f  (at top level: %.*f) \n",
                         3, ELEC_MICRONS(((CDw*)odesc)->wire_width()),
                         3, ELEC_MICRONS(((CDw*)ocpy)->wire_width()));
-                else
-                    sprintf(buf, "Width: %.*f\n",
+                }
+                else {
+                    snprintf(buf, sizeof(buf), "Width: %.*f\n",
                         3, ELEC_MICRONS(((CDw*)odesc)->wire_width()));
+                }
             }
         }
         lstr.add(buf);
@@ -725,98 +746,124 @@ cMain::Info(const CDo *odesc)
         lstr.add_c('\n');
         delete [] s;
         if (CDvdb()->getVariable(VA_InfoInternal)) {
-            if (ocpy)
-                sprintf(buf, "Width: %d  (at top level: %d)\n",
+            if (ocpy) {
+                snprintf(buf, sizeof(buf), "Width: %d  (at top level: %d)\n",
                     ((CDla*)odesc)->width(), ((CDla*)ocpy)->width());
-            else
-                sprintf(buf, "Width: %d\n", ((CDla*)odesc)->width());
+            }
+            else {
+                snprintf(buf, sizeof(buf), "Width: %d\n",
+                    ((CDla*)odesc)->width());
+            }
             lstr.add(buf);
-            if (ocpy)
-                sprintf(buf, "Height: %d  (at top level: %d)\n",
+            if (ocpy) {
+                snprintf(buf, sizeof(buf), "Height: %d  (at top level: %d)\n",
                     ((CDla*)odesc)->height(), ((CDla*)ocpy)->height());
-            else
-                sprintf(buf, "Height: %d\n", ((CDla*)odesc)->height());
+            }
+            else {
+                snprintf(buf, sizeof(buf), "Height: %d\n",
+                    ((CDla*)odesc)->height());
+            }
             lstr.add(buf);
-            if (ocpy)
-                sprintf(buf, "Coord: %d, %d  (at top level: %d, %d)\n",
+            if (ocpy) {
+                snprintf(buf, sizeof(buf),
+                    "Coord: %d, %d  (at top level: %d, %d)\n",
                     ((CDla*)odesc)->xpos(), ((CDla*)odesc)->ypos(),
                     ((CDla*)ocpy)->xpos(), ((CDla*)ocpy)->ypos());
-            else
-                sprintf(buf, "Coord:  %d, %d\n", ((CDla*)odesc)->xpos(),
-                    ((CDla*)odesc)->ypos());
+            }
+            else {
+                snprintf(buf, sizeof(buf), "Coord:  %d, %d\n",
+                    ((CDla*)odesc)->xpos(), ((CDla*)odesc)->ypos());
+            }
             lstr.add(buf);
         }
         else {
             if (dmode == Physical) {
-                if (ocpy)
-                    sprintf(buf, "Width: %.*f  (at top level: %.*f)\n",
+                if (ocpy) {
+                    snprintf(buf, sizeof(buf),
+                        "Width: %.*f  (at top level: %.*f)\n",
                         ndgt, MICRONS(((CDla*)odesc)->width()),
                         ndgt, MICRONS(((CDla*)ocpy)->width()));
-                else
-                    sprintf(buf, "Width: %.*f\n",
+                }
+                else {
+                    snprintf(buf, sizeof(buf), "Width: %.*f\n",
                         ndgt, MICRONS(((CDla*)odesc)->width()));
+                }
                 lstr.add(buf);
-                if (ocpy)
-                    sprintf(buf, "Height: %.*f  (at top level: %.*f)\n",
+                if (ocpy) {
+                    snprintf(buf, sizeof(buf),
+                        "Height: %.*f  (at top level: %.*f)\n",
                         ndgt, MICRONS(((CDla*)odesc)->height()),
                         ndgt, MICRONS(((CDla*)ocpy)->height()));
-                else
-                    sprintf(buf, "Height: %.*f\n",
+                }
+                else {
+                    snprintf(buf, sizeof(buf), "Height: %.*f\n",
                         ndgt, MICRONS(((CDla*)odesc)->height()));
+                }
                 lstr.add(buf);
-                if (ocpy)
-                    sprintf(buf, "Coord: %.*f, %.*f  (at top level: %.*f, %.*f)\n",
+                if (ocpy) {
+                    snprintf(buf, sizeof(buf),
+                        "Coord: %.*f, %.*f  (at top level: %.*f, %.*f)\n",
                         ndgt, MICRONS(((CDla*)odesc)->xpos()),
                         ndgt, MICRONS(((CDla*)odesc)->ypos()),
                         ndgt, MICRONS(((CDla*)ocpy)->xpos()),
                         ndgt, MICRONS(((CDla*)ocpy)->ypos()));
-                else
-                    sprintf(buf, "Coord:  %.*f, %.*f\n",
+                }
+                else {
+                    snprintf(buf, sizeof(buf), "Coord:  %.*f, %.*f\n",
                         ndgt, MICRONS(((CDla*)odesc)->xpos()),
                         ndgt, MICRONS(((CDla*)odesc)->ypos()));
+                }
                 lstr.add(buf);
             }
             else {
-                if (ocpy)
-                    sprintf(buf, "Width: %.*f  (at top level: %.*f)\n",
+                if (ocpy) {
+                    snprintf(buf, sizeof(buf),
+                        "Width: %.*f  (at top level: %.*f)\n",
                         3, ELEC_MICRONS(((CDla*)odesc)->width()),
                         3, ELEC_MICRONS(((CDla*)ocpy)->width()));
-                else
-                    sprintf(buf, "Width: %.*f\n",
+                }
+                else {
+                    snprintf(buf, sizeof(buf), "Width: %.*f\n",
                         3, ELEC_MICRONS(((CDla*)odesc)->width()));
+                }
                 lstr.add(buf);
-                if (ocpy)
-                    sprintf(buf, "Height: %.*f  (at top level: %.*f)\n",
+                if (ocpy) {
+                    snprintf(buf, sizeof(buf),
+                        "Height: %.*f  (at top level: %.*f)\n",
                         3, ELEC_MICRONS(((CDla*)odesc)->height()),
                         3, ELEC_MICRONS(((CDla*)ocpy)->height()));
-                else
-                    sprintf(buf, "Height: %.*f\n",
+                }
+                else {
+                    snprintf(buf, sizeof(buf), "Height: %.*f\n",
                         3, ELEC_MICRONS(((CDla*)odesc)->height()));
+                }
                 lstr.add(buf);
-                if (ocpy)
-                    sprintf(buf,
+                if (ocpy) {
+                    snprintf(buf, sizeof(buf),
                         "Coord: %.*f, %.*f  (at top level: %.*f, %.*f)\n",
                         3, ELEC_MICRONS(((CDla*)odesc)->xpos()),
                         3, ELEC_MICRONS(((CDla*)odesc)->ypos()),
                         3, ELEC_MICRONS(((CDla*)ocpy)->xpos()),
                         3, ELEC_MICRONS(((CDla*)ocpy)->ypos()));
-                else
-                    sprintf(buf, "Coord:  %.*f, %.*f\n",
+                }
+                else {
+                    snprintf(buf, sizeof(buf), "Coord:  %.*f, %.*f\n",
                         3, ELEC_MICRONS(((CDla*)odesc)->xpos()),
                         3, ELEC_MICRONS(((CDla*)odesc)->ypos()));
+                }
                 lstr.add(buf);
             }
         }
 
         int n = ((CDla*)odesc)->xform();
-        sprintf(buf, "Transform:\n Code: %d\n", n);
+        snprintf(buf, sizeof(buf), "Transform:\n Code: %d\n", n);
         lstr.add(buf);
         buf[0] = 0;
         int r = (n & TXTF_ROT)*90;
         if (n & TXTF_45)
             r += 45;
         if (r)
-            sprintf(buf, " Rot%d", r);
+            snprintf(buf, sizeof(buf), " Rot%d", r);
         if (n & TXTF_MY)
             strcat(buf, " MirY");
         if (n & TXTF_MX)
@@ -837,14 +884,14 @@ cMain::Info(const CDo *odesc)
         lstr.add(buf);
         if (ocpy) {
             n = ((CDla*)ocpy)->xform();
-            sprintf(buf, "at top level:\n Code: %d\n", n);
+            snprintf(buf, sizeof(buf), "at top level:\n Code: %d\n", n);
             lstr.add(buf);
             buf[0] = 0;
             r = (n & TXTF_ROT)*90;
             if (n & TXTF_45)
                 r += 45;
             if (r)
-                sprintf(buf, " Rot%d", r);
+                snprintf(buf, sizeof(buf), " Rot%d", r);
             if (n & TXTF_MY)
                 strcat(buf, " MirY");
             if (n & TXTF_MX)
@@ -866,33 +913,37 @@ cMain::Info(const CDo *odesc)
         }
     }
     if (odesc->type() != CDINSTANCE) {
-        sprintf(buf, "Layer: %s\n", odesc->ldesc()->name());
+        snprintf(buf, sizeof(buf), "Layer: %s\n", odesc->ldesc()->name());
         lstr.add(buf);
     }
     else {
-        sprintf(buf, "Master: %s\n", Tstring(((CDc*)odesc)->cellname()));
-        lstr.add(buf);
+        snprintf(buf, sizeof(buf), "Master: %s\n",
+            Tstring(((CDc*)odesc)->cellname())); lstr.add(buf);
     }
     if (CDvdb()->getVariable(VA_InfoInternal)) {
-        sprintf(buf, "Bounding Box: %d,%d %d,%d\n", odesc->oBB().left,
-            odesc->oBB().bottom, odesc->oBB().right, odesc->oBB().top);
+        snprintf(buf, sizeof(buf), "Bounding Box: %d,%d %d,%d\n",
+            odesc->oBB().left, odesc->oBB().bottom,
+            odesc->oBB().right, odesc->oBB().top);
         lstr.add(buf);
         if (ocpy) {
-            sprintf(buf, "at top level:: %d,%d %d,%d\n", ocpy->oBB().left,
-                ocpy->oBB().bottom, ocpy->oBB().right, ocpy->oBB().top);
+            snprintf(buf, sizeof(buf), "at top level:: %d,%d %d,%d\n",
+                ocpy->oBB().left, ocpy->oBB().bottom,
+                ocpy->oBB().right, ocpy->oBB().top);
             lstr.add(buf);
         }
     }
     else {
         if (dmode == Physical) {
-            sprintf(buf, "Bounding Box: %.*f,%.*f %.*f,%.*f\n",
+            snprintf(buf, sizeof(buf),
+                "Bounding Box: %.*f,%.*f %.*f,%.*f\n",
                 ndgt, MICRONS(odesc->oBB().left),
                 ndgt, MICRONS(odesc->oBB().bottom),
                 ndgt, MICRONS(odesc->oBB().right),
                 ndgt, MICRONS(odesc->oBB().top));
             lstr.add(buf);
             if (ocpy) {
-                sprintf(buf, "at top level: %.*f,%.*f %.*f,%.*f\n",
+                snprintf(buf, sizeof(buf),
+                    "at top level: %.*f,%.*f %.*f,%.*f\n",
                     ndgt, MICRONS(ocpy->oBB().left),
                     ndgt, MICRONS(ocpy->oBB().bottom),
                     ndgt, MICRONS(ocpy->oBB().right),
@@ -901,14 +952,16 @@ cMain::Info(const CDo *odesc)
             }
         }
         else {
-            sprintf(buf, "Bounding Box: %.*f,%.*f %.*f,%.*f\n",
+            snprintf(buf, sizeof(buf),
+                "Bounding Box: %.*f,%.*f %.*f,%.*f\n",
                 3, ELEC_MICRONS(odesc->oBB().left),
                 3, ELEC_MICRONS(odesc->oBB().bottom),
                 3, ELEC_MICRONS(odesc->oBB().right),
                 3, ELEC_MICRONS(odesc->oBB().top));
             lstr.add(buf);
             if (ocpy) {
-                sprintf(buf, "at top level: %.*f,%.*f %.*f,%.*f\n",
+                snprintf(buf, sizeof(buf),
+                    "at top level: %.*f,%.*f %.*f,%.*f\n",
                     3, ELEC_MICRONS(ocpy->oBB().left),
                     3, ELEC_MICRONS(ocpy->oBB().bottom),
                     3, ELEC_MICRONS(ocpy->oBB().right),
@@ -936,13 +989,13 @@ cMain::Info(const CDo *odesc)
                     *s++ = '0' + i;
             }
             *s = 0;
-            sprintf(buf, "  CDexpand (expansion in %s)\n", tbuf);
+            snprintf(buf, sizeof(buf), "  CDexpand (expansion in %s)\n", tbuf);
             lstr.add(buf);
         }
 
         for (FlagDef *f = OdescFlags; f->name; f++) {
             if (odesc->has_flag(f->value) && f->value != CDexpand) {
-                sprintf(buf, "  %s (%s)\n", f->name, f->desc);
+                snprintf(buf, sizeof(buf), "  %s (%s)\n", f->name, f->desc);
                 lstr.add(buf);
             }
         }
@@ -964,16 +1017,16 @@ cMain::Info(const CDo *odesc)
     strcat(buf, "\n");
     lstr.add(buf);
     if (odesc->type() != CDINSTANCE)
-        sprintf(buf, "Group: %d\n", odesc->group());
+        snprintf(buf, sizeof(buf), "Group: %d\n", odesc->group());
     else {
         CDc *cd = (CDc*)odesc;
         CDs *prnt = cd->parent();
         if (prnt) {
             if (!prnt->isInstNumValid())
                 prnt->numberInstances();
-            sprintf(buf, "Index: %d\n", cd->index());
+            snprintf(buf, sizeof(buf), "Index: %d\n", cd->index());
             lstr.add(buf);
-            sprintf(buf, "Id:    %d\n", cd->group());
+            snprintf(buf, sizeof(buf), "Id:    %d\n", cd->group());
         }
     }
     lstr.add(buf);
@@ -983,7 +1036,7 @@ cMain::Info(const CDo *odesc)
                 pdesc = pdesc->next_prp()) {
             char *s;
             if (pdesc->string(&s)) {
-                sprintf(buf, "  %d ", pdesc->value());
+                snprintf(buf, sizeof(buf), "  %d ", pdesc->value());
                 lstr.add(buf);
                 lstr.add(s);
                 if (pdesc->bound())
@@ -995,12 +1048,13 @@ cMain::Info(const CDo *odesc)
                 // This is a phony range property added to accommodate
                 // a non-unit m or nf parameter.
 
-                sprintf(buf, "  %d (dummy range for M or NF param)\n",
-                    pdesc->value());
+                snprintf(buf, sizeof(buf),
+                    "  %d (dummy range for M or NF param)\n", pdesc->value());
                 lstr.add(buf);
             }
             else {
-                sprintf(buf, "  %d (printing error!)\n", pdesc->value());
+                snprintf(buf, sizeof(buf),
+                    "  %d (printing error!)\n", pdesc->value());
                 lstr.add(buf);
             }
         }
@@ -1015,7 +1069,7 @@ box:
 poly:
     {
         Otype o = ((const CDpo*)odesc)->po_winding();
-        sprintf(buf, "Winding: %s\n",
+        snprintf(buf, sizeof(buf), "Winding: %s\n",
             o == Ocw ? "cw" : (o == Occw ? "ccw" : "none"));
         lstr.add(buf);
 
@@ -1038,7 +1092,7 @@ poly:
         }
         int num = ((const CDpo*)odesc)->numpts();
         const Point *pts = ((const CDpo*)odesc)->points();
-        sprintf(buf, "Coords (%d):\n", num);
+        snprintf(buf, sizeof(buf), "Coords (%d):\n", num);
         lstr.add(buf);
         int indgt = CDvdb()->getVariable(VA_InfoInternal) ? 0 : ndgt;
         char *s = cGEO::path_string(pts, num, indgt);
@@ -1102,7 +1156,7 @@ wire:
 
         int num = ((const CDw*)odesc)->numpts();
         const Point *pts = ((const CDw*)odesc)->points();
-        sprintf(buf, "Coords (%d):\n", num);
+        snprintf(buf, sizeof(buf), "Coords (%d):\n", num);
         lstr.add(buf);
         int indgt = CDvdb()->getVariable(VA_InfoInternal) ? 0 : ndgt;
         char *s = cGEO::path_string(pts, num, indgt);
@@ -1134,13 +1188,13 @@ inst:
         CDap ap((CDc*)odesc);
         if (ap.nx > 1 || ap.ny > 1) {
             lstr.add("Array: ");
-            sprintf(buf, "nx=%d, ny=%d, ",
+            snprintf(buf, sizeof(buf), "nx=%d, ny=%d, ",
                 ap.nx ? ap.nx : 1, ap.ny ? ap.ny : 1);
             lstr.add(buf);
             if (printint)
-                sprintf(buf, "dx=%d, dy=%d\n", ap.dx, ap.dy);
+                snprintf(buf, sizeof(buf), "dx=%d, dy=%d\n", ap.dx, ap.dy);
             else {
-                sprintf(buf, "dx=%.*f, dy=%.*f\n",
+                snprintf(buf, sizeof(buf), "dx=%.*f, dy=%.*f\n",
                     ndgt, MICRONS(ap.dx), ndgt, MICRONS(ap.dy));
             }
             lstr.add(buf);
@@ -1176,15 +1230,18 @@ inst:
             lstr.add_c('\n');
         }
         if (tx.tx != 0 || tx.ty != 0) {
-            if (printint)
-                sprintf(buf, "  Translate %d %d\n", tx.tx, tx.ty);
-            else
-                sprintf(buf, "  Translate %.*f %.*f\n",
+            if (printint) {
+                snprintf(buf, sizeof(buf), "  Translate %d %d\n",
+                    tx.tx, tx.ty);
+            }
+            else {
+                snprintf(buf, sizeof(buf), "  Translate %.*f %.*f\n",
                     ndgt, MICRONS(tx.tx), ndgt, MICRONS(tx.ty));
+            }
             lstr.add(buf);
         }
         if (tx.magn > 0 && tx.magn != 1.0) {
-            sprintf(buf, "  Magnify %g\n", tx.magn);
+            snprintf(buf, sizeof(buf), "  Magnify %g\n", tx.magn);
             lstr.add(buf);
         }
 
@@ -1196,7 +1253,8 @@ inst:
                 CDgenRange gen(pr);
                 int vecix = 0;
                 if (pr) {
-                    sprintf(buf, "Instance is vectored:  %s%c%d:%d%c\n",
+                    snprintf(buf, sizeof(buf),
+                        "Instance is vectored:  %s%c%d:%d%c\n",
                         ecdesc->getElecInstBaseName(),
                         cTnameTab::subscr_open(), pr->beg_range(),
                         pr->end_range(), cTnameTab::subscr_close());
@@ -1205,11 +1263,12 @@ inst:
                 while (gen.next(0)) {
                     if (pr) {
                         char *s = ecdesc->getElecInstName(vecix);
-                        sprintf(buf, "Component: %s\n", s);
+                        snprintf(buf, sizeof(buf), "Component: %s\n", s);
                         delete [] s;
                         lstr.add(buf);
                     }
-                    print_inst_terms(ecdesc, vecix, lstr, buf, printint, ndgt);
+                    print_inst_terms(ecdesc, vecix, lstr, buf, sizeof(buf),
+                        printint, ndgt);
                     vecix++;
                 }
             }
@@ -1223,15 +1282,16 @@ inst:
                         if (!ecdesc)
                             continue;
                         if (isary) {
-                            sprintf(buf, "Component x=%-4d y=%-4d\n", ix, iy);
+                            snprintf(buf, sizeof(buf),
+                                "Component x=%-4d y=%-4d\n", ix, iy);
                             lstr.add(buf);
                             char *s = ecdesc->getElecInstName(vecix);
-                            sprintf(buf, "Dual %s\n", s);
+                            snprintf(buf, sizeof(buf), "Dual %s\n", s);
                             delete [] s;
                             lstr.add(buf);
                         }
-                        print_inst_terms(ecdesc, vecix, lstr, buf, printint,
-                            ndgt);
+                        print_inst_terms(ecdesc, vecix, lstr, buf, sizeof(buf),
+                            printint, ndgt);
                     }
                 }
             }
@@ -1763,11 +1823,12 @@ void
 InfoState::show_cell_info(CDs *sdesc)
 {
     char buf[64];
-    sprintf(buf, "Type: ");
+    snprintf(buf, sizeof(buf), "Type: ");
+    int len = strlen(buf);
     if (sdesc == CurCell())
-        sprintf(buf + strlen(buf), "Current Cell\n");
+        snprintf(buf + len, sizeof(buf) - len, "Current Cell\n");
     else
-        sprintf(buf + strlen(buf), "Cell\n");
+        snprintf(buf + len, sizeof(buf) - len, "Cell\n");
     char *str = lstring::copy(buf);
     if (sdesc) {
         char *s = XM()->Info(sdesc, 100);

@@ -325,11 +325,13 @@ CDtx::tfstring()
     char tfbuf[64];
     tfbuf[0] = 0;
     if (ang != 0)
-        sprintf(tfbuf, "R%s", ang);
+        snprintf(tfbuf, sizeof(tfbuf), "R%s", ang);
     if (refly)
         strcat(tfbuf, "MY");
-    if (magn != 1.0)
-        sprintf(tfbuf + strlen(tfbuf), "M%.8f", magn);
+    if (magn != 1.0) {
+        int len = strlen(tfbuf);
+        snprintf(tfbuf + len, sizeof(tfbuf) - len, "M%.8f", magn);
+    }
     return (lstring::copy(tfbuf));
 }
 

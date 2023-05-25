@@ -609,7 +609,7 @@ cExt::editTermsExec(GRobject caller, GRobject endfix)
     // terminals with bad referencing.  We only care about the formal
     // terminals.
     //
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     if (!DSP()->ContactsVisible()) {
         DSP()->SetContactsVisible(true);
         if (!DSP()->TerminalsVisible()) {
@@ -620,7 +620,7 @@ cExt::editTermsExec(GRobject caller, GRobject endfix)
             DSP()->ShowTerminals(DISPLAY);
         }
     }
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     PtCmd = new PtState("TERMEDIT", "xic:tedit");
     PtCmd->setup(caller, endfix);

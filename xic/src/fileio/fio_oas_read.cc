@@ -407,7 +407,8 @@ oas_info::pr_records(FILE *fp)
     char buf[256];
     for (int i = 0; i < OAS_NUM_REC_TYPES; i++) {
         if (rec_counts[i]) {
-            sprintf(buf, "%-16s %d\n", oas_record_names[i], rec_counts[i]);
+            snprintf(buf, sizeof(buf), "%-16s %d\n", oas_record_names[i],
+                rec_counts[i]);
             if (fp)
                 fputs(buf, fp);
             else
@@ -4004,7 +4005,7 @@ oas_in::ac_layer(unsigned int layer, unsigned int datatype)
             if (!in_undef_layers)
                 in_undef_layers = new SymTab(true, false);
             if (SymTab::get(in_undef_layers, in_layer_name) == ST_NIL) {
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "No mapping for layer %d datatype %d (naming layer %s)",
                     in_curlayer, in_curdtype, in_layer_name);
                 in_undef_layers->add(lstring::copy(in_layer_name), 0, false);
@@ -4615,9 +4616,9 @@ oas_in::warning(const char *str, int x, int y, unsigned int l, unsigned int d)
 {
     char tbf[64];
     if (l < 256 && d < 256)
-        sprintf(tbf, "%02X%02X", l, d);
+        snprintf(tbf, sizeof(tbf), "%02X%02X", l, d);
     else
-        sprintf(tbf, "%04X%04X", l, d);
+        snprintf(tbf, sizeof(tbf), "%04X%04X", l, d);
 
     FIO()->ifPrintCvLog(IFLOG_WARN, "%s [%s %d,%d %s %llu]", str,
         in_cellname, x, y, tbf, (unsigned long long)in_offset);

@@ -150,7 +150,7 @@ qtLcb::layername()
         (GtkWidget*)gtk_object_get_data(GTK_OBJECT(shell), "label");
     char *string = get_lname(text, label);
     if (!string) {
-        QTdev::self()->Deselect(add);
+        QTdev::Deselect(add);
         add_cb(false);
         return (0);
     }

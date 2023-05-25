@@ -73,8 +73,8 @@ class Transaction;
 
 namespace qtinterf
 {
-    class interval_timer;
-    class draw_qt_w;
+    class QTtimer;
+    class QTcanvas;
 
     // A QImage with external data management.
     //
@@ -99,13 +99,13 @@ namespace qtinterf
         unsigned char *data;
     };
 
-    class viewer_w : public QScrollArea, public ViewerWidget,
+    class QTviewer : public QScrollArea, public ViewerWidget,
         public htmInterface, protected htmWidget
     {
         Q_OBJECT
 
     public:
-        viewer_w(int, int, htmDataInterface*, QWidget*);
+        QTviewer(int, int, htmDataInterface*, QWidget*);
 
         // ViewerWidget functions
         void freeze() { htmWidget::freeze(); }
@@ -272,9 +272,9 @@ namespace qtinterf
         QTimer btn_timer;           // press/release timer;
         bool btn_pressed;
 
-        interval_timer *timers;     // list of timers for animations
+        QTtimer *timers;            // list of timers for animations
 
-        draw_qt_w *darea;           // the drawing area
+        QTcanvas *darea;            // the drawing area
         QRubberBand *rband;         // transient selection rectangle
         Transaction *transact;      // download manager
         int width_hint;             // suggested width

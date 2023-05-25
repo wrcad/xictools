@@ -94,7 +94,8 @@ namespace {
             return (0);
         while (isspace(*face) || *face == '"' || *face == '\'')
             face++;
-        char *buf = new char[strlen(face) + 8];
+        int bsz = strlen(face) + 8;
+        char *buf = new char[bsz];
         strcpy(buf, face);
         char *t = buf + strlen(buf) - 1;
         while (t >= buf && (isspace(*t) || *t == '"' || *t == '\''))
@@ -104,7 +105,8 @@ namespace {
             return (0);
         }
         style &= (FONT_BOLD | FONT_ITALIC | FONT_FIXED);
-        sprintf(buf + strlen(buf), ":%d:%d", size, style);
+        int len = strlen(buf);
+        snprintf(buf + len, bsz - len, ":%d:%d", size, style);
         return (buf);
     }
 }

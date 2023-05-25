@@ -105,6 +105,7 @@ const char *spkw_forcegmin      = "forcegmin";
 const char *spkw_gminfirst      = "gminfirst";
 const char *spkw_hspice         = "hspice";
 const char *spkw_jjaccel        = "jjaccel";
+const char *spkw_nodcop         = "nodcop";
 const char *spkw_noiter         = "noiter";
 const char *spkw_nojjtp         = "nojjtp";
 const char *spkw_noklu          = "noklu";
@@ -372,6 +373,10 @@ sOPTIONS::setup(const sOPTIONS *opts, OMRG_TYPE mt)
     if (opts->OPTjjaccel_given && (mt == OMRG_GLOBAL || !OPTjjaccel_given)) {
         OPTjjaccel = opts->OPTjjaccel;
         OPTjjaccel_given = 1;
+    }
+    if (opts->OPTnodcop_given && (mt == OMRG_GLOBAL || !OPTnodcop_given)) {
+        OPTnodcop = opts->OPTnodcop;
+        OPTnodcop_given = 1;
     }
     if (opts->OPTnoiter_given && (mt == OMRG_GLOBAL || !OPTnoiter_given)) {
         OPTnoiter = opts->OPTnoiter;
@@ -883,6 +888,14 @@ OPTanalysis::setParm(sJOB *anal, int which, IFdata *data)
         else
             opt->OPTjjaccel_given = 0;
         break;
+    case OPT_NODCOP:
+        if (value) {
+            opt->OPTnodcop = value->iValue;
+            opt->OPTnodcop_given = 1;
+        }
+        else
+            opt->OPTnodcop_given = 0;
+        break;
     case OPT_NOITER:
         if (value) {
             opt->OPTnoiter = value->iValue;
@@ -1207,6 +1220,8 @@ namespace {
             "suppress warning, promote Hspice compatibility"),
         IFparm(spkw_jjaccel,        OPT_JJACCEL,        IF_IO|IF_FLAG,
             "Accelerate Josephson-only simulation"),
+        IFparm(spkw_nodcop,         OPT_NODCOP,         IF_IO|IF_FLAG,
+            "No DC operating point computation before AC analysis"),
         IFparm(spkw_noiter,         OPT_NOITER,         IF_IO|IF_FLAG,
             "Supress transient iterations past predictor"),
         IFparm(spkw_nojjtp,         OPT_NOJJTP,         IF_IO|IF_FLAG,

@@ -95,7 +95,7 @@ CommandTab::com_aspice(wordlist *wl)
         if (Global.ExecProg() && *Global.ExecProg())
             spicepath = Global.ExecProg();
         else {
-            GRpkgIf()->ErrPrintf(ET_MSG,
+            GRpkg::self()->ErrPrintf(ET_MSG,
                 "No executable is available for the aspice command.\n");
             return;
         }
@@ -134,7 +134,7 @@ CommandTab::com_rspice(wordlist *wl)
         if (*wl->wl_word == '-') {
             wordlist *next = wl->wl_next;
             if (!next) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, umsg);
+                GRpkg::self()->ErrPrintf(ET_ERROR, umsg);
                 return;
             }
             switch (wl->wl_word[1]) {
@@ -151,7 +151,7 @@ CommandTab::com_rspice(wordlist *wl)
                 wl = next->wl_next;
                 break;
             default:
-                GRpkgIf()->ErrPrintf(ET_ERROR, umsg);
+                GRpkg::self()->ErrPrintf(ET_ERROR, umsg);
                 return;
             }
         }
@@ -243,7 +243,7 @@ sJobc::rhost(wordlist *wl)
             else if (wl->wl_word[1] == 'd')
                 adding = false;
             else
-                GRpkgIf()->ErrPrintf(ET_WARN, "unknown option, ignored.\n");
+                GRpkg::self()->ErrPrintf(ET_WARN, "unknown option, ignored.\n");
             wl = wl->wl_next;
             continue;
         }
@@ -258,7 +258,7 @@ sJobc::rhost(wordlist *wl)
                 continue;
             }
             if (!gethostbyname(wl->wl_word)) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "unknown host, ignored.\n");
+                GRpkg::self()->ErrPrintf(ET_WARN, "unknown host, ignored.\n");
                 wl = wl->wl_next;
                 continue;
             }
@@ -339,7 +339,7 @@ sJobc::check_jobs()
                 break;
         }
         if (p == 0) {
-            GRpkgIf()->ErrPrintf(ET_INTERR,
+            GRpkg::self()->ErrPrintf(ET_INTERR,
                 "checkAsyncJobs: process %d not found.\n", pid);
             here = false;
             return;
@@ -355,7 +355,7 @@ sJobc::check_jobs()
             if (rj->job()->processReturn(p->rawfile())) {
                 // uh oh, bad
                 rj->job()->set_nogo(true);
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "no data returned from run, aborting.\n");
             }
             unlink(p->rawfile());
@@ -402,7 +402,7 @@ sJobc::check_jobs()
                     fclose(fp);
                 }
                 else
-                    GRpkgIf()->Perror(p->outfile());
+                    GRpkg::self()->Perror(p->outfile());
                 if (!p->saveout())
                     unlink(p->outfile());
             }
@@ -460,7 +460,7 @@ void
 sJobc::register_job(sCHECKprms *job)
 {
     char buf[128];
-    sprintf(buf, "%s %s", job->out_cir->name(),
+    snprintf(buf, sizeof(buf), "%s %s", job->out_cir->name(),
         job->monte() ? "Monte Carlo" : "Operating Range");
     rjob_t *rj = new rjob_t(buf, job);
     rj->set_next(jc_jobs);
@@ -552,7 +552,7 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
 
     char localhost[64];
     if (gethostname(localhost, 64) > 0) {
-        GRpkgIf()->Perror("gethostname");
+        GRpkg::self()->Perror("gethostname");
         return (true);
     }
 
@@ -577,12 +577,12 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
     }
     protoent *pp = getprotobyname("tcp");
     if (pp == 0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "tcp: unknown protocol.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "tcp: unknown protocol.\n");
         return (true);
     }
     hostent *hp = gethostbyname(hostname);
     if (hp == 0) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "unknown host %s.\n", hostname);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "unknown host %s.\n", hostname);
         return (true);
     }
     sockaddr_in server;
@@ -594,13 +594,13 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
     // Create the socket
     int sfd = socket(AF_INET, SOCK_STREAM, pp->p_proto);
     if (sfd < 0) {
-        GRpkgIf()->Perror("socket");
+        GRpkg::self()->Perror("socket");
         return (true);
     }
 
     if (connect(sfd, (struct sockaddr *) &server, 
             sizeof (struct sockaddr)) < 0) {
-        GRpkgIf()->Perror("connect");
+        GRpkg::self()->Perror("connect");
         return (true);
     }
 
@@ -613,26 +613,26 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
             *t = '_';
     }
     if (*program)
-        sprintf(buf, "%s %s %s", user, localhost, program);
+        snprintf(buf, sizeof(buf), "%s %s %s", user, localhost, program);
     else
-        sprintf(buf, "%s %s", user, localhost);
+        snprintf(buf, sizeof(buf), "%s %s", user, localhost);
     delete [] user;
     send(sfd, buf, strlen(buf) + 1, 0);      // Get the trailing \0
     if (recv(sfd, buf, BSIZE_SP, 0) <= 0) {
-        GRpkgIf()->ErrPrintf(ET_MSG, "Connection closed.\n");
+        GRpkg::self()->ErrPrintf(ET_MSG, "Connection closed.\n");
         CLOSESOCKET(sfd);
         return (true);
     }
 
     if (lstring::eq(buf, "toomany")) {
-        GRpkgIf()->ErrPrintf(ET_MSG,
+        GRpkg::self()->ErrPrintf(ET_MSG,
             "\nJob refused by %s: load exceeded.\n"
             "Please use another host or try again later.\n", hostname);
         CLOSESOCKET(sfd);
         return (true);
     }
     else if (!lstring::eq(buf, "ok")) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Job refused by %s: %s.\n", hostname,
+        GRpkg::self()->ErrPrintf(ET_ERROR, "Job refused by %s: %s.\n", hostname,
             buf);
         CLOSESOCKET(sfd);
         return (true);
@@ -644,14 +644,14 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
         deck = filename;
         FILE *inp;
         if (!(inp = Sp.PathOpen(deck, "r"))) {
-            GRpkgIf()->Perror(deck);
+            GRpkg::self()->Perror(deck);
             CLOSESOCKET(sfd);
             return (true);
         }
-        sprintf(buf, "%s: ", hostname);
+        snprintf(buf, sizeof(buf), "%s: ", hostname);
         char *t = buf + strlen(buf);
         if (!fgets(t, BSIZE_SP, inp)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "bad deck %s.\n", deck);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "bad deck %s.\n", deck);
             fclose(inp);
             CLOSESOCKET(sfd);
             return (true);
@@ -664,21 +664,22 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
         while ((i = fread(buf, 1, BSIZE_SP, inp)) > 0)
             send(sfd, buf, i, 0);
         if (analysis) {
-            sprintf(buf, "%s\n%s\n%s\n", CONT_KW, analysis, ENDC_KW);
+            snprintf(buf, sizeof(buf), "%s\n%s\n%s\n", CONT_KW, analysis,
+                ENDC_KW);
             send(sfd, buf, strlen(buf), 0);
         }
         send(sfd, "@\n", 3, 0);
     }
     else {
         if (!cir) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "no circuits loaded.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "no circuits loaded.\n");
             CLOSESOCKET(sfd);
             return (true);
         }
             
         // We have to make a FILE struct for the socket
         deck = cir->name();
-        sprintf(buf, "%s: %s", hostname, cir->deck()->line());
+        snprintf(buf, sizeof(buf), "%s: %s", hostname, cir->deck()->line());
         name = lstring::copy(buf);
         FILE *inp = fdopen(sfd, "w");
         if (rj) {
@@ -769,7 +770,7 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
     if (pid == 0) {
         FILE *out;
         if (!(out = fopen(outfile, "w"))) {
-            GRpkgIf()->Perror(outfile);
+            GRpkg::self()->Perror(outfile);
             fclose(serv);
             _exit(EXIT_BAD);
         }
@@ -846,14 +847,14 @@ sJobc::submit_local(const char *program, const char *analysis,
     bool tempinp = false;
     if (!filename) {
         if (!cir) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "no circuits loaded.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "no circuits loaded.\n");
             return (true);
         }
             
         filename = filestat::make_temp("sptmp");
         FILE *inp;
         if ((inp = fopen(filename, "w")) == 0) {
-            GRpkgIf()->Perror(filename);
+            GRpkg::self()->Perror(filename);
             return (true);
         }
         if (rj) {
@@ -901,11 +902,11 @@ sJobc::submit_local(const char *program, const char *analysis,
     if (!rj) {
         FILE *inp;
         if ((inp = fopen(filename, "r")) == 0) {
-            GRpkgIf()->Perror(filename);
+            GRpkg::self()->Perror(filename);
             return (true);
         }
         if (!fgets(buf, BSIZE_SP, inp)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "bad deck %s.\n", filename);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "bad deck %s.\n", filename);
             fclose(inp);
             return (true);
         }
@@ -939,11 +940,11 @@ sJobc::submit_local(const char *program, const char *analysis,
         if (!wd)
             wd = lstring::copy("c:");
         wd[2] = 0;
-        sprintf(cmdline, "%s%s -S -r %s", wd, program, raw);
+        snprintf(cmdline, sizeof(cmdline), "%s%s -S -r %s", wd, program, raw);
         delete [] wd;
     }
     else
-        sprintf(cmdline, "%s -S -r %s", program, raw);
+        snprintf(cmdline, sizeof(cmdline), "%s -S -r %s", program, raw);
 
     int pid;
     PROCESS_INFORMATION *info =
@@ -1065,7 +1066,7 @@ sJobc::th_hdlr(void *arg)
     char buf[BSIZE_SP];
     FILE *out;
     if (!(out = fopen(t->outfile, "w"))) {
-        GRpkgIf()->Perror(t->outfile);
+        GRpkg::self()->Perror(t->outfile);
         OP.jobc()->jc_numchanged++;
         for (sdone_t *sd = OP.jobc()->jc_complete_list; sd; sd = sd->next) {
             if (sd->pid == t->pid) {
@@ -1075,7 +1076,7 @@ sJobc::th_hdlr(void *arg)
         }
         delete t;
         if (Sp.GetFlag(FT_ASYNCDB))
-            GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
+            GRpkg::self()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
                 OP.jobc()->jc_numchanged);
         if (CP.GetFlag(CP_CWAIT))
             OP.checkAsyncJobs();
@@ -1094,7 +1095,7 @@ sJobc::th_hdlr(void *arg)
     }
     delete t;
     if (Sp.GetFlag(FT_ASYNCDB))
-        GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
+        GRpkg::self()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
             OP.jobc()->jc_numchanged);
     if (CP.GetFlag(CP_CWAIT))
         OP.checkAsyncJobs();
@@ -1117,7 +1118,7 @@ sJobc::th_local_hdlr(void *arg)
         }
     }
     if (Sp.GetFlag(FT_ASYNCDB))
-        GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
+        GRpkg::self()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
             OP.jobc()->jc_numchanged);
     if (CP.GetFlag(CP_CWAIT))
         OP.checkAsyncJobs();
@@ -1134,7 +1135,7 @@ sJobc::sigchild(int pid, int status, void*)
         OP.jobc()->jc_numchanged++;
         OP.jobc()->add_done(pid, WEXITSTATUS(status));
         if (Sp.GetFlag(FT_ASYNCDB)) {
-            GRpkgIf()->ErrPrintf(ET_MSG,
+            GRpkg::self()->ErrPrintf(ET_MSG,
                 "process %d exited with status %d.\n",
                 pid, WEXITSTATUS(status));
         }
@@ -1145,7 +1146,7 @@ sJobc::sigchild(int pid, int status, void*)
         OP.jobc()->jc_numchanged++;
         OP.jobc()->add_done(pid, -1);
         if (Sp.GetFlag(FT_ASYNCDB)) {
-            GRpkgIf()->ErrPrintf(ET_MSG,
+            GRpkg::self()->ErrPrintf(ET_MSG,
                 "process %d terminated by signal %d.\n",
                 pid, WIFSIGNALED(status));
         }

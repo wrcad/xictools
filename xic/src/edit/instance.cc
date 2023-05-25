@@ -199,7 +199,7 @@ namespace {
 void
 PlaceState::b1up()
 {
-    dspPkgIf()->RegisterIdleProc(doit_idle, 0);
+    DSPpkg::self()->RegisterIdleProc(doit_idle, 0);
 }
 
 
@@ -460,7 +460,7 @@ cEdit::placeAction()
                     PlaceCmd->smash_mode())) {
                 Ulist()->CommitChanges(true);
                 DSPmainDraw(ShowGhost(false))
-                dspPkgIf()->RegisterTimeoutProc(500, timeout, 0);
+                DSPpkg::self()->RegisterTimeoutProc(500, timeout, 0);
             }
             Gst()->RepaintGhost();
         }

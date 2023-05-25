@@ -1010,7 +1010,7 @@ edit_bangcmds::svq(const char *s)
     delete [] tok;
 
     char tname[64];
-    sprintf(tname, "$$$$REG%d", regnum);
+    snprintf(tname, sizeof(tname), "$$$$REG%d", regnum);
     CDcbin cbin;
     if (ED()->createCell(tname, &cbin, false, 0) && cbin.phys()) {
         cbin.phys()->setImmutable(true);
@@ -1034,7 +1034,7 @@ edit_bangcmds::rcq(const char *s)
     delete [] tok;
 
     char tname[64];
-    sprintf(tname, "$$$$REG%d", regnum);
+    snprintf(tname, sizeof(tname), "$$$$REG%d", regnum);
 
     const char *msg = "Nothing saved in register %d.";
     CDcbin cbin;
@@ -1767,8 +1767,8 @@ edit_bangcmds::import(const char *s)
         return;
     }
     char buf[256];
-    sprintf(buf, "This operation will permanently clear %s.  Continue? ",
-        s);
+    snprintf(buf, sizeof(buf),
+        "This operation will permanently clear %s.  Continue? ", s);
     char *in = PL()->EditPrompt(buf, "n");
     in = lstring::strip_space(in);
     if (in && (*in == 'y' || *in == 'Y')) {

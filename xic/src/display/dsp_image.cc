@@ -294,7 +294,7 @@ error:
     if (!strstr(s, "intersection area")) {
         int len = 64 + (s ? strlen(s) : 0);
         char *t = new char[len];
-        sprintf(t, "Error occurred when reading image data:\n%s", s);
+        snprintf(t, len, "Error occurred when reading image data:\n%s", s);
         DSP()->show_message(t, true);
         delete [] t;
     }
@@ -464,7 +464,7 @@ WindowDesc::redisplay_cddb_zimg(const BBox *AOI)
             CDl *ld;
             while ((ld = lgen.next()) != 0) {
                 int dim_pix;
-                GRpkgIf()->AllocateColor(&dim_pix,
+                DSPpkg::self()->AllocateColor(&dim_pix,
                     (p*dsp_prm(ld)->red())/100,
                     (p*dsp_prm(ld)->green())/100,
                     (p*dsp_prm(ld)->blue()/100));
@@ -644,7 +644,7 @@ WindowDesc::redisplay_cddb_zimg_rc(CDs *sdesc, int hierlev,
                 // Test for user interrupt
                 if (!(numgeom & 0xff) && numgeom) {
                     // Check every 256 objects for efficiency.
-                    dspPkgIf()->CheckForInterrupt();
+                    DSPpkg::self()->CheckForInterrupt();
                     if (DSP()->Interrupt()) {
                         if (magged)
                             DSP()->TPop();
@@ -699,7 +699,7 @@ WindowDesc::redisplay_cddb_zimg_rc(CDs *sdesc, int hierlev,
             ncells++;
             if (!(ncells & 0xff))
                 // check every 256 objects for efficiency
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
 
             // Test for user interrupt
             if (DSP()->Interrupt()) {
@@ -986,7 +986,7 @@ zimg_backend::write_box(const BBox *BB)
     if (!(zb_numgeom & 0xff)) {
         // check every 256 objects for efficiency
         if (zb_numgeom) {
-            dspPkgIf()->CheckForInterrupt();
+            DSPpkg::self()->CheckForInterrupt();
             if (DSP()->Interrupt()) {
                 DSP()->SetInterrupt(DSPinterNone);
                 be_abort = true;
@@ -1011,7 +1011,7 @@ zimg_backend::write_poly(const Poly *poly)
     if (!(zb_numgeom & 0xff)) {
         // check every 256 objects for efficiency
         if (zb_numgeom) {
-            dspPkgIf()->CheckForInterrupt();
+            DSPpkg::self()->CheckForInterrupt();
             if (DSP()->Interrupt()) {
                 DSP()->SetInterrupt(DSPinterNone);
                 be_abort = true;
@@ -1036,7 +1036,7 @@ zimg_backend::write_wire(const Wire *wire)
     if (!(zb_numgeom & 0xff)) {
         // check every 256 objects for efficiency
         if (zb_numgeom) {
-            dspPkgIf()->CheckForInterrupt();
+            DSPpkg::self()->CheckForInterrupt();
             if (DSP()->Interrupt()) {
                 DSP()->SetInterrupt(DSPinterNone);
                 be_abort = true;
@@ -1061,7 +1061,7 @@ zimg_backend::write_text(const Text *text)
     if (!(zb_numgeom & 0xff)) {
         // check every 256 objects for efficiency
         if (zb_numgeom) {
-            dspPkgIf()->CheckForInterrupt();
+            DSPpkg::self()->CheckForInterrupt();
             if (DSP()->Interrupt()) {
                 DSP()->SetInterrupt(DSPinterNone);
                 be_abort = true;

@@ -50,6 +50,7 @@
 void
 cMain::PopUpColor(GRobject caller, ShowMode mode)
 {
+    (void)caller;
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
@@ -213,8 +214,8 @@ namespace {
     idlefunc(void*)
     {
         static int on;
-        if (!dspPkgIf()->IsBusy()) {
-            if (dspPkgIf()->IsTrueColor()) {
+        if (!QTpkg::self()->IsBusy()) {
+            if (QTpkg::self()->IsTrueColor()) {
                 WindowDesc *wd;
                 WDgen wgen(WDgen::MAIN, WDgen::ALL);
                 while ((wd = wgen.next()) != 0) {
@@ -230,6 +231,10 @@ namespace {
                             Selections.show(wd);
                     }
                     wd->ShowHighlighting();
+
+                    //XXX This updates the entire drawing windows every
+                    // half second.
+                    wd->Wdraw()->Update();
                 }
                 DSP()->SetSelectPixel(DSP()->Color(SelectColor1));
             }
@@ -248,7 +253,7 @@ namespace {
     colortimer(void*)
     {
         if (!idle_id)
-            idle_id = qtPkgIf()->RegisterIdleProc(idlefunc, 0);
+            idle_id = QTpkg::self()->RegisterIdleProc(idlefunc, 0);
         return (true);
     }
 }

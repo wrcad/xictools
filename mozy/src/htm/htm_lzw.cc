@@ -172,7 +172,7 @@ namespace {
     // Create a temporary file name.
     //
     void
-    lzw_tempfile(char *buf)
+    lzw_tempfile(char *buf, int bsz)
     {
         static int num;
         const char *id = "htm-lzw";
@@ -185,10 +185,12 @@ namespace {
 #endif
         }
 
-        if (!access(path, W_OK))
-            sprintf(buf, "%s/%s%u-%d.Z", path, id, (unsigned int)getpid(), num);
+        if (!access(path, W_OK)) {
+            snprintf(buf, bsz, "%s/%s%u-%d.Z", path, id, 
+                (unsigned int)getpid(), num);
+        }
         else
-            sprintf(buf, "%s%u-%d.Z", id, (unsigned int)getpid(), num);
+            snprintf(buf, bsz, "%s%u-%d.Z", id, (unsigned int)getpid(), num);
         num++;
     }
 }
@@ -209,7 +211,8 @@ lzwStream::init()
     // check if we have the read functions
     char msg_buf[256];
     if (readOK == 0 || getData == 0) {
-        sprintf(msg_buf, "lzwStream Error: no read functions attached!");
+        snprintf(msg_buf, sizeof(msg_buf),
+            "lzwStream Error: no read functions attached!");
         lz_err_msg = lstring::copy(msg_buf);
         return (-2);
     }
@@ -245,9 +248,10 @@ lzwStream::init()
     lz_uncompressed = false;
 
     // temporary output file
-    lzw_tempfile(lz_zName);
+    lzw_tempfile(lz_zName, 256 - (lz_zName - lz_zCmd));
     if (!(lz_f = fopen(lz_zName, "w"))) {
-        sprintf(msg_buf, "lzwStream Error: couldn't open temporary file "
+        snprintf(msg_buf, sizeof(msg_buf),
+            "lzwStream Error: couldn't open temporary file "
             "'%s'.", lz_zName);
         lz_err_msg = lstring::copy(msg_buf);
         return (-1);
@@ -256,7 +260,8 @@ lzwStream::init()
     // get codeSize (= how many bits each pixel takes) from ImageBuffer.
     unsigned char c;
     if ((*readOK)(lz_ib, &c, 1) == 0) {
-        sprintf(msg_buf, "lzwStream Error: couldn't read GIF codesize.");
+        snprintf(msg_buf, sizeof(msg_buf),
+            "lzwStream Error: couldn't read GIF codesize.");
         lz_err_msg = lstring::copy(msg_buf);
         return (0);
     }
@@ -281,7 +286,8 @@ lzwStream::init()
 
     // check clearCode value
     if (lz_clearCode >= MAX_LZW_CODE) {
-        sprintf(msg_buf, "lzwStream Error: corrupt raster data: bad "
+        snprintf(msg_buf, sizeof(msg_buf),
+            "lzwStream Error: corrupt raster data: bad "
             "GIF codesize (%i).", lz_codeSize);
         lz_err_msg = lstring::copy(msg_buf);
         return (0);
@@ -340,7 +346,8 @@ lzwStream::uncompress(int *size)
     // sanity check
     char msg_buf[256];
     if (*size == 0) {
-        sprintf(msg_buf, "lzwStream Error: zero-length data file.");
+        snprintf(msg_buf, sizeof(msg_buf),
+            "lzwStream Error: zero-length data file.");
         lz_err_msg = lstring::copy(msg_buf);
         return (0);
     }
@@ -430,8 +437,8 @@ lzwStream::uncompressData()
 
         // call uncompress on our converted GIF lzw data
         if (system(lz_zCmd)) {
-            sprintf(msg_buf, "lzwStream Error: Couldn't execute '%s'.",
-                lz_zCmd);
+            snprintf(msg_buf, sizeof(msg_buf),
+                "lzwStream Error: Couldn't execute '%s'.", lz_zCmd);
             lz_err_msg = lstring::copy(msg_buf);
             unlink(lz_zName);
             lz_error = true;
@@ -440,7 +447,8 @@ lzwStream::uncompressData()
         // open the output file
         lz_zName[strlen(lz_zName) - 2] = '\0';
         if ((lz_zPipe = fopen(lz_zName, "r")) == 0) {
-            sprintf(msg_buf, "lzwStream Error: Couldn't open uncompress "
+            snprintf(msg_buf, sizeof(msg_buf),
+                "lzwStream Error: Couldn't open uncompress "
                 "file '%s'. Corrupt data?", lz_zName);
             lz_err_msg = lstring::copy(msg_buf);
             unlink(lz_zName);

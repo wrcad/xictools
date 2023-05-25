@@ -3724,7 +3724,7 @@ misc2_funcs::IFtoString(Variable *res, Variable *args, void*)
     if (args[0].type == TYP_SCALAR) {
         res->type = TYP_STRING;
         char buf[64];
-        sprintf(buf, "%g", args[0].content.value);
+        snprintf(buf, sizeof(buf), "%g", args[0].content.value);
         res->content.string = lstring::copy(buf);
         res->flags |= VF_ORIGINAL;
     }
@@ -3779,7 +3779,7 @@ misc2_funcs::IFtoStringA(Variable *res, Variable *args, void*)
             else if (ndgt > 15)
                 ndgt = 15;
             char buf[32];
-            sprintf(buf, "%.*f", ndgt-1, 0.0);
+            snprintf(buf, sizeof(buf), "%.*f", ndgt-1, 0.0);
             res->content.string = lstring::copy(buf);
         }
         res->flags |= VF_ORIGINAL;
@@ -3951,10 +3951,14 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
                     stringlist::destroy(s0);
                     return (BAD);
                 }
-                if (fw > 0)
-                    sprintf(buf, sl->string, fw, (int)args[ac].content.value);
-                else
-                    sprintf(buf, sl->string, (int)args[ac].content.value);
+                if (fw > 0) {
+                    snprintf(buf, sizeof(buf), sl->string, fw,
+                        (int)args[ac].content.value);
+                }
+                else {
+                    snprintf(buf, sizeof(buf), sl->string,
+                        (int)args[ac].content.value);
+                }
                 ac++;
                 break;
             }
@@ -3963,12 +3967,14 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
                     stringlist::destroy(s0);
                     return (BAD);
                 }
-                if (fw > 0)
-                    sprintf(buf, sl->string, fw,
+                if (fw > 0) {
+                    snprintf(buf, sizeof(buf), sl->string, fw,
                         (unsigned int)args[ac].content.value);
-                else
-                    sprintf(buf, sl->string,
+                }
+                else {
+                    snprintf(buf, sizeof(buf), sl->string,
                         (unsigned int)args[ac].content.value);
+                }
                 ac++;
                 break;
             }
@@ -3977,10 +3983,14 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
                     stringlist::destroy(s0);
                     return (BAD);
                 }
-                if (fw > 0)
-                    sprintf(buf, sl->string, fw, args[ac].content.value);
-                else
-                    sprintf(buf, sl->string, args[ac].content.value);
+                if (fw > 0) {
+                    snprintf(buf, sizeof(buf), sl->string, fw,
+                        args[ac].content.value);
+                }
+                else {
+                    snprintf(buf, sizeof(buf), sl->string,
+                        args[ac].content.value);
+                }
                 ac++;
                 break;
             }
@@ -3990,18 +4000,22 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
                     stringlist::destroy(s0);
                     return (BAD);
                 }
-                if (fw > 0)
-                    sprintf(buf, sl->string, fw, args[ac].content.string);
-                else
-                    sprintf(buf, sl->string, args[ac].content.string);
+                if (fw > 0) {
+                    snprintf(buf, sizeof(buf), sl->string, fw,
+                        args[ac].content.string);
+                }
+                else {
+                    snprintf(buf, sizeof(buf), sl->string,
+                        args[ac].content.string);
+                }
                 ac++;
                 break;
             }
             if (*s == 'p') {
                 if (fw > 0)
-                    sprintf(buf, sl->string, fw, (char*)0);
+                    snprintf(buf, sizeof(buf), sl->string, fw, (char*)0);
                 else
-                    sprintf(buf, sl->string, (char*)0);
+                    snprintf(buf, sizeof(buf), sl->string, (char*)0);
                 ac++;
                 break;
             }
@@ -4781,7 +4795,7 @@ misc2_funcs::IFlistDirectory(Variable *res, Variable *args, void*)
     if (!dir || !*dir)
         dir = defdir;
     char buf[256];
-    sprintf(buf, "%s/", dir);
+    snprintf(buf, sizeof(buf), "%s/", dir);
     char *s = buf + strlen(buf);
     DIR *wdir = opendir(dir);
     if (dir) {
@@ -5954,8 +5968,8 @@ namespace {
         void esc()
             {
                 got_abort = Abort;
-                if (GRpkgIf()->LoopLevel() > 1)
-                    GRpkgIf()->BreakLoop();
+                if (DSPpkg::self()->LoopLevel() > 1)
+                    DSPpkg::self()->BreakLoop();
                 EV()->PopCallback(this);
                 delete this;
             }
@@ -5972,7 +5986,8 @@ namespace {
     //
     PTretType pointTo()
     {
-        if (!GRpkgIf()->MainDev() || GRpkgIf()->MainDev()->ident != _devGTK_)
+        if (!DSPpkg::self()->MainDev() ||
+                DSPpkg::self()->MainDev()->ident != _devGTK_)
              return (PTesc);
         PointCmd = new PointState("POINT", "Point");
         PL()->SavePrompt();
@@ -5984,7 +5999,7 @@ namespace {
         }
         PL()->RestorePrompt();
         Gst()->RestoreGhost();
-        GRpkgIf()->MainLoop();
+        DSPpkg::self()->MainLoop();
 
         if (PointState::got_abort) {
             PointState::got_abort = false;
@@ -6090,8 +6105,8 @@ namespace {
         void esc()
             {
                 got_abort = Abort;
-                if (GRpkgIf()->LoopLevel() > 1)
-                    GRpkgIf()->BreakLoop();
+                if (DSPpkg::self()->LoopLevel() > 1)
+                    DSPpkg::self()->BreakLoop();
                 EV()->PopCallback(this);
                 delete this;
             }
@@ -6133,7 +6148,7 @@ misc2_funcs::IFselection(Variable *res, Variable*, void*)
     }
     PL()->RestorePrompt();
     Gst()->RestoreGhost();
-    GRpkgIf()->MainLoop();
+    DSPpkg::self()->MainLoop();
 
     if (SelectState::got_abort) {
         SelectState::got_abort = false;
@@ -6177,8 +6192,8 @@ namespace {
     InpState::esc()
     {
         GRledPopup *p = widget;
-        if (GRpkgIf()->LoopLevel() > 1)
-            GRpkgIf()->BreakLoop();
+        if (DSPpkg::self()->LoopLevel() > 1)
+            DSPpkg::self()->BreakLoop();
         EV()->PopCallback(this);
         delete this;
         if (p)
@@ -6249,7 +6264,7 @@ misc2_funcs::IFpopUpInput(Variable *res, Variable *args, void*)
     InpCmd->widget = 
     DSPmainWbagRet(PopUpEditString(0, GRloc(), msg, def, InpState::inp_cb, 0,
         0, InpState::inp_dn, multiline, btn));
-    GRpkgIf()->MainLoop();
+    DSPpkg::self()->MainLoop();
 
     res->type = TYP_STRING;
     res->content.string = InpState::ret_string;
@@ -6288,8 +6303,8 @@ namespace {
     AfState::esc()
     {
         GRaffirmPopup *p = widget;
-        if (GRpkgIf()->LoopLevel() > 1)
-            GRpkgIf()->BreakLoop();
+        if (DSPpkg::self()->LoopLevel() > 1)
+            DSPpkg::self()->BreakLoop();
         EV()->PopCallback(this);
         delete this;
         if (p)
@@ -6330,7 +6345,7 @@ misc2_funcs::IFpopUpAffirm(Variable *res, Variable *args, void*)
     }
     AfCmd->widget = 
     DSPmainWbagRet(PopUpAffirm(0, GRloc(), msg, AfState::af_cb, 0));
-    GRpkgIf()->MainLoop();
+    DSPpkg::self()->MainLoop();
 
     res->type = TYP_SCALAR;
     if (AfState::ret_value) {
@@ -6371,8 +6386,8 @@ namespace {
     NuState::esc()
     {
         GRnumPopup *p = widget;
-        if (GRpkgIf()->LoopLevel() > 1)
-            GRpkgIf()->BreakLoop();
+        if (DSPpkg::self()->LoopLevel() > 1)
+            DSPpkg::self()->BreakLoop();
         EV()->PopCallback(this);
         delete this;
         if (p)
@@ -6434,7 +6449,7 @@ misc2_funcs::IFpopUpNumeric(Variable *res, Variable *args, void*)
     NuCmd->widget = 
     DSPmainWbagRet(PopUpNumeric(0, GRloc(), msg, initd, mind, maxd, del,
         numd, NuState::nu_cb, 0));
-    GRpkgIf()->MainLoop();
+    DSPpkg::self()->MainLoop();
 
     res->type = TYP_SCALAR;
     res->content.value =  NuState::ret_value;
@@ -6521,9 +6536,11 @@ misc2_funcs::IFaskConsoleReal(Variable *res, Variable *args, void*)
     char buf[256];
     buf[0] = 0;
     if (prompt)
-        sprintf(buf, "%s ", prompt);
-    if (deflt)
-        sprintf(buf + strlen(buf), "[%s] ", deflt);
+        snprintf(buf, sizeof(buf), "%s ", prompt);
+    if (deflt) {
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, "[%s] ", deflt);
+    }
     fputs(buf, stdout);
     fflush(stdout);
     if (!fgets(buf, 256, stdin)) {
@@ -6561,9 +6578,11 @@ misc2_funcs::IFaskConsoleString(Variable *res, Variable *args, void*)
     char buf[256];
     buf[0] = 0;
     if (prompt)
-        sprintf(buf, "%s ", prompt);
-    if (deflt)
-        sprintf(buf + strlen(buf), "[%s] ", deflt);
+        snprintf(buf, sizeof(buf), "%s ", prompt);
+    if (deflt) {
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, "[%s] ", deflt);
+    }
     fputs(buf, stdout);
     fflush(stdout);
     if (!fgets(buf, 256, stdin)) {
@@ -6607,8 +6626,8 @@ namespace {
     {
         if (Abort)
             keyret = ESCAPE_KEY;
-        if (GRpkgIf()->LoopLevel() > 1)
-            GRpkgIf()->BreakLoop();
+        if (DSPpkg::self()->LoopLevel() > 1)
+            DSPpkg::self()->BreakLoop();
         EV()->PopCallback(this);
         delete this;
     }
@@ -6639,7 +6658,7 @@ misc2_funcs::IFgetKey(Variable *res, Variable*, void*)
         delete KCmd;
         return (BAD);
     }
-    GRpkgIf()->MainLoop();
+    DSPpkg::self()->MainLoop();
     res->type = TYP_SCALAR;
     res->content.value = KState::keyret;
     return (OK);
@@ -6696,7 +6715,7 @@ namespace {
             else if (args[i].type == TYP_SCALAR) {
                 if (need_sp)
                     lstr.add_c(' ');
-                sprintf(buf, "%g", args[i].content.value);
+                snprintf(buf, sizeof(buf), "%g", args[i].content.value);
                 lstr.add(buf);
                 need_sp = true;
             }
@@ -6707,7 +6726,8 @@ namespace {
                         lstr.add(" ...");
                         break;
                     }
-                    sprintf(buf, "%g", args[i].content.a->values()[j]);
+                    snprintf(buf, sizeof(buf), "%g",
+                        args[i].content.a->values()[j]);
                     if (need_sp)
                         lstr.add_c(' ');
                     lstr.add(buf);
@@ -6717,7 +6737,7 @@ namespace {
             else if (args[i].type == TYP_CMPLX) {
                 if (need_sp)
                     lstr.add_c(' ');
-                sprintf(buf, "(%g,%g)", args[i].content.cx.real,
+                snprintf(buf, sizeof(buf), "(%g,%g)", args[i].content.cx.real,
                     args[i].content.cx.imag);
                 lstr.add(buf);
                 need_sp = true;
@@ -6730,7 +6750,7 @@ namespace {
                     if (cnt == SIlcx()->maxZoids())
                         strcpy(buf, "list contains more zoids...");
                     else
-                        sprintf(buf, "%g %g %g %g %g %g",
+                        snprintf(buf, sizeof(buf), "%g %g %g %g %g %g",
                         MICRONS(z->Z.xll), MICRONS(z->Z.xlr), MICRONS(z->Z.yl),
                         MICRONS(z->Z.xul), MICRONS(z->Z.xur), MICRONS(z->Z.yu));
                     lstr.add(buf);
@@ -6760,10 +6780,12 @@ namespace {
                     lstr.add_c(' ');
                 int id = (int)args[i].content.value;
                 sHdl *hdl = sHdl::get(id);
-                if (hdl)
-                    sprintf(buf, "(%d): handle to %s", id, hdl->string());
+                if (hdl) {
+                    snprintf(buf, sizeof(buf), "(%d): handle to %s", id,
+                        hdl->string());
+                }
                 else
-                    sprintf(buf, "(%d): defunct handle", id);
+                    snprintf(buf, sizeof(buf), "(%d): defunct handle", id);
                 lstr.add(buf);
                 need_sp = true;
             }
@@ -6800,7 +6822,7 @@ namespace {
                     s0 = new stringlist(lstring::copy("(null)"), s0);
             }
             else if (args[i].type == TYP_SCALAR) {
-                sprintf(buf, "%g", args[i].content.value);
+                snprintf(buf, sizeof(buf), "%g", args[i].content.value);
                 s0 = new stringlist(lstring::copy(buf), s0);
             }
             else if (args[i].type == TYP_ARRAY) {
@@ -6810,19 +6832,20 @@ namespace {
                         s0 = new stringlist(lstring::copy(" ..."), s0);
                         break;
                     }
-                    sprintf(buf, "%g", args[i].content.a->values()[j]);
+                    snprintf(buf, sizeof(buf), "%g",
+                        args[i].content.a->values()[j]);
                     s0 = new stringlist(lstring::copy(buf), s0);
                 }
             }
             else if (args[i].type == TYP_CMPLX) {
-                sprintf(buf, "(%g,%g)", args[i].content.cx.real,
+                snprintf(buf, sizeof(buf), "(%g,%g)", args[i].content.cx.real,
                     args[i].content.cx.imag);
                 s0 = new stringlist(lstring::copy(buf), s0);
             }
             else if (args[i].type == TYP_ZLIST) {
                 int cnt = 0;
                 for (Zlist *z = args[i].content.zlist; z; z = z->next) {
-                    sprintf(buf, "%g %g %g %g %g %g",
+                    snprintf(buf, sizeof(buf), "%g %g %g %g %g %g",
                         MICRONS(z->Z.xll), MICRONS(z->Z.xlr), MICRONS(z->Z.yl),
                         MICRONS(z->Z.xul), MICRONS(z->Z.xur), MICRONS(z->Z.yu));
                     if (cnt == SIlcx()->maxZoids())
@@ -6840,10 +6863,12 @@ namespace {
             else if (args[i].type == TYP_HANDLE) {
                 int id = (int)args[i].content.value;
                 sHdl *hdl = sHdl::get(id);
-                if (hdl)
-                    sprintf(buf, "(%d): handle to %s", id, hdl->string());
+                if (hdl) {
+                    snprintf(buf, sizeof(buf), "(%d): handle to %s",
+                        id, hdl->string());
+                }
                 else
-                    sprintf(buf, "(%d): defunct handle", id);
+                    snprintf(buf, sizeof(buf), "(%d): defunct handle", id);
                 s0 = new stringlist(lstring::copy(buf), s0);
             }
         }

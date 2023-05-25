@@ -56,18 +56,18 @@
 namespace {
     void start_modal(GtkWidget *w)
     {
-        gtkMenu()->SetSensGlobal(false);
-        gtkMenu()->SetModal(w);
-        dspPkgIf()->SetOverrideBusy(true);
+        GTKmenu::self()->SetSensGlobal(false);
+        GTKmenu::self()->SetModal(w);
+        GTKpkg::self()->SetOverrideBusy(true);
         DSPmainDraw(ShowGhost(ERASE))
     }
 
 
     void end_modal()
     {
-        gtkMenu()->SetModal(0);
-        gtkMenu()->SetSensGlobal(true);
-        dspPkgIf()->SetOverrideBusy(false);
+        GTKmenu::self()->SetModal(0);
+        GTKmenu::self()->SetSensGlobal(true);
+        GTKpkg::self()->SetOverrideBusy(false);
         DSPmainDraw(ShowGhost(DISPLAY))
     }
 }
@@ -129,7 +129,7 @@ using namespace gtkselinst;
 void
 cMain::PopUpSelectInstances(CDol *list)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (RunMode() != ModeNormal)
         return;
@@ -148,12 +148,12 @@ cMain::PopUpSelectInstances(CDol *list)
     gtk_window_set_transient_for(GTK_WINDOW(CI->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), CI->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), CI->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(CI->Shell());
 
     start_modal(CI->Shell());
-    GRX->MainLoop();  // wait for user's response
+    GTKdev::self()->MainLoop();  // wait for user's response
 }
 
 
@@ -165,7 +165,7 @@ cMain::PopUpSelectInstances(CDol *list)
 CDol *
 cMain::PopUpFilterInstances(CDol *list)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return (list);
     if (RunMode() != ModeNormal)
         return (list);
@@ -186,13 +186,13 @@ cMain::PopUpFilterInstances(CDol *list)
     gtk_window_set_transient_for(GTK_WINDOW(CI->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), CI->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), CI->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(CI->Shell());
 
     ci_return = 0;
     start_modal(CI->Shell());
-    GRX->MainLoop();  // wait for user's response
+    GTKdev::self()->MainLoop();  // wait for user's response
     return (ci_return);
 }
 // End of cMain functions.
@@ -316,8 +316,8 @@ sCI::~sCI()
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)ci_cancel_proc, wb_shell);
     }
-    if (GRX->LoopLevel() > 1)
-        GRX->BreakLoop();
+    if (GTKdev::self()->LoopLevel() > 1)
+        GTKdev::self()->BreakLoop();
     end_modal();
 }
 
@@ -378,7 +378,8 @@ sCI::refresh()
         double val = text_get_scroll_value(wb_textarea);
         text_set_chars(wb_textarea, "");
         for (ci_item *s = ci_list; s->name; s++) {
-            sprintf(buf, "%s%c%d", s->name, CD_INST_NAME_SEP, s->index);
+            snprintf(buf, sizeof(buf), "%s%c%d", s->name, CD_INST_NAME_SEP,
+                s->index);
             int len = strlen(buf);
             char *e = buf + len;
             while (len <= ci_field) {
@@ -389,7 +390,7 @@ sCI::refresh()
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
             if (!ci_filt)
                 s->sel = (s->cdesc->state() == CDobjSelected);
-            sprintf(buf, "%-3s\n", s->sel ? "yes" : "no");
+            snprintf(buf, sizeof(buf), "%-3s\n", s->sel ? "yes" : "no");
             text_insert_chars_at_point(wb_textarea, s->sel ? yc : nc, buf,
                 -1, -1);
         }

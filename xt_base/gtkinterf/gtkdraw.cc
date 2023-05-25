@@ -1276,7 +1276,8 @@ GTKdraw::DefineColor(int *pixel, int red, int green, int blue)
     GC()->set_foreground(&newcolor);
     *pixel = newcolor.pixel;
 #else
-    if (gdk_colormap_alloc_color(GRX->Colormap(), &newcolor, false, true))
+    if (gdk_colormap_alloc_color(GTKdev::self()->Colormap(), &newcolor,
+            false, true))
         *pixel = newcolor.pixel;
     else
         *pixel = 0;
@@ -1760,7 +1761,7 @@ GTKdraw::GetRegion(int x, int y, int wid, int hei)
 
 #else
     GdkPixmap *pm = gdk_pixmap_new(gd_window, wid, hei,
-        gdk_visual_get_depth(GRX->Visual()));
+        gdk_visual_get_depth(GTKdev::self()->Visual()));
     gdk_window_copy_area(pm, CpyGC(), 0, 0, gd_window, x, y, wid, hei);
     return ((GRobject)pm);
 #endif
@@ -1795,7 +1796,7 @@ GTKdraw::DisplayImage(const GRimage *image, int x, int y,
     int width, int height)
 {
 #if GTK_CHECK_VERSION(3,0,0)
-    ndkImage *im = new ndkImage(ndkIMAGE_FASTEST, GRX->Visual(),
+    ndkImage *im = new ndkImage(ndkIMAGE_FASTEST, GTKdev::self()->Visual(),
         width, height);
 
     for (int i = 0; i < height; i++) {
@@ -1839,8 +1840,9 @@ GTKdraw::DisplayImage(const GRimage *image, int x, int y,
     if (image->shmid()) {
         XShmSegmentInfo shminfo;
         XImage *im = XShmCreateImage(gr_x_display(),
-            gr_x_visual(GRX->Visual()), GRX->Visual()->depth, ZPixmap,
-            0, &shminfo, image->width(), image->height());
+            gr_x_visual(GTKdev::self()->Visual()),
+            GTKdev::self()->Visual()->depth,
+            ZPixmap, 0, &shminfo, image->width(), image->height());
         if (!im)
             goto normal;
         shminfo.shmid = image->shmid();
@@ -1869,8 +1871,9 @@ normal:
     if (GRpkgIf()->UseSHM() > 0) {
         XShmSegmentInfo shminfo;
         XImage *im = XShmCreateImage(gr_x_display(),
-            gr_x_visual(GRX->Visual()), GRX->Visual()->depth, ZPixmap,
-            0, &shminfo, width, height);
+            gr_x_visual(GTKdev::self()->Visual()),
+            GTKdev::self()->Visual()->depth,
+            ZPixmap, 0, &shminfo, width, height);
         if (!im)
             return;
         shminfo.shmid = shmget(IPC_PRIVATE, im->bytes_per_line * im->height,
@@ -1909,7 +1912,7 @@ normal:
     }
 ******/
 
-    if (GRX->ImageCode() == 0) {
+    if (GTKdev::self()->ImageCode() == 0) {
         // Pure-X version, may have slightly less overhead than the gtk
         // code, but does not use SHM.  I can't see any difference
         // with/without SHM anyway.
@@ -1921,7 +1924,8 @@ normal:
         // code seems to work, and avoids the copy overhead.
 
         XImage *im = XCreateImage(gr_x_display(),
-            gr_x_visual(GRX->Visual()), GRX->Visual()->depth, ZPixmap,
+            gr_x_visual(GTKdev::self()->Visual()),
+            GTKdev::self()->Visual()->depth, ZPixmap,
             0, 0, image->width(), image->height(), 32, 0);
         im->data = (char*)image->data();
         XPutImage(gr_x_display(), gr_x_window(gd_window),
@@ -1930,13 +1934,14 @@ normal:
         XDestroyImage(im);
         return;
     }
-    if (GRX->ImageCode() == 1) {
+    if (GTKdev::self()->ImageCode() == 1) {
         // Pure-X version, may have slightly less overhead than the gtk
         // code, but does not use SHM.  I can't see any difference
         // with/without SHM anyway.
 
         XImage *im = XCreateImage(gr_x_display(),
-            gr_x_visual(GRX->Visual()), GRX->Visual()->depth, ZPixmap,
+            gr_x_visual(GTKdev::self()->Visual()),
+            GTKdev::self()->Visual()->depth, ZPixmap,
             0, 0, width, height, 32, 0);
         im->data = (char*)malloc(im->bytes_per_line * im->height);
 
@@ -1965,7 +1970,7 @@ normal:
 
     // Gdk version.
 
-    GdkImage *im = gdk_image_new(GDK_IMAGE_FASTEST, GRX->Visual(),
+    GdkImage *im = gdk_image_new(GDK_IMAGE_FASTEST, GTKdev::self()->Visual(),
         width, height);
 
     for (int i = 0; i < height; i++) {

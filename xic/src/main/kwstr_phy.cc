@@ -280,8 +280,10 @@ phyKWstruct::get_string_for(int type, const char *orig)
         if (!in)
             return (0);
         in = lstring::strip_space(in);
-        if (*in)
-            sprintf(buf + strlen(buf), " %s", in);
+        if (*in) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, " %s", in);
+        }
         break;
 
     case phThickness:
@@ -293,7 +295,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf, "%s %.4f", Ekw.Thickness(), d);
+                snprintf(buf, sizeof(buf), "%s %.4f", Ekw.Thickness(), d);
                 break;
             }
             in = prompt(
@@ -310,7 +312,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             int n;
             if (sscanf(in, "%d", &n) == 1 && n > 0) {
-                sprintf(buf, "%s %d", Ekw.FH_nhinc(), n);
+                snprintf(buf, sizeof(buf), "%s %d", Ekw.FH_nhinc(), n);
                 break;
             }
             in = prompt(
@@ -329,7 +331,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d > 0.0) {
-                sprintf(buf, "%s %.4f", Ekw.FH_rh(), d);
+                snprintf(buf, sizeof(buf), "%s %.4f", Ekw.FH_rh(), d);
                 break;
             }
             in = prompt(
@@ -346,7 +348,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf, "%s %.4e", Ekw.Rho(), d);
+                snprintf(buf, sizeof(buf), "%s %.4e", Ekw.Rho(), d);
                 break;
             }
             in = prompt(
@@ -363,7 +365,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d > 0.0) {
-                sprintf(buf, "%s %.4e", Ekw.Sigma(), d);
+                snprintf(buf, sizeof(buf), "%s %.4e", Ekw.Sigma(), d);
                 break;
             }
             in = prompt(
@@ -380,7 +382,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf, "%s %.4e", Ekw.Rsh(), d);
+                snprintf(buf, sizeof(buf), "%s %.4e", Ekw.Rsh(), d);
                 break;
             }
             in = prompt(
@@ -397,7 +399,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf, "%s %.4e", Ekw.Tau(), d);
+                snprintf(buf, sizeof(buf), "%s %.4e", Ekw.Tau(), d);
                 break;
             }
             in = prompt(
@@ -414,7 +416,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf, "%s %.4f", Ekw.EpsRel(), d);
+                snprintf(buf, sizeof(buf), "%s %.4f", Ekw.EpsRel(), d);
                 break;
             }
             in = prompt(
@@ -431,7 +433,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf, "%s %.4e", Ekw.Capacitance(), d);
+                snprintf(buf, sizeof(buf), "%s %.4e", Ekw.Capacitance(), d);
                 break;
             }
             in = prompt(
@@ -448,7 +450,8 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 break;
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf + strlen(buf), " %.4e", d);
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " %.4e", d);
                 break;
             }
             in = prompt(
@@ -465,7 +468,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf, "%s %.4e", Ekw.Lambda(), d);
+                snprintf(buf, sizeof(buf), "%s %.4e", Ekw.Lambda(), d);
                 break;
             }
             in = prompt(
@@ -482,7 +485,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             char *tok = lstring::gettok(&in);
             if (tok) {
-                sprintf(buf, "%s %s", Ekw.Tline(), tok);
+                snprintf(buf, sizeof(buf), "%s %s", Ekw.Tline(), tok);
                 delete [] tok;
                 break;
             }
@@ -497,7 +500,8 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf + strlen(buf), " %.4f", d);
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " %.4f", d);
                 break;
             }
             in = prompt(
@@ -511,7 +515,8 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf + strlen(buf), " %.4f", d);
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " %.4f", d);
                 break;
             }
             in = prompt(
@@ -528,7 +533,7 @@ phyKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
-                sprintf(buf, "%s %g", Ekw.Antenna(), d);
+                snprintf(buf, sizeof(buf), "%s %g", Ekw.Antenna(), d);
                 break;
             }
             in = prompt(
@@ -611,50 +616,51 @@ phyKWstruct::get_settings(const CDl *ld)
     }
     if (dp->thickness() > 0.0) {
         int ndgt = CD()->numDigits();
-        sprintf(buf, "%s %.*f\n", Ekw.Thickness(), ndgt, dp->thickness());
+        snprintf(buf, sizeof(buf), "%s %.*f\n", Ekw.Thickness(), ndgt,
+            dp->thickness());
         lstr.add(buf);
     }
     if (lp->fh_nhinc() > 1) {
-        sprintf(buf, "%s %d\n", Ekw.FH_nhinc(), lp->fh_nhinc());
+        snprintf(buf, sizeof(buf), "%s %d\n", Ekw.FH_nhinc(), lp->fh_nhinc());
         lstr.add(buf);
     }
     if (lp->fh_rh() > 0.0 && lp->fh_rh() != 2.0) {
-        sprintf(buf, "%s %g\n", Ekw.FH_rh(), lp->fh_rh());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.FH_rh(), lp->fh_rh());
         lstr.add(buf);
     }
     if (lp->rho() > 0.0) {
-        sprintf(buf, "%s %g\n", Ekw.Rho(), lp->rho());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.Rho(), lp->rho());
         lstr.add(buf);
     }
     if (lp->ohms_per_sq() > 0.0) {
-        sprintf(buf, "%s %g\n", Ekw.Rsh(), lp->ohms_per_sq());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.Rsh(), lp->ohms_per_sq());
         lstr.add(buf);
     }
     if (lp->tau() > 0.0) {
-        sprintf(buf, "%s %g\n", Ekw.Tau(), lp->tau());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.Tau(), lp->tau());
         lstr.add(buf);
     }
     if (lp->epsrel() > 0.0) {
-        sprintf(buf, "%s %g\n", Ekw.EpsRel(), lp->epsrel());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.EpsRel(), lp->epsrel());
         lstr.add(buf);
     }
     if (lp->cap_per_area() > 0.0 || lp->cap_per_perim() > 0.0) {
-        sprintf(buf, "%s %g %g\n", Ekw.Capacitance(), lp->cap_per_area(),
-            lp->cap_per_perim());
+        snprintf(buf, sizeof(buf), "%s %g %g\n", Ekw.Capacitance(),
+            lp->cap_per_area(), lp->cap_per_perim());
         lstr.add(buf);
     }
     if (lp->lambda() > 0.0) {
-        sprintf(buf, "%s %g\n", Ekw.Lambda(), lp->lambda());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.Lambda(), lp->lambda());
         lstr.add(buf);
     }
     if (lp->gp_lname() && *lp->gp_lname()) {
         int ndgt = CD()->numDigits();
-        sprintf(buf, "%s %s %.*f %g\n", Ekw.Tline(), lp->gp_lname(),
-            ndgt, lp->diel_thick(), lp->diel_const());
+        snprintf(buf, sizeof(buf), "%s %s %.*f %g\n", Ekw.Tline(),
+            lp->gp_lname(), ndgt, lp->diel_thick(), lp->diel_const());
         lstr.add(buf);
     }
     if (lp->ant_ratio() > 0) {
-        sprintf(buf, "%s %g\n", Ekw.Antenna(), lp->ant_ratio());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.Antenna(), lp->ant_ratio());
         lstr.add(buf);
     }
 
@@ -995,7 +1001,7 @@ phyKWstruct::set_settings(CDl *ld, const char *string)
                 }
                 else
                     msg = "Retry: unknown keyword line %d";
-                sprintf(buf, msg, linecnt);
+                snprintf(buf, sizeof(buf), msg, linecnt);
 
                 esbak.revert();
 

@@ -104,31 +104,38 @@ cMain::MenuItemLocation(int, int*, int*)
 
 namespace {
     const char *MIDX = "midx";
+
+    // Instantiate
+    GTKmenuConfig _cfg_;
 }
 
-gtkMenuConfig *gtkMenuConfig::instancePtr = 0;
 
-gtkMenuConfig::gtkMenuConfig()
+GTKmenuConfig *GTKmenuConfig::instancePtr = 0;
+
+GTKmenuConfig::GTKmenuConfig()
 {
     if (instancePtr) {
         fprintf(stderr,
-            "Singleton class gtkMenuConfig already instantiated.\n");
+            "Singleton class GTKmenuConfig already instantiated.\n");
         exit(1);
     }
     instancePtr = this;
 }
 
-// Instantiate
-gtkMenuConfig _cfg_;
+
+GTKmenuConfig::~GTKmenuConfig()
+{
+    instancePtr = 0;
+}
 
 
 // Private static error exit.
 //
 void
-gtkMenuConfig::on_null_ptr()
+GTKmenuConfig::on_null_ptr()
 {
     fprintf(stderr,
-        "Singleton class GtlMenuConfig used before instantiated.\n");
+        "Singleton class GTKmenuConfig used before instantiated.\n");
     exit(1);
 }
 
@@ -272,7 +279,7 @@ namespace {
 
 
 void
-gtkMenuConfig::instantiateMainMenus()
+GTKmenuConfig::instantiateMainMenus()
 {
     instantiateFileMenu();
     instantiateCellMenu();
@@ -291,7 +298,7 @@ gtkMenuConfig::instantiateMainMenus()
 
 
 void
-gtkMenuConfig::instantiateTopButtonMenu()
+GTKmenuConfig::instantiateTopButtonMenu()
 {
     // Horizontal button line at top of main window.
     MenuBox *mbox = Menu()->GetMiscMenu();
@@ -332,7 +339,7 @@ gtkMenuConfig::instantiateTopButtonMenu()
 
 
 void
-gtkMenuConfig::instantiateSideButtonMenus()
+GTKmenuConfig::instantiateSideButtonMenus()
 {
     instantiatePhysSideButtonMenu();
     instantiateElecSideButtonMenu();
@@ -340,7 +347,7 @@ gtkMenuConfig::instantiateSideButtonMenus()
 
 
 void
-gtkMenuConfig::instantiateSubwMenus(int wnum, GtkWidget *menubar,
+GTKmenuConfig::instantiateSubwMenus(int wnum, GtkWidget *menubar,
     GtkAccelGroup *accel_group)
 {
     instantiateSubwViewMenu(wnum, menubar, accel_group);
@@ -352,7 +359,7 @@ gtkMenuConfig::instantiateSubwMenus(int wnum, GtkWidget *menubar,
 
 
 void
-gtkMenuConfig::updateDynamicMenus()
+GTKmenuConfig::updateDynamicMenus()
 {
     struct submenu_list
     {
@@ -532,11 +539,11 @@ gtkMenuConfig::updateDynamicMenus()
 
 
 void
-gtkMenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
+GTKmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
 {
     if (wnum == 0) {
-        GtkWidget *bp = gtkMenu()->FindMainMenuWidget(MMview, MenuPHYS);
-        GtkWidget *be = gtkMenu()->FindMainMenuWidget(MMview, MenuSCED);
+        GtkWidget *bp = GTKmenu::self()->FindMainMenuWidget(MMview, MenuPHYS);
+        GtkWidget *be = GTKmenu::self()->FindMainMenuWidget(MMview, MenuSCED);
         if (bp && be) {
             if (mode == Physical) {
                 gtk_widget_show(be);
@@ -547,7 +554,7 @@ gtkMenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
                 gtk_widget_hide(be);
             }
         }
-        GtkWidget *ns = gtkMenu()->FindMainMenuWidget(MMattr, MenuNOSYM);
+        GtkWidget *ns = GTKmenu::self()->FindMainMenuWidget(MMattr, MenuNOSYM);
         if (ns) {
             if (mode == Physical)
                 gtk_widget_hide(ns);
@@ -556,22 +563,22 @@ gtkMenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
         }
 
         // Desensitize the DRC menu in electrical mode.
-        GtkWidget *mitem = gtkMenu()->FindMainMenuWidget(MMdrc, 0);
+        GtkWidget *mitem = GTKmenu::self()->FindMainMenuWidget(MMdrc, 0);
         if (mitem)
             gtk_widget_set_sensitive(mitem, (DSP()->CurMode() == Physical));
 
         // swap button menu
         if (mode == Physical) {
-            if (gtkMenu()->btnElecMenuWidget)
-                gtk_widget_hide(gtkMenu()->btnElecMenuWidget);
-            if (gtkMenu()->btnPhysMenuWidget)
-                gtk_widget_show(gtkMenu()->btnPhysMenuWidget);
+            if (GTKmenu::self()->btnElecMenuWidget)
+                gtk_widget_hide(GTKmenu::self()->btnElecMenuWidget);
+            if (GTKmenu::self()->btnPhysMenuWidget)
+                gtk_widget_show(GTKmenu::self()->btnPhysMenuWidget);
         }
         else {
-            if (gtkMenu()->btnPhysMenuWidget)
-                gtk_widget_hide(gtkMenu()->btnPhysMenuWidget);
-            if (gtkMenu()->btnElecMenuWidget)
-                gtk_widget_show(gtkMenu()->btnElecMenuWidget);
+            if (GTKmenu::self()->btnPhysMenuWidget)
+                gtk_widget_hide(GTKmenu::self()->btnPhysMenuWidget);
+            if (GTKmenu::self()->btnElecMenuWidget)
+                gtk_widget_show(GTKmenu::self()->btnElecMenuWidget);
         }
     }
     else {
@@ -592,8 +599,8 @@ gtkMenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
         if (!mmtok)
             return;
 
-        GtkWidget *be = gtkMenu()->FindMainMenuWidget(mmtok, MenuSCED);
-        GtkWidget *bp = gtkMenu()->FindMainMenuWidget(mmtok, MenuPHYS);
+        GtkWidget *be = GTKmenu::self()->FindMainMenuWidget(mmtok, MenuSCED);
+        GtkWidget *bp = GTKmenu::self()->FindMainMenuWidget(mmtok, MenuPHYS);
         if (be && bp) {
             if (mode == Physical) {
                 gtk_widget_hide(bp);
@@ -604,7 +611,7 @@ gtkMenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
                 gtk_widget_show(bp);
             }
         }
-        GtkWidget *ns = gtkMenu()->FindMainMenuWidget(mmtok, MenuNOSYM);
+        GtkWidget *ns = GTKmenu::self()->FindMainMenuWidget(mmtok, MenuNOSYM);
         if (ns) {
             if (mode == Physical)
                 gtk_widget_hide(ns);
@@ -618,14 +625,15 @@ gtkMenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
 // Turn on/off sensitivity of all menus in the main window.
 //
 void
-gtkMenuConfig::set_main_global_sens(bool sens)
+GTKmenuConfig::set_main_global_sens(bool sens)
 {
-    if (gtkMenu()->ButtonMenu(Physical))
-        gtk_widget_set_sensitive(gtkMenu()->ButtonMenu(Physical), sens);
-    if (gtkMenu()->ButtonMenu(Electrical))
-        gtk_widget_set_sensitive(gtkMenu()->ButtonMenu(Electrical), sens);
+    if (GTKmenu::self()->ButtonMenu(Physical))
+        gtk_widget_set_sensitive(GTKmenu::self()->ButtonMenu(Physical), sens);
+    if (GTKmenu::self()->ButtonMenu(Electrical))
+        gtk_widget_set_sensitive(GTKmenu::self()->ButtonMenu(Electrical), sens);
 
-    for (const MenuList *ml = gtkMenu()->GetMainMenus(); ml; ml = ml->next) {
+    for (const MenuList *ml = GTKmenu::self()->GetMainMenus(); ml;
+            ml = ml->next) {
         if (!ml->menubox || !ml->menubox->menu)
             continue;
         MenuEnt *ent = ml->menubox->menu;
@@ -643,7 +651,7 @@ gtkMenuConfig::set_main_global_sens(bool sens)
                     gtk_widget_set_sensitive(GTK_WIDGET(l->data), sens);
                 g_list_free(gl);
             }
-            MenuEnt *nent = gtkMenu()->FindEntry(MMview, MenuALLOC, 0);
+            MenuEnt *nent = GTKmenu::self()->FindEntry(MMview, MenuALLOC, 0);
             if (nent && nent->cmd.caller)
                 gtk_widget_set_sensitive(GTK_WIDGET(nent->cmd.caller), true);
         }
@@ -656,7 +664,7 @@ gtkMenuConfig::set_main_global_sens(bool sens)
                     gtk_widget_set_sensitive(GTK_WIDGET(l->data), sens);
                 g_list_free(gl);
             }
-            MenuEnt *nent = gtkMenu()->FindEntry(MMattr, MenuMAINW, 0);
+            MenuEnt *nent = GTKmenu::self()->FindEntry(MMattr, MenuMAINW, 0);
             if (nent && nent->cmd.caller) {
                 GtkWidget *btn = GTK_WIDGET(nent->cmd.caller);
                 gtk_widget_set_sensitive(btn, true);
@@ -666,7 +674,7 @@ gtkMenuConfig::set_main_global_sens(bool sens)
                     for (GList *l = gl; l; l = l->next)
                         gtk_widget_set_sensitive(GTK_WIDGET(l->data), sens);
                     g_list_free(gl);
-                    nent = gtkMenu()->FindEntry(MMattr, MenuFREEZ, 0);
+                    nent = GTKmenu::self()->FindEntry(MMattr, MenuFREEZ, 0);
                     if (nent && nent->cmd.caller) {
                         gtk_widget_set_sensitive(GTK_WIDGET(nent->cmd.caller),
                             true);
@@ -681,16 +689,16 @@ gtkMenuConfig::set_main_global_sens(bool sens)
 
 
 void
-gtkMenuConfig::instantiateFileMenu()
+GTKmenuConfig::instantiateFileMenu()
 {
     // File menu
     MenuBox *mbox = Menu()->FindMainMenu(MMfile);
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -724,7 +732,7 @@ gtkMenuConfig::instantiateFileMenu()
     // set data "menu" -> menu in the buttons
     // set data "callb" -> callback function
     // set data "data" -> callback data
-    GtkWidget *popup = gtkMenu()->new_popup_menu(item,
+    GtkWidget *popup = GTKmenu::self()->new_popup_menu(item,
         XM()->OpenCellMenuList(), G_CALLBACK(edmenu_proc), 0);
     if (popup) {
         gtk_widget_set_name(popup, "EditSubmenu");
@@ -847,16 +855,16 @@ gtkMenuConfig::instantiateFileMenu()
 
 
 void
-gtkMenuConfig::instantiateCellMenu()
+GTKmenuConfig::instantiateCellMenu()
 {
     // Cell menu
     MenuBox *mbox = Menu()->FindMainMenu(MMcell);
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -917,16 +925,16 @@ gtkMenuConfig::instantiateCellMenu()
 
 
 void
-gtkMenuConfig::instantiateEditMenu()
+GTKmenuConfig::instantiateEditMenu()
 {
     // Edit menu
     MenuBox *mbox = Menu()->FindMainMenu(MMedit);
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -1021,16 +1029,16 @@ gtkMenuConfig::instantiateEditMenu()
 
 
 void
-gtkMenuConfig::instantiateModifyMenu()
+GTKmenuConfig::instantiateModifyMenu()
 {
     // Modify menu
     MenuBox *mbox = Menu()->FindMainMenu(MMmod);
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -1119,16 +1127,16 @@ gtkMenuConfig::instantiateModifyMenu()
 
 
 void
-gtkMenuConfig::instantiateViewMenu()
+GTKmenuConfig::instantiateViewMenu()
 {
     // View menu
     MenuBox *mbox = Menu()->FindMainMenu(MMview);
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -1150,7 +1158,7 @@ gtkMenuConfig::instantiateViewMenu()
     // set data "menu" -> menu in the buttons
     // set data "callb" -> callback function
     // set data "data" -> callback data
-    GtkWidget *popup = gtkMenu()->new_popup_menu(item,
+    GtkWidget *popup = GTKmenu::self()->new_popup_menu(item,
         XM()->ViewList(), G_CALLBACK(vimenu_proc), 0);
     if (popup) {
         gtk_widget_set_name(popup, "ViewSubmenu");
@@ -1263,16 +1271,16 @@ gtkMenuConfig::instantiateViewMenu()
 
 
 void
-gtkMenuConfig::instantiateAttributesMenu()
+GTKmenuConfig::instantiateAttributesMenu()
 {
     // Attributes menu
     MenuBox *mbox = Menu()->FindMainMenu(MMattr);
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -1377,7 +1385,7 @@ gtkMenuConfig::instantiateAttributesMenu()
 
 
 void
-gtkMenuConfig::instantiateAttrSubMenu(GtkWidget *root)
+GTKmenuConfig::instantiateAttrSubMenu(GtkWidget *root)
 {
     MenuBox *mbox = Menu()->GetAttrSubMenu();
     if (!mbox || !mbox->menu)
@@ -1487,7 +1495,7 @@ gtkMenuConfig::instantiateAttrSubMenu(GtkWidget *root)
 
 
 void
-gtkMenuConfig::instantiateObjSubMenu(GtkWidget *root)
+GTKmenuConfig::instantiateObjSubMenu(GtkWidget *root)
 {
     MenuBox *mbox = Menu()->GetObjSubMenu();
     if (!mbox || !mbox->menu)
@@ -1533,16 +1541,16 @@ gtkMenuConfig::instantiateObjSubMenu(GtkWidget *root)
 
 
 void
-gtkMenuConfig::instantiateConvertMenu()
+GTKmenuConfig::instantiateConvertMenu()
 {
     // Convert menu
     MenuBox *mbox = Menu()->FindMainMenu(MMconv);
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -1613,16 +1621,16 @@ gtkMenuConfig::instantiateConvertMenu()
 
 
 void
-gtkMenuConfig::instantiateDRCMenu()
+GTKmenuConfig::instantiateDRCMenu()
 {
     // DRC menu
     MenuBox *mbox = Menu()->FindMainMenu(MMdrc);
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -1751,16 +1759,16 @@ gtkMenuConfig::instantiateDRCMenu()
 
 
 void
-gtkMenuConfig::instantiateExtractMenu()
+GTKmenuConfig::instantiateExtractMenu()
 {
     // Extract menu
     MenuBox *mbox = Menu()->FindMainMenu("extr");
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -1855,16 +1863,16 @@ gtkMenuConfig::instantiateExtractMenu()
 
 
 void
-gtkMenuConfig::instantiateUserMenu()
+GTKmenuConfig::instantiateUserMenu()
 {
     // User menu
     MenuBox *mbox = Menu()->FindMainMenu(MMuser);
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -1895,16 +1903,16 @@ gtkMenuConfig::instantiateUserMenu()
 
 
 void
-gtkMenuConfig::instantiateHelpMenu()
+GTKmenuConfig::instantiateHelpMenu()
 {
     // Extract menu
     MenuBox *mbox = Menu()->FindMainMenu(MMhelp);
     if (!mbox || !mbox->menu)
         return;
-    GtkAccelGroup *accel_group = gtkMenu()->AccelGroup();
+    GtkAccelGroup *accel_group = GTKmenu::self()->AccelGroup();
     if (!accel_group)
         return;
-    GtkWidget *menubar = gtkMenu()->MainMenu();
+    GtkWidget *menubar = GTKmenu::self()->MainMenu();
     if (!menubar)
         return;
 
@@ -1967,7 +1975,7 @@ gtkMenuConfig::instantiateHelpMenu()
 
 
 void
-gtkMenuConfig::instantiatePhysSideButtonMenu()
+GTKmenuConfig::instantiatePhysSideButtonMenu()
 {
     // Physical button menu.
     MenuBox *mbox = Menu()->GetPhysButtonMenu();
@@ -2010,7 +2018,7 @@ gtkMenuConfig::instantiatePhysSideButtonMenu()
 
     const char **spm = get_style_pixmap();
     GtkWidget *button = gtk_NewPixmapButton(spm, ent->menutext, false);
-    GtkWidget *menu = gtkMenu()->new_popup_menu(0,
+    GtkWidget *menu = GTKmenu::self()->new_popup_menu(0,
         EditIf()->styleList(), G_CALLBACK(stmenu_proc), 0);
     if (menu) {
         gtk_widget_set_name(menu, "StyleMenu");
@@ -2061,7 +2069,7 @@ gtkMenuConfig::instantiatePhysSideButtonMenu()
 }
 
 void
-gtkMenuConfig::instantiateElecSideButtonMenu()
+GTKmenuConfig::instantiateElecSideButtonMenu()
 {
     // Electrical button menu.
     MenuBox *mbox = Menu()->GetElecButtonMenu();
@@ -2087,7 +2095,7 @@ gtkMenuConfig::instantiateElecSideButtonMenu()
     set(ent, "Shape", 0);
 
     GtkWidget *button = gtk_NewPixmapButton(ent->xpm, ent->menutext, false);
-    GtkWidget *menu = gtkMenu()->new_popup_menu(0,
+    GtkWidget *menu = GTKmenu::self()->new_popup_menu(0,
         ScedIf()->shapesList(), G_CALLBACK(shmenu_proc), 0);
     if (menu) {
         gtk_widget_set_name(menu, "ShapeMenu");
@@ -2155,7 +2163,7 @@ gtkMenuConfig::instantiateElecSideButtonMenu()
 
 
 void
-gtkMenuConfig::instantiateSubwViewMenu(int wnum, GtkWidget *menubar,
+GTKmenuConfig::instantiateSubwViewMenu(int wnum, GtkWidget *menubar,
     GtkAccelGroup *accel_group)
 {
     // Subwin View Menu
@@ -2179,7 +2187,7 @@ gtkMenuConfig::instantiateSubwViewMenu(int wnum, GtkWidget *menubar,
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     check_separator(ent, submenu);
 
-    GtkWidget *popup = gtkMenu()->new_popup_menu(item,
+    GtkWidget *popup = GTKmenu::self()->new_popup_menu(item,
         XM()->ViewList(), G_CALLBACK(vimenu_proc), (void*)(intptr_t)wnum);
     if (popup) {
         g_object_set_data(G_OBJECT(item), "menu", popup);
@@ -2282,7 +2290,7 @@ gtkMenuConfig::instantiateSubwViewMenu(int wnum, GtkWidget *menubar,
 
 
 void
-gtkMenuConfig::instantiateSubwAttrMenu(int wnum, GtkWidget *menubar,
+GTKmenuConfig::instantiateSubwAttrMenu(int wnum, GtkWidget *menubar,
     GtkAccelGroup *accel_group)
 {
     // Subwin Attr Menu
@@ -2403,7 +2411,7 @@ gtkMenuConfig::instantiateSubwAttrMenu(int wnum, GtkWidget *menubar,
 
 
 void
-gtkMenuConfig::instantiateSubwObjSubMenu(int wnum, GtkWidget *root)
+GTKmenuConfig::instantiateSubwObjSubMenu(int wnum, GtkWidget *root)
 {
     MenuBox *mbox = Menu()->GetSubwObjMenu(wnum);
     if (!mbox || !mbox->menu)
@@ -2449,7 +2457,7 @@ gtkMenuConfig::instantiateSubwObjSubMenu(int wnum, GtkWidget *root)
 
 
 void
-gtkMenuConfig::instantiateSubwHelpMenu(int wnum, GtkWidget *menubar,
+GTKmenuConfig::instantiateSubwHelpMenu(int wnum, GtkWidget *menubar,
     GtkAccelGroup *accel_group)
 {
     // Subwin Help Menu
@@ -2484,7 +2492,7 @@ gtkMenuConfig::instantiateSubwHelpMenu(int wnum, GtkWidget *menubar,
 // commands from the menus.
 //
 void
-gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data)
+GTKmenuConfig::menu_handler(GtkWidget *caller, void *client_data)
 {
     unsigned int action =
         (unsigned long)g_object_get_data(G_OBJECT(caller), MIDX);
@@ -2507,10 +2515,11 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data)
         return;
 
     ent += action;
-    if (ent->alt_caller)
+    if (ent->alt_caller) {
         // Spurious call from menu pop-up.  This handler should only
         // be called through the alt_caller.
         return;
+    }
 
     ent->cmd.caller = caller;  // should already be set
     if (!ent->cmd.wdesc)
@@ -2527,12 +2536,13 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data)
     if (XM()->IsDoingHelp()) {
         int x, y;
         GdkModifierType mstate;
-        gdk_window_get_pointer(GRX->DefaultFocusWin(), &x, &y, &mstate);
+        gdk_window_get_pointer(GTKdev::self()->DefaultFocusWin(), &x, &y,
+            &mstate);
         bool state = Menu()->GetStatus(caller);
 
         const char *s;
         if (ent->is_dynamic()) {
-            sprintf(buf, "user:%s", ent->entry);
+            snprintf(buf, sizeof(buf), "user:%s", ent->entry);
             s = buf;
         }
         else {
@@ -2542,7 +2552,7 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data)
                 XM()->QuitHelp();
                 return;
             }
-            sprintf(buf, "xic:%s", s);
+            snprintf(buf, sizeof(buf), "xic:%s", s);
             s = buf;
         }
         if (!(mstate & GDK_SHIFT_MASK)) {
@@ -2598,7 +2608,7 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data)
             g_timeout_add(50, cmd_proc, ent);
         return;
     }
-    if (GTKmainwin::self()) {
+    if (GTKmainwin::exists()) {
         if (ent->action) {
             GTKmainwin::self()->ShowGhost(ERASE);
             (*ent->action)(&ent->cmd);
@@ -2623,9 +2633,9 @@ gtkMenuConfig::menu_handler(GtkWidget *caller, void *client_data)
 
 // Static function.
 int
-gtkMenuConfig::user_cmd_proc(void *arg)
+GTKmenuConfig::user_cmd_proc(void *arg)
 {
-    if (dspPkgIf()->IsBusy())
+    if (GTKpkg::self()->IsBusy())
         return (true);
     DSP()->SetInterrupt(DSPinterNone);
     MenuEnt *ent = (MenuEnt*)arg;
@@ -2636,7 +2646,7 @@ gtkMenuConfig::user_cmd_proc(void *arg)
     if (lstring::strdirsep(entry)) {
         // from submenu, add a distinguishing prefix to avoid confusion with
         // file path
-        sprintf(buf, "%s%s", SCR_LIBCODE, entry);
+        snprintf(buf, sizeof(buf), "%s%s", SCR_LIBCODE, entry);
         entry = buf;
     }
     SIfile *sfp;
@@ -2672,9 +2682,9 @@ gtkMenuConfig::user_cmd_proc(void *arg)
 
 // Static function.
 int
-gtkMenuConfig::cmd_proc(void *arg)
+GTKmenuConfig::cmd_proc(void *arg)
 {
-    if (dspPkgIf()->IsBusy())
+    if (GTKpkg::self()->IsBusy())
         return (true);
     DSP()->SetInterrupt(DSPinterNone);
     MenuEnt *ent = (MenuEnt*)arg;
@@ -2694,12 +2704,13 @@ gtkMenuConfig::cmd_proc(void *arg)
 // Edit menu handler.
 //
 void
-gtkMenuConfig::edmenu_proc(GtkWidget *caller, void*)
+GTKmenuConfig::edmenu_proc(GtkWidget *caller, void*)
 {
     if (XM()->IsDoingHelp()) {
         int x, y;
         GdkModifierType mstate;
-        gdk_window_get_pointer(GRX->DefaultFocusWin(), &x, &y, &mstate);
+        gdk_window_get_pointer(GTKdev::self()->DefaultFocusWin(), &x, &y,
+            &mstate);
         if (!(mstate & GDK_SHIFT_MASK)) {
             DSPmainWbag(PopUpHelp("xic:open"))
             return;
@@ -2711,7 +2722,7 @@ gtkMenuConfig::edmenu_proc(GtkWidget *caller, void*)
 
     int x, y;
     GdkModifierType mstate;
-    gdk_window_get_pointer(GRX->DefaultFocusWin(), &x, &y, &mstate);
+    gdk_window_get_pointer(GTKdev::self()->DefaultFocusWin(), &x, &y, &mstate);
     XM()->HandleOpenCellMenu(string, (mstate & GDK_SHIFT_MASK));
 }
 
@@ -2720,12 +2731,13 @@ gtkMenuConfig::edmenu_proc(GtkWidget *caller, void*)
 // View menu handler.
 //
 void
-gtkMenuConfig::vimenu_proc(GtkWidget *caller, void *client_data)
+GTKmenuConfig::vimenu_proc(GtkWidget *caller, void *client_data)
 {
     if (XM()->IsDoingHelp()) {
         int x, y;
         GdkModifierType mstate;
-        gdk_window_get_pointer(GRX->DefaultFocusWin(), &x, &y, &mstate);
+        gdk_window_get_pointer(GTKdev::self()->DefaultFocusWin(), &x, &y,
+            &mstate);
         if (!(mstate & GDK_SHIFT_MASK)) {
             DSPmainWbag(PopUpHelp("xic:view"))
             return;
@@ -2747,7 +2759,7 @@ gtkMenuConfig::vimenu_proc(GtkWidget *caller, void *client_data)
 // Style menu handler
 //
 void
-gtkMenuConfig::stmenu_proc(GtkWidget *caller, void*)
+GTKmenuConfig::stmenu_proc(GtkWidget *caller, void*)
 {
     const char *string = Menu()->GetLabel(caller);
     if (!string || !*string)
@@ -2763,7 +2775,8 @@ gtkMenuConfig::stmenu_proc(GtkWidget *caller, void*)
     if (XM()->IsDoingHelp()) {
         int x, y;
         GdkModifierType mstate;
-        gdk_window_get_pointer(GRX->DefaultFocusWin(), &x, &y, &mstate);
+        gdk_window_get_pointer(GTKdev::self()->DefaultFocusWin(), &x, &y,
+            &mstate);
         if (!(mstate & GDK_SHIFT_MASK)) {
             if (i == 0)
                 DSPmainWbag(PopUpHelp("xic:width"))
@@ -2801,7 +2814,7 @@ gtkMenuConfig::stmenu_proc(GtkWidget *caller, void*)
 // Shape menu handler.
 //
 void
-gtkMenuConfig::shmenu_proc(GtkWidget *caller, void*)
+GTKmenuConfig::shmenu_proc(GtkWidget *caller, void*)
 {
     if (!ScedIf()->shapesList())
         return;
@@ -2811,10 +2824,11 @@ gtkMenuConfig::shmenu_proc(GtkWidget *caller, void*)
     if (XM()->IsDoingHelp()) {
         int x, y;
         GdkModifierType mstate;
-        gdk_window_get_pointer(GRX->DefaultFocusWin(), &x, &y, &mstate);
+        gdk_window_get_pointer(GTKdev::self()->DefaultFocusWin(), &x, &y,
+            &mstate);
         if (!(mstate & GDK_SHIFT_MASK)) {
             char buf[64];
-            sprintf(buf, "shapes:%s", string);
+            snprintf(buf, sizeof(buf), "shapes:%s", string);
             DSPmainWbag(PopUpHelp(buf))
             return;
         }
@@ -2843,7 +2857,7 @@ namespace {
     {
         *pushin = true;
         GtkWidget *btn = GTK_WIDGET(data);
-        GRX->Location(btn, x, y);
+        GTKdev::self()->Location(btn, x, y);
     }
 }
 
@@ -2852,7 +2866,7 @@ namespace {
 // Button-press handler to produce pop-up menu.
 //
 int
-gtkMenuConfig::popup_btn_proc(GtkWidget *widget, GdkEvent *event, void *arg)
+GTKmenuConfig::popup_btn_proc(GtkWidget *widget, GdkEvent *event, void *arg)
 {
     gtk_menu_popup(GTK_MENU(arg), 0, 0, pos_func, widget, event->button.button,
         event->button.time);
@@ -2862,7 +2876,7 @@ gtkMenuConfig::popup_btn_proc(GtkWidget *widget, GdkEvent *event, void *arg)
 
 // Static function.
 const char **
-gtkMenuConfig::get_style_pixmap()
+GTKmenuConfig::get_style_pixmap()
 {
     if (EditIf()->getWireStyle() == CDWIRE_FLUSH)
         return (style_f_xpm);

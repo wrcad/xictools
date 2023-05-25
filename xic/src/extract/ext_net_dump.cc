@@ -335,7 +335,7 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
         // flag.  The output will contain the inverted layer.
 
         char buf[32];
-        sprintf(buf, "%s = !%s", ldgp->name(), ldgp->name());
+        snprintf(buf, sizeof(buf), "%s = !%s", ldgp->name(), ldgp->name());
         if (ED()->createLayer(sdesc, buf, 0, CLdefault) != XIok) {
             Errs()->add_error("dump_nets: ground plane inversion failed.");
             return (false);
@@ -438,8 +438,9 @@ cExtNets::write_metal_file(const CDs *sdesc, int x, int y) const
         return (false);
     }
 
-    char *outfile = new char[strlen(en_basename) + 40];
-    sprintf(outfile, "%s_%d_%d.oas", en_basename, x, y);
+    int len = strlen(en_basename) + 40;
+    char *outfile = new char[len];
+    snprintf(outfile, len, "%s_%d_%d.oas", en_basename, x, y);
     GCarray<char*> gc_outfile(outfile);
 
     comp_setup cs;
@@ -462,14 +463,15 @@ cExtNets::write_metal_file(const CDs *sdesc, int x, int y) const
     }
 
     char cname[64];
-    sprintf(cname, "%d_%d", x, y);
-    char *cptr = cname + strlen(cname);
+    snprintf(cname, sizeof(cname), "%d_%d", x, y);
+    int clen = strlen(cname);
+    char *cptr = cname + clen;
 
     for (int i = 0; i < gd->num_groups(); i++) {
         const sGroup *grp = gd->group_for(i);
         if (!grp->net())
             continue;
-        sprintf(cptr, "_%d", i);
+        snprintf(cptr, sizeof(cname) - clen, "_%d", i);
 
         // If then net is named, save the name in a cell property.
         if (grp->netname())
@@ -560,7 +562,7 @@ cExtNets::write_metal_file(const CDs *sdesc, int x, int y) const
         const sGroup *grp = gd->group_for(i);
         if (!grp->net())
             continue;
-        sprintf(cptr, "_%d", i);
+        snprintf(cptr, sizeof(cname) - clen, "_%d", i);
         inst.name = cname;
         if (!oas->write_sref(&inst)) {
             Errs()->add_error(
@@ -827,8 +829,9 @@ cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
         return (false);
     }
 
-    char *filename = new char[strlen(en_basename) + 40];
-    sprintf(filename, "%s_%d_%d", en_basename, x, y);
+    int len = strlen(en_basename) + 40;
+    char *filename = new char[len];
+    snprintf(filename, len, "%s_%d_%d", en_basename, x, y);
     char *fptr = filename + strlen(filename);
     GCarray<char*> gc_filename(filename);
 
@@ -1204,16 +1207,18 @@ namespace {
 bool
 cExtNets::stage2()
 {
-    char *fn1 = new char[strlen(en_basename) + 40];
+    int fnlen = strlen(en_basename) + 40;
+    char *fn1 = new char[fnlen];
     char *pfn1 = lstring::stpcpy(fn1, en_basename);
     GCarray<char*> gc_fn1(fn1);
 
-    char *fn2 = new char[strlen(en_basename) + 40];
+    char *fn2 = new char[fnlen];
     char *pfn2 = lstring::stpcpy(fn2, en_basename);
     GCarray<char*> gc_fn2(fn2);
 
-    char *outname = new char[strlen(en_basename) + 8];
-    sprintf(outname, "%s.equiv", en_basename);
+    int len = strlen(en_basename) + 8;
+    char *outname = new char[len];
+    snprintf(outname, len, "%s.equiv", en_basename);
     FILE *outfp = large_fopen(outname, "w");
     if (!outfp) {
         Errs()->add_error("stage2: can't open equiv file %s.", outname);
@@ -1232,10 +1237,12 @@ cExtNets::stage2()
     for (int ic = 0; ic < en_ny; ic++) {
         for (int jc = 0; jc < en_nx; jc++) {
             if (jc + 1 < en_nx) {
-                sprintf(pfn1, "_%d_%d_R.edg", jc, ic);
+                len = pfn1 - fn1;
+                snprintf(pfn1, fnlen - len, "_%d_%d_R.edg", jc, ic);
                 FILE *fp1 = large_fopen(fn1, "r");
 
-                sprintf(pfn2, "_%d_%d_L.edg", jc+1, ic);
+                len = pfn2 - fn2;
+                snprintf(pfn2, fnlen - len, "_%d_%d_L.edg", jc+1, ic);
                 FILE *fp2 = large_fopen(fn2, "r");
 
                 bool ret = true;
@@ -1280,10 +1287,12 @@ cExtNets::stage2()
                 }
             }
             if (ic + 1 < en_ny) {
-                sprintf(pfn1, "_%d_%d_T.edg", jc, ic);
+                len = pfn1 - fn1;
+                snprintf(pfn1, fnlen - len, "_%d_%d_T.edg", jc, ic);
                 FILE *fp1 = large_fopen(fn1, "r");
 
-                sprintf(pfn2, "_%d_%d_B.edg", jc, ic+1);
+                len = pfn2 - fn2;
+                snprintf(pfn2, fnlen - len, "_%d_%d_B.edg", jc, ic+1);
                 FILE *fp2 = large_fopen(fn2, "r");
 
                 bool ret = true;
@@ -1660,8 +1669,9 @@ cExtNets::stage3()
     // String table for st_a, st_b tags.
     strtab_t stringtab;
 
-    char *eqvname = new char[strlen(en_basename) + 8];
-    sprintf(eqvname, "%s.equiv", en_basename);
+    int len = strlen(en_basename) + 8;
+    char *eqvname = new char[len];
+    snprintf(eqvname, len, "%s.equiv", en_basename);
     GCarray<char*> gc_eqvname(eqvname);
 
     FILE *fp = large_fopen(eqvname, "r");
@@ -1702,9 +1712,9 @@ cExtNets::stage3()
             Errs()->add_error("stage3: bad record in file %s.", eqvname);
             return (false);
         }
-        sprintf(buf, "%d_%d_%d", x1, y1, g1);
+        snprintf(buf, sizeof(buf), "%d_%d_%d", x1, y1, g1);
         const char *id1 = stringtab.add(buf);
-        sprintf(buf, "%d_%d_%d", x2, y2, g2);
+        snprintf(buf, sizeof(buf), "%d_%d_%d", x2, y2, g2);
         const char *id2 = stringtab.add(buf);
 
         SymTabEnt *h1 = (SymTabEnt*)SymTab::get(&st_b, id1);
@@ -1814,12 +1824,14 @@ cExtNets::stage3()
         unlink(eqvname);
 
     // Basename buffer, used for OASIS grid file names.
-    char *fname = new char[strlen(en_basename) + 40];
+    int fnlen = strlen(en_basename) + 40;
+    char *fname = new char[fnlen];
     char *fptr = lstring::stpcpy(fname, en_basename);
     GCarray<char*> gc_bname(fname);
 
-    char *outname = new char[strlen(en_basename) + 5];
-    sprintf(outname, "%s.oas", en_basename);
+    len = strlen(en_basename) + 5;
+    char *outname = new char[len];
+    snprintf(outname, len, "%s.oas", en_basename);
     GCarray<char*> gc_outname(outname);
 
     comp_setup cs;
@@ -1859,7 +1871,8 @@ cExtNets::stage3()
     bool ok = true;
     for (int ic = 0; ic < en_ny; ic++) {
         for (int jc = 0; jc < en_nx; jc++) {
-            sprintf(fptr, "_%d_%d.oas", jc, ic);
+            len = fptr - fname;
+            snprintf(fptr, fnlen - len, "_%d_%d.oas", jc, ic);
             cCHD *chd = chd_cache[ic*en_nx + jc];
             if (!chd) {
                 chd = FIO()->NewCHD(fname, Foas, Physical, 0);
@@ -1884,7 +1897,7 @@ cExtNets::stage3()
             }
 
             for (int grp = 0; ; grp++) {
-                sprintf(hname, "%d_%d_%d", jc, ic, grp);
+                snprintf(hname, 128, "%d_%d_%d", jc, ic, grp);
                 symref_t *p = chd->findSymref(hname, Physical);
                 if (!p) {
                     // Ground group? maybe/maybe not
@@ -1908,7 +1921,7 @@ cExtNets::stage3()
 
                     if (primary) {
                         en_netcnt++;
-                        sprintf(cname, "n%d", en_netcnt);
+                        snprintf(cname, 128, "n%d", en_netcnt);
                     }
                     else
                         strcpy(cname, hname);
@@ -2000,7 +2013,7 @@ cExtNets::stage3()
     }
     Instance inst;
     for (unsigned int i = 1; i <= en_netcnt; i++) {
-        sprintf(cname, "n%d", i);
+        snprintf(cname, 128, "n%d", i);
         inst.name = cname;
         if (!oas->write_sref(&inst)) {
             Errs()->add_error("stage3: write_sref %s failed.", cname);
@@ -2026,7 +2039,8 @@ cExtNets::add_listed_nets(bool flat, stringlist *names, oas_out *oas,
     cCHD **chd_cache, cv_in *ref_in) const
 {
     if (flat) {
-        char *fname = new char[strlen(en_basename) + 40];
+        int fnlen = strlen(en_basename) + 40;
+        char *fname = new char[fnlen];
         char *fptr = lstring::stpcpy(fname, en_basename);
         GCarray<char*> gc_fname(fname);
 
@@ -2068,7 +2082,8 @@ cExtNets::add_listed_nets(bool flat, stringlist *names, oas_out *oas,
             }
 
             if (!chd) {
-                sprintf(fptr, "_%d_%d.oas", x, y);
+                int len = fptr - fname;
+                snprintf(fptr, fnlen - len, "_%d_%d.oas", x, y);
                 chd = FIO()->NewCHD(fname, Foas, Physical, 0);
                 if (!chd) {
                     Errs()->add_error(

@@ -74,7 +74,7 @@ cExt::dumpElecNetlist(FILE *fp, CDs *sdesc, sDumpOpts *opts)
             return (true);
     }
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     XM()->OpenFormatLib(EX_ENET_FORMAT);
     SymTab *tab = new SymTab(false, false);
     bool ret = false;
@@ -98,7 +98,7 @@ cExt::dumpElecNetlist(FILE *fp, CDs *sdesc, sDumpOpts *opts)
                 0);
     }
     delete tab;
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (ret);
 }
 

@@ -157,7 +157,7 @@ cExt::group(CDs *sdesc, int depth)
             return (false);
     }
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     if (EX()->isVerbosePromptline())
         PL()->PushPrompt("Grouping: ");
     else
@@ -207,7 +207,7 @@ cExt::group(CDs *sdesc, int depth)
     }
     else
         PL()->ShowPrompt("Grouping aborted.");
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     return (ret == XIok);
 }

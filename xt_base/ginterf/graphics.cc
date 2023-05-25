@@ -151,6 +151,12 @@ GRpkg::GRpkg()
 }
 
 
+GRpkg::~GRpkg()
+{
+    instancePtr = 0;
+}
+
+
 // Private static error exit.
 //
 void
@@ -270,7 +276,7 @@ namespace {
     void __cdecl thcb1(void *arg)
     {
         thread_got1 = false;
-        thread_c1 = GRpkgIf()->GetChar((intptr_t)arg);
+        thread_c1 = GRpkg::self()->GetChar((intptr_t)arg);
         thread_got1 = true;
         thread1 = 0;
     }
@@ -466,8 +472,8 @@ GRpkg::ErrPrintf(Etype type, const char *fmt, ...)
     if (pkg_error_callback)
         (*pkg_error_callback)(type, to_stdout, outstr);
     else {
-        if (!to_stdout && GRpkgIf()->MainWbag())
-            GRpkgIf()->MainWbag()->PopUpErr(MODE_ON, outstr);
+        if (!to_stdout && GRpkg::self()->MainWbag())
+            GRpkg::self()->MainWbag()->PopUpErr(MODE_ON, outstr);
         else
             fputs(outstr, stderr);
     }
@@ -508,8 +514,8 @@ GRpkg::ErrPrintf(Etype type, const char *fmt, ...)
     if (pkg_error_callback)
         (*pkg_error_callback)(type, to_stdout, buf);
     else {
-        if (!to_stdout && GRpkgIf()->MainWbag())
-            GRpkgIf()->MainWbag()->PopUpErr(MODE_ON, buf);
+        if (!to_stdout && GRpkg::self()->MainWbag())
+            GRpkg::self()->MainWbag()->PopUpErr(MODE_ON, buf);
         else
             fputs(buf, stderr);
     }

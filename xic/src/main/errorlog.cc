@@ -344,8 +344,9 @@ cErrLog::OpenLogDir(const char *app_root)
     // Strip exec suffix, if any.
     if (e && lstring::cieq(e, ".exe"))
         *e = 0;
-    e = buf + strlen(buf);
-    sprintf(e, ".%d", (int)getpid());
+    int len = strlen(buf);
+    e = buf + len;
+    snprintf(e, sizeof(buf) - len, ".%d", (int)getpid());
     char *logdir = pathlist::mk_path(path, buf);
 #ifdef WIN32
     if (mkdir(logdir) && errno != EEXIST) {
@@ -498,8 +499,10 @@ cErrLog::OpenLog(const char *name, const char *mode, bool sizetest)
             char *bak = new char[strlen(path) + 3];
             strcpy(bak, path);
             strcat(bak, ".0");
-            if (!filestat::move_file_local(bak, path))
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            if (!filestat::move_file_local(bak, path)) {
+                DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
+                    filestat::error_msg());
+            }
             delete [] bak;
             FILE *fp = fopen(path, "w");
             if (fp)
@@ -510,15 +513,17 @@ cErrLog::OpenLog(const char *name, const char *mode, bool sizetest)
     }
     if (*mode == 'w') {
         if (!filestat::create_bak(path)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
             return (0);
         }
         char *bak = new char[strlen(path) + 3];
         strcpy(bak, path);
         strcat(bak, ".0");
         if (!access(bak, F_OK)) {
-            if (!filestat::create_bak(bak))
-                GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+            if (!filestat::create_bak(bak)) {
+                DSPpkg::self()->ErrPrintf(ET_ERROR, "%s",
+                    filestat::error_msg());
+            }
             unlink(bak);
         }
         delete [] bak;
@@ -584,7 +589,7 @@ sMsgList::add_msg(bool warn, const char *header, const char *msgstr,
     FILE *fp = Log()->OpenLog(ml_log_filename, ml_msg_count == 1 ? "w" : "a",
         true);
     if (!fp && ml_msg_count == 1) {
-        sprintf(buf,
+        snprintf(buf, sizeof(buf),
             "(%d) Warning [initialization]\n"
             "Can't open %s file, errors and warningss won't be logged.",
             ml_msg_count, ml_log_filename);
@@ -593,13 +598,16 @@ sMsgList::add_msg(bool warn, const char *header, const char *msgstr,
     }
 
     int hlen = 24 + (header ? strlen(header) : 0);
-    char *mbuf = new char[strlen(msgstr) + hlen];
-    if (header)
-        sprintf(mbuf, "(%d) %s [%s]\n%s", ml_msg_count,
+    int len = strlen(msgstr) + hlen;
+    char *mbuf = new char[len];
+    if (header) {
+        snprintf(mbuf, len, "(%d) %s [%s]\n%s", ml_msg_count,
             warn ? "Warning" : "Error", header, msgstr);
-    else
-        sprintf(mbuf, "(%d) %s\n%s", ml_msg_count,
+    }
+    else {
+        snprintf(mbuf, len, "(%d) %s\n%s", ml_msg_count,
             warn ? "Warning" : "Error", msgstr);
+    }
     char *t = mbuf + strlen(mbuf) - 1;
     if (*t == '\n')
         *t = 0;
@@ -619,7 +627,7 @@ sMsgList::add_msg(bool warn, const char *header, const char *msgstr,
         if (cnt == KEEPMSGS) {
             delete [] sl->string;
             if (fp)
-                sprintf(buf, "See %s file.", ml_log_filename);
+                snprintf(buf, sizeof(buf), "See %s file.", ml_log_filename);
             else
                 strcpy(buf, "No logfile, message list truncated.");
             sl->string = lstring::copy(buf);

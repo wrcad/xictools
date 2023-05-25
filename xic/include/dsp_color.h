@@ -42,7 +42,7 @@
 #define DSP_COLOR_H
 
 
-// GUI color mapping.  Values passed to GRpkgIf()->GetAttrColor.
+// GUI color mapping.  Values passed to GRpkg::GetAttrColor.
 //
 #define GRattrColorNo       GRattrColorApp1
 #define GRattrColorYes      GRattrColorApp2
@@ -209,7 +209,7 @@ struct sColorTab
                 te_red = r;
                 te_green = g;
                 te_blue = b;
-                te_pixel = GRpkgIf()->NameColor(clr);
+                te_pixel = GRpkg::self()->NameColor(clr);
                 set_defclr(tab, clr);
                 te_set = true;
             }
@@ -231,7 +231,8 @@ struct sColorTab
 
         void alloc()
             {
-                GRpkgIf()->AllocateColor(&te_pixel, te_red, te_green, te_blue);
+                GRpkg::self()->AllocateColor(&te_pixel, te_red, te_green,
+                    te_blue);
             }
 
         void set_defclr(sColorTab *tab, const char *s)

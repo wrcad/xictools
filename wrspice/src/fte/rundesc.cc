@@ -280,7 +280,7 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
             else if (dd->regular()) {
                 if (!strrchr(dd->dname(), '(')) {
                     v->units()->set(UU_VOLTAGE);
-                    sprintf(buf, "v(%s)", dd->dname());
+                    snprintf(buf, sizeof(buf), "v(%s)", dd->dname());
                     v->set_name(buf);
                 }
             }
@@ -339,7 +339,7 @@ sRunDesc::addPointToPlot(IFvalue *refValue, IFvalue *valuePtr, bool inc)
             else if (rd_data[i].type() == IF_COMPLEX)
                 rd_data[i].addComplexValue(val.cValue, inc);
             else 
-                GRpkgIf()->ErrPrintf(ET_INTERR,
+                GRpkg::self()->ErrPrintf(ET_INTERR,
                     "unsupported data type in plot.\n");
         }
     }
@@ -379,7 +379,7 @@ sRunDesc::pushPointToPlot(sCKT *ckt, IFvalue *refValue, IFvalue *valuePtr,
             else if (rd_data[i].type() == IF_COMPLEX)
                 rd_data[i].pushComplexValue(val.cValue, indx);
             else 
-                GRpkgIf()->ErrPrintf(ET_INTERR,
+                GRpkg::self()->ErrPrintf(ET_INTERR,
                     "unsupported data type in plot.\n");
         }
     }
@@ -411,7 +411,8 @@ sRunDesc::dumpSegment()
     if (rd_pointCount) {
         if (rd_segfilebase && !rd_rd) {
             char buf[128];
-            sprintf(buf, "%s.s%02d", rd_segfilebase, rd_segindex);
+            snprintf(buf, sizeof(buf), "%s.s%02d", rd_segfilebase,
+                rd_segindex);
             bool use_csdf = false;
             if (use_csdf) {
                 cCSDFout csdf(rd_runPlot);
@@ -476,7 +477,7 @@ sRunDesc::datasize()
         maxdata = vv.get_real();
 
     if (mysize > maxdata) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "analysis would use %.1fKB which exceeds the maximum %gKB.\n"
             "Set \"maxdata\" to alter limit.\n", mysize, maxdata);
         return (true);

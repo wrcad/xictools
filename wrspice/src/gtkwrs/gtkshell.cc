@@ -112,7 +112,7 @@ GTKtoolbar::PopUpShellDefs(int x, int y)
     xKWent *entry = KWGET(kw_history);
     if (entry) {
         char tbuf[64];
-        sprintf(tbuf, "%d", CP_DefHistLen);
+        snprintf(tbuf, sizeof(tbuf), "%d", CP_DefHistLen);
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(CP_DefHistLen, 1.0, 0, 0, 0);
         entry->ent->create_widgets(entry, tbuf);
@@ -138,7 +138,7 @@ GTKtoolbar::PopUpShellDefs(int x, int y)
     entry = KWGET(kw_width);
     if (entry) {
         char tbuf[64];
-        sprintf(tbuf, "%d", DEF_WIDTH);
+        snprintf(tbuf, sizeof(tbuf), "%d", DEF_WIDTH);
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_WIDTH, 1.0, 0.0, 0.0, 0);
         entry->ent->create_widgets(entry, tbuf);
@@ -152,7 +152,7 @@ GTKtoolbar::PopUpShellDefs(int x, int y)
     entry = KWGET(kw_height);
     if (entry) {
         char tbuf[64];
-        sprintf(tbuf, "%d", DEF_HEIGHT);
+        snprintf(tbuf, sizeof(tbuf), "%d", DEF_HEIGHT);
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_HEIGHT, 1.0, 0.0, 0.0, 0);
         entry->ent->create_widgets(entry, tbuf);
@@ -329,7 +329,7 @@ GTKtoolbar::PopDownShellDefs()
     TB()->PopDownTBhelp(TBH_SH);
     SetLoc(ntb_shell, sh_shell);
 
-    GRX->Deselect(tb_shell);
+    GTKdev::Deselect(tb_shell);
     g_signal_handlers_disconnect_by_func(G_OBJECT(sh_shell),
         (gpointer)sh_cancel_proc, sh_shell);
 
@@ -384,7 +384,7 @@ namespace {
     sh_help_proc(GtkWidget *caller, void *client_data)
     {
         GtkWidget *parent = static_cast<GtkWidget*>(client_data);
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state)
             TB()->PopUpTBhelp(parent, caller, TBH_SH);
         else
@@ -397,7 +397,7 @@ namespace {
     {
         if (ent->active) {
             char *s;
-            GRX->SetStatus(ent->active, isset);
+            GTKdev::SetStatus(ent->active, isset);
             if (isset) {
                 s = get_sourcepath();
                 gtk_entry_set_text(GTK_ENTRY(ent->entry), s ? s : "");

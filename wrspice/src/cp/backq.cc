@@ -105,7 +105,7 @@ CshPar::BackQuote(wordlist **list)
                 char *tt = wordlist::flatten(nwl);
                 if (strlen(tt) + strlen(wbuf) + strlen(t) >= BSIZE_SP) {
                     tt[BSIZE_SP - strlen(wbuf) - strlen(t) - 1] = 0;
-                    GRpkgIf()->ErrPrintf(ET_WARN,
+                    GRpkg::self()->ErrPrintf(ET_WARN,
                         "line too long, truncated.\n");
                 }
                 wordlist::destroy(nwl->wl_next);
@@ -160,7 +160,7 @@ CshPar::BackEval(const char *string)
 
         FILE *proc = popen(string, "r");
         if (proc == 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "can't evaluate %s.\n", string);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "can't evaluate %s.\n", string);
             return (0);
         }
         FILE *old = cp_input;

@@ -282,7 +282,8 @@ cgx_info::pr_records(FILE *fp)
     char buf[256];
     for (int i = 0; i < CGX_NUM_REC_TYPES; i++) {
         if (rec_counts[i]) {
-            sprintf(buf, "%-16s %d\n", cgx_record_names[i], rec_counts[i]);
+            snprintf(buf, sizeof(buf), "%-16s %d\n", cgx_record_names[i],
+                rec_counts[i]);
             if (fp)
                 fputs(buf, fp);
             else
@@ -566,7 +567,8 @@ cgx_in::parse(DisplayMode mode, bool listonly, double sc, bool save_bb,
                 in_savebb = false;
                 return (true);
             }
-            sprintf(buf, "strange record type %d (ignored)", type);
+            snprintf(buf, sizeof(buf), "strange record type %d (ignored)",
+                type);
             warning(buf);
             continue;
         }
@@ -697,7 +699,8 @@ cgx_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
                 if (type >= R_ENDLIB) {
                     if (type == R_ENDLIB)
                         break;
-                    sprintf(buf, "strange record type %d (ignored)", type);
+                    snprintf(buf, sizeof(buf),
+                        "strange record type %d (ignored)", type);
                     warning(buf);
                     continue;
                 }
@@ -968,7 +971,7 @@ cgx_in::read_header(bool quick)
             s = strchr(md, '\n');
             if (s)
                 *s = 0;
-            sprintf(buf,
+            snprintf(buf, sizeof(buf),
             "Opening CGX library: %s\nCreated %24s GMT\nModified %24s GMT\n",
                 ptr, cd, md);
             delete [] cd;
@@ -1600,7 +1603,7 @@ cgx_in::a_wire(int size, int flags)
         }
         if (flags != 0 && flags != 1 && flags != 2) {
             char buf[64];
-            sprintf(buf, "unknown pathtype %d set to 0", flags);
+            snprintf(buf, sizeof(buf), "unknown pathtype %d set to 0", flags);
             warning(buf, w.points->x, w.points->y);
             flags = 0;
         }
@@ -2400,7 +2403,7 @@ cgx_in::ac_wire(int size, int flags)
     }
     if (flags != 0 && flags != 1 && flags != 2) {
         char buf[64];
-        sprintf(buf, "unknown pathtype %d, set to 0", flags);
+        snprintf(buf, sizeof(buf), "unknown pathtype %d, set to 0", flags);
         warning(buf, w.points->x, w.points->y);
         flags = 0;
     }
@@ -2753,7 +2756,7 @@ cgx_in::ac_sref(int, int flags)
         char *emsg = FIO()->GdsParamSet(&angle, &magn, &ax, &ay);
         if (emsg) {
             char buf[256];
-            sprintf(buf, "%s for instance of %s", emsg, name);
+            snprintf(buf, sizeof(buf), "%s for instance of %s", emsg, name);
             warning(emsg, name, x, y);
             delete [] emsg;
         }

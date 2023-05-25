@@ -551,7 +551,8 @@ namespace {
                 return (CD()->CellNameTableAdd(buf));
         }
         for (int i = 1; ; i++) {
-            sprintf(e, "_%d", i);
+            int len = e - buf;
+            snprintf(e, sizeof(buf) - len, "_%d", i);
             if (!CDcdb()->findSymbol(buf, &cbin))
                 return (CD()->CellNameTableAdd(buf));
         }
@@ -699,28 +700,37 @@ sStdVia::tech_print(FILE *fp) const
     fprintf(fp, "%s %-16s %-10s %-10s %s \\\n", Tkw.StandardVia(),
         tab_name(), bottom()->name(), top()->name(), via()->name());
     char buf[256];
-    sprintf(buf, "%g %g", MICRONS(via_wid()), MICRONS(via_hei()));
+    snprintf(buf, sizeof(buf), "%g %g", MICRONS(via_wid()),
+        MICRONS(via_hei()));
     fprintf(fp, "    %-12s", buf);
-    sprintf(buf, "%d %d", via_rows(), via_cols());
+    snprintf(buf, sizeof(buf), "%d %d", via_rows(), via_cols());
     fprintf(fp, " %-5s", buf);
-    sprintf(buf, "%g %g", MICRONS(via_spa_x()), MICRONS(via_spa_y()));
+    snprintf(buf, sizeof(buf), "%g %g", MICRONS(via_spa_x()),
+        MICRONS(via_spa_y()));
     fprintf(fp, " %-12s", buf);
-    sprintf(buf, "%g %g", MICRONS(bot_enc_x()), MICRONS(bot_enc_y()));
+    snprintf(buf, sizeof(buf), "%g %g", MICRONS(bot_enc_x()),
+        MICRONS(bot_enc_y()));
     fprintf(fp, " %-12s", buf);
-    sprintf(buf, "%g %g", MICRONS(top_enc_x()), MICRONS(top_enc_y()));
+    snprintf(buf, sizeof(buf), "%g %g", MICRONS(top_enc_x()),
+        MICRONS(top_enc_y()));
     fprintf(fp, " %s \\\n", buf);
 
-    sprintf(buf, "%g %g", MICRONS(bot_off_x()), MICRONS(bot_off_y()));
+    snprintf(buf, sizeof(buf), "%g %g", MICRONS(bot_off_x()),
+        MICRONS(bot_off_y()));
     fprintf(fp, "    %-12s", buf);
-    sprintf(buf, "%g %g", MICRONS(top_off_x()), MICRONS(top_off_y()));
+    snprintf(buf, sizeof(buf), "%g %g", MICRONS(top_off_x()),
+        MICRONS(top_off_y()));
     fprintf(fp, " %-12s", buf);
-    sprintf(buf, "%g %g", MICRONS(org_off_x()), MICRONS(org_off_y()));
+    snprintf(buf, sizeof(buf), "%g %g", MICRONS(org_off_x()),
+        MICRONS(org_off_y()));
     fprintf(fp, " %s", buf);
     if (implant1()) {
-        sprintf(buf, "%g %g", MICRONS(imp1_enc_x()), MICRONS(imp1_enc_y()));
+        snprintf(buf, sizeof(buf), "%g %g", MICRONS(imp1_enc_x()),
+            MICRONS(imp1_enc_y()));
         fprintf(fp, " \\\n    %-16s %12s", implant1()->name(), buf);
         if (implant2()) {
-            sprintf(buf, "%g %g", MICRONS(imp2_enc_x()), MICRONS(imp2_enc_y()));
+            snprintf(buf, sizeof(buf), "%g %g", MICRONS(imp2_enc_x()),
+                MICRONS(imp2_enc_y()));
             fprintf(fp, "  %-16s %12s", implant2()->name(), buf);
         }
     }
@@ -762,7 +772,7 @@ namespace {
     char *errret(const char *rstr)
     {
         char buf[256];
-        sprintf(buf, "error at token %s", rstr);
+        snprintf(buf, sizeof(buf), "error at token %s", rstr);
         return (lstring::copy(buf));
     }
 }

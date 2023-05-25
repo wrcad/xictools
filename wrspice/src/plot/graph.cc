@@ -63,7 +63,7 @@ Authors: 1988 Jeffrey M. Hsu
 namespace {
     inline int num_colors()
     {
-        return (SPMIN(GRpkgIf()->CurDev()->numcolors, NUMPLOTCOLORS));
+        return (SPMIN(GRpkg::self()->CurDev()->numcolors, NUMPLOTCOLORS));
     }
 }
 
@@ -71,7 +71,7 @@ namespace {
 #define BOXSIZE 30
 
 // Dimension map icon position.
-#define DIM_ICON_X (GRpkgIf()->CurDev()->xoff + gr_fontwid)
+#define DIM_ICON_X (GRpkg::self()->CurDev()->xoff + gr_fontwid)
 #define DIM_ICON_Y (gr_vport.top() + 2*gr_fonthei)
 
 // The left-side text filed width in y-separated plots.
@@ -90,19 +90,20 @@ bool
 sGraph::gr_setup_dev(int type, const char *name)
 {
     gr_apptype = type;
-    if (GRpkgIf()->CurDev() == GRpkgIf()->MainDev()) {
+    if (GRpkg::self()->CurDev() == GRpkg::self()->MainDev()) {
         // This is a hack:  the devdep for screen graphics inherits
         // both GRdraw and GRwbag interfaces.
 
         gr_dev = 0;
-        if (GRpkgIf()->CurDev() && GRpkgIf()->CurDev()->ident != _devNULL_) {
-            gr_dev = dynamic_cast<GRdraw*>(GRpkgIf()->NewWbag(name,
+        if (GRpkg::self()->CurDev() &&
+                GRpkg::self()->CurDev()->ident != _devNULL_) {
+            gr_dev = dynamic_cast<GRdraw*>(GRpkg::self()->NewWbag(name,
                 gr_new_gx(type)));
         }
     }
     else {
         // For hardcopy, we only need the GRdraw interface.
-        gr_dev = GRpkgIf()->NewDraw();
+        gr_dev = GRpkg::self()->NewDraw();
     }
     if (!gr_dev)
         return (false);
@@ -114,15 +115,16 @@ sGraph::gr_setup_dev(int type, const char *name)
 int
 sGraph::gr_dev_init()
 {
-    if (GRpkgIf()->MainDev() && GRpkgIf()->MainDev() == GRpkgIf()->CurDev() &&
-            GRpkgIf()->MainDev()->name)
+    if (GRpkg::self()->MainDev() &&
+            GRpkg::self()->MainDev() == GRpkg::self()->CurDev() &&
+            GRpkg::self()->MainDev()->name)
         return (gr_pkg_init());
     for (int i = 0; i < NUMPLOTCOLORS; i++)
         gr_colors[i] = SpGrPkg::DefColors[i];
-    gr_area.set_width(GRpkgIf()->CurDev()->width);
-    gr_area.set_height(GRpkgIf()->CurDev()->height);
-    gr_area.set_left(GRpkgIf()->CurDev()->xoff);
-    gr_area.set_bottom(GRpkgIf()->CurDev()->yoff);
+    gr_area.set_width(GRpkg::self()->CurDev()->width);
+    gr_area.set_height(GRpkg::self()->CurDev()->height);
+    gr_area.set_left(GRpkg::self()->CurDev()->xoff);
+    gr_area.set_bottom(GRpkg::self()->CurDev()->yoff);
     gr_dev->TextExtent(0, &gr_fontwid, &gr_fonthei);
     return (false);
 }
@@ -992,7 +994,7 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
                         gr_pressx = xl;
                     GP.SetSourceGraph(this);
 
-                    gr_timer_id = GRpkgIf()->AddTimer(200, timeout, this);
+                    gr_timer_id = GRpkg::self()->AddTimer(200, timeout, this);
                     return;
                 }
             }
@@ -1073,7 +1075,7 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
         if (!graph)
             graph = this;
         if (graph->gr_timer_id)
-            GRpkgIf()->RemoveTimer(graph->gr_timer_id);
+            GRpkg::self()->RemoveTimer(graph->gr_timer_id);
         graph->gr_timer_id = 0;
         if (graph->gr_cmdmode & Moving) {
             bool doit = false;
@@ -1256,7 +1258,7 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
                         int sid = graph->gr_id;
 
                         char buf[BSIZE_SP];
-                        sprintf(buf, "%d:%s", sid, t);
+                        snprintf(buf,sizeof(buf), "%d:%s", sid, t);
                         nv->set_name(buf);
 
                         sDvList *ndvl = new sDvList;
@@ -1457,7 +1459,7 @@ sGraph::gr_end()
     const char *text = "Enter p for hardcopy, return to continue";
     const char *text1 = "Hit p for hardcopy, any other key to continue";
     gr_dev->Update();
-    if (GRpkgIf()->CurDev()->devtype == GRfullScreen) {
+    if (GRpkg::self()->CurDev()->devtype == GRfullScreen) {
         char c;
         VTvalue vv;
         if (Sp.GetVar(kw_device, VTYP_STRING, &vv) &&
@@ -1507,12 +1509,12 @@ sGraph::gr_mark()
         dv_trace(true);
     }
     else {
-        if (GRpkgIf()->CurDev()->devtype == GRhardcopy)
+        if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
             return;
         dv_erase_factors();
 
         gr_set_ghost(ghost_mark, 0, 0);
-        if (GRpkgIf()->CurDev()->devtype == GRfullScreen) {
+        if (GRpkg::self()->CurDev()->devtype == GRfullScreen) {
             GP.ReturnEvent(0, 0, 0, 0);
             gr_set_ghost(0, 0, 0);
             gr_reference.mark = false;
@@ -2314,7 +2316,7 @@ sGraph::gr_show_logo()
 {
     if (gr_noplotlogo || gr_present)
         return;
-    int ident = GRpkgIf()->CurDev()->ident;
+    int ident = GRpkg::self()->CurDev()->ident;
     if (ident == _devHP_)
         // HPGL plotter.  A pen plotter may have trouble with the logo,
         // so skip it.
@@ -3036,7 +3038,7 @@ sGraph::dv_redraw()
     if (!gr_present) {
         // Show the dimensions map icon, but not in hard-copies.
         if (gr_selections && gr_selsize &&
-                GRpkgIf()->CurDev()->devtype != GRhardcopy) {
+                GRpkg::self()->CurDev()->devtype != GRhardcopy) {
             int x = DIM_ICON_X;
             int y = DIM_ICON_Y;
             int w = gr_fontwid+2;
@@ -3099,7 +3101,7 @@ sGraph::dv_redraw()
                     8, TXTF_HJR);
             }
 
-            if (GRpkgIf()->CurDev()->devtype != GRhardcopy) {
+            if (GRpkg::self()->CurDev()->devtype != GRhardcopy) {
                 if (gr_format != FT_SINGLE || gr_ysep) {
                     // Icons to shift the left side field width.
                     int x = gr_vport.left() - 3*gr_fontwid - gr_fontwid/2;
@@ -3164,12 +3166,12 @@ sGraph::dv_initdata()
 {
     gr_dev->TextExtent(0, &gr_fontwid, &gr_fonthei);
 
-    // Note:  GRpkgIf()->Cur->numlinestyles == 0 implies that the
+    // Note:  GRpkg::self()->Cur->numlinestyles == 0 implies that the
     // actual number is not bounded in the application code.
     //
     // Set up colors and line styles.
     int curlst;
-    if (GRpkgIf()->CurDev()->numlinestyles == 1 || num_colors() > 2 ||
+    if (GRpkg::self()->CurDev()->numlinestyles == 1 || num_colors() > 2 ||
             gr_ysep)
         curlst = -1; // Use the same one all the time.
     else
@@ -3191,7 +3193,7 @@ sGraph::dv_initdata()
             // a bool
             PointChars = SpGrPkg::DefPointchars;
         else {
-            if (GRpkgIf()->CurDev()->devtype == GRhardcopy)
+            if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
                 PointChars = SpGrPkg::DefPointchars;
             else
                 PointChars = 0;
@@ -3217,9 +3219,9 @@ sGraph::dv_initdata()
         v->set_color(curcolor);
         // change the color to that of the trace, if given
         if (v->defcolor()) {
-            gr_colors[curcolor].pixel = GRpkgIf()->NameColor(v->defcolor());
+            gr_colors[curcolor].pixel = GRpkg::self()->NameColor(v->defcolor());
             int r, g, b;
-            GRpkgIf()->RGBofPixel(gr_colors[curcolor].pixel, &r, &g, &b);
+            GRpkg::self()->RGBofPixel(gr_colors[curcolor].pixel, &r, &g, &b);
             gr_colors[curcolor].red = r;
             gr_colors[curcolor].green = g;
             gr_colors[curcolor].blue = b;
@@ -3247,9 +3249,9 @@ sGraph::dv_initdata()
         else  {
             v->set_linestyle((curlst >= 0 ? curlst : 0));
             if ((curlst >= 0) &&
-                    (++curlst == GRpkgIf()->CurDev()->numlinestyles))
+                    (++curlst == GRpkg::self()->CurDev()->numlinestyles))
                 curlst = 0;
-            if (curlst == 1 && GRpkgIf()->CurDev()->numlinestyles != 2)
+            if (curlst == 1 && GRpkg::self()->CurDev()->numlinestyles != 2)
                 // reserve linestyle 1 for grid
                 curlst++;
         }
@@ -3480,7 +3482,7 @@ sGraph::dv_legend(int plotno, sDataVec *dv)
             gr_dev->SetColor(gr_colors[dv->color()].pixel);
             if (PointChars) {
                 char buf[16];
-                sprintf(buf, "%c ", PointChars[dv->linestyle()]);
+                snprintf(buf, sizeof(buf), "%c ", PointChars[dv->linestyle()]);
                 gr_dev->Text(buf, scrx, yinv(scry), 0);
             }
             else
@@ -3496,7 +3498,7 @@ sGraph::dv_legend(int plotno, sDataVec *dv)
             gr_dev->Line(scrx, y, scrx + 4*gr_fontwid, y);
         }
     }
-    if (GRpkgIf()->CurDev()->devtype != GRhardcopy) {
+    if (GRpkg::self()->CurDev()->devtype != GRhardcopy) {
         // Draw the vertical scale translation icons.
 
         if (gr_grtype == GRID_POLAR || gr_grtype == GRID_SMITH ||
@@ -3695,7 +3697,7 @@ sGraph::dv_set_trace(sDataVec *v, sDataVec *xs, int plotno)
             if (gr_sel_flat) {
                 if (i >= gr_cpage*numdtab && i < (gr_cpage+1)*numdtab) {
                     int j = i - gr_cpage*numdtab;
-                    sprintf(buf, "%d", i);
+                    snprintf(buf, sizeof(buf), "%d", i);
                     if (!show_trace)
                         gr_dev->SetColor(gr_colors[1].pixel);
                     gr_dev->Text(buf, x, yinv(y - j*gr_fonthei), 0);
@@ -3718,7 +3720,7 @@ sGraph::dv_set_trace(sDataVec *v, sDataVec *xs, int plotno)
                             ypos -= gr_cpage*numdtab;
                     }
                     if (!skip) {
-                        sprintf(buf, "%d", dims[k]);
+                        snprintf(buf, sizeof(buf), "%d", dims[k]);
                         if (k == xs->numdims() - 2 &&
                                 (gr_numtraces == 1 || gr_ysep)) {
                             if (enabled[k])
@@ -3895,7 +3897,7 @@ void
 sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
 {
     if (v->length() < 1) {
-        GRpkgIf()->ErrPrintf(ET_WARN,
+        GRpkg::self()->ErrPrintf(ET_WARN,
             "trace %d contains no data, can't plot.\n", plotno);
         return;
     }
@@ -3904,7 +3906,7 @@ sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
         deg = v->length();
     if (deg < 1) {
         if (plotno == 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "polydegree is %d, set to 1.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "polydegree is %d, set to 1.\n",
                 deg);
         }
         deg = 1;
@@ -3916,7 +3918,7 @@ sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
         gridsize = vv.get_int();
     if ((gridsize < 0) || (gridsize > 10000)) {
         if (plotno == 0) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "grid size %d, out of range 0-10000, set to 0.\n", gridsize);
         }
         gridsize = 0;
@@ -3924,14 +3926,14 @@ sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
     if (gridsize) {
         if (gr_grtype != GRID_LIN) {
             if (plotno == 0) {
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "scale not linear, gridsize ignored.\n");
             }
             gridsize = 0;
         }
         if (xs && !gr_xmono) {
             if (plotno == 0) {
-                GRpkgIf()->ErrPrintf(ET_WARN,
+                GRpkg::self()->ErrPrintf(ET_WARN,
                     "scale not monotonic, gridsize ignored.\n");
             }
             gridsize = 0;
@@ -4052,8 +4054,8 @@ sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
 
         sPoly po(deg);
         if (!po.interp(ydata, result, xdata, v->length(), gridbuf, gridsize)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "can't put %s on gridsize %d.\n", 
-                v->name(), gridsize);
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "can't put %s on gridsize %d.\n", v->name(), gridsize);
             delete [] gridbuf;
             delete [] result;
             if (!v->isreal())
@@ -4110,7 +4112,7 @@ sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
             break;
         }
         if (po.dec_degree() == 0) {
-            GRpkgIf()->ErrPrintf(ET_INTERR, "plotcurve: #1.\n");
+            GRpkg::self()->ErrPrintf(ET_INTERR, "plotcurve: #1.\n");
             delete [] xdata;
             delete [] ydata;
             delete [] result;
@@ -4152,7 +4154,7 @@ sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
                 break;
             }
             if (po.dec_degree() == 0) {
-                GRpkgIf()->ErrPrintf(ET_INTERR, "plotcurve: #2.\n");
+                GRpkg::self()->ErrPrintf(ET_INTERR, "plotcurve: #2.\n");
                 delete [] xdata;
                 delete [] ydata;
                 delete [] result;
@@ -4445,7 +4447,7 @@ sGraph::dv_pl_environ(double x0, double x1, double y0, double y1, bool unset)
     if (unset)
         Sp.RemVar(s);
     else {
-        sprintf(buf, "%.12e, %.12e", x0, x1);
+        snprintf(buf, sizeof(buf), "%.12e, %.12e", x0, x1);
         Sp.SetVar(s, buf);
     }
 
@@ -4453,7 +4455,7 @@ sGraph::dv_pl_environ(double x0, double x1, double y0, double y1, bool unset)
     if (unset)
         Sp.RemVar(s);
     else {
-        sprintf(buf, "%.12e, %.12e", y0, y1);
+        snprintf(buf, sizeof(buf), "%.12e, %.12e", y0, y1);
         Sp.SetVar(s, buf);
     }
 

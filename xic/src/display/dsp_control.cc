@@ -110,11 +110,11 @@ cDisplay::RedisplayAfterInterrupt()
     if (Interrupt() == DSPinterUser) {
         notify_interrupted();
         if (DoingHcopy())
-            GRpkgIf()->HCabort("User abort");
+            DSPpkg::self()->HCabort("User abort");
     }
     else if (Interrupt() == DSPinterSys) {
         if (DoingHcopy())
-            GRpkgIf()->HCabort("System abort");
+            DSPpkg::self()->HCabort("System abort");
     }
     SetInterrupt(DSPinterNone);
 
@@ -133,7 +133,7 @@ cDisplay::QueueRedisplay()
 {
     if (d_redisplay_queued)
         return;
-    dspPkgIf()->RegisterIdleProc(RedisplayIdleProc, this);
+    DSPpkg::self()->RegisterIdleProc(RedisplayIdleProc, this);
     d_redisplay_queued = true;
 }
 
@@ -340,7 +340,7 @@ WindowDesc::RedisplayDirect(const BBox *AOI, bool no_clear, int clip_ht)
     bool working_set = DSP()->SlowMode() ||
         w_clip_rect.width() >= 100 || abs(w_clip_rect.height()) >= 100;
     if (working_set)
-        dspPkgIf()->SetWorking(true);
+        DSPpkg::self()->SetWorking(true);
 
     Tdbg()->start_timing("RedisplayDirect");
 
@@ -362,7 +362,7 @@ WindowDesc::RedisplayDirect(const BBox *AOI, bool no_clear, int clip_ht)
 
     w_draw->ShowGhost(DISPLAY);
     if (working_set)
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
 
     Tdbg()->stop_timing("RedisplayDirect", numgeom);
 
@@ -515,7 +515,7 @@ WindowDesc::RunPending()
     PushRedisplay();
 
     w_draw->ShowGhost(ERASE);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
 
     if (DSP()->NoPixmapStore())
         DestroyPixmap();
@@ -637,7 +637,7 @@ WindowDesc::RunPending()
     }
 
     w_draw->ShowGhost(DISPLAY);
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     Tdbg()->stop_timing("RedisplayPending", numgeom);
     PopRedisplay();
     DSP()->notify_display_done();
@@ -857,7 +857,7 @@ WindowDesc::show_cellbb(bool display, const BBox *AOI, bool flag, Blist **bret)
     else if (display)
         w_last_cellbb = *sBB;
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         w_draw->SetXOR(display ? GRxHlite : GRxUnhlite);
     else {
         if (!display) {
@@ -891,7 +891,7 @@ WindowDesc::show_cellbb(bool display, const BBox *AOI, bool flag, Blist **bret)
     ShowBox(display ? sBB : &w_last_cellbb, CDL_OUTLINED, 0);
     w_clip_rect = tBB;
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         w_draw->SetXOR(GRxNone);
     return (false);
 }

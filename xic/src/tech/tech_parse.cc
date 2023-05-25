@@ -43,6 +43,7 @@
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 #include "si_macro.h"
 #include "si_lisp.h"
 #include "si_parsenode.h"
@@ -151,8 +152,10 @@ cTech::InitPostParse()
             sLspec *excl = new sLspec;
             if (npoly == ppoly)
                 strcpy(buf, npoly->name());
-            else if (npoly && ppoly)
-                sprintf(buf, "%s|%s", npoly->name(), ppoly->name());
+            else if (npoly && ppoly) {
+                snprintf(buf, sizeof(buf), "%s|%s", npoly->name(),
+                    ppoly->name());
+            }
             else if (npoly)
                 strcpy(buf, npoly->name());
             else
@@ -495,7 +498,7 @@ cTech::GetRgb(int *rgb)
     char *t = tc_inbuf + strlen(tc_inbuf) - 1;
     while (isspace(*t) && t >= tc_inbuf)
         *t-- = 0;
-    if (!GRpkgIf()->NameToRGB(tc_inbuf, rgb)) {
+    if (!DSPpkg::self()->NameToRGB(tc_inbuf, rgb)) {
         rgb[0] = rgb[1] = rgb[2] = 0;
         return (false);
     }
@@ -933,7 +936,7 @@ cTech::SaveError(const char *fmt, ...) const
     buf[0] = 0;
     int line = tc_no_line_num ? -1 : LineCount();
     if (line > 0)
-        sprintf(buf, "(Line %d) ", line);
+        snprintf(buf, sizeof(buf), "(Line %d) ", line);
     int ofs = strlen(buf);
 
     va_start(args, fmt);

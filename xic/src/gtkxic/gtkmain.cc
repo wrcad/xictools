@@ -122,8 +122,8 @@ void
 cMain::SetNoToTop(bool b)
 {
 #ifdef WITH_X11
-    if (GRX)
-        GRX->SetNoToTop(b);
+    if (GTKdev::exists())
+        GTKdev::self()->SetNoToTop(b);
 #else
     (void)b;
 #endif
@@ -132,8 +132,8 @@ cMain::SetNoToTop(bool b)
 void
 cMain::SetLowerWinOffset(int offset)
 {
-    if (GRX)
-        GRX->SetLowerWinOffset(offset);
+    if (GTKdev::exists())
+        GTKdev::self()->SetLowerWinOffset(offset);
 }
 // End of cMain functions
 
@@ -345,8 +345,8 @@ namespace {
     int
     busy_msg_timeout(void*)
     {
-        if (gtkPkgIf()->busy_popup)
-            gtkPkgIf()->busy_popup->popdown();
+        if (GTKpkg::self()->busy_popup)
+            GTKpkg::self()->busy_popup->popdown();
         return (false);
     }
 
@@ -356,13 +356,13 @@ namespace {
         const char *busy_msg =
             "Working...\nPress Control-C in main window to abort.";
 
-        if (!gtkPkgIf()->busy_popup && GTKmainwin::self()) {
-            gtkPkgIf()->busy_popup =
+        if (!GTKpkg::self()->busy_popup && GTKmainwin::exists()) {
+            GTKpkg::self()->busy_popup =
                 GTKmainwin::self()->PopUpErrText(busy_msg, STY_NORM);
-            if (gtkPkgIf()->busy_popup)
-                gtkPkgIf()->busy_popup->
-                    register_usrptr((void**)&gtkPkgIf()->busy_popup);
-            gtkPkgIf()->RegisterTimeoutProc(3000, busy_msg_timeout, 0);
+            if (GTKpkg::self()->busy_popup)
+                GTKpkg::self()->busy_popup->
+                    register_usrptr((void**)&GTKpkg::self()->busy_popup);
+            GTKpkg::self()->RegisterTimeoutProc(3000, busy_msg_timeout, 0);
         }
     }
 }
@@ -422,8 +422,8 @@ GTKpkg::Initialize(GRwbag *wcp)
     if (!w)
         return (true);
 
-    GRX->RegisterMainFrame(w);
-    GRpkgIf()->RegisterMainWbag(w);
+    GTKdev::self()->RegisterMainFrame(w);
+    GTKpkg::self()->RegisterMainWbag(w);
     w->initialize();
 
     // Initialize the application's GUI.
@@ -445,7 +445,7 @@ GTKpkg::Initialize(GRwbag *wcp)
 #endif
 
     PL()->Init();
-    GRX->RegisterBigWindow(w->Shell());
+    GTKdev::self()->RegisterBigWindow(w->Shell());
 
     // dispatch the events in queue (aesthetic reasons)
     GdkEvent *ev;
@@ -464,7 +464,7 @@ GTKpkg::Initialize(GRwbag *wcp)
     }
 
     Gst()->SetGhost(GFnone);
-    if (!GTKmainwin::self())
+    if (!GTKmainwin::exists())
         // Halt called
         return (true);
     return (false);
@@ -478,7 +478,7 @@ GTKpkg::ReinitNoGraphics()
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return;
-    if (!GTKmainwin::self())
+    if (!GTKmainwin::exists())
         return;
     DSPmainDraw(Halt());
     DSP()->MainWdesc()->SetWbag(0);
@@ -488,7 +488,7 @@ GTKpkg::ReinitNoGraphics()
     PL()->SetNoGraphics();
     LT()->SetNoGraphics();
 
-    GRpkgIf()->SetNullGraphics();
+    GTKpkg::self()->SetNullGraphics();
     EV()->SetCurrentWin(DSP()->MainWdesc());
     null_bag *w = new null_bag;
     DSP()->MainWdesc()->SetWbag(w);
@@ -503,7 +503,7 @@ GTKpkg::Halt()
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return;
-    GRX->RegisterBigWindow(0);
+    GTKdev::self()->RegisterBigWindow(0);
     EV()->InitCallback();
     gtk_main_quit();
     if (DSP()->MainWdesc()) {
@@ -523,7 +523,7 @@ GTKpkg::AppLoop()
         return;
     RegisterEventHandler(0, 0);
     in_main_loop = true;
-    GRX->MainLoop(true);
+    GTKdev::self()->MainLoop(true);
 }
 
 
@@ -670,7 +670,7 @@ GTKpkg::SubwinInit(int wnum)
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return (false);
-    if (!GTKmainwin::self())
+    if (!GTKmainwin::exists())
         return (false);
     if (wnum < 1 || wnum >= DSP_NUMWINS)
         return (false);
@@ -782,7 +782,7 @@ GTKpkg::GetMainWinIdentifier(char *buf)
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return (false);
 #ifdef WITH_X11
-    if (GTKmainwin::self() && GTKmainwin::self()->Shell() &&
+    if (GTKmainwin::exists() && GTKmainwin::self()->Shell() &&
             gtk_widget_get_window(GTKmainwin::self()->Shell())) {
         snprintf(buf, 16, "%ld", (long)gr_x_window(
             gtk_widget_get_window(GTKmainwin::self()->Shell())));
@@ -798,7 +798,7 @@ GTKpkg::IsDualPlane()
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return (false);
-    return (GRX->IsDualPlane());
+    return (GTKdev::self()->IsDualPlane());
 }
 
 
@@ -807,7 +807,7 @@ GTKpkg::IsTrueColor()
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return (false);
-    return (GRX->IsTrueColor());
+    return (GTKdev::self()->IsTrueColor());
 }
 
 
@@ -827,9 +827,9 @@ GTKpkg::CloseGraphicsConnection()
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return;
-    if (GRX->ConnectFd() > 0) {
+    if (GTKdev::ConnectFd() > 0) {
         gtk_main_quit();
-        close(GRX->ConnectFd());
+        close(GTKdev::ConnectFd());
     }
 }
 
@@ -973,7 +973,7 @@ GTKpkg::RegisterTimeoutProc(int ms, int(*proc)(void*), void *arg)
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
          return (0);
-    return (GRX->AddTimer(ms, proc, arg));
+    return (GTKdev::self()->AddTimer(ms, proc, arg));
 }
 
 
@@ -982,7 +982,7 @@ GTKpkg::RemoveTimeoutProc(int id)
 {
     if (!MainDev() || MainDev()->ident != _devGTK_)
          return (false);
-    GRX->RemoveTimer(id);
+    GTKdev::self()->RemoveTimer(id);
     return (true);
 }
 
@@ -1261,8 +1261,8 @@ GTKsubwin::subw_initialize(int wnum)
     gd_window = gtk_widget_get_window(gd_viewport);
 #endif
 
-    gd_backg = GRX->NameColor("black");
-    gd_foreg = GRX->NameColor("white");
+    gd_backg = GTKdev::self()->NameColor("black");
+    gd_foreg = GTKdev::self()->NameColor("white");
     SetWindowBackground(gd_backg);
     Clear();
 
@@ -1339,7 +1339,7 @@ GTKsubwin::SwitchToPixmap()
         wib_px_width = vp_width;
         wib_px_height = vp_height;
         pm = gdk_pixmap_new(gd_window, wib_px_width, wib_px_height,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         if (pm)
             wib_draw_pixmap = pm;
         else {
@@ -1511,7 +1511,7 @@ GTKsubwin::DumpWindow(const char *filename, const BBox *AOI = 0)
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
 #else
         pm = gdk_pixmap_new(gd_window, vp_width, vp_height,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         if (!pm)
             return (false);
         GdkWindow *tmpw = gd_window;
@@ -1740,9 +1740,9 @@ GTKsubwin::CheckExec(bool exact)
             gtk_label_set_text(GTK_LABEL(wib_keyspressed), buf + n);
 
             if (ent->alt_caller)
-                gtkMenu()->CallCallback(GTK_WIDGET(ent->alt_caller));
+                GTKmenu::self()->CallCallback(GTK_WIDGET(ent->alt_caller));
             else
-                gtkMenu()->CallCallback(GTK_WIDGET(ent->cmd.caller));
+                GTKmenu::self()->CallCallback(GTK_WIDGET(ent->cmd.caller));
         }
         SetKeys(0);
     }
@@ -2000,7 +2000,7 @@ namespace {
     bool pointer_in_prompt_area()
     {
         int x, y;
-        GRX->PointerRootLoc(&x, &y);
+        GTKdev::PointerRootLoc(&x, &y);
         GtkWidget *w = GTKmainwin::self()->TextArea();
         GdkRectangle r;
         gtk_ShellGeometry(w, &r , 0);
@@ -2016,7 +2016,7 @@ namespace {
 int
 GTKsubwin::key_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
-    if (!GTKmainwin::self() || gtkPkgIf()->NotMapped())
+    if (!GTKmainwin::exists() || GTKpkg::self()->NotMapped())
         return (true);
     GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
     if (w->wb_message)
@@ -2050,7 +2050,7 @@ GTKsubwin::key_up_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
         grabbed_key = 0;
         gdk_keyboard_ungrab(event->key.time);
     }
-    if (!GTKmainwin::self() || gtkPkgIf()->NotMapped())
+    if (!GTKmainwin::exists() || GTKpkg::self()->NotMapped())
         return (true);
     GdkEventKey *kev = (GdkEventKey*)event;
     GTKsubwin *w = static_cast<GTKsubwin*>(client_data);
@@ -2069,7 +2069,7 @@ GTKsubwin::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
     GdkEventButton *bev = (GdkEventButton*)event;
     int button = Kmap()->ButtonMap(bev->button);
-    if (!gtk_widget_get_sensitive(gtkMenu()->MainMenu()) && button == 1)
+    if (!gtk_widget_get_sensitive(GTKmenu::self()->MainMenu()) && button == 1)
         // menu is insensitive, so ignore press
         return (true);
     if (event->type == GDK_2BUTTON_PRESS ||
@@ -2153,7 +2153,7 @@ GTKsubwin::button_up_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 {
     GdkEventButton *bev = (GdkEventButton*)event;
     int button = Kmap()->ButtonMap(bev->button);
-    if (!gtk_widget_get_sensitive(gtkMenu()->MainMenu()) && button == 1)
+    if (!gtk_widget_get_sensitive(GTKmenu::self()->MainMenu()) && button == 1)
         // menu is insensitive, so ignore release
         return (true);
     if (bev->button < GS_NBTNS)
@@ -2524,7 +2524,7 @@ GTKsubwin::drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
             }
         }
         if (!didit)
-            gtkPkgIf()->RegisterIdleProc(load_file_idle, lfd);
+            GTKpkg::self()->RegisterIdleProc(load_file_idle, lfd);
         success = true;
     }
     gtk_drag_finish(context, success, false, time);
@@ -2666,8 +2666,8 @@ GTKmainwin::initialize()
     // We will add the WR button later.
     GtkWidget *main_menu_box = hbox;
 
-    gtkMenu()->InitMainMenu(wb_shell);
-    gtk_box_pack_start(GTK_BOX(hbox), gtkMenu()->MainMenu(), true,
+    GTKmenu::self()->InitMainMenu(wb_shell);
+    gtk_box_pack_start(GTK_BOX(hbox), GTKmenu::self()->MainMenu(), true,
         true, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt + 1,
@@ -2686,21 +2686,21 @@ GTKmainwin::initialize()
             btnarray = gtk_vbox_new(false, 0);
         gtk_widget_show(btnarray);
 
-        gtkMenu()->InitSideButtonMenus(horiz_buttons);
+        GTKmenu::self()->InitSideButtonMenus(horiz_buttons);
         if (DSP()->CurMode() == Physical) {
-            if (gtkMenu()->ButtonMenu(Physical))
-                gtk_widget_show(gtkMenu()->ButtonMenu(Physical));
+            if (GTKmenu::self()->ButtonMenu(Physical))
+                gtk_widget_show(GTKmenu::self()->ButtonMenu(Physical));
         }
         else {
-            if (gtkMenu()->ButtonMenu(Electrical))
-                gtk_widget_show(gtkMenu()->ButtonMenu(Electrical));
+            if (GTKmenu::self()->ButtonMenu(Electrical))
+                gtk_widget_show(GTKmenu::self()->ButtonMenu(Electrical));
         }
-        if (gtkMenu()->ButtonMenu(Physical))
+        if (GTKmenu::self()->ButtonMenu(Physical))
             gtk_box_pack_start(GTK_BOX(btnarray),
-                gtkMenu()->ButtonMenu(Physical), true, true, 0);
-        if (gtkMenu()->ButtonMenu(Electrical))
+                GTKmenu::self()->ButtonMenu(Physical), true, true, 0);
+        if (GTKmenu::self()->ButtonMenu(Electrical))
             gtk_box_pack_start(GTK_BOX(btnarray),
-                gtkMenu()->ButtonMenu(Electrical), true, true, 0);
+                GTKmenu::self()->ButtonMenu(Electrical), true, true, 0);
         if (horiz_buttons) {
             gtk_table_attach(GTK_TABLE(form), btnarray, 0, 1, rowcnt, rowcnt+1,
                 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -2789,12 +2789,12 @@ GTKmainwin::initialize()
     gtk_box_pack_start(GTK_BOX(hbox), ltab->searcher(), false,
         false, 0);
 
-    gtkMenu()->InitTopButtonMenu();
+    GTKmenu::self()->InitTopButtonMenu();
 
     // The "top button menu" includes the WR button as the first
     // entry.  This we add to the main menubar.
     //
-    MenuBox *btn_menu = gtkMenu()->GetMiscMenu();
+    MenuBox *btn_menu = GTKmenu::self()->GetMiscMenu();
     if (btn_menu && btn_menu->menu) {
         GtkWidget *wrbtn = GTK_WIDGET(btn_menu->menu[1].cmd.caller);
         gtk_box_pack_start(GTK_BOX(main_menu_box), wrbtn, false, false, 0);
@@ -2802,7 +2802,7 @@ GTKmainwin::initialize()
     }
 
     // The rest of the entries are contianed here.
-    gtk_box_pack_start(GTK_BOX(hbox), gtkMenu()->TopButtonMenu(), false,
+    gtk_box_pack_start(GTK_BOX(hbox), GTKmenu::self()->TopButtonMenu(), false,
         false, 0);
 
     new cCoord;
@@ -2887,7 +2887,7 @@ GTKmainwin::initialize()
         int pmon = 0;
         {
             int xx, yy;
-            GRX->PointerRootLoc(&xx, &yy);
+            GTKdev::PointerRootLoc(&xx, &yy);
             pmon = gdk_screen_get_monitor_at_point(screen, xx, yy);
         }
         GdkRectangle r;
@@ -2911,10 +2911,10 @@ GTKmainwin::initialize()
 #if GTK_CHECK_VERSION(3,0,0)
     GdkWindow *window = gtk_widget_get_window(gd_viewport);
     GetDrawable()->set_window(window);
-    GRX->SetDefaultFocusWin(window);
+    GTKdev::self()->SetDefaultFocusWin(window);
 #else
     gd_window = gtk_widget_get_window(gd_viewport);
-    GRX->SetDefaultFocusWin(gd_window);
+    GTKdev::self()->SetDefaultFocusWin(gd_window);
 #endif
 
     // Make the GC's.
@@ -2941,8 +2941,8 @@ GTKmainwin::initialize()
 #endif
 #endif
 
-    gd_backg = GRX->NameColor("black");
-    gd_foreg = GRX->NameColor("white");
+    gd_backg = GTKdev::self()->NameColor("black");
+    gd_foreg = GTKdev::self()->NameColor("white");
 
     GdkColor clr;
     clr.pixel = gd_backg;
@@ -3004,11 +3004,11 @@ GTKmainwin::send_key_event(sKeyEvent *k)
 int
 GTKmainwin::main_destroy_proc(GtkWidget*, GdkEvent*, void*)
 {
-    if (gtkPkgIf()->IsBusy()) {
+    if (GTKpkg::self()->IsBusy()) {
         pop_busy();
         return (true);
     }
-    if (!gtkMenu()->IsGlobalInsensitive())
+    if (!GTKmenu::self()->IsGlobalInsensitive())
         XM()->Exit(ExitCheckMod);
     return (true);
 }
@@ -3072,7 +3072,7 @@ GTKmainwin::xrm_load_colors()
         XrmValue v;
         if (XrmGetResource(db, name, clss, &ss, &v)) {
             if (v.addr && *v.addr)
-                GRpkgIf()->SetAttrColor((GRattrColor)i, v.addr);
+                GTKpkg::self()->SetAttrColor((GRattrColor)i, v.addr);
         }
     }
 #endif
@@ -3096,7 +3096,7 @@ sEventHdlr::main_event_handler(GdkEvent *event, void*)
             cMain::InterruptHandler();
             return;
         }
-        if (gtkPkgIf()->IsBusy()) {
+        if (GTKpkg::self()->IsBusy()) {
             if (!is_modifier_key(event->key.keyval))
                 pop_busy();
             return;
@@ -3114,7 +3114,7 @@ sEventHdlr::main_event_handler(GdkEvent *event, void*)
     }
     else if (event->type == GDK_BUTTON_PRESS) {
         LogEvent(event);
-        if (gtkPkgIf()->IsBusy()) {
+        if (GTKpkg::self()->IsBusy()) {
             GtkWidget *evw = gtk_get_event_widget(event);
             if (g_object_get_data(G_OBJECT(evw), "abort"))
                 gtk_main_do_event(event);
@@ -3123,22 +3123,22 @@ sEventHdlr::main_event_handler(GdkEvent *event, void*)
                 pop_busy();
             return;
         }
-        if (gtkMenu()->IsGlobalInsensitive()) {
+        if (GTKmenu::self()->IsGlobalInsensitive()) {
             GtkWidget *evw = gtk_get_event_widget(event);
             if (GTK_IS_DRAWING_AREA(evw))
                 return;
             GtkWidget *top = gtk_widget_get_toplevel(evw);
-            if (!top || !GTKmainwin::self())
+            if (!top || !GTKmainwin::exists())
                 return;
             if (top != GTKmainwin::self()->Shell() &&
-                    top != gtkMenu()->GetModal())
+                    top != GTKmenu::self()->GetModal())
                 return;
         }
     }
     else if (event->type == GDK_BUTTON_RELEASE) {
         LogEvent(event);
         if (!gtk_grab_get_current()) {
-            if (gtkPkgIf()->IsBusy()) {
+            if (GTKpkg::self()->IsBusy()) {
                 GdkEventButton *bev = (GdkEventButton*)event;
                 if (button_state[bev->button]) {
                     // If the button state is active, the mouse button must
@@ -3153,22 +3153,22 @@ sEventHdlr::main_event_handler(GdkEvent *event, void*)
                     gtk_main_do_event(event);
                 return;
             }
-            if (gtkMenu()->IsGlobalInsensitive()) {
+            if (GTKmenu::self()->IsGlobalInsensitive()) {
                 GtkWidget *evw = gtk_get_event_widget(event);
                 if (GTK_IS_DRAWING_AREA(evw))
                     return;
                 GtkWidget *top = gtk_widget_get_toplevel(evw);
-                if (!top || !GTKmainwin::self())
+                if (!top || !GTKmainwin::exists())
                     return;
                 if (top != GTKmainwin::self()->Shell() &&
-                        top != gtkMenu()->GetModal())
+                        top != GTKmenu::self()->GetModal())
                     return;
             }
         }
     }
     else if (event->type == GDK_2BUTTON_PRESS ||
             event->type == GDK_3BUTTON_PRESS) {
-        if (gtkPkgIf()->IsBusy())
+        if (GTKpkg::self()->IsBusy())
             return;
     }
     gtk_main_do_event(event);
@@ -3233,7 +3233,8 @@ main_local::form_submit_hdlr(void *data)
     const char *t = cbs->action;
     char *tok = lstring::getqtok(&t);
     if (strcmp(tok, ACTION_TOKEN)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "unknown action_local submission.\n");
+        GTKpkg::self()->ErrPrintf(ET_ERROR,
+            "unknown action_local submission.\n");
         delete [] tok;
         return;
     }
@@ -3247,7 +3248,8 @@ main_local::form_submit_hdlr(void *data)
     stringlist *wl;
     XM()->OpenScript(script, &sfp, &wl);
     if (!sfp && !wl) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't find action_local script.\n");
+        GTKpkg::self()->ErrPrintf(ET_ERROR,
+            "can't find action_local script.\n");
         delete [] script;
         lock = false;
         return;

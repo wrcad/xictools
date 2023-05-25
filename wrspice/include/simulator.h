@@ -125,8 +125,8 @@ union va_t;
 #define DEF_SPEC_CATCHAR '@'
 
 // startup file names
-#define SYS_STARTUP(buf) sprintf(buf, "%sinit", CP.Program())
-#define USR_STARTUP(buf) sprintf(buf, ".%sinit", CP.Program())
+#define SYS_STARTUP(buf) snprintf(buf, sizeof(buf), "%sinit", CP.Program())
+#define USR_STARTUP(buf) snprintf(buf, sizeof(buf), ".%sinit", CP.Program())
 
 // Executable block (codeblock).
 struct sExBlk

@@ -295,7 +295,7 @@ using namespace gtkdebug;
 void
 cMain::PopUpDebug(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Dbg;
@@ -313,7 +313,7 @@ cMain::PopUpDebug(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Dbg->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Dbg->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Dbg->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Dbg->Shell());
 }
@@ -460,7 +460,7 @@ sDbg::sDbg(GRobject c)
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
         G_CALLBACK(db_action_proc), this);
-    GRX->SetStatus(item, GRX->GetCRLFtermination());
+    GTKdev::SetStatus(item, GTKdev::self()->GetCRLFtermination());
 #endif
 
     item = gtk_separator_menu_item_new();
@@ -760,7 +760,7 @@ sDbg::~sDbg()
     if (db_caller) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(db_caller),
             (gpointer)db_cancel_proc, wb_shell);
-        GRX->Deselect(db_caller);
+        GTKdev::Deselect(db_caller);
     }
     histlist::destroy(db_undo_list);
     histlist::destroy(db_redo_list);
@@ -841,7 +841,7 @@ sDbg::load_from_menu(MenuEnt *ent)
         if (lstring::strdirsep(entry)) {
             // from submenu, add a distinguishing prefix to avoid
             // confusion with file path
-            sprintf(buf, "%s%s", SCR_LIBCODE, entry);
+            snprintf(buf, sizeof(buf), "%s%s", SCR_LIBCODE, entry);
             entry = buf;
         }
         char *scrfile = XM()->FindScript(entry);
@@ -917,7 +917,7 @@ sDbg::step()
         PL()->SavePrompt();
         start();
         PL()->RestorePrompt();
-        GRX->SetFocus(Dbg->wb_shell);
+        GTKdev::SetFocus(Dbg->wb_shell);
         gtk_window_set_focus(GTK_WINDOW(Dbg->wb_shell), Dbg->wb_textarea);
         return;
     }
@@ -941,7 +941,7 @@ sDbg::step()
     db_status = Equiescent;
     set_sens(true);
     update_variables();
-    GRX->SetFocus(Dbg->wb_shell);
+    GTKdev::SetFocus(Dbg->wb_shell);
     gtk_window_set_focus(GTK_WINDOW(Dbg->wb_shell), Dbg->wb_textarea);
 }
 
@@ -990,7 +990,7 @@ sDbg::run()
             PL()->RestorePrompt();
             break;
         }
-        if (dspPkgIf()->CheckForInterrupt()) {
+        if (GTKpkg::self()->CheckForInterrupt()) {
             // ^C typed
             refresh(false, locFollowCurrent);
             break;
@@ -1056,7 +1056,7 @@ sDbg::breakpoint(int line)
     }
     if (line == db_line) {
         // Clicking on the active line steps it
-        dspPkgIf()->RegisterIdleProc(db_step_idle, 0);
+        GTKpkg::self()->RegisterIdleProc(db_step_idle, 0);
         return;
     }
     for (i = 0; i < NUMBKPTS; i++) {
@@ -1080,7 +1080,7 @@ bool
 sDbg::write_file(const char *fname)
 {
     if (!filestat::create_bak(fname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        GTKpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         return (false);
     }
     FILE *fp = fopen(fname, "w");
@@ -1097,7 +1097,7 @@ sDbg::write_file(const char *fname)
 #ifdef WIN32
         char *s = string;
         while (*s) {
-            if (!GRX->GetCRLFtermination()) {
+            if (!GTKdev::self()->GetCRLFtermination()) {
                 if (s[0] == '\r' && s[1] == '\n') {
                     lastc = *s++;
                     continue;
@@ -1118,7 +1118,7 @@ sDbg::write_file(const char *fname)
             s += 2;
 #ifdef WIN32
             while (*s) {
-                if (!GRX->GetCRLFtermination()) {
+                if (!GTKdev::self()->GetCRLFtermination()) {
                     if (s[0] == '\r' && s[1] == '\n') {
                         lastc = *s++;
                         continue;
@@ -1175,7 +1175,7 @@ sDbg::check_save(int code)
         }
         if (db_last_code != code) {
             db_last_code = code;
-            sprintf(buf, "Text has been modified.  %s", str);
+            snprintf(buf, sizeof(buf), "Text has been modified.  %s", str);
             PopUpMessage(buf, false);
             return (true);
         }
@@ -1409,7 +1409,7 @@ sDbg::monitor()
     }
     if (!db_vlist)
         return;
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
 
     db_vars_pop = new sDbV(&db_vars_pop);
@@ -1418,7 +1418,8 @@ sDbg::monitor()
         return;
     }
 
-    GRX->SetPopupLocation(GRloc(LW_LR), db_vars_pop->Shell(), wb_shell);
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LR), db_vars_pop->Shell(),
+        wb_shell);
     gtk_window_set_transient_for(GTK_WINDOW(db_vars_pop->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
     gtk_widget_show(db_vars_pop->Shell());
@@ -1573,7 +1574,7 @@ sDbg::db_search_proc(GtkWidget *caller, void*)
         if (!Dbg->db_search_pop)
             Dbg->db_search_pop = new GTKsearchPopup(caller, Dbg->wb_textarea,
                 0, 0);
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             Dbg->db_search_pop->pop_up_search(MODE_ON);
         else
             Dbg->db_search_pop->pop_up_search(MODE_OFF);
@@ -1588,7 +1589,7 @@ void
 sDbg::db_font_proc(GtkWidget *caller, void*)
 {
     if (Dbg) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             Dbg->PopUpFontSel(caller, GRloc(), MODE_ON, 0, 0, FNT_FIXED);
         else
             Dbg->PopUpFontSel(caller, GRloc(), MODE_OFF, 0, 0, FNT_FIXED);
@@ -1629,7 +1630,7 @@ sDbg::db_cancel_proc(GtkWidget*, void*)
             EV()->InitCallback();  // force a return if pushed
         if (Dbg->check_save(CancelCode)) {
             if (Dbg->db_caller)
-                GRX->Select(Dbg->db_caller);
+                GTKdev::Select(Dbg->db_caller);
             return;
         }
         XM()->PopUpDebug(0, MODE_OFF);
@@ -1891,7 +1892,7 @@ sDbg::db_action_proc(GtkWidget *caller, void *client_data)
         break;
     case CRLFcode:
 #ifdef WIN32
-        GRX->SetCRLFtermination(GRX->GetStatus(caller));
+        GTKdev::self()->SetCRLFtermination(GTKdev::GetStatus(caller));
 #endif
         break;
     case RunCode:
@@ -1954,7 +1955,7 @@ sDbg::db_open_cb(const char *namein, void*)
             delete [] Dbg->db_file_path;
             Dbg->db_file_path = name;
             EV()->InitCallback();
-            dspPkgIf()->RegisterIdleProc(db_open_idle, 0);
+            GTKpkg::self()->RegisterIdleProc(db_open_idle, 0);
             return (ESTR_DN);
         }
         else
@@ -2311,7 +2312,7 @@ sDbV::dv_select_proc(GtkTreeSelection*, GtkTreeModel *store,
             gtk_tree_model_get(store, &iter, 0, &var, 1, &val, -1);
         if (var && val) {
             char buf[128];
-            sprintf(buf, "assign %s = ", var);
+            snprintf(buf, sizeof(buf), "assign %s = ", var);
 
             bool busy;
             const char *in = Dbg->var_prompt(val, buf, &busy);

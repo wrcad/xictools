@@ -191,7 +191,7 @@ lyrKWstruct::get_string_for(int type, const char *orig)
         in = prompt("Enter alias name for layer ", orig);
         if (!in)
             return (0);
-        sprintf(buf, "%s %s", Tkw.LppName(), in);
+        snprintf(buf, sizeof(buf), "%s %s", Tkw.LppName(), in);
         in = buf + strlen(buf) - 1;
         while (in >= buf && isspace(*in))
             *in-- = 0;
@@ -201,7 +201,7 @@ lyrKWstruct::get_string_for(int type, const char *orig)
         in = prompt("Enter description for layer ", orig);
         if (!in)
             return (0);
-        sprintf(buf, "%s %s", Tkw.Description(), in);
+        snprintf(buf, sizeof(buf), "%s %s", Tkw.Description(), in);
         in = buf + strlen(buf) - 1;
         while (in >= buf && isspace(*in))
             *in-- = 0;
@@ -236,7 +236,8 @@ lyrKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.0 && d <= 100.0) {
-                sprintf(buf + strlen(buf), " %.4f", d);
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " %.4f", d);
                 break;
             }
             in = prompt(
@@ -253,7 +254,8 @@ lyrKWstruct::get_string_for(int type, const char *orig)
                 return (0);
             double d;
             if (sscanf(in, "%lf", &d) == 1 && d >= 0.01 && d <= 10.0) {
-                sprintf(buf + strlen(buf), " %.4f", d);
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " %.4f", d);
                 break;
             }
             in = prompt(
@@ -574,7 +576,7 @@ lyrKWstruct::set_settings(CDl *ld, const char *string)
                 lpbak.revert();
 
                 char buf[256];
-                sprintf(buf, "Retry: error on line %d", linecnt);
+                snprintf(buf, sizeof(buf), "Retry: error on line %d", linecnt);
                 return (lstring::copy(buf));
             }
             linecnt++;

@@ -75,7 +75,8 @@ GTKbag::PopUpMultiCol(stringlist *symlist, const char *title,
     gtk_window_set_transient_for(GTK_WINDOW(mcol->Shell()),
         GTK_WINDOW(wb_shell));
     int x, y;
-    GRX->ComputePopupLocation(GRloc(), mcol->Shell(), wb_shell, &x, &y);
+    GTKdev::self()->ComputePopupLocation(GRloc(), mcol->Shell(), wb_shell,
+        &x, &y);
     x += mcol_count*50 - 150;
     y += mcol_count*50 - 150;
     mcol_count++;
@@ -182,7 +183,7 @@ GTKmcolPopup::GTKmcolPopup(GTKbag *owner, stringlist *symlist,
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GRpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr, NULL);
     gtk_table_attach(GTK_TABLE(form), contr, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -248,7 +249,7 @@ GTKmcolPopup::~GTKmcolPopup()
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_caller)
-        GRX->Deselect(p_caller);
+        GTKdev::Deselect(p_caller);
     stringlist::destroy(mc_strings);
 
     g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
@@ -362,7 +363,7 @@ GTKmcolPopup::relist()
             int tmpmax = (i+1)*mc_pagesize;
             if (tmpmax > cnt)
                 tmpmax = cnt;
-            sprintf(buf, "%d - %d", i*mc_pagesize + 1, tmpmax);
+            snprintf(buf, sizeof(buf), "%d - %d", i*mc_pagesize + 1, tmpmax);
             gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(mc_pagesel),
                 buf);
         }
@@ -707,7 +708,7 @@ GTKmcolPopup::mc_source_drag_data_get(GtkWidget *widget, GdkDragContext*,
 void
 GTKmcolPopup::mc_save_btn_hdlr(GtkWidget *widget, void *arg)
 {
-    if (GRX->GetStatus(widget)) {
+    if (GTKdev::GetStatus(widget)) {
         GTKmcolPopup *mcp = (GTKmcolPopup*)arg;
         if (mcp->mc_save_pop)
             return;
@@ -720,7 +721,7 @@ GTKmcolPopup::mc_save_btn_hdlr(GtkWidget *widget, void *arg)
 
         gtk_window_set_transient_for(GTK_WINDOW(mcp->mc_save_pop->pw_shell),
             GTK_WINDOW(mcp->wb_shell));
-        GRX->SetPopupLocation(GRloc(), mcp->mc_save_pop->pw_shell,
+        GTKdev::self()->SetPopupLocation(GRloc(), mcp->mc_save_pop->pw_shell,
             mcp->wb_shell);
         mcp->mc_save_pop->set_visible(true);
     }
@@ -766,7 +767,7 @@ GTKmcolPopup::mc_save_cb(const char *string, void *arg)
         mcp->mc_msg_pop->register_usrptr((void**)&mcp->mc_msg_pop);
         gtk_window_set_transient_for(GTK_WINDOW(mcp->mc_msg_pop->pw_shell),
             GTK_WINDOW(mcp->wb_shell));
-        GRX->SetPopupLocation(GRloc(), mcp->mc_msg_pop->pw_shell,
+        GTKdev::self()->SetPopupLocation(GRloc(), mcp->mc_msg_pop->pw_shell,
             mcp->wb_shell);
         mcp->mc_msg_pop->set_visible(true);
         g_timeout_add(2000, mc_timeout, mcp);

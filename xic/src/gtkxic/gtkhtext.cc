@@ -140,7 +140,7 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
     pe_r_menu = gtk_menu_new();
     gtk_widget_set_name(pe_r_menu, "Rmenu");
     for (int i = 0; i < PE_NUMSTORES; i++) {
-        sprintf(buf, "%d", i);
+        snprintf(buf, sizeof(buf), "%d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -178,7 +178,7 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
     pe_s_menu = gtk_menu_new();
     gtk_widget_set_name(pe_s_menu, "Smenu");
     for (int i = 1; i < PE_NUMSTORES; i++) {
-        sprintf(buf, "%d", i);
+        snprintf(buf, sizeof(buf), "%d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -341,13 +341,14 @@ GTKedit::flash_msg(const char *msg, ...)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_container_add(GTK_CONTAINER(popup), label);
 
-    GRX->SetPopupLocation(GRloc(LW_LL), popup, GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), popup,
+        GTKmainwin::self()->Viewport());
     gtk_window_set_transient_for(GTK_WINDOW(popup),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
     gtk_widget_show(popup);
 
-    GRX->AddTimer(2000, fm_timeout, popup);
+    GTKdev::self()->AddTimer(2000, fm_timeout, popup);
 }
 
 
@@ -385,7 +386,7 @@ GTKedit::flash_msg_here(int x, int y, const char *msg, ...)
 
     gtk_widget_show(popup);
 
-    GRX->AddTimer(2000, fm_timeout, popup);
+    GTKdev::self()->AddTimer(2000, fm_timeout, popup);
 }
 
 
@@ -402,7 +403,7 @@ GTKedit::save_line()
 int
 GTKedit::win_width(bool in_chars)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return (in_chars ? 80 : 800);
     if (in_chars) {
         int cw, ch;
@@ -418,7 +419,7 @@ GTKedit::win_width(bool in_chars)
 int
 GTKedit::win_height()
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return (14);
     return (pe_hei);
 }
@@ -430,7 +431,7 @@ void
 GTKedit::set_focus()
 {
     if (GTKmainwin::self()) {
-        GRX->SetFocus(GTKmainwin::self()->Shell());
+        GTKdev::SetFocus(GTKmainwin::self()->Shell());
         gtk_window_set_focus(GTK_WINDOW(GTKmainwin::self()->Shell()),
             GTKmainwin::self()->Viewport());
     }
@@ -556,7 +557,7 @@ GTKedit::check_pixmap()
         if (pe_pixmap)
             gdk_pixmap_unref(pe_pixmap);
         pe_pixmap = gdk_pixmap_new(gd_window, w, h,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         pe_wid = w;
         pe_hei = h;
     }
@@ -675,7 +676,7 @@ namespace {
     {
         *pushin = true;
         GtkWidget *btn = GTK_WIDGET(data);
-        GRX->Location(btn, x, y);
+        GTKdev::self()->Location(btn, x, y);
     }
 }
 

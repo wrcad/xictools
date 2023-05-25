@@ -134,10 +134,10 @@ cGEO::path_string(const Point *points, int numpts, int ndgt)
     int len = 0;
     for (const Point *pair = points; numpts; pair++, numpts--) {
         if (ndgt)
-            sprintf(buf, " %.*f,%.*f",
+            snprintf(buf, sizeof(buf), " %.*f,%.*f",
                 ndgt, MICRONS(pair->x), ndgt, MICRONS(pair->y));
         else
-            sprintf(buf, " %d,%d", pair->x, pair->y);
+            snprintf(buf, sizeof(buf), " %d,%d", pair->x, pair->y);
         int len1 = strlen(buf);
         if (len + len1 < 79) {
             lstr.add(buf);
@@ -168,10 +168,10 @@ cGEO::path_diff_string(const Point *points, int numpts, int ndgt)
     int ly = points->y;
     for (const Point *pair = points; numpts; pair++, numpts--) {
         if (ndgt)
-            sprintf(buf, " %.*f,%.*f",
+            snprintf(buf, sizeof(buf), " %.*f,%.*f",
                 ndgt, MICRONS(pair->x - lx), ndgt, MICRONS(pair->y - ly));
         else
-            sprintf(buf, " %d,%d", pair->x - lx, pair->y - ly);
+            snprintf(buf, sizeof(buf), " %d,%d", pair->x - lx, pair->y - ly);
         int len1 = strlen(buf);
         if (len + len1 < 79) {
             lstr.add(buf);
@@ -199,13 +199,14 @@ sCurTx::tform_string() const
     char buf[64];
     buf[0] = 0;
     if (ct_angle != 0)
-        sprintf(buf, "R%d", ct_angle);
+        snprintf(buf, sizeof(buf), "R%d", ct_angle);
     if (ct_reflectY)
         strcat(buf, "MY");
     if (ct_reflectX)
         strcat(buf, "MX");
     if (magset()) {
-        sprintf(buf + strlen(buf), "M%.8f", ct_magn);
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, "M%.8f", ct_magn);
         char *t = buf + strlen(buf) - 1;
         int i = 0;
         while (*t == '0' && i < 7) {

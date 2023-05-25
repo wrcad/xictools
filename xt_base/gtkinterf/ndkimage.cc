@@ -75,7 +75,7 @@ ndkImage::ndkImage(ndkImageType type, GdkVisual *visual,
     int width, int height)
 {
     if (!visual)
-        visual = GRX->Visual();
+        visual = GTKdev::self()->Visual();
   
     im_screen = gdk_visual_get_screen(visual);
     im_type = type;

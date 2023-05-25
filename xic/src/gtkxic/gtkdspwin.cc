@@ -89,7 +89,7 @@ void
 cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
     bool(*cb)(bool, const BBox*, void*), void *arg)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Dw;
@@ -113,7 +113,8 @@ cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
 
     gtk_window_set_transient_for(GTK_WINDOW(Dw->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
-    GRX->SetPopupLocation(GRloc(), Dw->shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), Dw->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Dw->shell());
 }
 
@@ -240,7 +241,7 @@ sDw::~sDw()
 {
     Dw = 0;
     if (dw_caller)
-        GRX->Deselect(dw_caller);
+        GTKdev::Deselect(dw_caller);
     if (dw_callback)
         (*dw_callback)(false, 0, dw_arg);
     if (dw_popup)

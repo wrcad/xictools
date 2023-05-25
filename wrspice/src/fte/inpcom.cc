@@ -152,13 +152,13 @@ CommandTab::com_edit(wordlist *wl)
             //
             FILE *fp;
             if (!(fp = fopen(filename, "w"))) {
-                GRpkgIf()->Perror(filename);
+                GRpkg::self()->Perror(filename);
                 return;
             }
             Sp.Listing(fp, Sp.CurCircuit()->origdeck() ?
                 Sp.CurCircuit()->origdeck() : Sp.CurCircuit()->deck(),
                 Sp.CurCircuit()->options(), LS_DECK);
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "editing a temporary file -- circuit not saved.\n");
             fclose(fp);
         }
@@ -166,7 +166,7 @@ CommandTab::com_edit(wordlist *wl)
             // No current circuit, user must create (using temp file)
             FILE *fp;
             if (!(fp = fopen(filename, "w"))) {
-                GRpkgIf()->Perror(filename);
+                GRpkg::self()->Perror(filename);
                 return;
             }
             fprintf(fp, "WRspice test deck\n");
@@ -197,12 +197,12 @@ CommandTab::com_edit(wordlist *wl)
 void
 CommandTab::com_xeditor(wordlist *wl)
 {
-    if (!GRpkgIf()->CurDev()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+    if (!GRpkg::self()->CurDev()) {
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "internal editor not available without graphics.");
         return;
     }
-    GRwbag *cx = GRpkgIf()->MainDev()->NewWbag("xeditor", 0);
+    GRwbag *cx = GRpkg::self()->MainDev()->NewWbag("xeditor", 0);
     cx->SetCreateTopLevel();
     cx->PopUpTextEditor(wl ? wl->wl_word : 0, callback, (void*)1, true);
 }
@@ -243,7 +243,7 @@ CommandTab::com_listing(wordlist *wl)
                 no_cont = true;
                 break;
             default:
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad listing type %s.\n", s);
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad listing type %s.\n", s);
             }
             wl = wl->wl_next;
         }
@@ -257,7 +257,7 @@ CommandTab::com_listing(wordlist *wl)
             expand ? Sp.CurCircuit()->options() : 0, type);
     }
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no circuit loaded.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no circuit loaded.\n");
 }
 // End of CommandTab functions.
 
@@ -276,9 +276,9 @@ IFsimulator::Edit(const char *filename,
     else
         editor = "vi";
     if (lstring::eq(editor, "xeditor")) {
-        if (CP.Display() && GRpkgIf()->CurDev()) {
+        if (CP.Display() && GRpkg::self()->CurDev()) {
             *usex = true;
-            GRwbag *cx = GRpkgIf()->MainDev()->NewWbag("xeditor", 0);
+            GRwbag *cx = GRpkg::self()->MainDev()->NewWbag("xeditor", 0);
             cx->SetCreateTopLevel();
             cx->PopUpTextEditor(filename,
                 (bool(*)(const char*, void*, XEtype))callback, (void*)1,
@@ -289,8 +289,8 @@ IFsimulator::Edit(const char *filename,
     }
     *usex = false;
     char buf[BSIZE_SP];
-    sprintf(buf, "%s %s", editor, filename);
-    if (!(CP.Display() && GRpkgIf()->CurDev()) ||
+    snprintf(buf, sizeof(buf), "%s %s", editor, filename);
+    if (!(CP.Display() && GRpkg::self()->CurDev()) ||
             Sp.GetVar("noeditwin", VTYP_BOOL, 0)) {
         int i = CP.System(buf);
         if (CP.GetFlag(CP_WAITING))
@@ -587,7 +587,7 @@ IFsimulator::Listing(FILE *file, sLine *deck, sLine *extras, int flags)
         }
     }
     else
-        GRpkgIf()->ErrPrintf(ET_INTERR, "Listing: bad type %d.\n", type);
+        GRpkg::self()->ErrPrintf(ET_INTERR, "Listing: bad type %d.\n", type);
 }
 
 
@@ -600,7 +600,7 @@ IFsimulator::PathOpen(const char *namein, const char *mode, bool *no_rewind)
     if (lstring::ciprefix("http://", namein) ||
             lstring::ciprefix("ftp://", namein)) {
         if (strchr(mode, 'w') || strchr(mode, 'a') || strchr(mode, '+')) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "can't write file across network.\n");
             return (0);
         }

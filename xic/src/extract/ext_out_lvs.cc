@@ -65,12 +65,12 @@ cExt::lvs(FILE *fp, CDcbin *cbin, int depth)
 {
     if (!cbin || !cbin->elec())
         return (LVSap);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
 
     SymTab *tab = new SymTab(false, false);
     if (!associate(cbin->phys())) {
         delete tab;
-        dspPkgIf()->SetWorking(false);
+        DSPpkg::self()->SetWorking(false);
         return (LVSerror);
     }
 
@@ -89,7 +89,7 @@ cExt::lvs(FILE *fp, CDcbin *cbin, int depth)
     setParamCx(0);
     delete pcx;
 
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (ret);
 }
 
@@ -272,14 +272,15 @@ cGroupDesc::print_lvs(FILE *fp)
     for (int i = 1; i < psize || i < esize; i++) {
         char gr1[32];
         if (i < psize && has_net_or_terms(i))
-            sprintf(gr1, "%d", i);
+            snprintf(gr1, sizeof(gr1), "%d", i);
         else
             *gr1 = 0;
 
         char nname2[64];
         if (i < psize && gd_groups[i].node() >= 0) {
             const char *nn = SCD()->nodeName(esdesc, gd_groups[i].node());
-            sprintf(nname2, "(%d) %s", gd_groups[i].node(), nn);
+            snprintf(nname2, sizeof(nname2), "(%d) %s", gd_groups[i].node(),
+                nn);
         }
         else {
             if (i < psize && has_net_or_terms(i)) {
@@ -295,14 +296,14 @@ cGroupDesc::print_lvs(FILE *fp)
         char nname1[64];
         if (i < esize && node_active(i)) {
             const char *nn = SCD()->nodeName(esdesc, i);
-            sprintf(nname1, "(%d) %s", i, nn);
+            snprintf(nname1, sizeof(nname1), "(%d) %s", i, nn);
         }
         else
             *nname1 = 0;
 
         char gr2[32];
         if (i < esize && group_of_node(i) >= 0)
-            sprintf(gr2, "%d", group_of_node(i));
+            snprintf(gr2, sizeof(gr2), "%d", group_of_node(i));
         else {
             if (i < esize && node_active(i))
                 strcpy(gr2, "---");
@@ -460,7 +461,7 @@ cGroupDesc::print_lvs(FILE *fp)
                     continue;
                 CDap ap(s->cdesc());
                 if (ap.nx > 1 || ap.ny > 1) {
-                    sprintf(tbuf, "[%d,%d]", s->ix(), s->iy());
+                    snprintf(tbuf, sizeof(tbuf), "[%d,%d]", s->ix(), s->iy());
                     char *iname = s->instance_name();
                     fprintf(fp, "  %-24s %-7s:",  iname, tbuf);
                     delete [] iname;
@@ -640,7 +641,7 @@ cGroupDesc::print_subc_contact_lvs(FILE *fp, const CDcbin &cbin,
             strcpy(tbuf, "unconnected");
     }
     else
-        sprintf(tbuf, "(%d) %s", p_node, p_nn);
+        snprintf(tbuf, sizeof(tbuf), "(%d) %s", p_node, p_nn);
     fprintf(fp, "%20s -> ", tbuf);
 
     if (s_node < 0) {
@@ -652,7 +653,7 @@ cGroupDesc::print_subc_contact_lvs(FILE *fp, const CDcbin &cbin,
             strcpy(tbuf, "unconnected");
     }
     else
-        sprintf(tbuf, "(%d) %s", s_node, s_nn);
+        snprintf(tbuf, sizeof(tbuf), "(%d) %s", s_node, s_nn);
     fprintf(fp, "%s\n", tbuf);
 }
 

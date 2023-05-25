@@ -203,10 +203,10 @@ CommandTab::com_help(wordlist *wl)
 
     const char *err = HLP()->error_msg();
     if (err)
-        GRpkgIf()->ErrPrintf(ET_ERROR, err);
+        GRpkg::self()->ErrPrintf(ET_ERROR, err);
 #else
     (void)wl;
-    GRpkgIf()->ErrPrintf(ET_MSG,
+    GRpkg::self()->ErrPrintf(ET_MSG,
         "Help system is not available in this executable.");
 #endif
 }
@@ -218,7 +218,7 @@ CommandTab::com_helpreset(wordlist*)
 #ifdef HAVE_MOZY
     HLP()->rehash();
 #else
-    GRpkgIf()->ErrPrintf(ET_MSG,
+    GRpkg::self()->ErrPrintf(ET_MSG,
         "Help system is not available in this executable.");
 #endif
 }
@@ -273,18 +273,19 @@ void
 CommandTab::com_bug(wordlist*)
 {
     if (!Global.BugAddr() || !*Global.BugAddr()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no address to send bug reports to.\n");
-            return;
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "no address to send bug reports to.\n");
+        return;
     }
     const char *msg =
         "Please include the OS version number and machine architecture.\n"
         "If the problem is with a specific circuit, please include the\n"
         "input file.\n\n";
     char buf[BSIZE_SP];
-    if (GRpkgIf()->CurDev()) {
+    if (GRpkg::self()->CurDev()) {
         TTY.printf(msg);
-        sprintf(buf, "WRspice %s bug report", Sp.Version());
-        GRwbag *cx = GRpkgIf()->MainDev()->NewWbag("mail", 0);
+        snprintf(buf, sizeof(buf), "WRspice %s bug report", Sp.Version());
+        GRwbag *cx = GRpkg::self()->MainDev()->NewWbag("mail", 0);
         cx->SetCreateTopLevel();
         cx->PopUpMail(buf, Global.BugAddr());
     }
@@ -296,7 +297,7 @@ CommandTab::com_bug(wordlist*)
     "You are in the mail program.  Type your message, end with \".\"\n"
     "on its own line.\n\n");
 
-        sprintf(buf, SYSTEM_MAIL, Sp.Simulator(), Sp.Version(),
+        snprintf(buf, sizeof(buf), SYSTEM_MAIL, Sp.Simulator(), Sp.Version(),
             Global.BugAddr());
         CP.System(buf);
         TTY.printf("Bug report sent.  Thank you.\n");
@@ -325,7 +326,7 @@ CommandTab::com_version(wordlist *wl)
         int r2 = sscanf(Sp.Version(), "%d.%d.%d", &c1, &c2, &c3);
         if (r1 != r2 || (r1 >= 1 && v1 > c1) || (r1 >= 2 && v2 > c2) ||
                 (r1 == 3 && v3 > c3)) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "rawfile is version %s (current version is %s).\n",
                 wl->wl_word, Sp.Version());
         }
@@ -358,7 +359,7 @@ CommandTab::com_wrupdate(wordlist*)
     wl.wl_word = buf;
     com_help(&wl);
 #else
-    GRpkgIf()->ErrPrintf(ET_MSG,
+    GRpkg::self()->ErrPrintf(ET_MSG,
         "Package manager is not available in this executable.");
 #endif
 }

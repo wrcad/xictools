@@ -164,7 +164,7 @@ using namespace gtkextset;
 void
 cExt::PopUpExtSetup(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Es;
@@ -186,7 +186,7 @@ cExt::PopUpExtSetup(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Es->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LR), Es->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LR), Es->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Es->shell());
 }
@@ -335,13 +335,13 @@ sEs::sEs(GRobject c)
 sEs::~sEs()
 {
     // Must do this before zeroing Es.
-    if (es_p1_tedit && GRX->GetStatus(es_p1_tedit))
-        GRX->CallCallback(es_p1_tedit);
+    if (es_p1_tedit && GTKdev::GetStatus(es_p1_tedit))
+        GTKdev::CallCallback(es_p1_tedit);
     Es = 0;
     delete es_devdesc;
     SCD()->PopUpNodeMap(0, MODE_OFF);
     if (es_caller)
-        GRX->Deselect(es_caller);
+        GTKdev::Deselect(es_caller);
     if (es_popup)
         gtk_widget_destroy(es_popup);
 }
@@ -1218,50 +1218,50 @@ sEs::update()
     gtk_widget_set_sensitive(es_p1_cterms, physmode);
 
     if (DSP()->CurMode() == Electrical) {
-        GRX->SetStatus(es_p1_tedit,
+        GTKdev::SetStatus(es_p1_tedit,
             Menu()->MenuButtonStatus(MMside, MenuSUBCT));
-        GRX->SetStatus(es_p1_tfind,
+        GTKdev::SetStatus(es_p1_tfind,
             Menu()->MenuButtonStatus(MMside, MenuNODMP));
     }
 
-    GRX->SetStatus(es_p1_extview, EX()->isExtractionView());
-    GRX->SetStatus(es_p1_groups,
+    GTKdev::SetStatus(es_p1_extview, EX()->isExtractionView());
+    GTKdev::SetStatus(es_p1_groups,
         EX()->isShowingGroups() && !EX()->isShowingNodes());
-    GRX->SetStatus(es_p1_nodes,
+    GTKdev::SetStatus(es_p1_nodes,
         EX()->isShowingGroups() && EX()->isShowingNodes());
-    GRX->SetStatus(es_p1_terms,
+    GTKdev::SetStatus(es_p1_terms,
         DSP()->ShowTerminals() && DSP()->TerminalsVisible());
-    GRX->SetStatus(es_p1_cterms,
+    GTKdev::SetStatus(es_p1_cterms,
         DSP()->ShowTerminals() && DSP()->ContactsVisible());
 
     // page 2
     const char *s = CDvdb()->getVariable(VA_PinPurpose);
     if (s) {
         gtk_entry_set_text(GTK_ENTRY(es_p2_nlprp), s);
-        GRX->SetStatus(es_p2_nlprpset, true);
+        GTKdev::SetStatus(es_p2_nlprpset, true);
     }
     else
-        GRX->SetStatus(es_p2_nlprpset, false);
+        GTKdev::SetStatus(es_p2_nlprpset, false);
 
     s = CDvdb()->getVariable(VA_PinLayer);
     if (s) {
         gtk_entry_set_text(GTK_ENTRY(es_p2_nll), s);
-        GRX->SetStatus(es_p2_nllset, true);
+        GTKdev::SetStatus(es_p2_nllset, true);
     }
     else
-        GRX->SetStatus(es_p2_nllset, false);
+        GTKdev::SetStatus(es_p2_nllset, false);
 
-    GRX->SetStatus(es_p2_ignlab,
+    GTKdev::SetStatus(es_p2_ignlab,
         CDvdb()->getVariable(VA_IgnoreNetLabels) != 0);
-    GRX->SetStatus(es_p2_oldlab,
+    GTKdev::SetStatus(es_p2_oldlab,
         CDvdb()->getVariable(VA_FindOldTermLabels) != 0);
-    GRX->SetStatus(es_p2_updlab,
+    GTKdev::SetStatus(es_p2_updlab,
         CDvdb()->getVariable(VA_UpdateNetLabels) != 0);
-    GRX->SetStatus(es_p2_merge,
+    GTKdev::SetStatus(es_p2_merge,
         CDvdb()->getVariable(VA_MergeMatchingNamed) != 0);
-    GRX->SetStatus(es_p2_vcvx,
+    GTKdev::SetStatus(es_p2_vcvx,
         CDvdb()->getVariable(VA_ViaConvex) != 0);
-    GRX->SetStatus(es_p2_vsubs,
+    GTKdev::SetStatus(es_p2_vsubs,
         CDvdb()->getVariable(VA_ViaCheckBtwnSubs) != 0);
 
     s = sb_vdepth.get_string();
@@ -1270,9 +1270,9 @@ sEs::update()
             n != EX()->viaSearchDepth())
         sb_vdepth.set_value(EX()->viaSearchDepth());
 
-    GRX->SetStatus(es_p2_gpglob,
+    GTKdev::SetStatus(es_p2_gpglob,
         CDvdb()->getVariable(VA_GroundPlaneGlobal) != 0);
-    GRX->SetStatus(es_p2_gpmulti,
+    GTKdev::SetStatus(es_p2_gpmulti,
         CDvdb()->getVariable(VA_GroundPlaneMulti) != 0);
 
     if (es_gpmhst != (int)Tech()->GroundPlaneMode()) {
@@ -1281,23 +1281,23 @@ sEs::update()
     }
 
     // page 3
-    GRX->SetStatus(es_p3_noseries,
+    GTKdev::SetStatus(es_p3_noseries,
         CDvdb()->getVariable(VA_NoMergeSeries) != 0);
-    GRX->SetStatus(es_p3_nopara,
+    GTKdev::SetStatus(es_p3_nopara,
         CDvdb()->getVariable(VA_NoMergeParallel) != 0);
-    GRX->SetStatus(es_p3_keepshrt,
+    GTKdev::SetStatus(es_p3_keepshrt,
         CDvdb()->getVariable(VA_KeepShortedDevs) != 0);
-    GRX->SetStatus(es_p3_nomrgshrt,
+    GTKdev::SetStatus(es_p3_nomrgshrt,
         CDvdb()->getVariable(VA_NoMergeShorted) != 0);
-    GRX->SetStatus(es_p3_nomeas,
+    GTKdev::SetStatus(es_p3_nomeas,
         CDvdb()->getVariable(VA_NoMeasure) != 0);
-    GRX->SetStatus(es_p3_usecache,
+    GTKdev::SetStatus(es_p3_usecache,
         CDvdb()->getVariable(VA_UseMeasurePrpty) != 0);
-    GRX->SetStatus(es_p3_nordcache,
+    GTKdev::SetStatus(es_p3_nordcache,
         CDvdb()->getVariable(VA_NoReadMeasurePrpty) != 0);
-    GRX->SetStatus(es_p3_trytile,
+    GTKdev::SetStatus(es_p3_trytile,
         CDvdb()->getVariable(VA_RLSolverTryTile) != 0);
-    GRX->SetStatus(es_p3_deltaset,
+    GTKdev::SetStatus(es_p3_deltaset,
         CDvdb()->getVariable(VA_RLSolverDelta) != 0);
 
     s = sb_maxpts.get_string();
@@ -1308,7 +1308,7 @@ sEs::update()
     if (sscanf(s, "%d", &n) != 1 || n != RLsolver::rl_numgrid)
         sb_gridpts.set_value(RLsolver::rl_numgrid);
 
-    if (GRX->GetStatus(es_p3_deltaset)) {
+    if (GTKdev::GetStatus(es_p3_deltaset)) {
         s = sb_delta.get_string();
         double d;
         if (sscanf(s, "%lf", &d) != 1 ||
@@ -1323,30 +1323,30 @@ sEs::update()
     s = CDvdb()->getVariable(VA_FlattenPrefix);
     if (s) {
         gtk_entry_set_text(GTK_ENTRY(es_p4_flkeys), s);
-        GRX->SetStatus(es_p4_flkeyset, true);
+        GTKdev::SetStatus(es_p4_flkeyset, true);
     }
     else
-        GRX->SetStatus(es_p4_flkeyset, false);
+        GTKdev::SetStatus(es_p4_flkeyset, false);
 
-    GRX->SetStatus(es_p4_exopq,
+    GTKdev::SetStatus(es_p4_exopq,
         CDvdb()->getVariable(VA_ExtractOpaque) != 0);
 
-    GRX->SetStatus(es_p4_vrbos,
+    GTKdev::SetStatus(es_p4_vrbos,
         CDvdb()->getVariable(VA_VerbosePromptline) != 0);
 
     s = CDvdb()->getVariable(VA_GlobalExclude);
     if (s) {
         gtk_entry_set_text(GTK_ENTRY(es_p4_glbex), s);
-        GRX->SetStatus(es_p4_glbexset, true);
+        GTKdev::SetStatus(es_p4_glbexset, true);
     }
     else
-        GRX->SetStatus(es_p4_glbexset, false);
+        GTKdev::SetStatus(es_p4_glbexset, false);
 
-    GRX->SetStatus(es_p4_noperm,
+    GTKdev::SetStatus(es_p4_noperm,
         CDvdb()->getVariable(VA_NoPermute) != 0);
-    GRX->SetStatus(es_p4_apmrg,
+    GTKdev::SetStatus(es_p4_apmrg,
         CDvdb()->getVariable(VA_MergePhysContacts) != 0);
-    GRX->SetStatus(es_p4_apfix,
+    GTKdev::SetStatus(es_p4_apfix,
         CDvdb()->getVariable(VA_SubcPermutationFix) != 0);
 
     s = sb_loop.get_string();
@@ -1363,20 +1363,20 @@ sEs::update()
 void
 sEs::set_sens()
 {
-    if (GRX->GetStatus(es_p2_nlprpset))
+    if (GTKdev::GetStatus(es_p2_nlprpset))
         gtk_widget_set_sensitive(es_p2_nlprp, false);
     else
         gtk_widget_set_sensitive(es_p2_nlprp, true);
-    if (GRX->GetStatus(es_p2_nllset))
+    if (GTKdev::GetStatus(es_p2_nllset))
         gtk_widget_set_sensitive(es_p2_nll, false);
     else
         gtk_widget_set_sensitive(es_p2_nll, true);
-    if (GRX->GetStatus(es_p2_gpmulti))
+    if (GTKdev::GetStatus(es_p2_gpmulti))
         gtk_widget_set_sensitive(es_p2_gpmthd, true);
     else
         gtk_widget_set_sensitive(es_p2_gpmthd, false);
 
-    if (GRX->GetStatus(es_p3_deltaset)) {
+    if (GTKdev::GetStatus(es_p3_deltaset)) {
         sb_delta.set_sensitive(false);
         gtk_widget_set_sensitive(es_p3_trytile, false);
         gtk_widget_set_sensitive(es_p3_lmax, false);
@@ -1388,7 +1388,7 @@ sEs::set_sens()
         sb_delta.set_sensitive(true);
         gtk_widget_set_sensitive(es_p3_trytile, true);
 
-        if (GRX->GetStatus(es_p3_trytile)) {
+        if (GTKdev::GetStatus(es_p3_trytile)) {
             gtk_widget_set_sensitive(es_p3_lmax, true);
             sb_maxpts.set_sensitive(true);
             gtk_widget_set_sensitive(es_p3_lgrid, false);
@@ -1402,11 +1402,11 @@ sEs::set_sens()
         }
     }
 
-    if (GRX->GetStatus(es_p4_flkeyset))
+    if (GTKdev::GetStatus(es_p4_flkeyset))
         gtk_widget_set_sensitive(es_p4_flkeys, false);
     else
         gtk_widget_set_sensitive(es_p4_flkeys, true);
-    if (GRX->GetStatus(es_p4_glbexset))
+    if (GTKdev::GetStatus(es_p4_glbexset))
         gtk_widget_set_sensitive(es_p4_glbex, false);
     else
         gtk_widget_set_sensitive(es_p4_glbex, true);
@@ -1429,21 +1429,21 @@ sEs::es_show_grp_node(GtkWidget *caller)
     CDs *cursdp = CurCell(Physical);
     if (caller && cursdp && Menu()->GetStatus(caller)) {
         if (!EX()->associate(cursdp)) {
-            GRX->Deselect(caller);
+            GTKdev::Deselect(caller);
             return;
         }
         cGroupDesc *gd = cursdp->groups();
         if (!gd || gd->isempty()) {
-            GRX->Deselect(caller);
+            GTKdev::Deselect(caller);
             return;
         }
         bool shownodes = (caller == Es->es_p1_nodes);
         WindowDesc *wd;
         if (EX()->isShowingGroups()) {
             if (shownodes)
-                GRX->Deselect(Es->es_p1_groups);
+                GTKdev::Deselect(Es->es_p1_groups);
             else
-                GRX->Deselect(Es->es_p1_nodes);
+                GTKdev::Deselect(Es->es_p1_nodes);
             WDgen wgen(WDgen::MAIN, WDgen::CDDB);
             while ((wd = wgen.next()) != 0)
                 gd->show_groups(wd, ERASE);
@@ -1514,13 +1514,13 @@ sEs::es_action(GtkWidget *caller, void*)
         es_show_grp_node(Es->es_p1_nodes);
     }
     else if (!strcmp(name, "Terms")) {
-        if (GRX->GetStatus(Es->es_p1_terms))
-            GRX->SetStatus(Es->es_p1_cterms, false);
+        if (GTKdev::GetStatus(Es->es_p1_terms))
+            GTKdev::SetStatus(Es->es_p1_cterms, false);
         EX()->showPhysTermsExec(Es->es_p1_terms, false);
     }
     else if (!strcmp(name, "CTOnly")) {
-        if (GRX->GetStatus(Es->es_p1_cterms))
-            GRX->SetStatus(Es->es_p1_terms, false);
+        if (GTKdev::GetStatus(Es->es_p1_cterms))
+            GTKdev::SetStatus(Es->es_p1_terms, false);
         EX()->showPhysTermsExec(Es->es_p1_cterms, true);
     }
     else if (!strcmp(name, "ResetTerms")) {
@@ -1528,7 +1528,8 @@ sEs::es_action(GtkWidget *caller, void*)
         if (tmpt)
             DSP()->ShowTerminals(ERASE);
         CDcbin cbin(DSP()->CurCellName());
-        EX()->reset(&cbin, false, true, GRX->GetStatus(Es->es_p1_recurs));
+        EX()->reset(&cbin, false, true,
+            GTKdev::GetStatus(Es->es_p1_recurs));
         if (tmpt)
             DSP()->ShowTerminals(DISPLAY);
     }
@@ -1537,7 +1538,8 @@ sEs::es_action(GtkWidget *caller, void*)
         if (tmpt)
             DSP()->ShowTerminals(ERASE);
         CDcbin cbin(DSP()->CurCellName());
-        EX()->reset(&cbin, true, false, GRX->GetStatus(Es->es_p1_recurs));
+        EX()->reset(&cbin, true, false,
+            GTKdev::GetStatus(Es->es_p1_recurs));
         EX()->arrangeInstLabels(&cbin);
         if (tmpt)
             DSP()->ShowTerminals(DISPLAY);
@@ -1579,14 +1581,14 @@ sEs::es_action(GtkWidget *caller, void*)
         if (DSP()->CurMode() == Physical)
             EX()->editTermsExec(Es->es_p1_tedit, Es->es_p1_cterms);
         else {
-            bool state = GRX->GetStatus(caller);
+            bool state = GTKdev::GetStatus(caller);
             bool st = Menu()->MenuButtonStatus(MMside, MenuSUBCT);
             if (st != state)
                 Menu()->MenuButtonPress(MMside, MenuSUBCT);
         }
     }
     else if (!strcmp(name, "FindTerm")) {
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (DSP()->CurMode() == Physical) {
             if (state)
                 SCD()->PopUpNodeMap(caller, MODE_ON);
@@ -1602,7 +1604,7 @@ sEs::es_action(GtkWidget *caller, void*)
 
     // Page 2.
     else if (!strcmp(name, "NlpSet")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             const char *s = gtk_entry_get_text(GTK_ENTRY(Es->es_p2_nlprp));
             CDvdb()->setVariable(VA_PinPurpose, s);
         }
@@ -1610,7 +1612,7 @@ sEs::es_action(GtkWidget *caller, void*)
             CDvdb()->clearVariable(VA_PinPurpose);
     }
     else if (!strcmp(name, "NllSet")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             const char *s = gtk_entry_get_text(GTK_ENTRY(Es->es_p2_nll));
             CDvdb()->setVariable(VA_PinLayer, s);
         }
@@ -1618,49 +1620,49 @@ sEs::es_action(GtkWidget *caller, void*)
             CDvdb()->clearVariable(VA_PinLayer);
     }
     else if (!strcmp(name, "IgnName")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_IgnoreNetLabels, "");
         else
             CDvdb()->clearVariable(VA_IgnoreNetLabels);
     }
     else if (!strcmp(name, "OldName")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_FindOldTermLabels, "");
         else
             CDvdb()->clearVariable(VA_FindOldTermLabels);
     }
     else if (!strcmp(name, "UpdName")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_UpdateNetLabels, "");
         else
             CDvdb()->clearVariable(VA_UpdateNetLabels);
     }
     else if (!strcmp(name, "Merge")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_MergeMatchingNamed, "");
         else
             CDvdb()->clearVariable(VA_MergeMatchingNamed);
     }
     else if (!strcmp(name, "ViaCvx")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_ViaConvex, "");
         else
             CDvdb()->clearVariable(VA_ViaConvex);
     }
     else if (!strcmp(name, "ViaSubs")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_ViaCheckBtwnSubs, "");
         else
             CDvdb()->clearVariable(VA_ViaCheckBtwnSubs);
     }
     else if (!strcmp(name, "GPGlob")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_GroundPlaneGlobal, "");
         else
             CDvdb()->clearVariable(VA_GroundPlaneGlobal);
     }
     else if (!strcmp(name, "GPMulti")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_GroundPlaneMulti, "");
         else
             CDvdb()->clearVariable(VA_GroundPlaneMulti);
@@ -1668,61 +1670,61 @@ sEs::es_action(GtkWidget *caller, void*)
 
     // Page 3.
     else if (!strcmp(name, "NoSeries")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoMergeSeries, "");
         else
             CDvdb()->clearVariable(VA_NoMergeSeries);
     }
     else if (!strcmp(name, "NoPara")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoMergeParallel, "");
         else
             CDvdb()->clearVariable(VA_NoMergeParallel);
     }
     else if (!strcmp(name, "KeepShrt")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_KeepShortedDevs, "");
         else
             CDvdb()->clearVariable(VA_KeepShortedDevs);
     }
     else if (!strcmp(name, "NoMrgShrt")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoMergeShorted, "");
         else
             CDvdb()->clearVariable(VA_NoMergeShorted);
     }
     else if (!strcmp(name, "NoMeas")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoMeasure, "");
         else
             CDvdb()->clearVariable(VA_NoMeasure);
     }
     else if (!strcmp(name, "UseCache")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_UseMeasurePrpty, "");
         else
             CDvdb()->clearVariable(VA_UseMeasurePrpty);
     }
     else if (!strcmp(name, "NoRdCache")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoReadMeasurePrpty, "");
         else
             CDvdb()->clearVariable(VA_NoReadMeasurePrpty);
     }
     else if (!strcmp(name, "DeltaSet")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             const char *s = Es->sb_delta.get_string();
             double d;
             if (sscanf(s, "%lf", &d) == 1 && d >= 0.01)
                 CDvdb()->setVariable(VA_RLSolverDelta, s);
             else
-                GRX->Deselect(caller);
+                GTKdev::Deselect(caller);
         }
         else
             CDvdb()->clearVariable(VA_RLSolverDelta);
     }
     else if (!strcmp(name, "TryTile")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_RLSolverTryTile, "");
         else
             CDvdb()->clearVariable(VA_RLSolverTryTile);
@@ -1730,7 +1732,7 @@ sEs::es_action(GtkWidget *caller, void*)
 
     // Page 4.
     else if (!strcmp(name, "UseKeys")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             const char *s = gtk_entry_get_text(GTK_ENTRY(Es->es_p4_flkeys));
             CDvdb()->setVariable(VA_FlattenPrefix, s);
         }
@@ -1738,19 +1740,19 @@ sEs::es_action(GtkWidget *caller, void*)
             CDvdb()->clearVariable(VA_FlattenPrefix);
     }
     else if (!strcmp(name, "Opaque")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_ExtractOpaque, "");
         else
             CDvdb()->clearVariable(VA_ExtractOpaque);
     }
     else if (!strcmp(name, "Verbose")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_VerbosePromptline, "");
         else
             CDvdb()->clearVariable(VA_VerbosePromptline);
     }
     else if (!strcmp(name, "GlbSet")) {
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             const char *s = gtk_entry_get_text(GTK_ENTRY(Es->es_p4_glbex));
             CDvdb()->setVariable(VA_GlobalExclude, s);
         }
@@ -1758,19 +1760,19 @@ sEs::es_action(GtkWidget *caller, void*)
             CDvdb()->clearVariable(VA_GlobalExclude);
     }
     else if (!strcmp(name, "NoPerm")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoPermute, "");
         else
             CDvdb()->clearVariable(VA_NoPermute);
     }
     else if (!strcmp(name, "MergePC")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_MergePhysContacts, "");
         else
             CDvdb()->clearVariable(VA_MergePhysContacts);
     }
     else if (!strcmp(name, "PrmFix")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_SubcPermutationFix, "");
         else
             CDvdb()->clearVariable(VA_SubcPermutationFix);
@@ -1941,8 +1943,8 @@ sEs::es_dev_menu_proc(GtkWidget *caller, void *client_data)
         return;
     }
     sDevDesc *d = (sDevDesc*)client_data;
-    if (GRX->GetStatus(Es->es_p2_delblk)) {
-        GRX->Deselect(Es->es_p2_delblk);
+    if (GTKdev::GetStatus(Es->es_p2_delblk)) {
+        GTKdev::Deselect(Es->es_p2_delblk);
         if (d && EX()->removeDevice(Tstring(d->name()), d->prefix())) {
             d->set_next(0);
             delete Es->es_devdesc;

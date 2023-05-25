@@ -650,133 +650,133 @@ cTech::ParseAttributes(sAttrContext *ac, bool noact)
 
     // Fixed font for pop-up windows other than text editor/file browser.
     if (Matching(Tkw.Font1())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_FIXED);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_FIXED);
         return (TCmatch);
     }
     if (Matching(Tkw.Font1P())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_FIXED, FNT_FMT_P);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_FIXED, FNT_FMT_P);
         return (TCmatch);
     }
     if (Matching(Tkw.Font1Q())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_FIXED, FNT_FMT_Q);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_FIXED, FNT_FMT_Q);
         return (TCmatch);
     }
     if (Matching(Tkw.Font1W())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_FIXED, FNT_FMT_W);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_FIXED, FNT_FMT_W);
         return (TCmatch);
     }
     if (Matching(Tkw.Font1X())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_FIXED, FNT_FMT_X);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_FIXED, FNT_FMT_X);
         return (TCmatch);
     }
 
     // Prop. font for pop-up windows other than text editor/file browser.
     if (Matching(Tkw.Font2())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_PROP);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_PROP);
         return (TCmatch);
     }
     if (Matching(Tkw.Font2P())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_PROP, FNT_FMT_P);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_PROP, FNT_FMT_P);
         return (TCmatch);
     }
     if (Matching(Tkw.Font2Q())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_PROP, FNT_FMT_Q);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_PROP, FNT_FMT_Q);
         return (TCmatch);
     }
     if (Matching(Tkw.Font2W())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_PROP, FNT_FMT_W);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_PROP, FNT_FMT_W);
         return (TCmatch);
     }
     if (Matching(Tkw.Font2X())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_PROP, FNT_FMT_X);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_PROP, FNT_FMT_X);
         return (TCmatch);
     }
 
     // Fixed font for screen.
     if (Matching(Tkw.Font3())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_SCREEN);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_SCREEN);
         return (TCmatch);
     }
     if (Matching(Tkw.Font3P())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_SCREEN, FNT_FMT_P);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_SCREEN, FNT_FMT_P);
         return (TCmatch);
     }
     if (Matching(Tkw.Font3Q())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_SCREEN, FNT_FMT_Q);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_SCREEN, FNT_FMT_Q);
         return (TCmatch);
     }
     if (Matching(Tkw.Font3W())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_SCREEN, FNT_FMT_W);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_SCREEN, FNT_FMT_W);
         return (TCmatch);
     }
     if (Matching(Tkw.Font3X())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_SCREEN, FNT_FMT_X);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_SCREEN, FNT_FMT_X);
         return (TCmatch);
     }
 
     // Font for text editor/file browser windows.
     if (Matching(Tkw.Font4())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_EDITOR);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_EDITOR);
         return (TCmatch);
     }
     if (Matching(Tkw.Font4P())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_EDITOR, FNT_FMT_P);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_EDITOR, FNT_FMT_P);
         return (TCmatch);
     }
     if (Matching(Tkw.Font4Q())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_EDITOR, FNT_FMT_Q);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_EDITOR, FNT_FMT_Q);
         return (TCmatch);
     }
     if (Matching(Tkw.Font4W())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_EDITOR, FNT_FMT_W);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_EDITOR, FNT_FMT_W);
         return (TCmatch);
     }
     if (Matching(Tkw.Font4X())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_EDITOR, FNT_FMT_X);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_EDITOR, FNT_FMT_X);
         return (TCmatch);
     }
 
     // Proportional base font for HTML viewer (not used in Windows).
     if (Matching(Tkw.Font5())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_MOZY);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_MOZY);
         return (TCmatch);
     }
     if (Matching(Tkw.Font5P())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_MOZY, FNT_FMT_P);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_MOZY, FNT_FMT_P);
         return (TCmatch);
     }
     if (Matching(Tkw.Font5Q())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_MOZY, FNT_FMT_Q);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_MOZY, FNT_FMT_Q);
         return (TCmatch);
     }
     if (Matching(Tkw.Font5W())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_MOZY, FNT_FMT_W);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_MOZY, FNT_FMT_W);
         return (TCmatch);
     }
     if (Matching(Tkw.Font5X())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_MOZY, FNT_FMT_X);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_MOZY, FNT_FMT_X);
         return (TCmatch);
     }
 
     // Fixed base font for HTML viewer (not used in Windows).
     if (Matching(Tkw.Font6())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_MOZY_FIXED);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_MOZY_FIXED);
         return (TCmatch);
     }
     if (Matching(Tkw.Font6P())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_MOZY_FIXED, FNT_FMT_P);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_MOZY_FIXED, FNT_FMT_P);
         return (TCmatch);
     }
     if (Matching(Tkw.Font6Q())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_MOZY_FIXED, FNT_FMT_Q);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_MOZY_FIXED, FNT_FMT_Q);
         return (TCmatch);
     }
     if (Matching(Tkw.Font6W())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_MOZY_FIXED, FNT_FMT_W);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_MOZY_FIXED, FNT_FMT_W);
         return (TCmatch);
     }
     if (Matching(Tkw.Font6X())) {
-        dspPkgIf()->SetFont(tc_inbuf, FNT_MOZY_FIXED, FNT_FMT_X);
+        DSPpkg::self()->SetFont(tc_inbuf, FNT_MOZY_FIXED, FNT_FMT_X);
         return (TCmatch);
     }
 
@@ -1487,11 +1487,11 @@ cTech::print_layer_palettes(FILE *techfp)
 void
 cTech::print_fonts(FILE *techfp)
 {
-    FNT_FMT fnt_fmt = dspPkgIf()->GetFontFmt();
+    FNT_FMT fnt_fmt = DSPpkg::self()->GetFontFmt();
     bool hdr_printed = false;
     const char *hstr = "\n# Fonts\n";
 
-    const char *fn = dspPkgIf()->GetFont(FNT_FIXED);
+    const char *fn = DSPpkg::self()->GetFont(FNT_FIXED);
     const char *dn = FC.getDefaultName(FNT_FIXED);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
@@ -1523,7 +1523,7 @@ cTech::print_fonts(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font1W());
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font1X());
 
-    fn = dspPkgIf()->GetFont(FNT_PROP);
+    fn = DSPpkg::self()->GetFont(FNT_PROP);
     dn = FC.getDefaultName(FNT_PROP);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
@@ -1555,7 +1555,7 @@ cTech::print_fonts(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font2W());
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font2X());
 
-    fn = dspPkgIf()->GetFont(FNT_SCREEN);
+    fn = DSPpkg::self()->GetFont(FNT_SCREEN);
     dn = FC.getDefaultName(FNT_SCREEN);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
@@ -1587,7 +1587,7 @@ cTech::print_fonts(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font3W());
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font3X());
 
-    fn = dspPkgIf()->GetFont(FNT_EDITOR);
+    fn = DSPpkg::self()->GetFont(FNT_EDITOR);
     dn = FC.getDefaultName(FNT_EDITOR);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
@@ -1619,7 +1619,7 @@ cTech::print_fonts(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font4W());
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font4X());
 
-    fn = dspPkgIf()->GetFont(FNT_MOZY);
+    fn = DSPpkg::self()->GetFont(FNT_MOZY);
     dn = FC.getDefaultName(FNT_MOZY);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
@@ -1651,7 +1651,7 @@ cTech::print_fonts(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font5W());
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font5X());
 
-    fn = dspPkgIf()->GetFont(FNT_MOZY_FIXED);
+    fn = DSPpkg::self()->GetFont(FNT_MOZY_FIXED);
     dn = FC.getDefaultName(FNT_MOZY_FIXED);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {

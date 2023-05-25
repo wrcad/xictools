@@ -217,7 +217,7 @@ using namespace gtkfillp;
 void
 cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Fpe;
@@ -232,7 +232,7 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
         return;
 
     if (!XM()->CheckCurLayer()) {
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         return;
     }
 
@@ -244,7 +244,7 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Fpe->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LR), Fpe->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LR), Fpe->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Fpe->Shell());
 }
@@ -626,13 +626,13 @@ sFpe::sFpe(GRobject c) : GTKdraw(XW_DRAWING)
             delete [] map;
         }
         if (LT()->CurLayer()->isOutlined()) {
-            GRX->SetStatus(fp_outl, true);
+            GTKdev::SetStatus(fp_outl, true);
             if (LT()->CurLayer()->isOutlinedFat())
-                GRX->SetStatus(fp_fat, true);
+                GTKdev::SetStatus(fp_fat, true);
         }
         else
             gtk_widget_set_sensitive(fp_fat, false);
-        GRX->SetStatus(fp_cut, LT()->CurLayer()->isCut());
+        GTKdev::SetStatus(fp_cut, LT()->CurLayer()->isCut());
     }
     fp_mode_proc(0, 0);
 }
@@ -641,7 +641,7 @@ sFpe::sFpe(GRobject c) : GTKdraw(XW_DRAWING)
 sFpe::~sFpe()
 {
     Fpe = 0;
-    GRX->Deselect(fp_caller);
+    GTKdev::Deselect(fp_caller);
     if (fp_fp) {
         SetFillpattern(0);          // Remove pointer to saved pixmap.
         fp_fp->newMap(0, 0, 0);     // Clear pixel map.
@@ -694,7 +694,7 @@ sFpe::redraw_edit()
         if (fp_pixmap)
             gdk_pixmap_unref(fp_pixmap);
         fp_pixmap = gdk_pixmap_new(gtk_widget_get_window(fp_editor), wid, hei,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         if (fp_pixmap) {
             fp_pm_w = wid;
             fp_pm_h = hei;
@@ -760,7 +760,7 @@ sFpe::redraw_sample()
         if (fp_pixmap)
             gdk_pixmap_unref(fp_pixmap);
         fp_pixmap = gdk_pixmap_new(gtk_widget_get_window(fp_sample), wid, hei,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         if (fp_pixmap) {
             fp_pm_w = wid;
             fp_pm_h = hei;
@@ -791,9 +791,9 @@ sFpe::redraw_sample()
         }
     }
     if (!nonff) {
-        GRX->SetStatus(fp_cut, false);
-        GRX->SetStatus(fp_outl, false);
-        GRX->SetStatus(fp_fat, false);
+        GTKdev::SetStatus(fp_cut, false);
+        GTKdev::SetStatus(fp_outl, false);
+        GTKdev::SetStatus(fp_fat, false);
         gtk_widget_set_sensitive(fp_cut, false);
         gtk_widget_set_sensitive(fp_outl, false);
         gtk_widget_set_sensitive(fp_fat, false);
@@ -801,9 +801,9 @@ sFpe::redraw_sample()
     else {
         gtk_widget_set_sensitive(fp_cut, true);
         gtk_widget_set_sensitive(fp_outl, true);
-        gtk_widget_set_sensitive(fp_fat, GRX->GetStatus(fp_outl));
+        gtk_widget_set_sensitive(fp_fat, GTKdev::GetStatus(fp_outl));
     }
-    if (GRX->GetStatus(fp_outl)) {
+    if (GTKdev::GetStatus(fp_outl)) {
         int x1 = 0;
         int y1 = 0;
         int x2 = wid - 1;
@@ -812,7 +812,7 @@ sFpe::redraw_sample()
         Line(x2, y1, x2, y2);
         Line(x2, y2, x1, y2);
         Line(x1, y2, x1, y1);
-        if (GRX->GetStatus(fp_fat)) {
+        if (GTKdev::GetStatus(fp_fat)) {
             x1++;
             y1++;
             x2--;
@@ -831,7 +831,7 @@ sFpe::redraw_sample()
             Line(x1, y2, x1, y1);
         }
     }
-    if (GRX->GetStatus(fp_cut)) {
+    if (GTKdev::GetStatus(fp_cut)) {
         int x1 = 0;
         int y1 = 0;
         int x2 = wid - 1;
@@ -869,7 +869,7 @@ sFpe::redraw_store(int i)
             gdk_pixmap_unref(fp_pixmap);
         fp_pixmap = gdk_pixmap_new(
             gtk_widget_get_window(fp_stores[i]), wid, hei,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         if (fp_pixmap) {
             fp_pm_w = wid;
             fp_pm_h = hei;
@@ -1110,8 +1110,8 @@ sFpe::def_to_sample(LayerFillData *dd)
             nonff = true;
     }
     if (!nonz || !nonff) {
-        GRX->SetStatus(fp_outl, false);
-        GRX->SetStatus(fp_fat, false);
+        GTKdev::SetStatus(fp_outl, false);
+        GTKdev::SetStatus(fp_fat, false);
     }
 
     redraw_edit();
@@ -1174,16 +1174,16 @@ sFpe::layer_to_def_or_sample(LayerFillData *dd, int indx)
         sb_ny.set_value(fp_ny);
 
         if (dd->d_flags & LFD_OUTLINE) {
-            GRX->SetStatus(fp_outl, true);
+            GTKdev::SetStatus(fp_outl, true);
             gtk_widget_set_sensitive(fp_fat, true);
-            GRX->SetStatus(fp_fat, (dd->d_flags & LFD_FAT));
+            GTKdev::SetStatus(fp_fat, (dd->d_flags & LFD_FAT));
         }
         else {
-            GRX->SetStatus(fp_outl, false);
-            GRX->SetStatus(fp_fat, false);
+            GTKdev::SetStatus(fp_outl, false);
+            GTKdev::SetStatus(fp_fat, false);
             gtk_widget_set_sensitive(fp_fat, false);
         }
-        GRX->SetStatus(fp_cut, (dd->d_flags & LFD_CUT));
+        GTKdev::SetStatus(fp_cut, (dd->d_flags & LFD_CUT));
 
         if (LT()->CurLayer())
             fp_foreg = dsp_prm(LT()->CurLayer())->pixel();
@@ -1256,15 +1256,15 @@ sFpe::pattern_to_layer(LayerFillData *dd, CDl *ld)
                 dd->d_data);
             ld->setFilled(true);
         }
-        if (GRX->GetStatus(fp_outl)) {
+        if (GTKdev::GetStatus(fp_outl)) {
             ld->setOutlined(true);
-            ld->setOutlinedFat(GRX->GetStatus(fp_fat));
+            ld->setOutlinedFat(GTKdev::GetStatus(fp_fat));
         }
         else {
             ld->setOutlined(false);
             ld->setOutlinedFat(false);
         }
-        ld->setCut(GRX->GetStatus(fp_cut));
+        ld->setCut(GTKdev::GetStatus(fp_cut));
     }
     SetFillpattern(0);
     LT()->ShowLayerTable();
@@ -1835,7 +1835,7 @@ sFpe::fp_outline_proc(GtkWidget *caller, void*)
     if (!Fpe)
         return;
     if (caller == Fpe->fp_outl) {
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state) {
             int sz = Fpe->fp_ny*((Fpe->fp_nx + 7)/8);
             for (int i = 0; i < sz; i++) {

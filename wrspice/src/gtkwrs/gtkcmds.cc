@@ -74,7 +74,7 @@ namespace {
 
     inline void dblpr(char *buf, int n, double d, bool ex)
     {
-        sprintf(buf, ex ? "%.*e" : "%.*f", n, d);
+        snprintf(buf, 32, ex ? "%.*e" : "%.*f", n, d);
     }
 }
 
@@ -585,7 +585,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     entrycount++;
     entry = KWGET(kw_helpinitxpos);
     if (entry) {
-        sprintf(tbuf, "%d", HLP()->get_init_x());
+        snprintf(tbuf, sizeof(tbuf), "%d", HLP()->get_init_x());
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(HLP()->get_init_x(), 1.0, 0.0, 0.0, 0);
         entry->ent->create_widgets(entry, tbuf);
@@ -598,7 +598,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
 
     entry = KWGET(kw_helpinitypos);
     if (entry) {
-        sprintf(tbuf, "%d", HLP()->get_init_y());
+        snprintf(tbuf, sizeof(tbuf), "%d", HLP()->get_init_y());
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(HLP()->get_init_y(), 1.0, 0.0, 0.0, 0);
         entry->ent->create_widgets(entry, tbuf);
@@ -927,7 +927,7 @@ GTKtoolbar::PopDownCmdConfig()
     TB()->PopDownTBhelp(TBH_CM);
     SetLoc(ntb_commands, cm_shell);
 
-    GRX->Deselect(tb_commands);
+    GTKdev::Deselect(tb_commands);
     g_signal_handlers_disconnect_by_func(G_OBJECT(cm_shell),
         (gpointer)cmd_cancel_proc, cm_shell);
 
@@ -983,7 +983,7 @@ namespace {
     void helppath_func(bool isset, variable*, xEnt *ent)
     {
         if (ent->active) {
-            GRX->SetStatus(ent->active, isset);
+            GTKdev::SetStatus(ent->active, isset);
             if (isset) {
                 char *s;
                 get_helppath(&s);
@@ -1011,7 +1011,7 @@ namespace {
     void cmd_help_proc(GtkWidget *caller, void *client_data)
     {
         GtkWidget *parent = static_cast<GtkWidget*>(client_data);
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state)
             TB()->PopUpTBhelp(parent, caller, TBH_CM);
         else
@@ -1022,7 +1022,7 @@ namespace {
     int cmd_choice_hdlr(GtkWidget *caller, GdkEvent*, void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
-        if (GRX->GetStatus(entry->ent->active))
+        if (GTKdev::GetStatus(entry->ent->active))
             return (true);
         int i;
         if (!strcmp(entry->word, kw_filetype)) {
@@ -1032,8 +1032,8 @@ namespace {
                 if (!strcmp(string, KW.ft(i)->word))
                     break;
             if (!KW.ft(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad filetype found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad filetype found: %s.\n", string);
                 i = 0;
             }
             else {
@@ -1060,8 +1060,8 @@ namespace {
                 if (!strcmp(string, KW.level(i)->word))
                     break;
             if (!KW.level(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad level found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad level found: %s.\n", string);
                 i = 0;
             }
             else {
@@ -1088,8 +1088,8 @@ namespace {
                 if (!strcmp(string, KW.spec(i)->word))
                     break;
             if (!KW.spec(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad specwindow found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad specwindow found: %s.\n", string);
                 i = 0;
             }
             else {
@@ -1116,8 +1116,8 @@ namespace {
                 if (!strcmp(string, KW.units(i)->word))
                     break;
             if (!KW.units(i)->word) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad units found: %s.\n",
-                    string);
+                GRpkg::self()->ErrPrintf(ET_ERROR,
+                    "bad units found: %s.\n", string);
                 i = 0;
             }
             else {

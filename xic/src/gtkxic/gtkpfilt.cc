@@ -87,7 +87,7 @@ using namespace gtkpfilt;
 void
 cConvert::PopUpPropertyFilter(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Pflt;
@@ -109,7 +109,7 @@ cConvert::PopUpPropertyFilter(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Pflt->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UR), Pflt->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UR), Pflt->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Pflt->shell());
 }
@@ -284,7 +284,7 @@ sPflt::~sPflt()
 {
     Pflt = 0;
     if (pf_caller)
-        GRX->Deselect(pf_caller);
+        GTKdev::Deselect(pf_caller);
     if (pf_popup)
         gtk_widget_destroy(pf_popup);
 }

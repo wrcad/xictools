@@ -447,7 +447,7 @@ sced_funcs::IFgetNodeName(Variable *res, Variable *args, void*)
             const char *s = map->mapName(node);
             char buf[64];
             if (!*s) {
-                sprintf(buf, "%d", node);
+                snprintf(buf, sizeof(buf), "%d", node);
                 s = buf;
             }
             res->content.string = lstring::copy(s);

@@ -131,7 +131,7 @@ cDRC::PopUpRuleEdit(GRobject caller, ShowMode mode, DRCtype type,
     const char *username, bool (*callback)(const char*, void*),
     void *arg, const DRCtestDesc *rule)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Ru;
@@ -155,7 +155,7 @@ cDRC::PopUpRuleEdit(GRobject caller, ShowMode mode, DRCtype type,
     gtk_window_set_transient_for(GTK_WINDOW(Ru->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Ru->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Ru->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Ru->Shell());
 }
@@ -509,7 +509,7 @@ sRu::~sRu()
     delete [] ru_username;
     delete [] ru_stabstr;
     if (ru_caller)
-        GRX->Deselect(ru_caller);
+        GTKdev::Deselect(ru_caller);
 }
 
 
@@ -549,7 +549,7 @@ sRu::update(DRCtype type, const char *username, const DRCtestDesc *rule)
     type = ru_rule;
 
     char buf[256];
-    sprintf(buf, "Set Design Rule parameters for %s",
+    snprintf(buf, sizeof(buf), "Set Design Rule parameters for %s",
         type == drUserDefinedRule ? ru_username : DRCtestDesc::ruleName(type));
     gtk_label_set_text(GTK_LABEL(ru_label), buf);
 
@@ -780,7 +780,7 @@ sRu::update(DRCtype type, const char *username, const DRCtestDesc *rule)
             if (rule->value(1) > 0)
                 sb_net.set_value(MICRONS(rule->value(1)));
         }
-        GRX->SetStatus(ru_use_st, (rule && rule->spaceTab() &&
+        GTKdev::SetStatus(ru_use_st, (rule && rule->spaceTab() &&
             !(rule->spaceTab()->length & STF_IGNORE)));
         show_widget(ru_region_la,   true);
         show_widget(ru_region_ent,  true);
@@ -835,7 +835,7 @@ sRu::update(DRCtype type, const char *username, const DRCtestDesc *rule)
             if (rule->value(1) > 0)
                 sb_net.set_value(MICRONS(rule->value(1)));
         }
-        GRX->SetStatus(ru_use_st, (rule && rule->spaceTab() &&
+        GTKdev::SetStatus(ru_use_st, (rule && rule->spaceTab() &&
             !(rule->spaceTab()->length & STF_IGNORE)));
         show_widget(ru_region_la,   true);
         show_widget(ru_region_ent,  true);
@@ -986,10 +986,10 @@ sRu::update(DRCtype type, const char *username, const DRCtestDesc *rule)
                 break;
         }
         if (tst)
-            sprintf(buf, "User-defined rule arguments (%d required)",
-                tst->argc());
+            snprintf(buf, sizeof(buf),
+                "User-defined rule arguments (%d required)", tst->argc());
         else
-            sprintf(buf,
+            snprintf(buf, sizeof(buf),
                 "User-defined rule arguments (warning: unknown rule)");
         gtk_label_set_text(GTK_LABEL(ru_user_la), buf);
         show_widget(ru_region_la,   true);
@@ -1299,7 +1299,7 @@ sRu::apply()
                 delete [] tstr;
             }
             if (ru_stabstr) {
-                bool ignore = !GRX->GetStatus(ru_use_st);
+                bool ignore = !GTKdev::GetStatus(ru_use_st);
                 add_stab_fix(ru_stabstr, ignore, lstr);
             }
             else if (sb_dimen.get_value() > 0.0) {
@@ -1354,7 +1354,7 @@ sRu::apply()
                 return;
             }
             if (ru_stabstr) {
-                bool ignore = !GRX->GetStatus(ru_use_st);
+                bool ignore = !GTKdev::GetStatus(ru_use_st);
                 add_stab_fix(ru_stabstr, ignore, lstr);
             }
             else if (sb_dimen.get_value() > 0.0) {

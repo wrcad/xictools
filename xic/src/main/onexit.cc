@@ -91,11 +91,11 @@ cMain::ConfirmAbort(const char *msg)
             return (true);
         }
         Menu()->SetSensGlobal(false);
-        dspPkgIf()->SetOverrideBusy(true);
+        DSPpkg::self()->SetOverrideBusy(true);
         char *in = PL()->EditPrompt(
             (msg ? msg : "Interrupted.  Abort? "), "n");
         Menu()->SetSensGlobal(true);
-        dspPkgIf()->SetOverrideBusy(false);
+        DSPpkg::self()->SetOverrideBusy(false);
         in = lstring::strip_space(in);
         if (in && (*in == 'y' || *in == 'Y')) {
             PL()->ShowPrompt("Aborted.");
@@ -153,7 +153,7 @@ cMain::Exit(ExitType exit_type)
         Auth()->closeValidation();
 #endif
         Log()->CloseLogDir();
-        dspPkgIf()->Halt();
+        DSPpkg::self()->Halt();
         exit(0);
     }
     else if (exit_type == ExitPanic) {
@@ -213,8 +213,8 @@ cMain::Exit(ExitType exit_type)
     }
     else if (exit_type == ExitDebugger) {
         char header[256];
-        sprintf(header, "%s-%s %s (%s)", Product(), VersionString(),
-            OSname(), TagString());
+        snprintf(header, sizeof(header), "%s-%s %s (%s)", Product(),
+            VersionString(), OSname(), TagString());
 
         const char *logdir = Log()->LogDirectory();
         extern void* DeathAddr;

@@ -119,7 +119,7 @@ double sLgo::lgo_defpixsz = 1.0;
 void
 cEdit::PopUpLogo(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Lgo;
@@ -141,7 +141,7 @@ cEdit::PopUpLogo(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Lgo->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Lgo->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Lgo->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Lgo->Shell());
 }
@@ -335,7 +335,7 @@ sLgo::~sLgo()
     Lgo = 0;
     ED()->PopUpPolytextFont(0, MODE_OFF);
     if (lgo_caller)
-        GRX->Deselect(lgo_caller);
+        GTKdev::Deselect(lgo_caller);
     if (lgo_sav_pop)
         lgo_sav_pop->popdown();
     if (wb_shell) {
@@ -365,11 +365,11 @@ sLgo::update()
         double d = strtod(pix, &nstr);
         if (nstr != pix)
             lgo_sb_pix.set_value(d);
-        GRX->SetStatus(lgo_setpix, true);
+        GTKdev::SetStatus(lgo_setpix, true);
         lgo_sb_pix.set_sensitive(true);
     }
     else {
-        GRX->SetStatus(lgo_setpix, false);
+        GTKdev::SetStatus(lgo_setpix, false);
         lgo_sb_pix.set_sensitive(false);
     }
     ED()->assert_logo_pixel_size();
@@ -389,9 +389,9 @@ sLgo::update()
             DEF_LOGO_END_STYLE);
 
     if (CDvdb()->getVariable(VA_LogoToFile))
-        GRX->SetStatus(lgo_create, true);
+        GTKdev::SetStatus(lgo_create, true);
     else
-        GRX->SetStatus(lgo_create, false);
+        GTKdev::SetStatus(lgo_create, false);
 }
 
 
@@ -411,7 +411,7 @@ sLgo::lgo_action(GtkWidget *caller, void*)
         return;
     const char *name = gtk_widget_get_name(caller);
     if (!strcmp(name, "pixsz")) {
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state) {
             const char *s = Lgo->lgo_sb_pix.get_string();
             CDvdb()->setVariable(VA_LogoPixelSize, s);
@@ -421,7 +421,7 @@ sLgo::lgo_action(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "crcell")) {
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (state)
             CDvdb()->setVariable(VA_LogoToFile, "");
         else
@@ -429,7 +429,7 @@ sLgo::lgo_action(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "Select")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             ED()->PopUpPolytextFont(caller, MODE_ON);
         else
             ED()->PopUpPolytextFont(0, MODE_OFF);
@@ -438,7 +438,7 @@ sLgo::lgo_action(GtkWidget *caller, void*)
     if (!strcmp(name, "Dump")) {
         if (Lgo->lgo_sav_pop)
             Lgo->lgo_sav_pop->popdown();
-        if (GRX->GetStatus(caller)) {
+        if (GTKdev::GetStatus(caller)) {
             Lgo->lgo_sav_pop = Lgo->PopUpEditString((GRobject)Lgo->lgo_dump,
                 GRloc(), "Enter pathname for font file: ",
                 XM()->LogoFontFileName(), Lgo->lgo_sav_cb,
@@ -449,7 +449,7 @@ sLgo::lgo_action(GtkWidget *caller, void*)
         return;
     }
 
-    if (!GRX->GetStatus(caller))
+    if (!GTKdev::GetStatus(caller))
         return;
     if (!strcmp(name, "Vector"))
         CDvdb()->clearVariable(VA_LogoAltFont);
@@ -469,7 +469,7 @@ sLgo::lgo_es_menu_proc(GtkWidget *caller, void*)
     char buf[32];
     int es = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
     if (es >= 0 && es <= 2 && es != DEF_LOGO_END_STYLE) {
-        sprintf(buf, "%d", es);
+        snprintf(buf, sizeof(buf), "%d", es);
         CDvdb()->setVariable(VA_LogoEndStyle, buf);
     }
     else
@@ -486,7 +486,7 @@ sLgo::lgo_pw_menu_proc(GtkWidget *caller, void*)
     char buf[32];
     int pw = 1 + gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
     if (pw >= 1 && pw <= 5 && pw != DEF_LOGO_PATH_WIDTH) {
-        sprintf(buf, "%d", pw);
+        snprintf(buf, sizeof(buf), "%d", pw);
         CDvdb()->setVariable(VA_LogoPathWidth, buf);
     }
     else
@@ -505,7 +505,7 @@ sLgo::lgo_val_changed(GtkWidget*, void*)
     double d = strtod(s, &endp);
     if (endp > s) {
         lgo_defpixsz = d;
-        if (GRX->GetStatus(Lgo->lgo_setpix))
+        if (GTKdev::GetStatus(Lgo->lgo_setpix))
             CDvdb()->setVariable(VA_LogoPixelSize, s);
     }
 }
@@ -531,10 +531,10 @@ sLgo::lgo_sav_cb(const char *fname, void*)
             Lgo->PopUpMessage("Logo vector font saved in file.", false);
         }
         else
-            GRpkgIf()->Perror(lstring::strip_path(tok));
+            GTKpkg::self()->Perror(lstring::strip_path(tok));
     }
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        GTKpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
     delete [] tok;
     return (ESTR_DN);
 }

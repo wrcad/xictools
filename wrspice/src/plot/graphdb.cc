@@ -102,7 +102,8 @@ SPgraphics::NewGraph(int type, const char *name)
 {
     sGraph *graph = NewGraph();
     if (!graph->gr_setup_dev(type, name)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't open viewport for graphics.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "can't open viewport for graphics.\n");
         DestroyGraph(graph->id());
         return (0);
     }
@@ -164,7 +165,7 @@ SPgraphics::DestroyGraph(int id)
         list = list->next;
     }
 
-    GRpkgIf()->ErrPrintf(ET_INTERR,
+    GRpkg::self()->ErrPrintf(ET_INTERR,
         "DestroyGraph: tried to destroy non-existent graph.\n");
     return (false);
 }
@@ -296,7 +297,7 @@ SPgraphics::PlotPosition(int *x, int *y)
     int i = count;
     count++;
     i %= NUMGBUCKETS;
-    sprintf(name, "plotposn%d", i);
+    snprintf(name, sizeof(name), "plotposn%d", i);
     variable *v = Sp.GetRawVar(name);
     if (!v) {
         default_position(i, x, y);

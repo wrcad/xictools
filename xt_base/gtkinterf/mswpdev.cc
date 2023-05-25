@@ -306,7 +306,7 @@ MSPdev::NewDraw(int)
 
     char buf[64];
     static int jnum = 1;
-    sprintf(buf, "WR-MSP-%d", jnum++);
+    snprintf(buf, sizeof(buf), "WR-MSP-%d", jnum++);
     DOCINFO di;
     memset(&di, 0, sizeof(DOCINFO));
     di.cbSize = sizeof(DOCINFO);
@@ -329,7 +329,7 @@ MSPdev::NewDraw(int)
 namespace {
     BOOL CALLBACK AbortFunc(HDC, int)
     {
-        if (GRX->CheckForEvents()) {
+        if (GTKdev::self()->CheckForEvents()) {
             GRpkgIf()->HCabort("User aborted");
             return (FALSE);
         }

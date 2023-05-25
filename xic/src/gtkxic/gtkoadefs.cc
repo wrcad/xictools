@@ -89,7 +89,7 @@ using namespace gtkoadefs;
 void
 cOAif::PopUpOAdefs(GRobject caller, ShowMode mode, int x, int y)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete OAdf;
@@ -341,7 +341,7 @@ sOAdf::~sOAdf()
 {
     OAdf = 0;
     if (od_caller)
-        GRX->Deselect(od_caller);
+        GTKdev::Deselect(od_caller);
     if (od_popup)
         gtk_widget_destroy(od_popup);
 }
@@ -413,7 +413,7 @@ sOAdf::update()
     if (strcmp(s, t))
         gtk_entry_set_text(GTK_ENTRY(od_prop), s);
 
-    GRX->SetStatus(od_cdf, CDvdb()->getVariable(VA_OaDumpCdfFiles));
+    GTKdev::SetStatus(od_cdf, CDvdb()->getVariable(VA_OaDumpCdfFiles));
 }
 
 
@@ -439,7 +439,7 @@ sOAdf::od_action(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "cdf")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_OaDumpCdfFiles, "");
         else
             CDvdb()->clearVariable(VA_OaDumpCdfFiles);

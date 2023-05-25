@@ -43,16 +43,13 @@
 
 #include "menu.h"
 
-inline class GTKmenu *gtkMenu();
 
 // MenuMain subclass.
 //
 class GTKmenu : public MenuMain
 {
 public:
-    friend inline GTKmenu *gtkMenu()
-        { return (static_cast<GTKmenu*>(Menu())); }
-    friend class gtkMenuConfig;
+    friend class GTKmenuConfig;
 
     GTKmenu();
 
@@ -60,7 +57,7 @@ public:
     void InitTopButtonMenu();
     void InitSideButtonMenus(bool);
 
-    // virtual functions from MenuClass
+    // Virtual functions from MenuMain.
     void SetSensGlobal(bool);
     void Deselect(GRobject);
     void Select(GRobject);
@@ -86,6 +83,8 @@ public:
     void HideButtonMenu(bool);
     void DisableMainMenuItem(const char*, const char*, bool);
 
+    // Non-virtual.
+
     GtkWidget *FindMainMenuWidget(const char*, const char*);
 
     void SetModal(GtkWidget *w) { modalShell = w; }
@@ -94,11 +93,13 @@ public:
     GtkWidget *MainMenu()       { return (mainMenu); }
     GtkWidget *TopButtonMenu()  { return (topButtonWidget); }
     GtkWidget *ButtonMenu(DisplayMode m)
-        {
-            return (m == Physical ? btnPhysMenuWidget : btnElecMenuWidget);
-        }
+    {
+        return (m == Physical ? btnPhysMenuWidget : btnElecMenuWidget);
+    }
 
     GtkAccelGroup *AccelGroup() { return (accelGroup); }
+
+    static GTKmenu *self()  { return (dynamic_cast<GTKmenu*>(Menu())); }
 
 private:
 

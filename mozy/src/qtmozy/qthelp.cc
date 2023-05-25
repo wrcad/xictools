@@ -288,8 +288,8 @@ HelpWidget *
 HelpWidget::new_widget(GRwbag **ptr, int, int)
 {
     QWidget *parent = 0;
-    if (GRpkgIf()->MainWbag()) {
-        QTbag *wb = dynamic_cast<QTbag*>(GRpkgIf()->MainWbag());
+    if (GRpkg::self()->MainWbag()) {
+        QTbag *wb = dynamic_cast<QTbag*>(GRpkg::self()->MainWbag());
         if (wb)
             parent = wb->shell_widget();
     }
@@ -305,13 +305,23 @@ HelpWidget::new_widget(GRwbag **ptr, int, int)
 //-----------------------------------------------------------------------------
 // Constructor/destrucor
 
-static void sens_set(QTbag*, bool);
+namespace {
+    void sens_set(QTbag *wp, bool set, int)
+    {
+        QThelpPopup *w = dynamic_cast<QThelpPopup*>(wp);
+        if (w)
+            w->menu_sens_set(set);
+    }
+}
+
 
 QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
-    QTbag(this)
+    QTbag()
 {
     // If has_menu is false, the widget will not have the menu or the
     // status bar visible.
+
+    wb_shell = this;
     params = 0;
     root_topic = 0;
     cur_topic = 0;
@@ -323,7 +333,7 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
     frame_parent = 0;
     frame_name = 0;
 
-    sens_set = ::sens_set;
+    wb_sens_set = ::sens_set;
 
     if (!has_menu) {
         // This is for Apple, when given it uses a per-window menubar
@@ -344,7 +354,7 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
         move(xx, yy);
     }
     QWidget *cwidget = new QWidget;
-    html_viewer = new viewer_w(500, 400, this, this);
+    html_viewer = new QTviewer(500, 400, this, this);
     setCentralWidget(cwidget);
     status_bar = new QStatusBar(this);
     if (!has_menu)
@@ -564,15 +574,6 @@ QThelpPopup::menu_sens_set(bool set)
     a_Save->setEnabled(set);
     a_Open->setEnabled(set);
     a_FindText->setEnabled(set);
-}
-
-
-static void
-sens_set(QTbag *wp, bool set)
-{
-    QThelpPopup *w = dynamic_cast<QThelpPopup*>(wp);
-    if (w)
-        w->menu_sens_set(set);
 }
 
 
@@ -909,7 +910,7 @@ QThelpPopup::show_cache(int mode)
 //-----------------------------------------------------------------------------
 // htmDataInterface methods
 
-// All viewer_w "signals" are dispatched from here.
+// All QTviewer "signals" are dispatched from here.
 //
 void
 QThelpPopup::emit_signal(SignalID id, void *payload)
@@ -1187,7 +1188,7 @@ void
 QThelpPopup::open_slot()
 {
     PopUpInput("Enter keyword, file name, or URL", "", "Open", 0, 0);
-    connect(input, SIGNAL(action_call(const char*, void*)), this,
+    connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
         SLOT(do_open_slot(const char*, void*)));
 }
 
@@ -1207,7 +1208,7 @@ void
 QThelpPopup::save_slot()
 {
     PopUpInput(0, "", "Save", 0, 0);
-    connect(input, SIGNAL(action_call(const char*, void*)), this,
+    connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
         SLOT(do_save_slot(const char*, void*)));
 }
 
@@ -1261,7 +1262,7 @@ void
 QThelpPopup::search_slot()
 {
     PopUpInput("Enter keyword for database search:", "", "Search", 0, 0);
-    connect(input, SIGNAL(action_call(const char*, void*)), this,
+    connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
         SLOT(do_search_slot(const char*, void*)));
 }
 
@@ -1270,7 +1271,7 @@ void
 QThelpPopup::find_slot()
 {
     PopUpInput("Enter word for text search:", "", "Find Text", 0, 0);
-    connect(input, SIGNAL(action_call(const char*, void*)), this,
+    connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
         SLOT(do_find_text_slot(const char*, void*)));
 }
 
@@ -1280,8 +1281,8 @@ QThelpPopup::set_font_slot(bool set)
 {
     if (set) {
         PopUpFontSel(0, GRloc(), MODE_ON, 0, 0, FNT_MOZY);
-        connect(fontsel, SIGNAL(dismiss()), this, SLOT(font_down_slot()));
-        connect(fontsel, SIGNAL(select_action(int, const char*, void*)),
+        connect(wb_fontsel, SIGNAL(dismiss()), this, SLOT(font_down_slot()));
+        connect(wb_fontsel, SIGNAL(select_action(int, const char*, void*)),
             this, SLOT(font_selected_slot(int, const char*)));
     }
     else
@@ -1682,7 +1683,7 @@ QThelpPopup::frame_slot(htmFrameCallbackStruct *cbs)
                 PopUpErr(MODE_ON, buf);
             }
 
-            frame_array[i]->shell = shell;
+            frame_array[i]->wb_shell = wb_shell;
             newtop->set_target(cbs->frames[i].name);
             newtop->set_context(frame_array[i]);
             frame_array[i]->root_topic = newtop;
@@ -1753,8 +1754,8 @@ QThelpPopup::do_open_slot(const char *name, void*)
             if (!url)
                 url = lstring::copy(name);
             newtopic(url, false, false, true);
-            if (input)
-                input->popdown();
+            if (wb_input)
+                wb_input->popdown();
             delete [] url;
         }
     }
@@ -1802,8 +1803,8 @@ QThelpPopup::do_save_slot(const char *fnamein, void*)
         mesg = "Text file is empty";
 
     fclose(fp);
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
     PopUpMessage(mesg, false);
     delete [] fname;
 }
@@ -1822,8 +1823,8 @@ QThelpPopup::do_search_slot(const char *target, void*)
         else
             newtop->link_new_and_show(false, cur_topic);
     }
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
 }
 
 

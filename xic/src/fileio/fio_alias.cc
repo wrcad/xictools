@@ -455,7 +455,8 @@ FIOaliasTab::new_name(const char *name, bool force_change)
                 const char *cname = at_names->add(name);
                 at_alias_tab->add(cname, als);
                 at_dirty = true;
-                sprintf(scratch, "Using alias %s for name %s.", als, cname);
+                snprintf(scratch, sizeof(scratch),
+                    "Using alias %s for name %s.", als, cname);
                 FIO()->ifPrintCvLog(IFLOG_INFO, scratch);
                 return (als);
             }

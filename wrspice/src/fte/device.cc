@@ -145,7 +145,7 @@ namespace {
         int i = DEV.numdevs();
         DEV.loadDev(f);
         if (DEV.numdevs() == i) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "failed to allocate device.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "failed to allocate device.\n");
 #ifdef WIN32
             FreeLibrary((HINSTANCE)handle);
 #else
@@ -507,22 +507,24 @@ void
 CommandTab::com_devmod(wordlist *wl)
 {
     if (!wl) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "No device index given to devmod.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "No device index given to devmod.\n");
         return;
     }
     int index;
     if (sscanf(wl->wl_word, "%u", &index) != 1) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Bad device index given to devmod.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR,
+            "Bad device index given to devmod.\n");
         return;
     }
     if (index >= DEV.numdevs()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "Out of range device index given to devmod.\n");
         return;
     }
     IFdevice *dv = DEV.device(index);
     if (!dv) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "No device for index given to devmod.\n");
         return;
     }
@@ -533,17 +535,17 @@ CommandTab::com_devmod(wordlist *wl)
     wl = wl->wl_next;
     while (wl) {
         if (levels == NUM_DEV_LEVELS) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "Too many model levels given to devmod.\n");
             return;
         }
         if (sscanf(wl->wl_word, "%u", models + levels) != 1) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "Bad model level given to devmod.\n");
             return;
         }
         if (models[levels] < 1 || models[levels] > 255) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "Out of range model level given to devmod.\n");
             return;
         }
@@ -552,7 +554,7 @@ CommandTab::com_devmod(wordlist *wl)
     }
     if (levels) {
         if (dv->flags() & DV_NOLEVCHG) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "levels of device index %d can not be changed.\n", index);
             return;
         }
@@ -603,7 +605,8 @@ namespace {
                 for ( ; d; d = d->GENnextInstance)
                     cnt++;
                 if (cnt) {
-                    sprintf(buf, "%-14s %d", (const char*)dm->GENmodName, cnt);
+                    snprintf(buf, sizeof(buf), "%-14s %d",
+                        (const char*)dm->GENmodName, cnt);
                     char *t = buf + strlen(buf);
                     while (t - buf < 28)
                         *t++ = ' ';
@@ -628,7 +631,7 @@ void
 CommandTab::com_devcnt(wordlist *wl)
 {
     if (!Sp.CurCircuit()) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no current circuit.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no current circuit.\n");
         return;
     }
     bool freeckt = false;
@@ -636,7 +639,7 @@ CommandTab::com_devcnt(wordlist *wl)
     if (!ckt) {
         int err = Sp.CurCircuit()->newCKT(&ckt, 0);
         if (err != OK) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "circuit parse failed: %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "circuit parse failed: %s.\n",
                 IP.errMesgShort(err));
             return;
         }
@@ -683,15 +686,16 @@ CommandTab::com_show(wordlist *wl)
         case 'n':
             {
                 if (!wl->wl_next) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "no node name given.\n");
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "no node name given.\n");
                     return;
                 }
                 if (!Sp.CurCircuit()) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "no current circuit.\n");
+                    GRpkg::self()->ErrPrintf(ET_ERROR, "no current circuit.\n");
                     return;
                 }
                 if (!Sp.CurCircuit()->runckt()) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR, "no current simulation.\n");
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "no current simulation.\n");
                     return;
                 }
                 sCKT *ckt = Sp.CurCircuit()->runckt();
@@ -700,7 +704,7 @@ CommandTab::com_show(wordlist *wl)
                 sCKTnode *node;
                 ckt->findTerm(&nodename, &node);
                 if (!node) {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "can't find node named \"%s\".\n", nodename);
                     return;
                 }
@@ -745,7 +749,7 @@ CommandTab::com_show(wordlist *wl)
             }
             break;
         default:
-            GRpkgIf()->ErrPrintf(ET_ERROR, "bad option %c.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "bad option %c.\n",
                 *(wl->wl_word + 1));
         }
     }
@@ -770,7 +774,7 @@ CommandTab::com_alter(wordlist *wl)
     wordlist *devs, *parms;
     if (!sFtCirc::parseDevParams(wl, &devs, &parms, false)) {
         wordlist::destroy(parms);
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no matching devices found.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no matching devices found.\n");
         return;
     }
 
@@ -779,12 +783,12 @@ CommandTab::com_alter(wordlist *wl)
         return;
     }
     if (!devs) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no devices in list.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no devices in list.\n");
         wordlist::destroy(parms);
         return;
     }
     if (!parms) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no parameters in list.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no parameters in list.\n");
         wordlist::destroy(devs);
         return;
     }
@@ -939,7 +943,7 @@ IFsimulator::LoadModules(const char *str)
 #ifdef WIN32
             HINSTANCE handle = LoadLibrary(path);
             if ((intptr_t)handle <= HINSTANCE_ERROR) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                 "failed to dynamically load %s.\n", lstring::strip_path(path));
                 delete [] path;
                 return;
@@ -947,7 +951,7 @@ IFsimulator::LoadModules(const char *str)
 #else
             void *handle = dlopen(path, RTLD_LAZY | RTLD_GLOBAL);
             if (!handle) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "failed to dynamically load module %s.\n%s\n",
                     lstring::strip_path(path), dlerror());
                 delete [] path;
@@ -956,7 +960,7 @@ IFsimulator::LoadModules(const char *str)
 #endif
 
             if (!WRS_ModuleVersion) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "failed to identify module %s build version number.\n",
                     lstring::strip_path(path));
 #ifdef WIN32
@@ -968,7 +972,7 @@ IFsimulator::LoadModules(const char *str)
                 return;
             }
             if (!lstring::eq(WRS_ModuleVersion, Global.DevlibVersion())) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                 "incompatible module %s, built for %s, this release is %s.\n",
                     lstring::strip_path(path), WRS_ModuleVersion,
                     Global.DevlibVersion());
@@ -981,7 +985,7 @@ IFsimulator::LoadModules(const char *str)
                 return;
             }
             if (!WRS_ModuleName) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "failed to identify module %s device name.\n",
                     lstring::strip_path(path));
 #ifdef WIN32
@@ -1005,7 +1009,7 @@ IFsimulator::LoadModules(const char *str)
             NewDevFunc f = (NewDevFunc)dlsym(handle, buf);
 #endif
             if (!f) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "failed to find module %s allocator function %s.\n",
                     lstring::strip_path(path), buf);
 #ifdef WIN32
@@ -1024,7 +1028,7 @@ IFsimulator::LoadModules(const char *str)
             load_modules(path);
         }
         else {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "failed to find module or open directory in given path.\n");
         }
         delete [] path;
@@ -1077,7 +1081,7 @@ IFsimulator::Show(wordlist *wl, char**, bool mod, int contact_node)
     wordlist *objs, *parms;
     if (!sFtCirc::parseDevParams(wl, &objs, &parms, mod)) {
         wordlist::destroy(parms);
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no matching devices found.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no matching devices found.\n");
         return;
     }
 
@@ -1241,7 +1245,7 @@ sDevOut::textOut(OUTerrType flag, const char *fmt, ...)
     const char *s = lstr.string();
     if (!s || *(s + strlen(s)-1) != '\n')
         lstr.add_c('\n');
-    GRpkgIf()->ErrPrintf(ET_MSG, lstr.string());
+    GRpkg::self()->ErrPrintf(ET_MSG, lstr.string());
 }
 
 
@@ -1478,7 +1482,7 @@ namespace {
     void output(int fd, const char *str)
     {
         if (fd == 0)
-            GRpkgIf()->ErrPrintf(ET_MSG, str);
+            GRpkg::self()->ErrPrintf(ET_MSG, str);
         else if (fd <= 1)
             write(fileno(stdout), str, strlen(str));
         else
@@ -1715,7 +1719,7 @@ sDevOut::warning(sGENmodel *model, sGENinstance *inst, const char *fmt, ...)
 #endif
     va_end(args);
     delete [] nfmt;
-    GRpkgIf()->ErrPrintf(ET_MSG, lstr.string());
+    GRpkg::self()->ErrPrintf(ET_MSG, lstr.string());
 }
 
 
@@ -1742,7 +1746,7 @@ sDevOut::error(sGENmodel *model, sGENinstance *inst, const char *fmt, ...)
 #endif
     va_end(args);
     delete [] nfmt;
-    GRpkgIf()->ErrPrintf(ET_MSG, lstr.string());
+    GRpkg::self()->ErrPrintf(ET_MSG, lstr.string());
 }
 
 
@@ -1761,18 +1765,22 @@ sDevOut::finish(sGENmodel *model, sGENinstance *inst, double time, int n)
     DVO.dumpStrobe();
     if (n > 0) {
         if (model) {
-            if (inst)
-                GRpkgIf()->ErrPrintf(ET_MSG,
+            if (inst) {
+                GRpkg::self()->ErrPrintf(ET_MSG,
                     "$finish called at time=%g from instance %s of model %s.\n",
                     time, (const char*)model->GENmodName,
                     (const char*)inst->GENname);
-            else
-                GRpkgIf()->ErrPrintf(ET_MSG,
+            }
+            else {
+                GRpkg::self()->ErrPrintf(ET_MSG,
                     "$finish called at time=%g from model %s.\n",
                     time, (const char*)model->GENmodName);
+            }
         }
-        else
-            GRpkgIf()->ErrPrintf(ET_MSG, "$finish called at time=%g.\n", time);
+        else {
+            GRpkg::self()->ErrPrintf(ET_MSG, "$finish called at time=%g.\n",
+                time);
+        }
     }
     if (n > 1) {
         wordlist wl;
@@ -1792,18 +1800,22 @@ sDevOut::stop(sGENmodel *model, sGENinstance *inst, double time, int n)
     DVO.dumpStrobe();
     if (n > 0) {
         if (model) {
-            if (inst)
-                GRpkgIf()->ErrPrintf(ET_MSG,
+            if (inst) {
+                GRpkg::self()->ErrPrintf(ET_MSG,
                     "$stop called at time=%g from instance %s of model %s.\n",
                     time, (const char*)model->GENmodName,
                     (const char*)inst->GENname);
-            else
-                GRpkgIf()->ErrPrintf(ET_MSG,
+            }
+            else {
+                GRpkg::self()->ErrPrintf(ET_MSG,
                     "$stop called at time=%g from model %s.\n",
                     time, (const char*)model->GENmodName);
+            }
         }
-        else
-            GRpkgIf()->ErrPrintf(ET_MSG, "$stop called at time=%g.\n", time);
+        else {
+            GRpkg::self()->ErrPrintf(ET_MSG, "$stop called at time=%g.\n",
+                time);
+        }
     }
     if (n > 1) {
         wordlist wl;
@@ -1878,7 +1890,7 @@ namespace {
         int err = ckt->setParam(dl->dname, dl->param, dl->rhs);
         if (err) {
             const char *msg = Sp.ErrorShort(err);
-            GRpkgIf()->ErrPrintf(ET_ERROR, "could not set @%s[%s]: %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "could not set @%s[%s]: %s.\n",
                 dl->dname, dl->param, msg);
         }
     }
@@ -1933,7 +1945,7 @@ sFtCirc::alter(const char *dname, wordlist *dparams)
         if (!val) {
             wl = wl->wl_next;
             if (!wl) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "no value given for %s.\n", pname);
                 delete [] pname;
                 return;
@@ -1947,7 +1959,7 @@ sFtCirc::alter(const char *dname, wordlist *dparams)
         if (!val) {
             wl = wl->wl_next;
             if (!wl) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "no value given for %s.\n", pname);
                 delete [] pname;
                 return;
@@ -1955,7 +1967,7 @@ sFtCirc::alter(const char *dname, wordlist *dparams)
             val = lstring::copy(wl->wl_word);
         }
         if (lstring::cieq(pname, "all")) {
-            GRpkgIf()->ErrPrintf(ET_WARN,
+            GRpkg::self()->ErrPrintf(ET_WARN,
                 "invalid parameter name \"%s\".\n", pname);
             delete [] pname;
             delete [] val;
@@ -1964,7 +1976,7 @@ sFtCirc::alter(const char *dname, wordlist *dparams)
 
         const char *ct = val;
         if (!SPnum.parse(&ct, false)) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "non-numeric value given for %s.\n", pname);
             delete [] pname;
             delete [] val;
@@ -1972,7 +1984,7 @@ sFtCirc::alter(const char *dname, wordlist *dparams)
         }
 
         if (Sp.GetFlag(FT_SIMDB))
-            GRpkgIf()->ErrPrintf(ET_MSGS,
+            GRpkg::self()->ErrPrintf(ET_MSGS,
                 "adding deferred: device=%s param=%s value=%s\n",
                 dname, pname, val);
 
@@ -1995,7 +2007,7 @@ namespace {
             err = ckt->getParam(dl->dname, dl->param, data, 0);
         if (err) {
             const char *msg = Sp.ErrorShort(err);
-            GRpkgIf()->ErrPrintf(ET_ERROR, "could not get @%s[%s]: %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "could not get @%s[%s]: %s.\n",
                 dl->dname, dl->param, msg);
             return (err);
         }
@@ -2080,7 +2092,7 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
     if (!device)
         return (true);
     if (dwl) {
-        sprintf(buf, "device: %s (%s)", device->description(),
+        snprintf(buf, sizeof(buf), "device: %s (%s)", device->description(),
             device->name());
         wordlist *wl0 = new wordlist;
         wordlist *ww = wl0;
@@ -2091,16 +2103,24 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
             if (!k)
                 break;
             if (k->maxTerms <= 0)
-                sprintf(buf, "key: %c", k->key);
+                snprintf(buf, sizeof(buf), "key: %c", k->key);
             else {
-                sprintf(buf, "key: %c  terminals:", k->key);
-                for (int i = 0; i < k->minTerms; i++)
-                    sprintf(buf + strlen(buf), " %s", k->termNames[i]);
+                snprintf(buf, sizeof(buf), "key: %c  terminals:", k->key);
+                for (int i = 0; i < k->minTerms; i++) {
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, " %s",
+                        k->termNames[i]);
+                }
                 if (k->minTerms != k->maxTerms) {
-                    sprintf(buf + strlen(buf), " %s", "[");
-                    for (int i = k->minTerms; i < k->maxTerms; i++)
-                        sprintf(buf + strlen(buf), " %s", k->termNames[i]);
-                    sprintf(buf + strlen(buf), " %s", "]");
+                    int len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, " %s", "[");
+                    for (int i = k->minTerms; i < k->maxTerms; i++) {
+                        len = strlen(buf);
+                        snprintf(buf + len, sizeof(buf) - len, " %s",
+                            k->termNames[i]);
+                    }
+                    len = strlen(buf);
+                    snprintf(buf + len, sizeof(buf) - len, " %s", "]");
                 }
             }
             ww->wl_next = new wordlist;
@@ -2113,7 +2133,7 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
                 IFparm *opt = device->instanceParm(i);
                 if (!opt)
                     break;
-                sprintf(buf, "%-18s ", opt->keyword);
+                snprintf(buf, sizeof(buf), "%-18s ", opt->keyword);
                 if (!(opt->dataType & IF_ASK))
                     strcat(buf, "NR ");
                 else if (!(opt->dataType & IF_SET))
@@ -2143,7 +2163,7 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
         if (device->description())
             ww->wl_word = lstring::copy(device->description());
         else {
-            sprintf(buf, "%s model", device->name());
+            snprintf(buf, sizeof(buf), "%s model", device->name());
             ww->wl_word = lstring::copy(buf);
         }
         ww->wl_next = new wordlist;
@@ -2155,12 +2175,14 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
                 if (device->level(lcnt) == 0)
                     break;
             }
-            sprintf(buf, "%s %s:", device->name(),
+            snprintf(buf, sizeof(buf), "%s %s:", device->name(),
                 lcnt > 1 ? "levels" : "level");
             for (lcnt = 0; ; lcnt++) {
                 if (device->level(lcnt) == 0)
                     break;
-                sprintf(buf + strlen(buf), " %d", device->level(lcnt));
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " %d",
+                    device->level(lcnt));
             }
         }
         else 
@@ -2173,13 +2195,15 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
             ncnt++;
         }
         if (ncnt) {
-            sprintf(buf + strlen(buf), "  model %s:",
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, "  model %s:",
                 ncnt > 1 ? "names" : "name");
             for (int i = 0; ; i++) {
                 const char *kstr = device->modelKey(i);
                 if (!kstr)
                     break;
-                sprintf(buf + strlen(buf), " %s", kstr);
+                len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " %s", kstr);
             }
         }
         ww->wl_word = lstring::copy(buf);
@@ -2189,7 +2213,7 @@ sFtCirc::devParams(int code, wordlist **dwl, wordlist **mwl, bool parmstoo)
                 IFparm *opt = device->modelParm(i);
                 if (!opt)
                     break;
-                sprintf(buf, "%-18s ", opt->keyword);
+                snprintf(buf, sizeof(buf), "%-18s ", opt->keyword);
                 if (!(opt->dataType & IF_ASK))
                     strcat(buf, "NR ");
                 else if (!(opt->dataType & IF_SET))

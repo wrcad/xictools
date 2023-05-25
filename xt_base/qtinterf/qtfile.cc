@@ -622,8 +622,9 @@ namespace {
 
 QTfilePopup::QTfilePopup(QTbag *owner, FsMode mode, void *arg,
     const char *root_or_fname) :
-    QDialog(owner ? owner->shell : 0), QTbag(this)
+    QDialog(owner ? owner->Shell() : 0), QTbag()
 {
+wb_shell = this;
     p_parent = owner;
     p_cb_arg = arg;
     menubar = 0;
@@ -658,7 +659,7 @@ QTfilePopup::QTfilePopup(QTbag *owner, FsMode mode, void *arg,
     no_disable_go = false;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
     FSmonitor.add(this);
 
     // initialize editable filter lines
@@ -880,12 +881,14 @@ QTfilePopup::QTfilePopup(QTbag *owner, FsMode mode, void *arg,
     connect(
         tree, SIGNAL(itemExpanded(QTreeWidgetItem*)),
         this, SLOT(tree_expand_slot(QTreeWidgetItem*)));
-    connect(
-        list, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
-        this, SLOT(list_select_slot(QListWidgetItem*, QListWidgetItem*)));
-    connect(
-        list, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-        this, SLOT(list_double_clicked_slot(QListWidgetItem*)));
+    if (list) {
+        connect(list,
+            SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+            this, SLOT(list_select_slot(QListWidgetItem*, QListWidgetItem*)));
+        connect(list,
+            SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+            this, SLOT(list_double_clicked_slot(QListWidgetItem*)));
+    }
     init();
 
     timer = new QTimer(this);
@@ -921,7 +924,7 @@ QTfilePopup::~QTfilePopup()
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
-            owner->monitor.remove(this);
+            owner->MonitorRemove(this);
     } 
     FSmonitor.remove(this);
     if (p_cancel)
@@ -940,7 +943,7 @@ QTfilePopup::popdown()
 {       
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     delete this;
@@ -955,7 +958,7 @@ QTfilePopup::get_selection()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return (0);
     }
     if (!curnode || !curfile)
@@ -1059,7 +1062,7 @@ QTfilePopup::new_folder_slot()
         return;
     }
     PopUpInput("Enter new folder name:", 0, "Create", 0, 0);
-    connect(input, SIGNAL(action_call(const char*, void*)),
+    connect(wb_input, SIGNAL(action_call(const char*, void*)),
         this, SLOT(new_folder_cb_slot(const char*, void*)));
 }
 
@@ -1068,7 +1071,7 @@ void
 QTfilePopup::new_folder_cb_slot(const char *string, void*)
 {
     if (lstring::strdirsep(string))
-        input->set_message("Invalid name, try again:");
+        wb_input->set_message("Invalid name, try again:");
     else {
         char *path = get_path(curnode, false);
         char *dir = pathlist::mk_path(path, string);
@@ -1078,8 +1081,8 @@ QTfilePopup::new_folder_cb_slot(const char *string, void*)
         delete [] path;
     }
     // pop down
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
 }
 
 
@@ -1139,7 +1142,7 @@ QTfilePopup::rename_slot()
     snprintf(buf, sizeof(buf), "Enter new name for %s?",
         lstring::strip_path(path));
     PopUpInput(buf, 0, "Rename", 0, 0);
-    connect(input, SIGNAL(action_call(const char*, void*)),
+    connect(wb_input, SIGNAL(action_call(const char*, void*)),
         this, SLOT(rename_sb_slot(const char*, void*)));
     delete [] path;
 }
@@ -1154,7 +1157,7 @@ QTfilePopup::rename_cb_slot(const char *string, void*)
     if (!path)
         return;
     if (lstring::strdirsep(path))
-        input->set_message("Invalid name, try again");
+        wb_input->set_message("Invalid name, try again");
     else {
         char *npath = lstring::copy(path);
         char *t = lstring::strrdirsep(npath);
@@ -1170,8 +1173,8 @@ QTfilePopup::rename_cb_slot(const char *string, void*)
         delete [] npath;
     }
     delete [] path;
-    if (input)
-        input->popdown();
+    if (wb_input)
+        wb_input->popdown();
 }
 
 
@@ -1180,7 +1183,7 @@ QTfilePopup::new_root_slot()
 {
     PopUpInput("Enter full path to new directory", rootdir, "Apply",
         0, 0, 300);
-    connect(input, SIGNAL(action_call(const char*, void*)),
+    connect(wb_input, SIGNAL(action_call(const char*, void*)),
         this, SLOT(root_cb_slot(const char*, void*)));
 }
 
@@ -1195,8 +1198,8 @@ QTfilePopup::root_cb_slot(const char *rootin, void*)
         delete [] rootdir;
         rootdir = root;
         init();
-        if (input)
-            input->popdown();
+        if (wb_input)
+            wb_input->popdown();
     }
 }
 
@@ -1205,7 +1208,7 @@ void
 QTfilePopup::new_cwd_slot()
 {
     PopUpInput("Enter new current directory", cwd_bak, "Apply", 0, 0, 300);
-    connect(input, SIGNAL(action_call(const char*, void*)),
+    connect(wb_input, SIGNAL(action_call(const char*, void*)),
         this, SLOT(new_cwd_cb_slot(const char*, void*)));
 }
 
@@ -1225,8 +1228,8 @@ QTfilePopup::new_cwd_cb_slot(const char *wd, void*)
     char *nwd = get_newdir(wd);
     if (nwd) {
         if (!chdir(nwd)) {
-            if (input)
-                input->popdown();
+            if (wb_input)
+                wb_input->popdown();
             delete [] rootdir;
             rootdir = nwd;
             delete [] cwd_bak;
@@ -1558,7 +1561,8 @@ is_root(const char *str)
 void
 QTfilePopup::init()
 {
-    list->clear();
+    if (list)
+        list->clear();
     tree->clear();
     select_dir(0);
     select_file(0);

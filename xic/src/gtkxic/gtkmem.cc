@@ -116,7 +116,7 @@ using namespace gtkmem;
 void
 cMain::PopUpMemory(ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Mem;
@@ -137,7 +137,7 @@ cMain::PopUpMemory(ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Mem->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Mem->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Mem->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Mem->Shell());
 #if GTK_CHECK_VERSION(3,0,0)
@@ -145,7 +145,7 @@ cMain::PopUpMemory(ShowMode mode)
 #else
     Mem->SetWindow(gtk_widget_get_window(Mem->Viewport()));
 #endif
-    Mem->SetWindowBackground(GRX->NameColor("white"));
+    Mem->SetWindowBackground(GTKdev::self()->NameColor("white"));
 }
 // End of cMain functions.
 
@@ -213,7 +213,7 @@ sMem::sMem() : GTKdraw(XW_TEXT)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    gtkPkgIf()->RegisterTimeoutProc(5000, mem_proc, 0);
+    GTKpkg::self()->RegisterTimeoutProc(5000, mem_proc, 0);
 }
 
 
@@ -234,7 +234,7 @@ sMem::update()
     unsigned long c1 = DSP()->Color(PromptTextColor);
     unsigned long c2 = DSP()->Color(PromptEditTextColor);
     int fwid, fhei;
-    SetWindowBackground(GRX->NameColor("white"));
+    SetWindowBackground(GTKdev::self()->NameColor("white"));
     TextExtent(0, &fwid, &fhei);
     SetFillpattern(0);
     SetLinestyle(0);
@@ -249,7 +249,7 @@ sMem::update()
     const char *str = "Cells:";
     Text(str, x, y, 0);
     x += 7 * spw;
-    sprintf(buf, "phys=%d elec=%d", CDcdb()->cellCount(Physical),
+    snprintf(buf, sizeof(buf), "phys=%d elec=%d", CDcdb()->cellCount(Physical),
         CDcdb()->cellCount(Electrical));
     str = buf;
     SetColor(c2);
@@ -264,10 +264,10 @@ sMem::update()
 #else
     double v = chk_val(coresize(), &b);
 #endif
-    sprintf(buf, "Current Datasize (%cB):", b);
+    snprintf(buf, sizeof(buf), "Current Datasize (%cB):", b);
     Text(buf, x, y, 0);
     x += 24 * spw;
-    sprintf(buf, "%.3f", v);
+    snprintf(buf, sizeof(buf), "%.3f", v);
     SetColor(c2);
     Text(buf, x, y, 0);
 
@@ -289,10 +289,10 @@ sMem::update()
     y += fhei;
     if (rl.rlim_cur != RLIM_INFINITY && rl2.rlim_cur != RLIM_INFINITY &&
             (v = chk_val(0.001 * (rl.rlim_cur + rl2.rlim_cur), &b)) > 0) {
-        sprintf(buf, "Soft (%cB):", b);
+        snprintf(buf, sizeof(buf), "Soft (%cB):", b);
         Text(buf, x, y, 0);
         x += 24*spw;
-        sprintf(buf, "%.1f", v);
+        snprintf(buf, sizeof(buf), "%.1f", v);
         SetColor(c2);
         Text(buf, x, y, 0);
     }
@@ -311,10 +311,10 @@ sMem::update()
 
     if (rl.rlim_max != RLIM_INFINITY && rl2.rlim_max != RLIM_INFINITY &&
             (v = chk_val(0.001 * (rl.rlim_max + rl2.rlim_max), &b)) > 0) {
-        sprintf(buf, "Hard (%cB):", b);
+        snprintf(buf, sizeof(buf), "Hard (%cB):", b);
         Text(buf, x, y, 0);
         x += 24*spw;
-        sprintf(buf, "%.1f", v);
+        snprintf(buf, sizeof(buf), "%.1f", v);
         SetColor(c2);
         Text(buf, x, y, 0);
     }
@@ -338,22 +338,22 @@ sMem::update()
     x = 2;
     y += fhei;
     v = chk_val(0.001 * avail, &b);
-    sprintf(buf, "Available Memory (%cB):", b);
+    snprintf(buf, sizeof(buf), "Available Memory (%cB):", b);
     SetColor(c1);
     Text(buf, x, y, 0);
     x += 24 * spw;
-    sprintf(buf, "%.1f", v);
+    snprintf(buf, sizeof(buf), "%.1f", v);
     SetColor(c2);
     Text(buf, x, y, 0);
 
     x = 2;
     y += fhei;
     v = chk_val(0.001 * total, &b);
-    sprintf(buf, "Total Memory (%cB):", b);
+    snprintf(buf, sizeof(buf), "Total Memory (%cB):", b);
     SetColor(c1);
     Text(buf, x, y, 0);
     x += 24 * spw;
-    sprintf(buf, "%.1f", v);
+    snprintf(buf, sizeof(buf), "%.1f", v);
     SetColor(c2);
     Text(buf, x, y, 0);
 #endif

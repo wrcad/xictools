@@ -225,7 +225,7 @@ DRCresultParser::nextErr(DRCerrList *err, char **errstr)
     }
 
     char line[256];
-    sprintf(line, "%d) ", num);
+    snprintf(line, sizeof(line), "%d) ", num);
     char *t = line + strlen(line);
 
     for (;;) {
@@ -269,8 +269,10 @@ DRCresultParser::nextErr(DRCerrList *err, char **errstr)
         t = line + strlen(line) - 1;
         while (t >= line && isspace(*t))
             t--;
-        if (*t == ':')
-            sprintf(t+1, " %s", *errstr);
+        if (*t == ':') {
+            int len = t+1 - line;
+            snprintf(t+1, sizeof(line) - len, " %s", *errstr);
+        }
         delete [] *errstr;
         *errstr = lstring::copy(line);
     }
@@ -315,7 +317,7 @@ DRCresultParser::prevErr(DRCerrList *err, char **errstr)
             errNum = 0;
             return (RPeof);
         }
-        sprintf(line, "%d) ", num);
+        snprintf(line, sizeof(line), "%d) ", num);
         t = line + strlen(line);
         for (;;) {
             s = strchr(s, 'c');
@@ -362,8 +364,10 @@ DRCresultParser::prevErr(DRCerrList *err, char **errstr)
         t = line + strlen(line) - 1;
         while (t >= line && isspace(*t))
             t--;
-        if (*t == ':')
-            sprintf(t+1, " %s", *errstr);
+        if (*t == ':') {
+            int len = t+1 - line;
+            snprintf(t+1, sizeof(line) - len, " %s", *errstr);
+        }
         delete [] *errstr;
         *errstr = lstring::copy(line);
     }
@@ -1242,7 +1246,8 @@ cDRC::errLayer(const char *lname, int prpnum)
                 char *e = cname + strlen(cname) - 1;
                 if (*e == ':')
                     *e = 0;
-                sprintf(buf, "DRC error %d in cell %s:\n", cnt + 1, cname);
+                snprintf(buf, sizeof(buf), "DRC error %d in cell %s:\n",
+                    cnt + 1, cname);
                 lstr.add(buf);
                 delete [] cname;
                 lstr.add(string);

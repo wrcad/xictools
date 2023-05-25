@@ -151,11 +151,11 @@ sTspaceTable::to_lisp_string(const sTspaceTable *thisst, const char *pref,
     for (int i = 0; i < ents; i++) {
         lstr.add(pref);
         if (dims == 1) {
-            sprintf(buf, "    %-12g %12g\n",
+            snprintf(buf, sizeof(buf), "    %-12g %12g\n",
                 MICRONS(tab->width), MICRONS(tab->dimen));
         }
         else {
-            sprintf(buf, "    (%-12g %-12g) %12g\n",
+            snprintf(buf, sizeof(buf), "    (%-12g %-12g) %12g\n",
                 MICRONS(tab->width), MICRONS(tab->length),
                 MICRONS(tab->dimen));
         }

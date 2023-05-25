@@ -58,7 +58,7 @@ class QImage;
 
 // The X11Extras don't seem to be available on MacPorts.
 #ifndef __APPLE__
-#define WITH_X11
+//#define WITH_X11
 #endif
 #ifdef WITH_X11
 //#include <X11/Xlib.h>
@@ -80,6 +80,7 @@ namespace qtinterf
         virtual ~draw_if() { }
 
         virtual QWidget *widget() = 0;
+        virtual QPixmap *pixmap() = 0;
 
         virtual void draw_direct(bool) = 0;
         virtual void update() = 0;

@@ -84,12 +84,13 @@ namespace {
     {
         EventDispatchSuppress()
             {
-                dispatch_events = dspPkgIf()->CheckForInterruptDispatch(false);
+                dispatch_events =
+                    DSPpkg::self()->CheckForInterruptDispatch(false);
             }
 
         ~EventDispatchSuppress()
             {
-                dspPkgIf()->CheckForInterruptDispatch(dispatch_events);
+                DSPpkg::self()->CheckForInterruptDispatch(dispatch_events);
             }
 
     private:
@@ -394,7 +395,7 @@ namespace {
 void
 cEventHdlr::DownTimer(int which)
 {
-    GRpkgIf()->AddTimer(250, downtimeout, (void*)(uintptr_t)which);
+    DSPpkg::self()->AddTimer(250, downtimeout, (void*)(uintptr_t)which);
     btn_down = true;
 }
 
@@ -535,7 +536,7 @@ cEventHdlr::InitCallback()
     CmdState::SetAbort(false);
     XM()->ShowParameters();
     // Do any queued redisplays now.
-    dspPkgIf()->CheckForInterrupt();
+    DSPpkg::self()->CheckForInterrupt();
 }
 
 
@@ -632,7 +633,7 @@ cEventHdlr::KeyActions(WindowDesc *wdesc, eKeyAction action, int *code)
     case No_action:
         return (true);
     case Iconify_action:
-        dspPkgIf()->Iconify(true);
+        DSPpkg::self()->Iconify(true);
         return (true);
     case Interrupt_action:
         DSP()->SetInterrupt(DSPinterUser);
@@ -1157,7 +1158,7 @@ cEventHdlr::sel_b1down()
         selstate.AOI.bottom = yr;
         selstate.AOI.right = xr;
         selstate.AOI.top = yr;
-        selstate.id = GRpkgIf()->AddTimer(250, timeout, 0);
+        selstate.id = DSPpkg::self()->AddTimer(250, timeout, 0);
     }
     else {
         selstate.AOI.right = xr;
@@ -1260,7 +1261,7 @@ cEventHdlr::sel_b1down_altw()
         selstate.AOI.bottom = yr;
         selstate.AOI.right = xr;
         selstate.AOI.top = yr;
-        selstate.id = GRpkgIf()->AddTimer(250, timeout, (void*)1L);
+        selstate.id = DSPpkg::self()->AddTimer(250, timeout, (void*)1L);
     }
     else {
         selstate.AOI.right = xr;
@@ -1440,8 +1441,8 @@ cEventHdlr::timeout(void *arg)
 void
 CursorDesc::press_handler(WindowDesc *wdesc, int x, int y, int state)
 {
-    // Don't dispatch events from dspPkgIf()->CheckInterrupt while this
-    // function is active.  Otherwise, the b1up functions can be
+    // Don't dispatch events from DSPpkg::self()->CheckInterrupt while
+    // this function is active.  Otherwise, the b1up functions can be
     // called prematurely from here, breaking command logic.
     EventDispatchSuppress evs;
 

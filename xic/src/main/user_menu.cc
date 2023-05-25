@@ -70,7 +70,7 @@ namespace {
     {
         for (umenu *u = u0; u; u = u->next()) {
             char buf[128];
-            sprintf(buf, "%s/%s", path,
+            snprintf(buf, sizeof(buf), "%s/%s", path,
                 depth == 0 ? u->basename() : u->label());
             *ent = MenuEnt(&M_NoOp, lstring::copy(u->label()),
                 ME_VANILLA, CMD_NOTSAFE, lstring::copy(buf));
@@ -194,6 +194,6 @@ namespace {
 void
 user_menu::M_Rehash(CmdDesc*)
 {
-    dspPkgIf()->RegisterIdleProc(user_menu_update_idle_proc, 0);
+    DSPpkg::self()->RegisterIdleProc(user_menu_update_idle_proc, 0);
 }
 

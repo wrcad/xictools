@@ -91,7 +91,7 @@ sPbase::prptyInfoPtr()
 void
 cEdit::PopUpPropertyInfo(CDo *odesc, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Pi;
@@ -114,7 +114,7 @@ cEdit::PopUpPropertyInfo(CDo *odesc, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Pi->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UR), Pi->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UR), Pi->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Pi->Shell());
 }
@@ -169,7 +169,7 @@ sPi::sPi(CDo *odesc)
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
         "paragraph-background", bclr, NULL);
 
@@ -530,7 +530,7 @@ sPbase::data_received(GtkWidget *caller, GdkDragContext *context,
             gdk_atom_intern("property", true) &&
             caller != gtk_drag_get_source_widget(context)) {
         if (!pi_odesc) {
-            dspPkgIf()->RegisterTimeoutProc(3000, pi_bad_cb, this);
+            GTKpkg::self()->RegisterTimeoutProc(3000, pi_bad_cb, this);
             PopUpMessage("Can't add property, no object selected.", false,
                 false, false, GRloc(LW_LR));
         }
@@ -579,7 +579,7 @@ sPbase::data_received(GtkWidget *caller, GdkDragContext *context,
                 }
             }
             if (!accept) {
-                dspPkgIf()->RegisterTimeoutProc(3000, pi_bad_cb, this);
+                GTKpkg::self()->RegisterTimeoutProc(3000, pi_bad_cb, this);
                 PopUpMessage("Can't add property, incorrect type.", false,
                     false, false, GRloc(LW_LR));
             }

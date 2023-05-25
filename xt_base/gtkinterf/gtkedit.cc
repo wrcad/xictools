@@ -127,7 +127,7 @@ GTKbag::PopUpTextEditor(const char *fname,
     if (wb_shell) {
         gtk_window_set_transient_for(GTK_WINDOW(we->wb_shell),
             GTK_WINDOW(wb_shell));
-        GRX->SetPopupLocation(GRloc(), we->wb_shell, wb_shell);
+        GTKdev::self()->SetPopupLocation(GRloc(), we->wb_shell, wb_shell);
     }
     else if (we->transient_for()) {
         gtk_window_set_transient_for(GTK_WINDOW(we->wb_shell),
@@ -167,7 +167,7 @@ GTKbag::PopUpFileBrowser(const char *fname)
     }
     gtk_window_set_transient_for(GTK_WINDOW(we->wb_shell),
         GTK_WINDOW(wb_shell));
-    GRX->SetPopupLocation(GRloc(LW_UR), we->wb_shell, wb_shell);
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UR), we->wb_shell, wb_shell);
 
     gtk_widget_show(we->wb_shell);
     return (we);
@@ -203,7 +203,7 @@ GTKbag::PopUpStringEditor(const char *string,
     we->register_callback(callback);
     gtk_window_set_transient_for(GTK_WINDOW(we->wb_shell),
         GTK_WINDOW(wb_shell));
-    GRX->SetPopupLocation(GRloc(), we->wb_shell, wb_shell);
+    GTKdev::self()->SetPopupLocation(GRloc(), we->wb_shell, wb_shell);
 
     gtk_widget_show(we->wb_shell);
     if (!gtk_widget_has_focus(we->wb_textarea))
@@ -243,7 +243,7 @@ GTKbag::PopUpMail(const char *subject, const char *mailaddr,
 
     gtk_window_set_transient_for(GTK_WINDOW(we->wb_shell),
         GTK_WINDOW(wb_shell));
-    GRX->SetPopupLocation(loc, we->wb_shell, wb_shell);
+    GTKdev::self()->SetPopupLocation(loc, we->wb_shell, wb_shell);
 
     gtk_widget_show(we->wb_shell);
     if (!gtk_widget_has_focus(we->wb_textarea))
@@ -256,7 +256,7 @@ GTKbag::PopUpMail(const char *subject, const char *mailaddr,
 namespace {
     void crlf_proc(GtkWidget *w, void*)
     {
-        GRX->SetCRLFtermination(GRX->GetStatus(w));
+        GTKdev::self()->SetCRLFtermination(GTKdev::GetStatus(w));
     }
 }
 #endif
@@ -305,7 +305,7 @@ GTKeditPopup::GTKeditPopup(GTKbag *owner, GTKeditPopup::WidgetType type,
     ed_Options_Attach = 0;
 
     if (register_edit(true)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "too many edit windows open.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "too many edit windows open.\n");
         return;
     }
     wb_sens_set = ed_set_sens;
@@ -425,7 +425,7 @@ GTKeditPopup::GTKeditPopup(GTKbag *owner, GTKeditPopup::WidgetType type,
         gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), item);
         g_signal_connect(G_OBJECT(item), "activate",
             G_CALLBACK(crlf_proc), this);
-        GRX->SetStatus(item, GRX->GetCRLFtermination());
+        GTKdev::SetStatus(item, GTKdev::self()->GetCRLFtermination());
     }
 #endif
 
@@ -758,7 +758,7 @@ GTKeditPopup::~GTKeditPopup()
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_caller)
-        GRX->Deselect(p_caller);
+        GTKdev::Deselect(p_caller);
 
     delete [] ed_dropfile;
 
@@ -869,7 +869,7 @@ GTKeditPopup::write_file(const char *fname, int startpos, int endpos)
             char *s = text_get_chars(wb_textarea, start, end);
 #ifdef WIN32
             for (int i = 0; i < (end - start); i++) {
-                if (!GRX->GetCRLFtermination()) {
+                if (!GTKdev::self()->GetCRLFtermination()) {
                     if (s[i] == '\r' && s[i+1] == '\n') {
                         lastc = s[i];
                         continue;
@@ -1161,7 +1161,7 @@ GTKeditPopup::ed_search_proc(GtkWidget *caller, void *client_data)
         if (!w->ed_search_pop)
             w->ed_search_pop =
                 new GTKsearchPopup(caller, w->wb_textarea, 0, 0);
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             w->ed_search_pop->pop_up_search(MODE_ON);
         else
             w->ed_search_pop->pop_up_search(MODE_OFF);
@@ -1177,7 +1177,7 @@ GTKeditPopup::ed_font_proc(GtkWidget *caller, void *client_data)
 {
     GTKeditPopup *w = static_cast<GTKeditPopup*>(client_data);
     if (w) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             w->PopUpFontSel(caller, GRloc(), MODE_ON, 0, 0, FNT_EDITOR);
         else
             w->PopUpFontSel(caller, GRloc(), MODE_OFF, 0, 0, FNT_EDITOR);
@@ -1381,8 +1381,8 @@ GTKeditPopup::ed_mail_proc(GtkWidget*, void *client_data)
                         fclose(descfp);
                 }
                 else {
-                    sprintf(buf, "Error: can't open attachment file %s.",
-                        fname);
+                    snprintf(buf, sizeof(buf),
+                        "Error: can't open attachment file %s.", fname);
                     w->PopUpMessage(buf, true, false, false, loc);
                     err = true;
                 }
@@ -1399,14 +1399,14 @@ GTKeditPopup::ed_mail_proc(GtkWidget*, void *client_data)
 
     if (!err) {
         if (!state.nfiles) {
-            sprintf(buf, "mail -s \"%s\" %s < %s", subject, mailaddr,
-                descname);
+            snprintf(buf, sizeof(buf),
+                "mail -s \"%s\" %s < %s", subject, mailaddr, descname);
             system(buf);
         }
         else {
             for (int i = 0; i < state.nfiles; i++) {
                 // What is "-oi"?  took this from mpack
-                sprintf(buf, "sendmail -oi %s < %s", mailaddr,
+                snprintf(buf, sizeof(buf), "sendmail -oi %s < %s", mailaddr,
                     state.fnames[i]);
                 system(buf);
             }
@@ -1551,8 +1551,8 @@ GTKeditPopup::ed_help_proc(GtkWidget*, void *client_data)
     if (w) {
         const char *keyw = w->ed_widget_type == GTKeditPopup::Mailer ?
             "mailclient" : "xeditor";
-        if (GRX->MainFrame())
-            GRX->MainFrame()->PopUpHelp(keyw);
+        if (GTKdev::self()->MainFrame())
+            GTKdev::self()->MainFrame()->PopUpHelp(keyw);
         else
             w->PopUpHelp(keyw);
     }
@@ -1700,7 +1700,7 @@ GTKeditPopup::ed_do_attach_proc(const char *fnamein, void *client_data)
         char tbuf[256];
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
-        sprintf(tbuf, "Can't open %s!", fname);
+        snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
         gtk_label_set_text(GTK_LABEL(w->ed_msg), tbuf);
         delete [] fname;
         return;
@@ -1882,7 +1882,7 @@ GTKeditPopup::ed_do_load_proc(const char *fnamein, void *client_data)
             char tbuf[256];
             if (strlen(fname) > 64)
                 strcpy(fname + 60, "...");
-            sprintf(tbuf, "Can't open %s!", fname);
+            snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
             gtk_label_set_text(GTK_LABEL(w->ed_msg), tbuf);
             delete [] fname;
             return;
@@ -1935,7 +1935,7 @@ GTKeditPopup::ed_do_read_proc(const char *fnamein, void *client_data)
         if (!w->read_file(fname, false)) {
             if (strlen(fname) > 64)
                 strcpy(fname + 60, "...");
-            sprintf(tbuf, "Can't open %s!", fname);
+            snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
             gtk_label_set_text(GTK_LABEL(w->ed_msg), tbuf);
         }
         else {
@@ -1943,7 +1943,7 @@ GTKeditPopup::ed_do_read_proc(const char *fnamein, void *client_data)
             text_set_editable(w->wb_textarea, true);
             if (strlen(fname) > 64)
                 strcpy(fname + 60, "...");
-            sprintf(tbuf, "Successfully read %s", fname);
+            snprintf(tbuf, sizeof(tbuf), "Successfully read %s", fname);
             gtk_label_set_text(GTK_LABEL(w->ed_msg), tbuf);
         }
         if (w->wb_input)

@@ -325,7 +325,7 @@ namespace {
         static char buf[20];
 
         int value = val;
-        sprintf(buf, "%i", val);
+        snprintf(buf, sizeof(buf), "%i", val);
 
         int thousand = value/1000;
         value = value % 1000;

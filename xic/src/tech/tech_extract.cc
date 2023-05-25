@@ -636,8 +636,6 @@ cTech::ParseExtLayerBlock()
 void
 cTech::PrintExtLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld)
 {
-    char buf[256];
-
     if (ld->isVia()) {
         for (sVia *v = tech_prm(ld)->via_list(); v; v = v->next()) {
             if (v->layer1() && v->layer2()) {
@@ -802,29 +800,32 @@ cTech::PrintExtLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld)
     TechLayerParams *lp = tech_prm(ld);
     DspLayerParams *dp = dsp_prm(ld);
 
+    char buf[256];
+
     if (dp->thickness() > 0.0) {
-        sprintf(buf, "%s %.4f\n", Ekw.Thickness(), dp->thickness());
+        snprintf(buf, sizeof(buf), "%s %.4f\n", Ekw.Thickness(),
+            dp->thickness());
         PutStr(fp, lstr, buf);
     }
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Thickness());
 
     if (lp->fh_nhinc() > 1) {
-        sprintf(buf, "%s %d\n", Ekw.FH_nhinc(), lp->fh_nhinc());
+        snprintf(buf, sizeof(buf), "%s %d\n", Ekw.FH_nhinc(), lp->fh_nhinc());
         PutStr(fp, lstr, buf);
     }
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.FH_nhinc());
 
     if (lp->fh_rh() > 0.0 && lp->fh_rh() != DEF_FH_RH) {
-        sprintf(buf, "%s %g\n", Ekw.FH_rh(), lp->fh_rh());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.FH_rh(), lp->fh_rh());
         PutStr(fp, lstr, buf);
     }
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.FH_rh());
 
     if (lp->rho() > 0.0) {
-        sprintf(buf, "%s %g\n", Ekw.Rho(), lp->rho());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.Rho(), lp->rho());
         PutStr(fp, lstr, buf);
     }
     if (cmts) {
@@ -833,28 +834,28 @@ cTech::PrintExtLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld)
     }
 
     if (lp->tau() > 0.0) {
-        sprintf(buf, "%s %g\n", Ekw.Tau(), lp->tau());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.Tau(), lp->tau());
         PutStr(fp, lstr, buf);
     }
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Tau());
 
     if (lp->ohms_per_sq() > 0.0) {
-        sprintf(buf, "%s %g\n", Ekw.Rsh(), lp->ohms_per_sq());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.Rsh(), lp->ohms_per_sq());
         PutStr(fp, lstr, buf);
     }
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Rsh());
 
     if (lp->epsrel() > 1.0) {
-        sprintf(buf, "%s %g\n", Ekw.EpsRel(), lp->epsrel());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.EpsRel(), lp->epsrel());
         PutStr(fp, lstr, buf);
     }
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.EpsRel());
 
     if (lp->cap_per_area() > 0.0 || lp->cap_per_perim() > 0.0) {
-        sprintf(buf, "%s %g %g\n", Ekw.Capacitance(),
+        snprintf(buf, sizeof(buf), "%s %g %g\n", Ekw.Capacitance(),
             lp->cap_per_area(), lp->cap_per_perim());
         PutStr(fp, lstr, buf);
     }
@@ -862,26 +863,30 @@ cTech::PrintExtLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Capacitance());
 
     if (lp->lambda() > 0.0) {
-        sprintf(buf, "%s %g\n", Ekw.Lambda(), lp->lambda());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.Lambda(), lp->lambda());
         PutStr(fp, lstr, buf);
     }
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Lambda());
 
     if (lp->gp_lname() && *lp->gp_lname()) {
-        sprintf(buf, "%s %s", Ekw.Tline(), lp->gp_lname());
-        if (lp->diel_thick() > 0.0 || lp->diel_const() > 0.0)
-            sprintf(buf + strlen(buf), " %g", lp->diel_thick());
-        if (lp->diel_const() > 0.0)
-            sprintf(buf + strlen(buf), " %g", lp->diel_const());
-        strcpy(buf + strlen(buf), "\n");
+        snprintf(buf, sizeof(buf), "%s %s", Ekw.Tline(), lp->gp_lname());
+        if (lp->diel_thick() > 0.0 || lp->diel_const() > 0.0) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, " %g", lp->diel_thick());
+        }
+        if (lp->diel_const() > 0.0) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, " %g", lp->diel_const());
+        }
+        strcat(buf, "\n");
         PutStr(fp, lstr, buf);
     }
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Tline());
 
     if (lp->ant_ratio() > 0.0) {
-        sprintf(buf, "%s %g\n", Ekw.Antenna(), lp->ant_ratio());
+        snprintf(buf, sizeof(buf), "%s %g\n", Ekw.Antenna(), lp->ant_ratio());
         PutStr(fp, lstr, buf);
     }
     if (cmts)
@@ -1021,147 +1026,165 @@ cTech::ExtCheckLayerKeywords(CDl *ld)
     if (ld->isConductor()) {
         if (ld->isVia()) {
             // Via and Conductor
-            sprintf(buf, "ERROR on layer %s: both %s and %s defined.\n",
+            snprintf(buf, sizeof(buf),
+                "ERROR on layer %s: both %s and %s defined.\n",
                 ld->name(), Ekw.Via(), Ekw.Conductor());
             lstr.add(buf);
             return (lstr.string_trim());
         }
         if (ld->isDielectric()) {
             // Dielectric and Conductor
-            sprintf(buf, "ERROR on layer %s: both %s and %s defined.\n",
+            snprintf(buf, sizeof(buf),
+                "ERROR on layer %s: both %s and %s defined.\n",
                 ld->name(), Ekw.Dielectric(), Ekw.Conductor());
             lstr.add(buf);
             return (lstr.string_trim());
         }
         if (lp->epsrel() > 0.0) {
             // EpsRel on Conductor
-            sprintf(buf, msg, ld->name(), Ekw.EpsRel(), Ekw.Conductor());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.EpsRel(),
+                Ekw.Conductor());
             lstr.add(buf);
         }
         if ((lp->cap_per_area() > 0.0 || lp->cap_per_perim() > 0.0) &&
                 ld->isGroundPlane()) {
             // Capacitance on GroundPlane
-            sprintf(buf, msg, ld->name(), Ekw.Capacitance(),
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Capacitance(),
                 Ekw.GroundPlane());
             lstr.add(buf);
         }
         if (lp->gp_lname() != 0 && ld->isGroundPlane()) {
             // Tline on GroundPlane
-            sprintf(buf, msg, ld->name(), Ekw.Tline(), Ekw.GroundPlane());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Tline(),
+                Ekw.GroundPlane());
             lstr.add(buf);
         }
     }
     else if (ld->isVia()) {
         if (lp->rho() > 0.0) {
             // Rho/Sigma on Via
-            sprintf(tbuf, "%s or %s", Ekw.Rho(), Ekw.Sigma());
-            sprintf(buf, msg, ld->name(), tbuf, Ekw.Via());
+            snprintf(tbuf, sizeof(tbuf), "%s or %s", Ekw.Rho(), Ekw.Sigma());
+            snprintf(buf, sizeof(buf), msg, ld->name(), tbuf, Ekw.Via());
             lstr.add(buf);
         }
         if (lp->tau() > 0.0) {
             // Tau on Via
-            sprintf(buf, msg, ld->name(), Ekw.Tau(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Tau(), Ekw.Via());
             lstr.add(buf);
         }
         if (lp->ohms_per_sq() > 0.0) {
             // Rsh on Via
-            sprintf(buf, msg, ld->name(), Ekw.Rsh(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Rsh(), Ekw.Via());
             lstr.add(buf);
         }
         if (lp->cap_per_area() > 0.0 || lp->cap_per_perim() > 0.0) {
             // Capacitance on Via
-            sprintf(buf, msg, ld->name(), Ekw.Capacitance(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Capacitance(),
+                Ekw.Via());
             lstr.add(buf);
         }
         if (lp->lambda() > 0.0) {
             // Lambda on Via
-            sprintf(buf, msg, ld->name(), Ekw.Lambda(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Lambda(),
+                Ekw.Via());
             lstr.add(buf);
         }
         if (lp->gp_lname() != 0) {
             // Tline on Via
-            sprintf(buf, msg, ld->name(), Ekw.Tline(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Tline(),
+                Ekw.Via());
             lstr.add(buf);
         }
         if (lp->ant_ratio() > 0.0) {
             // Antenna on Via
-            sprintf(buf, msg, ld->name(), Ekw.Antenna(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Antenna(),
+                Ekw.Via());
             lstr.add(buf);
         }
     }
     else if (ld->isViaCut()) {
         if (lp->rho() > 0.0) {
             // Rho/Sigma on ViaCut
-            sprintf(tbuf, "%s or %s", Ekw.Rho(), Ekw.Sigma());
-            sprintf(buf, msg, ld->name(), tbuf, Ekw.Via());
+            snprintf(tbuf, sizeof(tbuf), "%s or %s", Ekw.Rho(), Ekw.Sigma());
+            snprintf(buf, sizeof(buf), msg, ld->name(), tbuf, Ekw.Via());
             lstr.add(buf);
         }
         if (lp->tau() > 0.0) {
             // Tau on ViaCut
-            sprintf(buf, msg, ld->name(), Ekw.Tau(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Tau(), Ekw.Via());
             lstr.add(buf);
         }
         if (lp->ohms_per_sq() > 0.0) {
             // Rsh on ViaCut
-            sprintf(buf, msg, ld->name(), Ekw.Rsh(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Rsh(), Ekw.Via());
             lstr.add(buf);
         }
         if (lp->cap_per_area() > 0.0 || lp->cap_per_perim() > 0.0) {
             // Capacitance on ViaCut
-            sprintf(buf, msg, ld->name(), Ekw.Capacitance(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Capacitance(),
+                Ekw.Via());
             lstr.add(buf);
         }
         if (lp->lambda() > 0.0) {
             // Lambda on ViaCut
-            sprintf(buf, msg, ld->name(), Ekw.Lambda(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Lambda(),
+                Ekw.Via());
             lstr.add(buf);
         }
         if (lp->gp_lname() != 0) {
             // Tline on ViaCut
-            sprintf(buf, msg, ld->name(), Ekw.Tline(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Tline(),
+                Ekw.Via());
             lstr.add(buf);
         }
         if (lp->ant_ratio() > 0.0) {
             // Antenna on ViaCut
-            sprintf(buf, msg, ld->name(), Ekw.Antenna(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Antenna(),
+                Ekw.Via());
             lstr.add(buf);
         }
     }
     else if (ld->isDielectric()) {
         if (lp->rho() > 0.0) {
             // Rho/Sigma on Dielectric
-            sprintf(tbuf, "%s or %s", Ekw.Rho(), Ekw.Sigma());
-            sprintf(buf, msg, ld->name(), tbuf, Ekw.Dielectric());
+            snprintf(tbuf, sizeof(tbuf), "%s or %s", Ekw.Rho(), Ekw.Sigma());
+            snprintf(buf, sizeof(buf), msg, ld->name(), tbuf,
+                Ekw.Dielectric());
             lstr.add(buf);
         }
         if (lp->tau() > 0.0) {
             // Tau on Via
-            sprintf(buf, msg, ld->name(), Ekw.Tau(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Tau(), Ekw.Via());
             lstr.add(buf);
         }
         if (lp->ohms_per_sq() > 0.0) {
             // Rsh on Dielectric
-            sprintf(buf, msg, ld->name(), Ekw.Rsh(), Ekw.Dielectric());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Rsh(),
+                Ekw.Dielectric());
             lstr.add(buf);
         }
         if (lp->cap_per_area() > 0.0 || lp->cap_per_perim() > 0.0) {
             // Capacitance on Dielectric
-            sprintf(buf, msg, ld->name(), Ekw.Capacitance(), Ekw.Dielectric());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Capacitance(),
+                Ekw.Dielectric());
             lstr.add(buf);
         }
         if (lp->lambda() > 0.0) {
             // Lambda on Dielectric
-            sprintf(buf, msg, ld->name(), Ekw.Lambda(), Ekw.Dielectric());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Lambda(),
+                Ekw.Dielectric());
             lstr.add(buf);
         }
         if (lp->gp_lname() != 0) {
             // Tline on Dielectric
-            sprintf(buf, msg, ld->name(), Ekw.Tline(), Ekw.Dielectric());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Tline(),
+                Ekw.Dielectric());
             lstr.add(buf);
         }
         if (lp->ant_ratio() > 0.0) {
             // Antenna on Dielectric
-            sprintf(buf, msg, ld->name(), Ekw.Antenna(), Ekw.Dielectric());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Antenna(),
+                Ekw.Dielectric());
             lstr.add(buf);
         }
     }
@@ -1170,38 +1193,43 @@ cTech::ExtCheckLayerKeywords(CDl *ld)
             "Layer %s: %s inappropriate on layer with %s defined.\n";
         if (lp->rho() > 0.0) {
             // Rho/Sigma with EpsRel
-            sprintf(tbuf, "%s or %s", Ekw.Rho(), Ekw.Sigma());
-            sprintf(buf, msg1, ld->name(), tbuf, Ekw.EpsRel());
+            snprintf(tbuf, sizeof(tbuf), "%s or %s", Ekw.Rho(), Ekw.Sigma());
+            snprintf(buf, sizeof(buf), msg1, ld->name(), tbuf, Ekw.EpsRel());
             lstr.add(buf);
         }
         if (lp->tau() > 0.0) {
             // Tau on Via
-            sprintf(buf, msg, ld->name(), Ekw.Tau(), Ekw.Via());
+            snprintf(buf, sizeof(buf), msg, ld->name(), Ekw.Tau(), Ekw.Via());
             lstr.add(buf);
         }
         if (lp->ohms_per_sq() > 0.0) {
             // Rsh with EpsRel
-            sprintf(buf, msg1, ld->name(), Ekw.Rsh(), Ekw.EpsRel());
+            snprintf(buf, sizeof(buf), msg1, ld->name(), Ekw.Rsh(),
+                Ekw.EpsRel());
             lstr.add(buf);
         }
         if (lp->cap_per_area() > 0.0 || lp->cap_per_perim() > 0.0) {
             // Capacitance with EpsRel
-            sprintf(buf, msg1, ld->name(), Ekw.Capacitance(), Ekw.EpsRel());
+            snprintf(buf, sizeof(buf), msg1, ld->name(), Ekw.Capacitance(),
+                Ekw.EpsRel());
             lstr.add(buf);
         }
         if (lp->lambda() > 0.0) {
             // Lambda with EpsRel
-            sprintf(buf, msg1, ld->name(), Ekw.Lambda(), Ekw.EpsRel());
+            snprintf(buf, sizeof(buf), msg1, ld->name(), Ekw.Lambda(),
+                Ekw.EpsRel());
             lstr.add(buf);
         }
         if (lp->gp_lname() != 0) {
             // Tline with EpsRel
-            sprintf(buf, msg1, ld->name(), Ekw.Tline(), Ekw.EpsRel());
+            snprintf(buf, sizeof(buf), msg1, ld->name(), Ekw.Tline(),
+                Ekw.EpsRel());
             lstr.add(buf);
         }
         if (lp->ant_ratio() > 0.0) {
             // Antenna with EpsRel
-            sprintf(buf, msg1, ld->name(), Ekw.Antenna(), Ekw.EpsRel());
+            snprintf(buf, sizeof(buf), msg1, ld->name(), Ekw.Antenna(),
+                Ekw.EpsRel());
             lstr.add(buf);
         }
     }
@@ -1412,34 +1440,44 @@ cTech::WriteRouting(const CDl *ld, FILE *fp, sLstr *lstr)
             PutStr(fp, lstr, " dir=VERT");
 
         if (lp->route_h_pitch() > 0) {
-            sprintf(buf, " pitch=%g", MICRONS(lp->route_h_pitch()));
+            snprintf(buf, sizeof(buf), " pitch=%g",
+                MICRONS(lp->route_h_pitch()));
             if (lp->route_v_pitch() > 0 &&
                     lp->route_v_pitch() != lp->route_h_pitch()) {
-                char *e = buf + strlen(buf);
+                int len = strlen(buf);
+                char *e = buf + len;
                 *e++ = ',';
-                sprintf(e, "%g", MICRONS(lp->route_v_pitch()));
+                len++;
+                snprintf(e, sizeof(buf) - len, "%g",
+                    MICRONS(lp->route_v_pitch()));
             }
             PutStr(fp, lstr, buf);
         }
 
         if (lp->route_h_offset() > 0) {
-            sprintf(buf, " offset=%g", MICRONS(lp->route_h_offset()));
+            snprintf(buf, sizeof(buf), " offset=%g",
+                MICRONS(lp->route_h_offset()));
             if (lp->route_v_offset() > 0 &&
                     lp->route_v_offset() != lp->route_h_offset()) {
-                char *e = buf + strlen(buf);
+                int len = strlen(buf);
+                char *e = buf + len;
                 *e++ = ',';
-                sprintf(e, "%g", MICRONS(lp->route_v_offset()));
+                len++;
+                snprintf(e, sizeof(buf) - len, "%g",
+                    MICRONS(lp->route_v_offset()));
             }
             PutStr(fp, lstr, buf);
         }
 
         if (lp->route_width() > 0) {
-            sprintf(buf, " width=%g", MICRONS(lp->route_width()));
+            snprintf(buf, sizeof(buf), " width=%g",
+                MICRONS(lp->route_width()));
             PutStr(fp, lstr, buf);
         }
 
         if (lp->route_max_dist() > 0) {
-            sprintf(buf, " maxdist=%g", MICRONS(lp->route_max_dist()));
+            snprintf(buf, sizeof(buf), " maxdist=%g",
+                MICRONS(lp->route_max_dist()));
             PutStr(fp, lstr, buf);
         }
     }

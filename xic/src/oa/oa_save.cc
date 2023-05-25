@@ -174,12 +174,12 @@ cOA::save_cbin_hier(const CDcbin *pcbin, const char *libname)
 
     oa_save out(this);
     out.push_defer_tech_upd();
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     CDgenHierDn_cbin gen(pcbin);
     bool err = false;
     CDcbin cbin;
     while (gen.next(&cbin, &err) != 0) {
-        if (dspPkgIf()->CheckForInterrupt()) {
+        if (DSPpkg::self()->CheckForInterrupt()) {
             if (XM()->ConfirmAbort("Interrupt received, abort save? "))
                 break;
         }
@@ -214,7 +214,7 @@ cOA::save_cbin_hier(const CDcbin *pcbin, const char *libname)
         err = true;
     if (!err && !out.save_devices())
         err = true;
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     if (!err && out.warnings()) {
         sLstr lstr;
@@ -246,12 +246,12 @@ cOA::save_cell_hier(CDs *sdesc, const char *libname)
 
     oa_save out(this);
     out.push_defer_tech_upd();
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     CDgenHierDn_s gen(sdesc);
     bool err = false;
     CDs *sd;
     while ((sd = gen.next(&err)) != 0) {
-        if (dspPkgIf()->CheckForInterrupt()) {
+        if (DSPpkg::self()->CheckForInterrupt()) {
             if (XM()->ConfirmAbort("Interrupt received, abort save? "))
                 break;
         }
@@ -276,7 +276,7 @@ cOA::save_cell_hier(CDs *sdesc, const char *libname)
 
     if (!err && !out.update_tech(libname))
         err = true;
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     if (!err && out.warnings()) {
         sLstr lstr;
@@ -309,7 +309,7 @@ cOA::save_cbin(const CDcbin *cbin, const char *libname, const char *altcname)
 
     oa_save out(this);
     out.push_defer_tech_upd();
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     bool ret = true;
     try {
         if (cbin->phys())
@@ -331,7 +331,7 @@ cOA::save_cbin(const CDcbin *cbin, const char *libname, const char *altcname)
         ret = false;
     if (ret && !out.save_devices())
         ret = false;
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     if (ret && out.warnings()) {
         sLstr lstr;
@@ -363,7 +363,7 @@ cOA::save_cell(CDs *sdesc, const char *libname, const char *altcname)
     }
 
     bool ret = true;
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     oa_save out(this);
     try {
         ret = out.save_cell(sdesc, libname, altcname);
@@ -379,7 +379,7 @@ cOA::save_cell(CDs *sdesc, const char *libname, const char *altcname)
     if (ret && !out.update_tech(libname))
         ret = false;
 
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     if (ret && out.warnings()) {
         sLstr lstr;
         for (stringlist *s = out.warnings(); s; s = s->next) {
@@ -1710,9 +1710,9 @@ oa_save::save_cell_properties(CDs *sdesc, oaObject *object)
                 h->stData = (void*)(long)(ix+1);
             }
             if (ix == 0)
-                sprintf(buf, "%s%d", OA_XICP_PFX, num);
+                snprintf(buf, strlen(buf), "%s%d", OA_XICP_PFX, num);
             else
-                sprintf(buf, "%s%d_%d", OA_XICP_PFX, num, ix);
+                snprintf(buf, strlen(buf), "%s%d_%d", OA_XICP_PFX, num, ix);
 
             if (out_mode == Electrical) {
                 if (num == P_SYMBLC) {
@@ -1792,9 +1792,11 @@ oa_save::save_obj_properties(const CDo *odesc, oaObject *object)
                     h->stData = (void*)(long)(ix+1);
                 }
                 if (ix == 0)
-                    sprintf(buf, "%s%d", OA_XICP_PFX, num);
-                else
-                    sprintf(buf, "%s%d_%d", OA_XICP_PFX, num, ix);
+                    snprintf(buf, sizeof(buf), "%s%d", OA_XICP_PFX, num);
+                else {
+                    snprintf(buf, sizeof(buf), "%s%d_%d", OA_XICP_PFX,
+                        num, ix);
+                }
 
                 oaStringProp::create(object, buf, string);
                 delete [] string;
@@ -1806,7 +1808,7 @@ oa_save::save_obj_properties(const CDo *odesc, oaObject *object)
         // Add the NODRC property if necessary
         if (out_mode == Physical && odesc->type() != CDINSTANCE &&
                 odesc->type() != CDLABEL && odesc->has_flag(CDnoDRC)) {
-            sprintf(buf, "%s%d", OA_XICP_PFX, XICP_NODRC);
+            snprintf(buf, sizeof(buf), "%s%d", OA_XICP_PFX, XICP_NODRC);
             oaStringProp::create(object, buf, "NODRC");
         }
     }

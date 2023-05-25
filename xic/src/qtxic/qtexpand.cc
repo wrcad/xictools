@@ -51,14 +51,14 @@
 
 
 cExpand::cExpand(QTbag *owner, const char *string, bool nopeek,
-    void *arg) : QDialog(owner ? owner->shell : 0)
+    void *arg) : QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
     p_cb_arg = arg;
     p_callback = 0;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Expand")));
 
@@ -199,7 +199,7 @@ cExpand::~cExpand()
     if (p_parent) {
         QTsubwin *owner = dynamic_cast<QTsubwin*>(p_parent);
         if (owner) {
-            owner->monitor.remove(this);
+            owner->MonitorRemove(this);
             owner->clear_expand();
         }
     }
@@ -216,10 +216,10 @@ cExpand::popdown()
     if (!p_parent)
         return;
     QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-    if (!owner || !owner->monitor.is_active(this))
+    if (!owner || !owner->MonitorActive(this))
         return;
 
-    delete this;
+    deleteLater();
 }
 
 
@@ -341,6 +341,6 @@ cExpand::apply_slot()
 void
 cExpand::dismiss_slot()
 {
-    delete this;
+    deleteLater();
 }
 

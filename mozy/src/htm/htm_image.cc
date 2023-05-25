@@ -461,7 +461,7 @@ namespace {
         if (!path)
             path = "/tmp";
         char tf[256], buf[256];
-        sprintf(tf, "%s/moz%d-%s.tmp", path, getpid(), program);
+        snprintf(tf, sizeof(tf), "%s/moz%d-%s.tmp", path, getpid(), program);
         FILE *fp = fopen(tf, "w");
         if (!fp)
             return (false);
@@ -470,7 +470,7 @@ namespace {
         fclose(fp);
 
         bool ret = false;
-        sprintf(buf, "%s %s 2>/dev/null", program, tf);
+        snprintf(buf, sizeof(buf), "%s %s 2>/dev/null", program, tf);
         fp = popen(buf, "r");
         if (fp) {
             int c, cnt = 0;
@@ -1149,8 +1149,9 @@ htmImageManager::loadBodyImage(const char *url)
     }
 
     // kludge so newImage recognizes it
-    char *buf = new char[strlen(url) + 7];
-    sprintf(buf, "src=\"%s\"", url);
+    int len = strlen(url) + 7;
+    char *buf = new char[len];
+    snprintf(buf, len, "src=\"%s\"", url);
 
     // load it
     htmImage *body_image;

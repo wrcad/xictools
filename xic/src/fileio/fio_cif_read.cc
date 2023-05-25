@@ -2711,7 +2711,8 @@ cif_in::a_delete_symbol()
     if (!look_for_semi(&c))
         return (false);
     char buf[64];
-    sprintf(buf, "definition delete (DD) of Symbol %d - ignored", sym_num);
+    snprintf(buf, sizeof(buf),
+        "definition delete (DD) of Symbol %d - ignored", sym_num);
     warning(buf, false);
     return (true);
 }
@@ -3007,9 +3008,10 @@ cif_in::a_call_db(int sym_num)
                     strcpy(in_cellname, Tstring(ptr->get_name()));
                 else {
                     char buf[256];
-                    sprintf(buf, "reference to undefined symbol %d", sym_num);
+                    snprintf(buf, sizeof(buf),
+                        "reference to undefined symbol %d", sym_num);
                     warning(buf, false);
-                    sprintf(in_cellname, "%s%d", UNDEF_PREFIX, sym_num);
+                    snprintf(in_cellname, 256, "%s%d", UNDEF_PREFIX, sym_num);
                 }
             }
             else {
@@ -3190,9 +3192,10 @@ cif_in::a_call_cvt(int sym_num)
                 strcpy(in_cellname, Tstring(ptr->get_name()));
             else {
                 char buf[256];
-                sprintf(buf, "reference to undefined symbol %d", sym_num);
+                snprintf(buf, sizeof(buf),
+                    "reference to undefined symbol %d", sym_num);
                 warning(buf, false);
-                sprintf(in_cellname, "%s%d", UNDEF_PREFIX, sym_num);
+                snprintf(in_cellname, 256, "%s%d", UNDEF_PREFIX, sym_num);
             }
         }
         else {
@@ -4867,7 +4870,7 @@ cif_in::symbol_name(int sym_num)
     }
 
     if (!*in_cellname)
-        sprintf(in_cellname, "%s%d", UNDEF_PREFIX, sym_num);
+        snprintf(in_cellname, 256, "%s%d", UNDEF_PREFIX, sym_num);
 
     return (true);
 }
@@ -5030,7 +5033,7 @@ cif_in::error(int id, const char *msg)
         Errs()->add_error(msg);
     }
     char buf[256];
-    add_bad(buf);
+    add_bad(buf, sizeof(buf));
     if (islower(*buf))
         *buf = toupper(*buf);
     Errs()->add_error("%s", buf);
@@ -5048,7 +5051,8 @@ cif_in::warning(const char *str, bool prop)
         *buf = 0;
 
     if (prop && in_prpty_list) {
-        sprintf(buf + strlen(buf),
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len,
             "\n**  \"%s\"\n**  at or before line %d (ignored).",
             in_prpty_list->string(), in_line_cnt);
     }
@@ -5058,7 +5062,8 @@ cif_in::warning(const char *str, bool prop)
             *s++ = '\n';
             *s = 0;
         }
-        add_bad(s);
+        int len = strlen(s);
+        add_bad(s, sizeof(buf) - len);
     }
     FIO()->ifPrintCvLog(IFLOG_WARN, "%s", buf);
 }
@@ -5067,7 +5072,7 @@ cif_in::warning(const char *str, bool prop)
 #define BACK_CHARS 30
 
 void
-cif_in::add_bad(char *str)
+cif_in::add_bad(char *str, int bsz)
 {
     char buf[BACK_CHARS+2];
     if (in_fp) {
@@ -5091,7 +5096,7 @@ cif_in::add_bad(char *str)
                 break;
             }
         }
-        sprintf(str, "on line %d near \" %s \"", in_line_cnt+1, s);
+        snprintf(str, bsz, "on line %d near \" %s \"", in_line_cnt+1, s);
     }
 }
 

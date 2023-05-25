@@ -121,10 +121,10 @@ Image::save_image(const char *file, SaveInfo *info)
     // Netpbm and cjpeg
     char cmd[10240];
     if (!strcasecmp(ext, "jpeg"))
-        sprintf(cmd,
+        snprintf(cmd, sizeof(cmd),
 "%%H -quality %i -progressive -outfile %%s", 100 * info->quality / 256);
     else if (!strcasecmp(ext, "jpg"))
-        sprintf(cmd,
+        snprintf(cmd, sizeof(cmd),
 "%%H -quality %i -progressive -outfile %%s", 100 * info->quality / 256);
     else if (!strcasecmp(ext, "bmp"))
         strcpy(cmd, "%Q %N/ppmtobmp > %s");

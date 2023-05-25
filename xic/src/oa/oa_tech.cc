@@ -937,10 +937,14 @@ cOaTechIf::printCdsLayerDefinitions()
                 // reserved values only.
 
                 char buf[256];
-                if (fixme)
-                    sprintf(buf, "%s_%s", (const char*)lname, (const char*)pname);
-                else
-                    sprintf(buf, "%s", (const char*)lpp.packetName);
+                if (fixme) {
+                    snprintf(buf, sizeof(buf), "%s_%s",
+                        (const char*)lname, (const char*)pname);
+                }
+                else {
+                    snprintf(buf, sizeof(buf), "%s",
+                        (const char*)lpp.packetName);
+                }
 
                 fprintf(if_fp, "  ( %-12s %-12s %-20s", (const char*)lname,
                     (const char*)pname, buf);
@@ -1163,7 +1167,7 @@ cOaTechIf::printCdsLayerRules()
             lnxt = l->next;
             oaMaterial fcn = l->layer->getMaterial();
             oaString mname = fcn.getName();
-            sprintf(buf, "\"%s\"", (const char*)mname);
+            snprintf(buf, sizeof(buf), "\"%s\"", (const char*)mname);
             oaString lname;
             l->layer->getName(lname);
             fprintf(if_fp, "  ( %-27s %-14s %-4d )\n", (const char*)lname,
@@ -1217,7 +1221,7 @@ cOaTechIf::printCdsLayerRules()
                 lyr->getName(lname);
                 oaPrefRoutingDir dir = lyr->getPrefRoutingDir();
                 oaString dname = dir.getName();
-                sprintf(buf, "\"%s\"", (const char*)dname);
+                snprintf(buf, sizeof(buf), "\"%s\"", (const char*)dname);
                 fprintf(if_fp, "  ( %-27s %-14s )\n", (const char*)lname,
                     buf);
             }
@@ -1302,7 +1306,8 @@ cOaTechIf::printCdsLayerRules()
                     oaObject *obj = member->getObject();
                     double xval =  0.0;
                     if (obj->getType() == oacPhysicalLayerType) {
-                        sprintf(buf, "\"%s\"", (const char*)name);
+                        snprintf(buf, sizeof(buf), "\"%s\"",
+                            (const char*)name);
                         fprintf(if_fp, "  ( %-27s", buf);
 
                         oaPhysicalLayer *lyr = (oaPhysicalLayer*)obj;
@@ -1344,7 +1349,8 @@ cOaTechIf::printCdsLayerRules()
                                     else if (pnm == "index")
                                         index = dprp->getValue();
                                 }
-                                sprintf(buf, "(%-6g %-6g)", xval, index);
+                                snprintf(buf, sizeof(buf), "(%-6g %-6g)",
+                                    xval, index);
                                 fprintf(if_fp, "        %-16s %g\n", buf,
                                     entry);
                             }
@@ -1407,25 +1413,31 @@ cOaTechIf::printCdsViaDefs()
                     prm.getCutColumns(), dbuToUU(prm.getCutSpacing().x()),
                     dbuToUU(prm.getCutSpacing().y()));
 
-                sprintf(buf, "(%g %g)", dbuToUU(prm.getLayer1Enc().x()),
+                snprintf(buf, sizeof(buf), "(%g %g)",
+                    dbuToUU(prm.getLayer1Enc().x()),
                     dbuToUU(prm.getLayer1Enc().y()));
                 fprintf(if_fp, "     %-14s", buf);
-                sprintf(buf, "(%g %g)", dbuToUU(prm.getLayer2Enc().x()),
+                snprintf(buf, sizeof(buf), "(%g %g)",
+                    dbuToUU(prm.getLayer2Enc().x()),
                     dbuToUU(prm.getLayer2Enc().y()));
                 fprintf(if_fp, " %-14s", buf);
-                sprintf(buf, "(%g %g)", dbuToUU(prm.getLayer1Offset().x()),
+                snprintf(buf, sizeof(buf), "(%g %g)",
+                    dbuToUU(prm.getLayer1Offset().x()),
                     dbuToUU(prm.getLayer1Offset().y()));
                 fprintf(if_fp, " %-14s", buf);
-                sprintf(buf, "(%g %g)", dbuToUU(prm.getLayer2Offset().x()),
+                snprintf(buf, sizeof(buf), "(%g %g)",
+                    dbuToUU(prm.getLayer2Offset().x()),
                     dbuToUU(prm.getLayer2Offset().y()));
                 fprintf(if_fp, " %-14s", buf);
-                sprintf(buf, "(%g %g)", dbuToUU(prm.getOriginOffset().x()),
+                snprintf(buf, sizeof(buf), "(%g %g)",
+                    dbuToUU(prm.getOriginOffset().x()),
                     dbuToUU(prm.getOriginOffset().y()));
                 fprintf(if_fp, " %s\n", buf);
 
                 oaPhysicalLayer *imp1 = stvd->getImplant1();
                 if (imp1) {
-                    sprintf(buf, "(%g %g)", dbuToUU(prm.getImplant1Enc().x()),
+                    snprintf(buf, sizeof(buf), "(%g %g)",
+                        dbuToUU(prm.getImplant1Enc().x()),
                         dbuToUU(prm.getImplant1Enc().y()));
                     oaString i1name;
                     imp1->getName(i1name);
@@ -1433,7 +1445,7 @@ cOaTechIf::printCdsViaDefs()
                         buf);
                     oaPhysicalLayer *imp2 = stvd->getImplant2();
                     if (imp2) {
-                        sprintf(buf, "(%g %g)",
+                        snprintf(buf, sizeof(buf), "(%g %g)",
                             dbuToUU(prm.getImplant2Enc().x()),
                             dbuToUU(prm.getImplant2Enc().y()));
                         oaString i2name;
@@ -1801,11 +1813,11 @@ cOaTechIf::printCdsConstraintGroupMem(const oaConstraintGroupMem *member,
                 oaPurpose *prp = oaPurpose::find(if_tech, cs->getPurpose());
                 oaString pname;
                 prp->getName(pname);
-                sprintf(buf, "(\"%s\" \"%s\")", (const char*)lname,
-                    (const char*)pname);
+                snprintf(buf, sizeof(buf), "(\"%s\" \"%s\")",
+                    (const char*)lname, (const char*)pname);
             }
             else {
-                sprintf(buf, "\"%s\"", (const char*)lname);
+                snprintf(buf, sizeof(buf), "\"%s\"", (const char*)lname);
             }
             if (name == "antenna") {
                 // The returned valstr is missing the layer token, we
@@ -1879,11 +1891,11 @@ cOaTechIf::printCdsConstraintGroupMem(const oaConstraintGroupMem *member,
                 oaPurpose *prp = oaPurpose::find(if_tech, cs->getPurpose1());
                 oaString pname;
                 prp->getName(pname);
-                sprintf(buf, "(\"%s\" \"%s\")", (const char*)lname,
-                    (const char*)pname);
+                snprintf(buf, sizeof(buf), "(\"%s\" \"%s\")",
+                    (const char*)lname, (const char*)pname);
             }
             else {
-                sprintf(buf, "\"%s\"", (const char*)lname);
+                snprintf(buf, sizeof(buf), "\"%s\"", (const char*)lname);
             }
             fprintf(if_fp, "%*c( %-27s %-9s", indent, ' ',
                 (const char*)name, buf);
@@ -1894,11 +1906,11 @@ cOaTechIf::printCdsConstraintGroupMem(const oaConstraintGroupMem *member,
                 oaPurpose *prp = oaPurpose::find(if_tech, cs->getPurpose2());
                 oaString pname;
                 prp->getName(pname);
-                sprintf(buf, "(\"%s\" \"%s\")", (const char*)lname,
-                    (const char*)pname);
+                snprintf(buf, sizeof(buf), "(\"%s\" \"%s\")",
+                    (const char*)lname, (const char*)pname);
             }
             else {
-                sprintf(buf, "\"%s\"", (const char*)lname);
+                snprintf(buf, sizeof(buf), "\"%s\"", (const char*)lname);
             }
             if (paramstr)
                 fprintf(if_fp, " %s\n", buf);
@@ -2291,7 +2303,7 @@ cOaTechIf::printCdsMppRec(const oaGroup *group)
 
             oaString lname, pname;
             getLppNames(lpp, lname, pname);
-            sprintf(buf, "(\"%s\" \"%s\")",
+            snprintf(buf, sizeof(buf), "(\"%s\" \"%s\")",
                 (const char*)lname, (const char*)pname);
 
             techMPP mpp;
@@ -2939,41 +2951,43 @@ cOaTechIf::printViaDef(const oaViaDef *viadef)
             (const char*)name, (const char*)l1name, (const char*)l2name,
             (const char*)clname);
 
-        sprintf(buf, "%g %g", dbuToUU(prm.getCutWidth()),
+        snprintf(buf, sizeof(buf), "%g %g", dbuToUU(prm.getCutWidth()),
             dbuToUU(prm.getCutHeight()));
         fprintf(if_fp, "    %-12s", buf);
-        sprintf(buf, "%d %d", prm.getCutRows(), prm.getCutColumns());
+        snprintf(buf, sizeof(buf), "%d %d", prm.getCutRows(),
+            prm.getCutColumns());
         fprintf(if_fp, " %-5s", buf);
-        sprintf(buf, "%g %g", dbuToUU(prm.getCutSpacing().x()),
+        snprintf(buf, sizeof(buf), "%g %g", dbuToUU(prm.getCutSpacing().x()),
             dbuToUU(prm.getCutSpacing().y()));
         fprintf(if_fp, " %-12s", buf);
-        sprintf(buf, "%g %g", dbuToUU(prm.getLayer1Enc().x()),
+        snprintf(buf, sizeof(buf), "%g %g", dbuToUU(prm.getLayer1Enc().x()),
             dbuToUU(prm.getLayer1Enc().y()));
         fprintf(if_fp, " %-12s", buf);
-        sprintf(buf, "%g %g", dbuToUU(prm.getLayer2Enc().x()),
+        snprintf(buf, sizeof(buf), "%g %g", dbuToUU(prm.getLayer2Enc().x()),
             dbuToUU(prm.getLayer2Enc().y()));
         fprintf(if_fp, " %s \\\n", buf);
 
-        sprintf(buf, "%g %g", dbuToUU(prm.getLayer1Offset().x()),
+        snprintf(buf, sizeof(buf), "%g %g", dbuToUU(prm.getLayer1Offset().x()),
             dbuToUU(prm.getLayer1Offset().y()));
         fprintf(if_fp, "    %-12s", buf);
-        sprintf(buf, "%g %g", dbuToUU(prm.getLayer2Offset().x()),
+        snprintf(buf, sizeof(buf), "%g %g", dbuToUU(prm.getLayer2Offset().x()),
             dbuToUU(prm.getLayer2Offset().y()));
         fprintf(if_fp, " %-12s", buf);
-        sprintf(buf, "%g %g", dbuToUU(prm.getOriginOffset().x()),
+        snprintf(buf, sizeof(buf), "%g %g", dbuToUU(prm.getOriginOffset().x()),
             dbuToUU(prm.getOriginOffset().y()));
         fprintf(if_fp, " %s", buf);
 
         oaPhysicalLayer *imp1 = stvd->getImplant1();
         if (imp1) {
-            sprintf(buf, "%g %g", dbuToUU(prm.getImplant1Enc().x()),
+            snprintf(buf, sizeof(buf), "%g %g",
+                dbuToUU(prm.getImplant1Enc().x()),
                 dbuToUU(prm.getImplant1Enc().y()));
             oaString i1name;
             imp1->getName(i1name);
             fprintf(if_fp, " \\\n    %-16s %12s", (const char*)i1name, buf);
             oaPhysicalLayer *imp2 = stvd->getImplant2();
             if (imp2) {
-                sprintf(buf, "%g %g",
+                snprintf(buf, sizeof(buf), "%g %g",
                     dbuToUU(prm.getImplant2Enc().x()),
                     dbuToUU(prm.getImplant2Enc().y()));
                 oaString i2name;
@@ -3797,8 +3811,8 @@ cOaTechIf::getAntennaRatioValueAsString(const oaAntennaRatioValue *av)
         else {
             lstr.add(" (");
             for (int i = 0; i < tsize; i++) {
-                sprintf(buf, "(%g %g)", dbuToUU(tbl.getHeader(i)),
-                    tbl.getValue(i));
+                snprintf(buf, sizeof(buf), "(%g %g)",
+                    dbuToUU(tbl.getHeader(i)), tbl.getValue(i));
                 if (i)
                     lstr.add_c(' ');
                 lstr.add(buf);
@@ -3835,11 +3849,13 @@ cOaTechIf::getDualIntValueAsString(const oaDualIntValue *i2, int ccode)
 {
     char buf[64];
     if (ccode == 1) {
-        sprintf(buf, "(%g %g)", dbuToUU(i2->getFirst()),
+        snprintf(buf, sizeof(buf), "(%g %g)", dbuToUU(i2->getFirst()),
             dbuToUU(i2->getSecond()));
     }
-    else
-        sprintf(buf, "(%d %d)", i2->getFirst(), i2->getSecond());
+    else {
+        snprintf(buf, sizeof(buf), "(%d %d)", i2->getFirst(),
+            i2->getSecond());
+    }
     return (lstring::copy(buf));
 }
 
@@ -3851,7 +3867,7 @@ cOaTechIf::getFlt1DTblValueAsString(const oaFlt1DTblValue *t)
     t->get(tbl);
     int tsize = tbl.getNumItems();
     oaString name = tbl.getName();
-    sprintf(buf, "( \"%s\" nil nil )", (const char*)name);
+    snprintf(buf, sizeof(buf), "( \"%s\" nil nil )", (const char*)name);
     sLstr lstr;
     lstr.add("\n        (");
     lstr.add(buf);
@@ -3859,8 +3875,8 @@ cOaTechIf::getFlt1DTblValueAsString(const oaFlt1DTblValue *t)
     lstr.add_g(tbl.getDefaultValue());
     lstr.add(" )\n        (\n");
     for (int i = 0; i < tsize; i++) {
-        sprintf(buf, "          %-8g %-8g\n", tbl.getHeader(i),
-            tbl.getValue(i));
+        snprintf(buf, sizeof(buf), "          %-8g %-8g\n",
+            tbl.getHeader(i), tbl.getValue(i));
         lstr.add(buf);
     }
     lstr.add("        )\n");
@@ -3877,8 +3893,8 @@ cOaTechIf::getFlt2DTblValueAsString(const oaFlt2DTblValue *t)
     int cols = tbl.getNumCols();
     oaString rowname = tbl.getRowName();
     oaString colname = tbl.getColName();
-    sprintf(buf, "( \"%s\" nil nil \"%s\" nil nil )", (const char*)rowname,
-        (const char*)colname);
+    snprintf(buf, sizeof(buf), "( \"%s\" nil nil \"%s\" nil nil )",
+        (const char*)rowname, (const char*)colname);
     sLstr lstr;
     lstr.add("\n        (");
     lstr.add(buf);
@@ -3887,8 +3903,8 @@ cOaTechIf::getFlt2DTblValueAsString(const oaFlt2DTblValue *t)
     lstr.add(" )\n        (\n");
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            sprintf(buf, "          (%-8g %-8g) %-8g\n", tbl.getRowHeader(i),
-                tbl.getColHeader(j), tbl.getValue(i, j));
+            snprintf(buf, sizeof(buf), "          (%-8g %-8g) %-8g\n",
+                tbl.getRowHeader(i), tbl.getColHeader(j), tbl.getValue(i, j));
             lstr.add(buf);
         }
     }
@@ -3906,8 +3922,8 @@ cOaTechIf::getFltIntFltTblValueAsString(const oaFltIntFltTblValue *t)
     int cols = tbl.getNumCols();
     oaString rowname = tbl.getRowName();
     oaString colname = tbl.getColName();
-    sprintf(buf, "( \"%s\" nil nil \"%s\" nil nil )", (const char*)rowname,
-        (const char*)colname);
+    snprintf(buf, sizeof(buf), "( \"%s\" nil nil \"%s\" nil nil )",
+        (const char*)rowname, (const char*)colname);
     sLstr lstr;
     lstr.add("\n        (");
     lstr.add(buf);
@@ -3916,8 +3932,8 @@ cOaTechIf::getFltIntFltTblValueAsString(const oaFltIntFltTblValue *t)
     lstr.add(" )\n        (\n");
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            sprintf(buf, "          (%-8g %-8d) %-8g\n", tbl.getRowHeader(i),
-                tbl.getColHeader(j), tbl.getValue(i, j));
+            snprintf(buf, sizeof(buf), "          (%-8g %-8d) %-8g\n",
+                tbl.getRowHeader(i), tbl.getColHeader(j), tbl.getValue(i, j));
             lstr.add(buf);
         }
     }
@@ -3929,7 +3945,7 @@ char *
 cOaTechIf::getFltValueAsString(const oaFltValue *f)
 {
     char buf[32];
-    sprintf(buf, "%g", f->get());
+    snprintf(buf, sizeof(buf), "%g", f->get());
     return (lstring::copy(buf));
 }
 
@@ -3941,7 +3957,7 @@ cOaTechIf::getInt1DTblValueAsString(const oaInt1DTblValue *t, int ccode)
     t->get(tbl);
     int tsize = tbl.getNumItems();
     oaString name = tbl.getName();
-    sprintf(buf, "( \"%s\" nil nil )", (const char*)name);
+    snprintf(buf, sizeof(buf), "( \"%s\" nil nil )", (const char*)name);
     sLstr lstr;
     lstr.add("\n        (");
     lstr.add(buf);
@@ -3953,15 +3969,18 @@ cOaTechIf::getInt1DTblValueAsString(const oaInt1DTblValue *t, int ccode)
     lstr.add(" )\n        (\n");
     for (int i = 0; i < tsize; i++) {
         if (ccode == 1) {
-            sprintf(buf, "          %-8g %-8g\n", dbuToUU(tbl.getHeader(i)),
+            snprintf(buf, sizeof(buf),
+                "          %-8g %-8g\n", dbuToUU(tbl.getHeader(i)),
                 dbuToUU(tbl.getValue(i)));
         }
         else if (ccode == 3) {
-            sprintf(buf, "          %-8g %-8d\n", dbuToUU(tbl.getHeader(i)),
+            snprintf(buf, sizeof(buf),
+                "          %-8g %-8d\n", dbuToUU(tbl.getHeader(i)),
                 tbl.getValue(i));
         }
         else {
-            sprintf(buf, "          %-8d %-8d\n", tbl.getHeader(i),
+            snprintf(buf, sizeof(buf),
+                "          %-8d %-8d\n", tbl.getHeader(i),
                 tbl.getValue(i));
         }
         lstr.add(buf);
@@ -3980,8 +3999,8 @@ cOaTechIf::getInt2DTblValueAsString(const oaInt2DTblValue *t, int ccode)
     int cols = tbl.getNumCols();
     oaString rowname = tbl.getRowName();
     oaString colname = tbl.getColName();
-    sprintf(buf, "( \"%s\" nil nil \"%s\" nil nil )", (const char*)rowname,
-        (const char*)colname);
+    snprintf(buf, sizeof(buf), "( \"%s\" nil nil \"%s\" nil nil )",
+        (const char*)rowname, (const char*)colname);
     sLstr lstr;
     lstr.add("\n        (");
     lstr.add(buf);
@@ -3994,12 +4013,14 @@ cOaTechIf::getInt2DTblValueAsString(const oaInt2DTblValue *t, int ccode)
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             if (ccode == 1) {
-                sprintf(buf, "          (%-8g %-8g) %-8g\n",
+                snprintf(buf, sizeof(buf),
+                    "          (%-8g %-8g) %-8g\n",
                     dbuToUU(tbl.getRowHeader(i)), dbuToUU(tbl.getColHeader(j)),
                     dbuToUU(tbl.getValue(i, j)));
             }
             else {
-                sprintf(buf, "          (%-8d %-8d) %-8d\n",
+                snprintf(buf, sizeof(buf),
+                    "          (%-8d %-8d) %-8d\n",
                     tbl.getRowHeader(i), tbl.getColHeader(j),
                     tbl.getValue(i, j));
             }
@@ -4024,7 +4045,7 @@ cOaTechIf::getIntFltTblValueAsString(const oaIntFltTblValue *t, int ccode)
     t->get(tbl);
     int tsize = tbl.getNumItems();
     oaString name = tbl.getName();
-    sprintf(buf, "( \"%s\" nil nil )", (const char*)name);
+    snprintf(buf, sizeof(buf), "( \"%s\" nil nil )", (const char*)name);
     sLstr lstr;
     lstr.add("\n        (");
     lstr.add(buf);
@@ -4032,12 +4053,14 @@ cOaTechIf::getIntFltTblValueAsString(const oaIntFltTblValue *t, int ccode)
     lstr.add_g(tbl.getDefaultValue());
     lstr.add(" )\n        (\n");
     for (int i = 0; i < tsize; i++) {
-        if (ccode == 1 || ccode == 3)
-            sprintf(buf, "          %-8g %-8g\n", dbuToUU(tbl.getHeader(i)),
+        if (ccode == 1 || ccode == 3) {
+            snprintf(buf, sizeof(buf),
+                "          %-8g %-8g\n", dbuToUU(tbl.getHeader(i)),
                 tbl.getValue(i));
+        }
         else {
-            sprintf(buf, "          %-8d %-8g\n", tbl.getHeader(i),
-                tbl.getValue(i));
+            snprintf(buf, sizeof(buf),
+                "          %-8d %-8g\n", tbl.getHeader(i), tbl.getValue(i));
         }
         lstr.add(buf);
     }
@@ -4076,16 +4099,16 @@ cOaTechIf::getIntValueAsString(const oaIntValue *i, int ccode)
     if (ccode == 1) {
         // Given DBU, return UU.
         double uu = dbuToUU(i->get());
-        sprintf(buf, "%g", uu);
+        snprintf(buf, sizeof(buf), "%g", uu);
     }
     else if (ccode == 2) {
         // Given DBU^2, return UU^2
         double sc = dbuToUU(1);
         double uu = dbuToUU(i->get());
-        sprintf(buf, "%g", sc*uu);
+        snprintf(buf, sizeof(buf), "%g", sc*uu);
     }
     else
-        sprintf(buf, "%d", i->get());
+        snprintf(buf, sizeof(buf), "%d", i->get());
     return (lstring::copy(buf));
 }
 
@@ -4161,7 +4184,7 @@ char *
 cOaTechIf::getUInt8ValueAsString(const oaUInt8Value *n)
 {
     char buf[64];
-    sprintf(buf, "%lld",  n->get());
+    snprintf(buf, sizeof(buf), "%lld",  n->get());
     return (lstring::copy(buf));
 }
 

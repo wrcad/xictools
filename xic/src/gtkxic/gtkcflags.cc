@@ -117,7 +117,7 @@ void
 cMain::PopUpCellFlags(GRobject caller, ShowMode mode, const stringlist *list,
     int dmode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete CF;
@@ -141,7 +141,7 @@ cMain::PopUpCellFlags(GRobject caller, ShowMode mode, const stringlist *list,
     gtk_window_set_transient_for(GTK_WINDOW(CF->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), CF->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), CF->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(CF->Shell());
 }
@@ -290,7 +290,7 @@ sCF::~sCF()
     CF = 0;
     cf_elt::destroy(cf_list);
     if (cf_caller)
-        GRX->Deselect(cf_caller);
+        GTKdev::Deselect(cf_caller);
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)cf_cancel_proc, wb_shell);
@@ -397,14 +397,14 @@ sCF::refresh(bool check_cc)
                 cf->immutable = cursdesc->isImmutable();
                 cf->library = cursdesc->isLibrary();
             }
-            sprintf(buf, "%-*s  ", cf_field, Tstring(cf->name));
+            snprintf(buf, sizeof(buf), "%-*s  ", cf_field, Tstring(cf->name));
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
             const char *yn = cf->immutable ? "yes" : "no";
-            sprintf(buf, "%-3s  ", yn);
+            snprintf(buf, sizeof(buf), "%-3s  ", yn);
             text_insert_chars_at_point(wb_textarea, *yn == 'y' ? yc : nc,
                 buf, -1, -1);
             yn = cf->library ? "yes" : "no";
-            sprintf(buf, "%-3s\n", yn);
+            snprintf(buf, sizeof(buf), "%-3s\n", yn);
             text_insert_chars_at_point(wb_textarea, *yn == 'y' ? yc : nc, buf,
                 -1, -1);
         }

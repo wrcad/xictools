@@ -122,7 +122,7 @@ using namespace gtkcgdlist;
 void
 cConvert::PopUpGeometries(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete CGL;
@@ -144,7 +144,7 @@ cConvert::PopUpGeometries(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(CGL->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_UL), CGL->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), CGL->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(CGL->Shell());
 }
@@ -304,7 +304,7 @@ sCGL::~sCGL()
     delete [] cgl_contlib;
 
     if (cgl_caller)
-        GRX->Deselect(cgl_caller);
+        GTKdev::Deselect(cgl_caller);
     Cvt()->PopUpCgdOpen(0, MODE_OFF, 0, 0, 0, 0, 0, 0);
     PopUpInfo(MODE_OFF, 0);
     if (cgl_sav_pop)
@@ -442,7 +442,7 @@ sCGL::action_hdlr(GtkWidget *caller, void *client_data)
         return;
     }
 
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
 
     if (client_data == (void*)CGLadd) {
         if (state) {
@@ -473,7 +473,7 @@ sCGL::action_hdlr(GtkWidget *caller, void *client_data)
                 cgl_sav_pop->register_usrptr((void**)&cgl_sav_pop);
         }
         else
-            GRX->Deselect(cgl_savbtn);
+            GTKdev::Deselect(cgl_savbtn);
         return;
     }
     if (client_data == (void*)CGLdel) {
@@ -492,12 +492,12 @@ sCGL::action_hdlr(GtkWidget *caller, void *client_data)
                     cgl_del_pop->register_usrptr((void**)&cgl_del_pop);
             }
             else {
-                GRX->Deselect(cgl_delbtn);
-                GRX->SetSensitive(cgl_delbtn, false);
+                GTKdev::Deselect(cgl_delbtn);
+                GTKdev::SetSensitive(cgl_delbtn, false);
             }
         }
         else
-            GRX->Deselect(cgl_delbtn);
+            GTKdev::Deselect(cgl_delbtn);
         return;
     }
     if (client_data == (void*)CGLinf) {
@@ -524,7 +524,7 @@ sCGL::err_message(const char *fmt)
     const char *s = Errs()->get_error();
     int len = strlen(fmt) + (s ? strlen(s) : 0) + 10;
     char *t = new char[len];
-    sprintf(t, fmt, s);
+    snprintf(t, len, fmt, s);
     PopUpMessage(t, true);
     delete [] t;
 }
@@ -633,9 +633,9 @@ sCGL::cgl_sav_cb(const char *fname, void*)
         return (ESTR_IGN);
     }
 
-    dspPkgIf()->SetWorking(true);
+    GTKpkg::self()->SetWorking(true);
     bool ok = cgd->write(fname);
-    dspPkgIf()->SetWorking(false);
+    GTKpkg::self()->SetWorking(false);
     if (!ok) {
         CGL->err_message("Error occurred when writing digest file:\n%s");
         return (ESTR_IGN);
@@ -688,7 +688,7 @@ sCGL::cgl_cnt_cb(const char *cellname, void*)
         char *listsel = CGL->cgl_cnt_pop->get_selection();
         stringlist *s0 = cgd->layer_info_list(listsel);
         char buf[256];
-        sprintf(buf, "Layers found in %s", listsel);
+        snprintf(buf, sizeof(buf), "Layers found in %s", listsel);
         delete [] listsel;
         if (CGL->cgl_inf_pop)
             CGL->cgl_inf_pop->update(s0, buf);

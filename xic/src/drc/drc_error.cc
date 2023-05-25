@@ -81,7 +81,7 @@ cDRC::showCurError(WindowDesc *wdesc, bool display)
 
     if (!drc_err_list)
         return;
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(display ? GRxHlite : GRxUnhlite);
     else {
         if (display)
@@ -111,7 +111,7 @@ cDRC::showCurError(WindowDesc *wdesc, bool display)
     }
     DSP()->TPop();
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(GRxNone);
     else if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
@@ -132,7 +132,7 @@ cDRC::showError(WindowDesc *wdesc, bool display, DRCerrList *el)
     if (!wdesc->IsSimilar(Physical, DSP()->MainWdesc()))
         return;
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(display ? GRxHlite : GRxUnhlite);
     else {
         if (display)
@@ -151,7 +151,7 @@ cDRC::showError(WindowDesc *wdesc, bool display, DRCerrList *el)
     }
     el->showbad(wdesc);
     el->showfailed(wdesc);
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         wdesc->Wdraw()->SetXOR(GRxNone);
     else if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
@@ -175,7 +175,7 @@ cDRC::eraseErrors(const BBox *AOI)
     BBox tBB = *AOI;
     stk.TBB(&tBB, 0);
     stk.TPop();
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         DSPmainDraw(SetXOR(GRxUnhlite))
     else
         DSPmainDraw(SetColor(dsp_prm(CellLayer())->pixel()))
@@ -204,7 +204,7 @@ cDRC::eraseErrors(const BBox *AOI)
                 wd->Refresh(&BB);
         }
     }
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         DSPmainDraw(SetXOR(GRxNone))
     else if (LT()->CurLayer())
         DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
@@ -220,7 +220,7 @@ cDRC::eraseListError(const op_change_t *list, bool doadd)
 {
     if (!list || !drc_err_list)
         return;
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         DSPmainDraw(SetXOR(GRxUnhlite))
     else
         DSPmainDraw(SetColor(dsp_prm(CellLayer())->pixel()))
@@ -299,7 +299,7 @@ cDRC::eraseListError(const op_change_t *list, bool doadd)
     }
     stk.TPop();
 
-    if (dspPkgIf()->IsDualPlane())
+    if (DSPpkg::self()->IsDualPlane())
         DSPmainDraw(SetXOR(GRxNone))
     else if (LT()->CurLayer())
         DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
@@ -367,7 +367,7 @@ cDRC::dumpCurError(const char *fname)
     if (!fname || !*fname)
         return (-1);
     if (!filestat::create_bak(fname)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         return (-1);
     }
     FILE *fp = fopen(fname, "w");
@@ -556,9 +556,9 @@ cDRC::errFilename(const char *cellname, int pid)
 
     char *errfile = new char[len];
     if (pid > 0)
-        sprintf(errfile, "%s.%s.%d", DRC_EFILE_PREFIX, cellname, pid);
+        snprintf(errfile, len, "%s.%s.%d", DRC_EFILE_PREFIX, cellname, pid);
     else
-        sprintf(errfile, "%s.%s", DRC_EFILE_PREFIX, cellname);
+        snprintf(errfile, len, "%s.%s", DRC_EFILE_PREFIX, cellname);
     return (errfile);
 }
 
@@ -822,43 +822,43 @@ DRCerrRet::errmsg(const CDo *odesc)
     case drConnected:
         delete [] name;
         name = er_rule->sourceString();
-        sprintf(buf, "  disconnected feature on %s.\n", name);
+        snprintf(buf, sizeof(buf), "  disconnected feature on %s.\n", name);
         break;
 
     case drNoHoles:
         delete [] name;
         name = er_rule->sourceString();
-        sprintf(buf, "  region surrounded by %s.\n", name);
+        snprintf(buf, sizeof(buf), "  region surrounded by %s.\n", name);
         break;
 
     case drExist:
         delete [] name;
         name = er_rule->sourceString();
-        sprintf(buf, "  feature on %s.\n", name);
+        snprintf(buf, sizeof(buf), "  feature on %s.\n", name);
         break;
 
     case drOverlap:
-        sprintf(buf, "  does not entirely overlap %s.\n", name);
+        snprintf(buf, sizeof(buf), "  does not entirely overlap %s.\n", name);
         break;
 
     case drIfOverlap:
-        sprintf(buf, "  partially overlaps %s.\n", name);
+        snprintf(buf, sizeof(buf), "  partially overlaps %s.\n", name);
         break;
 
     case drNoOverlap:
-        sprintf(buf, "  overlaps feature on %s.\n", name);
+        snprintf(buf, sizeof(buf), "  overlaps feature on %s.\n", name);
         break;
 
     case drAnyOverlap:
-        sprintf(buf, "  does not overlap %s.\n", name);
+        snprintf(buf, sizeof(buf), "  does not overlap %s.\n", name);
         break;
 
     case drPartOverlap:
-        sprintf(buf, "  does not partially overlap %s.\n", name);
+        snprintf(buf, sizeof(buf), "  does not partially overlap %s.\n", name);
         break;
 
     case drAnyNoOverlap:
-        sprintf(buf, "  completely overlaps %s.\n", name);
+        snprintf(buf, sizeof(buf), "  completely overlaps %s.\n", name);
         break;
 
     case drMinArea:
@@ -883,25 +883,33 @@ DRCerrRet::errmsg(const CDo *odesc)
 
     case drMinSpace:
     case drMinSpaceTo:
-        sprintf(buf, "  too close to feature on %s.\n",
+        snprintf(buf, sizeof(buf), "  too close to feature on %s.\n",
             er_rule->type() == drMinSpaceTo ? name : "same layer");
         break;
 
     case drMinSpaceFrom:
-        if (er_errtype == TT_OPP)
-            sprintf(buf, "   opposite side %s extension violation.\n", name);
-        else if (er_errtype == TT_IFOVL)
-            sprintf(buf, "   enclosure not fully covered by %s.\n", name);
-        else
-            sprintf(buf, "   exterior width of %s too narrow.\n", name);
+        if (er_errtype == TT_OPP) {
+            snprintf(buf, sizeof(buf),
+                "   opposite side %s extension violation.\n", name);
+        }
+        else if (er_errtype == TT_IFOVL) {
+            snprintf(buf, sizeof(buf),
+                "   enclosure not fully covered by %s.\n", name);
+        }
+        else {
+            snprintf(buf, sizeof(buf),
+                "   exterior width of %s too narrow.\n", name);
+        }
         break;
 
     case drMinOverlap:
-        sprintf(buf, "  less than minimum overlap with %s.\n", name);
+        snprintf(buf, sizeof(buf),
+            "  less than minimum overlap with %s.\n", name);
         break;
 
     case drMinNoOverlap:
-        sprintf(buf, "  less than minimum non-overlap with %s.\n", name);
+        snprintf(buf, sizeof(buf),
+            "  less than minimum non-overlap with %s.\n", name);
         break;
 
     case drUserDefinedRule:
@@ -913,7 +921,7 @@ DRCerrRet::errmsg(const CDo *odesc)
     lstr.add(buf);
 
     char tbuf[128];
-    sprintf(buf, msg2, which_test(tbuf),
+    snprintf(buf, sizeof(buf), msg2, which_test(tbuf),
         MICRONS(er_pbad[0].x), MICRONS(er_pbad[0].y),
         MICRONS(er_pbad[1].x), MICRONS(er_pbad[1].y),
         MICRONS(er_pbad[2].x), MICRONS(er_pbad[2].y),
@@ -949,22 +957,22 @@ DRCerrRet::which_test(char *buf)
     case TT_AMAX:
         return ("max area test");
     case TT_ELT:
-        sprintf(buf, "edge length test at edge %d", er_vcount);
+        snprintf(buf, 128, "edge length test at edge %d", er_vcount);
         return (buf);
     case TT_EWT:
-        sprintf(buf, "edge width test at edge %d", er_vcount);
+        snprintf(buf, 128, "edge width test at edge %d", er_vcount);
         return (buf);
     case TT_COT:
-        sprintf(buf, "corner overlap test at vertex %d", er_vcount);
+        snprintf(buf, 128, "corner overlap test at vertex %d", er_vcount);
         return (buf);
     case TT_CWT:
-        sprintf(buf, "corner width test at vertex %d", er_vcount);
+        snprintf(buf, 128, "corner width test at vertex %d", er_vcount);
         return (buf);
     case TT_EST:
-        sprintf(buf, "edge space test at edge %d", er_vcount);
+        snprintf(buf, 128, "edge space test at edge %d", er_vcount);
         return (buf);
     case TT_CST:
-        sprintf(buf, "corner space test at vertex %d", er_vcount);
+        snprintf(buf, 128, "corner space test at vertex %d", er_vcount);
         return (buf);
     case TT_EX:
         return ("existence test");
@@ -980,15 +988,16 @@ DRCerrRet::which_test(char *buf)
     int sz = 0;
     if (fb >= TT_UET && fb < TT_UCT) {
         sz = fb - TT_UET;
-        sprintf(buf, "user edge test at edge %d (vec=", er_vcount);
+        snprintf(buf, 128, "user edge test at edge %d (vec=", er_vcount);
     }
     else if (fb >= TT_UCT && fb < TT_UOT) {
         sz = fb - TT_UCT;
-        sprintf(buf, "user corner test at vertex %d (vec=", er_vcount);
+        snprintf(buf, 128, "user corner test at vertex %d (vec=", er_vcount);
     }
     else if (fb >= TT_UOT && fb < TT_UOT + 25) {
         sz = fb - TT_UOT;
-        sprintf(buf, "user corner overlap test at vertex %d (vec=", er_vcount);
+        snprintf(buf, 128, "user corner overlap test at vertex %d (vec=",
+            er_vcount);
     }
     if (sz > 0) {
         char *s = buf + strlen(buf);

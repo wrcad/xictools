@@ -102,7 +102,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_s_menu = gtk_menu_new();
     gtk_widget_set_name(wnd_s_menu, "Smenu");
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -194,7 +194,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_r_menu = gtk_menu_new();
     gtk_widget_set_name(wnd_r_menu, "Rmenu");
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -297,12 +297,12 @@ wnd_t::update()
         sb_bottom.set_value(MICRONS(FIO()->CvtWindow()->bottom));
         sb_right.set_value(MICRONS(FIO()->CvtWindow()->right));
         sb_top.set_value(MICRONS(FIO()->CvtWindow()->top));
-        GRX->SetStatus(wnd_use_win, FIO()->CvtUseWindow());
-        GRX->SetStatus(wnd_clip, FIO()->CvtClip());
-        GRX->SetStatus(wnd_flatten, FIO()->CvtFlatten());
-        GRX->SetStatus(wnd_ecf_pre,
+        GTKdev::SetStatus(wnd_use_win, FIO()->CvtUseWindow());
+        GTKdev::SetStatus(wnd_clip, FIO()->CvtClip());
+        GTKdev::SetStatus(wnd_flatten, FIO()->CvtFlatten());
+        GTKdev::SetStatus(wnd_ecf_pre,
             FIO()->CvtECFlevel() == ECFall || FIO()->CvtECFlevel() == ECFpre);
-        GRX->SetStatus(wnd_ecf_post,
+        GTKdev::SetStatus(wnd_ecf_post,
             FIO()->CvtECFlevel() == ECFall || FIO()->CvtECFlevel() == ECFpost);
     }
     else if (wnd_func_mode == WndFuncOut) {
@@ -310,12 +310,12 @@ wnd_t::update()
         sb_bottom.set_value(MICRONS(FIO()->OutWindow()->bottom));
         sb_right.set_value(MICRONS(FIO()->OutWindow()->right));
         sb_top.set_value(MICRONS(FIO()->OutWindow()->top));
-        GRX->SetStatus(wnd_use_win, FIO()->OutUseWindow());
-        GRX->SetStatus(wnd_clip, FIO()->OutClip());
-        GRX->SetStatus(wnd_flatten, FIO()->OutFlatten());
-        GRX->SetStatus(wnd_ecf_pre,
+        GTKdev::SetStatus(wnd_use_win, FIO()->OutUseWindow());
+        GTKdev::SetStatus(wnd_clip, FIO()->OutClip());
+        GTKdev::SetStatus(wnd_flatten, FIO()->OutFlatten());
+        GTKdev::SetStatus(wnd_ecf_pre,
             FIO()->OutECFlevel() == ECFall || FIO()->OutECFlevel() == ECFpre);
-        GRX->SetStatus(wnd_ecf_post,
+        GTKdev::SetStatus(wnd_ecf_post,
             FIO()->OutECFlevel() == ECFall || FIO()->OutECFlevel() == ECFpost);
     }
     else if (wnd_func_mode == WndFuncIn) {
@@ -323,12 +323,12 @@ wnd_t::update()
         sb_bottom.set_value(MICRONS(FIO()->InWindow()->bottom));
         sb_right.set_value(MICRONS(FIO()->InWindow()->right));
         sb_top.set_value(MICRONS(FIO()->InWindow()->top));
-        GRX->SetStatus(wnd_use_win, FIO()->InUseWindow());
-        GRX->SetStatus(wnd_clip, FIO()->InClip());
-        GRX->SetStatus(wnd_flatten, FIO()->InFlatten());
-        GRX->SetStatus(wnd_ecf_pre,
+        GTKdev::SetStatus(wnd_use_win, FIO()->InUseWindow());
+        GTKdev::SetStatus(wnd_clip, FIO()->InClip());
+        GTKdev::SetStatus(wnd_flatten, FIO()->InFlatten());
+        GTKdev::SetStatus(wnd_ecf_pre,
             FIO()->InECFlevel() == ECFall || FIO()->InECFlevel() == ECFpre);
-        GRX->SetStatus(wnd_ecf_post,
+        GTKdev::SetStatus(wnd_ecf_post,
             FIO()->InECFlevel() == ECFall || FIO()->InECFlevel() == ECFpost);
     }
     set_sens();
@@ -400,33 +400,33 @@ wnd_t::action(GtkWidget *caller)
     const char *name = gtk_widget_get_name(caller);
     if (!strcmp(name, "Window")) {
         if (wnd_func_mode == WndFuncCvt)
-            FIO()->SetCvtUseWindow(GRX->GetStatus(caller));
+            FIO()->SetCvtUseWindow(GTKdev::GetStatus(caller));
         else if (wnd_func_mode == WndFuncOut)
-            FIO()->SetOutUseWindow(GRX->GetStatus(caller));
+            FIO()->SetOutUseWindow(GTKdev::GetStatus(caller));
         else if (wnd_func_mode == WndFuncIn)
-            FIO()->SetInUseWindow(GRX->GetStatus(caller));
+            FIO()->SetInUseWindow(GTKdev::GetStatus(caller));
         set_sens();
     }
     if (!strcmp(name, "Clip")) {
         if (wnd_func_mode == WndFuncCvt)
-            FIO()->SetCvtClip(GRX->GetStatus(caller));
+            FIO()->SetCvtClip(GTKdev::GetStatus(caller));
         else if (wnd_func_mode == WndFuncOut)
-            FIO()->SetOutClip(GRX->GetStatus(caller));
+            FIO()->SetOutClip(GTKdev::GetStatus(caller));
         else if (wnd_func_mode == WndFuncIn)
-            FIO()->SetInClip(GRX->GetStatus(caller));
+            FIO()->SetInClip(GTKdev::GetStatus(caller));
     }
     if (!strcmp(name, "Flatten")) {
         if (wnd_func_mode == WndFuncCvt)
-            FIO()->SetCvtFlatten(GRX->GetStatus(caller));
+            FIO()->SetCvtFlatten(GTKdev::GetStatus(caller));
         else if (wnd_func_mode == WndFuncOut)
-            FIO()->SetOutFlatten(GRX->GetStatus(caller));
+            FIO()->SetOutFlatten(GTKdev::GetStatus(caller));
         else if (wnd_func_mode == WndFuncIn)
-            FIO()->SetInFlatten(GRX->GetStatus(caller));
+            FIO()->SetInFlatten(GTKdev::GetStatus(caller));
         set_sens();
     }
     if (!strcmp(name, "pre")) {
         if (wnd_func_mode == WndFuncCvt) {
-            if (GRX->GetStatus(caller)) {
+            if (GTKdev::GetStatus(caller)) {
                 switch (FIO()->CvtECFlevel()) {
                 case ECFnone:
                     FIO()->SetCvtECFlevel(ECFpre);
@@ -456,7 +456,7 @@ wnd_t::action(GtkWidget *caller)
             }
         }
         else if (wnd_func_mode == WndFuncOut) {
-            if (GRX->GetStatus(caller)) {
+            if (GTKdev::GetStatus(caller)) {
                 switch (FIO()->OutECFlevel()) {
                 case ECFnone:
                     FIO()->SetOutECFlevel(ECFpre);
@@ -486,7 +486,7 @@ wnd_t::action(GtkWidget *caller)
             }
         }
         else if (wnd_func_mode == WndFuncIn) {
-            if (GRX->GetStatus(caller)) {
+            if (GTKdev::GetStatus(caller)) {
                 switch (FIO()->InECFlevel()) {
                 case ECFnone:
                     FIO()->SetInECFlevel(ECFpre);
@@ -518,7 +518,7 @@ wnd_t::action(GtkWidget *caller)
     }
     if (!strcmp(name, "post")) {
         if (wnd_func_mode == WndFuncCvt) {
-            if (GRX->GetStatus(caller)) {
+            if (GTKdev::GetStatus(caller)) {
                 switch (FIO()->CvtECFlevel()) {
                 case ECFnone:
                     FIO()->SetCvtECFlevel(ECFpost);
@@ -548,7 +548,7 @@ wnd_t::action(GtkWidget *caller)
             }
         }
         else if (wnd_func_mode == WndFuncOut) {
-            if (GRX->GetStatus(caller)) {
+            if (GTKdev::GetStatus(caller)) {
                 switch (FIO()->OutECFlevel()) {
                 case ECFnone:
                     FIO()->SetOutECFlevel(ECFpost);
@@ -578,7 +578,7 @@ wnd_t::action(GtkWidget *caller)
             }
         }
         else if (wnd_func_mode == WndFuncIn) {
-            if (GRX->GetStatus(caller)) {
+            if (GTKdev::GetStatus(caller)) {
                 switch (FIO()->InECFlevel()) {
                 case ECFnone:
                     FIO()->SetInECFlevel(ECFpost);
@@ -624,13 +624,13 @@ wnd_t::set_sens()
         // NoEmpties available when not flattening.
         // Clip is enabled by UseWindow.
 
-        bool u = GRX->GetStatus(wnd_use_win);
+        bool u = GTKdev::GetStatus(wnd_use_win);
         if (!u)
-            GRX->SetStatus(wnd_clip, false);
-        bool f = GRX->GetStatus(wnd_flatten);
+            GTKdev::SetStatus(wnd_clip, false);
+        bool f = GTKdev::GetStatus(wnd_flatten);
         if (f) {
-            GRX->SetStatus(wnd_ecf_pre, false);
-            GRX->SetStatus(wnd_ecf_post, false);
+            GTKdev::SetStatus(wnd_ecf_pre, false);
+            GTKdev::SetStatus(wnd_ecf_post, false);
         }
         gtk_widget_set_sensitive(wnd_use_win, true);
         gtk_widget_set_sensitive(wnd_flatten, true);
@@ -656,16 +656,16 @@ wnd_t::set_sens()
         // NoEmpties available when not flattening.
         // Clip is enabled by UseWindow.
 
-        bool f = GRX->GetStatus(wnd_flatten);
+        bool f = GTKdev::GetStatus(wnd_flatten);
         if (!f)
-            GRX->SetStatus(wnd_use_win, false);
+            GTKdev::SetStatus(wnd_use_win, false);
         else {
-            GRX->SetStatus(wnd_ecf_pre, false);
-            GRX->SetStatus(wnd_ecf_post, false);
+            GTKdev::SetStatus(wnd_ecf_pre, false);
+            GTKdev::SetStatus(wnd_ecf_post, false);
         }
-        bool u = GRX->GetStatus(wnd_use_win);
+        bool u = GTKdev::GetStatus(wnd_use_win);
         if (!u)
-            GRX->SetStatus(wnd_clip, false);
+            GTKdev::SetStatus(wnd_clip, false);
         gtk_widget_set_sensitive(wnd_flatten, true);
         gtk_widget_set_sensitive(wnd_ecf_label, !f);
         gtk_widget_set_sensitive(wnd_ecf_pre, !f);
@@ -775,7 +775,7 @@ namespace {
     {
         *pushin = true;
         GtkWidget *btn = GTK_WIDGET(data);
-        GRX->Location(btn, x, y);
+        GTKdev::self()->Location(btn, x, y);
     }
 }
 

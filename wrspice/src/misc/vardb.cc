@@ -253,14 +253,14 @@ variable::varwl(const char *unit) const
     char buf[BSIZE_SP];
     switch(va_type) {
     case VTYP_BOOL:
-        sprintf(buf, "%s", va.v_bool ? "true" : "false");
+        snprintf(buf, sizeof(buf), "%s", va.v_bool ? "true" : "false");
         break;
     case VTYP_NUM:
-        sprintf(buf, "%d", va.v_num);
+        snprintf(buf, sizeof(buf), "%d", va.v_num);
         break;
     case VTYP_REAL:
         // Old format:
-        // sprintf(buf, "%.14g", va.v_real);
+        // snprintf(buf, sizeof(buf), "%.14g", va.v_real);
         // SPnum.fixxp2(buf);
         strcpy(buf, SPnum.printnum(va.v_real, unit));
         break;
@@ -297,7 +297,7 @@ variable::varwl(const char *unit) const
         }
         return (wl);
     default:
-        GRpkgIf()->ErrPrintf(ET_INTERR, "varwl: bad variable type %d.\n",
+        GRpkg::self()->ErrPrintf(ET_INTERR, "varwl: bad variable type %d.\n",
             va_type);
         return (0);
     }

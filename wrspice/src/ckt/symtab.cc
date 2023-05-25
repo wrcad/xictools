@@ -81,12 +81,14 @@ sCKT::newUid(IFuid *newuid, IFuid olduid, const char *suffix, UID_TYPE)
         return (E_BADPARM);
     char *newname;
     if (olduid) {
-        newname = new char[strlen(suffix) + strlen((char*)olduid) + 2];
-        sprintf(newname, "%s#%s", (char*)olduid, suffix);
+        int len = strlen(suffix) + strlen((char*)olduid) + 2;
+        newname = new char[len];
+        snprintf(newname, len, "%s#%s", (char*)olduid, suffix);
     }
     else {
-        newname = new char[strlen(suffix) + 1];
-        sprintf(newname, "%s", suffix);
+        int len = strlen(suffix) + 1;
+        newname = new char[len];
+        snprintf(newname, len, "%s", suffix);
     }
 
     int error = insert(&newname);
@@ -105,12 +107,14 @@ sCKT::newTerm(IFuid *newuid, IFuid olduid, const char *suffix,
         return (E_BADPARM);
     char *newname;
     if (olduid) {
-        newname = new char[strlen(suffix) + strlen((char*)olduid) + 2];
-        sprintf(newname, "%s#%s", (char*)olduid, suffix);
+        int len = strlen(suffix) + strlen((char*)olduid) + 2;
+        newname = new char[len];
+        snprintf(newname, len, "%s#%s", (char*)olduid, suffix);
     }
     else {
-        newname = new char[strlen(suffix) + 1];
-        sprintf(newname, "%s", suffix);
+        int len = strlen(suffix) + 1;
+        newname = new char[len];
+        snprintf(newname, len, "%s", suffix);
     }
 
     int error = mkTerm(&newname, nodedata);

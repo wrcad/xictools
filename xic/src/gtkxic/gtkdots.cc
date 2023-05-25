@@ -80,7 +80,7 @@ using namespace gtkdots;
 void
 cSced::PopUpDots(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Dt;
@@ -102,7 +102,8 @@ cSced::PopUpDots(GRobject caller, ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Dt->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Dt->shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), Dt->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Dt->shell());
 }
 
@@ -190,7 +191,7 @@ sDt::~sDt()
 {
     Dt = 0;
     if (dt_caller)
-        GRX->SetStatus(dt_caller, false);
+        GTKdev::SetStatus(dt_caller, false);
     if (dt_popup)
         gtk_widget_destroy(dt_popup);
 }
@@ -201,19 +202,19 @@ sDt::update()
 {
     const char *v = CDvdb()->getVariable(VA_ShowDots);
     if (!v) {
-        GRX->SetStatus(dt_none, true);
-        GRX->SetStatus(dt_norm, false);
-        GRX->SetStatus(dt_all, false);
+        GTKdev::SetStatus(dt_none, true);
+        GTKdev::SetStatus(dt_norm, false);
+        GTKdev::SetStatus(dt_all, false);
     }
     else if (*v == 'a' || *v == 'A') {
-        GRX->SetStatus(dt_none, false);
-        GRX->SetStatus(dt_norm, false);
-        GRX->SetStatus(dt_all, true);
+        GTKdev::SetStatus(dt_none, false);
+        GTKdev::SetStatus(dt_norm, false);
+        GTKdev::SetStatus(dt_all, true);
     }
     else {
-        GRX->SetStatus(dt_none, false);
-        GRX->SetStatus(dt_norm, true);
-        GRX->SetStatus(dt_all, false);
+        GTKdev::SetStatus(dt_none, false);
+        GTKdev::SetStatus(dt_norm, true);
+        GTKdev::SetStatus(dt_all, false);
     }
 }
 
@@ -232,7 +233,7 @@ sDt::dt_action(GtkWidget *caller, void*)
 {
     if (!Dt)
         return;
-    if (!GRX->GetStatus(caller))
+    if (!GTKdev::GetStatus(caller))
         return;
     if (caller == Dt->dt_none)
         CDvdb()->clearVariable(VA_ShowDots);

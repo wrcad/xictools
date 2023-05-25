@@ -165,7 +165,8 @@ CIFstyle::string()
         // Xic
         strcpy(buf, "x");
     else
-        sprintf(buf, "%d:%d:%d", cs_cnametype, cs_layertype, cs_labeltype);
+        snprintf(buf, sizeof(buf), "%d:%d:%d", cs_cnametype, cs_layertype,
+            cs_labeltype);
     return (lstring::copy(buf));
 }
 // End of CIFstyle functions
@@ -180,7 +181,7 @@ sCifGen::out_path(FILE *fp, const Point *points, int numpts, char *buf,
     int len = strlen(buf);
     for (const Point *pair = points; numpts; pair++, numpts--) {
         char buf1[80];
-        sprintf(buf1, " %d %d", pair->x - x, pair->y - y);
+        snprintf(buf1, sizeof(buf1), " %d %d", pair->x - x, pair->y - y);
         int len1 = strlen(buf1);
         if (len + len1 < 79) {
             strcat(buf, buf1);
@@ -206,7 +207,7 @@ sCifGen::out_path(sLstr &lstr, const Point *points, int numpts, int startlen,
     int len = startlen;
     for (const Point *pair = points; numpts; pair++, numpts--) {
         char buf1[80];
-        sprintf(buf1, " %d %d", pair->x - x, pair->y - y);
+        snprintf(buf1, sizeof(buf1), " %d %d", pair->x - x, pair->y - y);
         int len1 = strlen(buf1);
         if (len + len1 < 79) {
             lstr.add(buf1);
@@ -742,7 +743,7 @@ cif_out::queue_layer(const Layer *layer, bool*)
             if (strlen(layer->name) > 4) {
                 char buf[8];
                 for (;;) {
-                    sprintf(buf, "L%03d", out_layer_count);
+                    snprintf(buf, sizeof(buf), "L%03d", out_layer_count);
                     out_layer_count++;
                     if (out_layer_name_tab->get(buf) != ST_NIL)
                         continue;
@@ -773,7 +774,7 @@ cif_out::queue_layer(const Layer *layer, bool*)
                 // oops, collision with a mapped name
                 char buf[8];
                 for (;;) {
-                    sprintf(buf, "L%03d", out_layer_count);
+                    snprintf(buf, sizeof(buf), "L%03d", out_layer_count);
                     out_layer_count++;
                     if (SymTab::get(out_layer_name_tab, buf) != ST_NIL)
                         continue;

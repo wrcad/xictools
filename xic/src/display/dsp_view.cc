@@ -388,7 +388,7 @@ WindowDesc::Center(int x, int y)
 void
 WindowDesc::Pan(DirectionType dir, double factor)
 {
-    if (dspPkgIf()->IsBusy())
+    if (DSPpkg::self()->IsBusy())
         return;
     int x = (w_window.left + w_window.right)/2;
     int y = (w_window.bottom + w_window.top)/2;
@@ -434,7 +434,7 @@ WindowDesc::Pan(DirectionType dir, double factor)
 void
 WindowDesc::Zoom(double factor)
 {
-    if (dspPkgIf()->IsBusy())
+    if (DSPpkg::self()->IsBusy())
         return;
     int x = (w_window.left + w_window.right)/2;
     int y = (w_window.bottom + w_window.top)/2;

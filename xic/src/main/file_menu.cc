@@ -102,7 +102,7 @@ cMain::createFileMenu()
         MenuEnt(M_SelectFile, MenuFSEL,ME_VANILLA,  CMD_SAFE,
         MenuFSEL": Pop up a file browser panel.");
     FileMenu[fileMenuOpen] =
-        MenuEnt(&M_NoOp,    MenuOPEN,  ME_VANILLA,  CMD_NOTSAFE,
+        MenuEnt(&M_NoOp,    MenuOPEN,  ME_MENU,     CMD_NOTSAFE,
         MenuOPEN": Open new cell or file.");
     FileMenu[fileMenuSave] =
         MenuEnt(M_Save,     MenuSV,    ME_VANILLA,  CMD_PROMPT,
@@ -253,7 +253,7 @@ cMain::HandleOpenCellMenu(const char *entry, bool shift)
     if (!strcmp(entry, menu_list[0])) {
         // new
         // Prompt to open a new cell.
-        dspPkgIf()->RegisterIdleProc(&edit_idle_proc, 0);
+        DSPpkg::self()->RegisterIdleProc(&edit_idle_proc, 0);
     }
     else if (!strcmp(entry, menu_list[1])) {
         // temporary
@@ -303,7 +303,7 @@ namespace {
                 // line editor can finish.  It will hang otherwise if
                 // Load pop up a "modal" (e.g., merge control) pop-up.
 
-                dspPkgIf()->RegisterIdleProc(&load_idle, (void*)fname);
+                DSPpkg::self()->RegisterIdleProc(&load_idle, (void*)fname);
                 return;
             }
             else {

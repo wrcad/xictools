@@ -145,7 +145,7 @@ cEdit::copyExec(CmdDesc *cmd)
         return;
 
     char buf[32];
-    sprintf(buf, "%d", CopyState::RepCount);
+    snprintf(buf, sizeof(buf), "%d", CopyState::RepCount);
     char *in = PL()->EditPrompt("Enter replication count: ", buf);
     for (;;) {
         if (!in)

@@ -330,8 +330,8 @@ void
 sAsmPage::reset()
 {
     gtk_entry_set_text(GTK_ENTRY(pg_path), "");
-    GRX->Deselect(pg_layers_only);
-    GRX->Deselect(pg_skip_layers);
+    GTKdev::Deselect(pg_layers_only);
+    GTKdev::Deselect(pg_skip_layers);
     gtk_entry_set_text(GTK_ENTRY(pg_layer_list), "");
     gtk_entry_set_text(GTK_ENTRY(pg_layer_aliases), "");
     sb_scale.set_value(1.0);

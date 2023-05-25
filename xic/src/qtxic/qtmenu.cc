@@ -75,243 +75,125 @@ QTmenu::InitSideButtonMenus()
 }
 
 
+// Virtual function overrides.
+
 void
 QTmenu::SetSensGlobal(bool)
 {
 }
 
 
+// Set the state of obj to unselected, suppress the signal.
+//
 void
 QTmenu::Deselect(GRobject obj)
 {
-    if (obj) {
-        QObject *o = (QObject*)obj;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn && btn->isCheckable())
-                btn->setChecked(false);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a && a->isCheckable())
-                a->setChecked(false);
-        }
-    }
+    if (QTdev::exists())
+        QTdev::Deselect(obj);
 }
 
 
+// Set the state of obj to selected, suppress the signal.
+//
 void
 QTmenu::Select(GRobject obj)
 {
-    if (obj) {
-        QObject *o = (QObject*)obj;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn && btn->isCheckable())
-                btn->setChecked(true);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a && a->isCheckable())
-                a->setChecked(true);
-        }
-    }
+    if (QTdev::exists())
+        QTdev::Select(obj);
 }
 
 
+// Return the status of obj.
+//
 bool
 QTmenu::GetStatus(GRobject obj)
 {
-    if (obj) {
-        QObject *o = (QObject*)obj;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn && btn->isCheckable())
-                return (btn->isChecked());
-            return (true);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a && a->isCheckable())
-                return (a->isChecked());
-            return (true);
-        }
-    }
-    return (false);
+    if (!QTdev::exists())
+        return (false);
+    return (QTdev::GetStatus(obj));
 }
 
 
+// Set the status of obj, suppress the signal.
+//
 void
 QTmenu::SetStatus(GRobject obj, bool set)
 {
-    if (obj) {
-        QObject *o = (QObject*)obj;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn && btn->isCheckable())
-                btn->setChecked(set);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a && a->isCheckable())
-                a->setChecked(set);
-        }
-    }
+    if (QTdev::exists())
+        QTdev::SetStatus(obj, set);
 }
 
 
 void
 QTmenu::CallCallback(GRobject obj)
 {
-    if (obj) {
-        QObject *o = (QObject*)obj;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn)
-                btn->click();
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->activate(QAction::Trigger);
-        }
-    }
+    if (QTdev::exists())
+        QTdev::CallCallback(obj);
 }
 
 
 // Return the root window coordinates x+width, y of obj.
 //
 void
-QTmenu::Location(GRobject obj, int *x, int *y)
+QTmenu::Location(GRobject obj, int *xx, int *yy)
 {
-    if (obj) {
-        QObject *o = (QObject*)obj;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn) {
-                QPoint pt = btn->mapToGlobal(QPoint(0, 0));
-                *x = pt.x() + btn->width();
-                *y = pt.y();
-                return;
-            }
-        }
-        else {
-            /*
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->activate(QAction::Trigger);
-            */
-            // How to get menu item position?
-        }
-    }
-    *x = 0;
-    *y = 0;
+    if (QTdev::exists())
+        QTdev::self()->Location(obj, xx, yy);
 }
 
 
-// Return the pointer position in root window coordinates
+// Return the pointer position in root window coordinates.
 //
 void
-QTmenu::PointerRootLoc(int *x, int *y)
+QTmenu::PointerRootLoc(int *xx, int *yy)
 {
-    QPoint pt = QCursor::pos();
-    *x = pt.x();
-    *y = pt.y();
+    if (QTdev::exists()) {
+        QTdev::PointerRootLoc(xx, yy);
+        return;
+    }
+    if (xx)
+        *xx = 0;
+    if (yy)
+        *yy = 0;
 }
 
 
+// Return the label string of the button, accelerators stripped.  Do not
+// free the return.
+//
 const char *
 QTmenu::GetLabel(GRobject obj)
 {
-    static char buf[32];
-    if (obj) {
-        QObject *o = (QObject*)obj;
-        QString qs;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn)
-                qs = btn->text();
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                qs = a->text();
-        }
-        int n = qs.size();
-        if (n > 0) {
-            // Need to strip the '&' if present.
-            QByteArray b = qs.toLatin1();
-            int i = 0;
-            for (int j = 0; j < n; j++) {
-                if (b[j] != '&') {
-                    buf[i++] = b[j];
-                    if (i == sizeof(buf)-1)
-                        break;
-                }
-            }
-            buf[i] = 0;
-            return (buf);
-        }
-    }
-    return (0);
+    if (!QTdev::exists())
+        return ("");
+    return (QTdev::GetLabel(obj));
 }
 
 
+// Set the label of the button
+//
 void
 QTmenu::SetLabel(GRobject obj, const char *label)
 {
-    if (obj) {
-        QObject *o = (QObject*)obj;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn)
-                btn->setText(QString(label));
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->setText(QString(label));
-        }
-    }
+    if (QTdev::exists())
+        QTdev::SetLabel(obj, label);
 }
 
 
 void
-QTmenu::SetSensitive(GRobject obj, bool set)
+QTmenu::SetSensitive(GRobject obj, bool vis_state)
 {
-    if (obj) {
-        QObject *o = (QObject*)obj;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn)
-                btn->setEnabled(set);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->setEnabled(set);
-        }
-    }
+    if (QTdev::exists())
+        QTdev::SetSensitive(obj, vis_state);
 }
 
 
 bool
 QTmenu::IsSensitive(GRobject obj)
 {
-    if (obj) {
-        QObject *o = (QObject*)obj;
-        if (o->isWidgetType()) {
-            QWidget *btn = dynamic_cast<QWidget*>(o);
-            if (btn)
-                return (btn->isEnabled());
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                return (a->isEnabled());
-        }
-    }
-    return (false);
+    if (!QTdev::exists())
+        return (false);
+    return (QTdev::IsSensitive(obj));
 }
 
 
@@ -319,7 +201,7 @@ void
 QTmenu::SetVisible(GRobject obj, bool vis_state)
 {
     if (QTdev::exists())
-        QTdev::self()->SetVisible(obj, vis_state);
+        QTdev::SetVisible(obj, vis_state);
 }
 
 
@@ -328,14 +210,15 @@ QTmenu::IsVisible(GRobject obj)
 {
     if (!QTdev::exists())
         return (false);
-    return (QTdev::self()->IsVisible(obj));
+    return (QTdev::IsVisible(obj));
 }
 
 
 void
 QTmenu::DestroyButton(GRobject obj)
 {
-    (void)obj;
+    if (QTdev::exists())
+        QTdev::DestroyButton(obj);
 }
 
 

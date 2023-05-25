@@ -135,7 +135,7 @@ cTech::VarSubst(char *line, char **emesg, int *scnt)
         char *end;
         for (end = t+2; *end && *end != ')'; end++) ;
         if (!*end) {
-            sprintf(buf, "Substitution syntax error");
+            snprintf(buf, sizeof(buf), "Substitution syntax error");
             if (emesg)
                 *emesg = lstring::copy(buf);
             if (scnt)
@@ -155,7 +155,7 @@ cTech::VarSubst(char *line, char **emesg, int *scnt)
             // the list.
             sub = getenv(t+2);
             if (!sub) {
-                sprintf(buf, "Unresolved name %s", t+2);
+                snprintf(buf, sizeof(buf), "Unresolved name %s", t+2);
                 *end = ')';
                 if (emesg)
                     *emesg = lstring::copy(buf);

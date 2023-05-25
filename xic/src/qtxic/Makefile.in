@@ -25,21 +25,15 @@ BASE = ../../../xt_base
 SECURE = ../../../secure
 INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include
 
-HFILES = \
-    qtcoord.h \
-    qtexpand.h \
-    qthtext.h \
-    qtltab.h \
-    qtmain.h \
-    qtmenu.h \
-    qtmenucfg.h
 CCFILES = \
     qtcolor.cc \
     qtcoord.cc \
+    qtempty.cc \
     qtexpand.cc \
     qtextfc.cc \
     qtextfh.cc \
     qtfiledlg.cc \
+    qtfillp.cc \
     qthtext.cc \
     qtkeymacro.cc \
     qtkeymap.cc \
@@ -49,19 +43,31 @@ CCFILES = \
     qtmain.cc \
     qtmenu.cc \
     qtmenucfg.cc \
+    qtmerge.cc \
+    qtmodif.cc \
     qtparam.cc \
+    qtplace.cc \
     qtptext.cc \
+    qtsel.cc \
+    qtstab.cc \
+    qttree.cc \
     qtxdraw.cc \
+    qtxform.cc \
+    qtzoom.cc \
     qtxxx.cc
 MOCFILES = \
     moc_main.cpp \
     moc_coord.cpp \
+    moc_empty.cpp \
     moc_expand.cpp \
     moc_htext.cpp \
     moc_ltab.cpp \
     moc_menu.cpp \
     moc_menucfg.cpp \
-    moc_param.cpp
+    moc_merge.cpp \
+    moc_modif.cpp \
+    moc_param.cpp \
+    moc_zoom.cpp
 CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
 MOCOBJS = $(MOCFILES:.cpp=.o)
 LIBOBJS = $(CCOBJS) $(MOCOBJS)
@@ -90,17 +96,23 @@ endif
 
 moc_main.o: moc_main.cpp  qtmain.h
 moc_coord.o: moc_coord.cpp  qtcoord.h
+moc_empty.o: moc_empty.cpp  qtempty.h
 moc_expand.o: moc_expand.cpp  qtexpand.h
 moc_htext.o: moc_htext.cpp  qthtext.h
 moc_ltab.o: moc_ltab.cpp  qtltab.h
 moc_menu.o: moc_menu.cpp  qtmenu.h
 moc_menucfg.o: moc_menucfg.cpp  qtmenucfg.h
+moc_merge.o: moc_merge.cpp  qtmerge.h
+moc_modif.o: moc_modif.cpp  qtmodif.h
 moc_param.o: moc_param.cpp  qtparam.h
+moc_zoom.o: moc_zoom.cpp  qtzoom.h
 
 moc_main.cpp: $(MOC) qtmain.h
 	$(MOC) qtmain.h -o moc_main.cpp
 moc_coord.cpp: $(MOC) qtcoord.h
 	$(MOC) qtcoord.h -o moc_coord.cpp
+moc_empty.cpp: $(MOC) qtempty.h
+	$(MOC) qtempty.h -o moc_empty.cpp
 moc_expand.cpp: $(MOC) qtexpand.h
 	$(MOC) qtexpand.h -o moc_expand.cpp
 moc_htext.cpp: $(MOC) qthtext.h
@@ -111,8 +123,14 @@ moc_menu.cpp: $(MOC) qtmenu.h
 	$(MOC) qtmenu.h -o moc_menu.cpp
 moc_menucfg.cpp: $(MOC) qtmenucfg.h
 	$(MOC) qtmenucfg.h -o moc_menucfg.cpp
+moc_merge.cpp: $(MOC) qtmerge.h
+	$(MOC) qtmerge.h -o moc_merge.cpp
+moc_modif.cpp: $(MOC) qtmodif.h
+	$(MOC) qtmodif.h -o moc_modif.cpp
 moc_param.cpp: $(MOC) qtparam.h
 	$(MOC) qtparam.h -o moc_param.cpp
+moc_zoom.cpp: $(MOC) qtzoom.h
+	$(MOC) qtzoom.h -o moc_zoom.cpp
 
 depend:
 	@echo depending in xic/qtxic

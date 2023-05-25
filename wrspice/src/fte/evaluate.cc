@@ -87,7 +87,7 @@ IFsimulator::Evaluate(pnode *node)
     else if (node->token_string()) {
         if (node->type() == PN_TRAN) {
             if (!ft_curckt || !ft_curckt->runckt()) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "no circuit, evaluation failed for %s.\n",
                     node->token_string());
                 return (0);
@@ -105,13 +105,13 @@ IFsimulator::Evaluate(pnode *node)
                     d->newtemp();
                 }
                 else {
-                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
                         "evaluation failed for %s.\n", node->token_string());
                     return (0);
                 }
             }
             else {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "bad scale for %s.\n",
+                GRpkg::self()->ErrPrintf(ET_ERROR, "bad scale for %s.\n",
                     node->token_string());
                 return (0);
             }
@@ -146,7 +146,7 @@ IFsimulator::Evaluate(pnode *node)
     else if (node->oper())
         d = node->apply_bop();
     else {
-        GRpkgIf()->ErrPrintf(ET_INTERR, "Evaluate: bad node.\n");
+        GRpkg::self()->ErrPrintf(ET_INTERR, "Evaluate: bad node.\n");
         return (0);
     }
 
@@ -251,15 +251,15 @@ pnode::apply_func() const
     // Special case.  Resolve vector reference
     if (!pn_func->func()) {
         if (!pn_left->pn_string) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "bad %s() syntax.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "bad %s() syntax.\n",
                 pn_func->name());
             return (0);
         }
         char buf[256];
         if (*pn_func->name() == 'v')
-            sprintf(buf, "v(%s)", pn_left->pn_string);
+            snprintf(buf, sizeof(buf), "v(%s)", pn_left->pn_string);
         else
-            sprintf(buf, "%s", pn_left->pn_string);
+            snprintf(buf, sizeof(buf), "%s", pn_left->pn_string);
 
         // If the vector is "special" we must use VecGet, otherwise
         // it should be in the current plot.
@@ -288,7 +288,7 @@ pnode::apply_func() const
         if (p) {
             sDataVec *dv = Sp.Evaluate(p);
             if (!dv) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "evaluation of function %s failed.\n",
                     pn_func->name());
             }
@@ -296,7 +296,7 @@ pnode::apply_func() const
             return (dv);
         }
         else {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "call to unknown function %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "call to unknown function %s.\n",
                 pn_func->name());
             return (0);
         }
@@ -309,19 +309,19 @@ pnode::apply_func() const
         bool more;
         nargs = get_n_args(pn_left, pn_func->argc(), v, &more);
         if (nargs < 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "bad argument list to %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "bad argument list to %s.\n",
                 pn_func->name());
             return (0);
         }
         if (nargs < pn_func->argc()) {
             if (nargs == 0 || pn_func->func1() != &sDataVec::v_hs_gauss) {
-                GRpkgIf()->ErrPrintf(ET_ERROR, "too few arguments to %s.\n",
+                GRpkg::self()->ErrPrintf(ET_ERROR, "too few arguments to %s.\n",
                     pn_func->name());
                 return (0);
             }
         }
         if (more) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "too many arguments to %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "too many arguments to %s.\n",
                 pn_func->name());
             return (0);
         }
@@ -329,7 +329,7 @@ pnode::apply_func() const
     else {
         v[0] = Sp.Evaluate(pn_left);
         if (v[0] == 0) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "bad argument to %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "bad argument to %s.\n",
                 pn_func->name());
             return (0);
         }
@@ -386,7 +386,7 @@ pnode::apply_bop() const
     sDataVec *v1 = Sp.Evaluate(pn_left);
     if (!v1) {
         const char *s = pn_left->get_string();
-        GRpkgIf()->ErrPrintf(ET_ERROR, "\"%s\"  evaluation failed.\n", s);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "\"%s\"  evaluation failed.\n", s);
         delete [] s;
         return (0);
     }
@@ -401,7 +401,7 @@ pnode::apply_bop() const
     if (pn_op->optype() == TT_COND) {
         if (!pn_right || !pn_right->pn_op ||
                 pn_right->pn_op->optype() != TT_COLON) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
+            GRpkg::self()->ErrPrintf(ET_ERROR,
                 "internal, parse error in conditional.\n");
             return (0);
         }
@@ -409,7 +409,7 @@ pnode::apply_bop() const
         if (v1->realval(0) != 0.0) {
             if (!pn_right->pn_left) {
                 const char *s = pn_right->get_string();
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "\"%s\", left evaluation failed.\n", s);
                 delete [] s;
                 return (0);
@@ -417,7 +417,7 @@ pnode::apply_bop() const
             v2 = Sp.Evaluate(pn_right->pn_left);
             if (!v2) {
                 const char *s = pn_right->pn_left->get_string();
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "\"%s\", evaluation failed.\n", s);
                 delete [] s;
             }
@@ -425,7 +425,7 @@ pnode::apply_bop() const
         else {
             if (!pn_right->pn_right) {
                 const char *s = pn_right->get_string();
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "\"%s\", right evaluation failed.\n", s);
                 delete [] s;
                 return (0);
@@ -433,7 +433,7 @@ pnode::apply_bop() const
             v2 = Sp.Evaluate(pn_right->pn_right);
             if (!v2) {
                 char *s = pn_right->pn_right->get_string();
-                GRpkgIf()->ErrPrintf(ET_ERROR,
+                GRpkg::self()->ErrPrintf(ET_ERROR,
                     "\"%s\", evaluation failed.\n", s);
                 delete [] s;
             }
@@ -444,7 +444,7 @@ pnode::apply_bop() const
     sDataVec *v2 = Sp.Evaluate(pn_right);
     if (!v2) {
         char *s = pn_right->get_string();
-        GRpkgIf()->ErrPrintf(ET_ERROR, "\"%s\", evaluation failed.\n", s);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "\"%s\", evaluation failed.\n", s);
         delete [] s;
         return (0);
     }
@@ -454,7 +454,7 @@ pnode::apply_bop() const
     // thing.  For the time being don't do anything.
     //
     if (v1->link() || v2->link()) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "no operations on wildcards yet.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "no operations on wildcards yet.\n");
         return (0);
     }
     
@@ -549,13 +549,14 @@ namespace {
         if (!scale)
             scale = v->plot()->scale();
         if (!scale) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "no scale for vector %s.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "no scale for vector %s.\n",
                 v->name());
             return (0);
         }
 
         if (ind->length() != 1) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "strange range specification.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "strange range specification.\n");
             return (0);
         }
         double up, low;
@@ -579,8 +580,9 @@ namespace {
                 len++;
         }
 
-        char *bf = new char[strlen(v->name()) + strlen(ind->name()) + 5];
-        sprintf(bf, "%s[[%s]]", v->name(), ind->name());
+        int bflen = strlen(v->name()) + strlen(ind->name()) + 5;
+        char *bf = new char[bflen];
+        snprintf(bf, bflen, "%s[[%s]]", v->name(), ind->name());
         sDataVec *res = new sDataVec(bf, v->flags() & VF_COPYMASK,
             len, v->units());
         res->set_gridtype(v->gridtype());
@@ -605,7 +607,7 @@ namespace {
             }
         }
         if (j != len)
-            GRpkgIf()->ErrPrintf(ET_ERROR, "something funny..\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "something funny..\n");
 
         res->newtemp();
         return (res);
@@ -630,7 +632,7 @@ namespace {
             for (i = 0, j = 1; i < v->numdims(); i++)
                 j *= v->dims(i);
             if (v->length() != j) {
-                GRpkgIf()->ErrPrintf(ET_INTERR,
+                GRpkg::self()->ErrPrintf(ET_INTERR,
                     "op_ind: length %d should be %d.\n", v->length(), j);
                 return (0);
             }
@@ -642,7 +644,7 @@ namespace {
         }
 
         if (ind->length() != 1) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "index %s is not of length 1.\n",
+            GRpkg::self()->ErrPrintf(ET_ERROR, "index %s is not of length 1.\n",
                 ind->name());
             return (0);
         }
@@ -665,11 +667,14 @@ namespace {
             down = up = (int)ind->realval(0);
             length = blocksize;
             if (down < 0) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "index %d should be 0.\n", down);
+                GRpkg::self()->ErrPrintf(ET_WARN, "index %d should be 0.\n",
+                    down);
                 down = up = 0;
             }
-            else if (down >= v->length())
-                GRpkgIf()->ErrPrintf(ET_WARN, "index %d out of range.\n", down);
+            else if (down >= v->length()) {
+                GRpkg::self()->ErrPrintf(ET_WARN, "index %d out of range.\n",
+                    down);
+            }
         }
         else {
             newdim = false;
@@ -683,31 +688,32 @@ namespace {
                 rev = true;
             }
             if (up < 0) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "upper limit %d should be 0.\n",
-                    up);
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "upper limit %d should be 0.\n", up);
                 up = 0;
             }
             if (up >= majsize) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "upper limit %d should be %d.\n",
-                    up, majsize - 1);
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "upper limit %d should be %d.\n", up, majsize - 1);
                 up = majsize - 1;
             }
             if (down < 0) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "lower limit %d should be 0.\n",
-                    down);
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "lower limit %d should be 0.\n", down);
                 down = 0;
             }
             if (down >= majsize) {
-                GRpkgIf()->ErrPrintf(ET_WARN, "lower limit %d should be %d.\n",
-                    down, majsize - 1);
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "lower limit %d should be %d.\n", down, majsize - 1);
                 down = majsize - 1;
             }
             length = blocksize * (up - down + 1);
         }
 
         // Make up the new vector
-        char *bf = new char[strlen(v->name()) + strlen(ind->name()) + 3];
-        sprintf(bf, "%s[%s]", v->name(), ind->name());
+        int len = strlen(v->name()) + strlen(ind->name()) + 3;
+        char *bf = new char[len];
+        snprintf(bf, len, "%s[%s]", v->name(), ind->name());
         sDataVec *res = new sDataVec(bf, v->flags() & VF_COPYMASK,
             length, v->units());
         res->set_defcolor(v->defcolor());
@@ -775,14 +781,15 @@ namespace {
         if (res) {
             res->newtemp();
 #ifdef FTEDEBUG
-            if (ft_evdb)
-                GRpkgIf()->ErrPrintf(ET_MSGS,
+            if (ft_evdb) {
+                GRpkg::self()->ErrPrintf(ET_MSGS,
                     "apply_func: func %s to %s len %d, type %d\n",
                         func->fu_name, v->v_name, res->length(), res->flags());
+            }
 #endif
-            char *bf =
-                new char[strlen(func->name()) + strlen(v[0]->name()) + 3];
-            sprintf(bf, "%s(%s)", func->name(), v[0]->name());
+            int len = strlen(func->name()) + strlen(v[0]->name()) + 3;
+            char *bf = new char[len];
+            snprintf(bf, len, "%s(%s)", func->name(), v[0]->name());
             res->set_name(bf);
             delete [] bf;
 
@@ -963,7 +970,7 @@ namespace {
 
             int ix = t->plot() ? t->plot()->fftsc_ix() : 0;
             char *bf = new char[16];
-            sprintf(bf, "fft%d_scale", ix);
+            snprintf(bf, 16, "fft%d_scale", ix);
             if (t->plot())
                 t->plot()->set_fftsc_ix(++ix);
             t->set_name(bf);

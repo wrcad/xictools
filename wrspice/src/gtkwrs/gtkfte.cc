@@ -141,12 +141,14 @@ sPlots::pl_actions(GtkWidget *caller, void *client_data)
         OP.setCurPlot("new");
     else if (client_data == (void*)2) {
         // 'Delete' button pressed, ask for confirmation.
-        if (OP.curPlot() == OP.constants())
-            GRpkgIf()->ErrPrintf(ET_ERROR, "can't destroy constants plot.\n");
+        if (OP.curPlot() == OP.constants()) {
+            GRpkg::self()->ErrPrintf(ET_ERROR,
+                "can't destroy constants plot.\n");
+        }
         else
             TB()->RUsure(TB()->pl_shell, pl_dfunc);
     }
-    GRX->Deselect(caller);
+    GTKdev::Deselect(caller);
 }
 
 
@@ -200,10 +202,10 @@ GTKtoolbar::PopUpPlots(int x, int y)
     for (sPlot *p = OP.plotList(); p; p = p->next_plot()) {
         char buf[256];
         if (OP.curPlot() == p)
-            sprintf(buf, "Current %-11s%-20s (%s)\n",
+            snprintf(buf, sizeof(buf), "Current %-11s%-20s (%s)\n",
             p->type_name(), p->title(), p->name());
         else
-            sprintf(buf,"        %-11s%-20s (%s)\n",
+            snprintf(buf, sizeof(buf), "        %-11s%-20s (%s)\n",
                 p->type_name(), p->title(), p->name());
         lstr.add(buf);
     }
@@ -228,7 +230,7 @@ GTKtoolbar::PopDownPlots()
     if (confirm)
         gtk_widget_destroy(confirm);
 
-    GRX->SetStatus(tb_plots, false);
+    GTKdev::SetStatus(tb_plots, false);
     g_signal_handlers_disconnect_by_func(G_OBJECT(pl_shell),
         (gpointer)tp_cancel_proc, pl_shell);
     gtk_widget_destroy(pl_shell);
@@ -268,11 +270,11 @@ GTKtoolbar::UpdatePlots(int lev)
     sLstr lstr;
     for (sPlot *p = OP.plotList(); p; p = p->next_plot()) {
         if (OP.curPlot() == p) {
-            sprintf(buf, "Current %-11s%-20s (%s)\n",
+            snprintf(buf, sizeof(buf), "Current %-11s%-20s (%s)\n",
             p->type_name(), p->title(), p->name());
         }
         else {
-            sprintf(buf,"        %-11s%-20s (%s)\n",
+            snprintf(buf, sizeof(buf), "        %-11s%-20s (%s)\n",
                 p->type_name(), p->title(), p->name());
         }
         lstr.add(buf);
@@ -381,7 +383,7 @@ sVectors::ve_selections()
     }
     delete [] str;
     if (!wl0)
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no vectors are selected.\n");
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no vectors are selected.\n");
     return (wl0);
 }
 
@@ -403,7 +405,7 @@ sVectors::ve_actions(GtkWidget *caller, void *client_data)
             // Deselect now, if the print is aborted at "more", the
             // button won't be deselected otherwise.
 
-            GRX->Deselect(caller);
+            GTKdev::Deselect(caller);
             CommandTab::com_print(wl);
             wordlist::destroy(wl);
             CP.Prompt();
@@ -422,7 +424,7 @@ sVectors::ve_actions(GtkWidget *caller, void *client_data)
         // 'Delete' button pressed, ask for confirmation.
         TB()->RUsure(TB()->ve_shell, ve_dfunc);
     }
-    GRX->Deselect(caller);
+    GTKdev::Deselect(caller);
 }
 
 
@@ -582,7 +584,7 @@ GTKtoolbar::PopDownVectors()
     if (confirm)
         gtk_widget_destroy(confirm);
 
-    GRX->SetStatus(tb_vectors, false);
+    GTKdev::SetStatus(tb_vectors, false);
     g_signal_handlers_disconnect_by_func(G_OBJECT(ve_shell),
         (gpointer)tp_cancel_proc, ve_shell);
     gtk_widget_destroy(ve_shell);
@@ -663,10 +665,14 @@ sCircuits::ci_str()
     sLstr lstr;
     for (sFtCirc *p = Sp.CircuitList(); p; p = p->next()) {
         char buf[512];
-        if (Sp.CurCircuit() == p)
-            sprintf(buf, "Current %-6s %s\n", p->name(), p->descr());
-        else
-            sprintf(buf, "        %-6s %s\n", p->name(), p->descr());
+        if (Sp.CurCircuit() == p) {
+            snprintf(buf, sizeof(buf), "Current %-6s %s\n", p->name(),
+                p->descr());
+        }
+        else {
+            snprintf(buf, sizeof(buf), "        %-6s %s\n", p->name(),
+                p->descr());
+        }
         lstr.add(buf);
     }
     return (lstr.string_trim());
@@ -682,8 +688,8 @@ sCircuits::ci_actions(GtkWidget *caller, void*)
     if (Sp.CurCircuit())
         TB()->RUsure(TB()->ci_shell, ci_dfunc);
     else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "no current circuit.\n");
-    GRX->SetStatus(caller, false);
+        GRpkg::self()->ErrPrintf(ET_ERROR, "no current circuit.\n");
+    GTKdev::SetStatus(caller, false);
 }
 
 
@@ -749,7 +755,7 @@ GTKtoolbar::PopDownCircuits()
     if (confirm)
         gtk_widget_destroy(confirm);
 
-    GRX->SetStatus(tb_circuits, false);
+    GTKdev::SetStatus(tb_circuits, false);
     g_signal_handlers_disconnect_by_func(G_OBJECT(ci_shell),
         (gpointer)tp_cancel_proc, ci_shell);
     gtk_widget_destroy(ci_shell);
@@ -847,8 +853,8 @@ sFiles::fi_btn_hdlr(GtkWidget *caller, GdkEvent *event, void *arg)
     if (event->type != GDK_BUTTON_PRESS)
         return (true);
 
-    bool editstate = GRX->GetStatus(TB()->fi_edit);
-    bool srcstate = GRX->GetStatus(TB()->fi_source);
+    bool editstate = GTKdev::GetStatus(TB()->fi_edit);
+    bool srcstate = GTKdev::GetStatus(TB()->fi_source);
 
     // set to "current" text win
     FL()->wb_textarea = GTK_WIDGET(caller);
@@ -911,7 +917,7 @@ sFiles::fi_btn_hdlr(GtkWidget *caller, GdkEvent *event, void *arg)
         wl.wl_word = buf;
         CommandTab::com_source(&wl);
         CP.Prompt();
-        GRX->SetStatus(TB()->fi_source, false);
+        GTKdev::SetStatus(TB()->fi_source, false);
     }
     else if (editstate) {
         wl1.wl_prev = 0;
@@ -924,7 +930,7 @@ sFiles::fi_btn_hdlr(GtkWidget *caller, GdkEvent *event, void *arg)
             CommandTab::com_edit(&wl1);
             delete [] wl.wl_word;
         }
-        GRX->SetStatus(TB()->fi_edit, false);
+        GTKdev::SetStatus(TB()->fi_edit, false);
     }
     else {
         FL()->f_drag_start = true;
@@ -950,10 +956,10 @@ sFiles::fi_actions(GtkWidget *caller, void*)
 #ifdef HAVE_MOZY
         HLP()->word("filespanel");
 #endif
-        GRX->Deselect(caller);
+        GTKdev::Deselect(caller);
         return;
     }
-    bool state = GRX->GetStatus(caller);
+    bool state = GTKdev::GetStatus(caller);
     if (!state)
         return;
     int start, end;
@@ -985,7 +991,7 @@ sFiles::fi_actions(GtkWidget *caller, void*)
             delete [] wl.wl_word;
         }
     }
-    GRX->Deselect(caller);
+    GTKdev::Deselect(caller);
 }
 // End of sFiles functions
 
@@ -1001,7 +1007,7 @@ GTKtoolbar::PopUpFiles(int x, int y)
         gtk_window_set_transient_for(GTK_WINDOW(fi_shell),
             GTK_WINDOW(TB()->context->Shell()));
         FixLoc(&x, &y);
-        GRX->SetPopupLocation(GRloc(LW_XYA, x, y), fi_shell,
+        GTKdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y), fi_shell,
             TB()->context->Shell());
         gtk_widget_show(fi_shell);
     }
@@ -1018,7 +1024,7 @@ GTKtoolbar::PopDownFiles()
         return;
     SetLoc(ntb_files, fi_shell);
 
-    GRX->SetStatus(tb_files, false);
+    GTKdev::SetStatus(tb_files, false);
     delete FL();
     fi_shell = 0;
 
@@ -1103,13 +1109,13 @@ sTraces::tr_actions(GtkWidget *caller, void*)
                	    break;
 	    }
         if (!*t) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "no inactive debugs.\n");
-            GRX->SetStatus(caller, false);
+            GRpkg::self()->ErrPrintf(ET_ERROR, "no inactive debugs.\n");
+            GTKdev::SetStatus(caller, false);
             return;
         }
     }
     TB()->RUsure(TB()->tr_shell, tr_dfunc);
-    GRX->SetStatus(caller, false);
+    GTKdev::SetStatus(caller, false);
 }
 
 
@@ -1225,7 +1231,7 @@ GTKtoolbar::PopDownTrace()
     if (confirm)
         gtk_widget_destroy(confirm);
 
-    GRX->SetStatus(tb_trace, false);
+    GTKdev::SetStatus(tb_trace, false);
     g_signal_handlers_disconnect_by_func(G_OBJECT(tr_shell),
         (gpointer)tp_cancel_proc, tr_shell);
     gtk_widget_destroy(tr_shell);
@@ -1288,7 +1294,7 @@ GTKtoolbar::PopDownVariables()
         return;
     SetLoc(ntb_variables, va_shell);
 
-    GRX->SetStatus(tb_variables, false);
+    GTKdev::SetStatus(tb_variables, false);
     g_signal_handlers_disconnect_by_func(G_OBJECT(va_shell),
         (gpointer)tp_cancel_proc, va_shell);
     gtk_widget_destroy(va_shell);
@@ -1605,7 +1611,7 @@ GTKtoolbar::RUsure(GtkWidget *parent, void(*yesfunc)())
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
     gtk_misc_set_padding(GTK_MISC(gtk_bin_get_child(GTK_BIN(button))), 4, 0);
 
-    GRX->SetPopupLocation(GRloc(), popup, parent);
+    GTKdev::self()->SetPopupLocation(GRloc(), popup, parent);
     gtk_window_set_transient_for(GTK_WINDOW(popup),
         GTK_WINDOW(TB()->context->Shell()));
     gtk_widget_show(popup);

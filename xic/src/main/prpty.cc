@@ -96,13 +96,13 @@ cMain::PrptyStrings(CDs *sdesc)
             case XICP_PC:
                 // This can appear in electrical part of PCell from
                 // OpenAccess.
-                sprintf(tbuf, "(%d) pc_name: ", pdesc->value());
+                snprintf(tbuf, sizeof(tbuf), "(%d) pc_name: ", pdesc->value());
                 break;
             default:
                 if (prpty_internal(pdesc->value()))
-                    sprintf(tbuf, "(%d): ", pdesc->value());
+                    snprintf(tbuf, sizeof(tbuf), "(%d): ", pdesc->value());
                 else
-                    sprintf(tbuf, "%d: ", pdesc->value());
+                    snprintf(tbuf, sizeof(tbuf), "%d: ", pdesc->value());
                 break;
             }
             char *hd = lstring::copy(tbuf);
@@ -118,7 +118,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp_sname *pna = (CDp_sname*)sdesc->prpty(P_NAME);
         if (pna) {
-            sprintf(tbuf, "(%d) name: ", P_NAME);
+            snprintf(tbuf, sizeof(tbuf), "(%d) name: ", P_NAME);
             char *hd = lstring::copy(tbuf);
             if (pna->name_string())
                 strcpy(tbuf, Tstring(pna->name_string()));
@@ -135,7 +135,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp_bsnode *pbn = (CDp_bsnode*)sdesc->prpty(P_BNODE);
         for ( ; pbn; pbn = pbn->next()) {
-            sprintf(tbuf, "(%d) bnode: ", P_BNODE);
+            snprintf(tbuf, sizeof(tbuf), "(%d) bnode: ", P_BNODE);
             char *hd = lstring::copy(tbuf);
             sLstr lstr;
             lstr.add_i(pbn->index());
@@ -170,7 +170,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp_snode *pn = (CDp_snode*)sdesc->prpty(P_NODE);
         for ( ; pn; pn = pn->next()) {
-            sprintf(tbuf, "(%d) node: ", P_NODE);
+            snprintf(tbuf, sizeof(tbuf), "(%d) node: ", P_NODE);
             char *hd = lstring::copy(tbuf);
             sLstr lstr;
             lstr.add_i(pn->index());
@@ -205,7 +205,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp_user *pu = (CDp_user*)sdesc->prpty(P_MODEL);
         if (pu) {
-            sprintf(tbuf, "(%d) model: ", P_MODEL);
+            snprintf(tbuf, sizeof(tbuf), "(%d) model: ", P_MODEL);
             char *hd = lstring::copy(tbuf);
             char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
@@ -218,7 +218,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         pu = (CDp_user*)sdesc->prpty(P_VALUE);
         if (pu) {
-            sprintf(tbuf, "(%d) value: ", P_VALUE);
+            snprintf(tbuf, sizeof(tbuf), "(%d) value: ", P_VALUE);
             char *hd = lstring::copy(tbuf);
             char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
@@ -231,7 +231,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         pu = (CDp_user*)sdesc->prpty(P_PARAM);
         if (pu) {
-            sprintf(tbuf, "(%d) param: ", P_PARAM);
+            snprintf(tbuf, sizeof(tbuf), "(%d) param: ", P_PARAM);
             char *hd = lstring::copy(tbuf);
             char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
@@ -244,7 +244,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         pu = (CDp_user*)sdesc->prpty(P_OTHER);
         for ( ; pu; pu = pu->next()) {
-            sprintf(tbuf, "(%d) other: ", P_OTHER);;
+            snprintf(tbuf, sizeof(tbuf), "(%d) other: ", P_OTHER);;
             char *hd = lstring::copy(tbuf);
             char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
@@ -257,7 +257,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp *px = sdesc->prpty(P_NOPHYS);
         for ( ; px && px->value() == P_NOPHYS; px = px->next_prp()) {
-            sprintf(tbuf, "(%d) nophys: ", P_NOPHYS);
+            snprintf(tbuf, sizeof(tbuf), "(%d) nophys: ", P_NOPHYS);
             char *hd = lstring::copy(tbuf);
             const char *s = px->string();
             const char *pstr = "nophys";
@@ -274,7 +274,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         px = sdesc->prpty(P_VIRTUAL);
         for ( ; px && px->value() == P_VIRTUAL; px = px->next_prp()) {
-            sprintf(tbuf, "(%d) virtual: ", P_VIRTUAL);
+            snprintf(tbuf, sizeof(tbuf), "(%d) virtual: ", P_VIRTUAL);
             char *hd = lstring::copy(tbuf);
             char *str = lstring::copy("virtual");
             if (!list)
@@ -287,7 +287,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         px = sdesc->prpty(P_FLATTEN);
         for ( ; px && px->value() == P_FLATTEN; px = px->next_prp()) {
-            sprintf(tbuf, "(%d) flatten: ", P_FLATTEN);
+            snprintf(tbuf, sizeof(tbuf), "(%d) flatten: ", P_FLATTEN);
             char *hd = lstring::copy(tbuf);
             char *str = lstring::copy("flatten");
             if (!list)
@@ -300,7 +300,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp_branch *pb = (CDp_branch*)sdesc->prpty(P_BRANCH);
         for ( ; pb; pb = pb->next()) {
-            sprintf(tbuf, "(%d) branch: ", P_BRANCH);
+            snprintf(tbuf, sizeof(tbuf), "(%d) branch: ", P_BRANCH);
             char *hd = lstring::copy(tbuf);
             if (pb->br_string())
                 strcpy(tbuf, pb->br_string());
@@ -317,7 +317,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp_labloc *pl = (CDp_labloc*)sdesc->prpty(P_LABLOC);
         if (pl) {
-            sprintf(tbuf, "(%d) labloc: ", P_LABLOC);
+            snprintf(tbuf, sizeof(tbuf), "(%d) labloc: ", P_LABLOC);
             char *hd = lstring::copy(tbuf);
             char *str;
             pl->string(&str);
@@ -331,7 +331,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp_mut *pm = (CDp_mut*)sdesc->prpty(P_MUT);
         for ( ; pm; pm = (CDp_mut*)pm->next()) {
-            sprintf(tbuf, "(%d) oldmut: ", P_MUT);
+            snprintf(tbuf, sizeof(tbuf), "(%d) oldmut: ", P_MUT);
             char *hd = lstring::copy(tbuf);
             char *str;
             pm->string(&str);
@@ -345,14 +345,15 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp_nmut *pnm = (CDp_nmut*)sdesc->prpty(P_NEWMUT);
         for ( ; pnm; pnm = (CDp_nmut*)pnm->next()) {
-            sprintf(tbuf, "(%d) mut: ", P_NEWMUT);
+            snprintf(tbuf, sizeof(tbuf), "(%d) mut: ", P_NEWMUT);
             char *hd = lstring::copy(tbuf);
             tbuf[0] = 0;
             if (pnm->l1_dev() && pnm->l2_dev()) {
                 CDp_cname *p1 = (CDp_cname*)pnm->l1_dev()->prpty(P_NAME);
                 CDp_cname *p2 = (CDp_cname*)pnm->l2_dev()->prpty(P_NAME);
                 if (p1 && p1->name_string() && p2 && p2->name_string())
-                    sprintf(tbuf, "%d %s%d %s%d %s", pnm->index(),
+                    snprintf(tbuf, sizeof(tbuf),
+                        "%d %s%d %s%d %s", pnm->index(),
                         Tstring(p1->name_string()), pnm->l1_index(),
                         Tstring(p2->name_string()), pnm->l2_index(),
                         pnm->coeff_str());
@@ -368,7 +369,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp_sym *ps = (CDp_sym*)sdesc->prpty(P_SYMBLC);
         for ( ; ps; ps = (CDp_sym*)ps->next()) {
-            sprintf(tbuf, "(%d) symbolic: ", P_SYMBLC);
+            snprintf(tbuf, sizeof(tbuf), "(%d) symbolic: ", P_SYMBLC);
             char *hd = lstring::copy(tbuf);
             char *str;
             ps->string(&str);
@@ -382,7 +383,7 @@ cMain::PrptyStrings(CDs *sdesc)
 
         CDp_nodmp *pno = (CDp_nodmp*)sdesc->prpty(P_NODMAP);
         for ( ; pno; pno = (CDp_nodmp*)pno->next()) {
-            sprintf(tbuf, "(%d) nodemap: ", P_NODMAP);
+            snprintf(tbuf, sizeof(tbuf), "(%d) nodemap: ", P_NODMAP);
             char *hd = lstring::copy(tbuf);
             char *str;
             pno->string(&str);
@@ -407,22 +408,24 @@ cMain::PrptyStrings(CDs *sdesc)
                 string = "[text]";
             switch (pdesc->value()) {
             case XICP_FLAGS:
-                sprintf(tbuf, "(%d) flags: ", pdesc->value());
+                snprintf(tbuf, sizeof(tbuf), "(%d) flags: ", pdesc->value());
                 break;
             case XICP_PC:
-                sprintf(tbuf, "(%d) pc_name: ", pdesc->value());
+                snprintf(tbuf, sizeof(tbuf), "(%d) pc_name: ", pdesc->value());
                 break;
             case XICP_PC_PARAMS:
-                sprintf(tbuf, "(%d) pc_params: ", pdesc->value());
+                snprintf(tbuf, sizeof(tbuf), "(%d) pc_params: ",
+                    pdesc->value());
                 break;
             case XICP_PC_SCRIPT:
-                sprintf(tbuf, "(%d) pc_script: ", pdesc->value());
+                snprintf(tbuf, sizeof(tbuf), "(%d) pc_script: ",
+                    pdesc->value());
                 break;
             default:
                 if (prpty_internal(pdesc->value()))
-                    sprintf(tbuf, "(%d): ", pdesc->value());
+                    snprintf(tbuf, sizeof(tbuf), "(%d): ", pdesc->value());
                 else
-                    sprintf(tbuf, "%d: ", pdesc->value());
+                    snprintf(tbuf, sizeof(tbuf), "%d: ", pdesc->value());
                 break;
             }
             char *hd = lstring::copy(tbuf);
@@ -451,7 +454,8 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
         if (odesc->type() == CDWIRE) {
             CDp_bnode *pb = (CDp_bnode*)odesc->prpty(P_BNODE);
             if (pb) {
-                sprintf(tbuf, "(%d) bnode (internal): ", P_BNODE);
+                snprintf(tbuf, sizeof(tbuf), "(%d) bnode (internal): ",
+                    P_BNODE);
                 char *hd = lstring::copy(tbuf);
                 sLstr lstr;
                 lstr.add_i(pb->beg_range());
@@ -466,7 +470,8 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             }
             CDp_node *pn = (CDp_node*)odesc->prpty(P_NODE);
             if (pn) {
-                sprintf(tbuf, "(%d) node (internal): ", P_NODE);
+                snprintf(tbuf, sizeof(tbuf), "(%d) node (internal): ",
+                    P_NODE);
                 char *hd = lstring::copy(tbuf);
                 sLstr lstr;
                 if (pn->bound() && pn->get_term_name()) {
@@ -487,14 +492,15 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
         else if (odesc->type() == CDLABEL) {
             CDp_lref *pl = (CDp_lref*)odesc->prpty(P_LABRF);
             if (pl) {
-                sprintf(tbuf, "(%d) labref (internal): ", P_LABRF);
+                snprintf(tbuf, sizeof(tbuf), "(%d) labref (internal): ",
+                    P_LABRF);
                 char *hd = lstring::copy(tbuf);
                 if (pl->name())
-                    sprintf(tbuf, "%s %d %d", Tstring(pl->name()),
-                        pl->number(), pl->propnum());
+                    snprintf(tbuf, sizeof(tbuf), "%s %d %d",
+                        Tstring(pl->name()), pl->number(), pl->propnum());
                 else
-                    sprintf(tbuf, "%d %d %d", pl->pos_x(), pl->pos_y(),
-                        pl->propnum());
+                    snprintf(tbuf, sizeof(tbuf), "%d %d %d", pl->pos_x(),
+                        pl->pos_y(), pl->propnum());
                 char *str = lstring::copy(tbuf);
                 list = new PrptyText(hd, str, pl, list);
             }
@@ -502,7 +508,8 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
         else if (odesc->type() == CDINSTANCE) {
             CDp_cname *pna = (CDp_cname*)odesc->prpty(P_NAME);
             if (pna) {
-                sprintf(tbuf, "(%d) name (user): ", P_NAME);
+                snprintf(tbuf, sizeof(tbuf), "(%d) name (user): ",
+                    P_NAME);
                 char *hd = lstring::copy(tbuf);
                 bool copied;
                 hyList *hp = pna->label_text(&copied, OCALL(odesc));
@@ -513,50 +520,58 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             }
             CDp_range *pr = (CDp_range*)odesc->prpty(P_RANGE);
             for ( ; pr; pr = pr->next()) {
-                sprintf(tbuf, "(%d) range (user): ", P_RANGE);
+                snprintf(tbuf, sizeof(tbuf), "(%d) range (user): ",
+                    P_RANGE);
                 char *hd = lstring::copy(tbuf);
-                sprintf(tbuf, "%d %d", pr->beg_range(), pr->end_range());
+                snprintf(tbuf, sizeof(tbuf), "%d %d", pr->beg_range(),
+                    pr->end_range());
                 char *str = lstring::copy(tbuf);
                 list = new PrptyText(hd, str, pr, list);
             }
             CDp_user *pu = (CDp_user*)odesc->prpty(P_MODEL);
             if (pu) {
-                sprintf(tbuf, "(%d) model (user): ", P_MODEL);
+                snprintf(tbuf, sizeof(tbuf), "(%d) model (user): ",
+                    P_MODEL);
                 char *hd = lstring::copy(tbuf);
                 char *str = hyList::string(pu->data(), HYcvPlain, false);
                 list = new PrptyText(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_VALUE);
             if (pu) {
-                sprintf(tbuf, "(%d) value (user): ", P_VALUE);
+                snprintf(tbuf, sizeof(tbuf), "(%d) value (user): ",
+                    P_VALUE);
                 char *hd = lstring::copy(tbuf);
                 char *str = hyList::string(pu->data(), HYcvPlain, false);
                 list = new PrptyText(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_PARAM);
             if (pu) {
-                sprintf(tbuf, "(%d) param (user): ", P_PARAM);
+                snprintf(tbuf, sizeof(tbuf), "(%d) param (user): ",
+                    P_PARAM);
                 char *hd = lstring::copy(tbuf);
                 char *str = hyList::string(pu->data(), HYcvPlain, false);
                 list = new PrptyText(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_OTHER);
             for ( ; pu; pu = pu->next()) {
-                sprintf(tbuf, "(%d) other (user): ", P_OTHER);
+                snprintf(tbuf, sizeof(tbuf), "(%d) other (user): ",
+                    P_OTHER);
                 char *hd = lstring::copy(tbuf);
                 char *str = hyList::string(pu->data(), HYcvPlain, false);
                 list = new PrptyText(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_DEVREF);
             for ( ; pu; pu = pu->next()) {
-                sprintf(tbuf, "(%d) other (user): ", P_DEVREF);
+                snprintf(tbuf, sizeof(tbuf), "(%d) other (user): ",
+                    P_DEVREF);
                 char *hd = lstring::copy(tbuf);
                 char *str = hyList::string(pu->data(), HYcvPlain, false);
                 list = new PrptyText(hd, str, pu, list);
             }
             CDp *px = odesc->prpty(P_NOPHYS);
             for ( ; px && px->value() == P_NOPHYS; px = px->next_prp()) {
-                sprintf(tbuf, "(%d) nophys (user): ", P_NOPHYS);
+                snprintf(tbuf, sizeof(tbuf), "(%d) nophys (user): ",
+                    P_NOPHYS);
                 char *hd = lstring::copy(tbuf);
                 const char *s = px->string();
                 const char *pstr = "nophys";
@@ -567,14 +582,16 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             }
             px = odesc->prpty(P_FLATTEN);
             for ( ; px && px->value() == P_FLATTEN; px = px->next_prp()) {
-                sprintf(tbuf, "(%d) flatten (user): ", P_FLATTEN);
+                snprintf(tbuf, sizeof(tbuf), "(%d) flatten (user): ",
+                    P_FLATTEN);
                 char *hd = lstring::copy(tbuf);
                 char *str = lstring::copy("flatten");
                 list = new PrptyText(hd, str, px, list);
             }
             CDp_sym *psm = (CDp_sym*)odesc->prpty(P_SYMBLC);
             for ( ; psm && psm->value() == P_SYMBLC; psm = psm->next()) {
-                sprintf(tbuf, "(%d) nosymb (user): ", P_SYMBLC);
+                snprintf(tbuf, sizeof(tbuf), "(%d) nosymb (user): ",
+                    P_SYMBLC);
                 char *hd = lstring::copy(tbuf);
                 bool active = ((CDp_sym*)psm)->active();
                 char *str = lstring::copy(active ? "1" : "0");
@@ -582,7 +599,8 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             }
             CDp_bcnode *pcn = (CDp_bcnode*)odesc->prpty(P_BNODE);
             for ( ; pcn; pcn = pcn->next()) {
-                sprintf(tbuf, "(%d) bnode (internal): ", P_NODE);
+                snprintf(tbuf, sizeof(tbuf), "(%d) bnode (internal): ",
+                    P_NODE);
                 char *hd = lstring::copy(tbuf);
                 sLstr lstr;
                 lstr.add_i(pcn->index());
@@ -601,7 +619,8 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             }
             CDp_cnode *pn = (CDp_cnode*)odesc->prpty(P_NODE);
             for ( ; pn; pn = pn->next()) {
-                sprintf(tbuf, "(%d) node (internal): ", P_NODE);
+                snprintf(tbuf, sizeof(tbuf), "(%d) node (internal): ",
+                    P_NODE);
                 char *hd = lstring::copy(tbuf);
                 sLstr lstr;
                 if (pn->get_term_name()) {
@@ -628,7 +647,8 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             }
             CDp_branch *pb = (CDp_branch*)odesc->prpty(P_BRANCH);
             for ( ; pb; pb = pb->next()) {
-                sprintf(tbuf, "(%d) branch (internal): ", P_BRANCH);
+                snprintf(tbuf, sizeof(tbuf), "(%d) branch (internal): ",
+                    P_BRANCH);
                 char *hd = lstring::copy(tbuf);
                 hyList *hp = new hyList(HLrefBranch);
                 hyEnt *ent = new hyEnt(sdesc, pb->pos_x(), pb->pos_y(), odesc,
@@ -641,21 +661,22 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             }
             CDp_mutlrf *pm = (CDp_mutlrf*)odesc->prpty(P_MUTLRF);
             for ( ; pm; pm = pm->next()) {
-                sprintf(tbuf, "(%d) mut (internal): ", P_MUTLRF);
+                snprintf(tbuf, sizeof(tbuf), "(%d) mut (internal): ",
+                    P_MUTLRF);
                 char *hd = lstring::copy(tbuf);
                 char *str = lstring::copy(pm->string());
                 list = new PrptyText(hd, str, pm, list);
             }
             CDp *p = odesc->prpty(XICP_PC);
             if (p) {
-                sprintf(tbuf, "(%d) pc_name: ", p->value());
+                snprintf(tbuf, sizeof(tbuf), "(%d) pc_name: ", p->value());
                 char *hd = lstring::copy(tbuf);
                 char *str = lstring::copy(p->string());
                 list = new PrptyText(hd, str, p, list);
             }
             p = odesc->prpty(XICP_PC_PARAMS);
             if (p) {
-                sprintf(tbuf, "(%d) pc_params: ", p->value());
+                snprintf(tbuf, sizeof(tbuf), "(%d) pc_params: ", p->value());
                 char *hd = lstring::copy(tbuf);
                 char *str = lstring::copy(p->string());
                 list = new PrptyText(hd, str, p, list);
@@ -677,15 +698,19 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 // use symbolic form for long text
                 string = "[text]";
             if (prpty_internal(pdesc->value())) {
-                if (pdesc->value() == XICP_PC)
-                    sprintf(tbuf, "(%d) pc_name: ", pdesc->value());
-                else if (pdesc->value() == XICP_PC_PARAMS)
-                    sprintf(tbuf, "(%d) pc_params: ", pdesc->value());
+                if (pdesc->value() == XICP_PC) {
+                    snprintf(tbuf, sizeof(tbuf), "(%d) pc_name: ",
+                        pdesc->value());
+                }
+                else if (pdesc->value() == XICP_PC_PARAMS) {
+                    snprintf(tbuf, sizeof(tbuf), "(%d) pc_params: ",
+                        pdesc->value());
+                }
                 else
-                    sprintf(tbuf, "(%d): ", pdesc->value());
+                    snprintf(tbuf, sizeof(tbuf), "(%d): ", pdesc->value());
             }
             else
-                sprintf(tbuf, "%d: ", pdesc->value());
+                snprintf(tbuf, sizeof(tbuf), "%d: ", pdesc->value());
             list = new PrptyText(lstring::copy(tbuf), lstring::copy(string),
                 pdesc, list);
         }
@@ -695,102 +720,102 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
         if (odesc->type() != CDINSTANCE) {
             s = GetPseudoProp(odesc, XprpBB);
             if (s) {
-                sprintf(tbuf, "(%d) BB: ", XprpBB);
+                snprintf(tbuf, sizeof(tbuf), "(%d) BB: ", XprpBB);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpLayer);
             if (s) {
-                sprintf(tbuf, "(%d) Layer: ", XprpLayer);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Layer: ", XprpLayer);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
         s = GetPseudoProp(odesc, XprpFlags);
         if (s) {
-            sprintf(tbuf, "(%d) Flags: ", XprpFlags);
+            snprintf(tbuf, sizeof(tbuf), "(%d) Flags: ", XprpFlags);
             list = new PrptyText(lstring::copy(tbuf), s, 0, list);
         }
         s = GetPseudoProp(odesc, XprpState);
         if (s) {
-            sprintf(tbuf, "(%d) State: ", XprpState);
+            snprintf(tbuf, sizeof(tbuf), "(%d) State: ", XprpState);
             list = new PrptyText(lstring::copy(tbuf), s, 0, list);
         }
         s = GetPseudoProp(odesc, XprpGroup);
         if (s) {
-            sprintf(tbuf, "(%d) Group: ", XprpGroup);
+            snprintf(tbuf, sizeof(tbuf), "(%d) Group: ", XprpGroup);
             list = new PrptyText(lstring::copy(tbuf), s, 0, list);
         }
         if (odesc->type() != CDINSTANCE) {
             s = GetPseudoProp(odesc, XprpCoords);
             if (s) {
-                sprintf(tbuf, "(%d) Coords: ", XprpCoords);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Coords: ", XprpCoords);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpMagn);
             if (s) {
-                sprintf(tbuf, "(%d) Magn: ", XprpMagn);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Magn: ", XprpMagn);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
         if (odesc->type() == CDWIRE) {
             s = GetPseudoProp(odesc, XprpWwidth);
             if (s) {
-                sprintf(tbuf, "(%d) Wwidth: ", XprpWwidth);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Wwidth: ", XprpWwidth);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpWstyle);
             if (s) {
-                sprintf(tbuf, "(%d) Wstyle: ", XprpWstyle);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Wstyle: ", XprpWstyle);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
         if (odesc->type() == CDLABEL) {
             s = GetPseudoProp(odesc, XprpText);
             if (s) {
-                sprintf(tbuf, "(%d) Text: ", XprpText);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Text: ", XprpText);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpXform);
             if (s) {
-                sprintf(tbuf, "(%d) Xform: ", XprpXform);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Xform: ", XprpXform);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
         if (odesc->type() == CDINSTANCE) {
             s = GetPseudoProp(odesc, XprpArray);
             if (s) {
-                sprintf(tbuf, "(%d) Array: ", XprpArray);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Array: ", XprpArray);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpTransf);
             if (s) {
-                sprintf(tbuf, "(%d) Transf: ", XprpTransf);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Transf: ", XprpTransf);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpMagn);
             if (s) {
-                sprintf(tbuf, "(%d) Magn: ", XprpMagn);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Magn: ", XprpMagn);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpName);
             if (s) {
-                sprintf(tbuf, "(%d) Name: ", XprpName);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Name: ", XprpName);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
         s = GetPseudoProp(odesc, XprpXY);
         if (s) {
-            sprintf(tbuf, "(%d) XY: ", XprpXY);
+            snprintf(tbuf, sizeof(tbuf), "(%d) XY: ", XprpXY);
             list = new PrptyText(lstring::copy(tbuf), s, 0, list);
         }
         if (odesc->type() != CDINSTANCE) {
             s = GetPseudoProp(odesc, XprpWidth);
             if (s) {
-                sprintf(tbuf, "(%d) Width: ", XprpWidth);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Width: ", XprpWidth);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpHeight);
             if (s) {
-                sprintf(tbuf, "(%d) Height: ", XprpHeight);
+                snprintf(tbuf, sizeof(tbuf), "(%d) Height: ", XprpHeight);
                 list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
@@ -822,12 +847,12 @@ cMain::GetPseudoProp(CDo *odesc, int val)
         return (0);
     char buf[128];
     if (val == XprpType) {
-        sprintf(buf, "%c", odesc->type() ? odesc->type() : '0');
+        snprintf(buf, sizeof(buf), "%c", odesc->type() ? odesc->type() : '0');
         return (lstring::copy(buf));
     }
     if (val == XprpBB) {
-        sprintf(buf, "%d,%d %d,%d", odesc->oBB().left, odesc->oBB().bottom,
-            odesc->oBB().right, odesc->oBB().top);
+        snprintf(buf, sizeof(buf), "%d,%d %d,%d", odesc->oBB().left,
+            odesc->oBB().bottom, odesc->oBB().right, odesc->oBB().top);
         return (lstring::copy(buf));
     }
     if (val == XprpLayer)
@@ -846,13 +871,14 @@ cMain::GetPseudoProp(CDo *odesc, int val)
                 mask <<= 1;
             }
             *s = 0;
-            sprintf(buf, "%s", tbuf);
+            snprintf(buf, sizeof(buf), "%s", tbuf);
         }
-        int l = strlen(buf);
+        int len = strlen(buf);
         for (FlagDef *f = OdescFlags; f->name; f++) {
             if (odesc->has_flag(f->value) && f->value != CDexpand) {
-                sprintf(buf + l, l ? " %s" : "%s", f->name);
-                l = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, len ? " %s" : "%s",
+                    f->name);
+                len = strlen(buf);
             }
         }
         if (buf[0])
@@ -873,7 +899,7 @@ cMain::GetPseudoProp(CDo *odesc, int val)
         return (lstring::copy("Bad"));
     }
     if (val == XprpGroup) {
-        sprintf(buf, "%d", odesc->group());
+        snprintf(buf, sizeof(buf), "%d", odesc->group());
         return (lstring::copy(buf));
     }
 
@@ -909,11 +935,11 @@ box:
             return (cGEO::path_string(&p, 1, 0));
         }
         if (val == XprpWidth) {
-            sprintf(buf, "%d", odesc->oBB().width());
+            snprintf(buf, sizeof(buf), "%d", odesc->oBB().width());
             return (lstring::copy(buf));
         }
         if (val == XprpHeight) {
-            sprintf(buf, "%d", odesc->oBB().height());
+            snprintf(buf, sizeof(buf), "%d", odesc->oBB().height());
             return (lstring::copy(buf));
         }
         return (0);
@@ -935,11 +961,11 @@ poly:
             return (cGEO::path_string(&p, 1, 0));
         }
         if (val == XprpWidth) {
-            sprintf(buf, "%d", odesc->oBB().width());
+            snprintf(buf, sizeof(buf), "%d", odesc->oBB().width());
             return (lstring::copy(buf));
         }
         if (val == XprpHeight) {
-            sprintf(buf, "%d", odesc->oBB().height());
+            snprintf(buf, sizeof(buf), "%d", odesc->oBB().height());
             return (lstring::copy(buf));
         }
         return (0);
@@ -954,7 +980,7 @@ wire:
             return (cGEO::path_string(((CDw*)odesc)->points(),
                 ((CDw*)odesc)->numpts(), 0));
         if (val == XprpWwidth) {
-            sprintf(buf, "%d", ((CDw*)odesc)->wire_width());
+            snprintf(buf, sizeof(buf), "%d", ((CDw*)odesc)->wire_width());
             return (lstring::copy(buf));
         }
         if (val == XprpWstyle) {
@@ -975,11 +1001,11 @@ wire:
             return (cGEO::path_string(&p, 1, 0));
         }
         if (val == XprpWidth) {
-            sprintf(buf, "%d", odesc->oBB().width());
+            snprintf(buf, sizeof(buf), "%d", odesc->oBB().width());
             return (lstring::copy(buf));
         }
         if (val == XprpHeight) {
-            sprintf(buf, "%d", odesc->oBB().height());
+            snprintf(buf, sizeof(buf), "%d", odesc->oBB().height());
             return (lstring::copy(buf));
         }
         return (0);
@@ -1021,11 +1047,11 @@ label:
             return (cGEO::path_string(&p, 1, 0));
         }
         if (val == XprpWidth) {
-            sprintf(buf, "%d", odesc->oBB().width());
+            snprintf(buf, sizeof(buf), "%d", odesc->oBB().width());
             return (lstring::copy(buf));
         }
         if (val == XprpHeight) {
-            sprintf(buf, "%d", odesc->oBB().height());
+            snprintf(buf, sizeof(buf), "%d", odesc->oBB().height());
             return (lstring::copy(buf));
         }
         return (0);
@@ -1034,7 +1060,7 @@ inst:
     {
         if (val == XprpMagn) {
             CDtx tx((CDc*)odesc);
-            sprintf(buf, "%.6f", tx.magn > 0.0 ? tx.magn : 1.0);
+            snprintf(buf, sizeof(buf), "%.6f", tx.magn > 0.0 ? tx.magn : 1.0);
             return (lstring::copy(buf));
         }
         if (val == XprpCoords) {
@@ -1053,7 +1079,7 @@ inst:
         }
         if (val == XprpArray) {
             CDap ap((CDc*)odesc);
-            sprintf(buf, "%d,%d %d,%d",
+            snprintf(buf, sizeof(buf), "%d,%d %d,%d",
                 ap.nx >= 1 ? ap.nx : 1,
                 ap.ny >= 1 ? ap.ny : 1,
                 ap.dx > 0 ? ap.dx : odesc->oBB().width(),
@@ -1066,7 +1092,7 @@ inst:
             if (tx.refly)
                 strcat(buf, " MY");
             if (tx.ax != 1 || tx.ay != 0) {
-                sprintf(buf + strlen(buf), " R ");
+                strcat(buf, " R ");
                 const char *str = "??";
                 if (tx.ay == 1) {
                     if (tx.ax == 1)
@@ -1090,8 +1116,11 @@ inst:
                 }
                 strcat(buf, str);
             }
-            if (tx.tx != 0 || tx.ty != 0)
-                sprintf(buf + strlen(buf), " T %d %d", tx.tx, tx.ty);
+            if (tx.tx != 0 || tx.ty != 0) {
+                int len = strlen(buf);
+                snprintf(buf + len, sizeof(buf) - len, " T %d %d",
+                    tx.tx, tx.ty);
+            }
             if (*buf)
                 return (lstring::copy(buf + 1));
             return (lstring::copy("T 0 0"));
@@ -1106,11 +1135,11 @@ inst:
             return (cGEO::path_string(&p, 1, 0));
         }
         if (val == XprpWidth) {
-            sprintf(buf, "%d", odesc->oBB().width());
+            snprintf(buf, sizeof(buf), "%d", odesc->oBB().width());
             return (lstring::copy(buf));
         }
         if (val == XprpHeight) {
-            sprintf(buf, "%d", odesc->oBB().height());
+            snprintf(buf, sizeof(buf), "%d", odesc->oBB().height());
             return (lstring::copy(buf));
         }
         return (0);

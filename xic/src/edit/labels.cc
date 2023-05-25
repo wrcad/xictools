@@ -340,12 +340,12 @@ cEdit::makeLabelsExec(CmdDesc *cmd)
     char buf[256];
     hyList *hlabel;
     if (count) {
-        sprintf(buf, lmsg,
+        snprintf(buf, sizeof(buf), lmsg,
             (count == 1) ? (waswire ? "wire" : "label") : "labels");
         hlabel = PL()->EditHypertextPrompt(buf, init_htext, use_ltext);
     }
     else if (LabelCmd->TrgWire) {
-        sprintf(buf, lmsg, "wire");
+        snprintf(buf, sizeof(buf), lmsg, "wire");
         hlabel = PL()->EditHypertextPrompt(buf, init_htext, use_ltext);
     }
     else
@@ -820,8 +820,9 @@ cEdit::createLogo(const char *str, int x, int y, int csdim)
                 delete [] fname;
                 return;
             }
-            char *docstr = new char[strlen(str) + 64];
-            sprintf(docstr,
+            int len = strlen(str) + 64;
+            char *docstr = new char[len];
+            snprintf(docstr, len,
                 "string=\"%s\" layer=%s dim=%d pw=%d hj=%d style=%d",
                 str, LT()->CurLayer()->name(), csdim, pw, horzJustify(),
                 style);
@@ -1752,8 +1753,9 @@ char *
 label::new_filename(const char *string, const char *lname, int csdim,
     int pw, int hj, int st)
 {
-    char *docstr = new char[strlen(string) + 64];
-    sprintf(docstr,
+    int len = strlen(string) + 64;
+    char *docstr = new char[len];
+    snprintf(docstr, len,
         "string=\"%s\" layer=%s dim=%d pw=%d hj=%d style=%d",
         string, lname, csdim, pw, hj, st);
     MD5cx ctx;
@@ -1772,7 +1774,7 @@ label::new_filename(const char *string, const char *lname, int csdim,
         s++;
     }
     char buf[64];
-    sprintf(buf, "%s%s", strbuf, es);
+    snprintf(buf, sizeof(buf), "%s%s", strbuf, es);
     delete [] es;
 
     return (lstring::copy(buf));

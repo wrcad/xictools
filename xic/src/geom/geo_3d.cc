@@ -267,275 +267,275 @@ qface3d::print(FILE *fp, int n, int x, int y, double sc, const char *ff) const
         return;
     char tbuf[32];
     if (c4 == c1) {
-        sprintf(tbuf, "T %-3d", n);
+        snprintf(tbuf, sizeof(tbuf), "T %-3d", n);
         fputs(tbuf, fp);
         char *e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c1.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c1.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c1.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c1.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c1.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c1.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c2.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c2.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c2.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c2.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c2.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c2.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c3.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c3.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c3.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c3.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c3.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c3.z);
         e = tbuf + strlen(tbuf) - 1;
         while (isspace(*e))
             *e-- = 0;
         fputs(tbuf, fp);
     }
     else if (c1 == c2) {
-        sprintf(tbuf, "T %-3dd", n);
+        snprintf(tbuf, sizeof(tbuf), "T %-3dd", n);
         fputs(tbuf, fp);
         char *e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c2.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c2.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c2.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c2.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c2.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c2.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c3.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c3.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c3.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c3.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c3.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c3.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c4.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c4.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c4.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c4.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c4.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c4.z);
         e = tbuf + strlen(tbuf) - 1;
         while (isspace(*e))
             *e-- = 0;
         fputs(tbuf, fp);
     }
     else if (c2 == c3) {
-        sprintf(tbuf, "T %-3d", n);
+        snprintf(tbuf, sizeof(tbuf), "T %-3d", n);
         fputs(tbuf, fp);
         char *e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c1.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c1.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c1.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c1.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c1.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c1.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c2.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c2.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c2.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c2.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c2.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c2.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c4.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c4.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c4.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c4.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c4.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c4.z);
         e = tbuf + strlen(tbuf) - 1;
         while (isspace(*e))
             *e-- = 0;
         fputs(tbuf, fp);
     }
     else if (c3 == c4) {
-        sprintf(tbuf, "T %-3d", n);
+        snprintf(tbuf, sizeof(tbuf), "T %-3d", n);
         fputs(tbuf, fp);
         char *e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c1.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c1.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c1.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c1.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c1.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c1.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c2.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c2.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c2.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c2.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c2.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c2.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c3.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c3.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c3.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c3.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c3.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c3.z);
         e = tbuf + strlen(tbuf) - 1;
         while (isspace(*e))
             *e-- = 0;
         fputs(tbuf, fp);
     }
     else {
-        sprintf(tbuf, "Q %-3d", n);
+        snprintf(tbuf, sizeof(tbuf), "Q %-3d", n);
         fputs(tbuf, fp);
         char *e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c1.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c1.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c1.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c1.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c1.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c1.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c2.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c2.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c2.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c2.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c2.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c2.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c3.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c3.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c3.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c3.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c3.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c3.z);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c4.x+x));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c4.x+x));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*(c4.y+y));
+        snprintf(tbuf, sizeof(tbuf), ff, sc*(c4.y+y));
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
             putc(' ', fp);
-        sprintf(tbuf, ff, sc*c4.z);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*c4.z);
         e = tbuf + strlen(tbuf) - 1;
         while (isspace(*e))
             *e-- = 0;
@@ -768,56 +768,56 @@ glZoid3d::print(FILE *fp, double sc, const char *ff, const char *flg) const
         fp = stdout;
     char tbuf[32];
 
-    sprintf(tbuf, "* %-3d", layer_index);
+    snprintf(tbuf, sizeof(tbuf), "* %-3d", layer_index);
     fputs(tbuf, fp);
     char *e = tbuf + strlen(tbuf) - 1;
     if (!isspace(*e))
         putc(' ', fp);
 
-    sprintf(tbuf, ff, sc*zbot);
+    snprintf(tbuf, sizeof(tbuf), ff, sc*zbot);
     fputs(tbuf, fp);
     e = tbuf + strlen(tbuf) - 1;
     if (!isspace(*e))
         putc(' ', fp);
 
-    sprintf(tbuf, ff, sc*ztop);
+    snprintf(tbuf, sizeof(tbuf), ff, sc*ztop);
     fputs(tbuf, fp);
     e = tbuf + strlen(tbuf) - 1;
     if (!isspace(*e))
         putc(' ', fp);
 
-    sprintf(tbuf, ff, sc*yl);
+    snprintf(tbuf, sizeof(tbuf), ff, sc*yl);
     fputs(tbuf, fp);
     e = tbuf + strlen(tbuf) - 1;
     if (!isspace(*e))
         putc(' ', fp);
 
-    sprintf(tbuf, ff, sc*yu);
+    snprintf(tbuf, sizeof(tbuf), ff, sc*yu);
     fputs(tbuf, fp);
     e = tbuf + strlen(tbuf) - 1;
     if (!isspace(*e))
         putc(' ', fp);
 
-    sprintf(tbuf, ff, sc*xll);
+    snprintf(tbuf, sizeof(tbuf), ff, sc*xll);
     fputs(tbuf, fp);
     e = tbuf + strlen(tbuf) - 1;
     if (!isspace(*e))
         putc(' ', fp);
 
-    sprintf(tbuf, ff, sc*xul);
+    snprintf(tbuf, sizeof(tbuf), ff, sc*xul);
     fputs(tbuf, fp);
     e = tbuf + strlen(tbuf) - 1;
     if (!isspace(*e))
         putc(' ', fp);
 
-    sprintf(tbuf, ff, sc*xlr);
+    snprintf(tbuf, sizeof(tbuf), ff, sc*xlr);
     fputs(tbuf, fp);
     e = tbuf + strlen(tbuf) - 1;
     if (!isspace(*e))
         putc(' ', fp);
 
     if (flg && *flg) {
-        sprintf(tbuf, ff, sc*xur);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*xur);
         fputs(tbuf, fp);
         e = tbuf + strlen(tbuf) - 1;
         if (!isspace(*e))
@@ -825,7 +825,7 @@ glZoid3d::print(FILE *fp, double sc, const char *ff, const char *flg) const
         fputs(flg, fp);
     }
     else {
-        sprintf(tbuf, ff, sc*xur);
+        snprintf(tbuf, sizeof(tbuf), ff, sc*xur);
         e = tbuf + strlen(tbuf) - 1;
         while (isspace(*e))
             *e-- = 0;

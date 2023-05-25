@@ -125,7 +125,7 @@ cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
     bool (*action_cb)(const char*, void*, bool, const char*, int, int),
     void *action_arg, int depth)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Cmd;
@@ -153,7 +153,7 @@ cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
     gtk_window_set_transient_for(GTK_WINDOW(Cmd->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Cmd->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Cmd->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Cmd->shell());
 }
@@ -324,7 +324,7 @@ sCmd::sCmd(GRobject c, sExtCmd *cmd,
             if (i == DMAX)
                 strcpy(buf, "all");
             else
-                sprintf(buf, "%d", i);
+                snprintf(buf, sizeof(buf), "%d", i);
             gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), buf);
         }
         gtk_combo_box_set_active(GTK_COMBO_BOX(entry), depth);
@@ -398,7 +398,7 @@ sCmd::~sCmd()
 {
     Cmd = 0;
     if (cmd_caller)
-        GRX->Deselect(cmd_caller);
+        GTKdev::Deselect(cmd_caller);
     // call action, passing 0 on popdown
     if (cmd_action)
         (*cmd_action)(0, cmd_arg, false, 0, 0, 0);
@@ -443,7 +443,7 @@ sCmd::cmd_action_proc(GtkWidget *caller, void*)
 {
     if (!Cmd)
         return;
-    if (caller == Cmd->cmd_go && !GRX->GetStatus(caller))
+    if (caller == Cmd->cmd_go && !GTKdev::GetStatus(caller))
         return;
     bool down = false;
     if (!Cmd->cmd_action)
@@ -481,13 +481,14 @@ sCmd::cmd_action_proc(GtkWidget *caller, void*)
 
         if (caller == Cmd->cmd_go)
             gtk_widget_hide(Cmd->cmd_popup);
-        if (!Cmd->cmd_action || !(*Cmd->cmd_action)(GRX->GetLabel(caller),
-                Cmd->cmd_arg, GRX->GetStatus(caller), string, x, y))
+        if (!Cmd->cmd_action ||
+                !(*Cmd->cmd_action)(GTKdev::GetLabel(caller),
+                Cmd->cmd_arg, GTKdev::GetStatus(caller), string, x, y))
             down = true;
         else if (Cmd)
             gtk_widget_show(Cmd->cmd_popup);
         if (Cmd && caller == Cmd->cmd_go)
-            GRX->Deselect(caller);
+            GTKdev::Deselect(caller);
     }
     if (down)
         EX()->PopUpExtCmd(0, MODE_OFF, 0, 0, 0);

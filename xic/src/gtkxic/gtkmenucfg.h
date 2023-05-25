@@ -42,14 +42,12 @@
 #define GTKMENUCFG_H
 
 
-inline class gtkMenuConfig *gtkCfg();
-
-class gtkMenuConfig
+class GTKmenuConfig
 {
 public:
-    friend inline gtkMenuConfig *gtkCfg() { return (gtkMenuConfig::ptr()); }
+    GTKmenuConfig();
+    ~GTKmenuConfig();
 
-    gtkMenuConfig();
     void instantiateMainMenus();
     void instantiateTopButtonMenu();
     void instantiateSideButtonMenus();
@@ -57,6 +55,13 @@ public:
     void updateDynamicMenus();
     void switch_menu_mode(DisplayMode, int);
     void set_main_global_sens(bool);
+
+    static GTKmenuConfig *self()
+    {
+        if (!instancePtr)
+            on_null_ptr();
+        return (instancePtr);
+    }
 
 private:
     void instantiateFileMenu();
@@ -81,13 +86,6 @@ private:
     void instantiateSubwObjSubMenu(int, GtkWidget*);
     void instantiateSubwHelpMenu(int, GtkWidget*, GtkAccelGroup*);
 
-    static gtkMenuConfig *ptr()
-        {
-            if (!instancePtr)
-                on_null_ptr();
-            return (instancePtr);
-        }
-  
     static void on_null_ptr();
 
     static void menu_handler(GtkWidget*, void*);
@@ -100,7 +98,7 @@ private:
     static int popup_btn_proc(GtkWidget*, GdkEvent*, void*);
     static const char **get_style_pixmap();
 
-    static gtkMenuConfig *instancePtr;
+    static GTKmenuConfig *instancePtr;
 };
 
 #endif

@@ -157,36 +157,36 @@ struct sTKW
     // Function key macros.
     const char *FKey(int i)
         {
-            sprintf(kwbuf, "F%dKey", i);
+            snprintf(kwbuf, sizeof(kwbuf), "F%dKey", i);
             return (kwbuf);
         }
 
     // Grid register macros.
     const char *GridReg(int i)
         {
-            sprintf(kwbuf, "GridReg%d", i);
+            snprintf(kwbuf, sizeof(kwbuf), "GridReg%d", i);
             return (kwbuf);
         }
     const char *PhysGridReg(int i)
         {
-            sprintf(kwbuf, "PhysGridReg%d", i);
+            snprintf(kwbuf, sizeof(kwbuf), "PhysGridReg%d", i);
             return (kwbuf);
         }
     const char *ElecGridReg(int i)
         {
-            sprintf(kwbuf, "ElecGridReg%d", i);
+            snprintf(kwbuf, sizeof(kwbuf), "ElecGridReg%d", i);
             return (kwbuf);
         }
 
     // Layer Palette macros.
     const char *PhysLayerPalette(int i)
         {
-            sprintf(kwbuf, "PhysLayerPalette%d", i);
+            snprintf(kwbuf, sizeof(kwbuf), "PhysLayerPalette%d", i);
             return (kwbuf);
         }
     const char *ElecLayerPalette(int i)
         {
-            sprintf(kwbuf, "ElecLayerPalette%d", i);
+            snprintf(kwbuf, sizeof(kwbuf), "ElecLayerPalette%d", i);
             return (kwbuf);
         }
 

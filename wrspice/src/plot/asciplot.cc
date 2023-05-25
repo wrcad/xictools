@@ -99,7 +99,7 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
     char buf[BSIZE_SP];
     int margin = MARGIN_BASE;
     int omargin = margin;
-    sprintf(buf, "%1.1e", 0.0);        // expect 0.0e+00
+    snprintf(buf, sizeof(buf), "%1.1e", 0.0);        // expect 0.0e+00
     int shift = strlen(buf) - 7;
     margin += shift;
 
@@ -135,11 +135,11 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
     yrange[1] = gr->ylims[1];
 
     if (maxx <= 0) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "no points to plot.\n");
+        GRpkg::self()->ErrPrintf(ET_WARN, "no points to plot.\n");
         return;
     }
     else if (maxx < 2) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
+        GRpkg::self()->ErrPrintf(ET_ERROR,
             "asciiplot can't handle scale with length < 2.\n");
         return;
     }
@@ -171,7 +171,7 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
 
     // The following is similar to the stuff in grid.cc
     if ((xrange[0] > xrange[1]) || (yrange[0] > yrange[1])) {
-        GRpkgIf()->ErrPrintf(ET_INTERR,
+        GRpkg::self()->ErrPrintf(ET_INTERR,
             "ft_agraf: bad limits %g, %g, %g, %g.\n", 
             xrange[0], xrange[1], yrange[0], yrange[1]);
         return;
@@ -228,9 +228,9 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
         for (int k = 0; k < maxx; k++)
             field[k*omaxy + i] = LCHAR;
         line1[i + margin + 2*shift] = '|';
-        sprintf(buf, "%.2e", j*pow(10.0, (double)mag));
+        snprintf(buf, sizeof(buf), "%.2e", j*pow(10.0, (double)mag));
         memcpy(&line2[i + margin - ((j < 0) ? 2 : 1) - shift], buf,
-                strlen(buf));
+            strlen(buf));
     }
     line1[i - spacing + margin + 1] = '\0';
 
@@ -268,7 +268,7 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
         double x1 = xscale->realval(lower);
         double x2 = xscale->realval(upper);
         if (x1 > x2) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "X scale (%s) not monotonic.\n", 
+            GRpkg::self()->ErrPrintf(ET_ERROR, "X scale (%s) not monotonic.\n", 
                 xscale->name());
             return;
         }
@@ -305,7 +305,7 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
     TTY.send(buf);
     TTY.send("\n");
     curline++;
-    sprintf(buf, "%s %s", plot->name(), plot->date());
+    snprintf(buf, sizeof(buf), "%s %s", plot->name(), plot->date());
     buf[maxy + margin] = '\0';
     i = (omaxy + margin - strlen(buf)) / 2;
     while (i-- > 0)

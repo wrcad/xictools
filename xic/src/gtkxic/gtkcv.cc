@@ -120,7 +120,7 @@ void
 cConvert::PopUpConvert(GRobject caller, ShowMode mode, int inp_type,
     bool(*callback)(int, void*), void *arg)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Cv;
@@ -142,7 +142,8 @@ cConvert::PopUpConvert(GRobject caller, ShowMode mode, int inp_type,
     gtk_window_set_transient_for(GTK_WINDOW(Cv->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Cv->shell(), GTKmainwin::self()->Viewport());
+    GTKdev::self()->SetPopupLocation(GRloc(), Cv->shell(),
+        GTKmainwin::self()->Viewport());
     gtk_widget_show(Cv->shell());
 }
 
@@ -276,7 +277,7 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(cv_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_StripForExport));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_StripForExport));
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -288,7 +289,7 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     gtk_widget_show(button);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(cv_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_KeepLibMasters));
+    GTKdev::SetStatus(button, CDvdb()->getVariable(VA_KeepLibMasters));
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -489,7 +490,7 @@ sCv::~sCv()
     delete cv_cnmap;
     delete cv_wnd;
     if (cv_caller)
-        GRX->Deselect(cv_caller);
+        GTKdev::Deselect(cv_caller);
     if (cv_callback)
         (*cv_callback)(-1, cv_arg);
     if (cv_popup)
@@ -503,15 +504,24 @@ sCv::update(int inp_type)
     int op_type = inp_type >> 16;
     inp_type &= 0xffff;
 
-    GRX->SetStatus(cv_strip, CDvdb()->getVariable(VA_StripForExport));
-    GRX->SetStatus(cv_libsub, CDvdb()->getVariable(VA_KeepLibMasters));
-    GRX->SetStatus(cv_pcsub, CDvdb()->getVariable(VA_PCellKeepSubMasters));
-    GRX->SetStatus(cv_viasub, CDvdb()->getVariable(VA_ViaKeepSubMasters));
-    GRX->SetStatus(cv_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
-    GRX->SetStatus(cv_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
-    GRX->SetStatus(cv_nofllbs, CDvdb()->getVariable(VA_NoFlattenLabels));
-    GRX->SetStatus(cv_nolabels, CDvdb()->getVariable(VA_NoReadLabels));
-    GRX->SetStatus(cv_keepbad, CDvdb()->getVariable(VA_KeepBadArchive));
+    GTKdev::SetStatus(cv_strip,
+        CDvdb()->getVariable(VA_StripForExport));
+    GTKdev::SetStatus(cv_libsub,
+        CDvdb()->getVariable(VA_KeepLibMasters));
+    GTKdev::SetStatus(cv_pcsub,
+        CDvdb()->getVariable(VA_PCellKeepSubMasters));
+    GTKdev::SetStatus(cv_viasub,
+        CDvdb()->getVariable(VA_ViaKeepSubMasters));
+    GTKdev::SetStatus(cv_noflvias,
+        CDvdb()->getVariable(VA_NoFlattenStdVias));
+    GTKdev::SetStatus(cv_noflpcs,
+        CDvdb()->getVariable(VA_NoFlattenPCells));
+    GTKdev::SetStatus(cv_nofllbs,
+        CDvdb()->getVariable(VA_NoFlattenLabels));
+    GTKdev::SetStatus(cv_nolabels,
+        CDvdb()->getVariable(VA_NoReadLabels));
+    GTKdev::SetStatus(cv_keepbad,
+        CDvdb()->getVariable(VA_KeepBadArchive));
     sb_scale.set_value(FIO()->TransScale());
 
     cv_fmt->update();
@@ -571,62 +581,62 @@ sCv::cv_action(GtkWidget *caller, void*)
     if (!name)
         return;
     if (!strcmp(name, "strip")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_StripForExport, 0);
         else
             CDvdb()->clearVariable(VA_StripForExport);
     }
     if (!strcmp(name, "libcells")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_KeepLibMasters, 0);
         else
             CDvdb()->clearVariable(VA_KeepLibMasters);
         return;
     }
     if (!strcmp(name, "pcsub")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_PCellKeepSubMasters, "");
         else
             CDvdb()->clearVariable(VA_PCellKeepSubMasters);
         return;
     }
     if (!strcmp(name, "viasub")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_ViaKeepSubMasters, "");
         else
             CDvdb()->clearVariable(VA_ViaKeepSubMasters);
         return;
     }
     if (!strcmp(name, "noflvias")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoFlattenStdVias, 0);
         else
             CDvdb()->clearVariable(VA_NoFlattenStdVias);
         return;
     }
     if (!strcmp(name, "noflpcs")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoFlattenPCells, 0);
         else
             CDvdb()->clearVariable(VA_NoFlattenPCells);
         return;
     }
     if (!strcmp(name, "nofllbs")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoFlattenLabels, 0);
         else
             CDvdb()->clearVariable(VA_NoFlattenLabels);
         return;
     }
     if (!strcmp(name, "nolabels")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_NoReadLabels, 0);
         else
             CDvdb()->clearVariable(VA_NoReadLabels);
         return;
     }
     if (!strcmp(name, "keepbad")) {
-        if (GRX->GetStatus(caller))
+        if (GTKdev::GetStatus(caller))
             CDvdb()->setVariable(VA_KeepBadArchive, 0);
         else
             CDvdb()->clearVariable(VA_KeepBadArchive);

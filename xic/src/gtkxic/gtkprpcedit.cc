@@ -135,7 +135,7 @@ sAddEnt sPc::pc_phys_addmenu[] = {
 void
 cEdit::PopUpCellProperties(ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Pc;
@@ -156,7 +156,7 @@ cEdit::PopUpCellProperties(ShowMode mode)
     gtk_window_set_transient_for(GTK_WINDOW(Pc->Shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), Pc->Shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Pc->Shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Pc->Shell());
 }
@@ -246,7 +246,7 @@ sPc::sPc()
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
         "paragraph-background", bclr, NULL);
     gtk_widget_set_size_request(wb_textarea, 300, 200);
@@ -474,16 +474,16 @@ void
 sPc::pc_action_proc(GtkWidget *caller, void *client_data)
 {
     if (Pc) {
-        bool state = GRX->GetStatus(caller);
+        bool state = GTKdev::GetStatus(caller);
         if (!state) {
             if (caller == Pc->pc_edit)
                 EV()->InitCallback();
             return;
         }
         if (caller != Pc->pc_edit)
-            GRX->Deselect(Pc->pc_edit);
+            GTKdev::Deselect(Pc->pc_edit);
         if (caller != Pc->pc_del)
-            GRX->Deselect(Pc->pc_del);
+            GTKdev::Deselect(Pc->pc_del);
 
         Pc->pc_action_calls++;
         if (client_data == (void*)EditCode) {
@@ -491,14 +491,14 @@ sPc::pc_action_proc(GtkWidget *caller, void *client_data)
             if (p)
                 ED()->cellPrptyEdit(p);
             if (Pc)
-                GRX->Deselect(caller);
+                GTKdev::Deselect(caller);
         }
         else if (client_data == (void*)DeleteCode) {
             PrptyText *p = Pc->get_selection();
             if (p)
                 ED()->cellPrptyRemove(p);
             if (Pc)
-                GRX->Deselect(caller);
+                GTKdev::Deselect(caller);
         }
         if (Pc)
             Pc->pc_action_calls--;
@@ -533,8 +533,8 @@ sPc::pc_button_press(GtkWidget *widget, GdkEvent *event)
 {
     GtkWidget *menu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(widget));
     if (event->type == GDK_BUTTON_PRESS) {
-        GRX->Deselect(Pc->pc_edit);
-        GRX->Deselect(Pc->pc_del);
+        GTKdev::Deselect(Pc->pc_edit);
+        GTKdev::Deselect(Pc->pc_del);
         GdkEventButton *bevent = (GdkEventButton*)event;
         gtk_menu_popup(GTK_MENU(menu), 0, 0, 0, 0, bevent->button,
             bevent->time);

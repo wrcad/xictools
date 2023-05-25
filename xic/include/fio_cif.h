@@ -212,7 +212,7 @@ private:
 
     bool error(int, const char*);
     void warning(const char*, bool);
-    void add_bad(char*);
+    void add_bad(char*, int);
 
     bool read_array(int**, int*);
     bool read_point(int*, int*);

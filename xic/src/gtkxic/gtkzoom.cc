@@ -101,7 +101,7 @@ using namespace gtkzoom;
 void
 GTKsubwin::PopUpZoom(GRobject caller, ShowMode mode)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         if (wib_zoompop)
@@ -345,7 +345,7 @@ sZm::~sZm()
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_caller && !p_no_desel)
-        GRX->Deselect(p_caller);
+        GTKdev::Deselect(p_caller);
     if (zm_popup) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(zm_popup),
             (gpointer)zm_cancel_proc, this);
@@ -363,7 +363,7 @@ sZm::popdown()
         return;
     GTKbag *owner = dynamic_cast<GTKbag*>(p_parent);
     if (owner)
-        GRX->SetFocus(owner->Shell());
+        GTKdev::SetFocus(owner->Shell());
     if (!owner || !owner->MonitorActive(this))
         return;
 
@@ -381,7 +381,7 @@ sZm::initialize()
     if (w && w->Shell()) {
         gtk_window_set_transient_for(GTK_WINDOW(zm_popup),
             GTK_WINDOW(w->Shell()));
-        GRX->SetPopupLocation(GRloc(), zm_popup, w->Viewport());
+        GTKdev::self()->SetPopupLocation(GRloc(), zm_popup, w->Viewport());
     }
 }
 
@@ -428,7 +428,7 @@ sZm::update()
             sb_wid.set_value(ELEC_MICRONS(w));
     }
     if (zm_window->IsXSect()) {
-        GRX->SetStatus(zm_autoy, zm_window->IsXSectAutoY());
+        GTKdev::SetStatus(zm_autoy, zm_window->IsXSectAutoY());
         sb_yscale.set_value(zm_window->XSectYScale());
     }
 }
@@ -451,7 +451,7 @@ sZm::action_proc(GtkWidget *caller)
         else
             CDvdb()->setVariable(VA_XSectYScale, sb_yscale.get_string());
 
-        bool autoy = GRX->GetStatus(zm_autoy);
+        bool autoy = GTKdev::GetStatus(zm_autoy);
         zm_window->SetXSectAutoY(autoy);
         if (autoy)
             CDvdb()->clearVariable(VA_XSectNoAutoY);

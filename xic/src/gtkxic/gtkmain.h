@@ -83,22 +83,20 @@ extern void LogEvent(GdkEvent*);
 // Length of keypress buffer
 #define CBUFMAX 16
 
-inline class GTKpkg *gtkPkgIf();
 
-class GTKpkg : public cGrPkg
+class GTKpkg : public DSPpkg
 {
 public:
     GTKpkg()
-        {
-            busy_popup = 0;
-            in_main_loop = false;
-            not_mapped = false;
-        }
+    {
+        busy_popup = 0;
+        in_main_loop = false;
+        not_mapped = false;
+    }
 
-    friend inline GTKpkg *gtkPkgIf()
-        { return (dynamic_cast<GTKpkg*>(GRpkgIf())); }
+    static GTKpkg *self() { return (dynamic_cast<GTKpkg*>(DSPpkg::self())); }
 
-    // cGrPkg virtual overrides
+    // DSPpkg virtual overrides
     GRwbag *NewGX();
     int Initialize(GRwbag*);
     void ReinitNoGraphics();
@@ -269,6 +267,12 @@ public:
         if (DSP()->MainWdesc())
             return (dynamic_cast<GTKmainwin*>(DSP()->MainWdesc()->Wbag()));
         return (0);
+    }
+
+    static bool exists()
+    {
+        return (DSP()->MainWdesc() &&
+            dynamic_cast<GTKmainwin*>(DSP()->MainWdesc()->Wbag()) != 0);
     }
 
     static bool is_shift_down()

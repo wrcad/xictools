@@ -137,7 +137,8 @@ main(int argc, char **argv)
         char *cmdstr = GetCommandLine();
         while (*cmdstr && !isspace(*cmdstr))
             cmdstr++;
-        sprintf(cmdline + strlen(cmdline), "%s -winbg", cmdstr);
+        int len = strlen(cmdline);
+        snprintf(cmdline + len, sizeof(cmdline) - len, "%s -winbg", cmdstr);
 
         PROCESS_INFORMATION *info = msw::NewProcess(0, cmdline,
             DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, false);
@@ -151,9 +152,9 @@ main(int argc, char **argv)
     setup_gtk();
 #endif
 
-    if (GRpkgIf()->InitPkg(GR_CONFIG, &argc, argv))
+    if (GRpkg::self()->InitPkg(GR_CONFIG, &argc, argv))
         return (1);
-    GRpkgIf()->InitColormap(0, 0, false);
+    GRpkg::self()->InitColormap(0, 0, false);
 
     char *path = get_default_path();
     HLP()->set_path(path, false);
@@ -169,16 +170,16 @@ main(int argc, char **argv)
     if (NumArgs > 1) {
         Args++;
         NumArgs--;
-        GRwbag *cx = GRpkgIf()->NewWbag("xeditor", 0);
+        GRwbag *cx = GRpkg::self()->NewWbag("xeditor", 0);
         cx->SetCreateTopLevel();
         cx->PopUpTextEditor(*Args, callback, 0, false);
     }
     else {
-        GRwbag *cx = GRpkgIf()->NewWbag("xeditor", 0);
+        GRwbag *cx = GRpkg::self()->NewWbag("xeditor", 0);
         cx->SetCreateTopLevel();
         cx->PopUpTextEditor(0, callback, 0, false);
     }
-    GRpkgIf()->MainLoop();
+    GRpkg::self()->MainLoop();
     return (0);
 }
 
@@ -278,14 +279,15 @@ namespace {
             string = msw::GetProgramRoot("Mozy");
             if (string) {
                 string = enquote(string);
-                sprintf(buf, "%s/help", string);
+                snprintf(buf, sizeof(buf), "%s/help", string);
                 delete [] string;
                 string = buf;
             }
         }
 #endif
         if (!string) {
-            sprintf(buf, "%s/%s/%s/help", prefix, TOOLS_ROOT, APP_ROOT);
+            snprintf(buf, sizeof(buf), "%s/%s/%s/help", prefix,
+                TOOLS_ROOT, APP_ROOT);
             string = buf;
         }
         if (string && *string) {
@@ -306,14 +308,15 @@ namespace {
             string = msw::GetProgramRoot("Xic");
             if (string) {
                 string = enquote(string);
-                sprintf(buf, "%s/help", string);
+                snprintf(buf, sizeof(buf), "%s/help", string);
                 delete [] string;
                 string = buf;
             }
         }
 #endif
         if (!string) {
-            sprintf(buf, "%s/%s/%s/help", prefix, TOOLS_ROOT, "xic");
+            snprintf(buf, sizeof(buf), "%s/%s/%s/help", prefix,
+                TOOLS_ROOT, "xic");
             string = buf;
         }   
         if (string && *string) {
@@ -334,14 +337,15 @@ namespace {
             string = msw::GetProgramRoot("WRspice");
             if (string) {
                 string = enquote(string);
-                sprintf(buf, "%s/help", string);
+                snprintf(buf, sizeof(buf), "%s/help", string);
                 delete [] string;
                 string = buf;
             }
         }
 #endif
         if (!string) {
-            sprintf(buf, "( %s/%s/%s/help )", prefix, TOOLS_ROOT, "wrspice");
+            snprintf(buf, sizeof(buf), "( %s/%s/%s/help )", prefix,
+                TOOLS_ROOT, "wrspice");
             string = buf;
         }   
         if (string && *string) {
@@ -419,6 +423,7 @@ namespace {
     }
 
 
+//XXX This should b e removed
 #ifndef WIN32
     // There is a portability problem with the statically-linked gtk when
     // theme engines are imported.  In particular, libpng has very
@@ -443,13 +448,13 @@ namespace {
         if (!prefix || !lstring::is_rooted(prefix))
             prefix = PREFIX;
 
-        sprintf(buf, "%s/%s/%s/startup/default_theme/gtkrc", prefix,
-            TOOLS_ROOT, "xic");
+        snprintf(buf, sizeof(buf), "%s/%s/%s/startup/default_theme/gtkrc",
+            prefix, TOOLS_ROOT, "xic");
 
         FILE *fp = fopen(buf, "r");
         if (!fp) {
-            sprintf(buf, "%s/%s/%s/startup/default_theme/gtkrc", prefix,
-                TOOLS_ROOT, "wrspice");
+            snprintf(buf, sizeof(buf), "%s/%s/%s/startup/default_theme/gtkrc",
+                prefix, TOOLS_ROOT, "wrspice");
             fp = fopen(buf, "r");
         }
         if (fp) {
@@ -482,8 +487,9 @@ namespace {
             else
                 *ee = 0;
 
-            char *v1 = new char[strlen(rcp) + 16];
-            sprintf(v1, "%s=%s", "GTK_RC_FILES", rcp);
+            int len = strlen(rcp) + 16;
+            char *v1 = new char[len];
+            snprintf(v1, len, "%s=%s", "GTK_RC_FILES", rcp);
             putenv(v1);
             delete [] rcp;
 
@@ -492,8 +498,9 @@ namespace {
                 *e = 0;
             else
                 *path = 0;
-            char *v2 = new char[strlen(path) + 18];
-            sprintf(v2, "%s=%s", "GTK_EXE_PREFIX", path);
+            len = strlen(path) + 18;
+            char *v2 = new char[len];
+            snprintf(v2, len, "%s=%s", "GTK_EXE_PREFIX", path);
             putenv(v2);
         }
         else

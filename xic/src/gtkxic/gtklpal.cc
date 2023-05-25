@@ -103,7 +103,7 @@ void
 cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
     CDl *ldesc)
 {
-    if (!GRX || !GTKmainwin::self())
+    if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
         delete Lpal;
@@ -129,7 +129,7 @@ cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
     gtk_window_set_transient_for(GTK_WINDOW(Lpal->shell()),
         GTK_WINDOW(GTKmainwin::self()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(), Lpal->shell(),
+    GTKdev::self()->SetPopupLocation(GRloc(), Lpal->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Lpal->shell());
 }
@@ -182,7 +182,7 @@ sLpalette::sLpalette(GRobject caller) : GTKdraw(XW_LPAL)
     gtk_widget_set_name(recall_menu, "Recall");
     for (int i = 1; i < 8; i++) {
         char buf[16];
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -202,7 +202,7 @@ sLpalette::sLpalette(GRobject caller) : GTKdraw(XW_LPAL)
     gtk_widget_set_name(save_menu, "Save");
     for (int i = 1; i < 8; i++) {
         char buf[16];
-        sprintf(buf, "Reg %d", i);
+        snprintf(buf, sizeof(buf), "Reg %d", i);
         GtkWidget *mi = gtk_menu_item_new_with_label(buf);
         gtk_widget_set_name(mi, buf);
         gtk_widget_show(mi);
@@ -303,7 +303,7 @@ sLpalette::~sLpalette()
     Lpal = 0;
     SetGbag(0);
     if (lp_caller)
-        GRX->Deselect(lp_caller);
+        GTKdev::Deselect(lp_caller);
     if (lp_shell)
         gtk_widget_destroy(lp_shell);
 #if GTK_CHECK_VERSION(3,0,0)
@@ -340,7 +340,7 @@ sLpalette::update_info(CDl *ldesc)
             gdk_pixmap_unref(lp_pixmap);
         lp_pmap_width = win_width;
         lp_pixmap = gdk_pixmap_new(gd_window, lp_pmap_width, lp_pmap_height,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         lp_pmap_dirty = true;
     }
 
@@ -435,16 +435,16 @@ sLpalette::update_info(CDl *ldesc)
         x += GTKfont::stringWidth(gd_viewport, str);
 
         if (l > 255 || d > 255)
-            sprintf(buf, "%d (%04Xh) / ", l, l);
+            snprintf(buf, sizeof(buf), "%d (%04Xh) / ", l, l);
         else
-            sprintf(buf, "%d (%02Xh) / ", l, l);
+            snprintf(buf, sizeof(buf), "%d (%02Xh) / ", l, l);
         SetColor(c2);
         Text(buf, x, y, 0);
         x += GTKfont::stringWidth(gd_viewport, buf);
         if (l > 255 || d > 255)
-            sprintf(buf, "%d (%04Xh)", d, d);
+            snprintf(buf, sizeof(buf), "%d (%04Xh)", d, d);
         else
-            sprintf(buf, "%d (%02Xh)", d, d);
+            snprintf(buf, sizeof(buf), "%d (%02Xh)", d, d);
         Text(buf, x, y, 0);
     }
 #if GTK_CHECK_VERSION(3,0,0)
@@ -709,7 +709,7 @@ sLpalette::redraw()
             int y_text_fudge = 2;
             int yt = y + lp_box_dimension + y_text_fudge;
             int xt = x + lp_box_dimension + lp_box_text_spacing + 2;
-            sprintf(buf, "%d", ld->index(DSP()->CurMode()));
+            snprintf(buf, sizeof(buf), "%d", ld->index(DSP()->CurMode()));
             Text(buf, xt, yt, 0);
 
             SetColor(DSP()->Color(PromptCursorColor));
@@ -775,7 +775,7 @@ sLpalette::refresh(int x, int y, int w, int h)
         lp_pmap_width = win_width;
         lp_pmap_height = win_height;
         lp_pixmap = gdk_pixmap_new(gd_window, lp_pmap_width, lp_pmap_height,
-            gdk_visual_get_depth(GRX->Visual()));
+            gdk_visual_get_depth(GTKdev::self()->Visual()));
         lp_pmap_dirty = true;
     }
 
@@ -885,7 +885,7 @@ sLpalette::b3_handler(int x, int y, int state, bool down)
             else if (ctrl && shft)
                 Menu()->MenuButtonPress(MMmain, MenuLPEDT);
         }
-        else if (dspPkgIf()->IsTrueColor())
+        else if (GTKpkg::self()->IsTrueColor())
             gtkLtab()->blink(ld);
         else {
             if (ld->isBlink()) {
@@ -931,7 +931,7 @@ sLpalette::ldesc_at(int x, int y)
 bool
 sLpalette::remove(int x, int y)
 {
-    if (!GRX->GetStatus(lp_remove))
+    if (!GTKdev::GetStatus(lp_remove))
         return (false);
     if (y < lp_user_y)
         return (false);
@@ -952,7 +952,7 @@ sLpalette::remove(int x, int y)
         for (int i = ix; i < usz; i++)
             lp_user[i] = lp_user[i+1];
         lp_user[usz] = 0;
-        GRX->SetStatus(lp_remove, false);
+        GTKdev::SetStatus(lp_remove, false);
         return (true);
     }
     return (false);
@@ -1169,7 +1169,7 @@ sLpalette::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
             CDl *ld = Lpal->ldesc_at(x, y);
             XM()->FillLoadCallback(
                 (LayerFillData*)gtk_selection_data_get_data(data), ld);
-            if (dspPkgIf()->IsTrueColor()) {
+            if (GTKpkg::self()->IsTrueColor()) {
                 // update the colors
                 Lpal->update_layer(0);
                 LT()->ShowLayerTable(ld);
@@ -1193,7 +1193,7 @@ sLpalette::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
         CDl *ld = Lpal->ldesc_at(x, y);
 
         LT()->SetLayerColor(ld, vals[0] >> 8, vals[1] >> 8, vals[2] >> 8);
-        if (dspPkgIf()->IsTrueColor()) {
+        if (GTKpkg::self()->IsTrueColor()) {
             // update the colors
             Lpal->update_layer(0);
             LT()->ShowLayerTable(ld);
@@ -1223,7 +1223,7 @@ namespace {
     {
         *pushin = true;
         GtkWidget *btn = GTK_WIDGET(data);
-        GRX->Location(btn, x, y);
+        GTKdev::self()->Location(btn, x, y);
         GtkAllocation a;
         gtk_widget_get_allocation(btn, &a);
         (*x) -= a.width;

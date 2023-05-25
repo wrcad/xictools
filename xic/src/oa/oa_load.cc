@@ -538,14 +538,14 @@ oa_in::loadLibrary(const char *libname)
     try {
 
         lib->getAccess(oacReadLibAccess);
-        dspPkgIf()->SetWorking(true);
+        DSPpkg::self()->SetWorking(true);
 
         CD()->SetDeferInst(true);
         bool lpc = CD()->EnableLabelPatchCache(true);
         oaIter<oaCell> cIter(lib->getCells());
         while (oaCell *cell = cIter.getNext()) {
 
-            if (dspPkgIf()->CheckForInterrupt() &&
+            if (DSPpkg::self()->CheckForInterrupt() &&
                     XM()->ConfirmAbort("Interrupt received, abort load? ")) {
                 oiret = OIaborted;
                 break;
@@ -581,7 +581,7 @@ oa_in::loadLibrary(const char *libname)
         Errs()->add_error((const char*)excp.getMsg());
         oiret = OIerror;
     }
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     if (lib) {
         try {
@@ -627,7 +627,7 @@ oa_in::loadCell(const char *libname, const char *cellname,
     // Enable merge control.
     sMCenable mc_enable;
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     OItype oiret = OIok;
     try {
         oaScalarName libName(in_ns, libname);
@@ -654,7 +654,7 @@ oa_in::loadCell(const char *libname, const char *cellname,
         Errs()->add_error((const char*)excp.getMsg());
         oiret = OIerror;
     }
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     if (oiret == OIerror) {
         Errs()->add_error(
@@ -750,7 +750,7 @@ oa_in::loadCellRec(const oaScalarName &libName, const oaScalarName &cellName,
             return (OIok);
         }
 
-        if (dspPkgIf()->CheckForInterrupt()) {
+        if (DSPpkg::self()->CheckForInterrupt()) {
             if (XM()->ConfirmAbort("Interrupt received, abort load? "))
                 return (OIaborted);
         }
@@ -1837,7 +1837,7 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
         if (in_mode == Electrical && (f & (OAL_READE | OAL_READS)))
             return (OIok);
 
-        if (dspPkgIf()->CheckForInterrupt()) {
+        if (DSPpkg::self()->CheckForInterrupt()) {
             if (XM()->ConfirmAbort("Interrupt received, abort load? "))
                 return (OIaborted);
         }
@@ -1922,7 +1922,7 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
                 return (OIok);
             }
 
-            if (dspPkgIf()->CheckForInterrupt()) {
+            if (DSPpkg::self()->CheckForInterrupt()) {
                 if (XM()->ConfirmAbort("Interrupt received, abort load? ")) {
                     delete [] viaCellname;
                     return (OIaborted);
@@ -1980,7 +1980,8 @@ oa_in::getViaName(const oaViaHeader *hdr)
         header->getParams(params);
 
         char buf[256];
-        sprintf(buf, "%s/%s", (const char*)libname, (const char*)vianame);
+        snprintf(buf, sizeof(buf), "%s/%s", (const char*)libname,
+            (const char*)vianame);
 
         if (!in_via_tab)
             in_via_tab = new SymTab(false, false);
@@ -2085,7 +2086,7 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
     if (in_mode == Electrical && (f & (OAL_READE | OAL_READS)))
         return (OIok);
 
-    if (dspPkgIf()->CheckForInterrupt()) {
+    if (DSPpkg::self()->CheckForInterrupt()) {
         if (XM()->ConfirmAbort("Interrupt received, abort load? "))
             return (OIaborted);
     }

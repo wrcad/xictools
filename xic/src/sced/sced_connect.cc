@@ -120,7 +120,7 @@ namespace {
         if (tsd)
             sd = tsd;
         if (sd->cellname() == DSP()->CurCellName())
-            dspPkgIf()->SetWorking(true);
+            DSPpkg::self()->SetWorking(true);
         CDm_gen mgen(sd, GEN_MASTERS);
         for (CDm *mdesc = mgen.m_first(); mdesc; mdesc = mgen.m_next()) {
             if (!mdesc->hasInstances())
@@ -139,7 +139,7 @@ namespace {
         else 
             ret = SCD()->connect(sd);
         if (sd->cellname() == DSP()->CurCellName())
-            dspPkgIf()->SetWorking(false);
+            DSPpkg::self()->SetWorking(false);
         return (ret);
     }
 }
@@ -174,9 +174,9 @@ cSced::connectAll(bool for_spice, CDs *sd)
     sc_include_nophys = for_spice;
 
     ScedErrLog.start_logging(0);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     bool ret = connect_recurse(sd, 0);
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     ScedErrLog.end_logging();
 
     // If this was not the current cell, reset the sc_include_nophys
@@ -258,10 +258,10 @@ cSced::connect(CDs *sd)
         if (!sd->isConnected() || has_snp) {
             cScedConnect cx;
             if (sd->cellname() == DSP()->CurCellName())
-                dspPkgIf()->SetWorking(true);
+                DSPpkg::self()->SetWorking(true);
             cx.run(sd, false);
             if (sd->cellname() == DSP()->CurCellName())
-                dspPkgIf()->SetWorking(false);
+                DSPpkg::self()->SetWorking(false);
             nm_dirty = true;
         }
         sd->setSPconnected(true);
@@ -272,10 +272,10 @@ cSced::connect(CDs *sd)
         if (!sd->isSPconnected() || has_snp) {
             cScedConnect cx;
             if (sd->cellname() == DSP()->CurCellName())
-                dspPkgIf()->SetWorking(true);
+                DSPpkg::self()->SetWorking(true);
             cx.run(sd, true);
             if (sd->cellname() == DSP()->CurCellName())
-                dspPkgIf()->SetWorking(false);
+                DSPpkg::self()->SetWorking(false);
             nm_dirty = true;
         }
         sd->setConnected(true);

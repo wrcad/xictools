@@ -489,12 +489,12 @@ cMain::SaveCellAs(const char *name, bool silent_errors)
                 "Save current cell (only) to OpenAccess library %s? ";
 
             if (FIO()->IsSupportedArchiveFormat(ft))
-                sprintf(buf, prmsg_h, FIO()->TypeName(ft));
+                snprintf(buf, sizeof(buf), prmsg_h, FIO()->TypeName(ft));
             else if (ft == Fnative) {
                 if (token2 && !strcmp(token2, "*"))
-                    sprintf(buf, prmsg_h, FIO()->TypeName(ft));
+                    snprintf(buf, sizeof(buf), prmsg_h, FIO()->TypeName(ft));
                 else
-                    sprintf(buf, prmsg_c, FIO()->TypeName(ft));
+                    snprintf(buf, sizeof(buf), prmsg_c, FIO()->TypeName(ft));
             }
             else if (ft == Foa) {
                 const char *t1 = token1;
@@ -506,9 +506,9 @@ cMain::SaveCellAs(const char *name, bool silent_errors)
                     t1 = "";
                 }
                 if (t2 && !strcmp(t2, "*"))
-                    sprintf(buf, prmsg_hoa, t1);
+                    snprintf(buf, sizeof(buf), prmsg_hoa, t1);
                 else
-                    sprintf(buf, prmsg_coa, t1);
+                    snprintf(buf, sizeof(buf), prmsg_coa, t1);
             }
             else {
                 // Can't get here.
@@ -566,8 +566,8 @@ cMain::SaveCellAs(const char *name, bool silent_errors)
                     continue;
             }
             else if (!is_oa_lib(token1)) {
-                sprintf(buf, "Library %s does not exist, create it? ",
-                    token1);
+                snprintf(buf, sizeof(buf),
+                    "Library %s does not exist, create it? ", token1);
                 char *s = PL()->EditPrompt(buf, "y");
                 s = lstring::strip_space(s);
                 if (!s) {
@@ -644,7 +644,7 @@ namespace {
         }
 
         int pid = getpid();
-        sprintf(panicdir, "panic.%d", pid);
+        snprintf(panicdir, sizeof(panicdir), "panic.%d", pid);
         int cnt = 0;
         for (;;) {
             GFTtype g = filestat::get_file_type(panicdir);
@@ -666,7 +666,8 @@ namespace {
                 break;
             else {
                 cnt++;
-                sprintf(panicdir + strlen(panicdir), "_%d", cnt);
+                int len = strlen(panicdir);
+                snprintf(panicdir + len, sizeof(panicdir) - len, "_%d", cnt);
             }
         }
         return (panicdir);
@@ -687,7 +688,7 @@ SaveHlpr::save_panic(CDcbin *cbin)
     XM()->SetPanicDir(dn);
 
     char buf[256];
-    sprintf(buf, "%s/%s", dn, Tstring(cbin->cellname()));
+    snprintf(buf, sizeof(buf), "%s/%s", dn, Tstring(cbin->cellname()));
     FileType ft = cbin->fileType();
     if (ft != Fnone && ft != Fnative && ft != Foa) {
         const char *ext = FIO()->GetTypeExt(ft);
@@ -824,9 +825,11 @@ SaveHlpr::get_new_name(bool no_prompt)
     if (ft == Fnative || ft == Fnone) {
         char *fn = 0;
         if (cbin.fileType() == Fnative && cbin.fileName()) {
-            fn = new char[strlen(cbin.fileName()) +
-                strlen(Tstring(cbin.cellname())) + 2];
-            sprintf(fn, "%s/%s", cbin.fileName(), Tstring(cbin.cellname()));
+            int len = strlen(cbin.fileName()) +
+                strlen(Tstring(cbin.cellname())) + 2;
+            fn = new char[len];
+            snprintf(fn, len, "%s/%s", cbin.fileName(),
+                Tstring(cbin.cellname()));
         }
         if (!fn)
             fn = lstring::copy(Tstring(cbin.cellname()));
@@ -874,12 +877,12 @@ SaveHlpr::get_new_name(bool no_prompt)
     else if (ft == Foa) {
         char buf[256];
         if (cbin.fileType() == Foa && cbin.fileName()) {
-            sprintf(buf, "oa %s %s", cbin.fileName(),
+            snprintf(buf, sizeof(buf), "oa %s %s", cbin.fileName(),
                 Tstring(cbin.cellname()));
         }
         else {
             // Shouldn't happen.
-            sprintf(buf, "oa %s %s", "xic_unknown",
+            snprintf(buf, sizeof(buf), "oa %s %s", "xic_unknown",
                 Tstring(cbin.cellname()));
         }
         if (no_prompt)
@@ -1020,7 +1023,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
     bool ret = true;
     PL()->ShowPrompt(msg1);
     Errs()->init_error();
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
 
     // Finalize the cell before save.  The undo list is retained,
     // so recent changes can be undone after the save.  However,
@@ -1175,7 +1178,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
             if (!silent_errors)
                 Log()->ErrorLog(save_file, Errs()->get_error());
             XM()->ShowParameters();
-            dspPkgIf()->SetWorking(false);
+            DSPpkg::self()->SetWorking(false);
             return (false);
         }
         // Assign internal properties to the top level cell.
@@ -1324,7 +1327,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
     }
 
     XM()->ShowParameters();
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (ret);
 }
 

@@ -1419,20 +1419,25 @@ htmFormatManager::indexToWord()
         if (f_list_stack[i].type == HT_OL) {
             switch (f_list_stack[i].marker) {
             case MARKER_ALPHA_LOWER:
-                sprintf(number, "%s.", ToAsciiLower(f_list_stack[i].level));
+                snprintf(number, sizeof(number), "%s.",
+                    ToAsciiLower(f_list_stack[i].level));
                 break;
             case MARKER_ALPHA_UPPER:
-                sprintf(number, "%s.", ToAsciiUpper(f_list_stack[i].level));
+                snprintf(number, sizeof(number), "%s.",
+                    ToAsciiUpper(f_list_stack[i].level));
                 break;
             case MARKER_ROMAN_LOWER:
-                sprintf(number, "%s.", ToRomanLower(f_list_stack[i].level));
+                snprintf(number, sizeof(number), "%s.",
+                    ToRomanLower(f_list_stack[i].level));
                 break;
             case MARKER_ROMAN_UPPER:
-                sprintf(number, "%s.", ToRomanUpper(f_list_stack[i].level));
+                snprintf(number, sizeof(number), "%s.",
+                    ToRomanUpper(f_list_stack[i].level));
                 break;
             case MARKER_ARABIC:
             default:
-                sprintf(number, "%i.", f_list_stack[i].level);
+                snprintf(number, sizeof(number), "%i.",
+                    f_list_stack[i].level);
                 break;
             }
             // no buffer overflow
@@ -1823,24 +1828,25 @@ htmFormatManager::fillBullet()
         char number[64];
         switch (f_element->marker) {
         case MARKER_ALPHA_LOWER:
-            sprintf(number, "%s%s.", prefix,
+            snprintf(number, sizeof(number), "%s%s.", prefix,
                 ToAsciiLower(f_element->list_level));
             break;
         case MARKER_ALPHA_UPPER:
-            sprintf(number, "%s%s.", prefix,
+            snprintf(number, sizeof(number), "%s%s.", prefix,
                 ToAsciiUpper(f_element->list_level));
             break;
         case MARKER_ROMAN_LOWER:
-            sprintf(number, "%s%s.", prefix,
+            snprintf(number, sizeof(number), "%s%s.", prefix,
                 ToRomanLower(f_element->list_level));
             break;
         case MARKER_ROMAN_UPPER:
-            sprintf(number, "%s%s.", prefix,
+            snprintf(number, sizeof(number), "%s%s.", prefix,
                 ToRomanUpper(f_element->list_level));
             break;
         case MARKER_ARABIC:
         default:
-            sprintf(number, "%s%i.", prefix, f_element->list_level);
+            snprintf(number, sizeof(number), "%s%i.", prefix,
+                f_element->list_level);
             break;
         }
         f_element->text  = lstring::copy(number);

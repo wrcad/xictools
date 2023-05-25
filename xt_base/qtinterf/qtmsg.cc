@@ -68,13 +68,14 @@ namespace qtinterf
 
 
 QTmsgPopup::QTmsgPopup(QTbag *owner, const char *message_str, STYtype sty,
-    int w, int h) : QDialog(owner ? owner->shell : 0)
+    int w, int h) : QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
     display_style = sty;
+    pw_desens = false;
 
     if (owner)
-        owner->monitor.add(this);
+        owner->MonitorAdd(this);
 
     gbox = new QGroupBox(this);
     tx = new text_box(w, h, gbox);
@@ -107,37 +108,15 @@ QTmsgPopup::QTmsgPopup(QTbag *owner, const char *message_str, STYtype sty,
 
 QTmsgPopup::~QTmsgPopup()
 {
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller) {
-        QObject *o = (QObject*)p_caller;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn)
-                btn->setChecked(false);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->setChecked(false);
-        }
-    }
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner) {
-            owner->monitor.remove(this);
-            if (owner->message == this)
-                owner->message = 0;
-            else if (owner->error == this)
-                owner->error = 0;
-            else if (owner->info == this)
-                owner->info = 0;
-            else if (owner->info2 == this)
-                owner->info2 = 0;
-            else if (owner->htinfo == this)
-                owner->htinfo = 0;
-        }
+        if (owner)
+            owner->ClearPopup(this);
     }
+    if (p_usrptr)
+        *p_usrptr = 0;
+    if (p_caller)
+        QTdev::Deselect(p_caller);
 }
 
 
@@ -148,7 +127,7 @@ QTmsgPopup::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->monitor.is_active(this))
+        if (!owner || !owner->MonitorActive(this))
             return;
     }
     delete this;

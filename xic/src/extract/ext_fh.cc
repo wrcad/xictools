@@ -44,6 +44,7 @@
 #include "ext_fh.h"
 #include "dsp_layer.h"
 #include "dsp_inlines.h"
+#include "dsp_tkif.h"
 #include "geo_zgroup.h"
 #include "promptline.h"
 #include "errorlog.h"
@@ -319,7 +320,7 @@ cFH::fhRun(const char *infile, const char *outfile, const char *resfile,
         return;
     }
     if (!filestat::create_bak(newjob->outfile())) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        DSPpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         delete newjob;
         return;
     }
@@ -356,9 +357,9 @@ cFH::getFileName(const char *ext, int pid)
     char buf[128];
     const char *s = Tstring(CurCell(Physical)->cellname());
     if (pid > 0)
-        sprintf(buf, "%s-%d.%s", s, pid, ext);
+        snprintf(buf, sizeof(buf), "%s-%d.%s", s, pid, ext);
     else
-        sprintf(buf, "%s.%s", s, ext);
+        snprintf(buf, sizeof(buf), "%s.%s", s, ext);
     return (lstring::copy(buf));
 }
 
@@ -397,7 +398,7 @@ cFH::statusString()
 {
     int njobs = fxJob::num_jobs();
     char buf[128];
-    sprintf(buf, "Running Jobs: %d", njobs);
+    snprintf(buf, sizeof(buf), "Running Jobs: %d", njobs);
     return (lstring::copy(buf));
 }
 
@@ -845,7 +846,8 @@ fhLayout::setup()
     bool err = false;
     for (Layer3d *l = layers(); l; l = l->next()) {
         if (l->is_conductor()) {
-            sprintf(buf, "%s:%s", l->layer_desc()->oaLayerName(), "fhterm");
+            snprintf(buf, sizeof(buf), "%s:%s",
+                l->layer_desc()->oaLayerName(), "fhterm");
             CDl *fld = CDldb()->findLayer(buf, Physical);
             if (!fld)
                 continue;
@@ -1364,7 +1366,7 @@ fhLayout::check_sort_terms()
         // Make sure that each terminal has a node.
         for (fhTermList *t = fhl_terms[i]; t; t = t->next()) {
             if (!t->nodes()) {
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "Error: terminal without node, name %s %s layer %s "
                     "group %d.\n", t->portname(), t->suffix(),
                     layer(t->lnum())->layer_desc()->name(), i);
@@ -1378,7 +1380,7 @@ fhLayout::check_sort_terms()
         for (fhTermList *t = fhl_terms[i]; t; t = tnn) {
             tn = t->next();
             if (!tn) {
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "Error: singleton terminal, name %s %s layer %s "
                     "group %d.\n", t->portname(), t->suffix(),
                     layer(t->lnum())->layer_desc()->name(), i);
@@ -1388,7 +1390,7 @@ fhLayout::check_sort_terms()
             }
             tnn = tn->next();
             if (strcmp(t->portname(), tn->portname())) {
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "Error: singleton terminal, name %s %s layer %s "
                     "group %d.\n", t->portname(), t->suffix(),
                     layer(t->lnum())->layer_desc()->name(), i);
@@ -1398,14 +1400,14 @@ fhLayout::check_sort_terms()
                 continue;
             }
             if (tnn && !strcmp(t->portname(), tnn->portname())) {
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "Error: redundant port name %s.\n", t->portname());
                 lstr.add(buf);
                 err = true;
                 continue;
             }
             if (!strcmp(t->suffix(), tn->suffix())) {
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "Error: redundant suffix, name %s %s layer %s "
                     "group %d.\n", t->portname(), t->suffix(),
                     layer(t->lnum())->layer_desc()->name(), i);
@@ -1565,12 +1567,17 @@ fhConductor::segments_print(FILE *fp, e_unit unit, const fhLayout *fhl)
     buf[0] = 0;
     const unit_t *u = unit_t::units(unit);
     if (hc_sigma > 0.0) {
-        sprintf(buf, " sigma= %g", hc_sigma*u->sigma_factor());
-        if (hc_tau > 0.0 && hc_lambda <= 0.0)
-            sprintf(buf + strlen(buf), " tau= %g", hc_tau);
+        snprintf(buf, sizeof(buf), " sigma= %g", hc_sigma*u->sigma_factor());
+        if (hc_tau > 0.0 && hc_lambda <= 0.0) {
+            int len = strlen(buf);
+            snprintf(buf + len, sizeof(buf) - len, " tau= %g", hc_tau);
+        }
     }
-    if (hc_lambda > 0)
-        sprintf(buf + strlen(buf), " lambda= %g", hc_lambda*u->lambda_factor());
+    if (hc_lambda > 0) {
+        int len = strlen(buf);
+        snprintf(buf + len, sizeof(buf) - len, " lambda= %g",
+            hc_lambda*u->lambda_factor());
+    }
     double sc = u->coord_factor();
     const char *ff = u->float_format();
     char tbuf[64];
@@ -1591,7 +1598,7 @@ fhConductor::segments_print(FILE *fp, e_unit unit, const fhLayout *fhl)
         fhNode *n2 = fhl->nodes()->find_node(s->node2(), s->pn2());
         if (!n2 || n2->refcnt() < 2)
             continue;
-        sprintf(tbuf, "En%dn%d", s->node1(), s->node2());
+        snprintf(tbuf, sizeof(tbuf), "En%dn%d", s->node1(), s->node2());
         fprintf(fp, "%-12s ", tbuf);
         fprintf(fp, "N%-4d N%-4d", s->node1(), s->node2());
         fprintf(fp, " w=");
@@ -1787,7 +1794,7 @@ void
 fhConductor::save_dbg_zlist()
 {
     char buf[64];
-    sprintf(buf, "G%dL%d:FH", hc_group, hc_layer_ix);
+    snprintf(buf, sizeof(buf), "G%dL%d:FH", hc_group, hc_layer_ix);
     bool there = false;
     for (stringlist *sl = dbg_layers; sl; sl = sl->next) {
         if (!strcmp(sl->string, buf)) {

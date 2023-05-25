@@ -253,7 +253,7 @@ WindowDesc::redisplay_cddb(const BBox *AOI)
                     int p = DSP()->ContextDarkPcnt();
                     int pix = dsp_prm(ld)->pixel();
                     int dark_pix;
-                    GRpkgIf()->AllocateColor(&dark_pix,
+                    DSPpkg::self()->AllocateColor(&dark_pix,
                         (p*dsp_prm(ld)->red())/100,
                         (p*dsp_prm(ld)->green())/100,
                         (p*dsp_prm(ld)->blue()/100));
@@ -311,7 +311,7 @@ WindowDesc::redisplay_cddb(const BBox *AOI)
                         int p = DSP()->ContextDarkPcnt();
                         int pix = dsp_prm(state.layer)->pixel();
                         int dark_pix;
-                        GRpkgIf()->AllocateColor(&dark_pix,
+                        DSPpkg::self()->AllocateColor(&dark_pix,
                             (p*dsp_prm(state.layer)->red())/100,
                             (p*dsp_prm(state.layer)->green())/100,
                             (p*dsp_prm(state.layer)->blue()/100));
@@ -340,7 +340,7 @@ WindowDesc::redisplay_cddb(const BBox *AOI)
             if (DSP()->SlowMode()) {
                 // Show the initial cleared state.
                 cTimer::milli_sleep(DSP()->SleepTimeMs());
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
                 w_draw->Update();
                 if (DSP()->Interrupt())
                     goto finished;
@@ -370,7 +370,7 @@ WindowDesc::redisplay_cddb(const BBox *AOI)
                     int p = DSP()->ContextDarkPcnt();
                     int pix = dsp_prm(ld)->pixel();
                     int dark_pix;
-                    GRpkgIf()->AllocateColor(&dark_pix,
+                    DSPpkg::self()->AllocateColor(&dark_pix,
                         (p*dsp_prm(ld)->red())/100,
                         (p*dsp_prm(ld)->green())/100,
                         (p*dsp_prm(ld)->blue()/100));
@@ -395,7 +395,7 @@ WindowDesc::redisplay_cddb(const BBox *AOI)
                     lstr->add(ld->name());
                     DSP()->show_message(lstr->string());
                     cTimer::milli_sleep(DSP()->SleepTimeMs());
-                    dspPkgIf()->CheckForInterrupt();
+                    DSPpkg::self()->CheckForInterrupt();
                     w_draw->Update();
                 }
                 if (DSP()->Interrupt())
@@ -486,7 +486,7 @@ WindowDesc::redisplay_blist(const BBox *AOI)
                 if (!(numgeom & 0xff)) {
                     // check every 256 objects for efficiency
                     if (numgeom) {
-                        dspPkgIf()->CheckForInterrupt();
+                        DSPpkg::self()->CheckForInterrupt();
                         if (DSP()->Interrupt()) {
                             DisableCache();
                             goto done;
@@ -540,7 +540,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
                     if (!(numgeom & 0xff)) {
                         // check every 256 objects for efficiency
                         if (numgeom) {
-                            dspPkgIf()->CheckForInterrupt();
+                            DSPpkg::self()->CheckForInterrupt();
                             if (DSP()->Interrupt()) {
                                 DisableCache();
                                 goto done;
@@ -567,7 +567,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
                     if (!(numgeom & 0xff)) {
                         // check every 256 objects for efficiency
                         if (numgeom) {
-                            dspPkgIf()->CheckForInterrupt();
+                            DSPpkg::self()->CheckForInterrupt();
                             if (DSP()->Interrupt()) {
                                 DisableCache();
                                 goto done;
@@ -593,7 +593,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
                     if (!(numgeom & 0xff)) {
                         // check every 256 objects for efficiency
                         if (numgeom) {
-                            dspPkgIf()->CheckForInterrupt();
+                            DSPpkg::self()->CheckForInterrupt();
                             if (DSP()->Interrupt()) {
                                 DisableCache();
                                 goto done;
@@ -631,7 +631,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
                             if (!(numgeom & 0xff)) {
                                 // check every 256 objects for efficiency
                                 if (numgeom) {
-                                    dspPkgIf()->CheckForInterrupt();
+                                    DSPpkg::self()->CheckForInterrupt();
                                     if (DSP()->Interrupt()) {
                                         DisableCache();
                                         goto done;
@@ -773,7 +773,7 @@ WindowDesc::redisplay_layer_rc(CDs *sdesc, int hierlev,
                 if (!(numgeom & 0xff)) {
                     // check every 256 objects for efficiency
                     if (numgeom) {
-                        dspPkgIf()->CheckForInterrupt();
+                        DSPpkg::self()->CheckForInterrupt();
                         if (DSP()->Interrupt()) {
                             if (magged)
                                 DSP()->TPop();
@@ -844,7 +844,7 @@ WindowDesc::redisplay_layer_rc(CDs *sdesc, int hierlev,
             ncells++;
             if (!(ncells & 0xff))
                 // check every 256 objects for efficiency
-                dspPkgIf()->CheckForInterrupt();
+                DSPpkg::self()->CheckForInterrupt();
 
             // Test for user interrupt
             if (DSP()->Interrupt()) {

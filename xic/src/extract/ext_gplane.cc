@@ -194,7 +194,7 @@ cExt::invertGroundPlane(CDs *sdesc, int mode, const char *gpiname,
     // For library gates, forget about the ground plane.
     if (EX()->skipExtract(sdesc))
         return (XIok);
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     if (EX()->isVerbosePromptline())
         PL()->PushPromptV("Inverting ground plane in %s: ",
             Tstring(sdesc->cellname()));
@@ -204,7 +204,7 @@ cExt::invertGroundPlane(CDs *sdesc, int mode, const char *gpiname,
     char buf[128];
     XIrt ret = XIok;
     if (mode == GPI_PLACE) {
-        sprintf(buf, "%s = !%s&!$$", gpiname, gpname);
+        snprintf(buf, sizeof(buf), "%s = !%s&!$$", gpiname, gpname);
         CDgenHierDn_s gen(sdesc, CDMAXCALLDEPTH);
         bool err;
         CDs *sd;
@@ -224,7 +224,7 @@ cExt::invertGroundPlane(CDs *sdesc, int mode, const char *gpiname,
     }
     else if (mode == GPI_TOP) {
         if (!sdesc->isGPinv()) {
-            sprintf(buf, "%s = !%s", gpiname, gpname);
+            snprintf(buf, sizeof(buf), "%s = !%s", gpiname, gpname);
             ret = ED()->createLayer(sdesc, buf, CDMAXCALLDEPTH,
                 CLdefault | CLnoUndo);
             if (ret == XIok)
@@ -232,7 +232,7 @@ cExt::invertGroundPlane(CDs *sdesc, int mode, const char *gpiname,
         }
     }
     else if (mode == GPI_ALL) {
-        sprintf(buf, "%s = !%s", gpiname, gpname);
+        snprintf(buf, sizeof(buf), "%s = !%s", gpiname, gpname);
         CDgenHierDn_s gen(sdesc, CDMAXCALLDEPTH);
         bool err;
         CDs *sd;
@@ -254,7 +254,7 @@ cExt::invertGroundPlane(CDs *sdesc, int mode, const char *gpiname,
     }
     if (EX()->isVerbosePromptline())
         PL()->PopPrompt();
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
     return (ret);
 }
 // End ground plane functions.

@@ -114,7 +114,7 @@ cExt::extract(CDs *sdesc)
     if (!group(sdesc, CDMAXCALLDEPTH))
         return (false);
 
-    dspPkgIf()->SetWorking(true);
+    DSPpkg::self()->SetWorking(true);
     if (EX()->isVerbosePromptline())
         PL()->PushPrompt("Extracting: ");
     else
@@ -156,7 +156,7 @@ cExt::extract(CDs *sdesc)
     }
     else
         PL()->ShowPrompt("Extraction aborted.");
-    dspPkgIf()->SetWorking(false);
+    DSPpkg::self()->SetWorking(false);
 
     return (ret == XIok);
 }
@@ -2934,12 +2934,13 @@ char *
 sSubcInst::instance_name()
 {
     char buf[16];
-    sprintf(buf, "%d", sc_index);
+    snprintf(buf, sizeof(buf), "%d", sc_index);
     const char *nm = sc_cdesc ? Tstring(sc_cdesc->cellname()) : 0;
     if (!nm)
         nm = "UNKNOWN";
-    char *name = new char[strlen(nm) + strlen(buf) + 2];
-    sprintf(name, "%s%c%s", nm, CD_INST_NAME_SEP, buf);
+    int len = strlen(nm) + strlen(buf) + 2;
+    char *name = new char[len];
+    snprintf(name, len, "%s%c%s", nm, CD_INST_NAME_SEP, buf);
     return (name);
 }
 // End of sSubcInst functions.
