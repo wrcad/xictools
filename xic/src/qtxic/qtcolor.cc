@@ -38,12 +38,28 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
-#include "select.h"
+#include "qtcolor.h"
+#include "scedif.h"
+#include "cd_lgen.h"
 #include "dsp_layer.h"
 #include "dsp_color.h"
-#include "qtmain.h"
+#include "dsp_inlines.h"
+#include "menu.h"
+#include "layertab.h"
+#include "select.h"
+#include "qtparam.h"
+#include "qtcoord.h"
+#include "qthtext.h"
+#include "qtinterf/qtfont.h"
+#include "miscutil/pathlist.h"
 
+#include <QLayout>
+#include <QColorDialog>
+#include <QComboBox>
+#include <QPushButton>
+
+
+#define CLR_CURLYR  -1
 
 // Menu function to display, update, or destroy the color popup.
 //
@@ -54,207 +70,516 @@ cMain::PopUpColor(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-//        delete Clr;
+        if (cColor::self())
+            cColor::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-//        if (Clr)
-//            Clr->update();
+        if (cColor::self())
+            cColor::self()->update();
         return;
     }
-    /*
-    if (Clr)
+    if (cColor::self())
         return;
 
-    new sClr(caller);
-    if (!Clr->shell()) {
-        delete Clr;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Clr->shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new cColor(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), Clr->shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Clr->shell());
-    */
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cColor::self(),
+        QTmainwin::self()->Viewport());
+    cColor::self()->show();
 }
 
 
-// The following functions periodically alter the colormap to implement
-// blinking layers and selection boundary.
+//
+// The menus for attribute colors.
+//
 
-namespace { int colortimer(void*); }
+// Attributes, electrical and physical mode.
+//
+cColor::clritem cColor::Menu1[] =
+{
+    { "Current Layer", CLR_CURLYR },
+    { "Background", BackgroundColor },
+    { "Coarse Grid", CoarseGridColor },
+    { "Fine Grid", FineGridColor },
+    { "Ghosting", GhostColor },
+    { "Highlighting", HighlightingColor },
+    { "Selection Color 1", SelectColor1 },
+    { "Selection Color 2", SelectColor2 },
+    { "Terminals", MarkerColor },
+    { "Instance Boundary", InstanceBBColor },
+    { "Instance Name Text", InstanceNameColor },
+    { "Instance Size Text", InstanceSizeColor },
+    { 0, 0}
+};
 
-// Allocate a private color for the selection borders, and set the
-// initial timer.
+// Prompt line, electrical and physical mode.
+//
+cColor::clritem cColor::Menu2[] =
+{
+    { "Text", PromptEditTextColor },
+    { "Prompt Text", PromptTextColor },
+    { "Highlight Text", PromptHighlightColor },
+    { "Cursor", PromptCursorColor },
+    { "Background", PromptBackgroundColor },
+    { "Edit Background", PromptEditBackgColor },
+    { "Focussed Background", PromptEditFocusBackgColor },
+    { 0, 0 }
+};
+
+// Plot mark colors, electrical only.
+//
+cColor::clritem cColor::Menu3[] =
+{
+    { "Plot Mark 1", Color2 },
+    { "Plot Mark 2", Color3 },
+    { "Plot Mark 3", Color4 },
+    { "Plot Mark 4", Color5 },
+    { "Plot Mark 5", Color6 },
+    { "Plot Mark 6", Color7 },
+    { "Plot Mark 7", Color8 },
+    { "Plot Mark 8", Color9 },
+    { "Plot Mark 9", Color10 },
+    { "Plot Mark 10", Color11 },
+    { "Plot Mark 11", Color12 },
+    { "Plot Mark 12", Color13 },
+    { "Plot Mark 13", Color14 },
+    { "Plot Mark 14", Color15 },
+    { "Plot Mark 15", Color16 },
+    { "Plot Mark 17", Color17 },
+    { "Plot Mark 17", Color18 },
+    { "Plot Mark 18", Color19 },
+    { 0, 0 }
+};
+
+cColor *cColor::instPtr;
+
+cColor::cColor(GRobject c)
+{
+    instPtr = this;
+    c_mode = CLR_CURLYR;
+    c_caller = c;
+    c_modemenu = 0;
+    c_categmenu = 0;
+    c_attrmenu = 0;
+    c_clrd = 0;
+    c_listbtn = 0;
+    c_listpop = 0;
+    c_display_mode = DSP()->CurMode();
+    c_ref_mode = DSP()->CurMode();
+    c_red = 0;
+    c_green = 0;
+    c_blue = 0;
+
+    setWindowTitle(tr("Color Selection"));
+
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    // Physical/Electrical mode selector
+    //
+    c_modemenu = new QComboBox();
+    c_modemenu->addItem(tr("Physical"));
+    c_modemenu->addItem(tr("Electrical"));
+    c_modemenu->setCurrentIndex(c_display_mode == Physical ? 0 : 1);
+    hbox->addWidget(c_modemenu);
+    connect(c_modemenu, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(mode_menu_change_slot(int)));
+    if (ScedIf()->hasSced())
+        c_modemenu->show();
+    else
+        c_modemenu->hide();
+
+    // Categories menu
+    //
+    c_categmenu = new QComboBox();
+    fill_categ_menu();
+    hbox->addWidget(c_categmenu);
+    connect(c_categmenu, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(categ_menu_change_slot(int)));
+
+    // Attribute selection menu
+    //
+    c_attrmenu = new QComboBox();
+    fill_attr_menu(CATEG_ATTR);
+    hbox->addWidget(c_attrmenu);
+    connect(c_attrmenu, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(attr_menu_change_slot(int)));
+
+    c_clrd = new QColorDialog();
+    c_clrd->setWindowFlags(Qt::Widget);
+    c_clrd->setOptions(QColorDialog::DontUseNativeDialog |
+        QColorDialog::NoButtons);
+    vbox->addWidget(c_clrd);
+    connect(c_clrd, SIGNAL(currentColorChanged(const QColor&)),
+        this, SLOT(color_selected_slot(const QColor&)));
+
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    // Help, Colors, Apply, and Dismiss buttons.
+    //
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+
+    c_listbtn = new QPushButton(tr("Named Colors"));
+    c_listbtn->setCheckable(true);
+    connect(c_listbtn, SIGNAL(checked(bool)),
+        this, SLOT(colors_btn_slot(bool)));
+    hbox->addWidget(c_listbtn);
+
+    btn = new QPushButton(tr("Apply"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    hbox->addWidget(btn);
+
+    btn = new QPushButton(tr("Dismiss"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    hbox->addWidget(btn);
+
+    update_color();
+}
+
+
+cColor::~cColor()
+{
+    instPtr = 0;
+    if (c_caller)
+        QTdev::Deselect(c_caller);
+    if (c_listpop)
+        c_listpop->popdown();
+}
+
+
+void
+cColor::update()
+{
+    if (c_ref_mode != DSP()->CurMode()) {
+        // User changed between Physical and Electrical modes. 
+        // Rebuild the ATTR menu if current, since the visibility of
+        // the Current Layer item will have changed.
+        //
+        if (c_categmenu->currentIndex() == CATEG_ATTR)
+            fill_attr_menu(CATEG_ATTR);
+        c_ref_mode = DSP()->CurMode();
+    }
+    else {
+        // The current layer changed.  The second term in the
+        // conditional is redundant, for sanity.
+        //
+        if (c_mode == CLR_CURLYR && c_display_mode == DSP()->CurMode())
+            update_color();
+    }
+}
+
+
+// Update the color shown.
 //
 void
-cMain::ColorTimerInit()
+cColor::update_color()
 {
-    if (!QTdev::exists())
+    if (!c_clrd)
         return;
-    int pixel = DSP()->Color(SelectColor1);
-    int red, green, blue;
-    QTdev::self()->RGBofPixel(pixel, &red, &green, &blue);
-    int sp = DSP()->SelectPixel();
-    QTdev::self()->AllocateColor(&sp, red, green, blue);
-    DSP()->SetSelectPixel(sp);
-    QTdev::self()->AddTimer(500, colortimer, 0);
+    int r, g, b;
+    c_get_rgb(c_mode, &r, &g, &b);
+    QColor rgb(r, g, b);
+    c_clrd->setCurrentColor(rgb);
+//    set_sample_bg();
 }
 
 
-inline int
-encode(int r, int g, int b)
-{
-    return ( ((b & 0xff) << 16) | ((g & 0xff) << 8) | (r & 0xff) );
-}
-
-
-// If interactive graphics is disabled, all pixels in the color table will
-// be zero.  This fills in the correct value
-//
 void
-cMain::FixupColors(void *dp)
+cColor::fill_categ_menu()
 {
-/*
-    if (XM()->RunMode == ModeNormal)
-        return;
-    static enum { enc_none, enc_x, enc_triples } encoding;
-    Display *display = (Display*)dp;
-    // If a display was passed, the pixels will be X values, otherwise the
-    // pixels are encoded as RGB triples
-    bool use_triples = false;
-    if (!display) {
-        display = XOpenDisplay(":0");
-        if (!display)
-            return;
-        use_triples = true;
-    }
-    if ((encoding == enc_x && !use_triples) ||
-            (encoding == enc_triples && use_triples))
-        return;
-    encoding = (use_triples ? enc_triples : enc_x);
-    for (unsigned i = 0; i < ColorTableEnd; i++) {
-        const char *colorname = ColorTab[i].get_defclr();
-        if (colorname) {
-            int r, g, b;
-            XColor rgb;
-            if (sscanf(colorname, "%d %d %d", &r, &g, &b) == 3) {
-                if (r >= 0 && r <= 255 && g >= 0 && g <= 255 &&
-                        b >= 0 && b <= 255) {
-                    rgb.red = r*256;
-                    rgb.green = g*256;
-                    rgb.blue = b*256;
-                }
-                else if (r >= 0 && r <= 65535 && g >= 0 && g <= 65535 &&
-                        b >= 0 && b <= 65535) {
-                    rgb.red = r;
-                    rgb.green = g;
-                    rgb.blue = b;
-                }
-                else
-                    continue;
-            }
-            else if (!XParseColor(display, DefaultColormap(display, 0),
-                    colorname, &rgb))
+    c_categmenu->clear();
+    c_categmenu->addItem(tr("Attributes"));
+    c_categmenu->addItem(tr("Prompt Line"));
+    if (c_display_mode == Electrical)
+        c_categmenu->addItem(tr("Plot Marks"));
+    c_categmenu->setCurrentIndex(0);
+}
+
+
+void
+cColor::fill_attr_menu(int categ)
+{
+    if (categ == CATEG_ATTR) {
+        c_attrmenu->clear();
+        for (clritem *c = Menu1; c->descr; c++) {
+            // We want the Current Layer entry only when the mode
+            // matches the display mode, since the current layer
+            // of the "opposite" mode is not known here.
+            //
+            if (c == Menu1 && c_display_mode != DSP()->CurMode())
                 continue;
-            colors[i].red = rgb.red/256;
-            colors[i].green = rgb.green/256;
-            colors[i].blue = rgb.blue/256;
-            if (use_triples)
-                colors[i].pixel = encode(colors[i].red, colors[i].green,
-                    colors[i].blue);
-            else if (XAllocColor(display, DefaultColormap(display, 0), &rgb))
-                colors[i].pixel = rgb.pixel;
+            c_attrmenu->addItem(tr(c->descr), c->tab_indx);
         }
+        if (c_display_mode == DSP()->CurMode())
+            c_mode = Menu1[0].tab_indx;
+        else
+            c_mode = Menu1[1].tab_indx;
     }
-
-    CDl *ld;
-    CDlgen lgen(Physical, 0);
-    while ((ld = lgen.next()) != 0) {
-        if (use_triples)
-            ld->pixel = encode(ld->red, ld->green, ld->blue);
-        else {
-            XColor rgb;
-            rgb.red = ld->red * 256;
-            rgb.green = ld->green * 256;
-            rgb.blue = ld->blue * 256;
-            if (XAllocColor(display, DefaultColormap(display, 0), &rgb))
-                ld->pixel = rgb.pixel;
+    else if (categ == CATEG_PROMPT) {
+        c_attrmenu->clear();
+        for (clritem *c = Menu2; c->descr; c++) {
+            c_attrmenu->addItem(tr(c->descr), c->tab_indx);
         }
+        c_mode = Menu2[0].tab_indx;
     }
-    lgen = CDlgen(Electrical, 0);
-    while ((ld = lgen.next()) != 0) {
-        if (use_triples)
-            ld->pixel = encode(ld->red, ld->green, ld->blue);
-        else {
-            XColor rgb;
-            rgb.red = ld->red * 256;
-            rgb.green = ld->green * 256;
-            rgb.blue = ld->blue * 256;
-            if (XAllocColor(display, DefaultColormap(display, 0), &rgb))
-                ld->pixel = rgb.pixel;
+    else if (categ == CATEG_PLOT) {
+        c_attrmenu->clear();
+        for (clritem *c = Menu3; c->descr; c++) {
+            c_attrmenu->addItem(tr(c->descr), c->tab_indx);
         }
+        c_mode = Menu3[0].tab_indx;
     }
-
-    if (use_triples)
-        XCloseDisplay(display);
-*/
-(void)dp;
+    else
+        return;
+    c_attrmenu->setCurrentIndex(0);
+    update_color();
 }
 
 
-namespace {
-    int idle_id;
+// Static function.
+// Return the RGB for the current mode.
+//
+void
+cColor::c_get_rgb(int mode, int *red, int *green, int *blue)
+{
+    if (mode == CLR_CURLYR) {
+        if (LT()->CurLayer())
+            LT()->GetLayerColor(LT()->CurLayer(), red, green, blue);
+        else {
+            *red = 0;
+            *green = 0;
+            *blue = 0;
+        }
+    }
+    else {
+        if (cColor::self()) {
+            DSP()->ColorTab()->get_rgb(mode, cColor::self()->c_display_mode,
+                red, green, blue);
+        }
+        else {
+            *red = 0;
+            *green = 0;
+            *blue = 0;
+        }
+    }
+}
 
-    // Idle function to redraw highlighting.
-    //
-    int
-    idlefunc(void*)
-    {
-        static int on;
-        if (!QTpkg::self()->IsBusy()) {
-            if (QTpkg::self()->IsTrueColor()) {
-                WindowDesc *wd;
-                WDgen wgen(WDgen::MAIN, WDgen::ALL);
-                while ((wd = wgen.next()) != 0) {
-                    if (!on)
-                        DSP()->SetSelectPixel(
-                            DSP()->Color(SelectColor1, wd->Mode()));
-                    else
-                        DSP()->SetSelectPixel(
-                            DSP()->Color(SelectColor2, wd->Mode()));
 
-                    if (wd->DbType() == WDcddb) {
-                        if (Selections.blinking())
-                            Selections.show(wd);
-                    }
-                    wd->ShowHighlighting();
+// Static function.
+// This used to actually effect color change, now we defer to the
+// Apply button.
+//
+void
+cColor::c_set_rgb(int red, int green, int blue)
+{
+    if (!cColor::self())
+        return;
+    cColor::self()->c_red = red;
+    cColor::self()->c_green = green;
+    cColor::self()->c_blue = blue;
+}
 
-                    //XXX This updates the entire drawing windows every
-                    // half second.
-                    wd->Wdraw()->Update();
-                }
-                DSP()->SetSelectPixel(DSP()->Color(SelectColor1));
+
+// Insert the selected rgb.txt entry into the color selector.
+//
+void
+cColor::c_list_callback(const char *string, void*)
+{
+    if (string) {
+        while (isspace(*string))
+            string++;
+        int r, g, b;
+        if (sscanf(string, "%d %d %d", &r, &g, &b) != 3)
+            return;
+        if (cColor::self()) {
+            QColor rgb(r, g, b);
+            /*
+            gtk_color_selection_set_current_color(
+                GTK_COLOR_SELECTION(Clr->c_sel), &rgb);
+            */
+            cColor::c_set_rgb(r, g, b);
+        }
+    }
+    else if (cColor::self()) {
+        QTdev::SetStatus(cColor::self()->c_listbtn, false);
+        cColor::self()->c_listpop = 0;
+    }
+}
+
+
+void
+cColor::mode_menu_change_slot(int ix)
+{
+    c_display_mode = ix ? Electrical : Physical;
+    fill_categ_menu();
+    fill_attr_menu(CATEG_ATTR);
+}
+
+
+void
+cColor::categ_menu_change_slot(int ix)
+{
+    fill_attr_menu(ix);
+}
+
+
+void
+cColor::attr_menu_change_slot(int)
+{
+    int ix = c_attrmenu->currentData().toInt();
+    if (ix == Physical || ix == Electrical) {
+        c_mode = ix;
+        update_color();
+    }
+}
+
+
+void
+cColor::color_selected_slot(const QColor &clr)
+{
+    int r = clr.red();
+    int g = clr.green();
+    int b = clr.blue();
+    c_set_rgb(r, g, b);
+}
+
+
+void
+cColor::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:color"))
+}
+
+
+void
+cColor::colors_btn_slot(bool state)
+{
+    if (!c_listpop && state) {
+        stringlist *list = GRcolorList::listColors();
+        if (!list) {
+            QTdev::SetStatus(c_listbtn, false);
+            return;
+        }
+        c_listpop = DSPmainWbagRet(PopUpList(list, "Colors",
+            "click to select", c_list_callback, 0, false, false));
+        stringlist::destroy(list);
+        if (c_listpop)
+            c_listpop->register_usrptr((void**)&c_listpop);
+    }
+    else if (c_listpop && !state)
+        c_listpop->popdown();
+}
+
+
+void
+cColor::apply_btn_slot()
+{
+    // Actually perform the color change.
+    int mode = c_mode;
+    int red = c_red;
+    int green = c_green;
+    int blue = c_blue;
+    DisplayMode dm = c_display_mode;
+
+    if (mode == CLR_CURLYR) {
+        if (LT()->CurLayer() && dm == DSP()->CurMode()) {
+            LT()->SetLayerColor(LT()->CurLayer(), red, green, blue);
+            LT()->ShowLayerTable(LT()->CurLayer());
+            XM()->PopUpFillEditor(0, MODE_UPD);
+            XM()->PopUpLayerPalette(0, MODE_UPD, false, 0);
+
+            if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw()) {
+                DSP()->RedisplayAll();
             }
         }
-        on ^= true;
-        idle_id = 0;
-        return (false);
+        return;
+    }
+    if (mode == BackgroundColor) {
+        DSP()->ColorTab()->set_rgb(mode, dm, red, green, blue);
+        if (dm == DSP()->CurMode()) {
+            LT()->ShowLayerTable(LT()->CurLayer());
+            XM()->PopUpFillEditor(0, MODE_UPD);
+            XM()->PopUpLayerPalette(0, MODE_UPD, false, 0);
+        }
+        XM()->UpdateCursor(0, XM()->GetCursor());
+        if (dm == Electrical || !LT()->NoPhysRedraw()) {
+            DSP()->RedisplayAll(dm);
+        }
+        return;
     }
 
+    DSP()->ColorTab()->set_rgb(mode, dm, red, green, blue);
+    switch (mode) {
+    case PromptEditTextColor:
+    case PromptTextColor:
+    case PromptHighlightColor:
+    case PromptCursorColor:
+    case PromptBackgroundColor:
+    case PromptEditBackgColor:
+        Param()->redraw();
+        Coord()->redraw();
+        DSP()->MainWbag()->ShowKeys();
+        QTedit::self()->redraw();
+        break;
 
-    // Timer callback.  This self-regenerates the timing interval, and
-    // switches the colors of all flashing layers and the selection
-    // boundary.
-    //
-    int
-    colortimer(void*)
-    {
-        if (!idle_id)
-            idle_id = QTpkg::self()->RegisterIdleProc(idlefunc, 0);
-        return (true);
+    case CoarseGridColor:
+    case FineGridColor:
+        if (dm == Electrical || !LT()->NoPhysRedraw()) {
+            DSP()->RedisplayAll(dm);
+        }
+        break;
+
+    case GhostColor:
+        XM()->UpdateCursor(0, XM()->GetCursor());
+        break;
+
+    case HighlightingColor:
+        if (dm == Electrical || !LT()->NoPhysRedraw()) {
+            DSP()->RedisplayAll(dm);
+        }
+        break;
+
+    case SelectColor1:
+    case SelectColor2:
+        break;
+
+    case MarkerColor:
+    case InstanceBBColor:
+    case InstanceNameColor:
+    case InstanceSizeColor:
+        if (dm == Electrical || !LT()->NoPhysRedraw()) {
+            DSP()->RedisplayAll(dm);
+        }
+        break;
+
+    default:
+        break;
     }
 }
 
+
+void
+cColor::dismiss_btn_slot()
+{
+    XM()->PopUpColor(0, MODE_OFF);
+}
+
+#ifdef notdef
+
+//
+// Pop-up selectable list of rgb.txt color entries.
+//
+
+#endif

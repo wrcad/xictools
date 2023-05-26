@@ -38,60 +38,26 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtxform.h"
 #include "edit.h"
 #include "dsp_inlines.h"
-#include "qtmain.h"
-//#include "gtkinterf/gtkspinbtn.h"
 
+#include <QDialog>
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDoubleSpinBox>
+#include <QPushButton>
 
 //--------------------------------------------------------------------------
-// Pop up for setting the current transform
+// Pop up for setting the current transform.
 //
 // Help system keywords used:
 //  xic:xform
 
-namespace {
-    namespace gtkxform {
-        struct sTfm
-        {
-            sTfm(GRobject c,
-                bool (*)(const char*, bool, const char*, void*), void*);
-            ~sTfm();
-
-//            GtkWidget *shell() { return (tf_popup); }
-
-            void update();
-
-            /*
-        private:
-            static void tf_cancel_proc(GtkWidget*, void*);
-            static void tf_action_proc(GtkWidget*, void*);
-            static void tf_ang_proc(GtkWidget*, void*);
-            static void tf_val_changed(GtkWidget*, void*);
-
-            GRobject tf_caller;
-            GtkWidget *tf_popup;
-            GtkWidget *tf_rflx;
-            GtkWidget *tf_rfly;
-            GtkWidget *tf_ang;
-            GtkWidget *tf_id;
-            GtkWidget *tf_last;
-            GtkWidget *tf_cancel;
-            bool (*tf_callback)(const char*, bool, const char*, void*);
-            void *tf_arg;
-
-            GTKspinBtn sb_mag;
-            */
-        };
-
-        sTfm *Tfm;
-    }
-}
-
-using namespace gtkxform;
-
-// Magn spin button parameters
+// Magn spin button parameters.
 //
 #define TFM_NUMD 5
 #define TFM_MIND CDMAGMIN
@@ -112,40 +78,32 @@ cEdit::PopUpTransform(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete Tfm;
+        if (cXform::self())
+            cXform::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (Tfm)
-            Tfm->update();
+        if (cXform::self())
+            cXform::self()->update();
         return;
     }
-    if (Tfm)
+    if (cXform::self())
         return;
 
-        /*
-    new sTfm(caller, callback, arg);
-    if (!Tfm->shell()) {
-        delete Tfm;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Tfm->shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
-
-    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), Tfm->shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Tfm->shell());
-    */
+    new cXform(caller, callback, arg);
+    QTdev::self()->SetPopupLocation(GRloc(LW_UL), cXform::self(),
+        QTmainwin::self()->Viewport());
+    cXform::self()->show();
 }
 
 
-sTfm::sTfm(GRobject c,
+cXform *cXform::instPtr;
+
+cXform::cXform(GRobject c,
     bool (*callback)(const char*, bool, const char*, void*), void *arg)
 {
-    Tfm = this;
-#ifdef notdef
+    instPtr = this;
     tf_caller = c;
-    tf_popup = 0;
     tf_rflx = 0;
     tf_rfly = 0;
     tf_ang = 0;
@@ -155,277 +113,178 @@ sTfm::sTfm(GRobject c,
     tf_callback = callback;
     tf_arg = arg;
 
-    tf_popup = gtk_NewPopup(0, "Current Transform", tf_cancel_proc, 0);
-    if (!tf_popup)
-        return;
-    gtk_window_set_resizable(GTK_WINDOW(tf_popup), false);
+    setWindowTitle(tr("Current Transform"));
+//    gtk_window_set_resizable(GTK_WINDOW(tf_popup), false);
 
-    GtkWidget *form = gtk_table_new(1, 1, false);
-    gtk_widget_show(form);
-    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
-    gtk_container_add(GTK_CONTAINER(tf_popup), form);
-
-    //
     // Label in frame plus help btn
     //
-    GtkWidget *row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
-    GtkWidget *label = gtk_label_new(
-        "Set transform for new cells\nand move/copy.");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), label);
-    gtk_box_pack_start(GTK_BOX(row), frame, true, true, 0);
-    GtkWidget *button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
-    int rowcnt = 0;
-    gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    QGroupBox *gb = new QGroupBox(this);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    QLabel *lbl =
+        new QLabel(tr("Set transform for new cells\nand move/copy."));
+    hb->addWidget(lbl);
+    hbox->addWidget(gb);
+
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Rotation entry and mirror buttons
     //
-    row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
-    label = gtk_label_new("Angle");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    vbox->addLayout(hbox);
 
-    GtkWidget *entry = gtk_combo_box_text_new();
-    gtk_widget_set_name(entry, "rotat");
-    gtk_widget_show(entry);
-    g_signal_connect(G_OBJECT(entry), "changed",
-        G_CALLBACK(tf_ang_proc), this);
-    tf_ang = entry;
-    gtk_box_pack_start(GTK_BOX(row), entry, false, false, 0);
+    lbl = new QLabel(tr("Angle"));
+    hbox->addWidget(lbl);
 
-    button = gtk_check_button_new_with_label("Reflect Y");
-    gtk_widget_set_name(button, "rfly");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
-    tf_rfly = button;
+    tf_ang = new QComboBox();
+    hbox->addWidget(tf_ang);
+    connect(tf_ang, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(angle_change_slot(int)));
 
-    button = gtk_check_button_new_with_label("Reflect X");
-    gtk_widget_set_name(button, "rflx");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
-    tf_rflx = button;
+    tf_rflx = new QCheckBox(tr("Reflect X"));
+    hbox->addWidget(tf_rflx);
+    connect(tf_rflx, SIGNAL(stateChanged(int)),
+        this, SLOT(reflect_x_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    tf_rfly = new QCheckBox(tr("Reflect Y"));
+    hbox->addWidget(tf_rfly);
+    connect(tf_rfly, SIGNAL(stateChanged(int)),
+        this, SLOT(reflect_y_slot(int)));
 
+
+    // Magnification label and spin button.
     //
-    // Magnification label and spin button
-    //
-    row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
-    label = gtk_label_new("Magnification");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    gtk_box_pack_start(GTK_BOX(row), label, false, false, 0);
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    vbox->addLayout(hbox);
 
-    GtkWidget *sb = sb_mag.init(1.0, TFM_MIND, TFM_MAXD, TFM_NUMD);
-    sb_mag.connect_changed((GCallback)tf_val_changed, 0);
+    lbl = new QLabel(tr("Magnification"));
+    hbox->addWidget(lbl);
 
-    char buf[64];
-    snprintf(buf, sizeof(buf), "%.*f", TFM_NUMD, TFM_MAXD);
-    int wid = sb_mag.width_for_string(buf);
-    snprintf(buf, sizeof(buf), "%.*f", TFM_NUMD, TFM_MIND);
-    int wid1 = sb_mag.width_for_string(buf);
-    if (wid1 > wid)
-        wid = wid1;
-    gtk_widget_set_size_request(sb, wid, -1);
+    tf_mag = new QDoubleSpinBox();
+    tf_mag->setValue(1.0);
+    tf_mag->setMinimum(TFM_MIND);
+    tf_mag->setMaximum(TFM_MAXD);
+    tf_mag->setDecimals(TFM_NUMD);
+    hbox->addWidget(lbl);
+    connect(tf_mag, SIGNAL(valueChanged(double)),
+        this, SLOT(magnification_change_slot(double)));
 
-    gtk_box_pack_start(GTK_BOX(row), sb, false, false, 0);
-    gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
     // Identity and Last buttons
     //
-    row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
-    button = gtk_button_new_with_label("Identity Transform");
-    gtk_widget_set_name(button, "ident");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    tf_id = button;
-    button = gtk_button_new_with_label("Last Transform");
-    gtk_widget_set_name(button, "last");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    tf_last = button;
-    gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    vbox->addLayout(hbox);
 
-    //
+    tf_id = new QPushButton(tr("Identity Transform"));
+    hbox->addWidget(tf_id);
+    connect(tf_id, SIGNAL(clicked()), this, SLOT(identity_btn_slot()));
+
+    tf_last = new QPushButton(tr("Last Transform"));
+    hbox->addWidget(tf_last);
+    connect(tf_last, SIGNAL(clicked()), this, SLOT(last_btn_slot()));
+
     // Store buttons
     //
-    row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
-    button = gtk_button_new_with_label("Sto 1");
-    gtk_widget_set_name(button, "sto1");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    button = gtk_button_new_with_label("Sto 2");
-    gtk_widget_set_name(button, "sto2");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    button = gtk_button_new_with_label("Sto 3");
-    gtk_widget_set_name(button, "sto3");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    button = gtk_button_new_with_label("Sto 4");
-    gtk_widget_set_name(button, "sto4");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    button = gtk_button_new_with_label("Sto 5");
-    gtk_widget_set_name(button, "sto5");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    vbox->addLayout(hbox);
 
-    //
+    btn = new QPushButton(tr("Sto 1"));
+    hbox->addWidget(btn);
+    btn = new QPushButton(tr("Sto 2"));
+    hbox->addWidget(btn);
+    btn = new QPushButton(tr("Sto 3"));
+    hbox->addWidget(btn);
+    btn = new QPushButton(tr("Sto 4"));
+    hbox->addWidget(btn);
+    btn = new QPushButton(tr("Sto 5"));
+    hbox->addWidget(btn);
+
     // Recall buttons
     //
-    row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
-    button = gtk_button_new_with_label("Rcl 1");
-    gtk_widget_set_name(button, "rcl1");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    button = gtk_button_new_with_label("Rcl 2");
-    gtk_widget_set_name(button, "rcl2");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    button = gtk_button_new_with_label("Rcl 3");
-    gtk_widget_set_name(button, "rcl3");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    button = gtk_button_new_with_label("Rcl 4");
-    gtk_widget_set_name(button, "rcl4");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    button = gtk_button_new_with_label("Rcl 5");
-    gtk_widget_set_name(button, "rcl5");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_action_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    vbox->addLayout(hbox);
 
-    //
+    btn = new QPushButton(tr("Rcl 1"));
+    hbox->addWidget(btn);
+    btn = new QPushButton(tr("Rcl 2"));
+    hbox->addWidget(btn);
+    btn = new QPushButton(tr("Rcl 3"));
+    hbox->addWidget(btn);
+    btn = new QPushButton(tr("Rcl 4"));
+    hbox->addWidget(btn);
+    btn = new QPushButton(tr("Rcl 5"));
+    hbox->addWidget(btn);
+
     // Dismiss button
     //
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(tf_cancel_proc), 0);
-    tf_cancel = button;
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    vbox->addLayout(hbox);
+
+    tf_cancel = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(tf_cancel);
+    connect(tf_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update();
-#endif
 }
 
 
-sTfm::~sTfm()
+cXform::~cXform()
 {
-    Tfm = 0;
-    /*
+    instPtr = 0;
     if (tf_caller)
-        GTKdev::Deselect(tf_caller);
+        QTdev::Deselect(tf_caller);
     if (tf_callback)
         (*tf_callback)(0, false, 0, tf_arg);
-    if (tf_popup)
-        gtk_widget_destroy(tf_popup);
-    */
 }
 
 
 void
-sTfm::update()
+cXform::update()
 {
-    /*
-    GTKdev::SetStatus(tf_rflx, GEO()->curTx()->reflectX());
-    GTKdev::SetStatus(tf_rfly, GEO()->curTx()->reflectY());
+    QTdev::SetStatus(tf_rflx, GEO()->curTx()->reflectX());
+    QTdev::SetStatus(tf_rfly, GEO()->curTx()->reflectY());
     bool has_tf = GEO()->curTx()->reflectX();
     has_tf |= GEO()->curTx()->reflectY();
     char buf[32];
     int da = DSP()->CurMode() == Physical ? 45 : 90;
     int d = 0;
 
-    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(
-        GTK_COMBO_BOX(tf_ang))));
-
+    tf_ang->clear();
     while (d < 360) {
         snprintf(buf, sizeof(buf), "%d", d);
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(tf_ang), buf);
+        tf_ang->addItem(tr(buf));
         d += da;
     }
-    gtk_combo_box_set_active(GTK_COMBO_BOX(tf_ang),
-        GEO()->curTx()->angle()/da);
+    tf_ang->setCurrentIndex(GEO()->curTx()->angle()/da);
 
     has_tf |= GEO()->curTx()->angle();
     if (DSP()->CurMode() == Physical) {
-        sb_mag.set_value(GEO()->curTx()->magn());
-        sb_mag.set_sensitive(true);
+        tf_mag->setValue(GEO()->curTx()->magn());
+        tf_mag->setEnabled(true);
         has_tf |= (GEO()->curTx()->magn() != 1.0);
     }
     else {
-        sb_mag.set_value(1.0);
-        sb_mag.set_sensitive(false);
+        tf_mag->setValue(1.0);
+        tf_mag->setEnabled(false);
     }
 
+    /*XXX
     if (has_tf)
         gtk_window_set_focus(GTK_WINDOW(tf_popup), tf_id);
     else
@@ -433,37 +292,85 @@ sTfm::update()
     */
 }
 
-#ifdef notdef
-
-// Static function.
 void
-sTfm::tf_cancel_proc(GtkWidget*, void*)
+cXform::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:xform"))
+}
+
+
+void
+cXform::angle_change_slot(int)
+{
+    if (tf_callback) {
+        const char *t = (const char*)tf_ang->currentText().toLatin1();
+        if (t) {
+            (*tf_callback)("ang", true, t, tf_arg);
+        }
+    }
+}
+
+
+void
+cXform::reflect_x_slot(int state)
+{
+    if (tf_callback)
+        (*tf_callback)("rflx", state, 0, tf_arg);
+}
+
+
+void
+cXform::reflect_y_slot(int state)
+{
+    if (tf_callback)
+        (*tf_callback)("rfly", state, 0, tf_arg);
+}
+
+
+void
+cXform::magnification_change_slot(double val)
+{
+    if (tf_callback) {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%.*e", TFM_NUMD, val);
+            (*tf_callback)("magn", true, buf, tf_arg);
+    }
+}
+
+
+void
+cXform::identity_btn_slot()
+{
+    ED()->saveCurTransform(0);
+    ED()->clearCurTransform();
+//XXX    gtk_window_set_focus(GTK_WINDOW(Tfm->tf_popup), Tfm->tf_cancel);
+}
+
+
+void
+cXform::last_btn_slot()
+{
+    ED()->recallCurTransform(0);
+//XXX    gtk_window_set_focus(GTK_WINDOW(Tfm->tf_popup), Tfm->tf_cancel);
+}
+
+
+void
+cXform::dismiss_btn_slot()
 {
     ED()->PopUpTransform(0, MODE_OFF, 0, 0);
 }
 
 
+
+
+#ifdef notdef
+
 // Static function.
 void
-sTfm::tf_action_proc(GtkWidget *widget, void*)
+cXform::tf_action_proc(GtkWidget *widget, void*)
 {
     if (Tfm && Tfm->tf_callback) {
-        const char *name = gtk_widget_get_name(widget);
-        if (!strcmp(name, "Help")) {
-            DSPmainWbag(PopUpHelp("xic:xform"))
-            return;
-        }
-        if (!strcmp(name, "ident")) {
-            ED()->saveCurTransform(0);
-            ED()->clearCurTransform();
-            gtk_window_set_focus(GTK_WINDOW(Tfm->tf_popup), Tfm->tf_cancel);
-            return;
-        }
-        if (!strcmp(name, "last")) {
-            ED()->recallCurTransform(0);
-            gtk_window_set_focus(GTK_WINDOW(Tfm->tf_popup), Tfm->tf_cancel);
-            return;
-        }
         if (!strcmp(name, "sto1")) {
             ED()->saveCurTransform(1);
             return;
@@ -509,37 +416,6 @@ sTfm::tf_action_proc(GtkWidget *widget, void*)
             ED()->recallCurTransform(5);
             return;
         }
-        (*Tfm->tf_callback)(name, GTKdev::GetStatus(widget), 0,
-            Tfm->tf_arg);
-    }
-}
-
-
-// Static function.
-void
-sTfm::tf_ang_proc(GtkWidget*, void*)
-{
-    if (Tfm && Tfm->tf_callback) {
-        char *t = gtk_combo_box_text_get_active_text(
-            GTK_COMBO_BOX_TEXT(Tfm->tf_ang));
-        if (t) {
-            (*Tfm->tf_callback)("ang", true, t, Tfm->tf_arg);
-            g_free(t);
-        }
-    }
-}
-
-
-// Static function.
-void
-sTfm::tf_val_changed(GtkWidget*, void*)
-{
-    if (Tfm && Tfm->tf_callback) {
-        const char *s = Tfm->sb_mag.get_string();
-        char *endp;
-        double d = strtod(s, &endp);
-        if (endp > s && d >= TFM_MIND && d <= TFM_MAXD)
-            (*Tfm->tf_callback)("magn", true, s, Tfm->tf_arg);
     }
 }
 

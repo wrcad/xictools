@@ -222,13 +222,11 @@ cModif::cModif(stringlist *l, bool(*s)(const char*))
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton();
-    btn->setText(tr("Save All"));
+    QPushButton *btn = new QPushButton(tr("Save All"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(save_all_slot()));
 
-    btn = new QPushButton();
-    btn->setText(tr("Skip All"));
+    btn = new QPushButton(tr("Skip All"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(skip_all_slot()));
 
@@ -243,8 +241,7 @@ cModif::cModif(stringlist *l, bool(*s)(const char*))
     hb->addWidget(m_label);
     hbox->addWidget(gb);
 
-    btn = new QPushButton();
-    btn->setText(tr("Help"));
+    btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_slot()));
     vbox->addLayout(hbox);
@@ -258,12 +255,10 @@ cModif::cModif(stringlist *l, bool(*s)(const char*))
 
     hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
-    btn = new QPushButton();
-    btn->setText(tr("Apply - Continue"));
+    btn = new QPushButton(tr("Apply - Continue"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_slot()));
-    btn = new QPushButton();
-    btn->setText(tr("ABORT"));
+    btn = new QPushButton(tr("ABORT"));
     hbox->addWidget(btn);
     vbox->addLayout(hbox);
     connect(btn, SIGNAL(clicked()), this, SLOT(abort_slot()));

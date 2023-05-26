@@ -38,15 +38,19 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
-#include "edit.h"
+#include "qtplace.h"
 #include "dsp_inlines.h"
 #include "promptline.h"
 #include "select.h"
 #include "pbtn_menu.h"
-#include "qtmain.h"
 #include "qtmenu.h"
-//#include "gtkinterf/gtkspinbtn.h"
+
+#include <QLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QDoubleSpinBox>
 
 
 //-----------------------------------------------------------------------------
@@ -78,80 +82,11 @@ namespace {
         // Spin button code.
         enum { PL_NX, PL_NY, PL_DX, PL_DY };
 
-        struct sPlc : public cEdit::sPCpopup
-        {
-            sPlc(bool);
-            ~sPlc();
-
-//            GtkWidget *shell() { return (pl_popup); }
-
-            void update();
-
-            // virtual overrides
-            void rebuild_menu();
-            void desel_placebtn();
-            bool smash_mode();
-
-            static void update_params()
-                {
-                    if (DSP()->CurMode() == Physical)
-                        pl_iap = ED()->arrayParams();
-                }
-
-                /*
-        private:
-            void set_sens(bool);
-
-            static int pl_pop_idle(void*);
-            static void pl_cancel_proc(GtkWidget*, void*);
-            static void pl_replace_proc(GtkWidget*, void*);
-            static void pl_refmenu_proc(GtkWidget*, void*);
-            static void pl_array_proc(GtkWidget*, void*);
-            static void pl_array_set_proc(GtkWidget*, void*);
-            static void pl_val_changed(GtkWidget*, void*);
-            static void pl_place_proc(GtkWidget*, void*);
-            static void pl_menu_place_proc(GtkWidget*, void*);
-            static ESret pl_new_cb(const char*, void*);
-            static void pl_menu_proc(GtkWidget*, void*);
-            static void pl_help_proc(GtkWidget*, void*);
-            static void pl_drag_data_received(GtkWidget*, GdkDragContext*,
-                gint, gint, GtkSelectionData*, guint, guint time, void*);
-
-            GtkWidget *pl_popup;
-            GtkWidget *pl_arraybtn;
-            GtkWidget *pl_replbtn;
-            GtkWidget *pl_smshbtn;
-            GtkWidget *pl_refmenu;
-
-            GtkWidget *pl_label_nx;
-            GtkWidget *pl_label_ny;
-            GtkWidget *pl_label_dx;
-            GtkWidget *pl_label_dy;
-
-            GtkWidget *pl_masterbtn;
-            GtkWidget *pl_placebtn;
-            GtkWidget *pl_menu_placebtn;
-
-            GRledPopup *pl_str_editor;
-            char *pl_dropfile;
-
-            GTKspinBtn sb_nx;
-            GTKspinBtn sb_dx;
-            GTKspinBtn sb_ny;
-            GTKspinBtn sb_dy;
-            GTKspinBtn sb_mmlen;
-            */
-
-            static iap_t pl_iap;
-        };
-
-        sPlc *Plc;
     }
 }
 
-using namespace qtplace;
 
-iap_t sPlc::pl_iap;
+iap_t cPlace::pl_iap;
 
 
 // Main function to bring up the Placement Control pop-up.  If
@@ -163,46 +98,38 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete Plc;
+        if (cPlace::self())
+            cPlace::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (Plc)
-            Plc->update();
+        if (cPlace::self())
+            cPlace::self()->update();
         else
-            sPlc::update_params();
+            cPlace::update_params();
         return;
     }
-    if (Plc)
+    if (cPlace::self())
         return;
 
-    new sPlc(noprompt);
-    /*
-    if (!Plc->shell()) {
-        delete Plc;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Plc->shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new cPlace(noprompt);
+    QTdev::self()->SetPopupLocation(GRloc(LW_UL), cPlace::self(),
+        QTmainwin::self()->Viewport());
+    cPlace::self()->show();
 
-    GTKdev::self()->SetPopupLocation(GRloc(LW_UL), Plc->shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Plc->shell());
-    // give focus to main window
-    GTKdev::SetFocus(GTKmainwin::self()->Shell());
-    */
+    // Give focus to main window.
+//    QTdev::SetFocus(QTmainwin::self()->Shell());
 }
 // End of cEdit functions.
 
+cPlace *cPlace::instPtr;
 
-sPlc::sPlc(bool noprompt)
+cPlace::cPlace(bool noprompt)
 {
-    Plc = this;
-    /*
-    pl_popup = 0;
+    instPtr = this;
     pl_arraybtn = 0;
     pl_replbtn = 0;
-    pl_smshbtn = 0;
+    pl_smashbtn = 0;
     pl_refmenu = 0;
 
     pl_label_nx = 0;
@@ -218,545 +145,237 @@ sPlc::sPlc(bool noprompt)
 
     ED()->plInitMenuLen();
 
-    pl_popup = gtk_NewPopup(0, "Cell Placement Control", pl_cancel_proc, 0);
-    if (!pl_popup)
-        return;
-    gtk_window_set_resizable(GTK_WINDOW(pl_popup), false);
+    setWindowTitle(tr("Cell Placement Control"));
+//    gtk_window_set_resizable(GTK_WINDOW(pl_popup), false);
 
-    GtkWidget *form = gtk_table_new(1, 5, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(pl_popup), form);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    //
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
     // First row buttons.
     //
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
+    pl_arraybtn = new QPushButton(tr("Use Array"));
+    pl_arraybtn->setCheckable(true);
+    hbox->addWidget(pl_arraybtn);
+    connect(pl_arraybtn, SIGNAL(toggled(bool)),
+        this, SLOT(array_btn_slot(bool)));
 
-    GtkWidget *button = gtk_toggle_button_new_with_label("Use Array");
-    gtk_widget_set_name(button, "UseArray");
-    gtk_widget_show(button);
-    pl_arraybtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pl_array_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
+    pl_replbtn = new QPushButton(tr("Replace"));
+    pl_replbtn->setCheckable(true);
+    hbox->addWidget(pl_replbtn);
+    connect(pl_replbtn, SIGNAL(clicked(bool)),
+        this, SLOT(replace_btn_slot(bool)));
 
-    button = gtk_toggle_button_new_with_label("Replace");
-    gtk_widget_set_name(button, "Replace");
-    gtk_widget_show(button);
-    pl_replbtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pl_replace_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
+    pl_smashbtn = new QPushButton(tr("Smash"));
+    pl_smashbtn->setCheckable(true);
+    hbox->addWidget(pl_smashbtn);
 
-    button = gtk_toggle_button_new_with_label("Smash");
-    gtk_widget_set_name(button, "Smash");
-    gtk_widget_show(button);
-    pl_smshbtn = button;
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
+    pl_refmenu = new QComboBox();
+    pl_refmenu->addItem(tr("Origin"));
+    pl_refmenu->addItem(tr("Lower Left"));
+    pl_refmenu->addItem(tr("Upper Left"));
+    pl_refmenu->addItem(tr("Upper Right"));
+    pl_refmenu->addItem(tr("Lower Right"));
+    pl_refmenu->setCurrentIndex(ED()->instanceRef());
+    hbox->addWidget(pl_refmenu);
+    connect(pl_refmenu, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(refmenu_slot(int)));
 
-    pl_refmenu = gtk_combo_box_text_new();
-    gtk_widget_set_name(pl_refmenu, "Ref");
-    gtk_widget_show(pl_refmenu);
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_refmenu),
-        "Origin");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_refmenu),
-        "Lower Left");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_refmenu),
-        "Upper Left");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_refmenu),
-        "Upper Right");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_refmenu),
-        "Lower Right");
-    gtk_combo_box_set_active(GTK_COMBO_BOX(pl_refmenu),
-        ED()->instanceRef());
-    g_signal_connect(G_OBJECT(pl_refmenu), "changed",
-        G_CALLBACK(pl_refmenu_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), pl_refmenu, false, false, 0);
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pl_help_proc), 0);
-
-    int rowcnt = 0;
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
     // Array set labels and entries.
     //
-    hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    GtkWidget *vbox = gtk_vbox_new(false, 2);
-    gtk_widget_show(vbox);
+    QVBoxLayout *vb = new QVBoxLayout();
+    hbox->addLayout(vb);
 
-    GtkWidget *label = gtk_label_new("Nx");
-    gtk_widget_show(label);
-    pl_label_nx = label;
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-    gtk_box_pack_start(GTK_BOX(vbox), label, true, true, 0);
+    pl_label_nx = new QLabel(tr("Nx"));
+    vb->addWidget(pl_label_nx);
+    pl_nx = new QSpinBox();
+    vb->addWidget(pl_nx);
+    pl_nx->setValue(1);
+    pl_nx->setMaximum(MAX_ARRAY);
+    pl_nx->setMinimum(1);
+    connect(pl_nx, SIGNAL(valueChanged(int)),
+        this, SLOT(nx_change_slot(int)));
 
-    GtkWidget *sb = sb_nx.init(1.0, 1.0, MAX_ARRAY, 0);
-    sb_nx.connect_changed(G_CALLBACK(pl_array_set_proc), (void*)PL_NX,
-        "Nx");
-    gtk_box_pack_start(GTK_BOX(vbox), sb, false, false, 0);
+    pl_label_ny = new QLabel(tr("Ny"));
+    vb->addWidget(pl_label_ny);
+    pl_ny = new QSpinBox();
+    vb->addWidget(pl_ny);
+    pl_ny->setValue(1);
+    pl_ny->setMaximum(MAX_ARRAY);
+    pl_ny->setMinimum(1);
+    connect(pl_ny, SIGNAL(valueChanged(int)),
+        this, SLOT(ny_change_slot(int)));
 
-    label = gtk_label_new("Ny");
-    gtk_widget_show(label);
-    pl_label_ny = label;
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-    gtk_box_pack_start(GTK_BOX(vbox), label, true, true, 0);
-
-    sb = sb_ny.init(1.0, 1.0, MAX_ARRAY, 0);
-    sb_ny.connect_changed(G_CALLBACK(pl_array_set_proc), (void*)PL_NY,
-        "Ny");
-    gtk_box_pack_start(GTK_BOX(vbox), sb, false, false, 0);
-
-    gtk_box_pack_start(GTK_BOX(hbox), vbox, true, true, 0);
-
-    vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
-
+    vb = new QVBoxLayout();
+    hbox->addLayout(vb);
     int ndgt = CD()->numDigits();
 
-    label = gtk_label_new("Dx");
-    gtk_widget_show(label);
-    pl_label_dx = label;
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-    gtk_box_pack_start(GTK_BOX(vbox), label, true, true, 0);
+    pl_label_dx = new QLabel(tr("Dx"));
+    vb->addWidget(pl_label_dx);;
+    pl_dx = new QDoubleSpinBox();
+    vb->addWidget(pl_dx);;
+    pl_dx->setValue(0.0);
+    pl_dx->setMaximum(-1e6);
+    pl_dx->setMinimum(1e6);
+    pl_dx->setDecimals(ndgt);
+    connect(pl_dx, SIGNAL(valueChanged(double)),
+        this, SLOT(dx_change_slot(double)));
 
-    sb = sb_dx.init(0.0, -1e6, 1e6, ndgt);
-    sb_dx.connect_changed(G_CALLBACK(pl_array_set_proc), (void*)PL_DX,
-        "Dx");
-    gtk_box_pack_start(GTK_BOX(vbox), sb, true, true, 0);
+    pl_label_dy = new QLabel(tr("Dy"));
+    vb->addWidget(pl_label_dy);;
+    pl_dy = new QDoubleSpinBox();
+    vb->addWidget(pl_dy);
+    pl_dy->setValue(0.0);
+    pl_dy->setMaximum(-1e6);
+    pl_dy->setMinimum(1e6);
+    pl_dy->setDecimals(ndgt);
+    connect(pl_dy, SIGNAL(valueChanged(double)),
+        this, SLOT(dy_change_slot(double)));
 
-    label = gtk_label_new("Dy");
-    gtk_widget_show(label);
-    pl_label_dy = label;
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-    gtk_box_pack_start(GTK_BOX(vbox), label, true, true, 0);
-
-    sb = sb_dy.init(0.0, -1e6, 1e6, ndgt);
-    sb_dy.connect_changed(G_CALLBACK(pl_array_set_proc), (void*)PL_DY,
-        "Dy");
-    gtk_box_pack_start(GTK_BOX(vbox), sb, true, true, 0);
-
-    gtk_box_pack_start(GTK_BOX(hbox), vbox, true, true, 0);
-
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
     // Master selection option menu.
     //
-    GtkWidget *opmenu = gtk_combo_box_text_new();
-    gtk_widget_set_name(opmenu, "Master");
-    gtk_widget_show(opmenu);
-    pl_masterbtn = opmenu;
+    pl_masterbtn = new QComboBox();
+    vbox->addWidget(pl_masterbtn);
     rebuild_menu();
 
-    gtk_table_attach(GTK_TABLE(form), opmenu, 0, 1, 2, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    GtkWidget *sep = gtk_hseparator_new();
-    gtk_widget_show(sep);
-    gtk_table_attach(GTK_TABLE(form), sep, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
     // Label and entry area for max menu length.
     //
-    hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    label = gtk_label_new("Maximum menu length");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    gtk_box_pack_start(GTK_BOX(hbox), label, true, true, 0);
+    QLabel *label = new QLabel(tr("Maximum menu length"));
+    hbox->addWidget(label);
+    pl_mmlen = new QSpinBox();
+    hbox->addWidget(pl_mmlen);
+    pl_mmlen->setValue(ED()->plMenuLen());
+    pl_mmlen->setMinimum(1);
+    pl_mmlen->setMaximum(75);
 
-    sb = sb_mmlen.init(ED()->plMenuLen(), 1.0, 75.0, 0);
-    sb_mmlen.connect_changed(G_CALLBACK(pl_val_changed), 0, "mmlen");
-    gtk_widget_set_size_request(sb, 80, -1);
-    gtk_box_pack_end(GTK_BOX(hbox), sb, false, false, 0);
-
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
     // Place and dismiss buttons.
     //
-    hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
     MenuEnt *m = Menu()->FindEntry(MMside, MenuPLACE);
     if (m)
-        pl_menu_placebtn = (GtkWidget*)m->cmd.caller;
+        pl_menu_placebtn = (QPushButton*)m->cmd.caller;
     if (pl_menu_placebtn) {
         // pl_menu_placebtn is the menu "place" button, which
         // will be "connected" to the Place button in the widget.
 
-        button = gtk_toggle_button_new_with_label("Place");
-        gtk_widget_set_name(button, "Place");
-        gtk_widget_show(button);
-        pl_placebtn = button;
-        bool status = GTKdev::GetStatus(pl_menu_placebtn);
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), status);
-        g_signal_connect(G_OBJECT(button), "clicked",
-            G_CALLBACK(pl_place_proc), 0);
-        gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-        g_signal_connect(G_OBJECT(pl_menu_placebtn), "clicked",
-            G_CALLBACK(pl_menu_place_proc), 0);
+        pl_placebtn = new QPushButton(tr("Place"));;
+        pl_placebtn->setCheckable(true);
+        bool status = QTdev::GetStatus(pl_menu_placebtn);
+        pl_placebtn->setChecked(status);
+        hbox->addWidget(pl_placebtn);
+        connect(pl_placebtn, SIGNAL(toggled(bool)),
+            this, SLOT(place_btn_slot(bool)));
+        connect(pl_menu_placebtn, SIGNAL(toggled(bool)),
+            this, SLOT(menu_placebtn_slot(bool)));
     }
 
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pl_cancel_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     if (DSP()->CurMode() == Electrical)
-        gtk_widget_set_sensitive(pl_arraybtn, false);
+        pl_arraybtn->setEnabled(false);
     set_sens(false);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(pl_refmenu),
-        ED()->instanceRef());
+    pl_refmenu->setCurrentIndex(ED()->instanceRef());
 
     // Give focus to menu, otherwise cancel button may get focus, and
     // Enter (intending to change reference corner) will pop down.
-    gtk_widget_set_can_focus(pl_masterbtn, true);
-    gtk_window_set_focus(GTK_WINDOW(pl_popup), pl_masterbtn);
+//    gtk_widget_set_can_focus(pl_masterbtn, true);
+//    gtk_window_set_focus(GTK_WINDOW(pl_popup), pl_masterbtn);
 
     // drop site
-    gtk_drag_dest_set(pl_popup, GTK_DEST_DEFAULT_ALL, target_table,
-        n_targets, GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(pl_popup), "drag-data-received",
-        G_CALLBACK(pl_drag_data_received), 0);
+//    gtk_drag_dest_set(pl_popup, GTK_DEST_DEFAULT_ALL, target_table,
+//        n_targets, GDK_ACTION_COPY);
+//    g_signal_connect_after(G_OBJECT(pl_popup), "drag-data-received",
+//        G_CALLBACK(pl_drag_data_received), 0);
 
-    if (!ED()->plMenu() && !noprompt)
-        // Positioning is incorrect unless an idle proc is used here.
-        GTKpkg::self()->RegisterIdleProc(pl_pop_idle, 0);
-    */
+//    if (!ED()->plMenu() && !noprompt)
+//        // Positioning is incorrect unless an idle proc is used here.
+//        GTKpkg::self()->RegisterIdleProc(pl_pop_idle, 0);
 }
 
 
-sPlc::~sPlc()
+cPlace::~cPlace()
 {
-    Plc = 0;
-    /*
-    if (GTKdev::GetStatus(pl_placebtn))
+    instPtr = 0;
+    if (QTdev::GetStatus(pl_placebtn)) {
         // exit Place mode
-        GTKdev::CallCallback(pl_menu_placebtn);
+        QTdev::CallCallback(pl_menu_placebtn);
+    }
     // Turn off the replace and array functions
     ED()->setReplacing(false);
     ED()->setUseArray(false);
-    int state = GTKdev::GetStatus(pl_arraybtn);
+    int state = QTdev::GetStatus(pl_arraybtn);
     if (state)
         ED()->setArrayParams(iap_t());
     if (pl_str_editor)
         pl_str_editor->popdown();
-    if (pl_popup)
-        gtk_widget_destroy(pl_popup);
-    */
 }
 
 
 void
-sPlc::update()
+cPlace::update()
 {
-    /*
-    gtk_combo_box_set_active(GTK_COMBO_BOX(pl_refmenu),
-        ED()->instanceRef());
+    pl_refmenu->setCurrentIndex(ED()->instanceRef());
 
     ED()->plInitMenuLen();
-    const char *s = sb_mmlen.get_string();
-    int n;
-    if (sscanf(s, "%d", &n) != 1 || n != ED()->plMenuLen())
-        sb_mmlen.set_value(ED()->plMenuLen());
+    if (pl_mmlen->value() != ED()->plMenuLen())
+        pl_mmlen->setValue(ED()->plMenuLen());
 
     if (DSP()->CurMode() == Electrical) {
         iap_t iaptmp = pl_iap;
-        sb_nx.set_value(1);
-        sb_ny.set_value(1);
-        sb_dx.set_value(0.0);
-        sb_dy.set_value(0.0);
+        pl_nx->setValue(1);
+        pl_ny->setValue(1);
+        pl_dx->setValue(0.0);
+        pl_dy->setValue(0.0);
         pl_iap = iaptmp;
         ED()->setArrayParams(iap_t());
-        GTKdev::SetStatus(pl_arraybtn, false);
-        gtk_widget_set_sensitive(pl_arraybtn, false);
+        QTdev::SetStatus(pl_arraybtn, false);
+        pl_arraybtn->setEnabled(false);
         set_sens(false);
     }
     else {
         pl_iap = ED()->arrayParams();
-        gtk_widget_set_sensitive(pl_arraybtn, true);
-        if (GTKdev::GetStatus(pl_arraybtn)) {
-            sb_nx.set_value(pl_iap.nx());
-            sb_ny.set_value(pl_iap.ny());
-            sb_dx.set_value(MICRONS(pl_iap.spx()));
-            sb_dy.set_value(MICRONS(pl_iap.spy()));
+        pl_arraybtn->setEnabled(true);
+        if (QTdev::GetStatus(pl_arraybtn)) {
+            pl_nx->setValue(pl_iap.nx());
+            pl_ny->setValue(pl_iap.ny());
+            pl_dx->setValue(MICRONS(pl_iap.spx()));
+            pl_dy->setValue(MICRONS(pl_iap.spy()));
         }
     }
-    */
-}
-
-
-void
-sPlc::desel_placebtn()
-{
-//    GTKdev::Deselect(pl_placebtn);
-}
-
-
-bool
-sPlc::smash_mode()
-{
-//    return (GTKdev::GetStatus(pl_smshbtn));
-}
-
-
-// Set the order of names in the menu, and rebuild.
-//
-void
-sPlc::rebuild_menu()
-{
-    /*
-    if (!pl_masterbtn)
-        return;
-    g_signal_handlers_disconnect_by_func(G_OBJECT(pl_masterbtn),
-        (gpointer)pl_menu_proc, (gpointer)0);
-    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(
-        GTK_COMBO_BOX(pl_masterbtn))));
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_masterbtn),
-        "New");
-    for (stringlist *p = ED()->plMenu(); p; p = p->next) {
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(pl_masterbtn),
-            p->string);
-    }
-    if (ED()->plMenu())
-        gtk_combo_box_set_active(GTK_COMBO_BOX(pl_masterbtn), 1);
-    else
-        gtk_combo_box_set_active(GTK_COMBO_BOX(pl_masterbtn), 0);
-    g_signal_connect(G_OBJECT(pl_masterbtn), "changed",
-        G_CALLBACK(pl_menu_proc), 0);
-        */
-}
-
-#ifdef notdef
-
-// Set the sensitivity of the array parameter entry widgets
-//
-void
-sPlc::set_sens(bool set)
-{
-    gtk_widget_set_sensitive(pl_label_nx, set);
-    sb_nx.set_sensitive(set);
-    gtk_widget_set_sensitive(pl_label_ny, set);
-    sb_ny.set_sensitive(set);
-    gtk_widget_set_sensitive(pl_label_dx, set);
-    sb_dx.set_sensitive(set);
-    gtk_widget_set_sensitive(pl_label_dy, set);
-    sb_dy.set_sensitive(set);
-}
-
-
-// Static function.
-int
-sPlc::pl_pop_idle(void*)
-{
-    pl_menu_proc(0, 0);
-    return (0);
-}
-
-
-// Static function.
-// Cancel callback.  Simply pop it down.
-//
-void
-sPlc::pl_cancel_proc(GtkWidget*, void*)
-{
-    ED()->PopUpPlace(MODE_OFF, false);
-}
-
-
-// Static function.
-// Replace callback.  When the replace command is active, pointing at
-// existing instances will cause them to be replaced by the current
-// master.  The current transform is added to the existing transform.
-//
-void
-sPlc::pl_replace_proc(GtkWidget *caller, void*)
-{
-    if (GTKdev::GetStatus(caller)) {
-        ED()->setReplacing(true);
-        PL()->ShowPrompt("Select subcells to replace, press Esc to quit.");
-        if (Plc) {
-            GTKdev::SetStatus(Plc->pl_smshbtn, false);
-            gtk_widget_set_sensitive(Plc->pl_smshbtn, false);
-        }
-    }
-    else {
-        ED()->setReplacing(false);
-        PL()->ShowPrompt(
-            "Click on locations to place cell, press Esc to quit.");
-        if (Plc) {
-            gtk_widget_set_sensitive(Plc->pl_smshbtn, true);
-            if (DSP()->CurMode() == Physical)
-                gtk_widget_set_sensitive(Plc->pl_arraybtn, true);
-        }
-    }
-}
-
-
-// Static function.
-// The reference point of the cell, i.e., the point that is located at
-// the cursor, is switchable between the corners of the untransformed
-// cell, or the origin of the cell, in physical mode.
-//
-void
-sPlc::pl_refmenu_proc(GtkWidget *caller, void*)
-{
-    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
-    if (i < 0)
-        return;
-    if (i == 0)
-        ED()->setInstanceRef(PL_ORIGIN);
-    else if (i == 1)
-        ED()->setInstanceRef(PL_LL);
-    else if (i == 2)
-        ED()->setInstanceRef(PL_UL);
-    else if (i == 3)
-        ED()->setInstanceRef(PL_UR);
-    else if (i == 4)
-        ED()->setInstanceRef(PL_LR);
-}
-
-
-// Static function.
-// When on, cells placed can be arrayed.  Otherwise only a single
-// instance is created.
-//
-void
-sPlc::pl_array_proc(GtkWidget *caller, void*)
-{
-    if (!Plc)
-        return;
-    int state = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(caller));
-    if (state) {
-        Plc->sb_nx.set_value(Plc->pl_iap.nx());
-        Plc->sb_ny.set_value(Plc->pl_iap.ny());
-        Plc->sb_dx.set_value(MICRONS(Plc->pl_iap.spx()));
-        Plc->sb_dy.set_value(MICRONS(Plc->pl_iap.spy()));
-        Plc->set_sens(true);
-        ED()->setUseArray(true);
-    }
-    else {
-        iap_t iaptmp = pl_iap;
-        Plc->sb_nx.set_value(1);
-        Plc->sb_ny.set_value(1);
-        Plc->sb_dx.set_value(0.0);
-        Plc->sb_dy.set_value(0.0);
-        pl_iap = iaptmp;
-        Plc->set_sens(false);
-        ED()->setUseArray(false);
-    }
-}
-
-
-// Static function.
-void
-sPlc::pl_array_set_proc(GtkWidget*, void *arg)
-{
-    if (!Plc)
-        return;
-    int code = (intptr_t)arg;
-    if (code == PL_NX)
-        pl_iap.set_nx(Plc->sb_nx.get_value_as_int());
-    else if (code == PL_NY)
-        pl_iap.set_ny(Plc->sb_ny.get_value_as_int());
-    else if (code == PL_DX)
-        pl_iap.set_spx(INTERNAL_UNITS(Plc->sb_dx.get_value()));
-    else if (code == PL_DY)
-        pl_iap.set_spy(INTERNAL_UNITS(Plc->sb_dy.get_value()));
-
-    if (GTKmainwin::self()) {
-        GTKmainwin::self()->ShowGhost(ERASE);
-        ED()->setArrayParams(pl_iap);
-        GTKmainwin::self()->ShowGhost(DISPLAY);
-    }
-}
-
-
-// Static function.
-void
-sPlc::pl_val_changed(GtkWidget *caller, void*)
-{
-    if (!Plc)
-        return;
-    const char *name = gtk_widget_get_name(caller);
-    if (!name)
-        return;
-    if (!strcmp(name, "mmlen")) {
-        const char *s = Plc->sb_mmlen.get_string();
-        int n;
-        if (sscanf(s, "%d", &n) == 1 && n >= 1 && n <= 75) {
-            if (n == DEF_PLACE_MENU_LEN)
-                CDvdb()->clearVariable(VA_MasterMenuLength);
-            else
-                CDvdb()->setVariable(VA_MasterMenuLength, s);
-        }
-    }
-}
-
-
-// Static function.
-void
-sPlc::pl_place_proc(GtkWidget*, void*)
-{
-    if (!Plc)
-        return;
-    bool status = GTKdev::GetStatus(Plc->pl_placebtn);
-    bool mbstatus = GTKdev::GetStatus(Plc->pl_menu_placebtn);
-    if (status != mbstatus)
-        GTKdev::CallCallback(Plc->pl_menu_placebtn);
-}
-
-
-// Static function.
-void
-sPlc::pl_menu_place_proc(GtkWidget*, void*)
-{
-    if (!Plc)
-        return;
-    bool status = GTKdev::GetStatus(Plc->pl_menu_placebtn);
-    if (status)
-        GTKdev::Select(Plc->pl_placebtn);
-    else
-        GTKdev::Deselect(Plc->pl_placebtn);
 }
 
 
 // Static function.
 ESret
-sPlc::pl_new_cb(const char *string, void*)
+cPlace::pl_new_cb(const char *string, void*)
 {
     if (string && *string) {
-        // If two tokens, the first if a library or archive file name,
+        // If two tokens, the first is a library or archive file name,
         // the second is the cell name.
 
         char *aname = lstring::getqtok(&string);
@@ -766,28 +385,158 @@ sPlc::pl_new_cb(const char *string, void*)
         delete [] cname;
     }
     // give focus to main window
-    GTKdev::SetFocus(GTKmainwin::self()->Shell());
+//XXX    GTKdev::SetFocus(GTKmainwin::self()->Shell());
     return (ESTR_DN);
 }
 
 
-// Static function.
 void
-sPlc::pl_menu_proc(GtkWidget *caller, void*)
+cPlace::desel_placebtn()
 {
-    if (!Plc)
+    QTdev::Deselect(pl_placebtn);
+}
+
+
+bool
+cPlace::smash_mode()
+{
+    return (QTdev::GetStatus(pl_smashbtn));
+}
+
+
+// Set the order of names in the menu, and rebuild.
+//
+void
+cPlace::rebuild_menu()
+{
+    if (!pl_masterbtn)
         return;
-    int i = 0;
-    if (caller) {
-        i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
-        if (i < 0)
-            return;
+    pl_masterbtn->clear();
+    pl_masterbtn->addItem(tr("New"));
+    for (stringlist *p = ED()->plMenu(); p; p = p->next) {
+        pl_masterbtn->addItem(tr(p->string));
     }
-    if (i == 0) {
-        if (GTKdev::GetStatus(Plc->pl_placebtn))
-            GTKdev::CallCallback(Plc->pl_menu_placebtn);
-        char *dfile = Plc->pl_dropfile;
-        Plc->pl_dropfile = 0;
+    if (ED()->plMenu())
+        pl_masterbtn->setCurrentIndex(1);
+    else
+        pl_masterbtn->setCurrentIndex(0);
+    connect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(master_menu_slot(int)));
+}
+
+
+// Set the sensitivity of the array parameter entry widgets
+//
+void
+cPlace::set_sens(bool set)
+{
+    pl_label_nx->setEnabled(set);
+    pl_nx->setEnabled(set);
+    pl_label_ny->setEnabled(set);
+    pl_ny->setEnabled(set);
+    pl_label_dx->setEnabled(set);
+    pl_dx->setEnabled(set);
+    pl_label_dy->setEnabled(set);
+    pl_dy->setEnabled(set);
+}
+
+
+void
+cPlace::array_btn_slot(bool state)
+{
+    // When on, cells placed can be arrayed.  Otherwise only a single
+    // instance is created.
+
+    if (state) {
+        pl_nx->setValue(pl_iap.nx());
+        pl_ny->setValue(pl_iap.ny());
+        pl_dx->setValue(MICRONS(pl_iap.spx()));
+        pl_dy->setValue(MICRONS(pl_iap.spy()));
+        set_sens(true);
+        ED()->setUseArray(true);
+    }
+    else {
+        iap_t iaptmp = pl_iap;
+        pl_nx->setValue(1);
+        pl_ny->setValue(1);
+        pl_dx->setValue(0.0);
+        pl_dy->setValue(0.0);
+        pl_iap = iaptmp;
+        set_sens(false);
+        ED()->setUseArray(false);
+    }
+}
+
+
+void
+cPlace::replace_btn_slot(bool state)
+{
+    // When the replace mode is active, clicking on existing instances
+    // will cause them to be replaced by the current master.  The
+    // current transform is added to the existing transform.
+    //
+    if (state) {
+        ED()->setReplacing(true);
+        PL()->ShowPrompt("Select subcells to replace, press Esc to quit.");
+        QTdev::SetStatus(pl_smashbtn, false);
+        pl_smashbtn->setEnabled(false);
+    }
+    else {
+        ED()->setReplacing(false);
+        PL()->ShowPrompt(
+            "Click on locations to place cell, press Esc to quit.");
+        pl_smashbtn->setEnabled(true);
+        if (DSP()->CurMode() == Physical)
+            pl_arraybtn->setEnabled(true);
+    }
+}
+
+
+void
+cPlace::refmenu_slot(int ix)
+{
+    // The reference point of the cell, i.e., the point that is
+    // located at the cursor, is switchable between the corners of the
+    // untransformed cell, or the origin of the cell, in physical
+    // mode.
+
+    if (ix < 0)
+        return;
+    if (ix == 0)
+        ED()->setInstanceRef(PL_ORIGIN);
+    else if (ix == 1)
+        ED()->setInstanceRef(PL_LL);
+    else if (ix == 2)
+        ED()->setInstanceRef(PL_UL);
+    else if (ix == 3)
+        ED()->setInstanceRef(PL_UR);
+    else if (ix == 4)
+        ED()->setInstanceRef(PL_LR);
+}
+
+
+void
+cPlace::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("placepanel"))
+}
+
+
+void
+cPlace::dismiss_btn_slot()
+{
+    ED()->PopUpPlace(MODE_OFF, false);
+}
+
+
+void
+cPlace::master_menu_slot(int ix)
+{
+    if (ix == 0) {
+        if (QTdev::GetStatus(pl_placebtn))
+            QTdev::CallCallback(pl_menu_placebtn);
+        char *dfile = pl_dropfile;
+        pl_dropfile = 0;
         GCarray<char*> gc_dfile(dfile);
         const char *defname = dfile;
         if (!defname || !*defname) {
@@ -798,35 +547,116 @@ sPlc::pl_menu_proc(GtkWidget *caller, void*)
                     defname = Tstring(cd->cellname());
             }
         }
-        if (Plc->pl_str_editor)
-            Plc->pl_str_editor->popdown();
+        if (pl_str_editor)
+            pl_str_editor->popdown();
         int x, y;
-        GTKdev::self()->Location(Plc->pl_masterbtn, &x, &y);
-        Plc->pl_str_editor = DSPmainWbagRet(PopUpEditString(0,
+        QTdev::self()->Location(pl_masterbtn, &x, &y);
+        pl_str_editor = DSPmainWbagRet(PopUpEditString(0,
             GRloc(LW_XYA, x - 200, y), "File or cell name of cell to place?",
             defname, pl_new_cb, 0, 200, 0));
-        if (Plc->pl_str_editor)
-            Plc->pl_str_editor->register_usrptr((void**)&Plc->pl_str_editor);
+        if (pl_str_editor)
+            pl_str_editor->register_usrptr((void**)&pl_str_editor);
     }
     else {
-        char *tok = gtk_combo_box_text_get_active_text(
-            GTK_COMBO_BOX_TEXT(caller));
-        char *string = tok;
-        char *aname = lstring::getqtok(&string);
-        char *cname = lstring::getqtok(&string);
+        const char *tok = (const char*)pl_masterbtn->currentText().toLatin1();
+        const char *string = tok;
+        const char *aname = lstring::getqtok(&string);
+        const char *cname = lstring::getqtok(&string);
         ED()->addMaster(aname, cname);
         delete [] aname;
         delete [] cname;
-        g_free(tok);
     }
 }
 
 
-// Static function.
 void
-sPlc::pl_help_proc(GtkWidget*, void*)
+cPlace::place_btn_slot(bool state)
 {
-    DSPmainWbag(PopUpHelp("placepanel"))
+    bool mbstate = QTdev::GetStatus(pl_menu_placebtn);
+    if (state != mbstate)
+        QTdev::CallCallback(pl_menu_placebtn);
+}
+
+
+void
+cPlace::menu_placebtn_slot(bool status)
+{
+    if (status)
+        QTdev::Select(pl_placebtn);
+    else
+        QTdev::Deselect(pl_placebtn);
+}
+
+
+void
+cPlace::mmlen_change_slot(int val)
+{
+    if (val == DEF_PLACE_MENU_LEN)
+        CDvdb()->clearVariable(VA_MasterMenuLength);
+    else {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%d", val);
+        CDvdb()->setVariable(VA_MasterMenuLength, buf);
+    }
+}
+
+
+void
+cPlace::nx_change_slot(int num)
+{
+    pl_iap.set_nx(num);
+    if (QTmainwin::self()) {
+        QTmainwin::self()->ShowGhost(ERASE);
+        ED()->setArrayParams(pl_iap);
+        QTmainwin::self()->ShowGhost(DISPLAY);
+    }
+}
+
+
+void
+cPlace::ny_change_slot(int num)
+{
+    pl_iap.set_ny(num);
+    if (QTmainwin::self()) {
+        QTmainwin::self()->ShowGhost(ERASE);
+        ED()->setArrayParams(pl_iap);
+        QTmainwin::self()->ShowGhost(DISPLAY);
+    }
+}
+
+
+void
+cPlace::dx_change_slot(double val)
+{
+    pl_iap.set_spx(INTERNAL_UNITS(val));
+    if (QTmainwin::self()) {
+        QTmainwin::self()->ShowGhost(ERASE);
+        ED()->setArrayParams(pl_iap);
+        QTmainwin::self()->ShowGhost(DISPLAY);
+    }
+}
+
+
+void
+cPlace::dy_change_slot(double val)
+{
+    pl_iap.set_spy(INTERNAL_UNITS(val));
+    if (QTmainwin::self()) {
+        QTmainwin::self()->ShowGhost(ERASE);
+        ED()->setArrayParams(pl_iap);
+        QTmainwin::self()->ShowGhost(DISPLAY);
+    }
+}
+
+
+#ifdef notdef
+
+// Static function.
+int
+cPlace::pl_pop_idle(void*)
+{
+    pl_menu_proc(0, 0);
+    return (0);
 }
 
 
@@ -834,7 +664,7 @@ sPlc::pl_help_proc(GtkWidget*, void*)
 // Receive drop data (a path name).
 //
 void
-sPlc::pl_drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
+cPlace::pl_drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
     GtkSelectionData *data, guint, guint time, void*)
 {
     if (gtk_selection_data_get_length(data) >= 0 &&
@@ -864,6 +694,6 @@ sPlc::pl_drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
     }
     gtk_drag_finish(context, false, false, time);
 }
-// End of sPlc functions.
+// End of cPlace functions.
 
 #endif

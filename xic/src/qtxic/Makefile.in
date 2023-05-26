@@ -27,6 +27,7 @@ INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include
 
 CCFILES = \
     qtcolor.cc \
+    qtcolortimer.cc \
     qtcoord.cc \
     qtempty.cc \
     qtexpand.cc \
@@ -57,6 +58,7 @@ CCFILES = \
     qtxxx.cc
 MOCFILES = \
     moc_main.cpp \
+    moc_color.cpp \
     moc_coord.cpp \
     moc_empty.cpp \
     moc_expand.cpp \
@@ -67,6 +69,8 @@ MOCFILES = \
     moc_merge.cpp \
     moc_modif.cpp \
     moc_param.cpp \
+    moc_place.cpp \
+    moc_xform.cpp \
     moc_zoom.cpp
 CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
 MOCOBJS = $(MOCFILES:.cpp=.o)
@@ -95,6 +99,7 @@ endif
 	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc
 
 moc_main.o: moc_main.cpp  qtmain.h
+moc_color.o: moc_color.cpp  qtcolor.h
 moc_coord.o: moc_coord.cpp  qtcoord.h
 moc_empty.o: moc_empty.cpp  qtempty.h
 moc_expand.o: moc_expand.cpp  qtexpand.h
@@ -105,10 +110,14 @@ moc_menucfg.o: moc_menucfg.cpp  qtmenucfg.h
 moc_merge.o: moc_merge.cpp  qtmerge.h
 moc_modif.o: moc_modif.cpp  qtmodif.h
 moc_param.o: moc_param.cpp  qtparam.h
+moc_place.o: moc_place.cpp  qtplace.h
+moc_xform.o: moc_xform.cpp  qtxform.h
 moc_zoom.o: moc_zoom.cpp  qtzoom.h
 
 moc_main.cpp: $(MOC) qtmain.h
 	$(MOC) qtmain.h -o moc_main.cpp
+moc_color.cpp: $(MOC) qtcolor.h
+	$(MOC) qtcolor.h -o moc_color.cpp
 moc_coord.cpp: $(MOC) qtcoord.h
 	$(MOC) qtcoord.h -o moc_coord.cpp
 moc_empty.cpp: $(MOC) qtempty.h
@@ -129,6 +138,10 @@ moc_modif.cpp: $(MOC) qtmodif.h
 	$(MOC) qtmodif.h -o moc_modif.cpp
 moc_param.cpp: $(MOC) qtparam.h
 	$(MOC) qtparam.h -o moc_param.cpp
+moc_place.cpp: $(MOC) qtplace.h
+	$(MOC) qtplace.h -o moc_place.cpp
+moc_xform.cpp: $(MOC) qtxform.h
+	$(MOC) qtxform.h -o moc_xform.cpp
 moc_zoom.cpp: $(MOC) qtzoom.h
 	$(MOC) qtzoom.h -o moc_zoom.cpp
 
