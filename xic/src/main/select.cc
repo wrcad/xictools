@@ -85,7 +85,7 @@ unsigned int cSelections::blink_thresh = DEF_MAX_BLINKING_OBJECTS;
 
 //-----------------------------------------------------------------------------
 // Menu command to deselect everything.  There is provision for registering
-// and alternative handler, used by the Properties Editor.
+// an alternative handler, used by the Properties Editor.
 
 namespace { void(*desel_override)(CmdDesc*); }
 
@@ -2012,7 +2012,8 @@ selqueue_t::insert_and_show(CDol *list)
             if (!wdesc->Wdraw())
                 continue;
             if (wdesc->IsShowing(sq_sdesc)) {
-                wdesc->Wdraw()->SetColor(DSP()->SelectPixel());
+                wdesc->Wdraw()->SetColor(wdesc->Mode() == Physical ?
+                    DSP()->SelectPixelPhys() : DSP()->SelectPixelElec());
                 for (CDol *c = list; c; c = c->next) {
                     // Test for user interrupt
                     if (DSP()->Interrupt()) {
@@ -2201,7 +2202,6 @@ void
 selqueue_t::set_show_selected(const char *types, bool on)
 {
     if (on) {
-        DSPmainDraw(SetColor(DSP()->SelectPixel()))
         for (sqel_t *c = sq_list; c; c = c->next) {
             if (match_type(types, c->odesc) &&
                     c->odesc->state() == CDobjVanilla) {
@@ -2209,8 +2209,12 @@ selqueue_t::set_show_selected(const char *types, bool on)
                 WindowDesc *wdesc;
                 WDgen wgen(WDgen::MAIN, WDgen::CDDB);
                 while ((wdesc = wgen.next()) != 0) {
-                    if (wdesc->IsShowing(sq_sdesc))
+                    if (wdesc->IsShowing(sq_sdesc)) {
+                        DSPmainDraw(SetColor(wdesc->Mode() == Physical ?
+                            DSP()->SelectPixelPhys() :
+                            DSP()->SelectPixelElec()))
                         wdesc->DisplaySelected(c->odesc);
+                    }
                 }
             }
         }
@@ -2285,7 +2289,8 @@ unsigned int
 selqueue_t::show(WindowDesc *wdesc) const
 {
     unsigned int dcnt = 0;
-    wdesc->Wdraw()->SetColor(DSP()->SelectPixel());
+    wdesc->Wdraw()->SetColor(wdesc->Mode() == Physical ?
+        DSP()->SelectPixelPhys() : DSP()->SelectPixelElec());
     for (sqel_t *el = sq_list; el; el = el->next) {
         // Test for user interrupt.
         if (DSP()->Interrupt()) {
@@ -2749,12 +2754,14 @@ selqueue_t::show_selected(const CDs *sd, CDo *cd)
     cd->set_state(CDobjSelected);
     if (DSP()->NoRedisplay())
         return;
-    DSPmainDraw(SetColor(DSP()->SelectPixel()))
     WindowDesc *wdesc;
     WDgen wgen(WDgen::MAIN, WDgen::CDDB);
     while ((wdesc = wgen.next()) != 0) {
-        if (wdesc->IsShowing(sd))
+        if (wdesc->IsShowing(sd)) {
+            DSPmainDraw(SetColor(wdesc->Mode() == Physical ?
+                DSP()->SelectPixelPhys() : DSP()->SelectPixelElec()))
             wdesc->DisplaySelected(cd);
+        }
     }
 }
 

@@ -58,12 +58,19 @@ cMain::ColorTimerInit()
 {
     if (!QTdev::exists())
         return;
-    int pixel = DSP()->Color(SelectColor1);
+    int pixel = DSP()->Color(SelectColor1, Physical);
     int red, green, blue;
     QTdev::self()->RGBofPixel(pixel, &red, &green, &blue);
-    int sp = DSP()->SelectPixel();
+    int sp = DSP()->SelectPixelPhys();
     QTdev::self()->AllocateColor(&sp, red, green, blue);
-    DSP()->SetSelectPixel(sp);
+    DSP()->SetSelectPixelPhys(sp);
+
+    pixel = DSP()->Color(SelectColor1, Electrical);
+    QTdev::self()->RGBofPixel(pixel, &red, &green, &blue);
+    sp = DSP()->SelectPixelElec();
+    QTdev::self()->AllocateColor(&sp, red, green, blue);
+    DSP()->SetSelectPixelElec(sp);
+
     QTdev::self()->AddTimer(500, colortimer, 0);
 }
 
@@ -179,29 +186,30 @@ namespace {
     {
         static int on;
         if (!QTpkg::self()->IsBusy()) {
-            if (QTpkg::self()->IsTrueColor()) {
-                WindowDesc *wd;
-                WDgen wgen(WDgen::MAIN, WDgen::ALL);
-                while ((wd = wgen.next()) != 0) {
-                    if (!on)
-                        DSP()->SetSelectPixel(
-                            DSP()->Color(SelectColor1, wd->Mode()));
-                    else
-                        DSP()->SetSelectPixel(
-                            DSP()->Color(SelectColor2, wd->Mode()));
-
-                    if (wd->DbType() == WDcddb) {
-                        if (Selections.blinking())
-                            Selections.show(wd);
+            WindowDesc *wd;
+            WDgen wgen(WDgen::MAIN, WDgen::ALL);
+            while ((wd = wgen.next()) != 0) {
+                QTsubwin *sw = dynamic_cast<QTsubwin*>(wd->Wbag());
+                if (sw) {
+                    draw_if *dif = dynamic_cast<draw_if*>(sw->Viewport());
+                    if (dif) {
+                        dif->draw_direct(true);
+                        dif->update();
                     }
-                    wd->ShowHighlighting();
-
-                    //XXX This updates the entire drawing windows every
-                    // half second.
-                    wd->Wdraw()->Update();
                 }
-                DSP()->SetSelectPixel(DSP()->Color(SelectColor1));
             }
+        }
+        if (!on) {
+            DSP()->SetSelectPixelPhys(
+                DSP()->Color(SelectColor1, Physical));
+            DSP()->SetSelectPixelElec(
+                DSP()->Color(SelectColor1, Electrical));
+        }
+        else {
+            DSP()->SetSelectPixelPhys(
+                DSP()->Color(SelectColor2, Physical));
+            DSP()->SetSelectPixelElec(
+                DSP()->Color(SelectColor2, Electrical));
         }
         on ^= true;
         idle_id = 0;

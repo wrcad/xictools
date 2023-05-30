@@ -60,6 +60,9 @@ class QMenu;
 class QMenuBar;
 class QResizeEvent;
 
+#define HLP_DEF_WIDTH 730
+#define HLP_DEF_HEIGHT 400
+
 struct htmAnchorCallbackStruct;
 struct htmFormCallbackStruct;
 struct htmFrameCallbackStruct;
@@ -132,7 +135,8 @@ namespace qtinterf
         int get_scroll_pos(bool = false);
         void set_scroll_pos(int, bool = false);
 
-        QSize sizeHint() const { return (QSize(520, 350)); }
+        QSize sizeHint() const
+            { return (QSize(HLP_DEF_WIDTH, HLP_DEF_HEIGHT)); }
         QSize minimumSizeHint() const { return (QSize(260, 175)); }
 
     private slots:
@@ -186,62 +190,61 @@ namespace qtinterf
         void dismiss();
 
     private:
-        void set_frame_parent(QThelpPopup *p) { frame_parent = p; }
-        void set_frame_name(const char *n) { frame_name = strdup(n); }
+        void set_frame_parent(QThelpPopup *p) { h_frame_parent = p; }
+        void set_frame_name(const char *n) { h_frame_name = strdup(n); }
 
         void newtopic(const char*, bool, bool, bool);
         void stop_image_download();
 
-        QTviewer *html_viewer;
+        QTviewer    *h_viewer;
 
-        QMenuBar *menubar;
-        QMenu *main_menus[4];
-        QStatusBar *status_bar;
+        QMenu       *h_main_menus[4];
+        QStatusBar  *h_status_bar;
+
+        HLPparams   *h_params;          // default parameters
+        HLPtopic    *h_root_topic;      // root (original) topic
+        HLPtopic    *h_cur_topic;       // current topic
+        bool        h_stop_btn_pressed; // stop download flag
+        bool        h_is_frame;         // true for frames
+        GRlistPopup *h_cache_list;      // hook for pop-up cache list
+
+        QThelpPopup **h_frame_array;    // array of frame children
+        int         h_frame_array_size;
+        QThelpPopup *h_frame_parent;    // pointer to frame parent
+        char        *h_frame_name;      // frame name if frame
 
         // menu actions
-        QAction *a_Backward;
-        QAction *a_Forward;
-        QAction *a_Stop;
-        QAction *a_Open;
-        QAction *a_OpenFile;
-        QAction *a_Save;
-        QAction *a_Print;
-        QAction *a_Reload;
-        QAction *a_Quit;
-        QAction *a_Search;
-        QAction *a_FindText;
-        QAction *a_SetFont;
-        QAction *a_DontCache;
-        QAction *a_ClearCache;
-        QAction *a_ReloadCache;
-        QAction *a_ShowCache;
-        QAction *a_NoCookies;
-        QAction *a_NoImages;
-        QAction *a_SyncImages;
-        QAction *a_DelayedImages;
-        QAction *a_ProgressiveImages;
-        QAction *a_AnchorPlain;
-        QAction *a_AnchorButtons;
-        QAction *a_AnchorUnderline;
-        QAction *a_AnchorHighlight;
-        QAction *a_BadHTML;
-        QAction *a_FreezeAnimations;
-        QAction *a_LogTransactions;
-        QAction *a_AddBookmark;
-        QAction *a_DeleteBookmark;
-        QAction *a_Help;
-
-        HLPparams *params;          // default parameters
-        HLPtopic *root_topic;       // root (original) topic
-        HLPtopic *cur_topic;        // current topic
-        bool stop_btn_pressed;      // stop download flag
-        bool is_frame;              // true for frames
-        GRlistPopup *cache_list;    // hook for pop-up cache list
-
-        QThelpPopup **frame_array;  // array of frame children
-        int frame_array_size;
-        QThelpPopup *frame_parent;  // pointer to frame parent
-        char *frame_name;           // frame name if frame
+        QAction     *a_Backward;
+        QAction     *a_Forward;
+        QAction     *a_Stop;
+        QAction     *a_Open;
+        QAction     *a_OpenFile;
+        QAction     *a_Save;
+        QAction     *a_Print;
+        QAction     *a_Reload;
+        QAction     *a_Quit;
+        QAction     *a_Search;
+        QAction     *a_FindText;
+        QAction     *a_SetFont;
+        QAction     *a_DontCache;
+        QAction     *a_ClearCache;
+        QAction     *a_ReloadCache;
+        QAction     *a_ShowCache;
+        QAction     *a_NoCookies;
+        QAction     *a_NoImages;
+        QAction     *a_SyncImages;
+        QAction     *a_DelayedImages;
+        QAction     *a_ProgressiveImages;
+        QAction     *a_AnchorPlain;
+        QAction     *a_AnchorButtons;
+        QAction     *a_AnchorUnderline;
+        QAction     *a_AnchorHighlight;
+        QAction     *a_BadHTML;
+        QAction     *a_FreezeAnimations;
+        QAction     *a_LogTransactions;
+        QAction     *a_AddBookmark;
+        QAction     *a_DeleteBookmark;
+        QAction     *a_Help;
     };
 }
 

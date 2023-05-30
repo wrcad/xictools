@@ -60,11 +60,19 @@
 #include <QStatusBar>
 #include <QResizeEvent>
 #include <QScrollBar>
+#include <QToolBar>
 
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <unistd.h>
+
+
+/*=======================================================================
+ =
+ =  HTML Viewer for WWW and Help System
+ =
+ =======================================================================*/
 
 // Help keywords used in this file
 //  helpsys
@@ -322,16 +330,16 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
     // status bar visible.
 
     wb_shell = this;
-    params = 0;
-    root_topic = 0;
-    cur_topic = 0;
-    stop_btn_pressed = false;
-    is_frame = !has_menu;
-    cache_list = 0;
-    frame_array = 0;
-    frame_array_size = 0;
-    frame_parent = 0;
-    frame_name = 0;
+    h_params = 0;
+    h_root_topic = 0;
+    h_cur_topic = 0;
+    h_stop_btn_pressed = false;
+    h_is_frame = !has_menu;
+    h_cache_list = 0;
+    h_frame_array = 0;
+    h_frame_array_size = 0;
+    h_frame_parent = 0;
+    h_frame_name = 0;
 
     wb_sens_set = ::sens_set;
 
@@ -354,22 +362,44 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
         move(xx, yy);
     }
     QWidget *cwidget = new QWidget;
-    html_viewer = new QTviewer(500, 400, this, this);
+    h_viewer = new QTviewer(HLP_DEF_WIDTH, HLP_DEF_HEIGHT, this, this);
     setCentralWidget(cwidget);
-    status_bar = new QStatusBar(this);
+    h_status_bar = new QStatusBar(this);
     if (!has_menu)
-        status_bar->hide();
+        h_status_bar->hide();
     QVBoxLayout *vbox = new QVBoxLayout(cwidget);
     vbox->setMargin(4);
     vbox->setSpacing(2);
-    vbox->addWidget(html_viewer);
-    vbox->addWidget(status_bar);
+#ifdef __APPLE__
+    // Without a local menubar, the forward and back icons aren't
+    // visible, so we put them in a tool bar.
+    QToolBar *tb = new QToolBar();
+    if (!has_menu)
+        tb->hide();
+    tb->setMaximumHeight(24);
+    vbox->addWidget(tb);
+#endif
+    vbox->addWidget(h_viewer);
+    vbox->addWidget(h_status_bar);
 
-    if (!is_frame)
-        params = new HLPparams(HLP()->no_file_fonts());
+    if (!h_is_frame)
+        h_params = new HLPparams(HLP()->no_file_fonts());
 
-    html_viewer->freeze();
+    h_viewer->freeze();
 
+#ifdef __APPLE__
+    a_Backward =tb->addAction(tr("back"),
+        this, SLOT(backward_slot()));
+    a_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
+
+    a_Forward = tb->addAction(tr("forw"),
+        this, SLOT(forward_slot()));
+    a_Forward->setIcon(QIcon(QPixmap(forward_xpm)));
+
+    a_Stop = tb->addAction(tr("stop"),
+        this, SLOT(stop_slot()));
+    a_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
+#else
     a_Backward = menuBar()->addAction(tr("back"),
         this, SLOT(backward_slot()));
     a_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
@@ -381,166 +411,155 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
     a_Stop = menuBar()->addAction(tr("stop"),
         this, SLOT(stop_slot()));
     a_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
-
-    main_menus[0] = menuBar()->addMenu(tr("&File"));
-    a_Open = main_menus[0]->addAction(tr("&Open"),
+#endif
+    h_main_menus[0] = menuBar()->addMenu(tr("&File"));
+    a_Open = h_main_menus[0]->addAction(tr("&Open"),
         this, SLOT(open_slot()), Qt::CTRL+Qt::Key_O);
-    a_OpenFile = main_menus[0]->addAction(QString(tr("Open &File")),
+    a_OpenFile = h_main_menus[0]->addAction(QString(tr("Open &File")),
         this, SLOT(open_file_slot()), Qt::CTRL+Qt::Key_F);
-    a_Save = main_menus[0]->addAction(tr("&Save"),
+    a_Save = h_main_menus[0]->addAction(tr("&Save"),
         this, SLOT(save_slot()), Qt::CTRL+Qt::Key_S);
-    a_Print = main_menus[0]->addAction(tr("&Print"),
+    a_Print = h_main_menus[0]->addAction(tr("&Print"),
         this, SLOT(print_slot()), Qt::CTRL+Qt::Key_P);
-    a_Reload = main_menus[0]->addAction(tr("&Reload"),
+    a_Reload = h_main_menus[0]->addAction(tr("&Reload"),
         this, SLOT(reload_slot()), Qt::CTRL+Qt::Key_R);
-    main_menus[0]->addSeparator();
-    a_Quit = main_menus[0]->addAction(tr("&Quit"),
+    h_main_menus[0]->addSeparator();
+    a_Quit = h_main_menus[0]->addAction(tr("&Quit"),
         this, SLOT(quit_slot()), Qt::CTRL+Qt::Key_Q);
 
-    main_menus[1] = menuBar()->addMenu(tr("&Options"));
-    a_Search = main_menus[1]->addAction(tr("S&earch"),
+    h_main_menus[1] = menuBar()->addMenu(tr("&Options"));
+    a_Search = h_main_menus[1]->addAction(tr("S&earch"),
         this, SLOT(search_slot()));
-    a_FindText = main_menus[1]->addAction(tr("Find Text"),
+    a_FindText = h_main_menus[1]->addAction(tr("Find Text"),
         this, SLOT(find_slot()));
-    a_SetFont = main_menus[1]->addAction(tr("Set &Font"));
+    a_SetFont = h_main_menus[1]->addAction(tr("Set &Font"));
     a_SetFont->setCheckable(true);
     connect(a_SetFont, SIGNAL(toggled(bool)),
         this, SLOT(set_font_slot(bool)));
-    a_DontCache = main_menus[1]->addAction(tr("&Don't Cache"));
+    a_DontCache = h_main_menus[1]->addAction(tr("&Don't Cache"));
     a_DontCache->setCheckable(true);
     connect(a_DontCache, SIGNAL(toggled(bool)),
         this, SLOT(dont_cache_slot(bool)));
-    a_DontCache->setChecked(params->NoCache);
-    a_ClearCache = main_menus[1]->addAction(tr("&Clear Cache"),
+    a_DontCache->setChecked(h_params->NoCache);
+    a_ClearCache = h_main_menus[1]->addAction(tr("&Clear Cache"),
         this, SLOT(clear_cache_slot()));
-    a_ReloadCache = main_menus[1]->addAction(tr("&Reload Cache"),
+    a_ReloadCache = h_main_menus[1]->addAction(tr("&Reload Cache"),
         this, SLOT(reload_cache_slot()));
-    a_ShowCache = main_menus[1]->addAction(tr("Show Cache"),
+    a_ShowCache = h_main_menus[1]->addAction(tr("Show Cache"),
         this, SLOT(show_cache_slot()));
-    main_menus[1]->addSeparator();
-    a_NoCookies = main_menus[1]->addAction(tr("No Cookies"));
+    h_main_menus[1]->addSeparator();
+    a_NoCookies = h_main_menus[1]->addAction(tr("No Cookies"));
     a_NoCookies->setCheckable(true);
     connect(a_NoCookies, SIGNAL(toggled(bool)),
         this, SLOT(no_cookies_slot(bool)));
-    a_NoCookies->setChecked(params->NoCookies);
+    a_NoCookies->setChecked(h_params->NoCookies);
 
     QActionGroup *ag = new QActionGroup(this);
-    a_NoImages = main_menus[1]->addAction(tr("No Images"));
+    a_NoImages = h_main_menus[1]->addAction(tr("No Images"));
     a_NoImages->setCheckable(true);
     connect(a_NoImages, SIGNAL(toggled(bool)),
         this, SLOT(no_images_slot(bool)));
     ag->addAction(a_NoImages);
-    a_SyncImages = main_menus[1]->addAction(tr("Sync Images"));
+    a_SyncImages = h_main_menus[1]->addAction(tr("Sync Images"));
     a_SyncImages->setCheckable(true);
     connect(a_SyncImages, SIGNAL(toggled(bool)),
         this, SLOT(sync_images_slot(bool)));
     ag->addAction(a_SyncImages);
     a_DelayedImages =
-        main_menus[1]->addAction(tr("Delayed Images"));
+        h_main_menus[1]->addAction(tr("Delayed Images"));
     a_DelayedImages->setCheckable(true);
     connect(a_DelayedImages, SIGNAL(toggled(bool)),
         this, SLOT(delayed_images_slot(bool)));
     ag->addAction(a_DelayedImages);
     a_ProgressiveImages =
-        main_menus[1]->addAction(tr("Progressive Images"));
+        h_main_menus[1]->addAction(tr("Progressive Images"));
     a_ProgressiveImages->setCheckable(true);
     connect(a_ProgressiveImages, SIGNAL(toggled(bool)),
         this, SLOT(progressive_images_slot(bool)));
     ag->addAction(a_ProgressiveImages);
-    if (params->LoadMode == HLPparams::LoadProgressive)
+    if (h_params->LoadMode == HLPparams::LoadProgressive)
         a_ProgressiveImages->setChecked(true);
-    else if (params->LoadMode == HLPparams::LoadDelayed)
+    else if (h_params->LoadMode == HLPparams::LoadDelayed)
         a_DelayedImages->setChecked(true);
-    else if (params->LoadMode == HLPparams::LoadSync)
+    else if (h_params->LoadMode == HLPparams::LoadSync)
         a_SyncImages->setChecked(true);
     else
         a_NoImages->setChecked(true);
 
-    main_menus[1]->addSeparator();
+    h_main_menus[1]->addSeparator();
 
     ag = new QActionGroup(this);
-    a_AnchorPlain = main_menus[1]->addAction(tr("Anchor Plain"));
+    a_AnchorPlain = h_main_menus[1]->addAction(tr("Anchor Plain"));
     a_AnchorPlain->setCheckable(true);
     connect(a_AnchorPlain, SIGNAL(toggled(bool)),
         this, SLOT(anchor_plain_slot(bool)));
     ag->addAction(a_AnchorPlain);
     a_AnchorButtons =
-        main_menus[1]->addAction(tr("Anchor Buttons"));
+        h_main_menus[1]->addAction(tr("Anchor Buttons"));
     a_AnchorButtons->setCheckable(true);
     connect(a_AnchorButtons, SIGNAL(toggled(bool)),
         this, SLOT(anchor_buttons_slot(bool)));
     ag->addAction(a_AnchorButtons);
     a_AnchorUnderline =
-        main_menus[1]->addAction(tr("Anchor Underline"));
+        h_main_menus[1]->addAction(tr("Anchor Underline"));
     a_AnchorUnderline->setCheckable(true);
     connect(a_AnchorUnderline, SIGNAL(toggled(bool)),
         this, SLOT(anchor_underline_slot(bool)));
     ag->addAction(a_AnchorUnderline);
-    if (params->AnchorButtons)
+    if (h_params->AnchorButtons)
         a_AnchorButtons->setChecked(true);
-    else if (params->AnchorUnderlined)
+    else if (h_params->AnchorUnderlined)
         a_AnchorUnderline->setChecked(true);
     else
         a_AnchorPlain->setChecked(true);
 
     a_AnchorHighlight =
-        main_menus[1]->addAction(tr("Anchor Highlight"));
+        h_main_menus[1]->addAction(tr("Anchor Highlight"));
     a_AnchorHighlight->setCheckable(true);
     connect(a_AnchorHighlight, SIGNAL(toggled(bool)),
         this, SLOT(anchor_highlight_slot(bool)));
-    a_AnchorHighlight->setChecked(params->AnchorHighlight);
-    a_BadHTML = main_menus[1]->addAction(tr("Bad HTML Warnings"));
+    a_AnchorHighlight->setChecked(h_params->AnchorHighlight);
+    a_BadHTML = h_main_menus[1]->addAction(tr("Bad HTML Warnings"));
     a_BadHTML->setCheckable(true);
     connect(a_BadHTML, SIGNAL(toggled(bool)),
         this, SLOT(bad_html_slot(bool)));
-    a_BadHTML->setChecked(params->BadHTMLwarnings);
+    a_BadHTML->setChecked(h_params->BadHTMLwarnings);
     a_FreezeAnimations =
-        main_menus[1]->addAction(tr("Freeze Animations"));
+        h_main_menus[1]->addAction(tr("Freeze Animations"));
     a_FreezeAnimations->setCheckable(true);
     connect(a_FreezeAnimations, SIGNAL(toggled(bool)),
         this, SLOT(freeze_animations_slot(bool)));
-    a_FreezeAnimations->setChecked(params->FreezeAnimations);
+    a_FreezeAnimations->setChecked(h_params->FreezeAnimations);
     a_LogTransactions =
-        main_menus[1]->addAction(tr("Log Transactions"));
+        h_main_menus[1]->addAction(tr("Log Transactions"));
     a_LogTransactions->setCheckable(true);
     connect(a_LogTransactions, SIGNAL(toggled(bool)),
         this, SLOT(log_transactions_slot(bool)));
-    a_LogTransactions->setChecked(params->PrintTransact);
+    a_LogTransactions->setChecked(h_params->PrintTransact);
 
-    main_menus[2] = menuBar()->addMenu(tr("&Bookmarks"));
-    a_AddBookmark = main_menus[2]->addAction(tr("Add"),
+    h_main_menus[2] = menuBar()->addMenu(tr("&Bookmarks"));
+    a_AddBookmark = h_main_menus[2]->addAction(tr("Add"),
         this, SLOT(add_slot()));
-    a_DeleteBookmark = main_menus[2]->addAction(tr("Delete"),
+    a_DeleteBookmark = h_main_menus[2]->addAction(tr("Delete"),
         this, SLOT(delete_slot()));
     a_DeleteBookmark->setCheckable(true);
-    main_menus[2]->addSeparator();
+    h_main_menus[2]->addSeparator();
 
     menuBar()->addSeparator();
-    main_menus[3] = menuBar()->addMenu(tr("&Help"));
-    a_Help = main_menus[3]->addAction(tr("&Help"),
+    h_main_menus[3] = menuBar()->addMenu(tr("&Help"));
+    a_Help = h_main_menus[3]->addAction(tr("&Help"),
         this, SLOT(help_slot()), Qt::CTRL+Qt::Key_H);
 
-    const char *fn = FC.getName(FNT_MOZY);
-    if (fn) {
-        html_viewer->set_font(fn);
-        FC.registerCallback(html_viewer, FNT_MOZY);
-    }
-    fn = FC.getName(FNT_MOZY_FIXED);
-    if (fn) {
-        html_viewer->set_fixed_font(fn);
-        FC.registerCallback(html_viewer, FNT_MOZY_FIXED);
-    }
-
-    html_viewer->thaw();
+    h_viewer->thaw();
 
     HLP()->context()->readBookmarks();
     for (HLPbookMark *b = HLP()->context()->bookmarks(); b; b = b->next) {
         QString qs = QString(b->title);
         qs.truncate(32);
-        main_menus[2]->addAction(
-            new action_item(b, main_menus[2]));
+        h_main_menus[2]->addAction(
+            new action_item(b, h_main_menus[2]));
     }
-    connect(main_menus[2], SIGNAL(triggered(QAction*)), this,
+    connect(h_main_menus[2], SIGNAL(triggered(QAction*)), this,
         SLOT(bookmark_slot(QAction*)));
 
     a_Backward->setEnabled(false);
@@ -551,19 +570,19 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
 
 QThelpPopup::~QThelpPopup()
 {
-    FC.unregisterCallback(html_viewer, FNT_MOZY);
-    FC.unregisterCallback(html_viewer, FNT_MOZY_FIXED);
+    FC.unregisterCallback(h_viewer, FNT_MOZY);
+    FC.unregisterCallback(h_viewer, FNT_MOZY_FIXED);
     halt_images();
-    HLP()->context()->removeTopic(root_topic);
-    if (!is_frame)
-        delete params;
+    HLP()->context()->removeTopic(h_root_topic);
+    if (!h_is_frame)
+        delete h_params;
 
-    if (frame_array) {
-        for (int i = 0; i < frame_array_size; i++)
-            delete frame_array[i];
-        delete [] frame_array;
+    if (h_frame_array) {
+        for (int i = 0; i < h_frame_array_size; i++)
+            delete h_frame_array[i];
+        delete [] h_frame_array;
     }
-    delete [] frame_name;
+    delete [] h_frame_name;
 }
 
 
@@ -583,14 +602,14 @@ QThelpPopup::menu_sens_set(bool set)
 void
 QThelpPopup::freeze()
 {
-    html_viewer->freeze();
+    h_viewer->freeze();
 }
 
 
 void
 QThelpPopup::thaw()
 {
-    html_viewer->thaw();
+    h_viewer->thaw();
 }
 
 
@@ -599,16 +618,16 @@ QThelpPopup::thaw()
 void
 QThelpPopup::set_transaction(Transaction *t, const char *cookiedir)
 {
-    html_viewer->set_transaction(t, cookiedir);
+    h_viewer->set_transaction(t, cookiedir);
     if (t) {
-        t->set_timeout(params->Timeout);
-        t->set_retries(params->Retries);
-        t->set_http_port(params->HTTP_Port);
-        t->set_ftp_port(params->FTP_Port);
-        t->set_http_debug(params->DebugMode);
-        if (params->PrintTransact)
+        t->set_timeout(h_params->Timeout);
+        t->set_retries(h_params->Retries);
+        t->set_http_port(h_params->HTTP_Port);
+        t->set_ftp_port(h_params->FTP_Port);
+        t->set_http_debug(h_params->DebugMode);
+        if (h_params->PrintTransact)
             t->set_logfile("stderr");
-        if (cookiedir && !params->NoCookies) {
+        if (cookiedir && !h_params->NoCookies) {
             int len = strlen(cookiedir) + 20;
             char *cf = new char [len];
             snprintf(cf, len,  "%s/%s", cookiedir, "cookies");
@@ -624,7 +643,7 @@ QThelpPopup::set_transaction(Transaction *t, const char *cookiedir)
 Transaction *
 QThelpPopup::get_transaction()
 {
-    return (html_viewer->get_transaction());
+    return (h_viewer->get_transaction());
 }
 
 
@@ -635,10 +654,10 @@ QThelpPopup::check_halt_processing(bool run_events)
 {
     if (run_events) {
         qApp->processEvents(QEventLoop::AllEvents);
-        if (!a_Stop->isEnabled() && stop_btn_pressed)
+        if (!a_Stop->isEnabled() && h_stop_btn_pressed)
             return (true);
     }
-    else if (stop_btn_pressed)
+    else if (h_stop_btn_pressed)
         return (true);
     return (false);
 }
@@ -658,38 +677,38 @@ QThelpPopup::set_halt_proc_sens(bool set)
 void
 QThelpPopup::set_status_line(const char *msg)
 {
-    if (frame_parent)
-        frame_parent->set_status_line(msg);
+    if (h_frame_parent)
+        h_frame_parent->set_status_line(msg);
     else
-        status_bar->showMessage(QString(msg));
+        h_status_bar->showMessage(QString(msg));
 }
 
 
 htmImageInfo *
 QThelpPopup::new_image_info(const char *url, bool progressive)
 {
-    return (html_viewer->new_image_info(url, progressive));
+    return (h_viewer->new_image_info(url, progressive));
 }
 
 
 bool
 QThelpPopup::call_plc(const char *url)
 {
-    return (html_viewer->call_plc(url));
+    return (h_viewer->call_plc(url));
 }
 
 
 htmImageInfo *
 QThelpPopup::image_procedure(const char *url)
 {
-    return (html_viewer->image_procedure(url));
+    return (h_viewer->image_procedure(url));
 }
 
 
 void
 QThelpPopup::image_replace(htmImageInfo *image, htmImageInfo *new_image)
 {
-    html_viewer->image_replace(image, new_image);
+    h_viewer->image_replace(image, new_image);
 }
 
 
@@ -698,35 +717,35 @@ QThelpPopup::is_body_image(const char *url)
 {
     if (HLP()->context()->isImageInList(this))
         return (false);
-    return (html_viewer->is_body_image(url));
+    return (h_viewer->is_body_image(url));
 }
 
 
 const char *
 QThelpPopup::get_url()
 {
-    return (cur_topic ? cur_topic->keyword() : 0);
+    return (h_cur_topic ? h_cur_topic->keyword() : 0);
 }
 
 
 bool
 QThelpPopup::no_url_cache()
 {
-    return (params->NoCache);
+    return (h_params->NoCache);
 }
 
 
 int
 QThelpPopup::image_load_mode()
 {
-    return (params->LoadMode);
+    return (h_params->LoadMode);
 }
 
 
 int
 QThelpPopup::image_debug_mode()
 {
-    return (params->LocalImageTest);
+    return (h_params->LocalImageTest);
 }
 
 
@@ -747,8 +766,8 @@ void
 QThelpPopup::link_new(HLPtopic *top)
 {
     HLP()->context()->linkNewTopic(top);
-    root_topic = top;
-    cur_topic = top;
+    h_root_topic = top;
+    h_cur_topic = top;
     reuse(0, false);
 }
 
@@ -778,39 +797,39 @@ strip_html(char *buf)
 void
 QThelpPopup::reuse(HLPtopic *newtop, bool newlink)
 {
-    if (root_topic->lastborn()) {
+    if (h_root_topic->lastborn()) {
         // in the forward/back operations, the new topic is stitched in
         // as lastborn, and the scroll update is handled elsewhere
-        if (root_topic->lastborn() != newtop)
-            root_topic->lastborn()->set_topline(get_scroll_pos());
+        if (h_root_topic->lastborn() != newtop)
+            h_root_topic->lastborn()->set_topline(get_scroll_pos());
     }
     else if (newtop)
-        root_topic->set_topline(get_scroll_pos());
+        h_root_topic->set_topline(get_scroll_pos());
 
     if (!newtop)
-        newtop = root_topic;
+        newtop = h_root_topic;
 
     char *anchor = 0;
     newtop->set_show_plain(HLP()->context()->isPlain(newtop->keyword()));
-    if (newtop != root_topic) {
-        root_topic->set_text(newtop->get_text());
+    if (newtop != h_root_topic) {
+        h_root_topic->set_text(newtop->get_text());
         newtop->clear_text();
     }
     else
-        root_topic->get_text();
-    cur_topic = newtop;
+        h_root_topic->get_text();
+    h_cur_topic = newtop;
     const char *t = HLP()->context()->findAnchorRef(newtop->keyword());
     if (t)
         anchor = lstring::copy(t);
-    if (newlink && newtop != root_topic) {
-        newtop->set_sibling(root_topic->lastborn());
-        root_topic->set_lastborn(newtop);
-        newtop->set_parent(root_topic);
+    if (newlink && newtop != h_root_topic) {
+        newtop->set_sibling(h_root_topic->lastborn());
+        h_root_topic->set_lastborn(newtop);
+        newtop->set_parent(h_root_topic);
         a_Backward->setEnabled(true);
     }
     redisplay();
     if (anchor)
-        set_scroll_pos(html_viewer->anchor_pos_by_name(anchor));
+        set_scroll_pos(h_viewer->anchor_pos_by_name(anchor));
     else
         set_scroll_pos(newtop->get_topline());
     delete [] anchor;
@@ -818,7 +837,7 @@ QThelpPopup::reuse(HLPtopic *newtop, bool newlink)
 
     t = newtop->title();
     if (!t || !*t)
-        t = html_viewer->get_title();
+        t = h_viewer->get_title();
     if (!t || !*t)
         t = "Whiteley Research Inc.";
     char buf[256];
@@ -834,28 +853,30 @@ QThelpPopup::reuse(HLPtopic *newtop, bool newlink)
 void
 QThelpPopup::redisplay()
 {
-    Transaction *t = html_viewer->get_transaction();
+    Transaction *t = h_viewer->get_transaction();
     if (t) {
         // still downloading previous page, abort
         t->set_abort();
-        html_viewer->set_transaction(0, 0);
+        h_viewer->set_transaction(0, 0);
     }
     halt_images();
-    if (!(root_topic->lastborn() ?
-            root_topic->lastborn()->is_html() : root_topic->is_html()) &&
-            HLP()->context()->isPlain(root_topic->lastborn() ?
-            root_topic->lastborn()->keyword() : root_topic->keyword()))
-        html_viewer->set_mime_type("text/plain");
+
+    HLPtopic *top = h_root_topic->lastborn();
+    if (!top)
+        top = h_root_topic;
+
+    if (top->show_plain() || !top->is_html())
+        h_viewer->set_mime_type("text/plain");
     else
-        html_viewer->set_mime_type("text/html");
-    html_viewer->set_source(root_topic->get_cur_text());
+        h_viewer->set_mime_type("text/html");
+    h_viewer->set_source(h_root_topic->get_cur_text());
 }
 
 
 HLPtopic *
 QThelpPopup::get_topic()
 {
-    return (cur_topic);
+    return (h_cur_topic);
 }
 
 
@@ -864,7 +885,7 @@ QThelpPopup::get_topic()
 void
 QThelpPopup::unset_halt_flag()
 {
-    stop_btn_pressed = false;
+    h_stop_btn_pressed = false;
 }
 
 
@@ -880,26 +901,26 @@ void
 QThelpPopup::show_cache(int mode)
 {
     if (mode == MODE_OFF) {
-        if (cache_list)
-            cache_list->popdown();
+        if (h_cache_list)
+            h_cache_list->popdown();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cache_list) {
+        if (h_cache_list) {
             stringlist *s0 = HLP()->context()->listCache();
-            cache_list->update(s0, "Cache Entries", 0);
+            h_cache_list->update(s0, "Cache Entries", 0);
             stringlist::destroy(s0);
         }
         return;
     }
-    if (cache_list)
+    if (h_cache_list)
         return;
     stringlist *s0 = HLP()->context()->listCache();
-    cache_list = PopUpList(s0, "Cache Entries", 0, 0, 0, false, false);
+    h_cache_list = PopUpList(s0, "Cache Entries", 0, 0, 0, false, false);
     stringlist::destroy(s0);
-    if (cache_list) {
-        cache_list->register_usrptr((void**)&cache_list);
-        QTlistPopup *list = dynamic_cast<QTlistPopup*>(cache_list);
+    if (h_cache_list) {
+        h_cache_list->register_usrptr((void**)&h_cache_list);
+        QTlistPopup *list = dynamic_cast<QTlistPopup*>(h_cache_list);
         if (list)
             connect(list, SIGNAL(action_call(const char*, void*)),
                 this, SLOT(cache_choice_slot(const char*)));
@@ -1005,8 +1026,8 @@ QThelpPopup::end_image_data(htmPLCStream *stream, void*, int type, bool)
 void
 QThelpPopup::frame_rendering_area(htmRect *rct)
 {
-    QRect r1 = html_viewer->frameGeometry();
-    QRect r2 = status_bar->frameGeometry();
+    QRect r1 = h_viewer->frameGeometry();
+    QRect r2 = h_status_bar->frameGeometry();
     QSize qs = size();
 
     rct->x = 0;
@@ -1022,7 +1043,7 @@ QThelpPopup::frame_rendering_area(htmRect *rct)
 const char *
 QThelpPopup::get_frame_name()
 {
-    return (frame_name);
+    return (h_frame_name);
 }
 
 
@@ -1035,7 +1056,7 @@ QThelpPopup::get_topic_keys(char **pkw, char **ptitle)
         *pkw = 0;
     if (ptitle)
         *ptitle = 0;
-    HLPtopic *t = cur_topic;
+    HLPtopic *t = h_cur_topic;
     if (t) {
         if (pkw)
             *pkw = lstring::copy(t->keyword());
@@ -1082,7 +1103,7 @@ char *
 QThelpPopup::GetPostscriptText(int font_family, const char *url,
     const char *title, bool use_headers, bool a4)
 {
-    return (html_viewer->get_postscript_text(font_family, url, title,
+    return (h_viewer->get_postscript_text(font_family, url, title,
         use_headers, a4));
 }
 
@@ -1090,14 +1111,14 @@ QThelpPopup::GetPostscriptText(int font_family, const char *url,
 char *
 QThelpPopup::GetPlainText()
 {
-    return (html_viewer->get_plain_text());
+    return (h_viewer->get_plain_text());
 }
 
 
 char *
 QThelpPopup::GetHtmlText()
 {
-    return (html_viewer->get_html_text());
+    return (h_viewer->get_html_text());
 }
 
 
@@ -1110,9 +1131,9 @@ QThelpPopup::get_scroll_pos(bool horiz)
 {
     QScrollBar *sb;
     if (horiz)
-        sb = html_viewer->horizontalScrollBar();
+        sb = h_viewer->horizontalScrollBar();
     else
-        sb = html_viewer->verticalScrollBar();
+        sb = h_viewer->verticalScrollBar();
     if (!sb)
         return (0);
     return (sb->value());
@@ -1124,9 +1145,9 @@ QThelpPopup::set_scroll_pos(int posn, bool horiz)
 {
     QScrollBar *sb;
     if (horiz)
-        sb = html_viewer->horizontalScrollBar();
+        sb = h_viewer->horizontalScrollBar();
     else
-        sb = html_viewer->verticalScrollBar();
+        sb = h_viewer->verticalScrollBar();
     if (!sb)
         return;
     sb->setValue(posn);
@@ -1139,7 +1160,7 @@ QThelpPopup::set_scroll_pos(int posn, bool horiz)
 void
 QThelpPopup::backward_slot()
 {
-    HLPtopic *top = root_topic;
+    HLPtopic *top = h_root_topic;
     if (top && top->lastborn()) {
         HLPtopic *last = top->lastborn();
         top->set_lastborn(last->sibling());
@@ -1157,7 +1178,7 @@ QThelpPopup::backward_slot()
 void
 QThelpPopup::forward_slot()
 {
-    HLPtopic *top = root_topic;
+    HLPtopic *top = h_root_topic;
     if (top && top->next()) {
         HLPtopic *next = top->next();
         top->set_next(next->sibling());
@@ -1180,7 +1201,7 @@ QThelpPopup::stop_slot()
 {
     stop_image_download();
     a_Stop->setEnabled(false);
-    stop_btn_pressed = true;
+    h_stop_btn_pressed = true;
 }
 
 
@@ -1246,8 +1267,8 @@ QThelpPopup::print_slot()
 void
 QThelpPopup::reload_slot()
 {
-    cur_topic->set_topline(get_scroll_pos());
-    newtopic(cur_topic->keyword(), false, false, true);
+    h_cur_topic->set_topline(get_scroll_pos());
+    newtopic(h_cur_topic->keyword(), false, false, true);
 }
 
 
@@ -1294,16 +1315,7 @@ QThelpPopup::set_font_slot(bool set)
 void
 QThelpPopup::font_selected_slot(int font_id, const char *fontname)
 {
-    /*XXX
-    if (font_id == FNT_MOZY) {
-        params->store("FontFamily", fontname);
-        html_viewer->set_font(fontname);
-    }
-    else if (font_id == FNT_MOZY_FIXED) {
-        params->store("FixedFontFamily", fontname);
-        html_viewer->set_fixed_font(fontname);
-    }
-    */
+    // Ignore this.  Fonts are selected with the Apply buton.
 }
 
 
@@ -1319,7 +1331,7 @@ QThelpPopup::font_down_slot()
 void
 QThelpPopup::dont_cache_slot(bool set)
 {
-    params->NoCache = set;
+    h_params->NoCache = set;
 }
 
 
@@ -1347,7 +1359,7 @@ QThelpPopup::show_cache_slot()
 void
 QThelpPopup::no_cookies_slot(bool set)
 {
-    params->NoCookies = set;
+    h_params->NoCookies = set;
 }
 
 
@@ -1356,7 +1368,7 @@ QThelpPopup::no_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
-        params->LoadMode = HLPparams::LoadNone;
+        h_params->LoadMode = HLPparams::LoadNone;
     }
 }
 
@@ -1366,7 +1378,7 @@ QThelpPopup::sync_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
-        params->LoadMode = HLPparams::LoadSync;
+        h_params->LoadMode = HLPparams::LoadSync;
     }
 }
 
@@ -1376,7 +1388,7 @@ QThelpPopup::delayed_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
-        params->LoadMode = HLPparams::LoadDelayed;
+        h_params->LoadMode = HLPparams::LoadDelayed;
     }
 }
 
@@ -1386,7 +1398,7 @@ QThelpPopup::progressive_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
-        params->LoadMode = HLPparams::LoadProgressive;
+        h_params->LoadMode = HLPparams::LoadProgressive;
     }
 }
 
@@ -1395,9 +1407,9 @@ void
 QThelpPopup::anchor_plain_slot(bool set)
 {
     if (set) {
-        params->AnchorButtons = false;
-        params->AnchorUnderlined = false;
-        html_viewer->set_anchor_style(ANC_PLAIN);
+        h_params->AnchorButtons = false;
+        h_params->AnchorUnderlined = false;
+        h_viewer->set_anchor_style(ANC_PLAIN);
 
         int position = get_scroll_pos();
         set_scroll_pos(position);
@@ -1409,9 +1421,9 @@ void
 QThelpPopup::anchor_buttons_slot(bool set)
 {
     if (set) {
-        params->AnchorButtons = true;
-        params->AnchorUnderlined = false;
-        html_viewer->set_anchor_style(ANC_BUTTON);
+        h_params->AnchorButtons = true;
+        h_params->AnchorUnderlined = false;
+        h_viewer->set_anchor_style(ANC_BUTTON);
     }
 }
 
@@ -1420,9 +1432,9 @@ void
 QThelpPopup::anchor_underline_slot(bool set)
 {
     if (set) {
-        params->AnchorButtons = false;
-        params->AnchorUnderlined = true;
-        html_viewer->set_anchor_style(ANC_SINGLE_LINE);
+        h_params->AnchorButtons = false;
+        h_params->AnchorUnderlined = true;
+        h_viewer->set_anchor_style(ANC_SINGLE_LINE);
 
         int position = get_scroll_pos();
         set_scroll_pos(position);
@@ -1433,46 +1445,46 @@ QThelpPopup::anchor_underline_slot(bool set)
 void
 QThelpPopup::anchor_highlight_slot(bool set)
 {
-    params->AnchorHighlight = set;
-    html_viewer->set_anchor_highlighting(set);
+    h_params->AnchorHighlight = set;
+    h_viewer->set_anchor_highlighting(set);
 }
 
 
 void
 QThelpPopup::bad_html_slot(bool set)
 {
-    params->BadHTMLwarnings = set;
-    html_viewer->set_html_warnings(set);
+    h_params->BadHTMLwarnings = set;
+    h_viewer->set_html_warnings(set);
 }
 
 
 void
 QThelpPopup::freeze_animations_slot(bool set)
 {
-    params->FreezeAnimations = set;
-    html_viewer->set_freeze_animations(set);
+    h_params->FreezeAnimations = set;
+    h_viewer->set_freeze_animations(set);
 }
 
 
 void
 QThelpPopup::log_transactions_slot(bool set)
 {
-    params->PrintTransact = set;
+    h_params->PrintTransact = set;
 }
 
 
 void
 QThelpPopup::add_slot()
 {
-    if (!cur_topic)
+    if (!h_cur_topic)
         return;
-    HLPtopic *tp = cur_topic;
+    HLPtopic *tp = h_cur_topic;
     const char *ptitle = tp->title();
     char *title;
     if (ptitle && *ptitle)
         title = lstring::copy(ptitle);
     else
-        title = lstring::copy(html_viewer->get_title());
+        title = lstring::copy(h_viewer->get_title());
     char *url = lstring::copy(tp->keyword());
     if (!url || !*url) {
         delete [] url;
@@ -1489,8 +1501,8 @@ QThelpPopup::add_slot()
 
     QString qs = QString(b->title);
     qs.truncate(32);
-    main_menus[2]->addAction(
-        new action_item(b, main_menus[2]));
+    h_main_menus[2]->addAction(
+        new action_item(b, h_main_menus[2]));
 }
 
 
@@ -1558,9 +1570,9 @@ void
 QThelpPopup::anchor_track_slot(htmAnchorCallbackStruct *c)
 {
     if (c && c->href)
-        status_bar->showMessage(QString(c->href));
+        h_status_bar->showMessage(QString(c->href));
     else
-        status_bar->showMessage(QString(cur_topic->keyword()));
+        h_status_bar->showMessage(QString(h_cur_topic->keyword()));
 }
 
 
@@ -1582,8 +1594,8 @@ QThelpPopup::newtopic_slot(htmAnchorCallbackStruct *c)
     bool spawn = false;
     if (!force_download) {
         if (c->target) {
-            if (!cur_topic->target() ||
-                    strcmp(cur_topic->target(), c->target)) {
+            if (!h_cur_topic->target() ||
+                    strcmp(h_cur_topic->target(), c->target)) {
                 HLPtopic *t = HLP()->context()->findUrlTopic(c->target);
                 if (t) {
                     newtopic(c->href, false, false, false);
@@ -1639,39 +1651,39 @@ void
 QThelpPopup::frame_slot(htmFrameCallbackStruct *cbs)
 {
     if (cbs->reason == HTM_FRAMECREATE) {
-        html_viewer->hide_drawing_area(true);
-        frame_array_size = cbs->nframes;
-        frame_array = new QThelpPopup*[frame_array_size];
-        for (int i = 0; i < frame_array_size; i++) {
-            frame_array[i] = new QThelpPopup(false, this);
+        h_viewer->hide_drawing_area(true);
+        h_frame_array_size = cbs->nframes;
+        h_frame_array = new QThelpPopup*[h_frame_array_size];
+        for (int i = 0; i < h_frame_array_size; i++) {
+            h_frame_array[i] = new QThelpPopup(false, this);
             // use parent's defaults
-            frame_array[i]->params = params;
-            frame_array[i]->set_frame_parent(this);
-            frame_array[i]->set_frame_name(cbs->frames[i].name);
+            h_frame_array[i]->h_params = h_params;
+            h_frame_array[i]->set_frame_parent(this);
+            h_frame_array[i]->set_frame_name(cbs->frames[i].name);
 
-            frame_array[i]->setGeometry(cbs->frames[i].x, cbs->frames[i].y,
+            h_frame_array[i]->setGeometry(cbs->frames[i].x, cbs->frames[i].y,
                 cbs->frames[i].width, cbs->frames[i].height);
 
             if (cbs->frames[i].scroll_type == FRAME_SCROLL_NONE) {
-                frame_array[i]->html_viewer->setVerticalScrollBarPolicy(
+                h_frame_array[i]->h_viewer->setVerticalScrollBarPolicy(
                     Qt::ScrollBarAlwaysOff);
-                frame_array[i]->html_viewer->setHorizontalScrollBarPolicy(
+                h_frame_array[i]->h_viewer->setHorizontalScrollBarPolicy(
                     Qt::ScrollBarAlwaysOff);
             }
             else if (cbs->frames[i].scroll_type == FRAME_SCROLL_AUTO) {
-                frame_array[i]->html_viewer->setVerticalScrollBarPolicy(
+                h_frame_array[i]->h_viewer->setVerticalScrollBarPolicy(
                     Qt::ScrollBarAsNeeded);
-                frame_array[i]->html_viewer->setHorizontalScrollBarPolicy(
+                h_frame_array[i]->h_viewer->setHorizontalScrollBarPolicy(
                     Qt::ScrollBarAsNeeded);
             }
             else if (cbs->frames[i].scroll_type == FRAME_SCROLL_YES) {
-                frame_array[i]->html_viewer->setVerticalScrollBarPolicy(
+                h_frame_array[i]->h_viewer->setVerticalScrollBarPolicy(
                     Qt::ScrollBarAlwaysOn);
-                frame_array[i]->html_viewer->setHorizontalScrollBarPolicy(
+                h_frame_array[i]->h_viewer->setHorizontalScrollBarPolicy(
                     Qt::ScrollBarAlwaysOn);
             }
 
-            frame_array[i]->show();
+            h_frame_array[i]->show();
 
             HLPtopic *newtop;
             char hanchor[128];
@@ -1683,37 +1695,37 @@ QThelpPopup::frame_slot(htmFrameCallbackStruct *cbs)
                 PopUpErr(MODE_ON, buf);
             }
 
-            frame_array[i]->wb_shell = wb_shell;
+            h_frame_array[i]->wb_shell = wb_shell;
             newtop->set_target(cbs->frames[i].name);
-            newtop->set_context(frame_array[i]);
-            frame_array[i]->root_topic = newtop;
-            frame_array[i]->cur_topic = newtop;
+            newtop->set_context(h_frame_array[i]);
+            h_frame_array[i]->h_root_topic = newtop;
+            h_frame_array[i]->h_cur_topic = newtop;
 
             if (!newtop->is_html() &&
                     HLP()->context()->isPlain(newtop->keyword())) {
                 newtop->set_show_plain(true);
-                frame_array[i]->html_viewer->set_mime_type("text/plain");
+                h_frame_array[i]->h_viewer->set_mime_type("text/plain");
             }
             else {
                 newtop->set_show_plain(false);
-                frame_array[i]->html_viewer->set_mime_type("text/html");
+                h_frame_array[i]->h_viewer->set_mime_type("text/html");
             }
-            frame_array[i]->html_viewer->set_source(newtop->get_text());
+            h_frame_array[i]->h_viewer->set_source(newtop->get_text());
         }
     }
     else if (cbs->reason == HTM_FRAMERESIZE) {
-        for (int i = 0; i < frame_array_size; i++) {
-            frame_array[i]->setGeometry(cbs->frames[i].x, cbs->frames[i].y,
+        for (int i = 0; i < h_frame_array_size; i++) {
+            h_frame_array[i]->setGeometry(cbs->frames[i].x, cbs->frames[i].y,
                 cbs->frames[i].width, cbs->frames[i].height);
         }
     }
     else if (cbs->reason == HTM_FRAMEDESTROY) {
-        for (int i = 0; i < frame_array_size; i++)
-            delete frame_array[i];
-        delete [] frame_array;
-        frame_array = 0;
-        frame_array_size = 0;
-        html_viewer->show();
+        for (int i = 0; i < h_frame_array_size; i++)
+            delete h_frame_array[i];
+        delete [] h_frame_array;
+        h_frame_array = 0;
+        h_frame_array_size = 0;
+        h_viewer->show();
     }
 }
 
@@ -1786,7 +1798,7 @@ QThelpPopup::do_save_slot(const char *fnamein, void*)
         delete [] fname;
         return;
     }
-    char *tptr = html_viewer->get_plain_text();
+    char *tptr = h_viewer->get_plain_text();
     const char *mesg;
     if (tptr) {
         if (fputs(tptr, fp) == EOF) {
@@ -1821,7 +1833,7 @@ QThelpPopup::do_search_slot(const char *target, void*)
         if (!newtop)
             PopUpErr(MODE_ON, "Unresolved link.");
         else
-            newtop->link_new_and_show(false, cur_topic);
+            newtop->link_new_and_show(false, h_cur_topic);
     }
     if (wb_input)
         wb_input->popdown();
@@ -1832,7 +1844,7 @@ void
 QThelpPopup::do_find_text_slot(const char *target, void*)
 {
     if (target && *target)
-        html_viewer->find_words(target, false, false);
+        h_viewer->find_words(target, false, false);
 }
 
 
@@ -1848,7 +1860,7 @@ QThelpPopup::newtopic(const char *href, bool spawn, bool force_download,
     HLPtopic *newtop;
     char hanchor[128];
     if (HLP()->context()->resolveKeyword(href, &newtop, hanchor, this,
-            cur_topic, force_download, nonrelative))
+            h_cur_topic, force_download, nonrelative))
         return;
     if (!newtop) {
         char buf[256];
@@ -1857,7 +1869,7 @@ QThelpPopup::newtopic(const char *href, bool spawn, bool force_download,
         return;
     }
     newtop->set_context(this);
-    newtop->link_new_and_show(spawn, cur_topic);
+    newtop->link_new_and_show(spawn, h_cur_topic);
 }
 
 
@@ -1867,8 +1879,8 @@ QThelpPopup::newtopic(const char *href, bool spawn, bool force_download,
 void
 QThelpPopup::stop_image_download()
 {
-    if (params->LoadMode == HLPparams::LoadProgressive)
-        html_viewer->progressive_kill();
+    if (h_params->LoadMode == HLPparams::LoadProgressive)
+        h_viewer->progressive_kill();
     HLP()->context()->abortImageDownload(this);
 }
 

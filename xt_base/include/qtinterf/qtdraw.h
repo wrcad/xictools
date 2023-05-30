@@ -49,6 +49,7 @@ class QFont;
 class QCursor;
 class QPixmap;
 class QImage;
+class QPaintEvent;
 
 // This is an abstract class for a simple but efficient drawing area.
 // New instances are intended to be obtained from new_draw_interface().
@@ -292,10 +293,8 @@ namespace qtinterf
         void SetGhost(GhostDrawFunc cb, int x, int y)
                                             { gd_gbag->set_ghost(cb, x, y); }
         void ShowGhost(bool show)           { gd_gbag->show_ghost(show); }
-        void UndrawGhost(bool reset = false)
-                                            { gd_gbag->undraw_ghost(reset); }
+        void UndrawGhost(bool reset=false)  { gd_gbag->undraw_ghost(reset); }
         void DrawGhost(int x, int y)        { gd_gbag->draw_ghost(x, y); }
-
         void MovePointer(int, int, bool);
         void QueryPointer(int*, int*, unsigned*);
         void DefineColor(int*, int, int, int);

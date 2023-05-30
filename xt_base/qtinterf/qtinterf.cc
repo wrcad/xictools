@@ -57,6 +57,8 @@
 #include <QApplication>
 #include <QAction>
 #include <QPushButton>
+#include <QCheckBox>
+#include <QRadioButton>
 #include <QMenu>
 
 
@@ -495,8 +497,20 @@ QTdev::Deselect(GRobject obj)
         return;
     if (o->isWidgetType()) {
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
-        if (btn && btn->isCheckable())
+        if (btn && btn->isCheckable()) {
             btn->setChecked(false);
+            return;
+        }
+        QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+        if (cb) {
+            cb->setChecked(false);
+            return;
+        }
+        QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+        if (rb) {
+            rb->setChecked(false);
+            return;
+        }
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
@@ -517,8 +531,20 @@ QTdev::Select(GRobject obj)
         return;
     if (o->isWidgetType()) {
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
-        if (btn && btn->isCheckable())
+        if (btn && btn->isCheckable()) {
             btn->setChecked(true);
+            return;
+        }
+        QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+        if (cb) {
+            cb->setChecked(true);
+            return;
+        }
+        QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+        if (rb) {
+            rb->setChecked(true);
+            return;
+        }
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
@@ -540,6 +566,12 @@ QTdev::GetStatus(GRobject obj)
             QPushButton *btn = dynamic_cast<QPushButton*>(o);
             if (btn && btn->isCheckable())
                 return (btn->isChecked());
+            QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+            if (cb)
+                return (cb->isChecked());
+            QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+            if (rb)
+                return (rb->isChecked());
         }
         else {
             QAction *a = dynamic_cast<QAction*>(o);
@@ -563,8 +595,20 @@ QTdev::SetStatus(GRobject obj, bool state)
         return;
     if (o->isWidgetType()) {
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
-        if (btn && btn->isCheckable())
+        if (btn && btn->isCheckable()) {
             btn->setChecked(state);
+            return;
+        }
+        QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+        if (cb) {
+            cb->setChecked(state);
+            return;
+        }
+        QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+        if (rb) {
+            rb->setChecked(state);
+            return;
+        }
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
@@ -611,6 +655,16 @@ QTdev::GetLabel(GRobject obj)
             QPushButton *btn = dynamic_cast<QPushButton*>(o);
             if (btn)
                 qs = btn->text();
+            else {
+                QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+                if (cb)
+                    qs = cb->text();
+                else {
+                    QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+                    if (rb)
+                        qs = rb->text();
+                }
+            }
         }
         else {
             QAction *a = dynamic_cast<QAction*>(o);
@@ -652,6 +706,16 @@ QTdev::SetLabel(GRobject obj, const char *text)
             btn->setText(text);
             return;
         }
+        QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+        if (cb) {
+            cb->setText(text);
+            return;
+        }
+        QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+        if (rb) {
+            rb->setText(text);
+            return;
+        }
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
@@ -672,6 +736,16 @@ QTdev::SetSensitive(GRobject obj, bool sens_state)
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
         if (btn) {
             btn->setEnabled(sens_state);
+            return;
+        }
+        QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+        if (cb) {
+            cb->setEnabled(sens_state);
+            return;
+        }
+        QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+        if (rb) {
+            rb->setEnabled(sens_state);
             return;
         }
         QMenu *menu = dynamic_cast<QMenu*>(o);
@@ -697,6 +771,12 @@ QTdev::IsSensitive(GRobject obj)
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
         if (btn)
             return (btn->isEnabled());
+        QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+        if (cb)
+            return (cb->isEnabled());
+        QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+        if (rb)
+            return (rb->isEnabled());
         QMenu *menu = dynamic_cast<QMenu*>(o);
         if (menu)
             return (menu->isEnabled());
@@ -726,6 +806,22 @@ QTdev::SetVisible(GRobject obj, bool vis_state)
                 btn->hide();
             return;
         }
+        QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+        if (cb) {
+            if (vis_state)
+                cb->show();
+            else
+                cb->hide();
+            return;
+        }
+        QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+        if (rb) {
+            if (vis_state)
+                rb->show();
+            else
+                rb->hide();
+            return;
+        }
         QMenu *menu = dynamic_cast<QMenu*>(o);
         if (menu) {
             if (vis_state)
@@ -753,6 +849,12 @@ QTdev::IsVisible(GRobject obj)
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
         if (btn)
             return (btn->isVisible());
+        QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+        if (cb)
+            return (cb->isVisible());
+        QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+        if (rb)
+            return (rb->isVisible());
         QMenu *menu = dynamic_cast<QMenu*>(o);
         if (menu)
             return (menu->isVisible());
@@ -776,12 +878,22 @@ QTdev::DestroyButton(GRobject obj)
     if (o->isWidgetType()) {
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
         if (btn) {
-            delete btn;
+            btn->deleteLater();
+            return;
+        }
+        QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
+        if (cb) {
+            cb->deleteLater();
+            return;
+        }
+        QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
+        if (rb) {
+            rb->deleteLater();
             return;
         }
         QMenu *menu = dynamic_cast<QMenu*>(o);
         if (menu) {
-            delete menu;
+            menu->deleteLater();
             return;
         }
     }

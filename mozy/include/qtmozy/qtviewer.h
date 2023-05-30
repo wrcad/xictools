@@ -108,6 +108,7 @@ namespace qtinterf
         QTviewer(int, int, htmDataInterface*, QWidget*);
 
         // ViewerWidget functions
+        bool initialized() { return (htm_initialized); }
         void freeze() { htmWidget::freeze(); }
         void thaw() { htmWidget::thaw(); }
         void set_transaction(Transaction*, const char*);
@@ -127,6 +128,14 @@ namespace qtinterf
                     suffix(url, htm_body_image_url));
             }
 
+        // Wrap these for export.
+        void set_select_color(const char *c)
+            { htmWidget::set_select_bg(c); }
+        void set_imagemap_boundary_color(const char *c)
+            { htmWidget::set_imagemap_fg(c); }
+        void redisplay_view()
+            { htmWidget::redisplay(); }
+
         const char *get_url();
         bool no_url_cache();
         int image_load_mode();
@@ -134,16 +143,12 @@ namespace qtinterf
         GRwbag *get_widget_bag();
 
         // Inlines to access needed protected members
+        bool is_ready()
+            { return (isReady()); }
         const char *get_title()
             { return (getTitle()); }
         void set_mime_type(const char *mime_type)
             { setMimeType(mime_type); }
-        void set_source(const char *string)
-            {
-                delete rband;
-                rband = 0;
-                setSource(string);
-            }
         char *get_postscript_text(int fontfamily, const char *url,
             const char *title, bool use_header, bool a4)
             { return (getPostscriptText(fontfamily, url, title,
@@ -152,10 +157,12 @@ namespace qtinterf
             { return (getPlainText()); }
         char *get_html_text()
             { return (getString()); }
-        void find_words(const char *target, bool up, bool case_insens)
-            { findWords(target, up, case_insens); }
+        bool find_words(const char *target, bool up, bool case_insens)
+            { return (findWords(target, up, case_insens)); }
         void set_html_warnings(bool set)
             { setBadHtmlWarnings(set); }
+        void set_iso8859_source(bool set)
+            { v_iso8859 = set; }
 
         void progressive_kill()
             { htm_im.imageProgressiveKill(); }
@@ -184,15 +191,26 @@ namespace qtinterf
                 return (false);
             }
 
+        void set_source(const char*);
         void set_font(const char*);
         void set_fixed_font(const char*);
         void hide_drawing_area(bool);
+//        void add_widget(GtkWidget*);
+        int scroll_position(bool);
+        void set_scroll_position(int, bool);
+//        void set_scroll_policy(GtkPolicyType, GtkPolicyType);
+        int anchor_position(const char*);
+        void scroll_visible(int, int, int, int);
 
-        // rendering interface, exported to htmWidget
+        void formActivate(htmEvent *e, htmForm *f)
+            { return (htmWidget::formActivate(e, f)); }
+        void formReset(htmForm *f)
+            { return (htmWidget::formReset(f)); }
+
+        // htmInterface implementation
         void tk_resize_area(int, int);
         void tk_refresh_area(int, int, int, int);
-        void tk_window_size(htmInterface::WinRetMode,
-            unsigned int*, unsigned int*);
+        void tk_window_size(WinRetMode, unsigned int*, unsigned int*);
         unsigned int tk_scrollbar_width();
         void tk_set_anchor_cursor(bool);
         unsigned int tk_add_timer(int(*)(void*), void*);
@@ -232,9 +250,12 @@ namespace qtinterf
         void tk_set_clip_mask(htmPixmap*, htmBitmap*);
         void tk_set_clip_origin(int, int);
         void tk_set_clip_rectangle(htmRect*);
+
+// not in gtk?
         void tk_set_fill(htmInterface::FillMode);
         void tk_set_tile(htmPixmap*);
         void tk_set_ts_origin(int, int);
+
         void tk_draw_pixmap(int, int, htmPixmap*, int, int, int, int);
         void tk_tile_draw_pixmap(int, int, htmPixmap*, int, int, int, int);
 
@@ -255,9 +276,10 @@ namespace qtinterf
         void tk_position_and_show(htmForm*, bool);
         void tk_form_destroy(htmForm*);
 
-        QSize sizeHint() const { return (QSize(width_hint, height_hint)); }
+        QSize sizeHint() const { return (QSize(v_width_hint, v_height_hint)); }
 
     private slots:
+        void font_changed_slot(int);
         void press_event_slot(QMouseEvent*);
         void release_event_slot(QMouseEvent*);
         void move_event_slot(QMouseEvent*);
@@ -269,17 +291,18 @@ namespace qtinterf
         void resizeEvent(QResizeEvent*);
 
     private:
-        QTimer btn_timer;           // press/release timer;
-        bool btn_pressed;
+        QTimer          v_btn_timer;    // press/release timer;
+        bool            v_btn_pressed;
 
-        QTtimer *timers;            // list of timers for animations
+        QTtimer         *v_timers;      // list of timers for animations
 
-        QTcanvas *darea;            // the drawing area
-        QRubberBand *rband;         // transient selection rectangle
-        Transaction *transact;      // download manager
-        int width_hint;             // suggested width
-        int height_hint;            // suggested height
-        int frame_style;            // for hide/show
+        QTcanvas        *v_darea;       // the drawing area
+        QRubberBand     *v_rband;       // transient selection rectangle
+        Transaction     *v_transact;    // download manager
+        int             v_width_hint;   // suggested width
+        int             v_height_hint;  // suggested height
+        int             v_frame_style;  // for hide/show
+        bool            v_iso8859;      // if true, assume iso-8859-1
     };
 }
 

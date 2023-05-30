@@ -81,7 +81,7 @@ public:
 
 private slots:
     void redraw_slot();
-    void font_changed(int);
+    void font_changed_slot(int);
 
 private:
     int co_width;

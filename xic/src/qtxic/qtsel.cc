@@ -38,64 +38,24 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtsel.h"
 #include "dsp_inlines.h"
 #include "layertab.h"
 #include "menu.h"
 #include "select.h"
-#include "qtmain.h"
 #include "qtltab.h"
 
+#include <QLayout>
+#include <QGroupBox>
+#include <QRadioButton>
+#include <QCheckBox>
+#include <QPushButton>
 
 //-----------------------------------------------------------------------------
 // Pop-up to control selections
 //
 // help system keywords used:
 //  xic:layer
-
-namespace {
-    namespace gtksel {
-        struct sSel : public QTbag
-        {
-            sSel(GRobject);
-            ~sSel();
-
-            void update();
-
-        private:
-            /*
-            static void sl_cancel_proc(GtkWidget*, void*);
-            static void sl_ptr_mode_proc(GtkWidget*, void*);
-            static void sl_area_mode_proc(GtkWidget*, void*);
-            static void sl_add_mode_proc(GtkWidget*, void*);
-            static void sl_obj_proc(GtkWidget*, void*);
-            static void sl_btn_proc(GtkWidget*, void*);
-
-            GRobject sl_caller;
-            GtkWidget *sl_pm_norm;
-            GtkWidget *sl_pm_sel;
-            GtkWidget *sl_pm_mod;
-            GtkWidget *sl_am_norm;
-            GtkWidget *sl_am_enc;
-            GtkWidget *sl_am_all;
-            GtkWidget *sl_sel_norm;
-            GtkWidget *sl_sel_togl;
-            GtkWidget *sl_sel_add;
-            GtkWidget *sl_sel_rem;
-            GtkWidget *sl_cell;
-            GtkWidget *sl_box;
-            GtkWidget *sl_poly;
-            GtkWidget *sl_wire;
-            GtkWidget *sl_label;
-            GtkWidget *sl_upbtn;
-            */
-        };
-
-        sSel *Sel;
-    }
-}
-
-using namespace gtksel;
 
 
 void
@@ -104,42 +64,32 @@ cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete Sel;
+        if (cSelect::self())
+            cSelect::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (Sel)
-            Sel->update();
+        if (cSelect::self())
+            cSelect::self()->update();
         return;
     }
-    if (Sel)
+    if (cSelect::self())
         return;
 
-    new sSel(caller);
-    /*
-    if (!Sel->Shell()) {
-        delete Sel;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Sel->Shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new cSelect(caller);
 
-    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Sel->Shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Sel->Shell());
-
-    // Bug in OpenSuse 13.1 gtk-2.24.23
-    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), Sel->Shell(),
-        GTKmainwin::self()->Viewport());
-    */
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cSelect::self(),
+        QTmainwin::self()->Viewport());
+    cSelect::self()->show();
 }
 // End of cMain functions.
 
 
-sSel::sSel(GRobject c)
+cSelect *cSelect::instPtr;
+
+cSelect::cSelect(GRobject c)
 {
-    Sel = this;
-#ifdef notdef
+    instPtr = this;
     sl_caller = c;
     sl_pm_norm = 0;
     sl_pm_sel = 0;
@@ -158,236 +108,130 @@ sSel::sSel(GRobject c)
     sl_label = 0;
     sl_upbtn = 0;
 
-    wb_shell = gtk_NewPopup(0, "Selection Control", sl_cancel_proc, 0);
-    if (!wb_shell)
-        return;
-    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
+    setWindowTitle(tr("Selection Control"));
+//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
-    GtkWidget *form = gtk_table_new(1, 1, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(wb_shell), form);
 
-    //
     // pointer mode radio group
     //
-    GtkWidget *vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
-    sl_pm_norm = gtk_radio_button_new_with_label(0, "Normal");
-    gtk_widget_set_name(sl_pm_norm, "Normal");
-    gtk_widget_show(sl_pm_norm);
-    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_pm_norm));
-    gtk_box_pack_start(GTK_BOX(vbox), sl_pm_norm, true, false, 0);
-    g_signal_connect(G_OBJECT(sl_pm_norm), "clicked",
-        G_CALLBACK(sl_ptr_mode_proc), (void*)PTRnormal);
+    QGroupBox *pmgb = new QGroupBox(tr("Pointer Mode"));
+    QVBoxLayout *vb = new QVBoxLayout(pmgb);
+    vb->setMargin(0);
+    vb->setSpacing(2);
+    sl_pm_norm = new QRadioButton(tr("Normal"));
+    vb->addWidget(sl_pm_norm);
+    sl_pm_sel = new QRadioButton(tr("Select"));
+    vb->addWidget(sl_pm_sel);
+    sl_pm_mod = new QRadioButton(tr("Modify"));
+    vb->addWidget(sl_pm_mod);
 
-    sl_pm_sel = gtk_radio_button_new_with_label(group, "Select");
-    gtk_widget_set_name(sl_pm_sel, "Select");
-    gtk_widget_show(sl_pm_sel);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_pm_sel, true, false, 0);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_pm_sel));
-    g_signal_connect(G_OBJECT(sl_pm_sel), "clicked",
-        G_CALLBACK(sl_ptr_mode_proc), (void*)PTRselect);
-
-    sl_pm_mod = gtk_radio_button_new_with_label(group, "Modify");
-    gtk_widget_set_name(sl_pm_mod, "Modify");
-    gtk_widget_show(sl_pm_mod);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_pm_mod, true, false, 0);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_pm_mod));
-    g_signal_connect(G_OBJECT(sl_pm_mod), "clicked",
-        G_CALLBACK(sl_ptr_mode_proc), (void*)PTRmodify);
-
-    GtkWidget *frame = gtk_frame_new("Pointer Mode");
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), vbox);
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    //
     // area mode radio group
     //
-    vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
-    sl_am_norm = gtk_radio_button_new_with_label(0, "Normal");
-    gtk_widget_set_name(sl_am_norm, "Normal");
-    gtk_widget_show(sl_am_norm);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_am_norm));
-    gtk_box_pack_start(GTK_BOX(vbox), sl_am_norm, true, false, 0);
-    g_signal_connect(G_OBJECT(sl_am_norm), "clicked",
-        G_CALLBACK(sl_area_mode_proc), (void*)ASELnormal);
+    QGroupBox *amgb = new QGroupBox(tr("Area Mode"));
+    vb = new QVBoxLayout(amgb);
+    vb->setMargin(0);
+    vb->setSpacing(2);
+    sl_am_norm = new QRadioButton(tr("Normal"));
+    vb->addWidget(sl_am_norm);
+    sl_am_enc = new QRadioButton(tr("Enclosed"));
+    vb->addWidget(sl_am_enc);
+    sl_am_all = new QRadioButton(tr("All"));
+    vb->addWidget(sl_am_all);
 
-    sl_am_enc = gtk_radio_button_new_with_label(group, "Enclosed");
-    gtk_widget_set_name(sl_am_enc, "Enclosed");
-    gtk_widget_show(sl_am_enc);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_am_enc, true, false, 0);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_am_enc));
-    g_signal_connect(G_OBJECT(sl_am_enc), "clicked",
-        G_CALLBACK(sl_area_mode_proc), (void*)ASELenclosed);
-
-    sl_am_all = gtk_radio_button_new_with_label(group, "All");
-    gtk_widget_set_name(sl_am_all, "All");
-    gtk_widget_show(sl_am_all);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_am_all, true, false, 0);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_am_all));
-    g_signal_connect(G_OBJECT(sl_am_all), "clicked",
-        G_CALLBACK(sl_area_mode_proc), (void*)ASELall);
-
-    frame = gtk_frame_new("Area Mode");
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), vbox);
-    gtk_table_attach(GTK_TABLE(form), frame, 1, 2, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    //
     // addition mode radio group
     //
-    vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
-    sl_sel_norm = gtk_radio_button_new_with_label(0, "Normal");
-    gtk_widget_set_name(sl_sel_norm, "Normal");
-    gtk_widget_show(sl_sel_norm);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_sel_norm));
-    gtk_box_pack_start(GTK_BOX(vbox), sl_sel_norm, true, false, 0);
-    g_signal_connect(G_OBJECT(sl_sel_norm), "clicked",
-        G_CALLBACK(sl_add_mode_proc), (void*)SELnormal);
+    QGroupBox *sgb = new QGroupBox(tr("Selections"));
+    vb = new QVBoxLayout(sgb);
+    vb->setMargin(0);
+    vb->setSpacing(2);
+    sl_sel_norm = new QRadioButton(tr("Normal"));
+    vb->addWidget(sl_sel_norm);
+    sl_sel_togl = new QRadioButton(tr("Toggle"));
+    vb->addWidget(sl_sel_togl);
+    sl_sel_add = new QRadioButton(tr("Add"));
+    vb->addWidget(sl_sel_add);
+    sl_sel_rem = new QRadioButton(tr("Remove"));
+    vb->addWidget(sl_sel_rem);
 
-    sl_sel_togl = gtk_radio_button_new_with_label(group, "Toggle");
-    gtk_widget_set_name(sl_sel_togl, "Toggle");
-    gtk_widget_show(sl_sel_togl);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_sel_togl, true, false, 0);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_sel_togl));
-    g_signal_connect(G_OBJECT(sl_sel_togl), "clicked",
-        G_CALLBACK(sl_add_mode_proc), (void*)SELtoggle);
-
-    sl_sel_add = gtk_radio_button_new_with_label(group, "Add");
-    gtk_widget_set_name(sl_sel_add, "Add");
-    gtk_widget_show(sl_sel_add);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_sel_add, true, false, 0);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_sel_add));
-    g_signal_connect(G_OBJECT(sl_sel_add), "clicked",
-        G_CALLBACK(sl_add_mode_proc), (void*)SELselect);
-
-    sl_sel_rem = gtk_radio_button_new_with_label(group, "Remove");
-    gtk_widget_set_name(sl_sel_rem, "Remove");
-    gtk_widget_show(sl_sel_rem);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_sel_rem, true, false, 0);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sl_sel_rem));
-    g_signal_connect(G_OBJECT(sl_sel_rem), "clicked",
-        G_CALLBACK(sl_add_mode_proc), (void*)SELdesel);
-
-    frame = gtk_frame_new("Selections");
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), vbox);
-    gtk_table_attach(GTK_TABLE(form), frame, 2, 3, 0, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    //
     // objects group
     //
-    vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
-    sl_cell = gtk_check_button_new_with_label("Cells");
-    gtk_widget_set_name(sl_cell, "Cells");
-    gtk_widget_show(sl_cell);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_cell, true, false, 0);
-    g_signal_connect(G_OBJECT(sl_cell), "clicked",
-        G_CALLBACK(sl_obj_proc), (void*)CDINSTANCE);
+    QGroupBox *ogb = new QGroupBox(tr("Objects"));
+    vb = new QVBoxLayout(ogb);
+    vb->setMargin(0);
+    vb->setSpacing(2);
+    sl_cell = new QCheckBox(tr("Cells"));
+    vb->addWidget(sl_cell);
+    sl_box = new QCheckBox(tr("Boxes"));
+    vb->addWidget(sl_box);
+    sl_poly = new QCheckBox(tr("Polys"));
+    vb->addWidget(sl_poly);
+    sl_wire = new QCheckBox(tr("Wires"));
+    vb->addWidget(sl_wire);
+    sl_label = new QCheckBox(tr("Labels"));
+    vb->addWidget(sl_label);
 
-    sl_box = gtk_check_button_new_with_label("Boxes");
-    gtk_widget_set_name(sl_box, "Boxes");
-    gtk_widget_show(sl_box);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_box, true, false, 0);
-    g_signal_connect(G_OBJECT(sl_box), "clicked",
-        G_CALLBACK(sl_obj_proc), (void*)CDBOX);
-
-    sl_poly = gtk_check_button_new_with_label("Polys");
-    gtk_widget_set_name(sl_poly, "Polys");
-    gtk_widget_show(sl_poly);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_poly, true, false, 0);
-    g_signal_connect(G_OBJECT(sl_poly), "clicked",
-        G_CALLBACK(sl_obj_proc), (void*)CDPOLYGON);
-
-    sl_wire = gtk_check_button_new_with_label("Wires");
-    gtk_widget_set_name(sl_wire, "Wires");
-    gtk_widget_show(sl_wire);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_wire, true, false, 0);
-    g_signal_connect(G_OBJECT(sl_wire), "clicked",
-        G_CALLBACK(sl_obj_proc), (void*)CDWIRE);
-
-    sl_label = gtk_check_button_new_with_label("Labels");
-    gtk_widget_set_name(sl_label, "Labels");
-    gtk_widget_show(sl_label);
-    gtk_box_pack_start(GTK_BOX(vbox), sl_label, true, false, 0);
-    g_signal_connect(G_OBJECT(sl_label), "clicked",
-        G_CALLBACK(sl_obj_proc), (void*)CDLABEL);
-
-    frame = gtk_frame_new("Objects");
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), vbox);
-    gtk_table_attach(GTK_TABLE(form), frame, 3, 4, 0, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    //
     // buttons
     //
-    GtkWidget *button = gtk_toggle_button_new_with_label(
-        "Search Bottom to Top");
-    sl_upbtn = button;
-    gtk_widget_set_name(button, "Up");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(sl_btn_proc), (void*)0);
+    sl_upbtn = new QPushButton(tr("Search Bottom to Top"));
+    sl_upbtn->setCheckable(true);
+    sl_upbtn->setAutoDefault(false);
+    connect(sl_upbtn, SIGNAL(toggled(bool)), this, SLOT(up_btn_slot(bool)));
 
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    hbox->addWidget(pmgb);
+    hbox->addWidget(amgb);
 
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-    button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(sl_btn_proc), (void*)1);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
+    QVBoxLayout *vbox = new QVBoxLayout();
+    vbox->setMargin(0);
+    vbox->setSpacing(2);
+    vbox->addLayout(hbox);
+    vbox->addWidget(sl_upbtn);
 
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(sl_cancel_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    hbox->addLayout(vbox);
+    hbox->addWidget(sgb);
 
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 3, 2, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    vbox = new QVBoxLayout();
+    vbox->setMargin(0);
+    vbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-#endif
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    QPushButton *btn = new QPushButton(tr("Help"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    hbox->addWidget(btn);
+    btn = new QPushButton(tr("Dismiss"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    hbox->addWidget(btn);
+    vbox->addLayout(hbox);
+
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    hbox->addLayout(vbox);
+    hbox->addWidget(ogb);
+    setLayout(hbox);
     update();
 }
 
 
-sSel::~sSel()
+cSelect::~cSelect()
 {
-    Sel = 0;
-    /*
+    instPtr = 0;
     if (sl_caller)
-        GTKdev::Deselect(sl_caller);
-    if (wb_shell) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
-            (gpointer)sl_cancel_proc, wb_shell);
-    }
-    */
+        QTdev::Deselect(sl_caller);
 }
 
 
 void
-sSel::update()
+cSelect::update()
 {
-    /*
     if (Selections.ptrMode() == PTRnormal) {
         QTdev::Select(sl_pm_norm);
         QTdev::Deselect(sl_pm_sel);
@@ -457,68 +301,141 @@ sSel::update()
         (strchr(Selections.selectTypes(), CDLABEL) != 0));
 
     QTdev::SetStatus(sl_upbtn, Selections.layerSearchUp());
-    */
 }
 
-#ifdef notdef
 
-// Static function.
 void
-sSel::sl_cancel_proc(GtkWidget*, void*)
+cSelect::pm_norm_slot(int state)
+{
+    if (state)
+        Selections.setPtrMode(PTRnormal);
+}
+
+
+void
+cSelect::pm_sel_slot(int state)
+{
+    if (state)
+        Selections.setPtrMode(PTRselect);
+}
+
+
+void
+cSelect::pm_mod_slot(int state)
+{
+    if (state)
+        Selections.setPtrMode(PTRmodify);
+}
+
+
+void
+cSelect::am_norm_slot(int state)
+{
+    if (state)
+        Selections.setAreaMode(ASELnormal);
+}
+
+
+void
+cSelect::am_enc_slot(int state)
+{
+    if (state)
+        Selections.setAreaMode(ASELenclosed);
+}
+
+
+void
+cSelect::am_all_slot(int state)
+{
+    if (state)
+        Selections.setAreaMode(ASELall);
+}
+
+
+void
+cSelect::sl_norm_slot(int state)
+{
+    if (state)
+        Selections.setSelMode(SELnormal);
+}
+
+
+void
+cSelect::sl_togl_slot(int state)
+{
+    if (state)
+        Selections.setSelMode(SELtoggle);
+}
+
+
+void
+cSelect::sl_add_slot(int state)
+{
+    if (state)
+        Selections.setSelMode(SELselect);
+}
+
+
+void
+cSelect::sl_rem_slot(int state)
+{
+    if (state)
+        Selections.setSelMode(SELdesel);
+}
+
+
+void
+cSelect::ob_cell_slot(int state)
+{
+    Selections.setSelectType(CDINSTANCE, state);
+}
+
+
+void
+cSelect::ob_box_slot(int state)
+{
+    Selections.setSelectType(CDBOX, state);
+}
+
+
+void
+cSelect::ob_poly_slot(int state)
+{
+    Selections.setSelectType(CDPOLYGON, state);
+}
+
+
+void
+cSelect::ob_wire_slot(int state)
+{
+    Selections.setSelectType(CDWIRE, state);
+}
+
+
+void
+cSelect::ob_label_slot(int state)
+{
+    Selections.setSelectType(CDLABEL, state);
+}
+
+
+void
+cSelect::up_btn_slot(bool state)
+{
+    XM()->SetLayerSearchUpSelections(state);
+}
+
+
+void
+cSelect::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:layer"))
+}
+
+
+void
+cSelect::dismiss_btn_slot()
 {
     XM()->PopUpSelectControl(0, MODE_OFF);
 }
 
-
-// Static function.
-void
-sSel::sl_ptr_mode_proc(GtkWidget *widget, void *arg)
-{
-    if (GTKdev::GetStatus(widget))
-        Selections.setPtrMode((PTRmode)(intptr_t)(arg));
-}
-
-
-// Static function.
-void
-sSel::sl_area_mode_proc(GtkWidget *widget, void *arg)
-{
-    if (GTKdev::GetStatus(widget))
-        Selections.setAreaMode((ASELmode)(intptr_t)(arg));
-}
-
-
-// Static function.
-void
-sSel::sl_add_mode_proc(GtkWidget *widget, void *arg)
-{
-    if (GTKdev::GetStatus(widget))
-        Selections.setSelMode((SELmode)(intptr_t)(arg));
-}
-
-
-// Static function.
-void
-sSel::sl_obj_proc(GtkWidget *widget, void *arg)
-{
-    char c = (intptr_t)arg;
-    bool state = GTKdev::GetStatus(widget);
-    Selections.setSelectType(c, state);
-}
-
-
-// Static function.
-void
-sSel::sl_btn_proc(GtkWidget *widget, void *arg)
-{
-    if (arg == (void*)0) {
-        // search up
-        XM()->SetLayerSearchUpSelections(GTKdev::GetStatus(widget));
-    }
-    else if (arg == (void*)1) {
-        // help
-        DSPmainWbag(PopUpHelp("xic:layer"))
-    }
-}
-
-#endif

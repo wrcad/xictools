@@ -626,11 +626,14 @@ pathfinder::show_path(WindowDesc *wdesc, bool d_or_e)
             return;
         }
 
-        if (blink)
-            wdesc->Wdraw()->SetColor(DSP()->SelectPixel());
-        else if (!DSPpkg::self()->IsDualPlane())
+        if (blink) {
+            wdesc->Wdraw()->SetColor(wdesc->Mode() == Physical ?
+                DSP()->SelectPixelPhys() : DSP()->SelectPixelElec());
+        }
+        else if (!DSPpkg::self()->IsDualPlane()) {
             wdesc->Wdraw()->SetColor(
                 DSP()->Color(HighlightingColor, Physical));
+        }
 
         SymTabGen gen(pf_tab);
         SymTabEnt *h;

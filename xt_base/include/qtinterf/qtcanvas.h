@@ -147,7 +147,6 @@ namespace qtinterf
         void dropEvent(QDropEvent*);
 
     private:
-
         // Init a bounding box for refreshing.                                 
         void bb_init()
         {
@@ -175,7 +174,8 @@ namespace qtinterf
 
         QPixmap     *da_pixmap;         // main pixmap
         QPixmap     *da_tile_pixmap;    // tiling pixmap;
-        QPainter    *da_painter;        // main paint engine
+        QPainter    *da_painter;        // main painter, paints to da_pixmap
+        QPainter    *da_painter_dir;    // painter direct to window
         QPainter    *da_painter_temp;   // temp painter for pixmap switch
         QColor      da_fg;              // foreground color
         QColor      da_bg;              // background color
@@ -187,6 +187,7 @@ namespace qtinterf
         int         da_tile_y;          // tile origin y
         bool        da_fill_mode;       // true when tiling
         bool        da_xor_mode;        // true in XOR mode
+        bool        da_direct_mode;     // direct mode, see note in draw_direct
         int         da_line_mode;       // true when using internal textured
                                         //  lines (Qt::PenStyle - 1)
                                         //  1: dashes separated by a few pixels

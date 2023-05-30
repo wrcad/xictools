@@ -2698,7 +2698,8 @@ sMK::show_BBs(WindowDesc *wdesc)
     if (!wdesc->Wdraw())
         return;
     if (wdesc->IsSimilar(DSP()->MainWdesc(), WDsimXmode)) {
-        wdesc->Wdraw()->SetColor(DSP()->SelectPixel());
+        wdesc->Wdraw()->SetColor(wdesc->Mode() == Physical ?
+            DSP()->SelectPixelPhys() : DSP()->SelectPixelElec());
         Blist *b0 = (wdesc->Mode() == Physical ? phys_show : elec_show);
         for (Blist *b = b0; b; b = b->next)
             wdesc->ShowBox(&b->BB, 0, 0);
@@ -2757,7 +2758,8 @@ sMark::pixel(WindowDesc *wdesc)
         return (DSP()->Color(MarkerColor, wdesc->Mode()));
 
     if (mColor == SelectColor)
-        return (DSP()->SelectPixel());
+        return (wdesc->Mode() == Physical ?
+            DSP()->SelectPixelPhys() : DSP()->SelectPixelElec());
     if (mColor == MultiColor) {
         int ctab;
         if (mType < MARK_OBASE || mAltColor < 0)
@@ -4870,7 +4872,8 @@ hlite_t::display(WindowDesc *wdesc, bool disp_or_erase, bool blink)
         else if (hl_attr & hlaBlink) {
             if (!blink)
                 return;
-            wdesc->Wdraw()->SetColor(DSP()->SelectPixel());
+            wdesc->Wdraw()->SetColor(wdesc->Mode() == Physical ?
+                DSP()->SelectPixelPhys() : DSP()->SelectPixelElec());
         }
         else {
             if (blink)

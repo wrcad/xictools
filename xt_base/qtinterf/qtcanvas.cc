@@ -54,6 +54,8 @@ QTcanvas::QTcanvas(bool, QWidget *prnt) : QWidget(prnt)
 
     da_pixmap = new QPixmap(1, 1);
     da_painter = new QPainter(da_pixmap);
+    da_painter_dir = 0;
+    da_painter_temp = 0;
     da_bg.setNamedColor(QString("white"));
     da_fg.setNamedColor(QString("black"));
     da_brush.setStyle(Qt::SolidPattern);
@@ -63,10 +65,13 @@ QTcanvas::QTcanvas(bool, QWidget *prnt) : QWidget(prnt)
     da_tile_y = 0;
     da_fill_mode = false;
     da_xor_mode = false;
+    da_direct_mode = false;
     da_line_mode = 0;
     da_pen.setStyle(Qt::NoPen);
     da_line_style = 0;
     initialize();
+    setAttribute(Qt::WA_OpaquePaintEvent, false);
+    setAutoFillBackground(true);
 }
 
 
@@ -81,18 +86,16 @@ QTcanvas::~QTcanvas()
 // The drawing interface.
 //
 
+// This switches "direct mode" on/off.  When not in direct mode, the
+// drawing target is a pixmap, which can be drawn on at any time. 
+// During a paint event, the window surface is updated from the
+// pixmap.  In direct mode, after updating from the pixmap, the paint
+// event is emitted and the user can handle this and paint directly.
+//
 void
 QTcanvas::draw_direct(bool direct)
 {
-    if (direct) {
-        da_painter_temp = da_painter;
-        da_painter = new QPainter(widget());
-        initialize();
-    }
-    else {
-        delete da_painter;
-        da_painter = da_painter_temp;
-    }
+    da_direct_mode = direct;
 }
 
 
@@ -602,10 +605,11 @@ QTcanvas::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 
 
 void
-QTcanvas::draw_image(const GRimage*, int, int, int, int)
-//draw_gl_w::draw_image(const GRimage *image, int x, int y,
-//    int width, int height)
+QTcanvas::draw_image(const GRimage *im, int xx, int yy, int w, int h)
 {
+    QImage qimg((const unsigned char*)im->data(), im->width(), im->height(),
+        QImage::Format_RGB32);
+    da_painter->drawImage(QPoint(0, 0), qimg, QRect(xx, yy, w, h));
 }
 
 
@@ -709,13 +713,13 @@ QTcanvas::set_ghost_color(unsigned int pixel)
 void
 QTcanvas::set_draw_to_pixmap(QPixmap *pixmap)
 {
+    /*
     if (pixmap) {
         if (da_painter_temp)
             // already drawing to pixmap
             return;
-        QPainter *p = new QPainter(pixmap);
         da_painter_temp = da_painter;
-        da_painter = p;
+        da_painter = new QPainter(pixmap);
     }
     else {
         if (!da_painter_temp)
@@ -725,6 +729,7 @@ QTcanvas::set_draw_to_pixmap(QPixmap *pixmap)
         da_painter_temp = 0;
     }
     initialize();
+    */
 }
 
 
@@ -853,7 +858,14 @@ QTcanvas::resizeEvent(QResizeEvent *ev)
     da_pixmap = new QPixmap(ev->size());
     da_painter = new QPainter(da_pixmap);
     initialize();
+    /*XXX
     da_painter->setFont(fnt);
+    if (da_painter_dir) {
+        da_painter_dir->end();
+        delete da_painter_dir;
+        da_painter_dir = 0;
+    }
+    */
     emit new_painter(da_painter);
     emit resize_event(ev);
 }
@@ -862,25 +874,27 @@ QTcanvas::resizeEvent(QResizeEvent *ev)
 void
 QTcanvas::paintEvent(QPaintEvent *ev)
 {
-    if (!da_pixmap)
-        return;
     QPainter p(this);
-    QVector<QRect> rects = ev->region().rects();
-    for (int i  = 0; i < rects.size(); i++) {
-        QRect r = rects.at(i);
-        p.drawPixmap(r, *da_pixmap, r);
-//XXX
-//static int f;
-//printf("%d %d %d %d %d\n", f, r.x(), r.y(), r.width(), r.height());
-//f++;
+    if (da_pixmap) {
+        QVector<QRect> rects = ev->region().rects();
+        for (int i  = 0; i < rects.size(); i++) {
+            QRect r = rects.at(i);
+            p.drawPixmap(r, *da_pixmap, r);
+        }
     }
-
-    // The application can handle this to draw highlighting that is
-    // not in the pixmap.  In some applications, it is desirable to
-    // keep highlighting out of the pixmap, since it can be very
-    // expensive to erase the highlighting.
-    //
-    emit paint_event(ev);
+    if (da_direct_mode) {
+        // The application can handle this to draw highlighting that
+        // is not in the pixmap.  In some applications, it is
+        // desirable to keep highlighting out of the pixmap, since it
+        // can be very expensive to erase the highlighting.
+        //
+        QPainter *t = da_painter;
+        da_painter = &p;
+        da_painter->setBrush(da_brush);
+        da_painter->setPen(da_pen);
+        emit paint_event(ev);
+        da_painter = t;
+    }
 }
 
 

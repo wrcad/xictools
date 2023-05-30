@@ -206,30 +206,43 @@ QTform_list::setSize()
 // The viewer widget, public methods
 
 QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
-    QScrollArea(prnt), htmWidget(this, dta), btn_timer(this)
+    QScrollArea(prnt), htmWidget(this, dta), v_btn_timer(this)
 {
-    width_hint = wid;
-    height_hint = hei;
-    darea = new QTcanvas(false, this);
-    rband = 0;
-    transact = 0;
-    setWidget(darea);
-    frame_style = frameStyle();
+    v_width_hint = wid;
+    v_height_hint = hei;
+    v_darea = new QTcanvas(false, this);
+    v_rband = 0;
+    v_transact = 0;
+    setWidget(v_darea);
+    v_frame_style = frameStyle();
+    v_iso8859 = false;
 
-    connect(darea, SIGNAL(press_event(QMouseEvent*)),
+    connect(v_darea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(press_event_slot(QMouseEvent*)));
-    connect(darea, SIGNAL(release_event(QMouseEvent*)),
+    connect(v_darea, SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(release_event_slot(QMouseEvent*)));
-    connect(darea, SIGNAL(move_event(QMouseEvent*)),
+    connect(v_darea, SIGNAL(move_event(QMouseEvent*)),
         this, SLOT(move_event_slot(QMouseEvent*)));
 
-    timers = 0;
+    v_timers = 0;
 
     // timer to identify button clicks
-    btn_pressed = false;
-    btn_timer.setInterval(250);
-    btn_timer.setSingleShot(true);
-    connect(&btn_timer, SIGNAL(timeout()), this, SLOT(btn_timer_slot()));
+    v_btn_pressed = false;
+    v_btn_timer.setInterval(250);
+    v_btn_timer.setSingleShot(true);
+    connect(&v_btn_timer, SIGNAL(timeout()), this, SLOT(btn_timer_slot()));
+
+    const char *fn = FC.getName(FNT_MOZY);
+    if (fn)
+        set_font(fn);
+    fn = FC.getName(FNT_MOZY_FIXED);
+    if (fn)
+        set_fixed_font(fn);
+    // Listen for font family names under FNT_MOZY and FNT_MOZY_FIXED.
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+
+    setReady();
 }
 
 
@@ -239,14 +252,14 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
 void
 QTviewer::set_transaction(Transaction *t, const char*)
 {
-    transact = t;
+    v_transact = t;
 }
 
 
 Transaction *
 QTviewer::get_transaction()
 {
-    return (transact);
+    return (v_transact);
 }
 
 
@@ -320,6 +333,27 @@ QTviewer::get_widget_bag()
 //-----------------------------------------------------------------------------
 // Misc. public functions
 
+
+// Show updated text, try to keep present scroll positions.
+//
+void
+QTviewer::set_source(const char *string)
+{
+    int x = htm_viewarea.x;
+    int y = htm_viewarea.y;
+    setSource(string);
+    set_scroll_position(x, true);
+    set_scroll_position(y, false);
+    if (!htm_in_layout && htm_initialized)
+        trySync();
+
+        /* old
+    delete v_rband;
+    v_rband = 0;
+    setSource(string);
+    */
+}
+
 // Set the proportional font used.  The name is in the form
 // "face [style keywords] [size]".  The style keywords are ignored. 
 //
@@ -349,16 +383,124 @@ void
 QTviewer::hide_drawing_area(bool hd)
 {
     if (hd) {
-        darea->hide();
-        frame_style = frameStyle();
+        v_darea->hide();
+        v_frame_style = frameStyle();
         setFrameStyle(0);
         setEnabled(false);
     }
     else {
-        darea->show();
-        setFrameStyle(frame_style);
+        v_darea->show();
+        setFrameStyle(v_frame_style);
         setEnabled(true);
     }
+}
+
+
+/*
+// Add a widget to the viewing area, exported for forms support.
+//
+void
+QTviewer::add_widget(GtkWidget *w)
+{
+}
+*/
+
+
+int
+QTviewer::scroll_position(bool horiz)
+{
+    /*
+    if (horiz) {
+        if (gtk_widget_get_mapped(v_hsb) && v_hsba)
+            return ((int)gtk_adjustment_get_value(GTK_ADJUSTMENT(v_hsba)));
+    }
+    else {
+        if (gtk_widget_get_mapped(v_vsb) && v_vsba)
+            return ((int)gtk_adjustment_get_value(GTK_ADJUSTMENT(v_vsba)));
+    }
+    */
+    return (0);
+}
+
+
+void
+QTviewer::set_scroll_position(int value, bool horiz)
+{
+    /*
+    if (horiz) {
+        if (gtk_widget_get_mapped(v_hsb) && v_hsba) {
+            if (value < 0)
+                value = 0;
+            int v = (int)(gtk_adjustment_get_upper(v_hsba) -
+                gtk_adjustment_get_page_size(v_hsba));
+            if (value > v)
+                value = v;
+            int oldv = (int)gtk_adjustment_get_value(v_hsba);
+            if (value == oldv && value != htm_viewarea.x) {
+                // Make sure handler is called after (e.g.) font change.
+                hsb_change_handler(value);
+                return;
+            }
+            gtk_adjustment_set_value(v_hsba, value);
+        }
+    }
+    else {
+        if (gtk_widget_get_mapped(v_vsb) && v_vsba) {
+            if (value < 0)
+                value = 0;
+            int v = (int)(gtk_adjustment_get_upper(v_vsba) -
+                gtk_adjustment_get_page_size(v_vsba));
+            if (value > v)
+                value = v;
+            int oldv = (int)gtk_adjustment_get_value(v_vsba);
+            if (value == oldv && value != htm_viewarea.y) {
+                // Make sure handler is called after (e.g.) font change.
+                vsb_change_handler(value);
+                return;
+            }
+            gtk_adjustment_set_value(v_vsba, value);
+        }
+    }
+    */
+}
+
+
+/*
+void
+QTviewer::set_scroll_policy(GtkPolicyType hpolicy, GtkPolicyType vpolicy)
+{
+    v_hpolicy = hpolicy;
+    v_vpolicy = vpolicy;
+}
+*/
+
+
+// Return the Y coordinate of the named anchor.
+//
+int
+QTviewer::anchor_position(const char *name)
+{
+    return (anchorPosByName(name));
+}
+
+
+// Ensure that the bounding box specified is visible.
+//
+void
+QTviewer::scroll_visible(int l, int t, int r, int b)
+{
+    /*
+    if (gtk_widget_get_mapped(v_hsb) && v_hsba) {
+        int xmin = l < r ? l : r - 50;
+        int xmax = l > r ? l : r + 50;
+        gtk_adjustment_clamp_page(GTK_ADJUSTMENT(v_hsba), xmin, xmax);
+    }
+    if (gtk_widget_get_mapped(v_vsb) && v_vsba) {
+        int ymin = t < b ? t : b - 50;
+        int ymax = t > b ? t : b + 50;
+        gtk_adjustment_clamp_page(GTK_ADJUSTMENT(v_vsba), ymin, ymax);
+    }
+    */
 }
 
 
@@ -387,8 +529,8 @@ QTviewer::tk_resize_area(int wid, int hei)
     }
 
     QSize qda(wid, hei);
-    if (qda != darea->size())
-        darea->resize(wid, hei);
+    if (qda != v_darea->size())
+        v_darea->resize(wid, hei);
 }
 
 
@@ -397,7 +539,7 @@ QTviewer::tk_resize_area(int wid, int hei)
 void
 QTviewer::tk_refresh_area(int xx, int yy, int w, int h)
 {
-    darea->repaint(xx, yy, w, h);
+    v_darea->repaint(xx, yy, w, h);
 }
 
 
@@ -424,8 +566,8 @@ QTviewer::tk_window_size(htmInterface::WinRetMode mode,
     }
     else {
         // Return the size of the drawing pixmap.
-        *wp = darea->width();
-        *hp = darea->height();
+        *wp = v_darea->width();
+        *hp = v_darea->height();
     }
 }
 
@@ -446,9 +588,9 @@ void
 QTviewer::tk_set_anchor_cursor(bool set)
 {
     if (set)
-        darea->setCursor(QCursor(Qt::PointingHandCursor));
+        v_darea->setCursor(QCursor(Qt::PointingHandCursor));
     else
-        darea->unsetCursor();
+        v_darea->unsetCursor();
 }
 
 
@@ -457,9 +599,9 @@ QTviewer::tk_set_anchor_cursor(bool set)
 unsigned int
 QTviewer::tk_add_timer(int(*cb)(void*), void *arg)
 {
-    timers = new QTtimer(cb, arg, timers, this);
-    timers->register_list(&timers);
-    return (timers->id());
+    v_timers = new QTtimer(cb, arg, v_timers, this);
+    v_timers->register_list(&v_timers);
+    return (v_timers->id());
 }
 
 
@@ -468,7 +610,7 @@ QTviewer::tk_add_timer(int(*cb)(void*), void *arg)
 void
 QTviewer::tk_remove_timer(int id)
 {
-    for (QTtimer *t = timers; t; t = t->nextTimer()) {
+    for (QTtimer *t = v_timers; t; t = t->nextTimer()) {
         if (t->id() == id) {
             delete t;
             break;
@@ -483,7 +625,7 @@ QTviewer::tk_remove_timer(int id)
 void
 QTviewer::tk_start_timer(unsigned int id, int msec)
 {
-    for (QTtimer *t = timers; t; t = t->nextTimer()) {
+    for (QTtimer *t = v_timers; t; t = t->nextTimer()) {
         if (t->id() == (int)id) {
             t->start(msec);
         }
@@ -561,7 +703,7 @@ QTviewer::tk_release_font(void *fntp)
 void
 QTviewer::tk_set_font(htmFont *fnt)
 {
-    darea->set_font((QFont*)fnt->xfont);
+    v_darea->set_font((QFont*)fnt->xfont);
 }
 
 
@@ -571,7 +713,7 @@ QTviewer::tk_set_font(htmFont *fnt)
 int
 QTviewer::tk_text_width(htmFont *fnt, const char *str, int len)
 {
-    return (darea->text_width((QFont*)fnt->xfont, str, len));
+    return (v_darea->text_width((QFont*)fnt->xfont, str, len));
 }
 
 
@@ -586,7 +728,7 @@ QTviewer::tk_visual_mode()
     if (m == QColormap::Indexed)
         return (MODE_PALETTE);
     if (m == QColormap::Gray) {
-        if (darea->depth() == 2)
+        if (v_darea->depth() == 2)
             return (MODE_BW);
         else
             return (MODE_MY_GRAY);
@@ -600,7 +742,7 @@ QTviewer::tk_visual_mode()
 int
 QTviewer::tk_visual_depth()
 {
-    return (darea->depth());
+    return (v_darea->depth());
 }
 
 
@@ -648,7 +790,7 @@ QTviewer::tk_pixmap_from_info(htmImage*, htmImageInfo *info,
 void
 QTviewer::tk_set_draw_to_pixmap(htmPixmap *pixmap)
 {
-    darea->set_draw_to_pixmap((QPixmap*)pixmap);
+    v_darea->set_draw_to_pixmap((QPixmap*)pixmap);
 }
 
 
@@ -706,7 +848,7 @@ void
 QTviewer::tk_draw_image(int xw, int yw, htmXImage *image, int xi, int yi,
     int wi, int hi)
 {
-    darea->draw_image(xw, yw, (QImage*)image, xi, yi, wi, hi);
+    v_darea->draw_image(xw, yw, (QImage*)image, xi, yi, wi, hi);
 }
 
 
@@ -723,7 +865,7 @@ QTviewer::tk_release_image(htmXImage *image)
 void
 QTviewer::tk_set_foreground(unsigned int pix)
 {
-    darea->set_foreground(pix);
+    v_darea->set_foreground(pix);
 }
 
 
@@ -732,7 +874,7 @@ QTviewer::tk_set_foreground(unsigned int pix)
 void
 QTviewer::tk_set_background(unsigned int pix)
 {
-    darea->set_background(pix);
+    v_darea->set_background(pix);
 }
 
 
@@ -863,7 +1005,7 @@ QTviewer::tk_set_clip_rectangle(htmRect*)
 void
 QTviewer::tk_set_fill(htmInterface::FillMode mode)
 {
-    darea->set_fill((mode == htmInterface::TILED));
+    v_darea->set_fill((mode == htmInterface::TILED));
 }
 
 
@@ -872,7 +1014,7 @@ QTviewer::tk_set_fill(htmInterface::FillMode mode)
 void
 QTviewer::tk_set_tile(htmPixmap *pixmap)
 {
-    darea->set_tile((QPixmap*)pixmap);
+    v_darea->set_tile((QPixmap*)pixmap);
 }
 
 
@@ -881,7 +1023,7 @@ QTviewer::tk_set_tile(htmPixmap *pixmap)
 void
 QTviewer::tk_set_ts_origin(int xx, int yy)
 {
-    darea->set_tile_origin(xx, yy);
+    v_darea->set_tile_origin(xx, yy);
 }
 
 
@@ -891,7 +1033,7 @@ void
 QTviewer::tk_draw_pixmap(int xw, int yw, htmPixmap *pmap,
     int xp, int yp, int wp, int hp)
 {
-    darea->draw_pixmap(xw, yw, (QPixmap*)pmap, xp, yp, wp, hp);
+    v_darea->draw_pixmap(xw, yw, (QPixmap*)pmap, xp, yp, wp, hp);
 }
 
 
@@ -907,7 +1049,7 @@ QTviewer::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
 void
 QTviewer::tk_draw_rectangle(bool filled, int xx, int yy, int w, int h)
 {
-    darea->draw_rectangle(filled, xx, yy, w, h);
+    v_darea->draw_rectangle(filled, xx, yy, w, h);
 }
 
 
@@ -916,7 +1058,7 @@ QTviewer::tk_draw_rectangle(bool filled, int xx, int yy, int w, int h)
 void
 QTviewer::tk_set_line_style(htmInterface::FillMode styleid)
 {
-    darea->set_line_mode((styleid == htmInterface::TILED));
+    v_darea->set_line_mode((styleid == htmInterface::TILED));
 }
 
 
@@ -925,7 +1067,7 @@ QTviewer::tk_set_line_style(htmInterface::FillMode styleid)
 void
 QTviewer::tk_draw_line(int x1, int y1, int x2, int y2)
 {
-    darea->draw_line(x1, y1, x2, y2);
+    v_darea->draw_line(x1, y1, x2, y2);
 }
 
 
@@ -934,7 +1076,7 @@ QTviewer::tk_draw_line(int x1, int y1, int x2, int y2)
 void
 QTviewer::tk_draw_text(int xx, int yy, const char *str, int len)
 {
-    darea->draw_text(xx, yy, str, len);
+    v_darea->draw_text(xx, yy, str, len);
 }
 
 
@@ -943,7 +1085,7 @@ QTviewer::tk_draw_text(int xx, int yy, const char *str, int len)
 void
 QTviewer::tk_draw_polygon(bool filled, htmPoint *points, int numpts)
 {
-    darea->draw_polygon(filled, (QPoint*)points, numpts);
+    v_darea->draw_polygon(filled, (QPoint*)points, numpts);
 }
 
 
@@ -953,7 +1095,7 @@ void
 QTviewer::tk_draw_arc(bool filled, int xx, int yy, int w, int h, int st,
     int sp)
 {
-    darea->draw_arc(filled, xx, yy, w, h, st, sp);
+    v_darea->draw_arc(filled, xx, yy, w, h, st, sp);
 }
 
 
@@ -961,24 +1103,25 @@ QTviewer::tk_draw_arc(bool filled, int xx, int yy, int w, int h, int st,
 // Forms Handling
 //
 
-inline int
-char_width(QWidget *w)
-{
-    QFont f = w->font();
-    QFontMetrics fm(f);
+namespace {
+    inline int char_width(QWidget *w)
+    {
+        QFont f = w->font();
+        QFontMetrics fm(f);
 #if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-    return (fm.horizontalAdvance("X"));
+        return (fm.horizontalAdvance("X"));
 #else
-    return (fm.width("X"));
+        return (fm.width("X"));
 #endif
-}
+    }
 
-inline int
-line_height(QWidget *w)
-{
-    QFont f = w->font();
-    QFontMetrics fm(f);
-    return (fm.height());
+
+    inline int line_height(QWidget *w)
+    {
+        QFont f = w->font();
+        QFontMetrics fm(f);
+        return (fm.height());
+    }
 }
 
 
@@ -996,7 +1139,7 @@ QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_TEXT:
     case FORM_PASSWD:
         {
-            QLineEdit *ed = new QLineEdit(darea);
+            QLineEdit *ed = new QLineEdit(v_darea);
             if (entry->maxlength != -1)
                 ed->setMaxLength(entry->maxlength);
 
@@ -1015,19 +1158,19 @@ QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_CHECK:
     case FORM_RADIO:
         {
-            QPushButton *cb = new QTform_button(entry, darea);
+            QPushButton *cb = new QTform_button(entry, v_darea);
             entry->widget = cb;
         }
         break;
 
     case FORM_FILE:
-        entry->widget = new QTform_file(entry, darea);
+        entry->widget = new QTform_file(entry, v_darea);
         break;
         
     case FORM_RESET:
     case FORM_SUBMIT:
         {
-            QPushButton *btn = new QTform_button(entry, darea);
+            QPushButton *btn = new QTform_button(entry, v_darea);
             entry->widget = btn;
 
             if (entry->type == FORM_SUBMIT)
@@ -1042,11 +1185,11 @@ QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_SELECT:
         // multiple select or more than one item visible: it's a listbox
         if (entry->multiple || entry->size > 1) {
-            QTform_list *lb = new QTform_list(entry, darea);
+            QTform_list *lb = new QTform_list(entry, v_darea);
             entry->widget = lb;
         }
         else {
-            QTform_combo *cb = new QTform_combo(entry, darea);
+            QTform_combo *cb = new QTform_combo(entry, v_darea);
             entry->widget = cb;
         }
         break;
@@ -1078,7 +1221,7 @@ QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
 
     case FORM_TEXTAREA:
         {
-            QTextEdit *te = new QTextEdit(darea);
+            QTextEdit *te = new QTextEdit(v_darea);
             if (entry->value)
                 te->setPlainText(entry->value);
             entry->width = entry->size * char_width(te);
@@ -1319,6 +1462,23 @@ QTviewer::tk_form_destroy(htmForm *entry)
 // QTviewer slots
 
 void
+QTviewer::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_MOZY) {
+        const char *fn = FC.getName(FNT_MOZY);
+printf("font  %s\n", fn);
+        if (fn)
+            set_font(fn);
+    }
+    else if (fnum == FNT_MOZY_FIXED) {
+        const char *fn = FC.getName(FNT_MOZY_FIXED);
+        if (fn)
+            set_fixed_font(fn);
+    }
+}
+
+
+void
 QTviewer::press_event_slot(QMouseEvent *ev)
 {
     switch (ev->button()) {
@@ -1334,16 +1494,16 @@ QTviewer::press_event_slot(QMouseEvent *ev)
     default:
         return;
     } 
-    btn_pressed = true;
-    btn_timer.start();
+    v_btn_pressed = true;
+    v_btn_timer.start();
 }
 
 
 void
 QTviewer::release_event_slot(QMouseEvent *ev)
 {
-    delete rband;
-    rband = 0;
+    delete v_rband;
+    v_rband = 0;
 
     QRect r = contentsRect();
     QScrollBar *sb = horizontalScrollBar();
@@ -1356,19 +1516,19 @@ QTviewer::release_event_slot(QMouseEvent *ev)
     if (r.contains(ev->x(), ev->y())) {
         switch (ev->button()) {
         case Qt::LeftButton:
-            extendEnd(ev, 1, btn_pressed, ev->x(), ev->y());
+            extendEnd(ev, 1, v_btn_pressed, ev->x(), ev->y());
             break;
         case Qt::MidButton:
-            extendEnd(ev, 2, btn_pressed, ev->x(), ev->y());
+            extendEnd(ev, 2, v_btn_pressed, ev->x(), ev->y());
             break;
         case Qt::RightButton:
-            extendEnd(ev, 3, btn_pressed, ev->x(), ev->y());
+            extendEnd(ev, 3, v_btn_pressed, ev->x(), ev->y());
             break;
         default:
             return;
         } 
     }
-    btn_pressed = false;
+    v_btn_pressed = false;
 }
 
 
@@ -1384,8 +1544,8 @@ QTviewer::move_event_slot(QMouseEvent *ev)
         r.moveTop(sb->value());
 
     if (r.contains(ev->x(), ev->y())) {
-        if (rband) {
-            rband->show();
+        if (v_rband) {
+            v_rband->show();
             int lastx = viewportX(htm_press_x);
             int lasty = viewportY(htm_press_y);
             int xx = ev->x() < lastx ? ev->x() : lastx;
@@ -1400,13 +1560,13 @@ QTviewer::move_event_slot(QMouseEvent *ev)
                 yy -= sb->value();
 
             QRect rb(xx, yy, abs(ev->x() - lastx), abs(ev->y() - lasty));
-            rband->setGeometry(rb);
+            v_rband->setGeometry(rb);
             return;
         }
         anchorTrack(ev, ev->x(), ev->y());
     }
-    else if (rband)
-        rband->hide();
+    else if (v_rband)
+        v_rband->hide();
 }
 
 
@@ -1417,9 +1577,9 @@ QTviewer::move_event_slot(QMouseEvent *ev)
 void
 QTviewer::btn_timer_slot()
 {
-    if (btn_pressed)
-        rband = new QRubberBand(QRubberBand::Rectangle, this);
-    btn_pressed = false;
+    if (v_btn_pressed)
+        v_rband = new QRubberBand(QRubberBand::Rectangle, this);
+    v_btn_pressed = false;
 }
 
 
@@ -1448,14 +1608,16 @@ QTviewer::resizeEvent(QResizeEvent *ev)
     // If the size increases, resize the drawing area immediately so it
     // won't look strange while reformatting.  The reformatting will
     // resize it again.
-    QSize dasize = darea->size();
+    QSize dasize = v_darea->size();
     if (dasize.width() < ev->size().width())
         dasize.setWidth(ev->size().width());
     if (dasize.height() < ev->size().height())
         dasize.setHeight(ev->size().height());
-    if (dasize != darea->size())
-        darea->resize(dasize);
+    if (dasize != v_darea->size())
+        v_darea->resize(dasize);
 
     htmWidget::resize();
+    if (!htm_in_layout && htm_initialized)
+        trySync();
 }
 

@@ -35,6 +35,7 @@ CCFILES = \
     qtextfh.cc \
     qtfiledlg.cc \
     qtfillp.cc \
+    qtgrid.cc \
     qthtext.cc \
     qtkeymacro.cc \
     qtkeymap.cc \
@@ -70,6 +71,7 @@ MOCFILES = \
     moc_modif.cpp \
     moc_param.cpp \
     moc_place.cpp \
+    moc_sel.cpp \
     moc_xform.cpp \
     moc_zoom.cpp
 CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
@@ -111,6 +113,7 @@ moc_merge.o: moc_merge.cpp  qtmerge.h
 moc_modif.o: moc_modif.cpp  qtmodif.h
 moc_param.o: moc_param.cpp  qtparam.h
 moc_place.o: moc_place.cpp  qtplace.h
+moc_sel.o: moc_sel.cpp  qtsel.h
 moc_xform.o: moc_xform.cpp  qtxform.h
 moc_zoom.o: moc_zoom.cpp  qtzoom.h
 
@@ -140,6 +143,8 @@ moc_param.cpp: $(MOC) qtparam.h
 	$(MOC) qtparam.h -o moc_param.cpp
 moc_place.cpp: $(MOC) qtplace.h
 	$(MOC) qtplace.h -o moc_place.cpp
+moc_sel.cpp: $(MOC) qtsel.h
+	$(MOC) qtsel.h -o moc_sel.cpp
 moc_xform.cpp: $(MOC) qtxform.h
 	$(MOC) qtxform.h -o moc_xform.cpp
 moc_zoom.cpp: $(MOC) qtzoom.h

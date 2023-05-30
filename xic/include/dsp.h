@@ -393,8 +393,10 @@ public:
     void SetMaxLabelLines(int l)            { d_max_label_lines = l; }
     int SleepTimeMs()                       { return (d_sleep_time_ms); }
     void SetSleepTimeMs(int t)              { d_sleep_time_ms = t; }
-    int SelectPixel()                       { return (d_select_pixel); }
-    void SetSelectPixel(int p)              { d_select_pixel = p; }
+    int SelectPixelPhys()                   { return (d_select_pixel_phys); }
+    void SetSelectPixelPhys(int p)          { d_select_pixel_phys = p; }
+    int SelectPixelElec()                   { return (d_select_pixel_elec); }
+    void SetSelectPixelElec(int p)          { d_select_pixel_elec = p; }
     int PhysPropSize()                      { return (d_phys_prop_size); }
     void SetPhysPropSize(int s)             { d_phys_prop_size = s; }
     int TermTextSize()                      { return (d_term_text_size); }
@@ -517,7 +519,8 @@ private:
     int d_max_label_len;        // Max length of displayed property label.
     int d_max_label_lines;      // Max lines shown in property labels.
     int d_sleep_time_ms;        // Delay time msec for slow mode.
-    int d_select_pixel;         // Color index for select highlighting.
+    int d_select_pixel_phys;    // Color index for phys select highlighting.
+    int d_select_pixel_elec;    // Color index for elec select highlighting.
     int d_phys_prop_size;       // Size of text used for physical properties.
     int d_term_text_size;       // Size of text used for terminals.
     int d_term_mark_size;       // Size of mark used for terminals.

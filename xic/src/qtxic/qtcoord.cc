@@ -96,7 +96,7 @@ cCoord::cCoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     if (FC.getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed(int)), Qt::QueuedConnection);
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 }
 
 
@@ -252,7 +252,7 @@ cCoord::redraw_slot()
 
 
 void
-cCoord::font_changed(int fnum)
+cCoord::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;

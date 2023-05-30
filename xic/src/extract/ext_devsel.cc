@@ -446,7 +446,8 @@ cExt::showSelectedDevices(WindowDesc *wd)
     if (!wd->Wdraw())
         return;
     if (ext_selected_devices) {
-        wd->Wdraw()->SetColor(DSP()->SelectPixel());
+        wd->Wdraw()->SetColor(wd->Mode() == Physical ?
+            DSP()->SelectPixelPhys() : DSP()->SelectPixelElec());
         for (sDevInstList *d = ext_selected_devices; d; d = d->next)
             d->dev->show(wd);
         wd->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());

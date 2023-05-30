@@ -227,12 +227,19 @@ cMain::ColorTimerInit()
 {
     if (!GTKdev::exists())
         return;
-    int pixel = DSP()->Color(SelectColor1);
+    int pixel = DSP()->Color(SelectColor1, Physical);
     int red, green, blue;
     GTKdev::self()->RGBofPixel(pixel, &red, &green, &blue);
-    int sp = DSP()->SelectPixel();
+    int sp = DSP()->SelectPixelPhys();
     GTKdev::self()->AllocateColor(&sp, red, green, blue);
-    DSP()->SetSelectPixel(sp);
+    DSP()->SetSelectPixelPhys(sp);
+
+    pixel = DSP()->Color(SelectColor1, Electrical);
+    GTKdev::self()->RGBofPixel(pixel, &red, &green, &blue);
+    sp = DSP()->SelectPixelElec();
+    GTKdev::self()->AllocateColor(&sp, red, green, blue);
+    DSP()->SetSelectPixelElec(sp);
+
     GTKdev::self()->AddTimer(500, colortimer, 0);
 }
 
@@ -903,12 +910,18 @@ namespace {
                 WindowDesc *wd;
                 WDgen wgen(WDgen::MAIN, WDgen::ALL);
                 while ((wd = wgen.next()) != 0) {
-                    if (!on)
-                        DSP()->SetSelectPixel(
-                            DSP()->Color(SelectColor1, wd->Mode()));
-                    else
-                        DSP()->SetSelectPixel(
-                            DSP()->Color(SelectColor2, wd->Mode()));
+                    if (!on) {
+                        DSP()->SetSelectPixelPhys(
+                            DSP()->Color(SelectColor1, Physical));
+                        DSP()->SetSelectPixelElec(
+                            DSP()->Color(SelectColor1, Electrical));
+                    }
+                    else {
+                        DSP()->SetSelectPixelPhys(
+                            DSP()->Color(SelectColor2, Physical));
+                        DSP()->SetSelectPixelElec(
+                            DSP()->Color(SelectColor2, Electrical));
+                    }
 
                     if (wd->DbType() == WDcddb) {
                         if (Selections.blinking())
@@ -916,7 +929,6 @@ namespace {
                     }
                     wd->ShowHighlighting();
                 }
-                DSP()->SetSelectPixel(DSP()->Color(SelectColor1));
             }
             else {
                 GdkColor colorcell;

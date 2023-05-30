@@ -74,7 +74,8 @@ cDisplay::cDisplay()
     d_max_label_len         = 0;
     d_max_label_lines       = 0;
     d_sleep_time_ms         = 0;
-    d_select_pixel          = 0;
+    d_select_pixel_phys     = 0;
+    d_select_pixel_elec     = 0;
     d_phys_prop_size        = 0;
     d_term_text_size        = 0;
     d_term_mark_size        = 0;

@@ -1363,6 +1363,18 @@ QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
 
 #define MODMASK (GR_SHIFT_MASK | GR_CONTROL_MASK | GR_ALT_MASK)
 
+
+namespace {
+    // Match the "code" below case-insensitively.
+    //
+    bool codes_match(int code1, int code2)
+    {
+        return ((islower(code1) ? code1 : tolower(code1)) ==
+            (islower(code2) ? code2 : tolower(code2)));
+    }
+}
+
+
 // Handle keypresses in the main and subwindows.  If certain modes
 // are set, call the application.  Otherwise, save the keypress in
 // a buffer, which is displayed in the keypress readout area.  If
@@ -1431,8 +1443,9 @@ QTsubwin::keypress_handler(unsigned int keyval, unsigned int state,
     if (code == 0 && keyval >= 0x20)
         code = keyval;
 
+    // In Apple, Command maps to Ctrl, Option to Alt.
     for (keyaction *k = Kmap()->ActionMapPre(); k->code; k++) {
-        if (k->code == code &&
+        if (codes_match(k->code, code) &&
                 (!k->state || k->state == (state & MODMASK))) {
             if (EV()->KeyActions(sw_windesc, k->action, &code))
                 return (true);
@@ -1451,7 +1464,7 @@ QTsubwin::keypress_handler(unsigned int keyval, unsigned int state,
         return (false);
 
     for (keyaction *k = Kmap()->ActionMapPost(); k->code; k++) {
-       if (k->code == code &&
+        if (codes_match(k->code, code) &&
                 (!k->state || k->state == (state & MODMASK))) {
             if (EV()->KeyActions(sw_windesc, k->action, &code))
                 return (true);
@@ -1507,6 +1520,12 @@ void
 QTsubwin::paint_slot(QPaintEvent *ev)
 {
     (void)ev;
+    if (sw_windesc->DbType() == WDcddb) {
+        if (Selections.blinking())
+            Selections.show(sw_windesc);
+    }
+    sw_windesc->ShowHighlighting();
+    gd_viewport->draw_direct(false);
 }
 
 
@@ -1749,7 +1768,8 @@ QTsubwin::key_down_slot(QKeyEvent *ev)
         wb_message->popdown();
 
 //XXX
-//printf("%x %x %x\n", ev->key(), ev->nativeScanCode(), ev->nativeVirtualKey());
+//printf("%x %x %x %x %x\n", ev->key(), ev->nativeScanCode(),
+//ev->nativeVirtualKey(), ev->modifiers(), mod_state(ev->modifiers()));
 
     QString qs = ev->text().toLatin1();
     const char *string = (const char*)qs.constData();
