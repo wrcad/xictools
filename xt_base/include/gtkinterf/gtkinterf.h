@@ -127,10 +127,8 @@ namespace gtkinterf {
         GdkColormap *Colormap()     { return (dv_cmap); }
 #endif
         GdkVisual *Visual()         { return (dv_visual); }
-        bool IsTrueColor()          { return (dv_true_color); }
         int  LowerWinOffset()       { return (dv_lower_win_offset); }
         void SetLowerWinOffset(int o) { dv_lower_win_offset = o; }
-        bool IsDualPlane()          { return (dv_dual_plane); }
         void SetDefaultFocusWin(GdkWindow *w) { dv_default_focus_win = w; }
         GdkWindow *DefaultFocusWin() { return (dv_default_focus_win); }
 #ifdef WITH_X11
@@ -203,8 +201,6 @@ namespace gtkinterf {
 #endif
         GdkVisual       *dv_visual;
         int             dv_lower_win_offset;
-        bool            dv_dual_plane;  // color map has separate highlighting plane
-        bool            dv_true_color;  // not pseudo-color visual
 #ifdef WITH_X11
         bool            dv_silence_xerrors;
         bool            dv_no_to_top;

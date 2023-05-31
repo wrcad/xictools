@@ -106,47 +106,43 @@ cDisplay::ShowOdescPhysProperties(CDo *odesc, int display)
             continue;
 
         int delta = wdesc->LogScale(d_phys_prop_size);
-        if (DSPpkg::self()->IsDualPlane())
-            wdesc->Wdraw()->SetXOR(display ? GRxHlite : GRxUnhlite);
+        if (display)
+            wdesc->Wdraw()->SetColor(Color(HighlightingColor, Physical));
         else {
-            if (display)
-                wdesc->Wdraw()->SetColor(Color(HighlightingColor, Physical));
-            else {
-                BBox BB;
-                bool locfound = false;
-                for (CDp *pdesc = odesc->prpty_list(); pdesc;
-                        pdesc = pdesc->next_prp()) {
-                    if (is_prop_showable(pdesc, showprp)) {
-                        if (!locfound) {
-                            find_loc(odesc, &BB.left, &BB.bottom, delta);
-                            BB.right = BB.left;
-                            BB.top = BB.bottom;
-                            locfound = true;
-                        }
-                        else
-                            BB.bottom -= delta;
-                        sLstr lstr;
-                        lstr.add_i(pdesc->value());
-                        lstr.add_c(' ');
-                        lstr.add(get_prop_text(pdesc));
-                        int w, h;
-                        int nl = DefaultLabelSize(lstr.string(),
-                            wdesc->Mode(), &w, &h);
-                        double hd = delta*nl;
-                        w = mmRnd(w*hd/h);
-                        h = mmRnd(hd);
-                        BB.bottom -= h - delta;
-                        if (BB.right < BB.left + w)
-                            BB.right = BB.left + w;
-                        if (BB.top < BB.bottom + h)
-                            BB.top = BB.bottom + h;
+            BBox BB;
+            bool locfound = false;
+            for (CDp *pdesc = odesc->prpty_list(); pdesc;
+                    pdesc = pdesc->next_prp()) {
+                if (is_prop_showable(pdesc, showprp)) {
+                    if (!locfound) {
+                        find_loc(odesc, &BB.left, &BB.bottom, delta);
+                        BB.right = BB.left;
+                        BB.top = BB.bottom;
+                        locfound = true;
                     }
+                    else
+                        BB.bottom -= delta;
+                    sLstr lstr;
+                    lstr.add_i(pdesc->value());
+                    lstr.add_c(' ');
+                    lstr.add(get_prop_text(pdesc));
+                    int w, h;
+                    int nl = DefaultLabelSize(lstr.string(),
+                        wdesc->Mode(), &w, &h);
+                    double hd = delta*nl;
+                    w = mmRnd(w*hd/h);
+                    h = mmRnd(hd);
+                    BB.bottom -= h - delta;
+                    if (BB.right < BB.left + w)
+                        BB.right = BB.left + w;
+                    if (BB.top < BB.bottom + h)
+                        BB.top = BB.bottom + h;
                 }
-                PPgoaway = true;
-                wdesc->Redisplay(&BB);
-                PPgoaway = false;
-                return;
             }
+            PPgoaway = true;
+            wdesc->Redisplay(&BB);
+            PPgoaway = false;
+            return;
         }
 
         bool erase = d_erase_behind_props;
@@ -172,25 +168,17 @@ cDisplay::ShowOdescPhysProperties(CDo *odesc, int display)
                 h = mmRnd(hd);
                 y -= h - delta;
                 if (erase && display) {
-                    if (DSPpkg::self()->IsDualPlane())
-                        wdesc->Wdraw()->SetXOR(GRxNone);
                     wdesc->Wdraw()->SetColor(DSP()->Color(BackgroundColor,
                         Physical));
                     BBox BB(x, y, x + w, y + h);
                     wdesc->ShowBox(&BB, CDL_FILLED, 0);
-                    if (DSPpkg::self()->IsDualPlane())
-                        wdesc->Wdraw()->SetXOR(GRxHlite);
                     wdesc->Wdraw()->SetColor(Color(HighlightingColor,
                         Physical));
                 }
                 wdesc->ShowLabel(lstr.string(), x, y, w, h, 0);
                 if (erase && !display) {
-                    if (DSPpkg::self()->IsDualPlane())
-                        wdesc->Wdraw()->SetXOR(GRxNone);
                     BBox BB(x, y, x + w, y + h);
                     wdesc->Redisplay(&BB);
-                    if (DSPpkg::self()->IsDualPlane())
-                        wdesc->Wdraw()->SetXOR(GRxUnhlite);
                     wdesc->Wdraw()->SetColor(Color(HighlightingColor,
                         Physical));
                 }
@@ -198,8 +186,6 @@ cDisplay::ShowOdescPhysProperties(CDo *odesc, int display)
             }
         }
         *wdesc->ClipRect() = tBB;
-        if (DSPpkg::self()->IsDualPlane())
-            wdesc->Wdraw()->SetXOR(GRxNone);
     }
 }
 // End of cDisplay functions.
@@ -232,17 +218,52 @@ WindowDesc::ShowPhysProperties(const BBox *AOI, int display)
     if (!sdesc)
         return;
 
-    if (DSPpkg::self()->IsDualPlane())
-        w_draw->SetXOR(display ? GRxHlite : GRxUnhlite);
+    if (display)
+        w_draw->SetColor(DSP()->Color(HighlightingColor, Physical));
     else {
-        if (display)
-            w_draw->SetColor(DSP()->Color(HighlightingColor, Physical));
-        else {
-            CDg gdesc;
-            DSP()->TInitGen(sdesc, CellLayer(), AOI, &gdesc);
-            CDo *pointer;
-            bool locfound;
-            BBox BB(CDnullBB);
+        CDg gdesc;
+        DSP()->TInitGen(sdesc, CellLayer(), AOI, &gdesc);
+        CDo *pointer;
+        bool locfound;
+        BBox BB(CDnullBB);
+        while ((pointer = gdesc.next()) != 0) {
+            if (!pointer->is_normal())
+                continue;
+            CDp *pdesc = pointer->prpty_list();
+            if (!pdesc)
+                continue;
+            locfound = false;
+            BBox tBB;
+            for ( ; pdesc; pdesc = pdesc->next_prp()) {
+                if (is_prop_showable(pdesc, showprp)) {
+                    if (!locfound) {
+                        find_loc(pointer, &tBB.left, &tBB.bottom, delta);
+                        locfound = true;
+                    }
+                    sLstr lstr;
+                    lstr.add_i(pdesc->value());
+                    lstr.add_c(' ');
+                    lstr.add(get_prop_text(pdesc));
+                    int w, h;
+                    int nl = DSP()->DefaultLabelSize(lstr.string(),
+                        w_mode, &w, &h);
+                    double hd = delta*nl;
+                    w = mmRnd(w*hd/h);
+                    h = mmRnd(hd);
+                    tBB.bottom -= h - delta;
+                    tBB.right = tBB.left + w;
+                    tBB.top = tBB.bottom + h;
+                    BB.add(&tBB);
+                    tBB.bottom -= delta;
+                }
+            }
+        }
+
+        CDl *ld;
+        CDsLgen lgen(sdesc);
+        lgen.sort();
+        while ((ld = lgen.next()) != 0) {
+            DSP()->TInitGen(sdesc, ld, AOI, &gdesc);
             while ((pointer = gdesc.next()) != 0) {
                 if (!pointer->is_normal())
                     continue;
@@ -254,13 +275,22 @@ WindowDesc::ShowPhysProperties(const BBox *AOI, int display)
                 for ( ; pdesc; pdesc = pdesc->next_prp()) {
                     if (is_prop_showable(pdesc, showprp)) {
                         if (!locfound) {
-                            find_loc(pointer, &tBB.left, &tBB.bottom, delta);
+                            find_loc(pointer, &tBB.left, &tBB.bottom,
+                                delta);
                             locfound = true;
                         }
                         sLstr lstr;
-                        lstr.add_i(pdesc->value());
-                        lstr.add_c(' ');
-                        lstr.add(get_prop_text(pdesc));
+                        if (pdesc->value() == XICP_CNDR &&
+                                DSP()->ShowCndrNumbers()) {
+                            const char *t = get_prop_text(pdesc);
+                            lstring::advtok(&t);
+                            lstr.add(t);
+                        }
+                        else {
+                            lstr.add_i(pdesc->value());
+                            lstr.add_c(' ');
+                            lstr.add(get_prop_text(pdesc));
+                        }
                         int w, h;
                         int nl = DSP()->DefaultLabelSize(lstr.string(),
                             w_mode, &w, &h);
@@ -275,59 +305,11 @@ WindowDesc::ShowPhysProperties(const BBox *AOI, int display)
                     }
                 }
             }
-
-            CDl *ld;
-            CDsLgen lgen(sdesc);
-            lgen.sort();
-            while ((ld = lgen.next()) != 0) {
-                DSP()->TInitGen(sdesc, ld, AOI, &gdesc);
-                while ((pointer = gdesc.next()) != 0) {
-                    if (!pointer->is_normal())
-                        continue;
-                    CDp *pdesc = pointer->prpty_list();
-                    if (!pdesc)
-                        continue;
-                    locfound = false;
-                    BBox tBB;
-                    for ( ; pdesc; pdesc = pdesc->next_prp()) {
-                        if (is_prop_showable(pdesc, showprp)) {
-                            if (!locfound) {
-                                find_loc(pointer, &tBB.left, &tBB.bottom,
-                                    delta);
-                                locfound = true;
-                            }
-                            sLstr lstr;
-                            if (pdesc->value() == XICP_CNDR &&
-                                    DSP()->ShowCndrNumbers()) {
-                                const char *t = get_prop_text(pdesc);
-                                lstring::advtok(&t);
-                                lstr.add(t);
-                            }
-                            else {
-                                lstr.add_i(pdesc->value());
-                                lstr.add_c(' ');
-                                lstr.add(get_prop_text(pdesc));
-                            }
-                            int w, h;
-                            int nl = DSP()->DefaultLabelSize(lstr.string(),
-                                w_mode, &w, &h);
-                            double hd = delta*nl;
-                            w = mmRnd(w*hd/h);
-                            h = mmRnd(hd);
-                            tBB.bottom -= h - delta;
-                            tBB.right = tBB.left + w;
-                            tBB.top = tBB.bottom + h;
-                            BB.add(&tBB);
-                            tBB.bottom -= delta;
-                        }
-                    }
-                }
-            }
-            PPgoaway = true;
-            Redisplay(&BB);
-            PPgoaway = false;
-            return;
         }
+        PPgoaway = true;
+        Redisplay(&BB);
+        PPgoaway = false;
+        return;
     }
 
     bool erase = DSP()->EraseBehindProps();
@@ -363,26 +345,18 @@ WindowDesc::ShowPhysProperties(const BBox *AOI, int display)
                 h = mmRnd(hd);
                 y -= h - delta;
                 if (erase && display) {
-                    if (DSPpkg::self()->IsDualPlane())
-                        w_draw->SetXOR(GRxNone);
                     w_draw->SetColor(DSP()->Color(BackgroundColor, Physical));
                     BBox BB(x, y, x + w, y + h);
                     ShowBox(&BB, CDL_FILLED, 0);
-                    if (DSPpkg::self()->IsDualPlane())
-                        w_draw->SetXOR(GRxHlite);
                     w_draw->SetColor(DSP()->Color(HighlightingColor,
                         Physical));
                 }
                 ShowLabel(lstr.string(), x, y, w, h, 0);
                 if (erase && !display) {
-                    if (DSPpkg::self()->IsDualPlane())
-                        w_draw->SetXOR(GRxNone);
                     BBox BB(x, y, x + w, y + h);
                     PPgoaway = true;
                     Redisplay(&BB);
                     PPgoaway = false;
-                    if (DSPpkg::self()->IsDualPlane())
-                        w_draw->SetXOR(GRxUnhlite);
                     w_draw->SetColor(DSP()->Color(HighlightingColor,
                         Physical));
                 }
@@ -431,27 +405,19 @@ WindowDesc::ShowPhysProperties(const BBox *AOI, int display)
                     h = mmRnd(hd);
                     y -= h - delta;
                     if (erase && display) {
-                        if (DSPpkg::self()->IsDualPlane())
-                            w_draw->SetXOR(GRxNone);
                         w_draw->SetColor(DSP()->Color(BackgroundColor,
                             Physical));
                         BBox BB(x, y, x + w, y + h);
                         ShowBox(&BB, CDL_FILLED, 0);
-                        if (DSPpkg::self()->IsDualPlane())
-                            w_draw->SetXOR(GRxHlite);
                         w_draw->SetColor(DSP()->Color(HighlightingColor,
                             Physical));
                     }
                     ShowLabel(lstr.string(), x, y, w, h, 0);
                     if (erase && !display) {
-                        if (DSPpkg::self()->IsDualPlane())
-                            w_draw->SetXOR(GRxNone);
                         BBox BB(x, y, x + w, y + h);
                         PPgoaway = true;
                         Redisplay(&BB);
                         PPgoaway = false;
-                        if (DSPpkg::self()->IsDualPlane())
-                            w_draw->SetXOR(GRxUnhlite);
                         w_draw->SetColor(DSP()->Color(HighlightingColor,
                             Physical));
                     }
@@ -461,8 +427,6 @@ WindowDesc::ShowPhysProperties(const BBox *AOI, int display)
             w_clip_rect = tBB;
         }
     }
-    if (DSPpkg::self()->IsDualPlane())
-        w_draw->SetXOR(GRxNone);
 }
 // End of WindowDesc functions.
 

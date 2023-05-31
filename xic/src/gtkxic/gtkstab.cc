@@ -46,7 +46,6 @@
 #include "promptline.h"
 #include "events.h"
 #include "gtkmain.h"
-#include "gtkcv.h"
 
 
 //--------------------------------------------------------------------

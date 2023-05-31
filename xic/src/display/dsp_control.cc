@@ -857,32 +857,28 @@ WindowDesc::show_cellbb(bool display, const BBox *AOI, bool flag, Blist **bret)
     else if (display)
         w_last_cellbb = *sBB;
 
-    if (DSPpkg::self()->IsDualPlane())
-        w_draw->SetXOR(display ? GRxHlite : GRxUnhlite);
-    else {
-        if (!display) {
-            if (!bb_unchanged && !flag) {
-                Blist *b0 = AddEdges(0, &w_last_cellbb);
-                if (b0->BB.bottom == b0->BB.top || b0->BB.left == b0->BB.right)
-                    return (false);
-                if (bret)
-                    *bret = b0;
-                else {
-                    BBox tBB = w_clip_rect;
-                    w_clip_rect = Viewport();
+    if (!display) {
+        if (!bb_unchanged && !flag) {
+            Blist *b0 = AddEdges(0, &w_last_cellbb);
+            if (b0->BB.bottom == b0->BB.top || b0->BB.left == b0->BB.right)
+                return (false);
+            if (bret)
+                *bret = b0;
+            else {
+                BBox tBB = w_clip_rect;
+                w_clip_rect = Viewport();
 
-                    for (Blist *bl = b0; bl; bl = bl->next)
-                        Refresh(&bl->BB);
+                for (Blist *bl = b0; bl; bl = bl->next)
+                    Refresh(&bl->BB);
 
-                    Blist::destroy(b0);
-                    w_clip_rect = tBB;
-                }
-                return (true);
+                Blist::destroy(b0);
+                w_clip_rect = tBB;
             }
-            return (false);
+            return (true);
         }
-        w_draw->SetColor(DSP()->Color(HighlightingColor, w_mode));
+        return (false);
     }
+    w_draw->SetColor(DSP()->Color(HighlightingColor, w_mode));
 
     // Draw the whole boundary, otherwise we have to deal with matching
     // the line pattern
@@ -891,8 +887,6 @@ WindowDesc::show_cellbb(bool display, const BBox *AOI, bool flag, Blist **bret)
     ShowBox(display ? sBB : &w_last_cellbb, CDL_OUTLINED, 0);
     w_clip_rect = tBB;
 
-    if (DSPpkg::self()->IsDualPlane())
-        w_draw->SetXOR(GRxNone);
     return (false);
 }
 

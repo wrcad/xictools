@@ -179,7 +179,7 @@ cMain::HCswitchMode(bool dohc, bool transient, int drvr)
 }
 
 
-// Draw a dotted bow around the framed area.
+// Draw a dotted box around the framed area.
 //
 void
 cMain::HCdrawFrame(int display)
@@ -189,20 +189,17 @@ cMain::HCdrawFrame(int display)
     WindowDesc *wdesc = DSP()->MainWdesc();
     if (!wdesc->Wdraw())
         return;
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(display ? GRxHlite : GRxUnhlite);
+    if (display) {
+        wdesc->Wdraw()->SetColor(
+            DSP()->Color(HighlightingColor, wdesc->Mode()));
+    }
     else {
-        if (display)
-            wdesc->Wdraw()->SetColor(
-                DSP()->Color(HighlightingColor, wdesc->Mode()));
-        else {
-            FrameState::FrameSuppress = true; // avoid reentrancy
-            Blist *bl = wdesc->AddEdges(0, &FrameState::FrameBox);
-            wdesc->RefreshList(bl);
-            Blist::destroy(bl);
-            FrameState::FrameSuppress = false;
-            return;
-        }
+        FrameState::FrameSuppress = true; // avoid reentrancy
+        Blist *bl = wdesc->AddEdges(0, &FrameState::FrameBox);
+        wdesc->RefreshList(bl);
+        Blist::destroy(bl);
+        FrameState::FrameSuppress = false;
+        return;
     }
 
     // Draw the whole boundary, otherwise we have to deal with matching
@@ -213,9 +210,7 @@ cMain::HCdrawFrame(int display)
     wdesc->SetClipRect(tBB);
 
     wdesc->Wdraw()->SetLinestyle(0);
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(GRxNone);
-    else if (LT()->CurLayer())
+    if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
 }
 

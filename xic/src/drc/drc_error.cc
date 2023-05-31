@@ -81,26 +81,22 @@ cDRC::showCurError(WindowDesc *wdesc, bool display)
 
     if (!drc_err_list)
         return;
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(display ? GRxHlite : GRxUnhlite);
+    if (display)
+        wdesc->Wdraw()->SetColor(
+            DSP()->Color(HighlightingColor, Physical));
     else {
-        if (display)
-            wdesc->Wdraw()->SetColor(
-                DSP()->Color(HighlightingColor, Physical));
-        else {
-            BBox BB(CDnullBB);
-            for (DRCerrList *el = drc_err_list; el; el = el->next())
-                el->addBB(BB);
-            DSP()->TPush();
-            DSP()->TLoad(CDtfRegI0);  // Load push/pop transform register.
-            DSP()->TBB(&BB, 0);
-            DSP()->TPop();
-            DRCerrList *etmp = drc_err_list;
-            drc_err_list = 0;  // avoid reentrancy
-            wdesc->Refresh(&BB);
-            drc_err_list = etmp;
-            return;
-        }
+        BBox BB(CDnullBB);
+        for (DRCerrList *el = drc_err_list; el; el = el->next())
+            el->addBB(BB);
+        DSP()->TPush();
+        DSP()->TLoad(CDtfRegI0);  // Load push/pop transform register.
+        DSP()->TBB(&BB, 0);
+        DSP()->TPop();
+        DRCerrList *etmp = drc_err_list;
+        drc_err_list = 0;  // avoid reentrancy
+        wdesc->Refresh(&BB);
+        drc_err_list = etmp;
+        return;
     }
 
     DSP()->TPush();
@@ -111,9 +107,7 @@ cDRC::showCurError(WindowDesc *wdesc, bool display)
     }
     DSP()->TPop();
 
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(GRxNone);
-    else if (LT()->CurLayer())
+    if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
 }
 
@@ -132,28 +126,22 @@ cDRC::showError(WindowDesc *wdesc, bool display, DRCerrList *el)
     if (!wdesc->IsSimilar(Physical, DSP()->MainWdesc()))
         return;
 
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(display ? GRxHlite : GRxUnhlite);
+    if (display)
+        wdesc->Wdraw()->SetColor(
+            DSP()->Color(HighlightingColor, Physical));
     else {
-        if (display)
-            wdesc->Wdraw()->SetColor(
-                DSP()->Color(HighlightingColor, Physical));
-        else {
-            BBox BB(CDnullBB);
-            el->addBB(BB);
-            DSP()->TBB(&BB, 0);
+        BBox BB(CDnullBB);
+        el->addBB(BB);
+        DSP()->TBB(&BB, 0);
 
-            skip = true;
-            wdesc->Refresh(&BB);
-            skip = false;
-            return;
-        }
+        skip = true;
+        wdesc->Refresh(&BB);
+        skip = false;
+        return;
     }
     el->showbad(wdesc);
     el->showfailed(wdesc);
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(GRxNone);
-    else if (LT()->CurLayer())
+    if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
 }
 
@@ -175,10 +163,7 @@ cDRC::eraseErrors(const BBox *AOI)
     BBox tBB = *AOI;
     stk.TBB(&tBB, 0);
     stk.TPop();
-    if (DSPpkg::self()->IsDualPlane())
-        DSPmainDraw(SetXOR(GRxUnhlite))
-    else
-        DSPmainDraw(SetColor(dsp_prm(CellLayer())->pixel()))
+    DSPmainDraw(SetColor(dsp_prm(CellLayer())->pixel()))
     DRCerrList *ep = 0, *en;
     for (DRCerrList *el = drc_err_list; el; el = en) {
         en = el->next();
@@ -204,9 +189,7 @@ cDRC::eraseErrors(const BBox *AOI)
                 wd->Refresh(&BB);
         }
     }
-    if (DSPpkg::self()->IsDualPlane())
-        DSPmainDraw(SetXOR(GRxNone))
-    else if (LT()->CurLayer())
+    if (LT()->CurLayer())
         DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
 }
 
@@ -220,10 +203,7 @@ cDRC::eraseListError(const op_change_t *list, bool doadd)
 {
     if (!list || !drc_err_list)
         return;
-    if (DSPpkg::self()->IsDualPlane())
-        DSPmainDraw(SetXOR(GRxUnhlite))
-    else
-        DSPmainDraw(SetColor(dsp_prm(CellLayer())->pixel()))
+    DSPmainDraw(SetColor(dsp_prm(CellLayer())->pixel()))
 
     cTfmStack stk;
     stk.TPush();
@@ -299,9 +279,7 @@ cDRC::eraseListError(const op_change_t *list, bool doadd)
     }
     stk.TPop();
 
-    if (DSPpkg::self()->IsDualPlane())
-        DSPmainDraw(SetXOR(GRxNone))
-    else if (LT()->CurLayer())
+    if (LT()->CurLayer())
         DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
 }
 

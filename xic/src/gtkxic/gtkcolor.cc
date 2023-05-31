@@ -266,12 +266,6 @@ sClr::sClr(GRobject c)
     if (!GTKmainwin::self())
         return;
 
-    // In 256-color mode, the color selector's color display areas
-    // are gibberish unless it is read-only.  We go through some
-    // hoops here to replace the color wheel and sample areas with
-    // our own sample area.
-    bool fix256 = !GTKpkg::self()->IsTrueColor();
-
     c_shell = gtk_NewPopup(0, "Color Selection", c_cancel_proc, 0);
     if (!c_shell)
         return;
@@ -389,28 +383,9 @@ sClr::sClr(GRobject c)
         G_CALLBACK(c_change_proc), 0);
     update_color();
 
-    if (fix256) {
-        GtkWidget *frame = gtk_frame_new(0);
-        gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_IN);
-        gtk_widget_show(frame);
-        GtkWidget *da = gtk_drawing_area_new();
-        c_sample = da;
-        gtk_widget_show(da);
-        gtk_container_add(GTK_CONTAINER(frame), da);
-        gtk_widget_set_size_request(da, 150, -1);
-        hbox = gtk_hbox_new(false, 2);
-        gtk_widget_show(hbox);
-        gtk_box_pack_start(GTK_BOX(hbox), frame, false, true, 2);
-        gtk_box_pack_end(GTK_BOX(hbox), c_sel, false, true, 0);
-        gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt + 1,
-            (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-            (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
-    }
-    else {
-        gtk_table_attach(GTK_TABLE(form), c_sel, 0, 1, rowcnt, rowcnt + 1,
-            (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-            (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
-    }
+    gtk_table_attach(GTK_TABLE(form), c_sel, 0, 1, rowcnt, rowcnt + 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
     rowcnt++;
 
     sep = gtk_hseparator_new();
@@ -906,64 +881,27 @@ namespace {
     {
         static int on;
         if (!GTKpkg::self()->IsBusy()) {
-            if (GTKpkg::self()->IsTrueColor()) {
-                WindowDesc *wd;
-                WDgen wgen(WDgen::MAIN, WDgen::ALL);
-                while ((wd = wgen.next()) != 0) {
-                    if (!on) {
-                        DSP()->SetSelectPixelPhys(
-                            DSP()->Color(SelectColor1, Physical));
-                        DSP()->SetSelectPixelElec(
-                            DSP()->Color(SelectColor1, Electrical));
-                    }
-                    else {
-                        DSP()->SetSelectPixelPhys(
-                            DSP()->Color(SelectColor2, Physical));
-                        DSP()->SetSelectPixelElec(
-                            DSP()->Color(SelectColor2, Electrical));
-                    }
-
-                    if (wd->DbType() == WDcddb) {
-                        if (Selections.blinking())
-                            Selections.show(wd);
-                    }
-                    wd->ShowHighlighting();
+            WindowDesc *wd;
+            WDgen wgen(WDgen::MAIN, WDgen::ALL);
+            while ((wd = wgen.next()) != 0) {
+                if (!on) {
+                    DSP()->SetSelectPixelPhys(
+                        DSP()->Color(SelectColor1, Physical));
+                    DSP()->SetSelectPixelElec(
+                        DSP()->Color(SelectColor1, Electrical));
                 }
-            }
-            else {
-                GdkColor colorcell;
-                if (on)
-                    colorcell.pixel = DSP()->Color(SelectColor1);
-                else
-                    colorcell.pixel = DSP()->Color(SelectColor2);
-
-                int red, green, blue;
-                GTKdev::self()->RGBofPixel(colorcell.pixel,
-                    &red, &green, &blue);
-                colorcell.red = red << 8;
-                colorcell.green = green << 8;
-                colorcell.blue = blue << 8;
-
-                colorcell.pixel = DSP()->SelectPixel();
-
-                CDl *ld;
-                CDlgen lgen(DSP()->CurMode());
-                while ((ld = lgen.next()) != 0) {
-                    if (ld->isBlink()) {
-                        DspLayerParams *lp = dsp_prm(ld);
-                        colorcell.pixel = lp->pixel();
-                        if (on) {
-                            colorcell.red = 256 * lp->red();
-                            colorcell.green = 256 * lp->green();
-                            colorcell.blue = 256 * lp->blue();
-                        }
-                        else {
-                            colorcell.red = 192 * lp->red();
-                            colorcell.green = 192 * lp->green();
-                            colorcell.blue = 192 * lp->blue();
-                        }
-                    }
+                else {
+                    DSP()->SetSelectPixelPhys(
+                        DSP()->Color(SelectColor2, Physical));
+                    DSP()->SetSelectPixelElec(
+                        DSP()->Color(SelectColor2, Electrical));
                 }
+
+                if (wd->DbType() == WDcddb) {
+                    if (Selections.blinking())
+                        Selections.show(wd);
+                }
+                wd->ShowHighlighting();
             }
         }
         on ^= true;

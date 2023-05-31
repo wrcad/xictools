@@ -1226,42 +1226,12 @@ cLtab::b3_handler(int x, int y, int state, bool down)
             else if (ctrl && shft)
                 Menu()->MenuButtonPress(MMmain, MenuLPEDT);
         }
-        else if (DSPpkg::self()->IsTrueColor()) {
+        else {
             int entry = entry_of_xy(x, y);
             if (entry <= last_entry()) {
                 CDl *ld = CDldb()->layer(entry + lt_first_visible + 1,
                     DSP()->CurMode());
                 blink(ld);
-            }
-        }
-        else {
-            int entry = entry_of_xy(x, y);
-            if (entry > last_entry()) {
-                // Pointed at "S", turn off all blinking.
-                CDl *ld;
-                CDlgen lgen(DSP()->CurMode());
-                while ((ld = lgen.next()) != 0) {
-                    if (ld->isBlink()) {
-                        ld->setBlink(false);
-                        DspLayerParams *lp = dsp_prm(ld);
-                        int pix;
-                        define_color(&pix, lp->red(), lp->green(), lp->blue());
-                        lp->set_pixel(pix);
-                    }
-                }
-            }
-            else {
-                CDl *ld = CDldb()->layer(entry + lt_first_visible + 1,
-                    DSP()->CurMode());
-                if (ld->isBlink()) {
-                    ld->setBlink(false);
-                    DspLayerParams *lp = dsp_prm(ld);
-                    int pix;
-                    define_color(&pix, lp->red(), lp->green(), lp->blue());
-                    lp->set_pixel(pix);
-                }
-                else
-                    ld->setBlink(true);
             }
         }
     }

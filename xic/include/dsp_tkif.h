@@ -101,8 +101,6 @@ public:
     virtual void SetOverrideBusy(bool) = 0;
     virtual bool GetMainWinIdentifier(char*) = 0;
 
-    virtual bool IsDualPlane() = 0;
-    virtual bool IsTrueColor() = 0;
     virtual bool UsingX11() = 0;
     virtual void CloseGraphicsConnection() = 0;
     virtual const char *GetDisplayString() = 0;

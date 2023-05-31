@@ -604,22 +604,18 @@ pathfinder::show_path(WindowDesc *wdesc, bool d_or_e)
         EX()->setBlinkSelections(false);
 
         if (d_or_e == ERASE) {
-            if (!blink && DSPpkg::self()->IsDualPlane())
-                wdesc->Wdraw()->SetXOR(d_or_e ? GRxHlite : GRxUnhlite);
-            else {
-                BBox BB(CDnullBB);
-                SymTabGen gen(pf_tab);
-                SymTabEnt *h;
-                while ((h = gen.next()) != 0) {
-                    for (CDo *od = (CDo*)h->stData; od; od = od->next_odesc())
-                        BB.add(&od->oBB());
-                }
-                noenter = true;
-                wdesc->Refresh(&BB);
-                noenter = false;
-                EX()->setBlinkSelections(blink);
-                return;
+            BBox BB(CDnullBB);
+            SymTabGen gen(pf_tab);
+            SymTabEnt *h;
+            while ((h = gen.next()) != 0) {
+                for (CDo *od = (CDo*)h->stData; od; od = od->next_odesc())
+                    BB.add(&od->oBB());
             }
+            noenter = true;
+            wdesc->Refresh(&BB);
+            noenter = false;
+            EX()->setBlinkSelections(blink);
+            return;
         }
         else if (!pf_visible) {
             EX()->setBlinkSelections(blink);
@@ -630,7 +626,7 @@ pathfinder::show_path(WindowDesc *wdesc, bool d_or_e)
             wdesc->Wdraw()->SetColor(wdesc->Mode() == Physical ?
                 DSP()->SelectPixelPhys() : DSP()->SelectPixelElec());
         }
-        else if (!DSPpkg::self()->IsDualPlane()) {
+        else {
             wdesc->Wdraw()->SetColor(
                 DSP()->Color(HighlightingColor, Physical));
         }
@@ -642,9 +638,7 @@ pathfinder::show_path(WindowDesc *wdesc, bool d_or_e)
                 wdesc->DisplaySelected(od);
         }
 
-        if (!blink && DSPpkg::self()->IsDualPlane())
-            wdesc->Wdraw()->SetXOR(GRxNone);
-        else if (LT()->CurLayer())
+        if (LT()->CurLayer())
             wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
         EX()->setBlinkSelections(blink);
         return;

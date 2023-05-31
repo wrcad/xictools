@@ -387,31 +387,25 @@ cGroupDesc::show_groups(WindowDesc *wdesc, bool d_or_e)
     if (!wdesc->IsSimilar(Physical, DSP()->MainWdesc()))
         return;
 
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(d_or_e == DISPLAY ? GRxHlite : GRxUnhlite);
+    if (d_or_e == DISPLAY)
+        wdesc->Wdraw()->SetColor(
+            DSP()->Color(HighlightingColor, Physical));
     else {
-        if (d_or_e == DISPLAY)
-            wdesc->Wdraw()->SetColor(
-                DSP()->Color(HighlightingColor, Physical));
-        else {
-            BBox BB(CDnullBB);
-            for (int i = 0; i < gd_asize; i++) {
-                if (gd_groups[i].net() && gd_groups[i].displayed())
-                    gd_groups[i].show(wdesc, &BB);
-            }
-            skipit = true;
-            wdesc->Redisplay(&BB);
-            skipit = false;
-            return;
+        BBox BB(CDnullBB);
+        for (int i = 0; i < gd_asize; i++) {
+            if (gd_groups[i].net() && gd_groups[i].displayed())
+                gd_groups[i].show(wdesc, &BB);
         }
+        skipit = true;
+        wdesc->Redisplay(&BB);
+        skipit = false;
+        return;
     }
     for (int i = 0; i < gd_asize; i++) {
         if (gd_groups[i].net() && gd_groups[i].displayed())
             gd_groups[i].show(wdesc);
     }
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(GRxNone);
-    else if (LT()->CurLayer())
+    if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
 }
 

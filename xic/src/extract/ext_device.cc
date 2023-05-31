@@ -775,29 +775,26 @@ cGroupDesc::show_devs(WindowDesc *wdesc, bool d_or_e)
         return (0);
 
     int cnt = 0;
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(d_or_e == DISPLAY ? GRxHlite : GRxUnhlite);
+    if (d_or_e == DISPLAY) {
+        wdesc->Wdraw()->SetColor(
+            DSP()->Color(HighlightingColor, wdesc->Mode()));
+    }
     else {
-        if (d_or_e == DISPLAY)
-            wdesc->Wdraw()->SetColor(
-                DSP()->Color(HighlightingColor, wdesc->Mode()));
-        else {
-            BBox BB(CDnullBB);
-            for (sDevList *dv = gd_devices; dv; dv = dv->next()) {
-                for (sDevPrefixList *p = dv->prefixes(); p; p = p->next()) {
-                    for (sDevInst *di = p->devs(); di; di = di->next()) {
-                        if (di->displayed()) {
-                            di->show(wdesc, &BB);
-                            cnt++;
-                        }
+        BBox BB(CDnullBB);
+        for (sDevList *dv = gd_devices; dv; dv = dv->next()) {
+            for (sDevPrefixList *p = dv->prefixes(); p; p = p->next()) {
+                for (sDevInst *di = p->devs(); di; di = di->next()) {
+                    if (di->displayed()) {
+                        di->show(wdesc, &BB);
+                        cnt++;
                     }
                 }
             }
-            skipit = true;
-            wdesc->Redisplay(&BB);
-            skipit = false;
-            return (cnt);
         }
+        skipit = true;
+        wdesc->Redisplay(&BB);
+        skipit = false;
+        return (cnt);
     }
     for (sDevList *dv = gd_devices; dv; dv = dv->next()) {
         for (sDevPrefixList *p = dv->prefixes(); p; p = p->next()) {
@@ -809,9 +806,7 @@ cGroupDesc::show_devs(WindowDesc *wdesc, bool d_or_e)
             }
         }
     }
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(GRxNone);
-    else if (LT()->CurLayer())
+    if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
     return (cnt);
 }

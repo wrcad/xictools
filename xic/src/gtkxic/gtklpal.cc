@@ -885,19 +885,8 @@ sLpalette::b3_handler(int x, int y, int state, bool down)
             else if (ctrl && shft)
                 Menu()->MenuButtonPress(MMmain, MenuLPEDT);
         }
-        else if (GTKpkg::self()->IsTrueColor())
+        else
             gtkLtab()->blink(ld);
-        else {
-            if (ld->isBlink()) {
-                ld->setBlink(false);
-                DspLayerParams *lp = dsp_prm(ld);
-                int pix;
-                DefineColor(&pix, lp->red(), lp->green(), lp->blue());
-                lp->set_pixel(pix);
-            }
-            else
-                ld->setBlink(true);
-        }
     }
 }
 
@@ -1169,12 +1158,10 @@ sLpalette::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
             CDl *ld = Lpal->ldesc_at(x, y);
             XM()->FillLoadCallback(
                 (LayerFillData*)gtk_selection_data_get_data(data), ld);
-            if (GTKpkg::self()->IsTrueColor()) {
-                // update the colors
-                Lpal->update_layer(0);
-                LT()->ShowLayerTable(ld);
-                XM()->PopUpFillEditor(0, MODE_UPD);
-            }
+            // update the colors
+            Lpal->update_layer(0);
+            LT()->ShowLayerTable(ld);
+            XM()->PopUpFillEditor(0, MODE_UPD);
         }
     }
     else {
@@ -1193,12 +1180,10 @@ sLpalette::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
         CDl *ld = Lpal->ldesc_at(x, y);
 
         LT()->SetLayerColor(ld, vals[0] >> 8, vals[1] >> 8, vals[2] >> 8);
-        if (GTKpkg::self()->IsTrueColor()) {
-            // update the colors
-            Lpal->update_layer(0);
-            LT()->ShowLayerTable(ld);
-            XM()->PopUpFillEditor(0, MODE_UPD);
-        }
+        // update the colors
+        Lpal->update_layer(0);
+        LT()->ShowLayerTable(ld);
+        XM()->PopUpFillEditor(0, MODE_UPD);
     }
     gtk_drag_finish(context, true, false, time);
     if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())

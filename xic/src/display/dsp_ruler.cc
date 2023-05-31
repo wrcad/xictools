@@ -204,31 +204,27 @@ sRuler::show(bool d_or_e, bool ghost_erase)
     DSP()->TPoint(&x1, &y1);
     DSP()->TPoint(&x2, &y2);
 
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(d_or_e ? GRxHlite : GRxUnhlite);
-    else {
-        if (d_or_e) {
+    if (d_or_e) {
 #ifdef XOR_LINES
 #else
-            if (ghost_erase) {
-                // The first arg is always DISPLAY when ghost drawing.
-                BBox BB;
-                if (bbox(BB, wdesc))
-                    wdesc->GhostUpdate(&BB);
-                return;
-            }
-#endif
-            wdesc->Wdraw()->SetColor(
-                DSP()->Color(HighlightingColor, wdesc->Mode()));
-        }
-        else {
-            // This function will be reentered from Refresh to redraw
-            // other rulers.
+        if (ghost_erase) {
+            // The first arg is always DISPLAY when ghost drawing.
             BBox BB;
             if (bbox(BB, wdesc))
-                wdesc->Update(&BB);
+                wdesc->GhostUpdate(&BB);
             return;
         }
+#endif
+        wdesc->Wdraw()->SetColor(
+            DSP()->Color(HighlightingColor, wdesc->Mode()));
+    }
+    else {
+        // This function will be reentered from Refresh to redraw
+        // other rulers.
+        BBox BB;
+        if (bbox(BB, wdesc))
+            wdesc->Update(&BB);
+        return;
     }
 
     double dx = x1 - x2;
@@ -316,8 +312,6 @@ sRuler::show(bool d_or_e, bool ghost_erase)
             }
         }
     }
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(GRxNone);
 }
 
 

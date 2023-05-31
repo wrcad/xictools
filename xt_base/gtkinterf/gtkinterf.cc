@@ -129,8 +129,6 @@ GTKdev::GTKdev()
 #endif
     dv_visual = 0;
     dv_lower_win_offset = 0;
-    dv_dual_plane = false;
-    dv_true_color = false;
 #ifdef WITH_X11
     dv_silence_xerrors = false;
     dv_no_to_top = false;
@@ -384,7 +382,6 @@ GTKdev::InitColormap(int, int, bool)
 
     // Only true-color visuals are supported, colormaps are history.
     ColorAlloc.no_alloc = true;
-    dv_true_color = true;
 
     // Make sure that the necessary visual is available.
     if (!dv_visual) {
@@ -395,26 +392,21 @@ GTKdev::InitColormap(int, int, bool)
     switch (gdk_visual_get_visual_type(dv_visual)) {
     case GDK_VISUAL_STATIC_GRAY:
         printf(msg, "static gray", gdk_visual_get_depth(dv_visual));
-        dv_true_color = false;
         break;
     case GDK_VISUAL_STATIC_COLOR:
         printf(msg, "static color", gdk_visual_get_depth(dv_visual));
-        dv_true_color = false;
         break;
     case GDK_VISUAL_GRAYSCALE:
         printf(msg, "grayscale", gdk_visual_get_depth(dv_visual));
-        dv_true_color = false;
         break;
     case GDK_VISUAL_PSEUDO_COLOR:
         printf(msg, "pseudo color", gdk_visual_get_depth(dv_visual));
-        dv_true_color = false;
         break;
     case GDK_VISUAL_TRUE_COLOR:
         printf(msg, "true color", gdk_visual_get_depth(dv_visual));
         return (false);
     case GDK_VISUAL_DIRECT_COLOR:
         printf(msg, "direct color", gdk_visual_get_depth(dv_visual));
-        dv_true_color = false;
         return (false);
     }
     // No longer support these visuals.

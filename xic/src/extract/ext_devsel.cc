@@ -830,16 +830,12 @@ cExt::showMeasureBox(WindowDesc *wdesc, bool d_or_e)
     if (!wdesc->IsSimilar(Physical, DSP()->MainWdesc()))
         return;
 
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(d_or_e ? GRxHlite : GRxUnhlite);
+    if (d_or_e)
+        wdesc->Wdraw()->SetColor(
+            DSP()->Color(HighlightingColor, Physical));
     else {
-        if (d_or_e)
-            wdesc->Wdraw()->SetColor(
-                DSP()->Color(HighlightingColor, Physical));
-        else {
-            wdesc->Redisplay(MeasCmd->active_box());
-            return;
-        }
+        wdesc->Redisplay(MeasCmd->active_box());
+        return;
     }
 
     const BBox *BB = MeasCmd->active_box();
@@ -848,9 +844,7 @@ cExt::showMeasureBox(WindowDesc *wdesc, bool d_or_e)
     wdesc->ShowLineW(BB->right, BB->top, BB->right, BB->bottom);
     wdesc->ShowLineW(BB->right, BB->bottom, BB->left, BB->bottom);
 
-    if (DSPpkg::self()->IsDualPlane())
-        wdesc->Wdraw()->SetXOR(GRxNone);
-    else if (LT()->CurLayer())
+    if (LT()->CurLayer())
         wdesc->Wdraw()->SetColor(dsp_prm(LT()->CurLayer())->pixel());
 }
 

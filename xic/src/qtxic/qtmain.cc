@@ -628,20 +628,6 @@ QTpkg::GetMainWinIdentifier(char *buf)
 
 
 bool
-QTpkg::IsDualPlane()
-{
-    return (false);
-}
-
-
-bool
-QTpkg::IsTrueColor()
-{
-    return (true);  //XXX
-}
-
-
-bool
 QTpkg::UsingX11()
 {
     /*

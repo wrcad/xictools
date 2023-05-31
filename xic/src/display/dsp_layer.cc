@@ -62,10 +62,8 @@ DspLayerParams::DspLayerParams(CDl *ld)
     }
     else if (ld->layerType() == CDLinternal) {
         defaultColor();
-        // internal layer, these share a colormap pixel
-        if (internal_pixel == 0 || !DSPpkg::self()->IsDualPlane())
-            DSPpkg::self()->AllocateColor(&internal_pixel,
-                lp_red, lp_green, lp_blue);
+        DSPpkg::self()->AllocateColor(&internal_pixel,
+            lp_red, lp_green, lp_blue);
         lp_pixel = internal_pixel;
     }
     else {

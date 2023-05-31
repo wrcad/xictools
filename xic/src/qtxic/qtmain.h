@@ -109,8 +109,6 @@ public:
     void SetOverrideBusy(bool);
     bool GetMainWinIdentifier(char*);
 
-    bool IsDualPlane();
-    bool IsTrueColor();
     bool UsingX11();
     void CloseGraphicsConnection();
     const char *GetDisplayString();

@@ -45,7 +45,6 @@
 #include "dsp_inlines.h"
 #include "promptline.h"
 #include "events.h"
-#include "qtcv.h"
 
 #include <QLayout>
 #include <QGroupBox>

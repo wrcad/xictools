@@ -1311,11 +1311,9 @@ GTKltab::ltab_drag_data_received(GtkWidget*, GdkDragContext *context,
             CDldb()->layer(entry + lt->first_visible() + 1, DSP()->CurMode());
 
         LT()->SetLayerColor(layer, vals[0] >> 8, vals[1] >> 8, vals[2] >> 8);
-        if (GTKpkg::self()->IsTrueColor()) {
-            // update the colors
-            LT()->ShowLayerTable(layer);
-            XM()->PopUpFillEditor(0, MODE_UPD);
-        }
+        // update the colors
+        LT()->ShowLayerTable(layer);
+        XM()->PopUpFillEditor(0, MODE_UPD);
     }
     gtk_drag_finish(context, true, false, time);
     if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())

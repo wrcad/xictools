@@ -794,24 +794,6 @@ GTKpkg::GetMainWinIdentifier(char *buf)
 
 
 bool
-GTKpkg::IsDualPlane()
-{
-    if (!MainDev() || MainDev()->ident != _devGTK_)
-        return (false);
-    return (GTKdev::self()->IsDualPlane());
-}
-
-
-bool
-GTKpkg::IsTrueColor()
-{
-    if (!MainDev() || MainDev()->ident != _devGTK_)
-        return (false);
-    return (GTKdev::self()->IsTrueColor());
-}
-
-
-bool
 GTKpkg::UsingX11()
 {
 #ifdef WITH_X11
