@@ -1,0 +1,1464 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
+ *                       http://wrcad.com                                 *
+ *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Author: Stephen R. Whiteley, except as indicated.                     *
+ *                                                                        *
+ *  As fully as possible recognizing licensing terms and conditions       *
+ *  imposed by earlier work from which this work was derived, if any,     *
+ *  this work is released under the Apache License, Version 2.0 (the      *
+ *  "License").  You may not use this file except in compliance with      *
+ *  the License, and compliance with inherited licenses which are         *
+ *  specified in a sub-header below this one if applicable.  A copy       *
+ *  of the License is provided with this distribution, or you may         *
+ *  obtain a copy of the License at                                       *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *  See the License for the specific language governing permissions       *
+ *  and limitations under the License.                                    *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL WHITELEY RESEARCH INCORPORATED      *
+ *   OR STEPHEN R. WHITELEY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,      *
+ *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE       *
+ *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+ *                                                                        *
+ *========================================================================*
+ *               XicTools Integrated Circuit Design System                *
+ *                                                                        *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
+ *                                                                        *
+ *========================================================================*
+ $Id:$
+ *========================================================================*/
+
+#include "qtgrid.h"
+#include "dsp_inlines.h"
+#include "menu.h"
+#include "errorlog.h"
+#include "tech.h"
+
+
+// The Grid Setup panel, used to control the grid in each drawing
+// window.
+//
+// Help keyword used: xic:grid
+
+namespace gtkgrid {
+
+    enum { LstSolid, LstDots, LstStip };
+
+    const char *edgevals[] =
+    {
+        "DISABLED",
+        "Enabled in some commands",
+        "Enabled always",
+        0
+    };
+
+}
+
+#define REVERT "revert"
+#define LASTAPPL "last appl"
+
+
+void
+QTsubwin::PopUpGrid(GRobject caller, ShowMode mode)
+{
+    if (mode == MODE_OFF) {
+        if (sw_gridpop)
+            sw_gridpop->deleteLater();
+        return;
+    }
+    if (mode == MODE_UPD) {
+        if (sw_gridpop)
+            sw_gridpop->update();
+        return;
+    }
+    if (sw_gridpop)
+        return;
+    if (!QTmainwin::self())
+        return;
+
+    sw_gridpop = new cGridDlg(this, sw_windesc);
+    sw_gridpop->register_usrptr((void**)&sw_gridpop);
+    sw_gridpop->register_caller(caller);
+    sw_gridpop->initialize();
+    sw_gridpop->set_visible(true);
+}
+// End of QTsubwin functions.
+
+
+cGridDlg *cGridDlg::grid_pops[DSP_NUMWINS];
+
+cGridDlg::cGridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
+{
+    p_parent = owner;
+    gd_mfglabel = 0;
+    gd_snapbox = 0;
+    gd_snapbtn = 0;
+    gd_edgegrp = 0;
+    gd_edge = 0;
+    gd_off_grid = 0;
+    gd_use_nm_edge = 0;
+    gd_wire_edge = 0;
+    gd_wire_path = 0;
+
+    gd_showbtn = 0;
+    gd_topbtn = 0;
+    gd_noaxesbtn = 0;
+    gd_plaxesbtn = 0;
+    gd_oraxesbtn = 0;
+    gd_nocoarse = 0;
+    gd_sample = 0;
+    gd_solidbtn = 0;
+    gd_dotsbtn = 0;
+    gd_stipbtn = 0;
+    gd_crs_frame = 0;
+
+    gd_apply = 0;
+    gd_cancel = 0;
+
+    if (wd)
+        gd_grid = *wd->Attrib()->grid(wd->Mode());
+    gd_mask_bak = 0;
+    gd_win_num = wd ? wd->WinNumber() : -1;
+    gd_last_n = 0;
+    gd_drag_x = 0;
+    gd_drag_y = 0;
+    gd_dragging = false;
+
+    if (gd_win_num < 0) {
+        // Bail out if we don't have a valid window.
+        wb_shell = 0;
+        return;
+    }
+
+    grid_pops[gd_win_num] = this;
+
+    if (owner)
+        owner->MonitorAdd(this);
+
+#ifdef notdef
+    wb_shell = gtk_NewPopup(0, "Grid Setup", gd_cancel_proc,
+        grid_pops + gd_win_num);
+    if (!wb_shell)
+        return;
+    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
+
+#if GTK_CHECK_VERSION(3,0,0)
+        g_signal_connect(G_OBJECT(wb_shell), "draw",
+            G_CALLBACK(gd_redraw_hdlr), grid_pops + gd_win_num);
+#else
+        g_signal_connect(G_OBJECT(wb_shell), "expose-event",
+            G_CALLBACK(gd_redraw_hdlr), grid_pops + gd_win_num);
+#endif
+
+    GtkWidget *topform = gtk_table_new(2, 1, false);
+    gtk_widget_show(topform);
+    gtk_container_add(GTK_CONTAINER(wb_shell), topform);
+    int rowcnt = 0;
+
+    //
+    // label in frame plus help btn
+    //
+
+    GtkWidget *row = gtk_hbox_new(false, 2);
+    gtk_widget_show(row);
+    GtkWidget *label = gtk_label_new("Set grid parameters");
+    gtk_widget_show(label);
+    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
+    GtkWidget *frame = gtk_frame_new(0);
+    gtk_widget_show(frame);
+    gtk_container_add(GTK_CONTAINER(frame), label);
+    gtk_box_pack_start(GTK_BOX(row), frame, true, true, 0);
+    GtkWidget *button = gtk_button_new_with_label("Help");
+    gtk_widget_set_name(button, "help");
+    gtk_widget_show(button);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
+    gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
+    gtk_table_attach(GTK_TABLE(topform), row, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+
+    GtkWidget *nbook = gtk_notebook_new();
+    gtk_widget_show(nbook);
+    gtk_table_attach(GTK_TABLE(topform), nbook, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+
+    //
+    // Snapping Page
+    //
+
+    GtkWidget *form = gtk_table_new(2, 1, false);
+    gtk_widget_show(form);
+
+    // Grid Snapping controls
+
+    frame = gtk_frame_new("Snap Spacing");
+    gtk_widget_show(frame);
+    GtkWidget *vbox = gtk_vbox_new(false, 0);
+    gtk_widget_show(vbox);
+    gtk_container_add(GTK_CONTAINER(frame), vbox);
+
+    GtkWidget *sb = sb_resol.init(1.0, 0.0, 10000.0, 4);
+    GtkWidget *focus_widget = sb;
+    sb_resol.connect_changed(G_CALLBACK(gd_resol_change_proc),
+        grid_pops + gd_win_num, "Resolution");
+    gtk_widget_set_size_request(sb, 80, -1);
+    gtk_box_pack_start(GTK_BOX(vbox), sb, false, false, 0);
+
+    label = gtk_label_new("");
+    gtk_widget_show(label);
+    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
+    gd_mfglabel = label;
+    gtk_box_pack_start(GTK_BOX(vbox), label, false, false, 0);
+
+    int rcnt = 0;
+    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, rcnt, rcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    frame = gtk_frame_new("Snap");
+    gtk_widget_show(frame);
+    gd_snapbox = frame;
+
+    vbox = gtk_vbox_new(false, 0);
+    gtk_widget_show(vbox);
+    gtk_container_add(GTK_CONTAINER(frame), vbox);
+
+    sb = sb_snap.init(1, 1.0, 10.0, 0);
+    sb_snap.connect_changed(G_CALLBACK(gd_snap_change_proc),
+        grid_pops + gd_win_num, "Snap");
+    gtk_widget_set_size_request(sb, 80, -1);
+    gtk_box_pack_start(GTK_BOX(vbox), sb, true, false, 0);
+
+    button = gtk_check_button_new_with_label("GridPerSnap");
+    gtk_widget_show(button);
+    gtk_box_pack_start(GTK_BOX(vbox), button, false, false, 0);
+    gd_snapbtn = button;
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_snap_proc), grid_pops + gd_win_num);
+
+    gtk_table_attach(GTK_TABLE(form), frame, 1, 2, rcnt, rcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    rcnt++;
+
+    GtkWidget *hsep = gtk_hseparator_new();
+    gtk_widget_show(hsep);
+    gtk_table_attach(GTK_TABLE(form), hsep, 0, 2, rcnt, rcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    rcnt++;
+
+    // Edge Snapping group
+
+    frame = gtk_frame_new("Edge Snapping");
+    gtk_widget_show(frame);
+    gd_edgegrp = frame;
+    gtk_table_attach(GTK_TABLE(form), frame, 0, 2, rcnt, rcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    rcnt++;
+
+    GtkWidget *col = gtk_vbox_new(false, 2);
+    gtk_widget_show(col);
+    gtk_container_add(GTK_CONTAINER(frame), col);
+
+    GtkWidget *entry = gtk_combo_box_text_new();
+    gtk_widget_set_name(entry, "edgemenu");
+    gtk_widget_show(entry);
+    for (int i = 0; edgevals[i]; i++) {
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
+            edgevals[i]);
+    }
+    g_signal_connect(G_OBJECT(entry), "changed",
+        G_CALLBACK(gd_edge_menu_proc), grid_pops + gd_win_num);
+    gd_edge = entry;
+    gtk_box_pack_start(GTK_BOX(col), entry, true, true, 0);
+
+    button = gtk_check_button_new_with_label(
+        "Allow off-grid edge snapping");
+    gtk_widget_set_name(button, "offg");
+    gtk_widget_show(button);
+    gd_off_grid = button;
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
+    gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
+
+    button = gtk_check_button_new_with_label(
+        "Include non-Manhattan edges");
+    gtk_widget_set_name(button, "usenm");
+    gtk_widget_show(button);
+    gd_use_nm_edge = button;
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
+    gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
+
+    button = gtk_check_button_new_with_label(
+        "Include wire edges");
+    gtk_widget_set_name(button, "wedge");
+    gtk_widget_show(button);
+    gd_wire_edge = button;
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
+    gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
+
+    button = gtk_check_button_new_with_label(
+        "Include wire path");
+    gtk_widget_set_name(button, "wpath");
+    gtk_widget_show(button);
+    gd_wire_path = button;
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
+    gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
+
+    label = gtk_label_new("Snapping");
+    gtk_widget_show(label);
+    gtk_notebook_append_page(GTK_NOTEBOOK(nbook), form, label);
+
+    //
+    // Style page
+    //
+
+    form = gtk_table_new(4, 5, false);
+    gtk_widget_show(form);
+
+    // Top buttons
+
+    button = gtk_toggle_button_new_with_label("Show");
+    gtk_widget_show(button);
+    gtk_widget_set_name(button, "Show");
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
+    GTKdev::SetStatus(button, gd_grid.displayed());
+    gd_showbtn = button;
+    rcnt = 0;
+    gtk_table_attach(GTK_TABLE(form), button, 0, 1, rcnt, rcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    button = gtk_toggle_button_new_with_label("On Top");
+    gtk_widget_show(button);
+    gtk_widget_set_name(button, "OnTop");
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
+    GTKdev::SetStatus(button, gd_grid.show_on_top());
+    gd_topbtn = button;
+    gtk_table_attach(GTK_TABLE(form), button, 1, 2, rcnt, rcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    GtkWidget *menubar = gtk_menu_bar_new();
+    gtk_widget_set_name(menubar, "StoreB");
+    gtk_widget_show(menubar);
+
+    GtkWidget *item = gtk_menu_item_new_with_label("Store");
+    gtk_widget_set_name(item, "Store");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *menu;
+    {
+        char buf[64];
+        menu = gtk_menu_new();
+        gtk_widget_set_name(menu, "StMenu");
+        for (int i = 1; i < TECH_NUM_GRIDS; i++) {
+            snprintf(buf, sizeof(buf), "reg%d", i);
+            GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
+            gtk_widget_set_name(menu_item, buf);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+            g_signal_connect(G_OBJECT(menu_item), "activate",
+                G_CALLBACK(gd_sto_menu_proc), grid_pops + gd_win_num);
+            gtk_widget_show(menu_item);
+        }
+        gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
+    }
+
+    gtk_table_attach(GTK_TABLE(form), menubar, 2, 3, rcnt, rcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    menubar = gtk_menu_bar_new();
+    gtk_widget_set_name(menubar, "RecallB");
+    gtk_widget_show(menubar);
+
+    item = gtk_menu_item_new_with_label("Recall");
+    gtk_widget_set_name(item, "Recall");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    {
+        char buf[64];
+        menu = gtk_menu_new();
+        gtk_widget_set_name(menu, "RcMenu");
+
+        strcpy(buf, REVERT);
+        GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
+        gtk_widget_set_name(menu_item, buf);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+        g_signal_connect(G_OBJECT(menu_item), "activate",
+            G_CALLBACK(gd_rcl_menu_proc), grid_pops + gd_win_num);
+        gtk_widget_show(menu_item);
+
+        strcpy(buf, LASTAPPL);
+        menu_item = gtk_menu_item_new_with_label(buf);
+        gtk_widget_set_name(menu_item, buf);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+        g_signal_connect(G_OBJECT(menu_item), "activate",
+            G_CALLBACK(gd_rcl_menu_proc), grid_pops + gd_win_num);
+        gtk_widget_show(menu_item);
+
+        for (int i = 1; i < TECH_NUM_GRIDS; i++) {
+            snprintf(buf, sizeof(buf), "reg%d", i);
+            menu_item = gtk_menu_item_new_with_label(buf);
+            gtk_widget_set_name(menu_item, buf);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+            g_signal_connect(G_OBJECT(menu_item), "activate",
+                G_CALLBACK(gd_rcl_menu_proc), grid_pops + gd_win_num);
+            gtk_widget_show(menu_item);
+        }
+        gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
+    }
+
+    gtk_table_attach(GTK_TABLE(form), menubar, 3, 4, rcnt, rcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    rcnt++;
+
+    // Axes and Coarse Mult
+
+    vbox = gtk_vbox_new(false, 0);
+    gtk_widget_show(vbox);
+    button = gtk_radio_button_new_with_label(0, "No Axes");
+    gtk_widget_set_name(button, "NoAxes");
+    gtk_widget_show(button);
+    g_object_set_data(G_OBJECT(button), "axes", (void*)AxesNone);
+    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
+    gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_axes_proc), grid_pops + gd_win_num);
+    gd_noaxesbtn = button;
+
+    button = gtk_radio_button_new_with_label(group, "Plain Axes");
+    gtk_widget_set_name(button, "PlainAxes");
+    gtk_widget_show(button);
+    g_object_set_data(G_OBJECT(button), "axes", (void*)AxesPlain);
+    if (gd_grid.axes() == AxesPlain) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_noaxesbtn), false);
+    }
+    gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_axes_proc), grid_pops + gd_win_num);
+    gd_plaxesbtn = button;
+
+    button = gtk_radio_button_new_with_label(group, "Mark Origin");
+    gtk_widget_set_name(button, "MarkOrigin");
+    gtk_widget_show(button);
+    g_object_set_data(G_OBJECT(button), "axes", (void*)AxesMark);
+    if (gd_grid.axes() == AxesMark) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_noaxesbtn), false);
+    }
+    gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_axes_proc), grid_pops + gd_win_num);
+    gd_oraxesbtn = button;
+
+    gtk_table_attach(GTK_TABLE(form), vbox, 0, 2, rcnt, rcnt+1,
+        (GtkAttachOptions)0,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    frame = gtk_frame_new("Coarse Mult");
+    gtk_widget_show(frame);
+
+    sb = sb_cmult.init(1, 1.0, 50.0, 0);
+    sb_cmult.connect_changed(G_CALLBACK(gd_cmult_change_proc),
+        grid_pops + gd_win_num, "CoarseMult");
+    gtk_widget_set_size_request(sb, 80, -1);
+    gtk_container_add(GTK_CONTAINER(frame), sb);
+
+    gtk_table_attach(GTK_TABLE(form), frame, 2, 4, rcnt, rcnt+1,
+        (GtkAttachOptions)0,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    rcnt++;
+
+    // Line Style Editor
+
+    frame = gtk_frame_new("Line Style Editor");
+    gtk_widget_show(frame);
+
+    GtkWidget *eform = gtk_table_new(3, 4, false);
+    gtk_widget_show(eform);
+    gtk_container_add(GTK_CONTAINER(frame), eform);
+
+    gtk_table_attach(GTK_TABLE(form), frame, 0, 4, rcnt, rcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(0), 2, 2);
+    rcnt++;
+
+    button = gtk_radio_button_new_with_label(0, "Solid");
+    gtk_widget_set_name(button, "Solid");
+    gtk_widget_show(button);
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
+    g_object_set_data(G_OBJECT(button), "lst", (void*)LstSolid);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_lst_proc), grid_pops + gd_win_num);
+    gtk_table_attach(GTK_TABLE(eform), button, 0, 1, 0, 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    gd_solidbtn = button;
+
+    button = gtk_radio_button_new_with_label(group, "Dots");
+    gtk_widget_set_name(button, "Dots");
+    gtk_widget_show(button);
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
+    g_object_set_data(G_OBJECT(button), "lst", (void*)LstDots);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_lst_proc), grid_pops + gd_win_num);
+    gtk_table_attach(GTK_TABLE(eform), button, 1, 2, 0, 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    gd_dotsbtn = button;
+    if (gd_grid.linestyle().mask == 0) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_solidbtn), false);
+    }
+
+    button = gtk_radio_button_new_with_label(group, "Textured");
+    gtk_widget_set_name(button, "Textured");
+    gtk_widget_show(button);
+    g_object_set_data(G_OBJECT(button), "lst", (void*)LstStip);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_lst_proc), grid_pops + gd_win_num);
+    gtk_table_attach(GTK_TABLE(eform), button, 2, 3, 0, 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    gd_stipbtn = button;
+    if (gd_grid.linestyle().mask != 0 && gd_grid.linestyle().mask != -1) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_solidbtn), false);
+    }
+
+    GtkWidget *bframe = gtk_frame_new("Cross Size");
+    // start out hidden
+    gd_crs_frame = bframe;
+
+    sb = sb_crs.init(0, 0.0, 6.0, 0);
+    sb_crs.connect_changed(G_CALLBACK(gd_crs_change_proc),
+        grid_pops + gd_win_num, "CrossSize");
+    gtk_widget_set_size_request(sb, 80, -1);
+    gtk_container_add(GTK_CONTAINER(bframe), sb);
+    gtk_table_attach(GTK_TABLE(eform), bframe, 1, 2, 1, 2,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    GtkWidget *darea = gtk_drawing_area_new();
+    gtk_widget_show(darea);
+    gtk_widget_set_size_request(darea, 200, 10);
+    gtk_table_attach(GTK_TABLE(eform), darea, 0, 3, 2, 3,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    gd_sample = darea;
+
+    // The sample is a drag source of a piece of plain text which is
+    // the line style mask in "0xhhhh" format.  This might be useful
+    // for exporting the line style.
+
+    gtk_widget_add_events(darea, GDK_BUTTON_PRESS_MASK);
+    gtk_widget_add_events(darea, GDK_BUTTON_RELEASE_MASK);
+    gtk_widget_add_events(darea, GDK_POINTER_MOTION_MASK);
+    g_signal_connect(G_OBJECT(darea), "button-press-event",
+        G_CALLBACK(gd_button_press_hdlr), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(darea), "button-release-event",
+        G_CALLBACK(gd_button_release_hdlr), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(darea), "motion-notify-event",
+        G_CALLBACK(gd_motion_hdlr), grid_pops + gd_win_num);
+    g_signal_connect(G_OBJECT(darea), "drag-data-get",
+        G_CALLBACK(gd_drag_data_get), grid_pops + gd_win_num);
+
+    darea = gtk_drawing_area_new();
+    gtk_widget_show(darea);
+    gtk_widget_set_size_request(darea, 200, 10);
+    gtk_widget_add_events(darea, GDK_BUTTON_PRESS_MASK);
+    gtk_widget_add_events(darea, GDK_BUTTON_RELEASE_MASK);
+    g_signal_connect(G_OBJECT(darea), "button-press-event",
+        G_CALLBACK(gd_button_press_hdlr), grid_pops + gd_win_num);
+    gd_viewport = darea;
+    g_signal_connect(G_OBJECT(darea), "button-release-event",
+        G_CALLBACK(gd_button_release_hdlr), grid_pops + gd_win_num);
+    gtk_table_attach(GTK_TABLE(eform), darea, 0, 3, 3, 4,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    // Visibility controls (global)
+
+    frame = gtk_frame_new("All Windows");
+    if (gd_win_num == 0)
+        gtk_widget_show(frame);
+    else
+        gtk_widget_hide(frame);
+
+    GtkWidget *gform = gtk_table_new(2, 1, false);
+    gtk_widget_show(gform);
+    gtk_container_add(GTK_CONTAINER(frame), gform);
+
+    gtk_table_attach(GTK_TABLE(form), frame, 0, 4, rcnt, rcnt+1,
+        (GtkAttachOptions)0,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    rcnt++;
+
+    button = gtk_check_button_new_with_label("No coarse when fine invisible");
+    gtk_widget_set_name(button, "cvis");
+    gtk_widget_show(button);
+    gd_nocoarse = button;
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
+
+    gtk_table_attach(GTK_TABLE(gform), button, 0, 2, 0, 1,
+        (GtkAttachOptions)0,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    label = gtk_label_new("Visibility Threshold");
+    gtk_widget_show(label);
+    gtk_table_attach(GTK_TABLE(gform), label, 0, 1, 1, 2,
+        (GtkAttachOptions)0,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    sb = sb_thresh.init(DSP_DEF_GRID_THRESHOLD, DSP_MIN_GRID_THRESHOLD,
+        DSP_MAX_GRID_THRESHOLD, 0);
+    sb_thresh.connect_changed(G_CALLBACK(gd_thresh_change_proc),
+        grid_pops + gd_win_num, "GridThreshold");
+    gtk_widget_set_size_request(sb, 50, -1);
+    gtk_table_attach(GTK_TABLE(gform), sb, 1, 2, 1, 2,
+        (GtkAttachOptions)0,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    label = gtk_label_new("Style");
+    gtk_widget_show(label);
+    gtk_notebook_append_page(GTK_NOTEBOOK(nbook), form, label);
+
+    //
+    // Apply and Dismiss buttons
+    //
+
+    row = gtk_hbox_new(false, 2);
+    gtk_widget_show(row);
+
+    button = gtk_button_new_with_label("Apply");
+    gtk_widget_set_name(button, "Apply Grid");
+    gtk_widget_show(button);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_apply_proc), grid_pops + gd_win_num);
+    gd_apply = button;
+    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
+
+    button = gtk_button_new_with_label("Dismiss");
+    gtk_widget_set_name(button, "Dismiss");
+    gtk_widget_show(button);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(gd_cancel_proc), grid_pops + gd_win_num);
+    gd_cancel = button;
+    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
+
+    gtk_table_attach(GTK_TABLE(topform), row, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    // Initially focus to the Snap Spacing entry.  Set up a handler
+    // so that Enter will call apply, then a second Enter will call
+    // cancel.
+    //
+    gtk_window_set_focus(GTK_WINDOW(wb_shell), focus_widget);
+    g_signal_connect(G_OBJECT(wb_shell), "key-release-event",
+        G_CALLBACK(gd_key_hdlr), grid_pops + gd_win_num);
+
+#endif
+    update();
+}
+
+
+cGridDlg::~cGridDlg()
+{
+    if (gd_win_num >= 0)
+        grid_pops[gd_win_num] = 0;
+
+    if (p_parent) {
+        QTsubwin *owner = dynamic_cast<QTsubwin*>(p_parent);
+        if (owner)
+            owner->MonitorRemove(this);
+    }
+    if (p_usrptr)
+        *p_usrptr = 0;
+    if (p_caller)
+        QTdev::Deselect(p_caller);
+}
+
+
+// GRpopup override
+//
+void
+cGridDlg::popdown()
+{
+    if (!p_parent)
+        return;
+    QTbag *owner = dynamic_cast<QTbag*>(p_parent);
+    if (!owner || !owner->MonitorActive(this))
+        return;
+    deleteLater();
+}
+
+
+void
+cGridDlg::update(bool skip_init)
+{
+    /*
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd)
+        return;
+    if (!skip_init)
+        gd_grid = *wd->Attrib()->grid(wd->Mode());
+
+    // Snapping page
+
+    double del = GridDesc::mfg_grid(wd->Mode());
+    if (del <= 0.0)
+        del = wd->Mode() == Physical ? MICRONS(1) : ELEC_MICRONS(100);
+
+    sb_resol.set_min(del);
+    sb_resol.set_delta(del);
+    sb_resol.set_value(gd_grid.spacing(wd->Mode()));
+    sb_snap.set_value(abs(gd_grid.snap()));
+
+    char buf[64];
+    del = GridDesc::mfg_grid(wd->Mode());
+    if (del > 0.0)
+        snprintf(buf, sizeof(buf), "MfgGrid: %.4f", del);
+    else
+        strcpy(buf, "MfgGrid: unset");
+    gtk_label_set_text(GTK_LABEL(gd_mfglabel), buf);
+    if (gd_grid.snap() < 0) {
+        GTKdev::SetStatus(gd_snapbtn, true);
+        gtk_frame_set_label(GTK_FRAME(gd_snapbox), "GridPerSnap");
+    }
+    else {
+        GTKdev::SetStatus(gd_snapbtn, false);
+        gtk_frame_set_label(GTK_FRAME(gd_snapbox), "SnapPerGrid");
+    }
+
+    gtk_combo_box_set_active(GTK_COMBO_BOX(gd_edge),
+        wd->Attrib()->edge_snapping());
+    GTKdev::SetStatus(gd_off_grid, wd->Attrib()->edge_off_grid());
+    GTKdev::SetStatus(gd_use_nm_edge, wd->Attrib()->edge_non_manh());
+    GTKdev::SetStatus(gd_wire_edge, wd->Attrib()->edge_wire_edge());
+    GTKdev::SetStatus(gd_wire_path, wd->Attrib()->edge_wire_path());
+
+    // Style page
+
+    GTKdev::SetStatus(gd_showbtn, gd_grid.displayed());
+    GTKdev::SetStatus(gd_topbtn, gd_grid.show_on_top());
+    if (gd_grid.axes() == AxesNone)
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_noaxesbtn), true);
+    else if (gd_grid.axes() == AxesPlain)
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_plaxesbtn), true);
+    else if (gd_grid.axes() == AxesMark)
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_oraxesbtn), true);
+    if (wd->Mode() == Electrical) {
+        gtk_widget_set_sensitive(gd_noaxesbtn, false);
+        gtk_widget_set_sensitive(gd_plaxesbtn, false);
+        gtk_widget_set_sensitive(gd_oraxesbtn, false);
+        gtk_widget_set_sensitive(gd_nocoarse, false);
+        gtk_widget_set_sensitive(gd_edgegrp, false);
+    }
+    else {
+        gtk_widget_set_sensitive(gd_noaxesbtn, true);
+        gtk_widget_set_sensitive(gd_plaxesbtn, true);
+        gtk_widget_set_sensitive(gd_oraxesbtn, true);
+        gtk_widget_set_sensitive(gd_nocoarse, true);
+        gtk_widget_set_sensitive(gd_edgegrp, true);
+    }
+
+    sb_cmult.set_value(gd_grid.coarse_mult());
+
+    GTKdev::SetStatus(gd_nocoarse, DSP()->GridNoCoarseOnly());
+    sb_thresh.set_value(DSP()->GridThreshold());
+
+    gd_mask_bak = 0;
+    if (gd_grid.linestyle().mask == -1)
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_solidbtn), true);
+    else if (gd_grid.linestyle().mask == 0) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_dotsbtn), true);
+        sb_crs.set_value(gd_grid.dotsize());
+    }
+    else
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_stipbtn), true);
+
+    if (gtk_widget_get_mapped(wb_shell))
+        gd_redraw_hdlr(0, 0, grid_pops + gd_win_num);
+    */
+}
+
+
+void
+cGridDlg::initialize()
+{
+    /*
+    QTsubwin *w = dynamic_cast<QTsubwin*>(p_parent);
+    if (w) {
+        gtk_window_set_transient_for(GTK_WINDOW(wb_shell),
+            GTK_WINDOW(w->Shell()));
+        GTKdev::self()->SetPopupLocation(GRloc(), wb_shell, w->Viewport());
+    }
+    */
+}
+
+#ifdef notdef
+
+// Static function.
+void
+cGridDlg::gd_cancel_proc(GtkWidget*, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (grd)
+        grd->popdown();
+}
+
+
+// Static function.
+int
+cGridDlg::gd_key_hdlr(GtkWidget*, GdkEvent *event, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd || !grd->gd_apply)
+        return (0);
+
+    // Look only at Enter key events.  If not focussed on the Dismiss
+    // button, run the apply callback and set focus to the Dismiss
+    // button.  A second Enter press will then dismiss the pop-up.
+
+    if (event->key.keyval == GDK_KEY_Return) {
+        GtkWidget *w = gtk_window_get_focus(GTK_WINDOW(grd->wb_shell));
+        if (w != grd->gd_cancel) {
+            grd->gd_apply_proc(0, arg);
+            gtk_window_set_focus(GTK_WINDOW(grd->wb_shell), grd->gd_cancel);
+            return (1);
+        }
+    }
+    return (0);
+}
+
+
+// Static function.
+void
+cGridDlg::gd_apply_proc(GtkWidget*, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return;
+    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
+    if (!wd)
+        return;
+
+    DisplayMode mode = wd->Mode();
+    if (mode == Electrical) {
+        double spa = grd->gd_grid.spacing(mode);
+        if (10*ELEC_INTERNAL_UNITS(spa) % CDelecResolution) {
+            // "can't happen"
+            Log()->ErrorLog(mh::Initialization,
+                "Error: electrical mode snap points must be "
+                "0.1 micron multiples.");
+            return;
+        }
+        if (ELEC_INTERNAL_UNITS(spa) % CDelecResolution) {
+            Log()->WarningLog(mh::Initialization,
+                "Sub-micron snap points are NOT RECOMMENDED in\n"
+                "electrical mode.  Connection points should be on\n"
+                "a one micron grid.  The present grid is accepted\n"
+                "to allow repair of old files.");
+        }
+    }
+    DSPattrib *a = wd->Attrib();
+    GridDesc lastgrid = *a->grid(mode);
+    Tech()->SetGridReg(0, lastgrid, mode);
+    a->grid(mode)->set(grd->gd_grid);
+    bool axes_changed =
+        (mode == Physical && a->grid(mode)->axes() != lastgrid.axes());
+    if (lastgrid.visually_differ(a->grid(mode)))
+        wd->Redisplay(0);
+    else if (axes_changed) {
+        if (lastgrid.axes() != AxesNone)
+            wd->ShowAxes(ERASE);
+        wd->ShowAxes(DISPLAY);
+    }
+    XM()->ShowParameters();
+}
+
+
+// Static function.
+void
+cGridDlg::gd_snap_proc(GtkWidget *widget, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return;
+    if (GTKdev::GetStatus(widget)) {
+        gtk_frame_set_label(GTK_FRAME(grd->gd_snapbox), "GridPerSnap");
+        int sn = grd->sb_snap.get_value_as_int();
+        grd->gd_grid.set_snap(-sn);
+    }
+    else {
+        gtk_frame_set_label(GTK_FRAME(grd->gd_snapbox), "SnapPerGrid");
+        int sn = grd->sb_snap.get_value_as_int();
+        grd->gd_grid.set_snap(sn);
+    }
+}
+
+
+// Static function.
+void
+cGridDlg::gd_resol_change_proc(GtkWidget*, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return;
+    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
+    if (!wd)
+        return;
+
+    grd->gd_grid.set_spacing(grd->sb_resol.get_value());
+
+    // Reset the value, as it might have been reset to the mfg grid.
+    grd->sb_resol.set_value(grd->gd_grid.spacing(wd->Mode()));
+}
+
+
+// Static function.
+void
+cGridDlg::gd_snap_change_proc(GtkWidget*, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (grd) {
+        bool neg = GTKdev::GetStatus(grd->gd_snapbtn);
+        int sn = grd->sb_snap.get_value_as_int();
+        grd->gd_grid.set_snap(neg ? -sn : sn);
+    }
+}
+
+
+// Static function.
+void
+cGridDlg::gd_edge_menu_proc(GtkWidget*, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return;
+    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
+    if (!wd)
+        return;
+    switch (gtk_combo_box_get_active(GTK_COMBO_BOX(grd->gd_edge))) {
+    case EdgeSnapNone:
+        wd->Attrib()->set_edge_snapping(EdgeSnapNone);
+        break;
+    case EdgeSnapSome:
+        wd->Attrib()->set_edge_snapping(EdgeSnapSome);
+        break;
+    case EdgeSnapAll:
+        wd->Attrib()->set_edge_snapping(EdgeSnapAll);
+        break;
+    }
+}
+
+
+// Static function.
+void
+cGridDlg::gd_btn_proc(GtkWidget *widget, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return;
+    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
+    if (!wd)
+        return;
+
+    const char *name = gtk_widget_get_name(widget);
+    if (name && !strcmp(name, "help")) {
+        DSPmainWbag(PopUpHelp("xic:grid"));
+        return;
+    }
+
+    bool state = GTKdev::GetStatus(widget);
+    if (widget == grd->gd_off_grid)
+        wd->Attrib()->set_edge_off_grid(state);
+    else if (widget == grd->gd_use_nm_edge)
+        wd->Attrib()->set_edge_non_manh(state);
+    else if (widget == grd->gd_wire_edge)
+        wd->Attrib()->set_edge_wire_edge(state);
+    else if (widget == grd->gd_wire_path)
+        wd->Attrib()->set_edge_wire_path(state);
+    else if (widget == grd->gd_showbtn)
+        grd->gd_grid.set_displayed(GTKdev::GetStatus(widget));
+    else if (widget == grd->gd_topbtn)
+        grd->gd_grid.set_show_on_top(GTKdev::GetStatus(widget));
+    else if (widget == grd->gd_nocoarse) {
+        if (GTKdev::GetStatus(widget))
+            CDvdb()->setVariable(VA_GridNoCoarseOnly, "");
+        else
+            CDvdb()->clearVariable(VA_GridNoCoarseOnly);
+    }
+}
+
+
+// Static function.
+void
+cGridDlg::gd_sto_menu_proc(GtkWidget *widget, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return;
+    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
+    if (!wd)
+        return;
+
+    DisplayMode mode = wd->Mode();
+    const char *string = gtk_widget_get_name(widget);
+    if (string) {
+        while (isalpha(*string))
+            string++;
+        int indx = atoi(string);
+        if (indx >= 0 && indx < TECH_NUM_GRIDS)
+            Tech()->SetGridReg(indx, grd->gd_grid, mode);
+    }
+}
+
+
+// Static function.
+void
+cGridDlg::gd_rcl_menu_proc(GtkWidget *widget, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return;
+    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
+    if (!wd)
+        return;
+
+    const char *string = gtk_widget_get_name(widget);
+    if (string) {
+        if (!strcmp(string, REVERT)) {
+            // Revert to the current Attributes grid.
+            grd->update();
+            return;
+        }
+        if (!strcmp(string, LASTAPPL)) {
+            // Return to the last grid applied (reg 0);
+            GridDesc gref;
+            DisplayMode mode = wd->Mode();
+            GridDesc *g = Tech()->GridReg(0, mode);
+            if (*g != gref) {
+                grd->gd_grid.set(*g);
+                grd->update(true);
+            }
+            return;
+        }
+        while (isalpha(*string))
+            string++;
+        int indx = atoi(string);
+        if (indx >= 0 && indx < TECH_NUM_GRIDS) {
+            GridDesc gref;
+            DisplayMode mode = wd->Mode();
+            GridDesc *g = Tech()->GridReg(indx, mode);
+            if (*g != gref) {
+                grd->gd_grid.set(*g);
+                grd->update(true);
+            }
+        }
+    }
+}
+
+
+// Static function.
+void
+cGridDlg::gd_axes_proc(GtkWidget *widget, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return;
+    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
+    if (!wd)
+        return;
+    if (GTKdev::GetStatus(widget) && wd->Mode() == Physical) {
+        grd->gd_grid.set_axes((AxesType)(intptr_t)
+            g_object_get_data(G_OBJECT(widget), "axes"));
+    }
+}
+
+
+// Static function.
+void
+cGridDlg::gd_lst_proc(GtkWidget *widget, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (grd && GTKdev::GetStatus(widget)) {
+        int lst = (intptr_t)g_object_get_data(G_OBJECT(widget), "lst");
+        if (lst == LstSolid) {
+            if (!grd->gd_mask_bak && grd->gd_grid.linestyle().mask != 0 &&
+                    grd->gd_grid.linestyle().mask != -1)
+                grd->gd_mask_bak = grd->gd_grid.linestyle().mask;
+            grd->gd_grid.linestyle().mask = -1;
+        }
+        else if (lst == LstDots) {
+            if (!grd->gd_mask_bak && grd->gd_grid.linestyle().mask != 0 &&
+                    grd->gd_grid.linestyle().mask != -1)
+                grd->gd_mask_bak = grd->gd_grid.linestyle().mask;
+            grd->gd_grid.linestyle().mask = 0;
+        }
+        else {
+            if (grd->gd_mask_bak) {
+                grd->gd_grid.linestyle().mask = grd->gd_mask_bak;
+                grd->gd_mask_bak = 0;
+            }
+        }
+        gd_redraw_hdlr(0, 0, grid_pops + grd->gd_win_num);
+    }
+}
+
+
+// Static function.
+void
+cGridDlg::gd_cmult_change_proc(GtkWidget*, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (grd) {
+        int cm = grd->sb_cmult.get_value_as_int();
+        grd->gd_grid.set_coarse_mult(cm);
+    }
+}
+
+
+// Static function.
+void
+cGridDlg::gd_thresh_change_proc(GtkWidget*, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (grd) {
+        char buf[32];
+        int n = grd->sb_thresh.get_value_as_int();
+        if (n < DSP_MIN_GRID_THRESHOLD || n > DSP_MAX_GRID_THRESHOLD)
+            return;
+        snprintf(buf, sizeof(buf), "%d", n);
+        if (n != DSP_DEF_GRID_THRESHOLD)
+            CDvdb()->setVariable(VA_GridThreshold, buf);
+        else
+            CDvdb()->clearVariable(VA_GridThreshold);
+    }
+}
+
+
+// Static function.
+void
+cGridDlg::gd_crs_change_proc(GtkWidget*, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (grd)
+        grd->gd_grid.set_dotsize(grd->sb_crs.get_value_as_int());
+}
+
+
+// Static function.
+#if GTK_CHECK_VERSION(3,0,0)
+int
+cGridDlg::gd_redraw_hdlr(GtkWidget*, cairo_t*, void *arg)
+#else
+int
+cGridDlg::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
+#endif
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd || !grd->gd_viewport)
+        return (false);
+
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {
+        gtk_widget_hide(grd->gd_crs_frame);
+        gtk_widget_show(grd->gd_sample);
+        gtk_widget_show(grd->gd_viewport);
+
+        if (gtk_widget_get_mapped(grd->gd_viewport)) {
+#if GTK_CHECK_VERSION(3,0,0)
+            grd->GetDrawable()->set_window(
+                gtk_widget_get_window(grd->gd_viewport));
+#else
+            grd->gd_window = gtk_widget_get_window(grd->gd_viewport);
+#endif
+            grd->SetWindowBackground(GTKdev::self()->NameColor("white"));
+            grd->Clear();
+            grd->SetFillpattern(0);
+            grd->SetColor(GTKdev::self()->NameColor("blue"));
+#if GTK_CHECK_VERSION(3,0,0)
+            int wid = grd->GetDrawable()->get_width();
+            int hei = grd->GetDrawable()->get_height();
+#else
+            int wid = gdk_window_get_width(grd->gd_window);
+            int hei = gdk_window_get_height(grd->gd_window);
+#endif
+            int w = wid/32 - 1;
+            if (w < 2)
+                w = 2;
+            int tw = 32*w;
+            int os = 0;
+            if (tw < wid)
+                os = (wid - tw)/2;
+            unsigned mask = ~((~(unsigned)0) >> 1);
+            int x = os;
+            int xs = -1;
+            for (int i = 0; i < 32; i++) {
+                if (mask & grd->gd_grid.linestyle().mask) {
+                    grd->Box(x, 1, x+w, hei-2);
+                    if (xs < 0)
+                        xs = x;
+                }
+                x += w;
+                mask >>= 1;
+            }
+            if (xs < 0)
+                xs = tw + os;
+            GtkStyle *style = gtk_widget_get_style(grd->gd_viewport);
+            if (os) {
+                grd->SetColor(style->bg[GTK_STATE_NORMAL].pixel);
+                grd->Box(0, 0, os, hei);
+                grd->Box(os + tw, 0, wid, hei);
+            }
+            grd->SetColor(style->bg[GTK_STATE_ACTIVE].pixel);
+            grd->Box(os, 0, xs, hei);
+
+#if GTK_CHECK_VERSION(3,0,0)
+            grd->GetDrawable()->set_window(
+                gtk_widget_get_window(grd->gd_sample));
+#else
+            grd->gd_window = gtk_widget_get_window(grd->gd_sample);
+#endif
+            grd->SetWindowBackground(GTKdev::self()->NameColor("black"));
+            grd->Clear();
+            if (grd->gd_grid.linestyle().mask) {
+                // DefineLinestyle will convert 1,3,7,... to -1.
+                unsigned ltmp = grd->gd_grid.linestyle().mask;
+                grd->defineLinestyle(&grd->gd_grid.linestyle(), ltmp);
+                grd->gd_grid.linestyle().mask = ltmp;
+                grd->SetColor(GTKdev::self()->NameColor("white"));
+                grd->SetFillpattern(0);
+                grd->Line(os+2, 5, os+tw-2, 5);
+            }
+            if (os) {
+                grd->SetColor(style->bg[GTK_STATE_NORMAL].pixel);
+                grd->Box(0, 0, os, hei);
+                grd->Box(os + tw, 0, wid, hei);
+            }
+        }
+    }
+    else {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_dotsbtn)))
+            gtk_widget_show(grd->gd_crs_frame);
+        else
+            gtk_widget_hide(grd->gd_crs_frame);
+
+        if (gtk_widget_get_mapped(grd->gd_viewport)) {
+#if GTK_CHECK_VERSION(3,0,0)
+            grd->GetDrawable()->set_window(
+                gtk_widget_get_window(grd->gd_viewport));
+#else
+            grd->gd_window = gtk_widget_get_window(grd->gd_viewport);
+#endif
+            GtkStyle *style = gtk_widget_get_style(grd->gd_viewport);
+            grd->SetWindowBackground(style->bg[GTK_STATE_NORMAL].pixel);
+            grd->Clear();
+#if GTK_CHECK_VERSION(3,0,0)
+            grd->GetDrawable()->set_window(
+                gtk_widget_get_window(grd->gd_sample));
+#else
+            grd->gd_window = gtk_widget_get_window(grd->gd_sample);
+#endif
+            grd->SetWindowBackground(style->bg[GTK_STATE_NORMAL].pixel);
+            grd->Clear();
+        }
+
+        if (gtk_toggle_button_get_active(
+                GTK_TOGGLE_BUTTON(grd->gd_solidbtn))) {
+            gtk_widget_show(grd->gd_sample);
+            gtk_widget_show(grd->gd_viewport);
+        }
+        else {
+            gtk_widget_hide(grd->gd_sample);
+            gtk_widget_hide(grd->gd_viewport);
+        }
+    }
+    return (false);
+}
+
+
+// Static function.
+int
+cGridDlg::gd_button_press_hdlr(GtkWidget *widget, GdkEvent *event, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return (false);
+
+    if (widget == grd->gd_sample) {
+        grd->gd_dragging = true;
+        grd->gd_drag_x = (int)event->button.x;
+        grd->gd_drag_y = (int)event->button.y;
+        return (true);
+    }
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {
+        int x = (int)event->button.x;
+#if GTK_CHECK_VERSION(3,0,0)
+        int wid = grd->GetDrawable()->get_width();
+#else
+        int wid = gdk_window_get_width(grd->gd_window);
+#endif
+        int w = wid/32 - 1;
+        if (w < 2)
+            w = 2;
+        int tw = 32*w;
+        int os = 0;
+        if (tw < wid)
+            os = (wid - tw)/2;
+        int n = (x - os)/w;
+        if (n < 0 || n > 31)
+            return (true);
+        n = 31 - n;
+        if (event->button.button == 1)
+            grd->gd_grid.linestyle().mask ^= (1 << n);
+        else if (event->button.button == 2)
+            grd->gd_grid.linestyle().mask &= ~(1 << n);
+        else if (event->button.button == 3)
+            grd->gd_grid.linestyle().mask |= (1 << n);
+        else
+            return (false);
+        grd->gd_last_n = n;
+        gd_redraw_hdlr(0, 0, grid_pops + grd->gd_win_num);
+    }
+    return (true);
+}
+
+
+// Static function.
+int
+cGridDlg::gd_button_release_hdlr(GtkWidget *widget, GdkEvent *event, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return (false);
+
+    if (widget == grd->gd_sample) {
+        grd->gd_dragging = false;
+        grd->gd_drag_x = 0;
+        grd->gd_drag_y = 0;
+        return (true);
+    }
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {
+
+        int x = (int)event->button.x;
+#if GTK_CHECK_VERSION(3,0,0)
+        int wid = grd->GetDrawable()->get_width();
+#else
+        int wid = gdk_window_get_width(grd->gd_window);
+#endif
+        int w = wid/32 - 1;
+        if (w < 2)
+            w = 2;
+        int tw = 32*w;
+        int os = 0;
+        if (tw < wid)
+            os = (wid - tw)/2;
+        int n = (x - os)/w;
+        if (n < 0 || n > 31)
+            return (true);
+        n = 31 - n;
+        if (n > grd->gd_last_n) {
+            for (int i = grd->gd_last_n + 1; i <= n; i++) {
+                if (event->button.button == 1)
+                    grd->gd_grid.linestyle().mask ^= (1 << i);
+                else if (event->button.button == 2)
+                    grd->gd_grid.linestyle().mask &= ~(1 << i);
+                else if (event->button.button == 3)
+                    grd->gd_grid.linestyle().mask |= (1 << i);
+                else
+                    return (true);
+            }
+            gd_redraw_hdlr(0, 0, grid_pops + grd->gd_win_num);
+        }
+        else if (n < grd->gd_last_n) {
+            for (int i = grd->gd_last_n - 1; i >= n; i--) {
+                if (event->button.button == 1)
+                    grd->gd_grid.linestyle().mask ^= (1 << i);
+                else if (event->button.button == 2)
+                    grd->gd_grid.linestyle().mask &= ~(1 << i);
+                else if (event->button.button == 3)
+                    grd->gd_grid.linestyle().mask |= (1 << i);
+                else
+                    return (true);
+            }
+            gd_redraw_hdlr(0, 0, grid_pops + grd->gd_win_num);
+        }
+    }
+    return (true);
+}
+
+
+namespace {
+    GtkTargetEntry gd_targets[] = {
+        { (char*)"text/plain", 0, 4 },
+    };
+}
+
+
+// Static function.
+int
+cGridDlg::gd_motion_hdlr(GtkWidget *caller, GdkEvent *event, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return (false);
+
+    int x = (int)event->motion.x;
+    int y = (int)event->motion.y;
+    if (grd->gd_dragging &&
+            (abs(x - grd->gd_drag_x) > 2 || abs(y - grd->gd_drag_y) > 2)) {
+        grd->gd_dragging = false;
+        GtkTargetList *targets = gtk_target_list_new(gd_targets, 1);
+        gtk_drag_begin(caller, targets, (GdkDragAction)GDK_ACTION_COPY,
+            1, event);
+    }
+    return (true);
+}
+
+
+// Static function.
+// Initialize data for drag/drop transfer from 'this'.
+//
+void
+cGridDlg::gd_drag_data_get(GtkWidget*, GdkDragContext*,
+    GtkSelectionData *data, guint, guint, void *arg)
+{
+    cGridDlg *grd = *(cGridDlg**)arg;
+    if (!grd)
+        return;
+
+    char buf[64];
+    snprintf(buf, sizeof(buf), "0x%x", grd->gd_grid.linestyle().mask);
+    gtk_selection_data_set(data, gtk_selection_data_get_target(data),
+        8, (unsigned char*)buf, strlen(buf)+1);
+}
+
+#endif

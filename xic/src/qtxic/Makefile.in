@@ -72,6 +72,7 @@ MOCFILES = \
     moc_param.cpp \
     moc_place.cpp \
     moc_sel.cpp \
+    moc_stab.cpp \
     moc_xform.cpp \
     moc_zoom.cpp
 CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
@@ -114,6 +115,7 @@ moc_modif.o: moc_modif.cpp  qtmodif.h
 moc_param.o: moc_param.cpp  qtparam.h
 moc_place.o: moc_place.cpp  qtplace.h
 moc_sel.o: moc_sel.cpp  qtsel.h
+moc_stab.o: moc_stab.cpp  qtstab.h
 moc_xform.o: moc_xform.cpp  qtxform.h
 moc_zoom.o: moc_zoom.cpp  qtzoom.h
 
@@ -145,6 +147,8 @@ moc_place.cpp: $(MOC) qtplace.h
 	$(MOC) qtplace.h -o moc_place.cpp
 moc_sel.cpp: $(MOC) qtsel.h
 	$(MOC) qtsel.h -o moc_sel.cpp
+moc_stab.cpp: $(MOC) qtstab.h
+	$(MOC) qtstab.h -o moc_stab.cpp
 moc_xform.cpp: $(MOC) qtxform.h
 	$(MOC) qtxform.h -o moc_xform.cpp
 moc_zoom.cpp: $(MOC) qtzoom.h

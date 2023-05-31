@@ -38,10 +38,9 @@
  $Id:$
  *========================================================================*/
 
-#ifndef GTKCV_H
-#define GTKCV_H
+#ifndef QTCV_H
+#define QTCV_H
 
-#include "gtkinterf/gtkspinbtn.h"
 
 struct fmt_menu
 {
@@ -57,6 +56,7 @@ struct cnmap_t
     cnmap_t(bool);
 
     void update();
+    /*
     void text_changed(GtkWidget*);
     void action(GtkWidget*);
 
@@ -74,6 +74,7 @@ private:
     GtkWidget *cn_wr_alias;
     GtkWidget *cn_frame;
     bool cn_output;
+    */
 };
 
 //-------------------------------------------------------------------------
@@ -85,6 +86,7 @@ struct llist_t
     ~llist_t();
 
     void update();
+    /*
     void text_changed(GtkWidget*);
     void action(GtkWidget*);
 
@@ -100,6 +102,7 @@ private:
     GtkWidget *ll_aluse;
     GtkWidget *ll_aledit;
     GtkWidget *ll_frame;
+    */
 };
 
 //-------------------------------------------------------------------------
@@ -126,6 +129,7 @@ struct wnd_t
     ~wnd_t();
 
     void update();
+    /*
     void val_changed(GtkWidget*);
     void action(GtkWidget*);
     void set_sens();
@@ -164,6 +168,7 @@ private:
 
     WndSensMode (*wnd_sens_test)();
     WndFuncMode wnd_func_mode;
+    */
 };
 
 //-------------------------------------------------------------------------
@@ -195,6 +200,7 @@ struct cvofmt_t
     void configure(cvofmt_mode);
     void set_page(int);
 
+    /*
     GtkWidget *frame() { return (fmt_form); }
 
     // This is set from the OASIS-Advanced pop-up.
@@ -245,6 +251,7 @@ private:
 
     static int fmt_gds_inp;
     static char *fmt_oas_rep_string;
+    */
 };
 
 #endif
