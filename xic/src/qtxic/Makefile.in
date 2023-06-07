@@ -29,6 +29,7 @@ CCFILES = \
     qtcolor.cc \
     qtcolortimer.cc \
     qtcoord.cc \
+    qtdots.cc \
     qtempty.cc \
     qtexpand.cc \
     qtextfc.cc \
@@ -61,10 +62,13 @@ MOCFILES = \
     moc_main.cpp \
     moc_color.cpp \
     moc_coord.cpp \
+    moc_dots.cpp \
     moc_empty.cpp \
     moc_expand.cpp \
+    moc_fillp.cpp \
     moc_htext.cpp \
     moc_ltab.cpp \
+    moc_ltedit.cpp \
     moc_menu.cpp \
     moc_menucfg.cpp \
     moc_merge.cpp \
@@ -104,10 +108,13 @@ endif
 moc_main.o: moc_main.cpp  qtmain.h
 moc_color.o: moc_color.cpp  qtcolor.h
 moc_coord.o: moc_coord.cpp  qtcoord.h
+moc_dots.o: moc_dots.cpp  qtdots.h
 moc_empty.o: moc_empty.cpp  qtempty.h
 moc_expand.o: moc_expand.cpp  qtexpand.h
+moc_fillp.o: moc_fillp.cpp  qtfillp.h
 moc_htext.o: moc_htext.cpp  qthtext.h
 moc_ltab.o: moc_ltab.cpp  qtltab.h
+moc_ltedit.o: moc_ltedit.cpp  qtltedit.h
 moc_menu.o: moc_menu.cpp  qtmenu.h
 moc_menucfg.o: moc_menucfg.cpp  qtmenucfg.h
 moc_merge.o: moc_merge.cpp  qtmerge.h
@@ -125,14 +132,20 @@ moc_color.cpp: $(MOC) qtcolor.h
 	$(MOC) qtcolor.h -o moc_color.cpp
 moc_coord.cpp: $(MOC) qtcoord.h
 	$(MOC) qtcoord.h -o moc_coord.cpp
+moc_dots.cpp: $(MOC) qtdots.h
+	$(MOC) qtdots.h -o moc_dots.cpp
 moc_empty.cpp: $(MOC) qtempty.h
 	$(MOC) qtempty.h -o moc_empty.cpp
 moc_expand.cpp: $(MOC) qtexpand.h
 	$(MOC) qtexpand.h -o moc_expand.cpp
+moc_fillp.cpp: $(MOC) qtfillp.h
+	$(MOC) qtfillp.h -o moc_fillp.cpp
 moc_htext.cpp: $(MOC) qthtext.h
 	$(MOC) qthtext.h -o moc_htext.cpp
 moc_ltab.cpp: $(MOC) qtltab.h
 	$(MOC) qtltab.h -o moc_ltab.cpp
+moc_ltedit.cpp: $(MOC) qtltedit.h
+	$(MOC) qtltedit.h -o moc_ltedit.cpp
 moc_menu.cpp: $(MOC) qtmenu.h
 	$(MOC) qtmenu.h -o moc_menu.cpp
 moc_menucfg.cpp: $(MOC) qtmenucfg.h

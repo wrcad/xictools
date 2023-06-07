@@ -69,6 +69,7 @@ class QMenuBar;
 class QLineEdit;
 class QPushButton;
 class QEnterEvent;
+class QSplitter;
 
 // Graphics contexgt classes for application windows.
 enum XIC_WINDOW_CLASS
@@ -279,6 +280,7 @@ public:
         return (false);
     }
 
+
     // qtmain.cc
     QTmainwin();
     void initialize();
@@ -286,6 +288,7 @@ public:
 
     QWidget *PromptLine()       { return (mw_promptline); }
     QTltab *LayerTable()        { return (mw_layertab); }
+    QSplitter *splitter()       { return (mw_splitter); }
     
     /*
     // qtcells.cc
@@ -326,6 +329,7 @@ private:
     QWidget     *mw_top_button_box;
     QWidget     *mw_phys_button_box;
     QWidget     *mw_elec_button_box;
+    QSplitter   *mw_splitter;
 
     QWidget     *mw_promptline;
     cCoord      *mw_coords;

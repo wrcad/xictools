@@ -38,93 +38,118 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTPLACE_H
-#define QTPLACE_H
+#ifndef QTFILLP_H
+#define QTFILLP_H
 
 #include "main.h"
-#include "edit.h"
 #include "qtmain.h"
 
 #include <QDialog>
 
-class QLabel;
-class QPushButton;
-class QComboBox;
+class QHBoxLayout;
+class QGroupBox;
 class QSpinBox;
-class QDoubleSpinBox;
 class QDragEnterEvent;
 class QDropEvent;
 
-class cPlace : public QDialog, public cEdit::sPCpopup
+
+class cFillp : public QDialog, public QTbag, public QTdraw
 {
     Q_OBJECT
 
 public:
-    cPlace(bool);
-    ~cPlace();
+    // Pixel operations
+    enum FPSETtype { FPSEToff, FPSETon, FPSETflip };
+
+    cFillp(GRobject);
+    ~cFillp();
 
     void update();
+    void drag_load(LayerFillData*, CDl*);
 
-    // virtual overrides
-    void rebuild_menu();
-    void desel_placebtn();
-    bool smash_mode();
-
-    static cPlace *self()           { return (instPtr); }
-
-    static void update_params()
-    {
-        if (DSP()->CurMode() == Physical)
-            pl_iap = ED()->arrayParams();
-    }
+    static cFillp *self()           { return (instPtr); }
 
 private slots:
-    void array_btn_slot(bool);
-    void replace_btn_slot(bool);
-    void refmenu_slot(int);
-    void help_btn_slot();
-    void dismiss_btn_slot();
-    void master_menu_slot(int);
-    void place_btn_slot(bool);
-    void menu_placebtn_slot(bool);
-    void mmlen_change_slot(int);
     void nx_change_slot(int);
     void ny_change_slot(int);
-    void dx_change_slot(double);
-    void dy_change_slot(double);
+    void rot90_btn_slot();
+    void x_btn_slot();
+    void y_btn_slot();
+    void stores_btn_slot();
+    void defpats_change_slot(int);
+    void dump_btn_slot();
+    void pixed_btn_slot();
+    void load_btn_slot();
+    void apply_btn_slot();
+    void help_btn_slot();
+    void outline_btn_slot(bool);
+    void fat_btn_slot(bool);
+    void cut_btn_slot(bool);
+    void dismiss_btn_slot();
+    void button_down_slot(QMouseEvent*);
+    void button_up_slot(QMouseEvent*);
+    void key_down_slot(QKeyEvent*);
+    void motion_slot(QMouseEvent*);
+    void enter_slot(QEnterEvent*);
     void drag_enter_slot(QDragEnterEvent*);
     void drop_event_slot(QDropEvent*);
 
 private:
-    void set_sens(bool);
-    static ESret pl_new_cb(const char*, void*);
+    void fp_mode_proc(bool);
+    void redraw_edit();
+    void redraw_sample();
+    void redraw_store(int);
+    void show_pixel(int, int);
+    void set_fp(unsigned char*, int, int);
+    bool getij(int*, int*);
+    void set_pixel(int, int, FPSETtype);
+    FPSETtype get_pixel(int, int);
+    void line(int, int, int, int, FPSETtype);
+    void box(int, int, int, int, FPSETtype);
+    void def_to_sample(LayerFillData*);
+    void sample_to_def(LayerFillData*, int);
+    void layer_to_def_or_sample(LayerFillData*, int);
+    void pattern_to_layer(LayerFillData*, CDl*);
+    void connect_sigs(QTcanvas*, bool);
 
-    QPushButton *pl_arraybtn;
-    QPushButton *pl_replbtn;
-    QPushButton *pl_smashbtn;
-    QComboBox *pl_refmenu;
+    static void fp_drawghost(int, int, int, int, bool = false);
+    static int fp_update_idle_proc(void*);
 
-    QLabel *pl_label_nx;
-    QLabel *pl_label_ny;
-    QLabel *pl_label_dx;
-    QLabel *pl_label_dy;
+    GRobject fp_caller;
+    QPushButton *fp_outl;
+    QPushButton *fp_fat;
+    QPushButton *fp_cut;
+    QTcanvas *fp_editor;
+    QTcanvas *fp_sample;
+    QGroupBox *fp_editframe;
+    QWidget *fp_editctrl;
+    QGroupBox *fp_stoframe;
+    QWidget *fp_stoctrl;
+    QTcanvas *fp_stores[18];
+    QSpinBox *fp_spnx;
+    QSpinBox *fp_spny;
+    QSpinBox *fp_defpats;
 
-    QComboBox *pl_masterbtn;
-    QPushButton *pl_placebtn;
-    QPushButton *pl_menu_placebtn;
+    GRfillType *fp_fp;
+    int fp_pattern_bank;
+    int fp_width, fp_height;
+    long fp_foreg, fp_pixbg;
+    unsigned char fp_array[128];  // 32x32 max
+    int fp_nx, fp_ny;
+    int fp_margin;
+    int fp_def_box_w, fp_def_box_h;
+    int fp_pat_box_h;
+    int fp_edt_box_dim;
+    int fp_spa;
+    int fp_epsz;
+    int fp_ii, fp_jj;
+    int fp_drag_btn, fp_drag_x, fp_drag_y;
+    int fp_pm_w, fp_pm_h;
+    int fp_downbtn;
+    bool fp_dragging;
+    bool fp_editing;
 
-    GRledPopup *pl_str_editor;
-    char *pl_dropfile;
-
-    QSpinBox *pl_nx;
-    QSpinBox *pl_ny;
-    QDoubleSpinBox *pl_dx;
-    QDoubleSpinBox *pl_dy;
-    QSpinBox *pl_mmlen;
-
-    static cPlace *instPtr;
-
-    static iap_t pl_iap;
+    static cFillp *instPtr;
 };
 
 #endif

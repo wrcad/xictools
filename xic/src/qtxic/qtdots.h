@@ -38,93 +38,41 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTPLACE_H
-#define QTPLACE_H
+#ifndef QTDOTS_H
+#define QTDOTS_H
 
 #include "main.h"
-#include "edit.h"
 #include "qtmain.h"
 
 #include <QDialog>
 
-class QLabel;
-class QPushButton;
-class QComboBox;
-class QSpinBox;
-class QDoubleSpinBox;
-class QDragEnterEvent;
-class QDropEvent;
+class QRadioButton;
 
-class cPlace : public QDialog, public cEdit::sPCpopup
+class cDots : public QDialog
 {
     Q_OBJECT
 
 public:
-    cPlace(bool);
-    ~cPlace();
+    cDots(GRobject);
+    ~cDots();
 
     void update();
 
-    // virtual overrides
-    void rebuild_menu();
-    void desel_placebtn();
-    bool smash_mode();
-
-    static cPlace *self()           { return (instPtr); }
-
-    static void update_params()
-    {
-        if (DSP()->CurMode() == Physical)
-            pl_iap = ED()->arrayParams();
-    }
+    static cDots *self()            { return (instPtr); }
 
 private slots:
-    void array_btn_slot(bool);
-    void replace_btn_slot(bool);
-    void refmenu_slot(int);
-    void help_btn_slot();
-    void dismiss_btn_slot();
-    void master_menu_slot(int);
-    void place_btn_slot(bool);
-    void menu_placebtn_slot(bool);
-    void mmlen_change_slot(int);
-    void nx_change_slot(int);
-    void ny_change_slot(int);
-    void dx_change_slot(double);
-    void dy_change_slot(double);
-    void drag_enter_slot(QDragEnterEvent*);
-    void drop_event_slot(QDropEvent*);
+    void none_slot(bool);
+    void norm_slot(bool);
+    void all_slot(bool);
+    void dismiss_slot();
 
 private:
-    void set_sens(bool);
-    static ESret pl_new_cb(const char*, void*);
+    GRobject dt_caller;
+    QRadioButton *dt_none;
+    QRadioButton *dt_norm;
+    QRadioButton *dt_all;
 
-    QPushButton *pl_arraybtn;
-    QPushButton *pl_replbtn;
-    QPushButton *pl_smashbtn;
-    QComboBox *pl_refmenu;
-
-    QLabel *pl_label_nx;
-    QLabel *pl_label_ny;
-    QLabel *pl_label_dx;
-    QLabel *pl_label_dy;
-
-    QComboBox *pl_masterbtn;
-    QPushButton *pl_placebtn;
-    QPushButton *pl_menu_placebtn;
-
-    GRledPopup *pl_str_editor;
-    char *pl_dropfile;
-
-    QSpinBox *pl_nx;
-    QSpinBox *pl_ny;
-    QDoubleSpinBox *pl_dx;
-    QDoubleSpinBox *pl_dy;
-    QSpinBox *pl_mmlen;
-
-    static cPlace *instPtr;
-
-    static iap_t pl_iap;
+    static cDots *instPtr;
 };
 
 #endif

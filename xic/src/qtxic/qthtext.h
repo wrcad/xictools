@@ -101,6 +101,7 @@ private slots:
     void press_slot(QMouseEvent*);
     void enter_slot(QEnterEvent*);
     void leave_slot(QEvent*);
+    void motion_slot(QMouseEvent*);
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);
     void keys_press_slot(QMouseEvent*);

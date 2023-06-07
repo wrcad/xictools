@@ -53,6 +53,7 @@
 #include "dsp_inlines.h"
 #include "ginterf/nulldev.h"
 #include "promptline.h"
+#include "sced.h"
 #include "tech.h"
 #include "events.h"
 #include "select.h"
@@ -77,6 +78,9 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QEnterEvent>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 // Name clash with QT avoided with this placement.
 #include "miscutil/timer.h"
@@ -338,25 +342,30 @@ QTpkg::NewGX()
 }
 
 
-/*XXX
 namespace {
-    void messageOutput(QtMsgType type, const char *msg)
+    // All QT text comes through here.
+    void messageOutput(QtMsgType type, QMessageLogContext&,
+        const QString &smsg)
     {
         switch (type) {
         case QtDebugMsg:
+            fprintf(stderr, "Debug: %s\n", (const char*)smsg.toLatin1());
+            break;
         case QtInfoMsg:
+            fprintf(stderr, "Info: %s\n", (const char*)smsg.toLatin1());
+            break;
         case QtWarningMsg:
+            fprintf(stderr, "Warning: %s\n", (const char*)smsg.toLatin1());
             break;
         case QtCriticalMsg:
-            fprintf(stderr, "Critical: %s\n", msg);
+            fprintf(stderr, "Critical: %s\n", (const char*)smsg.toLatin1());
             break;
         case QtFatalMsg:
-            fprintf(stderr, "Fatal: %s\n", msg);
+            fprintf(stderr, "Fatal: %s\n", (const char*)smsg.toLatin1());
             break;
         }
     }
 }
-*/
 
 
 // Initialization function for the main window.  The argument *must* be
@@ -367,7 +376,7 @@ QTpkg::Initialize(GRwbag *wcp)
 {
     if (!MainDev())
         return (true);
-//qInstallMsgHandler(messageOutput);
+    qInstallMessageHandler((QtMessageHandler)messageOutput);
     if (MainDev()->ident == _devNULL_) {
         static QTltab qt_lt(true);
         static QTedit qt_hy(true);
@@ -486,8 +495,8 @@ bool
 QTpkg::CheckForInterrupt()
 {
     static unsigned long lasttime;
-//    if (!in_main_loop)
-//        return (false);
+    if (!pkg_in_main_loop)
+        return (false);
     if (DSP()->Interrupt())
         return (true);
 
@@ -783,7 +792,7 @@ QTpkg::RegisterEventHandler(void(*handler)(QEvent*, void*), void *arg)
 //-----------------------------------------------------------------------------
 // cKeys functions
 
-cKeys::cKeys(int wnum, QWidget *prnt) : QTcanvas(false, prnt)
+cKeys::cKeys(int wnum, QWidget *prnt) : QTcanvas(prnt)
 {
     k_keypos = 0;
     memset(k_keys, 0, CBUFMAX+1);
@@ -955,6 +964,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     gd_viewport = draw_if::new_draw_interface(sw_drawtype, true, this);
     Gbag()->set_draw_if(gd_viewport);
     Viewport()->setFocusPolicy(Qt::StrongFocus);
+    Viewport()->setAcceptDrops(true);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
@@ -1715,7 +1725,12 @@ QTsubwin::motion_slot(QMouseEvent *ev)
         ev->ignore();
         return;
     }
-    if (ev->type() != QEvent::MouseMove) {
+
+    QRect r(QPoint(0, 0), gd_viewport->widget()->size());
+    if (ev->type() != QEvent::MouseMove || !r.contains(ev->x(), ev->y())) {
+        // Leave event is not reliably delivered so do this here, too.
+        UndrawGhost();
+        gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
         ev->ignore();
         return;
     }
@@ -1726,7 +1741,6 @@ QTsubwin::motion_slot(QMouseEvent *ev)
         UndrawGhost();
         DrawGhost(ev->x(), ev->y());
     }
-
 
     int xx = ev->x();
     int yy = ev->y();
@@ -1885,7 +1899,7 @@ QTsubwin::leave_slot(QEvent *ev)
         ev->ignore();
         return;
     }
-    if (ev->type() != QEvent::Enter) {
+    if (ev->type() != QEvent::Leave) {
         ev->ignore();
         return;
     }
@@ -1898,17 +1912,109 @@ QTsubwin::leave_slot(QEvent *ev)
 }
 
 
+namespace {
+    struct load_file_data
+    {
+        load_file_data(const char *f, const char *c)
+            {
+                filename = lstring::copy(f);
+                cellname = lstring::copy(c);
+            }
+
+        ~load_file_data()
+            {
+                delete [] filename;
+                delete [] cellname;
+            }
+
+        char *filename;
+        char *cellname;
+    };
+
+    // Idle procedure to load a file, called from the drop handler.
+    //
+    int load_file_idle(void *arg)
+    {
+        load_file_data *data = (load_file_data*)arg;
+        XM()->Load(EV()->CurrentWin(), data->filename, 0, data->cellname);
+        delete data;
+        return (0);
+    }
+}
+
+
 void
 QTsubwin::drag_enter_slot(QDragEnterEvent *ev)
 {
-    (void)ev;
+    if (ev->mimeData()->hasFormat("text/property") ||
+            ev->mimeData()->hasFormat("text/twostring") ||
+            ev->mimeData()->hasFormat("text/cellname") ||
+            ev->mimeData()->hasFormat("text/string") ||
+            ev->mimeData()->hasFormat("text/plain")) {
+        ev->acceptProposedAction();
+    }
 }
 
 
 void
 QTsubwin::drop_slot(QDropEvent *ev)
 {
-    (void)ev;
+    if (ev->mimeData()->hasFormat("text/property")) {
+        if (QTedit::self() && QTedit::self()->is_active()) {
+            QByteArray bary = ev->mimeData()->data("text/property");
+            const char *val = (const char*)bary.data() + sizeof(int);
+            CDs *cursd = CurCell(true);
+            hyList *hp = new hyList(cursd, val, HYcvAscii);
+            QTedit::self()->insert(hp);
+            hyList::destroy(hp);
+        }
+        ev->acceptProposedAction();
+        return;
+    }
+    const char *fmt = 0;
+    if (ev->mimeData()->hasFormat("text/twostring"))
+        fmt = "text/twostring";
+    else if (ev->mimeData()->hasFormat("text/cellname"))
+        fmt = "text/cellname";
+    else if (ev->mimeData()->hasFormat("text/string"))
+        fmt = "text/string";
+    else if (ev->mimeData()->hasFormat("text/plain"))
+        fmt = "text/plain";
+    if (fmt) {
+        QByteArray bary = ev->mimeData()->data(fmt);
+        char *src = lstring::copy((const char*)bary.data());
+        char *t = 0;
+        if (!strcmp(fmt, "text/twostring")) {
+            // Drops from content lists may be in the form
+            // "fname_or_chd\ncellname".
+            t = strchr(src, '\n');
+            if (t)
+                *t++ = 0;
+        }
+        load_file_data *lfd = new load_file_data(src, t);
+        delete [] src;
+
+        bool didit = false;
+        if (QTedit::self() && QTedit::self()->is_active()) {
+            if (ScedIf()->doingPlot()) {
+                // Plot/Iplot edit line is active, break out.
+                QTedit::self()->abort();
+            }
+            else {
+                // If editing, push into prompt line.
+                // Keep the cellname.
+                if (lfd->cellname)
+                    QTedit::self()->insert(lfd->cellname);
+                else
+                    QTedit::self()->insert(lfd->filename);
+                delete lfd;
+                didit = true;
+            }
+        }
+        if (!didit)
+            QTpkg::self()->RegisterIdleProc(load_file_idle, lfd);
+        ev->acceptProposedAction();
+    }
 }
 
 
@@ -1981,6 +2087,7 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     mw_top_button_box = 0;
     mw_phys_button_box = 0;
     mw_elec_button_box = 0;
+    mw_splitter = 0;
 
     mw_promptline = 0;
     mw_coords = 0;
@@ -2031,25 +2138,24 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     hbox->addWidget(mw_phys_button_box);
     mw_elec_button_box = new QWidget(this);
     hbox->addWidget(mw_elec_button_box);
+
     mw_layertab = new QTltab(false);
-    hbox->addWidget(mw_layertab);
-    QWidget *qw = new QWidget();
-    qw->setLayout(hbox);
     LT()->SetLtab(mw_layertab);
 
     mw_layertab->set_search_widgets(ltab_sbtn, ltab_entry);
 
-    QSplitter *qs = new QSplitter();
-    qs->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    qs->addWidget(qw);
-    qs->addWidget(Viewport());
+    mw_splitter = new QSplitter();
+    hbox->addWidget(mw_splitter);
+    mw_splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    mw_splitter->addWidget(mw_layertab);
+    mw_splitter->addWidget(Viewport());
 
     // This sets the handle is a sensible place, not easy!
     int wd = sizeHint().width();
     int w = QTfont::stringWidth(0, FNT_SCREEN);
-    qs->setSizes(QList<int>() << 90 + 10*w << wd);
+    mw_splitter->setSizes(QList<int>() << 50 + 10*w << wd);
 
-    vbox->addWidget(qs);
+    vbox->addLayout(hbox);
 
     hbox = new QHBoxLayout(0);
     hbox->setMargin(0);

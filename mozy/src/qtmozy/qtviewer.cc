@@ -210,7 +210,7 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
 {
     v_width_hint = wid;
     v_height_hint = hei;
-    v_darea = new QTcanvas(false, this);
+    v_darea = new QTcanvas(this);
     v_rband = 0;
     v_transact = 0;
     setWidget(v_darea);

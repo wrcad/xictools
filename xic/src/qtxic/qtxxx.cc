@@ -294,10 +294,6 @@ cSced::PopUpSpiceIf(GRobject, ShowMode)
 {
 }
 
-void
-cSced::PopUpDots(GRobject, ShowMode)
-{
-}
 
 // qtfiles.cc
 

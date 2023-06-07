@@ -66,7 +66,7 @@ draw_if::new_draw_interface(DrawType type, bool use_common, QWidget *parent)
         type = DrawNative;
 #endif
     }
-    return (new QTcanvas(use_common, parent));
+    return (new QTcanvas(parent));
 }
 
 

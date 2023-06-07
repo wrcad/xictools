@@ -59,8 +59,11 @@ class QScrollBar;
 class QHBoxLayout;
 class QMouseEvent;
 class QResizeEvent;
+class QDragEnterEvent;
+class QDropEvent;
 class QLineEdit;
 
+Q_DECLARE_METATYPE(LayerFillData);
 
 class QTltab : public QWidget, public cLtab, public QTdraw
 {
@@ -83,7 +86,10 @@ public:
     // Instantiated in main window.
     void set_search_widgets(QPushButton*, QLineEdit*);
 
-    QScrollBar *scrollbar()     { return (ltab_scrollbar); }
+    QScrollBar *scrollbar()                 { return (ltab_scrollbar); }
+
+    static const char *mime_type()          { return (ltab_mime_type); }
+    static const char **fillpattern_xpm()   { return (ltab_fillpattern_xpm); }
 
     static QTltab *self()
     {
@@ -100,6 +106,9 @@ signals:
 private slots:
     void button_press_slot(QMouseEvent*);
     void button_release_slot(QMouseEvent*);
+    void motion_slot(QMouseEvent*);
+    void drag_enter_slot(QDragEnterEvent*);
+    void drop_event_slot(QDropEvent*);
     void resize_slot(QResizeEvent*);
     void ltab_scroll_value_changed_slot(int);
     void font_changed(int);
@@ -121,6 +130,8 @@ private:
     int         ltab_timer_id;
     bool        ltab_hidden;
 
+    static const char *ltab_mime_type;
+    static const char *ltab_fillpattern_xpm[];
     static QTltab *instancePtr;
 };
 

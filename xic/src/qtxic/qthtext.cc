@@ -51,21 +51,13 @@
 #include <QMenu>
 #include <QMouseEvent>
 #include <QEnterEvent>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 // Help keywords:
 //  promptline
 //
-
-/*
-static GtkTargetEntry pl_targets[] = {
-  { "STRING",     0, 0 },
-  { "text/plain", 0, 1 },
-  { "CELLNAME",   0, 2 },
-  { "property",   0, 3 }
-};
-static guint n_pl_targets = 4;
-
-*/
 
 
 //-------------------------------
@@ -148,6 +140,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
 
     gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
     hbox->addWidget(Viewport());
+    Viewport()->setAcceptDrops(true);
 
     QFont *tfont;
     if (FC.getFont(&tfont, FNT_SCREEN)) {
@@ -158,23 +151,25 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     }
 
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed(int)), Qt::QueuedConnection);
+        this, SLOT(font_changed(int)));
 
     connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)), Qt::QueuedConnection);
+        this, SLOT(resize_slot(QResizeEvent*)));
     connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(press_slot(QMouseEvent*)), Qt::QueuedConnection);
+        this, SLOT(press_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
-        this, SLOT(enter_slot(QEnterEvent*)), Qt::QueuedConnection);
+        this, SLOT(enter_slot(QEnterEvent*)));
     connect(Viewport(), SIGNAL(leave_event(QEvent*)),
-        this, SLOT(leave_slot(QEvent*)), Qt::QueuedConnection);
+        this, SLOT(leave_slot(QEvent*)));
+    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
+        this, SLOT(motion_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)), Qt::QueuedConnection);
+        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
     connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_slot(QDropEvent*)), Qt::QueuedConnection);
+        this, SLOT(drop_slot(QDropEvent*)));
 
     connect(pe_keys, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(keys_press_slot(QMouseEvent*)), Qt::QueuedConnection);
+        this, SLOT(keys_press_slot(QMouseEvent*)));
 }
 
 
@@ -557,14 +552,74 @@ QTedit::leave_slot(QEvent*)
 
 
 void
-QTedit::drag_enter_slot(QDragEnterEvent*)
+QTedit::motion_slot(QMouseEvent *ev)
 {
+    if (pe_has_drag)
+        pointer_motion_handler(ev->x(), ev->y());
 }
 
 
 void
-QTedit::drop_slot(QDropEvent*)
+QTedit::drag_enter_slot(QDragEnterEvent *ev)
 {
+    if (ev->mimeData()->hasFormat("text/property") ||
+            ev->mimeData()->hasFormat("text/twostring") ||
+            ev->mimeData()->hasFormat("text/cellname") ||
+            ev->mimeData()->hasFormat("text/string") ||
+            ev->mimeData()->hasFormat("text/plain")) {
+        ev->acceptProposedAction();
+    }
+}
+
+
+void
+QTedit::drop_slot(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasFormat("text/property")) {
+        if (is_active()) {
+            QByteArray bary = ev->mimeData()->data("text/property");
+            const char *val = (const char*)bary.data() + sizeof(int);
+            CDs *cursd = CurCell(true);
+            hyList *hp = new hyList(cursd, val, HYcvAscii);
+            insert(hp);
+            hyList::destroy(hp);
+        }
+        ev->acceptProposedAction();
+        return;
+    }
+    const char *fmt = 0;
+    if (ev->mimeData()->hasFormat("text/twostring"))
+        fmt = "text/twostring";
+    else if (ev->mimeData()->hasFormat("text/cellname"))
+        fmt = "text/cellname";
+    else if (ev->mimeData()->hasFormat("text/string"))
+        fmt = "text/string";
+    else if (ev->mimeData()->hasFormat("text/plain"))
+        fmt = "text/plain";
+    if (fmt) {
+        QByteArray bary = ev->mimeData()->data(fmt);
+        char *src = lstring::copy((const char*)bary.data());
+        char *t = 0;
+        if (!strcmp(fmt, "text/twostring")) {
+            // Drops from content lists may be in the form
+            // "fname_or_chd\ncellname".
+            t = strchr(src, '\n');
+            if (t)
+                *t++ = 0;
+        }
+        if (is_active()) {
+            // Keep the cellname.
+            // If editing, push into prompt line.
+            insert(t);
+        }
+        else {
+            if (t)
+                XM()->Load(EV()->CurrentWin(), src, 0, t);
+            else
+                XM()->Load(EV()->CurrentWin(), src);
+        }
+        ev->acceptProposedAction();
+    }
 }
 
 
@@ -681,76 +736,6 @@ pe_selection_proc(GtkWidget*, GtkSelectionData *sdata, void*)
         ptr()->insert(hpl);
         hyList::destroy(hpl);
     }
-}
-
-
-// Drag data received in main window - open the cell
-//
-static void
-pe_drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
-    GtkSelectionData *data, guint, guint time)
-{
-    bool success = false;
-    if (!ptr() || !gtk_selection_data_get_data(data))
-        ;
-    else if (gtk_selection_data_get_target(data) ==
-            gdk_atom_intern("property", true)) {
-        if (ptr()->is_active()) {
-            unsigned char *val =
-                (unsigned char*)gtk_selection_data_get_data(data) + sizeof(int);
-            CDs *cursd = CurCell(true);
-            hyList *hp = new hyList(cursd, (char*)val, HYcvAscii);
-            ptr()->insert(hp);
-            hyList::destroy(hp);
-            success = true;
-        }
-    }
-    else {
-        if (gtk_selection_data_get_length(data) >= 0 &&
-                gtk_selection_data_get_format(data) == 8) {
-            char *src = (char*)gtk_selection_data_get_data(data);
-            char *t = 0;
-            if (gtk_selection_data_get_target(data) ==
-                    gdk_atom_intern("TWOSTRING", true)) {
-                // Drops from content lists may be in the form
-                // "fname_or_chd\ncellname".
-                t = strchr(src, '\n');
-            }
-            if (ptr()->is_active()) {
-                // Keep the cellname.
-                if (t)
-                    src = t+1;
-                // If editing, push into prompt line.
-                ptr()->insert(src);
-            }
-            else {
-                if (t) {
-                    *t++ = 0;
-                    XM()->Load(EV()->CurrentWin(), src, 0, t);
-                }
-                else
-                    XM()->Load(EV()->CurrentWin(), src);
-            }
-            success = true;
-        }
-    }
-    gtk_drag_finish(context, success, false, time);
-}
-
-// Static functions.
-// Pointer motion handler.
-//
-int
-GTKedit::pe_motion_hdlr(GtkWidget*, GdkEvent *event, void*)
-{
-    if (!ptr())
-        return (false);
-    if (ptr()->pe_has_drag) {
-        ptr()->pointer_motion_handler(
-            (int)event->motion.x, (int)event->motion.y);
-        return (true);
-    }   
-    return (false);
 }
 
 

@@ -65,7 +65,7 @@ namespace qtinterf
         Q_OBJECT
 
     public:
-        QTcanvas(bool, QWidget *parent);
+        QTcanvas(QWidget *parent = nullptr);
         ~QTcanvas();
 
         QWidget *widget()           { return (this); }

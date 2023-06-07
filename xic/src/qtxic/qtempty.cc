@@ -346,7 +346,7 @@ cEmpty::mouse_press_slot(QMouseEvent *ev)
         return;
 
     const char *str = lstring::copy(
-        (const char*)ec_text->toPlainText().toLatin1());
+        (const char*)ec_text->toPlainText().toLatin1().constData());
     int x = (int)ev->x();
     int y = (int)ev->y();
     QTextCursor cur = ec_text->cursorForPosition(QPoint(x, y));

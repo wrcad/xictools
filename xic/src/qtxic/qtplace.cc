@@ -51,6 +51,9 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 
 //-----------------------------------------------------------------------------
@@ -67,26 +70,6 @@
 
 #define PL_NEW_CODE "_new$$entry_"
 
-namespace {
-    /*
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"CELLNAME",    0, 1 },
-        { (char*)"STRING",      0, 2 },
-        { (char*)"text/plain",  0, 3 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-    */
-
-    namespace qtplace {
-        // Spin button code.
-        enum { PL_NX, PL_NY, PL_DX, PL_DY };
-
-    }
-}
-
-
-iap_t cPlace::pl_iap;
 
 
 // Main function to bring up the Placement Control pop-up.  If
@@ -122,6 +105,8 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
 }
 // End of cEdit functions.
 
+
+iap_t cPlace::pl_iap;
 cPlace *cPlace::instPtr;
 
 cPlace::cPlace(bool noprompt)
@@ -228,9 +213,9 @@ cPlace::cPlace(bool noprompt)
     vb->addWidget(pl_label_dx);;
     pl_dx = new QDoubleSpinBox();
     vb->addWidget(pl_dx);;
+    pl_dx->setMaximum(1e6);
+    pl_dx->setMinimum(-1e6);
     pl_dx->setValue(0.0);
-    pl_dx->setMaximum(-1e6);
-    pl_dx->setMinimum(1e6);
     pl_dx->setDecimals(ndgt);
     connect(pl_dx, SIGNAL(valueChanged(double)),
         this, SLOT(dx_change_slot(double)));
@@ -239,9 +224,9 @@ cPlace::cPlace(bool noprompt)
     vb->addWidget(pl_label_dy);;
     pl_dy = new QDoubleSpinBox();
     vb->addWidget(pl_dy);
+    pl_dy->setMaximum(1e6);
+    pl_dy->setMinimum(-1e6);
     pl_dy->setValue(0.0);
-    pl_dy->setMaximum(-1e6);
-    pl_dy->setMinimum(1e6);
     pl_dy->setDecimals(ndgt);
     connect(pl_dy, SIGNAL(valueChanged(double)),
         this, SLOT(dy_change_slot(double)));
@@ -307,14 +292,13 @@ cPlace::cPlace(bool noprompt)
 //    gtk_window_set_focus(GTK_WINDOW(pl_popup), pl_masterbtn);
 
     // drop site
-//    gtk_drag_dest_set(pl_popup, GTK_DEST_DEFAULT_ALL, target_table,
-//        n_targets, GDK_ACTION_COPY);
-//    g_signal_connect_after(G_OBJECT(pl_popup), "drag-data-received",
-//        G_CALLBACK(pl_drag_data_received), 0);
+    setAcceptDrops(true);
+    connect(this, SIGNAL(drag_enter_event(QDragEnterEvent*)),
+        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
+    connect(this, SIGNAL(drop_event(QDropEvent*)),
+        this, SLOT(drop_slot(QDropEvent*)));
 
-//    if (!ED()->plMenu() && !noprompt)
-//        // Positioning is incorrect unless an idle proc is used here.
-//        GTKpkg::self()->RegisterIdleProc(pl_pop_idle, 0);
+    master_menu_slot(0);
 }
 
 
@@ -649,51 +633,52 @@ cPlace::dy_change_slot(double val)
 }
 
 
-#ifdef notdef
-
-// Static function.
-int
-cPlace::pl_pop_idle(void*)
-{
-    pl_menu_proc(0, 0);
-    return (0);
-}
-
-
-// Static function.
-// Receive drop data (a path name).
-//
 void
-cPlace::pl_drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
-    GtkSelectionData *data, guint, guint time, void*)
+cPlace::drag_enter_slot(QDragEnterEvent *ev)
 {
-    if (gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8 &&
-            gtk_selection_data_get_data(data)) {
-        char *src = (char*)gtk_selection_data_get_data(data);
-
-        // The "filename" can actually be two space-separated tokens,
-        // the first being an archive file of CHD name, the second being
-        // a cell name.
-        if (gtk_selection_data_get_target(data) ==
-                gdk_atom_intern("TWOSTRING", true)) {
-            char *t = strchr(src, '\n');
-            if (t)
-                *t = ' ';
-        }
-
-        delete [] Plc->pl_dropfile;
-        Plc->pl_dropfile = 0;
-        if (Plc->pl_str_editor) {
-            Plc->pl_str_editor->update(0, src);
-            gtk_drag_finish(context, true, false, time);
-            return;
-        }
-        Plc->pl_dropfile = lstring::copy(src);
-        pl_menu_proc(0, 0);
+    if (ev->mimeData()->hasFormat("text/twostring") ||
+            ev->mimeData()->hasFormat("text/cellname") ||
+            ev->mimeData()->hasFormat("text/string") ||
+            ev->mimeData()->hasFormat("text/plain")) {
+        ev->acceptProposedAction();
     }
-    gtk_drag_finish(context, false, false, time);
 }
-// End of cPlace functions.
 
-#endif
+
+void
+cPlace::drop_event_slot(QDropEvent *ev)
+{
+    const char *fmt = 0;
+    if (ev->mimeData()->hasFormat("text/twostring"))
+        fmt = "text/twostring";
+    else if (ev->mimeData()->hasFormat("text/cellname"))
+        fmt = "text/cellname";
+    else if (ev->mimeData()->hasFormat("text/string"))
+        fmt = "text/string";
+    else if (ev->mimeData()->hasFormat("text/plain"))
+        fmt = "text/plain";
+    if (fmt) {
+        QByteArray bary = ev->mimeData()->data(fmt);
+        char *src = lstring::copy((const char*)bary.data());
+        char *t = 0;
+        if (!strcmp(fmt, "text/twostring")) {
+            // Drops from content lists may be in the form
+            // "fname_or_chd\ncellname".
+            t = strchr(src, '\n');
+            if (t)
+                *t++ = 0;
+        }
+        delete [] pl_dropfile;
+        pl_dropfile = 0;
+        if (pl_str_editor) {
+            pl_str_editor->update(0, src);
+            delete [] src;
+        }
+        else {
+            pl_dropfile = src;
+            master_menu_slot(0);
+        }
+        ev->acceptProposedAction();
+    }
+}
+

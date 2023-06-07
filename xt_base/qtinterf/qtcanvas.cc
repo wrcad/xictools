@@ -48,7 +48,7 @@
 
 using namespace qtinterf;
 
-QTcanvas::QTcanvas(bool, QWidget *prnt) : QWidget(prnt)
+QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
 {
     setMouseTracking(true);
 

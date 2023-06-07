@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtfillp.h"
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
@@ -47,173 +47,25 @@
 #include "errorlog.h"
 #include "keymap.h"
 #include "tech.h"
-#include "qtmain.h"
-//#include "gtkinterf/gtkspinbtn.h"
-//#include <gdk/gdkkeysyms.h>
+#include "qtinterf/qtcanvas.h"
+#include "qtltab.h"
+#include <iostream>
 
+#include <QLayout>
+#include <QSpinBox>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QMouseEvent>
+#include <QDrag>
+#include <QMimeData>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 
 //-----------------------------------------------------------------------------
 // Fill pattern editing widget.
 //
 // Help system keywords used:
 //  fillpanel
-
-// This is used for the layer table also.
-// XPM
-const char *fillpattern_xpm[] = {
-    // width height ncolors chars_per_pixel
-    "24 24 3 1",
-    // colors
-    " 	c None",
-    ".	c #ffffff",
-    "+  c #000000",
-    // pixels
-    "++++++++++++++++++++++++",
-    "+......................+",
-    "+..+     ..+     ..+  .+",
-    "+...+     ..+     ..+ .+",
-    "+. ..+     ..+     ..+.+",
-    "+.  ..+     ..+     ...+",
-    "+.   ..+     ..+     ..+",
-    "+.    ..+     ..+     .+",
-    "+.     ..+     ..+    .+",
-    "+.+     ..+     ..+   .+",
-    "+..+     ..+     ..+  .+",
-    "+...+     ..+     ..+ .+",
-    "+. ..+     ..+     ..+.+",
-    "+.  ..+     ..+     ...+",
-    "+.   ..+     ..+     ..+",
-    "+.    ..+     ..+     .+",
-    "+.     ..+     ..+    .+",
-    "+.+     ..+     ..+   .+",
-    "+..+     ..+     ..+  .+",
-    "+...+     ..+     ..+ .+",
-    "+. ..+     ..+     ..+.+",
-    "+.  ..+     ..+     ...+",
-    "+......................+",
-    "++++++++++++++++++++++++"};
-
-namespace {
-    /*
-    GtkTargetEntry target_table[] = {
-        { (char*)"fillpattern", 0, 0 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-    */
-
-    namespace qtfillp {
-        // Pixel operations
-        enum FPSETtype { FPSEToff, FPSETon, FPSETflip };
-
-        struct sFpe : public QTbag, public QTdraw
-        {
-            sFpe(GRobject);
-            ~sFpe();
-
-            void update();
-            void drag_load(LayerFillData*, CDl*);
-
-            /*
-        private:
-            void redraw_edit();
-            void redraw_sample();
-            void redraw_store(int);
-            void show_pixel(int, int);
-            void set_fp(unsigned char*, int, int);
-            bool getij(int*, int*);
-            void set_pixel(int, int, FPSETtype);
-            FPSETtype get_pixel(int, int);
-            void line(int, int, int, int, FPSETtype);
-            void box(int, int, int, int, FPSETtype);
-            void def_to_sample(LayerFillData*);
-            void sample_to_def(LayerFillData*, int);
-            void layer_to_def_or_sample(LayerFillData*, int);
-            void pattern_to_layer(LayerFillData*, CDl*);
-
-            static void fp_connect_sigs(GtkWidget*, bool, bool);
-            static void fp_source_drag_data_get(GtkWidget*, GdkDragContext*,
-                GtkSelectionData*, guint, guint, void*);
-            static void fp_source_drag_begin(GtkWidget*, GdkDragContext*,
-                gpointer);
-            static void fp_source_drag_end(GtkWidget*, GdkDragContext*,
-                gpointer);
-            static void fp_target_drag_data_received(GtkWidget*,
-                GdkDragContext*, gint, gint, GtkSelectionData*, guint, guint);
-            static gboolean fp_target_drag_motion(GtkWidget*, GdkDragContext*,
-                gint, gint, guint);
-            static void fp_target_drag_leave(GtkWidget*, GdkDragContext*,
-                guint);
-            static int fp_config_hdlr(GtkWidget*, GdkEvent*, void*);
-#if GTK_CHECK_VERSION(3,0,0)
-            static int fp_redraw_edit_hdlr(GtkWidget*, cairo_t*, void*);
-            static int fp_redraw_sample_hdlr(GtkWidget*, cairo_t*, void*);
-            static int fp_redraw_store_hdlr(GtkWidget*, cairo_t*, void*);
-#else
-            static int fp_redraw_edit_hdlr(GtkWidget*, GdkEvent*, void*);
-            static int fp_redraw_sample_hdlr(GtkWidget*, GdkEvent*, void*);
-            static int fp_redraw_store_hdlr(GtkWidget*, GdkEvent*, void*);
-#endif
-            static int fp_button_press_hdlr(GtkWidget*, GdkEvent*, void*);
-            static int fp_button_rel_hdlr(GtkWidget*, GdkEvent*, void*);
-            static int fp_key_press_hdlr(GtkWidget*, GdkEvent*, void*);
-            static int fp_motion_hdlr(GtkWidget*, GdkEvent*, void*);
-            static int fp_enter_hdlr(GtkWidget*, GdkEvent*, void*);
-            static void fp_cancel_proc(GtkWidget*, void*);
-            static void fp_mode_proc(GtkWidget*, void*);
-            static void fp_outline_proc(GtkWidget*, void*);
-            static void fp_btn_proc(GtkWidget*, void*);
-            static void fp_nxy_proc(GtkWidget*, void*);
-            static void fp_rot90_proc(GtkWidget*, void*);
-            static void fp_refl_proc(GtkWidget*, void*);
-            static void fp_bank_proc(GtkWidget*, void*);
-            static void drawghost(int, int, int, int, bool = false);
-
-            GRobject fp_caller;
-#if GTK_CHECK_VERSION(3,0,0)
-#else
-            GdkPixmap *fp_pixmap;
-            GtkWidget *fp_pm_widget;
-#endif
-            GtkWidget *fp_outl;
-            GtkWidget *fp_fat;
-            GtkWidget *fp_cut;
-            GtkWidget *fp_editor;
-            GtkWidget *fp_sample;
-            GtkWidget *fp_editframe;
-            GtkWidget *fp_editctrl;
-            GtkWidget *fp_stoframe;
-            GtkWidget *fp_stoctrl;
-            GtkWidget *fp_stores[18];
-
-            GRfillType *fp_fp;
-            int fp_pattern_bank;
-            int fp_width, fp_height;
-            long fp_foreg, fp_pixbg;
-            unsigned char fp_array[128];  // 32x32 max
-            int fp_nx, fp_ny;
-            int fp_margin;
-            int fp_def_box_w, fp_def_box_h;
-            int fp_pat_box_h;
-            int fp_edt_box_dim;
-            int fp_spa;
-            int fp_epsz;
-            int fp_ii, fp_jj;
-            int fp_drag_btn, fp_drag_x, fp_drag_y;
-            int fp_pm_w, fp_pm_h;
-            int fp_downbtn;
-            bool fp_dragging;
-            bool fp_editing;
-            GTKspinBtn sb_nx;
-            GTKspinBtn sb_ny;
-            GTKspinBtn sb_defpats;
-            */
-        };
-
-        sFpe *Fpe;
-    }
-}
-
-using namespace qtfillp;
 
 
 // Menu callback for fill editor popup.
@@ -224,15 +76,16 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete Fpe;
+        if (cFillp::self())
+            cFillp::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (Fpe)
-            Fpe->update();
+        if (cFillp::self())
+            cFillp::self()->update();
         return;
     }
-    if (Fpe)
+    if (cFillp::self())
         return;
 
     if (!XM()->CheckCurLayer()) {
@@ -240,19 +93,11 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
         return;
     }
 
-    /*
-    new sFpe(caller);
-    if (!Fpe->Shell()) {
-        delete Fpe;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Fpe->Shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new cFillp(caller);
 
-    GTKdev::self()->SetPopupLocation(GRloc(LW_LR), Fpe->Shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Fpe->Shell());
-    */
+    QTdev::self()->SetPopupLocation(GRloc(LW_LR), cFillp::self(),
+        QTmainwin::self()->Viewport());
+    cFillp::self()->show();
 }
 
 
@@ -261,21 +106,17 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
 void
 cMain::FillLoadCallback(LayerFillData *dd, CDl *ld)
 {
-//    if (Fpe)
-//        Fpe->drag_load(dd, ld);
+    if (cFillp::self())
+        cFillp::self()->drag_load(dd, ld);
 }
 
 
-sFpe::sFpe(GRobject c) : QTdraw(XW_DRAWING)
+cFillp *cFillp::instPtr;
+
+cFillp::cFillp(GRobject c) : QTdraw(XW_DRAWING)
 {
-    Fpe = this;
-#ifdef notdef
+    instPtr = this;
     fp_caller = c;
-#if GTK_CHECK_VERSION(3,0,0)
-#else
-    fp_pixmap = 0;
-    fp_pm_widget = 0;
-#endif
     fp_outl = 0;
     fp_fat = 0;
     fp_cut = 0;
@@ -309,16 +150,11 @@ sFpe::sFpe(GRobject c) : QTdraw(XW_DRAWING)
 
     fp_nx = 8;
     fp_ny = 8;
-    wb_shell = gtk_NewPopup(0, "Fill Pattern Editor", fp_cancel_proc, 0);
-    if (!wb_shell)
-        return;
-    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
-    g_signal_connect(G_OBJECT(wb_shell), "configure-event",
-        G_CALLBACK(fp_config_hdlr), 0);
+    setWindowTitle(tr("Fill Pattern Editor"));
+//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     fp_width = 466;
-//    fp_height = 300;
     fp_height = 264;
     fp_spa = fp_height/36;
     fp_margin = 2*fp_spa;
@@ -329,288 +165,211 @@ sFpe::sFpe(GRobject c) : QTdraw(XW_DRAWING)
     fp_foreg = dsp_prm(LT()->CurLayer())->pixel();
     fp_pixbg = DSP()->Color(BackgroundColor);
 
-    GtkWidget *form = gtk_table_new(1, 3, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(wb_shell), form);
-    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
-
-    GtkWidget *row = gtk_hbox_new(false, 0);
-    gtk_widget_show(row);
-
-    GtkWidget *vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
-
+    // Mainrow + button row
     //
-    // Pixel editor
-    //
-    GtkWidget *frame = gtk_frame_new("Pixel Editor");
-    gtk_widget_show(frame);
-    fp_editframe = frame;
+    QVBoxLayout *top_vbox = new QVBoxLayout(this);
+    top_vbox->setMargin(0);
+    top_vbox->setSpacing(2);
 
-    GtkWidget *darea = gtk_drawing_area_new();
-    gtk_widget_set_double_buffered(darea, false);
-    gtk_widget_show(darea);
-    fp_editor = darea;
-    gtk_widget_set_size_request(darea, fp_edt_box_dim, fp_edt_box_dim);
-    gtk_widget_add_events(darea, GDK_ENTER_NOTIFY_MASK);
-    gtk_container_add(GTK_CONTAINER(frame), darea);
-    fp_connect_sigs(darea, false, true);
-    g_signal_connect(G_OBJECT(darea), "enter-notify-event",
-        G_CALLBACK(fp_enter_hdlr), 0);
-#if GTK_CHECK_VERSION(3,0,0)
-    g_signal_connect(G_OBJECT(darea), "draw",
-        G_CALLBACK(fp_redraw_edit_hdlr), 0);
-#else
-    g_signal_connect(G_OBJECT(darea), "expose-event",
-        G_CALLBACK(fp_redraw_edit_hdlr), 0);
-#endif
-
+    // Leftcol + pixel editor + stores
     //
+    QHBoxLayout *mainrow = new QHBoxLayout();
+    mainrow->setMargin(2);
+    mainrow->setSpacing(2);
+    top_vbox->addLayout(mainrow);
+
+    QGroupBox *bb = new QGroupBox();
+    mainrow->addWidget(bb);
+
+    // Pixel editor controls + stores controls + sample area
+    //
+    QVBoxLayout *leftcol = new QVBoxLayout();
+    leftcol->setMargin(2);
+    leftcol->setSpacing(2);
+    bb->setLayout(leftcol);
+
     // Pixel editor controls
     //
-    GtkWidget *ecvbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(ecvbox);
-    fp_editctrl = ecvbox;
+    fp_editctrl = new QWidget();
+    leftcol->addWidget(fp_editctrl);
 
-    GtkWidget *echbox = gtk_hbox_new(false, 0);
-    gtk_widget_show(echbox);
+    QVBoxLayout *vbox = new QVBoxLayout();
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+    fp_editctrl->setLayout(vbox);
 
-    frame = gtk_frame_new("NX x NY");
-    gtk_widget_show(frame);
+    QGroupBox *gb = new QGroupBox(tr("NX x NY"));
+    QHBoxLayout *hbox = new QHBoxLayout(gb);
+    hbox->setMargin(2);
+    vbox->addWidget(gb);
 
-    GtkWidget *sb = sb_nx.init(8.0, 2.0, 32.0, 0);
-    sb_nx.set_wrap(false);
-    sb_nx.set_editable(true);
-    sb_nx.connect_changed(G_CALLBACK(fp_nxy_proc), (void*)(long)1, "nx");
-    gtk_widget_set_size_request(sb, 50, -1);
-    gtk_box_pack_start(GTK_BOX(echbox), sb, false, false, 0);
+    fp_spnx = new QSpinBox();
+    hbox->addWidget(fp_spnx);
+    fp_spnx->setValue(8);
+    fp_spnx->setMinimum(2);
+    fp_spnx->setMaximum(32);
+    connect(fp_spnx, SIGNAL(valueChanged(int)),
+        this, SLOT(nx_change_slot(int)));
+    fp_spny = new QSpinBox();
+    fp_spny->setMinimum(2);
+    fp_spny->setMaximum(32);
+    hbox->addWidget(fp_spny);
+    fp_spny->setValue(8);
+    connect(fp_spny, SIGNAL(valueChanged(int)),
+        this, SLOT(ny_change_slot(int)));
 
-    sb = sb_ny.init(8.0, 2.0, 32.0, 0);
-    sb_ny.set_wrap(false);
-    sb_ny.set_editable(true);
-    sb_ny.connect_changed(G_CALLBACK(fp_nxy_proc), (void*)(long)2, "ny");
-    gtk_widget_set_size_request(sb, 50, -1);
-    gtk_box_pack_start(GTK_BOX(echbox), sb, false, false, 0);
-    gtk_container_add(GTK_CONTAINER(frame), echbox);
-    gtk_box_pack_start(GTK_BOX(ecvbox), frame, false, false, 0);
+    hbox = new QHBoxLayout();
+    hbox->setMargin(2);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    GtkWidget *hbox = gtk_hbox_new(false, 0);
-    gtk_widget_show(hbox);
+    QPushButton *btn = new QPushButton(tr("Rot90"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(rot90_btn_slot()));
 
-    GtkWidget *button = gtk_button_new_with_label("Rot90");
-    gtk_widget_set_name(button, "Rot90");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_rot90_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
+    btn = new QPushButton("X");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(x_btn_slot()));
+    btn = new QPushButton("Y");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(y_btn_slot()));
 
-    button = gtk_button_new_with_label("X");
-    gtk_widget_set_name(button, "MX");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_refl_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
+    btn = new QPushButton(tr("Stores"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(stores_btn_slot()));
 
-    button = gtk_button_new_with_label("Y");
-    gtk_widget_set_name(button, "MY");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_refl_proc), (void*)1L);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
-    gtk_box_pack_start(GTK_BOX(ecvbox), hbox, false, false, 0);
-
-    GtkWidget *hsep = gtk_hseparator_new();
-    gtk_widget_show(hsep);
-    gtk_box_pack_start(GTK_BOX(ecvbox), hsep, true, true, 0);
-
-    button = gtk_button_new_with_label("Stores");
-    gtk_widget_set_name(button, "ShowStores");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_mode_proc), 0);
-    gtk_box_pack_start(GTK_BOX(ecvbox), button, false, false, 0);
-
-    hsep = gtk_hseparator_new();
-    gtk_widget_show(hsep);
-    gtk_box_pack_start(GTK_BOX(ecvbox), hsep, true, true, 0);
-
-    //
     // Stores display controls
     //
-    GtkWidget *scvbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(scvbox);
-    fp_stoctrl = scvbox;
+    fp_stoctrl = new QWidget();
+    leftcol->addWidget(fp_stoctrl);
 
-    frame = gtk_frame_new("Page");
-    gtk_widget_show(frame);
+    vbox = new QVBoxLayout;
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+    fp_stoctrl->setLayout(vbox);
 
-    sb = sb_defpats.init(1.0, 1.0, 4.0, 0);
-    sb_defpats.set_wrap(true);
-    sb_defpats.set_editable(false);
-    sb_defpats.connect_changed(G_CALLBACK(fp_bank_proc), 0, "Defpats");
-    gtk_widget_set_size_request(sb, 50, -1);
-    gtk_container_add(GTK_CONTAINER(frame), sb);
-    gtk_box_pack_start(GTK_BOX(scvbox), frame, false, false, 0);
+    gb = new QGroupBox(tr("Page"));
+    vbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    fp_defpats = new QSpinBox();
+    fp_defpats->setValue(1);
+    fp_defpats->setMinimum(1);
+    fp_defpats->setMaximum(4);
+    fp_defpats->setWrapping(true);
+    hb->addWidget(fp_defpats);
+    connect(fp_defpats, SIGNAL(valueChanged(int)),
+        this, SLOT(defpats_change_slot(int)));
 
-    hsep = gtk_hseparator_new();
-    gtk_widget_show(hsep);
-    gtk_box_pack_start(GTK_BOX(scvbox), hsep, true, true, 0);
+    btn = new QPushButton(tr("Dump Defs"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dump_btn_slot()));
 
-    button = gtk_button_new_with_label("Dump Defs");
-    gtk_widget_set_name(button, "Dumpdefs");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_btn_proc), 0);
-    gtk_box_pack_start(GTK_BOX(scvbox), button, false, false, 0);
+    btn = new QPushButton(tr("Pixel Editor"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(pixed_btn_slot()));
 
-    hsep = gtk_hseparator_new();
-    gtk_widget_show(hsep);
-    gtk_box_pack_start(GTK_BOX(scvbox), hsep, true, true, 0);
-
-    button = gtk_button_new_with_label("Pixel Editor");
-    gtk_widget_set_name(button, "PexEd");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_mode_proc), (void*)(long)1);
-    gtk_box_pack_start(GTK_BOX(scvbox), button, false, false, 0);
-
-    hsep = gtk_hseparator_new();
-    gtk_widget_show(hsep);
-    gtk_box_pack_start(GTK_BOX(scvbox), hsep, true, true, 0);
-
-    //
     // Sample area
     //
-    frame = gtk_frame_new("Sample");
-    gtk_widget_show(frame);
+    gb = new QGroupBox(tr("Sample"));
+    leftcol->addWidget(gb);
+    hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
 
-    darea = gtk_drawing_area_new();
-    gtk_widget_set_double_buffered(darea, false);
-    gtk_widget_show(darea);
-    fp_sample = darea;
-    gtk_widget_set_size_request(darea, fp_def_box_h, fp_pat_box_h);
-    gtk_container_add(GTK_CONTAINER(frame), darea);
-    fp_connect_sigs(darea, true, true);
-    gtk_box_pack_start(GTK_BOX(vbox), fp_editctrl, true, true, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), fp_stoctrl, true, true, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), frame, true, true, 0);
-    gtk_box_pack_start(GTK_BOX(row), vbox, true, true, 0);
-#if GTK_CHECK_VERSION(3,0,0)
-    g_signal_connect(G_OBJECT(darea), "draw",
-        G_CALLBACK(fp_redraw_sample_hdlr), 0);
-#else
-    g_signal_connect(G_OBJECT(darea), "expose-event",
-        G_CALLBACK(fp_redraw_sample_hdlr), 0);
-#endif
+    fp_sample = new QTcanvas();
+    hb->addWidget(fp_sample);
+    connect_sigs(fp_sample, true);
 
+    // Pixel editor
     //
+    fp_editframe = new QGroupBox(tr("Pixel Editor"));
+    mainrow->addWidget(fp_editframe);
+    hb = new QHBoxLayout(fp_editframe);
+    hb->setMargin(2);
+
+    fp_editor = new QTcanvas();
+    fp_editor->setMinimumWidth(fp_edt_box_dim);
+    fp_editor->setMaximumWidth(fp_edt_box_dim);
+    fp_editor->setMinimumHeight(fp_edt_box_dim);
+    fp_editor->setMaximumHeight(fp_edt_box_dim);
+    hb->addWidget(fp_editor);
+    connect_sigs(fp_editor, true);
+    fp_editor->setFocusPolicy(Qt::StrongFocus);
+    connect(fp_editor, SIGNAL(enter_event(QEnterEvent*)),
+        this, SLOT(enter_slot(QEnterEvent*)));
+
     // Patterns
     //
-    frame = gtk_frame_new("Default Patterns - Pattern Storage");
-    gtk_widget_show(frame);
-    fp_stoframe = frame;
+    fp_stoframe = new QGroupBox(tr("Default Patterns - Pattern Storage"));
+    mainrow->addWidget(fp_stoframe);
 
-    vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
+    vbox = new QVBoxLayout();
+    vbox->setMargin(0);
+    vbox->setSpacing(0);
+    fp_stoframe->setLayout(vbox);
     for (int i = 0; i < 3; i++) {
-        hbox = gtk_hbox_new(false, 0);
-        gtk_widget_show(hbox);
+        hbox = new QHBoxLayout();
+        hbox->setMargin(0);
+        hbox->setSpacing(0);
+        vbox->addLayout(hbox);
         for (int j = 0; j < 6; j++) {
-            GtkWidget *iframe = gtk_frame_new(0);
-            gtk_widget_show(iframe);
-            darea = gtk_drawing_area_new();
-            gtk_widget_set_double_buffered(darea, false);
-            gtk_widget_show(darea);
-            fp_stores[i + j*3] = darea;
-            gtk_widget_set_size_request(darea, fp_def_box_w, fp_def_box_h);
-            gtk_container_add(GTK_CONTAINER(iframe), darea);
-            if (j == 0 && i <= 1)
-                fp_connect_sigs(darea, true, false);
-            else
-                fp_connect_sigs(darea, true, true);
-            gtk_box_pack_start(GTK_BOX(hbox), iframe, true, true, 0);
-#if GTK_CHECK_VERSION(3,0,0)
-            g_signal_connect(G_OBJECT(darea), "draw",
-                G_CALLBACK(fp_redraw_store_hdlr), (void*)(long)(i + j*3));
-#else
-            g_signal_connect(G_OBJECT(darea), "expose-event",
-                G_CALLBACK(fp_redraw_store_hdlr), (void*)(long)(i + j*3));
-#endif
+            QGroupBox *iframe = new QGroupBox();
+            QTcanvas *darea = new QTcanvas();
+            int k = i + j*3;
+            fp_stores[k] = darea;
+            darea->setMinimumWidth(fp_def_box_w);
+            darea->setMaximumWidth(fp_def_box_w);
+            darea->setMinimumHeight(fp_def_box_h);
+            darea->setMaximumHeight(fp_def_box_h);
+
+            hb = new QHBoxLayout(iframe);
+            hb->setMargin(0);
+            hb->addWidget(darea);
+            connect_sigs(darea, (k > 1));
+            hbox->addWidget(iframe);
         }
-        gtk_box_pack_start(GTK_BOX(vbox), hbox, true, true, 0);
     }
-    gtk_container_add(GTK_CONTAINER(frame), vbox);
-    gtk_box_pack_start(GTK_BOX(row), fp_editframe, true, true, 0);
-    gtk_box_pack_start(GTK_BOX(row), fp_stoframe, true, true, 0);
 
-    int rowcnt = 0;
-    gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
     // Button line
     //
-    row = gtk_hbox_new(false, 0);
-    gtk_widget_show(row);
+    hbox = new QHBoxLayout();
+    hbox->setMargin(2);
+    hbox->setSpacing(2);
+    top_vbox->addLayout(hbox);
 
-    button = gtk_button_new_with_label("Load");
-    gtk_widget_set_name(button, "Load");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_btn_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
+    btn = new QPushButton(tr("Load"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(load_btn_slot()));
 
-    button = gtk_button_new_with_label("Apply");
-    gtk_widget_set_name(button, "Apply");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_btn_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
+    btn = new QPushButton(tr("Apply"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_btn_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
+    btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    button = gtk_toggle_button_new_with_label("Outline");
-    gtk_widget_set_name(button, "Outline");
-    gtk_widget_show(button);
-    fp_outl = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_outline_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
+    btn = new QPushButton(tr("Outline"));
+    hbox->addWidget(btn);
+    btn->setCheckable(true);
+    fp_outl = btn;
+    connect(btn, SIGNAL(toggled(bool)), this, SLOT(outline_btn_slot(bool)));
 
-    button = gtk_toggle_button_new_with_label("Fat");
-    gtk_widget_set_name(button, "Fat");
-    gtk_widget_show(button);
-    fp_fat = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_outline_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
+    btn = new QPushButton(tr("Fat"));
+    hbox->addWidget(btn);
+    btn->setCheckable(true);
+    fp_fat = btn;;
+    connect(btn, SIGNAL(toggled(bool)), this, SLOT(fat_btn_slot(bool)));
 
-    button = gtk_toggle_button_new_with_label("Cut");
-    gtk_widget_set_name(button, "Cut");
-    gtk_widget_show(button);
-    fp_cut = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_outline_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
+    btn = new QPushButton(tr("Cut"));
+    hbox->addWidget(btn);
+    btn->setCheckable(true);
+    fp_cut = btn;
+    connect(btn, SIGNAL(toggled(bool)), this, SLOT(cut_btn_slot(bool)));
 
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fp_cancel_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-
-    gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    gtk_window_set_focus(GTK_WINDOW(wb_shell), button);
+    btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     DspLayerParams *lp = dsp_prm(LT()->CurLayer());
     bool solid = LT()->CurLayer()->isFilled() && !lp->fill()->hasMap();
@@ -633,42 +392,39 @@ sFpe::sFpe(GRobject c) : QTdraw(XW_DRAWING)
             delete [] map;
         }
         if (LT()->CurLayer()->isOutlined()) {
-            GTKdev::SetStatus(fp_outl, true);
+            QTdev::SetStatus(fp_outl, true);
             if (LT()->CurLayer()->isOutlinedFat())
-                GTKdev::SetStatus(fp_fat, true);
+                QTdev::SetStatus(fp_fat, true);
         }
         else
-            gtk_widget_set_sensitive(fp_fat, false);
-        GTKdev::SetStatus(fp_cut, LT()->CurLayer()->isCut());
+            fp_fat->setEnabled(false);
+        QTdev::SetStatus(fp_cut, LT()->CurLayer()->isCut());
     }
-    fp_mode_proc(0, 0);
-#endif
+    fp_mode_proc(false);
+    // The call to update() needs to be delayed or the sample and
+    // store patterns don't appear. Putting the call in an idle
+    // proc fixes this.
+    QTpkg::self()->RegisterIdleProc(fp_update_idle_proc, (void*)0);
 }
 
 
-sFpe::~sFpe()
+cFillp::~cFillp()
 {
-    Fpe = 0;
-    /*
-    GTKdev::Deselect(fp_caller);
+    instPtr = 0;
+    if (fp_caller)
+        QTdev::Deselect(fp_caller);
     if (fp_fp) {
         SetFillpattern(0);          // Remove pointer to saved pixmap.
         fp_fp->newMap(0, 0, 0);     // Clear pixel map.
         DefineFillpattern(fp_fp);   // Destroy pixmap.
         delete fp_fp;
     }
-    if (wb_shell) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
-            (gpointer)fp_cancel_proc, wb_shell);
-    }
-    */
 }
 
 
 void
-sFpe::update()
+cFillp::update()
 {
-    /*
     if (!LT()->CurLayer())
         return;
     fp_foreg = dsp_prm(LT()->CurLayer())->pixel();
@@ -677,59 +433,698 @@ sFpe::update()
         redraw_store(i);
     redraw_edit();
     redraw_sample();
-    */
 }
 
 
 void
-sFpe::drag_load(LayerFillData *dd, CDl *ld)
+cFillp::drag_load(LayerFillData *dd, CDl *ld)
 {
-    /*
     if (dd->d_from_layer)
         return;
     pattern_to_layer(dd, ld);
-    */
 }
 
-#ifdef notdef
 
 void
-sFpe::redraw_edit()
+cFillp::nx_change_slot(int nx)
+{
+    // Reconfigure the pixel map so that the pattern doesn't
+    // turn to crap when the bpl changes.
+
+    int oldx = fp_nx;
+    fp_nx = nx;
+    int oldbpl = (oldx + 7)/8;
+    int newbpl = (fp_nx + 7)/8;
+    if (oldbpl != newbpl) {
+        unsigned char ary[128];
+        memcpy(ary, fp_array, fp_ny*oldbpl);
+        unsigned char *t = fp_array;
+        unsigned char *f = ary;
+        for (int i = 0; i < fp_ny; i++) {
+            if (oldbpl < newbpl) {
+                for (int j = 0; j < newbpl; j++) {
+                    if (j < oldbpl)
+                        *t++ = *f++;
+                    else
+                        *t++ = 0;
+                }
+            }
+            else {
+                for (int j = 0; j < oldbpl; j++) {
+                    if (j < newbpl)
+                        *t++ = *f++;
+                    else
+                        f++;
+                }
+            }
+        }
+    }
+    set_fp(fp_array, fp_nx, fp_ny);
+    SetFillpattern(0);
+    redraw_edit();
+    redraw_sample();
+}
+
+
+void
+cFillp::ny_change_slot(int ny)
+{
+    fp_ny = ny;
+    set_fp(fp_array, fp_nx, fp_ny);
+    SetFillpattern(0);
+    redraw_edit();
+    redraw_sample();
+}
+
+
+namespace {
+    void setpix(int x, int nx, int y, unsigned char *ary)
+    {
+        int bpl = (nx + 7)/8;
+        unsigned char *a = ary + y*bpl;
+        unsigned int d = *a++;
+        for (int j = 1; j < bpl; j++)
+            d |= *a++ << j*8;
+        unsigned int mask = 1 << x;
+        d |= mask;
+        a = ary + y*bpl;
+        *a++ = d;
+        for (int j = 1; j < bpl; j++)
+            *a++ = d >> (j*8);
+    }
+}
+
+
+void
+cFillp::rot90_btn_slot()
+{
+    int nx = fp_nx;
+    int ny = fp_ny;
+    int bpl = (nx + 7)/8;
+
+    unsigned char ary[128];
+    memset(ary, 0, 128*sizeof(unsigned char));
+    for (int i = 0; i < ny; i++) {
+        unsigned char *a = fp_array + i*bpl;
+        unsigned int d = *a++;
+        for (int j = 1; j < bpl; j++)
+            d |= *a++ << j*8;
+        unsigned int mask = 1;
+        for (int j = 0; j < fp_nx; j++) {
+            bool lit = mask & d;
+            mask <<= 1;
+            if (lit)
+                setpix(i, ny, nx - j - 1, ary);
+        }
+    }
+    fp_spnx->setValue(ny);
+    fp_spny->setValue(nx);
+    fp_nx = ny;
+    fp_ny = nx;
+    memcpy(fp_array, ary, 128);
+    set_fp(ary, ny, nx);
+    SetFillpattern(0);
+    redraw_edit();
+    redraw_sample();
+}
+
+
+void
+cFillp::x_btn_slot()
+{
+    int nx = fp_nx;
+    int ny = fp_ny;
+    int bpl = (nx + 7)/8;
+
+    bool flipy = false;
+
+    unsigned char ary[128];
+    memset(ary, 0, 128*sizeof(unsigned char));
+    for (int i = 0; i < ny; i++) {
+        unsigned char *a = fp_array + i*bpl;
+        unsigned int d = *a++;
+        for (int j = 1; j < bpl; j++)
+            d |= *a++ << j*8;
+        unsigned int mask = 1;
+        for (int j = 0; j < fp_nx; j++) {
+            bool lit = mask & d;
+            mask <<= 1;
+            if (lit) {
+                if (flipy)
+                    setpix(j, nx, ny - i - 1, ary);
+                else
+                    setpix(nx - j - 1, nx, i, ary);
+            }
+        }
+    }
+    memcpy(fp_array, ary, 128);
+    set_fp(ary, nx, ny);
+    SetFillpattern(0);
+    redraw_edit();
+    redraw_sample();
+}
+
+
+void
+cFillp::y_btn_slot()
+{
+    int nx = fp_nx;
+    int ny = fp_ny;
+    int bpl = (nx + 7)/8;
+
+    bool flipy = true;
+
+    unsigned char ary[128];
+    memset(ary, 0, 128*sizeof(unsigned char));
+    for (int i = 0; i < ny; i++) {
+        unsigned char *a = fp_array + i*bpl;
+        unsigned int d = *a++;
+        for (int j = 1; j < bpl; j++)
+            d |= *a++ << j*8;
+        unsigned int mask = 1;
+        for (int j = 0; j < fp_nx; j++) {
+            bool lit = mask & d;
+            mask <<= 1;
+            if (lit) {
+                if (flipy)
+                    setpix(j, nx, ny - i - 1, ary);
+                else
+                    setpix(nx - j - 1, nx, i, ary);
+            }
+        }
+    }
+    memcpy(fp_array, ary, 128);
+    set_fp(ary, nx, ny);
+    SetFillpattern(0);
+    redraw_edit();
+    redraw_sample();
+}
+
+
+void
+cFillp::stores_btn_slot()
+{
+    fp_mode_proc(false);
+}
+
+
+void
+cFillp::defpats_change_slot(int bank)
+{
+    if (bank > 0 && bank <= TECH_MAP_SIZE/16) {
+        fp_pattern_bank = bank - 1;
+        for (int i = 0; i < 18; i++)
+            redraw_store(i);
+    }
+}
+
+
+void
+cFillp::dump_btn_slot()
+{
+    const char *err = Tech()->DumpDefaultStipples();
+    if (err)
+        PopUpMessage(err, true);
+    else {
+        PopUpMessage("Created xic_stipples file in current directory.",
+            false);
+    }
+}
+
+
+void
+cFillp::pixed_btn_slot()
+{
+    fp_mode_proc(true);
+}
+
+
+void
+cFillp::load_btn_slot()
+{
+    CDl *ld = LT()->CurLayer();
+    if (!ld)
+        return;
+    LayerFillData dd(ld);
+    layer_to_def_or_sample(&dd, -1);
+}
+
+
+void
+cFillp::apply_btn_slot()
+{
+    CDl *ld = LT()->CurLayer();
+    if (!ld)
+        return;
+    LayerFillData dd;
+    dd.d_from_sample = true;
+    dd.d_nx = fp_nx;
+    dd.d_ny = fp_ny;
+    memcpy(dd.d_data, fp_array, dd.d_ny*((dd.d_nx + 7)/8));
+    pattern_to_layer(&dd, ld);
+}
+
+
+void
+cFillp::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("fillpanel"))
+}
+
+
+void
+cFillp::outline_btn_slot(bool state)
+{
+    // Callback for the outline button.  When selected, new patterns
+    // will have the OUTLINED attribute set.
+
+    if (state) {
+        int sz = fp_ny*((fp_nx + 7)/8);
+        for (int i = 0; i < sz; i++) {
+            if (fp_array[i]) {
+                state = false;
+                break;
+            }
+        }
+    }
+    fp_fat->setEnabled(state);
+    redraw_sample();
+}
+
+
+void
+cFillp::fat_btn_slot(bool)
+{
+    redraw_sample();
+}
+
+
+void
+cFillp::cut_btn_slot(bool)
+{
+    redraw_sample();
+}
+
+
+void
+cFillp::dismiss_btn_slot()
+{
+    XM()->PopUpFillEditor(0, MODE_OFF);
+}
+
+
+void
+cFillp::button_down_slot(QMouseEvent *ev)
+{
+    // Button press, handles the pixel editor and drag/drop detection.
+
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+    int button = 0;
+    if (ev->button() == Qt::LeftButton)
+        button = 1;
+    else if (ev->button() == Qt::MidButton)
+        button = 2;
+    else if (ev->button() == Qt::RightButton)
+        button = 3;
+    button = Kmap()->ButtonMap(button);
+
+    if (sender() == fp_editor) {
+        // pixel editor
+        fp_jj = ev->x();
+        fp_ii = ev->y();
+        fp_downbtn = 0;
+        if (getij(&fp_jj, &fp_ii)) {
+            fp_downbtn = button;
+            if (fp_downbtn == 1 && (ev->modifiers() &
+                    (Qt::ShiftModifier | Qt::ControlModifier)))
+                fp_downbtn = 2;
+            int refx = fp_spa + fp_jj*fp_epsz + fp_epsz/2;
+            int refy = fp_spa + fp_ii*fp_epsz + fp_epsz/2;
+            gd_viewport = fp_editor;
+            SetGhost(&fp_drawghost, refx, refy);
+        }
+        return;
+    }
+
+    fp_dragging = true;
+    fp_drag_btn = button;
+    fp_drag_x = ev->x();
+    fp_drag_y = ev->y();
+}
+
+
+void
+cFillp::button_up_slot(QMouseEvent *ev)
+{
+    // Button release.  The pixel editor has several modes, depending
+    // on the button used, whether it is clicked or held and dragged,
+    // and whether the shift key is down.  If the buttons are clicked,
+    // the target pixel is acted on.  If held and dragged, a region of
+    // pixels is acted on, indicated by a "ghost" cursor box.
+    //
+    //    button  figure       none  Shift   Ctrl
+    //    1       solid rect   flip  set     unset
+    //    2       outl rect    flip  set     unset
+    //    3       line         flip  set     unset
+    //
+    // If Shift or Ctrl is down *before* button 1 is prssed, the action
+    // will be as for button 2.
+
+    if (ev->type() != QEvent::MouseButtonRelease) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    int btn = fp_downbtn;
+    fp_downbtn = 0;
+    if (sender() == fp_editor) {
+        if (!btn)
+            return;
+
+        gd_viewport = fp_editor;
+        SetGhost(0, 0, 0);
+
+        int jo = fp_jj;
+        int io = fp_ii;
+        fp_jj = ev->x();
+        fp_ii = ev->y();
+        if (!getij(&fp_jj, &fp_ii))
+            return;
+        int imin = (io < fp_ii ? io : fp_ii);
+        int imax = (io > fp_ii ? io : fp_ii);
+        int jmin = (jo < fp_jj ? jo : fp_jj);
+        int jmax = (jo > fp_jj ? jo : fp_jj);
+        switch (btn) {
+        case 1:
+            for (io = imin; io <= imax; io++) {
+                for (jo = jmin; jo <= jmax; jo++) {
+                    if (ev->modifiers() & Qt::ShiftModifier)
+                        set_pixel(io, jo, FPSETon);
+                    else if (ev->modifiers() & Qt::ControlModifier)
+                        set_pixel(io, jo, FPSEToff);
+                    else
+                        set_pixel(io, jo, FPSETflip);
+                }
+            }
+            redraw_edit();
+            redraw_sample();
+            break;
+        case 2:
+            if (ev->modifiers() & Qt::ShiftModifier)
+                box(imin, imax, jmin, jmax, FPSETon);
+            else if (ev->modifiers() & Qt::ControlModifier)
+                box(imin, imax, jmin, jmax, FPSEToff);
+            else
+                box(imin, imax, jmin, jmax, FPSETflip);
+            redraw_edit();
+            redraw_sample();
+            break;
+        case 3:
+            if (ev->modifiers() & Qt::ShiftModifier)
+                line(jo, io, fp_jj, fp_ii, FPSETon);
+            else if (ev->modifiers() & Qt::ControlModifier)
+                line(jo, io, fp_jj, fp_ii, FPSEToff);
+            else
+                line(jo, io, fp_jj, fp_ii, FPSETflip);
+            redraw_edit();
+            redraw_sample();
+            break;
+        }
+    }
+    else
+        fp_dragging = false;
+}
+
+
+void
+cFillp::key_down_slot(QKeyEvent *ev)
+{
+    // Key press.  The arrow keys rotate the pixel array in the
+    // direction of the arrow.
+
+    if (ev->type() != QEvent::KeyPress) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    int i, j;
+    FPSETtype tmp;
+    switch (ev->key()) {
+    case Qt::Key_Right:
+        for (i = 0; i < fp_ny; i++) {
+            tmp = get_pixel(i, 0);
+            for (j = 1; j < fp_nx; j++)
+                set_pixel(i, j - 1, get_pixel(i, j));
+            set_pixel(i, fp_nx - 1, tmp);
+        }
+        redraw_edit();
+        redraw_sample();
+        break;
+    case Qt::Key_Left:
+        for (i = 0; i < fp_ny; i++) {
+            tmp = get_pixel(i, fp_nx - 1);
+            for (j = fp_nx - 1; j >= 1; j--)
+                set_pixel(i, j, get_pixel(i, j - 1));
+            set_pixel(i, 0, tmp);
+        }
+        redraw_edit();
+        redraw_sample();
+        break;
+    case Qt::Key_Up:
+        for (j = 0; j < fp_nx; j++) {
+            tmp = get_pixel(fp_ny - 1, j);
+            for (i = fp_ny - 1; i >= 1; i--)
+                set_pixel(i, j, get_pixel(i - 1, j));
+            set_pixel(0, j, tmp);
+        }
+        redraw_edit();
+        redraw_sample();
+        break;
+    case Qt::Key_Down:
+        for (j = 0; j < fp_nx; j++) {
+            tmp = get_pixel(0, j);
+            for (i = 1; i < fp_ny; i++)
+                set_pixel(i - 1, j, get_pixel(i, j));
+            set_pixel(fp_ny - 1, j, tmp);
+        }
+        redraw_edit();
+        redraw_sample();
+        break;
+    }
+}
+
+
+void
+cFillp::motion_slot(QMouseEvent *ev)
+{
+    // Pointer motion.  This simply draws an XOR'ed opon box when the
+    // pointer button is held down, and the pointer is in the pixel
+    // editor.  This is also used for drag/drop detection.
+
+    if (ev->type() != QEvent::MouseMove) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    if (sender() == fp_editor) {
+        if (!fp_downbtn)
+            return;
+        int x = ev->x();
+        int y = ev->y();
+        if (!getij(&x, &y))
+            return;
+
+        x = fp_spa + x*fp_epsz + fp_epsz/2;
+        y = fp_spa + y*fp_epsz + fp_epsz/2;
+
+        gd_viewport = fp_editor;
+        SetColor(0xffffff);
+        UndrawGhost();
+        DrawGhost(x, y);
+    }
+    else if (fp_dragging &&
+            (abs(ev->x() - fp_drag_x) > 4 ||
+            abs(ev->y() - fp_drag_y) > 4)) {
+        fp_dragging = false;
+
+        LayerFillData dd;
+        bool isset = false;
+        if (sender() == fp_sample) {
+            dd.d_from_sample = true;
+            isset = true;
+            dd.d_nx = fp_nx;
+            dd.d_ny = fp_ny;
+            memcpy(dd.d_data, fp_array, dd.d_ny*((dd.d_nx + 7)/8));
+        }
+        else {
+            for (int i = 0; i < 18; i++) {
+                if (sender() == fp_stores[i]) {
+                    dd.d_layernum = i;
+                    isset = true;
+                    if (i == 0) {
+                        dd.d_nx = 8;
+                        dd.d_ny = 8;
+                        memset(dd.d_data, 0, 8);
+                    }
+                    else if (i == 1) {
+                        dd.d_nx = 8;
+                        dd.d_ny = 8;
+                        memset(dd.d_data, 0xff, 8);
+                    }
+                    else {
+                        sTpmap *p = Tech()->GetDefaultMap(
+                            i-2 + 16*fp_pattern_bank);
+                        if (p && p->map) {
+                            dd.d_nx = p->nx;
+                            dd.d_ny = p->ny;
+                            memcpy(dd.d_data, p->map,
+                                dd.d_ny*((dd.d_nx + 7)/8));
+                        }
+                        else {
+                            dd.d_nx = 8;
+                            dd.d_ny = 8;
+                            memset(dd.d_data, 0, 8);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        if (isset) {
+            QDrag *drag = new QDrag(sender());
+            drag->setPixmap(QPixmap(QTltab::fillpattern_xpm()));
+            QMimeData *mimedata = new QMimeData();
+            QByteArray qdata((const char*)&dd, sizeof(LayerFillData));
+            mimedata->setData(QTltab::mime_type(), qdata);
+            drag->setMimeData(mimedata);
+            drag->exec(Qt::CopyAction);
+
+            delete drag;
+        }
+    }
+}
+
+
+void
+cFillp::enter_slot(QEnterEvent *ev)
+{
+    // Pointer entered the fill editor.
+    // Set focus so we can see arrow keys.
+
+    fp_editor->setFocus(Qt::MouseFocusReason);
+}
+
+
+void
+cFillp::drag_enter_slot(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        // The "sender()" is the widget that recieved the event.
+        if (sender() == fp_sample || sender() == fp_editor) {
+            ev->acceptProposedAction();
+            return;
+        }
+
+        // Sender must be a store, prevent direct drag/drop between
+        // stores.`
+
+        QByteArray bary = ev->mimeData()->data(QTltab::mime_type());
+        LayerFillData *dd = (LayerFillData*)bary.data();
+        if (dd->d_from_sample || dd->d_from_layer) {
+            ev->acceptProposedAction();
+            return;
+        }
+    }
+}
+
+
+void
+cFillp::drop_event_slot(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        QByteArray bary = ev->mimeData()->data(QTltab::mime_type());
+        LayerFillData *dd = (LayerFillData*)bary.data();
+        // The "sender()" is the widget that recieved the event.
+        if (sender() == fp_sample || sender() == fp_editor) {
+            if (dd->d_from_layer)
+                layer_to_def_or_sample(dd, -1);
+            else if (dd->d_from_sample) {
+                if (ev->source() != fp_sample) {
+                    // from another process
+                    def_to_sample(dd);
+                }
+            }
+            else
+                def_to_sample(dd);
+        }
+        else {
+            for (int i = 0; i < 18; i++) {
+                if (sender() == fp_stores[i]) {
+                    if (dd->d_from_layer)
+                        layer_to_def_or_sample(dd, i);
+                    else if (dd->d_from_sample)
+                        sample_to_def(dd, i);
+                    else {
+                        // no drag between def boxes
+                        return;
+                    }
+                    break;
+                }
+            }
+        }
+        ev->acceptProposedAction();
+    }
+}
+// End of slots.
+
+
+void
+cFillp::fp_mode_proc(bool editing)
+{
+    if (editing) {
+        fp_editing = true;
+        fp_stoctrl->hide();
+        fp_stoframe->hide();
+        fp_editctrl->show();
+        fp_editframe->show();
+        redraw_edit();
+    }
+    else {
+        fp_editing = false;
+        fp_editctrl->hide();
+        fp_editframe->hide();
+        fp_stoctrl->show();
+        fp_stoframe->show();
+    }
+    redraw_sample();
+}
+
+
+void
+cFillp::redraw_edit()
 {
     if (!fp_editing)
         return;
-    int wid = gdk_window_get_width(gtk_widget_get_window(fp_editor));
-    int hei = gdk_window_get_height(gtk_widget_get_window(fp_editor));
-#if GTK_CHECK_VERSION(3,0,0)
-    GetDrawable()->set_pixmap(gtk_widget_get_window(fp_editor));
-#else
-    fp_pm_widget = 0;
-
-    if (!fp_pixmap || wid > fp_pm_w || hei > fp_pm_h) {
-        if (fp_pixmap)
-            gdk_pixmap_unref(fp_pixmap);
-        fp_pixmap = gdk_pixmap_new(gtk_widget_get_window(fp_editor), wid, hei,
-            gdk_visual_get_depth(GTKdev::self()->Visual()));
-        if (fp_pixmap) {
-            fp_pm_w = wid;
-            fp_pm_h = hei;
-        }
-    }
-
-    if (fp_pixmap)
-        gd_window = fp_pixmap;
-    else
-        gd_window = gtk_widget_get_window(fp_editor);
-#endif
+    gd_viewport = fp_editor;
+    QSize qs = fp_editor->size();
+    int wid = qs.width();
+    int hei = qs.height();
 
     int mind = mmMin(wid, hei);
     fp_spa = 2;
     fp_epsz = (mind - 2*fp_spa)/mmMax(fp_nx, fp_ny);
 
     SetFillpattern(0);
-    GtkStyle *style = gtk_widget_get_style(Shell());
-    SetColor(style->bg[0].pixel);
+    SetColor(0xf0f0f0);
     Box(0, 0, wid, hei);
+    SetBackground(fp_pixbg);
     SetColor(fp_pixbg);
     Box(fp_spa - 1, fp_spa - 1,
         fp_spa + fp_nx*fp_epsz + 2, fp_spa + fp_ny*fp_epsz + 2);
@@ -749,44 +1144,17 @@ sFpe::redraw_edit()
             mask <<= 1;
         }
     }
-#if GTK_CHECK_VERSION(3,0,0)
-    GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, wid, hei);
-#else
-    if (fp_pixmap) {
-        gdk_window_copy_area(gtk_widget_get_window(fp_editor), GC(), 0, 0,
-            gd_window, 0, 0, wid, hei);
-        fp_pm_widget = fp_editor;
-    }
-#endif
+    fp_editor->update();
 }
 
 
 void
-sFpe::redraw_sample()
+cFillp::redraw_sample()
 {
-    int wid = gdk_window_get_width(gtk_widget_get_window(fp_sample));
-    int hei = gdk_window_get_height(gtk_widget_get_window(fp_sample));
-#if GTK_CHECK_VERSION(3,0,0)
-    GetDrawable()->set_pixmap(gtk_widget_get_window(fp_sample));
-#else
-    fp_pm_widget = 0;
-
-    if (!fp_pixmap || wid > fp_pm_w || hei > fp_pm_h) {
-        if (fp_pixmap)
-            gdk_pixmap_unref(fp_pixmap);
-        fp_pixmap = gdk_pixmap_new(gtk_widget_get_window(fp_sample), wid, hei,
-            gdk_visual_get_depth(GTKdev::self()->Visual()));
-        if (fp_pixmap) {
-            fp_pm_w = wid;
-            fp_pm_h = hei;
-        }
-    }
-    if (fp_pixmap)
-        gd_window = fp_pixmap;
-    else {
-        gd_window = gtk_widget_get_window(fp_sample);
-    }
-#endif
+    gd_viewport = fp_sample;
+    QSize qs = fp_sample->size();
+    int wid = qs.width();
+    int hei = qs.height();
 
     SetColor(fp_pixbg);
     SetFillpattern(0);
@@ -806,19 +1174,19 @@ sFpe::redraw_sample()
         }
     }
     if (!nonff) {
-        GTKdev::SetStatus(fp_cut, false);
-        GTKdev::SetStatus(fp_outl, false);
-        GTKdev::SetStatus(fp_fat, false);
-        gtk_widget_set_sensitive(fp_cut, false);
-        gtk_widget_set_sensitive(fp_outl, false);
-        gtk_widget_set_sensitive(fp_fat, false);
+        QTdev::SetStatus(fp_cut, false);
+        QTdev::SetStatus(fp_outl, false);
+        QTdev::SetStatus(fp_fat, false);
+        fp_cut->setEnabled(false);
+        fp_outl->setEnabled(false);
+        fp_fat->setEnabled(false);
     }
     else {
-        gtk_widget_set_sensitive(fp_cut, true);
-        gtk_widget_set_sensitive(fp_outl, true);
-        gtk_widget_set_sensitive(fp_fat, GTKdev::GetStatus(fp_outl));
+        fp_cut->setEnabled(true);
+        fp_outl->setEnabled(true);
+        fp_fat->setEnabled(QTdev::GetStatus(fp_outl));
     }
-    if (GTKdev::GetStatus(fp_outl)) {
+    if (QTdev::GetStatus(fp_outl)) {
         int x1 = 0;
         int y1 = 0;
         int x2 = wid - 1;
@@ -827,7 +1195,7 @@ sFpe::redraw_sample()
         Line(x2, y1, x2, y2);
         Line(x2, y2, x1, y2);
         Line(x1, y2, x1, y1);
-        if (GTKdev::GetStatus(fp_fat)) {
+        if (QTdev::GetStatus(fp_fat)) {
             x1++;
             y1++;
             x2--;
@@ -846,7 +1214,7 @@ sFpe::redraw_sample()
             Line(x1, y2, x1, y1);
         }
     }
-    if (GTKdev::GetStatus(fp_cut)) {
+    if (QTdev::GetStatus(fp_cut)) {
         int x1 = 0;
         int y1 = 0;
         int x2 = wid - 1;
@@ -854,47 +1222,20 @@ sFpe::redraw_sample()
         Line(x1, y1, x2, y2);
         Line(x1, y2, x2, y1);
     }
-#if GTK_CHECK_VERSION(3,0,0)
-    GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, wid, hei);
-#else
-    if (fp_pixmap) {
-        gdk_window_copy_area(gtk_widget_get_window(fp_sample), GC(), 0, 0,
-            gd_window, 0, 0, wid, hei);
-        fp_pm_widget = fp_sample;
-    }
-#endif
+    fp_sample->update();
 }
 
 
 void
-sFpe::redraw_store(int i)
+cFillp::redraw_store(int i)
 {
     if (fp_editing)
         return;
 
-    int wid = gdk_window_get_width(gtk_widget_get_window(fp_stores[i]));
-    int hei = gdk_window_get_height(gtk_widget_get_window(fp_stores[i]));
-#if GTK_CHECK_VERSION(3,0,0)
-    GetDrawable()->set_pixmap(gtk_widget_get_window(fp_stores[i]));
-#else
-    fp_pm_widget = 0;
-
-    if (!fp_pixmap || wid > fp_pm_w || hei > fp_pm_h) {
-        if (fp_pixmap)
-            gdk_pixmap_unref(fp_pixmap);
-        fp_pixmap = gdk_pixmap_new(
-            gtk_widget_get_window(fp_stores[i]), wid, hei,
-            gdk_visual_get_depth(GTKdev::self()->Visual()));
-        if (fp_pixmap) {
-            fp_pm_w = wid;
-            fp_pm_h = hei;
-        }
-    }
-    if (fp_pixmap)
-        gd_window = fp_pixmap;
-    else
-        gd_window = gtk_widget_get_window(fp_stores[i]);
-#endif
+    gd_viewport = fp_stores[i];
+    QSize sz = fp_stores[i]->size();
+    int wid = sz.width();
+    int hei = sz.height();
 
     SetColor(fp_pixbg);
     SetFillpattern(0);
@@ -914,22 +1255,14 @@ sFpe::redraw_store(int i)
             SetFillpattern(0);
         }
     }
-#if GTK_CHECK_VERSION(3,0,0)
-    GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, wid, hei);
-#else
-    if (fp_pixmap) {
-        gdk_window_copy_area(gtk_widget_get_window(fp_stores[i]), GC(), 0, 0,
-            gd_window, 0, 0, wid, hei);
-        fp_pm_widget = fp_stores[i];
-    }
-#endif
+    fp_stores[i]->update();
 }
 
 
 // Show a box representing a pixel of the fillpattern.
 //
 void
-sFpe::show_pixel(int i, int j)
+cFillp::show_pixel(int i, int j)
 {
     int x = fp_spa + j*fp_epsz + 1;
     int y = fp_spa + i*fp_epsz + 1;
@@ -942,7 +1275,7 @@ sFpe::show_pixel(int i, int j)
 // the GC to use this pixmap.
 //
 void
-sFpe::set_fp(unsigned char *pmap, int x, int y)
+cFillp::set_fp(unsigned char *pmap, int x, int y)
 {
     if (!fp_fp)
         fp_fp = new GRfillType;
@@ -956,7 +1289,7 @@ sFpe::set_fp(unsigned char *pmap, int x, int y)
 // array j, i.
 //
 bool
-sFpe::getij(int *x, int *y)
+cFillp::getij(int *x, int *y)
 {
     int xx = *x;
     int yy = *y;
@@ -976,7 +1309,7 @@ sFpe::getij(int *x, int *y)
 // Set the j, i pixel according to the mode.
 //
 void
-sFpe::set_pixel(int i, int j, FPSETtype mode)
+cFillp::set_pixel(int i, int j, FPSETtype mode)
 {
     int bpl = (fp_nx + 7)/8;
     unsigned char *a = fp_array + i*bpl;
@@ -1010,8 +1343,8 @@ sFpe::set_pixel(int i, int j, FPSETtype mode)
 
 // Return the polarity of the pixel j, i.
 //
-FPSETtype
-sFpe::get_pixel(int i, int j)
+cFillp::FPSETtype
+cFillp::get_pixel(int i, int j)
 {
     int bpl = (fp_nx + 7)/8;
     unsigned char *a = fp_array + i*bpl;
@@ -1026,7 +1359,7 @@ sFpe::get_pixel(int i, int j)
 // Set the pixels in the array in a line from j1, i1 to j2, i2.
 //
 void
-sFpe::line(int x1, int y1, int x2, int y2, FPSETtype mode)
+cFillp::line(int x1, int y1, int x2, int y2, FPSETtype mode)
 {
     int i;
     double r = 0.0;
@@ -1085,7 +1418,7 @@ sFpe::line(int x1, int y1, int x2, int y2, FPSETtype mode)
 // box defined by jmin, imin to jmax, imax.
 //
 void
-sFpe::box(int imin, int imax, int jmin, int jmax, FPSETtype mode)
+cFillp::box(int imin, int imax, int jmin, int jmax, FPSETtype mode)
 {
     int i;
     for (i = jmin; i <= jmax; i++)
@@ -1105,7 +1438,7 @@ sFpe::box(int imin, int imax, int jmin, int jmax, FPSETtype mode)
 // Load the default fillpattern at x, y into the editor.
 //
 void
-sFpe::def_to_sample(LayerFillData *dd)
+cFillp::def_to_sample(LayerFillData *dd)
 {
     fp_nx = dd->d_nx;
     fp_ny = dd->d_ny;
@@ -1113,8 +1446,8 @@ sFpe::def_to_sample(LayerFillData *dd)
     int sz = fp_ny*bpl;
     memset(fp_array, 0, sizeof(fp_array));
     memcpy(fp_array, dd->d_data, fp_ny*bpl);
-    sb_nx.set_value(fp_nx);
-    sb_ny.set_value(fp_ny);
+    fp_spnx->setValue(fp_nx);
+    fp_spny->setValue(fp_ny);
 
     bool nonz = false;
     bool nonff = false;
@@ -1125,8 +1458,8 @@ sFpe::def_to_sample(LayerFillData *dd)
             nonff = true;
     }
     if (!nonz || !nonff) {
-        GTKdev::SetStatus(fp_outl, false);
-        GTKdev::SetStatus(fp_fat, false);
+        QTdev::SetStatus(fp_outl, false);
+        QTdev::SetStatus(fp_fat, false);
     }
 
     redraw_edit();
@@ -1138,7 +1471,7 @@ sFpe::def_to_sample(LayerFillData *dd)
 // pointed to, and redisplay.
 //
 void
-sFpe::sample_to_def(LayerFillData *dd, int indx)
+cFillp::sample_to_def(LayerFillData *dd, int indx)
 {
     if (indx <= 1) {
         // can't reset solid or open
@@ -1178,27 +1511,27 @@ sFpe::sample_to_def(LayerFillData *dd, int indx)
 // Load the current layer pattern into the sample or default areas.
 //
 void
-sFpe::layer_to_def_or_sample(LayerFillData *dd, int indx)
+cFillp::layer_to_def_or_sample(LayerFillData *dd, int indx)
 {
     if (indx < 0) {
         fp_nx = dd->d_nx;
         fp_ny = dd->d_ny;
         memset(fp_array, 0, sizeof(fp_array));
         memcpy(fp_array, dd->d_data, fp_ny*((fp_nx + 7)/8));
-        sb_nx.set_value(fp_nx);
-        sb_ny.set_value(fp_ny);
+        fp_spnx->setValue(fp_nx);
+        fp_spny->setValue(fp_ny);
 
         if (dd->d_flags & LFD_OUTLINE) {
-            GTKdev::SetStatus(fp_outl, true);
-            gtk_widget_set_sensitive(fp_fat, true);
-            GTKdev::SetStatus(fp_fat, (dd->d_flags & LFD_FAT));
+            QTdev::SetStatus(fp_outl, true);
+            fp_fat->setEnabled(true);
+            QTdev::SetStatus(fp_fat, (dd->d_flags & LFD_FAT));
         }
         else {
-            GTKdev::SetStatus(fp_outl, false);
-            GTKdev::SetStatus(fp_fat, false);
-            gtk_widget_set_sensitive(fp_fat, false);
+            QTdev::SetStatus(fp_outl, false);
+            QTdev::SetStatus(fp_fat, false);
+            fp_fat->setEnabled(false);
         }
-        GTKdev::SetStatus(fp_cut, (dd->d_flags & LFD_CUT));
+        QTdev::SetStatus(fp_cut, (dd->d_flags & LFD_CUT));
 
         if (LT()->CurLayer())
             fp_foreg = dsp_prm(LT()->CurLayer())->pixel();
@@ -1232,7 +1565,7 @@ sFpe::layer_to_def_or_sample(LayerFillData *dd, int indx)
 // Set the pattern for the layer.
 //
 void
-sFpe::pattern_to_layer(LayerFillData *dd, CDl *ld)
+cFillp::pattern_to_layer(LayerFillData *dd, CDl *ld)
 {
     if (!ld)
         return;
@@ -1271,15 +1604,15 @@ sFpe::pattern_to_layer(LayerFillData *dd, CDl *ld)
                 dd->d_data);
             ld->setFilled(true);
         }
-        if (GTKdev::GetStatus(fp_outl)) {
+        if (QTdev::GetStatus(fp_outl)) {
             ld->setOutlined(true);
-            ld->setOutlinedFat(GTKdev::GetStatus(fp_fat));
+            ld->setOutlinedFat(QTdev::GetStatus(fp_fat));
         }
         else {
             ld->setOutlined(false);
             ld->setOutlinedFat(false);
         }
-        ld->setCut(GTKdev::GetStatus(fp_cut));
+        ld->setCut(QTdev::GetStatus(fp_cut));
     }
     SetFillpattern(0);
     LT()->ShowLayerTable();
@@ -1287,788 +1620,27 @@ sFpe::pattern_to_layer(LayerFillData *dd, CDl *ld)
 }
 
 
-// Static function.
 // Set the handlers for a drawing area.
 //
 void
-sFpe::fp_connect_sigs(GtkWidget *darea, bool dnd_src, bool dnd_rcvr)
+cFillp::connect_sigs(QTcanvas *darea, bool dnd_rcvr)
 {
-    gtk_widget_add_events(darea, GDK_BUTTON_PRESS_MASK);
-    g_signal_connect(G_OBJECT(darea), "button-press-event",
-        G_CALLBACK(fp_button_press_hdlr), 0);
-    gtk_widget_add_events(darea, GDK_BUTTON_RELEASE_MASK);
-    g_signal_connect(G_OBJECT(darea), "button-release-event",
-        G_CALLBACK(fp_button_rel_hdlr), 0);
-    gtk_widget_add_events(darea, GDK_KEY_PRESS_MASK);
-    g_signal_connect_after(G_OBJECT(darea), "key-press-event",
-        G_CALLBACK(fp_key_press_hdlr), 0);
-    gtk_widget_add_events(darea, GDK_POINTER_MOTION_MASK);
-    g_signal_connect(G_OBJECT(darea), "motion-notify-event",
-        G_CALLBACK(fp_motion_hdlr), 0);
-    if (dnd_src) {
-        // source
-        g_signal_connect(G_OBJECT(darea), "drag-data-get",
-            G_CALLBACK(fp_source_drag_data_get), 0);
-        g_signal_connect(G_OBJECT(darea), "drag-begin",
-            G_CALLBACK(fp_source_drag_begin), 0);
-        g_signal_connect(G_OBJECT(darea), "drag-end",
-            G_CALLBACK(fp_source_drag_end), 0);
-    }
+    connect(darea, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(button_down_slot(QMouseEvent*)));
+    connect(darea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(button_up_slot(QMouseEvent*)));
+    connect(darea, SIGNAL(key_press_event(QKeyEvent*)),
+        this, SLOT(key_down_slot(QKeyEvent*)));
+    connect(darea, SIGNAL(move_event(QMouseEvent*)),
+        this, SLOT(motion_slot(QMouseEvent*)));
+
     if (dnd_rcvr) {
         // destination
-        GtkDestDefaults DD = (GtkDestDefaults)
-            (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP);
-        gtk_drag_dest_set(gtk_widget_get_parent(darea), DD, target_table,
-            n_targets, GDK_ACTION_COPY);
-        g_signal_connect_after(G_OBJECT(gtk_widget_get_parent(darea)),
-            "drag-data-received", G_CALLBACK(fp_target_drag_data_received), 0);
-        g_signal_connect(G_OBJECT(gtk_widget_get_parent(darea)),
-            "drag-leave", G_CALLBACK(fp_target_drag_leave), 0);
-        g_signal_connect(G_OBJECT(gtk_widget_get_parent(darea)),
-            "drag-motion", G_CALLBACK(fp_target_drag_motion), 0);
-    }
-}
-
-
-// Static function.
-// Set drag data.
-//
-void
-sFpe::fp_source_drag_data_get(GtkWidget *widget, GdkDragContext*,
-    GtkSelectionData *data, guint, guint, void*)
-{
-    if (!Fpe)
-        return;
-    LayerFillData dd;
-    bool isset = false;
-    if (widget == Fpe->fp_sample) {
-        dd.d_from_sample = true;
-        isset = true;
-        dd.d_nx = Fpe->fp_nx;
-        dd.d_ny = Fpe->fp_ny;
-        memcpy(dd.d_data, Fpe->fp_array, dd.d_ny*((dd.d_nx + 7)/8));
-    }
-    else {
-        for (int i = 0; i < 18; i++) {
-            if (widget == Fpe->fp_stores[i]) {
-                dd.d_layernum = i;
-                isset = true;
-                if (i == 0) {
-                    dd.d_nx = 8;
-                    dd.d_ny = 8;
-                    memset(dd.d_data, 0, 8);
-                }
-                else if (i == 1) {
-                    dd.d_nx = 8;
-                    dd.d_ny = 8;
-                    memset(dd.d_data, 0xff, 8);
-                }
-                else {
-                    sTpmap *p = Tech()->GetDefaultMap(
-                        i-2 + 16*Fpe->fp_pattern_bank);
-                    if (p && p->map) {
-                        dd.d_nx = p->nx;
-                        dd.d_ny = p->ny;
-                        memcpy(dd.d_data, p->map, dd.d_ny*((dd.d_nx + 7)/8));
-                    }
-                    else {
-                        dd.d_nx = 8;
-                        dd.d_ny = 8;
-                        memset(dd.d_data, 0, 8);
-                    }
-                }
-                break;
-            }
-        }
-    }
-    if (isset) {
-        gtk_selection_data_set(data, gtk_selection_data_get_target(data),
-            8, (unsigned char*)&dd, sizeof(LayerFillData));
-    }
-}
-
-
-// Static function.
-// Set the pixmap.
-//
-void
-sFpe::fp_source_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
-{
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(fillpattern_xpm);
-    gtk_drag_set_icon_pixbuf(context, pixbuf, -2, -2);
-    GTKsubwin::HaveDrag = true;
-}
-
-
-// Static function.
-void
-sFpe::fp_source_drag_end(GtkWidget*, GdkDragContext*, gpointer)
-{
-    GTKsubwin::HaveDrag = false;
-}
-
-
-// Static function.
-// Drop-data handler.
-//
-void
-sFpe::fp_target_drag_data_received(GtkWidget *widget, GdkDragContext *context,
-    gint, gint, GtkSelectionData *data, guint, guint time)
-{
-    if (Fpe && gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8) {
-        LayerFillData *dd = (LayerFillData*)gtk_selection_data_get_data(data);
-        if (widget == gtk_widget_get_parent(Fpe->fp_sample) ||
-                widget == gtk_widget_get_parent(Fpe->fp_editor)) {
-            if (dd->d_from_layer)
-                Fpe->layer_to_def_or_sample(dd, -1);
-            else if (dd->d_from_sample) {
-                if (gdk_drag_context_get_source_window(context) !=
-                        gdk_drag_context_get_dest_window(context))
-                    // from another process
-                    Fpe->def_to_sample(dd);
-            }
-            else
-                Fpe->def_to_sample(dd);
-        }
-        else {
-            for (int i = 0; i < 18; i++) {
-                if (widget == gtk_widget_get_parent(Fpe->fp_stores[i])) {
-                    if (dd->d_from_layer)
-                        Fpe->layer_to_def_or_sample(dd, i);
-                    else if (dd->d_from_sample)
-                        Fpe->sample_to_def(dd, i);
-                    else {
-                        // no drag between def boxes
-                        gtk_drag_finish(context, false, false, time);
-                        return;
-                    }
-                    break;
-                }
-            }
-        }
-        gtk_drag_finish(context, true, false, time);
-        return;
-    }
-    gtk_drag_finish(context, false, false, time);
-}
-
-
-// The default highlighting action causes a redraw of the main viewport.
-// Avoid this by handling highlighting here.
-
-// Static function.
-gboolean
-sFpe::fp_target_drag_motion(GtkWidget *widget, GdkDragContext*, gint, gint,
-    guint)
-{
-    if (!g_object_get_data(G_OBJECT(widget), "drag_hlite")) {
-        gtk_drag_highlight(widget);
-        g_object_set_data(G_OBJECT(widget), "drag_hlite", (void*)1);
-    }
-    return (true);
-}
-
-
-// Static function.
-void
-sFpe::fp_target_drag_leave(GtkWidget *widget, GdkDragContext*, guint)
-{
-    // called on drop, too
-    if (g_object_get_data(G_OBJECT(widget), "drag_hlite")) {
-        gtk_drag_unhighlight(widget);
-        g_object_set_data(G_OBJECT(widget), "drag_hlite", 0);
-    }
-}
-
-
-// Static function.
-int
-sFpe::fp_config_hdlr(GtkWidget*, GdkEvent*, void*)
-{
-#if GTK_CHECK_VERSION(3,0,0)
-#else
-    Fpe->fp_pm_widget = 0;
-#endif
-    // Can't call these before we have a window!
-    Fpe->sb_nx.set_value(Fpe->fp_nx);
-    Fpe->sb_ny.set_value(Fpe->fp_ny);
-    return (false);
-}
-
-
-// Static function.
-// Redraw handler, editing window.
-//
-#if GTK_CHECK_VERSION(3,0,0)
-int
-sFpe::fp_redraw_edit_hdlr(GtkWidget*, cairo_t *cr, void*)
-#else
-int
-sFpe::fp_redraw_edit_hdlr(GtkWidget*, GdkEvent *event, void*)
-#endif
-{
-#if GTK_CHECK_VERSION(3,0,0)
-    Fpe->redraw_edit();
-#else
-    if (Fpe->fp_pm_widget == Fpe->fp_editor) {
-        GdkEventExpose *pev = (GdkEventExpose*)event;
-        gdk_window_copy_area(gtk_widget_get_window(Fpe->fp_editor), Fpe->GC(),
-            pev->area.x, pev->area.y, Fpe->fp_pixmap,
-            pev->area.x, pev->area.y, pev->area.width, pev->area.height);
-    }
-    else
-        Fpe->redraw_edit();
-#endif
-    return (true);
-}
-
-
-// Static function.
-// Redraw handler, sample window.
-//
-#if GTK_CHECK_VERSION(3,0,0)
-int
-sFpe::fp_redraw_sample_hdlr(GtkWidget*, cairo_t*, void*)
-#else
-int
-sFpe::fp_redraw_sample_hdlr(GtkWidget*, GdkEvent *event, void*)
-#endif
-{
-#if GTK_CHECK_VERSION(3,0,0)
-    Fpe->redraw_sample();
-#else
-    if (Fpe->fp_pm_widget == Fpe->fp_sample) {
-        GdkEventExpose *pev = (GdkEventExpose*)event;
-        gdk_window_copy_area(gtk_widget_get_window(Fpe->fp_sample), Fpe->GC(),
-            pev->area.x, pev->area.y, Fpe->fp_pixmap,
-            pev->area.x, pev->area.y, pev->area.width, pev->area.height);
-    }
-    else
-        Fpe->redraw_sample();
-#endif
-    return (true);
-}
-
-
-// Static function.
-// Redraw handler, store windows.
-//
-#if GTK_CHECK_VERSION(3,0,0)
-int
-sFpe::fp_redraw_store_hdlr(GtkWidget*, cairo_t*, void *arg)
-#else
-int
-sFpe::fp_redraw_store_hdlr(GtkWidget*, GdkEvent *event, void *arg)
-#endif
-{
-    int i = (intptr_t)arg;
-#if GTK_CHECK_VERSION(3,0,0)
-    Fpe->redraw_store(i);
-#else
-    if (Fpe->fp_pm_widget == Fpe->fp_stores[i]) {
-        GdkEventExpose *pev = (GdkEventExpose*)event;
-        gdk_window_copy_area(gtk_widget_get_window(Fpe->fp_stores[i]),
-            Fpe->GC(),
-            pev->area.x, pev->area.y, Fpe->fp_pixmap,
-            pev->area.x, pev->area.y, pev->area.width, pev->area.height);
-    }
-    else
-        Fpe->redraw_store(i);
-#endif
-    return (true);
-}
-
-
-// Static function.
-// Button press handler, handles the pixel editor and drag/drop detection.
-//
-int
-sFpe::fp_button_press_hdlr(GtkWidget *caller, GdkEvent *event, void*)
-{
-    if (event->type != GDK_BUTTON_PRESS)
-        return (true);
-    if (!Fpe)
-        return (false);
-    GdkEventButton *bev = (GdkEventButton*)event;
-    if (caller == Fpe->fp_editor) {
-        // pixel editor
-        Fpe->fp_jj = (int)bev->x;
-        Fpe->fp_ii = (int)bev->y;
-        Fpe->fp_downbtn = 0;
-        if (Fpe->getij(&Fpe->fp_jj, &Fpe->fp_ii)) {
-            Fpe->fp_downbtn = Kmap()->ButtonMap(bev->button);
-            if (Fpe->fp_downbtn == 1 &&
-                    bev->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK))
-                Fpe->fp_downbtn = 2;
-            int refx = Fpe->fp_spa + Fpe->fp_jj*Fpe->fp_epsz + Fpe->fp_epsz/2;
-            int refy = Fpe->fp_spa + Fpe->fp_ii*Fpe->fp_epsz + Fpe->fp_epsz/2;
-            Fpe->SetGhost(&drawghost, refx, refy);
-        }
-        return (true);
-    }
-
-    Fpe->fp_dragging = true;
-    Fpe->fp_drag_btn = Kmap()->ButtonMap(bev->button);
-    Fpe->fp_drag_x = (int)bev->x;
-    Fpe->fp_drag_y = (int)bev->y;
-    return (true);
-}
-
-
-// Static function.
-// Button release callback.  The pixel editor has several modes,
-// depending on the button used, whether it is clicked or held
-// and dragged, and whether the shift key is down.  If the buttons
-// are clicked, the target pixel is acted on.  If held and dragged,
-// a region of pixels is acted on, indicated by a "ghost" cursor
-// box.
-//
-//    button  figure       none  Shift   Ctrl
-//    1       solid rect   flip  set     unset
-//    2       outl rect    flip  set     unset
-//    3       line         flip  set     unset
-//
-// If Shift or Ctrl is down *before* button 1 is prssed, the action
-// will be as for button 2.
-//
-int
-sFpe::fp_button_rel_hdlr(GtkWidget *caller, GdkEvent *event, void*)
-{
-    GdkEventButton *bev = (GdkEventButton*)event;
-    if (!Fpe)
-        return (false);
-    int btn = Fpe->fp_downbtn;
-    Fpe->fp_downbtn = 0;
-    if (caller == Fpe->fp_editor) {
-        if (!btn)
-            return (true);
-
-        Fpe->SetGhost(0, 0, 0);
-
-        int jo = Fpe->fp_jj;
-        int io = Fpe->fp_ii;
-        Fpe->fp_jj = (int)bev->x;
-        Fpe->fp_ii = (int)bev->y;
-        if (!Fpe->getij(&Fpe->fp_jj, &Fpe->fp_ii))
-            return (true);
-        int imin = (io < Fpe->fp_ii ? io : Fpe->fp_ii);
-        int imax = (io > Fpe->fp_ii ? io : Fpe->fp_ii);
-        int jmin = (jo < Fpe->fp_jj ? jo : Fpe->fp_jj);
-        int jmax = (jo > Fpe->fp_jj ? jo : Fpe->fp_jj);
-        switch (btn) {
-        case 1:
-            for (io = imin; io <= imax; io++) {
-                for (jo = jmin; jo <= jmax; jo++) {
-                    if (bev->state & GDK_SHIFT_MASK)
-                        Fpe->set_pixel(io, jo, FPSETon);
-                    else if (bev->state & GDK_CONTROL_MASK)
-                        Fpe->set_pixel(io, jo, FPSEToff);
-                    else
-                        Fpe->set_pixel(io, jo, FPSETflip);
-                }
-            }
-            Fpe->redraw_edit();
-            Fpe->redraw_sample();
-            break;
-        case 2:
-            if (bev->state & GDK_SHIFT_MASK)
-                Fpe->box(imin, imax, jmin, jmax, FPSETon);
-            else if (bev->state & GDK_CONTROL_MASK)
-                Fpe->box(imin, imax, jmin, jmax, FPSEToff);
-            else
-                Fpe->box(imin, imax, jmin, jmax, FPSETflip);
-            Fpe->redraw_edit();
-            Fpe->redraw_sample();
-            break;
-        case 3:
-            if (bev->state & GDK_SHIFT_MASK)
-                Fpe->line(jo, io, Fpe->fp_jj, Fpe->fp_ii, FPSETon);
-            else if (bev->state & GDK_CONTROL_MASK)
-                Fpe->line(jo, io, Fpe->fp_jj, Fpe->fp_ii, FPSEToff);
-            else
-                Fpe->line(jo, io, Fpe->fp_jj, Fpe->fp_ii, FPSETflip);
-            Fpe->redraw_edit();
-            Fpe->redraw_sample();
-            break;
-        }
-    }
-    else
-        Fpe->fp_dragging = false;
-    return (true);
-}
-
-
-// Static function.
-// Key press callback.  The arrow keys rotate the pixel array in
-// the direction of the arrow.
-//
-int
-sFpe::fp_key_press_hdlr(GtkWidget*, GdkEvent *event, void*)
-{
-    int i, j;
-    FPSETtype tmp;
-    switch (event->key.keyval) {
-    case GDK_KEY_Right:
-        for (i = 0; i < Fpe->fp_ny; i++) {
-            tmp = Fpe->get_pixel(i, 0);
-            for (j = 1; j < Fpe->fp_nx; j++)
-                Fpe->set_pixel(i, j - 1, Fpe->get_pixel(i, j));
-            Fpe->set_pixel(i, Fpe->fp_nx - 1, tmp);
-        }
-        Fpe->redraw_edit();
-        Fpe->redraw_sample();
-        break;
-    case GDK_KEY_Left:
-        for (i = 0; i < Fpe->fp_ny; i++) {
-            tmp = Fpe->get_pixel(i, Fpe->fp_nx - 1);
-            for (j = Fpe->fp_nx - 1; j >= 1; j--)
-                Fpe->set_pixel(i, j, Fpe->get_pixel(i, j - 1));
-            Fpe->set_pixel(i, 0, tmp);
-        }
-        Fpe->redraw_edit();
-        Fpe->redraw_sample();
-        break;
-    case GDK_KEY_Up:
-        for (j = 0; j < Fpe->fp_nx; j++) {
-            tmp = Fpe->get_pixel(Fpe->fp_ny - 1, j);
-            for (i = Fpe->fp_ny - 1; i >= 1; i--)
-                Fpe->set_pixel(i, j, Fpe->get_pixel(i - 1, j));
-            Fpe->set_pixel(0, j, tmp);
-        }
-        Fpe->redraw_edit();
-        Fpe->redraw_sample();
-        break;
-    case GDK_KEY_Down:
-        for (j = 0; j < Fpe->fp_nx; j++) {
-            tmp = Fpe->get_pixel(0, j);
-            for (i = 1; i < Fpe->fp_ny; i++)
-                Fpe->set_pixel(i - 1, j, Fpe->get_pixel(i, j));
-            Fpe->set_pixel(Fpe->fp_ny - 1, j, tmp);
-        }
-        Fpe->redraw_edit();
-        Fpe->redraw_sample();
-        break;
-    }
-    return (true);
-}
-
-
-// Static function.
-// Set focus so we can see arrow keys.
-//
-int
-sFpe::fp_enter_hdlr(GtkWidget *caller, GdkEvent*, void*)
-{
-    // pointer entered the fill editor
-    gtk_widget_set_can_focus(caller, true);
-    gtk_window_set_focus(GTK_WINDOW(Fpe->wb_shell), caller);
-    return (true);
-}
-
-
-// Static function.
-// Pointer motion handler.  This simply draws an XOR'ed opon box when the
-// pointer button is held down, and the pointer is in the pixel editor.
-// This is also used for drag/drop detection.
-//
-int
-sFpe::fp_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
-{
-    GdkEventMotion *mev = (GdkEventMotion*)event;
-    if (!Fpe)
-        return (false);
-    if (caller == Fpe->fp_editor) {
-        if (!Fpe->fp_downbtn)
-            return (true);
-        int x = (int)mev->x;
-        int y = (int)mev->y;
-        if (!Fpe->getij(&x, &y))
-            return (true);
-
-        x = Fpe->fp_spa + x*Fpe->fp_epsz + Fpe->fp_epsz/2;
-        y = Fpe->fp_spa + y*Fpe->fp_epsz + Fpe->fp_epsz/2;
-
-#if GTK_CHECK_VERSION(3,0,0)
-        Fpe->GetDrawable()->set_pixmap(gtk_widget_get_window(Fpe->fp_editor));
-        Fpe->GetDrawable()->set_draw_to_window();
-#else
-        Fpe->gd_window = gtk_widget_get_window(Fpe->fp_editor);
-#endif
-        Fpe->UndrawGhost();
-        Fpe->DrawGhost(x, y);
-    }
-    else if (Fpe->fp_dragging &&
-            (abs((int)event->motion.x - Fpe->fp_drag_x) > 4 ||
-            abs((int)event->motion.y - Fpe->fp_drag_y) > 4)) {
-        Fpe->fp_dragging = false;
-        GtkTargetList *targets = gtk_target_list_new(target_table, n_targets);
-        gtk_drag_begin(caller, targets, (GdkDragAction)GDK_ACTION_COPY,
-            Fpe->fp_drag_btn, event);
-    }
-    return (true);
-}
-
-
-// Static function.
-// Callback for the Cancel button.
-//
-void
-sFpe::fp_cancel_proc(GtkWidget*, void*)
-{
-    XM()->PopUpFillEditor(0, MODE_OFF);
-}
-
-
-void
-sFpe::fp_mode_proc(GtkWidget*, void *arg)
-{
-    if (arg) {
-        Fpe->fp_editing = true;
-        gtk_widget_hide(Fpe->fp_stoctrl);
-        gtk_widget_hide(Fpe->fp_stoframe);
-        gtk_widget_show(Fpe->fp_editctrl);
-        gtk_widget_show(Fpe->fp_editframe);
-    }
-    else {
-        Fpe->fp_editing = false;
-        gtk_widget_hide(Fpe->fp_editctrl);
-        gtk_widget_hide(Fpe->fp_editframe);
-        gtk_widget_show(Fpe->fp_stoctrl);
-        gtk_widget_show(Fpe->fp_stoframe);
-    }
-}
-
-
-// Static function.
-// Callback for the outline button.  When selected, new patterns
-// will have the OUTLINED attribute set.
-///
-void
-sFpe::fp_outline_proc(GtkWidget *caller, void*)
-{
-    if (!Fpe)
-        return;
-    if (caller == Fpe->fp_outl) {
-        bool state = GTKdev::GetStatus(caller);
-        if (state) {
-            int sz = Fpe->fp_ny*((Fpe->fp_nx + 7)/8);
-            for (int i = 0; i < sz; i++) {
-                if (Fpe->fp_array[i]) {
-                    state = false;
-                    break;
-                }
-            }
-        }
-        gtk_widget_set_sensitive(Fpe->fp_fat, state);
-    }
-    Fpe->redraw_sample();
-}
-
-
-// Static function.
-// Callback for pushbuttons.
-//
-void
-sFpe::fp_btn_proc(GtkWidget *widget, void*)
-{
-    if (!Fpe)
-        return;
-    const char *name = gtk_widget_get_name(widget);
-    if (!name)
-        return;
-    if (!strcmp(name, "Load")) {
-        CDl *ld = LT()->CurLayer();
-        if (!ld)
-            return;
-        LayerFillData dd(ld);
-        Fpe->layer_to_def_or_sample(&dd, -1);
-    }
-    else if (!strcmp(name, "Apply")) {
-        CDl *ld = LT()->CurLayer();
-        if (!ld)
-            return;
-        LayerFillData dd;
-        dd.d_from_sample = true;
-        dd.d_nx = Fpe->fp_nx;
-        dd.d_ny = Fpe->fp_ny;
-        memcpy(dd.d_data, Fpe->fp_array, dd.d_ny*((dd.d_nx + 7)/8));
-        Fpe->pattern_to_layer(&dd, ld);
-    }
-    else if (!strcmp(name, "Help")) {
-        DSPmainWbag(PopUpHelp("fillpanel"))
-    }
-    else if (!strcmp(name, "Dumpdefs")) {
-        const char *err = Tech()->DumpDefaultStipples();
-        if (err)
-            Fpe->PopUpMessage(err, true);
-        else
-            Fpe->PopUpMessage(
-                "Created xic_stipples file in current directory.",
-                false);
-    }
-}
-
-
-void
-sFpe::fp_nxy_proc(GtkWidget*, void *arg)
-{
-    if (Fpe) {
-        if ((intptr_t)arg == 1) {
-            // Reconfigure the pixel map so that the pattern doesn't
-            // turn to crap when the bpl changes.
-
-            int oldx = Fpe->fp_nx;
-            Fpe->fp_nx = Fpe->sb_nx.get_value_as_int();
-            int oldbpl = (oldx + 7)/8;
-            int newbpl = (Fpe->fp_nx + 7)/8;
-            if (oldbpl != newbpl) {
-                unsigned char ary[128];
-                memcpy(ary, Fpe->fp_array, Fpe->fp_ny*oldbpl);
-                unsigned char *t = Fpe->fp_array;
-                unsigned char *f = ary;
-                for (int i = 0; i < Fpe->fp_ny; i++) {
-                    if (oldbpl < newbpl) {
-                        for (int j = 0; j < newbpl; j++) {
-                            if (j < oldbpl)
-                                *t++ = *f++;
-                            else
-                                *t++ = 0;
-                        }
-                    }
-                    else {
-                        for (int j = 0; j < oldbpl; j++) {
-                            if (j < newbpl)
-                                *t++ = *f++;
-                            else
-                                f++;
-                        }
-                    }
-                }
-            }
-        }
-        else if ((intptr_t)arg == 2)
-            Fpe->fp_ny = Fpe->sb_ny.get_value_as_int();
-        Fpe->set_fp(Fpe->fp_array, Fpe->fp_nx, Fpe->fp_ny);
-        Fpe->SetFillpattern(0);
-        Fpe->redraw_edit();
-        Fpe->redraw_sample();
-    }
-}
-
-
-namespace {
-    void setpix(int x, int nx, int y, unsigned char *ary)
-    {
-        int bpl = (nx + 7)/8;
-        unsigned char *a = ary + y*bpl;
-        unsigned int d = *a++;
-        for (int j = 1; j < bpl; j++)
-            d |= *a++ << j*8;
-        unsigned int mask = 1 << x;
-        d |= mask;
-        a = ary + y*bpl;
-        *a++ = d;
-        for (int j = 1; j < bpl; j++)
-            *a++ = d >> (j*8);
-    }
-}
-
-
-// Static function.
-// Rotate the pixel map by 90 degrees.
-//
-void
-sFpe::fp_rot90_proc(GtkWidget*, void*)
-{
-    if (!Fpe)
-        return;
-    int nx = Fpe->fp_nx;
-    int ny = Fpe->fp_ny;
-    int bpl = (nx + 7)/8;
-
-    unsigned char ary[128];
-    memset(ary, 0, 128*sizeof(unsigned char));
-    for (int i = 0; i < ny; i++) {
-        unsigned char *a = Fpe->fp_array + i*bpl;
-        unsigned int d = *a++;
-        for (int j = 1; j < bpl; j++)
-            d |= *a++ << j*8;
-        unsigned int mask = 1;
-        for (int j = 0; j < Fpe->fp_nx; j++) {
-            bool lit = mask & d;
-            mask <<= 1;
-            if (lit)
-                setpix(i, ny, nx - j - 1, ary);
-        }
-    }
-    Fpe->sb_nx.set_value(ny);
-    Fpe->sb_ny.set_value(nx);
-    Fpe->fp_nx = ny;
-    Fpe->fp_ny = nx;
-    memcpy(Fpe->fp_array, ary, 128);
-    Fpe->set_fp(ary, ny, nx);
-    Fpe->SetFillpattern(0);
-    Fpe->redraw_edit();
-    Fpe->redraw_sample();
-}
-
-
-// Static function.
-// Reflect the pixel map.
-//
-void
-sFpe::fp_refl_proc(GtkWidget*, void *dir)
-{
-    if (!Fpe)
-        return;
-    int nx = Fpe->fp_nx;
-    int ny = Fpe->fp_ny;
-    int bpl = (nx + 7)/8;
-
-    bool flipy = (dir != 0);
-
-    unsigned char ary[128];
-    memset(ary, 0, 128*sizeof(unsigned char));
-    for (int i = 0; i < ny; i++) {
-        unsigned char *a = Fpe->fp_array + i*bpl;
-        unsigned int d = *a++;
-        for (int j = 1; j < bpl; j++)
-            d |= *a++ << j*8;
-        unsigned int mask = 1;
-        for (int j = 0; j < Fpe->fp_nx; j++) {
-            bool lit = mask & d;
-            mask <<= 1;
-            if (lit) {
-                if (flipy)
-                    setpix(j, nx, ny - i - 1, ary);
-                else
-                    setpix(nx - j - 1, nx, i, ary);
-            }
-        }
-    }
-    memcpy(Fpe->fp_array, ary, 128);
-    Fpe->set_fp(ary, nx, ny);
-    Fpe->SetFillpattern(0);
-    Fpe->redraw_edit();
-    Fpe->redraw_sample();
-}
-
-
-// Static function.
-// Callback for the default pattern bank menu.
-//
-void
-sFpe::fp_bank_proc(GtkWidget *caller, void*)
-{
-    if (Fpe) {
-        const char *s = gtk_entry_get_text(GTK_ENTRY(caller));
-        int bank = atoi(s);
-        if (bank > 0 && bank <= TECH_MAP_SIZE/16) {
-            Fpe->fp_pattern_bank = bank - 1;
-            for (int i = 0; i < 18; i++)
-                Fpe->redraw_store(i);
-        }
+        darea->setAcceptDrops(true);
+        connect(darea, SIGNAL(drag_enter_event(QDragEnterEvent*)),
+            this, SLOT(drag_enter_slot(QDragEnterEvent*)));
+        connect(darea, SIGNAL(drop_event(QDropEvent*)),
+            this, SLOT(drop_event_slot(QDropEvent*)));
     }
 }
 
@@ -2077,11 +1649,11 @@ sFpe::fp_bank_proc(GtkWidget *caller, void*)
 // Draw an open box or line, using the XOR GC.
 //
 void
-sFpe::drawghost(int x0, int y0, int x1, int y1, bool)
+cFillp::fp_drawghost(int x0, int y0, int x1, int y1, bool)
 {
-    if (Fpe) {
-        if (Fpe->fp_downbtn == 3)
-            Fpe->Line(x0, y0, x1, y1);
+    if (cFillp::self()) {
+        if (cFillp::self()->fp_downbtn == 3)
+            cFillp::self()->Line(x0, y0, x1, y1);
         else {
             GRmultiPt p(5);
             p.assign(0, x0, y0);
@@ -2089,10 +1661,18 @@ sFpe::drawghost(int x0, int y0, int x1, int y1, bool)
             p.assign(2, x1, y1);
             p.assign(3, x0, y1);
             p.assign(4, x0, y0);
-            Fpe->PolyLine(&p, 5);
+            cFillp::self()->PolyLine(&p, 5);
         }
     }
 }
 
-#endif
+
+// Static function.
+int
+cFillp::fp_update_idle_proc(void*)
+{
+    if (instPtr)
+        instPtr->update();
+    return (0);
+}
 

@@ -38,47 +38,21 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtltedit.h"
 #include "dsp_inlines.h"
 #include "cd_strmdata.h"
-#include "qtmain.h"
-#include "layertab.h"
+
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QComboBox>
+#include <QLineEdit>
+
 
 //--------------------------------------------------------------------
 // Layer Editor pop-up
 //
-
-struct qtLcb : public sLcb
-{
-    qtLcb(GRobject);
-    virtual ~qtLcb();
-
-//    GtkWidget *Shell() { return (le_shell); }
-
-    // virtual overrides
-    void update(CDll*);
-    char *layername();
-    void desel_rem();
-    void popdown();
-
-/*
-private:
-    static void le_popdown(GtkWidget*, void*);
-    static void le_add_proc(GtkWidget*, void*);
-    static void le_rem_proc(GtkWidget*, void*);
-    static char *le_get_lname(GtkWidget*, GtkWidget*);
-
-    GRobject le_caller;     // initiating button
-
-    GtkWidget *le_shell;    // pop-up shell
-    GtkWidget *le_add;      // add layer button
-    GtkWidget *le_rem;      // remove layer button
-    GtkWidget *le_opmenu;   // removed layers menu;
-
-    static const char *initmsg;
-*/
-};
-
 
 // Pop up the Layer editor.  The editor has buttons to add a layer, remove
 // layers, and a combo box for layer name entry.  The combo contains a
@@ -87,84 +61,232 @@ private:
 sLcb *
 cMain::PopUpLayerEditor(GRobject c)
 {
-    (void)c;
-    /*XXX
-    if (!QTsdev::exists() || !QTmainwin::exists())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return (0);
-    gtkLcb *cbs = new gtkLcb(c);
-    if (!cbs->Shell()) {
-        delete cbs;
-        return (0);
-    }
+    cLtabEdit *cbs = new cLtabEdit(c);
 
-    gtk_window_set_transient_for(GTK_WINDOW(cbs->Shell()),
-        GTK_WINDOW(QTmainwin::self()->Shell()));
-    QTdev::self()->SetPopupLocation(GRloc(), cbs->Shell(),
-        QTmainwin::self()->viewport);
-    gtk_widget_show(cbs->Shell());
+    QTdev::self()->SetPopupLocation(GRloc(), cbs,
+        QTmainwin::self()->Viewport());
+    cbs->show();
     return (cbs);
-    */
-return (0);
 }
 // End of cMain functions.
+
+
+const char *cLtabEdit::initmsg = "Layer Editor -- add or remove layers.";
+
+cLtabEdit::cLtabEdit(GRobject c)
+{
+    le_caller = c;
+    le_add = 0;
+    le_rem = 0;
+    le_opmenu = 0;
+    le_label = 0;
+
+    setWindowTitle(tr("Layer Editor"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+//    gtk_window_set_resizable(GTK_WINDOW(le_shell), false);
+
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    // label in frame
+    //
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    le_label = new QLabel(tr(initmsg));
+    hb->addWidget(le_label);
+
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    vbox->addLayout(hbox);
+
+    // combo box input area
+    //
+    le_opmenu = new QComboBox();
+    le_opmenu->setEditable(true);
+    le_opmenu->setInsertPolicy(QComboBox::NoInsert);
+    hbox->addWidget(le_opmenu);
+
+    // buttons
+    //
+    hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    btn = new QPushButton(tr("Add Layer"));
+    hbox->addWidget(btn);
+    btn->setCheckable(true);
+    connect(btn, SIGNAL(toggled(bool)), this, SLOT(add_layer_slot(bool)));
+    le_add = btn;
+
+    btn = new QPushButton(tr("Remove Layer"));
+    hbox->addWidget(btn);
+    btn->setCheckable(true);
+    connect(btn, SIGNAL(toggled(bool)), this, SLOT(rem_layer_slot(bool)));
+    le_rem = btn;
+
+    btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
+
+//    gtk_window_set_focus(GTK_WINDOW(le_shell), text);
+}
+
+
+cLtabEdit::~cLtabEdit()
+{
+    if (le_caller)
+        QTdev::Deselect(le_caller);
+    quit_cb();
+}
 
 
 // Update the list of removed layers
 //
 void
-qtLcb::update(CDll *list)
+cLtabEdit::update(CDll *list)
 {
-/*
-    if (!this)
-        return;
-    gtk_list_clear_items(GTK_LIST(opmenu), 0, -1);
-    if (!list) {
-        GtkWidget *text =
-            (GtkWidget*)gtk_object_get_data(GTK_OBJECT(shell), "text");
-        if (text)
-            gtk_entry_set_text(GTK_ENTRY(text), "");
-    }
+    le_opmenu->clear();
     for (CDll *l = list; l; l = l->next) {
-        GtkWidget *item = gtk_list_item_new_with_label(l->ldesc->name);
-        gtk_widget_show(item);
-        gtk_container_add(GTK_CONTAINER(opmenu), item);
+        le_opmenu->addItem(l->ldesc->name());
     }
-*/
-(void)list;
+    le_opmenu->setCurrentIndex(0);
+    QLineEdit *text = le_opmenu->lineEdit();
+    if (!list)
+        text->setText("");
 }
 
 
 // Return the current name in the text box.  The return value should be
 // freed.  If the value isn't good, 0 is returned.  This is called when
-// adding layers
+// adding layers.
 //
 char *
-qtLcb::layername()
+cLtabEdit::layername()
 {
-/*
-    GtkWidget *text =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(shell), "text");
+    QByteArray qba = le_opmenu->currentText().toLatin1();
+    const char *text = (const char*)qba.constData();
     if (!text)
         return (0);
-    GtkWidget *label =
-        (GtkWidget*)gtk_object_get_data(GTK_OBJECT(shell), "label");
-    char *string = get_lname(text, label);
+    char *string = le_get_lname();
+
     if (!string) {
-        QTdev::Deselect(add);
+        QTdev::Deselect(le_add);
         add_cb(false);
-        return (0);
     }
     return (string);
-*/
-return (0);
 }
 
 
-// Pop down the widget (from the caller)
+// Deselect the Remove button.
 //
 void
-qtLcb::popdown()
+cLtabEdit::desel_rem()
 {
-//    le_popdown(0, this);
+    QTdev::Deselect(le_rem);
+}
+
+
+// Pop down the widget (from the caller).
+//
+void
+cLtabEdit::popdown()
+{
+    deleteLater();
+}
+
+
+// Return the text input, or 0 if no good.
+//
+char *
+cLtabEdit::le_get_lname()
+{
+    QByteArray qba = le_opmenu->lineEdit()->text().toLatin1();;
+    const char *string = (const char*)qba.constData();
+    if (!string || !*string) {
+        le_label->setText(tr("No name entered.  Enter a layer name:"));
+        return (0);
+    }
+    char *lname = lstring::copy(string);
+    if (CDldb()->findLayer(lname, DSP()->CurMode())) {
+        char buf[256];
+        snprintf(buf, sizeof(buf),
+            "A layer %s already exists.  Enter a new name:", lname);
+        le_label->setText(tr(buf));
+        delete [] lname;
+        return (0);
+    }
+    return (lname);
+}
+
+
+void
+cLtabEdit::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:edlyr"))
+}
+
+
+void
+cLtabEdit::add_layer_slot(bool state)
+{
+    if (state) {
+        le_label->setText(tr(initmsg));
+        add_cb(false);
+        return;
+    }
+    QTdev::Deselect(le_rem);
+    char *string = le_get_lname();
+    if (!string) {
+        QTdev::Deselect(le_add);
+        return;
+    }
+    delete [] string;
+    le_label->setText(tr("Click where new layer is to be added."));
+    add_cb(true);
+}
+
+
+void
+cLtabEdit::rem_layer_slot(bool state)
+{
+    if (!state) {
+        le_label->setText(tr(initmsg));
+        rem_cb(false);
+        return;
+    }
+    bool rmstate;
+    if (DSP()->CurMode() == Electrical)
+        rmstate = (CDldb()->layer(2, Electrical) != 0);
+    else
+        rmstate = (CDldb()->layer(1, Physical) != 0);
+    if (!rmstate) {
+        le_label->setText(tr("No removable layers left"));
+        QTdev::Deselect(le_rem);
+        return;
+    }
+    QTdev::Deselect(le_add);
+    le_label->setText(tr("Click on layers to remove"));
+    rem_cb(true);
+}
+
+
+void
+cLtabEdit::dismiss_slot()
+{
+    popdown();
 }
 
