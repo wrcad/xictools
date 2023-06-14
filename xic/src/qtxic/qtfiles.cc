@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtfiles.h"
 #include "cvrt.h"
 #include "editif.h"
 #include "dsp_inlines.h"
@@ -48,10 +48,8 @@
 #include "fio_chd.h"
 #include "events.h"
 #include "errorlog.h"
-#include "gtkmain.h"
-#include "gtkinterf/gtkmcol.h"
-#include "gtkinterf/gtkpfiles.h"
-#include "gtkinterf/gtkfont.h"
+#include "qtinterf/qtmcol.h"
+#include "qtinterf/qtfont.h"
 
 
 //----------------------------------------------------------------------
@@ -59,6 +57,85 @@
 //
 // Help system keywords used:
 //  filespanel
+
+
+/*
+// Static function.
+//
+char *
+QTmainwin::get_file_selection()
+{
+    if (cFilesList::self())
+        return (cFilesList::self()->get_selection());
+    return (0);
+}
+
+
+// Static function.
+// Called on crash to prevent updates.
+//
+void
+QTmainwin::files_panic()
+{
+    files_bag::panic();
+}
+*/
+// End of QTmainwin functions.
+
+
+// It can take a while to process the files, unfortunately the "busy"
+// cursor seems to never appear with the standard logic.  In order to
+// make the busy cursor appear, had to use a timeout as below.
+
+namespace {
+    int msw_timeout(void *caller)
+    {
+        new cFilesList(caller);
+
+        QTdev::self()->SetPopupLocation(GRloc(), cFilesList::self(),
+            QTmainwin::self()->Viewport());
+        cFilesList::self()->show();
+
+        QTpkg::self()->SetWorking(false);
+        return (0);
+    }
+}
+
+
+void
+cConvert::PopUpFiles(GRobject caller, ShowMode mode)
+{
+    static bool lockout;
+    if (!QTdev::exists() || !QTmainwin::exists())
+        return;
+    if (mode == MODE_OFF) {
+        if (cFilesList::self())
+            cFilesList::self()->deleteLater();
+        return;
+    }
+    if (mode == MODE_UPD) {
+        if (cFilesList::self())
+            cFilesList::self()->update();
+        return;
+    }
+
+    if (cFilesList::self())
+        return;
+
+    // This is needed to reliable show the busy cursor.
+    QTpkg::self()->SetWorking(true);
+    QTpkg::self()->RegisterTimeoutProc(500, msw_timeout, caller);
+
+    /****
+    new cFilesList(caller);
+
+    QTdev::self()->SetPopupLocation(GRloc(), cFilesList::self(),
+        QTmainwin::self()->Viewport());
+    cFilesList::self()->show();
+    ****/
+}
+// End of cConvert functions.
+
 
 // The buttons displayed for various modes:
 // no editing:      view, content, help
@@ -71,52 +148,8 @@
 #define FB_HELP     "Help"
 
 
-namespace {
-    namespace gtkfiles {
-        inline struct sFL *FL();
-
-        struct sFL : public files_bag
-        {
-            friend inline sFL *FL()
-                { return (dynamic_cast<sFL*>(instance())); }
-
-            sFL(GRobject);
-            ~sFL();
-
-            void update();
-            char *get_selection();
-
-        private:
-            void action_hdlr(GtkWidget*);
-            bool button_hdlr(GtkWidget*, GdkEvent*);
-            bool show_content();
-            void set_sensitive(const char*, bool);
-
-            static sPathList *fl_listing(int);
-            static char *fl_is_symfile(const char*);
-            static void fl_action_proc(GtkWidget*, void*);
-            static int fl_btn_proc(GtkWidget*, GdkEvent*, void*);
-            static void fl_content_cb(const char*, void*);
-            static void fl_down_cb(GtkWidget*, void*);
-            static void fl_desel(void*);
-
-            char *fl_selection;
-            char *fl_contlib;
-            GRmcolPopup *fl_content_pop;
-            cCHD *fl_chd;
-            GRobject fl_caller;
-            int fl_noupdate;
-
-            static const char *nofiles_msg;
-            static const char *files_msg;
-        };
-    }
-}
-
-using namespace gtkfiles;
-
-const char *sFL::nofiles_msg = "  no recognized files found\n";
-const char *sFL::files_msg =
+const char *cFilesList::nofiles_msg = "  no recognized files found\n";
+const char *cFilesList::files_msg =
     "Files from search path.\nTypes: B CGX, C CIF, "
 #ifdef HANDLE_SCED
     "G GDSII, L library, O OASIS, S JSPICE3 (sced), X Xic";
@@ -124,116 +157,37 @@ const char *sFL::files_msg =
     "G GDSII, L library, O OASIS, X Xic";
 #endif
 
+cFilesList *cFilesList::instPtr;
 
-// Static function.
-//
-char *
-GTKmainwin::get_file_selection()
+cFilesList::cFilesList(GRobject c) :
+    files_bag(QTmainwin::self(), 0, 0, files_msg)
+        // fl_action_proc, fl_btn_proc,
+        //fl_listing, fl_down_cb, fl_desel)
 {
-    if (FL())
-        return (FL()->get_selection());
-    return (0);
-}
-
-
-// Static function.
-// Called on crash to prevent updates.
-//
-void
-GTKmainwin::files_panic()
-{
-    files_bag::panic();
-}
-
-
-// It can take a while to process the files, unfortunately the "busy"
-// cursor seems to never appear with the standard logic.  In order to
-// make the busy cursor appear, had to use a timeout as below.
-
-namespace {
-    int msw_timeout(void *caller)
-    {
-        new sFL(caller);
-
-        gtk_window_set_transient_for(GTK_WINDOW(FL()->Shell()),
-            GTK_WINDOW(GTKmainwin::self()->Shell()));
-        GTKdev::self()->SetPopupLocation(GRloc(), FL()->Shell(),
-            GTKmainwin::self()->Viewport());
-        gtk_widget_show(FL()->Shell());
-
-        GTKpkg::self()->SetWorking(false);
-        return (0);
-    }
-}
-
-
-void
-cConvert::PopUpFiles(GRobject caller, ShowMode mode)
-{
-    static bool lockout;
-    if (!GTKdev::exists() || !GTKmainwin::exists())
-        return;
-    if (mode == MODE_OFF) {
-        // Make sure we aren't reentered from destructor code.  This
-        // was a problem once, will memory-fault.
-        if (lockout)
-            return;
-        lockout = true;
-        delete FL();
-        lockout = false;
-        return;
-    }
-    if (mode == MODE_UPD) {
-        if (FL())
-            FL()->update();
-        return;
-    }
-
-    if (FL())
-        return;
-
-    // This is needed to reliable show the busy cursor.
-    GTKpkg::self()->SetWorking(true);
-    g_timeout_add(500, msw_timeout, caller);
-
-    /****
-    new sFL(caller);
-
-    gtk_window_set_transient_for(GTK_WINDOW(FL()->Shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
-    GTKdev::self()->SetPopupLocation(GRloc(), FL()->Shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(FL()->Shell());
-    ****/
-}
-
-
-sFL::sFL(GRobject c) :
-    files_bag(GTKmainwin::self(), 0, 0, files_msg, fl_action_proc, fl_btn_proc,
-        fl_listing, fl_down_cb, fl_desel)
-{
+    fl_caller = c;
     fl_selection = 0;
     fl_contlib = 0;
     fl_content_pop = 0;
     fl_chd = 0;
-    fl_caller = c;
     fl_noupdate = 0;
 
     update();
 
+    /*
     if (fl_caller) {
         g_signal_connect_after(G_OBJECT(fl_caller), "toggled",
             G_CALLBACK(fl_down_cb), this);
     }
+    */
 }
 
 
-sFL::~sFL()
+cFilesList::~cFilesList()
 {
     if (fl_caller) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(fl_caller),
-            (gpointer)fl_down_cb, this);
-        GTKdev::Deselect(fl_caller);
+//        g_signal_handlers_disconnect_by_func(G_OBJECT(fl_caller),
+//            (gpointer)fl_down_cb, this);
+        QTdev::Deselect(fl_caller);
     }
     if (fl_content_pop)
         fl_content_pop->popdown();
@@ -244,7 +198,7 @@ sFL::~sFL()
 
 
 void
-sFL::update()
+cFilesList::update()
 {
     if (fl_noupdate) {
         fl_noupdate++;
@@ -277,15 +231,15 @@ sFL::update()
         btns[3] = FB_HELP;
         nbtns = 4;
     }
-    files_bag::update(FIO()->PGetPath(), btns, nbtns, fl_action_proc);
-    fl_desel(0);
+//    files_bag::update(FIO()->PGetPath(), btns, nbtns, fl_action_proc);
+//    fl_desel(0);
 }
 
 
 // This overrides files_bag::get_selection().
 //
 char *
-sFL::get_selection()
+cFilesList::get_selection()
 {
     if (fl_contlib && fl_content_pop) {
         char *sel = fl_content_pop->get_selection();
@@ -299,14 +253,15 @@ sFL::get_selection()
             return (tbuf);
         }
     }
-    if (fl_selection && text_has_selection(wb_textarea))
-        return (lstring::copy(fl_selection));
+//    if (fl_selection && text_has_selection(wb_textarea))
+//        return (lstring::copy(fl_selection));
     return (0);
 }
 
 
+#ifdef notdef
 void
-sFL::action_hdlr(GtkWidget *caller)
+cFilesList::action_hdlr(GtkWidget *caller)
 {
     if (!wb_textarea) {
         GTKdev::Deselect(caller);
@@ -364,7 +319,7 @@ sFL::action_hdlr(GtkWidget *caller)
 
 
 bool
-sFL::button_hdlr(GtkWidget *caller, GdkEvent *event)
+cFilesList::button_hdlr(GtkWidget *caller, GdkEvent *event)
 {
     if (event->type != GDK_BUTTON_PRESS)
         return (true);
@@ -475,7 +430,7 @@ sFL::button_hdlr(GtkWidget *caller, GdkEvent *event)
 // Pop up the contents listing for archives.
 //
 bool
-sFL::show_content()
+cFilesList::show_content()
 {
     if (!fl_selection)
         return (false);
@@ -645,7 +600,7 @@ sFL::show_content()
 
 
 void
-sFL::set_sensitive(const char *bname, bool state)
+cFilesList::set_sensitive(const char *bname, bool state)
 {
     for (int i = 0; f_buttons[i]; i++) {
         const char *wname = gtk_widget_get_name(f_buttons[i]);
@@ -663,12 +618,12 @@ sFL::set_sensitive(const char *bname, bool state)
 // Create the listing struct.
 //
 sPathList *
-sFL::fl_listing(int cols)
+cFilesList::fl_listing(int cols)
 {
-    GTKpkg::self()->SetWorking(true);
+    QTpkg::self()->SetWorking(true);
     sPathList *l = new sPathList(FIO()->PGetPath(), fl_is_symfile, nofiles_msg,
         0, 0, cols, false);
-    GTKpkg::self()->SetWorking(false);
+    QTpkg::self()->SetWorking(false);
     return (l);
 }
 
@@ -678,7 +633,7 @@ sFL::fl_listing(int cols)
 // Return non-null if a known layout file.
 //
 char*
-sFL::fl_is_symfile(const char *fname)
+cFilesList::fl_is_symfile(const char *fname)
 {
     FILE *fp = fopen(fname, "rb");
     if (!fp)
@@ -739,7 +694,7 @@ sFL::fl_is_symfile(const char *fname)
 // If there is something selected, perform the action.
 //
 void
-sFL::fl_action_proc(GtkWidget *caller, void*)
+cFilesList::fl_action_proc(GtkWidget *caller, void*)
 {
     if (FL())
         FL()->action_hdlr(caller);
@@ -748,7 +703,7 @@ sFL::fl_action_proc(GtkWidget *caller, void*)
 
 // Static function.
 int
-sFL::fl_btn_proc(GtkWidget *caller, GdkEvent *event, void*)
+cFilesList::fl_btn_proc(GtkWidget *caller, GdkEvent *event, void*)
 {
     if (FL())
         return (FL()->button_hdlr(caller, event));
@@ -758,7 +713,7 @@ sFL::fl_btn_proc(GtkWidget *caller, GdkEvent *event, void*)
 
 // Static function.
 void
-sFL::fl_content_cb(const char *cellname, void*)
+cFilesList::fl_content_cb(const char *cellname, void*)
 {
     if (!FL())
         return;
@@ -792,7 +747,7 @@ sFL::fl_content_cb(const char *cellname, void*)
 
 // Static function.
 void
-sFL::fl_down_cb(GtkWidget*, void*)
+cFilesList::fl_down_cb(GtkWidget*, void*)
 {
     Cvt()->PopUpFiles(0, MODE_OFF);
 }
@@ -800,7 +755,7 @@ sFL::fl_down_cb(GtkWidget*, void*)
 
 // Static function.
 void
-sFL::fl_desel(void*)
+cFilesList::fl_desel(void*)
 {
     if (!FL())
         return;
@@ -818,3 +773,4 @@ sFL::fl_desel(void*)
     }
 }
 
+#endif

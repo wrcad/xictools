@@ -76,6 +76,7 @@ QTmsgPopup::QTmsgPopup(QTbag *owner, const char *message_str, STYtype sty,
 
     if (owner)
         owner->MonitorAdd(this);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     gbox = new QGroupBox(this);
     tx = new text_box(w, h, gbox);

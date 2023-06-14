@@ -84,6 +84,12 @@ namespace qtinterf
         virtual QPixmap *pixmap() = 0;
 
         virtual void draw_direct(bool) = 0;
+        virtual void switch_to_pixmap2() = 0;
+        virtual void switch_from_pixmap2(int, int, int, int) = 0;
+        virtual void set_draw_to_pixmap(QPixmap*) = 0;
+        virtual void refresh(int, int, int, int) = 0;
+        virtual void refresh() = 0;
+        virtual void update(int, int, int, int) = 0;
         virtual void update() = 0;
         virtual void clear() = 0;
         virtual void clear_area(int, int, int, int) = 0;
@@ -116,7 +122,6 @@ namespace qtinterf
         virtual void set_xor_mode(bool) = 0;
         virtual void set_ghost_color(unsigned int) = 0;
 
-        virtual void set_draw_to_pixmap(QPixmap*) = 0;
         virtual void draw_pixmap(int, int, QPixmap*, int, int, int, int) = 0;
         virtual void draw_image(int, int, QImage*, int, int, int, int) = 0;
     };
@@ -313,6 +318,13 @@ namespace qtinterf
             { if (gd_viewport) gd_viewport->define_fillpattern(fp); }
         void SetFillpattern(const GRfillType *fp)
             { if (gd_viewport) gd_viewport->set_fillpattern(fp); }
+
+        void Refresh(int x, int y, int w, int h)
+            { if (gd_viewport) gd_viewport->refresh(x, y, w, h); }
+        void Refresh()
+            { if (gd_viewport) gd_viewport->refresh(); }
+        void Update(int x, int y, int w, int h)
+            { if (gd_viewport) gd_viewport->update(x, y, w, h); }
         void Update()
             { if (gd_viewport) gd_viewport->update(); }
 

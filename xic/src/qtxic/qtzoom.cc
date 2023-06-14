@@ -74,6 +74,9 @@ cZoom::cZoom(QTbag *owner, WindowDesc *w)
         owner->MonitorAdd(this);
 
     setWindowTitle(tr("Set Display Window"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_ShowWithoutActivating);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);

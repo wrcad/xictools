@@ -661,6 +661,7 @@ wb_shell = this;
     if (owner)
         owner->MonitorAdd(this);
     FSmonitor.add(this);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     // initialize editable filter lines
     if (!filter_options[2])

@@ -146,6 +146,7 @@ wb_shell = this;
         owner->MonitorAdd(this);
 
     setWindowTitle(tr("Listing"));
+    setAttribute(Qt::WA_DeleteOnClose);
     const char *t;
     char buf[256];
     if (title && header) {

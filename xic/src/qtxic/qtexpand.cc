@@ -61,6 +61,8 @@ cExpand::cExpand(QTbag *owner, const char *string, bool nopeek,
         owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Expand")));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);

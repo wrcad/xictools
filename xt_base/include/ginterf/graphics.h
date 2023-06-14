@@ -964,6 +964,9 @@ namespace ginterf
         virtual void SetLinestyle(const GRlineType*)                    = 0;
         virtual void DefineFillpattern(GRfillType*)                     = 0;
         virtual void SetFillpattern(const GRfillType*)                  = 0;
+        virtual void Refresh(int, int, int, int)                        = 0;
+        virtual void Refresh()                                          = 0;
+        virtual void Update(int, int, int, int)                         = 0;
         virtual void Update()                                           = 0;
         virtual void Input(int*, int*, int*, int*)                      = 0;
         virtual void SetXOR(int)                                        = 0;
@@ -1031,6 +1034,9 @@ namespace ginterf
         void DefineLinestyle(GRlineType*)                       { }
         void DefineFillpattern(GRfillType*)                     { }
 
+        void Refresh(int, int, int, int)                        { }
+        void Refresh()                                          { }
+        void Update(int, int, int, int)                         { }
         void Update()                                           { }
         void Input(int*, int*, int*, int*)                      { }
         void SetXOR(int)                                        { }

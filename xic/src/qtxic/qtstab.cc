@@ -101,8 +101,11 @@ cStab::cStab(GRobject c)
     tb_del_pop = 0;
     tb_namelist = 0;
 
-//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
     setWindowTitle(tr("Symbol Tables"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_ShowWithoutActivating);
+//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);

@@ -69,6 +69,7 @@ class QMenuBar;
 class QLineEdit;
 class QPushButton;
 class QEnterEvent;
+class QFocusEvent;
 class QSplitter;
 
 // Graphics contexgt classes for application windows.
@@ -242,6 +243,8 @@ protected slots:
     void key_up_slot(QKeyEvent*);
     void enter_slot(QEnterEvent*);
     void leave_slot(QEvent*);
+    void focus_in_slot(QFocusEvent*);
+    void focus_out_slot(QFocusEvent*);
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);
     void font_changed(int);

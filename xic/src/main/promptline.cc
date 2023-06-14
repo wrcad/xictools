@@ -1895,24 +1895,23 @@ cPromptEdit::draw_cursor(bool draw)
         Box(x + pe_offset, y, x + pe_offset + w - 1, y + CURHT);
     }
 
-    if (at_end)
-        return;
-
-    int i = pe_column;
-    int xpos = pe_xpos + realcol*pe_fntwid + pe_offset;
-    if (pe_buf.element(i)->type() == HLrefText) {
-        SetColor(DSP()->Color(PromptEditTextColor));
-        if (pe_obscure_mode)
-            text("*", xpos);
-        else
-            text(pe_buf.element(i)->chr(), xpos);
-    }
-    else {
-        const char *s = pe_buf.element(i)->type() == HLrefLongText ?
-            HY_LT_MSG : pe_buf.element(i)->string();
-        if (s && *s) {
-            SetColor(DSP()->Color(PromptHighlightColor));
-            text(s, xpos);
+    if (!at_end) {
+        int i = pe_column;
+        int xpos = pe_xpos + realcol*pe_fntwid + pe_offset;
+        if (pe_buf.element(i)->type() == HLrefText) {
+            SetColor(DSP()->Color(PromptEditTextColor));
+            if (pe_obscure_mode)
+                text("*", xpos);
+            else
+                text(pe_buf.element(i)->chr(), xpos);
+        }
+        else {
+            const char *s = pe_buf.element(i)->type() == HLrefLongText ?
+                HY_LT_MSG : pe_buf.element(i)->string();
+            if (s && *s) {
+                SetColor(DSP()->Color(PromptHighlightColor));
+                text(s, xpos);
+            }
         }
     }
     Update();
@@ -1949,16 +1948,16 @@ cPromptEdit::redraw()
     bool use_pm = check_pixmap();
 
     SetWindowBackground(bg_pixel());
-    int tmp = pe_column;
+    int tmpcol = pe_column;
+    int tmpcmin = pe_colmin;
     set_col(0, true);
     if (pe_active == hyOFF)
         pe_colmin = -1; // force text in prompt color
     draw_text(DRAW, TOEND, use_pm);
-    set_col(tmp, true);
+    set_col(tmpcol, true);
     if (pe_active == hyACTIVE)
         draw_cursor(DRAW);
-    if (pe_active == hyOFF)
-        pe_colmin = 0;
+    pe_colmin = tmpcmin;
 }
 
 

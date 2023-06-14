@@ -490,6 +490,7 @@ QTfontPopup::QTfontPopup(QTbag *owner, int indx, void *arg) :
         owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Font Selection")));
+    setAttribute(Qt::WA_DeleteOnClose);
     face_list = new font_list_widget(180, this);
     style_list = new font_list_widget(120, this);
     size_list = new font_list_widget(60, this);

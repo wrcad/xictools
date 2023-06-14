@@ -79,6 +79,8 @@ QTnumPopup::QTnumPopup(QTbag *owner, const char *prompt_str, double initd,
         owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Numeric Entry")));
+    setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFlags(Qt::WindowStaysOnTopHint);
 
     QSizePolicy policy = sizePolicy();
     policy.setVerticalPolicy(QSizePolicy::Preferred);

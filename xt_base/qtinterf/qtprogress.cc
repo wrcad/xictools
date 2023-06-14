@@ -72,6 +72,8 @@ QTprogress::QTprogress(QTbag *owner, prgMode mode) :
         owner->MonitorAdd(this);
 
     setWindowTitle(tr("Progress"));
+    setAttribute(Qt::WA_DeleteOnClose);
+
     QVBoxLayout *form = new QVBoxLayout(this);
     form->setMargin(4);
     form->setSpacing(2);

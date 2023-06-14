@@ -137,6 +137,7 @@ wb_shell = this;
         owner->MonitorAdd(this);
 
     setWindowTitle(tr("Listing"));
+    setAttribute(Qt::WA_DeleteOnClose);
     label = new QLabel(QString(title), this);
     lbox = new mcol_list_widget(this);
     lbox->setMinimumWidth(300);

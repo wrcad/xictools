@@ -48,9 +48,13 @@
 // Save File Dialog - pop up a selectable directory tree, use the prompt
 // line for text input.
 //
-struct sSFD
+struct cSaveFileDlg
 {
-    sSFD() { sfd_fsel = 0; sfd_dir_only = false; }
+    cSaveFileDlg()
+    {
+        sfd_fsel = 0;
+        sfd_dir_only = false;
+    }
 
     char *SaveFileDlg(const char*, const char*);
     char *OpenFileDlg(const char*, const char*);
@@ -64,133 +68,7 @@ private:
     bool sfd_dir_only;
 };
 
-namespace { sSFD SFD; }
-
-
-// Obtain the file name to save a file under.  The return is the static
-// string from the hypertext editor.  If fname is null, we are seeking a
-// directory path
-//
-char *
-sSFD::SaveFileDlg(const char *prompt, const char *fnamein)
-{
-    if (sfd_fsel)
-        return (0);
-    if (!QTmainwin::exists())
-        return (0);
-    sfd_dir_only = true;
-    char *fname = pathlist::expand_path(fnamein, true, true);
-    if (fname)
-        sfd_dir_only = false;
-
-    QTfilePopup *fs = new QTfilePopup(QTmainwin::self(), fsSAVE, 0, fname);
-    fs->register_callback(go_cb);
-    fs->register_get_callback(path_get);
-    fs->register_set_callback(path_set);
-    sfd_fsel = fs;
-    fs->register_usrptr((void**)&sfd_fsel);
-
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), fs,
-        QTmainwin::self()->Viewport());
-    fs->show();
-
-    char *in = PL()->EditPrompt(prompt, fname);
-    pathlist::path_canon(in);
-    if (sfd_fsel) {
-        sfd_fsel->popdown();
-        sfd_fsel = 0;
-    }
-    delete [] fname;
-    return (in);
-}
-
-
-// Obtain the name of a file to open.  The return is the static
-// string from the hypertext editor.
-//
-char *
-sSFD::OpenFileDlg(const char *prompt, const char *fnamein)
-{
-    if (sfd_fsel)
-        return (0);
-    if (!QTmainwin::exists())
-        return (0);
-    char *fname = pathlist::expand_path(fnamein, true, true);
-
-    QTfilePopup *fs = new QTfilePopup(QTmainwin::self(), fsOPEN, 0, fname);
-    fs->register_callback(go_cb);
-    fs->register_set_callback(path_set);
-    sfd_fsel = fs;
-    fs->register_usrptr((void**)&sfd_fsel);
-
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), fs,
-        QTmainwin::self()->Viewport());
-    fs->show();
-
-    char *in = PL()->EditPrompt(prompt, fname);
-    pathlist::path_canon(in);
-    if (sfd_fsel) {
-        sfd_fsel->popdown();
-        sfd_fsel = 0;
-    }
-    delete [] fname;
-    return (in);
-}
-
-
-// Static function.
-char *
-sSFD::path_get()
-{
-    if (SFD.sfd_dir_only)
-        return (0);
-    hyList *hp = PL()->List();
-    if (!hp)
-        return (0);
-    char *s = hyList::string(hp, HYcvPlain, true);
-    hyList::destroy(hp);
-    // remove any quoting
-    char *t = s;
-    char *path = lstring::getqtok(&t);
-    delete [] s;
-    return (path);  // freed by widget
-}
-
-
-// Static function.
-void
-sSFD::path_set(const char *path)
-{
-    if (!path)
-        SFD.sfd_fsel = 0;
-    else {
-        // quote if white space
-        for (const char *s = path; *s; s++) {
-            if (isspace(*s)) {
-                char *t = new char[strlen(path) + 3];
-                *t = '"';
-                strcpy(t+1, path);
-                strcat(t, "\"");
-                delete [] path;
-                path = t;
-                break;
-            }
-        }
-        PL()->EditPrompt(0, path, PLedUpdate);
-        delete [] path;
-    }
-}
-
-
-// Static function.
-void
-sSFD::go_cb(const char*, void*)
-{
-    // Simulate a Return press
-    XM()->SendKeyEvent(0, Qt::Key_Return, 0, false);
-    XM()->SendKeyEvent(0, Qt::Key_Return, 0, true);
-}
-// End of sSFD functions.
+namespace { cSaveFileDlg SFD; }
 
 
 // Open a save-file selection window.
@@ -245,4 +123,131 @@ cMain::PopUpFileSel(const char *root, void(*cb)(const char*, void*), void *arg)
 
     fs->show();
 }
+// End od cMain functions.
+
+
+// Obtain the file name to save a file under.  The return is the static
+// string from the hypertext editor.  If fname is null, we are seeking a
+// directory path
+//
+char *
+cSaveFileDlg::SaveFileDlg(const char *prompt, const char *fnamein)
+{
+    if (sfd_fsel)
+        return (0);
+    if (!QTmainwin::exists())
+        return (0);
+    sfd_dir_only = true;
+    char *fname = pathlist::expand_path(fnamein, true, true);
+    if (fname)
+        sfd_dir_only = false;
+
+    QTfilePopup *fs = new QTfilePopup(QTmainwin::self(), fsSAVE, 0, fname);
+    fs->register_callback(go_cb);
+    fs->register_get_callback(path_get);
+    fs->register_set_callback(path_set);
+    sfd_fsel = fs;
+    fs->register_usrptr((void**)&sfd_fsel);
+
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), fs,
+        QTmainwin::self()->Viewport());
+    fs->show();
+
+    char *in = PL()->EditPrompt(prompt, fname);
+    pathlist::path_canon(in);
+    if (sfd_fsel) {
+        sfd_fsel->popdown();
+        sfd_fsel = 0;
+    }
+    delete [] fname;
+    return (in);
+}
+
+
+// Obtain the name of a file to open.  The return is the static
+// string from the hypertext editor.
+//
+char *
+cSaveFileDlg::OpenFileDlg(const char *prompt, const char *fnamein)
+{
+    if (sfd_fsel)
+        return (0);
+    if (!QTmainwin::exists())
+        return (0);
+    char *fname = pathlist::expand_path(fnamein, true, true);
+
+    QTfilePopup *fs = new QTfilePopup(QTmainwin::self(), fsOPEN, 0, fname);
+    fs->register_callback(go_cb);
+    fs->register_set_callback(path_set);
+    sfd_fsel = fs;
+    fs->register_usrptr((void**)&sfd_fsel);
+
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), fs,
+        QTmainwin::self()->Viewport());
+    fs->show();
+
+    char *in = PL()->EditPrompt(prompt, fname);
+    pathlist::path_canon(in);
+    if (sfd_fsel) {
+        sfd_fsel->popdown();
+        sfd_fsel = 0;
+    }
+    delete [] fname;
+    return (in);
+}
+
+
+// Static function.
+char *
+cSaveFileDlg::path_get()
+{
+    if (SFD.sfd_dir_only)
+        return (0);
+    hyList *hp = PL()->List();
+    if (!hp)
+        return (0);
+    char *s = hyList::string(hp, HYcvPlain, true);
+    hyList::destroy(hp);
+    // remove any quoting
+    char *t = s;
+    char *path = lstring::getqtok(&t);
+    delete [] s;
+    return (path);  // freed by widget
+}
+
+
+// Static function.
+void
+cSaveFileDlg::path_set(const char *path)
+{
+    if (!path)
+        SFD.sfd_fsel = 0;
+    else {
+        // quote if white space
+        for (const char *s = path; *s; s++) {
+            if (isspace(*s)) {
+                char *t = new char[strlen(path) + 3];
+                *t = '"';
+                strcpy(t+1, path);
+                strcat(t, "\"");
+                delete [] path;
+                path = t;
+                break;
+            }
+        }
+        PL()->EditPrompt(0, path, PLedUpdate);
+        delete [] path;
+    }
+}
+
+
+// Static function.
+void
+cSaveFileDlg::go_cb(const char*, void*)
+{
+    // Simulate a Return press
+    XM()->SendKeyEvent(0, Qt::Key_Return, 0, false);
+    XM()->SendKeyEvent(0, Qt::Key_Return, 0, true);
+}
+// End of cSaveFileDlg functions.
 

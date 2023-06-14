@@ -147,6 +147,7 @@ wb_shell = this;
 
     if (owner)
         owner->MonitorAdd(this);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     menubar = new QMenuBar(this);
     main_menus[0] = new QMenu(this);

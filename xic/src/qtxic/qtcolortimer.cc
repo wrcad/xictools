@@ -192,10 +192,13 @@ namespace {
                 QTsubwin *sw = dynamic_cast<QTsubwin*>(wd->Wbag());
                 if (sw) {
                     draw_if *dif = dynamic_cast<draw_if*>(sw->Viewport());
-                    if (dif) {
-                        dif->draw_direct(true);
-                        dif->update();
+//XXX                    dif->refresh(0, 0, -1, -1);
+                    if (wd->DbType() == WDcddb) {
+                        if (Selections.blinking())
+                            Selections.show(wd);
                     }
+                    wd->ShowHighlighting();
+                    dif->update();
                 }
             }
         }

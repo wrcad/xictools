@@ -63,6 +63,8 @@ QTledPopup::QTledPopup(QTbag *owner, const char *label_str,
         owner->MonitorAdd(this);
 
     setWindowTitle(tr("Text Entry"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     if (!label_str)
         label_str = "Enter Filename";

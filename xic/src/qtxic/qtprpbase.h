@@ -32,133 +32,63 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtinterf.h"
-#include "qttext.h"
-#include "qtfont.h"
+#ifndef QTPRPTY_H
+#define QTPRPTY_H
 
-#include <QAction>
-#include <QGroupBox>
-#include <QLayout>
-#include <QTextEdit>
-#include <QPushButton>
+#include "main.h"
+#include "edit.h"
+#include "qtmain.h"
 
-// XXX FIXME this is the same as msg popup.
+class QMimeData;
 
-namespace qtinterf
+class cPrpBase : public QTbag
 {
-    class text_box : public QTextEdit
+public:
+    cPrpBase()
     {
-    public:
-        text_box(int w, int h, QWidget *prnt) :
-            QTextEdit(prnt), qs(w, h), qsmin(w/2, h/2) { }
-
-        QSize sizeHint() const { return (qs); }
-        QSize minimumSizeHint() const { return (qsmin); }
-
-    private:
-        QSize qs;
-        QSize qsmin;
-    };
-}
-
-
-//XXX use me
-char *QTtextPopup::pw_errlog;
-
-QTtextPopup::QTtextPopup(QTbag *owner, const char *message_str, STYtype sty,
-    int w, int h) : QDialog(owner ? owner->Shell() : 0)
-{
-    p_parent = owner;
-    display_style = sty;
-    pw_desens = false;
-
-    if (owner)
-        owner->MonitorAdd(this);
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    gbox = new QGroupBox(this);
-    tx = new text_box(w, h, gbox);
-    tx->setReadOnly(true);
-
-    if (sty == STY_FIXED) {
-        QFont *f;
-        if (FC.getFont(&f, FNT_FIXED)) {
-            tx->setCurrentFont(*f);
-            tx->setFont(*f);
-        }
+        pb_line_selected = -1;
+        pb_list = 0;
+        pb_odesc = 0;
+        pb_btn_callback = 0;
+        pb_start = 0;
+        pb_end = 0;
+        pb_drag_x = 0;
+        pb_drag_y = 0;
+        pb_dragging = false;
     }
-    setText(message_str);
+    virtual ~cPrpBase()         { PrptyText::destroy(pb_list); }
 
-    QVBoxLayout *vbox = new QVBoxLayout(gbox);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(tx);
+    PrptyText *resolve(int, CDo**);
 
-    b_cancel = new QPushButton(tr("Dismiss"), this);
-    connect(b_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    static cPrpBase *prptyInfoPtr();
 
-    vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(gbox);
-    vbox->addWidget(b_cancel);
-}
+protected:
+    PrptyText *get_selection();
+    void update_display();
+    void select_range(int, int);
+    void handle_button_down(QMouseEvent*);
+    void handle_button_up(QMouseEvent*);
+    void handle_mouse_motion(QMouseEvent*);
+    void handle_mime_data_received(const QMimeData*);
 
+    static int pb_bad_cb(void*);
 
-QTtextPopup::~QTtextPopup()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner)
-            owner->ClearPopup(this);
-    }
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller)
-        QTdev::Deselect(p_caller);
-}
+    int         pb_line_selected;
+    PrptyText   *pb_list;
+    CDo         *pb_odesc;
+    int         (*pb_btn_callback)(PrptyText*);
+    int         pb_start;
+    int         pb_end;
+    int         pb_drag_x;
+    int         pb_drag_y;
+    bool        pb_dragging;
+};
 
-
-// GRpopup override
-//
-void
-QTtextPopup::popdown()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->MonitorActive(this))
-            return;
-    }
-    delete this;
-}
-
-
-void
-QTtextPopup::setTitle(const char *title)
-{
-    setWindowTitle(title);
-}
-
-
-void
-QTtextPopup::setText(const char *message_str)
-{
-    if (display_style == STY_HTML)
-        tx->setHtml(message_str);
-    else
-        tx->setPlainText(message_str);
-}
-
-
-void
-QTtextPopup::quit_slot()
-{
-    delete this;
-}
+#endif
 

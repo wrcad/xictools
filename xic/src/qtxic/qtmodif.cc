@@ -212,6 +212,7 @@ cModif::cModif(stringlist *l, bool(*s)(const char*))
     }
 
     setWindowTitle(tr("Modified Cells"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);

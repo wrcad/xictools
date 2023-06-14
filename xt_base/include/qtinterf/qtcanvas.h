@@ -57,6 +57,7 @@ class QKeyEvent;
 class QDragEnterEvent;
 class QDragEvent;
 class QEnterEvent;
+class QFocusEvent;
 
 namespace qtinterf
 {
@@ -72,7 +73,13 @@ namespace qtinterf
         QPixmap *pixmap()           { return (da_pixmap); }
 
         void draw_direct(bool);
-        void update();
+        void switch_to_pixmap2();
+        void switch_from_pixmap2(int, int, int, int);
+        void set_draw_to_pixmap(QPixmap*);
+        void refresh(int, int, int, int);
+        void refresh()              { refresh(0, 0, width(), height()); }
+        void update(int, int, int, int);
+        void update()               { update(0, 0, width(), height()); }
         void clear();
         void clear_area(int, int, int, int);
 
@@ -104,7 +111,6 @@ namespace qtinterf
         void set_xor_mode(bool);
         void set_ghost_color(unsigned int);
 
-        void set_draw_to_pixmap(QPixmap*);
         void draw_pixmap(int, int, QPixmap*, int, int, int, int);
         void draw_image(int, int, QImage*, int, int, int, int);
 
@@ -130,6 +136,8 @@ namespace qtinterf
         void key_release_event(QKeyEvent*);
         void enter_event(QEnterEvent*);
         void leave_event(QEvent*);
+        void focus_in_event(QFocusEvent*);
+        void focus_out_event(QFocusEvent*);
         void drag_enter_event(QDragEnterEvent*);
         void drop_event(QDropEvent*);
 
@@ -143,6 +151,8 @@ namespace qtinterf
         void keyReleaseEvent(QKeyEvent*);
         void enterEvent(QEvent*);
         void leaveEvent(QEvent*);
+        void focusInEvent(QFocusEvent*);
+        void focusOutEvent(QFocusEvent*);
         void dragEnterEvent(QDragEnterEvent*);
         void dropEvent(QDropEvent*);
 
@@ -173,10 +183,12 @@ namespace qtinterf
         void initialize();
 
         QPixmap     *da_pixmap;         // main pixmap
+        QPixmap     *da_pixmap2;        // backing pixmap
+        QPixmap     *da_pixmap_bak;     // mode_swap_backing
         QPixmap     *da_tile_pixmap;    // tiling pixmap;
-        QPainter    *da_painter;        // main painter, paints to da_pixmap
-        QPainter    *da_painter_dir;    // painter direct to window
-        QPainter    *da_painter_temp;   // temp painter for pixmap switch
+        QPainter    *da_painter;        // main painter, paints da_pixmap
+        QPainter    *da_painter2;       // backing painter, paints da_pixmap2
+        QPainter    *da_painter_bak;    // mode swap backing
         QColor      da_fg;              // foreground color
         QColor      da_bg;              // background color
         QColor      da_ghost;           // ghost color

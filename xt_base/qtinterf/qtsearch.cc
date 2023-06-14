@@ -103,6 +103,8 @@ QTsearch::QTsearch(QTbag *owner, const char *initstr) :
         owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Search")));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(4);

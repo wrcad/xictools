@@ -35,21 +35,30 @@ CCFILES = \
     qtextfc.cc \
     qtextfh.cc \
     qtfiledlg.cc \
+    qtfiles.cc \
     qtfillp.cc \
+    qtflatten.cc \
     qtgrid.cc \
     qthtext.cc \
+    qtjoin.cc \
     qtkeymacro.cc \
     qtkeymap.cc \
     qtltab.cc \
     qtltalias.cc \
     qtltedit.cc \
     qtmain.cc \
+    qtmclchg.cc \
+    qtmem.cc \
     qtmenu.cc \
     qtmenucfg.cc \
     qtmerge.cc \
     qtmodif.cc \
     qtparam.cc \
+    qtpfilt.cc \
     qtplace.cc \
+    qtprpbase.cc \
+    qtprpedit.cc \
+    qtprpinfo.cc \
     qtptext.cc \
     qtsel.cc \
     qtstab.cc \
@@ -66,15 +75,21 @@ MOCFILES = \
     moc_empty.cpp \
     moc_expand.cpp \
     moc_fillp.cpp \
+    moc_flatten.cpp \
     moc_htext.cpp \
+    moc_join.cpp \
     moc_ltab.cpp \
     moc_ltedit.cpp \
+    moc_mclchg.cpp \
+    moc_mem.cpp \
     moc_menu.cpp \
     moc_menucfg.cpp \
     moc_merge.cpp \
     moc_modif.cpp \
     moc_param.cpp \
     moc_place.cpp \
+    moc_prpedit.cpp \
+    moc_prpinfo.cpp \
     moc_sel.cpp \
     moc_stab.cpp \
     moc_xform.cpp \
@@ -112,15 +127,21 @@ moc_dots.o: moc_dots.cpp  qtdots.h
 moc_empty.o: moc_empty.cpp  qtempty.h
 moc_expand.o: moc_expand.cpp  qtexpand.h
 moc_fillp.o: moc_fillp.cpp  qtfillp.h
+moc_flatten.o: moc_flatten.cpp  qlatten.h
 moc_htext.o: moc_htext.cpp  qthtext.h
+moc_join.o: moc_join.cpp  qtjoin.h
 moc_ltab.o: moc_ltab.cpp  qtltab.h
 moc_ltedit.o: moc_ltedit.cpp  qtltedit.h
+moc_mclchg.o: moc_mclchg.cpp  qtmclchg.h
+moc_mem.o: moc_mem.cpp  qtmem.h
 moc_menu.o: moc_menu.cpp  qtmenu.h
 moc_menucfg.o: moc_menucfg.cpp  qtmenucfg.h
 moc_merge.o: moc_merge.cpp  qtmerge.h
 moc_modif.o: moc_modif.cpp  qtmodif.h
 moc_param.o: moc_param.cpp  qtparam.h
 moc_place.o: moc_place.cpp  qtplace.h
+moc_prpedit.o: moc_prpedit.cpp  qtprpedit.h
+moc_prpinfo.o: moc_prpinfo.cpp  qtprpinfo.h
 moc_sel.o: moc_sel.cpp  qtsel.h
 moc_stab.o: moc_stab.cpp  qtstab.h
 moc_xform.o: moc_xform.cpp  qtxform.h
@@ -140,12 +161,20 @@ moc_expand.cpp: $(MOC) qtexpand.h
 	$(MOC) qtexpand.h -o moc_expand.cpp
 moc_fillp.cpp: $(MOC) qtfillp.h
 	$(MOC) qtfillp.h -o moc_fillp.cpp
+moc_flatten.cpp: $(MOC) qtflatten.h
+	$(MOC) qtflatten.h -o moc_flatten.cpp
 moc_htext.cpp: $(MOC) qthtext.h
 	$(MOC) qthtext.h -o moc_htext.cpp
+moc_join.cpp: $(MOC) qtjoin.h
+	$(MOC) qtjoin.h -o moc_join.cpp
 moc_ltab.cpp: $(MOC) qtltab.h
 	$(MOC) qtltab.h -o moc_ltab.cpp
 moc_ltedit.cpp: $(MOC) qtltedit.h
 	$(MOC) qtltedit.h -o moc_ltedit.cpp
+moc_mclchg.cpp: $(MOC) qtmclchg.h
+	$(MOC) qtmclchg.h -o moc_mclchg.cpp
+moc_mem.cpp: $(MOC) qtmem.h
+	$(MOC) qtmem.h -o moc_mem.cpp
 moc_menu.cpp: $(MOC) qtmenu.h
 	$(MOC) qtmenu.h -o moc_menu.cpp
 moc_menucfg.cpp: $(MOC) qtmenucfg.h
@@ -158,6 +187,10 @@ moc_param.cpp: $(MOC) qtparam.h
 	$(MOC) qtparam.h -o moc_param.cpp
 moc_place.cpp: $(MOC) qtplace.h
 	$(MOC) qtplace.h -o moc_place.cpp
+moc_prpedit.cpp: $(MOC) qtprpedit.h
+	$(MOC) qtprpedit.h -o moc_prpedit.cpp
+moc_prpinfo.cpp: $(MOC) qtprpinfo.h
+	$(MOC) qtprpinfo.h -o moc_prpinfo.cpp
 moc_sel.cpp: $(MOC) qtsel.h
 	$(MOC) qtsel.h -o moc_sel.cpp
 moc_stab.cpp: $(MOC) qtstab.h

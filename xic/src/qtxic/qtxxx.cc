@@ -191,11 +191,6 @@ cConvert::PopUpCompare(GRobject, ShowMode)
 {
 }
 
-void
-cConvert::PopUpPropertyFilter(GRobject, ShowMode)
-{
-}
-
 
 // qtcvout.cc
 
@@ -295,23 +290,6 @@ cSced::PopUpSpiceIf(GRobject, ShowMode)
 }
 
 
-// qtfiles.cc
-
-void
-cConvert::PopUpFiles(GRobject, ShowMode)
-{
-}
-
-
-// qtflatten.cc
-
-void
-cEdit::PopUpFlatten(GRobject, ShowMode,
-        bool(*)(const char*, bool, const char*, void*),
-        void*, int, bool)
-{
-}
-
 // qtlibs.cc
 
 void
@@ -333,22 +311,11 @@ cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*)
 {
 }
 
-void
-cEdit::PopUpLayerChangeMode(ShowMode)
-{
-}
 
 // atltalias.cc
 
 void
 cMain::PopUpLayerAliases(GRobject, ShowMode)
-{
-}
-
-// qtmem.cc
-
-void
-cMain::PopUpMemory(ShowMode)
 {
 }
 
@@ -374,12 +341,6 @@ cEdit::polytext(const char*, int, int, int)
     return (0);
 }
 
-// qtprpedit.cc
-
-void
-cEdit::PopUpProperties(CDo*, ShowMode, PRPmode)
-{
-}
 
 void
 cEdit::PopUpStdVia(GRobject, ShowMode, CDc*)
@@ -392,53 +353,7 @@ cEdit::PopUpEditSetup(GRobject, ShowMode)
 }
 
 void
-cEdit::PopUpJoin(GRobject, ShowMode)
-{
-}
-
-void
 cEdit::PopUpLayerExp(GRobject, ShowMode)
-{
-}
-
-
-PrptyText *
-cEdit::PropertyResolve(int, int, CDo**)
-{
-    return (0);
-}
-
-void
-cEdit::PropertyPurge(CDo*, CDo*)
-{
-}
-
-PrptyText *
-cEdit::PropertySelect(int)
-{
-    return (0);
-}
-
-PrptyText *
-cEdit::PropertyCycle(CDp*, bool (*)(const CDp*), bool)
-{
-    return (0);
-}
-
-void
-cEdit::RegisterPrptyBtnCallback(int(*)(PrptyText*))
-{
-}
-
-// qtprpinfo.cc
-
-void
-cEdit::PopUpPropertyInfo(CDo*, ShowMode)
-{
-}
-
-void
-cEdit::PropertyInfoPurge(CDo*, CDo*)
 {
 }
 

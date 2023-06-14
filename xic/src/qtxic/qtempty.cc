@@ -51,6 +51,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QScrollBar>
+#include <QMouseEvent>
 
 
 //--------------------------------------------------------------------------
@@ -92,6 +93,9 @@ cEmpty::cEmpty(stringlist *l)
     ec_changed = false;
 
     setWindowTitle(tr("Empty Cells"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_ShowWithoutActivating);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);

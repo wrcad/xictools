@@ -42,7 +42,7 @@
 #include "cvrt.h"
 #include "cd_compare.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
+#include "qtmain.h"
 
 
 //-----------------------------------------------------------------------------
@@ -52,6 +52,7 @@
 // Help system keywords used:
 //  xic:prpfilt
 
+/*
 namespace {
     namespace gtkpfilt {
         struct sPflt
@@ -82,11 +83,13 @@ namespace {
 }
 
 using namespace gtkpfilt;
+*/
 
 
 void
 cConvert::PopUpPropertyFilter(GRobject caller, ShowMode mode)
 {
+#ifdef notdef
     if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
@@ -112,8 +115,10 @@ cConvert::PopUpPropertyFilter(GRobject caller, ShowMode mode)
     GTKdev::self()->SetPopupLocation(GRloc(LW_UR), Pflt->shell(),
         GTKmainwin::self()->Viewport());
     gtk_widget_show(Pflt->shell());
+#endif
 }
 
+#ifdef notdef
 
 sPflt::sPflt(GRobject c)
 {
@@ -394,3 +399,4 @@ sPflt::pf_action(GtkWidget *caller, void *arg)
     }
 }
 
+#endif

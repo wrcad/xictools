@@ -161,7 +161,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
         this, SLOT(enter_slot(QEnterEvent*)));
     connect(Viewport(), SIGNAL(leave_event(QEvent*)),
         this, SLOT(leave_slot(QEvent*)));
-    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
+    connect(Viewport(), SIGNAL(move_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
@@ -538,16 +538,20 @@ QTedit::press_slot(QMouseEvent *ev)
 void
 QTedit::enter_slot(QEnterEvent*)
 {
-    pe_entered = true;
-    redraw();
+    if (QTmainwin::self()->Viewport()->hasFocus()) {
+        pe_entered = true;
+        redraw();
+    }
 }
 
 
 void
 QTedit::leave_slot(QEvent*)
 {
-    pe_entered = false;
-    redraw();
+    if (QTmainwin::self()->Viewport()->hasFocus()) {
+        pe_entered = false;
+        redraw();
+    }
 }
 
 

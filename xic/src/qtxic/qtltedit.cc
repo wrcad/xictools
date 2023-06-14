@@ -85,6 +85,8 @@ cLtabEdit::cLtabEdit(GRobject c)
 
     setWindowTitle(tr("Layer Editor"));
     setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(le_shell), false);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);

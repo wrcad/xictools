@@ -131,6 +131,7 @@ cPlace::cPlace(bool noprompt)
     ED()->plInitMenuLen();
 
     setWindowTitle(tr("Cell Placement Control"));
+    setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(pl_popup), false);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);

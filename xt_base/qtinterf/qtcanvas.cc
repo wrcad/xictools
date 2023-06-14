@@ -44,6 +44,7 @@
 #include <QBitmap>
 #include <QPainter>
 #include <QEnterEvent>
+#include <QFocusEvent>
 
 
 using namespace qtinterf;
@@ -53,22 +54,28 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     setMouseTracking(true);
 
     da_pixmap = new QPixmap(1, 1);
-    da_painter = new QPainter(da_pixmap);
-    da_painter_dir = 0;
-    da_painter_temp = 0;
-    da_bg.setNamedColor(QString("white"));
-    da_fg.setNamedColor(QString("black"));
-    da_brush.setStyle(Qt::SolidPattern);
-    da_painter_temp = 0;
+    da_pixmap2 = 0;
+    da_pixmap_bak = 0;
     da_tile_pixmap = 0;
+    da_painter = new QPainter(da_pixmap);
+    da_painter2 = 0;
+    da_painter_bak = 0;
     da_tile_x = 0;
     da_tile_y = 0;
     da_fill_mode = false;
     da_xor_mode = false;
     da_direct_mode = false;
     da_line_mode = 0;
-    da_pen.setStyle(Qt::NoPen);
     da_line_style = 0;
+    da_xb1 = 0;
+    da_yb1 = 0;
+    da_xb2 = 0;
+    da_yb2 = 0;
+
+    da_bg.setNamedColor(QString("white"));
+    da_fg.setNamedColor(QString("black"));
+    da_brush.setStyle(Qt::SolidPattern);
+    da_pen.setStyle(Qt::NoPen);
     initialize();
     setAttribute(Qt::WA_OpaquePaintEvent, false);
     setAutoFillBackground(true);
@@ -77,8 +84,16 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
 
 QTcanvas::~QTcanvas()
 {
-    delete da_painter;
     delete da_pixmap;
+    delete da_painter;
+    if (da_pixmap_bak) {
+        delete da_pixmap_bak;
+        delete da_painter_bak;
+    }
+    else if (da_pixmap2) {
+        delete da_pixmap2;
+        delete da_painter2;
+    }
 }
 
 
@@ -91,20 +106,111 @@ QTcanvas::~QTcanvas()
 // During a paint event, the window surface is updated from the
 // pixmap.  In direct mode, after updating from the pixmap, the paint
 // event is emitted and the user can handle this and paint directly.
+// DOES NOT WORK IN QT.
 //
 void
 QTcanvas::draw_direct(bool direct)
 {
-    da_direct_mode = direct;
+//    da_direct_mode = direct;
 }
 
 
-// Paint the screen window from the pixmap.
+// Switch the drawing context to the second pixmap.
 //
 void
-QTcanvas::update()
+QTcanvas::switch_to_pixmap2()
 {
-    repaint(0, 0, width(), height());
+    if (da_pixmap_bak) {
+        // Already switched.
+        return;
+    }
+    if (!da_pixmap2) {
+        da_pixmap2 = new QPixmap(da_pixmap->size());
+        da_painter2 = new QPainter(da_pixmap2);
+//        da_painter2->clear();
+    }
+    da_pixmap_bak = da_pixmap;
+    da_pixmap = da_pixmap2;
+    da_painter_bak = da_painter;
+    da_painter = da_painter2;
+    da_painter->setBrush(da_brush);
+    da_painter->setPen(da_pen);
+    bb_init();
+    emit new_painter(da_painter);
+printf("sw to\n");
+}
+
+
+// Switch back to the main pixmap and copy the given region from the
+// second pixmap, update the screen.
+//
+void
+QTcanvas::switch_from_pixmap2(int xx, int yy, int w, int h)
+{
+    if (!da_pixmap_bak) {
+        // Already switched back.
+        return;
+    }
+    da_pixmap = da_pixmap_bak;
+    da_pixmap_bak = 0;
+    da_painter = da_painter_bak;
+    da_painter_bak = 0;
+    da_painter->setBrush(da_brush);
+    da_painter->setPen(da_pen);
+    bb_init();
+    emit new_painter(da_painter);
+    da_painter->drawPixmap(xx, yy, *da_pixmap2, xx, yy, w, h);
+    repaint(xx, yy, w, h);
+printf("sw from\n");
+}
+
+
+// Switch the drawing context to the supplied pixmap, or back to the
+// main pixmap if 0 is passed.
+//
+void
+QTcanvas::set_draw_to_pixmap(QPixmap *pixmap)
+{
+    //XXX called from html viewer
+    /*
+    if (pixmap) {
+        if (da_painter_temp)
+            // already drawing to pixmap
+            return;
+        da_painter_temp = da_painter;
+        da_painter = new QPainter(pixmap);
+    }
+    else {
+        if (!da_painter_temp)
+            return;
+        delete da_painter;
+        da_painter = da_painter_temp;
+        da_painter_temp = 0;
+    }
+    initialize();
+    */
+}
+
+
+// Copy the pixmap2 area into the main pixmap.
+//
+void
+QTcanvas::refresh(int xx, int yy, int w, int h)
+{
+    if (da_pixmap_bak || !da_pixmap2) {
+        // Do this in main mode only.
+        return;
+    }
+    da_painter->drawPixmap(xx, yy, *da_pixmap2, xx, yy, w, h);
+}
+
+
+// Paint the screen window from the main pixmap.
+//
+void
+QTcanvas::update(int xx, int yy, int w, int h)
+{
+    repaint(xx, yy, w, h);
 }
 
 
@@ -704,33 +810,27 @@ QTcanvas::set_ghost_color(unsigned int pixel)
     da_ghost.setRgb(pixel);
     da_ghost_fg.setRgb(pixel ^ da_bg.rgb());
 }
-// End of exported virtual interface
 
 
-// Switch the drawing context to the supplied pixmap, or back to the
-// main pixmap if 0 is passed.
+// Copy out the part of a pixmap (xp,yp,wp,hp) to xw,yw.
 //
 void
-QTcanvas::set_draw_to_pixmap(QPixmap *pixmap)
+QTcanvas::draw_pixmap(int xw, int yw, QPixmap *pmap,
+    int xp, int yp, int wp, int hp)
 {
-    /*
-    if (pixmap) {
-        if (da_painter_temp)
-            // already drawing to pixmap
-            return;
-        da_painter_temp = da_painter;
-        da_painter = new QPainter(pixmap);
-    }
-    else {
-        if (!da_painter_temp)
-            return;
-        delete da_painter;
-        da_painter = da_painter_temp;
-        da_painter_temp = 0;
-    }
-    initialize();
-    */
+    da_painter->drawPixmap(xw, yw, wp, hp, *pmap, xp, yp, wp, hp);
 }
+
+
+// Copy out the part of a pixmap (xp,yp,wp,hp) to xw,yw.
+//
+void
+QTcanvas::draw_image(int xw, int yw, QImage *image,
+    int xp, int yp, int wp, int hp)
+{
+    da_painter->drawImage(xw, yw, *image, xp, yp, wp, hp);
+}
+// End of exported virtual interface
 
 
 // Set to internal line pattern (argument nonzero).  If set to zero,
@@ -825,26 +925,6 @@ QTcanvas::draw_polygon(bool filled, QPoint *points, int numpts)
         da_painter->setBrush(da_brush);
     }
 }
-
-
-// Copy out the part of a pixmap (xp,yp,wp,hp) to xw,yw.
-//
-void
-QTcanvas::draw_pixmap(int xw, int yw, QPixmap *pmap,
-    int xp, int yp, int wp, int hp)
-{
-    da_painter->drawPixmap(xw, yw, wp, hp, *pmap, xp, yp, wp, hp);
-}
-
-
-// Copy out the part of a pixmap (xp,yp,wp,hp) to xw,yw.
-//
-void
-QTcanvas::draw_image(int xw, int yw, QImage *image,
-    int xp, int yp, int wp, int hp)
-{
-    da_painter->drawImage(xw, yw, *image, xp, yp, wp, hp);
-}
 // End of extra drawing functions
 
 
@@ -857,15 +937,26 @@ QTcanvas::resizeEvent(QResizeEvent *ev)
     delete da_pixmap;
     da_pixmap = new QPixmap(ev->size());
     da_painter = new QPainter(da_pixmap);
-    initialize();
-    /*XXX
     da_painter->setFont(fnt);
-    if (da_painter_dir) {
-        da_painter_dir->end();
-        delete da_painter_dir;
-        da_painter_dir = 0;
+    initialize();
+    if (da_pixmap_bak) {
+        fnt = da_painter_bak->font();
+        da_painter_bak->end();
+        delete da_painter_bak;
+        delete da_pixmap_bak;
+        da_pixmap_bak = new QPixmap(ev->size());
+        da_painter_bak = new QPainter(da_pixmap_bak);
+        da_painter_bak->setFont(fnt);
     }
-    */
+    else if (da_pixmap2) {
+        fnt = da_painter2->font();
+        da_painter2->end();
+        delete da_painter2;
+        delete da_pixmap2;
+        da_pixmap2 = new QPixmap(ev->size());
+        da_painter2 = new QPainter(da_pixmap2);
+        da_painter2->setFont(fnt);
+    }
     emit new_painter(da_painter);
     emit resize_event(ev);
 }
@@ -882,6 +973,7 @@ QTcanvas::paintEvent(QPaintEvent *ev)
             p.drawPixmap(r, *da_pixmap, r);
         }
     }
+    /*
     if (da_direct_mode) {
         // The application can handle this to draw highlighting that
         // is not in the pixmap.  In some applications, it is
@@ -895,6 +987,7 @@ QTcanvas::paintEvent(QPaintEvent *ev)
         emit paint_event(ev);
         da_painter = t;
     }
+    */
 }
 
 
@@ -945,6 +1038,20 @@ void
 QTcanvas::leaveEvent(QEvent *ev)
 {
     emit leave_event(ev);
+}
+
+
+void
+QTcanvas::focusInEvent(QFocusEvent *ev)
+{
+    emit focus_in_event(ev);
+}
+
+
+void
+QTcanvas::focusOutEvent(QFocusEvent *ev)
+{
+    emit focus_out_event(ev);
 }
 
 

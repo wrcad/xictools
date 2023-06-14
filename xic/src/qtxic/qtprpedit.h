@@ -32,133 +32,82 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtinterf.h"
-#include "qttext.h"
-#include "qtfont.h"
+#ifndef QTPRPEDIT_H
+#define QTPRPEDIT_H
 
-#include <QAction>
-#include <QGroupBox>
-#include <QLayout>
-#include <QTextEdit>
-#include <QPushButton>
+#include "qtprpbase.h"
 
-// XXX FIXME this is the same as msg popup.
+#include <QDialog>
 
-namespace qtinterf
+class QPushButton;
+class QMenu;
+class QAction;
+class QMimeData;
+
+class cPrpEditor : public QDialog, public cPrpBase
 {
-    class text_box : public QTextEdit
+    Q_OBJECT
+
+public:
+    struct sAddEnt
     {
-    public:
-        text_box(int w, int h, QWidget *prnt) :
-            QTextEdit(prnt), qs(w, h), qsmin(w/2, h/2) { }
+        sAddEnt(const char *n, int v)   { name = n; value = v; }
 
-        QSize sizeHint() const { return (qs); }
-        QSize minimumSizeHint() const { return (qsmin); }
-
-    private:
-        QSize qs;
-        QSize qsmin;
+        const char *name;
+        int value;
     };
-}
 
+    cPrpEditor(CDo*, PRPmode);
+    ~cPrpEditor();
 
-//XXX use me
-char *QTtextPopup::pw_errlog;
+    void update(CDo*, PRPmode);
+    void purge(CDo*, CDo*);
+    PrptyText *select(int);
+    PrptyText *cycle(CDp*, bool(*)(const CDp*), bool);
+    void set_btn_callback(int(*)(PrptyText*));
 
-QTtextPopup::QTtextPopup(QTbag *owner, const char *message_str, STYtype sty,
-    int w, int h) : QDialog(owner ? owner->Shell() : 0)
-{
-    p_parent = owner;
-    display_style = sty;
-    pw_desens = false;
+    static cPrpEditor *self()           { return (instPtr); }
 
-    if (owner)
-        owner->MonitorAdd(this);
-    setAttribute(Qt::WA_DeleteOnClose);
+private slots:
+    void edit_btn_slot(bool);
+    void del_btn_slot(bool);
+    void add_menu_slot(QAction*);
+    void global_btn_slot(bool);
+    void info_btn_slot(bool);
+    void help_btn_slot();
+    void activ_btn_slot(bool);
+    void dismiss_btn_slot();
+    void mouse_press_slot(QMouseEvent*);
+    void mouse_motion_slot(QMouseEvent*);
+    void mime_data_received_slot(const QMimeData*);
+    void font_changed_slot(int);
 
-    gbox = new QGroupBox(this);
-    tx = new text_box(w, h, gbox);
-    tx->setReadOnly(true);
+private:
+    void activate(bool);
+    void call_prpty_add(int);
+    void call_prpty_edit(PrptyText*);
+    void call_prpty_del(PrptyText*);
 
-    if (sty == STY_FIXED) {
-        QFont *f;
-        if (FC.getFont(&f, FNT_FIXED)) {
-            tx->setCurrentFont(*f);
-            tx->setFont(*f);
-        }
-    }
-    setText(message_str);
+    QPushButton *po_activ;
+    QPushButton *po_edit;
+    QPushButton *po_del;
+    QPushButton *po_add;
+    QMenu *po_addmenu;
+    QPushButton *po_global;
+    QPushButton *po_info;
+    QAction *po_name_btn;
+    int po_dspmode;
 
-    QVBoxLayout *vbox = new QVBoxLayout(gbox);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(tx);
+    static cPrpEditor *instPtr;
+    static sAddEnt po_elec_addmenu[];
+    static sAddEnt po_phys_addmenu[];
+};
 
-    b_cancel = new QPushButton(tr("Dismiss"), this);
-    connect(b_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
-
-    vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(gbox);
-    vbox->addWidget(b_cancel);
-}
-
-
-QTtextPopup::~QTtextPopup()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner)
-            owner->ClearPopup(this);
-    }
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller)
-        QTdev::Deselect(p_caller);
-}
-
-
-// GRpopup override
-//
-void
-QTtextPopup::popdown()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->MonitorActive(this))
-            return;
-    }
-    delete this;
-}
-
-
-void
-QTtextPopup::setTitle(const char *title)
-{
-    setWindowTitle(title);
-}
-
-
-void
-QTtextPopup::setText(const char *message_str)
-{
-    if (display_style == STY_HTML)
-        tx->setHtml(message_str);
-    else
-        tx->setPlainText(message_str);
-}
-
-
-void
-QTtextPopup::quit_slot()
-{
-    delete this;
-}
+#endif
 

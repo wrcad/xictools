@@ -172,6 +172,8 @@ cColor::cColor(GRobject c)
     c_blue = 0;
 
     setWindowTitle(tr("Color Selection"));
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_ShowWithoutActivating);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);

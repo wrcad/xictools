@@ -39,13 +39,12 @@
  *========================================================================*/
 
 #include "config.h"
-#include "main.h"
+#include "qtmem.h"
 #include "cd_celldb.h"
 #include "dsp_color.h"
 #include "menu.h"
 #include "view_menu.h"
-#include "gtkmain.h"
-#include "gtkinterf/gtkfont.h"
+#include "qtinterf/qtfont.h"
 #ifdef HAVE_LOCAL_ALLOCATOR
 #include "malloc/local_malloc.h"
 #else
@@ -62,90 +61,37 @@
 #endif
 #endif
 
+#include <QLayout>
+#include <QPushButton>
+#include "qtinterf/qtcanvas.h"
+
 
 //-----------------------------------------------------------------------------
 // Memory Monitor pop-up
 //
 
-namespace {
-    namespace gtkmem {
-        struct sMem : public GTKbag, public GTKdraw
-        {
-            sMem();
-            ~sMem();
-
-            void update();
-
-        private:
-            static void mem_popdown(GtkWidget*, void*);
-            static int mem_proc(void*);
-#if GTK_CHECK_VERSION(3,0,0)
-            static int mem_redraw(GtkWidget*, cairo_t*, void*);
-#else
-            static int mem_redraw(GtkWidget*, GdkEvent*, void*);
-#endif
-            static void mem_font_change(GtkWidget*, void*, void*);
-        };
-
-        sMem *Mem;
-    }
-
-
-    double chk_val(double val, char *m)
-    {
-        *m = 'K';
-        if (val >= 1e9) {
-            val *= 1e-9;
-            *m = 'T';
-        }
-        else if (val >= 1e6) {
-            val *= 1e-6;
-            *m = 'G';
-        }
-        else if (val >= 1e3) {
-            val *= 1e-3;
-            *m = 'M';
-        }
-        return (val);
-    }
-}
-
-using namespace gtkmem;
-
-
 void
 cMain::PopUpMemory(ShowMode mode)
 {
-    if (!GTKdev::exists() || !GTKmainwin::exists())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete Mem;
+        if (cMemMon::self())
+            cMemMon::self()->deleteLater();
         return;
     }
-    if (Mem) {
-        Mem->update();
+    if (cMemMon::self()) {
+        cMemMon::self()->update();
         return;
     }
     if (mode == MODE_UPD)
         return;
 
-    new sMem;
-    if (!Mem->Shell()) {
-        delete Mem;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Mem->Shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new cMemMon;
 
-    GTKdev::self()->SetPopupLocation(GRloc(), Mem->Shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Mem->Shell());
-#if GTK_CHECK_VERSION(3,0,0)
-    Mem->GetDrawable()->set_window(gtk_widget_get_window(Mem->Viewport()));
-#else
-    Mem->SetWindow(gtk_widget_get_window(Mem->Viewport()));
-#endif
-    Mem->SetWindowBackground(GTKdev::self()->NameColor("white"));
+    QTdev::self()->SetPopupLocation(GRloc(), cMemMon::self(),
+        QTmainwin::self()->Viewport());
+    cMemMon::self()->show();
 }
 // End of cMain functions.
 
@@ -153,89 +99,79 @@ cMain::PopUpMemory(ShowMode mode)
 // Minimum widget width so that title text isn't truncated.
 #define MEM_MINWIDTH 240
 
-sMem::sMem() : GTKdraw(XW_TEXT)
+cMemMon *cMemMon::instPtr;
+
+cMemMon::cMemMon() : QTdraw(XW_TEXT)
 {
-    Mem = this;
-    wb_shell = gtk_NewPopup(GTKmainwin::self(), "Memory Monitor",
-        mem_popdown, 0);
-    if (!wb_shell)
-        return;
-    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
+    instPtr = this;
 
-    GtkWidget *form = gtk_table_new(1, 2, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(wb_shell), form);
+    setWindowTitle(tr("Memory Monitor"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_ShowWithoutActivating);
+//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    // The drawing area.
     //
-    // the drawing area, in a frame
+    gd_viewport = new QTcanvas();
+    vbox->addWidget(gd_viewport->widget());
+
+    // The dismiss button.
     //
-    gd_viewport = gtk_drawing_area_new();
-    gtk_widget_set_name(gd_viewport, "Viewport");
-    gtk_widget_show(gd_viewport);
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
-    GTKfont::setupFont(gd_viewport, FNT_FIXED, true);
+    connect(gd_viewport->widget(), SIGNAL(resize_event(QResizeEvent*)),
+        this, SLOT(resize_slot(QResizeEvent*)));
 
-    int fw, fh;
-    TextExtent(0, &fw, &fh);
-    int ww = 34*fw + 4;
-    if (ww < MEM_MINWIDTH)
-        ww = MEM_MINWIDTH;
-    gtk_widget_set_size_request(gd_viewport, ww, 5*fh + 4);
-
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), gd_viewport);
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 4, 2);
-
-#if GTK_CHECK_VERSION(3,0,0)
-    g_signal_connect(G_OBJECT(gd_viewport), "draw",
-        G_CALLBACK(mem_redraw), 0);
-#else
-    gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
-        G_CALLBACK(mem_redraw), 0);
-#endif
-    g_signal_connect(G_OBJECT(gd_viewport), "style-set",
-        G_CALLBACK(mem_font_change), 0);
-
+    // Font setup.
     //
-    // the dismiss button
-    //
-    GtkWidget *button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(mem_popdown), 0);
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED)) {
+        gd_viewport->widget()->setFont(*fnt);
+    }
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    GTKpkg::self()->RegisterTimeoutProc(5000, mem_proc, 0);
+//    GTKpkg::self()->RegisterTimeoutProc(5000, mem_proc, 0);
+    update();
 }
 
 
-sMem::~sMem()
+cMemMon::~cMemMon()
 {
-    Mem = 0;
+printf("destr\n");
+    instPtr = 0;
     Menu()->MenuButtonSet(0, MenuALLOC, false);
-    if (wb_shell) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
-            (gpointer)mem_popdown, wb_shell);
-    }
+}
+
+
+QSize
+cMemMon::sizeHint() const
+{
+    int fw = QTfont::stringWidth(0, gd_viewport->widget());
+    int fh = QTfont::lineHeight(gd_viewport->widget());
+    int ww = 34*fw + 4;
+    if (ww < MEM_MINWIDTH)
+        ww = MEM_MINWIDTH;
+    int wh = 5*fh + 50;
+    return (QSize(ww, wh));
 }
 
 
 void
-sMem::update()
+cMemMon::update()
 {
     unsigned long c1 = DSP()->Color(PromptTextColor);
     unsigned long c2 = DSP()->Color(PromptEditTextColor);
     int fwid, fhei;
-    SetWindowBackground(GTKdev::self()->NameColor("white"));
     TextExtent(0, &fwid, &fhei);
+    SetWindowBackground(QTdev::self()->NameColor("white"));
     SetFillpattern(0);
     SetLinestyle(0);
     Clear();
@@ -273,12 +209,16 @@ sMem::update()
 
 #ifdef HAVE_SYS_RESOURCE_H
     rlimit rl;
-    if (getrlimit(RLIMIT_DATA, &rl))    // data segment limit
+    if (getrlimit(RLIMIT_DATA, &rl)) {      // data segment limit
+        Update();
         return;
+    }
 
     rlimit rl2;
-    if (getrlimit(RLIMIT_AS, &rl2))     // mmap limit
-    return;
+    if (getrlimit(RLIMIT_AS, &rl2)) {       // mmap limit
+        Update();
+        return;
+    }
 
     x = 2;
     y += fhei;
@@ -358,51 +298,53 @@ sMem::update()
     Text(buf, x, y, 0);
 #endif
 #endif
+    Update();
 }
 
 
-// Static function.
-#if GTK_CHECK_VERSION(3,0,0)
-int
-sMem::mem_redraw(GtkWidget*, cairo_t*, void*)
-#else
-int
-sMem::mem_redraw(GtkWidget*, GdkEvent*, void*)
-#endif
-{
-    XM()->PopUpMemory(MODE_UPD);
-    return (true);
-}
-
-
-// Static function.
 void
-sMem::mem_font_change(GtkWidget*, void*, void*)
+cMemMon::dismiss_btn_slot()
 {
-    if (Mem) {
-        int fw, fh;
-        Mem->TextExtent(0, &fw, &fh);
-        int ww = 34*fw + 4;
-        if (ww < MEM_MINWIDTH)
-            ww = MEM_MINWIDTH;
-        gtk_widget_set_size_request(Mem->gd_viewport, ww, 5*fh + 4);
+    XM()->PopUpMemory(MODE_OFF);
+}
+
+
+void
+cMemMon::resize_slot(QResizeEvent*)
+{
+    update();
+}
+
+
+void
+cMemMon::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_FIXED))
+            gd_viewport->widget()->setFont(*fnt);
+        XM()->PopUpMemory(MODE_UPD);
     }
 }
 
 
 // Static function.
-int
-sMem::mem_proc(void*)
+double
+cMemMon::chk_val(double val, char *m)
 {
-    XM()->PopUpMemory(MODE_UPD);
-    return (Mem != 0);
-}
-
-
-// Static function.
-void
-sMem::mem_popdown(GtkWidget*, void*)
-{
-    XM()->PopUpMemory(MODE_OFF);
+    *m = 'K';
+    if (val >= 1e9) {
+        val *= 1e-9;
+        *m = 'T';
+    }
+    else if (val >= 1e6) {
+        val *= 1e-6;
+        *m = 'G';
+    }
+    else if (val >= 1e3) {
+        val *= 1e-3;
+        *m = 'M';
+    }
+    return (val);
 }
 

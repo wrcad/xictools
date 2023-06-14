@@ -38,143 +38,178 @@
  $Id:$
  *========================================================================*/
 
-#include "qtdots.h"
-#include "sced.h"
+#include "qtmclchg.h"
+#include "edit.h"
+#include "edit_variables.h"
+#include "dsp_inlines.h"
 #include "menu.h"
-#include "attr_menu.h"
+#include "modf_menu.h"
 
 #include <QLayout>
+#include <QLabel>
+#include <QGroupBox>
 #include <QRadioButton>
 #include <QPushButton>
 
 
 //-------------------------------------------------------------------------
-// Pop-up to control electrical connection point display.
+// Pop-up to control the layer change option in move/copy.
+//
+// Help system keywords used:
+//  xic:mclcg
 
-cDots *cDots::instPtr;
 
 void
-cSced::PopUpDots(GRobject caller, ShowMode mode)
+cEdit::PopUpLayerChangeMode(ShowMode mode)
 {
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cDots::self())
-            cDots::self()->deleteLater();
+        Menu()->MenuButtonSet(MMmain, MenuMCLCG, false);
+        if (cMCLchange::self())
+            cMCLchange::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cDots::self())
-            cDots::self()->update();
+        if (cMCLchange::self())
+            cMCLchange::self()->update();
         return;
     }
-    if (cDots::self())
+    if (cMCLchange::self())
         return;
 
-    new cDots(caller);
+    new cMCLchange;
 
-    QTdev::self()->SetPopupLocation(GRloc(), cDots::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), cMCLchange::self(),
         QTmainwin::self()->Viewport());
-    cDots::self()->show();
+    cMCLchange::self()->show();
 }
-//End of cSced functions.
+// End of cEdit functions.
 
 
-cDots::cDots(GRobject caller)
+cMCLchange *cMCLchange::instPtr;
+
+cMCLchange::cMCLchange()
 {
     instPtr = this;
-    dt_caller = caller;
-    dt_none = 0;
-    dt_norm = 0;
-    dt_all = 0;
+    lcg_none = 0;
+    lcg_cur = 0;
+    lcg_all = 0;
 
-    setWindowTitle(tr("Connection Points"));
+    setWindowTitle(tr("Layer Change Mode"));
     setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_ShowWithoutActivating);
-//    gtk_window_set_resizable(GTK_WINDOW(dt_popup), false);
+//    gtk_window_set_resizable(GTK_WINDOW(lcg_popup), false);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);
-    vbox->setSpacing(2);
+    vbox->setSpacing(4);
 
-    dt_none = new QRadioButton(tr("Don't show dots"));
-    vbox->addWidget(dt_none);
-    connect(dt_none, SIGNAL(toggled(bool)), this, SLOT(none_slot(bool)));
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    dt_norm = new QRadioButton(tr("Show dots normally"));
-    vbox->addWidget(dt_norm);
-    connect(dt_norm, SIGNAL(toggled(bool)), this, SLOT(norm_slot(bool)));
+    // label in frame plus help btn
+    //
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    QLabel *label = new QLabel(tr("Set layer change option for Move/Copy"));
+    hb->addWidget(label);
 
-    dt_all = new QRadioButton(tr("Show dot at every connection"));
-    vbox->addWidget(dt_all);
-    connect(dt_all, SIGNAL(toggled(bool)), this, SLOT(all_slot(bool)));
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    lcg_none = new QRadioButton(tr("Don't allow layer change"));
+    vbox->addWidget(lcg_none);
+    connect(lcg_none, SIGNAL(toggled(bool)),
+        this, SLOT(none_btn_slot(bool)));
+
+    lcg_cur = new QRadioButton(tr(
+        "Allow layer change for objects on current layer"));
+    vbox->addWidget(lcg_cur);
+    connect(lcg_cur, SIGNAL(toggled(bool)),
+        this, SLOT(cur_btn_slot(bool)));
+
+    lcg_all = new QRadioButton(tr(
+        "Allow layer change for all objects"));
+    vbox->addWidget(lcg_all);
+    connect(lcg_all, SIGNAL(toggled(bool)),
+        this, SLOT(all_btn_slot(bool)));
+
+    btn = new QPushButton(tr("Dismiss"));
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update();
 }
 
 
-cDots::~cDots()
+cMCLchange::~cMCLchange()
 {
     instPtr = 0;
-    if (dt_caller)
-        QTdev::SetStatus(dt_caller, false);
 }
 
 
 void
-cDots::update()
+cMCLchange::update()
 {
-    const char *v = CDvdb()->getVariable(VA_ShowDots);
+    const char *v = CDvdb()->getVariable(VA_LayerChangeMode);
     if (!v) {
-        QTdev::SetStatus(dt_none, true);
-        QTdev::SetStatus(dt_norm, false);
-        QTdev::SetStatus(dt_all, false);
+        QTdev::SetStatus(lcg_none, true);
+        QTdev::SetStatus(lcg_cur, false);
+        QTdev::SetStatus(lcg_all, false);
     }
     else if (*v == 'a' || *v == 'A') {
-        QTdev::SetStatus(dt_none, false);
-        QTdev::SetStatus(dt_norm, false);
-        QTdev::SetStatus(dt_all, true);
+        QTdev::SetStatus(lcg_none, false);
+        QTdev::SetStatus(lcg_cur, false);
+        QTdev::SetStatus(lcg_all, true);
     }
     else {
-        QTdev::SetStatus(dt_none, false);
-        QTdev::SetStatus(dt_norm, true);
-        QTdev::SetStatus(dt_all, false);
+        QTdev::SetStatus(lcg_none, false);
+        QTdev::SetStatus(lcg_cur, true);
+        QTdev::SetStatus(lcg_all, false);
     }
 }
 
 
 void
-cDots::none_slot(bool state)
+cMCLchange::help_btn_slot()
 {
-    if (state)
-        CDvdb()->clearVariable(VA_ShowDots);
+    DSPmainWbag(PopUpHelp("xic:mclcg"))
 }
 
 
 void
-cDots::norm_slot(bool state)
+cMCLchange::none_btn_slot(bool status)
 {
-    if (state)
-        CDvdb()->setVariable(VA_ShowDots, "");
+    if (status)
+        CDvdb()->clearVariable(VA_LayerChangeMode);
 }
 
 
 void
-cDots::all_slot(bool state)
+cMCLchange::cur_btn_slot(bool status)
 {
-    if (state)
-        CDvdb()->setVariable(VA_ShowDots, "all");
+    if (status)
+        CDvdb()->setVariable(VA_LayerChangeMode, "");
 }
 
 
 void
-cDots::dismiss_slot()
+cMCLchange::all_btn_slot(bool status)
 {
-    SCD()->PopUpDots(0, MODE_OFF);
+    if (status)
+        CDvdb()->setVariable(VA_LayerChangeMode, "all");
+}
+
+
+void
+cMCLchange::dismiss_btn_slot()
+{
+    ED()->PopUpLayerChangeMode(MODE_OFF);
 }
 

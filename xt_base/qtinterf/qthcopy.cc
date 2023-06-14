@@ -188,6 +188,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
     printer_busy = false;
 
     setWindowTitle(QString(tr("Print Control")));
+    setAttribute(Qt::WA_DeleteOnClose);
 
     if (pd_cb) {
         pd_drvrmask = cb->drvrmask;

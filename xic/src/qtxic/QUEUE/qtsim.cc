@@ -103,7 +103,7 @@ namespace {
 void
 cSced::PopUpSim(SpType status)
 {
-    if (!GTKdev::exists() || !GTKmainwin::exists())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return;
     Sim.control(status);
 }

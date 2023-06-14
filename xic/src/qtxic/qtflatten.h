@@ -32,133 +32,62 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtinterf.h"
-#include "qttext.h"
-#include "qtfont.h"
+#ifndef QTFLATTEN_H
+#define QTFLATTEN_H
 
-#include <QAction>
-#include <QGroupBox>
-#include <QLayout>
-#include <QTextEdit>
-#include <QPushButton>
+#include "main.h"
+#include "qtmain.h"
 
-// XXX FIXME this is the same as msg popup.
+#include <QDialog>
 
-namespace qtinterf
+
+class QCheckBox;
+class QPushButton;
+class QAction;
+
+class cFlatten : public QDialog
 {
-    class text_box : public QTextEdit
-    {
-    public:
-        text_box(int w, int h, QWidget *prnt) :
-            QTextEdit(prnt), qs(w, h), qsmin(w/2, h/2) { }
+    Q_OBJECT
 
-        QSize sizeHint() const { return (qs); }
-        QSize minimumSizeHint() const { return (qsmin); }
+public:
+    cFlatten(GRobject, bool(*)(const char*, bool, const char*, void*),
+        void*, int, bool);
+    ~cFlatten();
 
-    private:
-        QSize qs;
-        QSize qsmin;
-    };
-}
+    void update();
 
+    static cFlatten *self()         { return (instPtr); }
 
-//XXX use me
-char *QTtextPopup::pw_errlog;
+private slots:
+    void help_btn_slot();
+    void depth_menu_slot(QAction*);
+    void novias_btn_slot(int);
+    void nopcells_btn_slot(int);
+    void nolabels_btn_slot(int);
+    void fastmode_btn_slot(int);
+    void merge_btn_slot(int);
+    void go_btn_slot();
+    void dismiss_btn_slot();
 
-QTtextPopup::QTtextPopup(QTbag *owner, const char *message_str, STYtype sty,
-    int w, int h) : QDialog(owner ? owner->Shell() : 0)
-{
-    p_parent = owner;
-    display_style = sty;
-    pw_desens = false;
+private:
+    GRobject fl_caller;
+    QCheckBox *fl_novias;
+    QCheckBox *fl_nopcells;
+    QCheckBox *fl_nolabels;
+    QCheckBox *fl_merge;
+    QPushButton *fl_go;
 
-    if (owner)
-        owner->MonitorAdd(this);
-    setAttribute(Qt::WA_DeleteOnClose);
+    bool (*fl_callback)(const char*, bool, const char*, void*);
+    void *fl_arg;
 
-    gbox = new QGroupBox(this);
-    tx = new text_box(w, h, gbox);
-    tx->setReadOnly(true);
+    static cFlatten *instPtr;
+};
 
-    if (sty == STY_FIXED) {
-        QFont *f;
-        if (FC.getFont(&f, FNT_FIXED)) {
-            tx->setCurrentFont(*f);
-            tx->setFont(*f);
-        }
-    }
-    setText(message_str);
-
-    QVBoxLayout *vbox = new QVBoxLayout(gbox);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(tx);
-
-    b_cancel = new QPushButton(tr("Dismiss"), this);
-    connect(b_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
-
-    vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(gbox);
-    vbox->addWidget(b_cancel);
-}
-
-
-QTtextPopup::~QTtextPopup()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner)
-            owner->ClearPopup(this);
-    }
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller)
-        QTdev::Deselect(p_caller);
-}
-
-
-// GRpopup override
-//
-void
-QTtextPopup::popdown()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->MonitorActive(this))
-            return;
-    }
-    delete this;
-}
-
-
-void
-QTtextPopup::setTitle(const char *title)
-{
-    setWindowTitle(title);
-}
-
-
-void
-QTtextPopup::setText(const char *message_str)
-{
-    if (display_style == STY_HTML)
-        tx->setHtml(message_str);
-    else
-        tx->setPlainText(message_str);
-}
-
-
-void
-QTtextPopup::quit_slot()
-{
-    delete this;
-}
+#endif
 

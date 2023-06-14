@@ -152,6 +152,8 @@ cFillp::cFillp(GRobject c) : QTdraw(XW_DRAWING)
     fp_ny = 8;
 
     setWindowTitle(tr("Fill Pattern Editor"));
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     fp_width = 466;

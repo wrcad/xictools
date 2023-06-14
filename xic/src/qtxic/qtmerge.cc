@@ -153,6 +153,9 @@ cMerge::cMerge(mitem_t *mi)
     mc_do_elec = false;
 
     setWindowTitle(tr("Symbol Merge"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_ShowWithoutActivating);
 
     mc_names->add(lstring::copy(mi->name), (void*)1, false);
 

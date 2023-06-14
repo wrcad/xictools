@@ -78,6 +78,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QEnterEvent>
+#include <QFocusEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
@@ -992,6 +993,10 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
         this, SLOT(enter_slot(QEnterEvent*)));
     connect(Viewport(), SIGNAL(leave_event(QEvent*)),
         this, SLOT(leave_slot(QEvent*)));
+    connect(Viewport(), SIGNAL(focus_in_event(QFocusEvent*)),
+        this, SLOT(focus_in_slot(QFocusEvent*)));
+    connect(Viewport(), SIGNAL(focus_out_event(QFocusEvent*)),
+        this, SLOT(focus_out_slot(QFocusEvent*)));
     connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
     connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
@@ -1127,7 +1132,8 @@ QTsubwin::pre_destroy(int wnum)
 void
 QTsubwin::SwitchToPixmap()
 {
-    // Nothing to do here, pixmap is already installed.
+    // Switch to second pixmap.
+    gd_viewport->switch_to_pixmap2();
 }
 
 
@@ -1138,8 +1144,10 @@ void
 QTsubwin::SwitchFromPixmap(const BBox *BB)
 {
     // Copy the area in a paint event, but the pixmap is retained.
-    Viewport()->repaint(BB->left, BB->top, BB->right - BB->left + 1,
-        BB->bottom - BB->top + 1);
+    gd_viewport->switch_from_pixmap2(BB->left, BB->top,
+        BB->right - BB->left + 1, BB->bottom - BB->top + 1);
+//    Viewport()->repaint(BB->left, BB->top, BB->right - BB->left + 1,
+//        BB->bottom - BB->top + 1);
 }
 
 
@@ -1159,8 +1167,10 @@ QTsubwin::DrawableReset()
 void
 QTsubwin::CopyPixmap(const BBox *BB)
 {
-    Viewport()->repaint(BB->left, BB->top, BB->right - BB->left + 1,
+    gd_viewport->refresh(BB->left, BB->top, BB->right - BB->left + 1,
         BB->bottom - BB->top + 1);
+//    Viewport()->repaint(BB->left, BB->top, BB->right - BB->left + 1,
+//        BB->bottom - BB->top + 1);
 }
 
 
@@ -1516,12 +1526,6 @@ void
 QTsubwin::paint_slot(QPaintEvent *ev)
 {
     (void)ev;
-    if (sw_windesc->DbType() == WDcddb) {
-        if (Selections.blinking())
-            Selections.show(sw_windesc);
-    }
-    sw_windesc->ShowHighlighting();
-    gd_viewport->draw_direct(false);
 }
 
 
@@ -1789,6 +1793,7 @@ QTsubwin::key_down_slot(QKeyEvent *ev)
 */
 
     keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
+        Viewport()->hasFocus() &&
         QTmainwin::self()->PromptLine()->underMouse(), false);
 }
 
@@ -1845,7 +1850,7 @@ QTsubwin::enter_slot(QEnterEvent *ev)
     }
     ev->accept();
 
-    setFocus();
+    Viewport()->setFocus();
 
     /*
     GdkEventCrossing *cev = (GdkEventCrossing*)event;
@@ -1909,6 +1914,24 @@ QTsubwin::leave_slot(QEvent *ev)
         mod_state(QGuiApplication::keyboardModifiers()));
     UndrawGhost();
     gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
+}
+
+
+void
+QTsubwin::focus_in_slot(QFocusEvent *ev)
+{
+    ev->accept();
+    if (QTedit::self() && QTedit::self()->is_active())
+        QTedit::self()->draw_cursor(DRAW);
+}
+
+
+void
+QTsubwin::focus_out_slot(QFocusEvent *ev)
+{
+    ev->accept();
+    if (QTedit::self() && QTedit::self()->is_active())
+        QTedit::self()->draw_cursor(UNDRAW);
 }
 
 

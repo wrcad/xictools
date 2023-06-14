@@ -75,6 +75,8 @@ QTaffirmPopup::QTaffirmPopup(QTbag *owner, const char *question_str,
         owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Yes or No?")));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     QSizePolicy policy = sizePolicy();
     policy.setVerticalPolicy(QSizePolicy::Preferred);

@@ -114,6 +114,9 @@ cXform::cXform(GRobject c,
     tf_arg = arg;
 
     setWindowTitle(tr("Current Transform"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(tf_popup), false);
 
     // Label in frame plus help btn
