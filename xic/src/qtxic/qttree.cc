@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qttree.h"
 #include "editif.h"
 #include "cd_celldb.h"
 #include "cd_digest.h"
@@ -47,10 +47,15 @@
 #include "fio_chd.h"
 #include "events.h"
 #include "errorlog.h"
-#include "qtmain.h"
 #include "qtinterf/qtfont.h"
 #include "miscutil/timer.h"
 #include <algorithm>
+
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QTreeWidget>
 
 
 //----------------------------------------------------------------------
@@ -68,86 +73,19 @@ namespace {
     };
     guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
     */
-
-// Max number of user buttons.
-#define TR_MAXBTNS 5
-
-    namespace gtktree {
-        // subclass QTbag so sTree can be passed to ToTop handler function
-        //
-        struct sTree : public QTbag
-        {
-            sTree(GRobject, const char*, TreeUpdMode);
-            ~sTree();
-
-            void update(const char*, const char*, TreeUpdMode);
-            char *get_selection();
-
-        private:
-            bool check_fb();
-            void check_sens();
-            /*
-            void build_tree(CDs*);
-            void build_tree(cCHD*, symref_t*);
-            bool build_tree_rc(CDs*, GtkTreeIter*, int);
-            bool build_tree_rc(cCHD*, symref_t*, GtkTreeIter*, int);
-
-            static int t_build_proc(void*);
-            static int t_select_proc(GtkTreeSelection*, GtkTreeModel*,
-                GtkTreePath*, int, void*);
-            static bool t_focus_proc(GtkWidget*, GdkEvent*, void*);
-            static int t_collapse_proc(GtkTreeView*, GtkTreeIter*,
-                GtkTreePath*, void*);
-            static void t_cancel(GtkWidget*, void*);
-            static void t_action(GtkWidget*, void*);
-
-            static int t_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-            static int t_btn_release_hdlr(GtkWidget*, GdkEvent*, void*);
-            static int t_motion_hdlr(GtkWidget*, GdkEvent*, void*);
-            static void t_drag_data_get(GtkWidget *widget, GdkDragContext*,
-                GtkSelectionData*, guint, guint, void*);
-            static int t_selection_clear(GtkWidget*, GdkEventSelection*,
-                void*);
-            static void t_selection_get(GtkWidget*, GtkSelectionData*, guint,
-                guint, gpointer);
-
-            GRobject t_caller;          // toggle button initiator
-            GtkWidget *t_label;         // label above listing
-            GtkWidget *t_tree;          // tree listing
-            GtkWidget *t_buttons[TR_MAXBTNS]; // user buttons
-            GtkTreePath *t_curnode;     // selected node
-            char *t_selection;          // selected text
-            char *t_root_cd;            // name of root cell
-            char *t_root_db;            // name of root cell
-            DisplayMode t_mode;         // display mode of cells
-            bool t_dragging;            // drag/drop
-            bool t_no_select;           // treeview focus hack
-            int t_dragX, t_dragY;       // drag/drop
-            unsigned int t_ucount;      // user feedback counter
-            unsigned int t_udel;        // user feedback increment
-            int t_mdepth;               // max depth
-            uint64_t t_check_time;      // interval test
-            */
-        };
-
-        sTree *Tree;
-    }
 }
-
-using namespace gtktree;
 
 #define TREE_WIDTH 400
 #define TREE_HEIGHT 300
 
 
-/*
 // Static function.
 //
 char *
 QTmainwin::get_tree_selection()
 {
-//    if (Tree)
-//        return (Tree->get_selection());
+    if (cTree::self())
+        return (cTree::self()->get_selection());
     return (0);
 }
 
@@ -158,9 +96,8 @@ QTmainwin::get_tree_selection()
 void
 QTmainwin::tree_panic()
 {
-    Tree = 0;
+    cTree::set_panic();
 }
-*/
 
 
 // Pop up a window displaying a tree diagram of the hierarchy of the
@@ -174,33 +111,27 @@ cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete Tree;
+        if (cTree::self())
+            cTree::self()->deleteLater();
         return;
     }
 
-    if (mode == MODE_UPD || (mode == MODE_ON && Tree)) {
-        if (Tree)
-            Tree->update(root, oldroot, dmode);
+    if (mode == MODE_UPD || (mode == MODE_ON && cTree::self())) {
+        if (cTree::self())
+            cTree::self()->update(root, oldroot, dmode);
         return;
     }
 
     if ((!root || !*root) && DSP()->MainWdesc()->DbType() == WDcddb)
         return;
 
-        /*
-    new sTree(caller, root, dmode);
-    if (!Tree->Shell()) {
-        delete Tree;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Tree->Shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new cTree(caller, root, dmode);
 
-    GTKdev::self()->SetPopupLocation(GRloc(), Tree->Shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Tree->Shell());
-    */
+    QTdev::self()->SetPopupLocation(GRloc(), cTree::self(),
+        QTmainwin::self()->Viewport());
+    cTree::self()->show();
 }
+// End of cMain functions.
 
 
 #define TR_INFO_BTN     "Info"
@@ -208,12 +139,14 @@ cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
 #define TR_PLACE_BTN    "Place"
 #define TR_UPD_BTN      "Update"
 
-sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
+cTree *cTree::instPtr;
+
+cTree::cTree(GRobject c, const char *root, TreeUpdMode dmode)
 {
-    Tree = this;
-#ifdef notdef
+    instPtr = this;
     t_caller = c;
     t_label = 0;
+    t_info = 0;
     t_tree = 0;
     t_curnode = 0;
     t_selection = 0;
@@ -239,49 +172,56 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
     for (int i = 0; i < TR_MAXBTNS; i++)
         t_buttons[i] = 0;
 
-    wb_shell = gtk_NewPopup(0, "Cell Hierarchy Tree", t_cancel, 0);
-    if (!wb_shell)
-        return;
-    gtk_window_set_default_size(GTK_WINDOW(wb_shell), TREE_WIDTH,
-        TREE_HEIGHT);
+    setWindowTitle(tr("Cell Hierarchy Tree"));
+    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_ShowWithoutActivating);
+
     if (DSP()->MainWdesc()->DbType() == WDchd)
         t_root_db = lstring::copy(root);
     else
         t_root_cd = lstring::copy(root);
 
-    GtkWidget *form = gtk_table_new(1, 3, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(wb_shell), form);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    t_label = gtk_label_new("");
-    gtk_widget_show(t_label);
-    gtk_misc_set_padding(GTK_MISC(t_label), 2, 2);
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), t_label);
-    GtkWidget *row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
-    gtk_box_pack_start(GTK_BOX(row), frame, true, true, 0);
-    GtkWidget *button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(t_action), 0);
-    gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    gtk_table_attach(GTK_TABLE(form), row, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
 
-    //
+    t_label = new QLabel("");
+    hb->addWidget(t_label);
+
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+
     // scrolled tree
     //
-    GtkWidget *swin = gtk_scrolled_window_new(0, 0);
-    gtk_widget_show(swin);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin),
-        GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
-    gtk_container_set_border_width(GTK_CONTAINER(swin), 2);
+    t_tree = new QTreeWidget();
+    vbox->addWidget(t_tree);
 
+    connect(t_tree,
+        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgretItem*)),
+        this,
+        SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(t_tree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
+        this, SLOT(item_activated(QTreeWidgetItem*, int)));
+    connect(t_tree, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
+        this, SLOT(item_changed(QTreeWidgetItem*, int)));
+    connect(t_tree, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
+        this, SLOT(item_clicked(QTreeWidgetItem*, int)));
+    connect(t_tree, SIGNAL(itemCollapsed(QTreeWidgetItem*, int)),
+        this, SLOT(item_collapsed(QTreeWidgetItem*, int)));
+    connect(t_tree, SIGNAL(itemExpanded(QTreeWidgetItem*, int)),
+        this, SLOT(item_expanded(QTreeWidgetItem*, int)));
+
+    /*
     GtkTreeStore *store = gtk_tree_store_new(1, G_TYPE_STRING);
     t_tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
     gtk_widget_show(t_tree);
@@ -301,16 +241,15 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
     // TreeView bug hack, see note with handlers.   
     g_signal_connect(G_OBJECT(t_tree), "focus",
         G_CALLBACK(t_focus_proc), this);
+    */
 
-    gtk_container_add(GTK_CONTAINER(swin), t_tree);
 
+/*
     // Set up font and tracking.
     GTKfont::setupFont(t_tree, FNT_PROP, true);
+*/
 
-    gtk_table_attach(GTK_TABLE(form), swin, 0, 1, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
+/*
     g_signal_connect(G_OBJECT(t_tree), "test_collapse_row",
         (GCallback)t_collapse_proc, 0);
     // init for drag/drop
@@ -329,28 +268,29 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
         G_CALLBACK(t_selection_clear), 0);
     g_signal_connect(G_OBJECT(t_tree), "selection-get",
         G_CALLBACK(t_selection_get), 0);
+*/
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    wb_textarea = gtk_label_new("");
-    gtk_widget_show(wb_textarea);
-    frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), wb_textarea);
+    gb = new QGroupBox();
+    hbox->addWidget(gb);
+    hb = new QHBoxLayout(gb);
 
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 2, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    //
+    t_info = new QLabel("");
+    hb->addWidget(t_info);
+
     // dismiss button line
     //
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(t_cancel), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-    GtkWidget *dismiss_btn = button;
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     const char *buttons[5];
     buttons[0] = TR_INFO_BTN;
@@ -366,57 +306,42 @@ sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
     buttons[4] = 0;
 
     for (int i = 0; i < TR_MAXBTNS && buttons[i]; i++) {
-        button = gtk_button_new_with_label(buttons[i]);
-        gtk_widget_set_name(button, buttons[i]);
-        gtk_widget_show(button);
-        g_signal_connect(G_OBJECT(button), "clicked",
-            G_CALLBACK(t_action), 0);
-        gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
-        t_buttons[i] = button;
+        btn = new QPushButton(tr(buttons[i]));
+        connect(btn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
+        t_buttons[i] = btn;
+        hbox->addWidget(btn);
     }
 
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 3, 4,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    gtk_window_set_focus(GTK_WINDOW(wb_shell), dismiss_btn);
-
+/*
     if (t_caller) {
         g_signal_connect(G_OBJECT(t_caller), "toggled",
             G_CALLBACK(t_cancel), 0);
     }
+*/
 
     update(0, 0, dmode);
-#endif
 }
 
 
-sTree::~sTree()
+cTree::~cTree()
 {
-    Tree = 0;
-    /*
+    instPtr = 0;
     XM()->SetTreeCaptive(false);
     delete [] t_root_cd;
     delete [] t_root_db;
     delete [] t_selection;
-    if (t_curnode)
-        gtk_tree_path_free(t_curnode);
-    if (t_caller) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(t_caller),
-            (gpointer)t_cancel, 0);
-        GTKdev::Deselect(t_caller);
-    }
-    if (wb_shell) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
-            (gpointer)t_cancel, wb_shell);
-    }
-    */
+//    if (t_curnode)
+//        gtk_tree_path_free(t_curnode);
+    if (t_caller)
+        QTdev::Deselect(t_caller);
 }
 
 
 void
-sTree::update(const char *root, const char *oldroot, TreeUpdMode dmode)
+cTree::update(const char *root, const char *oldroot, TreeUpdMode dmode)
 {
-    /*
+    if (!instPtr)
+        return;
     if (DSP()->MainWdesc()->DbType() == WDchd) {
         if (root && (!t_root_db || strcmp(root, t_root_db))) {
             delete [] t_root_db;
@@ -440,11 +365,11 @@ sTree::update(const char *root, const char *oldroot, TreeUpdMode dmode)
     }
 
     if (t_caller)
-        GTKdev::Select(t_caller);
+        QTdev::Select(t_caller);
     delete [] t_selection;
     t_selection = 0;
-    if (Tree->t_curnode)
-        gtk_tree_path_free(Tree->t_curnode);
+//    if (Tree->t_curnode)
+//        gtk_tree_path_free(Tree->t_curnode);
     t_curnode = 0;
 
     if (dmode == TU_PHYS)
@@ -462,21 +387,19 @@ sTree::update(const char *root, const char *oldroot, TreeUpdMode dmode)
         snprintf(buf, sizeof(buf), "%s cells from memory",
             DisplayModeName(t_mode));
     }
-    gtk_label_set_text(GTK_LABEL(t_label), buf);
+    t_label->setText(buf);
 
-    gtk_label_set_text(GTK_LABEL(wb_textarea),
-        "Adding nodes, please wait...");
-    GTKpkg::self()->RegisterTimeoutProc(200, t_build_proc, 0);
+    t_info->setText(tr("Adding nodes, please wait..."));
+    QTpkg::self()->RegisterTimeoutProc(200, t_build_proc, 0);
     check_sens();
-    */
 }
 
 
 char *
-sTree::get_selection()
+cTree::get_selection()
 {
-//    if (t_selection && *t_selection)
-//        return (lstring::copy(t_selection));
+    if (t_selection && *t_selection)
+        return (lstring::copy(t_selection));
     return (0);
 }
 
@@ -484,112 +407,113 @@ sTree::get_selection()
 // Check for interrupts and print update message while building tree.
 //
 bool
-sTree::check_fb()
+cTree::check_fb()
 {
-    /*
-    if (!Tree)
+    if (!instPtr)
         return (true);
     t_ucount++;
     if (!(t_ucount & t_udel)) {
         char buf[256];
         snprintf(buf, sizeof(buf), "%s:  %u", "Nodes processed", t_ucount);
-        gtk_label_set_text(GTK_LABEL(wb_textarea), buf);
+        t_info->setText(buf);
     }
     if (Timer()->check_interval(t_check_time)) {
         if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
-            GTKpkg::self()->CheckForInterrupt();
+            QTpkg::self()->CheckForInterrupt();
         return (XM()->ConfirmAbort());
     }
-    */
     return (false);
 }
 
 
 void
-sTree::check_sens()
+cTree::check_sens()
 {
-    /*
     bool has_sel = (t_selection != 0);
     for (int i = 0; i < TR_MAXBTNS && t_buttons[i]; i++) {
-        const char *name = gtk_widget_get_name(t_buttons[i]);
-        if (!name)
-            continue;
-        if (!strcmp(TR_INFO_BTN, name))
-            gtk_widget_set_sensitive(t_buttons[i], has_sel);
-        else if (!strcmp(TR_OPEN_BTN, name)) {
+        QString name = t_buttons[i]->text();
+        if (name == TR_INFO_BTN)
+            t_buttons[i]->setEnabled(has_sel);
+        else if (name == TR_OPEN_BTN) {
             if (DSP()->MainWdesc()->DbType() == WDchd)
-                gtk_widget_set_sensitive(t_buttons[i], false);
+                t_buttons[i]->setEnabled(false);
             else
-                gtk_widget_set_sensitive(t_buttons[i], has_sel);
+                t_buttons[i]->setEnabled(has_sel);
         }
-        else if (!strcmp(TR_PLACE_BTN, name)) {
+        else if (name == TR_PLACE_BTN) {
             if (DSP()->MainWdesc()->DbType() == WDchd)
-                gtk_widget_set_sensitive(t_buttons[i], false);
+                t_buttons[i]->setEnabled(false);
             else
-                gtk_widget_set_sensitive(t_buttons[i], has_sel);
+                t_buttons[i]->setEnabled(has_sel);
         }
     }
-    */
 }
 
-#ifdef notdef
 
 // Main entry to build the tree, using CDs objects.
 //
 void
-sTree::build_tree(CDs *sdesc)
+cTree::build_tree(CDs *sdesc)
 {
-    GTKpkg::self()->SetWorking(true);
+    QTpkg::self()->SetWorking(true);
     t_ucount = 0;
     t_udel = (1 << 10) - 1;
     t_mdepth = 0;
 
+    /*
     GtkTreeStore *store =
         GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
     gtk_tree_store_clear(store);
+    */
+    t_tree->clear();
 
     bool ret = build_tree_rc(sdesc, 0, 0);
-    if (Tree && GTK_IS_TREE_VIEW(t_tree)) {
+    if (instPtr) {
         char buf[256];
         if (ret)
             snprintf(buf, sizeof(buf), "Total Nodes: %u   Max Depth: %d",
                 t_ucount, t_mdepth+1);
         else
             strcpy(buf, "Aborted, content incomplete.");
-        gtk_label_set_text(GTK_LABEL(wb_textarea), buf);
+        t_info->setText(buf);
+/*
         GtkTreePath *p = gtk_tree_path_new_from_indices(0, -1);
         gtk_tree_view_expand_row(GTK_TREE_VIEW(t_tree), p, false);
         gtk_tree_path_free(p);
+*/
     }
-    GTKpkg::self()->SetWorking(false);
+    QTpkg::self()->SetWorking(false);
 }
 
 
 // Main entry to build the tree, using symref_t objects.
 //
 void
-sTree::build_tree(cCHD *chd, symref_t *p)
+cTree::build_tree(cCHD *chd, symref_t *p)
 {
-    GTKpkg::self()->SetWorking(true);
+    QTpkg::self()->SetWorking(true);
     t_ucount = 0;
     t_udel = (1 << 10) - 1;
     t_mdepth = 0;
 
+    /*
     GtkTreeStore *store =
         GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
     gtk_tree_store_clear(store);
+    */
+    t_tree->clear();
 
     bool ret = build_tree_rc(chd, p, 0, 0);
-    if (Tree && GTK_IS_TREE_VIEW(t_tree)) {
+    if (instPtr) {
         char buf[256];
         if (ret)
             snprintf(buf, sizeof(buf), "Total Nodes: %u   Max Depth: %d",
                 t_ucount, t_mdepth+1);
         else
             strcpy(buf, "Aborted, content incomplete.");
-        gtk_label_set_text(GTK_LABEL(wb_textarea), buf);
+        t_info->setText(buf);
     }
-    GTKpkg::self()->SetWorking(false);
+    QTpkg::self()->SetWorking(false);
 }
 
 
@@ -607,22 +531,28 @@ namespace {
 // Recursively add the hierarchy to the tree (using CDs objects).
 //
 bool
-sTree::build_tree_rc(CDs *sdesc, GtkTreeIter *parent, int dpt)
+cTree::build_tree_rc(CDs *sdesc, QTreeWidgetItem *parent, int dpt)
 {
-    if (!sdesc || !Tree || !GTK_IS_TREE_VIEW(t_tree))
+    if (!sdesc || !instPtr)
         return (false);
 
+/*
     GtkTreeStore *store =
         GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
     GtkTreeIter iter;
     gtk_tree_store_append(store, &iter, parent);
     gtk_tree_store_set(store, &iter, 0, Tstring(sdesc->cellname()), -1);
+*/
+    QTreeWidgetItem *item = new QTreeWidgetItem(parent);
+    item->setText(0, Tstring(sdesc->cellname()));
+    if (!parent)
+        t_tree->addTopLevelItem(item);
 
     if (dpt > t_mdepth)
         t_mdepth = dpt;
     if (check_fb())
         return (false);
-    if (!Tree)
+    if (!instPtr)
         return (false);
 
     // The sorting function in gtk is too slow, so we do sorting
@@ -667,7 +597,7 @@ sTree::build_tree_rc(CDs *sdesc, GtkTreeIter *parent, int dpt)
     }
     std::sort(ary, ary + icnt, m_cmp);
     for (int i = 0; i < icnt; i++) {
-        if (!build_tree_rc(ary[i]->celldesc(), &iter, dpt+1)) {
+        if (!build_tree_rc(ary[i]->celldesc(), item, dpt+1)) {
             delete [] ary;
             return (false);
         }
@@ -680,27 +610,33 @@ sTree::build_tree_rc(CDs *sdesc, GtkTreeIter *parent, int dpt)
 // Recursively add the hierarchy to the tree (using symref_t objects).
 //
 bool
-sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
+cTree::build_tree_rc(cCHD *chd, symref_t *p, QTreeWidgetItem *parent, int dpt)
 {
-    if (!p || !Tree || !GTK_IS_TREE_VIEW(t_tree))
+    if (!p || !instPtr)
         return (false);
 
+    /*
     GtkTreeStore *store =
         GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
     GtkTreeIter iter;
     gtk_tree_store_append(store, &iter, parent);
     gtk_tree_store_set(store, &iter, 0, Tstring(p->get_name()), -1);
+    */
+    QTreeWidgetItem *item = new QTreeWidgetItem(parent);
+    item->setText(0, Tstring(p->get_name()));
+    if (!parent)
+        t_tree->addTopLevelItem(item);
 
     if (dpt > t_mdepth)
         t_mdepth = dpt;
     if (check_fb())
         return (false);
-    if (!Tree)
+    if (!instPtr)
         return (false);
 
     SymTab *xtab = new SymTab(false, false);
     syrlist_t *s0 = 0;
-    nametab_t *ntab = chd->nameTab(Tree->t_mode);
+    nametab_t *ntab = chd->nameTab(t_mode);
     crgen_t cgen(ntab, p);
     const cref_o_t *c;
     while ((c = cgen.next()) != 0) {
@@ -714,7 +650,7 @@ sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
     syrlist_t::sort(s0, false);
 
     for (syrlist_t *sr = s0; sr; sr = sr->next) {
-        if (!build_tree_rc(chd, sr->symref, &iter, dpt+1)) {
+        if (!build_tree_rc(chd, sr->symref, item, dpt+1)) {
             syrlist_t::destroy(s0);
             return (false);
         }
@@ -728,31 +664,31 @@ sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
 // Timer callback for initial build.
 //
 int
-sTree::t_build_proc(void*)
+cTree::t_build_proc(void*)
 {
     bool ok = false;
-    if (Tree) {
+    if (instPtr) {
         if (DSP()->MainWdesc()->DbType() == WDcddb) {
-            if (!Tree->t_root_cd)
+            if (!instPtr->t_root_cd)
                 // "can't happen"
                 Log()->ErrorLog(mh::Processing, "Null cell name encountered.");
             else {
                 CDcbin cbin;
-                if (CDcdb()->findSymbol(Tree->t_root_cd, &cbin)) {
-                    CDs *sdesc = cbin.celldesc(Tree->t_mode);
+                if (CDcdb()->findSymbol(instPtr->t_root_cd, &cbin)) {
+                    CDs *sdesc = cbin.celldesc(instPtr->t_mode);
                     if (sdesc) {
-                        Tree->build_tree(sdesc);
+                        instPtr->build_tree(sdesc);
                         ok = true;
                     }
                     else
                         Log()->ErrorLogV(mh::Processing,
                             "Null cell pointer encountered in cell %s.",
-                            Tree->t_root_cd);
+                            instPtr->t_root_cd);
                 }
                 else
                     Log()->ErrorLogV(mh::Processing,
                         "Can't find cell %s for tree display.",
-                        Tree->t_root_cd);
+                        instPtr->t_root_cd);
             }
         }
         else if (DSP()->MainWdesc()->DbType() == WDchd) {
@@ -760,16 +696,16 @@ sTree::t_build_proc(void*)
             if (dbname) {
                 cCHD *chd = CDchd()->chdRecall(dbname, false);
                 if (chd) {
-                    symref_t *p = chd->findSymref(Tree->t_root_db,
-                        Tree->t_mode, true);
+                    symref_t *p = chd->findSymref(instPtr->t_root_db,
+                        instPtr->t_mode, true);
                     if (p) {
-                        Tree->build_tree(chd, p);
+                        instPtr->build_tree(chd, p);
                         ok = true;
                     }
                     else
                         Log()->ErrorLogV(mh::Processing,
                             "Can't find name %s in database.",
-                            Tree->t_root_db ? Tree->t_root_db : "<null>");
+                            instPtr->t_root_db ? instPtr->t_root_db : "<null>");
                 }
                 else {
                     Log()->ErrorLogV(mh::Processing,
@@ -781,7 +717,7 @@ sTree::t_build_proc(void*)
                     "Null database name encountered.");
             }
         }
-        Tree->check_sens();
+        instPtr->check_sens();
     }
     if (!ok)
         XM()->PopUpTree(0, MODE_OFF, 0, TU_CUR);
@@ -789,10 +725,108 @@ sTree::t_build_proc(void*)
 }
 
 
+void
+cTree::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:tree"))
+}
+
+
+void
+cTree::dismiss_btn_slot()
+{
+    XM()->PopUpTree(0, MODE_OFF, 0, TU_CUR);
+}
+
+
+void
+cTree::user_btn_slot()
+{
+    QString name = qobject_cast<QPushButton*>(sender())->text();
+    if (name == TR_INFO_BTN) {
+        if (!t_selection)
+            return;
+        if (DSP()->MainWdesc()->DbType() == WDchd) {
+            cCHD *chd = CDchd()->chdRecall(DSP()->MainWdesc()->DbName(),
+                false);
+            if (!chd)
+                return;
+            symref_t *p = chd->findSymref(t_selection, t_mode, true);
+            if (!p)
+                return;
+            stringlist *sl = new stringlist(
+                lstring::copy(Tstring(p->get_name())), 0);
+            int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
+                FIO_INFO_BBS | FIO_INFO_FLAGS;
+            char *str = chd->prCells(0, t_mode, flgs, sl);
+            stringlist::destroy(sl);
+            PopUpInfo(MODE_ON, str, STY_FIXED);
+            delete [] str;
+        }
+        else
+            XM()->ShowCellInfo(t_selection, true, t_mode);
+    }
+    else if (name == TR_OPEN_BTN) {
+        if (!t_selection)
+            return;
+        XM()->Load(DSP()->MainWdesc(), t_selection);
+    }
+    else if (name == TR_PLACE_BTN) {
+        if (!t_selection)
+            return;
+        if (DSP()->MainWdesc()->DbType() == WDcddb) {
+            EV()->InitCallback();
+            EditIf()->addMaster(t_selection, 0);
+        }
+    }
+    else if (name == TR_UPD_BTN) {
+        XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
+    }
+}
+
+
+void
+cTree::current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
+{
+}
+
+
+void
+cTree::item_activated(QTreeWidgetItem*, int)
+{
+}
+
+
+void
+cTree::item_changed(QTreeWidgetItem*, int)
+{
+}
+
+
+void
+cTree::item_clicked(QTreeWidgetItem*, int)
+{
+}
+
+
+void
+cTree::item_collapsed(QTreeWidgetItem*, int)
+{
+}
+
+
+void
+cTree::item_expanded(QTreeWidgetItem*, int)
+{
+}
+
+
+#ifdef notdef
+
 // Static function.
 //
 int
-sTree::t_select_proc(GtkTreeSelection*, GtkTreeModel *store,
+cTree::t_select_proc(GtkTreeSelection*, GtkTreeModel *store,
     GtkTreePath *path, int issel, void*)
 {
     if (!Tree)
@@ -830,7 +864,7 @@ sTree::t_select_proc(GtkTreeSelection*, GtkTreeModel *store,
 // case.
 //
 bool
-sTree::t_focus_proc(GtkWidget*, GdkEvent*, void*)
+cTree::t_focus_proc(GtkWidget*, GdkEvent*, void*)
 {
     if (Tree) {
         GtkTreeSelection *sel =
@@ -848,7 +882,7 @@ sTree::t_focus_proc(GtkWidget*, GdkEvent*, void*)
 // automatically.
 //
 int
-sTree::t_collapse_proc(GtkTreeView *tv, GtkTreeIter*, GtkTreePath *path, void*)
+cTree::t_collapse_proc(GtkTreeView *tv, GtkTreeIter*, GtkTreePath *path, void*)
 {
     if (!Tree)
         return (true);
@@ -861,19 +895,9 @@ sTree::t_collapse_proc(GtkTreeView *tv, GtkTreeIter*, GtkTreePath *path, void*)
 
 
 // Static function.
-// Pop down the tree popup.
 //
 void
-sTree::t_cancel(GtkWidget*, void*)
-{
-    XM()->PopUpTree(0, MODE_OFF, 0, TU_CUR);
-}
-
-
-// Static function.
-//
-void
-sTree::t_action(GtkWidget *widget, void*)
+cTree::t_action(GtkWidget *widget, void*)
 {
     if (!Tree)
         return;
@@ -881,48 +905,7 @@ sTree::t_action(GtkWidget *widget, void*)
     if (!wname)
         return;
     if (!strcmp("Help", wname)) {
-        DSPmainWbag(PopUpHelp("xic:tree"))
         return;
-    }
-    if (!strcmp(TR_INFO_BTN, wname)) {
-        if (!Tree->t_selection)
-            return;
-        if (DSP()->MainWdesc()->DbType() == WDchd) {
-            cCHD *chd = CDchd()->chdRecall(DSP()->MainWdesc()->DbName(),
-                false);
-            if (!chd)
-                return;
-            symref_t *p = chd->findSymref(Tree->t_selection,
-                Tree->t_mode, true);
-            if (!p)
-                return;
-            stringlist *sl = new stringlist(
-                lstring::copy(Tstring(p->get_name())), 0);
-            int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
-                FIO_INFO_BBS | FIO_INFO_FLAGS;
-            char *str = chd->prCells(0, Tree->t_mode, flgs, sl);
-            stringlist::destroy(sl);
-            Tree->PopUpInfo(MODE_ON, str, STY_FIXED);
-            delete [] str;
-        }
-        else
-            XM()->ShowCellInfo(Tree->t_selection, true, Tree->t_mode);
-    }
-    else if (!strcmp(TR_OPEN_BTN, wname)) {
-        if (!Tree->t_selection)
-            return;
-        XM()->Load(DSP()->MainWdesc(), Tree->t_selection);
-    }
-    else if (!strcmp(TR_PLACE_BTN, wname)) {
-        if (!Tree->t_selection)
-            return;
-        if (DSP()->MainWdesc()->DbType() == WDcddb) {
-            EV()->InitCallback();
-            EditIf()->addMaster(Tree->t_selection, 0);
-        }
-    }
-    else if (!strcmp(TR_UPD_BTN, wname)) {
-        XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
     }
 }
 
@@ -930,7 +913,7 @@ sTree::t_action(GtkWidget *widget, void*)
 // Static function.
 //
 int
-sTree::t_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
+cTree::t_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
     if (Tree && event->type == GDK_BUTTON_PRESS) {
         Tree->t_dragging = true;
@@ -944,7 +927,7 @@ sTree::t_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
 // Static function.
 //
 int
-sTree::t_btn_release_hdlr(GtkWidget*, GdkEvent*, void*)
+cTree::t_btn_release_hdlr(GtkWidget*, GdkEvent*, void*)
 {
     if (Tree)
         Tree->t_dragging = false;
@@ -956,7 +939,7 @@ sTree::t_btn_release_hdlr(GtkWidget*, GdkEvent*, void*)
 // Motion handler, begin drag.
 //
 int
-sTree::t_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
+cTree::t_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 {
     if (Tree && Tree->t_dragging) {
         if ((abs((int)event->motion.x - Tree->t_dragX) > 4 ||
@@ -978,7 +961,7 @@ sTree::t_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 // Data-get function, for drag/drop.
 //
 void
-sTree::t_drag_data_get(GtkWidget*, GdkDragContext*,
+cTree::t_drag_data_get(GtkWidget*, GdkDragContext*,
     GtkSelectionData *data, guint, guint, void*)
 {
     if (!Tree || !Tree->t_curnode || !Tree->t_selection)
@@ -992,7 +975,7 @@ sTree::t_drag_data_get(GtkWidget*, GdkDragContext*,
 // Selection clear handler.
 //
 int
-sTree::t_selection_clear(GtkWidget*, GdkEventSelection*, void*)
+cTree::t_selection_clear(GtkWidget*, GdkEventSelection*, void*)
 {
     if (Tree && Tree->t_curnode) {
         GtkTreeSelection *sel =
@@ -1006,7 +989,7 @@ sTree::t_selection_clear(GtkWidget*, GdkEventSelection*, void*)
 // Static function.
 //
 void
-sTree::t_selection_get(GtkWidget*, GtkSelectionData *data,
+cTree::t_selection_get(GtkWidget*, GtkSelectionData *data,
     guint, guint, void*)
 {
     if (gtk_selection_data_get_selection(data) != GDK_SELECTION_PRIMARY)

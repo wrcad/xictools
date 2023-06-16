@@ -942,6 +942,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     sw_menubar = new QMenuBar(this);
     sw_keys_pressed = 0;
     sw_expand = 0;
+    sw_zoom = 0;
+    sw_gridpop = 0;
     sw_windesc = 0;
     sw_win_number = wnum < 0 ? -1 : wnum;
 

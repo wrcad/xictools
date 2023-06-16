@@ -305,11 +305,11 @@ public:
     // qtlibs.cc
     static char *get_lib_selection();
     static void libs_panic();
+    */
 
     // qttree.cc
     static char *get_tree_selection();
     static void tree_panic();
-    */
 
     QSize sizeHint() const      { return (QSize(800, 650)); }
     QSize minimumSizeHint()     const { return (QSize(800, 650)); }

@@ -358,14 +358,6 @@ cEdit::PopUpLayerExp(GRobject, ShowMode)
 }
 
 
-// qtsim.cc
-
-void
-cSced::PopUpSim(SpType)
-{
-}
-
-
 /* ----- */
 
 void

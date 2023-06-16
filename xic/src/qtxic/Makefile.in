@@ -61,6 +61,7 @@ CCFILES = \
     qtprpinfo.cc \
     qtptext.cc \
     qtsel.cc \
+    qtsim.cc \
     qtstab.cc \
     qttree.cc \
     qtxdraw.cc \
@@ -92,6 +93,7 @@ MOCFILES = \
     moc_prpinfo.cpp \
     moc_sel.cpp \
     moc_stab.cpp \
+    moc_tree.cpp \
     moc_xform.cpp \
     moc_zoom.cpp
 CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
@@ -127,7 +129,7 @@ moc_dots.o: moc_dots.cpp  qtdots.h
 moc_empty.o: moc_empty.cpp  qtempty.h
 moc_expand.o: moc_expand.cpp  qtexpand.h
 moc_fillp.o: moc_fillp.cpp  qtfillp.h
-moc_flatten.o: moc_flatten.cpp  qlatten.h
+moc_flatten.o: moc_flatten.cpp  qtflatten.h
 moc_htext.o: moc_htext.cpp  qthtext.h
 moc_join.o: moc_join.cpp  qtjoin.h
 moc_ltab.o: moc_ltab.cpp  qtltab.h
@@ -143,7 +145,9 @@ moc_place.o: moc_place.cpp  qtplace.h
 moc_prpedit.o: moc_prpedit.cpp  qtprpedit.h
 moc_prpinfo.o: moc_prpinfo.cpp  qtprpinfo.h
 moc_sel.o: moc_sel.cpp  qtsel.h
+moc_sim.o: moc_sim.cpp  qtsim.h
 moc_stab.o: moc_stab.cpp  qtstab.h
+moc_tree.o: moc_tree.cpp  qttree.h
 moc_xform.o: moc_xform.cpp  qtxform.h
 moc_zoom.o: moc_zoom.cpp  qtzoom.h
 
@@ -193,8 +197,12 @@ moc_prpinfo.cpp: $(MOC) qtprpinfo.h
 	$(MOC) qtprpinfo.h -o moc_prpinfo.cpp
 moc_sel.cpp: $(MOC) qtsel.h
 	$(MOC) qtsel.h -o moc_sel.cpp
+moc_sim.cpp: $(MOC) qtsim.h
+	$(MOC) qtsim.h -o moc_sim.cpp
 moc_stab.cpp: $(MOC) qtstab.h
 	$(MOC) qtstab.h -o moc_stab.cpp
+moc_tree.cpp: $(MOC) qttree.h
+	$(MOC) qttree.h -o moc_tree.cpp
 moc_xform.cpp: $(MOC) qtxform.h
 	$(MOC) qtxform.h -o moc_xform.cpp
 moc_zoom.cpp: $(MOC) qtzoom.h
