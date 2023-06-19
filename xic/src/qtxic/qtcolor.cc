@@ -235,7 +235,7 @@ cColor::cColor(GRobject c)
 
     c_listbtn = new QPushButton(tr("Named Colors"));
     c_listbtn->setCheckable(true);
-    connect(c_listbtn, SIGNAL(checked(bool)),
+    connect(c_listbtn, SIGNAL(toggled(bool)),
         this, SLOT(colors_btn_slot(bool)));
     hbox->addWidget(c_listbtn);
 

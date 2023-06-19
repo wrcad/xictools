@@ -38,10 +38,17 @@
  $Id:$
  *========================================================================*/
 
-#include "qtchdsave.h:
+#include "qtchdsave.h"
 #include "cvrt.h"
 #include "dsp_inlines.h"
-#include "qtcv.h"
+#include "qtllist.h"
+
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QCheckBox>
+#include <QPushButton>
+#include <QLineEdit>
 
 
 //-----------------------------------------------------------------------------
@@ -49,7 +56,6 @@
 //
 // Help system keywords used:
 //  xic:chdsav
-
 
 void
 cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
@@ -83,6 +89,7 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
     gtk_window_move(GTK_WINDOW(Cs->shell()), x, y);
     gtk_widget_show(Cs->shell());
     */
+    cCHDsave::self()->show();
 }
 
 
@@ -100,6 +107,8 @@ namespace {
 */
 
 
+cCHDsave *cCHDsave::instPtr;
+
 cCHDsave::cCHDsave(GRobject caller, bool(*callback)(const char*, bool, void*),
     void *arg, const char *chdname)
 {
@@ -113,126 +122,84 @@ cCHDsave::cCHDsave(GRobject caller, bool(*callback)(const char*, bool, void*),
     cs_callback = callback;
     cs_arg = arg;
 
-#ifdef notdef
-    cs_popup = gtk_NewPopup(0, "Save Hierarchy Digest File", cs_cancel_proc,
-        0);
-    if (!cs_popup)
-        return;
+    setWindowTitle(tr("Save Hierarchy Digest File"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    GtkWidget *form = gtk_table_new(2, 1, false);
-    gtk_widget_show(form);
-    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
-    gtk_container_add(GTK_CONTAINER(cs_popup), form);
-    int rowcnt = 0;
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    // Label in frame plus help button.
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    // label in frame plus help btn
     //
     char buf[256];
     snprintf(buf, sizeof(buf), "Saving %s, enter pathname for file:",
         chdname ? chdname : "");
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-    cs_label = gtk_label_new(buf);
-    gtk_widget_show(cs_label);
-    gtk_misc_set_padding(GTK_MISC(cs_label), 2, 2);
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), cs_label);
-    gtk_box_pack_start(GTK_BOX(hbox), frame, true, true, 0);
-    GtkWidget *button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(cs_action), 0);
-    gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    cs_label = new QLabel(tr(buf));
+    hb->addWidget(cs_label);
+
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // This allows user to change label text.
-    g_object_set_data(G_OBJECT(cs_popup), "label", cs_label);
+//    g_object_set_data(G_OBJECT(cs_popup), "label", cs_label);
 
-    cs_text = gtk_entry_new();
-    gtk_widget_show(cs_text);
-    gtk_editable_set_editable(GTK_EDITABLE(cs_text), true);
-    gtk_table_attach(GTK_TABLE(form), cs_text, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 0);
-    rowcnt++;
-
-    gtk_widget_set_size_request(cs_text, 320, -1);
-
-    g_signal_connect_after(G_OBJECT(cs_text), "changed",
-        G_CALLBACK(cs_change_proc), 0);
+    cs_text = new QLineEdit();
+    vbox->addWidget(cs_text);
+    cs_text->setReadOnly(false);
+    connect(cs_text, SIGNAL(textChanged(const QString&)),
+        this, SLOT(text_changed_slot(const QString&)));
 
     // drop site
+/*
     GtkDestDefaults DD = (GtkDestDefaults)
         (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
     gtk_drag_dest_set(cs_text, DD, target_table, n_targets,
         GDK_ACTION_COPY);
     g_signal_connect_after(G_OBJECT(cs_text), "drag-data-received",
         G_CALLBACK(cs_drag_data_received), 0);
+*/
 
-    GtkWidget *sep = gtk_hseparator_new();
-    gtk_widget_show(sep);
-    gtk_table_attach(GTK_TABLE(form), sep, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    cs_geom = new QCheckBox(tr("Include geometry records in file"));
+    vbox->addWidget(cs_geom);
+    connect(cs_geom, SIGNAL(stateChanged(int)),
+        this, SLOT(geom_btn_slot(int)));
 
-    cs_geom = gtk_check_button_new_with_label(
-        "Include geometry records in file");
-    gtk_widget_set_name(cs_geom, "Geom");
-    gtk_widget_show(cs_geom);
-    g_signal_connect(G_OBJECT(cs_geom), "clicked",
-        G_CALLBACK(cs_action), 0);
-
-    gtk_table_attach(GTK_TABLE(form), cs_geom, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
     // Layer list
     //
-    cs_llist = new llist_t;
-    gtk_widget_set_sensitive(cs_llist->frame(), false);
-    gtk_table_attach(GTK_TABLE(form), cs_llist->frame(), 0, 2, rowcnt,
-        rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    cs_llist = new cLayerList;
+    cs_llist->setEnabled(false);
+    vbox->addWidget(cs_llist);
 
-    //
     // Apply/Dismiss buttons
     //
-    cs_apply = gtk_button_new_with_label("Apply");
-    gtk_widget_set_name(cs_apply, "Apply");
-    gtk_widget_show(cs_apply);
-    g_signal_connect(G_OBJECT(cs_apply), "clicked",
-        G_CALLBACK(cs_action), 0);
-    gtk_table_attach(GTK_TABLE(form), cs_apply, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(cs_cancel_proc), 0);
+    cs_apply = new QPushButton(tr("Apply"));
+    hbox->addWidget(cs_apply);
+    connect(cs_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    gtk_window_set_focus(GTK_WINDOW(cs_popup), cs_text);
-#endif
+    btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
 cCHDsave::~cCHDsave()
 {
     instPtr = 0;
-    delete cs_llist;
     if (cs_caller)
         QTdev::Deselect(cs_caller);
 }
@@ -244,58 +211,56 @@ cCHDsave::update(const char *chdname)
     if (!chdname)
         return;
     char buf[256];
-    snprintf(buf, sizeof(buf), "Saving %s, enter pathname for file:", chdname);
-    gtk_label_set_text(GTK_LABEL(cs_label), buf);
+    snprintf(buf, sizeof(buf), "Saving %s, enter pathname for file:",
+        chdname);
+    cs_label->setText(buf);
     cs_llist->update();
 }
 
 
-// Pop down and destroy, call callback.  Note that if the callback
-// returns nonzero but not one, the caller is not deselected.
-//
 void
-cCHDsave::button_hdlr(GtkWidget *widget)
+cCHDsave::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:chdsav"))
+}
+
+
+void
+cCHDsave::text_changed_slot(const QString&)
+{
+}
+
+
+void
+cCHDsave::geom_btn_slot(int state)
+{
+    cs_llist->setEnabled(state);
+}
+
+
+void
+cCHDsave::apply_btn_slot()
 {
     int ret = true;
-    if (cs_callback && widget == cs_apply) {
-        GTKdev::Deselect(widget);
-        char *string = gtk_editable_get_chars(GTK_EDITABLE(cs_text), 0, -1);
-        ret = (*cs_callback)(string, GTKdev::GetStatus(cs_geom),
+    if (cs_callback) {
+        const char *string =
+            lstring::copy(cs_text->text().toLatin1().constData());
+        ret = (*cs_callback)(string, QTdev::GetStatus(cs_geom),
             cs_arg);
-        free(string);
+        delete [] string;
     }
     if (ret)
-        cs_cancel_proc(0, 0);
+        cCHDsave::self()->deleteLater();
+}
+
+
+void
+cCHDsave::dismiss_btn_slot()
+{
+    Cvt()->PopUpChdSave(0, MODE_OFF, 0, 0, 0, 0, 0);
 }
 
 #ifdef notdef
-
-// Static function.
-void
-cCHDsave::cs_cancel_proc(GtkWidget*, void*)
-{
-    delete Cs;
-}
-
-
-// Static function.
-void
-cCHDsave::cs_action(GtkWidget *caller, void*)
-{
-    if (!Cs)
-        return;
-    const char *name = gtk_widget_get_name(caller);
-    if (!strcmp(name, "Help")) {
-        DSPmainWbag(PopUpHelp("xic:chdsav"))
-        return;
-    }
-    if (!strcmp(name, "Apply"))
-        Cs->button_hdlr(caller);
-    else if (!strcmp(name, "Geom"))
-        gtk_widget_set_sensitive(Cs->cs_llist->frame(),
-            GTKdev::GetStatus(caller));
-}
-
 
 // Private static GTK signal handler.
 // The entry widget has the focus initially, and the Enter key is ignored.

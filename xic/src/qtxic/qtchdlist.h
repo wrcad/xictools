@@ -38,49 +38,90 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCHDSAVE_H
-#define QTCHDSAVE_H
+#ifndef QTCHDLIST_H
+#define QTCHDLIST_H
 
 #include "main.h"
 #include "qtmain.h"
 
 #include <QDialog>
 
+class QPushButton;
+class QTreeWidget;
+class QTreeWidgetItem;
+class QCheckBox;
+class QComboBox;
 
-struct cCHDsave : public QDialog
+
+class cCHDlist : public QDialog, public QTbag
 {
-    cCHDsave(GRobject, bool(*)(const char*, bool, void*), void*, const char*);
-    ~cCHDsave();
+    Q_OBJECT
 
-    void update(const char*);
-    
-    cCHDsave *self()            return (instPtr); }
+public:
+    cCHDlist(GRobject);
+    ~cCHDlist();
+
+    void update();
+
+    static cCHDlist *self()         { return (instPtr); }
+
+private slots:
+    void add_btn_slot(bool);
+    void sav_btn_slot(bool);
+    void del_btn_slot(bool);
+    void cfg_btn_slot(bool);
+    void dsp_btn_slot(bool);
+    void cnt_btn_slot();
+    void cel_btn_slot(bool);
+    void inf_btn_slot();
+    void qinf_btn_slot();
+    void help_btn_slot();
+    void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
+    void item_activated_slot(QTreeWidgetItem*, int);
+    void item_clicked_slot(QTreeWidgetItem*, int);
+    void item_selection_changed();
+    void rename_btn_slot(int);
+    void loadtop_btn_slot(int);
+    void failres_btn_slot(int);
+    void usetab_btn_slot(int);
+    void showtab_btn_slot(bool);
+    void geom_change_slot(int);
+    void dismiss_btn_slot();
 
 private:
-    void button_hdlr(GtkWidget*);
+    void recolor();
+    void err_message(const char*);
+    static bool chl_add_cb(const char*, const char*, int, void*);
+    static bool chl_sav_cb(const char*, bool, void*);
+    static void chl_del_cb(bool, void*);
+    static bool chl_display_cb(bool, const BBox*, void*);
+    static void chl_cnt_cb(const char*, void*);
+    static ESret chl_cel_cb(const char*, void*);
 
-    /*
-    static void cs_cancel_proc(GtkWidget*, void*);
-    static void cs_action(GtkWidget*, void*);
+    GRobject chl_caller;
+    QPushButton *chl_addbtn;
+    QPushButton *chl_savbtn;
+    QPushButton *chl_delbtn;
+    QPushButton *chl_cfgbtn;
+    QPushButton *chl_dspbtn;
+    QPushButton *chl_cntbtn;
+    QPushButton *chl_celbtn;
+    QPushButton *chl_infbtn;
+    QPushButton *chl_qinfbtn;
+    QTreeWidget *chl_list;
+    QCheckBox *chl_loadtop;
+    QCheckBox *chl_rename;
+    QCheckBox *chl_usetab;
+    QPushButton *chl_showtab;
+    QCheckBox *chl_failres;
+    QComboBox *chl_geomenu;
+    GRledPopup *chl_cel_pop;
+    GRmcolPopup *chl_cnt_pop;
+    GRaffirmPopup *chl_del_pop;
+    char *chl_selection;
+    char *chl_contlib;
 
-    static void cs_change_proc(GtkWidget*, void*);
-    static int cs_key_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void cs_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint);
-    */
-
-    GRobject cs_caller;
-    GtkWidget *cs_popup;
-    GtkWidget *cs_label;
-    GtkWidget *cs_text;
-    GtkWidget *cs_geom;
-    GtkWidget *cs_apply;
-    llist_t *cs_llist;
-
-    bool(*cs_callback)(const char*, bool, void*);
-    void *cs_arg;
-
-    static cCHDsave *instPtr;
+    static cCHDlist *instPtr;
 };
 
 #endif

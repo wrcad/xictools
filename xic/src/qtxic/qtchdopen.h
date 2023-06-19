@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCGDOPEN_H
-#define QTCGDOPEN_H
+#ifndef QTCHDOPEN_H
+#define QTCHDOPEN_H
 
 #include "main.h"
 #include "qtmain.h"
@@ -47,53 +47,50 @@
 #include <QDialog>
 
 
-class cCGDopen : public QDialog, public GTKbag
+class QTabWidget;
+class QLineEdit;
+class QComboBox;
+class QRadioButton;
+class QPushButton;
+class cCnmap;
+
+class cCHDopen : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCGDopen(GRobject, bool(*)(const char*, const char*, int, void*),
-        void*, const char*, const char*);
-    ~cCGDopen();
+    cCHDopen(GRobject, bool(*)(const char*, const char*, int, void*), void*,
+        const char*, const char*);
+    ~cCHDopen();
 
     void update(const char*, const char*);
 
-    static cCGDopen *self()         { return (instPtr); }
+    static cCHDopen *self()             { return (instPtr); }
+
+private slots:
+    void help_btn_slot();
+    void p1_info_slot(int);
+    void apply_btn_slot();
+    void dismiss_btn_slot();
 
 private:
-    void apply_proc(GtkWidget*);
-    char *encode_remote_spec(GtkWidget**);
-    void load_remote_spec(const char*);
+    GRobject co_caller;
+    QTabWidget *co_nbook;
+    QLineEdit *co_p1_text;
+    QComboBox *co_p1_info;
+    QLineEdit *co_p2_text;
+    QRadioButton *co_p2_mem;
+    QRadioButton *co_p2_file;
+    QRadioButton *co_p2_none;
+    QLineEdit *co_idname;
+    QPushButton *co_apply;
 
-    /*
-    static void cgo_cancel_proc(GtkWidget*, void*);
-    static void cgo_action(GtkWidget*, void*);
+    cCnmap *co_p1_cnmap;
 
-    static int cgo_key_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void cgo_info_proc(GtkWidget*, void*);
-    static void cgo_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint);
-    static void cgo_page_proc(GtkNotebook*, void*, int, void*);
-    */
+    bool(*co_callback)(const char*, const char*, int, void*);
+    void *co_arg;
 
-    GRobject cgo_caller;
-    GtkWidget *cgo_nbook;
-    GtkWidget *cgo_p1_entry;
-    GtkWidget *cgo_p2_entry;
-    GtkWidget *cgo_p3_host;
-    GtkWidget *cgo_p3_port;
-    GtkWidget *cgo_p3_idname;
-    GtkWidget *cgo_idname;
-    GtkWidget *cgo_apply;
-
-    llist_t *cgo_p1_llist;
-    cnmap_t *cgo_p1_cnmap;
-
-    bool(*cgo_callback)(const char*, const char*, int, void*);
-    void *cgo_arg;
-
-    static cCGDopen *instPtr;
+    static cCHDopen *instPtr;
 };
 
 #endif
-

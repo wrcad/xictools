@@ -38,58 +38,44 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCGDLIST_H
-#define QTCGDLIST_H
+#ifndef QTCNMAP_H
+#define QTCNMAP_H
 
-#include "main.h"
-#include "qtmain.h"
+#include <QGroupBox>
 
-#include <QDialog>
+class QLineEdit;
+class QCheckBox;
 
 
-class cCGDlist : public QDialog, public GTKbag
+//-------------------------------------------------------------------------
+// Subwidget group for cell name mapping.
+//
+class cCnmap : public QGroupBox
 {
-    cCGDlist(GRobject);
-    ~cCGDlist();
+    Q_OBJECT
+
+public:
+    cCnmap(bool);
 
     void update();
 
-    static cCGDlist *self()         { return (instPtr); }
-
 private slots:
+    void prefix_changed_slot(const QString&);
+    void suffix_changed_slot(const QString&);
+    void to_lower_slot(int);
+    void to_upper_slot(int);
+    void rd_alias_slot(int);
+    void wr_alias_slot(int);
 
 private:
-    void action_hdlr(GtkWidget*, void*);
-    void err_message(const char*);
-
-    /*
-    static int cgl_selection_proc(GtkTreeSelection*, GtkTreeModel*,
-        GtkTreePath*, int, void*);
-    static bool cgl_focus_proc(GtkWidget*, GdkEvent*, void*);
-    static bool cgl_add_cb(const char*, const char*, int, void*);
-    static ESret cgl_sav_cb(const char*, void*);
-    static void cgl_del_cb(bool, void*);
-    static void cgl_cnt_cb(const char*, void*);
-    static void cgl_action_proc(GtkWidget*, void*);
-    static void cgl_cancel(GtkWidget*, void*);
-    */
-
-    GRobject cgl_caller;
-    GtkWidget *cgl_addbtn;
-    GtkWidget *cgl_savbtn;
-    GtkWidget *cgl_delbtn;
-    GtkWidget *cgl_cntbtn;
-    GtkWidget *cgl_infbtn;
-    GtkWidget *cgl_list;
-    GRledPopup *cgl_sav_pop;
-    GRaffirmPopup *cgl_del_pop;
-    GRmcolPopup *cgl_cnt_pop;
-    GRmcolPopup *cgl_inf_pop;
-    char *cgl_selection;
-    char *cgl_contlib;
-    bool cgl_no_select;     // treeview focus hack
-
-    static cCGDlist *instPtr;
+    QLineEdit *cn_prefix;
+    QLineEdit *cn_suffix;
+    QCheckBox *cn_to_lower;
+    QCheckBox *cn_to_upper;
+    QCheckBox *cn_rd_alias;
+    QCheckBox *cn_wr_alias;
+    bool cn_output;
 };
 
 #endif
+

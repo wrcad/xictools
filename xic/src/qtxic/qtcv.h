@@ -48,62 +48,6 @@ struct fmt_menu
     int code;
 };
 
-//-------------------------------------------------------------------------
-// Subwidget group for cell name mapping
-//
-struct cnmap_t
-{
-    cnmap_t(bool);
-
-    void update();
-    /*
-    void text_changed(GtkWidget*);
-    void action(GtkWidget*);
-
-    GtkWidget *frame() { return (cn_frame); }
-
-private:
-    static void cn_text_changed(GtkWidget*, void*);
-    static void cn_action(GtkWidget*, void*);
-
-    GtkWidget *cn_prefix;
-    GtkWidget *cn_suffix;
-    GtkWidget *cn_to_lower;
-    GtkWidget *cn_to_upper;
-    GtkWidget *cn_rd_alias;
-    GtkWidget *cn_wr_alias;
-    GtkWidget *cn_frame;
-    bool cn_output;
-    */
-};
-
-//-------------------------------------------------------------------------
-// Subwidget group for layer list
-//
-struct llist_t
-{
-    llist_t();
-    ~llist_t();
-
-    void update();
-    /*
-    void text_changed(GtkWidget*);
-    void action(GtkWidget*);
-
-    GtkWidget *frame() { return (ll_frame); }
-
-private:
-    static void ll_text_changed(GtkWidget*, void*);
-    static void ll_action(GtkWidget*, void*);
-
-    GtkWidget *ll_luse;
-    GtkWidget *ll_lskip;
-    GtkWidget *ll_laylist;
-    GtkWidget *ll_aluse;
-    GtkWidget *ll_aledit;
-    GtkWidget *ll_frame;
-    */
-};
 
 //-------------------------------------------------------------------------
 // Subwidget group for window control

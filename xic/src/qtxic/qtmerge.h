@@ -71,8 +71,8 @@ public:
 private slots:
     void apply_btn_slot();
     void apply_to_all_btn_slot();
-    void phys_check_box_slot(bool);
-    void elec_check_box_slot(bool);
+    void phys_check_box_slot(int);
+    void elec_check_box_slot(int);
 
 private:
     QLabel *mc_label;

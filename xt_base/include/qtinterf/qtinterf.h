@@ -207,6 +207,10 @@ namespace qtinterf
         int             wb_info_cnt;
         int             wb_info2_cnt;
         int             wb_htinfo_cnt;
+
+        // These are used in a lot of places.
+        static const char *wb_closed_folder_xpm[];
+        static const char *wb_open_folder_xpm[];
     };
 
     // An event loop that can be linked into a list.

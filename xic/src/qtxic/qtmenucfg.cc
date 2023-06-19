@@ -255,7 +255,7 @@ QTmenuConfig::instantiateMainMenus()
 
         set(mbox->menu[editMenu], "&Edit", 0);
         set(mbox->menu[editMenuCedit], "&Enable Editing", 0);
-        set(mbox->menu[editMenuEdSet], "&Setup", 0);
+        set(mbox->menu[editMenuEdSet], "x&Setup", 0);
         set(mbox->menu[editMenuPcctl], "PCell C&ontrol", 0);
         set(mbox->menu[editMenuCrcel], "Cre&ate Cell", 0);
         set(mbox->menu[editMenuCrvia], "Create &Via", 0);
@@ -567,7 +567,7 @@ QTmenuConfig::instantiateMainMenus()
         menubar->addMenu(drc_menu);
 
         set(mbox->menu[drcMenu], "&DRC", 0);
-        set(mbox->menu[drcMenuLimit], "&Setup", 0);
+        set(mbox->menu[drcMenuLimit], "x&Setup", 0);
         set(mbox->menu[drcMenuSflag], "Set Skip &Flags", 0);
         set(mbox->menu[drcMenuIntr], "Enable &Interactive", "Alt+I");
         set(mbox->menu[drcMenuNopop], "&No Pop-up Errors", 0);
@@ -611,7 +611,7 @@ QTmenuConfig::instantiateMainMenus()
         menubar->addMenu(ext_menu);
 
         set(mbox->menu[extMenu], "E&xtract", 0);
-        set(mbox->menu[extMenuExcfg], "Set&up", 0);
+        set(mbox->menu[extMenuExcfg], "xSet&up", 0);
         set(mbox->menu[extMenuSel], "&Net Selections", 0);
         set(mbox->menu[extMenuDvsel], "&Device Selections", 0);
         set(mbox->menu[extMenuSourc], "&Source SPICE", 0);

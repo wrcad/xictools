@@ -200,7 +200,8 @@ printf("x1\n");
     QCheckBox *cb = new QCheckBox();
     hbox->addWidget(cb);
     cb->setText(tr("Overwrite Physical"));
-    connect(cb, SIGNAL(checked(bool)), this, SLOT(phys_check_box_slot(bool)));
+    connect(cb, SIGNAL(stateChanged(int)),
+        this, SLOT(phys_check_box_slot(int)));
     cb->setChecked(mc_do_elec);
 
     hbox = new QHBoxLayout(0);
@@ -210,7 +211,8 @@ printf("x1\n");
     cb = new QCheckBox();
     hbox->addWidget(cb);
     cb->setText(tr("Overwrite Electrical"));
-    connect(cb, SIGNAL(checked(bool)), this, SLOT(elec_check_box_slot(bool)));
+    connect(cb, SIGNAL(stateChanged(int)),
+        this, SLOT(elec_check_box_slot(int)));
     cb->setChecked(mc_do_elec);
 
     hbox = new QHBoxLayout(0);
@@ -294,14 +296,14 @@ cMerge::apply_to_all_btn_slot()
 
 
 void
-cMerge::phys_check_box_slot(bool checked)
+cMerge::phys_check_box_slot(int checked)
 {
     mc_do_phys = checked;
 }
 
 
 void
-cMerge::elec_check_box_slot(bool checked)
+cMerge::elec_check_box_slot(int checked)
 {
     mc_do_elec = checked;
 }

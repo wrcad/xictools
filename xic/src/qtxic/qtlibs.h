@@ -32,92 +32,74 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef QTTEXT_H
-#define QTTEXT_H
+#ifndef QTLIBS_H
+#define QTLIBS_H
 
-#include "ginterf/graphics.h"
-#include "miscutil/lstring.h"
+#include "main.h"
+#include "qtmain.h"
 
-#include <QVariant>
 #include <QDialog>
 
-class QGroupBox;
+
 class QPushButton;
-class QTextEdit;
+class QTreeWidget;
+class QTreeWidgetItem;
+class QPixmap;
 
-//XXX FIXME differentiate this from msgPopup
-
-namespace qtinterf
+class cLibs : public QDialog, public QTbag
 {
-    class QTbag;
-    class text_box;
+    Q_OBJECT
 
-    class QTtextPopup : public QDialog, public GRtextPopup
-    {
-        Q_OBJECT
+public:
+    cLibs(GRobject);
+    ~cLibs();
 
-    public:
-        QTtextPopup(QTbag*, const char*, STYtype style, int, int);
-        ~QTtextPopup();
+    QSize sizeHint() const;
 
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void set_desens()           { pw_desens = true; }
-        bool is_desens()            { return (pw_desens); }
+    char *get_selection();
+    void update();
 
-        // GRtextPopup overrides
-        bool get_btn2_state()       { return (false); }
-        void set_btn2_state(bool)   { }
+    static void set_panic()         { instPtr = 0; }
+    static cLibs *self()            { return (instPtr); }
 
-        // When set, error pop-ups have a "Show Error Log" button that
-        // pops up a file browser on this file.
-        //
-        static void set_error_log(const char *s)
-        {
-            char *t = lstring::copy(s);
-            delete [] pw_errlog;
-            pw_errlog = t;
-        }
+private slots:
+    void open_btn_slot();
+    void cont_btn_slot();
+    void help_btn_slot();
+    void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
+    void item_activated_slot(QTreeWidgetItem*, int);
+    void item_clicked_slot(QTreeWidgetItem*, int);
+    void item_selection_changed();
+    void noovr_btn_slot(bool);
+    void dismiss_btn_slot();
 
-        void popdown();
-        void setTitle(const char*);
-        void setText(const char*);
+private:
+    void pop_up_contents();
+    static void lb_content_cb(const char*, void*);
+    static stringlist *lb_pathlibs();
+    static stringlist *lb_add_dir(char*, stringlist*);
 
-//XXX
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
+    GRobject lb_caller;
+    QPushButton *lb_openbtn;
+    QPushButton *lb_contbtn;
+    QTreeWidget *lb_list;
+    QPushButton *lb_noovr;
+    GRmcolPopup *lb_content_pop;
+    char *lb_selection;
+    char *lb_contlib;
 
-    private slots:
-        void quit_slot();
+    QPixmap *lb_open_pb;
+    QPixmap *lb_close_pb;
 
-    private:
-        QGroupBox *gbox;
-        text_box *tx;
-        QPushButton *b_cancel;
-        STYtype display_style;
-        bool pw_desens;             // If true, parent->wb_inout is disabled.
-
-        static char *pw_errlog;
-    };
-}
+    static const char *nolibmsg;
+    static cLibs *instPtr;
+};
 
 #endif
 

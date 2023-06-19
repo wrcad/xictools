@@ -301,11 +301,11 @@ public:
     // qtfiles.cc
     static char *get_file_selection();
     static void files_panic();
+    */
 
     // qtlibs.cc
     static char *get_lib_selection();
     static void libs_panic();
-    */
 
     // qttree.cc
     static char *get_tree_selection();

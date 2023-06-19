@@ -32,92 +32,65 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef QTTEXT_H
-#define QTTEXT_H
+#ifndef QTEDSET_H
+#define QTEDSET_H
 
-#include "ginterf/graphics.h"
-#include "miscutil/lstring.h"
+#include "main.h"
+#include "qtmain.h"
 
-#include <QVariant>
 #include <QDialog>
 
-class QGroupBox;
-class QPushButton;
-class QTextEdit;
 
-//XXX FIXME differentiate this from msgPopup
+class QCheckBox;
+class QComboBox;
+class QSpinBox;
 
-namespace qtinterf
+class cEditSetup : public QDialog
 {
-    class QTbag;
-    class text_box;
+    Q_OBJECT
 
-    class QTtextPopup : public QDialog, public GRtextPopup
-    {
-        Q_OBJECT
+public:
+    cEditSetup(GRobject);
+    ~cEditSetup();
 
-    public:
-        QTtextPopup(QTbag*, const char*, STYtype style, int, int);
-        ~QTtextPopup();
+    void update();
 
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void set_desens()           { pw_desens = true; }
-        bool is_desens()            { return (pw_desens); }
+    static cEditSetup *self()           { return (instPtr); }
 
-        // GRtextPopup overrides
-        bool get_btn2_state()       { return (false); }
-        void set_btn2_state(bool)   { }
+private slots:
+    void help_btn_slot();
+    void cons45_btn_slot(int);
+    void merge_btn_slot(int);
+    void noply_btn_slot(int);
+    void prompt_btn_slot(int);
+    void noww_btn_slot(int);
+    void crcovr_btn_slot(int);
+    void ulen_changed_slot(int);
+    void maxgobs_changed_slot(int);
+    void depth_changed_slot(int);
+    void dismiss_btn_slot();
 
-        // When set, error pop-ups have a "Show Error Log" button that
-        // pops up a file browser on this file.
-        //
-        static void set_error_log(const char *s)
-        {
-            char *t = lstring::copy(s);
-            delete [] pw_errlog;
-            pw_errlog = t;
-        }
+private:
+    GRobject    ed_caller;
+    QCheckBox   *ed_cons45;
+    QCheckBox   *ed_merge;
+    QCheckBox   *ed_noply;
+    QCheckBox   *ed_prompt;
+    QCheckBox   *ed_noww;
+    QCheckBox   *ed_crcovr;
+    QComboBox   *ed_depth;
+    QSpinBox    *ed_sb_ulen;
+    QSpinBox    *ed_sb_maxgobjs;
 
-        void popdown();
-        void setTitle(const char*);
-        void setText(const char*);
-
-//XXX
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-    private slots:
-        void quit_slot();
-
-    private:
-        QGroupBox *gbox;
-        text_box *tx;
-        QPushButton *b_cancel;
-        STYtype display_style;
-        bool pw_desens;             // If true, parent->wb_inout is disabled.
-
-        static char *pw_errlog;
-    };
-}
+    static const char *ed_depthvals[];
+    static cEditSetup *instPtr;
+};
 
 #endif
 

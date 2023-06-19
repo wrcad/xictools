@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCHDCFG_H
-#define QTCHDCFG_H
+#ifndef QTCGDOPEN_H
+#define QTCGDOPEN_H
 
 #include "main.h"
 #include "qtmain.h"
@@ -47,45 +47,51 @@
 #include <QDialog>
 
 
-class cCHDcfg : public QDialog, public GTKbag
+class QLineEdit;
+class QPushButton;
+class QTabWidget;
+class cLayerList;
+class cCnmap;
+
+class cCGDopen : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCHDcfg(GRobject, const char*);
-    ~cCHDcfg();
+    cCGDopen(GRobject, bool(*)(const char*, const char*, int, void*),
+        void*, const char*, const char*);
+    ~cCGDopen();
 
-    void update(const char*);
+    void update(const char*, const char*);
 
-    static cCHDcfg *self()          { return (instPtr); }
+    static cCGDopen *self()         { return (instPtr); }
+
+private slots:
+    void help_btn_slot();
+    void apply_btn_slot();
+    void dismiss_btn_slot();
 
 private:
-    void button_hdlr(GtkWidget*);
+    char *encode_remote_spec(QLineEdit**);
+    void load_remote_spec(const char*);
 
-    /*
-    static bool cf_new_cgd_cb(const char*, const char*, int, void*);
-    static void cf_cancel_proc(GtkWidget*, void*);
-    static void cf_action(GtkWidget*, void*);
-    static void cf_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint);
-    */
+    GRobject    cgo_caller;
+    QTabWidget  *cgo_nbook;
+    QLineEdit   *cgo_p1_entry;
+    QLineEdit   *cgo_p2_entry;
+    QLineEdit   *cgo_p3_host;
+    QLineEdit   *cgo_p3_port;
+    QLineEdit   *cgo_p3_idname;
+    QLineEdit   *cgo_idname;
+    QPushButton *cgo_apply;
 
-    GRobject cf_caller;
-    GtkWidget *cf_label;
-    GtkWidget *cf_dtc_label;
-    GtkWidget *cf_last;
-    GtkWidget *cf_text;
-    GtkWidget *cf_apply_tc;
-    GtkWidget *cf_newcgd;
-    GtkWidget *cf_cgdentry;
-    GtkWidget *cf_cgdlabel;
-    GtkWidget *cf_apply_cgd;
+    cLayerList  *cgo_p1_llist;
+    cCnmap      *cgo_p1_cnmap;
 
-    char *cf_chdname;
-    char *cf_lastname;
-    char *cf_cgdname;
+    bool(*cgo_callback)(const char*, const char*, int, void*);
+    void *cgo_arg;
 
-    static cCHDcfg *instPtr;
+    static cCGDopen *instPtr;
 };
 
 #endif

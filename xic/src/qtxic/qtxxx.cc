@@ -84,35 +84,6 @@ cMain::PopUpCellFlags(GRobject, ShowMode, const stringlist*, int)
 {
 }
 
-// qtcgdlist.cc
-
-void
-cConvert::PopUpGeometries(GRobject, ShowMode)
-{
-}
-
-// qtchdcfg.cc
-
-void
-cConvert::PopUpChdConfig(GRobject, ShowMode, const char*, int, int)
-{
-}
-
-// qtchdlist.cc
-
-void
-cConvert::PopUpHierarchies(GRobject, ShowMode)
-{
-}
-
-// qtchdopen.cc
-
-void
-cConvert::PopUpChdOpen(GRobject, ShowMode,
-    const char*, const char*, int, int,
-    bool(*)(const char*, const char*, int, void*), void*)
-{
-}
 
 void
 cMain::PopUpDebugFlags(GRobject, ShowMode)
@@ -289,21 +260,6 @@ cSced::PopUpSpiceIf(GRobject, ShowMode)
 {
 }
 
-
-// qtlibs.cc
-
-void
-cConvert::PopUpLibraries(GRobject, ShowMode)
-{
-}
-
-// qtlogo.cc
-
-void
-cEdit::PopUpLogo(GRobject, ShowMode)
-{
-}
-
 // qtlpal.cc
 
 void
@@ -347,10 +303,6 @@ cEdit::PopUpStdVia(GRobject, ShowMode, CDc*)
 {
 }
 
-void
-cEdit::PopUpEditSetup(GRobject, ShowMode)
-{
-}
 
 void
 cEdit::PopUpLayerExp(GRobject, ShowMode)
@@ -404,6 +356,7 @@ cOAif::PopUpOAdefs(GRobject, ShowMode, int, int)
 bool
 cSced::PopUpNodeMap(GRobject, ShowMode, int)
 {
+    return (false);
 }
 
 void
@@ -421,4 +374,5 @@ bool
 cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*,
     const char*, pcpMode)
 {
+    return (false);
 }

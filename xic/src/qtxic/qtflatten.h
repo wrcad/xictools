@@ -66,7 +66,7 @@ public:
 
 private slots:
     void help_btn_slot();
-    void depth_menu_slot(QAction*);
+    void depth_menu_slot(const QString&);
     void novias_btn_slot(int);
     void nopcells_btn_slot(int);
     void nolabels_btn_slot(int);

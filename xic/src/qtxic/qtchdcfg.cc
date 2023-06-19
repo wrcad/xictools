@@ -1,0 +1,553 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
+ *                       http://wrcad.com                                 *
+ *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Author: Stephen R. Whiteley, except as indicated.                     *
+ *                                                                        *
+ *  As fully as possible recognizing licensing terms and conditions       *
+ *  imposed by earlier work from which this work was derived, if any,     *
+ *  this work is released under the Apache License, Version 2.0 (the      *
+ *  "License").  You may not use this file except in compliance with      *
+ *  the License, and compliance with inherited licenses which are         *
+ *  specified in a sub-header below this one if applicable.  A copy       *
+ *  of the License is provided with this distribution, or you may         *
+ *  obtain a copy of the License at                                       *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *  See the License for the specific language governing permissions       *
+ *  and limitations under the License.                                    *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL WHITELEY RESEARCH INCORPORATED      *
+ *   OR STEPHEN R. WHITELEY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,      *
+ *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE       *
+ *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+ *                                                                        *
+ *========================================================================*
+ *               XicTools Integrated Circuit Design System                *
+ *                                                                        *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
+ *                                                                        *
+ *========================================================================*
+ $Id:$
+ *========================================================================*/
+
+#include "qtchdcfg.h"
+#include "cvrt.h"
+#include "errorlog.h"
+#include "dsp_inlines.h"
+#include "fio.h"
+#include "fio_chd.h"
+#include "fio_cgd.h"
+#include "cd_digest.h"
+
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QLineEdit>
+
+
+//-----------------------------------------------------------------------------
+// Pop up to configure a CHD.  The CHD can be configured with
+// 1.  a default top cell.
+// 2.  an associated geometry database.
+//
+// When a configured CHD is used for access, it will use only cells in
+// the hierarchy under the top cell that are needed to render the area.
+// The original file is accessed, unless the in-core geometry database
+// is loaded.
+//
+// Help system keywords used:
+//  xic:chdconfig
+
+/*
+namespace {
+    // Drag/drop stuff.
+    //
+    GtkTargetEntry target_table[] = {
+        { (char*)"TWOSTRING",   0, 0 },
+        { (char*)"CELLNAME",    0, 1 },
+        { (char*)"STRING",      0, 2 },
+        { (char*)"text/plain",  0, 3 }
+    };
+    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+}
+*/
+
+
+void
+cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
+    const char *chdname, int x, int y)
+{
+    if (!QTdev::exists() || !QTmainwin::exists())
+        return;
+    if (mode == MODE_OFF) {
+        if (cCHDcfg::self())
+            cCHDcfg::self()->deleteLater();
+        return;
+    }
+    if (mode == MODE_UPD) {
+        if (cCHDcfg::self())
+            cCHDcfg::self()->update(chdname);
+        return;
+    }
+    if (cCHDcfg::self())
+        return;
+
+    new cCHDcfg(caller, chdname);
+
+    /*
+    int mwid;
+    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, 0);
+    GtkRequisition req;
+    gtk_widget_get_requisition(Cfg->Shell(), &req);
+    if (x + req.width > mwid)
+        x = mwid - req.width;
+    gtk_window_move(GTK_WINDOW(Cfg->Shell()), x, y);
+    gtk_widget_show(Cfg->Shell());
+    */
+    cCHDcfg::self()->show();
+}
+
+
+cCHDcfg *cCHDcfg::instPtr;
+
+cCHDcfg::cCHDcfg(GRobject caller, const char *chdname)
+{
+    instPtr = this;
+    cf_caller = caller;
+    cf_label = 0;
+    cf_dtc_label = 0;
+    cf_last = 0;
+    cf_text = 0;
+    cf_apply_tc = 0;
+    cf_newcgd = 0;
+    cf_cgdentry = 0;
+    cf_cgdlabel = 0;
+    cf_apply_cgd = 0;
+    cf_chdname = 0;
+    cf_lastname = 0;
+    cf_cgdname = 0;
+
+    setWindowTitle(tr("Configure Cell Hierarchy Digest"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    // label in frame plus help btn
+    //
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    cf_label = new QLabel("");
+    hb->addWidget(cf_label);
+
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+
+    // Frame and name group.
+    //
+    gb = new QGroupBox();
+    vbox->addWidget(gb);
+
+    QVBoxLayout *gvbox = new QVBoxLayout(gb);
+    gvbox->setMargin(2);
+    gvbox->setSpacing(2);
+
+    QHBoxLayout *ghbox = new QHBoxLayout();
+    gvbox->addLayout(ghbox);
+    ghbox->setMargin(0);
+    ghbox->setSpacing(2);
+
+    cf_apply_tc = new QPushButton("");
+    ghbox->addWidget(cf_apply_tc);
+    connect(cf_apply_tc, SIGNAL(clicked()), this, SLOT(apply_tc_btn_slot()));
+
+    QLabel *label = new QLabel(tr("Set Default Cell"));
+    ghbox->addWidget(label);
+
+    // Name group controls.
+    //
+    ghbox = new QHBoxLayout();
+    gvbox->addLayout(ghbox);
+    ghbox->setMargin(0);
+    ghbox->setSpacing(2);
+
+    cf_dtc_label = new QLabel(tr("Default top cell"));
+    ghbox->addWidget(cf_dtc_label);
+
+    cf_last = new QPushButton(tr("Last"));
+    ghbox->addWidget(cf_last);
+    connect(cf_last, SIGNAL(clicked()), this, SLOT(last_btn_slot()));
+
+    cf_text = new QLineEdit();
+    cf_text->setReadOnly(false);
+    ghbox->addWidget(cf_text);
+
+    // drop site
+/*
+    GtkDestDefaults DD = (GtkDestDefaults)
+        (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
+    gtk_drag_dest_set(cf_text, DD, target_table, n_targets,
+        GDK_ACTION_COPY);
+    g_signal_connect_after(G_OBJECT(cf_text), "drag-data-received",
+        G_CALLBACK(cf_drag_data_received), 0);
+*/
+    //
+    // End of name group.
+
+    // Frame and CGD group.
+    //
+    gb = new QGroupBox();
+    vbox->addWidget(gb);
+
+    gvbox = new QVBoxLayout(gb);
+    gvbox->setMargin(2);
+    gvbox->setSpacing(2);
+
+    ghbox = new QHBoxLayout();
+    gvbox->addLayout(ghbox);
+    ghbox->setMargin(0);
+    ghbox->setSpacing(2);
+
+    cf_apply_cgd = new QPushButton("");
+    ghbox->addWidget(cf_apply_cgd);
+    connect(cf_apply_cgd, SIGNAL(clicked()),
+        this, SLOT(apply_cgd__btn_slot()));
+
+    label = new QLabel(tr("Setup Linked Cell Geometry Digest"));
+    ghbox->addWidget(label);
+
+    cf_newcgd = new QCheckBox(tr("Open new CGD"));
+    gvbox->addWidget(cf_newcgd);
+    connect(cf_newcgd, SIGNAL(stateChanged(int)),
+        this, SLOT(new_cgd_btn_slot(int)));
+
+    ghbox = new QHBoxLayout();
+    gvbox->addLayout(ghbox);
+    ghbox->setMargin(0);
+    ghbox->setSpacing(2);
+
+    cf_cgdlabel = new QLabel(tr("CGD name"));
+    ghbox->addWidget(label);
+
+    cf_cgdentry = new QLineEdit();
+    ghbox->addWidget(cf_cgdentry);
+    cf_cgdentry->setReadOnly(false);
+    //
+    // End of CGD group.
+
+    // Dismiss button
+    //
+    btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss _btn_slot()));
+
+    update(chdname);
+}
+
+
+cCHDcfg::~cCHDcfg()
+{
+    instPtr = 0;
+    delete [] cf_lastname;
+    delete [] cf_chdname;
+    delete [] cf_cgdname;
+    if (cf_caller)
+        QTdev::Deselect(cf_caller);
+}
+
+
+void
+cCHDcfg::update(const char *chdname)
+{
+    if (!chdname)
+        return;
+    if (chdname != cf_chdname) {
+        delete [] cf_chdname;
+        cf_chdname = lstring::copy(chdname);
+    }
+    cCHD *chd = CDchd()->chdRecall(chdname, false);
+    if (chd) {
+        cf_text->setText(chd->defaultCell(Physical));
+        bool has_name = (chd->getConfigSymref() != 0);
+
+        cf_dtc_label->setEnabled(!has_name);
+        cf_last->setEnabled(!has_name);
+        cf_text->setEnabled(!has_name);
+
+        const char *cgdname = chd->getCgdName();
+        if (cgdname) {
+            cf_cgdentry->setText(cgdname);
+            cf_cgdentry->setReadOnly(true);
+            QTdev::SetStatus(cf_newcgd, false);
+        }
+        else {
+            cf_cgdentry->setText(cf_cgdname ? cf_cgdname : "");
+            cf_cgdentry->setReadOnly(false);
+        }
+
+        cf_newcgd->setEnabled(!chd->hasCgd());
+        cf_cgdentry->setEnabled(!chd->hasCgd());
+        cf_cgdlabel->setEnabled(!chd->hasCgd());
+
+        char buf[256];
+        if (has_name || chd->hasCgd()) {
+            snprintf(buf, sizeof(buf), "CHD %s is configured with ", chdname);
+            int xx = 0;
+            if (has_name) {
+                strcat(buf, "Cell");
+                xx++;
+            }
+            if (chd->hasCgd()) {
+                if (xx)
+                    strcat(buf, ", Geometry");
+                else
+                    strcat(buf, "Geometry");
+            }
+            strcat(buf, ".");
+        }
+        else
+            snprintf(buf, sizeof(buf), "CHD %s is not configured.", chdname);
+        cf_label->setText(buf);
+
+        cf_apply_tc->setText(has_name ? "Clear" : "Apply");
+        cf_apply_cgd->setText(chd->hasCgd() ? "Clear" : "Apply");
+    }
+    cf_apply_tc->setEnabled(chd != 0);
+    cf_apply_cgd->setEnabled(chd != 0);
+}
+
+
+// Static function.
+// Callback for the Open CGD panel.
+//
+bool
+cCHDcfg::cf_new_cgd_cb(const char *idname, const char *string, int mode,
+    void *arg)
+{
+    if (!idname || !*idname)
+        return (false);
+    if (!string || !*string)
+        return (false);
+    CgdType tp = CGDremote;
+    if (mode == 0)
+        tp = CGDmemory;
+    else if (mode == 1)
+        tp = CGDfile;
+    cCGD *cgd = FIO()->NewCGD(idname, string, tp);
+    if (!cgd) {
+        const char *fmt = "Failed to create new Geometry Digest:\n%s";
+        if (cCHDcfg::self()) {
+            const char *s = Errs()->get_error();
+            int len = strlen(fmt) + (s ? strlen(s) : 0) + 10;
+            char *t = new char[len];
+            snprintf(t, len, fmt, s);
+            cCHDcfg::self()->PopUpMessage(t, true);
+            delete [] t;
+        }
+        else
+            Log()->ErrorLogV(mh::Processing,
+                "Failed to create new Geometry Digest:\n%s",
+                Errs()->get_error());
+        return (false);
+    }
+    // Link the new CHD, and set the flag to delete the CGD when
+    // unlinked.
+    cCHD *chd = (cCHD*)arg;
+    if (chd) {
+        cgd->set_free_on_unlink(true);
+        chd->setCgd(cgd);
+        if (cCHDcfg::self())
+            cCHDcfg::self()->update(cCHDcfg::self()->cf_chdname);
+    }
+    return (true);
+}
+
+
+void
+cCHDcfg::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:chdconfig"))
+}
+
+
+void
+cCHDcfg::apply_tc_btn_slot()
+{
+    // NOTE:  cCHD::setDefaultCellname calls back to the update
+    // function, so we don't call it here.  Have to be careful to
+    // not revert cf_text before we get the new name.
+
+    if (!cf_chdname)
+        return;
+    cCHD *chd = CDchd()->chdRecall(cf_chdname, false);
+    if (!chd) {
+        PopUpMessage("Error: can't find named CHD.", true);
+        return;
+    }
+
+    bool iscfg = chd->getConfigSymref() != 0;
+    if (iscfg) {
+        // Save the current configuration cellname, for the Last button.
+        delete [] cf_lastname;
+        cf_lastname = lstring::copy(cf_text->text().toLatin1().constData());
+        chd->setDefaultCellname(0, 0);
+        update(cf_chdname);
+        return;
+    }
+    const char *ent = lstring::copy(cf_text->text().toLatin1().constData());
+    if (ent && *ent) {
+        if (!chd->findSymref(ent, Physical)) {
+            PopUpMessage("Error: can't find named cell in CHD.", true);
+            delete [] ent;
+            return;
+        }
+    }
+    const char *dfl = chd->defaultCell(Physical);
+    if (ent && dfl && strcmp(ent, dfl)) {
+        if (!chd->setDefaultCellname(ent, 0)) {
+            Errs()->add_error("Call to configure failed.");
+            PopUpMessage(Errs()->get_error(), true);
+            delete [] ent;
+            return;
+        }
+    }
+    delete [] ent;
+}
+
+
+void
+cCHDcfg::last_btn_slot()
+{
+    if (!cf_chdname)
+        return;
+    cCHD *chd = CDchd()->chdRecall(cf_chdname, false);
+    if (!chd) {
+        PopUpMessage("Error: can't find named CHD.", true);
+        return;
+    }
+
+    char *ent = lstring::copy(cf_text->text().toLatin1().constData());
+    cf_text->setText(cf_lastname ? cf_lastname : chd->defaultCell(Physical));
+    delete [] cf_lastname;
+    cf_lastname = ent;
+}
+
+
+void
+cCHDcfg::apply_cgd_btn_slot()
+{
+    if (!cf_chdname)
+        return;
+    cCHD *chd = CDchd()->chdRecall(cf_chdname, false);
+    if (!chd) {
+        PopUpMessage("Error: can't find named CHD.", true);
+        return;
+    }
+
+    bool iscfg = chd->hasCgd();
+    chd->setCgd(0);
+    if (iscfg) {
+        // clearing only
+        update(cf_chdname);
+        return;
+    }
+    delete [] cf_cgdname;
+    cf_cgdname = 
+        lstring::copy(cf_cgdentry->text().toLatin1().constData());
+    const char *str = cf_cgdname;
+    cCGD *cgd = CDcgd()->cgdRecall(cf_cgdname, false);
+    if (!cgd) {
+        if (QTdev::GetStatus(cf_newcgd)) {
+            QPoint pg = mapToGlobal(QPoint(0, 0));
+            char *cn;
+            if (cf_cgdname && *cf_cgdname)
+                cn = lstring::copy(cf_cgdname);
+            else
+                cn = CDcgd()->newCgdName();
+            // Pop down first, panel used elsewhere.
+            Cvt()->PopUpCgdOpen(0, MODE_OFF, 0, 0, 0, 0, 0, 0);
+            Cvt()->PopUpCgdOpen(0, MODE_ON, cn, chd->filename(),
+                pg.x(), pg.y(), cf_new_cgd_cb, chd);
+            delete [] cn;
+        }
+        else {
+            char buf[256];
+            if (!cf_cgdname || !*cf_cgdname)
+                strcpy(buf, "No CGD access name given.");
+            else {
+                snprintf(buf, sizeof(buf), "No CGD with access name %s "
+                    "currently exists.", cf_cgdname);
+            }
+            PopUpMessage(buf, false);
+        }
+    }
+    else
+        chd->setCgd(cgd);
+    update(cf_chdname);
+}
+
+
+void
+cCHDcfg::new_cgd_btn_slot(int)
+{
+}
+
+
+void
+cCHDcfg::dismiss_btn_slot()
+{
+    Cvt()->PopUpChdConfig(0, MODE_OFF, 0, 0, 0);
+}
+
+
+
+
+
+#ifdef notdef
+
+// Private static GTK signal handler.
+// Drag data received in editing window, grab it
+//
+void
+cCHDcfg::cf_drag_data_received(GtkWidget *entry, GdkDragContext *context,
+    gint, gint, GtkSelectionData *data, guint, guint time)
+{
+    if (gtk_selection_data_get_length(data) >= 0 &&
+            gtk_selection_data_get_format(data) == 8 &&
+            gtk_selection_data_get_data(data)) {
+        char *src = (char*)gtk_selection_data_get_data(data);
+        if (gtk_selection_data_get_target(data) ==
+                gdk_atom_intern("TWOSTRING", true)) {
+            // Drops from content lists may be in the form
+            // "fname_or_chd\ncellname".  Keep the cellname.
+            char *t = strchr(src, '\n');
+            if (t)
+                src = t+1;
+        }
+        gtk_entry_set_text(GTK_ENTRY(entry), src);
+        gtk_drag_finish(context, true, false, time);
+        return;
+    }
+    gtk_drag_finish(context, false, false, time);
+}
+
+#endif

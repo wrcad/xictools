@@ -38,58 +38,67 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCHDOPEN_H
-#define QTCHDOPEN_H
+#ifndef QTCGDLIST_H
+#define QTCGDLIST_H
 
 #include "main.h"
 #include "qtmain.h"
 
 #include <QDialog>
 
-class cCHDopen : public GTKbag
+
+class QPushButton;
+class QTreeWidget;
+class QTreeWidgetItem;
+
+class cCGDlist : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCHDopen(GRobject, bool(*)(const char*, const char*, int, void*), void*,
-        const char*, const char*);
-    ~cCHDopen();
+    cCGDlist(GRobject);
+    ~cCGDlist();
 
-    void update(const char*, const char*);
+    void update();
 
-    cCHDopen *self()            { return (instPtr); }
+    static cCGDlist *self()         { return (instPtr); }
+
+private slots:
+    void add_btn_slot(bool);
+    void sav_btn_slot(bool);
+    void del_btn_slot(bool);
+    void cont_btn_slot();
+    void inf_btn_slot(bool);
+    void help_btn_slot();
+    void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
+    void item_activated_slot(QTreeWidgetItem*, int);
+    void item_clicked_slot(QTreeWidgetItem*, int);
+    void item_selection_changed();
+    void dismiss_btn_slot();
 
 private:
-    void apply_proc(GtkWidget*);
+    void err_message(const char*);
+    static bool cgl_add_cb(const char*, const char*, int, void*);
+    static ESret cgl_sav_cb(const char*, void*);
+    static void cgl_del_cb(bool, void*);
+    static void cgl_cnt_cb(const char*, void*);
 
-    /*
-    static void co_cancel_proc(GtkWidget*, void*);
-    static void co_action(GtkWidget*, void*);
+    GRobject        cgl_caller;
+    QPushButton     *cgl_addbtn;
+    QPushButton     *cgl_savbtn;
+    QPushButton     *cgl_delbtn;
+    QPushButton     *cgl_cntbtn;
+    QPushButton     *cgl_infbtn;
+    QTreeWidget     *cgl_list;
+    GRledPopup      *cgl_sav_pop;
+    GRaffirmPopup   *cgl_del_pop;
+    GRmcolPopup     *cgl_cnt_pop;
+    GRmcolPopup     *cgl_inf_pop;
+    char            *cgl_selection;
+    char            *cgl_contlib;
 
-    static int co_key_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void co_info_proc(GtkWidget*, void*);
-    static void co_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint);
-    static void co_page_proc(GtkNotebook*, void*, int, void*);
-    */
-
-    GRobject co_caller;
-    GtkWidget *co_nbook;
-    GtkWidget *co_p1_text;
-    GtkWidget *co_p1_info;
-    GtkWidget *co_p2_text;
-    GtkWidget *co_p2_mem;
-    GtkWidget *co_p2_file;
-    GtkWidget *co_p2_none;
-    GtkWidget *co_idname;
-    GtkWidget *co_apply;
-
-    cnmap_t *co_p1_cnmap;
-
-    bool(*co_callback)(const char*, const char*, int, void*);
-    void *co_arg;
-
-    static cCHDopen *instPtr;
+    static cCGDlist *instPtr;
 };
 
 #endif
+

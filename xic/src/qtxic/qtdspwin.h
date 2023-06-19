@@ -38,73 +38,50 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCHDLIST_H
-#define QTCHDLIST_H
+#ifndef QTDSPWIN_H
+#define QTDSPWIN_H
 
 #include "main.h"
 #include "qtmain.h"
 
 #include <QDialog>
 
-class cCHDlist : public QDialog, public GTKbag
+class QPushButton;
+class QDoubleSpinBox;
+
+
+class cDisplayWin : public QDialog
 {
     Q_OBJECT
 
 public:
-    cCHDlist(GRobject);
-    ~cCHDlist();
+    cDisplayWin(GRobject, const BBox*,
+        bool(*)(bool, const BBox*, void*), void*);
+    ~cDisplayWin();
 
-    void update();
+    void update(const BBox*);
 
-    cCHDlist *self()            { return (instPtr); }
+    static cDisplayWin *self()          { return (instPtr); }
 
 private slots:
+    void apply_btn_slot();
+    void center_btn_slot();
+    void dismiss_btn_slot();
 
 private:
-    void recolor();
-    void action_hdlr(GtkWidget*, void*);
-    void err_message(const char*);
+    GRobject dw_caller;
+    QPushButton *dw_apply;
+    QPushButton *dw_center;
+    QDoubleSpinBox *dw_sb_x;
+    QDoubleSpinBox *dw_sb_y;
+    QDoubleSpinBox *dw_sb_wid;
 
-    /*
-    static void chl_cancel(GtkWidget*, void*);
-    static void chl_action_proc(GtkWidget*, void*);
-    static void chl_geom_proc(GtkWidget*, void*);
-    static int chl_selection_proc(GtkTreeSelection*, GtkTreeModel*,
-        GtkTreePath*, int, void*);
-    static bool chl_focus_proc(GtkWidget*, GdkEvent*, void*);
-    static bool chl_add_cb(const char*, const char*, int, void*);
-    static bool chl_sav_cb(const char*, bool, void*);
-    static void chl_del_cb(bool, void*);
-    static bool chl_display_cb(bool, const BBox*, void*);
-    static void chl_cnt_cb(const char*, void*);
-    static ESret chl_cel_cb(const char*, void*);
-    */
+    WindowDesc *dw_window;
+    bool (*dw_callback)(bool, const BBox*, void*);
+    void *dw_arg;
 
-    GRobject chl_caller;
-    GtkWidget *chl_addbtn;
-    GtkWidget *chl_savbtn;
-    GtkWidget *chl_delbtn;
-    GtkWidget *chl_cfgbtn;
-    GtkWidget *chl_dspbtn;
-    GtkWidget *chl_cntbtn;
-    GtkWidget *chl_celbtn;
-    GtkWidget *chl_infbtn;
-    GtkWidget *chl_qinfbtn;
-    GtkWidget *chl_list;
-    GtkWidget *chl_loadtop;
-    GtkWidget *chl_rename;
-    GtkWidget *chl_usetab;
-    GtkWidget *chl_showtab;
-    GtkWidget *chl_failres;
-    GtkWidget *chl_geomenu;
-    GRledPopup *chl_cel_pop;
-    GRmcolPopup *chl_cnt_pop;
-    GRaffirmPopup *chl_del_pop;
-    char *chl_selection;
-    char *chl_contlib;
-    bool chl_no_select;     // treeview focus hack
-
-    static cCHDlist *instPtr;
+    static cDisplayWin *instPtr;
 };
 
 #endif
+

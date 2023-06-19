@@ -32,92 +32,50 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef QTTEXT_H
-#define QTTEXT_H
+#ifndef QTLLIST_H
+#define QTLLIST_H
 
-#include "ginterf/graphics.h"
-#include "miscutil/lstring.h"
+#include <QGroupBox>
 
-#include <QVariant>
-#include <QDialog>
 
-class QGroupBox;
+//-------------------------------------------------------------------------
+// Subwidget group for layer list
+//
+
+class QCheckBox;
+class QLineEdit;
 class QPushButton;
-class QTextEdit;
 
-//XXX FIXME differentiate this from msgPopup
-
-namespace qtinterf
+class cLayerList : public QGroupBox
 {
-    class QTbag;
-    class text_box;
+    Q_OBJECT
 
-    class QTtextPopup : public QDialog, public GRtextPopup
-    {
-        Q_OBJECT
+public:
+    cLayerList();
+    ~cLayerList();
 
-    public:
-        QTtextPopup(QTbag*, const char*, STYtype style, int, int);
-        ~QTtextPopup();
+    void update();
 
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void set_desens()           { pw_desens = true; }
-        bool is_desens()            { return (pw_desens); }
+private slots:
+    void luse_btn_slot(int);
+    void lskip_btn_slot(int);
+    void aluse_btn_slot(int);
+    void aledit_btn_slot(bool);
+    void text_changed_slot(const QString&);
 
-        // GRtextPopup overrides
-        bool get_btn2_state()       { return (false); }
-        void set_btn2_state(bool)   { }
-
-        // When set, error pop-ups have a "Show Error Log" button that
-        // pops up a file browser on this file.
-        //
-        static void set_error_log(const char *s)
-        {
-            char *t = lstring::copy(s);
-            delete [] pw_errlog;
-            pw_errlog = t;
-        }
-
-        void popdown();
-        void setTitle(const char*);
-        void setText(const char*);
-
-//XXX
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-    private slots:
-        void quit_slot();
-
-    private:
-        QGroupBox *gbox;
-        text_box *tx;
-        QPushButton *b_cancel;
-        STYtype display_style;
-        bool pw_desens;             // If true, parent->wb_inout is disabled.
-
-        static char *pw_errlog;
-    };
-}
+private:
+    QCheckBox *ll_luse;
+    QCheckBox *ll_lskip;
+    QLineEdit *ll_laylist;
+    QCheckBox *ll_aluse;
+    QPushButton *ll_aledit;
+};
 
 #endif
 

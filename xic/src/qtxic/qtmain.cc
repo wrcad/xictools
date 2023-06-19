@@ -1009,10 +1009,16 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
         return;
 
     sw_keys_pressed = new cKeys(sw_win_number, this);
+    sw_keys_pressed->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    sw_keys_pressed->show_keys();
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);
     vbox->setSpacing(2);
+
+#ifndef __APPLE__
+    // For Apple, there is no menubar, and the keys show up in the
+    // upper left window corner.
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
@@ -1021,6 +1027,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     hbox->setMenuBar(sw_menubar);
     hbox->addWidget(sw_keys_pressed);
     vbox->addLayout(hbox);
+#endif
+
     vbox->addWidget(Viewport());
 }
 

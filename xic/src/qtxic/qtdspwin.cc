@@ -1,0 +1,244 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
+ *                       http://wrcad.com                                 *
+ *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Author: Stephen R. Whiteley, except as indicated.                     *
+ *                                                                        *
+ *  As fully as possible recognizing licensing terms and conditions       *
+ *  imposed by earlier work from which this work was derived, if any,     *
+ *  this work is released under the Apache License, Version 2.0 (the      *
+ *  "License").  You may not use this file except in compliance with      *
+ *  the License, and compliance with inherited licenses which are         *
+ *  specified in a sub-header below this one if applicable.  A copy       *
+ *  of the License is provided with this distribution, or you may         *
+ *  obtain a copy of the License at                                       *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *  See the License for the specific language governing permissions       *
+ *  and limitations under the License.                                    *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL WHITELEY RESEARCH INCORPORATED      *
+ *   OR STEPHEN R. WHITELEY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,      *
+ *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE       *
+ *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+ *                                                                        *
+ *========================================================================*
+ *               XicTools Integrated Circuit Design System                *
+ *                                                                        *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
+ *                                                                        *
+ *========================================================================*
+ $Id:$
+ *========================================================================*/
+
+#include "qtdspwin.h"
+#include "cvrt.h"
+
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QDoubleSpinBox>
+
+
+//-----------------------------------------------------------------------------
+//  Pop-up for the CHD Display command
+//
+
+void
+cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
+    bool(*cb)(bool, const BBox*, void*), void *arg)
+{
+    if (!QTdev::exists() || !QTmainwin::exists())
+        return;
+    if (mode == MODE_OFF) {
+        if (cDisplayWin::self())
+            cDisplayWin::self()->deleteLater();
+        return;
+    }
+    if (mode == MODE_UPD) {
+        if (cDisplayWin::self())
+            cDisplayWin::self()->update(BB);
+        return;
+    }
+    if (cDisplayWin::self())
+        return;
+
+    new cDisplayWin(caller, BB, cb, arg);
+
+    QTdev::self()->SetPopupLocation(GRloc(), cDisplayWin::self(),
+        QTmainwin::self()->Viewport());
+    cDisplayWin::self()->show();
+}
+// End of cConvert functions.
+
+
+cDisplayWin *cDisplayWin::instPtr;
+
+cDisplayWin::cDisplayWin(GRobject caller, const BBox *BB,
+    bool(*cb)(bool, const BBox*, void*), void *arg)
+{
+    instPtr = this;
+    dw_caller = caller;
+    dw_apply = 0;
+    dw_center = 0;
+    dw_sb_x = 0;
+    dw_sb_y = 0;
+    dw_sb_wid = 0;
+    dw_window = DSP()->MainWdesc();
+    dw_callback = cb;
+    dw_arg = arg;
+
+    setWindowTitle(tr("Set Display Window"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+//    gtk_window_set_resizable(GTK_WINDOW(dw_popup), false);
+
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    // label in frame
+    //
+    QGroupBox *gb = new QGroupBox();
+    vbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    QLabel *label = new QLabel(tr("Set area to display"));
+    hb->addWidget(label);
+
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    QVBoxLayout *col1 = new QVBoxLayout(this);
+    hbox->addLayout(col1);
+    col1->setMargin(0);
+    col1->setSpacing(2);
+    QVBoxLayout *col2 = new QVBoxLayout(this);
+    hbox->addLayout(col2);
+    col2->setMargin(0);
+    col2->setSpacing(2);
+    QVBoxLayout *col3 = new QVBoxLayout(this);
+    hbox->addLayout(col3);
+    col3->setMargin(0);
+    col3->setSpacing(2);
+
+    label = new QLabel(tr("Center X,Y"));
+    col1->addWidget(label);
+
+    int ndgt = CD()->numDigits();
+    dw_sb_x = new QDoubleSpinBox();
+    dw_sb_x->setMinimum(-1e6);
+    dw_sb_x->setMaximum(1e6);
+    dw_sb_x->setDecimals(ndgt);
+    dw_sb_x->setValue(0.0);
+    col2->addWidget(dw_sb_x);
+    connect(dw_sb_x, SIGNAL(valueChanged(double)),
+        this, SLOT(x_value_changed(double)));
+
+    dw_sb_y = new QDoubleSpinBox();
+    dw_sb_y->setMinimum(-1e6);
+    dw_sb_y->setMaximum(1e6);
+    dw_sb_y->setDecimals(ndgt);
+    dw_sb_y->setValue(0.0);
+    col3->addWidget(dw_sb_y);
+    connect(dw_sb_y, SIGNAL(valueChanged(double)),
+        this, SLOT(y_value_changed(double)));
+
+    label = new QLabel(tr("Window Width"));
+    col1->addWidget(label);
+
+    dw_sb_wid = new QDoubleSpinBox();
+    dw_sb_wid->setMinimum(0.1);
+    dw_sb_wid->setMaximum(1e6);
+    dw_sb_wid->setDecimals(2);
+    dw_sb_wid->setValue(100.0);
+    col2->addWidget(dw_sb_wid);
+    connect(dw_sb_wid, SIGNAL(valueChanged(double)),
+        this, SLOT(wid_value_changed(double)));
+
+    dw_apply = new QPushButton(tr("Apply"));
+    col3->addWidget(dw_apply);
+    connect(dw_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    dw_center = new QPushButton(tr("Center Full View"));
+    hbox->addWidget(dw_center);
+    connect(dw_center, SIGNAL(clicked()), this, SLOT(center_btn_slot()));
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+
+    update(BB);
+}
+
+
+cDisplayWin::~cDisplayWin()
+{
+    instPtr = 0;
+    if (dw_caller)
+        QTdev::Deselect(dw_caller);
+    if (dw_callback)
+        (*dw_callback)(false, 0, dw_arg);
+}
+
+
+void
+cDisplayWin::update(const BBox *BB)
+{
+    if (!BB)
+        return;
+    int x = (BB->left + BB->right)/2;
+    int y = (BB->bottom + BB->top)/2;
+    int w = BB->width();
+    dw_sb_x->setValue(MICRONS(x));
+    dw_sb_y->setValue(MICRONS(y));
+    dw_sb_wid->setValue(MICRONS(w));
+}
+
+void
+cDisplayWin::apply_btn_slot()
+{
+    double dx = dw_sb_x->value();
+    double dy = dw_sb_y->value();
+    double dw = dw_sb_wid->value();
+
+    int wid2 = abs(INTERNAL_UNITS(dw)/2);
+    int x = INTERNAL_UNITS(dx);
+    int y = INTERNAL_UNITS(dy);
+
+    BBox BB(x - wid2, y, x + wid2, y);
+    if (dw_callback && !(*dw_callback)(true, &BB, dw_arg))
+        return;
+    Cvt()->PopUpDisplayWindow(0, MODE_OFF, 0, 0, 0);
+}
+
+
+void
+cDisplayWin::center_btn_slot()
+{
+    if (dw_callback && !(*dw_callback)(true, 0, dw_arg))
+        return;
+    Cvt()->PopUpDisplayWindow(0, MODE_OFF, 0, 0, 0);
+}
+
+
+void
+cDisplayWin::dismiss_btn_slot()
+{
+    Cvt()->PopUpDisplayWindow(0, MODE_OFF, 0, 0, 0);
+}
+

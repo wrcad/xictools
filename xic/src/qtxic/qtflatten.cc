@@ -160,8 +160,8 @@ cFlatten::cFlatten(
         entry->addItem(buf);
     }
     entry->setCurrentIndex(depth);
-    connect(entry, SIGNAL(activate(QAction*)),
-        this, SLOT(depth_menu_slot(QAction*)));
+    connect(entry, SIGNAL(currentTextChanged(const QString&)),
+        this, SLOT(depth_menu_slot(const QString&)));
 
     // check boxes
     //
@@ -242,10 +242,10 @@ cFlatten::help_btn_slot()
 
 
 void
-cFlatten::depth_menu_slot(QAction *a)
+cFlatten::depth_menu_slot(const QString &qs)
 {
     if (fl_callback) {
-        const char *str = lstring::copy(a->text().toLatin1().constData());
+        const char *str = lstring::copy(qs.toLatin1().constData());
         if (str) {
             (*fl_callback)("depth", true, str, fl_arg);
             delete [] str;
