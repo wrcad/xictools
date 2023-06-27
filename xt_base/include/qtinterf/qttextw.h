@@ -45,65 +45,85 @@
 #include <QMimeData>
 #include <QDragEnterEvent>
 
+class QResizeEvent;
 class QMouseEvent;
 class QDropEvent;
 class QWidget;
 
 // Derive a new class to expose the button press override.
 
-class QTtextEdit : public QTextEdit
+namespace qtinterf
 {
-    Q_OBJECT
-
-public:
-    QTtextEdit(QWidget *prnt = 0) : QTextEdit(prnt) { }
-
-signals:
-    void press_event(QMouseEvent*);
-    void motion_event(QMouseEvent*);
-    void mime_data_received(const QMimeData*);
-
-protected:
-    void mousePressEvent(QMouseEvent *ev)
+    class QTtextEdit : public QTextEdit
     {
-        emit press_event(ev);
-    }
+        Q_OBJECT
 
-    void mouseMoveEvent(QMouseEvent *ev)
-    {
-        emit motion_event(ev);
-    }
+    public:
+        QTtextEdit();
 
-    // Tricky stuff here to allow window to handle drag/drop while
-    // in read-only mode.
+        // qttextw.cc
+        bool has_selection();
+        char *get_selection();
+        char *get_chars(int, int);
+        void set_chars(const char*);
+        int get_scroll_value();
+        void set_scroll_value(int);
 
-    void dragEnterEvent(QDragEnterEvent *ev) {
-        if (canInsertFromMimeData(ev->mimeData()))
+
+    signals:
+        void resize_event(QResizeEvent*);
+        void press_event(QMouseEvent*);
+        void motion_event(QMouseEvent*);
+        void mime_data_received(const QMimeData*);
+
+    protected:
+        void resizeEvent(QResizeEvent *ev)
+        {
+            QTextEdit::resizeEvent(ev);
+            emit resize_event(ev);
+        }
+
+        void mousePressEvent(QMouseEvent *ev)
+        {
+            emit press_event(ev);
+        }
+
+        void mouseMoveEvent(QMouseEvent *ev)
+        {
+            emit motion_event(ev);
+        }
+
+        // Tricky stuff here to allow window to handle drag/drop while
+        // in read-only mode.
+
+        void dragEnterEvent(QDragEnterEvent *ev) {
+            if (canInsertFromMimeData(ev->mimeData()))
+                ev->acceptProposedAction();
+        }
+
+        void dragMoveEvent(QDragMoveEvent *ev) {
+            if (canInsertFromMimeData(ev->mimeData()))
+                ev->acceptProposedAction();
+        }
+
+        void dropEvent(QDropEvent *ev) {
+            insertFromMimeData(ev->mimeData());
             ev->acceptProposedAction();
-    }
+        }
 
-    void dragMoveEvent(QDragMoveEvent *ev) {
-        if (canInsertFromMimeData(ev->mimeData()))
-            ev->acceptProposedAction();
-    }
+        bool canInsertFromMimeData(const QMimeData *source) const
+        {
+            // Extend mime types as needed.
+            if (source->hasFormat("text/property"))
+                return (true);
+            return (QTextEdit::canInsertFromMimeData(source));
+        }
 
-    void dropEvent(QDropEvent *ev) {
-        insertFromMimeData(ev->mimeData());
-        ev->acceptProposedAction();
-    }
-
-    bool canInsertFromMimeData(const QMimeData *source) const
-    {
-        // Extend mime types as needed.
-        if (source->hasFormat("text/property"))
-            return (true);
-        return (QTextEdit::canInsertFromMimeData(source));
-    }
-
-    void insertFromMimeData(const QMimeData *source) {
-        emit mime_data_received(source);
-    }
-};
+        void insertFromMimeData(const QMimeData *source) {
+            emit mime_data_received(source);
+        }
+    };
+}
 
 #endif
 

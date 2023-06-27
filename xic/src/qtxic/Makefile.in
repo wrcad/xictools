@@ -26,6 +26,9 @@ SECURE = ../../../secure
 INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include
 
 CCFILES = \
+    qtcells.cc \
+    qtcfilt.cc \
+    qtcflags.cc \
     qtcgdlist.cc \
     qtcgdopen.cc \
     qtchdcfg.cc \
@@ -36,6 +39,8 @@ CCFILES = \
     qtcolor.cc \
     qtcolortimer.cc \
     qtcoord.cc \
+    qtcv.cc \
+    qtcvofmt.cc \
     qtdots.cc \
     qtdspwin.cc \
     qtedset.cc \
@@ -52,6 +57,7 @@ CCFILES = \
     qtjoin.cc \
     qtkeymacro.cc \
     qtkeymap.cc \
+    qtlexp.cc \
     qtlibs.cc \
     qtllist.cc \
     qtlogo.cc \
@@ -66,22 +72,27 @@ CCFILES = \
     qtmerge.cc \
     qtmodif.cc \
     qtparam.cc \
+    qtpcctrl.cc \
     qtpfilt.cc \
     qtplace.cc \
     qtprpbase.cc \
+    qtprpcedit.cc \
     qtprpedit.cc \
     qtprpinfo.cc \
-    qtptext.cc \
     qtsel.cc \
     qtsim.cc \
     qtstab.cc \
     qttree.cc \
+    qtwndc.cc \
     qtxdraw.cc \
     qtxform.cc \
     qtzoom.cc \
     qtxxx.cc
 MOCFILES = \
     moc_main.cpp \
+    moc_cells.cpp \
+    moc_cfilt.cpp \
+    moc_cflags.cpp \
     moc_cgdlist.cpp \
     moc_cgdopen.cpp \
     moc_chdcfg.cpp \
@@ -91,6 +102,8 @@ MOCFILES = \
     moc_cnmap.cpp \
     moc_color.cpp \
     moc_coord.cpp \
+    moc_cv.cpp \
+    moc_cvofmt.cpp \
     moc_dots.cpp \
     moc_dspwin.cpp \
     moc_edset.cpp \
@@ -100,10 +113,12 @@ MOCFILES = \
     moc_flatten.cpp \
     moc_htext.cpp \
     moc_join.cpp \
+    moc_lexp.cpp \
     moc_libs.cpp \
     moc_llist.cpp \
     moc_logo.cpp \
     moc_ltab.cpp \
+    moc_ltalias.cpp \
     moc_ltedit.cpp \
     moc_mclchg.cpp \
     moc_mem.cpp \
@@ -112,13 +127,16 @@ MOCFILES = \
     moc_merge.cpp \
     moc_modif.cpp \
     moc_param.cpp \
+    moc_pcctrl.cpp \
     moc_place.cpp \
+    moc_prpcedit.cpp \
     moc_prpedit.cpp \
     moc_prpinfo.cpp \
     moc_sel.cpp \
     moc_sim.cpp \
     moc_stab.cpp \
     moc_tree.cpp \
+    moc_wndc.cpp \
     moc_xform.cpp \
     moc_zoom.cpp
 CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
@@ -148,6 +166,9 @@ endif
 	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc
 
 moc_main.o: moc_main.cpp  qtmain.h
+moc_cells.o: moc_cells.cpp  qtcells.h
+moc_cfilt.o: moc_cfilt.cpp  qtcfilt.h
+moc_cflags.o: moc_cflags.cpp  qtcflags.h
 moc_cgdlist.o: moc_cgdlist.cpp  qtcgdlist.h
 moc_cgdopen.o: moc_cgdopen.cpp  qtcgdopen.h
 moc_chdcfg.o: moc_chdcfg.cpp  qtchdcfg.h
@@ -157,6 +178,8 @@ moc_chdsave.o: moc_chdsave.cpp  qtchdsave.h
 moc_cnmap.o: moc_cnmap.cpp  qtcnmap.h
 moc_color.o: moc_color.cpp  qtcolor.h
 moc_coord.o: moc_coord.cpp  qtcoord.h
+moc_cv.o: moc_cv.cpp  qtcv.h
+moc_cvofmt.o: moc_cvofmt.cpp  qtcvofmt.h
 moc_dots.o: moc_dots.cpp  qtdots.h
 moc_dspwin.o: moc_dspwin.cpp  qtdspwin.h
 moc_edset.o: moc_edset.cpp  qtedset.h
@@ -166,10 +189,12 @@ moc_fillp.o: moc_fillp.cpp  qtfillp.h
 moc_flatten.o: moc_flatten.cpp  qtflatten.h
 moc_htext.o: moc_htext.cpp  qthtext.h
 moc_join.o: moc_join.cpp  qtjoin.h
+moc_lexp.o: moc_lexp.cpp  qtlexp.h
 moc_libs.o: moc_libs.cpp  qtlibs.h
 moc_llist.o: moc_llist.cpp  qtllist.h
 moc_logo.o: moc_logo.cpp  qtlogo.h
 moc_ltab.o: moc_ltab.cpp  qtltab.h
+moc_ltalias.o: moc_ltalias.cpp  qtltalias.h
 moc_ltedit.o: moc_ltedit.cpp  qtltedit.h
 moc_mclchg.o: moc_mclchg.cpp  qtmclchg.h
 moc_mem.o: moc_mem.cpp  qtmem.h
@@ -178,18 +203,27 @@ moc_menucfg.o: moc_menucfg.cpp  qtmenucfg.h
 moc_merge.o: moc_merge.cpp  qtmerge.h
 moc_modif.o: moc_modif.cpp  qtmodif.h
 moc_param.o: moc_param.cpp  qtparam.h
+moc_pcctrl.o: moc_pcctrl.cpp  qtpcctrl.h
 moc_place.o: moc_place.cpp  qtplace.h
+moc_prpcedit.o: moc_prpcedit.cpp  qtprpcedit.h
 moc_prpedit.o: moc_prpedit.cpp  qtprpedit.h
 moc_prpinfo.o: moc_prpinfo.cpp  qtprpinfo.h
 moc_sel.o: moc_sel.cpp  qtsel.h
 moc_sim.o: moc_sim.cpp  qtsim.h
 moc_stab.o: moc_stab.cpp  qtstab.h
 moc_tree.o: moc_tree.cpp  qttree.h
+moc_wndc.o: moc_wndc.cpp  qtwndc.h
 moc_xform.o: moc_xform.cpp  qtxform.h
 moc_zoom.o: moc_zoom.cpp  qtzoom.h
 
 moc_main.cpp: $(MOC) qtmain.h
 	$(MOC) qtmain.h -o moc_main.cpp
+moc_cells.cpp: $(MOC) qtcells.h
+	$(MOC) qtcells.h -o moc_cells.cpp
+moc_cfilt.cpp: $(MOC) qtcfilt.h
+	$(MOC) qtcfilt.h -o moc_cfilt.cpp
+moc_cflags.cpp: $(MOC) qtcflags.h
+	$(MOC) qtcflags.h -o moc_cflags.cpp
 moc_cgdlist.cpp: $(MOC) qtcgdlist.h
 	$(MOC) qtcgdlist.h -o moc_cgdlist.cpp
 moc_cgdopen.cpp: $(MOC) qtcgdopen.h
@@ -208,6 +242,10 @@ moc_color.cpp: $(MOC) qtcolor.h
 	$(MOC) qtcolor.h -o moc_color.cpp
 moc_coord.cpp: $(MOC) qtcoord.h
 	$(MOC) qtcoord.h -o moc_coord.cpp
+moc_cv.cpp: $(MOC) qtcv.h
+	$(MOC) qtcv.h -o moc_cv.cpp
+moc_cvofmt.cpp: $(MOC) qtcvofmt.h
+	$(MOC) qtcvofmt.h -o moc_cvofmt.cpp
 moc_dots.cpp: $(MOC) qtdots.h
 	$(MOC) qtdots.h -o moc_dots.cpp
 moc_dspwin.cpp: $(MOC) qtdspwin.h
@@ -226,6 +264,8 @@ moc_htext.cpp: $(MOC) qthtext.h
 	$(MOC) qthtext.h -o moc_htext.cpp
 moc_join.cpp: $(MOC) qtjoin.h
 	$(MOC) qtjoin.h -o moc_join.cpp
+moc_lexp.cpp: $(MOC) qtlexp.h
+	$(MOC) qtlexp.h -o moc_lexp.cpp
 moc_libs.cpp: $(MOC) qtlibs.h
 	$(MOC) qtlibs.h -o moc_libs.cpp
 moc_llist.cpp: $(MOC) qtllist.h
@@ -234,6 +274,8 @@ moc_logo.cpp: $(MOC) qtlogo.h
 	$(MOC) qtlogo.h -o moc_logo.cpp
 moc_ltab.cpp: $(MOC) qtltab.h
 	$(MOC) qtltab.h -o moc_ltab.cpp
+moc_ltalias.cpp: $(MOC) qtltalias.h
+	$(MOC) qtltalias.h -o moc_ltalias.cpp
 moc_ltedit.cpp: $(MOC) qtltedit.h
 	$(MOC) qtltedit.h -o moc_ltedit.cpp
 moc_mclchg.cpp: $(MOC) qtmclchg.h
@@ -250,8 +292,12 @@ moc_modif.cpp: $(MOC) qtmodif.h
 	$(MOC) qtmodif.h -o moc_modif.cpp
 moc_param.cpp: $(MOC) qtparam.h
 	$(MOC) qtparam.h -o moc_param.cpp
+moc_pcctrl.cpp: $(MOC) qtpcctrl.h
+	$(MOC) qtpcctrl.h -o moc_pcctrl.cpp
 moc_place.cpp: $(MOC) qtplace.h
 	$(MOC) qtplace.h -o moc_place.cpp
+moc_prpcedit.cpp: $(MOC) qtprpcedit.h
+	$(MOC) qtprpcedit.h -o moc_prpcedit.cpp
 moc_prpedit.cpp: $(MOC) qtprpedit.h
 	$(MOC) qtprpedit.h -o moc_prpedit.cpp
 moc_prpinfo.cpp: $(MOC) qtprpinfo.h
@@ -264,6 +310,8 @@ moc_stab.cpp: $(MOC) qtstab.h
 	$(MOC) qtstab.h -o moc_stab.cpp
 moc_tree.cpp: $(MOC) qttree.h
 	$(MOC) qttree.h -o moc_tree.cpp
+moc_wndc.cpp: $(MOC) qtwndc.h
+	$(MOC) qtwndc.h -o moc_wndc.cpp
 moc_xform.cpp: $(MOC) qtxform.h
 	$(MOC) qtxform.h -o moc_xform.cpp
 moc_zoom.cpp: $(MOC) qtzoom.h

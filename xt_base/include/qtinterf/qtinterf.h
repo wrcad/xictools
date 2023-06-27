@@ -52,7 +52,6 @@
 
 class QCursor;
 class QWidget;
-class QTextEdit;
 
 namespace qtinterf { }
 using namespace qtinterf;
@@ -71,6 +70,7 @@ namespace qtinterf
     class QTmsgPopup;
     class QTprintPopup;
     class QTtextPopup;
+    class QTtextEdit;
 
     class QTbag : virtual public GRwbag
     {
@@ -90,7 +90,7 @@ namespace qtinterf
         QWidget *Shell()                { return (wb_shell); }
         QTprintPopup *HC()              { return (wb_hc); }
         void SetHC(QTprintPopup *p)     { wb_hc = p; }
-        QTextEdit *TextArea()           { return (wb_textarea); }
+        QTtextEdit *TextArea()          { return (wb_textarea); }
 
         // Pass a title for the window and icon.
         //
@@ -188,7 +188,7 @@ namespace qtinterf
 
     protected:
         QWidget         *wb_shell;      // top level widget
-        QTextEdit       *wb_textarea;   // text widget
+        QTtextEdit      *wb_textarea;   // text widget
         QTledPopup      *wb_input;      // dialog input popup
         QTmsgPopup      *wb_message;    // message popup
         QTtextPopup     *wb_info;       // info popup

@@ -2299,6 +2299,71 @@ QTmainwin::update_coords_slot(int xx, int yy)
 {
     mw_coords->print(xx, yy, cCoord::COOR_MOTION);
 }
+// End of QTmainwin functions.
+
+
+// Export the file/cell selected in the Files Selection, Cells Listing,
+// Files Listing, Libraries Listing, or Tree pop-ups.
+//
+char *
+cMain::GetCurFileSelection()
+{
+    if (!QTdev::exists())
+        return (0);
+    static char *tbuf;
+    delete [] tbuf;
+/*
+    tbuf = QTfilePopup::any_selection();
+    if (tbuf)
+        return (tbuf);
+
+    tbuf = QTmainwin::get_cell_selection();
+    if (tbuf)
+        return (tbuf);
+
+    tbuf = QTmainwin::get_file_selection();
+    if (tbuf)
+        return (tbuf);
+*/
+
+    tbuf = QTmainwin::get_lib_selection();
+    if (tbuf)
+        return (tbuf);
+
+    tbuf = QTmainwin::get_tree_selection();
+    if (tbuf)
+        return (tbuf);
+
+/*
+    // look for selected text in an Info window
+    GdkWindow *window = gdk_selection_owner_get(GDK_SELECTION_PRIMARY);
+    if (window) {
+        GtkWidget *widget;
+        gdk_window_get_user_data(window, (void**)&widget);
+        if (widget &&
+                g_object_get_data(G_OBJECT(widget), "export")) {
+            tbuf = text_get_selection(widget);
+            if (tbuf && CDcdb()->findSymbol(tbuf))
+                return (tbuf);
+            delete [] tbuf;
+        }
+    }
+*/
+    return (0);
+}
+
+
+// Called when crashing, disable any updates
+//
+void
+cMain::DisableDialogs()
+{
+//    QTmainwin::cells_panic();
+//    QTmainwin::files_panic();
+    QTmainwin::libs_panic();
+    QTmainwin::tree_panic();
+}
+// End if cMain functions.
 
 
 //-----------------------------------------------------------------------

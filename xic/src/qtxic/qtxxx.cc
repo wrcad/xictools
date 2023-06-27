@@ -70,26 +70,6 @@ cConvert::PopUpAuxTab(GRobject, ShowMode)
 {
 }
 
-// qtcells.cc
-
-void
-cMain::PopUpCells(GRobject, ShowMode)
-{
-}
-
-// qtcflags.cc
-
-void
-cMain::PopUpCellFlags(GRobject, ShowMode, const stringlist*, int)
-{
-}
-
-
-void
-cMain::PopUpDebugFlags(GRobject, ShowMode)
-{
-}
-
 
 void
 cMain::PopUpSelectInstances(CDol*)
@@ -102,11 +82,6 @@ cMain::PopUpFilterInstances(CDol*)
     return (0);
 }
 
-void
-cMain::PopUpCellFilt(GRobject, ShowMode, DisplayMode,
-    void(*)(cfilter_t*, void*), void*)
-{
-}
 
 CursorType
 cMain::GetCursor()
@@ -140,14 +115,6 @@ cMain::SetLowerWinOffset(int)
 {
 }
 
-
-// qtcv.cc
-
-void
-cConvert::PopUpConvert(GRobject, ShowMode, int,
-    bool(*)(int, void*), void*)
-{
-}
 
 // qtcvin.cc
 
@@ -196,18 +163,6 @@ cSced::DevsEscCallback()
 {
 }
 
-// qtdlgcb.cc
-
-char *
-cMain::GetCurFileSelection()
-{ 
-    return (0);
-}
-
-void
-cMain::DisableDialogs()
-{
-}
 
 // qtdvedit.cc
 
@@ -268,49 +223,11 @@ cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*)
 }
 
 
-// atltalias.cc
-
-void
-cMain::PopUpLayerAliases(GRobject, ShowMode)
-{
-}
-
-// qtprpcedit.cc
-
-void
-cEdit::PopUpCellProperties(ShowMode)
-{
-}
-
-void
-cEdit::PopUpPolytextFont(GRobject, ShowMode)
-{
-}
-
-void
-cEdit::polytextExtent(const char*, int*, int*, int*)
-{
-}
-PolyList *
-cEdit::polytext(const char*, int, int, int)
-{
-    return (0);
-}
-
-
 void
 cEdit::PopUpStdVia(GRobject, ShowMode, CDc*)
 {
 }
 
-
-void
-cEdit::PopUpLayerExp(GRobject, ShowMode)
-{
-}
-
-
-/* ----- */
 
 void
 cDRC::PopUpRules(GRobject, ShowMode)
@@ -364,10 +281,6 @@ cConvert::PopUpOasAdv(GRobject, ShowMode, int, int)
 {
 }
 
-void
-cEdit::PopUpPCellCtrl(GRobject, ShowMode)
-{
-}
 
 struct PCellParam;
 bool

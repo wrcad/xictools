@@ -188,7 +188,7 @@ cCHDopen::cCHDopen(GRobject caller,
         G_CALLBACK(co_drag_data_received), 0);
 */
 
-    co_p1_cnmap = new cCnmap(false);
+    co_p1_cnmap = new cCnameMap(false);
     p_vbox->addWidget(co_p1_cnmap);
 
     QHBoxLayout *p_hbox = new QHBoxLayout();

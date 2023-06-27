@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCHDOPEN_H
-#define QTCHDOPEN_H
+#ifndef QTLTALIAS_H
+#define QTLTALIAS_H
 
 #include "main.h"
 #include "qtmain.h"
@@ -47,50 +47,55 @@
 #include <QDialog>
 
 
-class QTabWidget;
-class QLineEdit;
-class QComboBox;
-class QRadioButton;
+class QTreeWidget;
+class QTreeWidgetItem;
 class QPushButton;
-class cCnameMap;
+class QCheckBox;
 
-class cCHDopen : public QDialog, public QTbag
+class cLayerAliasTab : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCHDopen(GRobject, bool(*)(const char*, const char*, int, void*), void*,
-        const char*, const char*);
-    ~cCHDopen();
+    cLayerAliasTab(GRobject);
+    ~cLayerAliasTab();
 
-    void update(const char*, const char*);
+    void update();
 
-    static cCHDopen *self()             { return (instPtr); }
+    GRobject call_btn()                 { return (la_calling_btn); }
+    static cLayerAliasTab *self()       { return (instPtr); }
 
 private slots:
+    void open_btn_slot();
+    void save_btn_slot();
+    void new_btn_slot();
+    void del_btn_slot();
+    void edit_btn_slot();
     void help_btn_slot();
-    void p1_info_slot(int);
-    void apply_btn_slot();
+    void current_item_changed(QTreeWidgetItem*, QTreeWidgetItem*);
+    void decimal_btn_slot(int);
     void dismiss_btn_slot();
 
 private:
-    GRobject    co_caller;
-    QTabWidget  *co_nbook;
-    QLineEdit   *co_p1_text;
-    QComboBox   *co_p1_info;
-    QLineEdit   *co_p2_text;
-    QRadioButton *co_p2_mem;
-    QRadioButton *co_p2_file;
-    QRadioButton *co_p2_none;
-    QLineEdit   *co_idname;
-    QPushButton *co_apply;
+    static ESret str_cb(const char*, void*);
+    static void yn_cb(bool, void*);
 
-    cCnameMap   *co_p1_cnmap;
+    QPushButton *la_open;
+    QPushButton *la_save;
+    QPushButton *la_new;
+    QPushButton *la_del;
+    QPushButton *la_edit;
+    QTreeWidget *la_list;
+    QCheckBox   *la_decimal;
 
-    bool(*co_callback)(const char*, const char*, int, void*);
-    void *co_arg;
+    GRaffirmPopup *la_affirm;
+    GRledPopup  *la_line_edit;
+    GRobject    la_calling_btn;
+    int         la_row;
+    bool        la_show_dec;
 
-    static cCHDopen *instPtr;
+    static cLayerAliasTab *instPtr;
 };
 
 #endif
+

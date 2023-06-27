@@ -48,7 +48,6 @@
 
 class QLabel;
 class QMouseEvent;
-class QTtextEdit;
 
 
 class cModif : public QDialog, public QTbag

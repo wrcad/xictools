@@ -38,13 +38,20 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtpcctrl.h"
 #include "edit.h"
 #include "edit_variables.h"
 #include "cvrt_variables.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkinterf/gtkspinbtn.h"
+#include "qtmain.h"
+
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QSpinBox>
 
 
 //--------------------------------------------------------------------
@@ -53,246 +60,158 @@
 // Help system keywords used:
 //  xic:pcctl
 
-namespace {
-    namespace gtkpcc {
-        struct sPCc
-        {
-            sPCc(GRobject);
-            ~sPCc();
-
-            void update();
-
-            GtkWidget *shell() { return (pcc_popup); }
-
-        private:
-            static void pcc_cancel_proc(GtkWidget*, void*);
-            static void pcc_action(GtkWidget*, void*);
-            static void pcc_abut_menu_proc(GtkWidget*, void*);
-            static void pcc_val_changed(GtkWidget*, void*);
-
-            GRobject pcc_caller;
-            GtkWidget *pcc_popup;
-            GtkWidget *pcc_abut;
-            GtkWidget *pcc_hidestr;
-            GtkWidget *pcc_listsm;
-            GtkWidget *pcc_allwarn;
-
-            GTKspinBtn sb_psz;
-        };
-
-        sPCc *PCc;
-    }
-
-    const char *abutvals[] =
-    {
-        "Mode 0 (no auto-abutment)",
-        "Mode 1 (no contact)",
-        "Mode 2 (with contact)",
-        0
-    };
-}
-
-using namespace gtkpcc;
-
 
 void
 cEdit::PopUpPCellCtrl(GRobject caller, ShowMode mode)
 {
-    if (!GTKdev::exists() || !GTKmainwin::exists())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete PCc;
+        if (cPCellCtrl::self())
+            cPCellCtrl::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (PCc)
-            PCc->update();
+        if (cPCellCtrl::self())
+            cPCellCtrl::self()->update();
         return;
     }
-    if (PCc)
+    if (cPCellCtrl::self())
         return;
 
-    new sPCc(caller);
-    if (!PCc->shell()) {
-        delete PCc;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(PCc->shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new cPCellCtrl(caller);
 
-    GTKdev::self()->SetPopupLocation(GRloc(), PCc->shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(PCc->shell());
+    QTdev::self()->SetPopupLocation(GRloc(), cPCellCtrl::self(),
+        QTmainwin::self()->Viewport());
+    cPCellCtrl::self()->show();
 }
 
 
-sPCc::sPCc(GRobject c)
+const char *cPCellCtrl::pcc_abutvals[] =
 {
-    PCc = this;
+    "Mode 0 (no auto-abutment)",
+    "Mode 1 (no contact)",
+    "Mode 2 (with contact)",
+    0
+};
+
+cPCellCtrl *cPCellCtrl::instPtr;
+
+cPCellCtrl::cPCellCtrl(GRobject c)
+{
+    instPtr = this;
     pcc_caller = c;
-    pcc_popup = 0;
     pcc_abut = 0;
     pcc_hidestr = 0;
     pcc_listsm = 0;
     pcc_allwarn = 0;
 
-    pcc_popup = gtk_NewPopup(0, "PCell Control", pcc_cancel_proc, 0);
-    if (!pcc_popup)
-        return;
-    gtk_window_set_resizable(GTK_WINDOW(pcc_popup), false);
+    setWindowTitle(tr("PCell Control"));
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+//    gtk_window_set_resizable(GTK_WINDOW(pcc_popup), false);
 
-    GtkWidget *form = gtk_table_new(2, 1, false);
-    gtk_widget_show(form);
-    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
-    gtk_container_add(GTK_CONTAINER(pcc_popup), form);
-    int rowcnt = 0;
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    //
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
     // label in frame plus help btn
     //
-    GtkWidget *row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
-    GtkWidget *label = gtk_label_new("Control Parameterized Cell Options");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), label);
-    gtk_box_pack_start(GTK_BOX(row), frame, true, true, 0);
-    GtkWidget *button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pcc_action), 0);
-    gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
-    gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    QLabel *label = new QLabel(tr("Control Parameterized Cell Options"));
+    hb->addWidget(label);
 
-    row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    label = gtk_label_new("Auto-abutment mode");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    GtkWidget *entry = gtk_combo_box_text_new();
-    gtk_widget_set_name(entry, "abutmenu");
-    gtk_widget_show(entry);
-    for (int i = 0; abutvals[i]; i++) {
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
-            abutvals[i]);
-    }
-    g_signal_connect(G_OBJECT(entry), "changed",
-        G_CALLBACK(pcc_abut_menu_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
-    pcc_abut = entry;
+    label = new QLabel(tr("Auto-abutment mode"));
+    hbox->addWidget(label);
 
-    gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    pcc_abut = new QComboBox();;
+    hbox->addWidget(pcc_abut);
+    for (int i = 0; pcc_abutvals[i]; i++)
+        pcc_abut->addItem(tr(pcc_abutvals[i]));
+    connect(pcc_abut, SIGNAL(currrentIndexChanged(int)),
+        this, SLOT(abut_mode_slot(int)));
 
-    button = gtk_check_button_new_with_label(
-        "Hide and disable stretch handles");
-    gtk_widget_set_name(button, "hidestr");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pcc_action), 0);
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-    pcc_hidestr = button;
+    pcc_hidestr = new QCheckBox(tr("Hide and disable stretch handles"));
+    vbox->addWidget(pcc_hidestr);
+    connect(pcc_hidestr, SIGNAL(stateChanged(int)),
+        this, SLOT(hidestr_btn_slot(int)));
 
-    row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
+    hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    label = gtk_label_new("Instance min. pixel size for stretch handles");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    gtk_box_pack_start(GTK_BOX(row), label, true, true, 0);
+    label = new QLabel(tr("Instance min. pixel size for stretch handles"));
+    hbox->addWidget(label);
 
-    GtkWidget *sb = sb_psz.init(DSP_MIN_FENCE_INST_PIXELS, 0, 1000, 0);
-    sb_psz.connect_changed(G_CALLBACK(pcc_val_changed), 0, 0);
-    gtk_widget_set_size_request(sb, 60, -1);
-    gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
+    pcc_sb_psz = new QSpinBox();
+    pcc_sb_psz->setMinimum(0);
+    pcc_sb_psz->setMaximum(1000);
+    pcc_sb_psz->setValue(DSP_MIN_FENCE_INST_PIXELS);
+    hbox->addWidget(pcc_sb_psz);
+    connect(pcc_sb_psz, SIGNAL(valueChanged(int)),
+        this, SLOT(psz_change_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    pcc_listsm = new QCheckBox(tr("List sub-masters as modified cells"));
+    vbox->addWidget(pcc_listsm);
+    connect(pcc_listsm, SIGNAL(stateChanged(int)),
+        this, SLOT(listsm_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label(
-        "List sub-masters as modified cells");
-    gtk_widget_set_name(button, "listsm");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pcc_action), 0);
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-    pcc_listsm = button;
+    pcc_allwarn = new QCheckBox(tr("Show all evaluation warnings"));
+    vbox->addWidget(pcc_allwarn);
+    connect(pcc_allwarn, SIGNAL(stateChanged(int)),
+        this, SLOT(allwarn_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label(
-        "Show all evaluation warnings");
-    gtk_widget_set_name(button, "allwarn");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pcc_action), 0);
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-    pcc_allwarn = button;
-
-    //
     // Dismiss button
     //
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pcc_cancel_proc), 0);
-
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    gtk_window_set_focus(GTK_WINDOW(pcc_popup), button);
+    btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update();
 }
 
 
-sPCc::~sPCc()
+cPCellCtrl::~cPCellCtrl()
 {
-    PCc = 0;
+    instPtr = 0;
     if (pcc_caller)
-        GTKdev::Deselect(pcc_caller);
-    if (pcc_popup)
-        gtk_widget_destroy(pcc_popup);
+        QTdev::Deselect(pcc_caller);
 }
 
 
 void
-sPCc::update()
+cPCellCtrl::update()
 {
     const char *s = CDvdb()->getVariable(VA_PCellAbutMode);
     if (s && atoi(s) == 2)
-        gtk_combo_box_set_active(GTK_COMBO_BOX(pcc_abut), 2);
+        pcc_abut->setCurrentIndex(2);
     else if (s && atoi(s) == 0)
-        gtk_combo_box_set_active(GTK_COMBO_BOX(pcc_abut), 0);
+        pcc_abut->setCurrentIndex(0);
     else
-        gtk_combo_box_set_active(GTK_COMBO_BOX(pcc_abut), 1);
+        pcc_abut->setCurrentIndex(1);
 
-    GTKdev::SetStatus(pcc_hidestr,
+    QTdev::SetStatus(pcc_hidestr,
         CDvdb()->getVariable(VA_PCellHideGrips));
-    GTKdev::SetStatus(pcc_listsm,
+    QTdev::SetStatus(pcc_listsm,
         CDvdb()->getVariable(VA_PCellListSubMasters));
-    GTKdev::SetStatus(pcc_allwarn,
+    QTdev::SetStatus(pcc_allwarn,
         CDvdb()->getVariable(VA_PCellShowAllWarnings));
 
     int d;
@@ -301,57 +220,20 @@ sPCc::update()
         ;
     else
         d = DSP_MIN_FENCE_INST_PIXELS;
-    sb_psz.set_value(d);
+    pcc_sb_psz->setValue(d);
 }
 
 
-// Static function.
 void
-sPCc::pcc_cancel_proc(GtkWidget*, void*)
+cPCellCtrl::help_btn_slot()
 {
-    ED()->PopUpPCellCtrl(0, MODE_OFF);
+    DSPmainWbag(PopUpHelp("xic:pcctl"))
 }
 
 
-// Static function.
 void
-sPCc::pcc_action(GtkWidget *caller, void*)
+cPCellCtrl::abut_mode_slot(int i)
 {
-    if (!PCc)
-        return;
-    const char *name = gtk_widget_get_name(caller);
-    if (!strcmp(name, "Help")) {
-        DSPmainWbag(PopUpHelp("xic:pcctl"))
-        return;
-    }
-
-    bool state = GTKdev::GetStatus(caller);
-    if (!strcmp(name, "hidestr")) {
-        if (state)
-            CDvdb()->setVariable(VA_PCellHideGrips, "");
-        else
-            CDvdb()->clearVariable(VA_PCellHideGrips);
-    }
-    else if (!strcmp(name, "listsm")) {
-        if (state)
-            CDvdb()->setVariable(VA_PCellListSubMasters, "");
-        else
-            CDvdb()->clearVariable(VA_PCellListSubMasters);
-    }
-    else if (!strcmp(name, "allwarn")) {
-        if (state)
-            CDvdb()->setVariable(VA_PCellShowAllWarnings, "");
-        else
-            CDvdb()->clearVariable(VA_PCellShowAllWarnings);
-    }
-}
-
-
-// Static function.
-void
-sPCc::pcc_abut_menu_proc(GtkWidget *caller, void*)
-{
-    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
     if (i == 0)
         CDvdb()->setVariable(VA_PCellAbutMode, "0");
     else if (i == 1)
@@ -361,23 +243,52 @@ sPCc::pcc_abut_menu_proc(GtkWidget *caller, void*)
 }
 
 
-// Static function.
 void
-sPCc::pcc_val_changed(GtkWidget*, void*)
+cPCellCtrl::hidestr_btn_slot(int state)
 {
-    if (!PCc)
-        return;
-    const char *s = PCc->sb_psz.get_string();
-    char *endp;
-    int d = (int)strtod(s, &endp);
-    if (endp > s && d >= 0 && d <= 1000) {
-        if (d == DSP_MIN_FENCE_INST_PIXELS)
-            CDvdb()->clearVariable(VA_PCellGripInstSize);
-        else {
-            char buf[32];
-            snprintf(buf, sizeof(buf), "%d", d);
-            CDvdb()->setVariable(VA_PCellGripInstSize, buf);
-        }
+    if (state)
+        CDvdb()->setVariable(VA_PCellHideGrips, "");
+    else
+        CDvdb()->clearVariable(VA_PCellHideGrips);
+}
+
+
+void
+cPCellCtrl::psz_change_slot(int d)
+{
+    if (d == DSP_MIN_FENCE_INST_PIXELS)
+        CDvdb()->clearVariable(VA_PCellGripInstSize);
+    else {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%d", d);
+        CDvdb()->setVariable(VA_PCellGripInstSize, buf);
     }
+}
+
+
+void
+cPCellCtrl::listsm_btn_slot(int state)
+{
+    if (state)
+        CDvdb()->setVariable(VA_PCellListSubMasters, "");
+    else
+        CDvdb()->clearVariable(VA_PCellListSubMasters);
+}
+
+
+void
+cPCellCtrl::allwarn_btn_slot(int state)
+{
+    if (state)
+        CDvdb()->setVariable(VA_PCellShowAllWarnings, "");
+    else
+        CDvdb()->clearVariable(VA_PCellShowAllWarnings);
+}
+
+
+void
+cPCellCtrl::dismiss_btn_slot()
+{
+    ED()->PopUpPCellCtrl(0, MODE_OFF);
 }
 

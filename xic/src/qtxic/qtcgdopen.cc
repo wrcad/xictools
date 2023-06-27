@@ -215,7 +215,7 @@ cCGDopen::cCGDopen(GRobject caller,
 
     // Cell name mapping.
     //
-    cgo_p1_cnmap = new cCnmap(false);
+    cgo_p1_cnmap = new cCnameMap(false);
     pvbox->addWidget(cgo_p1_cnmap);
 
     // File reference page.

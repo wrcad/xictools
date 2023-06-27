@@ -38,67 +38,70 @@
  $Id:$
  *========================================================================*/
 
+#ifndef QTDBGFLG_H
+#define QTDBGFLG_H
+
 #include "main.h"
-#include "cd_celldb.h"
-#include "gtkmain.h"
-#include "gtkinterf/gtkfile.h"
+#include "qtmain.h"
+
+#include <QDialog>
 
 
-// Export the file/cell selected in the Files Selection, Cells Listing,
-// Files Listing, Libraries Listing, or Tree pop-ups.
-//
-char *
-cMain::GetCurFileSelection()
+class QCheckBox;
+class QLineEdit;
+
+class cDbgFlags : public QDialog
 {
-    if (!GTKdev::exists())
-        return (0);
-    static char *tbuf;
-    delete [] tbuf;
-    tbuf = GTKfilePopup::any_selection();
-    if (tbuf)
-        return (tbuf);
+    Q_OBJECT
 
-    tbuf = GTKmainwin::get_cell_selection();
-    if (tbuf)
-        return (tbuf);
+public:
+    cDbgFlags(void*);
+    ~cDbgFlags();
 
-    tbuf = GTKmainwin::get_file_selection();
-    if (tbuf)
-        return (tbuf);
+    void update();
 
-    tbuf = GTKmainwin::get_lib_selection();
-    if (tbuf)
-        return (tbuf);
+    static cDbgFlags *self()            { return (instPtr); }
 
-    tbuf = GTKmainwin::get_tree_selection();
-    if (tbuf)
-        return (tbuf);
+private slots:
+    void help_btn_slot();
+    void sel_btn_slot(int);
+    void undo_btn_slot(int);
+    void ldb3d_btn_slot(int);
+    void rlsolv_btn_slot(int);
+    void editing_finished_slot();
+    void lisp_btn_slot(int);
+    void connect_btn_slot(int);
+    void rlsolvlog_btn_slot(int);
+    void group_btn_slot(int);
+    void extract_btn_slot(int);
+    void assoc_btn_slot(int);
+    void verbose_btn_slot(int);
+    void load_btn_slot(int);
+    void net_btn_slot(int);
+    void pcell_btn_slot(int);
+    void dismiss_btn_slot();
 
-    // look for selected text in an Info window
-    GdkWindow *window = gdk_selection_owner_get(GDK_SELECTION_PRIMARY);
-    if (window) {
-        GtkWidget *widget;
-        gdk_window_get_user_data(window, (void**)&widget);
-        if (widget &&
-                g_object_get_data(G_OBJECT(widget), "export")) {
-            tbuf = text_get_selection(widget);
-            if (tbuf && CDcdb()->findSymbol(tbuf))
-                return (tbuf);
-            delete [] tbuf;
-        }
-    }
-    return (0);
-}
+private:
+    GRobject df_caller;
+    QCheckBox *df_sel;
+    QCheckBox *df_undo;
+    QCheckBox *df_ldb3d;
+    QCheckBox *df_rlsolv;
+    QLineEdit *df_fname;
 
+    QCheckBox *df_lisp;
+    QCheckBox *df_connect;
+    QCheckBox *df_rlsolvlog;
+    QCheckBox *df_group;
+    QCheckBox *df_extract;
+    QCheckBox *df_assoc;
+    QCheckBox *df_verbose;
+    QCheckBox *df_load;
+    QCheckBox *df_net;
+    QCheckBox *df_pcell;
 
-// Called when crashing, disable any updates
-//
-void
-cMain::DisableDialogs()
-{
-    GTKmainwin::cells_panic();
-    GTKmainwin::files_panic();
-    GTKmainwin::libs_panic();
-    GTKmainwin::tree_panic();
-}
+    static cDbgFlags *instPtr;
+};
+
+#endif
 

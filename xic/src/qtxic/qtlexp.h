@@ -38,109 +38,87 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCELLS_H
-#define QTCELLS_H
+#ifndef QTLEXP_H
+#define QTLEXP_H
 
 #include "main.h"
 #include "qtmain.h"
 
+#include <QDialog>
 
-cCells *cCells::instPtr;
+class QRadioButton;
+class QComboBox;
+class QCheckBox;
+class QPushButton;
+class QLineEdit;
+class QMenu;
+class QAction;
+class QSpinBox;
+class QDoubleSpinBox;
 
-class cCells : public QDialog, public QTbag
+class cLayerExp : public QDialog
 {
     Q_OBJECT
 
 public:
-    cCells(GRobject);
-    ~cCells();
+    cLayerExp(void*);
+    ~cLayerExp();
 
     void update();
 
-    char *get_selection() { return (text_get_selection(wb_textarea)); }
+    static cLayerExp *self()            { return (instPtr); }
 
-    void end_search() { GTKdev::Deselect(c_searchbtn); }
-    
-    static cCells *self()           { return (instPtr); }
+private slots:
+    void help_btn_slot();
+    void depth_changed_slot(int);
+    void recurse_btn_slot(int);
+    void none_btn_slot(bool);
+    void part_changed_slot(double);
+    void threads_changed_slot(int);
+    void deflt_btn_slot(bool);
+    void join_btn_slot(bool);
+    void split_h_btn_slot(bool);
+    void split_v_btn_slot(bool);
+    void recall_menu_slot(QAction*);
+    void save_menu_slot(QAction*);
+    void noclear_btn_slot(int);
+    void merge_btn_slot(int);
+    void fast_btn_slot(int);
+    void eval_btn_slot();
+    void dismiss_btn_slot();
 
 private:
-    void clear(const char*);
-    void copy_cell(const char*);
-    void replace_instances(const char*);
-    void rename_cell(const char*);
-    int button_hdlr(bool, GtkWidget*, GdkEvent*);
-    void select_range(int, int);
-    void action_hdlr(GtkWidget*, void*);
-    int motion_hdlr(GtkWidget*, GdkEvent*);
-    void resize_hdlr(GtkAllocation*);
-    stringlist *raw_cell_list(int*, int*, bool);
-    char *cell_list(int);
-    void update_text(char*);
-    void check_sens();
+    GRobject        lx_caller;
+    QRadioButton    *lx_deflt;
+    QRadioButton    *lx_join;
+    QRadioButton    *lx_split_h;
+    QRadioButton    *lx_split_v;
+    QComboBox       *lx_depth;
+    QCheckBox       *lx_recurse;
+    QCheckBox       *lx_merge;
+    QCheckBox       *lx_fast;
+    QPushButton     *lx_none;
+    QLineEdit       *lx_tolayer;
+    QCheckBox       *lx_noclear;
+    QLineEdit       *lx_lexpr;
+    QPushButton     *lx_save;
+    QPushButton     *lx_recall;
+    QMenu           *lx_save_menu;
+    QMenu           *lx_recall_menu;
+    QDoubleSpinBox  *lx_sb_part;
+    QSpinBox        *lx_sb_thread;
 
-    /*
-    static void c_clear_cb(bool, void*);
-    static ESret c_copy_cb(const char*, void*);
-    static void c_repl_cb(bool, void*);
-    static ESret c_rename_cb(const char*, void*);
+    double lx_last_part_size;
 
-    static void c_page_proc(GtkWidget*, void*);
-    static void c_mode_proc(GtkWidget*, void*);
-    static void c_filter_cb(cfilter_t*, void*);
-    static int c_highlight_idle(void*);
-    static void c_drag_data_get(GtkWidget *widget, GdkDragContext*,
-        GtkSelectionData*, guint, guint, void*);
-    static int c_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int c_btn_release_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int c_motion_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void c_resize_hdlr(GtkWidget*, GtkAllocation*);
-    static void c_realize_hdlr(GtkWidget*, void*);
-    static void c_action_proc(GtkWidget*, void*);
-    static void c_help_proc(GtkWidget*, void*);
-    static void c_cancel(GtkWidget*, void*);
-    static void c_save_btn_hdlr(GtkWidget*, void*);
-    static ESret c_save_cb(const char*, void*);
-    static int c_timeout(void*);
-    */
+    static char *last_lexpr;
+    static int depth_hst;
+    static int create_mode;
+    static bool fast_mode;
+    static bool use_merge;
+    static bool do_recurse;
+    static bool noclear;
 
-    GRobject c_caller;
-    GRaffirmPopup *c_clear_pop;
-    GRaffirmPopup *c_repl_pop;
-    GRledPopup *c_copy_pop;
-    GRledPopup *c_rename_pop;
-    GTKledPopup *c_save_pop;
-    GTKmsgPopup *c_msg_pop;
-    GtkWidget *c_label;
-    GtkWidget *c_clearbtn;
-    GtkWidget *c_treebtn;
-    GtkWidget *c_openbtn;
-    GtkWidget *c_placebtn;
-    GtkWidget *c_copybtn;
-    GtkWidget *c_replbtn;
-    GtkWidget *c_renamebtn;
-    GtkWidget *c_searchbtn;
-    GtkWidget *c_flagbtn;
-    GtkWidget *c_infobtn;
-    GtkWidget *c_showbtn;
-    GtkWidget *c_fltrbtn;
-    GtkWidget *c_page_combo;
-    GtkWidget *c_mode_combo;
-    cfilter_t *c_pfilter;
-    cfilter_t *c_efilter;
-    char *c_copyname;
-    char *c_replname;
-    char *c_newname;
-    bool c_no_select;
-    bool c_no_update;
-    bool c_dragging;
-    int c_drag_x, c_drag_y;
-    int c_cols;
-    int c_page;
-    DisplayMode c_mode;
-    int c_start;
-    int c_end;
-
-    static cCells *instPtr;
+    static cLayerExp *instPtr;
 };
 
 #endif

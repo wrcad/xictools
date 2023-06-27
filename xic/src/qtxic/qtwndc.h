@@ -38,88 +38,88 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCFILT_H
-#define QTCFILT_H
+#ifndef QTWNDC_H
+#define QTWNDC_H
 
 #include "main.h"
-#include "gtkmain.h"
+#include "qtmain.h"
 
-#include <QDialog>
+#include <QGroupBox>
+
+class QCheckBox;
+class QLabel;
+class QPushButton;
+class QMenu;
+class QDoubleSpinBox;
 
 
+//-------------------------------------------------------------------------
+// Subwidget group for window control
+//
 
-class cCfilt : public QDialog
+// Sensitivity logic.
+enum WndSensMode {
+    WndSensAllModes,
+    WndSensFlatten,
+    WndSensNone
+};
+
+// Set which function.
+enum WndFuncMode {
+    WndFuncCvt,     // Conversion
+    WndFuncOut,     // Export
+    WndFuncIn       // Import
+};
+
+class cWindowCfg : public QGroupBox
 {
     Q_OBJECT
 
-public
-    cCfilt(GRobject, DisplayMode, void(*)(cfilter_t*, void*), void*);
-    ~cCfilt();
+public:
+    cWindowCfg(WndSensMode(*)(), WndFuncMode);
+    ~cWindowCfg();
 
-    void update(DisplayMode);
+    void update();
+    void set_sens();
+    bool get_bb(BBox*);
+    void set_bb(const BBox*);
 
-    static cCfilt *self()           { return (instPtr); }
+private slots:
+    void usewin_btn_slot(int);
+    void clip_btn_slot(int);
+    void flatten_btn_slot(int);
+    void s_menu_slot(QAction*);
+    void r_menu_slot(QAction*);
+    void left_value_slot(double);
+    void right_value_slot(double);
+    void bottom_value_slot(double);
+    void top_value_slot(double);
+    void ecf_pre_btn_slot(int);
+    void ecf_post_btn_slot(int);
 
 private:
-    void setup(const cfilter_t*);
-    cfilter_t *new_filter();
-    /*
-    static void cf_cancel_proc(GtkWidget*, void*);
-    static void cf_action(GtkWidget*, void*);
-    static void cf_radio(GtkWidget*, void*);
-    static void cf_vlayer_menu_proc(GtkWidget*, void*);
-    static void cf_name_menu_proc(GtkWidget*, void*);
-    static void cf_sto_menu_proc(GtkWidget*, void*);
-    static void cf_rcl_menu_proc(GtkWidget*, void*);
-    */
+    QCheckBox   *wnd_use_win;
+    QCheckBox   *wnd_clip;
+    QCheckBox   *wnd_flatten;
+    QLabel      *wnd_ecf_label;
+    QCheckBox   *wnd_ecf_pre;
+    QCheckBox   *wnd_ecf_post;
+    QLabel      *wnd_l_label;
+    QLabel      *wnd_b_label;
+    QLabel      *wnd_r_label;
+    QLabel      *wnd_t_label;
+    QPushButton *wnd_sbutton;
+    QPushButton *wnd_rbutton;
+    QMenu       *wnd_s_menu;
+    QMenu       *wnd_r_menu;
+    QDoubleSpinBox *wnd_sb_left;
+    QDoubleSpinBox *wnd_sb_bottom;
+    QDoubleSpinBox *wnd_sb_right;
+    QDoubleSpinBox *wnd_sb_top;
 
-    GRobject cf_caller;
-    GtkWidget *cf_nimm;
-    GtkWidget *cf_imm;
-    GtkWidget *cf_nvsm;
-    GtkWidget *cf_vsm;
-    GtkWidget *cf_nlib;
-    GtkWidget *cf_lib;
-    GtkWidget *cf_npsm;
-    GtkWidget *cf_psm;
-    GtkWidget *cf_ndev;
-    GtkWidget *cf_dev;
-    GtkWidget *cf_nspr;
-    GtkWidget *cf_spr;
-    GtkWidget *cf_ntop;
-    GtkWidget *cf_top;
-    GtkWidget *cf_nmod;
-    GtkWidget *cf_mod;
-    GtkWidget *cf_nalt;
-    GtkWidget *cf_alt;
-    GtkWidget *cf_nref;
-    GtkWidget *cf_ref;
-    GtkWidget *cf_npcl;
-    GtkWidget *cf_pcl;
-    GtkWidget *cf_pclent;
-    GtkWidget *cf_nscl;
-    GtkWidget *cf_scl;
-    GtkWidget *cf_sclent;
-    GtkWidget *cf_nlyr;
-    GtkWidget *cf_lyr;
-    GtkWidget *cf_lyrent;
-    GtkWidget *cf_nflg;
-    GtkWidget *cf_flg;
-    GtkWidget *cf_flgent;
-    GtkWidget *cf_nftp;
-    GtkWidget *cf_ftp;
-    GtkWidget *cf_ftpent;
-    GtkWidget *cf_apply;
-
-    void(*cf_cb)(cfilter_t*, void*);
-    void *cf_arg;
-    DisplayMode cf_mode;
-
-#define NUMREGS 6
-    static char *cf_phys_regs[];
-    static char *cf_elec_regs[];
-
-    static cCfilt *instPtr;
+    WndSensMode (*wnd_sens_test)();
+    WndFuncMode wnd_func_mode;
 };
 
 #endif
+

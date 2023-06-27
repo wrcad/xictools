@@ -92,15 +92,15 @@ cLayerList::cLayerList()
         this, SLOT(aluse_btn_slot(int)));
 
     ll_aledit = new QPushButton(tr("Edit Layer Aliases"));
-    hbox->addWidget(ll_aluse);
-    ll_aluse->setCheckable(true);
+    hbox->addWidget(ll_aledit);
+    ll_aledit->setCheckable(true);
     connect(ll_aledit, SIGNAL(toggled(bool)),
         this, SLOT(aledit_btn_slot(bool)));
 
     update();
 
     connect(ll_laylist, SIGNAL(textChanged(const QString&)),
-        this, SLOT(text_chnged_slot(const QString&)));
+        this, SLOT(text_changed_slot(const QString&)));
 }
 
 

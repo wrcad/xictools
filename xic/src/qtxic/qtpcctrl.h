@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCHDOPEN_H
-#define QTCHDOPEN_H
+#ifndef QTPCCTRL_H
+#define QTPCCTRL_H
 
 #include "main.h"
 #include "qtmain.h"
@@ -47,50 +47,42 @@
 #include <QDialog>
 
 
-class QTabWidget;
-class QLineEdit;
 class QComboBox;
-class QRadioButton;
-class QPushButton;
-class cCnameMap;
+class QCheckBox;
+class QSpinBox;
 
-class cCHDopen : public QDialog, public QTbag
+class cPCellCtrl : public QDialog
 {
     Q_OBJECT
 
 public:
-    cCHDopen(GRobject, bool(*)(const char*, const char*, int, void*), void*,
-        const char*, const char*);
-    ~cCHDopen();
+    cPCellCtrl(GRobject);
+    ~cPCellCtrl();
 
-    void update(const char*, const char*);
+    void update();
 
-    static cCHDopen *self()             { return (instPtr); }
+    static cPCellCtrl *self()           { return (instPtr); }
 
 private slots:
     void help_btn_slot();
-    void p1_info_slot(int);
-    void apply_btn_slot();
+    void abut_mode_slot(int);
+    void hidestr_btn_slot(int);
+    void psz_change_slot(int);
+    void listsm_btn_slot(int);
+    void allwarn_btn_slot(int);
     void dismiss_btn_slot();
 
 private:
-    GRobject    co_caller;
-    QTabWidget  *co_nbook;
-    QLineEdit   *co_p1_text;
-    QComboBox   *co_p1_info;
-    QLineEdit   *co_p2_text;
-    QRadioButton *co_p2_mem;
-    QRadioButton *co_p2_file;
-    QRadioButton *co_p2_none;
-    QLineEdit   *co_idname;
-    QPushButton *co_apply;
+    GRobject    pcc_caller;
+    QComboBox   *pcc_abut;
+    QCheckBox   *pcc_hidestr;
+    QCheckBox   *pcc_listsm;
+    QCheckBox   *pcc_allwarn;
+    QSpinBox    *pcc_sb_psz;
 
-    cCnameMap   *co_p1_cnmap;
-
-    bool(*co_callback)(const char*, const char*, int, void*);
-    void *co_arg;
-
-    static cCHDopen *instPtr;
+    static const char *pcc_abutvals[];
+    static cPCellCtrl *instPtr;
 };
 
 #endif
+

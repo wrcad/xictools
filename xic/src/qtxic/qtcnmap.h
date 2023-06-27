@@ -50,12 +50,12 @@ class QCheckBox;
 //-------------------------------------------------------------------------
 // Subwidget group for cell name mapping.
 //
-class cCnmap : public QGroupBox
+class cCnameMap : public QGroupBox
 {
     Q_OBJECT
 
 public:
-    cCnmap(bool);
+    cCnameMap(bool);
 
     void update();
 

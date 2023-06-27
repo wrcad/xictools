@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCHDOPEN_H
-#define QTCHDOPEN_H
+#ifndef QTPRPCEDIT_H
+#define QTPRPCEDIT_H
 
 #include "main.h"
 #include "qtmain.h"
@@ -47,50 +47,67 @@
 #include <QDialog>
 
 
-class QTabWidget;
-class QLineEdit;
-class QComboBox;
-class QRadioButton;
+class QAction;
+class QMouseEvent;
+class QMimeData;
 class QPushButton;
-class cCnameMap;
+class QMenu;
 
-class cCHDopen : public QDialog, public QTbag
+class cCellPrp : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCHDopen(GRobject, bool(*)(const char*, const char*, int, void*), void*,
-        const char*, const char*);
-    ~cCHDopen();
+    struct sAddEnt
+    {
+        sAddEnt(const char *n, int v) : name(n), value(v) { }
 
-    void update(const char*, const char*);
+        const char *name;
+        int value;
+    };
 
-    static cCHDopen *self()             { return (instPtr); }
+    cCellPrp();
+    ~cCellPrp();
+
+    void update();
+
+    static cCellPrp *self()         { return (instPtr); }
 
 private slots:
+    void edit_btn_slot(bool);
+    void del_btn_slot(bool);
+    void add_menu_slot(QAction*);
     void help_btn_slot();
-    void p1_info_slot(int);
-    void apply_btn_slot();
+    void mouse_press_slot(QMouseEvent*);
+//    void mouse_motion_slot(QMouseEvent*);
+//    void mime_data_received_slot(const QMimeData*);
     void dismiss_btn_slot();
+    void font_changed_slot(int);
 
 private:
-    GRobject    co_caller;
-    QTabWidget  *co_nbook;
-    QLineEdit   *co_p1_text;
-    QComboBox   *co_p1_info;
-    QLineEdit   *co_p2_text;
-    QRadioButton *co_p2_mem;
-    QRadioButton *co_p2_file;
-    QRadioButton *co_p2_none;
-    QLineEdit   *co_idname;
-    QPushButton *co_apply;
+    PrptyText *get_selection();
+    void update_display();
+    void select_range(int, int);
+    void handle_button_down(QMouseEvent*);
+    void handle_button_up(QMouseEvent*);
+//    void handle_mouse_motion(QMouseEvent*);
+//    void handle_mime_data_received(const QMimeData*);
 
-    cCnameMap   *co_p1_cnmap;
+    QPushButton *pc_edit;
+    QPushButton *pc_del;
+    QPushButton *pc_add;
+    QMenu *pc_addmenu;
+    PrptyText *pc_list;
+    int pc_line_selected;
+    int pc_action_calls;
+    int pc_start;
+    int pc_end;
+    int pc_dspmode;
 
-    bool(*co_callback)(const char*, const char*, int, void*);
-    void *co_arg;
-
-    static cCHDopen *instPtr;
+    static sAddEnt pc_elec_addmenu[];
+    static sAddEnt pc_phys_addmenu[];
+    static cCellPrp *instPtr;
 };
 
 #endif
+

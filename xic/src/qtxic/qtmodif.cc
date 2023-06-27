@@ -311,9 +311,7 @@ cModif::refresh()
     QColor c1 = QTbag::PopupColor(GRattrColorHl2);
     QColor c2 = QTbag::PopupColor(GRattrColorHl3);
     QScrollBar *vsb = m_text->verticalScrollBar();
-    double val = 0.0;
-    if (vsb)
-        val = vsb->value();
+    int sval = m_text->get_scroll_value();
     m_text->clear();
     for (s_item *s = m_list; s->name; s++) {
         snprintf(buf, sizeof(buf), "%-*s  ", m_field, s->name);
@@ -333,8 +331,7 @@ cModif::refresh()
         m_text->setTextColor(QColor("black"));
         m_text->insertPlainText(tr(buf));
     }
-    if (vsb)
-        vsb->setValue(val);
+    m_text->set_scroll_value(sval);
 
     char lab[256];
     strcpy(lab, "Modified Cells            Click on yes/no \n");
@@ -377,7 +374,7 @@ cModif::apply_slot()
     if (m_saveproc) {
         for (s_item *s = m_list; s->name; s++) {
             if (s->save && !(*m_saveproc)(s->name))
-                m_retval = PMerr;
+                    m_retval = PMerr;
         }
         m_saveproc = 0;
     }

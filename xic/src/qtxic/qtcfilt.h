@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCHDOPEN_H
-#define QTCHDOPEN_H
+#ifndef QTCFILT_H
+#define QTCFILT_H
 
 #include "main.h"
 #include "qtmain.h"
@@ -47,50 +47,110 @@
 #include <QDialog>
 
 
-class QTabWidget;
+class QCheckBox;
 class QLineEdit;
-class QComboBox;
-class QRadioButton;
-class QPushButton;
-class cCnameMap;
 
-class cCHDopen : public QDialog, public QTbag
+class cCfilt : public QDialog
 {
     Q_OBJECT
 
 public:
-    cCHDopen(GRobject, bool(*)(const char*, const char*, int, void*), void*,
-        const char*, const char*);
-    ~cCHDopen();
+    cCfilt(GRobject, DisplayMode, void(*)(cfilter_t*, void*), void*);
+    ~cCfilt();
 
-    void update(const char*, const char*);
+    void update(DisplayMode);
 
-    static cCHDopen *self()             { return (instPtr); }
+    static cCfilt *self()           { return (instPtr); }
 
 private slots:
+    void store_menu_slot(QAction*);
+    void recall_menu_slot(QAction*);
     void help_btn_slot();
-    void p1_info_slot(int);
+    void nimm_btn_slot(int);
+    void imm_btn_slot(int);
+    void nvsm_btn_slot(int);
+    void vsm_btn_slot(int);
+    void nlib_btn_slot(int);
+    void lib_btn_slot(int);
+    void npsm_btn_slot(int);
+    void psm_btn_slot(int);
+    void ndev_btn_slot(int);
+    void dev_btn_slot(int);
+    void nspr_btn_slot(int);
+    void spr_btn_slot(int);
+    void ntop_btn_slot(int);
+    void top_btn_slot(int);
+    void nmod_btn_slot(int);
+    void mod_btn_slot(int);
+    void nalt_btn_slot(int);
+    void alt_btn_slot(int);
+    void nref_btn_slot(int);
+    void ref_btn_slot(int);
+    void npcl_btn_slot(int);
+    void pcl_btn_slot(int);
+    void nscl_btn_slot(int);
+    void scl_btn_slot(int);
+    void nlyr_btn_slot(int);
+    void lyr_btn_slot(int);
+    void nflg_btn_slot(int);
+    void flg_btn_slot(int);
+    void nftp_btn_slot(int);
+    void ftp_btn_slot(int);
     void apply_btn_slot();
     void dismiss_btn_slot();
 
 private:
-    GRobject    co_caller;
-    QTabWidget  *co_nbook;
-    QLineEdit   *co_p1_text;
-    QComboBox   *co_p1_info;
-    QLineEdit   *co_p2_text;
-    QRadioButton *co_p2_mem;
-    QRadioButton *co_p2_file;
-    QRadioButton *co_p2_none;
-    QLineEdit   *co_idname;
-    QPushButton *co_apply;
+    void setup(const cfilter_t*);
+    cfilter_t *new_filter();
 
-    cCnameMap   *co_p1_cnmap;
+    GRobject cf_caller;
+    QCheckBox *cf_nimm;
+    QCheckBox *cf_imm;
+    QCheckBox *cf_nvsm;
+    QCheckBox *cf_vsm;
+    QCheckBox *cf_nlib;
+    QCheckBox *cf_lib;
+    QCheckBox *cf_npsm;
+    QCheckBox *cf_psm;
+    QCheckBox *cf_ndev;
+    QCheckBox *cf_dev;
+    QCheckBox *cf_nspr;
+    QCheckBox *cf_spr;
+    QCheckBox *cf_ntop;
+    QCheckBox *cf_top;
+    QCheckBox *cf_nmod;
+    QCheckBox *cf_mod;
+    QCheckBox *cf_nalt;
+    QCheckBox *cf_alt;
+    QCheckBox *cf_nref;
+    QCheckBox *cf_ref;
+    QCheckBox *cf_npcl;
+    QCheckBox *cf_pcl;
+    QLineEdit *cf_pclent;
+    QCheckBox *cf_nscl;
+    QCheckBox *cf_scl;
+    QLineEdit *cf_sclent;
+    QCheckBox *cf_nlyr;
+    QCheckBox *cf_lyr;
+    QLineEdit *cf_lyrent;
+    QCheckBox *cf_nflg;
+    QCheckBox *cf_flg;
+    QLineEdit *cf_flgent;
+    QCheckBox *cf_nftp;
+    QCheckBox *cf_ftp;
+    QLineEdit *cf_ftpent;
+    QPushButton *cf_apply;
 
-    bool(*co_callback)(const char*, const char*, int, void*);
-    void *co_arg;
+    void(*cf_cb)(cfilter_t*, void*);
+    void *cf_arg;
+    DisplayMode cf_mode;
 
-    static cCHDopen *instPtr;
+#define NUMREGS 6
+    static char *cf_phys_regs[];
+    static char *cf_elec_regs[];
+
+    static cCfilt *instPtr;
 };
 
 #endif
+

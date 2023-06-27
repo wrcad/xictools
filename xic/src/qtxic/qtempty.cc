@@ -118,10 +118,12 @@ cEmpty::cEmpty(stringlist *l)
 
     hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
+    hbox->setSpacing(2);
 
     QGroupBox *gb = new QGroupBox(this);
     QHBoxLayout *hb = new QHBoxLayout(gb);
     hb->setMargin(2);
+    hb->setSpacing(2);
     ec_label = new QLabel(gb);
 
     hb->addWidget(ec_label);
@@ -137,6 +139,7 @@ cEmpty::cEmpty(stringlist *l)
 
     hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
+    hbox->setSpacing(2);
     btn = new QPushButton();
     btn->setText(tr("Apply"));
     hbox->addWidget(btn);

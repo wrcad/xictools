@@ -1,0 +1,699 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
+ *                       http://wrcad.com                                 *
+ *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Author: Stephen R. Whiteley, except as indicated.                     *
+ *                                                                        *
+ *  As fully as possible recognizing licensing terms and conditions       *
+ *  imposed by earlier work from which this work was derived, if any,     *
+ *  this work is released under the Apache License, Version 2.0 (the      *
+ *  "License").  You may not use this file except in compliance with      *
+ *  the License, and compliance with inherited licenses which are         *
+ *  specified in a sub-header below this one if applicable.  A copy       *
+ *  of the License is provided with this distribution, or you may         *
+ *  obtain a copy of the License at                                       *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *  See the License for the specific language governing permissions       *
+ *  and limitations under the License.                                    *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL WHITELEY RESEARCH INCORPORATED      *
+ *   OR STEPHEN R. WHITELEY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,      *
+ *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE       *
+ *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+ *                                                                        *
+ *========================================================================*
+ *               XicTools Integrated Circuit Design System                *
+ *                                                                        *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
+ *                                                                        *
+ *========================================================================*
+ $Id:$
+ *========================================================================*/
+
+#include "qtprpcedit.h"
+#include "edit.h"
+#include "dsp_color.h"
+#include "dsp_inlines.h"
+#include "cd_propnum.h"
+#include "menu.h"
+#include "edit_menu.h"
+#include "events.h"
+#include "promptline.h"
+#include "qtinterf/qtfont.h"
+#include "qtinterf/qttextw.h"
+
+#include <QLayout>
+#include <QPushButton>
+#include <QMenu>
+#include <QAction>
+#include <QMouseEvent>
+#include <QMimeData>
+#include <QScrollBar>
+
+
+//--------------------------------------------------------------------------
+// Pop up to modify proerties of the current cell
+//
+// Help system keywords used:
+//  xic:cprop
+
+
+// Pop up the cell properties editor.
+//
+void
+cEdit::PopUpCellProperties(ShowMode mode)
+{
+    if (!QTdev::exists() || !QTmainwin::exists())
+        return;
+    if (mode == MODE_OFF) {
+        if (cCellPrp::self())
+            cCellPrp::self()->deleteLater();
+        return;
+    }
+    if (cCellPrp::self()) {
+        cCellPrp::self()->update();
+        return;
+    }
+    if (mode == MODE_UPD)
+        return;
+
+    new cCellPrp();
+
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cCellPrp::self(),
+        QTmainwin::self()->Viewport());
+    cCellPrp::self()->show();
+}
+// End of cEdit functions.
+
+
+cCellPrp::sAddEnt cCellPrp::pc_elec_addmenu[] = {
+    sAddEnt("param", P_PARAM),
+    sAddEnt("other", P_OTHER),
+    sAddEnt("virtual", P_VIRTUAL),
+    sAddEnt("flatten", P_FLATTEN),
+    sAddEnt(0, 0)
+};
+
+cCellPrp::sAddEnt cCellPrp::pc_phys_addmenu[] = {
+    sAddEnt("any", -1),
+    sAddEnt("flags", XICP_FLAGS),
+    sAddEnt("flatten", XICP_EXT_FLATTEN),
+    sAddEnt("pc_script", XICP_PC_SCRIPT),
+    sAddEnt("pc_params", XICP_PC_PARAMS),
+    sAddEnt(0, 0)
+};
+
+cCellPrp *cCellPrp::instPtr;
+
+cCellPrp::cCellPrp()
+{
+    instPtr = this;
+    pc_edit = 0;
+    pc_del = 0;
+    pc_add = 0;
+    pc_addmenu = 0;
+    pc_list = 0;
+    pc_line_selected = -1;
+    pc_action_calls = 0;
+    pc_start = 0;
+    pc_end = 0;
+    pc_dspmode = -1;
+
+    setWindowTitle(tr("Cell Property Editor"));
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    // top row buttons
+    //
+    pc_edit = new QPushButton(tr("Edit"));
+    pc_edit->setCheckable(true);
+    hbox->addWidget(pc_edit);
+    connect(pc_edit, SIGNAL(toggled(bool)), this, SLOT(edit_btn_slot(bool)));
+
+    pc_del = new QPushButton(tr("Delete"));
+    hbox->addWidget(pc_del);
+    connect(pc_del, SIGNAL(toggled(bool)), this, SLOT(del_btn_slot(bool)));
+
+    pc_add = new QPushButton(tr("Add"));
+    pc_add->setCheckable(true);
+    hbox->addWidget(pc_add);
+
+    pc_addmenu = new QMenu();
+    pc_add->setMenu(pc_addmenu);
+    connect(pc_addmenu, SIGNAL(triggered(QAction*)),
+        this, SLOT(add_menu_slot(QAction*)));
+
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+
+    // scrolled text area
+    //
+    wb_textarea = new QTtextEdit();
+    wb_textarea->setReadOnly(true);
+    wb_textarea->setMouseTracking(true);
+    wb_textarea->setAcceptDrops(true);
+    vbox->addWidget(wb_textarea);
+    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    /* No drag/drop to this window at present.
+    connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
+        this, SLOT(mouse_motion_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
+        this, SLOT(mime_data_received_slot(const QMimeData*)));
+    */
+
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED))
+        wb_textarea->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+
+
+    /*
+    GtkTextBuffer *textbuf =
+        gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
+    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
+    gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
+        "paragraph-background", bclr, NULL);
+    gtk_widget_set_size_request(wb_textarea, 300, 200);
+    */
+
+    // dismiss button
+    //
+    btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+
+    update();
+}
+
+
+cCellPrp::~cCellPrp()
+{
+    if (pc_action_calls) {
+        EV()->InitCallback();
+        pc_action_calls = 0;
+    }
+    instPtr = 0;
+    PrptyText::destroy(pc_list);
+    Menu()->MenuButtonSet(0, MenuCPROP, false);
+    PL()->AbortLongText();
+}
+
+
+void
+cCellPrp::update()
+{
+    PrptyText::destroy(pc_list);
+    CDs *cursd = CurCell();
+    pc_list = cursd ? XM()->PrptyStrings(cursd) : 0;
+    update_display();
+
+    if (DSP()->CurMode() == pc_dspmode)
+        return;
+    pc_dspmode = DSP()->CurMode();
+
+    // Set up the add menu.
+    pc_addmenu->clear();
+    if (DSP()->CurMode() == Physical) {
+        for (int i = 0; ; i++) {
+            const char *s = pc_phys_addmenu[i].name;
+            if (!s)
+                break;
+            QAction *a = pc_addmenu->addAction(s);
+            a->setData(i);
+        }
+    }
+    else {
+        for (int i = 0; ; i++) {
+            const char *s = pc_elec_addmenu[i].name;
+            if (!s)
+                break;
+            QAction *a = pc_addmenu->addAction(s);
+            a->setData(i);
+        }
+    }
+}
+
+
+// Return the PrptyText element corresponding to the selected line, or 0 if
+// there is no selection.
+//
+PrptyText *
+cCellPrp::get_selection()
+{
+    int start, end;
+    start = pc_start;
+    end = pc_end;
+    if (start == end)
+        return (0);
+    for (PrptyText *p = pc_list; p; p = p->next()) {
+        if (start >= p->start() && start < p->end())
+            return (p);
+    }
+    return (0);
+}
+
+
+void
+cCellPrp::update_display()
+{
+    QColor c1 = QTbag::PopupColor(GRattrColorHl4);
+    QColor c2 = QTbag::PopupColor(GRattrColorHl2);
+    QScrollBar *vsb = wb_textarea->verticalScrollBar();
+    double val = 0.0;
+    if (vsb)
+        val = vsb->value();
+    wb_textarea->clear();
+
+    if (!pc_list) {
+        wb_textarea->setTextColor(c1);
+        wb_textarea->insertPlainText(tr("Current cell has no properties."));
+    }
+    else {
+        int cnt = 0;
+        QColor blk("black");
+        for (PrptyText *p = pc_list; p; p = p->next()) {
+            p->set_start(cnt);
+
+            QColor *c;
+            const char *s = p->head();
+            if (*s == '(')
+                s++;
+            int num = atoi(s);
+            if (DSP()->CurMode() == Physical) {
+                if (prpty_gdsii(num) || prpty_global(num) ||
+                        prpty_reserved(num))
+                    c = &blk;
+                else if (prpty_pseudo(num))
+                    c = &c2;
+                else
+                    c = &c1;
+            }
+            else {
+                switch (num) {
+                case P_PARAM:
+                case P_OTHER:
+                case P_VIRTUAL:
+                case P_FLATTEN:
+                case P_MACRO:
+                    c = &c1;
+                    break;
+                default:
+                    c = &blk;
+                    break;
+                }
+            }
+            wb_textarea->setTextColor(*c);
+            wb_textarea->insertPlainText(p->head());
+            cnt += strlen(p->head());
+            wb_textarea->setTextColor(blk);
+            wb_textarea->insertPlainText(p->string());
+            cnt += strlen(p->string());
+            wb_textarea->insertPlainText("\n");
+            p->set_end(cnt);
+            cnt++;
+        }
+    }
+    if (vsb)
+        vsb->setValue(val);
+    pc_line_selected = -1;
+}
+
+
+// Select the chars in the range, start=end deselects existing.
+//
+void
+cCellPrp::select_range(int start, int end)
+{
+    if (start == end) {
+        QTextCursor c = wb_textarea->textCursor();
+        int pos = c.position();
+        int apos = c.anchor();
+        if (apos != pos) {
+            if (pos < apos) {
+                int t = pos;
+                pos = apos;
+                apos = t;
+            }
+            int n = pos - apos;
+            c.movePosition(QTextCursor::PreviousCharacter,
+                QTextCursor::KeepAnchor, n);
+            wb_textarea->setTextCursor(c);
+        }
+    }
+    else {
+        if (start > end) {
+            int t = start;
+            start = end;
+            end = t;
+        }
+        QTextCursor c = wb_textarea->textCursor();
+        c.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+        if (start) {
+            c.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor,
+                start);
+        }
+        c.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
+            end-start);
+        wb_textarea->setTextCursor(c);
+    }
+    pc_start = start;
+    pc_end = end;
+}
+
+
+void
+cCellPrp::handle_button_down(QMouseEvent *ev)
+{
+// Drag support disabled, this provides selection support only.
+//    pc_dragging = false;
+    QByteArray qba = wb_textarea->toPlainText().toLatin1();
+    int x = ev->x();
+    int y = ev->y();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
+    int pos = cur.position();
+    const char *str = lstring::copy((const char*)qba.constData());
+    const char *line_start = str;
+    int linesel = 0;
+    for (int i = 0; i <= pos; i++) {
+        if (str[i] == '\n') {
+            if (i == pos) {
+                // Clicked to  right of line.
+                delete [] str;
+                return;
+            }
+            linesel++;
+            line_start = str + i+1;
+        }
+    }
+    if (line_start && *line_start != '\n') {
+        PrptyText *p = pc_list;
+        pos = line_start - str;
+        for ( ; p; p = p->next()) {
+            if (pos >= p->start() && pos < p->end())
+                break;
+        }
+        if (p && pc_line_selected != linesel) {
+            pc_line_selected = linesel;
+            select_range(p->start() + strlen(p->head()), p->end());
+//            if (pc_btn_callback)
+//                (*pc_btn_callback)(p);
+            delete [] str;
+//            pc_drag_x = x;
+//            pc_drag_y = y;
+//            pc_dragging = true;
+            return;
+        }
+    }
+    pc_line_selected = -1;
+    delete [] str;
+    select_range(0, 0);
+}
+
+
+void
+cCellPrp::handle_button_up(QMouseEvent*)
+{
+//    pc_dragging = false;
+}
+
+
+/**** Not used at present, support for drag.
+void
+cCellPrp::handle_mouse_motion(QMouseEvent *ev)
+{
+    if (!pc_dragging)
+        return;
+    if (abs(ev->x() - pc_drag_x) < 5 && abs(ev->y() - pc_drag_y) < 5)
+        return;
+    PrptyText *p = get_selection();
+    if (!p)
+        return;
+    pc_dragging = false;
+
+    int sz = 0;
+    char *bf = 0;
+    if (p->prpty()) {
+        CDs *cursd =  CurCell(true);
+        if (cursd) {
+            hyList *hp = cursd->hyPrpList(pc_odesc, p->prpty());
+            char *s = hyList::string(hp, HYcvAscii, true);
+            hyList::destroy(hp);
+            sz = sizeof(int) + strlen(s) + 1;
+            bf = new char[sz];
+            *(int*)bf = p->prpty()->value();
+            strcpy(bf + sizeof(int), s);
+            delete [] s;
+        }
+    }
+    else {
+        QString qs = wb_textarea->toPlainText();
+        QByteArray qba = qs.toLatin1();
+        sz = p->end() - (p->start() + strlen(p->head())) + sizeof(int) + 1;
+        bf = new char[sz];
+        const char *q = p->head();
+        if (!isdigit(*q))
+            q++;
+        *(int*)bf = atoi(q);
+        int i = sizeof(int);
+        for (int j = p->start() + strlen(p->head()); j < p->end(); j++)
+            bf[i++] = qba[j];
+        bf[i] = 0;
+    }
+
+    QDrag *drag = new QDrag(wb_textarea);
+    QMimeData *mimedata = new QMimeData();
+    QByteArray qdata((const char*)bf, sz);
+    mimedata->setData("text/property", qdata);
+    delete [] bf;
+    drag->setMimeData(mimedata);
+    drag->exec(Qt::CopyAction);
+    delete drag;
+}
+****/
+
+
+/**** Not used at present, support for drops.
+void
+cPrpBase::handle_mime_data_received(const QMimeData *data)
+{
+    if (data->hasFormat("text/property")) {
+        if (!pc_odesc) {
+            QTpkg::self()->RegisterTimeoutProc(3000, pc_bad_cb, this);
+            PopUpMessage("Can't add property, no object selected.", false,
+                false, false, GRloc(LW_LR));
+        }
+        else {
+            QByteArray bary = data->data("text/property");
+            int num = *(int*)bary.data();
+            const char *val = (const char*)bary.data() + sizeof(int);
+            bool accept = false;
+            // Note: the window text is updated by call to PrptyRelist() in
+            // CommitChangges()
+            if (DSP()->CurMode() == Electrical) {
+                if (pc_odesc->type() == CDINSTANCE) {
+                    if (num == P_MODEL || num == P_VALUE || num == P_PARAM ||
+                            num == P_OTHER || num == P_NOPHYS ||
+                            num == P_FLATTEN || num == P_SYMBLC ||
+                            num == P_RANGE || num == P_DEVREF) {
+                        CDs *cursde = CurCell(Electrical, true);
+                        if (cursde) {
+                            Ulist()->ListCheck("addprp", cursde, false);
+                            CDp *pdesc =
+                                num != P_OTHER ? OCALL(pc_odesc)->prpty(num)
+                                : 0;
+                            hyList *hp = new hyList(cursde, (char*)val,
+                                HYcvAscii);
+                            ED()->prptyModify(OCALL(pc_odesc), pdesc, num,
+                                0, hp);
+                            hyList::destroy(hp);
+                            Ulist()->CommitChanges(true);
+                            accept = true;
+                        }
+                    }
+                }
+            }
+            else {
+                CDs *cursdp = CurCell(Physical);
+                if (cursdp) {
+                    Ulist()->ListCheck("ddprp", cursdp, false);
+                    DSP()->ShowOdescPhysProperties(pc_odesc, ERASE);
+
+                    CDp *newp = new CDp((char*)val, num);
+                    Ulist()->RecordPrptyChange(cursdp, pc_odesc, 0, newp);
+
+                    Ulist()->CommitChanges(true);
+                    DSP()->ShowOdescPhysProperties(pc_odesc, DISPLAY);
+                    accept = true;
+                }
+            }
+            if (!accept) {
+                QTpkg::self()->RegisterTimeoutProc(3000, pc_bad_cb, this);
+                PopUpMessage("Can't add property, incorrect type.", false,
+                    false, false, GRloc(LW_LR));
+            }
+        }
+    }
+}
+****/
+
+
+void
+cCellPrp::edit_btn_slot(bool state)
+{
+    if (!state) {
+        EV()->InitCallback();
+        return;
+    }
+    QTdev::Deselect(pc_del);
+
+    pc_action_calls++;
+    PrptyText *p = get_selection();
+    if (p)
+        ED()->cellPrptyEdit(p);
+    QTdev::Deselect(pc_edit);
+    pc_action_calls--;
+}
+
+
+void
+cCellPrp::del_btn_slot(bool state)
+{
+    if (!state)
+        return;
+    QTdev::Deselect(pc_edit);
+
+    pc_action_calls++;
+    PrptyText *p = get_selection();
+    if (p)
+        ED()->cellPrptyRemove(p);
+    QTdev::Deselect(pc_del);
+    pc_action_calls--;
+}
+
+
+void
+cCellPrp::add_menu_slot(QAction *a)
+{
+    pc_action_calls++;
+    int ix = a->data().toInt();
+    sAddEnt *ae;
+    if (DSP()->CurMode() == Electrical)
+        ae = &pc_elec_addmenu[ix];
+    else
+        ae = &pc_elec_addmenu[ix];
+    ED()->cellPrptyAdd(ae->value);
+    pc_action_calls--;
+}
+
+
+void
+cCellPrp::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:cprop"))
+}
+
+
+void
+cCellPrp::mouse_press_slot(QMouseEvent *ev)
+{
+    if (ev->type() == QEvent::MouseButtonPress) {
+        ev->accept();
+        handle_button_down(ev);
+        return;
+    }
+    if (ev->type() == QEvent::MouseButtonRelease) {
+        ev->accept();
+        handle_button_up(ev);
+        return;
+    }
+    ev->ignore();
+}
+
+
+/**** Drag/drop support for possible future use.
+void
+cCellPrp::mouse_motion_slot(QMouseEvent *ev)
+{
+    if (ev->type() != QEvent::MouseMove) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+    handle_mouse_motion(ev);
+}
+
+
+void
+cCellPrp::mime_data_received_slot(const QMimeData *d)
+{
+    handle_mime_data_received(d);
+}
+****/
+
+
+void
+cCellPrp::dismiss_btn_slot()
+{
+    ED()->PopUpCellProperties(MODE_OFF);
+}
+
+
+void
+cCellPrp::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_FIXED))
+            wb_textarea->setFont(*fnt);
+    }
+}
+
+
+#ifdef notdef
+
+// Static function.
+// Respond to a button-press by posting a menu passed in as widget.
+//
+// Note that the "widget" argument is the menu being posted, NOT
+// the button that was pressed.
+//
+int
+cCellPrp::pc_button_press(GtkWidget *widget, GdkEvent *event)
+{
+    GtkWidget *menu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(widget));
+    if (event->type == GDK_BUTTON_PRESS) {
+
+        GTKdev::Deselect(Pc->pc_edit);
+        GTKdev::Deselect(Pc->pc_del);
+
+        GdkEventButton *bevent = (GdkEventButton*)event;
+        gtk_menu_popup(GTK_MENU(menu), 0, 0, 0, 0, bevent->button,
+            bevent->time);
+        return (true);
+    }
+    return (false);
+}
+
+
+// End of cCellPrp functions.
+
+#endif

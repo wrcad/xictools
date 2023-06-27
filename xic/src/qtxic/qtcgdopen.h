@@ -51,7 +51,7 @@ class QLineEdit;
 class QPushButton;
 class QTabWidget;
 class cLayerList;
-class cCnmap;
+class cCnameMap;
 
 class cCGDopen : public QDialog, public QTbag
 {
@@ -86,7 +86,7 @@ private:
     QPushButton *cgo_apply;
 
     cLayerList  *cgo_p1_llist;
-    cCnmap      *cgo_p1_cnmap;
+    cCnameMap   *cgo_p1_cnmap;
 
     bool(*cgo_callback)(const char*, const char*, int, void*);
     void *cgo_arg;

@@ -32,52 +32,102 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Xic Integrated Circuit Layout and Schematic Editor                     *
+ * QtInterf Graphical Interface Library                                   *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef QTCFLAGS_H
-#define QTCFLAGS_H
+#include "qttextw.h"
 
-#include "main.h"
-#include "qtmain.h"
-
-#include <QDialog>
+#include <QScrollBar>
 
 
-struct cCflags : public QDialog, public GTKbag
+// A fixed text window class for general use, replaces the
+// "text_window" utilities in the GTK verssion.
+
+using namespace qtinterf;
+
+QTtextEdit::QTtextEdit()
 {
-    Q_OBJECT
+    // Doesn't work, fixme!
+    viewport()->setCursor(Qt::ArrowCursor);
+}
 
-public:
-    cCflags(GRobject, const stringlist*, int);
-    ~cCflags();
 
-    void update(const stringlist*, int);
+bool
+QTtextEdit::has_selection()
+{
+    QTextCursor c = textCursor();
+    return (c.position() != c.anchor());
+}
 
-    static cCflags *self()          { return (instPtr); }
 
-private:
-    void init();
-    void set(int, int);
-    void refresh(bool = false);
+char *
+QTtextEdit::get_selection()
+{
+    QTextCursor c = textCursor();
+    if (c.position() == c.anchor())
+        return (0);
+    int s = c.position();
+    int e = c.anchor();
+    if (e < s) {
+        int t = e;
+        e = s;
+        s = t;
+    }
+    char *sel = new char[e-s + 1];
+    QByteArray qba = toPlainText().toLatin1();
+    int i = 0;
+    while (s < e)
+        sel[i++] = qba[s++];
+    sel[i] = 0;
+    return (sel);
+}
 
-    /*
-    static void cf_font_changed();
-    static void cf_cancel_proc(GtkWidget*, void*);
-    static void cf_btn_proc(GtkWidget*, void*);
-    static int cf_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-    */
 
-    GRobject cf_caller;
-    GtkWidget *cf_label;
-    cf_elt *cf_list;                    // list of cells
-    int cf_field;                       // name field width
-    int cf_dmode;                       // display mode of cells
-    
-    static cCflags *instPtr;
-};
+char *
+QTtextEdit::get_chars(int start, int end)
+{
+    QByteArray qba = toPlainText().toLatin1();
+    if (start < 0)
+        start = 0;
+    if (end < 0 || end > qba.length())
+        end = qba.length();
+    if (end <= start)
+        return (0);
+    char *str = new char[end - start + 1];
+    int i = 0;
+    while (start < end)
+        str[i++] = qba[start++];
+    str[i] = 0;
+    return (str);
+}
 
-#endif
+
+void
+QTtextEdit::set_chars(const char *str)
+{
+    setPlainText(str);
+}
+
+
+int
+QTtextEdit::get_scroll_value()
+{
+    QScrollBar *vsb = verticalScrollBar();
+    int val = 0;
+    if (vsb)
+        val = (int)vsb->value();
+    return (val);
+}
+
+
+void
+QTtextEdit::set_scroll_value(int val)
+{
+    QScrollBar *vsb = verticalScrollBar();
+    if (vsb)
+        vsb->setValue(val);
+}
+

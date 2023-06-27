@@ -38,59 +38,119 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCHDOPEN_H
-#define QTCHDOPEN_H
+#ifndef QTCVOFMT_H
+#define QTCVOFMT_H
 
 #include "main.h"
 #include "qtmain.h"
 
-#include <QDialog>
+#include <QTabWidget>
 
-
-class QTabWidget;
-class QLineEdit;
 class QComboBox;
-class QRadioButton;
+class QCheckBox;
 class QPushButton;
-class cCnameMap;
+class QLabel;
+class QComboBox;
+class QMenu;
+class QDoubleSpinBox;
 
-class cCHDopen : public QDialog, public QTbag
+
+//-------------------------------------------------------------------------
+// Subwidget for output format selection and control.
+//
+
+class cConvOutFmt : public QTabWidget
 {
     Q_OBJECT
 
 public:
-    cCHDopen(GRobject, bool(*)(const char*, const char*, int, void*), void*,
-        const char*, const char*);
-    ~cCHDopen();
+    enum cvofmt_mode
+    {
+        cvofmt_file,
+        cvofmt_native,
+        cvofmt_chd,
+        cvofmt_chdfile,
+        cvofmt_asm,
+        cvofmt_db
+    };
 
-    void update(const char*, const char*);
+    struct fmt_menu
+    {
+        const char *name;
+        int code;
+    };
 
-    static cCHDopen *self()             { return (instPtr); }
+    cConvOutFmt(void(*)(int), int, cvofmt_mode);
+    ~cConvOutFmt();
+
+    void update();
+    bool gds_text_input();
+    void configure(cvofmt_mode);
+    void set_page(int);
+
+    // This is set from the OASIS-Advanced pop-up.
+    static void set_rep_string(char *s)
+        {
+            delete [] fmt_oas_rep_string;
+            fmt_oas_rep_string = s;
+        }
+    static char *rep_string()   { return (fmt_oas_rep_string); }
 
 private slots:
-    void help_btn_slot();
-    void p1_info_slot(int);
-    void apply_btn_slot();
-    void dismiss_btn_slot();
+    void gdsftopt_menu_changed(int);
+    void gdslevel_menu_changed(int);
+    void gdsmap_btn_slot(int);
+    void gdscut_btn_slot(int);
+    void gdsunit_changed_slot(double);
+    void oasadv_btn_slot(bool);
+    void oasmap_btn_slot(int);
+    void oascmp_btn_slot(int);
+    void oasrep_btn_slot(int);
+    void oastab_btn_slot(int);
+    void oassum_btn_slot(int);
+    void cifcname_menu_changed(int);
+    void ciflayer_menu_changed(int);
+    void ciflabel_menu_changed(int);
+    void ciflast_btn_slot();
+    void cgxcut_btn_slot(int);
+    void oasoff_btn_slot(int);
+    void oasnwp_btn_slot(int);
 
 private:
-    GRobject    co_caller;
-    QTabWidget  *co_nbook;
-    QLineEdit   *co_p1_text;
-    QComboBox   *co_p1_info;
-    QLineEdit   *co_p2_text;
-    QRadioButton *co_p2_mem;
-    QRadioButton *co_p2_file;
-    QRadioButton *co_p2_none;
-    QLineEdit   *co_idname;
-    QPushButton *co_apply;
+    QComboBox   *fmt_level;
+    QCheckBox   *fmt_gdsmap;
+    QCheckBox   *fmt_gdscut;
+    QCheckBox   *fmt_cgxcut;
+    QCheckBox   *fmt_oasmap;
+    QCheckBox   *fmt_oascmp;
+    QCheckBox   *fmt_oasrep;
+    QCheckBox   *fmt_oastab;
+    QCheckBox   *fmt_oassum;
+    QCheckBox   *fmt_oasoff;
+    QCheckBox   *fmt_oasnwp;
+    QPushButton *fmt_oasadv;
+    QLabel      *fmt_gdsftlab;
+    QComboBox   *fmt_gdsftopt;
+    QPushButton *fmt_cifext;
+    QMenu       *fmt_cifflags;
+    QComboBox   *fmt_cifcname;
+    QComboBox   *fmt_ciflayer;
+    QComboBox   *fmt_ciflabel;
+    QDoubleSpinBox *fmt_sb_gdsunit;
 
-    cCnameMap   *co_p1_cnmap;
+    void (*fmt_cb)(int);
+    bool fmt_strip;
 
-    bool(*co_callback)(const char*, const char*, int, void*);
-    void *co_arg;
-
-    static cCHDopen *instPtr;
+    static int          fmt_gds_inp;
+    static char         *fmt_oas_rep_string;
+    static const char   *fmt_gds_limits[];
+    static const char   *fmt_which_flags[];
+    static fmt_menu     fmt_gds_input[];
+    static fmt_menu     fmt_cif_extensions[];
+    static fmt_menu     fmt_cname_formats[];
+    static fmt_menu     fmt_layer_formats[];
+    static fmt_menu     fmt_label_formats[];
 };
 
 #endif
+

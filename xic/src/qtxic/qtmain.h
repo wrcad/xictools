@@ -293,11 +293,11 @@ public:
     QTltab *LayerTable()        { return (mw_layertab); }
     QSplitter *splitter()       { return (mw_splitter); }
     
-    /*
     // qtcells.cc
     static char *get_cell_selection();
     static void cells_panic();
 
+    /*
     // qtfiles.cc
     static char *get_file_selection();
     static void files_panic();

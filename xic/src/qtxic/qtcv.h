@@ -41,161 +41,92 @@
 #ifndef QTCV_H
 #define QTCV_H
 
+#include "main.h"
+#include "qtmain.h"
 
-struct fmt_menu
+#include <QDialog>
+
+
+class cLayerList;
+class cConvOutFmt;;
+class cCnameMap;
+class cWindowCfg;
+
+class QLabel;
+class QTabWidget;
+class QCheckBox;
+class QPushButton;
+class QDoubleSpinBox;
+
+class cConvertFmt : public QDialog
 {
-    const char *name;
-    int code;
-};
+    Q_OBJECT
 
+public:
+    // Sensitivity logic, MUST be the same as WndSensMode in qtwndc.h.
+    enum CvSensMode {
+        CvSensAllModes,
+        CvSensFlatten,
+        CvSensNone
+    };
 
-//-------------------------------------------------------------------------
-// Subwidget group for window control
-//
+    cConvertFmt(GRobject, int, bool(*)(int, void*), void*);
+    ~cConvertFmt();
 
-// Sensitivity logic.
-enum WndSensMode {
-    WndSensAllModes,
-    WndSensFlatten,
-    WndSensNone
-};
+    void update(int);
 
-// Set which function.
-enum WndFuncMode {
-    WndFuncCvt,     // Conversion
-    WndFuncOut,     // Export
-    WndFuncIn       // Import
-};
+    static cConvertFmt *self()          { return (instPtr); }
 
-struct wnd_t
-{
-    wnd_t(WndSensMode(*)(), WndFuncMode);
-    ~wnd_t();
-
-    void update();
-    /*
-    void val_changed(GtkWidget*);
-    void action(GtkWidget*);
-    void set_sens();
-    bool get_bb(BBox*);
-    void set_bb(const BBox*);
-
-    GtkWidget *frame() { return (wnd_frame); }
+private slots:
+    void help_btn_slot();
+    void input_menu_slot(int);
+    void nbook_page_slot(int);
+    void strip_btn_slot(int);
+    void libsub_btn_slot(int);
+    void pcsub_btn_slot(int);
+    void viasub_btn_slot(int);
+    void noflvias_btn_slot(int);
+    void noflpcs_btn_slot(int);
+    void nofllbs_btn_slot(int);
+    void nolabels_btn_slot(int);
+    void keepbad_btn_slot(int);
+    void convert_btn_slot();
+    void scale_changed_slot(double);
+    void dismiss_btn_slot();
 
 private:
-    static void wnd_val_changed(GtkWidget*, void*);
-    static void wnd_action(GtkWidget*, void*);
-    static int wnd_popup_btn_proc(GtkWidget*, GdkEvent*, void*);
-    static void wnd_sto_menu_proc(GtkWidget*, void*);
-    static void wnd_rcl_menu_proc(GtkWidget*, void*);
+    static void cv_format_proc(int);
+    static void cv_sens_test();
+    static CvSensMode wnd_sens_test();
 
-    GtkWidget *wnd_use_win;
-    GtkWidget *wnd_clip;
-    GtkWidget *wnd_flatten;
-    GtkWidget *wnd_ecf_label;
-    GtkWidget *wnd_ecf_pre;
-    GtkWidget *wnd_ecf_post;
-    GtkWidget *wnd_l_label;
-    GtkWidget *wnd_b_label;
-    GtkWidget *wnd_r_label;
-    GtkWidget *wnd_t_label;
-    GtkWidget *wnd_frame;
-    GtkWidget *wnd_sbutton;
-    GtkWidget *wnd_rbutton;
-    GtkWidget *wnd_s_menu;
-    GtkWidget *wnd_r_menu;
+    GRobject    cv_caller;
+    QLabel      *cv_label;
+    QComboBox   *cv_input;
+    cConvOutFmt *cv_fmt;
+    QTabWidget  *cv_nbook;
 
-    GTKspinBtn sb_left;
-    GTKspinBtn sb_bottom;
-    GTKspinBtn sb_right;
-    GTKspinBtn sb_top;
+    QCheckBox   *cv_strip;
+    QCheckBox   *cv_libsub;
+    QCheckBox   *cv_pcsub;
+    QCheckBox   *cv_viasub;
+    QCheckBox   *cv_noflvias;
+    QCheckBox   *cv_noflpcs;
+    QCheckBox   *cv_nofllbs;
+    QCheckBox   *cv_nolabels;
+    QCheckBox   *cv_keepbad;
 
-    WndSensMode (*wnd_sens_test)();
-    WndFuncMode wnd_func_mode;
-    */
-};
+    cLayerList  *cv_llist;
+    cCnameMap   *cv_cnmap;
+    cWindowCfg  *cv_wnd;
+    QLabel      *cv_tx_label;
+    QDoubleSpinBox *cv_sb_scale;
 
-//-------------------------------------------------------------------------
-// Subwidget group for output format control
-//
+    bool (*cv_callback)(int, void*);
+    void *cv_arg;
 
-// Define to include support for CHD/CGD creation.  This support has
-// been removed.
-// #define FMT_WITH_DIGESTS
-
-// configuration
-enum cvofmt_mode
-{
-    cvofmt_file,
-    cvofmt_native,
-    cvofmt_chd,
-    cvofmt_chdfile,
-    cvofmt_asm,
-    cvofmt_db
-};
-
-struct cvofmt_t
-{
-    cvofmt_t(void(*)(int), int, cvofmt_mode);
-    ~cvofmt_t();
-
-    void update();
-    bool gds_text_input();
-    void configure(cvofmt_mode);
-    void set_page(int);
-
-    /*
-    GtkWidget *frame() { return (fmt_form); }
-
-    // This is set from the OASIS-Advanced pop-up.
-    static void set_rep_string(char *s)
-        {
-            delete [] fmt_oas_rep_string;
-            fmt_oas_rep_string = s;
-        }
-    static char *rep_string()   { return (fmt_oas_rep_string); }
-
-private:
-    static void fmt_action(GtkWidget*, void*);
-    static void fmt_flags_proc(GtkWidget*, void*);
-    static void fmt_level_proc(GtkWidget*, void*);
-    static void fmt_style_proc(GtkWidget*, void*);
-    static void fmt_input_proc(GtkWidget*, void*);
-    static void fmt_val_changed(GtkWidget*, void*);
-    static void fmt_page_proc(GtkWidget*, GtkWidget*, int, void*);
-    static void fmt_info_proc(GtkWidget*, void*);
-
-    GtkWidget *fmt_form;
-    GtkWidget *fmt_level;
-    GtkWidget *fmt_gdsmap;
-    GtkWidget *fmt_gdscut;
-    GtkWidget *fmt_cgxcut;
-    GtkWidget *fmt_oasmap;
-    GtkWidget *fmt_oascmp;
-    GtkWidget *fmt_oasrep;
-    GtkWidget *fmt_oastab;
-    GtkWidget *fmt_oassum;
-    GtkWidget *fmt_oasoff;
-    GtkWidget *fmt_oasnwp;
-    GtkWidget *fmt_oasadv;
-    GtkWidget *fmt_gdsftlab;
-    GtkWidget *fmt_gdsftopt;
-    GtkWidget *fmt_cifflags;
-    GtkWidget *fmt_cifcname;
-    GtkWidget *fmt_ciflayer;
-    GtkWidget *fmt_ciflabel;
-#ifdef FMT_WITH_DIGESTS
-    GtkWidget *fmt_chdlabel;
-    GtkWidget *fmt_chdinfo;
-#endif
-    void (*fmt_cb)(int);
-    bool fmt_strip;
-
-    GTKspinBtn sb_gdsunit;
-
-    static int fmt_gds_inp;
-    static char *fmt_oas_rep_string;
-    */
+    static int cv_fmt_type;
+    static int cv_inp_type;
+    static cConvertFmt *instPtr;
 };
 
 #endif

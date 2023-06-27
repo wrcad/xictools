@@ -23,7 +23,8 @@ CCFILES = \
   polysplit.cc qtactivity.cc qtaffirm.cc qtcanvas.cc qtcanvas_x.cc \
   qtdraw.cc qtedit.cc qtfile.cc qtfont.cc qthcopy.cc qtidleproc.cc \
   qtinput.cc qtinterf.cc qtlist.cc qtmcol.cc qtmsg.cc qtnumer.cc \
-  qtpfiles.cc qtprogress.cc qtsearch.cc qttext.cc qttimer.cc qtxdraw.cc
+  qtpfiles.cc qtprogress.cc qtsearch.cc qttext.cc qttextw.cc \
+  qttimer.cc qtxdraw.cc
 
 MOCFILES = \
     moc_activity.cpp \

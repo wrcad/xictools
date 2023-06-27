@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCHDOPEN_H
-#define QTCHDOPEN_H
+#ifndef QTCFLAGS_H
+#define QTCFLAGS_H
 
 #include "main.h"
 #include "qtmain.h"
@@ -47,50 +47,68 @@
 #include <QDialog>
 
 
-class QTabWidget;
-class QLineEdit;
-class QComboBox;
-class QRadioButton;
-class QPushButton;
-class cCnameMap;
+class QLabel;
 
-class cCHDopen : public QDialog, public QTbag
+struct cCflags : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCHDopen(GRobject, bool(*)(const char*, const char*, int, void*), void*,
-        const char*, const char*);
-    ~cCHDopen();
+    struct cf_elt
+    {
+        cf_elt(CDcellName n, bool i, bool l)
+            {
+                next = 0;
+                name = n;
+                immutable = i;
+                library = l;
+            }
 
-    void update(const char*, const char*);
+        static void destroy(const cf_elt *e)
+            {
+                while (e) {
+                    const cf_elt *ex = e;
+                    e = e->next;
+                    delete ex;
+                }
+            }
 
-    static cCHDopen *self()             { return (instPtr); }
+        cf_elt *next;
+        CDcellName name;
+        bool immutable;
+        bool library;
+    };
+
+    cCflags(GRobject, const stringlist*, int);
+    ~cCflags();
+
+    void update(const stringlist*, int);
+
+    static cCflags *self()          { return (instPtr); }
 
 private slots:
-    void help_btn_slot();
-    void p1_info_slot(int);
+    void imm_none_btn_slot();
+    void imm_all_btn_slot();
+    void lib_none_btn_slot();
+    void lib_all_btn_slot();
+    void mouse_press_slot(QMouseEvent*);
     void apply_btn_slot();
     void dismiss_btn_slot();
+    void font_changed_slot(int);
 
 private:
-    GRobject    co_caller;
-    QTabWidget  *co_nbook;
-    QLineEdit   *co_p1_text;
-    QComboBox   *co_p1_info;
-    QLineEdit   *co_p2_text;
-    QRadioButton *co_p2_mem;
-    QRadioButton *co_p2_file;
-    QRadioButton *co_p2_none;
-    QLineEdit   *co_idname;
-    QPushButton *co_apply;
+    void init();
+    void set(int, int);
+    void refresh(bool = false);
 
-    cCnameMap   *co_p1_cnmap;
-
-    bool(*co_callback)(const char*, const char*, int, void*);
-    void *co_arg;
-
-    static cCHDopen *instPtr;
+    GRobject cf_caller;
+    QLabel *cf_label;
+    cf_elt *cf_list;                    // list of cells
+    int cf_field;                       // name field width
+    int cf_dmode;                       // display mode of cells
+    
+    static cCflags *instPtr;
 };
 
 #endif
+

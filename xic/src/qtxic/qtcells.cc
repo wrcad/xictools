@@ -54,9 +54,19 @@
 #include "select.h"
 #include "qtinterf/qtpfiles.h"
 #include "qtinterf/qtfont.h"
-#include "qtinterf/qtutil.h"
+#include "qtinterf/qttextw.h"
+#include "qtinterf/qtmsg.h"
+#include "qtinterf/qtinput.h"
 #include "miscutil/filestat.h"
 
+#include <QLayout>
+#include <QPushButton>
+#include <QGroupBox>
+#include <QLabel>
+#include <QMouseEvent>
+#include <QResizeEvent>
+#include <QMimeData>
+#include <QComboBox>
 
 //----------------------------------------------------------------------
 //  Cells Listing Panel
@@ -116,52 +126,53 @@ cMain::PopUpCells(GRobject caller, ShowMode mode)
         return;
 
     new cCells(caller);
+
     QTdev::self()->SetPopupLocation(GRloc(), cCells::self(),
-        GTKmainwin::self()->Viewport());
+        QTmainwin::self()->Viewport());
     cCells::self()->show();
 }
+// End of cMain functions.
 
 
 namespace {
-    namespace gtkcells {
-        // Command state for the Search function.
-        //
-        struct ListState : public CmdState
+    // Command state for the Search function.
+    //
+    struct ListState : public CmdState
+    {
+        ListState(const char *nm, const char *hk) : CmdState(nm, hk)
         {
-            ListState(const char *nm, const char *hk) : CmdState(nm, hk)
-                {
-                    lsAOI = CDinfiniteBB;
-                }
-            virtual ~ListState();
+            lsAOI = CDinfiniteBB;
+        }
+        virtual ~ListState();
 
-            static void show_search(bool);
-            char *label_text();
-            stringlist *cell_list(bool);
+        static void show_search(bool);
+        char *label_text();
+        stringlist *cell_list(bool);
 
-            void b1down() { cEventHdlr::sel_b1down(); }
-            void b1up();
-            void esc();
-            void undo() { cEventHdlr::sel_undo(); }
-            void redo() { cEventHdlr::sel_redo(); }
-            void message() { PL()->ShowPrompt(info_msg); }
+        void b1down() { cEventHdlr::sel_b1down(); }
+        void b1up();
+        void esc();
+        void undo() { cEventHdlr::sel_undo(); }
+        void redo() { cEventHdlr::sel_redo(); }
+        void message() { PL()->ShowPrompt(info_msg); }
 
-        private:
-            BBox lsAOI;
+    private:
+        BBox lsAOI;
 
-            static const char *info_msg;
-        };
+        static const char *info_msg;
+    };
 
-        ListState *ListCmd;
+    ListState *ListCmd;
 
-        enum { NilCode, ClearCode, TreeCode, OpenCode, PlaceCode, CopyCode,
-            ReplCode, RenameCode, SearchCode, FlagCode, InfoCode, ShowCode,
-            FltrCode };
-    }
+    enum { NilCode, ClearCode, TreeCode, OpenCode, PlaceCode, CopyCode,
+        ReplCode, RenameCode, SearchCode, FlagCode, InfoCode, ShowCode,
+        FltrCode };
 }
 
 const char *ListState::info_msg =
     "Use pointer to define area for subcell list.";
 
+cCells *cCells::instPtr;
 
 cCells::cCells(GRobject c)
 {
@@ -203,159 +214,130 @@ cCells::cCells(GRobject c)
     c_start = 0;
     c_end = 0;
 
-#ifdef notdef
-    wb_shell = gtk_NewPopup(0, "Cells Listing", c_cancel, 0);
-    if (!wb_shell)
-        return;
+    setWindowTitle(tr("Cells Listing"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    GtkWidget *form = gtk_table_new(1, 5, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(wb_shell), form);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    GtkWidget *vbox = gtk_vbox_new(false, 2);
-    gtk_widget_show(vbox);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
+    QVBoxLayout *col1 = new QVBoxLayout();
+    col1->setMargin(0);
+    col1->setSpacing(2);
+    hbox->addLayout(col1);
+
+    // button column
     //
-    // button row
-    //
-    GtkWidget *button = gtk_button_new_with_label("Clear");
-    gtk_widget_set_name(button, "Clear");
-    gtk_widget_show(button);
-    c_clearbtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)ClearCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_clearbtn = new QPushButton(tr("Clear"));
+    col1->addWidget(c_clearbtn);
+    connect(c_clearbtn, SIGNAL(clicked()), this, SLOT(clear_btn_slot()));
     if (!EditIf()->hasEdit())
-        gtk_widget_hide(button);
+        c_clearbtn->hide();
 
-    button = gtk_button_new_with_label("Tree");
-    gtk_widget_set_name(button, "Tree");
-    gtk_widget_show(button);
-    c_treebtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)TreeCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_treebtn = new QPushButton(tr("Tree"));
+    col1->addWidget(c_treebtn);
+    connect(c_treebtn, SIGNAL(clicked()), this, SLOT(tree_btn_slot()));
 
-    button = gtk_button_new_with_label("Open");
-    gtk_widget_set_name(button, "Open");
-    gtk_widget_show(button);
-    c_openbtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)OpenCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_openbtn = new QPushButton(tr("Open"));
+    col1->addWidget(c_openbtn);
+    connect(c_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
-    button = gtk_button_new_with_label("Place");
-    gtk_widget_set_name(button, "Place");
-    gtk_widget_show(button);
-    c_placebtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)PlaceCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_placebtn = new QPushButton(tr("Place"));
+    col1->addWidget(c_placebtn);
+    connect(c_placebtn, SIGNAL(clicked()), this, SLOT(place_btn_slot()));
     if (!EditIf()->hasEdit())
-        gtk_widget_hide(button);
+        c_placebtn->hide();
 
-    button = gtk_button_new_with_label("Copy");
-    gtk_widget_set_name(button, "Copy");
-    gtk_widget_show(button);
-    c_copybtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)CopyCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_copybtn = new QPushButton(tr("Copy"));
+    col1->addWidget(c_copybtn);
+    connect(c_copybtn, SIGNAL(clicked()), this, SLOT(copy_btn_slot()));
     if (!EditIf()->hasEdit())
-        gtk_widget_hide(button);
+        c_copybtn->hide();
 
-    button = gtk_button_new_with_label("Replace");
-    gtk_widget_set_name(button, "Replace");
-    gtk_widget_show(button);
-    c_replbtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)ReplCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_replbtn = new QPushButton(tr("Replace"));;
+    col1->addWidget(c_replbtn);
+    connect(c_replbtn, SIGNAL(clicked()), this, SLOT(repl_btn_slot()));
     if (!EditIf()->hasEdit())
-        gtk_widget_hide(button);
+        c_replbtn->hide();
 
-    button = gtk_button_new_with_label("Rename");
-    gtk_widget_set_name(button, "Rename");
-    gtk_widget_show(button);
-    c_renamebtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)RenameCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_renamebtn = new QPushButton(tr("Rename"));;
+    col1->addWidget(c_renamebtn);
+    connect(c_renamebtn, SIGNAL(clicked()), this, SLOT(rename_btn_slot()));
     if (!EditIf()->hasEdit())
-        gtk_widget_hide(button);
+        c_renamebtn->hide();
 
-    button = gtk_toggle_button_new_with_label("Search");
-    gtk_widget_set_name(button, "Search");
-    gtk_widget_show(button);
-    c_searchbtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)SearchCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_searchbtn = new QPushButton(tr("Search"));;
+    c_searchbtn->setCheckable(true);
+    col1->addWidget(c_searchbtn);
+    connect(c_searchbtn, SIGNAL(toggled(bool)),
+        this, SLOT(search_btn_slot(bool)));
 
-    button = gtk_button_new_with_label("Flags");
-    gtk_widget_set_name(button, "Flags");
-    gtk_widget_show(button);
-    c_flagbtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)FlagCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_flagbtn = new QPushButton(tr("Flags"));
+    col1->addWidget(c_flagbtn);
+    connect(c_flagbtn, SIGNAL(clicked()), this, SLOT(flag_btn_slot()));
 
-    button = gtk_button_new_with_label("Info");
-    gtk_widget_set_name(button, "Info");
-    gtk_widget_show(button);
-    c_infobtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)InfoCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_infobtn = new QPushButton(tr("Info"));;
+    col1->addWidget(c_infobtn);
+    connect(c_infobtn, SIGNAL(clicked()), this, SLOT(info_btn_slot()));
 
-    button = gtk_toggle_button_new_with_label("Show");
-    gtk_widget_set_name(button, "Show");
-    gtk_widget_show(button);
-    c_showbtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)ShowCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_showbtn = new QPushButton(tr("Show"));;
+    c_showbtn->setCheckable(true);
+    col1->addWidget(c_showbtn);
+    connect(c_showbtn, SIGNAL(toggled(bool)), this, SLOT(show_btn_slot(bool)));
 
-    button = gtk_toggle_button_new_with_label("Filter");
-    gtk_widget_set_name(button, "Filter");
-    gtk_widget_show(button);
-    c_fltrbtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_action_proc), (void*)FltrCode);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    c_fltrbtn = new QPushButton(tr("Filter"));
+    c_fltrbtn->setCheckable(true);
+    col1->addWidget(c_fltrbtn);
+    connect(c_fltrbtn, SIGNAL(toggled(bool)), this, SLOT(fltr_btn_slot(bool)));
 
-    button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_help_proc), 0);
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 0);
+    QPushButton *btn = new QPushButton(tr("Help"));
+    col1->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    gtk_table_attach(GTK_TABLE(form), vbox, 0, 1, 0, 1,
-        (GtkAttachOptions)0,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    vbox = gtk_vbox_new(false, 2);
-    gtk_widget_show(vbox);
-
-    //
     // title label
     //
-    c_label = gtk_label_new("");
-    gtk_widget_show(c_label);
+    QVBoxLayout *col2 = new QVBoxLayout();
+    hbox->addLayout(col2);
+    col2->setMargin(0);
+    col2->setSpacing(2);
 
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), c_label);
-    gtk_box_pack_start(GTK_BOX(vbox), frame, false, false, 0);
+    QGroupBox *gb = new QGroupBox();
+    col2->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    hb->setSpacing(2);
 
-    //
+    c_label = new QLabel("");
+    hb->addWidget(c_label);
+
     // scrolled text area
     //
-    GtkWidget *contr;
-    text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
+    wb_textarea = new QTtextEdit();
+    wb_textarea->setReadOnly(true);
+    wb_textarea->setMouseTracking(true);
+    wb_textarea->setAcceptDrops(true);
+    col2->addWidget(wb_textarea);
+    connect(wb_textarea, SIGNAL(resize_event(QResizeEvent*)),
+        this, SLOT(resize_slot(QResizeEvent*)));
+    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
+        this, SLOT(mouse_motion_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
+        this, SLOT(mime_data_received_slot(const QMimeData*)));
 
-    gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED))
+        wb_textarea->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+
+/*
     g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
         G_CALLBACK(c_btn_hdlr), 0);
     g_signal_connect(G_OBJECT(wb_textarea), "size-allocate",
@@ -374,67 +356,47 @@ cCells::cCells(GRobject c)
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
     const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr, NULL);
+*/
 
-    gtk_box_pack_start(GTK_BOX(vbox), contr, true, true, 0);
-    gtk_table_attach(GTK_TABLE(form), vbox, 1, 2, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
-
-    GtkWidget *sep = gtk_hseparator_new();
-    gtk_widget_show(sep);
-    gtk_table_attach(GTK_TABLE(form), sep, 0, 2, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-
-    button = gtk_toggle_button_new_with_label("Save Text ");
-    gtk_widget_set_name(button, "Save");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_save_btn_hdlr), this);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
-
-    c_page_combo = gtk_combo_box_text_new();
-    g_signal_connect(G_OBJECT(c_page_combo), "changed",
-        G_CALLBACK(c_page_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), c_page_combo, false, false, 0);
-
+    // bottom row buttons
     //
+    hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    btn = new QPushButton(tr("Save Text"));
+    btn->setCheckable(true);
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
+
+    c_page_combo = new QComboBox();
+    hbox->addWidget(c_page_combo);
+    connect(c_page_combo, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(page_menu_slot(int)));
+
     // dismiss button
     //
-    button = gtk_toggle_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(c_cancel), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-    GtkWidget *dismiss_btn = button;
+    btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     // mode menu
     //
-    c_mode_combo = gtk_combo_box_text_new();
-    gtk_widget_show(c_mode_combo);
-    gtk_box_pack_start(GTK_BOX(hbox), c_mode_combo, false, false, 0);
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c_mode_combo),
-        "Phys Cells");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c_mode_combo),
-        "Elec Cells");
-    g_signal_connect(G_OBJECT(c_mode_combo), "changed",
-        G_CALLBACK(c_mode_proc), 0);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(c_mode_combo), c_mode);
+    c_mode_combo = new QComboBox();
+    hbox->addWidget(c_mode_combo);
+    c_mode_combo->addItem(tr("Phys Cells"));
+    c_mode_combo->addItem(tr("Elec Cells"));
+    c_mode_combo->setCurrentIndex(c_mode);
+    connect(c_mode_combo, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(mode_changed_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, 2, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    gtk_window_set_focus(GTK_WINDOW(wb_shell), dismiss_btn);
-
+/*XXX
     if (c_caller) {
         g_signal_connect(G_OBJECT(c_caller), "toggled",
             G_CALLBACK(c_cancel), 0);
     }
-#endif
+*/
     check_sens();
 }
 
@@ -446,7 +408,7 @@ cCells::~cCells()
     if (c_caller) {
 //        g_signal_handlers_disconnect_by_func(G_OBJECT(c_caller),
 //            (gpointer)c_cancel, 0);
-        qtdev::Deselect(c_caller);
+        QTdev::Deselect(c_caller);
     }
     if (ListCmd)
         ListCmd->esc();
@@ -479,7 +441,7 @@ void
 cCells::update()
 {
     select_range(0, 0);
-    if (GTKdev::GetStatus(c_showbtn))
+    if (QTdev::GetStatus(c_showbtn))
         DSP()->ShowCells(0);
     XM()->PopUpCellFlags(0, MODE_OFF, 0, 0);
     if (DSP()->MainWdesc()->DbType() == WDchd) {
@@ -492,87 +454,94 @@ cCells::update()
         if (c_rename_pop)
             c_rename_pop->popdown();
 
-        GTKdev::Deselect(c_showbtn);
+        QTdev::Deselect(c_showbtn);
 
-        gtk_widget_set_sensitive(c_clearbtn, false);
-        gtk_widget_set_sensitive(c_openbtn, false);
-        gtk_widget_set_sensitive(c_placebtn, false);
-        gtk_widget_set_sensitive(c_copybtn, false);
-        gtk_widget_set_sensitive(c_replbtn, false);
-        gtk_widget_set_sensitive(c_renamebtn, false);
-        gtk_widget_set_sensitive(c_flagbtn, false);
+        c_clearbtn->setEnabled(false);
+        c_openbtn->setEnabled(false);
+        c_placebtn->setEnabled(false);
+        c_copybtn->setEnabled(false);
+        c_replbtn->setEnabled(false);
+        c_renamebtn->setEnabled(false);
+        c_flagbtn->setEnabled(false);
 
-        gtk_widget_hide(c_clearbtn);
-        gtk_widget_hide(c_openbtn);
-        gtk_widget_hide(c_placebtn);
-        gtk_widget_hide(c_copybtn);
-        gtk_widget_hide(c_replbtn);
-        gtk_widget_hide(c_renamebtn);
-        gtk_widget_hide(c_flagbtn);
-        gtk_widget_hide(c_fltrbtn);
+        c_clearbtn->hide();
+        c_openbtn->hide();
+        c_placebtn->hide();
+        c_copybtn->hide();
+        c_replbtn->hide();
+        c_renamebtn->hide();
+        c_flagbtn->hide();
+        c_fltrbtn->hide();
 
         if (ActiveInput())
             ActiveInput()->popdown();
         XM()->PopUpCellFilt(0, MODE_OFF, Physical, 0, 0);
     }
     else {
-        gtk_widget_set_sensitive(c_clearbtn, true);
-        gtk_widget_set_sensitive(c_openbtn, true);
+        c_clearbtn->setEnabled(true);
+        c_openbtn->setEnabled(true);
         if (EditIf()->hasEdit()) {
-            gtk_widget_set_sensitive(c_placebtn, true);
-            gtk_widget_set_sensitive(c_copybtn, true);
-            gtk_widget_set_sensitive(c_replbtn, true);
-            gtk_widget_set_sensitive(c_renamebtn, true);
+            c_placebtn->setEnabled(true);
+            c_copybtn->setEnabled(true);
+            c_replbtn->setEnabled(true);
+            c_renamebtn->setEnabled(true);
         }
-        gtk_widget_set_sensitive(c_flagbtn, true);
+        c_flagbtn->setEnabled(true);
 
-        gtk_widget_show(c_clearbtn);
-        gtk_widget_show(c_openbtn);
+        c_clearbtn->show();
+        c_openbtn->show();
         if (EditIf()->hasEdit()) {
-            gtk_widget_show(c_placebtn);
-            gtk_widget_show(c_copybtn);
-            gtk_widget_show(c_replbtn);
-            gtk_widget_show(c_renamebtn);
+            c_placebtn->show();
+            c_copybtn->show();
+            c_replbtn->show();
+            c_renamebtn->show();
         }
-        gtk_widget_show(c_flagbtn);
-        gtk_widget_show(c_fltrbtn);
+        c_flagbtn->show();
+        c_fltrbtn->show();
     }
-    if (!c_no_update && wb_textarea && gtk_widget_get_window(wb_textarea)) {
-        int wid = gdk_window_get_width(gtk_widget_get_window(wb_textarea));
-        c_cols = (wid-4)/GTKfont::stringWidth(Cells->wb_textarea, 0);
+    if (!c_no_update) {
+        int wid = wb_textarea->width();
+        c_cols = (wid-4)/QTfont::stringWidth(0, wb_textarea);
         char *s = cell_list(c_cols);
         update_text(s);
         delete [] s;
     }
-    if (GTKdev::GetStatus(c_searchbtn) && ListCmd) {
+    if (QTdev::GetStatus(c_searchbtn) && ListCmd) {
         char *s = ListCmd->label_text();
-        gtk_label_set_text(GTK_LABEL(c_label), s);
+        c_label->setText(tr(s));
         delete [] s;
     }
     else if (DSP()->MainWdesc()->DbType() == WDchd) {
         const char *chd_msg = "Cells in displayed cell hierarchy";
-        gtk_label_set_text(GTK_LABEL(c_label), chd_msg);
+        c_label->setText(tr(chd_msg));
     }
     else {
         const char *pcells_msg = "Physical cells (+ modified, * top level)";
         const char *ecells_msg = "Electrical cells (+ modified, * top level)";
         if (c_mode == Physical)
-            gtk_label_set_text(GTK_LABEL(c_label), pcells_msg);
+            c_label->setText(tr(pcells_msg));
         else
-            gtk_label_set_text(GTK_LABEL(c_label), ecells_msg);
+            c_label->setText(tr(ecells_msg));
     }
 
-    if (GTKdev::GetStatus(c_searchbtn)) {
+    if (QTdev::GetStatus(c_searchbtn)) {
         DisplayMode oldm = c_mode;
         c_mode = DSP()->CurMode();
         if (oldm != c_mode)
             XM()->PopUpCellFilt(0, MODE_UPD, c_mode, 0, 0);
-        gtk_combo_box_set_active(GTK_COMBO_BOX(c_mode_combo), c_mode);
-        gtk_widget_set_sensitive(c_mode_combo, false);
+        c_mode_combo->setCurrentIndex(c_mode);
+        c_mode_combo->setEnabled(false);
     }
     else
-        gtk_widget_set_sensitive(c_mode_combo, true);
+        c_mode_combo->setEnabled(true);
     check_sens();
+}
+
+
+char *
+cCells::get_selection()
+{
+    return (wb_textarea->get_selection());
 }
 
 
@@ -693,7 +662,7 @@ cCells::replace_instances(const char *name)
     lstr.add(c_replname);
     lstr.add(".  Continue? ");
 
-    c_repl_pop = PopUpAffirm(Cells->c_replbtn, GRloc(), lstr.string(),
+    c_repl_pop = PopUpAffirm(c_replbtn, GRloc(), lstr.string(),
         c_repl_cb, c_replname);
     if (c_repl_pop)
         c_repl_pop->register_usrptr((void**)&c_repl_pop);
@@ -722,84 +691,6 @@ cCells::rename_cell(const char *name)
 }
 
 
-int
-cCells::button_hdlr(bool up, GtkWidget *caller, GdkEvent *event)
-{
-    if (up) {
-        c_dragging = false;
-        return (false);
-    }
-
-    if (event->type != GDK_BUTTON_PRESS)
-        return (true);
-    if (c_no_select)
-        return (true);
-
-    select_range(0, 0);
-
-    char *string = text_get_chars(caller, 0, -1);
-    int x = (int)event->button.x;
-    int y = (int)event->button.y;
-    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
-        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
-    GtkTextIter ihere, iline;
-    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(caller), &ihere, x, y);
-    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
-    x = gtk_text_iter_get_offset(&ihere) - gtk_text_iter_get_offset(&iline);
-    char *line_start = string + gtk_text_iter_get_offset(&iline);
-
-    int start = 0;
-    for ( ; start < x; start++) {
-        if (line_start[start] == '\n' || line_start[start] == 0) {
-            // pointing to right of line end
-            delete [] string;
-            return (true);
-        }
-    }
-    if (isspace(line_start[start])) {
-        // pointing at white space
-        delete [] string;
-        return (true);
-    }
-    int end = start;
-    while (start > 0 && !isspace(line_start[start]))
-        start--;
-    if (isspace(line_start[start]))
-        start++;
-    while (line_start[end] && !isspace(line_start[end]))
-        end++;
-
-    char buf[256];
-    char *t = buf;
-    for (int i = start; i < end; i++)
-        *t++ = line_start[i];
-    *t = 0;
-
-    t = buf;
-
-    // The top level cells are listed with an '*'.
-    // Modified cells are listed  with a '+'.
-    while ((*t == '+' || *t == '*') && !CDcdb()->findSymbol(t)) {
-        start++;
-        t++;
-    }
-
-    start += (line_start - string);
-    end += (line_start - string);
-    delete [] string;
-
-    if (start == end)
-        return (true);
-    select_range(start, end);
-
-    c_dragging = true;
-    c_drag_x = (int)event->button.x;
-    c_drag_y = (int)event->button.y;
-
-    return (true);
-}
-
-
 // Select the chars in the range, start=end deselects existing.  In
 // GTK-1, selecting gives blue inverse, which turns gray if
 // unselected, retaining an indication for the buttons.  GTK-2
@@ -808,6 +699,7 @@ cCells::button_hdlr(bool up, GtkWidget *caller, GdkEvent *event)
 void
 cCells::select_range(int start, int end)
 {
+    /*
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
     GtkTextIter istart, iend;
@@ -824,157 +716,8 @@ cCells::select_range(int start, int end)
     }
     c_start = start;
     c_end = end;
+    */
     check_sens();
-}
-
-
-void
-cCells::action_hdlr(GtkWidget *caller, void *client_data)
-{
-    if (c_clear_pop)
-        c_clear_pop->popdown();
-    if (c_copy_pop)
-        c_copy_pop->popdown();
-    if (c_repl_pop)
-        c_repl_pop->popdown();
-    if (c_rename_pop)
-        c_rename_pop->popdown();
-
-    c_no_select = true;
-    char *cname = text_get_selection(wb_textarea);
-
-    if (client_data == (void*)ClearCode) {
-        clear(cname);
-    }
-    else if (client_data == (void*)TreeCode) {
-        if (cname) {
-            // find the main menu button for the tree popup
-            MenuEnt *m = Menu()->FindEntry(MMcell, MenuTREE);
-            GtkWidget *widg = 0;
-            if (m)
-                widg = (GtkWidget*)m->cmd.caller;
-            XM()->PopUpTree(widg, MODE_ON, cname,
-                c_mode == Physical ? TU_PHYS : TU_ELEC);
-            // If tree is "captive" don't update after main window
-            // display mode switch.
-            XM()->SetTreeCaptive(true);
-
-            if (widg)
-                GTKdev::Select(widg);
-        }
-    }
-    else if (client_data == (void*)OpenCode) {
-        if (cname) {
-            c_no_update = true;
-            EV()->InitCallback();
-            XM()->EditCell(cname, false);
-            if (Cells)
-                c_no_update = false;
-        }
-    }
-    else if (client_data == (void*)PlaceCode) {
-        if (cname) {
-            EV()->InitCallback();
-            EditIf()->addMaster(cname, 0);
-        }
-    }
-    else if (client_data == (void*)CopyCode) {
-        copy_cell(cname);
-    }
-    else if (client_data == (void*)ReplCode) {
-        replace_instances(cname);
-    }
-    else if (client_data == (void*)RenameCode) {
-        rename_cell(cname);
-    }
-    else if (client_data == (void*)SearchCode) {
-        bool state = GTKdev::GetStatus(caller);
-        if (state)
-            EV()->InitCallback();
-        ListState::show_search(state);
-    }
-    else if (client_data == (void*)FlagCode) {
-        stringlist *s0;
-        if (cname)
-            s0 = new stringlist(lstring::copy(cname), 0);
-        else
-            s0 = raw_cell_list(0, 0, true);
-        XM()->PopUpCellFlags(c_flagbtn, MODE_ON, s0, c_mode);
-        stringlist::destroy(s0);
-    }
-    else if (client_data == (void*)InfoCode) {
-        if (DSP()->MainWdesc()->DbType() == WDchd) {
-            cCHD *chd = CDchd()->chdRecall(DSP()->MainWdesc()->DbName(), false);
-            if (chd) {
-                symref_t *p = chd->findSymref(cname, DSP()->CurMode(), true);
-                if (p) {
-                    stringlist *sl = new stringlist(
-                        lstring::copy(Tstring(p->get_name())), 0);
-                    int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
-                        FIO_INFO_BBS | FIO_INFO_FLAGS;
-                    char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);
-                    stringlist::destroy(sl);
-                    PopUpInfo(MODE_ON, str, STY_FIXED);
-                    delete [] str;
-                }
-            }
-        }
-        else
-            XM()->ShowCellInfo(cname, true, c_mode);
-    }
-    else if (client_data == (void*)ShowCode) {
-        bool state = GTKdev::GetStatus(caller);
-        if (state)
-            DSP()->ShowCells(cname);
-        else
-            DSP()->ShowCells(0);
-    }
-    else if (client_data == (void*)FltrCode) {
-        bool state = GTKdev::GetStatus(caller);
-        if (state)
-            XM()->PopUpCellFilt(caller, MODE_ON, c_mode, c_filter_cb, 0);
-        else
-            XM()->PopUpCellFilt(0, MODE_OFF, Physical, 0, 0);
-    }
-
-    if (Cells)
-        c_no_select = false;
-    delete [] cname;
-}
-
-
-int
-cCells::motion_hdlr(GtkWidget *widget, GdkEvent *event)
-{
-    if (c_dragging) {
-        if (event->motion.is_hint)
-            gdk_event_request_motions((GdkEventMotion*)event);
-        if ((abs((int)event->motion.x - c_drag_x) > 4 ||
-                abs((int)event->motion.y - c_drag_y) > 4)) {
-            c_dragging = false;
-            GtkTargetList *targets = gtk_target_list_new(target_table,
-                n_targets);
-            GdkDragContext *drcx = gtk_drag_begin(widget, targets,
-                (GdkDragAction)GDK_ACTION_COPY, 1, event);
-            gtk_drag_set_icon_default(drcx);
-            return (true);
-        }
-    }
-    return (false);
-}
-
-
-void
-cCells::resize_hdlr(GtkAllocation *a)
-{
-    int cols = (a->width-4)/GTKfont::stringWidth(wb_textarea, 0) - 2;
-    if (cols == c_cols)
-        return;
-    c_cols = cols;
-    char *s = cell_list(cols);
-    update_text(s);
-    delete [] s;
-    select_range(0, 0);
 }
 
 
@@ -1000,7 +743,7 @@ cCells::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
     if (ppgs)
         *ppgs = 0;
     stringlist *s0 = 0;
-    if (GTKdev::GetStatus(Cells->c_searchbtn) && ListCmd)
+    if (QTdev::GetStatus(c_searchbtn) && ListCmd)
         s0 = ListCmd->cell_list(nomark);
     else {
         if (DSP()->MainWdesc()->DbType() == WDchd) {
@@ -1110,22 +853,19 @@ cCells::cell_list(int cols)
     int cnt, pagesz;
     stringlist *s0 = raw_cell_list(&cnt, &pagesz, false);
     if (cnt <= pagesz)
-        gtk_widget_hide(c_page_combo);
+        c_page_combo->hide();
     else {
         char buf[128];
-        GtkListStore *store = GTK_LIST_STORE(gtk_combo_box_get_model(
-            GTK_COMBO_BOX(c_page_combo)));
-        gtk_list_store_clear(store);
+        c_page_combo->clear();
         for (int i = 0; i*pagesz < cnt; i++) {
             int tmpmax = (i+1)*pagesz;
             if (tmpmax > cnt)
                 tmpmax = cnt;
             snprintf(buf, sizeof(buf), "%d - %d", i*pagesz, tmpmax);
-            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c_page_combo),
-                buf);
+            c_page_combo->addItem(buf);
         }
-        gtk_combo_box_set_active(GTK_COMBO_BOX(c_page_combo), c_page);
-        gtk_widget_show(c_page_combo);
+        c_page_combo->setCurrentIndex(c_page);
+        c_page_combo->show();
     }
 
     char *t = stringlist::col_format(s0, cols);
@@ -1141,9 +881,9 @@ cCells::update_text(char *newtext)
 {
     if (wb_textarea == 0 || newtext == 0)
         return;
-    double val = text_get_scroll_value(wb_textarea);
-    text_set_chars(wb_textarea, newtext);
-    text_set_scroll_value(wb_textarea, val);
+    double val = wb_textarea->get_scroll_value();
+    wb_textarea->set_chars(newtext);
+    wb_textarea->set_scroll_value(val);
 }
 
 
@@ -1152,40 +892,39 @@ cCells::update_text(char *newtext)
 void
 cCells::check_sens()
 {
-    bool has_sel = text_has_selection(wb_textarea);
+    bool has_sel = wb_textarea->has_selection();
     if (!has_sel) {
-        if (GTKdev::GetStatus(c_showbtn))
+        if (QTdev::GetStatus(c_showbtn))
             DSP()->ShowCells(0);
-        gtk_widget_set_sensitive(c_treebtn, false);
-        gtk_widget_set_sensitive(c_openbtn, false);
-        gtk_widget_set_sensitive(c_placebtn, false);
-        gtk_widget_set_sensitive(c_copybtn, false);
-        gtk_widget_set_sensitive(c_replbtn, false);
-        gtk_widget_set_sensitive(c_renamebtn, false);
+        c_treebtn->setEnabled(false);
+        c_openbtn->setEnabled(false);
+        c_placebtn->setEnabled(false);
+        c_copybtn->setEnabled(false);
+        c_replbtn->setEnabled(false);
+        c_renamebtn->setEnabled(false);
     }
     else {
         bool mode_ok = (c_mode == DSP()->CurMode());
-        gtk_widget_set_sensitive(c_treebtn, true);
+        c_treebtn->setEnabled(true);
         if (DSP()->MainWdesc()->DbType() == WDcddb) {
-            gtk_widget_set_sensitive(c_openbtn, mode_ok);
+            c_openbtn->setEnabled(mode_ok);
             if (EditIf()->hasEdit()) {
                 bool ed_ok = !CurCell() || !CurCell()->isImmutable();
-                gtk_widget_set_sensitive(c_placebtn, mode_ok && ed_ok);
-                gtk_widget_set_sensitive(c_copybtn, true);
-                gtk_widget_set_sensitive(c_replbtn, mode_ok && ed_ok &&
+                c_placebtn->setEnabled(mode_ok && ed_ok);
+                c_copybtn->setEnabled(true);
+                c_replbtn->setEnabled(mode_ok && ed_ok &&
                     (Selections.firstObject(CurCell(), "c")) != 0);
-                gtk_widget_set_sensitive(c_renamebtn, ed_ok);
+                c_renamebtn->setEnabled(ed_ok);
             }
         }
-        if (GTKdev::GetStatus(c_showbtn)) {
-            char *cn = text_get_selection(wb_textarea);
+        if (QTdev::GetStatus(c_showbtn)) {
+            char *cn = get_selection();
             DSP()->ShowCells(cn);
             delete [] cn;
         }
     }
 }
 
-#ifdef notdef
 
 // Static function.
 // Callback for the clear button dialog.
@@ -1211,7 +950,7 @@ cCells::c_copy_cb(const char *newname, void *arg)
         CDcbin cbin;
         if (CDcdb()->findSymbol(newname, &cbin)) {
             // select new cell
-            GTKpkg::self()->RegisterIdleProc(c_highlight_idle,
+            QTpkg::self()->RegisterIdleProc(c_highlight_idle,
                 (void*)cbin.cellname());
         }
         return (ESTR_DN);
@@ -1220,7 +959,7 @@ cCells::c_copy_cb(const char *newname, void *arg)
     lstr.add("Copy cell ");
     lstr.add(name);
     lstr.add("\nName invalid or not unique, try again ");
-    Cells->c_copy_pop->update(lstr.string(), 0);
+    instPtr->c_copy_pop->update(lstr.string(), 0);
     return (ESTR_IGN);
 }
 
@@ -1261,7 +1000,7 @@ cCells::c_repl_cb(bool state, void *arg)
 ESret
 cCells::c_rename_cb(const char *newname, void *arg)
 {
-    if (!Cells)
+    if (!instPtr)
         return (ESTR_DN);
     char *name = (char*)arg;
     if (EditIf()->renameSymbol(name, newname)) {
@@ -1273,7 +1012,7 @@ cCells::c_rename_cb(const char *newname, void *arg)
         CDcbin cbin;
         if (CDcdb()->findSymbol(newname, &cbin))
             // select renamed cell
-            GTKpkg::self()->RegisterIdleProc(c_highlight_idle,
+            QTpkg::self()->RegisterIdleProc(c_highlight_idle,
                 (void*)cbin.cellname());
 
         WindowDesc *wd;
@@ -1297,38 +1036,8 @@ cCells::c_rename_cb(const char *newname, void *arg)
     lstr.add("Rename cell ");
     lstr.add(name);
     lstr.add(Errs()->get_error());
-    Cells->c_rename_pop->update(lstr.string(), 0);
+    instPtr->c_rename_pop->update(lstr.string(), 0);
     return (ESTR_IGN);
-}
-
-
-void
-cCells::c_page_proc(GtkWidget *caller, void*)
-{
-    if (Cells) {
-        int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
-        if (Cells->c_page != i) {
-            Cells->c_page = i;
-            Cells->update();
-        }
-    }
-}
-
-
-void
-cCells::c_mode_proc(GtkWidget *caller, void*)
-{
-    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
-    if (i < 0)
-        return;
-    DisplayMode m = i ? Electrical : Physical;
-    if (Cells && Cells->c_mode != m) {
-        Cells->c_mode = m;
-        XM()->PopUpCellFilt(0, MODE_UPD, Cells->c_mode, 0, 0);
-        Cells->update();
-        XM()->PopUpTree(0, MODE_UPD, 0,
-            Cells->c_mode == Physical ? TU_PHYS : TU_ELEC);
-    }
 }
 
 
@@ -1338,21 +1047,21 @@ cCells::c_mode_proc(GtkWidget *caller, void*)
 void
 cCells::c_filter_cb(cfilter_t *flt, void*)
 {
-    if (!Cells) {
+    if (!instPtr) {
         delete flt;
         return;
     }
     if (!flt)
         return;
     if (flt->mode() == Physical) {
-        delete Cells->c_pfilter;
-        Cells->c_pfilter = flt;
+        delete instPtr->c_pfilter;
+        instPtr->c_pfilter = flt;
     }
     else {
-        delete Cells->c_efilter;
-        Cells->c_efilter = flt;
+        delete instPtr->c_efilter;
+        instPtr->c_efilter = flt;
     }
-    Cells->update();
+    instPtr->update();
 }
 
 
@@ -1362,12 +1071,12 @@ cCells::c_filter_cb(cfilter_t *flt, void*)
 int
 cCells::c_highlight_idle(void *arg)
 {
-    if (Cells && arg) {
+    if (instPtr && arg) {
         const char *name = (const char*)arg;
         int n = strlen(name);
         if (!n)
             return (0);
-        char *s = text_get_chars(Cells->wb_textarea, 0, -1);
+        char *s = instPtr->wb_textarea->get_chars(0, -1);
         char *t = s;
         while (*t) {
             while (isspace(*t))
@@ -1380,7 +1089,7 @@ cCells::c_highlight_idle(void *arg)
                 break;
             if (!strncmp(t, name, n) && (isspace(t[n]) || !t[n])) {
                 int top = t - s;
-                Cells->select_range(top, top + n);
+                instPtr->select_range(top, top + n);
                 break;
             }
             while (*t && !isspace(*t))
@@ -1389,136 +1098,6 @@ cCells::c_highlight_idle(void *arg)
         delete [] s;
     }
     return (0);
-}
-
-
-// Static function.
-// Data-get function, for drag/drop.
-//
-void
-cCells::c_drag_data_get(GtkWidget *widget, GdkDragContext*,
-    GtkSelectionData *data, guint, guint, void*)
-{
-    if (GTK_IS_TEXT_VIEW(widget))
-    // stop text view native handler
-    g_signal_stop_emission_by_name(G_OBJECT(widget), "drag-data-get");
-
-    char *string = text_get_selection(widget);
-    if (string) {
-        gtk_selection_data_set(data, gtk_selection_data_get_target(data),
-            8, (unsigned char*)string, strlen(string)+1);
-        delete [] string;
-    }
-}
-
-
-// Static function.
-// Handle button presses in the text area.
-//
-int
-cCells::c_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
-{
-    if (Cells)
-        return (Cells->button_hdlr(false, caller, event));
-    return (true);
-}
-
-
-// Static function.
-int
-cCells::c_btn_release_hdlr(GtkWidget*, GdkEvent*, void*)
-{
-    if (Cells)
-        Cells->button_hdlr(true, 0, 0);
-    return (false);
-}
-
-
-// Static function.
-// Motion handler, begin drag.
-//
-int
-cCells::c_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
-{
-    if (Cells)
-        return (Cells->motion_hdlr(caller, event));
-    return (false);
-}
-
-
-// Static function.
-void
-cCells::c_resize_hdlr(GtkWidget *widget, GtkAllocation *a)
-{
-    if (Cells && gtk_widget_get_realized(widget))
-        Cells->resize_hdlr(a);
-}
-
-
-// Static function.
-void
-cCells::c_realize_hdlr(GtkWidget *widget, void *arg)
-{
-    text_realize_proc(widget, arg);
-    if (Cells)
-        Cells->update();
-}
-
-
-// Static function.
-// If there is something selected, perform the action.
-//
-void
-cCells::c_action_proc(GtkWidget *caller, void *client_data)
-{
-    if (Cells)
-        Cells->action_hdlr(caller, client_data);
-}
-
-
-// Static function.
-// Handler for the help button.
-//
-void
-cCells::c_help_proc(GtkWidget*, void*)
-{
-    DSPmainWbag(PopUpHelp("cellspanel"))
-}
-
-
-// Static function.
-// Pop down the cells popup
-//
-void
-cCells::c_cancel(GtkWidget*, void*)
-{
-    XM()->PopUpCells(0, MODE_OFF);
-}
-
-
-// Private static GTK signal handler.
-// Handle Save Text button presses.
-//
-void
-cCells::c_save_btn_hdlr(GtkWidget *widget, void *arg)
-{
-    if (GTKdev::GetStatus(widget)) {
-        cCells *cp = (cCells*)arg;
-        if (cp->c_save_pop)
-            return;
-        cp->c_save_pop = new GTKledPopup(0,
-            "Enter path to file for saved text:", "", 200, false, 0, arg);
-        cp->c_save_pop->register_caller(widget, false, true);
-        cp->c_save_pop->register_callback(
-            (GRledPopup::GRledCallback)&cp->c_save_cb);
-        cp->c_save_pop->register_usrptr((void**)&cp->c_save_pop);
-
-        gtk_window_set_transient_for(GTK_WINDOW(cp->c_save_pop->pw_shell),
-            GTK_WINDOW(cp->wb_shell));
-        GTKdev::self()->SetPopupLocation(GRloc(), cp->c_save_pop->pw_shell,
-            cp->wb_shell);
-        cp->c_save_pop->set_visible(true);
-    }
 }
 
 
@@ -1540,7 +1119,7 @@ cCells::c_save_cb(const char *string, void *arg)
             cp->c_save_pop->update("Error opening file, try again", 0);
             return (ESTR_IGN);
         }
-        char *txt = text_get_chars(cp->wb_textarea, 0, -1);
+        char *txt = cp->wb_textarea->get_chars(0, -1);
         if (txt) {
             unsigned int len = strlen(txt);
             if (len) {
@@ -1557,14 +1136,12 @@ cCells::c_save_cb(const char *string, void *arg)
 
         if (cp->c_msg_pop)
             cp->c_msg_pop->popdown();
-        cp->c_msg_pop = new GTKmsgPopup(0, "Text saved in file.", false);
+//        cp->c_msg_pop = new QTmsgPopup(0, "Text saved in file.", false);
         cp->c_msg_pop->register_usrptr((void**)&cp->c_msg_pop);
-        gtk_window_set_transient_for(GTK_WINDOW(cp->c_msg_pop->pw_shell),
-            GTK_WINDOW(cp->wb_shell));
-        GTKdev::self()->SetPopupLocation(GRloc(), cp->c_msg_pop->pw_shell,
+        QTdev::self()->SetPopupLocation(GRloc(), cp->c_msg_pop,
             cp->wb_shell);
         cp->c_msg_pop->set_visible(true);
-        g_timeout_add(2000, c_timeout, cp);
+        QTpkg::self()->RegisterTimeoutProc(2000, c_timeout, cp);
     }
     return (ESTR_DN);
 }
@@ -1578,7 +1155,516 @@ cCells::c_timeout(void *arg)
         cp->c_msg_pop->popdown();
     return (0);
 }
-// End of cCells functions.
+
+
+void
+cCells::clear_btn_slot()
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+    clear(cname);
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::tree_btn_slot()
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    if (cname) {
+        // find the main menu button for the tree popup
+        MenuEnt *m = Menu()->FindEntry(MMcell, MenuTREE);
+        GRobject widg = 0;
+        if (m)
+            widg = m->cmd.caller;
+        XM()->PopUpTree(widg, MODE_ON, cname,
+            c_mode == Physical ? TU_PHYS : TU_ELEC);
+        // If tree is "captive" don't update after main window
+        // display mode switch.
+        XM()->SetTreeCaptive(true);
+
+        if (widg)
+            QTdev::Select(widg);
+    }
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::open_btn_slot()
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    if (cname) {
+        c_no_update = true;
+        EV()->InitCallback();
+        XM()->EditCell(cname, false);
+        c_no_update = false;
+    }
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::place_btn_slot()
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    if (cname) {
+        EV()->InitCallback();
+        EditIf()->addMaster(cname, 0);
+    }
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::copy_btn_slot()
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    copy_cell(cname);
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::repl_btn_slot()
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    replace_instances(cname);
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::rename_btn_slot()
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    rename_cell(cname);
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::search_btn_slot(bool state)
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    if (state)
+        EV()->InitCallback();
+    ListState::show_search(state);
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::flag_btn_slot()
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    stringlist *s0;
+    if (cname)
+        s0 = new stringlist(lstring::copy(cname), 0);
+    else
+        s0 = raw_cell_list(0, 0, true);
+    XM()->PopUpCellFlags(c_flagbtn, MODE_ON, s0, c_mode);
+    stringlist::destroy(s0);
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::info_btn_slot()
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    if (DSP()->MainWdesc()->DbType() == WDchd) {
+        cCHD *chd = CDchd()->chdRecall(DSP()->MainWdesc()->DbName(), false);
+        if (chd) {
+            symref_t *p = chd->findSymref(cname, DSP()->CurMode(), true);
+            if (p) {
+                stringlist *sl = new stringlist(
+                    lstring::copy(Tstring(p->get_name())), 0);
+                int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
+                    FIO_INFO_BBS | FIO_INFO_FLAGS;
+                char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);
+                stringlist::destroy(sl);
+                PopUpInfo(MODE_ON, str, STY_FIXED);
+                delete [] str;
+            }
+        }
+    }
+    else
+        XM()->ShowCellInfo(cname, true, c_mode);
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::show_btn_slot(bool state)
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    if (state)
+        DSP()->ShowCells(cname);
+    else
+        DSP()->ShowCells(0);
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::fltr_btn_slot(bool state)
+{
+    if (c_clear_pop)
+        c_clear_pop->popdown();
+    if (c_copy_pop)
+        c_copy_pop->popdown();
+    if (c_repl_pop)
+        c_repl_pop->popdown();
+    if (c_rename_pop)
+        c_rename_pop->popdown();
+
+    c_no_select = true;
+    char *cname = get_selection();
+
+    if (state)
+        XM()->PopUpCellFilt(c_fltrbtn, MODE_ON, c_mode, c_filter_cb, 0);
+    else
+        XM()->PopUpCellFilt(0, MODE_OFF, Physical, 0, 0);
+    c_no_select = false;
+    delete [] cname;
+}
+
+
+void
+cCells::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("cellspanel"))
+}
+
+
+void
+cCells::resize_slot(QResizeEvent*)
+{
+    /*
+    int cols = (a->width-4)/QTfont::stringWidth(0, wb_textarea) - 2;
+    if (cols == c_cols)
+        return;
+    c_cols = cols;
+    char *s = cell_list(cols);
+    update_text(s);
+    delete [] s;
+    select_range(0, 0);
+    */
+}
+
+
+void
+cCells::mouse_press_slot(QMouseEvent *ev)
+{
+    /*
+    if (up) {
+        c_dragging = false;
+        return;
+    }
+    */
+
+//    if (event->type != GDK_BUTTON_PRESS)
+//        return (true);
+    if (c_no_select)
+        return;
+
+    select_range(0, 0);
+
+    char *string = wb_textarea->get_chars(0, -1);
+    int x = ev->x();
+    int y = ev->y();
+/*
+    int x = (int)event->button.x;
+    int y = (int)event->button.y;
+    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
+        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
+    GtkTextIter ihere, iline;
+    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(caller), &ihere, x, y);
+    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
+    x = gtk_text_iter_get_offset(&ihere) - gtk_text_iter_get_offset(&iline);
+    char *line_start = string + gtk_text_iter_get_offset(&iline);
+*/
+char *line_start = 0;
+
+    int start = 0;
+    for ( ; start < x; start++) {
+        if (line_start[start] == '\n' || line_start[start] == 0) {
+            // pointing to right of line end
+            delete [] string;
+            return;
+        }
+    }
+    if (isspace(line_start[start])) {
+        // pointing at white space
+        delete [] string;
+        return;
+    }
+    int end = start;
+    while (start > 0 && !isspace(line_start[start]))
+        start--;
+    if (isspace(line_start[start]))
+        start++;
+    while (line_start[end] && !isspace(line_start[end]))
+        end++;
+
+    char buf[256];
+    char *t = buf;
+    for (int i = start; i < end; i++)
+        *t++ = line_start[i];
+    *t = 0;
+
+    t = buf;
+
+    // The top level cells are listed with an '*'.
+    // Modified cells are listed  with a '+'.
+    while ((*t == '+' || *t == '*') && !CDcdb()->findSymbol(t)) {
+        start++;
+        t++;
+    }
+
+    start += (line_start - string);
+    end += (line_start - string);
+    delete [] string;
+
+    if (start == end)
+        return;
+    select_range(start, end);
+
+    c_dragging = true;
+    c_drag_x = ev->x();
+    c_drag_y = ev->y();
+
+}
+
+
+void
+cCells::mouse_motion_slot(QMouseEvent*)
+{
+    /*
+    if (c_dragging) {
+        if (event->motion.is_hint)
+            gdk_event_request_motions((GdkEventMotion*)event);
+        if ((abs((int)event->motion.x - c_drag_x) > 4 ||
+                abs((int)event->motion.y - c_drag_y) > 4)) {
+            c_dragging = false;
+            GtkTargetList *targets = gtk_target_list_new(target_table,
+                n_targets);
+            GdkDragContext *drcx = gtk_drag_begin(widget, targets,
+                (GdkDragAction)GDK_ACTION_COPY, 1, event);
+            gtk_drag_set_icon_default(drcx);
+            return (true);
+        }
+    }
+// drag data get
+    if (GTK_IS_TEXT_VIEW(widget))
+    // stop text view native handler
+    g_signal_stop_emission_by_name(G_OBJECT(widget), "drag-data-get");
+
+    char *string = text_get_selection(widget);
+    if (string) {
+        gtk_selection_data_set(data, gtk_selection_data_get_target(data),
+            8, (unsigned char*)string, strlen(string)+1);
+        delete [] string;
+    }
+    */
+}
+
+
+void
+cCells::mime_data_received_slot(const QMimeData*)
+{
+}
+
+
+void
+cCells::font_changed_slot(int)
+{
+}
+
+
+void
+cCells::save_btn_slot(bool state)
+{
+    if (state) {
+        if (c_save_pop)
+            return;
+/*
+        c_save_pop = new QTledPopup(0,
+            "Enter path to file for saved text:", "", 200, false, 0, arg);
+        c_save_pop->register_caller(widget, false, true);
+        c_save_pop->register_callback(
+            (GRledPopup::GRledCallback)&c_save_cb);
+        c_save_pop->register_usrptr((void**)&c_save_pop);
+
+        QTdev::self()->SetPopupLocation(GRloc(), c_save_pop,
+            cp->wb_shell);
+        cp->c_save_pop->set_visible(true);
+*/
+    }
+}
+
+
+void
+cCells::page_menu_slot(int i)
+{
+    if (c_page != i) {
+        c_page = i;
+        update();
+    }
+}
+
+
+void
+cCells::dismiss_btn_slot()
+{
+    XM()->PopUpCells(0, MODE_OFF);
+}
+
+
+void
+cCells::mode_changed_slot(int i)
+{
+    DisplayMode m = i ? Electrical : Physical;
+    if (c_mode != m) {
+        c_mode = m;
+        XM()->PopUpCellFilt(0, MODE_UPD, c_mode, 0, 0);
+        update();
+        XM()->PopUpTree(0, MODE_UPD, 0,
+            c_mode == Physical ? TU_PHYS : TU_ELEC);
+    }
+}
+// End of cCells functions and slots.
 
 
 //-----------------------
@@ -1613,7 +1699,8 @@ ListState::show_search(bool on)
             return;
         ListCmd->esc();
     }
-    Cells->update();
+    if (cCells::self())
+        cCells::self()->update();
 }
 
 
@@ -1694,7 +1781,8 @@ ListState::b1up()
     BBox BB;
     if (cEventHdlr::sel_b1up(&BB, 0, B1UP_NOSEL)) {
         lsAOI = BB;
-        Cells->update();
+        if (cCells::self())
+            cCells::self()->update();
     }
 }
 
@@ -1705,12 +1793,10 @@ void
 ListState::esc()
 {
     cEventHdlr::sel_esc();
-    if (Cells)
-        Cells->end_search();
+    if (cCells::self())
+        cCells::self()->end_search();
     PL()->ErasePrompt();
     EV()->PopCallback(this);
     delete this;
 }
-
-#endif
 
