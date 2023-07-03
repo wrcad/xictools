@@ -56,15 +56,15 @@ cSced::PopUpSim(SpType status)
 {
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
-    cSimRun::control(status);
+    QTsimRunDlg::control(status);
 }
 // End of cSced functions.
 
 
-SpType cSimRun::sp_status = SpNil;
-cSimRun *cSimRun::instPtr;
+SpType QTsimRunDlg::sp_status = SpNil;
+QTsimRunDlg *QTsimRunDlg::instPtr;
 
-cSimRun::cSimRun(const char *msg)
+QTsimRunDlg::QTsimRunDlg(const char *msg)
 {
     instPtr = this;
     sp_status = SpNil;
@@ -106,7 +106,7 @@ cSimRun::cSimRun(const char *msg)
 }
 
 
-cSimRun::~cSimRun()
+QTsimRunDlg::~QTsimRunDlg()
 {
     sp_status = SpNil;
     instPtr = 0;
@@ -115,7 +115,7 @@ cSimRun::~cSimRun()
 
 // Static function.
 void
-cSimRun::control(SpType status)
+QTsimRunDlg::control(SpType status)
 {
     const char *msg;
     switch (status) {
@@ -149,7 +149,7 @@ cSimRun::control(SpType status)
         return;
     }
 
-    new cSimRun(msg);
+    new QTsimRunDlg(msg);
 }
 
 
@@ -157,7 +157,7 @@ cSimRun::control(SpType status)
 // Make the popup go away after an interval.
 //
 int
-cSimRun::sp_down_timer(void*)
+QTsimRunDlg::sp_down_timer(void*)
 {
     if (instPtr)
         instPtr->hide();
@@ -167,7 +167,7 @@ cSimRun::sp_down_timer(void*)
 
 // Static function.
 int
-cSimRun::sp_label_set_idle(void *arg)
+QTsimRunDlg::sp_label_set_idle(void *arg)
 {
     if (instPtr) {
         const char *msg = (const char*)arg;
@@ -179,7 +179,7 @@ cSimRun::sp_label_set_idle(void *arg)
 
 
 void
-cSimRun::pause_btn_slot()
+QTsimRunDlg::pause_btn_slot()
 {
     // Tell the simulator to pause, if an analysis is in progress.
     SCD()->spif()->InterruptSpice();
@@ -187,7 +187,7 @@ cSimRun::pause_btn_slot()
 
 
 void
-cSimRun::dismiss_btn_slot()
+QTsimRunDlg::dismiss_btn_slot()
 {
     if (instPtr)
         instPtr->hide();

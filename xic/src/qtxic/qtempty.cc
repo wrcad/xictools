@@ -64,25 +64,25 @@ cConvert::PopUpEmpties(stringlist *list)
 {
     if (!QTdev::exists() || !QTmainwin::self())
         return;
-    if (cEmpty::self())
+    if (QTemptyDlg::self())
         return;
     if (XM()->RunMode() != ModeNormal)
         return;
     if (!list)
         return;
 
-    new cEmpty(list);
+    new QTemptyDlg(list);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cEmpty::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTemptyDlg::self(),
         QTmainwin::self()->Viewport());
-    cEmpty::self()->show();
+    QTemptyDlg::self()->show();
 }
 // End of cConvert functions.
 
 
-cEmpty *cEmpty::instPtr;
+QTemptyDlg *QTemptyDlg::instPtr;
 
-cEmpty::cEmpty(stringlist *l)
+QTemptyDlg::QTemptyDlg(stringlist *l)
 {
     instPtr = this;
     ec_list = 0;
@@ -122,7 +122,7 @@ cEmpty::cEmpty(stringlist *l)
 
     QGroupBox *gb = new QGroupBox(this);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setMargin(0);
     hb->setSpacing(2);
     ec_label = new QLabel(gb);
 
@@ -164,7 +164,7 @@ cEmpty::cEmpty(stringlist *l)
 }
 
 
-cEmpty::~cEmpty()
+QTemptyDlg::~QTemptyDlg()
 {
     instPtr = 0;
     if (ec_changed) {
@@ -180,7 +180,7 @@ cEmpty::~cEmpty()
 
 
 QSize
-cEmpty::sizeHint() const
+QTemptyDlg::sizeHint() const
 {
     int ww = (ec_field + 6)*QTfont::stringWidth(0, ec_text);
     if (ww < 200)
@@ -194,7 +194,7 @@ cEmpty::sizeHint() const
 
 
 void
-cEmpty::update(stringlist *sl)
+QTemptyDlg::update(stringlist *sl)
 {
     stringlist *s0 = 0;
     if (!ec_tab)
@@ -244,7 +244,7 @@ cEmpty::update(stringlist *sl)
 // Redraw the text area.
 //
 void
-cEmpty::refresh()
+QTemptyDlg::refresh()
 {
     char buf[256];
     QColor nc = QTbag::PopupColor(GRattrColorNo);
@@ -277,7 +277,7 @@ cEmpty::refresh()
 
 
 void
-cEmpty::delete_btn_slot()
+QTemptyDlg::delete_btn_slot()
 {
     for (e_item *s = ec_list; s->name; s++)
         s->del = true;
@@ -286,7 +286,7 @@ cEmpty::delete_btn_slot()
 
 
 void
-cEmpty::skip_btn_slot()
+QTemptyDlg::skip_btn_slot()
 {
     for (e_item *s = ec_list; s->name; s++)
         s->del = false;
@@ -295,7 +295,7 @@ cEmpty::skip_btn_slot()
 
 
 void
-cEmpty::apply_btn_slot()
+QTemptyDlg::apply_btn_slot()
 {
     bool didone = false;
     bool leftone = false;
@@ -320,14 +320,14 @@ cEmpty::apply_btn_slot()
 
 
 void
-cEmpty::dismiss_btn_slot()
+QTemptyDlg::dismiss_btn_slot()
 {
     deleteLater();
 }
 
 
 void
-cEmpty::font_changed_slot(int fnum)
+QTemptyDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
@@ -341,7 +341,7 @@ cEmpty::font_changed_slot(int fnum)
 
 
 void
-cEmpty::mouse_press_slot(QMouseEvent *ev)
+QTemptyDlg::mouse_press_slot(QMouseEvent *ev)
 {
     if (ev->type() != QEvent::MouseButtonPress) {
         ev->ignore();

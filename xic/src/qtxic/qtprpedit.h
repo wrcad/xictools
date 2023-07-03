@@ -50,7 +50,7 @@ class QMenu;
 class QAction;
 class QMimeData;
 
-class cPrpEditor : public QDialog, public cPrpBase
+class QTprpEditorDlg : public QDialog, public QTprpBase
 {
     Q_OBJECT
 
@@ -63,8 +63,8 @@ public:
         int value;
     };
 
-    cPrpEditor(CDo*, PRPmode);
-    ~cPrpEditor();
+    QTprpEditorDlg(CDo*, PRPmode);
+    ~QTprpEditorDlg();
 
     void update(CDo*, PRPmode);
     void purge(CDo*, CDo*);
@@ -72,7 +72,7 @@ public:
     PrptyText *cycle(CDp*, bool(*)(const CDp*), bool);
     void set_btn_callback(int(*)(PrptyText*));
 
-    static cPrpEditor *self()           { return (instPtr); }
+    static QTprpEditorDlg *self()           { return (instPtr); }
 
 private slots:
     void edit_btn_slot(bool);
@@ -104,7 +104,7 @@ private:
     QAction *po_name_btn;
     int po_dspmode;
 
-    static cPrpEditor *instPtr;
+    static QTprpEditorDlg *instPtr;
     static sAddEnt po_elec_addmenu[];
     static sAddEnt po_phys_addmenu[];
 };

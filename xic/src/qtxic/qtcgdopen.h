@@ -50,21 +50,21 @@
 class QLineEdit;
 class QPushButton;
 class QTabWidget;
-class cLayerList;
-class cCnameMap;
+class QTlayerList;
+class QTcnameMap;;
 
-class cCGDopen : public QDialog, public QTbag
+class QTcgdOpenDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCGDopen(GRobject, bool(*)(const char*, const char*, int, void*),
+    QTcgdOpenDlg(GRobject, bool(*)(const char*, const char*, int, void*),
         void*, const char*, const char*);
-    ~cCGDopen();
+    ~QTcgdOpenDlg();
 
     void update(const char*, const char*);
 
-    static cCGDopen *self()         { return (instPtr); }
+    static QTcgdOpenDlg *self()         { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -85,13 +85,13 @@ private:
     QLineEdit   *cgo_idname;
     QPushButton *cgo_apply;
 
-    cLayerList  *cgo_p1_llist;
-    cCnameMap   *cgo_p1_cnmap;
+    QTlayerList *cgo_p1_llist;
+    QTcnameMap  *cgo_p1_cnmap;
 
     bool(*cgo_callback)(const char*, const char*, int, void*);
     void *cgo_arg;
 
-    static cCGDopen *instPtr;
+    static QTcgdOpenDlg *instPtr;
 };
 
 #endif

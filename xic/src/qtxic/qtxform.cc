@@ -78,28 +78,28 @@ cEdit::PopUpTransform(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cXform::self())
-            cXform::self()->deleteLater();
+        if (QTxformDlg::self())
+            QTxformDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cXform::self())
-            cXform::self()->update();
+        if (QTxformDlg::self())
+            QTxformDlg::self()->update();
         return;
     }
-    if (cXform::self())
+    if (QTxformDlg::self())
         return;
 
-    new cXform(caller, callback, arg);
-    QTdev::self()->SetPopupLocation(GRloc(LW_UL), cXform::self(),
+    new QTxformDlg(caller, callback, arg);
+    QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTxformDlg::self(),
         QTmainwin::self()->Viewport());
-    cXform::self()->show();
+    QTxformDlg::self()->show();
 }
 
 
-cXform *cXform::instPtr;
+QTxformDlg *QTxformDlg::instPtr;
 
-cXform::cXform(GRobject c,
+QTxformDlg::QTxformDlg(GRobject c,
     bool (*callback)(const char*, bool, const char*, void*), void *arg)
 {
     instPtr = this;
@@ -247,7 +247,7 @@ cXform::cXform(GRobject c,
 }
 
 
-cXform::~cXform()
+QTxformDlg::~QTxformDlg()
 {
     instPtr = 0;
     if (tf_caller)
@@ -258,7 +258,7 @@ cXform::~cXform()
 
 
 void
-cXform::update()
+QTxformDlg::update()
 {
     QTdev::SetStatus(tf_rflx, GEO()->curTx()->reflectX());
     QTdev::SetStatus(tf_rfly, GEO()->curTx()->reflectY());
@@ -296,14 +296,14 @@ cXform::update()
 }
 
 void
-cXform::help_btn_slot()
+QTxformDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:xform"))
 }
 
 
 void
-cXform::angle_change_slot(int)
+QTxformDlg::angle_change_slot(int)
 {
     if (tf_callback) {
         const char *t = (const char*)tf_ang->currentText().toLatin1();
@@ -315,7 +315,7 @@ cXform::angle_change_slot(int)
 
 
 void
-cXform::reflect_x_slot(int state)
+QTxformDlg::reflect_x_slot(int state)
 {
     if (tf_callback)
         (*tf_callback)("rflx", state, 0, tf_arg);
@@ -323,7 +323,7 @@ cXform::reflect_x_slot(int state)
 
 
 void
-cXform::reflect_y_slot(int state)
+QTxformDlg::reflect_y_slot(int state)
 {
     if (tf_callback)
         (*tf_callback)("rfly", state, 0, tf_arg);
@@ -331,7 +331,7 @@ cXform::reflect_y_slot(int state)
 
 
 void
-cXform::magnification_change_slot(double val)
+QTxformDlg::magnification_change_slot(double val)
 {
     if (tf_callback) {
         char buf[32];
@@ -342,7 +342,7 @@ cXform::magnification_change_slot(double val)
 
 
 void
-cXform::identity_btn_slot()
+QTxformDlg::identity_btn_slot()
 {
     ED()->saveCurTransform(0);
     ED()->clearCurTransform();
@@ -351,7 +351,7 @@ cXform::identity_btn_slot()
 
 
 void
-cXform::last_btn_slot()
+QTxformDlg::last_btn_slot()
 {
     ED()->recallCurTransform(0);
 //XXX    gtk_window_set_focus(GTK_WINDOW(Tfm->tf_popup), Tfm->tf_cancel);
@@ -359,7 +359,7 @@ cXform::last_btn_slot()
 
 
 void
-cXform::dismiss_btn_slot()
+QTxformDlg::dismiss_btn_slot()
 {
     ED()->PopUpTransform(0, MODE_OFF, 0, 0);
 }
@@ -371,7 +371,7 @@ cXform::dismiss_btn_slot()
 
 // Static function.
 void
-cXform::tf_action_proc(GtkWidget *widget, void*)
+QTxformDlg::tf_action_proc(GtkWidget *widget, void*)
 {
     if (Tfm && Tfm->tf_callback) {
         if (!strcmp(name, "sto1")) {

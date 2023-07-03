@@ -1342,7 +1342,7 @@ QTsubwin::PopUpExpand(GRobject caller, ShowMode mode,
     if (sw_expand)
         return;
 
-    sw_expand = new cExpand(this, string, nopeek, arg);
+    sw_expand = new QTexpandDlg(this, string, nopeek, arg);
     sw_expand->register_caller(caller);
     sw_expand->register_callback(callback);
     sw_expand->set_visible(true);
@@ -1367,7 +1367,7 @@ QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
     if (sw_zoom)
         return;
 
-    sw_zoom = new cZoom(this, sw_windesc);
+    sw_zoom = new QTzoomDlg(this, sw_windesc);
     sw_zoom->register_usrptr((void**)&sw_zoom);
     sw_zoom->register_caller(caller);
     sw_zoom->initialize();
@@ -2159,7 +2159,7 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
 
     mw_top_button_box = new QWidget(this);
     hbox->addWidget(mw_top_button_box);
-    mw_coords = new cCoord(this);
+    mw_coords = new QTcoord(this);
     hbox->addWidget(mw_coords);
     hbox->addWidget(new QWidget(this));  // Filler
 
@@ -2204,7 +2204,7 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     sw_keys_pressed = QTedit::self()->keys();
     hbox->addWidget(QTedit::self());
 
-    mw_status = new cParam(this);
+    mw_status = new QTparam(this);
     mw_status->setMinimumHeight(h);
     mw_status->setMaximumHeight(h);
     vbox->addWidget(mw_status);
@@ -2297,7 +2297,7 @@ QTmainwin::wr_btn_slot()
 void
 QTmainwin::update_coords_slot(int xx, int yy)
 {
-    mw_coords->print(xx, yy, cCoord::COOR_MOTION);
+    mw_coords->print(xx, yy, QTcoord::COOR_MOTION);
 }
 // End of QTmainwin functions.
 

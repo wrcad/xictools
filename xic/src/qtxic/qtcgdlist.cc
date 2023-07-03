@@ -79,32 +79,32 @@ cConvert::PopUpGeometries(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cCGDlist::self())
-            cCGDlist::self()->deleteLater();
+        if (QTcgdListDlg::self())
+            QTcgdListDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cCGDlist::self())
-            cCGDlist::self()->update();
+        if (QTcgdListDlg::self())
+            QTcgdListDlg::self()->update();
         return;
     }
-    if (cCGDlist::self())
+    if (QTcgdListDlg::self())
         return;
 
-    new cCGDlist(caller);
+    new QTcgdListDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_UL), cCGDlist::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTcgdListDlg::self(),
         QTmainwin::self()->Viewport());
-    cCGDlist::self()->show();
+    QTcgdListDlg::self()->show();
 }
 
 
 // Contests pop-up button.
 #define INFO_BTN "Info"
 
-cCGDlist *cCGDlist::instPtr;
+QTcgdListDlg *QTcgdListDlg::instPtr;
 
-cCGDlist::cCGDlist(GRobject c)
+QTcgdListDlg::QTcgdListDlg(GRobject c)
 {
     instPtr = this;
     cgl_caller = c;
@@ -197,7 +197,7 @@ cCGDlist::cCGDlist(GRobject c)
 }
 
 
-cCGDlist::~cCGDlist()
+QTcgdListDlg::~QTcgdListDlg()
 {
     instPtr = 0;
     delete [] cgl_selection;
@@ -221,7 +221,7 @@ cCGDlist::~cCGDlist()
 // Update the listing.
 //
 void
-cCGDlist::update()
+QTcgdListDlg::update()
 {
     if (cgl_selection && !CDcgd()->cgdRecall(cgl_selection, false)) {
         delete [] cgl_selection;
@@ -279,7 +279,7 @@ cCGDlist::update()
 
 
 void
-cCGDlist::err_message(const char *fmt)
+QTcgdListDlg::err_message(const char *fmt)
 {
     const char *s = Errs()->get_error();
     int len = strlen(fmt) + (s ? strlen(s) : 0) + 10;
@@ -294,7 +294,7 @@ cCGDlist::err_message(const char *fmt)
 // Callback for the Open dialog.
 //
 bool
-cCGDlist::cgl_add_cb(const char *idname, const char *string, int mode, void*)
+QTcgdListDlg::cgl_add_cb(const char *idname, const char *string, int mode, void*)
 {
     if (!idname || !*idname)
         return (false);
@@ -318,7 +318,7 @@ cCGDlist::cgl_add_cb(const char *idname, const char *string, int mode, void*)
 // Callback for the Save dialog.
 //
 ESret
-cCGDlist::cgl_sav_cb(const char *fname, void*)
+QTcgdListDlg::cgl_sav_cb(const char *fname, void*)
 {
     if (!instPtr->cgl_selection) {
         instPtr->err_message("No selection, select a CGD in the listing.");
@@ -347,7 +347,7 @@ cCGDlist::cgl_sav_cb(const char *fname, void*)
 // Callback for confirmation pop-up.
 //
 void
-cCGDlist::cgl_del_cb(bool yn, void *arg)
+QTcgdListDlg::cgl_del_cb(bool yn, void *arg)
 {
     if (arg && yn && instPtr) {
         char *dbname = (char*)arg;
@@ -366,7 +366,7 @@ cCGDlist::cgl_del_cb(bool yn, void *arg)
 // listing of the layers used.
 //
 void
-cCGDlist::cgl_cnt_cb(const char *cellname, void*)
+QTcgdListDlg::cgl_cnt_cb(const char *cellname, void*)
 {
     if (!instPtr)
         return;
@@ -404,7 +404,7 @@ cCGDlist::cgl_cnt_cb(const char *cellname, void*)
 
 
 void
-cCGDlist::add_btn_slot(bool state)
+QTcgdListDlg::add_btn_slot(bool state)
 {
     if (state) {
         QPoint pg = mapToGlobal(QPoint(0, 0));
@@ -421,7 +421,7 @@ cCGDlist::add_btn_slot(bool state)
 
 
 void
-cCGDlist::sav_btn_slot(bool state)
+QTcgdListDlg::sav_btn_slot(bool state)
 {
     if (cgl_sav_pop)
         cgl_sav_pop->popdown();
@@ -440,7 +440,7 @@ cCGDlist::sav_btn_slot(bool state)
 
 
 void
-cCGDlist::del_btn_slot(bool state)
+QTcgdListDlg::del_btn_slot(bool state)
 {
     if (cgl_sav_pop)
         cgl_sav_pop->popdown();
@@ -467,7 +467,7 @@ cCGDlist::del_btn_slot(bool state)
 
 
 void
-cCGDlist::cont_btn_slot()
+QTcgdListDlg::cont_btn_slot()
 {
     if (!cgl_selection)
         return;
@@ -513,7 +513,7 @@ cCGDlist::cont_btn_slot()
 
 
 void
-cCGDlist::inf_btn_slot(bool state)
+QTcgdListDlg::inf_btn_slot(bool state)
 {
     if (state) {
         cCGD *cgd = CDcgd()->cgdRecall(cgl_selection, false);
@@ -531,14 +531,14 @@ cCGDlist::inf_btn_slot(bool state)
 
 
 void
-cCGDlist::help_btn_slot()
+QTcgdListDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:geom"))
 }
 
 
 void
-cCGDlist::current_item_changed_slot(QTreeWidgetItem *cur, QTreeWidgetItem*)
+QTcgdListDlg::current_item_changed_slot(QTreeWidgetItem *cur, QTreeWidgetItem*)
 {
     if (!cur) {
         delete [] cgl_selection;
@@ -564,25 +564,25 @@ cCGDlist::current_item_changed_slot(QTreeWidgetItem *cur, QTreeWidgetItem*)
 
 
 void
-cCGDlist::item_activated_slot(QTreeWidgetItem*, int)
+QTcgdListDlg::item_activated_slot(QTreeWidgetItem*, int)
 {
 }
 
 
 void
-cCGDlist::item_clicked_slot(QTreeWidgetItem*, int)
+QTcgdListDlg::item_clicked_slot(QTreeWidgetItem*, int)
 {
 }
 
 
 void
-cCGDlist::item_selection_changed()
+QTcgdListDlg::item_selection_changed()
 {
 }
 
 
 void
-cCGDlist::dismiss_btn_slot()
+QTcgdListDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpGeometries(0, MODE_OFF);
 }

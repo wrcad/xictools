@@ -52,18 +52,18 @@ class QTreeWidgetItem;
 class QPushButton;
 class QCheckBox;
 
-class cLayerAliasTab : public QDialog, public QTbag
+class QTlayerAliasDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cLayerAliasTab(GRobject);
-    ~cLayerAliasTab();
+    QTlayerAliasDlg(GRobject);
+    ~QTlayerAliasDlg();
 
     void update();
 
     GRobject call_btn()                 { return (la_calling_btn); }
-    static cLayerAliasTab *self()       { return (instPtr); }
+    static QTlayerAliasDlg *self()      { return (instPtr); }
 
 private slots:
     void open_btn_slot();
@@ -94,7 +94,7 @@ private:
     int         la_row;
     bool        la_show_dec;
 
-    static cLayerAliasTab *instPtr;
+    static QTlayerAliasDlg *instPtr;
 };
 
 #endif

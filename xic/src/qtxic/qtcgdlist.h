@@ -51,17 +51,17 @@ class QPushButton;
 class QTreeWidget;
 class QTreeWidgetItem;
 
-class cCGDlist : public QDialog, public QTbag
+class QTcgdListDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCGDlist(GRobject);
-    ~cCGDlist();
+    QTcgdListDlg(GRobject);
+    ~QTcgdListDlg();
 
     void update();
 
-    static cCGDlist *self()         { return (instPtr); }
+    static QTcgdListDlg *self()         { return (instPtr); }
 
 private slots:
     void add_btn_slot(bool);
@@ -97,7 +97,7 @@ private:
     char            *cgl_selection;
     char            *cgl_contlib;
 
-    static cCGDlist *instPtr;
+    static QTcgdListDlg *instPtr;
 };
 
 #endif

@@ -83,8 +83,8 @@
 char *
 QTmainwin::get_lib_selection()
 {
-    if (cLibs::self())
-        return (cLibs::self()->get_selection());
+    if (QTlibsDlg::self())
+        return (QTlibsDlg::self()->get_selection());
     return (0);
 }
 
@@ -95,7 +95,7 @@ QTmainwin::get_lib_selection()
 void
 QTmainwin::libs_panic()
 {
-    cLibs::set_panic();
+    QTlibsDlg::set_panic();
 }
 // End of QTmainwin functions.
 
@@ -111,23 +111,23 @@ cConvert::PopUpLibraries(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cLibs::self())
-            cLibs::self()->deleteLater();
+        if (QTlibsDlg::self())
+            QTlibsDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cLibs::self())
-            cLibs::self()->update();
+        if (QTlibsDlg::self())
+            QTlibsDlg::self()->update();
         return;
     }
-    if (cLibs::self())
+    if (QTlibsDlg::self())
         return;
 
-    new cLibs(caller);
+    new QTlibsDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_UL), cLibs::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTlibsDlg::self(),
         QTmainwin::self()->Viewport());
-    cLibs::self()->show();
+    QTlibsDlg::self()->show();
 }
 // End of cConvert functions.
 
@@ -136,10 +136,10 @@ cConvert::PopUpLibraries(GRobject caller, ShowMode mode)
 #define OPEN_BTN "Open"
 #define PLACE_BTN "Place"
 
-const char *cLibs::nolibmsg = "There are no libraries found.";
-cLibs *cLibs::instPtr;
+const char *QTlibsDlg::nolibmsg = "There are no libraries found.";
+QTlibsDlg *QTlibsDlg::instPtr;
 
-cLibs::cLibs(GRobject c)
+QTlibsDlg::QTlibsDlg(GRobject c)
 {
     instPtr = this;
     lb_caller = c;
@@ -229,7 +229,7 @@ cLibs::cLibs(GRobject c)
 }
 
 
-cLibs::~cLibs()
+QTlibsDlg::~QTlibsDlg()
 {
     instPtr = 0;
     delete [] lb_selection;
@@ -247,14 +247,14 @@ cLibs::~cLibs()
 
 
 QSize
-cLibs::sizeHint() const
+QTlibsDlg::sizeHint() const
 {
     return (QSize(450, 200));
 }
 
 
 char *
-cLibs::get_selection()
+QTlibsDlg::get_selection()
 {
     if (lb_contlib && lb_content_pop) {
         char *sel = lb_content_pop->get_selection();
@@ -275,7 +275,7 @@ cLibs::get_selection()
 // Update the listing of open directories in the main pop-up.
 //
 void
-cLibs::update()
+QTlibsDlg::update()
 {
     QTdev::SetStatus(lb_noovr,
         CDvdb()->getVariable(VA_NoOverwriteLibCells));
@@ -341,7 +341,7 @@ cLibs::update()
 // Pop up a listing of the contents of the selected library.
 //
 void
-cLibs::pop_up_contents()
+QTlibsDlg::pop_up_contents()
 {
     if (!lb_selection)
         return;
@@ -388,7 +388,7 @@ cLibs::pop_up_contents()
 // Callback for a content window.
 //
 void
-cLibs::lb_content_cb(const char *cellname, void*)
+QTlibsDlg::lb_content_cb(const char *cellname, void*)
 {
     if (!instPtr)
         return;
@@ -426,7 +426,7 @@ cLibs::lb_content_cb(const char *cellname, void*)
 // search path, for the Open pop-up.
 //
 stringlist *
-cLibs::lb_pathlibs()
+QTlibsDlg::lb_pathlibs()
 {
     stringlist *sl = 0;
     const char *path = FIO()->PGetPath();
@@ -459,7 +459,7 @@ cLibs::lb_pathlibs()
 // suffix.
 //
 stringlist *
-cLibs::lb_add_dir(char *dir, stringlist *sl)
+QTlibsDlg::lb_add_dir(char *dir, stringlist *sl)
 {
     DIR *wdir;
     if (!(wdir = opendir(dir)))
@@ -496,7 +496,7 @@ cLibs::lb_add_dir(char *dir, stringlist *sl)
 
 
 void
-cLibs::open_btn_slot()
+QTlibsDlg::open_btn_slot()
 {
     if (lb_selection) {
         char *tmp = lstring::copy(lb_selection);
@@ -514,33 +514,33 @@ cLibs::open_btn_slot()
 
 
 void
-cLibs::cont_btn_slot()
+QTlibsDlg::cont_btn_slot()
 {
     pop_up_contents();
 }
 
 
 void
-cLibs::help_btn_slot()
+QTlibsDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("libspanel"))
 }
 
 
 void
-cLibs::current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
+QTlibsDlg::current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
 {
 }
 
 
 void
-cLibs::item_activated_slot(QTreeWidgetItem*, int)
+QTlibsDlg::item_activated_slot(QTreeWidgetItem*, int)
 {
 }
 
 
 void
-cLibs::item_clicked_slot(QTreeWidgetItem *item, int col)
+QTlibsDlg::item_clicked_slot(QTreeWidgetItem *item, int col)
 {
     // Toggle closed/open by clicking on the icon in the selected row.
     //
@@ -582,7 +582,7 @@ cLibs::item_clicked_slot(QTreeWidgetItem *item, int col)
 
 
 void
-cLibs::item_selection_changed()
+QTlibsDlg::item_selection_changed()
 {
     /*
     char *text = 0;
@@ -622,7 +622,7 @@ cLibs::item_selection_changed()
 
 
 void
-cLibs::noovr_btn_slot(bool state)
+QTlibsDlg::noovr_btn_slot(bool state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoOverwriteLibCells, "");
@@ -632,7 +632,7 @@ cLibs::noovr_btn_slot(bool state)
 
 
 void
-cLibs::dismiss_btn_slot()
+QTlibsDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpLibraries(0, MODE_OFF);
 }

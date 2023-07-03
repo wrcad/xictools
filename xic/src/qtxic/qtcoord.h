@@ -44,24 +44,23 @@
 #include <QWidget>
 #include "qtinterf/qtinterf.h"
 
+
 class QTmainwin;
 
-inline class cCoord *Coord();
-
-// The coordinate readout.
+// The coordinate readout, singleton, installed in main window.
 //
-class cCoord : public QWidget, public QTdraw
+class QTcoord : public QWidget, public QTdraw
 {
     Q_OBJECT
 
 public:
-    // update mode for cCoord::print()
+    // update mode for QTcoord::print()
     enum { COOR_BEGIN, COOR_MOTION, COOR_REL };
 
-    friend inline cCoord *Coord() { return (cCoord::instancePtr); }
+    QTcoord(QTmainwin*);
+    ~QTcoord();
 
-    cCoord(QTmainwin*);
-    ~cCoord();
+    static QTcoord *self()          { return (instPtr); }
 
     void print(int, int, int);
 
@@ -93,7 +92,7 @@ private:
     bool co_rel;
     bool co_snap;
 
-    static cCoord *instancePtr;
+    static QTcoord *instPtr;
 };
 
 #endif

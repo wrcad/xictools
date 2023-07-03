@@ -50,7 +50,7 @@ class QLabel;
 class QMouseEvent;
 
 
-class cEmpty : public QDialog, public QTbag
+class QTemptyDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
@@ -66,13 +66,13 @@ public:
         bool del;                           // deletion flag
     };
 
-    cEmpty(stringlist*);
-    ~cEmpty();
+    QTemptyDlg(stringlist*);
+    ~QTemptyDlg();
 
     QSize sizeHint() const;
     void update(stringlist*);
 
-    static cEmpty *self()           { return (instPtr); }
+    static QTemptyDlg *self()           { return (instPtr); }
 
 private slots:
     void delete_btn_slot();
@@ -92,7 +92,7 @@ private:
     int ec_field;                       // max cell name length
     bool ec_changed;
 
-    static cEmpty *instPtr;
+    static QTemptyDlg *instPtr;
 };
 
 #endif

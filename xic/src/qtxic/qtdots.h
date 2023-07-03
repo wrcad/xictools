@@ -48,17 +48,17 @@
 
 class QRadioButton;
 
-class cDots : public QDialog
+class QTdotsDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cDots(GRobject);
-    ~cDots();
+    QTdotsDlg(GRobject);
+    ~QTdotsDlg();
 
     void update();
 
-    static cDots *self()            { return (instPtr); }
+    static QTdotsDlg *self()            { return (instPtr); }
 
 private slots:
     void none_slot(bool);
@@ -72,7 +72,7 @@ private:
     QRadioButton *dt_norm;
     QRadioButton *dt_all;
 
-    static cDots *instPtr;
+    static QTdotsDlg *instPtr;
 };
 
 #endif

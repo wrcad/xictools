@@ -38,72 +38,98 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTAUXTAB_H
-#define QTAUXTAB_H
+#ifndef QTCVIN_H
+#define QTCVIN_H
 
 #include "main.h"
 #include "qtmain.h"
 
 #include <QDialog>
 
-class cAuxTab : public QDialog, public QTbag
+
+class QLabel;
+class QTabWidget;
+class QCheckBox;
+class QComboBox;
+class QDoubleSpinBox;
+class QTcnameMap;
+class QTlayerList;
+class QTwindowCfg;
+
+class QTconvertInDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cAuxTab(GRobject);
-    ~cAuxTab();
+    struct fmt_menu
+    {
+        const char *name;
+        int code;
+    };
+
+    QTconvertInDlg(GRobject, bool(*)(int, void*), void*);
+    ~QTconvertInDlg();
 
     void update();
 
-    static cAuxTab *self()          { return (instPtr); }
+    static QTconvertInDlg *self()           { return (instPtr); }
 
 private slots:
+    void help_btn_slot();
+    void nbook_page_slot(int);
+    void nonpc_btn_slot(int);
+    void yesoapc_btn_slot(int);
+    void nolyr_btn_slot(int);
+    void over_menu_slot(int);
+    void replace_btn_slot(int);
+    void merge_btn_slot(int);
+    void polys_btn_slot(int);
+    void dup_menu_slot(int);
+    void empties_btn_slot(int);
+    void dtypes_btn_slot(int);
+    void force_menu_slot(int);
+    void noflvias_btn_slot(int);
+    void noflpcs_btn_slot(int);
+    void nofllbs_btn_slot(int);
+    void nolabels_btn_slot(int);
+    void merg_menu_slot(int);
+    void scale_changed_slot(double);
+    void read_btn_slot();
+    void dismiss_btn_slot();
 
 private:
-    void action_hdlr(GtkWidget*, void*);
-    int button_hdlr(bool, GtkWidget*, GdkEvent*);
-    int motion_hdlr(GtkWidget*, GdkEvent*);
-    void select_range(int, int);
-    void check_sens();
+    GRobject    cvi_caller;
+    QLabel      *cvi_label;
+    QTabWidget  *cvi_nbook;
+    QCheckBox   *cvi_nonpc;
+    QCheckBox   *cvi_yesoapc;
+    QCheckBox   *cvi_nolyr;
+    QCheckBox   *cvi_replace;
+    QComboBox   *cvi_over;
+    QCheckBox   *cvi_merge;
+    QCheckBox   *cvi_polys;
+    QComboBox   *cvi_dup;
+    QCheckBox   *cvi_empties;
+    QCheckBox   *cvi_dtypes;
+    QComboBox   *cvi_force;
+    QCheckBox   *cvi_noflvias;
+    QCheckBox   *cvi_noflpcs;
+    QCheckBox   *cvi_nofllbs;
+    QCheckBox   *cvi_nolabels;
+    QComboBox   *cvi_merg;
+    QDoubleSpinBox *cvi_sb_scale;
+    QTcnameMap  *cvi_cnmap;
+    QTlayerList *cvi_llist;
+    QTwindowCfg *cvi_wnd;
+    bool        (*cvi_callback)(int, void*);
+    void        *cvi_arg;
 
-    /*
-    static void at_cancel(GtkWidget*, void*);
-    static void at_action_proc(GtkWidget*, void*);
-    static ESret at_add_cb(const char*, void*);
-    static void at_remove_cb(bool, void*);
-    static void at_clear_cb(bool, void*);
-
-    static void at_drag_data_get(GtkWidget *widget, GdkDragContext*,
-        GtkSelectionData*, guint, guint, void*);
-    static void at_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint);
-    static int at_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int at_btn_release_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int at_motion_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void at_resize_hdlr(GtkWidget*, GtkAllocation*);
-    static void at_realize_hdlr(GtkWidget*, void*);
-    */
-
-    GRobject at_caller;
-    /*
-    GtkWidget *at_addbtn;
-    GtkWidget *at_rembtn;
-    GtkWidget *at_clearbtn;
-    GtkWidget *at_over;
-    GtkWidget *at_skip;
-    */
-    GRledPopup *at_add_pop;
-    GRaffirmPopup *at_remove_pop;
-    GRaffirmPopup *at_clear_pop;
-
-    int at_start;
-    int at_end;
-    int at_drag_x;
-    int at_drag_y;
-    bool at_dragging;
-
-    static *cAuxTab instPtr;
+    static const char *cvi_mergvals[];
+    static const char *cvi_overvals[];
+    static const char *cvi_dupvals[];
+    static fmt_menu cvi_forcevals[];
+    static int cvi_merg_val;
+    static QTconvertInDlg *instPtr;
 };
 
 #endif

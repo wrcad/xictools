@@ -53,16 +53,16 @@
 class QLabel;
 class QCheckBox;
 
-class cMerge : public QDialog
+class QTmergeDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cMerge(mitem_t*);
-    ~cMerge();
+    QTmergeDlg(mitem_t*);
+    ~QTmergeDlg();
 
-    bool is_hidden()                { return (mc_allflag); }
-    static cMerge *self()           { return (instPtr); }
+    bool is_hidden()                    { return (mc_allflag); }
+    static QTmergeDlg *self()           { return (instPtr); }
 
     void query(mitem_t*);
     bool set_apply_to_all();
@@ -83,7 +83,7 @@ private:
     bool mc_do_phys;
     bool mc_do_elec;
 
-    static cMerge *instPtr;
+    static QTmergeDlg *instPtr;
 };
 
 #endif

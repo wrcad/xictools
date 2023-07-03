@@ -51,17 +51,17 @@ class QCheckBox;
 class QComboBox;
 class QSpinBox;
 
-class cEditSetup : public QDialog
+class QTeditSetupDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cEditSetup(GRobject);
-    ~cEditSetup();
+    QTeditSetupDlg(GRobject);
+    ~QTeditSetupDlg();
 
     void update();
 
-    static cEditSetup *self()           { return (instPtr); }
+    static QTeditSetupDlg *self()            { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -89,7 +89,7 @@ private:
     QSpinBox    *ed_sb_maxgobjs;
 
     static const char *ed_depthvals[];
-    static cEditSetup *instPtr;
+    static QTeditSetupDlg *instPtr;
 };
 
 #endif

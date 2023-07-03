@@ -51,17 +51,17 @@
 class QLabel;
 
 
-class cSimRun : public QDialog
+class QTsimRunDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cSimRun(const char*);
-    ~cSimRun();
+    QTsimRunDlg(const char*);
+    ~QTsimRunDlg();
 
     static void control(SpType);
 
-    static cSimRun *self()          { return (instPtr); }
+    static QTsimRunDlg *self()          { return (instPtr); }
 
 private slots:
     void pause_btn_slot();
@@ -74,7 +74,7 @@ private:
     QLabel *sp_label;
 
     static SpType sp_status;
-    static cSimRun *instPtr;
+    static QTsimRunDlg *instPtr;
 };
 
 #endif

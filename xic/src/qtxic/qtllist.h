@@ -52,13 +52,13 @@ class QCheckBox;
 class QLineEdit;
 class QPushButton;
 
-class cLayerList : public QGroupBox
+class QTlayerList : public QGroupBox
 {
     Q_OBJECT
 
 public:
-    cLayerList();
-    ~cLayerList();
+    QTlayerList();
+    ~QTlayerList();
 
     void update();
 

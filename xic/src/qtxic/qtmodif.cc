@@ -114,37 +114,37 @@ cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
 {
     if (!QTdev::self() || !QTmainwin::self())
         return (PMok);
-    if (cModif::self())
+    if (QTmodifDlg::self())
         return (PMok);
     if (!list)
         return (PMok);
 
-    new cModif(list, saveproc);
-    if (cModif::self()->is_empty()) {
-        cModif::self()->deleteLater();
+    new QTmodifDlg(list, saveproc);
+    if (QTmodifDlg::self()->is_empty()) {
+        QTmodifDlg::self()->deleteLater();
         return (PMok);
     }
-    if (!cModif::self()->Shell()) {
-        cModif::self()->deleteLater();
+    if (!QTmodifDlg::self()->Shell()) {
+        QTmodifDlg::self()->deleteLater();
         return (PMerr);
     }
-    QTdev::self()->SetPopupLocation(GRloc(), cModif::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTmodifDlg::self(),
         QTmainwin::self()->Viewport());
 
-    cModif::self()-> show();
-    start_modal(cModif::self());
+    QTmodifDlg::self()-> show();
+    start_modal(QTmodifDlg::self());
     QTdev::self()->MainLoop();  // wait for user's response
     end_modal();
 
-    return (cModif::retval());
+    return (QTmodifDlg::retval());
 }
 // End of cEdit functions.
 
 
-PMretType cModif::m_retval;
-cModif *cModif::instPtr;
+PMretType QTmodifDlg::m_retval;
+QTmodifDlg *QTmodifDlg::instPtr;
 
-cModif::cModif(stringlist *l, bool(*s)(const char*))
+QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*))
 {
     instPtr = this;
     wb_shell = this;
@@ -279,7 +279,7 @@ cModif::cModif(stringlist *l, bool(*s)(const char*))
 }
 
 
-cModif::~cModif()
+QTmodifDlg::~QTmodifDlg()
 {
     instPtr = 0;
     delete [] m_list;
@@ -287,7 +287,7 @@ cModif::~cModif()
 
 
 QSize
-cModif::sizeHint() const
+QTmodifDlg::sizeHint() const
 {
     int ww = m_width*QTfont::stringWidth(0, m_text);
     if (ww < 200)
@@ -303,7 +303,7 @@ cModif::sizeHint() const
 // Redraw the text area.
 //
 void
-cModif::refresh()
+QTmodifDlg::refresh()
 {
     char buf[256];
     QColor nc = QTbag::PopupColor(GRattrColorNo);
@@ -344,7 +344,7 @@ cModif::refresh()
 
 
 void
-cModif::save_all_slot()
+QTmodifDlg::save_all_slot()
 {
     for (s_item *s = instPtr->m_list; s->name; s++)
         s->save = true;
@@ -353,7 +353,7 @@ cModif::save_all_slot()
 
 
 void
-cModif::skip_all_slot()
+QTmodifDlg::skip_all_slot()
 {
     for (s_item *s = instPtr->m_list; s->name; s++)
         s->save = false;
@@ -362,14 +362,14 @@ cModif::skip_all_slot()
 
 
 void
-cModif::help_slot()
+QTmodifDlg::help_slot()
 {
     DSPmainWbag(PopUpHelp("xic:sv"))
 }
 
 
 void
-cModif::apply_slot()
+QTmodifDlg::apply_slot()
 {
     if (m_saveproc) {
         for (s_item *s = m_list; s->name; s++) {
@@ -385,7 +385,7 @@ cModif::apply_slot()
 
 
 void
-cModif::abort_slot()
+QTmodifDlg::abort_slot()
 {
     m_retval = PMabort;
     if (QTdev::self()->LoopLevel() > 1)
@@ -395,7 +395,7 @@ cModif::abort_slot()
 
 
 void
-cModif::font_changed_slot(int fnum)
+QTmodifDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
@@ -409,14 +409,14 @@ cModif::font_changed_slot(int fnum)
 
 
 void
-cModif::mouse_press_slot(QMouseEvent *ev)
+QTmodifDlg::mouse_press_slot(QMouseEvent *ev)
 {
     if (ev->type() != QEvent::MouseButtonPress) {
         ev->ignore();
         return;
     }
     ev->accept();
-    cModif::self()->mousePressEvent(ev);
+    QTmodifDlg::self()->mousePressEvent(ev);
 
     const char *str = lstring::copy(
         (const char*)m_text->toPlainText().toLatin1());
@@ -476,5 +476,4 @@ cModif::mouse_press_slot(QMouseEvent *ev)
     }
     delete [] str;
 }
-// End of cModif definitions.
 

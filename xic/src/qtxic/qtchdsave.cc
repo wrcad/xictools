@@ -65,19 +65,19 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cCHDsave::self())
-            cCHDsave::self()->deleteLater();
+        if (QTchdSaveDlg::self())
+            QTchdSaveDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cCHDsave::self())
-            cCHDsave::self()->update(chdname);
+        if (QTchdSaveDlg::self())
+            QTchdSaveDlg::self()->update(chdname);
         return;
     }
-    if (cCHDsave::self())
+    if (QTchdSaveDlg::self())
         return;
 
-    new cCHDsave(caller, callback, arg, chdname);
+    new QTchdSaveDlg(caller, callback, arg, chdname);
 
     /*
     int mwid;
@@ -89,7 +89,7 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
     gtk_window_move(GTK_WINDOW(Cs->shell()), x, y);
     gtk_widget_show(Cs->shell());
     */
-    cCHDsave::self()->show();
+    QTchdSaveDlg::self()->show();
 }
 
 
@@ -107,10 +107,10 @@ namespace {
 */
 
 
-cCHDsave *cCHDsave::instPtr;
+QTchdSaveDlg *QTchdSaveDlg::instPtr;
 
-cCHDsave::cCHDsave(GRobject caller, bool(*callback)(const char*, bool, void*),
-    void *arg, const char *chdname)
+QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
+    bool(*callback)(const char*, bool, void*), void *arg, const char *chdname)
 {
     instPtr = this;
     cs_caller = caller;
@@ -143,6 +143,8 @@ cCHDsave::cCHDsave(GRobject caller, bool(*callback)(const char*, bool, void*),
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     cs_label = new QLabel(tr(buf));
     hb->addWidget(cs_label);
 
@@ -176,7 +178,7 @@ cCHDsave::cCHDsave(GRobject caller, bool(*callback)(const char*, bool, void*),
 
     // Layer list
     //
-    cs_llist = new cLayerList;
+    cs_llist = new QTlayerList;
     cs_llist->setEnabled(false);
     vbox->addWidget(cs_llist);
 
@@ -197,7 +199,7 @@ cCHDsave::cCHDsave(GRobject caller, bool(*callback)(const char*, bool, void*),
 }
 
 
-cCHDsave::~cCHDsave()
+QTchdSaveDlg::~QTchdSaveDlg()
 {
     instPtr = 0;
     if (cs_caller)
@@ -206,7 +208,7 @@ cCHDsave::~cCHDsave()
 
 
 void
-cCHDsave::update(const char *chdname)
+QTchdSaveDlg::update(const char *chdname)
 {
     if (!chdname)
         return;
@@ -219,27 +221,27 @@ cCHDsave::update(const char *chdname)
 
 
 void
-cCHDsave::help_btn_slot()
+QTchdSaveDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:chdsav"))
 }
 
 
 void
-cCHDsave::text_changed_slot(const QString&)
+QTchdSaveDlg::text_changed_slot(const QString&)
 {
 }
 
 
 void
-cCHDsave::geom_btn_slot(int state)
+QTchdSaveDlg::geom_btn_slot(int state)
 {
     cs_llist->setEnabled(state);
 }
 
 
 void
-cCHDsave::apply_btn_slot()
+QTchdSaveDlg::apply_btn_slot()
 {
     int ret = true;
     if (cs_callback) {
@@ -250,12 +252,12 @@ cCHDsave::apply_btn_slot()
         delete [] string;
     }
     if (ret)
-        cCHDsave::self()->deleteLater();
+        QTchdSaveDlg::self()->deleteLater();
 }
 
 
 void
-cCHDsave::dismiss_btn_slot()
+QTchdSaveDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpChdSave(0, MODE_OFF, 0, 0, 0, 0, 0);
 }
@@ -267,7 +269,7 @@ cCHDsave::dismiss_btn_slot()
 // After the user types, the Enter key will call the Apply method.
 //
 void
-cCHDsave::cs_change_proc(GtkWidget*, void*)
+QTchdSaveDlg::cs_change_proc(GtkWidget*, void*)
 {
     if (Cs) {
         g_signal_connect(G_OBJECT(Cs->cs_popup), "key-press-event",
@@ -282,7 +284,7 @@ cCHDsave::cs_change_proc(GtkWidget*, void*)
 // In single-line mode, Return is taken as an "OK" termination.
 //
 int
-cCHDsave::cs_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
+QTchdSaveDlg::cs_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
 {
     if (Cs && ev->key.keyval == GDK_KEY_Return) {
         Cs->button_hdlr(Cs->cs_apply);
@@ -296,7 +298,7 @@ cCHDsave::cs_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
 // Drag data received in editing window, grab it
 //
 void
-cCHDsave::cs_drag_data_received(GtkWidget *entry,
+QTchdSaveDlg::cs_drag_data_received(GtkWidget *entry,
     GdkDragContext *context, gint, gint, GtkSelectionData *data,
     guint, guint time)
 {

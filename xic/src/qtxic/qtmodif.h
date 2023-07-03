@@ -46,11 +46,11 @@
 #include "editif.h"
 #include <QDialog>
 
+
 class QLabel;
 class QMouseEvent;
 
-
-class cModif : public QDialog, public QTbag
+class QTmodifDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
@@ -69,14 +69,14 @@ public:
         char ft[4];                         // file type code
     };
 
-    cModif(stringlist*, bool(*)(const char*));
-    ~cModif();
+    QTmodifDlg(stringlist*, bool(*)(const char*));
+    ~QTmodifDlg();
 
     QSize sizeHint() const;
 
-    bool is_empty()             { return (!m_field || !m_width); }
-    static PMretType retval()   { return (m_retval); }
-    static cModif *self()       { return (instPtr); }
+    bool is_empty()                 { return (!m_field || !m_width); }
+    static PMretType retval()       { return (m_retval); }
+    static QTmodifDlg *self()       { return (instPtr); }
 
 private slots:
     void save_all_slot();
@@ -98,7 +98,7 @@ private:
     QTtextEdit *m_text;
 
     static PMretType m_retval;         // return flag
-    static cModif *instPtr;
+    static QTmodifDlg *instPtr;
 };
 
 #endif

@@ -50,8 +50,8 @@
 class QColorDialog;
 class QComboBox;
 
-//class cColor : public QColorDialog
-class cColor : public QDialog
+//class QTcolorDlg : public QColorDialog
+class QTcolorDlg : public QDialog
 {
     Q_OBJECT
 
@@ -63,12 +63,12 @@ public:
     };
     enum { CATEG_ATTR, CATEG_PROMPT, CATEG_PLOT };
 
-    cColor(GRobject);
-    ~cColor();
+    QTcolorDlg(GRobject);
+    ~QTcolorDlg();
 
     void update();
 
-    static cColor *self()           { return (instPtr); }
+    static QTcolorDlg *self()           { return (instPtr); }
 
 private slots:
     void mode_menu_change_slot(int);
@@ -104,7 +104,7 @@ private:
     int c_green;
     int c_blue;
 
-    static cColor *instPtr;
+    static QTcolorDlg *instPtr;
 
     static clritem Menu1[];
     static clritem Menu2[];

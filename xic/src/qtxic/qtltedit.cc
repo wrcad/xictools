@@ -63,7 +63,7 @@ cMain::PopUpLayerEditor(GRobject c)
 {
     if (!QTdev::exists() || !QTmainwin::exists())
         return (0);
-    cLtabEdit *cbs = new cLtabEdit(c);
+    QTltabEditDlg *cbs = new QTltabEditDlg(c);
 
     QTdev::self()->SetPopupLocation(GRloc(), cbs,
         QTmainwin::self()->Viewport());
@@ -73,9 +73,9 @@ cMain::PopUpLayerEditor(GRobject c)
 // End of cMain functions.
 
 
-const char *cLtabEdit::initmsg = "Layer Editor -- add or remove layers.";
+const char *QTltabEditDlg::initmsg = "Layer Editor -- add or remove layers.";
 
-cLtabEdit::cLtabEdit(GRobject c)
+QTltabEditDlg::QTltabEditDlg(GRobject c)
 {
     le_caller = c;
     le_add = 0;
@@ -103,6 +103,8 @@ cLtabEdit::cLtabEdit(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     le_label = new QLabel(tr(initmsg));
     hb->addWidget(le_label);
 
@@ -148,7 +150,7 @@ cLtabEdit::cLtabEdit(GRobject c)
 }
 
 
-cLtabEdit::~cLtabEdit()
+QTltabEditDlg::~QTltabEditDlg()
 {
     if (le_caller)
         QTdev::Deselect(le_caller);
@@ -159,7 +161,7 @@ cLtabEdit::~cLtabEdit()
 // Update the list of removed layers
 //
 void
-cLtabEdit::update(CDll *list)
+QTltabEditDlg::update(CDll *list)
 {
     le_opmenu->clear();
     for (CDll *l = list; l; l = l->next) {
@@ -177,7 +179,7 @@ cLtabEdit::update(CDll *list)
 // adding layers.
 //
 char *
-cLtabEdit::layername()
+QTltabEditDlg::layername()
 {
     QByteArray qba = le_opmenu->currentText().toLatin1();
     const char *text = (const char*)qba.constData();
@@ -196,7 +198,7 @@ cLtabEdit::layername()
 // Deselect the Remove button.
 //
 void
-cLtabEdit::desel_rem()
+QTltabEditDlg::desel_rem()
 {
     QTdev::Deselect(le_rem);
 }
@@ -205,7 +207,7 @@ cLtabEdit::desel_rem()
 // Pop down the widget (from the caller).
 //
 void
-cLtabEdit::popdown()
+QTltabEditDlg::popdown()
 {
     deleteLater();
 }
@@ -214,7 +216,7 @@ cLtabEdit::popdown()
 // Return the text input, or 0 if no good.
 //
 char *
-cLtabEdit::le_get_lname()
+QTltabEditDlg::le_get_lname()
 {
     QByteArray qba = le_opmenu->lineEdit()->text().toLatin1();;
     const char *string = (const char*)qba.constData();
@@ -236,14 +238,14 @@ cLtabEdit::le_get_lname()
 
 
 void
-cLtabEdit::help_btn_slot()
+QTltabEditDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:edlyr"))
 }
 
 
 void
-cLtabEdit::add_layer_slot(bool state)
+QTltabEditDlg::add_layer_slot(bool state)
 {
     if (state) {
         le_label->setText(tr(initmsg));
@@ -263,7 +265,7 @@ cLtabEdit::add_layer_slot(bool state)
 
 
 void
-cLtabEdit::rem_layer_slot(bool state)
+QTltabEditDlg::rem_layer_slot(bool state)
 {
     if (!state) {
         le_label->setText(tr(initmsg));
@@ -287,7 +289,7 @@ cLtabEdit::rem_layer_slot(bool state)
 
 
 void
-cLtabEdit::dismiss_slot()
+QTltabEditDlg::dismiss_slot()
 {
     popdown();
 }

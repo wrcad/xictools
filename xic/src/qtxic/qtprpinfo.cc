@@ -70,10 +70,10 @@ namespace {
 
 
 // Static function.
-cPrpBase *
-cPrpBase::prptyInfoPtr()
+QTprpBase *
+QTprpBase::prptyInfoPtr()
 {
-    return (cPrpInfo::self());
+    return (QTprpInfoDlg::self());
 }
 
 
@@ -85,12 +85,12 @@ cEdit::PopUpPropertyInfo(CDo *odesc, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cPrpInfo::self())
-            cPrpInfo::self()->deleteLater();
+        if (QTprpInfoDlg::self())
+            QTprpInfoDlg::self()->deleteLater();
         return;
     }
-    if (cPrpInfo::self()) {
-        cPrpInfo::self()->update(odesc);
+    if (QTprpInfoDlg::self()) {
+        QTprpInfoDlg::self()->update(odesc);
         return;
     }
     if (mode == MODE_UPD)
@@ -98,11 +98,11 @@ cEdit::PopUpPropertyInfo(CDo *odesc, ShowMode mode)
     if (!odesc)
         return;
 
-    new cPrpInfo(odesc);
+    new QTprpInfoDlg(odesc);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_UR), cPrpInfo::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_UR), QTprpInfoDlg::self(),
         QTmainwin::self()->Viewport());
-    cPrpInfo::self()->show();
+    QTprpInfoDlg::self()->show();
 }
 
 
@@ -111,15 +111,15 @@ cEdit::PopUpPropertyInfo(CDo *odesc, ShowMode mode)
 void
 cEdit::PropertyInfoPurge(CDo *odold, CDo *odnew)
 {
-    if (cPrpInfo::self())
-        cPrpInfo::self()->purge(odold, odnew);
+    if (QTprpInfoDlg::self())
+        QTprpInfoDlg::self()->purge(odold, odnew);
 }
 // End of cEdit functions.
 
 
-cPrpInfo *cPrpInfo::instPtr;
+QTprpInfoDlg *QTprpInfoDlg::instPtr;
 
-cPrpInfo::cPrpInfo(CDo *odesc)
+QTprpInfoDlg::QTprpInfoDlg(CDo *odesc)
 {
     instPtr = this;
 
@@ -172,7 +172,7 @@ cPrpInfo::cPrpInfo(CDo *odesc)
 }
 
 
-cPrpInfo::~cPrpInfo()
+QTprpInfoDlg::~QTprpInfoDlg()
 {
     instPtr = 0;
     if (pb_odesc)
@@ -181,7 +181,7 @@ cPrpInfo::~cPrpInfo()
 
 
 void
-cPrpInfo::update(CDo *odesc)
+QTprpInfoDlg::update(CDo *odesc)
 {
     if (pb_odesc)
         DSP()->ShowCurrentObject(ERASE, pb_odesc, HighlightingColor);
@@ -200,7 +200,7 @@ cPrpInfo::update(CDo *odesc)
 
 
 void
-cPrpInfo::purge(CDo *odold, CDo *odnew)
+QTprpInfoDlg::purge(CDo *odold, CDo *odnew)
 {
     if (odold == pb_odesc) {
         if (odnew)
@@ -212,7 +212,7 @@ cPrpInfo::purge(CDo *odold, CDo *odnew)
 
 
 void
-cPrpInfo::mouse_press_slot(QMouseEvent *ev)
+QTprpInfoDlg::mouse_press_slot(QMouseEvent *ev)
 {
     if (ev->type() == QEvent::MouseButtonPress) {
         ev->accept();
@@ -229,7 +229,7 @@ cPrpInfo::mouse_press_slot(QMouseEvent *ev)
 
 
 void
-cPrpInfo::mouse_motion_slot(QMouseEvent *ev)
+QTprpInfoDlg::mouse_motion_slot(QMouseEvent *ev)
 {
     if (ev->type() != QEvent::MouseMove) {
         ev->ignore();
@@ -241,21 +241,21 @@ cPrpInfo::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-cPrpInfo::mime_data_received_slot(const QMimeData *d)
+QTprpInfoDlg::mime_data_received_slot(const QMimeData *d)
 {
     handle_mime_data_received(d);
 }
 
 
 void
-cPrpInfo::dismiss_btn_slot()
+QTprpInfoDlg::dismiss_btn_slot()
 {
     ED()->PopUpPropertyInfo(0, MODE_OFF);
 }
 
 
 void
-cPrpInfo::font_changed_slot(int fnum)
+QTprpInfoDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;

@@ -66,31 +66,31 @@ cMain::PopUpCellFilt(GRobject caller, ShowMode mode, DisplayMode dm,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cCfilt::self())
-            cCfilt::self()->deleteLater();
+        if (QTcfiltDlg::self())
+            QTcfiltDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cCfilt::self())
-            cCfilt::self()->update(dm);
+        if (QTcfiltDlg::self())
+            QTcfiltDlg::self()->update(dm);
         return;
     }
-    if (cCfilt::self())
+    if (QTcfiltDlg::self())
         return;
 
-    new cCfilt(caller, dm, cb, arg);
+    new QTcfiltDlg(caller, dm, cb, arg);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cCfilt::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTcfiltDlg::self(),
         QTmainwin::self()->Viewport());
-    cCfilt::self()->show();
+    QTcfiltDlg::self()->show();
 }
 
 
-char *cCfilt::cf_phys_regs[NUMREGS];
-char *cCfilt::cf_elec_regs[NUMREGS];
-cCfilt *cCfilt::instPtr;
+char *QTcfiltDlg::cf_phys_regs[NUMREGS];
+char *QTcfiltDlg::cf_elec_regs[NUMREGS];
+QTcfiltDlg *QTcfiltDlg::instPtr;
 
-cCfilt::cCfilt(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
+QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     void *arg)
 {
     instPtr = this;
@@ -182,6 +182,8 @@ cCfilt::cCfilt(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set filtering for cells list"));
     hb->addWidget(label);
 
@@ -408,7 +410,7 @@ cCfilt::cCfilt(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
 }
 
 
-cCfilt::~cCfilt()
+QTcfiltDlg::~QTcfiltDlg()
 {
     instPtr = 0;
     if (cf_caller)
@@ -420,7 +422,7 @@ cCfilt::~cCfilt()
 // panel, before the actual list is generated.
 //
 void
-cCfilt::update(DisplayMode mode)
+QTcfiltDlg::update(DisplayMode mode)
 {
     cf_mode = mode;
     cfilter_t *cf;
@@ -435,7 +437,7 @@ cCfilt::update(DisplayMode mode)
 
 
 void
-cCfilt::setup(const cfilter_t *cf)
+QTcfiltDlg::setup(const cfilter_t *cf)
 {
     if (!cf)
         return;
@@ -577,7 +579,7 @@ cCfilt::setup(const cfilter_t *cf)
 // Create a new filter based on the present panel content.
 //
 cfilter_t *
-cCfilt::new_filter()
+QTcfiltDlg::new_filter()
 {
     cfilter_t *cf = new cfilter_t(cf_mode);
     unsigned int f = 0;
@@ -693,7 +695,7 @@ cCfilt::new_filter()
 
 
 void
-cCfilt::store_menu_slot(QAction *a)
+QTcfiltDlg::store_menu_slot(QAction *a)
 {
     int ix = a->data().toInt();
     cfilter_t *cf = new_filter();
@@ -714,7 +716,7 @@ cCfilt::store_menu_slot(QAction *a)
 
 
 void
-cCfilt::recall_menu_slot(QAction *a)
+QTcfiltDlg::recall_menu_slot(QAction *a)
 {
     int ix = a->data().toInt();
     cfilter_t *cf;
@@ -728,14 +730,14 @@ cCfilt::recall_menu_slot(QAction *a)
 
 
 void
-cCfilt::help_btn_slot()
+QTcfiltDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:cfilt"))
 }
 
 
 void
-cCfilt::nimm_btn_slot(int state)
+QTcfiltDlg::nimm_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_imm, false);
@@ -743,7 +745,7 @@ cCfilt::nimm_btn_slot(int state)
 
 
 void
-cCfilt::imm_btn_slot(int state)
+QTcfiltDlg::imm_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nimm, false);
@@ -751,7 +753,7 @@ cCfilt::imm_btn_slot(int state)
 
 
 void
-cCfilt::nvsm_btn_slot(int state)
+QTcfiltDlg::nvsm_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_vsm, false);
@@ -759,7 +761,7 @@ cCfilt::nvsm_btn_slot(int state)
 
 
 void
-cCfilt::vsm_btn_slot(int state)
+QTcfiltDlg::vsm_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nvsm, false);
@@ -767,7 +769,7 @@ cCfilt::vsm_btn_slot(int state)
 
 
 void
-cCfilt::nlib_btn_slot(int state)
+QTcfiltDlg::nlib_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_lib, false);
@@ -775,7 +777,7 @@ cCfilt::nlib_btn_slot(int state)
 
 
 void
-cCfilt::lib_btn_slot(int state)
+QTcfiltDlg::lib_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nlib, false);
@@ -783,7 +785,7 @@ cCfilt::lib_btn_slot(int state)
 
 
 void
-cCfilt::npsm_btn_slot(int state)
+QTcfiltDlg::npsm_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_psm, false);
@@ -791,7 +793,7 @@ cCfilt::npsm_btn_slot(int state)
 
 
 void
-cCfilt::psm_btn_slot(int state)
+QTcfiltDlg::psm_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_npsm, false);
@@ -799,7 +801,7 @@ cCfilt::psm_btn_slot(int state)
 
 
 void
-cCfilt::ndev_btn_slot(int state)
+QTcfiltDlg::ndev_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_dev, false);
@@ -807,7 +809,7 @@ cCfilt::ndev_btn_slot(int state)
 
 
 void
-cCfilt::dev_btn_slot(int state)
+QTcfiltDlg::dev_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_ndev, false);
@@ -815,7 +817,7 @@ cCfilt::dev_btn_slot(int state)
 
 
 void
-cCfilt::nspr_btn_slot(int state)
+QTcfiltDlg::nspr_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_spr, false);
@@ -823,7 +825,7 @@ cCfilt::nspr_btn_slot(int state)
 
 
 void
-cCfilt::spr_btn_slot(int state)
+QTcfiltDlg::spr_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nspr, false);
@@ -831,7 +833,7 @@ cCfilt::spr_btn_slot(int state)
 
 
 void
-cCfilt::ntop_btn_slot(int state)
+QTcfiltDlg::ntop_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_top, false);
@@ -839,7 +841,7 @@ cCfilt::ntop_btn_slot(int state)
 
 
 void
-cCfilt::top_btn_slot(int state)
+QTcfiltDlg::top_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_ntop, false);
@@ -847,7 +849,7 @@ cCfilt::top_btn_slot(int state)
 
 
 void
-cCfilt::nmod_btn_slot(int state)
+QTcfiltDlg::nmod_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_mod, false);
@@ -855,7 +857,7 @@ cCfilt::nmod_btn_slot(int state)
 
 
 void
-cCfilt::mod_btn_slot(int state)
+QTcfiltDlg::mod_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nmod, false);
@@ -863,7 +865,7 @@ cCfilt::mod_btn_slot(int state)
 
 
 void
-cCfilt::nalt_btn_slot(int state)
+QTcfiltDlg::nalt_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_alt, false);
@@ -871,7 +873,7 @@ cCfilt::nalt_btn_slot(int state)
 
 
 void
-cCfilt::alt_btn_slot(int state)
+QTcfiltDlg::alt_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nalt, false);
@@ -879,7 +881,7 @@ cCfilt::alt_btn_slot(int state)
 
 
 void
-cCfilt::nref_btn_slot(int state)
+QTcfiltDlg::nref_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_ref, false);
@@ -887,7 +889,7 @@ cCfilt::nref_btn_slot(int state)
 
 
 void
-cCfilt::ref_btn_slot(int state)
+QTcfiltDlg::ref_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nref, false);
@@ -895,7 +897,7 @@ cCfilt::ref_btn_slot(int state)
 
 
 void
-cCfilt::npcl_btn_slot(int state)
+QTcfiltDlg::npcl_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_pcl, false);
@@ -903,7 +905,7 @@ cCfilt::npcl_btn_slot(int state)
 
 
 void
-cCfilt::pcl_btn_slot(int state)
+QTcfiltDlg::pcl_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_npcl, false);
@@ -911,7 +913,7 @@ cCfilt::pcl_btn_slot(int state)
 
 
 void
-cCfilt::nscl_btn_slot(int state)
+QTcfiltDlg::nscl_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_scl, false);
@@ -919,7 +921,7 @@ cCfilt::nscl_btn_slot(int state)
 
 
 void
-cCfilt::scl_btn_slot(int state)
+QTcfiltDlg::scl_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nscl, false);
@@ -927,7 +929,7 @@ cCfilt::scl_btn_slot(int state)
 
 
 void
-cCfilt::nlyr_btn_slot(int state)
+QTcfiltDlg::nlyr_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_lyr, false);
@@ -935,7 +937,7 @@ cCfilt::nlyr_btn_slot(int state)
 
 
 void
-cCfilt::lyr_btn_slot(int state)
+QTcfiltDlg::lyr_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nlyr, false);
@@ -943,7 +945,7 @@ cCfilt::lyr_btn_slot(int state)
 
 
 void
-cCfilt::nflg_btn_slot(int state)
+QTcfiltDlg::nflg_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_flg, false);
@@ -951,7 +953,7 @@ cCfilt::nflg_btn_slot(int state)
 
 
 void
-cCfilt::flg_btn_slot(int state)
+QTcfiltDlg::flg_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nflg, false);
@@ -959,7 +961,7 @@ cCfilt::flg_btn_slot(int state)
 
 
 void
-cCfilt::nftp_btn_slot(int state)
+QTcfiltDlg::nftp_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_ftp, false);
@@ -967,7 +969,7 @@ cCfilt::nftp_btn_slot(int state)
 
 
 void
-cCfilt::ftp_btn_slot(int state)
+QTcfiltDlg::ftp_btn_slot(int state)
 {
     if (state)
         QTdev::SetStatus(cf_nftp, false);
@@ -975,7 +977,7 @@ cCfilt::ftp_btn_slot(int state)
 
 
 void
-cCfilt::apply_btn_slot()
+QTcfiltDlg::apply_btn_slot()
 {
     if (!cf_cb)
         return;
@@ -987,7 +989,7 @@ cCfilt::apply_btn_slot()
 
 
 void
-cCfilt::dismiss_btn_slot()
+QTcfiltDlg::dismiss_btn_slot()
 {
     XM()->PopUpCellFilt(0, MODE_OFF, Physical, 0, 0);
 }

@@ -92,18 +92,17 @@ class QPushButton;
 class QLabel;
 class QSpinBox;
 
-
-class cJoin : public QDialog
+class QTjoinDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cJoin(void*);
-    ~cJoin();
+    QTjoinDlg(void*);
+    ~QTjoinDlg();
 
     void update();
 
-    static cJoin *self()            { return (instPtr); }
+    static QTjoinDlg *self()            { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -150,7 +149,7 @@ private:
     int jn_last_mqueue;
     int jn_last;
 
-    static cJoin *instPtr;
+    static QTjoinDlg *instPtr;
 };
 
 #endif

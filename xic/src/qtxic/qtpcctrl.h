@@ -51,17 +51,17 @@ class QComboBox;
 class QCheckBox;
 class QSpinBox;
 
-class cPCellCtrl : public QDialog
+class QTpcellCtrlDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cPCellCtrl(GRobject);
-    ~cPCellCtrl();
+    QTpcellCtrlDlg(GRobject);
+    ~QTpcellCtrlDlg();
 
     void update();
 
-    static cPCellCtrl *self()           { return (instPtr); }
+    static QTpcellCtrlDlg *self()           { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -81,7 +81,7 @@ private:
     QSpinBox    *pcc_sb_psz;
 
     static const char *pcc_abutvals[];
-    static cPCellCtrl *instPtr;
+    static QTpcellCtrlDlg *instPtr;
 };
 
 #endif

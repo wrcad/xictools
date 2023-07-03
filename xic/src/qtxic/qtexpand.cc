@@ -50,7 +50,7 @@
 #include <QPushButton>
 
 
-cExpand::cExpand(QTbag *owner, const char *string, bool nopeek,
+QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     void *arg) : QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
@@ -74,7 +74,8 @@ cExpand::cExpand(QTbag *owner, const char *string, bool nopeek,
 
     QGroupBox *gb = new QGroupBox(this);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     label = new QLabel(gb);
     label->setText(QString(tr("Set Expansion Control String")));
     hb->addWidget(label);
@@ -181,7 +182,7 @@ cExpand::cExpand(QTbag *owner, const char *string, bool nopeek,
 }
 
 
-cExpand::~cExpand()
+QTexpandDlg::~QTexpandDlg()
 {
     if (p_usrptr)
         *p_usrptr = 0;
@@ -213,7 +214,7 @@ cExpand::~cExpand()
 // GRpopup override
 //
 void
-cExpand::popdown()
+QTexpandDlg::popdown()
 {
     if (!p_parent)
         return;
@@ -226,21 +227,21 @@ cExpand::popdown()
 
 
 void
-cExpand::update(const char *string)
+QTexpandDlg::update(const char *string)
 {
     edit->setText(QString(string));
 }
 
 
 void
-cExpand::help_slot()
+QTexpandDlg::help_slot()
 {
     DSPmainWbag(PopUpHelp("xic:expnd"))
 }
 
 
 void
-cExpand::plus_slot()
+QTexpandDlg::plus_slot()
 {
     QString qs = edit->text();
     if (!qs.isNull()) {
@@ -256,7 +257,7 @@ cExpand::plus_slot()
 
 
 void
-cExpand::minus_slot()
+QTexpandDlg::minus_slot()
 {
     QString qs = edit->text();
     if (!qs.isNull()) {
@@ -272,63 +273,63 @@ cExpand::minus_slot()
 
 
 void
-cExpand::all_slot()
+QTexpandDlg::all_slot()
 {
     edit->setText(QString(tr("all")));
 }
 
 
 void
-cExpand::b0_slot()
+QTexpandDlg::b0_slot()
 {
     edit->setText(QString("0"));
 }
 
 
 void
-cExpand::b1_slot()
+QTexpandDlg::b1_slot()
 {
     edit->setText(QString("1"));
 }
 
 
 void
-cExpand::b2_slot()
+QTexpandDlg::b2_slot()
 {
     edit->setText(QString("2"));
 }
 
 
 void
-cExpand::b3_slot()
+QTexpandDlg::b3_slot()
 {
     edit->setText(QString("3"));
 }
 
 
 void
-cExpand::b4_slot()
+QTexpandDlg::b4_slot()
 {
     edit->setText(QString("4"));
 }
 
 
 void
-cExpand::b5_slot()
+QTexpandDlg::b5_slot()
 {
     edit->setText(QString("5"));
 }
 
 
 void
-cExpand::peek_slot()
+QTexpandDlg::peek_slot()
 {
     edit->setText(QString("p"));
 }
 
 
 void
-cExpand::apply_slot()
+QTexpandDlg::apply_slot()
 {
     char *string = lstring::copy(edit->text().toLatin1().constData());
     bool ret = false;
@@ -341,7 +342,7 @@ cExpand::apply_slot()
 
 
 void
-cExpand::dismiss_slot()
+QTexpandDlg::dismiss_slot()
 {
     deleteLater();
 }

@@ -67,27 +67,27 @@ cEdit::PopUpPCellCtrl(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cPCellCtrl::self())
-            cPCellCtrl::self()->deleteLater();
+        if (QTpcellCtrlDlg::self())
+            QTpcellCtrlDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cPCellCtrl::self())
-            cPCellCtrl::self()->update();
+        if (QTpcellCtrlDlg::self())
+            QTpcellCtrlDlg::self()->update();
         return;
     }
-    if (cPCellCtrl::self())
+    if (QTpcellCtrlDlg::self())
         return;
 
-    new cPCellCtrl(caller);
+    new QTpcellCtrlDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cPCellCtrl::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTpcellCtrlDlg::self(),
         QTmainwin::self()->Viewport());
-    cPCellCtrl::self()->show();
+    QTpcellCtrlDlg::self()->show();
 }
 
 
-const char *cPCellCtrl::pcc_abutvals[] =
+const char *QTpcellCtrlDlg::pcc_abutvals[] =
 {
     "Mode 0 (no auto-abutment)",
     "Mode 1 (no contact)",
@@ -95,9 +95,9 @@ const char *cPCellCtrl::pcc_abutvals[] =
     0
 };
 
-cPCellCtrl *cPCellCtrl::instPtr;
+QTpcellCtrlDlg *QTpcellCtrlDlg::instPtr;
 
-cPCellCtrl::cPCellCtrl(GRobject c)
+QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
 {
     instPtr = this;
     pcc_caller = c;
@@ -125,6 +125,8 @@ cPCellCtrl::cPCellCtrl(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Control Parameterized Cell Options"));
     hb->addWidget(label);
 
@@ -188,7 +190,7 @@ cPCellCtrl::cPCellCtrl(GRobject c)
 }
 
 
-cPCellCtrl::~cPCellCtrl()
+QTpcellCtrlDlg::~QTpcellCtrlDlg()
 {
     instPtr = 0;
     if (pcc_caller)
@@ -197,7 +199,7 @@ cPCellCtrl::~cPCellCtrl()
 
 
 void
-cPCellCtrl::update()
+QTpcellCtrlDlg::update()
 {
     const char *s = CDvdb()->getVariable(VA_PCellAbutMode);
     if (s && atoi(s) == 2)
@@ -225,14 +227,14 @@ cPCellCtrl::update()
 
 
 void
-cPCellCtrl::help_btn_slot()
+QTpcellCtrlDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:pcctl"))
 }
 
 
 void
-cPCellCtrl::abut_mode_slot(int i)
+QTpcellCtrlDlg::abut_mode_slot(int i)
 {
     if (i == 0)
         CDvdb()->setVariable(VA_PCellAbutMode, "0");
@@ -244,7 +246,7 @@ cPCellCtrl::abut_mode_slot(int i)
 
 
 void
-cPCellCtrl::hidestr_btn_slot(int state)
+QTpcellCtrlDlg::hidestr_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_PCellHideGrips, "");
@@ -254,7 +256,7 @@ cPCellCtrl::hidestr_btn_slot(int state)
 
 
 void
-cPCellCtrl::psz_change_slot(int d)
+QTpcellCtrlDlg::psz_change_slot(int d)
 {
     if (d == DSP_MIN_FENCE_INST_PIXELS)
         CDvdb()->clearVariable(VA_PCellGripInstSize);
@@ -267,7 +269,7 @@ cPCellCtrl::psz_change_slot(int d)
 
 
 void
-cPCellCtrl::listsm_btn_slot(int state)
+QTpcellCtrlDlg::listsm_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_PCellListSubMasters, "");
@@ -277,7 +279,7 @@ cPCellCtrl::listsm_btn_slot(int state)
 
 
 void
-cPCellCtrl::allwarn_btn_slot(int state)
+QTpcellCtrlDlg::allwarn_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_PCellShowAllWarnings, "");
@@ -287,7 +289,7 @@ cPCellCtrl::allwarn_btn_slot(int state)
 
 
 void
-cPCellCtrl::dismiss_btn_slot()
+QTpcellCtrlDlg::dismiss_btn_slot()
 {
     ED()->PopUpPCellCtrl(0, MODE_OFF);
 }

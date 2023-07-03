@@ -57,13 +57,13 @@ class QCheckBox;
 // Help system keywords used:
 //  xic:zoom
 
-class cZoom : public QDialog, public GRpopup
+class QTzoomDlg : public QDialog, public GRpopup
 {
     Q_OBJECT
 
 public:
-    cZoom(QTbag*, WindowDesc*);
-    ~cZoom();
+    QTzoomDlg(QTbag*, WindowDesc*);
+    ~QTzoomDlg();
 
     // GRpopup overrides
     void set_visible(bool visib)

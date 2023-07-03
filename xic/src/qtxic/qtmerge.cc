@@ -93,28 +93,28 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
     if (!QTdev::exists() || !QTmainwin::exists())
         return (true);
     if (mode == MODE_OFF) {
-        if (cMerge::self() && !cMerge::self()->is_hidden()) {
+        if (QTmergeDlg::self() && !QTmergeDlg::self()->is_hidden()) {
             if (QTdev::self()->LoopLevel() > 1)
                 QTdev::self()->BreakLoop();
             end_modal();
         }
-        if (cMerge::self())
-            cMerge::self()->deleteLater();
+        if (QTmergeDlg::self())
+            QTmergeDlg::self()->deleteLater();
         return (true);
     }
     if (mode == MODE_UPD) {
         // We get here when the user presses "apply to all".  Hide the
         // widget and break out of modality.
 
-        if (cMerge::self() && cMerge::self()->set_apply_to_all()) {
+        if (QTmergeDlg::self() && QTmergeDlg::self()->set_apply_to_all()) {
             if (QTdev::self()->LoopLevel() > 1)
                 QTdev::self()->BreakLoop();
             end_modal();
         }
         return (true);
     }
-    if (cMerge::self()) {
-        if (cMerge::self()->refresh(mi))
+    if (QTmergeDlg::self()) {
+        if (QTmergeDlg::self()->refresh(mi))
             return (true);
     }
     else {
@@ -122,26 +122,26 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
             // If the popup is not enabled, return the default.
             return (true);
 
-        new cMerge(mi);
-        if (cMerge::self()->is_hidden())
+        new QTmergeDlg(mi);
+        if (QTmergeDlg::self()->is_hidden())
             return (true);
 
-        QTdev::self()->SetPopupLocation(GRloc(LW_LL), cMerge::self(),
+        QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTmergeDlg::self(),
             QTmainwin::self()->Viewport());
-        start_modal(cMerge::self());
+        start_modal(QTmergeDlg::self());
     }
 
     QTdev::self()->MainLoop();  // Wait for user's response.
 
-    if (cMerge::self())
-        cMerge::self()->query(mi);
+    if (QTmergeDlg::self())
+        QTmergeDlg::self()->query(mi);
     return (true);
 }
 
 
-cMerge *cMerge::instPtr;
+QTmergeDlg *QTmergeDlg::instPtr;
 
-cMerge::cMerge(mitem_t *mi)
+QTmergeDlg::QTmergeDlg(mitem_t *mi)
 {
     instPtr = this;
     mc_label = 0;
@@ -232,7 +232,7 @@ printf("x1\n");
 }
 
 
-cMerge::~cMerge()
+QTmergeDlg::~QTmergeDlg()
 {
     instPtr = 0;
     delete mc_names;
@@ -240,7 +240,7 @@ cMerge::~cMerge()
 
 
 void
-cMerge::query(mitem_t *mi)
+QTmergeDlg::query(mitem_t *mi)
 {
     mi->overwrite_phys = mc_do_phys;
     mi->overwrite_elec = mc_do_elec;
@@ -248,7 +248,7 @@ cMerge::query(mitem_t *mi)
 
 
 bool
-cMerge::set_apply_to_all()
+QTmergeDlg::set_apply_to_all()
 {
     if (!mc_allflag) {
         mc_allflag = true;
@@ -260,7 +260,7 @@ cMerge::set_apply_to_all()
 
 
 bool
-cMerge::refresh(mitem_t *mi)
+QTmergeDlg::refresh(mitem_t *mi)
 {
     if (SymTab::get(mc_names, mi->name) != ST_NIL) {
         // We've seen this cell before.
@@ -281,7 +281,7 @@ cMerge::refresh(mitem_t *mi)
 
 
 void
-cMerge::apply_btn_slot()
+QTmergeDlg::apply_btn_slot()
 {
     if (QTdev::self()->LoopLevel() > 1)
         QTdev::self()->BreakLoop();
@@ -289,21 +289,21 @@ cMerge::apply_btn_slot()
 
 
 void
-cMerge::apply_to_all_btn_slot()
+QTmergeDlg::apply_to_all_btn_slot()
 {
     Cvt()->PopUpMergeControl(MODE_UPD, 0);
 }
 
 
 void
-cMerge::phys_check_box_slot(int checked)
+QTmergeDlg::phys_check_box_slot(int checked)
 {
     mc_do_phys = checked;
 }
 
 
 void
-cMerge::elec_check_box_slot(int checked)
+QTmergeDlg::elec_check_box_slot(int checked)
 {
     mc_do_elec = checked;
 }
@@ -312,7 +312,7 @@ cMerge::elec_check_box_slot(int checked)
 /*
 // Static function.
 void
-cMerge::mc_cancel_proc(GtkWidget*, void*)
+QTmergeDlg::mc_cancel_proc(GtkWidget*, void*)
 {
     Cvt()->PopUpMergeControl(MODE_UPD, 0);
 }

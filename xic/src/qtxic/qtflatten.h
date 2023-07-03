@@ -51,18 +51,18 @@ class QCheckBox;
 class QPushButton;
 class QAction;
 
-class cFlatten : public QDialog
+class QTflattenDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cFlatten(GRobject, bool(*)(const char*, bool, const char*, void*),
+    QTflattenDlg(GRobject, bool(*)(const char*, bool, const char*, void*),
         void*, int, bool);
-    ~cFlatten();
+    ~QTflattenDlg();
 
     void update();
 
-    static cFlatten *self()         { return (instPtr); }
+    static QTflattenDlg *self()         { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -86,7 +86,7 @@ private:
     bool (*fl_callback)(const char*, bool, const char*, void*);
     void *fl_arg;
 
-    static cFlatten *instPtr;
+    static QTflattenDlg *instPtr;
 };
 
 #endif

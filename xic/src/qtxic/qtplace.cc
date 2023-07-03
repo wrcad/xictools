@@ -81,24 +81,24 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cPlace::self())
-            cPlace::self()->deleteLater();
+        if (QTplaceDlg::self())
+            QTplaceDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cPlace::self())
-            cPlace::self()->update();
+        if (QTplaceDlg::self())
+            QTplaceDlg::self()->update();
         else
-            cPlace::update_params();
+            QTplaceDlg::update_params();
         return;
     }
-    if (cPlace::self())
+    if (QTplaceDlg::self())
         return;
 
-    new cPlace(noprompt);
-    QTdev::self()->SetPopupLocation(GRloc(LW_UL), cPlace::self(),
+    new QTplaceDlg(noprompt);
+    QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTplaceDlg::self(),
         QTmainwin::self()->Viewport());
-    cPlace::self()->show();
+    QTplaceDlg::self()->show();
 
     // Give focus to main window.
 //    QTdev::SetFocus(QTmainwin::self()->Shell());
@@ -106,10 +106,10 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
 // End of cEdit functions.
 
 
-iap_t cPlace::pl_iap;
-cPlace *cPlace::instPtr;
+iap_t QTplaceDlg::pl_iap;
+QTplaceDlg *QTplaceDlg::instPtr;
 
-cPlace::cPlace(bool noprompt)
+QTplaceDlg::QTplaceDlg(bool noprompt)
 {
     instPtr = this;
     pl_arraybtn = 0;
@@ -303,7 +303,7 @@ cPlace::cPlace(bool noprompt)
 }
 
 
-cPlace::~cPlace()
+QTplaceDlg::~QTplaceDlg()
 {
     instPtr = 0;
     if (QTdev::GetStatus(pl_placebtn)) {
@@ -322,7 +322,7 @@ cPlace::~cPlace()
 
 
 void
-cPlace::update()
+QTplaceDlg::update()
 {
     pl_refmenu->setCurrentIndex(ED()->instanceRef());
 
@@ -357,7 +357,7 @@ cPlace::update()
 
 // Static function.
 ESret
-cPlace::pl_new_cb(const char *string, void*)
+QTplaceDlg::pl_new_cb(const char *string, void*)
 {
     if (string && *string) {
         // If two tokens, the first is a library or archive file name,
@@ -376,14 +376,14 @@ cPlace::pl_new_cb(const char *string, void*)
 
 
 void
-cPlace::desel_placebtn()
+QTplaceDlg::desel_placebtn()
 {
     QTdev::Deselect(pl_placebtn);
 }
 
 
 bool
-cPlace::smash_mode()
+QTplaceDlg::smash_mode()
 {
     return (QTdev::GetStatus(pl_smashbtn));
 }
@@ -392,7 +392,7 @@ cPlace::smash_mode()
 // Set the order of names in the menu, and rebuild.
 //
 void
-cPlace::rebuild_menu()
+QTplaceDlg::rebuild_menu()
 {
     if (!pl_masterbtn)
         return;
@@ -413,7 +413,7 @@ cPlace::rebuild_menu()
 // Set the sensitivity of the array parameter entry widgets
 //
 void
-cPlace::set_sens(bool set)
+QTplaceDlg::set_sens(bool set)
 {
     pl_label_nx->setEnabled(set);
     pl_nx->setEnabled(set);
@@ -427,7 +427,7 @@ cPlace::set_sens(bool set)
 
 
 void
-cPlace::array_btn_slot(bool state)
+QTplaceDlg::array_btn_slot(bool state)
 {
     // When on, cells placed can be arrayed.  Otherwise only a single
     // instance is created.
@@ -454,7 +454,7 @@ cPlace::array_btn_slot(bool state)
 
 
 void
-cPlace::replace_btn_slot(bool state)
+QTplaceDlg::replace_btn_slot(bool state)
 {
     // When the replace mode is active, clicking on existing instances
     // will cause them to be replaced by the current master.  The
@@ -478,7 +478,7 @@ cPlace::replace_btn_slot(bool state)
 
 
 void
-cPlace::refmenu_slot(int ix)
+QTplaceDlg::refmenu_slot(int ix)
 {
     // The reference point of the cell, i.e., the point that is
     // located at the cursor, is switchable between the corners of the
@@ -501,21 +501,21 @@ cPlace::refmenu_slot(int ix)
 
 
 void
-cPlace::help_btn_slot()
+QTplaceDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("placepanel"))
 }
 
 
 void
-cPlace::dismiss_btn_slot()
+QTplaceDlg::dismiss_btn_slot()
 {
     ED()->PopUpPlace(MODE_OFF, false);
 }
 
 
 void
-cPlace::master_menu_slot(int ix)
+QTplaceDlg::master_menu_slot(int ix)
 {
     if (ix == 0) {
         if (QTdev::GetStatus(pl_placebtn))
@@ -555,7 +555,7 @@ cPlace::master_menu_slot(int ix)
 
 
 void
-cPlace::place_btn_slot(bool state)
+QTplaceDlg::place_btn_slot(bool state)
 {
     bool mbstate = QTdev::GetStatus(pl_menu_placebtn);
     if (state != mbstate)
@@ -564,7 +564,7 @@ cPlace::place_btn_slot(bool state)
 
 
 void
-cPlace::menu_placebtn_slot(bool status)
+QTplaceDlg::menu_placebtn_slot(bool status)
 {
     if (status)
         QTdev::Select(pl_placebtn);
@@ -574,7 +574,7 @@ cPlace::menu_placebtn_slot(bool status)
 
 
 void
-cPlace::mmlen_change_slot(int val)
+QTplaceDlg::mmlen_change_slot(int val)
 {
     if (val == DEF_PLACE_MENU_LEN)
         CDvdb()->clearVariable(VA_MasterMenuLength);
@@ -587,7 +587,7 @@ cPlace::mmlen_change_slot(int val)
 
 
 void
-cPlace::nx_change_slot(int num)
+QTplaceDlg::nx_change_slot(int num)
 {
     pl_iap.set_nx(num);
     if (QTmainwin::self()) {
@@ -599,7 +599,7 @@ cPlace::nx_change_slot(int num)
 
 
 void
-cPlace::ny_change_slot(int num)
+QTplaceDlg::ny_change_slot(int num)
 {
     pl_iap.set_ny(num);
     if (QTmainwin::self()) {
@@ -611,7 +611,7 @@ cPlace::ny_change_slot(int num)
 
 
 void
-cPlace::dx_change_slot(double val)
+QTplaceDlg::dx_change_slot(double val)
 {
     pl_iap.set_spx(INTERNAL_UNITS(val));
     if (QTmainwin::self()) {
@@ -623,7 +623,7 @@ cPlace::dx_change_slot(double val)
 
 
 void
-cPlace::dy_change_slot(double val)
+QTplaceDlg::dy_change_slot(double val)
 {
     pl_iap.set_spy(INTERNAL_UNITS(val));
     if (QTmainwin::self()) {
@@ -635,7 +635,7 @@ cPlace::dy_change_slot(double val)
 
 
 void
-cPlace::drag_enter_slot(QDragEnterEvent *ev)
+QTplaceDlg::drag_enter_slot(QDragEnterEvent *ev)
 {
     if (ev->mimeData()->hasFormat("text/twostring") ||
             ev->mimeData()->hasFormat("text/cellname") ||
@@ -647,7 +647,7 @@ cPlace::drag_enter_slot(QDragEnterEvent *ev)
 
 
 void
-cPlace::drop_event_slot(QDropEvent *ev)
+QTplaceDlg::drop_event_slot(QDropEvent *ev)
 {
     const char *fmt = 0;
     if (ev->mimeData()->hasFormat("text/twostring"))

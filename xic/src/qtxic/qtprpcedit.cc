@@ -74,27 +74,27 @@ cEdit::PopUpCellProperties(ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cCellPrp::self())
-            cCellPrp::self()->deleteLater();
+        if (QTcellPrpDlg::self())
+            QTcellPrpDlg::self()->deleteLater();
         return;
     }
-    if (cCellPrp::self()) {
-        cCellPrp::self()->update();
+    if (QTcellPrpDlg::self()) {
+        QTcellPrpDlg::self()->update();
         return;
     }
     if (mode == MODE_UPD)
         return;
 
-    new cCellPrp();
+    new QTcellPrpDlg();
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cCellPrp::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTcellPrpDlg::self(),
         QTmainwin::self()->Viewport());
-    cCellPrp::self()->show();
+    QTcellPrpDlg::self()->show();
 }
 // End of cEdit functions.
 
 
-cCellPrp::sAddEnt cCellPrp::pc_elec_addmenu[] = {
+QTcellPrpDlg::sAddEnt QTcellPrpDlg::pc_elec_addmenu[] = {
     sAddEnt("param", P_PARAM),
     sAddEnt("other", P_OTHER),
     sAddEnt("virtual", P_VIRTUAL),
@@ -102,7 +102,7 @@ cCellPrp::sAddEnt cCellPrp::pc_elec_addmenu[] = {
     sAddEnt(0, 0)
 };
 
-cCellPrp::sAddEnt cCellPrp::pc_phys_addmenu[] = {
+QTcellPrpDlg::sAddEnt QTcellPrpDlg::pc_phys_addmenu[] = {
     sAddEnt("any", -1),
     sAddEnt("flags", XICP_FLAGS),
     sAddEnt("flatten", XICP_EXT_FLATTEN),
@@ -111,9 +111,9 @@ cCellPrp::sAddEnt cCellPrp::pc_phys_addmenu[] = {
     sAddEnt(0, 0)
 };
 
-cCellPrp *cCellPrp::instPtr;
+QTcellPrpDlg *QTcellPrpDlg::instPtr;
 
-cCellPrp::cCellPrp()
+QTcellPrpDlg::QTcellPrpDlg()
 {
     instPtr = this;
     pc_edit = 0;
@@ -205,7 +205,7 @@ cCellPrp::cCellPrp()
 }
 
 
-cCellPrp::~cCellPrp()
+QTcellPrpDlg::~QTcellPrpDlg()
 {
     if (pc_action_calls) {
         EV()->InitCallback();
@@ -219,7 +219,7 @@ cCellPrp::~cCellPrp()
 
 
 void
-cCellPrp::update()
+QTcellPrpDlg::update()
 {
     PrptyText::destroy(pc_list);
     CDs *cursd = CurCell();
@@ -257,7 +257,7 @@ cCellPrp::update()
 // there is no selection.
 //
 PrptyText *
-cCellPrp::get_selection()
+QTcellPrpDlg::get_selection()
 {
     int start, end;
     start = pc_start;
@@ -273,7 +273,7 @@ cCellPrp::get_selection()
 
 
 void
-cCellPrp::update_display()
+QTcellPrpDlg::update_display()
 {
     QColor c1 = QTbag::PopupColor(GRattrColorHl4);
     QColor c2 = QTbag::PopupColor(GRattrColorHl2);
@@ -341,47 +341,16 @@ cCellPrp::update_display()
 // Select the chars in the range, start=end deselects existing.
 //
 void
-cCellPrp::select_range(int start, int end)
+QTcellPrpDlg::select_range(int start, int end)
 {
-    if (start == end) {
-        QTextCursor c = wb_textarea->textCursor();
-        int pos = c.position();
-        int apos = c.anchor();
-        if (apos != pos) {
-            if (pos < apos) {
-                int t = pos;
-                pos = apos;
-                apos = t;
-            }
-            int n = pos - apos;
-            c.movePosition(QTextCursor::PreviousCharacter,
-                QTextCursor::KeepAnchor, n);
-            wb_textarea->setTextCursor(c);
-        }
-    }
-    else {
-        if (start > end) {
-            int t = start;
-            start = end;
-            end = t;
-        }
-        QTextCursor c = wb_textarea->textCursor();
-        c.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-        if (start) {
-            c.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor,
-                start);
-        }
-        c.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
-            end-start);
-        wb_textarea->setTextCursor(c);
-    }
+    wb_textarea->select_range(start, end);
     pc_start = start;
     pc_end = end;
 }
 
 
 void
-cCellPrp::handle_button_down(QMouseEvent *ev)
+QTcellPrpDlg::handle_button_down(QMouseEvent *ev)
 {
 // Drag support disabled, this provides selection support only.
 //    pc_dragging = false;
@@ -430,7 +399,7 @@ cCellPrp::handle_button_down(QMouseEvent *ev)
 
 
 void
-cCellPrp::handle_button_up(QMouseEvent*)
+QTcellPrpDlg::handle_button_up(QMouseEvent*)
 {
 //    pc_dragging = false;
 }
@@ -438,7 +407,7 @@ cCellPrp::handle_button_up(QMouseEvent*)
 
 /**** Not used at present, support for drag.
 void
-cCellPrp::handle_mouse_motion(QMouseEvent *ev)
+QTcellPrpDlg::handle_mouse_motion(QMouseEvent *ev)
 {
     if (!pc_dragging)
         return;
@@ -557,7 +526,7 @@ cPrpBase::handle_mime_data_received(const QMimeData *data)
 
 
 void
-cCellPrp::edit_btn_slot(bool state)
+QTcellPrpDlg::edit_btn_slot(bool state)
 {
     if (!state) {
         EV()->InitCallback();
@@ -575,7 +544,7 @@ cCellPrp::edit_btn_slot(bool state)
 
 
 void
-cCellPrp::del_btn_slot(bool state)
+QTcellPrpDlg::del_btn_slot(bool state)
 {
     if (!state)
         return;
@@ -591,7 +560,7 @@ cCellPrp::del_btn_slot(bool state)
 
 
 void
-cCellPrp::add_menu_slot(QAction *a)
+QTcellPrpDlg::add_menu_slot(QAction *a)
 {
     pc_action_calls++;
     int ix = a->data().toInt();
@@ -606,14 +575,14 @@ cCellPrp::add_menu_slot(QAction *a)
 
 
 void
-cCellPrp::help_btn_slot()
+QTcellPrpDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:cprop"))
 }
 
 
 void
-cCellPrp::mouse_press_slot(QMouseEvent *ev)
+QTcellPrpDlg::mouse_press_slot(QMouseEvent *ev)
 {
     if (ev->type() == QEvent::MouseButtonPress) {
         ev->accept();
@@ -631,7 +600,7 @@ cCellPrp::mouse_press_slot(QMouseEvent *ev)
 
 /**** Drag/drop support for possible future use.
 void
-cCellPrp::mouse_motion_slot(QMouseEvent *ev)
+QTcellPrpDlg::mouse_motion_slot(QMouseEvent *ev)
 {
     if (ev->type() != QEvent::MouseMove) {
         ev->ignore();
@@ -643,7 +612,7 @@ cCellPrp::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-cCellPrp::mime_data_received_slot(const QMimeData *d)
+QTcellPrpDlg::mime_data_received_slot(const QMimeData *d)
 {
     handle_mime_data_received(d);
 }
@@ -651,14 +620,14 @@ cCellPrp::mime_data_received_slot(const QMimeData *d)
 
 
 void
-cCellPrp::dismiss_btn_slot()
+QTcellPrpDlg::dismiss_btn_slot()
 {
     ED()->PopUpCellProperties(MODE_OFF);
 }
 
 
 void
-cCellPrp::font_changed_slot(int fnum)
+QTcellPrpDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
@@ -677,7 +646,7 @@ cCellPrp::font_changed_slot(int fnum)
 // the button that was pressed.
 //
 int
-cCellPrp::pc_button_press(GtkWidget *widget, GdkEvent *event)
+QTcellPrpDlg::pc_button_press(GtkWidget *widget, GdkEvent *event)
 {
     GtkWidget *menu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(widget));
     if (event->type == GDK_BUTTON_PRESS) {
@@ -694,6 +663,6 @@ cCellPrp::pc_button_press(GtkWidget *widget, GdkEvent *event)
 }
 
 
-// End of cCellPrp functions.
+// End of QTcellPrpDlg functions.
 
 #endif

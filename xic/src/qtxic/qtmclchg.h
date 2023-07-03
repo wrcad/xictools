@@ -48,17 +48,17 @@
 
 class QRadioButton;
 
-class cMCLchange : public QDialog
+class QTmclChangeDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cMCLchange();
-    ~cMCLchange();
+    QTmclChangeDlg();
+    ~QTmclChangeDlg();
 
     void update();
 
-    static cMCLchange *self()       { return (instPtr); }
+    static QTmclChangeDlg *self()       { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -72,7 +72,7 @@ private:
     QRadioButton *lcg_cur;
     QRadioButton *lcg_all;
 
-    static cMCLchange *instPtr;
+    static QTmclChangeDlg *instPtr;
 };
 
 #endif

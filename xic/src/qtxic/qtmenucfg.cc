@@ -533,7 +533,7 @@ QTmenuConfig::instantiateMainMenus()
         set(mbox->menu[cvrtMenuImprt], "&Import Cell Data", 0);
         set(mbox->menu[cvrtMenuConvt], "&Format Conversion", 0);
         set(mbox->menu[cvrtMenuAssem], "&Assemble Layout", 0);
-        set(mbox->menu[cvrtMenuDiff], "&Cpmpare Layouts", 0);
+        set(mbox->menu[cvrtMenuDiff], "&Compare Layouts", 0);
         set(mbox->menu[cvrtMenuCut], "C&ut and Export", 0);
         set(mbox->menu[cvrtMenuTxted], "&Text Edito&r", 0);
 

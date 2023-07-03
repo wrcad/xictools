@@ -59,30 +59,30 @@ cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cDisplayWin::self())
-            cDisplayWin::self()->deleteLater();
+        if (QTdisplayWinDlg::self())
+            QTdisplayWinDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cDisplayWin::self())
-            cDisplayWin::self()->update(BB);
+        if (QTdisplayWinDlg::self())
+            QTdisplayWinDlg::self()->update(BB);
         return;
     }
-    if (cDisplayWin::self())
+    if (QTdisplayWinDlg::self())
         return;
 
-    new cDisplayWin(caller, BB, cb, arg);
+    new QTdisplayWinDlg(caller, BB, cb, arg);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cDisplayWin::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTdisplayWinDlg::self(),
         QTmainwin::self()->Viewport());
-    cDisplayWin::self()->show();
+    QTdisplayWinDlg::self()->show();
 }
 // End of cConvert functions.
 
 
-cDisplayWin *cDisplayWin::instPtr;
+QTdisplayWinDlg *QTdisplayWinDlg::instPtr;
 
-cDisplayWin::cDisplayWin(GRobject caller, const BBox *BB,
+QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     bool(*cb)(bool, const BBox*, void*), void *arg)
 {
     instPtr = this;
@@ -110,6 +110,8 @@ cDisplayWin::cDisplayWin(GRobject caller, const BBox *BB,
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set area to display"));
     hb->addWidget(label);
 
@@ -186,7 +188,7 @@ cDisplayWin::cDisplayWin(GRobject caller, const BBox *BB,
 }
 
 
-cDisplayWin::~cDisplayWin()
+QTdisplayWinDlg::~QTdisplayWinDlg()
 {
     instPtr = 0;
     if (dw_caller)
@@ -197,7 +199,7 @@ cDisplayWin::~cDisplayWin()
 
 
 void
-cDisplayWin::update(const BBox *BB)
+QTdisplayWinDlg::update(const BBox *BB)
 {
     if (!BB)
         return;
@@ -210,7 +212,7 @@ cDisplayWin::update(const BBox *BB)
 }
 
 void
-cDisplayWin::apply_btn_slot()
+QTdisplayWinDlg::apply_btn_slot()
 {
     double dx = dw_sb_x->value();
     double dy = dw_sb_y->value();
@@ -228,7 +230,7 @@ cDisplayWin::apply_btn_slot()
 
 
 void
-cDisplayWin::center_btn_slot()
+QTdisplayWinDlg::center_btn_slot()
 {
     if (dw_callback && !(*dw_callback)(true, 0, dw_arg))
         return;
@@ -237,7 +239,7 @@ cDisplayWin::center_btn_slot()
 
 
 void
-cDisplayWin::dismiss_btn_slot()
+QTdisplayWinDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpDisplayWindow(0, MODE_OFF, 0, 0, 0);
 }

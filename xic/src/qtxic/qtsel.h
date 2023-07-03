@@ -50,17 +50,17 @@ class QRadioButton;
 class QCheckBox;
 class QPushButton;
 
-class cSelect : public QDialog, public QTbag
+class QTselectDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cSelect(GRobject);
-    ~cSelect();
+    QTselectDlg(GRobject);
+    ~QTselectDlg();
 
     void update();
 
-    static cSelect *self()      { return (instPtr); }
+    static QTselectDlg *self()      { return (instPtr); }
 
 private slots:
     void pm_norm_slot(int);
@@ -102,7 +102,7 @@ private:
     QCheckBox *sl_label;
     QPushButton *sl_upbtn;
 
-    static cSelect *instPtr;
+    static QTselectDlg *instPtr;
 };
 
 #endif

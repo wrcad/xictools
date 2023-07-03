@@ -52,17 +52,17 @@ class QPushButton;
 class QLineEdit;
 class QCheckBox;;
 
-class cCHDcfg : public QDialog, public QTbag
+class QTchdCfgDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCHDcfg(GRobject, const char*);
-    ~cCHDcfg();
+    QTchdCfgDlg(GRobject, const char*);
+    ~QTchdCfgDlg();
 
     void update(const char*);
 
-    static cCHDcfg *self()          { return (instPtr); }
+    static QTchdCfgDlg *self()           { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -90,7 +90,7 @@ private:
     char *cf_lastname;
     char *cf_cgdname;
 
-    static cCHDcfg *instPtr;
+    static QTchdCfgDlg *instPtr;
 };
 
 #endif

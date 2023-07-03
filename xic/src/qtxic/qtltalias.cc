@@ -63,26 +63,26 @@ cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cLayerAliasTab::self())
-            cLayerAliasTab::self()->deleteLater();
+        if (QTlayerAliasDlg::self())
+            QTlayerAliasDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cLayerAliasTab::self())
-            cLayerAliasTab::self()->update();
+        if (QTlayerAliasDlg::self())
+            QTlayerAliasDlg::self()->update();
         return;
     }
-    if (cLayerAliasTab::self()) {
-        if (caller && caller != cLayerAliasTab::self()->call_btn())
+    if (QTlayerAliasDlg::self()) {
+        if (caller && caller != QTlayerAliasDlg::self()->call_btn())
             QTdev::Deselect(caller);
         return;
     }
 
-    new cLayerAliasTab(caller);
+    new QTlayerAliasDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cLayerAliasTab::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTlayerAliasDlg::self(),
         QTmainwin::self()->Viewport());
-    cLayerAliasTab::self()->show();
+    QTlayerAliasDlg::self()->show();
 }
 
 
@@ -92,9 +92,9 @@ namespace {
         EditCode, DecCode, HelpCode };
 }
 
-cLayerAliasTab *cLayerAliasTab::instPtr;
+QTlayerAliasDlg *QTlayerAliasDlg::instPtr;
 
-cLayerAliasTab::cLayerAliasTab(GRobject c)
+QTlayerAliasDlg::QTlayerAliasDlg(GRobject c)
 {
     instPtr = this;
     la_open = 0;
@@ -198,7 +198,7 @@ cLayerAliasTab::cLayerAliasTab(GRobject c)
 }
 
 
-cLayerAliasTab::~cLayerAliasTab()
+QTlayerAliasDlg::~QTlayerAliasDlg()
 {
     instPtr = 0;
     if (la_calling_btn)
@@ -207,7 +207,7 @@ cLayerAliasTab::~cLayerAliasTab()
 
 
 void
-cLayerAliasTab::update()
+QTlayerAliasDlg::update()
 {
     FIOlayerAliasTab latab;
     latab.parse(CDvdb()->getVariable(VA_LayerAlias));
@@ -242,7 +242,7 @@ cLayerAliasTab::update()
 
 // Static function.
 ESret
-cLayerAliasTab::str_cb(const char *str, void *arg)
+QTlayerAliasDlg::str_cb(const char *str, void *arg)
 {
     if (arg == (void*)OpenCode) {
         if (str && *str) {
@@ -251,7 +251,7 @@ cLayerAliasTab::str_cb(const char *str, void *arg)
             if (!fp) {
                 snprintf(buf, sizeof(buf), "Failed to open file\n%s",
                     strerror(errno));
-                cLayerAliasTab::self()->PopUpMessage(buf, true, false, true);
+                QTlayerAliasDlg::self()->PopUpMessage(buf, true, false, true);
             }
             else {
                 FIOlayerAliasTab latab;
@@ -260,7 +260,7 @@ cLayerAliasTab::str_cb(const char *str, void *arg)
                 CDvdb()->setVariable(VA_LayerAlias, t);
                 delete [] t;
                 fclose(fp);
-                cLayerAliasTab::self()->update();
+                QTlayerAliasDlg::self()->update();
             }
         }
         return (ESTR_DN);
@@ -272,14 +272,14 @@ cLayerAliasTab::str_cb(const char *str, void *arg)
             if (!fp) {
                 snprintf(buf, sizeof(buf), "Failed to open file\n%s",
                     strerror(errno));
-                cLayerAliasTab::self()->PopUpMessage(buf, true, false, true);
+                QTlayerAliasDlg::self()->PopUpMessage(buf, true, false, true);
             }
             else {
                 FIOlayerAliasTab latab;
                 latab.parse(CDvdb()->getVariable(VA_LayerAlias));
                 latab.dumpFile(fp);
                 fclose(fp);
-                cLayerAliasTab::self()->PopUpMessage("Layer alias data saved.", true, false, true);
+                QTlayerAliasDlg::self()->PopUpMessage("Layer alias data saved.", true, false, true);
             }
         }
         return (ESTR_DN);
@@ -292,7 +292,7 @@ cLayerAliasTab::str_cb(const char *str, void *arg)
             char *t = latab.toString(false);
             CDvdb()->setVariable(VA_LayerAlias, t);
             delete [] t;
-            cLayerAliasTab::self()->update();
+            QTlayerAliasDlg::self()->update();
         }
         return (ESTR_IGN);
     }
@@ -307,7 +307,7 @@ cLayerAliasTab::str_cb(const char *str, void *arg)
             char *t = latab.toString(false);
             CDvdb()->setVariable(VA_LayerAlias, t);
             delete [] t;
-            cLayerAliasTab::self()->update();
+            QTlayerAliasDlg::self()->update();
         }
         return (ESTR_IGN);
     }
@@ -317,13 +317,13 @@ cLayerAliasTab::str_cb(const char *str, void *arg)
 
 // Static function.
 void
-cLayerAliasTab::yn_cb(bool yn, void*)
+QTlayerAliasDlg::yn_cb(bool yn, void*)
 {
-    if (yn && cLayerAliasTab::self()->la_row >= 0) {
+    if (yn && QTlayerAliasDlg::self()->la_row >= 0) {
 /*
-        GtkTreePath *p = gtk_tree_path_new_from_indices(cLayerAliasTab::self()->la_row, -1);
+        GtkTreePath *p = gtk_tree_path_new_from_indices(QTlayerAliasDlg::self()->la_row, -1);
         GtkTreeModel *store = 
-            gtk_tree_view_get_model(GTK_TREE_VIEW(cLayerAliasTab::self()->la_list));
+            gtk_tree_view_get_model(GTK_TREE_VIEW(QTlayerAliasDlg::self()->la_list));
         GtkTreeIter iter;
         gtk_tree_model_get_iter(store, &iter, p);
         char *text;
@@ -345,14 +345,14 @@ char *text = 0;
                 CDvdb()->clearVariable(VA_UseLayerAlias);
             }
             delete [] t;
-            cLayerAliasTab::self()->update();
+            QTlayerAliasDlg::self()->update();
         }
     }
 }
 
 
 void
-cLayerAliasTab::open_btn_slot()
+QTlayerAliasDlg::open_btn_slot()
 {
     if (la_line_edit)
         la_line_edit->popdown();
@@ -366,7 +366,7 @@ cLayerAliasTab::open_btn_slot()
 
 
 void
-cLayerAliasTab::save_btn_slot()
+QTlayerAliasDlg::save_btn_slot()
 {
     if (la_line_edit)
         la_line_edit->popdown();
@@ -380,7 +380,7 @@ cLayerAliasTab::save_btn_slot()
 
 
 void
-cLayerAliasTab::new_btn_slot()
+QTlayerAliasDlg::new_btn_slot()
 {
     if (la_line_edit)
         la_line_edit->popdown();
@@ -394,7 +394,7 @@ cLayerAliasTab::new_btn_slot()
 
 
 void
-cLayerAliasTab::del_btn_slot()
+QTlayerAliasDlg::del_btn_slot()
 {
     if (la_affirm)
         la_affirm->popdown();
@@ -407,7 +407,7 @@ cLayerAliasTab::del_btn_slot()
 
 
 void
-cLayerAliasTab::edit_btn_slot()
+QTlayerAliasDlg::edit_btn_slot()
 {
     /*
     if (la_row >= 0) {
@@ -442,14 +442,14 @@ cLayerAliasTab::edit_btn_slot()
 
 
 void
-cLayerAliasTab::help_btn_slot()
+QTlayerAliasDlg::help_btn_slot()
 {
     PopUpHelp("layerchange");
 }
 
 
 void
-cLayerAliasTab::current_item_changed(QTreeWidgetItem *cur, QTreeWidgetItem*)
+QTlayerAliasDlg::current_item_changed(QTreeWidgetItem *cur, QTreeWidgetItem*)
 {
     if (!cur) {
         la_row = -1;
@@ -471,7 +471,7 @@ cLayerAliasTab::current_item_changed(QTreeWidgetItem *cur, QTreeWidgetItem*)
 
 
 void
-cLayerAliasTab::decimal_btn_slot(int state)
+QTlayerAliasDlg::decimal_btn_slot(int state)
 {
     la_show_dec = state;
     update();
@@ -479,7 +479,7 @@ cLayerAliasTab::decimal_btn_slot(int state)
 
 
 void
-cLayerAliasTab::dismiss_btn_slot()
+QTlayerAliasDlg::dismiss_btn_slot()
 {
     XM()->PopUpLayerAliases(0, MODE_OFF);
 }

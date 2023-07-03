@@ -53,7 +53,7 @@
 //-------------------------------------------------------------------------
 // Subwidget group for layer list.
 
-cLayerList::cLayerList()
+QTlayerList::QTlayerList()
 {
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);
@@ -104,7 +104,7 @@ cLayerList::cLayerList()
 }
 
 
-cLayerList::~cLayerList()
+QTlayerList::~QTlayerList()
 {
     if (ll_aledit && QTdev::GetStatus(ll_aledit))
         QTdev::CallCallback(ll_aledit);
@@ -112,7 +112,7 @@ cLayerList::~cLayerList()
 
 
 void
-cLayerList::update()
+QTlayerList::update()
 {
     const char *use = CDvdb()->getVariable(VA_UseLayerList);
     if (use) {
@@ -144,7 +144,7 @@ cLayerList::update()
 
 
 void
-cLayerList::luse_btn_slot(int state)
+QTlayerList::luse_btn_slot(int state)
 {
     if (state) {
         CDvdb()->setVariable(VA_UseLayerList, 0);
@@ -156,7 +156,7 @@ cLayerList::luse_btn_slot(int state)
 
 
 void
-cLayerList::lskip_btn_slot(int state)
+QTlayerList::lskip_btn_slot(int state)
 {
     if (state) {
         CDvdb()->setVariable(VA_UseLayerList, "n");
@@ -168,7 +168,7 @@ cLayerList::lskip_btn_slot(int state)
 
 
 void
-cLayerList::aluse_btn_slot(int state)
+QTlayerList::aluse_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_UseLayerAlias, 0);
@@ -178,7 +178,7 @@ cLayerList::aluse_btn_slot(int state)
 
 
 void
-cLayerList::aledit_btn_slot(bool state)
+QTlayerList::aledit_btn_slot(bool state)
 {
     if (state)
         XM()->PopUpLayerAliases(ll_aledit, MODE_ON);
@@ -188,7 +188,7 @@ cLayerList::aledit_btn_slot(bool state)
 
 
 void
-cLayerList::text_changed_slot(const QString &s)
+QTlayerList::text_changed_slot(const QString &s)
 {
     if (s.isNull() || s.isEmpty()) {
         CDvdb()->clearVariable(VA_LayerList);

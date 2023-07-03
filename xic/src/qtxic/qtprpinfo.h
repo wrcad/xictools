@@ -47,18 +47,18 @@
 
 class QMimeData;
 
-class cPrpInfo : public QDialog, public cPrpBase
+class QTprpInfoDlg : public QDialog, public QTprpBase
 {
     Q_OBJECT
 
 public:
-    cPrpInfo(CDo*);
-    ~cPrpInfo();
+    QTprpInfoDlg(CDo*);
+    ~QTprpInfoDlg();
 
     void update(CDo*);
     void purge(CDo*, CDo*);
 
-    static cPrpInfo *self()         { return (instPtr); }
+    static QTprpInfoDlg *self()         { return (instPtr); }
 
 private slots:
     void mouse_press_slot(QMouseEvent*);
@@ -68,7 +68,7 @@ private slots:
     void font_changed_slot(int);
 
 private:
-    static cPrpInfo *instPtr;
+    static QTprpInfoDlg *instPtr;
 };
 
 #endif

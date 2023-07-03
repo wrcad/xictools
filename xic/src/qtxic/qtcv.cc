@@ -76,32 +76,32 @@ cConvert::PopUpConvert(GRobject caller, ShowMode mode, int inp_type,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cConvertFmt::self())
-           cConvertFmt::self()->deleteLater();
+        if (QTconvertFmtDlg::self())
+           QTconvertFmtDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cConvertFmt::self())
-            cConvertFmt::self()->update(inp_type);
+        if (QTconvertFmtDlg::self())
+            QTconvertFmtDlg::self()->update(inp_type);
         return;
     }
-    if (cConvertFmt::self())
+    if (QTconvertFmtDlg::self())
         return;
 
-    new cConvertFmt(caller, inp_type, callback, arg);
+    new QTconvertFmtDlg(caller, inp_type, callback, arg);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cConvertFmt::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTconvertFmtDlg::self(),
         QTmainwin::self()->Viewport());
-    cConvertFmt::self()->show();
+    QTconvertFmtDlg::self()->show();
 }
 // End of cConvert functions.
 
 
-int cConvertFmt::cv_fmt_type = cConvert::cvGds;
-int cConvertFmt::cv_inp_type = cConvert::cvLayoutFile;
-cConvertFmt *cConvertFmt::instPtr;
+int QTconvertFmtDlg::cv_fmt_type = cConvert::cvGds;
+int QTconvertFmtDlg::cv_inp_type = cConvert::cvLayoutFile;
+QTconvertFmtDlg *QTconvertFmtDlg::instPtr;
 
-cConvertFmt::cConvertFmt(GRobject c, int inp_type,
+QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     bool(*callback)(int, void*), void *arg)
 {
     instPtr = this;
@@ -144,6 +144,8 @@ cConvertFmt::cConvertFmt(GRobject c, int inp_type,
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     cv_label = new QLabel("");
     hb->addWidget(cv_label);
 
@@ -172,8 +174,8 @@ cConvertFmt::cConvertFmt(GRobject c, int inp_type,
 
     // Output format selection notebook.
     //
-    cv_fmt = new cConvOutFmt(cv_format_proc, cv_fmt_type,
-        cConvOutFmt::cvofmt_file);
+    cv_fmt = new QTconvOutFmt(cv_format_proc, cv_fmt_type,
+        QTconvOutFmt::cvofmt_file);
     vbox->addWidget(cv_fmt);
 
     // Lower half tab widget.
@@ -257,17 +259,17 @@ cConvertFmt::cConvertFmt(GRobject c, int inp_type,
 
     // Layer list.
     //
-    cv_llist = new cLayerList();;
+    cv_llist = new QTlayerList();;
     vb->addWidget(cv_llist);
 
     // Cell name mapping.
     //
-    cv_cnmap = new cCnameMap(false);
+    cv_cnmap = new QTcnameMap(false);
     vb->addWidget(cv_cnmap);
 
     // Window
     //
-    cv_wnd = new cWindowCfg((WndSensMode(*)())&wnd_sens_test, WndFuncCvt);
+    cv_wnd = new QTwindowCfg((WndSensMode(*)())&wnd_sens_test, WndFuncCvt);
     vb->addWidget(cv_wnd);
 
     // Go button
@@ -307,7 +309,7 @@ cConvertFmt::cConvertFmt(GRobject c, int inp_type,
 }
 
 
-cConvertFmt::~cConvertFmt()
+QTconvertFmtDlg::~QTconvertFmtDlg()
 {
     instPtr = 0;
     if (cv_caller)
@@ -318,7 +320,7 @@ cConvertFmt::~cConvertFmt()
 
 
 void
-cConvertFmt::update(int inp_type)
+QTconvertFmtDlg::update(int inp_type)
 {
     int op_type = inp_type >> 16;
     inp_type &= 0xffff;
@@ -353,11 +355,11 @@ cConvertFmt::update(int inp_type)
             inp_type <= cConvert::cvNativeDir)
         cv_input->setCurrentIndex(inp_type - 1);
     if (inp_type == cConvert::cvChdName)
-        cv_fmt->configure(cConvOutFmt::cvofmt_chd);
+        cv_fmt->configure(QTconvOutFmt::cvofmt_chd);
     else if (inp_type == cConvert::cvChdFile)
-        cv_fmt->configure(cConvOutFmt::cvofmt_chdfile);
+        cv_fmt->configure(QTconvOutFmt::cvofmt_chdfile);
     else if (inp_type == cConvert::cvNativeDir)
-        cv_fmt->configure(cConvOutFmt::cvofmt_native);
+        cv_fmt->configure(QTconvOutFmt::cvofmt_native);
 
     if (op_type > 0) {
         op_type -= 1;
@@ -369,7 +371,7 @@ cConvertFmt::update(int inp_type)
 
 // Static function.
 void
-cConvertFmt::cv_format_proc(int type)
+QTconvertFmtDlg::cv_format_proc(int type)
 {
     if (!instPtr)
         return;
@@ -416,7 +418,7 @@ cConvertFmt::cv_format_proc(int type)
 
 // Static function.
 void
-cConvertFmt::cv_sens_test()
+QTconvertFmtDlg::cv_sens_test()
 {
     bool ns = cv_fmt_type == cConvert::cvGds &&
         instPtr->cv_fmt->gds_text_input();
@@ -433,8 +435,8 @@ cConvertFmt::cv_sens_test()
 
 
 // Static function.
-cConvertFmt::CvSensMode
-cConvertFmt::wnd_sens_test()
+QTconvertFmtDlg::CvSensMode
+QTconvertFmtDlg::wnd_sens_test()
 {
     if (cv_inp_type == cConvert::cvNativeDir)
         return (CvSensNone);
@@ -449,42 +451,42 @@ cConvertFmt::wnd_sens_test()
 
 
 void
-cConvertFmt::help_btn_slot()
+QTconvertFmtDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:convt"))
 }
 
 
 void
-cConvertFmt::input_menu_slot(int ix)
+QTconvertFmtDlg::input_menu_slot(int ix)
 {
     int a = 1 + ix;
     if (a == cConvert::cvLayoutFile) {
         cv_cnmap->setEnabled(true);
         cv_inp_type = cConvert::cvLayoutFile;
-        cv_fmt->configure(cConvOutFmt::cvofmt_file);
+        cv_fmt->configure(QTconvOutFmt::cvofmt_file);
     }
     else if (a == cConvert::cvChdName) {
         cv_cnmap->setEnabled(false);
         cv_inp_type = cConvert::cvChdName;
-        cv_fmt->configure(cConvOutFmt::cvofmt_chd);
+        cv_fmt->configure(QTconvOutFmt::cvofmt_chd);
     }
     else if (a == cConvert::cvChdFile) {
         cv_cnmap->setEnabled(false);
         cv_inp_type = cConvert::cvChdFile;
-        cv_fmt->configure(cConvOutFmt::cvofmt_chdfile);
+        cv_fmt->configure(QTconvOutFmt::cvofmt_chdfile);
     }
     else if (a == cConvert::cvNativeDir) {
         cv_cnmap->setEnabled(true);
         cv_inp_type = cConvert::cvNativeDir;
-        cv_fmt->configure(cConvOutFmt::cvofmt_native);
+        cv_fmt->configure(QTconvOutFmt::cvofmt_native);
     }
     cv_sens_test();
 }
 
 
 void
-cConvertFmt::nbook_page_slot(int pg)
+QTconvertFmtDlg::nbook_page_slot(int pg)
 {
     const char *lb;
     if (pg == 0)
@@ -496,7 +498,7 @@ cConvertFmt::nbook_page_slot(int pg)
 
 
 void
-cConvertFmt::strip_btn_slot(int state)
+QTconvertFmtDlg::strip_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_StripForExport, 0);
@@ -506,7 +508,7 @@ cConvertFmt::strip_btn_slot(int state)
 
 
 void
-cConvertFmt::libsub_btn_slot(int state)
+QTconvertFmtDlg::libsub_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_KeepLibMasters, 0);
@@ -516,7 +518,7 @@ cConvertFmt::libsub_btn_slot(int state)
 
 
 void
-cConvertFmt::pcsub_btn_slot(int state)
+QTconvertFmtDlg::pcsub_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_PCellKeepSubMasters, "");
@@ -526,7 +528,7 @@ cConvertFmt::pcsub_btn_slot(int state)
 
 
 void
-cConvertFmt::viasub_btn_slot(int state)
+QTconvertFmtDlg::viasub_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_ViaKeepSubMasters, "");
@@ -536,7 +538,7 @@ cConvertFmt::viasub_btn_slot(int state)
 
 
 void
-cConvertFmt::noflvias_btn_slot(int state)
+QTconvertFmtDlg::noflvias_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoFlattenStdVias, 0);
@@ -546,7 +548,7 @@ cConvertFmt::noflvias_btn_slot(int state)
 
 
 void
-cConvertFmt::noflpcs_btn_slot(int state)
+QTconvertFmtDlg::noflpcs_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoFlattenPCells, 0);
@@ -556,7 +558,7 @@ cConvertFmt::noflpcs_btn_slot(int state)
 
 
 void
-cConvertFmt::nofllbs_btn_slot(int state)
+QTconvertFmtDlg::nofllbs_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoFlattenLabels, 0);
@@ -566,7 +568,7 @@ cConvertFmt::nofllbs_btn_slot(int state)
 
 
 void
-cConvertFmt::nolabels_btn_slot(int state)
+QTconvertFmtDlg::nolabels_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoReadLabels, 0);
@@ -576,7 +578,7 @@ cConvertFmt::nolabels_btn_slot(int state)
 
 
 void
-cConvertFmt::keepbad_btn_slot(int state)
+QTconvertFmtDlg::keepbad_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_KeepBadArchive, 0);
@@ -586,7 +588,7 @@ cConvertFmt::keepbad_btn_slot(int state)
 
 
 void
-cConvertFmt::convert_btn_slot()
+QTconvertFmtDlg::convert_btn_slot()
 {
     int code = cv_fmt_type;
     if (cv_inp_type == cConvert::cvChdName)
@@ -610,14 +612,14 @@ cConvertFmt::convert_btn_slot()
 
 
 void
-cConvertFmt::scale_changed_slot(double d)
+QTconvertFmtDlg::scale_changed_slot(double d)
 {
     FIO()->SetTransScale(d);
 }
 
 
 void
-cConvertFmt::dismiss_btn_slot()
+QTconvertFmtDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpConvert(0, MODE_OFF, 0, 0, 0);
 }

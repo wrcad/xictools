@@ -52,13 +52,13 @@ class QComboBox;
 class QLabel;
 
 
-class cLtabEdit : public QDialog, public sLcb
+class QTltabEditDlg : public QDialog, public sLcb
 {
     Q_OBJECT
 
 public:
-    cLtabEdit(GRobject);
-    virtual ~cLtabEdit();
+    QTltabEditDlg(GRobject);
+    virtual ~QTltabEditDlg();
 
     // virtual overrides
     void update(CDll*);

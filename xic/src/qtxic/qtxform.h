@@ -50,18 +50,18 @@ class QDoubleSpinBox;
 class QPushButton;
 
 
-class cXform : public QDialog
+class QTxformDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cXform(GRobject c,
+    QTxformDlg(GRobject c,
         bool (*)(const char*, bool, const char*, void*), void*);
-    ~cXform();
+    ~QTxformDlg();
 
     void update();
 
-    static cXform *self()       { return (instPtr); }
+    static QTxformDlg *self()       { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -86,7 +86,7 @@ private:
     bool (*tf_callback)(const char*, bool, const char*, void*);
     void *tf_arg;
     
-    static cXform* instPtr;
+    static QTxformDlg* instPtr;
 };
 
 #endif

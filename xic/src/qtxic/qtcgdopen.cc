@@ -81,19 +81,19 @@ cConvert::PopUpCgdOpen(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cCGDopen::self())
-            cCGDopen::self()->deleteLater();
+        if (QTcgdOpenDlg::self())
+            QTcgdOpenDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cCGDopen::self())
-            cCGDopen::self()->update(init_idname, init_str);
+        if (QTcgdOpenDlg::self())
+            QTcgdOpenDlg::self()->update(init_idname, init_str);
         return;
     }
-    if (cCGDopen::self())
+    if (QTcgdOpenDlg::self())
         return;
 
-    new cCGDopen(caller, callback, arg, init_idname, init_str);
+    new QTcgdOpenDlg(caller, callback, arg, init_idname, init_str);
 
     /*
     int mwid;
@@ -108,7 +108,7 @@ cConvert::PopUpCgdOpen(GRobject caller, ShowMode mode,
     // OpenSuse-13.1 gtk-2.24.23 bug
     gtk_window_move(GTK_WINDOW(Cgo->Shell()), x, y);
     */
-    cCGDopen::self()->show();
+    QTcgdOpenDlg::self()->show();
 }
 // End of cConvert functions.
 
@@ -123,9 +123,9 @@ cConvert::PopUpCgdOpen(GRobject caller, ShowMode mode,
 //    files.  A CHD source will use the CHD's aliasing.  A CGD file
 //    will be read verbatim.
 
-cCGDopen *cCGDopen::instPtr;
+QTcgdOpenDlg *QTcgdOpenDlg::instPtr;
 
-cCGDopen::cCGDopen(GRobject caller,
+QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     bool(*callback)(const char*, const char*, int, void*), void *arg,
     const char *init_idname, const char *init_str)
 {
@@ -161,6 +161,8 @@ cCGDopen::cCGDopen(GRobject caller,
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     QLabel *label = new QLabel(tr(
         "Enter parameters to create new Cell Geometry Digest"));
     hb->addWidget(label);
@@ -208,14 +210,14 @@ cCGDopen::cCGDopen(GRobject caller,
 
     // Layer list.
     //
-    cgo_p1_llist = new cLayerList();;
+    cgo_p1_llist = new QTlayerList();;
     pvbox->addWidget(cgo_p1_llist);
 
     label = new QLabel(tr("For layout file input only:"));
 
     // Cell name mapping.
     //
-    cgo_p1_cnmap = new cCnameMap(false);
+    cgo_p1_cnmap = new QTcnameMap(false);
     pvbox->addWidget(cgo_p1_cnmap);
 
     // File reference page.
@@ -340,7 +342,7 @@ cCGDopen::cCGDopen(GRobject caller,
 }
 
 
-cCGDopen::~cCGDopen()
+QTcgdOpenDlg::~QTcgdOpenDlg()
 {
     instPtr = 0;
     delete cgo_p1_llist;
@@ -351,7 +353,7 @@ cCGDopen::~cCGDopen()
 
 
 void
-cCGDopen::update(const char *init_idname, const char *init_str)
+QTcgdOpenDlg::update(const char *init_idname, const char *init_str)
 {
     if (init_idname)
         cgo_idname->setText(init_idname);
@@ -375,7 +377,7 @@ cCGDopen::update(const char *init_idname, const char *init_str)
 // and a null string.
 //
 char *
-cCGDopen::encode_remote_spec(QLineEdit **bad)
+QTcgdOpenDlg::encode_remote_spec(QLineEdit **bad)
 {
     if (bad)
         *bad = 0;
@@ -440,7 +442,7 @@ cCGDopen::encode_remote_spec(QLineEdit **bad)
 // possible, filling in the entries.
 //
 void
-cCGDopen::load_remote_spec(const char *str)
+QTcgdOpenDlg::load_remote_spec(const char *str)
 {
     if (!str)
         return;
@@ -474,13 +476,13 @@ cCGDopen::load_remote_spec(const char *str)
 
 
 void
-cCGDopen::help_btn_slot()
+QTcgdOpenDlg::help_btn_slot()
 {
 }
 
 
 void
-cCGDopen::apply_btn_slot()
+QTcgdOpenDlg::apply_btn_slot()
 {
     int ret = true;
     if (cgo_callback) {
@@ -529,7 +531,7 @@ cCGDopen::apply_btn_slot()
 
 
 void
-cCGDopen::dismiss_btn_slot()
+QTcgdOpenDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpCgdOpen(0, MODE_OFF, 0, 0, 0, 0, 0, 0);
 }
@@ -542,7 +544,7 @@ cCGDopen::dismiss_btn_slot()
 // Return is taken as an Apply press, if chars have been entered.
 //
 int
-cCGDopen::cgo_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
+QTcgdOpenDlg::cgo_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
 {
     if (Cgo && ev->key.keyval == GDK_KEY_Return) {
         const char *string;
@@ -578,7 +580,7 @@ cCGDopen::cgo_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
 // Drag data received in editing window, grab it.
 //
 void
-cCGDopen::cgo_drag_data_received(GtkWidget *entry,
+QTcgdOpenDlg::cgo_drag_data_received(GtkWidget *entry,
     GdkDragContext *context, gint, gint, GtkSelectionData *data,
     guint, guint time)
 {
@@ -606,7 +608,7 @@ cCGDopen::cgo_drag_data_received(GtkWidget *entry,
 // Handle page change, set focus to text entry.
 //
 void
-cCGDopen::cgo_page_proc(GtkNotebook*, void*, int num, void*)
+QTcgdOpenDlg::cgo_page_proc(GtkNotebook*, void*, int num, void*)
 {
     if (!Cgo)
         return;

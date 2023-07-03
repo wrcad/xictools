@@ -75,22 +75,22 @@ cEdit::PopUpProperties(CDo *odesc, ShowMode mode, PRPmode activ)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cPrpEditor::self())
-            cPrpEditor::self()->deleteLater();
+        if (QTprpEditorDlg::self())
+            QTprpEditorDlg::self()->deleteLater();
         return;
     }
-    if (cPrpEditor::self()) {
-        cPrpEditor::self()->update(odesc, activ);
+    if (QTprpEditorDlg::self()) {
+        QTprpEditorDlg::self()->update(odesc, activ);
         return;
     }
     if (mode == MODE_UPD)
         return;
 
-    new cPrpEditor(odesc, activ);
+    new QTprpEditorDlg(odesc, activ);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cPrpEditor::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTprpEditorDlg::self(),
         QTmainwin::self()->Viewport());
-    cPrpEditor::self()->show();
+    QTprpEditorDlg::self()->show();
 }
 
 
@@ -104,12 +104,12 @@ cEdit::PropertyResolve(int code, int offset, CDo **odp)
     if (odp)
         *odp = 0;
     if (code == 1) {
-        if (cPrpEditor::self())
-            return (cPrpEditor::self()->resolve(offset, odp));
+        if (QTprpEditorDlg::self())
+            return (QTprpEditorDlg::self()->resolve(offset, odp));
     }
     else if (code == 2) {
-        if (cPrpBase::prptyInfoPtr())
-            return (cPrpBase::prptyInfoPtr()->resolve(offset, odp));
+        if (QTprpBase::prptyInfoPtr())
+            return (QTprpBase::prptyInfoPtr()->resolve(offset, odp));
     }
     return (0);
 }
@@ -120,8 +120,8 @@ cEdit::PropertyResolve(int code, int offset, CDo **odp)
 void
 cEdit::PropertyPurge(CDo *odold, CDo *odnew)
 {
-    if (cPrpEditor::self())
-        cPrpEditor::self()->purge(odold, odnew);
+    if (QTprpEditorDlg::self())
+        QTprpEditorDlg::self()->purge(odold, odnew);
 }
 
 
@@ -130,8 +130,8 @@ cEdit::PropertyPurge(CDo *odold, CDo *odnew)
 PrptyText *
 cEdit::PropertySelect(int which)
 {
-    if (cPrpEditor::self())
-        return (cPrpEditor::self()->select(which));
+    if (QTprpEditorDlg::self())
+        return (QTprpEditorDlg::self()->select(which));
     return (0);
 }
 
@@ -139,8 +139,8 @@ cEdit::PropertySelect(int which)
 PrptyText *
 cEdit::PropertyCycle(CDp *pd, bool(*checkfunc)(const CDp*), bool rev)
 {
-    if (cPrpEditor::self())
-        return (cPrpEditor::self()->cycle(pd, checkfunc, rev));
+    if (QTprpEditorDlg::self())
+        return (QTprpEditorDlg::self()->cycle(pd, checkfunc, rev));
     return (0);
 }
 
@@ -148,15 +148,15 @@ cEdit::PropertyCycle(CDp *pd, bool(*checkfunc)(const CDp*), bool rev)
 void
 cEdit::RegisterPrptyBtnCallback(int(*cb)(PrptyText*))
 {
-    if (cPrpEditor::self())
-        cPrpEditor::self()->set_btn_callback(cb);
+    if (QTprpEditorDlg::self())
+        QTprpEditorDlg::self()->set_btn_callback(cb);
 }
 // End of cEdit functions.
 
 
-cPrpEditor *cPrpEditor::instPtr;
+QTprpEditorDlg *QTprpEditorDlg::instPtr;
 
-cPrpEditor::sAddEnt cPrpEditor::po_elec_addmenu[] = {
+QTprpEditorDlg::sAddEnt QTprpEditorDlg::po_elec_addmenu[] = {
     sAddEnt("name", P_NAME),
     sAddEnt("model", P_MODEL),
     sAddEnt("value", P_VALUE),
@@ -170,7 +170,7 @@ cPrpEditor::sAddEnt cPrpEditor::po_elec_addmenu[] = {
     sAddEnt(0, 0)
 };
 
-cPrpEditor::sAddEnt cPrpEditor::po_phys_addmenu[] = {
+QTprpEditorDlg::sAddEnt QTprpEditorDlg::po_phys_addmenu[] = {
     sAddEnt("any", -1),
     sAddEnt("flatten", XICP_EXT_FLATTEN),
     sAddEnt("nomerge", XICP_NOMERGE),
@@ -178,7 +178,7 @@ cPrpEditor::sAddEnt cPrpEditor::po_phys_addmenu[] = {
 };
 
 
-cPrpEditor::cPrpEditor(CDo *odesc, PRPmode activ)
+QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ)
 {
     instPtr = this;
     po_activ = 0;
@@ -299,7 +299,7 @@ cPrpEditor::cPrpEditor(CDo *odesc, PRPmode activ)
 }
 
 
-cPrpEditor::~cPrpEditor()
+QTprpEditorDlg::~QTprpEditorDlg()
 {
     instPtr = 0;
     if (Menu()->MenuButtonStatus(MMedit, MenuPRPTY) == 1) {
@@ -311,7 +311,7 @@ cPrpEditor::~cPrpEditor()
 
 
 void
-cPrpEditor::update(CDo *odesc, PRPmode activ)
+QTprpEditorDlg::update(CDo *odesc, PRPmode activ)
 {
     if (pb_odesc)
         DSP()->ShowCurrentObject(ERASE, pb_odesc, MarkerColor);
@@ -374,7 +374,7 @@ cPrpEditor::update(CDo *odesc, PRPmode activ)
 
 
 void
-cPrpEditor::purge(CDo *odold, CDo *odnew)
+QTprpEditorDlg::purge(CDo *odold, CDo *odnew)
 {
     if (odold == pb_odesc)
         ED()->PopUpProperties(odnew, MODE_UPD, PRPnochange);
@@ -382,7 +382,7 @@ cPrpEditor::purge(CDo *odold, CDo *odnew)
 
 
 PrptyText *
-cPrpEditor::select(int which)
+QTprpEditorDlg::select(int which)
 {
     for (PrptyText *p = pb_list; p; p = p->next()) {
         if (!p->prpty())
@@ -397,7 +397,7 @@ cPrpEditor::select(int which)
 
 
 PrptyText *
-cPrpEditor::cycle(CDp *pd, bool(*checkfunc)(const CDp*), bool rev)
+QTprpEditorDlg::cycle(CDp *pd, bool(*checkfunc)(const CDp*), bool rev)
 {
     int cnt = 0;
     for (PrptyText *p = pb_list; p; p = p->next(), cnt++) ;
@@ -476,14 +476,14 @@ cPrpEditor::cycle(CDp *pd, bool(*checkfunc)(const CDp*), bool rev)
 
 
 void
-cPrpEditor::set_btn_callback(int(*cb)(PrptyText*))
+QTprpEditorDlg::set_btn_callback(int(*cb)(PrptyText*))
 {
     pb_btn_callback = cb;
 }
 
 
 void
-cPrpEditor::activate(bool activ)
+QTprpEditorDlg::activate(bool activ)
 {
     po_edit->setEnabled(activ);
     po_del->setEnabled(activ);
@@ -494,63 +494,63 @@ cPrpEditor::activate(bool activ)
 
 
 void
-cPrpEditor::call_prpty_add(int which)
+QTprpEditorDlg::call_prpty_add(int which)
 {
     po_global->setEnabled(false);
     ED()->prptyAdd(which);
-    if (cPrpEditor::self())
+    if (QTprpEditorDlg::self())
         po_global->setEnabled(true);
 }
 
 
 void
-cPrpEditor::call_prpty_edit(PrptyText *line)
+QTprpEditorDlg::call_prpty_edit(PrptyText *line)
 {
     po_global->setEnabled(false);
     ED()->prptyEdit(line);
-    if (cPrpEditor::self())
+    if (QTprpEditorDlg::self())
         po_global->setEnabled(true);
 }
 
 
 void
-cPrpEditor::call_prpty_del(PrptyText *line)
+QTprpEditorDlg::call_prpty_del(PrptyText *line)
 {
     po_global->setEnabled(false);
     ED()->prptyRemove(line);
-    if (cPrpEditor::self())
+    if (QTprpEditorDlg::self())
         po_global->setEnabled(true);
 }
 
 
 void
-cPrpEditor::edit_btn_slot(bool state)
+QTprpEditorDlg::edit_btn_slot(bool state)
 {
     if (!state)
        return;
     QTdev::Deselect(po_del);
     PrptyText *p = get_selection();
     call_prpty_edit(p);
-    if (cPrpEditor::self())
+    if (QTprpEditorDlg::self())
         QTdev::Deselect(po_edit);
 }
 
 
 void
-cPrpEditor::del_btn_slot(bool state)
+QTprpEditorDlg::del_btn_slot(bool state)
 {
     if (!state)
        return;
     QTdev::Deselect(po_edit);
     PrptyText *p = get_selection();
     call_prpty_del(p);
-    if (cPrpEditor::self())
+    if (QTprpEditorDlg::self())
         QTdev::Deselect(po_del);
 }
 
 
 void
-cPrpEditor::add_menu_slot(QAction *a)
+QTprpEditorDlg::add_menu_slot(QAction *a)
 {
     int ix = a->data().toInt();
     sAddEnt *ae;
@@ -563,7 +563,7 @@ cPrpEditor::add_menu_slot(QAction *a)
 
 
 void
-cPrpEditor::global_btn_slot(bool state)
+QTprpEditorDlg::global_btn_slot(bool state)
 {
     ED()->prptySetGlobal(state);
     if (po_name_btn)
@@ -572,7 +572,7 @@ cPrpEditor::global_btn_slot(bool state)
 
 
 void
-cPrpEditor::info_btn_slot(bool state)
+QTprpEditorDlg::info_btn_slot(bool state)
 {
     if (EV()->CurCmd() && EV()->CurCmd() != ED()->prptyCmd())
         EV()->CurCmd()->esc();
@@ -582,14 +582,14 @@ cPrpEditor::info_btn_slot(bool state)
 
 
 void
-cPrpEditor::help_btn_slot()
+QTprpEditorDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("prppanel"))
 }
 
 
 void
-cPrpEditor::activ_btn_slot(bool state)
+QTprpEditorDlg::activ_btn_slot(bool state)
 {
     if (EV()->CurCmd() && EV()->CurCmd() != ED()->prptyCmd())
         EV()->CurCmd()->esc();
@@ -609,14 +609,14 @@ cPrpEditor::activ_btn_slot(bool state)
 
 
 void
-cPrpEditor::dismiss_btn_slot()
+QTprpEditorDlg::dismiss_btn_slot()
 {
     ED()->PopUpProperties(0, MODE_OFF, PRPnochange);
 }
 
 
 void
-cPrpEditor::mouse_press_slot(QMouseEvent *ev)
+QTprpEditorDlg::mouse_press_slot(QMouseEvent *ev)
 {
     if (ev->type() == QEvent::MouseButtonPress) {
         ev->accept();
@@ -633,7 +633,7 @@ cPrpEditor::mouse_press_slot(QMouseEvent *ev)
 
 
 void
-cPrpEditor::mouse_motion_slot(QMouseEvent *ev)
+QTprpEditorDlg::mouse_motion_slot(QMouseEvent *ev)
 {
     if (ev->type() != QEvent::MouseMove) {
         ev->ignore();
@@ -645,14 +645,14 @@ cPrpEditor::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-cPrpEditor::mime_data_received_slot(const QMimeData *d)
+QTprpEditorDlg::mime_data_received_slot(const QMimeData *d)
 {
     handle_mime_data_received(d);
 }
 
 
 void
-cPrpEditor::font_changed_slot(int fnum)
+QTprpEditorDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;

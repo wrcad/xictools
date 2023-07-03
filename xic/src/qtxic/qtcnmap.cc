@@ -52,7 +52,7 @@
 //-------------------------------------------------------------------------
 // Subwidget group for cell name mapping
 
-cCnameMap::cCnameMap(bool outp)
+QTcnameMap::QTcnameMap(bool outp)
 {
     cn_output = outp;
 
@@ -102,7 +102,7 @@ cCnameMap::cCnameMap(bool outp)
 
 
 void
-cCnameMap::update()
+QTcnameMap::update()
 {
     if (cn_output) {
         QString str(CDvdb()->getVariable(VA_OutCellNamePrefix));
@@ -178,7 +178,7 @@ cCnameMap::update()
 
 
 void
-cCnameMap::prefix_changed_slot(const QString &str)
+QTcnameMap::prefix_changed_slot(const QString &str)
 {
     if (str.isNull() || str.isEmpty()) {
         if (cn_output)
@@ -202,7 +202,7 @@ cCnameMap::prefix_changed_slot(const QString &str)
 
 
 void
-cCnameMap::suffix_changed_slot(const QString &str)
+QTcnameMap::suffix_changed_slot(const QString &str)
 {
     if (str.isNull() || str.isEmpty()) {
         if (cn_output)
@@ -226,7 +226,7 @@ cCnameMap::suffix_changed_slot(const QString &str)
 
 
 void
-cCnameMap::to_lower_slot(int state)
+QTcnameMap::to_lower_slot(int state)
 {
     if (cn_output) {
         if (state)
@@ -244,7 +244,7 @@ cCnameMap::to_lower_slot(int state)
 
 
 void
-cCnameMap::to_upper_slot(int state)
+QTcnameMap::to_upper_slot(int state)
 {
     if (cn_output) {
         if (state)
@@ -262,7 +262,7 @@ cCnameMap::to_upper_slot(int state)
 
 
 void
-cCnameMap::rd_alias_slot(int state)
+QTcnameMap::rd_alias_slot(int state)
 {
     if (cn_output) {
         bool rd = state;
@@ -300,7 +300,7 @@ cCnameMap::rd_alias_slot(int state)
 
 
 void
-cCnameMap::wr_alias_slot(int state)
+QTcnameMap::wr_alias_slot(int state)
 {
     if (cn_output) {
         bool rd = QTdev::GetStatus(cn_rd_alias);

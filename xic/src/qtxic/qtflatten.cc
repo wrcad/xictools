@@ -71,30 +71,30 @@ cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cFlatten::self())
-            cFlatten::self()->deleteLater();
+        if (QTflattenDlg::self())
+            QTflattenDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cFlatten::self())
-            cFlatten::self()->update();
+        if (QTflattenDlg::self())
+            QTflattenDlg::self()->update();
         return;
     }
-    if (cFlatten::self())
+    if (QTflattenDlg::self())
         return;
 
-    new cFlatten(caller, callback, arg, depth, fmode);
+    new QTflattenDlg(caller, callback, arg, depth, fmode);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cFlatten::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTflattenDlg::self(),
         QTmainwin::self()->Viewport());
-    cFlatten::self()->show();
+    QTflattenDlg::self()->show();
 }
 // End of cEdit functions.
 
 
-cFlatten *cFlatten::instPtr;
+QTflattenDlg *QTflattenDlg::instPtr;
 
-cFlatten::cFlatten(
+QTflattenDlg::QTflattenDlg(
     GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     void *arg, int depth, bool fmode)
 {
@@ -117,7 +117,7 @@ cFlatten::cFlatten(
     vbox->setMargin(2);
     vbox->setSpacing(2);
 
-    QHBoxLayout *hbox = new QHBoxLayout(0);
+    QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setMargin(0);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
@@ -127,6 +127,8 @@ cFlatten::cFlatten(
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Selected subcells will be flattened"));
     hb->addWidget(label);
 
@@ -212,7 +214,7 @@ cFlatten::cFlatten(
 }
 
 
-cFlatten::~cFlatten()
+QTflattenDlg::~QTflattenDlg()
 {
     instPtr = 0;
     if (fl_caller)
@@ -223,7 +225,7 @@ cFlatten::~cFlatten()
 
 
 void
-cFlatten::update()
+QTflattenDlg::update()
 {
     QTdev::SetStatus(fl_novias,
         CDvdb()->getVariable(VA_NoFlattenStdVias));
@@ -235,14 +237,14 @@ cFlatten::update()
 
 
 void
-cFlatten::help_btn_slot()
+QTflattenDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:flatn"))
 }
 
 
 void
-cFlatten::depth_menu_slot(const QString &qs)
+QTflattenDlg::depth_menu_slot(const QString &qs)
 {
     if (fl_callback) {
         const char *str = lstring::copy(qs.toLatin1().constData());
@@ -255,7 +257,7 @@ cFlatten::depth_menu_slot(const QString &qs)
 
 
 void
-cFlatten::novias_btn_slot(int state)
+QTflattenDlg::novias_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoFlattenStdVias, "");
@@ -265,7 +267,7 @@ cFlatten::novias_btn_slot(int state)
 
 
 void
-cFlatten::nopcells_btn_slot(int state)
+QTflattenDlg::nopcells_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoFlattenPCells, "");
@@ -275,7 +277,7 @@ cFlatten::nopcells_btn_slot(int state)
 
 
 void
-cFlatten::nolabels_btn_slot(int state)
+QTflattenDlg::nolabels_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoFlattenLabels, "");
@@ -285,7 +287,7 @@ cFlatten::nolabels_btn_slot(int state)
 
 
 void
-cFlatten::fastmode_btn_slot(int state)
+QTflattenDlg::fastmode_btn_slot(int state)
 {
     if (fl_callback)
         (*fl_callback)("mode", state, 0, fl_arg);
@@ -293,7 +295,7 @@ cFlatten::fastmode_btn_slot(int state)
 
 
 void
-cFlatten::merge_btn_slot(int state)
+QTflattenDlg::merge_btn_slot(int state)
 {
     if (fl_callback)
         (*fl_callback)("merge", state, 0, fl_arg);
@@ -301,7 +303,7 @@ cFlatten::merge_btn_slot(int state)
 
 
 void
-cFlatten::go_btn_slot()
+QTflattenDlg::go_btn_slot()
 {
     if (fl_callback)
         (*fl_callback)("flatten", true, 0, fl_arg);
@@ -309,7 +311,7 @@ cFlatten::go_btn_slot()
 
 
 void
-cFlatten::dismiss_btn_slot()
+QTflattenDlg::dismiss_btn_slot()
 {
     ED()->PopUpFlatten(0, MODE_OFF, 0, 0);
 }

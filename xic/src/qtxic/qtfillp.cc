@@ -76,16 +76,16 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cFillp::self())
-            cFillp::self()->deleteLater();
+        if (QTfillPatDlg::self())
+            QTfillPatDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cFillp::self())
-            cFillp::self()->update();
+        if (QTfillPatDlg::self())
+            QTfillPatDlg::self()->update();
         return;
     }
-    if (cFillp::self())
+    if (QTfillPatDlg::self())
         return;
 
     if (!XM()->CheckCurLayer()) {
@@ -93,11 +93,11 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
         return;
     }
 
-    new cFillp(caller);
+    new QTfillPatDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LR), cFillp::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LR), QTfillPatDlg::self(),
         QTmainwin::self()->Viewport());
-    cFillp::self()->show();
+    QTfillPatDlg::self()->show();
 }
 
 
@@ -106,14 +106,14 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
 void
 cMain::FillLoadCallback(LayerFillData *dd, CDl *ld)
 {
-    if (cFillp::self())
-        cFillp::self()->drag_load(dd, ld);
+    if (QTfillPatDlg::self())
+        QTfillPatDlg::self()->drag_load(dd, ld);
 }
 
 
-cFillp *cFillp::instPtr;
+QTfillPatDlg *QTfillPatDlg::instPtr;
 
-cFillp::cFillp(GRobject c) : QTdraw(XW_DRAWING)
+QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
 {
     instPtr = this;
     fp_caller = c;
@@ -410,7 +410,7 @@ cFillp::cFillp(GRobject c) : QTdraw(XW_DRAWING)
 }
 
 
-cFillp::~cFillp()
+QTfillPatDlg::~QTfillPatDlg()
 {
     instPtr = 0;
     if (fp_caller)
@@ -425,7 +425,7 @@ cFillp::~cFillp()
 
 
 void
-cFillp::update()
+QTfillPatDlg::update()
 {
     if (!LT()->CurLayer())
         return;
@@ -439,7 +439,7 @@ cFillp::update()
 
 
 void
-cFillp::drag_load(LayerFillData *dd, CDl *ld)
+QTfillPatDlg::drag_load(LayerFillData *dd, CDl *ld)
 {
     if (dd->d_from_layer)
         return;
@@ -448,7 +448,7 @@ cFillp::drag_load(LayerFillData *dd, CDl *ld)
 
 
 void
-cFillp::nx_change_slot(int nx)
+QTfillPatDlg::nx_change_slot(int nx)
 {
     // Reconfigure the pixel map so that the pattern doesn't
     // turn to crap when the bpl changes.
@@ -489,7 +489,7 @@ cFillp::nx_change_slot(int nx)
 
 
 void
-cFillp::ny_change_slot(int ny)
+QTfillPatDlg::ny_change_slot(int ny)
 {
     fp_ny = ny;
     set_fp(fp_array, fp_nx, fp_ny);
@@ -518,7 +518,7 @@ namespace {
 
 
 void
-cFillp::rot90_btn_slot()
+QTfillPatDlg::rot90_btn_slot()
 {
     int nx = fp_nx;
     int ny = fp_ny;
@@ -552,7 +552,7 @@ cFillp::rot90_btn_slot()
 
 
 void
-cFillp::x_btn_slot()
+QTfillPatDlg::x_btn_slot()
 {
     int nx = fp_nx;
     int ny = fp_ny;
@@ -588,7 +588,7 @@ cFillp::x_btn_slot()
 
 
 void
-cFillp::y_btn_slot()
+QTfillPatDlg::y_btn_slot()
 {
     int nx = fp_nx;
     int ny = fp_ny;
@@ -624,14 +624,14 @@ cFillp::y_btn_slot()
 
 
 void
-cFillp::stores_btn_slot()
+QTfillPatDlg::stores_btn_slot()
 {
     fp_mode_proc(false);
 }
 
 
 void
-cFillp::defpats_change_slot(int bank)
+QTfillPatDlg::defpats_change_slot(int bank)
 {
     if (bank > 0 && bank <= TECH_MAP_SIZE/16) {
         fp_pattern_bank = bank - 1;
@@ -642,7 +642,7 @@ cFillp::defpats_change_slot(int bank)
 
 
 void
-cFillp::dump_btn_slot()
+QTfillPatDlg::dump_btn_slot()
 {
     const char *err = Tech()->DumpDefaultStipples();
     if (err)
@@ -655,14 +655,14 @@ cFillp::dump_btn_slot()
 
 
 void
-cFillp::pixed_btn_slot()
+QTfillPatDlg::pixed_btn_slot()
 {
     fp_mode_proc(true);
 }
 
 
 void
-cFillp::load_btn_slot()
+QTfillPatDlg::load_btn_slot()
 {
     CDl *ld = LT()->CurLayer();
     if (!ld)
@@ -673,7 +673,7 @@ cFillp::load_btn_slot()
 
 
 void
-cFillp::apply_btn_slot()
+QTfillPatDlg::apply_btn_slot()
 {
     CDl *ld = LT()->CurLayer();
     if (!ld)
@@ -688,14 +688,14 @@ cFillp::apply_btn_slot()
 
 
 void
-cFillp::help_btn_slot()
+QTfillPatDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("fillpanel"))
 }
 
 
 void
-cFillp::outline_btn_slot(bool state)
+QTfillPatDlg::outline_btn_slot(bool state)
 {
     // Callback for the outline button.  When selected, new patterns
     // will have the OUTLINED attribute set.
@@ -715,28 +715,28 @@ cFillp::outline_btn_slot(bool state)
 
 
 void
-cFillp::fat_btn_slot(bool)
+QTfillPatDlg::fat_btn_slot(bool)
 {
     redraw_sample();
 }
 
 
 void
-cFillp::cut_btn_slot(bool)
+QTfillPatDlg::cut_btn_slot(bool)
 {
     redraw_sample();
 }
 
 
 void
-cFillp::dismiss_btn_slot()
+QTfillPatDlg::dismiss_btn_slot()
 {
     XM()->PopUpFillEditor(0, MODE_OFF);
 }
 
 
 void
-cFillp::button_down_slot(QMouseEvent *ev)
+QTfillPatDlg::button_down_slot(QMouseEvent *ev)
 {
     // Button press, handles the pixel editor and drag/drop detection.
 
@@ -780,7 +780,7 @@ cFillp::button_down_slot(QMouseEvent *ev)
 
 
 void
-cFillp::button_up_slot(QMouseEvent *ev)
+QTfillPatDlg::button_up_slot(QMouseEvent *ev)
 {
     // Button release.  The pixel editor has several modes, depending
     // on the button used, whether it is clicked or held and dragged,
@@ -864,7 +864,7 @@ cFillp::button_up_slot(QMouseEvent *ev)
 
 
 void
-cFillp::key_down_slot(QKeyEvent *ev)
+QTfillPatDlg::key_down_slot(QKeyEvent *ev)
 {
     // Key press.  The arrow keys rotate the pixel array in the
     // direction of the arrow.
@@ -923,7 +923,7 @@ cFillp::key_down_slot(QKeyEvent *ev)
 
 
 void
-cFillp::motion_slot(QMouseEvent *ev)
+QTfillPatDlg::motion_slot(QMouseEvent *ev)
 {
     // Pointer motion.  This simply draws an XOR'ed opon box when the
     // pointer button is held down, and the pointer is in the pixel
@@ -1015,7 +1015,7 @@ cFillp::motion_slot(QMouseEvent *ev)
 
 
 void
-cFillp::enter_slot(QEnterEvent *ev)
+QTfillPatDlg::enter_slot(QEnterEvent *ev)
 {
     // Pointer entered the fill editor.
     // Set focus so we can see arrow keys.
@@ -1025,7 +1025,7 @@ cFillp::enter_slot(QEnterEvent *ev)
 
 
 void
-cFillp::drag_enter_slot(QDragEnterEvent *ev)
+QTfillPatDlg::drag_enter_slot(QDragEnterEvent *ev)
 {
     if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
         // The "sender()" is the widget that recieved the event.
@@ -1048,7 +1048,7 @@ cFillp::drag_enter_slot(QDragEnterEvent *ev)
 
 
 void
-cFillp::drop_event_slot(QDropEvent *ev)
+QTfillPatDlg::drop_event_slot(QDropEvent *ev)
 {
     if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
         QByteArray bary = ev->mimeData()->data(QTltab::mime_type());
@@ -1088,7 +1088,7 @@ cFillp::drop_event_slot(QDropEvent *ev)
 
 
 void
-cFillp::fp_mode_proc(bool editing)
+QTfillPatDlg::fp_mode_proc(bool editing)
 {
     if (editing) {
         fp_editing = true;
@@ -1110,7 +1110,7 @@ cFillp::fp_mode_proc(bool editing)
 
 
 void
-cFillp::redraw_edit()
+QTfillPatDlg::redraw_edit()
 {
     if (!fp_editing)
         return;
@@ -1151,7 +1151,7 @@ cFillp::redraw_edit()
 
 
 void
-cFillp::redraw_sample()
+QTfillPatDlg::redraw_sample()
 {
     gd_viewport = fp_sample;
     QSize qs = fp_sample->size();
@@ -1229,7 +1229,7 @@ cFillp::redraw_sample()
 
 
 void
-cFillp::redraw_store(int i)
+QTfillPatDlg::redraw_store(int i)
 {
     if (fp_editing)
         return;
@@ -1264,7 +1264,7 @@ cFillp::redraw_store(int i)
 // Show a box representing a pixel of the fillpattern.
 //
 void
-cFillp::show_pixel(int i, int j)
+QTfillPatDlg::show_pixel(int i, int j)
 {
     int x = fp_spa + j*fp_epsz + 1;
     int y = fp_spa + i*fp_epsz + 1;
@@ -1277,7 +1277,7 @@ cFillp::show_pixel(int i, int j)
 // the GC to use this pixmap.
 //
 void
-cFillp::set_fp(unsigned char *pmap, int x, int y)
+QTfillPatDlg::set_fp(unsigned char *pmap, int x, int y)
 {
     if (!fp_fp)
         fp_fp = new GRfillType;
@@ -1291,7 +1291,7 @@ cFillp::set_fp(unsigned char *pmap, int x, int y)
 // array j, i.
 //
 bool
-cFillp::getij(int *x, int *y)
+QTfillPatDlg::getij(int *x, int *y)
 {
     int xx = *x;
     int yy = *y;
@@ -1311,7 +1311,7 @@ cFillp::getij(int *x, int *y)
 // Set the j, i pixel according to the mode.
 //
 void
-cFillp::set_pixel(int i, int j, FPSETtype mode)
+QTfillPatDlg::set_pixel(int i, int j, FPSETtype mode)
 {
     int bpl = (fp_nx + 7)/8;
     unsigned char *a = fp_array + i*bpl;
@@ -1345,8 +1345,8 @@ cFillp::set_pixel(int i, int j, FPSETtype mode)
 
 // Return the polarity of the pixel j, i.
 //
-cFillp::FPSETtype
-cFillp::get_pixel(int i, int j)
+QTfillPatDlg::FPSETtype
+QTfillPatDlg::get_pixel(int i, int j)
 {
     int bpl = (fp_nx + 7)/8;
     unsigned char *a = fp_array + i*bpl;
@@ -1361,7 +1361,7 @@ cFillp::get_pixel(int i, int j)
 // Set the pixels in the array in a line from j1, i1 to j2, i2.
 //
 void
-cFillp::line(int x1, int y1, int x2, int y2, FPSETtype mode)
+QTfillPatDlg::line(int x1, int y1, int x2, int y2, FPSETtype mode)
 {
     int i;
     double r = 0.0;
@@ -1420,7 +1420,7 @@ cFillp::line(int x1, int y1, int x2, int y2, FPSETtype mode)
 // box defined by jmin, imin to jmax, imax.
 //
 void
-cFillp::box(int imin, int imax, int jmin, int jmax, FPSETtype mode)
+QTfillPatDlg::box(int imin, int imax, int jmin, int jmax, FPSETtype mode)
 {
     int i;
     for (i = jmin; i <= jmax; i++)
@@ -1440,7 +1440,7 @@ cFillp::box(int imin, int imax, int jmin, int jmax, FPSETtype mode)
 // Load the default fillpattern at x, y into the editor.
 //
 void
-cFillp::def_to_sample(LayerFillData *dd)
+QTfillPatDlg::def_to_sample(LayerFillData *dd)
 {
     fp_nx = dd->d_nx;
     fp_ny = dd->d_ny;
@@ -1473,7 +1473,7 @@ cFillp::def_to_sample(LayerFillData *dd)
 // pointed to, and redisplay.
 //
 void
-cFillp::sample_to_def(LayerFillData *dd, int indx)
+QTfillPatDlg::sample_to_def(LayerFillData *dd, int indx)
 {
     if (indx <= 1) {
         // can't reset solid or open
@@ -1513,7 +1513,7 @@ cFillp::sample_to_def(LayerFillData *dd, int indx)
 // Load the current layer pattern into the sample or default areas.
 //
 void
-cFillp::layer_to_def_or_sample(LayerFillData *dd, int indx)
+QTfillPatDlg::layer_to_def_or_sample(LayerFillData *dd, int indx)
 {
     if (indx < 0) {
         fp_nx = dd->d_nx;
@@ -1567,7 +1567,7 @@ cFillp::layer_to_def_or_sample(LayerFillData *dd, int indx)
 // Set the pattern for the layer.
 //
 void
-cFillp::pattern_to_layer(LayerFillData *dd, CDl *ld)
+QTfillPatDlg::pattern_to_layer(LayerFillData *dd, CDl *ld)
 {
     if (!ld)
         return;
@@ -1625,7 +1625,7 @@ cFillp::pattern_to_layer(LayerFillData *dd, CDl *ld)
 // Set the handlers for a drawing area.
 //
 void
-cFillp::connect_sigs(QTcanvas *darea, bool dnd_rcvr)
+QTfillPatDlg::connect_sigs(QTcanvas *darea, bool dnd_rcvr)
 {
     connect(darea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(button_down_slot(QMouseEvent*)));
@@ -1651,11 +1651,11 @@ cFillp::connect_sigs(QTcanvas *darea, bool dnd_rcvr)
 // Draw an open box or line, using the XOR GC.
 //
 void
-cFillp::fp_drawghost(int x0, int y0, int x1, int y1, bool)
+QTfillPatDlg::fp_drawghost(int x0, int y0, int x1, int y1, bool)
 {
-    if (cFillp::self()) {
-        if (cFillp::self()->fp_downbtn == 3)
-            cFillp::self()->Line(x0, y0, x1, y1);
+    if (QTfillPatDlg::self()) {
+        if (QTfillPatDlg::self()->fp_downbtn == 3)
+            QTfillPatDlg::self()->Line(x0, y0, x1, y1);
         else {
             GRmultiPt p(5);
             p.assign(0, x0, y0);
@@ -1663,7 +1663,7 @@ cFillp::fp_drawghost(int x0, int y0, int x1, int y1, bool)
             p.assign(2, x1, y1);
             p.assign(3, x0, y1);
             p.assign(4, x0, y0);
-            cFillp::self()->PolyLine(&p, 5);
+            QTfillPatDlg::self()->PolyLine(&p, 5);
         }
     }
 }
@@ -1671,7 +1671,7 @@ cFillp::fp_drawghost(int x0, int y0, int x1, int y1, bool)
 
 // Static function.
 int
-cFillp::fp_update_idle_proc(void*)
+QTfillPatDlg::fp_update_idle_proc(void*)
 {
     if (instPtr)
         instPtr->update();

@@ -38,12 +38,15 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtpfilt.h"
 #include "cvrt.h"
 #include "cd_compare.h"
 #include "dsp_inlines.h"
-#include "qtmain.h"
 
+#include <QLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QLineEdit>
 
 //-----------------------------------------------------------------------------
 // The Custom Property Filter Setup pop-up, called from the Compare
@@ -52,77 +55,38 @@
 // Help system keywords used:
 //  xic:prpfilt
 
-/*
-namespace {
-    namespace gtkpfilt {
-        struct sPflt
-        {
-            sPflt(GRobject);
-            ~sPflt();
-
-            void update();
-
-            GtkWidget *shell() { return (pf_popup); }
-
-        private:
-            static void pf_cancel_proc(GtkWidget*, void*);
-            static void pf_action(GtkWidget*, void*);
-
-            GRobject pf_caller;
-            GtkWidget *pf_popup;
-            GtkWidget *pf_phys_cell;
-            GtkWidget *pf_phys_inst;
-            GtkWidget *pf_phys_obj;
-            GtkWidget *pf_elec_cell;
-            GtkWidget *pf_elec_inst;
-            GtkWidget *pf_elec_obj;
-        };
-
-        sPflt *Pflt;
-    }
-}
-
-using namespace gtkpfilt;
-*/
-
-
 void
 cConvert::PopUpPropertyFilter(GRobject caller, ShowMode mode)
 {
-#ifdef notdef
-    if (!GTKdev::exists() || !GTKmainwin::exists())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete Pflt;
+        if (QTcmpPrpFltDlg::self())
+            QTcmpPrpFltDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (Pflt)
-            Pflt->update();
+        if (QTcmpPrpFltDlg::self())
+            QTcmpPrpFltDlg::self()->update();
         return;
     }
-    if (Pflt)
+    if (QTcmpPrpFltDlg::self())
         return;
 
-    new sPflt(caller);
-    if (!Pflt->shell()) {
-        delete Pflt;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Pflt->shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new QTcmpPrpFltDlg(caller);
 
-    GTKdev::self()->SetPopupLocation(GRloc(LW_UR), Pflt->shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Pflt->shell());
-#endif
+    QTdev::self()->SetPopupLocation(GRloc(LW_UR), QTcmpPrpFltDlg::self(),
+        QTmainwin::self()->Viewport());
+    QTcmpPrpFltDlg::self()->show();
 }
+// End of cCompare functions.
 
-#ifdef notdef
 
-sPflt::sPflt(GRobject c)
+QTcmpPrpFltDlg *QTcmpPrpFltDlg::instPtr;
+
+QTcmpPrpFltDlg::QTcmpPrpFltDlg(GRobject c)
 {
-    Pflt = this;
+    instPtr = this;
     pf_caller = c;
     pf_phys_cell = 0;
     pf_phys_inst = 0;
@@ -131,272 +95,227 @@ sPflt::sPflt(GRobject c)
     pf_elec_inst = 0;
     pf_elec_obj = 0;
 
-    pf_popup = gtk_NewPopup(0, "Custom Property Filter Setup",
-        pf_cancel_proc, 0);
-    if (!pf_popup)
-        return;
+    setWindowTitle(tr("Custom Property Filter Setup"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    GtkWidget *form = gtk_table_new(2, 1, false);
-    gtk_widget_show(form);
-    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
-    gtk_container_add(GTK_CONTAINER(pf_popup), form);
-    int rowcnt = 0;
+    QGridLayout *grid = new QGridLayout(this);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    grid->addLayout(hbox, 0, 1);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
 
-    //
     // physical strings
     //
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-    GtkWidget *label = gtk_label_new("Physical property filter strings");
-    gtk_widget_show(label);
-    gtk_box_pack_start(GTK_BOX(hbox), label, false, false, 0);
+    QLabel *label = new QLabel(tr("Physical property filter strings"));
+    hbox->addWidget(label);
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    GtkWidget *button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pf_action), (void*)10L);
-    gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
+    label = new QLabel(tr("Cell"));
+    grid->addWidget(label, 1, 0);
+    label = new QLabel(tr("Inst"));
+    grid->addWidget(label, 2, 0);
+    label = new QLabel(tr("Obj"));
+    grid->addWidget(label, 3, 0);
 
-    gtk_table_attach(GTK_TABLE(form), hbox, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    pf_phys_cell = new QLineEdit();
+    grid->addWidget(pf_phys_cell, 1, 1);
+    connect(pf_phys_cell, SIGNAL(textChanged(const QString&)),
+        this, SLOT(phys_cellstr_slot(const QString&)));
+    pf_phys_inst = new QLineEdit();
+    grid->addWidget(pf_phys_inst, 2, 1);
+    connect(pf_phys_inst, SIGNAL(textChanged(const QString&)),
+        this, SLOT(phys_inststr_slot(const QString&)));
+    pf_phys_obj = new QLineEdit();
+    grid->addWidget(pf_phys_obj, 3, 1);
+    connect(pf_phys_obj, SIGNAL(textChanged(const QString&)),
+        this, SLOT(phys_objstr_slot(const QString&)));
 
-    label = gtk_label_new("Cell");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)GTK_SHRINK,
-        (GtkAttachOptions)0, 2, 2);
-
-    pf_phys_cell = gtk_entry_new();
-    gtk_widget_show(pf_phys_cell);
-    g_signal_connect(G_OBJECT(pf_phys_cell), "changed",
-        G_CALLBACK(pf_action), (void*)0L);
-    gtk_table_attach(GTK_TABLE(form), pf_phys_cell, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    label = gtk_label_new("Inst");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)GTK_SHRINK,
-        (GtkAttachOptions)0, 2, 2);
-
-    pf_phys_inst = gtk_entry_new();
-    gtk_widget_show(pf_phys_inst);
-    g_signal_connect(G_OBJECT(pf_phys_inst), "changed",
-        G_CALLBACK(pf_action), (void*)1L);
-    gtk_table_attach(GTK_TABLE(form), pf_phys_inst, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    label = gtk_label_new("Obj");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)GTK_SHRINK,
-        (GtkAttachOptions)0, 2, 2);
-
-    pf_phys_obj = gtk_entry_new();
-    gtk_widget_show(pf_phys_obj);
-    g_signal_connect(G_OBJECT(pf_phys_obj), "changed",
-        G_CALLBACK(pf_action), (void*)2L);
-    gtk_table_attach(GTK_TABLE(form), pf_phys_obj, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
     // electrical strings
     //
-    hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-    label = gtk_label_new("Electrical property filter strings");
-    gtk_widget_show(label);
-    gtk_box_pack_start(GTK_BOX(hbox), label, false, false, 0);
-    gtk_table_attach(GTK_TABLE(form), hbox, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    label = new QLabel(tr("Electrical property filter strings"));
+    grid->addWidget(label, 4, 1);
 
-    label = gtk_label_new("Cell");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)GTK_SHRINK,
-        (GtkAttachOptions)0, 2, 2);
+    label = new QLabel(tr("Cell"));
+    grid->addWidget(label, 5, 0);
+    label = new QLabel(tr("Inst"));
+    grid->addWidget(label, 6, 0);
+    label = new QLabel(tr("Obj"));
+    grid->addWidget(label, 7, 0);
 
-    pf_elec_cell = gtk_entry_new();
-    gtk_widget_show(pf_elec_cell);
-    g_signal_connect(G_OBJECT(pf_elec_cell), "changed",
-        G_CALLBACK(pf_action), (void*)3L);
-    gtk_table_attach(GTK_TABLE(form), pf_elec_cell, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    pf_elec_cell = new QLineEdit();
+    grid->addWidget(pf_elec_cell, 5, 1);
+    connect(pf_elec_cell, SIGNAL(textChanged(const QString&)),
+        this, SLOT(elec_cellstr_slot(const QString&)));
+    pf_elec_inst = new QLineEdit();
+    grid->addWidget(pf_elec_inst, 6, 1);
+    connect(pf_elec_inst, SIGNAL(textChanged(const QString&)),
+        this, SLOT(elec_inststr_slot(const QString&)));
+    pf_elec_obj = new QLineEdit();
+    grid->addWidget(pf_elec_obj, 7, 1);
+    connect(pf_elec_obj, SIGNAL(textChanged(const QString&)),
+        this, SLOT(elec_objstr_slot(const QString&)));
 
-    label = gtk_label_new("Inst");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)GTK_SHRINK,
-        (GtkAttachOptions)0, 2, 2);
-
-    pf_elec_inst = gtk_entry_new();
-    gtk_widget_show(pf_elec_inst);
-    g_signal_connect(G_OBJECT(pf_elec_inst), "changed",
-        G_CALLBACK(pf_action), (void*)4L);
-    gtk_table_attach(GTK_TABLE(form), pf_elec_inst, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    label = gtk_label_new("Obj");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)GTK_SHRINK,
-        (GtkAttachOptions)0, 2, 2);
-
-    pf_elec_obj = gtk_entry_new();
-    gtk_widget_show(pf_elec_obj);
-    g_signal_connect(G_OBJECT(pf_elec_obj), "changed",
-        G_CALLBACK(pf_action), (void*)5L);
-    gtk_table_attach(GTK_TABLE(form), pf_elec_obj, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
     // dismiss button
     //
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(pf_cancel_proc), 0);
+    btn = new QPushButton(tr("Dismiss"));
+    grid->addWidget(btn, 8, 0, 1, 2);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    gtk_window_set_focus(GTK_WINDOW(pf_popup), button);
-
-    gtk_widget_set_size_request(pf_popup, 350, -1);
     update();
 }
 
 
-sPflt::~sPflt()
+QTcmpPrpFltDlg::~QTcmpPrpFltDlg()
 {
-    Pflt = 0;
+    instPtr = 0;
     if (pf_caller)
-        GTKdev::Deselect(pf_caller);
-    if (pf_popup)
-        gtk_widget_destroy(pf_popup);
+        QTdev::Deselect(pf_caller);
 }
 
 
 void
-sPflt::update()
+QTcmpPrpFltDlg::update()
 {
     const char *s1 = CDvdb()->getVariable(VA_PhysPrpFltCell);
-    const char *s2 = gtk_entry_get_text(GTK_ENTRY(pf_phys_cell));
+    const char *s2 = lstring::copy(
+        pf_phys_cell->text().toLatin1().constData());
     if (s1 && strcmp(s1, s2))
-        gtk_entry_set_text(GTK_ENTRY(pf_phys_cell), s1);
+        pf_phys_cell->setText(s1);
     else if (!s1)
-        gtk_entry_set_text(GTK_ENTRY(pf_phys_cell), "");
+        pf_phys_cell->setText("");
+    delete [] s2;
 
     s1 = CDvdb()->getVariable(VA_PhysPrpFltInst);
-    s2 = gtk_entry_get_text(GTK_ENTRY(pf_phys_inst));
+    s2 = lstring::copy(pf_phys_inst->text().toLatin1().constData());
     if (s1 && strcmp(s1, s2))
-        gtk_entry_set_text(GTK_ENTRY(pf_phys_inst), s1);
+        pf_phys_inst->setText(s1);
     else if (!s1)
-        gtk_entry_set_text(GTK_ENTRY(pf_phys_inst), "");
+        pf_phys_inst->setText("");
+    delete [] s2;
 
     s1 = CDvdb()->getVariable(VA_PhysPrpFltObj);
-    s2 = gtk_entry_get_text(GTK_ENTRY(pf_phys_obj));
+    s2 = lstring::copy(pf_phys_obj->text().toLatin1().constData());
     if (s1 && strcmp(s1, s2))
-        gtk_entry_set_text(GTK_ENTRY(pf_phys_obj), s1);
+        pf_phys_obj->setText(s1);
     else if (!s1)
-        gtk_entry_set_text(GTK_ENTRY(pf_phys_obj), "");
+        pf_phys_obj->setText("");
+    delete [] s2;
 
     s1 = CDvdb()->getVariable(VA_ElecPrpFltCell);
-    s2 = gtk_entry_get_text(GTK_ENTRY(pf_elec_cell));
+    s2 = lstring::copy(pf_elec_cell->text().toLatin1().constData());
     if (s1 && strcmp(s1, s2))
-        gtk_entry_set_text(GTK_ENTRY(pf_elec_cell), s1);
+        pf_elec_cell->setText(s1);
     else if (!s1)
-        gtk_entry_set_text(GTK_ENTRY(pf_elec_cell), "");
+        pf_elec_cell->setText("");
+    delete [] s2;
 
     s1 = CDvdb()->getVariable(VA_ElecPrpFltInst);
-    s2 = gtk_entry_get_text(GTK_ENTRY(pf_elec_inst));
+    s2 = lstring::copy(pf_elec_inst->text().toLatin1().constData());
     if (s1 && strcmp(s1, s2))
-        gtk_entry_set_text(GTK_ENTRY(pf_elec_inst), s1);
+        pf_elec_inst->setText(s1);
     else if (!s1)
-        gtk_entry_set_text(GTK_ENTRY(pf_elec_inst), "");
+        pf_elec_inst->setText("");
+    delete [] s2;
 
     s1 = CDvdb()->getVariable(VA_ElecPrpFltObj);
-    s2 = gtk_entry_get_text(GTK_ENTRY(pf_elec_obj));
+    s2 = lstring::copy(pf_elec_obj->text().toLatin1().constData());
     if (s1 && strcmp(s1, s2))
-        gtk_entry_set_text(GTK_ENTRY(pf_elec_obj), s1);
+        pf_elec_obj->setText(s1);
     else if (!s1)
-        gtk_entry_set_text(GTK_ENTRY(pf_elec_obj), "");
+        pf_elec_obj->setText("");
+    delete [] s2;
+}
+
+void
+QTcmpPrpFltDlg::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:prpfilt"))
 }
 
 
-// Static function.
 void
-sPflt::pf_cancel_proc(GtkWidget*, void*)
+QTcmpPrpFltDlg::phys_cellstr_slot(const QString &qs)
+{
+    if (qs.isNull() || qs.isEmpty())
+        CDvdb()->clearVariable(VA_PhysPrpFltCell);
+    else {
+        const char *s = lstring::copy(qs.toLatin1().constData());
+        CDvdb()->setVariable(VA_PhysPrpFltCell, s);
+        delete [] s;
+    }
+}
+
+
+void
+QTcmpPrpFltDlg::phys_inststr_slot(const QString &qs)
+{
+    if (qs.isNull() || qs.isEmpty())
+        CDvdb()->clearVariable(VA_PhysPrpFltInst);
+    else {
+        const char *s = lstring::copy(qs.toLatin1().constData());
+        CDvdb()->setVariable(VA_PhysPrpFltInst, s);
+        delete [] s;
+    }
+}
+
+
+void
+QTcmpPrpFltDlg::phys_objstr_slot(const QString &qs)
+{
+    if (qs.isNull() || qs.isEmpty())
+        CDvdb()->clearVariable(VA_PhysPrpFltObj);
+    else {
+        const char *s = lstring::copy(qs.toLatin1().constData());
+        CDvdb()->setVariable(VA_PhysPrpFltObj, s);
+        delete [] s;
+    }
+}
+
+
+void
+QTcmpPrpFltDlg::elec_cellstr_slot(const QString &qs)
+{
+    if (qs.isNull() || qs.isEmpty())
+        CDvdb()->clearVariable(VA_ElecPrpFltCell);
+    else {
+        const char *s = lstring::copy(qs.toLatin1().constData());
+        CDvdb()->setVariable(VA_ElecPrpFltCell, s);
+        delete [] s;
+    }
+}
+
+
+void
+QTcmpPrpFltDlg::elec_inststr_slot(const QString &qs)
+{
+    if (qs.isNull() || qs.isEmpty())
+        CDvdb()->clearVariable(VA_ElecPrpFltInst);
+    else {
+        const char *s = lstring::copy(qs.toLatin1().constData());
+        CDvdb()->setVariable(VA_ElecPrpFltInst, s);
+        delete [] s;
+    }
+}
+
+
+void
+QTcmpPrpFltDlg::elec_objstr_slot(const QString &qs)
+{
+    if (qs.isNull() || qs.isEmpty())
+        CDvdb()->clearVariable(VA_ElecPrpFltObj);
+    else {
+        const char *s = lstring::copy(qs.toLatin1().constData());
+        CDvdb()->setVariable(VA_ElecPrpFltObj, s);
+        delete [] s;
+    }
+}
+
+
+void
+QTcmpPrpFltDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpPropertyFilter(0, MODE_OFF);
 }
 
-
-// Static function.
-void
-sPflt::pf_action(GtkWidget *caller, void *arg)
-{
-    if (!Pflt)
-        return;
-    if (arg == (void*)10L) {
-        DSPmainWbag(PopUpHelp("xic:prpfilt"))
-        return;
-    }
-    const char *s = gtk_entry_get_text(GTK_ENTRY(caller));
-    if (arg == (void*)0L) {
-        if (!*s)
-            CDvdb()->clearVariable(VA_PhysPrpFltCell);
-        else
-            CDvdb()->setVariable(VA_PhysPrpFltCell, s);
-    }
-    else if (arg == (void*)1L) {
-        if (!*s)
-            CDvdb()->clearVariable(VA_PhysPrpFltInst);
-        else
-            CDvdb()->setVariable(VA_PhysPrpFltInst, s);
-    }
-    else if (arg == (void*)2L) {
-        if (!*s)
-            CDvdb()->clearVariable(VA_PhysPrpFltObj);
-        else
-            CDvdb()->setVariable(VA_PhysPrpFltObj, s);
-    }
-    else if (arg == (void*)3L) {
-        if (!*s)
-            CDvdb()->clearVariable(VA_ElecPrpFltCell);
-        else
-            CDvdb()->setVariable(VA_ElecPrpFltCell, s);
-    }
-    else if (arg == (void*)4L) {
-        if (!*s)
-            CDvdb()->clearVariable(VA_ElecPrpFltInst);
-        else
-            CDvdb()->setVariable(VA_ElecPrpFltInst, s);
-    }
-    else if (arg == (void*)5L) {
-        if (!*s)
-            CDvdb()->clearVariable(VA_ElecPrpFltObj);
-        else
-            CDvdb()->setVariable(VA_ElecPrpFltObj, s);
-    }
-}
-
-#endif

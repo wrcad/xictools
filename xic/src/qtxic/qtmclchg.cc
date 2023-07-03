@@ -66,30 +66,30 @@ cEdit::PopUpLayerChangeMode(ShowMode mode)
         return;
     if (mode == MODE_OFF) {
         Menu()->MenuButtonSet(MMmain, MenuMCLCG, false);
-        if (cMCLchange::self())
-            cMCLchange::self()->deleteLater();
+        if (QTmclChangeDlg::self())
+            QTmclChangeDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cMCLchange::self())
-            cMCLchange::self()->update();
+        if (QTmclChangeDlg::self())
+            QTmclChangeDlg::self()->update();
         return;
     }
-    if (cMCLchange::self())
+    if (QTmclChangeDlg::self())
         return;
 
-    new cMCLchange;
+    new QTmclChangeDlg;
 
-    QTdev::self()->SetPopupLocation(GRloc(), cMCLchange::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTmclChangeDlg::self(),
         QTmainwin::self()->Viewport());
-    cMCLchange::self()->show();
+    QTmclChangeDlg::self()->show();
 }
 // End of cEdit functions.
 
 
-cMCLchange *cMCLchange::instPtr;
+QTmclChangeDlg *QTmclChangeDlg::instPtr;
 
-cMCLchange::cMCLchange()
+QTmclChangeDlg::QTmclChangeDlg()
 {
     instPtr = this;
     lcg_none = 0;
@@ -116,6 +116,8 @@ cMCLchange::cMCLchange()
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set layer change option for Move/Copy"));
     hb->addWidget(label);
 
@@ -148,14 +150,14 @@ cMCLchange::cMCLchange()
 }
 
 
-cMCLchange::~cMCLchange()
+QTmclChangeDlg::~QTmclChangeDlg()
 {
     instPtr = 0;
 }
 
 
 void
-cMCLchange::update()
+QTmclChangeDlg::update()
 {
     const char *v = CDvdb()->getVariable(VA_LayerChangeMode);
     if (!v) {
@@ -177,14 +179,14 @@ cMCLchange::update()
 
 
 void
-cMCLchange::help_btn_slot()
+QTmclChangeDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:mclcg"))
 }
 
 
 void
-cMCLchange::none_btn_slot(bool status)
+QTmclChangeDlg::none_btn_slot(bool status)
 {
     if (status)
         CDvdb()->clearVariable(VA_LayerChangeMode);
@@ -192,7 +194,7 @@ cMCLchange::none_btn_slot(bool status)
 
 
 void
-cMCLchange::cur_btn_slot(bool status)
+QTmclChangeDlg::cur_btn_slot(bool status)
 {
     if (status)
         CDvdb()->setVariable(VA_LayerChangeMode, "");
@@ -200,7 +202,7 @@ cMCLchange::cur_btn_slot(bool status)
 
 
 void
-cMCLchange::all_btn_slot(bool status)
+QTmclChangeDlg::all_btn_slot(bool status)
 {
     if (status)
         CDvdb()->setVariable(VA_LayerChangeMode, "all");
@@ -208,7 +210,7 @@ cMCLchange::all_btn_slot(bool status)
 
 
 void
-cMCLchange::dismiss_btn_slot()
+QTmclChangeDlg::dismiss_btn_slot()
 {
     ED()->PopUpLayerChangeMode(MODE_OFF);
 }

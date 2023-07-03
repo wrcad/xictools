@@ -56,19 +56,19 @@
 
 #define FMT_MAX_ID 5
 
-int cConvOutFmt::fmt_gds_inp = 0;
-char *cConvOutFmt::fmt_oas_rep_string = 0;
+int QTconvOutFmt::fmt_gds_inp = 0;
+char *QTconvOutFmt::fmt_oas_rep_string = 0;
 
 const char *
-cConvOutFmt::fmt_gds_limits[] =
+QTconvOutFmt::fmt_gds_limits[] =
 {
     "7  8000/8000",
     "3  600/200",
-    "3  200/200",
+    "2  200/200",
     0
 };
 
-cConvOutFmt::fmt_menu cConvOutFmt::fmt_gds_input[] =
+QTconvOutFmt::fmt_menu QTconvOutFmt::fmt_gds_input[] =
 {
     { "archive", Fnone },
     { "gds-text",Fnone },
@@ -76,13 +76,13 @@ cConvOutFmt::fmt_menu cConvOutFmt::fmt_gds_input[] =
 };
 
 const char *
-cConvOutFmt::fmt_which_flags[] =
+QTconvOutFmt::fmt_which_flags[] =
 {
     "WITHOUT Strip For Export",
     "WITH Strip For Export"
 };
 
-cConvOutFmt::fmt_menu cConvOutFmt::fmt_cif_extensions[] =
+QTconvOutFmt::fmt_menu QTconvOutFmt::fmt_cif_extensions[] =
 {
     { "scale extension",        CIF_SCALE_EXTENSION },
     { "cell properties",        CIF_CELL_PROPERTIES },
@@ -99,7 +99,7 @@ cConvOutFmt::fmt_menu cConvOutFmt::fmt_cif_extensions[] =
     { 0,                        0 }
 };
 
-cConvOutFmt::fmt_menu cConvOutFmt::fmt_cname_formats[] =
+QTconvOutFmt::fmt_menu QTconvOutFmt::fmt_cname_formats[] =
 {
     { "9 cellname;",        EXTcnameDef },
     { "(cellname);",        EXTcnameNCA },
@@ -109,14 +109,14 @@ cConvOutFmt::fmt_menu cConvOutFmt::fmt_cname_formats[] =
     { 0,                    0 }
 };
 
-cConvOutFmt::fmt_menu cConvOutFmt::fmt_layer_formats[] =
+QTconvOutFmt::fmt_menu QTconvOutFmt::fmt_layer_formats[] =
 {
     { "By Name",            EXTlayerDef },
     { "By Index",           EXTlayerNCA },
     { 0,                    0 }
 };
 
-cConvOutFmt::fmt_menu cConvOutFmt::fmt_label_formats[] = {
+QTconvOutFmt::fmt_menu QTconvOutFmt::fmt_label_formats[] = {
     { "94 text x y xform w h;",     EXTlabelDef },
     { "94 text x y;",               EXTlabelKIC },
     { "92 text x y layer_index;",   EXTlabelNCA },
@@ -125,7 +125,7 @@ cConvOutFmt::fmt_menu cConvOutFmt::fmt_label_formats[] = {
     { 0,                            0 }
 };
 
-cConvOutFmt::cConvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
+QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 {
     fmt_cb = cb;
 
@@ -166,7 +166,7 @@ cConvOutFmt::cConvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     hbox->addWidget(fmt_gdsftopt);;
     for (int i = 0; fmt_gds_input[i].name; i++)
         fmt_gdsftopt->addItem(tr(fmt_gds_input[i].name), i);
-    fmt_gdsftopt->setCurrentIndex(cConvOutFmt::fmt_gds_inp);
+    fmt_gdsftopt->setCurrentIndex(QTconvOutFmt::fmt_gds_inp);
     connect(fmt_gdsftopt, SIGNAL(currentIndexChanged(int)),
         this, SLOT(gdsftopt_menu_changed(int)));
 
@@ -193,7 +193,7 @@ cConvOutFmt::cConvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     label = new QLabel(tr("GDSII version number, polyon/wire vertex limit"));
     label->setAlignment(Qt::AlignCenter);
-    hbox->addWidget(fmt_level);
+    hbox->addWidget(label);
 
     // next row
     fmt_gdsmap = new QCheckBox(tr(
@@ -214,6 +214,8 @@ cConvOutFmt::cConvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         this, SLOT(gdscut_btn_slot(int)));
     QTdev::SetStatus(fmt_gdscut,
         CDvdb()->getVariable(VA_GdsTruncateLongStrings));
+
+    hbox->addStretch(1);
 
     fmt_sb_gdsunit = new QDoubleSpinBox();
     hbox->addWidget(fmt_sb_gdsunit);
@@ -521,7 +523,7 @@ cConvOutFmt::cConvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 }
 
 
-cConvOutFmt::~cConvOutFmt()
+QTconvOutFmt::~QTconvOutFmt()
 {
     if (fmt_oasadv && QTdev::GetStatus(fmt_oasadv))
         QTdev::CallCallback(fmt_oasadv);
@@ -535,7 +537,7 @@ cConvOutFmt::~cConvOutFmt()
 
 
 void
-cConvOutFmt::update()
+QTconvOutFmt::update()
 {
     QTdev::SetStatus(fmt_gdsmap,
         CDvdb()->getVariable(VA_NoGdsMapOk));
@@ -608,14 +610,14 @@ cConvOutFmt::update()
 
 
 bool
-cConvOutFmt::gds_text_input()
+QTconvOutFmt::gds_text_input()
 {
     return (fmt_gds_inp);
 }
 
 
 void
-cConvOutFmt::configure(cvofmt_mode mode)
+QTconvOutFmt::configure(cvofmt_mode mode)
 {
     if (mode == cvofmt_file) {
         // Converting layout file.
@@ -737,7 +739,7 @@ cConvOutFmt::configure(cvofmt_mode mode)
 
 
 void
-cConvOutFmt::set_page(int ix)
+QTconvOutFmt::set_page(int ix)
 {
     if (ix >= 0 && ix <= 7)
         setCurrentIndex(ix);
@@ -745,7 +747,7 @@ cConvOutFmt::set_page(int ix)
 
 
 void
-cConvOutFmt::gdsftopt_menu_changed(int i)
+QTconvOutFmt::gdsftopt_menu_changed(int i)
 {
     fmt_gds_inp = i;
     if (fmt_cb)
@@ -754,7 +756,7 @@ cConvOutFmt::gdsftopt_menu_changed(int i)
 
 
 void
-cConvOutFmt::gdslevel_menu_changed(int i)
+QTconvOutFmt::gdslevel_menu_changed(int i)
 {
     if (i > 0)
         CDvdb()->setVariable(VA_GdsOutLevel, i == 1 ? "1" : "2");
@@ -764,7 +766,7 @@ cConvOutFmt::gdslevel_menu_changed(int i)
 
 
 void
-cConvOutFmt::gdsmap_btn_slot(int state)
+QTconvOutFmt::gdsmap_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoGdsMapOk, 0);
@@ -774,7 +776,7 @@ cConvOutFmt::gdsmap_btn_slot(int state)
 
 
 void
-cConvOutFmt::gdscut_btn_slot(int state)
+QTconvOutFmt::gdscut_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_GdsTruncateLongStrings, 0);
@@ -784,7 +786,7 @@ cConvOutFmt::gdscut_btn_slot(int state)
 
 
 void
-cConvOutFmt::gdsunit_changed_slot(double val)
+QTconvOutFmt::gdsunit_changed_slot(double val)
 {
     if (val == 1.0)
         CDvdb()->clearVariable(VA_GdsMunit);
@@ -797,7 +799,7 @@ cConvOutFmt::gdsunit_changed_slot(double val)
 
 
 void
-cConvOutFmt::oasadv_btn_slot(bool state)
+QTconvOutFmt::oasadv_btn_slot(bool state)
 {
     if (state) {
         int x, y;
@@ -810,7 +812,7 @@ cConvOutFmt::oasadv_btn_slot(bool state)
 
 
 void
-cConvOutFmt::oasmap_btn_slot(int state)
+QTconvOutFmt::oasmap_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoGdsMapOk, 0);
@@ -820,7 +822,7 @@ cConvOutFmt::oasmap_btn_slot(int state)
 
 
 void
-cConvOutFmt::oascmp_btn_slot(int state)
+QTconvOutFmt::oascmp_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_OasWriteCompressed, 0);
@@ -830,7 +832,7 @@ cConvOutFmt::oascmp_btn_slot(int state)
 
 
 void
-cConvOutFmt::oasrep_btn_slot(int state)
+QTconvOutFmt::oasrep_btn_slot(int state)
 {
     if (state) {
         if (!rep_string())
@@ -843,7 +845,7 @@ cConvOutFmt::oasrep_btn_slot(int state)
 
 
 void
-cConvOutFmt::oastab_btn_slot(int state)
+QTconvOutFmt::oastab_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_OasWriteNameTab, 0);
@@ -853,7 +855,7 @@ cConvOutFmt::oastab_btn_slot(int state)
 
 
 void
-cConvOutFmt::oassum_btn_slot(int state)
+QTconvOutFmt::oassum_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_OasWriteChecksum, 0);
@@ -878,7 +880,7 @@ namespace {
 
 
 void
-cConvOutFmt::cifcname_menu_changed(int i)
+QTconvOutFmt::cifcname_menu_changed(int i)
 {
     FIO()->CifStyle().set_cname_type((EXTcnameType)fmt_cname_formats[i].code);
     resetvar();
@@ -886,7 +888,7 @@ cConvOutFmt::cifcname_menu_changed(int i)
 
 
 void
-cConvOutFmt::ciflayer_menu_changed(int i)
+QTconvOutFmt::ciflayer_menu_changed(int i)
 {
     FIO()->CifStyle().set_layer_type((EXTlayerType)fmt_layer_formats[i].code);
     resetvar();
@@ -894,7 +896,7 @@ cConvOutFmt::ciflayer_menu_changed(int i)
 
 
 void
-cConvOutFmt::ciflabel_menu_changed(int i)
+QTconvOutFmt::ciflabel_menu_changed(int i)
 {
     FIO()->CifStyle().set_label_type((EXTlabelType)fmt_label_formats[i].code);
     resetvar();
@@ -902,7 +904,7 @@ cConvOutFmt::ciflabel_menu_changed(int i)
 
 
 void
-cConvOutFmt::ciflast_btn_slot()
+QTconvOutFmt::ciflast_btn_slot()
 {
     char *string = FIO()->LastCifStyle();
     if (!strcmp(string, "x"))
@@ -914,7 +916,7 @@ cConvOutFmt::ciflast_btn_slot()
 
 
 void
-cConvOutFmt::cgxcut_btn_slot(int state)
+QTconvOutFmt::cgxcut_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_GdsTruncateLongStrings, 0);
@@ -924,7 +926,7 @@ cConvOutFmt::cgxcut_btn_slot(int state)
 
 
 void
-cConvOutFmt::oasoff_btn_slot(int state)
+QTconvOutFmt::oasoff_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_OasPrintOffset, 0);
@@ -934,7 +936,7 @@ cConvOutFmt::oasoff_btn_slot(int state)
 
 
 void
-cConvOutFmt::oasnwp_btn_slot(int state)
+QTconvOutFmt::oasnwp_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_OasPrintNoWrap, 0);
@@ -948,9 +950,9 @@ cConvOutFmt::oasnwp_btn_slot(int state)
 
 // Static function.
 void
-cConvOutFmt::fmt_flags_proc(GtkWidget *caller, void *client_data)
+QTconvOutFmt::fmt_flags_proc(GtkWidget *caller, void *client_data)
 {
-    cConvOutFmt *fmt = (cConvOutFmt*)g_object_get_data(G_OBJECT(caller),
+    QTconvOutFmt *fmt = (QTconvOutFmt*)g_object_get_data(G_OBJECT(caller),
         "cvofmt");
     if (!fmt)
         return;
@@ -1006,9 +1008,9 @@ cConvOutFmt::fmt_flags_proc(GtkWidget *caller, void *client_data)
 // Static function.
 //
 void
-cConvOutFmt::fmt_page_proc(GtkWidget*, GtkWidget*, int pagenum, void *arg)
+QTconvOutFmt::fmt_page_proc(GtkWidget*, GtkWidget*, int pagenum, void *arg)
 {
-    cConvOutFmt *fmt = (cConvOutFmt*)arg;
+    QTconvOutFmt *fmt = (QTconvOutFmt*)arg;
     if (fmt->fmt_cb)
         (*fmt->fmt_cb)(pagenum);
 }

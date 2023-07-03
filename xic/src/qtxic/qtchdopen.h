@@ -52,20 +52,20 @@ class QLineEdit;
 class QComboBox;
 class QRadioButton;
 class QPushButton;
-class cCnameMap;
+class QTcnameMap;
 
-class cCHDopen : public QDialog, public QTbag
+class QTchdOpenDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCHDopen(GRobject, bool(*)(const char*, const char*, int, void*), void*,
-        const char*, const char*);
-    ~cCHDopen();
+    QTchdOpenDlg(GRobject, bool(*)(const char*, const char*, int, void*),
+        void*, const char*, const char*);
+    ~QTchdOpenDlg();
 
     void update(const char*, const char*);
 
-    static cCHDopen *self()             { return (instPtr); }
+    static QTchdOpenDlg *self()             { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -85,12 +85,12 @@ private:
     QLineEdit   *co_idname;
     QPushButton *co_apply;
 
-    cCnameMap   *co_p1_cnmap;
+    QTcnameMap  *co_p1_cnmap;
 
     bool(*co_callback)(const char*, const char*, int, void*);
     void *co_arg;
 
-    static cCHDopen *instPtr;
+    static QTchdOpenDlg *instPtr;
 };
 
 #endif

@@ -47,10 +47,10 @@
 
 class QMimeData;
 
-class cPrpBase : public QTbag
+class QTprpBase : public QTbag
 {
 public:
-    cPrpBase()
+    QTprpBase()
     {
         pb_line_selected = -1;
         pb_list = 0;
@@ -62,11 +62,11 @@ public:
         pb_drag_y = 0;
         pb_dragging = false;
     }
-    virtual ~cPrpBase()         { PrptyText::destroy(pb_list); }
+    virtual ~QTprpBase()         { PrptyText::destroy(pb_list); }
 
     PrptyText *resolve(int, CDo**);
 
-    static cPrpBase *prptyInfoPtr();
+    static QTprpBase *prptyInfoPtr();
 
 protected:
     PrptyText *get_selection();

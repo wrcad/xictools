@@ -90,19 +90,19 @@ cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cCHDcfg::self())
-            cCHDcfg::self()->deleteLater();
+        if (QTchdCfgDlg::self())
+            QTchdCfgDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cCHDcfg::self())
-            cCHDcfg::self()->update(chdname);
+        if (QTchdCfgDlg::self())
+            QTchdCfgDlg::self()->update(chdname);
         return;
     }
-    if (cCHDcfg::self())
+    if (QTchdCfgDlg::self())
         return;
 
-    new cCHDcfg(caller, chdname);
+    new QTchdCfgDlg(caller, chdname);
 
     /*
     int mwid;
@@ -114,13 +114,13 @@ cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
     gtk_window_move(GTK_WINDOW(Cfg->Shell()), x, y);
     gtk_widget_show(Cfg->Shell());
     */
-    cCHDcfg::self()->show();
+    QTchdCfgDlg::self()->show();
 }
 
 
-cCHDcfg *cCHDcfg::instPtr;
+QTchdCfgDlg *QTchdCfgDlg::instPtr;
 
-cCHDcfg::cCHDcfg(GRobject caller, const char *chdname)
+QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
 {
     instPtr = this;
     cf_caller = caller;
@@ -155,6 +155,8 @@ cCHDcfg::cCHDcfg(GRobject caller, const char *chdname)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     cf_label = new QLabel("");
     hb->addWidget(cf_label);
 
@@ -264,7 +266,7 @@ cCHDcfg::cCHDcfg(GRobject caller, const char *chdname)
 }
 
 
-cCHDcfg::~cCHDcfg()
+QTchdCfgDlg::~QTchdCfgDlg()
 {
     instPtr = 0;
     delete [] cf_lastname;
@@ -276,7 +278,7 @@ cCHDcfg::~cCHDcfg()
 
 
 void
-cCHDcfg::update(const char *chdname)
+QTchdCfgDlg::update(const char *chdname)
 {
     if (!chdname)
         return;
@@ -340,7 +342,7 @@ cCHDcfg::update(const char *chdname)
 // Callback for the Open CGD panel.
 //
 bool
-cCHDcfg::cf_new_cgd_cb(const char *idname, const char *string, int mode,
+QTchdCfgDlg::cf_new_cgd_cb(const char *idname, const char *string, int mode,
     void *arg)
 {
     if (!idname || !*idname)
@@ -355,12 +357,12 @@ cCHDcfg::cf_new_cgd_cb(const char *idname, const char *string, int mode,
     cCGD *cgd = FIO()->NewCGD(idname, string, tp);
     if (!cgd) {
         const char *fmt = "Failed to create new Geometry Digest:\n%s";
-        if (cCHDcfg::self()) {
+        if (QTchdCfgDlg::self()) {
             const char *s = Errs()->get_error();
             int len = strlen(fmt) + (s ? strlen(s) : 0) + 10;
             char *t = new char[len];
             snprintf(t, len, fmt, s);
-            cCHDcfg::self()->PopUpMessage(t, true);
+            QTchdCfgDlg::self()->PopUpMessage(t, true);
             delete [] t;
         }
         else
@@ -375,22 +377,22 @@ cCHDcfg::cf_new_cgd_cb(const char *idname, const char *string, int mode,
     if (chd) {
         cgd->set_free_on_unlink(true);
         chd->setCgd(cgd);
-        if (cCHDcfg::self())
-            cCHDcfg::self()->update(cCHDcfg::self()->cf_chdname);
+        if (QTchdCfgDlg::self())
+            QTchdCfgDlg::self()->update(QTchdCfgDlg::self()->cf_chdname);
     }
     return (true);
 }
 
 
 void
-cCHDcfg::help_btn_slot()
+QTchdCfgDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:chdconfig"))
 }
 
 
 void
-cCHDcfg::apply_tc_btn_slot()
+QTchdCfgDlg::apply_tc_btn_slot()
 {
     // NOTE:  cCHD::setDefaultCellname calls back to the update
     // function, so we don't call it here.  Have to be careful to
@@ -435,7 +437,7 @@ cCHDcfg::apply_tc_btn_slot()
 
 
 void
-cCHDcfg::last_btn_slot()
+QTchdCfgDlg::last_btn_slot()
 {
     if (!cf_chdname)
         return;
@@ -453,7 +455,7 @@ cCHDcfg::last_btn_slot()
 
 
 void
-cCHDcfg::apply_cgd_btn_slot()
+QTchdCfgDlg::apply_cgd_btn_slot()
 {
     if (!cf_chdname)
         return;
@@ -507,13 +509,13 @@ cCHDcfg::apply_cgd_btn_slot()
 
 
 void
-cCHDcfg::new_cgd_btn_slot(int)
+QTchdCfgDlg::new_cgd_btn_slot(int)
 {
 }
 
 
 void
-cCHDcfg::dismiss_btn_slot()
+QTchdCfgDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpChdConfig(0, MODE_OFF, 0, 0, 0);
 }
@@ -528,7 +530,7 @@ cCHDcfg::dismiss_btn_slot()
 // Drag data received in editing window, grab it
 //
 void
-cCHDcfg::cf_drag_data_received(GtkWidget *entry, GdkDragContext *context,
+QTchdCfgDlg::cf_drag_data_received(GtkWidget *entry, GdkDragContext *context,
     gint, gint, GtkSelectionData *data, guint, guint time)
 {
     if (gtk_selection_data_get_length(data) >= 0 &&

@@ -70,23 +70,23 @@ cMain::PopUpColor(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cColor::self())
-            cColor::self()->deleteLater();
+        if (QTcolorDlg::self())
+            QTcolorDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cColor::self())
-            cColor::self()->update();
+        if (QTcolorDlg::self())
+            QTcolorDlg::self()->update();
         return;
     }
-    if (cColor::self())
+    if (QTcolorDlg::self())
         return;
 
-    new cColor(caller);
+    new QTcolorDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cColor::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTcolorDlg::self(),
         QTmainwin::self()->Viewport());
-    cColor::self()->show();
+    QTcolorDlg::self()->show();
 }
 
 
@@ -96,7 +96,7 @@ cMain::PopUpColor(GRobject caller, ShowMode mode)
 
 // Attributes, electrical and physical mode.
 //
-cColor::clritem cColor::Menu1[] =
+QTcolorDlg::clritem QTcolorDlg::Menu1[] =
 {
     { "Current Layer", CLR_CURLYR },
     { "Background", BackgroundColor },
@@ -115,7 +115,7 @@ cColor::clritem cColor::Menu1[] =
 
 // Prompt line, electrical and physical mode.
 //
-cColor::clritem cColor::Menu2[] =
+QTcolorDlg::clritem QTcolorDlg::Menu2[] =
 {
     { "Text", PromptEditTextColor },
     { "Prompt Text", PromptTextColor },
@@ -129,7 +129,7 @@ cColor::clritem cColor::Menu2[] =
 
 // Plot mark colors, electrical only.
 //
-cColor::clritem cColor::Menu3[] =
+QTcolorDlg::clritem QTcolorDlg::Menu3[] =
 {
     { "Plot Mark 1", Color2 },
     { "Plot Mark 2", Color3 },
@@ -152,9 +152,9 @@ cColor::clritem cColor::Menu3[] =
     { 0, 0 }
 };
 
-cColor *cColor::instPtr;
+QTcolorDlg *QTcolorDlg::instPtr;
 
-cColor::cColor(GRobject c)
+QTcolorDlg::QTcolorDlg(GRobject c)
 {
     instPtr = this;
     c_mode = CLR_CURLYR;
@@ -251,7 +251,7 @@ cColor::cColor(GRobject c)
 }
 
 
-cColor::~cColor()
+QTcolorDlg::~QTcolorDlg()
 {
     instPtr = 0;
     if (c_caller)
@@ -262,7 +262,7 @@ cColor::~cColor()
 
 
 void
-cColor::update()
+QTcolorDlg::update()
 {
     if (c_ref_mode != DSP()->CurMode()) {
         // User changed between Physical and Electrical modes. 
@@ -286,7 +286,7 @@ cColor::update()
 // Update the color shown.
 //
 void
-cColor::update_color()
+QTcolorDlg::update_color()
 {
     if (!c_clrd)
         return;
@@ -299,7 +299,7 @@ cColor::update_color()
 
 
 void
-cColor::fill_categ_menu()
+QTcolorDlg::fill_categ_menu()
 {
     c_categmenu->clear();
     c_categmenu->addItem(tr("Attributes"));
@@ -311,7 +311,7 @@ cColor::fill_categ_menu()
 
 
 void
-cColor::fill_attr_menu(int categ)
+QTcolorDlg::fill_attr_menu(int categ)
 {
     if (categ == CATEG_ATTR) {
         c_attrmenu->clear();
@@ -354,7 +354,7 @@ cColor::fill_attr_menu(int categ)
 // Return the RGB for the current mode.
 //
 void
-cColor::c_get_rgb(int mode, int *red, int *green, int *blue)
+QTcolorDlg::c_get_rgb(int mode, int *red, int *green, int *blue)
 {
     if (mode == CLR_CURLYR) {
         if (LT()->CurLayer())
@@ -366,8 +366,8 @@ cColor::c_get_rgb(int mode, int *red, int *green, int *blue)
         }
     }
     else {
-        if (cColor::self()) {
-            DSP()->ColorTab()->get_rgb(mode, cColor::self()->c_display_mode,
+        if (QTcolorDlg::self()) {
+            DSP()->ColorTab()->get_rgb(mode, QTcolorDlg::self()->c_display_mode,
                 red, green, blue);
         }
         else {
@@ -384,20 +384,20 @@ cColor::c_get_rgb(int mode, int *red, int *green, int *blue)
 // Apply button.
 //
 void
-cColor::c_set_rgb(int red, int green, int blue)
+QTcolorDlg::c_set_rgb(int red, int green, int blue)
 {
-    if (!cColor::self())
+    if (!QTcolorDlg::self())
         return;
-    cColor::self()->c_red = red;
-    cColor::self()->c_green = green;
-    cColor::self()->c_blue = blue;
+    QTcolorDlg::self()->c_red = red;
+    QTcolorDlg::self()->c_green = green;
+    QTcolorDlg::self()->c_blue = blue;
 }
 
 
 // Insert the selected rgb.txt entry into the color selector.
 //
 void
-cColor::c_list_callback(const char *string, void*)
+QTcolorDlg::c_list_callback(const char *string, void*)
 {
     if (string) {
         while (isspace(*string))
@@ -405,24 +405,24 @@ cColor::c_list_callback(const char *string, void*)
         int r, g, b;
         if (sscanf(string, "%d %d %d", &r, &g, &b) != 3)
             return;
-        if (cColor::self()) {
+        if (QTcolorDlg::self()) {
             QColor rgb(r, g, b);
             /*
             gtk_color_selection_set_current_color(
                 GTK_COLOR_SELECTION(Clr->c_sel), &rgb);
             */
-            cColor::c_set_rgb(r, g, b);
+            QTcolorDlg::c_set_rgb(r, g, b);
         }
     }
-    else if (cColor::self()) {
-        QTdev::SetStatus(cColor::self()->c_listbtn, false);
-        cColor::self()->c_listpop = 0;
+    else if (QTcolorDlg::self()) {
+        QTdev::SetStatus(QTcolorDlg::self()->c_listbtn, false);
+        QTcolorDlg::self()->c_listpop = 0;
     }
 }
 
 
 void
-cColor::mode_menu_change_slot(int ix)
+QTcolorDlg::mode_menu_change_slot(int ix)
 {
     c_display_mode = ix ? Electrical : Physical;
     fill_categ_menu();
@@ -431,14 +431,14 @@ cColor::mode_menu_change_slot(int ix)
 
 
 void
-cColor::categ_menu_change_slot(int ix)
+QTcolorDlg::categ_menu_change_slot(int ix)
 {
     fill_attr_menu(ix);
 }
 
 
 void
-cColor::attr_menu_change_slot(int)
+QTcolorDlg::attr_menu_change_slot(int)
 {
     int ix = c_attrmenu->currentData().toInt();
     if (ix == Physical || ix == Electrical) {
@@ -449,7 +449,7 @@ cColor::attr_menu_change_slot(int)
 
 
 void
-cColor::color_selected_slot(const QColor &clr)
+QTcolorDlg::color_selected_slot(const QColor &clr)
 {
     int r = clr.red();
     int g = clr.green();
@@ -459,14 +459,14 @@ cColor::color_selected_slot(const QColor &clr)
 
 
 void
-cColor::help_btn_slot()
+QTcolorDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:color"))
 }
 
 
 void
-cColor::colors_btn_slot(bool state)
+QTcolorDlg::colors_btn_slot(bool state)
 {
     if (!c_listpop && state) {
         stringlist *list = GRcolorList::listColors();
@@ -486,7 +486,7 @@ cColor::colors_btn_slot(bool state)
 
 
 void
-cColor::apply_btn_slot()
+QTcolorDlg::apply_btn_slot()
 {
     // Actually perform the color change.
     int mode = c_mode;
@@ -530,8 +530,8 @@ cColor::apply_btn_slot()
     case PromptCursorColor:
     case PromptBackgroundColor:
     case PromptEditBackgColor:
-        Param()->redraw();
-        Coord()->redraw();
+        QTparam::self()->redraw();
+        QTcoord::self()->redraw();
         DSP()->MainWbag()->ShowKeys();
         QTedit::self()->redraw();
         break;
@@ -573,15 +573,8 @@ cColor::apply_btn_slot()
 
 
 void
-cColor::dismiss_btn_slot()
+QTcolorDlg::dismiss_btn_slot()
 {
     XM()->PopUpColor(0, MODE_OFF);
 }
 
-#ifdef notdef
-
-//
-// Pop-up selectable list of rgb.txt color entries.
-//
-
-#endif

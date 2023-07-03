@@ -55,21 +55,21 @@ class QLabel;
 // Max number of user buttons.
 #define TR_MAXBTNS 5
 
-class cTree : public QDialog, public QTbag
+class QTtreeDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cTree(GRobject, const char*, TreeUpdMode);
-    ~cTree();
+    QTtreeDlg(GRobject, const char*, TreeUpdMode);
+    ~QTtreeDlg();
 
     void update(const char*, const char*, TreeUpdMode);
     char *get_selection();
 
     // Program is exiting, disable updates.
-    static void set_panic()         { instPtr = 0; }
+    static void set_panic()             { instPtr = 0; }
 
-    static cTree *self()            { return (instPtr); }
+    static QTtreeDlg *self()            { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -129,7 +129,7 @@ private:
     int t_mdepth;               // max depth
     uint64_t t_check_time;      // interval test
 
-    static cTree *instPtr;
+    static QTtreeDlg *instPtr;
 };
 
 #endif

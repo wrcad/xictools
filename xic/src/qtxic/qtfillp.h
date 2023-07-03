@@ -53,7 +53,7 @@ class QDragEnterEvent;
 class QDropEvent;
 
 
-class cFillp : public QDialog, public QTbag, public QTdraw
+class QTfillPatDlg : public QDialog, public QTbag, public QTdraw
 {
     Q_OBJECT
 
@@ -61,13 +61,13 @@ public:
     // Pixel operations
     enum FPSETtype { FPSEToff, FPSETon, FPSETflip };
 
-    cFillp(GRobject);
-    ~cFillp();
+    QTfillPatDlg(GRobject);
+    ~QTfillPatDlg();
 
     void update();
     void drag_load(LayerFillData*, CDl*);
 
-    static cFillp *self()           { return (instPtr); }
+    static QTfillPatDlg *self()             { return (instPtr); }
 
 private slots:
     void nx_change_slot(int);
@@ -149,7 +149,7 @@ private:
     bool fp_dragging;
     bool fp_editing;
 
-    static cFillp *instPtr;
+    static QTfillPatDlg *instPtr;
 };
 
 #endif

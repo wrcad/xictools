@@ -55,13 +55,13 @@ class QDoubleSpinBox;
 class QDragEnterEvent;
 class QDropEvent;
 
-class cPlace : public QDialog, public cEdit::sPCpopup
+class QTplaceDlg : public QDialog, public cEdit::sPCpopup
 {
     Q_OBJECT
 
 public:
-    cPlace(bool);
-    ~cPlace();
+    QTplaceDlg(bool);
+    ~QTplaceDlg();
 
     void update();
 
@@ -70,7 +70,7 @@ public:
     void desel_placebtn();
     bool smash_mode();
 
-    static cPlace *self()           { return (instPtr); }
+    static QTplaceDlg *self()           { return (instPtr); }
 
     static void update_params()
     {
@@ -122,7 +122,7 @@ private:
     QDoubleSpinBox *pl_dy;
     QSpinBox *pl_mmlen;
 
-    static cPlace *instPtr;
+    static QTplaceDlg *instPtr;
 
     static iap_t pl_iap;
 };

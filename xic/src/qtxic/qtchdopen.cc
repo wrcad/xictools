@@ -71,19 +71,19 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cCHDopen::self())
-            cCHDopen::self()->deleteLater();
+        if (QTchdOpenDlg::self())
+            QTchdOpenDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cCHDopen::self())
-            cCHDopen::self()->update(init_idname, init_str);
+        if (QTchdOpenDlg::self())
+            QTchdOpenDlg::self()->update(init_idname, init_str);
         return;
     }
-    if (cCHDopen::self())
+    if (QTchdOpenDlg::self())
         return;
 
-    new cCHDopen(caller, callback, arg, init_idname, init_str);
+    new QTchdOpenDlg(caller, callback, arg, init_idname, init_str);
 
     /*
     int mwid;
@@ -98,7 +98,7 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
     // OpenSuse-13.1 gtk-2.24.23 bug
     gtk_window_move(GTK_WINDOW(Co->Shell()), x, y);
     */
-cCHDopen::self()->show();
+QTchdOpenDlg::self()->show();
 }
 
 /*
@@ -115,9 +115,9 @@ namespace {
 */
 
 
-cCHDopen *cCHDopen::instPtr;
+QTchdOpenDlg *QTchdOpenDlg::instPtr;
 
-cCHDopen::cCHDopen(GRobject caller,
+QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     bool(*callback)(const char*, const char*, int, void*),
     void *arg, const char *init_idname, const char *init_str)
 {
@@ -153,6 +153,8 @@ cCHDopen::cCHDopen(GRobject caller,
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     QLabel *label = new QLabel( tr(
         "Enter path to layout or saved digest file"));
     hb->addWidget(label);
@@ -188,7 +190,7 @@ cCHDopen::cCHDopen(GRobject caller,
         G_CALLBACK(co_drag_data_received), 0);
 */
 
-    co_p1_cnmap = new cCnameMap(false);
+    co_p1_cnmap = new QTcnameMap(false);
     p_vbox->addWidget(co_p1_cnmap);
 
     QHBoxLayout *p_hbox = new QHBoxLayout();
@@ -300,7 +302,7 @@ cCHDopen::cCHDopen(GRobject caller,
 }
 
 
-cCHDopen::~cCHDopen()
+QTchdOpenDlg::~QTchdOpenDlg()
 {
     instPtr = 0;
     if (co_caller)
@@ -309,7 +311,7 @@ cCHDopen::~cCHDopen()
 
 
 void
-cCHDopen::update(const char *init_idname, const char *init_str)
+QTchdOpenDlg::update(const char *init_idname, const char *init_str)
 {
     if (init_str) {
         int pg = co_nbook->currentIndex();
@@ -344,14 +346,14 @@ cCHDopen::update(const char *init_idname, const char *init_str)
 }
 
 void
-cCHDopen::help_btn_slot()
+QTchdOpenDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:chdadd"))
 }
 
 
 void
-cCHDopen::p1_info_slot(int tp)
+QTchdOpenDlg::p1_info_slot(int tp)
 {
     cvINFO cv;
     switch (tp) {
@@ -381,7 +383,7 @@ cCHDopen::p1_info_slot(int tp)
 
 
 void
-cCHDopen::apply_btn_slot()
+QTchdOpenDlg::apply_btn_slot()
 {
     // Pop down and destroy, call callback.  Note that if the callback
     // returns nonzero but not one, the caller is not deselected.
@@ -417,9 +419,9 @@ cCHDopen::apply_btn_slot()
 
 
 void
-cCHDopen::dismiss_btn_slot()
+QTchdOpenDlg::dismiss_btn_slot()
 {
-    cCHDopen::self()->deleteLater();
+    QTchdOpenDlg::self()->deleteLater();
 }
 
 
@@ -430,7 +432,7 @@ cCHDopen::dismiss_btn_slot()
 // In single-line mode, Return is taken as an "OK" termination.
 //
 int
-cCHDopen::co_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
+QTchdOpenDlg::co_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
 {
     if (Co && ev->key.keyval == GDK_KEY_Return) {
         const char *string;
@@ -452,7 +454,7 @@ cCHDopen::co_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
 // Drag data received in editing window, grab it
 //
 void
-cCHDopen::co_drag_data_received(GtkWidget *entry,
+QTchdOpenDlg::co_drag_data_received(GtkWidget *entry,
     GdkDragContext *context, gint, gint, GtkSelectionData *data,
     guint, guint time)
 {
@@ -480,7 +482,7 @@ cCHDopen::co_drag_data_received(GtkWidget *entry,
 // Handle page change, set focus to text entry.
 //
 void
-cCHDopen::co_page_proc(GtkNotebook*, void*, int num, void*)
+QTchdOpenDlg::co_page_proc(GtkNotebook*, void*, int num, void*)
 {
     if (!Co)
         return;

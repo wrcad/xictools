@@ -63,13 +63,6 @@ cMain::PopUpAttributes(GRobject, ShowMode)
 {
 }
 
-// qtauxtab.cc
-
-void
-cConvert::PopUpAuxTab(GRobject, ShowMode)
-{
-}
-
 
 void
 cMain::PopUpSelectInstances(CDol*)
@@ -99,11 +92,6 @@ cMain::PopUpLayerParamEditor(GRobject, ShowMode, const char*, const char*)
 {
 }
 
-void
-cMain::PopUpTechWrite(GRobject, ShowMode)
-{
-}
-
 
 void
 cMain::SetNoToTop(bool)
@@ -115,28 +103,6 @@ cMain::SetLowerWinOffset(int)
 {
 }
 
-
-// qtcvin.cc
-
-void
-cConvert::PopUpImport(GRobject, ShowMode,
-    bool (*)(int, void*), void*)
-{
-}
-
-void
-cConvert::PopUpCompare(GRobject, ShowMode)
-{
-}
-
-
-// qtcvout.cc
-
-void
-cConvert::PopUpExport(GRobject, ShowMode, 
-    bool (*)(FileType, bool, void*), void*)
-{
-}
 
 // qtdebug.cc
 
@@ -274,11 +240,6 @@ bool
 cSced::PopUpNodeMap(GRobject, ShowMode, int)
 {
     return (false);
-}
-
-void
-cConvert::PopUpOasAdv(GRobject, ShowMode, int, int)
-{
 }
 
 

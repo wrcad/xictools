@@ -53,22 +53,22 @@
 void
 cMain::SetCoordMode(COmode mode, int rx, int ry)
 {
-    if (!Coord())
+    if (!QTcoord::self())
         return;
     if (mode == CO_ABSOLUTE)
-        Coord()->set_mode(0, 0, false, true);
+        QTcoord::self()->set_mode(0, 0, false, true);
     else if (mode == CO_RELATIVE)
-        Coord()->set_mode(rx, ry, true, true);
+        QTcoord::self()->set_mode(rx, ry, true, true);
     else if (mode == CO_REDRAW)
-        Coord()->redraw();
+        QTcoord::self()->redraw();
 }
 
 
-cCoord *cCoord::instancePtr = 0;
+QTcoord *QTcoord::instPtr = 0;
 
-cCoord::cCoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
+QTcoord::QTcoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 {
-    instancePtr = this;
+    instPtr = this;
 
     co_lx = co_ly = 0;
     co_width = co_height = 0;
@@ -100,14 +100,14 @@ cCoord::cCoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 }
 
 
-cCoord::~cCoord()
+QTcoord::~QTcoord()
 {
-    instancePtr = 0;
+    instPtr = 0;
 }
 
 
 void
-cCoord::print(int xc, int yc, int upd)
+QTcoord::print(int xc, int yc, int upd)
 {
     const char *fmt;
     DisplayMode mode = EV()->CurrentWin()->Mode();
@@ -243,7 +243,7 @@ cCoord::print(int xc, int yc, int upd)
 
 
 void
-cCoord::redraw_slot()
+QTcoord::redraw_slot()
 {
     int xx, yy;
     EV()->Cursor().get_xy(&xx, &yy);
@@ -252,7 +252,7 @@ cCoord::redraw_slot()
 
 
 void
-cCoord::font_changed_slot(int fnum)
+QTcoord::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;

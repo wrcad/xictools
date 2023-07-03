@@ -76,22 +76,22 @@ cMain::PopUpMemory(ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cMemMon::self())
-            cMemMon::self()->deleteLater();
+        if (QTmemMonDlg::self())
+            QTmemMonDlg::self()->deleteLater();
         return;
     }
-    if (cMemMon::self()) {
-        cMemMon::self()->update();
+    if (QTmemMonDlg::self()) {
+        QTmemMonDlg::self()->update();
         return;
     }
     if (mode == MODE_UPD)
         return;
 
-    new cMemMon;
+    new QTmemMonDlg;
 
-    QTdev::self()->SetPopupLocation(GRloc(), cMemMon::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTmemMonDlg::self(),
         QTmainwin::self()->Viewport());
-    cMemMon::self()->show();
+    QTmemMonDlg::self()->show();
 }
 // End of cMain functions.
 
@@ -99,9 +99,9 @@ cMain::PopUpMemory(ShowMode mode)
 // Minimum widget width so that title text isn't truncated.
 #define MEM_MINWIDTH 240
 
-cMemMon *cMemMon::instPtr;
+QTmemMonDlg *QTmemMonDlg::instPtr;
 
-cMemMon::cMemMon() : QTdraw(XW_TEXT)
+QTmemMonDlg::QTmemMonDlg() : QTdraw(XW_TEXT)
 {
     instPtr = this;
 
@@ -143,7 +143,7 @@ cMemMon::cMemMon() : QTdraw(XW_TEXT)
 }
 
 
-cMemMon::~cMemMon()
+QTmemMonDlg::~QTmemMonDlg()
 {
 printf("destr\n");
     instPtr = 0;
@@ -152,7 +152,7 @@ printf("destr\n");
 
 
 QSize
-cMemMon::sizeHint() const
+QTmemMonDlg::sizeHint() const
 {
     int fw = QTfont::stringWidth(0, gd_viewport->widget());
     int fh = QTfont::lineHeight(gd_viewport->widget());
@@ -165,7 +165,7 @@ cMemMon::sizeHint() const
 
 
 void
-cMemMon::update()
+QTmemMonDlg::update()
 {
     unsigned long c1 = DSP()->Color(PromptTextColor);
     unsigned long c2 = DSP()->Color(PromptEditTextColor);
@@ -303,21 +303,21 @@ cMemMon::update()
 
 
 void
-cMemMon::dismiss_btn_slot()
+QTmemMonDlg::dismiss_btn_slot()
 {
     XM()->PopUpMemory(MODE_OFF);
 }
 
 
 void
-cMemMon::resize_slot(QResizeEvent*)
+QTmemMonDlg::resize_slot(QResizeEvent*)
 {
     update();
 }
 
 
 void
-cMemMon::font_changed_slot(int fnum)
+QTmemMonDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
@@ -330,7 +330,7 @@ cMemMon::font_changed_slot(int fnum)
 
 // Static function.
 double
-cMemMon::chk_val(double val, char *m)
+QTmemMonDlg::chk_val(double val, char *m)
 {
     *m = 'K';
     if (val >= 1e9) {

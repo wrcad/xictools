@@ -46,24 +46,24 @@
 
 #include <QDialog>
 
+
 class QPushButton;
 class QTreeWidget;
 class QTreeWidgetItem;
 class QCheckBox;
 class QComboBox;
 
-
-class cCHDlist : public QDialog, public QTbag
+class QTchdListDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCHDlist(GRobject);
-    ~cCHDlist();
+    QTchdListDlg(GRobject);
+    ~QTchdListDlg();
 
     void update();
 
-    static cCHDlist *self()         { return (instPtr); }
+    static QTchdListDlg *self()         { return (instPtr); }
 
 private slots:
     void add_btn_slot(bool);
@@ -121,7 +121,7 @@ private:
     char *chl_selection;
     char *chl_contlib;
 
-    static cCHDlist *instPtr;
+    static QTchdListDlg *instPtr;
 };
 
 #endif

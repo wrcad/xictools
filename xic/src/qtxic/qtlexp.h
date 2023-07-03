@@ -56,17 +56,17 @@ class QAction;
 class QSpinBox;
 class QDoubleSpinBox;
 
-class cLayerExp : public QDialog
+class QTlayerExpDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cLayerExp(void*);
-    ~cLayerExp();
+    QTlayerExpDlg(void*);
+    ~QTlayerExpDlg();
 
     void update();
 
-    static cLayerExp *self()            { return (instPtr); }
+    static QTlayerExpDlg *self()            { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -118,7 +118,7 @@ private:
     static bool do_recurse;
     static bool noclear;
 
-    static cLayerExp *instPtr;
+    static QTlayerExpDlg *instPtr;
 };
 
 #endif

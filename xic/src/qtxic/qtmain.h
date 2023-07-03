@@ -55,11 +55,11 @@
 #include <QFontMetrics>
 
 struct sKeyEvent;
-class cCoord;
-class cParam;
+class QTcoord;
+class QTparam;
 class cKeys;
-class cExpand;
-class cZoom;
+class QTexpandDlg;
+class QTzoomDlg;
 class cGridDlg;
 class QTidleproc;
 class QTltab;
@@ -253,8 +253,8 @@ protected:
     QPixmap     *sw_pixmap;
     QMenuBar    *sw_menubar;
     cKeys       *sw_keys_pressed;
-    cExpand     *sw_expand;
-    cZoom       *sw_zoom;
+    QTexpandDlg *sw_expand;
+    QTzoomDlg   *sw_zoom;
     cGridDlg    *sw_gridpop;
     WindowDesc  *sw_windesc;
     int         sw_win_number;
@@ -335,9 +335,9 @@ private:
     QSplitter   *mw_splitter;
 
     QWidget     *mw_promptline;
-    cCoord      *mw_coords;
+    QTcoord     *mw_coords;
     QTltab      *mw_layertab;
-    cParam      *mw_status;
+    QTparam     *mw_status;
 };
 
 

@@ -50,17 +50,17 @@
 class QCheckBox;
 class QLineEdit;
 
-class cCfilt : public QDialog
+class QTcfiltDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cCfilt(GRobject, DisplayMode, void(*)(cfilter_t*, void*), void*);
-    ~cCfilt();
+    QTcfiltDlg(GRobject, DisplayMode, void(*)(cfilter_t*, void*), void*);
+    ~QTcfiltDlg();
 
     void update(DisplayMode);
 
-    static cCfilt *self()           { return (instPtr); }
+    static QTcfiltDlg *self()           { return (instPtr); }
 
 private slots:
     void store_menu_slot(QAction*);
@@ -149,7 +149,7 @@ private:
     static char *cf_phys_regs[];
     static char *cf_elec_regs[];
 
-    static cCfilt *instPtr;
+    static QTcfiltDlg *instPtr;
 };
 
 #endif

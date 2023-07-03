@@ -59,7 +59,7 @@ class QDoubleSpinBox;
 // Subwidget for output format selection and control.
 //
 
-class cConvOutFmt : public QTabWidget
+class QTconvOutFmt : public QTabWidget
 {
     Q_OBJECT
 
@@ -80,8 +80,8 @@ public:
         int code;
     };
 
-    cConvOutFmt(void(*)(int), int, cvofmt_mode);
-    ~cConvOutFmt();
+    QTconvOutFmt(void(*)(int), int, cvofmt_mode);
+    ~QTconvOutFmt();
 
     void update();
     bool gds_text_input();

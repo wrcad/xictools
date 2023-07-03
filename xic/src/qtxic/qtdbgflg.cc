@@ -68,29 +68,29 @@ cMain::PopUpDebugFlags(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cDbgFlags::self())
-            cDbgFlags::self()->deleteLater();
+        if (QTdbgFlagsDlg::self())
+            QTdbgFlagsDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cDbgFlags::self())
-            cDbgFlags::self()->update();
+        if (QTdbgFlagsDlg::self())
+            QTdbgFlagsDlg::self()->update();
         return;
     }
-    if (cDbgFlags::self())
+    if (QTdbgFlagsDlg::self())
         return;
 
-    new cDbgFlags(caller);
+    new QTdbgFlagsDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cDbgFlags::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTdbgFlagsDlg::self(),
         QTmainwin::self()->Viewport());
-    cDbgFlags::self()->show();
+    QTdbgFlagsDlg::self()->show();
 }
 
 
-cDbgFlags *cDbgFlags::instPtr;
+QTdbgFlagsDlg *QTdbgFlagsDlg::instPtr;
 
-cDbgFlags::cDbgFlags(GRobject c)
+QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
 {
     instPtr = this;
     df_caller = c;
@@ -269,7 +269,7 @@ cDbgFlags::cDbgFlags(GRobject c)
 }
 
 
-cDbgFlags::~cDbgFlags()
+QTdbgFlagsDlg::~QTdbgFlagsDlg()
 {
     instPtr = 0;
     if (df_caller)
@@ -278,7 +278,7 @@ cDbgFlags::~cDbgFlags()
 
 
 void
-cDbgFlags::update()
+QTdbgFlagsDlg::update()
 {
     unsigned int flags = XM()->DebugFlags();
     QTdev::SetStatus(df_sel, flags & DBG_SELECT);
@@ -323,14 +323,14 @@ cDbgFlags::update()
 
 
 void
-cDbgFlags::help_btn_slot()
+QTdbgFlagsDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:dblog"))
 }
 
 
 void
-cDbgFlags::sel_btn_slot(int state)
+QTdbgFlagsDlg::sel_btn_slot(int state)
 {
     unsigned int f = XM()->DebugFlags();
     if (state)
@@ -342,7 +342,7 @@ cDbgFlags::sel_btn_slot(int state)
 
 
 void
-cDbgFlags::undo_btn_slot(int state)
+QTdbgFlagsDlg::undo_btn_slot(int state)
 {
     unsigned int f = XM()->DebugFlags();
     if (state)
@@ -354,21 +354,21 @@ cDbgFlags::undo_btn_slot(int state)
 
 
 void
-cDbgFlags::ldb3d_btn_slot(int state)
+QTdbgFlagsDlg::ldb3d_btn_slot(int state)
 {
     Ldb3d::set_logging(state);
 }
 
 
 void
-cDbgFlags::rlsolv_btn_slot(int state)
+QTdbgFlagsDlg::rlsolv_btn_slot(int state)
 {
     ExtIf()->setRLsolverMsgs(state);
 }
 
 
 void
-cDbgFlags::editing_finished_slot()
+QTdbgFlagsDlg::editing_finished_slot()
 {
     const char *text = lstring::copy(df_fname->text().toLatin1().constData());
     const char *t = text;
@@ -423,56 +423,56 @@ cDbgFlags::editing_finished_slot()
 
 
 void
-cDbgFlags::lisp_btn_slot(int state)
+QTdbgFlagsDlg::lisp_btn_slot(int state)
 {
     cLispEnv::set_logging(state);
 }
 
 
 void
-cDbgFlags::connect_btn_slot(int state)
+QTdbgFlagsDlg::connect_btn_slot(int state)
 {
     ScedIf()->setLogConnect(state);
 }
 
 
 void
-cDbgFlags::rlsolvlog_btn_slot(int state)
+QTdbgFlagsDlg::rlsolvlog_btn_slot(int state)
 {
     ExtIf()->setLogRLsolver(state);
 }
 
 
 void
-cDbgFlags::group_btn_slot(int state)
+QTdbgFlagsDlg::group_btn_slot(int state)
 {
     ExtIf()->setLogGrouping(state);
 }
 
 
 void
-cDbgFlags::extract_btn_slot(int state)
+QTdbgFlagsDlg::extract_btn_slot(int state)
 {
     ExtIf()->setLogExtracting(state);
 }
 
 
 void
-cDbgFlags::assoc_btn_slot(int state)
+QTdbgFlagsDlg::assoc_btn_slot(int state)
 {
     ExtIf()->setLogAssociating(state);
 }
 
 
 void
-cDbgFlags::verbose_btn_slot(int state)
+QTdbgFlagsDlg::verbose_btn_slot(int state)
 {
     ExtIf()->setLogVerbose(state);
 }
 
 
 void
-cDbgFlags::load_btn_slot(int state)
+QTdbgFlagsDlg::load_btn_slot(int state)
 {
     if (state)
         OAif()->set_debug_flags("l", 0);
@@ -482,7 +482,7 @@ cDbgFlags::load_btn_slot(int state)
 
 
 void
-cDbgFlags::net_btn_slot(int state)
+QTdbgFlagsDlg::net_btn_slot(int state)
 {
     if (state)
         OAif()->set_debug_flags("n", 0);
@@ -492,7 +492,7 @@ cDbgFlags::net_btn_slot(int state)
 
 
 void
-cDbgFlags::pcell_btn_slot(int state)
+QTdbgFlagsDlg::pcell_btn_slot(int state)
 {
     if (state)
         OAif()->set_debug_flags("p", 0);
@@ -502,7 +502,7 @@ cDbgFlags::pcell_btn_slot(int state)
 
 
 void
-cDbgFlags::dismiss_btn_slot()
+QTdbgFlagsDlg::dismiss_btn_slot()
 {
     XM()->PopUpDebugFlags(0, MODE_OFF);
 }

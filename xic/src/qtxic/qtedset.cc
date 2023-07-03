@@ -65,28 +65,28 @@ cEdit::PopUpEditSetup(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cEditSetup::self())
-            cEditSetup::self()->deleteLater();
+        if (QTeditSetupDlg::self())
+            QTeditSetupDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cEditSetup::self())
-            cEditSetup::self()->update();
+        if (QTeditSetupDlg::self())
+            QTeditSetupDlg::self()->update();
         return;
     }
-    if (cEditSetup::self())
+    if (QTeditSetupDlg::self())
         return;
 
-    new cEditSetup(caller);
+    new QTeditSetupDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cEditSetup::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTeditSetupDlg::self(),
         QTmainwin::self()->Viewport());
-    cEditSetup::self()->show();
+    QTeditSetupDlg::self()->show();
 }
 // End of cEdit functions.
 
 
-const char *cEditSetup::ed_depthvals[] =
+const char *QTeditSetupDlg::ed_depthvals[] =
 {
     "as expanded",
     "0",
@@ -101,9 +101,9 @@ const char *cEditSetup::ed_depthvals[] =
     0
 };
 
-cEditSetup *cEditSetup::instPtr;
+QTeditSetupDlg *QTeditSetupDlg::instPtr;
 
-cEditSetup::cEditSetup(GRobject c)
+QTeditSetupDlg::QTeditSetupDlg(GRobject c)
 {
     instPtr = this;
     ed_caller = c;
@@ -132,6 +132,8 @@ cEditSetup::cEditSetup(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set editing flags and parameters"));
     hb->addWidget(label);
 
@@ -237,7 +239,7 @@ cEditSetup::cEditSetup(GRobject c)
 }
 
 
-cEditSetup::~cEditSetup()
+QTeditSetupDlg::~QTeditSetupDlg()
 {
     instPtr = 0;
     if (ed_caller)
@@ -246,7 +248,7 @@ cEditSetup::~cEditSetup()
 
 
 void
-cEditSetup::update()
+QTeditSetupDlg::update()
 {
     QTdev::SetStatus(ed_cons45,
         CDvdb()->getVariable(VA_Constrain45));
@@ -281,14 +283,14 @@ cEditSetup::update()
 
 
 void
-cEditSetup::help_btn_slot()
+QTeditSetupDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:edset"))
 }
 
 
 void
-cEditSetup::cons45_btn_slot(int state)
+QTeditSetupDlg::cons45_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_Constrain45, "");
@@ -298,7 +300,7 @@ cEditSetup::cons45_btn_slot(int state)
 
 
 void
-cEditSetup::merge_btn_slot(int state)
+QTeditSetupDlg::merge_btn_slot(int state)
 {
     if (state)
         CDvdb()->clearVariable(VA_NoMergeObjects);
@@ -308,7 +310,7 @@ cEditSetup::merge_btn_slot(int state)
 
 
 void
-cEditSetup::noply_btn_slot(int state)
+QTeditSetupDlg::noply_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoMergePolys, "");
@@ -318,7 +320,7 @@ cEditSetup::noply_btn_slot(int state)
 
 
 void
-cEditSetup::prompt_btn_slot(int state)
+QTeditSetupDlg::prompt_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_AskSaveNative, "");
@@ -328,7 +330,7 @@ cEditSetup::prompt_btn_slot(int state)
 
 
 void
-cEditSetup::noww_btn_slot(int state)
+QTeditSetupDlg::noww_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_NoWireWidthMag, "");
@@ -338,7 +340,7 @@ cEditSetup::noww_btn_slot(int state)
 
 
 void
-cEditSetup::crcovr_btn_slot(int state)
+QTeditSetupDlg::crcovr_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_CrCellOverwrite, "");
@@ -348,7 +350,7 @@ cEditSetup::crcovr_btn_slot(int state)
 
 
 void
-cEditSetup::ulen_changed_slot(int n)
+QTeditSetupDlg::ulen_changed_slot(int n)
 {
     if (n == DEF_MAX_UNDO_LEN)
         CDvdb()->clearVariable(VA_UndoListLength);
@@ -361,7 +363,7 @@ cEditSetup::ulen_changed_slot(int n)
 
 
 void
-cEditSetup::maxgobs_changed_slot(int n)
+QTeditSetupDlg::maxgobs_changed_slot(int n)
 {
     if (n == DEF_MAX_GHOST_OBJECTS)
         CDvdb()->clearVariable(VA_MaxGhostObjects);
@@ -374,7 +376,7 @@ cEditSetup::maxgobs_changed_slot(int n)
 
 
 void
-cEditSetup::depth_changed_slot(int n)
+QTeditSetupDlg::depth_changed_slot(int n)
 {
     const char *s = ed_depthvals[n];
     if (isdigit(*s))
@@ -385,7 +387,7 @@ cEditSetup::depth_changed_slot(int n)
 
 
 void
-cEditSetup::dismiss_btn_slot()
+QTeditSetupDlg::dismiss_btn_slot()
 {
     ED()->PopUpEditSetup(0, MODE_OFF);
 }

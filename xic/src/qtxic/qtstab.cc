@@ -66,29 +66,29 @@ cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cStab::self())
-            cStab::self()->deleteLater();
+        if (QTstabDlg::self())
+            QTstabDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cStab::self())
-            cStab::self()->update();
+        if (QTstabDlg::self())
+            QTstabDlg::self()->update();
         return;
     }
-    if (cStab::self())
+    if (QTstabDlg::self())
         return;
 
-    new cStab(caller);
+    new QTstabDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cStab::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTstabDlg::self(),
         QTmainwin::self()->Viewport());
-    cStab::self()->show();
+    QTstabDlg::self()->show();
 }
 
 
-cStab *cStab::instPtr;
+QTstabDlg *QTstabDlg::instPtr;
 
-cStab::cStab(GRobject c)
+QTstabDlg::QTstabDlg(GRobject c)
 {
     instPtr = this;
     tb_caller = c;
@@ -173,7 +173,7 @@ cStab::cStab(GRobject c)
 }
 
 
-cStab::~cStab()
+QTstabDlg::~QTstabDlg()
 {
     instPtr = 0;
     stringlist::destroy(tb_namelist);
@@ -183,7 +183,7 @@ cStab::~cStab()
 
 
 void
-cStab::update()
+QTstabDlg::update()
 {
     stringlist *list = CDcdb()->listTables();
 
@@ -218,14 +218,14 @@ cStab::update()
 
 
 void
-cStab::help_btn_slot()
+QTstabDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:stabs"))
 }
 
 
 void
-cStab::table_change_slot(int)
+QTstabDlg::table_change_slot(int)
 {
     QString qs = tb_tables->currentText();
     if (!qs.length() > 0)
@@ -234,7 +234,7 @@ cStab::table_change_slot(int)
 
 
 void
-cStab::add_btn_slot(bool)
+QTstabDlg::add_btn_slot(bool)
 {
     if (tb_del_pop)
         tb_del_pop->popdown();
@@ -251,7 +251,7 @@ cStab::add_btn_slot(bool)
 
 
 void
-cStab::clear_btn_slot(bool)
+QTstabDlg::clear_btn_slot(bool)
 {
     if (tb_add_pop)
         tb_add_pop->popdown();
@@ -267,7 +267,7 @@ cStab::clear_btn_slot(bool)
 
 
 void
-cStab::destroy_btn_slot(bool)
+QTstabDlg::destroy_btn_slot(bool)
 {
     if (tb_add_pop)
         tb_add_pop->popdown();
@@ -283,7 +283,7 @@ cStab::destroy_btn_slot(bool)
 
 
 void
-cStab::dismiss_btn_slot()
+QTstabDlg::dismiss_btn_slot()
 {
     XM()->PopUpSymTabs(0, MODE_OFF);
 }
@@ -294,7 +294,7 @@ cStab::dismiss_btn_slot()
 // Callback for the Add dialog.
 //
 ESret
-cStab::tb_add_cb(const char *name, void*)
+QTstabDlg::tb_add_cb(const char *name, void*)
 {
     if (name && self())
         XM()->SetSymbolTable(name);
@@ -306,7 +306,7 @@ cStab::tb_add_cb(const char *name, void*)
 // Callback for Clear confirmation pop-up.
 //
 void
-cStab::tb_clr_cb(bool yn, void*)
+QTstabDlg::tb_clr_cb(bool yn, void*)
 {
     if (yn && self())
         XM()->Clear(0);
@@ -317,7 +317,7 @@ cStab::tb_clr_cb(bool yn, void*)
 // Callback for Destroy confirmation pop-up.
 //
 void
-cStab::tb_del_cb(bool yn, void*)
+QTstabDlg::tb_del_cb(bool yn, void*)
 {
     if (yn && self())
         XM()->ClearSymbolTable();

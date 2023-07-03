@@ -52,7 +52,7 @@
 //-------------------------------------------------------------------------
 // Subwidget group for window control.
 
-cWindowCfg::cWindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
+QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
 {
     wnd_sens_test = sens_test;
     wnd_func_mode = fmode;
@@ -64,7 +64,7 @@ cWindowCfg::cWindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
     hbox->setMargin(0);
-    hbox->setSpacing(2);
+    hbox->setSpacing(16);
 
     wnd_use_win = new QCheckBox(tr("Use Window"));
     hbox->addWidget(wnd_use_win);
@@ -83,6 +83,8 @@ cWindowCfg::cWindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     wnd_ecf_label = new QLabel(tr("Empty Cell Filter"));
     hbox->addWidget(wnd_ecf_label);
+    if (wnd_func_mode == WndFuncOut || wnd_func_mode == WndFuncIn)
+        wnd_ecf_label->hide();;
 
     // two rows, six cols
     hbox = new QHBoxLayout();
@@ -238,13 +240,13 @@ cWindowCfg::cWindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
 }
 
 
-cWindowCfg::~cWindowCfg()
+QTwindowCfg::~QTwindowCfg()
 {
 }
 
 
 void
-cWindowCfg::update()
+QTwindowCfg::update()
 {
     if (wnd_func_mode == WndFuncCvt) {
         wnd_sb_left->setValue(MICRONS(FIO()->CvtWindow()->left));
@@ -290,7 +292,7 @@ cWindowCfg::update()
 
 
 void
-cWindowCfg::set_sens()
+QTwindowCfg::set_sens()
 {
     WndSensMode mode = (wnd_sens_test ? (*wnd_sens_test)() : WndSensAllModes);
 
@@ -385,7 +387,7 @@ cWindowCfg::set_sens()
 
 
 bool
-cWindowCfg::get_bb(BBox *BB)
+QTwindowCfg::get_bb(BBox *BB)
 {
     if (!BB)
         return (false);
@@ -414,7 +416,7 @@ cWindowCfg::get_bb(BBox *BB)
 
 
 void
-cWindowCfg::set_bb(const BBox *BB)
+QTwindowCfg::set_bb(const BBox *BB)
 {
     if (!BB)
         return;
@@ -426,7 +428,7 @@ cWindowCfg::set_bb(const BBox *BB)
 
 
 void
-cWindowCfg::usewin_btn_slot(int state)
+QTwindowCfg::usewin_btn_slot(int state)
 {
     if (wnd_func_mode == WndFuncCvt)
         FIO()->SetCvtUseWindow(state);
@@ -439,7 +441,7 @@ cWindowCfg::usewin_btn_slot(int state)
 
 
 void
-cWindowCfg::clip_btn_slot(int state)
+QTwindowCfg::clip_btn_slot(int state)
 {
     if (wnd_func_mode == WndFuncCvt)
         FIO()->SetCvtClip(state);
@@ -451,7 +453,7 @@ cWindowCfg::clip_btn_slot(int state)
 
 
 void
-cWindowCfg::flatten_btn_slot(int state)
+QTwindowCfg::flatten_btn_slot(int state)
 {
     if (wnd_func_mode == WndFuncCvt)
         FIO()->SetCvtFlatten(state);
@@ -464,21 +466,21 @@ cWindowCfg::flatten_btn_slot(int state)
 
 
 void
-cWindowCfg::s_menu_slot(QAction *a)
+QTwindowCfg::s_menu_slot(QAction *a)
 {
     get_bb(FIO()->savedBB(a->data().toInt()));
 }
 
 
 void
-cWindowCfg::r_menu_slot(QAction *a)
+QTwindowCfg::r_menu_slot(QAction *a)
 {
     set_bb(FIO()->savedBB(a->data().toInt()));
 }
 
 
 void
-cWindowCfg::left_value_slot(double d)
+QTwindowCfg::left_value_slot(double d)
 {
     if (wnd_func_mode == WndFuncCvt)
         FIO()->SetCvtWindowLeft(INTERNAL_UNITS(d));
@@ -490,7 +492,7 @@ cWindowCfg::left_value_slot(double d)
 
 
 void
-cWindowCfg::right_value_slot(double d)
+QTwindowCfg::right_value_slot(double d)
 {
     if (wnd_func_mode == WndFuncCvt)
         FIO()->SetCvtWindowRight(INTERNAL_UNITS(d));
@@ -502,7 +504,7 @@ cWindowCfg::right_value_slot(double d)
 
 
 void
-cWindowCfg::bottom_value_slot(double d)
+QTwindowCfg::bottom_value_slot(double d)
 {
     if (wnd_func_mode == WndFuncCvt)
         FIO()->SetCvtWindowBottom(INTERNAL_UNITS(d));
@@ -514,7 +516,7 @@ cWindowCfg::bottom_value_slot(double d)
 
 
 void
-cWindowCfg::top_value_slot(double d)
+QTwindowCfg::top_value_slot(double d)
 {
     if (wnd_func_mode == WndFuncCvt)
         FIO()->SetCvtWindowTop(INTERNAL_UNITS(d));
@@ -526,7 +528,7 @@ cWindowCfg::top_value_slot(double d)
 
 
 void
-cWindowCfg::ecf_pre_btn_slot(int state)
+QTwindowCfg::ecf_pre_btn_slot(int state)
 {
     if (wnd_func_mode == WndFuncCvt) {
         if (state) {
@@ -622,7 +624,7 @@ cWindowCfg::ecf_pre_btn_slot(int state)
 
 
 void
-cWindowCfg::ecf_post_btn_slot(int state)
+QTwindowCfg::ecf_post_btn_slot(int state)
 {
     if (wnd_func_mode == WndFuncCvt) {
         if (state) {

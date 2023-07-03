@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTCMP_H
-#define QTCMP_H
+#ifndef QTCVOUT_H
+#define QTCVOUT_H
 
 #include "main.h"
 #include "qtmain.h"
@@ -47,92 +47,84 @@
 #include <QDialog>
 
 
-class cCompare : public QDialog
+class QLabel;
+class QTabWidget;
+class QCheckBox;
+class QDoubleSpinBox;
+class QTconvOutFmt;
+class QTwindowCfg;
+class QTcnameMap;
+
+typedef bool(*CvoCallback)(FileType, bool, void*);
+
+class QTconvertOutDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    friend struct sCmp_store;
-    cCompare(GRobject);
-    ~cCompare();
+    struct fmtval_t
+    {
+        fmtval_t(const char *n, FileType t) { name = n; filetype = t; }
+
+        const char *name;
+        FileType filetype;
+    };
+
+    QTconvertOutDlg(GRobject, CvoCallback, void*);
+    ~QTconvertOutDlg();
 
     void update();
 
-    sCompare *self()            { return (instPtr); }
+    static QTconvertOutDlg *self()          { return (instPtr); }
 
 private slots:
+    void help_btn_slot();
+    void nbook_page_slot(int);
+    void invis_p_btn_slot(int);
+    void invis_e_btn_slot(int);
+    void strip_btn_slot(int);
+    void libsub_btn_slot(int);
+    void pcsub_btn_slot(int);
+    void viasub_btn_slot(int);
+    void allcells_btn_slot(int);
+    void noflvias_btn_slot(int);
+    void noflpcs_btn_slot(int);
+    void nofllbs_btn_slot(int);
+    void keepbad_btn_slot(int);
+    void scale_changed_slot(double);
+    void write_btn_slot();
+    void dismiss_btn_slot();
 
 private:
-    void per_cell_obj_page();
-    void per_cell_geom_page();
-    void flat_geom_page();
-    void p1_sens();
-    char *compose_arglist();
-    bool get_bb(BBox*);
-    void set_bb(const BBox*);
+    static void cvo_format_proc(int);
 
-    /*
-    static void cmp_cancel_proc(GtkWidget*, void*);
-    static void cmp_action(GtkWidget*, void*);
-    static void cmp_p1_action(GtkWidget*, void*);
-    static void cmp_p1_fltr_proc(GtkWidget*, void*);
-    static int cmp_popup_btn_proc(GtkWidget*, GdkEvent*, void*);
-    static void cmp_sto_menu_proc(GtkWidget*, void*);
-    static void cmp_rcl_menu_proc(GtkWidget*, void*);
-    static void cmp_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint);
-    */
+    GRobject    cvo_caller;
+    QLabel      *cvo_label;
+    QTabWidget  *cvo_nbook;
+    QCheckBox   *cvo_strip;
+    QCheckBox   *cvo_libsub;
+    QCheckBox   *cvo_pcsub;
+    QCheckBox   *cvo_viasub;
+    QCheckBox   *cvo_allcells;
+    QCheckBox   *cvo_noflvias;
+    QCheckBox   *cvo_noflpcs;
+    QCheckBox   *cvo_nofllbs;
+    QCheckBox   *cvo_keepbad;
+    QCheckBox   *cvo_invis_p;
+    QCheckBox   *cvo_invis_e;
+    QDoubleSpinBox *cvo_sb_scale;
+    QTconvOutFmt *cvo_fmt;
+    QTwindowCfg *cvo_wnd;
+    QTcnameMap  *cvo_cnmap;
 
-    GRobject cmp_caller;
-    GtkWidget *cmp_popup;
-    GtkWidget *cmp_mode;
-    GtkWidget *cmp_fname1;
-    GtkWidget *cmp_fname2;
-    GtkWidget *cmp_cnames1;
-    GtkWidget *cmp_cnames2;
-    GtkWidget *cmp_diff_only;
-    GtkWidget *cmp_layer_list;
-    GtkWidget *cmp_layer_use;
-    GtkWidget *cmp_layer_skip;
-    GTKspinBtn sb_max_errs;
+    CvoCallback cvo_callback;
+    void        *cvo_arg;
+    bool        cvo_useallcells;
 
-    GtkWidget *cmp_p1_expand_arrays;
-    GtkWidget *cmp_p1_slop;
-    GtkWidget *cmp_p1_dups;
-    GtkWidget *cmp_p1_boxes;
-    GtkWidget *cmp_p1_polys;
-    GtkWidget *cmp_p1_wires;
-    GtkWidget *cmp_p1_labels;
-    GtkWidget *cmp_p1_insta;
-    GtkWidget *cmp_p1_boxes_prp;
-    GtkWidget *cmp_p1_polys_prp;
-    GtkWidget *cmp_p1_wires_prp;
-    GtkWidget *cmp_p1_labels_prp;
-    GtkWidget *cmp_p1_insta_prp;
-    GtkWidget *cmp_p1_recurse;
-    GtkWidget *cmp_p1_phys;
-    GtkWidget *cmp_p1_elec;
-    GtkWidget *cmp_p1_cell_prp;
-    GtkWidget *cmp_p1_fltr;
-    GtkWidget *cmp_p1_setup;
-    PrpFltMode cmp_p1_fltr_mode;
-
-    GtkWidget *cmp_p2_expand_arrays;
-    GtkWidget *cmp_p2_recurse;
-    GtkWidget *cmp_p2_insta;
-
-    GtkWidget *cmp_p3_aoi_use;
-    GtkWidget *cmp_p3_s_btn;
-    GtkWidget *cmp_p3_r_btn;
-    GtkWidget *cmp_p3_s_menu;
-    GtkWidget *cmp_p3_r_menu;
-    GTKspinBtn sb_p3_aoi_left;
-    GTKspinBtn sb_p3_aoi_bottom;
-    GTKspinBtn sb_p3_aoi_right;
-    GTKspinBtn sb_p3_aoi_top;
-    GTKspinBtn sb_p3_fine_grid;
-    GTKspinBtn sb_p3_coarse_mult;
-
-    static cCompare *instPtr;
+    static fmtval_t cvo_fmtvals[];
+    static int cvo_fmt_type;
+    static QTconvertOutDlg *instPtr;
 };
+
 #endif
+

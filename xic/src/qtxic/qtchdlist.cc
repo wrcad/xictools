@@ -77,23 +77,23 @@ cConvert::PopUpHierarchies(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cCHDlist::self())
-            cCHDlist::self()->deleteLater();
+        if (QTchdListDlg::self())
+            QTchdListDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cCHDlist::self())
-            cCHDlist::self()->update();
+        if (QTchdListDlg::self())
+            QTchdListDlg::self()->update();
         return;
     }
-    if (cCHDlist::self())
+    if (QTchdListDlg::self())
         return;
 
-    new cCHDlist(caller);
+    new QTchdListDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_UL), cCHDlist::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTchdListDlg::self(),
         QTmainwin::self()->Viewport());
-    cCHDlist::self()->show();
+    QTchdListDlg::self()->show();
 }
 // End of cConvert functions.
 
@@ -103,9 +103,9 @@ cConvert::PopUpHierarchies(GRobject caller, ShowMode mode)
 #define OPEN_BTN    "Open"
 #define PLACE_BTN   "Place"
 
-cCHDlist *cCHDlist::instPtr;
+QTchdListDlg *QTchdListDlg::instPtr;
 
-cCHDlist::cCHDlist(GRobject c)
+QTchdListDlg::QTchdListDlg(GRobject c)
 {
     instPtr = this;
     chl_caller = c;
@@ -297,7 +297,7 @@ cCHDlist::cCHDlist(GRobject c)
 }
 
 
-cCHDlist::~cCHDlist()
+QTchdListDlg::~QTchdListDlg()
 {
     instPtr = 0;
     delete [] chl_selection;
@@ -321,7 +321,7 @@ cCHDlist::~cCHDlist()
 // Update the listing.
 //
 void
-cCHDlist::update()
+QTchdListDlg::update()
 {
     QTdev::SetStatus(chl_loadtop, CDvdb()->getVariable(VA_ChdLoadTopOnly));
     QTdev::SetStatus(chl_rename, CDvdb()->getVariable(VA_RefCellAutoRename));
@@ -429,7 +429,7 @@ cCHDlist::update()
 // Color the background of entry being displayed.
 //
 void
-cCHDlist::recolor()
+QTchdListDlg::recolor()
 {
     const char *sclr = QTpkg::self()->GetAttrColor(GRattrColorLocSel);
     if (DSP()->MainWdesc()->DbType() == WDchd) {
@@ -481,7 +481,7 @@ cCHDlist::recolor()
 
 
 void
-cCHDlist::err_message(const char *fmt)
+QTchdListDlg::err_message(const char *fmt)
 {
     const char *s = Errs()->get_error();
     int len = strlen(fmt) + (s ? strlen(s) : 0) + 10;
@@ -496,7 +496,7 @@ cCHDlist::err_message(const char *fmt)
 // Callback for the Add dialog.
 //
 bool
-cCHDlist::chl_add_cb(const char *idname, const char *fname, int mode, void*)
+QTchdListDlg::chl_add_cb(const char *idname, const char *fname, int mode, void*)
 {
     char buf[256];
     char *realname;
@@ -578,7 +578,7 @@ cCHDlist::chl_add_cb(const char *idname, const char *fname, int mode, void*)
 // Callback for the Save dialog.
 //
 bool
-cCHDlist::chl_sav_cb(const char *fname, bool with_geom, void*)
+QTchdListDlg::chl_sav_cb(const char *fname, bool with_geom, void*)
 {
     if (!instPtr->chl_selection) {
         instPtr->err_message("No selection, select a CHD in the listing.");
@@ -608,7 +608,7 @@ cCHDlist::chl_sav_cb(const char *fname, bool with_geom, void*)
 // Callback for confirmation pop-up.
 //
 void
-cCHDlist::chl_del_cb(bool yn, void *arg)
+QTchdListDlg::chl_del_cb(bool yn, void *arg)
 {
     if (arg && yn && instPtr) {
         char *dbname = (char*)arg;
@@ -629,7 +629,7 @@ cCHDlist::chl_del_cb(bool yn, void *arg)
 // Callback for the display window pop-up.
 //
 bool
-cCHDlist::chl_display_cb(bool working, const BBox *BB, void*)
+QTchdListDlg::chl_display_cb(bool working, const BBox *BB, void*)
 {
     if (!instPtr)
         return (true);
@@ -662,7 +662,7 @@ cCHDlist::chl_display_cb(bool working, const BBox *BB, void*)
 
 // Static function.
 void
-cCHDlist::chl_cnt_cb(const char *cellname, void*)
+QTchdListDlg::chl_cnt_cb(const char *cellname, void*)
 {
     if (!instPtr)
         return;
@@ -717,7 +717,7 @@ cCHDlist::chl_cnt_cb(const char *cellname, void*)
 // Callback for the Cell dialog.
 //
 ESret
-cCHDlist::chl_cel_cb(const char *cname, void*)
+QTchdListDlg::chl_cel_cb(const char *cname, void*)
 {
     if (!instPtr->chl_selection)
         return (ESTR_DN);
@@ -746,7 +746,7 @@ cCHDlist::chl_cel_cb(const char *cname, void*)
 
 
 void
-cCHDlist::add_btn_slot(bool state)
+QTchdListDlg::add_btn_slot(bool state)
 {
     if (state) {
         QPoint pg = mapToGlobal(QPoint(0, 0));
@@ -761,7 +761,7 @@ cCHDlist::add_btn_slot(bool state)
 
 
 void
-cCHDlist::sav_btn_slot(bool state)
+QTchdListDlg::sav_btn_slot(bool state)
 {
     if (state) {
         if (chl_del_pop)
@@ -781,7 +781,7 @@ cCHDlist::sav_btn_slot(bool state)
 
 
 void
-cCHDlist::del_btn_slot(bool state)
+QTchdListDlg::del_btn_slot(bool state)
 {
     if (chl_del_pop)
         chl_del_pop->popdown();
@@ -802,7 +802,7 @@ cCHDlist::del_btn_slot(bool state)
 
 
 void
-cCHDlist::cfg_btn_slot(bool state)
+QTchdListDlg::cfg_btn_slot(bool state)
 {
     if (state) {
         QPoint pg = mapToGlobal(QPoint(0, 0));
@@ -815,7 +815,7 @@ cCHDlist::cfg_btn_slot(bool state)
 
 
 void
-cCHDlist::dsp_btn_slot(bool state)
+QTchdListDlg::dsp_btn_slot(bool state)
 {
     if (state) {
         if (!chl_selection) {
@@ -852,7 +852,7 @@ cCHDlist::dsp_btn_slot(bool state)
 
 
 void
-cCHDlist::cnt_btn_slot()
+QTchdListDlg::cnt_btn_slot()
 {
     if (!chl_selection)
         return;
@@ -935,7 +935,7 @@ cCHDlist::cnt_btn_slot()
 
 
 void
-cCHDlist::cel_btn_slot(bool state)
+QTchdListDlg::cel_btn_slot(bool state)
 {
     if (chl_cel_pop)
         chl_cel_pop->popdown();
@@ -962,7 +962,7 @@ cCHDlist::cel_btn_slot(bool state)
 
 
 void
-cCHDlist::inf_btn_slot()
+QTchdListDlg::inf_btn_slot()
 {
     if (!chl_selection)
         return;
@@ -988,7 +988,7 @@ cCHDlist::inf_btn_slot()
 
 
 void
-cCHDlist::qinf_btn_slot()
+QTchdListDlg::qinf_btn_slot()
 {
     if (!chl_selection)
         return;
@@ -1019,14 +1019,14 @@ cCHDlist::qinf_btn_slot()
 
 
 void
-cCHDlist::help_btn_slot()
+QTchdListDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:hier"))
 }
 
 
 void
-cCHDlist::current_item_changed_slot(QTreeWidgetItem *cur, QTreeWidgetItem*)
+QTchdListDlg::current_item_changed_slot(QTreeWidgetItem *cur, QTreeWidgetItem*)
 {
     if (!cur) {
         delete [] chl_selection;
@@ -1054,25 +1054,25 @@ cCHDlist::current_item_changed_slot(QTreeWidgetItem *cur, QTreeWidgetItem*)
 
 
 void
-cCHDlist::item_activated_slot(QTreeWidgetItem*, int)
+QTchdListDlg::item_activated_slot(QTreeWidgetItem*, int)
 {
 }
 
 
 void
-cCHDlist::item_clicked_slot(QTreeWidgetItem*, int)
+QTchdListDlg::item_clicked_slot(QTreeWidgetItem*, int)
 {
 }
 
 
 void
-cCHDlist::item_selection_changed()
+QTchdListDlg::item_selection_changed()
 {
 }
 
 
 void
-cCHDlist::rename_btn_slot(int state)
+QTchdListDlg::rename_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_RefCellAutoRename, "");
@@ -1082,7 +1082,7 @@ cCHDlist::rename_btn_slot(int state)
 
 
 void
-cCHDlist::loadtop_btn_slot(int state)
+QTchdListDlg::loadtop_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_ChdLoadTopOnly, "");
@@ -1092,7 +1092,7 @@ cCHDlist::loadtop_btn_slot(int state)
 
 
 void
-cCHDlist::failres_btn_slot(int state)
+QTchdListDlg::failres_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_ChdFailOnUnresolved, "");
@@ -1102,7 +1102,7 @@ cCHDlist::failres_btn_slot(int state)
 
 
 void
-cCHDlist::usetab_btn_slot(int state)
+QTchdListDlg::usetab_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_UseCellTab, "");
@@ -1112,7 +1112,7 @@ cCHDlist::usetab_btn_slot(int state)
 
 
 void
-cCHDlist::showtab_btn_slot(bool state)
+QTchdListDlg::showtab_btn_slot(bool state)
 {
     if (state) {
         Cvt()->PopUpAuxTab(0, MODE_OFF);
@@ -1124,7 +1124,7 @@ cCHDlist::showtab_btn_slot(bool state)
 
 
 void
-cCHDlist::geom_change_slot(int index)
+QTchdListDlg::geom_change_slot(int index)
 {
     if (index == 0)
         sCHDin::set_default_cgd_type(CHD_CGDmemory);
@@ -1136,7 +1136,7 @@ cCHDlist::geom_change_slot(int index)
 
 
 void
-cCHDlist::dismiss_btn_slot()
+QTchdListDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpHierarchies(0, MODE_OFF);
 }

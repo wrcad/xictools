@@ -50,19 +50,20 @@ class QLabel;
 class QLineEdit;
 class QCheckBox;
 class QPushButton;
-class cLayerList;
+class QTlayerList;
 
-class cCHDsave : public QDialog
+class QTchdSaveDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cCHDsave(GRobject, bool(*)(const char*, bool, void*), void*, const char*);
-    ~cCHDsave();
+    QTchdSaveDlg(GRobject, bool(*)(const char*, bool, void*), void*,
+        const char*);
+    ~QTchdSaveDlg();
 
     void update(const char*);
     
-    static cCHDsave *self()         { return (instPtr); }
+    static QTchdSaveDlg *self()         { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -89,12 +90,12 @@ private:
     QLineEdit   *cs_text;
     QCheckBox   *cs_geom;
     QPushButton *cs_apply;
-    cLayerList  *cs_llist;
+    QTlayerList *cs_llist;
 
     bool(*cs_callback)(const char*, bool, void*);
     void *cs_arg;
 
-    static cCHDsave *instPtr;
+    static QTchdSaveDlg *instPtr;
 };
 
 #endif

@@ -59,7 +59,7 @@
 
 
 
-cZoom::cZoom(QTbag *owner, WindowDesc *w)
+QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
 {
     p_parent = owner;
     zm_window = w;
@@ -208,7 +208,7 @@ cZoom::cZoom(QTbag *owner, WindowDesc *w)
 }
 
 
-cZoom::~cZoom()
+QTzoomDlg::~QTzoomDlg()
 {
     if (p_parent) {
         QTsubwin *owner = dynamic_cast<QTsubwin*>(p_parent);
@@ -225,7 +225,7 @@ cZoom::~cZoom()
 // GRpopup override
 //
 void
-cZoom::popdown()
+QTzoomDlg::popdown()
 {
     if (!p_parent)
         return;
@@ -243,7 +243,7 @@ cZoom::popdown()
 // visible after creation.
 //
 void
-cZoom::initialize()
+QTzoomDlg::initialize()
 {
     QTsubwin *w = dynamic_cast<QTsubwin*>(p_parent);
     if (w)
@@ -252,7 +252,7 @@ cZoom::initialize()
 
 
 void
-cZoom::update()
+QTzoomDlg::update()
 {
     int xc = (zm_window->Window()->left + zm_window->Window()->right)/2;
     int yc = (zm_window->Window()->bottom + zm_window->Window()->top)/2;
@@ -292,14 +292,14 @@ cZoom::update()
 
 
 void
-cZoom::help_btn_slot()
+QTzoomDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:zoom"))
 }
 
 
 void
-cZoom::y_apply_btn_slot()
+QTzoomDlg::y_apply_btn_slot()
 {
     double ysc = zm_yscale->value();
     zm_window->SetXSectYScale(ysc);
@@ -323,7 +323,7 @@ cZoom::y_apply_btn_slot()
 
 
 void
-cZoom::z_apply_btn_slot()
+QTzoomDlg::z_apply_btn_slot()
 {
     double d = zm_zoom->value();
     WindowDesc *wdesc = zm_window;
@@ -336,7 +336,7 @@ cZoom::z_apply_btn_slot()
 
 
 void
-cZoom::window_apply_btn_slot()
+QTzoomDlg::window_apply_btn_slot()
 {
     double dx = zm_x->value();
     double dy = zm_y->value();
@@ -355,7 +355,7 @@ cZoom::window_apply_btn_slot()
 
 
 void
-cZoom::dismiss_btn_slot()
+QTzoomDlg::dismiss_btn_slot()
 {
     popdown();
 }

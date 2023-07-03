@@ -52,21 +52,21 @@ class QTreeWidget;
 class QTreeWidgetItem;
 class QPixmap;
 
-class cLibs : public QDialog, public QTbag
+class QTlibsDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cLibs(GRobject);
-    ~cLibs();
+    QTlibsDlg(GRobject);
+    ~QTlibsDlg();
 
     QSize sizeHint() const;
 
     char *get_selection();
     void update();
 
-    static void set_panic()         { instPtr = 0; }
-    static cLibs *self()            { return (instPtr); }
+    static void set_panic()             { instPtr = 0; }
+    static QTlibsDlg *self()            { return (instPtr); }
 
 private slots:
     void open_btn_slot();
@@ -98,7 +98,7 @@ private:
     QPixmap *lb_close_pb;
 
     static const char *nolibmsg;
-    static cLibs *instPtr;
+    static QTlibsDlg *instPtr;
 };
 
 #endif

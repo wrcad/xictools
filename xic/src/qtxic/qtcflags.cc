@@ -67,32 +67,32 @@ cMain::PopUpCellFlags(GRobject caller, ShowMode mode, const stringlist *list,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cCflags::self())
-            cCflags::self()->deleteLater();
+        if (QTcflagsDlg::self())
+            QTcflagsDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cCflags::self())
-            cCflags::self()->update(list, dmode);
+        if (QTcflagsDlg::self())
+            QTcflagsDlg::self()->update(list, dmode);
         return;
     }
-    if (cCflags::self()) {
-        cCflags::self()->update(list, dmode);
+    if (QTcflagsDlg::self()) {
+        QTcflagsDlg::self()->update(list, dmode);
         return;
     }
 
-    new cCflags(caller, list, dmode);
+    new QTcflagsDlg(caller, list, dmode);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cCflags::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTcflagsDlg::self(),
         QTmainwin::self()->Viewport());
-    cCflags::self()->show();
+    QTcflagsDlg::self()->show();
 }
 // End of cMain functions.
 
 
-cCflags *cCflags::instPtr;
+QTcflagsDlg *QTcflagsDlg::instPtr;
 
-cCflags::cCflags(GRobject caller, const stringlist *sl, int dmode)
+QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
 {
     instPtr = this;
     cf_caller = caller;
@@ -184,7 +184,7 @@ cCflags::cCflags(GRobject caller, const stringlist *sl, int dmode)
 }
 
 
-cCflags::~cCflags()
+QTcflagsDlg::~QTcflagsDlg()
 {
     instPtr = 0;
     cf_elt::destroy(cf_list);
@@ -194,7 +194,7 @@ cCflags::~cCflags()
 
 
 void
-cCflags::update(const stringlist *sl, int dmode)
+QTcflagsDlg::update(const stringlist *sl, int dmode)
 {
     if (!sl) {
         refresh(true);
@@ -263,7 +263,7 @@ cCflags::update(const stringlist *sl, int dmode)
 // Set a flag for all cells in list.
 //
 void
-cCflags::set(int im, int lb)
+QTcflagsDlg::set(int im, int lb)
 {
     for (cf_elt *cf = cf_list; cf; cf = cf->next) {
         if (im >= 0)
@@ -277,7 +277,7 @@ cCflags::set(int im, int lb)
 // Redraw the text area.
 //
 void
-cCflags::refresh(bool check_cc)
+QTcflagsDlg::refresh(bool check_cc)
 {
     CDs *cursdesc = check_cc && DSP()->CurMode() == cf_dmode ?
         CurCell(DSP()->CurMode()) : 0;
@@ -308,7 +308,7 @@ cCflags::refresh(bool check_cc)
 
 
 void
-cCflags::imm_none_btn_slot()
+QTcflagsDlg::imm_none_btn_slot()
 {
     set(0, -1);
     refresh();
@@ -316,7 +316,7 @@ cCflags::imm_none_btn_slot()
 
 
 void
-cCflags::imm_all_btn_slot()
+QTcflagsDlg::imm_all_btn_slot()
 {
     set(1, -1);
     refresh();
@@ -324,7 +324,7 @@ cCflags::imm_all_btn_slot()
 
 
 void
-cCflags::lib_none_btn_slot()
+QTcflagsDlg::lib_none_btn_slot()
 {
     set(-1, 0);
     refresh();
@@ -332,7 +332,7 @@ cCflags::lib_none_btn_slot()
 
 
 void
-cCflags::lib_all_btn_slot()
+QTcflagsDlg::lib_all_btn_slot()
 {
     set(-1, 1);
     refresh();
@@ -340,7 +340,7 @@ cCflags::lib_all_btn_slot()
 
 
 void
-cCflags::mouse_press_slot(QMouseEvent *ev)
+QTcflagsDlg::mouse_press_slot(QMouseEvent *ev)
 {
     if (ev->type() != QEvent::MouseButtonPress) {
         ev->ignore();
@@ -408,7 +408,7 @@ cCflags::mouse_press_slot(QMouseEvent *ev)
 
 
 void
-cCflags::apply_btn_slot()
+QTcflagsDlg::apply_btn_slot()
 {
     CDs *cursd = CurCell(DSP()->CurMode());
     bool cc_changed = false;
@@ -440,14 +440,14 @@ cCflags::apply_btn_slot()
 
 
 void
-cCflags::dismiss_btn_slot()
+QTcflagsDlg::dismiss_btn_slot()
 {
     XM()->PopUpCellFlags(0, MODE_OFF, 0, 0);
 }
 
 
 void
-cCflags::font_changed_slot(int fnum)
+QTcflagsDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;

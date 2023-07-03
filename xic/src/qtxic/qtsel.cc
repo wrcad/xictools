@@ -64,30 +64,30 @@ cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cSelect::self())
-            cSelect::self()->deleteLater();
+        if (QTselectDlg::self())
+            QTselectDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cSelect::self())
-            cSelect::self()->update();
+        if (QTselectDlg::self())
+            QTselectDlg::self()->update();
         return;
     }
-    if (cSelect::self())
+    if (QTselectDlg::self())
         return;
 
-    new cSelect(caller);
+    new QTselectDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cSelect::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTselectDlg::self(),
         QTmainwin::self()->Viewport());
-    cSelect::self()->show();
+    QTselectDlg::self()->show();
 }
 // End of cMain functions.
 
 
-cSelect *cSelect::instPtr;
+QTselectDlg *QTselectDlg::instPtr;
 
-cSelect::cSelect(GRobject c)
+QTselectDlg::QTselectDlg(GRobject c)
 {
     instPtr = this;
     sl_caller = c;
@@ -224,7 +224,7 @@ cSelect::cSelect(GRobject c)
 }
 
 
-cSelect::~cSelect()
+QTselectDlg::~QTselectDlg()
 {
     instPtr = 0;
     if (sl_caller)
@@ -233,7 +233,7 @@ cSelect::~cSelect()
 
 
 void
-cSelect::update()
+QTselectDlg::update()
 {
     if (Selections.ptrMode() == PTRnormal) {
         QTdev::Select(sl_pm_norm);
@@ -308,7 +308,7 @@ cSelect::update()
 
 
 void
-cSelect::pm_norm_slot(int state)
+QTselectDlg::pm_norm_slot(int state)
 {
     if (state)
         Selections.setPtrMode(PTRnormal);
@@ -316,7 +316,7 @@ cSelect::pm_norm_slot(int state)
 
 
 void
-cSelect::pm_sel_slot(int state)
+QTselectDlg::pm_sel_slot(int state)
 {
     if (state)
         Selections.setPtrMode(PTRselect);
@@ -324,7 +324,7 @@ cSelect::pm_sel_slot(int state)
 
 
 void
-cSelect::pm_mod_slot(int state)
+QTselectDlg::pm_mod_slot(int state)
 {
     if (state)
         Selections.setPtrMode(PTRmodify);
@@ -332,7 +332,7 @@ cSelect::pm_mod_slot(int state)
 
 
 void
-cSelect::am_norm_slot(int state)
+QTselectDlg::am_norm_slot(int state)
 {
     if (state)
         Selections.setAreaMode(ASELnormal);
@@ -340,7 +340,7 @@ cSelect::am_norm_slot(int state)
 
 
 void
-cSelect::am_enc_slot(int state)
+QTselectDlg::am_enc_slot(int state)
 {
     if (state)
         Selections.setAreaMode(ASELenclosed);
@@ -348,7 +348,7 @@ cSelect::am_enc_slot(int state)
 
 
 void
-cSelect::am_all_slot(int state)
+QTselectDlg::am_all_slot(int state)
 {
     if (state)
         Selections.setAreaMode(ASELall);
@@ -356,7 +356,7 @@ cSelect::am_all_slot(int state)
 
 
 void
-cSelect::sl_norm_slot(int state)
+QTselectDlg::sl_norm_slot(int state)
 {
     if (state)
         Selections.setSelMode(SELnormal);
@@ -364,7 +364,7 @@ cSelect::sl_norm_slot(int state)
 
 
 void
-cSelect::sl_togl_slot(int state)
+QTselectDlg::sl_togl_slot(int state)
 {
     if (state)
         Selections.setSelMode(SELtoggle);
@@ -372,7 +372,7 @@ cSelect::sl_togl_slot(int state)
 
 
 void
-cSelect::sl_add_slot(int state)
+QTselectDlg::sl_add_slot(int state)
 {
     if (state)
         Selections.setSelMode(SELselect);
@@ -380,7 +380,7 @@ cSelect::sl_add_slot(int state)
 
 
 void
-cSelect::sl_rem_slot(int state)
+QTselectDlg::sl_rem_slot(int state)
 {
     if (state)
         Selections.setSelMode(SELdesel);
@@ -388,56 +388,56 @@ cSelect::sl_rem_slot(int state)
 
 
 void
-cSelect::ob_cell_slot(int state)
+QTselectDlg::ob_cell_slot(int state)
 {
     Selections.setSelectType(CDINSTANCE, state);
 }
 
 
 void
-cSelect::ob_box_slot(int state)
+QTselectDlg::ob_box_slot(int state)
 {
     Selections.setSelectType(CDBOX, state);
 }
 
 
 void
-cSelect::ob_poly_slot(int state)
+QTselectDlg::ob_poly_slot(int state)
 {
     Selections.setSelectType(CDPOLYGON, state);
 }
 
 
 void
-cSelect::ob_wire_slot(int state)
+QTselectDlg::ob_wire_slot(int state)
 {
     Selections.setSelectType(CDWIRE, state);
 }
 
 
 void
-cSelect::ob_label_slot(int state)
+QTselectDlg::ob_label_slot(int state)
 {
     Selections.setSelectType(CDLABEL, state);
 }
 
 
 void
-cSelect::up_btn_slot(bool state)
+QTselectDlg::up_btn_slot(bool state)
 {
     XM()->SetLayerSearchUpSelections(state);
 }
 
 
 void
-cSelect::help_btn_slot()
+QTselectDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:layer"))
 }
 
 
 void
-cSelect::dismiss_btn_slot()
+QTselectDlg::dismiss_btn_slot()
 {
     XM()->PopUpSelectControl(0, MODE_OFF);
 }

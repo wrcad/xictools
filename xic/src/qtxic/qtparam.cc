@@ -57,16 +57,16 @@
 void
 cMain::ShowParameters(const char*)
 {
-    if (Param())
-        Param()->print();
+    if (QTparam::self())
+        QTparam::self()->print();
 }
 
 
-cParam *cParam::instancePtr = 0;
+QTparam *QTparam::instPtr = 0;
 
-cParam::cParam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
+QTparam::QTparam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 {
-    instancePtr = this;
+    instPtr = this;
 
     gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
     QHBoxLayout *hbox = new QHBoxLayout(this);
@@ -82,14 +82,14 @@ cParam::cParam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 }
 
 
-cParam::~cParam()
+QTparam::~QTparam()
 {
-    instancePtr = 0;
+    instPtr = 0;
 }
 
 
 void
-cParam::print()
+QTparam::print()
 {
     unsigned long c1 = DSP()->Color(PromptTextColor);
     unsigned long c2 = DSP()->Color(PromptEditTextColor);
@@ -207,13 +207,13 @@ cParam::print()
     p_text.setup(this);
     display(0, 256);
 
-    if (Coord())
-        Coord()->print(0, 0, cCoord::COOR_REL);
+    if (QTcoord::self())
+        QTcoord::self()->print(0, 0, QTcoord::COOR_REL);
 }
 
 
 void
-cParam::display(int start, int end)
+QTparam::display(int start, int end)
 {
     if (start == 0 && end == 256) {
         SetWindowBackground(DSP()->Color(PromptBackgroundColor));
@@ -234,7 +234,7 @@ cParam::display(int start, int end)
 // Select the chars that overlap the pixel coord range x1,x2.
 //
 void
-cParam::select(int x1, int x2)
+QTparam::select(int x1, int x2)
 {
     if (x2 < x1) {
         int t = x2;
@@ -260,7 +260,7 @@ cParam::select(int x1, int x2)
             // For some reason the owner_set code doesn't work in
             // Windows.
 
-            char *str = Param()->p_text.get_sel();
+            char *str = QTparam::self()->p_text.get_sel();
             if (str) {
                 GtkClipboard *cb = gtk_clipboard_get_for_display(
                     gdk_display_get_default(), GDK_SELECTION_PRIMARY);
@@ -286,7 +286,7 @@ cParam::select(int x1, int x2)
 // Select the word at pixel coord x.
 //
 void
-cParam::select_word(int xx)
+QTparam::select_word(int xx)
 {
 //    bool was_sel = deselect();
     if (p_text.select_word(xx)) {
@@ -296,7 +296,7 @@ cParam::select_word(int xx)
             // For some reason the owner_set code doesn't work in
             // Windows.
 
-            char *str = Param()->p_text.get_sel();
+            char *str = QTparam::self()->p_text.get_sel();
             if (str) {
                 GtkClipboard *cb = gtk_clipboard_get_for_display(
                     gdk_display_get_default(), GDK_SELECTION_PRIMARY);
@@ -320,7 +320,7 @@ cParam::select_word(int xx)
 // Deselect text.
 //
 bool
-cParam::deselect()
+QTparam::deselect()
 {
     unsigned int xstart, xend;
     if (p_text.has_sel(&xstart, &xend)) {
@@ -335,11 +335,11 @@ cParam::deselect()
 #ifdef WIN32
 // Static function.
 void
-cParam::primary_get_cb(GtkClipboard*, GtkSelectionData *data,
+QTparam::primary_get_cb(GtkClipboard*, GtkSelectionData *data,
     unsigned int, void*)
 {
-    if (Param()) {
-        char *str = Param()->p_text.get_sel();
+    if (QTparam::self()) {
+        char *str = QTparam::self()->p_text.get_sel();
         if (str) {
             gtk_selection_data_set_text(data, str, -1);
             delete [] str;
@@ -350,10 +350,10 @@ cParam::primary_get_cb(GtkClipboard*, GtkSelectionData *data,
 
 // Static function.
 void
-cParam::primary_clear_cb(GtkClipboard*, void*)
+QTparam::primary_clear_cb(GtkClipboard*, void*)
 {
-    if (Param())
-        Param()->deselect();
+    if (QTparam::self())
+        QTparam::self()->deselect();
 }
 #endif
 
@@ -363,25 +363,25 @@ cParam::primary_clear_cb(GtkClipboard*, void*)
 // Pop up info about the parameter display area in help mode.
 //
 int
-cParam::readout_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
+QTparam::readout_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
-    if (!Param())
+    if (!QTparam::self())
         return (false);
     if (event->button.button == 1 && event->type == GDK_BUTTON_PRESS) {
         if (XM()->IsDoingHelp() && !is_shift_down())
             DSPmainWbag(PopUpHelp("statusline"))
         else {
-            Param()->p_has_drag = true;
-            Param()->p_dragged = false;
-            Param()->p_drag_x = (int)event->button.x;
-            Param()->p_drag_y = (int)event->button.y;
+            QTparam::self()->p_has_drag = true;
+            QTparam::self()->p_dragged = false;
+            QTparam::self()->p_drag_x = (int)event->button.x;
+            QTparam::self()->p_drag_y = (int)event->button.y;
         }
         return (true);
     }
     if (event->button.button == 1 && event->type == GDK_BUTTON_RELEASE) {
-        if (Param()->p_has_drag && !Param()->p_dragged)
-            Param()->select_word(Param()->p_drag_x);
-        Param()->p_has_drag = false;
+        if (QTparam::self()->p_has_drag && !QTparam::self()->p_dragged)
+            QTparam::self()->select_word(QTparam::self()->p_drag_x);
+        QTparam::self()->p_has_drag = false;
         return (true);
     }
     return (false);
@@ -392,14 +392,14 @@ cParam::readout_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
 // Pointer motion handler.
 //
 int
-cParam::readout_motion_hdlr(GtkWidget*, GdkEvent *event, void*)
+QTparam::readout_motion_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
-    if (!Param())
+    if (!QTparam::self())
         return (false);
-    if (Param()->p_has_drag) {
+    if (QTparam::self()->p_has_drag) {
         int mvx = (int)event->motion.x;
-        Param()->select(Param()->p_drag_x, mvx);
-        Param()->p_dragged = true;
+        QTparam::self()->select(QTparam::self()->p_drag_x, mvx);
+        QTparam::self()->p_dragged = true;
         return (true);
     }   
     return (false);
@@ -411,25 +411,25 @@ cParam::readout_motion_hdlr(GtkWidget*, GdkEvent *event, void*)
 //
 #if GTK_CHECK_VERSION(3,0,0)
 int
-cParam::readout_redraw(GtkWidget*, cairo_t *cr, void*)
+QTparam::readout_redraw(GtkWidget*, cairo_t *cr, void*)
 #else
 int
-cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
+QTparam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
 #endif
 {
-    if (!Param())
+    if (!QTparam::self())
         return (false);
 #if GTK_CHECK_VERSION(3,0,0)
-    Param()->GetDrawable()->refresh(Param()->CpyGC(), cr);
+    QTparam::self()->GetDrawable()->refresh(QTparam::self()->CpyGC(), cr);
 #else
     GdkEventExpose *pev = (GdkEventExpose*)event;
-    if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
+    if (QTparam::self() && GDK_IS_DRAWABLE(QTparam::self()->gd_window)) {
         GdkRectangle *rects;
         int nrects;
         gdk_region_get_rectangles(pev->region, &rects, &nrects);
         for (int i = 0; i < nrects; i++) {
-            gdk_window_copy_area(Param()->gd_window, Param()->CpyGC(),
-                rects[i].x, rects[i].y, Param()->p_pm,
+            gdk_window_copy_area(QTparam::self()->gd_window, QTparam::self()->CpyGC(),
+                rects[i].x, rects[i].y, QTparam::self()->p_pm,
                 rects[i].x, rects[i].y, rects[i].width, rects[i].height);
         }
         g_free(rects);
@@ -444,17 +444,17 @@ cParam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
 // Font change handler.
 //
 void
-cParam::readout_font_change(GtkWidget*, void*, void*)
+QTparam::readout_font_change(GtkWidget*, void*, void*)
 {
 #if GTK_CHECK_VERSION(3,0,0)
-    if (Param() && GDK_IS_WINDOW(Param()->GetDrawable()->get_window())) {
+    if (QTparam::self() && GDK_IS_WINDOW(QTparam::self()->GetDrawable()->get_window())) {
 #else
-    if (Param() && GDK_IS_DRAWABLE(Param()->gd_window)) {
+    if (QTparam::self() && GDK_IS_DRAWABLE(QTparam::self()->gd_window)) {
 #endif
         int fw, fh;
-        Param()->TextExtent(0, &fw, &fh);
-        gtk_widget_set_size_request(Param()->gd_viewport, -1, fh + 2);
-        Param()->print();
+        QTparam::self()->TextExtent(0, &fw, &fh);
+        gtk_widget_set_size_request(QTparam::self()->gd_viewport, -1, fh + 2);
+        QTparam::self()->print();
     }
 }
 
@@ -463,24 +463,24 @@ cParam::readout_font_change(GtkWidget*, void*, void*)
 // Selection clear handler.
 //
 int
-cParam::readout_selection_clear(GtkWidget*, GdkEventSelection*, void*)
+QTparam::readout_selection_clear(GtkWidget*, GdkEventSelection*, void*)
 {
-    if (Param())
-        Param()->deselect();
+    if (QTparam::self())
+        QTparam::self()->deselect();
     return (true);
 }
 
 
 void
-cParam::readout_selection_get(GtkWidget*, GtkSelectionData *data,
+QTparam::readout_selection_get(GtkWidget*, GtkSelectionData *data,
     guint, guint, void*)
 {
     if (gtk_selection_data_get_selection(data) != GDK_SELECTION_PRIMARY)
         return;
-    if (!Param())
+    if (!QTparam::self())
         return;
         
-    char *str = Param()->p_text.get_sel();
+    char *str = QTparam::self()->p_text.get_sel();
     if (!str)
         return;  // refuse
     int length = strlen(str);
@@ -493,7 +493,7 @@ cParam::readout_selection_get(GtkWidget*, GtkSelectionData *data,
 
 
 void
-cParam::font_changed(int fnum)
+QTparam::font_changed(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
@@ -502,7 +502,7 @@ cParam::font_changed(int fnum)
         print();
     }
 }
-// End of cParam functions.
+// End of QTparam functions.
 
 
 // Select the chars that overlap the pixel coord range xmin,xmax. 
@@ -576,7 +576,7 @@ ptext_t::select_word(int x)
 // Set up the character offsets and widths.
 //
 void
-ptext_t::setup(cParam *prm)
+ptext_t::setup(QTparam *prm)
 {
     char bf[2];
     bf[1] = 0;
@@ -598,7 +598,7 @@ ptext_t::setup(cParam *prm)
 // Display the chars in the index range fc through lc-1.
 //
 void
-ptext_t::display(cParam *prm, unsigned int fc, unsigned int lc)
+ptext_t::display(QTparam *prm, unsigned int fc, unsigned int lc)
 {
     if (!pt_set)
         return;
@@ -643,7 +643,7 @@ ptext_t::display(cParam *prm, unsigned int fc, unsigned int lc)
 // Display the chars that overlap the pixel range xmin,xmax.
 //
 void
-ptext_t::display_c(cParam *prm, int xmin, int xmax)
+ptext_t::display_c(QTparam *prm, int xmin, int xmax)
 {
     if (!pt_set)
         return;

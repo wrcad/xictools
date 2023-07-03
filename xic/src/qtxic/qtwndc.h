@@ -71,13 +71,13 @@ enum WndFuncMode {
     WndFuncIn       // Import
 };
 
-class cWindowCfg : public QGroupBox
+class QTwindowCfg : public QGroupBox
 {
     Q_OBJECT
 
 public:
-    cWindowCfg(WndSensMode(*)(), WndFuncMode);
-    ~cWindowCfg();
+    QTwindowCfg(WndSensMode(*)(), WndFuncMode);
+    ~QTwindowCfg();
 
     void update();
     void set_sens();

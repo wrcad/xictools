@@ -47,10 +47,10 @@
 #include <QDialog>
 
 
-class cLayerList;
-class cConvOutFmt;;
-class cCnameMap;
-class cWindowCfg;
+class QTlayerList;
+class QTconvOutFmt;
+class QTcnameMap;
+class QTwindowCfg;
 
 class QLabel;
 class QTabWidget;
@@ -58,7 +58,7 @@ class QCheckBox;
 class QPushButton;
 class QDoubleSpinBox;
 
-class cConvertFmt : public QDialog
+class QTconvertFmtDlg : public QDialog
 {
     Q_OBJECT
 
@@ -70,12 +70,12 @@ public:
         CvSensNone
     };
 
-    cConvertFmt(GRobject, int, bool(*)(int, void*), void*);
-    ~cConvertFmt();
+    QTconvertFmtDlg(GRobject, int, bool(*)(int, void*), void*);
+    ~QTconvertFmtDlg();
 
     void update(int);
 
-    static cConvertFmt *self()          { return (instPtr); }
+    static QTconvertFmtDlg *self()          { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -102,7 +102,7 @@ private:
     GRobject    cv_caller;
     QLabel      *cv_label;
     QComboBox   *cv_input;
-    cConvOutFmt *cv_fmt;
+    QTconvOutFmt *cv_fmt;
     QTabWidget  *cv_nbook;
 
     QCheckBox   *cv_strip;
@@ -115,9 +115,9 @@ private:
     QCheckBox   *cv_nolabels;
     QCheckBox   *cv_keepbad;
 
-    cLayerList  *cv_llist;
-    cCnameMap   *cv_cnmap;
-    cWindowCfg  *cv_wnd;
+    QTlayerList *cv_llist;
+    QTcnameMap  *cv_cnmap;
+    QTwindowCfg *cv_wnd;
     QLabel      *cv_tx_label;
     QDoubleSpinBox *cv_sb_scale;
 
@@ -126,7 +126,7 @@ private:
 
     static int cv_fmt_type;
     static int cv_inp_type;
-    static cConvertFmt *instPtr;
+    static QTconvertFmtDlg *instPtr;
 };
 
 #endif

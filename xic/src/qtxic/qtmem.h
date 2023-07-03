@@ -48,18 +48,18 @@
 
 class QResizeEvent;
 
-class cMemMon : public QDialog, public QTbag, public QTdraw
+class QTmemMonDlg : public QDialog, public QTbag, public QTdraw
 {
     Q_OBJECT
 
 public:
-    cMemMon();
-    virtual ~cMemMon();
+    QTmemMonDlg();
+    virtual ~QTmemMonDlg();
 
     QSize sizeHint() const;
     void update();
 
-    static cMemMon *self()      { return (instPtr); }
+    static QTmemMonDlg *self()      { return (instPtr); }
 
 private slots:
     void dismiss_btn_slot();
@@ -69,7 +69,7 @@ private slots:
 private:
     double chk_val(double, char*);
 
-    static cMemMon *instPtr;
+    static QTmemMonDlg *instPtr;
 };
 
 #endif

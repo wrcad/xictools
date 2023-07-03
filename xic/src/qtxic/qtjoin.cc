@@ -64,30 +64,30 @@ cEdit::PopUpJoin(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cJoin::self())
-            cJoin::self()->deleteLater();
+        if (QTjoinDlg::self())
+            QTjoinDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cJoin::self())
-            cJoin::self()->update();
+        if (QTjoinDlg::self())
+            QTjoinDlg::self()->update();
         return;
     }
-    if (cJoin::self())
+    if (QTjoinDlg::self())
         return;
 
-    new cJoin(caller);
+    new QTjoinDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_UL), cJoin::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTjoinDlg::self(),
         QTmainwin::self()->Viewport());
-    cJoin::self()->show();
+    QTjoinDlg::self()->show();
 }
 // End of cEdit functions.
 
 
-cJoin *cJoin::instPtr;
+QTjoinDlg *QTjoinDlg::instPtr;
 
-cJoin::cJoin(GRobject c)
+QTjoinDlg::QTjoinDlg(GRobject c)
 {
     instPtr = this;
     jn_caller = c;
@@ -127,6 +127,8 @@ cJoin::cJoin(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
     QLabel *label = new QLabel(tr(
         "Set parameters or initiate join/split operation"));
     hb->addWidget(label);
@@ -250,7 +252,7 @@ cJoin::cJoin(GRobject c)
 }
 
 
-cJoin::~cJoin()
+QTjoinDlg::~QTjoinDlg()
 {
     instPtr = 0;
     if (jn_caller)
@@ -259,7 +261,7 @@ cJoin::~cJoin()
 
 
 void
-cJoin::update()
+QTjoinDlg::update()
 {
     QTdev::SetStatus(jn_clean,
         CDvdb()->getVariable(VA_JoinBreakClean) != 0);
@@ -288,7 +290,7 @@ cJoin::update()
 
 
 void
-cJoin::set_sens(bool sens)
+QTjoinDlg::set_sens(bool sens)
 {
     jn_mverts->setEnabled(sens);
     jn_mgroup->setEnabled(sens);
@@ -301,14 +303,14 @@ cJoin::set_sens(bool sens)
 
 
 void
-cJoin::help_btn_slot()
+QTjoinDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:join"))
 }
 
 
 void
-cJoin::nolimit_btn_slot(int state)
+QTjoinDlg::nolimit_btn_slot(int state)
 {
     if (state) {
         jn_last_mverts = jn_mverts->value();
@@ -336,7 +338,7 @@ cJoin::nolimit_btn_slot(int state)
 
 
 void
-cJoin::mverts_change_slot(int n)
+QTjoinDlg::mverts_change_slot(int n)
 {
     // Skip over 1-19 in spin button display, these values are
     // no good.
@@ -360,7 +362,7 @@ cJoin::mverts_change_slot(int n)
 
 
 void
-cJoin::mgroup_change_slot(int n)
+QTjoinDlg::mgroup_change_slot(int n)
 {
     if (n == DEF_JoinMaxGroup)
         CDvdb()->clearVariable(VA_JoinMaxPolyGroup);
@@ -373,7 +375,7 @@ cJoin::mgroup_change_slot(int n)
 
 
 void
-cJoin::mqueue_change_slot(int n)
+QTjoinDlg::mqueue_change_slot(int n)
 {
     if (n == DEF_JoinMaxQueue)
         CDvdb()->clearVariable(VA_JoinMaxPolyQueue);
@@ -386,7 +388,7 @@ cJoin::mqueue_change_slot(int n)
 
 
 void
-cJoin::clean_btn_slot(int state)
+QTjoinDlg::clean_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_JoinBreakClean, "");
@@ -396,7 +398,7 @@ cJoin::clean_btn_slot(int state)
 
 
 void
-cJoin::wires_btn_slot(int state)
+QTjoinDlg::wires_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_JoinSplitWires, "");
@@ -406,7 +408,7 @@ cJoin::wires_btn_slot(int state)
 
 
 void
-cJoin::join_btn_slot()
+QTjoinDlg::join_btn_slot()
 {
     bool ret = ED()->joinCmd();
     if (!ret)
@@ -415,7 +417,7 @@ cJoin::join_btn_slot()
 
 
 void
-cJoin::join_lyr_btn_slot()
+QTjoinDlg::join_lyr_btn_slot()
 {
     bool ret = ED()->joinLyrCmd();
     if (!ret)
@@ -424,7 +426,7 @@ cJoin::join_lyr_btn_slot()
 
 
 void
-cJoin::join_all_btn_slot()
+QTjoinDlg::join_all_btn_slot()
 {
     bool ret = ED()->joinAllCmd();
     if (!ret)
@@ -433,7 +435,7 @@ cJoin::join_all_btn_slot()
 
 
 void
-cJoin::split_h_btn_slot()
+QTjoinDlg::split_h_btn_slot()
 {
     bool ret = ED()->splitCmd(false);
     if (!ret)
@@ -442,7 +444,7 @@ cJoin::split_h_btn_slot()
 
 
 void
-cJoin::split_v_btn_slot()
+QTjoinDlg::split_v_btn_slot()
 {
     bool ret = ED()->splitCmd(true);
     if (!ret)
@@ -451,7 +453,7 @@ cJoin::split_v_btn_slot()
 
 
 void
-cJoin::delete_btn_slot()
+QTjoinDlg::delete_btn_slot()
 {
     ED()->PopUpJoin(0, MODE_OFF);
 }

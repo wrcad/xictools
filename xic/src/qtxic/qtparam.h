@@ -45,7 +45,7 @@
 #include "qtinterf/qtinterf.h"
 
 class QTmainwin;
-class cParam;
+class QTparam;
 
 // Represent a character to display.
 //
@@ -130,9 +130,9 @@ struct ptext_t
         }
     }
 
-    void setup(cParam*);
-    void display(cParam*, unsigned int, unsigned int);
-    void display_c(cParam*, int, int);
+    void setup(QTparam*);
+    void display(QTparam*, unsigned int, unsigned int);
+    void display_c(QTparam*, int, int);
     bool select(int, int);
     bool select_word(int);
 
@@ -145,29 +145,27 @@ private:
 };
 
 
-inline class cParam *Param();
-
-// The status readout line.
+// The status readout line, singleton, instantiated in main window.
 //
-class cParam : public QWidget, public QTdraw
+class QTparam : public QWidget, public QTdraw
 {
     Q_OBJECT
 
 public:
-    friend inline cParam *Param() { return (cParam::instancePtr); }
+    QTparam(QTmainwin*);
+    ~QTparam();
 
-    cParam(QTmainwin*);
-    ~cParam();
+    static QTparam *self()      { return (instPtr); }
 
     void print();
     void display(int, int);
 
-    void redraw()           { print(); }
+    void redraw()               { print(); }
 
-    unsigned int xval()     { return (p_xval); }
-    unsigned int yval()     { return (p_yval); }
-    int width()             { return (p_width); }
-    int height()            { return (p_height); }
+    unsigned int xval()         { return (p_xval); }
+    unsigned int yval()         { return (p_yval); }
+    int width()                 { return (p_width); }
+    int height()                { return (p_height); }
 
 private slots:
     void font_changed(int);
@@ -187,7 +185,7 @@ private:
     int p_height;
     ptext_t p_text;
 
-    static cParam *instancePtr;
+    static QTparam *instPtr;
 };
 
 #endif

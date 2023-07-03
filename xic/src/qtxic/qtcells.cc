@@ -67,6 +67,7 @@
 #include <QResizeEvent>
 #include <QMimeData>
 #include <QComboBox>
+#include <QDrag>
 
 //----------------------------------------------------------------------
 //  Cells Listing Panel
@@ -91,8 +92,8 @@ namespace {
 char *
 QTmainwin::get_cell_selection()
 {
-    if (cCells::self())
-        return (cCells::self()->get_selection());
+    if (QTcellsDlg::self())
+        return (QTcellsDlg::self()->get_selection());
     return (0);
 }
 
@@ -113,23 +114,23 @@ cMain::PopUpCells(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cCells::self())
-            cCells::self()->deleteLater();
+        if (QTcellsDlg::self())
+            QTcellsDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cCells::self())
-            cCells::self()->update();
+        if (QTcellsDlg::self())
+            QTcellsDlg::self()->update();
         return;
     }
-    if (cCells::self())
+    if (QTcellsDlg::self())
         return;
 
-    new cCells(caller);
+    new QTcellsDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cCells::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTcellsDlg::self(),
         QTmainwin::self()->Viewport());
-    cCells::self()->show();
+    QTcellsDlg::self()->show();
 }
 // End of cMain functions.
 
@@ -172,9 +173,9 @@ namespace {
 const char *ListState::info_msg =
     "Use pointer to define area for subcell list.";
 
-cCells *cCells::instPtr;
+QTcellsDlg *QTcellsDlg::instPtr;
 
-cCells::cCells(GRobject c)
+QTcellsDlg::QTcellsDlg(GRobject c)
 {
     instPtr = this;
     c_caller = c;
@@ -320,7 +321,7 @@ cCells::cCells(GRobject c)
     wb_textarea = new QTtextEdit();
     wb_textarea->setReadOnly(true);
     wb_textarea->setMouseTracking(true);
-    wb_textarea->setAcceptDrops(true);
+    wb_textarea->setAcceptDrops(false);
     col2->addWidget(wb_textarea);
     connect(wb_textarea, SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
@@ -328,35 +329,12 @@ cCells::cCells(GRobject c)
         this, SLOT(mouse_press_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
-        this, SLOT(mime_data_received_slot(const QMimeData*)));
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
-
-/*
-    g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
-        G_CALLBACK(c_btn_hdlr), 0);
-    g_signal_connect(G_OBJECT(wb_textarea), "size-allocate",
-        G_CALLBACK(c_resize_hdlr), 0);
-    // init for drag/drop
-    g_signal_connect(G_OBJECT(wb_textarea), "button-release-event",
-        G_CALLBACK(c_btn_release_hdlr), 0);
-    g_signal_connect(G_OBJECT(wb_textarea), "motion-notify-event",
-        G_CALLBACK(c_motion_hdlr), 0);
-    g_signal_connect(G_OBJECT(wb_textarea), "drag-data-get",
-        G_CALLBACK(c_drag_data_get), 0);
-    g_signal_connect_after(G_OBJECT(wb_textarea), "realize",
-        G_CALLBACK(c_realize_hdlr), 0);
-
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
-    gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr, NULL);
-*/
 
     // bottom row buttons
     //
@@ -391,25 +369,16 @@ cCells::cCells(GRobject c)
     connect(c_mode_combo, SIGNAL(currentIndexChanged(int)),
         this, SLOT(mode_changed_slot(int)));
 
-/*XXX
-    if (c_caller) {
-        g_signal_connect(G_OBJECT(c_caller), "toggled",
-            G_CALLBACK(c_cancel), 0);
-    }
-*/
-    check_sens();
+    update();
 }
 
 
-cCells::~cCells()
+QTcellsDlg::~QTcellsDlg()
 {
     instPtr = 0;
     XM()->SetTreeCaptive(false);
-    if (c_caller) {
-//        g_signal_handlers_disconnect_by_func(G_OBJECT(c_caller),
-//            (gpointer)c_cancel, 0);
+    if (c_caller)
         QTdev::Deselect(c_caller);
-    }
     if (ListCmd)
         ListCmd->esc();
     if (QTdev::GetStatus(c_showbtn))
@@ -438,7 +407,7 @@ cCells::~cCells()
 
 
 void
-cCells::update()
+QTcellsDlg::update()
 {
     select_range(0, 0);
     if (QTdev::GetStatus(c_showbtn))
@@ -539,7 +508,7 @@ cCells::update()
 
 
 char *
-cCells::get_selection()
+QTcellsDlg::get_selection()
 {
     return (wb_textarea->get_selection());
 }
@@ -549,7 +518,7 @@ cCells::get_selection()
 // database.
 //
 void
-cCells::clear(const char *name)
+QTcellsDlg::clear(const char *name)
 {
     if (!name || !*name) {
         EV()->InitCallback();
@@ -626,7 +595,7 @@ cCells::clear(const char *name)
 // Function to copy a selected cell to a new name.
 //
 void
-cCells::copy_cell(const char *name)
+QTcellsDlg::copy_cell(const char *name)
 {
     if (!name)
         return;
@@ -649,7 +618,7 @@ cCells::copy_cell(const char *name)
 // Function to replace selected instances with listing selection.
 //
 void
-cCells::replace_instances(const char *name)
+QTcellsDlg::replace_instances(const char *name)
 {
     if (!name)
         return;
@@ -672,7 +641,7 @@ cCells::replace_instances(const char *name)
 // Function to rename all instances of a cell in the database.
 //
 void
-cCells::rename_cell(const char *name)
+QTcellsDlg::rename_cell(const char *name)
 {
     if (!name)
         return;
@@ -691,32 +660,14 @@ cCells::rename_cell(const char *name)
 }
 
 
-// Select the chars in the range, start=end deselects existing.  In
-// GTK-1, selecting gives blue inverse, which turns gray if
-// unselected, retaining an indication for the buttons.  GTK-2
-// doesn't do this automatically so we provide something similar here.
+// Select the chars in the range, start=end deselects existing.
 //
 void
-cCells::select_range(int start, int end)
+QTcellsDlg::select_range(int start, int end)
 {
-    /*
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    GtkTextIter istart, iend;
-    if (c_end != c_start) {
-        gtk_text_buffer_get_iter_at_offset(textbuf, &istart, c_start);
-        gtk_text_buffer_get_iter_at_offset(textbuf, &iend, c_end);
-        gtk_text_buffer_remove_tag_by_name(textbuf, "primary", &istart, &iend);
-    }
-    text_select_range(wb_textarea, start, end);
-    if (end != start) {
-        gtk_text_buffer_get_iter_at_offset(textbuf, &istart, start);
-        gtk_text_buffer_get_iter_at_offset(textbuf, &iend, end);
-        gtk_text_buffer_apply_tag_by_name(textbuf, "primary", &istart, &iend);
-    }
+    wb_textarea->select_range(start, end);
     c_start = start;
     c_end = end;
-    */
     check_sens();
 }
 
@@ -736,7 +687,7 @@ namespace {
 
 
 stringlist *
-cCells::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
+QTcellsDlg::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
 {
     if (pcnt)
         *pcnt = 0;
@@ -848,7 +799,7 @@ cCells::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
 // Return a formatted list of cells found in the database.
 //
 char *
-cCells::cell_list(int cols)
+QTcellsDlg::cell_list(int cols)
 {
     int cnt, pagesz;
     stringlist *s0 = raw_cell_list(&cnt, &pagesz, false);
@@ -877,7 +828,7 @@ cCells::cell_list(int cols)
 // Refresh the text while keeping current top location.
 //
 void
-cCells::update_text(char *newtext)
+QTcellsDlg::update_text(char *newtext)
 {
     if (wb_textarea == 0 || newtext == 0)
         return;
@@ -890,7 +841,7 @@ cCells::update_text(char *newtext)
 // Set button sensitivity according to mode.
 //
 void
-cCells::check_sens()
+QTcellsDlg::check_sens()
 {
     bool has_sel = wb_textarea->has_selection();
     if (!has_sel) {
@@ -930,7 +881,7 @@ cCells::check_sens()
 // Callback for the clear button dialog.
 //
 void
-cCells::c_clear_cb(bool state, void *arg)
+QTcellsDlg::c_clear_cb(bool state, void *arg)
 {
     char *name = (char*)arg;
     if (state)
@@ -943,7 +894,7 @@ cCells::c_clear_cb(bool state, void *arg)
 // Callback for the copy button dialog.
 //
 ESret
-cCells::c_copy_cb(const char *newname, void *arg)
+QTcellsDlg::c_copy_cb(const char *newname, void *arg)
 {
     char *name = (char*)arg;
     if (EditIf()->copySymbol(name, newname)) {
@@ -968,7 +919,7 @@ cCells::c_copy_cb(const char *newname, void *arg)
 // Callback for the replace dialog.
 //
 void
-cCells::c_repl_cb(bool state, void *arg)
+QTcellsDlg::c_repl_cb(bool state, void *arg)
 {
     if (state) {
         Errs()->init_error();
@@ -998,7 +949,7 @@ cCells::c_repl_cb(bool state, void *arg)
 // Callback for the rename dialog.
 //
 ESret
-cCells::c_rename_cb(const char *newname, void *arg)
+QTcellsDlg::c_rename_cb(const char *newname, void *arg)
 {
     if (!instPtr)
         return (ESTR_DN);
@@ -1045,7 +996,7 @@ cCells::c_rename_cb(const char *newname, void *arg)
 // we need to own.
 //
 void
-cCells::c_filter_cb(cfilter_t *flt, void*)
+QTcellsDlg::c_filter_cb(cfilter_t *flt, void*)
 {
     if (!instPtr) {
         delete flt;
@@ -1069,7 +1020,7 @@ cCells::c_filter_cb(cfilter_t *flt, void*)
 // Idle proc to highlight the listing for name.
 //
 int
-cCells::c_highlight_idle(void *arg)
+QTcellsDlg::c_highlight_idle(void *arg)
 {
     if (instPtr && arg) {
         const char *name = (const char*)arg;
@@ -1105,9 +1056,9 @@ cCells::c_highlight_idle(void *arg)
 // Callback for the save file name pop-up.
 //
 ESret
-cCells::c_save_cb(const char *string, void *arg)
+QTcellsDlg::c_save_cb(const char *string, void *arg)
 {
-    cCells *cp = (cCells*)arg;
+    QTcellsDlg *cp = (QTcellsDlg*)arg;
     if (string) {
         if (!filestat::create_bak(string)) {
             cp->c_save_pop->update(
@@ -1148,9 +1099,9 @@ cCells::c_save_cb(const char *string, void *arg)
 
 
 int
-cCells::c_timeout(void *arg)
+QTcellsDlg::c_timeout(void *arg)
 {
-    cCells *cp = (cCells*)arg;
+    QTcellsDlg *cp = (QTcellsDlg*)arg;
     if (cp->c_msg_pop)
         cp->c_msg_pop->popdown();
     return (0);
@@ -1158,7 +1109,7 @@ cCells::c_timeout(void *arg)
 
 
 void
-cCells::clear_btn_slot()
+QTcellsDlg::clear_btn_slot()
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1178,7 +1129,7 @@ cCells::clear_btn_slot()
 
 
 void
-cCells::tree_btn_slot()
+QTcellsDlg::tree_btn_slot()
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1213,7 +1164,7 @@ cCells::tree_btn_slot()
 
 
 void
-cCells::open_btn_slot()
+QTcellsDlg::open_btn_slot()
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1239,7 +1190,7 @@ cCells::open_btn_slot()
 
 
 void
-cCells::place_btn_slot()
+QTcellsDlg::place_btn_slot()
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1263,7 +1214,7 @@ cCells::place_btn_slot()
 
 
 void
-cCells::copy_btn_slot()
+QTcellsDlg::copy_btn_slot()
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1284,7 +1235,7 @@ cCells::copy_btn_slot()
 
 
 void
-cCells::repl_btn_slot()
+QTcellsDlg::repl_btn_slot()
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1305,7 +1256,7 @@ cCells::repl_btn_slot()
 
 
 void
-cCells::rename_btn_slot()
+QTcellsDlg::rename_btn_slot()
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1326,7 +1277,7 @@ cCells::rename_btn_slot()
 
 
 void
-cCells::search_btn_slot(bool state)
+QTcellsDlg::search_btn_slot(bool state)
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1349,7 +1300,7 @@ cCells::search_btn_slot(bool state)
 
 
 void
-cCells::flag_btn_slot()
+QTcellsDlg::flag_btn_slot()
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1376,7 +1327,7 @@ cCells::flag_btn_slot()
 
 
 void
-cCells::info_btn_slot()
+QTcellsDlg::info_btn_slot()
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1414,7 +1365,7 @@ cCells::info_btn_slot()
 
 
 void
-cCells::show_btn_slot(bool state)
+QTcellsDlg::show_btn_slot(bool state)
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1438,7 +1389,7 @@ cCells::show_btn_slot(bool state)
 
 
 void
-cCells::fltr_btn_slot(bool state)
+QTcellsDlg::fltr_btn_slot(bool state)
 {
     if (c_clear_pop)
         c_clear_pop->popdown();
@@ -1462,17 +1413,16 @@ cCells::fltr_btn_slot(bool state)
 
 
 void
-cCells::help_btn_slot()
+QTcellsDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("cellspanel"))
 }
 
 
 void
-cCells::resize_slot(QResizeEvent*)
+QTcellsDlg::resize_slot(QResizeEvent *ev)
 {
-    /*
-    int cols = (a->width-4)/QTfont::stringWidth(0, wb_textarea) - 2;
+    int cols = (ev->size().width()-4)/QTfont::stringWidth(0, wb_textarea) - 2;
     if (cols == c_cols)
         return;
     c_cols = cols;
@@ -1480,141 +1430,121 @@ cCells::resize_slot(QResizeEvent*)
     update_text(s);
     delete [] s;
     select_range(0, 0);
-    */
 }
 
 
 void
-cCells::mouse_press_slot(QMouseEvent *ev)
+QTcellsDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    /*
-    if (up) {
+    if (ev->type() == QEvent::MouseButtonRelease) {
         c_dragging = false;
+        ev->accept();
         return;
     }
-    */
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
 
-//    if (event->type != GDK_BUTTON_PRESS)
-//        return (true);
     if (c_no_select)
         return;
 
     select_range(0, 0);
 
-    char *string = wb_textarea->get_chars(0, -1);
+    char *str =
+        lstring::copy(wb_textarea->toPlainText().toLatin1().constData());
     int x = ev->x();
     int y = ev->y();
-/*
-    int x = (int)event->button.x;
-    int y = (int)event->button.y;
-    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
-        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
-    GtkTextIter ihere, iline;
-    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(caller), &ihere, x, y);
-    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
-    x = gtk_text_iter_get_offset(&ihere) - gtk_text_iter_get_offset(&iline);
-    char *line_start = string + gtk_text_iter_get_offset(&iline);
-*/
-char *line_start = 0;
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
+    int pos = cur.position();
 
-    int start = 0;
-    for ( ; start < x; start++) {
-        if (line_start[start] == '\n' || line_start[start] == 0) {
-            // pointing to right of line end
-            delete [] string;
-            return;
-        }
-    }
-    if (isspace(line_start[start])) {
-        // pointing at white space
-        delete [] string;
+    if (isspace(str[pos])) {
+        // Clicked on white space.
+        delete [] str;
         return;
     }
-    int end = start;
-    while (start > 0 && !isspace(line_start[start]))
+
+    char *start = str + pos;
+    char *end = start;
+    while (!isspace(*start) && start > str)
         start--;
-    if (isspace(line_start[start]))
+    if (isspace(*start))
         start++;
-    while (line_start[end] && !isspace(line_start[end]))
+    while (!isspace(*end) && *end)
         end++;
-
-    char buf[256];
-    char *t = buf;
-    for (int i = start; i < end; i++)
-        *t++ = line_start[i];
-    *t = 0;
-
-    t = buf;
+    *end = 0;
 
     // The top level cells are listed with an '*'.
     // Modified cells are listed  with a '+'.
-    while ((*t == '+' || *t == '*') && !CDcdb()->findSymbol(t)) {
+    while ((*start == '+' || *start == '*') && !CDcdb()->findSymbol(start))
         start++;
-        t++;
-    }
 
-    start += (line_start - string);
-    end += (line_start - string);
-    delete [] string;
-
-    if (start == end)
+    if (start == end) {
+        delete [] str;
         return;
-    select_range(start, end);
+    }
+    select_range(start - str, end - str);
+    delete [] str;
 
     c_dragging = true;
-    c_drag_x = ev->x();
-    c_drag_y = ev->y();
-
+    c_drag_x = x;
+    c_drag_y = y;
 }
 
 
 void
-cCells::mouse_motion_slot(QMouseEvent*)
+QTcellsDlg::mouse_motion_slot(QMouseEvent *ev)
 {
-    /*
-    if (c_dragging) {
-        if (event->motion.is_hint)
-            gdk_event_request_motions((GdkEventMotion*)event);
-        if ((abs((int)event->motion.x - c_drag_x) > 4 ||
-                abs((int)event->motion.y - c_drag_y) > 4)) {
-            c_dragging = false;
-            GtkTargetList *targets = gtk_target_list_new(target_table,
-                n_targets);
-            GdkDragContext *drcx = gtk_drag_begin(widget, targets,
-                (GdkDragAction)GDK_ACTION_COPY, 1, event);
-            gtk_drag_set_icon_default(drcx);
-            return (true);
-        }
+    if (ev->type() != QEvent::MouseMove) {
+        ev->ignore();
+        return;
     }
-// drag data get
-    if (GTK_IS_TEXT_VIEW(widget))
-    // stop text view native handler
-    g_signal_stop_emission_by_name(G_OBJECT(widget), "drag-data-get");
+    ev->accept();
 
-    char *string = text_get_selection(widget);
-    if (string) {
-        gtk_selection_data_set(data, gtk_selection_data_get_target(data),
-            8, (unsigned char*)string, strlen(string)+1);
-        delete [] string;
+    if (!c_dragging)
+        return;
+    if (abs(ev->x() - c_drag_x) < 5 && abs(ev->y() - c_drag_y) < 5)
+        return;
+
+    char *sel = wb_textarea->get_selection();
+    if (!sel)
+        return;
+
+    c_dragging = false;
+    QDrag *drag = new QDrag(wb_textarea);
+    QMimeData *mimedata = new QMimeData();
+    QByteArray qdata((const char*)sel, strlen(sel)+1);
+    mimedata->setData("text/plain", qdata);
+    delete [] sel;
+    drag->setMimeData(mimedata);
+    drag->exec(Qt::CopyAction);
+    delete drag;
+}
+
+
+void
+QTcellsDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_FIXED))
+            wb_textarea->setFont(*fnt);
+        int cols = (wb_textarea->width()-4)/
+            QTfont::stringWidth(0, wb_textarea) - 2;
+        if (cols == c_cols)
+            return;
+        c_cols = cols;
+        char *s = cell_list(cols);
+        update_text(s);
+        delete [] s;
+        select_range(0, 0);
     }
-    */
 }
 
 
 void
-cCells::mime_data_received_slot(const QMimeData*)
-{
-}
-
-
-void
-cCells::font_changed_slot(int)
-{
-}
-
-
-void
-cCells::save_btn_slot(bool state)
+QTcellsDlg::save_btn_slot(bool state)
 {
     if (state) {
         if (c_save_pop)
@@ -1636,7 +1566,7 @@ cCells::save_btn_slot(bool state)
 
 
 void
-cCells::page_menu_slot(int i)
+QTcellsDlg::page_menu_slot(int i)
 {
     if (c_page != i) {
         c_page = i;
@@ -1646,14 +1576,14 @@ cCells::page_menu_slot(int i)
 
 
 void
-cCells::dismiss_btn_slot()
+QTcellsDlg::dismiss_btn_slot()
 {
     XM()->PopUpCells(0, MODE_OFF);
 }
 
 
 void
-cCells::mode_changed_slot(int i)
+QTcellsDlg::mode_changed_slot(int i)
 {
     DisplayMode m = i ? Electrical : Physical;
     if (c_mode != m) {
@@ -1664,7 +1594,7 @@ cCells::mode_changed_slot(int i)
             c_mode == Physical ? TU_PHYS : TU_ELEC);
     }
 }
-// End of cCells functions and slots.
+// End of QTcellsDlg functions and slots.
 
 
 //-----------------------
@@ -1699,8 +1629,8 @@ ListState::show_search(bool on)
             return;
         ListCmd->esc();
     }
-    if (cCells::self())
-        cCells::self()->update();
+    if (QTcellsDlg::self())
+        QTcellsDlg::self()->update();
 }
 
 
@@ -1781,8 +1711,8 @@ ListState::b1up()
     BBox BB;
     if (cEventHdlr::sel_b1up(&BB, 0, B1UP_NOSEL)) {
         lsAOI = BB;
-        if (cCells::self())
-            cCells::self()->update();
+        if (QTcellsDlg::self())
+            QTcellsDlg::self()->update();
     }
 }
 
@@ -1793,8 +1723,8 @@ void
 ListState::esc()
 {
     cEventHdlr::sel_esc();
-    if (cCells::self())
-        cCells::self()->end_search();
+    if (QTcellsDlg::self())
+        QTcellsDlg::self()->end_search();
     PL()->ErasePrompt();
     EV()->PopCallback(this);
     delete this;

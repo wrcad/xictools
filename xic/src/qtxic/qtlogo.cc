@@ -59,23 +59,23 @@ cEdit::PopUpLogo(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cLogo::self())
-            cLogo::self()->deleteLater();
+        if (QTlogoDlg::self())
+            QTlogoDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cLogo::self())
-            cLogo::self()->update();
+        if (QTlogoDlg::self())
+            QTlogoDlg::self()->update();
         return;
     }
-    if (cLogo::self())
+    if (QTlogoDlg::self())
         return;
 
-    new cLogo(caller);
+    new QTlogoDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), cLogo::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTlogoDlg::self(),
         QTmainwin::self()->Viewport());
-    cLogo::self()->show();
+    QTlogoDlg::self()->show();
 }
 
 
@@ -310,7 +310,7 @@ return (0);
 // End of cEdit functions.
 
 
-const char *cLogo::lgo_endstyles[] =
+const char *QTlogoDlg::lgo_endstyles[] =
 {
     "flush",
     "rounded",
@@ -318,7 +318,7 @@ const char *cLogo::lgo_endstyles[] =
     0
 };
 
-const char *cLogo::lgo_pathwidth[] =
+const char *QTlogoDlg::lgo_pathwidth[] =
 {
     "thinner",
     "thin",
@@ -328,10 +328,10 @@ const char *cLogo::lgo_pathwidth[] =
     0
 };
 
-double cLogo::lgo_defpixsz = 1.0;
-cLogo *cLogo::instPtr;
+double QTlogoDlg::lgo_defpixsz = 1.0;
+QTlogoDlg *QTlogoDlg::instPtr;
 
-cLogo::cLogo(GRobject c)
+QTlogoDlg::QTlogoDlg(GRobject c)
 {
     instPtr = this;
     lgo_caller = c;
@@ -460,7 +460,7 @@ cLogo::cLogo(GRobject c)
 }
 
 
-cLogo::~cLogo()
+QTlogoDlg::~QTlogoDlg()
 {
     instPtr = 0;
     ED()->PopUpPolytextFont(0, MODE_OFF);
@@ -482,7 +482,7 @@ namespace {
 
 
 void
-cLogo::update()
+QTlogoDlg::update()
 {
     int dd;
     if (str_to_int(&dd, CDvdb()->getVariable(VA_LogoAltFont)) &&
@@ -533,7 +533,7 @@ cLogo::update()
 // Callback for the Save dialog.
 //
 ESret
-cLogo::lgo_sav_cb(const char *fname, void*)
+QTlogoDlg::lgo_sav_cb(const char *fname, void*)
 {
     if (!fname)
         return (ESTR_IGN);
@@ -546,7 +546,7 @@ cLogo::lgo_sav_cb(const char *fname, void*)
         if (fp) {
             ED()->logoFont()->dumpFont(fp);
             fclose(fp);
-            cLogo::self()->PopUpMessage("Logo vector font saved in file.",
+            QTlogoDlg::self()->PopUpMessage("Logo vector font saved in file.",
                 false);
         }
         else
@@ -560,7 +560,7 @@ cLogo::lgo_sav_cb(const char *fname, void*)
 
 
 void
-cLogo::vector_btn_slot(bool state)
+QTlogoDlg::vector_btn_slot(bool state)
 {
     if (state)
         CDvdb()->clearVariable(VA_LogoAltFont);
@@ -568,7 +568,7 @@ cLogo::vector_btn_slot(bool state)
 
 
 void
-cLogo::manh_btn_slot(bool state)
+QTlogoDlg::manh_btn_slot(bool state)
 {
     if (state)
         CDvdb()->setVariable(VA_LogoAltFont, "0");
@@ -576,7 +576,7 @@ cLogo::manh_btn_slot(bool state)
 
 
 void
-cLogo::pretty_btn_slot(bool state)
+QTlogoDlg::pretty_btn_slot(bool state)
 {
     if (state)
         CDvdb()->setVariable(VA_LogoAltFont, "1");
@@ -584,7 +584,7 @@ cLogo::pretty_btn_slot(bool state)
 
 
 void
-cLogo::pixel_btn_slot(int state)
+QTlogoDlg::pixel_btn_slot(int state)
 {
     if (state) {
         const char *s =
@@ -598,7 +598,7 @@ cLogo::pixel_btn_slot(int state)
 
 
 void
-cLogo::value_changed_slot(double d)
+QTlogoDlg::value_changed_slot(double d)
 {
     lgo_defpixsz = d;
     if (QTdev::GetStatus(lgo_setpix)) {
@@ -611,7 +611,7 @@ cLogo::value_changed_slot(double d)
 
 
 void
-cLogo::endstyle_change_slot(int es)
+QTlogoDlg::endstyle_change_slot(int es)
 {
     if (es != DEF_LOGO_END_STYLE) {
         char buf[32];
@@ -624,7 +624,7 @@ cLogo::endstyle_change_slot(int es)
 
 
 void
-cLogo::pwidth_change_slot(int pw)
+QTlogoDlg::pwidth_change_slot(int pw)
 {
     pw++;
     if (pw != DEF_LOGO_PATH_WIDTH) {
@@ -638,7 +638,7 @@ cLogo::pwidth_change_slot(int pw)
 
 
 void
-cLogo::create_btn_slot(int state)
+QTlogoDlg::create_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_LogoToFile, "");
@@ -648,7 +648,7 @@ cLogo::create_btn_slot(int state)
 
 
 void
-cLogo::dump_btn_slot(bool state)
+QTlogoDlg::dump_btn_slot(bool state)
 {
     if (lgo_sav_pop)
         lgo_sav_pop->popdown();
@@ -663,7 +663,7 @@ cLogo::dump_btn_slot(bool state)
 
 
 void
-cLogo::sel_btn_slot(bool state)
+QTlogoDlg::sel_btn_slot(bool state)
 {
     if (state)
         ED()->PopUpPolytextFont(lgo_sel, MODE_ON);
@@ -673,7 +673,7 @@ cLogo::sel_btn_slot(bool state)
 
 
 void
-cLogo::dismiss_btn_slot()
+QTlogoDlg::dismiss_btn_slot()
 {
     ED()->PopUpLogo(0, MODE_OFF);
 }

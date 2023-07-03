@@ -58,7 +58,7 @@
 
 
 PrptyText *
-cPrpBase::resolve(int offset, CDo **odp)
+QTprpBase::resolve(int offset, CDo **odp)
 {
     if (odp)
         *odp = pb_odesc;
@@ -74,7 +74,7 @@ cPrpBase::resolve(int offset, CDo **odp)
 // there is no selection.
 //
 PrptyText *
-cPrpBase::get_selection()
+QTprpBase::get_selection()
 {
     int start, end;
     start = pb_start;
@@ -90,7 +90,7 @@ cPrpBase::get_selection()
 
 
 void
-cPrpBase::update_display()
+QTprpBase::update_display()
 {
     QColor c1 = QTbag::PopupColor(GRattrColorHl4);
     QColor c2 = QTbag::PopupColor(GRattrColorHl2);
@@ -173,47 +173,16 @@ cPrpBase::update_display()
 // Select the chars in the range, start=end deselects existing.
 //
 void
-cPrpBase::select_range(int start, int end)
+QTprpBase::select_range(int start, int end)
 {
-    if (start == end) {
-        QTextCursor c = wb_textarea->textCursor();
-        int pos = c.position();
-        int apos = c.anchor();
-        if (apos != pos) {
-            if (pos < apos) {
-                int t = pos;
-                pos = apos;
-                apos = t;
-            }
-            int n = pos - apos;
-            c.movePosition(QTextCursor::PreviousCharacter,
-                QTextCursor::KeepAnchor, n);
-            wb_textarea->setTextCursor(c);
-        }
-    }
-    else {
-        if (start > end) {
-            int t = start;
-            start = end;
-            end = t;
-        }
-        QTextCursor c = wb_textarea->textCursor();
-        c.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-        if (start) {
-            c.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor,
-                start);
-        }
-        c.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
-            end-start);
-        wb_textarea->setTextCursor(c);
-    }
+    wb_textarea->select_range(start, end);
     pb_start = start;
     pb_end = end;
 }
 
 
 void
-cPrpBase::handle_button_down(QMouseEvent *ev)
+QTprpBase::handle_button_down(QMouseEvent *ev)
 {
     pb_dragging = false;
     QByteArray qba = wb_textarea->toPlainText().toLatin1();
@@ -261,14 +230,14 @@ cPrpBase::handle_button_down(QMouseEvent *ev)
 
 
 void
-cPrpBase::handle_button_up(QMouseEvent*)
+QTprpBase::handle_button_up(QMouseEvent*)
 {
     pb_dragging = false;
 }
 
 
 void
-cPrpBase::handle_mouse_motion(QMouseEvent *ev)
+QTprpBase::handle_mouse_motion(QMouseEvent *ev)
 {
     if (!pb_dragging)
         return;
@@ -278,13 +247,6 @@ cPrpBase::handle_mouse_motion(QMouseEvent *ev)
     if (!p)
         return;
     pb_dragging = false;
-
-/*
-    if (GTK_IS_TEXT_VIEW(wb_textarea)) {
-        // stop text view native handler
-        g_signal_stop_emission_by_name(G_OBJECT(wb_textarea), "drag-data-get");
-    }
-*/
 
     int sz = 0;
     char *bf = 0;
@@ -328,7 +290,7 @@ cPrpBase::handle_mouse_motion(QMouseEvent *ev)
 
 
 void
-cPrpBase::handle_mime_data_received(const QMimeData *data)
+QTprpBase::handle_mime_data_received(const QMimeData *data)
 {
     if (data->hasFormat("text/property")) {
         if (!pb_odesc) {
@@ -392,9 +354,9 @@ cPrpBase::handle_mime_data_received(const QMimeData *data)
 
 // Static function.
 int
-cPrpBase::pb_bad_cb(void *arg)
+QTprpBase::pb_bad_cb(void *arg)
 {
-    cPrpBase *pb = (cPrpBase*)arg;
+    QTprpBase *pb = (QTprpBase*)arg;
     if (pb && pb->wb_message)
         pb->wb_message->popdown();
     return (false);

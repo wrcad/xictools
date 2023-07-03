@@ -53,7 +53,7 @@ class QMimeData;
 class QPushButton;
 class QMenu;
 
-class cCellPrp : public QDialog, public QTbag
+class QTcellPrpDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
@@ -66,12 +66,12 @@ public:
         int value;
     };
 
-    cCellPrp();
-    ~cCellPrp();
+    QTcellPrpDlg();
+    ~QTcellPrpDlg();
 
     void update();
 
-    static cCellPrp *self()         { return (instPtr); }
+    static QTcellPrpDlg *self()         { return (instPtr); }
 
 private slots:
     void edit_btn_slot(bool);
@@ -106,7 +106,7 @@ private:
 
     static sAddEnt pc_elec_addmenu[];
     static sAddEnt pc_phys_addmenu[];
-    static cCellPrp *instPtr;
+    static QTcellPrpDlg *instPtr;
 };
 
 #endif

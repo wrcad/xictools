@@ -54,18 +54,18 @@ class QMouseEvent;
 class QResizeEvent;
 class QMimeData;
 
-class cCells : public QDialog, public QTbag
+class QTcellsDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cCells(GRobject);
-    ~cCells();
+    QTcellsDlg(GRobject);
+    ~QTcellsDlg();
 
     void update();
     char *get_selection();
     void end_search()               { QTdev::Deselect(c_searchbtn); }
-    static cCells *self()           { return (instPtr); }
+    static QTcellsDlg *self()       { return (instPtr); }
 
 private slots:
     void clear_btn_slot();
@@ -84,7 +84,6 @@ private slots:
     void resize_slot(QResizeEvent*);
     void mouse_press_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
-    void mime_data_received_slot(const QMimeData*);
     void font_changed_slot(int);
     void save_btn_slot(bool);
     void page_menu_slot(int);
@@ -97,12 +96,6 @@ private:
     void replace_instances(const char*);
     void rename_cell(const char*);
     void select_range(int, int);
-    /*
-    int button_hdlr(bool, GtkWidget*, GdkEvent*);
-    void action_hdlr(GtkWidget*, void*);
-    int motion_hdlr(GtkWidget*, GdkEvent*);
-    void resize_hdlr(GtkAllocation*);
-    */
     stringlist *raw_cell_list(int*, int*, bool);
     char *cell_list(int);
     void update_text(char*);
@@ -171,7 +164,7 @@ private:
     int c_start;
     int c_end;
 
-    static cCells *instPtr;
+    static QTcellsDlg *instPtr;
 };
 
 #endif

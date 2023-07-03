@@ -50,17 +50,17 @@ class QComboBox;
 class QPushButton;
 
 
-class cStab : public QDialog, public QTbag
+class QTstabDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    cStab(GRobject);
-    ~cStab();
+    QTstabDlg(GRobject);
+    ~QTstabDlg();
 
     void update();
 
-    static cStab * self()           { return (instPtr); }
+    static QTstabDlg * self()           { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -86,7 +86,7 @@ private:
     GRaffirmPopup *tb_del_pop;
     stringlist *tb_namelist;
 
-    static cStab *instPtr;
+    static QTstabDlg *instPtr;
 };
 
 #endif

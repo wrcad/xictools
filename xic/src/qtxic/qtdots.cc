@@ -51,36 +51,36 @@
 //-------------------------------------------------------------------------
 // Pop-up to control electrical connection point display.
 
-cDots *cDots::instPtr;
-
 void
 cSced::PopUpDots(GRobject caller, ShowMode mode)
 {
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cDots::self())
-            cDots::self()->deleteLater();
+        if (QTdotsDlg::self())
+            QTdotsDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cDots::self())
-            cDots::self()->update();
+        if (QTdotsDlg::self())
+            QTdotsDlg::self()->update();
         return;
     }
-    if (cDots::self())
+    if (QTdotsDlg::self())
         return;
 
-    new cDots(caller);
+    new QTdotsDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cDots::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTdotsDlg::self(),
         QTmainwin::self()->Viewport());
-    cDots::self()->show();
+    QTdotsDlg::self()->show();
 }
 //End of cSced functions.
 
 
-cDots::cDots(GRobject caller)
+QTdotsDlg *QTdotsDlg::instPtr;
+
+QTdotsDlg::QTdotsDlg(GRobject caller)
 {
     instPtr = this;
     dt_caller = caller;
@@ -118,7 +118,7 @@ cDots::cDots(GRobject caller)
 }
 
 
-cDots::~cDots()
+QTdotsDlg::~QTdotsDlg()
 {
     instPtr = 0;
     if (dt_caller)
@@ -127,7 +127,7 @@ cDots::~cDots()
 
 
 void
-cDots::update()
+QTdotsDlg::update()
 {
     const char *v = CDvdb()->getVariable(VA_ShowDots);
     if (!v) {
@@ -149,7 +149,7 @@ cDots::update()
 
 
 void
-cDots::none_slot(bool state)
+QTdotsDlg::none_slot(bool state)
 {
     if (state)
         CDvdb()->clearVariable(VA_ShowDots);
@@ -157,7 +157,7 @@ cDots::none_slot(bool state)
 
 
 void
-cDots::norm_slot(bool state)
+QTdotsDlg::norm_slot(bool state)
 {
     if (state)
         CDvdb()->setVariable(VA_ShowDots, "");
@@ -165,7 +165,7 @@ cDots::norm_slot(bool state)
 
 
 void
-cDots::all_slot(bool state)
+QTdotsDlg::all_slot(bool state)
 {
     if (state)
         CDvdb()->setVariable(VA_ShowDots, "all");
@@ -173,7 +173,7 @@ cDots::all_slot(bool state)
 
 
 void
-cDots::dismiss_slot()
+QTdotsDlg::dismiss_slot()
 {
     SCD()->PopUpDots(0, MODE_OFF);
 }

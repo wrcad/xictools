@@ -86,6 +86,46 @@ QTtextEdit::get_selection()
 }
 
 
+// Select the chars in the range, start=end deselects existing.
+//
+void
+QTtextEdit::select_range(int start, int end)
+{
+    if (start == end) {
+        QTextCursor c = textCursor();
+        int pos = c.position();
+        int apos = c.anchor();
+        if (apos != pos) {
+            if (pos < apos) {
+                int t = pos;
+                pos = apos;
+                apos = t;
+            }
+            int n = pos - apos;
+            c.movePosition(QTextCursor::PreviousCharacter,
+                QTextCursor::KeepAnchor, n);
+            setTextCursor(c);
+        }
+    }
+    else {
+        if (start > end) {
+            int t = start;
+            start = end;
+            end = t;
+        }
+        QTextCursor c = textCursor();
+        c.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+        if (start) {
+            c.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor,
+                start);
+        }
+        c.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
+            end-start);
+        setTextCursor(c);
+    }
+}
+
+
 char *
 QTtextEdit::get_chars(int start, int end)
 {

@@ -50,17 +50,17 @@
 class QCheckBox;
 class QLineEdit;
 
-class cDbgFlags : public QDialog
+class QTdbgFlagsDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cDbgFlags(void*);
-    ~cDbgFlags();
+    QTdbgFlagsDlg(void*);
+    ~QTdbgFlagsDlg();
 
     void update();
 
-    static cDbgFlags *self()            { return (instPtr); }
+    static QTdbgFlagsDlg *self()            { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -100,7 +100,7 @@ private:
     QCheckBox *df_net;
     QCheckBox *df_pcell;
 
-    static cDbgFlags *instPtr;
+    static QTdbgFlagsDlg *instPtr;
 };
 
 #endif

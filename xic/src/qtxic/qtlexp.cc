@@ -70,36 +70,36 @@ cEdit::PopUpLayerExp(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cLayerExp::self())
-            cLayerExp::self()->deleteLater();
+        if (QTlayerExpDlg::self())
+            QTlayerExpDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cLayerExp::self())
-            cLayerExp::self()->update();
+        if (QTlayerExpDlg::self())
+            QTlayerExpDlg::self()->update();
         return;
     }
-    if (cLayerExp::self())
+    if (QTlayerExpDlg::self())
         return;
 
-    new cLayerExp(caller);
+    new QTlayerExpDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_UL), cLayerExp::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTlayerExpDlg::self(),
         QTmainwin::self()->Viewport());
-    cLayerExp::self()->show();
+    QTlayerExpDlg::self()->show();
 }
 
 
-char *cLayerExp::last_lexpr = 0;
-int cLayerExp::depth_hst = 0;
-int cLayerExp::create_mode = CLdefault;
-bool cLayerExp::fast_mode = false;
-bool cLayerExp::use_merge = false;
-bool cLayerExp::do_recurse = false;
-bool cLayerExp::noclear = false;
-cLayerExp *cLayerExp::instPtr;
+char *QTlayerExpDlg::last_lexpr = 0;
+int QTlayerExpDlg::depth_hst = 0;
+int QTlayerExpDlg::create_mode = CLdefault;
+bool QTlayerExpDlg::fast_mode = false;
+bool QTlayerExpDlg::use_merge = false;
+bool QTlayerExpDlg::do_recurse = false;
+bool QTlayerExpDlg::noclear = false;
+QTlayerExpDlg *QTlayerExpDlg::instPtr;
 
-cLayerExp::cLayerExp(GRobject c)
+QTlayerExpDlg::QTlayerExpDlg(GRobject c)
 {
     instPtr = this;
     lx_caller = c;
@@ -139,7 +139,7 @@ cLayerExp::cLayerExp(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setMargin(0);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr(
         "Set parameters, evaluate layer expression"));
@@ -368,7 +368,7 @@ cLayerExp::cLayerExp(GRobject c)
 }
 
 
-cLayerExp::~cLayerExp()
+QTlayerExpDlg::~QTlayerExpDlg()
 {
     instPtr = 0;
     char *s = lstring::copy(lx_lexpr->text().toLatin1().constData());
@@ -384,7 +384,7 @@ cLayerExp::~cLayerExp()
 
 
 void
-cLayerExp::update()
+QTlayerExpDlg::update()
 {
     const char *s = CDvdb()->getVariable(VA_PartitionSize);
     if (s) {
@@ -417,28 +417,28 @@ cLayerExp::update()
 
 
 void
-cLayerExp::help_btn_slot()
+QTlayerExpDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:lexpr"))
 }
 
 
 void
-cLayerExp::depth_changed_slot(int d)
+QTlayerExpDlg::depth_changed_slot(int d)
 {
     depth_hst = d;
 }
 
 
 void
-cLayerExp::recurse_btn_slot(int state)
+QTlayerExpDlg::recurse_btn_slot(int state)
 {
     do_recurse = state;
 }
 
 
 void
-cLayerExp::none_btn_slot(bool state)
+QTlayerExpDlg::none_btn_slot(bool state)
 {
     if (state) {
         lx_last_part_size = lx_sb_part->value();
@@ -450,7 +450,7 @@ cLayerExp::none_btn_slot(bool state)
 
 
 void
-cLayerExp::part_changed_slot(double val)
+QTlayerExpDlg::part_changed_slot(double val)
 {
     if (val >= GRD_PART_MIN && val <= GRD_PART_MAX) {
         int nint = INTERNAL_UNITS(val);
@@ -467,7 +467,7 @@ cLayerExp::part_changed_slot(double val)
 
 
 void
-cLayerExp::threads_changed_slot(int d)
+QTlayerExpDlg::threads_changed_slot(int d)
 {
     if (d >= DSP_MIN_THREADS && d <= DSP_MAX_THREADS) {
         if (d == DSP_DEF_THREADS)
@@ -482,7 +482,7 @@ cLayerExp::threads_changed_slot(int d)
 
 
 void
-cLayerExp::deflt_btn_slot(bool state)
+QTlayerExpDlg::deflt_btn_slot(bool state)
 {
     if (state)
         create_mode = CLdefault;
@@ -490,7 +490,7 @@ cLayerExp::deflt_btn_slot(bool state)
 
 
 void
-cLayerExp::join_btn_slot(bool state)
+QTlayerExpDlg::join_btn_slot(bool state)
 {
     if (state)
         create_mode = CLjoin;
@@ -498,7 +498,7 @@ cLayerExp::join_btn_slot(bool state)
 
 
 void
-cLayerExp::split_h_btn_slot(bool state)
+QTlayerExpDlg::split_h_btn_slot(bool state)
 {
     if (state)
         create_mode = CLsplitH;
@@ -506,7 +506,7 @@ cLayerExp::split_h_btn_slot(bool state)
 
 
 void
-cLayerExp::split_v_btn_slot(bool state)
+QTlayerExpDlg::split_v_btn_slot(bool state)
 {
     if (state)
         create_mode = CLsplitV;
@@ -514,7 +514,7 @@ cLayerExp::split_v_btn_slot(bool state)
 
 
 void
-cLayerExp::recall_menu_slot(QAction *a)
+QTlayerExpDlg::recall_menu_slot(QAction *a)
 {
     int ix = a->data().toInt();
     const char *s = ED()->layerExpString(ix);
@@ -525,7 +525,7 @@ cLayerExp::recall_menu_slot(QAction *a)
 
 
 void
-cLayerExp::save_menu_slot(QAction *a)
+QTlayerExpDlg::save_menu_slot(QAction *a)
 {
     int ix = a->data().toInt();
     const char *s = lstring::copy(lx_lexpr->text().toLatin1().constData());
@@ -536,28 +536,28 @@ cLayerExp::save_menu_slot(QAction *a)
 
 
 void
-cLayerExp::noclear_btn_slot(int state)
+QTlayerExpDlg::noclear_btn_slot(int state)
 {
     noclear = state;
 }
 
 
 void
-cLayerExp::merge_btn_slot(int state)
+QTlayerExpDlg::merge_btn_slot(int state)
 {
     use_merge = state;
 }
 
 
 void
-cLayerExp::fast_btn_slot(int state)
+QTlayerExpDlg::fast_btn_slot(int state)
 {
     fast_mode = state;
 }
 
 
 void
-cLayerExp::eval_btn_slot()
+QTlayerExpDlg::eval_btn_slot()
 {
     const char *s = lstring::copy(lx_tolayer->text().toLatin1().constData());
     const char *t = s;
@@ -594,7 +594,7 @@ cLayerExp::eval_btn_slot()
 
 
 void
-cLayerExp::dismiss_btn_slot()
+QTlayerExpDlg::dismiss_btn_slot()
 {
     ED()->PopUpLayerExp(0, MODE_OFF);
 }

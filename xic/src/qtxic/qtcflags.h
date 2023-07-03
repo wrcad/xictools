@@ -49,7 +49,7 @@
 
 class QLabel;
 
-struct cCflags : public QDialog, public QTbag
+struct QTcflagsDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
@@ -79,12 +79,12 @@ public:
         bool library;
     };
 
-    cCflags(GRobject, const stringlist*, int);
-    ~cCflags();
+    QTcflagsDlg(GRobject, const stringlist*, int);
+    ~QTcflagsDlg();
 
     void update(const stringlist*, int);
 
-    static cCflags *self()          { return (instPtr); }
+    static QTcflagsDlg *self()          { return (instPtr); }
 
 private slots:
     void imm_none_btn_slot();
@@ -107,7 +107,7 @@ private:
     int cf_field;                       // name field width
     int cf_dmode;                       // display mode of cells
     
-    static cCflags *instPtr;
+    static QTcflagsDlg *instPtr;
 };
 
 #endif

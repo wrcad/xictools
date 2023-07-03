@@ -50,18 +50,18 @@ class QPushButton;
 class QDoubleSpinBox;
 
 
-class cDisplayWin : public QDialog
+class QTdisplayWinDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    cDisplayWin(GRobject, const BBox*,
+    QTdisplayWinDlg(GRobject, const BBox*,
         bool(*)(bool, const BBox*, void*), void*);
-    ~cDisplayWin();
+    ~QTdisplayWinDlg();
 
     void update(const BBox*);
 
-    static cDisplayWin *self()          { return (instPtr); }
+    static QTdisplayWinDlg *self()          { return (instPtr); }
 
 private slots:
     void apply_btn_slot();
@@ -80,7 +80,7 @@ private:
     bool (*dw_callback)(bool, const BBox*, void*);
     void *dw_arg;
 
-    static cDisplayWin *instPtr;
+    static QTdisplayWinDlg *instPtr;
 };
 
 #endif
