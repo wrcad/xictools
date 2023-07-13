@@ -145,7 +145,7 @@ printf("sw to\n");
 // second pixmap, update the screen.
 //
 void
-QTcanvas::switch_from_pixmap2(int xx, int yy, int w, int h)
+QTcanvas::switch_from_pixmap2(int xd, int yd, int xs, int ys, int w, int h)
 {
     if (!da_pixmap_bak) {
         // Already switched back.
@@ -159,8 +159,8 @@ QTcanvas::switch_from_pixmap2(int xx, int yy, int w, int h)
     da_painter->setPen(da_pen);
     bb_init();
     emit new_painter(da_painter);
-    da_painter->drawPixmap(xx, yy, *da_pixmap2, xx, yy, w, h);
-    repaint(xx, yy, w, h);
+    da_painter->drawPixmap(xd, yd, *da_pixmap2, xs, ys, w, h);
+    repaint(xd, yd, w, h);
 printf("sw from\n");
 }
 
@@ -1008,7 +1008,7 @@ QTcanvas::mouseReleaseEvent(QMouseEvent *ev)
 void
 QTcanvas::mouseMoveEvent(QMouseEvent *ev)
 {
-    emit move_event(ev);
+    emit motion_event(ev);
 }
 
 

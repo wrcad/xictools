@@ -546,7 +546,7 @@ draw_gl_w::mouseReleaseEvent(QMouseEvent *ev)
 void
 draw_gl_w::mouseMoveEvent(QMouseEvent *ev)
 {
-    emit move_event(ev);
+    emit motion_event(ev);
 }
 
 

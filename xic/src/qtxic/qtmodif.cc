@@ -65,8 +65,7 @@
 //  xic:sv
 
 namespace {
-    void
-    start_modal(QDialog *w)
+    void start_modal(QDialog *w)
     {
         QTmenu::self()->SetSensGlobal(false);
         QTmenu::self()->SetModal(w);
@@ -75,8 +74,7 @@ namespace {
     }
 
 
-    void
-    end_modal()
+    void end_modal()
     {
         QTmenu::self()->SetModal(0);
         QTmenu::self()->SetSensGlobal(true);
@@ -416,12 +414,12 @@ QTmodifDlg::mouse_press_slot(QMouseEvent *ev)
         return;
     }
     ev->accept();
-    QTmodifDlg::self()->mousePressEvent(ev);
+//XXX ?    QTmodifDlg::self()->mousePressEvent(ev);
 
     const char *str = lstring::copy(
         (const char*)m_text->toPlainText().toLatin1());
-    int x = (int)ev->x();
-    int y = (int)ev->y();
+    int x = ev->x();
+    int y = ev->y();
     QTextCursor cur = m_text->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
     

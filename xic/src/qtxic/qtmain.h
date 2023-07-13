@@ -89,7 +89,6 @@ public:
     QTpkg()
         {
             pkg_busy_popup      = 0;
-            pkg_idle_control    = 0;
             pkg_in_main_loop    = false;
             pkg_not_mapped      = false;
         }
@@ -133,7 +132,6 @@ public:
 
 private:
     GRpopup     *pkg_busy_popup;        // busy indicator
-    QTidleproc  *pkg_idle_control;
     bool        pkg_in_main_loop;       // gtk_main called
     bool        pkg_not_mapped;         // true when iconic
 };
@@ -297,11 +295,9 @@ public:
     static char *get_cell_selection();
     static void cells_panic();
 
-    /*
     // qtfiles.cc
     static char *get_file_selection();
     static void files_panic();
-    */
 
     // qtlibs.cc
     static char *get_lib_selection();

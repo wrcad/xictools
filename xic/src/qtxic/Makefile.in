@@ -26,6 +26,7 @@ SECURE = ../../../secure
 INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include
 
 CCFILES = \
+    qtattri.cc \
     qtauxtab.cc \
     qtcells.cc \
     qtcfilt.cc \
@@ -46,7 +47,10 @@ CCFILES = \
     qtcvofmt.cc \
     qtcvout.cc \
     qtdbgflg.cc \
+    qtdevedit.cc \
+    qtdevs.cc \
     qtdots.cc \
+    qtdrclim.cc \
     qtdspwin.cc \
     qtedset.cc \
     qtempty.cc \
@@ -76,6 +80,9 @@ CCFILES = \
     qtmenucfg.cc \
     qtmerge.cc \
     qtmodif.cc \
+    qtoadefs.cc \
+    qtoalibs.cc \
+    qtoatech.cc \
     qtoasis.cc \
     qtparam.cc \
     qtpcctrl.cc \
@@ -86,9 +93,12 @@ CCFILES = \
     qtprpedit.cc \
     qtprpinfo.cc \
     qtsel.cc \
+    qtselinst.cc \
     qtsim.cc \
+    qtspif.cc \
     qtstab.cc \
     qttech.cc \
+    qttedit.cc \
     qttree.cc \
     qtwndc.cc \
     qtxdraw.cc \
@@ -97,6 +107,7 @@ CCFILES = \
     qtxxx.cc
 MOCFILES = \
     moc_main.cpp \
+    moc_attri.cpp \
     moc_auxtab.cpp \
     moc_cells.cpp \
     moc_cfilt.cpp \
@@ -116,11 +127,17 @@ MOCFILES = \
     moc_cvofmt.cpp \
     moc_cvout.cpp \
     moc_dbgflg.cpp \
+    moc_devedit.cpp \
+    moc_devs.cpp \
     moc_dots.cpp \
+    moc_drclim.cpp \
     moc_dspwin.cpp \
     moc_edset.cpp \
     moc_empty.cpp \
     moc_expand.cpp \
+    moc_extfc.cpp \
+    moc_extfh.cpp \
+    moc_files.cpp \
     moc_fillp.cpp \
     moc_flatten.cpp \
     moc_htext.cpp \
@@ -138,6 +155,9 @@ MOCFILES = \
     moc_menucfg.cpp \
     moc_merge.cpp \
     moc_modif.cpp \
+    moc_oadefs.cpp \
+    moc_oalibs.cpp \
+    moc_oatech.cpp \
     moc_oasis.cpp \
     moc_param.cpp \
     moc_pcctrl.cpp \
@@ -147,9 +167,12 @@ MOCFILES = \
     moc_prpedit.cpp \
     moc_prpinfo.cpp \
     moc_sel.cpp \
+    moc_selinst.cpp \
     moc_sim.cpp \
+    moc_spif.cpp \
     moc_stab.cpp \
     moc_tech.cpp \
+    moc_tedit.cpp \
     moc_tree.cpp \
     moc_wndc.cpp \
     moc_xform.cpp \
@@ -181,6 +204,7 @@ endif
 	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc
 
 moc_main.o: moc_main.cpp  qtmain.h
+moc_attri.o: moc_attri.cpp  qtattri.h
 moc_auxtab.o: moc_auxtab.cpp  qtauxtab.h
 moc_cells.o: moc_cells.cpp  qtcells.h
 moc_cfilt.o: moc_cfilt.cpp  qtcfilt.h
@@ -200,11 +224,17 @@ moc_cvin.o: moc_cvin.cpp  qtcvin.h
 moc_cvofmt.o: moc_cvofmt.cpp  qtcvofmt.h
 moc_cvout.o: moc_cvout.cpp  qtcvout.h
 moc_dbgflg.o: moc_dbgflg.cpp  qtdbgflg.h
+moc_devedit.o: moc_devedit.cpp  qtdevedit.h
+moc_devs.o: moc_devs.cpp  qtdevs.h
 moc_dots.o: moc_dots.cpp  qtdots.h
+moc_drclim.o: moc_drclim.cpp  qtdrclim.h
 moc_dspwin.o: moc_dspwin.cpp  qtdspwin.h
 moc_edset.o: moc_edset.cpp  qtedset.h
 moc_empty.o: moc_empty.cpp  qtempty.h
 moc_expand.o: moc_expand.cpp  qtexpand.h
+moc_extfc.o: moc_extfc.cpp  qtextfc.h
+moc_extfh.o: moc_extfh.cpp  qtextfh.h
+moc_files.o: moc_files.cpp  qtfiles.h
 moc_fillp.o: moc_fillp.cpp  qtfillp.h
 moc_flatten.o: moc_flatten.cpp  qtflatten.h
 moc_htext.o: moc_htext.cpp  qthtext.h
@@ -222,6 +252,9 @@ moc_menu.o: moc_menu.cpp  qtmenu.h
 moc_menucfg.o: moc_menucfg.cpp  qtmenucfg.h
 moc_merge.o: moc_merge.cpp  qtmerge.h
 moc_modif.o: moc_modif.cpp  qtmodif.h
+moc_oadefs.o: moc_oadefs.cpp  qtoadefs.h
+moc_oalibs.o: moc_oalibs.cpp  qtoalibs.h
+moc_oatech.o: moc_oatech.cpp  qtoatech.h
 moc_oasis.o: moc_oasis.cpp  qtoasis.h
 moc_param.o: moc_param.cpp  qtparam.h
 moc_pcctrl.o: moc_pcctrl.cpp  qtpcctrl.h
@@ -231,9 +264,12 @@ moc_prpcedit.o: moc_prpcedit.cpp  qtprpcedit.h
 moc_prpedit.o: moc_prpedit.cpp  qtprpedit.h
 moc_prpinfo.o: moc_prpinfo.cpp  qtprpinfo.h
 moc_sel.o: moc_sel.cpp  qtsel.h
+moc_selinst.o: moc_selinst.cpp  qtselinst.h
 moc_sim.o: moc_sim.cpp  qtsim.h
+moc_spif.o: moc_spif.cpp  qtspif.h
 moc_stab.o: moc_stab.cpp  qtstab.h
 moc_tech.o: moc_tech.cpp  qttech.h
+moc_tedit.o: moc_tedit.cpp  qttedit.h
 moc_tree.o: moc_tree.cpp  qttree.h
 moc_wndc.o: moc_wndc.cpp  qtwndc.h
 moc_xform.o: moc_xform.cpp  qtxform.h
@@ -241,6 +277,8 @@ moc_zoom.o: moc_zoom.cpp  qtzoom.h
 
 moc_main.cpp: $(MOC) qtmain.h
 	$(MOC) qtmain.h -o moc_main.cpp
+moc_attri.cpp: $(MOC) qtattri.h
+	$(MOC) qtattri.h -o moc_attri.cpp
 moc_auxtab.cpp: $(MOC) qtauxtab.h
 	$(MOC) qtauxtab.h -o moc_auxtab.cpp
 moc_cells.cpp: $(MOC) qtcells.h
@@ -279,8 +317,14 @@ moc_cvout.cpp: $(MOC) qtcvout.h
 	$(MOC) qtcvout.h -o moc_cvout.cpp
 moc_dbgflg.cpp: $(MOC) qtdbgflg.h
 	$(MOC) qtdbgflg.h -o moc_dbgflg.cpp
+moc_devedit.cpp: $(MOC) qtdevedit.h
+	$(MOC) qtdevedit.h -o moc_devedit.cpp
+moc_devs.cpp: $(MOC) qtdevs.h
+	$(MOC) qtdevs.h -o moc_devs.cpp
 moc_dots.cpp: $(MOC) qtdots.h
 	$(MOC) qtdots.h -o moc_dots.cpp
+moc_drclim.cpp: $(MOC) qtdrclim.h
+	$(MOC) qtdrclim.h -o moc_drclim.cpp
 moc_dspwin.cpp: $(MOC) qtdspwin.h
 	$(MOC) qtdspwin.h -o moc_dspwin.cpp
 moc_edset.cpp: $(MOC) qtedset.h
@@ -289,6 +333,12 @@ moc_empty.cpp: $(MOC) qtempty.h
 	$(MOC) qtempty.h -o moc_empty.cpp
 moc_expand.cpp: $(MOC) qtexpand.h
 	$(MOC) qtexpand.h -o moc_expand.cpp
+moc_extfc.cpp: $(MOC) qtextfc.h
+	$(MOC) qtextfc.h -o moc_extfc.cpp
+moc_extfh.cpp: $(MOC) qtextfh.h
+	$(MOC) qtextfh.h -o moc_extfh.cpp
+moc_files.cpp: $(MOC) qtfiles.h
+	$(MOC) qtfiles.h -o moc_files.cpp
 moc_fillp.cpp: $(MOC) qtfillp.h
 	$(MOC) qtfillp.h -o moc_fillp.cpp
 moc_flatten.cpp: $(MOC) qtflatten.h
@@ -323,6 +373,12 @@ moc_merge.cpp: $(MOC) qtmerge.h
 	$(MOC) qtmerge.h -o moc_merge.cpp
 moc_modif.cpp: $(MOC) qtmodif.h
 	$(MOC) qtmodif.h -o moc_modif.cpp
+moc_oadefs.cpp: $(MOC) qtoadefs.h
+	$(MOC) qtoadefs.h -o moc_oadefs.cpp
+moc_oalibs.cpp: $(MOC) qtoalibs.h
+	$(MOC) qtoalibs.h -o moc_oalibs.cpp
+moc_oatech.cpp: $(MOC) qtoatech.h
+	$(MOC) qtoatech.h -o moc_oatech.cpp
 moc_oasis.cpp: $(MOC) qtoasis.h
 	$(MOC) qtoasis.h -o moc_oasis.cpp
 moc_param.cpp: $(MOC) qtparam.h
@@ -341,12 +397,18 @@ moc_prpinfo.cpp: $(MOC) qtprpinfo.h
 	$(MOC) qtprpinfo.h -o moc_prpinfo.cpp
 moc_sel.cpp: $(MOC) qtsel.h
 	$(MOC) qtsel.h -o moc_sel.cpp
+moc_selinst.cpp: $(MOC) qtselinst.h
+	$(MOC) qtselinst.h -o moc_selinst.cpp
 moc_sim.cpp: $(MOC) qtsim.h
 	$(MOC) qtsim.h -o moc_sim.cpp
+moc_spif.cpp: $(MOC) qtspif.h
+	$(MOC) qtspif.h -o moc_spif.cpp
 moc_stab.cpp: $(MOC) qtstab.h
 	$(MOC) qtstab.h -o moc_stab.cpp
 moc_tech.cpp: $(MOC) qttech.h
 	$(MOC) qttech.h -o moc_tech.cpp
+moc_tedit.cpp: $(MOC) qttedit.h
+	$(MOC) qttedit.h -o moc_tedit.cpp
 moc_tree.cpp: $(MOC) qttree.h
 	$(MOC) qttree.h -o moc_tree.cpp
 moc_wndc.cpp: $(MOC) qtwndc.h

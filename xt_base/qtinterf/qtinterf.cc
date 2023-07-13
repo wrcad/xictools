@@ -51,6 +51,7 @@
 #include "qthcopy.h"
 #include "qtedit.h"
 #include "qttimer.h"
+#include "qtidleproc.h"
 
 #include "help/help_defs.h"
 
@@ -91,6 +92,7 @@ QTdev::QTdev()
     dv_loop         = 0;
     dv_main_bag     = 0;
     dv_timers       = 0;
+    dv_idle_ctrl    = 0;
     dv_minx         = 0;
     dv_miny         = 0;
     dv_loop_level   = 0;
@@ -284,6 +286,28 @@ QTdev::RemoveTimer(int id)
             return;
         }
     }
+}
+
+
+// Install an idle procedure, return its ID.  The calback will be called
+// repeatedly until it returns 0.
+//
+int
+QTdev::AddIdleProc(int(*cb)(void*), void *arg)
+{
+    if (!dv_idle_ctrl)
+        dv_idle_ctrl = new QTidleproc();
+    return (dv_idle_ctrl->add(cb, arg));
+}
+
+
+// Remove an existing idle procedure by id.
+//
+void
+QTdev::RemoveIdleProc(int id)
+{
+    if (dv_idle_ctrl)
+        dv_idle_ctrl->remove(id);
 }
 
 
@@ -1624,9 +1648,9 @@ QTbag::PopupColor(GRattrColor c)
             else
                 return (QColor("black"));
         }
-        QColor c(colorname);
-        if (c.isValid())
-            return (c);
+        QColor qc(colorname);
+        if (qc.isValid())
+            return (qc);
         if (GRcolorList::lookupColor(colorname, &r, &g, &b)) {
             // My list is much more complete.
             QColor nc(r, g, b);

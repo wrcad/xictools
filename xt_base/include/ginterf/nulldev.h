@@ -183,6 +183,8 @@ namespace ginterf
 
         int AddTimer(int, int(*)(void*), void*)         { return (0); }
         void RemoveTimer(int)                           { }
+        int AddIdleProc(int(*)(void*), void*)           { return (0); }
+        void RemoveIdleProc(int)                        { }
         void (* RegisterSigintHdlr(void(*)()) )()       { return (0); }
         bool CheckForEvents()                           { return (false); }
         int Input(int, int, int*)                       { return (0); }

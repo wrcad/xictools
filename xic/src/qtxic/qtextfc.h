@@ -46,16 +46,30 @@
 
 #include <QDialog>
 
-class QWidget;
-class QDoubleSpinBox;
 
-class cFCdlg : public QDialog, public QTbag
+//-----------------------------------------------------------------------------
+// Pop-up to control FasterCap/FastCap-WR interface
+//
+
+class QLabel;
+class QPushButton;
+class QLineEdit;
+class QComboBox;
+class QCheckBox;
+class QDoubleSpinBox;
+class QMouseEvent;
+
+class QTfastCapDlg : public QDialog, public QTbag
 {
-//    Q_OBJECT
+    Q_OBJECT
 
 public:
-    cFCdlg(GRobject);
-    ~cFCdlg();
+    enum { FcRun, FcRunFile, FcDump, FcPath, FcArgs, ShowNums, 
+        Foreg, ToCons, FcPlaneBloat, SubstrateThickness, 
+        SubstrateEps, Enable, FcPanelTarget, Kill };
+
+    QTfastCapDlg(GRobject);
+    ~QTfastCapDlg();
 
     void update();
     void update_jobs_list();
@@ -63,71 +77,98 @@ public:
     void update_numbers();
     void clear_numbers();
 
-    static cFCdlg *self()           { return (instPtr); }
+    static QTfastCapDlg *self()           { return (instPtr); }
+
+private slots:
+    void help_btn_slot();
+    void page_changed_slot(int);
+    void foreg_btn_slot(int);
+    void console_btn_slot(int);
+    void shownum_btn_slot(int);
+    void runfile_btn_slot();
+    void runext_btn_slot();
+    void dumplist_btn_slot();
+    void args_changed_slot(const QString&);
+    void path_changed_slot(const QString&);
+    void plane_bloat_changed_slot(double);
+    void subthick_changed_slot(double);
+    void units_changed_slot(int);
+    void subeps_changed_slot(double);
+    void enable_btn_slot(int);
+    void panels_changed_slot(double);
+    void abort_btn_slot();
+    void dismiss_btn_slot();
+
+    void zoid_dbg_btn_slot(int);
+    void vrbo_dbg_btn_slot(int);
+    void nm_dbg_btn_slot(int);
+    void czbot_dbg_btn_slot(int);
+    void dzbot_dbg_btn_slot(int);
+    void cztop_dbg_btn_slot(int);
+    void dztop_dbg_btn_slot(int);
+    void cyl_dbg_btn_slot(int);
+    void dyl_dbg_btn_slot(int);
+    void cyu_dbg_btn_slot(int);
+    void dyu_dbg_btn_slot(int);
+    void cleft_dbg_btn_slot(int);
+    void dleft_dbg_btn_slot(int);
+    void cright_dbg_btn_slot(int);
+    void dright_dbg_btn_slot(int);
+
+    void mouse_press_slot(QMouseEvent*);
+    void font_changed_slot(int);
 
 private:
     void select_range(int, int);
     int get_pid();
     void select_pid(int);
-
-    /*
+    void debug_btn_hdlr(int, int);
     static const char *fc_def_string(int);
-    static void fc_cancel_proc(GtkWidget*, void*);
-    static void fc_help_proc(GtkWidget*, void*);
-    static void fc_page_change_proc(GtkWidget*, void*, int, void*);
-    static void fc_change_proc(GtkWidget*, void*);
-    static void fc_units_proc(GtkWidget*, void*);
     static void fc_p_cb(bool, void*);
     static void fc_dump_cb(const char*, void*);
-    static void fc_btn_proc(GtkWidget*, void*);
-    static int fc_button_dn(GtkWidget*, GdkEvent*, void*);
-    static void fc_font_changed();
-    static void fc_dbg_btn_proc(GtkWidget*, void*);
-    */
 
-    GRobject fc_caller;
-    QWidget *fc_label;
-    QWidget *fc_foreg;
-    QWidget *fc_out;
-    QWidget *fc_shownum;
-    QWidget *fc_file;
-    QWidget *fc_args;
-    QWidget *fc_path;
+    GRobject    fc_caller;
+    QLabel      *fc_label;
+    QCheckBox   *fc_foreg;
+    QCheckBox   *fc_out;
+    QCheckBox   *fc_shownum;
+    QLineEdit   *fc_file;
+    QLineEdit   *fc_args;
+    QLineEdit   *fc_path;
 
-    QWidget *fc_units;
-    QWidget *fc_enab;
+    QComboBox   *fc_units;
+    QCheckBox   *fc_enab;
+    QDoubleSpinBox *fc_sb_plane_bloat;
+    QDoubleSpinBox *fc_sb_substrate_thickness;
+    QDoubleSpinBox *fc_sb_substrate_eps;
+    QDoubleSpinBox *fc_sb_panel_target;
 
-    QWidget *fc_jobs;
-    QWidget *fc_kill;
+    QCheckBox   *fc_dbg_zoids;
+    QCheckBox   *fc_dbg_vrbo;
+    QCheckBox   *fc_dbg_nm;
+    QCheckBox   *fc_dbg_czbot;
+    QCheckBox   *fc_dbg_dzbot;
+    QCheckBox   *fc_dbg_cztop;
+    QCheckBox   *fc_dbg_dztop;
+    QCheckBox   *fc_dbg_cyl;
+    QCheckBox   *fc_dbg_dyl;
+    QCheckBox   *fc_dbg_cyu;
+    QCheckBox   *fc_dbg_dyu;
+    QCheckBox   *fc_dbg_cleft;
+    QCheckBox   *fc_dbg_dleft;
+    QCheckBox   *fc_dbg_cright;
+    QCheckBox   *fc_dbg_dright;
 
-    QWidget *fc_dbg_zoids;
-    QWidget *fc_dbg_vrbo;
-    QWidget *fc_dbg_nm;
-    QWidget *fc_dbg_czbot;
-    QWidget *fc_dbg_dzbot;
-    QWidget *fc_dbg_cztop;
-    QWidget *fc_dbg_dztop;
-    QWidget *fc_dbg_cyl;
-    QWidget *fc_dbg_dyl;
-    QWidget *fc_dbg_cyu;
-    QWidget *fc_dbg_dyu;
-    QWidget *fc_dbg_cleft;
-    QWidget *fc_dbg_dleft;
-    QWidget *fc_dbg_cright;
-    QWidget *fc_dbg_dright;
+    QTtextEdit  *fc_jobs;
+    QPushButton *fc_kill;
 
-    bool fc_no_reset;
-    bool fc_frozen;
-    int fc_start;
-    int fc_end;
-    int fc_line_selected;
+    bool    fc_no_reset;
+    bool    fc_frozen;
+    int     fc_start;
+    int     fc_end;
+    int     fc_line_selected;
 
-    QDoubleSpinBox *fc_fc_plane_bloat;
-    QDoubleSpinBox *fc_substrate_thickness;
-    QDoubleSpinBox *fc_substrate_eps;
-    QDoubleSpinBox *fc_fc_panel_target;
-
-    static cFCdlg *instPtr;
+    static QTfastCapDlg *instPtr;
 };
 
 #endif

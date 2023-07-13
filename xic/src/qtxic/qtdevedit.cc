@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtdevedit.h"
 #include "fio.h"
 #include "sced.h"
 #include "dsp_color.h"
@@ -48,8 +48,14 @@
 #include "promptline.h"
 #include "errorlog.h"
 #include "menu.h"
-#include "gtkmain.h"
 #include "miscutil/filestat.h"
+
+#include <QLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QCheckBox>
 
 
 //-----------------------------------------------------------------------------
@@ -60,118 +66,20 @@
 // Help system keywords used:
 //  devedit
 
-namespace {
-    namespace gtkdvedit {
-        struct sBstate : public CmdState
-        {
-            friend struct sDE;
-
-            sBstate(const char*, const char*);
-            virtual ~sBstate();
-
-            void setXY(int x, int y)
-                {
-                    xref = x;
-                    yref = y;
-                }
-
-            void b1down();
-            void b1up();
-            void esc();
-
-        private:
-            int xref, yref;
-        };
-
-        sBstate *Bcmd;
-
-        // Container for text entries.
-        //
-        struct entries_t
-        {
-            entries_t()
-                {
-                    cname = 0;
-                    prefix = 0;
-                    model = 0;
-                    value = 0;
-                    param = 0;
-                    branch = 0;
-                }
-
-            ~entries_t()
-                {
-                    delete [] cname;
-                    delete [] prefix;
-                    delete [] model;
-                    delete [] value;
-                    delete [] param;
-                    delete [] branch;
-                }
-
-            char *cname;
-            char *prefix;
-            char *model;
-            char *value;
-            char *param;
-            char *branch;
-        };
-
-        struct sDE
-        {
-            sDE(GRobject);
-            ~sDE();
-
-            GtkWidget *shell() { return (de_shell); }
-
-            void set_ref(int, int);
-
-        private:
-            void load(entries_t*);
-            static void de_cancel_proc(GtkWidget*, void*);
-            static void de_help_proc(GtkWidget*, void*);
-            static void de_menu_proc(GtkWidget*, void*);
-            static void de_devs_proc(GtkWidget*, void*);
-            static void de_branch_proc(GtkWidget*, void*);
-
-            GRobject de_caller;
-            GtkWidget *de_shell;
-            GtkWidget *de_cname;
-            GtkWidget *de_prefix;
-            GtkWidget *de_model;
-            GtkWidget *de_value;
-            GtkWidget *de_param;
-            GtkWidget *de_toggle;
-            GtkWidget *de_branch;
-            GtkWidget *de_nophys;
-            int de_menustate;
-            int de_xref, de_yref;
-
-            static const char *orient_labels[];
-        };
-
-        sDE *DE;
-
-        const char *sDE::orient_labels[] =
-            { "none", "Left", "Down", "Right", "Up", 0 };
-    }
-}
-
-using namespace gtkdvedit;
-
 
 // Pop up the Device Parameters panel.
 //
 void
 cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
 {
-    if (!GTKdev::exists() || !GTKmainwin::exists())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete DE;
+        if (QTdeviceDlg::self())
+            QTdeviceDlg::self()->deleteLater();
         return;
     }
-    if (DE)
+    if (QTdeviceDlg::self())
         return;
 
     CDs *sd = CurCell(Electrical);
@@ -200,26 +108,49 @@ cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
         return;
     }
 
-    new sDE(caller);
-    if (!DE->shell()) {
-        delete DE;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(DE->shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new QTdeviceDlg(caller);
 
-    GTKdev::self()->SetPopupLocation(GRloc(), DE->shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(DE->shell());
+    QTdev::self()->SetPopupLocation(GRloc(), QTdeviceDlg::self(),
+        QTmainwin::self()->Viewport());
+    QTdeviceDlg::self()->show();
 }
 // End of cSced functions.
 
 
-sDE::sDE(GRobject caller)
+namespace {
+    struct sBstate : public CmdState
+    {
+        sBstate(const char*, const char*);
+        virtual ~sBstate();
+
+        void setXY(int x, int y)
+            {
+                xref = x;
+                yref = y;
+            }
+        int x_ref()         { return (xref); }
+        int y_ref()         { return (yref); }
+
+        void b1down();
+        void b1up();
+        void esc();
+
+    private:
+        int xref, yref;
+    };
+
+    sBstate *Bcmd;
+}
+
+
+const char *QTdeviceDlg::orient_labels[] =
+    { "none", "Left", "Down", "Right", "Up", 0 };
+QTdeviceDlg *QTdeviceDlg::instPtr;
+
+QTdeviceDlg::QTdeviceDlg(GRobject caller)
 {
-    DE = this;
+    instPtr = this;
     de_caller = caller;
-    de_shell = 0;
     de_cname = 0;
     de_prefix = 0;
     de_model = 0;
@@ -233,38 +164,24 @@ sDE::sDE(GRobject caller)
 
     CDs *cursde = CurCell(Electrical);
 
-    de_shell = gtk_NewPopup(0, "Device Parameters", de_cancel_proc, 0);
-    if (!de_shell)
-        return;
+    setWindowTitle(tr("Device Parameters"));
+    setAttribute(Qt::WA_DeleteOnClose);
+    QGridLayout *grid = new QGridLayout(this);
+    grid->setMargin(2);
+    grid->setSpacing(2);
 
-    GtkWidget *form = gtk_table_new(1, 1, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(de_shell), form);
+    QLabel *label = new QLabel(tr("Device Name"));
+    grid->addWidget(label, 0, 0);
 
-    int row = 0;
-    GtkWidget *label = gtk_label_new("Device Name");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 2, row, row+1,
-        (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
-    de_cname = gtk_entry_new();
-    gtk_widget_show(de_cname);
-    gtk_table_attach(GTK_TABLE(form), de_cname, 2, 3, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
+    de_cname = new QLineEdit();
+    grid->addWidget(de_cname, 0, 1);
+    de_cname->setText(Tstring(DSP()->CurCellName()));
 
-    gtk_entry_set_text(GTK_ENTRY(de_cname), Tstring(DSP()->CurCellName()));
+    label = new QLabel(tr("SPICE Prefix"));
+    grid->addWidget(label, 1, 0);
 
-    label = gtk_label_new("SPICE Prefix");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 2, row, row+1,
-        (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
-    de_prefix = gtk_entry_new();
-    gtk_widget_show(de_prefix);
-    gtk_table_attach(GTK_TABLE(form), de_prefix, 2, 3, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
+    de_prefix = new QLineEdit();
+    grid->addWidget(de_prefix, 1, 1);
 
     CDp_sname *pn = (CDp_sname*)(cursde ? cursde->prpty(P_NAME) : 0);
     if (pn && pn->name_string()) {
@@ -272,99 +189,70 @@ sDE::sDE(GRobject caller)
         lstr.add(Tstring(pn->name_string()));
         if (pn->is_macro())
             lstr.add(" macro");
-        gtk_entry_set_text(GTK_ENTRY(de_prefix), lstr.string());
+        de_prefix->setText(lstr.string());
     }
 
-    GtkWidget *button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(de_help_proc), 0);
-    gtk_table_attach(GTK_TABLE(form), button, 3, 4, row-2, row,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    QPushButton *btn = new QPushButton(tr("Help"));
+    grid->addWidget(btn, 0, 2, 2, 1);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    label = gtk_label_new("Default Model");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 2, row, row+1,
-        (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
-    de_model = gtk_entry_new();
-    gtk_widget_show(de_model);
-    gtk_table_attach(GTK_TABLE(form), de_model, 2, 4, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
+    label = new QLabel(tr("Default Model"));
+    grid->addWidget(label, 2, 0);
+
+    de_model = new QLineEdit();
+    grid->addWidget(de_model, 2, 1, 1, 2);
 
     CDp_user *pu = (CDp_user*)(cursde ? cursde->prpty(P_MODEL) : 0);
     if (pu) {
         char *s = hyList::string(pu->data(), HYcvPlain, false);
-        gtk_entry_set_text(GTK_ENTRY(de_model), s);
+        de_model->setText(s);
         delete [] s;
     }
 
-    label = gtk_label_new("Default Value");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 2, row, row+1,
-        (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
-    de_value = gtk_entry_new();
-    gtk_widget_show(de_value);
-    gtk_table_attach(GTK_TABLE(form), de_value, 2, 4, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
+    label = new QLabel(tr("Default Value"));
+    grid->addWidget(label, 3, 0);
+
+    de_value = new QLineEdit();
+    grid->addWidget(de_value, 3, 1, 1, 2);
 
     pu = (CDp_user*)(cursde ? cursde->prpty(P_VALUE) : 0);
     if (pu) {
         char *s = hyList::string(pu->data(), HYcvPlain, false);
-        gtk_entry_set_text(GTK_ENTRY(de_value), s);
+        de_value->setText(s);
         delete [] s;
     }
 
-    label = gtk_label_new("Default Parameters");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 2, row, row+1,
-        (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
-    de_param = gtk_entry_new();
-    gtk_widget_show(de_param);
-    gtk_table_attach(GTK_TABLE(form), de_param, 2, 4, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
+    label = new QLabel(tr("Default Parameters"));
+    grid->addWidget(label, 4, 0);
+
+    de_param = new QLineEdit();
+    grid->addWidget(de_param, 4, 1, 1, 2);
 
     pu = (CDp_user*)(cursde ? cursde->prpty(P_PARAM) : 0);
     if (pu) {
         char *s = hyList::string(pu->data(), HYcvPlain, false);
-        gtk_entry_set_text(GTK_ENTRY(de_param), s);
+        de_param->setText(s);
         delete [] s;
     }
 
-    de_toggle = gtk_toggle_button_new_with_label("Hot Spot");
-    gtk_widget_set_name(de_toggle, "hotspot");
-    gtk_widget_show(de_toggle);
-    g_signal_connect(G_OBJECT(de_toggle), "clicked",
-        G_CALLBACK(de_branch_proc), 0);
-    gtk_table_attach(GTK_TABLE(form), de_toggle, 0, 1, row, row+1,
-        (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    grid->addLayout(hbox, 5, 0);
 
-    GtkWidget *entry = gtk_combo_box_text_new();
-    gtk_widget_set_name(entry, "orient");
-    gtk_widget_show(entry);
+    de_toggle = new QPushButton(tr("Hot Spot"));
+    de_toggle->setCheckable(true);
+    hbox->addWidget(de_toggle);
+    connect(de_toggle, SIGNAL(toggled(bool)),
+        this, SLOT(hotspot_btn_slot(bool)));
 
-    for (int i = 0; orient_labels[i]; i++) {
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
-            orient_labels[i]);
-    }
-    g_signal_connect(G_OBJECT(entry), "changed",
-        G_CALLBACK(de_menu_proc), 0);
-    gtk_table_attach(GTK_TABLE(form), entry, 1, 2, row, row+1,
-        (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
+    QComboBox *entry = new QComboBox();
+    hbox->addWidget(entry);
+    for (int i = 0; orient_labels[i]; i++)
+        entry->addItem(orient_labels[i]);
+    connect(entry, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(menu_changed_slot(int)));
 
-    de_branch = gtk_entry_new();
-    gtk_widget_show(de_branch);
-    gtk_table_attach(GTK_TABLE(form), de_branch, 2, 4, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
+    de_branch = new QLineEdit();
+    grid->addWidget(de_branch, 5, 1, 1, 2);
 
     CDp_branch *pb = (CDp_branch*)(cursde ? cursde->prpty(P_BRANCH) : 0);
     if (pb) {
@@ -382,77 +270,61 @@ sDE::sDE(GRobject caller)
                 ix = 3;
         }
         de_menustate = ix;
-        gtk_combo_box_set_active(GTK_COMBO_BOX(entry), ix);
+        entry->setCurrentIndex(ix);
         if (pb->br_string())
-            gtk_entry_set_text(GTK_ENTRY(de_branch), pb->br_string());
+            de_branch->setText(pb->br_string());
 
         de_xref = pb->pos_x();
         de_yref = pb->pos_y();
 
-        GTKdev::SetStatus(de_toggle, true);
+        QTdev::SetStatus(de_toggle, true);
+/*XXX
         de_branch_proc(de_toggle, 0);
+*/
     }
 
-    de_nophys = gtk_check_button_new_with_label(
-        "No Physical Implementation");
-    gtk_widget_set_name(de_nophys, "nophys");
-    gtk_widget_show(de_nophys);
-    gtk_table_attach(GTK_TABLE(form), de_nophys, 0, 4, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
+    de_nophys = new QCheckBox(tr("No Physical Implementation"));
+    grid->addWidget(de_nophys, 6, 0, 1, 3);
 
     CDp *pnp = cursde ? cursde->prpty(P_NOPHYS) : 0;
     if (pnp)
-        GTKdev::SetStatus(de_nophys, true);
+        QTdev::SetStatus(de_nophys, true);
 
-    button = gtk_button_new_with_label("Save in Library");
-    gtk_widget_set_name(button, "save_lib");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(de_devs_proc), 0);
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    hbox = new QHBoxLayout;
+    grid->addLayout(hbox, 7, 0, 1, 3);
+    hbox->setMargin(2);
+    hbox->setSpacing(2);
 
-    button = gtk_button_new_with_label("Save as Cell File");
-    gtk_widget_set_name(button, "save_nat");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(de_devs_proc), (void*)(long)1);
-    gtk_table_attach(GTK_TABLE(form), button, 2, 3, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    btn = new QPushButton(tr("Save in Library"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(savlib_btn_slot()));
 
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(de_cancel_proc), 0);
-    gtk_table_attach(GTK_TABLE(form), button, 3, 4, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    btn = new QPushButton(tr("Save as Cell File"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(savfile_btn_slot()));
+
+    btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
-sDE::~sDE()
+QTdeviceDlg::~QTdeviceDlg()
 {
-    DE = 0;
+    instPtr = 0;
     if (de_caller)
-        GTKdev::SetStatus(de_caller, false);
+        QTdev::SetStatus(de_caller, false);
     if (Bcmd)
         Bcmd->esc();
-    if (de_shell)
-        gtk_widget_destroy(de_shell);
 }
 
 
 void
-sDE::set_ref(int x, int y)
+QTdeviceDlg::set_ref(int x, int y)
 {
     de_xref = x;
     de_yref = y;
-    GTKdev::SetStatus(de_branch, false);
+    QTdev::SetStatus(de_branch, false);
 }
 
 
@@ -480,22 +352,32 @@ namespace {
 // Load the entries from the pop-up.
 //
 void
-sDE::load(entries_t *e)
+QTdeviceDlg::load(entries_t *e)
 {
     if (!e)
         return;
-    e->cname = strip(gtk_entry_get_text(GTK_ENTRY(de_cname)));
+    QByteArray cname_ba = de_cname->text().toLatin1();
+    e->cname = strip(cname_ba.constData());
     char *cn = lstring::strip_path(e->cname);
     if (cn != e->cname) {
         char *ctmp = e->cname;
         e->cname = lstring::copy(cn);
         delete [] ctmp;
     }
-    e->prefix = strip(gtk_entry_get_text(GTK_ENTRY(de_prefix)));
-    e->model = strip(gtk_entry_get_text(GTK_ENTRY(de_model)));
-    e->value = strip(gtk_entry_get_text(GTK_ENTRY(de_value)));
-    e->param = strip(gtk_entry_get_text(GTK_ENTRY(de_param)));
-    e->branch = strip(gtk_entry_get_text(GTK_ENTRY(de_branch)));
+    QByteArray prefix_ba = de_prefix->text().toLatin1();
+    e->prefix = strip(prefix_ba.constData());
+
+    QByteArray model_ba = de_model->text().toLatin1();
+    e->model = strip(model_ba.constData());
+
+    QByteArray value_ba = de_value->text().toLatin1();
+    e->value = strip(value_ba.constData());
+
+    QByteArray param_ba = de_param->text().toLatin1();
+    e->param = strip(param_ba.constData());
+
+    QByteArray branch_ba = de_branch->text().toLatin1();
+    e->branch = strip(branch_ba.constData());
 
     // Make sure that 'X' is a macro.
     if (*e->prefix == 'X' || *e->prefix == 'x') {
@@ -511,37 +393,9 @@ sDE::load(entries_t *e)
 }
 
 
-// Static function.
 void
-sDE::de_cancel_proc(GtkWidget*, void*)
+QTdeviceDlg::do_save(bool tofile)
 {
-    SCD()->PopUpDevEdit(0, MODE_OFF);
-}
-
-
-// Static function.
-void
-sDE::de_help_proc(GtkWidget*, void*)
-{
-    DSPmainWbag(PopUpHelp("devedit"))
-}
-
-
-// Static function.
-void
-sDE::de_menu_proc(GtkWidget *caller, void*)
-{
-    if (DE)
-        DE->de_menustate = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
-}
-
-
-// Static function.
-void
-sDE::de_devs_proc(GtkWidget*, void *arg)
-{
-    if (!DE)
-        return;
     CDs *cursde = CurCell(Electrical);
     if (!cursde) {
         Log()->PopUpErr("No curent cell!");
@@ -549,7 +403,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
     }
 
     entries_t ent;
-    DE->load(&ent);
+    load(&ent);
     if (!ent.cname) {
         Log()->PopUpErr("No Cell Name given, this is required.");
         return;
@@ -654,7 +508,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
         }
     }
 
-    if (GTKdev::GetStatus(DE->de_toggle) && !is_sc) {
+    if (QTdev::GetStatus(de_toggle) && !is_sc) {
         CDp_branch *pb = (CDp_branch*)cursde->prpty(P_BRANCH);
         if (!pb) {
             pb = new CDp_branch;
@@ -662,7 +516,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
             cursde->setPrptyList(pb);
         }
         pb->set_br_string(ent.branch);
-        switch (DE->de_menustate) {
+        switch (de_menustate) {
         default:
         case 0:
             pb->set_rot_x(0);
@@ -685,8 +539,8 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
             pb->set_rot_y(1);
             break;
         }
-        pb->set_pos_x(Bcmd->xref);
-        pb->set_pos_y(Bcmd->yref);
+        pb->set_pos_x(Bcmd->x_ref());
+        pb->set_pos_y(Bcmd->y_ref());
     }
     else {
         CDp_branch *pb = (CDp_branch*)cursde->prpty(P_BRANCH);
@@ -696,7 +550,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
         }
     }
 
-    if (GTKdev::GetStatus(DE->de_nophys)) {
+    if (QTdev::GetStatus(de_nophys)) {
         CDp *p = cursde->prpty(P_NOPHYS);
         if (!p) {
             p = new CDp(P_NOPHYS);
@@ -716,7 +570,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
     if (!ent.prefix) {
         // This is only possible for a ground terminal.
         if (nodecnt == 1 && !ent.model && !ent.value && !ent.param &&
-                !GTKdev::GetStatus(DE->de_toggle)) {
+                !QTdev::GetStatus(de_toggle)) {
             CDp_sname *pn = (CDp_sname*)cursde->prpty(P_NAME);
             if (pn) {
                 cursde->prptyUnlink(pn);
@@ -741,13 +595,13 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
     }
     cursde->setDevice(true);
 
-    if (!SCD()->saveAsDev(ent.cname, (arg != 0))) {
+    if (!SCD()->saveAsDev(ent.cname, tofile)) {
         Log()->ErrorLogV(mh::Processing,
             "Save as device failed:\n%s.", Errs()->get_error());
         return;
     }
 
-    if (arg)
+    if (tofile)
         PL()->ShowPrompt("Device cell saved.");
     else
         PL()->ShowPrompt("Device library updated, in current directory.");
@@ -756,20 +610,23 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
 }
 
 
-// When the Branch button is active, clicking in the drawing moves a
-// marker around to set the "hot spot" location for the branch property.
-
-// Static function.
 void
-sDE::de_branch_proc(GtkWidget *caller, void*)
+QTdeviceDlg::help_btn_slot()
 {
-    if (GTKdev::GetStatus(caller)) {
-        if (!Bcmd && DE) {
+    DSPmainWbag(PopUpHelp("devedit"))
+}
+
+
+void
+QTdeviceDlg::hotspot_btn_slot(bool state)
+{
+    if (state) {
+        if (!Bcmd) {
             Bcmd = new sBstate("brloc", "devedit#hspot");
-            Bcmd->setXY(DE->de_xref, DE->de_yref);
+            Bcmd->setXY(de_xref, de_yref);
             if (!EV()->PushCallback(Bcmd))
                 delete Bcmd;
-            DSP()->ShowCrossMark(DISPLAY, Bcmd->xref, Bcmd->yref,
+            DSP()->ShowCrossMark(DISPLAY, Bcmd->x_ref(), Bcmd->y_ref(),
                 HighlightingColor, 20, DSP()->CurMode());
         }
     }
@@ -778,7 +635,50 @@ sDE::de_branch_proc(GtkWidget *caller, void*)
             Bcmd->esc();
     }
 }
-// End of sDE functions.
+
+
+void
+QTdeviceDlg::menu_changed_slot(int i)
+{
+    de_menustate = i;
+}
+
+
+void
+QTdeviceDlg::savlib_btn_slot()
+{
+    do_save(false);
+}
+
+
+void
+QTdeviceDlg::savfile_btn_slot()
+{
+    do_save(true);
+}
+
+
+void
+QTdeviceDlg::dismiss_btn_slot()
+{
+    SCD()->PopUpDevEdit(0, MODE_OFF);
+}
+
+
+
+#ifdef notdef
+
+
+// When the Branch button is active, clicking in the drawing moves a
+// marker around to set the "hot spot" location for the branch property.
+
+// Static function.
+void
+QTdeviceDlg::de_branch_proc(GtkWidget *caller, void*)
+{
+}
+#endif
+// End of QTdeviceDlg functions.
 
 
 sBstate::sBstate(const char *nm, const char *hk) : CmdState(nm, hk)
@@ -814,8 +714,8 @@ sBstate::b1up()
 void
 sBstate::esc()
 {
-    if (DE)
-        DE->set_ref(xref, yref);
+    if (QTdeviceDlg::self())
+        QTdeviceDlg::self()->set_ref(xref, yref);
     DSP()->ShowCrossMark(ERASE, xref, yref, HighlightingColor, 20,
         DSP()->CurMode());
     EV()->PopCallback(this);

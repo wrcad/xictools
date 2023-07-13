@@ -32,104 +32,81 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtidleproc.h"
+#ifndef QTDRCLIM_H
+#define QTDRCLIM_H
+
+#include "main.h"
+#include "qtmain.h"
+
+#include <QDialog>
 
 
-using namespace qtinterf;
-
-QTidleproc::QTidleproc() : QTimer(0)
-{
-    idle_proc_list = 0;
-    idle_id_cnt = 1000;
-    running = false;
-    connect(this, SIGNAL(timeout()), this, SLOT(run_slot()));
-}
-
-
-// Add an idle function callback.  The function will be called repeatedly
-// until 0 is returned, at which point it will be removed from the list.
-// An id for the callback is returned.
+//------------------------------------------------------------------------
+// DRC Limits Pop-Up
 //
-int
-QTidleproc::add(int(*cb)(void*), void *arg)
+// This provides entry fields for the various limit parameters and
+// the error recording level.
+
+class QCheckBox;
+class QLineEdit;
+class QRadioButton;
+class QSpinBox;
+
+class QTdrcLimitsDlg : public QDialog
 {
-    idle_procs *ip = new idle_procs(cb, arg);
-    if (!idle_proc_list)
-        idle_proc_list = ip;
-    else {
-        idle_procs *p = idle_proc_list;
-        while (p->next)
-            p = p->next;
-        p->next = ip;
-    }
-    idle_proc_list->id = idle_id_cnt++;
-    if (!running) {
-        start();
-        running = true;
-    }
-    return (idle_proc_list->id);
-}
+    Q_OBJECT
 
+public:
+    QTdrcLimitsDlg(GRobject);
+    ~QTdrcLimitsDlg();
 
-// Remove an idle function callback from the list.  The argument is
-// the return value obtained when the callback was added.  Return
-// true if a removal was done.
-//
-bool
-QTidleproc::remove(int iid)
-{
-    idle_procs *p = 0;
-    for (idle_procs *ip = idle_proc_list; ip; ip = ip->next) {
-        if (ip->id == iid) {
-            if (p)
-                p->next = ip->next;
-            else
-                idle_proc_list = ip->next;
-            delete ip;
-            return (true);
-        }
-        p = ip;
-    }
-    return (false);
-}
+    void update();
 
+    static QTdrcLimitsDlg *self()           { return (instPtr); }
 
-// Slot to run the idle queue.  The first callback is popped off and
-// run.  If the callback returns true, the callback is appended to the
-// end of the list, otherwise it is deleted.
-//
-void
-QTidleproc::run_slot()
-{
-    if (idle_proc_list) {
-        idle_procs *ip = idle_proc_list;
-        idle_proc_list = ip->next;
-        ip->next = 0;
+private slots:
+    void help_btn_slot();
+    void luse_btn_slot(int);
+    void lskip_btn_slot(int);
+    void ruse_btn_slot(int);
+    void rskip_btn_slot(int);
+    void max_errs_changed_slot(int);
+    void imax_objs_changed_slot(int);
+    void imax_time_changed_slot(int);
+    void imax_errs_changed_slot(int);
+    void skip_btn_slot(int);
+    void b1_btn_slot(bool);
+    void b2_btn_slot(bool);
+    void b3_btn_slot(bool);
+    void dismiss_btn_slot();
+    void llist_changed_slot(const QString&);
+    void rlist_changed_slot(const QString&);
 
-        int ret = (*ip->proc)(ip->arg);
-        if (ret) {
-            if (!idle_proc_list)
-                idle_proc_list = ip;
-            else {
-                idle_procs *p = idle_proc_list;
-                while (p->next)
-                    p = p->next;
-                p->next = ip;
-            }
-        }
-        else
-            delete ip;
-    }
+private:
+    GRobject    dl_caller;
+    QCheckBox   *dl_luse;
+    QCheckBox   *dl_lskip;
+    QLineEdit   *dl_llist;
+    QCheckBox   *dl_ruse;
+    QCheckBox   *dl_rskip;
+    QLineEdit   *dl_rlist;
+    QCheckBox   *dl_skip;
+    QRadioButton *dl_b1;
+    QRadioButton *dl_b2;
+    QRadioButton *dl_b3;
+    QSpinBox    *dl_sb_max_errs;
+    QSpinBox    *dl_sb_imax_objs;
+    QSpinBox    *dl_sb_imax_time;
+    QSpinBox    *dl_sb_imax_errs;
 
-    if (!idle_proc_list) {
-        stop();
-        running = false;
-    }
-}
+    static QTdrcLimitsDlg *instPtr;
+};
+
+#endif
 

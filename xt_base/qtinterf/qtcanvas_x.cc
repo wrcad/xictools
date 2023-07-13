@@ -543,7 +543,7 @@ QTcanvas_x::mouseReleaseEvent(QMouseEvent *ev)
 void
 QTcanvas_x::mouseMoveEvent(QMouseEvent *ev)
 {
-    emit move_event(ev);
+    emit motion_event(ev);
 }
 
 

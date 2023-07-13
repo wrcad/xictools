@@ -49,7 +49,19 @@
 #include "select.h"
 #include "tech.h"
 #include "tech_extract.h"
-//#include "qtinterf/qtutil.h"
+#include "qtinterf/qttextw.h"
+#include "qtinterf/qtinput.h"
+
+#include <QLayout>
+#include <QTabWidget>
+#include <QLabel>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QMouseEvent>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QDoubleSpinBox>
 
 
 //-----------------------------------------------------------------------------
@@ -57,27 +69,6 @@
 //
 // Help system keywords used:
 //  fcpanel
-
-namespace {
-
-    enum { FcRun, FcRunFile, FcDump, FcPath, FcArgs, ShowNums, 
-        Foreg, ToCons, FcPlaneBloat, SubstrateThickness, 
-        SubstrateEps, Enable, FcPanelTarget, Kill };
-
-    // FastHenry units menu, must have same order and length as used in
-    // ext_fxunits.cc.
-    //
-    const char *units_strings[] =
-    {
-        "meters",
-        "centimeters",
-        "millimeters",
-        "microns",
-        "inches",
-        "mils",
-        0
-    };
-}
 
 
 // Pop up a panel to control the fastcap/fasthenry interface.
@@ -88,23 +79,23 @@ cFC::PopUpExtIf(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cFCdlg::self())
-            cFCdlg::self()->deleteLater();
+        if (QTfastCapDlg::self())
+            QTfastCapDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cFCdlg::self())
-            cFCdlg::self()->update();
+        if (QTfastCapDlg::self())
+            QTfastCapDlg::self()->update();
         return;
     }
-    if (cFCdlg::self())
+    if (QTfastCapDlg::self())
         return;
 
-    new cFCdlg(caller);
+    new QTfastCapDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(LW_LR), cFCdlg::self(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LR), QTfastCapDlg::self(),
         QTmainwin::self()->Viewport());
-    cFCdlg::self()->show();
+    QTfastCapDlg::self()->show();
     setPopUpVisible(true);
 }
 
@@ -112,9 +103,9 @@ cFC::PopUpExtIf(GRobject caller, ShowMode mode)
 void
 cFC::updateString()
 {
-    if (cFCdlg::self()) {
+    if (QTfastCapDlg::self()) {
         char *s = statusString();
-        cFCdlg::self()->update_label(s);
+        QTfastCapDlg::self()->update_label(s);
         delete [] s;
     }
 }
@@ -124,8 +115,8 @@ void
 cFC::updateMarks()
 {
     DSP()->EraseCrossMarks(Physical, CROSS_MARK_FC);
-    if (cFCdlg::self())
-        cFCdlg::self()->update_numbers();
+    if (QTfastCapDlg::self())
+        QTfastCapDlg::self()->update_numbers();
 }
 
 
@@ -136,15 +127,15 @@ cFC::clearMarks()
     delete [] fc_groups;
     fc_groups = 0;
     fc_ngroups = 0;
-    if (cFCdlg::self())
-        cFCdlg::self()->clear_numbers();
+    if (QTfastCapDlg::self())
+        QTfastCapDlg::self()->clear_numbers();
 }
 // End of cFC functions.
 
 
-cFCdlg *cFCdlg::instPtr;
+QTfastCapDlg *QTfastCapDlg::instPtr;
 
-cFCdlg::cFCdlg(GRobject c)
+QTfastCapDlg::QTfastCapDlg(GRobject c)
 {
     instPtr = this;
     fc_caller = c;
@@ -157,6 +148,25 @@ cFCdlg::cFCdlg(GRobject c)
     fc_path = 0;
     fc_units = 0;
     fc_enab = 0;
+    fc_sb_plane_bloat = 0;
+    fc_sb_substrate_thickness = 0;
+    fc_sb_substrate_eps = 0;
+    fc_sb_panel_target = 0;
+    fc_dbg_zoids = 0;
+    fc_dbg_vrbo = 0;
+    fc_dbg_nm = 0;
+    fc_dbg_czbot = 0;
+    fc_dbg_dzbot = 0;
+    fc_dbg_cztop = 0;
+    fc_dbg_dztop = 0;
+    fc_dbg_cyl = 0;
+    fc_dbg_dyl = 0;
+    fc_dbg_cyu = 0;
+    fc_dbg_dyu = 0;
+    fc_dbg_cleft = 0;
+    fc_dbg_dleft = 0;
+    fc_dbg_cright = 0;
+    fc_dbg_dright = 0;
     fc_jobs = 0;
     fc_kill = 0;
     fc_no_reset = false;
@@ -165,559 +175,353 @@ cFCdlg::cFCdlg(GRobject c)
     fc_end = 0;
     fc_line_selected = -1;
 
-#ifdef notdef
-    wb_shell = gtk_NewPopup(0, "Cap. Extraction", fc_cancel_proc, 0);
-    if (!wb_shell)
-        return;
+    setWindowTitle(tr("Cap. Extraction"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    GtkWidget *form = gtk_table_new(2, 1, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(wb_shell), form);
-    int rowcnt = 0;
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    // label in frame plus help btn
     //
-    // Label in frame plus help btn
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
+    QLabel *label = new QLabel(tr("Fast[er]Cap Interface"));
+    hb->addWidget(label);
+
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+
+    QTabWidget *nbook = new QTabWidget();
+    vbox->addWidget(nbook);
+    connect(nbook, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(page_changed_slot(int)));
+
+    // Run page.
     //
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-    GtkWidget *label = gtk_label_new("Fast[er]Cap Interface");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), label);
-    gtk_box_pack_start(GTK_BOX(hbox), frame, true, true, 0);
-    GtkWidget *button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_help_proc), 0);
-    gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    QWidget *page = new QWidget();
+    nbook->addTab(page, tr("Run"));
+    QVBoxLayout *vb = new QVBoxLayout(page);
+    vb->setMargin(2);
+    vb->setSpacing(2);
+    hb = new QHBoxLayout();
+    vb->addLayout(hb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
 
-    GtkWidget *nbook = gtk_notebook_new();
-    gtk_widget_show(nbook);
-    g_signal_connect(G_OBJECT(nbook), "switch-page",
-        G_CALLBACK(fc_page_change_proc), 0);
-    gtk_table_attach(GTK_TABLE(form), nbook, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    fc_foreg = new QCheckBox(tr("Run in foreground"));
+    hb->addWidget(fc_foreg);
+    connect(fc_foreg, SIGNAL(stateChanged(int)),
+        this, SLOT(foreg_btn_slot(int)));
 
+    fc_out = new QCheckBox(tr("Out to console"));
+    hb->addWidget(fc_out);
+    connect(fc_out, SIGNAL(stateChanged(int)),
+        this, SLOT(console_btn_slot(int)));
+
+    hb = new QHBoxLayout();
+    vb->addLayout(hb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
+
+    fc_shownum = new QCheckBox(tr("Show Numbers"));
+    hb->addWidget(fc_shownum);
+    connect(fc_shownum, SIGNAL(stateChanged(int)),
+        this, SLOT(shownum_btn_slot(int)));
+
+    vb->addStretch(1);
+
+    hb = new QHBoxLayout();
+    vb->addLayout(hb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
+
+    btn = new QPushButton(tr("Run File"));
+    hb->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(runfile_btn_slot()));
+
+    fc_file = new QLineEdit();
+    hb->addWidget(fc_file);;
+
+    hb = new QHBoxLayout();
+    vb->addLayout(hb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
+
+    btn = new QPushButton("Run Extraction");
+    hb->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(runext_btn_slot()));
+
+    btn = new QPushButton(tr("Dump Unified List File"));
+    hb->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dumplist_btn_slot()));
+
+    gb = new QGroupBox(tr("FcArgs"));
+    vb->addWidget(gb);
+    hb = new QHBoxLayout(gb);
+
+    fc_args = new QLineEdit();
+    fc_args->setText(fc_def_string(FcArgs));
+    hb->addWidget(fc_args);
+    connect(fc_args, SIGNAL(textChanged(const QString&)),
+        this, SLOT(args_changed_slot(const QString&)));
+
+    gb = new QGroupBox(tr("Path to FasterCap or FastCap-WR"));
+    vb->addWidget(gb);
+    hb = new QHBoxLayout(gb);
+
+    fc_path = new QLineEdit();;
+    fc_path->setText(fc_def_string(FcPath));
+    hb->addWidget(fc_path);
+    connect(fc_path, SIGNAL(textChanged(const QString&)),
+        this, SLOT(path_changed_slot(const QString&)));
+
+    // Params page.
     //
-    // Run page
-    //
-    GtkWidget *table = gtk_table_new(2, 1, false);
-    gtk_widget_show(table);
-    int row = 0;
+    page = new QWidget();
+    nbook->addTab(page, tr("Parms"));
+    QGridLayout *grid = new QGridLayout(page);
 
-    hbox = gtk_hbox_new(false, 0);
-    gtk_widget_show(hbox);
-
-    button = gtk_check_button_new_with_label("Run in foreground");
-    gtk_widget_set_name(button, "FcForeg");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_btn_proc), (void*)Foreg);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
-    fc_foreg = button;
-
-    button = gtk_check_button_new_with_label("Out to console");
-    gtk_widget_set_name(button, "FcCons");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_btn_proc), (void*)ToCons);
-    gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
-    fc_out = button;
-
-    gtk_table_attach(GTK_TABLE(table), hbox, 0, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
-
-    button = gtk_check_button_new_with_label("Show Numbers");
-    gtk_widget_set_name(button, "ShowNums");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_btn_proc), (void*)ShowNums);
-    fc_shownum = button;
-
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
-    row++;
-
-    GtkWidget *hsep = gtk_hseparator_new();
-    gtk_widget_show(hsep);
-
-    gtk_table_attach(GTK_TABLE(table), hsep, 0, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    row++;
-
-    hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-
-    button = gtk_button_new_with_label("Run File");
-    gtk_widget_set_name(button, "FcRunFile");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_btn_proc), (void*)FcRunFile);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
-
-    GtkWidget *entry = gtk_entry_new();
-    gtk_widget_show(entry);
-    gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
-    fc_file = entry;
-
-    gtk_table_attach(GTK_TABLE(table), hbox, 0, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
-
-    button = gtk_button_new_with_label("Run Extraction");
-    gtk_widget_set_name(button, "FcRun");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_btn_proc), (void*)FcRun);
-
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    button = gtk_button_new_with_label("Dump Unified List File");
-    gtk_widget_set_name(button, "FcDump");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_btn_proc), (void*)FcDump);
-
-    gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
-
-    frame = gtk_frame_new("FcArgs");
-    gtk_widget_show(frame);
-    entry = gtk_entry_new();
-    gtk_widget_show(entry);
-    gtk_container_add(GTK_CONTAINER(frame), entry);
-    gtk_entry_set_text(GTK_ENTRY(entry), fc_def_string(FcArgs));
-    g_signal_connect(G_OBJECT(entry), "changed",
-        G_CALLBACK(fc_change_proc), (void*)FcArgs);
-    fc_args = entry;
-
-    gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
-
-    frame = gtk_frame_new("Path to FasterCap or FastCap-WR");
-    gtk_widget_show(frame);
-    entry = gtk_entry_new();
-    gtk_widget_show(entry);
-    gtk_container_add(GTK_CONTAINER(frame), entry);
-    gtk_entry_set_text(GTK_ENTRY(entry), fc_def_string(FcPath));
-    g_signal_connect(G_OBJECT(entry), "changed",
-        G_CALLBACK(fc_change_proc), (void*)FcPath);
-    fc_path = entry;
-
-    gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
-
-    label = gtk_label_new("Run");
-    gtk_widget_show(label);
-    gtk_notebook_append_page(GTK_NOTEBOOK(nbook), table, label);
-
-    //
-    // Params page
-    //
-    table = gtk_table_new(2, 1, false);
-    gtk_widget_show(table);
-    row = 0;
+    gb = new QGroupBox("FcPlaneBloat");
+    grid->addWidget(gb, 0, 0);
+    hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    hb->setSpacing(2);
 
     int ndgt = CD()->numDigits();
 
-    GtkWidget *sb = sb_fc_plane_bloat.init(FC_PLANE_BLOAT_DEF,
-        FC_PLANE_BLOAT_MIN, FC_PLANE_BLOAT_MAX, ndgt);
-    gtk_widget_set_size_request(sb, 100, -1);
-    sb_fc_plane_bloat.connect_changed(G_CALLBACK(fc_change_proc),
-        (void*)FcPlaneBloat, "FcPlaneBloat");
-    frame = gtk_frame_new("FcPlaneBloat");
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), sb);
+    fc_sb_plane_bloat = new QDoubleSpinBox();
+    fc_sb_plane_bloat->setMinimum(FC_PLANE_BLOAT_MIN);
+    fc_sb_plane_bloat->setMaximum(FC_PLANE_BLOAT_MAX);
+    fc_sb_plane_bloat->setDecimals(ndgt);
+    fc_sb_plane_bloat->setValue(FC_PLANE_BLOAT_DEF);
+    hb->addWidget(fc_sb_plane_bloat);
+    connect(fc_sb_plane_bloat, SIGNAL(valueChanged(double)),
+        this, SLOT(plane_bloat_changed_slot(double)));
 
-    gtk_table_attach(GTK_TABLE(table), frame, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    gb = new QGroupBox("SubstrateThickness");
+    grid->addWidget(gb, 0, 1);
+    hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    hb->setSpacing(2);
 
-    sb = sb_substrate_thickness.init(SUBSTRATE_THICKNESS,
-        SUBSTRATE_THICKNESS_MIN, SUBSTRATE_THICKNESS_MAX, ndgt);
-    gtk_widget_set_size_request(sb, 100, -1);
-    sb_substrate_thickness.connect_changed(G_CALLBACK(fc_change_proc),
-        (void*)SubstrateThickness, "SubstrateThickness");
-    frame = gtk_frame_new("SubstrateThickness");
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), sb);
+    fc_sb_substrate_thickness = new QDoubleSpinBox();
+    fc_sb_substrate_thickness->setMinimum(SUBSTRATE_THICKNESS_MIN);
+    fc_sb_substrate_thickness->setMaximum(SUBSTRATE_THICKNESS_MAX);
+    fc_sb_substrate_thickness->setDecimals(ndgt);
+    fc_sb_substrate_thickness->setValue(SUBSTRATE_THICKNESS);
+    hb->addWidget(fc_sb_substrate_thickness);
+    connect(fc_sb_substrate_thickness, SIGNAL(valueChanged(double)),
+        this, SLOT(subthick_changed_slot(double)));
 
-    gtk_table_attach(GTK_TABLE(table), frame, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
+    gb = new QGroupBox("FcUnits");
+    grid->addWidget(gb, 1, 0);
+    hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    hb->setSpacing(2);
 
-    frame = gtk_frame_new("FcUnits");
-    gtk_widget_show(frame);
-    entry = gtk_combo_box_text_new();
-    gtk_widget_set_name(entry, "FcUnits");
-    gtk_widget_show(entry);
-    for (int i = 0; units_strings[i]; i++) {
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
-            units_strings[i]);
-    }
-    gtk_combo_box_set_active(GTK_COMBO_BOX(entry), FCif()->getUnitsIndex(0));
-    g_signal_connect(G_OBJECT(entry), "changed",
-        G_CALLBACK(fc_units_proc), 0);
-    gtk_container_add(GTK_CONTAINER(frame), entry);
-    fc_units = entry;
+    fc_units = new QComboBox();;
+    hb->addWidget(fc_units);
+    for (int i = 0; unit_t::units_strings[i]; i++)
+        fc_units->addItem(unit_t::units_strings[i]);
+    fc_units->setCurrentIndex(FCif()->getUnitsIndex(0));
+    connect(fc_units, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(units_changed_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(table), frame, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    gb = new QGroupBox("SubstrateEps");
+    grid->addWidget(gb, 1, 1);
+    hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    hb->setSpacing(2);
 
-    sb = sb_substrate_eps.init(SUBSTRATE_EPS, SUBSTRATE_EPS_MIN,
-        SUBSTRATE_EPS_MAX, 3);
-    gtk_widget_set_size_request(sb, 100, -1);
-    sb_substrate_eps.connect_changed(G_CALLBACK(fc_change_proc),
-        (void*)SubstrateEps, "SubstrateEps");
-    frame = gtk_frame_new("SubstrateEps");
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), sb);
+    fc_sb_substrate_eps = new QDoubleSpinBox();
+    fc_sb_substrate_eps->setMinimum(SUBSTRATE_EPS_MIN);
+    fc_sb_substrate_eps->setMaximum(SUBSTRATE_EPS_MAX);
+    fc_sb_substrate_eps->setDecimals(3);
+    fc_sb_substrate_eps->setValue(SUBSTRATE_EPS);
+    hb->addWidget(fc_sb_substrate_eps);
+    connect(fc_sb_substrate_eps, SIGNAL(valueChanged(double)),
+        this, SLOT(subeps_changed_slot(double)));
 
-    gtk_table_attach(GTK_TABLE(table), frame, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
+    vb->addStretch(1);
 
-    hsep = gtk_hseparator_new();
-    gtk_widget_show(hsep);
+    gb = new QGroupBox();
+    vb->addWidget(gb);
+    hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    hb->setSpacing(2);
 
-    gtk_table_attach(GTK_TABLE(table), hsep, 0, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    row++;
+    label = new QLabel(tr("FastCap Panel Refinement"));
+    hb->addWidget(label);
 
-    label = gtk_label_new("FastCap Panel Refinement");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), label);
+    hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    hb->setSpacing(2);
+    vb->addLayout(hb);
 
-    gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
+    fc_enab = new QCheckBox(tr("Enable"));
+    hb->addWidget(fc_enab);
+    connect(fc_enab, SIGNAL(stteChanged(int)),
+        this, SLOT(enable_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label("Enable");
-    gtk_widget_set_name(button, "Enable");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_btn_proc), (void*)Enable);
-    fc_enab = button;
+    gb = new QGroupBox("FcPanelTarget");
+    hb->addWidget(gb);
+    QHBoxLayout *hb1 = new QHBoxLayout(gb);
+    hb1->setMargin(2);
+    hb1->setSpacing(2);
 
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
 
-    sb = sb_fc_panel_target.init(FC_DEF_TARG_PANELS, FC_MIN_TARG_PANELS,
-        FC_MAX_TARG_PANELS, 1);
-    gtk_widget_set_size_request(sb, 100, -1);
-    sb_fc_panel_target.connect_changed(G_CALLBACK(fc_change_proc),
-        (void*)FcPanelTarget, "FcPanelTarget");
-    frame = gtk_frame_new("FcPanelTarget");
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), sb);
+//XXX This is exponential display, can QT do this?
+    fc_sb_panel_target = new QDoubleSpinBox();
+    fc_sb_panel_target->setMinimum(FC_MIN_TARG_PANELS);
+    fc_sb_panel_target->setMaximum(FC_MAX_TARG_PANELS);
+    fc_sb_panel_target->setDecimals(1);
+    fc_sb_panel_target->setValue(FC_DEF_TARG_PANELS);
+    hb1->addWidget(fc_sb_panel_target);
+    connect(fc_sb_panel_target, SIGNAL(valueChanged(double)),
+        this, SLOT(panels_changed_slot(double)));
 
-    gtk_table_attach(GTK_TABLE(table), frame, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    label = gtk_label_new("Params");
-    gtk_widget_show(label);
-    gtk_notebook_append_page(GTK_NOTEBOOK(nbook), table, label);
-
-    //
     // Debug page
+    // This is invisible unless the variable FcDebug is set.
     //
-    table = gtk_table_new(2, 1, false);
-    gtk_widget_show(table);
-    row = 0;
+    page = new QWidget();
+    nbook->addTab(page, tr("Debug"));
+    grid = new QGridLayout(page);
+    nbook->setTabVisible(2, CDvdb()->getVariable(VA_FcDebug));
 
-    button = gtk_check_button_new_with_label("Zoids");
-    gtk_widget_set_name(button, "Zoids");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_zoids = button;
+    fc_dbg_zoids = new QCheckBox("Zoids");
+    grid->addWidget(fc_dbg_zoids, 0, 0);
+    connect(fc_dbg_zoids, SIGNAL(stateChanged(int)),
+        this, SLOT(zoid_dbg_btn_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    fc_dbg_vrbo = new QCheckBox(tr("Verbose Out"));
+    grid->addWidget(fc_dbg_vrbo, 0, 1);
+    connect(fc_dbg_vrbo, SIGNAL(stateChanged(int)),
+        this, SLOT(vrbo_dbg_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label("Verbose Out");
-    gtk_widget_set_name(button, "VrbO");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_vrbo = button;
+    fc_dbg_nm = new QCheckBox(tr("No Merge"));
+    grid->addWidget(fc_dbg_nm, 1, 0);
+    connect(fc_dbg_nm, SIGNAL(stateChanged(int)),
+        this, SLOT(nm_dbg_btn_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    row++;
+    fc_dbg_czbot = new QCheckBox("C zbot");
+    grid->addWidget(fc_dbg_czbot, 2, 0);
+    connect(fc_dbg_czbot, SIGNAL(stateChanged(int)),
+        this, SLOT(czbot_dbg_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label("No Merge");
-    gtk_widget_set_name(button, "NoMerge");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_nm = button;
+    fc_dbg_dzbot = new QCheckBox("D zbot");
+    grid->addWidget(fc_dbg_dzbot, 2, 1);
+    connect(fc_dbg_dzbot, SIGNAL(stateChanged(int)),
+        this, SLOT(dzbot_dbg_btn_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    row++;
+    fc_dbg_cztop = new QCheckBox("C ztop");
+    grid->addWidget(fc_dbg_cztop, 3, 0);
+    connect(fc_dbg_cztop, SIGNAL(stateChanged(int)),
+        this, SLOT(cztop_dbg_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label("C zbot");
-    gtk_widget_set_name(button, "czbot");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_czbot = button;
+    fc_dbg_dztop = new QCheckBox("D ztop");
+    grid->addWidget(fc_dbg_dztop, 3, 1);
+    connect(fc_dbg_dztop, SIGNAL(stateChanged(int)),
+        this, SLOT(dztop_dbg_btn_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    fc_dbg_cyl = new QCheckBox("C yl");
+    grid->addWidget(fc_dbg_cyl, 4, 0);
+    connect(fc_dbg_cyl, SIGNAL(stateChanged(int)),
+        this, SLOT(cyl_dbg_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label("D zbot");
-    gtk_widget_set_name(button, "dzbot");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_dzbot = button;
+    fc_dbg_dyl = new QCheckBox("D yl");
+    grid->addWidget(fc_dbg_dyl, 4, 1);
+    connect(fc_dbg_dyl, SIGNAL(stateChanged(int)),
+        this, SLOT(dyl_dbg_btn_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    row++;
+    fc_dbg_cyu = new QCheckBox("C yu");
+    grid->addWidget(fc_dbg_cyu, 5, 0);
+    connect(fc_dbg_cyu, SIGNAL(stateChanged(int)),
+        this, SLOT(cyu_dbg_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label("C ztop");
-    gtk_widget_set_name(button, "cztop");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_cztop = button;
+    fc_dbg_dyu = new QCheckBox("D yu");
+    grid->addWidget(fc_dbg_dyu, 5, 1);
+    connect(fc_dbg_dyu, SIGNAL(stateChanged(int)),
+        this, SLOT(dyu_dbg_btn_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    fc_dbg_cleft = new QCheckBox("C left");
+    grid->addWidget(fc_dbg_cleft, 6, 0);
+    connect(fc_dbg_cleft, SIGNAL(stateChanged(int)),
+        this, SLOT(cleft_dbg_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label("D ztop");
-    gtk_widget_set_name(button, "dztop");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_dztop = button;
+    fc_dbg_dleft = new QCheckBox("D left");
+    grid->addWidget(fc_dbg_dleft, 6, 1);
+    connect(fc_dbg_dleft, SIGNAL(stateChanged(int)),
+        this, SLOT(dleft_dbg_btn_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    row++;
+    fc_dbg_cright = new QCheckBox("C right");
+    grid->addWidget(fc_dbg_cright, 7, 0);
+    connect(fc_dbg_cright, SIGNAL(stateChanged(int)),
+        this, SLOT(cright_dbg_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label("C yl");
-    gtk_widget_set_name(button, "cyl");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_cyl = button;
+    fc_dbg_dright = new QCheckBox("D right");
+    grid->addWidget(fc_dbg_dright, 7, 1);
+    connect(fc_dbg_dright, SIGNAL(stateChanged(int)),
+        this, SLOT(dright_dbg_btn_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    button = gtk_check_button_new_with_label("D yl");
-    gtk_widget_set_name(button, "dyl");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_dyl = button;
-
-    gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    row++;
-
-    button = gtk_check_button_new_with_label("C yu");
-    gtk_widget_set_name(button, "cyu");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_cyu = button;
-
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    button = gtk_check_button_new_with_label("D yu");
-    gtk_widget_set_name(button, "dyu");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_dyu = button;
-
-    gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    row++;
-
-    button = gtk_check_button_new_with_label("C left");
-    gtk_widget_set_name(button, "cleft");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_cleft = button;
-
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    button = gtk_check_button_new_with_label("D left");
-    gtk_widget_set_name(button, "dleft");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_dleft = button;
-
-    gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    row++;
-
-    button = gtk_check_button_new_with_label("C right");
-    gtk_widget_set_name(button, "cright");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_cright = button;
-
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    button = gtk_check_button_new_with_label("D right");
-    gtk_widget_set_name(button, "dright");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_dbg_btn_proc), 0);
-    fc_dbg_dright = button;
-
-    gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    row++;
-
-
-    label = gtk_label_new("Debug");
-    gtk_widget_show(label);
-    int pg = gtk_notebook_append_page(GTK_NOTEBOOK(nbook), table, label);
-    if (pg >= 0 && !CDvdb()->getVariable(VA_FcDebug))
-        gtk_widget_hide(gtk_notebook_get_nth_page(GTK_NOTEBOOK(nbook), pg));
-
-    //
     // Jobs page
     //
-    table = gtk_table_new(2, 1, false);
-    gtk_widget_show(table);
-    row = 0;
+    page = new QWidget();
+    nbook->addTab(page, tr("Jobs"));
+    vb = new QVBoxLayout(page);
+    vb->setMargin(2);
+    vb->setSpacing(2);
 
-    GtkWidget *contr;
-    text_scrollable_new(&contr, &fc_jobs, FNT_FIXED);
+    fc_jobs = new QTtextEdit();
+    vb->addWidget(fc_jobs);
+    fc_jobs->setReadOnly(true);
+    fc_jobs->setMouseTracking(true);
+    connect(fc_jobs, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(mouse_press_slot(QMouseEvent*)));
 
-    gtk_widget_add_events(fc_jobs, GDK_BUTTON_PRESS_MASK);
-    g_signal_connect(G_OBJECT(fc_jobs), "button-press-event",
-        G_CALLBACK(fc_button_dn), 0);
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED))
+        fc_jobs->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    // The font change pop-up uses this to redraw the widget
-    g_object_set_data(G_OBJECT(fc_jobs), "font_changed",
-        (void*)fc_font_changed);
+    fc_kill = new QPushButton(tr("Abort job"));
+    vb->addWidget(fc_kill);
+    connect(fc_kill, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
 
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(fc_jobs));
-    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
-    gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
-        "paragraph-background", bclr, NULL);
-
-    gtk_widget_set_size_request(fc_jobs, 200, 200);
-
-    gtk_table_attach(GTK_TABLE(table), contr, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
-
-    button = gtk_button_new_with_label("Abort job");
-    gtk_widget_set_name(button, "Abort");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_btn_proc), (void*)Kill);
-    fc_kill = button;
-
-    gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
-
-    label = gtk_label_new("Jobs");
-    gtk_widget_show(label);
-    gtk_notebook_append_page(GTK_NOTEBOOK(nbook), table, label);
-
+    // End of pages.
+    // Status line and Dismiss button.
     //
-    // Status line and Dismiss button
-    //
+    gb = new QGroupBox();
+    vbox->addWidget(gb);
+    hbox = new QHBoxLayout(gb);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
     char *s = FCif()->statusString();
-    fc_label = gtk_label_new(s);
+    fc_label = new QLabel(s);
+    fc_label->setAlignment(Qt::AlignCenter);
     delete [] s;
-    gtk_widget_show(fc_label);
-    gtk_misc_set_alignment(GTK_MISC(fc_label), 0.5, 0.5);
-    gtk_misc_set_padding(GTK_MISC(fc_label), 2, 2);
-    frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), fc_label);
+    hbox->addWidget(fc_label);
 
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(fc_cancel_proc), 0);
-
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    gtk_window_set_focus(GTK_WINDOW(wb_shell), button);
-#endif
+    btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update();
 }
 
 
-cFCdlg::~cFCdlg()
+QTfastCapDlg::~QTfastCapDlg()
 {
     FCif()->showMarks(false);
     instPtr = 0;
@@ -728,12 +532,11 @@ cFCdlg::~cFCdlg()
 
 
 void
-cFCdlg::update()
+QTfastCapDlg::update()
 {
     const char *var, *cur;
     fc_no_reset = true;
 
-/*
     // Run page
     QTdev::SetStatus(fc_foreg, CDvdb()->getVariable(VA_FcForeg));
     QTdev::SetStatus(fc_out, CDvdb()->getVariable(VA_FcMonitor));
@@ -741,72 +544,77 @@ cFCdlg::update()
     var = CDvdb()->getVariable(VA_FcArgs);
     if (!var)
         var = fc_def_string(FcArgs);
-    cur = gtk_entry_get_text(GTK_ENTRY(fc_args));
+    cur = fc_args->text().toLatin1().constData();
     if (!cur)
         cur = "";
     if (strcmp(var, cur))
-        gtk_entry_set_text(GTK_ENTRY(fc_args), var);
+        fc_args->setText(var);
 
     var = CDvdb()->getVariable(VA_FcPath);
     if (!var)
         var = fc_def_string(FcPath);
-    cur = gtk_entry_get_text(GTK_ENTRY(fc_path));
+    cur = fc_path->text().toLatin1().constData();
     if (!cur)
         cur = "";
     if (strcmp(var, cur))
-        gtk_entry_set_text(GTK_ENTRY(fc_path), var);
+        fc_path->setText(var);
 
     // Params page
     var = CDvdb()->getVariable(VA_FcPlaneBloat);
-    if (sb_fc_plane_bloat.is_valid(var))
-        sb_fc_plane_bloat.set_value(atof(var));
+    QString qs(var);
+    int z = 0;
+    if (fc_sb_plane_bloat->validate(qs, z) == QValidator::Acceptable)
+        fc_sb_plane_bloat->setValue(atof(var));
     else {
         if (var)
             CDvdb()->clearVariable(VA_FcPlaneBloat);
-        sb_fc_plane_bloat.set_value(FC_PLANE_BLOAT_DEF);
+        fc_sb_plane_bloat->setValue(FC_PLANE_BLOAT_DEF);
     }
 
     var = CDvdb()->getVariable(VA_SubstrateThickness);
-    if (sb_substrate_thickness.is_valid(var))
-        sb_substrate_thickness.set_value(atof(var));
+    qs = QString(var);
+    if (fc_sb_substrate_thickness->validate(qs, z) == QValidator::Acceptable)
+        fc_sb_substrate_thickness->setValue(atof(var));
     else {
         if (var)
             CDvdb()->clearVariable(VA_SubstrateThickness);
-        sb_substrate_thickness.set_value(SUBSTRATE_THICKNESS);
+        fc_sb_substrate_thickness->setValue(SUBSTRATE_THICKNESS);
     }
 
     var = CDvdb()->getVariable(VA_SubstrateEps);
-    if (sb_substrate_eps.is_valid(var))
-        sb_substrate_eps.set_value(atof(var));
+    qs = QString(var);
+    if (fc_sb_substrate_eps->validate(qs, z) == QValidator::Acceptable)
+        fc_sb_substrate_eps->setValue(atof(var));
     else {
         if (var)
             CDvdb()->clearVariable(VA_SubstrateEps);
-        sb_substrate_eps.set_value(SUBSTRATE_EPS);
+        fc_sb_substrate_eps->setValue(SUBSTRATE_EPS);
     }
 
     var = CDvdb()->getVariable(VA_FcUnits);
     if (!var)
         var = "";
     int uoff = FCif()->getUnitsIndex(var);
-    int ucur = gtk_combo_box_get_active(GTK_COMBO_BOX(fc_units));
+    int ucur = fc_units->currentIndex();
     if (uoff != ucur)
-        gtk_combo_box_set_active(GTK_COMBO_BOX(fc_units), uoff);
+        fc_units->setCurrentIndex(uoff);
 
     static double fcpt_bak;
     var = CDvdb()->getVariable(VA_FcPanelTarget);
-    if (sb_fc_panel_target.is_valid(var)) {
-        sb_fc_panel_target.set_value(atof(var));
-        sb_fc_panel_target.set_sensitive(true);
-        GTKdev::SetStatus(fc_enab, true);
-        fcpt_bak = sb_fc_panel_target.get_value();
+    qs = QString(var);
+    if (fc_sb_panel_target->validate(qs, z) == QValidator::Acceptable) {
+        fc_sb_panel_target->setValue(atof(var));
+        fc_sb_panel_target->setEnabled(true);
+        QTdev::SetStatus(fc_enab, true);
+        fcpt_bak = fc_sb_panel_target->value();
     }
     else {
         if (var)
             CDvdb()->clearVariable(VA_FcPanelTarget);
         if (fcpt_bak > 0.0)
-            sb_fc_panel_target.set_value(fcpt_bak);
-        sb_fc_panel_target.set_sensitive(false);
-        GTKdev::SetStatus(fc_enab, false);
+            fc_sb_panel_target->setValue(fcpt_bak);
+        fc_sb_panel_target->setEnabled(false);
+        QTdev::SetStatus(fc_enab, false);
     }
 
     // Debug page
@@ -833,102 +641,82 @@ cFCdlg::update()
 
     // Jobs page
     update_jobs_list();
-*/
 
     fc_no_reset = false;
 }
 
 
 void
-cFCdlg::update_jobs_list()
+QTfastCapDlg::update_jobs_list()
 {
-/*
     if (!fc_jobs)
         return;
-    GdkColor *c1 = gtk_PopupColor(GRattrColorHl4);
+    QColor c1 = QTbag::PopupColor(GRattrColorHl4);
 
     int pid = get_pid();
     if (pid <= 0)
-        gtk_widget_set_sensitive(fc_kill, false);
+        fc_kill->setEnabled(false);
 
-    double val = text_get_scroll_value(fc_jobs);
-    text_set_chars(fc_jobs, "");
+    double val = fc_jobs->get_scroll_value();
+    fc_jobs->set_chars("");
 
     char *list = FCif()->jobList();
-    if (!list)
-        text_insert_chars_at_point(fc_jobs, c1,
-            "No background jobs running.", -1, -1);
-
-    else
-        text_insert_chars_at_point(fc_jobs, 0, list, -1, -1);
-    text_set_scroll_value(fc_jobs, val);
+    if (!list) {
+        fc_jobs->setTextColor(c1);
+        fc_jobs->set_chars("No background jobs running.");
+    }
+    else {
+        fc_jobs->setTextColor(QColor("black"));
+        fc_jobs->set_chars(list);
+    }
+    fc_jobs->set_scroll_value(val);
     if (pid > 0)
         select_pid(pid);
-    gtk_widget_set_sensitive(fc_kill, get_pid() > 0);
-*/
+    fc_kill->setEnabled(get_pid() > 0);
 }
 
 
 void
-cFCdlg::update_label(const char *s)
+QTfastCapDlg::update_label(const char *s)
 {
-//    gtk_label_set_text(GTK_LABEL(fc_label), s);
+    fc_label->setText(s);
 }
 
 
 void
-cFCdlg::update_numbers()
+QTfastCapDlg::update_numbers()
 {
-//    if (QTdev::GetStatus(fc_shownum))
-//        FCif()->showMarks(true);
+    if (QTdev::GetStatus(fc_shownum))
+        FCif()->showMarks(true);
 }
 
 
 void
-cFCdlg::clear_numbers()
+QTfastCapDlg::clear_numbers()
 {
-//    QTdev::SetStatus(fc_shownum, false);
+    QTdev::SetStatus(fc_shownum, false);
 }
 
 
-// Select the chars in the range, start=end deselects existing.  In
-// GTK-1, selecting gives blue inverse, which turns gray if
-// unselected, retaining an indication for the buttons.  GTK-2
-// doesn't do this automatically so we provide something similar here.
+// Select the chars in the range, start=end deselects existing.
 //
 void
-cFCdlg::select_range(int start, int end)
+QTfastCapDlg::select_range(int start, int end)
 {
-    /*
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(fc_jobs));
-    GtkTextIter istart, iend;
-    if (fc_end != fc_start) {
-        gtk_text_buffer_get_iter_at_offset(textbuf, &istart, fc_start);
-        gtk_text_buffer_get_iter_at_offset(textbuf, &iend, fc_end);
-        gtk_text_buffer_remove_tag_by_name(textbuf, "primary", &istart, &iend);
-    }
-    text_select_range(fc_jobs, start, end);
-    if (end != start) {
-        gtk_text_buffer_get_iter_at_offset(textbuf, &istart, start);
-        gtk_text_buffer_get_iter_at_offset(textbuf, &iend, end);
-        gtk_text_buffer_apply_tag_by_name(textbuf, "primary", &istart, &iend);
-    }
+    fc_jobs->select_range(start, end);
     fc_start = start;
     fc_end = end;
-    */
 }
 
 
 // Return the PID value of the selected line, or -1.
 //
 int
-cFCdlg::get_pid()
+QTfastCapDlg::get_pid()
 {
-    /*
     if (fc_line_selected < 0)
         return (-1);
-    char *string = text_get_chars(fc_jobs, 0, -1);
+    char *string = fc_jobs->get_chars();
     int line = 0;
     for (const char *s = string; *s; s++) {
         if (line == fc_line_selected) {
@@ -943,16 +731,14 @@ cFCdlg::get_pid()
             line++;
     }
     delete [] string;
-    */
     return (-1);
 }
 
 
 void
-cFCdlg::select_pid(int p)
+QTfastCapDlg::select_pid(int p)
 {
-    /*
-    char *string = text_get_chars(fc_jobs, 0, -1);
+    char *string = fc_jobs->get_chars();
     bool nl = true;
     int line = 0;
     const char *cs = 0;
@@ -971,7 +757,7 @@ cFCdlg::select_pid(int p)
                 select_range(cs - string, ce - string);
                 delete [] string;
                 fc_line_selected = line;
-                gtk_widget_set_sensitive(fc_kill, true);
+                fc_kill->setEnabled(true);
                 return;
             }
         }
@@ -981,16 +767,14 @@ cFCdlg::select_pid(int p)
         }
     }
     delete [] string;
-    */
 }
 
-#ifdef notdef
 
 // Static function.
 // Return the default text field text.
 //
 const char *
-cFCdlg::fc_def_string(int id)
+QTfastCapDlg::fc_def_string(int id)
 {
     int ndgt = CD()->numDigits();
     static char tbuf[16];
@@ -1016,386 +800,18 @@ cFCdlg::fc_def_string(int id)
 }
 
 
-// Static function.
 void
-cFCdlg::fc_cancel_proc(GtkWidget*, void*)
+QTfastCapDlg::debug_btn_hdlr(int state, int val)
 {
-    FCif()->PopUpExtIf(0, MODE_OFF);
-}
-
-
-// Static function.
-void
-cFCdlg::fc_help_proc(GtkWidget*, void*)
-{
-    DSPmainWbag(PopUpHelp("fcpanel"))
-}
-
-
-void
-cFCdlg::fc_page_change_proc(GtkWidget*, void*, int, void*)
-{
-}
-
-
-namespace {
-    bool check_num(const char *s, double minv, double maxv)
-    {
-        if (!s || !*s)
-            return (true);
-        double d;
-        if (sscanf(s, "%lf", &d) != 1)
-            return (true);
-        if (d < minv || d > maxv)
-            return (true);
-        return (false);
-    }
-}
-
-
-// Static function.
-void
-cFCdlg::fc_change_proc(GtkWidget *widget, void *arg)
-{
-    if (!Fc || Fc->fc_no_reset)
-        return;
-    const char *s = gtk_entry_get_text(GTK_ENTRY(widget));
-    if (!s)
-        return;
-    int id = (intptr_t)arg;
-    switch (id) {
-    case FcPath:
-        if (!strcmp(s, fc_def_string(id)))
-            CDvdb()->clearVariable(VA_FcPath);
-        else
-            CDvdb()->setVariable(VA_FcPath, s);
-        break;
-    case FcArgs:
-        if (!strcmp(s, fc_def_string(id)))
-            CDvdb()->clearVariable(VA_FcArgs);
-        else
-            CDvdb()->setVariable(VA_FcArgs, s);
-        break;
-    case FcPlaneBloat:
-        if (check_num(s, FC_PLANE_BLOAT_MIN, FC_PLANE_BLOAT_MAX))
-            break;
-        if (!strcmp(s, fc_def_string(id)))
-            CDvdb()->clearVariable(VA_FcPlaneBloat);
-        else
-            CDvdb()->setVariable(VA_FcPlaneBloat, s);
-        break;
-    case SubstrateThickness:
-        if (check_num(s, SUBSTRATE_THICKNESS_MIN, SUBSTRATE_THICKNESS_MAX))
-            break;
-        if (!strcmp(s, fc_def_string(id)))
-            CDvdb()->clearVariable(VA_SubstrateThickness);
-        else
-            CDvdb()->setVariable(VA_SubstrateThickness, s);
-        break;
-    case SubstrateEps:
-        if (check_num(s, SUBSTRATE_EPS_MIN, SUBSTRATE_EPS_MAX))
-            break;
-        if (!strcmp(s, fc_def_string(id)))
-            CDvdb()->clearVariable(VA_SubstrateEps);
-        else
-            CDvdb()->setVariable(VA_SubstrateEps, s);
-        break;
-    case FcPanelTarget:
-        if (check_num(s, FC_MIN_TARG_PANELS, FC_MAX_TARG_PANELS))
-            break;
-        if (!strcmp(s, fc_def_string(id)))
-            CDvdb()->clearVariable(VA_FcPanelTarget);
-        else
-            CDvdb()->setVariable(VA_FcPanelTarget, s);
-        break;
-    }
-}
-
-
-// Static function.
-void
-cFCdlg::fc_units_proc(GtkWidget *caller, void*)
-{
-    int i = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
-    if (i < 0)
-        return;
-    const char *str = FCif()->getUnitsString(units_strings[i]);
-    if (str)
-        CDvdb()->setVariable(VA_FcUnits, str);
-    else
-        CDvdb()->clearVariable(VA_FcUnits);
-}
-
-
-// Static function.
-void
-cFCdlg::fc_p_cb(bool ok, void *arg)
-{
-    char *fname = (char*)arg;
-    if (ok)
-        DSPmainWbag(PopUpFileBrowser(fname))
-    delete [] fname;
-}
-
-
-// Static function.
-void
-cFCdlg::fc_dump_cb(const char *fname, void *client_data)
-{
-    switch ((intptr_t)client_data) {
-    case FcDump:
-        if (FCif()->fcDump(fname)) {
-            if (!Fc)
-                return;
-            const char *fn = lstring::strip_path(fname);
-            char tbuf[256];
-            snprintf(tbuf, sizeof(tbuf),
-                "Input is in file %s.  View file? ", fn);
-            Fc->PopUpAffirm(0, GRloc(LW_UL), tbuf, fc_p_cb,
-                lstring::copy(fname));
-        }
-        break;
-    }
-    if (Fc && Fc->wb_input)
-        Fc->wb_input->popdown();
-}
-
-
-// Static function.
-void
-cFCdlg::fc_btn_proc(GtkWidget *widget, void *arg)
-{
-    if (!Fc)
-        return;
-    switch ((intptr_t)arg) {
-    case FcRun:
-        FCif()->fcRun(0, 0, 0);
-        break;
-    case FcRunFile:
-        {
-            const char *s = gtk_entry_get_text(GTK_ENTRY(Fc->fc_file));
-            char *tok = lstring::getqtok(&s);
-            if (tok) {
-                FCif()->fcRun(tok, 0, 0, true);
-                delete [] tok;
-            }
-            else {
-                Fc->PopUpErr(MODE_ON, "No file name given!");
-                return;
-            }
-        }
-        break;
-    case FcDump:
-        {
-            char *s = FCif()->getFileName(FC_LST_SFX);
-            Fc->PopUpInput(0, s, "Dump", fc_dump_cb, (void*)FcDump);
-            delete [] s;
-        }
-        break;
-    case ShowNums:
-        FCif()->showMarks(GTKdev::GetStatus(widget));
-        break;
-    case Foreg:
-        if (GTKdev::GetStatus(widget))
-            CDvdb()->setVariable(VA_FcForeg, "");
-        else
-            CDvdb()->clearVariable(VA_FcForeg);
-        break;
-    case ToCons:
-        if (GTKdev::GetStatus(widget))
-            CDvdb()->setVariable(VA_FcMonitor, "");
-        else
-            CDvdb()->clearVariable(VA_FcMonitor);
-        break;
-    case Enable:
-        if (GTKdev::GetStatus(widget)) {
-            const char *s = Fc->sb_fc_panel_target.get_string();
-            if (!check_num(s, FC_MIN_TARG_PANELS, FC_MAX_TARG_PANELS))
-                CDvdb()->setVariable(VA_FcPanelTarget, s);
-            else {
-                char tbf[32];
-                snprintf(tbf, sizeof(tbf), "%.1e", FC_DEF_TARG_PANELS);
-                CDvdb()->setVariable(VA_FcPanelTarget, tbf);
-            }
-            Fc->sb_fc_panel_target.set_sensitive(true);
-        }
-        else {
-            CDvdb()->clearVariable(VA_FcPanelTarget);
-            Fc->sb_fc_panel_target.set_sensitive(false);
-        }
-        break;
-    case Kill:
-        {
-            int pid = Fc->get_pid();
-            if (pid > 0)
-                FCif()->killProcess(pid);
-        }
-    }
-}
-
-
-// Static function.
-int
-cFCdlg::fc_button_dn(GtkWidget *caller, GdkEvent *event, void*)
-{
-    if (!Fc)
-        return (true);
-    if (event->type != GDK_BUTTON_PRESS)
-        return (true);
-
-    char *string = text_get_chars(caller, 0, -1);
-    int x = (int)event->button.x;
-    int y = (int)event->button.y;
-    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
-        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
-    GtkTextIter ihere, iline;
-    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(caller), &ihere, x, y);
-    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
-    char *line_start = string + gtk_text_iter_get_offset(&iline);
-    x = gtk_text_iter_get_offset(&ihere) - gtk_text_iter_get_offset(&iline);
-    y = gtk_text_iter_get_line(&iline);
-
-    // line_start points to start of selected line, or 0
-    if (line_start && *line_start != '\n') {
-
-        int start = line_start - string;
-        int end = start;
-        while (string[end] && string[end] != '\n')
-            end++;
-
-        Fc->fc_line_selected = y;
-        Fc->select_range(start, end);
-        delete [] string;
-        gtk_widget_set_sensitive(Fc->fc_kill, Fc->get_pid() > 0);
-        return (true);
-    }
-    Fc->fc_line_selected = -1;
-    delete [] string;
-    Fc->select_range(0, 0);
-    gtk_widget_set_sensitive(Fc->fc_kill, false);
-    return (true);
-}
-
-
-// Static function.
-void
-cFCdlg::fc_font_changed()
-{
-    if (Fc)
-        Fc->update_jobs_list();
-}
-
-
-// Static function.
-void
-cFCdlg::fc_dbg_btn_proc(GtkWidget *widget, void*)
-{
-    if (!Fc)
-        return;
-    const char *name = gtk_widget_get_name(widget);
-    if (!name)
-        return;
-    bool state = GTKdev::GetStatus(widget);
-        
-    if (!strcmp(name, "NoMerge")) {
-        if (state)
-            CDvdb()->setVariable(VA_FcNoMerge, "");
-        else
-            CDvdb()->clearVariable(VA_FcNoMerge);
-        return;
-    }
-    if (!strcmp(name, "Zoids")) {
-        if (state)
-            CDvdb()->setVariable(VA_FcZoids, "");
-        else
-            CDvdb()->clearVariable(VA_FcZoids);
-        return;
-    }
-    if (!strcmp(name, "VrbO")) {
-        if (state)
-            CDvdb()->setVariable(VA_FcVerboseOut, "");
-        else
-            CDvdb()->clearVariable(VA_FcVerboseOut);
-        return;
-    }
     unsigned int mrgflgs = MRG_ALL;
     const char *s = CDvdb()->getVariable(VA_FcMergeFlags);
     if (s)
         mrgflgs = Tech()->GetInt(s) & MRG_ALL;
     unsigned bkflgs = mrgflgs;
-
-    if (!strcmp(name, "czbot")) {
-        if (state)
-            mrgflgs |= MRG_C_ZBOT;
-        else
-            mrgflgs &= ~MRG_C_ZBOT;
-    }
-    else if (!strcmp(name, "dzbot")) {
-        if (state)
-            mrgflgs |= MRG_D_ZBOT;
-        else
-            mrgflgs &= ~MRG_D_ZBOT;
-    }
-    else if (!strcmp(name, "cztop")) {
-        if (state)
-            mrgflgs |= MRG_C_ZTOP;
-        else
-            mrgflgs &= ~MRG_C_ZTOP;
-    }
-    else if (!strcmp(name, "dztop")) {
-        if (state)
-            mrgflgs |= MRG_D_ZTOP;
-        else
-            mrgflgs &= ~MRG_D_ZTOP;
-    }
-    else if (!strcmp(name, "cyl")) {
-        if (state)
-            mrgflgs |= MRG_C_YL;
-        else
-            mrgflgs &= ~MRG_C_YL;
-    }
-    else if (!strcmp(name, "dyl")) {
-        if (state)
-            mrgflgs |= MRG_D_YL;
-        else
-            mrgflgs &= ~MRG_D_YL;
-    }
-    else if (!strcmp(name, "cyu")) {
-        if (state)
-            mrgflgs |= MRG_C_YU;
-        else
-            mrgflgs &= ~MRG_C_YU;
-    }
-    else if (!strcmp(name, "dyu")) {
-        if (state)
-            mrgflgs |= MRG_D_YU;
-        else
-            mrgflgs &= ~MRG_D_YU;
-    }
-    else if (!strcmp(name, "cleft")) {
-        if (state)
-            mrgflgs |= MRG_C_LEFT;
-        else
-            mrgflgs &= ~MRG_C_LEFT;
-    }
-    else if (!strcmp(name, "dleft")) {
-        if (state)
-            mrgflgs |= MRG_D_LEFT;
-        else
-            mrgflgs &= ~MRG_D_LEFT;
-    }
-    else if (!strcmp(name, "cright")) {
-        if (state)
-            mrgflgs |= MRG_C_RIGHT;
-        else
-            mrgflgs &= ~MRG_C_RIGHT;
-    }
-    else if (!strcmp(name, "dright")) {
-        if (state)
-            mrgflgs |= MRG_D_RIGHT;
-        else
-            mrgflgs &= ~MRG_D_RIGHT;
-    }
+    if (state)
+        mrgflgs |= val;
+    else
+        mrgflgs &= ~val;
     if (mrgflgs != bkflgs) {
         if (mrgflgs == MRG_ALL)
             CDvdb()->clearVariable(VA_FcMergeFlags);
@@ -1406,4 +822,419 @@ cFCdlg::fc_dbg_btn_proc(GtkWidget *widget, void*)
         }
     }
 }
-#endif
+
+
+// Static function.
+void
+QTfastCapDlg::fc_p_cb(bool ok, void *arg)
+{
+    char *fname = (char*)arg;
+    if (ok)
+        DSPmainWbag(PopUpFileBrowser(fname))
+    delete [] fname;
+}
+
+
+// Static function.
+void
+QTfastCapDlg::fc_dump_cb(const char *fname, void *client_data)
+{
+    switch ((intptr_t)client_data) {
+    case FcDump:
+        if (FCif()->fcDump(fname)) {
+            if (!QTfastCapDlg::self())
+                return;
+            const char *fn = lstring::strip_path(fname);
+            char tbuf[256];
+            snprintf(tbuf, sizeof(tbuf),
+                "Input is in file %s.  View file? ", fn);
+            QTfastCapDlg::self()->PopUpAffirm(0, GRloc(LW_UL), tbuf, fc_p_cb,
+                lstring::copy(fname));
+        }
+        break;
+    }
+    if (QTfastCapDlg::self() && QTfastCapDlg::self()->wb_input)
+        QTfastCapDlg::self()->wb_input->popdown();
+}
+
+
+void
+QTfastCapDlg::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("fcpanel"))
+}
+
+
+void
+QTfastCapDlg::page_changed_slot(int)
+{
+}
+
+
+void
+QTfastCapDlg::foreg_btn_slot(int state)
+{
+    if (state)
+        CDvdb()->setVariable(VA_FcForeg, "");
+    else
+        CDvdb()->clearVariable(VA_FcForeg);
+}
+
+
+void
+QTfastCapDlg::console_btn_slot(int state)
+{
+    if (state)
+        CDvdb()->setVariable(VA_FcMonitor, "");
+    else
+        CDvdb()->clearVariable(VA_FcMonitor);
+}
+
+
+void
+QTfastCapDlg::shownum_btn_slot(int state)
+{
+    FCif()->showMarks(state);
+}
+
+
+void
+QTfastCapDlg::runfile_btn_slot()
+{
+    const char *s = fc_file->text().toLatin1().constData();
+    char *tok = lstring::getqtok(&s);
+    if (tok) {
+        FCif()->fcRun(tok, 0, 0, true);
+        delete [] tok;
+    }
+    else
+        PopUpErr(MODE_ON, "No file name given!");
+}
+
+
+void
+QTfastCapDlg::runext_btn_slot()
+{
+    FCif()->fcRun(0, 0, 0);
+}
+
+
+void
+QTfastCapDlg::dumplist_btn_slot()
+{
+    char *s = FCif()->getFileName(FC_LST_SFX);
+    PopUpInput(0, s, "Dump", fc_dump_cb, (void*)FcDump);
+    delete [] s;
+}
+
+
+void
+QTfastCapDlg::args_changed_slot(const QString &qs)
+{
+    if (fc_no_reset)
+        return;
+    if (!strcmp(qs.toLatin1().constData(), fc_def_string(FcArgs)))
+        CDvdb()->clearVariable(VA_FcArgs);
+    else
+        CDvdb()->setVariable(VA_FcArgs, qs.toLatin1().constData());
+}
+
+
+void
+QTfastCapDlg::path_changed_slot(const QString &qs)
+{
+    if (fc_no_reset)
+        return;
+    if (!strcmp(qs.toLatin1().constData(), fc_def_string(FcPath)))
+        CDvdb()->clearVariable(VA_FcPath);
+    else
+        CDvdb()->setVariable(VA_FcPath, qs.toLatin1().constData());
+}
+
+
+void
+QTfastCapDlg::plane_bloat_changed_slot(double)
+{
+    if (fc_no_reset)
+        return;
+    if (fc_sb_plane_bloat->cleanText() == fc_def_string(FcPlaneBloat))
+        CDvdb()->clearVariable(VA_FcPlaneBloat);
+    else {
+        CDvdb()->setVariable(VA_FcPlaneBloat,
+            fc_sb_plane_bloat->cleanText().toLatin1().constData());
+    }
+}
+
+
+void
+QTfastCapDlg::subthick_changed_slot(double)
+{
+    if (fc_no_reset)
+        return;
+    if (fc_sb_substrate_thickness->cleanText() ==
+            fc_def_string(SubstrateThickness))
+        CDvdb()->clearVariable(VA_SubstrateThickness);
+    else {
+        CDvdb()->setVariable(VA_SubstrateThickness,
+            fc_sb_substrate_thickness->cleanText().toLatin1().constData());
+    }
+}
+
+
+void
+QTfastCapDlg::units_changed_slot(int i)
+{
+    const char *str = FCif()->getUnitsString(unit_t::units_strings[i]);
+    if (str)
+        CDvdb()->setVariable(VA_FcUnits, str);
+    else
+        CDvdb()->clearVariable(VA_FcUnits);
+}
+
+
+void
+QTfastCapDlg::subeps_changed_slot(double)
+{
+    if (fc_no_reset)
+        return;
+    if (fc_sb_substrate_eps->cleanText() == fc_def_string(SubstrateEps))
+        CDvdb()->clearVariable(VA_SubstrateEps);
+    else {
+        CDvdb()->setVariable(VA_SubstrateEps,
+            fc_sb_substrate_eps->cleanText().toLatin1().constData());
+    }
+}
+
+
+void
+QTfastCapDlg::enable_btn_slot(int state)
+{
+    if (state) {
+        QString qs = fc_sb_panel_target->cleanText();
+        int z = 0;
+        if (fc_sb_panel_target->validate(qs, z) == QValidator::Acceptable)
+            CDvdb()->setVariable(VA_FcPanelTarget, qs.toLatin1().constData());
+        else {
+            char tbf[32];
+            snprintf(tbf, sizeof(tbf), "%.1e", FC_DEF_TARG_PANELS);
+            CDvdb()->setVariable(VA_FcPanelTarget, tbf);
+        }
+        fc_sb_panel_target->setEnabled(true);
+    }
+    else {
+        CDvdb()->clearVariable(VA_FcPanelTarget);
+        fc_sb_panel_target->setEnabled(false);
+    }
+}
+
+
+void
+QTfastCapDlg::panels_changed_slot(double)
+{
+    if (fc_no_reset)
+        return;
+    if (fc_sb_panel_target->cleanText() == fc_def_string(FcPanelTarget))
+        CDvdb()->clearVariable(VA_FcPanelTarget);
+    else {
+        CDvdb()->setVariable(VA_FcPanelTarget,
+            fc_sb_panel_target->cleanText().toLatin1().constData());
+    }
+}
+
+
+void
+QTfastCapDlg::abort_btn_slot()
+{
+    int pid = get_pid();
+    if (pid > 0)
+        FCif()->killProcess(pid);
+}
+
+
+void
+QTfastCapDlg::dismiss_btn_slot()
+{
+    FCif()->PopUpExtIf(0, MODE_OFF);
+}
+
+
+void
+QTfastCapDlg::zoid_dbg_btn_slot(int state)
+{
+    if (state)
+        CDvdb()->setVariable(VA_FcZoids, "");
+    else
+        CDvdb()->clearVariable(VA_FcZoids);
+}
+
+
+void
+QTfastCapDlg::vrbo_dbg_btn_slot(int state)
+{
+    if (state)
+        CDvdb()->setVariable(VA_FcVerboseOut, "");
+    else
+        CDvdb()->clearVariable(VA_FcVerboseOut);
+}
+
+
+void
+QTfastCapDlg::nm_dbg_btn_slot(int state)
+{
+    if (state)
+        CDvdb()->setVariable(VA_FcNoMerge, "");
+    else
+        CDvdb()->clearVariable(VA_FcNoMerge);
+}
+
+
+void
+QTfastCapDlg::czbot_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_C_ZBOT);
+}
+
+
+void
+QTfastCapDlg::dzbot_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_D_ZBOT);
+}
+
+
+void
+QTfastCapDlg::cztop_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_C_ZTOP);
+}
+
+
+void
+QTfastCapDlg::dztop_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_D_ZTOP);
+}
+
+
+void
+QTfastCapDlg::cyl_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_C_YL);
+}
+
+
+void
+QTfastCapDlg::dyl_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_D_YL);
+}
+
+
+void
+QTfastCapDlg::cyu_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_C_YU);
+}
+
+
+void
+QTfastCapDlg::dyu_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_D_YU);
+}
+
+
+void
+QTfastCapDlg::cleft_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_C_LEFT);
+}
+
+
+void
+QTfastCapDlg::dleft_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_D_LEFT);
+}
+
+
+void
+QTfastCapDlg::cright_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_C_RIGHT);
+}
+
+
+void
+QTfastCapDlg::dright_dbg_btn_slot(int state)
+{
+    debug_btn_hdlr(state, MRG_D_RIGHT);
+}
+
+
+void
+QTfastCapDlg::mouse_press_slot(QMouseEvent *ev)
+{
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    const char *str = lstring::copy(
+        (const char*)fc_jobs->toPlainText().toLatin1());
+    int x = ev->x();
+    int y = ev->y();
+    QTextCursor cur = fc_jobs->cursorForPosition(QPoint(x, y));
+    int pos = cur.position();
+    
+    if (isspace(str[pos])) {
+        // Clicked on white space.
+        delete [] str;
+        return;
+    }
+
+    const char *lineptr = str;
+    int line = 0;
+    for (int i = 0; i <= pos; i++) {
+        if (str[i] == '\n') {
+            if (i == pos) {
+                // Clicked to right of line.
+                delete [] str;
+                return;
+            }
+            line++;
+            lineptr = str + i+1;
+        }
+    }
+    if (lineptr && *lineptr != '\n') {
+
+        int start = lineptr - str;
+        int end = start;
+        while (str[end] && str[end] != '\n')
+            end++;
+
+        fc_line_selected = line;
+        select_range(start, end);
+        delete [] str;
+        fc_kill->setEnabled(get_pid() > 0);
+    }
+
+    fc_line_selected = -1;
+    delete [] str;
+    select_range(0, 0);
+    fc_kill->setEnabled(false);
+}
+
+
+void
+QTfastCapDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_FIXED))
+            fc_jobs->setFont(*fnt);
+        update_jobs_list();
+    }
+}
+

@@ -1626,9 +1626,10 @@ namespace ginterf
         virtual int NameColor(const char*)                      = 0;
         virtual bool NameToRGB(const char*, int*)               = 0;
         virtual void RGBofPixel(int, int*, int*, int*)          = 0;
-
         virtual int AddTimer(int, int(*)(void*), void*)         = 0;
         virtual void RemoveTimer(int)                           = 0;
+        virtual int AddIdleProc(int(*)(void*), void*)           = 0;
+        virtual void RemoveIdleProc(int)                        = 0;
         virtual GRsigintHdlr RegisterSigintHdlr(GRsigintHdlr)   = 0;
         virtual bool CheckForEvents()                           = 0;
         virtual int Input(int, int, int *k)                     = 0;
@@ -1636,8 +1637,6 @@ namespace ginterf
         virtual int LoopLevel()                                 = 0;
         virtual void BreakLoop()                                = 0;
         virtual void HCmessage(const char*)                     = 0;
-//XXX ridme
-        virtual int UseSHM()                                    = 0;
     };
 }
 
@@ -1848,13 +1847,6 @@ namespace ginterf
 
         GRscreenDev *MainDev()  { return (pkg_main_dev); }
         GRdev *CurDev()         { return (pkg_cur_dev); }
-
-        int UseSHM()
-        {
-            if (pkg_main_dev)
-                return (pkg_main_dev->UseSHM());
-            return (0);
-        }
 
     private:
         void RegisterDevice(GRdev*);

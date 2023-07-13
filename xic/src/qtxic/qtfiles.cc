@@ -50,23 +50,37 @@
 #include "errorlog.h"
 #include "qtinterf/qtmcol.h"
 #include "qtinterf/qtfont.h"
+#include "qtinterf/qtfile.h"
+#include "qtinterf/qttextw.h"
+#include "miscutil/pathlist.h"
+#include <sys/stat.h>
+
+#include <QLayout>
+#include <QStackedWidget>
+#include <QLabel>
+#include <QGroupBox>
+#include <QComboBox>
+#include <QPushButton>
+#include <QMouseEvent>
+#include <QResizeEvent>
+#include <QDrag>
+#include <QMimeData>
 
 
 //----------------------------------------------------------------------
-//  Files Popup
+//  Files Listing Popup
 //
 // Help system keywords used:
 //  filespanel
 
 
-/*
 // Static function.
 //
 char *
 QTmainwin::get_file_selection()
 {
-    if (cFilesList::self())
-        return (cFilesList::self()->get_selection());
+    if (QTfilesListDlg::self())
+        return (QTfilesListDlg::self()->get_selection());
     return (0);
 }
 
@@ -77,9 +91,8 @@ QTmainwin::get_file_selection()
 void
 QTmainwin::files_panic()
 {
-    files_bag::panic();
+    QTfilesListDlg::panic();
 }
-*/
 // End of QTmainwin functions.
 
 
@@ -87,52 +100,51 @@ QTmainwin::files_panic()
 // cursor seems to never appear with the standard logic.  In order to
 // make the busy cursor appear, had to use a timeout as below.
 
+/*
 namespace {
     int msw_timeout(void *caller)
     {
-        new cFilesList(caller);
+        new QTfilesListDlg(caller);
 
-        QTdev::self()->SetPopupLocation(GRloc(), cFilesList::self(),
+        QTdev::self()->SetPopupLocation(GRloc(), QTfilesListDlg::self(),
             QTmainwin::self()->Viewport());
-        cFilesList::self()->show();
+        QTfilesListDlg::self()->show();
 
         QTpkg::self()->SetWorking(false);
         return (0);
     }
 }
+*/
 
 
 void
 cConvert::PopUpFiles(GRobject caller, ShowMode mode)
 {
-    static bool lockout;
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (cFilesList::self())
-            cFilesList::self()->deleteLater();
+        if (QTfilesListDlg::self())
+            QTfilesListDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (cFilesList::self())
-            cFilesList::self()->update();
+        if (QTfilesListDlg::self())
+            QTfilesListDlg::self()->update();
         return;
     }
 
-    if (cFilesList::self())
+    if (QTfilesListDlg::self())
         return;
 
-    // This is needed to reliable show the busy cursor.
-    QTpkg::self()->SetWorking(true);
-    QTpkg::self()->RegisterTimeoutProc(500, msw_timeout, caller);
+    // This is needed to reliably show the busy cursor.
+//    QTpkg::self()->SetWorking(true);
+//    QTpkg::self()->RegisterTimeoutProc(500, msw_timeout, caller);
 
-    /****
-    new cFilesList(caller);
+    new QTfilesListDlg(caller);
 
-    QTdev::self()->SetPopupLocation(GRloc(), cFilesList::self(),
+    QTdev::self()->SetPopupLocation(GRloc(), QTfilesListDlg::self(),
         QTmainwin::self()->Viewport());
-    cFilesList::self()->show();
-    ****/
+    QTfilesListDlg::self()->show();
 }
 // End of cConvert functions.
 
@@ -148,8 +160,8 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
 #define FB_HELP     "Help"
 
 
-const char *cFilesList::nofiles_msg = "  no recognized files found\n";
-const char *cFilesList::files_msg =
+const char *QTfilesListDlg::nofiles_msg = "  no recognized files found\n";
+const char *QTfilesListDlg::files_msg =
     "Files from search path.\nTypes: B CGX, C CIF, "
 #ifdef HANDLE_SCED
     "G GDSII, L library, O OASIS, S JSPICE3 (sced), X Xic";
@@ -157,38 +169,110 @@ const char *cFilesList::files_msg =
     "G GDSII, L library, O OASIS, X Xic";
 #endif
 
-cFilesList *cFilesList::instPtr;
+// The directories in the path are monitored for changes.
+//
+sPathList *QTfilesListDlg::f_path_list;
+char *QTfilesListDlg::f_cwd;
+int QTfilesListDlg::f_timer_tag;
+QTfilesListDlg *QTfilesListDlg::instPtr;
 
-cFilesList::cFilesList(GRobject c) :
-    files_bag(QTmainwin::self(), 0, 0, files_msg)
-        // fl_action_proc, fl_btn_proc,
-        //fl_listing, fl_down_cb, fl_desel)
+QTfilesListDlg::QTfilesListDlg(GRobject c)
 {
     fl_caller = c;
+    instPtr = this;
+
+    for (int i = 0; i < MAX_BTNS; i++)
+        f_buttons[i] = 0;
+    f_button_box = 0;
+    f_menu = 0;
+    f_notebook = 0;
+    f_start = 0;
+    f_end = 0;
+    f_drag_start = false;
+    f_drag_btn = 0;
+    f_drag_x = 0;
+    f_drag_y = 0;
+    f_directory = 0;
+
     fl_selection = 0;
     fl_contlib = 0;
     fl_content_pop = 0;
     fl_chd = 0;
     fl_noupdate = 0;
 
-    update();
+//    f_btn_hdlr = btn_hdlr;
+//    f_destroy = destroy;
+//    f_desel = desel;
 
-    /*
-    if (fl_caller) {
-        g_signal_connect_after(G_OBJECT(fl_caller), "toggled",
-            G_CALLBACK(fl_down_cb), this);
+    setWindowTitle(tr("Path Files Listing"));
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    // Create the layout for the button row.
+    f_button_box = new QHBoxLayout();
+    vbox->addLayout(f_button_box);
+    f_button_box->setMargin(0);
+    f_button_box->setSpacing(2);
+
+    // title label
+    //
+    QGroupBox *gb = new QGroupBox();
+    vbox->addWidget(gb);
+    QHBoxLayout *hbox = new QHBoxLayout(gb);
+    hbox->setMargin(2);
+    hbox->setSpacing(2);
+
+    QLabel *label = new QLabel(tr(files_msg));
+    label->setAlignment(Qt::AlignCenter);
+    hbox->addWidget(label);
+
+    int fw, fh;
+    if (!QTfont::stringBounds(0, FNT_FIXED, &fw, &fh))
+        fw = 8;
+    int cols = (sizeHint().width()-8)/fw - 2;
+    if (!f_path_list) {
+        f_path_list = fl_listing(cols);
+        f_monitor_setup();
     }
-    */
+    else if (cols != f_path_list->columns()) {
+        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
+            dl->set_dirty(true);
+        f_path_list->set_columns(cols);
+        f_idle_proc(0);
+    }
+
+    f_menu = new QComboBox();
+    vbox->addWidget(f_menu);
+
+    // creates notebook
+    init_viewing_area();
+    vbox->addWidget(f_notebook);
+
+    // dismiss button
+    //
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+
+    update();
 }
 
 
-cFilesList::~cFilesList()
+QTfilesListDlg::~QTfilesListDlg()
 {
-    if (fl_caller) {
-//        g_signal_handlers_disconnect_by_func(G_OBJECT(fl_caller),
-//            (gpointer)fl_down_cb, this);
-        QTdev::Deselect(fl_caller);
+printf("here3\n");
+    instPtr = 0;
+    if (f_path_list) {
+        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
+            dl->set_dataptr(0);
     }
+    delete [] f_directory;
+
+    if (fl_caller)
+        QTdev::Deselect(fl_caller);
     if (fl_content_pop)
         fl_content_pop->popdown();
     delete [] fl_selection;
@@ -198,7 +282,7 @@ cFilesList::~cFilesList()
 
 
 void
-cFilesList::update()
+QTfilesListDlg::update()
 {
     if (fl_noupdate) {
         fl_noupdate++;
@@ -231,15 +315,57 @@ cFilesList::update()
         btns[3] = FB_HELP;
         nbtns = 4;
     }
-//    files_bag::update(FIO()->PGetPath(), btns, nbtns, fl_action_proc);
-//    fl_desel(0);
+    update(FIO()->PGetPath(), btns, nbtns);
+    fl_desel(0);
 }
 
 
-// This overrides files_bag::get_selection().
+// Update the directory listings.
+//
+void
+QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
+{
+    if (path && f_path_list) {
+        stringlist *s0 = 0, *se = 0;
+        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
+            if (!s0)
+                s0 = se = new stringlist(lstring::copy(dl->dirname()), 0);
+            else {
+                se->next = new stringlist(lstring::copy(dl->dirname()), 0);
+                se = se->next;
+            }
+        }
+        if (f_check_path_and_update(path))
+            relist(s0);
+        stringlist::destroy(s0);
+    }
+
+    if (numbuttons > 0 && buttons) {
+        if (numbuttons > MAX_BTNS)
+            numbuttons = MAX_BTNS;
+
+        for (int i = 0; f_buttons[i]; i++) {
+            f_button_box->removeWidget(f_buttons[i]);
+            f_buttons[i]->deleteLater();
+            f_buttons[i] = 0;
+        }
+        for (int i = 0; i < numbuttons; i++) {
+            QPushButton *btn = new QPushButton(tr(buttons[i]));
+            f_button_box->addWidget(btn);
+            btn->setCheckable(true);
+            f_buttons[i] = btn;
+            connect(btn, SIGNAL(toggled(bool)),
+                this, SLOT(button_slot(bool)));
+        }
+    }
+}
+
+
+// Return the full path name of the selected file, or 0 if no
+// selection.
 //
 char *
-cFilesList::get_selection()
+QTfilesListDlg::get_selection()
 {
     if (fl_contlib && fl_content_pop) {
         char *sel = fl_content_pop->get_selection();
@@ -253,184 +379,315 @@ cFilesList::get_selection()
             return (tbuf);
         }
     }
-//    if (fl_selection && text_has_selection(wb_textarea))
-//        return (lstring::copy(fl_selection));
+
+    if (!f_directory || !*f_directory)
+        return (0);
+    char *s = wb_textarea->get_selection();
+    if (s) {
+        if (*s) {
+            sLstr lstr;
+            lstr.add(f_directory);
+            lstr.add_c('/');
+            lstr.add(s);
+            delete [] s;
+            return (lstr.string_trim());
+        }
+        delete [] s;
+    }
     return (0);
 }
 
 
-#ifdef notdef
+// Initialize the notebook of file listings.
+//
 void
-cFilesList::action_hdlr(GtkWidget *caller)
+QTfilesListDlg::init_viewing_area()
 {
-    if (!wb_textarea) {
-        GTKdev::Deselect(caller);
-        return;
+    if (f_path_list) {
+        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
+            dl->set_dataptr(0);
     }
-    const char *wname = gtk_widget_get_name(caller);
-    if (!wname) {
-        GTKdev::Deselect(caller);
+    if (!f_notebook)
+        f_notebook = new QStackedWidget();
+    if (!f_path_list)
         return;
-    }
 
-    // Note:  during open and place, callbacks to update are deferred. 
-    // These are generated when the path changes when reading native
-    // cells.
+    int init_page = 0;
+    int maxchars = 120;
+    if (f_path_list && f_directory) {
+        int i = 0;
+        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
+            if (!strcmp(f_directory, dl->dirname())) {
+                init_page = i;
+                break;
+            }
+            i++;
+        }
+    }
+    delete [] f_directory;
+    f_directory = 0;
+
+    char buf[256];
+    int i = 0;
+    for (sDirList *dl = f_path_list->dirs(); dl; i++, dl = dl->next()) {
+        if (i == init_page)
+            f_directory = lstring::copy(dl->dirname());
+
+        int len = strlen(dl->dirname());
+        if (len <= maxchars)
+            strcpy(buf, dl->dirname());
+        else {
+            int partchars = maxchars/2 - 2;
+            strncpy(buf, dl->dirname(), partchars);
+            strcpy(buf + partchars, " ... ");
+            strcat(buf, dl->dirname() + len - partchars);
+        }
+        f_menu->addItem(buf);
+
+        create_page(dl);
+        QTtextEdit *nbtext = (QTtextEdit*)dl->dataptr();
+        if (nbtext) {
+            f_notebook->addWidget(nbtext);
+        }
+        if (i == init_page)
+            wb_textarea = nbtext;
+    }
+    connect(f_notebook, SIGNAL(currentChanged(int)),
+        this, SLOT(page_change_slot(int)));
+
+    f_notebook->setCurrentIndex(init_page);
+    f_menu->setCurrentIndex(init_page);
+    connect(f_menu, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(menu_change_slot(int)));
+}
+
+
+namespace {
+    // Return the index of str, -1 if not in list.
     //
-    if (!strcmp(wname, FB_OPEN)) {
-        GTKdev::Deselect(caller);
-        if (fl_selection) {
-            fl_noupdate = 1;
-            EV()->InitCallback();
-            XM()->EditCell(fl_selection, false, FIO()->DefReadPrms(), 0, 0);
-            if (FL()) {
-                if (fl_noupdate > 1) {
-                    files_bag::update(FIO()->PGetPath(), 0, 0, 0);
-                    fl_desel(0);
-                }
-                fl_noupdate = 0;
+    int findstr(const char *str, const char **ary, int len)
+    {
+        if (str && ary && len > 0) {
+            for (int i = 0; i < len; i++) {
+                if (ary[i] && !strcmp(str, ary[i]))
+                    return (i);
             }
         }
-    }
-    else if (!strcmp(wname, FB_PLACE)) {
-        GTKdev::Deselect(caller);
-        if (fl_selection) {
-            fl_noupdate = 1;
-            EV()->InitCallback();
-            EditIf()->addMaster(fl_selection, 0, 0);
-            if (FL()) {
-                if (fl_noupdate > 1) {
-                    files_bag::update(FIO()->PGetPath(), 0, 0, 0);
-                    fl_desel(0);
-                }
-                fl_noupdate = 0;
-            }
-        }
-    }
-    else if (!strcmp(wname, FB_CONTENT)) {
-        GTKdev::Deselect(caller);
-        show_content();
-    }
-    else if (!strcmp(wname, FB_HELP)) {
-        GTKdev::Deselect(caller);
-        DSPmainWbag(PopUpHelp("filespanel"))
+        return (-1);
     }
 }
 
 
-bool
-cFilesList::button_hdlr(GtkWidget *caller, GdkEvent *event)
+// Reset the notebook listings.  The f_path_list has already been set. 
+// The argument is the old path list, which still represents the state
+// of the menu and pages.
+//
+void
+QTfilesListDlg::relist(stringlist *oldlist)
 {
-    if (event->type != GDK_BUTTON_PRESS)
-        return (true);
+    if (!oldlist) {
+        // This is the original way of doing things, just rebuild
+        // everything.
 
-    set_sensitive(FB_OPEN, false);
-    set_sensitive(FB_PLACE, false);
-    set_sensitive(FB_CONTENT, false);
-
-    char *string = text_get_chars(caller, 0, -1);
-    if (!strcmp(string, nofiles_msg)) {
-        delete [] string;
-        return (true);
+        init_viewing_area();
+        return;
     }
-    int x = (int)event->button.x;
-    int y = (int)event->button.y;
-    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
-        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
-    GtkTextIter ihere, iline;
-    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(caller), &ihere, x, y);
-    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
-    x = gtk_text_iter_get_offset(&ihere) - gtk_text_iter_get_offset(&iline);
-    char *line_start = string + gtk_text_iter_get_offset(&iline);
 
-    const int *colwid = 0;
+    // New way:  keep what we already have, just add new directories. 
+    // This is faster, and retains the selection.
+
+    // Put the list in an array, easier to work with.
+    int len = stringlist::length(oldlist);
+    const char **ary = new const char*[len];
+    stringlist *stmp = oldlist;
+    for (int i = 0; i < len; i++) {
+        ary[i] = stmp->string;
+        stmp = stmp->next;
+    }
+
+    int n = 0;
+    for (sDirList *dl = f_path_list->dirs(); dl; n++, dl = dl->next()) {
+        int oldn = findstr(dl->dirname(), ary, len);
+        if (oldn == n)
+            continue;
+        if (oldn > 0) {
+            // Directory moved to a new location in the path.  Make
+            // the corresponding change to the notebook, menu, and the
+            // array.
+
+            QWidget *pg = f_notebook->widget(oldn);
+            f_notebook->removeWidget(pg);
+            f_notebook->insertWidget(n, pg);
+
+            const char *t = ary[oldn];
+            // We know that oldn is larger than n.
+            for (int i = oldn; i > n; i--)
+                ary[i] = ary[i-1];
+            ary[n] = t;
+            continue;
+        }
+        // Directory wasn't found in the old list, insert a new page
+        // and menu entry, and add to the array.
+
+        QWidget *pg = create_page(dl);
+        f_notebook->insertWidget(n, pg);
+
+        char buf[256];
+        int maxchars = 120;
+        int dlen = strlen(dl->dirname());
+        if (dlen <= maxchars)
+            strcpy(buf, dl->dirname());
+        else {
+            int partchars = maxchars/2 - 2;
+            strncpy(buf, dl->dirname(), partchars);
+            strcpy(buf + partchars, " ... ");
+            strcat(buf, dl->dirname() + dlen - partchars);
+        }
+
+        const char **nary = new const char*[len+1];
+        for (int i = 0; i < n; i++)
+            nary[i] = ary[i];
+        nary[n] = dl->dirname();
+        for (int i = n; i < len; i++)
+            nary[i+1] = ary[i];
+        len++;
+        delete [] ary;
+        ary = nary;
+    }
+    delete [] ary;
+
+    // Anything at position n or above is not in the list so should be
+    // deleted.
+
+    while (f_notebook->widget(n) != 0)
+        f_notebook->removeWidget(f_notebook->widget(n));
+
+    // Clear the combo box.
+    f_menu->clear();
+
     for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
-        if (dl->dataptr() && !strcmp(f_directory, dl->dirname())) {
-            colwid = dl->col_width();
-            break;
+        char buf[256];
+        int maxchars = 120;
+        int dlen = strlen(dl->dirname());
+        if (dlen <= maxchars)
+            strcpy(buf, dl->dirname());
+        else {
+            int partchars = maxchars/2 - 2;
+            strncpy(buf, dl->dirname(), partchars);
+            strcpy(buf + partchars, " ... ");
+            strcat(buf, dl->dirname() + dlen - partchars);
         }
+        f_menu->addItem(buf);
     }
-    if (!colwid) {
-        delete [] string;
-        return (true);
+    n = f_notebook->currentIndex();
+    f_menu->setCurrentIndex(n);
+}
+
+
+// Select the chars in the range, start=end deselects existing.  In
+// GTK-1, selecting gives blue inverse, which turns gray if
+// unselected, retaining an indication for the buttons.  GTK-2
+// doesn't do this automatically so we provide something similar here.
+//
+void
+QTfilesListDlg::select_range(QTtextEdit *caller, int start, int end)
+{
+    caller->select_range(start, end);
+    f_start = start;
+    f_end = end;
+//    if (f_desel)
+//        (*f_desel)(this);
+}
+
+
+QWidget *
+QTfilesListDlg::create_page(sDirList *dl)
+{
+    QWidget *page = new QWidget();
+    QVBoxLayout *vbox = new QVBoxLayout(page);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    // scrolled text area
+    //
+    QTtextEdit *nbtext = new QTtextEdit();
+    vbox->addWidget(nbtext);
+    dl->set_dataptr(nbtext);
+    nbtext->setReadOnly(true);
+    nbtext->setMouseTracking(true);
+    nbtext->set_chars(dl->dirfiles());
+
+    QFont *tfont;
+    if (FC.getFont(&tfont, FNT_SCREEN))
+        nbtext->setFont(*tfont);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)));
+
+    connect(nbtext, SIGNAL(resize_event(QResizeEvent*)),
+        this, SLOT(resize_slot(QResizeEvent*)));
+    connect(nbtext, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(nbtext, SIGNAL(motion_event(QMouseEvent*)),
+        this, SLOT(mouse_motion_slot(QMouseEvent*)));
+    connect(nbtext, SIGNAL(mime_data_received(const QMimeData*)),
+        this, SLOT(mime_data_received_slot(const QMimeData*)));
+
+        /*
+    if (f_btn_hdlr) {
+        gtk_widget_add_events(nbtext, GDK_BUTTON_PRESS_MASK);
+        g_signal_connect(G_OBJECT(nbtext), "button-press-event",
+            G_CALLBACK(f_btn_hdlr), this);
     }
+    */
+    /*
+    g_signal_connect(G_OBJECT(nbtext), "button-release-event",
+        G_CALLBACK(f_btn_release_hdlr), this);
+    g_signal_connect(G_OBJECT(nbtext), "motion-notify-event",
+        G_CALLBACK(f_motion), this);
+    g_signal_connect_after(G_OBJECT(nbtext), "realize",
+        G_CALLBACK(f_realize_proc), this);
 
-    int cstart = 0;
-    int cend = 0;
-    for (int i = 0; colwid[i]; i++) {
-        cstart = cend;
-        cend += colwid[i];
-        if (x >= cstart && x < cend)
-            break;
-    }
-    if (cstart == cend || x >= cend) {
-            delete [] string;
-            return (0);
-    }
-    for (int st = 0 ; st <= x; st++) {
-        if (line_start[st] == '\n' || line_start[st] == 0) {
-            // pointing to right of line end
-            delete [] string;
-            return (0);
-        }
-    }
+    g_signal_connect(G_OBJECT(nbtext), "unrealize",
+        G_CALLBACK(f_unrealize_proc), this);
 
-    // We know that the file name starts at cstart, find the actual
-    // end.  Note that we deal with file names that contain spaces.
-    for (int st = 0 ; st < cend; st++) {
-        if (line_start[st] == '\n') {
-            cend = st;
-            break;
-        }
-    }
+    // Gtk-2 is tricky to overcome internal selection handling.
+    // Must remove clipboard (in f_realize_proc), and explicitly
+    // call gtk_selection_owner_set after selecting text.  Note
+    // also that explicit clear-event handling is needed.
 
-    // Omit trailing space.
-    while (isspace(line_start[cend-1]))
-        cend--;
-    if (x >= cend) {
-        // Clicked on trailing white space.
-        delete [] string;
-        return (0);
-    }
+    gtk_selection_add_targets(nbtext, GDK_SELECTION_PRIMARY,
+        target_table, n_targets);
+    g_signal_connect(G_OBJECT(nbtext), "selection-clear-event",
+        G_CALLBACK(f_selection_clear), 0);
+    g_signal_connect(G_OBJECT(nbtext), "selection-get",
+        G_CALLBACK(f_selection_get), 0);
 
-    // Skip over the filetype indicator, which is a single character
-    // and a space separator.
-    char code = line_start[cstart];
-    cstart += 2;
+    GtkTextBuffer *textbuf =
+        gtk_text_view_get_buffer(GTK_TEXT_VIEW(nbtext));
+    const char *bclr = GRpkg::self()->GetAttrColor(GRattrColorLocSel);
+    gtk_text_buffer_create_tag(textbuf, "primary",
+        "background", bclr, NULL);
 
-    cstart += (line_start - string);
-    cend += (line_start - string);
-    delete [] string;
+    // drag source (starts explicitly)
+    g_signal_connect(G_OBJECT(nbtext), "drag-data-get",
+        G_CALLBACK(f_source_drag_data_get), this);
 
-    if (cstart == cend) {
-        select_range(caller, 0, 0);
-        return (true);
-    }
-    select_range(caller, cstart, cend);
-
-    // The fl_selection has the full path.
-    delete [] fl_selection;
-    fl_selection = files_bag::get_selection();
-
-    if (fl_selection) {
-        set_sensitive(FB_OPEN, true);
-        set_sensitive(FB_PLACE, true);
-        if (strchr("GBOCL", code))
-            set_sensitive(FB_CONTENT, true);
-
-        f_drag_start = true;
-        f_drag_btn = event->button.button;
-        f_drag_x = (int)event->button.x;
-        f_drag_y = (int)event->button.y;
-    }
-    return (true);
+    // drop site
+    gtk_drag_dest_set(nbtext, GTK_DEST_DEFAULT_ALL, target_table,
+        n_targets,
+        (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE |
+         GDK_ACTION_LINK | GDK_ACTION_ASK));
+    g_signal_connect_after(G_OBJECT(nbtext), "drag-data-received",
+        G_CALLBACK(f_drag_data_received), this);
+    */
+    return (page);
 }
 
 
 // Pop up the contents listing for archives.
 //
 bool
-cFilesList::show_content()
+QTfilesListDlg::show_content()
 {
     if (!fl_selection)
         return (false);
@@ -600,17 +857,204 @@ cFilesList::show_content()
 
 
 void
-cFilesList::set_sensitive(const char *bname, bool state)
+QTfilesListDlg::set_sensitive(const char *bname, bool state)
 {
+    QString qs(bname);
     for (int i = 0; f_buttons[i]; i++) {
-        const char *wname = gtk_widget_get_name(f_buttons[i]);
-        if (!wname)
-            continue;
-        if (!strcmp(wname, bname)) {
-            gtk_widget_set_sensitive(f_buttons[i], state);
+        if (f_buttons[i]->text() == qs) {
+            f_buttons[i]->setEnabled(state);
             break;
         }
     }
+}
+
+//
+// The following functions implement polling to keep the directory
+// listing current.
+//
+
+// Static private function.
+// Idle procedure to update the file list.
+//
+int
+QTfilesListDlg::f_idle_proc(void*)
+{
+    for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
+        if (dl->dirty()) {
+            sFileList fl(dl->dirname());
+            fl.read_list(f_path_list->checkfunc(), f_path_list->incldirs());
+            int *colwid;
+            char *txt = fl.get_formatted_list(f_path_list->columns(),
+                false, f_path_list->no_files_msg(), &colwid);
+            dl->set_dirfiles(txt, colwid);
+            dl->set_dirty(false);
+            if (instPtr) {
+                f_update_text((QTtextEdit*)dl->dataptr(), dl->dirfiles());
+                if ((QTtextEdit*)dl->dataptr() == instPtr->wb_textarea) {
+                    /* XXX
+                    if (instPtr->f_desel)
+                        (*instPtr->f_desel)(instPtr);
+                        */
+                }
+            }
+        }
+    }
+    return (false);
+}
+
+
+// Static private function.
+// Check if directory has been modified, and set dirty flag if so.
+//
+int
+QTfilesListDlg::f_timer(void*)
+{
+    // If the cwd changes, update everything
+    char *cwd = getcwd(0, 0);
+    if (cwd) {
+        if (!f_cwd || strcmp(f_cwd, cwd)) {
+            delete [] f_cwd;
+            f_cwd = lstring::tocpp(cwd);
+            if (instPtr)
+                instPtr->update(f_path_list->path_string());
+            return (true);
+        }
+        else
+            free(cwd);
+    }
+
+    bool dirtyone = false;
+    for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
+        if (dl->mtime() != 0) {
+            struct stat st;
+            if (stat(dl->dirname(), &st) == 0 && dl->mtime() != st.st_mtime) {
+                dl->set_dirty(true);
+                dl->set_mtime(st.st_mtime);
+                dirtyone = true;
+            }
+        }
+    }
+    if (dirtyone)
+        QTdev::self()->AddIdleProc(f_idle_proc, 0);
+
+    return (true);
+}
+
+
+// Static private function.
+// Set up monitoring of the directories in the path.
+//
+void
+QTfilesListDlg::f_monitor_setup()
+{
+    if (!f_cwd)
+        f_cwd = lstring::tocpp(getcwd(0, 0));
+
+    for (sDirList *d = f_path_list->dirs(); d; d = d->next()) {
+        struct stat st;
+        if (stat(d->dirname(), &st) == 0)
+            d->set_mtime(st.st_mtime);
+    }
+    if (!f_timer_tag)
+        f_timer_tag = QTdev::self()->AddTimer(1000, f_timer, 0);
+}
+
+
+// Static private function.
+// Return true if the given path does not match the path stored in
+// the files list, and at the same time update the files list.
+//
+bool
+QTfilesListDlg::f_check_path_and_update(const char *path)
+{
+    int cnt = 0;
+    sDirList *dl;
+    for (dl = f_path_list->dirs(); dl; cnt++, dl = dl->next()) ;
+    sDirList **array = new sDirList*[cnt];
+    cnt = 0;
+    for (dl = f_path_list->dirs(); dl; cnt++, dl = dl->next())
+        array[cnt] = dl;
+    // cnt is number of old path elements
+
+    sDirList *d0 = 0, *de = 0;
+    if (pathlist::is_empty_path(path))
+        path = ".";
+    bool changed = false;
+    int newcnt = 0;
+    pathgen pg(path);
+    char *p;
+    while ((p = pg.nextpath(true)) != 0) {
+        if (newcnt < cnt && array[newcnt] &&
+                !strcmp(p, array[newcnt]->dirname())) {
+            if (!d0)
+                de = d0 = array[newcnt];
+            else {
+                de->set_next(array[newcnt]);
+                de = de->next();
+            }
+            array[newcnt] = 0;
+            de->set_next(0);
+        }
+        else {
+            changed = true;
+            int i;
+            for (i = 0; i < cnt; i++) {
+                if (array[i] && !strcmp(p, array[i]->dirname())) {
+                    if (!d0)
+                        de = d0 = array[i];
+                    else {
+                        de->set_next(array[i]);
+                        de = de->next();
+                    }
+                    array[i] = 0;
+                    de->set_next(0);
+                    break;
+                }
+            }
+            if (i == cnt) {
+                // not already there, create new element
+                sDirList *d = new sDirList(p);
+                sFileList fl(p);
+                fl.read_list(f_path_list->checkfunc(),
+                    f_path_list->incldirs());
+                int *colwid;
+                char *txt = fl.get_formatted_list(f_path_list->columns(),
+                    false, f_path_list->no_files_msg(), &colwid);
+                d->set_dirfiles(txt, colwid);
+                if (!d0)
+                    de = d0 = d;
+                else {
+                    de->set_next(d);
+                    de = de->next();
+                }
+            }
+        }
+        newcnt++;
+        delete [] p;
+    }
+
+    for (int i = 0; i < cnt; i++) {
+        if (array[i]) {
+            changed = true;
+            delete array[i];
+        }
+    }
+    delete [] array;
+    if (changed)
+        f_path_list->set_dirs(d0);
+    return (changed);
+}
+
+
+// Static private function.
+// Refresh the text while keeping current top location.
+//
+void
+QTfilesListDlg::f_update_text(QTtextEdit *text, const char *newtext)
+{
+    if (instPtr == 0 || text == 0 || newtext == 0)
+        return;
+    text->set_chars(newtext);
 }
 
 
@@ -618,7 +1062,7 @@ cFilesList::set_sensitive(const char *bname, bool state)
 // Create the listing struct.
 //
 sPathList *
-cFilesList::fl_listing(int cols)
+QTfilesListDlg::fl_listing(int cols)
 {
     QTpkg::self()->SetWorking(true);
     sPathList *l = new sPathList(FIO()->PGetPath(), fl_is_symfile, nofiles_msg,
@@ -633,7 +1077,7 @@ cFilesList::fl_listing(int cols)
 // Return non-null if a known layout file.
 //
 char*
-cFilesList::fl_is_symfile(const char *fname)
+QTfilesListDlg::fl_is_symfile(const char *fname)
 {
     FILE *fp = fopen(fname, "rb");
     if (!fp)
@@ -691,33 +1135,13 @@ cFilesList::fl_is_symfile(const char *fname)
 
 
 // Static function.
-// If there is something selected, perform the action.
-//
 void
-cFilesList::fl_action_proc(GtkWidget *caller, void*)
+QTfilesListDlg::fl_content_cb(const char *cellname, void*)
 {
-    if (FL())
-        FL()->action_hdlr(caller);
-}
-
-
-// Static function.
-int
-cFilesList::fl_btn_proc(GtkWidget *caller, GdkEvent *event, void*)
-{
-    if (FL())
-        return (FL()->button_hdlr(caller, event));
-    return (true);
-}
-
-
-// Static function.
-void
-cFilesList::fl_content_cb(const char *cellname, void*)
-{
-    if (!FL())
+    if (!QTfilesListDlg::self())
         return;
-    if (!FL()->fl_contlib || !FL()->fl_content_pop)
+    if (!QTfilesListDlg::self()->fl_contlib ||
+            !QTfilesListDlg::self()->fl_content_pop)
         return;
     if (!cellname)
         return;
@@ -726,19 +1150,20 @@ cFilesList::fl_content_cb(const char *cellname, void*)
 
     cellname++;
     if (!strcmp(cellname, FB_OPEN)) {
-        char *sel = FL()->fl_content_pop->get_selection();
+        char *sel = QTfilesListDlg::self()->fl_content_pop->get_selection();
         if (sel) {
             EV()->InitCallback();
-            XM()->EditCell(FL()->fl_contlib, false, FIO()->DefReadPrms(), sel,
-                FL()->fl_chd);
+            XM()->EditCell(QTfilesListDlg::self()->fl_contlib, false,
+                FIO()->DefReadPrms(), sel, QTfilesListDlg::self()->fl_chd);
             delete [] sel;
         }
     }
     else if (!strcmp(cellname, FB_PLACE)) {
-        char *sel = FL()->fl_content_pop->get_selection();
+        char *sel = QTfilesListDlg::self()->fl_content_pop->get_selection();
         if (sel) {
             EV()->InitCallback();
-            EditIf()->addMaster(FL()->fl_contlib, sel, FL()->fl_chd);
+            EditIf()->addMaster(QTfilesListDlg::self()->fl_contlib, sel,
+                QTfilesListDlg::self()->fl_chd);
             delete [] sel;
         }
     }
@@ -747,7 +1172,7 @@ cFilesList::fl_content_cb(const char *cellname, void*)
 
 // Static function.
 void
-cFilesList::fl_down_cb(GtkWidget*, void*)
+QTfilesListDlg::fl_down_cb(void*)
 {
     Cvt()->PopUpFiles(0, MODE_OFF);
 }
@@ -755,22 +1180,368 @@ cFilesList::fl_down_cb(GtkWidget*, void*)
 
 // Static function.
 void
-cFilesList::fl_desel(void*)
+QTfilesListDlg::fl_desel(void*)
 {
-    if (!FL())
+    if (!QTfilesListDlg::self())
         return;
-    if (text_has_selection(FL()->wb_textarea)) {
-        FL()->set_sensitive(FB_OPEN, true);
-        FL()->set_sensitive(FB_PLACE, true);
-        FL()->set_sensitive(FB_CONTENT, true);
+    if (!QTfilesListDlg::self()->wb_textarea)
+        return;
+    if (QTfilesListDlg::self()->wb_textarea->has_selection()) {
+        QTfilesListDlg::self()->set_sensitive(FB_OPEN, true);
+        QTfilesListDlg::self()->set_sensitive(FB_PLACE, true);
+        QTfilesListDlg::self()->set_sensitive(FB_CONTENT, true);
     }
     else {
-        delete [] FL()->fl_selection;
-        FL()->fl_selection = 0;
-        FL()->set_sensitive(FB_OPEN, false);
-        FL()->set_sensitive(FB_PLACE, false);
-        FL()->set_sensitive(FB_CONTENT, false);
+        delete [] QTfilesListDlg::self()->fl_selection;
+        QTfilesListDlg::self()->fl_selection = 0;
+        QTfilesListDlg::self()->set_sensitive(FB_OPEN, false);
+        QTfilesListDlg::self()->set_sensitive(FB_PLACE, false);
+        QTfilesListDlg::self()->set_sensitive(FB_CONTENT, false);
     }
+}
+
+
+void
+QTfilesListDlg::button_slot(bool)
+{
+    QPushButton *caller = qobject_cast<QPushButton*>(sender());
+    if (!caller)
+        return;
+    if (!wb_textarea) {
+        QTdev::Deselect(caller);
+        return;
+    }
+
+    // Note:  during open and place, callbacks to update are deferred. 
+    // These are generated when the path changes when reading native
+    // cells.
+    //
+    if (caller->text() == QString(FB_OPEN)) {
+        QTdev::Deselect(caller);
+        if (fl_selection) {
+            fl_noupdate = 1;
+            EV()->InitCallback();
+            XM()->EditCell(fl_selection, false, FIO()->DefReadPrms(), 0, 0);
+            if (QTfilesListDlg::self()) {
+                if (fl_noupdate > 1) {
+                    update(FIO()->PGetPath(), 0, 0);
+                    fl_desel(0);
+                }
+                fl_noupdate = 0;
+            }
+        }
+    }
+    else if (caller->text() == QString(FB_PLACE)) {
+        QTdev::Deselect(caller);
+        if (fl_selection) {
+            fl_noupdate = 1;
+            EV()->InitCallback();
+            EditIf()->addMaster(fl_selection, 0, 0);
+            if (QTfilesListDlg::self()) {
+                if (fl_noupdate > 1) {
+                    update(FIO()->PGetPath(), 0, 0);
+                    fl_desel(0);
+                }
+                fl_noupdate = 0;
+            }
+        }
+    }
+    else if (caller->text() == QString(FB_CONTENT)) {
+        QTdev::Deselect(caller);
+        show_content();
+    }
+    else if (caller->text() == QString(FB_HELP)) {
+        QTdev::Deselect(caller);
+        DSPmainWbag(PopUpHelp("filespanel"))
+    }
+}
+
+
+void
+QTfilesListDlg::page_change_slot(int pg)
+{
+    int i = 0;
+    for (sDirList *dl = f_path_list->dirs(); dl; i++, dl = dl->next()) {
+        if (i == pg && dl->dataptr()) {
+            delete [] f_directory;
+            f_directory = lstring::copy(dl->dirname());
+            if (wb_textarea)
+                wb_textarea->select_range(0, 0);
+            wb_textarea = (QTtextEdit*)dl->dataptr();
+            wb_textarea->select_range(0, 0);
+            break;
+        }
+    }
+}
+
+
+void
+QTfilesListDlg::menu_change_slot(int i)
+{
+    f_notebook->setCurrentIndex(i);
+}
+
+
+void
+QTfilesListDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_FIXED))
+            qobject_cast<QTtextEdit*>(sender())->setFont(*fnt);
+    }
+}
+
+
+void
+QTfilesListDlg::resize_slot(QResizeEvent *ev)
+{
+    int fw, fh;
+    if (!QTfont::stringBounds(0, FNT_FIXED, &fw, &fh))
+        fw = 8;
+    int cols = ev->size().width()/fw - 2;
+    if (cols != f_path_list->columns()) {
+        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
+            dl->set_dirty(true);
+        f_path_list->set_columns(cols);
+        f_idle_proc(0);
+    }
+}
+
+
+void
+QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
+{
+    if (ev->type() == QEvent::MouseButtonRelease) {
+        ev->accept();
+        f_drag_start = false;
+        return;
+    }
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    set_sensitive(FB_OPEN, false);
+    set_sensitive(FB_PLACE, false);
+    set_sensitive(FB_CONTENT, false);
+
+    f_drag_start = false;
+    if (!wb_textarea)
+        return;
+    if (wb_textarea->toPlainText() == QString(nofiles_msg))
+        return;
+    QByteArray qba = wb_textarea->toPlainText().toLatin1();
+    int x = ev->x();
+    int y = ev->y();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
+    int pos = cur.position();
+    const char *str = lstring::copy((const char*)qba.constData());
+    const char *line_start = str;
+    for (int i = 0; i <= pos; i++) {
+        if (str[i] == '\n') {
+            if (i == pos) {
+                // Clicked to  right of line.
+                delete [] str;
+                return;
+            }
+            line_start = str + i+1;
+        }
+    }
+
+    const int *colwid = 0;
+    for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
+        if (dl->dataptr() && !strcmp(f_directory, dl->dirname())) {
+            colwid = dl->col_width();
+            break;
+        }
+    }
+    if (!colwid) {
+        delete [] str;
+        return;
+    }
+
+    int cpos = &str[pos] - line_start;
+    int cstart = 0;
+    int cend = 0;
+    for (int i = 0; colwid[i]; i++) {
+        cstart = cend;
+        cend += colwid[i];
+        if (cpos >= cstart && cpos < cend)
+            break;
+    }
+    if (cstart == cend || cpos >= cend) {
+            delete [] str;
+            return;
+    }
+    for (int st = 0 ; st <= cpos; st++) {
+        if (line_start[st] == '\n' || line_start[st] == 0) {
+            // pointing to right of line end
+            delete [] str;
+            return;
+        }
+    }
+
+    // We know that the file name starts at cstart, find the actual
+    // end.  Note that we deal with file names that contain spaces.
+    for (int st = 0 ; st < cend; st++) {
+        if (line_start[st] == '\n') {
+            cend = st;
+            break;
+        }
+    }
+
+    // Omit trailing space.
+    while (isspace(line_start[cend-1]))
+        cend--;
+    if (cpos >= cend) {
+        // Clicked on trailing white space.
+        delete [] str;
+        return;
+    }
+
+    // Skip over the filetype indicator, which is a single character
+    // and a space separator.
+    char code = line_start[cstart];
+    cstart += 2;
+
+    cstart += (line_start - str);
+    cend += (line_start - str);
+    delete [] str;
+
+    if (cstart == cend) {
+        select_range(wb_textarea, 0, 0);
+        return;
+    }
+    select_range(wb_textarea, cstart, cend);
+
+    // The fl_selection has the full path.
+    delete [] fl_selection;
+    fl_selection = get_selection();
+
+    if (fl_selection) {
+        set_sensitive(FB_OPEN, true);
+        set_sensitive(FB_PLACE, true);
+        if (strchr("GBOCL", code))
+            set_sensitive(FB_CONTENT, true);
+
+        f_drag_start = true;
+        f_drag_btn = ev->button();
+        f_drag_x = x;
+        f_drag_y = y;
+    }
+}
+
+
+void
+QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
+{
+    if (!f_drag_start)
+        return;
+    if (abs(ev->x() - f_drag_x) < 5 && abs(ev->y() - f_drag_y) < 5)
+        return;
+    f_drag_start = false;
+
+    char *s = get_selection();
+    if (!s)
+        return;
+    int sz = strlen(s) + 1;
+    QDrag *drag = new QDrag(wb_textarea);
+    QMimeData *mimedata = new QMimeData();
+    QByteArray qdata(s, sz);
+    mimedata->setData("text/plain", qdata);
+    delete [] s;
+    drag->setMimeData(mimedata);
+    drag->exec(Qt::CopyAction);
+    delete drag;
+}
+
+
+void
+QTfilesListDlg::mime_data_received_slot(const QMimeData *data)
+{
+    QByteArray bary = data->data("text/plain");
+    const char *src = bary.constData();
+    if (src && *src && instPtr->wb_textarea) {
+        const char *dst = f_directory;
+        if (dst && *dst && strcmp(src, dst)) {
+            QTfilePopup::DoFileAction(this, src, dst, QTfilePopup::A_NOOP);
+            return;
+        }
+    }
+}
+
+
+void
+QTfilesListDlg::dismiss_btn_slot()
+{
+    Cvt()->PopUpFiles(0, MODE_OFF);
+}
+
+
+#ifdef notdef
+
+
+// Private static GTK signal handler.
+void
+files_bag::f_realize_proc(GtkWidget *widget, void *arg)
+{
+    // Remove the primary selection clipboard before selection. 
+    // In order to return the full path, we have to handle
+    // selections ourselves.
+    //
+    gtk_text_buffer_remove_selection_clipboard(
+        gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget)),
+        gtk_widget_get_clipboard(widget, GDK_SELECTION_PRIMARY));
+    text_realize_proc(widget, arg);
+}
+
+
+// Private static GTK signal handler.
+void
+files_bag::f_unrealize_proc(GtkWidget *widget, void*)
+{
+    // Stupid alert:  put the clipboard back into the buffer to
+    // avoid a whine when remove_selection_clipboard is called in
+    // unrealize.
+
+    gtk_text_buffer_add_selection_clipboard(
+        gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget)),
+        gtk_widget_get_clipboard(widget, GDK_SELECTION_PRIMARY));
+}
+
+
+// Private static GTK signal handler.
+// In GTK-2, this overrides the built-in selection-get function.
+//
+void
+files_bag::f_selection_get(GtkWidget *widget,
+    GtkSelectionData *selection_data, guint, guint, void*)
+{
+    if (gtk_selection_data_get_selection(selection_data) !=
+            GDK_SELECTION_PRIMARY)
+        return;  
+
+    // stop native handler
+    g_signal_stop_emission_by_name(G_OBJECT(widget), "selection-get");
+
+    char *s = instPtr->get_selection();
+    gtk_selection_data_set(selection_data,
+        gtk_selection_data_get_target(selection_data),
+        8, (unsigned char*)s, s ? strlen(s) + 1 : 0);
+    delete [] s;
+}
+
+
+// Private static GTK signal handler.
+// Selection clear handler, need to do this ourselves in GTK-2.
+//
+int
+files_bag::f_selection_clear(GtkWidget *widget, GdkEventSelection*, void*)  
+{
+    text_select_range(widget, 0, 0);
+    return (true);
 }
 
 #endif

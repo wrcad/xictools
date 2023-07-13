@@ -74,7 +74,7 @@ namespace qtinterf
 
         void draw_direct(bool);
         void switch_to_pixmap2();
-        void switch_from_pixmap2(int, int, int, int);
+        void switch_from_pixmap2(int, int, int, int, int, int);
         void set_draw_to_pixmap(QPixmap*);
         void refresh(int, int, int, int);
         void refresh()              { refresh(0, 0, width(), height()); }
@@ -131,7 +131,7 @@ namespace qtinterf
         void paint_event(QPaintEvent*);
         void press_event(QMouseEvent*);
         void release_event(QMouseEvent*);
-        void move_event(QMouseEvent*);
+        void motion_event(QMouseEvent*);
         void key_press_event(QKeyEvent*);
         void key_release_event(QKeyEvent*);
         void enter_event(QEnterEvent*);

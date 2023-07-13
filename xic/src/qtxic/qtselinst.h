@@ -32,104 +32,78 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtidleproc.h"
+#ifndef QTSELINST_H
+#define QTSELINST_H
+
+#include "main.h"
+#include "qtmain.h"
+
+#include <QDialog>
 
 
-using namespace qtinterf;
-
-QTidleproc::QTidleproc() : QTimer(0)
-{
-    idle_proc_list = 0;
-    idle_id_cnt = 1000;
-    running = false;
-    connect(this, SIGNAL(timeout()), this, SLOT(run_slot()));
-}
-
-
-// Add an idle function callback.  The function will be called repeatedly
-// until 0 is returned, at which point it will be removed from the list.
-// An id for the callback is returned.
+//--------------------------------------------------------------------------
 //
-int
-QTidleproc::add(int(*cb)(void*), void *arg)
-{
-    idle_procs *ip = new idle_procs(cb, arg);
-    if (!idle_proc_list)
-        idle_proc_list = ip;
-    else {
-        idle_procs *p = idle_proc_list;
-        while (p->next)
-            p = p->next;
-        p->next = ip;
-    }
-    idle_proc_list->id = idle_id_cnt++;
-    if (!running) {
-        start();
-        running = true;
-    }
-    return (idle_proc_list->id);
-}
-
-
-// Remove an idle function callback from the list.  The argument is
-// the return value obtained when the callback was added.  Return
-// true if a removal was done.
+// Pop up to allow the user to select/deselect cell instances.
 //
-bool
-QTidleproc::remove(int iid)
+
+class QLabel;
+
+class QTcellInstSelectDlg : public QDialog, public QTbag
 {
-    idle_procs *p = 0;
-    for (idle_procs *ip = idle_proc_list; ip; ip = ip->next) {
-        if (ip->id == iid) {
-            if (p)
-                p->next = ip->next;
-            else
-                idle_proc_list = ip->next;
-            delete ip;
-            return (true);
-        }
-        p = ip;
-    }
-    return (false);
-}
+    Q_OBJECT
 
-
-// Slot to run the idle queue.  The first callback is popped off and
-// run.  If the callback returns true, the callback is appended to the
-// end of the list, otherwise it is deleted.
-//
-void
-QTidleproc::run_slot()
-{
-    if (idle_proc_list) {
-        idle_procs *ip = idle_proc_list;
-        idle_proc_list = ip->next;
-        ip->next = 0;
-
-        int ret = (*ip->proc)(ip->arg);
-        if (ret) {
-            if (!idle_proc_list)
-                idle_proc_list = ip;
-            else {
-                idle_procs *p = idle_proc_list;
-                while (p->next)
-                    p = p->next;
-                p->next = ip;
+public:
+    // List element for cell instances.
+    //
+    struct ci_item
+    {
+        ci_item()
+            {
+                cdesc = 0;
+                name = 0;
+                index = 0;
+                sel = false;
             }
-        }
-        else
-            delete ip;
-    }
 
-    if (!idle_proc_list) {
-        stop();
-        running = false;
-    }
-}
+        CDc *cdesc;                         // instance desc
+        const char *name;                   // master cell name
+        int index;                          // instance index
+        bool sel;                           // selection flag
+    };
 
+    QTcellInstSelectDlg(CDol*, bool = false);
+    ~QTcellInstSelectDlg();
+
+    QSize sizeHint() const;
+    void update(CDol*);
+
+    static CDol *instances()                    { return (ci_return); }
+    static QTcellInstSelectDlg *self()          { return (instPtr); }
+
+private slots:
+    void sel_btn_slot();
+    void desel_btn_slot();
+    void mouse_press_slot(QMouseEvent*);
+    void dismiss_btn_slot();
+    void font_changed_slot(int);
+
+private:
+    void refresh();
+    static void apply_selection(ci_item*);
+
+    ci_item     *ci_list;           // list of cell instances
+    QLabel      *ci_label;          // label widget
+    int         ci_field;           // max cell name length
+    bool        ci_filt;            // instance filtering mode
+
+    static CDol *ci_return;
+    static QTcellInstSelectDlg *instPtr;
+};
+
+#endif

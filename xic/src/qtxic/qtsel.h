@@ -63,16 +63,16 @@ public:
     static QTselectDlg *self()      { return (instPtr); }
 
 private slots:
-    void pm_norm_slot(int);
-    void pm_sel_slot(int);
-    void pm_mod_slot(int);
-    void am_norm_slot(int);
-    void am_enc_slot(int);
-    void am_all_slot(int);
-    void sl_norm_slot(int);
-    void sl_togl_slot(int);
-    void sl_add_slot(int);
-    void sl_rem_slot(int);
+    void pm_norm_slot(bool);
+    void pm_sel_slot(bool);
+    void pm_mod_slot(bool);
+    void am_norm_slot(bool);
+    void am_enc_slot(bool);
+    void am_all_slot(bool);
+    void sl_norm_slot(bool);
+    void sl_togl_slot(bool);
+    void sl_add_slot(bool);
+    void sl_rem_slot(bool);
     void ob_cell_slot(int);
     void ob_box_slot(int);
     void ob_poly_slot(int);

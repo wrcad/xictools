@@ -56,36 +56,7 @@ cConvert::PopUpAssemble(GRobject, ShowMode)
 {
 }
 
-// qtattri.cc
 
-void
-cMain::PopUpAttributes(GRobject, ShowMode)
-{
-}
-
-
-void
-cMain::PopUpSelectInstances(CDol*)
-{
-}
-
-CDol *
-cMain::PopUpFilterInstances(CDol*)
-{
-    return (0);
-}
-
-
-CursorType
-cMain::GetCursor()
-{
-    return ((CursorType)0);
-}
-
-void
-cMain::UpdateCursor(WindowDesc*, CursorType, bool)
-{
-}
 
 void
 cMain::PopUpLayerParamEditor(GRobject, ShowMode, const char*, const char*)
@@ -115,26 +86,6 @@ bool
 cMain::DbgLoad(MenuEnt*)
 {
     return (false);
-}
-
-// qtdevs.cc
-
-void
-cSced::PopUpDevs(GRobject, ShowMode)
-{
-}
-
-void
-cSced::DevsEscCallback()
-{
-}
-
-
-// qtdvedit.cc
-
-void
-cSced::PopUpDevEdit(GRobject, ShowMode)
-{
 }
 
 
@@ -168,18 +119,6 @@ cExt::PopUpPhysTermEdit(GRobject, ShowMode, TermEditInfo*,
 {
 }
 
-// qtextterm.cc
-
-void
-cSced::PopUpTermEdit(GRobject, ShowMode, TermEditInfo*,
-    void(*)(TermEditInfo*, CDp*), CDp*, int, int)
-{
-}
-
-void
-cSced::PopUpSpiceIf(GRobject, ShowMode)
-{
-}
 
 // qtlpal.cc
 
@@ -201,11 +140,6 @@ cDRC::PopUpRules(GRobject, ShowMode)
 }
 
 void
-cDRC::PopUpDrcLimits(GRobject, ShowMode)
-{
-}
-
-void
 cDRC::PopUpDrcRun(GRobject, ShowMode)
 {
 }
@@ -213,26 +147,6 @@ cDRC::PopUpDrcRun(GRobject, ShowMode)
 void
 cDRC::PopUpRuleEdit(GRobject, ShowMode, DRCtype, const char*,
     bool(*)(const char*, void*), void*, const DRCtestDesc*)
-{
-}
-
-void
-cOAif::PopUpOAlibraries(GRobject, ShowMode)
-{
-}
-
-void
-cOAif::GetSelection(const char**, const char**)
-{
-}
-
-void
-cOAif::PopUpOAtech(GRobject, ShowMode, int, int)
-{
-}
-
-void
-cOAif::PopUpOAdefs(GRobject, ShowMode, int, int)
 {
 }
 

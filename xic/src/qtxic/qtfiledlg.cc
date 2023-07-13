@@ -48,9 +48,10 @@
 // Save File Dialog - pop up a selectable directory tree, use the prompt
 // line for text input.
 //
-struct cSaveFileDlg
+class QTsaveFileDlg
 {
-    cSaveFileDlg()
+public:
+    QTsaveFileDlg()
     {
         sfd_fsel = 0;
         sfd_dir_only = false;
@@ -58,7 +59,7 @@ struct cSaveFileDlg
 
     char *SaveFileDlg(const char*, const char*);
     char *OpenFileDlg(const char*, const char*);
-
+    
 private:
     static char *path_get();
     static void path_set(const char*);
@@ -68,7 +69,7 @@ private:
     bool sfd_dir_only;
 };
 
-namespace { cSaveFileDlg SFD; }
+namespace { QTsaveFileDlg SFD; }
 
 
 // Open a save-file selection window.
@@ -131,7 +132,7 @@ cMain::PopUpFileSel(const char *root, void(*cb)(const char*, void*), void *arg)
 // directory path
 //
 char *
-cSaveFileDlg::SaveFileDlg(const char *prompt, const char *fnamein)
+QTsaveFileDlg::SaveFileDlg(const char *prompt, const char *fnamein)
 {
     if (sfd_fsel)
         return (0);
@@ -168,7 +169,7 @@ cSaveFileDlg::SaveFileDlg(const char *prompt, const char *fnamein)
 // string from the hypertext editor.
 //
 char *
-cSaveFileDlg::OpenFileDlg(const char *prompt, const char *fnamein)
+QTsaveFileDlg::OpenFileDlg(const char *prompt, const char *fnamein)
 {
     if (sfd_fsel)
         return (0);
@@ -199,7 +200,7 @@ cSaveFileDlg::OpenFileDlg(const char *prompt, const char *fnamein)
 
 // Static function.
 char *
-cSaveFileDlg::path_get()
+QTsaveFileDlg::path_get()
 {
     if (SFD.sfd_dir_only)
         return (0);
@@ -218,7 +219,7 @@ cSaveFileDlg::path_get()
 
 // Static function.
 void
-cSaveFileDlg::path_set(const char *path)
+QTsaveFileDlg::path_set(const char *path)
 {
     if (!path)
         SFD.sfd_fsel = 0;
@@ -243,11 +244,11 @@ cSaveFileDlg::path_set(const char *path)
 
 // Static function.
 void
-cSaveFileDlg::go_cb(const char*, void*)
+QTsaveFileDlg::go_cb(const char*, void*)
 {
     // Simulate a Return press
     XM()->SendKeyEvent(0, Qt::Key_Return, 0, false);
     XM()->SendKeyEvent(0, Qt::Key_Return, 0, true);
 }
-// End of cSaveFileDlg functions.
+// End of QTsaveFileDlg functions.
 

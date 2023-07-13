@@ -43,53 +43,103 @@
 
 #include "main.h"
 #include "qtmain.h"
-#include "qtinterf/qtpfiles.h"
 
 #include <QDialog>
 
-struct sPathList;
 
-class cFilesList : public QDialog, public files_bag
+//----------------------------------------------------------------------
+//  Files Listing Popup
+//
+
+#define MAX_BTNS 5
+
+class QPushButton;
+class QHBoxLayout;
+class QComboBox;
+class QStackedWidget;
+class QMimeData;
+struct sPathList;
+struct sDirList;
+
+class QTfilesListDlg : public QDialog, public QTbag
 {
-//    Q_OBJECT
+    Q_OBJECT
 
 public:
-    cFilesList(GRobject);
-    ~cFilesList();
+    QTfilesListDlg(GRobject);
+    ~QTfilesListDlg();
+
+    QSize sizeHint()                const { return (QSize(500, 400)); }
 
     void update();
+    void update(const char*, const char** = 0, int = 0);
     char *get_selection();
 
-    static cFilesList *self()           { return (instPtr); }
+    const char *get_directory()         { return (f_directory); }
+    static void panic()                 { instPtr = 0; }
+    static QTfilesListDlg *self()       { return (instPtr); }
+
+private slots:
+    void button_slot(bool);
+    void page_change_slot(int);
+    void menu_change_slot(int);
+    void font_changed_slot(int);
+    void resize_slot(QResizeEvent*);
+    void mouse_press_slot(QMouseEvent*);
+    void mouse_motion_slot(QMouseEvent*);
+    void mime_data_received_slot(const QMimeData*);
+    void dismiss_btn_slot();
 
 private:
-    /*
-    void action_hdlr(GtkWidget*);
-    bool button_hdlr(GtkWidget*, GdkEvent*);
-    */
+    void init_viewing_area();
+    void relist(stringlist*);
+    void select_range(QTtextEdit*, int, int);
+    QWidget *create_page(sDirList*);
     bool show_content();
     void set_sensitive(const char*, bool);
 
+    static int f_idle_proc(void*);
+    static int f_timer(void*);
+    static void f_monitor_setup();
+    static bool f_check_path_and_update(const char*);
+    static void f_update_text(QTtextEdit*, const char*);
+
     static sPathList *fl_listing(int);
     static char *fl_is_symfile(const char*);
-    /*
-    static void fl_action_proc(GtkWidget*, void*);
-    static int fl_btn_proc(GtkWidget*, GdkEvent*, void*);
     static void fl_content_cb(const char*, void*);
-    static void fl_down_cb(GtkWidget*, void*);
+    static void fl_down_cb(void*);
     static void fl_desel(void*);
-    */
 
-    GRobject fl_caller;
-    char *fl_selection;
-    char *fl_contlib;
+    GRobject    fl_caller;
+    QPushButton *f_buttons[MAX_BTNS];
+    QHBoxLayout *f_button_box;
+    QComboBox   *f_menu;
+    QStackedWidget *f_notebook;
+
+    int         f_start;
+    int         f_end;
+    bool        f_drag_start;   // used for drag/drop
+    int         f_drag_btn;     // drag button
+    int         f_drag_x;       // drag start location
+    int         f_drag_y;
+    char        *f_directory;   // visible directory
+
+    char        *fl_selection;
+    char        *fl_contlib;
     GRmcolPopup *fl_content_pop;
-    cCHD *fl_chd;
-    int fl_noupdate;
+    cCHD        *fl_chd;
+    int         fl_noupdate;
 
+//        void (*f_desel)(void*); // deselection notification
+//        int (*f_btn_hdlr)(GtkWidget*, GdkEvent*, void*);
+//        void (*f_destroy)(GtkWidget*, void*);
+
+    static sPathList *f_path_list;  // the search path struct
+    static char *f_cwd;             // the current directory
+    static int f_timer_tag;         // timer id for file monitor
     static const char *nofiles_msg;
     static const char *files_msg;
-    static cFilesList *instPtr;
+    static QTfilesListDlg *instPtr;
 };
 
 #endif

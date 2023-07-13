@@ -87,7 +87,7 @@ void *
 ShmCtl::allocate(int *retid, unsigned int sz)
 {
 #ifdef HAVE_SHMGET
-    if (GRpkg::self()->UseSHM()) {
+//XXX    if (GRpkg::self()->UseSHM()) {
         if (!instance) {
             fprintf(stderr, "Class ShmCtl used before allocated.\n");
             exit (1);
@@ -116,7 +116,7 @@ printf("failed, using heap\n");
         instance->shm_tab->link(e);
         instance->shm_tab = instance->shm_tab->check_rehash();
         return (addr);
-    }
+//XXX    }
 #endif
 #ifdef SHMDBG
 printf("allocating normal %d bytes\n", sz);

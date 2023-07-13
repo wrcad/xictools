@@ -111,7 +111,7 @@ QTselectDlg::QTselectDlg(GRobject c)
     setWindowTitle(tr("Selection Control"));
     setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
+//    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
 
@@ -123,10 +123,16 @@ QTselectDlg::QTselectDlg(GRobject c)
     vb->setSpacing(2);
     sl_pm_norm = new QRadioButton(tr("Normal"));
     vb->addWidget(sl_pm_norm);
+    connect(sl_pm_norm, SIGNAL(toggled(bool)),
+        this, SLOT(pm_norm_slot(bool)));
     sl_pm_sel = new QRadioButton(tr("Select"));
     vb->addWidget(sl_pm_sel);
+    connect(sl_pm_sel, SIGNAL(toggled(bool)),
+        this, SLOT(pm_sel_slot(bool)));
     sl_pm_mod = new QRadioButton(tr("Modify"));
     vb->addWidget(sl_pm_mod);
+    connect(sl_pm_mod, SIGNAL(toggled(bool)),
+        this, SLOT(pm_mod_slot(bool)));
 
     // area mode radio group
     //
@@ -136,10 +142,16 @@ QTselectDlg::QTselectDlg(GRobject c)
     vb->setSpacing(2);
     sl_am_norm = new QRadioButton(tr("Normal"));
     vb->addWidget(sl_am_norm);
+    connect(sl_am_norm, SIGNAL(toggled(bool)),
+        this, SLOT(am_norm_slot(bool)));
     sl_am_enc = new QRadioButton(tr("Enclosed"));
     vb->addWidget(sl_am_enc);
+    connect(sl_am_enc, SIGNAL(toggled(bool)),
+        this, SLOT(am_enc_slot(bool)));
     sl_am_all = new QRadioButton(tr("All"));
     vb->addWidget(sl_am_all);
+    connect(sl_am_all, SIGNAL(toggled(bool)),
+        this, SLOT(am_all_slot(bool)));
 
     // addition mode radio group
     //
@@ -149,12 +161,20 @@ QTselectDlg::QTselectDlg(GRobject c)
     vb->setSpacing(2);
     sl_sel_norm = new QRadioButton(tr("Normal"));
     vb->addWidget(sl_sel_norm);
+    connect(sl_sel_norm, SIGNAL(toggled(bool)),
+        this, SLOT(sl_norm_slot(bool)));
     sl_sel_togl = new QRadioButton(tr("Toggle"));
     vb->addWidget(sl_sel_togl);
+    connect(sl_sel_togl, SIGNAL(toggled(bool)),
+        this, SLOT(sl_togl_slot(bool)));
     sl_sel_add = new QRadioButton(tr("Add"));
     vb->addWidget(sl_sel_add);
+    connect(sl_sel_add, SIGNAL(toggled(bool)),
+        this, SLOT(sl_add_slot(bool)));
     sl_sel_rem = new QRadioButton(tr("Remove"));
     vb->addWidget(sl_sel_rem);
+    connect(sl_sel_rem, SIGNAL(toggled(bool)),
+        this, SLOT(sl_rem_slot(bool)));
 
     // objects group
     //
@@ -164,14 +184,24 @@ QTselectDlg::QTselectDlg(GRobject c)
     vb->setSpacing(2);
     sl_cell = new QCheckBox(tr("Cells"));
     vb->addWidget(sl_cell);
+    connect(sl_cell, SIGNAL(stateChanged(int)),
+        this, SLOT(ob_cell_slot(int)));
     sl_box = new QCheckBox(tr("Boxes"));
     vb->addWidget(sl_box);
+    connect(sl_box, SIGNAL(stateChanged(int)),
+        this, SLOT(ob_box_slot(int)));
     sl_poly = new QCheckBox(tr("Polys"));
     vb->addWidget(sl_poly);
+    connect(sl_poly, SIGNAL(stateChanged(int)),
+        this, SLOT(ob_poly_slot(int)));
     sl_wire = new QCheckBox(tr("Wires"));
     vb->addWidget(sl_wire);
+    connect(sl_wire, SIGNAL(stateChanged(int)),
+        this, SLOT(ob_wire_slot(int)));
     sl_label = new QCheckBox(tr("Labels"));
     vb->addWidget(sl_label);
+    connect(sl_label, SIGNAL(stateChanged(int)),
+        this, SLOT(ob_label_slot(int)));
 
     // buttons
     //
@@ -308,7 +338,7 @@ QTselectDlg::update()
 
 
 void
-QTselectDlg::pm_norm_slot(int state)
+QTselectDlg::pm_norm_slot(bool state)
 {
     if (state)
         Selections.setPtrMode(PTRnormal);
@@ -316,7 +346,7 @@ QTselectDlg::pm_norm_slot(int state)
 
 
 void
-QTselectDlg::pm_sel_slot(int state)
+QTselectDlg::pm_sel_slot(bool state)
 {
     if (state)
         Selections.setPtrMode(PTRselect);
@@ -324,7 +354,7 @@ QTselectDlg::pm_sel_slot(int state)
 
 
 void
-QTselectDlg::pm_mod_slot(int state)
+QTselectDlg::pm_mod_slot(bool state)
 {
     if (state)
         Selections.setPtrMode(PTRmodify);
@@ -332,7 +362,7 @@ QTselectDlg::pm_mod_slot(int state)
 
 
 void
-QTselectDlg::am_norm_slot(int state)
+QTselectDlg::am_norm_slot(bool state)
 {
     if (state)
         Selections.setAreaMode(ASELnormal);
@@ -340,7 +370,7 @@ QTselectDlg::am_norm_slot(int state)
 
 
 void
-QTselectDlg::am_enc_slot(int state)
+QTselectDlg::am_enc_slot(bool state)
 {
     if (state)
         Selections.setAreaMode(ASELenclosed);
@@ -348,7 +378,7 @@ QTselectDlg::am_enc_slot(int state)
 
 
 void
-QTselectDlg::am_all_slot(int state)
+QTselectDlg::am_all_slot(bool state)
 {
     if (state)
         Selections.setAreaMode(ASELall);
@@ -356,7 +386,7 @@ QTselectDlg::am_all_slot(int state)
 
 
 void
-QTselectDlg::sl_norm_slot(int state)
+QTselectDlg::sl_norm_slot(bool state)
 {
     if (state)
         Selections.setSelMode(SELnormal);
@@ -364,7 +394,7 @@ QTselectDlg::sl_norm_slot(int state)
 
 
 void
-QTselectDlg::sl_togl_slot(int state)
+QTselectDlg::sl_togl_slot(bool state)
 {
     if (state)
         Selections.setSelMode(SELtoggle);
@@ -372,7 +402,7 @@ QTselectDlg::sl_togl_slot(int state)
 
 
 void
-QTselectDlg::sl_add_slot(int state)
+QTselectDlg::sl_add_slot(bool state)
 {
     if (state)
         Selections.setSelMode(SELselect);
@@ -380,7 +410,7 @@ QTselectDlg::sl_add_slot(int state)
 
 
 void
-QTselectDlg::sl_rem_slot(int state)
+QTselectDlg::sl_rem_slot(bool state)
 {
     if (state)
         Selections.setSelMode(SELdesel);

@@ -32,104 +32,81 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtidleproc.h"
+#ifndef QTSPIF_H
+#define QTSPIF_H
+
+#include "main.h"
+#include "qtmain.h"
+
+#include <QDialog>
 
 
-using namespace qtinterf;
-
-QTidleproc::QTidleproc() : QTimer(0)
-{
-    idle_proc_list = 0;
-    idle_id_cnt = 1000;
-    running = false;
-    connect(this, SIGNAL(timeout()), this, SLOT(run_slot()));
-}
-
-
-// Add an idle function callback.  The function will be called repeatedly
-// until 0 is returned, at which point it will be removed from the list.
-// An id for the callback is returned.
+//--------------------------------------------------------------------
+// Pop-up to control the WRspice interface.
 //
-int
-QTidleproc::add(int(*cb)(void*), void *arg)
+
+class QCheckBox;
+class QLineEdit;
+class QComboBox;
+class QPushButton;
+
+class QTspiceIfDlg : public QDialog
 {
-    idle_procs *ip = new idle_procs(cb, arg);
-    if (!idle_proc_list)
-        idle_proc_list = ip;
-    else {
-        idle_procs *p = idle_proc_list;
-        while (p->next)
-            p = p->next;
-        p->next = ip;
-    }
-    idle_proc_list->id = idle_id_cnt++;
-    if (!running) {
-        start();
-        running = true;
-    }
-    return (idle_proc_list->id);
-}
+    Q_OBJECT
 
+public:
+    QTspiceIfDlg(GRobject);
+    ~QTspiceIfDlg();
 
-// Remove an idle function callback from the list.  The argument is
-// the return value obtained when the callback was added.  Return
-// true if a removal was done.
-//
-bool
-QTidleproc::remove(int iid)
-{
-    idle_procs *p = 0;
-    for (idle_procs *ip = idle_proc_list; ip; ip = ip->next) {
-        if (ip->id == iid) {
-            if (p)
-                p->next = ip->next;
-            else
-                idle_proc_list = ip->next;
-            delete ip;
-            return (true);
-        }
-        p = ip;
-    }
-    return (false);
-}
+    void update();
 
+    static QTspiceIfDlg *self()         { return (instPtr); }
 
-// Slot to run the idle queue.  The first callback is popped off and
-// run.  If the callback returns true, the callback is appended to the
-// end of the list, otherwise it is deleted.
-//
-void
-QTidleproc::run_slot()
-{
-    if (idle_proc_list) {
-        idle_procs *ip = idle_proc_list;
-        idle_proc_list = ip->next;
-        ip->next = 0;
+private slots:
+    void help_btn_slot();
+    void listall_btn_slot(int);
+    void checksol_btn_slot(int);
+    void notools_btn_slot(int);
+    void alias_btn_slot(int);
+    void hostname_btn_slot(int);
+    void dispname_btn_slot(int);
+    void progname_btn_slot(int);
+    void execdir_btn_slot(int);
+    void execname_btn_slot(int);
+    void catchar_btn_slot(int);
+    void catmode_btn_slot(int);
+    void dismiss_btn_slot();
 
-        int ret = (*ip->proc)(ip->arg);
-        if (ret) {
-            if (!idle_proc_list)
-                idle_proc_list = ip;
-            else {
-                idle_procs *p = idle_proc_list;
-                while (p->next)
-                    p = p->next;
-                p->next = ip;
-            }
-        }
-        else
-            delete ip;
-    }
+private:
+    GRobject  sc_caller;
+    QCheckBox *sc_listall;
+    QCheckBox *sc_checksol;
+    QCheckBox *sc_notools;
+    QLineEdit *sc_alias;
+    QCheckBox *sc_alias_b;
+    QLineEdit *sc_hostname;
+    QCheckBox *sc_hostname_b;
+    QLineEdit *sc_dispname;
+    QCheckBox *sc_dispname_b;
+    QLineEdit *sc_progname;
+    QCheckBox *sc_progname_b;
+    QLineEdit *sc_execdir;
+    QCheckBox *sc_execdir_b;
+    QLineEdit *sc_execname;
+    QCheckBox *sc_execname_b;
+    QLineEdit *sc_catchar;
+    QCheckBox *sc_catchar_b;
+    QComboBox *sc_catmode;
+    QCheckBox *sc_catmode_b;
 
-    if (!idle_proc_list) {
-        stop();
-        running = false;
-    }
-}
+    static QTspiceIfDlg *instPtr;
+};
+
+#endif
 

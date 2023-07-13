@@ -1633,7 +1633,7 @@ QTfillPatDlg::connect_sigs(QTcanvas *darea, bool dnd_rcvr)
         this, SLOT(button_up_slot(QMouseEvent*)));
     connect(darea, SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_down_slot(QKeyEvent*)));
-    connect(darea, SIGNAL(move_event(QMouseEvent*)),
+    connect(darea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
 
     if (dnd_rcvr) {

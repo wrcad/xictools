@@ -155,7 +155,6 @@ QTlibsDlg::QTlibsDlg(GRobject c)
 
     setWindowTitle(tr("Libraries"));
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);

@@ -171,7 +171,7 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
         this, SLOT(button_press_slot(QMouseEvent*)));
     connect(gd_viewport->widget(), SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(button_release_slot(QMouseEvent*)));
-    connect(gd_viewport->widget(), SIGNAL(move_event(QMouseEvent*)),
+    connect(gd_viewport->widget(), SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
     connect(ltab_scrollbar, SIGNAL(valueChanged(int)),
         this, SLOT(ltab_scroll_value_changed_slot(int)));

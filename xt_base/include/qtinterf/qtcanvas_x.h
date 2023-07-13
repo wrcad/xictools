@@ -106,7 +106,7 @@ namespace qtinterf
         void paint_event(QPaintEvent*);
         void press_event(QMouseEvent*);
         void release_event(QMouseEvent*);
-        void move_event(QMouseEvent*);
+        void motion_event(QMouseEvent*);
         void key_press_event(QKeyEvent*);
         void key_release_event(QKeyEvent*);
         void enter_event(QEvent*);

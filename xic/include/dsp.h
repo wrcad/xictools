@@ -118,13 +118,13 @@
 
 // Default pixel height of text labels.
 #define DSP_DEF_PTRM_TXTHT 14
-#define DSP_MAX_PTRM_TXTHT 6
-#define DSP_MIN_PTRM_TXTHT 48
+#define DSP_MAX_PTRM_TXTHT 48
+#define DSP_MIN_PTRM_TXTHT 6
 
 // Default pixel size of physical terminal cross, from center.
 #define DSP_DEF_PTRM_DELTA 10
-#define DSP_MAX_PTRM_DELTA 6
-#define DSP_MIN_PTRM_DELTA 48
+#define DSP_MAX_PTRM_DELTA 48
+#define DSP_MIN_PTRM_DELTA 6
 
 // various marks
 // basic mark types

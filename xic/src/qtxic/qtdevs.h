@@ -38,65 +38,102 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTATTRI_H
-#define QTATTRI_H
+#ifndef QTDEVS_H
+#define QTDEVS_H
 
 #include "main.h"
 #include "qtmain.h"
 
 #include <QDialog>
 
-class QWidget;
-class QSpinBox;
 
+//-----------------------------------------------------------------------------
+// This implements a menu of devices from the device library, in three
+// styles.  The drop-down menu styles take less screen space and the
+// categories variation (vs.  alphabetic) is the default.  The
+// graphical palette might be more useful to beginners.
+//
 
-cAttr:: *cAttr::instPtr;
+class QPushButton;
 
-class cAttr : public QDialog
+class QTdevMenuDlg : public QDialog, public QTbag, public QTdraw
 {
     Q_OBJECT
 
 public:
-    cAttr(GRobject);
-    ~cAttr();
+    // Device list element
+    //
+    struct sEnt
+    {
+        sEnt() : name(0), x(0), width(0) { }
+        ~sEnt() { delete [] name; }
 
-    void update();
+        char *name;
+        int x;
+        int width;
+    };
 
-    static *cAttr self()        { return (instPtr); }
+    enum dvType { dvMenuCateg, dvMenuAlpha, dvMenuPict };
+
+    QTdevMenuDlg(GRobject, stringlist*);
+    ~QTdevMenuDlg();
+
+    QSize sizeHint() const;
+
+    void activate(bool);
+    void esc();
+
+    GRobject get_caller()
+    {
+        GRobject tc = dv_caller;
+        dv_caller = 0;
+        return (tc);
+    }
+
+    bool is_active()                    { return (dv_active); }
+    static QTdevMenuDlg *self()         { return (instPtr); }
 
 private slots:
+    void menu_slot(QAction*);
+    void style_btn_slot();
+    void more_btn_slot();
+    void font_changed_slot(int);
+    void button_down_slot(QMouseEvent*);
+    void button_up_slot(QMouseEvent*);
+    void motion_slot(QMouseEvent*);
+    void enter_slot(QEnterEvent*);
+    void leave_slot(QEvent*);
+    void resize_slot(QResizeEvent*);
 
 private:
-    /*
-    static void at_cancel_proc(GtkWidget*, void*);
-    static void at_action(GtkWidget*, void*);
-    static void at_curs_menu_proc(GtkWidget*, void*);
-    static void at_menuproc(GtkWidget*, void*);
-    static void at_val_changed(GtkWidget*, void*);
-    static void at_ebt_proc(GtkWidget*, void*);
-    */
+    int init_sizes();
+    void render_cell(int, bool);
+    void cyclemore();
+    int  whichent(int);
+    void show_selected(int);
+    void show_unselected(int);
+    void redraw();
 
-    GRobject at_caller;
-    QWidget *at_cursor;
-    QWidget *at_fullscr;
-    QWidget *at_minst;
-    QWidget *at_mcntr;
-    QWidget *at_ebprop;
-    QWidget *at_ebterms;
-    QWidget *at_hdn;
-    int at_ebthst;
+    GRobject    dv_caller;
+    QPushButton *dv_morebtn;
+    sEnt        *dv_entries;
+    int         dv_numdevs;
+    int         dv_leftindx;
+    int         dv_leftofst;
+    int         dv_rightindx;
+    int         dv_curdev;
+    int         dv_pressed;
+    int         dv_px;
+    int         dv_py;
+    int         dv_width;
+    unsigned int dv_foreg;
+    unsigned int dv_backg;
+    unsigned int dv_hlite;
+    unsigned int dv_selec;
+    bool        dv_active;
+    dvType      dv_type;
 
-    QSpinBox *at_tsize;
-    QSpinBox *at_ttsize;
-    QSpinBox *at_tmsize;
-    QSpinBox *at_cellthr;
-    QSpinBox *at_cxpct;
-    QSpinBox *at_offset;
-    QSpinBox *at_lheight;
-    QSpinBox *at_llen;
-    QSpinBox *at_llines;
-
-    static cAttr *instPtr;
+    static QTdevMenuDlg *instPtr;
 };
 
 #endif

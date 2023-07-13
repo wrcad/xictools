@@ -32,104 +32,99 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtidleproc.h"
+#ifndef QTTEDIT_H
+#define QTTEDIT_H
+
+#include "main.h"
+#include "qtmain.h"
+
+#include <QDialog>
 
 
-using namespace qtinterf;
-
-QTidleproc::QTidleproc() : QTimer(0)
-{
-    idle_proc_list = 0;
-    idle_id_cnt = 1000;
-    running = false;
-    connect(this, SIGNAL(timeout()), this, SLOT(run_slot()));
-}
-
-
-// Add an idle function callback.  The function will be called repeatedly
-// until 0 is returned, at which point it will be removed from the list.
-// An id for the callback is returned.
+//---------------------------------------------------------------------------
+// Pop-up interface for terminal/property editing.  This handles
+// electrical mode (SUBCT command).
 //
-int
-QTidleproc::add(int(*cb)(void*), void *arg)
-{
-    idle_procs *ip = new idle_procs(cb, arg);
-    if (!idle_proc_list)
-        idle_proc_list = ip;
-    else {
-        idle_procs *p = idle_proc_list;
-        while (p->next)
-            p = p->next;
-        p->next = ip;
-    }
-    idle_proc_list->id = idle_id_cnt++;
-    if (!running) {
-        start();
-        running = true;
-    }
-    return (idle_proc_list->id);
-}
 
+class QLabel;
+class QSpinBox;
+class QLineEdit;
+class QComboBox;
+class QCheckBox;
+class QGroupBox;
+class QPushButton;
+struct TermEditInfo;
 
-// Remove an idle function callback from the list.  The argument is
-// the return value obtained when the callback was added.  Return
-// true if a removal was done.
-//
-bool
-QTidleproc::remove(int iid)
+class QTelecTermEditDlg : public QDialog
 {
-    idle_procs *p = 0;
-    for (idle_procs *ip = idle_proc_list; ip; ip = ip->next) {
-        if (ip->id == iid) {
-            if (p)
-                p->next = ip->next;
-            else
-                idle_proc_list = ip->next;
-            delete ip;
-            return (true);
+    Q_OBJECT
+
+public:
+    QTelecTermEditDlg(GRobject, TermEditInfo*, void(*)(TermEditInfo*, CDp*),
+        CDp*);
+    ~QTelecTermEditDlg();
+
+    void update(TermEditInfo*, CDp*);
+
+    static QTelecTermEditDlg *self()            { return (instPtr); }
+
+private slots:
+    void help_btn_slot();
+    void has_phys_term_slot(int);
+    void destroy_btn_slot();
+    void crbits_btn_slot();
+    void ordbits_btn_slot();
+    void scvis_btn_slot();
+    void scinvis_btn_slot();
+    void syvis_btn_slot();
+    void syinvis_btn_slot();
+    void prev_btn_slot();
+    void next_btn_slot();
+    void toindex_btn_slot();
+    void apply_btn_slot();
+    void layer_menu_slot(int);
+    void dismiss_btn_slot();
+
+private:
+    void set_layername(const char *n)
+        {
+            const char *nn = lstring::copy(n);
+            delete [] te_lname;
+            te_lname = nn;
         }
-        p = ip;
-    }
-    return (false);
-}
 
+    GRobject    te_caller;
+    QLabel      *te_lab_top;
+    QLabel      *te_lab_index;
+    QSpinBox    *te_sb_index;
+    QLineEdit   *te_name;
+    QLabel      *te_lab_netex;
+    QLineEdit   *te_netex;
+    QComboBox   *te_layer;
+    QCheckBox   *te_fixed;
+    QCheckBox   *te_phys;
+    QGroupBox   *te_physgrp;
+    QCheckBox   *te_byname;
+    QCheckBox   *te_scinvis;
+    QCheckBox   *te_syinvis;
+    QGroupBox   *te_bitsgrp;
+    QPushButton *te_crtbits;
+    QPushButton *te_ordbits;
+    QSpinBox    *te_sb_toindex;
 
-// Slot to run the idle queue.  The first callback is popped off and
-// run.  If the callback returns true, the callback is appended to the
-// end of the list, otherwise it is deleted.
-//
-void
-QTidleproc::run_slot()
-{
-    if (idle_proc_list) {
-        idle_procs *ip = idle_proc_list;
-        idle_proc_list = ip->next;
-        ip->next = 0;
+    void        (*te_action)(TermEditInfo*, CDp*);
+    CDp         *te_prp;
+    const char  *te_lname;
+    bool        te_bterm;
 
-        int ret = (*ip->proc)(ip->arg);
-        if (ret) {
-            if (!idle_proc_list)
-                idle_proc_list = ip;
-            else {
-                idle_procs *p = idle_proc_list;
-                while (p->next)
-                    p = p->next;
-                p->next = ip;
-            }
-        }
-        else
-            delete ip;
-    }
+    static QTelecTermEditDlg *instPtr;
+};
 
-    if (!idle_proc_list) {
-        stop();
-        running = false;
-    }
-}
+#endif
 

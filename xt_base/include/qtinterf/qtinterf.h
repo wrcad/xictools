@@ -61,6 +61,7 @@ using namespace qtinterf;
 namespace qtinterf
 {
     class QTtimer;
+    class QTidleproc;
     class QTfilePopup;
     class QTfontPopup;
     class QTlistPopup;
@@ -245,14 +246,14 @@ namespace qtinterf
         GRwbag      *NewWbag(const char*, GRwbag*);
         int         AddTimer(int, int(*)(void*), void*);
         void        RemoveTimer(int);
+        int         AddIdleProc(int(*)(void*), void*);
+        void        RemoveIdleProc(int);
         GRsigintHdlr RegisterSigintHdlr(GRsigintHdlr);
         bool        CheckForEvents();
         int         Input(int, int, int*);
         void        MainLoop(bool=false);
         int         LoopLevel()             { return (dv_loop_level); }
         void        BreakLoop();
-//XXX ridme
-        int UseSHM()                        { return (false); };
         // virtual override, qthcopy.cc
         void HCmessage(const char*);
 
@@ -305,6 +306,7 @@ namespace qtinterf
         event_loop      *dv_loop;       // event loop stack
         QTbag           *dv_main_bag;   // top level bag
         QTtimer         *dv_timers;     // list of timers
+        QTidleproc      *dv_idle_ctrl;  // idle process control
         int             dv_minx;
         int             dv_miny;
         int             dv_loop_level;  // loop level

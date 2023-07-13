@@ -32,104 +32,96 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtidleproc.h"
+#ifndef QTOALIBS_h
+#define QTOALIBS_h
+
+#include "main.h"
+#include "qtmain.h"
+
+#include <QDialog>
 
 
-using namespace qtinterf;
-
-QTidleproc::QTidleproc() : QTimer(0)
-{
-    idle_proc_list = 0;
-    idle_id_cnt = 1000;
-    running = false;
-    connect(this, SIGNAL(timeout()), this, SLOT(run_slot()));
-}
-
-
-// Add an idle function callback.  The function will be called repeatedly
-// until 0 is returned, at which point it will be removed from the list.
-// An id for the callback is returned.
+//----------------------------------------------------------------------
+//  OpenAccess Libraries Popup
 //
-int
-QTidleproc::add(int(*cb)(void*), void *arg)
+
+class QPushButton;
+class QRadioButton;
+class QTreeWidget;
+class QTreeWidgetItem;
+
+class QToaLibsDlg : public QDialog, public QTbag
 {
-    idle_procs *ip = new idle_procs(cb, arg);
-    if (!idle_proc_list)
-        idle_proc_list = ip;
-    else {
-        idle_procs *p = idle_proc_list;
-        while (p->next)
-            p = p->next;
-        p->next = ip;
-    }
-    idle_proc_list->id = idle_id_cnt++;
-    if (!running) {
-        start();
-        running = true;
-    }
-    return (idle_proc_list->id);
-}
+    Q_OBJECT
 
+public:
+    enum { LBhelp, LBopen, LBwrt, LBcont, LBcrt, LBdefs,
+        LBtech, LBdest, LBboth, LBphys, LBelec };
 
-// Remove an idle function callback from the list.  The argument is
-// the return value obtained when the callback was added.  Return
-// true if a removal was done.
-//
-bool
-QTidleproc::remove(int iid)
-{
-    idle_procs *p = 0;
-    for (idle_procs *ip = idle_proc_list; ip; ip = ip->next) {
-        if (ip->id == iid) {
-            if (p)
-                p->next = ip->next;
-            else
-                idle_proc_list = ip->next;
-            delete ip;
-            return (true);
-        }
-        p = ip;
-    }
-    return (false);
-}
+    QToaLibsDlg(GRobject);
+    ~QToaLibsDlg();
 
+    QSize sizeHint() const;
 
-// Slot to run the idle queue.  The first callback is popped off and
-// run.  If the callback returns true, the callback is appended to the
-// end of the list, otherwise it is deleted.
-//
-void
-QTidleproc::run_slot()
-{
-    if (idle_proc_list) {
-        idle_procs *ip = idle_proc_list;
-        idle_proc_list = ip->next;
-        ip->next = 0;
+    void get_selection(const char**, const char**);
+    void update();
 
-        int ret = (*ip->proc)(ip->arg);
-        if (ret) {
-            if (!idle_proc_list)
-                idle_proc_list = ip;
-            else {
-                idle_procs *p = idle_proc_list;
-                while (p->next)
-                    p = p->next;
-                p->next = ip;
-            }
-        }
-        else
-            delete ip;
-    }
+    static QToaLibsDlg *self()          { return (instPtr); }
 
-    if (!idle_proc_list) {
-        stop();
-        running = false;
-    }
-}
+private slots:
+    void open_btn_slot();
+    void write_btn_slot();
+    void cont_btn_slot();
+    void create_btn_slot();
+    void defs_btn_slot(bool);
+    void help_btn_slot();
+    void tech_btn_slot(bool);
+    void dest_btn_slot(bool);
+    void both_btn_slot(bool);
+    void phys_btn_slot(bool);
+    void elec_btn_slot(bool);
+    void item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
+    void item_activated_slot(QTreeWidgetItem*, int);
+    void item_clicked_slot(QTreeWidgetItem*, int);
+    void item_selection_change();
+    void dismiss_btn_slot();
+
+private:
+    void pop_up_contents();
+    void update_contents(bool);
+    void set_sensitive(bool);
+    static void lb_lib_cb(const char*, void*);
+    static void lb_dest_cb(bool, void*);
+    static void lb_content_cb(const char*, void*);
+
+    GRobject    lb_caller;
+    QPushButton *lb_openbtn;
+    QPushButton *lb_writbtn;
+    QPushButton *lb_contbtn;
+    QPushButton *lb_defsbtn;
+    QPushButton *lb_techbtn;
+    QPushButton *lb_destbtn;
+    QRadioButton *lb_both;
+    QRadioButton *lb_phys;
+    QRadioButton *lb_elec;
+    QTreeWidget *lb_list;
+
+    GRmcolPopup *lb_content_pop;
+    QPixmap     *lb_open_pm;
+    QPixmap     *lb_close_pm;
+    char        *lb_selection;
+    char        *lb_contlib;
+    char        *lb_tempstr;
+
+    static const char *nolibmsg;
+    static QToaLibsDlg *instPtr;
+};
+
+#endif
 

@@ -52,7 +52,6 @@
 #include "promptline.h"
 #include "errorlog.h"
 #include "select.h"
-#include "qtinterf/qtpfiles.h"
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qttextw.h"
 #include "qtinterf/qtmsg.h"

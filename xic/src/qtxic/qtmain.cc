@@ -401,8 +401,6 @@ QTpkg::Initialize(GRwbag *wcp)
     if (MainDev()->ident != _devQT_)
         return (true);
 
-    pkg_idle_control = new QTidleproc();
-
     QTmainwin *w = dynamic_cast<QTmainwin*>(wcp);
     if (!w)
         return (true);
@@ -687,7 +685,7 @@ QTpkg::RegisterIdleProc(int(*cb)(void*), void *arg)
 {
     if (!MainDev() || MainDev()->ident != _devQT_)
          return (0);
-    return (pkg_idle_control->add(cb, arg));
+    return (QTdev::self()->AddIdleProc(cb, arg));
 }
 
 
@@ -696,7 +694,8 @@ QTpkg::RemoveIdleProc(int id)
 {
     if (!MainDev() || MainDev()->ident != _devQT_)
          return (false);
-    return (pkg_idle_control->remove(id));
+    QTdev::self()->RemoveIdleProc(id);
+    return (true);
 }
 
 
@@ -985,7 +984,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
         this, SLOT(button_down_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(button_up_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(move_event(QMouseEvent*)),
+    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_down_slot(QKeyEvent*)));
@@ -1154,10 +1153,8 @@ void
 QTsubwin::SwitchFromPixmap(const BBox *BB)
 {
     // Copy the area in a paint event, but the pixmap is retained.
-    gd_viewport->switch_from_pixmap2(BB->left, BB->top,
+    gd_viewport->switch_from_pixmap2(BB->left, BB->top, BB->left, BB->top,
         BB->right - BB->left + 1, BB->bottom - BB->top + 1);
-//    Viewport()->repaint(BB->left, BB->top, BB->right - BB->left + 1,
-//        BB->bottom - BB->top + 1);
 }
 
 

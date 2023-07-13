@@ -65,7 +65,7 @@ namespace qtinterf
         bool has_selection();
         char *get_selection();
         void select_range(int, int);
-        char *get_chars(int, int);
+        char *get_chars(int = 0, int = -1);
         void set_chars(const char*);
         int get_scroll_value();
         void set_scroll_value(int);

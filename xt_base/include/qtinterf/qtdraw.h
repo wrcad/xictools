@@ -85,7 +85,7 @@ namespace qtinterf
 
         virtual void draw_direct(bool) = 0;
         virtual void switch_to_pixmap2() = 0;
-        virtual void switch_from_pixmap2(int, int, int, int) = 0;
+        virtual void switch_from_pixmap2(int, int, int, int, int, int) = 0;
         virtual void set_draw_to_pixmap(QPixmap*) = 0;
         virtual void refresh(int, int, int, int) = 0;
         virtual void refresh() = 0;

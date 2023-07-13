@@ -68,6 +68,8 @@ namespace qtinterf
         Q_OBJECT
 
     public:
+        enum ActionType { A_NOOP, A_COPY, A_MOVE, A_LINK, A_ASK };
+
         QTfilePopup(QTbag*, FsMode, void*, const char*);
         ~QTfilePopup();
 
@@ -100,6 +102,9 @@ namespace qtinterf
         // not called.  The default behavior is to hide the widget instead
         // of deleting it, which would likely be a core leak here.
         void closeEvent(QCloseEvent*) { quit_slot(); }
+
+        static void DoFileAction(QTbag*, const char*, const char*,
+            ActionType);
 
     signals:
         void file_selected(const char*, void*);

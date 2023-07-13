@@ -83,6 +83,8 @@ struct unit_t
     static int find_unit(const char*);
     static const unit_t *units(e_unit);
 
+    static const char *units_strings[];
+
 private:
     const char *u_name;             // FastHenry code
     const char *u_float_format;     // printing format

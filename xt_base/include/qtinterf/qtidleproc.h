@@ -43,35 +43,41 @@
 
 #include <QTimer>
 
-
-class QTidleproc : public QTimer
-{
-    Q_OBJECT
-
-public:
-    struct idle_procs
+namespace qtinterf {
+    class QTidleproc : public QTimer
     {
-        idle_procs(int(*c)(void*), void *a) { proc = c; arg = a; next = 0; }
+        Q_OBJECT
 
-        int (*proc)(void*);
-        void *arg;
-        int id;
-        idle_procs *next;
+    public:
+        struct idle_procs
+        {
+            idle_procs(int(*c)(void*), void *a)
+            {
+                proc = c;
+                arg = a;
+                next = 0;
+            }
+
+            int (*proc)(void*);
+            void *arg;
+            int id;
+            idle_procs *next;
+        };
+
+        QTidleproc();
+
+        int add(int(*)(void*), void*);
+        bool remove(int);
+
+    private slots:
+        void run_slot();
+
+    private:
+        idle_procs *idle_proc_list;
+        int idle_id_cnt;
+        bool running;
     };
-
-    QTidleproc();
-
-    int add(int(*)(void*), void*);
-    bool remove(int);
-
-private slots:
-    void run_slot();
-
-private:
-    idle_procs *idle_proc_list;
-    int idle_id_cnt;
-    bool running;
-};
+}
 
 #endif
 

@@ -32,104 +32,64 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtidleproc.h"
+#ifndef QTOADEFS_H
+#define QTOADEFS_H
 
+#include "main.h"
+#include "qtmain.h"
 
-using namespace qtinterf;
+#include <QDialog>
 
-QTidleproc::QTidleproc() : QTimer(0)
-{
-    idle_proc_list = 0;
-    idle_id_cnt = 1000;
-    running = false;
-    connect(this, SIGNAL(timeout()), this, SLOT(run_slot()));
-}
-
-
-// Add an idle function callback.  The function will be called repeatedly
-// until 0 is returned, at which point it will be removed from the list.
-// An id for the callback is returned.
 //
-int
-QTidleproc::add(int(*cb)(void*), void *arg)
-{
-    idle_procs *ip = new idle_procs(cb, arg);
-    if (!idle_proc_list)
-        idle_proc_list = ip;
-    else {
-        idle_procs *p = idle_proc_list;
-        while (p->next)
-            p = p->next;
-        p->next = ip;
-    }
-    idle_proc_list->id = idle_id_cnt++;
-    if (!running) {
-        start();
-        running = true;
-    }
-    return (idle_proc_list->id);
-}
-
-
-// Remove an idle function callback from the list.  The argument is
-// the return value obtained when the callback was added.  Return
-// true if a removal was done.
+// Panel for setting misc OA interface parameters.
 //
-bool
-QTidleproc::remove(int iid)
+
+class QLineEdit;
+class QCheckBox;
+
+class QToaDefsDlg : public QDialog
 {
-    idle_procs *p = 0;
-    for (idle_procs *ip = idle_proc_list; ip; ip = ip->next) {
-        if (ip->id == iid) {
-            if (p)
-                p->next = ip->next;
-            else
-                idle_proc_list = ip->next;
-            delete ip;
-            return (true);
-        }
-        p = ip;
-    }
-    return (false);
-}
+    Q_OBJECT
 
+public:
+    QToaDefsDlg(GRobject);
+    ~QToaDefsDlg();
 
-// Slot to run the idle queue.  The first callback is popped off and
-// run.  If the callback returns true, the callback is appended to the
-// end of the list, otherwise it is deleted.
-//
-void
-QTidleproc::run_slot()
-{
-    if (idle_proc_list) {
-        idle_procs *ip = idle_proc_list;
-        idle_proc_list = ip->next;
-        ip->next = 0;
+    void update();
 
-        int ret = (*ip->proc)(ip->arg);
-        if (ret) {
-            if (!idle_proc_list)
-                idle_proc_list = ip;
-            else {
-                idle_procs *p = idle_proc_list;
-                while (p->next)
-                    p = p->next;
-                p->next = ip;
-            }
-        }
-        else
-            delete ip;
-    }
+    static QToaDefsDlg *self()          { return (instPtr); }
 
-    if (!idle_proc_list) {
-        stop();
-        running = false;
-    }
-}
+private slots:
+    void help_btn_slot();
+    void path_text_changed(const QString&);
+    void lib_text_changed(const QString&);
+    void tech_text_changed(const QString&);
+    void lview_text_changed(const QString&);
+    void schview_text_changed(const QString&);
+    void symview_text_changed(const QString&);
+    void prop_text_changed(const QString&);
+    void cdf_btn_slot(int);
+    void dismiss_btn_slot();
+
+private:
+    GRobject    od_caller;
+    QLineEdit   *od_path;
+    QLineEdit   *od_lib;
+    QLineEdit   *od_techlib;
+    QLineEdit   *od_layout;
+    QLineEdit   *od_schem;
+    QLineEdit   *od_symb;
+    QLineEdit   *od_prop;
+    QCheckBox   *od_cdf;
+
+    static QToaDefsDlg *instPtr;
+};
+
+#endif
 

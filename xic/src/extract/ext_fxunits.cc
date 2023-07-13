@@ -46,6 +46,21 @@
 // Units selection for the FastCap/FastHenry interface.
 //
 
+// FastHenry/FastCap units menu, must have same order and length as
+// used in ext_fxunits.cc.
+//
+const char *
+unit_t::units_strings[] =
+{
+    "meters",
+    "centimeters",
+    "millimeters",
+    "microns",
+    "inches",
+    "mils",
+    0
+};
+
 namespace {
     unit_t Units[] =
     {

@@ -1346,17 +1346,13 @@ QTmenuConfig::file_open_menu_slot(QAction *a)
         }
     }
 
-    const char *str = lstring::copy((const char*)a->text().toLatin1());
-    if (!str)
+    QByteArray text_ba = a->text().toLatin1();
+    const char *str = text_ba.constData();
+    if (!str || !*str)
         return;
-    if (!*str) {
-        delete [] str;
-        return;
-    }
 
     int mstate = QApplication::keyboardModifiers();
     XM()->HandleOpenCellMenu(str, (mstate & Qt::ShiftModifier));
-    delete [] str;
 }
 
 
@@ -1840,7 +1836,8 @@ QTmenuConfig::shape_slot(MenuEnt *ent)
 void
 QTmenuConfig::style_menu_slot(QAction *a)
 {
-    const char *string = a->text().toLatin1().constData();
+    QByteArray text_ba = a->text().toLatin1();
+    const char *string = text_ba.constData();
     if (!string || !*string)
         return;
     if (!EditIf()->styleList())
@@ -1883,7 +1880,8 @@ QTmenuConfig::style_menu_slot(QAction *a)
 void
 QTmenuConfig::shape_menu_slot(QAction *a)
 {
-    const char *string = a->text().toLatin1().constData();
+    QByteArray text_ba = a->text().toLatin1();
+    const char *string = text_ba.constData();
     if (!string || !*string)
         return;
     if (!ScedIf()->shapesList())

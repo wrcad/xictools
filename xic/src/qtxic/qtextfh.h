@@ -46,24 +46,63 @@
 
 #include <QDialog>
 
-class QWidget;
-class QDoubleSpinBox;
 
-class cFHdlg : public QDialog, public QTbag
+//-----------------------------------------------------------------------------
+// Pop-up to control FastHenry interface.
+//
+
+class QLabel;
+class QCheckBox;
+class QLineEdit;
+class QComboBox;
+class QSpinBox;
+class QDoubleSpinBox;
+class QPushButton;
+
+class QTfastHenryDlg : public QDialog, public QTbag
 {
-//    Q_OBJECT
+    Q_OBJECT
 
 public:
-    cFHdlg(GRobject);
-    ~cFHdlg();
+    enum { fhRun, fhRunFile, fhDump, fhForeg, fhMonitor, fhEnable,
+        fhOverrd, fhFlmt, fhKill,  fhManhGridCnt, fhNhinc, fhRh,
+        fhVolElMin, fhVolElTarg, fhPath, fhArgs, fhDefaults, fhFreq };
+
+    QTfastHenryDlg(GRobject);
+    ~QTfastHenryDlg();
 
     void update();
     void update_jobs_list();
     void update_label(const char*);
 
-    static cFHdlg *self()           { return (instPtr); }
+    static QTfastHenryDlg *self()           { return (instPtr); }
 
 private slots:
+    void help_btn_slot();
+    void foreg_btn_slot(int);
+    void console_btn_slot(int);
+    void runfile_btn_slot();
+    void runext_btn_slot();
+    void dumplist_btn_slot();
+    void args_changed_slot(const QString&);
+    void fmin_changed_slot(const QString&);
+    void fmax_changed_slot(const QString&);
+    void ndec_changed_slot(const QString&);
+    void path_changed_slot(const QString&);
+    void units_changed_slot(int);
+    void manh_grid_changed_slot(int);
+    void defaults_changed_slot(const QString&);
+    void nhinc_changed_slot(int);
+    void rh_changed_slot(double);
+    void override_btn_slot(int);
+    void internal_btn_slot(int);
+    void enable_btn_slot(int);
+    void volel_min_changed_slot(double);
+    void volel_target_changed_slot(int);
+    void mouse_press_slot(QMouseEvent*);
+    void abort_btn_slot();
+    void dismiss_btn_slot();
+    void font_changed_slot(int);
 
 private:
     void set_sens(bool);
@@ -72,53 +111,42 @@ private:
     void select_range(int, int);
     int get_pid();
     void select_pid(int);
-
     static const char *fh_def_string(int);
-    /*
-    static void fh_cancel_proc(GtkWidget*, void*);
-    static void fh_help_proc(GtkWidget*, void*);
-    static void fh_change_proc(GtkWidget*, void*);
-    static void fh_units_proc(GtkWidget*, void*);
     static void fh_p_cb(bool, void*);
     static void fh_dump_cb(const char*, void*);
-    static void fh_btn_proc(GtkWidget*, void*);
-    static int fh_button_dn(GtkWidget*, GdkEvent*, void*);
-    static void fh_font_changed();
-    */
 
-    GRobject fh_caller;
-    QWidget *fh_label;
+    GRobject    fh_caller;
+    QLabel      *fh_label;
 
-    QWidget *fh_units;
-    QWidget *fh_nhinc_ovr;
-    QWidget *fh_nhinc_fh;
-    QWidget *fh_enab;
+    QCheckBox   *fh_foreg;
+    QCheckBox   *fh_out;
+    QLineEdit   *fh_file;
+    QLineEdit   *fh_args;
+    QLineEdit   *fh_defs;
+    QLineEdit   *fh_fmin;
+    QLineEdit   *fh_fmax;
+    QLineEdit   *fh_ndec;
+    QLineEdit   *fh_path;
 
-    QWidget *fh_foreg;
-    QWidget *fh_out;
-    QWidget *fh_file;
-    QWidget *fh_args;
-    QWidget *fh_defs;
-    QWidget *fh_fmin;
-    QWidget *fh_fmax;
-    QWidget *fh_ndec;
-    QWidget *fh_path;
+    QComboBox   *fh_units;
+    QCheckBox   *fh_nhinc_ovr;
+    QCheckBox   *fh_nhinc_fh;
+    QCheckBox   *fh_enab;
+    QSpinBox    *fh_sb_manh_grid_cnt;
+    QSpinBox    *fh_sb_nhinc;
+    QDoubleSpinBox *fh_sb_rh;
+    QDoubleSpinBox *fh_sb_volel_min;
+    QSpinBox    *fh_sb_volel_target;
 
-    QWidget *fh_jobs;
-    QWidget *fh_kill;
+    QTtextEdit  *fh_jobs;
+    QPushButton *fh_kill;
 
-    bool fh_no_reset;
-    int fh_start;
-    int fh_end;
-    int fh_line_selected;
+    bool    fh_no_reset;
+    int     fh_start;
+    int     fh_end;
+    int     fh_line_selected;
 
-    QDoubleSpinBox *fh_fh_manh_grid_cnt;
-    QDoubleSpinBox *fh_fh_nhinc;
-    QDoubleSpinBox *fh_fh_rh;
-    QDoubleSpinBox *fh_fh_volel_min;
-    QDoubleSpinBox *fh_fh_volel_target;
-
-    static cFHdlg *instPtr;
+    static QTfastHenryDlg *instPtr;
 };
 
 #endif

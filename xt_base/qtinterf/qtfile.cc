@@ -81,8 +81,6 @@
 
 #define COLUMN_SPACING 20
 
-enum ActionType { A_NOOP, A_COPY, A_MOVE, A_LINK, A_ASK };
-static void DoFileAction(QTfilePopup*, const char*, const char*, ActionType);
 
 // XPM
 static const char* const up_xpm[] = {
@@ -373,15 +371,15 @@ file_tree_widget::dropEvent(QDropEvent *ev)
         char *dst = fsel->get_dir(it);
 
         if (src && dst) {
-            ActionType a = A_NOOP;
+            QTfilePopup::ActionType a = QTfilePopup::A_NOOP;
             if (proposed_action & Qt::CopyAction)
-                a = A_COPY;
+                a = QTfilePopup::A_COPY;
             else if (proposed_action & Qt::MoveAction)
-                a = A_MOVE;
+                a = QTfilePopup::A_MOVE;
             else if (proposed_action & Qt::LinkAction)
-                a = A_LINK;
+                a = QTfilePopup::A_LINK;
 
-            DoFileAction(fsel, src, dst, a);
+            QTfilePopup::DoFileAction(fsel, src, dst, a);
         }
         delete [] src;
         delete [] dst;
@@ -547,14 +545,14 @@ file_list_widget::dropEvent(QDropEvent *ev)
     char *dst = fsel->get_dir();
 
     if (src && dst) {
-        ActionType a = A_NOOP;
+        QTfilePopup::ActionType a = QTfilePopup::A_NOOP;
         if (proposed_action & Qt::CopyAction)
-            a = A_COPY;
+            a = QTfilePopup::A_COPY;
         else if (proposed_action & Qt::MoveAction)
-            a = A_MOVE;
+            a = QTfilePopup::A_MOVE;
         else if (proposed_action & Qt::LinkAction)
-            a = A_LINK;
-        DoFileAction(fsel, src, dst, a);
+            a = QTfilePopup::A_LINK;
+        QTfilePopup::DoFileAction(fsel, src, dst, a);
     }
     delete [] src;
     delete [] dst;
@@ -1816,26 +1814,28 @@ QTfilePopup::get_newdir(const char *rootin)
 }
 
 
-// Invoke the shell function in buf, and return any output
-//
-static char *
-doit(char *buf)
-{
-    FILE *fp = popen(buf, "r");
-    if (!fp)
-        return (0);
-    sLstr lstr;
-    while (fgets(buf, 256, fp) != 0)
-        lstr.add(buf);
-    pclose(fp);
-    return (lstr.string_trim());
+namespace {
+    // Invoke the shell function in buf, and return any output.
+    //
+    char *doit(char *buf)
+    {
+        FILE *fp = popen(buf, "r");
+        if (!fp)
+            return (0);
+        sLstr lstr;
+        while (fgets(buf, 256, fp) != 0)
+            lstr.add(buf);
+        pclose(fp);
+        return (lstr.string_trim());
+    }
 }
 
 
+// Static function.
 // Actually perform the move/copy/link.
 //
-static void
-DoFileAction(QTfilePopup *fs, const char *src, const char *dst,
+void
+QTfilePopup::DoFileAction(QTbag *bg, const char *src, const char *dst,
     ActionType action)
 {
     if (!src || !*src || !dst || !*dst || !strcmp(src, dst))
@@ -1890,8 +1890,8 @@ DoFileAction(QTfilePopup *fs, const char *src, const char *dst,
     delete [] tbuf;
 
     if (err) {
-        if (*err)
-            fs->PopUpMessage(err, true);
+        if (*err && bg)
+            bg->PopUpMessage(err, true);
         delete [] err;
     }
 }
