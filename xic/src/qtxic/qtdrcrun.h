@@ -38,81 +38,108 @@
  $Id:$
  *========================================================================*/
 
+#ifndef QTDRCRUN_H
+#define QTDRCRUN_H
+
 #include "main.h"
-#include "cvrt.h"
-#include "edit.h"
-#include "sced.h"
-#include "drc.h"
-#include "ext.h"
-#include "oa_if.h"
+#include "qtmain.h"
+
+#include <QDialog>
 
 
-// qtasm.cc
-
-// Exported function to pop up/down the tool.
+//------------------------------------------------------------------------
+// DRC Run dialog.
 //
-void
-cConvert::PopUpAssemble(GRobject, ShowMode)
+// Allowe initiation and control of batch DRC runs.
+//
+
+class QPushButon;
+class QLineEdit;
+class QDoubleSpinBox;
+class QCheckBox;
+class QLabel;
+
+class QTdrcRunDlg : public QDialog
 {
-}
+    Q_OBJECT
 
+public:
+    QTdrcRunDlg(GRobject);
+    ~QTdrcRunDlg();
 
-void
-cMain::SetNoToTop(bool)
-{
-}
+    void update();
+    void update_jobs_list();
+    void set_window(const BBox*);
+    void unset_set();
 
-void
-cMain::SetLowerWinOffset(int)
-{
-}
+    static QTdrcRunDlg *self()          { return (instPtr); }
 
+private slots:
+    void help_btn_slot();
+    void use_btn_slot(bool);
+    void chd_name_slot(const QString&);
+    void cname_slot(const QString&);
+    void none_btn_slot(bool);
+    void part_changed_slot(double);
+    void win_btn_slot(int);
+    void flat_btn_slot(int);
+    void set_btn_slot(bool);
+    void left_changed_slot(double);
+    void botm_changed_slot(double);
+    void right_changed_slot(double);
+    void top_changed_slot(double);
+    void check_btn_slot(bool);
+    void checkbg_btn_slot(bool);
+    void mouse_press_slot(QMouseEvent*);
+    void font_changed_slot(int);
+    void abort_btn_slot();
+    void dismiss_btn_slot();
 
-// qtdebug.cc
+private:
+    void select_range(int, int);
+    int get_pid();
+    void select_pid(int);
+    void run_drc(bool, bool);
+    void dc_region();
+    void dc_region_quit();
 
-void
-cMain::PopUpDebug(GRobject, ShowMode)
-{
-}
+    GRobject    dc_caller;
+    QPushButton *dc_use;
+    QLineEdit   *dc_chdname;
+    QLineEdit   *dc_cname;
+    QPushButton *dc_none;
+    QDoubleSpinBox *dc_sb_part;
+    QCheckBox   *dc_wind;
+    QCheckBox   *dc_flat;
+    QPushButton *dc_set;
+    QLabel      *dc_l_label;
+    QLabel      *dc_b_label;
+    QLabel      *dc_r_label;
+    QLabel      *dc_t_label;
+    QDoubleSpinBox *dc_sb_left;
+    QDoubleSpinBox *dc_sb_bottom;
+    QDoubleSpinBox *dc_sb_right;
+    QDoubleSpinBox *dc_sb_top;
+    QPushButton *dc_check;
+    QPushButton *dc_checkbg;
+    QTtextEdit  *dc_jobs;
+    QPushButton *dc_kill;
 
-bool
-cMain::DbgLoad(MenuEnt*)
-{
-    return (false);
-}
+    int         dc_start;
+    int         dc_end;
+    int         dc_line_selected;
 
+    static double dc_last_part_size;
+    static double dc_l_val;
+    static double dc_b_val;
+    static double dc_r_val;
+    static double dc_t_val;
+    static bool dc_use_win;
+    static bool dc_flatten;
+    static bool dc_use_chd;
 
-// qtlpal.cc
+    static QTdrcRunDlg *instPtr;
+};
 
-void
-cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*)
-{
-}
+#endif
 
-
-void
-cDRC::PopUpRules(GRobject, ShowMode)
-{
-}
-
-
-void
-cDRC::PopUpRuleEdit(GRobject, ShowMode, DRCtype, const char*,
-    bool(*)(const char*, void*), void*, const DRCtestDesc*)
-{
-}
-
-bool
-cSced::PopUpNodeMap(GRobject, ShowMode, int)
-{
-    return (false);
-}
-
-
-struct PCellParam;
-bool
-cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*,
-    const char*, pcpMode)
-{
-    return (false);
-}

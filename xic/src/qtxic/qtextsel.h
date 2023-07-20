@@ -38,81 +38,81 @@
  $Id:$
  *========================================================================*/
 
+#ifndef QTEXTSEL_H
+#define QTEXTSEL_H
+
 #include "main.h"
-#include "cvrt.h"
-#include "edit.h"
-#include "sced.h"
-#include "drc.h"
-#include "ext.h"
-#include "oa_if.h"
+#include "qtmain.h"
 
+#include <QDialog>
 
-// qtasm.cc
-
-// Exported function to pop up/down the tool.
+//-------------------------------------------------------------------------
+// Pop-up to control group/node/path selections
 //
-void
-cConvert::PopUpAssemble(GRobject, ShowMode)
+
+class QPushButton;
+class QComboBox;
+class QSpinBox;
+class QCheckBox;
+class QLabel;
+
+class QTextNetSelDlg : public QDialog, public QTbag
 {
-}
+    Q_OBJECT
 
+public:
+    QTextNetSelDlg(GRobject);
+    ~QTextNetSelDlg();
 
-void
-cMain::SetNoToTop(bool)
-{
-}
+    void update();
 
-void
-cMain::SetLowerWinOffset(int)
-{
-}
+    static QTextNetSelDlg *self()           { return (instPtr); }
 
+private slots:
+    void gnsel_btn_slot(bool);
+    void pathsel_btn_slot(bool);
+    void qpath_btn_slot(bool);
+    void help_btn_slot();
+    void gplane_menu_slot(int);
+    void depth_changed_slot(int);
+    void zbtn_slot();
+    void allbtn_slot();
+    void qp_usec_btn_slot(bool);
+    void blink_btn_slot(bool);
+    void subpath_btn_slot(bool);
+    void ldant_btn_slot();
+    void zoid_btn_slot();
+    void tofile_btn_slot();
+    void pathvias_btn_slot(int);
+    void vcheck_btn_slot(int);
+    void def_terms_slot(bool);
+    void meas_btn_slot();
+    void dismiss_btn_slot();
 
-// qtdebug.cc
+private:
+    void set_sens();
+    static int es_redraw_idle(void*);
 
-void
-cMain::PopUpDebug(GRobject, ShowMode)
-{
-}
+    GRobject    es_caller;
+    QPushButton *es_gnsel;
+    QPushButton *es_paths;
+    QPushButton *es_qpath;
+    QComboBox   *es_gpmnu;
+    QSpinBox    *es_sb_depth;
+    QCheckBox   *es_qpconn;
+    QCheckBox   *es_blink;
+    QCheckBox   *es_subpath;
+    QPushButton *es_antenna;
+    QPushButton *es_zoid;
+    QPushButton *es_tofile;
+    QCheckBox   *es_vias;
+    QCheckBox   *es_vtree;
+    QLabel      *es_rlab;
+    QPushButton *es_terms;
+    QPushButton *es_meas;
 
-bool
-cMain::DbgLoad(MenuEnt*)
-{
-    return (false);
-}
+    static QTextNetSelDlg *instPtr;
+};
 
+#endif
 
-// qtlpal.cc
-
-void
-cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*)
-{
-}
-
-
-void
-cDRC::PopUpRules(GRobject, ShowMode)
-{
-}
-
-
-void
-cDRC::PopUpRuleEdit(GRobject, ShowMode, DRCtype, const char*,
-    bool(*)(const char*, void*), void*, const DRCtestDesc*)
-{
-}
-
-bool
-cSced::PopUpNodeMap(GRobject, ShowMode, int)
-{
-    return (false);
-}
-
-
-struct PCellParam;
-bool
-cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*,
-    const char*, pcpMode)
-{
-    return (false);
-}

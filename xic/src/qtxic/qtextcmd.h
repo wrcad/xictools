@@ -38,81 +38,65 @@
  $Id:$
  *========================================================================*/
 
+#ifndef QTEXTCMD_H
+#define QTEXTCMD_H
+
 #include "main.h"
-#include "cvrt.h"
-#include "edit.h"
-#include "sced.h"
-#include "drc.h"
-#include "ext.h"
-#include "oa_if.h"
+#include "qtmain.h"
+
+#include <QDialog>
 
 
-// qtasm.cc
-
-// Exported function to pop up/down the tool.
+//---------------------------------------------------------------------------
+// Pop-up interface for the following extraction commands:
+//  PNET, ENET, SOURC, EXSET
 //
-void
-cConvert::PopUpAssemble(GRobject, ShowMode)
+
+struct sExtCmd;
+class QComboBox;
+class QLabel;
+class QLineEdit;
+class QPushButton;
+class QCheckBox;
+
+class QTextCmdDlg : public QDialog
 {
-}
+    Q_OBJECT
 
+public:
+    QTextCmdDlg(GRobject, sExtCmd*,
+        bool(*)(const char*, void*, bool, const char*, int, int),
+        void*, int);
+    ~QTextCmdDlg();
 
-void
-cMain::SetNoToTop(bool)
-{
-}
+    sExtCmd *excmd()                    { return (cmd_excmd); }
 
-void
-cMain::SetLowerWinOffset(int)
-{
-}
+    static QTextCmdDlg *self()          { return (instPtr); }
 
+    void update();
 
-// qtdebug.cc
+private slots:
+    void help_btn_slot();
+    void go_btn_slot(bool);
+    void check_state_changed_slot(int);
+    void depth_changed_slot(int);
+    void cancel_btn_slot();
 
-void
-cMain::PopUpDebug(GRobject, ShowMode)
-{
-}
+private:
+    GRobject    cmd_caller;
+    QComboBox   *cmd_depth;
+    QLabel      *cmd_label;
+    QLineEdit   *cmd_text;
+    QPushButton *cmd_go;
+    QPushButton *cmd_cancel;
+    QCheckBox   **cmd_bx;
 
-bool
-cMain::DbgLoad(MenuEnt*)
-{
-    return (false);
-}
+    sExtCmd *cmd_excmd;
+    bool (*cmd_action)(const char*, void*, bool, const char*, int, int);
+    void *cmd_arg;
+    const char *cmd_helpkw;
 
+    static QTextCmdDlg *instPtr;
+};
 
-// qtlpal.cc
-
-void
-cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*)
-{
-}
-
-
-void
-cDRC::PopUpRules(GRobject, ShowMode)
-{
-}
-
-
-void
-cDRC::PopUpRuleEdit(GRobject, ShowMode, DRCtype, const char*,
-    bool(*)(const char*, void*), void*, const DRCtestDesc*)
-{
-}
-
-bool
-cSced::PopUpNodeMap(GRobject, ShowMode, int)
-{
-    return (false);
-}
-
-
-struct PCellParam;
-bool
-cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*,
-    const char*, pcpMode)
-{
-    return (false);
-}
+#endif

@@ -51,12 +51,17 @@ CCFILES = \
     qtdevs.cc \
     qtdots.cc \
     qtdrclim.cc \
+    qtdrcrun.cc \
     qtdspwin.cc \
     qtedset.cc \
     qtempty.cc \
     qtexpand.cc \
+    qtextcmd.cc \
+    qtextdev.cc \
     qtextfc.cc \
     qtextfh.cc \
+    qtextsel.cc \
+    qtextset.cc \
     qtfiledlg.cc \
     qtfiles.cc \
     qtfillp.cc \
@@ -92,6 +97,7 @@ CCFILES = \
     qtprpcedit.cc \
     qtprpedit.cc \
     qtprpinfo.cc \
+    qtptedit.cc \
     qtsel.cc \
     qtselinst.cc \
     qtsim.cc \
@@ -100,6 +106,7 @@ CCFILES = \
     qttech.cc \
     qttedit.cc \
     qttree.cc \
+    qtvia.cc \
     qtwndc.cc \
     qtxdraw.cc \
     qtxform.cc \
@@ -131,12 +138,17 @@ MOCFILES = \
     moc_devs.cpp \
     moc_dots.cpp \
     moc_drclim.cpp \
+    moc_drcrun.cpp \
     moc_dspwin.cpp \
     moc_edset.cpp \
     moc_empty.cpp \
     moc_expand.cpp \
+    moc_extcmd.cpp \
+    moc_extdev.cpp \
     moc_extfc.cpp \
     moc_extfh.cpp \
+    moc_extsel.cpp \
+    moc_extset.cpp \
     moc_files.cpp \
     moc_fillp.cpp \
     moc_flatten.cpp \
@@ -166,6 +178,7 @@ MOCFILES = \
     moc_prpcedit.cpp \
     moc_prpedit.cpp \
     moc_prpinfo.cpp \
+    moc_ptedit.cpp \
     moc_sel.cpp \
     moc_selinst.cpp \
     moc_sim.cpp \
@@ -174,6 +187,7 @@ MOCFILES = \
     moc_tech.cpp \
     moc_tedit.cpp \
     moc_tree.cpp \
+    moc_via.cpp \
     moc_wndc.cpp \
     moc_xform.cpp \
     moc_zoom.cpp
@@ -228,12 +242,17 @@ moc_devedit.o: moc_devedit.cpp  qtdevedit.h
 moc_devs.o: moc_devs.cpp  qtdevs.h
 moc_dots.o: moc_dots.cpp  qtdots.h
 moc_drclim.o: moc_drclim.cpp  qtdrclim.h
+moc_drcrun.o: moc_drcrun.cpp  qtdrcrun.h
 moc_dspwin.o: moc_dspwin.cpp  qtdspwin.h
 moc_edset.o: moc_edset.cpp  qtedset.h
 moc_empty.o: moc_empty.cpp  qtempty.h
 moc_expand.o: moc_expand.cpp  qtexpand.h
+moc_extcmd.o: moc_extcmd.cpp  qtextcmd.h
+moc_extdev.o: moc_extdev.cpp  qtextdev.h
 moc_extfc.o: moc_extfc.cpp  qtextfc.h
 moc_extfh.o: moc_extfh.cpp  qtextfh.h
+moc_extsel.o: moc_extsel.cpp  qtextsel.h
+moc_extset.o: moc_extset.cpp  qtextset.h
 moc_files.o: moc_files.cpp  qtfiles.h
 moc_fillp.o: moc_fillp.cpp  qtfillp.h
 moc_flatten.o: moc_flatten.cpp  qtflatten.h
@@ -263,6 +282,7 @@ moc_place.o: moc_place.cpp  qtplace.h
 moc_prpcedit.o: moc_prpcedit.cpp  qtprpcedit.h
 moc_prpedit.o: moc_prpedit.cpp  qtprpedit.h
 moc_prpinfo.o: moc_prpinfo.cpp  qtprpinfo.h
+moc_ptedit.o: moc_ptedit.cpp  qtptedit.h
 moc_sel.o: moc_sel.cpp  qtsel.h
 moc_selinst.o: moc_selinst.cpp  qtselinst.h
 moc_sim.o: moc_sim.cpp  qtsim.h
@@ -271,6 +291,7 @@ moc_stab.o: moc_stab.cpp  qtstab.h
 moc_tech.o: moc_tech.cpp  qttech.h
 moc_tedit.o: moc_tedit.cpp  qttedit.h
 moc_tree.o: moc_tree.cpp  qttree.h
+moc_via.o: moc_via.cpp  qtvia.h
 moc_wndc.o: moc_wndc.cpp  qtwndc.h
 moc_xform.o: moc_xform.cpp  qtxform.h
 moc_zoom.o: moc_zoom.cpp  qtzoom.h
@@ -325,6 +346,8 @@ moc_dots.cpp: $(MOC) qtdots.h
 	$(MOC) qtdots.h -o moc_dots.cpp
 moc_drclim.cpp: $(MOC) qtdrclim.h
 	$(MOC) qtdrclim.h -o moc_drclim.cpp
+moc_drcrun.cpp: $(MOC) qtdrcrun.h
+	$(MOC) qtdrcrun.h -o moc_drcrun.cpp
 moc_dspwin.cpp: $(MOC) qtdspwin.h
 	$(MOC) qtdspwin.h -o moc_dspwin.cpp
 moc_edset.cpp: $(MOC) qtedset.h
@@ -333,10 +356,18 @@ moc_empty.cpp: $(MOC) qtempty.h
 	$(MOC) qtempty.h -o moc_empty.cpp
 moc_expand.cpp: $(MOC) qtexpand.h
 	$(MOC) qtexpand.h -o moc_expand.cpp
+moc_extcmd.cpp: $(MOC) qtextcmd.h
+	$(MOC) qtextcmd.h -o moc_extcmd.cpp
+moc_extdev.cpp: $(MOC) qtextdev.h
+	$(MOC) qtextdev.h -o moc_extdev.cpp
 moc_extfc.cpp: $(MOC) qtextfc.h
 	$(MOC) qtextfc.h -o moc_extfc.cpp
 moc_extfh.cpp: $(MOC) qtextfh.h
 	$(MOC) qtextfh.h -o moc_extfh.cpp
+moc_extsel.cpp: $(MOC) qtextsel.h
+	$(MOC) qtextsel.h -o moc_extsel.cpp
+moc_extset.cpp: $(MOC) qtextset.h
+	$(MOC) qtextset.h -o moc_extset.cpp
 moc_files.cpp: $(MOC) qtfiles.h
 	$(MOC) qtfiles.h -o moc_files.cpp
 moc_fillp.cpp: $(MOC) qtfillp.h
@@ -395,6 +426,8 @@ moc_prpedit.cpp: $(MOC) qtprpedit.h
 	$(MOC) qtprpedit.h -o moc_prpedit.cpp
 moc_prpinfo.cpp: $(MOC) qtprpinfo.h
 	$(MOC) qtprpinfo.h -o moc_prpinfo.cpp
+moc_ptedit.cpp: $(MOC) qtptedit.h
+	$(MOC) qtptedit.h -o moc_ptedit.cpp
 moc_sel.cpp: $(MOC) qtsel.h
 	$(MOC) qtsel.h -o moc_sel.cpp
 moc_selinst.cpp: $(MOC) qtselinst.h
@@ -411,6 +444,8 @@ moc_tedit.cpp: $(MOC) qttedit.h
 	$(MOC) qttedit.h -o moc_tedit.cpp
 moc_tree.cpp: $(MOC) qttree.h
 	$(MOC) qttree.h -o moc_tree.cpp
+moc_via.cpp: $(MOC) qtvia.h
+	$(MOC) qtvia.h -o moc_via.cpp
 moc_wndc.cpp: $(MOC) qtwndc.h
 	$(MOC) qtwndc.h -o moc_wndc.cpp
 moc_xform.cpp: $(MOC) qtxform.h

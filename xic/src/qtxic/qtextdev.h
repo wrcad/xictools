@@ -38,81 +38,85 @@
  $Id:$
  *========================================================================*/
 
+#ifndef QTEXTDEV_H
+#define QTEXTDEV_H
+
 #include "main.h"
-#include "cvrt.h"
-#include "edit.h"
-#include "sced.h"
-#include "drc.h"
-#include "ext.h"
-#include "oa_if.h"
+#include "qtmain.h"
 
+#include <QDialog>
 
-// qtasm.cc
-
-// Exported function to pop up/down the tool.
+//-------------------------------------------------------------------------
+// Dialog to control device highlighting and selection.
 //
-void
-cConvert::PopUpAssemble(GRobject, ShowMode)
+
+class QTreeWidgetItem;
+class QTreeWidget;
+class QPushButton;
+class QLineEdit;
+class QCheckBox;
+
+class QTextDevDlg : public QDialog
 {
-}
+    Q_OBJECT
 
+public:
+    QTextDevDlg(GRobject);
+    ~QTextDevDlg();
 
-void
-cMain::SetNoToTop(bool)
-{
-}
+    void update();
+    void relist();
 
-void
-cMain::SetLowerWinOffset(int)
-{
-}
+    static QTextDevDlg *self()          { return (instPtr); }
 
+private slots:
+    void update_btn_slot();
+    void showall_btn_slot();
+    void eraseall_btn_slot();
+    void help_btn_slot();
+    void show_btn_slot();
+    void erase_btn_slot();
+    void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
+    void item_activated_slot(QTreeWidgetItem*, int);
+    void item_clicked_slot(QTreeWidgetItem*, int);
+    void item_selection_changed_slot();
+    void enablesel_btn_slot(bool);
+    void compute_btn_slot(int);
+    void compare_btn_slot(int);
+    void measbox_btn_slot(bool);
+    void paint_btn_slot();
+    void dismiss_btn_slot();
 
-// qtdebug.cc
+private:
+    /*
+    static void ed_cancel_proc(GtkWidget*, void*);
+    static void ed_action_proc(GtkWidget*, void*);
+    static int ed_selection_proc(GtkTreeSelection*, GtkTreeModel*,
+        GtkTreePath*, int, void*);
+    static bool ed_focus_proc(GtkWidget*, GdkEvent*, void*);
+    */
 
-void
-cMain::PopUpDebug(GRobject, ShowMode)
-{
-}
+    GRobject    ed_caller;
+    QPushButton *ed_update;
+    QPushButton *ed_show;
+    QPushButton *ed_erase;
+    QPushButton *ed_show_all;
+    QPushButton *ed_erase_all;
+    QLineEdit   *ed_indices;
+    QTreeWidget *ed_list;
+    QPushButton *ed_select;
+    QCheckBox   *ed_compute;
+    QCheckBox   *ed_compare;
+    QPushButton *ed_measbox;
+    QPushButton *ed_paint;
 
-bool
-cMain::DbgLoad(MenuEnt*)
-{
-    return (false);
-}
+    char        *ed_selection;
+    CDs         *ed_sdesc;
+    bool        ed_devs_listed;
 
+    static const char *nodevmsg;
+    static QTextDevDlg *instPtr;
+};
 
-// qtlpal.cc
+#endif
 
-void
-cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*)
-{
-}
-
-
-void
-cDRC::PopUpRules(GRobject, ShowMode)
-{
-}
-
-
-void
-cDRC::PopUpRuleEdit(GRobject, ShowMode, DRCtype, const char*,
-    bool(*)(const char*, void*), void*, const DRCtestDesc*)
-{
-}
-
-bool
-cSced::PopUpNodeMap(GRobject, ShowMode, int)
-{
-    return (false);
-}
-
-
-struct PCellParam;
-bool
-cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*,
-    const char*, pcpMode)
-{
-    return (false);
-}

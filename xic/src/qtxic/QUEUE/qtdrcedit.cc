@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "qtdrcedit.h"
 #include "main.h"
 #include "drc.h"
 #include "drc_edit.h"
@@ -50,10 +51,8 @@
 #include "promptline.h"
 #include "errorlog.h"
 #include "tech.h"
-#include "gtkmain.h"
-#include "gtkinterf/gtkfont.h"
+#include "qtinterf/qtfont.h"
 #include "miscutil/filestat.h"
-#include <gdk/gdkkeysyms.h>
 
 
 //-----------------------------------------------------------------------------
@@ -62,112 +61,54 @@
 // Help system keywords used:
 //  xic:dredt
 
+void
+cDRC::PopUpRules(GRobject caller, ShowMode mode)
+{
+    if (!QTdev::exists() || !QTmainwin::exists())
+        return;
+    if (mode == MODE_OFF) {
+        if (QTdrcRuleEdutDlg::self())
+            QTdrcRuleEditDlg::self()->deleteLater();
+        return;
+    }
+    if (mode == MODE_UPD) {
+        if (!QTdrcRuleEditDlg::self())
+            return;
+        if (DSP()->CurMode() == Electrical) {
+            PopUpRules(0, MODE_OFF);
+            return;
+        }
+        QTdrcRuleEditDlg::self()->update();
+        return;
+    }
+
+    if (QTdrcRuleEditDlg::self())
+        return;
+
+    new QRdrcRuleEditDlg(caller);
+
+    QTdev::self()->SetPopupLocation(GRloc(), QTdrcRuleEditDlg::self(),
+        QTmainwin::self()->Viewport());
+    QTdrcRuleEditDlg::self()->show();
+}
+// End of cDRC functions.
+
+
 // Default window size, assumes 6X13 chars, 80 cols, 12 rows
 // with a 2-pixel margin.
 #define DEF_WIDTH 484
 #define DEF_HEIGHT 160
 
 namespace {
-    namespace gtkdrcedit {
-        struct sDim : public DRCedit
-        {
-            sDim(GRobject);
-            ~sDim();
-
-            GtkWidget *shell() { return (dim_popup); }
-
-            void update();
-
-        private:
-            void rule_menu_upd();
-            void save_last_op(DRCtestDesc*, DRCtestDesc*);
-            void select_range(int, int);
-            void check_sens();
-
-            static void dim_font_changed();
-            static void dim_cancel_proc(GtkWidget*, void*);
-            static void dim_help_proc(GtkWidget*, void*);
-            static void dim_inhibit_proc(GtkWidget*, void*);
-            static void dim_edit_proc(GtkWidget*, void*);
-            static void dim_delete_proc(GtkWidget*, void*);
-            static void dim_undo_proc(GtkWidget*, void*);
-            static void dim_rule_proc(GtkWidget*, void*);
-            static bool dim_cb(const char*, void*);
-            static void dim_show_msg(const char*);
-            static bool dim_editsave(const char*, void*, XEtype);
-            static void dim_rule_menu_proc(GtkWidget*, void*);
-            static int dim_text_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-
-            GRobject dim_caller;        // initiating button
-            GtkWidget *dim_popup;       // popup shell
-            GtkWidget *dim_text;        // text area
-            GtkWidget *dim_inhibit;     // inhibit menu entry
-            GtkWidget *dim_edit;        // edit menu entry
-            GtkWidget *dim_del;         // delete menu entry
-            GtkWidget *dim_undo;        // undo menu entry
-            GtkWidget *dim_menu;        // rule block menu
-            GtkWidget *dim_umenu;       // user rules menu
-            GtkWidget *dim_delblk;      // rule block delete
-            GtkWidget *dim_undblk;      // rule block undelete
-            DRCtestDesc *dim_editing_rule;  // rule selected for editing
-            int dim_start;
-            int dim_end;
-        };
-
-        sDim *Dim;
-    }
-}
-
-using namespace gtkdrcedit;
-
-
-void
-cDRC::PopUpRules(GRobject caller, ShowMode mode)
-{
-    if (!GTKdev::exists() || !GTKmainwin::exists())
-        return;
-    if (mode == MODE_OFF) {
-        delete Dim;
-        return;
-    }
-    if (mode == MODE_UPD) {
-        if (!Dim)
-            return;
-        if (DSP()->CurMode() == Electrical) {
-            PopUpRules(0, MODE_OFF);
-            return;
-        }
-        Dim->update();
-        return;
-    }
-
-    if (Dim)
-        return;
-
-    new sDim(caller);
-    if (!Dim->shell()) {
-        delete Dim;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Dim->shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
-
-    GTKdev::self()->SetPopupLocation(GRloc(), Dim->shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Dim->shell());
-}
-// End of cDRC functions.
-
-
-namespace {
     const char *MIDX = "midx";
 }
 
-sDim::sDim(GRobject c)
+QTdrcRuleEditDlg *QTdrcRuleEditDlg::instPtr;
+
+QRdrcRuleEditDlg::QRdrcRuleEditDlg(GRobject c)
 {
-    Dim = this;
+    instPtr = this;
     dim_caller = c;
-    dim_popup = 0;
     dim_text = 0;
     dim_inhibit = 0;
     dim_edit = 0;
@@ -181,368 +122,102 @@ sDim::sDim(GRobject c)
     dim_start = 0;
     dim_end = 0;
 
-    dim_popup = gtk_NewPopup(0, "Design Rule Editor",
-        dim_cancel_proc, 0);
-    if (!dim_popup)
-        return;
+    setWindowTitle(tr("Design Rule Editor");
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    GtkWidget *form = gtk_table_new(1, 2, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(dim_popup), form);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    //
     // menu bar
     //
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-    gtk_window_add_accel_group(GTK_WINDOW(dim_popup), accel_group);
-    GtkWidget *menubar = gtk_menu_bar_new();
-    g_object_set_data(G_OBJECT(dim_popup), "menubar", menubar);
-    gtk_widget_show(menubar);
-    GtkWidget *item;
+    QMenuBar *menubar = new QMenuBar(this);
 
     // Edit menu.
-    item = gtk_menu_item_new_with_mnemonic("_Edit");
-    gtk_widget_set_name(item, "Edit");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *submenu = gtk_menu_new();
-    gtk_widget_show(submenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
-
+    QMenu *menu = menubar->addMenu(tr("&Edit"));
     // _Edit, <control>E, dim_edit_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("_Edit");
-    gtk_widget_set_name(item, "Edit");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_edit_proc), 0);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_e,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    dim_edit = item;
-
+    dim_edit = menu->addAction(tr("&Edit"));
     // _Inhibit, <control>I, dim_inhibit_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("_Inhibit");
-    gtk_widget_set_name(item, "Inhibit");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_inhibit_proc), 0);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_i,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    dim_inhibit = item;
-
+    dim_inhibit = menu->addAction(tr("&Inhibit"));
     // _Delete, <control>D, dim_delete_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("_Delete");
-    gtk_widget_set_name(item, "Delete");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_delete_proc), 0);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_d,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    dim_del = item;
-
+    dim_del = menu->addAction(tr("&Delete"));
     // _Undo, <control>U, dim_undo_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("_Undo");
-    gtk_widget_set_name(item, "Undo");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_undo_proc), 0);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_u,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    dim_undo = item;
-
-    item = gtk_separator_menu_item_new();
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-
+    dim_undo = menu->addAction(tr("&Undo"));
+// SEPARATOR
     // _Quit, <control>Q, dim_cancel_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("_Quit");
-    gtk_widget_set_name(item, "Quit");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_cancel_proc), 0);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    QAction *a = menu->addAction(tr("_Quit"));
 
     // Rules menu.
-    item = gtk_menu_item_new_with_mnemonic("_Rules");
-    gtk_widget_set_name(item, "Rules");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    submenu = gtk_menu_new();
-    gtk_widget_show(submenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
-
+    menu = menubar->addMenu(tr("&Rules"));
     // User Defined Rule, 0, 0, 0, "<Branch>"
-    item = gtk_menu_item_new_with_mnemonic("User Defined Rule");
-    gtk_widget_set_name(item, "User Defined Rule");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    GtkWidget *sm = gtk_menu_new();
-    gtk_widget_show(sm);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sm);
+    QMenu *sm = menu->addMenu(tr("User Defined Rule"));
 
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
-        item = gtk_menu_item_new_with_label(tst->name());
-        gtk_widget_set_name(item, tst->name());
-        gtk_widget_show(item);
-        g_signal_connect(G_OBJECT(item), "activate",
-            G_CALLBACK(dim_rule_proc), (void*)tst->name());
-        gtk_menu_shell_append(GTK_MENU_SHELL(sm), item);
+        QAction *a = sm->addAction(tst->name());
     }
-
     // Connected, 0, dim_rule_proc, drConnected, 0
-    item = gtk_menu_item_new_with_mnemonic("Connected");
-    gtk_widget_set_name(item, "Connected");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drConnected);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("Connected");
     // NoHoles, 0, dim_rule_proc, drNoHoles, 0
-    item = gtk_menu_item_new_with_mnemonic("NoHoles");
-    gtk_widget_set_name(item, "NoHoles");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drNoHoles);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("NoHoles");
     // Exist, 0, dim_rule_proc, drExist, 0
-    item = gtk_menu_item_new_with_mnemonic("Exist");
-    gtk_widget_set_name(item, "Exist");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drExist);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("Exist");
     // Overlap", 0, dim_rule_proc, drOverlap, 0
-    item = gtk_menu_item_new_with_mnemonic("Overlap");
-    gtk_widget_set_name(item, "Overlap");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drOverlap);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("Overlap");
     // IfOverlap, 0, dim_rule_proc, drIfOverlap, 0
-    item = gtk_menu_item_new_with_mnemonic("IfOverlap");
-    gtk_widget_set_name(item, "IfOverlap");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drIfOverlap);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("IfOverlap");
     // NoOverlap, 0, dim_rule_proc, drNoOverlap, 0
-    item = gtk_menu_item_new_with_mnemonic("NoOverlap");
-    gtk_widget_set_name(item, "NoOverlap");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drNoOverlap);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("NoOverlap");
     // AnyOverlap, 0, dim_rule_proc, drAnyOverlap, 0
-    item = gtk_menu_item_new_with_mnemonic("AnyOverlap");
-    gtk_widget_set_name(item, "AnyOverlap");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drAnyOverlap);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction(("AnyOverlap");
     // PartOverlap, 0, dim_rule_proc, drPartOverlap, 0
-    item = gtk_menu_item_new_with_mnemonic("PartOverlap");
-    gtk_widget_set_name(item, "PartOverlap");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drPartOverlap);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("PartOverlap");
     // AnyNoOverlap, 0, dim_rule_proc, drAnyNoOverlap, 0);
-    item = gtk_menu_item_new_with_mnemonic("AnyNoOverlap");
-    gtk_widget_set_name(item, "AnyNoOverlap");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drAnyNoOverlap);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("AnyNoOverlap");
     // MinArea, 0, dim_rule_proc, drMinArea, 0)
-    item = gtk_menu_item_new_with_mnemonic("MinArea");
-    gtk_widget_set_name(item, "MinArea");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinArea);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("MinArea");
     // MaxArea, 0, dim_rule_proc, drMaxArea, 0
-    item = gtk_menu_item_new_with_mnemonic("MaxArea");
-    gtk_widget_set_name(item, "MaxArea");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMaxArea);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("MaxArea");
     // MinEdgeLength, 0, dim_rule_proc, drMinEdgeLength, 0
-    item = gtk_menu_item_new_with_mnemonic("MinEdgeLength");
-    gtk_widget_set_name(item, "MinEdgeLength");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinEdgeLength);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("MinEdgeLength");
     // MaxWidth, 0, dim_rule_proc, drMaxWidth, 0);
-    item = gtk_menu_item_new_with_mnemonic("MaxWidth");
-    gtk_widget_set_name(item, "MaxWidth");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMaxWidth);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("MaxWidth");
     // MinWidth, 0, dim_rule_proc, drMinWidth, 0
-    item = gtk_menu_item_new_with_mnemonic("MinWidth");
-    gtk_widget_set_name(item, "MinWidth");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinWidth);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("MinWidth");
     // MinSpace, 0, dim_rule_proc, drMinSpace, 0
-    item = gtk_menu_item_new_with_mnemonic("MinSpace");
-    gtk_widget_set_name(item, "MinSpace");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinSpace);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("MinSpace");
     // MinSpaceTo, 0, dim_rule_proc, drMinSpaceTo, 0
-    item = gtk_menu_item_new_with_mnemonic("MinSpaceTo");
-    gtk_widget_set_name(item, "MinSpaceTo");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinSpaceTo);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("MinSpaceTo");
     // MinSpaceFrom", 0, dim_rule_proc, drMinSpaceFrom, 0
-    item = gtk_menu_item_new_with_mnemonic("MinSpaceFrom");
-    gtk_widget_set_name(item, "MinSpaceFrom");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinSpaceFrom);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("MinSpaceFrom");
     // MinOverlap, 0, dim_rule_proc, drMinOverlap, 0
-    item = gtk_menu_item_new_with_mnemonic("MinOverlap");
-    gtk_widget_set_name(item, "MinOverlap");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinOverlap);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
-
+    menu->addAction("MinOverlap");
     // MinNoOverlap, 0, dim_rule_proc, drMinNoOverlap, 0
-    item = gtk_menu_item_new_with_mnemonic("MinNoOverlap");
-    gtk_widget_set_name(item, "MinNoOverlap");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)drMinNoOverlap);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_proc), 0);
+    menu->addAction("MinNoOverlap");
 
     // Rule Block menu.
-    item = gtk_menu_item_new_with_mnemonic("Rule _Block");
-    gtk_widget_set_name(item, "Rule Block");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    submenu = gtk_menu_new();
-    gtk_widget_show(submenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
-
+    menu = menubar->addMenu(tr("Rule &Block"));
     // New, 0, dim_rule_menu_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("New");
-    gtk_widget_set_name(item, "New");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_menu_proc), 0);
-
+    menu->addAction(tr("New"));
     // Delete, 0, dim_rule_menu_proc, 1, <CheckItem>
-    item = gtk_check_menu_item_new_with_mnemonic("Delete");
-    gtk_widget_set_name(item, "Delete");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)1);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_menu_proc), 0);
-    dim_delblk = item;
-
+    dim_delblk = menu->addAction(tr("Delete"));
     // Undelete, 0, dim_rule_menu_proc, 2, 0
-    item = gtk_check_menu_item_new_with_mnemonic("Undelete");
-    gtk_widget_set_name(item, "Undelete");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)2);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_rule_menu_proc), 0);
-    dim_undblk = item;
-    gtk_widget_set_sensitive(dim_undblk, false);
-
-    item = gtk_separator_menu_item_new();
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+    dim_undblk = menu->addAction(tr("Undelete"));
+    dim_undblk->setEnabled(false);
+//Separator
 
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
-        item = gtk_menu_item_new_with_label(tst->name());
-        gtk_widget_set_name(item, tst->name());
-        gtk_widget_show(item);
-        g_signal_connect(G_OBJECT(item), "activate",
-            G_CALLBACK(dim_rule_menu_proc), tst);
-        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
+        menu->addAction(tst->name());
     }
 
     // Help menu.
-    item = gtk_menu_item_new_with_mnemonic("_Help");
-    gtk_widget_set_name(item, "Help");
-    gtk_menu_item_set_right_justified(GTK_MENU_ITEM(item), true);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    submenu = gtk_menu_new();
-    gtk_widget_show(submenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
-
+    menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, dim_help_proc, 0, 0);
-    item = gtk_menu_item_new_with_mnemonic("_Help");
-    gtk_widget_set_name(item, "Help");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(dim_help_proc), 0);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    menu->addAction(tr("&Help"));
 
-    gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    dim_text = new QTtextEdit();
+    vbox->addQidget(dim_text);
 
-    GtkWidget *contr;
-    text_scrollable_new(&contr, &dim_text, FNT_FIXED);
-
+/*
     gtk_widget_add_events(dim_text, GDK_BUTTON_PRESS_MASK);
     g_signal_connect(G_OBJECT(dim_text), "button-press-event",
         G_CALLBACK(dim_text_btn_hdlr), 0);
@@ -559,27 +234,21 @@ sDim::sDim(GRobject c)
     // The font change pop-up uses this to redraw the widget
     g_object_set_data(G_OBJECT(dim_text), "font_changed",
         (void*)dim_font_changed);
-
-    gtk_table_attach(GTK_TABLE(form), contr, 0, 1, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+*/
 
     if (dim_undo)
-        gtk_widget_set_sensitive(dim_undo, false);
+        dim_undo->setEnablerd(false);
     update();
 }
 
 
-sDim::~sDim()
+QRdrcRuleEditDlg::~QRdrcRuleEditDlg()
 {
-    Dim = 0;
+    instPtr = 0;
     if (ed_text_input)
         PL()->AbortEdit();
     if (dim_caller)
-        GTKdev::Deselect(dim_caller);
-
-    if (dim_popup)
-        gtk_widget_destroy(dim_popup);
+        QTdev::Deselect(dim_caller);
 
     DRC()->PopUpRuleEdit(0, MODE_OFF, drNoRule, 0, 0, 0, 0);
 }
@@ -588,15 +257,15 @@ sDim::~sDim()
 // Update text.
 //
 void
-sDim::update()
+QRdrcRuleEditDlg::update()
 {
     dim_editing_rule = 0;
     select_range(0, 0);
     stringlist *s0 = rule_list();
-    GdkColor *c1 = gtk_PopupColor(GRattrColorHl1);
-    GdkColor *c2 = gtk_PopupColor(GRattrColorHl4);
-    double val = text_get_scroll_value(dim_text);
-    text_set_chars(dim_text, "");
+    QColor c1 = QTbag::PopupColor(GRattrColorHl1);
+    QColor c2 = QTbag::PopupColor(GRattrColorHl4);
+    double val = dim_text->get_scroll_value();
+    dim_text->clear();
     for (stringlist *l = s0; l && *l->string; l = l->next) {
         char bf[4];
         char *t = l->string;
@@ -605,14 +274,17 @@ sDim::update()
         bf[2] = 0;
         while (*t && !isspace(*t))
             t++;
-        text_insert_chars_at_point(dim_text, c1, bf, -1, -1);
+        dim_text->setTextColot(c1);
+        dim_text->set_chars(bf);
+/*
         text_insert_chars_at_point(dim_text, c2, l->string + 2,
             t - l->string - 2, -1);
         if (*t)
             text_insert_chars_at_point(dim_text, 0, t, -1, -1);
         text_insert_chars_at_point(dim_text, 0, "\n", 1, -1);
+*/
     }
-    text_set_scroll_value(dim_text, val);
+    dim_text->set_scroll_value(val);
     stringlist::destroy(s0);
 
     check_sens();
@@ -623,8 +295,9 @@ sDim::update()
 // Update the Rule Block and User Defined Rules menus.
 //
 void
-sDim::rule_menu_upd()
+QRdrcRuleEditDlg::rule_menu_upd()
 {
+    /*
     GList *gl = gtk_container_get_children(GTK_CONTAINER(dim_menu));
     int cnt = 0;
     for (GList *l = gl; l; l = l->next, cnt++) {
@@ -637,7 +310,7 @@ sDim::rule_menu_upd()
         GtkWidget *mi = gtk_menu_item_new_with_label(tst->name());
         gtk_widget_show(mi);
         g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(sDim::dim_rule_menu_proc), tst);
+            G_CALLBACK(QRdrcRuleEditDlg::dim_rule_menu_proc), tst);
         gtk_menu_shell_append(GTK_MENU_SHELL(dim_menu), mi);
     }
 
@@ -651,23 +324,24 @@ sDim::rule_menu_upd()
         GtkWidget *mi = gtk_menu_item_new_with_label(tst->name());
         gtk_widget_show(mi);
         g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(sDim::dim_rule_proc), (void*)tst->name());
+            G_CALLBACK(QRdrcRuleEditDlg::dim_rule_proc), (void*)tst->name());
         gtk_menu_shell_append(GTK_MENU_SHELL(dim_umenu), mi);
     }
+    */
 }
 
 
 // Save the last operation for undo.
 //
 void
-sDim::save_last_op(DRCtestDesc *tdold, DRCtestDesc *tdnew)
+QRdrcRuleEditDlg::save_last_op(DRCtestDesc *tdold, DRCtestDesc *tdnew)
 {
     if (ed_last_delete)
         delete ed_last_delete;
     ed_last_delete = tdold;
     ed_last_insert = tdnew;
     if (dim_undo)
-        gtk_widget_set_sensitive(dim_undo, true);
+        dim_undo->setEnabled(true);
 }
 
 
@@ -677,22 +351,9 @@ sDim::save_last_op(DRCtestDesc *tdold, DRCtestDesc *tdnew)
 // doesn't do this automatically so we provide something similar here.
 //
 void
-sDim::select_range(int start, int end)
+QRdrcRuleEditDlg::select_range(int start, int end)
 {
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(dim_text));
-    GtkTextIter istart, iend;
-    if (dim_end != dim_start) {
-        gtk_text_buffer_get_iter_at_offset(textbuf, &istart, dim_start);
-        gtk_text_buffer_get_iter_at_offset(textbuf, &iend, dim_end);
-        gtk_text_buffer_remove_tag_by_name(textbuf, "primary", &istart, &iend);
-    }
-    text_select_range(dim_text, start, end);
-    if (end != start) {
-        gtk_text_buffer_get_iter_at_offset(textbuf, &istart, start);
-        gtk_text_buffer_get_iter_at_offset(textbuf, &iend, end);
-        gtk_text_buffer_apply_tag_by_name(textbuf, "primary", &istart, &iend);
-    }
+    dim_text->select_range(start, end);
     dim_start = start;
     dim_end = end;
     check_sens();
@@ -700,38 +361,40 @@ sDim::select_range(int start, int end)
 
 
 void
-sDim::check_sens()
+QRdrcRuleEditDlg::check_sens()
 {
     int start, end;
-    text_get_selection_pos(dim_text, &start, &end);
+//XXX    text_get_selection_pos(dim_text, &start, &end);
     if (dim_edit) {
         if (start == end)
-            gtk_widget_set_sensitive(dim_edit, false);
+            dim_edit->setEnabled(false);
         else
-            gtk_widget_set_sensitive(dim_edit, true);
+            dim_edit->setEnabled(true);
     }
     if (dim_del) {
         if (start == end)
-            gtk_widget_set_sensitive(dim_del, false);
+            dim_del->setEnabled(false);
         else
-            gtk_widget_set_sensitive(dim_del, true);
+            dim_del->setEnabled(true);
     }
     if (dim_inhibit) {
         if (start == end)
-            gtk_widget_set_sensitive(dim_inhibit, false);
+            dim_inhibit->setEnablrd(false);
         else
-            gtk_widget_set_sensitive(dim_inhibit, true);
+            dim_inhibit->setEnablrd(true);
     }
     if (start == end)
         ed_rule_selected = -1;
 }
 
 
+#ifdef notdef
+
 // Static function.
 // Redraw text after font change.
 //
 void
-sDim::dim_font_changed()
+QRdrcRuleEditDlg::dim_font_changed()
 {
     if (Dim)
         Dim->update();
@@ -742,7 +405,7 @@ sDim::dim_font_changed()
 // Pop down the dimensions panel.
 //
 void
-sDim::dim_cancel_proc(GtkWidget*, void*)
+QRdrcRuleEditDlg::dim_cancel_proc(GtkWidget*, void*)
 {
     DRC()->PopUpRules(0, MODE_OFF);
 }
@@ -752,7 +415,7 @@ sDim::dim_cancel_proc(GtkWidget*, void*)
 // Enter help mode.
 //
 void
-sDim::dim_help_proc(GtkWidget*, void*)
+QRdrcRuleEditDlg::dim_help_proc(GtkWidget*, void*)
 {
     DSPmainWbag(PopUpHelp("xic:dredt"))
 }
@@ -760,7 +423,7 @@ sDim::dim_help_proc(GtkWidget*, void*)
 
 // Static function.
 void
-sDim::dim_inhibit_proc(GtkWidget*, void*)
+QRdrcRuleEditDlg::dim_inhibit_proc(GtkWidget*, void*)
 {
     if (!Dim)
         return;
@@ -778,7 +441,7 @@ sDim::dim_inhibit_proc(GtkWidget*, void*)
 // the selected rule.
 //
 void
-sDim::dim_edit_proc(GtkWidget*, void*)
+QRdrcRuleEditDlg::dim_edit_proc(GtkWidget*, void*)
 {
     if (!LT()->CurLayer() || !Dim)
         return;
@@ -802,7 +465,7 @@ sDim::dim_edit_proc(GtkWidget*, void*)
 // Remove any selected rule from the list, and redraw.
 //
 void
-sDim::dim_delete_proc(GtkWidget*, void*)
+QRdrcRuleEditDlg::dim_delete_proc(GtkWidget*, void*)
 {
     if (!LT()->CurLayer() || !Dim)
         return;
@@ -822,7 +485,7 @@ sDim::dim_delete_proc(GtkWidget*, void*)
 // etc.
 //
 void
-sDim::dim_undo_proc(GtkWidget*, void*)
+QRdrcRuleEditDlg::dim_undo_proc(GtkWidget*, void*)
 {
     if (!LT()->CurLayer() || !Dim)
         return;
@@ -845,7 +508,7 @@ sDim::dim_undo_proc(GtkWidget*, void*)
 // drUserDefinedRule.
 //
 void
-sDim::dim_rule_proc(GtkWidget *caller, void *user_name)
+QRdrcRuleEditDlg::dim_rule_proc(GtkWidget *caller, void *user_name)
 {
     long action = (long)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!LT()->CurLayer() || !Dim)
@@ -864,7 +527,7 @@ sDim::dim_rule_proc(GtkWidget *caller, void *user_name)
 // specification.
 //
 bool
-sDim::dim_cb(const char *string, void*)
+QRdrcRuleEditDlg::dim_cb(const char *string, void*)
 {
     if (!LT()->CurLayer() || !Dim)
         return (true);
@@ -941,7 +604,7 @@ sDim::dim_cb(const char *string, void*)
 // an informational message.
 //
 void
-sDim::dim_show_msg(const char *name)
+QRdrcRuleEditDlg::dim_show_msg(const char *name)
 {
     char buf[512];
     snprintf(buf, sizeof(buf),
@@ -974,7 +637,7 @@ sDim::dim_show_msg(const char *name)
 // Callback from the text editor popup.
 //
 bool
-sDim::dim_editsave(const char *fname, void*, XEtype type)
+QRdrcRuleEditDlg::dim_editsave(const char *fname, void*, XEtype type)
 {
     if (type == XE_QUIT)
         unlink(fname);
@@ -1002,7 +665,7 @@ sDim::dim_editsave(const char *fname, void*, XEtype type)
 // Edit a user-defined rule block.
 //
 void
-sDim::dim_rule_menu_proc(GtkWidget *caller, void *client_data)
+QRdrcRuleEditDlg::dim_rule_menu_proc(GtkWidget *caller, void *client_data)
 {
     long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
     if (type == 2) {
@@ -1073,7 +736,7 @@ sDim::dim_rule_menu_proc(GtkWidget *caller, void *client_data)
 // perform the operation on the pointed-to rule.
 //
 int
-sDim::dim_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
+QRdrcRuleEditDlg::dim_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 {
     if (!Dim)
         return (false);
@@ -1127,3 +790,4 @@ sDim::dim_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
     return (true);
 }
 
+#endif

@@ -38,81 +38,70 @@
  $Id:$
  *========================================================================*/
 
+#ifndef QTPTEDIT_H
+#define QTPTEDIT_H
+
 #include "main.h"
-#include "cvrt.h"
-#include "edit.h"
 #include "sced.h"
-#include "drc.h"
-#include "ext.h"
-#include "oa_if.h"
+#include "qtmain.h"
+
+#include <QDialog>
 
 
-// qtasm.cc
+//---------------------------------------------------------------------------
+// Pop-up interface for terminal/property editing.  This handles
+// physical mode (TEDIT command).
 
-// Exported function to pop up/down the tool.
-//
-void
-cConvert::PopUpAssemble(GRobject, ShowMode)
+class QLabel;
+class QGroupBox;
+class QComboBox;
+class QCheckBox;
+class QSpinBox;
+
+class QTphysTermDlg : public QDialog
 {
-}
+    Q_OBJECT
 
+public:
+    QTphysTermDlg(GRobject, TermEditInfo*, void(*)(TermEditInfo*, CDsterm*),
+        CDsterm*);
+    ~QTphysTermDlg();
 
-void
-cMain::SetNoToTop(bool)
-{
-}
+    void update(TermEditInfo*, CDsterm*);
 
-void
-cMain::SetLowerWinOffset(int)
-{
-}
+    static QTphysTermDlg *self()            { return (instPtr); }
 
+private slots:
+    void help_btn_slot();
+    void prev_btn_slot();
+    void next_btn_slot();
+    void toindex_btn_slot();
+    void apply_btn_slot();
+    void dismiss_btn_slot();
+    void layer_menu_slot(int);
 
-// qtdebug.cc
+private:
+    void set_layername(const char *n)
+        {
+            const char *nn = lstring::copy(n);
+            delete [] te_lname;
+            te_lname = nn;
+        }
 
-void
-cMain::PopUpDebug(GRobject, ShowMode)
-{
-}
+    GRobject    te_caller;
+    QLabel      *te_name;
+    QGroupBox   *te_physgrp;
+    QComboBox   *te_layer;
+    QCheckBox   *te_fixed;
+    QLabel      *te_flags;
+    QSpinBox    *te_sb_toindex;
 
-bool
-cMain::DbgLoad(MenuEnt*)
-{
-    return (false);
-}
+    void (*te_action)(TermEditInfo*, CDsterm*);
+    CDsterm *te_term;
+    const char *te_lname;
 
+    static QTphysTermDlg *instPtr;
+};
 
-// qtlpal.cc
+#endif
 
-void
-cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*)
-{
-}
-
-
-void
-cDRC::PopUpRules(GRobject, ShowMode)
-{
-}
-
-
-void
-cDRC::PopUpRuleEdit(GRobject, ShowMode, DRCtype, const char*,
-    bool(*)(const char*, void*), void*, const DRCtestDesc*)
-{
-}
-
-bool
-cSced::PopUpNodeMap(GRobject, ShowMode, int)
-{
-    return (false);
-}
-
-
-struct PCellParam;
-bool
-cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*,
-    const char*, pcpMode)
-{
-    return (false);
-}

@@ -38,7 +38,6 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
 #include "dsp_color.h"
 #include "dsp_layer.h"
 #include "dsp_inlines.h"
@@ -48,10 +47,9 @@
 #include "tech.h"
 #include "menu.h"
 #include "attr_menu.h"
-#include "gtkmain.h"
-#include "gtklpal.h"
-#include "gtkltab.h"
-#include "gtkinterf/gtkfont.h"
+#include "qtlpal.h"
+#include "qtltab.h"
+#include "qtinterf/qtfont.h"
 
 
 //-----------------------------------------------------------------------------

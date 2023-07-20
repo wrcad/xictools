@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "config.h"
-#include "main.h"
+#include "qtnodmp.h"
 #include "sced.h"
 #include "sced_nodemap.h"
 #include "extif.h"
@@ -54,8 +54,6 @@
 #include "select.h"
 #include "promptline.h"
 #include "errorlog.h"
-#include "gtkmain.h"
-#include "gtkinterf/gtkutil.h"
 
 #include "bitmaps/lsearch.xpm"
 #ifdef HAVE_REGEX_H
@@ -68,6 +66,7 @@
 namespace {
     // Some utilities for GtkTreeView.
 
+    /*
     // Return the text item at row,col, needs to be freed.
     //
     char *list_get_text(GtkWidget *list, int row, int col)
@@ -120,6 +119,7 @@ namespace {
         gtk_tree_selection_select_path(sel, p);
         gtk_tree_path_free(p);
     }
+    */
 }
 
 
@@ -142,91 +142,8 @@ namespace {
             void esc();
         };
 
-        struct sNM : public GTKbag
-        {
-            sNM(GRobject, int);
-            ~sNM();
-
-            bool update(int);
-            void show_node_terms(int);
-            void update_map();
-
-            void clear_cmd() { nm_cmd = 0; }
-            void desel_point_btn() { GTKdev::Deselect(nm_point_btn); }
-
-        private:
-            void enable_point(bool);
-
-            static int nm_node_of_row(int);
-            static int nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
-                GtkTreePath*, int, void*);
-            static bool nm_n_focus_proc(GtkWidget*, GdkEvent*, void*);
-            static int nm_select_tlist_proc(GtkTreeSelection*, GtkTreeModel*,
-                GtkTreePath*, int, void*);
-            static bool nm_t_focus_proc(GtkWidget*, GdkEvent*, void*);
-            static void nm_cancel_proc(GtkWidget*, void*);
-            static void nm_desel_proc(GtkWidget*, void*);
-            static void nm_use_np_proc(GtkWidget*, void*);
-            static void nm_name_cb(const char*, void*);
-            static void nm_join_cb(bool, void*);
-            static void nm_set_name(const char*);
-            static void nm_rename_proc(GtkWidget*, void*);
-            static void nm_rm_cb(bool, void*);
-            static void nm_remove_proc(GtkWidget*, void*);
-            static void nm_point_proc(GtkWidget*, void*);
-            static void nm_usex_proc(GtkWidget*, void*);
-            static void nm_find_proc(GtkWidget*, void*);
-            static void nm_help_proc(GtkWidget*, void*);
-            static void nm_search_hdlr(GtkWidget*, void*);
-            static void nm_activate_proc(GtkWidget*, void*);
-
-            void do_search(int*, int*);
-            int find_row(const char*);
-
-            struct NmpState *nm_cmd;
-            GRobject nm_caller;
-            GtkWidget *nm_use_np;;
-            GtkWidget *nm_rename;
-            GtkWidget *nm_remove;
-            GtkWidget *nm_point_btn;
-            GtkWidget *nm_srch_btn;
-            GtkWidget *nm_srch_entry;
-            GtkWidget *nm_srch_nodes;
-            GtkWidget *nm_node_list;
-            GtkWidget *nm_term_list;
-            GtkWidget *nm_paned;
-            GtkWidget *nm_usex_btn;
-            GtkWidget *nm_find_btn;
-            int nm_showing_node;
-            int nm_showing_row;
-            int nm_showing_term_row;
-            bool nm_noupdating;
-            bool nm_n_no_select;        // treeview focus hack
-            bool nm_t_no_select;        // treeview focus hack
-
-            CDp_node *nm_node;
-            CDc *nm_cdesc;
-
-            GRaffirmPopup *nm_rm_affirm;
-            GRaffirmPopup *nm_join_affirm;
-
-            static bool nm_use_extract;
-
-            static short int nm_win_width;
-            static short int nm_win_height;
-            static short int nm_grip_pos;
-        };
-
-        sNM *NM;
-
-        bool sNM::nm_use_extract;
-        short int sNM::nm_win_width;
-        short int sNM::nm_win_height;
-        short int sNM::nm_grip_pos;
     }
 }
-
-using namespace gtknodmp;
 
 
 // The return is true when MODE_UPD, and an update was done.  This is
@@ -236,41 +153,41 @@ using namespace gtknodmp;
 bool
 cSced::PopUpNodeMap(GRobject caller, ShowMode mode, int node)
 {
-    if (!GTKdev::exists() || !GTKmainwin::exists())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return (false);
     if (mode == MODE_OFF) {
-        delete NM;
+        if (QTnodeMapDlg::self())
+            QTnodeMapDlg::self()->deleteLater();
         return (false);
     }
     if (mode == MODE_UPD) {
-        if (NM)
-            return (NM->update(node));
+        if (QTnodeMapDlg::self())
+            return (QTnodeMapDlg::self()->update(node));
         return (false);
     }
-    if (NM)
+    if (QTnodeMapDlg::self())
         return (true);
     if (!CurCell(Electrical, true))
         return (false);
 
-    new sNM(caller, node);
-    if (!NM->Shell()) {
-        delete NM;
-        return (false);
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(NM->Shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new QTnodeMapDlg(caller, node);
 
-    GTKdev::self()->SetPopupLocation(GRloc(LW_LL), NM->Shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(NM->Shell());
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTnodeMapDlg::self(),
+        QTmainwin::self()->Viewport());
+    QTnodeMapDlg::self()->show();
     return (true);
 }
 // End of cSced functions.
 
 
-sNM::sNM(GRobject caller, int node)
+bool QTnodeMapDlg::nm_use_extract;
+short int QTnodeMapDlg::nm_win_width;
+short int QTnodeMapDlg::nm_win_height;
+short int QTnodeMapDlg::nm_grip_pos;
+
+QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
 {
-    NM = this;
+    instPtr = this;
     nm_caller = caller;
     nm_cmd = 0;
     nm_use_np = 0;
@@ -296,114 +213,77 @@ sNM::sNM(GRobject caller, int node)
     nm_n_no_select = false;
     nm_t_no_select = false;
 
-    wb_shell = gtk_NewPopup(0, "Node (Net) Name Mapping", nm_cancel_proc, 0);
-    if (!wb_shell)
-        return;
+    setWindowTitle(tr("Node (Net) Name Mapping"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    GtkWidget *form = gtk_table_new(1, 4, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(wb_shell), form);
-    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    //
     // button line
     //
-    GtkWidget *button = gtk_toggle_button_new_with_label("Use nophys");
-    gtk_widget_set_name(button, "UseNoPhys");
-    gtk_widget_show(button);
-    nm_use_np = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(nm_use_np_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+    nm_use_np = new QPushButton(tr("Use nophys"));
+    nm_use_np->setCheckable(true);
+    hbox->addWidget(nm_use_np);
+    connect(nm_use_np, SIGNAL(toggled(bool)),
+        this, SLOT(nophys_btn_slot(bool)));
 
-    button = gtk_toggle_button_new_with_label("Map Name");
-    gtk_widget_set_name(button, "Rename");
-    gtk_widget_show(button);
-    nm_rename = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(nm_rename_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+    nm_rename = new QPushButton(tr("Map Name"));
+    nm_rename->setCheckable(true);
+    hbox->addWidget(nm_rename);
+    connect(nm_rename, SIGNAL(toggled(bool)),
+        this, SLOT(maname_btn_slot(bool)));
 
-    button = gtk_toggle_button_new_with_label("Unmap");
-    gtk_widget_set_name(button, "Remove");
-    gtk_widget_show(button);
-    nm_remove = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(nm_remove_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+    nm_remove = new QPushButton(tr("Unmap"));
+    nm_remove->setCheckable(true);
+    hbox->addWidget(nm_remove);
+    connect(nm_remove, SIGNAL(toggled(bool)),
+        this, SLOT(unmap_btn_slot(bool)));
 
-    button = gtk_toggle_button_new_with_label("Click-Select Mode");
-    gtk_widget_set_name(button, "Click");
-    gtk_widget_show(button);
-    nm_point_btn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(nm_point_proc), wb_shell);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+    nm_point_btn = new QPushButton(tr("Click-Select Mode"));
+    nm_point_btn->setCheckable(true);
+    hbox->addWidget(nm_point_btn);
+    connect(nm_point_btn, SIGNAL(toggled(bool)),
+        this, SLOT(click_btn_slot(bool)));
 
-    button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(nm_help_proc), wb_shell);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    int rowcnt = 0;
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 0, 0);
-    rowcnt++;
-
-    hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-
-    //
     // second button line
     //
-    GtkWidget *label = gtk_label_new("Search");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    gtk_box_pack_start(GTK_BOX(hbox), label, false, false, 0);
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    button = gtk_NewPixmapButton(lsearch_xpm, 0, false);
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(nm_search_hdlr), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
-    nm_srch_btn = button;
+    QLabel *label = new QLabel(tr("Search"));
+    hbox->addWidget(label);
 
-    GtkWidget *entry = gtk_entry_new();
-    gtk_widget_show(entry);
-    gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
-    gtk_widget_set_size_request(entry, 80, -1);
-    g_signal_connect(G_OBJECT(entry), "activate",
-        G_CALLBACK(nm_activate_proc), 0);
-    nm_srch_entry = entry;
+    nm_srch_btn = new QPushButton();
+    hbox->addWidget(nm_search_btn);
+    nm_srch_btn->setIcon(QIcon(QPixmap(lsearch_xpm)));
+    connect(nm_search_btn, SIGNAL(clicked()), this, SLOT(srch_btn_slot()));
 
-    button = gtk_radio_button_new_with_label(0, "Nodes");
-    gtk_widget_set_name(button, "Nodes");
-    gtk_widget_show(button);
-    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
-    nm_srch_nodes = button;
+    nm_srch_entry = new QLineEdit();
+    hbox->addWidget(nm_srch_entry);
+    connect(nm_srch_entry, SIGNAL(textChanged(const QString&)),
+        this, SLOT(srch_text_changed_slot(const QString&)));
 
-    button = gtk_radio_button_new_with_label(group, "Terminals");
-    gtk_widget_set_name(button, "Terminals");
-    gtk_widget_show(button);
-    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
-
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 0, 0);
-    rowcnt++;
+    nm_srch_nodes = new RadioButton(tr("Nodes"));
+    hbox->addWidget(nm_srch_nodes);
+    btn = new QRadioButton(tr("Terminals"));
+    hbox->addWidget(btn);
 
     GtkWidget *paned = gtk_hpaned_new();
     gtk_widget_show(paned);
     nm_paned = paned;
 
-    //
     // node listing text
     //
     GtkWidget *swin = gtk_scrolled_window_new(0, 0);
@@ -552,7 +432,7 @@ sNM::sNM(GRobject caller, int node)
 }
 
 
-sNM::~sNM()
+QTnodeMapDlg::~QTnodeMapDlg()
 {
     NM = 0;
     if (nm_cmd)
@@ -594,7 +474,7 @@ sNM::~sNM()
 
 
 bool
-sNM::update(int node)
+QTnodeMapDlg::update(int node)
 {
     if (nm_noupdating)
         return (true);
@@ -654,7 +534,7 @@ sNM::update(int node)
 
 
 void
-sNM::show_node_terms(int node)
+QTnodeMapDlg::show_node_terms(int node)
 {
     DSP()->ShowNode(ERASE, nm_showing_node);
     nm_showing_node = -1;
@@ -717,7 +597,7 @@ sNM::show_node_terms(int node)
 
 
 void
-sNM::update_map()
+QTnodeMapDlg::update_map()
 {
     CDcbin cbin(DSP()->CurCellName());
     if (!cbin.elec())
@@ -849,7 +729,7 @@ sNM::update_map()
 
 
 void
-sNM::enable_point(bool on)
+QTnodeMapDlg::enable_point(bool on)
 {
     if (on)
         gtk_widget_set_sensitive(nm_point_btn, true);
@@ -863,7 +743,7 @@ sNM::enable_point(bool on)
 
 // Static function.
 int
-sNM::nm_node_of_row(int row)
+QTnodeMapDlg::nm_node_of_row(int row)
 {
     char *text = list_get_text(NM->nm_node_list, row, 0);
     if (!text)
@@ -878,7 +758,7 @@ sNM::nm_node_of_row(int row)
 
 // Static function.
 int
-sNM::nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
+QTnodeMapDlg::nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
     GtkTreePath *path, int issel, void*)
 {
     if (NM) {
@@ -912,7 +792,7 @@ sNM::nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
         if (node < 0)
             return (true);
 
-        // Lock out the call back to sNM::update, select the node in
+        // Lock out the call back to QTnodeMapDlg::update, select the node in
         // physical if command is active.
         NM->nm_noupdating = true;
         ExtIf()->selectShowNode(node);
@@ -951,7 +831,7 @@ sNM::nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
 // case.
 //
 bool
-sNM::nm_n_focus_proc(GtkWidget*, GdkEvent*, void*)
+QTnodeMapDlg::nm_n_focus_proc(GtkWidget*, GdkEvent*, void*)
 {
     if (NM) {
         GtkTreeSelection *sel =
@@ -966,7 +846,7 @@ sNM::nm_n_focus_proc(GtkWidget*, GdkEvent*, void*)
 
 // Static function.
 int
-sNM::nm_select_tlist_proc(GtkTreeSelection*, GtkTreeModel *store,
+QTnodeMapDlg::nm_select_tlist_proc(GtkTreeSelection*, GtkTreeModel *store,
     GtkTreePath *path, int issel, void*)
 {
     if (NM) {
@@ -1058,7 +938,7 @@ sNM::nm_select_tlist_proc(GtkTreeSelection*, GtkTreeModel *store,
 // Focus handler.
 //
 bool
-sNM::nm_t_focus_proc(GtkWidget*, GdkEvent*, void*)
+QTnodeMapDlg::nm_t_focus_proc(GtkWidget*, GdkEvent*, void*)
 {
     if (NM) {
         GtkTreeSelection *sel =
@@ -1075,7 +955,7 @@ sNM::nm_t_focus_proc(GtkWidget*, GdkEvent*, void*)
 // Cancel callback, pop the widget down.
 //
 void
-sNM::nm_cancel_proc(GtkWidget*, void*)
+QTnodeMapDlg::nm_cancel_proc(GtkWidget*, void*)
 {
     SCD()->PopUpNodeMap(0, MODE_OFF);
 }
@@ -1085,7 +965,7 @@ sNM::nm_cancel_proc(GtkWidget*, void*)
 // Deselect button callback, deselect window selections.
 //
 void
-sNM::nm_desel_proc(GtkWidget*, void*)
+QTnodeMapDlg::nm_desel_proc(GtkWidget*, void*)
 {
     if (!NM)
         return;
@@ -1129,7 +1009,7 @@ sNM::nm_desel_proc(GtkWidget*, void*)
 // Handler for the use nophys button.
 //
 void
-sNM::nm_use_np_proc(GtkWidget*, void*)
+QTnodeMapDlg::nm_use_np_proc(GtkWidget*, void*)
 {
     if (!NM)
         return;
@@ -1143,7 +1023,7 @@ sNM::nm_use_np_proc(GtkWidget*, void*)
 // Handler for the name entry pop-up.
 //
 void
-sNM::nm_name_cb(const char *name, void*)
+QTnodeMapDlg::nm_name_cb(const char *name, void*)
 {
     if (!NM)
         return;
@@ -1185,7 +1065,7 @@ sNM::nm_name_cb(const char *name, void*)
 // name token which needs to be freed.
 //
 void
-sNM::nm_join_cb(bool yes, void *arg)
+QTnodeMapDlg::nm_join_cb(bool yes, void *arg)
 {
     char *name = (char*)arg;
     if (NM && yes)
@@ -1198,7 +1078,7 @@ sNM::nm_join_cb(bool yes, void *arg)
 // Apply the name to the currently selected node.
 //
 void
-sNM::nm_set_name(const char *name)
+QTnodeMapDlg::nm_set_name(const char *name)
 {
     cNodeMap *map = CurCell(Electrical)->nodes();
     if (!map)
@@ -1239,7 +1119,7 @@ sNM::nm_set_name(const char *name)
 // Handler for the rename button.
 //
 void
-sNM::nm_rename_proc(GtkWidget *caller, void*)
+QTnodeMapDlg::nm_rename_proc(GtkWidget *caller, void*)
 {
     if (!NM)
         return;
@@ -1301,7 +1181,7 @@ sNM::nm_rename_proc(GtkWidget *caller, void*)
 // Handler for the remove mapping confirmation pop-up.
 //
 void
-sNM::nm_rm_cb(bool yes, void*)
+QTnodeMapDlg::nm_rm_cb(bool yes, void*)
 {
     char buf[256];
     if (yes && NM && NM->nm_showing_row >= 0) {
@@ -1337,7 +1217,7 @@ sNM::nm_rm_cb(bool yes, void*)
 // Handler for the remove button.
 //
 void
-sNM::nm_remove_proc(GtkWidget *caller, void*)
+QTnodeMapDlg::nm_remove_proc(GtkWidget *caller, void*)
 {
     if (!GTKdev::GetStatus(caller)) {
         if (NM && NM->nm_rm_affirm)
@@ -1380,12 +1260,12 @@ sNM::nm_remove_proc(GtkWidget *caller, void*)
 // Click-Select Mode button handler.
 //
 void
-sNM::nm_point_proc(GtkWidget *caller, void*)
+QTnodeMapDlg::nm_point_proc(GtkWidget *caller, void*)
 {
     if (!NM)
         return;
     int state = GTKdev::GetStatus(caller);
-    if (sNM::nm_use_extract) {
+    if (QTnodeMapDlg::nm_use_extract) {
         bool st = Menu()->MenuButtonStatus(MMext, MenuEXSEL);
         if (st != state)
             Menu()->MenuButtonPress(MMext, MenuEXSEL);
@@ -1416,11 +1296,11 @@ sNM::nm_point_proc(GtkWidget *caller, void*)
 // Static function.
 //
 void
-sNM::nm_usex_proc(GtkWidget *caller, void*)
+QTnodeMapDlg::nm_usex_proc(GtkWidget *caller, void*)
 {
     if (!NM)
         return;
-    sNM::nm_use_extract = GTKdev::GetStatus(caller);
+    QTnodeMapDlg::nm_use_extract = GTKdev::GetStatus(caller);
     if (NM->nm_cmd)
         NM->nm_cmd->esc();
     NM->update(0);
@@ -1430,14 +1310,14 @@ sNM::nm_usex_proc(GtkWidget *caller, void*)
 // Static function.
 //
 void
-sNM::nm_find_proc(GtkWidget*, void*)
+QTnodeMapDlg::nm_find_proc(GtkWidget*, void*)
 {
     if (!NM)
         return;
     int row = NM->nm_showing_term_row;
     if (row < 0)
         return;
-    if (sNM::nm_use_extract) {
+    if (QTnodeMapDlg::nm_use_extract) {
         CDs *psd = CurCell(Physical);
         if (psd) {
             if (!ExtIf()->associate(psd)) {
@@ -1463,7 +1343,7 @@ sNM::nm_find_proc(GtkWidget*, void*)
 // Click-Select Mode button handler.
 //
 void
-sNM::nm_help_proc(GtkWidget*, void*)
+QTnodeMapDlg::nm_help_proc(GtkWidget*, void*)
 {
     if (!NM)
         return;
@@ -1473,7 +1353,7 @@ sNM::nm_help_proc(GtkWidget*, void*)
 
 // Static function.
 void
-sNM::nm_search_hdlr(GtkWidget*, void*)
+QTnodeMapDlg::nm_search_hdlr(GtkWidget*, void*)
 {
     if (!NM)
         return;
@@ -1495,7 +1375,7 @@ sNM::nm_search_hdlr(GtkWidget*, void*)
 // button.
 //
 void
-sNM::nm_activate_proc(GtkWidget*, void*)
+QTnodeMapDlg::nm_activate_proc(GtkWidget*, void*)
 {
     if (!NM)
         return;
@@ -1506,7 +1386,7 @@ sNM::nm_activate_proc(GtkWidget*, void*)
 // Function to actually perform the search.
 //
 void
-sNM::do_search(int *pindx, int *ptindx)
+QTnodeMapDlg::do_search(int *pindx, int *ptindx)
 {
     if (pindx)
         *pindx = -1;
@@ -1583,7 +1463,7 @@ sNM::do_search(int *pindx, int *ptindx)
 // Find the row with the name given.
 //
 int
-sNM::find_row(const char *str)
+QTnodeMapDlg::find_row(const char *str)
 {
     if (!str || !*str)
         return (-1);
@@ -1602,7 +1482,7 @@ sNM::find_row(const char *str)
     }
     return (-1);
 }
-// End of sNM functions.
+// End of QTnodeMapDlg functions.
 
 
 NmpState::~NmpState()

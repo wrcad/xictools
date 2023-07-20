@@ -38,81 +38,78 @@
  $Id:$
  *========================================================================*/
 
+#ifndef QTVIA_H
+#define QTVIA_H
+
 #include "main.h"
-#include "cvrt.h"
-#include "edit.h"
-#include "sced.h"
-#include "drc.h"
-#include "ext.h"
-#include "oa_if.h"
+#include "qtmain.h"
 
+#include <QDialog>
 
-// qtasm.cc
-
-// Exported function to pop up/down the tool.
+//--------------------------------------------------------------------
+// Dialog to create a standard via.
 //
-void
-cConvert::PopUpAssemble(GRobject, ShowMode)
+
+class QComboBox;
+class QLineEdit;
+class QPushButton;
+class QDoubleSpinBox;
+class QSpinBox;
+
+class QTstdViaDlg : public QDialog
 {
-}
+    Q_OBJECT
 
+public:
+    QTstdViaDlg(GRobject, CDc*);
+    ~QTstdViaDlg();
 
-void
-cMain::SetNoToTop(bool)
-{
-}
+    void update(GRobject, CDc*);
 
-void
-cMain::SetLowerWinOffset(int)
-{
-}
+    static QTstdViaDlg *self()          { return (instPtr); }
 
+private slots:
+    void help_btn_slot();
+    void name_menu_slot(const QString&);
+    void layerv_menu_slot(const QString&);
+    void apply_btn_slot();
+    void dismiss_btn_slot();
 
-// qtdebug.cc
+private:
+    GRobject        stv_caller;
+    QComboBox       *stv_name;
+    QLineEdit       *stv_layer1;
+    QLineEdit       *stv_layer2;
+    QComboBox       *stv_layerv;
+    QLineEdit       *stv_imp1;
+    QLineEdit       *stv_imp2;
+    QPushButton     *stv_apply;
 
-void
-cMain::PopUpDebug(GRobject, ShowMode)
-{
-}
+    CDc             *stv_cdesc;
 
-bool
-cMain::DbgLoad(MenuEnt*)
-{
-    return (false);
-}
+    QDoubleSpinBox  *stv_sb_wid;
+    QDoubleSpinBox  *stv_sb_hei;
+    QSpinBox        *stv_sb_rows;
+    QSpinBox        *stv_sb_cols;
+    QDoubleSpinBox  *stv_sb_spa_x;
+    QDoubleSpinBox  *stv_sb_spa_y;
+    QDoubleSpinBox  *stv_sb_enc1_x;
+    QDoubleSpinBox  *stv_sb_enc1_y;
+    QDoubleSpinBox  *stv_sb_off1_x;
+    QDoubleSpinBox  *stv_sb_off1_y;
+    QDoubleSpinBox  *stv_sb_enc2_x;
+    QDoubleSpinBox  *stv_sb_enc2_y;
+    QDoubleSpinBox  *stv_sb_off2_x;
+    QDoubleSpinBox  *stv_sb_off2_y;
+    QDoubleSpinBox  *stv_sb_org_x;
+    QDoubleSpinBox  *stv_sb_org_y;
+    QDoubleSpinBox  *stv_sb_imp1_x;
+    QDoubleSpinBox  *stv_sb_imp1_y;
+    QDoubleSpinBox  *stv_sb_imp2_x;
+    QDoubleSpinBox  *stv_sb_imp2_y;
 
+    static QTstdViaDlg *instPtr;
+};
 
-// qtlpal.cc
+#endif
 
-void
-cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*)
-{
-}
-
-
-void
-cDRC::PopUpRules(GRobject, ShowMode)
-{
-}
-
-
-void
-cDRC::PopUpRuleEdit(GRobject, ShowMode, DRCtype, const char*,
-    bool(*)(const char*, void*), void*, const DRCtestDesc*)
-{
-}
-
-bool
-cSced::PopUpNodeMap(GRobject, ShowMode, int)
-{
-    return (false);
-}
-
-
-struct PCellParam;
-bool
-cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*,
-    const char*, pcpMode)
-{
-    return (false);
-}

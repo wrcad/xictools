@@ -38,72 +38,24 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtextcmd.h"
 #include "ext.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkinterf/gtkfont.h"
+#include "qtinterf/qtfont.h"
+
+#include <QLayout>
+#include <QComboBox>
+#include <QGroupBox>
+#include <QLabel>
+#include <QCheckBox>
+#include <QPushButton>
+#include <QLineEdit>
 
 
 //---------------------------------------------------------------------------
 // Pop-up interface for the following extraction commands:
 //  PNET, ENET, SOURC, EXSET
 //
-
-namespace {
-    // Drag/drop stuff
-    //
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-
-    namespace gtkextcmd {
-        struct sCmd
-        {
-            sCmd(GRobject, sExtCmd*,
-                bool(*)(const char*, void*, bool, const char*, int, int),
-                void*, int);
-            ~sCmd();
-
-            GtkWidget *shell() { return (cmd_popup); }
-            sExtCmd *excmd() { return (cmd_excmd); }
-
-            void update();
-
-        private:
-            static void cmd_cancel_proc(GtkWidget*, void*);
-            static void cmd_action_proc(GtkWidget*, void*);
-            static void cmd_help_proc(GtkWidget*, void*);
-            static void cmd_depth_proc(GtkWidget*, void*);
-            static void cmd_drag_data_received(GtkWidget*, GdkDragContext*,
-                gint, gint, GtkSelectionData*, guint, guint time);
-
-            GRobject cmd_caller;
-            GtkWidget *cmd_popup;
-            GtkWidget *cmd_label;
-            GtkWidget *cmd_text;
-            GtkWidget *cmd_go;
-            GtkWidget *cmd_cancel;
-            GtkWidget **cmd_bx;
-
-            sExtCmd *cmd_excmd;
-            bool (*cmd_action)(const char*, void*, bool, const char*, int,
-                int);
-            void *cmd_arg;
-        };
-
-        sCmd *Cmd;
-    }
-}
-
-using namespace gtkextcmd;
-
-// Depth choices are 0 -- DMAX-1, "all"
-#define DMAX 6
-
 
 // Pop up/down the interface.  Only one pop-up can exist at a given time.
 // Args are:
@@ -125,19 +77,20 @@ cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
     bool (*action_cb)(const char*, void*, bool, const char*, int, int),
     void *action_arg, int depth)
 {
-    if (!GTKdev::exists() || !GTKmainwin::exists())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete Cmd;
+        if (QTextCmdDlg::self())
+            QTextCmdDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {
-        if (Cmd)
-            Cmd->update();
+        if (QTextCmdDlg::self())
+            QTextCmdDlg::self()->update();
         return;
     }
-    if (Cmd) {
-        sExtCmd *oldmode = Cmd->excmd();
+    if (QTextCmdDlg::self()) {
+        sExtCmd *oldmode = QTextCmdDlg::self()->excmd();
         PopUpExtCmd(0, MODE_OFF, 0, 0, 0);
         if (oldmode == cmd)
             return;
@@ -145,140 +98,111 @@ cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
     if (!cmd)
         return;
 
-    new sCmd(caller, cmd, action_cb, action_arg, depth);
-    if (!Cmd->shell()) {
-        delete Cmd;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Cmd->shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
+    new QTextCmdDlg(caller, cmd, action_cb, action_arg, depth);
 
-    GTKdev::self()->SetPopupLocation(GRloc(), Cmd->shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Cmd->shell());
+    QTdev::self()->SetPopupLocation(GRloc(), QTextCmdDlg::self(),
+        QTmainwin::self()->Viewport());
+    QTextCmdDlg::self()->show();
 }
 // End of cExt functions.
 
 
-sCmd::sCmd(GRobject c, sExtCmd *cmd,
+// Depth choices are 0 -- DMAX-1, "all"
+#define DMAX 6
+
+
+QTextCmdDlg *QTextCmdDlg::instPtr;
+
+QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
     bool (*action_cb)(const char*, void*, bool, const char*, int, int),
     void *action_arg, int depth)
 {
-    Cmd = this;
+    instPtr = this;
     cmd_caller = c;
-    cmd_popup = 0;
+    cmd_depth = 0;
     cmd_label = 0;
     cmd_text = 0;
     cmd_go = 0;
     cmd_cancel = 0;
 
     cmd_excmd = cmd;
-    cmd_bx = new GtkWidget*[cmd->num_buttons()];
+    cmd_bx = new QCheckBox*[cmd->num_buttons()];
     for (int i = 0; i < cmd->num_buttons(); i++)
         cmd_bx[i] = 0;
 
     cmd_action = action_cb;
     cmd_arg = action_arg;
+    cmd_helpkw = 0;
 
-    cmd_popup = gtk_NewPopup(0, cmd_excmd->wintitle(), cmd_cancel_proc, 0);
-    if (!cmd_popup)
-        return;
+    setWindowTitle(cmd_excmd->wintitle());
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    GtkWidget *form = gtk_table_new(1, 1, false);
-    gtk_widget_show(form);
-    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
-    gtk_container_add(GTK_CONTAINER(cmd_popup), form);
-    int rowcnt = 0;
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    //
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
     // label in frame plus help btn
     //
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-
     const char *titlemsg = 0;
-    const char *hkw = 0;
     switch (cmd_excmd->type()) {
     case ExtDumpPhys:
         titlemsg = "Dump Physical Netlist";
-        hkw = "xic:pnet";
+        cmd_helpkw = "xic:pnet";
         break;
     case ExtDumpElec:
         titlemsg = "Dump Schematic Netlist";
-        hkw = "xic:enet";
+        cmd_helpkw = "xic:enet";
         break;
     case ExtLVS:
         titlemsg = "Compare Layout Vs. Schematic";
-        hkw = "xic:lvs";
+        cmd_helpkw = "xic:lvs";
         break;
     case ExtSource:
         titlemsg = "Schematic from SPICE File";
-        hkw = "xic:sourc";
+        cmd_helpkw = "xic:sourc";
         break;
     case ExtSet:
         titlemsg = "Schematic from Layout";
-        hkw = "xic:exset";
+        cmd_helpkw = "xic:exset";
         break;
     };
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
+    QLabel *label = new QLabel(tr(titlemsg));
+    hb->addWidget(label);
 
-    GtkWidget *label = gtk_label_new(titlemsg);
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), label);
-    gtk_box_pack_start(GTK_BOX(hbox), frame, true, true, 0);
-    GtkWidget *button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(cmd_help_proc), (void*)hkw);
-    gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    frame = gtk_frame_new(cmd_excmd->btntitle());
-    gtk_widget_show(frame);
-    GtkWidget *btab = gtk_table_new(1, 1, false);
-    gtk_widget_show(btab);
-    gtk_container_add(GTK_CONTAINER(frame), btab);
-
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    // activate button
-    GtkWidget *row2 = gtk_hbox_new(false, 2);
-    gtk_widget_show(row2);
-    button = gtk_toggle_button_new_with_label(cmd_excmd->gotext());
-    gtk_widget_set_name(button, cmd_excmd->gotext());
-    gtk_box_pack_start(GTK_BOX(row2), button, true, true, 0);
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(cmd_action_proc), 0);
-    cmd_go = button;
+    gb = new QGroupBox(tr(cmd_excmd->btntitle()));
+    vbox->addWidget(gb);
+    QGridLayout *grid = new QGridLayout(gb);
+    grid->setMargin(2);
+    grid->setSpacing(2);
 
     // setup check buttons
     for (int i = 0; i < cmd_excmd->num_buttons(); i++) {
         if (!cmd_excmd->button(i)->name())
             continue;
-        button = gtk_check_button_new_with_label(cmd_excmd->button(i)->name());
-        gtk_widget_set_name(button, cmd_excmd->button(i)->name());
+        cmd_bx[i] = new QCheckBox(tr(cmd_excmd->button(i)->name()));
+//        gtk_widget_set_name(button, cmd_excmd->button(i)->name());
+
         int col = cmd_excmd->button(i)->col();
         int row = cmd_excmd->button(i)->row();
-        gtk_table_attach(GTK_TABLE(btab), button, col, col+1, row, row+1,
-            (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-            (GtkAttachOptions)0, 2, 2);
-        cmd_bx[i] = button;
-
+        grid->addWidget(cmd_bx[i], row, col);
         if (cmd_excmd->button(i)->is_active())
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
-        gtk_widget_show(button);
-        g_signal_connect(G_OBJECT(button), "clicked",
-            G_CALLBACK(cmd_action_proc), 0);
+            QTdev::SetStatus(cmd_bx[i], true);
+        connect(cmd_bx[i], SIGNAL(stateChanged(int)),
+            this, SLOT(check_state_changed_slot(int)));
     }
 
     // set sensitivity
@@ -291,30 +215,29 @@ sCmd::sCmd(GRobject c, sExtCmd *cmd,
                 ix--;
                 if ((int)ix < cmd_excmd->num_buttons()) {
                     set = true;
-                    sens = gtk_toggle_button_get_active(
-                        GTK_TOGGLE_BUTTON(cmd_bx[ix]));
+                    sens = QTdev::GetStatus(cmd_bx[ix]);
                     if (sens)
                         break;
                 }
             }
         }
-        gtk_widget_set_sensitive(cmd_bx[i], !set || sens);
+        cmd_bx[i]->setEnabled(!set || sens);
     }
 
     if (cmd_excmd->has_depth()) {
         //
         // depth option menu
         //
-        GtkWidget* row1 = gtk_hbox_new(false, 2);
-        gtk_widget_show(row1);
-        label = gtk_label_new("Depth to process");
-        gtk_widget_show(label);
-        gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-        gtk_box_pack_start(GTK_BOX(row1), label, false, false, 0);
+        hbox = new QHBoxLayout();
+        hbox->setMargin(0);
+        hbox->setSpacing(2);
+        vbox->addLayout(hbox);
 
-        GtkWidget *entry = gtk_combo_box_text_new();
-        gtk_widget_set_name(entry, "Depth");
-        gtk_widget_show(entry);
+        label = new QLabel(tr("Depth to process"));
+        hbox->addWidget(label);
+
+        cmd_depth = new QComboBox();
+        hbox->addWidget(cmd_depth);
         if (depth < 0)
             depth = 0;
         if (depth > DMAX)
@@ -325,100 +248,89 @@ sCmd::sCmd(GRobject c, sExtCmd *cmd,
                 strcpy(buf, "all");
             else
                 snprintf(buf, sizeof(buf), "%d", i);
-            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), buf);
+            cmd_depth->addItem(buf);
         }
-        gtk_combo_box_set_active(GTK_COMBO_BOX(entry), depth);
-        g_signal_connect(G_OBJECT(entry), "changed",
-            G_CALLBACK(cmd_depth_proc), 0);
-        gtk_box_pack_start(GTK_BOX(row1), entry, false, false, 0);
-        gtk_table_attach(GTK_TABLE(form), row1, 0, 1, rowcnt, rowcnt+1,
-            (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-            (GtkAttachOptions)0, 2, 2);
-        rowcnt++;
+        cmd_depth->setCurrentIndex(depth);
+        connect(cmd_depth, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(depth_changed_slot(int)));
     }
 
     if (cmd_excmd->message()) {
         //
         // label in frame
         //
-        cmd_label = gtk_label_new(cmd_excmd->message());
-        gtk_widget_show(cmd_label);
-        gtk_misc_set_padding(GTK_MISC(cmd_label), 2, 2);
-        frame = gtk_frame_new(0);
-        gtk_widget_show(frame);
-        gtk_container_add(GTK_CONTAINER(frame), cmd_label);
-        gtk_table_attach(GTK_TABLE(form), frame, 0, 1, rowcnt, rowcnt+1,
-            (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-            (GtkAttachOptions)0, 2, 2);
-        rowcnt++;
+        gb = new QGroupBox();
+        vbox->addWidget(gb);
+        QHBoxLayout *hb = new QHBoxLayout(gb);
+        hb->setMargin(0);
+        hb->setSpacing(2);
 
-        cmd_text = gtk_entry_new();
-        gtk_widget_show(cmd_text);
+        cmd_label = new QLabel(tr(cmd_excmd->message()));
+        cmd_label->setAlignment(Qt::AlignCenter);
+        hb->addWidget(cmd_label);
+
+        cmd_text = new QLineEdit();
+        vbox->addWidget(cmd_text);
+
         if (cmd_excmd->filename())
-            gtk_entry_set_text(GTK_ENTRY(cmd_text), cmd_excmd->filename());
-        gtk_editable_set_editable(GTK_EDITABLE(cmd_text), true);
-        gtk_table_attach(GTK_TABLE(form), cmd_text, 0, 1, rowcnt, rowcnt+1,
-            (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-            (GtkAttachOptions)0, 2, 0);
-        rowcnt++;
+            cmd_text->setText(cmd_excmd->filename());
+        cmd_text->setReadOnly(false);
 
         int wid = 250;
         if (cmd_excmd->filename()) {
-            int twid = GTKfont::stringWidth(cmd_text, cmd_excmd->filename());
+            int twid = QTfont::stringWidth(cmd_excmd->filename(), cmd_text);
             if (wid < twid)
                 wid = twid;
         }
-        gtk_widget_set_size_request(cmd_text, wid + 10, -1);
+//XXX        gtk_widget_set_size_request(cmd_text, wid + 10, -1);
 
         // drop site
+/*
         GtkDestDefaults DD = (GtkDestDefaults)
             (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
         gtk_drag_dest_set(cmd_text, DD, target_table, n_targets,
             GDK_ACTION_COPY);
         g_signal_connect_after(G_OBJECT(cmd_text), "drag-data-received",
             G_CALLBACK(cmd_drag_data_received), 0);
+*/
     }
 
-    const char *cn = "Cancel";
-    cmd_cancel = gtk_button_new_with_label(cn);
-    gtk_widget_set_name(cmd_cancel, cn);
-    gtk_widget_show(cmd_cancel);
-    g_signal_connect(G_OBJECT(cmd_cancel), "clicked",
-        G_CALLBACK(cmd_cancel_proc), 0);
-    gtk_box_pack_start(GTK_BOX(row2), cmd_cancel, true, true, 0);
+    // activate button
+    hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    gtk_table_attach(GTK_TABLE(form), row2, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    gtk_window_set_focus(GTK_WINDOW(cmd_popup), cmd_cancel);
+    cmd_go = new QPushButton(tr(cmd_excmd->gotext()));
+    cmd_go->setCheckable(true);
+    hbox->addWidget(cmd_go);
+//    gtk_widget_set_name(button, cmd_excmd->gotext());
+    connect(cmd_go, SIGNAL(toggled(bool)), this, SLOT(go_btn_slot(bool)));
+
+    const char *cn = "Cancel";
+    cmd_cancel = new QPushButton(tr(cn));
+    hbox->addWidget(cmd_cancel);
+    connect(cmd_cancel, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 }
 
 
-sCmd::~sCmd()
+QTextCmdDlg::~QTextCmdDlg()
 {
-    Cmd = 0;
+    instPtr = 0;
     if (cmd_caller)
-        GTKdev::Deselect(cmd_caller);
+        QTdev::Deselect(cmd_caller);
     // call action, passing 0 on popdown
     if (cmd_action)
         (*cmd_action)(0, cmd_arg, false, 0, 0, 0);
-    if (cmd_popup)
-        gtk_widget_destroy(cmd_popup);
     delete [] cmd_bx;
 }
 
 
-// Static function.
-void
-sCmd::cmd_cancel_proc(GtkWidget*, void*)
-{
-    EX()->PopUpExtCmd(0, MODE_OFF, 0, 0, 0);
-}
-
 
 void
-sCmd::update()
+QTextCmdDlg::update()
 {
+    /*
     for (int i = 0; i < cmd_excmd->num_buttons(); i++) {
         if (cmd_excmd->button(i)->var()) {
             bool bstate = gtk_toggle_button_get_active(
@@ -434,13 +346,27 @@ sCmd::update()
             }
         }
     }
+    */
 }
 
 
-// Static function.
 void
-sCmd::cmd_action_proc(GtkWidget *caller, void*)
+QTextCmdDlg::help_btn_slot()
 {
+    DSPmainWbag(PopUpHelp(cmd_helpkw))
+}
+
+
+void
+QTextCmdDlg::go_btn_slot(bool)
+{
+}
+
+
+void
+QTextCmdDlg::check_state_changed_slot(int)
+{
+    /*
     if (!Cmd)
         return;
     if (caller == Cmd->cmd_go && !GTKdev::GetStatus(caller))
@@ -492,37 +418,48 @@ sCmd::cmd_action_proc(GtkWidget *caller, void*)
     }
     if (down)
         EX()->PopUpExtCmd(0, MODE_OFF, 0, 0, 0);
+    */
 }
 
 
 void
-sCmd::cmd_help_proc(GtkWidget*, void *arg)
+QTextCmdDlg::depth_changed_slot(int)
 {
-    const char *hkw = (const char*)arg;
-    DSPmainWbag(PopUpHelp(hkw))
-}
-
-
-// Static function.
-void
-sCmd::cmd_depth_proc(GtkWidget *caller, void*)
-{
-    if (!Cmd)
-        return;
-    if (Cmd->cmd_action) {
-        char *t = gtk_combo_box_text_get_active_text(
-            GTK_COMBO_BOX_TEXT(caller));
-        (*Cmd->cmd_action)("depth", Cmd->cmd_arg, true, t, 0, 0);
-        g_free(t);
+    if (cmd_action) {
+        QByteArray dp_ba = cmd_depth->currentText().toLatin1();
+        const char *t = dp_ba.constData();
+        (*cmd_action)("depth", cmd_arg, true, t, 0, 0);
     }
 }
 
+
+void
+QTextCmdDlg::cancel_btn_slot()
+{
+    EX()->PopUpExtCmd(0, MODE_OFF, 0, 0, 0);
+}
+
+
+#ifdef notdef
+
+namespace {
+    /*
+    // Drag/drop stuff
+    //
+    GtkTargetEntry target_table[] = {
+        { (char*)"TWOSTRING",   0, 0 },
+        { (char*)"STRING",      0, 1 },
+        { (char*)"text/plain",  0, 2 }
+    };
+    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+    */
+}
 
 // Static function.
 // Drag data received in editing window, grab it.
 //
 void
-sCmd::cmd_drag_data_received(GtkWidget *entry, GdkDragContext *context,
+QTextCmdDlg::cmd_drag_data_received(GtkWidget *entry, GdkDragContext *context,
     gint, gint, GtkSelectionData *data, guint, guint time)
 {
     if (gtk_selection_data_get_length(data) >= 0 &&
@@ -544,3 +481,4 @@ sCmd::cmd_drag_data_received(GtkWidget *entry, GdkDragContext *context,
     gtk_drag_finish(context, false, false, time);
 }
 
+#endif
