@@ -90,7 +90,7 @@ sSPnumber SPnum;
 // The returned string memory is managed here in a rotating pool.
 //
 const char *
-sSPnumber::printnum(double num, sUnits *units, bool fix, int numd)
+sSPnumber::printnum(double num, const sUnits *units, bool fix, int numd)
 {
 #ifdef WRSPICE
     char *ustr = units ? units->unitstr() : 0;

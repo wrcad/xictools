@@ -1817,7 +1817,7 @@ sGraph::gr_get_keyed_bb(sKeyed *k, int *xl, int *yb, int *xr, int *yt)
 
 
 void
-sGraph::gr_writef(double d, sUnits *units, int x, int y, bool limit)
+sGraph::gr_writef(double d, const sUnits *units, int x, int y, bool limit)
 {
     const char *tmp = SPnum.printnum(d, units, true, NUMDGT);
     if (limit) {

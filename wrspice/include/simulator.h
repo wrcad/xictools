@@ -654,7 +654,7 @@ struct IFsimulator
     bool HspiceFriendly();
 
     // fte/evaluate.cc
-    sDataVec *Evaluate(pnode*);
+    sDataVec *Evaluate(pnode*, bool = false);
     sDvList *DvList(pnlist*);
 
     // fte/initialize.cc

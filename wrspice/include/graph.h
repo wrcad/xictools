@@ -426,7 +426,7 @@ struct sGraph
     void gr_set_keyed_posn(sKeyed*, int, int);
     void gr_get_keyed_posn(sKeyed*, int*, int*);
     bool gr_get_keyed_bb(sKeyed*, int*, int*, int*, int*);
-    void gr_writef(double, sUnits*, int, int, bool = false);
+    void gr_writef(double, const sUnits*, int, int, bool = false);
     void gr_draw_last(int);
     void gr_set_ghost(GhostDrawFunc, int, int);
     void gr_show_ghost(bool);

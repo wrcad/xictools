@@ -68,10 +68,13 @@ namespace {
 }
 
 
-// Note that Evaluate will return 0 on invalid expressions.
+// Note that Evaluate will return 0 on invalid expressions.  If
+// optional arg nocopy is true, suppress copying permanent vectors for
+// efficiency when indexing.  Don't save any pointers when this is
+// set!
 //
 sDataVec *
-IFsimulator::Evaluate(pnode *node)
+IFsimulator::Evaluate(pnode *node, bool nocopy)
 {
     if (!node)
         return (0);
@@ -128,8 +131,10 @@ IFsimulator::Evaluate(pnode *node)
                 return (0);
             }
             if (!d->link()) {
-                d = d->copy();
-                d->newtemp();
+                if (!nocopy) {
+                    d = d->copy();
+                    d->newtemp();
+                }
             }
             else {
                 for (sDvList *dl = d->link(); dl; dl = dl->dl_next) {
@@ -159,6 +164,11 @@ IFsimulator::Evaluate(pnode *node)
     if (!d->length() && !d->link()) {
         Error(E_NOVEC, 0, d->name());
         return (0);
+    }
+    if (d->numdims() <= 1) {
+        // Just in case we were sloppy
+        d->set_numdims(1);
+        d->set_dims(0, d->length());
     }
     return (d);
 }
@@ -621,7 +631,7 @@ namespace {
     //
     sDataVec *op_ind(pnode *arg1, pnode *arg2)
     {
-        sDataVec *v = Sp.Evaluate(arg1);
+        const sDataVec *v = Sp.Evaluate(arg1, true);
         sDataVec *ind = Sp.Evaluate(arg2);
         if (!v || !ind)
             return (0);
@@ -636,11 +646,6 @@ namespace {
                     "op_ind: length %d should be %d.\n", v->length(), j);
                 return (0);
             }
-        }
-        else {
-            // Just in case we were sloppy
-            v->set_numdims(1);
-            v->set_dims(0, v->length());
         }
 
         if (ind->length() != 1) {
@@ -936,9 +941,9 @@ namespace {
         t->newtemp();
         t->set_flags(0);
         if (scale && *scale->units() == UU_TIME)
-            t->units()->set(UU_FREQUENCY);
+            t->ncunits()->set(UU_FREQUENCY);
         else if (scale && *scale->units() == UU_FREQUENCY)
-            t->units()->set(UU_TIME);
+            t->ncunits()->set(UU_TIME);
 
         int nblks = 1;
         int blsize;

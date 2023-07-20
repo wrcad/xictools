@@ -1159,7 +1159,7 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
     }
     if (numdims == 0) {
         // reuse vector n, copy stuff from t
-        *n->units() = *t->units();
+        *n->ncunits() = *t->units();
         n->set_flags(t->flags());
         if (rdonly)
             n->set_flags(n->flags() | VF_READONLY);

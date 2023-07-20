@@ -128,64 +128,64 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
             dataDesc *dd = rd_data + i;
             sDataVec *v = new sDataVec;
             if (lstring::cieq(dd->dname(), "frequency"))
-                v->units()->set(UU_FREQUENCY);
+                v->ncunits()->set(UU_FREQUENCY);
             else if (dd->regular()) {
                 if (lstring::ciprefix("inoise", dd->dname())) {
                     if (in_is_cur) {
                         if (is_spectrum)
-                            v->units()->set("AAS");  // A^2/Hz
+                            v->ncunits()->set("AAS");  // A^2/Hz
                         else
-                            v->units()->set("AA");
+                            v->ncunits()->set("AA");
                     }
                     else {
                         if (is_spectrum)
-                            v->units()->set("VVS");  // V^2/Hz
+                            v->ncunits()->set("VVS");  // V^2/Hz
                         else
-                            v->units()->set("VV");
+                            v->ncunits()->set("VV");
                     }
                 }
                 else if (lstring::ciprefix("onoise", dd->dname())) {
                     if (out_is_cur) {
                         if (is_spectrum)
-                            v->units()->set("AAS");  // A^2/Hz
+                            v->ncunits()->set("AAS");  // A^2/Hz
                         else
-                            v->units()->set("AA");
+                            v->ncunits()->set("AA");
                     }
                     else {
                         if (is_spectrum)
-                            v->units()->set("VVS");  // V^2/Hz
+                            v->ncunits()->set("VVS");  // V^2/Hz
                         else
-                            v->units()->set("VV");
+                            v->ncunits()->set("VV");
                     }
                 }
                 else if (strchr(dd->dname(), Sp.SpecCatchar())) {
                     // Found the '@' in, e.g., dens@YYY
                     if (in_is_cur) {
                         if (is_spectrum)
-                            v->units()->set("AAS");  // A^2/Hz
+                            v->ncunits()->set("AAS");  // A^2/Hz
                         else
-                            v->units()->set("AA");
+                            v->ncunits()->set("AA");
                     }
                     else {
                         if (is_spectrum)
-                            v->units()->set("VVS");  // V^2/Hz
+                            v->ncunits()->set("VVS");  // V^2/Hz
                         else
-                            v->units()->set("VV");
+                            v->ncunits()->set("VV");
                     }
                 }
                 else if (lstring::cisubstring("dens", dd->dname()) ||
                         lstring::cisubstring("tot", dd->dname())) {
                     if (out_is_cur) {
                         if (is_spectrum)
-                            v->units()->set("AAS");  // A^2/Hz
+                            v->ncunits()->set("AAS");  // A^2/Hz
                         else
-                            v->units()->set("AA");
+                            v->ncunits()->set("AA");
                     }
                     else {
                         if (is_spectrum)
-                            v->units()->set("VVS");  // V^2/Hz
+                            v->ncunits()->set("VVS");  // V^2/Hz
                         else
-                            v->units()->set("VV");
+                            v->ncunits()->set("VV");
                     }
                 }
             }
@@ -207,21 +207,21 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
             dataDesc *dd = rd_data + i;
             sDataVec *v = new sDataVec;
             if (lstring::cieq(dd->dname(), "frequency"))
-                v->units()->set(UU_FREQUENCY);
+                v->ncunits()->set(UU_FREQUENCY);
             else if (dd->regular()) {
                 if (lstring::cieq(dd->dname(), "tranfunc")) {
                     if (an->TFinIsI && an->TFoutIsV)
-                        v->units()->set(UU_RES);
+                        v->ncunits()->set(UU_RES);
                     else if (an->TFinIsV && an->TFoutIsI)
-                        v->units()->set(UU_COND);
+                        v->ncunits()->set(UU_COND);
                 }
                 else if (lstring::cisubstring("Zi", dd->dname()) ||
                         lstring::cisubstring("Zo", dd->dname()))
-                    v->units()->set(UU_RES);
+                    v->ncunits()->set(UU_RES);
                 else if (lstring::cisubstring("isweep", dd->dname()))
-                    v->units()->set(UU_CURRENT);
+                    v->ncunits()->set(UU_CURRENT);
                 else if (lstring::cisubstring("vsweep", dd->dname()))
-                    v->units()->set(UU_VOLTAGE);
+                    v->ncunits()->set(UU_VOLTAGE);
             }
             v->set_name(dd->dname());
             v->set_scale(0);
@@ -241,13 +241,13 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
             dataDesc *dd = rd_data + i;
             sDataVec *v = new sDataVec;
             if (lstring::cieq(dd->dname(), "frequency"))
-                v->units()->set(UU_FREQUENCY);
+                v->ncunits()->set(UU_FREQUENCY);
             else if (dd->regular()) {
                 if (lstring::cisubstring("sweep", dd->dname())) {
                     if (an->SENSoutSrc)
-                        v->units()->set(UU_CURRENT);
+                        v->ncunits()->set(UU_CURRENT);
                     else
-                        v->units()->set(UU_VOLTAGE);
+                        v->ncunits()->set(UU_VOLTAGE);
                 }
             }
             v->set_name(dd->dname());
@@ -272,14 +272,14 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
             if (lstring::substring("#branch", dd->dname()) ||
                     lstring::cieq(dd->dname(), "isweep") ||
                     ((s = strchr(dd->dname(), '#')) != 0 && *(s+1) == 'i'))
-                v->units()->set(UU_CURRENT);
+                v->ncunits()->set(UU_CURRENT);
             else if (lstring::cieq(dd->dname(), "time"))
-                v->units()->set(UU_TIME);
+                v->ncunits()->set(UU_TIME);
             else if (lstring::cieq(dd->dname(), "frequency"))
-                v->units()->set(UU_FREQUENCY);
+                v->ncunits()->set(UU_FREQUENCY);
             else if (dd->regular()) {
                 if (!strrchr(dd->dname(), '(')) {
-                    v->units()->set(UU_VOLTAGE);
+                    v->ncunits()->set(UU_VOLTAGE);
                     snprintf(buf, sizeof(buf), "v(%s)", dd->dname());
                     v->set_name(buf);
                 }
@@ -655,7 +655,7 @@ sRunDesc::getSpecial(sCKT *ckt, int indx, IFvalue *val)
             // The data vecs were created before we had the units,
             // so set the units on the first pass thru here
             if (set_vtype)
-                desc->vec()->units()->set(d.toUU());
+                desc->vec()->ncunits()->set(d.toUU());
             return (true);
         }
         else {

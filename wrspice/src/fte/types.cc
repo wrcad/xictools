@@ -100,7 +100,7 @@ struct Abbrev
     plotab *findPlotAb(const char*);
     plotab *findPlotAbMatch(const char*);
 
-    friend char *sUnits::unitstr();
+    friend char *sUnits::unitstr() const;
 
 private:
     plotab *plotAbs;
@@ -206,9 +206,9 @@ CommandTab::com_settype(wordlist *wl)
         else {
             if (v->link())
                 for (sDvList *dl = v->link(); dl; dl = dl->dl_next)
-                    *dl->dl_dvec->units() = u;
+                    *dl->dl_dvec->ncunits() = u;
             else
-                *v->units() = u;
+                *v->ncunits() = u;
         }
     }
 }
@@ -660,7 +660,7 @@ sUnits::set(const char *string)
 
 
 bool
-sUnits::operator==(Utype type)
+sUnits::operator==(Utype type) const
 {
     typeab *t = Ab.findTypeAb(type);
     if (!t)
@@ -676,7 +676,7 @@ sUnits::operator==(Utype type)
 // less fundamental types.
 //
 char *
-sUnits::unitstr()
+sUnits::unitstr() const
 {
     sUnits u = *this;
     char xx[NUM_BTYPES+1];
@@ -788,7 +788,7 @@ sUnits::unitstr()
 // If denom is false, remove from numerator, else remove from denominator.
 //
 void
-sUnits::trial(sUnits &u, int *cnt, bool denom)
+sUnits::trial(const sUnits &u, int *cnt, bool denom) const
 {
     int tcnt = 0;
     for (int i = 0; i < 8; i++) {

@@ -676,7 +676,7 @@ cRawIn::raw_read(const char *name)
                 t = lstring::gettok(&s); // The units
                 if (t) {
                     if (!strchr(t, '='))
-                        v->units()->set(t);
+                        v->ncunits()->set(t);
                     else
                         s = olds;
                     delete [] t;

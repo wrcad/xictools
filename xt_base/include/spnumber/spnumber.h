@@ -68,7 +68,7 @@ struct sSPnumber
             np_offs = 0;
         }
 
-    const char *printnum(double, sUnits*, bool = false, int = 0);
+    const char *printnum(double, const sUnits*, bool = false, int = 0);
     const char *printnum(double, const char* = 0, bool = false, int = 0);
     const char *print_exp(double, int);
 

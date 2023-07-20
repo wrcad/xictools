@@ -205,20 +205,20 @@ struct sUnits
             units[i] -= u.units[i]; }
 
     // Note that "no units" is equivalent to any units.
-    bool operator==(sUnits &u)
+    bool operator==(const sUnits &u) const
         { if (isnotype() || u.isnotype()) return (true);
           for (int i = 0; i < 8; i++)
             if (units[i] != u.units[i]) return (false);
           return (true); }
-    bool operator==(Utype);
-    bool isnotype()
+    bool operator==(Utype) const;
+    bool isnotype() const
         { for (int i = 0; i < 8; i++)
             if (units[i]) return (false);
           return (true); }
-    char *unitstr();
+    char *unitstr() const;
 
 private:
-    void trial(sUnits&, int*, bool);
+    void trial(const sUnits&, int*, bool) const;
 
     char units[8];
 };
@@ -668,7 +668,7 @@ struct sDataVec
             memset(v_dims, 0, MAXDIMS*sizeof(int));
         }
 
-    sDataVec(sUnits &u)
+    sDataVec(const sUnits &u)
         {
             v_data.real = 0;
 
@@ -695,7 +695,8 @@ struct sDataVec
             memset(v_dims, 0, MAXDIMS*sizeof(int));
         }
 
-    sDataVec(char *vname, int type, int len, sUnits *u = 0, void *data = 0)
+    sDataVec(char *vname, int type, int len, const sUnits *u = 0,
+        void *data = 0)
         {
             v_data.real = 0;
             if (data)
@@ -743,8 +744,8 @@ struct sDataVec
     void unscalarize();
     void segmentize();
     void unsegmentize();
-    sDataVec *copy();
-    void copyto(sDataVec*, int, int, int);
+    sDataVec *copy() const;
+    void copyto(sDataVec*, int, int, int) const;
     void alloc(bool, int);
     void resize(int);
     char *basename();
@@ -862,12 +863,12 @@ struct sDataVec
     sDataVec *v_and(sDataVec*);
     sDataVec *v_or(sDataVec*);
 
-    bool isreal()               { return (!(v_flags & VF_COMPLEX)); }
-    bool iscomplex()            { return (v_flags & VF_COMPLEX); }
+    bool isreal()               const { return (!(v_flags & VF_COMPLEX)); }
+    bool iscomplex()            const { return (v_flags & VF_COMPLEX); }
 
-    bool has_data()             { return (v_data.real != 0); }
+    bool has_data()             const { return (v_data.real != 0); }
 
-    double realval(int i)
+    double realval(int i) const
         {
             return (isreal() ? v_data.real[i] : v_data.comp[i].real);
         }
@@ -880,7 +881,7 @@ struct sDataVec
                 v_data.comp[i].real = d;
         }
 
-    double *realvec()           { return (isreal() ? v_data.real : 0); }
+    double *realvec()           const { return (isreal() ? v_data.real : 0); }
 
     void set_realvec(double *v, bool clean = false)
         {
@@ -890,7 +891,7 @@ struct sDataVec
             v_data.real = v;
         }
 
-    double imagval(int i)
+    double imagval(int i) const
         {
             return (isreal() ? 0.0 : v_data.comp[i].imag);
         }
@@ -903,7 +904,7 @@ struct sDataVec
                 v_data.comp[i].imag = d;
         }
 
-    complex compval(int i)
+    complex compval(int i) const
         {
             if (isreal())
                 return (complex(v_data.real[i], 0.0));
@@ -919,7 +920,7 @@ struct sDataVec
                 v_data.comp[i] = c;
         }
 
-    complex *compvec()          { return (isreal() ? 0 : v_data.comp); }
+    complex *compvec()          const { return (isreal() ? 0 : v_data.comp); }
 
     void set_compvec(complex *c, bool clean = false)
         {
@@ -929,7 +930,7 @@ struct sDataVec
             v_data.comp = c;
         }
 
-    bool no_sxze()              { return (v_flags & VF_NOSXZE); }
+    bool no_sxze()              const { return (v_flags & VF_NOSXZE); }
     void set_no_sxze(bool b)
         {
             if (b)
@@ -938,12 +939,12 @@ struct sDataVec
                 v_flags &= ~VF_NOSXZE;
         }
 
-    bool scalarized()           { return (v_scaldata != 0); }
-    bool segmentized()          { return (v_segmdata != 0); }
+    bool scalarized()           const { return (v_scaldata != 0); }
+    bool segmentized()          const { return (v_segmdata != 0); }
 
     // Length within smallest block if multi-dimensional.
     //
-    int unscalarized_length()
+    int unscalarized_length() const
         {
             if (v_scaldata) {
                 int l = v_scaldata->length;
@@ -957,7 +958,7 @@ struct sDataVec
             return (l);
         }
 
-    double unscalarized_prev_real()
+    double unscalarized_prev_real() const
         {
             if (v_scaldata) {
                 int n = v_scaldata->length - 2;
@@ -971,7 +972,7 @@ struct sDataVec
             
         }
 
-    double unscalarized_prev_imag()
+    double unscalarized_prev_imag() const
         {
             if (v_scaldata) {
                 int n = v_scaldata->length - 2;
@@ -984,14 +985,14 @@ struct sDataVec
             return (0.0);
         }
 
-    double unscalarized_first()
+    double unscalarized_first() const
         {
             if (v_scaldata)
                 return (v_scaldata->real);
             return (realval(0));
         }
 
-    double absval(int i)
+    double absval(int i) const
         {
             return (isreal() ? fabs(v_data.real[i]) :
                 sqrt(v_data.comp[i].real*v_data.comp[i].real +
@@ -1011,7 +1012,7 @@ struct sDataVec
             v_rlength = len;
         }
 
-    const char *name()              { return (v_name); }
+    const char *name()              const { return (v_name); }
     void set_name(const char *n)
         {
             char *s = lstring::copy(n);
@@ -1019,18 +1020,19 @@ struct sDataVec
             v_name = s;
         }
 
-    sUnits *units()                 { return (&v_units); }
+    const sUnits *units()           const { return (&v_units); }
+    sUnits *ncunits()               { return (&v_units); }
 
-    double minsignal()              { return (v_minsignal); }
+    double minsignal()              const { return (v_minsignal); }
     void set_minsignal(double d)    { v_minsignal = d; }
 
-    double maxsignal()              { return (v_maxsignal); }
+    double maxsignal()              const { return (v_maxsignal); }
     void set_maxsignal(double d)    { v_maxsignal = d; }
 
-    sPlot *plot()                   { return (v_plot); }
+    sPlot *plot()                   const { return (v_plot); }
     void set_plot(sPlot *p)         { v_plot = p; }
 
-    sDataVec *scale()
+    sDataVec *scale() const
         {
             if (v_scale)
                 return (v_scale);
@@ -1038,16 +1040,16 @@ struct sDataVec
                 return (v_plot->scale());
             return (0);
         }
-    sDataVec *special_scale()       { return (v_scale); }
+    sDataVec *special_scale()       const { return (v_scale); }
     void set_scale(sDataVec *s)     { v_scale = s; }
 
-    sDataVec *next()                { return (v_next); }
+    sDataVec *next()                const { return (v_next); }
     void set_next(sDataVec *n)      { v_next = n; }
 
-    sDvList *link()                 { return (v_link2); }
+    sDvList *link()                 const { return (v_link2); }
     void set_link(sDvList *l)       { v_link2 = l; }
 
-    const char *defcolor()          { return (v_defcolor); }
+    const char *defcolor()          const { return (v_defcolor); }
     void set_defcolor(const char *c)
         {
             char *s = lstring::copy(c);
@@ -1055,31 +1057,31 @@ struct sDataVec
             v_defcolor = s;
         }
 
-    int flags()                     { return (v_flags); }
+    int flags()                     const { return (v_flags); }
     void set_flags(int f)           { v_flags = f; }
 
-    int length()                    { return (v_length); }
+    int length()                    const { return (v_length); }
     void set_length(int l)          { v_length = l; }
 
-    int allocated()                 { return (v_rlength); }
+    int allocated()                 const { return (v_rlength); }
     void set_allocated(int a)       { v_rlength = a; }
 
-    GridType gridtype()             { return (v_gridtype); }
+    GridType gridtype()             const { return (v_gridtype); }
     void set_gridtype(GridType g)   { v_gridtype = g; }
 
-    PlotType plottype()             { return (v_plottype); }
+    PlotType plottype()             const { return (v_plottype); }
     void set_plottype(PlotType p)   { v_plottype = p; }
 
-    int linestyle()                 { return (v_linestyle); }
+    int linestyle()                 const { return (v_linestyle); }
     void set_linestyle(int l)       { v_linestyle = l; }
 
-    int color()                     { return (v_color); }
+    int color()                     const { return (v_color); }
     void set_color(int c)           { v_color = c; }
 
-    int numdims()                   { return (v_numdims); }
+    int numdims()                   const { return (v_numdims); }
     void set_numdims(int n)         { v_numdims = n; }
 
-    int dims(int i)                 { return (v_dims[i]); }
+    int dims(int i)                 const { return (v_dims[i]); }
     void set_dims(int i, int d)     { v_dims[i] = d; }
 
     // This flag determines whether degrees or radians are used.  The

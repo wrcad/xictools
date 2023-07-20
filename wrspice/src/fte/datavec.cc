@@ -265,7 +265,7 @@ sDataVec::unsegmentize()
 // Create a copy of a vector.
 //
 sDataVec *
-sDataVec::copy()
+sDataVec::copy() const
 {
     const sDataVec *datavec = this;
     if (!datavec)
@@ -297,7 +297,7 @@ sDataVec::copy()
 }
 
 void
-sDataVec::copyto(sDataVec *dstv, int srcoff, int dstoff, int size)
+sDataVec::copyto(sDataVec *dstv, int srcoff, int dstoff, int size) const
 {
     if (isreal()) {
         if (dstv->isreal()) {
