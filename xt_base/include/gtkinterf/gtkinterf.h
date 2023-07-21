@@ -99,6 +99,8 @@ namespace gtkinterf {
         GRwbag      *NewWbag(const char*, GRwbag*);
         int         AddTimer(int, int(*)(void*), void*);
         void        RemoveTimer(int);
+        int         AddIdleProc(int(*)(void*), void*) { return (0); }
+        void        RemoveIdleProc(int)     { }
         GRsigintHdlr RegisterSigintHdlr(GRsigintHdlr);
         bool        CheckForEvents();
         int         Input(int, int, int*);

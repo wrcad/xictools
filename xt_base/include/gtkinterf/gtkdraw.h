@@ -275,6 +275,9 @@ namespace gtkinterf {
         void SetLinestyle(const GRlineType*);
         void DefineFillpattern(GRfillType*);
         void SetFillpattern(const GRfillType*);
+        void Refresh(int, int, int, int)                { }
+        void Refresh()                                  { }
+        void Update(int, int, int, int)                 { }
         void Update();
         void Input(int*, int*, int*, int*);
         void SetXOR(int);
