@@ -747,15 +747,15 @@ struct sDataVec
     sDataVec *copy() const;
     void copyto(sDataVec*, int, int, int) const;
     void alloc(bool, int);
-    void resize(int);
-    char *basename();
+    void resize(int, int = 0);
+    char *basename() const;
     void sort();
     sDataVec *mkfamily();
     void extend(int);
-    void print(sLstr*);
-    void minmax(double*, bool);
-    void SmithMinmax(double*, bool);
-    sDataVec *SmithCopy();
+    void print(sLstr*) const;
+    void minmax(double*, bool) const;
+    void SmithMinmax(double*, bool) const;
+    sDataVec *SmithCopy() const;
 
     // math functions
 

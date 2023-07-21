@@ -353,29 +353,41 @@ sDataVec::alloc(bool real, int size)
 
 
 void
-sDataVec::resize(int newsize)
+sDataVec::resize(int newsize, int extra)
 {
     if (newsize < 1)
         newsize = 1;
-    int sz = SPMIN(v_length, newsize);
+    if (extra < 0)
+        extra = 0;
+    int cpsz = SPMIN(v_length, newsize);
+
+    // When increasing the size, grab "extra" elements to avoid the copy
+    // that might otherwise occur on subsequent calls.
+    if (newsize > v_length) {
+        if (v_rlength > newsize)
+            return;
+        newsize += extra;
+    }
+
     if (isreal()) {
         double *oldv = v_data.real;
         v_data.real = new double[newsize];
-        memcpy(v_data.real, oldv, sz*sizeof(double));
-        if (sz < newsize)
-            memset(v_data.real + sz, 0, (newsize - sz)*sizeof(double));
+        memcpy(v_data.real, oldv, cpsz*sizeof(double));
+        if (cpsz < newsize)
+            memset(v_data.real + cpsz, 0, (newsize - cpsz)*sizeof(double));
         delete [] oldv;
     }
     else {
         complex *oldv = v_data.comp;
         v_data.comp = new complex[newsize];
-        memcpy(v_data.comp, oldv, sz*sizeof(complex));
-        if (sz < newsize) {
-            memset((void*)(v_data.comp + sz), 0,
-                (newsize - sz)*sizeof(complex));
+        memcpy(v_data.comp, oldv, cpsz*sizeof(complex));
+        if (cpsz < newsize) {
+            memset((void*)(v_data.comp + cpsz), 0,
+                (newsize - cpsz)*sizeof(complex));
         }
         delete [] oldv;
     }
+    v_length = cpsz;
     v_rlength = newsize;
 }
 
@@ -385,7 +397,7 @@ sDataVec::resize(int newsize)
 // 'plot prefix'.
 //
 char *
-sDataVec::basename()
+sDataVec::basename() const
 {
     if (!v_name)
         return (0);
@@ -487,9 +499,6 @@ sDataVec::sort()
 sDataVec *
 sDataVec::mkfamily()
 {
-    const sDataVec *datavec = this;
-    if (!datavec)
-        return (0);
     if (v_numdims < 2)
         return (this);
 
@@ -593,7 +602,7 @@ sDataVec::extend(int len)
 
 
 void
-sDataVec::print(sLstr *plstr)
+sDataVec::print(sLstr *plstr) const
 {
     char buf[BSIZE_SP];
     char ubuf[64];
@@ -707,7 +716,7 @@ sDataVec::print(sLstr *plstr)
 // res[0] = min, res[1] = max
 //
 void
-sDataVec::minmax(double *res, bool real)
+sDataVec::minmax(double *res, bool real) const
 {
     double d = real ? realval(0) : imagval(0);
     res[0] = d;
@@ -733,7 +742,7 @@ namespace {
 // Will report the minimum and maximum in "reflection coefficient" space
 //
 void
-sDataVec::SmithMinmax(double *res, bool yval)
+sDataVec::SmithMinmax(double *res, bool yval) const
 {
     double d, d2;
     SMITHtfm(realval(0), imagval(0), &d, &d2);
@@ -754,7 +763,7 @@ sDataVec::SmithMinmax(double *res, bool yval)
 
 
 sDataVec *
-sDataVec::SmithCopy()
+sDataVec::SmithCopy() const
 {
     // Transform for smith plots
     sDataVec *d = copy();

@@ -1276,7 +1276,7 @@ IFoutput::vecSet(const char *lhs, const char *rhs, bool rdonly,
     if (offset + rsize > n->length()) {
         // have to allocate more space
         n->set_length(offset + rsize);
-        n->resize(n->length());
+        n->resize(n->length(), n->length()/10);
     }
     t->copyto(n, 0, offset, t->length());
     if (pl == curPlot())
