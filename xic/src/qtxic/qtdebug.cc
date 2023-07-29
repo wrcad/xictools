@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtdebug.h"
 #include "editif.h"
 #include "fio.h"
 #include "dsp_color.h"
@@ -49,20 +49,67 @@
 #include "menu.h"
 #include "promptline.h"
 #include "events.h"
-#include "gtkmain.h"
-#include "gtkinterf/gtkfont.h"
-#include "gtkinterf/gtkutil.h"
-#include "gtkinterf/gtksearch.h"
+#include "qtinterf/qtfont.h"
+#include "qtinterf/qtsearch.h"
+#include "qtinterf/qttextw.h"
+#include "qtinterf/qtmsg.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
-#include <gdk/gdkkeysyms.h>
 
+#include <QLayout>
+#include <QMenuBar>
+#include <QMenu>
+#include <QAction>
+#include <QLabel>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QTreeWidget>
+#include <QTreeWidget>
+#include <QHeaderView>
 
 //-----------------------------------------------------------------------------
 // Pop-up panel and supporting functions for script debugger.
 //
 // Help system keywords used:
 //  xic:debug
+
+// Menu command to bring up a panel which facilitates debugging of
+// scripts.
+//
+void
+cMain::PopUpDebug(GRobject caller, ShowMode mode)
+{
+    if (!QTdev::exists() || !QTmainwin::exists())
+        return;
+    if (mode == MODE_OFF) {
+        if (QTscriptDebuggerDlg::self())
+            QTscriptDebuggerDlg::self()->deleteLater();
+        return;
+    }
+
+    if (QTscriptDebuggerDlg::self())
+        return;
+
+    new QTscriptDebuggerDlg(caller);
+
+    QTdev::self()->SetPopupLocation(GRloc(), QTscriptDebuggerDlg::self(),
+        QTmainwin::self()->Viewport());
+    QTscriptDebuggerDlg::self()->show();
+}
+
+
+// This is a callback from the main menu that sets the file name when
+// one of the scripts in the debug menu is selected.
+//
+bool
+cMain::DbgLoad(MenuEnt *ent)
+{
+    if (QTscriptDebuggerDlg::self())
+        return (QTscriptDebuggerDlg::self()->load_from_menu(ent));
+    return (false);
+}
+// End of cMain functions.
+
 
 // Default window size, assumes 6X13 chars, 80 cols, 20 rows
 // with a 2-pixel margin
@@ -72,12 +119,10 @@
 // line buffer size
 #define LINESIZE 1024
 
-// max number of active breakpoints
-#define NUMBKPTS 5
-
 #define DEF_FILE "unnamed"
 
 namespace {
+    /*
     // Drag/drop stuff.
     GtkTargetEntry target_table[] = {
         { (char*)"TWOSTRING",   0, 0 },
@@ -85,185 +130,8 @@ namespace {
         { (char*)"text/plain",  0, 2 }
     };
     guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+    */
 
-    // breakpoints
-    struct sBp
-    {
-        sBp() { line = 0; active = false; }
-
-        int line;
-        bool active;
-    };
-
-    namespace gtkdebug {
-        // function codes
-        enum {NoCode, CancelCode, NewCode, LoadCode, PrintCode, SaveAsCode,
-            CRLFcode, RunCode, StepCode, StartCode, MonitorCode, HelpCode };
-
-        // current status
-        enum Estatus { Equiescent, Eexecuting };
-
-        // configuration mode
-        enum DBmode { DBedit, DBrun }; 
-
-        // Code passed to refresh()
-        // locStart          scroll to top
-        // locPresent        keep present position
-        // locFollowCurrent  keep the current exec. line visible
-        //
-        enum locType { locStart, locPresent, locFollowCurrent };
-
-        // Wariables listing pop-up.
-        struct sDbV
-        {
-            sDbV(void*);
-            ~sDbV();
-
-            GtkWidget *Shell() { return (dv_popup); }
-            void popdown() { delete this; }
-
-            void update(stringlist*);
-
-        private:
-            static void dv_cancel_proc(GtkWidget*, void*);
-            static int dv_select_proc(GtkTreeSelection*, GtkTreeModel*,
-                GtkTreePath*, int, void*);
-            static bool dv_focus_proc(GtkWidget*, GdkEvent*, void*);
-
-            GtkWidget *dv_popup;
-            GtkWidget *dv_list;
-            void *dv_pointer;
-            bool dv_no_select;      // treeview focus hack
-        };
-
-        // Main window.
-        struct sDbg : public GTKbag
-        {
-            friend struct sDbV;
-
-            // Undo list element.
-            struct histlist
-            {
-                histlist(char *t, int p, bool d, histlist *n)
-                    {
-                        h_next = n;
-                        h_text = t;
-                        h_cpos = p;
-                        h_deletion = d;
-                    }
-
-                ~histlist()
-                    {
-                        delete [] h_text;
-                    }
-
-                static void destroy(const histlist *l)
-                    {
-                        while (l) {
-                            const histlist *x = l;
-                            l = l->h_next;
-                            delete x;
-                        }
-                    }
-
-                histlist *h_next;
-                char *h_text;
-                int h_cpos;
-                bool h_deletion;
-            };
-
-            sDbg(GRobject);
-            ~sDbg();
-
-            bool load_from_menu(MenuEnt*);
-
-        private:
-            void update_variables()
-                {
-                    if (db_vars_pop)
-                        db_vars_pop->update(db_vlist);
-                }
-
-            void check_sens();
-            void set_mode(DBmode);
-            void set_line();
-            bool is_last_line();
-            void step();
-            void run();
-            void set_sens(bool);
-            void start();
-            void breakpoint(int);
-            bool write_file(const char*);
-            bool check_save(int);
-            void refresh(bool, locType, bool = false);
-            char *listing(bool);
-            void monitor();
-            const char *var_prompt(const char*, const char*, bool*);
-
-            static void db_undo_proc(GtkWidget*, void*);
-            static void db_redo_proc(GtkWidget*, void*);
-            static void db_cut_proc(GtkWidget*, void*);
-            static void db_copy_proc(GtkWidget*, void*);
-            static void db_paste_proc(GtkWidget*, void*);
-            static void db_paste_prim_proc(GtkWidget*, void*);
-            static void db_search_proc(GtkWidget*, void*);
-            static void db_font_proc(GtkWidget*, void*);
-            static int db_step_idle(void*);
-            static void db_font_changed();
-            static void db_cancel_proc(GtkWidget*, void*);
-            static void db_mode_proc(GtkWidget*, void*);
-            static void db_change_proc(GtkWidget*, void*);
-            static int db_key_dn_hdlr(GtkWidget*, GdkEvent*, void*);
-            static int db_text_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-            static void db_action_proc(GtkWidget*, void*);
-            static ESret db_open_cb(const char*, void*);
-            static int db_open_idle(void*);
-            static void db_do_saveas_proc(const char*, void*);
-            static void db_drag_data_received(GtkWidget*, GdkDragContext*,
-                gint, gint, GtkSelectionData*, guint, guint, void*);
-            static void db_insert_text_proc(GtkTextBuffer*, GtkTextIter*,
-                char*, int, void*);
-            static void db_delete_range_proc(GtkTextBuffer*, GtkTextIter*,
-                GtkTextIter*, void*);
-            static stringlist *db_mklist(const char*);
-
-            GRobject db_caller;
-            GtkWidget *db_modelabel;
-            GtkWidget *db_title;
-            GtkWidget *db_modebtn;
-            GtkWidget *db_saveas;
-            GtkWidget *db_undo;
-            GtkWidget *db_redo;
-            GtkWidget *db_filemenu;
-            GtkWidget *db_editmenu;
-            GtkWidget *db_execmenu;
-            GtkWidget *db_load_btn;
-            GRledPopup *db_load_pop;
-            sDbV *db_vars_pop;
-
-            char *db_file_path;
-            const char *db_line_ptr;
-            char *db_line_save;
-            char *db_dropfile;
-            FILE *db_file_ptr;
-            stringlist *db_vlist;
-            GTKsearchPopup *db_search_pop;
-
-            int db_line;
-            int db_last_code;
-            Estatus db_status;
-            DBmode db_mode;
-            bool db_text_changed;
-            bool db_row_cb_flag;
-            bool db_in_edit;
-            bool db_in_undo;
-            histlist *db_undo_list;
-            histlist *db_redo_list;
-            struct sBp db_breaks[NUMBKPTS];
-        };
-
-        sDbg *Dbg;
-    }
 
     // for hardcopies
     HCcb dbgHCcb =
@@ -286,50 +154,6 @@ namespace {
     };
 }
 
-using namespace gtkdebug;
-
-
-// Menu command to bring up a panel which facilitates debugging of
-// scripts.
-//
-void
-cMain::PopUpDebug(GRobject caller, ShowMode mode)
-{
-    if (!GTKdev::exists() || !GTKmainwin::exists())
-        return;
-    if (mode == MODE_OFF) {
-        delete Dbg;
-        return;
-    }
-
-    if (Dbg)
-        return;
-
-    new sDbg(caller);
-    if (!Dbg->Shell()) {
-        delete Dbg;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Dbg->Shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
-
-    GTKdev::self()->SetPopupLocation(GRloc(), Dbg->Shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Dbg->Shell());
-}
-
-
-// This is a callback from the main menu that sets the file name when
-// one of the scripts in the debug menu is selected.
-//
-bool
-cMain::DbgLoad(MenuEnt *ent)
-{
-    if (Dbg)
-        return (Dbg->load_from_menu(ent));
-    return (false);
-}
-
 
 // Assumptions about EditPrompt()
 //  1.  returns 0 immediately if call is reentrant
@@ -340,9 +164,12 @@ namespace {
     const char *MIDX = "midx";
 }
 
-sDbg::sDbg(GRobject c)
+
+QTscriptDebuggerDlg *QTscriptDebuggerDlg::instPtr;
+
+QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
 {
-    Dbg = this;
+    instPtr = this;
     db_caller = c;
     db_modelabel = 0;
     db_title = 0;
@@ -377,328 +204,146 @@ sDbg::sDbg(GRobject c)
     db_redo_list = 0;
     memset(db_breaks, 0, NUMBKPTS*sizeof(sBp));
 
-    wb_shell = gtk_NewPopup(0, "Script Debugger", db_cancel_proc, 0);
-    if (!wb_shell)
-        return;
-    // don't propogate unhandled key events to main window
-    g_object_set_data(G_OBJECT(wb_shell), "no_prop_key", (void*)1);
+    setWindowTitle(tr("Script Debugger"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    GtkWidget *form = gtk_table_new(1, 4, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(wb_shell), form);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    //
     // menu bar
     //
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-    gtk_window_add_accel_group(GTK_WINDOW(wb_shell), accel_group);
-    GtkWidget *menubar = gtk_menu_bar_new();
-    g_object_set_data(G_OBJECT(wb_shell), "menubar", menubar);
-    gtk_widget_show(menubar);
-    GtkWidget *item;
+    QMenuBar *menubar = new QMenuBar(this);
 
     // File menu.
-    item = gtk_menu_item_new_with_mnemonic("_File");
-    gtk_widget_set_name(item, "File");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *submenu = gtk_menu_new();
-    gtk_widget_show(submenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
-    db_filemenu = item;
-
+    db_filemenu = menubar->addMenu(tr("&File"));
     // _New, 0, db_action_proc, NewCode, 0
-    item = gtk_menu_item_new_with_mnemonic("_New");
-    gtk_widget_set_name(item, "New");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)NewCode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-
-    // _Load", <control>", db_action_proc, LoadCode, 0
-    item = gtk_menu_item_new_with_mnemonic("_Load");
-    gtk_widget_set_name(item, "Load");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)LoadCode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_l,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    db_load_btn = item;
-
+    QAction *a = db_filemenu->addAction(tr("&New"));
+    a->setData(NewCode);
+    // _Load", <control>L", db_action_proc, LoadCode, 0
+    a = db_filemenu->addAction(tr("&Load"));
+    a->setData(LoadCode);
+    a->setShortcut(QKeySequence("Ctrl+L"));
+    db_load_btn = a;
     // _Print, <control>P, db_action_proc, PrintCode, 0
-    item = gtk_menu_item_new_with_mnemonic("_Print");
-    gtk_widget_set_name(item, "Print");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)PrintCode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_p,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
+    a = db_filemenu->addAction(tr("&Print"));
+    a->setData(PrintCode);
+    a->setShortcut(QKeySequence("Ctrl+P"));
     // _Save As, <alt>A, db_action_proc, SaveAsCode, 0
-    item = gtk_menu_item_new_with_mnemonic("_Save As");
-    gtk_widget_set_name(item, "Save As");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)SaveAsCode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_a,
-//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-    db_saveas = item;
-
+    a = db_filemenu->addAction(tr("_Save As"));
+    a->setData(SaveAsCode);
+    a->setShortcut(QKeySequence("Alt+A"));
+    db_saveas = a;
 #ifdef WIN32
     // _Write CRLF, 0, db_action_proc, CRLFcode, <CheckItem>"
-    item = gtk_check_menu_item_new_with_mnemonic("_Write CRLF");
-    gtk_widget_set_name(item, "Write CRLF");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)CRLFcode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-    GTKdev::SetStatus(item, GTKdev::self()->GetCRLFtermination());
+    a = db_filemenu->addAction(tr("&Write CRLF"));
+    a->setCheckable(true);
+    a->setData(CRLFcode);
+    QTdev::SetStatus(a, QTdev::self()->GetCRLFtermination());
 #endif
 
-    item = gtk_separator_menu_item_new();
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-
+    db_filemenu->addSeparator();
     // _Quit, <control>Q, db_action_proc, CancelCode, 0
-    item = gtk_menu_item_new_with_mnemonic("_Quit");
-    gtk_widget_set_name(item, "Quit");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)CancelCode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    a = db_filemenu->addAction(tr("&Quit"));
+    a->setData(CancelCode);
+    a->setShortcut(QKeySequence("Ctrl+Q"));
+    connect(db_filemenu, SIGNAL(triggered(QAction*)),
+        this, SLOT(file_menu_slot(QAction*)));
 
     // Edit menu.
-    item = gtk_menu_item_new_with_mnemonic("_Edit");
-    gtk_widget_set_name(item, "Edit");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    submenu = gtk_menu_new();
-    gtk_widget_show(submenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
-    db_editmenu = item;
-
+    db_editmenu = menubar->addMenu(tr("&Edit"));
     // Undo, <Alt>U, db_undo_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("Undo");
-    gtk_widget_set_name(item, "Undo");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_undo_proc), this);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_u,
-//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-    db_undo = item;
-
+    a = db_editmenu->addAction(tr("Undo"));
+    a->setShortcut(QKeySequence("Alt+U"));
+    db_undo = a;
     // Redo, <Alt>R, db_redo_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("Redo");
-    gtk_widget_set_name(item, "Redo");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_redo_proc), this);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_r,
-//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
-    db_redo = item;
+    a = db_editmenu->addAction(tr("Redo"));
+    a->setShortcut(QKeySequence("Alt+R"));
+    db_redo = a;
 
-    item = gtk_separator_menu_item_new();
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-
+    db_editmenu->addSeparator();
     // Cut to Clipboard, <control>X, db_cut_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("Cut to Clipboard");
-    gtk_widget_set_name(item, "Cut to Clipboard");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_cut_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_x,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
+    a = db_editmenu->addAction(tr("Cut to Clipboard"));
+    a->setShortcut(QKeySequence("Ctrl+X"));
     // Copy to Clipboard, <control>C, db_copy_proc,  0, 0
-    item = gtk_menu_item_new_with_mnemonic("Copy to Clipboard");
-    gtk_widget_set_name(item, "Copy to Clipboard");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_copy_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_c,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
+    a = db_editmenu->addAction(tr("Copy to Clipboard"));
+    a->setShortcut(QKeySequence("Ctrl+C"));
     // Paste from Clipboard, <control>V, db_paste_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("Paste from Clipboard");
-    gtk_widget_set_name(item, "Paste from Clipboard");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_paste_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_v,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
+    a = db_filemenu->addAction(tr("Paste from Clipboard"));
+    a->setShortcut(QKeySequence("Ctrl+V"));
     // Paste Primary, <alt>P, db_paste_prim_proc, 0, 0
-    item = gtk_menu_item_new_with_mnemonic("Paste Primary");
-    gtk_widget_set_name(item, "Paste Primary");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_paste_prim_proc), this);
-//    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_p,
-//        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
+    a = db_editmenu->addAction(tr("Paste Primary"));
+    a->setShortcut(QKeySequence("Alt+P"));
+    connect(db_editmenu, SIGNAL(triggered(QAction*)),
+        this, SLOT(edit_menu_slot(QAction*)));
 
     // Execute menu.
-    item = gtk_menu_item_new_with_mnemonic("E_xecute");
-    gtk_widget_set_name(item, "Execute");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    submenu = gtk_menu_new();
-    gtk_widget_show(submenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
-    db_execmenu = item;
-
+    db_execmenu = menubar->addMenu(tr("E&xecute"));
     // _Run, <control>R, db_action_proc, RunCode, 0
-    item = gtk_menu_item_new_with_mnemonic("_Run");
-    gtk_widget_set_name(item, "Run");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)RunCode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_r,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
+    a = db_execmenu->addAction(tr("&Run"));
+    a->setData(RunCode);
+    a->setShortcut(QKeySequence("Ctrl+R"));
     // S_tep, <control>T, db_action_proc, StepCode, 0
-    item = gtk_menu_item_new_with_mnemonic("S_tep");
-    gtk_widget_set_name(item, "Step");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)StepCode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_t,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
+    a = db_execmenu->addAction(tr("S_tep"));
+    a->setData(StepCode);
+    a->setShortcut(QKeySequence("Ctrl+T"));
     // R_eset, <control>E, db_action_proc, StartCode, 0
-    item = gtk_menu_item_new_with_mnemonic("R_eset");
-    gtk_widget_set_name(item, "Reset");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)StartCode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_e,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
+    a = db_execmenu->addAction(tr("R&eset"));
+    a->setData(StartCode);
+    a->setShortcut(QKeySequence("Ctrl+E"));
     // _Monitor, <control>M, db_action_proc, MonitorCode,0
-    item = gtk_menu_item_new_with_mnemonic("_Monitor");
-    gtk_widget_set_name(item, "Monitor");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)MonitorCode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_m,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    a = db_execmenu->addAction(tr("&Monitor"));
+    a->setData(MonitorCode);
+    a->setShortcut(QKeySequence("Ctrl+M"));
+    connect(db_execmenu, SIGNAL(triggered(QAction*)),
+        this, SLOT(exec_menu_slot(QAction*)));
 
     // Options menu.
-    item = gtk_menu_item_new_with_mnemonic("_Options");
-    gtk_widget_set_name(item, "Options");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    submenu = gtk_menu_new();
-    gtk_widget_show(submenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
-
+    QMenu *menu = menubar->addMenu(tr("_Options"));
     // _Search, 0, db_search_proc, 0, <CheckItem>);
-    item = gtk_check_menu_item_new_with_mnemonic("_Search");
-    gtk_widget_set_name(item, "Search");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_search_proc), this);
-
+    a = menu->addAction(tr("&Search"));
+    a->setCheckable(true);
     // _Font, 0, db_font_proc, 0, <CheckItem>
-    item = gtk_check_menu_item_new_with_mnemonic("_Font");
-    gtk_widget_set_name(item, "Font");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_font_proc), this);
+    a = menu->addAction(tr("&Font"));
+    a->setCheckable(true);
+    connect(menu, SIGNAL(triggered(QAction*)),
+        this, SLOT(options_menu_slot(QAction*)));
 
     // Help menu.
-    item = gtk_menu_item_new_with_mnemonic("_Help");
-    gtk_menu_item_set_right_justified(GTK_MENU_ITEM(item), true);
-    gtk_widget_set_name(item, "Help");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    submenu = gtk_menu_new();
-    gtk_widget_show(submenu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
-
+    menu = menubar->addMenu(tr("_Help"));
     // _Help, <control>H, db_action_proc, HelpCode, 0
-    item = gtk_menu_item_new_with_mnemonic("_Help");
-    gtk_widget_set_name(item, "Help");
-    g_object_set_data(G_OBJECT(item), MIDX, (gpointer)(long)HelpCode);
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(db_action_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    a = menu->addAction(tr("&Help"));
+    a->setShortcut(QKeySequence("Ctrl+H"));
+    connect(menu, SIGNAL(triggered(QAction*)),
+        this, SLOT(help_menu_slot(QAction*)));
 
-    gtk_table_attach(GTK_TABLE(form), menubar, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
+    db_modebtn = new QPushButton(tr("Run"));
+    hbox->addWidget(db_modebtn);
+    db_modebtn->setEnabled(false);
+    connect(db_modebtn, SIGNAL(clicked()), this, SLOT(mode_btn_slot()));
+
+    // labels in frame
     //
-    // label area
-    //
-    GtkWidget *hbox = gtk_hbox_new(false, 0);
-    gtk_widget_show(hbox);
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
+    db_modelabel = new QLabel(tr("Edit Mode"));
+    hb->addWidget(db_modelabel);
+    db_title = new QLabel("");
+    hb->addWidget(db_title);
 
-    db_modelabel = gtk_label_new("Edit Mode");
-    gtk_widget_show(db_modelabel);
-    gtk_label_set_justify(GTK_LABEL(db_modelabel), GTK_JUSTIFY_LEFT);
-    gtk_box_pack_start(GTK_BOX(hbox), db_modelabel, false, false, 2);
-
-    db_title = gtk_label_new("");
-    gtk_widget_show(db_title);
-    gtk_box_pack_end(GTK_BOX(hbox), db_title, true, true, 2);
-
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), hbox);
-
-    hbox = gtk_hbox_new(false, 0);
-    gtk_widget_show(hbox);
-
-    db_modebtn = gtk_button_new_with_label("Run");
-    gtk_widget_set_name(db_modebtn, "Mode");
-    gtk_widget_set_sensitive(db_modebtn, false);
-    gtk_widget_show(db_modebtn);
-    g_signal_connect(G_OBJECT(db_modebtn), "clicked",
-        G_CALLBACK(db_mode_proc), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), db_modebtn, false, false, 0);
-    gtk_box_pack_start(GTK_BOX(hbox), frame, true, true, 0);
-
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    //
     // text window with scroll bar
     //
-    GtkWidget *contr;
-    text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
+    wb_textarea = new QTtextEdit();
 
+/*
     g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
         G_CALLBACK(db_text_btn_hdlr), 0);
 
@@ -740,12 +385,13 @@ sDbg::sDbg(GRobject c)
     text_set_change_hdlr(wb_textarea, db_change_proc, 0, true);
     gtk_widget_set_sensitive(db_execmenu, false);
     gtk_window_set_focus(GTK_WINDOW(wb_shell), wb_textarea);
+*/
 }
 
 
-sDbg::~sDbg()
+QTscriptDebuggerDlg::~QTscriptDebuggerDlg()
 {
-    Dbg = 0;
+    instPtr = 0;
     stringlist::destroy(db_vlist);
     delete [] db_line_save;
     delete [] db_dropfile;
@@ -757,39 +403,33 @@ sDbg::~sDbg()
         db_load_pop->popdown();
     if (db_vars_pop)
         db_vars_pop->popdown();
-    if (db_caller) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(db_caller),
-            (gpointer)db_cancel_proc, wb_shell);
-        GTKdev::Deselect(db_caller);
-    }
+    if (db_caller)
+        QTdev::Deselect(db_caller);
     histlist::destroy(db_undo_list);
     histlist::destroy(db_redo_list);
 
     SI()->Clear();
-    if (wb_shell) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
-            (gpointer)db_cancel_proc, wb_shell);
-    }
 }
 
 
 // Check/set menu item sensitivity for items that change during editing.
 //
 void
-sDbg::check_sens()
+QTscriptDebuggerDlg::check_sens()
 {
     if (db_undo)
-        gtk_widget_set_sensitive(db_undo, (db_undo_list != 0));
+        db_undo->setEnabled(db_undo_list != 0);
     if (db_redo)
-        gtk_widget_set_sensitive(db_redo, (db_redo_list != 0));
+        db_redo->setEnabled(db_redo_list != 0);
 }
 
 
 // Set configuration mode.
 //
 void
-sDbg::set_mode(DBmode mode)
+QTscriptDebuggerDlg::set_mode(DBmode mode)
 {
+    /*
     if (mode == DBedit) {
         if (db_mode != DBedit) {
             db_mode = DBedit;
@@ -827,12 +467,14 @@ sDbg::set_mode(DBmode mode)
             g_object_unref(G_OBJECT(c));
         }
     }
+    */
 }
 
 
 bool
-sDbg::load_from_menu(MenuEnt *ent)
+QTscriptDebuggerDlg::load_from_menu(MenuEnt *ent)
 {
+    /*
     if (db_load_pop) {
         const char *entry = ent->menutext + strlen("/User/");
         // entry is the same as ent->entry, but contains the menu path
@@ -851,6 +493,7 @@ sDbg::load_from_menu(MenuEnt *ent)
             return (true);
         }
     }
+    */
     return (false);
 }
 
@@ -858,7 +501,7 @@ sDbg::load_from_menu(MenuEnt *ent)
 // Set db_line_ptr pointing at the line for the "Line" field.
 //
 void
-sDbg::set_line()
+QTscriptDebuggerDlg::set_line()
 {
     delete [] db_line_save;
     db_line_save = 0;
@@ -867,7 +510,7 @@ sDbg::set_line()
         db_line_ptr = 0;
         return;
     }
-    char *string = text_get_chars(wb_textarea, 0, -1);
+    char *string = wb_textarea->get_chars();
     int count = 0;
     char *t;
     for (t = string; *t && count < db_line; t++) {
@@ -885,9 +528,9 @@ sDbg::set_line()
 // See if db_line now points beyond the end, in which case we're done.
 //
 bool
-sDbg::is_last_line()
+QTscriptDebuggerDlg::is_last_line()
 {
-    char *string = text_get_chars(wb_textarea, 0, -1);
+    char *string = wb_textarea->get_chars();
     int count = 0;
     char *t;
     for (t = string; *t && count < db_line; t++) {
@@ -903,9 +546,9 @@ sDbg::is_last_line()
 // Execute a single line of code.
 //
 void
-sDbg::step()
+QTscriptDebuggerDlg::step()
 {
-    if (!Dbg)
+    if (!instPtr)
         return;
     if (db_row_cb_flag) {
         // We're waiting for input in the prompt line, back out.
@@ -917,14 +560,14 @@ sDbg::step()
         PL()->SavePrompt();
         start();
         PL()->RestorePrompt();
-        GTKdev::SetFocus(Dbg->wb_shell);
-        gtk_window_set_focus(GTK_WINDOW(Dbg->wb_shell), Dbg->wb_textarea);
+//        QTdev::SetFocus(Dbg->wb_shell);
+//        gtk_window_set_focus(GTK_WINDOW(Dbg->wb_shell), Dbg->wb_textarea);
         return;
     }
     db_status = Eexecuting;
     set_sens(false);
     db_line = SI()->Interpret(0, 0, &db_line_ptr, 0, true);
-    if (!Dbg) {
+    if (!instPtr) {
         // debugger window deleted
         SI()->Clear();
         EditIf()->ulCommitChanges();
@@ -941,15 +584,15 @@ sDbg::step()
     db_status = Equiescent;
     set_sens(true);
     update_variables();
-    GTKdev::SetFocus(Dbg->wb_shell);
-    gtk_window_set_focus(GTK_WINDOW(Dbg->wb_shell), Dbg->wb_textarea);
+//    GTKdev::SetFocus(Dbg->wb_shell);
+//    gtk_window_set_focus(GTK_WINDOW(Dbg->wb_shell), Dbg->wb_textarea);
 }
 
 
 // Execute until the next breakpoint.
 //
 void
-sDbg::run()
+QTscriptDebuggerDlg::run()
 {
     if (db_row_cb_flag) {
         // We're waiting for input in the prompt line, back out.
@@ -974,7 +617,7 @@ sDbg::run()
         }
 
         db_line = SI()->Interpret(0, 0, &db_line_ptr, 0, true);
-        if (!Dbg) {
+        if (!instPtr) {
             // debugger window deleted
             SI()->Clear();
             EditIf()->ulCommitChanges();
@@ -990,7 +633,7 @@ sDbg::run()
             PL()->RestorePrompt();
             break;
         }
-        if (GTKpkg::self()->CheckForInterrupt()) {
+        if (QTpkg::self()->CheckForInterrupt()) {
             // ^C typed
             refresh(false, locFollowCurrent);
             break;
@@ -1016,17 +659,17 @@ sDbg::run()
 // Desensitize buttons while executing.
 //
 void
-sDbg::set_sens(bool sens)
+QTscriptDebuggerDlg::set_sens(bool sens)
 {
-    gtk_widget_set_sensitive(db_filemenu, sens);
-    gtk_widget_set_sensitive(db_execmenu, sens);
+    db_filemenu->setEnabled(sens);
+    db_execmenu->setEnabled(sens);
 }
 
 
 // Reset a paused executing script.
 //
 void
-sDbg::start()
+QTscriptDebuggerDlg::start()
 {
     if (db_row_cb_flag) {
         // We're waiting for input in the prompt line, back out.
@@ -1046,7 +689,7 @@ sDbg::start()
 // Set/reset breakpoint at line.
 //
 void
-sDbg::breakpoint(int line)
+QTscriptDebuggerDlg::breakpoint(int line)
 {
     int i;
     if (line < 0) {
@@ -1056,7 +699,7 @@ sDbg::breakpoint(int line)
     }
     if (line == db_line) {
         // Clicking on the active line steps it
-        GTKpkg::self()->RegisterIdleProc(db_step_idle, 0);
+        QTpkg::self()->RegisterIdleProc(db_step_idle, 0);
         return;
     }
     for (i = 0; i < NUMBKPTS; i++) {
@@ -1077,10 +720,10 @@ sDbg::breakpoint(int line)
 // Dump the buffer to fname.  Return false if error.
 //
 bool
-sDbg::write_file(const char *fname)
+QTscriptDebuggerDlg::write_file(const char *fname)
 {
     if (!filestat::create_bak(fname)) {
-        GTKpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
+        QTpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
         return (false);
     }
     FILE *fp = fopen(fname, "w");
@@ -1092,12 +735,12 @@ sDbg::write_file(const char *fname)
 #ifdef WIN32
     char lastc = 0;
 #endif
-    char *string = text_get_chars(wb_textarea, 0, -1);
+    char *string = wb_textarea->get_chars();
     if (db_mode == DBedit) {
 #ifdef WIN32
         char *s = string;
         while (*s) {
-            if (!GTKdev::self()->GetCRLFtermination()) {
+            if (!QTdev::self()->GetCRLFtermination()) {
                 if (s[0] == '\r' && s[1] == '\n') {
                     lastc = *s++;
                     continue;
@@ -1118,7 +761,7 @@ sDbg::write_file(const char *fname)
             s += 2;
 #ifdef WIN32
             while (*s) {
-                if (!GTKdev::self()->GetCRLFtermination()) {
+                if (!QTdev::self()->GetCRLFtermination()) {
                     if (s[0] == '\r' && s[1] == '\n') {
                         lastc = *s++;
                         continue;
@@ -1155,7 +798,7 @@ sDbg::write_file(const char *fname)
 // If unsaved text, warn.  Return true to abort operation.
 //
 bool
-sDbg::check_save(int code)
+QTscriptDebuggerDlg::check_save(int code)
 {
     if (db_text_changed) {
         const char *str;
@@ -1190,20 +833,21 @@ sDbg::check_save(int code)
 // If mode_switch, strip margin for edit mode.
 //
 void
-sDbg::refresh(bool mode_switch, locType loc, bool clear)
+QTscriptDebuggerDlg::refresh(bool mode_switch, locType loc, bool clear)
 {
+    /*
     if (!Dbg)
         return;
     char *s = listing(clear ? false : mode_switch);
     double val = text_get_scroll_value(wb_textarea);
     if (db_mode == DBedit) {
         db_in_undo = true;
-        text_set_chars(wb_textarea, s);
+        wb_textarea->set_chars(s);
         db_in_undo = false;
         if (loc == locStart)
-            text_set_scroll_value(wb_textarea, 0.0);
+            wb_textarea->set_scroll_value(0);
         else
-            text_set_scroll_value(wb_textarea, val);
+            wb_textarea->set_scroll_value(val);
     }
     else {
         if (loc == locStart)
@@ -1212,8 +856,8 @@ sDbg::refresh(bool mode_switch, locType loc, bool clear)
             val = text_get_scroll_to_line_value(wb_textarea, db_line, val);
         db_in_undo = true;
         if (mode_switch || clear) {
-            text_set_chars(wb_textarea, "");
-            GdkColor *c = gtk_PopupColor(GRattrColorHl1);
+            wb_textarea->clear();
+            QColor c = QTbag::PopupColor(GRattrColorHl1);
             char *t = s;
             while (*t) {
                 char *end = t;
@@ -1252,6 +896,7 @@ sDbg::refresh(bool mode_switch, locType loc, bool clear)
             text_set_scroll_value(wb_textarea, val);
     }
     delete [] s;
+    */
 }
 
 
@@ -1260,8 +905,9 @@ sDbg::refresh(bool mode_switch, locType loc, bool clear)
 // progress.
 //
 char *
-sDbg::listing(bool mode_switch)
+QTscriptDebuggerDlg::listing(bool mode_switch)
 {
+    /*
     if (!Dbg)
         return (0);
     char buf[LINESIZE];
@@ -1372,14 +1018,17 @@ sDbg::listing(bool mode_switch)
     }
     fseek(db_file_ptr, ftold, SEEK_SET);
     return (str);
+    */
+return (0);
 }
 
 
 // Solicit a list of variables, and pop up the monitor window.
 //
 void
-sDbg::monitor()
+QTscriptDebuggerDlg::monitor()
 {
+    /*
     if (!Dbg)
         return;
     char buf[256];
@@ -1412,7 +1061,7 @@ sDbg::monitor()
     if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
 
-    db_vars_pop = new sDbV(&db_vars_pop);
+    db_vars_pop = new QTdbgVarsDlg(&db_vars_pop);
     if (!db_vars_pop->Shell()) {
         delete db_vars_pop;
         return;
@@ -1428,15 +1077,17 @@ sDbg::monitor()
     // entry, not sure that I know why.  The selection is very
     // undesirable since it prompts for a value.
     db_vars_pop->update(db_vlist);
+    */
 }
 
 
 // Export for the variables window selection handler.
 //
 const char *
-sDbg::var_prompt(const char *text, const char *buf, bool *busy)
+QTscriptDebuggerDlg::var_prompt(const char *text, const char *buf, bool *busy)
 {
     *busy = false;
+    /*
     if (Dbg->db_row_cb_flag) {
         PL()->EditPrompt(buf, text, PLedUpdate);
         *busy = true;
@@ -1450,15 +1101,68 @@ sDbg::var_prompt(const char *text, const char *buf, bool *busy)
     }
     Dbg->db_row_cb_flag = false;
     return (in);
+    */
+return (0);
 }
 
+
+// Static function.
+// Don't want to wait in the interrupt handler, take care of single
+// step when user clicks on active line.
+//
+int
+QTscriptDebuggerDlg::db_step_idle(void*)
+{
+    if (instPtr)
+        instPtr->step();
+    return (false);
+}
+
+
+void
+QTscriptDebuggerDlg::file_menu_slot(QAction*)
+{
+}
+
+
+void
+QTscriptDebuggerDlg::edit_menu_slot(QAction*)
+{
+}
+
+
+void
+QTscriptDebuggerDlg::exec_menu_slot(QAction*)
+{
+}
+
+
+void
+QTscriptDebuggerDlg::options_menu_slot(QAction*)
+{
+}
+
+
+void
+QTscriptDebuggerDlg::help_menu_slot(QAction*)
+{
+}
+
+
+void
+QTscriptDebuggerDlg::mode_btn_slot()
+{
+}
+
+#ifdef notdef
 
 // Private static GTK signal handler.
 // Undo last insert/delete.
 //
 void
-sDbg::db_undo_proc(GtkWidget*, void*)
+QTscriptDebuggerDlg::db_undo_proc(GtkWidget*, void*)
 {
+    /*
     if (!Dbg || !Dbg->db_undo_list)
         return;
     histlist *h = Dbg->db_undo_list;
@@ -1481,6 +1185,7 @@ sDbg::db_undo_proc(GtkWidget*, void*)
     h->h_next = Dbg->db_redo_list;
     Dbg->db_redo_list = h;
     Dbg->check_sens();
+    */
 }
 
 
@@ -1488,7 +1193,7 @@ sDbg::db_undo_proc(GtkWidget*, void*)
 // Redo last undone operation.
 //
 void
-sDbg::db_redo_proc(GtkWidget*, void*)
+QTscriptDebuggerDlg::db_redo_proc(GtkWidget*, void*)
 {
     if (!Dbg || !Dbg->db_redo_list)
         return;
@@ -1519,7 +1224,7 @@ sDbg::db_redo_proc(GtkWidget*, void*)
 // Kill selected text, copy to clipboard.
 //
 void
-sDbg::db_cut_proc(GtkWidget*, void*)
+QTscriptDebuggerDlg::db_cut_proc(GtkWidget*, void*)
 {
     if (Dbg)
         text_cut_clipboard(Dbg->wb_textarea);
@@ -1530,7 +1235,7 @@ sDbg::db_cut_proc(GtkWidget*, void*)
 // Copy selected text to the clipboard.
 //
 void
-sDbg::db_copy_proc(GtkWidget*, void*)
+QTscriptDebuggerDlg::db_copy_proc(GtkWidget*, void*)
 {
     if (Dbg)
         text_copy_clipboard(Dbg->wb_textarea);
@@ -1541,7 +1246,7 @@ sDbg::db_copy_proc(GtkWidget*, void*)
 // Insert clipboard text.
 //
 void
-sDbg::db_paste_proc(GtkWidget*, void*)
+QTscriptDebuggerDlg::db_paste_proc(GtkWidget*, void*)
 {
     if (Dbg)
         text_paste_clipboard(Dbg->wb_textarea);
@@ -1552,7 +1257,7 @@ sDbg::db_paste_proc(GtkWidget*, void*)
 // Insert primary selection text.
 //
 void
-sDbg::db_paste_prim_proc(GtkWidget*, void*)
+QTscriptDebuggerDlg::db_paste_prim_proc(GtkWidget*, void*)
 {
     if (Dbg) {
         GtkTextBuffer *tbf =
@@ -1568,7 +1273,7 @@ sDbg::db_paste_prim_proc(GtkWidget*, void*)
 // Pop up the regular expression search dialog.
 //
 void
-sDbg::db_search_proc(GtkWidget *caller, void*)
+QTscriptDebuggerDlg::db_search_proc(GtkWidget *caller, void*)
 {
     if (Dbg) {
         if (!Dbg->db_search_pop)
@@ -1586,7 +1291,7 @@ sDbg::db_search_proc(GtkWidget *caller, void*)
 // Font selector pop-up.
 //
 void
-sDbg::db_font_proc(GtkWidget *caller, void*)
+QTscriptDebuggerDlg::db_font_proc(GtkWidget *caller, void*)
 {
     if (Dbg) {
         if (GTKdev::GetStatus(caller))
@@ -1598,23 +1303,10 @@ sDbg::db_font_proc(GtkWidget *caller, void*)
 
 
 // Static function.
-// Don't want to wait in the interrupt handler, take care of single
-// step when user clicks on active line.
-//
-int
-sDbg::db_step_idle(void*)
-{
-    if (Dbg)
-        Dbg->step();
-    return (false);
-}
-
-
-// Static function.
 // This is called when the font is changed.
 //
 void
-sDbg::db_font_changed()
+QTscriptDebuggerDlg::db_font_changed()
 {
     if (Dbg)
         Dbg->refresh(false, locPresent, true);
@@ -1623,7 +1315,7 @@ sDbg::db_font_changed()
 
 // Static function.
 void
-sDbg::db_cancel_proc(GtkWidget*, void*)
+QTscriptDebuggerDlg::db_cancel_proc(GtkWidget*, void*)
 {
     if (Dbg) {
         if (Dbg->db_status == Eexecuting)
@@ -1642,7 +1334,7 @@ sDbg::db_cancel_proc(GtkWidget*, void*)
 // Tiggle configuration mode.
 //
 void
-sDbg::db_mode_proc(GtkWidget*, void*)
+QTscriptDebuggerDlg::db_mode_proc(GtkWidget*, void*)
 {
     if (Dbg) {
         if (Dbg->db_mode == DBedit)
@@ -1657,7 +1349,7 @@ sDbg::db_mode_proc(GtkWidget*, void*)
 // This callback is called whenever the text is modified.
 //
 void
-sDbg::db_change_proc(GtkWidget*, void*)
+QTscriptDebuggerDlg::db_change_proc(GtkWidget*, void*)
 {
     if (Dbg->db_text_changed)
         return;
@@ -1689,7 +1381,7 @@ sDbg::db_change_proc(GtkWidget*, void*)
 // accelerators for start/run/reset.
 //
 int
-sDbg::db_key_dn_hdlr(GtkWidget*, GdkEvent *event, void*)
+QTscriptDebuggerDlg::db_key_dn_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
     if (!Dbg)
         return (false);
@@ -1763,7 +1455,7 @@ namespace {
 // Handle button presses in the text area.
 //
 int
-sDbg::db_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
+QTscriptDebuggerDlg::db_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 {
     if (Dbg->db_mode == DBedit)
         return (false);
@@ -1832,7 +1524,7 @@ sDbg::db_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 // General menu processing.
 //
 void
-sDbg::db_action_proc(GtkWidget *caller, void *client_data)
+QTscriptDebuggerDlg::db_action_proc(GtkWidget *caller, void *client_data)
 {
     long code = (long)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!Dbg)
@@ -1923,7 +1615,7 @@ sDbg::db_action_proc(GtkWidget *caller, void *client_data)
 // Callback for the load command popup.
 //
 ESret
-sDbg::db_open_cb(const char *namein, void*)
+QTscriptDebuggerDlg::db_open_cb(const char *namein, void*)
 {
     delete [] Dbg->db_dropfile;
     Dbg->db_dropfile = 0;
@@ -1970,7 +1662,7 @@ sDbg::db_open_cb(const char *namein, void*)
 // already running.
 //
 int
-sDbg::db_open_idle(void*)
+QTscriptDebuggerDlg::db_open_idle(void*)
 {
     if (Dbg) {
         Dbg->db_file_ptr = fopen(Dbg->db_file_path, "r");
@@ -2003,7 +1695,7 @@ sDbg::db_open_idle(void*)
 // Callback passed to PopUpInput() to actually save the file.
 //
 void
-sDbg::db_do_saveas_proc(const char *fnamein, void*)
+QTscriptDebuggerDlg::db_do_saveas_proc(const char *fnamein, void*)
 {
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!Dbg->write_file(fname)) {
@@ -2023,7 +1715,7 @@ sDbg::db_do_saveas_proc(const char *fnamein, void*)
 // Receive drop data (a path name).
 //
 void
-sDbg::db_drag_data_received(GtkWidget *caller, GdkDragContext *context, gint,
+QTscriptDebuggerDlg::db_drag_data_received(GtkWidget *caller, GdkDragContext *context, gint,
     gint, GtkSelectionData *data, guint, guint time, void*)
 {
     if (gtk_selection_data_get_length(data) >= 0 &&
@@ -2069,7 +1761,7 @@ sDbg::db_drag_data_received(GtkWidget *caller, GdkDragContext *context, gint,
 
 
 void
-sDbg::db_insert_text_proc(GtkTextBuffer*, GtkTextIter *istart, char *text,
+QTscriptDebuggerDlg::db_insert_text_proc(GtkTextBuffer*, GtkTextIter *istart, char *text,
     int len, void*)
 {
     if (!Dbg || Dbg->db_in_undo || !len)
@@ -2086,7 +1778,7 @@ sDbg::db_insert_text_proc(GtkTextBuffer*, GtkTextIter *istart, char *text,
 
 
 void
-sDbg::db_delete_range_proc(GtkTextBuffer*, GtkTextIter *istart,
+QTscriptDebuggerDlg::db_delete_range_proc(GtkTextBuffer*, GtkTextIter *istart,
     GtkTextIter *iend, void*)
 {
     if (!Dbg || Dbg->db_in_undo)
@@ -2138,7 +1830,7 @@ namespace {
 // Return a list of the tokens in str.
 //
 stringlist *
-sDbg::db_mklist(const char *str)
+QTscriptDebuggerDlg::db_mklist(const char *str)
 {
     if (!str)
         return (0);
@@ -2169,125 +1861,114 @@ sDbg::db_mklist(const char *str)
     }
     return (wl0);
 }
-// End of sDbg functions.
+// End of QTscriptDebuggerDlg functions.
 
+#endif
 
 //
 // The variables monitor.
 //
 
-sDbV::sDbV(void *p)
+QTdbgVarsDlg::QTdbgVarsDlg(void *p)
 {
-    dv_no_select = false;
     dv_pointer = p;
-    dv_popup = gtk_NewPopup(0, "Variables", dv_cancel_proc, this);
 
-    GtkWidget *form = gtk_table_new(1, 2, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(dv_popup), form);
+    setWindowTitle(tr("Variables"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    //
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
     // variable listing text
     //
-    GtkWidget *swin = gtk_scrolled_window_new(0, 0);
-    gtk_widget_show(swin);
-    gtk_widget_set_size_request(swin, 220, 200);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin),
-        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_container_set_border_width(GTK_CONTAINER(swin), 2);
+    dv_list = new QTreeWidget();
+    vbox->addWidget(dv_list);
+    dv_list->setHeaderLabels(QStringList(QList<QString>() <<
+        tr("Variable") << tr("value")));
+    dv_list->header()->setMinimumSectionSize(25);
+    dv_list->header()->resizeSection(0, 50);
 
-    const char *tbuf[2];
-    tbuf[0] = "Variable";
-    tbuf[1] = "Value";
-    GtkListStore *store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-    dv_list = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
-    gtk_widget_show(dv_list);
-    gtk_tree_view_set_enable_search(GTK_TREE_VIEW(dv_list), false);
-    GtkCellRenderer *rnd = gtk_cell_renderer_text_new();
-    GtkTreeViewColumn *tvcol = gtk_tree_view_column_new_with_attributes(
-        tbuf[0], rnd, "text", 0, NULL);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(dv_list), tvcol);
-    tvcol = gtk_tree_view_column_new_with_attributes(
-        tbuf[1], rnd, "text", 1, NULL);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(dv_list), tvcol);
+    connect(dv_list,
+        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+        this,
+        SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(dv_list, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
+        this, SLOT(item_activated_slot(QTreeWidgetItem*, int)));
+    connect(dv_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
+        this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
+    connect(dv_list, SIGNAL(itemSelectionChanged()),
+        this, SLOT(item_selection_changed()));
 
-    GtkTreeSelection *sel =
-        gtk_tree_view_get_selection(GTK_TREE_VIEW(dv_list));
-    gtk_tree_selection_set_select_function(sel, dv_select_proc, 0, 0);
-    // TreeView bug hack, see note with handlers.   
-    g_signal_connect(G_OBJECT(dv_list), "focus",
-        G_CALLBACK(dv_focus_proc), this);
-
-    gtk_container_add(GTK_CONTAINER(swin), dv_list);
-
-    // Set up font and tracking.
-    GTKfont::setupFont(dv_list, FNT_PROP, true);
-
-    gtk_table_attach(GTK_TABLE(form), swin, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    //
     // Dismiss button
     //
-    GtkWidget *button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(dv_cancel_proc), this);
-
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    gtk_window_set_focus(GTK_WINDOW(dv_popup), button);
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
-sDbV::~sDbV()
+QTdbgVarsDlg::~QTdbgVarsDlg()
 {
     if (dv_pointer)
         *(void**)dv_pointer = 0;
-    if (dv_popup) {
-        g_signal_handlers_disconnect_by_func(G_OBJECT(dv_popup),
-            (gpointer)dv_cancel_proc, this);
-        gtk_widget_destroy(dv_popup);
-    }
 }
 
 
 // Update the variables listing.
 //
 void
-sDbV::update(stringlist *vars)
+QTdbgVarsDlg::update(stringlist *vars)
 {
     if (!vars) {
         popdown();
         return;
     }
-    GtkListStore *store =
-        GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(dv_list)));
-    gtk_list_store_clear(store);
+    dv_list->clear();
 
-    GtkTreeIter iter;
     char buf[256];
     for (stringlist *wl = vars; wl; wl = wl->next) {
         SIparse()->printVar(wl->string, buf);
-        gtk_list_store_append(store, &iter);
-        gtk_list_store_set(store, &iter, 0, wl->string, 1, buf, -1);
+        QTreeWidgetItem *item = new QTreeWidgetItem(dv_list);
+        item->setText(0, wl->string);
+        item->setText(1, buf);
     }
 }
 
 
-// Static function.
-// Cancel procedure for the variables monitor popup.
-//
 void
-sDbV::dv_cancel_proc(GtkWidget*, void *client_data)
+QTdbgVarsDlg::current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
 {
-    sDbV *p = static_cast<sDbV*>(client_data);
-    if (p)
-        p->popdown();
 }
+
+
+void
+QTdbgVarsDlg::item_activated_slot(QTreeWidgetItem*, int)
+{
+}
+
+
+void
+QTdbgVarsDlg::item_clicked_slot(QTreeWidgetItem*, int)
+{
+}
+
+
+void
+QTdbgVarsDlg::item_selection_changed()
+{
+}
+
+
+void
+QTdbgVarsDlg::dismiss_btn_slot()
+{
+    popdown();
+}
+
+
+
+#ifdef notdef
 
 
 // Static function.
@@ -2296,7 +1977,7 @@ sDbV::dv_cancel_proc(GtkWidget*, void *client_data)
 // button-press handler.
 //
 int
-sDbV::dv_select_proc(GtkTreeSelection*, GtkTreeModel *store,
+QTdbgVarsDlg::dv_select_proc(GtkTreeSelection*, GtkTreeModel *store,
     GtkTreePath *path, int issel, void*)
 {
     if (Dbg && Dbg->db_vars_pop) {
@@ -2345,24 +2026,4 @@ sDbV::dv_select_proc(GtkTreeSelection*, GtkTreeModel *store,
     return (false);
 }
 
-
-// Static function.
-// This handler is a hack to avoid a GtkTreeWidget defect:  when focus
-// is taken and there are no selections, the 0'th row will be
-// selected.  There seems to be no way to avoid this other than a hack
-// like this one.  We set a flag to lock out selection changes in this
-// case.
-//
-bool
-sDbV::dv_focus_proc(GtkWidget*, GdkEvent*, void*)
-{
-    if (Dbg && Dbg->db_vars_pop) {
-        GtkTreeSelection *sel = gtk_tree_view_get_selection(
-            GTK_TREE_VIEW(Dbg->db_vars_pop->dv_list));
-        // If nothing selected set the flag.
-        if (!gtk_tree_selection_get_selected(sel, 0, 0))
-            Dbg->db_vars_pop->dv_no_select = true;
-    }
-    return (false);
-}
- 
+#endif

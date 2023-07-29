@@ -999,6 +999,7 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
         }
         if (!pl_ex) {
             pl_ex = new sPlot(EXECPLOTNAME);
+            pl_ex->set_type(sPlot::PLexec);
             pl_ex->new_plot();
             pl_ex->set_circuit(ft_curckt->name());
             pl_ex->set_title(ft_curckt->name());

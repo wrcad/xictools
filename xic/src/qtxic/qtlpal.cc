@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "qtlpal.h"
 #include "dsp_color.h"
 #include "dsp_layer.h"
 #include "dsp_inlines.h"
@@ -47,9 +48,21 @@
 #include "tech.h"
 #include "menu.h"
 #include "attr_menu.h"
-#include "qtlpal.h"
 #include "qtltab.h"
 #include "qtinterf/qtfont.h"
+#include "qtinterf/qtcanvas.h"
+
+#include <QLayout>
+#include <QPushButton>
+#include <QGroupBox>
+#include <QMenu>
+#include <QAction>
+#include <QResizeEvent>
+#include <QMouseEvent>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QDrag>
+#include <QMimeData>
 
 
 //-----------------------------------------------------------------------------
@@ -63,18 +76,39 @@
 // Help system keywords used:
 //  xic:ltpal
 
-// gtkfillp.cc
-extern const char *fillpattern_xpm[];
+void
+cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
+    CDl *ldesc)
+{
+    if (!QTdev::exists() || !QTmainwin::exists())
+        return;
+    if (mode == MODE_OFF) {
+        if (QTlayerPaletteDlg::self())
+            QTlayerPaletteDlg::self()->deleteLater();
+        return;
+    }
+    if (mode == MODE_UPD) {
+        if (QTlayerPaletteDlg::self()) {
+            if (showinfo)
+                QTlayerPaletteDlg::self()->update_info(ldesc);
+            else
+                QTlayerPaletteDlg::self()->update_layer(ldesc);
+        }
+        return;
+    }
+    if (QTlayerPaletteDlg::self())
+        return;
+
+    new QTlayerPaletteDlg(caller);
+
+    QTdev::self()->SetPopupLocation(GRloc(), QTlayerPaletteDlg::self(),
+        QTmainwin::self()->Viewport());
+    QTlayerPaletteDlg::self()->show();
+}
+// End of cMain functions.
+
 
 namespace {
-    // The layer table is a dnd source for fill patterns, and a receiver for
-    // fillpatterns and colors.
-    //
-    GtkTargetEntry lp_targets[] = {
-        { (char*)"fillpattern", 0, 0 },
-        { (char*)"application/x-color", 0, 1 }
-    };
-    guint n_lp_targets = sizeof(lp_targets) / sizeof(lp_targets[0]);
 
     // These give the widget areas distinctive backgrounds.
 
@@ -94,60 +128,19 @@ namespace {
     }
 }
 
-namespace { sLpalette *Lpal; }
 
+QTlayerPaletteDlg *QTlayerPaletteDlg::instPtr;
 
-void
-cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
-    CDl *ldesc)
+QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
 {
-    if (!GTKdev::exists() || !GTKmainwin::exists())
-        return;
-    if (mode == MODE_OFF) {
-        delete Lpal;
-        return;
-    }
-    if (mode == MODE_UPD) {
-        if (Lpal) {
-            if (showinfo)
-                Lpal->update_info(ldesc);
-            else
-                Lpal->update_layer(ldesc);
-        }
-        return;
-    }
-    if (Lpal)
-        return;
-
-    new sLpalette(caller);
-    if (!Lpal->shell()) {
-        delete Lpal;
-        return;
-    }
-    gtk_window_set_transient_for(GTK_WINDOW(Lpal->shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
-
-    GTKdev::self()->SetPopupLocation(GRloc(), Lpal->shell(),
-        GTKmainwin::self()->Viewport());
-    gtk_widget_show(Lpal->shell());
-}
-
-
-sLpalette::sLpalette(GRobject caller) : GTKdraw(XW_LPAL)
-{
-    Lpal = this;
+    instPtr = this;
     lp_caller = caller;
-    lp_shell = 0;
     lp_remove = 0;
     memset(lp_history, 0, LP_PALETTE_COLS * sizeof(CDl*));
     memset(lp_user, 0, LP_PALETTE_COLS * LP_PALETTE_ROWS * sizeof(CDl*));
-#if GTK_CHECK_VERSION(3,0,0)
-#else
-    lp_pixmap = 0;
-#endif
-    lp_pmap_width = 0;
-    lp_pmap_height = 0;
-    lp_pmap_dirty = false;
+//    lp_pmap_width = 0;
+//    lp_pmap_height = 0;
+//    lp_pmap_dirty = false;
 
     lp_drag_x = 0;
     lp_drag_y = 0;
@@ -160,89 +153,107 @@ sLpalette::sLpalette(GRobject caller) : GTKdraw(XW_LPAL)
     lp_box_text_spacing = 0;
     lp_entry_width = 0;
 
-    lp_shell = gtk_NewPopup(0, "Layer Palette", lp_cancel_proc, 0);
-    if (!lp_shell)
-        return;
-    gtk_window_set_resizable(GTK_WINDOW(lp_shell), false);
+    setWindowTitle(tr("Layer Palette"));
+    setAttribute(Qt::WA_DeleteOnClose);
+//    gtk_window_set_resizable(GTK_WINDOW(lp_shell), false);
 
-    GtkWidget *form = gtk_table_new(1, 2, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(lp_shell), form);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    GtkWidget *row = gtk_hbox_new(false, 0);
-    gtk_widget_show(row);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    GtkWidget *recall_btn = gtk_button_new_with_label("Recall");
-    gtk_widget_set_name(recall_btn, "Recall");
-    gtk_widget_show(recall_btn);
+    QPushButton *recall_btn = new QPushButton(tr("Recall"));
+    hbox->addWidget(recall_btn);
 
-    GtkWidget *recall_menu = gtk_menu_new();
-    gtk_widget_set_name(recall_menu, "Recall");
+    QMenu *recall_menu = new QMenu();
+    recall_btn->setMenu(recall_menu);
     for (int i = 1; i < 8; i++) {
         char buf[16];
         snprintf(buf, sizeof(buf), "Reg %d", i);
-        GtkWidget *mi = gtk_menu_item_new_with_label(buf);
-        gtk_widget_set_name(mi, buf);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(recall_menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(lp_recall_proc), (void*)(intptr_t)i);
+        QAction *a = recall_menu->addAction(buf);
+        a->setData(i);
     }
-    g_signal_connect(G_OBJECT(recall_btn), "button-press-event",
-        G_CALLBACK(lp_popup_menu), recall_menu);
-    gtk_box_pack_start(GTK_BOX(row), recall_btn, true, true, 2);
+    connect(recall_menu, SIGNAL(triggered(QAction*)),
+        this, SLOT(recall_menu_slot(QAction*)));
 
-    GtkWidget *save_btn = gtk_button_new_with_label("Save");
-    gtk_widget_set_name(save_btn, "Save");
-    gtk_widget_show(save_btn);
+    QPushButton *save_btn = new QPushButton(tr("Save"));
+    hbox->addWidget(save_btn);
 
-    GtkWidget *save_menu = gtk_menu_new();
-    gtk_widget_set_name(save_menu, "Save");
+    QMenu *save_menu = new QMenu();
+    save_btn->setMenu(save_menu);
     for (int i = 1; i < 8; i++) {
         char buf[16];
         snprintf(buf, sizeof(buf), "Reg %d", i);
-        GtkWidget *mi = gtk_menu_item_new_with_label(buf);
-        gtk_widget_set_name(mi, buf);
-        gtk_widget_show(mi);
-        gtk_menu_shell_append(GTK_MENU_SHELL(save_menu), mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(lp_save_proc), (void*)(intptr_t)i);
+        QAction *a = save_menu->addAction(buf);
+        a->setData(i);
     }
-    g_signal_connect(G_OBJECT(save_btn), "button-press-event",
-        G_CALLBACK(lp_popup_menu), save_menu);
-    gtk_box_pack_start(GTK_BOX(row), save_btn, true, true, 2);
+    connect(save_menu, SIGNAL(triggered(QAction*)),
+        this, SLOT(save_menu_slot(QAction*)));
 
-    lp_remove = gtk_toggle_button_new_with_label("Remove");
-    gtk_widget_set_name(lp_remove, "Remove");
-    gtk_widget_show(lp_remove);
-    gtk_box_pack_start(GTK_BOX(row), lp_remove, true, true, 2);
+    lp_remove = new QPushButton(tr("Remove"));
+    lp_remove->setCheckable(true);
+    hbox->addWidget(lp_remove);
 
-    GtkWidget *button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "Help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(lp_help_proc), 0);
-    gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    int rowcnt = 0;
-    gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 4, 2);
-    rowcnt++;
+    QGroupBox *gb = new QGroupBox(0);
+    vbox->addWidget(gb);
+    QVBoxLayout *vb = new QVBoxLayout(gb);
+    vb->setMargin(2);
+    vb->setSpacing(2);
 
-    gd_viewport = gtk_drawing_area_new();
-    gtk_widget_set_double_buffered(gd_viewport, false);
-    gtk_widget_set_name(gd_viewport, "LayerPalette");
-    gtk_widget_show(gd_viewport);
+    gd_viewport = new QTcanvas();
+    vb->addWidget(gd_viewport->widget());
+    Gbag()->set_draw_if(gd_viewport);
+    Viewport()->setFocusPolicy(Qt::StrongFocus);
+    Viewport()->setAcceptDrops(true);
 
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), gd_viewport);
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 4, 2);
-    rowcnt++;
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_SCREEN))
+        gd_viewport->set_font(fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
+    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
+        this, SLOT(resize_slot(QResizeEvent*)));
+/*
+    connect(Viewport(), SIGNAL(new_painter(QPainter*)),
+        this, SLOT(new_painter_slot(QPainter*)));
+    connect(Viewport(), SIGNAL(paint_event(QPaintEvent*)),
+        this, SLOT(paint_slot(QPaintEvent*)));
+*/
+    connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(button_down_slot(QMouseEvent*)));
+    connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(button_up_slot(QMouseEvent*)));
+    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
+        this, SLOT(motion_slot(QMouseEvent*)));
+/*
+    connect(Viewport(), SIGNAL(key_press_event(QKeyEvent*)),
+        this, SLOT(key_down_slot(QKeyEvent*)));
+    connect(Viewport(), SIGNAL(key_release_event(QKeyEvent*)),
+        this, SLOT(key_up_slot(QKeyEvent*)));
+    connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
+        this, SLOT(enter_slot(QEnterEvent*)));
+    connect(Viewport(), SIGNAL(leave_event(QEvent*)),
+        this, SLOT(leave_slot(QEvent*)));
+    connect(Viewport(), SIGNAL(focus_in_event(QFocusEvent*)),
+        this, SLOT(focus_in_slot(QFocusEvent*)));
+    connect(Viewport(), SIGNAL(focus_out_event(QFocusEvent*)),
+        this, SLOT(focus_out_slot(QFocusEvent*)));
+*/
+    connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
+        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
+    connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
+        this, SLOT(drop_slot(QDropEvent*)));
+
+    /*
     gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
     g_signal_connect(G_OBJECT(gd_viewport), "configure-event",
         G_CALLBACK(lp_resize_hdlr), 0);
@@ -277,75 +288,33 @@ sLpalette::sLpalette(GRobject caller) : GTKdraw(XW_LPAL)
         G_CALLBACK(lp_font_change_hdlr), 0);
 
     GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);
+    */
 
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(lp_cancel_proc), 0);
-
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     init_size();
-    gtk_window_set_focus(GTK_WINDOW(lp_shell), button);
-    lp_recall_proc(0, 0);
+//    lp_recall_proc(0, 0);
 }
 
 
-sLpalette::~sLpalette()
+QTlayerPaletteDlg::~QTlayerPaletteDlg()
 {
-    lp_save_proc(0, 0);
+//    lp_save_proc(0, 0);
 
-    Lpal = 0;
+    instPtr = 0;
     SetGbag(0);
     if (lp_caller)
-        GTKdev::Deselect(lp_caller);
-    if (lp_shell)
-        gtk_widget_destroy(lp_shell);
-#if GTK_CHECK_VERSION(3,0,0)
-#else
-    if (lp_pixmap)
-        gdk_pixmap_unref(lp_pixmap);
-#endif
+        QTdev::Deselect(lp_caller);
 }
 
 
 // Update the info text.
 //
 void
-sLpalette::update_info(CDl *ldesc)
+QTlayerPaletteDlg::update_info(CDl *ldesc)
 {
-#if GTK_CHECK_VERSION(3,0,0)
-    if (!GetDrawable()->get_window())
-        GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
-    if (!GetDrawable()->get_window())
-        return;
-    int win_width = GetDrawable()->get_width();
-    GetDrawable()->set_draw_to_pixmap();
-#else
-    if (!gd_window)
-        gd_window = gtk_widget_get_window(gd_viewport);
-    if (!gd_window)
-        return;
-
-    int win_width = gdk_window_get_width(gd_window);
-    int win_height = gdk_window_get_height(gd_window);
-    if (!lp_pixmap || lp_pmap_width != win_width ||
-            lp_pmap_height != win_height) {
-        if (lp_pixmap)
-            gdk_pixmap_unref(lp_pixmap);
-        lp_pmap_width = win_width;
-        lp_pixmap = gdk_pixmap_new(gd_window, lp_pmap_width, lp_pmap_height,
-            gdk_visual_get_depth(GTKdev::self()->Visual()));
-        lp_pmap_dirty = true;
-    }
-
-    GdkWindow *win = gd_window;
-    gd_window = lp_pixmap;
-#endif
-
     int fwid, fhei;
     TextExtent(0, &fwid, &fhei);
     int x = 2;
@@ -354,7 +323,7 @@ sLpalette::update_info(CDl *ldesc)
     SetColor(text_backg());
     SetFillpattern(0);
     SetBackground(text_backg());
-    Box(0, 0, win_width, LP_TEXT_LINES*fhei + 2);
+    Box(0, 0, width(), LP_TEXT_LINES*fhei + 2);
 
     unsigned long c1 = DSP()->Color(PromptTextColor);
     unsigned long c2 = DSP()->Color(PromptEditTextColor);
@@ -368,10 +337,10 @@ sLpalette::update_info(CDl *ldesc)
     SetColor(c1);
     str = "name (num): ";
     Text(str, x, y, 0);
-    x += GTKfont::stringWidth(gd_viewport, str);
+    x += QTfont::stringWidth(str, gd_viewport->widget());
     SetColor(c2);
     Text(lname, x, y, 0);
-    x += GTKfont::stringWidth(gd_viewport, lname);
+    x += QTfont::stringWidth(lname, gd_viewport->widget());
     Text(buf, x, y, 0);
 
     y += fhei;
@@ -384,10 +353,10 @@ sLpalette::update_info(CDl *ldesc)
     SetColor(c1);
     str = "purpose (num): ";
     Text(str, x, y, 0);
-    x += GTKfont::stringWidth(gd_viewport, str);
+    x += QTfont::stringWidth(str, gd_viewport->widget());
     SetColor(c2);
     Text(pname, x, y, 0);
-    x += GTKfont::stringWidth(gd_viewport, pname);
+    x += QTfont::stringWidth(pname, gd_viewport->widget());
     Text(buf, x, y, 0);
 
     y += fhei;
@@ -396,7 +365,7 @@ sLpalette::update_info(CDl *ldesc)
     SetColor(c1);
     str = "alias: ";
     Text(str, x, y, 0);
-    x += GTKfont::stringWidth(gd_viewport, str);
+    x += QTfont::stringWidth(str, gd_viewport->widget());
     if (ldesc->lppName()) {
         SetColor(c2);
         Text(ldesc->lppName(), x, y, 0);
@@ -408,7 +377,7 @@ sLpalette::update_info(CDl *ldesc)
     SetColor(c1);
     str = "descr: ";
     Text(str, x, y, 0);
-    x += GTKfont::stringWidth(gd_viewport, str);
+    x += QTfont::stringWidth(str, gd_viewport->widget());
     if (ldesc->description()) {
         SetColor(c2);
         Text(ldesc->description(), x, y, 0);
@@ -430,7 +399,7 @@ sLpalette::update_info(CDl *ldesc)
         SetColor(c1);
         str = "GDSII layer/dtype: ";
         Text(str, x, y, 0);
-        x += GTKfont::stringWidth(gd_viewport, str);
+        x += QTfont::stringWidth(str, gd_viewport->widget());
 
         if (l > 255 || d > 255)
             snprintf(buf, sizeof(buf), "%d (%04Xh) / ", l, l);
@@ -438,27 +407,22 @@ sLpalette::update_info(CDl *ldesc)
             snprintf(buf, sizeof(buf), "%d (%02Xh) / ", l, l);
         SetColor(c2);
         Text(buf, x, y, 0);
-        x += GTKfont::stringWidth(gd_viewport, buf);
+        x += QTfont::stringWidth(buf, gd_viewport->widget());
         if (l > 255 || d > 255)
             snprintf(buf, sizeof(buf), "%d (%04Xh)", d, d);
         else
             snprintf(buf, sizeof(buf), "%d (%02Xh)", d, d);
         Text(buf, x, y, 0);
     }
-#if GTK_CHECK_VERSION(3,0,0)
-    GetDrawable()->set_draw_to_window();
-    GetDrawable()->copy_pixmap_to_window(GC(), 0, 0, win_width, 5*fhei);
-#else
-    gdk_window_copy_area(win, GC(), 0, 0, gd_window, 0, 0, win_width, 5*fhei);
-    gd_window = win;
-#endif
+
+    Update();
 }
 
 
 // Update the layer history list.
 //
 void
-sLpalette::update_layer(CDl *ldesc)
+QTlayerPaletteDlg::update_layer(CDl *ldesc)
 {
     if (ldesc) {
         if (!CDldb()->findLayer(ldesc->name(), DSP()->CurMode())) {
@@ -490,7 +454,7 @@ sLpalette::update_layer(CDl *ldesc)
                     for (int j = i; j > 0; j--)
                         lp_history[j] = lp_history[j-1];
                     lp_history[0] = ldesc;
-                    lp_pmap_dirty = true;
+//                    lp_pmap_dirty = true;
                     refresh(0, 0, 0, 0);
                     return;
                 }
@@ -500,13 +464,13 @@ sLpalette::update_layer(CDl *ldesc)
             lp_history[0] = ldesc;
         }
     }
-    lp_pmap_dirty = true;
+//    lp_pmap_dirty = true;
     refresh(0, 0, 0, 0);
 }
 
 
 void
-sLpalette::update_user(CDl *ldesc, int x, int y)
+QTlayerPaletteDlg::update_user(CDl *ldesc, int x, int y)
 {
     int col = (x-2)/lp_entry_width;
     if (col < 0)
@@ -558,13 +522,13 @@ sLpalette::update_user(CDl *ldesc, int x, int y)
     }
     else
         return;
-    lp_pmap_dirty = true;
+//    lp_pmap_dirty = true;
     refresh(0, 0, 0, 0);
 }
 
 
 void
-sLpalette::init_size()
+QTlayerPaletteDlg::init_size()
 {
     int fwid, fhei;
     TextExtent(0, &fwid, &fhei);
@@ -579,22 +543,18 @@ sLpalette::init_size()
 
     int wid = LP_PALETTE_COLS*lp_entry_width + 4;
     int hei = lp_user_y + (2*fhei + fhei/2)*LP_PALETTE_ROWS;
-    gtk_widget_set_size_request(Lpal->gd_viewport, wid, hei);
+    gd_viewport->widget()->setMinimumWidth(wid);
+    gd_viewport->widget()->setMinimumHeight(hei);
 }
 
 
 // Redraw the two sample areas, not the text area.
 //
 void
-sLpalette::redraw()
+QTlayerPaletteDlg::redraw()
 {
-#if GTK_CHECK_VERSION(3,0,0)
-    int win_width = GetDrawable()->get_width();
-    int win_height = GetDrawable()->get_height();
-#else
-    int win_width = gdk_window_get_width(gd_window);
-    int win_height = gdk_window_get_height(gd_window);
-#endif
+    int win_width = Viewport()->width();
+    int win_height = Viewport()->height();
     SetFillpattern(0);
     SetColor(user_backg());
     Box(0, lp_hist_y - 8, win_width, lp_hist_y - 6);
@@ -731,15 +691,16 @@ sLpalette::redraw()
             x += lp_entry_width;
         }
     }
-    lp_pmap_dirty = true;
+//    lp_pmap_dirty = true;
 }
 
 
 // Exposure redraw, avoids flicker.
 //
 void
-sLpalette::refresh(int x, int y, int w, int h)
+QTlayerPaletteDlg::refresh(int x, int y, int w, int h)
 {
+    /*
 #if GTK_CHECK_VERSION(3,0,0)
     if (!GetDrawable()->get_window())
         GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
@@ -793,6 +754,7 @@ sLpalette::refresh(int x, int y, int w, int h)
     gdk_window_copy_area(win, GC(), x, y, gd_window, x, y, w, h);
     gd_window = win;
 #endif
+    */
 }
 
 
@@ -800,11 +762,11 @@ sLpalette::refresh(int x, int y, int w, int h)
 // pointed to, and perform necessary actions.
 //
 void
-sLpalette::b1_handler(int x, int y, int state, bool down)
+QTlayerPaletteDlg::b1_handler(int x, int y, int state, bool down)
 {
     if (down) {
         if (remove(x, y)) {
-            lp_pmap_dirty = true;
+//            lp_pmap_dirty = true;
             refresh(0, 0, 0, 0);
             return;
         }
@@ -817,7 +779,7 @@ sLpalette::b1_handler(int x, int y, int state, bool down)
                     (DSP()->CurMode() == Electrical) || !LT()->NoPhysRedraw());
             if (state & GR_CONTROL_MASK)
                 LT()->SetLayerSelectability(LTtoggle, ld);
-            lp_pmap_dirty = true;
+//            lp_pmap_dirty = true;
             refresh(0, 0, 0, 0);
             return;
         }
@@ -842,7 +804,7 @@ sLpalette::b1_handler(int x, int y, int state, bool down)
 // changing (for now) whether dots are filled or outlined only.
 //
 void
-sLpalette::b2_handler(int x, int y, int state, bool down)
+QTlayerPaletteDlg::b2_handler(int x, int y, int state, bool down)
 {
     if (down) {
         CDl *ld = ldesc_at(x, y);
@@ -853,7 +815,7 @@ sLpalette::b2_handler(int x, int y, int state, bool down)
             ((DSP()->CurMode() == Electrical) ||
             (LT()->NoPhysRedraw() && (state & GR_SHIFT_MASK)) ||
             (!LT()->NoPhysRedraw() && !(state & GR_SHIFT_MASK))));
-        lp_pmap_dirty = true;
+//        lp_pmap_dirty = true;
         refresh(0, 0, 0, 0);
     }
 }
@@ -864,7 +826,7 @@ sLpalette::b2_handler(int x, int y, int state, bool down)
 // selected layer(s).
 //
 void
-sLpalette::b3_handler(int x, int y, int state, bool down)
+QTlayerPaletteDlg::b3_handler(int x, int y, int state, bool down)
 {
     if (down) {
         CDl *ld = ldesc_at(x, y);
@@ -883,25 +845,14 @@ sLpalette::b3_handler(int x, int y, int state, bool down)
             else if (ctrl && shft)
                 Menu()->MenuButtonPress(MMmain, MenuLPEDT);
         }
-        else if (GTKpkg::self()->IsTrueColor())
-            gtkLtab()->blink(ld);
-        else {
-            if (ld->isBlink()) {
-                ld->setBlink(false);
-                DspLayerParams *lp = dsp_prm(ld);
-                int pix;
-                DefineColor(&pix, lp->red(), lp->green(), lp->blue());
-                lp->set_pixel(pix);
-            }
-            else
-                ld->setBlink(true);
-        }
+        else
+            QTltab::self()->blink(ld);
     }
 }
 
 
 CDl *
-sLpalette::ldesc_at(int x, int y)
+QTlayerPaletteDlg::ldesc_at(int x, int y)
 {
     if (y < lp_hist_y)
         return (0);
@@ -927,9 +878,9 @@ sLpalette::ldesc_at(int x, int y)
 // active, remove the entry and reset the button.
 //
 bool
-sLpalette::remove(int x, int y)
+QTlayerPaletteDlg::remove(int x, int y)
 {
-    if (!GTKdev::GetStatus(lp_remove))
+    if (!QTdev::GetStatus(lp_remove))
         return (false);
     if (y < lp_user_y)
         return (false);
@@ -950,33 +901,284 @@ sLpalette::remove(int x, int y)
         for (int i = ix; i < usz; i++)
             lp_user[i] = lp_user[i+1];
         lp_user[usz] = 0;
-        GTKdev::SetStatus(lp_remove, false);
+        QTdev::SetStatus(lp_remove, false);
         return (true);
     }
     return (false);
 }
 
 
-// Static function.
 void
-sLpalette::lp_cancel_proc(GtkWidget*, void*)
+QTlayerPaletteDlg::recall_menu_slot(QAction *a)
 {
-    XM()->PopUpLayerPalette(0, MODE_OFF, false, 0);
+    int ix = a->data().toInt();
+
+    int usz = LP_PALETTE_COLS * LP_PALETTE_ROWS;
+    for (int i = 0; i < usz; i++)
+        lp_user[i] = 0;
+
+    const char *s = Tech()->LayerPaletteReg(ix, DSP()->CurMode());
+    int cnt = 0;
+    char *tok;
+    while ((tok = lstring::gettok(&s)) != 0) {
+        CDl *ld = CDldb()->findLayer(tok, DSP()->CurMode());
+        delete [] tok;
+        if (!ld)
+            continue;
+        lp_user[cnt] = ld;
+        cnt++;
+    }
+//    lp_pmap_dirty = true;
+    refresh(0, 0, 0, 0);
 }
 
 
-// Static function.
 void
-sLpalette::lp_help_proc(GtkWidget*, void*)
+QTlayerPaletteDlg::save_menu_slot(QAction *a)
+{
+    int ix = a->data().toInt();
+
+    sLstr lstr;
+    int usz = LP_PALETTE_COLS * LP_PALETTE_ROWS;
+    for (int i = 0; i < usz; i++) {
+        CDl *ld = lp_user[i];
+        if (!ld)
+            break;
+        if (i)
+            lstr.add_c(' ');
+        lstr.add(ld->name());
+    }
+    Tech()->SetLayerPaletteReg(ix, DSP()->CurMode(), lstr.string());
+}
+
+
+void
+QTlayerPaletteDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:lpal"))
 }
 
 
+void
+QTlayerPaletteDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_SCREEN) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_SCREEN))
+            gd_viewport->set_font(fnt);
+        init_size();
+    }
+}
+
+
+void
+QTlayerPaletteDlg::resize_slot(QResizeEvent*)
+{
+}
+
+
+void
+QTlayerPaletteDlg::button_down_slot(QMouseEvent *ev)
+{
+    int button = 0;
+    if (ev->button() == Qt::LeftButton)
+        button = 1;
+    else if (ev->button() == Qt::MidButton)
+        button = 2;
+    else if (ev->button() == Qt::RightButton)
+        button = 3;
+
+    button = Kmap()->ButtonMap(button);
+    int state = ev->modifiers();
+
+    if (XM()->IsDoingHelp() && (state & GR_SHIFT_MASK)) {
+        DSPmainWbag(PopUpHelp("layertab"))
+        return;
+    }
+
+    switch (button) {
+    case 1:
+        b1_handler(ev->x(), ev->y(), state, true);
+        break;
+    case 2:
+        b2_handler(ev->x(), ev->y(), state, true);
+        break;
+    case 3:
+        b3_handler(ev->x(), ev->y(), state, true);
+        break;
+    }
+    update();
+}
+
+
+void
+QTlayerPaletteDlg::button_up_slot(QMouseEvent *ev)
+{
+    int button = 0;
+    if (ev->button() == Qt::LeftButton)
+        button = 1;
+    else if (ev->button() == Qt::MidButton)
+        button = 2;
+    else if (ev->button() == Qt::RightButton)
+        button = 3;
+
+    button = Kmap()->ButtonMap(button);
+    int state = ev->modifiers();
+
+    if (XM()->IsDoingHelp() && (state & GR_SHIFT_MASK)) {
+        DSPmainWbag(PopUpHelp("layertab"))
+        return;
+    }
+
+    switch (button) {
+    case 1:
+        b1_handler(ev->x(), ev->y(), state, false);
+        break;
+    case 2:
+        b2_handler(ev->x(), ev->y(), state, false);
+        break;
+    case 3:
+        b3_handler(ev->x(), ev->y(), state, false);
+        break;
+    }
+}
+
+
+void
+QTlayerPaletteDlg::motion_slot(QMouseEvent *ev)
+{
+    if (ev->type() != QEvent::MouseMove) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    int x = ev->x();
+    int y = ev->y();
+    if (lp_dragging &&
+            (abs(x - lp_drag_x) > 4 || abs(y - lp_drag_y) > 4)) {
+        lp_dragging = false;
+
+//        int entry = entry_of_xy(x, y);
+//        int last_ent = last_entry();
+//        if (entry <= last_ent) {
+            CDl *ld = ldesc_at(x, y);
+            XM()->PopUpLayerPalette(0, MODE_UPD, true, ld);
+
+            LayerFillData dd(ld);
+            QDrag *drag = new QDrag(sender());
+            drag->setPixmap(QPixmap(QTltab::fillpattern_xpm()));
+            QMimeData *mimedata = new QMimeData();
+            QByteArray qdata((const char*)&dd, sizeof(LayerFillData));
+            mimedata->setData(QTltab::mime_type(), qdata);
+            drag->setMimeData(mimedata);
+
+//            QTsubwin::HaveDrag = true;
+            drag->exec(Qt::CopyAction);
+//            QTsubwin::HaveDrag = false;
+
+            delete drag;
+//        }
+    }
+
+
+
+    /*
+
+    if (!Lpal)
+        return (false);
+    int x = (int)event->motion.x;
+    int y = (int)event->motion.y;
+    if (Lpal->lp_dragging &&
+            (abs(x - Lpal->lp_drag_x) > 4 || abs(y - Lpal->lp_drag_y) > 4)) {
+        Lpal->lp_dragging = false;
+        // fillpattern only
+        GtkTargetList *targets = gtk_target_list_new(lp_targets, 1);
+        gtk_drag_begin(caller, targets, (GdkDragAction)GDK_ACTION_COPY,
+            1, event);
+    }
+
+    CDl *ld = Lpal->ldesc_at(x, y);
+    if (ld)
+        Lpal->update_info(ld);
+        */
+
+}
+
+
+/*
+void
+QTlayerPaletteDlg::key_down_slot(QKeyEvent*)
+{
+}
+
+
+void
+QTlayerPaletteDlg::key_up_slot(QKeyEvent*)
+{
+}
+*/
+
+
+void
+QTlayerPaletteDlg::drag_enter_slot(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasFormat(QTltab::mime_type()))
+        ev->acceptProposedAction();
+    if (ev->mimeData()->hasColor())
+        ev->acceptProposedAction();
+}
+
+
+void
+QTlayerPaletteDlg::drop_slot(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        QByteArray bary = ev->mimeData()->data(QTltab::mime_type());
+        LayerFillData *dd = (LayerFillData*)bary.data();
+        XM()->FillLoadCallback(dd, LT()->LayerAt(ev->pos().x(), ev->pos().y()));
+        ev->acceptProposedAction();
+        if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
+            DSP()->RedisplayAll();
+        return;
+    }
+    if (ev->mimeData()->hasColor()) {
+        ev->acceptProposedAction();
+        QColor color = qvariant_cast<QColor>(ev->mimeData()->colorData());
+        /*
+        int entry = entry_of_xy(ev->pos().x(), ev->pos().y());
+
+        if (entry > last_entry())
+            return;
+        CDl *layer =
+            CDldb()->layer(entry + first_visible() + 1, DSP()->CurMode());
+        */
+        CDl *layer = ldesc_at(ev->pos().x(), ev->pos().y());
+
+        LT()->SetLayerColor(layer, color.red(), color.green(), color.blue());
+        // update the colors
+        LT()->ShowLayerTable(layer);
+        XM()->PopUpFillEditor(0, MODE_UPD);
+        ev->acceptProposedAction();
+        if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
+            DSP()->RedisplayAll();
+    }
+}
+
+
+void
+QTlayerPaletteDlg::dismiss_btn_slot()
+{
+    XM()->PopUpLayerPalette(0, MODE_OFF, false, 0);
+}
+
+
+#ifdef notdef
+
 // Static function.
 // Widget is not resizable.
 int
-sLpalette::lp_resize_hdlr(GtkWidget*, GdkEvent*, void*)
+QTlayerPaletteDlg::lp_resize_hdlr(GtkWidget*, GdkEvent*, void*)
 {
     if (!Lpal)
         return (0);
@@ -1000,10 +1202,10 @@ sLpalette::lp_resize_hdlr(GtkWidget*, GdkEvent*, void*)
 //
 #if GTK_CHECK_VERSION(3,0,0)
 int
-sLpalette::lp_redraw_hdlr(GtkWidget*, cairo_t *cr, void*)
+QTlayerPaletteDlg::lp_redraw_hdlr(GtkWidget*, cairo_t *cr, void*)
 #else
 int
-sLpalette::lp_redraw_hdlr(GtkWidget*, GdkEvent *event, void*)
+QTlayerPaletteDlg::lp_redraw_hdlr(GtkWidget*, GdkEvent *event, void*)
 #endif
 {
 #if GTK_CHECK_VERSION(3,0,0)
@@ -1020,98 +1222,10 @@ sLpalette::lp_redraw_hdlr(GtkWidget*, GdkEvent *event, void*)
 
 
 // Static function.
-// Dispatch mouse button presses in the drawing area.
-//
-int
-sLpalette::lp_button_down_hdlr(GtkWidget*, GdkEvent *event, void*)
-{
-    if (event->type == GDK_2BUTTON_PRESS ||
-            event->type == GDK_3BUTTON_PRESS)
-        return (true);
-    GdkEventButton *bev = (GdkEventButton*)event;
-    int button = Kmap()->ButtonMap(bev->button);
-
-    if (XM()->IsDoingHelp() && !GTKmainwin::is_shift_down()) {
-        DSPmainWbag(PopUpHelp("xic:ltpal"))
-        return (true);
-    }
-
-    switch (button) {
-    case 1:
-        if (Lpal)
-            Lpal->b1_handler((int)bev->x, (int)bev->y, bev->state, true);
-        break;
-    case 2:
-        if (Lpal)
-            Lpal->b2_handler((int)bev->x, (int)bev->y, bev->state, true);
-        break;
-    case 3:
-        if (Lpal)
-            Lpal->b3_handler((int)bev->x, (int)bev->y, bev->state, true);
-        break;
-    }
-    return (true);
-}
-
-
-// Static function.
-int
-sLpalette::lp_button_up_hdlr(GtkWidget*, GdkEvent *event, void*)
-{
-    GdkEventButton *bev = (GdkEventButton*)event;
-    int button = Kmap()->ButtonMap(bev->button);
-
-    if (XM()->IsDoingHelp() && !GTKmainwin::is_shift_down())
-        return (true);
-
-    switch (button) {
-    case 1:
-        if (Lpal)
-            Lpal->b1_handler((int)bev->x, (int)bev->y, bev->state, false);
-        break;
-    case 2:
-        if (Lpal)
-            Lpal->b2_handler((int)bev->x, (int)bev->y, bev->state, false);
-        break;
-    case 3:
-        if (Lpal)
-            Lpal->b3_handler((int)bev->x, (int)bev->y, bev->state, false);
-        break;
-    }
-    return (true);
-}
-
-
-// Static function.
-int
-sLpalette::lp_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
-{
-    if (!Lpal)
-        return (false);
-    int x = (int)event->motion.x;
-    int y = (int)event->motion.y;
-    if (Lpal->lp_dragging &&
-            (abs(x - Lpal->lp_drag_x) > 4 || abs(y - Lpal->lp_drag_y) > 4)) {
-        Lpal->lp_dragging = false;
-        // fillpattern only
-        GtkTargetList *targets = gtk_target_list_new(lp_targets, 1);
-        gtk_drag_begin(caller, targets, (GdkDragAction)GDK_ACTION_COPY,
-            1, event);
-    }
-
-    CDl *ld = Lpal->ldesc_at(x, y);
-    if (ld)
-        Lpal->update_info(ld);
-
-    return (true);
-}
-
-
-// Static function.
 // Set the pixmap.
 //
 void
-sLpalette::lp_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
+QTlayerPaletteDlg::lp_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
 {
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(fillpattern_xpm);
     gtk_drag_set_icon_pixbuf(context, pixbuf, -2, -2);
@@ -1121,7 +1235,7 @@ sLpalette::lp_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
 
 // Static function.
 void
-sLpalette::lp_drag_end(GtkWidget*, GdkDragContext*, gpointer)
+QTlayerPaletteDlg::lp_drag_end(GtkWidget*, GdkDragContext*, gpointer)
 {
     GTKsubwin::HaveDrag = false;
 }
@@ -1131,7 +1245,7 @@ sLpalette::lp_drag_end(GtkWidget*, GdkDragContext*, gpointer)
 // Initialize data for drag/drop transfer from 'this'.
 //
 void
-sLpalette::lp_drag_data_get(GtkWidget*, GdkDragContext*,
+QTlayerPaletteDlg::lp_drag_data_get(GtkWidget*, GdkDragContext*,
     GtkSelectionData *data, guint, guint, void*)
 {
     CDl *ld = LT()->CurLayer();
@@ -1143,12 +1257,23 @@ sLpalette::lp_drag_data_get(GtkWidget*, GdkDragContext*,
 }
 
 
+    /*
+    // The layer table is a dnd source for fill patterns, and a receiver for
+    // fillpatterns and colors.
+    //
+    GtkTargetEntry lp_targets[] = {
+        { (char*)"fillpattern", 0, 0 },
+        { (char*)"application/x-color", 0, 1 }
+    };
+    guint n_lp_targets = sizeof(lp_targets) / sizeof(lp_targets[0]);
+    */
+
 // Static function.
 // Drag data received from layer table, or from 'this'.  The layer is added
 // to the user palette line.
 //
 void
-sLpalette::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
+QTlayerPaletteDlg::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
     gint x, gint y, GtkSelectionData *data, guint, guint time)
 {
     // datum is a guint16 array of the format:
@@ -1167,12 +1292,10 @@ sLpalette::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
             CDl *ld = Lpal->ldesc_at(x, y);
             XM()->FillLoadCallback(
                 (LayerFillData*)gtk_selection_data_get_data(data), ld);
-            if (GTKpkg::self()->IsTrueColor()) {
-                // update the colors
-                Lpal->update_layer(0);
-                LT()->ShowLayerTable(ld);
-                XM()->PopUpFillEditor(0, MODE_UPD);
-            }
+            // update the colors
+            Lpal->update_layer(0);
+            LT()->ShowLayerTable(ld);
+            XM()->PopUpFillEditor(0, MODE_UPD);
         }
     }
     else {
@@ -1191,103 +1314,14 @@ sLpalette::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
         CDl *ld = Lpal->ldesc_at(x, y);
 
         LT()->SetLayerColor(ld, vals[0] >> 8, vals[1] >> 8, vals[2] >> 8);
-        if (GTKpkg::self()->IsTrueColor()) {
-            // update the colors
-            Lpal->update_layer(0);
-            LT()->ShowLayerTable(ld);
-            XM()->PopUpFillEditor(0, MODE_UPD);
-        }
+        // update the colors
+        Lpal->update_layer(0);
+        LT()->ShowLayerTable(ld);
+        XM()->PopUpFillEditor(0, MODE_UPD);
     }
     gtk_drag_finish(context, true, false, time);
     if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
         DSP()->RedisplayAll();
 }
 
-
-// Static function.
-void
-sLpalette::lp_font_change_hdlr(GtkWidget*, void*, void*)
-{
-    if (Lpal)
-        Lpal->init_size();
-}
-
-
-namespace {
-    // Positioning function for pop-up menus.
-    //
-    void
-    pos_func(GtkMenu*, int *x, int *y, gboolean *pushin, void *data)
-    {
-        *pushin = true;
-        GtkWidget *btn = GTK_WIDGET(data);
-        GTKdev::self()->Location(btn, x, y);
-        GtkAllocation a;
-        gtk_widget_get_allocation(btn, &a);
-        (*x) -= a.width;
-        (*y) += a.height;
-    }
-}
-
-
-// Static function.
-// Button-press handler to produce pop-up menu.
-//
-int
-sLpalette::lp_popup_menu(GtkWidget *widget, GdkEvent *event, void *arg)
-{
-    gtk_menu_popup(GTK_MENU(arg), 0, 0, pos_func, widget, event->button.button,
-        event->button.time);
-    return (true);
-}
-
-
-// Static function.
-void
-sLpalette::lp_recall_proc(GtkWidget*, void *arg)
-{
-    if (!Lpal)
-        return;
-    int ix = (intptr_t)arg;
-
-    int usz = LP_PALETTE_COLS * LP_PALETTE_ROWS;
-    for (int i = 0; i < usz; i++)
-        Lpal->lp_user[i] = 0;
-
-    const char *s = Tech()->LayerPaletteReg(ix, DSP()->CurMode());
-    int cnt = 0;
-    char *tok;
-    while ((tok = lstring::gettok(&s)) != 0) {
-        CDl *ld = CDldb()->findLayer(tok, DSP()->CurMode());
-        delete [] tok;
-        if (!ld)
-            continue;
-        Lpal->lp_user[cnt] = ld;
-        cnt++;
-    }
-    Lpal->lp_pmap_dirty = true;
-    Lpal->refresh(0, 0, 0, 0);
-}
-
-
-// Static function.
-void
-sLpalette::lp_save_proc(GtkWidget*, void *arg)
-{
-    if (!Lpal)
-        return;
-    int ix = (intptr_t)arg;
-
-    sLstr lstr;
-    int usz = LP_PALETTE_COLS * LP_PALETTE_ROWS;
-    for (int i = 0; i < usz; i++) {
-        CDl *ld = Lpal->lp_user[i];
-        if (!ld)
-            break;
-        if (i)
-            lstr.add_c(' ');
-        lstr.add(ld->name());
-    }
-    Tech()->SetLayerPaletteReg(ix, DSP()->CurMode(), lstr.string());
-}
-
+#endif

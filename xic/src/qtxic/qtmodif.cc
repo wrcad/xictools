@@ -414,7 +414,6 @@ QTmodifDlg::mouse_press_slot(QMouseEvent *ev)
         return;
     }
     ev->accept();
-//XXX ?    QTmodifDlg::self()->mousePressEvent(ev);
 
     const char *str = lstring::copy(
         (const char*)m_text->toPlainText().toLatin1());

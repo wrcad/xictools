@@ -39,9 +39,6 @@
  *========================================================================*/
 
 #include "qtdrcedit.h"
-#include "main.h"
-#include "drc.h"
-#include "drc_edit.h"
 #include "cd_lgen.h"
 #include "dsp_layer.h"
 #include "dsp_color.h"
@@ -52,7 +49,14 @@
 #include "errorlog.h"
 #include "tech.h"
 #include "qtinterf/qtfont.h"
+#include "qtinterf/qttextw.h"
 #include "miscutil/filestat.h"
+
+#include <QLayout>
+#include <QMenuBar>
+#include <QMenu>
+#include <QAction>
+#include <QMouseEvent>
 
 
 //-----------------------------------------------------------------------------
@@ -67,7 +71,7 @@ cDRC::PopUpRules(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTdrcRuleEdutDlg::self())
+        if (QTdrcRuleEditDlg::self())
             QTdrcRuleEditDlg::self()->deleteLater();
         return;
     }
@@ -85,7 +89,7 @@ cDRC::PopUpRules(GRobject caller, ShowMode mode)
     if (QTdrcRuleEditDlg::self())
         return;
 
-    new QRdrcRuleEditDlg(caller);
+    new QTdrcRuleEditDlg(caller);
 
     QTdev::self()->SetPopupLocation(GRloc(), QTdrcRuleEditDlg::self(),
         QTmainwin::self()->Viewport());
@@ -105,7 +109,7 @@ namespace {
 
 QTdrcRuleEditDlg *QTdrcRuleEditDlg::instPtr;
 
-QRdrcRuleEditDlg::QRdrcRuleEditDlg(GRobject c)
+QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
 {
     instPtr = this;
     dim_caller = c;
@@ -116,13 +120,14 @@ QRdrcRuleEditDlg::QRdrcRuleEditDlg(GRobject c)
     dim_undo = 0;
     dim_menu = 0;
     dim_umenu = 0;
+    dim_rbmenu = 0;
     dim_delblk = 0;
     dim_undblk = 0;
     dim_editing_rule = 0;
     dim_start = 0;
     dim_end = 0;
 
-    setWindowTitle(tr("Design Rule Editor");
+    setWindowTitle(tr("Design Rule Editor"));
     setAttribute(Qt::WA_DeleteOnClose);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
@@ -137,112 +142,137 @@ QRdrcRuleEditDlg::QRdrcRuleEditDlg(GRobject c)
     QMenu *menu = menubar->addMenu(tr("&Edit"));
     // _Edit, <control>E, dim_edit_proc, 0, 0
     dim_edit = menu->addAction(tr("&Edit"));
+    dim_edit->setShortcut(QKeySequence("Ctrl+E"));
     // _Inhibit, <control>I, dim_inhibit_proc, 0, 0
     dim_inhibit = menu->addAction(tr("&Inhibit"));
+    dim_inhibit->setShortcut(QKeySequence("Ctrl+I"));
     // _Delete, <control>D, dim_delete_proc, 0, 0
     dim_del = menu->addAction(tr("&Delete"));
+    dim_del->setShortcut(QKeySequence("Ctrl+D"));
     // _Undo, <control>U, dim_undo_proc, 0, 0
     dim_undo = menu->addAction(tr("&Undo"));
-// SEPARATOR
+    dim_del->setShortcut(QKeySequence("Ctrl+U"));
+    menu->addSeparator();
     // _Quit, <control>Q, dim_cancel_proc, 0, 0
     QAction *a = menu->addAction(tr("_Quit"));
+    a->setShortcut(QKeySequence("Ctrl+Q"));
+    connect(menu, SIGNAL(triggered(QAction*)),
+        this, SLOT(edit_menu_slot(QAction*)));
 
     // Rules menu.
-    menu = menubar->addMenu(tr("&Rules"));
+    dim_menu = menubar->addMenu(tr("&Rules"));
     // User Defined Rule, 0, 0, 0, "<Branch>"
-    QMenu *sm = menu->addMenu(tr("User Defined Rule"));
-
+    dim_umenu = dim_menu->addMenu(tr("User Defined Rule"));
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
-        QAction *a = sm->addAction(tst->name());
+        dim_umenu->addAction(tst->name());
     }
+    connect(dim_umenu, SIGNAL(triggered(QAction*)),
+        this, SLOT(user_menu_slot(QAction*)));
+
     // Connected, 0, dim_rule_proc, drConnected, 0
-    menu->addAction("Connected");
+    a = dim_menu->addAction("Connected");
+    a->setData(drConnected);
     // NoHoles, 0, dim_rule_proc, drNoHoles, 0
-    menu->addAction("NoHoles");
+    a = dim_menu->addAction("NoHoles");
+    a->setData(drNoHoles);
     // Exist, 0, dim_rule_proc, drExist, 0
-    menu->addAction("Exist");
+    a = dim_menu->addAction("Exist");
+    a->setData(drExist);
     // Overlap", 0, dim_rule_proc, drOverlap, 0
-    menu->addAction("Overlap");
+    a = dim_menu->addAction("Overlap");
+    a->setData(drOverlap);
     // IfOverlap, 0, dim_rule_proc, drIfOverlap, 0
-    menu->addAction("IfOverlap");
+    a = dim_menu->addAction("IfOverlap");
+    a->setData(drIfOverlap);
     // NoOverlap, 0, dim_rule_proc, drNoOverlap, 0
-    menu->addAction("NoOverlap");
+    a = dim_menu->addAction("NoOverlap");
+    a->setData(drNoOverlap);
     // AnyOverlap, 0, dim_rule_proc, drAnyOverlap, 0
-    menu->addAction(("AnyOverlap");
+    a = dim_menu->addAction("AnyOverlap");
+    a->setData(drAnyOverlap);
     // PartOverlap, 0, dim_rule_proc, drPartOverlap, 0
-    menu->addAction("PartOverlap");
+    a = dim_menu->addAction("PartOverlap");
+    a->setData(drPartOverlap);
     // AnyNoOverlap, 0, dim_rule_proc, drAnyNoOverlap, 0);
-    menu->addAction("AnyNoOverlap");
+    a = dim_menu->addAction("AnyNoOverlap");
+    a->setData(drAnyNoOverlap);
     // MinArea, 0, dim_rule_proc, drMinArea, 0)
-    menu->addAction("MinArea");
+    a = dim_menu->addAction("MinArea");
+    a->setData(drMinArea);
     // MaxArea, 0, dim_rule_proc, drMaxArea, 0
-    menu->addAction("MaxArea");
+    a = dim_menu->addAction("MaxArea");
+    a->setData(drMaxArea);
     // MinEdgeLength, 0, dim_rule_proc, drMinEdgeLength, 0
-    menu->addAction("MinEdgeLength");
+    a = dim_menu->addAction("MinEdgeLength");
+    a->setData(drMinEdgeLength);
     // MaxWidth, 0, dim_rule_proc, drMaxWidth, 0);
-    menu->addAction("MaxWidth");
+    a = dim_menu->addAction("MaxWidth");
+    a->setData(drMaxWidth);
     // MinWidth, 0, dim_rule_proc, drMinWidth, 0
-    menu->addAction("MinWidth");
+    a = dim_menu->addAction("MinWidth");
+    a->setData(drMinWidth);
     // MinSpace, 0, dim_rule_proc, drMinSpace, 0
-    menu->addAction("MinSpace");
+    a = dim_menu->addAction("MinSpace");
+    a->setData(drMinSpace);
     // MinSpaceTo, 0, dim_rule_proc, drMinSpaceTo, 0
-    menu->addAction("MinSpaceTo");
+    a = dim_menu->addAction("MinSpaceTo");
+    a->setData(drMinSpaceTo);
     // MinSpaceFrom", 0, dim_rule_proc, drMinSpaceFrom, 0
-    menu->addAction("MinSpaceFrom");
+    a = dim_menu->addAction("MinSpaceFrom");
+    a->setData(drMinSpaceFrom);
     // MinOverlap, 0, dim_rule_proc, drMinOverlap, 0
-    menu->addAction("MinOverlap");
+    a = dim_menu->addAction("MinOverlap");
+    a->setData(drMinOverlap);
     // MinNoOverlap, 0, dim_rule_proc, drMinNoOverlap, 0
-    menu->addAction("MinNoOverlap");
+    a = dim_menu->addAction("MinNoOverlap");
+    a->setData(drMinNoOverlap);
+    connect(dim_menu, SIGNAL(triggered(QAction*)),
+        this, SLOT(rules_menu_slot(QAction*)));
 
     // Rule Block menu.
-    menu = menubar->addMenu(tr("Rule &Block"));
+    dim_rbmenu = menubar->addMenu(tr("Rule &Block"));
     // New, 0, dim_rule_menu_proc, 0, 0
-    menu->addAction(tr("New"));
+    dim_rbmenu->addAction(tr("New"));
     // Delete, 0, dim_rule_menu_proc, 1, <CheckItem>
-    dim_delblk = menu->addAction(tr("Delete"));
+    dim_delblk = dim_rbmenu->addAction(tr("Delete"));
     // Undelete, 0, dim_rule_menu_proc, 2, 0
-    dim_undblk = menu->addAction(tr("Undelete"));
+    dim_undblk = dim_rbmenu->addAction(tr("Undelete"));
     dim_undblk->setEnabled(false);
-//Separator
-
+    dim_rbmenu->addSeparator();
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
-        menu->addAction(tst->name());
+        dim_rbmenu->addAction(tst->name());
     }
+    connect(dim_rbmenu, SIGNAL(triggered(QAction*)),
+        this, SLOT(ruleblk_menu_slot(QAction*)));
 
     // Help menu.
     menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, dim_help_proc, 0, 0);
-    menu->addAction(tr("&Help"));
+    a = menu->addAction(tr("&Help"));
+    a->setShortcut(QKeySequence("Ctrl+H"));
+    connect(menu, SIGNAL(triggered(QAction*)),
+        this, SLOT(help_menu_slot(QAction*)));
 
     dim_text = new QTtextEdit();
-    vbox->addQidget(dim_text);
+    vbox->addWidget(dim_text);
+    dim_text->setReadOnly(true);
+    dim_text->setMouseTracking(true);
+    connect(dim_text, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(mouse_press_slot(QMouseEvent*)));
 
-/*
-    gtk_widget_add_events(dim_text, GDK_BUTTON_PRESS_MASK);
-    g_signal_connect(G_OBJECT(dim_text), "button-press-event",
-        G_CALLBACK(dim_text_btn_hdlr), 0);
-    g_signal_connect_after(G_OBJECT(dim_text), "realize",
-        G_CALLBACK(text_realize_proc), 0);
-
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(dim_text));
-    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
-    gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr, NULL);
-
-    gtk_widget_set_size_request(dim_text, DEF_WIDTH, DEF_HEIGHT);
-
-    // The font change pop-up uses this to redraw the widget
-    g_object_set_data(G_OBJECT(dim_text), "font_changed",
-        (void*)dim_font_changed);
-*/
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED))
+        dim_text->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     if (dim_undo)
-        dim_undo->setEnablerd(false);
+        dim_undo->setEnabled(false);
     update();
 }
 
 
-QRdrcRuleEditDlg::~QRdrcRuleEditDlg()
+QTdrcRuleEditDlg::~QTdrcRuleEditDlg()
 {
     instPtr = 0;
     if (ed_text_input)
@@ -257,7 +287,7 @@ QRdrcRuleEditDlg::~QRdrcRuleEditDlg()
 // Update text.
 //
 void
-QRdrcRuleEditDlg::update()
+QTdrcRuleEditDlg::update()
 {
     dim_editing_rule = 0;
     select_range(0, 0);
@@ -274,15 +304,17 @@ QRdrcRuleEditDlg::update()
         bf[2] = 0;
         while (*t && !isspace(*t))
             t++;
-        dim_text->setTextColot(c1);
-        dim_text->set_chars(bf);
-/*
-        text_insert_chars_at_point(dim_text, c2, l->string + 2,
-            t - l->string - 2, -1);
+        dim_text->setTextColor(c1);
+        dim_text->insertPlainText(bf);
+        dim_text->setTextColor(c2);
+        char ctmp = *t;
+        *t = 0;
+        dim_text->insertPlainText(l->string + 2);
+        *t = ctmp;
+        dim_text->setTextColor(QColor("black"));
         if (*t)
-            text_insert_chars_at_point(dim_text, 0, t, -1, -1);
-        text_insert_chars_at_point(dim_text, 0, "\n", 1, -1);
-*/
+            dim_text->insertPlainText(t);
+        dim_text->insertPlainText("\n");
     }
     dim_text->set_scroll_value(val);
     stringlist::destroy(s0);
@@ -295,46 +327,35 @@ QRdrcRuleEditDlg::update()
 // Update the Rule Block and User Defined Rules menus.
 //
 void
-QRdrcRuleEditDlg::rule_menu_upd()
+QTdrcRuleEditDlg::rule_menu_upd()
 {
-    /*
-    GList *gl = gtk_container_get_children(GTK_CONTAINER(dim_menu));
-    int cnt = 0;
-    for (GList *l = gl; l; l = l->next, cnt++) {
-        if (cnt > 3)  // ** skip first four entries **
-            gtk_widget_destroy(GTK_WIDGET(l->data));
+    QList<QAction*> alist = dim_rbmenu->actions();
+    int sz = alist.size();
+    for (int i = 0; i < sz; i++) {
+        if (i > 3) {
+            // ** skip first four entries **
+            dim_rbmenu->removeAction(alist.at(i));
+        }
     }
-    g_list_free(gl);
-
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(tst->name());
-        gtk_widget_show(mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(QRdrcRuleEditDlg::dim_rule_menu_proc), tst);
-        gtk_menu_shell_append(GTK_MENU_SHELL(dim_menu), mi);
+        dim_rbmenu->addAction(tst->name());
     }
 
-    gl = gtk_container_get_children(GTK_CONTAINER(dim_umenu));
-    cnt = 0;
-    for (GList *l = gl; l; l = l->next, cnt++)
-        gtk_widget_destroy(GTK_WIDGET(l->data));
-    g_list_free(gl);
-
+    alist = dim_umenu->actions();
+    sz = alist.size();
+    for (int i = 0; i < sz; i++) {
+        dim_umenu->removeAction(alist.at(i));
+    }
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
-        GtkWidget *mi = gtk_menu_item_new_with_label(tst->name());
-        gtk_widget_show(mi);
-        g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(QRdrcRuleEditDlg::dim_rule_proc), (void*)tst->name());
-        gtk_menu_shell_append(GTK_MENU_SHELL(dim_umenu), mi);
+        dim_umenu->addAction(tst->name());
     }
-    */
 }
 
 
 // Save the last operation for undo.
 //
 void
-QRdrcRuleEditDlg::save_last_op(DRCtestDesc *tdold, DRCtestDesc *tdnew)
+QTdrcRuleEditDlg::save_last_op(DRCtestDesc *tdold, DRCtestDesc *tdnew)
 {
     if (ed_last_delete)
         delete ed_last_delete;
@@ -345,13 +366,10 @@ QRdrcRuleEditDlg::save_last_op(DRCtestDesc *tdold, DRCtestDesc *tdnew)
 }
 
 
-// Select the chars in the range, start=end deselects existing.  In
-// GTK-1, selecting gives blue inverse, which turns gray if
-// unselected, retaining an indication for the buttons.  GTK-2
-// doesn't do this automatically so we provide something similar here.
+// Select the chars in the range, start=end deselects existing.
 //
 void
-QRdrcRuleEditDlg::select_range(int start, int end)
+QTdrcRuleEditDlg::select_range(int start, int end)
 {
     dim_text->select_range(start, end);
     dim_start = start;
@@ -361,163 +379,17 @@ QRdrcRuleEditDlg::select_range(int start, int end)
 
 
 void
-QRdrcRuleEditDlg::check_sens()
+QTdrcRuleEditDlg::check_sens()
 {
-    int start, end;
-//XXX    text_get_selection_pos(dim_text, &start, &end);
-    if (dim_edit) {
-        if (start == end)
-            dim_edit->setEnabled(false);
-        else
-            dim_edit->setEnabled(true);
-    }
-    if (dim_del) {
-        if (start == end)
-            dim_del->setEnabled(false);
-        else
-            dim_del->setEnabled(true);
-    }
-    if (dim_inhibit) {
-        if (start == end)
-            dim_inhibit->setEnablrd(false);
-        else
-            dim_inhibit->setEnablrd(true);
-    }
-    if (start == end)
+    bool has_sel = dim_text->has_selection();
+    if (dim_edit)
+        dim_edit->setEnabled(has_sel);
+    if (dim_del)
+        dim_del->setEnabled(has_sel);
+    if (dim_inhibit)
+        dim_inhibit->setEnabled(has_sel);
+    if (!has_sel)
         ed_rule_selected = -1;
-}
-
-
-#ifdef notdef
-
-// Static function.
-// Redraw text after font change.
-//
-void
-QRdrcRuleEditDlg::dim_font_changed()
-{
-    if (Dim)
-        Dim->update();
-}
-
-
-// Static function.
-// Pop down the dimensions panel.
-//
-void
-QRdrcRuleEditDlg::dim_cancel_proc(GtkWidget*, void*)
-{
-    DRC()->PopUpRules(0, MODE_OFF);
-}
-
-
-// Static function.
-// Enter help mode.
-//
-void
-QRdrcRuleEditDlg::dim_help_proc(GtkWidget*, void*)
-{
-    DSPmainWbag(PopUpHelp("xic:dredt"))
-}
-
-
-// Static function.
-void
-QRdrcRuleEditDlg::dim_inhibit_proc(GtkWidget*, void*)
-{
-    if (!Dim)
-        return;
-    if (Dim->ed_rule_selected >= 0) {
-        DRCtestDesc *td = Dim->inhibit_selected();
-        if (td)
-            DRC()->PopUpRules(0, MODE_UPD);
-        Dim->ed_rule_selected = -1;
-    }
-}
-
-
-// Static function.
-// Use the Rule Editor pop-up to edit the parameters associated with
-// the selected rule.
-//
-void
-QRdrcRuleEditDlg::dim_edit_proc(GtkWidget*, void*)
-{
-    if (!LT()->CurLayer() || !Dim)
-        return;
-    if (Dim->ed_rule_selected >= 0) {
-        DRCtestDesc *td = *tech_prm(LT()->CurLayer())->rules_addr();
-        for (int i = Dim->ed_rule_selected; i && td; i--, td = td->next()) ;
-        if (!td) {
-            Dim->ed_rule_selected = -1;
-            return;
-        }
-
-        Dim->dim_editing_rule = td;
-        const DRCtest *ur = td->userRule();
-        DRC()->PopUpRuleEdit(0, MODE_ON, td->type(), ur ? ur->name() : 0,
-            &Dim->dim_cb, 0, td);
-    }
-}
-
-
-// Static function.
-// Remove any selected rule from the list, and redraw.
-//
-void
-QRdrcRuleEditDlg::dim_delete_proc(GtkWidget*, void*)
-{
-    if (!LT()->CurLayer() || !Dim)
-        return;
-    if (Dim->ed_rule_selected >= 0) {
-        DRCtestDesc *td = Dim->remove_selected();
-        if (td) {
-            Dim->save_last_op(td, 0);
-            DRC()->PopUpRules(0, MODE_UPD);
-        }
-        Dim->ed_rule_selected = -1;
-    }
-}
-
-
-// Static function.
-// Undo the last insertion or deletion.  A second call undoes the undo,
-// etc.
-//
-void
-QRdrcRuleEditDlg::dim_undo_proc(GtkWidget*, void*)
-{
-    if (!LT()->CurLayer() || !Dim)
-        return;
-    DRCtestDesc *td = 0;
-    if (Dim->ed_last_insert)
-        td = DRC()->unlinkRule(Dim->ed_last_insert);
-    if (Dim->ed_last_delete)
-        DRC()->linkRule(Dim->ed_last_delete);
-    Dim->ed_last_insert = Dim->ed_last_delete;
-    Dim->ed_last_delete = td;
-    DRC()->PopUpRules(0, MODE_UPD);
-}
-
-
-// Static function.
-// Handle the rule keyword menu entries, for both regular and
-// user-defined rules.  For regular rules, user_name is null, and
-// action is the rule id.  For user-defined rules, user_name is the
-// rule name, action is undefined and must be set to
-// drUserDefinedRule.
-//
-void
-QRdrcRuleEditDlg::dim_rule_proc(GtkWidget *caller, void *user_name)
-{
-    long action = (long)g_object_get_data(G_OBJECT(caller), MIDX);
-    if (!LT()->CurLayer() || !Dim)
-        return;
-    if (user_name)
-        action = drUserDefinedRule;
-    Dim->dim_editing_rule = 0;
-    DRC()->PopUpRuleEdit(0, MODE_ON, (DRCtype)action, (const char*)user_name,
-        Dim->dim_cb, 0, 0);
 }
 
 
@@ -527,9 +399,9 @@ QRdrcRuleEditDlg::dim_rule_proc(GtkWidget *caller, void *user_name)
 // specification.
 //
 bool
-QRdrcRuleEditDlg::dim_cb(const char *string, void*)
+QTdrcRuleEditDlg::dim_cb(const char *string, void*)
 {
-    if (!LT()->CurLayer() || !Dim)
+    if (!LT()->CurLayer() || !instPtr)
         return (true);
     if (!string || !*string)
         return (false);
@@ -554,8 +426,8 @@ QRdrcRuleEditDlg::dim_cb(const char *string, void*)
     delete [] tok;
 
     DRCtestDesc *td;
-    if (Dim->dim_editing_rule)
-        td = new DRCtestDesc(Dim->dim_editing_rule, 0, 0, 0);
+    if (instPtr->dim_editing_rule)
+        td = new DRCtestDesc(instPtr->dim_editing_rule, 0, 0, 0);
     else
         td = new DRCtestDesc(type, LT()->CurLayer());
     const char *emsg = td->parse(string, 0, tst);
@@ -568,7 +440,7 @@ QRdrcRuleEditDlg::dim_cb(const char *string, void*)
     // replaced by the new rule.
 
     DRCtestDesc *oldrule = 0;
-    if (td->type() != drUserDefinedRule && !Dim->dim_editing_rule) {
+    if (td->type() != drUserDefinedRule && !instPtr->dim_editing_rule) {
         char *rstr = td->regionString();
         if (!rstr) {
             if (DRCtestDesc::requiresTarget(td->type())) {
@@ -586,13 +458,13 @@ QRdrcRuleEditDlg::dim_cb(const char *string, void*)
 
     td->initialize();
     DRCtestDesc *erule = 0;
-    if (Dim->dim_editing_rule)
-        erule = DRC()->unlinkRule(Dim->dim_editing_rule);
+    if (instPtr->dim_editing_rule)
+        erule = DRC()->unlinkRule(instPtr->dim_editing_rule);
     else if (oldrule)
         erule = DRC()->unlinkRule(oldrule);
     DRC()->linkRule(td);
-    Dim->save_last_op(erule, td);
-    Dim->dim_editing_rule = 0;
+    instPtr->save_last_op(erule, td);
+    instPtr->dim_editing_rule = 0;
     DRC()->PopUpRules(0, MODE_UPD);
 
     return (true);
@@ -604,7 +476,7 @@ QRdrcRuleEditDlg::dim_cb(const char *string, void*)
 // an informational message.
 //
 void
-QRdrcRuleEditDlg::dim_show_msg(const char *name)
+QTdrcRuleEditDlg::dim_show_msg(const char *name)
 {
     char buf[512];
     snprintf(buf, sizeof(buf),
@@ -637,7 +509,7 @@ QRdrcRuleEditDlg::dim_show_msg(const char *name)
 // Callback from the text editor popup.
 //
 bool
-QRdrcRuleEditDlg::dim_editsave(const char *fname, void*, XEtype type)
+QTdrcRuleEditDlg::dim_editsave(const char *fname, void*, XEtype type)
 {
     if (type == XE_QUIT)
         unlink(fname);
@@ -651,8 +523,8 @@ QRdrcRuleEditDlg::dim_editsave(const char *fname, void*, XEtype type)
         const char *name;
         bool ret = DRC()->techParseUserRule(fp, &name);
         fclose(fp);
-        if (ret && Dim && DRC()->userTests()) {
-            Dim->rule_menu_upd();
+        if (ret && instPtr && DRC()->userTests()) {
+            instPtr->rule_menu_upd();
             dim_show_msg(name);
             DRC()->PopUpRules(0, MODE_UPD);
         }
@@ -661,36 +533,125 @@ QRdrcRuleEditDlg::dim_editsave(const char *fname, void*, XEtype type)
 }
 
 
-// Static function.
-// Edit a user-defined rule block.
-//
 void
-QRdrcRuleEditDlg::dim_rule_menu_proc(GtkWidget *caller, void *client_data)
+QTdrcRuleEditDlg::edit_menu_slot(QAction *a)
 {
-    long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
-    if (type == 2) {
+    if (a == dim_edit) {
+        if (!LT()->CurLayer())
+            return;
+        if (ed_rule_selected >= 0) {
+            DRCtestDesc *td = *tech_prm(LT()->CurLayer())->rules_addr();
+            for (int i = ed_rule_selected; i && td; i--, td = td->next()) ;
+            if (!td) {
+                ed_rule_selected = -1;
+                return;
+            }
+
+            dim_editing_rule = td;
+            const DRCtest *ur = td->userRule();
+            DRC()->PopUpRuleEdit(0, MODE_ON, td->type(), ur ? ur->name() : 0,
+                &dim_cb, 0, td);
+        }
+    }
+    else if (a == dim_inhibit) {
+        if (ed_rule_selected >= 0) {
+            DRCtestDesc *td = inhibit_selected();
+            if (td)
+                DRC()->PopUpRules(0, MODE_UPD);
+            ed_rule_selected = -1;
+        }
+    }
+    else if (a == dim_del) {
+        if (!LT()->CurLayer())
+            return;
+        if (ed_rule_selected >= 0) {
+            DRCtestDesc *td = remove_selected();
+            if (td) {
+                save_last_op(td, 0);
+                DRC()->PopUpRules(0, MODE_UPD);
+            }
+            ed_rule_selected = -1;
+        }
+    }
+    else if (a == dim_undo) {
+        if (!LT()->CurLayer())
+            return;
+        DRCtestDesc *td = 0;
+        if (ed_last_insert)
+            td = DRC()->unlinkRule(ed_last_insert);
+        if (ed_last_delete)
+            DRC()->linkRule(ed_last_delete);
+        ed_last_insert = ed_last_delete;
+        ed_last_delete = td;
+        DRC()->PopUpRules(0, MODE_UPD);
+    }
+    else 
+        DRC()->PopUpRules(0, MODE_OFF);
+}
+
+
+void
+QTdrcRuleEditDlg::user_menu_slot(QAction *a)
+{
+    // Handle the user rule keyword menu entries.
+    if (!LT()->CurLayer())
+        return;
+
+    QByteArray ba = a->text().toLatin1();
+    dim_editing_rule = 0;
+    DRC()->PopUpRuleEdit(0, MODE_ON, drUserDefinedRule, ba.constData(),
+        dim_cb, 0, 0);
+}
+
+
+void
+QTdrcRuleEditDlg::rules_menu_slot(QAction *a)
+{
+    // Handle the rule keyword menu entries from the Rules menu.
+    if (!LT()->CurLayer())
+        return;
+
+    int rule = a->data().toInt();
+    dim_editing_rule = 0;
+    DRC()->PopUpRuleEdit(0, MODE_ON, (DRCtype)rule, 0, dim_cb, 0, 0);
+}
+
+
+void
+QTdrcRuleEditDlg::ruleblk_menu_slot(QAction *a)
+{
+    QString qs = a->text();
+    if (qs == "Undelete") {
         // Undelete button
         if (!DRC()->userTests())
-            DRC()->setUserTests(Dim->ed_usertest);
+            DRC()->setUserTests(ed_usertest);
         else {
             DRCtest *tst = DRC()->userTests();
             while (tst->next())
                 tst = tst->next();
-            tst->setNext(Dim->ed_usertest);
+            tst->setNext(ed_usertest);
         }
-        Dim->user_rule_mod(Uuninhibit);
-        Dim->ed_usertest = 0;
-        gtk_widget_set_sensitive(Dim->dim_undblk, false);
-        Dim->rule_menu_upd();
+        user_rule_mod(Uuninhibit);
+        ed_usertest = 0;
+        dim_undblk->setEnabled(false);
+        rule_menu_upd();
         return;
     }
-    if (type == 1) {
+    if (qs == "Delete") {
         // delete button;
         return;
     }
-    DRCtest *tst = (DRCtest*)client_data;
-    if (GTKdev::GetStatus(Dim->dim_delblk)) {
-        GTKdev::Deselect(Dim->dim_delblk);
+
+    DRCtest *tst = 0;
+    for (DRCtest *tx = DRC()->userTests(); tx; tx = tx->next()) {
+        if (qs == tx->name()) {
+            tst = tx;
+            break;
+        }
+    }
+
+    if (QTdev::GetStatus(dim_delblk)) {
+        QTdev::Deselect(dim_delblk);
         if (tst) {
             DRCtest *tp = 0;
             for (DRCtest *tx = DRC()->userTests(); tx; tx = tx->next()) {
@@ -699,13 +660,13 @@ QRdrcRuleEditDlg::dim_rule_menu_proc(GtkWidget *caller, void *client_data)
                         DRC()->setUserTests(tx->next());
                     else
                         tp->setNext(tx->next());
-                    tst->setNext(0);
-                    Dim->user_rule_mod(Udelete);
-                    delete Dim->ed_usertest;
-                    Dim->ed_usertest = tst;
-                    Dim->user_rule_mod(Uinhibit);
-                    gtk_widget_set_sensitive(Dim->dim_undblk, true);
-                    Dim->rule_menu_upd();
+                    tx->setNext(0);
+                    user_rule_mod(Udelete);
+                    delete ed_usertest;
+                    ed_usertest = tx;
+                    user_rule_mod(Uinhibit);
+                    dim_undblk->setEnabled(true);
+                    rule_menu_upd();
                     break;
                 }
                 tp = tx;
@@ -730,64 +691,75 @@ QRdrcRuleEditDlg::dim_rule_menu_proc(GtkWidget *caller, void *client_data)
 }
 
 
-// Static function.
-// Handle button presses in the text area.  If neither edit mode or
-// delete mode is active, highlight the rule pointed to.  Otherwise,
-// perform the operation on the pointed-to rule.
-//
-int
-QRdrcRuleEditDlg::dim_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
+void
+QTdrcRuleEditDlg::help_menu_slot(QAction*)
 {
-    if (!Dim)
-        return (false);
-    if (event->type != GDK_BUTTON_PRESS)
-        return (true);
+    DSPmainWbag(PopUpHelp("xic:dredt"))
+}
 
-    char *string = text_get_chars(caller, 0, -1);
-    int x = (int)event->button.x;
-    int y = (int)event->button.y;
-    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
-        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
-    GtkTextIter ihere, iline;
-    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(caller), &ihere, x, y);
-    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
-    y = gtk_text_iter_get_line(&iline);
 
-    int line = 0;
+void
+QTdrcRuleEditDlg::mouse_press_slot(QMouseEvent *ev)
+{
+    // Handle button presses in the text area.  If neither edit mode or
+    // delete mode is active, highlight the rule pointed to.  Otherwise,
+    // perform the operation on the pointed-to rule.
+
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    char *str = dim_text->get_chars();
+    int x = ev->x();
+    int y = ev->y();
+    QTextCursor cur = dim_text->cursorForPosition(QPoint(x, y));
+    int pos = cur.position();
+
     int rule = 0;
     int start = 0;
-    for (const char *s = string; *s; s++) {
-        if (line == y)
-            break;
-        if (*s == '\n') {
-            line++;
-            if (s > string && *(s-1) == '\\')
+    for (int i = 0; i < pos; i++) {
+        if (str[i] == '\n') {
+            if (i > 0 && str[i-1] == '\\')
                 continue;
             rule++;
-            start = (s + 1 - string);
+            start = (i + 1);
         }
     }
-    if (Dim->ed_rule_selected >= 0 && Dim->ed_rule_selected == rule) {
-        delete [] string;
-        Dim->select_range(0, 0);
-        return (true);
-    }
-    Dim->ed_rule_selected = rule;
 
     // Find the end of the rule.
     int end = -1;
-    for (const char *s = string + start; *s; s++) {
-        if (*s == '\n') {
-            if (s > string && *(s-1) == '\\')
+    int i = start;
+    for ( ; str[i]; i++) {
+        if (str[i] == '\n') {
+            if (str[i-1] == '\\')
                 continue;
-            end = (s - string);
-                break;
+            break;
         }
     }
+    end = i;
 
-    Dim->select_range(start + 2, end);
-    delete [] string;
-    return (true);
+    if (ed_rule_selected >= 0 && ed_rule_selected == rule) {
+        delete [] str;
+        select_range(0, 0);
+        return;
+    }
+    ed_rule_selected = rule;
+
+    select_range(start + 2, end);
+    delete [] str;
 }
 
-#endif
+
+void
+QTdrcRuleEditDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_FIXED))
+            dim_text->setFont(*fnt);
+        update();
+    }
+}
+

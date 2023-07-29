@@ -2360,6 +2360,18 @@ cMain::DisableDialogs()
     QTmainwin::libs_panic();
     QTmainwin::tree_panic();
 }
+
+
+void
+cMain::SetNoToTop(bool)
+{
+}
+
+
+void
+cMain::SetLowerWinOffset(int)
+{
+}
 // End if cMain functions.
 
 

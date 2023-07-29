@@ -363,8 +363,8 @@ sDataVec::resize(int newsize, int extra)
 
     // When increasing the size, grab "extra" elements to avoid the copy
     // that might otherwise occur on subsequent calls.
-    if (newsize > v_length) {
-        if (v_rlength > newsize)
+    if (newsize >= v_length) {
+        if (v_rlength >= newsize)
             return;
         newsize += extra;
     }

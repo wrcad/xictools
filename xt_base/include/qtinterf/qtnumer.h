@@ -74,7 +74,7 @@ namespace qtinterf
                 else
                     hide();
             }
-        void register_caller(GRobject, bool, bool);
+        void register_caller(GRobject, bool=false, bool=false);
         void popdown();
 
         // This widget will be deleted when closed with the title bar "X"

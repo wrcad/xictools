@@ -78,6 +78,7 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
     ToolBar()->UpdatePlots(1);
     if (plot == 0) {
         rd_runPlot = new sPlot(rd_type);
+        rd_runPlot->set_type(sPlot::PLsimrun);
         rd_runPlot->new_plot();
         OP.setCurPlot(rd_runPlot->type_name());
         // add some interface hooks

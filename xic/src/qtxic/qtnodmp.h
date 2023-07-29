@@ -32,70 +32,116 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef AFFIRM_D_H
-#define AFFIRM_D_H
+#ifndef QTNODMP_H
+#define QTNODMP_H
 
-#include "ginterf/graphics.h"
+#include "main.h"
+#include "qtmain.h"
 
-#include <QVariant>
 #include <QDialog>
 
-class QTextEdit;
+
+//-------------------------------------------------------------------------
+// Node (Net) Name Mapping
+//
+
+namespace { struct NmpState; }
 class QPushButton;
+class QLineEdit;
+class QRadioButton;
+class QTreeWidget;
+class QCheckBox;
 
-namespace qtinterf
+class QTnodeMapDlg : public QDialog, public QTbag
 {
-    class QTbag;
+    Q_OBJECT
 
-    class QTaffirmPopup : public QDialog, public GRaffirmPopup
-    {
-        Q_OBJECT
+public:
+    QTnodeMapDlg(GRobject, int);
+    ~QTnodeMapDlg();
 
-    public:
-        QTaffirmPopup(QTbag*, const char*, void*);
-        ~QTaffirmPopup();
+    bool update(int);
+    void show_node_terms(int);
+    void update_map();
 
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void register_caller(GRobject, bool=false, bool=false);
-        void popdown();
+    void clear_cmd()                    { nm_cmd = 0; }
+    void desel_point_btn()              { QTdev::Deselect(nm_point_btn); }
 
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
+    static QTnodeMapDlg *self()         { return (instPtr); }
 
-        QSize sizeHint() const { return (QSize(300, 100)); }
+private slots:
+    void nophys_btn_slot(bool);
+    void mapname_btn_slot(bool);
+    void unmap_btn_slot(bool);
+    void click_btn_slot(bool);
+    void help_btn_slot();
+    void srch_btn_slot();
+    void srch_text_changed_slot(const QString&);
+    void deselect_btn_slot();
+    void dismiss_btn_slot();
+    void usex_btn_slot(int);
+    void find_btn_slot();
 
-    signals:
-        void affirm(bool, void*);
+private:
+    void enable_point(bool);
+    int node_of_row(int);
+    void set_name(const char*);
+    void do_search(int*, int*);
+    int find_row(const char*);
+    static void nm_name_cb(const char*, void*);
+    static void nm_join_cb(bool, void*);
+    static void nm_rm_cb(bool, void*);
 
-    private slots:
-        void action_slot();
-        void quit_slot();
+    /*
+    static int nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
+        GtkTreePath*, int, void*);
+    static bool nm_n_focus_proc(GtkWidget*, GdkEvent*, void*);
+    static int nm_select_tlist_proc(GtkTreeSelection*, GtkTreeModel*,
+        GtkTreePath*, int, void*);
+    static bool nm_t_focus_proc(GtkWidget*, GdkEvent*, void*);
+    */
 
-    private:
-        QTextEdit *label;
-        QPushButton *yesbtn;
-        QPushButton *nobtn;
-    };
-}
+    NmpState    *nm_cmd;
+    GRobject    nm_caller;
+    QPushButton *nm_use_np;;
+    QPushButton *nm_rename;
+    QPushButton *nm_remove;
+    QPushButton *nm_point_btn;
+    QPushButton *nm_srch_btn;
+    QLineEdit   *nm_srch_entry;
+    QRadioButton *nm_srch_nodes;
+    QTreeWidget *nm_node_list;
+    QTreeWidget *nm_term_list;
+    QCheckBox   *nm_usex_btn;
+    QPushButton *nm_find_btn;
+
+    int         nm_showing_node;
+    int         nm_showing_row;
+    int         nm_showing_term_row;
+    bool        nm_noupdating;
+    bool        nm_n_no_select;         // treeview focus hack
+    bool        nm_t_no_select;         // treeview focus hack
+
+    CDp_node    *nm_node;
+    CDc         *nm_cdesc;
+
+    GRaffirmPopup *nm_rm_affirm;
+    GRaffirmPopup *nm_join_affirm;
+
+    static bool nm_use_extract;
+
+    static short int nm_win_width;
+    static short int nm_win_height;
+    static short int nm_grip_pos;
+
+    static QTnodeMapDlg *instPtr;
+};
 
 #endif
 

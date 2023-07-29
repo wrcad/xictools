@@ -495,7 +495,8 @@ IFoutput::removePlot(const char *name, bool all_for_cir)
             npl = pl->next_plot();
             if (pl->active())
                 active = true;
-            if (pl != o_constants && !pl->active())
+            if (pl != o_constants && !pl->active() &&
+                    pl->type() != sPlot::PLexec)
                 pl->destroy();
         }
         if (active)

@@ -363,11 +363,15 @@ public:
     virtual bool file_close() = 0;
 };
 
+
 // The information for a particular set of vectors that come from one
 // plot.
 //
 struct sPlot
 {
+    // Type of plot: unknown, simulation data, constants, exec local data.
+    enum PLtype { PLnone, PLsimrun, PLconst, PLexec };
+
     // plots.cc
     sPlot(const char*);
     ~sPlot();
@@ -495,6 +499,9 @@ struct sPlot
 
     wordlist *notes()                       const { return (pl_notes); }
 
+    PLtype type()                           const { return ((PLtype)pl_type); }
+    void set_type(PLtype t)                 { pl_type = (char)t; }
+
 private:
     char *pl_title;         // The title card.
     char *pl_date;          // Date.
@@ -521,6 +528,7 @@ private:
     int pl_fftsc_ix;        // Index to keep FFT scale names unique.
     bool pl_active;         // True when the plot is being used.
     bool pl_written;        // Some or all of the vecs have been saved.
+    char pl_type;           // Type of data.
 };
 
 // Structure:  sDataVec

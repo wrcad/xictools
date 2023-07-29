@@ -92,6 +92,7 @@ namespace {
             set_date(datestring());
             set_name("constants");
             set_type_name("constants");
+            set_type(sPlot::PLconst);
             set_written(true);
         }
     };

@@ -38,10 +38,20 @@
  $Id:$
  *========================================================================*/
 
-#ifndef GTKASM_H
-#define GTKASM_H
+#ifndef QTASM_H
+#define QTASM_H
 
-#include "gtkinterf/gtkspinbtn.h"
+#include "main.h"
+#include "fio.h"
+#include "qtmain.h"
+
+#include <QDialog>
+#include <QTabWidget>
+
+
+//-----------------------------------------------------------------------------
+// Pop-up to merge layout sources into a single file.
+//
 
 enum ASMcode { ASM_INIT, ASM_INFO, ASM_READ, ASM_WRITE, ASM_CNAME };
 
@@ -55,9 +65,16 @@ enum ASMcode { ASM_INIT, ASM_INFO, ASM_READ, ASM_WRITE, ASM_CNAME };
 // Token shown in Top-Level Cells listing for default cell.
 #define ASM_TOPC "<default>"
 
-class cAsm;
-class cAsmPage;
-struct cvofmt_t;
+class QTasmDlg;
+class QTasmPage;
+class QTconvOutFmt;
+namespace qtinterf { class QTactivity; }
+
+class QLabel;
+class QDoubleSpinBox;
+class QCheckBox;
+class QTreeWidget;
+
 
 // Transformation parameters for instances.
 //
@@ -102,111 +119,123 @@ struct tlinfo
 
 // Container for instance transform widgets, used in notebook pages.
 //
-class cAsmTf
+class QTasmTf : public QTabWidget
 {
-public:
-    cAsmTf(cAsmPage*);
-    ~cAsmTf();
+    Q_OBJECT
 
-    GtkWidget *shell() { return (tf_top); }
+public:
+    QTasmTf(QTasmPage*);
+    ~QTasmTf();
 
     void set_sens(bool, bool);
     void reset();
     void get_tx_params(tlinfo*);
     void set_tx_params(tlinfo*);
 
+private slots:
+    void angle_changed_slot(int);
+    void usew_btn_slot(int);
+
 private:
-    static void tf_angle_proc(GtkWidget*, void*);
-    static void tf_use_win_proc(GtkWidget*, void*);
-
-    cAsmPage *tf_owner;             // container
-    GtkWidget *tf_top;              // top-level container
+    QTasmPage   *tf_owner;              // container
     // "basic" page
-    GtkWidget *tf_pxy_label;        // placement label
-    GtkWidget *tf_angle;            // angle option menu 0-315 in 45 incr.
-    GtkWidget *tf_ang_label;        // angle label
-    GtkWidget *tf_mirror;           // reflection button
-    GtkWidget *tf_mag_label;        // magnification label
-    GtkWidget *tf_name_label;       // placement name label
-    GtkWidget *tf_name;             // placement name
+    QLabel      *tf_pxy_label;          // placement label
+    QDoubleSpinBox *tf_sb_placement_x;  // placement x spin button
+    QDoubleSpinBox *tf_sb_placement_y;  // placement y spin button
+    QLabel      *tf_ang_label;          // angle label
+    QComboBox   *tf_angle;              // angle option menu 0-315 in 45 incr.
+    QCheckBox   *tf_mirror;             // reflection button
+    QLabel      *tf_mag_label;          // magnification label
+    QDoubleSpinBox *tf_sb_magnification;// magnification spin button
+    QLabel      *tf_name_label;         // placement name label
+    QLineEdit   *tf_name;               // placement name
     // "advanced" page
-    GtkWidget *tf_use_win;          // use window check box
-    GtkWidget *tf_do_clip;          // clip check box
-    GtkWidget *tf_do_flatn;         // flatten check box
-    GtkWidget *tf_ecf_label;        // empty cell filtering label
-    GtkWidget *tf_ecf_pre;          // empty cell pre-filtering
-    GtkWidget *tf_ecf_post;         // empty cell post-filtering
-    GtkWidget *tf_lb_label;         // l,b label
-    GtkWidget *tf_rt_label;         // r,t label
-    GtkWidget *tf_sc_label;         // scale factor label
-    GtkWidget *tf_no_hier;          // no hier check box
-    int tf_angle_ix;                // current angle selection index
-
-    GTKspinBtn sb_placement_x;      // placement x spin button
-    GTKspinBtn sb_placement_y;      // placement y spin button
-    GTKspinBtn sb_magnification;    // magnification spin button
-    GTKspinBtn sb_win_l;            // window left spin button
-    GTKspinBtn sb_win_b;            // window bottom spin button
-    GTKspinBtn sb_win_r;            // window right spin button
-    GTKspinBtn sb_win_t;            // window top spin button
-    GTKspinBtn sb_scale;            // scale spin button
+    QCheckBox   *tf_use_win;            // use window check box
+    QCheckBox   *tf_do_clip;            // clip check box
+    QCheckBox   *tf_do_flatn;           // flatten check box
+    QLabel      *tf_ecf_label;          // empty cell filtering label
+    QCheckBox   *tf_ecf_pre;            // empty cell pre-filtering
+    QCheckBox   *tf_ecf_post;           // empty cell post-filtering
+    QLabel      *tf_lb_label;           // l,b label
+    QDoubleSpinBox *tf_sb_win_l;        // window left spin button
+    QDoubleSpinBox *tf_sb_win_b;        // window bottom spin button
+    QLabel      *tf_rt_label;           // r,t label
+    QDoubleSpinBox *tf_sb_win_r;        // window right spin button
+    QDoubleSpinBox *tf_sb_win_t;        // window top spin button
+    QLabel      *tf_sc_label;           // scale factor label
+    QDoubleSpinBox *tf_sb_scale;        // scale spin button
+    QCheckBox   *tf_no_hier;            // no hier check box
+    int         tf_angle_ix;            // current angle selection index
 };
 
 // Container for notebook page widgets.
 //
-struct cAsmPage
+class QTasmPage : public QWidget
 {
-public:
-    friend struct cAsm;
+    Q_OBJECT
 
-    cAsmPage(cAsm*);
-    ~cAsmPage();
+public:
+    friend class QTasmDlg;
+
+    QTasmPage(QTasmDlg*);
+    ~QTasmPage();
 
     void upd_sens();
     void reset();
     tlinfo *add_instance(const char*);
 
-private:
-    static int pg_selection_proc(GtkTreeSelection*, GtkTreeModel*,
-        GtkTreePath*, int, void*);
-    static int pg_focus_proc(GtkWidget*, GdkEvent*, void*);
-    static void pg_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint, void*);
+private slots:
+    void toplev_selection_changed_slot();
 
-    cAsm *pg_owner;                 // container
-    GtkWidget *pg_form;             // top-level container
-    GtkWidget *pg_tablabel;         // tab label
-    GtkWidget *pg_path;             // archive path entry
-    GtkWidget *pg_layers_only;      // use layer list layers only button
-    GtkWidget *pg_skip_layers;      // skip layer list layers button
-    GtkWidget *pg_layer_list;       // layer list entry
-    GtkWidget *pg_layer_aliases;    // layer aliases entry
-    GtkWidget *pg_prefix;           // cell name modification prefix entry
-    GtkWidget *pg_suffix;           // cell name modification suffix entry
-    GtkWidget *pg_prefix_lab;       // prefix label
-    GtkWidget *pg_suffix_lab;       // suffix label
-    GtkWidget *pg_to_lower;         // cell name case change
-    GtkWidget *pg_to_upper;         // cell name case change
-    GtkWidget *pg_toplevels;        // scrolled list box cell instance list
-    cAsmTf *pg_tx;                  // cell instance transform widgets
-    tlinfo **pg_cellinfo;           // per instance transform info
+private:
+    QTasmDlg    *pg_owner;          // container
+    QLineEdit   *pg_path;           // archive path entry
+    QCheckBox   *pg_layers_only;    // use layer list layers only button
+    QCheckBox   *pg_skip_layers;    // skip layer list layers button
+    QLineEdit   *pg_layer_list;     // layer list entry
+    QLineEdit   *pg_layer_aliases;  // layer aliases entry
+    QDoubleSpinBox *pg_sb_scale;    // scale spin button
+    QLineEdit   *pg_prefix;         // cell name modification prefix entry
+    QLineEdit   *pg_suffix;         // cell name modification suffix entry
+    QLabel      *pg_prefix_lab;     // prefix label
+    QLabel      *pg_suffix_lab;     // suffix label
+    QCheckBox   *pg_to_lower;       // cell name case change
+    QCheckBox   *pg_to_upper;       // cell name case change
+    QTreeWidget *pg_toplevels;      // scrolled list box cell instance list
+    QTasmTf     *pg_tx;             // cell instance transform widgets
+    tlinfo      **pg_cellinfo;      // per instance transform info
     unsigned int pg_infosize;       // size of cellinfo
     unsigned int pg_numtlcells;     // number of instances
-    int pg_curtlcell;               // index of selected instance, or -1
-    GTKspinBtn sb_scale;            // scale spin button
-    bool pg_no_select;              // treeview focus fix
+    int         pg_curtlcell;       // index of selected instance, or -1
 };
 
 // The main widget container.
 //
-struct cAsm : public GTKbag
+class QTasmDlg : public QDialog, public QTbag
 {
+    Q_OBJECT
+
 public:
-    friend void cConvert::PopUpAssemble(GRobject, ShowMode);
+    // Main menu function codes.
+    enum
+    {
+        NoCode,
+        CancelCode,
+        OpenCode,
+        SaveCode,
+        RecallCode,
+        ResetCode,
+        NewCode,
+        DelCode,
+        NewTlCode,
+        DelTlCode,
+        HelpCode
+    };
 
-    cAsm(GRobject);
-    ~cAsm();
+    QTasmDlg(GRobject);
+    ~QTasmDlg();
 
+    static QTasmDlg *self()         { return (instPtr); }
     bool scanning()                 { return (asm_doing_scan); }
     void set_scanning(bool b)       { asm_doing_scan = b; }
 
@@ -226,76 +255,78 @@ public:
     static void set_status_message(const char*);
     static void pop_up_monitor(int, const char*, ASMcode);
 
-    static void asm_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint);
+private slots:
+    void main_menu_slot(QAction*);
+    void tab_changed_slot(int);
+    void crlayout_btn_slot();
+    void dismiss_btn_slot();
 
 private:
-    static void asm_cancel_proc(GtkWidget*, void*);
-    static void asm_go_proc(GtkWidget*, void*);
-    static void asm_page_change_proc(GtkWidget*, void*, int, void*);
-    static void asm_action_proc(GtkWidget*, void*);
     static void asm_save_cb(const char*, void*);
     static void asm_recall_cb(const char*, void*);
     static void asm_fsel_open(const char*, void*);
     static void asm_fsel_cancel(GRfilePopup*, void*);
     static void asm_tladd_cb(const char*, void*);
-
     static int asm_timer_callback(void*);
     static void asm_setup_monitor(bool);
     static bool asm_do_run(const char*);
 
-    GRobject asm_caller;                // calling button
-    GtkWidget *asm_filesel_btn;         // file select menu button
-    GtkWidget *asm_notebook;            // pages, one per source file
-    GtkWidget *asm_outfile;             // output file name entry
-    GtkWidget *asm_topcell;             // new top level cell name entry
-    GtkWidget *asm_status;              // status label
+    GRobject    asm_caller;             // calling button
+    QAction     *asm_filesel_btn;       // file select menu button
+    QTabWidget  *asm_notebook;          // pages, one per source file
+    QLineEdit   *asm_outfile;           // output file name entry
+    QLineEdit   *asm_topcell;           // new top level cell name entry
+    QLabel      *asm_status;            // status label
     GRfilePopup *asm_fsel;              // file selection
-    cvofmt_t *asm_fmt;                  // output fromat selection
+    QTconvOutFmt *asm_fmt;              // output fromat selection
 
-    cAsmPage **asm_sources;             // notebook pages
+    QTasmPage   **asm_sources;          // notebook pages
     unsigned int asm_srcsize;           // size of sources
     unsigned int asm_pages;             // number of pages in use
     GRlistPopup *asm_listobj;           // layer list pop-up object
-    int asm_timer_id;                   // status message timer id
-    void **asm_refptr;
-    bool asm_doing_scan;                // true while scanning
-    bool asm_abort;                     // abort operation flag
+    int         asm_timer_id;           // status message timer id
+    void        **asm_refptr;
+    bool        asm_doing_scan;         // true while scanning
+    bool        asm_abort;              // abort operation flag
+
+    static QTasmDlg *instPtr;
 
 public:
-    static GtkTargetEntry target_table[];
     static const char *path_to_source_string;
     static const char *path_to_new_string;
-    static guint n_targets;
     static int asm_fmt_type;
 };
 
-// Progrss monitor pop-up.
+// Progress monitor pop-up.
 //
-class cAsmPrg
+class QTasmPrgDlg : public QDialog
 {
+    Q_OBJECT
+
 public:
-    cAsmPrg();
-    ~cAsmPrg();
+    QTasmPrgDlg();
+    ~QTasmPrgDlg();
 
     void update(const char*, ASMcode);
 
     void set_refptr(void **ptr)     { prg_refptr = ptr; }
     bool aborted()                  { return (prg_abort); }
-    GtkWidget *shell()              { return (prg_shell); }
+    static QTasmPrgDlg *self()      { return (instPtr); }
+
+private slots:
+    void abort_btn_slot();
+    void dismiss_btn_slot();
 
 private:
-    static void prg_cancel_proc(GtkWidget*, void*);
-    static void prg_abort_proc(GtkWidget*, void*);
+    QLabel  *prg_inp_label;
+    QLabel  *prg_out_label;
+    QLabel  *prg_info_label;
+    QLabel  *prg_cname_label;
+    QTactivity *prg_pbar;
+    void    **prg_refptr;
+    bool    prg_abort;              // abort operation flag
 
-    GtkWidget *prg_shell;
-    GtkWidget *prg_inp_label;
-    GtkWidget *prg_out_label;
-    GtkWidget *prg_info_label;
-    GtkWidget *prg_cname_label;
-    GtkWidget *prg_pbar;
-    void **prg_refptr;
-    bool prg_abort;                     // abort operation flag
+    static QTasmPrgDlg *instPtr;
 };
 
 #endif

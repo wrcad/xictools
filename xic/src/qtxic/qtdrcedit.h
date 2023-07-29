@@ -32,70 +32,85 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef AFFIRM_D_H
-#define AFFIRM_D_H
+#ifndef QTDRCEDIT_H
+#define QTDRCEDIT_H
 
-#include "ginterf/graphics.h"
+#include "main.h"
+#include "drc.h"
+#include "drc_edit.h"
+#include "qtmain.h"
 
-#include <QVariant>
 #include <QDialog>
 
-class QTextEdit;
-class QPushButton;
+//-----------------------------------------------------------------------------
+// Pop up to display a listing of design rules for the current layer.
+//
 
-namespace qtinterf
+class QAction;
+class QMouseEvent;
+class QMenu;
+
+class QTdrcRuleEditDlg : public QDialog, public DRCedit
 {
-    class QTbag;
+    Q_OBJECT
 
-    class QTaffirmPopup : public QDialog, public GRaffirmPopup
-    {
-        Q_OBJECT
+public:
+//    edit { emEdit, emInhibit, emDelete, emUndo, emQuit };
 
-    public:
-        QTaffirmPopup(QTbag*, const char*, void*);
-        ~QTaffirmPopup();
+    QTdrcRuleEditDlg(GRobject);
+    ~QTdrcRuleEditDlg();
 
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void register_caller(GRobject, bool=false, bool=false);
-        void popdown();
+    void update();
 
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
+    static QTdrcRuleEditDlg *self()         { return (instPtr); }
 
-        QSize sizeHint() const { return (QSize(300, 100)); }
+private slots:
+    void edit_menu_slot(QAction*);
+    void user_menu_slot(QAction*);
+    void rules_menu_slot(QAction*);
+    void ruleblk_menu_slot(QAction*);
+    void help_menu_slot(QAction*);
+    void mouse_press_slot(QMouseEvent*);
+    void font_changed_slot(int);
 
-    signals:
-        void affirm(bool, void*);
+private:
+    void rule_menu_upd();
+    void save_last_op(DRCtestDesc*, DRCtestDesc*);
+    void select_range(int, int);
+    void check_sens();
+    static bool dim_cb(const char*, void*);
+    static void dim_show_msg(const char*);
+    static bool dim_editsave(const char*, void*, XEtype);
 
-    private slots:
-        void action_slot();
-        void quit_slot();
+    /*
+    static void dim_rule_proc(GtkWidget*, void*);
+    static void dim_rule_menu_proc(GtkWidget*, void*);
+    static int dim_text_btn_hdlr(GtkWidget*, GdkEvent*, void*);
+    */
 
-    private:
-        QTextEdit *label;
-        QPushButton *yesbtn;
-        QPushButton *nobtn;
-    };
-}
+    GRobject    dim_caller;         // initiating button
+    QTtextEdit  *dim_text;          // text area
+    QAction     *dim_edit;          // Edit/Edit action
+    QAction     *dim_inhibit;       // Edit/Iihibit action
+    QAction     *dim_del;           // Edit/Delete action
+    QAction     *dim_undo;          // Edit/Undo action
+    QMenu       *dim_menu;          // rules menu
+    QMenu       *dim_umenu;         // user rules menu
+    QMenu       *dim_rbmenu;        // rule block menu
+    QAction     *dim_delblk;        // rule block delete
+    QAction     *dim_undblk;        // rule block undelete
+    DRCtestDesc *dim_editing_rule;  // rule selected for editing
+    int         dim_start;
+    int         dim_end;
+
+    static QTdrcRuleEditDlg *instPtr;
+};
 
 #endif
 

@@ -38,81 +38,128 @@
  $Id:$
  *========================================================================*/
 
-#include "main.h"
+#include "qtasm.h"
 #include "cvrt.h"
-#include "edit.h"
-#include "sced.h"
-#include "drc.h"
-#include "ext.h"
-#include "oa_if.h"
+#include "qtinterf/qtactivity.h"
 
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
 
-// qtasm.cc
+//-----------------------------------------------------------------------------
+// Progress Monitor Pop-Up.
 
-// Exported function to pop up/down the tool.
-//
-void
-cConvert::PopUpAssemble(GRobject, ShowMode)
+QTasmPrgDlg *QTasmPrgDlg::instPtr;
+
+QTasmPrgDlg::QTasmPrgDlg()
 {
+    instPtr = this;
+    prg_inp_label = 0;
+    prg_out_label = 0;
+    prg_info_label = 0;
+    prg_cname_label = 0;
+    prg_pbar = 0;
+    prg_refptr = 0;
+    prg_abort = false;
+
+    setWindowTitle(tr("Progress"));
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    QGridLayout *grid = new QGridLayout(this);
+    grid->setMargin(2);
+    grid->setSpacing(2);
+
+    QGroupBox *gb = new QGroupBox(tr("Input"));
+    grid->addWidget(gb, 0, 0);
+    QHBoxLayout *hbox = new QHBoxLayout(gb);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+    prg_inp_label = new QLabel("");
+    hbox->addWidget(prg_inp_label);
+
+    gb = new QGroupBox(tr("Output"));
+    grid->addWidget(gb, 0, 1);
+    hbox = new QHBoxLayout(gb);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    prg_out_label = new QLabel("");
+    hbox->addWidget(prg_out_label);
+
+    gb = new QGroupBox(tr("Info"));
+    grid->addWidget(gb, 1, 0, 1, 2);
+    hbox = new QHBoxLayout(gb);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    prg_info_label = new QLabel("");
+    hbox->addWidget(prg_info_label);
+
+    gb = new QGroupBox();
+    grid->addWidget(gb, 2, 0, 1, 2);
+    hbox = new QHBoxLayout(gb);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    prg_cname_label = new QLabel("");
+    hbox->addWidget(prg_cname_label);
+
+    hbox = new QHBoxLayout(0);
+    grid->addLayout(hbox, 3, 0);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    QPushButton *btn = new QPushButton(tr("Abort"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
+
+    btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+
+    prg_pbar = new QTactivity(this);
+    grid->addWidget(prg_pbar, 4, 0, 1, 2);
+}
+
+
+QTasmPrgDlg::~QTasmPrgDlg()
+{
+    instPtr = 0;
+    if (prg_refptr)
+        *prg_refptr = 0;
 }
 
 
 void
-cMain::SetNoToTop(bool)
+QTasmPrgDlg::update(const char *msg, ASMcode code)
 {
-}
-
-void
-cMain::SetLowerWinOffset(int)
-{
-}
-
-
-// qtdebug.cc
-
-void
-cMain::PopUpDebug(GRobject, ShowMode)
-{
-}
-
-bool
-cMain::DbgLoad(MenuEnt*)
-{
-    return (false);
-}
-
-
-// qtlpal.cc
-
-void
-cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*)
-{
+    char *str = lstring::copy(msg);
+    char *s = str + strlen(str) - 1;
+    while (s >= str && isspace(*s))
+        *s-- = 0;
+    if (code == ASM_INFO)
+        prg_info_label->setText(str);
+    else if (code == ASM_READ)
+        prg_inp_label->setText(str);
+    else if (code == ASM_WRITE)
+        prg_out_label->setText(str);
+    else if (code == ASM_CNAME)
+        prg_cname_label->setText(str);
+    delete [] str;
 }
 
 
 void
-cDRC::PopUpRules(GRobject, ShowMode)
+QTasmPrgDlg::abort_btn_slot()
 {
+    prg_abort = true;
 }
 
 
 void
-cDRC::PopUpRuleEdit(GRobject, ShowMode, DRCtype, const char*,
-    bool(*)(const char*, void*), void*, const DRCtestDesc*)
+QTasmPrgDlg::dismiss_btn_slot()
 {
+    deleteLater();
 }
 
-bool
-cSced::PopUpNodeMap(GRobject, ShowMode, int)
-{
-    return (false);
-}
-
-
-struct PCellParam;
-bool
-cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*,
-    const char*, pcpMode)
-{
-    return (false);
-}

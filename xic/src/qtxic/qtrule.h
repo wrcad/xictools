@@ -32,70 +32,93 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef AFFIRM_D_H
-#define AFFIRM_D_H
+#ifndef QTRULE_H
+#define QTRULE_H
 
-#include "ginterf/graphics.h"
+#include "main.h"
+#include "drc.h"
+#include "qtmain.h"
 
-#include <QVariant>
 #include <QDialog>
 
-class QTextEdit;
+
+//--------------------------------------------------------------------
+// Pop-up to control input parameters
+//
+
+class QLabel;
+class QLineEdit;
+class QDoubleSpinBox;
+class QCheckBox;
 class QPushButton;
 
-namespace qtinterf
+class QTruleDlg : public QDialog, public QTbag
 {
-    class QTbag;
+    Q_OBJECT
 
-    class QTaffirmPopup : public QDialog, public GRaffirmPopup
-    {
-        Q_OBJECT
+public:
+    QTruleDlg(GRobject, DRCtype, const char*, bool(*)(const char*, void*),
+        void*, const DRCtestDesc*);
+    ~QTruleDlg();
 
-    public:
-        QTaffirmPopup(QTbag*, const char*, void*);
-        ~QTaffirmPopup();
+    void update(DRCtype, const char*, const DRCtestDesc*);
 
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void register_caller(GRobject, bool=false, bool=false);
-        void popdown();
+    static QTruleDlg *self()            { return (instPtr); }
 
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
+private slots:
+    void help_btn_slot();
+    void edit_table_slot();
+    void apply_btn_slot();
+    void dismiss_btn_slot();
 
-        QSize sizeHint() const { return (QSize(300, 100)); }
+private:
+    void alloff();
+    void apply();
+    static bool ru_edit_cb(const char*, void*, XEtype);
 
-    signals:
-        void affirm(bool, void*);
+    GRobject    ru_caller;
+    bool        (*ru_callback)(const char*, void*);
+    void        *ru_arg;
+    char        *ru_username;
+    char        *ru_stabstr;
+    DRCtype     ru_rule;
 
-    private slots:
-        void action_slot();
-        void quit_slot();
+    QLabel      *ru_label;
+    QLabel      *ru_region_la;
+    QLineEdit   *ru_region_ent;
+    QLabel      *ru_inside_la;
+    QLineEdit   *ru_inside_ent;
+    QLabel      *ru_outside_la;
+    QLineEdit   *ru_outside_ent;
+    QLabel      *ru_target_la;
+    QLineEdit   *ru_target_ent;
+    QLabel      *ru_dimen_la;
+    QDoubleSpinBox *ru_dimen_sb;
+    QDoubleSpinBox *ru_area_sb;
+    QLabel      *ru_diag_la;
+    QDoubleSpinBox *ru_diag_sb;
+    QLabel      *ru_net_la;
+    QDoubleSpinBox *ru_net_sb;
+    QCheckBox   *ru_use_st;
+    QPushButton *ru_edit_st;
+    QLabel      *ru_enc_la;
+    QDoubleSpinBox *ru_enc_sb;
+    QLabel      *ru_opp_la;
+    QDoubleSpinBox *ru_opp_sb1;
+    QDoubleSpinBox *ru_opp_sb2;
+    QLabel      *ru_user_la;
+    QLineEdit   *ru_user_ent;
+    QLabel      *ru_descr_la;
+    QLineEdit   *ru_descr_ent;
 
-    private:
-        QTextEdit *label;
-        QPushButton *yesbtn;
-        QPushButton *nobtn;
-    };
-}
+    static QTruleDlg *instPtr;
+};
 
 #endif
 

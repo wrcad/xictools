@@ -72,7 +72,7 @@ namespace qtinterf
                 else
                     hide();
             }
-        void register_caller(GRobject, bool, bool);
+        void register_caller(GRobject, bool=false, bool=false);
         void popdown();
 
         // GRledPopup override

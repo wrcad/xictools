@@ -32,70 +32,72 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef AFFIRM_D_H
-#define AFFIRM_D_H
+#ifndef QTPCPRMS_H
+#define QTPCPRMS_H
 
-#include "ginterf/graphics.h"
+#include "main.h"
+#include "edit.h"
+#include "qtmain.h"
 
-#include <QVariant>
 #include <QDialog>
+#include <QHash>
 
-class QTextEdit;
-class QPushButton;
 
-namespace qtinterf
+//-------------------------------------------------------------------------
+// Pop-up to edit a perhaps long list of parameters, probably for a
+// pcell.
+
+class QLabel;
+class QScrollArea;
+
+class QTpcellParamsDlg : public QDialog
 {
-    class QTbag;
+    Q_OBJECT
 
-    class QTaffirmPopup : public QDialog, public GRaffirmPopup
-    {
-        Q_OBJECT
+public:
+    QTpcellParamsDlg(GRobject, PCellParam*, const char*, pcpMode);
+    ~QTpcellParamsDlg();
 
-    public:
-        QTaffirmPopup(QTbag*, const char*, void*);
-        ~QTaffirmPopup();
+    void update(const char*, PCellParam*);
 
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void register_caller(GRobject, bool=false, bool=false);
-        void popdown();
+    static QTpcellParamsDlg *self()         { return (instPtr); }
 
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
+private slots:
+    void help_btn_slot();
+    void open_btn_slot();
+    void apply_btn_slot();
+    void reset_btn_slot();
+    void dismiss_btn_slot();
 
-        QSize sizeHint() const { return (QSize(300, 100)); }
+    void bool_type_slot(int);
+    void choice_type_slot(const QString&);
+    void num_type_slot(double);
+    void ncint_type_slot(int);
+    void nctime_type_slot(int);
+    void ncfd_type_slot(double);
+    void string_type_slot(const QString&);
 
-    signals:
-        void affirm(bool, void*);
+private:
+    QWidget *setup_entry(PCellParam*, sLstr&, char**);
 
-    private slots:
-        void action_slot();
-        void quit_slot();
+    GRobject    pcp_caller;
+    QLabel      *pcp_label;
+    QScrollArea *pcp_swin;
 
-    private:
-        QTextEdit *label;
-        QPushButton *yesbtn;
-        QPushButton *nobtn;
-    };
-}
+    PCellParam  *pcp_params;
+    PCellParam  *pcp_params_bak;
+    char        *pcp_dbname;
+    pcpMode     pcp_mode;
+    QHash<QString, PCellParam*> pcp_hash;
+
+    static QTpcellParamsDlg *instPtr;
+};
 
 #endif
 

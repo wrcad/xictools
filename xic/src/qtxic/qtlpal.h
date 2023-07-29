@@ -32,70 +32,104 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef AFFIRM_D_H
-#define AFFIRM_D_H
+#ifndef QTLPAL_H
+#define QTLPAL_H
 
-#include "ginterf/graphics.h"
+#include "main.h"
+#include "qtmain.h"
 
-#include <QVariant>
 #include <QDialog>
 
-class QTextEdit;
+
+//-----------------------------------------------------------------------------
+// The Layer Palette.  The top third is a text field that displays
+// information about a layer under the pointer, or the current layer.
+// The middle third contains icons for the last few current layer
+// choices.  The bottom third is a user-configurable palette.  The
+// user can drag their favorite layers into this area.  Clicking on
+// any of the layer icons will set the current layer.
+//
+
 class QPushButton;
+class QAction;
+class QResizeEvent;
+class QMouseEvent;
+class QDragEntrEvent;
+class QDropEvent;
 
-namespace qtinterf
+// Number of layer entries.
+#define LP_PALETTE_COLS 5
+#define LP_PALETTE_ROWS 3
+
+// Number of text lines at top.
+#define LP_TEXT_LINES 5
+
+class QTlayerPaletteDlg : public QDialog, public QTdraw
 {
-    class QTbag;
+    Q_OBJECT
 
-    class QTaffirmPopup : public QDialog, public GRaffirmPopup
-    {
-        Q_OBJECT
+public:
+    QTlayerPaletteDlg(GRobject);
+    ~QTlayerPaletteDlg();
 
-    public:
-        QTaffirmPopup(QTbag*, const char*, void*);
-        ~QTaffirmPopup();
+    void update_info(CDl*);
+    void update_layer(CDl*);
 
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void register_caller(GRobject, bool=false, bool=false);
-        void popdown();
+    static QTlayerPaletteDlg *self()            { return (instPtr); }
 
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
+private slots:
+    void recall_menu_slot(QAction*);
+    void save_menu_slot(QAction*);
+    void help_btn_slot();
+    void font_changed_slot(int);
+    void resize_slot(QResizeEvent*);
+    void button_down_slot(QMouseEvent*);
+    void button_up_slot(QMouseEvent*);
+    void motion_slot(QMouseEvent*);
+    void drag_enter_slot(QDragEnterEvent*);
+    void drop_slot(QDropEvent*);
+    void dismiss_btn_slot();
 
-        QSize sizeHint() const { return (QSize(300, 100)); }
+private:
+    void update_user(CDl*, int, int);
+    void init_size();
+    void redraw();
+    void refresh(int, int, int, int);
+    void b1_handler(int, int, int, bool);
+    void b2_handler(int, int, int, bool);
+    void b3_handler(int, int, int, bool);
+    CDl *ldesc_at(int, int);
+    bool remove(int, int);
 
-    signals:
-        void affirm(bool, void*);
+    GRobject lp_caller;
+    QPushButton *lp_remove;
 
-    private slots:
-        void action_slot();
-        void quit_slot();
+    CDl *lp_history[LP_PALETTE_COLS];
+    CDl *lp_user[LP_PALETTE_COLS * LP_PALETTE_ROWS];
 
-    private:
-        QTextEdit *label;
-        QPushButton *yesbtn;
-        QPushButton *nobtn;
-    };
-}
+//    int lp_pmap_width;  
+//    int lp_pmap_height;
+//    bool lp_pmap_dirty;
+
+    int lp_drag_x;
+    int lp_drag_y;
+    bool lp_dragging;
+
+    int lp_hist_y;
+    int lp_user_y;
+    int lp_line_height;
+    int lp_box_dimension;
+    int lp_box_text_spacing;
+    int lp_entry_width;
+
+    static QTlayerPaletteDlg *instPtr;
+};
 
 #endif
 
