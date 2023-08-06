@@ -81,6 +81,7 @@ private slots:
     void item_clicked(QTreeWidgetItem*, int);
     void item_collapsed(QTreeWidgetItem*, int);
     void item_expanded(QTreeWidgetItem*, int);
+    void font_changed_slot(int);
 
 private:
     bool check_fb();

@@ -454,6 +454,15 @@ QTlayerParamDlg::~QTlayerParamDlg()
 }
 
 
+QSize
+QTlayerParamDlg::sizeHint() const
+{
+    int fw, fh;
+    QTfont::stringBounds(0, FNT_FIXED, &fw, &fh);
+    return (QSize(80*fw + 4, 32*fh));
+}
+
+
 void
 QTlayerParamDlg::update(const char *msg, const char *string)
 {
@@ -752,22 +761,6 @@ QTlayerParamDlg::call_callback(const char *before)
 void
 QTlayerParamDlg::select_range(int start, int end)
 {
-    /*
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(lp_text));
-    GtkTextIter istart, iend;
-    if (lp_end != lp_start) {
-        gtk_text_buffer_get_iter_at_offset(textbuf, &istart, lp_start);
-        gtk_text_buffer_get_iter_at_offset(textbuf, &iend, lp_end);
-        gtk_text_buffer_remove_tag_by_name(textbuf, "primary", &istart, &iend);
-    }
-    text_select_range(lp_text, start, end);
-    if (end != start) {
-        gtk_text_buffer_get_iter_at_offset(textbuf, &istart, start);
-        gtk_text_buffer_get_iter_at_offset(textbuf, &iend, end);
-        gtk_text_buffer_apply_tag_by_name(textbuf, "primary", &istart, &iend);
-    }
-    */
     lp_text->select_range(start, end);
     lp_start = start;
     lp_end = end;

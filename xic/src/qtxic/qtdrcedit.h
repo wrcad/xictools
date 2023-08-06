@@ -66,6 +66,7 @@ public:
     QTdrcRuleEditDlg(GRobject);
     ~QTdrcRuleEditDlg();
 
+    QSize sizeHint() const;
     void update();
 
     static QTdrcRuleEditDlg *self()         { return (instPtr); }

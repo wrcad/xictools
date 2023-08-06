@@ -50,58 +50,57 @@ class QGroupBox;
 class QPushButton;
 class QTextEdit;
 
-namespace qtinterf
-{
+namespace qtinterf {
     class QTbag;
-    class text_box;
-
-    class QTmsgPopup : public QDialog, public GRtextPopup
-    {
-        Q_OBJECT
-
-    public:
-        QTmsgPopup(QTbag*, const char*, STYtype style, int, int);
-        ~QTmsgPopup();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void set_desens()           { pw_desens = true; }
-        bool is_desens()            { return (pw_desens); }
-
-        // GRtextPopup overrides
-        bool get_btn2_state()       { return (false); }
-        void set_btn2_state(bool)   { }
-
-        void popdown();
-        void setTitle(const char*);
-        void setText(const char*);
-
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-    private slots:
-        void quit_slot();
-
-    private:
-        QGroupBox *gbox;
-        text_box *tx;
-        QPushButton *b_cancel;
-        STYtype display_style;
-        bool pw_desens;             // If true, parent->wb_inout is disabled.
-    };
+    class QTmsgDlg;
 }
+
+class qtinterf::QTmsgDlg : public QDialog, public GRtextPopup
+{
+    Q_OBJECT
+
+public:
+    QTmsgDlg(QTbag*, const char*, bool err=false, STYtype style=STY_NORM);
+    ~QTmsgDlg();
+
+    // GRpopup overrides
+    void set_visible(bool visib)
+    {
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
+        }
+        else
+            hide();
+    }
+    void set_desens()               { tx_desens = true; }
+    bool is_desens()                { return (tx_desens); }
+
+    // GRtextPopup overrides
+    bool get_btn2_state()           { return (false); }
+    void set_btn2_state(bool)       { }
+
+    void popdown();
+    void setTitle(const char*);
+    void setText(const char*);
+
+    // This widget will be deleted when closed with the title bar "X"
+    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
+    // not called.  The default behavior is to hide the widget instead
+    // of deleting it, which would likely be a core leak here.
+    void closeEvent(QCloseEvent*)   { quit_slot(); }
+
+private slots:
+    void quit_slot();
+
+private:
+    QGroupBox   *tx_gbox;
+    QTextEdit   *tx_tbox;
+    QPushButton *tx_cancel;
+    STYtype     tx_display_style;
+    bool        tx_desens;      // If true, parent->wb_inout is disabled.
+};
 
 #endif
 

@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef ACTIVITY_W_H
-#define ACTIVITY_W_H
+#ifndef QTACTIVITY_H
+#define QTACTIVITY_H
 
 #include <QWidget>
 #include <QTimer>
@@ -47,33 +47,34 @@
 class QPaintEvent;
 class QPixmap;
 
-namespace qtinterf
-{
-    class QTactivity : public QWidget
-    {
-        Q_OBJECT
-
-    public:
-        QTactivity(QWidget*);
-        ~QTactivity();
-
-        void start();
-        void stop();
-
-        void paintEvent(QPaintEvent*);
-
-    private slots:
-        void increment_slot();
-
-    private:
-        QTimer timer;
-
-        QPixmap *image;
-        int pos_x;
-        int vel_x;
-        int rad;
-        bool active;
-    };
+namespace qtinterf {
+    class QTactivity;
 }
+
+class qtinterf::QTactivity : public QWidget
+{
+    Q_OBJECT
+
+public:
+    QTactivity(QWidget*);
+    ~QTactivity();
+
+    void start();
+    void stop();
+
+    void paintEvent(QPaintEvent*);
+
+private slots:
+    void increment_slot();
+
+private:
+    QTimer  a_timer;
+
+    QPixmap *a_pixmap;
+    int     a_pos_x;
+    int     a_vel_x;
+    int     a_rad;
+    bool    a_active;
+};
 
 #endif

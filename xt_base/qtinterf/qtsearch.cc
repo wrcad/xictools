@@ -94,8 +94,8 @@ static const char * const down_xpm[] = {
 "                                ",
 "                                "};
 
-QTsearch::QTsearch(QTbag *owner, const char *initstr) :
-    QDialog(owner ? owner->Shell() : 0), timer(this)
+QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) :
+    QDialog(owner ? owner->Shell() : 0), se_timer(this)
 {
     p_parent = owner;
 
@@ -111,49 +111,49 @@ QTsearch::QTsearch(QTbag *owner, const char *initstr) :
     vbox->setSpacing(2);
 
     QGroupBox *gb = new QGroupBox(this);
-    label = new QLabel(gb);
+    se_label = new QLabel(gb);
     QVBoxLayout *vb = new QVBoxLayout(gb);
     vb->setMargin(4);
-    vb->addWidget(label);
+    vb->addWidget(se_label);
     vbox->addWidget(gb);
 
-    edit = new QLineEdit(this);
-    edit->setText(QString(initstr));
-    vbox->addWidget(edit);
+    se_edit = new QLineEdit(this);
+    se_edit->setText(initstr);
+    vbox->addWidget(se_edit);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
     hbox->setSpacing(2);
 
-    b_cancel = new QPushButton(this);
-    b_dn = new QPushButton(this);
-    b_up = new QPushButton(this);
+    se_cancel = new QPushButton(this);
+    se_dn = new QPushButton(this);
+    se_up = new QPushButton(this);
 
-    b_dn->setAutoDefault(false);
-    b_dn->setIcon(QIcon(QPixmap(down_xpm)));
-    hbox->addWidget(b_dn);
-    b_up->setAutoDefault(false);
-    b_up->setIcon(QIcon(QPixmap(up_xpm)));
-    hbox->addWidget(b_up);
-    b_nc = new QCheckBox(this);
-    b_nc->setText(QString(tr("No Case")));
-    hbox->addWidget(b_nc);
-    b_cancel->setText(QString(tr("Dismiss")));
-    hbox->addWidget(b_cancel);
+    se_dn->setAutoDefault(false);
+    se_dn->setIcon(QIcon(QPixmap(down_xpm)));
+    hbox->addWidget(se_dn);
+    se_up->setAutoDefault(false);
+    se_up->setIcon(QIcon(QPixmap(up_xpm)));
+    hbox->addWidget(se_up);
+    se_nc = new QCheckBox(this);
+    se_nc->setText(QString(tr("No Case")));
+    hbox->addWidget(se_nc);
+    se_cancel->setText(QString(tr("Dismiss")));
+    hbox->addWidget(se_cancel);
     vbox->addLayout(hbox);
 
-    timer.setInterval(1000);
+    se_timer.setInterval(1000);
     set_message("Enter search text:");
 
-    connect(b_dn, SIGNAL(clicked()), this, SLOT(down_slot()));
-    connect(b_up, SIGNAL(clicked()), this, SLOT(up_slot()));
-    connect(b_nc, SIGNAL(toggled(bool)), this, SLOT(ign_case_slot(bool)));
-    connect(b_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
-    connect(&timer, SIGNAL(timeout()), this, SLOT(timeout_slot()));
+    connect(se_dn, SIGNAL(clicked()), this, SLOT(down_slot()));
+    connect(se_up, SIGNAL(clicked()), this, SLOT(up_slot()));
+    connect(se_nc, SIGNAL(toggled(bool)), this, SLOT(ign_case_slot(bool)));
+    connect(se_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    connect(&se_timer, SIGNAL(timeout()), this, SLOT(timeout_slot()));
 }
 
 
-QTsearch::~QTsearch()
+QTsearchDlg::~QTsearchDlg()
 {
     if (p_usrptr)
         *p_usrptr = 0;
@@ -175,14 +175,14 @@ QTsearch::~QTsearch()
         if (owner)
             owner->MonitorRemove(this);
     }
-    delete [] label_string;
+    delete [] se_label_string;
 }
 
 
 // GRpopup override
 //
 void
-QTsearch::popdown()
+QTsearchDlg::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -194,72 +194,72 @@ QTsearch::popdown()
 
 
 void
-QTsearch::set_ign_case(bool set)
+QTsearchDlg::set_ign_case(bool set)
 {
-    b_nc->setChecked(set);
+    se_nc->setChecked(set);
 }
 
 
 void
-QTsearch::set_message(const char *msg)
+QTsearchDlg::set_message(const char *msg)
 {
     if (msg) {
-        delete [] label_string;
-        label_string = lstring::copy(msg);
-        label->setText(QString(msg));
+        delete [] se_label_string;
+        se_label_string = lstring::copy(msg);
+        se_label->setText(msg);
     }
 }
 
 
 void
-QTsearch::set_transient_message(const char *msg)
+QTsearchDlg::set_transient_message(const char *msg)
 {
     if (msg) {
-        label->setText(QString(msg));
-        timer.start();
+        se_label->setText(QString(msg));
+        se_timer.start();
     }
 }
 
 
 QString
-QTsearch::get_target()
+QTsearchDlg::get_target()
 {
-    return (edit->text());
+    return (se_edit->text());
 }
 
 
 void
-QTsearch::quit_slot()
+QTsearchDlg::quit_slot()
 {
     delete this;
 }
 
 
 void
-QTsearch::down_slot()
+QTsearchDlg::down_slot()
 {
     emit search_down();
 }
 
 
 void
-QTsearch::up_slot()
+QTsearchDlg::up_slot()
 {
     emit search_up();
 }
 
 
 void
-QTsearch::ign_case_slot(bool set)
+QTsearchDlg::ign_case_slot(bool set)
 {
     emit ignore_case(set);
 }
 
 
 void
-QTsearch::timeout_slot()
+QTsearchDlg::timeout_slot()
 {
-    timer.stop();
-    label->setText(QString(label_string));
+    se_timer.stop();
+    se_label->setText(se_label_string);
 }
 

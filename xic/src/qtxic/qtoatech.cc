@@ -79,16 +79,8 @@ cOAif::PopUpOAtech(GRobject caller, ShowMode mode, int x, int y)
 
     new QToaTechAttachDlg(caller);
 
-    /*
-    int mwid;
-    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, 0);
-    GtkRequisition req;
-    gtk_widget_get_requisition(OAtc->shell(), &req);
-    if (x + req.width > mwid)
-        x = mwid - req.width;
-    gtk_window_move(GTK_WINDOW(OAtc->shell()), x, y);
-    gtk_widget_show(OAtc->shell());
-    */
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
+        QToaTechAttachDlg::self(), QTmainwin::self()->Viewport());
     QToaTechAttachDlg::self()->show();
 }
 // End of cOAif functions.

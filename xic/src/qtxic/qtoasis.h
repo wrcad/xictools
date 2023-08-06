@@ -117,6 +117,7 @@ private:
     int oas_lasta;
     int oas_lastt;
 
+    static const char *pmaskvals[];
     static QToasisDlg *instPtr;
 };
 

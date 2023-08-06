@@ -107,7 +107,7 @@ http_monitor::start(Transaction *t)
 
 QThttpmon::QThttpmon(QWidget *prnt) : QDialog(prnt)
 {
-    transaction = 0;
+    g_transaction = 0;
     g_textbuf = 0;
     g_jbuf_set = false;
 
@@ -117,22 +117,22 @@ QThttpmon::QThttpmon(QWidget *prnt) : QDialog(prnt)
     setWindowTitle("httpget - download file");
 #endif
 
-    gb = new QGroupBox(this);
-    label = new QLabel("", gb);
-    label->setMinimumWidth(350);
-    QVBoxLayout *vbox = new QVBoxLayout(gb);
+    g_gb = new QGroupBox(this);
+    g_label = new QLabel("", g_gb);
+    g_label->setMinimumWidth(350);
+    QVBoxLayout *vbox = new QVBoxLayout(g_gb);
     vbox->setMargin(4);
     vbox->setSpacing(2);
-    vbox->addWidget(label);
+    vbox->addWidget(g_label);
 
-    b_cancel = new QPushButton(tr("Cancel Download"), this);
+    g_cancel = new QPushButton(tr("Cancel Download"), this);
     vbox = new QVBoxLayout(this);
     vbox->setMargin(4);
     vbox->setSpacing(2);
-    vbox->addWidget(gb);
-    vbox->addWidget(b_cancel);
+    vbox->addWidget(g_gb);
+    vbox->addWidget(g_cancel);
 
-    connect(b_cancel, SIGNAL(clicked()), this, SLOT(abort_slot()));
+    connect(g_cancel, SIGNAL(clicked()), this, SLOT(abort_slot()));
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(run_slot()));
@@ -148,8 +148,8 @@ QThttpmon::QThttpmon(QWidget *prnt) : QDialog(prnt)
 
 QThttpmon::~QThttpmon()
 {
-    if (transaction)
-        transaction->set_gr(0);
+    if (g_transaction)
+        g_transaction->set_gr(0);
     delete [] g_textbuf;
 }
 
@@ -175,7 +175,7 @@ QThttpmon::widget_print(const char *buf)
                 delete [] g_textbuf;
                 g_textbuf = lstring::copy(s);  // for expose
             }
-            label->setText(s);
+            g_label->setText(s);
         }
         delete [] str;
     }
@@ -219,8 +219,8 @@ QThttpmon::run(Transaction *t)
 void
 QThttpmon::run_slot()
 {
-    if (transaction)
-        run (transaction);
+    if (g_transaction)
+        run (g_transaction);
 }
 
 

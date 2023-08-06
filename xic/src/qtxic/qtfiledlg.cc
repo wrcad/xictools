@@ -65,7 +65,7 @@ private:
     static void path_set(const char*);
     static void go_cb(const char*, void*);
 
-    QTfilePopup *sfd_fsel;
+    QTfileDlg *sfd_fsel;
     bool sfd_dir_only;
 };
 
@@ -109,7 +109,7 @@ cMain::PopUpFileSel(const char *root, void(*cb)(const char*, void*), void *arg)
         return;
     static int posn_cnt;
 
-    QTfilePopup *fs = new QTfilePopup(QTmainwin::self(), fsSEL, arg, root);
+    QTfileDlg *fs = new QTfileDlg(QTmainwin::self(), fsSEL, arg, root);
     fs->register_callback(cb);
 
     int cnt = posn_cnt % 4;
@@ -143,7 +143,7 @@ QTsaveFileDlg::SaveFileDlg(const char *prompt, const char *fnamein)
     if (fname)
         sfd_dir_only = false;
 
-    QTfilePopup *fs = new QTfilePopup(QTmainwin::self(), fsSAVE, 0, fname);
+    QTfileDlg *fs = new QTfileDlg(QTmainwin::self(), fsSAVE, 0, fname);
     fs->register_callback(go_cb);
     fs->register_get_callback(path_get);
     fs->register_set_callback(path_set);
@@ -177,7 +177,7 @@ QTsaveFileDlg::OpenFileDlg(const char *prompt, const char *fnamein)
         return (0);
     char *fname = pathlist::expand_path(fnamein, true, true);
 
-    QTfilePopup *fs = new QTfilePopup(QTmainwin::self(), fsOPEN, 0, fname);
+    QTfileDlg *fs = new QTfileDlg(QTmainwin::self(), fsOPEN, 0, fname);
     fs->register_callback(go_cb);
     fs->register_set_callback(path_set);
     sfd_fsel = fs;

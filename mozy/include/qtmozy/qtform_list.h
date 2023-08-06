@@ -38,32 +38,33 @@
  $Id:$
  *========================================================================*/
 
-#ifndef FORM_LIST_W_H
-#define FORM_LIST_W_H
+#ifndef FORM_LIST_H
+#define FORM_LIST_H
 
 #include <QListWidget>
 
 struct htmForm;
 
-namespace qtinterf
-{
-    class QTform_list : public QListWidget
-    {
-        Q_OBJECT
-
-    public:
-        QTform_list(htmForm*, QWidget*);
-
-        void setSize();
-
-    signals:
-
-    private slots:
-      
-    private:
-        htmForm *form_entry;
-    };
+namespace qtinterf {
+    class QTform_list;
 }
+
+class qtinterf::QTform_list : public QListWidget
+{
+    Q_OBJECT
+
+public:
+    QTform_list(htmForm*, QWidget*);
+
+    void setSize();
+
+signals:
+
+private slots:
+  
+private:
+    htmForm *form_entry;
+};
 
 #endif
 

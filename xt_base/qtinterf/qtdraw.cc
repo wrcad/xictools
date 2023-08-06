@@ -52,6 +52,7 @@ using namespace qtinterf;
 draw_if *
 draw_if::new_draw_interface(DrawType type, bool use_common, QWidget *parent)
 {
+    (void)use_common; //XXX
     if (type == DrawGL) {
         fprintf(stderr,
             "GL is not currently supported, using native QT graphics.\n");
@@ -59,7 +60,7 @@ draw_if::new_draw_interface(DrawType type, bool use_common, QWidget *parent)
     }
     if (type == DrawX) {
 #ifdef WITH_X11
-        return (new draw_x_w(use_common, parent));
+        return (new QTcanvas_x(use_common, parent));
 #else
         fprintf(stderr,
             "X11 is not currently supported, using native QT graphics.\n");
@@ -80,6 +81,7 @@ sGbag *sGbag::app_gbags[NUMGCS];
 sGbag *
 sGbag::default_gbag(int type)
 {
+    (void)type; //XXX
     return (new sGbag);
     /* XXX  The common graphical context is an X-Windows thing.
     if (type < 0 || type >= NUMGCS)

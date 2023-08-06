@@ -62,19 +62,6 @@
 // Help system keywords used:
 //  xic:oasadv
 
-namespace {
-
-    const char *pmaskvals[] =
-    {
-        "mask none",
-        "mask XIC_PROPERTIES 7012",
-        "mask XIC_LABEL",
-        "mask 7012 and XIC_LABEL",
-        "mask all properties",
-        0
-    };
-}
-
 
 void
 cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
@@ -99,19 +86,22 @@ cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
 
     new QToasisDlg(caller);
 
-/*
-    int mwid;
-    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, 0);
-    GtkRequisition req;
-    gtk_widget_get_requisition(Oas->shell(), &req);
-    if (x + req.width > mwid)
-        x = mwid - req.width;
-    gtk_window_move(GTK_WINDOW(Oas->shell()), x, y);
-*/
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
+        QToasisDlg::self(), QTmainwin::self()->Viewport());
     QToasisDlg::self()->show();
-
 }
+// End of cConvert functions.
 
+
+const char *QToasisDlg::pmaskvals[] =
+{
+    "mask none",
+    "mask XIC_PROPERTIES 7012",
+    "mask XIC_LABEL",
+    "mask 7012 and XIC_LABEL",
+    "mask all properties",
+    0
+};
 
 QToasisDlg *QToasisDlg::instPtr;
 

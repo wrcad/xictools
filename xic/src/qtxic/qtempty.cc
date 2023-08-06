@@ -160,7 +160,6 @@ QTemptyDlg::QTemptyDlg(stringlist *l)
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
     update(l);
-
 }
 
 

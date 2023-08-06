@@ -223,6 +223,12 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     connect(t_tree, SIGNAL(itemExpanded(QTreeWidgetItem*, int)),
         this, SLOT(item_expanded(QTreeWidgetItem*, int)));
 
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_PROP))
+        t_tree->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+
     /*
     GtkTreeStore *store = gtk_tree_store_new(1, G_TYPE_STRING);
     t_tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
@@ -820,6 +826,18 @@ QTtreeDlg::item_collapsed(QTreeWidgetItem*, int)
 void
 QTtreeDlg::item_expanded(QTreeWidgetItem*, int)
 {
+}
+
+
+void
+QTtreeDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_PROP) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum))
+            t_tree->setFont(*fnt);
+//XXX needs redraw        update();
+    }
 }
 
 

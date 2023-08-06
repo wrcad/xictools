@@ -183,6 +183,12 @@ QTasmPage::QTasmPage(QTasmDlg *mt)
     connect(pg_toplevels, SIGNAL(itemSelectionChanged()),
         this, SLOT(toplev_selection_changed_slot()));
 
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_PROP))
+        pg_toplevels->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+
 /*
     GtkWidget *swin = gtk_scrolled_window_new(0, 0);
     gtk_widget_show(swin);
@@ -319,6 +325,18 @@ QTasmPage::toplev_selection_changed_slot()
         src->upd_sens();
     }
     */
+}
+
+
+void
+QTasmPage::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_PROP) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_PROP))
+            pg_toplevels->setFont(*fnt);
+//XXX need to redraw
+    }
 }
 
 

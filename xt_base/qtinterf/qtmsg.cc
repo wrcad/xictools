@@ -49,65 +49,48 @@
 #include <QPushButton>
 
 
-namespace qtinterf
-{
-    class text_box : public QTextEdit
-    {
-    public:
-        text_box(int w, int h, QWidget *prnt) :
-            QTextEdit(prnt), qs(w, h), qsmin(w/2, h/2) { }
-
-        QSize sizeHint() const { return (qs); }
-        QSize minimumSizeHint() const { return (qsmin); }
-
-    private:
-        QSize qs;
-        QSize qsmin;
-    };
-}
-
-
-QTmsgPopup::QTmsgPopup(QTbag *owner, const char *message_str, STYtype sty,
-    int w, int h) : QDialog(owner ? owner->Shell() : 0)
+QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
+    bool err, STYtype sty) : QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
-    display_style = sty;
-    pw_desens = false;
+    tx_display_style = sty;
+    tx_desens = false;
 
     if (owner)
         owner->MonitorAdd(this);
+    setWindowTitle(err ? tr("ERROR") : tr("Message"));
     setAttribute(Qt::WA_DeleteOnClose);
 
-    gbox = new QGroupBox(this);
-    tx = new text_box(w, h, gbox);
-    tx->setReadOnly(true);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    QGroupBox *gb = new QGroupBox();
+    vbox->addWidget(gb);
+    QVBoxLayout *vb = new QVBoxLayout(gb);
+    vb->setMargin(2);
+    vb->setSpacing(2);
+
+    tx_tbox = new QTextEdit();
+    tx_tbox->setReadOnly(true);
+    vb->addWidget(tx_gbox);
 
     if (sty == STY_FIXED) {
         QFont *f;
         if (FC.getFont(&f, FNT_FIXED)) {
-            tx->setCurrentFont(*f);
-            tx->setFont(*f);
+            tx_tbox->setCurrentFont(*f);
+            tx_tbox->setFont(*f);
         }
     }
     setText(message_str);
 
-    QVBoxLayout *vbox = new QVBoxLayout(gbox);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(tx);
-
-    b_cancel = new QPushButton(tr("Dismiss"), this);
-    connect(b_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
-
-    vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(gbox);
-    vbox->addWidget(b_cancel);
+    tx_cancel = new QPushButton(tr("Dismiss"), this);
+    vbox->addWidget(tx_cancel);
+    connect(tx_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
 }
 
 
-QTmsgPopup::~QTmsgPopup()
+QTmsgDlg::~QTmsgDlg()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -124,7 +107,7 @@ QTmsgPopup::~QTmsgPopup()
 // GRpopup override
 //
 void
-QTmsgPopup::popdown()
+QTmsgDlg::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -136,24 +119,24 @@ QTmsgPopup::popdown()
 
 
 void
-QTmsgPopup::setTitle(const char *title)
+QTmsgDlg::setTitle(const char *title)
 {
     setWindowTitle(title);
 }
 
 
 void
-QTmsgPopup::setText(const char *message_str)
+QTmsgDlg::setText(const char *message_str)
 {
-    if (display_style == STY_HTML)
-        tx->setHtml(message_str);
+    if (tx_display_style == STY_HTML)
+        tx_tbox->setHtml(message_str);
     else
-        tx->setPlainText(message_str);
+        tx_tbox->setPlainText(message_str);
 }
 
 
 void
-QTmsgPopup::quit_slot()
+QTmsgDlg::quit_slot()
 {
     delete this;
 }

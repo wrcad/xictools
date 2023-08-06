@@ -78,10 +78,10 @@
 //  helpsys
 
 // Architecture note
-// Each QThelpPopup has a corresponding "root_topic" topic struct
+// Each QThelpDlg has a corresponding "root_topic" topic struct
 // linked into HLP()->context()->TopList.  In these topics, the
-// context field points back to the QThelpPopup.  Each new page
-// displayed in the QThelpPopup window has a corresponding topic struct
+// context field points back to the QThelpDlg.  Each new page
+// displayed in the QThelpDlg window has a corresponding topic struct
 // linked from lastborn in the root_topic, and has the cur_topic field
 // set to point to the topic.  Topics linked to lastborn do not have
 // the context field set.
@@ -288,7 +288,7 @@ HelpWidget::get_widget(HLPtopic *top)
 {
     if (!top)
         return (0);
-    return (dynamic_cast<QThelpPopup*>(HLPtopic::get_parent(top)->context()));
+    return (dynamic_cast<QThelpDlg*>(HLPtopic::get_parent(top)->context()));
 }
 
 
@@ -302,7 +302,7 @@ HelpWidget::new_widget(GRwbag **ptr, int, int)
             parent = wb->shell_widget();
     }
 
-    QThelpPopup *w = new QThelpPopup(true, parent);
+    QThelpDlg *w = new QThelpDlg(true, parent);
     if (ptr)
         *ptr = w;
     w->show();
@@ -316,14 +316,14 @@ HelpWidget::new_widget(GRwbag **ptr, int, int)
 namespace {
     void sens_set(QTbag *wp, bool set, int)
     {
-        QThelpPopup *w = dynamic_cast<QThelpPopup*>(wp);
+        QThelpDlg *w = dynamic_cast<QThelpDlg*>(wp);
         if (w)
             w->menu_sens_set(set);
     }
 }
 
 
-QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
+QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
     QTbag()
 {
     // If has_menu is false, the widget will not have the menu or the
@@ -388,166 +388,166 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
     h_viewer->freeze();
 
 #ifdef __APPLE__
-    a_Backward =tb->addAction(tr("back"),
+    h_Backward = tb->addAction(tr("back"),
         this, SLOT(backward_slot()));
-    a_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
+    h_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
 
-    a_Forward = tb->addAction(tr("forw"),
+    h_Forward = tb->addAction(tr("forw"),
         this, SLOT(forward_slot()));
-    a_Forward->setIcon(QIcon(QPixmap(forward_xpm)));
+    h_Forward->setIcon(QIcon(QPixmap(forward_xpm)));
 
-    a_Stop = tb->addAction(tr("stop"),
+    h_Stop = tb->addAction(tr("stop"),
         this, SLOT(stop_slot()));
-    a_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
+    h_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
 #else
-    a_Backward = menuBar()->addAction(tr("back"),
+    h_Backward = menuBar()->addAction(tr("back"),
         this, SLOT(backward_slot()));
-    a_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
+    h_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
 
-    a_Forward = menuBar()->addAction(tr("forw"),
+    h_Forward = menuBar()->addAction(tr("forw"),
         this, SLOT(forward_slot()));
-    a_Forward->setIcon(QIcon(QPixmap(forward_xpm)));
+    h_Forward->setIcon(QIcon(QPixmap(forward_xpm)));
 
-    a_Stop = menuBar()->addAction(tr("stop"),
+    h_Stop = menuBar()->addAction(tr("stop"),
         this, SLOT(stop_slot()));
-    a_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
+    h_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
 #endif
     h_main_menus[0] = menuBar()->addMenu(tr("&File"));
-    a_Open = h_main_menus[0]->addAction(tr("&Open"),
+    h_Open = h_main_menus[0]->addAction(tr("&Open"),
         this, SLOT(open_slot()), Qt::CTRL+Qt::Key_O);
-    a_OpenFile = h_main_menus[0]->addAction(QString(tr("Open &File")),
+    h_OpenFile = h_main_menus[0]->addAction(QString(tr("Open &File")),
         this, SLOT(open_file_slot()), Qt::CTRL+Qt::Key_F);
-    a_Save = h_main_menus[0]->addAction(tr("&Save"),
+    h_Save = h_main_menus[0]->addAction(tr("&Save"),
         this, SLOT(save_slot()), Qt::CTRL+Qt::Key_S);
-    a_Print = h_main_menus[0]->addAction(tr("&Print"),
+    h_Print = h_main_menus[0]->addAction(tr("&Print"),
         this, SLOT(print_slot()), Qt::CTRL+Qt::Key_P);
-    a_Reload = h_main_menus[0]->addAction(tr("&Reload"),
+    h_Reload = h_main_menus[0]->addAction(tr("&Reload"),
         this, SLOT(reload_slot()), Qt::CTRL+Qt::Key_R);
     h_main_menus[0]->addSeparator();
-    a_Quit = h_main_menus[0]->addAction(tr("&Quit"),
+    h_Quit = h_main_menus[0]->addAction(tr("&Quit"),
         this, SLOT(quit_slot()), Qt::CTRL+Qt::Key_Q);
 
     h_main_menus[1] = menuBar()->addMenu(tr("&Options"));
-    a_Search = h_main_menus[1]->addAction(tr("S&earch"),
+    h_Search = h_main_menus[1]->addAction(tr("S&earch"),
         this, SLOT(search_slot()));
-    a_FindText = h_main_menus[1]->addAction(tr("Find Text"),
+    h_FindText = h_main_menus[1]->addAction(tr("Find Text"),
         this, SLOT(find_slot()));
-    a_SetFont = h_main_menus[1]->addAction(tr("Set &Font"));
-    a_SetFont->setCheckable(true);
-    connect(a_SetFont, SIGNAL(toggled(bool)),
+    h_SetFont = h_main_menus[1]->addAction(tr("Set &Font"));
+    h_SetFont->setCheckable(true);
+    connect(h_SetFont, SIGNAL(toggled(bool)),
         this, SLOT(set_font_slot(bool)));
-    a_DontCache = h_main_menus[1]->addAction(tr("&Don't Cache"));
-    a_DontCache->setCheckable(true);
-    connect(a_DontCache, SIGNAL(toggled(bool)),
+    h_DontCache = h_main_menus[1]->addAction(tr("&Don't Cache"));
+    h_DontCache->setCheckable(true);
+    connect(h_DontCache, SIGNAL(toggled(bool)),
         this, SLOT(dont_cache_slot(bool)));
-    a_DontCache->setChecked(h_params->NoCache);
-    a_ClearCache = h_main_menus[1]->addAction(tr("&Clear Cache"),
+    h_DontCache->setChecked(h_params->NoCache);
+    h_ClearCache = h_main_menus[1]->addAction(tr("&Clear Cache"),
         this, SLOT(clear_cache_slot()));
-    a_ReloadCache = h_main_menus[1]->addAction(tr("&Reload Cache"),
+    h_ReloadCache = h_main_menus[1]->addAction(tr("&Reload Cache"),
         this, SLOT(reload_cache_slot()));
-    a_ShowCache = h_main_menus[1]->addAction(tr("Show Cache"),
+    h_ShowCache = h_main_menus[1]->addAction(tr("Show Cache"),
         this, SLOT(show_cache_slot()));
     h_main_menus[1]->addSeparator();
-    a_NoCookies = h_main_menus[1]->addAction(tr("No Cookies"));
-    a_NoCookies->setCheckable(true);
-    connect(a_NoCookies, SIGNAL(toggled(bool)),
+    h_NoCookies = h_main_menus[1]->addAction(tr("No Cookies"));
+    h_NoCookies->setCheckable(true);
+    connect(h_NoCookies, SIGNAL(toggled(bool)),
         this, SLOT(no_cookies_slot(bool)));
-    a_NoCookies->setChecked(h_params->NoCookies);
+    h_NoCookies->setChecked(h_params->NoCookies);
 
     QActionGroup *ag = new QActionGroup(this);
-    a_NoImages = h_main_menus[1]->addAction(tr("No Images"));
-    a_NoImages->setCheckable(true);
-    connect(a_NoImages, SIGNAL(toggled(bool)),
+    h_NoImages = h_main_menus[1]->addAction(tr("No Images"));
+    h_NoImages->setCheckable(true);
+    connect(h_NoImages, SIGNAL(toggled(bool)),
         this, SLOT(no_images_slot(bool)));
-    ag->addAction(a_NoImages);
-    a_SyncImages = h_main_menus[1]->addAction(tr("Sync Images"));
-    a_SyncImages->setCheckable(true);
-    connect(a_SyncImages, SIGNAL(toggled(bool)),
+    ag->addAction(h_NoImages);
+    h_SyncImages = h_main_menus[1]->addAction(tr("Sync Images"));
+    h_SyncImages->setCheckable(true);
+    connect(h_SyncImages, SIGNAL(toggled(bool)),
         this, SLOT(sync_images_slot(bool)));
-    ag->addAction(a_SyncImages);
-    a_DelayedImages =
+    ag->addAction(h_SyncImages);
+    h_DelayedImages =
         h_main_menus[1]->addAction(tr("Delayed Images"));
-    a_DelayedImages->setCheckable(true);
-    connect(a_DelayedImages, SIGNAL(toggled(bool)),
+    h_DelayedImages->setCheckable(true);
+    connect(h_DelayedImages, SIGNAL(toggled(bool)),
         this, SLOT(delayed_images_slot(bool)));
-    ag->addAction(a_DelayedImages);
-    a_ProgressiveImages =
+    ag->addAction(h_DelayedImages);
+    h_ProgressiveImages =
         h_main_menus[1]->addAction(tr("Progressive Images"));
-    a_ProgressiveImages->setCheckable(true);
-    connect(a_ProgressiveImages, SIGNAL(toggled(bool)),
+    h_ProgressiveImages->setCheckable(true);
+    connect(h_ProgressiveImages, SIGNAL(toggled(bool)),
         this, SLOT(progressive_images_slot(bool)));
-    ag->addAction(a_ProgressiveImages);
+    ag->addAction(h_ProgressiveImages);
     if (h_params->LoadMode == HLPparams::LoadProgressive)
-        a_ProgressiveImages->setChecked(true);
+        h_ProgressiveImages->setChecked(true);
     else if (h_params->LoadMode == HLPparams::LoadDelayed)
-        a_DelayedImages->setChecked(true);
+        h_DelayedImages->setChecked(true);
     else if (h_params->LoadMode == HLPparams::LoadSync)
-        a_SyncImages->setChecked(true);
+        h_SyncImages->setChecked(true);
     else
-        a_NoImages->setChecked(true);
+        h_NoImages->setChecked(true);
 
     h_main_menus[1]->addSeparator();
 
     ag = new QActionGroup(this);
-    a_AnchorPlain = h_main_menus[1]->addAction(tr("Anchor Plain"));
-    a_AnchorPlain->setCheckable(true);
-    connect(a_AnchorPlain, SIGNAL(toggled(bool)),
+    h_AnchorPlain = h_main_menus[1]->addAction(tr("Anchor Plain"));
+    h_AnchorPlain->setCheckable(true);
+    connect(h_AnchorPlain, SIGNAL(toggled(bool)),
         this, SLOT(anchor_plain_slot(bool)));
-    ag->addAction(a_AnchorPlain);
-    a_AnchorButtons =
+    ag->addAction(h_AnchorPlain);
+    h_AnchorButtons =
         h_main_menus[1]->addAction(tr("Anchor Buttons"));
-    a_AnchorButtons->setCheckable(true);
-    connect(a_AnchorButtons, SIGNAL(toggled(bool)),
+    h_AnchorButtons->setCheckable(true);
+    connect(h_AnchorButtons, SIGNAL(toggled(bool)),
         this, SLOT(anchor_buttons_slot(bool)));
-    ag->addAction(a_AnchorButtons);
-    a_AnchorUnderline =
+    ag->addAction(h_AnchorButtons);
+    h_AnchorUnderline =
         h_main_menus[1]->addAction(tr("Anchor Underline"));
-    a_AnchorUnderline->setCheckable(true);
-    connect(a_AnchorUnderline, SIGNAL(toggled(bool)),
+    h_AnchorUnderline->setCheckable(true);
+    connect(h_AnchorUnderline, SIGNAL(toggled(bool)),
         this, SLOT(anchor_underline_slot(bool)));
-    ag->addAction(a_AnchorUnderline);
+    ag->addAction(h_AnchorUnderline);
     if (h_params->AnchorButtons)
-        a_AnchorButtons->setChecked(true);
+        h_AnchorButtons->setChecked(true);
     else if (h_params->AnchorUnderlined)
-        a_AnchorUnderline->setChecked(true);
+        h_AnchorUnderline->setChecked(true);
     else
-        a_AnchorPlain->setChecked(true);
+        h_AnchorPlain->setChecked(true);
 
-    a_AnchorHighlight =
+    h_AnchorHighlight =
         h_main_menus[1]->addAction(tr("Anchor Highlight"));
-    a_AnchorHighlight->setCheckable(true);
-    connect(a_AnchorHighlight, SIGNAL(toggled(bool)),
+    h_AnchorHighlight->setCheckable(true);
+    connect(h_AnchorHighlight, SIGNAL(toggled(bool)),
         this, SLOT(anchor_highlight_slot(bool)));
-    a_AnchorHighlight->setChecked(h_params->AnchorHighlight);
-    a_BadHTML = h_main_menus[1]->addAction(tr("Bad HTML Warnings"));
-    a_BadHTML->setCheckable(true);
-    connect(a_BadHTML, SIGNAL(toggled(bool)),
+    h_AnchorHighlight->setChecked(h_params->AnchorHighlight);
+    h_BadHTML = h_main_menus[1]->addAction(tr("Bad HTML Warnings"));
+    h_BadHTML->setCheckable(true);
+    connect(h_BadHTML, SIGNAL(toggled(bool)),
         this, SLOT(bad_html_slot(bool)));
-    a_BadHTML->setChecked(h_params->BadHTMLwarnings);
-    a_FreezeAnimations =
+    h_BadHTML->setChecked(h_params->BadHTMLwarnings);
+    h_FreezeAnimations =
         h_main_menus[1]->addAction(tr("Freeze Animations"));
-    a_FreezeAnimations->setCheckable(true);
-    connect(a_FreezeAnimations, SIGNAL(toggled(bool)),
+    h_FreezeAnimations->setCheckable(true);
+    connect(h_FreezeAnimations, SIGNAL(toggled(bool)),
         this, SLOT(freeze_animations_slot(bool)));
-    a_FreezeAnimations->setChecked(h_params->FreezeAnimations);
-    a_LogTransactions =
+    h_FreezeAnimations->setChecked(h_params->FreezeAnimations);
+    h_LogTransactions =
         h_main_menus[1]->addAction(tr("Log Transactions"));
-    a_LogTransactions->setCheckable(true);
-    connect(a_LogTransactions, SIGNAL(toggled(bool)),
+    h_LogTransactions->setCheckable(true);
+    connect(h_LogTransactions, SIGNAL(toggled(bool)),
         this, SLOT(log_transactions_slot(bool)));
-    a_LogTransactions->setChecked(h_params->PrintTransact);
+    h_LogTransactions->setChecked(h_params->PrintTransact);
 
     h_main_menus[2] = menuBar()->addMenu(tr("&Bookmarks"));
-    a_AddBookmark = h_main_menus[2]->addAction(tr("Add"),
+    h_AddBookmark = h_main_menus[2]->addAction(tr("Add"),
         this, SLOT(add_slot()));
-    a_DeleteBookmark = h_main_menus[2]->addAction(tr("Delete"),
+    h_DeleteBookmark = h_main_menus[2]->addAction(tr("Delete"),
         this, SLOT(delete_slot()));
-    a_DeleteBookmark->setCheckable(true);
+    h_DeleteBookmark->setCheckable(true);
     h_main_menus[2]->addSeparator();
 
     menuBar()->addSeparator();
     h_main_menus[3] = menuBar()->addMenu(tr("&Help"));
-    a_Help = h_main_menus[3]->addAction(tr("&Help"),
+    h_Help = h_main_menus[3]->addAction(tr("&Help"),
         this, SLOT(help_slot()), Qt::CTRL+Qt::Key_H);
 
     h_viewer->thaw();
@@ -562,13 +562,13 @@ QThelpPopup::QThelpPopup(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
     connect(h_main_menus[2], SIGNAL(triggered(QAction*)), this,
         SLOT(bookmark_slot(QAction*)));
 
-    a_Backward->setEnabled(false);
-    a_Forward->setEnabled(false);
-    a_Stop->setEnabled(false);
+    h_Backward->setEnabled(false);
+    h_Forward->setEnabled(false);
+    h_Stop->setEnabled(false);
 }
 
 
-QThelpPopup::~QThelpPopup()
+QThelpDlg::~QThelpDlg()
 {
     FC.unregisterCallback(h_viewer, FNT_MOZY);
     FC.unregisterCallback(h_viewer, FNT_MOZY_FIXED);
@@ -587,12 +587,12 @@ QThelpPopup::~QThelpPopup()
 
 
 void
-QThelpPopup::menu_sens_set(bool set)
+QThelpDlg::menu_sens_set(bool set)
 {
-    a_Search->setEnabled(set);
-    a_Save->setEnabled(set);
-    a_Open->setEnabled(set);
-    a_FindText->setEnabled(set);
+    h_Search->setEnabled(set);
+    h_Save->setEnabled(set);
+    h_Open->setEnabled(set);
+    h_FindText->setEnabled(set);
 }
 
 
@@ -600,14 +600,14 @@ QThelpPopup::menu_sens_set(bool set)
 // ViewWidget and HelpWidget virtual function overrides
 
 void
-QThelpPopup::freeze()
+QThelpDlg::freeze()
 {
     h_viewer->freeze();
 }
 
 
 void
-QThelpPopup::thaw()
+QThelpDlg::thaw()
 {
     h_viewer->thaw();
 }
@@ -616,7 +616,7 @@ QThelpPopup::thaw()
 // Set a pointer to the Transaction struct.
 //
 void
-QThelpPopup::set_transaction(Transaction *t, const char *cookiedir)
+QThelpDlg::set_transaction(Transaction *t, const char *cookiedir)
 {
     h_viewer->set_transaction(t, cookiedir);
     if (t) {
@@ -641,7 +641,7 @@ QThelpPopup::set_transaction(Transaction *t, const char *cookiedir)
 // Return a pointer to the transaction struct.
 //
 Transaction *
-QThelpPopup::get_transaction()
+QThelpDlg::get_transaction()
 {
     return (h_viewer->get_transaction());
 }
@@ -650,11 +650,11 @@ QThelpPopup::get_transaction()
 // Check if the transfer should be aborted, return true if so.
 //
 bool
-QThelpPopup::check_halt_processing(bool run_events)
+QThelpDlg::check_halt_processing(bool run_events)
 {
     if (run_events) {
         qApp->processEvents(QEventLoop::AllEvents);
-        if (!a_Stop->isEnabled() && h_stop_btn_pressed)
+        if (!h_Stop->isEnabled() && h_stop_btn_pressed)
             return (true);
     }
     else if (h_stop_btn_pressed)
@@ -666,16 +666,16 @@ QThelpPopup::check_halt_processing(bool run_events)
 // Enable/disable halt button sensitivity.
 //
 void
-QThelpPopup::set_halt_proc_sens(bool set)
+QThelpDlg::set_halt_proc_sens(bool set)
 {
-    a_Stop->setEnabled(set);
+    h_Stop->setEnabled(set);
 }
 
 
 // Write text on the status line.
 //
 void
-QThelpPopup::set_status_line(const char *msg)
+QThelpDlg::set_status_line(const char *msg)
 {
     if (h_frame_parent)
         h_frame_parent->set_status_line(msg);
@@ -685,35 +685,35 @@ QThelpPopup::set_status_line(const char *msg)
 
 
 htmImageInfo *
-QThelpPopup::new_image_info(const char *url, bool progressive)
+QThelpDlg::new_image_info(const char *url, bool progressive)
 {
     return (h_viewer->new_image_info(url, progressive));
 }
 
 
 bool
-QThelpPopup::call_plc(const char *url)
+QThelpDlg::call_plc(const char *url)
 {
     return (h_viewer->call_plc(url));
 }
 
 
 htmImageInfo *
-QThelpPopup::image_procedure(const char *url)
+QThelpDlg::image_procedure(const char *url)
 {
     return (h_viewer->image_procedure(url));
 }
 
 
 void
-QThelpPopup::image_replace(htmImageInfo *image, htmImageInfo *new_image)
+QThelpDlg::image_replace(htmImageInfo *image, htmImageInfo *new_image)
 {
     h_viewer->image_replace(image, new_image);
 }
 
 
 bool
-QThelpPopup::is_body_image(const char *url)
+QThelpDlg::is_body_image(const char *url)
 {
     if (HLP()->context()->isImageInList(this))
         return (false);
@@ -722,35 +722,35 @@ QThelpPopup::is_body_image(const char *url)
 
 
 const char *
-QThelpPopup::get_url()
+QThelpDlg::get_url()
 {
     return (h_cur_topic ? h_cur_topic->keyword() : 0);
 }
 
 
 bool
-QThelpPopup::no_url_cache()
+QThelpDlg::no_url_cache()
 {
     return (h_params->NoCache);
 }
 
 
 int
-QThelpPopup::image_load_mode()
+QThelpDlg::image_load_mode()
 {
     return (h_params->LoadMode);
 }
 
 
 int
-QThelpPopup::image_debug_mode()
+QThelpDlg::image_debug_mode()
 {
     return (h_params->LocalImageTest);
 }
 
 
 GRwbag *
-QThelpPopup::get_widget_bag()
+QThelpDlg::get_widget_bag()
 {
     return (this);
 }
@@ -763,7 +763,7 @@ QThelpPopup::get_widget_bag()
 // Link and display the new topic.
 //
 void
-QThelpPopup::link_new(HLPtopic *top)
+QThelpDlg::link_new(HLPtopic *top)
 {
     HLP()->context()->linkNewTopic(top);
     h_root_topic = top;
@@ -795,7 +795,7 @@ strip_html(char *buf)
 // Reuse the current display to show and possible link in newtop.
 //
 void
-QThelpPopup::reuse(HLPtopic *newtop, bool newlink)
+QThelpDlg::reuse(HLPtopic *newtop, bool newlink)
 {
     if (h_root_topic->lastborn()) {
         // in the forward/back operations, the new topic is stitched in
@@ -825,7 +825,7 @@ QThelpPopup::reuse(HLPtopic *newtop, bool newlink)
         newtop->set_sibling(h_root_topic->lastborn());
         h_root_topic->set_lastborn(newtop);
         newtop->set_parent(h_root_topic);
-        a_Backward->setEnabled(true);
+        h_Backward->setEnabled(true);
     }
     redisplay();
     if (anchor)
@@ -851,7 +851,7 @@ QThelpPopup::reuse(HLPtopic *newtop, bool newlink)
 // Halt any current display activity and redisplay.
 //
 void
-QThelpPopup::redisplay()
+QThelpDlg::redisplay()
 {
     Transaction *t = h_viewer->get_transaction();
     if (t) {
@@ -874,7 +874,7 @@ QThelpPopup::redisplay()
 
 
 HLPtopic *
-QThelpPopup::get_topic()
+QThelpDlg::get_topic()
 {
     return (h_cur_topic);
 }
@@ -883,14 +883,14 @@ QThelpPopup::get_topic()
 // Unset the halt flag, which will be set if an abort is needed.
 //
 void
-QThelpPopup::unset_halt_flag()
+QThelpDlg::unset_halt_flag()
 {
     h_stop_btn_pressed = false;
 }
 
 
 void
-QThelpPopup::halt_images()
+QThelpDlg::halt_images()
 {
     stop_image_download();
     HLP()->context()->flushImages(this);
@@ -898,7 +898,7 @@ QThelpPopup::halt_images()
 
 
 void
-QThelpPopup::show_cache(int mode)
+QThelpDlg::show_cache(int mode)
 {
     if (mode == MODE_OFF) {
         if (h_cache_list)
@@ -920,7 +920,7 @@ QThelpPopup::show_cache(int mode)
     stringlist::destroy(s0);
     if (h_cache_list) {
         h_cache_list->register_usrptr((void**)&h_cache_list);
-        QTlistPopup *list = dynamic_cast<QTlistPopup*>(h_cache_list);
+        QTlistDlg *list = dynamic_cast<QTlistDlg*>(h_cache_list);
         if (list)
             connect(list, SIGNAL(action_call(const char*, void*)),
                 this, SLOT(cache_choice_slot(const char*)));
@@ -934,7 +934,7 @@ QThelpPopup::show_cache(int mode)
 // All QTviewer "signals" are dispatched from here.
 //
 void
-QThelpPopup::emit_signal(SignalID id, void *payload)
+QThelpDlg::emit_signal(SignalID id, void *payload)
 {
     switch (id) {
     case S_ARM:
@@ -974,14 +974,14 @@ QThelpPopup::emit_signal(SignalID id, void *payload)
 
 
 void *
-QThelpPopup::event_proc(const char*)
+QThelpDlg::event_proc(const char*)
 {
     return (0);
 }
 
 
 void
-QThelpPopup::panic_callback(const char*)
+QThelpDlg::panic_callback(const char*)
 {
 }
 
@@ -989,7 +989,7 @@ QThelpPopup::panic_callback(const char*)
 // Called by the widget to resolve image references.
 //
 htmImageInfo *
-QThelpPopup::image_resolve(const char *fname)
+QThelpDlg::image_resolve(const char *fname)
 {
     if (!fname)
         return (0);
@@ -1000,7 +1000,7 @@ QThelpPopup::image_resolve(const char *fname)
 // This is the "get_data" callback for progressive image loading.
 //
 int
-QThelpPopup::get_image_data(htmPLCStream *stream, void *buffer)
+QThelpDlg::get_image_data(htmPLCStream *stream, void *buffer)
 {
     HLPimageList *im = (HLPimageList*)stream->user_data;
     return (HLP()->context()->getImageData(im, stream, buffer));
@@ -1010,7 +1010,7 @@ QThelpPopup::get_image_data(htmPLCStream *stream, void *buffer)
 // This is the "end_data" callback for progressive image loading.
 //
 void
-QThelpPopup::end_image_data(htmPLCStream *stream, void*, int type, bool)
+QThelpDlg::end_image_data(htmPLCStream *stream, void*, int type, bool)
 {
     if (type == PLC_IMAGE) {
         HLPimageList *im = (HLPimageList*)stream->user_data;
@@ -1024,7 +1024,7 @@ QThelpPopup::end_image_data(htmPLCStream *stream, void*, int type, bool)
 // status bar.
 //
 void
-QThelpPopup::frame_rendering_area(htmRect *rct)
+QThelpDlg::frame_rendering_area(htmRect *rct)
 {
     QRect r1 = h_viewer->frameGeometry();
     QRect r2 = h_status_bar->frameGeometry();
@@ -1041,7 +1041,7 @@ QThelpPopup::frame_rendering_area(htmRect *rct)
 // Otherwise return -1.
 //
 const char *
-QThelpPopup::get_frame_name()
+QThelpDlg::get_frame_name()
 {
     return (h_frame_name);
 }
@@ -1050,7 +1050,7 @@ QThelpPopup::get_frame_name()
 // Return the keyword and title from the current topic, if possible.
 //
 void
-QThelpPopup::get_topic_keys(char **pkw, char **ptitle)
+QThelpDlg::get_topic_keys(char **pkw, char **ptitle)
 {
     if (pkw)
         *pkw = 0;
@@ -1072,7 +1072,7 @@ QThelpPopup::get_topic_keys(char **pkw, char **ptitle)
 // Ensure that the bounding box passed is visible.
 //
 void
-QThelpPopup::scroll_visible(int l, int t, int r, int b)
+QThelpDlg::scroll_visible(int l, int t, int r, int b)
 {
 /*XXX
     const int slop = 20;
@@ -1100,7 +1100,7 @@ QThelpPopup::scroll_visible(int l, int t, int r, int b)
 // QTbag functions
 
 char *
-QThelpPopup::GetPostscriptText(int font_family, const char *url,
+QThelpDlg::GetPostscriptText(int font_family, const char *url,
     const char *title, bool use_headers, bool a4)
 {
     return (h_viewer->get_postscript_text(font_family, url, title,
@@ -1109,14 +1109,14 @@ QThelpPopup::GetPostscriptText(int font_family, const char *url,
 
 
 char *
-QThelpPopup::GetPlainText()
+QThelpDlg::GetPlainText()
 {
     return (h_viewer->get_plain_text());
 }
 
 
 char *
-QThelpPopup::GetHtmlText()
+QThelpDlg::GetHtmlText()
 {
     return (h_viewer->get_html_text());
 }
@@ -1127,7 +1127,7 @@ QThelpPopup::GetHtmlText()
 
 // scrollbar setting
 int
-QThelpPopup::get_scroll_pos(bool horiz)
+QThelpDlg::get_scroll_pos(bool horiz)
 {
     QScrollBar *sb;
     if (horiz)
@@ -1141,7 +1141,7 @@ QThelpPopup::get_scroll_pos(bool horiz)
 
 
 void
-QThelpPopup::set_scroll_pos(int posn, bool horiz)
+QThelpDlg::set_scroll_pos(int posn, bool horiz)
 {
     QScrollBar *sb;
     if (horiz)
@@ -1158,7 +1158,7 @@ QThelpPopup::set_scroll_pos(int posn, bool horiz)
 // Slots
 
 void
-QThelpPopup::backward_slot()
+QThelpDlg::backward_slot()
 {
     HLPtopic *top = h_root_topic;
     if (top && top->lastborn()) {
@@ -1169,14 +1169,14 @@ QThelpPopup::backward_slot()
         last->set_topline(get_scroll_pos());
         top->reuse(top->lastborn(), false);
 
-        a_Backward->setEnabled(top->lastborn());
-        a_Forward->setEnabled(true);
+        h_Backward->setEnabled(top->lastborn());
+        h_Forward->setEnabled(true);
    }
 }
 
 
 void
-QThelpPopup::forward_slot()
+QThelpDlg::forward_slot()
 {
     HLPtopic *top = h_root_topic;
     if (top && top->next()) {
@@ -1190,23 +1190,23 @@ QThelpPopup::forward_slot()
             top->set_topline(get_scroll_pos());
         top->reuse(top->lastborn(), false);
 
-        a_Forward->setEnabled(top->next());
-        a_Backward->setEnabled(true);
+        h_Forward->setEnabled(top->next());
+        h_Backward->setEnabled(true);
     }
 }
 
 
 void
-QThelpPopup::stop_slot()
+QThelpDlg::stop_slot()
 {
     stop_image_download();
-    a_Stop->setEnabled(false);
+    h_Stop->setEnabled(false);
     h_stop_btn_pressed = true;
 }
 
 
 void
-QThelpPopup::open_slot()
+QThelpDlg::open_slot()
 {
     PopUpInput("Enter keyword, file name, or URL", "", "Open", 0, 0);
     connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
@@ -1215,10 +1215,10 @@ QThelpPopup::open_slot()
 
 
 void
-QThelpPopup::open_file_slot()
+QThelpDlg::open_file_slot()
 {
     GRfilePopup *fs = PopUpFileSelector(fsSEL, GRloc(), 0, 0, 0, 0);
-    QTfilePopup *fsel = dynamic_cast<QTfilePopup*>(fs);
+    QTfileDlg *fsel = dynamic_cast<QTfileDlg*>(fs);
     if (fsel)
         connect(fsel, SIGNAL(file_selected(const char*, void*)),
             this, SLOT(do_open_slot(const char*, void*)));
@@ -1226,7 +1226,7 @@ QThelpPopup::open_file_slot()
 
 
 void
-QThelpPopup::save_slot()
+QThelpDlg::save_slot()
 {
     PopUpInput(0, "", "Save", 0, 0);
     connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
@@ -1256,7 +1256,7 @@ static HCcb hlpHCcb =
 
 
 void
-QThelpPopup::print_slot()
+QThelpDlg::print_slot()
 {
     if (!hlpHCcb.command)
         hlpHCcb.command = lstring::copy(GRappIf()->GetPrintCmd());
@@ -1265,7 +1265,7 @@ QThelpPopup::print_slot()
 
 
 void
-QThelpPopup::reload_slot()
+QThelpDlg::reload_slot()
 {
     h_cur_topic->set_topline(get_scroll_pos());
     newtopic(h_cur_topic->keyword(), false, false, true);
@@ -1273,14 +1273,14 @@ QThelpPopup::reload_slot()
 
 
 void
-QThelpPopup::quit_slot()
+QThelpDlg::quit_slot()
 {
     emit dismiss();
 }
 
 
 void
-QThelpPopup::search_slot()
+QThelpDlg::search_slot()
 {
     PopUpInput("Enter keyword for database search:", "", "Search", 0, 0);
     connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
@@ -1289,7 +1289,7 @@ QThelpPopup::search_slot()
 
 
 void
-QThelpPopup::find_slot()
+QThelpDlg::find_slot()
 {
     PopUpInput("Enter word for text search:", "", "Find Text", 0, 0);
     connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
@@ -1298,7 +1298,7 @@ QThelpPopup::find_slot()
 
 
 void
-QThelpPopup::set_font_slot(bool set)
+QThelpDlg::set_font_slot(bool set)
 {
     if (set) {
         PopUpFontSel(0, GRloc(), MODE_ON, 0, 0, FNT_MOZY);
@@ -1313,7 +1313,7 @@ QThelpPopup::set_font_slot(bool set)
 
 // Handle font selection in pop-up.
 void
-QThelpPopup::font_selected_slot(int font_id, const char *fontname)
+QThelpDlg::font_selected_slot(int font_id, const char *fontname)
 {
     // Ignore this.  Fonts are selected with the Apply buton.
 }
@@ -1322,49 +1322,49 @@ QThelpPopup::font_selected_slot(int font_id, const char *fontname)
 // Handle font selector dismissal.
 //
 void
-QThelpPopup::font_down_slot()
+QThelpDlg::font_down_slot()
 {
-    a_SetFont->setChecked(false);
+    h_SetFont->setChecked(false);
 }
 
 
 void
-QThelpPopup::dont_cache_slot(bool set)
+QThelpDlg::dont_cache_slot(bool set)
 {
     h_params->NoCache = set;
 }
 
 
 void
-QThelpPopup::clear_cache_slot()
+QThelpDlg::clear_cache_slot()
 {
     HLP()->context()->clearCache();
 }
 
 
 void
-QThelpPopup::reload_cache_slot()
+QThelpDlg::reload_cache_slot()
 {
     HLP()->context()->reloadCache();
 }
 
 
 void
-QThelpPopup::show_cache_slot()
+QThelpDlg::show_cache_slot()
 {
     show_cache(MODE_ON);
 }
 
 
 void
-QThelpPopup::no_cookies_slot(bool set)
+QThelpDlg::no_cookies_slot(bool set)
 {
     h_params->NoCookies = set;
 }
 
 
 void
-QThelpPopup::no_images_slot(bool set)
+QThelpDlg::no_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
@@ -1374,7 +1374,7 @@ QThelpPopup::no_images_slot(bool set)
 
 
 void
-QThelpPopup::sync_images_slot(bool set)
+QThelpDlg::sync_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
@@ -1384,7 +1384,7 @@ QThelpPopup::sync_images_slot(bool set)
 
 
 void
-QThelpPopup::delayed_images_slot(bool set)
+QThelpDlg::delayed_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
@@ -1394,7 +1394,7 @@ QThelpPopup::delayed_images_slot(bool set)
 
 
 void
-QThelpPopup::progressive_images_slot(bool set)
+QThelpDlg::progressive_images_slot(bool set)
 {
     if (set) {
         stop_image_download();
@@ -1404,7 +1404,7 @@ QThelpPopup::progressive_images_slot(bool set)
 
 
 void
-QThelpPopup::anchor_plain_slot(bool set)
+QThelpDlg::anchor_plain_slot(bool set)
 {
     if (set) {
         h_params->AnchorButtons = false;
@@ -1418,7 +1418,7 @@ QThelpPopup::anchor_plain_slot(bool set)
 
 
 void
-QThelpPopup::anchor_buttons_slot(bool set)
+QThelpDlg::anchor_buttons_slot(bool set)
 {
     if (set) {
         h_params->AnchorButtons = true;
@@ -1429,7 +1429,7 @@ QThelpPopup::anchor_buttons_slot(bool set)
 
 
 void
-QThelpPopup::anchor_underline_slot(bool set)
+QThelpDlg::anchor_underline_slot(bool set)
 {
     if (set) {
         h_params->AnchorButtons = false;
@@ -1443,7 +1443,7 @@ QThelpPopup::anchor_underline_slot(bool set)
 
 
 void
-QThelpPopup::anchor_highlight_slot(bool set)
+QThelpDlg::anchor_highlight_slot(bool set)
 {
     h_params->AnchorHighlight = set;
     h_viewer->set_anchor_highlighting(set);
@@ -1451,7 +1451,7 @@ QThelpPopup::anchor_highlight_slot(bool set)
 
 
 void
-QThelpPopup::bad_html_slot(bool set)
+QThelpDlg::bad_html_slot(bool set)
 {
     h_params->BadHTMLwarnings = set;
     h_viewer->set_html_warnings(set);
@@ -1459,7 +1459,7 @@ QThelpPopup::bad_html_slot(bool set)
 
 
 void
-QThelpPopup::freeze_animations_slot(bool set)
+QThelpDlg::freeze_animations_slot(bool set)
 {
     h_params->FreezeAnimations = set;
     h_viewer->set_freeze_animations(set);
@@ -1467,14 +1467,14 @@ QThelpPopup::freeze_animations_slot(bool set)
 
 
 void
-QThelpPopup::log_transactions_slot(bool set)
+QThelpDlg::log_transactions_slot(bool set)
 {
     h_params->PrintTransact = set;
 }
 
 
 void
-QThelpPopup::add_slot()
+QThelpDlg::add_slot()
 {
     if (!h_cur_topic)
         return;
@@ -1507,27 +1507,28 @@ QThelpPopup::add_slot()
 
 
 void
-QThelpPopup::delete_slot()
+QThelpDlg::delete_slot()
 {
 }
 
 
-static void
-yncb(bool val, void *client_data)
-{
-    if (val)
-        delete static_cast<action_item*>(client_data);
+namespace {
+    void yncb(bool val, void *client_data)
+    {
+        if (val)
+            delete static_cast<action_item*>(client_data);
+    }
 }
 
 
 // Handler for bookmarks selected in the menu.
 // 
 void
-QThelpPopup::bookmark_slot(QAction *action)
+QThelpDlg::bookmark_slot(QAction *action)
 {
     action_item *ac = dynamic_cast<action_item*>(action);
     if (ac) {
-        if (a_DeleteBookmark->isChecked()) {
+        if (h_DeleteBookmark->isChecked()) {
             char buf[256];
             strcpy(buf, "Delete ");
             char *t = buf + strlen(buf);
@@ -1545,7 +1546,7 @@ QThelpPopup::bookmark_slot(QAction *action)
 
 
 void
-QThelpPopup::help_slot()
+QThelpDlg::help_slot()
 {
     if (QTdev::self()->MainFrame())
         QTdev::self()->MainFrame()->PopUpHelp("helpsys");
@@ -1557,7 +1558,7 @@ QThelpPopup::help_slot()
 // Handle selections from the cache listing.
 //
 void
-QThelpPopup::cache_choice_slot(const char *string)
+QThelpDlg::cache_choice_slot(const char *string)
 {
     lstring::advtok(&string);
     newtopic(string, false, false, true);
@@ -1567,7 +1568,7 @@ QThelpPopup::cache_choice_slot(const char *string)
 // Print the current anchor href in the status label.
 //
 void
-QThelpPopup::anchor_track_slot(htmAnchorCallbackStruct *c)
+QThelpDlg::anchor_track_slot(htmAnchorCallbackStruct *c)
 {
     if (c && c->href)
         h_status_bar->showMessage(QString(c->href));
@@ -1579,7 +1580,7 @@ QThelpPopup::anchor_track_slot(htmAnchorCallbackStruct *c)
 // Handle clicking on an anchor.
 //
 void
-QThelpPopup::newtopic_slot(htmAnchorCallbackStruct *c)
+QThelpDlg::newtopic_slot(htmAnchorCallbackStruct *c)
 {
     if (c == 0 || c->href == 0)
         return;
@@ -1639,7 +1640,7 @@ QThelpPopup::newtopic_slot(htmAnchorCallbackStruct *c)
 // prevents multiple submissions of the same form.
 //
 void
-QThelpPopup::form_slot(htmFormCallbackStruct *cbs)
+QThelpDlg::form_slot(htmFormCallbackStruct *cbs)
 {
     HLP()->context()->formProcess(cbs, this);
 }
@@ -1648,14 +1649,14 @@ QThelpPopup::form_slot(htmFormCallbackStruct *cbs)
 // Handle frames.
 //
 void
-QThelpPopup::frame_slot(htmFrameCallbackStruct *cbs)
+QThelpDlg::frame_slot(htmFrameCallbackStruct *cbs)
 {
     if (cbs->reason == HTM_FRAMECREATE) {
         h_viewer->hide_drawing_area(true);
         h_frame_array_size = cbs->nframes;
-        h_frame_array = new QThelpPopup*[h_frame_array_size];
+        h_frame_array = new QThelpDlg*[h_frame_array_size];
         for (int i = 0; i < h_frame_array_size; i++) {
-            h_frame_array[i] = new QThelpPopup(false, this);
+            h_frame_array[i] = new QThelpDlg(false, this);
             // use parent's defaults
             h_frame_array[i]->h_params = h_params;
             h_frame_array[i]->set_frame_parent(this);
@@ -1734,7 +1735,7 @@ QThelpPopup::frame_slot(htmFrameCallbackStruct *cbs)
 // keyword or file
 //
 void
-QThelpPopup::do_open_slot(const char *name, void*)
+QThelpDlg::do_open_slot(const char *name, void*)
 {
     if (name) {
         while (isspace(*name))
@@ -1777,7 +1778,7 @@ QThelpPopup::do_open_slot(const char *name, void*)
 // Callback passed to PopUpInput to actually save the text in a file.
 //
 void
-QThelpPopup::do_save_slot(const char *fnamein, void*)
+QThelpDlg::do_save_slot(const char *fnamein, void*)
 {
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
@@ -1826,7 +1827,7 @@ QThelpPopup::do_save_slot(const char *fnamein, void*)
 // search.
 //
 void
-QThelpPopup::do_search_slot(const char *target, void*)
+QThelpDlg::do_search_slot(const char *target, void*)
 {
     if (target && *target) {
         HLPtopic *newtop = HLP()->search(target);
@@ -1841,7 +1842,7 @@ QThelpPopup::do_search_slot(const char *target, void*)
 
 
 void
-QThelpPopup::do_find_text_slot(const char *target, void*)
+QThelpDlg::do_find_text_slot(const char *target, void*)
 {
     if (target && *target)
         h_viewer->find_words(target, false, false);
@@ -1854,7 +1855,7 @@ QThelpPopup::do_find_text_slot(const char *target, void*)
 // Function to display a new topic, or respond to a link
 //
 void
-QThelpPopup::newtopic(const char *href, bool spawn, bool force_download,
+QThelpDlg::newtopic(const char *href, bool spawn, bool force_download,
     bool nonrelative)
 {
     HLPtopic *newtop;
@@ -1877,7 +1878,7 @@ QThelpPopup::newtopic(const char *href, bool spawn, bool force_download,
 // queue of jobs for this window
 //
 void
-QThelpPopup::stop_image_download()
+QThelpDlg::stop_image_download()
 {
     if (h_params->LoadMode == HLPparams::LoadProgressive)
         h_viewer->progressive_kill();

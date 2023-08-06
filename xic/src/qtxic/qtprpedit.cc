@@ -59,12 +59,12 @@
 #include <QDropEvent>
 #include <QMimeData>
 
+
 //--------------------------------------------------------------------------
 // Pop up to modify proerties of objects
 //
 // Help system keywords used:
 //  prppanel
-
 
 // Pop up the property panel, list the properties of odesc.  The activ
 // argument sets the state of the Activate button and menu sensitivity.
@@ -254,30 +254,12 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ)
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
         this, SLOT(mime_data_received_slot(const QMimeData*)));
-    /*
-    connect(wb_textarea, SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(wb_textarea, SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_event_slot(QDropEvent*)));
-    */
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
-
-/*
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    const char *bclr = QTpkg::self()->GetAttrColor(GRattrColorLocSel);
-    gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
-        "paragraph-background", bclr, NULL);
-
-    // for passing hypertext via selections, see gtkhtext.cc
-    g_object_set_data(G_OBJECT(wb_textarea), "hyexport", (void*)1);
-
-*/
 
     // activate and dismiss buttons
     //
@@ -289,7 +271,8 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ)
     po_activ = new QPushButton(tr("Activate"));
     po_activ->setCheckable(true);
     hbox->addWidget(po_activ);
-    connect(po_activ, SIGNAL(toggled(bool)), this, SLOT(activ_btn_slot(bool)));
+    connect(po_activ, SIGNAL(toggled(bool)),
+        this, SLOT(activ_btn_slot(bool)));
 
     btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);

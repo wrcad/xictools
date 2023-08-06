@@ -132,8 +132,8 @@ private:
     GRaffirmPopup *c_repl_pop;
     GRledPopup *c_copy_pop;
     GRledPopup *c_rename_pop;
-    QTledPopup *c_save_pop;
-    QTmsgPopup *c_msg_pop;
+    QTledDlg *c_save_pop;
+    QTmsgDlg *c_msg_pop;
     QLabel *c_label;
     QPushButton *c_clearbtn;
     QPushButton *c_treebtn;

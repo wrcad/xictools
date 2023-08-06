@@ -472,9 +472,9 @@ namespace {
 }
 
 
-QTfontPopup *QTfontPopup::activeFontSels[4];
+QTfontDlg *QTfontDlg::activeFontSels[4];
 
-QTfontPopup::QTfontPopup(QTbag *owner, int indx, void *arg) :
+QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
@@ -491,19 +491,19 @@ QTfontPopup::QTfontPopup(QTbag *owner, int indx, void *arg) :
 
     setWindowTitle(QString(tr("Font Selection")));
     setAttribute(Qt::WA_DeleteOnClose);
-    face_list = new font_list_widget(180, this);
-    style_list = new font_list_widget(120, this);
-    size_list = new font_list_widget(60, this);
-    quit = new QPushButton(this);
-    quit->setText(QString(tr("Dismiss")));
-    apply = new QPushButton(this);
-    apply->setText(QString(tr("Apply")));
-    apply->setAutoDefault(false);
-    menu = new QComboBox(this);
+    ft_face_list = new font_list_widget(180, this);
+    ft_style_list = new font_list_widget(120, this);
+    ft_size_list = new font_list_widget(60, this);
+    ft_quit = new QPushButton(this);
+    ft_quit->setText(QString(tr("Dismiss")));
+    ft_apply = new QPushButton(this);
+    ft_apply->setText(QString(tr("Apply")));
+    ft_apply->setAutoDefault(false);
+    ft_menu = new QComboBox(this);
 
-    QSize qs = apply->sizeHint();
-    menu->setMinimumHeight(qs.height());
-    menu->setEditable(false);
+    QSize qs = ft_apply->sizeHint();
+    ft_menu->setMinimumHeight(qs.height());
+    ft_menu->setEditable(false);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(4);
@@ -516,7 +516,7 @@ QTfontPopup::QTfontPopup(QTbag *owner, int indx, void *arg) :
     QLabel *label = new QLabel(this);
     label->setText(QString(tr("Faces")));
     vb->addWidget(label);
-    vb->addWidget(face_list);
+    vb->addWidget(ft_face_list);
     hbox->addLayout(vb);
 
     vb = new QVBoxLayout(0);
@@ -524,7 +524,7 @@ QTfontPopup::QTfontPopup(QTbag *owner, int indx, void *arg) :
     label = new QLabel(this);
     label->setText(QString(tr("Styles")));
     vb->addWidget(label);
-    vb->addWidget(style_list);
+    vb->addWidget(ft_style_list);
     hbox->addLayout(vb);
 
     vb = new QVBoxLayout(0);
@@ -532,55 +532,55 @@ QTfontPopup::QTfontPopup(QTbag *owner, int indx, void *arg) :
     label = new QLabel(this);
     label->setText(QString(tr("Sizes")));
     vb->addWidget(label);
-    vb->addWidget(size_list);
+    vb->addWidget(ft_size_list);
     hbox->addLayout(vb);
     vbox->addLayout(hbox);
 
     QGroupBox *gb = new QGroupBox(this);
     gb->setTitle(QString(tr("Preview")));
-    preview = new QTextEdit(gb);
-    preview->setFixedHeight(50);
+    ft_preview = new QTextEdit(gb);
+    ft_preview->setFixedHeight(50);
     vb = new QVBoxLayout(gb);
     vb->setMargin(2);
     vb->setSpacing(4);
-    vb->addWidget(preview);
+    vb->addWidget(ft_preview);
     vbox->addWidget(gb);
 
     hbox = new QHBoxLayout(0);
     hbox->setMargin(4);
     hbox->setSpacing(2);
-    hbox->addWidget(apply);
-    hbox->addWidget(menu);
-    hbox->addWidget(quit);
+    hbox->addWidget(ft_apply);
+    hbox->addWidget(ft_menu);
+    hbox->addWidget(ft_quit);
     vbox->addLayout(hbox);
 
-    connect(face_list,
+    connect(ft_face_list,
         SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
         SLOT(face_changed_slot(QListWidgetItem*, QListWidgetItem*)));
-    connect(style_list,
+    connect(ft_style_list,
         SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
         SLOT(style_changed_slot(QListWidgetItem*, QListWidgetItem*)));
-    connect(size_list,
+    connect(ft_size_list,
         SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
         SLOT(size_changed_slot(QListWidgetItem*, QListWidgetItem*)));
-    connect(menu, SIGNAL(activated(int)), this, SLOT(menu_choice_slot(int)));
+    connect(ft_menu, SIGNAL(activated(int)), this, SLOT(menu_choice_slot(int)));
 
-    connect(apply, SIGNAL(clicked()), this, SLOT(action_slot()));
-    connect(quit, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    connect(ft_apply, SIGNAL(clicked()), this, SLOT(action_slot()));
+    connect(ft_quit, SIGNAL(clicked()), this, SLOT(quit_slot()));
 
     for (int i = 1; i < FC.num_app_fonts; i++) {
         QFont *fnt;
         FC.getFont(&fnt, i);
         add_choice(fnt, FC.getLabel(i));
     }
-    menu->setCurrentIndex(indx-1);
+    ft_menu->setCurrentIndex(indx-1);
 
-    fdb = new QFontDatabase();
+    ft_fdb = new QFontDatabase();
     menu_choice_slot(indx - 1);
 }
 
 
-QTfontPopup::~QTfontPopup()
+QTfontDlg::~QTfontDlg()
 {
     for (int i = 0; i < 4; i++) {
         if (activeFontSels[i] == this) {
@@ -608,7 +608,7 @@ QTfontPopup::~QTfontPopup()
 //  2.  whether or not deselecting the caller causes popdown.
 //
 void
-QTfontPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
+QTfontDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
 {
     p_caller = c;
     p_no_desel = no_dsl;
@@ -635,7 +635,7 @@ QTfontPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
 // GRpopup override
 //
 void
-QTfontPopup::popdown()
+QTfontDlg::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -646,10 +646,10 @@ QTfontPopup::popdown()
 }
 
 
-// GRfontPopup override
+// GRfontDlg override
 // Set the font.
 void
-QTfontPopup::set_font_name(const char *fontname)
+QTfontDlg::set_font_name(const char *fontname)
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -667,7 +667,7 @@ QTfontPopup::set_font_name(const char *fontname)
 // Update the label text (if a label is being user).
 //
 void
-QTfontPopup::update_label(const char *text)
+QTfontDlg::update_label(const char *text)
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -680,14 +680,14 @@ QTfontPopup::update_label(const char *text)
 
 
 void
-QTfontPopup::select_font(const QFont *fnt)
+QTfontDlg::select_font(const QFont *fnt)
 {
     if (!fnt)
         return;
     QString fam = fnt->family();
-    QList<QListWidgetItem*> list = face_list->findItems(fam, Qt::MatchExactly);
+    QList<QListWidgetItem*> list = ft_face_list->findItems(fam, Qt::MatchExactly);
     if (list.size() > 0) {
-        face_list->setCurrentItem(list.at(0));
+        ft_face_list->setCurrentItem(list.at(0));
         face_changed_slot(list.at(0), 0);
     }
     else {
@@ -700,9 +700,9 @@ QTfontPopup::select_font(const QFont *fnt)
             while (ix && fam.at(ix - 1) == QChar(' '))
                 ix--;
             fam.truncate(ix);
-            list = face_list->findItems(fam, Qt::MatchExactly);
+            list = ft_face_list->findItems(fam, Qt::MatchExactly);
             if (list.size() > 0) {
-                face_list->setCurrentItem(list.at(0));
+                ft_face_list->setCurrentItem(list.at(0));
                 face_changed_slot(list.at(0), 0);
                 found = true;
             }
@@ -710,46 +710,46 @@ QTfontPopup::select_font(const QFont *fnt)
         if (!found)
             return;
     }
-    QString sty = fdb->styleString(*fnt);
-    list = style_list->findItems(sty, Qt::MatchExactly);
+    QString sty = ft_fdb->styleString(*fnt);
+    list = ft_style_list->findItems(sty, Qt::MatchExactly);
     if (list.size() > 0)
-        style_list->setCurrentItem(list.at(0));
+        ft_style_list->setCurrentItem(list.at(0));
     int sz = fnt->pointSize();
     if (sz < 0)
         sz = fnt->pixelSize();
     QString qs =  QString("%1").arg(sz);
-    list = size_list->findItems(qs, Qt::MatchExactly);
+    list = ft_size_list->findItems(qs, Qt::MatchExactly);
     if (list.size() > 0)
-        size_list->setCurrentItem(list.at(0));
+        ft_size_list->setCurrentItem(list.at(0));
 
-    preview->setFont(*fnt);
-    preview->setPlainText(QString(PREVIEW_STRING));
+    ft_preview->setFont(*fnt);
+    ft_preview->setPlainText(QString(PREVIEW_STRING));
 }
 
 
 QFont *
-QTfontPopup::current_selection()
+QTfontDlg::current_selection()
 {
-    QListWidgetItem *item = face_list->currentItem();
+    QListWidgetItem *item = ft_face_list->currentItem();
     if (!item)
         return (0);
     QString qface = item->text();
-    item = style_list->currentItem();
+    item = ft_style_list->currentItem();
     if (!item)
         return (0);
     QString qstyle = item->text();
-    item = size_list->currentItem();
+    item = ft_size_list->currentItem();
     if (!item)
         return (0);
     int sz = item->text().toInt();
-    return (new QFont(fdb->font(qface, qstyle, sz)));
+    return (new QFont(ft_fdb->font(qface, qstyle, sz)));
 }
 
 
 char *
-QTfontPopup::current_face()
+QTfontDlg::current_face()
 {
-    QListWidgetItem *item = face_list->currentItem();
+    QListWidgetItem *item = ft_face_list->currentItem();
     if (!item)
         return (0);
     QString qface = item->text();
@@ -758,9 +758,9 @@ QTfontPopup::current_face()
 
 
 char *
-QTfontPopup::current_style()
+QTfontDlg::current_style()
 {
-    QListWidgetItem *item = style_list->currentItem();
+    QListWidgetItem *item = ft_style_list->currentItem();
     if (!item)
         return (0);
     QString qstyle = item->text();
@@ -769,9 +769,9 @@ QTfontPopup::current_style()
 
 
 int
-QTfontPopup::current_size()
+QTfontDlg::current_size()
 {
-    QListWidgetItem *item = size_list->currentItem();
+    QListWidgetItem *item = ft_size_list->currentItem();
     if (!item)
         return (0);
     return (item->text().toInt());
@@ -779,14 +779,14 @@ QTfontPopup::current_size()
 
 
 void
-QTfontPopup::add_choice(const QFont *, const char *descr)
+QTfontDlg::add_choice(const QFont *, const char *descr)
 {
-    menu->addItem(QString(descr));
+    ft_menu->addItem(QString(descr));
 }
 
 
 void
-QTfontPopup::action_slot()
+QTfontDlg::action_slot()
 {
     char *face = current_face();
     if (!face)
@@ -819,7 +819,7 @@ QTfontPopup::action_slot()
     }
     *t++ = ' ';
     snprintf(t, 8, "%d", sz);
-    int fnum = menu->currentIndex() + 1;
+    int fnum = ft_menu->currentIndex() + 1;
     FC.setName(spec, fnum);
     if (p_callback)
         (*p_callback)(FC.getLabel(fnum), spec, p_cb_arg);
@@ -829,7 +829,7 @@ QTfontPopup::action_slot()
 
 
 void
-QTfontPopup::quit_slot()
+QTfontDlg::quit_slot()
 {
     emit dismiss();
     delete this;
@@ -837,93 +837,93 @@ QTfontPopup::quit_slot()
 
 
 void
-QTfontPopup::face_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
+QTfontDlg::face_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
 {
     if (!new_item) {
-        preview->setPlainText(QString(""));
+        ft_preview->setPlainText(QString(""));
         return;
     }
     QString qface = new_item->text();
 
     QString qstyle;
-    if (style_list->currentItem())
-        qstyle = style_list->currentItem()->text();
-    style_list->clear();
+    if (ft_style_list->currentItem())
+        qstyle = ft_style_list->currentItem()->text();
+    ft_style_list->clear();
 
     QString qsize;
-    if (size_list->currentItem())
-        qsize = size_list->currentItem()->text();
-    size_list->clear();
+    if (ft_size_list->currentItem())
+        qsize = ft_size_list->currentItem()->text();
+    ft_size_list->clear();
 
-    QStringList styles = fdb->styles(qface);
+    QStringList styles = ft_fdb->styles(qface);
     for (int i = 0; i < styles.size(); i++)
-        style_list->addItem(styles.at(i));
+        ft_style_list->addItem(styles.at(i));
 
-    QList<int> sizes = fdb->smoothSizes(qface, styles.at(0));
+    QList<int> sizes = ft_fdb->smoothSizes(qface, styles.at(0));
     for (int i = 0; i < sizes.size(); i++)
-        size_list->addItem(QString("%1").arg(sizes.at(i)));
+        ft_size_list->addItem(QString("%1").arg(sizes.at(i)));
 
-    QList<QListWidgetItem*> list = style_list->findItems(qstyle,
+    QList<QListWidgetItem*> list = ft_style_list->findItems(qstyle,
         Qt::MatchExactly);
     if (list.size() > 0)
-        style_list->setCurrentItem(list.at(0));
+        ft_style_list->setCurrentItem(list.at(0));
     else
-        style_list->setCurrentRow(0);
+        ft_style_list->setCurrentRow(0);
 
-    list = size_list->findItems(qsize, Qt::MatchExactly);
+    list = ft_size_list->findItems(qsize, Qt::MatchExactly);
     if (list.size() > 0)
-        size_list->setCurrentItem(list.at(0));
+        ft_size_list->setCurrentItem(list.at(0));
     else
-        size_list->setCurrentRow(0);
+        ft_size_list->setCurrentRow(0);
 
     QFont *fnt = current_selection();
     if (fnt) {
-        preview->setFont(*fnt);
+        ft_preview->setFont(*fnt);
         delete fnt;
     }
     else
-        preview->setPlainText(QString(""));
+        ft_preview->setPlainText(QString(""));
 }
 
 
 void
-QTfontPopup::style_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
+QTfontDlg::style_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
 {
     (void)new_item;
     QFont *fnt = current_selection();
     if (fnt) {
-        preview->setFont(*fnt);
+        ft_preview->setFont(*fnt);
         delete fnt;
     }
     else
-        preview->setPlainText(QString(""));
+        ft_preview->setPlainText(QString(""));
 }
 
 
 void
-QTfontPopup::size_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
+QTfontDlg::size_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
 {
     (void)new_item;
     QFont *fnt = current_selection();
     if (fnt) {
-        preview->setFont(*fnt);
+        ft_preview->setFont(*fnt);
         delete fnt;
-        preview->setPlainText(QString(PREVIEW_STRING));
+        ft_preview->setPlainText(QString(PREVIEW_STRING));
     }
     else
-        preview->setPlainText(QString(""));
+        ft_preview->setPlainText(QString(""));
 }
 
 
 void
-QTfontPopup::menu_choice_slot(int indx)
+QTfontDlg::menu_choice_slot(int indx)
 {
     indx++;
-    face_list->clear();
-    style_list->clear();
-    size_list->clear();
+    ft_face_list->clear();
+    ft_style_list->clear();
+    ft_size_list->clear();
 
-    QStringList families = fdb->families();
+    QStringList families = ft_fdb->families();
     for (int i = 0; i < families.size(); i++) {
 
         // The isFixedPitch function lies, have to identify fixed
@@ -942,7 +942,7 @@ QTfontPopup::menu_choice_slot(int indx)
         bool fixed = (w1 >= w2);
 
         if (!FC.isFixed(indx) || fixed)
-            face_list->addItem(families.at(i));
+            ft_face_list->addItem(families.at(i));
     }
     QFont *fnt;
     FC.getFont(&fnt, indx);

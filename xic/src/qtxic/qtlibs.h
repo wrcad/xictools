@@ -78,6 +78,7 @@ private slots:
     void item_selection_changed();
     void noovr_btn_slot(bool);
     void dismiss_btn_slot();
+    void font_changed_slot(int);
 
 private:
     void pop_up_contents();

@@ -247,17 +247,9 @@ QTedit::flash_msg_here(int xx, int yy, const char *msg, ...)
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_container_add(GTK_CONTAINER(popup), label);
 
-    int mwid, mhei;
-    gtk_MonitorGeom(QTmainwin::self()->Shell(), 0, 0, &mwid, &mhei);
-    GtkRequisition req;
-    gtk_widget_get_requisition(popup, &req);
-    if (x + req.width > mwid)
-        x = mwid - req.width;
-    if (y + req.height > mhei)
-        y = mhei - req.height;
-    gtk_window_move(GTK_WINDOW(popup), x, y);
-    gtk_window_set_transient_for(GTK_WINDOW(popup),
-        GTK_WINDOW(QTmainwin::self()->Shell()));
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
+        popup, QTmainwin::self()->Viewport());
+
 
     gtk_widget_show(popup);
 

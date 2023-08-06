@@ -53,9 +53,11 @@
 #include "qtinterf/qtsearch.h"
 #include "qtinterf/qttextw.h"
 #include "qtinterf/qtmsg.h"
+#include "qtinterf/qtinput.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QMenuBar>
 #include <QMenu>
@@ -66,6 +68,9 @@
 #include <QTreeWidget>
 #include <QTreeWidget>
 #include <QHeaderView>
+#include <QMouseEvent>
+#include <QMimeData>
+
 
 //-----------------------------------------------------------------------------
 // Pop-up panel and supporting functions for script debugger.
@@ -111,28 +116,9 @@ cMain::DbgLoad(MenuEnt *ent)
 // End of cMain functions.
 
 
-// Default window size, assumes 6X13 chars, 80 cols, 20 rows
-// with a 2-pixel margin
-#define DEF_WIDTH 484
-#define DEF_HEIGHT 264
-
-// line buffer size
-#define LINESIZE 1024
-
 #define DEF_FILE "unnamed"
 
 namespace {
-    /*
-    // Drag/drop stuff.
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-    */
-
-
     // for hardcopies
     HCcb dbgHCcb =
     {
@@ -159,10 +145,6 @@ namespace {
 //  1.  returns 0 immediately if call is reentrant
 //  2.  ErasePrompt() safe to call, does nothing while
 //      editor is active
-
-namespace {
-    const char *MIDX = "midx";
-}
 
 
 QTscriptDebuggerDlg *QTscriptDebuggerDlg::instPtr;
@@ -264,15 +246,19 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
     db_editmenu->addSeparator();
     // Cut to Clipboard, <control>X, db_cut_proc, 0, 0
     a = db_editmenu->addAction(tr("Cut to Clipboard"));
+    a->setData(1);
     a->setShortcut(QKeySequence("Ctrl+X"));
     // Copy to Clipboard, <control>C, db_copy_proc,  0, 0
     a = db_editmenu->addAction(tr("Copy to Clipboard"));
+    a->setData(2);
     a->setShortcut(QKeySequence("Ctrl+C"));
     // Paste from Clipboard, <control>V, db_paste_proc, 0, 0
     a = db_filemenu->addAction(tr("Paste from Clipboard"));
+    a->setData(3);
     a->setShortcut(QKeySequence("Ctrl+V"));
     // Paste Primary, <alt>P, db_paste_prim_proc, 0, 0
     a = db_editmenu->addAction(tr("Paste Primary"));
+    a->setData(4);
     a->setShortcut(QKeySequence("Alt+P"));
     connect(db_editmenu, SIGNAL(triggered(QAction*)),
         this, SLOT(edit_menu_slot(QAction*)));
@@ -299,18 +285,20 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
         this, SLOT(exec_menu_slot(QAction*)));
 
     // Options menu.
-    QMenu *menu = menubar->addMenu(tr("_Options"));
+    QMenu *menu = menubar->addMenu(tr("&Options"));
     // _Search, 0, db_search_proc, 0, <CheckItem>);
     a = menu->addAction(tr("&Search"));
+    a->setData(1);
     a->setCheckable(true);
     // _Font, 0, db_font_proc, 0, <CheckItem>
     a = menu->addAction(tr("&Font"));
+    a->setData(2);
     a->setCheckable(true);
     connect(menu, SIGNAL(triggered(QAction*)),
         this, SLOT(options_menu_slot(QAction*)));
 
     // Help menu.
-    menu = menubar->addMenu(tr("_Help"));
+    menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, db_action_proc, HelpCode, 0
     a = menu->addAction(tr("&Help"));
     a->setShortcut(QKeySequence("Ctrl+H"));
@@ -325,6 +313,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
     db_modebtn = new QPushButton(tr("Run"));
     hbox->addWidget(db_modebtn);
     db_modebtn->setEnabled(false);
+    db_modebtn->setMaximumWidth(80);
     connect(db_modebtn, SIGNAL(clicked()), this, SLOT(mode_btn_slot()));
 
     // labels in frame
@@ -342,30 +331,30 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
     // text window with scroll bar
     //
     wb_textarea = new QTtextEdit();
+    wb_textarea->setMouseTracking(true);
+    wb_textarea->setAcceptDrops(true);
+    vbox->addWidget(wb_textarea);
+    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(textChanged()),
+        this, SLOT(text_changed_slot()));
+    connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
+        this, SLOT(mime_data_received_slot(const QMimeData*)));
 
+    QTextDocument *doc = wb_textarea->document();
+    connect(doc, SIGNAL(contentsChange(int, int, int)),
+        this, SLOT(text_change_slot(int, int, int)));
+
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED))
+        wb_textarea->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+//XXX handle key press
 /*
-    g_signal_connect(G_OBJECT(wb_textarea), "button-press-event",
-        G_CALLBACK(db_text_btn_hdlr), 0);
-
     gtk_widget_add_events(wb_shell, GDK_KEY_PRESS_MASK);
     g_signal_connect(G_OBJECT(wb_shell), "key-press-event",
         G_CALLBACK(db_key_dn_hdlr), 0);
-
-    gtk_widget_set_size_request(wb_textarea, DEF_WIDTH, DEF_HEIGHT);
-
-    // The font change pop-up uses this to redraw the widget
-    g_object_set_data(G_OBJECT(wb_textarea), "font_changed",
-        (void*)db_font_changed);
-
-    gtk_table_attach(GTK_TABLE(form), contr, 0, 1, 2, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
-
-    // drop site
-    gtk_drag_dest_set(wb_textarea, GTK_DEST_DEFAULT_ALL, target_table,
-        n_targets, GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(wb_textarea), "drag-data-received",
-        G_CALLBACK(db_drag_data_received), 0);
 
     GtkTextBuffer *tbf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
@@ -373,19 +362,18 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
         G_CALLBACK(db_insert_text_proc), this);
     g_signal_connect(G_OBJECT(tbf), "delete-range",
         G_CALLBACK(db_delete_range_proc), this);
-    db_in_undo = false;
-    check_sens();
 
     if (db_caller) {
         g_signal_connect(G_OBJECT(db_caller), "toggled",
             G_CALLBACK(db_cancel_proc), wb_shell);
     }
-
-    text_set_editable(wb_textarea, true);
     text_set_change_hdlr(wb_textarea, db_change_proc, 0, true);
-    gtk_widget_set_sensitive(db_execmenu, false);
-    gtk_window_set_focus(GTK_WINDOW(wb_shell), wb_textarea);
 */
+
+    db_in_undo = false;
+    check_sens();
+    wb_textarea->setReadOnly(false);
+    db_execmenu->setEnabled(false);
 }
 
 
@@ -412,6 +400,15 @@ QTscriptDebuggerDlg::~QTscriptDebuggerDlg()
 }
 
 
+QSize
+QTscriptDebuggerDlg::sizeHint() const
+{
+    int fw, fh;
+    QTfont::stringBounds(0, FNT_FIXED, &fw, &fh);
+    return (QSize(80*fw + 4, 32*fh));
+}
+
+
 // Check/set menu item sensitivity for items that change during editing.
 //
 void
@@ -429,52 +426,49 @@ QTscriptDebuggerDlg::check_sens()
 void
 QTscriptDebuggerDlg::set_mode(DBmode mode)
 {
-    /*
     if (mode == DBedit) {
         if (db_mode != DBedit) {
             db_mode = DBedit;
-            text_set_editable(wb_textarea, true);
+            wb_textarea->set_editable(true);
             refresh(true, locPresent);
-            text_set_change_hdlr(wb_textarea, db_change_proc, 0, true);
-            gtk_label_set_text(GTK_LABEL(db_modelabel), "Edit Mode");
-            gtk_widget_set_sensitive(db_execmenu, false);
-            gtk_widget_set_sensitive(db_editmenu, true);
-            g_object_set(G_OBJECT(db_modebtn), "label", "Run", (char*)0);
+//XXX            text_set_change_hdlr(wb_textarea, db_change_proc, 0, true);
+            db_modelabel->setText(tr("Edit Mode"));
+            db_execmenu->setEnabled(false);
+            db_editmenu->setEnabled(true);
+//            g_object_set(G_OBJECT(db_modebtn), "label", "Run", (char*)0);
 
-            GdkCursor *c = gdk_cursor_new(GDK_XTERM);
-            gdk_window_set_cursor(
-                gtk_text_view_get_window(GTK_TEXT_VIEW(wb_textarea),
-                GTK_TEXT_WINDOW_TEXT), c);
-            g_object_unref(G_OBJECT(c));
+//            GdkCursor *c = gdk_cursor_new(GDK_XTERM);
+//            gdk_window_set_cursor(
+//                gtk_text_view_get_window(GTK_TEXT_VIEW(wb_textarea),
+//                GTK_TEXT_WINDOW_TEXT), c);
+//            g_object_unref(G_OBJECT(c));
         }
     }
     else if (mode == DBrun) {
         if (db_mode != DBrun) {
             db_mode = DBrun;
-            text_set_change_hdlr(wb_textarea, db_change_proc, 0, false);
-            text_set_editable(wb_textarea, false);
+//            text_set_change_hdlr(wb_textarea, db_change_proc, 0, false);
+            wb_textarea->set_editable(false);
             refresh(true, locPresent);
             start();
-            gtk_label_set_text(GTK_LABEL(db_modelabel), "Exec Mode");
-            gtk_widget_set_sensitive(db_execmenu, true);
-            gtk_widget_set_sensitive(db_editmenu, false);
-            g_object_set(G_OBJECT(db_modebtn), "label", "Edit", (char*)0);
+            db_modelabel->setText(tr("Exec Mode"));
+            db_execmenu->setEnabled(true);
+            db_editmenu->setEnabled(false);
+//            g_object_set(G_OBJECT(db_modebtn), "label", "Edit", (char*)0);
 
-            GdkCursor *c = gdk_cursor_new(GDK_TOP_LEFT_ARROW);
-            gdk_window_set_cursor(
-                gtk_text_view_get_window(GTK_TEXT_VIEW(wb_textarea),
-                GTK_TEXT_WINDOW_TEXT),  c);
-            g_object_unref(G_OBJECT(c));
+//            GdkCursor *c = gdk_cursor_new(GDK_TOP_LEFT_ARROW);
+//            gdk_window_set_cursor(
+//                gtk_text_view_get_window(GTK_TEXT_VIEW(wb_textarea),
+//                GTK_TEXT_WINDOW_TEXT),  c);
+//            g_object_unref(G_OBJECT(c));
         }
     }
-    */
 }
 
 
 bool
 QTscriptDebuggerDlg::load_from_menu(MenuEnt *ent)
 {
-    /*
     if (db_load_pop) {
         const char *entry = ent->menutext + strlen("/User/");
         // entry is the same as ent->entry, but contains the menu path
@@ -493,7 +487,6 @@ QTscriptDebuggerDlg::load_from_menu(MenuEnt *ent)
             return (true);
         }
     }
-    */
     return (false);
 }
 
@@ -729,7 +722,7 @@ QTscriptDebuggerDlg::write_file(const char *fname)
     FILE *fp = fopen(fname, "w");
     if (!fp) {
         // shouldn't happen
-        PopUpMessage("Can't open file, text not saved", true);
+        QTbag::PopUpMessage("Can't open file, text not saved", true);
         return (false);
     }
 #ifdef WIN32
@@ -819,7 +812,7 @@ QTscriptDebuggerDlg::check_save(int code)
         if (db_last_code != code) {
             db_last_code = code;
             snprintf(buf, sizeof(buf), "Text has been modified.  %s", str);
-            PopUpMessage(buf, false);
+            QTbag::PopUpMessage(buf, false);
             return (true);
         }
         if (wb_message)
@@ -835,11 +828,8 @@ QTscriptDebuggerDlg::check_save(int code)
 void
 QTscriptDebuggerDlg::refresh(bool mode_switch, locType loc, bool clear)
 {
-    /*
-    if (!Dbg)
-        return;
     char *s = listing(clear ? false : mode_switch);
-    double val = text_get_scroll_value(wb_textarea);
+    double val = wb_textarea->get_scroll_value();
     if (db_mode == DBedit) {
         db_in_undo = true;
         wb_textarea->set_chars(s);
@@ -853,7 +843,7 @@ QTscriptDebuggerDlg::refresh(bool mode_switch, locType loc, bool clear)
         if (loc == locStart)
             val = 0.0;
         else if (loc == locFollowCurrent)
-            val = text_get_scroll_to_line_value(wb_textarea, db_line, val);
+            val = wb_textarea->get_scroll_to_line_value(db_line, val);
         db_in_undo = true;
         if (mode_switch || clear) {
             wb_textarea->clear();
@@ -865,16 +855,16 @@ QTscriptDebuggerDlg::refresh(bool mode_switch, locType loc, bool clear)
                     end++;
                 if (*end == '\n')
                     end++;
-                text_insert_chars_at_point(wb_textarea, c, t, 1, -1);
-                text_insert_chars_at_point(wb_textarea, 0, t+1, end-t-1, -1);
+                wb_textarea->insert_chars_at_point(&c, t, 1, -1);
+                wb_textarea->insert_chars_at_point(0, t+1, end-t-1, -1);
                 if (!*end)
                     break;
                 t = end;
             }
         }
         else {
-            char *str = text_get_chars(wb_textarea, 0, -1);
-            GdkColor *c = gtk_PopupColor(GRattrColorHl1);
+            char *str = wb_textarea->get_chars();
+            QColor c = QTbag::PopupColor(GRattrColorHl1);
             char *t = s;
             while (*t) {
                 char *end = t;
@@ -883,7 +873,7 @@ QTscriptDebuggerDlg::refresh(bool mode_switch, locType loc, bool clear)
                 if (*end == '\n')
                     end++;
                 if (*t != str[t-s])
-                    text_replace_chars(wb_textarea, c, t, t-s, t-s + 1);
+                    wb_textarea->replace_chars(&c, t, t-s, t-s + 1);
                 if (!*end)
                     break;
                 t = end;
@@ -891,12 +881,11 @@ QTscriptDebuggerDlg::refresh(bool mode_switch, locType loc, bool clear)
             delete [] str;
         }
         db_in_undo = false;
-        double vt = text_get_scroll_value(wb_textarea);
+        double vt = wb_textarea->get_scroll_value();
         if (fabs(vt - val) > 1.0)
-            text_set_scroll_value(wb_textarea, val);
+            wb_textarea->set_scroll_value(val);
     }
     delete [] s;
-    */
 }
 
 
@@ -907,12 +896,12 @@ QTscriptDebuggerDlg::refresh(bool mode_switch, locType loc, bool clear)
 char *
 QTscriptDebuggerDlg::listing(bool mode_switch)
 {
-    /*
-    if (!Dbg)
-        return (0);
+// line buffer size
+#define LINESIZE 1024
+
     char buf[LINESIZE];
     if (!db_file_ptr) {
-        char *str = text_get_chars(wb_textarea, 0, -1);
+        char *str = wb_textarea->get_chars();
         char *t = str;
         if (mode_switch) {
             if (db_mode == DBedit) {
@@ -1018,8 +1007,6 @@ QTscriptDebuggerDlg::listing(bool mode_switch)
     }
     fseek(db_file_ptr, ftold, SEEK_SET);
     return (str);
-    */
-return (0);
 }
 
 
@@ -1028,9 +1015,6 @@ return (0);
 void
 QTscriptDebuggerDlg::monitor()
 {
-    /*
-    if (!Dbg)
-        return;
     char buf[256];
     char *s = buf;
     *s = 0;
@@ -1058,737 +1042,19 @@ QTscriptDebuggerDlg::monitor()
     }
     if (!db_vlist)
         return;
-    if (!GTKdev::exists() || !GTKmainwin::exists())
+    if (!QTdev::exists() || !QTmainwin::exists())
         return;
 
     db_vars_pop = new QTdbgVarsDlg(&db_vars_pop);
-    if (!db_vars_pop->Shell()) {
-        delete db_vars_pop;
-        return;
-    }
 
-    GTKdev::self()->SetPopupLocation(GRloc(LW_LR), db_vars_pop->Shell(),
+    QTdev::self()->SetPopupLocation(GRloc(LW_LR), db_vars_pop,
         wb_shell);
-    gtk_window_set_transient_for(GTK_WINDOW(db_vars_pop->Shell()),
-        GTK_WINDOW(GTKmainwin::self()->Shell()));
-    gtk_widget_show(db_vars_pop->Shell());
+    db_vars_pop->show();
 
     // Calling this from here avoids spontaneously selecting the first
     // entry, not sure that I know why.  The selection is very
     // undesirable since it prompts for a value.
     db_vars_pop->update(db_vlist);
-    */
-}
-
-
-// Export for the variables window selection handler.
-//
-const char *
-QTscriptDebuggerDlg::var_prompt(const char *text, const char *buf, bool *busy)
-{
-    *busy = false;
-    /*
-    if (Dbg->db_row_cb_flag) {
-        PL()->EditPrompt(buf, text, PLedUpdate);
-        *busy = true;
-        return (0);
-    }
-    Dbg->db_row_cb_flag = true;
-    char *in = PL()->EditPrompt(buf, text);
-    if (!Dbg) {
-        *busy = true;
-        return (0);
-    }
-    Dbg->db_row_cb_flag = false;
-    return (in);
-    */
-return (0);
-}
-
-
-// Static function.
-// Don't want to wait in the interrupt handler, take care of single
-// step when user clicks on active line.
-//
-int
-QTscriptDebuggerDlg::db_step_idle(void*)
-{
-    if (instPtr)
-        instPtr->step();
-    return (false);
-}
-
-
-void
-QTscriptDebuggerDlg::file_menu_slot(QAction*)
-{
-}
-
-
-void
-QTscriptDebuggerDlg::edit_menu_slot(QAction*)
-{
-}
-
-
-void
-QTscriptDebuggerDlg::exec_menu_slot(QAction*)
-{
-}
-
-
-void
-QTscriptDebuggerDlg::options_menu_slot(QAction*)
-{
-}
-
-
-void
-QTscriptDebuggerDlg::help_menu_slot(QAction*)
-{
-}
-
-
-void
-QTscriptDebuggerDlg::mode_btn_slot()
-{
-}
-
-#ifdef notdef
-
-// Private static GTK signal handler.
-// Undo last insert/delete.
-//
-void
-QTscriptDebuggerDlg::db_undo_proc(GtkWidget*, void*)
-{
-    /*
-    if (!Dbg || !Dbg->db_undo_list)
-        return;
-    histlist *h = Dbg->db_undo_list;
-    Dbg->db_undo_list = Dbg->db_undo_list->h_next;
-    Dbg->db_in_undo = true;
-    GtkTextBuffer *tbf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
-    GtkTextIter istart;
-    gtk_text_buffer_get_iter_at_offset(tbf, &istart, h->h_cpos);
-    gtk_text_buffer_place_cursor(tbf, &istart);
-    if (h->h_deletion)
-        gtk_text_buffer_insert(tbf, &istart, h->h_text, -1);
-    else {
-        GtkTextIter iend;
-        gtk_text_buffer_get_iter_at_offset(tbf, &iend,
-            h->h_cpos + strlen(h->h_text));
-        gtk_text_buffer_delete(tbf, &istart, &iend);
-    }
-    Dbg->db_in_undo = false;
-    h->h_next = Dbg->db_redo_list;
-    Dbg->db_redo_list = h;
-    Dbg->check_sens();
-    */
-}
-
-
-// Private static GTK signal handler.
-// Redo last undone operation.
-//
-void
-QTscriptDebuggerDlg::db_redo_proc(GtkWidget*, void*)
-{
-    if (!Dbg || !Dbg->db_redo_list)
-        return;
-    histlist *h = Dbg->db_redo_list;
-    Dbg->db_redo_list = Dbg->db_redo_list->h_next;
-    Dbg->db_in_undo = true;
-    GtkTextBuffer *tbf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
-    GtkTextIter istart;
-    gtk_text_buffer_get_iter_at_offset(tbf, &istart, h->h_cpos);
-    gtk_text_buffer_place_cursor(tbf, &istart);
-    if (!h->h_deletion)
-        gtk_text_buffer_insert(tbf, &istart, h->h_text, -1);
-    else {
-        GtkTextIter iend;
-        gtk_text_buffer_get_iter_at_offset(tbf, &iend,
-            h->h_cpos + strlen(h->h_text));
-        gtk_text_buffer_delete(tbf, &istart, &iend);
-    }
-    Dbg->db_in_undo = false;
-    h->h_next = Dbg->db_undo_list;
-    Dbg->db_undo_list = h;
-    Dbg->check_sens();
-}
-
-
-// Private static GTK signal handler.
-// Kill selected text, copy to clipboard.
-//
-void
-QTscriptDebuggerDlg::db_cut_proc(GtkWidget*, void*)
-{
-    if (Dbg)
-        text_cut_clipboard(Dbg->wb_textarea);
-}
-
-
-// Private static GTK signal handler.
-// Copy selected text to the clipboard.
-//
-void
-QTscriptDebuggerDlg::db_copy_proc(GtkWidget*, void*)
-{
-    if (Dbg)
-        text_copy_clipboard(Dbg->wb_textarea);
-}
-
-
-// Private static GTK signal handler.
-// Insert clipboard text.
-//
-void
-QTscriptDebuggerDlg::db_paste_proc(GtkWidget*, void*)
-{
-    if (Dbg)
-        text_paste_clipboard(Dbg->wb_textarea);
-}
-
-
-// Private static GTK signal handler.
-// Insert primary selection text.
-//
-void
-QTscriptDebuggerDlg::db_paste_prim_proc(GtkWidget*, void*)
-{
-    if (Dbg) {
-        GtkTextBuffer *tbf =
-            gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
-        GtkClipboard *cb = gtk_clipboard_get_for_display(
-            gdk_display_get_default(), GDK_SELECTION_PRIMARY);
-        gtk_text_buffer_paste_clipboard(tbf, cb, 0, true);
-    }
-}
-
-
-// Private static GTK signal handler.
-// Pop up the regular expression search dialog.
-//
-void
-QTscriptDebuggerDlg::db_search_proc(GtkWidget *caller, void*)
-{
-    if (Dbg) {
-        if (!Dbg->db_search_pop)
-            Dbg->db_search_pop = new GTKsearchPopup(caller, Dbg->wb_textarea,
-                0, 0);
-        if (GTKdev::GetStatus(caller))
-            Dbg->db_search_pop->pop_up_search(MODE_ON);
-        else
-            Dbg->db_search_pop->pop_up_search(MODE_OFF);
-    }
-}
-
-
-// Private static GTK signal handler.
-// Font selector pop-up.
-//
-void
-QTscriptDebuggerDlg::db_font_proc(GtkWidget *caller, void*)
-{
-    if (Dbg) {
-        if (GTKdev::GetStatus(caller))
-            Dbg->PopUpFontSel(caller, GRloc(), MODE_ON, 0, 0, FNT_FIXED);
-        else
-            Dbg->PopUpFontSel(caller, GRloc(), MODE_OFF, 0, 0, FNT_FIXED);
-    }
-}
-
-
-// Static function.
-// This is called when the font is changed.
-//
-void
-QTscriptDebuggerDlg::db_font_changed()
-{
-    if (Dbg)
-        Dbg->refresh(false, locPresent, true);
-}
-
-
-// Static function.
-void
-QTscriptDebuggerDlg::db_cancel_proc(GtkWidget*, void*)
-{
-    if (Dbg) {
-        if (Dbg->db_status == Eexecuting)
-            EV()->InitCallback();  // force a return if pushed
-        if (Dbg->check_save(CancelCode)) {
-            if (Dbg->db_caller)
-                GTKdev::Select(Dbg->db_caller);
-            return;
-        }
-        XM()->PopUpDebug(0, MODE_OFF);
-    }
-}
-
-
-// Static function.
-// Tiggle configuration mode.
-//
-void
-QTscriptDebuggerDlg::db_mode_proc(GtkWidget*, void*)
-{
-    if (Dbg) {
-        if (Dbg->db_mode == DBedit)
-            Dbg->set_mode(DBrun);
-        else
-            Dbg->set_mode(DBedit);
-    }
-}
-
-
-// Static function.
-// This callback is called whenever the text is modified.
-//
-void
-QTscriptDebuggerDlg::db_change_proc(GtkWidget*, void*)
-{
-    if (Dbg->db_text_changed)
-        return;
-    Dbg->db_text_changed = true;
-    gtk_widget_set_sensitive(Dbg->db_saveas, true);
-    char buf[256];
-    const char *fname = gtk_label_get_text(GTK_LABEL(Dbg->db_title));
-    strcpy(buf, DEF_FILE);
-    if (fname) {
-        while (isspace(*fname))
-            fname++;
-    }
-    if (fname && *fname) {
-        strcpy(buf, fname);
-        char *f = buf;
-        while (*f && !isspace(*f))
-            f++;
-        *f++ = ' ';
-        *f++ = ' ';
-        strcpy(f, "(modified)");
-    }
-    gtk_label_set_text(GTK_LABEL(Dbg->db_title), buf);
-    gtk_widget_set_sensitive(Dbg->db_modebtn, true);
-}
-
-
-// Static function.
-// Handle key presses in the debugger window.  This provides additional
-// accelerators for start/run/reset.
-//
-int
-QTscriptDebuggerDlg::db_key_dn_hdlr(GtkWidget*, GdkEvent *event, void*)
-{
-    if (!Dbg)
-        return (false);
-    if (Dbg->db_mode == DBedit) {
-        // Eat the spacebar press, so that it doesn't "press" the
-        // mode button.
-        if (event->key.string) {
-            if (*event->key.string == ' ')
-                return (true);
-        }
-        return (false);
-    }
-    else if (Dbg->db_mode == DBrun) {
-        if (event->key.string) {
-            switch (*event->key.string) {
-            case ' ':
-            case 't':
-                Dbg->step();
-                return (true);
-            case 'r':
-                Dbg->run();
-                return (true);
-            case '\b':
-            case 'e':
-                Dbg->start();
-                return (true);
-            }
-        }
-    }
-    return (false);
-}
-
-
-namespace {
-    // Return true if s matches word followed by null or space.
-    //
-    bool
-    isword(const char *s, const char *word)
-    {
-        while (*word) {
-            if (*s != *word)
-                return (false);
-            s++;
-            word++;
-        }
-        return (!*s || isspace(*s));
-    }
-
-
-    // Return true if line is in a function definition.
-    //
-    bool
-    infunc(char *line)
-    {
-        char *t = strchr(line, '\n');
-        while (t) {
-            while (isspace(*t))
-                t++;
-            if (isword(t, "function"))
-                break;
-            if (isword(t, "endfunc"))
-                return (true);
-            t = strchr(t, '\n');
-        }
-        return (false);
-    }
-}
-
-
-// Static function.
-// Handle button presses in the text area.
-//
-int
-QTscriptDebuggerDlg::db_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
-{
-    if (Dbg->db_mode == DBedit)
-        return (false);
-    if (event->type != GDK_BUTTON_PRESS)
-        return (false);
-
-    char *string = text_get_chars(caller, 0, -1);
-    int x = (int)event->button.x;
-    int y = (int)event->button.y;
-    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
-        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
-    GtkTextIter iline;
-    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
-    y = gtk_text_iter_get_line(&iline);
-    char *line_start = string + gtk_text_iter_get_offset(&iline);
-    // line_start points to start of selected line, or 0
-    if (!line_start) {
-        text_select_range(caller, 0, 0);
-        delete [] string;
-        return (true);
-    }
-
-    char *s = line_start;
-    while (isspace(*s) && *s != '\n')
-        s++;
-
-    text_select_range(caller, 0, 0);
-
-    if (line_start > string) {
-        if (*(line_start - 2) == '\\') {
-            // continuation line, invalid target
-            delete [] string;
-            return (true);
-        }
-    }
-
-    // don't allow line in a function block
-    if (infunc(line_start)) {
-        delete [] string;
-        return (true);
-    }
-
-    char buf[16];
-    strncpy(buf, s, 16);
-    s = buf;
-    delete [] string;
-
-    if (!*s || *s == '\n' || *s == '#' || (*s == '/' && *(s+1) == '/'))
-        // pointing beyond text, or blank/comment line
-        return (true);
-    // these lines are never visited
-    if (isword(s, "end"))
-        return (true);
-    if (isword(s, "else"))
-        return (true);
-    if (isword(s, "function"))
-        return (true);
-    if (isword(s, "endfunc"))
-        return (true);
-    Dbg->breakpoint(y);
-    return (true);
-}
-
-
-// Static function.
-// General menu processing.
-//
-void
-QTscriptDebuggerDlg::db_action_proc(GtkWidget *caller, void *client_data)
-{
-    long code = (long)g_object_get_data(G_OBJECT(caller), MIDX);
-    if (!Dbg)
-        return;
-    switch (code) {
-    case CancelCode:
-        db_cancel_proc(caller, client_data);
-        break;
-    case NewCode:
-        if (Dbg->check_save(NewCode))
-            return;
-        histlist::destroy(Dbg->db_undo_list);
-        Dbg->db_undo_list = 0;
-        histlist::destroy(Dbg->db_redo_list);
-        Dbg->db_redo_list = 0;
-        Dbg->check_sens();
-        text_set_chars(Dbg->wb_textarea, "");
-        delete [] Dbg->db_file_path;
-        Dbg->db_file_path = 0;
-        SI()->Clear();
-        SI()->Init();
-        Dbg->breakpoint(-1);
-        Dbg->db_line = 0;
-        gtk_widget_set_sensitive(Dbg->db_saveas, false);
-        gtk_label_set_text(GTK_LABEL(Dbg->db_title), DEF_FILE);
-        Dbg->set_mode(DBedit);
-        Dbg->db_text_changed = false;
-        break;
-    case LoadCode:
-        if (Dbg->db_load_pop) {
-            Dbg->db_load_pop->popdown();
-            return;
-        }
-        if (Dbg->check_save(LoadCode))
-            return;
-        Dbg->db_load_pop = Dbg->PopUpEditString(0, GRloc(),
-            "Enter script file name: ", Dbg->db_dropfile, db_open_cb,
-                0, 214, 0);
-        if (Dbg->db_load_pop)
-            Dbg->db_load_pop->register_usrptr((void**)&Dbg->db_load_pop);
-        break;
-    case PrintCode:
-        if (dbgHCcb.command)
-            delete [] dbgHCcb.command;
-        dbgHCcb.command = lstring::copy(GRappIf()->GetPrintCmd());
-        Dbg->PopUpPrint(caller, &dbgHCcb, HCtext);
-        break;
-    case SaveAsCode:
-        {
-            if (Dbg->wb_input) {
-                Dbg->wb_input->popdown();
-                return;
-            }
-            Dbg->PopUpInput(0, Dbg->db_file_path, "Save File",
-                db_do_saveas_proc, 0);
-        }
-        break;
-    case CRLFcode:
-#ifdef WIN32
-        GTKdev::self()->SetCRLFtermination(GTKdev::GetStatus(caller));
-#endif
-        break;
-    case RunCode:
-        Dbg->set_mode(DBrun);
-        Dbg->run();
-        break;
-    case StepCode:
-        Dbg->set_mode(DBrun);
-        Dbg->step();
-        break;
-    case StartCode:
-        Dbg->set_mode(DBrun);
-        Dbg->start();
-        break;
-    case MonitorCode:
-        Dbg->monitor();
-        break;
-    case HelpCode:
-        DSPmainWbag(PopUpHelp("xic:debug"))
-        break;
-    default:
-        break;
-    }
-}
-
-
-// Static function.
-// Callback for the load command popup.
-//
-ESret
-QTscriptDebuggerDlg::db_open_cb(const char *namein, void*)
-{
-    delete [] Dbg->db_dropfile;
-    Dbg->db_dropfile = 0;
-    if (namein && *namein) {
-        char *name = pathlist::expand_path(namein, false, true);
-        char *t = strrchr(name, '.');
-        if (!t || !lstring::cieq(t, SCR_SUFFIX)) {
-            char *ct = new char[strlen(name) + strlen(SCR_SUFFIX) + 1];
-            strcpy(ct, name);
-            strcat(ct, SCR_SUFFIX);
-            delete [] name;
-            name = ct;
-        }
-        FILE *fp;
-        if (lstring::strdirsep(name))
-            fp = fopen(name, "r");
-        else {
-            // Search will check CWD first, then path.
-            char *fpath;
-            fp = pathlist::open_path_file(name,
-                CDvdb()->getVariable(VA_ScriptPath), "r", &fpath, true);
-            if (fpath) {
-                delete [] name;
-                name = fpath;
-            }
-        }
-        if (fp) {
-            fclose(fp);
-            delete [] Dbg->db_file_path;
-            Dbg->db_file_path = name;
-            EV()->InitCallback();
-            GTKpkg::self()->RegisterIdleProc(db_open_idle, 0);
-            return (ESTR_DN);
-        }
-        else
-            delete [] name;
-    }
-    Dbg->db_load_pop->update("No file found, try again: ", 0);
-    return (ESTR_IGN);
-}
-
-
-// This need to be in an idle proc, otherwise problems if a script is
-// already running.
-//
-int
-QTscriptDebuggerDlg::db_open_idle(void*)
-{
-    if (Dbg) {
-        Dbg->db_file_ptr = fopen(Dbg->db_file_path, "r");
-        if (Dbg->db_file_ptr) {
-            histlist::destroy(Dbg->db_undo_list);
-            Dbg->db_undo_list = 0;
-            histlist::destroy(Dbg->db_redo_list);
-            Dbg->db_redo_list = 0;
-            Dbg->check_sens();
-            Dbg->db_in_undo = true;
-            Dbg->set_mode(DBedit);
-            SI()->Clear();
-            Dbg->breakpoint(-1);
-            Dbg->db_line = 0;
-            Dbg->start();
-            Dbg->db_text_changed = false;
-            Dbg->db_in_undo = false;
-            gtk_widget_set_sensitive(Dbg->db_saveas, false);
-            gtk_label_set_text(GTK_LABEL(Dbg->db_title), Dbg->db_file_path);
-            fclose(Dbg->db_file_ptr);
-            Dbg->db_file_ptr = 0;
-            gtk_widget_set_sensitive(Dbg->db_modebtn, true);
-        }
-    }
-    return (0);
-}
-
-
-// Static function.
-// Callback passed to PopUpInput() to actually save the file.
-//
-void
-QTscriptDebuggerDlg::db_do_saveas_proc(const char *fnamein, void*)
-{
-    char *fname = pathlist::expand_path(fnamein, false, true);
-    if (!Dbg->write_file(fname)) {
-        delete [] fname;
-        return;
-    }
-    Dbg->db_text_changed = false;
-    gtk_widget_set_sensitive(Dbg->db_saveas, false);
-    if (Dbg->wb_input)
-        Dbg->wb_input->popdown();
-    gtk_label_set_text(GTK_LABEL(Dbg->db_title), fname);
-    delete [] fname;
-}
-
-
-// Static function.
-// Receive drop data (a path name).
-//
-void
-QTscriptDebuggerDlg::db_drag_data_received(GtkWidget *caller, GdkDragContext *context, gint,
-    gint, GtkSelectionData *data, guint, guint time, void*)
-{
-    if (gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8 &&
-            gtk_selection_data_get_data(data)) {
-        if (Dbg) {
-            char *src = (char*)gtk_selection_data_get_data(data);
-            if (Dbg->db_mode == DBedit) {
-                GdkModifierType mask;
-                gdk_window_get_pointer(0, 0, 0, &mask);
-                if (mask & GDK_CONTROL_MASK) {
-                    // If we're pressing Ctrl, insert text at cursor.
-                    int n = text_get_insertion_point(caller);
-                    text_insert_chars_at_point(caller, 0, src, strlen(src), n);
-                    gtk_drag_finish(context, true, false, time);
-                    return;
-                }
-            }
-            if (gtk_selection_data_get_target(data) ==
-                    gdk_atom_intern("TWOSTRING", true)) {
-                // Drops from content lists may be in the form
-                // "fname_or_chd\ncellname".  Keep the filename.
-                char *t = strchr(src, '\n');
-                if (t)
-                    *t = 0;
-            }
-
-            delete [] Dbg->db_dropfile;
-            Dbg->db_dropfile = 0;
-            Dbg->set_mode(DBedit);
-            if (Dbg->db_load_pop)
-                Dbg->db_load_pop->update(0, src);
-            else {
-                Dbg->db_dropfile = lstring::copy(src);
-                db_action_proc(Dbg->db_load_btn, 0);
-            }
-            gtk_drag_finish(context, true, false, time);
-            return;
-        }
-    }
-    gtk_drag_finish(context, false, false, time);
-}
-
-
-void
-QTscriptDebuggerDlg::db_insert_text_proc(GtkTextBuffer*, GtkTextIter *istart, char *text,
-    int len, void*)
-{
-    if (!Dbg || Dbg->db_in_undo || !len)
-        return;
-    int start = gtk_text_iter_get_offset(istart);
-    char *ntext = new char[len+1];
-    strncpy(ntext, text, len);
-    ntext[len] = 0;
-    Dbg->db_undo_list = new histlist(ntext, start, false, Dbg->db_undo_list);
-    histlist::destroy(Dbg->db_redo_list);
-    Dbg->db_redo_list = 0;
-    Dbg->check_sens();
-}
-
-
-void
-QTscriptDebuggerDlg::db_delete_range_proc(GtkTextBuffer*, GtkTextIter *istart,
-    GtkTextIter *iend, void*)
-{
-    if (!Dbg || Dbg->db_in_undo)
-        return;
-    int start = gtk_text_iter_get_offset(istart);
-    char *s = lstring::tocpp(gtk_text_iter_get_text(istart, iend));
-    Dbg->db_undo_list = new histlist(s, start, true, Dbg->db_undo_list);
-    histlist::destroy(Dbg->db_redo_list);
-    Dbg->db_redo_list = 0;
-    Dbg->check_sens();
 }
 
 
@@ -1861,6 +1127,649 @@ QTscriptDebuggerDlg::db_mklist(const char *str)
     }
     return (wl0);
 }
+
+
+// Static function.
+// Export for the variables window selection handler.
+//
+const char *
+QTscriptDebuggerDlg::var_prompt(const char *text, const char *buf, bool *busy)
+{
+    *busy = false;
+    if (!instPtr)
+        return (0);
+    if (instPtr->db_row_cb_flag) {
+        PL()->EditPrompt(buf, text, PLedUpdate);
+        *busy = true;
+        return (0);
+    }
+    instPtr->db_row_cb_flag = true;
+    char *in = PL()->EditPrompt(buf, text);
+    if (!instPtr) {
+        *busy = true;
+        return (0);
+    }
+    instPtr->db_row_cb_flag = false;
+    return (in);
+}
+
+
+// Static function.
+// Don't want to wait in the interrupt handler, take care of single
+// step when user clicks on active line.
+//
+int
+QTscriptDebuggerDlg::db_step_idle(void*)
+{
+    if (instPtr)
+        instPtr->step();
+    return (false);
+}
+
+
+// Static function.
+// Callback for the load command popup.
+//
+ESret
+QTscriptDebuggerDlg::db_open_cb(const char *namein, void*)
+{
+    delete [] instPtr->db_dropfile;
+    instPtr->db_dropfile = 0;
+    if (namein && *namein) {
+        char *name = pathlist::expand_path(namein, false, true);
+        char *t = strrchr(name, '.');
+        if (!t || !lstring::cieq(t, SCR_SUFFIX)) {
+            char *ct = new char[strlen(name) + strlen(SCR_SUFFIX) + 1];
+            strcpy(ct, name);
+            strcat(ct, SCR_SUFFIX);
+            delete [] name;
+            name = ct;
+        }
+        FILE *fp;
+        if (lstring::strdirsep(name))
+            fp = fopen(name, "r");
+        else {
+            // Search will check CWD first, then path.
+            char *fpath;
+            fp = pathlist::open_path_file(name,
+                CDvdb()->getVariable(VA_ScriptPath), "r", &fpath, true);
+            if (fpath) {
+                delete [] name;
+                name = fpath;
+            }
+        }
+        if (fp) {
+            fclose(fp);
+            delete [] instPtr->db_file_path;
+            instPtr->db_file_path = name;
+            EV()->InitCallback();
+            QTpkg::self()->RegisterIdleProc(db_open_idle, 0);
+            return (ESTR_DN);
+        }
+        else
+            delete [] name;
+    }
+    instPtr->db_load_pop->update("No file found, try again: ", 0);
+    return (ESTR_IGN);
+}
+
+
+// Static function.
+// This needs to be in an idle proc, otherwise problems if a script is
+// already running.
+//
+int
+QTscriptDebuggerDlg::db_open_idle(void*)
+{
+// XXX ridiculous make non-static
+    if (instPtr) {
+        instPtr->db_file_ptr = fopen(instPtr->db_file_path, "r");
+        if (instPtr->db_file_ptr) {
+            histlist::destroy(instPtr->db_undo_list);
+            instPtr->db_undo_list = 0;
+            histlist::destroy(instPtr->db_redo_list);
+            instPtr->db_redo_list = 0;
+            instPtr->check_sens();
+            instPtr->db_in_undo = true;
+            instPtr->set_mode(DBedit);
+            SI()->Clear();
+            instPtr->breakpoint(-1);
+            instPtr->db_line = 0;
+            instPtr->start();
+            instPtr->db_text_changed = false;
+            instPtr->db_in_undo = false;
+            instPtr->db_saveas->setEnabled(false);
+            instPtr->db_title->setText(instPtr->db_file_path);
+            fclose(instPtr->db_file_ptr);
+            instPtr->db_file_ptr = 0;
+            instPtr->db_modebtn->setEnabled(true);
+        }
+    }
+    return (0);
+}
+
+
+// Static function.
+// Callback passed to PopUpInput() to actually save the file.
+//
+void
+QTscriptDebuggerDlg::db_do_saveas_proc(const char *fnamein, void*)
+{
+    char *fname = pathlist::expand_path(fnamein, false, true);
+    if (!instPtr->write_file(fname)) {
+        delete [] fname;
+        return;
+    }
+    instPtr->db_text_changed = false;
+    instPtr->db_saveas->setEnabled(false);
+    if (instPtr->wb_input)
+        instPtr->wb_input->popdown();
+    instPtr->db_title->setText(fname);
+    delete [] fname;
+}
+
+
+void
+QTscriptDebuggerDlg::file_menu_slot(QAction *a)
+{
+    if (a->data().toInt() == NewCode) {
+        if (check_save(NewCode))
+            return;
+        histlist::destroy(db_undo_list);
+        db_undo_list = 0;
+        histlist::destroy(db_redo_list);
+        db_redo_list = 0;
+        check_sens();
+        wb_textarea->clear();
+        delete [] db_file_path;
+        db_file_path = 0;
+        SI()->Clear();
+        SI()->Init();
+        breakpoint(-1);
+        db_line = 0;
+        db_saveas->setEnabled(false);
+        db_title->setText(DEF_FILE);
+        set_mode(DBedit);
+        db_text_changed = false;
+        return;
+    }
+    if (a->data().toInt() == LoadCode) {
+        if (db_load_pop) {
+            db_load_pop->popdown();
+            return;
+        }
+        if (check_save(LoadCode))
+            return;
+        db_load_pop = PopUpEditString(0, GRloc(),
+            "Enter script file name: ", db_dropfile, db_open_cb,
+                0, 214, 0);
+        if (db_load_pop)
+            db_load_pop->register_usrptr((void**)&db_load_pop);
+        return;
+    }
+    if (a->data().toInt() == PrintCode) {
+        if (dbgHCcb.command)
+            delete [] dbgHCcb.command;
+        dbgHCcb.command = lstring::copy(GRappIf()->GetPrintCmd());
+        PopUpPrint(a, &dbgHCcb, HCtext);
+        return;
+    }
+    if (a->data().toInt() == SaveAsCode) {
+        if (wb_input) {
+            wb_input->popdown();
+            return;
+        }
+        PopUpInput(0, db_file_path, "Save File", db_do_saveas_proc, 0);
+        return;
+    }
+    if (a->data().toInt() == CRLFcode) {
+#ifdef WIN32
+        QTdev::self()->SetCRLFtermination(QTdev::GetStatus(a));
+#endif
+        return;
+    }
+    if (a->data().toInt() == CancelCode) {
+        if (db_status == Eexecuting)
+            EV()->InitCallback();  // force a return if pushed
+        if (check_save(CancelCode)) {
+            if (db_caller)
+                QTdev::Select(db_caller);
+            return;
+        }
+        XM()->PopUpDebug(0, MODE_OFF);
+    }
+}
+
+
+void
+QTscriptDebuggerDlg::edit_menu_slot(QAction *a)
+{
+    if (a == db_undo) {
+        if (!db_undo_list)
+            return;
+        histlist *h = db_undo_list;
+        db_undo_list = db_undo_list->h_next;
+        db_in_undo = true;
+/*XXX
+        GtkTextBuffer *tbf =
+            gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
+        GtkTextIter istart;
+        gtk_text_buffer_get_iter_at_offset(tbf, &istart, h->h_cpos);
+        gtk_text_buffer_place_cursor(tbf, &istart);
+        if (h->h_deletion)
+            gtk_text_buffer_insert(tbf, &istart, h->h_text, -1);
+        else {
+            GtkTextIter iend;
+            gtk_text_buffer_get_iter_at_offset(tbf, &iend,
+                h->h_cpos + strlen(h->h_text));
+            gtk_text_buffer_delete(tbf, &istart, &iend);
+        }
+*/
+        db_in_undo = false;
+        h->h_next = db_redo_list;
+        db_redo_list = h;
+        check_sens();
+        return;
+    }
+
+    if (a == db_redo) {
+        if (!db_redo_list)
+            return;
+        histlist *h = db_redo_list;
+        db_redo_list = db_redo_list->h_next;
+        db_in_undo = true;
+/*XXX
+        GtkTextBuffer *tbf =
+            gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
+        GtkTextIter istart;
+        gtk_text_buffer_get_iter_at_offset(tbf, &istart, h->h_cpos);
+        gtk_text_buffer_place_cursor(tbf, &istart);
+        if (!h->h_deletion)
+            gtk_text_buffer_insert(tbf, &istart, h->h_text, -1);
+        else {
+            GtkTextIter iend;
+            gtk_text_buffer_get_iter_at_offset(tbf, &iend,
+                h->h_cpos + strlen(h->h_text));
+            gtk_text_buffer_delete(tbf, &istart, &iend);
+        }
+*/
+        db_in_undo = false;
+        h->h_next = db_undo_list;
+        db_undo_list = h;
+        check_sens();
+    }
+    if (a->data().toInt() == 1) {
+        wb_textarea->cut_clipboard();
+        return;
+    }
+    if (a->data().toInt() == 2) {
+        wb_textarea->copy_clipboard();
+        return;
+    }
+    if (a->data().toInt() == 3) {
+        wb_textarea->paste_clipboard();
+        return;
+    }
+    if (a->data().toInt() == 4) {
+/*XXX
+        GtkTextBuffer *tbf =
+            gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
+        GtkClipboard *cb = gtk_clipboard_get_for_display(
+            gdk_display_get_default(), GDK_SELECTION_PRIMARY);
+        gtk_text_buffer_paste_clipboard(tbf, cb, 0, true);
+*/
+    }
+}
+
+
+void
+QTscriptDebuggerDlg::exec_menu_slot(QAction *a)
+{
+    if (a->data().toInt() == RunCode) {
+        set_mode(DBrun);
+        run();
+        return;
+    }
+    if (a->data().toInt() == StepCode) {
+        set_mode(DBrun);
+        step();
+        return;
+    }
+    if (a->data().toInt() == StartCode) {
+        set_mode(DBrun);
+        start();
+        return;
+    }
+    if (a->data().toInt() == MonitorCode) {
+        monitor();
+    }
+}
+
+
+void
+QTscriptDebuggerDlg::options_menu_slot(QAction *a)
+{
+    if (a->data().toInt() == 1) {
+        if (QTdev::GetStatus(a)) {
+            if (!db_search_pop) {
+                char *initstr = wb_textarea->get_selection();
+                db_search_pop = new QTsearchDlg(this, initstr);
+                delete [] initstr;
+            }
+        }
+        else if (db_search_pop)
+            db_search_pop->popdown();
+        return;
+    }
+    if (a->data().toInt() == 2) {
+        if (QTdev::GetStatus(a))
+            PopUpFontSel(a, GRloc(), MODE_ON, 0, 0, FNT_FIXED);
+        else
+            PopUpFontSel(a, GRloc(), MODE_OFF, 0, 0, FNT_FIXED);
+    }
+}
+
+
+void
+QTscriptDebuggerDlg::help_menu_slot(QAction*)
+{
+    DSPmainWbag(PopUpHelp("xic:debug"))
+}
+
+
+void
+QTscriptDebuggerDlg::mode_btn_slot()
+{
+    if (db_mode == DBedit)
+        set_mode(DBrun);
+    else
+        set_mode(DBedit);
+}
+
+
+namespace {
+    // Return true if s matches word followed by null or space.
+    //
+    bool isword(const char *s, const char *word)
+    {
+        while (*word) {
+            if (*s != *word)
+                return (false);
+            s++;
+            word++;
+        }
+        return (!*s || isspace(*s));
+    }
+
+
+    // Return true if line is in a function definition.
+    //
+    bool infunc(const char *line)
+    {
+        const char *t = strchr(line, '\n');
+        while (t) {
+            while (isspace(*t))
+                t++;
+            if (isword(t, "function"))
+                break;
+            if (isword(t, "endfunc"))
+                return (true);
+            t = strchr(t, '\n');
+        }
+        return (false);
+    }
+}
+
+
+void
+QTscriptDebuggerDlg::mouse_press_slot(QMouseEvent *ev)
+{
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
+        return;
+    }
+
+    if (db_mode == DBedit) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    char *str = wb_textarea->get_chars();
+    int x = ev->x();
+    int y = ev->y();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
+    int pos = cur.position();
+
+    const char *lineptr = str;
+    int line = 0;
+    for (int i = 0; i <= pos; i++) {
+        if (str[i] == '\n') {
+            if (i == pos) {
+                // Clicked to right of line.
+                break;
+            }
+            line++;
+            lineptr = str + i+1;
+        }
+    }
+    if (!lineptr) {
+        wb_textarea->select_range(0, 0);
+        delete [] str;
+        return;
+    }
+
+    const char *s = lineptr;
+    while (isspace(*s) && *s != '\n')
+        s++;
+    wb_textarea->select_range(0, 0);
+
+    if (lineptr > str) {
+        if (*(lineptr - 2) == '\\') {
+            // continuation line, invalid target
+            delete [] str;
+            return;
+        }
+    }
+
+    // don't allow line in a function block
+    if (infunc(lineptr)) {
+        delete [] str;
+        return;
+    }
+
+    char buf[16];
+    strncpy(buf, s, 16);
+    s = buf;
+    delete [] str;
+
+    if (!*s || *s == '\n' || *s == '#' || (*s == '/' && *(s+1) == '/'))
+        // clicked beyond text, or blank/comment line
+        return;
+    // these lines are never visited
+    if (isword(s, "end"))
+        return;
+    if (isword(s, "else"))
+        return;
+    if (isword(s, "function"))
+        return;
+    if (isword(s, "endfunc"))
+        return;
+    breakpoint(line);
+}
+
+
+void
+QTscriptDebuggerDlg::text_changed_slot()
+{
+    if (db_text_changed)
+        return;
+    db_text_changed = true;
+    db_saveas->setEnabled(true);
+    char buf[256];
+    QByteArray title_ba = db_title->text().toLatin1();
+    const char *fname = title_ba.constData();
+    strcpy(buf, DEF_FILE);
+    if (fname) {
+        while (isspace(*fname))
+            fname++;
+    }
+    if (fname && *fname) {
+        strcpy(buf, fname);
+        char *f = buf;
+        while (*f && !isspace(*f))
+            f++;
+        *f++ = ' ';
+        *f++ = ' ';
+        strcpy(f, "(modified)");
+    }
+    db_title->setText(buf);
+    db_modebtn->setEnabled(true);
+}
+
+
+void
+QTscriptDebuggerDlg::text_change_slot(int start, int nch_rm, int nch_add)
+{
+    if (nch_rm) {
+        // chars_deleted
+        if (db_in_undo)
+            return;
+        char *text = wb_textarea->get_chars();
+        char *ntext = new char[nch_rm+1];
+        strncpy(ntext, text+start, nch_rm);
+        ntext[nch_rm] = 0;
+        delete [] text;
+//XXX?        char *s = lstring::tocpp(gtk_text_iter_get_text(istart, iend));
+        db_undo_list = new histlist(ntext, start, true, db_undo_list);
+        histlist::destroy(db_redo_list);
+        db_redo_list = 0;
+        check_sens();
+    }
+    if (nch_add) {
+        // chars inserted
+        if (db_in_undo)
+            return;
+        char *text = wb_textarea->get_chars();
+        char *ntext = new char[nch_add+1];
+        strncpy(ntext, text+start, nch_add);
+        ntext[nch_add] = 0;
+        delete [] text;
+        db_undo_list = new histlist(ntext, start, false, db_undo_list);
+        histlist::destroy(db_redo_list);
+        db_redo_list = 0;
+        check_sens();
+    }
+}
+
+
+void
+QTscriptDebuggerDlg::mime_data_received_slot(const QMimeData *data)
+{
+    // Receive drop data (a path name).
+
+    QByteArray data_ba;
+    if (data->hasFormat("text/twostring"))
+        data_ba = data->data("text/twostring");
+    else if (data->hasFormat("text/plain"))
+        data_ba = data->data("text/plain");
+    else
+        return;
+    char *src = lstring::copy(data_ba.constData());
+    if (!src)
+        return;
+
+    if (db_mode == DBedit) {
+        if (QApplication::queryKeyboardModifiers() & Qt::ControlModifier) {
+            // If we're pressing Ctrl, insert text at cursor.
+            int n = wb_textarea->get_insertion_point();
+            wb_textarea->insert_chars_at_point(0, src, strlen(src), n);
+            delete [] src;
+            return;
+        }
+    }
+    // Drops from content lists may be in the form
+    // "fname_or_chd\ncellname".  Keep the filename.
+    char *t = strchr(src, '\n');
+    if (t)
+        *t = 0;
+
+    delete [] db_dropfile;
+    db_dropfile = 0;
+    set_mode(DBedit);
+    if (db_load_pop)
+        db_load_pop->update(0, src);
+    else {
+        db_dropfile = lstring::copy(src);
+        if (db_load_pop) {
+            db_load_pop->popdown();
+            return;
+        }
+        if (check_save(LoadCode))
+            return;
+        db_load_pop = PopUpEditString(0, GRloc(),
+            "Enter script file name: ", db_dropfile, db_open_cb,
+                0, 214, 0);
+        if (db_load_pop)
+            db_load_pop->register_usrptr((void**)&db_load_pop);
+    }
+    delete [] src;
+}
+
+
+void
+QTscriptDebuggerDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum))
+            wb_textarea->setFont(*fnt);
+        refresh(false, locPresent, true);
+    }
+}
+
+
+#ifdef notdef
+
+
+// Static function.
+// Handle key presses in the debugger window.  This provides additional
+// accelerators for start/run/reset.
+//
+int
+QTscriptDebuggerDlg::db_key_dn_hdlr(GtkWidget*, GdkEvent *event, void*)
+{
+    if (!Dbg)
+        return (false);
+    if (Dbg->db_mode == DBedit) {
+        // Eat the spacebar press, so that it doesn't "press" the
+        // mode button.
+        if (event->key.string) {
+            if (*event->key.string == ' ')
+                return (true);
+        }
+        return (false);
+    }
+    else if (Dbg->db_mode == DBrun) {
+        if (event->key.string) {
+            switch (*event->key.string) {
+            case ' ':
+            case 't':
+                Dbg->step();
+                return (true);
+            case 'r':
+                Dbg->run();
+                return (true);
+            case '\b':
+            case 'e':
+                Dbg->start();
+                return (true);
+            }
+        }
+    }
+    return (false);
+}
+
 // End of QTscriptDebuggerDlg functions.
 
 #endif
@@ -1899,6 +1808,12 @@ QTdbgVarsDlg::QTdbgVarsDlg(void *p)
         this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
     connect(dv_list, SIGNAL(itemSelectionChanged()),
         this, SLOT(item_selection_changed()));
+
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED))
+        dv_list->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     // Dismiss button
     //
@@ -1966,6 +1881,17 @@ QTdbgVarsDlg::dismiss_btn_slot()
     popdown();
 }
 
+
+void
+QTdbgVarsDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_FIXED))
+            dv_list->setFont(*fnt);
+//XXX needs redraw        update();
+    }
+}
 
 
 #ifdef notdef

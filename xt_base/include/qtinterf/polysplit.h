@@ -38,6 +38,9 @@
  $Id:$
  *========================================================================*/
 
+#ifndef POLYSPLIT_H
+#define POLYSPLIT_H
+
 //
 // The following code performs trapezoid decomp for ploygons.
 //
@@ -158,4 +161,6 @@ namespace qtinterf
         int zelcnt;
     };
 }
+
+#endif
 

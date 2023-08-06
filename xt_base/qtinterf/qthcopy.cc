@@ -133,7 +133,7 @@ namespace {
 #define MM(x) (pd_metric ? (x)*MMPI : (x))
 
 
-QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
+QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
     QDialog(wbag ? wbag->Shell() : 0)
 {
     pd_owner = wbag;
@@ -157,35 +157,35 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
     pd_lft_val = 0.0;
     pd_top_val = 0.0;
 
-    cmdtxtbox = 0;
-    cmdlab = 0;
-    wlabel = 0;
-    hlabel = 0;
-    xlabel = 0;
-    ylabel = 0;
-    wid = 0;
-    hei = 0;
-    left = 0;
-    top = 0;
-    portbtn = 0;
-    landsbtn = 0;
-    fitbtn = 0;
-    legbtn = 0;
-    tofbtn = 0;
-    metbtn = 0;
-    a4btn = 0;
-    ltrbtn = 0;
-    fontmenu = 0;
-    fmtmenu = 0;
-    resmenu = 0;
-    pgsmenu = 0;
-    frmbtn = 0;
-    hlpbtn = 0;
-    printbtn = 0;
-    dismissbtn = 0;
-    process = 0;
-    progress = 0;
-    printer_busy = false;
+    pd_cmdtxtbox = 0;
+    pd_cmdlab = 0;
+    pd_wlabel = 0;
+    pd_hlabel = 0;
+    pd_xlabel = 0;
+    pd_ylabel = 0;
+    pd_wid = 0;
+    pd_hei = 0;
+    pd_left = 0;
+    pd_top = 0;
+    pd_portbtn = 0;
+    pd_landsbtn = 0;
+    pd_fitbtn = 0;
+    pd_legbtn = 0;
+    pd_tofbtn = 0;
+    pd_metbtn = 0;
+    pd_a4btn = 0;
+    pd_ltrbtn = 0;
+    pd_fontmenu = 0;
+    pd_fmtmenu = 0;
+    pd_resmenu = 0;
+    pd_pgsmenu = 0;
+    pd_frmbtn = 0;
+    pd_hlpbtn = 0;
+    pd_printbtn = 0;
+    pd_dismissbtn = 0;
+    pd_process = 0;
+    pd_progress = 0;
+    pd_printer_busy = false;
 
     setWindowTitle(QString(tr("Print Control")));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -277,67 +277,67 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
     int row1cnt = 0;
     if (pd_textmode == HCgraphical) {
         if (cb && cb->hcframe) {
-            frmbtn = new QPushButton(this);
-            frmbtn->setText(QString(tr("Frame")));
-            frmbtn->setAutoDefault(false);
-            connect(frmbtn, SIGNAL(toggled(bool)),
+            pd_frmbtn = new QPushButton(this);
+            pd_frmbtn->setText(QString(tr("Frame")));
+            pd_frmbtn->setAutoDefault(false);
+            connect(pd_frmbtn, SIGNAL(toggled(bool)),
                 this, SLOT(frame_slot(bool)));
-            hbox->addWidget(frmbtn);
+            hbox->addWidget(pd_frmbtn);
             row1cnt++;
         }
-        fitbtn = new QCheckBox(this);
-        fitbtn->setText(QString(tr("Best Fit")));
-        connect(fitbtn, SIGNAL(toggled(bool)),
+        pd_fitbtn = new QCheckBox(this);
+        pd_fitbtn->setText(QString(tr("Best Fit")));
+        connect(pd_fitbtn, SIGNAL(toggled(bool)),
             this, SLOT(best_fit_slot(bool)));
-        hbox->addWidget(fitbtn);
+        hbox->addWidget(pd_fitbtn);
         row1cnt++;
         if (!cb || cb->legend != HClegNone) {
-            legbtn = new QCheckBox(this);
-            legbtn->setText(QString(tr("Legend")));
-            connect(legbtn, SIGNAL(toggled(bool)),
+            pd_legbtn = new QCheckBox(this);
+            pd_legbtn->setText(QString(tr("Legend")));
+            connect(pd_legbtn, SIGNAL(toggled(bool)),
                 this, SLOT(legend_slot(bool)));
-            hbox->addWidget(legbtn);
+            hbox->addWidget(pd_legbtn);
             row1cnt++;
         }
     }
     else {
         if (!cb || cb->legend != HClegNone) {
-            legbtn = new QCheckBox(this);
-            legbtn->setText(QString(tr("Legend")));
-            hbox->addWidget(legbtn);
+            pd_legbtn = new QCheckBox(this);
+            pd_legbtn->setText(QString(tr("Legend")));
+            hbox->addWidget(pd_legbtn);
             if (pd_legend == HClegNone)
-                legbtn->setEnabled(false);
+                pd_legbtn->setEnabled(false);
             else
-                legbtn->setChecked(pd_legend == HClegOn);
-            connect(legbtn, SIGNAL(toggled(bool)),
+                pd_legbtn->setChecked(pd_legend == HClegOn);
+            connect(pd_legbtn, SIGNAL(toggled(bool)),
                 this, SLOT(legend_slot(bool)));
             row1cnt++;
         }
         if (pd_textmode == HCtextPS) {
-            a4btn = new QCheckBox(this);
-            a4btn->setText(QString(tr("A4")));
-            connect(a4btn, SIGNAL(toggled(bool)),
+            pd_a4btn = new QCheckBox(this);
+            pd_a4btn->setText(QString(tr("A4")));
+            connect(pd_a4btn, SIGNAL(toggled(bool)),
                 this, SLOT(a4_slot(bool)));
-            hbox->addWidget(a4btn);
-            ltrbtn = new QCheckBox(this);
-            ltrbtn->setText(QString(tr("Letter")));
-            connect(ltrbtn, SIGNAL(toggled(bool)),
+            hbox->addWidget(pd_a4btn);
+            pd_ltrbtn = new QCheckBox(this);
+            pd_ltrbtn->setText(QString(tr("Letter")));
+            connect(pd_ltrbtn, SIGNAL(toggled(bool)),
                 this, SLOT(letter_slot(bool)));
-            hbox->addWidget(ltrbtn);
+            hbox->addWidget(pd_ltrbtn);
             hbox->addSpacing(20);
             if (pd_metric)
-                a4btn->setChecked(true);
+                pd_a4btn->setChecked(true);
             else
-                ltrbtn->setChecked(true);
+                pd_ltrbtn->setChecked(true);
             row1cnt++;
 
             pd_textfmt = PStimes;  // default postscript times
 
-            fontmenu = new QComboBox(this);
+            pd_fontmenu = new QComboBox(this);
             int entries = sizeof(textfonts)/sizeof(sFonts);
             int hist = -1;
             for (int i = 0; i < entries; i++) {
-                fontmenu->addItem(QString(textfonts[i].descr));
+                pd_fontmenu->addItem(QString(textfonts[i].descr));
                 if (pd_textfmt == textfonts[i].type)
                     hist = i;
             }
@@ -345,20 +345,20 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
                 hist = 0;
                 pd_textfmt = textfonts[0].type;
             }
-            fontmenu->setCurrentIndex(hist);
-            connect(fontmenu, SIGNAL(activated(int)),
+            pd_fontmenu->setCurrentIndex(hist);
+            connect(pd_fontmenu, SIGNAL(activated(int)),
                 this, SLOT(font_slot(int)));
-            hbox->addWidget(fontmenu);
+            hbox->addWidget(pd_fontmenu);
             row1cnt++;
         }
     }
     // Don't leave a lonely help button in the top row, move it to the
     // second row.
     if (row1cnt) {
-        hlpbtn = new QPushButton(this);
-        hlpbtn->setText(QString(tr("Help")));
-        hlpbtn->setAutoDefault(false);
-        hbox->addWidget(hlpbtn);
+        pd_hlpbtn = new QPushButton(this);
+        pd_hlpbtn->setText(QString(tr("Help")));
+        pd_hlpbtn->setAutoDefault(false);
+        hbox->addWidget(pd_hlpbtn);
         vbox->addLayout(hbox);
     }
     else
@@ -368,14 +368,14 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
     hbox = new QHBoxLayout(gb);
     hbox->setMargin(4);
     hbox->setSpacing(2);
-    cmdlab = new QLabel(gb);
-    cmdlab->setText(QString(tr(pd_tofile ? "File Name" : "Print Command")));
-    hbox->addWidget(cmdlab);
-    tofbtn = new QCheckBox(gb);
-    tofbtn->setText(QString(tr("To File")));
-    tofbtn->setChecked(pd_tofile);
-    connect(tofbtn, SIGNAL(toggled(bool)), this, SLOT(tofile_slot(bool)));
-    hbox->addWidget(tofbtn);
+    pd_cmdlab = new QLabel(gb);
+    pd_cmdlab->setText(QString(tr(pd_tofile ? "File Name" : "Print Command")));
+    hbox->addWidget(pd_cmdlab);
+    pd_tofbtn = new QCheckBox(gb);
+    pd_tofbtn->setText(QString(tr("To File")));
+    pd_tofbtn->setChecked(pd_tofile);
+    connect(pd_tofbtn, SIGNAL(toggled(bool)), this, SLOT(tofile_slot(bool)));
+    hbox->addWidget(pd_tofbtn);
     if (row1cnt)
         vbox->addWidget(gb);
     else {
@@ -383,17 +383,17 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         hbox->setMargin(0);
         hbox->setSpacing(2);
         hbox->addWidget(gb);
-        hlpbtn = new QPushButton(this);
-        hlpbtn->setText(QString(tr("Help")));
-        hlpbtn->setAutoDefault(false);
-        hbox->addWidget(hlpbtn);
+        pd_hlpbtn = new QPushButton(this);
+        pd_hlpbtn->setText(QString(tr("Help")));
+        pd_hlpbtn->setAutoDefault(false);
+        hbox->addWidget(pd_hlpbtn);
         vbox->addLayout(hbox);
     }
-    connect(hlpbtn, SIGNAL(clicked()), this, SLOT(help_slot()));
+    connect(pd_hlpbtn, SIGNAL(clicked()), this, SLOT(help_slot()));
 
-    cmdtxtbox = new QLineEdit(this);
-    cmdtxtbox->setText(QString(pd_tofile ? pd_tofilename : pd_cmdtext));
-    vbox->addWidget(cmdtxtbox);
+    pd_cmdtxtbox = new QLineEdit(this);
+    pd_cmdtxtbox->setText(QString(pd_tofile ? pd_tofilename : pd_cmdtext));
+    vbox->addWidget(pd_cmdtxtbox);
 
     if (pd_textmode == HCgraphical) {
         hbox = new QHBoxLayout(0);
@@ -405,27 +405,27 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         QHBoxLayout *hb = new QHBoxLayout(gb);
         hb->setMargin(2);
         hb->setSpacing(2);
-        portbtn = new QCheckBox(gb);
-        portbtn->setText(QString(tr("Portrait")));
-        hb->addWidget(portbtn);
-        connect(portbtn, SIGNAL(toggled(bool)),
+        pd_portbtn = new QCheckBox(gb);
+        pd_portbtn->setText(QString(tr("Portrait")));
+        hb->addWidget(pd_portbtn);
+        connect(pd_portbtn, SIGNAL(toggled(bool)),
             this, SLOT(portrait_slot(bool)));
-        landsbtn = new QCheckBox(gb);
-        landsbtn->setText(QString(tr("Landscape")));
-        hb->addWidget(landsbtn);
-        connect(landsbtn, SIGNAL(toggled(bool)),
+        pd_landsbtn = new QCheckBox(gb);
+        pd_landsbtn->setText(QString(tr("Landscape")));
+        hb->addWidget(pd_landsbtn);
+        connect(pd_landsbtn, SIGNAL(toggled(bool)),
             this, SLOT(landscape_slot(bool)));
         vb->addWidget(gb);
 
-        fmtmenu = new QComboBox(this);
+        pd_fmtmenu = new QComboBox(this);
         for (int i = 0; GRpkg::self()->HCof(i); i++) {
             if (pd_drvrmask & (1 << i))
                 continue;
-            fmtmenu->addItem(QString(GRpkg::self()->HCof(i)->descr));
+            pd_fmtmenu->addItem(QString(GRpkg::self()->HCof(i)->descr));
         }
-        fmtmenu->setCurrentIndex(pd_fmt);
-        connect(fmtmenu, SIGNAL(activated(int)), this, SLOT(format_slot(int)));
-        vb->addWidget(fmtmenu);
+        pd_fmtmenu->setCurrentIndex(pd_fmt);
+        connect(pd_fmtmenu, SIGNAL(activated(int)), this, SLOT(format_slot(int)));
+        vb->addWidget(pd_fmtmenu);
         hbox->addLayout(vb);
 
         vb = new QVBoxLayout(0);
@@ -439,17 +439,17 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         hb->addWidget(res);
         vb->addWidget(gb);
 
-        resmenu = new QComboBox(this);
+        pd_resmenu = new QComboBox(this);
         const char **s = GRpkg::self()->HCof(pd_fmt)->limits.resols;
         if (s && *s) {
             for (int i = 0; s[i]; i++)
-                resmenu->addItem(QString(s[i]));
+                pd_resmenu->addItem(QString(s[i]));
         }
         else
-            resmenu->addItem(QString("fixed"));
-        resmenu->setCurrentIndex(pd_resol);
-        connect(resmenu, SIGNAL(activated(int)), this, SLOT(resol_slot(int)));
-        vb->addWidget(resmenu);
+            pd_resmenu->addItem(QString("fixed"));
+        pd_resmenu->setCurrentIndex(pd_resol);
+        connect(pd_resmenu, SIGNAL(activated(int)), this, SLOT(resol_slot(int)));
+        vb->addWidget(pd_resmenu);
         hbox->addLayout(vb);
         vbox->addLayout(hbox);
 
@@ -462,72 +462,72 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         gb = new QGroupBox(this);
         hb = new QHBoxLayout(gb);
         hb->setMargin(2);
-        wlabel = new QCheckBox(gb);
-        wlabel->setText(QString(tr("Width")));
-        connect(wlabel, SIGNAL(toggled(bool)),
+        pd_wlabel = new QCheckBox(gb);
+        pd_wlabel->setText(QString(tr("Width")));
+        connect(pd_wlabel, SIGNAL(toggled(bool)),
             this, SLOT(auto_width_slot(bool)));
-        hb->addWidget(wlabel);
+        hb->addWidget(pd_wlabel);
         vb->addWidget(gb);
-        wid = new QDoubleSpinBox(this);
-        wid->setDecimals(2);
-        wid->setMinimum(MM(desc->limits.minwidth));
-        wid->setMaximum(MM(desc->limits.maxwidth));
-        wid->setValue(pd_wid_val);
-        wid->setSingleStep(0.1);
-        vb->addWidget(wid);
+        pd_wid = new QDoubleSpinBox(this);
+        pd_wid->setDecimals(2);
+        pd_wid->setMinimum(MM(desc->limits.minwidth));
+        pd_wid->setMaximum(MM(desc->limits.maxwidth));
+        pd_wid->setValue(pd_wid_val);
+        pd_wid->setSingleStep(0.1);
+        vb->addWidget(pd_wid);
         hbox->addLayout(vb);
 
         vb = new QVBoxLayout(0);
         gb = new QGroupBox(this);
         hb = new QHBoxLayout(gb);
         hb->setMargin(2);
-        hlabel = new QCheckBox(gb);
-        hlabel->setText(QString(tr("Height")));
-        connect(hlabel, SIGNAL(toggled(bool)),
+        pd_hlabel = new QCheckBox(gb);
+        pd_hlabel->setText(QString(tr("Height")));
+        connect(pd_hlabel, SIGNAL(toggled(bool)),
             this, SLOT(auto_height_slot(bool)));
-        hb->addWidget(hlabel);
+        hb->addWidget(pd_hlabel);
         vb->addWidget(gb);
-        hei = new QDoubleSpinBox(this);
-        hei->setDecimals(2);
-        hei->setMinimum(MM(desc->limits.minheight));
-        hei->setMaximum(MM(desc->limits.maxheight));
-        hei->setValue(pd_hei_val);
-        hei->setSingleStep(0.1);
-        vb->addWidget(hei);
+        pd_hei = new QDoubleSpinBox(this);
+        pd_hei->setDecimals(2);
+        pd_hei->setMinimum(MM(desc->limits.minheight));
+        pd_hei->setMaximum(MM(desc->limits.maxheight));
+        pd_hei->setValue(pd_hei_val);
+        pd_hei->setSingleStep(0.1);
+        vb->addWidget(pd_hei);
         hbox->addLayout(vb);
 
         vb = new QVBoxLayout(0);
         gb = new QGroupBox(this);
         hb = new QHBoxLayout(gb);
         hb->setMargin(2);
-        xlabel = new QLabel(gb);
-        xlabel->setText(QString(tr("Left")));
-        hb->addWidget(xlabel);
+        pd_xlabel = new QLabel(gb);
+        pd_xlabel->setText(QString(tr("Left")));
+        hb->addWidget(pd_xlabel);
         vb->addWidget(gb);
-        left = new QDoubleSpinBox(this);
-        left->setDecimals(2);
-        left->setMinimum(MM(desc->limits.minxoff));
-        left->setMaximum(MM(desc->limits.maxxoff));
-        left->setValue(pd_lft_val);
-        left->setSingleStep(0.1);
-        vb->addWidget(left);
+        pd_left = new QDoubleSpinBox(this);
+        pd_left->setDecimals(2);
+        pd_left->setMinimum(MM(desc->limits.minxoff));
+        pd_left->setMaximum(MM(desc->limits.maxxoff));
+        pd_left->setValue(pd_lft_val);
+        pd_left->setSingleStep(0.1);
+        vb->addWidget(pd_left);
         hbox->addLayout(vb);
 
         vb = new QVBoxLayout(0);
         gb = new QGroupBox(this);
         hb = new QHBoxLayout(gb);
         hb->setMargin(2);
-        ylabel = new QLabel(gb);
-        ylabel->setText(QString(tr("Bottom")));
-        hb->addWidget(ylabel);
+        pd_ylabel = new QLabel(gb);
+        pd_ylabel->setText(QString(tr("Bottom")));
+        hb->addWidget(pd_ylabel);
         vb->addWidget(gb);
-        top = new QDoubleSpinBox(this);
-        top->setDecimals(2);
-        top->setMinimum(MM(desc->limits.minyoff));
-        top->setMaximum(MM(desc->limits.maxyoff));
-        top->setValue(pd_top_val);
-        top->setSingleStep(0.1);
-        vb->addWidget(top);
+        pd_top = new QDoubleSpinBox(this);
+        pd_top->setDecimals(2);
+        pd_top->setMinimum(MM(desc->limits.minyoff));
+        pd_top->setMaximum(MM(desc->limits.maxyoff));
+        pd_top->setValue(pd_top_val);
+        pd_top->setSingleStep(0.1);
+        vb->addWidget(pd_top);
         hbox->addLayout(vb);
 
         vbox->addLayout(hbox);
@@ -536,19 +536,19 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
         hbox->setMargin(0);
         hbox->setSpacing(2);
 
-        pgsmenu = new QComboBox(this);
-        hbox->addWidget(pgsmenu);
+        pd_pgsmenu = new QComboBox(this);
+        hbox->addWidget(pd_pgsmenu);
         int i = 0;
         for (sMedia *m = pagesizes; m->name; m++, i++)
-            pgsmenu->addItem(QString(m->name));
-        connect(pgsmenu, SIGNAL(activated(int)),
+            pd_pgsmenu->addItem(QString(m->name));
+        connect(pd_pgsmenu, SIGNAL(activated(int)),
             this, SLOT(pagesize_slot(int)));
-        metbtn = new QCheckBox(this);
-        metbtn->setText(QString(tr("Metric (mm)")));
-        metbtn->setChecked(pd_metric);
-        connect(metbtn, SIGNAL(toggled(bool)), this, SLOT(metric_slot(bool)));
+        pd_metbtn = new QCheckBox(this);
+        pd_metbtn->setText(QString(tr("Metric (mm)")));
+        pd_metbtn->setChecked(pd_metric);
+        connect(pd_metbtn, SIGNAL(toggled(bool)), this, SLOT(metric_slot(bool)));
         hbox->addSpacing(20);
-        hbox->addWidget(metbtn);
+        hbox->addWidget(pd_metbtn);
         vbox->addLayout(hbox);
     }
 
@@ -556,17 +556,17 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
     hbox->setMargin(0);
     hbox->setSpacing(2);
 
-    printbtn = new QPushButton(this);
-    printbtn->setText(QString(tr("Print")));
-    printbtn->setAutoDefault(false);
-    connect(printbtn, SIGNAL(clicked()), this, SLOT(print_slot()));
-    hbox->addWidget(printbtn);
-    dismissbtn = new QPushButton(this);
-    dismissbtn->setText(QString(tr("Dismiss")));
-    connect(dismissbtn, SIGNAL(clicked()), this, SLOT(quit_slot()));
-    hbox->addWidget(dismissbtn);
+    pd_printbtn = new QPushButton(this);
+    pd_printbtn->setText(QString(tr("Print")));
+    pd_printbtn->setAutoDefault(false);
+    connect(pd_printbtn, SIGNAL(clicked()), this, SLOT(print_slot()));
+    hbox->addWidget(pd_printbtn);
+    pd_dismissbtn = new QPushButton(this);
+    pd_dismissbtn->setText(QString(tr("Dismiss")));
+    connect(pd_dismissbtn, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    hbox->addWidget(pd_dismissbtn);
     vbox->addLayout(hbox);
-    dismissbtn->setFocus(Qt::ActiveWindowFocusReason);
+    pd_dismissbtn->setFocus(Qt::ActiveWindowFocusReason);
 
     if (pd_cb && pd_cb->hcsetup)
         (*pd_cb->hcsetup)(true, pd_fmt, false, 0);
@@ -582,7 +582,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
             }
             else {
                 float tmp = desc->last_w;
-                wlabel->setChecked(true);
+                pd_wlabel->setChecked(true);
                 desc->last_w = tmp;
             }
         }
@@ -594,7 +594,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
             }
             else {
                 float tmp = desc->last_h;
-                hlabel->setChecked(true);
+                pd_hlabel->setChecked(true);
                 desc->last_h = tmp;
             }
         }
@@ -609,7 +609,7 @@ QTprintPopup::QTprintPopup(HCcb *cb, HCmode textmode, QTbag *wbag) :
 }
 
 
-QTprintPopup::~QTprintPopup()
+QTprintDlg::~QTprintDlg()
 {
     if (pd_owner)
         pd_owner->SetHC(0);
@@ -620,7 +620,7 @@ QTprintPopup::~QTprintPopup()
 // The HCcb struct is filled in with the present values.
 //
 void
-QTprintPopup::update(HCcb *cb)
+QTprintDlg::update(HCcb *cb)
 {
     if (!cb)
         return;
@@ -628,7 +628,7 @@ QTprintPopup::update(HCcb *cb)
     cb->hcgo = pd_cb ? pd_cb->hcgo : 0;
     cb->hcframe = pd_cb ? pd_cb->hcframe : 0;
 
-    char *s = lstring::copy(cmdtxtbox->text().toLatin1().constData());
+    char *s = lstring::copy(pd_cmdtxtbox->text().toLatin1().constData());
     if (pd_tofile) {
         cb->tofilename = s;
         cb->command = pd_cmdtext;
@@ -645,19 +645,19 @@ QTprintPopup::update(HCcb *cb)
     cb->tofile = pd_tofile;
 
     double d;
-    d = left->value();
+    d = pd_left->value();
     if (pd_metric)
         d /= MMPI;
     cb->left = d;
-    d = top->value();
+    d = pd_top->value();
     if (pd_metric)
         d /= MMPI;
     cb->top = d;
-    d = wid->value();
+    d = pd_wid->value();
     if (pd_metric)
         d /= MMPI;
     cb->width = d;
-    d = hei->value();
+    d = pd_hei->value();
     if (pd_metric)
         d /= MMPI;
     cb->height = d;
@@ -667,22 +667,22 @@ QTprintPopup::update(HCcb *cb)
 // Print a message to the progress monitor.
 //
 void
-QTprintPopup::set_message(const char *msg)
+QTprintDlg::set_message(const char *msg)
 {
-    if (progress)
-        progress->set_etc(msg);
+    if (pd_progress)
+        pd_progress->set_etc(msg);
 }
 
 
 void
-QTprintPopup::disable_progress()
+QTprintDlg::disable_progress()
 {
-    delete progress;
+    delete pd_progress;
 }
 
 
 void
-QTprintPopup::set_active(bool set)
+QTprintDlg::set_active(bool set)
 {
     if (set) {
         if (!pd_active) {
@@ -704,12 +704,12 @@ QTprintPopup::set_active(bool set)
 // Font change handler.
 //
 void
-QTprintPopup::format_slot(int indx)
+QTprintDlg::format_slot(int indx)
 {
-    if (wlabel->isChecked())
-        wlabel->setChecked(false);
-    if (hlabel->isChecked())
-        hlabel->setChecked(false);
+    if (pd_wlabel->isChecked())
+        pd_wlabel->setChecked(false);
+    if (pd_hlabel->isChecked())
+        pd_hlabel->setChecked(false);
 
     if (pd_drvrmask & (1 << indx))
         return;;
@@ -720,7 +720,7 @@ QTprintPopup::format_slot(int indx)
         delete [] GRpkg::self()->HCof(i)->defaults.command;
     if (!pd_tofile)
         GRpkg::self()->HCof(i)->defaults.command =
-            lstring::copy(cmdtxtbox->text().toLatin1().constData());
+            lstring::copy(pd_cmdtxtbox->text().toLatin1().constData());
     else
         GRpkg::self()->HCof(i)->defaults.command = lstring::copy(pd_cmdtext);
     GRpkg::self()->HCof(i)->defaults.defresol = pd_resol;
@@ -730,19 +730,19 @@ QTprintPopup::format_slot(int indx)
     GRpkg::self()->HCof(i)->defaults.orient = pd_orient;
     pd_orient = GRpkg::self()->HCof(pd_fmt)->defaults.orient;
 
-    double w = wid->value();
+    double w = pd_wid->value();
     if (pd_metric)
         w /= MMPI;
     GRpkg::self()->HCof(i)->defaults.defwidth = w;
-    double h = hei->value();
+    double h = pd_hei->value();
     if (pd_metric)
         h /= MMPI;
     GRpkg::self()->HCof(i)->defaults.defheight = h;
-    double xx = left->value();
+    double xx = pd_left->value();
     if (pd_metric)
         xx /= MMPI;
     GRpkg::self()->HCof(i)->defaults.defxoff = xx;
-    double yy = top->value();
+    double yy = pd_top->value();
     if (pd_metric)
         yy /= MMPI;
     GRpkg::self()->HCof(i)->defaults.defyoff = yy;
@@ -759,30 +759,30 @@ QTprintPopup::format_slot(int indx)
     else
         pd_cmdtext = lstring::copy("");
     if (!pd_tofile)
-        cmdtxtbox->setText(QString(pd_cmdtext));
+        pd_cmdtxtbox->setText(QString(pd_cmdtext));
 
     pd_resol = desc->defaults.defresol;
 
-    wid->setMinimum(MM(desc->limits.minwidth));
-    wid->setMaximum(MM(desc->limits.maxwidth));
-    wid->setValue(MM(desc->defaults.defwidth));
+    pd_wid->setMinimum(MM(desc->limits.minwidth));
+    pd_wid->setMaximum(MM(desc->limits.maxwidth));
+    pd_wid->setValue(MM(desc->defaults.defwidth));
 
-    hei->setMinimum(MM(desc->limits.minheight));
-    hei->setMaximum(MM(desc->limits.maxheight));
-    hei->setValue(MM(desc->defaults.defheight));
+    pd_hei->setMinimum(MM(desc->limits.minheight));
+    pd_hei->setMaximum(MM(desc->limits.maxheight));
+    pd_hei->setValue(MM(desc->defaults.defheight));
 
-    left->setMinimum(MM(desc->limits.minxoff));
-    left->setMaximum(MM(desc->limits.maxxoff));
-    left->setValue(MM(desc->defaults.defxoff));
+    pd_left->setMinimum(MM(desc->limits.minxoff));
+    pd_left->setMaximum(MM(desc->limits.maxxoff));
+    pd_left->setValue(MM(desc->defaults.defxoff));
 
-    top->setMinimum(MM(desc->limits.minyoff));
-    top->setMaximum(MM(desc->limits.maxyoff));
-    top->setValue(MM(desc->defaults.defyoff));
+    pd_top->setMinimum(MM(desc->limits.minyoff));
+    pd_top->setMaximum(MM(desc->limits.maxyoff));
+    pd_top->setValue(MM(desc->defaults.defyoff));
 
     if (desc->limits.flags & HCtopMargin)
-        ylabel->setText(QString(tr("Top")));
+        pd_ylabel->setText(QString(tr("Top")));
     else
-        ylabel->setText(QString(tr("Bottom")));
+        pd_ylabel->setText(QString(tr("Bottom")));
 
     set_sens(desc->limits.flags);
     if (!(desc->limits.flags & HCdontCareWidth) &&
@@ -790,25 +790,25 @@ QTprintPopup::format_slot(int indx)
         if (desc->limits.flags & HCnoAutoWid)
             desc->defaults.defwidth = desc->limits.minwidth;
         else
-            wlabel->setChecked(true);
+            pd_wlabel->setChecked(true);
     }
     if (!(desc->limits.flags & HCdontCareHeight) &&
             desc->defaults.defheight == 0.0 && desc->limits.minheight > 0.0) {
         if (desc->limits.flags & HCnoAutoHei)
             desc->defaults.defheight = desc->limits.minheight;
         else
-            hlabel->setChecked(true);
+            pd_hlabel->setChecked(true);
     }
 
-    resmenu->clear();
+    pd_resmenu->clear();
     const char **s = desc->limits.resols;
     if (s && *s) {
         for (int j = 0; s[j]; j++)
-            resmenu->addItem(QString(s[j]));
+            pd_resmenu->addItem(QString(s[j]));
     }
     else
-        resmenu->addItem(QString("fixed"));
-    resmenu->setCurrentIndex(pd_resol);
+        pd_resmenu->addItem(QString("fixed"));
+    pd_resmenu->setCurrentIndex(pd_resol);
 
     if (pd_cb && pd_cb->hcsetup)
         (*pd_cb->hcsetup)(true, pd_fmt, false, 0);
@@ -818,7 +818,7 @@ QTprintPopup::format_slot(int indx)
 // Set the printer resolution.
 //
 void
-QTprintPopup::resol_slot(int indx)
+QTprintDlg::resol_slot(int indx)
 {
     pd_resol = indx;
 }
@@ -827,7 +827,7 @@ QTprintPopup::resol_slot(int indx)
 // Handler for the "font" menu.
 //
 void
-QTprintPopup::font_slot(int indx)
+QTprintDlg::font_slot(int indx)
 {
     pd_textfmt = textfonts[indx].type;
 }
@@ -836,7 +836,7 @@ QTprintPopup::font_slot(int indx)
 // Handler for the page size menu.
 //
 void
-QTprintPopup::pagesize_slot(int indx)
+QTprintDlg::pagesize_slot(int indx)
 {
     double shrink = 0.375 * 72;
     double w = pagesizes[indx].width - 2*shrink;
@@ -847,42 +847,42 @@ QTprintPopup::pagesize_slot(int indx)
         h *= MMPI;
         shrink *= MMPI;
     }
-    wid->setValue(w/72);
-    hei->setValue(h/72);
-    left->setValue(shrink/72);
-    top->setValue(shrink/72);
+    pd_wid->setValue(w/72);
+    pd_hei->setValue(h/72);
+    pd_left->setValue(shrink/72);
+    pd_top->setValue(shrink/72);
 }
 
 
 void
-QTprintPopup::a4_slot(bool set)
+QTprintDlg::a4_slot(bool set)
 {
     if (set) {
-        if (ltrbtn->isChecked())
-            ltrbtn->setChecked(false);
+        if (pd_ltrbtn->isChecked())
+            pd_ltrbtn->setChecked(false);
     }
-    else if (!ltrbtn->isChecked())
-        a4btn->setChecked(true);
+    else if (!pd_ltrbtn->isChecked())
+        pd_a4btn->setChecked(true);
     // This is text-only mode, set the metric field for A4.
-    pd_metric = a4btn->isChecked();
+    pd_metric = pd_a4btn->isChecked();
 }
 
 
 void
-QTprintPopup::letter_slot(bool set)
+QTprintDlg::letter_slot(bool set)
 {
     if (set) {
-        if (a4btn->isChecked())
-            a4btn->setChecked(false);
+        if (pd_a4btn->isChecked())
+            pd_a4btn->setChecked(false);
     }
-    else if (!a4btn->isChecked())
-        ltrbtn->setChecked(true);
-    pd_metric = a4btn->isChecked();
+    else if (!pd_a4btn->isChecked())
+        pd_ltrbtn->setChecked(true);
+    pd_metric = pd_a4btn->isChecked();
 }
 
 
 void
-QTprintPopup::metric_slot(bool set)
+QTprintDlg::metric_slot(bool set)
 {
     bool wasmetric = pd_metric;
     pd_metric = set;
@@ -890,60 +890,60 @@ QTprintPopup::metric_slot(bool set)
     if (wasmetric != pd_metric) {
         double d;
 
-        d = wid->value();
+        d = pd_wid->value();
         if (wasmetric) {
             d /= MMPI;
-            wid->setMinimum(wid->minimum()/MMPI);
-            wid->setMaximum(wid->maximum()/MMPI);
-            wid->setValue(d);
+            pd_wid->setMinimum(pd_wid->minimum()/MMPI);
+            pd_wid->setMaximum(pd_wid->maximum()/MMPI);
+            pd_wid->setValue(d);
         }
         else {
             d *= MMPI;
-            wid->setMinimum(wid->minimum()*MMPI);
-            wid->setMaximum(wid->maximum()*MMPI);
-            wid->setValue(d);
+            pd_wid->setMinimum(pd_wid->minimum()*MMPI);
+            pd_wid->setMaximum(pd_wid->maximum()*MMPI);
+            pd_wid->setValue(d);
         }
 
-        d = hei->value();
+        d = pd_hei->value();
         if (wasmetric) {
             d /= MMPI;
-            hei->setMinimum(hei->minimum()/MMPI);
-            hei->setMaximum(hei->maximum()/MMPI);
-            hei->setValue(d);
+            pd_hei->setMinimum(pd_hei->minimum()/MMPI);
+            pd_hei->setMaximum(pd_hei->maximum()/MMPI);
+            pd_hei->setValue(d);
         }
         else {
             d *= MMPI;
-            hei->setMinimum(hei->minimum()*MMPI);
-            hei->setMaximum(hei->maximum()*MMPI);
-            hei->setValue(d);
+            pd_hei->setMinimum(pd_hei->minimum()*MMPI);
+            pd_hei->setMaximum(pd_hei->maximum()*MMPI);
+            pd_hei->setValue(d);
         }
 
-        d = left->value();
+        d = pd_left->value();
         if (wasmetric) {
             d /= MMPI;
-            left->setMinimum(left->minimum()/MMPI);
-            left->setMaximum(left->maximum()/MMPI);
-            left->setValue(d);
+            pd_left->setMinimum(pd_left->minimum()/MMPI);
+            pd_left->setMaximum(pd_left->maximum()/MMPI);
+            pd_left->setValue(d);
         }
         else {
             d *= MMPI;
-            left->setMinimum(left->minimum()*MMPI);
-            left->setMaximum(left->maximum()*MMPI);
-            left->setValue(d);
+            pd_left->setMinimum(pd_left->minimum()*MMPI);
+            pd_left->setMaximum(pd_left->maximum()*MMPI);
+            pd_left->setValue(d);
         }
 
-        d = top->value();
+        d = pd_top->value();
         if (wasmetric) {
             d /= MMPI;
-            top->setMinimum(top->minimum()/MMPI);
-            top->setMaximum(top->maximum()/MMPI);
-            top->setValue(d);
+            pd_top->setMinimum(pd_top->minimum()/MMPI);
+            pd_top->setMaximum(pd_top->maximum()/MMPI);
+            pd_top->setValue(d);
         }
         else {
             d *= MMPI;
-            top->setMinimum(top->minimum()*MMPI);
-            top->setMaximum(top->maximum()*MMPI);
-            top->setValue(d);
+            pd_top->setMinimum(pd_top->minimum()*MMPI);
+            pd_top->setMaximum(pd_top->maximum()*MMPI);
+            pd_top->setValue(d);
         }
     }
 }
@@ -953,7 +953,7 @@ QTprintPopup::metric_slot(bool set)
 // graphics to be printed.
 //
 void
-QTprintPopup::frame_slot(bool)
+QTprintDlg::frame_slot(bool)
 {
     if (pd_cb && pd_cb->hcframe)
         (*pd_cb->hcframe)(HCframeCmd, 0, 0, 0, 0, 0, 0);
@@ -963,55 +963,55 @@ QTprintPopup::frame_slot(bool)
 // Switch between portrait and landscape orientation.
 //
 void
-QTprintPopup::portrait_slot(bool set)
+QTprintDlg::portrait_slot(bool set)
 {
     if (set) {
-        if (landsbtn && landsbtn->isChecked())
-            landsbtn->setChecked(false);
+        if (pd_landsbtn && pd_landsbtn->isChecked())
+            pd_landsbtn->setChecked(false);
         if (!(pd_orient & HClandscape))
             return;
         pd_orient &= ~HClandscape;
         // See if we should swap the margin label
         if (GRpkg::self()->HCof(pd_fmt)->limits.flags & HClandsSwpYmarg) {
-            const char *str = ylabel->text().toLatin1().constData();
+            const char *str = pd_ylabel->text().toLatin1().constData();
             if (!strcmp(str, "Top"))
-                ylabel->setText(QString("Bottom"));
+                pd_ylabel->setText(QString("Bottom"));
             else
-                ylabel->setText(QString("Top"));
+                pd_ylabel->setText(QString("Top"));
         }
     }
-    else if (!landsbtn->isChecked())
-        portbtn->setChecked(true);
+    else if (!pd_landsbtn->isChecked())
+        pd_portbtn->setChecked(true);
 }
 
 
 void
-QTprintPopup::landscape_slot(bool set)
+QTprintDlg::landscape_slot(bool set)
 {
     if (set) {
-        if (portbtn->isChecked())
-            portbtn->setChecked(false);
+        if (pd_portbtn->isChecked())
+            pd_portbtn->setChecked(false);
         if (pd_orient & HClandscape)
             return;
         pd_orient |= HClandscape;
         // See if we should swap the margin label
         if (GRpkg::self()->HCof(pd_fmt)->limits.flags & HClandsSwpYmarg) {
-            const char *str = ylabel->text().toLatin1().constData();
+            const char *str = pd_ylabel->text().toLatin1().constData();
             if (!strcmp(str, "Top"))
-                ylabel->setText(QString("Bottom"));
+                pd_ylabel->setText(QString("Bottom"));
             else
-                ylabel->setText(QString("Top"));
+                pd_ylabel->setText(QString("Top"));
         }
     }
-    else if (!portbtn->isChecked())
-        landsbtn->setChecked(true);
+    else if (!pd_portbtn->isChecked())
+        pd_landsbtn->setChecked(true);
 }
 
 
 // If the "best fit" button is active, allow rotation of the image.
 //
 void
-QTprintPopup::best_fit_slot(bool set)
+QTprintDlg::best_fit_slot(bool set)
 {
     if (set)
         pd_orient |= HCbest;
@@ -1023,21 +1023,21 @@ QTprintPopup::best_fit_slot(bool set)
 // Send the output to a file, rather than a printer.
 //
 void
-QTprintPopup::tofile_slot(bool set)
+QTprintDlg::tofile_slot(bool set)
 {
     pd_tofile = set;
-    const char *s = cmdtxtbox->text().toLatin1().constData();
+    const char *s = pd_cmdtxtbox->text().toLatin1().constData();
     if (set) {
-        cmdlab->setText(QString("File Name"));
+        pd_cmdlab->setText(QString("File Name"));
         delete [] pd_cmdtext;
         pd_cmdtext = lstring::copy(s);
-        cmdtxtbox->setText(QString(pd_tofilename));
+        pd_cmdtxtbox->setText(QString(pd_tofilename));
     }
     else {
-        cmdlab->setText(QString("Print Command"));
+        pd_cmdlab->setText(QString("Print Command"));
         delete [] pd_tofilename;
         pd_tofilename = lstring::copy(s);
-        cmdtxtbox->setText(QString(pd_cmdtext));
+        pd_cmdtxtbox->setText(QString(pd_cmdtext));
     }
 }
 
@@ -1045,7 +1045,7 @@ QTprintPopup::tofile_slot(bool set)
 // Toggle display of the legend associated with the plot.
 //
 void
-QTprintPopup::legend_slot(bool set)
+QTprintDlg::legend_slot(bool set)
 {
     pd_legend = (set ? HClegOn : HClegOff);
 }
@@ -1054,63 +1054,63 @@ QTprintPopup::legend_slot(bool set)
 // Handle the auto-height and auto-width buttons
 //
 void
-QTprintPopup::auto_width_slot(bool set)
+QTprintDlg::auto_width_slot(bool set)
 {
     if (set) {
-        GRpkg::self()->HCof(pd_fmt)->last_w = wid->value();
+        GRpkg::self()->HCof(pd_fmt)->last_w = pd_wid->value();
         if (pd_metric)
             GRpkg::self()->HCof(pd_fmt)->last_w /= MMPI;
         GRpkg::self()->HCof(pd_fmt)->defaults.defwidth = 0;
-        wid->setEnabled(false);
-        wid->setPrefix(QString("Auto"));
-        wid->clear();
-        if (hlabel->isChecked()) {
-            hlabel->setChecked(false);
-            hei->setEnabled(true);
+        pd_wid->setEnabled(false);
+        pd_wid->setPrefix(QString("Auto"));
+        pd_wid->clear();
+        if (pd_hlabel->isChecked()) {
+            pd_hlabel->setChecked(false);
+            pd_hei->setEnabled(true);
             double h = GRpkg::self()->HCof(pd_fmt)->last_h;
             if (h == 0.0)
                 h = GRpkg::self()->HCof(pd_fmt)->limits.minheight;
-            hei->setValue(MM(h));
+            pd_hei->setValue(MM(h));
         }
     }
     else {
-        wid->setPrefix(QString());
-        wid->setEnabled(true);
+        pd_wid->setPrefix(QString());
+        pd_wid->setEnabled(true);
         double w = GRpkg::self()->HCof(pd_fmt)->last_w;
         if (w == 0.0)
             w = GRpkg::self()->HCof(pd_fmt)->limits.minwidth;
-        wid->setValue(MM(w));
+        pd_wid->setValue(MM(w));
     }
 }
 
 
 void
-QTprintPopup::auto_height_slot(bool set)
+QTprintDlg::auto_height_slot(bool set)
 {
     if (set) {
-        GRpkg::self()->HCof(pd_fmt)->last_h = hei->value();
+        GRpkg::self()->HCof(pd_fmt)->last_h = pd_hei->value();
         if (pd_metric)
             GRpkg::self()->HCof(pd_fmt)->last_h /= MMPI;
         GRpkg::self()->HCof(pd_fmt)->defaults.defheight = 0;
-        hei->setEnabled(false);
-        hei->setPrefix(QString("Auto"));
-        hei->clear();
-        if (wlabel->isChecked()) {
-            wlabel->setChecked(false);
-            wid->setEnabled(true);
+        pd_hei->setEnabled(false);
+        pd_hei->setPrefix(QString("Auto"));
+        pd_hei->clear();
+        if (pd_wlabel->isChecked()) {
+            pd_wlabel->setChecked(false);
+            pd_wid->setEnabled(true);
             double w = GRpkg::self()->HCof(pd_fmt)->last_w;
             if (w == 0.0)
                 w = GRpkg::self()->HCof(pd_fmt)->limits.minwidth;
-            wid->setValue(MM(w));
+            pd_wid->setValue(MM(w));
         }
     }
     else {
-        hei->setPrefix(QString());
-        hei->setEnabled(true);
+        pd_hei->setPrefix(QString());
+        pd_hei->setEnabled(true);
         double h = GRpkg::self()->HCof(pd_fmt)->last_h;
         if (h == 0.0)
             h = GRpkg::self()->HCof(pd_fmt)->limits.minheight;
-        hei->setValue(MM(h));
+        pd_hei->setValue(MM(h));
     }
 }
 
@@ -1119,7 +1119,7 @@ QTprintPopup::auto_height_slot(bool set)
 // for help mode.
 //
 void
-QTprintPopup::help_slot()
+QTprintDlg::help_slot()
 {
     if (pd_owner)
         pd_owner->PopUpHelp("hcopypanel");
@@ -1133,13 +1133,13 @@ QTprintPopup::help_slot()
 // Callback to actually generate the hardcopy.
 //
 void
-QTprintPopup::print_slot()
+QTprintDlg::print_slot()
 {
     GRpkg::self()->HCabort(0);
     if (!pd_owner)
         return;
 
-    const char *str = cmdtxtbox->text().toLatin1().constData();
+    const char *str = pd_cmdtxtbox->text().toLatin1().constData();
     if (!str || !*str) {
         if (pd_tofile)
             pd_owner->PopUpMessage("No filename given!", true);
@@ -1182,7 +1182,7 @@ QTprintPopup::print_slot()
                 delete [] all_text;
                 fclose(fp);
                 if (!pd_tofile) {
-                    const char *st = cmdtxtbox->text().toLatin1().constData();
+                    const char *st = pd_cmdtxtbox->text().toLatin1().constData();
                     fork_and_submit(st, filename);
                     // note that the file is NOT unlinked
                 }
@@ -1244,7 +1244,7 @@ QTprintPopup::print_slot()
             if (pd_textfmt != HtmlText)
                 delete [] text;
             if (!pd_tofile) {
-                const char *st = cmdtxtbox->text().toLatin1().constData();
+                const char *st = pd_cmdtxtbox->text().toLatin1().constData();
                 fork_and_submit(st, filename);
                 // note that the file is NOT unlinked
             }
@@ -1255,37 +1255,37 @@ QTprintPopup::print_slot()
         return;
     }
 
-    if (printer_busy) {
+    if (pd_printer_busy) {
         pd_owner->PopUpMessage("I'm busy, please wait.", true);
         return;
     }
-    printer_busy = true;
+    pd_printer_busy = true;
 
     double w = 0.0;
     if (!(GRpkg::self()->HCof(pd_fmt)->limits.flags & HCdontCareWidth)) {
-        if (!wlabel->isChecked()) {
-            w = wid->value();
+        if (!pd_wlabel->isChecked()) {
+            w = pd_wid->value();
             if (pd_metric)
                 w /= MMPI;
         }
     }
     double h = 0.0;
     if (!(GRpkg::self()->HCof(pd_fmt)->limits.flags & HCdontCareHeight)) {
-        if (!hlabel->isChecked()) {
-            h = hei->value();
+        if (!pd_hlabel->isChecked()) {
+            h = pd_hei->value();
             if (pd_metric)
                 h /= MMPI;
         }
     }
     double xx = 0.0;
     if (!(GRpkg::self()->HCof(pd_fmt)->limits.flags & HCdontCareXoff)) {
-        xx = left->value();
+        xx = pd_left->value();
         if (pd_metric)
             xx /= MMPI;
     }
     double yy = 0.0;
     if (!(GRpkg::self()->HCof(pd_fmt)->limits.flags & HCdontCareYoff)) {
-        yy = top->value();
+        yy = pd_top->value();
         if (pd_metric)
             yy /= MMPI;
     }
@@ -1322,7 +1322,7 @@ QTprintPopup::print_slot()
         bool ok = true;
         // hc might be freed during hcgo
         bool tofile = pd_tofile;
-        char *cmd = lstring::copy(cmdtxtbox->text().toLatin1().constData());
+        char *cmd = lstring::copy(pd_cmdtxtbox->text().toLatin1().constData());
 
         if (pd_cb && pd_cb->hcgo) {
             HCorientFlags ot = pd_orient & HCbest;
@@ -1356,12 +1356,12 @@ QTprintPopup::print_slot()
     }
     delete [] cmdstr;
     delete [] filename;
-    printer_busy = false;
+    pd_printer_busy = false;
 }
 
 
 void
-QTprintPopup::quit_slot()
+QTprintDlg::quit_slot()
 {
     set_active(false);  // keep the pop-up alive
     emit dismiss();
@@ -1369,9 +1369,9 @@ QTprintPopup::quit_slot()
 
 
 void
-QTprintPopup::process_error_slot(QProcess::ProcessError err)
+QTprintDlg::process_error_slot(QProcess::ProcessError err)
 {
-    if (progress) {
+    if (pd_progress) {
         const char *msg;
         switch (err) {
         case QProcess::FailedToStart:
@@ -1397,15 +1397,15 @@ QTprintPopup::process_error_slot(QProcess::ProcessError err)
         
         char buf[256];
         snprintf(buf, sizeof(buf), "Error reported: code=%d (%s)", err, msg);
-        progress->set_etc(buf);
+        pd_progress->set_etc(buf);
     }
 }
 
 
 void
-QTprintPopup::process_finished_slot(int code)
+QTprintDlg::process_finished_slot(int code)
 {
-    if (progress) {
+    if (pd_progress) {
         char buf[256];
         if (code == 0)
             strcpy(buf, "Job completed successfully.");
@@ -1413,94 +1413,94 @@ QTprintPopup::process_finished_slot(int code)
             snprintf(buf, sizeof(buf), "Job completed with exit status %d.",
                 code);
         }
-        progress->set_etc(buf);
-        progress->finished();
+        pd_progress->set_etc(buf);
+        pd_progress->finished();
     }
 }
 
 
 void
-QTprintPopup::set_sens(unsigned int word)
+QTprintDlg::set_sens(unsigned int word)
 {
-    resmenu->setEnabled(!(word & HCfixedResol));
-    xlabel->setEnabled(!(word & HCdontCareXoff));
-    left->setEnabled(!(word & HCdontCareXoff));
-    ylabel->setEnabled(!(word & HCdontCareYoff));
-    top->setEnabled(!(word & HCdontCareYoff));
+    pd_resmenu->setEnabled(!(word & HCfixedResol));
+    pd_xlabel->setEnabled(!(word & HCdontCareXoff));
+    pd_left->setEnabled(!(word & HCdontCareXoff));
+    pd_ylabel->setEnabled(!(word & HCdontCareYoff));
+    pd_top->setEnabled(!(word & HCdontCareYoff));
 
-    wlabel->setEnabled(!(word & HCdontCareWidth));
-    wid->setEnabled(!(word & HCdontCareWidth));
+    pd_wlabel->setEnabled(!(word & HCdontCareWidth));
+    pd_wid->setEnabled(!(word & HCdontCareWidth));
 
-    hlabel->setEnabled(!(word & HCdontCareHeight));
-    hei->setEnabled(!(word & HCdontCareHeight));
+    pd_hlabel->setEnabled(!(word & HCdontCareHeight));
+    pd_hei->setEnabled(!(word & HCdontCareHeight));
 
     if ((word & HCdontCareXoff) && (word & HCdontCareYoff) &&
             (word & HCdontCareWidth) && (word & HCdontCareHeight)) {
-        pgsmenu->setEnabled(false);
-        metbtn->setEnabled(false);
+        pd_pgsmenu->setEnabled(false);
+        pd_metbtn->setEnabled(false);
     }
     else {
-        pgsmenu->setEnabled(true);
-        metbtn->setEnabled(true);
-        metbtn->setChecked(pd_metric);
-        pgsmenu->setCurrentIndex(pd_pgsindex);
+        pd_pgsmenu->setEnabled(true);
+        pd_metbtn->setEnabled(true);
+        pd_metbtn->setChecked(pd_metric);
+        pd_pgsmenu->setCurrentIndex(pd_pgsindex);
     }
 
     if (word & HCnoLandscape) {
-        portbtn->setChecked(true);
-        landsbtn->setEnabled(false);
+        pd_portbtn->setChecked(true);
+        pd_landsbtn->setEnabled(false);
     }
     else {
-        landsbtn->setEnabled(true);
+        pd_landsbtn->setEnabled(true);
         if (pd_orient & HClandscape) {
-            portbtn->setChecked(false);
-            landsbtn->setChecked(true);
+            pd_portbtn->setChecked(false);
+            pd_landsbtn->setChecked(true);
         }
         else {
-            portbtn->setChecked(true);
-            landsbtn->setChecked(false);
+            pd_portbtn->setChecked(true);
+            pd_landsbtn->setChecked(false);
         }
     }
 
     if (word & HCnoBestOrient) {
-        fitbtn->setChecked(false);
-        fitbtn->setEnabled(false);
+        pd_fitbtn->setChecked(false);
+        pd_fitbtn->setEnabled(false);
     }
     else {
-        fitbtn->setEnabled(true);
-        fitbtn->setChecked(pd_orient & HCbest);
+        pd_fitbtn->setEnabled(true);
+        pd_fitbtn->setChecked(pd_orient & HCbest);
     }
-    if (legbtn) {
+    if (pd_legbtn) {
         if (pd_legend == HClegNone) {
-            legbtn->setChecked(false);
-            legbtn->setEnabled(false);
+            pd_legbtn->setChecked(false);
+            pd_legbtn->setEnabled(false);
             pd_legend = HClegNone;
         }
         else {
-            legbtn->setEnabled(true);
-            legbtn->setChecked(pd_legend != HClegOff);
+            pd_legbtn->setEnabled(true);
+            pd_legbtn->setChecked(pd_legend != HClegOff);
         }
     }
     if (word & HCfileOnly) {
         if (!(pd_tofbak & 1))
             pd_tofbak = pd_tofile ? 3 : 1;
-        tofbtn->setChecked(true);
+        pd_tofbtn->setChecked(true);
         // hc->tofile is now true
-        tofbtn->setEnabled(false);
+        pd_tofbtn->setEnabled(false);
     }
     else {
         if (pd_tofbak & 1) {
             pd_tofile = (pd_tofbak & 2);
             pd_tofbak = 0;
         }
-        tofbtn->setEnabled(true);
-        tofbtn->setChecked(pd_tofile);
+        pd_tofbtn->setEnabled(true);
+        pd_tofbtn->setChecked(pd_tofile);
     }
 }
 
 
 void
-QTprintPopup::fork_and_submit(const char *str, const char *filename)
+QTprintDlg::fork_and_submit(const char *str, const char *filename)
 {
     // Check for '%s' and substitute filename, otherwise
     // cat the filename.
@@ -1526,20 +1526,20 @@ QTprintPopup::fork_and_submit(const char *str, const char *filename)
     else
         *t = '\0';
 
-    progress = new QTprogress(pd_owner, QTprogress::prgPrint);
-    progress->register_usrptr((void**)&progress);
-    progress->set_visible(true);
+    pd_progress = new QTprogressDlg(pd_owner, QTprogressDlg::prgPrint);
+    pd_progress->register_usrptr((void**)&pd_progress);
+    pd_progress->set_visible(true);
 
-    if (!process) {
-        process = new QProcess(this);
-        connect(process, SIGNAL(error(QProcess::ProcessError)),
-            this, SLOT(process_error_slot(QProcess::ProcessError)));
-        connect(process, SIGNAL(finished(int)),
-            this, SLOT(process_finished_slot(int)));
+    if (!pd_process) {
+        pd_process = new QProcess(this);
+        connect(pd_process, SIGNAL(error(QProcess::ProcessError)),
+            this, SLOT(pd_process_error_slot(QProcess::ProcessError)));
+        connect(pd_process, SIGNAL(finished(int)),
+            this, SLOT(pd_process_finished_slot(int)));
     }
     QStringList sl;
     sl << "sh" << "-c" << buf;
-    process->start(QString("/bin/sh"), sl);
+    pd_process->start(QString("/bin/sh"), sl);
 }
 
 

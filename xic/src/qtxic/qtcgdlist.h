@@ -75,6 +75,7 @@ private slots:
     void item_clicked_slot(QTreeWidgetItem*, int);
     void item_selection_changed();
     void dismiss_btn_slot();
+    void font_changed_slot(int);
 
 private:
     void err_message(const char*);

@@ -322,6 +322,14 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
     int wd1 = 0.75*width();
     spl->setSizes(QList<int>() << wd1 << width());
 
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_PROP)) {
+        nm_node_list->setFont(*fnt);
+        nm_term_list->setFont(*fnt);
+    }
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+
     // cancel button row
     //
     hbox = new QHBoxLayout();
@@ -1174,6 +1182,20 @@ QTnodeMapDlg::find_btn_slot()
             DSP()->ShowTerminal(cdesc, vecix, pn);
     }
     delete [] text;
+}
+
+
+void
+QTnodeMapDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_PROP) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum)) {
+            nm_node_list->setFont(*fnt);
+            nm_term_list->setFont(*fnt);
+        }
+        update(0);
+    }
 }
 
 

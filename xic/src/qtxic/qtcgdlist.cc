@@ -187,6 +187,12 @@ QTcgdListDlg::QTcgdListDlg(GRobject c)
     // Set up font and tracking.
 //    GTKfont::setupFont(cgl_list, FNT_PROP, true);
 
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_PROP))
+        cgl_list->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+
     // dismiss button
     //
     btn = new QPushButton(tr("Dismiss"));
@@ -585,5 +591,17 @@ void
 QTcgdListDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpGeometries(0, MODE_OFF);
+}
+
+
+void
+QTcgdListDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_PROP) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum))
+            cgl_list->setFont(*fnt);
+        update();
+    }
 }
 

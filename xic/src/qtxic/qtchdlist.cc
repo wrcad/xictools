@@ -66,7 +66,7 @@
 
 
 //----------------------------------------------------------------------
-//  Cell Hierarchy Digests Listing
+//  Cell Hierarchy Digests Listing.
 //
 // Help system keywords used:
 //  xic:hier
@@ -217,17 +217,22 @@ QTchdListDlg::QTchdListDlg(GRobject c)
         SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
         this,
         SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
+/*
     connect(chl_list, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
         this, SLOT(item_activated_slot(QTreeWidgetItem*, int)));
     connect(chl_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
         this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
     connect(chl_list, SIGNAL(itemSelectionChanged()),
         this, SLOT(item_selection_changed()));
+*/
 //    g_signal_connect(G_OBJECT(chl_list), "button-press-event",
 //        G_CALLBACK(lb_button_press_proc), this);
 
-    // Set up font and tracking.
-//    QTfont::setupFont(lb_list, FNT_PROP, true);
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_PROP))
+        chl_list->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     // lower buttons
     //
@@ -392,7 +397,7 @@ QTchdListDlg::update()
 
                 delete [] strings[1];
                 delete [] strings[2];
-             /*
+             /* XXX
                 if (chl_selection && rowsel < 0 &&
                         !strcmp(chl_selection, l->string))
                     rowsel = rowcnt;
@@ -410,7 +415,7 @@ QTchdListDlg::update()
         }
     }
     // This resizes columns and the widget.
-    /*
+    /* XXX
     gtk_tree_view_columns_autosize(GTK_TREE_VIEW(chl_list));
     if (rowsel >= 0) {
         GtkTreePath *p = gtk_tree_path_new_from_indices(rowsel, -1);
@@ -433,7 +438,7 @@ QTchdListDlg::recolor()
 {
     const char *sclr = QTpkg::self()->GetAttrColor(GRattrColorLocSel);
     if (DSP()->MainWdesc()->DbType() == WDchd) {
-        /*
+        /* XXX
         GtkTreeIter iter;
         GtkListStore *store =
             GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(chl_list)));
@@ -456,7 +461,7 @@ QTchdListDlg::recolor()
         */
     }
     else {
-        /*
+        /* XXX
         GtkTreeIter iter;
         GtkListStore *store =
             GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(chl_list)));
@@ -1054,24 +1059,6 @@ QTchdListDlg::current_item_changed_slot(QTreeWidgetItem *cur, QTreeWidgetItem*)
 
 
 void
-QTchdListDlg::item_activated_slot(QTreeWidgetItem*, int)
-{
-}
-
-
-void
-QTchdListDlg::item_clicked_slot(QTreeWidgetItem*, int)
-{
-}
-
-
-void
-QTchdListDlg::item_selection_changed()
-{
-}
-
-
-void
 QTchdListDlg::rename_btn_slot(int state)
 {
     if (state)
@@ -1139,5 +1126,17 @@ void
 QTchdListDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpHierarchies(0, MODE_OFF);
+}
+
+
+void
+QTchdListDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_PROP) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, FNT_PROP))
+            chl_list->setFont(*fnt);
+        update();
+    }
 }
 

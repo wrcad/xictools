@@ -38,36 +38,37 @@
  $Id:$
  *========================================================================*/
 
-#ifndef FORM_BUTTON_W_H
-#define FORM_BUTTON_W_H
+#ifndef QTFORM_BUTTON_H
+#define QTFORM_BUTTON_H
 
 #include <QPushButton>
 
 struct htmForm;
 
-namespace qtinterf
-{
-    // Subclass QPushButton for use in forms.
-    //
-    class QTform_button : public QPushButton
-    {
-        Q_OBJECT
-
-    public:
-        QTform_button(htmForm*, QWidget*);
-
-    signals:
-        void pressed(htmForm*);
-        void released(htmForm*);
-
-    private slots:
-        void pressed_slot();
-        void released_slot();
-
-    private:
-        htmForm *form_entry;
-    };
+namespace qtinterf {
+    class QTform_button;
 }
+
+// Subclass QPushButton for use in forms.
+//
+class qtinterf::QTform_button : public QPushButton
+{
+    Q_OBJECT
+
+public:
+    QTform_button(htmForm*, QWidget*);
+
+signals:
+    void pressed(htmForm*);
+    void released(htmForm*);
+
+private slots:
+    void pressed_slot();
+    void released_slot();
+
+private:
+    htmForm *form_entry;
+};
 
 #endif
 

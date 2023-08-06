@@ -77,36 +77,36 @@ line_height(QWidget *w)
 
 QTform_file::QTform_file(htmForm *entry, QWidget *prnt) : QWidget(prnt)
 {
-    fsel = 0;
-    edit = new QLineEdit(this);
-    int wd = entry->size * char_width(edit) + 4;
-    int ht = line_height(edit);
-    edit->resize(wd, ht);
-    browse = new QPushButton(this);
-    browse->setText(QString("Browse..."));
-    browse->setMaximumHeight(ht);
+    ff_fsel = 0;
+    ff_edit = new QLineEdit(this);
+    int wd = entry->size * char_width(ff_edit) + 4;
+    int ht = line_height(ff_edit);
+    ff_edit->resize(wd, ht);
+    ff_browse = new QPushButton(this);
+    ff_browse->setText(QString("Browse..."));
+    ff_browse->setMaximumHeight(ht);
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setMargin(0);
     hbox->setSpacing(4);
-    hbox->addWidget(edit);
-    hbox->addWidget(browse);
+    hbox->addWidget(ff_edit);
+    hbox->addWidget(ff_browse);
     QSize qs = size();
     entry->width = qs.width();
     entry->height = ht + 4;
-    connect(browse, SIGNAL(clicked()), this, SLOT(browse_btn_slot()));
+    connect(ff_browse, SIGNAL(clicked()), this, SLOT(browse_btn_slot()));
 }
 
 
 void
 QTform_file::browse_btn_slot()
 {
-    if (!fsel) {
-        fsel = new QTfilePopup(0, fsSEL, 0, 0);
-        fsel->register_usrptr((void**)&fsel);
-        connect(fsel, SIGNAL(file_selected(const char*, void*)),
+    if (!ff_fsel) {
+        ff_fsel = new QTfileDlg(0, fsSEL, 0, 0);
+        ff_fsel->register_usrptr((void**)&ff_fsel);
+        connect(ff_fsel, SIGNAL(file_selected(const char*, void*)),
             this, SLOT(file_selected_slot(const char*, void*)));
     }
-    fsel->set_visible(true);
+    ff_fsel->set_visible(true);
 }
 
 
@@ -114,6 +114,6 @@ void
 QTform_file::file_selected_slot(const char *fname, void*)
 {
     if (fname && *fname)
-        edit->setText(QString(fname));
+        ff_edit->setText(QString(fname));
 }
 

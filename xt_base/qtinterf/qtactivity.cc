@@ -83,35 +83,35 @@ static const char * const smile_xpm[] = {
 
 QTactivity::QTactivity(QWidget *prnt) : QWidget(prnt)
 {
-    pos_x = 0;
-    vel_x = 4;
-    rad = 8;  // half image size
-    active = false;
-    image = new QPixmap(smile_xpm);
-    connect(&timer, SIGNAL(timeout()), this, SLOT(increment_slot()));
+    a_pos_x = 0;
+    a_vel_x = 4;
+    a_rad = 8;  // half image size
+    a_active = false;
+    a_pixmap = new QPixmap(smile_xpm);
+    connect(&a_timer, SIGNAL(timeout()), this, SLOT(increment_slot()));
 }
 
 
 QTactivity::~QTactivity()
 {
-    delete image;
+    delete a_pixmap;
 }
 
 
 void
 QTactivity::start()
 {
-    pos_x = 0;
-    vel_x = 4;
-    timer.start(100);
-    active = true;
+    a_pos_x = 0;
+    a_vel_x = 4;
+    a_timer.start(100);
+    a_active = true;
 }
 
 void
 QTactivity::stop()
 {
-    timer.stop();
-    active = false;
+    a_timer.stop();
+    a_active = false;
     increment_slot();
 }
 
@@ -121,10 +121,10 @@ QTactivity::paintEvent(QPaintEvent*)
 {
     QPainter p(this);
     p.eraseRect(0, 0, size().width(), size().height());
-    if (active)
-        p.drawPixmap(pos_x, size().height()/2 - rad, *image);
+    if (a_active)
+        p.drawPixmap(a_pos_x, size().height()/2 - a_rad, *a_pixmap);
     else
-        p.drawText(rad, size().height()/2 + rad, QString("idle"));
+        p.drawText(a_rad, size().height()/2 + a_rad, QString("idle"));
     p.end();
 }
 
@@ -132,16 +132,16 @@ QTactivity::paintEvent(QPaintEvent*)
 void
 QTactivity::increment_slot()
 {
-    int nx = pos_x + vel_x;
-    if (nx + 2*rad > size().width()) {
-        vel_x = -vel_x;
-        nx += (size().width() - nx - 2*rad);
+    int nx = a_pos_x + a_vel_x;
+    if (nx + 2*a_rad > size().width()) {
+        a_vel_x = -a_vel_x;
+        nx += (size().width() - nx - 2*a_rad);
     }
     if (nx < 0) {
-        vel_x = -vel_x;
+        a_vel_x = -a_vel_x;
         nx = - nx;
     }
-    pos_x = nx;
+    a_pos_x = nx;
     repaint(0, 0, size().width(), size().height());
 }
 

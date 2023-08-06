@@ -50,74 +50,89 @@
 class QGroupBox;
 class QPushButton;
 class QTextEdit;
-
-//XXX FIXME differentiate this from msgPopup
-
-namespace qtinterf
-{
+namespace qtinterf {
     class QTbag;
-    class text_box;
+    class QTtextDlg;
+    class QTmsgDlg;
+    class QTledDlg;
+}
 
-    class QTtextPopup : public QDialog, public GRtextPopup
+
+class qtinterf::QTtextDlg : public QDialog, public GRtextPopup
+{
+    Q_OBJECT
+
+public:
+    // Fancy message box types.
+    enum PuType {PuWarn, PuErr, PuErrAlso, PuInfo, PuInfo2, PuHTML};
+
+    QTtextDlg(QTbag*, const char*, PuType=PuInfo, STYtype=STY_NORM);
+    ~QTtextDlg();
+
+    // GRpopup overrides
+    void set_visible(bool visib)
     {
-        Q_OBJECT
-
-    public:
-        QTtextPopup(QTbag*, const char*, STYtype style, int, int);
-        ~QTtextPopup();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void set_desens()           { pw_desens = true; }
-        bool is_desens()            { return (pw_desens); }
-
-        // GRtextPopup overrides
-        bool get_btn2_state()       { return (false); }
-        void set_btn2_state(bool)   { }
-
-        // When set, error pop-ups have a "Show Error Log" button that
-        // pops up a file browser on this file.
-        //
-        static void set_error_log(const char *s)
-        {
-            char *t = lstring::copy(s);
-            delete [] pw_errlog;
-            pw_errlog = t;
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
         }
+        else
+            hide();
+    }
+    void set_desens()               { tx_desens = true; }
+    bool is_desens()                { return (tx_desens); }
 
-        void popdown();
-        void setTitle(const char*);
-        void setText(const char*);
+    // When set, error pop-ups have a "Show Error Log" button that
+    // pops up a file browser on this file.
+    //
+    static void set_error_log(const char *s)
+    {
+        char *t = lstring::copy(s);
+        delete [] tx_errlog;
+        tx_errlog = t;
+    }
+
+    void popdown();
+    void setTitle(const char*);
+    void setText(const char*);
+    bool get_btn2_state();
+    void set_btn2_state(bool);
+    bool update(const char*);
 
 //XXX
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
+/*
+    // This widget will be deleted when closed with the title bar "X"
+    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
+    // not called.  The default behavior is to hide the widget instead
+    // of deleting it, which would likely be a core leak here.
+    void closeEvent(QCloseEvent*)   { quit_slot(); }
+*/
 
-    private slots:
-        void quit_slot();
+private slots:
+    void save_btn_slot(bool);
+    void showlog_btn_slot();
+    void help_btn_slot();
+    void activate_btn_slot(bool);
+    void dismiss_btn_slot();
 
-    private:
-        QGroupBox *gbox;
-        text_box *tx;
-        QPushButton *b_cancel;
-        STYtype display_style;
-        bool pw_desens;             // If true, parent->wb_inout is disabled.
+private:
+    static ESret tx_save_cb(const char*, void*);
+    static int tx_timeout(void*);
 
-        static char *pw_errlog;
-    };
-}
+    QTextEdit   *tx_tbox;
+    QPushButton *tx_save;
+    QPushButton *tx_showlog;
+    QPushButton *tx_activate;
+    QPushButton *tx_cancel;
+    QTledDlg    *tx_save_pop;
+    QTmsgDlg    *tx_msg_pop;
+    PuType      tx_which;
+    STYtype     tx_style;
+    bool        tx_desens;      // If true, parent->wb_inout is disabled.
+
+    static char *tx_errlog;
+};
 
 #endif
 

@@ -87,6 +87,7 @@ private slots:
     void dismiss_btn_slot();
     void usex_btn_slot(int);
     void find_btn_slot();
+    void font_changed_slot(int);
 
 private:
     void enable_point(bool);

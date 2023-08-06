@@ -65,7 +65,6 @@
 // Help system keywords used:
 //  xic:cprop
 
-
 // Pop up the cell properties editor.
 //
 void
@@ -168,32 +167,15 @@ QTcellPrpDlg::QTcellPrpDlg()
     wb_textarea = new QTtextEdit();
     wb_textarea->setReadOnly(true);
     wb_textarea->setMouseTracking(true);
-    wb_textarea->setAcceptDrops(true);
     vbox->addWidget(wb_textarea);
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
-    /* No drag/drop to this window at present.
-    connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
-        this, SLOT(mime_data_received_slot(const QMimeData*)));
-    */
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
-
-
-    /*
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
-    gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
-        "paragraph-background", bclr, NULL);
-    gtk_widget_set_size_request(wb_textarea, 300, 200);
-    */
 
     // dismiss button
     //
@@ -631,38 +613,11 @@ QTcellPrpDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (FC.getFont(&fnt, FNT_FIXED)) {
             wb_textarea->setFont(*fnt);
+            update_display();
+        }
     }
 }
-
-
-#ifdef notdef
-
-// Static function.
-// Respond to a button-press by posting a menu passed in as widget.
-//
-// Note that the "widget" argument is the menu being posted, NOT
-// the button that was pressed.
-//
-int
-QTcellPrpDlg::pc_button_press(GtkWidget *widget, GdkEvent *event)
-{
-    GtkWidget *menu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(widget));
-    if (event->type == GDK_BUTTON_PRESS) {
-
-        GTKdev::Deselect(Pc->pc_edit);
-        GTKdev::Deselect(Pc->pc_del);
-
-        GdkEventButton *bevent = (GdkEventButton*)event;
-        gtk_menu_popup(GTK_MENU(menu), 0, 0, 0, 0, bevent->button,
-            bevent->time);
-        return (true);
-    }
-    return (false);
-}
-
-
 // End of QTcellPrpDlg functions.
 
-#endif

@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef HTTPMON_D_H
-#define HTTPMON_D_H
+#ifndef QTHTTPMON_H
+#define QTHTTPMON_H
  
 #include <QVariant>
 #include <QDialog>
@@ -55,42 +55,43 @@ class QGroupBox;
 class QLabel;
 class QPushButton;
 
-namespace qtinterf
-{
-    class QThttpmon : public QDialog, public http_monitor
-    {
-        Q_OBJECT
-
-    public:
-        QThttpmon(QWidget*);
-        ~QThttpmon();
-
-        bool widget_print(const char*);     // print to monitor
-        void abort();                       // abort transmission
-        void run(Transaction*);             // start transfer
-
-        void set_transaction(Transaction *t) { transaction = t; }
-
-    private slots:
-        void run_slot();
-        void abort_slot();
-        void quit_slot();
-
-    private:
-        bool event(QEvent*);
-
-        QGroupBox *gb;
-        QLabel *label;
-        QPushButton *b_cancel;
-
-        Transaction *transaction;
-
-        char *g_textbuf;
-        bool g_jbuf_set;
-    public:
-        jmp_buf g_jbuf;
-    };
+namespace qtinterf {
+    class QThttpmon;
 }
+
+class qtinterf::QThttpmon : public QDialog, public http_monitor
+{
+    Q_OBJECT
+
+public:
+    QThttpmon(QWidget*);
+    ~QThttpmon();
+
+    bool widget_print(const char*);         // print to monitor
+    void abort();                           // abort transmission
+    void run(Transaction*);                 // start transfer
+
+    void set_transaction(Transaction *t)    { g_transaction = t; }
+
+private slots:
+    void run_slot();
+    void abort_slot();
+    void quit_slot();
+
+private:
+    bool event(QEvent*);
+
+    QGroupBox   *g_gb;
+    QLabel      *g_label;
+    QPushButton *g_cancel;
+
+    Transaction *g_transaction;
+
+    char        *g_textbuf;
+    bool        g_jbuf_set;
+public:
+    jmp_buf     g_jbuf;
+};
 
 #endif
 

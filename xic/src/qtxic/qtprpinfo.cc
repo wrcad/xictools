@@ -59,16 +59,6 @@
 // Pop up to view object properties
 //
 
-namespace {
-    /*
-    GtkTargetEntry target_table[] = {
-        { (char*)"property",     0, 0 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-    */
-}
-
-
 // Static function.
 QTprpBase *
 QTprpBase::prptyInfoPtr()
@@ -124,7 +114,6 @@ QTprpInfoDlg::QTprpInfoDlg(CDo *odesc)
     instPtr = this;
 
     setWindowTitle(tr("Properties"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
@@ -150,17 +139,6 @@ QTprpInfoDlg::QTprpInfoDlg(CDo *odesc)
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
-
-        /*
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    const char *bclr = GTKpkg::self()->GetAttrColor(GRattrColorLocSel);
-    gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr,
-        "paragraph-background", bclr, NULL);
-
-    // for passing hypertext via selections, see gtkhtext.cc
-    g_object_set_data(G_OBJECT(wb_textarea), "hyexport", (void*)2);
-    */
 
     // dismiss button
     //

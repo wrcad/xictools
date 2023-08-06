@@ -73,7 +73,12 @@ class QLabel;
 class QPushButton;
 class QMenu;
 class QAction;
-class QTsearch;
+class QMouseEvent;
+class QMimeData;
+namespace qtinterf {
+    class QTsearchDlg;
+    class QTbag;
+}
 
 // Wariables listing dialog.
 //
@@ -95,6 +100,7 @@ private slots:
     void item_clicked_slot(QTreeWidgetItem*, int);
     void item_selection_changed();
     void dismiss_btn_slot();
+    void font_changed_slot(int);
 
 private:
     /*
@@ -164,6 +170,8 @@ public:
     QTscriptDebuggerDlg(GRobject);
     ~QTscriptDebuggerDlg();
 
+    QSize sizeHint() const;
+
     bool load_from_menu(MenuEnt*);
 
     static QTscriptDebuggerDlg *self()          { return (instPtr); }
@@ -175,6 +183,11 @@ private slots:
     void options_menu_slot(QAction*);
     void help_menu_slot(QAction*);
     void mode_btn_slot();
+    void mouse_press_slot(QMouseEvent*);
+    void text_changed_slot();
+    void text_change_slot(int, int, int);
+    void mime_data_received_slot(const QMimeData*);
+    void font_changed_slot(int);
 
 private:
     void update_variables()
@@ -197,35 +210,27 @@ private:
     void refresh(bool, locType, bool = false);
     char *listing(bool);
     void monitor();
-    const char *var_prompt(const char*, const char*, bool*);
 
+    static stringlist *db_mklist(const char*);
+    static const char *var_prompt(const char*, const char*, bool*);
     static int db_step_idle(void*);
+    static ESret db_open_cb(const char*, void*);
+    static int db_open_idle(void*);
+    static void db_do_saveas_proc(const char*, void*);
+
     /*
-    static void db_undo_proc(GtkWidget*, void*);
-    static void db_redo_proc(GtkWidget*, void*);
-    static void db_cut_proc(GtkWidget*, void*);
-    static void db_copy_proc(GtkWidget*, void*);
-    static void db_paste_proc(GtkWidget*, void*);
-    static void db_paste_prim_proc(GtkWidget*, void*);
     static void db_search_proc(GtkWidget*, void*);
     static void db_font_proc(GtkWidget*, void*);
-    static void db_font_changed();
-    static void db_cancel_proc(GtkWidget*, void*);
     static void db_mode_proc(GtkWidget*, void*);
     static void db_change_proc(GtkWidget*, void*);
     static int db_key_dn_hdlr(GtkWidget*, GdkEvent*, void*);
     static int db_text_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void db_action_proc(GtkWidget*, void*);
-    static ESret db_open_cb(const char*, void*);
-    static int db_open_idle(void*);
-    static void db_do_saveas_proc(const char*, void*);
     static void db_drag_data_received(GtkWidget*, GdkDragContext*,
         gint, gint, GtkSelectionData*, guint, guint, void*);
     static void db_insert_text_proc(GtkTextBuffer*, GtkTextIter*,
         char*, int, void*);
     static void db_delete_range_proc(GtkTextBuffer*, GtkTextIter*,
         GtkTextIter*, void*);
-    static stringlist *db_mklist(const char*);
     */
 
     GRobject    db_caller;
@@ -248,7 +253,7 @@ private:
     char        *db_dropfile;
     FILE        *db_file_ptr;
     stringlist  *db_vlist;
-    QTsearch    *db_search_pop;
+    QTsearchDlg *db_search_pop;
 
     int         db_line;
     int         db_last_code;

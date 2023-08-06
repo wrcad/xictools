@@ -68,22 +68,12 @@
 #include <QComboBox>
 #include <QDrag>
 
+
 //----------------------------------------------------------------------
 //  Cells Listing Panel
 //
 // Help system keywords used:
 //  cellspanel
-
-/*
-namespace {
-    GtkTargetEntry target_table[] = {
-        { (char*)"CELLNAME",    2, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-}
-*/
 
 
 // Static function.
@@ -103,7 +93,7 @@ QTmainwin::get_cell_selection()
 void
 QTmainwin::cells_panic()
 {
-//    Cells = 0;
+    delete QTcellsDlg::self();
 }
 
 
@@ -162,15 +152,11 @@ namespace {
         static const char *info_msg;
     };
 
+    const char *ListState::info_msg =
+        "Use pointer to define area for subcell list.";
     ListState *ListCmd;
-
-    enum { NilCode, ClearCode, TreeCode, OpenCode, PlaceCode, CopyCode,
-        ReplCode, RenameCode, SearchCode, FlagCode, InfoCode, ShowCode,
-        FltrCode };
 }
 
-const char *ListState::info_msg =
-    "Use pointer to define area for subcell list.";
 
 QTcellsDlg *QTcellsDlg::instPtr;
 
@@ -1086,7 +1072,7 @@ QTcellsDlg::c_save_cb(const char *string, void *arg)
 
         if (cp->c_msg_pop)
             cp->c_msg_pop->popdown();
-//        cp->c_msg_pop = new QTmsgPopup(0, "Text saved in file.", false);
+        cp->c_msg_pop = new QTmsgDlg(0, "Text saved in file.", false);
         cp->c_msg_pop->register_usrptr((void**)&cp->c_msg_pop);
         QTdev::self()->SetPopupLocation(GRloc(), cp->c_msg_pop,
             cp->wb_shell);
@@ -1510,6 +1496,17 @@ QTcellsDlg::mouse_motion_slot(QMouseEvent *ev)
     if (!sel)
         return;
 
+/*
+namespace {
+    GtkTargetEntry target_table[] = {
+        { (char*)"CELLNAME",    2, 0 },
+        { (char*)"STRING",      0, 1 },
+        { (char*)"text/plain",  0, 2 }
+    };
+    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+}
+*/
+
     c_dragging = false;
     QDrag *drag = new QDrag(wb_textarea);
     QMimeData *mimedata = new QMimeData();
@@ -1545,22 +1542,20 @@ QTcellsDlg::font_changed_slot(int fnum)
 void
 QTcellsDlg::save_btn_slot(bool state)
 {
-    if (state) {
-        if (c_save_pop)
-            return;
-/*
-        c_save_pop = new QTledPopup(0,
-            "Enter path to file for saved text:", "", 200, false, 0, arg);
-        c_save_pop->register_caller(widget, false, true);
-        c_save_pop->register_callback(
-            (GRledPopup::GRledCallback)&c_save_cb);
-        c_save_pop->register_usrptr((void**)&c_save_pop);
+    if (!state)
+        return;
+    if (c_save_pop)
+        return;
+    c_save_pop = new QTledDlg(0,
+        "Enter path to file for saved text:", "", "Save", false);
+    c_save_pop->register_caller(sender(), false, true);
+    c_save_pop->register_callback(
+        (GRledPopup::GRledCallback)&c_save_cb);
+    c_save_pop->set_callback_arg(this);
+    c_save_pop->register_usrptr((void**)&c_save_pop);
 
-        QTdev::self()->SetPopupLocation(GRloc(), c_save_pop,
-            cp->wb_shell);
-        cp->c_save_pop->set_visible(true);
-*/
-    }
+    QTdev::self()->SetPopupLocation(GRloc(), c_save_pop, this);
+    c_save_pop->set_visible(true);
 }
 
 

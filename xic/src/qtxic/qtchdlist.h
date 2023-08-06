@@ -47,6 +47,10 @@
 #include <QDialog>
 
 
+//----------------------------------------------------------------------
+//  Cell Hierarchy Digests Listing.
+//
+
 class QPushButton;
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -77,9 +81,6 @@ private slots:
     void qinf_btn_slot();
     void help_btn_slot();
     void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
-    void item_activated_slot(QTreeWidgetItem*, int);
-    void item_clicked_slot(QTreeWidgetItem*, int);
-    void item_selection_changed();
     void rename_btn_slot(int);
     void loadtop_btn_slot(int);
     void failres_btn_slot(int);
@@ -87,6 +88,7 @@ private slots:
     void showtab_btn_slot(bool);
     void geom_change_slot(int);
     void dismiss_btn_slot();
+    void font_changed_slot(int);
 
 private:
     void recolor();
@@ -98,7 +100,7 @@ private:
     static void chl_cnt_cb(const char*, void*);
     static ESret chl_cel_cb(const char*, void*);
 
-    GRobject chl_caller;
+    GRobject    chl_caller;
     QPushButton *chl_addbtn;
     QPushButton *chl_savbtn;
     QPushButton *chl_delbtn;
@@ -109,19 +111,20 @@ private:
     QPushButton *chl_infbtn;
     QPushButton *chl_qinfbtn;
     QTreeWidget *chl_list;
-    QCheckBox *chl_loadtop;
-    QCheckBox *chl_rename;
-    QCheckBox *chl_usetab;
+    QCheckBox   *chl_loadtop;
+    QCheckBox   *chl_rename;
+    QCheckBox   *chl_usetab;
     QPushButton *chl_showtab;
-    QCheckBox *chl_failres;
-    QComboBox *chl_geomenu;
-    GRledPopup *chl_cel_pop;
+    QCheckBox   *chl_failres;
+    QComboBox   *chl_geomenu;
+    GRledPopup  *chl_cel_pop;
     GRmcolPopup *chl_cnt_pop;
     GRaffirmPopup *chl_del_pop;
-    char *chl_selection;
-    char *chl_contlib;
+    char        *chl_selection;
+    char        *chl_contlib;
 
     static QTchdListDlg *instPtr;
 };
 
 #endif
+

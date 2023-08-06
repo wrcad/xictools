@@ -118,134 +118,140 @@ static const char * const attach_xpm[] = {
 "                                "};
 
 
-QTeditPopup::QTeditPopup(QTbag *owner, QTeditPopup::WidgetType type,
+QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     const char *file_or_string, bool with_source, void *arg) :
     QDialog(owner ? owner->Shell() : 0), QTbag()
 {
 wb_shell = this;
     p_parent = owner;
     p_cb_arg = arg;
-    widget_type = type;
+    ed_widget_type = type;
 
-    lastEvent = QUIT;
-    string = 0;
-    savedAs = 0;
-    sourceFile = 0;
-    dropFile = 0;
-    lastSearch = 0;
-    searchTimeout = 0;
-    textChanged = false;
-    ignCase = false;
-    ignChange = false;
-    searcher = 0;
+    ed_lastEvent = QUIT;
+    ed_savedAs = 0;
+    ed_sourceFile = 0;
+    ed_dropFile = 0;
+    ed_lastSearch = 0;
+    ed_textChanged = false;
+    ed_ignCase = false;
+    ed_ignChange = false;
+    ed_searcher = 0;
 
-    a_Load = 0;
-    a_Read = 0;
-    a_Save = 0;
-    a_SaveAs = 0;
-    a_HelpMenu = 0;
+    ed_menubar = 0;
+    ed_filemenu = 0;
+    ed_editmenu = 0;
+    ed_optmenu = 0;
+    ed_helpmenu = 0;
+    ed_to_entry = 0;
+    ed_subj_entry = 0;
+    ed_text_editor = 0;
+    ed_status_bar = 0;
+
+    ed_Load = 0;
+    ed_Read = 0;
+    ed_Save = 0;
+    ed_SaveAs = 0;
+    ed_HelpMenu = 0;
 
     if (owner)
         owner->MonitorAdd(this);
     setAttribute(Qt::WA_DeleteOnClose);
 
-    menubar = new QMenuBar(this);
-    main_menus[0] = new QMenu(this);
-    main_menus[0]->setTitle(QString(tr("&File")));
-    if (widget_type == Editor || widget_type == Browser) {
-        main_menus[0]->addAction(QString(tr("&Open")), this,
+    ed_menubar = new QMenuBar(this);
+    ed_filemenu = new QMenu(this);
+    ed_filemenu->setTitle(QString(tr("&File")));
+    if (ed_widget_type == Editor || ed_widget_type == Browser) {
+        ed_filemenu->addAction(QString(tr("&Open")), this,
             SLOT(open_slot()),  Qt::CTRL+Qt::Key_O);
-        a_Load = main_menus[0]->addAction(QString(tr("&Load")), this,
+        ed_Load = ed_filemenu->addAction(QString(tr("&Load")), this,
             SLOT(load_slot()),  Qt::CTRL+Qt::Key_L);
     }
-    if (widget_type != Browser) {
-        a_Read = main_menus[0]->addAction(QString(tr("&Read")), this,
+    if (ed_widget_type != Browser) {
+        ed_Read = ed_filemenu->addAction(QString(tr("&Read")), this,
             SLOT(read_slot()),  Qt::CTRL+Qt::Key_R);
     }
-    if (widget_type == Editor || widget_type == StringEditor) {
-        a_Save = main_menus[0]->addAction(QString(tr("&Save")), this,
+    if (ed_widget_type == Editor || ed_widget_type == StringEditor) {
+        ed_Save = ed_filemenu->addAction(QString(tr("&Save")), this,
             SLOT(save_slot()),  Qt::CTRL+Qt::Key_S);
     }
-    if (widget_type != StringEditor) {
-        a_SaveAs = main_menus[0]->addAction(QString(tr("Save &As")), this,
+    if (ed_widget_type != StringEditor) {
+        ed_SaveAs = ed_filemenu->addAction(QString(tr("Save &As")), this,
             SLOT(save_as_slot()),  Qt::CTRL+Qt::Key_A);
-        main_menus[0]->addAction(QString(tr("&Print")), this,
+        ed_filemenu->addAction(QString(tr("&Print")), this,
             SLOT(print_slot()),  Qt::CTRL+Qt::Key_P);
     }
-    main_menus[0]->addSeparator();
-    if (widget_type == Mailer)  {
-        main_menus[0]->addAction(QString(tr("Send &Mail")), this,
+    ed_filemenu->addSeparator();
+    if (ed_widget_type == Mailer)  {
+        ed_filemenu->addAction(QString(tr("Send &Mail")), this,
             SLOT(send_slot()),  Qt::CTRL+Qt::Key_M);
     }
-    main_menus[0]->addAction(QString(tr("&Quit")), this,
+    ed_filemenu->addAction(QString(tr("&Quit")), this,
         SLOT(quit_slot()),  Qt::CTRL+Qt::Key_Q);
-    menubar->addMenu(main_menus[0]);
+    ed_menubar->addMenu(ed_filemenu);
 
-    main_menus[1] = new QMenu(this);
-    main_menus[1]->setTitle(QString(tr("&Edit")));
-    main_menus[1]->addAction(QString(tr("&Cut")), this,
+    ed_editmenu = new QMenu(this);
+    ed_editmenu->setTitle(QString(tr("&Edit")));
+    ed_editmenu->addAction(QString(tr("&Cut")), this,
         SLOT(cut_slot()));
-    main_menus[1]->addAction(QString(tr("&Copy")), this,
+    ed_editmenu->addAction(QString(tr("&Copy")), this,
         SLOT(copy_slot()));
-    main_menus[1]->addAction(QString(tr("&Paste")), this,
+    ed_editmenu->addAction(QString(tr("&Paste")), this,
         SLOT(paste_slot()));
-    menubar->addMenu(main_menus[1]);
+    ed_menubar->addMenu(ed_editmenu);
 
-    main_menus[2] = new QMenu(this);
-    main_menus[2]->setTitle(QString(tr("&Options")));
-    main_menus[2]->addAction(QString(tr("&Search")), this,
+    ed_optmenu = new QMenu(this);
+    ed_optmenu->setTitle(QString(tr("&Options")));
+    ed_optmenu->addAction(QString(tr("&Search")), this,
         SLOT(search_slot()));
-    if ((widget_type == Editor || widget_type == StringEditor) &&
+    if ((ed_widget_type == Editor || ed_widget_type == StringEditor) &&
             with_source) {
-        main_menus[2]->addAction(QString(tr("&Source")), this,
+        ed_optmenu->addAction(QString(tr("&Source")), this,
             SLOT(source_slot()));
     }
-    if (widget_type == Mailer) {
-        main_menus[2]->addAction(QString(tr("&Attach")), this,
+    if (ed_widget_type == Mailer) {
+        ed_optmenu->addAction(QString(tr("&Attach")), this,
             SLOT(attach_slot()));
     }
-    main_menus[2]->addAction(QString(tr("&Font")), this,
+    ed_optmenu->addAction(QString(tr("&Font")), this,
         SLOT(font_slot()));
-    menubar->addMenu(main_menus[2]);
+    ed_menubar->addMenu(ed_optmenu);
 
-    menubar->addSeparator();
-    main_menus[3] = new QMenu(this);
-    main_menus[3]->setTitle(QString(tr("&Help")));
-    main_menus[3]->addAction(QString(tr("&Help")), this,
+    ed_menubar->addSeparator();
+    ed_helpmenu = new QMenu(this);
+    ed_helpmenu->setTitle(QString(tr("&Help")));
+    ed_helpmenu->addAction(QString(tr("&Help")), this,
         SLOT(help_slot()));
-    a_HelpMenu = menubar->addMenu(main_menus[3]);
+    ed_HelpMenu = ed_menubar->addMenu(ed_helpmenu);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMenuBar(menubar);
+    vbox->setMenuBar(ed_menubar);
     vbox->setMargin(4);
     vbox->setSpacing(2);
 
-    to_entry = 0;
-    subj_entry = 0;
-    if (widget_type == Mailer) {
+    if (ed_widget_type == Mailer) {
         QGroupBox *gb = new QGroupBox(this);
         gb->setTitle(QString(tr("To:")));
         QVBoxLayout *vb = new QVBoxLayout(gb);
         vb->setMargin(4);
-        to_entry = new QLineEdit(gb);
-        vb->addWidget(to_entry);
+        ed_to_entry = new QLineEdit(gb);
+        vb->addWidget(ed_to_entry);
         vbox->addWidget(gb);
-        to_entry->setText(QString(mail_addr));
+        ed_to_entry->setText(QString(mail_addr));
 
         gb = new QGroupBox(this);
         gb->setTitle(QString(tr("Subject:")));
         vb = new QVBoxLayout(gb);
         vb->setMargin(4);
-        subj_entry = new QLineEdit(gb);
-        vb->addWidget(subj_entry);
+        ed_subj_entry = new QLineEdit(gb);
+        vb->addWidget(ed_subj_entry);
         vbox->addWidget(gb);
-        subj_entry->setText(QString(mail_subject));
+        ed_subj_entry->setText(QString(mail_subject));
     }
-    text_editor = new QTextEdit(this);
-    vbox->addWidget(text_editor);
+    ed_text_editor = new QTextEdit(this);
+    vbox->addWidget(ed_text_editor);
 
-    status_bar = new QStatusBar(this);
-    vbox->addWidget(status_bar);
+    ed_status_bar = new QStatusBar(this);
+    vbox->addWidget(ed_status_bar);
 
     static bool checked_env;
     if (!checked_env) {
@@ -256,55 +262,55 @@ wb_shell = this;
     }
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_EDITOR))
-        text_editor->setFont(*fnt);
+        ed_text_editor->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    if (widget_type == Editor || widget_type == Browser) {
-        if (widget_type == Browser)
-            text_editor->setReadOnly(true);
+    if (ed_widget_type == Editor || ed_widget_type == Browser) {
+        if (ed_widget_type == Browser)
+            ed_text_editor->setReadOnly(true);
 
         char *fname = pathlist::expand_path(file_or_string, false, true);
         check_t which = filestat::check_file(fname, R_OK);
         if (which == NOGO) {
             fname = filestat::make_temp("xe");
-            if (widget_type == Browser)
-                status_bar->showMessage(QString("Can't open file!"));
+            if (ed_widget_type == Browser)
+                ed_status_bar->showMessage(QString("Can't open file!"));
         }
         else if (which == READ_OK) {
             if (!read_file(fname, true))
-                status_bar->showMessage(QString("Can't open file!"));
-            if (widget_type == Browser)
-                status_bar->showMessage(QString("Read-Only"));
+                ed_status_bar->showMessage(QString("Can't open file!"));
+            if (ed_widget_type == Browser)
+                ed_status_bar->showMessage(QString("Read-Only"));
         }
         else if (which == NO_EXIST) {
-            if (widget_type == Browser)
-                status_bar->showMessage(QString("Can't open file!"));
+            if (ed_widget_type == Browser)
+                ed_status_bar->showMessage(QString("Can't open file!"));
         }
         else {
-            status_bar->showMessage(QString("Read-Only"));
-            text_editor->setReadOnly(true);
+            ed_status_bar->showMessage(QString("Read-Only"));
+            ed_text_editor->setReadOnly(true);
         }
         set_source(fname);
         delete [] fname;
     }
-    else if (widget_type == Mailer) {
-        text_editor->setPlainText(file_or_string);
-        status_bar->showMessage(QString("Please enter your comment"));
+    else if (ed_widget_type == Mailer) {
+        ed_text_editor->setPlainText(file_or_string);
+        ed_status_bar->showMessage(QString("Please enter your comment"));
     }
     else
-        text_editor->setPlainText(file_or_string);
+        ed_text_editor->setPlainText(file_or_string);
 
-    textChanged = false;
-    connect(text_editor, SIGNAL(textChanged()),
+    ed_textChanged = false;
+    connect(ed_text_editor, SIGNAL(ed_textChanged()),
         this, SLOT(text_changed_slot()));
 
-    savedAs = 0;
-    lastEvent = LOAD;
+    ed_savedAs = 0;
+    ed_lastEvent = LOAD;
 }
 
 
-QTeditPopup::~QTeditPopup()
+QTeditDlg::~QTeditDlg()
 {
     if (p_usrptr)
         *p_usrptr = 0;
@@ -326,17 +332,17 @@ QTeditPopup::~QTeditPopup()
         if (owner)
             owner->MonitorRemove(this);
     }
-    delete [] savedAs;
-    delete [] sourceFile;
-    delete [] dropFile;
-    delete [] lastSearch;
+    delete [] ed_savedAs;
+    delete [] ed_sourceFile;
+    delete [] ed_dropFile;
+    delete [] ed_lastSearch;
 }
 
 
 // GRpopup override
 //
 void
-QTeditPopup::popdown()
+QTeditDlg::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -353,7 +359,7 @@ QTeditPopup::popdown()
 // is destroyed.
 //
 void
-QTeditPopup::set_caller(GRobject obj)
+QTeditDlg::set_caller(GRobject obj)
 {
     p_caller = obj;
     if (obj) {
@@ -375,41 +381,41 @@ QTeditPopup::set_caller(GRobject obj)
 
 
 void
-QTeditPopup::set_mailaddr(const char *str)
+QTeditDlg::set_mailaddr(const char *str)
 {
-    if (to_entry)
-        to_entry->setText(QString(str));
+    if (ed_to_entry)
+        ed_to_entry->setText(QString(str));
 }
 
 
 void
-QTeditPopup::set_mailsubj(const char *str)
+QTeditDlg::set_mailsubj(const char *str)
 {
-    if (subj_entry)
-        subj_entry->setText(str);
+    if (ed_subj_entry)
+        ed_subj_entry->setText(str);
 }
 
 
 // Handler for the file selection widget.
 //
 void
-QTeditPopup::file_selection_slot(const char *fname, void*)
+QTeditDlg::file_selection_slot(const char *fname, void*)
 {
-    delete [] dropFile;
-    dropFile = lstring::copy(fname);
+    delete [] ed_dropFile;
+    ed_dropFile = lstring::copy(fname);
     if (wb_input)
         wb_input->popdown();
-    a_Load->activate(QAction::Trigger);
+    ed_Load->activate(QAction::Trigger);
 }
 
 
 // Pop up the file selector.
 //
 void
-QTeditPopup::open_slot()
+QTeditDlg::open_slot()
 {
     // open the file selector in the directory of the current file
-    char *path = lstring::copy(sourceFile);
+    char *path = lstring::copy(ed_sourceFile);
     if (path && *path) {
         char *t = strrchr(path, '/');
         if (t)
@@ -420,7 +426,7 @@ QTeditPopup::open_slot()
         }
     }
     GRfilePopup *fs = PopUpFileSelector(fsSEL, GRloc(), 0, 0, 0, path);
-    QTfilePopup *fsel = dynamic_cast<QTfilePopup*>(fs);
+    QTfileDlg *fsel = dynamic_cast<QTfileDlg*>(fs);
     if (fsel)
         connect(fsel, SIGNAL(file_selected(const char*, void*)),
             this, SLOT(file_selection_slot(const char*, void*)));
@@ -433,7 +439,7 @@ QTeditPopup::open_slot()
 // to edit.
 //
 void
-QTeditPopup::load_file_slot(const char *fnamein, void*)
+QTeditDlg::load_file_slot(const char *fnamein, void*)
 {
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
@@ -444,11 +450,11 @@ QTeditPopup::load_file_slot(const char *fnamein, void*)
         delete [] fname;
         return;
     }
-    text_editor->setReadOnly(true);
+    ed_text_editor->setReadOnly(true);
 
     bool ok = read_file(fname, true);
-    if (widget_type != Browser)
-        text_editor->setReadOnly(false);
+    if (ed_widget_type != Browser)
+        ed_text_editor->setReadOnly(false);
     if (wb_input)
         wb_input->popdown();
     if (!ok) {
@@ -456,19 +462,19 @@ QTeditPopup::load_file_slot(const char *fnamein, void*)
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
         snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
-        status_bar->showMessage(QString(tbuf));
+        ed_status_bar->showMessage(QString(tbuf));
         delete [] fname;
         return;
     }
     set_source(fname);
-    if (textChanged) {
-        textChanged = false;
-        if (a_Save)
-            a_Save->setEnabled(false);
+    if (ed_textChanged) {
+        ed_textChanged = false;
+        if (ed_Save)
+            ed_Save->setEnabled(false);
     }
-    if (savedAs) {
-        delete [] savedAs;
-        savedAs = 0;
+    if (ed_savedAs) {
+        delete [] ed_savedAs;
+        ed_savedAs = 0;
     }
     delete [] fname;
 }
@@ -477,11 +483,11 @@ QTeditPopup::load_file_slot(const char *fnamein, void*)
 // Callback to load a new file into the editor
 //
 void
-QTeditPopup::load_slot()
+QTeditDlg::load_slot()
 {
-    if (textChanged) {
-        if (lastEvent != LOAD) {
-            lastEvent = LOAD;
+    if (ed_textChanged) {
+        if (ed_lastEvent != LOAD) {
+            ed_lastEvent = LOAD;
             PopUpMessage(
                 "Text has been modified.  Press Load again to load", false);
             return;
@@ -491,10 +497,10 @@ QTeditPopup::load_slot()
     }
     char buf[512];
     *buf = '\0';
-    if (dropFile) {
-        strcpy(buf, dropFile);
-        delete [] dropFile;
-        dropFile = 0;
+    if (ed_dropFile) {
+        strcpy(buf, ed_dropFile);
+        delete [] ed_dropFile;
+        ed_dropFile = 0;
     }
     else if (p_callback)
         (*p_callback)(buf, p_cb_arg, XE_LOAD);
@@ -510,7 +516,7 @@ QTeditPopup::load_slot()
 // cursor position.
 //
 void
-QTeditPopup::read_file_slot(const char *fnamein, void*)
+QTeditDlg::read_file_slot(const char *fnamein, void*)
 {
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
@@ -521,22 +527,22 @@ QTeditPopup::read_file_slot(const char *fnamein, void*)
         delete [] fname;
         return;
     }
-    text_editor->setReadOnly(true);
+    ed_text_editor->setReadOnly(true);
 
     char tbuf[256];
     if (!read_file(fname, false)) {
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
         snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
-        status_bar->showMessage(QString(tbuf));
+        ed_status_bar->showMessage(QString(tbuf));
     }
     else {
         text_changed_slot();  // this isn't called otherwise
-        text_editor->setReadOnly(false);
+        ed_text_editor->setReadOnly(false);
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
         snprintf(tbuf, sizeof(tbuf), "Successfully read %s", fname);
-        status_bar->showMessage(QString(tbuf));
+        ed_status_bar->showMessage(QString(tbuf));
     }
     if (wb_input)
         wb_input->popdown();
@@ -547,14 +553,14 @@ QTeditPopup::read_file_slot(const char *fnamein, void*)
 // Read a file into the editor at the current position.
 //
 void
-QTeditPopup::read_slot()
+QTeditDlg::read_slot()
 {
     char buf[512];
     *buf = '\0';
-    if (dropFile) {
-        strcpy(buf, dropFile);
-        delete [] dropFile;
-        dropFile = 0;
+    if (ed_dropFile) {
+        strcpy(buf, ed_dropFile);
+        delete [] ed_dropFile;
+        ed_dropFile = 0;
     }
     PopUpInput(0, buf, "Read File", 0, 0);
     connect(wb_input, SIGNAL(action_call(const char*, void*)),
@@ -565,20 +571,20 @@ QTeditPopup::read_slot()
 // Save file.
 //
 void
-QTeditPopup::save_slot()
+QTeditDlg::save_slot()
 {
-    lastEvent = SAVE;
+    ed_lastEvent = SAVE;
 
     if (p_callback) {
         char *st =
-            lstring::copy(text_editor->toPlainText().toLatin1().constData());
+            lstring::copy(ed_text_editor->toPlainText().toLatin1().constData());
         bool ret = (*p_callback)(st, p_cb_arg, XE_SAVE);
         delete [] st;
         if (ret)
             delete this;
         return;
     }
-    char *fname = sourceFile;
+    char *fname = ed_sourceFile;
     if (filestat::check_file(fname, W_OK) == NOGO) {
         PopUpMessage(filestat::error_msg(), true);
         return;
@@ -588,15 +594,15 @@ QTeditPopup::save_slot()
         return;
     }
 
-    status_bar->showMessage(QString(tr("Text saved")));
-    // This can be called with textChanged false if we saved
+    ed_status_bar->showMessage(QString(tr("Text saved")));
+    // This can be called with ed_textChanged false if we saved
     // under a new name, and made no subsequent changes.
-    if (textChanged)
-        textChanged = false;
-    a_SaveAs->setEnabled(false);
-    if (savedAs) {
-        delete [] savedAs;
-        savedAs = 0;
+    if (ed_textChanged)
+        ed_textChanged = false;
+    ed_SaveAs->setEnabled(false);
+    if (ed_savedAs) {
+        delete [] ed_savedAs;
+        ed_savedAs = 0;
     }
     if (p_callback)
         (*p_callback)(fname, p_cb_arg, XE_SAVE);
@@ -622,7 +628,7 @@ same(const char *s, const char *t)
 // If a block is selected, only the block is saved in the new file
 //
 void
-QTeditPopup::save_file_as_slot(const char *fnamein, void*)
+QTeditDlg::save_file_as_slot(const char *fnamein, void*)
 {
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
@@ -632,16 +638,16 @@ QTeditPopup::save_file_as_slot(const char *fnamein, void*)
         delete [] fname;
         return;
     }
-    QTextCursor c = text_editor->textCursor();
+    QTextCursor c = ed_text_editor->textCursor();
     int start = c.anchor();
     int end = c.position();
     const char *mesg;
     if (start == end) {
-        const char *oldfname = sourceFile;
+        const char *oldfname = ed_sourceFile;
         // no selected text
         if (same(fname, oldfname)) {
-            if (!textChanged) {
-                status_bar->showMessage(QString("No save needed"));
+            if (!ed_textChanged) {
+                ed_status_bar->showMessage(QString("No save needed"));
                 delete [] fname;
                 return;
             }
@@ -650,13 +656,13 @@ QTeditPopup::save_file_as_slot(const char *fnamein, void*)
                 delete [] fname;
                 return;
             }
-            if (savedAs) {
-                delete [] savedAs;
-                savedAs = 0;
+            if (ed_savedAs) {
+                delete [] ed_savedAs;
+                ed_savedAs = 0;
             }
-            textChanged = false;
-            if (a_Save)
-                a_Save->setEnabled(false);
+            ed_textChanged = false;
+            if (ed_Save)
+                ed_Save->setEnabled(false);
         }
         else {
             if (!write_file(fname, 0 , -1)) {
@@ -664,10 +670,10 @@ QTeditPopup::save_file_as_slot(const char *fnamein, void*)
                 delete [] fname;
                 return;
             }
-            if (savedAs)
-                delete [] savedAs;
-            savedAs = lstring::copy(fname);
-            textChanged = false;
+            if (ed_savedAs)
+                delete [] ed_savedAs;
+            ed_savedAs = lstring::copy(fname);
+            ed_textChanged = false;
         }
         mesg = "Text saved";
     }
@@ -681,7 +687,7 @@ QTeditPopup::save_file_as_slot(const char *fnamein, void*)
     }
     if (wb_input)
         wb_input->popdown();
-    status_bar->showMessage(QString(mesg));
+    ed_status_bar->showMessage(QString(mesg));
     delete [] fname;
 }
 
@@ -689,18 +695,18 @@ QTeditPopup::save_file_as_slot(const char *fnamein, void*)
 // Save file under a new name.
 //
 void
-QTeditPopup::save_as_slot()
+QTeditDlg::save_as_slot()
 {
-    lastEvent = SAVEAS;
+    ed_lastEvent = SAVEAS;
     if (wb_input)
         wb_input->popdown();
 
-    QTextCursor c = text_editor->textCursor();
+    QTextCursor c = ed_text_editor->textCursor();
     int start = c.anchor();
     int end = c.position();
     if (start == end) {
-        const char *fname = sourceFile;
-        if (widget_type == Mailer)
+        const char *fname = ed_sourceFile;
+        if (ed_widget_type == Mailer)
             fname = "";
         PopUpInput(0, fname, "Save File", 0, 0);
         connect(wb_input, SIGNAL(action_call(const char*, void*)),
@@ -717,7 +723,7 @@ QTeditPopup::save_as_slot()
 // Bring up the printer control pop-up.
 //
 void
-QTeditPopup::print_slot()
+QTeditDlg::print_slot()
 {
     if (edHCcb.command)
         delete [] edHCcb.command;
@@ -727,7 +733,7 @@ QTeditPopup::print_slot()
 
 
 void
-QTeditPopup::send_slot()
+QTeditDlg::send_slot()
 {
     char *descname = filestat::make_temp("m1");
     FILE *descfp = fopen(descname, "w");
@@ -736,7 +742,7 @@ QTeditPopup::send_slot()
         delete [] descname;
         return;
     }
-    char *s = lstring::copy(text_editor->toPlainText().toLatin1().constData());
+    char *s = lstring::copy(ed_text_editor->toPlainText().toLatin1().constData());
     fputs(s, descfp);
     delete [] s;
     fclose(descfp);
@@ -745,15 +751,15 @@ QTeditPopup::send_slot()
     state.outfname = filestat::make_temp("m2");
     char buf[256];
 
-    char *mailaddr = lstring::copy(to_entry->text().toLatin1().constData());
+    char *mailaddr = lstring::copy(ed_to_entry->text().toLatin1().constData());
     char *header = new char[strlen(mailaddr) + 8];
     strcpy(header, "To: ");
     strcat(header, mailaddr);
     strcat(header, "\n");
 
-    char *subject = lstring::copy(subj_entry->text().toLatin1().constData());
+    char *subject = lstring::copy(ed_subj_entry->text().toLatin1().constData());
     bool err = false;
-    QList<QAction*> acts = menubar->actions();
+    QList<QAction*> acts = ed_menubar->actions();
     for (int i = 0; i < acts.size(); i++) {
         QString qs = acts.at(i)->text();
         if (qs.isNull() || qs.isEmpty())
@@ -826,12 +832,12 @@ QTeditPopup::send_slot()
 // Quit the editor, after confirmation if unsaved work.
 //
 void
-QTeditPopup::quit_slot()
+QTeditDlg::quit_slot()
 {
-    if ((widget_type == Editor || widget_type == StringEditor) &&
-            textChanged) {
-        if (lastEvent != QUIT) {
-            lastEvent = QUIT;
+    if ((ed_widget_type == Editor || ed_widget_type == StringEditor) &&
+            ed_textChanged) {
+        if (ed_lastEvent != QUIT) {
+            ed_lastEvent = QUIT;
             PopUpMessage(
                 "Text has been modified.  Press Quit again to quit", false);
             return;
@@ -844,9 +850,9 @@ QTeditPopup::quit_slot()
 // Kill selected text, copy to clipboard.
 //
 void
-QTeditPopup::cut_slot()
+QTeditDlg::cut_slot()
 {
-    QTextCursor c = text_editor->textCursor();
+    QTextCursor c = ed_text_editor->textCursor();
     if (c.hasSelection()) {
         QClipboard *cb = qApp->clipboard();
         if (cb->supportsSelection())
@@ -861,9 +867,9 @@ QTeditPopup::cut_slot()
 // Copy selected text to the clipboard.
 //
 void
-QTeditPopup::copy_slot()
+QTeditDlg::copy_slot()
 {
-    QTextCursor c = text_editor->textCursor();
+    QTextCursor c = ed_text_editor->textCursor();
     if (c.hasSelection()) {
         QClipboard *cb = qApp->clipboard();
         if (cb->supportsSelection())
@@ -877,10 +883,10 @@ QTeditPopup::copy_slot()
 // Insert clipboard text.
 //
 void
-QTeditPopup::paste_slot()
+QTeditDlg::paste_slot()
 {
     QClipboard *cb = qApp->clipboard();
-    QTextCursor c = text_editor->textCursor();
+    QTextCursor c = ed_text_editor->textCursor();
     if (cb->supportsSelection())
         c.insertText(cb->text(QClipboard::Selection));
     else
@@ -891,19 +897,19 @@ QTeditPopup::paste_slot()
 // Pop up the regular expression search dialog.
 //
 void
-QTeditPopup::search_slot()
+QTeditDlg::search_slot()
 {
-    if (!searcher) {
-        searcher = new QTsearch(this, lastSearch);
-        searcher->register_usrptr((void**)&searcher);
-        searcher->set_visible(true);
+    if (!ed_searcher) {
+        ed_searcher = new QTsearchDlg(this, ed_lastSearch);
+        ed_searcher->register_usrptr((void**)&ed_searcher);
+        ed_searcher->set_visible(true);
 
-        searcher->set_ign_case(ignCase);
-        connect(searcher, SIGNAL(search_down()),
+        ed_searcher->set_ign_case(ed_ignCase);
+        connect(ed_searcher, SIGNAL(search_down()),
             this, SLOT(search_down_slot()));
-        connect(searcher, SIGNAL(search_up()),
+        connect(ed_searcher, SIGNAL(search_up()),
             this, SLOT(search_up_slot()));
-        connect(searcher, SIGNAL(ignore_case(bool)),
+        connect(ed_searcher, SIGNAL(ignore_case(bool)),
             this, SLOT(ignore_case_slot(bool)));
     }
 }
@@ -912,11 +918,11 @@ QTeditPopup::search_slot()
 // Send the file to the application to be used as input.
 //
 void
-QTeditPopup::source_slot()
+QTeditDlg::source_slot()
 {
     const char *fname;
-    lastEvent = SOURCE;
-    if (textChanged) {
+    ed_lastEvent = SOURCE;
+    if (ed_textChanged) {
         fname = filestat::make_temp("sp");
         if (!write_file(fname, 0 , -1)) {
             PopUpMessage("Error: can't write temp file", true);
@@ -925,14 +931,14 @@ QTeditPopup::source_slot()
         }
     }
     else {
-        if (savedAs)
-            fname = lstring::copy(savedAs);
+        if (ed_savedAs)
+            fname = lstring::copy(ed_savedAs);
         else
-            fname = lstring::copy(sourceFile);
+            fname = lstring::copy(ed_sourceFile);
     }
     if (p_callback) {
         (*p_callback)(fname, p_cb_arg, XE_SOURCE);
-        status_bar->showMessage(QString(tr("Text sourced")));
+        ed_status_bar->showMessage(QString(tr("Text sourced")));
     }
     delete [] fname;
 }
@@ -946,7 +952,7 @@ QTeditPopup::source_slot()
 // Callback from the input popup to attach a file to a mail message
 //
 void
-QTeditPopup::attach_file_slot(const char *fnamein, void*)
+QTeditDlg::attach_file_slot(const char *fnamein, void*)
 {
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
@@ -962,7 +968,7 @@ QTeditPopup::attach_file_slot(const char *fnamein, void*)
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
         snprintf(tbuf, sizeof(tbuf), "Can't open %s!", fname);
-        status_bar->showMessage(QString(tr(tbuf)));
+        ed_status_bar->showMessage(QString(tr(tbuf)));
         delete [] fname;
         return;
     }
@@ -973,7 +979,7 @@ QTeditPopup::attach_file_slot(const char *fnamein, void*)
     a->setMenu(menu);
     a->setIcon(QIcon(QPixmap(attach_xpm)));
     a->setText(QString("    "));  // need to set text or nothing will show!
-    menubar->insertAction(a_HelpMenu, a);
+    ed_menubar->insertAction(ed_HelpMenu, a);
     QAction *a_path = a;
 
     char *fn = lstring::copy(lstring::strip_path(fname));
@@ -998,14 +1004,14 @@ QTeditPopup::attach_file_slot(const char *fnamein, void*)
 // Attach a file in mail mode.
 //
 void
-QTeditPopup::attach_slot()
+QTeditDlg::attach_slot()
 {
     char buf[512];
     *buf = '\0';
-    if (dropFile) {
-        strcpy(buf, dropFile);
-        delete [] dropFile;
-        dropFile = 0;
+    if (ed_dropFile) {
+        strcpy(buf, ed_dropFile);
+        delete [] ed_dropFile;
+        ed_dropFile = 0;
     }
     PopUpInput(0, buf, "Attach File", 0, 0);
     connect(wb_input, SIGNAL(action_call(const char*, void*)),
@@ -1016,7 +1022,7 @@ QTeditPopup::attach_slot()
 // Unattach a file.
 //
 void
-QTeditPopup::unattach_slot(QAction *a)
+QTeditDlg::unattach_slot(QAction *a)
 {
     if (a) {
         QAction *a_path = (QAction*)(unsigned long)a->data().toULongLong();
@@ -1028,7 +1034,7 @@ QTeditPopup::unattach_slot(QAction *a)
 // Font selector pop-up.
 //
 void
-QTeditPopup::font_slot()
+QTeditDlg::font_slot()
 {
     PopUpFontSel(0, GRloc(), MODE_ON, 0, 0, FNT_EDITOR);
 }
@@ -1037,55 +1043,55 @@ QTeditPopup::font_slot()
 // Pop up a help window using the application database.
 //
 void
-QTeditPopup::help_slot()
+QTeditDlg::help_slot()
 {
     if (GRpkg::self()->MainWbag())
         GRpkg::self()->MainWbag()->PopUpHelp(
-            widget_type == Mailer ? "mailclient" : "xeditor");
+            ed_widget_type == Mailer ? "mailclient" : "xeditor");
     else
-        PopUpHelp(widget_type == Mailer ? "mailclient" : "xeditor");
+        PopUpHelp(ed_widget_type == Mailer ? "mailclient" : "xeditor");
 }
 
 
 // Update state to reflect text modified.
 //
 void
-QTeditPopup::text_changed_slot()
+QTeditDlg::text_changed_slot()
 {
-    if (ignChange)
+    if (ed_ignChange)
         return;
-    lastEvent = TEXTMOD;
-    status_bar->showMessage(QString(""));
+    ed_lastEvent = TEXTMOD;
+    ed_status_bar->showMessage(QString(""));
     if (wb_message)
         wb_message->popdown();
-    if (textChanged)
+    if (ed_textChanged)
         return;
-    textChanged = true;
-    if (a_Save)
-        a_Save->setEnabled(true);
+    ed_textChanged = true;
+    if (ed_Save)
+        ed_Save->setEnabled(true);
 }
 
 
 // Function to read a file into the editor
 //
 bool
-QTeditPopup::read_file(const char *fname, bool clear)
+QTeditDlg::read_file(const char *fname, bool clear)
 {
     FILE *fp = fopen(fname, "r");
     if (fp) {
         if (clear)
-            text_editor->clear();
+            ed_text_editor->clear();
         char buf[1024];
         for (;;) {
             int n = fread(buf, 1, 1024, fp);
-            text_editor->append(QString(QByteArray(buf, n)));
+            ed_text_editor->append(QString(QByteArray(buf, n)));
             if (n < 1024)
                 break;
         }
         fclose(fp);
-        QTextCursor c = text_editor->textCursor();
+        QTextCursor c = ed_text_editor->textCursor();
         c.setPosition(0);
-        text_editor->setTextCursor(c);
+        ed_text_editor->setTextCursor(c);
         return (true);
     }
     return (false);
@@ -1097,11 +1103,11 @@ QTeditPopup::read_file(const char *fname, bool clear)
 // Function to write a file from the window contents
 //
 bool
-QTeditPopup::write_file(const char *fname, int startpos, int endpos)
+QTeditDlg::write_file(const char *fname, int startpos, int endpos)
 {
     FILE *fp = fopen(fname, "w");
     if (fp) {
-        QString qs = text_editor->toPlainText();
+        QString qs = ed_text_editor->toPlainText();
         int length = qs.size();
         char *buffer = lstring::copy(qs.toLatin1().constData());
         if (endpos >= 0 && endpos < length)
@@ -1132,22 +1138,22 @@ QTeditPopup::write_file(const char *fname, int startpos, int endpos)
 
 
 void
-QTeditPopup::set_source(const char *str)
+QTeditDlg::set_source(const char *str)
 {
-    delete [] sourceFile;
-    sourceFile = lstring::copy(str);
+    delete [] ed_sourceFile;
+    ed_sourceFile = lstring::copy(str);
 }
 
 
 void
-QTeditPopup::set_sens(bool set)
+QTeditDlg::set_sens(bool set)
 {
-    if (a_Load)
-        a_Load->setEnabled(set);
-    if (a_Read)
-        a_Read->setEnabled(set);
-    if (a_SaveAs)
-        a_SaveAs->setEnabled(set);
+    if (ed_Load)
+        ed_Load->setEnabled(set);
+    if (ed_Read)
+        ed_Read->setEnabled(set);
+    if (ed_SaveAs)
+        ed_SaveAs->setEnabled(set);
 }
 
 
@@ -1156,62 +1162,62 @@ QTeditPopup::set_sens(bool set)
 //
 
 void
-QTeditPopup::search_down_slot()
+QTeditDlg::search_down_slot()
 {
-    QString target = searcher->get_target();
+    QString target = ed_searcher->get_target();
     if (!target.isNull() && !target.isEmpty()) {
-        delete [] lastSearch;
-        lastSearch = lstring::copy(target.toLatin1().constData());
+        delete [] ed_lastSearch;
+        ed_lastSearch = lstring::copy(target.toLatin1().constData());
 
-        QTextCursor c = text_editor->textCursor();
-        QTextDocument *doc = text_editor->document();
+        QTextCursor c = ed_text_editor->textCursor();
+        QTextDocument *doc = ed_text_editor->document();
         QTextCursor nc = doc->find(target, c,
-            ignCase ? (QTextDocument::FindFlag)0 :
+            ed_ignCase ? (QTextDocument::FindFlag)0 :
                 QTextDocument::FindCaseSensitively);
         if (!nc.isNull())
-            text_editor->setTextCursor(nc);
+            ed_text_editor->setTextCursor(nc);
         else
-            searcher->set_transient_message("Not found!");
+            ed_searcher->set_transient_message("Not found!");
     }
 }
 
 
 void
-QTeditPopup::search_up_slot()
+QTeditDlg::search_up_slot()
 {
-    QString target = searcher->get_target();
+    QString target = ed_searcher->get_target();
     if (!target.isNull() && !target.isEmpty()) {
-        delete [] lastSearch;
-        lastSearch = lstring::copy(target.toLatin1().constData());
+        delete [] ed_lastSearch;
+        ed_lastSearch = lstring::copy(target.toLatin1().constData());
 
-        QTextCursor c = text_editor->textCursor();
-        QTextDocument *doc = text_editor->document();
+        QTextCursor c = ed_text_editor->textCursor();
+        QTextDocument *doc = ed_text_editor->document();
         QTextCursor nc = doc->find(target, c,
-            ignCase ? QTextDocument::FindBackward :
+            ed_ignCase ? QTextDocument::FindBackward :
                 QTextDocument::FindBackward |
                     QTextDocument::FindCaseSensitively);
         if (!nc.isNull())
-            text_editor->setTextCursor(nc);
+            ed_text_editor->setTextCursor(nc);
         else
-            searcher->set_transient_message("Not found!");
+            ed_searcher->set_transient_message("Not found!");
     }
 }
 
 
 void
-QTeditPopup::ignore_case_slot(bool set)
+QTeditDlg::ignore_case_slot(bool set)
 {
-    ignCase = set;
+    ed_ignCase = set;
 }
 
 
 void
-QTeditPopup::font_changed_slot(int fnum)
+QTeditDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_EDITOR) {
         QFont *fnt;
         if (FC.getFont(&fnt, FNT_EDITOR))
-            text_editor->setFont(*fnt);
+            ed_text_editor->setFont(*fnt);
     }
 }
 

@@ -38,32 +38,33 @@
  $Id:$
  *========================================================================*/
 
-#ifndef FORM_COMBO_W_H
-#define FORM_COMBO_W_H
+#ifndef QTFORM_COMBO_H
+#define QTFORM_COMBO_H
 
 #include <QComboBox>
 
 struct htmForm;
 
-namespace qtinterf
-{
-    class QTform_combo : public QComboBox
-    {
-        Q_OBJECT
-
-    public:
-        QTform_combo(htmForm*, QWidget*);
-
-        void setSize();
-
-    signals:
-
-    private slots:
-      
-    private:
-        htmForm *form_entry;
-    };
+namespace qtinterf {
+    class QTform_combo;
 }
+
+class qtinterf::QTform_combo : public QComboBox
+{
+    Q_OBJECT
+
+public:
+    QTform_combo(htmForm*, QWidget*);
+
+    void setSize();
+
+signals:
+
+private slots:
+  
+private:
+    htmForm *form_entry;
+};
 
 #endif
 

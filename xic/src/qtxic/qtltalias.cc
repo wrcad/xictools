@@ -176,8 +176,11 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c)
 //    g_signal_connect(G_OBJECT(chl_list), "button-press-event",
 //        G_CALLBACK(lb_button_press_proc), this);
 
-    // Set up font and tracking.
-//    GTKfont::setupFont(la_list, FNT_PROP, true);
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_PROP))
+        la_list->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     hbox = new QHBoxLayout(0);
     hbox->setMargin(0);
@@ -482,5 +485,17 @@ void
 QTlayerAliasDlg::dismiss_btn_slot()
 {
     XM()->PopUpLayerAliases(0, MODE_OFF);
+}
+
+
+void
+QTlayerAliasDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_PROP) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum))
+            la_list->setFont(*fnt);
+        update();
+    }
 }
 

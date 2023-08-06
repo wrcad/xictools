@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef VIEWMON_H
-#define VIEWMON_H
+#ifndef QTVIEWMON_H
+#define QTVIEWMON_H
 
 #include <QObject>
 #include "qtinterf/qtinterf.h"
@@ -54,33 +54,33 @@ struct htmFormCallbackStruct;
 struct htmImagemapCallbackStruct;
 struct htmEventCallbackStruct;
 
-namespace qtinterf
-{
+namespace qtinterf {
     class QTviewer;
-
-    class QTviewmon : public QObject
-    {
-        Q_OBJECT
-
-    public:
-        QTviewmon(QTviewer*);
-
-    private slots:
-        void arm_slot(htmCallbackInfo*);
-        void activate_slot(htmAnchorCallbackStruct*);
-        void anchor_track_slot(htmAnchorCallbackStruct*);
-        void anchor_visited_slot(htmVisitedCallbackStruct*);
-        void document_slot(htmDocumentCallbackStruct*);
-        void link_slot(htmLinkCallbackStruct*);
-        void frame_slot(htmFrameCallbackStruct*);
-        void form_slot(htmFormCallbackStruct*);
-        void imagemap_slot(htmImagemapCallbackStruct*);
-        void html_event_slot(htmEventCallbackStruct*);
-
-    private:
-        QTviewer *html_viewer;
-    };
+    class QTviewmon;
 }
+
+class qtinterf::QTviewmon : public QObject
+{
+    Q_OBJECT
+
+public:
+    QTviewmon(QTviewer*);
+
+private slots:
+    void arm_slot(htmCallbackInfo*);
+    void activate_slot(htmAnchorCallbackStruct*);
+    void anchor_track_slot(htmAnchorCallbackStruct*);
+    void anchor_visited_slot(htmVisitedCallbackStruct*);
+    void document_slot(htmDocumentCallbackStruct*);
+    void link_slot(htmLinkCallbackStruct*);
+    void frame_slot(htmFrameCallbackStruct*);
+    void form_slot(htmFormCallbackStruct*);
+    void imagemap_slot(htmImagemapCallbackStruct*);
+    void html_event_slot(htmEventCallbackStruct*);
+
+private:
+    QTviewer *html_viewer;
+};
 
 #endif
 

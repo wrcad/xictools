@@ -111,6 +111,7 @@ QTcanvas::~QTcanvas()
 void
 QTcanvas::draw_direct(bool direct)
 {
+    (void)direct;
 //    da_direct_mode = direct;
 }
 
@@ -171,6 +172,7 @@ printf("sw from\n");
 void
 QTcanvas::set_draw_to_pixmap(QPixmap *pixmap)
 {
+    (void)pixmap;
     //XXX called from html viewer
     /*
     if (pixmap) {
@@ -967,11 +969,17 @@ QTcanvas::paintEvent(QPaintEvent *ev)
 {
     QPainter p(this);
     if (da_pixmap) {
+        QRegion::const_iterator i;
+        for (i = ev->region().begin(); i != ev->region().end(); i++)
+            p.drawPixmap(*i, *da_pixmap, *i);
+
+            /* deprecated
         QVector<QRect> rects = ev->region().rects();
         for (int i  = 0; i < rects.size(); i++) {
             QRect r = rects.at(i);
             p.drawPixmap(r, *da_pixmap, r);
         }
+        */
     }
     /*
     if (da_direct_mode) {

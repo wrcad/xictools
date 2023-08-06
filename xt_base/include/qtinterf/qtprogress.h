@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef PROGRESS_D_H
-#define PROGRESS_D_H
+#ifndef QTPROGRESS_H
+#define QTPROGRESS_H
 
 #include "ginterf/graphics.h"
 
@@ -51,66 +51,66 @@ class QLabel;
 class QPushButton;
 class QTextEdit;
 
-namespace qtinterf
-{
+namespace qtinterf {
     class QTactivity;
     class QTbag;
-
-    class QTprogress : public QDialog, public GRpopup
-    {
-        Q_OBJECT
-
-    public:
-        enum prgMode { prgPrint, prgFileop };
-
-        QTprogress(QTbag*, prgMode);
-        ~QTprogress();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void popdown();
-
-        void set_input(const char*);
-        void set_output(const char*);
-        void set_info(const char*);
-        void set_etc(const char*);
-        void start();
-        void finished();
-
-        void set_info_limit(int n) { info_limit = n; info_count = 0; }
-
-    signals:
-        void abort();
-
-    private slots:
-        void quit_slot();
-        void abort_slot();
-
-    private:
-        QGroupBox *gb_in;
-        QLabel *label_in;
-        QGroupBox *gb_out;
-        QLabel *label_out;
-        QGroupBox *gb_info;
-        QTextEdit *te_info;
-        QGroupBox *gb_etc;
-        QLabel *label_etc;
-        QPushButton *b_abort;
-        QPushButton *b_cancel;
-        QTactivity *pbar;
-        int info_limit;
-        int info_count;
-    };
+    class QTprogressDlg;
 }
+
+class qtinterf::QTprogressDlg : public QDialog, public GRpopup
+{
+    Q_OBJECT
+
+public:
+    enum prgMode { prgPrint, prgFileop };
+
+    QTprogressDlg(QTbag*, prgMode);
+    ~QTprogressDlg();
+
+    // GRpopup overrides
+    void set_visible(bool visib)
+    {
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
+        }
+        else
+            hide();
+    }
+    void popdown();
+
+    void set_input(const char*);
+    void set_output(const char*);
+    void set_info(const char*);
+    void set_etc(const char*);
+    void start();
+    void finished();
+
+    void set_info_limit(int n)  { pg_info_limit = n; pg_info_count = 0; }
+
+signals:
+    void abort();
+
+private slots:
+    void quit_slot();
+    void abort_slot();
+
+private:
+    QGroupBox   *pg_gb_in;
+    QLabel      *pg_label_in;
+    QGroupBox   *pg_gb_out;
+    QLabel      *pg_label_out;
+    QGroupBox   *pg_gb_info;
+    QTextEdit   *pg_te_info;
+    QGroupBox   *pg_gb_etc;
+    QLabel      *pg_label_etc;
+    QPushButton *pg_abort;
+    QPushButton *pg_cancel;
+    QTactivity  *pg_pbar;
+    int         pg_info_limit;
+    int         pg_info_count;
+};
 
 #endif
 

@@ -68,7 +68,7 @@
 
 
 //----------------------------------------------------------------------
-//  Files Listing Popup
+//  Files Listing Dialog
 //
 // Help system keywords used:
 //  filespanel
@@ -263,7 +263,6 @@ QTfilesListDlg::QTfilesListDlg(GRobject c)
 
 QTfilesListDlg::~QTfilesListDlg()
 {
-printf("here3\n");
     instPtr = 0;
     if (f_path_list) {
         for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
@@ -584,10 +583,7 @@ QTfilesListDlg::relist(stringlist *oldlist)
 }
 
 
-// Select the chars in the range, start=end deselects existing.  In
-// GTK-1, selecting gives blue inverse, which turns gray if
-// unselected, retaining an indication for the buttons.  GTK-2
-// doesn't do this automatically so we provide something similar here.
+// Select the chars in the range, start=end deselects existing.
 //
 void
 QTfilesListDlg::select_range(QTtextEdit *caller, int start, int end)
@@ -632,14 +628,12 @@ QTfilesListDlg::create_page(sDirList *dl)
     connect(nbtext, SIGNAL(mime_data_received(const QMimeData*)),
         this, SLOT(mime_data_received_slot(const QMimeData*)));
 
-        /*
+/*XXX
     if (f_btn_hdlr) {
         gtk_widget_add_events(nbtext, GDK_BUTTON_PRESS_MASK);
         g_signal_connect(G_OBJECT(nbtext), "button-press-event",
             G_CALLBACK(f_btn_hdlr), this);
     }
-    */
-    /*
     g_signal_connect(G_OBJECT(nbtext), "button-release-event",
         G_CALLBACK(f_btn_release_hdlr), this);
     g_signal_connect(G_OBJECT(nbtext), "motion-notify-event",
@@ -679,7 +673,7 @@ QTfilesListDlg::create_page(sDirList *dl)
          GDK_ACTION_LINK | GDK_ACTION_ASK));
     g_signal_connect_after(G_OBJECT(nbtext), "drag-data-received",
         G_CALLBACK(f_drag_data_received), this);
-    */
+*/
     return (page);
 }
 
@@ -1466,7 +1460,7 @@ QTfilesListDlg::mime_data_received_slot(const QMimeData *data)
     if (src && *src && instPtr->wb_textarea) {
         const char *dst = f_directory;
         if (dst && *dst && strcmp(src, dst)) {
-            QTfilePopup::DoFileAction(this, src, dst, QTfilePopup::A_NOOP);
+            QTfileDlg::DoFileAction(this, src, dst, QTfileDlg::A_NOOP);
             return;
         }
     }

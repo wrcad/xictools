@@ -86,6 +86,7 @@ cConvert::PopUpAuxTab(GRobject caller, ShowMode mode)
         QTmainwin::self()->Viewport());
     QTauxTabDlg::self()->show();
 }
+// End of cConvert functions.
 
 
 QTauxTabDlg *QTauxTabDlg::instPtr;
@@ -412,7 +413,7 @@ QTauxTabDlg::dismiss_btn_slot()
 
 
 void
-QTauxTabDlg::resize_slot(QResizeEvent *ev)
+QTauxTabDlg::resize_slot(QResizeEvent*)
 {
     update();
 }
@@ -510,28 +511,33 @@ QTauxTabDlg::mime_data_received_slot(const QMimeData *data)
 {
     if (!CDcdb()->auxCellTab())
         return;
-    if (data->hasFormat("text/plain")) {
-        QByteArray bary = data->data("text/plain");
-        char *str = lstring::copy(bary.constData());
-        if (!str)
-            return;
-        // Drops from content lists may be in the form
-        // "fname_or_chd\ncellname".  Keep the cellname.
-//XXX  fixme     gdk_atom_intern("TWOSTRING", true))
-        char *t = strchr(str, '\n');
-        if (t) {
-            t++;
-            if (*t) {
-                if (CDcdb()->auxCellTab()->add(t, false))
-                    update();
-            }
-        }
-        else {
-            if (CDcdb()->auxCellTab()->add(str, false))
+
+    QByteArray data_ba;
+    if (data->hasFormat("text/twostring"))
+        data_ba = data->data("text/twostring");
+    else if (data->hasFormat("text/plain"))
+        data_ba = data->data("text/plain");
+    else
+        return;
+    char *src = lstring::copy(data_ba.constData());
+    if (!src)
+        return;
+
+    // Drops from content lists may be in the form
+    // "fname_or_chd\ncellname".  Keep the cellname.
+    char *t = strchr(src, '\n');
+    if (t) {
+        t++;
+        if (*t) {
+            if (CDcdb()->auxCellTab()->add(t, false))
                 update();
         }
-        delete [] str;
     }
+    else {
+        if (CDcdb()->auxCellTab()->add(src, false))
+            update();
+    }
+    delete [] src;
 }
 
 

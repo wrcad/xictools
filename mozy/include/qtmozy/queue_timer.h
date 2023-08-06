@@ -51,26 +51,27 @@ class QTimer;
 // Idle timer for delayed image processing.
 //
 
-namespace qtinterf
-{
-    class queue_timer : public QObject, public QueueLoop
-    {
-        Q_OBJECT
-
-    public:
-        queue_timer() : QObject(0) { timer = 0; }
-
-        void start();
-        void suspend();
-        void resume();
-
-    private slots:
-        void run_queue_slot();
-
-    private:
-        QTimer *timer;
-    };
+namespace qtinterf {
+    class queue_timer;
 }
+
+class qtinterf::queue_timer : public QObject, public QueueLoop
+{
+    Q_OBJECT
+
+public:
+    queue_timer() : QObject(0) { timer = 0; }
+
+    void start();
+    void suspend();
+    void resume();
+
+private slots:
+    void run_queue_slot();
+
+private:
+    QTimer *timer;
+};
 
 #endif
 

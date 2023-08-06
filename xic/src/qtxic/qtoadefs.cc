@@ -79,18 +79,12 @@ cOAif::PopUpOAdefs(GRobject caller, ShowMode mode, int x, int y)
 
     new QToaDefsDlg(caller);
 
-    /*
-    int mwid;
-    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, 0);
-    GtkRequisition req;
-    gtk_widget_get_requisition(OAdf->shell(), &req);
-    if (x + req.width > mwid)
-        x = mwid - req.width;
-    gtk_window_move(GTK_WINDOW(OAdf->shell()), x, y);
-    gtk_widget_show(OAdf->shell());
-    */
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
+        QToaDefsDlg::self(), QTmainwin::self()->Viewport());
     QToaDefsDlg::self()->show();
 }
+// End of cOSif functions.
+
 
 QToaDefsDlg *QToaDefsDlg::instPtr;
 

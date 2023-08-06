@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef PRINT_D_H
-#define PRINT_D_H
+#ifndef QTHCOPY_H
+#define QTHCOPY_H
 
 #include <QVariant>
 #include <QDialog>
@@ -54,9 +54,9 @@ class QLineEdit;
 class QPushButton;
 class QProcess;
 
-namespace qtinterf
-{
-    class QTprogress;
+namespace qtinterf {
+    class QTprogressDlg;
+    class QTprintDlg;
 
     // values for textfmt
     enum HCtextType
@@ -69,110 +69,110 @@ namespace qtinterf
         PScentury,
         PSlucida
     };
-
-    class QTprintPopup : public QDialog
-    {
-        Q_OBJECT
-
-    public:
-        QTprintPopup(HCcb*, HCmode, QTbag* = 0);
-        ~QTprintPopup();
-
-        void update(HCcb*);
-        void set_message(const char*);
-        void disable_progress();
-
-        bool is_active() { return (pd_active); }
-        void set_active(bool);
-        int format_index() { return (pd_fmt); }
-        HCcb *callbacks() { return (pd_cb); }
-
-    signals:
-        void dismiss();
-
-    private slots:
-        void format_slot(int);
-        void resol_slot(int);
-        void font_slot(int);
-        void pagesize_slot(int);
-        void a4_slot(bool);
-        void letter_slot(bool);
-        void metric_slot(bool);
-        void frame_slot(bool);
-        void portrait_slot(bool);
-        void landscape_slot(bool);
-        void best_fit_slot(bool);
-        void tofile_slot(bool);
-        void legend_slot(bool);
-        void auto_width_slot(bool);
-        void auto_height_slot(bool);
-        void help_slot();
-        void print_slot();
-        void quit_slot();
-
-        void process_error_slot(QProcess::ProcessError);
-        void process_finished_slot(int);
-
-        // Window title bar X button
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-    private:
-        QTbag           *pd_owner;          // back pointer to owning set
-        HCcb            *pd_cb;             // parameter data struct
-        const char      *pd_cmdtext;        // print command or file name
-        const char      *pd_tofilename;     // file name
-        int             pd_resol;           // resolution index
-        int             pd_fmt;             // format index
-        HCmode          pd_textmode;        // display mode (text/graphical)
-        HCtextType      pd_textfmt;         // text font for text mode
-        HClegType       pd_legend;          // use legend
-        HCorientFlags   pd_orient;          // portrait or landscape
-        bool            pd_tofile;          // print to file
-        unsigned char   pd_tofbak;          // backup value
-        bool            pd_active;          // pop-up is visible
-        bool            pd_metric;          // dimensions are metric
-        int             pd_drvrmask;        // available drivers
-        int             pd_pgsindex;        // page size
-        float           pd_wid_val;         // rendering are width on page
-        float           pd_hei_val;         // rendering area height on page
-        float           pd_lft_val;         // rendering area left on page
-        float           pd_top_val;         // rendering top or bottom on page
-
-        void set_sens(unsigned int);
-        void fork_and_submit(const char*, const char*);
-
-        QLineEdit *cmdtxtbox;
-        QLabel *cmdlab;
-        QCheckBox *wlabel;
-        QCheckBox *hlabel;
-        QLabel *xlabel;
-        QLabel *ylabel;
-        QDoubleSpinBox *wid;
-        QDoubleSpinBox *hei;
-        QDoubleSpinBox *left;
-        QDoubleSpinBox *top;
-        QCheckBox *portbtn;
-        QCheckBox *landsbtn;
-        QCheckBox *fitbtn;
-        QCheckBox *legbtn;
-        QCheckBox *tofbtn;
-        QCheckBox *metbtn;
-        QCheckBox *a4btn;
-        QCheckBox *ltrbtn;
-        QComboBox *fontmenu;
-        QComboBox *fmtmenu;
-        QComboBox *resmenu;
-        QComboBox *pgsmenu;
-        QPushButton *frmbtn;
-        QPushButton *hlpbtn;
-        QPushButton *printbtn;
-        QPushButton *dismissbtn;
-        QProcess *process;
-        QTprogress *progress;
-
-        bool printer_busy;
-    };
 }
+
+class qtinterf::QTprintDlg : public QDialog
+{
+    Q_OBJECT
+
+public:
+    QTprintDlg(HCcb*, HCmode, QTbag* = 0);
+    ~QTprintDlg();
+
+    void update(HCcb*);
+    void set_message(const char*);
+    void disable_progress();
+
+    void set_active(bool);
+    bool is_active()                { return (pd_active); }
+    int format_index()              { return (pd_fmt); }
+    HCcb *callbacks()               { return (pd_cb); }
+
+    // Window title bar X button.
+    void closeEvent(QCloseEvent*)   { quit_slot(); }
+
+signals:
+    void dismiss();
+
+private slots:
+    void format_slot(int);
+    void resol_slot(int);
+    void font_slot(int);
+    void pagesize_slot(int);
+    void a4_slot(bool);
+    void letter_slot(bool);
+    void metric_slot(bool);
+    void frame_slot(bool);
+    void portrait_slot(bool);
+    void landscape_slot(bool);
+    void best_fit_slot(bool);
+    void tofile_slot(bool);
+    void legend_slot(bool);
+    void auto_width_slot(bool);
+    void auto_height_slot(bool);
+    void help_slot();
+    void print_slot();
+    void quit_slot();
+
+    void process_error_slot(QProcess::ProcessError);
+    void process_finished_slot(int);
+
+private:
+    void set_sens(unsigned int);
+    void fork_and_submit(const char*, const char*);
+
+    QTbag           *pd_owner;      // back pointer to owning set
+    HCcb            *pd_cb;         // parameter data struct
+    const char      *pd_cmdtext;    // print command or file name
+    const char      *pd_tofilename; // file name
+    int             pd_resol;       // resolution index
+    int             pd_fmt;         // format index
+    HCmode          pd_textmode;    // display mode (text/graphical)
+    HCtextType      pd_textfmt;     // text font for text mode
+    HClegType       pd_legend;      // use legend
+    HCorientFlags   pd_orient;      // portrait or landscape
+    bool            pd_tofile;      // print to file
+    unsigned char   pd_tofbak;      // backup value
+    bool            pd_active;      // pop-up is visible
+    bool            pd_metric;      // dimensions are metric
+    int             pd_drvrmask;    // available drivers
+    int             pd_pgsindex;    // page size
+    float           pd_wid_val;     // rendering are width on page
+    float           pd_hei_val;     // rendering area height on page
+    float           pd_lft_val;     // rendering area left on page
+    float           pd_top_val;     // rendering top or bottom on page
+
+    QLineEdit       *pd_cmdtxtbox;
+    QLabel          *pd_cmdlab;
+    QCheckBox       *pd_wlabel;
+    QCheckBox       *pd_hlabel;
+    QLabel          *pd_xlabel;
+    QLabel          *pd_ylabel;
+    QDoubleSpinBox  *pd_wid;
+    QDoubleSpinBox  *pd_hei;
+    QDoubleSpinBox  *pd_left;
+    QDoubleSpinBox  *pd_top;
+    QCheckBox       *pd_portbtn;
+    QCheckBox       *pd_landsbtn;
+    QCheckBox       *pd_fitbtn;
+    QCheckBox       *pd_legbtn;
+    QCheckBox       *pd_tofbtn;
+    QCheckBox       *pd_metbtn;
+    QCheckBox       *pd_a4btn;
+    QCheckBox       *pd_ltrbtn;
+    QComboBox       *pd_fontmenu;
+    QComboBox       *pd_fmtmenu;
+    QComboBox       *pd_resmenu;
+    QComboBox       *pd_pgsmenu;
+    QPushButton     *pd_frmbtn;
+    QPushButton     *pd_hlpbtn;
+    QPushButton     *pd_printbtn;
+    QPushButton     *pd_dismissbtn;
+    QProcess        *pd_process;
+    QTprogressDlg   *pd_progress;
+
+    bool            pd_printer_busy;
+};
 
 #endif
 

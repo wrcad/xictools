@@ -86,6 +86,7 @@ private slots:
     void measbox_btn_slot(bool);
     void paint_btn_slot();
     void dismiss_btn_slot();
+    void font_changed_slot(int);
 
 private:
     /*

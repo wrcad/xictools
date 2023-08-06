@@ -179,10 +179,11 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     connect(ed_list, SIGNAL(itemSelectionChanged()),
         this, SLOT(item_selection_changed_slot()));
 
-
-    // Set up font and tracking.
-//    GTKfont::setupFont(ed_list, FNT_PROP, true);
-
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED))
+        ed_list->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     // Frame and select devices group.
     //
@@ -563,6 +564,18 @@ void
 QTextDevDlg::dismiss_btn_slot()
 {
     EX()->PopUpDevices(0, MODE_OFF);
+}
+
+
+void
+QTextDevDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum))
+            ed_list->setFont(*fnt);
+        update();
+    }
 }
 
 

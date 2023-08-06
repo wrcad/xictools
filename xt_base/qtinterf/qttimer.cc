@@ -49,30 +49,30 @@ QTtimer::QTtimer(int(*cb)(void*), void *a, QTtimer *n, QObject *p) : QTimer(p)
     // our own id generator.
     static int id_cntr = 1;
 
-    callback = cb;
-    arg = a;
-    next = n;
-    msec = 0;
-    list = 0;
-    timer_id = id_cntr++;
-    deleted = false;
-    use_cb_ret = false;
+    t_callback = cb;
+    t_arg = a;
+    t_next = n;
+    t_msec = 0;
+    t_list = 0;
+    t_timer_id = id_cntr++;
+    t_deleted = false;
+    t_use_cb_ret = false;
     connect(this, SIGNAL(timeout()), this, SLOT(timeout_slot()));
 }
 
 
 QTtimer::~QTtimer()
 {
-    deleted = true;  // Make sure that no timeouts are delivered after
-                     // the timer is destroyed.
-    if (list) {
+    t_deleted = true;   // Make sure that no timeouts are delivered after
+                        // the timer is destroyed.
+    if (t_list) {
         QTtimer *tp = 0;
-        for (QTtimer *t = *list; t; t = t->next) {
+        for (QTtimer *t = *t_list; t; t = t->t_next) {
             if (t == this) {
                 if (tp)
-                    tp->next = t->next;
+                    tp->t_next = t->t_next;
                 else
-                    *list = t->next;
+                    *t_list = t->t_next;
                 break;
             }
             tp = t;
@@ -86,11 +86,11 @@ void
 QTtimer::timeout_slot()
 {
     stop();
-    if (!deleted && callback) {
-        bool r = (*callback)(arg);
-        if (use_cb_ret) {
+    if (!t_deleted && t_callback) {
+        bool r = (*t_callback)(t_arg);
+        if (t_use_cb_ret) {
             if (r)
-                start(msec);
+                start(t_msec);
             else
                 delete this;
         }

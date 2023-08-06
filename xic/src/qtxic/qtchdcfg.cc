@@ -68,21 +68,6 @@
 // Help system keywords used:
 //  xic:chdconfig
 
-/*
-namespace {
-    // Drag/drop stuff.
-    //
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"CELLNAME",    0, 1 },
-        { (char*)"STRING",      0, 2 },
-        { (char*)"text/plain",  0, 3 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-}
-*/
-
-
 void
 cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
     const char *chdname, int x, int y)
@@ -104,18 +89,11 @@ cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
 
     new QTchdCfgDlg(caller, chdname);
 
-    /*
-    int mwid;
-    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, 0);
-    GtkRequisition req;
-    gtk_widget_get_requisition(Cfg->Shell(), &req);
-    if (x + req.width > mwid)
-        x = mwid - req.width;
-    gtk_window_move(GTK_WINDOW(Cfg->Shell()), x, y);
-    gtk_widget_show(Cfg->Shell());
-    */
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
+        QTchdCfgDlg::self(), QTmainwin::self()->Viewport());
     QTchdCfgDlg::self()->show();
 }
+// End of cConvert functions.
 
 
 QTchdCfgDlg *QTchdCfgDlg::instPtr;
@@ -521,10 +499,21 @@ QTchdCfgDlg::dismiss_btn_slot()
 }
 
 
-
-
-
 #ifdef notdef
+/*
+namespace {
+    // Drag/drop stuff.
+    //
+    GtkTargetEntry target_table[] = {
+        { (char*)"TWOSTRING",   0, 0 },
+        { (char*)"CELLNAME",    0, 1 },
+        { (char*)"STRING",      0, 2 },
+        { (char*)"text/plain",  0, 3 }
+    };
+    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+}
+*/
+
 
 // Private static GTK signal handler.
 // Drag data received in editing window, grab it

@@ -56,7 +56,7 @@ namespace qtinterf
     class text_edit : public QTextEdit
     {
     public:
-        text_edit(QWidget *prnt) : QTextEdit(prnt)
+        text_edit(QWidget *prnt = 0) : QTextEdit(prnt)
         {
             QSizePolicy policy = sizePolicy();
             policy.setVerticalPolicy(QSizePolicy::Preferred);
@@ -67,13 +67,13 @@ namespace qtinterf
     };
 }
 
-QTnumPopup::QTnumPopup(QTbag *owner, const char *prompt_str, double initd,
+QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
     double mind, double maxd, double del, int numd, void *arg) :
     QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
     p_cb_arg = arg;
-    pw_affirmed = false;
+    nu_affirmed = false;
 
     if (owner)
         owner->MonitorAdd(this);
@@ -86,46 +86,43 @@ QTnumPopup::QTnumPopup(QTbag *owner, const char *prompt_str, double initd,
     policy.setVerticalPolicy(QSizePolicy::Preferred);
     setSizePolicy(policy);
 
-    label = new text_edit(this);
-    label->setPlainText(QString(prompt_str));
-    label->setReadOnly(true);
-
-    spinbtn = new QDoubleSpinBox(this);
-    spinbtn->setMinimum(mind);
-    spinbtn->setMaximum(maxd);
-    spinbtn->setDecimals(numd);
-    spinbtn->setValue(initd);
-    spinbtn->setSingleStep(del);
-    spinbtn->setMaximumWidth(100);
-    spinbtn->setMinimumWidth(100);
-
-    yesbtn = new QPushButton(this);
-    yesbtn->setText(QString(tr("Apply")));
-    nobtn = new QPushButton(this);
-    nobtn->setText(QString(tr("Dismiss")));
-    yesbtn->setDefault(true);
-
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
+    vbox->setMargin(2);
     vbox->setSpacing(2);
-    vbox->addWidget(label);
-    vbox->addWidget(spinbtn);
-    vbox->setAlignment(spinbtn, Qt::AlignCenter);
-    QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setSpacing(2);
-    hbox->addWidget(yesbtn);
-    hbox->addWidget(nobtn);
-    vbox->addLayout(hbox);
 
-    connect(yesbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
-    connect(nobtn, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    nu_label = new text_edit();
+    nu_label->setReadOnly(true);
+    nu_label->setPlainText(tr(prompt_str));
+    vbox->addWidget(nu_label);
+
+    nu_spinbtn = new QDoubleSpinBox(this);
+    nu_spinbtn->setRange(mind, maxd);
+    nu_spinbtn->setDecimals(numd);
+    nu_spinbtn->setValue(initd);
+    nu_spinbtn->setSingleStep(del);
+    vbox->addWidget(nu_spinbtn);
+    vbox->setAlignment(nu_spinbtn, Qt::AlignCenter);
+
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    nu_yesbtn = new QPushButton(tr("Apply"));
+    nu_yesbtn->setDefault(true);
+    hbox->addWidget(nu_yesbtn);
+    connect(nu_yesbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
+
+    nu_nobtn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(nu_nobtn);
+    connect(nu_nobtn, SIGNAL(clicked()), this, SLOT(quit_slot()));
 }
 
 
-QTnumPopup::~QTnumPopup()
+QTnumDlg::~QTnumDlg()
 {
     if (p_callback)
-        (*p_callback)(spinbtn->value(), pw_affirmed, p_cb_arg);
+        (*p_callback)(nu_spinbtn->value(), nu_affirmed, p_cb_arg);
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_caller && !p_no_desel) {
@@ -155,7 +152,7 @@ QTnumPopup::~QTnumPopup()
 //  2.  whether or not deselecting the caller causes popdown.
 //
 void
-QTnumPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
+QTnumDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
 {
     p_caller = c;
     p_no_desel = no_dsl;
@@ -182,7 +179,7 @@ QTnumPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
 // GRpopup override
 //
 void
-QTnumPopup::popdown()
+QTnumDlg::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -194,17 +191,17 @@ QTnumPopup::popdown()
 
 
 void
-QTnumPopup::action_slot()
+QTnumDlg::action_slot()
 {
-    pw_affirmed = true;
-    emit affirm(spinbtn->value(), p_cb_arg);
+    nu_affirmed = true;
+    emit affirm(nu_spinbtn->value(), p_cb_arg);
     delete this;
 }
 
 
 void
-QTnumPopup::quit_slot()
+QTnumDlg::quit_slot()
 {
-    delete this;
+    deleteLater();
 }
 

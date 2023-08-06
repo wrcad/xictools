@@ -199,9 +199,11 @@ QTlibsDlg::QTlibsDlg(GRobject c)
 //    g_signal_connect(G_OBJECT(lb_list), "button-press-event",
 //        G_CALLBACK(lb_button_press_proc), this);
 
-
-    // Set up font and tracking.
-//    GTKfont::setupFont(lb_list, FNT_PROP, true);
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_PROP))
+        lb_list->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     // dismiss button line
     //
@@ -634,5 +636,17 @@ void
 QTlibsDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpLibraries(0, MODE_OFF);
+}
+
+
+void
+QTlibsDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_PROP) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum))
+            lb_list->setFont(*fnt);
+        update();
+    }
 }
 

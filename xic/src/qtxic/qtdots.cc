@@ -89,9 +89,9 @@ QTdotsDlg::QTdotsDlg(GRobject caller)
     dt_all = 0;
 
     setWindowTitle(tr("Connection Points"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+//    setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
+//    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(dt_popup), false);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);

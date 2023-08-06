@@ -1167,6 +1167,13 @@ namespace ginterf
             return (ctmp);
         }
 
+        void *set_callback_arg(void *arg)
+        {
+            void *t = p_cb_arg;
+            p_cb_arg = arg;
+            return (t);
+        }
+
     protected:
         GRaffirmCallback p_callback;
         void *p_cb_arg;
@@ -1189,6 +1196,13 @@ namespace ginterf
             GRnumCallback ctmp = p_callback;
             p_callback = cb;
             return (ctmp);
+        }
+
+        void *set_callback_arg(void *arg)
+        {
+            void *t = p_cb_arg;
+            p_cb_arg = arg;
+            return (t);
         }
 
     protected:
@@ -1215,6 +1229,13 @@ namespace ginterf
             GRledCallback ctmp = p_callback;
             p_callback = cb;
             return (ctmp);
+        }
+
+        void *set_callback_arg(void *arg)
+        {
+            void *t = p_cb_arg;
+            p_cb_arg = arg;
+            return (t);
         }
 
         GRledQuitFunc register_quit_callback(GRledQuitFunc cb)
@@ -1261,6 +1282,13 @@ namespace ginterf
             return (ctmp);
         }
 
+        void *set_callback_arg(void *arg)
+        {
+            void *t = p_cb_arg;
+            p_cb_arg = arg;
+            return (t);
+        }
+
         virtual bool get_btn2_state() = 0;
         virtual void set_btn2_state(bool) = 0;
 
@@ -1286,6 +1314,13 @@ namespace ginterf
             GRfontCallback ctmp = p_callback;
             p_callback = cb;
             return (ctmp);
+        }
+
+        void *set_callback_arg(void *arg)
+        {
+            void *t = p_cb_arg;
+            p_cb_arg = arg;
+            return (t);
         }
 
         virtual void set_font_name(const char*) = 0;
@@ -1315,6 +1350,13 @@ namespace ginterf
             return (ctmp);
         }
 
+        void *set_callback_arg(void *arg)
+        {
+            void *t = p_cb_arg;
+            p_cb_arg = arg;
+            return (t);
+        }
+
         virtual void update(stringlist*, const char*, const char*) = 0;
         virtual void update(bool(*)(const char*)) = 0;
         virtual void unselect_all() = 0;
@@ -1342,6 +1384,13 @@ namespace ginterf
             GRmcolCallback ctmp = p_callback;
             p_callback = cb;
             return (ctmp);
+        }
+
+        void *set_callback_arg(void *arg)
+        {
+            void *t = p_cb_arg;
+            p_cb_arg = arg;
+            return (t);
         }
 
         void set_no_dragdrop(bool b) { p_no_dd = b; }
@@ -1379,6 +1428,13 @@ namespace ginterf
             GRfileCallback ctmp = p_callback;
             p_callback = cb;
             return (ctmp);
+        }
+
+        void *set_callback_arg(void *arg)
+        {
+            void *t = p_cb_arg;
+            p_cb_arg = arg;
+            return (t);
         }
 
         GRfileCancelFunc register_quit_callback(GRfileCancelFunc cb)
@@ -1431,6 +1487,13 @@ namespace ginterf
             GReditCallback ctmp = p_callback;
             p_callback = cb;
             return (ctmp);
+        }
+
+        void *set_callback_arg(void *arg)
+        {
+            void *t = p_cb_arg;
+            p_cb_arg = arg;
+            return (t);
         }
 
         GReditCancelFunc register_quit_callback(GReditCancelFunc cb)

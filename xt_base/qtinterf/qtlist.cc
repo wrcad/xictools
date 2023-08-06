@@ -49,14 +49,14 @@
 #define COLUMN_SPACING 20
 
 
-// Popup to display a list.  title is the title label text, header
-// is the first line displayed or 0.  callback is called with
-// the word pointed to when the user points in the window, and 0
-// when the popup is destroyed.
+// Dialog to display a list.  title is the title label text, header is
+// the first line displayed or 0, callback is called with the word
+// pointed to when the user clicks in the window, and 0 when the popup
+// is destroyed.
 //
 // If usepix is set, a two-column list is used, with the first column
 // an open or closed icon.  This is controlled by the first two chars
-// of each string (which are stripped):  if one in non-space, the open
+// of each string (which are stripped):  if one is non-space, the open
 // icon is used.
 //
 // If use_apply is set, the list will have an Apply button, which will
@@ -70,9 +70,7 @@ QTbag::PopUpList(stringlist *symlist, const char *title,
     //XXX
     (void)use_apply;
 
-    static int list_count;
-
-    QTlistPopup *list = new QTlistPopup(this, symlist, title, header,
+    QTlistDlg *list = new QTlistDlg(this, symlist, title, header,
         usepix, arg);
     list->register_callback(callback);
 
@@ -91,18 +89,18 @@ namespace qtinterf
         list_list_widget(QWidget*);
 
         QListWidgetItem *item_of(const QModelIndex &index)
-            {
-                return (itemFromIndex(index));
-            }
+        {
+            return (itemFromIndex(index));
+        }
     };
 
     class list_delegate : public QItemDelegate
     {
     public:
         list_delegate(list_list_widget *w) : QItemDelegate(w)
-            {
-                widget = w;
-            }
+        {
+            widget = w;
+        }
 
         QSize sizeHint(const QStyleOptionViewItem&,
             const QModelIndex&)  const;
@@ -134,10 +132,12 @@ list_delegate::sizeHint(const QStyleOptionViewItem&,
 }
 
 
-QTlistPopup::QTlistPopup(QTbag *owner, stringlist *symlist, const char *title,
+QTlistDlg::QTlistDlg(QTbag *owner, stringlist *symlist, const char *title,
     const char *header, bool usepix, void *arg) :
     QDialog(owner ? owner->Shell() : 0), QTbag()
 {
+    (void)usepix; //XXX
+
 wb_shell = this;
     p_parent = owner;
     p_cb_arg = arg;
@@ -155,27 +155,27 @@ wb_shell = this;
     }
     else
         t = header ? header : title;
-    label = new QLabel(QString(t), this);
-    lbox = new list_list_widget(this);
-    lbox->setWrapping(false);
+    li_label = new QLabel(QString(t), this);
+    li_lbox = new list_list_widget(this);
+    li_lbox->setWrapping(false);
     for (stringlist *l = symlist; l; l = l->next)
-        lbox->addItem(QString(l->string));
-    lbox->sortItems();
-    connect(lbox,
+        li_lbox->addItem(QString(l->string));
+    li_lbox->sortItems();
+    connect(li_lbox,
         SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
         this, SLOT(action_slot()));
-    b_cancel = new QPushButton(tr("Dismiss"), this);
+    li_cancel = new QPushButton(tr("Dismiss"), this);
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(4);
     vbox->setSpacing(2);
-    vbox->addWidget(label);
-    vbox->addWidget(lbox);
-    vbox->addWidget(b_cancel);
-    connect(b_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    vbox->addWidget(li_label);
+    vbox->addWidget(li_lbox);
+    vbox->addWidget(li_cancel);
+    connect(li_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
 }
 
 
-QTlistPopup::~QTlistPopup()
+QTlistDlg::~QTlistDlg()
 {
     if (p_usrptr)
         *p_usrptr = 0;
@@ -205,7 +205,7 @@ QTlistPopup::~QTlistPopup()
 // GRpopup override
 //
 void
-QTlistPopup::popdown()
+QTlistDlg::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -219,7 +219,7 @@ QTlistPopup::popdown()
 // Update the title, header, and contents of the list widget.
 //
 void
-QTlistPopup::update(stringlist *symlist, const char *title, const char *header)
+QTlistDlg::update(stringlist *symlist, const char *title, const char *header)
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -235,11 +235,11 @@ QTlistPopup::update(stringlist *symlist, const char *title, const char *header)
     }
     else
         t = header ? header : title;
-    label->setText(QString(t));
-    lbox->clear();
+    li_label->setText(QString(t));
+    li_lbox->clear();
     for (stringlist *l = symlist; l; l = l->next)
-        lbox->addItem(QString(l->string));
-    lbox->sortItems();
+        li_lbox->addItem(QString(l->string));
+    li_lbox->sortItems();
     raise();
     activateWindow();
 }
@@ -251,8 +251,9 @@ QTlistPopup::update(stringlist *symlist, const char *title, const char *header)
 // from the callback is "open".
 //
 void
-QTlistPopup::update(bool(*cb)(const char*))
+QTlistDlg::update(bool(*cb)(const char*))
 {
+    (void)cb;
 /* XXX
     if (ls_use_pix && cb) {
         for (int r = 0; ; r++) {
@@ -276,24 +277,24 @@ QTlistPopup::update(bool(*cb)(const char*))
 // GRlistPopup override.
 //
 void
-QTlistPopup::unselect_all()
+QTlistDlg::unselect_all()
 {
  //XXX   gtk_clist_unselect_all(GTK_CLIST(ls_clist));
 }
 
 
 QList<QListWidgetItem*>
-QTlistPopup::get_items()
+QTlistDlg::get_items()
 {
-    return (lbox->findItems(QString("*"), Qt::MatchWildcard));
+    return (li_lbox->findItems(QString("*"), Qt::MatchWildcard));
 }
 
 
 void
-QTlistPopup::action_slot()
+QTlistDlg::action_slot()
 {
-    if (lbox) {
-        QByteArray ba = lbox->currentItem()->text().toLatin1();
+    if (li_lbox) {
+        QByteArray ba = li_lbox->currentItem()->text().toLatin1();
         if (p_callback)
             (*p_callback)(ba, p_cb_arg);
         emit action_call(ba, p_cb_arg);
@@ -302,8 +303,8 @@ QTlistPopup::action_slot()
 
 
 void
-QTlistPopup::quit_slot()
+QTlistDlg::quit_slot()
 {
-    delete this;
+    deleteLater();
 }
 

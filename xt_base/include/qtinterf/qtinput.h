@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef INPUT_D_H
-#define INPUT_D_H
+#ifndef QTINPUT_H
+#define QTINPUT_H
 
 #include "qtinterf.h"
 
@@ -50,62 +50,62 @@ class QLabel;
 class QPushButton;
 class QGroupBox;
 
-namespace qtinterf
-{
-    class QTledPopup : public QDialog, public GRledPopup
-    {
-        Q_OBJECT
-
-    public:
-        QTledPopup(QTbag*, const char*, const char*, const char*, void*,
-            bool);
-        ~QTledPopup();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void register_caller(GRobject, bool=false, bool=false);
-        void popdown();
-
-        // GRledPopup override
-        void update(const char*, const char*);
-
-        void set_ignore_return(bool set) { ign_ret = set; }
-        void set_message(const char*);
-        void set_text(const char*);
-
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-    signals:
-        void action_call(const char*, void*);
-
-    private slots:
-        void action_slot();
-        void quit_slot();
-
-    private:
-        QGroupBox *gbox;
-        QLabel *label;
-        QWidget *edit;  // QLineEdit or QTextEdit
-        QPushButton *b_ok;
-        QPushButton *b_cancel;
-        bool multiline;             // true when multiline
-        bool quit_flag;             // set true if Apply pressed
-        bool ign_ret;               // true if ignoring callback return
-    };
+namespace qtinterf {
+    class QTledDlg;
 }
+
+class qtinterf::QTledDlg : public QDialog, public GRledPopup
+{
+    Q_OBJECT
+
+public:
+    QTledDlg(QTbag*, const char*, const char*, const char*, bool);
+    ~QTledDlg();
+
+    // GRpopup overrides
+    void set_visible(bool visib)
+    {
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
+        }
+        else
+            hide();
+    }
+    void register_caller(GRobject, bool=false, bool=false);
+    void popdown();
+
+    // GRledPopup override
+    void update(const char*, const char*);
+
+    void set_ignore_return(bool set)    { ed_ign_ret = set; }
+    void set_message(const char*);
+    void set_text(const char*);
+
+    // This widget will be deleted when closed with the title bar "X"
+    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
+    // not called.  The default behavior is to hide the widget instead
+    // of deleting it, which would likely be a core leak here.
+    void closeEvent(QCloseEvent*)       { quit_slot(); }
+
+signals:
+    void action_call(const char*, void*);
+
+private slots:
+    void action_slot();
+    void quit_slot();
+
+private:
+    QGroupBox *ed_gbox;
+    QLabel *ed_label;
+    QWidget *ed_edit;           // QLineEdit or QTextEdit
+    QPushButton *ed_ok;
+    QPushButton *ed_cancel;
+    bool ed_multiline;          // true when multiline
+    bool ed_quit_flag;          // set true if Apply pressed
+    bool ed_ign_ret;            // true if ignoring callback return
+};
 
 #endif
 

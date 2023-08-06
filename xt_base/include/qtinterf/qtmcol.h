@@ -32,7 +32,7 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * GtkInterf Graphical Interface Library                                  *
  *                                                                        *
  *========================================================================*
  $Id:$
@@ -42,71 +42,78 @@
 #define QTMCOL_H
 
 #include "qtinterf.h"
-#include "miscutil/lstring.h"
 
-#include <QVariant>
 #include <QDialog>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QItemDelegate>
 
-class QCloseEvent;
+class QComboBox;
 class QLabel;
 class QPushButton;
 
-namespace qtinterf
-{
-    class QTbag;
-    class mcol_list_widget;
+// Max number of optional buttons.
+#define MC_MAXBTNS 3
 
-    class QTmcolPopup : public QDialog, public GRmcolPopup, public QTbag
-    {
-        Q_OBJECT
-
-    public:
-        QTmcolPopup(QTbag*, stringlist*, const char*, const char**,
-            int, void*);
-        ~QTmcolPopup();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void popdown();
-
-        // GRmcolPopup override
-        void update(stringlist*, const char*);
-        char *get_selection();
-        void set_button_sens(int);
-
-        QList<QListWidgetItem*> get_items();
-
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-    signals:
-        void action_call(const char*, void*);
-
-    private slots:
-        void action_slot();
-        void quit_slot();
-
-    private:
-        QLabel *label;
-        mcol_list_widget *lbox;
-        QPushButton *b_cancel;
-    };
+namespace qtinterf {
+    class QTmcolDlg;
 }
+
+class qtinterf::QTmcolDlg : public QDialog, public GRmcolPopup,
+    public QTbag
+
+{
+    Q_OBJECT
+
+public:
+    QTmcolDlg(QTbag*, stringlist*, const char*, const char**,
+        int, void*);
+    ~QTmcolDlg();
+
+    // GRpopup overrides
+    void set_visible(bool visib)
+    {
+        if (visib)
+            show();
+        else
+            hide();
+    }
+    void popdown();
+
+    // GRmcolPopup override
+    void update(stringlist*, const char*);
+    char *get_selection();
+    void set_button_sens(int);
+
+private slots:
+    void save_btn_slot(bool);
+    void dismiss_btn_slot();
+    void user_btn_slot();
+    void page_size_slot(int);
+    void resize_slot(QResizeEvent*);
+    void mouse_press_slot(QMouseEvent*);
+    void mouse_motion_slot(QMouseEvent*);
+    void font_changed_slot(int);
+
+private:
+    void relist();
+    void select_range(int, int);
+    static ESret mc_save_cb(const char*, void*);
+    static int mc_timeout(void*);
+
+    QComboBox   *mc_pagesel;        // page selection menu if multicol
+    QPushButton *mc_buttons[MC_MAXBTNS];
+    QTledDlg    *mc_save_pop;
+    QTmsgDlg    *mc_msg_pop;
+    QLabel      *mc_label;          // title label
+    stringlist  *mc_strings;        // list contents
+    int         mc_alloc_width;     // visible width
+    int         mc_drag_x;          // drag start coord
+    int         mc_drag_y;          // drag start coord
+    int         mc_page;            // multicol page
+    int         mc_pagesize;        // entries per page
+    unsigned int mc_btnmask;        // prevent btn selection mask
+    int         mc_start;           // selection extent
+    int         mc_end;
+    bool        mc_dragging;        // possible start of drag/drop
+};
 
 #endif
 

@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef NUMER_D_H
-#define NUMER_D_H
+#ifndef QTNUMER_H
+#define QTNUMER_H
 
 #include "ginterf/graphics.h"
 
@@ -50,56 +50,56 @@ class QTextEdit;
 class QPushButton;
 class QDoubleSpinBox;
 
-namespace qtinterf
-{
+namespace qtinterf {
     class QTbag;
-
-    class QTnumPopup : public QDialog, public GRnumPopup
-    {
-        Q_OBJECT
-
-    public:
-        QTnumPopup(QTbag*, const char*, double, double, double, double,
-            int, void*);
-        ~QTnumPopup();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void register_caller(GRobject, bool=false, bool=false);
-        void popdown();
-
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-        QSize sizeHint() const { return (QSize(300, 150)); }
-
-    signals:
-        void affirm(bool, void*);
-
-    private slots:
-        void action_slot();
-        void quit_slot();
-
-    private:
-        QTextEdit *label;
-        QDoubleSpinBox *spinbtn;
-        QPushButton *yesbtn;
-        QPushButton *nobtn;
-        bool pw_affirmed;
-    };
+    class QTnumDlg;
 }
+
+class qtinterf::QTnumDlg : public QDialog, public GRnumPopup
+{
+    Q_OBJECT
+
+public:
+    QTnumDlg(QTbag*, const char*, double, double, double, double,
+        int, void*);
+    ~QTnumDlg();
+
+    // GRpopup overrides
+    void set_visible(bool visib)
+    {
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
+        }
+        else
+            hide();
+    }
+    void register_caller(GRobject, bool=false, bool=false);
+    void popdown();
+
+    // This widget will be deleted when closed with the title bar "X"
+    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
+    // not called.  The default behavior is to hide the widget instead
+    // of deleting it, which would likely be a core leak here.
+    void closeEvent(QCloseEvent*) { quit_slot(); }
+
+    QSize sizeHint()        const { return (QSize(300, 150)); }
+
+signals:
+    void affirm(bool, void*);
+
+private slots:
+    void action_slot();
+    void quit_slot();
+
+private:
+    QTextEdit   *nu_label;
+    QDoubleSpinBox *nu_spinbtn;
+    QPushButton *nu_yesbtn;
+    QPushButton *nu_nobtn;
+    bool        nu_affirmed;
+};
 
 #endif
 

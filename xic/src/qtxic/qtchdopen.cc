@@ -85,34 +85,11 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
 
     new QTchdOpenDlg(caller, callback, arg, init_idname, init_str);
 
-    /*
-    int mwid;
-    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, 0);
-    GtkRequisition req;
-    gtk_widget_get_requisition(Co->Shell(), &req);
-    if (x + req.width > mwid)
-        x = mwid - req.width;
-    gtk_window_move(GTK_WINDOW(Co->Shell()), x, y);
-    gtk_widget_show(Co->Shell());
-
-    // OpenSuse-13.1 gtk-2.24.23 bug
-    gtk_window_move(GTK_WINDOW(Co->Shell()), x, y);
-    */
-QTchdOpenDlg::self()->show();
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
+        QTchdOpenDlg::self(), QTmainwin::self()->Viewport());
+    QTchdOpenDlg::self()->show();
 }
-
-/*
-namespace {
-    // Drag/drop stuff, also used in PopUpInput(), PopUpEditString()
-    //
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-}
-*/
+// End of cConvert functions.
 
 
 QTchdOpenDlg *QTchdOpenDlg::instPtr;
@@ -448,6 +425,19 @@ QTchdOpenDlg::co_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
     }
     return (false);
 }
+
+/*
+namespace {
+    // Drag/drop stuff, also used in PopUpInput(), PopUpEditString()
+    //
+    GtkTargetEntry target_table[] = {
+        { (char*)"TWOSTRING",   0, 0 },
+        { (char*)"STRING",      0, 1 },
+        { (char*)"text/plain",  0, 2 }
+    };
+    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+}
+*/
 
 
 // Private static GTK signal handler.

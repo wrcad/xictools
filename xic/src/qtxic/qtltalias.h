@@ -75,6 +75,7 @@ private slots:
     void current_item_changed(QTreeWidgetItem*, QTreeWidgetItem*);
     void decimal_btn_slot(int);
     void dismiss_btn_slot();
+    void font_changed_slot(int);
 
 private:
     static ESret str_cb(const char*, void*);

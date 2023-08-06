@@ -54,7 +54,7 @@ namespace qtinterf
     class text_edit : public QTextEdit
     {
     public:
-        text_edit(QWidget *prnt) : QTextEdit(prnt)
+        text_edit(QWidget *prnt = 0) : QTextEdit(prnt)
         {
             QSizePolicy policy = sizePolicy();
             policy.setVerticalPolicy(QSizePolicy::Preferred);
@@ -65,7 +65,7 @@ namespace qtinterf
     };
 }
 
-QTaffirmPopup::QTaffirmPopup(QTbag *owner, const char *question_str,
+QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str,
     void *arg) : QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
@@ -82,30 +82,31 @@ QTaffirmPopup::QTaffirmPopup(QTbag *owner, const char *question_str,
     policy.setVerticalPolicy(QSizePolicy::Preferred);
     setSizePolicy(policy);
 
-    label = new text_edit(this);
-    label->setPlainText(QString(question_str));
-    label->setReadOnly(true);
-    yesbtn = new QPushButton(this);
-    yesbtn->setText(QString(tr("Yes")));
-    nobtn = new QPushButton(this);
-    nobtn->setText(QString(tr("No")));
-
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(4);
     vbox->setSpacing(2);
-    vbox->addWidget(label);
-    QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setSpacing(2);
-    hbox->addWidget(yesbtn);
-    hbox->addWidget(nobtn);
-    vbox->addLayout(hbox);
 
-    connect(yesbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
-    connect(nobtn, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    af_label = new text_edit();
+    vbox->addWidget(af_label);
+    af_label->setReadOnly(true);
+    af_label->setPlainText(question_str);
+
+    QHBoxLayout *hbox = new QHBoxLayout(0);
+    vbox->addLayout(hbox);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    af_yesbtn = new QPushButton(tr("Yes"));
+    hbox->addWidget(af_yesbtn);
+    connect(af_yesbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
+
+    af_nobtn = new QPushButton(tr("No"));
+    hbox->addWidget(af_nobtn);
+    connect(af_nobtn, SIGNAL(clicked()), this, SLOT(quit_slot()));
 }
 
 
-QTaffirmPopup::~QTaffirmPopup()
+QTaffirmDlg::~QTaffirmDlg()
 {
     if (p_usrptr)
         *p_usrptr = 0;
@@ -136,7 +137,7 @@ QTaffirmPopup::~QTaffirmPopup()
 //  2.  whether or not deselecting the caller causes popdown.
 //
 void
-QTaffirmPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
+QTaffirmDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
 {
     p_caller = c;
     p_no_desel = no_dsl;
@@ -163,7 +164,7 @@ QTaffirmPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
 // GRpopup override
 //
 void
-QTaffirmPopup::popdown()
+QTaffirmDlg::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -175,7 +176,7 @@ QTaffirmPopup::popdown()
 
 
 void
-QTaffirmPopup::action_slot()
+QTaffirmDlg::action_slot()
 {
     if (p_callback)
         (*p_callback)(true, p_cb_arg);
@@ -185,7 +186,7 @@ QTaffirmPopup::action_slot()
 
 
 void
-QTaffirmPopup::quit_slot()
+QTaffirmDlg::quit_slot()
 {
     if (p_callback)
         (*p_callback)(false, p_cb_arg);

@@ -45,9 +45,9 @@ using namespace qtinterf;
 
 QTidleproc::QTidleproc() : QTimer(0)
 {
-    idle_proc_list = 0;
-    idle_id_cnt = 1000;
-    running = false;
+    ip_idle_proc_list = 0;
+    ip_idle_id_cnt = 1000;
+    ip_running = false;
     connect(this, SIGNAL(timeout()), this, SLOT(run_slot()));
 }
 
@@ -60,20 +60,20 @@ int
 QTidleproc::add(int(*cb)(void*), void *arg)
 {
     idle_procs *ip = new idle_procs(cb, arg);
-    if (!idle_proc_list)
-        idle_proc_list = ip;
+    if (!ip_idle_proc_list)
+        ip_idle_proc_list = ip;
     else {
-        idle_procs *p = idle_proc_list;
+        idle_procs *p = ip_idle_proc_list;
         while (p->next)
             p = p->next;
         p->next = ip;
     }
-    idle_proc_list->id = idle_id_cnt++;
-    if (!running) {
+    ip_idle_proc_list->id = ip_idle_id_cnt++;
+    if (!ip_running) {
         start();
-        running = true;
+        ip_running = true;
     }
-    return (idle_proc_list->id);
+    return (ip_idle_proc_list->id);
 }
 
 
@@ -85,12 +85,12 @@ bool
 QTidleproc::remove(int iid)
 {
     idle_procs *p = 0;
-    for (idle_procs *ip = idle_proc_list; ip; ip = ip->next) {
+    for (idle_procs *ip = ip_idle_proc_list; ip; ip = ip->next) {
         if (ip->id == iid) {
             if (p)
                 p->next = ip->next;
             else
-                idle_proc_list = ip->next;
+                ip_idle_proc_list = ip->next;
             delete ip;
             return (true);
         }
@@ -107,17 +107,17 @@ QTidleproc::remove(int iid)
 void
 QTidleproc::run_slot()
 {
-    if (idle_proc_list) {
-        idle_procs *ip = idle_proc_list;
-        idle_proc_list = ip->next;
+    if (ip_idle_proc_list) {
+        idle_procs *ip = ip_idle_proc_list;
+        ip_idle_proc_list = ip->next;
         ip->next = 0;
 
         int ret = (*ip->proc)(ip->arg);
         if (ret) {
-            if (!idle_proc_list)
-                idle_proc_list = ip;
+            if (!ip_idle_proc_list)
+                ip_idle_proc_list = ip;
             else {
-                idle_procs *p = idle_proc_list;
+                idle_procs *p = ip_idle_proc_list;
                 while (p->next)
                     p = p->next;
                 p->next = ip;
@@ -127,9 +127,9 @@ QTidleproc::run_slot()
             delete ip;
     }
 
-    if (!idle_proc_list) {
+    if (!ip_idle_proc_list) {
         stop();
-        running = false;
+        ip_running = false;
     }
 }
 

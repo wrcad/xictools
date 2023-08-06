@@ -71,6 +71,7 @@ public:
     QTlayerParamDlg(GRobject, const char*, const char*);
     ~QTlayerParamDlg();
 
+    QSize sizeHint() const;
     void update(const char*, const char*);
 
     static QTlayerParamDlg *self()          { return (instPtr); }

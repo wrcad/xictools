@@ -32,24 +32,27 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * GtkInterf Graphical Interface Library                                  *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include <QAction>
-#include <QEvent>
-#include <QLabel>
-#include <QLayout>
-#include <QPushButton>
-
 #include "qtmcol.h"
+#include "qtmsg.h"
+#include "qttextw.h"
+#include "qtinput.h"
+#include "qtfont.h"
+#include "miscutil/filestat.h"
 
-#define COLUMN_SPACING 20
+#include <QLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QComboBox>
+#include <QDrag>
 
 
-// Popup to display a list.  title is the title label text, callback
+// Dialog to display a list.  title is the title label text, callback
 // is called with the word pointed to when the user points in the
 // window, and 0 when the popup is destroyed.
 //
@@ -59,153 +62,170 @@
 //
 GRmcolPopup *
 QTbag::PopUpMultiCol(stringlist *symlist, const char *title,
-    void(*callback)(const char*, void*), void *arg,
+    void (*callback)(const char*, void*), void *arg,
     const char **buttons, int pgsize, bool no_dd)
 {
-    QTmcolPopup *mcol = new QTmcolPopup(this, symlist, title,
+    static int mcol_count;
+
+    QTmcolDlg *mcol = new QTmcolDlg(this, symlist, title,
         buttons, pgsize, arg);
     mcol->register_callback(callback);
     mcol->set_no_dragdrop(no_dd);
+
+    int x, y;
+    QTdev::self()->ComputePopupLocation(GRloc(), mcol->Shell(), wb_shell,
+        &x, &y);
+    x += mcol_count*50 - 150;
+    y += mcol_count*50 - 150;
+    mcol_count++;
+    if (mcol_count == 6)
+        mcol_count = 0;
+    mcol->move(x, y);
 
     mcol->set_visible(true);
     return (mcol);
 }
 
-namespace qtinterf
-{
-    // Go through some wretched shit in order to get reasonable
-    // spacing between columns.
-    //
-    class mcol_list_widget : public QListWidget
-    {
-    public:
-        mcol_list_widget(QWidget*);
 
-        QListWidgetItem *item_of(const QModelIndex &index)
-            {
-                return (itemFromIndex(index));
-            }
-    };
-
-    class mcol_delegate : public QItemDelegate
-    {
-    public:
-        mcol_delegate(mcol_list_widget *w) : QItemDelegate(w)
-            {
-                widget = w;
-            }
-
-        QSize sizeHint(const QStyleOptionViewItem&,
-            const QModelIndex&)  const;
-
-    private:
-        mcol_list_widget *widget;
-    };
-}
-
-
-mcol_list_widget::mcol_list_widget(QWidget *prnt) : QListWidget(prnt)
-{
-    setItemDelegate(new mcol_delegate(this));
-}
-
-
-QSize
-mcol_delegate::sizeHint(const QStyleOptionViewItem&,
-    const QModelIndex &index)  const
-{
-    QListWidgetItem *item = widget->item_of(index);
-    QFontMetrics fm(item->font());
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-    return (QSize(fm.horizontalAdvance(item->text()) + COLUMN_SPACING,
-        fm.height()));
-#else
-    return (QSize(fm.width(item->text()) + COLUMN_SPACING, fm.height()));
-#endif
-}
-
-
-QTmcolPopup::QTmcolPopup(QTbag *owner, stringlist *symlist,
-    const char *title, const char **buttons, int pgsize, void *arg) :
-    QDialog(owner ? owner->Shell() : 0), QTbag()
+QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
+    const char *title, const char **buttons, int pgsize, void *arg)
 {
 wb_shell = this;
     p_parent = owner;
     p_cb_arg = arg;
+    mc_pagesel = 0;
+    for (int i = 0; i < MC_MAXBTNS; i++)
+        mc_buttons[i] = 0;
+    mc_save_pop = 0;
+    mc_msg_pop = 0;
+    mc_label = 0;
+    mc_strings = stringlist::dup(symlist);
+    stringlist::sort(mc_strings);
+
+    mc_alloc_width = 0;
+    mc_drag_x = mc_drag_y = 0;
+    mc_page = 0;
+
+    mc_pagesize = pgsize;
+    if (mc_pagesize <= 0)
+        mc_pagesize = DEF_LIST_MAX_PER_PAGE;
+    else if (mc_pagesize < 100)
+        mc_pagesize = 100;
+    else if (mc_pagesize > 50000)
+        mc_pagesize = 50000;
+
+    mc_btnmask = 0;
+    mc_start = 0;
+    mc_end = 0;
+    mc_dragging = false;
 
     if (owner)
         owner->MonitorAdd(this);
 
     setWindowTitle(tr("Listing"));
     setAttribute(Qt::WA_DeleteOnClose);
-    label = new QLabel(QString(title), this);
-    lbox = new mcol_list_widget(this);
-    lbox->setMinimumWidth(300);
-    lbox->setWrapping(true);
-    lbox->setFlow(QListView::TopToBottom);
 
-    for (stringlist *l = symlist; l; l = l->next)
-        lbox->addItem(QString(l->string));
-    lbox->sortItems();
-    connect(lbox,
-        SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
-        this, SLOT(action_slot()));
-    b_cancel = new QPushButton(tr("Dismiss"), this);
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
+    vbox->setMargin(2);
     vbox->setSpacing(2);
-    vbox->addWidget(label);
-    vbox->addWidget(lbox);
-    vbox->addWidget(b_cancel);
-    connect(b_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
+
+    // Title label.
+    //
+    mc_label = new QLabel(tr(title));
+    vbox->addWidget(mc_label);
+
+    // Scrolled text area.
+    //
+    wb_textarea = new QTtextEdit();
+    vbox->addWidget(wb_textarea);
+    wb_textarea->setReadOnly(true);
+    wb_textarea->setMouseTracking(true);
+    wb_textarea->setAcceptDrops(false);
+    connect(wb_textarea, SIGNAL(resize_event(QResizeEvent*)),
+        this, SLOT(resize_slot(QResizeEvent*)));
+    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
+        this, SLOT(mouse_motion_slot(QMouseEvent*)));
+
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED))
+        wb_textarea->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
+
+    QPushButton *btn = new QPushButton(tr("Save Text "));
+    btn->setCheckable(true);
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
+
+    mc_pagesel = new QComboBox();
+    hbox->addWidget(mc_pagesel);
+
+    // Dismiss button.
+    //
+    btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+
+    if (buttons) {
+        for (int i = 0; i < MC_MAXBTNS && buttons[i]; i++) {
+            btn = new QPushButton(buttons[i]);
+            btn->setEnabled(false);
+            mc_buttons[i] = btn;
+            hbox->addWidget(btn);
+            connect(btn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
+        }
+    }
+
+    relist();
 }
 
 
-QTmcolPopup::~QTmcolPopup()
+QTmcolDlg::~QTmcolDlg()
 {
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller) {
-        QObject *o = (QObject*)p_caller;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn)
-                btn->setChecked(false);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->setChecked(false);
-        }
-    }
-    if (p_callback)
-        (*p_callback)(0, p_cb_arg);
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
+    if (p_callback)
+        (*p_callback)(0, p_cb_arg);
+    if (mc_save_pop)
+        mc_save_pop->popdown();
+    if (mc_msg_pop)
+        mc_msg_pop->popdown();
+    if (p_usrptr)
+        *p_usrptr = 0;
+    if (p_caller)
+        QTdev::Deselect(p_caller);
+    stringlist::destroy(mc_strings);
 }
 
 
 // GRpopup override
 //
 void
-QTmcolPopup::popdown()
+QTmcolDlg::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (!owner || !owner->MonitorActive(this))
             return;
     }
-    delete this;
+    deleteLater();
 }
 
 
-// Update the title, header, and contents of the mcol widget.
+// GRmcolPopup override
 //
 void
-QTmcolPopup::update(stringlist *symlist, const char *title)
+QTmcolDlg::update(stringlist *symlist, const char *title)
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -213,14 +233,15 @@ QTmcolPopup::update(stringlist *symlist, const char *title)
             return;
     }
 
+    stringlist::destroy(mc_strings);
+    mc_strings = stringlist::dup(symlist);
+    stringlist::sort(mc_strings);
+
+    mc_page = 0;
+    relist();
+
     if (title)
-        label->setText(QString(title));
-    lbox->clear();
-    for (stringlist *l = symlist; l; l = l->next)
-        lbox->addItem(QString(l->string));
-    lbox->sortItems();
-    raise();
-    activateWindow();
+        mc_label->setText(tr(title));
 }
 
 
@@ -229,10 +250,11 @@ QTmcolPopup::update(stringlist *symlist, const char *title)
 // Return the selected text, null if no selection.
 //
 char *
-QTmcolPopup::get_selection()
+QTmcolDlg::get_selection()
 {
-//XXX    return (text_get_selection(wb_textarea));
-return (0);
+    if (mc_end != mc_start)
+        return (wb_textarea->get_chars(mc_start, mc_end));
+    return (0);
 }
 
 
@@ -243,44 +265,349 @@ return (0);
 // Bit == 1:  button sensitive when selection.
 //
 void
-QTmcolPopup::set_button_sens(int bmask)
+QTmcolDlg::set_button_sens(int mask)
 {
-/*XXX
     int bm = 1;
     mc_btnmask = ~mask;
-    bool has_sel = text_has_selection(wb_textarea);
+    bool has_sel = (mc_end != mc_start);
     for (int i = 0; i < MC_MAXBTNS && mc_buttons[i]; i++) {
-        gtk_widget_set_sensitive(mc_buttons[i], (bm & mask) && has_sel);
+        mc_buttons[i]->setEnabled((bm & mask) && has_sel);
         bm <<= 1;
     }
-*/
 }
 
 
-QList<QListWidgetItem*>
-QTmcolPopup::get_items()
-{
-    return (lbox->findItems(QString("*"), Qt::MatchWildcard));
-}
-
-
+// Handle the relisting, the display is paged.
+//
 void
-QTmcolPopup::action_slot()
+QTmcolDlg::relist()
 {
-/*XXX
-    if (lbox) {
-        QByteArray ba = lbox->currentItem()->text().toLatin1();
-        if (p_callback)
-            (*p_callback)(ba, p_cb_arg);
-        emit action_call(ba, p_cb_arg);
+    int min = mc_page * mc_pagesize;
+    int max = min + mc_pagesize;
+
+    stringlist *s0 = 0, *se = 0;
+    int cnt = 0;
+    for (stringlist *s = mc_strings; s; s = s->next) {
+        if (cnt >= min && cnt < max) {
+            if (!s0)
+                se = s0 = new stringlist(lstring::copy(s->string), 0);
+            else {
+                se->next = new stringlist(lstring::copy(s->string), 0);
+                se = se->next;
+            }
+        }
+        cnt++;
     }
-*/
+
+    if (cnt <= mc_pagesize)
+        mc_pagesel->hide();
+    else {
+        char buf[128];
+        mc_pagesel->clear();
+
+        for (int i = 0; i*mc_pagesize < cnt; i++) {
+            int tmpmax = (i+1)*mc_pagesize;
+            if (tmpmax > cnt)
+                tmpmax = cnt;
+            snprintf(buf, sizeof(buf), "%d - %d", i*mc_pagesize + 1, tmpmax);
+            mc_pagesel->addItem(buf);
+        }
+        mc_pagesel->setCurrentIndex(mc_page);
+        connect(mc_pagesel, SIGNAL(currentIndex(int)),
+            this, SLOT(page_size_slot(int)));
+        mc_pagesel->show();
+    }
+
+    int tw = wb_textarea->width();
+    int cols = (tw - 4)/QTfont::stringWidth(0, wb_textarea);
+    char *s = stringlist::col_format(s0, cols);
+    stringlist::destroy(s0);
+    wb_textarea->setPlainText(s);
+    delete [] s;
+}
+
+
+// Select the chars in the range, start=end deselects existing.
+//
+void
+QTmcolDlg::select_range(int start, int end)
+{
+    wb_textarea->select_range(start, end);
+    mc_start = start;
+    mc_end = end;
+    if (start == end) {
+        for (int i = 0; i < MC_MAXBTNS && mc_buttons[i]; i++)
+            mc_buttons[i]->setEnabled(false);
+    }
+    else {
+        int bm = 1;
+        for (int i = 0; i < MC_MAXBTNS && mc_buttons[i]; i++) {
+            mc_buttons[i]->setEnabled(bm & ~mc_btnmask);
+            bm <<= 1;
+        }
+    }
+}
+
+
+// Private static handler.
+// Callback for the save file name pop-up.
+//
+ESret
+QTmcolDlg::mc_save_cb(const char *string, void *arg)
+{
+    QTmcolDlg *mcp = (QTmcolDlg*)arg;
+    if (string) {
+        if (!filestat::create_bak(string)) {
+            mcp->mc_save_pop->update(
+                "Error backing up existing file, try again", 0);
+            return (ESTR_IGN);
+        }
+        FILE *fp = fopen(string, "w");
+        if (!fp) {
+            mcp->mc_save_pop->update("Error opening file, try again", 0);
+            return (ESTR_IGN);
+        }
+        QByteArray txt_ba = mcp->wb_textarea->toPlainText().toLatin1();
+        const char *txt = txt_ba.constData();
+        if (txt) {
+            unsigned int len = strlen(txt);
+            if (len) {
+                if (fwrite(txt, 1, len, fp) != len) {
+                    mcp->mc_save_pop->update("Write failed, try again", 0);
+                    delete [] txt;
+                    fclose(fp);
+                    return (ESTR_IGN);
+                }
+            }
+            delete [] txt;
+        }
+        fclose(fp);
+
+        if (mcp->mc_msg_pop)
+            mcp->mc_msg_pop->popdown();
+        mcp->mc_msg_pop = new QTmsgDlg(0, "Text saved in file.");
+        mcp->mc_msg_pop->register_usrptr((void**)&mcp->mc_msg_pop);
+        QTdev::self()->SetPopupLocation(GRloc(), mcp->mc_msg_pop,
+            mcp->wb_shell);
+        mcp->mc_msg_pop->set_visible(true);
+        QTdev::self()->AddTimer(2000, mc_timeout, mcp);
+    }
+    return (ESTR_DN);
+}
+
+
+int
+QTmcolDlg::mc_timeout(void *arg)
+{
+    QTmcolDlg *mcp = (QTmcolDlg*)arg;
+    if (mcp->mc_msg_pop)
+        mcp->mc_msg_pop->popdown();
+    return (0);
 }
 
 
 void
-QTmcolPopup::quit_slot()
+QTmcolDlg::save_btn_slot(bool state)
 {
-    delete this;
+    if (!state)
+        return;
+    if (mc_save_pop)
+        return;
+    mc_save_pop = new QTledDlg(0,
+        "Enter path to file for saved text:", "", "Save", false);
+    mc_save_pop->register_caller(sender(), false, true);
+    mc_save_pop->set_callback_arg(this);
+    mc_save_pop->register_callback(
+        (GRledPopup::GRledCallback)&mc_save_cb);
+    mc_save_pop->register_usrptr((void**)&mc_save_pop);
+
+    QTdev::self()->SetPopupLocation(GRloc(), mc_save_pop, this);
+    mc_save_pop->set_visible(true);
+}
+
+
+void
+QTmcolDlg::dismiss_btn_slot()
+{
+    popdown();
+}
+
+
+void
+QTmcolDlg::user_btn_slot()
+{
+    // Handle the auxiliary buttons:  call the callback with '/'
+    // followed by button text.
+
+    QPushButton *b = qobject_cast<QPushButton*>(sender());
+    if (b) {
+        sLstr lstr;
+        lstr.add_c('/');
+        lstr.add(b->text().toLatin1().constData());
+        (*p_callback)(lstr.string(), p_cb_arg);
+    }
+}
+
+
+void
+QTmcolDlg::page_size_slot(int i)
+{
+    mc_page = i;
+    relist();
+}
+
+
+void
+QTmcolDlg::resize_slot(QResizeEvent *ev)
+{
+    // Reformat the listing when window size changes.
+    int wid = ev->size().width();
+    if (wb_textarea && mc_strings && wid > 0 && wid != mc_alloc_width) {
+        mc_alloc_width = wid;
+        relist();
+    }
+}
+
+
+void
+QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
+{
+    if (ev->type() == QEvent::MouseButtonRelease) {
+        if (ev->button() == Qt::LeftButton) {
+            mc_dragging = false;
+            ev->accept();
+        }
+        else
+            ev->ignore();
+        return;
+    }
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
+        return;
+    }
+    if (ev->button() != Qt::LeftButton) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    const char *str = lstring::copy(
+        wb_textarea->toPlainText().toLatin1().constData());
+    int x = ev->x();
+    int y = ev->y();;
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
+    int pos = cur.position();
+
+    select_range(0, 0);
+
+    if (isspace(str[pos])) {
+        // Clicked on white space.
+        delete [] str;
+        return;
+    }
+
+    const char *lineptr = str;
+    for (int i = 0; i <= pos; i++) {
+        if (str[i] == '\n') {
+            if (i == pos) {
+                // Clicked to right of line.
+                delete [] str;
+                return;
+            }
+            lineptr = str + i+1;
+        }
+    }
+    int start = pos - (lineptr - str);;
+    int end = start;
+    while (start > 0 && !isspace(lineptr[start]))
+        start--;
+    if (isspace(lineptr[start]))
+        start++;
+    while (lineptr[end] && !isspace(lineptr[end]))
+        end++;
+    // The top level cells are listed with an '*'.
+    // Modified cells are listed  with a '+'.
+    if (lineptr[start] == '+' || lineptr[start] == '*')
+        start++;
+    if (start == end)
+        return;
+
+    char *tbuf = new char[end - start + 1];
+    char *t = tbuf;
+    for (int i = start; i < end; i++)
+        *t++ = lineptr[i];
+    *t = 0;
+
+    delete [] str;
+    start += (lineptr - str);
+    end += (lineptr - str);
+    select_range(start, end);
+
+    if (p_callback)
+        (*p_callback)(tbuf, p_cb_arg);
+    delete [] tbuf;
+
+    mc_drag_x = x;
+    mc_drag_y = y;
+    mc_dragging = true;
+}
+
+
+void
+QTmcolDlg::mouse_motion_slot(QMouseEvent *ev)
+{
+    if (ev->type() != QEvent::MouseMove) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    // Start the drag, after a selection, if the pointer moves.
+    if (p_no_dd)
+        return;
+    if (!mc_dragging)
+        return;
+    if (abs(ev->x() - mc_drag_x) < 5 && abs(ev->y() - mc_drag_y) < 5)
+        return;
+    if (!wb_textarea->has_selection())
+        return;
+    mc_dragging = false;
+
+    // The payload is a string which has two substrings separated by
+    // a newline.  We call this "text/twostring" locally.
+
+    QByteArray label_ba = mc_label->text().toLatin1();
+    const char *ltext = label_ba.constData();
+    const char *t = strchr(ltext, '\n');
+    if (t)
+        ltext = t+1;
+    sLstr lstr;
+    lstr.add(ltext);
+    lstr.add_c('\n');
+    const char *sel = wb_textarea->get_selection();
+    lstr.add(sel);
+    delete [] sel;
+
+    QDrag *drag = new QDrag(wb_textarea);
+    QMimeData *mimedata = new QMimeData();
+    QByteArray qdata(lstr.string(), strlen(lstr.string())+1);
+    mimedata->setData("text/twostring", qdata);
+    delete [] sel;
+    drag->setMimeData(mimedata);
+    drag->exec(Qt::CopyAction);
+    delete drag;
+}
+
+
+void
+QTmcolDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum)) {
+            wb_textarea->setFont(*fnt);
+            relist();
+        }
+    }
 }
 

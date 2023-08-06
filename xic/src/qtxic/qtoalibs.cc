@@ -244,6 +244,12 @@ QToaLibsDlg::QToaLibsDlg(GRobject c)
     connect(lb_list, SIGNAL(itemSelectionChanged()),
         this, SLOT(item_selection_changed()));
 
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_PROP))
+        lb_list->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+
     // dismiss button line
     //
     btn = new QPushButton(tr("Dismiss"));
@@ -789,6 +795,18 @@ void
 QToaLibsDlg::dismiss_btn_slot()
 {
     OAif()->PopUpOAlibraries(0, MODE_OFF);
+}
+
+
+void
+QToaLibsDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_PROP) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum))
+            lb_list->setFont(*fnt);
+        update();
+    }
 }
 
 

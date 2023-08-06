@@ -186,6 +186,7 @@ public:
 
 private slots:
     void toplev_selection_changed_slot();
+    void font_changed_slot(int);
 
 private:
     QTasmDlg    *pg_owner;          // container

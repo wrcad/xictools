@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef SEARCH_D_H
-#define SEARCH_D_H
+#ifndef QTSEARCH_H
+#define QTSEARCH_H
 
 #include "ginterf/graphics.h"
 #include <QVariant>
@@ -52,65 +52,65 @@ class QLabel;
 class QLineEdit;
 class QPushButton;
 
-namespace qtinterf
-{
+namespace qtinterf {
     class QTbag;
-
-    class QTsearch : public QDialog, public GRpopup
-    {
-        Q_OBJECT
-
-    public:
-        QTsearch(QTbag*, const char*);
-        ~QTsearch();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void popdown();
-
-        void set_ign_case(bool);
-        void set_message(const char*);
-        void set_transient_message(const char*);
-        QString get_target();
-
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-    signals:
-        void search_down();
-        void search_up();
-        void ignore_case(bool);
-
-    private slots:
-        void quit_slot();
-        void down_slot();
-        void up_slot();
-        void ign_case_slot(bool);
-        void timeout_slot();
-
-    private:
-        QLabel *label;
-        QLineEdit *edit;
-        QPushButton *b_up;
-        QPushButton *b_dn;
-        QCheckBox *b_nc;
-        QPushButton *b_cancel;
-        const char *label_string;
-        QTimer timer;
-    };
+    class QTsearchDlg;
 }
+
+class qtinterf::QTsearchDlg : public QDialog, public GRpopup
+{
+    Q_OBJECT
+
+public:
+    QTsearchDlg(QTbag*, const char*);
+    ~QTsearchDlg();
+
+    // GRpopup overrides
+    void set_visible(bool visib)
+    {
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
+        }
+        else
+            hide();
+    }
+    void popdown();
+
+    void set_ign_case(bool);
+    void set_message(const char*);
+    void set_transient_message(const char*);
+    QString get_target();
+
+    // This widget will be deleted when closed with the title bar "X"
+    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
+    // not called.  The default behavior is to hide the widget instead
+    // of deleting it, which would likely be a core leak here.
+    void closeEvent(QCloseEvent*)   { quit_slot(); }
+
+signals:
+    void search_down();
+    void search_up();
+    void ignore_case(bool);
+
+private slots:
+    void quit_slot();
+    void down_slot();
+    void up_slot();
+    void ign_case_slot(bool);
+    void timeout_slot();
+
+private:
+    QLabel      *se_label;
+    QLineEdit   *se_edit;
+    QPushButton *se_up;
+    QPushButton *se_dn;
+    QCheckBox   *se_nc;
+    QPushButton *se_cancel;
+    const char  *se_label_string;
+    QTimer      se_timer;
+};
 
 #endif
 

@@ -50,23 +50,23 @@
 #include "qtactivity.h"
 
 
-QTprogress::QTprogress(QTbag *owner, prgMode mode) :
+QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode) :
     QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
-    gb_in = 0;
-    label_in = 0;
-    gb_out = 0;
-    label_out = 0;
-    gb_info = 0;
-    te_info = 0;
-    gb_etc = 0;
-    label_etc = 0;
-    b_abort = 0;
-    b_cancel = 0;
-    pbar = 0;
-    info_limit = 0;
-    info_count = 0;
+    pg_gb_in = 0;
+    pg_label_in = 0;
+    pg_gb_out = 0;
+    pg_label_out = 0;
+    pg_gb_info = 0;
+    pg_te_info = 0;
+    pg_gb_etc = 0;
+    pg_label_etc = 0;
+    pg_abort = 0;
+    pg_cancel = 0;
+    pg_pbar = 0;
+    pg_info_limit = 0;
+    pg_info_count = 0;
 
     if (owner)
         owner->MonitorAdd(this);
@@ -82,59 +82,59 @@ QTprogress::QTprogress(QTbag *owner, prgMode mode) :
         QHBoxLayout *hbox = new QHBoxLayout(0);
         hbox->setSpacing(2);
         form->addLayout(hbox);
-        gb_in = new QGroupBox(QString(tr("Input")), this);
-        label_in = new QLabel("", gb_in);
-        QVBoxLayout *vbox = new QVBoxLayout(gb_in);
+        pg_gb_in = new QGroupBox(QString(tr("Input")), this);
+        pg_label_in = new QLabel("", pg_gb_in);
+        QVBoxLayout *vbox = new QVBoxLayout(pg_gb_in);
         vbox->setMargin(4);
         vbox->setSpacing(2);
         vbox->addSpacing(10);
-        vbox->addWidget(label_in);
-        hbox->addWidget(gb_in);
+        vbox->addWidget(pg_label_in);
+        hbox->addWidget(pg_gb_in);
 
-        gb_out = new QGroupBox(QString(tr("Output")), this);
-        label_out = new QLabel("", gb_out);
-        vbox = new QVBoxLayout(gb_out);
+        pg_gb_out = new QGroupBox(QString(tr("Output")), this);
+        pg_label_out = new QLabel("", pg_gb_out);
+        vbox = new QVBoxLayout(pg_gb_out);
         vbox->setMargin(4);
         vbox->setSpacing(2);
         vbox->addSpacing(10);
-        vbox->addWidget(label_out);
-        hbox->addWidget(gb_out);
+        vbox->addWidget(pg_label_out);
+        hbox->addWidget(pg_gb_out);
 
-        gb_info = new QGroupBox(QString(tr("Info")), this);
-        te_info = new QTextEdit(gb_info);
-        te_info->setReadOnly(true);
-        vbox = new QVBoxLayout(gb_info);
+        pg_gb_info = new QGroupBox(QString(tr("Info")), this);
+        pg_te_info = new QTextEdit(pg_gb_info);
+        pg_te_info->setReadOnly(true);
+        vbox = new QVBoxLayout(pg_gb_info);
         vbox->setMargin(4);
         vbox->setSpacing(2);
         vbox->addSpacing(10);
-        vbox->addWidget(te_info);
-        form->addWidget(gb_info);
+        vbox->addWidget(pg_te_info);
+        form->addWidget(pg_gb_info);
     }
 
-    gb_etc = new QGroupBox(this);
-    label_etc = new QLabel("", gb_etc);
-    QVBoxLayout *vbox = new QVBoxLayout(gb_etc);
+    pg_gb_etc = new QGroupBox(this);
+    pg_label_etc = new QLabel("", pg_gb_etc);
+    QVBoxLayout *vbox = new QVBoxLayout(pg_gb_etc);
     vbox->setMargin(4);
     vbox->setSpacing(2);
-    vbox->addWidget(label_etc);
-    form->addWidget(gb_etc);
+    vbox->addWidget(pg_label_etc);
+    form->addWidget(pg_gb_etc);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setSpacing(2);
     form->addLayout(hbox);
-    b_abort = new QPushButton("Abort", this);
-    hbox->addWidget(b_abort);
-    b_cancel = new QPushButton("Dismiss", this);
-    hbox->addWidget(b_cancel);
-    pbar = new QTactivity(this);
-    hbox->addWidget(pbar);
+    pg_abort = new QPushButton("Abort", this);
+    hbox->addWidget(pg_abort);
+    pg_cancel = new QPushButton("Dismiss", this);
+    hbox->addWidget(pg_cancel);
+    pg_pbar = new QTactivity(this);
+    hbox->addWidget(pg_pbar);
 
-    connect(b_abort, SIGNAL(clicked()), this, SLOT(abort_slot()));
-    connect(b_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    connect(pg_abort, SIGNAL(clicked()), this, SLOT(abort_slot()));
+    connect(pg_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
 }
 
 
-QTprogress::~QTprogress()
+QTprogressDlg::~QTprogressDlg()
 {
     if (p_usrptr)
         *p_usrptr = 0;
@@ -162,7 +162,7 @@ QTprogress::~QTprogress()
 // GRpopup override
 //
 void
-QTprogress::popdown()
+QTprogressDlg::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -174,32 +174,32 @@ QTprogress::popdown()
 
 
 void
-QTprogress::set_input(const char *str)
+QTprogressDlg::set_input(const char *str)
 {
-    if (label_in)
-        label_in->setText(str);
+    if (pg_label_in)
+        pg_label_in->setText(str);
 }
 
 
 void
-QTprogress::set_output(const char *str)
+QTprogressDlg::set_output(const char *str)
 {
-    if (label_out)
-        label_out->setText(str);
+    if (pg_label_out)
+        pg_label_out->setText(str);
 }
 
 
 void
-QTprogress::set_info(const char *str)
+QTprogressDlg::set_info(const char *str)
 {
-    if (te_info && str && *str) {
-        if (info_limit > 0) {
-            if (info_count == info_limit) {
-                te_info->append(QString("More messages, see log file."));
-                info_count++;
+    if (pg_te_info && str && *str) {
+        if (pg_info_limit > 0) {
+            if (pg_info_count == pg_info_limit) {
+                pg_te_info->append(QString("More messages, see log file."));
+                pg_info_count++;
                 return;
             }
-            if (info_count > info_limit)
+            if (pg_info_count > pg_info_limit)
                 return;
         }
         // Add a bullet and embolden "Warning:"
@@ -209,46 +209,46 @@ QTprogress::set_info(const char *str)
             snprintf(tbf, len, "%c <b>Warning:</b>%s", 176, str+8);
         else
             snprintf(tbf, len, "%c %s", 176, str);
-        te_info->append(QString(tbf));
+        pg_te_info->append(QString(tbf));
         delete [] tbf;
-        info_count++;
+        pg_info_count++;
     }
 }
 
 
 void
-QTprogress::set_etc(const char *str)
+QTprogressDlg::set_etc(const char *str)
 {
-    if (label_etc)
-        label_etc->setText(str);
+    if (pg_label_etc)
+        pg_label_etc->setText(str);
 }
 
 
 void
-QTprogress::start()
+QTprogressDlg::start()
 {
-    if (pbar)
-        pbar->start();
+    if (pg_pbar)
+        pg_pbar->start();
 }
 
 
 void
-QTprogress::finished()
+QTprogressDlg::finished()
 {
-    if (pbar)
-        pbar->stop();
+    if (pg_pbar)
+        pg_pbar->stop();
 }
 
 
 void
-QTprogress::quit_slot()
+QTprogressDlg::quit_slot()
 {
     delete this;
 }
 
 
 void
-QTprogress::abort_slot()
+QTprogressDlg::abort_slot()
 {
     emit abort();
 }

@@ -81,26 +81,7 @@ namespace {
         QTpkg::self()->SetOverrideBusy(false);
         DSPmainDraw(ShowGhost(DISPLAY))
     }
-
-
-    const char *file_type_str(FileType ft)
-    {
-        if (ft == Fnative || ft == Fnone)
-            return ("X");
-        if (ft == Fgds)
-            return ("G");
-        if (ft == Fcgx)
-            return ("B");
-        if (ft == Foas)
-            return ("O");
-        if (ft == Fcif)
-            return ("C");
-        if (ft == Foa)
-            return ("A");
-        return ("");
-    }
 }
-
 
 
 // Pop-up to list modified cells, allowing the user to choose which to
@@ -137,6 +118,26 @@ cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
     return (QTmodifDlg::retval());
 }
 // End of cEdit functions.
+
+
+namespace {
+    const char *file_type_str(FileType ft)
+    {
+        if (ft == Fnative || ft == Fnone)
+            return ("X");
+        if (ft == Fgds)
+            return ("G");
+        if (ft == Fcgx)
+            return ("B");
+        if (ft == Foas)
+            return ("O");
+        if (ft == Fcif)
+            return ("C");
+        if (ft == Foa)
+            return ("A");
+        return ("");
+    }
+}
 
 
 PMretType QTmodifDlg::m_retval;
@@ -308,7 +309,6 @@ QTmodifDlg::refresh()
     QColor yc = QTbag::PopupColor(GRattrColorYes);
     QColor c1 = QTbag::PopupColor(GRattrColorHl2);
     QColor c2 = QTbag::PopupColor(GRattrColorHl3);
-    QScrollBar *vsb = m_text->verticalScrollBar();
     int sval = m_text->get_scroll_value();
     m_text->clear();
     for (s_item *s = m_list; s->name; s++) {
@@ -416,7 +416,7 @@ QTmodifDlg::mouse_press_slot(QMouseEvent *ev)
     ev->accept();
 
     const char *str = lstring::copy(
-        (const char*)m_text->toPlainText().toLatin1());
+        m_text->toPlainText().toLatin1().constData());
     int x = ev->x();
     int y = ev->y();
     QTextCursor cur = m_text->cursorForPosition(QPoint(x, y));

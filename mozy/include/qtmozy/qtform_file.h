@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef FORM_FILE_W_H
-#define FORM_FILE_W_H
+#ifndef QTFORM_FILE_H
+#define QTFORM_FILE_H
 
 #include <QWidget>
 
@@ -48,31 +48,31 @@ class QPushButton;
 
 struct htmForm;
 
-namespace qtinterf
-{
-    class QTfilePopup;
-
-    // Container for the FORM_FILE element
-    //
-    class QTform_file : public QWidget
-    {
-        Q_OBJECT
-
-    public:
-        QTform_file(htmForm*, QWidget*);
-
-        QLineEdit *editor() { return (edit); }
-
-    private slots:
-        void browse_btn_slot();
-        void file_selected_slot(const char*, void*);
-
-    private:
-        QLineEdit *edit;
-        QPushButton *browse;
-        QTfilePopup *fsel;
-    };
+namespace qtinterf {
+    class QTfileDlg;
+    class QTform_file;
 }
+
+// Container for the FORM_FILE element
+//
+class qtinterf::QTform_file : public QWidget
+{
+    Q_OBJECT
+
+public:
+    QTform_file(htmForm*, QWidget*);
+
+    QLineEdit *editor()     { return (ff_edit); }
+
+private slots:
+    void browse_btn_slot();
+    void file_selected_slot(const char*, void*);
+
+private:
+    QLineEdit   *ff_edit;
+    QPushButton *ff_browse;
+    QTfileDlg   *ff_fsel;
+};
 
 #endif
 

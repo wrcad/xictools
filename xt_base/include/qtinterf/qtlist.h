@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef LIST_D_H
-#define LIST_D_H
+#ifndef QTLIST_H
+#define QTLIST_H
 
 #include "qtinterf.h"
 #include "miscutil/lstring.h"
@@ -54,59 +54,60 @@ class QCloseEvent;
 class QLabel;
 class QPushButton;
 
-namespace qtinterf
-{
+namespace qtinterf {
     class QTbag;
     class list_list_widget;
-
-    class QTlistPopup : public QDialog, public GRlistPopup, public QTbag
-    {
-        Q_OBJECT
-
-    public:
-        QTlistPopup(QTbag*, stringlist*, const char*, const char*,
-            bool, void*);
-        ~QTlistPopup();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void popdown();
-
-        // GRlistPopup override
-        void update(stringlist*, const char*, const char*);
-        void update(bool(*)(const char*));
-        void unselect_all();
-
-        QList<QListWidgetItem*> get_items();
-
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-    signals:
-        void action_call(const char*, void*);
-
-    private slots:
-        void action_slot();
-        void quit_slot();
-
-    private:
-        QLabel *label;
-        list_list_widget *lbox;
-        QPushButton *b_cancel;
-    };
+    class QTlistDlg;
 }
+
+class qtinterf::QTlistDlg : public QDialog, public GRlistPopup,
+    public QTbag
+{
+    Q_OBJECT
+
+public:
+    QTlistDlg(QTbag*, stringlist*, const char*, const char*,
+        bool, void*);
+    ~QTlistDlg();
+
+    // GRpopup overrides
+    void set_visible(bool visib)
+    {
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
+        }
+        else
+            hide();
+    }
+    void popdown();
+
+    // GRlistPopup override
+    void update(stringlist*, const char*, const char*);
+    void update(bool(*)(const char*));
+    void unselect_all();
+
+    QList<QListWidgetItem*> get_items();
+
+    // This widget will be deleted when closed with the title bar "X"
+    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
+    // not called.  The default behavior is to hide the widget instead
+    // of deleting it, which would likely be a core leak here.
+    void closeEvent(QCloseEvent*)   { quit_slot(); }
+
+signals:
+    void action_call(const char*, void*);
+
+private slots:
+    void action_slot();
+    void quit_slot();
+
+private:
+    QLabel      *li_label;
+    list_list_widget *li_lbox;
+    QPushButton *li_cancel;
+};
 
 #endif
 

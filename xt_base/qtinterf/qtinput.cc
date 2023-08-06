@@ -50,14 +50,13 @@
 #include <QTextEdit>
 
 
-QTledPopup::QTledPopup(QTbag *owner, const char *label_str,
-    const char *initial_str, const char *action_str, void *arg, bool mult) :
+QTledDlg::QTledDlg(QTbag *owner, const char *label_str,
+    const char *initial_str, const char *action_str, bool mult) :
     QDialog(owner ? owner->Shell() : 0)
 {
     p_parent = owner;
-    p_cb_arg = arg;
-    multiline = mult;
-    quit_flag = false;
+    ed_multiline = mult;
+    ed_quit_flag = false;
 
     if (owner)
         owner->MonitorAdd(this);
@@ -68,59 +67,52 @@ QTledPopup::QTledPopup(QTbag *owner, const char *label_str,
 
     if (!label_str)
         label_str = "Enter Filename";
-    gbox = new QGroupBox(this);
-    label = new QLabel(label_str, gbox);
-    QVBoxLayout *vbox = new QVBoxLayout(gbox);
+    ed_gbox = new QGroupBox(this);
+    ed_label = new QLabel(label_str, ed_gbox);
+    QVBoxLayout *vbox = new QVBoxLayout(ed_gbox);
     vbox->setMargin(4);
     vbox->setSpacing(2);
-    vbox->addWidget(label);
+    vbox->addWidget(ed_label);
 
-    if (multiline) {
-        edit = new QTextEdit(this);
-        dynamic_cast<QTextEdit*>(edit)->setPlainText(initial_str);
+    if (ed_multiline) {
+        ed_edit = new QTextEdit(this);
+        dynamic_cast<QTextEdit*>(ed_edit)->setPlainText(initial_str);
     }
     else {
-        edit = new QLineEdit(this);
-        dynamic_cast<QLineEdit*>(edit)->setText(initial_str);
+        ed_edit = new QLineEdit(this);
+        dynamic_cast<QLineEdit*>(ed_edit)->setText(initial_str);
     }
 
-    b_ok = new QPushButton(action_str, this);
-    connect(b_ok, SIGNAL(clicked()), this, SLOT(action_slot()));
-    b_cancel = new QPushButton(tr("Cancel"), this);
-    connect(b_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    if (!action_str)
+        action_str = "Apply";
+    ed_ok = new QPushButton(action_str, this);
+    connect(ed_ok, SIGNAL(clicked()), this, SLOT(action_slot()));
+    ed_cancel = new QPushButton(tr("Cancel"), this);
+    connect(ed_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
 
     vbox = new QVBoxLayout(this);
     vbox->setMargin(4);
     vbox->setSpacing(2);
-    vbox->addWidget(gbox);
-    vbox->addWidget(edit);
+    vbox->addWidget(ed_gbox);
+    vbox->addWidget(ed_edit);
     QHBoxLayout *hbox = new QHBoxLayout(0);
     vbox->addLayout(hbox);
-    hbox->addWidget(b_ok);
-    hbox->addWidget(b_cancel);
+    hbox->addWidget(ed_ok);
+    hbox->addWidget(ed_cancel);
 }
 
 
-QTledPopup::~QTledPopup()
+QTledDlg::~QTledDlg()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner) {
+        if (owner)
             owner->ClearPopup(this);
-            /*XXX
-            owner->MonitorRemove(this);
-            if (owner->wb_input == this) {
-                owner->wb_input = 0;
-                if (owner && owner->wb_sens_set)
-                    (*owner->wb_sens_set)(owner, true);
-            }
-            */
-        }
     }
     if (p_usrptr)
         *p_usrptr = 0;
     if (p_cancel)
-        (*p_cancel)(quit_flag);
+        (*p_cancel)(ed_quit_flag);
     if (p_caller && !p_no_desel)
         QTdev::Deselect(p_caller);
 }
@@ -132,7 +124,7 @@ QTledPopup::~QTledPopup()
 //  2.  whether or not deselecting the caller causes popdown.
 //
 void
-QTledPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
+QTledDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
 {
     p_caller = c;
     p_no_desel = no_dsl;
@@ -159,7 +151,7 @@ QTledPopup::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
 // GRpopup override
 //
 void
-QTledPopup::popdown()
+QTledDlg::popdown()
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -173,7 +165,7 @@ QTledPopup::popdown()
 // GRledPopup override
 //
 void
-QTledPopup::update(const char *prompt_str, const char *init_str)
+QTledDlg::update(const char *prompt_str, const char *init_str)
 {
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
@@ -190,36 +182,36 @@ QTledPopup::update(const char *prompt_str, const char *init_str)
 // Replace the label text.
 //
 void
-QTledPopup::set_message(const char *msg)
+QTledDlg::set_message(const char *msg)
 {
-    label->setText(QString(msg));
+    ed_label->setText(QString(msg));
 }
 
 
 // Replace the edit text.
 //
 void
-QTledPopup::set_text(const char *msg)
+QTledDlg::set_text(const char *msg)
 {
-    if (multiline)
-        dynamic_cast<QTextEdit*>(edit)->setPlainText(QString(msg));
+    if (ed_multiline)
+        dynamic_cast<QTextEdit*>(ed_edit)->setPlainText(QString(msg));
     else
-        dynamic_cast<QLineEdit*>(edit)->setText(QString(msg));
+        dynamic_cast<QLineEdit*>(ed_edit)->setText(QString(msg));
 }
 
 
 void
-QTledPopup::action_slot()
+QTledDlg::action_slot()
 {
     char *text;
-    if (multiline)
-        text = lstring::copy(dynamic_cast<QTextEdit*>(edit)->
+    if (ed_multiline)
+        text = lstring::copy(dynamic_cast<QTextEdit*>(ed_edit)->
             toPlainText().toLatin1().constData());
     else
-        text = lstring::copy(dynamic_cast<QLineEdit*>(edit)->
+        text = lstring::copy(dynamic_cast<QLineEdit*>(ed_edit)->
             text().toLatin1().constData());
 
-    if (ign_ret) {
+    if (ed_ign_ret) {
         if (p_callback)
             (*p_callback)(text, p_cb_arg);
         emit action_call(text, p_cb_arg);
@@ -230,7 +222,7 @@ QTledPopup::action_slot()
         emit action_call(text, p_cb_arg);
         delete [] text;
         if (ret != ESTR_IGN) {
-            quit_flag = true;
+            ed_quit_flag = true;
             delete this;
         }
     }
@@ -242,8 +234,8 @@ QTledPopup::action_slot()
 
 
 void
-QTledPopup::quit_slot()
+QTledDlg::quit_slot()
 {
-    delete this;
+    deleteLater();
 }
 

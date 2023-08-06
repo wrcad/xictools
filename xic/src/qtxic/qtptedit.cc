@@ -60,7 +60,7 @@
 //---------------------------------------------------------------------------
 // Pop-up interface for terminal/property editing.  This handles
 // physical mode (TEDIT command).
-
+//
 // Help system keywords used:
 //  xic:edtrm
 
@@ -95,21 +95,8 @@ cExt::PopUpPhysTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
 
     new QTphysTermDlg(caller, tinfo, action, term);
 
-    /*XXX
-    int mwid, mhei;
-    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, &mhei);
-    GtkRequisition req;
-    gtk_widget_get_requisition(TE->shell(), &req);
-    if (x + req.width > mwid)
-        x = mwid - req.width;
-    if (y + req.height > mhei)
-        y = mhei - req.height;
-    gtk_window_move(GTK_WINDOW(TE->shell()), x, y);
-    gtk_widget_show(TE->shell());
-
-    // OpenSuse-13.1 gtk-2.24.23 bug
-    gtk_window_move(GTK_WINDOW(TE->shell()), x, y);
-    */
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
+        QTphysTermDlg::self(), QTmainwin::self()->Viewport());
     QTphysTermDlg::self()->show();
 }
 // End of cSced functions.

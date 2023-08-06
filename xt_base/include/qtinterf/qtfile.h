@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef FILE_D_H
-#define FILE_D_H
+#ifndef QTFILE_H
+#define QTFILE_H
 
 #include "qtinterf/qtinterf.h"
 
@@ -51,138 +51,140 @@ class QComboBox;
 class QLabel;
 class QListWidget;
 class QListWidgetItem;
+class QTreeWidget;
+class QTreeWidgetItem;
 class QLineEdit;
 class QMenu;
 class QMenuBar;
 class QTimer;
-class QTreeWidget;
-class QTreeWidgetItem;
 
-namespace qtinterf
-{
+namespace qtinterf {
     class file_tree_widget;
     class file_list_widget;
-
-    class QTfilePopup : public QDialog, public GRfilePopup, public QTbag
-    {
-        Q_OBJECT
-
-    public:
-        enum ActionType { A_NOOP, A_COPY, A_MOVE, A_LINK, A_ASK };
-
-        QTfilePopup(QTbag*, FsMode, void*, const char*);
-        ~QTfilePopup();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void popdown();
-
-        // GRfilePopup override
-        char *get_selection();
-
-        char *get_dir(QTreeWidgetItem *node = 0)
-            { return (get_path(node ? node : curnode, false)); }
-        void set_label();
-        void flash(QTreeWidgetItem*);
-
-        QSize sizeHint() const { return (QSize(500, 250)); }
-        QSize minimumSizeHint() const { return (QSize(250, 125)); }
-
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-        static void DoFileAction(QTbag*, const char*, const char*,
-            ActionType);
-
-    signals:
-        void file_selected(const char*, void*);
-        void dismiss();
-
-    private slots:
-        void up_slot();
-        void open_slot();
-        void new_folder_slot();
-        void new_folder_cb_slot(const char*, void*);
-        void delete_slot();
-        void delete_cb_slot(bool, void*);
-        void rename_slot();
-        void rename_cb_slot(const char*, void*);
-        void new_root_slot();
-        void root_cb_slot(const char*, void*);
-        void new_cwd_slot();
-        void new_cwd_cb_slot(const char*, void*);
-        void show_filter_slot(bool);
-        void filter_choice_slot(int);
-        void filter_change_slot(const QString&);
-        void quit_slot();
-        void help_slot();
-        void up_menu_slot(QAction*);
-        void menu_update_slot();
-        void tree_select_slot(QTreeWidgetItem*, QTreeWidgetItem*);
-        void tree_collapse_slot(QTreeWidgetItem*);
-        void tree_expand_slot(QTreeWidgetItem*);
-        void list_files_slot();
-        void list_select_slot(QListWidgetItem*, QListWidgetItem*);
-        void list_double_clicked_slot(QListWidgetItem*);
-        void flash_slot();
-        void check_slot();
-
-    private:
-        void init();
-        void select_file(const char*);
-        void select_dir(QTreeWidgetItem*);
-        char *get_path(QTreeWidgetItem*, bool);
-        QTreeWidgetItem *insert_node(char*, QTreeWidgetItem*);
-        void add_dir(QTreeWidgetItem*, char*);
-        stringlist *tokenize_filter();
-        char *get_newdir(const char*);
-
-        QMenuBar *menubar;
-        file_tree_widget *tree;
-        file_list_widget *list;
-        QLabel *label;
-        QComboBox *filter;
-        QAction *a_Up;
-        QAction *a_Go;
-        QAction *a_UpMenu;
-        QAction *a_Open;
-        QAction *a_New;
-        QAction *a_Delete;
-        QAction *a_Rename;
-        QLineEdit *entry;
-        QMenu *filemenu;
-        QMenu *upmenu;
-        QMenu *listmenu;
-        QMenu *helpmenu;
-        QTimer *timer;
-        QTimer *flasher;
-        int flasher_cnt;
-        QTreeWidgetItem *flasher_item;
-
-        FsMode config;
-        QTreeWidgetItem *curnode;
-        char *curfile;
-        char *rootdir;
-        char *cwd_bak;
-        char *temp_string;
-        int filter_index;
-        QIcon closed_folder_icon;
-        QIcon open_folder_icon;
-        bool no_disable_go;
-    };
+    class QTfileDlg;
 }
+
+class qtinterf::QTfileDlg : public QDialog, public GRfilePopup,
+    public QTbag
+{
+    Q_OBJECT
+
+public:
+    enum ActionType { A_NOOP, A_COPY, A_MOVE, A_LINK, A_ASK };
+
+    QTfileDlg(QTbag*, FsMode, void*, const char*);
+    ~QTfileDlg();
+
+    // GRpopup overrides
+    void set_visible(bool visib)
+        {
+            if (visib) {
+                show();
+                raise();
+                activateWindow();
+            }
+            else
+                hide();
+        }
+    void popdown();
+
+    // GRfilePopup override
+    char *get_selection();
+
+    char *get_dir(QTreeWidgetItem *node = 0)
+        { return (get_path(node ? node : f_curnode, false)); }
+    void set_label();
+    void flash(QTreeWidgetItem*);
+
+    QSize sizeHint() const { return (QSize(500, 250)); }
+    QSize minimumSizeHint() const { return (QSize(250, 125)); }
+
+    // This widget will be deleted when closed with the title bar "X"
+    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
+    // not called.  The default behavior is to hide the widget instead
+    // of deleting it, which would likely be a core leak here.
+    void closeEvent(QCloseEvent*) { quit_slot(); }
+
+    static void DoFileAction(QTbag*, const char*, const char*,
+        ActionType);
+
+signals:
+    void file_selected(const char*, void*);
+    void dismiss();
+
+private slots:
+    void up_slot();
+    void open_slot();
+    void new_folder_slot();
+    void new_folder_cb_slot(const char*, void*);
+    void delete_slot();
+    void delete_cb_slot(bool, void*);
+    void rename_slot();
+    void rename_cb_slot(const char*, void*);
+    void new_root_slot();
+    void root_cb_slot(const char*, void*);
+    void new_cwd_slot();
+    void new_cwd_cb_slot(const char*, void*);
+    void show_filter_slot(bool);
+    void filter_choice_slot(int);
+    void filter_change_slot(const QString&);
+    void quit_slot();
+    void help_slot();
+    void up_menu_slot(QAction*);
+    void menu_update_slot();
+    void tree_select_slot(QTreeWidgetItem*, QTreeWidgetItem*);
+    void tree_collapse_slot(QTreeWidgetItem*);
+    void tree_expand_slot(QTreeWidgetItem*);
+    void list_files_slot();
+    void list_select_slot(QListWidgetItem*, QListWidgetItem*);
+    void list_double_clicked_slot(QListWidgetItem*);
+    void flash_slot();
+    void check_slot();
+
+private:
+    void init();
+    void select_file(const char*);
+    void select_dir(QTreeWidgetItem*);
+    char *get_path(QTreeWidgetItem*, bool);
+    QTreeWidgetItem *insert_node(char*, QTreeWidgetItem*);
+    void add_dir(QTreeWidgetItem*, char*);
+    stringlist *tokenize_filter();
+    char *get_newdir(const char*);
+
+    QMenuBar    *f_menubar;
+    file_tree_widget *f_tree;
+    file_list_widget *f_list;
+    QLabel      *f_label;
+    QComboBox   *f_filter;
+    QAction     *f_Up;
+    QAction     *f_Go;
+    QAction     *f_UpMenu;
+    QAction     *f_Open;
+    QAction     *f_New;
+    QAction     *f_Delete;
+    QAction     *f_Rename;
+    QLineEdit   *f_entry;
+    QMenu       *f_filemenu;
+    QMenu       *f_upmenu;
+    QMenu       *f_listmenu;
+    QMenu       *f_helpmenu;
+    QTimer      *f_timer;
+    QTimer      *f_flasher;
+    int         f_flasher_cnt;
+    QTreeWidgetItem *f_flasher_item;
+
+    FsMode      f_config;
+    QTreeWidgetItem *f_curnode;
+    char        *f_curfile;
+    char        *f_rootdir;
+    char        *f_cwd_bak;
+    char        *f_temp_string;
+    int         f_filter_index;
+    bool        f_no_disable_go;
+
+    QIcon closed_folder_icon;
+    QIcon open_folder_icon;
+};
 
 #endif
 

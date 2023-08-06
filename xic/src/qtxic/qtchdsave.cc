@@ -79,32 +79,11 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
 
     new QTchdSaveDlg(caller, callback, arg, chdname);
 
-    /*
-    int mwid;
-    gtk_MonitorGeom(GTKmainwin::self()->Shell(), 0, 0, &mwid, 0);
-    GtkRequisition req;
-    gtk_widget_get_requisition(Cs->shell(), &req);
-    if (x + req.width > mwid)
-        x = mwid - req.width;
-    gtk_window_move(GTK_WINDOW(Cs->shell()), x, y);
-    gtk_widget_show(Cs->shell());
-    */
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
+        QTchdSaveDlg::self(), QTmainwin::self()->Viewport());
     QTchdSaveDlg::self()->show();
 }
-
-
-/*
-namespace {
-    // Drag/drop stuff, also used in PopUpInput(), PopUpEditString()
-    //
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-}
-*/
+// End of cConvert functions.
 
 
 QTchdSaveDlg *QTchdSaveDlg::instPtr;
@@ -292,6 +271,20 @@ QTchdSaveDlg::cs_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
     }
     return (false);
 }
+
+
+/*
+namespace {
+    // Drag/drop stuff, also used in PopUpInput(), PopUpEditString()
+    //
+    GtkTargetEntry target_table[] = {
+        { (char*)"TWOSTRING",   0, 0 },
+        { (char*)"STRING",      0, 1 },
+        { (char*)"text/plain",  0, 2 }
+    };
+    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+}
+*/
 
 
 // Private static GTK signal handler.

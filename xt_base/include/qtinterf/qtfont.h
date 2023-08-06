@@ -59,133 +59,134 @@ class QFontDatabase;
 class QPushButton;
 class QComboBox;
 
-namespace qtinterf
-{
-    class QTfont : public QObject, public GRfont
-    {
-        Q_OBJECT
-
-    public:
-        QTfont();
-        ~QTfont();
-
-        void initFonts();
-        GRfontType getType();
-        void setName(const char*, int);
-        const char *getName(int);
-        char *getFamilyName(int);
-        bool getFont(void*, int);
-        void registerCallback(void*, int);
-        void unregisterCallback(void*, int);
-
-        static bool stringBounds(const char*, int, int*, int*);
-        static bool stringBounds(const char*, const QWidget*, int*, int*);
-        static int stringWidth(const char*, int);
-        static int stringWidth(const char*, const QWidget*);
-        static int lineHeight(int);
-        static int lineHeight(const QWidget*);
-
-        static QTfont *self()
-        {
-            if (!instancePtr)
-                on_null_ptr();
-            return (instancePtr);
-        }
-
-    signals:
-        void fontChanged(int);
-
-    private:
-        QFont *new_font(const char*, bool);
-        void refresh(int);
-        static void on_null_ptr();
-
-        struct FcbRec
-        {
-            FcbRec(QWidget *w, FcbRec *n) { widget = w; next = n; }
-
-            QWidget *widget;
-            FcbRec *next;
-        };
-
-        struct sFrec
-        {
-            sFrec() { name = 0; font = 0; cbs = 0; }
-
-            const char *name;
-            QFont *font;
-            FcbRec *cbs;
-        } fonts[MAX_NUM_APP_FONTS];
-
-        static QTfont *instancePtr;
-    };
-
+namespace qtinterf {
     class QTbag;
-
-    class QTfontPopup : public QDialog, public GRfontPopup
-    {
-        Q_OBJECT
-
-    public:
-        QTfontPopup(QTbag*, int, void*);
-        ~QTfontPopup();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
-            {
-                if (visib) {
-                    show();
-                    raise();
-                    activateWindow();
-                }
-                else
-                    hide();
-            }
-        void register_caller(GRobject, bool=false, bool=false);
-        void popdown();
-
-        // GRfontPopup overrides
-        void set_font_name(const char*);
-        void update_label(const char*);
-
-        void select_font(const QFont*);
-        QFont *current_selection();
-        char *current_face();
-        char *current_style();
-        int current_size();
-        void add_choice(const QFont*, const char*);
-
-        // This widget will be deleted when closed with the title bar "X"
-        // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-        // not called.  The default behavior is to hide the widget instead
-        // of deleting it, which would likely be a core leak here.
-        void closeEvent(QCloseEvent*) { quit_slot(); }
-
-    signals:
-        void select_action(int, const char*, void*);
-        void dismiss();
-
-    private slots:
-        void action_slot();
-        void quit_slot();
-        void face_changed_slot(QListWidgetItem*, QListWidgetItem*);
-        void style_changed_slot(QListWidgetItem*, QListWidgetItem*);
-        void size_changed_slot(QListWidgetItem*, QListWidgetItem*);
-        void menu_choice_slot(int);
-
-    private:
-        QListWidget *face_list;
-        QListWidget *style_list;
-        QListWidget *size_list;
-        QTextEdit *preview;
-        QPushButton *apply;
-        QPushButton *quit;
-        QComboBox *menu;
-        QFontDatabase *fdb;
-
-        static QTfontPopup *activeFontSels[4];
-    };
+    class QTfont;
+    class QTfontDlg;
 }
+
+class qtinterf::QTfont : public QObject, public GRfont
+{
+    Q_OBJECT
+
+public:
+    QTfont();
+    ~QTfont();
+
+    void initFonts();
+    GRfontType getType();
+    void setName(const char*, int);
+    const char *getName(int);
+    char *getFamilyName(int);
+    bool getFont(void*, int);
+    void registerCallback(void*, int);
+    void unregisterCallback(void*, int);
+
+    static bool stringBounds(const char*, int, int*, int*);
+    static bool stringBounds(const char*, const QWidget*, int*, int*);
+    static int stringWidth(const char*, int);
+    static int stringWidth(const char*, const QWidget*);
+    static int lineHeight(int);
+    static int lineHeight(const QWidget*);
+
+    static QTfont *self()
+    {
+        if (!instancePtr)
+            on_null_ptr();
+        return (instancePtr);
+    }
+
+signals:
+    void fontChanged(int);
+
+private:
+    QFont *new_font(const char*, bool);
+    void refresh(int);
+    static void on_null_ptr();
+
+    struct FcbRec
+    {
+        FcbRec(QWidget *w, FcbRec *n) { widget = w; next = n; }
+
+        QWidget *widget;
+        FcbRec *next;
+    };
+
+    struct sFrec
+    {
+        sFrec() { name = 0; font = 0; cbs = 0; }
+
+        const char *name;
+        QFont *font;
+        FcbRec *cbs;
+    } fonts[MAX_NUM_APP_FONTS];
+
+    static QTfont *instancePtr;
+};
+
+class qtinterf::QTfontDlg : public QDialog, public GRfontPopup
+{
+    Q_OBJECT
+
+public:
+    QTfontDlg(QTbag*, int, void*);
+    ~QTfontDlg();
+
+    // GRpopup overrides
+    void set_visible(bool visib)
+        {
+            if (visib) {
+                show();
+                raise();
+                activateWindow();
+            }
+            else
+                hide();
+        }
+    void register_caller(GRobject, bool=false, bool=false);
+    void popdown();
+
+    // GRfontPopup overrides
+    void set_font_name(const char*);
+    void update_label(const char*);
+
+    void select_font(const QFont*);
+    QFont *current_selection();
+    char *current_face();
+    char *current_style();
+    int current_size();
+    void add_choice(const QFont*, const char*);
+
+    // This widget will be deleted when closed with the title bar "X"
+    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
+    // not called.  The default behavior is to hide the widget instead
+    // of deleting it, which would likely be a core leak here.
+    void closeEvent(QCloseEvent*) { quit_slot(); }
+
+signals:
+    void select_action(int, const char*, void*);
+    void dismiss();
+
+private slots:
+    void action_slot();
+    void quit_slot();
+    void face_changed_slot(QListWidgetItem*, QListWidgetItem*);
+    void style_changed_slot(QListWidgetItem*, QListWidgetItem*);
+    void size_changed_slot(QListWidgetItem*, QListWidgetItem*);
+    void menu_choice_slot(int);
+
+private:
+    QListWidget *ft_face_list;
+    QListWidget *ft_style_list;
+    QListWidget *ft_size_list;
+    QTextEdit   *ft_preview;
+    QPushButton *ft_apply;
+    QPushButton *ft_quit;
+    QComboBox   *ft_menu;
+    QFontDatabase *ft_fdb;
+
+    static QTfontDlg *activeFontSels[4];
+};
 
 #endif
 

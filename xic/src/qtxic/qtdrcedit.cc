@@ -103,9 +103,6 @@ cDRC::PopUpRules(GRobject caller, ShowMode mode)
 #define DEF_WIDTH 484
 #define DEF_HEIGHT 160
 
-namespace {
-    const char *MIDX = "midx";
-}
 
 QTdrcRuleEditDlg *QTdrcRuleEditDlg::instPtr;
 
@@ -281,6 +278,15 @@ QTdrcRuleEditDlg::~QTdrcRuleEditDlg()
         QTdev::Deselect(dim_caller);
 
     DRC()->PopUpRuleEdit(0, MODE_OFF, drNoRule, 0, 0, 0, 0);
+}
+
+
+QSize
+QTdrcRuleEditDlg::sizeHint() const
+{
+    int fw, fh;
+    QTfont::stringBounds(0, FNT_FIXED, &fw, &fh);
+    return (QSize(80*fw + 4, 32*fh));
 }
 
 
