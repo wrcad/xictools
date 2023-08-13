@@ -374,8 +374,8 @@ moc_devs.cpp: $(MOC) qtdevs.h
 	$(MOC) qtdevs.h -o moc_devs.cpp
 moc_dots.cpp: $(MOC) qtdots.h
 	$(MOC) qtdots.h -o moc_dots.cpp
-moc_xrcedit.cpp: $(MOC) qtxrcedit.h
-	$(MOC) qtxrcedit.h -o moc_xrcedit.cpp
+moc_drcedit.cpp: $(MOC) qtdrcedit.h
+	$(MOC) qtdrcedit.h -o moc_drcedit.cpp
 moc_drclim.cpp: $(MOC) qtdrclim.h
 	$(MOC) qtdrclim.h -o moc_drclim.cpp
 moc_drcrun.cpp: $(MOC) qtdrcrun.h

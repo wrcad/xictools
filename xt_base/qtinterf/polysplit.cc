@@ -43,13 +43,12 @@
 #include <algorithm>
 #include <math.h>
 #include <limits.h>
+//#include <stdio.h>
 
-  #include <stdio.h>
 
 //
 // The following code performs trapezoid decomp for ploygons.
 //
-
 
 using namespace qtinterf;
 

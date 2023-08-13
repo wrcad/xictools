@@ -50,8 +50,7 @@
 #include "qtactivity.h"
 
 
-QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode) :
-    QDialog(owner ? owner->Shell() : 0)
+QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode)
 {
     p_parent = owner;
     pg_gb_in = 0;
@@ -74,63 +73,68 @@ QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode) :
     setWindowTitle(tr("Progress"));
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QVBoxLayout *form = new QVBoxLayout(this);
-    form->setMargin(4);
-    form->setSpacing(2);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(4);
+    vbox->setSpacing(2);
 
     if (mode == prgFileop) {
-        QHBoxLayout *hbox = new QHBoxLayout(0);
+        QHBoxLayout *hbox = new QHBoxLayout();
+        hbox->setMargin(0);
         hbox->setSpacing(2);
-        form->addLayout(hbox);
-        pg_gb_in = new QGroupBox(QString(tr("Input")), this);
-        pg_label_in = new QLabel("", pg_gb_in);
-        QVBoxLayout *vbox = new QVBoxLayout(pg_gb_in);
-        vbox->setMargin(4);
-        vbox->setSpacing(2);
-        vbox->addSpacing(10);
-        vbox->addWidget(pg_label_in);
+        vbox->addLayout(hbox);
+
+        pg_gb_in = new QGroupBox(tr("Input"));
         hbox->addWidget(pg_gb_in);
+        QVBoxLayout *vb = new QVBoxLayout(pg_gb_in);
+        vb->setMargin(2);
+        vb->setSpacing(2);
+        pg_label_in = new QLabel("");
+        vb->addWidget(pg_label_in);
+        vb->addSpacing(10);
 
-        pg_gb_out = new QGroupBox(QString(tr("Output")), this);
-        pg_label_out = new QLabel("", pg_gb_out);
-        vbox = new QVBoxLayout(pg_gb_out);
-        vbox->setMargin(4);
-        vbox->setSpacing(2);
-        vbox->addSpacing(10);
-        vbox->addWidget(pg_label_out);
+        pg_gb_out = new QGroupBox(tr("Output"));
         hbox->addWidget(pg_gb_out);
+        vb = new QVBoxLayout(pg_gb_out);
+        vb->setMargin(2);
+        vb->setSpacing(2);
+        pg_label_out = new QLabel("");
+        vb->addWidget(pg_label_out);
+        vb->addSpacing(10);
 
-        pg_gb_info = new QGroupBox(QString(tr("Info")), this);
-        pg_te_info = new QTextEdit(pg_gb_info);
+        pg_gb_info = new QGroupBox(tr("Info"));
+        vbox->addWidget(pg_gb_info);
+        vb = new QVBoxLayout(pg_gb_info);
+        vb->setMargin(2);
+        vb->setSpacing(2);
+        vb->addSpacing(10);
+        pg_te_info = new QTextEdit();
         pg_te_info->setReadOnly(true);
-        vbox = new QVBoxLayout(pg_gb_info);
-        vbox->setMargin(4);
-        vbox->setSpacing(2);
-        vbox->addSpacing(10);
-        vbox->addWidget(pg_te_info);
-        form->addWidget(pg_gb_info);
+        vb->addWidget(pg_te_info);
     }
 
     pg_gb_etc = new QGroupBox(this);
-    pg_label_etc = new QLabel("", pg_gb_etc);
-    QVBoxLayout *vbox = new QVBoxLayout(pg_gb_etc);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(pg_label_etc);
-    form->addWidget(pg_gb_etc);
+    vbox->addWidget(pg_gb_etc);
+    QVBoxLayout *vb = new QVBoxLayout(pg_gb_etc);
+    vb->setMargin(2);
+    vb->setSpacing(2);
+    pg_label_etc = new QLabel("");
+    vb->addWidget(pg_label_etc);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
+    hbox->setMargin(0);
     hbox->setSpacing(2);
-    form->addLayout(hbox);
-    pg_abort = new QPushButton("Abort", this);
-    hbox->addWidget(pg_abort);
-    pg_cancel = new QPushButton("Dismiss", this);
-    hbox->addWidget(pg_cancel);
-    pg_pbar = new QTactivity(this);
-    hbox->addWidget(pg_pbar);
+    vbox->addLayout(hbox);
 
-    connect(pg_abort, SIGNAL(clicked()), this, SLOT(abort_slot()));
-    connect(pg_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    pg_abort = new QPushButton(tr("Abort"));
+    hbox->addWidget(pg_abort);
+    connect(pg_abort, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
+
+    pg_cancel = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(pg_cancel);
+    connect(pg_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+
+    pg_pbar = new QTactivity();
+    hbox->addWidget(pg_pbar);
 }
 
 
@@ -241,15 +245,15 @@ QTprogressDlg::finished()
 
 
 void
-QTprogressDlg::quit_slot()
+QTprogressDlg::abort_btn_slot()
 {
-    delete this;
+    emit abort();
 }
 
 
 void
-QTprogressDlg::abort_slot()
+QTprogressDlg::dismiss_btn_slot()
 {
-    emit abort();
+    delete this;
 }
 

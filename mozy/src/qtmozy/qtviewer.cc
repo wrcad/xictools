@@ -221,8 +221,8 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
         this, SLOT(press_event_slot(QMouseEvent*)));
     connect(v_darea, SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(release_event_slot(QMouseEvent*)));
-    connect(v_darea, SIGNAL(move_event(QMouseEvent*)),
-        this, SLOT(move_event_slot(QMouseEvent*)));
+    connect(v_darea, SIGNAL(motion_event(QMouseEvent*)),
+        this, SLOT(motion_event_slot(QMouseEvent*)));
 
     v_timers = 0;
 
@@ -1533,7 +1533,7 @@ QTviewer::release_event_slot(QMouseEvent *ev)
 
 
 void
-QTviewer::move_event_slot(QMouseEvent *ev)
+QTviewer::motion_event_slot(QMouseEvent *ev)
 {
     QRect r = contentsRect();
     QScrollBar *sb = horizontalScrollBar();

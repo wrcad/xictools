@@ -57,6 +57,8 @@ enum TBH_type { TBH_CM, TBH_DB, TBH_PD, TBH_SH, TBH_SD, TBH_end };
 //
 struct sToolbar
 {
+#define NEW_TBIF
+#ifdef NEW_TBIF
     virtual ~sToolbar() { }
 
     // timer/idle utilities
@@ -66,33 +68,92 @@ struct sToolbar
     virtual bool RemoveTimeoutProc(int) = 0;
     virtual void RegisterBigForeignWindow(unsigned int) = 0;
 
-    // command defaults popup
+    // command defaults dialog
+    virtual void PopUpCmdConfig(ShowMode, int, int) = 0;
+
+    // color control dialog
+    virtual void PopUpColors(ShowMode, int, int) = 0;
+    virtual void UpdateColors(const char*) = 0;
+    virtual void LoadResourceColors() = 0;
+
+    // debugging dialog
+    virtual void PopUpDebugDefs(ShowMode, int, int) = 0;
+
+    // plot defaults dialog
+    virtual void PopUpPlotDefs(ShowMode, int, int) = 0;
+
+    // shell defaults dialog
+    virtual void PopUpShellDefs(ShowMode, int, int) = 0;
+
+    // simulation defaults dialog
+    virtual void PopUpSimDefs(ShowMode, int, int) = 0;
+
+    // misc listing panels and dialogs
+    virtual void SuppressUpdate(bool) = 0;
+    virtual void PopUpPlots(ShowMode, int, int) = 0;
+    virtual void UpdatePlots(int) = 0;
+    virtual void PopUpVectors(ShowMode, int, int) = 0;
+    virtual void UpdateVectors(int) = 0;
+    virtual void PopUpCircuits(ShowMode, int, int) = 0;
+    virtual void UpdateCircuits() = 0;
+    virtual void PopUpFiles(ShowMode, int, int) = 0;
+    virtual void UpdateFiles() = 0;
+    virtual void PopUpTrace(ShowMode, int, int) = 0;
+    virtual void UpdateTrace() = 0;
+    virtual void PopUpVariables(ShowMode, int, int) = 0;
+    virtual void UpdateVariables() = 0;
+
+    // main window and a few more
+    virtual void Toolbar() = 0;
+    virtual void PopUpToolbar(ShowMode, int, int) = 0;
+    virtual void PopUpBugRpt(ShowMode, int, int) = 0;
+    virtual void PopUpFont(ShowMode, int, int) = 0;
+    virtual void PopUpTBhelp(ShowMode, GRobject, GRobject, TBH_type) = 0;
+    virtual void PopUpSpiceErr(bool, const char*) = 0;
+    virtual void PopUpSpiceMessage(const char*, int, int) = 0;
+    virtual void UpdateMain(ResUpdType) = 0;
+    virtual void CloseGraphicsConnection() = 0;
+
+    virtual void PopUpInfo(const char*) = 0;
+    virtual void PopUpNotes() = 0;
+#else
+    //XXX FIXME update GTK, uses this
+    virtual ~sToolbar() { }
+
+    // timer/idle utilities
+    virtual int RegisterIdleProc(int(*)(void*), void*) = 0;
+    virtual bool RemoveIdleProc(int) = 0;
+    virtual int RegisterTimeoutProc(int, int(*)(void*), void*) = 0;
+    virtual bool RemoveTimeoutProc(int) = 0;
+    virtual void RegisterBigForeignWindow(unsigned int) = 0;
+
+    // command defaults dialog
     virtual void PopUpCmdConfig(int, int) = 0;
     virtual void PopDownCmdConfig() = 0;
 
-    // color control popup
+    // color control dialog
     virtual void PopUpColors(int, int) = 0;
     virtual void PopDownColors() = 0;
     virtual void UpdateColors(const char*) = 0;
     virtual void LoadResourceColors() = 0;
 
-    // debugging popup
+    // debugging dialog
     virtual void PopUpDebugDefs(int, int) = 0;
     virtual void PopDownDebugDefs() = 0;
 
-    // plot defaults popup
+    // plot defaults dialog
     virtual void PopUpPlotDefs(int, int) = 0;
     virtual void PopDownPlotDefs() = 0;
 
-    // shell defaults popup
+    // shell defaults dialog
     virtual void PopUpShellDefs(int, int) = 0;
     virtual void PopDownShellDefs() = 0;
 
-    // simulation defaults popup
+    // simulation defaults dialog
     virtual void PopUpSimDefs(int, int) = 0;
     virtual void PopDownSimDefs() = 0;
 
-    // misc listing popups
+    // misc listing panels and dialogs
     virtual void SuppressUpdate(bool) = 0;
     virtual void PopUpPlots(int, int) = 0;
     virtual void PopDownPlots() = 0;
@@ -113,7 +174,7 @@ struct sToolbar
     virtual void PopDownVariables() = 0;
     virtual void UpdateVariables() = 0;
 
-    // main popup and a few more
+    // main window and a few more
     virtual void Toolbar() = 0;
     virtual void PopUpBugRpt(int, int) = 0;
     virtual void PopDownBugRpt() = 0;
@@ -128,8 +189,10 @@ struct sToolbar
 
     virtual void PopUpInfo(const char*) = 0;
     virtual void PopUpNotes() = 0;
+#endif
 };
 extern sToolbar *ToolBar();
+
 
 //
 // Error message handling/display base class.

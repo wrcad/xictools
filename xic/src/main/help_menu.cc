@@ -162,13 +162,15 @@ using namespace help_menu;
 void
 cMain::QuitHelp()
 {
+//XXX
+printf("QiotHelp\n");
     if (HelpCmd)
         HelpCmd->esc();
 }
 
 
-// The Help function.  Pointing at buttons or areas of the screen
-// produces pop-up descriptions.
+// The Help function.  Clicking on buttons or areas of the screen
+// produces pop-up descriptions.  This is a mode, press Esc to exit.
 //
 void
 help_menu::M_Help(CmdDesc *cmd)

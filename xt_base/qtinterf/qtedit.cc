@@ -302,7 +302,7 @@ wb_shell = this;
         ed_text_editor->setPlainText(file_or_string);
 
     ed_textChanged = false;
-    connect(ed_text_editor, SIGNAL(ed_textChanged()),
+    connect(ed_text_editor, SIGNAL(textChanged()),
         this, SLOT(text_changed_slot()));
 
     ed_savedAs = 0;

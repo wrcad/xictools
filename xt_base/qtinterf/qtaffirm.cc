@@ -65,16 +65,14 @@ namespace qtinterf
     };
 }
 
-QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str,
-    void *arg) : QDialog(owner ? owner->Shell() : 0)
+QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str)
 {
     p_parent = owner;
-    p_cb_arg = arg;
 
     if (owner)
         owner->MonitorAdd(this);
 
-    setWindowTitle(QString(tr("Yes or No?")));
+    setWindowTitle(QString(tr("Affirm?")));
     setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -86,23 +84,23 @@ QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str,
     vbox->setMargin(4);
     vbox->setSpacing(2);
 
-    af_label = new text_edit();
-    vbox->addWidget(af_label);
-    af_label->setReadOnly(true);
-    af_label->setPlainText(question_str);
+    text_edit *tarea = new text_edit();
+    vbox->addWidget(tarea);
+    tarea->setReadOnly(true);
+    tarea->setPlainText(question_str);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     vbox->addLayout(hbox);
     hbox->setMargin(0);
     hbox->setSpacing(2);
 
-    af_yesbtn = new QPushButton(tr("Yes"));
-    hbox->addWidget(af_yesbtn);
-    connect(af_yesbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
+    QPushButton *btn = new QPushButton(tr("Affirm"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(affirm_btn_slot()));
 
-    af_nobtn = new QPushButton(tr("No"));
-    hbox->addWidget(af_nobtn);
-    connect(af_nobtn, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    btn = new QPushButton(tr("Cancel"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 }
 
 
@@ -176,7 +174,7 @@ QTaffirmDlg::popdown()
 
 
 void
-QTaffirmDlg::action_slot()
+QTaffirmDlg::affirm_btn_slot()
 {
     if (p_callback)
         (*p_callback)(true, p_cb_arg);
@@ -186,7 +184,7 @@ QTaffirmDlg::action_slot()
 
 
 void
-QTaffirmDlg::quit_slot()
+QTaffirmDlg::cancel_btn_slot()
 {
     if (p_callback)
         (*p_callback)(false, p_cb_arg);

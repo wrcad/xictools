@@ -83,31 +83,22 @@ public:
     void set_transient_message(const char*);
     QString get_target();
 
-    // This widget will be deleted when closed with the title bar "X"
-    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-    // not called.  The default behavior is to hide the widget instead
-    // of deleting it, which would likely be a core leak here.
-    void closeEvent(QCloseEvent*)   { quit_slot(); }
-
 signals:
     void search_down();
     void search_up();
     void ignore_case(bool);
 
 private slots:
-    void quit_slot();
-    void down_slot();
-    void up_slot();
-    void ign_case_slot(bool);
+    void down_btn_slot();
+    void up_btn_slot();
+    void icase_btn_slot(bool);
+    void dismiss_btn_slot();
     void timeout_slot();
 
 private:
     QLabel      *se_label;
     QLineEdit   *se_edit;
-    QPushButton *se_up;
-    QPushButton *se_dn;
     QCheckBox   *se_nc;
-    QPushButton *se_cancel;
     const char  *se_label_string;
     QTimer      se_timer;
 };

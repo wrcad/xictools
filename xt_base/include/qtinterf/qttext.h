@@ -100,15 +100,6 @@ public:
     void set_btn2_state(bool);
     bool update(const char*);
 
-//XXX
-/*
-    // This widget will be deleted when closed with the title bar "X"
-    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-    // not called.  The default behavior is to hide the widget instead
-    // of deleting it, which would likely be a core leak here.
-    void closeEvent(QCloseEvent*)   { quit_slot(); }
-*/
-
 private slots:
     void save_btn_slot(bool);
     void showlog_btn_slot();
@@ -122,9 +113,7 @@ private:
 
     QTextEdit   *tx_tbox;
     QPushButton *tx_save;
-    QPushButton *tx_showlog;
     QPushButton *tx_activate;
-    QPushButton *tx_cancel;
     QTledDlg    *tx_save_pop;
     QTmsgDlg    *tx_msg_pop;
     PuType      tx_which;

@@ -63,8 +63,7 @@ class qtinterf::QTmcolDlg : public QDialog, public GRmcolPopup,
     Q_OBJECT
 
 public:
-    QTmcolDlg(QTbag*, stringlist*, const char*, const char**,
-        int, void*);
+    QTmcolDlg(QTbag*, stringlist*, const char*, const char**, int);
     ~QTmcolDlg();
 
     // GRpopup overrides

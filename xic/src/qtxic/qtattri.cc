@@ -50,6 +50,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
+#include <QBitmap>
 
 
 //--------------------------------------------------------------------
@@ -75,34 +76,43 @@ namespace {
         0
     };
 
-    // Small cross-hair cursor
-#define cursor_width 16
-#define cursor_height 16
-#define cursor_x_hot 8
-#define cursor_y_hot 7
+    // Cursors.
+    // b=1 m=1 black
+    // b=0 m=1 white
+    // b=0 m=0 transparent
+    // b=1 m=1 undefined
 
-    char cursorCross_bits[] = {
-        char(0x00), char(0x01), char(0x00), char(0x01),
-        char(0x00), char(0x01), char(0x00), char(0x01),
-        char(0x00), char(0x01), char(0x00), char(0x01),
-        char(0x00), char(0x00), char(0x7e), char(0xfc),
-        char(0x00), char(0x00), char(0x00), char(0x01),
-        char(0x00), char(0x01), char(0x00), char(0x01),
-        char(0x00), char(0x01), char(0x00), char(0x01),
-        char(0x00), char(0x01), char(0x00), char(0x00) };
-    char cursorCross_mask[] = {
-        char(0x80), char(0x03), char(0x80), char(0x03),
-        char(0x80), char(0x03), char(0x80), char(0x03),
-        char(0x80), char(0x03), char(0x80), char(0x03),
-        char(0x7e), char(0xfc), char(0x7e), char(0xfc),
-        char(0x7e), char(0xfc), char(0x80), char(0x03),
-        char(0x80), char(0x03), char(0x80), char(0x03),
-        char(0x80), char(0x03), char(0x80), char(0x03),
-        char(0x80), char(0x03), char(0x00), char(0x00) };
+    // Legacy small cross-hair cursor.
+#define cursor_cross_width 16
+#define cursor_cross_height 16
+#define cursor_cross_x_hot 8
+#define cursor_cross_y_hot 7
+    unsigned char cursor_cross_bits[] = {
+        0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,
+        0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x7e, 0xfc,
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,
+        0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00 };
+    unsigned char cursor_cross_mask[] = {
+        0x80, 0x03, 0x80, 0x03, 0x80, 0x03, 0x80, 0x03,
+        0x80, 0x03, 0x80, 0x03, 0x7e, 0xfc, 0x7e, 0xfc,
+        0x7e, 0xfc, 0x80, 0x03, 0x80, 0x03, 0x80, 0x03,
+        0x80, 0x03, 0x80, 0x03, 0x80, 0x03, 0x00, 0x00 };
 
-//    GdkCursor *left_cursor;
-//    GdkCursor *right_cursor;
-//    GdkCursor *busy_cursor;
+    // Right arrow, QT seems not to have one as stock.
+#define cursor_right_width 10
+#define cursor_right_height 16
+#define cursor_right_x_hot 7
+#define cursor_right_y_hot 0
+    unsigned char cursor_right_bits[] = {
+        0x00, 0x01, 0x00, 0x01, 0x80, 0x01, 0xc0, 0x01,
+        0xe0, 0x01, 0xf0, 0x01, 0xf8, 0x01, 0xfc, 0x01,
+        0xfe, 0x01, 0xf0, 0x01, 0xb0, 0x01, 0x18, 0x00,
+        0x18, 0x00, 0x0c, 0x00, 0x0c, 0x00, 0x00, 0x00};
+    unsigned char cursor_right_mask[] = {
+        0x00, 0x03, 0x80, 0x03, 0xc0, 0x03, 0xe0, 0x03,
+        0xf0, 0x03, 0xf8, 0x03, 0xfc, 0x03, 0xfe, 0x03,
+        0xff, 0x03, 0xff, 0x03, 0xf8, 0x03, 0xbc, 0x03,
+        0x3c, 0x00, 0x1e, 0x00, 0x1e, 0x00, 0x0c, 0x00};
 }
 
 
@@ -112,11 +122,9 @@ CursorType
 cMain::GetCursor()
 {
     return ((CursorType)0);
-    /*
     if (!QTmainwin::self())
         return (CursorDefault);
     return ((CursorType)QTmainwin::self()->Gbag()->get_cursor_type());
-    */
 }
 
 
@@ -130,7 +138,6 @@ cMain::GetCursor()
 void
 cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
 {
-#ifdef notdef
     if (!force && t ==
             (CursorType)QTmainwin::self()->Gbag()->get_cursor_type() &&
             t != CursorCross)
@@ -146,263 +153,82 @@ cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
         // QT default cursor.
         if (wd) {
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
-#if GTK_CHECK_VERSION(3,0,0)
-            if (w && w->GetDrawable()->get_window()) {
-                if (cross_cursor) {
-                    cross_cursor->revert_in_window(
-                        w->GetDrawable()->get_window());
-                }
-                gdk_window_set_cursor(w->GetDrawable()->get_window(), 0);
-            }
-#else
-            if (w && w->Window()) {
-                if (!GDK_IS_PIXMAP(w->Window()))
-                    gdk_window_set_cursor(w->Window(), 0);
-            }
-#endif
+            w->Viewport()->setCursor(Qt::ArrowCursor);
             return;
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
-            GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
-#if GTK_CHECK_VERSION(3,0,0)
-            if (w && w->GetDrawable()->get_window()) {
-                if (cross_cursor) {
-                    cross_cursor->revert_in_window(
-                        w->GetDrawable()->get_window());
-                }
-                gdk_window_set_cursor(w->GetDrawable()->get_window(), 0);
-            }
-#else
-            if (w && w->Window()) {
-                if (!GDK_IS_PIXMAP(w->Window()))
-                    gdk_window_set_cursor(w->Window(), 0);
-            }
-#endif
+            QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
+            w->Viewport()->setCursor(Qt::ArrowCursor);
         }
     }
     else if (t == CursorCross) {
         // Legacy cross cursor.
+        QBitmap bits_bm =
+            QBitmap::fromData(QSize(cursor_cross_width, cursor_cross_height),
+            cursor_cross_bits, QImage::Format_MonoLSB);
+        QBitmap bits_mask =
+            QBitmap::fromData(QSize(cursor_cross_width, cursor_cross_height),
+            cursor_cross_mask, QImage::Format_MonoLSB);
+        QCursor cross_cursor(bits_bm, bits_mask,
+            cursor_cross_x_hot, cursor_cross_y_hot);
         if (wd) {
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
-#if GTK_CHECK_VERSION(3,0,0)
-            if (w && w->GetDrawable()->get_window()) {
-                if (!cross_cursor) {
-                    GdkColor foreg, backg;
-                    backg.pixel = w->GetBackgPixel();
-                    foreg.pixel = w->GetForegPixel();
-                    gtk_QueryColor(&backg);
-                    gtk_QueryColor(&foreg);
-                    cross_cursor = new ndkCursor(w->GetDrawable()->get_window(),
-                        cursorCross_bits, cursorCross_mask,
-                        cursor_width, cursor_height, cursor_x_hot, cursor_y_hot,
-                        &foreg, &backg);
-                }
-                cross_cursor->set_in_window(w->GetDrawable()->get_window());
-            }
-#else
-            if (w && w->Window()) {
-                if (!GDK_IS_PIXMAP(w->Window())) {
-                    GdkWindow *win = w->Window();
-                    GdkPixmap *data = gdk_bitmap_create_from_data(win,
-                        cursorCross_bits, cursor_width, cursor_height);
-                    GdkPixmap *mask = gdk_bitmap_create_from_data(win,
-                        cursorCross_mask, cursor_width, cursor_height);
-
-                    GdkColor foreg, backg;
-                    backg.pixel = w->GetBackgPixel();
-                    foreg.pixel = w->GetForegPixel();
-                    gtk_QueryColor(&backg);
-                    gtk_QueryColor(&foreg);
-                    GdkCursor *cursor = gdk_cursor_new_from_pixmap(data, mask,
-                        &foreg, &backg, cursor_x_hot, cursor_y_hot);
-                    g_object_unref(data);
-                    g_object_unref(mask);
-                    gdk_window_set_cursor(win, cursor);
-                    gdk_cursor_unref(cursor);
-                }
-            }
-#endif
+            w->Viewport()->setCursor(cross_cursor);
             return;
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
-#if GTK_CHECK_VERSION(3,0,0)
-            if (w && w->GetDrawable()->get_window()) {
-                if (!cross_cursor) {
-                    GdkColor foreg, backg;
-                    backg.pixel = w->GetBackgPixel();
-                    foreg.pixel = w->GetForegPixel();
-                    gtk_QueryColor(&backg);
-                    gtk_QueryColor(&foreg);
-                    cross_cursor = new ndkCursor(w->GetDrawable()->get_window(),
-                        cursorCross_bits, cursorCross_mask,
-                        cursor_width, cursor_height, cursor_x_hot, cursor_y_hot,
-                        &foreg, &backg);
-                }
-                cross_cursor->set_in_window(w->GetDrawable()->get_window());
-            }
-#else
-            if (w && w->Window()) {
-                if (!GDK_IS_PIXMAP(w->Window())) {
-                    GdkWindow *win = w->Window();
-                    GdkPixmap *data = gdk_bitmap_create_from_data(win,
-                        cursorCross_bits, cursor_width, cursor_height);
-                    GdkPixmap *mask = gdk_bitmap_create_from_data(win,
-                        cursorCross_mask, cursor_width, cursor_height);
-
-                    GdkColor foreg, backg;
-                    backg.pixel = w->GetBackgPixel();
-                    foreg.pixel = w->GetForegPixel();
-                    gtk_QueryColor(&backg);
-                    gtk_QueryColor(&foreg);
-                    GdkCursor *cursor = gdk_cursor_new_from_pixmap(data, mask,
-                        &foreg, &backg, cursor_x_hot, cursor_y_hot);
-                    g_object_unref(data);
-                    g_object_unref(mask);
-                    gdk_window_set_cursor(win, cursor);
-                    gdk_cursor_unref(cursor);
-                }
-            }
-#endif
+            w->Viewport()->setCursor(cross_cursor);
         }
     }
     else if (t == CursorLeftArrow) {
         // Stock left pointer cursor.
-        if (!left_cursor)
-            left_cursor = gdk_cursor_new(GDK_LEFT_PTR);
         if (wd) {
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
-#if GTK_CHECK_VERSION(3,0,0)
-            if (w && w->GetDrawable()->get_window()) {
-                if (cross_cursor) {
-                    cross_cursor->revert_in_window(
-                        w->GetDrawable()->get_window());
-                }
-                gdk_window_set_cursor(w->GetDrawable()->get_window(),
-                    left_cursor);
-            }
-#else
-            if (w && w->Window()) {
-                if (!GDK_IS_PIXMAP(w->Window()))
-                    gdk_window_set_cursor(w->Window(), left_cursor);
-            }
-#endif
+            w->Viewport()->setCursor(Qt::ArrowCursor);
             return;
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
-#if GTK_CHECK_VERSION(3,0,0)
-            if (w && w->GetDrawable()->get_window()) {
-                if (cross_cursor) {
-                    cross_cursor->revert_in_window(
-                        w->GetDrawable()->get_window());
-                }
-                gdk_window_set_cursor(w->GetDrawable()->get_window(),
-                    left_cursor);
-            }
-#else
-            if (w && w->Window()) {
-                if (!GDK_IS_PIXMAP(w->Window()))
-                    gdk_window_set_cursor(w->Window(), left_cursor);
-            }
-#endif
+            w->Viewport()->setCursor(Qt::ArrowCursor);
         }
     }
     else if (t == CursorRightArrow) {
-        // Stock right pointer cursor.
-        if (!right_cursor)
-            right_cursor = gdk_cursor_new(GDK_RIGHT_PTR);
+        QBitmap bits_bm =
+            QBitmap::fromData(QSize(cursor_right_width, cursor_right_height),
+            cursor_right_bits, QImage::Format_MonoLSB);
+        QBitmap bits_mask =
+            QBitmap::fromData(QSize(cursor_right_width, cursor_right_height),
+            cursor_right_mask, QImage::Format_MonoLSB);
+        QCursor right_cursor(bits_bm, bits_mask,
+            cursor_right_x_hot, cursor_right_y_hot);
         if (wd) {
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
-#if GTK_CHECK_VERSION(3,0,0)
-            if (w && w->GetDrawable()->get_window()) {
-                if (cross_cursor) {
-                    cross_cursor->revert_in_window(
-                        w->GetDrawable()->get_window());
-                }
-                gdk_window_set_cursor(w->GetDrawable()->get_window(),
-                    right_cursor);
-            }
-#else
-            if (w && w->Window()) {
-                if (!GDK_IS_PIXMAP(w->Window()))
-                    gdk_window_set_cursor(w->Window(), right_cursor);
-            }
-#endif
+            w->Viewport()->setCursor(right_cursor);
             return;
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
-#if GTK_CHECK_VERSION(3,0,0)
-            if (w && w->GetDrawable()->get_window()) {
-                if (cross_cursor) {
-                    cross_cursor->revert_in_window(
-                        w->GetDrawable()->get_window());
-                }
-                gdk_window_set_cursor(w->GetDrawable()->get_window(),
-                    right_cursor);
-            }
-#else
-            if (w && w->Window()) {
-                if (!GDK_IS_PIXMAP(w->Window()))
-                    gdk_window_set_cursor(w->Window(), right_cursor);
-            }
-#endif
+            w->Viewport()->setCursor(right_cursor);
         }
     }
     else if (t == CursorBusy) {
         // Stock watch (busy) cursor.
-        if (!busy_cursor)
-            busy_cursor = gdk_cursor_new(GDK_WATCH);
         if (wd) {
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
-#if GTK_CHECK_VERSION(3,0,0)
-            if (w && w->GetDrawable()->get_window()) {
-                if (cross_cursor) {
-                    cross_cursor->revert_in_window(
-                        w->GetDrawable()->get_window());
-                }
-                gdk_window_set_cursor(w->GetDrawable()->get_window(),
-                    busy_cursor);
-            }
-#else
-            if (w && w->Window()) {
-                if (!GDK_IS_PIXMAP(w->Window()))
-                    gdk_window_set_cursor(w->Window(), busy_cursor);
-            }
-#endif
+            w->Viewport()->setCursor(Qt::WaitCursor);
             return;
         }
         WDgen wgen(WDgen::MAIN, WDgen::ALL);
         while ((wd = wgen.next()) != 0) {
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
-#if GTK_CHECK_VERSION(3,0,0)
-            if (w && w->GetDrawable()->get_window()) {
-                if (cross_cursor) {
-                    cross_cursor->revert_in_window(
-                        w->GetDrawable()->get_window());
-                }
-                gdk_window_set_cursor(w->GetDrawable()->get_window(),
-                    busy_cursor);
-                // Force immediate display of busy cursor.
-                QTpkg::self()->CheckForInterrupt();
-            }
-#else
-            if (w && w->Window()) {
-                if (!GDK_IS_PIXMAP(w->Window())) {
-                    gdk_window_set_cursor(w->Window(), busy_cursor);
-                    // Force immediate display of busy cursor.
-                    QTpkg::self()->CheckForInterrupt();
-                }
-            }
-#endif
+            w->Viewport()->setCursor(Qt::WaitCursor);
         }
     }
-#endif // notdef
 }
 
 
@@ -872,10 +698,10 @@ QTattributesDlg::markcntr_btn_slot(int state)
 void
 QTattributesDlg::abprop_btn_slot(int state)
 {
-        if (state)
-            CDvdb()->setVariable(VA_EraseBehindProps, "");
-        else
-            CDvdb()->clearVariable(VA_EraseBehindProps);
+    if (state)
+        CDvdb()->setVariable(VA_EraseBehindProps, "");
+    else
+        CDvdb()->clearVariable(VA_EraseBehindProps);
 }
 
 

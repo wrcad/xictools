@@ -51,8 +51,7 @@
 
 
 QTledDlg::QTledDlg(QTbag *owner, const char *label_str,
-    const char *initial_str, const char *action_str, bool mult) :
-    QDialog(owner ? owner->Shell() : 0)
+    const char *initial_str, const char *action_str, bool mult)
 {
     p_parent = owner;
     ed_multiline = mult;
@@ -65,40 +64,46 @@ QTledDlg::QTledDlg(QTbag *owner, const char *label_str,
     setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
+    QGroupBox *gb = new QGroupBox();
+    vbox->addWidget(gb);
+
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(0);
+    hb->setSpacing(2);
+
     if (!label_str)
         label_str = "Enter Filename";
-    ed_gbox = new QGroupBox(this);
-    ed_label = new QLabel(label_str, ed_gbox);
-    QVBoxLayout *vbox = new QVBoxLayout(ed_gbox);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(ed_label);
+    ed_label = new QLabel(tr(label_str));
+    hb->addWidget(ed_label);
 
     if (ed_multiline) {
-        ed_edit = new QTextEdit(this);
+        ed_edit = new QTextEdit();
         dynamic_cast<QTextEdit*>(ed_edit)->setPlainText(initial_str);
     }
     else {
-        ed_edit = new QLineEdit(this);
+        ed_edit = new QLineEdit();
         dynamic_cast<QLineEdit*>(ed_edit)->setText(initial_str);
     }
+    vbox->addWidget(ed_edit);
+
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
 
     if (!action_str)
         action_str = "Apply";
-    ed_ok = new QPushButton(action_str, this);
-    connect(ed_ok, SIGNAL(clicked()), this, SLOT(action_slot()));
-    ed_cancel = new QPushButton(tr("Cancel"), this);
-    connect(ed_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    QPushButton *btn = new QPushButton(tr(action_str));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(action_slot()));
 
-    vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(ed_gbox);
-    vbox->addWidget(ed_edit);
-    QHBoxLayout *hbox = new QHBoxLayout(0);
-    vbox->addLayout(hbox);
-    hbox->addWidget(ed_ok);
-    hbox->addWidget(ed_cancel);
+    btn = new QPushButton(tr("Cancel"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 }
 
 
@@ -133,15 +138,17 @@ QTledDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
         if (o) {
             if (o->isWidgetType()) {
                 QPushButton *btn = dynamic_cast<QPushButton*>(o);
-                if (btn)
+                if (btn) {
                     connect(btn, SIGNAL(clicked()),
-                        this, SLOT(quit_slot()));
+                        this, SLOT(cancel_btn_slot()));
+                }
             }
             else {
                 QAction *a = dynamic_cast<QAction*>(o);
-                if (a)
+                if (a) {
                     connect(a, SIGNAL(triggered()),
-                        this, SLOT(quit_slot()));
+                        this, SLOT(cancel_btn_slot()));
+                }
             }
         }
     }
@@ -234,8 +241,8 @@ QTledDlg::action_slot()
 
 
 void
-QTledDlg::quit_slot()
+QTledDlg::cancel_btn_slot()
 {
-    deleteLater();
+    delete this;
 }
 

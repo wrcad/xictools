@@ -287,19 +287,12 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     set_sens(false);
     pl_refmenu->setCurrentIndex(ED()->instanceRef());
 
-    // Give focus to menu, otherwise cancel button may get focus, and
-    // Enter (intending to change reference corner) will pop down.
-//    gtk_widget_set_can_focus(pl_masterbtn, true);
-//    gtk_window_set_focus(GTK_WINDOW(pl_popup), pl_masterbtn);
-
     // drop site
     setAcceptDrops(true);
-    connect(this, SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(this, SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_slot(QDropEvent*)));
 
-    master_menu_slot(0);
+    // Delay popping the string editor until we know where to put it!
+    if (!noprompt)
+        QTdev::self()->AddTimer(100, pl_timeout, 0);
 }
 
 
@@ -369,8 +362,6 @@ QTplaceDlg::pl_new_cb(const char *string, void*)
         delete [] aname;
         delete [] cname;
     }
-    // give focus to main window
-//XXX    GTKdev::SetFocus(GTKmainwin::self()->Shell());
     return (ESTR_DN);
 }
 
@@ -410,6 +401,58 @@ QTplaceDlg::rebuild_menu()
 }
 
 
+// Override QWidget virtual function.
+void
+QTplaceDlg::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasFormat("text/twostring") ||
+            ev->mimeData()->hasFormat("text/cellname") ||
+            ev->mimeData()->hasFormat("text/string") ||
+            ev->mimeData()->hasFormat("text/plain")) {
+        ev->acceptProposedAction();
+    }
+}
+
+
+// Override QWidget virtual function.
+void
+QTplaceDlg::dropEvent(QDropEvent *ev)
+{
+    const char *fmt = 0;
+    if (ev->mimeData()->hasFormat("text/twostring"))
+        fmt = "text/twostring";
+    else if (ev->mimeData()->hasFormat("text/cellname"))
+        fmt = "text/cellname";
+    else if (ev->mimeData()->hasFormat("text/string"))
+        fmt = "text/string";
+    else if (ev->mimeData()->hasFormat("text/plain"))
+        fmt = "text/plain";
+    if (fmt) {
+        QByteArray bary = ev->mimeData()->data(fmt);
+        char *src = lstring::copy((const char*)bary.data());
+        char *t = 0;
+        if (!strcmp(fmt, "text/twostring")) {
+            // Drops from content lists may be in the form
+            // "fname_or_chd\ncellname".
+            t = strchr(src, '\n');
+            if (t)
+                *t++ = 0;
+        }
+        delete [] pl_dropfile;
+        pl_dropfile = 0;
+        if (pl_str_editor) {
+            pl_str_editor->update(0, src);
+            delete [] src;
+        }
+        else {
+            pl_dropfile = src;
+            master_menu_slot(0);
+        }
+        ev->acceptProposedAction();
+    }
+}
+
+
 // Set the sensitivity of the array parameter entry widgets
 //
 void
@@ -423,6 +466,16 @@ QTplaceDlg::set_sens(bool set)
     pl_dx->setEnabled(set);
     pl_label_dy->setEnabled(set);
     pl_dy->setEnabled(set);
+}
+
+
+// Static function
+int
+QTplaceDlg::pl_timeout(void*)
+{
+    if (instPtr)
+        instPtr->master_menu_slot(0);
+    return (0);
 }
 
 
@@ -630,56 +683,6 @@ QTplaceDlg::dy_change_slot(double val)
         QTmainwin::self()->ShowGhost(ERASE);
         ED()->setArrayParams(pl_iap);
         QTmainwin::self()->ShowGhost(DISPLAY);
-    }
-}
-
-
-void
-QTplaceDlg::drag_enter_slot(QDragEnterEvent *ev)
-{
-    if (ev->mimeData()->hasFormat("text/twostring") ||
-            ev->mimeData()->hasFormat("text/cellname") ||
-            ev->mimeData()->hasFormat("text/string") ||
-            ev->mimeData()->hasFormat("text/plain")) {
-        ev->acceptProposedAction();
-    }
-}
-
-
-void
-QTplaceDlg::drop_event_slot(QDropEvent *ev)
-{
-    const char *fmt = 0;
-    if (ev->mimeData()->hasFormat("text/twostring"))
-        fmt = "text/twostring";
-    else if (ev->mimeData()->hasFormat("text/cellname"))
-        fmt = "text/cellname";
-    else if (ev->mimeData()->hasFormat("text/string"))
-        fmt = "text/string";
-    else if (ev->mimeData()->hasFormat("text/plain"))
-        fmt = "text/plain";
-    if (fmt) {
-        QByteArray bary = ev->mimeData()->data(fmt);
-        char *src = lstring::copy((const char*)bary.data());
-        char *t = 0;
-        if (!strcmp(fmt, "text/twostring")) {
-            // Drops from content lists may be in the form
-            // "fname_or_chd\ncellname".
-            t = strchr(src, '\n');
-            if (t)
-                *t++ = 0;
-        }
-        delete [] pl_dropfile;
-        pl_dropfile = 0;
-        if (pl_str_editor) {
-            pl_str_editor->update(0, src);
-            delete [] src;
-        }
-        else {
-            pl_dropfile = src;
-            master_menu_slot(0);
-        }
-        ev->acceptProposedAction();
     }
 }
 

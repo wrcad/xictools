@@ -2308,11 +2308,13 @@ SubcState::te_cb(TermEditInfo *tinfo, CDp *prp)
 {
     if (!tinfo) {
         // Terminal editor popping down.
-        DSP()->HliteElecTerm(ERASE, SubcCmd->EditNode, 0, 0);
-        DSP()->HliteElecBsc(ERASE, SubcCmd->EditBterm);
-        SubcCmd->EditVisible = false;
-        SubcCmd->EditNode = 0;
-        SubcCmd->EditBterm = 0;
+        if (SubcCmd) {
+            DSP()->HliteElecTerm(ERASE, SubcCmd->EditNode, 0, 0);
+            DSP()->HliteElecBsc(ERASE, SubcCmd->EditBterm);
+            SubcCmd->EditVisible = false;
+            SubcCmd->EditNode = 0;
+            SubcCmd->EditBterm = 0;
+        }
         return;
     }
     if (!prp)

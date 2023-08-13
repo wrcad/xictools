@@ -67,11 +67,11 @@ QTbag::PopUpList(stringlist *symlist, const char *title,
     const char *header, void(*callback)(const char*, void*), void *arg,
     bool usepix, bool use_apply)
 {
-    //XXX
+    //XXX implement me
     (void)use_apply;
 
     QTlistDlg *list = new QTlistDlg(this, symlist, title, header,
-        usepix, arg);
+        usepix);
     list->register_callback(callback);
 
     list->set_visible(true);
@@ -133,20 +133,24 @@ list_delegate::sizeHint(const QStyleOptionViewItem&,
 
 
 QTlistDlg::QTlistDlg(QTbag *owner, stringlist *symlist, const char *title,
-    const char *header, bool usepix, void *arg) :
-    QDialog(owner ? owner->Shell() : 0), QTbag()
+    const char *header, bool usepix)
 {
-    (void)usepix; //XXX
-
-wb_shell = this;
+    wb_shell = this;
     p_parent = owner;
-    p_cb_arg = arg;
+    li_use_pix = usepix;
+    li_open_pm = 0;
+    li_close_pm = 0;
 
     if (owner)
         owner->MonitorAdd(this);
 
     setWindowTitle(tr("Listing"));
     setAttribute(Qt::WA_DeleteOnClose);
+
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
+
     const char *t;
     char buf[256];
     if (title && header) {
@@ -155,23 +159,23 @@ wb_shell = this;
     }
     else
         t = header ? header : title;
-    li_label = new QLabel(QString(t), this);
+    li_label = new QLabel(t);
+    vbox->addWidget(li_label);
+
     li_lbox = new list_list_widget(this);
     li_lbox->setWrapping(false);
     for (stringlist *l = symlist; l; l = l->next)
         li_lbox->addItem(QString(l->string));
     li_lbox->sortItems();
+    vbox->addWidget(li_lbox);
+
     connect(li_lbox,
         SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
         this, SLOT(action_slot()));
+
     li_cancel = new QPushButton(tr("Dismiss"), this);
-    QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
-    vbox->setSpacing(2);
-    vbox->addWidget(li_label);
-    vbox->addWidget(li_lbox);
     vbox->addWidget(li_cancel);
-    connect(li_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    connect(li_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
@@ -199,6 +203,8 @@ QTlistDlg::~QTlistDlg()
         if (owner)
             owner->MonitorRemove(this);
     }
+    delete li_open_pm;
+    delete li_close_pm;
 }
 
 
@@ -235,7 +241,8 @@ QTlistDlg::update(stringlist *symlist, const char *title, const char *header)
     }
     else
         t = header ? header : title;
-    li_label->setText(QString(t));
+    li_label->setText(t);
+
     li_lbox->clear();
     for (stringlist *l = symlist; l; l = l->next)
         li_lbox->addItem(QString(l->string));
@@ -253,24 +260,21 @@ QTlistDlg::update(stringlist *symlist, const char *title, const char *header)
 void
 QTlistDlg::update(bool(*cb)(const char*))
 {
-    (void)cb;
-/* XXX
-    if (ls_use_pix && cb) {
-        for (int r = 0; ; r++) {
-            char *text = 0;
-            if (!gtk_clist_get_text(GTK_CLIST(ls_clist), r, 1, &text))
-                break;
-            if (!text || !*text)
-                break;
-            if ((*cb)(text))
-                gtk_clist_set_pixmap(GTK_CLIST(ls_clist), r, 0,
-                    ls_open_pm, ls_open_mask);
-            else
-                gtk_clist_set_pixmap(GTK_CLIST(ls_clist), r, 0,
-                    ls_close_pm, ls_close_mask);
-        }
+    if (!cb || !li_use_pix)
+        return;
+    if (!li_open_pm)
+        li_open_pm = new QPixmap(wb_open_folder_xpm);
+    if (!li_close_pm)
+        li_close_pm = new QPixmap(wb_closed_folder_xpm);
+
+    for (int r = 0; ; r++) {
+        QListWidgetItem *itm = li_lbox->item(r);
+        QByteArray row_ba = itm->text().toLatin1();
+        if ((*cb)(row_ba.constData()))
+            itm->setIcon(*li_open_pm);
+        else
+            itm->setIcon(*li_close_pm);
     }
-*/
 }
 
 
@@ -279,14 +283,14 @@ QTlistDlg::update(bool(*cb)(const char*))
 void
 QTlistDlg::unselect_all()
 {
- //XXX   gtk_clist_unselect_all(GTK_CLIST(ls_clist));
+    li_lbox->clearSelection();
 }
 
 
 QList<QListWidgetItem*>
 QTlistDlg::get_items()
 {
-    return (li_lbox->findItems(QString("*"), Qt::MatchWildcard));
+    return (li_lbox->findItems("*", Qt::MatchWildcard));
 }
 
 
@@ -303,8 +307,8 @@ QTlistDlg::action_slot()
 
 
 void
-QTlistDlg::quit_slot()
+QTlistDlg::dismiss_btn_slot()
 {
-    deleteLater();
+    delete this;
 }
 

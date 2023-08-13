@@ -93,8 +93,8 @@ signals:
     void abort();
 
 private slots:
-    void quit_slot();
-    void abort_slot();
+    void abort_btn_slot();
+    void dismiss_btn_slot();
 
 private:
     QGroupBox   *pg_gb_in;

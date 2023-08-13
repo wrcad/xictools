@@ -84,6 +84,8 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
 
 QTcanvas::~QTcanvas()
 {
+    if (da_painter->isActive())
+        da_painter->end();
     delete da_pixmap;
     delete da_painter;
     if (da_pixmap_bak) {

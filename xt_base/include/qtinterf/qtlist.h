@@ -66,8 +66,7 @@ class qtinterf::QTlistDlg : public QDialog, public GRlistPopup,
     Q_OBJECT
 
 public:
-    QTlistDlg(QTbag*, stringlist*, const char*, const char*,
-        bool, void*);
+    QTlistDlg(QTbag*, stringlist*, const char*, const char*, bool);
     ~QTlistDlg();
 
     // GRpopup overrides
@@ -90,23 +89,20 @@ public:
 
     QList<QListWidgetItem*> get_items();
 
-    // This widget will be deleted when closed with the title bar "X"
-    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-    // not called.  The default behavior is to hide the widget instead
-    // of deleting it, which would likely be a core leak here.
-    void closeEvent(QCloseEvent*)   { quit_slot(); }
-
 signals:
     void action_call(const char*, void*);
 
 private slots:
     void action_slot();
-    void quit_slot();
+    void dismiss_btn_slot();
 
 private:
     QLabel      *li_label;
     list_list_widget *li_lbox;
     QPushButton *li_cancel;
+    QPixmap     *li_open_pm;
+    QPixmap     *li_close_pm;
+    bool        li_use_pix;
 };
 
 #endif

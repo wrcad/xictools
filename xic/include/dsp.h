@@ -167,13 +167,13 @@ struct sRuler
         { win_num = wn; mirror = m; loff = 0.0; loff = l; next = nx; }
 
     static void destroy(sRuler *r)
-        {
-            while (r) {
-                sRuler *rx = r;
-                r = r->next;
-                delete rx;
-            }
+    {
+        while (r) {
+            sRuler *rx = r;
+            r = r->next;
+            delete rx;
         }
+    }
 
     void show(bool, bool = false);
     bool bbox(BBox&, WindowDesc*);
@@ -211,11 +211,11 @@ inline class cDisplay *DSP();
 class cDisplay : public cDisplayIf, public cTfmStack
 {
     static cDisplay *ptr()
-        {
-            if (!instancePtr)
-                on_null_ptr();
-            return (instancePtr);
-        }
+    {
+        if (!instancePtr)
+            on_null_ptr();
+        return (instancePtr);
+    }
 
     static void on_null_ptr();
 
@@ -305,6 +305,11 @@ public:
     // dsp_view.cc
     void ClearViews();
 
+    // Main window
+    inline DSPwbag *MainWbag();
+    inline GRdraw *MainDraw();
+    WindowDesc *MainWdesc()                 { return (d_windows[0]); }
+
     // Current display mode
     inline DisplayMode CurMode();
     inline void SetCurMode(DisplayMode);
@@ -315,58 +320,53 @@ public:
     inline void SetCurCellName(CDcellName);
     inline void SetTopCellName(CDcellName);
 
-    // Main window
-    inline DSPwbag *MainWbag();
-    inline GRdraw *MainDraw();
-    WindowDesc *MainWdesc() { return (d_windows[0]); }
-
     // Color pixel
     inline int Color(int, DisplayMode);
     inline int Color(int);
-    sColorTab *ColorTab() { return (d_color_table); }
+    sColorTab *ColorTab()                   { return (d_color_table); }
 
     // If a physical master is saved in the invisible_master_tab,
     // it won't appear in the display.
 
     void SetInvisible(CDm *mdesc)
-        {
-            if (!mdesc)
-                return;
-            if (!d_invisible_master_tab)
-                d_invisible_master_tab = new SymTab(false, false);
-            d_invisible_master_tab->add((intptr_t)mdesc, 0, true);
-        }
+    {
+        if (!mdesc)
+            return;
+        if (!d_invisible_master_tab)
+            d_invisible_master_tab = new SymTab(false, false);
+        d_invisible_master_tab->add((intptr_t)mdesc, 0, true);
+    }
 
     void ClearInvisible(CDm *mdesc)
-        {
-            if (!d_invisible_master_tab)
-                return;
-            if (!mdesc) {
-                delete d_invisible_master_tab;
-                d_invisible_master_tab = 0;
-            }
-            else
-                d_invisible_master_tab->remove((intptr_t)mdesc);
+    {
+        if (!d_invisible_master_tab)
+            return;
+        if (!mdesc) {
+            delete d_invisible_master_tab;
+            d_invisible_master_tab = 0;
         }
+        else
+            d_invisible_master_tab->remove((intptr_t)mdesc);
+    }
 
     bool IsInvisible(CDm *mdesc)
-        {
-            return (d_invisible_master_tab && mdesc &&
-                SymTab::get(d_invisible_master_tab, (intptr_t)mdesc) !=
-                ST_NIL);
-        }
+    {
+        return (d_invisible_master_tab && mdesc &&
+            SymTab::get(d_invisible_master_tab, (intptr_t)mdesc) !=
+            ST_NIL);
+    }
 
     WindowDesc *Window(int i)
-        {
-            if (i >= 0 && i < DSP_NUMWINS)
-                return (d_windows[i]);
-            return (0);
-        }
+    {
+        if (i >= 0 && i < DSP_NUMWINS)
+            return (d_windows[i]);
+        return (0);
+    }
     void SetWindow(int i, WindowDesc *w)
-        {
-            if (i >= 0 && i < DSP_NUMWINS)
-                d_windows[i] = w;
-        }
+    {
+        if (i >= 0 && i < DSP_NUMWINS)
+            d_windows[i] = w;
+    }
 
     HLmode HiddenLabelMode()                { return (d_hidden_label_mode); }
     void SetHiddenLabelMode(HLmode m)       { d_hidden_label_mode = m; }
@@ -481,12 +481,12 @@ public:
     void SetAllocCount(int c)               { d_alloc_count = c; }
     int ContextDarkPcnt()                   { return (d_context_dark_pcnt); }
     void SetContextDarkPcnt(int p)
-        {
-            if (p >= 0 && p <= 100)
-                d_context_dark_pcnt = p;
-            else
-                d_context_dark_pcnt = DSP_DEF_CX_DARK_PCNT;
-        }
+    {
+        if (p >= 0 && p <= 100)
+            d_context_dark_pcnt = p;
+        else
+            d_context_dark_pcnt = DSP_DEF_CX_DARK_PCNT;
+    }
 
     int FenceInstPixSize()                  { return (d_fence_inst_pixsz); }
     void SetFenceInstPixSize(int s)         { d_fence_inst_pixsz = s; }

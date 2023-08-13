@@ -283,7 +283,7 @@ private slots:
     void font_changed_slot(int);
     void press_event_slot(QMouseEvent*);
     void release_event_slot(QMouseEvent*);
-    void move_event_slot(QMouseEvent*);
+    void motion_event_slot(QMouseEvent*);
     void btn_timer_slot();
     void form_submit_slot(htmForm*);
     void form_reset_slot(htmForm*);

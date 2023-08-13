@@ -101,10 +101,10 @@ QTemptyDlg::QTemptyDlg(stringlist *l)
     vbox->setMargin(2);
     vbox->setSpacing(2);
 
-    QHBoxLayout *hbox = new QHBoxLayout(0);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
     hbox->setMargin(0);
     hbox->setSpacing(2);
-    vbox->addLayout(hbox);
 
     QPushButton *btn = new QPushButton();
     btn->setText(tr("Delete All"));
@@ -116,19 +116,14 @@ QTemptyDlg::QTemptyDlg(stringlist *l)
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(skip_btn_slot()));
 
-    hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
-    hbox->setSpacing(2);
-
-    QGroupBox *gb = new QGroupBox(this);
+    QGroupBox *gb = new QGroupBox();
+    vbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
     hb->setMargin(0);
     hb->setSpacing(2);
-    ec_label = new QLabel(gb);
 
+    ec_label = new QLabel(gb);
     hb->addWidget(ec_label);
-    hbox->addWidget(gb);
-    vbox->addLayout(hbox);
 
     ec_text = new QTtextEdit();
     ec_text->setReadOnly(true);
@@ -137,17 +132,19 @@ QTemptyDlg::QTemptyDlg(stringlist *l)
     connect(ec_text, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
-    hbox = new QHBoxLayout(0);
+    hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
     hbox->setMargin(0);
     hbox->setSpacing(2);
+
     btn = new QPushButton();
     btn->setText(tr("Apply"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+
     btn = new QPushButton();
     btn->setText(tr("Dismiss"));
     hbox->addWidget(btn);
-    vbox->addLayout(hbox);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     // Use a fixed font in the label, same as the text area, so can

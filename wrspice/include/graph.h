@@ -743,10 +743,10 @@ private:
 
     int gr_pressx;                  // button press point
     int gr_pressy;
-#define Moving       1
-#define ZoomIn       2
-#define ShiftMode   16
-#define ControlMode 32
+#define grMoving        1
+#define grZoomIn        2
+#define grShiftMode     16
+#define grControlMode   32
     unsigned int gr_cmdmode;        // in-command flags
     sDvList *gr_cmd_data;           // transient trace data storage
 

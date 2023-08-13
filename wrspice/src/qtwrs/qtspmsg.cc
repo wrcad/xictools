@@ -32,112 +32,100 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * WRspice Circuit Simulation and Analysis Tool                           *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtinterf.h"
-#include "qtmsg.h"
-#include "qtfont.h"
+#include "cshell.h"
+#include "qtspmsg.h"
+#include "qttoolb.h"
 
-#include <QAction>
-#include <QGroupBox>
 #include <QLayout>
-#include <QTextEdit>
+#include <QGroupBox>
+#include <QLabel>
 #include <QPushButton>
 
 
-QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
-    bool err, STYtype sty) : QDialog(owner ? owner->Shell() : 0)
+// Pop up a message at x, y.
+//
+void
+QTtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
 {
-    p_parent = owner;
-    tx_display_style = sty;
-    tx_desens = false;
+    if (!CP.Display())
+        return;
+    if (!GRpkg::self()->CurDev())
+        return;
+    if (!string || !*string)
+        return;
+    if (!QTspmsgDlg::self()) {
+        new QTspmsgDlg(string);
+        FixLoc(&x, &y);
+        /*XXX
+        int mwid, mhei;
+        gtk_MonitorGeom(0, 0, 0, &mwid, &mhei);
+        int wd = width();
+        int ht = height();
+        if (x + wd > mwid)
+            x = mwid - wd;
+        if (y + ht > mhei)
+            y = mhei - ht;
+        */
 
-    if (owner)
-        owner->MonitorAdd(this);
-    setWindowTitle(err ? tr("ERROR") : tr("Message"));
+        // MSW seems to need this before gtk_window_show.
+//        RevertFocus(popup);
+
+        QTspmsgDlg::self()->move(x, y);
+        QTspmsgDlg::self()->show();
+    }
+}
+
+
+QTspmsgDlg *QTspmsgDlg::instPtr;
+
+QTspmsgDlg::QTspmsgDlg(const char *string)
+{
+    instPtr = this;
+    setWindowTitle(tr("Message"));
     setAttribute(Qt::WA_DeleteOnClose);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);
     vbox->setSpacing(2);
 
+    // the label, in a frame
+    //
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
-    QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
-    vb->setSpacing(2);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    hb->setSpacing(2);
 
-    tx_tbox = new QTextEdit();
-    tx_tbox->setReadOnly(true);
-    vb->addWidget(tx_tbox);
+    QLabel *label = new QLabel(tr(string));
+    hb->addWidget(label);
+    label->setAlignment(Qt::AlignCenter);
 
-    if (sty == STY_FIXED) {
-        QFont *f;
-        if (FC.getFont(&f, FNT_FIXED)) {
-            tx_tbox->setCurrentFont(*f);
-            tx_tbox->setFont(*f);
-        }
-    }
-    setText(message_str);
+    // the dismiss button
+    //
+    QPushButton *cancel = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(cancel);
+    connect(cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
-    tx_cancel = new QPushButton(tr("Dismiss"), this);
-    vbox->addWidget(tx_cancel);
-    connect(tx_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+//    QTdev::self()->SetDoubleClickExit(popup, cancel);
+
 }
 
 
-QTmsgDlg::~QTmsgDlg()
+QTspmsgDlg::~QTspmsgDlg()
 {
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner)
-            owner->ClearPopup(this);
-    }
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller)
-        QTdev::Deselect(p_caller);
-}
-
-
-// GRpopup override
-//
-void
-QTmsgDlg::popdown()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->MonitorActive(this))
-            return;
-    }
-    deleteLater();
+    instPtr = 0;
 }
 
 
 void
-QTmsgDlg::setTitle(const char *title)
+QTspmsgDlg::dismiss_btn_slot()
 {
-    setWindowTitle(title);
-}
-
-
-void
-QTmsgDlg::setText(const char *message_str)
-{
-    if (tx_display_style == STY_HTML)
-        tx_tbox->setHtml(message_str);
-    else
-        tx_tbox->setPlainText(message_str);
-}
-
-
-void
-QTmsgDlg::dismiss_btn_slot()
-{
-    deleteLater();
+    delete this;
 }
 

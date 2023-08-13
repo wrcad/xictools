@@ -443,7 +443,7 @@ QTlogoDlg::QTlogoDlg(GRobject c)
     col2->addWidget(lgo_dump);
     lgo_dump->setCheckable(true);
     connect(lgo_dump, SIGNAL(toggled(bool)),
-        this, SLOT(dumb_btn_slot(bool)));
+        this, SLOT(dump_btn_slot(bool)));
 
     // bottom row
     lgo_sel = new QPushButton(tr("Select Pretty Font"));

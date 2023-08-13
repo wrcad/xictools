@@ -124,6 +124,8 @@ QTdev::Init(int *argc, char **argv)
         static int ac = *argc;
         // QApplications takes a reference as first arg, must not be on stack
         new QApplication(ac, argv);
+//XXX
+printf("new QApp\n");
         *argc = ac;
     }
 
@@ -329,6 +331,8 @@ QTdev::RegisterSigintHdlr(void(*)()) )()
 bool
 QTdev::CheckForEvents()
 {
+    QApplication::instance()->sendPostedEvents();
+    QApplication::instance()->processEvents();
     return (false);
 }
 
@@ -403,21 +407,23 @@ QTdev::Location(GRobject obj, int *xx, int *yy)
     if (obj) {
         QObject *o = (QObject*)obj;
         if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn) {
-                QPoint pt = btn->mapToGlobal(QPoint(0, 0));
-                *xx = pt.x() + btn->width();
+            QWidget *widget = dynamic_cast<QWidget*>(o);
+            if (widget) {
+                QPoint pt = widget->mapToGlobal(QPoint(0, 0));
+                *xx = pt.x() + widget->width();
                 *yy = pt.y();
                 return;
             }
         }
         else {
-            /*
             QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->activate(QAction::Trigger);
-            */
-            // How to get menu item position?
+            QMenu *menu = a ? a->menu() : 0;
+            if (menu) {
+                QPoint pt = menu->mapToGlobal(QPoint(0, 0));
+                *xx = pt.x() + menu->width();
+                *yy = pt.y();
+                return;
+            }
         }
     }
     *xx = 0;
@@ -1360,9 +1366,10 @@ GRaffirmPopup *
 QTbag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
     void(*action_callback)(bool, void*), void *action_arg)
 {
-    QTaffirmDlg *affirm = new QTaffirmDlg(this, question_str, action_arg);
+    QTaffirmDlg *affirm = new QTaffirmDlg(this, question_str);
     affirm->register_caller(caller, false, true);
     affirm->register_callback(action_callback);
+    affirm->set_callback_arg(action_arg);
     affirm->set_visible(true);
     QTdev::self()->SetPopupLocation(loc, affirm, wb_shell);
     return (affirm);
@@ -1378,9 +1385,10 @@ QTbag::PopUpNumeric(GRobject caller, GRloc loc, const char *prompt_str,
     void(*action_callback)(double, bool, void*), void *action_arg)
 {
     QTnumDlg *numer = new QTnumDlg(this, prompt_str, initd, mind, maxd,
-        del, numd, action_arg);
+        del, numd);
     numer->register_caller(caller, false, true);
     numer->register_callback(action_callback);
+    numer->set_callback_arg(action_arg);
     numer->set_visible(true);
     QTdev::self()->SetPopupLocation(loc, numer, wb_shell);
     return (numer);

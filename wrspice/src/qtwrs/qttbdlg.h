@@ -32,112 +32,78 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * WRspice Circuit Simulation and Analysis Tool                           *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtinterf.h"
-#include "qtmsg.h"
-#include "qtfont.h"
+#ifndef QTTBDLG_H
+#define QTTBDLG_H
 
-#include <QAction>
-#include <QGroupBox>
-#include <QLayout>
-#include <QTextEdit>
-#include <QPushButton>
+#include "qttoolb.h"
 
+#include <QDialog>
 
-QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
-    bool err, STYtype sty) : QDialog(owner ? owner->Shell() : 0)
+class QMenu;
+class QAction;
+class QLineEdit;
+class QGroupBox;
+class QDragEnterEvent;
+class QDropEvent;
+
+class QTtbDlg : public QDialog, public QTdraw
 {
-    p_parent = owner;
-    tx_display_style = sty;
-    tx_desens = false;
+    Q_OBJECT
 
-    if (owner)
-        owner->MonitorAdd(this);
-    setWindowTitle(err ? tr("ERROR") : tr("Message"));
-    setAttribute(Qt::WA_DeleteOnClose);
+public:
+    QTtbDlg();
+    ~QTtbDlg();
 
-    QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
-    vbox->setSpacing(2);
+    // Menu codes.
+    enum {
+        // File menu.
+        MA_file_sel, MA_source, MA_load, MA_upd_tools, MA_upd_wrs, MA_dismiss,
+        // Edit menu.
+        MA_txt_edit, MA_xic,
+        // Help menu.
+        MA_help, MA_about, MA_notes };
 
-    QGroupBox *gb = new QGroupBox();
-    vbox->addWidget(gb);
-    QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
-    vb->setSpacing(2);
+    void update(ResUpdType = RES_UPD);
 
-    tx_tbox = new QTextEdit();
-    tx_tbox->setReadOnly(true);
-    vb->addWidget(tx_tbox);
+    static QTtbDlg *self()          { return (instPtr); }
 
-    if (sty == STY_FIXED) {
-        QFont *f;
-        if (FC.getFont(&f, FNT_FIXED)) {
-            tx_tbox->setCurrentFont(*f);
-            tx_tbox->setFont(*f);
-        }
-    }
-    setText(message_str);
+private slots:
+    void file_menu_slot(QAction*);
+    void edit_menu_slot(QAction*);
+    void tools_menu_slot(QAction*);
+    void help_menu_slot(QAction*);
+    void wr_btn_slot();
+    void run_btn_slot();
+    void stop_btn_slot();
+    void font_changed_slot(int);
+    void drag_enter_slot(QDragEnterEvent*);
+    void drop_slot(QDropEvent*);
 
-    tx_cancel = new QPushButton(tr("Dismiss"), this);
-    vbox->addWidget(tx_cancel);
-    connect(tx_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-}
+private:
+    static int tb_res_timeout(void*);
 
+    QMenu   *tb_file_menu;
+    QAction *tb_source_btn;
+    QAction *tb_load_btn;
+    QMenu   *tb_edit_menu;
+    QMenu   *tb_tools_menu;
+    QMenu   *tb_help_menu;
 
-QTmsgDlg::~QTmsgDlg()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner)
-            owner->ClearPopup(this);
-    }
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller)
-        QTdev::Deselect(p_caller);
-}
+    char    *tb_dropfile;
+    double  tb_elapsed_start;
+    int     tb_clr_1;
+    int     tb_clr_2;
+    int     tb_clr_3;
+    int     tb_clr_4;
 
+    static QTtbDlg *instPtr;
+};
 
-// GRpopup override
-//
-void
-QTmsgDlg::popdown()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->MonitorActive(this))
-            return;
-    }
-    deleteLater();
-}
-
-
-void
-QTmsgDlg::setTitle(const char *title)
-{
-    setWindowTitle(title);
-}
-
-
-void
-QTmsgDlg::setText(const char *message_str)
-{
-    if (tx_display_style == STY_HTML)
-        tx_tbox->setHtml(message_str);
-    else
-        tx_tbox->setPlainText(message_str);
-}
-
-
-void
-QTmsgDlg::dismiss_btn_slot()
-{
-    deleteLater();
-}
+#endif
 

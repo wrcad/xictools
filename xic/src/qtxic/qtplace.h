@@ -92,12 +92,13 @@ private slots:
     void ny_change_slot(int);
     void dx_change_slot(double);
     void dy_change_slot(double);
-    void drag_enter_slot(QDragEnterEvent*);
-    void drop_event_slot(QDropEvent*);
 
 private:
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
     void set_sens(bool);
     static ESret pl_new_cb(const char*, void*);
+    static int pl_timeout(void*);
 
     QPushButton *pl_arraybtn;
     QPushButton *pl_replbtn;

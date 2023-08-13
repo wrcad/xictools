@@ -598,7 +598,7 @@ void
 sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
 {
     sKeyed *k = gr_keyed;
-    if (gr_cmdmode & Moving) {
+    if (gr_cmdmode & grMoving) {
         if (code == UP_KEY || code == RIGHT_KEY) {
             gr_show_ghost(false);
             if (k->xform & TXTF_HJR)
@@ -891,9 +891,9 @@ void
 sGraph::gr_bdown_hdlr(int button, int x, int y)
 {
     if (button == 1) {
-        if (gr_cmdmode & ShiftMode)
+        if (gr_cmdmode & grShiftMode)
             button = 2;
-        else if (gr_cmdmode & ControlMode)
+        else if (gr_cmdmode & grControlMode)
             button = 3;
     }
     if (!gr_present) {
@@ -998,7 +998,7 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
                     return;
                 }
             }
-            if (!(gr_cmdmode & Moving)) {
+            if (!(gr_cmdmode & grMoving)) {
                 if (gr_apptype == GR_MPLT) {
                     mp_bdown_hdlr(button, x, y);
                     return;
@@ -1054,7 +1054,7 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
 
         if (dv_dims_map_hdlr(button, x, y, false))
             return;
-        if (!(gr_cmdmode & Moving)) {
+        if (!(gr_cmdmode & grMoving)) {
             if (gr_reference.mark)
                 gr_show_ghost(false);
             gr_zoomin(x, y);
@@ -1077,7 +1077,7 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
         if (graph->gr_timer_id)
             GRpkg::self()->RemoveTimer(graph->gr_timer_id);
         graph->gr_timer_id = 0;
-        if (graph->gr_cmdmode & Moving) {
+        if (graph->gr_cmdmode & grMoving) {
             bool doit = false;
             gr_set_ghost(0, 0, 0);
             if (graph == this) {
@@ -1097,12 +1097,12 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
                 if (graph != this)
                     graph->gr_set_ghost(0, 0, 0);
                 sKeyed *k = graph->gr_keyed;
-                graph->gr_cmdmode &= ~Moving;
+                graph->gr_cmdmode &= ~grMoving;
                 if (ok) {
                     // should be in window
                     gr_show_sel_text(false);
                     if (graph != this ||
-                            (gr_cmdmode & (ShiftMode | ControlMode))) {
+                            (gr_cmdmode & (grShiftMode | grControlMode))) {
                         // Copy the text, note that drag between
                         // windows is always a copy.
                         sKeyed *kk = new sKeyed(*k);
@@ -1144,7 +1144,7 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
                 }
             }
             else
-                gr_cmdmode &= ~Moving;
+                gr_cmdmode &= ~grMoving;
             return;
         }
 
@@ -1152,9 +1152,9 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
             return;
 
         int btn = button;
-        if (gr_cmdmode & ShiftMode)
+        if (gr_cmdmode & grShiftMode)
             btn = 2;
-        else if (gr_cmdmode & ControlMode)
+        else if (gr_cmdmode & grControlMode)
             btn = 3;
         if (dv_dims_map_hdlr(btn, x, y, true))
             return;
@@ -1276,7 +1276,7 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
             GP.SetSourceGraph(0);
         }
     }
-    if (gr_cmdmode & ZoomIn) {
+    if (gr_cmdmode & grZoomIn) {
         gr_set_ghost(0, 0, 0);
         int xlbnd = gr_vport.left() - 2;
         int xubnd = gr_vport.right() + 2;
@@ -1303,7 +1303,7 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
             }
             gr_zoom(fx0, fy0, fx1, fy1);
         }
-        gr_cmdmode &= ~ZoomIn;
+        gr_cmdmode &= ~grZoomIn;
     }
     dv_dims_map_hdlr(button, x, y, true);
 }
@@ -1403,7 +1403,7 @@ sGraph::gr_zoomin(int x0, int y0)
             y1 = y0 + BOXSIZE;
     }
 
-    gr_cmdmode |= ZoomIn;
+    gr_cmdmode |= grZoomIn;
     gr_pressx = x0;
     gr_pressy = y0;
 
@@ -4610,7 +4610,7 @@ sGraph::timeout(void *arg)
     sGraph *graph = (sGraph*)arg;
     graph->gr_set_ghost(ghost_tbox, 0, 0);
     graph->gr_dev->MovePointer(0, 0, false);
-    graph->gr_cmdmode |= Moving;
+    graph->gr_cmdmode |= grMoving;
     return (false);
 }
 // End of sGraph private functions.

@@ -32,112 +32,70 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * WRspice Circuit Simulation and Analysis Tool                           *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtinterf.h"
-#include "qtmsg.h"
-#include "qtfont.h"
+#ifndef QTERRMSG_H
+#define QTERRMSG_H
 
-#include <QAction>
-#include <QGroupBox>
-#include <QLayout>
-#include <QTextEdit>
-#include <QPushButton>
+#include "toolbar.h"
 
+#include <QDialog>
 
-QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
-    bool err, STYtype sty) : QDialog(owner ? owner->Shell() : 0)
-{
-    p_parent = owner;
-    tx_display_style = sty;
-    tx_desens = false;
+namespace qtinterf { class QTtextEdit; }
+using namespace qtinterf;
 
-    if (owner)
-        owner->MonitorAdd(this);
-    setWindowTitle(err ? tr("ERROR") : tr("Message"));
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
-    vbox->setSpacing(2);
-
-    QGroupBox *gb = new QGroupBox();
-    vbox->addWidget(gb);
-    QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
-    vb->setSpacing(2);
-
-    tx_tbox = new QTextEdit();
-    tx_tbox->setReadOnly(true);
-    vb->addWidget(tx_tbox);
-
-    if (sty == STY_FIXED) {
-        QFont *f;
-        if (FC.getFont(&f, FNT_FIXED)) {
-            tx_tbox->setCurrentFont(*f);
-            tx_tbox->setFont(*f);
-        }
-    }
-    setText(message_str);
-
-    tx_cancel = new QPushButton(tr("Dismiss"), this);
-    vbox->addWidget(tx_cancel);
-    connect(tx_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-}
-
-
-QTmsgDlg::~QTmsgDlg()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner)
-            owner->ClearPopup(this);
-    }
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller)
-        QTdev::Deselect(p_caller);
-}
-
-
-// GRpopup override
+// The invisible part, handles text trimming, etc.
 //
-void
-QTmsgDlg::popdown()
+class QTmsgDb : public cMsgHdlr
 {
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->MonitorActive(this))
-            return;
-    }
-    deleteLater();
-}
+public:
+    void PopUpErr(const char*);
+    void ToLog(const char *s)   { first_message(s); }
+
+    // Pop-up state kept here for persistence.
+    void set_x(int x)           { er_x = x; }
+    int  get_x()                { return (er_x); }
+    void set_y(int y)           { er_y = y; }
+    int  get_y()                { return (er_x); }
+    void set_wrap(bool w)       { er_wrap = w; }
+    bool get_wrap()             { return (er_wrap); }
+
+private:
+    void stuff_msg(const char*);
+
+    int er_x;
+    int er_y;
+    bool er_wrap;
+};
 
 
-void
-QTmsgDlg::setTitle(const char *title)
+// The dialog, shows the lines in the database.
+//
+class QTerrmsgDlg : public QDialog
 {
-    setWindowTitle(title);
-}
+    Q_OBJECT
 
+public:
+    QTerrmsgDlg();
+    ~QTerrmsgDlg();
 
-void
-QTmsgDlg::setText(const char *message_str)
-{
-    if (tx_display_style == STY_HTML)
-        tx_tbox->setHtml(message_str);
-    else
-        tx_tbox->setPlainText(message_str);
-}
+    void stuff_msg(const char*);
 
+    static QTerrmsgDlg *self()          { return (instPtr); }
 
-void
-QTmsgDlg::dismiss_btn_slot()
-{
-    deleteLater();
-}
+private slots:
+    void wrap_btn_slot(bool);
+    void dismiss_btn_slot();
+
+private:
+    QTtextEdit *er_text;
+
+    static QTerrmsgDlg *instPtr;
+};
+
+#endif
 

@@ -55,7 +55,7 @@
 char *QTtextDlg::tx_errlog;
 
 QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
-    STYtype sty) : QDialog(owner ? owner->Shell() : 0)
+    STYtype sty)
 {
     p_parent = owner;
     tx_which = which;
@@ -107,18 +107,20 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
     hbox->setMargin(0);
     hbox->setSpacing(2);
 
+    /* Used to use mozy for this.
     if (tx_style != STY_HTML) {
-        tx_save = new QPushButton(tr("Save Text "));
-        tx_save->setCheckable(true);
-        hbox->addWidget(tx_save);
-        connect(tx_save, SIGNAL(toggled(bool)),
-            this, SLOT(save_btn_slot(bool)));
     }
+    */
+    tx_save = new QPushButton(tr("Save Text "));
+    tx_save->setCheckable(true);
+    hbox->addWidget(tx_save);
+    connect(tx_save, SIGNAL(toggled(bool)),
+        this, SLOT(save_btn_slot(bool)));
     if ((tx_which == PuErr || tx_which == PuErrAlso) &&
             tx_errlog && p_parent) {
-        tx_showlog = new QPushButton(tr("Show Error Log"));
-        hbox->addWidget(tx_showlog);
-        connect(tx_showlog, SIGNAL(clicked()),
+        QPushButton *btn = new QPushButton(tr("Show Error Log"));
+        hbox->addWidget(btn);
+        connect(btn, SIGNAL(clicked()),
             this, SLOT(showlog_btn_slot()));
     }
     if (tx_which == PuInfo2) {
@@ -134,18 +136,16 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
             this, SLOT(activate_btn_slot(bool)));
     }
 
-    tx_cancel = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(tx_cancel);
-    connect(tx_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
 QTtextDlg::~QTtextDlg()
 {
-    /* XXX
     if (tx_activate && QTdev::GetStatus(tx_activate))
-        gtk_button_clicked(GTK_BUTTON(pw_btn));
-    */
+        tx_activate->setChecked(false);
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
@@ -172,7 +172,7 @@ QTtextDlg::popdown()
         if (!owner || !owner->MonitorActive(this))
             return;
     }
-    deleteLater();
+    delete this;
 }
 
 
@@ -230,26 +230,9 @@ QTtextDlg::set_btn2_state(bool state)
 bool
 QTtextDlg::update(const char *message_str)
 {
-    /* XXX
-    if (tx_style == STY_HTML) {
-#ifdef HAVE_MOZY
-        if (pw_viewer) {
-            if (has_body_tag(message_str))
-                pw_viewer->set_source(message_str);
-            else {
-                sLstr lstr;
-                lstr.add("<body bgcolor=\"");
-                lstr.add(HTML_TEXT_BG);
-                lstr.add("\">");
-                lstr.add(message_str);
-                lstr.add("</body>");
-                pw_viewer->set_source(lstr.string());
-            }
-            return (true);
-        }
-#endif
-    }
-    */
+    // The GTK version uses the HTML viewer from mozy, which adds a
+    // lot of complexity.
+
     if (tx_tbox) {
         tx_tbox->setText(message_str);
             return (true);
@@ -363,6 +346,6 @@ QTtextDlg::activate_btn_slot(bool state)
 void
 QTtextDlg::dismiss_btn_slot()
 {
-    deleteLater();
+    delete this;
 }
 

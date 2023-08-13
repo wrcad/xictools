@@ -56,7 +56,7 @@ class qtinterf::QTactivity : public QWidget
     Q_OBJECT
 
 public:
-    QTactivity(QWidget*);
+    QTactivity(QWidget* = 0);
     ~QTactivity();
 
     void start();

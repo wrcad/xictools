@@ -85,14 +85,8 @@ public:
     void setTitle(const char*);
     void setText(const char*);
 
-    // This widget will be deleted when closed with the title bar "X"
-    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-    // not called.  The default behavior is to hide the widget instead
-    // of deleting it, which would likely be a core leak here.
-    void closeEvent(QCloseEvent*)   { quit_slot(); }
-
 private slots:
-    void quit_slot();
+    void dismiss_btn_slot();
 
 private:
     QGroupBox   *tx_gbox;

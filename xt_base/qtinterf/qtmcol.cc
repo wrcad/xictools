@@ -67,9 +67,9 @@ QTbag::PopUpMultiCol(stringlist *symlist, const char *title,
 {
     static int mcol_count;
 
-    QTmcolDlg *mcol = new QTmcolDlg(this, symlist, title,
-        buttons, pgsize, arg);
+    QTmcolDlg *mcol = new QTmcolDlg(this, symlist, title, buttons, pgsize);
     mcol->register_callback(callback);
+    mcol->set_callback_arg(arg);
     mcol->set_no_dragdrop(no_dd);
 
     int x, y;
@@ -88,11 +88,10 @@ QTbag::PopUpMultiCol(stringlist *symlist, const char *title,
 
 
 QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
-    const char *title, const char **buttons, int pgsize, void *arg)
+    const char *title, const char **buttons, int pgsize)
 {
-wb_shell = this;
+    wb_shell = this;
     p_parent = owner;
-    p_cb_arg = arg;
     mc_pagesel = 0;
     for (int i = 0; i < MC_MAXBTNS; i++)
         mc_buttons[i] = 0;

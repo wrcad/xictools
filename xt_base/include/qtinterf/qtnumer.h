@@ -60,8 +60,7 @@ class qtinterf::QTnumDlg : public QDialog, public GRnumPopup
     Q_OBJECT
 
 public:
-    QTnumDlg(QTbag*, const char*, double, double, double, double,
-        int, void*);
+    QTnumDlg(QTbag*, const char*, double, double, double, double, int);
     ~QTnumDlg();
 
     // GRpopup overrides
@@ -78,12 +77,6 @@ public:
     void register_caller(GRobject, bool=false, bool=false);
     void popdown();
 
-    // This widget will be deleted when closed with the title bar "X"
-    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-    // not called.  The default behavior is to hide the widget instead
-    // of deleting it, which would likely be a core leak here.
-    void closeEvent(QCloseEvent*) { quit_slot(); }
-
     QSize sizeHint()        const { return (QSize(300, 150)); }
 
 signals:
@@ -91,7 +84,7 @@ signals:
 
 private slots:
     void action_slot();
-    void quit_slot();
+    void dismiss_btn_slot();
 
 private:
     QTextEdit   *nu_label;

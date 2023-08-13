@@ -151,7 +151,6 @@ private slots:
     void search_slot();
     void find_slot();
     void set_font_slot(bool);
-    void font_selected_slot(int, const char*);
     void font_down_slot();
     void dont_cache_slot(bool);
     void clear_cache_slot();
@@ -184,9 +183,6 @@ private slots:
     void do_save_slot(const char*, void*);
     void do_search_slot(const char*, void*);
     void do_find_text_slot(const char*, void*);
-
-signals:
-    void dismiss();
 
 private:
     void set_frame_parent(QThelpDlg *p) { h_frame_parent = p; }

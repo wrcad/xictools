@@ -94,8 +94,7 @@ static const char * const down_xpm[] = {
 "                                ",
 "                                "};
 
-QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) :
-    QDialog(owner ? owner->Shell() : 0), se_timer(this)
+QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) : se_timer(this)
 {
     p_parent = owner;
 
@@ -107,48 +106,49 @@ QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) :
     setAttribute(Qt::WA_DeleteOnClose);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
+    vbox->setMargin(2);
     vbox->setSpacing(2);
 
-    QGroupBox *gb = new QGroupBox(this);
-    se_label = new QLabel(gb);
-    QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(4);
-    vb->addWidget(se_label);
+    QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
+    QVBoxLayout *vb = new QVBoxLayout(gb);
+    vb->setMargin(2);
+    vb->setSpacing(2);
+    se_label = new QLabel("");
+    vb->addWidget(se_label);
 
     se_edit = new QLineEdit(this);
     se_edit->setText(initstr);
     vbox->addWidget(se_edit);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
+    vbox->addLayout(hbox);
     hbox->setMargin(0);
     hbox->setSpacing(2);
 
-    se_cancel = new QPushButton(this);
-    se_dn = new QPushButton(this);
-    se_up = new QPushButton(this);
+    QPushButton *btn = new QPushButton();
+    btn->setAutoDefault(false);
+    btn->setIcon(QIcon(QPixmap(down_xpm)));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(down_btn_slot()));
 
-    se_dn->setAutoDefault(false);
-    se_dn->setIcon(QIcon(QPixmap(down_xpm)));
-    hbox->addWidget(se_dn);
-    se_up->setAutoDefault(false);
-    se_up->setIcon(QIcon(QPixmap(up_xpm)));
-    hbox->addWidget(se_up);
+    btn = new QPushButton();
+    btn->setAutoDefault(false);
+    btn->setIcon(QIcon(QPixmap(up_xpm)));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(up_btn_slot()));
+
     se_nc = new QCheckBox(this);
-    se_nc->setText(QString(tr("No Case")));
+    se_nc->setText(tr("No Case"));
     hbox->addWidget(se_nc);
-    se_cancel->setText(QString(tr("Dismiss")));
-    hbox->addWidget(se_cancel);
-    vbox->addLayout(hbox);
+    connect(se_nc, SIGNAL(toggled(bool)), this, SLOT(icase_btn_slot(bool)));
+
+    btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     se_timer.setInterval(1000);
     set_message("Enter search text:");
-
-    connect(se_dn, SIGNAL(clicked()), this, SLOT(down_slot()));
-    connect(se_up, SIGNAL(clicked()), this, SLOT(up_slot()));
-    connect(se_nc, SIGNAL(toggled(bool)), this, SLOT(ign_case_slot(bool)));
-    connect(se_cancel, SIGNAL(clicked()), this, SLOT(quit_slot()));
     connect(&se_timer, SIGNAL(timeout()), this, SLOT(timeout_slot()));
 }
 
@@ -229,30 +229,30 @@ QTsearchDlg::get_target()
 
 
 void
-QTsearchDlg::quit_slot()
-{
-    delete this;
-}
-
-
-void
-QTsearchDlg::down_slot()
+QTsearchDlg::down_btn_slot()
 {
     emit search_down();
 }
 
 
 void
-QTsearchDlg::up_slot()
+QTsearchDlg::up_btn_slot()
 {
     emit search_up();
 }
 
 
 void
-QTsearchDlg::ign_case_slot(bool set)
+QTsearchDlg::icase_btn_slot(bool set)
 {
     emit ignore_case(set);
+}
+
+
+void
+QTsearchDlg::dismiss_btn_slot()
+{
+    delete this;
 }
 
 

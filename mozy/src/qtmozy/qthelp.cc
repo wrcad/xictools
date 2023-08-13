@@ -570,6 +570,7 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
 
 QThelpDlg::~QThelpDlg()
 {
+    HLP()->context()->quitHelp();
     FC.unregisterCallback(h_viewer, FNT_MOZY);
     FC.unregisterCallback(h_viewer, FNT_MOZY_FIXED);
     halt_images();
@@ -844,6 +845,7 @@ QThelpDlg::reuse(HLPtopic *newtop, bool newlink)
     snprintf(buf, 256, "%s -- %s", HLP()->get_name(), t);
     strip_html(buf);
     setWindowTitle(QString(buf));
+    setAttribute(Qt::WA_DeleteOnClose);
     QueueTimer.start();
 }
 
@@ -1275,7 +1277,7 @@ QThelpDlg::reload_slot()
 void
 QThelpDlg::quit_slot()
 {
-    emit dismiss();
+    delete this;
 }
 
 
@@ -1303,19 +1305,9 @@ QThelpDlg::set_font_slot(bool set)
     if (set) {
         PopUpFontSel(0, GRloc(), MODE_ON, 0, 0, FNT_MOZY);
         connect(wb_fontsel, SIGNAL(dismiss()), this, SLOT(font_down_slot()));
-        connect(wb_fontsel, SIGNAL(select_action(int, const char*, void*)),
-            this, SLOT(font_selected_slot(int, const char*)));
     }
     else
         PopUpFontSel(0, GRloc(), MODE_OFF, 0, 0, 0);
-}
-
-
-// Handle font selection in pop-up.
-void
-QThelpDlg::font_selected_slot(int font_id, const char *fontname)
-{
-    // Ignore this.  Fonts are selected with the Apply buton.
 }
 
 

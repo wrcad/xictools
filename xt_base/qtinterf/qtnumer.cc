@@ -68,11 +68,9 @@ namespace qtinterf
 }
 
 QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
-    double mind, double maxd, double del, int numd, void *arg) :
-    QDialog(owner ? owner->Shell() : 0)
+    double mind, double maxd, double del, int numd)
 {
     p_parent = owner;
-    p_cb_arg = arg;
     nu_affirmed = false;
 
     if (owner)
@@ -95,7 +93,7 @@ QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
     nu_label->setPlainText(tr(prompt_str));
     vbox->addWidget(nu_label);
 
-    nu_spinbtn = new QDoubleSpinBox(this);
+    nu_spinbtn = new QDoubleSpinBox();
     nu_spinbtn->setRange(mind, maxd);
     nu_spinbtn->setDecimals(numd);
     nu_spinbtn->setValue(initd);
@@ -115,7 +113,7 @@ QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
 
     nu_nobtn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(nu_nobtn);
-    connect(nu_nobtn, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    connect(nu_nobtn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
@@ -161,15 +159,17 @@ QTnumDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
         if (o) {
             if (o->isWidgetType()) {
                 QPushButton *btn = dynamic_cast<QPushButton*>(o);
-                if (btn)
+                if (btn) {
                     connect(btn, SIGNAL(clicked()),
-                        this, SLOT(quit_slot()));
+                        this, SLOT(dismiss_btn_slot()));
+                }
             }
             else {
                 QAction *a = dynamic_cast<QAction*>(o);
-                if (a)
+                if (a) {
                     connect(a, SIGNAL(triggered()),
-                        this, SLOT(quit_slot()));
+                        this, SLOT(dismiss_btn_slot()));
+                }
             }
         }
     }
@@ -186,7 +186,7 @@ QTnumDlg::popdown()
         if (!owner || !owner->MonitorActive(this))
             return;
     }
-    delete this;
+    deleteLater();
 }
 
 
@@ -195,12 +195,12 @@ QTnumDlg::action_slot()
 {
     nu_affirmed = true;
     emit affirm(nu_spinbtn->value(), p_cb_arg);
-    delete this;
+    deleteLater();
 }
 
 
 void
-QTnumDlg::quit_slot()
+QTnumDlg::dismiss_btn_slot()
 {
     deleteLater();
 }

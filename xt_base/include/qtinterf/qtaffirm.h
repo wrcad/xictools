@@ -59,28 +59,22 @@ class qtinterf::QTaffirmDlg : public QDialog, public GRaffirmPopup
     Q_OBJECT
 
 public:
-    QTaffirmDlg(QTbag*, const char*, void*);
+    QTaffirmDlg(QTbag*, const char*);
     ~QTaffirmDlg();
 
     // GRpopup overrides
     void set_visible(bool visib)
-        {
-            if (visib) {
-                show();
-                raise();
-                activateWindow();
-            }
-            else
-                hide();
+    {
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
         }
+        else
+            hide();
+    }
     void register_caller(GRobject, bool=false, bool=false);
     void popdown();
-
-    // This widget will be deleted when closed with the title bar "X"
-    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-    // not called.  The default behavior is to hide the widget instead
-    // of deleting it, which would likely be a core leak here.
-    void closeEvent(QCloseEvent*) { quit_slot(); }
 
     QSize sizeHint() const { return (QSize(300, 100)); }
 
@@ -88,13 +82,8 @@ signals:
     void affirm(bool, void*);
 
 private slots:
-    void action_slot();
-    void quit_slot();
-
-private:
-    QTextEdit   *af_label;
-    QPushButton *af_yesbtn;
-    QPushButton *af_nobtn;
+    void affirm_btn_slot();
+    void cancel_btn_slot();
 };
 
 #endif

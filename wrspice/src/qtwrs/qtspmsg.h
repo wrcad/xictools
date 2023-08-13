@@ -32,112 +32,34 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * WRspice Circuit Simulation and Analysis Tool                           *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtinterf.h"
-#include "qtmsg.h"
-#include "qtfont.h"
+#ifndef QTSPMSG_H
+#define QTSPMSG_H
 
-#include <QAction>
-#include <QGroupBox>
-#include <QLayout>
-#include <QTextEdit>
-#include <QPushButton>
+#include <QDialog>
 
 
-QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
-    bool err, STYtype sty) : QDialog(owner ? owner->Shell() : 0)
+class QTspmsgDlg : public QDialog
 {
-    p_parent = owner;
-    tx_display_style = sty;
-    tx_desens = false;
+    Q_OBJECT
 
-    if (owner)
-        owner->MonitorAdd(this);
-    setWindowTitle(err ? tr("ERROR") : tr("Message"));
-    setAttribute(Qt::WA_DeleteOnClose);
+public:
+    QTspmsgDlg(const char*);
+    ~QTspmsgDlg();
 
-    QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
-    vbox->setSpacing(2);
+    static QTspmsgDlg *self()       { return (instPtr); }
 
-    QGroupBox *gb = new QGroupBox();
-    vbox->addWidget(gb);
-    QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
-    vb->setSpacing(2);
+private slots:
+    void dismiss_btn_slot();
 
-    tx_tbox = new QTextEdit();
-    tx_tbox->setReadOnly(true);
-    vb->addWidget(tx_tbox);
+private:
+    static QTspmsgDlg *instPtr;
+};
 
-    if (sty == STY_FIXED) {
-        QFont *f;
-        if (FC.getFont(&f, FNT_FIXED)) {
-            tx_tbox->setCurrentFont(*f);
-            tx_tbox->setFont(*f);
-        }
-    }
-    setText(message_str);
-
-    tx_cancel = new QPushButton(tr("Dismiss"), this);
-    vbox->addWidget(tx_cancel);
-    connect(tx_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-}
-
-
-QTmsgDlg::~QTmsgDlg()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner)
-            owner->ClearPopup(this);
-    }
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller)
-        QTdev::Deselect(p_caller);
-}
-
-
-// GRpopup override
-//
-void
-QTmsgDlg::popdown()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->MonitorActive(this))
-            return;
-    }
-    deleteLater();
-}
-
-
-void
-QTmsgDlg::setTitle(const char *title)
-{
-    setWindowTitle(title);
-}
-
-
-void
-QTmsgDlg::setText(const char *message_str)
-{
-    if (tx_display_style == STY_HTML)
-        tx_tbox->setHtml(message_str);
-    else
-        tx_tbox->setPlainText(message_str);
-}
-
-
-void
-QTmsgDlg::dismiss_btn_slot()
-{
-    deleteLater();
-}
+#endif
 

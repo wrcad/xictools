@@ -9,40 +9,139 @@ DATE = @DATE@
 
 CXX = @CXX@
 CC = @CC@
-CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@ @UFLAGS@ -DWRSPICE
-DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @TOOLKITCFLAGS@ -DWRSPICE
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@ @UFLAGS@ -DWRSPICE
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@ -DWRSPICE
+WINDRES = @WINDRES@
 AR = @AR@
+LD = @LD@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
-INCLUDE = $(APPINCL) @TOOLKITINC@
+USEMOZY = @USEMOZY@
+TOOLKITINC = @TOOLKITINC@
+RESOURCE = @RESOURCE@
+MOC = @MOC@
 
-LIB_TARGET = ../qtwrs.a
-HFILES =
-CCFILES =
-CCOBJS = $(CCFILES:.cc=.o)
-APPINCL = -I. -I../include -I../../ginterf -I../../ginterf/qtinterf
+LIB_TARGET = qtwrs.a
 
-$(LIB_TARGET): $(CCOBJS)
+BASE = ../../../xt_base
+SECURE = ../../../secure
+INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include
+
+CCFILES = \
+    qterrmsg.cc \
+    qtplot.cc \
+    qtspmsg.cc \
+    qttbdlg.cc \
+    qttoolb.cc
+#    qtcmds.cc \
+#    qtcolor.cc \
+#    qtdebug.cc \
+#    qtfte.cc \
+#    qtpldef.cc \
+#    qtshell.cc \
+#    qtsim.cc \
+
+MOCFILES = \
+    moc_errmsg.cpp \
+    moc_spmsg.cpp \
+    moc_tbdlg.cpp
+#    moc_cmds.cpp \
+#    moc_color.cpp \
+#    moc_debug.cpp \
+#    moc_fte.cpp \
+#    moc_pldef.cpp \
+#    moc_plot.cpp \
+#    moc_shell.cpp \
+#    moc_sim.cpp \
+
+CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
+MOCOBJS = $(MOCFILES:.cpp=.o)
+LIBOBJS = $(CCOBJS) $(MOCOBJS)
+
+$(LIB_TARGET): $(LIBOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
-	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(AR) cr $(LIB_TARGET) $(LIBOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
+ifeq ($(USEMOZY), yes)
+MOZY = ../../../mozy
+MOZYINC = -I$(MOZY)/include
+MOBJS = qtmain.o
+
+$(MOBJS):
+	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) -c $*.cc
+endif
+
+.cpp.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -o $@ $<
+
 .cc.o:
-	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc
+
+#moc_cmds.o: moc_cmds.cpp qtcmds.h
+#moc_color.o: moc_color.cpp qtcolor.h
+#moc_debug.o: moc_debug.cpp qtdebug.h
+moc_errmsg.o: moc_errmsg.cpp qterrmsg.h
+#moc_fte.o: moc_fte.cpp qtfte.h
+#moc_pldef.o: moc_pldef.cpp qtpldef.h
+#moc_plot.o: moc_plot.cpp qtplot.h
+#moc_shell.o: moc_shell.cpp qtshell.h
+#moc_sim.o: moc_sim.cpp qtsim.h
+moc_spmsg.o: moc_spmsg.cpp qtspmsg.h
+moc_tbdlg.o: moc_tbdlg.cpp qttbdlg.h
+
+#moc_cmds.cpp: $(MOC) qtcmds.h
+#	$(MOC) qtcmds.h -o moc_cmds.cpp
+#moc_color.cpp: $(MOC) qtcolor.h
+#	$(MOC) qtcolor.h -o moc_color.cpp
+#moc_debug.cpp: $(MOC) qtdebug.h
+#	$(MOC) qtdebug.h -o moc_debug.cpp
+moc_errmsg.cpp: $(MOC) qterrmsg.h
+	$(MOC) qterrmsg.h -o moc_errmsg.cpp
+#moc_fte.cpp: $(MOC) qtfte.h
+#	$(MOC) qtfte.h -o moc_fte.cpp
+#moc_pldef.cpp: $(MOC) qtpldef.h
+#	$(MOC) qtpldef.h -o moc_pldef.cpp
+#moc_plot.cpp: $(MOC) qtplot.h
+#	$(MOC) qtplot.h -o moc_plot.cpp
+#moc_shell.cpp: $(MOC) qtshell.h
+#	$(MOC) qtshell.h -o moc_shell.cpp
+#moc_sim.cpp: $(MOC) qtsim.h
+#	$(MOC) qtsim.h -o moc_sim.cpp
+moc_spmsg.cpp: $(MOC) qtspmsg.h
+	$(MOC) qtspmsg.h -o moc_spmsg.cpp
+moc_tbdlg.cpp: $(MOC) qttbdlg.h
+	$(MOC) qttbdlg.h -o moc_tbdlg.cpp
 
 depend:
 	@echo depending in wrspice/gtkwrs
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) $(CCFILES) \
+  $(FILTER) >> Makefile; \
 	fi
 
-clean:
+mocclean:
+	-@rm -f $(MOCOBJS)
+	-@rm -f $(MOCFILES)
+
+clean: mocclean
 	-rm *.o $(LIB_TARGET)
 
 distclean:
 	-rm *.o $(LIB_TARGET) Makefile
+
+resource.o: resource.cc wrs.rc
+	vers=$(SPICE_VERSION); \
+	IFS="$$IFS."; \
+	set $$vers; \
+	$(WINDRES) -DWRSPICE_RESOURCE -DWRS_BIN_VERSION="0,$$1,$$2,$$3" \
+ -DWRS_FILE_VERSION=\\\"$$1.$$2.$$3\\\" \
+ -DWRS_PROG_VERSION=\\\"Xic-$$1.$$2.$$3\\\"  wrs.rc resource_temp.o
+	$(CC) -c -o restmp.o resource.cc
+	$(LD) -r -o resource.o resource_temp.o restmp.o
+	rm -f resource_temp.o restmp.o
 
 #######################################################################

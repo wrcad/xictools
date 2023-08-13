@@ -8,7 +8,11 @@ specifics.  Presently there are visible artifacts and things not quite
 right involving mostly ghosting and animation, recoloring, highlighting..
 
 TODO
-Double Spin Btns, step issue, elponential button in extfc.cc and elsewhere?
+Double spin btns, step issue, exponential button in extfc.cc and elsewhere?
+
+Button defaulting. button state indication.
+
+Mouse wheel support in drawing wins.
 
 These use QMenuBar, which gets hijacked in Apple.
 qtasm.cc
@@ -36,7 +40,6 @@ qtprpcedit.cc
 These have "#ifdef notdef", i.e., code to translate.
 qtasm.cc
 qtasmpage.cc
-qtattri.cc
 qtcgdopen.cc
 qtchdcfg.cc
 qtchdopen.cc
@@ -70,6 +73,18 @@ qtltab.cc
 qtmain.cc
 qtmem.cc
 
+These use QTreeWidget
+qtasmpage.cc
+qtcgdlist.cc
+qtchdlist.cc
+qtdebug.cc
+qtextdev.cc
+qtlibs.cc
+qtltalias.cc
+qtnodmp.cc
+qtoalibs.cc
+qttree.cc
+
 These use QTtextEdit
 qtauxtab.cc
 qtcells.cc
@@ -87,18 +102,6 @@ qtprpcedit.cc
 qtprpedit.cc
 qtprpinfo.cc
 qtselinst.cc
-
-These use QTreeWidget
-qtasmpage.cc
-qtcgdlist.cc
-qtchdlist.cc
-qtdebug.cc
-qtextdev.cc
-qtlibs.cc
-qtltalias.cc
-qtnodmp.cc
-qtoalibs.cc
-qttree.cc
 
 MonitorGeom was used in this (replaced)
 qtcgdopen.cc
@@ -124,7 +127,7 @@ qtasm.cc        1
 qtasmpage.cc    1
 qtasmprg.cc     1
 qtasmtf.cc      1
-qtattri.cc
+qtattri.cc      3
 qtauxtab.cc     3
 qtcells.cc      3
 qtcfilt.cc
@@ -196,7 +199,7 @@ qtparam.cc
 qtpcctrl.cc
 qtpcprms.cc
 qtpfilt.cc
-qtplace.cc
+qtplace.cc      3
 qtprpbase.cc
 qtprpcedit.cc   2
 qtprpedit.cc    3

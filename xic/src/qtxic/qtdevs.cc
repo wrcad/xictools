@@ -493,6 +493,7 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         QMenu *menu_t = menubar->addMenu(tr("Terminals"));
         connect(menu_t, SIGNAL(triggered(QAction*)),
             this, SLOT(menu_slot(QAction*)));
+        QPushButton *btn;  // needed below
 #endif
 
         for (stringlist *ww = wl; ww; ww = ww->next) {

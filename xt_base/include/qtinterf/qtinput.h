@@ -83,28 +83,19 @@ public:
     void set_message(const char*);
     void set_text(const char*);
 
-    // This widget will be deleted when closed with the title bar "X"
-    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-    // not called.  The default behavior is to hide the widget instead
-    // of deleting it, which would likely be a core leak here.
-    void closeEvent(QCloseEvent*)       { quit_slot(); }
-
 signals:
     void action_call(const char*, void*);
 
 private slots:
     void action_slot();
-    void quit_slot();
+    void cancel_btn_slot();
 
 private:
-    QGroupBox *ed_gbox;
-    QLabel *ed_label;
+    QLabel  *ed_label;
     QWidget *ed_edit;           // QLineEdit or QTextEdit
-    QPushButton *ed_ok;
-    QPushButton *ed_cancel;
-    bool ed_multiline;          // true when multiline
-    bool ed_quit_flag;          // set true if Apply pressed
-    bool ed_ign_ret;            // true if ignoring callback return
+    bool    ed_multiline;       // true when multiline
+    bool    ed_quit_flag;       // set true if Apply pressed
+    bool    ed_ign_ret;         // true if ignoring callback return
 };
 
 #endif
