@@ -381,7 +381,6 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     wid = 40*wid + 6;
     hei = 6*hei + 6;
     Viewport()->setFixedSize(QSize(wid, hei));
-//    setFixedSize(width(), height());
 
 
     // drawing colors

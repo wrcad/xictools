@@ -89,20 +89,20 @@ enum {GR_TB, GR_PLOT, GR_MPLT};
 struct sColor
 {
     sColor()
-        {
-            pixel = 0;
-            red = 0;
-            green = 0;
-            blue = 0;
-        }
+    {
+        pixel = 0;
+        red = 0;
+        green = 0;
+        blue = 0;
+    }
 
     sColor(unsigned int p, unsigned int r, unsigned int g, unsigned int b)
-        {
-            pixel = p;
-            red = r;
-            green = g;
-            blue = b;
-        }
+    {
+        pixel = p;
+        red = r;
+        green = g;
+        blue = b;
+    }
 
     unsigned int pixel;
     unsigned char red, green, blue;
@@ -171,41 +171,41 @@ enum LAtype { LAuser=0, LAtitle, LAname, LAdate, LAxlabel, LAylabel,
 struct sKeyed
 {
     sKeyed()
-        {
-            text = 0;
-            region = KeyedPlot;
-            x = y = 0;
-            colorindex = 0;
-            xform = 0;
-            inspos = 0;
-            terminated = false;
-            fixed = false;
-            ignore = false;
-            type = LAuser;
-            next = 0;
-        }
+    {
+        text = 0;
+        region = KeyedPlot;
+        x = y = 0;
+        colorindex = 0;
+        xform = 0;
+        inspos = 0;
+        terminated = false;
+        fixed = false;
+        ignore = false;
+        type = LAuser;
+        next = 0;
+    }
 
-     void update(const sKeyed *k)
-        {
-            if (fixed)
-                return;
-            if (!k)
-                text[0] = 0;
-            else if (type == k->type) {
-                if (strcmp(text, k->text)) {
-                    delete [] text;
-                    text = lstring::copy(k->text);
-                }
-                region = k->region;
-                x = k->x;
-                y = k->y;
-                colorindex = k->colorindex;
-                xform = k->xform;
-                terminated = k->terminated;
-                fixed = k->fixed;
-                ignore = k->ignore;
+    void update(const sKeyed *k)
+    {
+        if (fixed)
+            return;
+        if (!k)
+            text[0] = 0;
+        else if (type == k->type) {
+            if (strcmp(text, k->text)) {
+                delete [] text;
+                text = lstring::copy(k->text);
             }
+            region = k->region;
+            x = k->x;
+            y = k->y;
+            colorindex = k->colorindex;
+            xform = k->xform;
+            terminated = k->terminated;
+            fixed = k->fixed;
+            ignore = k->ignore;
         }
+    }
 
     ~sKeyed() { delete [] text; }
 
@@ -229,10 +229,10 @@ enum { NO_KEY, UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY, ENTER_KEY,
 struct sVport
 {
     sVport()
-        {
-            vp_xoff = vp_yoff = 0;
-            vp_width = vp_height = 0;
-        }
+    {
+        vp_xoff = vp_yoff = 0;
+        vp_width = vp_height = 0;
+    }
 
     int left()              { return (vp_xoff); }
     int bottom()            { return (vp_yoff); }
@@ -255,10 +255,10 @@ struct sVport
 struct sDataWin
 {
     sDataWin()
-        {
-            xmin = ymin = 0;
-            xmax = ymax = 0;
-        }
+    {
+        xmin = ymin = 0;
+        xmax = ymax = 0;
+    }
 
     double xmin, ymin, xmax, ymax;
 };
@@ -266,10 +266,10 @@ struct sDataWin
 struct sRmark
 {
     sRmark()
-        {
-            x = y = 0;
-            set = mark = false;
-        }
+    {
+        x = y = 0;
+        set = mark = false;
+    }
 
     int x, y;      // reference point, viewport coords
     bool set;      // reference has been set
@@ -285,99 +285,99 @@ struct sGrInit;
 struct sGraph
 {
     sGraph()
-        {
-            gr_id           = 0;
-            gr_apptype      = 0;
-            gr_dev          = 0;
-            gr_filename     = 0;;
+    {
+        gr_id           = 0;
+        gr_apptype      = 0;
+        gr_dev          = 0;
+        gr_filename     = 0;;
 
-            gr_command      = 0;
-            gr_plotname     = 0;
-            gr_title        = 0;
-            gr_date         = 0;
-            gr_plotdata     = 0;
+        gr_command      = 0;
+        gr_plotname     = 0;
+        gr_title        = 0;
+        gr_date         = 0;
+        gr_plotdata     = 0;
 
-            gr_numtraces    = 0;
-            gr_scalewidth   = 0;
-            gr_fontwid      = 0;
-            gr_fonthei      = 0;
-            gr_aspect_x     = 0.0;
-            gr_aspect_y     = 0.0;
-            gr_grpmin[0]    = 0.0;
-            gr_grpmin[1]    = 0.0;
-            gr_grpmin[2]    = 0.0;
-            gr_grpmax[0]    = 0.0;
-            gr_grpmax[1]    = 0.0;
-            gr_grpmax[2]    = 0.0;
-            memset(&gr_xaxis, 0, sizeof(uGrid));
-            memset(&gr_yaxis, 0, sizeof(uGrid));
+        gr_numtraces    = 0;
+        gr_scalewidth   = 0;
+        gr_fontwid      = 0;
+        gr_fonthei      = 0;
+        gr_aspect_x     = 0.0;
+        gr_aspect_y     = 0.0;
+        gr_grpmin[0]    = 0.0;
+        gr_grpmin[1]    = 0.0;
+        gr_grpmin[2]    = 0.0;
+        gr_grpmax[0]    = 0.0;
+        gr_grpmax[1]    = 0.0;
+        gr_grpmax[2]    = 0.0;
+        memset(&gr_xaxis, 0, sizeof(uGrid));
+        memset(&gr_yaxis, 0, sizeof(uGrid));
 
-            gr_linestyle    = 0;;
-            gr_color        = 0;;
-            gr_ticmarks     = 0;
-            gr_field        = 0;
+        gr_linestyle    = 0;;
+        gr_color        = 0;;
+        gr_ticmarks     = 0;
+        gr_field        = 0;
 
-            gr_pltype       = PLOT_LIN;
-            gr_grtype       = GRID_LIN;
-            gr_format       = FT_SINGLE;
+        gr_pltype       = PLOT_LIN;
+        gr_grtype       = GRID_LIN;
+        gr_format       = FT_SINGLE;
 
-            gr_xlabel       = 0;
-            gr_ylabel       = 0;
-            gr_degree       = 0;
+        gr_xlabel       = 0;
+        gr_ylabel       = 0;
+        gr_degree       = 0;
 
-            gr_dimwidth     = 0;
+        gr_dimwidth     = 0;
 
-            gr_xdelta       = 0.0;
-            gr_ydelta       = 0.0;
-            gr_numycells    = 0;
+        gr_xdelta       = 0.0;
+        gr_ydelta       = 0.0;
+        gr_numycells    = 0;
 
-            gr_ysep         = false;
-            gr_nogrid       = false;
-            gr_present      = false;
-            gr_xmono        = false;
-            gr_xlimfixed    = false;
-            gr_ylimfixed    = false;
-            gr_stop         = false;
-            gr_oneval       = false;
+        gr_ysep         = false;
+        gr_nogrid       = false;
+        gr_present      = false;
+        gr_xmono        = false;
+        gr_xlimfixed    = false;
+        gr_ylimfixed    = false;
+        gr_stop         = false;
+        gr_oneval       = false;
 
-            gr_noevents     = false;
-            gr_noplotlogo   = false;
+        gr_noevents     = false;
+        gr_noplotlogo   = false;
 
-            gr_dirty        = false;
-            gr_seltext      = false;
-            gr_nolinecache  = false;
+        gr_dirty        = false;
+        gr_seltext      = false;
+        gr_nolinecache  = false;
 #ifdef WIN32
-            gr_destroyed    = false;
-            gr_redraw_queued = false;
+        gr_destroyed    = false;
+        gr_redraw_queued = false;
 #endif
 
-            gr_keyed        = 0;
-            gr_timer_id     = 0;
+        gr_keyed        = 0;
+        gr_timer_id     = 0;
 
-            gr_pressx       = 0;
-            gr_pressy       = 0;
-            gr_cmdmode      = 0;
-            gr_cmd_data     = 0;
+        gr_pressx       = 0;
+        gr_pressy       = 0;
+        gr_cmdmode      = 0;
+        gr_cmd_data     = 0;
 
-            gr_selections   = 0;
-            gr_selsize      = 0;
-            gr_sel_flat     = false;
-            gr_sel_show     = false;
-            gr_sel_drag     = false;
-            gr_sel_x        = 0;
-            gr_sel_y        = 0;
+        gr_selections   = 0;
+        gr_selsize      = 0;
+        gr_sel_flat     = false;
+        gr_sel_show     = false;
+        gr_sel_drag     = false;
+        gr_sel_x        = 0;
+        gr_sel_y        = 0;
 
-            gr_scale_flags  = 0;
+        gr_scale_flags  = 0;
 
-            gr_cpage        = 0;
-            gr_npage        = 0;
+        gr_cpage        = 0;
+        gr_npage        = 0;
 
-            gr_in_redraw    = 0;
+        gr_in_redraw    = 0;
 
 #if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
-            oldhdlr         = 0;
+        oldhdlr         = 0;
 #endif
-        }
+    }
 
     // No destructor, don't explicitly delete, gr_reset deallocates.
 
@@ -456,37 +456,37 @@ struct sGraph
     int yinv(int y) { return (gr_area.top() - y - 1); }
 
     sKeyed *get_keyed(int num)
-        {
-            for (sKeyed *k = gr_keyed; k; k = k->next) {
-                if (k->type == num)
-                    return (k);
-            }
-            return (0);
+    {
+        for (sKeyed *k = gr_keyed; k; k = k->next) {
+            if (k->type == num)
+                return (k);
         }
+        return (0);
+    }
 
     // The following functions get and set the plot trace name text.
     //
     char *get_txt(int num)
-        {
-            sKeyed *k = get_keyed(LAyval + num);
-            return (k ? k->text : 0);
-        }
+    {
+        sKeyed *k = get_keyed(LAyval + num);
+        return (k ? k->text : 0);
+    }
 
     void set_txt(int num, char *text)
-        {
-            sKeyed *k = get_keyed(LAyval + num);
-            if (k)
-                k->text = text;
-        }
+    {
+        sKeyed *k = get_keyed(LAyval + num);
+        if (k)
+            k->text = text;
+    }
 
     int id()                        { return (gr_id); }
     void newid(int gid)
-        {
-            // used in graphdb.cc
-            gr_id = gid;
-            gr_degree = 1;
-            gr_linestyle = -1;
-        }
+    {
+        // used in graphdb.cc
+        gr_id = gid;
+        gr_degree = 1;
+        gr_linestyle = -1;
+    }
 
     int apptype()                   { return (gr_apptype); }
     void set_apptype(int a)         { gr_apptype = a; }
@@ -494,11 +494,11 @@ struct sGraph
     GRdraw *dev()                   { return (gr_dev); }
     void set_dev(GRdraw *d)         { gr_dev = d; }
     void halt()
-        {
-            if (gr_dev)
-                gr_dev->Halt();
-            gr_dev = 0;
-        }
+    {
+        if (gr_dev)
+            gr_dev->Halt();
+        gr_dev = 0;
+    }
 
     wordlist *command()             { return (gr_command); }
     const char *plotname()          { return (gr_plotname); }
@@ -511,9 +511,9 @@ struct sGraph
     int numtraces()                 { return (gr_numtraces); }
 
     void set_fontsize()
-        {
-            gr_dev->TextExtent(0, &gr_fontwid, &gr_fonthei);
-        }
+    {
+        gr_dev->TextExtent(0, &gr_fontwid, &gr_fonthei);
+    }
 
     sDataWin &datawin()             { return (gr_datawin); }
     sDataWin &rawdata()             { return (gr_rawdata); }
@@ -548,12 +548,12 @@ struct sGraph
     void set_cmdmode(int m)         { gr_cmdmode = m; }
 
     void clear_selections()
-        {
-            delete [] gr_selections;
-            gr_selections = 0;
-            gr_selsize = 0;
-            gr_sel_flat = false;
-        }
+    {
+        delete [] gr_selections;
+        gr_selections = 0;
+        gr_selsize = 0;
+        gr_sel_flat = false;
+    }
 
 #ifdef WIN32
     bool destroyed()                { return (gr_destroyed); }
@@ -561,11 +561,11 @@ struct sGraph
     bool redraw_queued()            { return (gr_redraw_queued); }
     void set_redraw_queued(bool b)  { gr_redraw_queued = b; }
     void msw_stop()
-        {
-            gr_cpage = 0;
-            gr_stop = true;
-        }
-    int in_redraw()                { return (gr_in_redraw); }
+    {
+        gr_cpage = 0;
+        gr_stop = true;
+    }
+    int in_redraw()                 { return (gr_in_redraw); }
 #endif
 
     // This is a hack to delete the units strings from the saved text
@@ -573,41 +573,41 @@ struct sGraph
     // the redraw.
     //
     void clear_saved_text()
-        {
-            sKeyed *kp = 0, *kn;
-            for (sKeyed *k = gr_keyed; k; k = kn) {
-                kn = k->next;
-                if (k->type == LAxunits || k->type == LAyunits) {
-                    if (!kp)
-                        gr_keyed = kn;
-                    else
-                        kp->next = kn;
-                    delete k;
-                }
+    {
+        sKeyed *kp = 0, *kn;
+        for (sKeyed *k = gr_keyed; k; k = kn) {
+            kn = k->next;
+            if (k->type == LAxunits || k->type == LAyunits) {
+                if (!kp)
+                    gr_keyed = kn;
                 else
-                    kp = k;
+                    kp->next = kn;
+                delete k;
             }
+            else
+                kp = k;
         }
+    }
 
     // Clear the units text, latype is LAxunits or LAyunits.
     //
     void clear_units_text(LAtype latype)
-        {
-            sKeyed *kp = 0;
-            for (sKeyed *k = gr_keyed; k; k = k->next) {
-                if (k->type == latype) {
-                    if (!k->fixed) {
-                        if (!kp)
-                            gr_keyed = k->next;
-                        else
-                            kp->next = k->next;
-                        delete k;
-                    }
-                    break;
+    {
+        sKeyed *kp = 0;
+        for (sKeyed *k = gr_keyed; k; k = k->next) {
+            if (k->type == latype) {
+                if (!k->fixed) {
+                    if (!kp)
+                        gr_keyed = k->next;
+                    else
+                        kp->next = k->next;
+                    delete k;
                 }
-                kp = k;
+                break;
             }
+            kp = k;
         }
+    }
 
 private:
 
@@ -785,47 +785,47 @@ enum MDtype { MDnormal, MDmonte, MDdimens };
 struct sChkPts
 {
     sChkPts()
-        {
-            minv1       = 0.0;
-            maxv1       = 0.0;
-            minv2       = 0.0;
-            maxv2       = 0.0;
-            type        = MDnormal;
-            flat        = false;
-            pfset       = false;
-            param1      = 0;
-            param2      = 0;
-            filename    = 0;
-            plotname    = 0;
-            date        = 0;
-            v1          = 0;
-            v2          = 0;
-            pf          = 0;
-            sel         = 0;
-            delta1      = 0;
-            delta2      = 0;
-            size        = 0;
-            rsize       = 0;
-            xc          = 0;
-            yc          = 0;
-            d           = 0;
-            d1          = 0;
-            d2          = 0;
-            next        = 0;
-        }
+    {
+        minv1       = 0.0;
+        maxv1       = 0.0;
+        minv2       = 0.0;
+        maxv2       = 0.0;
+        type        = MDnormal;
+        flat        = false;
+        pfset       = false;
+        param1      = 0;
+        param2      = 0;
+        filename    = 0;
+        plotname    = 0;
+        date        = 0;
+        v1          = 0;
+        v2          = 0;
+        pf          = 0;
+        sel         = 0;
+        delta1      = 0;
+        delta2      = 0;
+        size        = 0;
+        rsize       = 0;
+        xc          = 0;
+        yc          = 0;
+        d           = 0;
+        d1          = 0;
+        d2          = 0;
+        next        = 0;
+    }
 
     ~sChkPts()
-        {
-            delete [] v1;
-            delete [] v2;
-            delete [] pf;
-            delete [] sel;
-            delete [] date;
-            delete [] filename;
-            delete [] plotname;
-            delete [] param1;
-            delete [] param2;
-        }
+    {
+        delete [] v1;
+        delete [] v2;
+        delete [] pf;
+        delete [] sel;
+        delete [] date;
+        delete [] filename;
+        delete [] plotname;
+        delete [] param1;
+        delete [] param2;
+    }
 
 
     double minv1;   // min/max data values
@@ -862,44 +862,44 @@ struct sChkPts
 struct sGrInit
 {
     sGrInit()
-        {
-            xlims[0] = 0.0;
-            xlims[1] = 0.0;
-            ylims[0] = 0.0;
-            ylims[1] = 0.0;
-            xdelta = 0;
-            ydelta = 0;        
-            xname = 0;
-            plotname = 0;       
-            title = 0;
-            hcopy = 0;
-            xlabel = 0;
-            ylabel = 0;
-            command = 0;
-            nplots = 0;
-            gridtype = GRID_LIN;
-            plottype = PLOT_LIN;
-            format = FT_SINGLE;
-            nointerp = false;
-            ysep = false;
-            noplotlogo = false;
-            nogrid = false;
-            present = false;
+    {
+        xlims[0] = 0.0;
+        xlims[1] = 0.0;
+        ylims[0] = 0.0;
+        ylims[1] = 0.0;
+        xdelta = 0;
+        ydelta = 0;        
+        xname = 0;
+        plotname = 0;       
+        title = 0;
+        hcopy = 0;
+        xlabel = 0;
+        ylabel = 0;
+        command = 0;
+        nplots = 0;
+        gridtype = GRID_LIN;
+        plottype = PLOT_LIN;
+        format = FT_SINGLE;
+        nointerp = false;
+        ysep = false;
+        noplotlogo = false;
+        nogrid = false;
+        present = false;
 
-            free_title = false;
-            free_xlabel = false;
-            free_ylabel = false;
-        }
+        free_title = false;
+        free_xlabel = false;
+        free_ylabel = false;
+    }
 
     ~sGrInit()
-        {
-            if (free_title)
-                delete [] title;
-            if (free_xlabel)
-                delete [] xlabel;
-            if (free_ylabel)
-                delete [] ylabel;
-        }
+    {
+        if (free_title)
+            delete [] title;
+        if (free_xlabel)
+            delete [] xlabel;
+        if (free_ylabel)
+            delete [] ylabel;
+    }
 
     double xlims[2];      // The size of the screen
     double ylims[2];
@@ -945,15 +945,15 @@ private:
 struct SPgraphics
 {
     SPgraphics()
-        {
-            spg_cur = 0;
-            spg_echogr = 0;
-            spg_sourceGraph = 0;
-            spg_tmpGraph = 0;
-            spg_mainThread = 0;
-            spg_mplotOn = false;
-            spg_running_id = 1;
-        };
+    {
+        spg_cur = 0;
+        spg_echogr = 0;
+        spg_sourceGraph = 0;
+        spg_tmpGraph = 0;
+        spg_mainThread = 0;
+        spg_mplotOn = false;
+        spg_running_id = 1;
+    };
 
     // doplot.cc
     bool Plot(wordlist*, sGraph*, const char*, const char*, int);

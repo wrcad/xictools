@@ -1,242 +1,212 @@
 
-//========================================================================
-// Pop up to display keyword help lists.  Clicking on the list entries
+/*========================================================================*
+ *                                                                        *
+ *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
+ *                       http://wrcad.com                                 *
+ *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Author: Stephen R. Whiteley, except as indicated.                     *
+ *                                                                        *
+ *  As fully as possible recognizing licensing terms and conditions       *
+ *  imposed by earlier work from which this work was derived, if any,     *
+ *  this work is released under the Apache License, Version 2.0 (the      *
+ *  "License").  You may not use this file except in compliance with      *
+ *  the License, and compliance with inherited licenses which are         *
+ *  specified in a sub-header below this one if applicable.  A copy       *
+ *  of the License is provided with this distribution, or you may         *
+ *  obtain a copy of the License at                                       *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *  See the License for the specific language governing permissions       *
+ *  and limitations under the License.                                    *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL WHITELEY RESEARCH INCORPORATED      *
+ *   OR STEPHEN R. WHITELEY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,      *
+ *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE       *
+ *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+ *                                                                        *
+ *========================================================================*
+ *               XicTools Integrated Circuit Design System                *
+ *                                                                        *
+ * WRspice Circuit Simulation and Analysis Tool                           *
+ *                                                                        *
+ *========================================================================*
+ $Id:$
+ *========================================================================*/
+
+#include "qttbhelp.h"
+#include "qtinterf/qttextw.h"
+#include "qtinterf/qtfont.h"
+#include "qttoolb.h"
+
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QMouseEvent>
+
+void
+QTtoolbar::PopUpTBhelp(ShowMode mode, GRobject parent, GRobject call_btn,
+    TBH_type type)
+{
+    if (mode == MODE_OFF) {
+        if (!tb_kw_help[type])
+            return;
+        delete tb_kw_help[type];
+        return;
+    }
+    if (tb_kw_help[type])
+        return;
+    QTtbHelpDlg *th = new QTtbHelpDlg(parent, call_btn, type);
+    tb_kw_help[type] = th;
+    if (tb_kw_help_pos[type].x != 0 && tb_kw_help_pos[type].y != 0)
+        th->move(tb_kw_help_pos[type].x, tb_kw_help_pos[type].y);
+    th->show();
+}
+
+char *
+QTtoolbar::KeywordsText(GRobject parent)
+{
+    sLstr lstr;
+/* XXX fixme
+    if (parent == (GRobject)tb_shell) {
+        for (int i = 0; KW.shell(i)->word; i++)
+            KW.shell(i)->print(&lstr);
+    }
+    else if (parent == (GRobject)tb_simdeffs) {
+        for (int i = 0; KW.sim(i)->word; i++)
+            KW.sim(i)->print(&lstr);
+    }
+    else if (parent == (GRobject)tb_commands) {
+        for (int i = 0; KW.cmds(i)->word; i++)
+            KW.cmds(i)->print(&lstr);
+    }
+    else if (parent == (GRobject)tb_plotdefs) {
+        for (int i = 0; KW.plot(i)->word; i++)
+            KW.plot(i)->print(&lstr);
+    }
+    else if (parent == (GRobject)tb_debug) {
+        for (int i = 0; KW.debug(i)->word; i++)
+            KW.debug(i)->print(&lstr);
+    }
+    else
+*/
+        lstr.add("Internal error.");
+    return (lstr.string_trim());
+}
+
+void
+QTtoolbar::KeywordsCleanup(QTtbHelpDlg *dlg)
+{
+    if (!dlg)
+        return;
+    TBH_type t = dlg->type();
+    tb_kw_help[t] = 0;
+    QPoint pt = dlg->mapToGlobal(QPoint(0, 0));
+    tb_kw_help_pos[t].x = pt.x();
+    tb_kw_help_pos[t].y = pt.y();
+}
+// End of QTtoolbar functions;
+
+
+// Dialog to display keyword help lists.  Clicking on the list entries
 // calls the main help system.  This is called from the dialogs which
 // contain lists of 'set' variables to modify.
 //
 
-struct sTBhelp
+
+QTtbHelpDlg::QTtbHelpDlg(GRobject parent, GRobject call_btn, TBH_type type)
 {
-    friend void QTtoolbar::PopDownTBhelp(TBH_type);
-
-    sTBhelp(GRobject, GRobject);
-    // No destructor, this struct should not be destroyed explicitly.
-
-    QWidget *show(TBH_type);
-
-private:
-    void select(QWidget*, int, int);
-
-    static void th_cancel_proc(QWidget*, void*);
-    static int th_btn_hdlr(QWidget*, QEvent*, void*);
-    static void th_destroy(void*);
-
-    QWidget *th_popup;
-    QWidget *th_text;
-
-    int th_lx;
-    int th_ly;
-};
-
-
-void
-QTtoolbar::PopUpTBhelp(GRobject parent, GRobject call_btn, TBH_type type)
-{
-    if (tb_kw_help[type])
-        return;
-    sTBhelp *th = new sTBhelp(parent, call_btn);
-    tb_kw_help[type] = th->show(type);;
-//    g_object_set_data(G_OBJECT(tb_kw_help[type]), "tbtype",
-//        (void*)(long)type);
-}
-
-
-void
-QTtoolbar::PopDownTBhelp(TBH_type type)
-{
-    if (!tb_kw_help[type])
-        return;
-/*
-    g_signal_handlers_disconnect_by_func(G_OBJECT(tb_kw_help[type]),
-        (gpointer)sTBhelp::th_cancel_proc, (gpointer)tb_kw_help[type]);
-    gdk_window_get_root_origin(gtk_widget_get_window(tb_kw_help[type]),
-        &tb_kw_help_pos[type].x, &tb_kw_help_pos[type].y);
-    gtk_widget_destroy(GTK_WIDGET(tb_kw_help[type]));
-*/
-    tb_kw_help[type] = 0;
-}
-
-
-sTBhelp::sTBhelp(GRobject parent, GRobject call_btn)
-{
-    /*
-    th_popup = gtk_NewPopup(0, "Keyword Help", th_cancel_proc, 0);
     th_text = 0;
+    th_parent = parent;
+    th_caller = call_btn;
+    th_type = type;
     th_lx = 0;
     th_ly = 0;
 
-    g_object_set_data_full(G_OBJECT(th_popup), "tbhelp", this, th_destroy);
-    g_object_set_data(G_OBJECT(th_popup), "caller", call_btn);
+    setWindowTitle(tr("Keyword Help"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    GtkWidget *form = gtk_table_new(1, 4, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(th_popup), form);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setMargin(2);
+    vbox->setSpacing(2);
 
-    //
     // label in frame
     //
-    GtkWidget *label = gtk_label_new("Click on entries for more help: ");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), label);
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
+    QGroupBox *gb = new QGroupBox();
+    vbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setMargin(2);
+    hb->setSpacing(2);
 
-    sLstr lstr;
-    int i;
-    if (parent == (GRobject)TB()->sh_shell) {
-        for (i = 0; KW.shell(i)->word; i++)
-            KW.shell(i)->print(&lstr);
-    }
-    else if (parent == (GRobject)TB()->sd_shell) {
-        for (i = 0; KW.sim(i)->word; i++)
-            KW.sim(i)->print(&lstr);
-    }
-    else if (parent == (GRobject)TB()->cm_shell) {
-        for (i = 0; KW.cmds(i)->word; i++)
-            KW.cmds(i)->print(&lstr);
-    }
-    else if (parent == (GRobject)TB()->pd_shell) {
-        for (i = 0; KW.plot(i)->word; i++)
-            KW.plot(i)->print(&lstr);
-    }
-    else if (parent == (GRobject)TB()->db_shell) {
-        for (i = 0; KW.debug(i)->word; i++)
-            KW.debug(i)->print(&lstr);
-    }
-    else
-        lstr.add("Internal error.");
+    QLabel *label = new QLabel(tr("Click on entries for more help: "));
+    hb->addWidget(label);
 
-    //
     // text area
     //
-    GtkWidget *hbox;
-    text_scrollable_new(&hbox, &th_text, FNT_FIXED);
+    th_text = new QTtextEdit();
+    vbox->addWidget(th_text);
+    th_text->setReadOnly(true);
+    th_text->setMouseTracking(true);
+    connect(th_text, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_FIXED))
+        th_text->setFont(*fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    text_set_chars(th_text, lstr.string());
+    char *s = TB()->KeywordsText(th_parent);
+    th_text->set_chars(s);
+    delete [] s;
 
-    gtk_widget_add_events(th_text,
-        GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
-
-    g_signal_connect(G_OBJECT(th_text), "button_press_event",
-        G_CALLBACK(th_btn_hdlr), this);
-    g_signal_connect(G_OBJECT(th_text), "button_release_event",
-        G_CALLBACK(th_btn_hdlr), this);
-
+/* XXX
     // This will provide an arrow cursor.
     g_signal_connect_after(G_OBJECT(th_text), "realize",
         G_CALLBACK(text_realize_proc), 0);
+*/
 
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
+    int wid = 80*QTfont::stringWidth(0, th_text);
+    int hei = 12*QTfont::lineHeight(th_text);
+//XXX    gtk_window_set_default_size(GTK_WINDOW(th_popup), wid + 8, hei + 20);
 
-    int wid = 80*QTfont::stringWidth(th_text, 0);
-    int hei = 12*QTfont::stringHeight(th_text, 0);
-    gtk_window_set_default_size(GTK_WINDOW(th_popup), wid + 8, hei + 20);
-
-    GtkWidget *sep = gtk_hseparator_new();
-    gtk_widget_show(sep);
-    gtk_table_attach(GTK_TABLE(form), sep, 0, 1, 2, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    //
     // buttons
     //
-    GtkWidget *button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(th_cancel_proc), th_popup);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setMargin(0);
+    hbox->setSpacing(2);
 
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, 3, 4,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    */
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
-QWidget *
-sTBhelp::show(TBH_type type)
+QTtbHelpDlg::~QTtbHelpDlg()
 {
-
-    /*
-    gtk_window_set_transient_for(GTK_WINDOW(th_popup),
-        GTK_WINDOW(TB()->context->Shell()));
-    if (TB()->tb_kw_help_pos[type].x != 0 && TB()->tb_kw_help_pos[type].y != 0)
-        gtk_window_move(GTK_WINDOW(th_popup), TB()->tb_kw_help_pos[type].x,
-            TB()->tb_kw_help_pos[type].y);
-    gtk_widget_show(th_popup);
-    */
-    return (th_popup);
+    if (th_caller)
+        QTdev::Deselect(th_caller);
+    TB()->KeywordsCleanup(this);
 }
 
 
 void
-sTBhelp::select(GtkWidget *caller, int x, int y)
+QTtbHelpDlg::dismiss_btn_slot()
 {
-    /*
-    char *string = text_get_chars(caller, 0, -1);
-    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
-        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
-    GtkTextIter ihere, iline;
-    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(caller), &ihere, x, y);
-    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
-    char *line_start = string + gtk_text_iter_get_offset(&iline);
-
-    // find first word
-    while (isspace(*line_start) && *line_start != '\n')
-        line_start++;
-    if (*line_start == 0 || *line_start == '\n') {
-        text_select_range(caller, 0, 0);
-        delete [] string;
-        return;
-    }
-
-    int start = line_start - string;
-    char buf[64];
-    char *s = buf;
-    while (!isspace(*line_start))
-        *s++ = *line_start++;
-    *s = '\0';
-    int end = line_start - string;
-
-    text_select_range(caller, start, end);
-#ifdef HAVE_MOZY
-    HLP()->word(buf);
-#endif
-    delete [] string;
-    */
+    delete this;
 }
 
 
-// Static function.
-//
 void
-sTBhelp::th_cancel_proc(GtkWidget*, void *client_data)
+QTtbHelpDlg::mouse_press_slot(QMouseEvent *ev)
 {
     /*
-    GtkWidget *popup = (GtkWidget*)client_data;
-    GtkWidget *caller = (GtkWidget*)g_object_get_data(G_OBJECT(popup),
-        "caller");
-    if (caller)
-        QTdev::Deselect(caller);
-    int type = (intptr_t)g_object_get_data(G_OBJECT(popup), "tbtype");
-    TB()->PopDownTBhelp((TBH_type)type);
-    */
-}
-
-
-// Static function.
-//
-int
-sTBhelp::th_btn_hdlr(GtkWidget *caller, GdkEvent *event, void *arg)
-{
-    /*
-    sTBhelp *th = (sTBhelp*)arg;
+    QTtbHelpDlg *th = (QTtbHelpDlg*)arg;
     if (event->type == GDK_BUTTON_PRESS) {
         if (event->button.button == 1) {
             th->th_lx = (int)event->button.x;
@@ -255,15 +225,66 @@ sTBhelp::th_btn_hdlr(GtkWidget *caller, GdkEvent *event, void *arg)
         }
     }
     */
-    return (true);
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+
+    const char *str = lstring::copy(
+        th_text->toPlainText().toLatin1().constData());
+    int x = ev->x();
+    int y = ev->y();
+    QTextCursor cur = th_text->cursorForPosition(QPoint(x, y));
+    int pos = cur.position();
+
+    const char *lineptr = str;
+    for (int i = 0; i <= pos; i++) {
+        if (str[i] == '\n') {
+            if (i == pos) {
+                // Clicked to right of line.
+                th_text->select_range(0, 0);
+                delete [] str;
+                return;
+            }
+            lineptr = str + i+1;
+        }
+    }
+
+    // find first word
+    while (isspace(*lineptr) && *lineptr != '\n')
+        lineptr++;
+    if (*lineptr == 0 || *lineptr == '\n') {
+        th_text->select_range(0, 0);
+        delete [] str;
+        return;
+    }
+
+    int start = lineptr - str;
+    char buf[64];
+    char *s = buf;
+    while (!isspace(*lineptr))
+        *s++ = *lineptr++;
+    *s = 0;
+    int end = lineptr - str;
+
+    th_text->select_range(start, end);
+#ifdef HAVE_MOZY
+    HLP()->word(buf);
+#endif
+    delete [] str;
 }
 
 
-// Static function.
-//
 void
-sTBhelp::th_destroy(void *arg)
+QTtbHelpDlg::font_changed_slot(int fnum)
 {
-    delete (sTBhelp*)arg;
+    if (fnum == FNT_FIXED) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum)) {
+            th_text->setFont(*fnt);
+            //XXX redraw
+        }
+    }
 }
 

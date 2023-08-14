@@ -49,6 +49,8 @@ enum tid_id { tid_toolbar, tid_bug, tid_font, tid_files, tid_circuits,
     tid_plots, tid_plotdefs, tid_colors, tid_vectors, tid_variables,
     tid_shell, tid_simdefs, tid_commands, tid_trace, tid_debug, tid_END };
 
+class QTtbHelpDlg;
+
 extern inline class QTtoolbar *TB();
 
 // Keep track of the active popup widgets
@@ -158,6 +160,10 @@ public:
     void PopUpNotes();
     // --------------------------------
     // End of Toolbar virtual overrides.
+
+    // qttbhelp.cc
+    char *KeywordsText(GRobject);
+    void KeywordsCleanup(QTtbHelpDlg*);
 
     void Toolbar();
 //XXX    void RevertFocus(GtkWidget*);

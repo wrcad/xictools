@@ -421,7 +421,7 @@ QTmodifDlg::mouse_press_slot(QMouseEvent *ev)
     int y = ev->y();
     QTextCursor cur = m_text->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
-    
+
     if (isspace(str[pos])) {
         // Clicked on white space.
         delete [] str;

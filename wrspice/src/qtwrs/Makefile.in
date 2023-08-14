@@ -29,9 +29,11 @@ INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include
 
 CCFILES = \
     qterrmsg.cc \
+    qtgraph.cc \
     qtplot.cc \
     qtspmsg.cc \
     qttbdlg.cc \
+    qttbhelp.cc \
     qttoolb.cc
 #    qtcmds.cc \
 #    qtcolor.cc \
@@ -43,8 +45,10 @@ CCFILES = \
 
 MOCFILES = \
     moc_errmsg.cpp \
+    moc_plot.cpp \
     moc_spmsg.cpp \
-    moc_tbdlg.cpp
+    moc_tbdlg.cpp \
+    moc_tbhelp.cpp
 #    moc_cmds.cpp \
 #    moc_color.cpp \
 #    moc_debug.cpp \
@@ -89,8 +93,10 @@ moc_errmsg.o: moc_errmsg.cpp qterrmsg.h
 #moc_plot.o: moc_plot.cpp qtplot.h
 #moc_shell.o: moc_shell.cpp qtshell.h
 #moc_sim.o: moc_sim.cpp qtsim.h
+moc_plot.o: moc_plot.cpp qtplot.h
 moc_spmsg.o: moc_spmsg.cpp qtspmsg.h
 moc_tbdlg.o: moc_tbdlg.cpp qttbdlg.h
+moc_tbhelp.o: moc_tbhelp.cpp qttbhelp.h
 
 #moc_cmds.cpp: $(MOC) qtcmds.h
 #	$(MOC) qtcmds.h -o moc_cmds.cpp
@@ -110,10 +116,14 @@ moc_errmsg.cpp: $(MOC) qterrmsg.h
 #	$(MOC) qtshell.h -o moc_shell.cpp
 #moc_sim.cpp: $(MOC) qtsim.h
 #	$(MOC) qtsim.h -o moc_sim.cpp
+moc_plot.cpp: $(MOC) qtplot.h
+	$(MOC) qtplot.h -o moc_plot.cpp
 moc_spmsg.cpp: $(MOC) qtspmsg.h
 	$(MOC) qtspmsg.h -o moc_spmsg.cpp
 moc_tbdlg.cpp: $(MOC) qttbdlg.h
 	$(MOC) qttbdlg.h -o moc_tbdlg.cpp
+moc_tbhelp.cpp: $(MOC) qttbhelp.h
+	$(MOC) qttbhelp.h -o moc_tbhelp.cpp
 
 depend:
 	@echo depending in wrspice/gtkwrs

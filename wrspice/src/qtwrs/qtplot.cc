@@ -49,12 +49,14 @@ Authors: 1988 Jeffrey M. Hsu
 // QT drivers for plotting.
 //
 
+#include "qtplot.h"
 #include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
 #include "simulator.h"
 #include "qttoolb.h"
+#include "qtinterf/qtcanvas.h"
 #include "qtinterf/qtfont.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
@@ -66,6 +68,18 @@ Authors: 1988 Jeffrey M. Hsu
 #include "../../icons/wrspice_48x48.xpm"
 #endif
 
+#include <QLayout>
+#include <QPushButton>
+#include <QGroupBox>
+#include <QLabel>
+#include <QResizeEvent>
+#include <QPaintEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QEnterEvent>
+#include <QFocusEvent>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 
 // help keywords used in this file
 // plotpanel
@@ -86,152 +100,69 @@ Authors: 1988 Jeffrey M. Hsu
     gdk_gc_set_foreground(w->XorGC(), &clr);
 #endif
 */
-void
-sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
-{
-}
-int
-sGraph::gr_pkg_init()
-{
-    return 1;
-}
-bool
-sGraph::gr_init_btns()
-{
-    return 0;
-}
-bool
-sGraph::gr_check_plot_events()
-{
-    return 0;
-}
-GRwbag *
-sGraph::gr_new_gx(int type)
-{
-    return 0;
-}
-void
-sGraph::gr_redraw()
-{
-}
-void
-sGraph::gr_popdown()
-{
-}
 
-#ifdef notdef
 
-// Indices into the buttons array for the button witget pointers.
-enum pbtn_type
+QSize
+QTplotDlg::sizeHint() const
 {
-    pbtn_dismiss,
-    pbtn_help,
-    pbtn_redraw,
-    pbtn_print,
-    pbtn_saveplot,
-    pbtn_saveprint,
-    pbtn_points,
-    pbtn_comb,
-    pbtn_logx,
-    pbtn_logy,
-    pbtn_marker,
-    pbtn_separate,
-    pbtn_single,
-    pbtn_group,
-    pbtn_NUMBTNS
-};
-
-// special 'widget bag' for plot and mplot windows.
-//
-struct plot_bag : public GTKbag,  public GTKdraw
-{
-    friend struct sGraph;
-
-    plot_bag(int type) : GTKdraw(type)
-        {
-            pb_bbox = 0;
-            for (int i = 0; i < pbtn_NUMBTNS; i++)
-                pb_checkwins[i] = 0;
-#if GTK_CHECK_VERSION(3,0,0)
-#else
-            pb_pixmap = 0;
-            pb_pmwid = pb_pmhei = 0;
-#endif
-            pb_id = 0;
-            pb_x = pb_y = 0;
-            pb_rdid = 0;
+    int wid, hei;
+    if (pb_graph->apptype() == GR_PLOT) {
+        wid = 500;
+        hei = 300;
+    
+        variable *v = Sp.GetRawVar(kw_plotgeom);
+        if (v) {
+            if (v->type() == VTYP_STRING) {
+                const char *s = v->string();
+                double *d = SPnum.parse(&s, false);
+                if (d && *d >= 100.0 && *d <= 2000.0) {
+                    wid = (int)*d;
+                    while (*s && !isdigit(*s)) s++;
+                    d = SPnum.parse(&s, false);
+                    if (d && *d >= 100.0 && *d <= 2000.0)
+                        hei = (int)*d;
+                }
+            }
+            else if (v->type() == VTYP_LIST) {
+                v = v->list();
+                bool ok = false;
+                if (v->type() == VTYP_NUM && v->integer() >= 100 &&
+                        v->integer() <= 2000) {
+                    wid = v->integer();
+                    ok = true;
+                }
+                else if (v->type() == VTYP_REAL && v->real() >= 100.0 &&
+                        v->real() <= 2000) {
+                    wid = (int)v->real();
+                    ok = true;
+                }
+                v = v->next();
+                if (ok && v) {
+                    if (v->type() == VTYP_NUM && v->integer() >= 100 &&
+                            v->integer() <= 2000)
+                        hei = v->integer();
+                    else if (v->type() == VTYP_REAL && v->real() >= 100.0 &&
+                            v->real() <= 2000.0)
+                        hei = (int)v->real();
+                }
+            }
         }
-
-    ~plot_bag()
-        {
-#if GTK_CHECK_VERSION(3,0,0)
-#else
-            if (pb_pixmap)
-                gdk_pixmap_unref(pb_pixmap);
-#endif
-            if (pb_id)
-                g_source_remove(pb_id);
-        }
-
-    bool init_gbuttons(sGraph*);
-
-    bool init(sGraph*);
-
-private:
-    static bool check_event(GdkEvent*, sGraph*);
-    static void sens_set(GTKbag*, bool, int);
-    static int resize(GtkWidget*, GdkEvent*, void*);
-    static int redraw_timeout(void*);
-#if GTK_CHECK_VERSION(3,0,0)
-    static int redraw(GtkWidget*, cairo_t*, void*);
-#else
-    static int redraw(GtkWidget*, GdkEvent*, void*);
-#endif
-    static int motion(GtkWidget*, GdkEvent*, void*);
-    static int motion_idle(void*);
-    static int focus(GtkWidget*, GdkEvent*, void*);
-    static int keypress(GtkWidget*, GdkEvent*, void*);
-    static int buttonpress(GtkWidget*, GdkEvent*, void*);
-    static int buttonup(GtkWidget*, GdkEvent*, void*);
-    static int enter_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int leave_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void font_change_hdlr(GtkWidget*, void*, void*);
-    static void b_quit(GtkWidget*, void*);
-    static void b_help(GtkWidget*, void*);
-    static void b_recolor(GtkWidget*, void*);
-    static void b_hardcopy(GtkWidget*, void*);
-    static void b_save_plot(GtkWidget*, void*);
-    static void do_save_plot(const char*, void*);
-    static void b_save_print(GtkWidget*, void*);
-    static void do_save_print(const char*, void*);
-    static void b_points(GtkWidget*, void*);
-    static void b_logx(GtkWidget*, void*);
-    static void b_logy(GtkWidget*, void*);
-    static void b_marker(GtkWidget*, void*);
-    static void b_separate(GtkWidget*, void*);
-    static void b_onescale(GtkWidget*, void*);
-    static void b_multiscale(GtkWidget*, void*);
-    static void set_hccb(HCcb*);
-    static bool get_dim(const char*, double*);
-
-    GtkWidget *pb_bbox;             // frame containing button box
-    GtkWidget *pb_checkwins[pbtn_NUMBTNS];  // button widget pointers
-#if GTK_CHECK_VERSION(3,0,0)
-#else
-    GdkPixmap *pb_pixmap;           // backing store
-    int pb_pmwid, pb_pmhei;         // pixmap size
-#endif
-    int pb_id;                      // motion idle id
-    int pb_x, pb_y;                 // motion coords
-    int pb_rdid;                    // redisplay timeout id
-};
+    }
+    else {
+        wid = 400;
+        hei = 300;
+    }
+    return (QSize(wid, hei));
+}
 
 
 bool
-plot_bag::init(sGraph *gr)
+QTplotDlg::init(sGraph *gr)
 {
     wb_sens_set = sens_set;
+    pb_graph = gr;
 
+/*  icons in QT?
 #ifdef WIN32
     // Icons are obtained from resources.
 #else
@@ -246,121 +177,76 @@ plot_bag::init(sGraph *gr)
     g2->next = g3;
     gtk_window_set_icon_list(GTK_WINDOW(Shell()), g1);
 #endif
+*/
 
+    char buf[128];
+    const char *anam = "";
+    if (gr->apptype() == GR_PLOT)
+        anam = GR_PLOTstr;
+    else if (gr->apptype() == GR_MPLT)
+        anam = GR_MPLTstr;
+    snprintf(buf, sizeof(buf), "%s %s %d", CP.Program(), anam, gr->id());
+    setWindowTitle(buf);
+
+/*
     g_signal_connect(G_OBJECT(Shell()), "destroy",
         G_CALLBACK(b_quit), gr);
+*/
 
-    GtkWidget *form = gtk_table_new(2, 1, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(Shell()), form);
-    gtk_container_set_border_width(GTK_CONTAINER(Shell()), 5);
+    QHBoxLayout *hbox = new QHBoxLayout(this);
+    hbox->setMargin(2);
+    hbox->setSpacing(2);
 
     // set up viewport
-    SetViewport(gtk_drawing_area_new());
+    gd_viewport = new QTcanvas();
+    hbox->addWidget(Viewport(), 0, 0);
+    Gbag()->set_draw_if(gd_viewport);
+    Viewport()->setFocusPolicy(Qt::StrongFocus);
 
-    int dawid, dahei;
-    if (gr->apptype() == GR_PLOT) {
-        dawid = 400;
-        dahei = 300;
-    
-        variable *v = Sp.GetRawVar(kw_plotgeom);
-        if (v) {
-            if (v->type() == VTYP_STRING) {
-                const char *s = v->string();
-                double *d = SPnum.parse(&s, false);
-                if (d && *d >= 100.0 && *d <= 2000.0) {
-                    dawid = (int)*d;
-                    while (*s && !isdigit(*s)) s++;
-                    d = SPnum.parse(&s, false);
-                    if (d && *d >= 100.0 && *d <= 2000.0)
-                        dahei = (int)*d;
-                }
-            }
-            else if (v->type() == VTYP_LIST) {
-                v = v->list();
-                bool ok = false;
-                if (v->type() == VTYP_NUM && v->integer() >= 100 &&
-                        v->integer() <= 2000) {
-                    dawid = v->integer();
-                    ok = true;
-                }
-                else if (v->type() == VTYP_REAL && v->real() >= 100.0 &&
-                        v->real() <= 2000) {
-                    dawid = (int)v->real();
-                    ok = true;
-                }
-                v = v->next();
-                if (ok && v) {
-                    if (v->type() == VTYP_NUM && v->integer() >= 100 &&
-                            v->integer() <= 2000)
-                        dahei = v->integer();
-                    else if (v->type() == VTYP_REAL && v->real() >= 100.0 &&
-                            v->real() <= 2000.0)
-                        dahei = (int)v->real();
-                }
-            }
-        }
-    }
-    else {
-        dawid = 300;
-        dahei = 300;
-    }
-    gtk_widget_set_size_request(Viewport(), dawid, dahei);
-    gtk_widget_show(Viewport());
-    GTKfont::setupFont(Viewport(), FNT_SCREEN, true);
+    QFont *fnt;
+    if (FC.getFont(&fnt, FNT_SCREEN))
+        gd_viewport->set_font(fnt);
+    connect(QTfont::self(), SIGNAL(fontChanged(int)),
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    gtk_widget_add_events(Viewport(), GDK_STRUCTURE_MASK);
-    g_signal_connect(G_OBJECT(Viewport()), "configure_event",
-        G_CALLBACK(resize), gr);
-#if GTK_CHECK_VERSION(3,0,0)
-    g_signal_connect(G_OBJECT(Viewport()), "draw",
-        G_CALLBACK(redraw), gr);
-#else
-    gtk_widget_add_events(Viewport(), GDK_EXPOSURE_MASK);
-    g_signal_connect(G_OBJECT(Viewport()), "expose_event",
-        G_CALLBACK(redraw), gr);
-#endif
-    gtk_widget_add_events(Viewport(), GDK_KEY_PRESS_MASK);
-    g_signal_connect_after(G_OBJECT(Viewport()), "key_press_event",
-        G_CALLBACK(keypress), gr);
-    gtk_widget_add_events(Viewport(), GDK_BUTTON_PRESS_MASK);
-    g_signal_connect_after(G_OBJECT(Viewport()), "button_press_event",
-        G_CALLBACK(buttonpress), gr);
-    gtk_widget_add_events(Viewport(), GDK_BUTTON_RELEASE_MASK);
-    g_signal_connect_after(G_OBJECT(Viewport()), "button_release_event",
-        G_CALLBACK(buttonup), gr);
-    gtk_widget_add_events(Viewport(), GDK_POINTER_MOTION_MASK);
-    g_signal_connect(G_OBJECT(Viewport()), "motion_notify_event",
-        G_CALLBACK(motion), gr);
-    gtk_widget_add_events(Viewport(), GDK_ENTER_NOTIFY_MASK);
-    g_signal_connect(G_OBJECT(Viewport()), "enter_notify_event",
-        G_CALLBACK(enter_hdlr), gr);
-    gtk_widget_add_events(Viewport(), GDK_LEAVE_NOTIFY_MASK);
-    g_signal_connect(G_OBJECT(Viewport()), "leave_notify_event",
-        G_CALLBACK(leave_hdlr), gr);
-    g_signal_connect(G_OBJECT(Viewport()), "style_set",
-        G_CALLBACK(font_change_hdlr), gr);
+    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
+        this, SLOT(resize_slot(QResizeEvent*)));
+    connect(Viewport(), SIGNAL(paint_event(QPaintEvent*)),
+        this, SLOT(paint_slot(QPaintEvent*)));
+    connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(button_down_slot(QMouseEvent*)));
+    connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(button_up_slot(QMouseEvent*)));
+    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
+        this, SLOT(motion_slot(QMouseEvent*)));
+    connect(Viewport(), SIGNAL(key_press_event(QKeyEvent*)),
+        this, SLOT(key_down_slot(QKeyEvent*)));
+    connect(Viewport(), SIGNAL(key_release_event(QKeyEvent*)),
+        this, SLOT(key_up_slot(QKeyEvent*)));
+    connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
+        this, SLOT(enter_slot(QEnterEvent*)));
+    connect(Viewport(), SIGNAL(leave_event(QEvent*)),
+        this, SLOT(leave_slot(QEvent*)));
+    connect(Viewport(), SIGNAL(focus_in_event(QFocusEvent*)),
+        this, SLOT(focus_in_slot(QFocusEvent*)));
+    connect(Viewport(), SIGNAL(focus_out_event(QFocusEvent*)),
+        this, SLOT(focus_out_slot(QFocusEvent*)));
+    connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
+        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
+    connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
+        this, SLOT(drop_slot(QDropEvent*)));
 
-    // This avoids issue of an expose event on focus change.
-    gtk_widget_add_events(Viewport(), GDK_FOCUS_CHANGE_MASK);
-    g_signal_connect(G_OBJECT(Viewport()), "focus_in_event",
-        G_CALLBACK(focus), this);
-    g_signal_connect(G_OBJECT(Viewport()), "focus_out_event",
-        G_CALLBACK(focus), this);
+//    Viewport()->resize(dawid, dahei);
 
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), Viewport());
+    pb_gbox = new QGroupBox();
+    hbox->addWidget(pb_gbox);
+    pb_gbox->setMaximumWidth(100);
 
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 0, 0);
+    init_gbuttons();
 
-    init_gbuttons(gr);
-    gtk_table_attach(GTK_TABLE(form), pb_bbox, 1, 2, 0, 1,
-        (GtkAttachOptions)0,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 0, 0);
+    hbox->setStretch(0, 1);
 
+/*
     // The first plot is issued a sGbag and GCs.  Subsequent plots are
     // issued the same sGbag for the class (plots and mplots are
     // separate classes).  This is a problem for plots, which have
@@ -375,11 +261,14 @@ plot_bag::init(sGraph *gr)
         gbag->set_xorgc(XorGC());
         SetGbag(gbag);
     }
+*/
 
     // position the plot on screen
     int x, y;
     GP.PlotPosition(&x, &y);
     TB()->FixLoc(&x, &y);
+    move(x, y);
+/*
     gtk_window_move(GTK_WINDOW(Shell()), x, y);
     gtk_widget_add_events(Shell(), GDK_VISIBILITY_NOTIFY_MASK);
     g_signal_connect(G_OBJECT(Shell()), "visibility_notify_event",
@@ -389,57 +278,15 @@ plot_bag::init(sGraph *gr)
     TB()->RevertFocus(Shell());
 
     gtk_widget_show(Shell());
-#if GTK_CHECK_VERSION(3,0,0)
-    GetDrawable()->set_window(gtk_widget_get_window(Viewport()));
-#else
-    SetWindow(gtk_widget_get_window(Viewport()));
-#endif
-    {
-        char buf1[128], buf2[64];
-        const char *anam = "";
-        if (gr->apptype() == GR_PLOT)
-            anam = GR_PLOTstr;
-        else if (gr->apptype() == GR_MPLT)
-            anam = GR_MPLTstr;
-        snprintf(buf1, sizeof(buf1), "%s %s %d", CP.Program(), anam, gr->id());
-        snprintf(buf2, sizeof(buf2), "%s%d", anam, gr->id());
-        Title(buf1, buf2);
-    }
+*/
+    show();
+
 
     gr->gr_pkg_init_colors();
     gr->set_fontsize();
+    gr->area().set_width(Viewport()->width());
+    gr->area().set_height(Viewport()->height());
 
-    // set up cursor
-    GdkCursor *cursor = gdk_cursor_new(GDK_LEFT_PTR);
-#if GTK_CHECK_VERSION(3,0,0)
-    GdkWindow *window = GetDrawable()->get_window();
-    if (window) {
-        gdk_window_set_cursor(window, cursor);
-        gr->area().set_width(gdk_window_get_width(window));
-        gr->area().set_height(gdk_window_get_height(window));
-    }
-#else
-    gdk_window_set_cursor(Window(), cursor);
-
-    int w = gdk_window_get_width(Window());
-    int h = gdk_window_get_height(Window());
-    gr->area().set_width(w);
-    gr->area().set_height(h);
-#endif
-
-#ifndef __APPLE__
-    // With OSX 13.0.1 abd XQuartz 2.8.2, these lines cause the
-    // toolbar to become hidden when a plot window pops up.  Not sure
-    // why these lines are needed in any case.
-#if GTK_CHECK_VERSION(3,0,0)
-    if (TB()->context && TB()->context->GetDrawable()->get_window()) {
-#else
-    if (TB()->context && TB()->context->Window()) {
-#endif
-        gtk_window_set_transient_for(GTK_WINDOW(Shell()),
-            GTK_WINDOW(TB()->context->Shell()));
-    }
-#endif
     return (false);
 }
 
@@ -448,181 +295,189 @@ plot_bag::init(sGraph *gr)
 // Set up button array, return true if the button count changes
 //
 bool
-plot_bag::init_gbuttons(sGraph *graph)
+QTplotDlg::init_gbuttons()
 {
-
-    GtkWidget *vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
+    QVBoxLayout *vbox = new QVBoxLayout(pb_gbox);
+    vbox->setMargin(0);
+    vbox->setSpacing(2);
 
     // Just rebuild the whole button array, easier that way.
     for (int i = 0; i < pbtn_NUMBTNS; i++)
         pb_checkwins[i] = 0;
 
     if (!pb_checkwins[pbtn_dismiss]) {
-        GtkWidget *button = gtk_button_new_with_label("Dismiss");
-        gtk_widget_show(button);
-        g_signal_connect(G_OBJECT(button), "clicked",
-            G_CALLBACK(b_quit), graph);
-        gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-        gtk_widget_set_tooltip_text(button, "Delete this window");
-        pb_checkwins[pbtn_dismiss] = button;
+        QPushButton *btn = new QPushButton(tr("Dismiss"));
+        vbox->addWidget(btn);
+//        g_signal_connect(G_OBJECT(button), "clicked",
+//            G_CALLBACK(b_quit), graph);
+        btn->setToolTip(tr("Delete this window"));
+        pb_checkwins[pbtn_dismiss] = btn;
+        connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
     }
 
     if (!pb_checkwins[pbtn_help]) {
-        GtkWidget *button = gtk_button_new_with_label("Help");
-        gtk_widget_show(button);
-        g_signal_connect(G_OBJECT(button), "clicked",
-            G_CALLBACK(b_help), graph);
-        gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-        gtk_widget_set_tooltip_text(button, "Press for help");
-        pb_checkwins[pbtn_help] = button;
+        QPushButton *btn = new QPushButton(tr("Help"));
+        vbox->addWidget(btn);
+//        g_signal_connect(G_OBJECT(button), "clicked",
+//            G_CALLBACK(b_help), graph);
+        btn->setToolTip(tr("Press for help"));
+        pb_checkwins[pbtn_help] = btn;
+        connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
     }
 
     if (!pb_checkwins[pbtn_redraw]) {
-        GtkWidget *button = gtk_button_new_with_label("Redraw");
-        gtk_widget_show(button);
-        g_signal_connect(G_OBJECT(button), "clicked",
-            G_CALLBACK(b_recolor), graph);
-        gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-        gtk_widget_set_tooltip_text(button, "Redraw the plot");
-        pb_checkwins[pbtn_redraw] = button;
+        QPushButton *btn = new QPushButton(tr("Redraw"));
+        vbox->addWidget(btn);
+//        g_signal_connect(G_OBJECT(button), "clicked",
+//            G_CALLBACK(b_recolor), graph);
+        btn->setToolTip(tr("Redraw the plot"));
+        pb_checkwins[pbtn_redraw] = btn;
+        connect(btn, SIGNAL(clicked()),
+            this, SLOT(redraw_btn_slot()));
     }
 
     if (!pb_checkwins[pbtn_print]) {
-        GtkWidget *button = gtk_toggle_button_new_with_label("Print");
-        gtk_widget_show(button);
-        g_signal_connect(G_OBJECT(button), "clicked",
-            G_CALLBACK(b_hardcopy), graph);
-        gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-        gtk_widget_set_tooltip_text(button, "Print control panel");
-        pb_checkwins[pbtn_print] = button;
+        QPushButton *btn = new QPushButton(tr("Print"));
+        vbox->addWidget(btn);
+        btn->setCheckable(true);
+//        g_signal_connect(G_OBJECT(button), "clicked",
+//            G_CALLBACK(b_hardcopy), graph);
+        btn->setToolTip(tr("Print control panel"));
+        pb_checkwins[pbtn_print] = btn;
+        connect(btn, SIGNAL(toggled(bool)),
+            this, SLOT(print_btn_slot(bool)));
     }
 
-    if (graph->apptype() == GR_PLOT) {
+    if (pb_graph->apptype() == GR_PLOT) {
         if (!pb_checkwins[pbtn_saveplot]) {
-            GtkWidget *button = gtk_button_new_with_label("Save Plot");
-            gtk_widget_show(button);
-            g_object_set_data(G_OBJECT(wb_shell), "save_plot", button);
-            g_signal_connect(G_OBJECT(button), "clicked",
-                G_CALLBACK(b_save_plot), graph);
-            gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-            gtk_widget_set_tooltip_text(button,
-                "Save the plot in a plot file");
-            pb_checkwins[pbtn_saveplot] = button;
+            QPushButton *btn = new QPushButton(tr("Save Plot"));
+            vbox->addWidget(btn);
+//            g_object_set_data(G_OBJECT(wb_shell), "save_plot", button);
+//            g_signal_connect(G_OBJECT(button), "clicked",
+//                G_CALLBACK(b_save_plot), graph);
+            btn->setToolTip(tr("Save the plot in a plot file"));
+            pb_checkwins[pbtn_saveplot] = btn;
+            connect(btn, SIGNAL(clicked()),
+                this, SLOT(saveplt_btn_slot()));
         }
 
         if (!pb_checkwins[pbtn_saveprint]) {
-            GtkWidget *button = gtk_button_new_with_label("Save Print ");
-            gtk_widget_show(button);
-            g_object_set_data(G_OBJECT(wb_shell), "save_print", button);
-            g_signal_connect(G_OBJECT(button), "clicked",
-                G_CALLBACK(b_save_print), graph);
-            gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-            gtk_widget_set_tooltip_text(button,
-                "Save the plot in a print file");
-            pb_checkwins[pbtn_saveprint] = button;
+            QPushButton *btn = new QPushButton(tr("Save Print "));
+            vbox->addWidget(btn);
+//            g_object_set_data(G_OBJECT(wb_shell), "save_print", button);
+//            g_signal_connect(G_OBJECT(button), "clicked",
+//                G_CALLBACK(b_save_print), graph);
+            btn->setToolTip(tr("Save the plot in a print file"));
+            pb_checkwins[pbtn_saveprint] = btn;
+            connect(btn, SIGNAL(clicked()),
+                this, SLOT(savepr_btn_slot()));
         }
 
         if (!pb_checkwins[pbtn_points]) {
-            GtkWidget *button = gtk_toggle_button_new_with_label("Points");
-            gtk_widget_show(button);
-            g_object_set_data(G_OBJECT(wb_shell), "points", button);
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
-                (graph->plottype() == PLOT_POINT)); 
-            g_signal_connect(G_OBJECT(button), "clicked",
-                G_CALLBACK(b_points), graph);
-            gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-            gtk_widget_set_tooltip_text(button, "Plot data as points");
-            pb_checkwins[pbtn_points] = button;
+            QPushButton *btn = new QPushButton(tr("Points"));
+            vbox->addWidget(btn);
+            btn->setCheckable(true);
+//            g_object_set_data(G_OBJECT(wb_shell), "points", button);
+            btn->setChecked(pb_graph->plottype() == PLOT_POINT); 
+//            g_signal_connect(G_OBJECT(button), "clicked",
+//                G_CALLBACK(b_points), graph);
+            btn->setToolTip(tr("Plot data as points"));
+            pb_checkwins[pbtn_points] = btn;
+            connect(btn, SIGNAL(toggled(bool)),
+                this, SLOT(points_btn_slot(bool)));
         }
 
         if (!pb_checkwins[pbtn_comb]) {
-            GtkWidget *button = gtk_toggle_button_new_with_label("Comb");
-            gtk_widget_show(button);
-            g_object_set_data(G_OBJECT(wb_shell), "combplot", button);
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
-                (graph->plottype() == PLOT_COMB)); 
-            g_signal_connect(G_OBJECT(button), "clicked",
-                G_CALLBACK(b_points), graph);
-            gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-            gtk_widget_set_tooltip_text(button, "Plot data as histogram");
-            pb_checkwins[pbtn_comb] = button;
+            QPushButton *btn = new QPushButton(tr("Comb"));
+            vbox->addWidget(btn);
+            btn->setCheckable(true);
+//            g_object_set_data(G_OBJECT(wb_shell), "combplot", button);
+            btn->setChecked(pb_graph->plottype() == PLOT_COMB); 
+//            g_signal_connect(G_OBJECT(button), "clicked",
+//                G_CALLBACK(b_points), graph);
+            btn->setToolTip(tr("Plot data as histogram"));
+            pb_checkwins[pbtn_comb] = btn;
+            connect(btn, SIGNAL(toggled(bool)),
+                this, SLOT(comb_btn_slot(bool)));
         }
 
-        if (graph->rawdata().xmin > 0) {
+        if (pb_graph->rawdata().xmin > 0) {
             if (!pb_checkwins[pbtn_logx]) {
-                GtkWidget *button = gtk_toggle_button_new_with_label("Log X");
-                gtk_widget_show(button);
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
-                    (graph->gridtype() == GRID_XLOG ||
-                        graph->gridtype() == GRID_LOGLOG));
-                g_signal_connect(G_OBJECT(button), "clicked",
-                    G_CALLBACK(b_logx), graph);
-                gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-                gtk_widget_set_tooltip_text(button,
-                    "Use logarithmic horizontal scale");
-                pb_checkwins[pbtn_logx] = button;
+                QPushButton *btn = new QPushButton(tr("Log X"));
+                vbox->addWidget(btn);
+                btn->setCheckable(true);
+                btn->setChecked(pb_graph->gridtype() == GRID_XLOG ||
+                        pb_graph->gridtype() == GRID_LOGLOG);
+//                g_signal_connect(G_OBJECT(button), "clicked",
+//                    G_CALLBACK(b_logx), graph);
+                btn->setToolTip(tr(
+                    "Use logarithmic horizontal scale"));
+                pb_checkwins[pbtn_logx] = btn;
+                connect(btn, SIGNAL(toggled(bool)),
+                    this, SLOT(logx_btn_slot(bool)));
             }
         }
         else {
-            if (graph->gridtype() == GRID_LOGLOG)
-                graph->set_gridtype(GRID_YLOG);
-            else if (graph->gridtype() == GRID_XLOG)
-                graph->set_gridtype(GRID_LIN);
+            if (pb_graph->gridtype() == GRID_LOGLOG)
+                pb_graph->set_gridtype(GRID_YLOG);
+            else if (pb_graph->gridtype() == GRID_XLOG)
+                pb_graph->set_gridtype(GRID_LIN);
         }
 
-        if (graph->rawdata().ymin > 0) {
+        if (pb_graph->rawdata().ymin > 0) {
             if (!pb_checkwins[pbtn_logy]) {
-                GtkWidget *button = gtk_toggle_button_new_with_label("Log Y");
-                gtk_widget_show(button);
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
-                    (graph->gridtype() == GRID_YLOG ||
-                        graph->gridtype() == GRID_LOGLOG));
-                g_signal_connect(G_OBJECT(button), "clicked",
-                    G_CALLBACK(b_logy), graph);
-                gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-                gtk_widget_set_tooltip_text(button,
-                    "Use logarithmic vertical scale");
-                pb_checkwins[pbtn_logy] = button;
+                QPushButton *btn = new QPushButton(tr("Log Y"));
+                vbox->addWidget(btn);
+                btn->setCheckable(true);
+                btn->setChecked(pb_graph->gridtype() == GRID_YLOG ||
+                        pb_graph->gridtype() == GRID_LOGLOG);
+//                g_signal_connect(G_OBJECT(button), "clicked",
+//                    G_CALLBACK(b_logy), graph);
+                btn->setToolTip(tr(
+                    "Use logarithmic vertical scale"));
+                pb_checkwins[pbtn_logy] = btn;
+                connect(btn, SIGNAL(toggled(bool)),
+                    this, SLOT(logy_btn_slot(bool)));
             }
         }
         else {
-            if (graph->gridtype() == GRID_LOGLOG)
-                graph->set_gridtype(GRID_XLOG);
-            else if (graph->gridtype() == GRID_YLOG)
-                graph->set_gridtype(GRID_LIN);
+            if (pb_graph->gridtype() == GRID_LOGLOG)
+                pb_graph->set_gridtype(GRID_XLOG);
+            else if (pb_graph->gridtype() == GRID_YLOG)
+                pb_graph->set_gridtype(GRID_LIN);
         }
 
         if (!pb_checkwins[pbtn_marker]) {
-            GtkWidget *button = gtk_toggle_button_new_with_label("Marker");
-            gtk_widget_show(button);
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
-                graph->reference().mark);
-            g_signal_connect(G_OBJECT(button), "clicked",
-                G_CALLBACK(b_marker), graph);
-            gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-            gtk_widget_set_tooltip_text(button, "Show marker");
-            pb_checkwins[pbtn_marker] = button;
+            QPushButton *btn = new QPushButton(tr("Marker"));
+            vbox->addWidget(btn);
+            btn->setCheckable(true);
+            btn->setChecked(pb_graph->reference().mark);
+//            g_signal_connect(G_OBJECT(button), "clicked",
+//                G_CALLBACK(b_marker), graph);
+            btn->setToolTip(tr("Show marker"));
+            pb_checkwins[pbtn_marker] = btn;
+            connect(btn, SIGNAL(toggled(bool)),
+                this, SLOT(marker_btn_slot(bool)));
         }
 
-        if (graph->numtraces() > 1 && graph->numtraces() <= MAXNUMTR) {
+        if (pb_graph->numtraces() > 1 && pb_graph->numtraces() <= MAXNUMTR) {
             if (!pb_checkwins[pbtn_separate]) {
-                GtkWidget *button =
-                    gtk_toggle_button_new_with_label("Separate");
-                gtk_widget_show(button);
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
-                    (graph->yseparate()));
-                g_signal_connect(G_OBJECT(button), "clicked",
-                    G_CALLBACK(b_separate), graph);
-                gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-                gtk_widget_set_tooltip_text(button, "Show traces separately");
-                pb_checkwins[pbtn_separate] = button;
+                QPushButton *btn = new QPushButton(tr("Separate"));
+                vbox->addWidget(btn);
+                btn->setCheckable(true);
+                btn->setChecked(pb_graph->yseparate());
+//                g_signal_connect(G_OBJECT(button), "clicked",
+//                    G_CALLBACK(b_separate), graph);
+                btn->setToolTip(tr("Show traces separately"));
+                pb_checkwins[pbtn_separate] = btn;
+                connect(btn, SIGNAL(toggled(bool)),
+                    this, SLOT(separate_btn_slot(bool)));
             }
 
             int i = 0;
-            for (sDvList *link = (sDvList*)graph->plotdata(); link;
+            for (sDvList *link = (sDvList*)pb_graph->plotdata(); link;
                     link = link->dl_next, i++) {
-                if (!(*((sDvList *)graph->plotdata())->dl_dvec->units() ==
+                if (!(*((sDvList *)pb_graph->plotdata())->dl_dvec->units() ==
                         *link->dl_dvec->units())) {
                     i = 0;
                     break;
@@ -631,59 +486,60 @@ plot_bag::init_gbuttons(sGraph *graph)
             if (i > 1) {
                 // more than one trace, same type
                 if (!pb_checkwins[pbtn_single]) {
-                    GtkWidget *button =
-                        gtk_toggle_button_new_with_label("Single");
-                    gtk_widget_show(button);
-                    g_object_set_data(G_OBJECT(wb_shell), "onescale",
-                        button);
-                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
-                        (graph->format() == FT_SINGLE));
-                    g_signal_connect(G_OBJECT(button), "clicked",
-                        G_CALLBACK(b_onescale), graph);
-                    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-                    gtk_widget_set_tooltip_text(button, 
-                        "Use single vertical scale");
-                    pb_checkwins[pbtn_single] = button;
+                    QPushButton *btn = new QPushButton(tr("Single"));
+                    vbox->addWidget(btn);
+                    btn->setCheckable(true);
+//                    g_object_set_data(G_OBJECT(wb_shell), "onescale",
+//                        button);
+                    btn->setChecked(pb_graph->format() == FT_SINGLE);
+//                    g_signal_connect(G_OBJECT(button), "clicked",
+//                        G_CALLBACK(b_onescale), graph);
+                    btn->setToolTip(tr(
+                        "Use single vertical scale"));
+                    pb_checkwins[pbtn_single] = btn;
+                    connect(btn, SIGNAL(toggled(bool)),
+                        this, SLOT(single_btn_slot(bool)));
                 }
             }
             else if (!i) {
                 // more than one trace type
                 if (!pb_checkwins[pbtn_single]) {
-                    GtkWidget *button =
-                        gtk_toggle_button_new_with_label("Single");
-                    gtk_widget_show(button);
-                    g_object_set_data(G_OBJECT(wb_shell), "onescale",
-                        button);
-                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
-                        (graph->format() == FT_SINGLE));
-                    g_signal_connect(G_OBJECT(button), "clicked",
-                        G_CALLBACK(b_multiscale), graph);
-                    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-                    gtk_widget_set_tooltip_text(button, 
-                        "Use single vertical scale");
-                    pb_checkwins[pbtn_single] = button;
+                    QPushButton *btn = new QPushButton(tr("Single"));
+                    vbox->addWidget(btn);
+                    btn->setCheckable(true);
+//                    g_object_set_data(G_OBJECT(wb_shell), "onescale",
+//                        button);
+                    btn->setChecked(pb_graph->format() == FT_SINGLE);
+//                    g_signal_connect(G_OBJECT(button), "clicked",
+//                        G_CALLBACK(b_multiscale), graph);
+                    btn->setToolTip(tr( 
+                        "Use single vertical scale"));
+                    pb_checkwins[pbtn_single] = btn;
+                    connect(btn, SIGNAL(toggled(bool)),
+                        this, SLOT(single_btn_slot(bool)));
                 }
 
                 if (!pb_checkwins[pbtn_group]) {
-                    GtkWidget *button =
-                        gtk_toggle_button_new_with_label("Group");
-                    gtk_widget_show(button);
-                    g_object_set_data(G_OBJECT(wb_shell), "grpscale",
-                        button);
-                    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button),
-                        (graph->format() == FT_GROUP));
-                    g_signal_connect(G_OBJECT(button), "clicked",
-                        G_CALLBACK(b_multiscale), graph);
-                    gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
-                    gtk_widget_set_tooltip_text(button, 
-                        "Same scale for groups: V, I, other");
-                    pb_checkwins[pbtn_group] = button;
+                    QPushButton *btn = new QPushButton(tr("Group"));
+                    vbox->addWidget(btn);
+                    btn->setCheckable(true);
+//                    g_object_set_data(G_OBJECT(wb_shell), "grpscale",
+//                        button);
+                    btn->setChecked(pb_graph->format() == FT_GROUP);
+//                    g_signal_connect(G_OBJECT(button), "clicked",
+//                        G_CALLBACK(b_multiscale), graph);
+                    btn->setToolTip(tr(
+                        "Same scale for groups: V, I, other"));
+                    pb_checkwins[pbtn_group] = btn;
+                    connect(btn, SIGNAL(toggled(bool)),
+                        this, SLOT(group_btn_slot(bool)));
                 }
             }
         }
     }
 
     bool ret = true;
+    /*
     if (pb_bbox) {
         int nlen = g_list_length(gtk_container_get_children(
             GTK_CONTAINER(vbox)));
@@ -699,221 +555,49 @@ plot_bag::init_gbuttons(sGraph *graph)
         gtk_widget_show(pb_bbox);
     }
     gtk_container_add(GTK_CONTAINER(pb_bbox), vbox);
+    */
     return (ret);
-}
-// End of plot_bag functions
-
-
-// Return a new graphics context struct.
-//
-GRwbag *
-sGraph::gr_new_gx(int type)
-{
-    return (new plot_bag(type));
+return (false);
 }
 
 
-// Initialization of X11 graphics, return false on success.
-//
-int
-sGraph::gr_pkg_init()
-{
-    if (!gr_dev)
-        return (true);
-
-    plot_bag *w = dynamic_cast<plot_bag*>(gr_dev);
-    return (w->init(this));
-}
-
-
-// Fill in the current colors in the graph from the DefColors array,
-// which is updated.
+// Static function.
+// Callback for PopUpInput() sensitivity set.
 //
 void
-sGraph::gr_pkg_init_colors()
+QTplotDlg::sens_set(QTbag *w, bool set, int)
 {
-    SpGrPkg::SetDefaultColors();
-    const sGraph *tgraph = this;
-    if (!tgraph)
-        return;
-
-    plot_bag *w = dynamic_cast<plot_bag*>(gr_dev);
-    if (w && w->Viewport() && gtk_widget_get_window(w->Viewport())) {
-        w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
-        w->SetBackground(SpGrPkg::DefColors[0].pixel);
-        w->Clear();
+    /*
+    GtkWidget *save_plot =
+        (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()), "save_plot");
+    GtkWidget *save_print =
+        (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()), "save_print");
+    if (set) {
+        if (save_plot)
+            gtk_widget_set_sensitive(save_plot, true);
+        if (save_print)
+            gtk_widget_set_sensitive(save_print, true);
     }
-    for (int i = 0; i < GRpkg::self()->MainDev()->numcolors; i++)
-        gr_colors[i] = SpGrPkg::DefColors[i];
+    else {
+        if (save_plot)
+            gtk_widget_set_sensitive(save_plot, false);
+        if (save_print)
+            gtk_widget_set_sensitive(save_print, false);
+    }
+    */
 }
 
 
-// This rebuilds the button array after adding/removing a trace.  The
-// return is true if the button count changes
-//
-bool
-sGraph::gr_init_btns()
-{
-    plot_bag *w = dynamic_cast<plot_bag*>(gr_dev);
-    if (w)
-        return (w->init_gbuttons(this));
-    return (false);
-}
-
-
-// This is called periodically while a plot is being drawn.  If a button
-// press or exposure event is detected for the plot window, return true.
-//
-bool
-sGraph::gr_check_plot_events()
-{
-    GdkEvent *ev;
-    while ((ev = gdk_event_peek()) != 0) {
-        if (plot_bag::check_event(ev, this)) {
-            gdk_event_free(ev);
-            return (true);
-        }
-        gdk_event_free(ev);
-        if ((ev = gdk_event_get()) != 0)
-            gtk_main_do_event(ev);
-    }
-    return (false);
-}
-
-
-void
-sGraph::gr_redraw()
-{
-    if (GRpkg::self()->CurDev()->devtype == GRhardcopy) {
-        gr_redraw_direct();
-        gr_redraw_keyed();
-        return;
-    }
-    plot_bag *wb = dynamic_cast<plot_bag*>(gr_dev);
-#if GTK_CHECK_VERSION(3,0,0)
-    ndkDrawable *dw = wb->GetDrawable();
-    dw->set_draw_to_pixmap();
-    int width = dw->get_width();
-    int height = dw->get_height();
-    area().set_width(width);
-    area().set_height(height);
-    wb->SetColor(gr_colors[0].pixel);
-    wb->Box(0, 0, width, height);
-    gr_redraw_direct();  // This might change area().width/area().height.
-    dw->set_draw_to_window();
-    dw->copy_pixmap_to_window(wb->GC(), 0, 0, -1, -1);
-
-#else
-    if (!wb->Window())
-        return;
-    int width = gdk_window_get_width(wb->Window());
-    int height = gdk_window_get_height(wb->Window());
-    area().set_width(width);
-    area().set_height(height);
-    if (!wb->pb_pixmap || wb->pb_pmwid != width || wb->pb_pmhei != height) {
-        if (wb->pb_pixmap)
-            gdk_pixmap_unref(wb->pb_pixmap);
-        wb->pb_pixmap = gdk_pixmap_new(wb->Window(), width, height,
-            gdk_visual_get_depth(GTKdev::self()->Visual()));
-        wb->pb_pmwid = width;
-        wb->pb_pmhei = height;
-    }
-    GdkWindow *wtmp = wb->Window();
-    wb->SetWindow(wb->pb_pixmap);
-    wb->SetColor(gr_colors[0].pixel);
-    wb->Box(0, 0, width, height);
-    gr_redraw_direct();  // This might change area().width/area().height.
-    wb->SetWindow(wtmp);
-    gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
-        width, height);
-#endif
-
-    gr_redraw_keyed();
-    gr_dirty = false;
-}
-
-
-void
-sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
-{
-    plot_bag *wb = dynamic_cast<plot_bag*>(gr_dev);
-#if GTK_CHECK_VERSION(3,0,0)
-    ndkDrawable *dw = wb->GetDrawable();
-    int w = dw->get_width();
-    int h = dw->get_height();
-    area().set_width(w);
-    area().set_height(h);
-    bool dirty = dw->set_draw_to_pixmap();
-    dw->set_draw_to_window();
-    if (dirty) {
-        gr_redraw();
-        return;
-    }
-    dw->copy_pixmap_to_window(wb->GC(), 0, 0, -1, -1);
-
-    GdkRectangle r;
-    r.x = left;
-    r.y = top;
-    r.width = right - left;
-    r.height = bottom - top;
-    wb->GC()->set_clip_rectangle(&r);
-    wb->XorGC()->set_clip_rectangle(&r);
-    if (!notxt)
-        gr_redraw_keyed();
-    wb->GC()->set_clip_rectangle(0);
-    wb->XorGC()->set_clip_rectangle(0);
-
-#else
-    int w = gdk_window_get_width(wb->Window());
-    int h = gdk_window_get_height(wb->Window());
-    area().set_width(w);
-    area().set_height(h);
-    if (gr_dirty || !wb->pb_pixmap || wb->pb_pmwid != area().width() ||
-            wb->pb_pmhei != area().height()) {
-        gr_redraw();
-        return;
-    }
-    gdk_window_copy_area(wb->Window(), wb->GC(), left,
-        top, wb->pb_pixmap, left, top, right - left, bottom - top);
-    GdkRectangle r;
-    r.x = left;
-    r.y = top;
-    r.width = right - left;
-    r.height = bottom - top;
-    gdk_gc_set_clip_rectangle(wb->GC(), &r);
-    gdk_gc_set_clip_rectangle(wb->XorGC(), &r);
-    if (!notxt)
-        gr_redraw_keyed();
-    gdk_gc_set_clip_rectangle(wb->GC(), 0);
-    gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
-#endif
-}
-
-
-// Pop down and destroy.
-//
-void
-sGraph::gr_popdown()
-{
-    plot_bag *w = dynamic_cast<plot_bag*>(dev());
-    g_signal_handlers_disconnect_by_func(G_OBJECT(w->Shell()),
-        (gpointer)plot_bag::b_quit, this);
-    delete w;
-    set_dev(0);
-    GP.DestroyGraph(id());
-}
-// End of sGraph functions.
-
-
+/*
 // Static function.
 // Core test for gr_check_plot_events.
 //
 bool
-plot_bag::check_event(GdkEvent *ev, sGraph *graph)
+QTplotDlg::check_event(GdkEvent *ev, sGraph *graph)
 {
     if (!graph)
         return (false);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
     if (!w)
         return (false);
     if (ev->type == GDK_EXPOSE) {
@@ -945,72 +629,18 @@ plot_bag::check_event(GdkEvent *ev, sGraph *graph)
     }
     return (false);
 }
-
-
-// Static function.
-// Callback for PopUpInput() sensitivity set
-//
-void
-plot_bag::sens_set(GTKbag *w, bool set, int)
-{
-    GtkWidget *save_plot =
-        (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()), "save_plot");
-    GtkWidget *save_print =
-        (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()), "save_print");
-    if (set) {
-        if (save_plot)
-            gtk_widget_set_sensitive(save_plot, true);
-        if (save_print)
-            gtk_widget_set_sensitive(save_print, true);
-    }
-    else {
-        if (save_plot)
-            gtk_widget_set_sensitive(save_plot, false);
-        if (save_print)
-            gtk_widget_set_sensitive(save_print, false);
-    }
-}
-
-
-//
-// Event Handlers
-//
-
-// Static function.
-int
-plot_bag::resize(GtkWidget *caller, GdkEvent*, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
-
-#if GTK_CHECK_VERSION(3,0,0)
-    if (!wb->GetDrawable()->get_window()) {
-        GtkWidget *vp = wb->Viewport();
-        if (gtk_widget_get_window(vp))
-            wb->GetDrawable()->set_window(gtk_widget_get_window(vp));
-    }
-
-#else
-    if (!wb->Window())
-        wb->SetWindow(gtk_widget_get_window(wb->Viewport()));
-#endif
-    int w = gdk_window_get_width(gtk_widget_get_window(caller));
-    int h = gdk_window_get_height(gtk_widget_get_window(caller));
-    graph->area().set_width(w);
-    graph->area().set_height(h);
-    graph->gr_abort();
-    return (true);
-}
+*/
 
 
 // Static function.
 // The redraw is in a timeout so that plots with a lot of data and
 // take time to render can be resized more easily.
 int
-plot_bag::redraw_timeout(void *arg)
+QTplotDlg::redraw_timeout(void *arg)
 {
+    /*
     sGraph *graph = static_cast<sGraph*>(arg);
-    plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
+    QTplotDlg *wb = dynamic_cast<QTplotDlg*>(graph->dev());
 
     wb->pb_rdid = 0;
 #if GTK_CHECK_VERSION(3,0,0)
@@ -1036,48 +666,18 @@ plot_bag::redraw_timeout(void *arg)
     graph->gr_redraw_keyed();
     graph->set_dirty(false);
     return (0);
+    */
 }
 
 
+/*
 // Static function.
 int
-#if GTK_CHECK_VERSION(3,0,0)
-plot_bag::redraw(GtkWidget*, cairo_t *cr, void *client_data)
-#else
-plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
-#endif
+QTplotDlg::redraw(GtkWidget*, GdkEvent *event, void *client_data)
 {
     sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
+    QTplotDlg *wb = dynamic_cast<QTplotDlg*>(graph->dev());
 
-#if GTK_CHECK_VERSION(3,0,0)
-    ndkDrawable *dw = wb->GetDrawable();
-
-    bool dirty = dw->set_draw_to_pixmap();
-    graph->area().set_width(dw->get_width());
-    graph->area().set_height(dw->get_height());
-    if (dirty)
-        graph->set_dirty(true);
-
-    if (graph->dirty()) {
-        if (wb->pb_rdid)
-            g_source_remove(wb->pb_rdid);
-        wb->pb_rdid = g_timeout_add(250, redraw_timeout, client_data);
-    }
-    else {
-        cairo_rectangle_int_t rect;
-        ndkDrawable::redraw_area(cr, &rect);
-
-        dw->copy_pixmap_to_window(wb->GC(), rect.x, rect.y,
-            rect.width, rect.height);
-        wb->GC()->set_clip_rectangle(&rect);
-        wb->XorGC()->set_clip_rectangle(&rect);
-        graph->gr_redraw_keyed();
-        wb->GC()->set_clip_rectangle(0);
-        wb->XorGC()->set_clip_rectangle(0);
-    }
-
-#else
     GdkEventExpose *pev = &event->expose;
     // hack for Motif
     if (pev->window != wb->Window())
@@ -1114,30 +714,9 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         gdk_gc_set_clip_rectangle(wb->GC(), 0);
         gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
     }
-#endif
     return (true);
 }
-
-
-// Static function.
-int
-plot_bag::motion(GtkWidget*, GdkEvent *event, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    if (w && w->Gbag()->showing_ghost()) {
-        if (w->pb_id) {
-            g_source_remove(w->pb_id);
-            w->pb_id = 0;
-        }
-        w->pb_x = (int)event->motion.x;
-        w->pb_y = (int)event->motion.y;
-        w->pb_id = g_idle_add(motion_idle, client_data);
-        // GTK-2 sets a grab, prevents dragging between windows.
-        gdk_pointer_ungrab(GDK_CURRENT_TIME);
-    }
-    return (true);
-}
+*/
 
 
 // Static function.
@@ -1145,10 +724,11 @@ plot_bag::motion(GtkWidget*, GdkEvent *event, void *client_data)
 // avoid cursor lag seen in GTK-2 with Pango and certain fonts.
 //
 int
-plot_bag::motion_idle(void *arg)
+QTplotDlg::motion_idle(void *arg)
 {
+    /*
     sGraph *graph = static_cast<sGraph*>(arg);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
     if (w && w->Gbag()->showing_ghost()) {
         w->pb_id = 0;
         GP.PushGraphContext(graph);
@@ -1156,266 +736,18 @@ plot_bag::motion_idle(void *arg)
         w->DrawGhost(w->pb_x, w->pb_y);
         GP.PopGraphContext();
     }
+    */
     return (0);
 }
 
 
 // Static function.
-int
-plot_bag::focus(GtkWidget*, GdkEvent*, void*)
-{
-    // Nothing to do but handle this to avoid default action of
-    // issuing expose event 
-    return (true); 
-} 
- 
- 
-// Static function.
-int
-plot_bag::keypress(GtkWidget*, GdkEvent *event, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    GdkEventKey *kev = &event->key;
-    int keyval = kev->keyval;
-
-    // Make sure we catch backspace.
-    if (keyval == GDK_KEY_h && kev->string && *kev->string == '\b')
-        keyval = GDK_KEY_BackSpace;
-
-    int code = 0;
-    switch (keyval) {
-    case GDK_KEY_Escape:
-    case GDK_KEY_Tab:
-        // Tab will switch focus.
-        return (false);
-
-    case GDK_KEY_Up:
-        code = UP_KEY;
-        break;
-    case GDK_KEY_Down:
-        code = DOWN_KEY;
-        break;
-    case GDK_KEY_Left:
-        code = LEFT_KEY;
-        break;
-    case GDK_KEY_Right:
-        code = RIGHT_KEY;
-        break;
-    case GDK_KEY_Return:
-        code = ENTER_KEY;
-        break;
-    case GDK_KEY_BackSpace:
-        code = BSP_KEY;
-        break;
-    case GDK_KEY_Delete:
-        code = DELETE_KEY;
-        break;
-    }
-    char text[8];
-    *text = 0;
-    if (kev->string) {
-        strncpy(text, kev->string, 8);
-        text[7] = 0;
-    }
-
-    // Throw out when cursor is not in viewport.
-    int x, y;
-    gdk_window_get_pointer(kev->window, &x, &y, 0);
-    if (x < 0 || y < 0 ||
-            x >= graph->area().width() || y >= graph->area().height())
-        return (false);
-
-    graph->gr_key_hdlr(text, code, x, graph->yinv(y));
-    return (true);
-}
-
-
-// Static function.
-int
-plot_bag::buttonpress(GtkWidget *widget, GdkEvent *event, void *client_data)
-{
-    if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
-        return (false);
-    GdkEventButton *buttonev = &event->button;
-    sGraph *graph = static_cast<sGraph*>(client_data);
-
-    gtk_widget_grab_focus(widget);
-
-    int button = 0;
-    switch (buttonev->button) {
-    case 1:
-        button = 1;
-        break;
-    case 2:
-        button = 2;
-        break;
-    case 3:
-        button = 3;
-        break;
-    }
-    if (buttonev->state & GDK_SHIFT_MASK)
-        graph->set_cmdmode(graph->cmdmode() | ShiftMode);
-    else
-        graph->set_cmdmode(graph->cmdmode() & ~ShiftMode);
-    if (buttonev->state & GDK_CONTROL_MASK)
-        graph->set_cmdmode(graph->cmdmode() | ControlMode);
-    else
-        graph->set_cmdmode(graph->cmdmode() & ~ControlMode);
-    graph->gr_bdown_hdlr(button, (int)buttonev->x,
-        graph->yinv((int)buttonev->y));
-    return (true);
-}
-
-
-// Static function.
-int
-plot_bag::buttonup(GtkWidget*, GdkEvent *event, void *client_data)
-{
-    if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
-        return (false);
-    GdkEventButton *buttonev = &event->button;
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    int button = 0;
-    switch (buttonev->button) {
-    case 1:
-        button = 1;
-        break;
-    case 2:
-        button = 2;
-        break;
-    case 3:
-        button = 3;
-        break;
-    }
-    if (buttonev->state & GDK_SHIFT_MASK)
-        graph->set_cmdmode(graph->cmdmode() | ShiftMode);
-    else
-        graph->set_cmdmode(graph->cmdmode() & ~ShiftMode);
-    if (buttonev->state & GDK_CONTROL_MASK)
-        graph->set_cmdmode(graph->cmdmode() | ControlMode);
-    else
-        graph->set_cmdmode(graph->cmdmode() & ~ControlMode);
-    graph->gr_bup_hdlr(button, (int)buttonev->x,
-        graph->yinv((int)buttonev->y));
-    return (true);
-}
-
-
-// Static function.
-int
-plot_bag::enter_hdlr(GtkWidget *caller, GdkEvent*, void *client_data)
-{
-    // pointer entered a drawing window
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    gtk_widget_set_can_focus(caller, true);
-    gtk_window_set_focus(GTK_WINDOW(w->Shell()), caller);
-    if (GP.SourceGraph() && graph != GP.SourceGraph()) {
-        // hack a ghost for move/copy
-        w->Gbag()->set_ghost_func(dynamic_cast<plot_bag*>(
-            GP.SourceGraph()->dev())->Gbag()->get_ghost_func());
-    }
-    graph->dev()->ShowGhost(true);
-    return (true);
-}
-
-
-// Static function.
-// Gracefully terminate ghost drawing when the pointer leaves a
-// window.
-//
-int
-plot_bag::leave_hdlr(GtkWidget*, GdkEvent*, void *client_data)
-{
-    // pointer left the drawing window
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    if (w->Gbag()->has_ghost()) {
-        GP.PushGraphContext(graph);
-        w->ShowGhost(false);
-        GP.PopGraphContext();
-    }
-    if (GP.SourceGraph() && graph != GP.SourceGraph()) {
-        // remove hacked ghost
-        w->Gbag()->set_ghost_func(0);
-    }
-    return (true);
-}
-
-
-// Static function.
 void
-plot_bag::font_change_hdlr(GtkWidget*, void*, void *arg)
+QTplotDlg::do_save_plot(const char *fnamein, void *client_data)
 {
-    sGraph *graph = (sGraph*)arg;
-    graph->set_dirty(true);
-}
-
-
-//
-// Signal Handlers
-//
-
-// Static function.
-void
-plot_bag::b_quit(GtkWidget*, void *client_data)
-{
+    /*
     sGraph *graph = static_cast<sGraph*>(client_data);
-    graph->gr_popdown();
-}
-
-
-// Static function.
-void
-plot_bag::b_help(GtkWidget *caller, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    bool state = GTKdev::GetStatus(caller);
-    if (state)
-        w->PopUpHelp(graph->apptype() == GR_PLOT ? "plotpanel" : "mplotpanel");
-}
-
-
-// Static function.
-void
-plot_bag::b_recolor(GtkWidget*, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    graph->gr_pkg_init_colors();
-    graph->dev()->Clear();
-    graph->gr_redraw();
-}
-
-
-// Static function.
-void
-plot_bag::b_hardcopy(GtkWidget *caller, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    set_hccb(&wrsHCcb);
-    w->PopUpPrint(caller, &wrsHCcb, HCgraphical, w);
-}
-
-
-// Static function.
-void
-plot_bag::b_save_plot(GtkWidget*, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    w->PopUpInput("Enter name for data file", 0, "Save Plot File",
-        do_save_plot, client_data);
-}
-
-
-// Static function.
-void
-plot_bag::do_save_plot(const char *fnamein, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
         return;
@@ -1435,26 +767,17 @@ plot_bag::do_save_plot(const char *fnamein, void *client_data)
         w->wb_input->popdown();
     w->PopUpMessage("Operation completed.", false);
     delete [] fname;
+    */
 }
 
 
 // Static function.
 void
-plot_bag::b_save_print(GtkWidget*, void *client_data)
+QTplotDlg::do_save_print(const char *fnamein, void *client_data)
 {
+    /*
     sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    w->PopUpInput("Enter name for print file", 0, "Save Print File",
-        do_save_print, client_data);
-}
-
-
-// Static function.
-void
-plot_bag::do_save_print(const char *fnamein, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
         return;
@@ -1476,201 +799,7 @@ plot_bag::do_save_print(const char *fnamein, void *client_data)
     if (fp)
         w->PopUpMessage("Plot saved to file as print data.", false);
     delete [] fname;
-}
-
-
-// Static function.
-void
-plot_bag::b_points(GtkWidget *caller, void *client_data)
-{
-    // handle points and combplot modes
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-
-    GtkWidget *pts = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
-        "points");
-    GtkWidget *cmb = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
-        "combplot");
-    if (pts && cmb) {
-        bool ptson = GTKdev::GetStatus(pts);
-        bool cmbon = GTKdev::GetStatus(cmb);
-
-        if (!ptson && !cmbon)
-            graph->set_plottype(PLOT_LIN);
-        else if (caller == pts) {
-            if (cmbon)
-                GTKdev::SetStatus(cmb, false);
-            graph->set_plottype(PLOT_POINT);
-        }
-        else {
-            if (ptson)
-                GTKdev::SetStatus(pts, false);
-            graph->set_plottype(PLOT_COMB);
-        }
-        graph->dev()->Clear();
-        graph->gr_redraw();
-    }
-}
-
-
-// Static function.
-void
-plot_bag::b_logx(GtkWidget *caller, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    if (graph->rawdata().xmin <= 0) {
-        w->PopUpErr(MODE_ON,
-            "The X-axis scale must be greater than zero for log plot.");
-        GTKdev::SetStatus(caller, false);
-        return;
-    }
-    bool state = GTKdev::GetStatus(caller);
-    if (state) {
-        if (graph->gridtype() == GRID_YLOG)
-            graph->set_gridtype(GRID_LOGLOG);
-        else
-            graph->set_gridtype(GRID_XLOG);
-    }
-    else {
-        if (graph->gridtype() == GRID_LOGLOG)
-            graph->set_gridtype(GRID_YLOG);
-        else
-            graph->set_gridtype(GRID_LIN);
-    }
-
-    graph->clear_units_text(LAxunits);
-    graph->dev()->Clear();
-    graph->gr_redraw();
-}
-
-
-// Static function.
-void
-plot_bag::b_logy(GtkWidget *caller, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    if (graph->rawdata().ymin <= 0) {
-        w->PopUpErr(MODE_ON,
-            "The Y-axis scale must be greater than zero for log plot.");
-        GTKdev::SetStatus(caller, false);
-        return;
-    }
-    bool state = GTKdev::GetStatus(caller);
-    if (state) {
-        if (graph->gridtype() == GRID_XLOG)
-            graph->set_gridtype(GRID_LOGLOG);
-        else
-            graph->set_gridtype(GRID_YLOG);
-    }
-    else {
-        if (graph->gridtype() == GRID_LOGLOG)
-            graph->set_gridtype(GRID_XLOG);
-        else
-            graph->set_gridtype(GRID_LIN);
-    }
-
-    // clear the yunits text
-    graph->clear_units_text(LAyunits);
-    graph->dev()->Clear();
-    graph->gr_redraw();
-}
-
-
-// Static function.
-void
-plot_bag::b_marker(GtkWidget *caller, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    if (!graph->xmonotonic() && graph->yseparate()) {
-        w->PopUpErr(MODE_ON,
-"Marker is not available in separate trace mode with nonmonotonic scale.");
-        GTKdev::SetStatus(caller, false);
-        return;
-    }
-    if (GTKdev::GetStatus(caller)) {
-        if (!graph->reference().mark) {
-            graph->reference().mark = true;
-            graph->gr_mark();
-        }
-    }
-    else if (graph->reference().mark) {
-        graph->reference().mark = false;
-        graph->gr_mark();
-        graph->reference().set = false;
-    }
-}
-
-
-// Static function.
-void
-plot_bag::b_separate(GtkWidget *caller, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-    if (!graph->xmonotonic() && graph->reference().mark) {
-        w->PopUpErr(MODE_ON,
-"Can't enter separate trace mode with nonmonotonic scale when\n\
-marker is active.");
-        GTKdev::SetStatus(caller, false);
-        return;
-    }
-    if (graph->yseparate())
-        graph->set_yseparate(false);
-    else
-        graph->set_yseparate(true);
-    graph->dev()->Clear();
-    graph->gr_redraw();
-}
-
-
-// Static function.
-void
-plot_bag::b_onescale(GtkWidget*, void *client_data)
-{
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    if (graph->format() == FT_MULTI)
-        graph->set_format(FT_SINGLE);
-    else
-        graph->set_format(FT_MULTI);
-    graph->dev()->Clear();
-    graph->gr_redraw();
-}
-
-
-// Static function.
-void
-plot_bag::b_multiscale(GtkWidget *caller, void *client_data)
-{
-    // Handle one scale and grp scale modes.
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
-
-    GtkWidget *one = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
-        "onescale");
-    GtkWidget *grp =  (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
-        "grpscale");
-    if (one && grp) {
-        bool oneon = GTKdev::GetStatus(one);
-        bool grpon = GTKdev::GetStatus(grp);
-
-        if (!oneon && !grpon)
-            graph->set_format(FT_MULTI);
-        else if (caller == one) {
-            if (grpon)
-                GTKdev::SetStatus(grp, false);
-            graph->set_format(FT_SINGLE);
-        }
-        else {
-            if (oneon)
-                GTKdev::SetStatus(one, false);
-            graph->set_format(FT_GROUP);
-        }
-        graph->dev()->Clear();
-        graph->gr_redraw();
-    }
+    */
 }
 
 
@@ -1679,7 +808,7 @@ plot_bag::b_multiscale(GtkWidget *caller, void *client_data)
 // hardcopy widget.
 //
 void
-plot_bag::set_hccb(HCcb *cb)
+QTplotDlg::set_hccb(HCcb *cb)
 {
     if (cb->command)
         delete [] cb->command;
@@ -1746,7 +875,7 @@ plot_bag::set_hccb(HCcb *cb)
 // is a floating point number possibly followed by "cm".
 //
 bool
-plot_bag::get_dim(const char *str, double *val)
+QTplotDlg::get_dim(const char *str, double *val)
 {
     char buf[128];
     int i = sscanf(str, "%lf%s", val, buf);
@@ -1757,5 +886,525 @@ plot_bag::get_dim(const char *str, double *val)
     return (false);
 }
 
-#endif //notdef
+
+void
+QTplotDlg::font_changed_slot(int fnum)
+{
+    if (fnum == FNT_SCREEN) {
+        QFont *fnt;
+        if (FC.getFont(&fnt, fnum)) {
+            gd_viewport->set_font(fnt);
+            pb_graph->set_dirty(true);
+        }
+    }
+}
+
+
+void
+QTplotDlg::resize_slot(QResizeEvent*)
+{
+    /*
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    QTplotDlg *wb = dynamic_cast<QTplotDlg*>(graph->dev());
+
+#if GTK_CHECK_VERSION(3,0,0)
+    if (!wb->GetDrawable()->get_window()) {
+        GtkWidget *vp = wb->Viewport();
+        if (gtk_widget_get_window(vp))
+            wb->GetDrawable()->set_window(gtk_widget_get_window(vp));
+    }
+
+#else
+    if (!wb->Window())
+        wb->SetWindow(gtk_widget_get_window(wb->Viewport()));
+#endif
+    int w = gdk_window_get_width(gtk_widget_get_window(caller));
+    int h = gdk_window_get_height(gtk_widget_get_window(caller));
+    graph->area().set_width(w);
+    graph->area().set_height(h);
+    graph->gr_abort();
+    */
+}
+
+
+void
+QTplotDlg::paint_slot(QPaintEvent*)
+{
+}
+
+
+void
+QTplotDlg::button_down_slot(QMouseEvent*)
+{
+    /*
+    if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
+        return (false);
+    GdkEventButton *buttonev = &event->button;
+    sGraph *graph = static_cast<sGraph*>(client_data);
+
+    gtk_widget_grab_focus(widget);
+
+    int button = 0;
+    switch (buttonev->button) {
+    case 1:
+        button = 1;
+        break;
+    case 2:
+        button = 2;
+        break;
+    case 3:
+        button = 3;
+        break;
+    }
+    if (buttonev->state & GDK_SHIFT_MASK)
+        graph->set_cmdmode(graph->cmdmode() | ShiftMode);
+    else
+        graph->set_cmdmode(graph->cmdmode() & ~ShiftMode);
+    if (buttonev->state & GDK_CONTROL_MASK)
+        graph->set_cmdmode(graph->cmdmode() | ControlMode);
+    else
+        graph->set_cmdmode(graph->cmdmode() & ~ControlMode);
+    graph->gr_bdown_hdlr(button, (int)buttonev->x,
+        graph->yinv((int)buttonev->y));
+    */
+}
+
+
+void
+QTplotDlg::button_up_slot(QMouseEvent*)
+{
+    /*
+    if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
+        return (false);
+    GdkEventButton *buttonev = &event->button;
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    int button = 0;
+    switch (buttonev->button) {
+    case 1:
+        button = 1;
+        break;
+    case 2:
+        button = 2;
+        break;
+    case 3:
+        button = 3;
+        break;
+    }
+    if (buttonev->state & GDK_SHIFT_MASK)
+        graph->set_cmdmode(graph->cmdmode() | ShiftMode);
+    else
+        graph->set_cmdmode(graph->cmdmode() & ~ShiftMode);
+    if (buttonev->state & GDK_CONTROL_MASK)
+        graph->set_cmdmode(graph->cmdmode() | ControlMode);
+    else
+        graph->set_cmdmode(graph->cmdmode() & ~ControlMode);
+    graph->gr_bup_hdlr(button, (int)buttonev->x,
+        graph->yinv((int)buttonev->y));
+    */
+}
+
+
+void
+QTplotDlg::motion_slot(QMouseEvent*)
+{
+    /*
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
+    if (w && w->Gbag()->showing_ghost()) {
+        if (w->pb_id) {
+            g_source_remove(w->pb_id);
+            w->pb_id = 0;
+        }
+        w->pb_x = (int)event->motion.x;
+        w->pb_y = (int)event->motion.y;
+        w->pb_id = g_idle_add(motion_idle, client_data);
+        // GTK-2 sets a grab, prevents dragging between windows.
+        gdk_pointer_ungrab(GDK_CURRENT_TIME);
+    }
+    */
+}
+
+
+void
+QTplotDlg::key_down_slot(QKeyEvent*)
+{
+    /*
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    GdkEventKey *kev = &event->key;
+    int keyval = kev->keyval;
+
+    // Make sure we catch backspace.
+    if (keyval == GDK_KEY_h && kev->string && *kev->string == '\b')
+        keyval = GDK_KEY_BackSpace;
+
+    int code = 0;
+    switch (keyval) {
+    case GDK_KEY_Escape:
+    case GDK_KEY_Tab:
+        // Tab will switch focus.
+        return (false);
+
+    case GDK_KEY_Up:
+        code = UP_KEY;
+        break;
+    case GDK_KEY_Down:
+        code = DOWN_KEY;
+        break;
+    case GDK_KEY_Left:
+        code = LEFT_KEY;
+        break;
+    case GDK_KEY_Right:
+        code = RIGHT_KEY;
+        break;
+    case GDK_KEY_Return:
+        code = ENTER_KEY;
+        break;
+    case GDK_KEY_BackSpace:
+        code = BSP_KEY;
+        break;
+    case GDK_KEY_Delete:
+        code = DELETE_KEY;
+        break;
+    }
+    char text[8];
+    *text = 0;
+    if (kev->string) {
+        strncpy(text, kev->string, 8);
+        text[7] = 0;
+    }
+
+    // Throw out when cursor is not in viewport.
+    int x, y;
+    gdk_window_get_pointer(kev->window, &x, &y, 0);
+    if (x < 0 || y < 0 ||
+            x >= graph->area().width() || y >= graph->area().height())
+        return (false);
+
+    graph->gr_key_hdlr(text, code, x, graph->yinv(y));
+    */
+}
+
+
+void
+QTplotDlg::key_up_slot(QKeyEvent*)
+{
+}
+
+
+void
+QTplotDlg::enter_slot(QEnterEvent*)
+{
+    /*
+    // pointer entered a drawing window
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
+    gtk_widget_set_can_focus(caller, true);
+    gtk_window_set_focus(GTK_WINDOW(w->Shell()), caller);
+    if (GP.SourceGraph() && graph != GP.SourceGraph()) {
+        // hack a ghost for move/copy
+        w->Gbag()->set_ghost_func(dynamic_cast<QTplotDlg*>(
+            GP.SourceGraph()->dev())->Gbag()->get_ghost_func());
+    }
+    graph->dev()->ShowGhost(true);
+    */
+}
+
+
+void
+QTplotDlg::leave_slot(QEvent*)
+{
+    /*
+    // pointer left the drawing window
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
+    if (w->Gbag()->has_ghost()) {
+        GP.PushGraphContext(graph);
+        w->ShowGhost(false);
+        GP.PopGraphContext();
+    }
+    if (GP.SourceGraph() && graph != GP.SourceGraph()) {
+        // remove hacked ghost
+        w->Gbag()->set_ghost_func(0);
+    }
+    */
+}
+
+
+void
+QTplotDlg::focus_in_slot(QFocusEvent*)
+{
+}
+
+
+void
+QTplotDlg::focus_out_slot(QFocusEvent*)
+{
+}
+
+
+void
+QTplotDlg::drag_enter_slot(QDragEnterEvent*)
+{
+}
+
+
+void
+QTplotDlg::drop_slot(QDropEvent*)
+{
+}
+
+
+void
+QTplotDlg::dismiss_btn_slot()
+{
+    pb_graph->gr_popdown();
+}
+
+
+void
+QTplotDlg::help_btn_slot()
+{
+    PopUpHelp(pb_graph->apptype() == GR_PLOT ? "plotpanel" : "mplotpanel");
+}
+
+
+void
+QTplotDlg::redraw_btn_slot()
+{
+    pb_graph->gr_pkg_init_colors();
+    Clear();
+    pb_graph->gr_redraw();
+}
+
+
+void
+QTplotDlg::print_btn_slot(bool)
+{
+    set_hccb(&wrsHCcb);
+    PopUpPrint(sender(), &wrsHCcb, HCgraphical, this);
+}
+
+
+void
+QTplotDlg::saveplt_btn_slot()
+{
+    PopUpInput("Enter name for data file", 0, "Save Plot File",
+        do_save_plot, pb_graph);
+}
+
+
+void
+QTplotDlg::savepr_btn_slot()
+{
+    PopUpInput("Enter name for print file", 0, "Save Print File",
+        do_save_print, pb_graph);
+}
+
+
+void
+QTplotDlg::points_btn_slot(bool)
+{
+    /*
+    // handle points and combplot modes
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
+
+    GtkWidget *pts = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
+        "points");
+    GtkWidget *cmb = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
+        "combplot");
+    if (pts && cmb) {
+        bool ptson = GTKdev::GetStatus(pts);
+        bool cmbon = GTKdev::GetStatus(cmb);
+
+        if (!ptson && !cmbon)
+            graph->set_plottype(PLOT_LIN);
+        else if (caller == pts) {
+            if (cmbon)
+                GTKdev::SetStatus(cmb, false);
+            graph->set_plottype(PLOT_POINT);
+        }
+        else {
+            if (ptson)
+                GTKdev::SetStatus(pts, false);
+            graph->set_plottype(PLOT_COMB);
+        }
+        graph->dev()->Clear();
+        graph->gr_redraw();
+    }
+    */
+}
+
+
+void
+QTplotDlg::comb_btn_slot(bool)
+{
+}
+
+
+void
+QTplotDlg::logx_btn_slot(bool)
+{
+    /*
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
+    if (graph->rawdata().xmin <= 0) {
+        w->PopUpErr(MODE_ON,
+            "The X-axis scale must be greater than zero for log plot.");
+        GTKdev::SetStatus(caller, false);
+        return;
+    }
+    bool state = GTKdev::GetStatus(caller);
+    if (state) {
+        if (graph->gridtype() == GRID_YLOG)
+            graph->set_gridtype(GRID_LOGLOG);
+        else
+            graph->set_gridtype(GRID_XLOG);
+    }
+    else {
+        if (graph->gridtype() == GRID_LOGLOG)
+            graph->set_gridtype(GRID_YLOG);
+        else
+            graph->set_gridtype(GRID_LIN);
+    }
+
+    graph->clear_units_text(LAxunits);
+    graph->dev()->Clear();
+    graph->gr_redraw();
+    */
+}
+
+
+void
+QTplotDlg::logy_btn_slot(bool)
+{
+    /*
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
+    if (graph->rawdata().ymin <= 0) {
+        w->PopUpErr(MODE_ON,
+            "The Y-axis scale must be greater than zero for log plot.");
+        GTKdev::SetStatus(caller, false);
+        return;
+    }
+    bool state = GTKdev::GetStatus(caller);
+    if (state) {
+        if (graph->gridtype() == GRID_XLOG)
+            graph->set_gridtype(GRID_LOGLOG);
+        else
+            graph->set_gridtype(GRID_YLOG);
+    }
+    else {
+        if (graph->gridtype() == GRID_LOGLOG)
+            graph->set_gridtype(GRID_XLOG);
+        else
+            graph->set_gridtype(GRID_LIN);
+    }
+
+    // clear the yunits text
+    graph->clear_units_text(LAyunits);
+    graph->dev()->Clear();
+    graph->gr_redraw();
+    */
+}
+
+
+void
+QTplotDlg::marker_btn_slot(bool)
+{
+    /*
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
+    if (!graph->xmonotonic() && graph->yseparate()) {
+        w->PopUpErr(MODE_ON,
+"Marker is not available in separate trace mode with nonmonotonic scale.");
+        GTKdev::SetStatus(caller, false);
+        return;
+    }
+    if (GTKdev::GetStatus(caller)) {
+        if (!graph->reference().mark) {
+            graph->reference().mark = true;
+            graph->gr_mark();
+        }
+    }
+    else if (graph->reference().mark) {
+        graph->reference().mark = false;
+        graph->gr_mark();
+        graph->reference().set = false;
+    }
+    */
+}
+
+
+void
+QTplotDlg::separate_btn_slot(bool)
+{
+    /*
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
+    if (!graph->xmonotonic() && graph->reference().mark) {
+        w->PopUpErr(MODE_ON,
+"Can't enter separate trace mode with nonmonotonic scale when\n\
+marker is active.");
+        GTKdev::SetStatus(caller, false);
+        return;
+    }
+    if (graph->yseparate())
+        graph->set_yseparate(false);
+    else
+        graph->set_yseparate(true);
+    graph->dev()->Clear();
+    graph->gr_redraw();
+    */
+}
+
+
+void
+QTplotDlg::single_btn_slot(bool)
+{
+    /*
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    if (graph->format() == FT_MULTI)
+        graph->set_format(FT_SINGLE);
+    else
+        graph->set_format(FT_MULTI);
+    graph->dev()->Clear();
+    graph->gr_redraw();
+    */
+}
+
+
+void
+QTplotDlg::group_btn_slot(bool)
+{
+    /*
+    // Handle one scale and grp scale modes.
+    sGraph *graph = static_cast<sGraph*>(client_data);
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
+
+    GtkWidget *one = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
+        "onescale");
+    GtkWidget *grp =  (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
+        "grpscale");
+    if (one && grp) {
+        bool oneon = GTKdev::GetStatus(one);
+        bool grpon = GTKdev::GetStatus(grp);
+
+        if (!oneon && !grpon)
+            graph->set_format(FT_MULTI);
+        else if (caller == one) {
+            if (grpon)
+                GTKdev::SetStatus(grp, false);
+            graph->set_format(FT_SINGLE);
+        }
+        else {
+            if (oneon)
+                GTKdev::SetStatus(one, false);
+            graph->set_format(FT_GROUP);
+        }
+        graph->dev()->Clear();
+        graph->gr_redraw();
+    }
+    */
+}
 

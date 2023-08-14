@@ -1,3 +1,4 @@
+#include "qtkwent.h"
 
 //==========================================================================
 //
@@ -18,7 +19,7 @@ namespace {
     //
     void def_proc(GtkWidget*, void *client_data)
     {
-        xEnt *ent = (xEnt*)client_data;
+        QTent *ent = (QTent*)client_data;
         if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ent->active)))
             gtk_toggle_button_toggled(GTK_TOGGLE_BUTTON(ent->active));
         if (ent->defstr)
@@ -37,7 +38,7 @@ namespace {
     void value_changed(GtkWidget*, void *client_data)
     {
         xKWent *kwent = (xKWent*)client_data;
-        xEnt *ent = kwent->ent;
+        QTent *ent = kwent->ent;
         if (ent->defstr && ent->active &&
                 !GTKdev::GetStatus(ent->active)) {
             const char *str = gtk_entry_get_text(GTK_ENTRY(ent->entry));
@@ -63,7 +64,7 @@ namespace {
 // int(*cb)()                Callback function for item list.
 //
 void
-xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
+QTent::create_widgets(xKWent *kwstruct, const char *defstring,
     int(*cb)(GtkWidget*, GdkEvent*, void*))
 {
     variable *v = Sp.GetRawVar(kwstruct->word);
@@ -71,23 +72,23 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
         defstring = "";
     defstr = lstring::copy(defstring);
 
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
+    QHBoxLayout *hbox = new QHBoxLayout(this);
+    hbox->setMargin(2);
+    hbox->setSpacing(2);
 
-    active = gtk_check_button_new_with_label("Set");
-    gtk_widget_show(active);
-    gtk_box_pack_start(GTK_BOX(hbox), active, false, false, 0);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(active), v ? true : false);
+    active = new QPushButton(tr("Set"));
+    active->setCheckable(true);
+    active->setChecked(v);
+    hbox->addWidget(active);
 
     if (kwstruct->type != VTYP_BOOL &&
             !(kwstruct->type == VTYP_LIST && mode == KW_NO_CB)) {
         // second term is for "debug" button in debug panel
-        deflt = gtk_button_new_with_label("Def");
-        gtk_widget_show(deflt);
-        g_signal_connect(G_OBJECT(deflt), "clicked",
-            G_CALLBACK(def_proc), this);
-        gtk_misc_set_padding(GTK_MISC(gtk_bin_get_child(GTK_BIN(deflt))), 4, 0);
-        gtk_box_pack_start(GTK_BOX(hbox), deflt, false, false, 2);
+        deflt = new QPushButton(tr("Def"));
+        hbox->addWidget(deflt);
+        connect(drflt, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
+//        g_signal_connect(G_OBJECT(deflt), "clicked",
+//            G_CALLBACK(def_proc), this);
     }
 
     if ((mode != KW_FLOAT && mode != KW_NO_SPIN) &&
@@ -96,16 +97,13 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
             (mode == KW_INT_2 || mode == KW_REAL_2)))) {
         if (mode == KW_REAL_2) {
             // no spin - may want to add options with and without spin
-            entry = gtk_entry_new();
-            gtk_widget_show(entry);
-            gtk_widget_set_size_request(entry, 80, -1);
-            gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 2);
-            entry2 = gtk_entry_new();
-            gtk_widget_show(entry2);
-            gtk_widget_set_size_request(entry2, 80, -1);
-            gtk_box_pack_start(GTK_BOX(hbox), entry2, true, true, 2);
+            entry = new QLineEdit();
+            hbox->addWidget(entry);
+            entry2 = new QLineEdit();
+            hbox->addWidget(entry2);
         }
         else {
+            /*
             GtkAdjustment *adj = (GtkAdjustment*)gtk_adjustment_new(val,
                 kwstruct->min, kwstruct->max, del, pgsize, 0);
             entry = gtk_spin_button_new(adj, rate, numd);
@@ -122,6 +120,7 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
                 gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry2), true);
                 gtk_box_pack_start(GTK_BOX(hbox), entry2, false, false, 2);
             }
+            */
         }
     }
     else if (mode == KW_FLOAT ||
@@ -230,29 +229,30 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
 // Set sensitivity status in accord with Set button status
 //
 void
-xEnt::set_state(bool state)
+QTent::set_state(bool state)
 {
     if (active)
-        GTKdev::SetStatus(active, state);
+        QTdev::SetStatus(active, state);
     if (deflt) {
         if (state)
-            gtk_widget_set_sensitive(deflt, false);
+            deflt->setEnabled(false);
         else {
             bool isdef = false;
             if (entry) {
-                const char *str = gtk_entry_get_text(GTK_ENTRY(entry));
+                QByteArray ba = entry->text().toLatin1();
+                const char *str = ba.constData();
                 if (!strcmp(defstr, str))
                     isdef = true;
             }
-            gtk_widget_set_sensitive(deflt, !isdef);
+            deflt->setEnabled(!isdef);
         }
     }
     if (entry) {
         if (mode != KW_STR_PICK)
-            gtk_editable_set_editable(GTK_EDITABLE(entry), !state);
+            entry->setReadOnly(state);
         else
-            gtk_editable_set_editable(GTK_EDITABLE(entry), false);
-        gtk_widget_set_sensitive(entry, !state);
+            entry->setReadOnly(true);
+        entry->setEnabled(!state);
     }
 }
 
@@ -269,20 +269,21 @@ namespace {
 // Processing for the "set" button
 //
 void
-xEnt::handler(void *data)
+QTent::handler(void *data)
 {
     xKWent *kwstruct = (xKWent*)data;
     variable v;
-    bool state = GTKdev::GetStatus(active);
+    bool state = QTdev::GetStatus(active);
     // reset button temporarily, final status is set by callback()
-    GTKdev::SetStatus(active, !state);
+    QTdev::SetStatus(active, !state);
 
     if (kwstruct->type == VTYP_BOOL) {
         v.set_boolean(state);
         kwstruct->callback(state, &v);
     }
     else if (kwstruct->type == VTYP_NUM) {
-        const char *string = gtk_entry_get_text(GTK_ENTRY(entry));
+        QByteArray ba = entry->text().toLatin1();
+        const char *string = ba.constData();
         int ival;
         if (sscanf(string, "%d", &ival) != 1) {
             error_pr(kwstruct->word, 0, "an integer");
@@ -292,7 +293,8 @@ xEnt::handler(void *data)
         kwstruct->callback(state, &v);
     }
     else if (kwstruct->type == VTYP_REAL) {
-        const char *string = gtk_entry_get_text(GTK_ENTRY(entry));
+        QByteArray ba = entry->text().toLatin1();
+        const char *string = ba.constData();
         double *d = SPnum.parse(&string, false);
         if (!d) {
             error_pr(kwstruct->word, 0, "a real");
@@ -302,7 +304,8 @@ xEnt::handler(void *data)
         kwstruct->callback(state, &v);
     }
     else if (kwstruct->type == VTYP_STRING) {
-        const char *string = gtk_entry_get_text(GTK_ENTRY(entry));
+        QByteArray ba = entry->text().toLatin1();
+        const char *string = ba.constData();
         if (entry2) {
             // hack for two numeric fields
             const char *s = string;
@@ -311,7 +314,8 @@ xEnt::handler(void *data)
                 error_pr(kwstruct->word, " min", "a real");
                 return;
             }
-            const char *string2 = gtk_entry_get_text(GTK_ENTRY(entry2));
+            QByteArray ba2 = entry2->text().toLatin1();
+            const char *string2 = ba2.constData();
             s = string2;
             d = SPnum.parse(&s, false);
             if (!d) {
@@ -328,7 +332,8 @@ xEnt::handler(void *data)
         kwstruct->callback(state, &v);
     }
     else if (kwstruct->type == VTYP_LIST) {
-        const char *string = gtk_entry_get_text(GTK_ENTRY(entry));
+        QByteArray ba = entry->text().toLatin1();
+        const char *string = ba->constData();
         wordlist *wl = CP.LexString(string);
         if (wl) {
             if (!strcmp(wl->wl_word, "(")) {
@@ -360,13 +365,13 @@ xEnt::handler(void *data)
 
 //
 // Some global callback functions for use as an argument to
-// xEnt::create_widgets(), for generic data
+// QTent::create_widgets(), for generic data
 //
 
 // Boolean data
 //
 void
-kw_bool_func(bool isset, variable*, xEnt *ent)
+kw_bool_func(bool isset, variable*, QTent *ent)
 {
     ent->set_state(isset);
 }
@@ -375,7 +380,7 @@ kw_bool_func(bool isset, variable*, xEnt *ent)
 // Integer data
 //
 void
-kw_int_func(bool isset, variable *v, xEnt *ent)
+kw_int_func(bool isset, variable *v, QTent *ent)
 {
     ent->set_state(isset);
     if (ent->entry && isset) {
@@ -395,7 +400,7 @@ kw_int_func(bool isset, variable *v, xEnt *ent)
 // Real valued data
 //
 void
-kw_real_func(bool isset, variable *v, xEnt *ent)
+kw_real_func(bool isset, variable *v, QTent *ent)
 {
     ent->set_state(isset);
     if (ent->entry && isset) {
@@ -420,7 +425,7 @@ kw_real_func(bool isset, variable *v, xEnt *ent)
 // String data.
 //
 void
-kw_string_func(bool isset, variable *v, xEnt *ent)
+kw_string_func(bool isset, variable *v, QTent *ent)
 {
     ent->set_state(isset);
     if (ent->entry && isset)
@@ -494,7 +499,7 @@ namespace {
 }
 
 
-// This handler is passed in the callback arg of xEnt::create_widgets()
+// This handler is passed in the callback arg of QTent::create_widgets()
 //
 int
 kw_float_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
@@ -511,67 +516,3 @@ kw_float_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
     return (true);
 }
 
-#endif
-
-//////////////
-// Differernt modes for the entry
-//
-enum EntryMode { KW_NORMAL, KW_INT_2, KW_REAL_2, KW_FLOAT, KW_NO_SPIN,
-    KW_NO_CB, KW_STR_PICK };
-
-// KW_NORMAL       Normal mode (regular spin button or entry)
-// KW_INT_2        Use two integer fields (min/max)
-// KW_REAL_2       Use two real fields (min/max)
-// KW_FLOAT        Use exponential notation
-// KW_NO_SPIN      Numeric entry but no adjustment
-// KW_NO_CB        Special callbacks for debug popup
-// KW_STR_PICK     String selection - callback arg passed to
-//                  create_widgets()
-
-// Struct used in the keyword entry popups
-//
-struct xEnt : public userEnt
-{
-    xEnt(void(*cb)(bool, variable*, xEnt*))
-        { update = (void(*)(bool, variable*, void*))cb; val = 0.0; del = 0.0;
-        pgsize = 0.0; rate = 0.0; numd = 0; defstr = 0; active = 0; deflt = 0;
-        entry = 0; entry2 = 0; frame = 0; thandle = 0; down = false;
-        mode = KW_NORMAL; }
-    virtual ~xEnt() { delete [] defstr; }
-    void setup(float v, float d, float p, float r, int n)
-        { val = v; del = d; pgsize = p; rate = r; numd = n; }
-    void callback(bool isset, variable *v)
-        { if (update) (*update)(isset, v, this); }
-    void create_widgets(sKWent<xEnt>*, const char*,
-        int(*)(QWidget*, QEvent*, void*) = 0);
-    void set_state(bool);
-    void handler(void*);
-
-    void (*update)(bool, variable*, void*);
-
-    float val;                               // default numeric value
-    float del, pgsize, rate;                 // spin button parameters
-    int numd;                                // fraction digits shown
-    const char *defstr;                      // default string
-    QPushButton *active;                     // "set" button
-    QPushButton *deflt;                      // "def" button
-    QLineEdit *entry;                        // entry area
-    QLineEdit *entry2;                       // entry area
-    QGroupBox *frame;                        // top level of composite
-    int thandle;                             // timer handle
-    bool down;                               // decrement flag
-    EntryMode mode;                          // operating mode
-};
-typedef sKWent<xEnt> xKWent;
-
-//
-// Some global callback functions for use as an argument to
-// xEnt::xEnt(), for generic data
-//
-/*
-extern void kw_bool_func(bool, variable*, xEnt*);
-extern void kw_int_func(bool, variable*, xEnt*);
-extern void kw_real_func(bool, variable*, xEnt*);
-extern void kw_string_func(bool, variable*, xEnt*);
-extern int kw_float_hdlr(GtkWidget*, GdkEvent*, void*);
-*/

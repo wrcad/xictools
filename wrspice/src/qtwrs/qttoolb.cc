@@ -1,4 +1,4 @@
-
+ 
 /*========================================================================*
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
@@ -581,11 +581,12 @@ QTtoolbar::PopUpFont(ShowMode mode, int x, int y)
     PopUpFontSel(0, GRloc(LW_XYA, x, y), MODE_ON, tb_font_cb, 0, FNT_FIXED);
     tb_fontsel = ((QTfontDlg*)ActiveFontsel());
     SetActive(tid_font, true);
+//XXX
 printf("font %d %d\n", x, y);
 }
 
 
-void QTtoolbar::PopUpTBhelp(ShowMode, GRobject, GRobject, TBH_type) { }
+//void QTtoolbar::PopUpTBhelp(ShowMode, GRobject, GRobject, TBH_type) { }
 //void QTtoolbar::PopUpSpiceErr(bool, const char*) { }
 //void QTtoolbar::PopUpSpiceMessage(const char*, int, int) { }
 
