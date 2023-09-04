@@ -47,7 +47,13 @@
 
 #include <QLayout>
 #include <QPushButton>
+#include <QScreen>
 
+// Error message default window size.
+#define ER_WIDTH    400
+#define ER_HEIGHT   120
+
+// Instantiate the message database.
 namespace {
     QTmsgDb msgDB;
 }
@@ -75,7 +81,6 @@ QTtoolbar::PopUpSpiceErr(bool to_stdout, const char *string)
         msgDB.ToLog(string);
         return;
     }
-
     msgDB.PopUpErr(string);
 }
 
@@ -148,21 +153,13 @@ QTerrmsgDlg::QTerrmsgDlg()
     er_text->setLineWrapMode(
         msgDB.get_wrap() ? QTextEdit::WidgetWidth : QTextEdit::NoWrap);
 
-//    QTdev::self()->SetDoubleClickExit(er_popup, cancel);
+//XXX    QTdev::self()->SetDoubleClickExit(er_popup, cancel);
 
-/*
-    int mwid, mhei;
-    gtk_MonitorGeom(0, 0, 0, &mwid, &mhei);
-
-    int wid = 400;
-    int hei = 120;
-    gtk_widget_set_size_request(er_popup, wid, hei);
-    if (er_x == 0 && er_y == 0) {
-        er_x = (mwid - wid)/2;
-        er_y = 0;
+    if (msgDB.get_x() == 0 && msgDB.get_y() == 0) {
+        QSize screen_sz = screen()->size();
+        msgDB.set_x((screen_sz.width() - ER_WIDTH)/2);
+        msgDB.set_y(0);
     }
-*/
-
     move(msgDB.get_x(), msgDB.get_y());
     show();
 }
@@ -174,6 +171,13 @@ QTerrmsgDlg::~QTerrmsgDlg()
     QPoint pt = mapToGlobal(QPoint(0, 0));
     msgDB.set_x(pt.x());
     msgDB.set_y(pt.y());
+}
+
+
+QSize
+QTerrmsgDlg::sizeHint() const
+{
+    return (QSize(ER_WIDTH, ER_HEIGHT));
 }
 
 
@@ -210,7 +214,7 @@ QTerrmsgDlg::stuff_msg(const char *string)
 
     er_text->insert_chars_at_point(0, string, -1, -1);
     er_text->set_editable(false);
-/*
+/*XXX
     GtkAdjustment *adj = gtk_text_view_get_vadjustment(GTK_TEXT_VIEW(er_text));
     if (adj && gtk_adjustment_get_value(adj) <
             gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj)) {
@@ -236,19 +240,4 @@ QTerrmsgDlg::dismiss_btn_slot()
 {
     delete this;
 }
-
-
-#ifdef notdef
-
-
-// Static function.
-int
-ErrMsgBox::er_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
-{
-    if (event->type != GDK_BUTTON_PRESS)
-        return (true);
-    return (false);
-}
-#endif
-// End of ErrMsgBox functions.
 

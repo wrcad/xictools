@@ -15,7 +15,7 @@ enum EntryMode { KW_NORMAL, KW_INT_2, KW_REAL_2, KW_FLOAT, KW_NO_SPIN,
 
 // Class used in the keyword entry dialogs.
 //
-class QTent : public QWidget, public userEnt
+class QTent : public QGroupBox, public userEnt
 {
     QTent(void(*cb)(bool, variable*, xEnt*))
     {
@@ -69,7 +69,7 @@ class QTent : public QWidget, public userEnt
     float       rate;               // spin button parameters
     int         numd;               // fraction digits shown
     const char  *defstr;            // default string
-    QPushButton *active;            // "set" button
+    QCheckBox   *active;            // "set" check box
     QPushButton *deflt;             // "def" button
     QLineEdit   *entry;             // entry area
     QLineEdit   *entry2;            // entry area

@@ -84,6 +84,7 @@
 #include <QAction>
 #include <QPushButton>
 #include <QGroupBox>
+#include <QScreen>
 
 /*XXX need this?
 #ifdef WIN32
@@ -119,8 +120,7 @@ CommandTab::com_setfont(wordlist *wl)
 namespace {
     // See if str means true.
     //
-    bool
-    affirm(const char *str)
+    bool affirm(const char *str)
     {
         if (!strcmp(str, "on") || !strcmp(str, "true") || !strcmp(str, "1")
                 || !strcmp(str, "yes"))
@@ -171,11 +171,10 @@ CommandTab::com_tbsetup(wordlist *wl)
                 break;
             continue;
         }
-        ent->active = affirm(on);
-        if (sscanf(posx, "%d", &ent->x) != 1)
-            ent->x = 0;
-        if (sscanf(posy, "%d", &ent->y) != 1)
-            ent->y = 0;
+        ent->set_active(affirm(on));
+        int x, y;
+        if (sscanf(posx, "%d", &x) == 1 && sscanf(posy, "%d", &y) == 1)
+            ent->set_xy(x, y);
         if (!wl)
             break;
     }
@@ -297,8 +296,6 @@ CommandTab::com_setrdb(wordlist*)
 // End of CommandTab functions.
 
 
-
-
 // The Tools menu starts with fonts, in the same order.
 QTtoolbar::tbent_t QTtoolbar::tb_entries[] = {
     tbent_t("toolbar",  tid_toolbar),
@@ -314,7 +311,7 @@ QTtoolbar::tbent_t QTtoolbar::tb_entries[] = {
     tbent_t("shell",    tid_shell),
     tbent_t("simdefs",  tid_simdefs),
     tbent_t("commands", tid_commands),
-    tbent_t("trace",    tid_trace),
+    tbent_t("runops",   tid_runops),
     tbent_t("debug",    tid_debug),
     tbent_t(0,          -1)
 };
@@ -343,22 +340,6 @@ QTtoolbar::QTtoolbar()
     }
     tb_suppress_update = false;
     tb_saved = false;
-
-
-//    GRpkg::self()->NewWbag(GR_TBstr, w);
-
-//    for (tbent *tb = entries; tb && tb->name; tb++) {
-//        if (tb->name == ntb_toolbar) {
-        tbent_t *tb = &tb_entries[tid_toolbar];
-        int x = tb->x;
-        int y = tb->y;
-        FixLoc(&x, &y);
-       //XXX     move(x, y);
-//            break;
-//        }
-//    }
-
-
 }
 
 
@@ -443,21 +424,13 @@ void QTtoolbar::PopUpShellDefs(ShowMode, int, int) { }
 // gtksim.cc
 void QTtoolbar::PopUpSimDefs(ShowMode, int, int) { }
 
-// misc listing panels and dialogs
-// gtkfte.cc
-void QTtoolbar::SuppressUpdate(bool) { }
-void QTtoolbar::PopUpPlots(ShowMode, int, int) { }
-void QTtoolbar::UpdatePlots(int) { }
-void QTtoolbar::PopUpVectors(ShowMode, int, int) { }
-void QTtoolbar::UpdateVectors(int) { }
-void QTtoolbar::PopUpCircuits(ShowMode, int, int) { }
-void QTtoolbar::UpdateCircuits() { }
-void QTtoolbar::PopUpFiles(ShowMode, int, int) { }
-void QTtoolbar::UpdateFiles() { }
-void QTtoolbar::PopUpTrace(ShowMode, int, int) { }
-void QTtoolbar::UpdateTrace() { }
-void QTtoolbar::PopUpVariables(ShowMode, int, int) { }
-void QTtoolbar::UpdateVariables() { }
+
+void
+QTtoolbar::SuppressUpdate(bool suppress)
+{
+    tb_suppress_update = suppress;
+}
+
 
 // Pop up the toolbar.
 //
@@ -470,45 +443,44 @@ QTtoolbar::Toolbar()
 //XXX    gtk_window_set_default_icon_name("wrspice");
 
     // Launch the application windows that start realized.
-    for (tbent_t *tb = tb_entries; tb && tb->name; tb++) {
-        int id = tb->id;
+    for (tbent_t *tb = tb_entries; tb && tb->name(); tb++) {
+        int id = tb->id();
         if (id == tid_toolbar) {
-            TB()->PopUpToolbar(MODE_ON, tb->x, tb->y);
+            TB()->PopUpToolbar(MODE_ON, tb->x(), tb->y());
             continue;
         }
-        if (!tb->active)
+        if (!tb->active())
             continue;
         if (id == tid_font)
-            TB()->PopUpFont(MODE_ON, tb->x, tb->y);
+            TB()->PopUpFont(MODE_ON, tb->x(), tb->y());
         else if (id == tid_files)
-            TB()->PopUpFiles(MODE_ON, tb->x, tb->y);
+            TB()->PopUpFiles(MODE_ON, tb->x(), tb->y());
         else if (id == tid_circuits)
-            TB()->PopUpCircuits(MODE_ON, tb->x, tb->y);
+            TB()->PopUpCircuits(MODE_ON, tb->x(), tb->y());
         else if (id == tid_plots)
-            TB()->PopUpPlots(MODE_ON, tb->x, tb->y);
+            TB()->PopUpPlots(MODE_ON, tb->x(), tb->y());
         else if (id == tid_plotdefs)
-            TB()->PopUpPlotDefs(MODE_ON, tb->x, tb->y);
+            TB()->PopUpPlotDefs(MODE_ON, tb->x(), tb->y());
         else if (id == tid_colors)
-            TB()->PopUpColors(MODE_ON, tb->x, tb->y);
+            TB()->PopUpColors(MODE_ON, tb->x(), tb->y());
         else if (id == tid_vectors)
-            TB()->PopUpVectors(MODE_ON, tb->x, tb->y);
+            TB()->PopUpVectors(MODE_ON, tb->x(), tb->y());
         else if (id == tid_variables)
-            TB()->PopUpVariables(MODE_ON, tb->x, tb->y);
+            TB()->PopUpVariables(MODE_ON, tb->x(), tb->y());
         else if (id == tid_shell)
-            TB()->PopUpShellDefs(MODE_ON, tb->x, tb->y);
+            TB()->PopUpShellDefs(MODE_ON, tb->x(), tb->y());
         else if (id == tid_simdefs)
-            TB()->PopUpSimDefs(MODE_ON, tb->x, tb->y);
+            TB()->PopUpSimDefs(MODE_ON, tb->x(), tb->y());
         else if (id == tid_commands)
-            TB()->PopUpCmdConfig(MODE_ON, tb->x, tb->y);
-        else if (id == tid_trace)
-            TB()->PopUpTrace(MODE_ON, tb->x, tb->y);
+            TB()->PopUpCmdConfig(MODE_ON, tb->x(), tb->y());
+        else if (id == tid_runops)
+            TB()->PopUpRunops(MODE_ON, tb->x(), tb->y());
         else if (id == tid_debug)
-            TB()->PopUpDebugDefs(MODE_ON, tb->x, tb->y);
-        tb->active = false;
+            TB()->PopUpDebugDefs(MODE_ON, tb->x(), tb->y());
+        tb->set_active(false);
     }
 }
 
-// main window and a few more
 
 //==========================================================================
 //
@@ -558,9 +530,6 @@ QTtoolbar::tb_font_cb(const char *btn, const char *name, void*)
     if (!name && !btn) {
         TB()->SetLoc(tid_font, TB()->tb_fontsel);
         TB()->SetActive(tid_font, false);
-        TB()->tb_fontsel = 0;
-//        QTdev::SetStatus(TB()->tb_font, false);
-        return;
     }
 }
 
@@ -578,17 +547,22 @@ QTtoolbar::PopUpFont(ShowMode mode, int x, int y)
         return;
     }
     FixLoc(&x, &y);
-    PopUpFontSel(0, GRloc(LW_XYA, x, y), MODE_ON, tb_font_cb, 0, FNT_FIXED);
+    PopUpFontSel(this, GRloc(LW_XYA, x, y), MODE_ON, tb_font_cb, 0, FNT_FIXED);
     tb_fontsel = ((QTfontDlg*)ActiveFontsel());
+    tb_fontsel->register_usrptr((void**)&tb_fontsel);
     SetActive(tid_font, true);
-//XXX
-printf("font %d %d\n", x, y);
 }
 
+void QTtoolbar::PopUpNotes()       { /* notes_proc(0, 0); */ }
 
 //void QTtoolbar::PopUpTBhelp(ShowMode, GRobject, GRobject, TBH_type) { }
 //void QTtoolbar::PopUpSpiceErr(bool, const char*) { }
 //void QTtoolbar::PopUpSpiceMessage(const char*, int, int) { }
+
+void QTtoolbar::PopUpSpiceInfo(const char *msg)
+{
+    QTbag::PopUpInfo(MODE_ON, msg);
+}
 
 void QTtoolbar::UpdateMain(ResUpdType res)
 {
@@ -603,12 +577,6 @@ QTtoolbar::CloseGraphicsConnection()
         ::close(QTdev::ConnectFd());
 }
 
-void QTtoolbar::PopUpInfo(const char *msg)
-{
-    QTbag::PopUpInfo(MODE_ON, msg);
-}
-void QTtoolbar::PopUpNotes()       { /* notes_proc(0, 0); */ }
-
 //----- End Toolbar interface stubs.
 
 
@@ -617,17 +585,15 @@ void QTtoolbar::PopUpNotes()       { /* notes_proc(0, 0); */ }
 // Save the location of a tool.
 //
 void
-QTtoolbar::SetLoc(tid_id id, QWidget *shell)
+QTtoolbar::SetLoc(tid_id id, QWidget *w)
 {
     tbent_t *tb = &tb_entries[id];
-    /*
-    gdk_window_get_root_origin(gtk_widget_get_window(shell),
-        &tb->x, &tb->y);
-    int x, y;
-    gtk_MonitorGeom(shell, &x, &y);
-    tb->x -= x;
-    tb->y -= y;
-    */
+    QPoint pt = w->mapToGlobal(QPoint(0, 0));
+
+    // Subtract the monitor origin.
+    QScreen *screen = w->screen();
+    QRect r = screen->geometry();
+    tb->set_xy(pt.x() - r.x(), pt.y() - r.y());
 }
 
 
@@ -639,11 +605,12 @@ QTtoolbar::SetLoc(tid_id id, QWidget *shell)
 void
 QTtoolbar::FixLoc(int *px, int *py)
 {
-    int x, y;
-    x=0; y=0;
-//XXX    gtk_MonitorGeom(toolbar, &x, &y);
-    *px += x;
-    *py += y;
+    if (QTtbDlg::self()) {
+        QScreen *screen = QTtbDlg::self()->screen();
+        QRect r = screen->geometry();
+        *px += r.x();
+        *py += r.y();
+    }
 }
 
 
@@ -670,8 +637,8 @@ if (0)
             snprintf(buf, sizeof(buf), fmt, "toolbar", "on", x, y);
             lstr.add(buf);
         }
-        for (tbent_t *tb = tb_entries; tb && tb->name; tb++) {
-            if (!strcmp(tb->name, "toolbar"))
+        for (tbent_t *tb = tb_entries; tb && tb->name(); tb++) {
+            if (!strcmp(tb->name(), "toolbar"))
                 continue;
             /*
             GdkRectangle rect;

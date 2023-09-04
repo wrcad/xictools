@@ -457,8 +457,10 @@ sVectors::ve_btn_hdlr(GtkWidget *caller, int x, int y)
     x = gtk_text_iter_get_offset(&ihere) - gtk_text_iter_get_offset(&iline);
     char *line_start = string + gtk_text_iter_get_offset(&iline);
     y = gtk_text_iter_get_line(&iline);
-    if (y <= 3)
+    if (y <= 3) {
+        delete [] string;
         return;
+    }
 
     // is it selected? set to opposite
     bool select = (*line_start == ' ');
@@ -517,6 +519,7 @@ sVectors::ve_recolor()
             wasret = true;
         n++;
     }
+    delete [] string;
     text_set_editable(TB()->ve_text, false);
 }
 
@@ -550,6 +553,7 @@ sVectors::ve_desel()
             wasret = true;
         n++;
     }
+    delete [] string;
     text_set_editable(text, false);
     text_set_scroll_value(text, val);
     OP.curPlot()->clear_selected();
@@ -1103,17 +1107,20 @@ sTraces::tr_actions(GtkWidget *caller, void*)
     char *s = text_get_chars(TB()->tr_text, 0, -1);
     if (*s != 'I') {
         char *t;
-        for (t = s; *t; t++)
+        for (t = s; *t; t++) {
             if (*t == '\n') {
                 if (*(t+1) == 'I')
                	    break;
-	    }
+            }
+        }
         if (!*t) {
             GRpkg::self()->ErrPrintf(ET_ERROR, "no inactive debugs.\n");
             GTKdev::SetStatus(caller, false);
+            delete [] s;
             return;
         }
     }
+    delete [] s;
     TB()->RUsure(TB()->tr_shell, tr_dfunc);
     GTKdev::SetStatus(caller, false);
 }
@@ -1200,6 +1207,7 @@ sTraces::tr_recolor()
         n++;
     }
     text_set_editable(TB()->tr_text, false);
+    delete [] string();
 }
 // End of sTraces functions
 

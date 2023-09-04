@@ -105,21 +105,24 @@ QTtextEdit::replace_chars(const QColor *color, const char *string,
         return;
     delete_chars(start, end);
     QTextCursor c = textCursor();
+    QColor clr = textColor();
+    setTextColor(QColor("red"));
     if (end < 0)
-        c.insertText(string);
+        insertPlainText(string);
     else {
         int nc = abs(end - start);
         int len = strlen(string);
         if (len <= nc)
-            c.insertText(string);
+            insertPlainText(string);
         else {
             char *tstr = lstring::copy(string);
             tstr[nc] = 0;
-            c.insertText(tstr);
+            insertPlainText(tstr);
             delete [] tstr;
         }
     }
     setTextCursor(c);
+    setTextColor(clr);
 }
 
 

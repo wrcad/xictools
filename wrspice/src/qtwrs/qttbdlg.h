@@ -57,7 +57,7 @@ class QTtbDlg : public QDialog, public QTdraw
     Q_OBJECT
 
 public:
-    QTtbDlg();
+    QTtbDlg(int, int);
     ~QTtbDlg();
 
     // Menu codes.

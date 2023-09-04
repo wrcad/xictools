@@ -25,36 +25,50 @@ LIB_TARGET = qtwrs.a
 
 BASE = ../../../xt_base
 SECURE = ../../../secure
-INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include
+ifeq ($(USEMOZY), yes)
+MOZY = ../../../mozy
+MOZYINC = -I$(MOZY)/include
+endif
+
+INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include $(MOZYINC)
 
 CCFILES = \
+    qtcircuits.cc \
     qterrmsg.cc \
+    qtfiles.cc \
     qtgraph.cc \
     qtplot.cc \
+    qtplots.cc \
+    qtrunops.cc \
     qtspmsg.cc \
     qttbdlg.cc \
     qttbhelp.cc \
-    qttoolb.cc
+    qttoolb.cc \
+    qtvariables.cc \
+    qtvectors.cc
 #    qtcmds.cc \
 #    qtcolor.cc \
 #    qtdebug.cc \
-#    qtfte.cc \
 #    qtpldef.cc \
 #    qtshell.cc \
 #    qtsim.cc \
 
 MOCFILES = \
+    moc_circuits.cpp \
     moc_errmsg.cpp \
+    moc_files.cpp \
     moc_plot.cpp \
+    moc_plots.cpp \
+    moc_runops.cpp \
     moc_spmsg.cpp \
     moc_tbdlg.cpp \
-    moc_tbhelp.cpp
+    moc_tbhelp.cpp \
+    moc_variables.cpp \
+    moc_vectors.cpp
 #    moc_cmds.cpp \
 #    moc_color.cpp \
 #    moc_debug.cpp \
-#    moc_fte.cpp \
 #    moc_pldef.cpp \
-#    moc_plot.cpp \
 #    moc_shell.cpp \
 #    moc_sim.cpp \
 
@@ -69,34 +83,29 @@ $(LIB_TARGET): $(LIBOBJS)
 	$(AR) cr $(LIB_TARGET) $(LIBOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
-ifeq ($(USEMOZY), yes)
-MOZY = ../../../mozy
-MOZYINC = -I$(MOZY)/include
-MOBJS = qtmain.o
-
-$(MOBJS):
-	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) -c $*.cc
-endif
-
 .cpp.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -o $@ $<
 
 .cc.o:
-	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc
+	$(CXX) -c $(CFLAGS) $(INCLUDE) $(TOOLKITINC) $*.cc
 
 #moc_cmds.o: moc_cmds.cpp qtcmds.h
 #moc_color.o: moc_color.cpp qtcolor.h
 #moc_debug.o: moc_debug.cpp qtdebug.h
+moc_circuits.o: moc_circuits.cpp qtcircuits.h
 moc_errmsg.o: moc_errmsg.cpp qterrmsg.h
-#moc_fte.o: moc_fte.cpp qtfte.h
+moc_files.o: moc_files.cpp qtfiles.h
 #moc_pldef.o: moc_pldef.cpp qtpldef.h
-#moc_plot.o: moc_plot.cpp qtplot.h
 #moc_shell.o: moc_shell.cpp qtshell.h
 #moc_sim.o: moc_sim.cpp qtsim.h
 moc_plot.o: moc_plot.cpp qtplot.h
+moc_plots.o: moc_plots.cpp qtplots.h
+moc_runops.o: moc_runops.cpp qtrunops.h
 moc_spmsg.o: moc_spmsg.cpp qtspmsg.h
 moc_tbdlg.o: moc_tbdlg.cpp qttbdlg.h
 moc_tbhelp.o: moc_tbhelp.cpp qttbhelp.h
+moc_variables.o: moc_variables.cpp qtvariables.h
+moc_vectors.o: moc_vectors.cpp qtvectors.h
 
 #moc_cmds.cpp: $(MOC) qtcmds.h
 #	$(MOC) qtcmds.h -o moc_cmds.cpp
@@ -104,26 +113,34 @@ moc_tbhelp.o: moc_tbhelp.cpp qttbhelp.h
 #	$(MOC) qtcolor.h -o moc_color.cpp
 #moc_debug.cpp: $(MOC) qtdebug.h
 #	$(MOC) qtdebug.h -o moc_debug.cpp
+moc_circuits.cpp: $(MOC) qtcircuits.h
+	$(MOC) qtcircuits.h -o moc_circuits.cpp
 moc_errmsg.cpp: $(MOC) qterrmsg.h
 	$(MOC) qterrmsg.h -o moc_errmsg.cpp
-#moc_fte.cpp: $(MOC) qtfte.h
-#	$(MOC) qtfte.h -o moc_fte.cpp
+moc_files.cpp: $(MOC) qtfiles.h
+	$(MOC) qtfiles.h -o moc_files.cpp
 #moc_pldef.cpp: $(MOC) qtpldef.h
 #	$(MOC) qtpldef.h -o moc_pldef.cpp
-#moc_plot.cpp: $(MOC) qtplot.h
-#	$(MOC) qtplot.h -o moc_plot.cpp
 #moc_shell.cpp: $(MOC) qtshell.h
 #	$(MOC) qtshell.h -o moc_shell.cpp
 #moc_sim.cpp: $(MOC) qtsim.h
 #	$(MOC) qtsim.h -o moc_sim.cpp
 moc_plot.cpp: $(MOC) qtplot.h
 	$(MOC) qtplot.h -o moc_plot.cpp
+moc_plots.cpp: $(MOC) qtplots.h
+	$(MOC) qtplots.h -o moc_plots.cpp
+moc_runops.cpp: $(MOC) qtrunops.h
+	$(MOC) qtrunops.h -o moc_runops.cpp
 moc_spmsg.cpp: $(MOC) qtspmsg.h
 	$(MOC) qtspmsg.h -o moc_spmsg.cpp
 moc_tbdlg.cpp: $(MOC) qttbdlg.h
 	$(MOC) qttbdlg.h -o moc_tbdlg.cpp
 moc_tbhelp.cpp: $(MOC) qttbhelp.h
 	$(MOC) qttbhelp.h -o moc_tbhelp.cpp
+moc_variables.cpp: $(MOC) qtvariables.h
+	$(MOC) qtvariables.h -o moc_variables.cpp
+moc_vectors.cpp: $(MOC) qtvectors.h
+	$(MOC) qtvectors.h -o moc_vectors.cpp
 
 depend:
 	@echo depending in wrspice/gtkwrs

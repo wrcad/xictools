@@ -1100,9 +1100,10 @@ QTfileDlg::delete_slot()
         snprintf(buf, sizeof(buf), "Delete .../%s?", lstring::strip_path(path));
     GRaffirmPopup *a = PopUpAffirm(0, GRloc(), buf, 0, 0);
     QTaffirmDlg *affirm = dynamic_cast<QTaffirmDlg*>(a);
-    if (a)
+    if (a) {
         connect(affirm, SIGNAL(affirm(bool, void*)),
             this, SLOT(delete_cb_slot(bool, void*)));
+    }
     delete [] path;
 }
 

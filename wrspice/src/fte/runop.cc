@@ -157,7 +157,7 @@ IFoutput::measureCmd(wordlist *wl)
             else
                 curcir->set_measures(m);
         }
-        ToolBar()->UpdateTrace();
+        ToolBar()->UpdateRunops();
     }
 }
 
@@ -197,7 +197,7 @@ IFoutput::stopCmd(wordlist *wl)
             else
                 curcir->set_stops(m);
         }
-        ToolBar()->UpdateTrace();
+        ToolBar()->UpdateRunops();
     }
 }
 
@@ -308,7 +308,7 @@ IFoutput::deleteCmd(wordlist *wl)
             else if (d == db.stops())
                 db.set_stops(db.stops()->next());
         }
-        ToolBar()->UpdateTrace();
+        ToolBar()->UpdateRunops();
         d->destroy();
         return;
     }
@@ -392,7 +392,7 @@ IFoutput::deleteCmd(wordlist *wl)
         int i = atoi(wl->wl_word);
         deleteRunop(DF_ALL, inactive, i);
     }
-    ToolBar()->UpdateTrace();
+    ToolBar()->UpdateRunops();
 }
 
 

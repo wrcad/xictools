@@ -70,8 +70,6 @@
 void
 QTtoolbar::PopUpToolbar(ShowMode mode, int x, int y)
 {
-//    if (!QTdev::exists() || !QTmainwin::exists())
-//        return;
     if (mode == MODE_OFF) {
         if (QTtbDlg::self())
             QTtbDlg::self()->deleteLater();
@@ -85,9 +83,7 @@ QTtoolbar::PopUpToolbar(ShowMode mode, int x, int y)
     if (QTtbDlg::self())
         return;
 
-    new QTtbDlg();
-
-    QTtbDlg::self()->move(x, y);
+    new QTtbDlg(x, y);
     QTtbDlg::self()->show();
 }
 // End of QTtoolbar functions.
@@ -95,7 +91,7 @@ QTtoolbar::PopUpToolbar(ShowMode mode, int x, int y)
 
 QTtbDlg *QTtbDlg::instPtr;
 
-QTtbDlg::QTtbDlg() : QTdraw(0)
+QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
 {
     instPtr = this;
     tb_file_menu = 0;
@@ -196,7 +192,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_font);
     a->setShortcut(QKeySequence("Alt+N"));
     a->setToolTip(tr("Set window fonts"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_font)->active);
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_font)->active());
+    QTtoolbar::entries(tid_font)->set_action(a);
 
     // "/Tools/_Files", "<alt>Z", "<CheckItem>"
     a = tb_tools_menu->addAction(tr("&Files"));
@@ -204,7 +201,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_files);
     a->setShortcut(QKeySequence("Alt+Z"));
     a->setToolTip(tr("List search path files"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_files)->active);
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_files)->active());
+    QTtoolbar::entries(tid_files)->set_action(a);
 
     // "/Tools/_Circuits", "<alt>C", "<CheckItem>"
     a = tb_tools_menu->addAction(tr("&Circuits"));
@@ -212,7 +210,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_circuits);
     a->setShortcut(QKeySequence("Alt+C"));
     a->setToolTip(tr("List circuits"));
-    QTdev::SetStatus(a, TB()->entries(tid_circuits)->active);
+    QTdev::SetStatus(a, TB()->entries(tid_circuits)->active());
+    QTtoolbar::entries(tid_circuits)->set_action(a);
 
     // "/Tools/_Plots", "<alt>P", "<CheckItem>");
     a = tb_tools_menu->addAction(tr("&Plots"));
@@ -220,7 +219,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_plots);
     a->setShortcut(QKeySequence("Alt+P"));
     a->setToolTip(tr("List result plot data"));
-    QTdev::SetStatus(a, TB()->entries(tid_plots)->active);
+    QTdev::SetStatus(a, TB()->entries(tid_plots)->active());
+    QTtoolbar::entries(tid_plots)->set_action(a);
 
     // "/Tools/P_lot Opts", "<alt>L", "<CheckItem>"
     a = tb_tools_menu->addAction(tr("P&lot Opts"));
@@ -228,7 +228,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_plotdefs);
     a->setShortcut(QKeySequence("Alt+L"));
     a->setToolTip(tr("Set plot options"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_plotdefs)->active);
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_plotdefs)->active());
+    QTtoolbar::entries(tid_plotdefs)->set_action(a);
 
     // "/Tools/C_olors", "<alt>O", "<CheckItem>");
     a = tb_tools_menu->addAction(tr("C&olors"));
@@ -236,7 +237,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_colors);
     a->setShortcut(QKeySequence("Alt+O"));
     a->setToolTip(tr("Set plot colors"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_colors)->active);
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_colors)->active());
+    QTtoolbar::entries(tid_colors)->set_action(a);
 
     // "/Tools/_Vectors", "<alt>V", "<CheckItem>"
     a = tb_tools_menu->addAction(tr("&Vectors"));
@@ -244,7 +246,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_vectors);
     a->setShortcut(QKeySequence("Alt+V"));
     a->setToolTip(tr("List vectors in current plot"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_vectors)->active);
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_vectors)->active());
+    QTtoolbar::entries(tid_vectors)->set_action(a);
 
     // "/Tools/Va_riables", "<alt>R", "<CheckItem>");
     a = tb_tools_menu->addAction(tr("Va&riables"));
@@ -252,7 +255,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_variables);
     a->setShortcut(QKeySequence("Alt+R"));
     a->setToolTip(tr("List set shell variables"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_variables)->active);
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_variables)->active());
+    QTtoolbar::entries(tid_variables)->set_action(a);
 
     // "/Tools/_Shell", "<alt>S", "<CheckItem>");
     a = tb_tools_menu->addAction(tr("&Shell"));
@@ -260,7 +264,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_shell);
     a->setShortcut(QKeySequence("Alt+S"));
     a->setToolTip(tr("Set shell options"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_shell)->active);
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_shell)->active());
+    QTtoolbar::entries(tid_shell)->set_action(a);
 
     // "/Tools/S_im Opts", "<alt>I", "<CheckItem>"
     a = tb_tools_menu->addAction(tr("S&im Opts"));
@@ -268,7 +273,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_simdefs);
     a->setShortcut(QKeySequence("Alt+I"));
     a->setToolTip(tr("Set simulation options"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_simdefs)->active);
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_simdefs)->active());
+    QTtoolbar::entries(tid_simdefs)->set_action(a);
 
     // "/Tools/Co_mmands", "<alt>M", "<CheckItem>"
     a = tb_tools_menu->addAction(tr("Co&mmands"));
@@ -276,15 +282,17 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_commands);
     a->setShortcut(QKeySequence("Alt+M"));
     a->setToolTip(tr("Set command options"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_commands)->active);
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_commands)->active());
+    QTtoolbar::entries(tid_commands)->set_action(a);
 
-    // "/Tools/_Trace", "<alt>A", "<CheckItem>");
-    a = tb_tools_menu->addAction(tr("&Trace"));
+    // "/Tools/_Runops", "<alt>U", "<CheckItem>");
+    a = tb_tools_menu->addAction(tr("&Runops"));
     a->setCheckable(true);
-    a->setData(tid_trace);
-    a->setShortcut(QKeySequence("Alt+A"));
-    a->setToolTip(tr("List traces in effect"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_trace)->active);
+    a->setData(tid_runops);
+    a->setShortcut(QKeySequence("Alt+U"));
+    a->setToolTip(tr("List runops (traces, etc.) in effect"));
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_runops)->active());
+    QTtoolbar::entries(tid_runops)->set_action(a);
 
     // "/Tools/_Debug", "<alt>D", "<CheckItem>");
     a = tb_tools_menu->addAction(tr("&Debug"));
@@ -292,7 +300,8 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     a->setData(tid_debug);
     a->setShortcut(QKeySequence("Alt+D"));
     a->setToolTip(tr("Set debugging options"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_debug)->active);
+    QTdev::SetStatus(a, QTtoolbar::entries(tid_debug)->active());
+    QTtoolbar::entries(tid_debug)->set_action(a);
     connect(tb_tools_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(tools_menu_slot(QAction*)));
 
@@ -382,7 +391,6 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
     hei = 6*hei + 6;
     Viewport()->setFixedSize(QSize(wid, hei));
 
-
     // drawing colors
     const char *c1 = 0;
     const char *c2 = 0;
@@ -418,12 +426,17 @@ QTtbDlg::QTtbDlg() : QTdraw(0)
 
     TB()->RegisterTimeoutProc(50, tb_res_timeout, (void*)1L);
     TB()->RegisterTimeoutProc(2000, tb_res_timeout, 0);
+    TB()->FixLoc(&x, &y);
+    TB()->SetActive(tid_toolbar, true);
+    move(x, y);
 }
 
 
 QTtbDlg::~QTtbDlg()
 {
     instPtr = 0;
+    TB()->SetLoc(tid_toolbar, this);
+    TB()->SetActive(tid_toolbar, false);
 }
 
 
@@ -772,34 +785,90 @@ QTtbDlg::tools_menu_slot(QAction *a)
     int id = a->data().toInt();
     QTtoolbar::tbent_t *tb = QTtoolbar::entries(id);
 
-    if (id == tid_bug)
-        TB()->PopUpBugRpt(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_font)
-        TB()->PopUpFont(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_files)
-        TB()->PopUpFiles(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_circuits)
-        TB()->PopUpCircuits(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_plots)
-        TB()->PopUpPlots(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_plotdefs)
-        TB()->PopUpPlotDefs(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_colors)
-        TB()->PopUpColors(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_vectors)
-        TB()->PopUpVectors(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_variables)
-        TB()->PopUpVariables(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_shell)
-        TB()->PopUpShellDefs(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_simdefs)
-        TB()->PopUpSimDefs(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_commands)
-        TB()->PopUpCmdConfig(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_trace)
-        TB()->PopUpTrace(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
-    else if (id == tid_debug)
-        TB()->PopUpDebugDefs(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
+    if (id == tid_bug) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpBugRpt(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpBugRpt(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_font) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpFont(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpFont(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_files) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpFiles(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpFiles(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_circuits) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpCircuits(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpCircuits(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_plots) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpPlots(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpPlots(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_plotdefs) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpPlotDefs(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpPlotDefs(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_colors) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpColors(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpColors(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_vectors) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpVectors(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpVectors(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_variables) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpVariables(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpVariables(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_shell) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpShellDefs(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpShellDefs(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_simdefs) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpSimDefs(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpSimDefs(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_commands) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpCmdConfig(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpCmdConfig(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_runops) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpRunops(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpRunops(MODE_OFF, tb->x(), tb->y());
+    }
+    else if (id == tid_debug) {
+        if (a->isChecked() && !tb->active())
+            TB()->PopUpDebugDefs(MODE_ON, tb->x(), tb->y());
+        else if (!a->isChecked() && tb->active())
+            TB()->PopUpDebugDefs(MODE_OFF, tb->x(), tb->y());
+    }
 }
 
 
@@ -913,7 +982,7 @@ QTtbDlg::wr_btn_slot()
 {
     // The WR button slot, linked to the bug report popup.
     QTtoolbar::tbent_t *tb = QTtoolbar::entries(tid_bug);
-    TB()->PopUpBugRpt(tb->active ? MODE_OFF : MODE_ON, tb->x, tb->y);
+    TB()->PopUpBugRpt(tb->active() ? MODE_OFF : MODE_ON, tb->x(), tb->y());
 }
 
 

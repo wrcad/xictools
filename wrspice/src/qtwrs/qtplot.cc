@@ -903,27 +903,9 @@ QTplotDlg::font_changed_slot(int fnum)
 void
 QTplotDlg::resize_slot(QResizeEvent*)
 {
-    /*
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *wb = dynamic_cast<QTplotDlg*>(graph->dev());
-
-#if GTK_CHECK_VERSION(3,0,0)
-    if (!wb->GetDrawable()->get_window()) {
-        GtkWidget *vp = wb->Viewport();
-        if (gtk_widget_get_window(vp))
-            wb->GetDrawable()->set_window(gtk_widget_get_window(vp));
-    }
-
-#else
-    if (!wb->Window())
-        wb->SetWindow(gtk_widget_get_window(wb->Viewport()));
-#endif
-    int w = gdk_window_get_width(gtk_widget_get_window(caller));
-    int h = gdk_window_get_height(gtk_widget_get_window(caller));
-    graph->area().set_width(w);
-    graph->area().set_height(h);
-    graph->gr_abort();
-    */
+    pb_graph->area().set_width(Viewport()->width());
+    pb_graph->area().set_height(Viewport()->height());
+    pb_graph->gr_abort();
 }
 
 
@@ -934,11 +916,11 @@ QTplotDlg::paint_slot(QPaintEvent*)
 
 
 void
-QTplotDlg::button_down_slot(QMouseEvent*)
+QTplotDlg::button_down_slot(QMouseEvent *ev)
 {
-    /*
     if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
-        return (false);
+        return;
+    /*
     GdkEventButton *buttonev = &event->button;
     sGraph *graph = static_cast<sGraph*>(client_data);
 
@@ -973,9 +955,9 @@ QTplotDlg::button_down_slot(QMouseEvent*)
 void
 QTplotDlg::button_up_slot(QMouseEvent*)
 {
-    /*
     if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
-        return (false);
+        return;
+    /*
     GdkEventButton *buttonev = &event->button;
     sGraph *graph = static_cast<sGraph*>(client_data);
     int button = 0;
@@ -1008,18 +990,17 @@ void
 QTplotDlg::motion_slot(QMouseEvent*)
 {
     /*
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
-    if (w && w->Gbag()->showing_ghost()) {
-        if (w->pb_id) {
-            g_source_remove(w->pb_id);
-            w->pb_id = 0;
+    if (Gbag()->showing_ghost()) {
+        if (pb_id) {
+            g_source_remove(pb_id);
+            pb_id = 0;
         }
-        w->pb_x = (int)event->motion.x;
-        w->pb_y = (int)event->motion.y;
+        w->pb_x = event->pos().x();
+        w->pb_y = event->pos().y();
+        QTdev::self()->AddIdleProc(motion_idle, XXX);
         w->pb_id = g_idle_add(motion_idle, client_data);
         // GTK-2 sets a grab, prevents dragging between windows.
-        gdk_pointer_ungrab(GDK_CURRENT_TIME);
+//        gdk_pointer_ungrab(GDK_CURRENT_TIME);
     }
     */
 }
@@ -1204,29 +1185,26 @@ QTplotDlg::savepr_btn_slot()
 void
 QTplotDlg::points_btn_slot(bool)
 {
-    /*
     // handle points and combplot modes
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
-
+    /*
     GtkWidget *pts = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
         "points");
     GtkWidget *cmb = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
         "combplot");
     if (pts && cmb) {
-        bool ptson = GTKdev::GetStatus(pts);
-        bool cmbon = GTKdev::GetStatus(cmb);
+        bool ptson = QTdev::GetStatus(pts);
+        bool cmbon = QTdev::GetStatus(cmb);
 
         if (!ptson && !cmbon)
             graph->set_plottype(PLOT_LIN);
         else if (caller == pts) {
             if (cmbon)
-                GTKdev::SetStatus(cmb, false);
+                QTdev::SetStatus(cmb, false);
             graph->set_plottype(PLOT_POINT);
         }
         else {
             if (ptson)
-                GTKdev::SetStatus(pts, false);
+                QTdev::SetStatus(pts, false);
             graph->set_plottype(PLOT_COMB);
         }
         graph->dev()->Clear();
@@ -1245,143 +1223,121 @@ QTplotDlg::comb_btn_slot(bool)
 void
 QTplotDlg::logx_btn_slot(bool)
 {
-    /*
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
-    if (graph->rawdata().xmin <= 0) {
-        w->PopUpErr(MODE_ON,
+    if (pb_graph->rawdata().xmin <= 0) {
+        PopUpErr(MODE_ON,
             "The X-axis scale must be greater than zero for log plot.");
-        GTKdev::SetStatus(caller, false);
+        QTdev::SetStatus(sender(), false);
         return;
     }
-    bool state = GTKdev::GetStatus(caller);
+    bool state = QTdev::GetStatus(sender());
     if (state) {
-        if (graph->gridtype() == GRID_YLOG)
-            graph->set_gridtype(GRID_LOGLOG);
+        if (pb_graph->gridtype() == GRID_YLOG)
+            pb_graph->set_gridtype(GRID_LOGLOG);
         else
-            graph->set_gridtype(GRID_XLOG);
+            pb_graph->set_gridtype(GRID_XLOG);
     }
     else {
-        if (graph->gridtype() == GRID_LOGLOG)
-            graph->set_gridtype(GRID_YLOG);
+        if (pb_graph->gridtype() == GRID_LOGLOG)
+            pb_graph->set_gridtype(GRID_YLOG);
         else
-            graph->set_gridtype(GRID_LIN);
+            pb_graph->set_gridtype(GRID_LIN);
     }
 
-    graph->clear_units_text(LAxunits);
-    graph->dev()->Clear();
-    graph->gr_redraw();
-    */
+    pb_graph->clear_units_text(LAxunits);
+    Clear();
+    pb_graph->gr_redraw();
 }
 
 
 void
 QTplotDlg::logy_btn_slot(bool)
 {
-    /*
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
-    if (graph->rawdata().ymin <= 0) {
-        w->PopUpErr(MODE_ON,
+    if (pb_graph->rawdata().ymin <= 0) {
+        PopUpErr(MODE_ON,
             "The Y-axis scale must be greater than zero for log plot.");
-        GTKdev::SetStatus(caller, false);
+        QTdev::SetStatus(sender(), false);
         return;
     }
-    bool state = GTKdev::GetStatus(caller);
+    bool state = QTdev::GetStatus(sender());
     if (state) {
-        if (graph->gridtype() == GRID_XLOG)
-            graph->set_gridtype(GRID_LOGLOG);
+        if (pb_graph->gridtype() == GRID_XLOG)
+            pb_graph->set_gridtype(GRID_LOGLOG);
         else
-            graph->set_gridtype(GRID_YLOG);
+            pb_graph->set_gridtype(GRID_YLOG);
     }
     else {
-        if (graph->gridtype() == GRID_LOGLOG)
-            graph->set_gridtype(GRID_XLOG);
+        if (pb_graph->gridtype() == GRID_LOGLOG)
+            pb_graph->set_gridtype(GRID_XLOG);
         else
-            graph->set_gridtype(GRID_LIN);
+            pb_graph->set_gridtype(GRID_LIN);
     }
 
     // clear the yunits text
-    graph->clear_units_text(LAyunits);
-    graph->dev()->Clear();
-    graph->gr_redraw();
-    */
+    pb_graph->clear_units_text(LAyunits);
+    Clear();
+    pb_graph->gr_redraw();
 }
 
 
 void
 QTplotDlg::marker_btn_slot(bool)
 {
-    /*
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
-    if (!graph->xmonotonic() && graph->yseparate()) {
-        w->PopUpErr(MODE_ON,
+    if (!pb_graph->xmonotonic() && pb_graph->yseparate()) {
+        PopUpErr(MODE_ON,
 "Marker is not available in separate trace mode with nonmonotonic scale.");
-        GTKdev::SetStatus(caller, false);
+        QTdev::SetStatus(sender(), false);
         return;
     }
-    if (GTKdev::GetStatus(caller)) {
-        if (!graph->reference().mark) {
-            graph->reference().mark = true;
-            graph->gr_mark();
+    if (QTdev::GetStatus(sender())) {
+        if (!pb_graph->reference().mark) {
+            pb_graph->reference().mark = true;
+            pb_graph->gr_mark();
         }
     }
-    else if (graph->reference().mark) {
-        graph->reference().mark = false;
-        graph->gr_mark();
-        graph->reference().set = false;
+    else if (pb_graph->reference().mark) {
+        pb_graph->reference().mark = false;
+        pb_graph->gr_mark();
+        pb_graph->reference().set = false;
     }
-    */
 }
 
 
 void
 QTplotDlg::separate_btn_slot(bool)
 {
-    /*
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
-    if (!graph->xmonotonic() && graph->reference().mark) {
-        w->PopUpErr(MODE_ON,
+    if (!pb_graph->xmonotonic() && pb_graph->reference().mark) {
+        PopUpErr(MODE_ON,
 "Can't enter separate trace mode with nonmonotonic scale when\n\
 marker is active.");
-        GTKdev::SetStatus(caller, false);
+        QTdev::SetStatus(sender(), false);
         return;
     }
-    if (graph->yseparate())
-        graph->set_yseparate(false);
+    if (pb_graph->yseparate())
+        pb_graph->set_yseparate(false);
     else
-        graph->set_yseparate(true);
-    graph->dev()->Clear();
-    graph->gr_redraw();
-    */
+        pb_graph->set_yseparate(true);
+    Clear();
+    pb_graph->gr_redraw();
 }
 
 
 void
 QTplotDlg::single_btn_slot(bool)
 {
-    /*
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    if (graph->format() == FT_MULTI)
-        graph->set_format(FT_SINGLE);
+    if (pb_graph->format() == FT_MULTI)
+        pb_graph->set_format(FT_SINGLE);
     else
-        graph->set_format(FT_MULTI);
-    graph->dev()->Clear();
-    graph->gr_redraw();
-    */
+        pb_graph->set_format(FT_MULTI);
+    Clear();
+    pb_graph->gr_redraw();
 }
 
 
 void
 QTplotDlg::group_btn_slot(bool)
 {
-    /*
     // Handle one scale and grp scale modes.
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
-
+    /*
     GtkWidget *one = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
         "onescale");
     GtkWidget *grp =  (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),

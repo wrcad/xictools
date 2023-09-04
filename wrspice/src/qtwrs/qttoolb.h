@@ -47,9 +47,10 @@
 
 enum tid_id { tid_toolbar, tid_bug, tid_font, tid_files, tid_circuits,
     tid_plots, tid_plotdefs, tid_colors, tid_vectors, tid_variables,
-    tid_shell, tid_simdefs, tid_commands, tid_trace, tid_debug, tid_END };
+    tid_shell, tid_simdefs, tid_commands, tid_runops, tid_debug, tid_END };
 
 class QTtbHelpDlg;
+class QAction;
 
 extern inline class QTtoolbar *TB();
 
@@ -74,16 +75,32 @@ public:
     {
         tbent_t(const char *n = 0, int i = -1)
         {
-            name = n;
-            id = i;
-            active = false;
-            x = y = 0;
+            te_action = 0;
+            te_name = n;
+            te_id = i;
+            te_active = false;
+            te_x = te_y = 0;
         }
 
-        const char *name;
-        int id;
-        bool active;
-        int x, y;
+        QAction *action()       const { return (te_action); }
+        const char *name()      const { return (te_name); }
+        int id()                const { return (te_id); }
+        bool active()           const { return (te_active); }
+        int x()                 const { return (te_x); }
+        int y()                 const { return (te_y); }
+
+        void set_action(QAction *a)     { te_action = a; }
+        void set_name(const char *n)    { te_name = n; }
+        void set_id(int i)              { te_id = i; }
+        void set_active(bool b)         { te_active = b; }
+        void set_xy(int ix, int iy)     { te_x = ix; te_y = iy; }
+
+    private:
+        QAction     *te_action;
+        const char  *te_name;
+        int         te_id;
+        bool        te_active;
+        int         te_x, te_y;
     };
 
     struct tbpoint_t
@@ -141,8 +158,8 @@ public:
     void UpdateCircuits();
     void PopUpFiles(ShowMode, int, int);
     void UpdateFiles();
-    void PopUpTrace(ShowMode, int, int);
-    void UpdateTrace();
+    void PopUpRunops(ShowMode, int, int);
+    void UpdateRunops();
     void PopUpVariables(ShowMode, int, int);
     void UpdateVariables();
 
@@ -151,13 +168,13 @@ public:
     void PopUpBugRpt(ShowMode, int, int);
     void PopUpFont(ShowMode, int, int);
     void PopUpTBhelp(ShowMode, GRobject, GRobject, TBH_type);
+    void PopUpNotes();
     void PopUpSpiceErr(bool, const char*);
     void PopUpSpiceMessage(const char*, int, int);
+    void PopUpSpiceInfo(const char*);
     void UpdateMain(ResUpdType);
     void CloseGraphicsConnection();
 
-    void PopUpInfo(const char *msg);  // XXX clash!
-    void PopUpNotes();
     // --------------------------------
     // End of Toolbar virtual overrides.
 
@@ -173,8 +190,8 @@ public:
     static tbent_t *FindEnt(const char *str)
     {
         if (str) {
-            for (tbent_t *tb = tb_entries; tb->name; tb++) {
-                if (!strcmp(str, tb->name))
+            for (tbent_t *tb = tb_entries; tb->name(); tb++) {
+                if (!strcmp(str, tb->name()))
                     return (tb);
             }
         }
@@ -185,7 +202,7 @@ public:
     //
     static void SetActive(tid_id id, bool state)
     {
-        tb_entries[id].active = state;
+        tb_entries[id].set_active(state);
     }
 
     static void SetLoc(tid_id, QWidget*);

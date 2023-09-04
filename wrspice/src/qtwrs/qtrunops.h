@@ -38,67 +38,46 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTERRMSG_H
-#define QTERRMSG_H
+#ifndef QTRUNOPS_H
+#define QTRUNOPS_H
 
-#include "toolbar.h"
+#include "qtinterf/qtinterf.h"
 
 #include <QDialog>
 
-namespace qtinterf { class QTtextEdit; }
-using namespace qtinterf;
 
-// The invisible part, handles text trimming, etc.
-//
-class QTmsgDb : public cMsgHdlr
-{
-public:
-    QTmsgDb() : er_x(0), er_y(0), er_wrap(false) { }
+//===========================================================================
+// Dialog to display the current "runops" (traces, iplots, etc.).
 
-    void PopUpErr(const char*);
-    void ToLog(const char *s)   { first_message(s); }
-
-    // Pop-up state kept here for persistence.
-    void set_x(int x)           { er_x = x; }
-    int  get_x()                { return (er_x); }
-    void set_y(int y)           { er_y = y; }
-    int  get_y()                { return (er_y); }
-    void set_wrap(bool w)       { er_wrap = w; }
-    bool get_wrap()             { return (er_wrap); }
-
-private:
-    void stuff_msg(const char*);
-
-    int er_x;
-    int er_y;
-    bool er_wrap;
-};
-
-
-// The dialog, shows the lines in the database.
-//
-class QTerrmsgDlg : public QDialog
+class QTrunopListDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    QTerrmsgDlg();
-    ~QTerrmsgDlg();
+    QTrunopListDlg(int, int, const char*);
+    ~QTrunopListDlg();
 
     QSize sizeHint() const;
+    void update(const char *s);
 
-    void stuff_msg(const char*);
-
-    static QTerrmsgDlg *self()          { return (instPtr); }
+    static QTrunopListDlg *self()           { return (instPtr); }
 
 private slots:
-    void wrap_btn_slot(bool);
+    void help_btn_slot();
+    void mouse_press_slot(QMouseEvent*);
+    void mouse_motion_slot(QMouseEvent*);
+    void font_changed_slot(int);
+    void button_slot(bool);
     void dismiss_btn_slot();
+    void delete_runop_slot(bool, void*);
 
 private:
-    QTtextEdit *er_text;
+    void recolor();
 
-    static QTerrmsgDlg *instPtr;
+    GRaffirmPopup *tl_affirm;
+
+    static const char *tl_btns[];
+    static QTrunopListDlg *instPtr;
 };
 
 #endif

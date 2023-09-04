@@ -122,10 +122,9 @@ QTdev::Init(int *argc, char **argv)
 {
     if (!QApplication::instance()) {
         static int ac = *argc;
-        // QApplications takes a reference as first arg, must not be on stack
+        // QApplications takes a reference as first arg, must not be
+        // on stack.
         new QApplication(ac, argv);
-//XXX
-printf("new QApp\n");
         *argc = ac;
     }
 
@@ -1193,13 +1192,14 @@ QTbag::PopUpMail(const char *subject, const char *mailaddr,
 //
 void
 QTbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
-    void(*)(const char*, const char*, void*), void *arg, int indx,
+    void(*cb)(const char*, const char*, void*), void *arg, int indx,
     const char**, const char*)
 {
     if (mode == MODE_ON) {
         if (wb_fontsel)
             return;
         wb_fontsel = new QTfontDlg(this, indx, arg);
+        wb_fontsel->register_callback(cb);
         wb_fontsel->register_caller(caller, false, true);
         wb_fontsel->show();
         wb_fontsel->raise();

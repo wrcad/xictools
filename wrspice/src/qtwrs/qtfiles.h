@@ -32,73 +32,104 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * WRspice Circuit Simulation and Analysis Tool                           *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef QTERRMSG_H
-#define QTERRMSG_H
+#ifndef QTFILES_H
+#define QTFILES_H
 
-#include "toolbar.h"
+#include "qtinterf/qtinterf.h"
 
 #include <QDialog>
 
-namespace qtinterf { class QTtextEdit; }
-using namespace qtinterf;
 
-// The invisible part, handles text trimming, etc.
+//----------------------------------------------------------------------
+//  Files Listing Dialog
 //
-class QTmsgDb : public cMsgHdlr
-{
-public:
-    QTmsgDb() : er_x(0), er_y(0), er_wrap(false) { }
 
-    void PopUpErr(const char*);
-    void ToLog(const char *s)   { first_message(s); }
+#define MAX_BTNS 5
 
-    // Pop-up state kept here for persistence.
-    void set_x(int x)           { er_x = x; }
-    int  get_x()                { return (er_x); }
-    void set_y(int y)           { er_y = y; }
-    int  get_y()                { return (er_y); }
-    void set_wrap(bool w)       { er_wrap = w; }
-    bool get_wrap()             { return (er_wrap); }
+class QPushButton;
+class QHBoxLayout;
+class QComboBox;
+class QStackedWidget;
+class QMimeData;
+struct sPathList;
+struct sDirList;
 
-private:
-    void stuff_msg(const char*);
-
-    int er_x;
-    int er_y;
-    bool er_wrap;
-};
-
-
-// The dialog, shows the lines in the database.
-//
-class QTerrmsgDlg : public QDialog
+class QTfilesListDlg : public QDialog, public QTbag
 {
     Q_OBJECT
 
 public:
-    QTerrmsgDlg();
-    ~QTerrmsgDlg();
+    QTfilesListDlg(int, int);
+    ~QTfilesListDlg();
 
-    QSize sizeHint() const;
+    QSize sizeHint()                const { return (QSize(500, 400)); }
 
-    void stuff_msg(const char*);
+    void update();
+    void update(const char*, const char** = 0, int = 0);
+    char *get_selection();
 
-    static QTerrmsgDlg *self()          { return (instPtr); }
+    const char *get_directory()         { return (f_directory); }
+    static void panic()                 { instPtr = 0; }
+    static QTfilesListDlg *self()       { return (instPtr); }
 
 private slots:
-    void wrap_btn_slot(bool);
+    void button_slot(bool);
+    void page_change_slot(int);
+    void menu_change_slot(int);
+    void font_changed_slot(int);
+    void resize_slot(QResizeEvent*);
+    void mouse_press_slot(QMouseEvent*);
+    void mouse_motion_slot(QMouseEvent*);
+    void mime_data_received_slot(const QMimeData*);
     void dismiss_btn_slot();
 
 private:
-    QTtextEdit *er_text;
+    void init_viewing_area();
+    void relist(stringlist*);
+    void select_range(QTtextEdit*, int, int);
+    QWidget *create_page(sDirList*);
+    bool show_content();
+    void set_sensitive(const char*, bool);
 
-    static QTerrmsgDlg *instPtr;
+    static int f_idle_proc(void*);
+    static int f_timer(void*);
+    static void f_monitor_setup();
+    static bool f_check_path_and_update(const char*);
+    static void f_update_text(QTtextEdit*, const char*);
+
+    static sPathList *fl_listing(int);
+    static void fl_down_cb(void*);
+    static void fl_desel(void*);
+
+    GRobject    fl_caller;
+    QPushButton *f_buttons[MAX_BTNS];
+    QHBoxLayout *f_button_box;
+    QComboBox   *f_menu;
+    QStackedWidget *f_notebook;
+
+    int         f_start;
+    int         f_end;
+    bool        f_drag_start;   // used for drag/drop
+    int         f_drag_btn;     // drag button
+    int         f_drag_x;       // drag start location
+    int         f_drag_y;
+    char        *f_directory;   // visible directory
+
+    char        *fl_selection;
+    int         fl_noupdate;
+
+    static sPathList *f_path_list;  // the search path struct
+    static char *f_cwd;             // the current directory
+    static int f_timer_tag;         // timer id for file monitor
+    static const char *nofiles_msg;
+    static const char *files_msg;
+    static QTfilesListDlg *instPtr;
 };
 
 #endif

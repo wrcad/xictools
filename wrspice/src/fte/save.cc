@@ -187,7 +187,7 @@ IFoutput::saveCmd(wordlist *wl)
             addSave(Sp.CurCircuit(), n1);
         }
     }
-    ToolBar()->UpdateTrace();
+    ToolBar()->UpdateRunops();
 }
 
 // Save a vector.

@@ -146,13 +146,13 @@ QTaffirmDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 QPushButton *btn = dynamic_cast<QPushButton*>(o);
                 if (btn)
                     connect(btn, SIGNAL(clicked()),
-                        this, SLOT(quit_slot()));
+                        this, SLOT(cancel_btn_slot()));
             }
             else {
                 QAction *a = dynamic_cast<QAction*>(o);
                 if (a)
                     connect(a, SIGNAL(triggered()),
-                        this, SLOT(quit_slot()));
+                        this, SLOT(cancel_btn_slot()));
             }
         }
     }

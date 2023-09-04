@@ -98,8 +98,8 @@ struct sToolbar
     virtual void UpdateCircuits() = 0;
     virtual void PopUpFiles(ShowMode, int, int) = 0;
     virtual void UpdateFiles() = 0;
-    virtual void PopUpTrace(ShowMode, int, int) = 0;
-    virtual void UpdateTrace() = 0;
+    virtual void PopUpRunops(ShowMode, int, int) = 0;
+    virtual void UpdateRunops() = 0;
     virtual void PopUpVariables(ShowMode, int, int) = 0;
     virtual void UpdateVariables() = 0;
 
@@ -109,13 +109,13 @@ struct sToolbar
     virtual void PopUpBugRpt(ShowMode, int, int) = 0;
     virtual void PopUpFont(ShowMode, int, int) = 0;
     virtual void PopUpTBhelp(ShowMode, GRobject, GRobject, TBH_type) = 0;
+    virtual void PopUpNotes() = 0;
     virtual void PopUpSpiceErr(bool, const char*) = 0;
     virtual void PopUpSpiceMessage(const char*, int, int) = 0;
+    virtual void PopUpSpiceInfo(const char*) = 0;
     virtual void UpdateMain(ResUpdType) = 0;
     virtual void CloseGraphicsConnection() = 0;
 
-    virtual void PopUpInfo(const char*) = 0;
-    virtual void PopUpNotes() = 0;
 #else
     //XXX FIXME update GTK, uses this
     virtual ~sToolbar() { }

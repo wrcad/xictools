@@ -97,6 +97,7 @@ public:
         pb_id = 0;
         pb_x = pb_y = 0;
         pb_rdid = 0;
+        setAttribute(Qt::WA_DeleteOnClose);
     }
 
     ~QTplotDlg()

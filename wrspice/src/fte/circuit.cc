@@ -187,7 +187,7 @@ IFsimulator::SetCircuit(const char *name)
     }
     SetCurCircuit(p);
     ToolBar()->UpdateCircuits();
-    ToolBar()->UpdateTrace();
+    ToolBar()->UpdateRunops();
 }
 
 

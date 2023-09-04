@@ -129,7 +129,7 @@ IFoutput::TraceCmd(wordlist *wl)
         else
             runop->set_traces(d);
     }
-    ToolBar()->UpdateTrace();
+    ToolBar()->UpdateRunops();
 }
 
 
@@ -199,7 +199,7 @@ IFoutput::iplotCmd(wordlist *wl)
         else
             runop->set_iplots(d);
     }
-    ToolBar()->UpdateTrace();
+    ToolBar()->UpdateRunops();
 }
 
 namespace {
