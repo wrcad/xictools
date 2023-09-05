@@ -112,12 +112,10 @@ public:
     // gtktoolb.cc
     GTKtoolbar();
     void Toolbar();
-    void PopUpBugRpt(int, int);
-    void PopDownBugRpt();
-    void PopUpFont(int, int);
-    void PopDownFont();
-    void PopUpTBhelp(GRobject, GRobject, TBH_type);
-    void PopDownTBhelp(TBH_type);
+    void PopUpToolbar(ShowMode, int, int);
+    void PopUpBugRpt(ShowMode, int, int);
+    void PopUpFont(ShowMode, int, int);
+    void PopUpTBhelp(ShowMode, GRobject, GRobject, TBH_type);
     void PopUpSpiceErr(bool, const char*);
     void PopUpSpiceMessage(const char*, int, int);
     void UpdateMain(ResUpdType);
@@ -137,54 +135,42 @@ public:
     char *ConfigString();
 
     // gtkcmds.cc
-    void PopUpCmdConfig(int, int);
-    void PopDownCmdConfig();
+    void PopUpCmdConfig(ShowMode, int, int);
 
     // gtkcolor.cc
-    void PopUpColors(int, int);
-    void PopDownColors();
+    void PopUpColors(ShowMode, int, int);
     void UpdateColors(const char*);
     void LoadResourceColors();
     const char *XRMgetFromDb(const char*);
 
     // gtkdebug.cc
-    void PopUpDebugDefs(int, int);
-    void PopDownDebugDefs();
+    void PopUpDebugDefs(ShowMode, int, int);
 
     // gtkpldef.cc
-    void PopUpPlotDefs(int, int);
-    void PopDownPlotDefs();
+    void PopUpPlotDefs(ShowMode, int, int);
 
     // gtkshell.cc
-    void PopUpShellDefs(int, int);
-    void PopDownShellDefs();
+    void PopUpShellDefs(ShowMode, int, int);
 
     // gtksim.cc
-    void PopUpSimDefs(int, int);
-    void PopDownSimDefs();
+    void PopUpSimDefs(ShowMode, int, int);
 
     // gtkfte.cc
     void SuppressUpdate(bool);
-    void PopUpPlots(int, int);
-    void PopDownPlots();
+    void PopUpPlots(ShowMode, int, int);
     void UpdatePlots(int);
-    void PopUpVectors(int, int);
-    void PopDownVectors();
+    void PopUpVectors(ShowMode, int, int);
     void UpdateVectors(int);
-    void PopUpCircuits(int, int);
-    void PopDownCircuits();
+    void PopUpCircuits(ShowMode, int, int);
     void UpdateCircuits();
-    void PopUpFiles(int, int);
-    void PopDownFiles();
+    void PopUpFiles(ShowMode, int, int);
     void UpdateFiles();
-    void PopUpTrace(int, int);
-    void PopDownTrace();
-    void UpdateTrace();
-    void PopUpVariables(int, int);
-    void PopDownVariables();
+    void PopUpRunops(ShowMode, int, int);
+    void UpdateRunops();
+    void PopUpVariables(ShowMode, int, int);
     void UpdateVariables();
 
-    void PopUpInfo(const char *msg)
+    void PopUpSpiceInfo(const char *msg)
         {
             if (context)
                 context->PopUpInfo(MODE_ON, msg);

@@ -82,8 +82,42 @@ namespace {
 // The command configuration popup, initiated from the toolbar.
 //
 void
-GTKtoolbar::PopUpCmdConfig(int x, int y)
+GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (!cm_shell)
+            return;
+        TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_CM);
+        SetLoc(ntb_commands, cm_shell);
+
+        GTKdev::Deselect(tb_commands);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(cm_shell),
+            (gpointer)cmd_cancel_proc, cm_shell);
+
+        for (int i = 0; KW.cmds(i)->word; i++) {
+            xKWent *ent = static_cast<xKWent*>(KW.cmds(i));
+            if (ent->ent) {
+                if (ent->ent->entry) {
+                    const char *str =
+                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
+                    delete [] ent->lastv1;
+                    ent->lastv1 = lstring::copy(str);
+                }
+                if (ent->ent->entry2) {
+                    const char *str =
+                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
+                    delete [] ent->lastv2;
+                    ent->lastv2 = lstring::copy(str);
+                }
+                delete ent->ent;
+                ent->ent = 0;
+            }
+        }
+        gtk_widget_destroy(cm_shell);
+        cm_shell = 0;
+        SetActive(ntb_commands, false);
+        return;
+    }
     if (cm_shell)
         return;
 
@@ -917,45 +951,6 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
 }
 
 
-// Remove the command configuration popup.  Called from the toolbar.
-//
-void
-GTKtoolbar::PopDownCmdConfig()
-{
-    if (!cm_shell)
-        return;
-    TB()->PopDownTBhelp(TBH_CM);
-    SetLoc(ntb_commands, cm_shell);
-
-    GTKdev::Deselect(tb_commands);
-    g_signal_handlers_disconnect_by_func(G_OBJECT(cm_shell),
-        (gpointer)cmd_cancel_proc, cm_shell);
-
-    for (int i = 0; KW.cmds(i)->word; i++) {
-        xKWent *ent = static_cast<xKWent*>(KW.cmds(i));
-        if (ent->ent) {
-            if (ent->ent->entry) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
-                delete [] ent->lastv1;
-                ent->lastv1 = lstring::copy(str);
-            }
-            if (ent->ent->entry2) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
-                delete [] ent->lastv2;
-                ent->lastv2 = lstring::copy(str);
-            }
-            delete ent->ent;
-            ent->ent = 0;
-        }
-    }
-    gtk_widget_destroy(cm_shell);
-    cm_shell = 0;
-    SetActive(ntb_commands, false);
-}
-
-
 namespace {
 #ifdef HAVE_MOZY
     // Return true and set the path if the help path is currently set as
@@ -1004,7 +999,7 @@ namespace {
 
     void cmd_cancel_proc(GtkWidget*, void*)
     {
-        TB()->PopDownCmdConfig();
+        TB()->PopUpCmdConfig(MODE_OFF, 0, 0);
     }
 
 
@@ -1013,9 +1008,9 @@ namespace {
         GtkWidget *parent = static_cast<GtkWidget*>(client_data);
         bool state = GTKdev::GetStatus(caller);
         if (state)
-            TB()->PopUpTBhelp(parent, caller, TBH_CM);
+            TB()->PopUpTBhelp(MODE_ON, parent, caller, TBH_CM);
         else
-            TB()->PopDownTBhelp(TBH_CM);
+            TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_CM);
     }
 
 

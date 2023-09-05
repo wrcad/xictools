@@ -434,6 +434,11 @@ GTKtoolbar::Toolbar()
     }
 }
 
+// XXX fixme from QT
+void
+GTKtoolbar::PopUpToolbar(ShowMode, int, int)
+{
+}
 
 //==========================================================================
 //
@@ -453,8 +458,13 @@ namespace {
 // Pop up to email bug report text
 //
 void
-GTKtoolbar::PopUpBugRpt(int x, int y)
+GTKtoolbar::PopUpBugRpt(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (tb_mailer)
+            tb_mailer->popdown();
+        return;
+    }
     if (!toolbar)
         return;
     if (!tb_mailer) {
@@ -471,14 +481,6 @@ GTKtoolbar::PopUpBugRpt(int x, int y)
         if (tb_mailer)
             tb_mailer->register_usrptr((void**)&tb_mailer);
     }
-}
-
-
-void
-GTKtoolbar::PopDownBugRpt()
-{
-    if (tb_mailer)
-        tb_mailer->popdown();
 }
 
 
@@ -502,8 +504,18 @@ namespace {
 
 
 void
-GTKtoolbar::PopUpFont(int x, int y)
+GTKtoolbar::PopUpFont(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (!ft_shell)
+            return;
+        SetLoc(ntb_font, ft_shell);
+        context->ActiveFontsel()->popdown();
+        ft_shell = 0;
+        SetActive(ntb_font, false);
+        GTKdev::SetStatus(tb_font, false);
+        return;
+    }
     if (!toolbar)
         return;
     FixLoc(&x, &y);
@@ -511,19 +523,6 @@ GTKtoolbar::PopUpFont(int x, int y)
         FNT_FIXED);
     ft_shell = ((GTKfontPopup*)context->ActiveFontsel())->Shell();
     SetActive(ntb_font, true);
-}
-
-
-void
-GTKtoolbar::PopDownFont()
-{
-    if (!ft_shell)
-        return;
-    SetLoc(ntb_font, ft_shell);
-    context->ActiveFontsel()->popdown();
-    ft_shell = 0;
-    SetActive(ntb_font, false);
-    GTKdev::SetStatus(tb_font, false);
 }
 
 
@@ -535,7 +534,7 @@ GTKtoolbar::PopDownFont()
 
 struct sTBhelp
 {
-    friend void GTKtoolbar::PopDownTBhelp(TBH_type);
+    friend void GTKtoolbar::PopUpTBhelp(ShowMode, GRobject, GRobject, TBH_type);
 
     sTBhelp(GRobject, GRobject);
     // No destructor, this struct should not be destroyed explicitly.
@@ -558,28 +557,26 @@ private:
 
 
 void
-GTKtoolbar::PopUpTBhelp(GRobject parent, GRobject call_btn, TBH_type type)
+GTKtoolbar::PopUpTBhelp(ShowMode mode, GRobject parent, GRobject call_btn,
+    TBH_type type)
 {
+    if (mode == MODE_OFF) {
+        if (!tb_kw_help[type])
+            return;
+        g_signal_handlers_disconnect_by_func(G_OBJECT(tb_kw_help[type]),
+            (gpointer)sTBhelp::th_cancel_proc, (gpointer)tb_kw_help[type]);
+        gdk_window_get_root_origin(gtk_widget_get_window(tb_kw_help[type]),
+            &tb_kw_help_pos[type].x, &tb_kw_help_pos[type].y);
+        gtk_widget_destroy(GTK_WIDGET(tb_kw_help[type]));
+        tb_kw_help[type] = 0;
+        return;
+    }
     if (tb_kw_help[type])
         return;
     sTBhelp *th = new sTBhelp(parent, call_btn);
     tb_kw_help[type] = th->show(type);;
     g_object_set_data(G_OBJECT(tb_kw_help[type]), "tbtype",
         (void*)(long)type);
-}
-
-
-void
-GTKtoolbar::PopDownTBhelp(TBH_type type)
-{
-    if (!tb_kw_help[type])
-        return;
-    g_signal_handlers_disconnect_by_func(G_OBJECT(tb_kw_help[type]),
-        (gpointer)sTBhelp::th_cancel_proc, (gpointer)tb_kw_help[type]);
-    gdk_window_get_root_origin(gtk_widget_get_window(tb_kw_help[type]),
-        &tb_kw_help_pos[type].x, &tb_kw_help_pos[type].y);
-    gtk_widget_destroy(GTK_WIDGET(tb_kw_help[type]));
-    tb_kw_help[type] = 0;
 }
 
 
@@ -744,7 +741,7 @@ sTBhelp::th_cancel_proc(GtkWidget*, void *client_data)
     if (caller)
         GTKdev::Deselect(caller);
     int type = (intptr_t)g_object_get_data(G_OBJECT(popup), "tbtype");
-    TB()->PopDownTBhelp((TBH_type)type);
+    TB()->PopUpTBhelp(MODE_OFF, 0, 0, (TBH_type)type);
 }
 
 
@@ -2468,9 +2465,9 @@ GTKtoolbar::wr_btn_hdlr(GtkWidget*, void*)
     for (tbent *tb = TB()->entries; tb && tb->name; tb++) {
         if (tb->name == TB()->ntb_bug) {
             if (!tb->active)
-                TB()->PopUpBugRpt(tb->x, tb->y);
+                TB()->PopUpBugRpt(MODE_ON, tb->x, tb->y);
             else
-                TB()->PopDownBugRpt();
+                TB()->PopUpBugRpt(MODE_OFF, 0, 0);
             break;
         }
     }
@@ -2701,87 +2698,87 @@ GTKtoolbar::menu_proc(GtkWidget*, void *data)
     tbent *tb = &TB()->entries[indx];
     if (tb->name == TB()->ntb_bug) {
         if (!tb->active)
-            TB()->PopUpBugRpt(tb->x, tb->y);
+            TB()->PopUpBugRpt(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownBugRpt();
+            TB()->PopUpBugRpt(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_circuits) {
         if (!tb->active)
-            TB()->PopUpCircuits(tb->x, tb->y);
+            TB()->PopUpCircuits(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownCircuits();
+            TB()->PopUpCircuits(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_colors) {
         if (!tb->active)
-            TB()->PopUpColors(tb->x, tb->y);
+            TB()->PopUpColors(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownColors();
+            TB()->PopUpColors(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_commands) {
         if (!tb->active)
-            TB()->PopUpCmdConfig(tb->x, tb->y);
+            TB()->PopUpCmdConfig(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownCmdConfig();
+            TB()->PopUpCmdConfig(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_debug) {
         if (!tb->active)
-            TB()->PopUpDebugDefs(tb->x, tb->y);
+            TB()->PopUpDebugDefs(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownDebugDefs();
+            TB()->PopUpDebugDefs(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_files) {
         if (!tb->active)
-            TB()->PopUpFiles(tb->x, tb->y);
+            TB()->PopUpFiles(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownFiles();
+            TB()->PopUpFiles(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_font) {
         if (!tb->active)
-            TB()->PopUpFont(tb->x, tb->y);
+            TB()->PopUpFont(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownFont();
+            TB()->PopUpFont(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_plotdefs) {
         if (!tb->active)
-            TB()->PopUpPlotDefs(tb->x, tb->y);
+            TB()->PopUpPlotDefs(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownPlotDefs();
+            TB()->PopUpPlotDefs(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_plots) {
         if (!tb->active)
-            TB()->PopUpPlots(tb->x, tb->y);
+            TB()->PopUpPlots(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownPlots();
+            TB()->PopUpPlots(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_shell) {
         if (!tb->active)
-            TB()->PopUpShellDefs(tb->x, tb->y);
+            TB()->PopUpShellDefs(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownShellDefs();
+            TB()->PopUpShellDefs(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_simdefs) {
         if (!tb->active)
-            TB()->PopUpSimDefs(tb->x, tb->y);
+            TB()->PopUpSimDefs(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownSimDefs();
+            TB()->PopUpSimDefs(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_trace) {
         if (!tb->active)
-            TB()->PopUpTrace(tb->x, tb->y);
+            TB()->PopUpRunops(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownTrace();
+            TB()->PopUpRunops(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_variables) {
         if (!tb->active)
-            TB()->PopUpVariables(tb->x, tb->y);
+            TB()->PopUpVariables(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownVariables();
+            TB()->PopUpVariables(MODE_OFF, 0, 0);
     }
     else if (tb->name == TB()->ntb_vectors) {
         if (!tb->active)
-            TB()->PopUpVectors(tb->x, tb->y);
+            TB()->PopUpVectors(MODE_ON, tb->x, tb->y);
         else
-            TB()->PopDownVectors();
+            TB()->PopUpVectors(MODE_OFF, 0, 0);
     }
 }
 

@@ -74,8 +74,41 @@ namespace {
 
 
 void
-GTKtoolbar::PopUpColors(int x, int y)
+GTKtoolbar::PopUpColors(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (!co_shell)
+            return;
+        SetLoc(ntb_colors, co_shell);
+
+        GTKdev::Deselect(tb_colors);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(co_shell),
+            (gpointer)clr_cancel_proc, co_shell);
+
+        for (int i = 0; KW.color(i)->word; i++) {
+            xKWent *ent = static_cast<xKWent*>(KW.color(i));
+            if (ent->ent) {
+                if (ent->ent->entry) {
+                    const char *str =
+                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
+                    delete [] ent->lastv1;
+                    ent->lastv1 = lstring::copy(str);
+                }
+                if (ent->ent->entry2) {
+                    const char *str =
+                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
+                    delete [] ent->lastv2;
+                    ent->lastv2 = lstring::copy(str);
+                }
+                delete ent->ent;
+                ent->ent = 0;
+            }
+        }
+        gtk_widget_destroy(co_shell);
+        co_shell = 0;
+        SetActive(ntb_colors, false);
+        return;
+    }
     if (co_shell)
         return;
     co_shell = gtk_NewPopup(0, "Plot Colors", clr_cancel_proc, 0);
@@ -144,42 +177,6 @@ GTKtoolbar::PopUpColors(int x, int y)
 
 
 void
-GTKtoolbar::PopDownColors()
-{
-    if (!co_shell)
-        return;
-    SetLoc(ntb_colors, co_shell);
-
-    GTKdev::Deselect(tb_colors);
-    g_signal_handlers_disconnect_by_func(G_OBJECT(co_shell),
-        (gpointer)clr_cancel_proc, co_shell);
-
-    for (int i = 0; KW.color(i)->word; i++) {
-        xKWent *ent = static_cast<xKWent*>(KW.color(i));
-        if (ent->ent) {
-            if (ent->ent->entry) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
-                delete [] ent->lastv1;
-                ent->lastv1 = lstring::copy(str);
-            }
-            if (ent->ent->entry2) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
-                delete [] ent->lastv2;
-                ent->lastv2 = lstring::copy(str);
-            }
-            delete ent->ent;
-            ent->ent = 0;
-        }
-    }
-    gtk_widget_destroy(co_shell);
-    co_shell = 0;
-    SetActive(ntb_colors, false);
-}
-
-
-void
 GTKtoolbar::UpdateColors(const char *s)
 {
     if (!co_shell)
@@ -229,7 +226,7 @@ namespace {
     void
     clr_cancel_proc(GtkWidget*, void*)
     {
-        TB()->PopDownColors();
+        TB()->PopUpColors(MODE_OFF, 0, 0);
     }
 
 

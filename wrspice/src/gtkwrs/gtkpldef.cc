@@ -67,8 +67,42 @@ namespace {
 // The plot defaults popup, initiated from the toolbar.
 //
 void
-GTKtoolbar::PopUpPlotDefs(int x, int y)
+GTKtoolbar::PopUpPlotDefs(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (!pd_shell)
+            return;
+        TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_PD);
+        SetLoc(ntb_plotdefs, pd_shell);
+
+        GTKdev::Deselect(tb_plotdefs);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(pd_shell),
+            (gpointer)pl_cancel_proc, pd_shell);
+
+        for (int i = 0; KW.plot(i)->word; i++) {
+            xKWent *ent = static_cast<xKWent*>(KW.plot(i));
+            if (ent->ent) {
+                if (ent->ent->entry) {
+                    const char *str =
+                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
+                    delete [] ent->lastv1;
+                    ent->lastv1 = lstring::copy(str);
+                }
+                if (ent->ent->entry2) {
+                    const char *str =
+                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
+                    delete [] ent->lastv2;
+                    ent->lastv2 = lstring::copy(str);
+                }
+                delete ent->ent;
+                ent->ent = 0;
+            }
+        }
+        gtk_widget_destroy(pd_shell);
+        pd_shell = 0;
+        SetActive(ntb_plotdefs, false);
+        return;
+    }
     if (pd_shell)
         return;
 
@@ -683,45 +717,6 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
 }
 
 
-// Remove the plot defaults popup.  Called from the toolbar.
-//
-void
-GTKtoolbar::PopDownPlotDefs()
-{
-    if (!pd_shell)
-        return;
-    TB()->PopDownTBhelp(TBH_PD);
-    SetLoc(ntb_plotdefs, pd_shell);
-
-    GTKdev::Deselect(tb_plotdefs);
-    g_signal_handlers_disconnect_by_func(G_OBJECT(pd_shell),
-        (gpointer)pl_cancel_proc, pd_shell);
-
-    for (int i = 0; KW.plot(i)->word; i++) {
-        xKWent *ent = static_cast<xKWent*>(KW.plot(i));
-        if (ent->ent) {
-            if (ent->ent->entry) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
-                delete [] ent->lastv1;
-                ent->lastv1 = lstring::copy(str);
-            }
-            if (ent->ent->entry2) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
-                delete [] ent->lastv2;
-                ent->lastv2 = lstring::copy(str);
-            }
-            delete ent->ent;
-            ent->ent = 0;
-        }
-    }
-    gtk_widget_destroy(pd_shell);
-    pd_shell = 0;
-    SetActive(ntb_plotdefs, false);
-}
-
-
 namespace {
     //
     // Callbacks to process the button selections
@@ -730,7 +725,7 @@ namespace {
     void
     pl_cancel_proc(GtkWidget*, void*)
     {
-        TB()->PopDownPlotDefs();
+        TB()->PopUpPlotDefs(MODE_OFF, 0, 0);
     }
 
 
@@ -740,9 +735,9 @@ namespace {
         GtkWidget *parent = static_cast<GtkWidget*>(client_data);
         bool state = GTKdev::GetStatus(caller);
         if (state)
-            TB()->PopUpTBhelp(parent, caller, TBH_PD);
+            TB()->PopUpTBhelp(MODE_ON, parent, caller, TBH_PD);
         else
-            TB()->PopDownTBhelp(TBH_PD);
+            TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_PD);
     }
 
 

@@ -1211,13 +1211,13 @@ plot_bag::buttonpress(GtkWidget *widget, GdkEvent *event, void *client_data)
         break;
     }
     if (buttonev->state & GDK_SHIFT_MASK)
-        graph->set_cmdmode(graph->cmdmode() | ShiftMode);
+        graph->set_cmdmode(graph->cmdmode() | grShiftMode);
     else
-        graph->set_cmdmode(graph->cmdmode() & ~ShiftMode);
+        graph->set_cmdmode(graph->cmdmode() & ~grShiftMode);
     if (buttonev->state & GDK_CONTROL_MASK)
-        graph->set_cmdmode(graph->cmdmode() | ControlMode);
+        graph->set_cmdmode(graph->cmdmode() | grControlMode);
     else
-        graph->set_cmdmode(graph->cmdmode() & ~ControlMode);
+        graph->set_cmdmode(graph->cmdmode() & ~grControlMode);
     graph->gr_bdown_hdlr(button, (int)buttonev->x,
         graph->yinv((int)buttonev->y));
     return (true);
@@ -1245,13 +1245,13 @@ plot_bag::buttonup(GtkWidget*, GdkEvent *event, void *client_data)
         break;
     }
     if (buttonev->state & GDK_SHIFT_MASK)
-        graph->set_cmdmode(graph->cmdmode() | ShiftMode);
+        graph->set_cmdmode(graph->cmdmode() | grShiftMode);
     else
-        graph->set_cmdmode(graph->cmdmode() & ~ShiftMode);
+        graph->set_cmdmode(graph->cmdmode() & ~grShiftMode);
     if (buttonev->state & GDK_CONTROL_MASK)
-        graph->set_cmdmode(graph->cmdmode() | ControlMode);
+        graph->set_cmdmode(graph->cmdmode() | grControlMode);
     else
-        graph->set_cmdmode(graph->cmdmode() & ~ControlMode);
+        graph->set_cmdmode(graph->cmdmode() & ~grControlMode);
     graph->gr_bup_hdlr(button, (int)buttonev->x,
         graph->yinv((int)buttonev->y));
     return (true);

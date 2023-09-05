@@ -82,15 +82,15 @@ namespace {
         GtkWidget *which = (GtkWidget*)client_data;
 
         if (which == TB()->pl_shell)
-            TB()->PopDownPlots();
+            TB()->PopUpPlots(MODE_OFF, 0, 0);
         else if (which == TB()->ve_shell)
-            TB()->PopDownVectors();
+            TB()->PopUpVectors(MODE_OFF, 0, 0);
         else if (which == TB()->ci_shell)
-            TB()->PopDownCircuits();
+            TB()->PopUpCircuits(MODE_OFF, 0, 0);
         else if (which == TB()->tr_shell)
-            TB()->PopDownTrace();
+            TB()->PopUpRunops(MODE_OFF, 0, 0);
         else if (which == TB()->va_shell)
-            TB()->PopDownVariables();
+            TB()->PopUpVariables(MODE_OFF, 0, 0);
     }
 }
 
@@ -194,8 +194,27 @@ sPlots::pl_btn_hdlr(GtkWidget *caller, int x, int y)
 
 
 void
-GTKtoolbar::PopUpPlots(int x, int y)
+GTKtoolbar::PopUpPlots(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (!pl_shell)
+            return;
+        SetLoc(ntb_plots, pl_shell);
+
+        GtkWidget *confirm = (GtkWidget*)g_object_get_data(G_OBJECT(pl_shell),
+            "confirm");
+        if (confirm)
+            gtk_widget_destroy(confirm);
+
+        GTKdev::SetStatus(tb_plots, false);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(pl_shell),
+            (gpointer)tp_cancel_proc, pl_shell);
+        gtk_widget_destroy(pl_shell);
+        pl_shell = 0;
+
+        SetActive(ntb_plots, false);
+        return;
+    }
     if (pl_shell)
         return;
     sLstr lstr;
@@ -213,30 +232,6 @@ GTKtoolbar::PopUpPlots(int x, int y)
     sPlots plts(x, y, lstr.string());
     pl_text = (GtkWidget*)g_object_get_data(G_OBJECT(pl_shell), "text");
     SetActive(ntb_plots, true);
-}
-
-
-// Pop down and destroy the list of plots.
-//
-void
-GTKtoolbar::PopDownPlots()
-{
-    if (!pl_shell)
-        return;
-    SetLoc(ntb_plots, pl_shell);
-
-    GtkWidget *confirm = (GtkWidget*)g_object_get_data(G_OBJECT(pl_shell),
-        "confirm");
-    if (confirm)
-        gtk_widget_destroy(confirm);
-
-    GTKdev::SetStatus(tb_plots, false);
-    g_signal_handlers_disconnect_by_func(G_OBJECT(pl_shell),
-        (gpointer)tp_cancel_proc, pl_shell);
-    gtk_widget_destroy(pl_shell);
-    pl_shell = 0;
-
-    SetActive(ntb_plots, false);
 }
 
 
@@ -562,8 +557,27 @@ sVectors::ve_desel()
 
 
 void
-GTKtoolbar::PopUpVectors(int x, int y)
+GTKtoolbar::PopUpVectors(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (!ve_shell)
+            return;
+        SetLoc(ntb_vectors, ve_shell);
+
+        GtkWidget *confirm = (GtkWidget*)g_object_get_data(G_OBJECT(ve_shell),
+            "confirm");
+        if (confirm)
+            gtk_widget_destroy(confirm);
+
+        GTKdev::SetStatus(tb_vectors, false);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(ve_shell),
+            (gpointer)tp_cancel_proc, ve_shell);
+        gtk_widget_destroy(ve_shell);
+        ve_shell = 0;
+
+        SetActive(ntb_vectors, false);
+        return;
+    }
     if (ve_shell)
         return;
     FixLoc(&x, &y);
@@ -571,30 +585,6 @@ GTKtoolbar::PopUpVectors(int x, int y)
     ve_text = (GtkWidget*)g_object_get_data(G_OBJECT(ve_shell), "text");
     sVectors::update();
     SetActive(ntb_vectors, true);
-}
-
-
-// Pop down and destroy the vector list.
-//
-void
-GTKtoolbar::PopDownVectors()
-{
-    if (!ve_shell)
-        return;
-    SetLoc(ntb_vectors, ve_shell);
-
-    GtkWidget *confirm = (GtkWidget*)g_object_get_data(G_OBJECT(ve_shell),
-        "confirm");
-    if (confirm)
-        gtk_widget_destroy(confirm);
-
-    GTKdev::SetStatus(tb_vectors, false);
-    g_signal_handlers_disconnect_by_func(G_OBJECT(ve_shell),
-        (gpointer)tp_cancel_proc, ve_shell);
-    gtk_widget_destroy(ve_shell);
-    ve_shell = 0;
-
-    SetActive(ntb_vectors, false);
 }
 
 
@@ -732,8 +722,27 @@ sCircuits::ci_btn_hdlr(GtkWidget *caller, int x, int y)
 
 
 void
-GTKtoolbar::PopUpCircuits(int x, int y)
+GTKtoolbar::PopUpCircuits(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (!ci_shell)
+            return;
+        SetLoc(ntb_circuits, ci_shell);
+
+        GtkWidget *confirm = (GtkWidget*)g_object_get_data(G_OBJECT(ci_shell),
+            "confirm");
+        if (confirm)
+            gtk_widget_destroy(confirm);
+
+        GTKdev::SetStatus(tb_circuits, false);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(ci_shell),
+            (gpointer)tp_cancel_proc, ci_shell);
+        gtk_widget_destroy(ci_shell);
+        ci_shell = 0;
+
+        SetActive(ntb_circuits, false);
+        return;
+    }
     if (ci_shell)
         return;
     char *s = sCircuits::ci_str();
@@ -742,30 +751,6 @@ GTKtoolbar::PopUpCircuits(int x, int y)
     ci_text = (GtkWidget*)g_object_get_data(G_OBJECT(ci_shell), "text");
     delete [] s;
     SetActive(ntb_circuits, true);
-}
-
-
-// Pop down and destroy the circuit list.
-//
-void
-GTKtoolbar::PopDownCircuits()
-{
-    if (!ci_shell)
-        return;
-    SetLoc(ntb_circuits, ci_shell);
-
-    GtkWidget *confirm = (GtkWidget*)g_object_get_data(G_OBJECT(ci_shell),
-        "confirm");
-    if (confirm)
-        gtk_widget_destroy(confirm);
-
-    GTKdev::SetStatus(tb_circuits, false);
-    g_signal_handlers_disconnect_by_func(G_OBJECT(ci_shell),
-        (gpointer)tp_cancel_proc, ci_shell);
-    gtk_widget_destroy(ci_shell);
-    ci_shell = 0;
-
-    SetActive(ntb_circuits, false);
 }
 
 
@@ -831,7 +816,7 @@ const char *sFiles::fi_nofiles_msg = "no files found";
 void
 sFiles::fi_cancel_proc(GtkWidget*, void*)
 {
-    TB()->PopDownFiles();
+    TB()->PopUpFiles(MODE_OFF, 0, 0);
 }
 
 
@@ -1001,8 +986,20 @@ sFiles::fi_actions(GtkWidget *caller, void*)
 
 
 void
-GTKtoolbar::PopUpFiles(int x, int y)
+GTKtoolbar::PopUpFiles(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (!fi_shell)
+            return;
+        SetLoc(ntb_files, fi_shell);
+
+        GTKdev::SetStatus(tb_files, false);
+        delete FL();
+        fi_shell = 0;
+
+        SetActive(ntb_files, false);
+        return;
+    }
     new sFiles;
     fi_shell = FL()->Shell();
     if (fi_shell) {
@@ -1016,23 +1013,6 @@ GTKtoolbar::PopUpFiles(int x, int y)
         gtk_widget_show(fi_shell);
     }
     SetActive(ntb_files, true);
-}
-
-
-// Pop down and destroy the file list.
-//
-void
-GTKtoolbar::PopDownFiles()
-{
-    if (!fi_shell)
-        return;
-    SetLoc(ntb_files, fi_shell);
-
-    GTKdev::SetStatus(tb_files, false);
-    delete FL();
-    fi_shell = 0;
-
-    SetActive(ntb_files, false);
 }
 
 
@@ -1133,7 +1113,7 @@ void
 sTraces::tr_dfunc()
 {
     OP.deleteRunop(DF_ALL, true, -1);
-    TB()->UpdateTrace();
+    TB()->UpdateRunops();
 }
 
 
@@ -1207,14 +1187,33 @@ sTraces::tr_recolor()
         n++;
     }
     text_set_editable(TB()->tr_text, false);
-    delete [] string();
+    delete [] string;
 }
 // End of sTraces functions
 
 
 void
-GTKtoolbar::PopUpTrace(int x, int y)
+GTKtoolbar::PopUpRunops(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (!tr_shell)
+            return;
+        SetLoc(ntb_trace, tr_shell);
+
+        GtkWidget *confirm = (GtkWidget*)g_object_get_data(G_OBJECT(tr_shell),
+            "confirm");
+        if (confirm)
+            gtk_widget_destroy(confirm);
+
+        GTKdev::SetStatus(tb_trace, false);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(tr_shell),
+            (gpointer)tp_cancel_proc, tr_shell);
+        gtk_widget_destroy(tr_shell);
+        tr_shell = 0;
+
+        SetActive(ntb_trace, false);
+        return;
+    }
     if (tr_shell)
         return;
     FixLoc(&x, &y);
@@ -1225,34 +1224,10 @@ GTKtoolbar::PopUpTrace(int x, int y)
 }
 
 
-// Pop down and destroy the trace pop up.
-//
-void
-GTKtoolbar::PopDownTrace()
-{
-    if (!tr_shell)
-        return;
-    SetLoc(ntb_trace, tr_shell);
-
-    GtkWidget *confirm = (GtkWidget*)g_object_get_data(G_OBJECT(tr_shell),
-        "confirm");
-    if (confirm)
-        gtk_widget_destroy(confirm);
-
-    GTKdev::SetStatus(tb_trace, false);
-    g_signal_handlers_disconnect_by_func(G_OBJECT(tr_shell),
-        (gpointer)tp_cancel_proc, tr_shell);
-    gtk_widget_destroy(tr_shell);
-    tr_shell = 0;
-
-    SetActive(ntb_trace, false);
-}
-
-
 // Update the trace list.  Called when debugs are added or deleted.
 //
 void
-GTKtoolbar::UpdateTrace()
+GTKtoolbar::UpdateRunops()
 {
     if (tb_suppress_update)
         return;
@@ -1280,8 +1255,22 @@ struct sVariables
 
 
 void
-GTKtoolbar::PopUpVariables(int x, int y)
+GTKtoolbar::PopUpVariables(ShowMode mode, int x, int y)
 {
+    if (mode == MODE_OFF) {
+        if (!va_shell)
+            return;
+        SetLoc(ntb_variables, va_shell);
+
+        GTKdev::SetStatus(tb_variables, false);
+        g_signal_handlers_disconnect_by_func(G_OBJECT(va_shell),
+            (gpointer)tp_cancel_proc, va_shell);
+        gtk_widget_destroy(va_shell);
+        va_shell = 0;
+
+        SetActive(ntb_variables, false);
+        return;
+    }
     if (va_shell)
         return;
     sLstr lstr;
@@ -1290,25 +1279,6 @@ GTKtoolbar::PopUpVariables(int x, int y)
     sVariables vars(x, y, lstr.string());
     va_text = (GtkWidget*)g_object_get_data(G_OBJECT(va_shell), "text");
     SetActive(ntb_variables, true);
-}
-
-
-// Pop down and destroy the variables pop up.
-//
-void
-GTKtoolbar::PopDownVariables()
-{
-    if (!va_shell)
-        return;
-    SetLoc(ntb_variables, va_shell);
-
-    GTKdev::SetStatus(tb_variables, false);
-    g_signal_handlers_disconnect_by_func(G_OBJECT(va_shell),
-        (gpointer)tp_cancel_proc, va_shell);
-    gtk_widget_destroy(va_shell);
-    va_shell = 0;
-
-    SetActive(ntb_variables, false);
 }
 
 
