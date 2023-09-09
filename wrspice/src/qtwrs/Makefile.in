@@ -37,9 +37,11 @@ CCFILES = \
     qterrmsg.cc \
     qtfiles.cc \
     qtgraph.cc \
+    qtkwent.cc \
     qtplot.cc \
     qtplots.cc \
     qtrunops.cc \
+    qtsim.cc \
     qtspmsg.cc \
     qttbdlg.cc \
     qttbhelp.cc \
@@ -51,15 +53,16 @@ CCFILES = \
 #    qtdebug.cc \
 #    qtpldef.cc \
 #    qtshell.cc \
-#    qtsim.cc \
 
 MOCFILES = \
     moc_circuits.cpp \
     moc_errmsg.cpp \
     moc_files.cpp \
+    moc_kwent.cpp \
     moc_plot.cpp \
     moc_plots.cpp \
     moc_runops.cpp \
+    moc_sim.cpp \
     moc_spmsg.cpp \
     moc_tbdlg.cpp \
     moc_tbhelp.cpp \
@@ -70,7 +73,6 @@ MOCFILES = \
 #    moc_debug.cpp \
 #    moc_pldef.cpp \
 #    moc_shell.cpp \
-#    moc_sim.cpp \
 
 CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
 MOCOBJS = $(MOCFILES:.cpp=.o)
@@ -95,12 +97,13 @@ $(LIB_TARGET): $(LIBOBJS)
 moc_circuits.o: moc_circuits.cpp qtcircuits.h
 moc_errmsg.o: moc_errmsg.cpp qterrmsg.h
 moc_files.o: moc_files.cpp qtfiles.h
+moc_kwent.o: moc_kwent.cpp qtkwent.h
 #moc_pldef.o: moc_pldef.cpp qtpldef.h
 #moc_shell.o: moc_shell.cpp qtshell.h
-#moc_sim.o: moc_sim.cpp qtsim.h
 moc_plot.o: moc_plot.cpp qtplot.h
 moc_plots.o: moc_plots.cpp qtplots.h
 moc_runops.o: moc_runops.cpp qtrunops.h
+moc_sim.o: moc_sim.cpp qtsim.h
 moc_spmsg.o: moc_spmsg.cpp qtspmsg.h
 moc_tbdlg.o: moc_tbdlg.cpp qttbdlg.h
 moc_tbhelp.o: moc_tbhelp.cpp qttbhelp.h
@@ -119,18 +122,20 @@ moc_errmsg.cpp: $(MOC) qterrmsg.h
 	$(MOC) qterrmsg.h -o moc_errmsg.cpp
 moc_files.cpp: $(MOC) qtfiles.h
 	$(MOC) qtfiles.h -o moc_files.cpp
+moc_kwent.cpp: $(MOC) qtkwent.h
+	$(MOC) qtkwent.h -o moc_kwent.cpp
 #moc_pldef.cpp: $(MOC) qtpldef.h
 #	$(MOC) qtpldef.h -o moc_pldef.cpp
 #moc_shell.cpp: $(MOC) qtshell.h
 #	$(MOC) qtshell.h -o moc_shell.cpp
-#moc_sim.cpp: $(MOC) qtsim.h
-#	$(MOC) qtsim.h -o moc_sim.cpp
 moc_plot.cpp: $(MOC) qtplot.h
 	$(MOC) qtplot.h -o moc_plot.cpp
 moc_plots.cpp: $(MOC) qtplots.h
 	$(MOC) qtplots.h -o moc_plots.cpp
 moc_runops.cpp: $(MOC) qtrunops.h
 	$(MOC) qtrunops.h -o moc_runops.cpp
+moc_sim.cpp: $(MOC) qtsim.h
+	$(MOC) qtsim.h -o moc_sim.cpp
 moc_spmsg.cpp: $(MOC) qtspmsg.h
 	$(MOC) qtspmsg.h -o moc_spmsg.cpp
 moc_tbdlg.cpp: $(MOC) qttbdlg.h

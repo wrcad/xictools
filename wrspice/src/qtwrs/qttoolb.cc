@@ -422,7 +422,7 @@ void QTtoolbar::PopUpShellDefs(ShowMode, int, int) { }
 
 // simulation defaults dialog
 // gtksim.cc
-void QTtoolbar::PopUpSimDefs(ShowMode, int, int) { }
+//void QTtoolbar::PopUpSimDefs(ShowMode, int, int) { }
 
 
 void
