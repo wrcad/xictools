@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTSIM_H
-#define QTSIM_H
+#ifndef QTCOLOR_H
+#define QTCOLOR_H
 
 #include "qtkwent.h"
 
@@ -47,29 +47,25 @@
 
 
 /**************************************************************************
- * Simulation parameter setting dialog.
+ * Color parameter setting dialog.
  **************************************************************************/
 
-class QTabWidget;
-
-class QTsimParamDlg : public QDialog
+class QTcolorParamDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    QTsimParamDlg(int, int);
-    ~QTsimParamDlg();
+    QTcolorParamDlg(int, int);
+    ~QTcolorParamDlg();
 
-    static QTsimParamDlg *self()        { return (instPtr); }
+    static QTcolorParamDlg *self()          { return (instPtr); }
 
 private slots:
     void dismiss_btn_slot();
     void help_btn_slot(bool);
 
 private:
-    QTabWidget *si_notebook;
-
-    static QTsimParamDlg *instPtr;
+    static QTcolorParamDlg *instPtr;
 };
 
 #endif

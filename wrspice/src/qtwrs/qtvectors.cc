@@ -446,17 +446,19 @@ QTvectorListDlg::button_slot(bool state)
 
                 if (string) {
                     double val = wb_textarea->get_scroll_value();
-                    int n = 0;
+                    int nc = 0;
                     wb_textarea->set_editable(true);
                     for (const char *s = string; *s; s++) {
                         if (wasret) {
                             wasret = false;
-                            if (*s == '>')
-                                wb_textarea->replace_chars(&red, " ", n, n+1);
+                            if (*s == '>') {
+                                wb_textarea->replace_chars(&red, " ", nc,
+                                    nc + 1);
+                            }
                         }
                         if (*s == '\n')
                             wasret = true;
-                        n++;
+                        nc++;
                     }
                     wb_textarea->set_editable(false);
                     wb_textarea->set_scroll_value(val);

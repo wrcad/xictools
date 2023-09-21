@@ -49,14 +49,111 @@
 #include <QDoubleSpinBox>
 
 
-//==========================================================================
+//----------------------------------------------------------------------------
+// A Double Spin Box that uses exponential notation.
+
+void
+QTexpDoubleSpinBox::stepBy(int n)
+{
+    double d = value();
+    bool neg = false;
+    if (d < 0) {
+        neg = true;
+        d = -d;
+    }
+    double logd = log10(d);
+    int ex = (int)floor(logd);
+    logd -= ex;
+    double mant = pow(10.0, logd);
+
+    double del = 1.0;
+    if ((n > 0 && !neg) || (n < 0 && neg))
+        mant += del;
+    else {
+        if (mant - del < 1.0)
+            mant = 1.0 - (1.0 - mant + del)/10;
+        else
+            mant -= del;
+    }
+    d = mant * pow(10.0, ex);
+    if (neg)
+        d = -d;
+    if (d > maximum())
+        d = maximum();
+    else if (d < minimum())
+        d = minimum();
+    setValue(d);
+}
+
+
+double
+QTexpDoubleSpinBox::valueFromText(const QString & text) const
+{
+    QByteArray text_ba = text.toLatin1();
+    const char *str = text_ba.constData();
+    double *d = SPnum.parse(&str, true);
+    if (d)
+        return (*d);
+    return (0.0/0.0);  // NaN, "can't happen"
+}
+
+QString
+QTexpDoubleSpinBox::textFromValue(double value) const
+{
+    const char *str = SPnum.printnum(value, (const char*)0, true,
+        decimals());
+    while (isspace(*str))
+        str++;
+    return (QString(str));
+}
+
+// Change the way we validate user input (if validate => valueFromText)
+QValidator::State
+QTexpDoubleSpinBox::validate(QString &text, int&) const
+{
+    QByteArray text_ba = text.toLatin1();
+    const char *str = text_ba.constData();
+    double *d = SPnum.parse(&str, true);
+    return (d ? QValidator::Acceptable : QValidator::Invalid);
+}
+
+
+//----------------------------------------------------------------------------
+// A string Spin Box that is used for keyword choice selection.
+
+QString
+QTchoiceSpinBox::textFromValue(int i) const
+{
+    int n = csb_entries.length();
+    if (i >= 0 && i < n)
+        return (csb_entries[i]);
+    return (QString(""));
+}
+
+
+int
+QTchoiceSpinBox::valueFromText(const QString &txt) const
+{
+    return (csb_entries.indexOf(txt));
+}
+
+
+QValidator::State
+QTchoiceSpinBox::validate(QString &txt, int&) const
+{
+    if (csb_entries.indexOf(txt) >= 0)
+        return (QValidator::Acceptable);
+    return (QValidator::Invalid);
+}
+
+
+//----------------------------------------------------------------------------
 // The keyword entry composite widget.
 
 QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
-    const char *defstring, UpDnCallback udcb)
+    const char *defstring, Kword **kw)
 {
     ke_update = cb;
-    ke_udcb = udcb;
     ke_kwstruct = kwstruct;
     ke_val = 0.0;
     ke_del = 0.0;
@@ -64,7 +161,6 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
     ke_rate = 0.0;
     ke_numd = 0;
     ke_thandle = 0;
-    ke_down = false;
     ke_mode = m;
     ke_defstr = 0;
     ke_active = 0;
@@ -73,8 +169,8 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
     ke_entry2 = 0;
     ke_spbox = 0;
     ke_spbox2 = 0;
-    ke_upbtn = 0;
-    ke_dnbtn = 0;
+    ke_choice = 0;
+    ke_expsb = 0;
 
     variable *v = Sp.GetRawVar(kwstruct->word);
     if (!defstring)
@@ -112,9 +208,11 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
         }
         else {
             ke_spbox = new QDoubleSpinBox();
+            ke_spbox->setRange(ke_kwstruct->min, ke_kwstruct->max);
             hbox->addWidget(ke_spbox);
             if (ke_mode == KW_INT_2) {
                 ke_spbox2 = new QDoubleSpinBox();
+                ke_spbox2->setRange(ke_kwstruct->min, ke_kwstruct->max);
                 hbox->addWidget(ke_spbox2);
             }
         }
@@ -123,67 +221,30 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
             ke_mode == KW_NO_SPIN || kwstruct->type == VTYP_STRING ||
             kwstruct->type == VTYP_LIST) {
         if (kwstruct->type != VTYP_LIST || ke_mode != KW_NO_CB) {
-            ke_entry = new QLineEdit();
-            hbox->addWidget(ke_entry);
+            if (ke_mode == KW_FLOAT) {
+                ke_expsb = new QTexpDoubleSpinBox();
+                hbox->addWidget(ke_expsb);
+                ke_expsb->setRange(ke_kwstruct->min, ke_kwstruct->max);
+                ke_expsb->setSingleStep(0);
+            }
+            else if (ke_mode == KW_NO_SPIN) {
+                ke_entry = new QLineEdit();
+                hbox->addWidget(ke_entry);
+            }
+            else {
+                ke_choice = new QTchoiceSpinBox();
+                hbox->addWidget(ke_choice);
+                if (kw) {
+                    int i;
+                    for (i = 0; kw[i]->word; i++)
+                        ke_choice->entries()->append(kw[i]->word);
+                    ke_choice->setMaximum(i-1);
+                }
+            }
         }
-        if (udcb && ke_mode != KW_NO_SPIN && ke_mode != KW_NO_CB) {
-            ke_entry->setReadOnly(true);
+        if (ke_mode != KW_NO_SPIN && ke_mode != KW_NO_CB) {
             if (ke_mode == KW_NORMAL)
                 ke_mode = KW_STR_PICK;
-            // up/down buttons
-            QVBoxLayout *vb = new QVBoxLayout();
-            vb->setMargin(0);
-            vb->setSpacing(2);
-            hbox->addLayout(vb);
-
-            ke_upbtn = new QPushButton();
-            vb->addWidget(ke_upbtn);
-            connect(ke_upbtn, SIGNAL(pressed()),
-                this, SLOT(up_btn_pressed_slot()));
-            connect(ke_upbtn, SIGNAL(released()),
-                this, SLOT(up_btn_released_slot()));
-            ke_dnbtn = new QPushButton();
-            vb->addWidget(ke_dnbtn);
-            connect(ke_dnbtn, SIGNAL(pressed()),
-                this, SLOT(down_btn_pressed_slot()));
-            connect(ke_dnbtn, SIGNAL(released()),
-                this, SLOT(down_btn_released_slot()));
-       //XXX need arrow icons
-
-            /*
-            GtkWidget *arrow = gtk_arrow_new(GTK_ARROW_UP, GTK_SHADOW_OUT);
-            gtk_widget_show(arrow);
-            GtkWidget *ebox = gtk_event_box_new();
-            gtk_widget_show(ebox);
-            gtk_container_add(GTK_CONTAINER(ebox), arrow);
-            gtk_widget_add_events(ebox, GDK_BUTTON_PRESS_MASK);
-            g_signal_connect_after(G_OBJECT(ebox), "button_press_event",
-                G_CALLBACK(udcb), kwstruct);
-            if (mode == KW_FLOAT) {
-                gtk_widget_add_events(ebox, GDK_BUTTON_RELEASE_MASK);
-                g_signal_connect_after(G_OBJECT(ebox),
-                    "button_release_event", G_CALLBACK(udcb), kwstruct);
-            }
-            gtk_box_pack_start(GTK_BOX(vbox), ebox, false, false, 0);
-
-            arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_OUT);
-            gtk_widget_show(arrow);
-            ebox = gtk_event_box_new();
-            gtk_widget_show(ebox);
-            gtk_container_add(GTK_CONTAINER(ebox), arrow);
-            gtk_widget_add_events(ebox, GDK_BUTTON_PRESS_MASK);
-            g_signal_connect_after(G_OBJECT(ebox), "button_press_event",
-                G_CALLBACK(udcb), kwstruct);
-            if (mode == KW_FLOAT) {
-                gtk_widget_add_events(ebox, GDK_BUTTON_RELEASE_MASK);
-                g_signal_connect_after(G_OBJECT(ebox),
-                    "button_release_event", G_CALLBACK(udcb), kwstruct);
-            }
-            g_object_set_data(G_OBJECT(ebox), "down", (void*)1);
-            gtk_box_pack_start(GTK_BOX(vbox), ebox, false, false, 0);
-
-            gtk_box_pack_start(GTK_BOX(hbox), vbox, false, false, 2);
-            */
         }
     }
     else if (ke_mode == KW_NO_CB) {
@@ -226,10 +287,36 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
                 this, SLOT(val_changed_slot(const QString&)));
         }
     }
-    if (ke_mode != KW_NO_CB)
-        set_state(v ? true : false);
+    if (ke_spbox) {
+        if (v && ke_update)
+            (*ke_update)(true, v, this);
+        connect(ke_spbox, SIGNAL(textChanged(const QString&)),
+            this, SLOT(val_changed_slot(const QString&)));
+    }
+    if (ke_expsb) {
+        if (v && ke_update)
+            (*ke_update)(true, v, this);
+        connect(ke_expsb, SIGNAL(textChanged(const QString&)),
+            this, SLOT(val_changed_slot(const QString&)));
+    }
+    if (ke_choice) {
+        if (!v) {
+            int val = ke_choice->valueFromText(ke_defstr);
+            if (val >= 0)
+                ke_choice->setValue(val);
+            QString qstr = ke_choice->text();
+            if (ke_defstr && ke_active && !QTdev::GetStatus(ke_active)) {
+                ke_deflt->setEnabled(qstr != ke_defstr);
+            }
+        }
+        else if (v && ke_update)
+            (*ke_update)(true, v, this);
+        connect(ke_choice, SIGNAL(textChanged(const QString&)),
+            this, SLOT(val_changed_slot(const QString&)));
+    }
 
     if (ke_mode != KW_NO_CB) {
+        set_state(v ? true : false);
         connect(ke_active, SIGNAL(stateChanged(int)),
             this, SLOT(set_btn_slot(int)));
     }
@@ -255,6 +342,47 @@ QTkwent::~QTkwent()
 }
 
 
+void
+QTkwent::callback(bool isset, variable *v)
+{
+    if (ke_update)
+        (*ke_update)(isset, v, this);
+}
+
+
+// Set up spin parameters for numerical entry.
+//
+void
+QTkwent::setup(double v, double d, double p, double r, int n)
+{
+    ke_val = v;
+    ke_del = d;
+    ke_pgsize = p;
+    ke_rate = r;
+    ke_numd = n;
+    variable *var = Sp.GetRawVar(ke_kwstruct->word);
+    if (ke_spbox) {
+        ke_spbox->setDecimals(ke_numd);
+        ke_spbox->setSingleStep(pow(10.0, -ke_numd));
+        if (!var)
+            ke_spbox->setValue(ke_val);
+        if (ke_spbox2) {
+            ke_spbox2->setDecimals(ke_numd);
+            ke_spbox2->setSingleStep(pow(10.0, -ke_numd));
+        }
+        QString qstr = ke_spbox->text();
+        if (ke_defstr && ke_active && !QTdev::GetStatus(ke_active)) {
+            ke_deflt->setEnabled(qstr != ke_defstr);
+        }
+    }
+    else if (ke_expsb) {
+        ke_expsb->setDecimals(ke_numd);
+        if (!var)
+            ke_expsb->setValue(ke_val);
+    }
+}
+
+
 // Set sensitivity status in accord with Set button status.
 //
 void
@@ -267,12 +395,18 @@ QTkwent::set_state(bool state)
             ke_deflt->setEnabled(false);
         else {
             bool isdef = false;
-            if (ke_entry) {
-                QByteArray ba = ke_entry->text().toLatin1();
-                const char *str = ba.constData();
-                if (!strcmp(ke_defstr, str))
-                    isdef = true;
-            }
+            QByteArray ba;
+            if (ke_entry)
+                ba = ke_entry->text().toLatin1();
+            else if (ke_spbox)
+                ba = ke_spbox->text().toLatin1();
+            else if (ke_expsb)
+                ba = ke_expsb->text().toLatin1();
+            else if (ke_choice)
+                ba = ke_choice->text().toLatin1();
+            const char *str = ba.constData();
+            if (!strcmp(ke_defstr, str))
+                isdef = true;
             ke_deflt->setEnabled(!isdef);
         }
     }
@@ -283,72 +417,12 @@ QTkwent::set_state(bool state)
             ke_entry->setReadOnly(true);
         ke_entry->setEnabled(!state);
     }
-}
-
-
-// Increment or decrement the current value of exponential spin box.
-//
-void
-QTkwent::bump()
-{
-    if (!ke_entry || !ke_entry->isEnabled())
-        return;
-    QByteArray ba = ke_entry->text().toLatin1();
-    const char *string = ba.constData();
-    double d;
-    sscanf(string, "%lf", &d);
-    bool neg = false;
-    if (d < 0) {
-        neg = true;
-        d = -d;
-    }
-    double logd = log10(d);
-    int ex = (int)floor(logd);
-    logd -= ex;
-    double mant = pow(10.0, logd);
-
-    if ((!ke_down && !neg) || (ke_down && neg))
-        mant += ke_del;
-    else {
-        if (mant - ke_del < 1.0)
-            mant = 1.0 - (1.0 - mant + ke_del)/10;
-        else
-            mant -= ke_del;
-    }
-    d = mant * pow(10.0, ex);
-    if (neg)
-        d = -d;
-    if (d > ke_kwstruct->max)
-        d = ke_kwstruct->max;
-    else if (d < ke_kwstruct->min)
-        d = ke_kwstruct->min;
-    char buf[128];
-    snprintf(buf, sizeof(buf), "%.*e", ke_numd, d);
-    ke_entry->setText(buf);
-}
-
-
-// Static function;
-// Repetitive timing loop for exponential spin box.
-//
-int
-QTkwent::repeat_timer(void *client_data)
-{
-    QTkwent *ent = static_cast<QTkwent*>(client_data);
-    ent->bump();
-    return (true);
-}
-
-
-// Static function;
-// Initial delay timer.
-//
-int
-QTkwent::delay_timer(void *client_data)
-{
-    QTkwent *ent = static_cast<QTkwent*>(client_data);
-    ent->ke_thandle = QTdev::self()->AddTimer(50, repeat_timer, client_data);
-    return (false);
+    else if (ke_spbox)
+        ke_spbox->setEnabled(!state);
+    else if (ke_expsb)
+        ke_expsb->setEnabled(!state);
+    else if (ke_choice)
+        ke_choice->setEnabled(!state);
 }
 
 
@@ -363,6 +437,50 @@ QTkwent::ke_bool_func(bool isset, variable*, void *entp)
 }
 
 
+/*
+    void
+    int2_func(bool isset, variable *v, xEnt *ent)
+    {
+        ent->set_state(isset);
+        if (ent->entry) {
+            if (isset) {
+                int val1=0, val2=0;
+                if (v->type() == VTYP_STRING) {
+                    const char *string = v->string();
+                    double *d = SPnum.parse(&string, false);
+                    val1 = (int)*d;
+                    while (*string && !isdigit(*string) &&
+                        *string != '-' && *string != '+') string++;
+                    d = SPnum.parse(&string, true);
+                    val2 = (int)*d;
+                }
+                else if (v->type() == VTYP_LIST) {
+                    variable *vx = v->list();
+                    val1 = vx->integer();
+                    vx = vx->next();
+                    val2 = vx->integer();
+                }
+                char buf[64];
+                snprintf(buf, sizeof(buf), "%d", val1);
+                gtk_entry_set_text(GTK_ENTRY(ent->entry), buf);
+
+                if (ent->entry2) {
+                    snprintf(buf, sizeof(buf), "%d", val2);
+                    gtk_entry_set_text(GTK_ENTRY(ent->entry2), buf);
+                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), false);
+                    gtk_widget_set_sensitive(ent->entry2, false);
+                }
+            }
+            else {
+                if (ent->entry2) {
+                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), true);
+                    gtk_widget_set_sensitive(ent->entry2, true);
+                }
+            }
+        }
+    }
+*/
+
 // Static function.
 // Integer data.
 //
@@ -373,7 +491,10 @@ QTkwent::ke_int_func(bool isset, variable *v, void *entp)
     ent->set_state(isset);
     if (isset) {
         if (ent->ke_spbox) {
-            ent->ke_spbox->setValue(v->real());
+            bool isenab = ent->ke_spbox->isEnabled();
+            ent->ke_spbox->setEnabled(true);
+            ent->ke_spbox->setValue(v->integer());
+            ent->ke_spbox->setEnabled(isenab);
         }
         else if (ent->ke_entry) {
             char buf[64];
@@ -384,6 +505,50 @@ QTkwent::ke_int_func(bool isset, variable *v, void *entp)
 }
 
 
+/*
+    void
+    real2_func(bool isset, variable *v, xEnt *ent)
+    {
+        ent->set_state(isset);
+        if (ent->entry) {
+            if (isset) {
+                double dval1=0.0, dval2=0.0;
+                if (v->type() == VTYP_STRING) {
+                    const char *string = v->string();
+                    double *d = SPnum.parse(&string, false);
+                    dval1 = *d;
+                    while (*string && !isdigit(*string) &&
+                        *string != '-' && *string != '+') string++;
+                    d = SPnum.parse(&string, true);
+                    dval2 = *d;
+                }
+                else if (v->type() == VTYP_LIST) {
+                    variable *vx = v->list();
+                    dval1 = vx->real();
+                    vx = vx->next();
+                    dval2 = vx->real();
+                }
+                char buf[64];
+                snprintf(buf, sizeof(buf), "%g", dval1);
+                gtk_entry_set_text(GTK_ENTRY(ent->entry), buf);
+
+                if (ent->entry2) {
+                    snprintf(buf, sizeof(buf), "%g", dval2);
+                    gtk_entry_set_text(GTK_ENTRY(ent->entry2), buf);
+                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), false);
+                    gtk_widget_set_sensitive(ent->entry2, false);
+                }
+            }
+            else {
+                if (ent->entry2) {
+                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), true);
+                    gtk_widget_set_sensitive(ent->entry2, true);
+                }
+            }
+        }
+    }
+*/
+
 // Static function.
 // Real valued data.
 //
@@ -393,7 +558,10 @@ QTkwent::ke_real_func(bool isset, variable *v, void *entp)
     QTkwent *ent = static_cast<QTkwent*>(entp);
     ent->set_state(isset);
     if (isset) {
-        if (ent->ke_spbox) {
+        if (ent->ke_expsb) {
+            ent->ke_expsb->setValue(v->real());
+        }
+        else if (ent->ke_spbox) {
             ent->ke_spbox->setValue(v->real());
         }
         else if (ent->ke_entry) {
@@ -418,25 +586,18 @@ QTkwent::ke_string_func(bool isset, variable *v, void *entp)
 {
     QTkwent *ent = static_cast<QTkwent*>(entp);
     ent->set_state(isset);
-    if (ent->ke_entry && isset)
-        ent->ke_entry->setText(v->string());
-}
-
-
-// Static function.
-//
-void
-QTkwent::ke_float_hdlr(xKWent *entry, bool topbtn, bool pressed)
-{
-    //XXX
-    if (pressed) {
-        entry->ent->ke_down = !topbtn;
-        entry->ent->bump();
-        entry->ent->ke_thandle = QTdev::self()->AddTimer(200, delay_timer,
-            entry->ent);
+    if (isset) {
+        if (ent->ke_entry)
+            ent->ke_entry->setText(v->string());
+        else if (ent->ke_choice) {
+            bool isenab = ent->ke_choice->isEnabled();
+            ent->ke_choice->setEnabled(true);
+            int val = ent->ke_choice->valueFromText(v->string());
+            if (val >= 0)
+                ent->ke_choice->setValue(val);
+            ent->ke_choice->setEnabled(isenab);
+        }
     }
-    else 
-        QTdev::self()->RemoveTimer(entry->ent->ke_thandle);
 }
 
 
@@ -490,34 +651,43 @@ QTkwent::set_btn_slot(int state)
         }
         else if (ke_spbox)
             v.set_real(ke_spbox->value());
+        else if (ke_expsb)
+            v.set_real(ke_expsb->value());
         ke_kwstruct->callback(state, &v);
     }
     else if (ke_kwstruct->type == VTYP_STRING) {
-        QByteArray ba = ke_entry->text().toLatin1();
-        const char *string = ba.constData();
-        if (ke_entry2) {
-            // hack for two numeric fields
-            const char *s = string;
-            double *d = SPnum.parse(&s, false);
-            if (!d) {
-                error_pr(ke_kwstruct->word, " min", "a real");
+        if (ke_entry) {
+            QByteArray ba = ke_entry->text().toLatin1();
+            const char *string = ba.constData();
+            if (ke_entry2) {
+                // hack for two numeric fields
+                const char *s = string;
+                double *d = SPnum.parse(&s, false);
+                if (!d) {
+                    error_pr(ke_kwstruct->word, " min", "a real");
+                    return;
+                }
+                QByteArray ba2 = ke_entry2->text().toLatin1();
+                const char *string2 = ba2.constData();
+                s = string2;
+                d = SPnum.parse(&s, false);
+                if (!d) {
+                    error_pr(ke_kwstruct->word, " max", "a real");
+                    return;
+                }
+                char buf[256];
+                snprintf(buf, sizeof(buf), "%s %s", string, string2);
+                v.set_string(buf);
+                ke_kwstruct->callback(state, &v);
                 return;
             }
-            QByteArray ba2 = ke_entry2->text().toLatin1();
-            const char *string2 = ba2.constData();
-            s = string2;
-            d = SPnum.parse(&s, false);
-            if (!d) {
-                error_pr(ke_kwstruct->word, " max", "a real");
-                return;
-            }
-            char buf[256];
-            snprintf(buf, sizeof(buf), "%s %s", string, string2);
-            v.set_string(buf);
-            ke_kwstruct->callback(state, &v);
-            return;
+            v.set_string(string);
         }
-        v.set_string(string);
+        else if (ke_choice) {
+            QByteArray ba = ke_choice->text().toLatin1();
+            const char *string = ba.constData();
+            v.set_string(string);
+        }
         ke_kwstruct->callback(state, &v);
     }
     else if (ke_kwstruct->type == VTYP_LIST) {
@@ -566,71 +736,26 @@ QTkwent::def_btn_slot()
             ke_entry->setText(ke_defstr);
         else if (ke_spbox)
             ke_spbox->setValue(atof(ke_defstr));
+        else if (ke_expsb)
+            ke_expsb->setValue(atof(ke_defstr));
     }
     else if (ke_spbox)
         ke_spbox->setValue(ke_val);
+    else if (ke_expsb)
+        ke_expsb->setValue(ke_val);
     if (ke_entry2)
         ke_entry2->setText(ke_defstr ? ke_defstr : "");
 }
 
 
 void
-QTkwent::up_btn_pressed_slot()
-{
-    if (ke_udcb)
-        (*ke_udcb)(ke_kwstruct, true, true);
-}
-
-
-void
-QTkwent::up_btn_released_slot()
-{
-    if (ke_udcb)
-        (*ke_udcb)(ke_kwstruct, true, false);
-}
-
-
-void
-QTkwent::down_btn_pressed_slot()
-{
-    if (ke_udcb)
-        (*ke_udcb)(ke_kwstruct, false, true);
-}
-
-
-void
-QTkwent::down_btn_released_slot()
-{
-    if (ke_udcb)
-        (*ke_udcb)(ke_kwstruct, false, false);
-}
-
-
-void
-QTkwent::val_changed_slot(const QString&)
+QTkwent::val_changed_slot(const QString &qstr)
 {
     // Set the "Def" button sensitive when the text is different from
     // the default text.
     //
-    xKWent *kwent = ke_kwstruct;
     if (ke_defstr && ke_active && !QTdev::GetStatus(ke_active)) {
-        QByteArray ba = ke_entry->text().toLatin1();
-        const char *str = ba.constData();
-        QByteArray ba2;
-        const char *str2 = 0;
-        if (ke_entry2) {
-            ba2 = ke_entry2->text().toLatin1();
-            str2 =  ba2.constData();
-        }
-        bool isdef = true;
-        if (strcmp(str, ke_defstr))
-            isdef = false;
-        else if (str2 && strcmp(str2, ke_defstr))
-            isdef = false;
-        if (isdef)
-            ke_deflt->setEnabled(false);
-        else
-            ke_deflt->setEnabled(true);
+        ke_deflt->setEnabled(qstr != ke_defstr);
     }
 }
 

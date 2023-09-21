@@ -294,10 +294,8 @@ QTrunopListDlg::mouse_press_slot(QMouseEvent *ev)
     int pos = cur.position();
 
     const char *lineptr = str;
-    int line = 0;
     for (int i = 0; i <= pos; i++) {
         if (str[i] == '\n') {
-            line++;
             if (i == pos) {
                 // Clicked to  right of line.
                 break;

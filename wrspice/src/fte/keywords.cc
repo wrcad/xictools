@@ -64,13 +64,11 @@ typedef void ParseNode;
 #endif
 
 
-typedef sKWent<userEnt> KWent;
+#define STR(x) #x
+#define STRINGIFY(x) STR(x)
 
 // Instantiate.
 cKeyWords KW;
-
-#define STR(x) #x
-#define STRINGIFY(x) STR(x)
 
 
 // Print a listing of option keywords and descriptions.
@@ -135,7 +133,7 @@ CommandTab::com_usrset(wordlist *wl)
             }
             continue;
         }
-        sKW *entry = (sKW*)sHtab::get(Sp.Options(), wl->wl_word);
+        Kword *entry = (Kword*)sHtab::get(Sp.Options(), wl->wl_word);
         if (entry)
             TTY.printf("%-18s %s %s\n", entry->word,
                 ((variable*)0)->typeString(entry->type), entry->descr);
@@ -172,7 +170,7 @@ cKeyWords::initDatabase()
 
 
 void
-sKW::print(sLstr *plstr)
+Kword::print(sLstr *plstr)
 {
     char buf[256];
     const char *fmt = "%-18s %s %s\n";
@@ -223,11 +221,11 @@ const char *kw_linplot          = "linplot";
 const char *kw_pointplot        = "pointplot";
 const char *kw_combplot         = "combplot";
 
-sKW *cKeyWords::KWpstyles[] = {
-    new sKW(kw_linplot, "Standard vector plotting."),
-    new sKW(kw_pointplot, "Plot data points only."),
-    new sKW(kw_combplot, "Produce a comb plot."),
-    new sKW(0, 0)
+Kword *cKeyWords::KWpstyles[] = {
+    new Kword(kw_linplot, "Standard vector plotting."),
+    new Kword(kw_pointplot, "Plot data points only."),
+    new Kword(kw_combplot, "Produce a comb plot."),
+    new Kword(0, 0)
 };
 
 // the gridstyle arguments
@@ -239,15 +237,15 @@ const char *kw_polar            = "polar";
 const char *kw_smith            = "smith";
 const char *kw_smithgrid        = "smithgrid";
 
-sKW *cKeyWords::KWgstyles[] = {
-    new sKW(kw_lingrid, "Use linear scales."),
-    new sKW(kw_xlog, "Use a log X scale."),
-    new sKW(kw_ylog, "Use a log Y scale."),
-    new sKW(kw_loglog, "Use log scales for X and Y."),
-    new sKW(kw_polar, "Plot on a polar grid."),
-    new sKW(kw_smith, "Plot on a Smith grid, transform data."),
-    new sKW(kw_smithgrid, "Plot on a Smith grid."),
-    new sKW(0, 0)
+Kword *cKeyWords::KWgstyles[] = {
+    new Kword(kw_lingrid, "Use linear scales."),
+    new Kword(kw_xlog, "Use a log X scale."),
+    new Kword(kw_ylog, "Use a log Y scale."),
+    new Kword(kw_loglog, "Use log scales for X and Y."),
+    new Kword(kw_polar, "Plot on a polar grid."),
+    new Kword(kw_smith, "Plot on a Smith grid, transform data."),
+    new Kword(kw_smithgrid, "Plot on a Smith grid."),
+    new Kword(0, 0)
 };
 
 // the scaletype arguments
@@ -255,11 +253,11 @@ const char *kw_multi            = "multi";
 const char *kw_single           = "single";
 const char *kw_group            = "group";
 
-sKW *cKeyWords::KWscale[] = {
-    new sKW(kw_multi, "Use individual Y scale for each trace."),
-    new sKW(kw_single, "Use a common Y scale for all traces."),
-    new sKW(kw_group, "Use common Y scale for V, I, and other."),
-    new sKW(0, 0)
+Kword *cKeyWords::KWscale[] = {
+    new Kword(kw_multi, "Use individual Y scale for each trace."),
+    new Kword(kw_single, "Use a common Y scale for all traces."),
+    new Kword(kw_group, "Use common Y scale for V, I, and other."),
+    new Kword(0, 0)
 };
 
 // plot window geometry
@@ -473,7 +471,7 @@ struct KWent_gridstyle : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.gstyles(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.gstyles(i)->word,
@@ -924,7 +922,7 @@ struct KWent_plotstyle : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.pstyles(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.pstyles(i)->word,
@@ -1058,7 +1056,7 @@ struct KWent_scaletype : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.scale(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.scale(i)->word,
@@ -1497,7 +1495,7 @@ struct KWent_ysep : public KWent
     }
 };
 
-sKW *cKeyWords::KWplot[] = {
+Kword *cKeyWords::KWplot[] = {
     new KWent_colorN(),
     new KWent_curanalysis(),
     new KWent_curplot(),
@@ -1543,7 +1541,7 @@ sKW *cKeyWords::KWplot[] = {
     new KWent_ylabel(),
     new KWent_ylimit(),
     new KWent_ysep(),
-    new sKW(0, 0)
+    new Kword(0, 0)
 };
 
 
@@ -1592,7 +1590,7 @@ struct KWent_color : public KWent
     }
 };
 
-sKW *cKeyWords::KWcolor[] = {
+Kword *cKeyWords::KWcolor[] = {
     new KWent_color(kw_color0, "Plot background."),
     new KWent_color(kw_color1, "Plot foreground."),
     new KWent_color(kw_color2, "Plot trace color."),
@@ -1613,7 +1611,7 @@ sKW *cKeyWords::KWcolor[] = {
     new KWent_color(kw_color17, ""),
     new KWent_color(kw_color18, ""),
     new KWent_color(kw_color19, ""),
-    new sKW(0,0)
+    new Kword(0,0)
 };
 
 
@@ -1674,7 +1672,7 @@ struct KWent_dbarg : public KWent
     }
 };
 
-sKW *cKeyWords::KWdbargs[] = {
+Kword *cKeyWords::KWdbargs[] = {
     new KWent_dbarg(kw_async, "Debug background simulations."),
     new KWent_dbarg(kw_control, "Debug control structures."),
     new KWent_dbarg(kw_cshpar, "Debug command interpreter."),
@@ -1685,7 +1683,7 @@ sKW *cKeyWords::KWdbargs[] = {
     new KWent_dbarg(kw_parser, "Debug input parsing."),
     new KWent_dbarg(kw_siminterface, "Debug simulation interface."),
     new KWent_dbarg(kw_vecdb, "Debug vector database."),
-    new sKW(0, 0)
+    new Kword(0, 0)
 };
 
 
@@ -1727,7 +1725,7 @@ struct KWent_debug : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.dbargs(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.dbargs(i)->word,
@@ -2200,7 +2198,7 @@ struct KWent_fpemode : public KWent
     }
 };
 
-sKW *cKeyWords::KWdebug[] = {
+Kword *cKeyWords::KWdebug[] = {
     new KWent_debug(),
     new KWent_display(),
     new KWent_dontplot(),
@@ -2217,7 +2215,7 @@ sKW *cKeyWords::KWdebug[] = {
     new KWent_term(),
     new KWent_trantrace(),
     new KWent_fpemode(),
-    new sKW(0, 0)
+    new Kword(0, 0)
 };
 
 
@@ -2229,10 +2227,10 @@ sKW *cKeyWords::KWdebug[] = {
 const char *kw_ascii            = "ascii";
 const char *kw_binary           = "binary";
 
-sKW *cKeyWords::KWft[] = {
-    new sKW(kw_ascii, "Ascii rawfile."),
-    new sKW(kw_binary, "Binary rawfile."),
-    new sKW(0, 0)
+Kword *cKeyWords::KWft[] = {
+    new Kword(kw_ascii, "Ascii rawfile."),
+    new Kword(kw_binary, "Binary rawfile."),
+    new Kword(0, 0)
 };
 
 // level arguments
@@ -2240,11 +2238,11 @@ const char *kw_i                = "i";
 const char *kw_b                = "b";
 const char *kw_a                = "a";
 
-sKW *cKeyWords::KWlevel[] = {
-    new sKW(kw_i, "Intermediate level for help."),
-    new sKW(kw_b, "Beginner level for help."),
-    new sKW(kw_a, "Advanced level for help."),
-    new sKW(0, 0)
+Kword *cKeyWords::KWlevel[] = {
+    new Kword(kw_i, "Intermediate level for help."),
+    new Kword(kw_b, "Beginner level for help."),
+    new Kword(kw_a, "Advanced level for help."),
+    new Kword(0, 0)
 };
 
 // specwindow arguments
@@ -2258,27 +2256,27 @@ const char *kw_none             = "none";
 const char *kw_rectangular      = "rectangular";
 const char *kw_triangle         = "triangle";
 
-sKW *cKeyWords::KWspec[] = {
-    new sKW(kw_bartlet,   "Bartlet (triangle) window."),
-    new sKW(kw_blackman,  "Blackman order 2 window."),
-    new sKW(kw_cosine,    "Hanning (cosine) window."),
-    new sKW(kw_gaussian,  "Gaussian window."),
-    new sKW(kw_hamming,   "Hamming window."),
-    new sKW(kw_hanning,   "Hanning (cosine) window."),
-    new sKW(kw_none,      "No windowing."),
-    new sKW(kw_rectangular,"Rectangular window."),
-    new sKW(kw_triangle,  "Bartlet (triangle) window."),
-    new sKW(0, 0)
+Kword *cKeyWords::KWspec[] = {
+    new Kword(kw_bartlet,   "Bartlet (triangle) window."),
+    new Kword(kw_blackman,  "Blackman order 2 window."),
+    new Kword(kw_cosine,    "Hanning (cosine) window."),
+    new Kword(kw_gaussian,  "Gaussian window."),
+    new Kword(kw_hamming,   "Hamming window."),
+    new Kword(kw_hanning,   "Hanning (cosine) window."),
+    new Kword(kw_none,      "No windowing."),
+    new Kword(kw_rectangular,"Rectangular window."),
+    new Kword(kw_triangle,  "Bartlet (triangle) window."),
+    new Kword(0, 0)
 };
 
 // units arguments
 const char *kw_radians          = "radians";
 const char *kw_degrees          = "degrees";
 
-sKW *cKeyWords::KWunits[] = {
-    new sKW(kw_radians, "Trig functions use radians."),
-    new sKW(kw_degrees, "Trig functions use degrees."),
-    new sKW(0, 0)
+Kword *cKeyWords::KWunits[] = {
+    new Kword(kw_radians, "Trig functions use radians."),
+    new Kword(kw_degrees, "Trig functions use degrees."),
+    new Kword(0, 0)
 };
 
 // the command configuration keywords
@@ -2537,7 +2535,7 @@ struct KWent_filetype : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.ft(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.ft(i)->word,
@@ -2705,7 +2703,7 @@ struct KWent_level : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.level(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.level(i)->word,
@@ -3125,7 +3123,7 @@ struct KWent_specwindow : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.spec(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.spec(i)->word,
@@ -3214,7 +3212,7 @@ struct KWent_units : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.units(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.units(i)->word,
@@ -3273,7 +3271,7 @@ struct KWent_xicpath : public KWent
     }
 };
 
-sKW *cKeyWords::KWcmds[] = {
+Kword *cKeyWords::KWcmds[] = {
     new KWent_appendwrite(),
     new KWent_checkiterate(),
     new KWent_diff_abstol(),
@@ -3315,7 +3313,7 @@ sKW *cKeyWords::KWcmds[] = {
     new KWent_spicepath(),
     new KWent_units(),
     new KWent_xicpath(),
-    new sKW(0, 0)
+    new Kword(0, 0)
 };
 
 
@@ -3737,7 +3735,7 @@ struct KWent_wmfocusfix : public KWent
     }
 };
 
-sKW *cKeyWords::KWshell[] = {
+Kword *cKeyWords::KWshell[] = {
     new KWent_cktvars(),
     new KWent_height(),
     new KWent_history(),
@@ -3757,7 +3755,7 @@ sKW *cKeyWords::KWshell[] = {
     new KWent_unixcom(),
     new KWent_width(),
     new KWent_wmfocusfix(),
-    new sKW(0, 0)
+    new Kword(0, 0)
 };
 
 
@@ -3767,39 +3765,39 @@ sKW *cKeyWords::KWshell[] = {
 
 // the method arguments
 
-sKW *cKeyWords::KWmethod[] = {
-    new sKW(spkw_trap, "Trapezoidal integration."),
-    new sKW(spkw_gear, "Gear integration."),
-    new sKW(0, 0)
+Kword *cKeyWords::KWmethod[] = {
+    new Kword(spkw_trap, "Trapezoidal integration."),
+    new Kword(spkw_gear, "Gear integration."),
+    new Kword(0, 0)
 };
 
 // the optmerge arguments
 
-sKW *cKeyWords::KWoptmerge[] = {
-    new sKW(spkw_global, "Shell variables override .options."),
-    new sKW(spkw_local, "Shell variables are overridden by .options."),
-    new sKW(spkw_noshell, "Shell variables are ignored."),
-    new sKW(0, 0)
+Kword *cKeyWords::KWoptmerge[] = {
+    new Kword(spkw_global, "Shell variables override .options."),
+    new Kword(spkw_local, "Shell variables are overridden by .options."),
+    new Kword(spkw_noshell, "Shell variables are ignored."),
+    new Kword(0, 0)
 };
 
-sKW *cKeyWords::KWparhier[] = {
-    new sKW(spkw_global, "Global parameter definitions override local."),
-    new sKW(spkw_local, "Local parameter definitions override global."),
-    new sKW(0, 0)
+Kword *cKeyWords::KWparhier[] = {
+    new Kword(spkw_global, "Global parameter definitions override local."),
+    new Kword(spkw_local, "Local parameter definitions override global."),
+    new Kword(0, 0)
 };
 
 // the steptype arguments
 
-sKW *cKeyWords::KWstep[] = {
-    new sKW(spkw_interpolate,
+Kword *cKeyWords::KWstep[] = {
+    new Kword(spkw_interpolate,
         "Interpolate user time steps during transient analysis."),
-    new sKW(spkw_hitusertp,
+    new Kword(spkw_hitusertp,
         "Perform transient analysis at user timepoints."),
-    new sKW(spkw_nousertp,
+    new Kword(spkw_nousertp,
         "Output raw time points in transient analysis."),
-    new sKW(spkw_fixedstep,
+    new Kword(spkw_fixedstep,
         "Force internal time delta = transient analysis step."),
-    new sKW(0, 0)
+    new Kword(0, 0)
 };
 
 // Spice option keywords
@@ -5214,7 +5212,7 @@ struct KWent_method : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.method(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.method(i)->word,
@@ -5257,7 +5255,7 @@ struct KWent_optmerge : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.optmerge(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.optmerge(i)->word,
@@ -5300,7 +5298,7 @@ struct KWent_parhier : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.parhier(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.parhier(i)->word,
@@ -5343,7 +5341,7 @@ struct KWent_steptype : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.step(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.step(i)->word,
@@ -5498,7 +5496,7 @@ struct KWent_submaps : public KWent
 
     void print(sLstr *plstr)
     {
-        sKW::print(plstr);
+        Kword::print(plstr);
         char buf[256];
         for (int i = 0; KW.parhier(i)->word; i++) {
             snprintf(buf, sizeof(buf), fmt2, KW.parhier(i)->word,
@@ -5525,7 +5523,7 @@ struct KWent_submaps : public KWent
 // End of boolean-valued options.
 
 
-sKW *cKeyWords::KWsim[] = {
+Kword *cKeyWords::KWsim[] = {
     new KWent_abstol(),
     new KWent_bypass(),
     new KWent_chgtol(),
@@ -5671,6 +5669,6 @@ sKW *cKeyWords::KWsim[] = {
     new KWent_substart(),
     new KWent_submaps(),
 */
-    new sKW(0, 0)
+    new Kword(0, 0)
 };
 

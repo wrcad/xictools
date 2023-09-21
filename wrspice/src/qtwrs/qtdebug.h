@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTSIM_H
-#define QTSIM_H
+#ifndef QTDEBUG_H
+#define QTDEBUG_H
 
 #include "qtkwent.h"
 
@@ -47,29 +47,30 @@
 
 
 /**************************************************************************
- * Simulation parameter setting dialog.
+ * Debug parameter setting dialog.
  **************************************************************************/
 
 class QTabWidget;
 
-class QTsimParamDlg : public QDialog
+class QTdebugParamDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    QTsimParamDlg(int, int);
-    ~QTsimParamDlg();
+    QTdebugParamDlg(int, int);
+    ~QTdebugParamDlg();
 
-    static QTsimParamDlg *self()        { return (instPtr); }
+    static QTdebugParamDlg *self()      { return (instPtr); }
 
 private slots:
     void dismiss_btn_slot();
     void help_btn_slot(bool);
+    void set_btn_slot(int);
 
 private:
-    QTabWidget *si_notebook;
+    xKWent *db_dbent;
 
-    static QTsimParamDlg *instPtr;
+    static QTdebugParamDlg *instPtr;
 };
 
 #endif

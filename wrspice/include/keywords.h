@@ -49,12 +49,12 @@
 //
 
 // Basic keyword.
-struct sKW
+struct Kword
 {
-    sKW() { }
-    sKW(const char *w, const char *d)
+    Kword() { }
+    Kword(const char *w, const char *d)
         { word = w; descr = d; type = VTYP_NONE; }
-    virtual ~sKW () { }
+    virtual ~Kword () { }
     virtual void print(sLstr*);
 
     const char *word;
@@ -66,12 +66,12 @@ struct userEnt
 {
     virtual ~userEnt() { }
 
-    virtual void callback(bool, variable*) { }
+    virtual void callback(bool, variable*) = 0;
 };
 
-template<class T> struct sKWent : public sKW
+struct KWent : public Kword
 {
-    sKWent(const char *w=0, VTYPenum t=VTYP_NONE, const char *d=0)
+    KWent(const char *w=0, VTYPenum t=VTYP_NONE, const char *d=0)
         { set(w, t, 0.0, 0.0, d); lastv1 = lastv2 = 0; ent = 0; }
     void set(const char *w, VTYPenum t, double mi, double mx, const char *d)
         { word = w; type = t; min = mi; max = mx; descr = d; }
@@ -84,7 +84,7 @@ template<class T> struct sKWent : public sKW
     double min, max;     // for numeric variables
     const char *lastv1;  // previous value set, for graphics
     const char *lastv2;  // previous value set, for graphics
-    T *ent;              // used in graphics subsystem
+    userEnt *ent;        // used in graphics subsystem
 };
 
 class cKeyWords
@@ -92,44 +92,43 @@ class cKeyWords
 public:
     void initDatabase();
 
-    sKW *pstyles(int i)     { return (KWpstyles[i]); }
-    sKW *gstyles(int i)     { return (KWgstyles[i]); }
-    sKW *scale(int i)       { return (KWscale[i]); }
-    sKW *plot(int i)        { return (KWplot[i]); }
-    sKW *color(int i)       { return (KWcolor[i]); }
-    sKW *dbargs(int i)      { return (KWdbargs[i]); }
-    sKW *debug(int i)       { return (KWdebug[i]); }
-    sKW *ft(int i)          { return (KWft[i]); }
-    sKW *level(int i)       { return (KWlevel[i]); }
-    sKW *units(int i)       { return (KWunits[i]); }
-    sKW *spec(int i)        { return (KWspec[i]); }
-    sKW *cmds(int i)        { return (KWcmds[i]); }
-    sKW *shell(int i)       { return (KWshell[i]); }
-    sKW *step(int i)        { return (KWstep[i]); }
-    sKW *method(int i)      { return (KWmethod[i]); }
-    sKW *optmerge(int i)    { return (KWoptmerge[i]); }
-    sKW *parhier(int i)     { return (KWparhier[i]); }
-    sKW *sim(int i)         { return (KWsim[i]); }
+    Kword *pstyles(int i)     { return (KWpstyles[i]); }
+    Kword *gstyles(int i)     { return (KWgstyles[i]); }
+    Kword *scale(int i)       { return (KWscale[i]); }
+    Kword *plot(int i)        { return (KWplot[i]); }
+    Kword *color(int i)       { return (KWcolor[i]); }
+    Kword *dbargs(int i)      { return (KWdbargs[i]); }
+    Kword *debug(int i)       { return (KWdebug[i]); }
+    Kword *ft(int i)          { return (KWft[i]); }
+    Kword *level(int i)       { return (KWlevel[i]); }
+    Kword *units(int i)       { return (KWunits[i]); }
+    Kword *spec(int i)        { return (KWspec[i]); }
+    Kword *cmds(int i)        { return (KWcmds[i]); }
+    Kword *shell(int i)       { return (KWshell[i]); }
+    Kword *step(int i)        { return (KWstep[i]); }
+    Kword *method(int i)      { return (KWmethod[i]); }
+    Kword *optmerge(int i)    { return (KWoptmerge[i]); }
+    Kword *parhier(int i)     { return (KWparhier[i]); }
+    Kword *sim(int i)         { return (KWsim[i]); }
 
-private:
-    static sKW *KWpstyles[];
-    static sKW *KWgstyles[];
-    static sKW *KWscale[];
-    static sKW *KWplot[];
-    static sKW *KWcolor[];
-    static sKW *KWdbargs[];
-    static sKW *KWdebug[];
-    static sKW *KWft[];
-    static sKW *KWlevel[];
-    static sKW *KWunits[];
-    static sKW *KWspec[];
-    static sKW *KWcmds[];
-    static sKW *KWshell[];
-    static sKW *KWstep[];
-    static sKW *KWmethod[];
-    static sKW *KWoptmerge[];
-    static sKW *KWparhier[];
-    static sKW *KWsim[];
+    static Kword *KWpstyles[];
+    static Kword *KWgstyles[];
+    static Kword *KWscale[];
+    static Kword *KWplot[];
+    static Kword *KWcolor[];
+    static Kword *KWdbargs[];
+    static Kword *KWdebug[];
+    static Kword *KWft[];
+    static Kword *KWlevel[];
+    static Kword *KWunits[];
+    static Kword *KWspec[];
+    static Kword *KWcmds[];
+    static Kword *KWshell[];
+    static Kword *KWstep[];
+    static Kword *KWmethod[];
+    static Kword *KWoptmerge[];
+    static Kword *KWparhier[];
+    static Kword *KWsim[];
 };
 
 extern cKeyWords KW;

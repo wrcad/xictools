@@ -209,11 +209,8 @@ public:
     static void FixLoc(int*, int*);
     static char *ConfigString();
 
-/*
     // gtkcolor.cc
     const char *XRMgetFromDb(const char*);
-*/
-
 
 /*XXX
     GtkWidget *TextPop(int, int, const char*, const char*,

@@ -287,12 +287,6 @@ bad:
     delete [] startup_filename;
     delete [] bkfile;
 }
-
-
-void
-CommandTab::com_setrdb(wordlist*)
-{
-}
 // End of CommandTab functions.
 
 
@@ -397,32 +391,6 @@ QTtoolbar::RegisterBigForeignWindow(unsigned int w)
 //    if (QTdev::exists())
 //        QTdev::self()->RegisterBigForeignWindow(w);
 }
-
-// command defaults dialog
-// gtkcmds.cc
-void QTtoolbar::PopUpCmdConfig(ShowMode, int, int) { }
-
-// color control dialog
-// gtkcolor.cc
-void QTtoolbar::PopUpColors(ShowMode, int, int) { }
-void QTtoolbar::UpdateColors(const char*) { }
-void QTtoolbar::LoadResourceColors() { }
-
-// debugging dialog
-// gtkdebug.cc
-void QTtoolbar::PopUpDebugDefs(ShowMode, int, int) { }
-
-// plot defaults dialog
-// gtkpldef.cc
-void QTtoolbar::PopUpPlotDefs(ShowMode, int, int) { }
-
-// shell defaults dialog
-// gtkshell.cc
-void QTtoolbar::PopUpShellDefs(ShowMode, int, int) { }
-
-// simulation defaults dialog
-// gtksim.cc
-//void QTtoolbar::PopUpSimDefs(ShowMode, int, int) { }
 
 
 void

@@ -46,13 +46,13 @@
 
 //----------------------------------------------------------------------------
 // A Double Spin Box that uses exponential notation.
-//  INCOMPLETE! XXX FIXME
 
-class ExpDoubleSpinbox : public QDoubleSpinBox
+class QTexpDoubleSpinBox : public QDoubleSpinBox
 {
-    Q_OBJECT
 public:
-    explicit ExpDoubleSpinbox(QWidget *parent = 0) : QDoubleSpinBox(parent) {}
+    explicit QTexpDoubleSpinBox(QWidget *parent = nullptr) :
+        QDoubleSpinBox(parent) { }
+    ~QTexpDoubleSpinBox() { }
 
     double valueFromText(const QString & text) const
     {
@@ -66,7 +66,8 @@ public:
 
     QString textFromValue(double value) const
     {
-        const char *str = SPnum.printnum(value, 0, true, decimals());
+        const char *str = SPnum.printnum(value, (const char*)0, true,
+            decimals());
         return (QString(str));
     }
 
@@ -80,4 +81,4 @@ public:
     }
 };
 
-#endifo
+#endif

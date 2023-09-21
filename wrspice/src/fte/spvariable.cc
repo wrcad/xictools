@@ -111,8 +111,7 @@ IFsimulator::SetVar(const char *varname)
         variable v;
         v.set_boolean(true);
 
-        sKWent<userEnt> *entry =
-            static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
+        KWent *entry = static_cast<KWent*>(sHtab::get(ft_options, vname));
         if (entry) {
             entry->callback(true, &v);
             delete [] vname;
@@ -146,8 +145,7 @@ IFsimulator::SetVar(const char *varname, int value)
         variable v;
         v.set_integer(value);
 
-        sKWent<userEnt> *entry =
-            static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
+        KWent *entry = static_cast<KWent*>(sHtab::get(ft_options, vname));
         if (entry) {
             entry->callback(true, &v);
             delete [] vname;
@@ -181,8 +179,7 @@ IFsimulator::SetVar(const char *varname, double value)
         variable v;
         v.set_real(value);
 
-        sKWent<userEnt> *entry =
-            static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
+        KWent *entry = static_cast<KWent*>(sHtab::get(ft_options, vname));
         if (entry) {
             entry->callback(true, &v);
             delete [] vname;
@@ -214,8 +211,7 @@ IFsimulator::SetVar(const char *varname, const char *value)
         variable v;
         v.set_string(value);
 
-        sKWent<userEnt> *entry =
-            static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
+        KWent *entry = static_cast<KWent*>(sHtab::get(ft_options, vname));
         if (entry) {
             entry->callback(true, &v);
             delete [] vname;
@@ -248,8 +244,7 @@ IFsimulator::SetVar(const char *varname, variable *value)
         // The list is not copied, caller must not free!
         v.set_list(value);
 
-        sKWent<userEnt> *entry =
-            static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
+        KWent *entry = static_cast<KWent*>(sHtab::get(ft_options, vname));
         if (entry) {
             entry->callback(true, &v);
             delete [] vname;
@@ -967,8 +962,7 @@ IFsimulator::RemVar(const char *varname)
     char vname[BSIZE_SP];
     strcpy(vname, varname);
     CP.Unquote(vname);
-    sKWent<userEnt> *entry =
-        static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
+    KWent *entry = static_cast<KWent*>(sHtab::get(ft_options, vname));
     if (entry) {
         entry->callback(false, 0);
         return;

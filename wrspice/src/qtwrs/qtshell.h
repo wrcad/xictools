@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTSIM_H
-#define QTSIM_H
+#ifndef QTSHELL_H
+#define QTSHELL_H
 
 #include "qtkwent.h"
 
@@ -47,29 +47,28 @@
 
 
 /**************************************************************************
- * Simulation parameter setting dialog.
+ * Shell parameter setting dialog.
  **************************************************************************/
 
-class QTabWidget;
-
-class QTsimParamDlg : public QDialog
+class QTshellParamDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    QTsimParamDlg(int, int);
-    ~QTsimParamDlg();
+    QTshellParamDlg(int, int);
+    ~QTshellParamDlg();
 
-    static QTsimParamDlg *self()        { return (instPtr); }
+    static QTshellParamDlg *self()      { return (instPtr); }
 
 private slots:
     void dismiss_btn_slot();
     void help_btn_slot(bool);
 
 private:
-    QTabWidget *si_notebook;
+    static void sourcepath_func(bool, variable*, void*);
+    static char *get_sourcepath();
 
-    static QTsimParamDlg *instPtr;
+    static QTshellParamDlg *instPtr;
 };
 
 #endif

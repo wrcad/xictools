@@ -46,29 +46,96 @@
 #include "variable.h"
 #include "keywords.h"
 
-#include <QGroupBox>
 
+//----------------------------------------------------------------------------
+// A Double Spin Box that uses exponential notation.
+
+#include <QDoubleSpinBox>
+#include "spnumber/spnumber.h"
+
+class QTexpDoubleSpinBox : public QDoubleSpinBox
+{
+public:
+    explicit QTexpDoubleSpinBox(QWidget *parent = nullptr) :
+        QDoubleSpinBox(parent)
+    {
+        QDoubleSpinBox::setDecimals(400);
+    }
+    ~QTexpDoubleSpinBox() { }
+
+    // This is subtle:  there is a hard-coded round function in
+    // QDoubleSpinBox that is used in setValue that will round the
+    // values to zero if the negative exponent is too large.  A way
+    // around this is to set the decimals value to something large
+    // (see source code).  We implement our own decimals for
+    // significant figs display.
+
+    int decimals() const        { return (d_decimals); }
+    void setDecimals(int d)     { d_decimals = d; }
+
+    // Virtual overrides.
+    void stepBy(int);
+    double valueFromText(const QString & text) const;
+    QString textFromValue(double value) const;
+    QValidator::State validate(QString &text, int&) const;
+
+private:
+    int d_decimals;
+};
+
+
+//----------------------------------------------------------------------------
+// A string Spin Box that is used for keyword choice selection.
+
+#include <QGroupBox>
+#include <QSpinBox>
 
 class QCheckBox;
 class QPushButton;
 class QLineEdit;
-class QDoubleSpinBox;
 class QTkwent;
 
-typedef sKWent<QTkwent> xKWent;
+class QTchoiceSpinBox : public QSpinBox
+{
+public:
+    explicit QTchoiceSpinBox(QWidget *parent = nullptr) : QSpinBox(parent) { }
+    ~QTchoiceSpinBox() { }
+
+    // Overrides
+    QString textFromValue(int) const;
+    int valueFromText(const QString&) const;
+    QValidator::State validate(QString&, int&) const;
+
+    QStringList *entries()      { return (&csb_entries); }
+
+private:
+    QStringList csb_entries;  // List of words.
+};
+
+
+//----------------------------------------------------------------------------
+// The keyword entry area used in the panels and pages to set variables.
+// Lots of options.
+
+// Wrapper to access KWent::ent cleanly.
+//
+struct xKWent : public KWent
+{
+    inline QTkwent *qtent();
+};
+
 typedef void(*EntryCallback)(bool, variable*, void*);
-typedef void(*UpDnCallback)(xKWent*, bool, bool);
 
 enum EntryMode { KW_NORMAL, KW_INT_2, KW_REAL_2, KW_FLOAT, KW_NO_SPIN,
     KW_NO_CB, KW_STR_PICK };
 
-// KW_NORMAL       Normal mode (regular spin button or entry)
-// KW_INT_2        Use two integer fields (min/max)
-// KW_REAL_2       Use two real fields (min/max)
-// KW_FLOAT        Use exponential notation
-// KW_NO_SPIN      Numeric entry but no adjustment
-// KW_NO_CB        Special callbacks for debug popup
-// KW_STR_PICK     String selection - callback arg passed to
+// KW_NORMAL       Normal mode (regular spin button or entry).
+// KW_INT_2        Use two integer fields (min/max).
+// KW_REAL_2       Use two real fields (min/max).
+// KW_FLOAT        Use exponential notation, one field only.
+// KW_NO_SPIN      Numeric entry but no adjustment.
+// KW_NO_CB        Special callbacks for debug popup.
+// KW_STR_PICK     String selection, one field only.
 
 
 // Class used in the keyword entry dialogs.
@@ -78,24 +145,13 @@ class QTkwent : public QGroupBox, public userEnt
     Q_OBJECT
 
 public:
-    QTkwent(EntryMode, EntryCallback, xKWent*, const char*, UpDnCallback = 0);
+    QTkwent(EntryMode, EntryCallback, xKWent*, const char*, Kword** = 0);
     virtual ~QTkwent();
 
-    void callback(bool isset, variable *v)
-    {
-        if (ke_update)
-            (*ke_update)(isset, v, this);
-    }
+    // userEnt virtual override
+    void callback(bool, variable*);
 
-    void setup(double v, double d, double p, double r, int n)
-    {
-        ke_val = v;
-        ke_del = d;
-        ke_pgsize = p;
-        ke_rate = r;
-        ke_numd = n;
-    }
-
+    void setup(double, double, double, double, int);
     void set_state(bool);
 
     // Global callback functions for generic data.
@@ -105,22 +161,19 @@ public:
     static void ke_string_func(bool, variable*, void*);
     static void ke_float_hdlr(xKWent*, bool, bool);
 
+    QCheckBox *active()         { return (ke_active); }
+    QLineEdit *entry()          { return (ke_entry); }
+    QLineEdit *entry2()         { return (ke_entry2); }
+    QTchoiceSpinBox *choice()   { return (ke_choice); }
+    xKWent *kwstruct()          { return (ke_kwstruct); }
+
 private slots:
     void set_btn_slot(int);
     void def_btn_slot();
-    void up_btn_pressed_slot();
-    void up_btn_released_slot();
-    void down_btn_pressed_slot();
-    void down_btn_released_slot();
     void val_changed_slot(const QString&);
 
 private:
-    void bump();
-    static int repeat_timer(void*);
-    static int delay_timer(void*);
-
     EntryCallback ke_update;
-    UpDnCallback ke_udcb;
     xKWent      *ke_kwstruct;
 
     double      ke_val;                 // spin box numeric values
@@ -129,19 +182,21 @@ private:
     double      ke_rate;                // spin button parameters
     int         ke_numd;                // fraction digits shown
     int         ke_thandle;             // timer handle
-    bool        ke_down;                // decrement flag
     EntryMode   ke_mode;                // operating mode
     const char  *ke_defstr;             // default string
 
     QCheckBox   *ke_active;             // "set" check box
     QPushButton *ke_deflt;              // "def" button
-    QLineEdit   *ke_entry;              // string entry area
-    QLineEdit   *ke_entry2;             // string entry area
+    QLineEdit   *ke_entry;              // entry area
+    QLineEdit   *ke_entry2;             // second entry area
     QDoubleSpinBox *ke_spbox;           // spin box
     QDoubleSpinBox *ke_spbox2;          // second spin box
-    QPushButton *ke_upbtn;              // choice up button
-    QPushButton *ke_dnbtn;              // choice down button
+    QTchoiceSpinBox *ke_choice;         // for keyword choice
+    QTexpDoubleSpinBox *ke_expsb;       // for exponential input spin box
 };
+
+inline QTkwent *
+xKWent::qtent()     { return (dynamic_cast<QTkwent*>(ent)); }
 
 #endif
 

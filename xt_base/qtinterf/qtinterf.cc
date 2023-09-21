@@ -537,24 +537,33 @@ QTdev::Deselect(GRobject obj)
     if (o->isWidgetType()) {
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
         if (btn && btn->isCheckable()) {
+            btn->blockSignals(true);
             btn->setChecked(false);
+            btn->blockSignals(false);
             return;
         }
         QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
         if (cb) {
+            cb->blockSignals(true);
             cb->setChecked(false);
+            cb->blockSignals(false);
             return;
         }
         QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
         if (rb) {
+            rb->blockSignals(true);
             rb->setChecked(false);
+            rb->blockSignals(false);
             return;
         }
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
-        if (a && a->isCheckable())
+        if (a && a->isCheckable()) {
+            a->blockSignals(true);
             a->setChecked(false);
+            a->blockSignals(false);
+        }
     }
 }
 
@@ -571,24 +580,33 @@ QTdev::Select(GRobject obj)
     if (o->isWidgetType()) {
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
         if (btn && btn->isCheckable()) {
+            btn->blockSignals(true);
             btn->setChecked(true);
+            btn->blockSignals(false);
             return;
         }
         QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
         if (cb) {
+            cb->blockSignals(true);
             cb->setChecked(true);
+            cb->blockSignals(false);
             return;
         }
         QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
         if (rb) {
+            rb->blockSignals(true);
             rb->setChecked(true);
+            rb->blockSignals(false);
             return;
         }
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
-        if (a && a->isCheckable())
+        if (a && a->isCheckable()) {
+            a->blockSignals(true);
             a->setChecked(true);
+            a->blockSignals(false);
+        }
     }
 }
 
@@ -635,24 +653,33 @@ QTdev::SetStatus(GRobject obj, bool state)
     if (o->isWidgetType()) {
         QPushButton *btn = dynamic_cast<QPushButton*>(o);
         if (btn && btn->isCheckable()) {
+            btn->blockSignals(true);
             btn->setChecked(state);
+            btn->blockSignals(false);
             return;
         }
         QCheckBox *cb = dynamic_cast<QCheckBox*>(o);
         if (cb) {
+            cb->blockSignals(true);
             cb->setChecked(state);
+            cb->blockSignals(false);
             return;
         }
         QRadioButton *rb = dynamic_cast<QRadioButton*>(o);
         if (rb) {
+            rb->blockSignals(true);
             rb->setChecked(state);
+            rb->blockSignals(false);
             return;
         }
     }
     else {
         QAction *a = dynamic_cast<QAction*>(o);
-        if (a && a->isCheckable())
+        if (a && a->isCheckable()) {
+            a->blockSignals(true);
             a->setChecked(state);
+            a->blockSignals(false);
+        }
     }
 }
 

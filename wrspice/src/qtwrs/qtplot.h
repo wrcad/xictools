@@ -132,8 +132,7 @@ private slots:
     void print_btn_slot(bool);
     void saveplt_btn_slot();
     void savepr_btn_slot();
-    void points_btn_slot(bool);
-    void comb_btn_slot(bool);
+    void ptype_btn_slot(bool);
     void logx_btn_slot(bool);
     void logy_btn_slot(bool);
     void marker_btn_slot(bool);

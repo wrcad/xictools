@@ -199,7 +199,7 @@ QTplotDlg::init(sGraph *gr)
 
     // set up viewport
     gd_viewport = new QTcanvas();
-    hbox->addWidget(Viewport(), 0, 0);
+    hbox->addWidget(Viewport());
     Gbag()->set_draw_if(gd_viewport);
     Viewport()->setFocusPolicy(Qt::StrongFocus);
 
@@ -286,6 +286,9 @@ QTplotDlg::init(sGraph *gr)
     gr->set_fontsize();
     gr->area().set_width(Viewport()->width());
     gr->area().set_height(Viewport()->height());
+
+    Clear();
+    pb_graph->gr_redraw();
 
     return (false);
 }
@@ -384,7 +387,7 @@ QTplotDlg::init_gbuttons()
             btn->setToolTip(tr("Plot data as points"));
             pb_checkwins[pbtn_points] = btn;
             connect(btn, SIGNAL(toggled(bool)),
-                this, SLOT(points_btn_slot(bool)));
+                this, SLOT(ptype_btn_slot(bool)));
         }
 
         if (!pb_checkwins[pbtn_comb]) {
@@ -398,7 +401,7 @@ QTplotDlg::init_gbuttons()
             btn->setToolTip(tr("Plot data as histogram"));
             pb_checkwins[pbtn_comb] = btn;
             connect(btn, SIGNAL(toggled(bool)),
-                this, SLOT(comb_btn_slot(bool)));
+                this, SLOT(ptype_btn_slot(bool)));
         }
 
         if (pb_graph->rawdata().xmin > 0) {
@@ -906,6 +909,9 @@ QTplotDlg::resize_slot(QResizeEvent*)
     pb_graph->area().set_width(Viewport()->width());
     pb_graph->area().set_height(Viewport()->height());
     pb_graph->gr_abort();
+    pb_graph->gr_pkg_init_colors();
+    Clear();
+    pb_graph->gr_redraw();
 }
 
 
@@ -920,7 +926,7 @@ QTplotDlg::button_down_slot(QMouseEvent *ev)
 {
     if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
         return;
-    /*
+    /*XXX
     GdkEventButton *buttonev = &event->button;
     sGraph *graph = static_cast<sGraph*>(client_data);
 
@@ -957,7 +963,7 @@ QTplotDlg::button_up_slot(QMouseEvent*)
 {
     if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
         return;
-    /*
+    /*XXX
     GdkEventButton *buttonev = &event->button;
     sGraph *graph = static_cast<sGraph*>(client_data);
     int button = 0;
@@ -989,7 +995,7 @@ QTplotDlg::button_up_slot(QMouseEvent*)
 void
 QTplotDlg::motion_slot(QMouseEvent*)
 {
-    /*
+    /*XXX
     if (Gbag()->showing_ghost()) {
         if (pb_id) {
             g_source_remove(pb_id);
@@ -1009,7 +1015,7 @@ QTplotDlg::motion_slot(QMouseEvent*)
 void
 QTplotDlg::key_down_slot(QKeyEvent*)
 {
-    /*
+    /*XXX
     sGraph *graph = static_cast<sGraph*>(client_data);
     GdkEventKey *kev = &event->key;
     int keyval = kev->keyval;
@@ -1075,39 +1081,31 @@ QTplotDlg::key_up_slot(QKeyEvent*)
 void
 QTplotDlg::enter_slot(QEnterEvent*)
 {
-    /*
     // pointer entered a drawing window
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
-    gtk_widget_set_can_focus(caller, true);
-    gtk_window_set_focus(GTK_WINDOW(w->Shell()), caller);
-    if (GP.SourceGraph() && graph != GP.SourceGraph()) {
+//XXX    gtk_widget_set_can_focus(caller, true);
+//XXX    gtk_window_set_focus(GTK_WINDOW(w->Shell()), caller);
+    if (GP.SourceGraph() && pb_graph != GP.SourceGraph()) {
         // hack a ghost for move/copy
-        w->Gbag()->set_ghost_func(dynamic_cast<QTplotDlg*>(
+        Gbag()->set_ghost_func(dynamic_cast<QTplotDlg*>(
             GP.SourceGraph()->dev())->Gbag()->get_ghost_func());
     }
-    graph->dev()->ShowGhost(true);
-    */
+    ShowGhost(true);
 }
 
 
 void
 QTplotDlg::leave_slot(QEvent*)
 {
-    /*
     // pointer left the drawing window
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
-    if (w->Gbag()->has_ghost()) {
-        GP.PushGraphContext(graph);
-        w->ShowGhost(false);
+    if (Gbag()->has_ghost()) {
+        GP.PushGraphContext(pb_graph);
+        ShowGhost(false);
         GP.PopGraphContext();
     }
-    if (GP.SourceGraph() && graph != GP.SourceGraph()) {
+    if (GP.SourceGraph() && pb_graph != GP.SourceGraph()) {
         // remove hacked ghost
-        w->Gbag()->set_ghost_func(0);
+        Gbag()->set_ghost_func(0);
     }
-    */
 }
 
 
@@ -1183,40 +1181,30 @@ QTplotDlg::savepr_btn_slot()
 
 
 void
-QTplotDlg::points_btn_slot(bool)
+QTplotDlg::ptype_btn_slot(bool)
 {
-    // handle points and combplot modes
-    /*
-    GtkWidget *pts = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
-        "points");
-    GtkWidget *cmb = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
-        "combplot");
+    // handle points and comb modes
+    QPushButton *pts = pb_checkwins[pbtn_points];
+    QPushButton *cmb = pb_checkwins[pbtn_comb];
     if (pts && cmb) {
         bool ptson = QTdev::GetStatus(pts);
         bool cmbon = QTdev::GetStatus(cmb);
 
         if (!ptson && !cmbon)
-            graph->set_plottype(PLOT_LIN);
-        else if (caller == pts) {
+            pb_graph->set_plottype(PLOT_LIN);
+        else if (sender() == pts) {
             if (cmbon)
                 QTdev::SetStatus(cmb, false);
-            graph->set_plottype(PLOT_POINT);
+            pb_graph->set_plottype(PLOT_POINT);
         }
         else {
             if (ptson)
                 QTdev::SetStatus(pts, false);
-            graph->set_plottype(PLOT_COMB);
+            pb_graph->set_plottype(PLOT_COMB);
         }
-        graph->dev()->Clear();
-        graph->gr_redraw();
+        Clear();
+        pb_graph->gr_redraw();
     }
-    */
-}
-
-
-void
-QTplotDlg::comb_btn_slot(bool)
-{
 }
 
 
@@ -1272,7 +1260,6 @@ QTplotDlg::logy_btn_slot(bool)
             pb_graph->set_gridtype(GRID_LIN);
     }
 
-    // clear the yunits text
     pb_graph->clear_units_text(LAyunits);
     Clear();
     pb_graph->gr_redraw();
@@ -1337,30 +1324,26 @@ void
 QTplotDlg::group_btn_slot(bool)
 {
     // Handle one scale and grp scale modes.
-    /*
-    GtkWidget *one = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
-        "onescale");
-    GtkWidget *grp =  (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
-        "grpscale");
+    QPushButton *one = pb_checkwins[pbtn_single];
+    QPushButton *grp = pb_checkwins[pbtn_group];
     if (one && grp) {
-        bool oneon = GTKdev::GetStatus(one);
-        bool grpon = GTKdev::GetStatus(grp);
+        bool oneon = QTdev::GetStatus(one);
+        bool grpon = QTdev::GetStatus(grp);
 
         if (!oneon && !grpon)
-            graph->set_format(FT_MULTI);
-        else if (caller == one) {
+            pb_graph->set_format(FT_MULTI);
+        else if (sender() == one) {
             if (grpon)
-                GTKdev::SetStatus(grp, false);
-            graph->set_format(FT_SINGLE);
+                QTdev::SetStatus(grp, false);
+            pb_graph->set_format(FT_SINGLE);
         }
         else {
             if (oneon)
-                GTKdev::SetStatus(one, false);
-            graph->set_format(FT_GROUP);
+                QTdev::SetStatus(one, false);
+            pb_graph->set_format(FT_GROUP);
         }
-        graph->dev()->Clear();
-        graph->gr_redraw();
+        pb_graph->dev()->Clear();
+        pb_graph->gr_redraw();
     }
-    */
 }
 

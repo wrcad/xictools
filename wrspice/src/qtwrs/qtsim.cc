@@ -50,6 +50,7 @@
 #include <QTabWidget>
 #include <QLabel>
 #include <QPushButton>
+#include <QLineEdit>
 #include <QAction>
 
 
@@ -57,12 +58,7 @@
  * Simulation parameter setting dialog.
  **************************************************************************/
 
-#define STR(x) #x
-#define STRINGIFY(x) STR(x)
-#define KWGET(string) (xKWent*)sHtab::get(Sp.Options(), string)
-
-
-// The simulator defaults popup, initiated from the toolbar.
+// The simulator parameter setting dialog, initiated from the Tools menu.
 //
 void
 QTtoolbar::PopUpSimDefs(ShowMode mode, int x, int y)
@@ -78,21 +74,15 @@ QTtoolbar::PopUpSimDefs(ShowMode mode, int x, int y)
     new QTsimParamDlg(x, y);
     QTsimParamDlg::self()->show();
 }
-
-/*
-// Remove the simulation defaults popup.  Called from the toolbar.
-//
-void
-GTKtoolbar::PopDownSimDefs()
-{
-}
-*/
-
 // End of QTtoolbar functions.
 
+
+#define STR(x) #x
+#define STRINGIFY(x) STR(x)
+#define KWGET(string) (xKWent*)sHtab::get(Sp.Options(), string)
+
 namespace {
-    inline void
-    dblpr(char *buf, int n, double d, bool ex)
+    inline void dblpr(char *buf, int n, double d, bool ex)
     {
         snprintf(buf, 32, ex ? "%.*e" : "%.*f", n, d);
     }
@@ -158,54 +148,54 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_real_func, entry,
             "256000");
-        grid->addWidget(entry->ent, 1, 0);
-        entry->ent->setup(256000.0, 1000.0, 0, 0, 0);
+        grid->addWidget(entry->qtent(), 1, 0);
+        entry->qtent()->setup(256000.0, 1000.0, 0, 0, 0);
     }
     entry = KWGET(spkw_extprec);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 1, 1);
+        grid->addWidget(entry->qtent(), 1, 1);
 
     }
     entry = KWGET(spkw_noklu);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 1, 2);
+        grid->addWidget(entry->qtent(), 1, 2);
     }
     entry = KWGET(spkw_nomatsort);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 1, 3);
+        grid->addWidget(entry->qtent(), 1, 3);
     }
 
     entry = KWGET(spkw_fpemode);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry, "0");
-        grid->addWidget(entry->ent, 2, 0);
-        entry->ent->setup(0, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 2, 0);
+        entry->qtent()->setup(0, 1.0, 0.0, 0.0, 0);
     }
     entry = KWGET(spkw_savecurrent);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 2, 1);
+        grid->addWidget(entry->qtent(), 2, 1);
     }
     entry = KWGET(spkw_dcoddstep);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 2, 2);
+        grid->addWidget(entry->qtent(), 2, 2);
     }
 
     entry = KWGET(spkw_loadthrds);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry, "0");
-        grid->addWidget(entry->ent, 3, 0);
-        entry->ent->setup(0, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 3, 0);
+        entry->qtent()->setup(0, 1.0, 0.0, 0.0, 0);
     }
     entry = KWGET(spkw_loopthrds);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry, "0");
-        grid->addWidget(entry->ent, 3, 1);
-        entry->ent->setup(0, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 3, 1);
+        entry->qtent()->setup(0, 1.0, 0.0, 0.0, 0);
     }
     grid->setRowStretch(4, 1);
 
@@ -230,31 +220,31 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     entry = KWGET(spkw_steptype);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_string_func, entry,
-            KW.step(0)->word, si_choice_hdlr);
-        grid->addWidget(entry->ent, 1, 0);
+            KW.step(0)->word, KW.KWstep);
+        grid->addWidget(entry->qtent(), 1, 0);
     }
 
     entry = KWGET(spkw_interplev);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry,
             STRINGIFY(DEF_polydegree));
-        grid->addWidget(entry->ent, 1, 1);
-        entry->ent->setup(DEF_polydegree, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 1, 1);
+        entry->qtent()->setup(DEF_polydegree, 1.0, 0.0, 0.0, 0);
     }
 
     entry = KWGET(spkw_method);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_string_func, entry,
-            KW.method(0)->word, si_choice_hdlr);
-        grid->addWidget(entry->ent, 2, 0);
+            KW.method(0)->word, KW.KWmethod);
+        grid->addWidget(entry->qtent(), 2, 0);
     }
 
     entry = KWGET(spkw_maxord);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry,
             STRINGIFY(DEF_maxOrder));
-        grid->addWidget(entry->ent, 2, 1);
-        entry->ent->setup(DEF_maxOrder, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 2, 1);
+        entry->qtent()->setup(DEF_maxOrder, 1.0, 0.0, 0.0, 0);
     }
 
     entry = KWGET(spkw_trapratio);
@@ -262,14 +252,14 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         dblpr(tbuf, 2, DEF_trapRatio, false);
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->ent, 3, 0);
-        entry->ent->setup(DEF_trapRatio, .1, 0.0, 0.0, 2);
+        grid->addWidget(entry->qtent(), 3, 0);
+        entry->qtent()->setup(DEF_trapRatio, .1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_trapcheck);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 3, 1);
+        grid->addWidget(entry->qtent(), 3, 1);
     }
 
     entry = KWGET(spkw_xmu);
@@ -277,14 +267,14 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         dblpr(tbuf, 3, DEF_xmu, false);
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->ent, 4, 0);
-        entry->ent->setup(DEF_xmu, .01, 0.0, 0.0, 3);
+        grid->addWidget(entry->qtent(), 4, 0);
+        entry->qtent()->setup(DEF_xmu, .01, 0.0, 0.0, 3);
     }
 
     entry = KWGET(spkw_spice3);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 4, 1);
+        grid->addWidget(entry->qtent(), 4, 1);
     }
 
     entry = KWGET(spkw_trtol);
@@ -292,17 +282,16 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         dblpr(tbuf, 2, DEF_trtol, false);
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->ent, 5, 0);
-        entry->ent->setup(DEF_trtol, .1, 0.0, 0.0, 2);
+        grid->addWidget(entry->qtent(), 5, 0);
+        entry->qtent()->setup(DEF_trtol, .1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_chgtol);
     if (entry) {
         dblpr(tbuf, 2, DEF_chgtol, true);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf,
-            QTkwent::ke_float_hdlr);
-        grid->addWidget(entry->ent, 5, 1);
-        entry->ent->setup(DEF_chgtol, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
+        grid->addWidget(entry->qtent(), 5, 1);
+        entry->qtent()->setup(DEF_chgtol, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_dphimax);
@@ -310,43 +299,45 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         dblpr(tbuf, 3, DEF_dphiMax, false);
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->ent, 6, 0);
-        entry->ent->setup(DEF_dphiMax, .01, 0.0, 0.0, 3);
+        grid->addWidget(entry->qtent(), 6, 0);
+        entry->qtent()->setup(DEF_dphiMax, .01, 0.0, 0.0, 3);
     }
 
     entry = KWGET(spkw_jjaccel);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 6, 1);
+        grid->addWidget(entry->qtent(), 6, 1);
     }
 
     entry = KWGET(spkw_nojjtp);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 6, 2);
+        grid->addWidget(entry->qtent(), 6, 2);
     }
 
     entry = KWGET(spkw_delmin);
     if (entry) {
         dblpr(tbuf, 2, DEF_delMin, false);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
-        grid->addWidget(entry->ent, 7, 0);
-        entry->ent->setup(DEF_delMin, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_real_func, entry,
+            tbuf);
+        grid->addWidget(entry->qtent(), 7, 0);
+        entry->qtent()->setup(DEF_delMin, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_minbreak);
     if (entry) {
         dblpr(tbuf, 2, DEF_minBreak, false);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
-        grid->addWidget(entry->ent, 7, 1);
-        entry->ent->setup(DEF_minBreak, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_real_func, entry,
+            tbuf);
+        grid->addWidget(entry->qtent(), 7, 1);
+        entry->qtent()->setup(DEF_minBreak, 0.1, 0.0, 0.0, 2);
     }
 
     /* NOT CURRENTLY USED
     entry = KWGET(spkw_noiter);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 7, 2);
+        grid->addWidget(entry->qtent(), 7, 2);
     }
     */
     grid->setRowStretch(8, 1);
@@ -370,55 +361,49 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     entry = KWGET(spkw_abstol);
     if (entry) {
         dblpr(tbuf, 2, DEF_abstol, true);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf,
-            QTkwent::ke_float_hdlr);
-        grid->addWidget(entry->ent, 1, 0);
-        entry->ent->setup(DEF_abstol, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
+        grid->addWidget(entry->qtent(), 1, 0);
+        entry->qtent()->setup(DEF_abstol, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_reltol);
     if (entry) {
         dblpr(tbuf, 2, DEF_reltol, true);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf,
-            QTkwent::ke_float_hdlr);
-        grid->addWidget(entry->ent, 1, 1);
-        entry->ent->setup(DEF_reltol, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
+        grid->addWidget(entry->qtent(), 1, 1);
+        entry->qtent()->setup(DEF_reltol, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_vntol);
     if (entry) {
         dblpr(tbuf, 2, DEF_voltTol, true);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf,
-            QTkwent::ke_float_hdlr);
-        grid->addWidget(entry->ent, 2, 0);
-        entry->ent->setup(DEF_voltTol, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
+        grid->addWidget(entry->qtent(), 2, 0);
+        entry->qtent()->setup(DEF_voltTol, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_pivrel);
     if (entry) {
         dblpr(tbuf, 2, DEF_pivotRelTol, true);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf,
-            QTkwent::ke_float_hdlr);
-        grid->addWidget(entry->ent, 2, 1);
-        entry->ent->setup(DEF_pivotRelTol, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
+        grid->addWidget(entry->qtent(), 2, 1);
+        entry->qtent()->setup(DEF_pivotRelTol, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_gmin);
     if (entry) {
         dblpr(tbuf, 2, DEF_gmin, true);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf,
-            QTkwent::ke_float_hdlr);
-        grid->addWidget(entry->ent, 3, 0);
-        entry->ent->setup(DEF_gmin, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
+        grid->addWidget(entry->qtent(), 3, 0);
+        entry->qtent()->setup(DEF_gmin, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_pivtol);
     if (entry) {
         dblpr(tbuf, 2, DEF_pivotAbsTol, true);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf,
-            QTkwent::ke_float_hdlr);
-        grid->addWidget(entry->ent, 3, 1);
-        entry->ent->setup(DEF_pivotAbsTol, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
+        grid->addWidget(entry->qtent(), 3, 1);
+        entry->qtent()->setup(DEF_pivotAbsTol, 0.1, 0.0, 0.0, 2);
     }
     grid->setRowStretch(4, 1);
 
@@ -442,101 +427,99 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry,
             STRINGIFY(DEF_numGminSteps));
-        grid->addWidget(entry->ent, 1, 0);
-        entry->ent->setup(DEF_numGminSteps, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 1, 0);
+        entry->qtent()->setup(DEF_numGminSteps, 1.0, 0.0, 0.0, 0);
     }
 
     entry = KWGET(spkw_srcsteps);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry,
             STRINGIFY(DEF_numSrcSteps));
-        grid->addWidget(entry->ent, 1, 1);
-        entry->ent->setup(DEF_numSrcSteps, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 1, 1);
+        entry->qtent()->setup(DEF_numSrcSteps, 1.0, 0.0, 0.0, 0);
     }
 
     entry = KWGET(spkw_gminfirst);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 2, 0);
+        grid->addWidget(entry->qtent(), 2, 0);
     }
 
     entry = KWGET(spkw_noopiter);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 2, 1);
+        grid->addWidget(entry->qtent(), 2, 1);
     }
 
     entry = KWGET(spkw_dcmu);
     if (entry) {
         dblpr(tbuf, 3, DEF_dcMu, false);
-        entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_real_func, entry,
-            tbuf, QTkwent::ke_float_hdlr);
-        grid->addWidget(entry->ent, 3, 0);
-        entry->ent->setup(DEF_dcMu, 0.01, 0.0, 0.0, 3);
+        entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_real_func, entry, tbuf);
+        grid->addWidget(entry->qtent(), 3, 0);
+        entry->qtent()->setup(DEF_dcMu, 0.01, 0.0, 0.0, 3);
     }
 
     entry = KWGET(spkw_itl1);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry,
             STRINGIFY(DEF_dcMaxIter));
-        grid->addWidget(entry->ent, 3, 1);
-        entry->ent->setup(DEF_dcMaxIter, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 3, 1);
+        entry->qtent()->setup(DEF_dcMaxIter, 1.0, 0.0, 0.0, 0);
     }
 
     entry = KWGET(spkw_itl2);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry,
             STRINGIFY(DEF_dcTrcvMaxIter));
-        grid->addWidget(entry->ent, 4, 0);
-        entry->ent->setup(DEF_dcTrcvMaxIter, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 4, 0);
+        entry->qtent()->setup(DEF_dcTrcvMaxIter, 1.0, 0.0, 0.0, 0);
     }
 
     entry = KWGET(spkw_itl4);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry,
             STRINGIFY(DEF_tranMaxIter));
-        grid->addWidget(entry->ent, 4, 1);
-        entry->ent->setup(DEF_tranMaxIter, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 4, 1);
+        entry->qtent()->setup(DEF_tranMaxIter, 1.0, 0.0, 0.0, 0);
     }
 
     entry = KWGET(spkw_itl2gmin);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry,
             STRINGIFY(DEF_dcOpGminMaxIter));
-        grid->addWidget(entry->ent, 5, 0);
-        entry->ent->setup(DEF_dcOpGminMaxIter, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 5, 0);
+        entry->qtent()->setup(DEF_dcOpGminMaxIter, 1.0, 0.0, 0.0, 0);
     }
 
     entry = KWGET(spkw_itl2src);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry,
             STRINGIFY(DEF_dcOpSrcMaxIter));
-        grid->addWidget(entry->ent, 5, 1);
-        entry->ent->setup(DEF_dcOpSrcMaxIter, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 5, 1);
+        entry->qtent()->setup(DEF_dcOpSrcMaxIter, 1.0, 0.0, 0.0, 0);
     }
 
     entry = KWGET(spkw_gmax);
     if (entry) {
         dblpr(tbuf, 2, DEF_gmax, true);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry,
-            tbuf, QTkwent::ke_float_hdlr);
-        grid->addWidget(entry->ent, 6, 0);
-        entry->ent->setup(DEF_gmax, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
+        grid->addWidget(entry->qtent(), 6, 0);
+        entry->qtent()->setup(DEF_gmax, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_forcegmin);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 6, 1);
+        grid->addWidget(entry->qtent(), 6, 1);
     }
 
     entry = KWGET(spkw_rampup);
     if (entry) {
         dblpr(tbuf, 2, 0.0, true);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry,
-            tbuf, QTkwent::ke_float_hdlr);
-        grid->addWidget(entry->ent, 7, 0);
-        entry->ent->setup(0.0, 0.1, 0.0, 0.0, 2);
+        entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_real_func, entry,
+            tbuf);
+        grid->addWidget(entry->qtent(), 7, 0);
+        entry->qtent()->setup(0.0, 0.1, 0.0, 0.0, 2);
     }
     grid->setRowStretch(8, 1);
 
@@ -561,8 +544,8 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         snprintf(tbuf, sizeof(tbuf), "%g", DEF_defaultMosAD);
         entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->ent, 1, 0);
-        entry->ent->setup(DEF_defaultMosAD, 0.1, 0.0, 0.0, 2);
+        grid->addWidget(entry->qtent(), 1, 0);
+        entry->qtent()->setup(DEF_defaultMosAD, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_defas);
@@ -570,8 +553,8 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         snprintf(tbuf, sizeof(tbuf), "%g", DEF_defaultMosAS);
         entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->ent, 1, 1);
-        entry->ent->setup(DEF_defaultMosAS, 0.1, 0.0, 0.0, 2);
+        grid->addWidget(entry->qtent(), 1, 1);
+        entry->qtent()->setup(DEF_defaultMosAS, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_defl);
@@ -579,8 +562,8 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         snprintf(tbuf, sizeof(tbuf), "%g", DEF_defaultMosL);
         entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->ent, 2, 0);
-        entry->ent->setup(DEF_defaultMosL, 0.1, 0.0, 0.0, 2);
+        grid->addWidget(entry->qtent(), 2, 0);
+        entry->qtent()->setup(DEF_defaultMosL, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_defw);
@@ -588,34 +571,34 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         snprintf(tbuf, sizeof(tbuf), "%g", DEF_defaultMosW);
         entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->ent, 2, 1);
-        entry->ent->setup(DEF_defaultMosW, 0.1, 0.0, 0.0, 2);
+        grid->addWidget(entry->qtent(), 2, 1);
+        entry->qtent()->setup(DEF_defaultMosW, 0.1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_bypass);
     if (entry) {
         snprintf(tbuf, sizeof(tbuf), "%d", DEF_bypass);
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry, tbuf);
-        grid->addWidget(entry->ent, 3, 0);
-        entry->ent->setup(1.0, 1.0, 0.0, 0.0, 0);
+        grid->addWidget(entry->qtent(), 3, 0);
+        entry->qtent()->setup(1.0, 1.0, 0.0, 0.0, 0);
     }
 
     entry = KWGET(spkw_oldlimit);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 3, 1);
+        grid->addWidget(entry->qtent(), 3, 1);
     }
 
     entry = KWGET(spkw_trytocompact);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 3, 2);
+        grid->addWidget(entry->qtent(), 3, 2);
     }
 
     entry = KWGET(spkw_useadjoint);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 4, 0);
+        grid->addWidget(entry->qtent(), 4, 0);
     }
     grid->setRowStretch(5, 1);
 
@@ -640,8 +623,8 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         dblpr(tbuf, 2, DEF_temp - 273.15, false);
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->ent, 1, 0);
-        entry->ent->setup(DEF_temp - 273.15, .1, 0.0, 0.0, 2);
+        grid->addWidget(entry->qtent(), 1, 0);
+        entry->qtent()->setup(DEF_temp - 273.15, .1, 0.0, 0.0, 2);
     }
 
     entry = KWGET(spkw_tnom);
@@ -649,8 +632,8 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         dblpr(tbuf, 2, DEF_nomTemp - 273.15, false);
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->ent, 1, 1);
-        entry->ent->setup(DEF_temp - 273.15, .1, 0.0, 0.0, 2);
+        grid->addWidget(entry->qtent(), 1, 1);
+        entry->qtent()->setup(DEF_temp - 273.15, .1, 0.0, 0.0, 2);
     }
     grid->setRowStretch(2, 1);
 
@@ -672,68 +655,70 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
 
     entry = KWGET(kw_modelcard);
     if (entry) {
-        entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_string_func, entry,
+        entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_string_func, entry,
             ".model");
-        grid->addWidget(entry->ent, 1, 0);
+        grid->addWidget(entry->qtent(), 1, 0);
     }
 
     entry = KWGET(kw_subend);
     if (entry) {
-        entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_string_func, entry,
+        entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_string_func, entry,
             ".ends");
-        grid->addWidget(entry->ent, 1, 1);
+        grid->addWidget(entry->qtent(), 1, 1);
     }
 
     entry = KWGET(kw_subinvoke);
     if (entry) {
-        entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_string_func, entry,
+        entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_string_func, entry,
             "x");
-        grid->addWidget(entry->ent, 2, 0);
+        grid->addWidget(entry->qtent(), 2, 0);
     }
 
     entry = KWGET(kw_substart);
     if (entry) {
-        entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_string_func, entry,
+        entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_string_func, entry,
             ".subckt");
-        grid->addWidget(entry->ent, 2, 1);
+        grid->addWidget(entry->qtent(), 2, 1);
     }
 
     entry = KWGET(kw_nobjthack);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 3, 0);
+        grid->addWidget(entry->qtent(), 3, 0);
     }
 
     entry = KWGET(spkw_renumber);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 3, 1);
+        grid->addWidget(entry->qtent(), 3, 1);
     }
 
     entry = KWGET(spkw_optmerge);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_string_func, entry,
-            KW.optmerge(0)->word, si_choice_hdlr);
-        grid->addWidget(entry->ent, 4, 0);
+            KW.optmerge(0)->word, KW.KWoptmerge);
+        grid->addWidget(entry->qtent(), 4, 0);
     }
 
     entry = KWGET(spkw_parhier);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_string_func, entry,
-            KW.parhier(0)->word, si_choice_hdlr);
-        grid->addWidget(entry->ent, 4, 1);
+            KW.parhier(0)->word, KW.KWparhier);
+        grid->addWidget(entry->qtent(), 4, 1);
     }
 
     entry = KWGET(spkw_hspice);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->ent, 5, 0);
+        grid->addWidget(entry->qtent(), 5, 0);
     }
     grid->setRowStretch(6, 1);
 
+    if (x || y) {
+        TB()->FixLoc(&x, &y);
+        move(x, y);
+    }
     TB()->SetActive(tid_simdefs, true);
-    TB()->FixLoc(&x, &y);
-    move(x, y);
 }
 
 
@@ -744,137 +729,6 @@ QTsimParamDlg::~QTsimParamDlg()
     TB()->SetLoc(tid_simdefs, this);
     TB()->SetActive(tid_simdefs, false);
     QTtoolbar::entries(tid_simdefs)->action()->setChecked(false);
-}
-
-
-// Static function.
-void
-QTsimParamDlg::si_choice_hdlr(xKWent *entry, bool up, bool pressed)
-{
-    /*
-    if (QTdev::GetStatus(entry->ent->active))
-        return (true);
-    int i;
-    if (!strcmp(entry->word, spkw_method)) {
-        char *string =
-            gtk_editable_get_chars(GTK_EDITABLE(entry->ent->entry), 0, -1);
-        for (i = 0; KW.method(i)->word; i++)
-            if (!strcmp(string, KW.method(i)->word))
-                break;
-        if (!KW.method(i)->word) {
-            GRpkg::self()->ErrPrintf(ET_ERROR,
-                "bad method found: %s.\n", string);
-            i = 0;
-        }
-        else {
-            if (g_object_get_data(G_OBJECT(caller), "down")) {
-                i--;
-                if (i < 0) {
-                    i = 0;
-                    while (KW.method(i)->word && KW.method(i+1)->word)
-                        i++;
-                }
-            }
-            else {
-                i++;
-                if (!KW.method(i)->word)
-                    i = 0;
-            }
-        }
-        delete [] string;
-        gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),
-            KW.method(i)->word);
-    }
-    else if (!strcmp(entry->word, spkw_optmerge)) {
-        char *string =
-            gtk_editable_get_chars(GTK_EDITABLE(entry->ent->entry), 0, -1);
-        for (i = 0; KW.optmerge(i)->word; i++)
-            if (!strcmp(string, KW.optmerge(i)->word))
-                break;
-        if (!KW.optmerge(i)->word) {
-            GRpkg::self()->ErrPrintf(ET_ERROR,
-                "bad optmerge key found: %s.\n", string);
-            i = 0;
-        }
-        else {
-            if (g_object_get_data(G_OBJECT(caller), "down")) {
-                i--;
-                if (i < 0) {
-                    i = 0;
-                    while (KW.optmerge(i)->word && KW.optmerge(i+1)->word)
-                        i++;
-                }
-            }
-            else {
-                i++;
-                if (!KW.optmerge(i)->word)
-                    i = 0;
-            }
-        }
-        delete [] string;
-        gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),
-            KW.optmerge(i)->word);
-    }
-    else if (!strcmp(entry->word, spkw_parhier)) {
-        char *string =
-            gtk_editable_get_chars(GTK_EDITABLE(entry->ent->entry), 0, -1);
-        for (i = 0; KW.parhier(i)->word; i++)
-            if (!strcmp(string, KW.parhier(i)->word))
-                break;
-        if (!KW.parhier(i)->word) {
-            GRpkg::self()->ErrPrintf(ET_ERROR,
-                "bad parhier key found: %s.\n", string);
-            i = 0;
-        }
-        else {
-            if (g_object_get_data(G_OBJECT(caller), "down")) {
-                i--;
-                if (i < 0) {
-                    i = 0;
-                    while (KW.parhier(i)->word && KW.parhier(i+1)->word)
-                        i++;
-                }
-            }
-            else {
-                i++;
-                if (!KW.parhier(i)->word)
-                    i = 0;
-            }
-        }
-        delete [] string;
-        gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),
-            KW.parhier(i)->word);
-    }
-    else if (!strcmp(entry->word, spkw_steptype)) {
-        char *string =
-            gtk_editable_get_chars(GTK_EDITABLE(entry->ent->entry), 0, -1);
-        for (i = 0; KW.step(i)->word; i++)
-            if (!strcmp(string, KW.step(i)->word))
-                break;
-        if (!KW.step(i)->word) {
-            GRpkg::self()->ErrPrintf(ET_ERROR,
-                "bad steptype found: %s.\n", string);
-            i = 0;
-        }
-        else {
-            if (g_object_get_data(G_OBJECT(caller), "down")) {
-                i--;
-                if (i < 0) {
-                    i = 0;
-                    while (KW.step(i)->word && KW.step(i+1)->word)
-                        i++;
-                }
-            }
-            else {
-                i++;
-                if (!KW.step(i)->word)
-                    i = 0;
-            }
-        }
-        gtk_entry_set_text(GTK_ENTRY(entry->ent->entry), KW.step(i)->word);
-        delete [] string;
-    }
-    */
 }
 
 
