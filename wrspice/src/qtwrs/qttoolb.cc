@@ -1,4 +1,4 @@
- 
+
 /*========================================================================*
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
@@ -61,13 +61,8 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qtedit.h"
 #include "qtinterf/qtcanvas.h"
-//XXX #include "qtinterf/qtpfiles.h"
 #include "spnumber/spnumber.h"
 #include "miscutil/filestat.h"
-#ifdef HAVE_MOZY
-//#include "help/help_defs.h"
-//#include "qtmozy/qthelp.h"
-#endif
 #include <signal.h>
 
 #ifdef WIN32
@@ -82,17 +77,16 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QAction>
+#include <QDialog>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QScreen>
 
-/*XXX need this?
 #ifdef WIN32
 // Reference a symbol in the resource module so the resources are linked.
 extern int ResourceModuleId;
 namespace { int dummy = ResourceModuleId; }
 #endif
-*/
 
 
 void
@@ -388,8 +382,10 @@ QTtoolbar::RemoveTimeoutProc(int id)
 void
 QTtoolbar::RegisterBigForeignWindow(unsigned int w)
 {
-//    if (QTdev::exists())
-//        QTdev::self()->RegisterBigForeignWindow(w);
+#ifdef WITH_X11
+    if (QTdev::exists())
+        QTdev::self()->RegisterBigForeignWindow(w);
+#endif
 }
 
 
@@ -408,7 +404,9 @@ QTtoolbar::Toolbar()
     if (!CP.Display())
         return;
 
-//XXX    gtk_window_set_default_icon_name("wrspice");
+/* XXX App Icons?
+gtk_window_set_default_icon_name("wrspice");
+*/
 
     // Launch the application windows that start realized.
     for (tbent_t *tb = tb_entries; tb && tb->name(); tb++) {
@@ -451,8 +449,7 @@ QTtoolbar::Toolbar()
 
 
 //==========================================================================
-//
-//  Bug report pop-up
+//  Bug report dialog.
 
 // Static function.
 void
@@ -460,11 +457,11 @@ QTtoolbar::tb_mail_destroy_cb(GReditPopup *w)
 {
     QTeditDlg *we = dynamic_cast<QTeditDlg*>(w);
     if (we)
-        TB()->SetLoc(tid_bug, we->Shell());
+        TB()->SetLoc(tid_bug, we);
 }
 
 
-// Pop up to email bug report text.
+// Dialog to email bug report text.
 //
 void
 QTtoolbar::PopUpBugRpt(ShowMode mode, int x, int y)
@@ -497,7 +494,7 @@ QTtoolbar::tb_font_cb(const char *btn, const char *name, void*)
 {
     if (!name && !btn) {
         TB()->SetLoc(tid_font, TB()->tb_fontsel);
-        TB()->SetActive(tid_font, false);
+        TB()->SetActiveDlg(tid_font, 0);
     }
 }
 
@@ -511,21 +508,19 @@ QTtoolbar::PopUpFont(ShowMode mode, int x, int y)
         SetLoc(tid_font, tb_fontsel);
         ActiveFontsel()->popdown();
         tb_fontsel = 0;
-        SetActive(tid_font, false);
+        SetActiveDlg(tid_font, 0);
         return;
     }
     FixLoc(&x, &y);
     PopUpFontSel(this, GRloc(LW_XYA, x, y), MODE_ON, tb_font_cb, 0, FNT_FIXED);
     tb_fontsel = ((QTfontDlg*)ActiveFontsel());
     tb_fontsel->register_usrptr((void**)&tb_fontsel);
-    SetActive(tid_font, true);
+    SetActiveDlg(tid_font, tb_fontsel);
 }
 
+//XXX
 void QTtoolbar::PopUpNotes()       { /* notes_proc(0, 0); */ }
 
-//void QTtoolbar::PopUpTBhelp(ShowMode, GRobject, GRobject, TBH_type) { }
-//void QTtoolbar::PopUpSpiceErr(bool, const char*) { }
-//void QTtoolbar::PopUpSpiceMessage(const char*, int, int) { }
 
 void QTtoolbar::PopUpSpiceInfo(const char *msg)
 {
@@ -544,16 +539,14 @@ QTtoolbar::CloseGraphicsConnection()
     if (QTdev::exists() && QTdev::self()->ConnectFd() > 0)
         ::close(QTdev::ConnectFd());
 }
-
 //----- End Toolbar interface stubs.
-
 
 
 // Static function.
 // Save the location of a tool.
 //
 void
-QTtoolbar::SetLoc(tid_id id, QWidget *w)
+QTtoolbar::SetLoc(tid_id id, QDialog *w)
 {
     tbent_t *tb = &tb_entries[id];
     QPoint pt = w->mapToGlobal(QPoint(0, 0));
@@ -593,35 +586,29 @@ QTtoolbar::ConfigString()
     char buf[512];
     const char *off = "off", *on = "on";
     const char *fmt = "\\\n %s %s %d %d";
-//    if (!toolbar)
-//    if (!isVisible())
-if (0)
+    if (!QTtbDlg::self())
         lstr.add("tbsetup toolbar off");
     else {
         lstr.add("tbsetup");
-//        if (gtk_widget_get_window(toolbar)) {
-            int x, y;
-//XXX            gdk_window_get_root_origin(gtk_widget_get_window(toolbar), &x, &y);
-            snprintf(buf, sizeof(buf), fmt, "toolbar", "on", x, y);
+        QPoint pt = QTtbDlg::self()->mapToGlobal(QPoint(0, 0));
+        snprintf(buf, sizeof(buf), fmt, "toolbar", "on", pt.x(), pt.y());
+        lstr.add(buf);
+        for (tbent_t *tb = tb_entries; tb && tb->name(); tb++) {
+            if (tb->id() == tid_toolbar)
+                continue;
+            int x = tb->x();
+            int y = tb->y();
+            QDialog *dlg = tb->dialog();
+            if (dlg) {
+                pt = dlg->mapToGlobal(QPoint(0, 0));
+                x = pt.x();
+                y = pt.y();
+                FixLoc(&x, &y);
+            }
+            snprintf(buf, sizeof(buf), fmt, tb->name(),
+                tb->dialog() ? on : off, x, y);
             lstr.add(buf);
         }
-        for (tbent_t *tb = tb_entries; tb && tb->name(); tb++) {
-            if (!strcmp(tb->name(), "toolbar"))
-                continue;
-            /*
-            GdkRectangle rect;
-            rect.x = tb->x;
-            rect.y = tb->y;
-            if (tb->active) {
-                GtkWidget *wsh = GetShell(tb->name);
-                if (wsh)
-                    gtk_ShellGeometry(wsh, 0, &rect);
-            }
-            snprintf(buf, sizeof(buf), fmt, tb->name, tb->active ? on : off,
-                rect.x, rect.y);
-            */
-            lstr.add(buf);
-//        }
     }
     lstr.add_c('\n');
 

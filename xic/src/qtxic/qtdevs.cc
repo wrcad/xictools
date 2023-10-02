@@ -321,7 +321,6 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
     if (type && *type == '0' + dvMenuPict) {
         dv_type = dvMenuPict;
         gd_viewport = new QTcanvas();
-        Gbag()->set_draw_if(gd_viewport);
 
         QFont *fnt;
         if (FC.getFont(&fnt, FNT_SCREEN))

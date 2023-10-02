@@ -62,19 +62,6 @@ QTtoolbar::PopUpSpiceMessage(const char *string, int x, int y)
     if (!QTspmsgDlg::self()) {
         new QTspmsgDlg(string);
         FixLoc(&x, &y);
-        /*XXX
-        int mwid, mhei;
-        gtk_MonitorGeom(0, 0, 0, &mwid, &mhei);
-        int wd = width();
-        int ht = height();
-        if (x + wd > mwid)
-            x = mwid - wd;
-        if (y + ht > mhei)
-            y = mhei - ht;
-        */
-
-        // MSW seems to need this before gtk_window_show.
-//        RevertFocus(popup);
 
         QTspmsgDlg::self()->move(x, y);
         QTspmsgDlg::self()->show();

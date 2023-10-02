@@ -263,6 +263,7 @@ fi
 
 #XXX fixme
 #echo '#define HAVE_GTK2 1'>> confdefs.h
+echo "#define WITH_$grpkg 1">> confdefs.h
 
 if test $nomozy = no; then
     echo '#define HAVE_MOZY 1'>> confdefs.h

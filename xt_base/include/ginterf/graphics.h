@@ -951,6 +951,7 @@ namespace ginterf
         virtual void TextExtent(const char*, int*, int*)                = 0;
         virtual void SetGhost(GhostDrawFunc, int, int)                  = 0;
         virtual void ShowGhost(bool)                                    = 0;
+        virtual bool ShowingGhost()                                     = 0;
         virtual void UndrawGhost(bool = false)                          = 0;
         virtual void DrawGhost(int, int)                                = 0;
         virtual void MovePointer(int, int, bool)                        = 0;
@@ -969,6 +970,8 @@ namespace ginterf
         virtual void Update(int, int, int, int)                         = 0;
         virtual void Update()                                           = 0;
         virtual void Input(int*, int*, int*, int*)                      = 0;
+        virtual void SetOverlayMode(bool)                               = 0;
+        virtual void CreateOverlayBackg()                               = 0;
         virtual void SetXOR(int)                                        = 0;
         virtual void ShowGlyph(int, int, int)                           = 0;
         virtual GRobject GetRegion(int, int, int, int)                  = 0;
@@ -1019,6 +1022,7 @@ namespace ginterf
         void Clear()                                            { }
 
         void SetGhost(GhostDrawFunc, int, int)                  { }
+        bool ShowingGhost()                                     { return (0); }
         void ShowGhost(bool)                                    { }
         void UndrawGhost(bool = false)                          { }
         void DrawGhost(int, int)                                { }
@@ -1039,6 +1043,8 @@ namespace ginterf
         void Update(int, int, int, int)                         { }
         void Update()                                           { }
         void Input(int*, int*, int*, int*)                      { }
+        void SetOverlayMode(bool)                               { }
+        void CreateOverlayBackg()                               { }
         void SetXOR(int)                                        { }
         void ShowGlyph(int, int, int)                           { }
         GRobject GetRegion(int, int, int, int)              { return (0); }

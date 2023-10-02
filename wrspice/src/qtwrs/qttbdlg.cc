@@ -192,7 +192,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_font);
     a->setShortcut(QKeySequence("Alt+N"));
     a->setToolTip(tr("Set window fonts"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_font)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_font)->dialog() != 0));
     QTtoolbar::entries(tid_font)->set_action(a);
 
     // "/Tools/_Files", "<alt>Z", "<CheckItem>"
@@ -201,7 +201,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_files);
     a->setShortcut(QKeySequence("Alt+Z"));
     a->setToolTip(tr("List search path files"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_files)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_files)->dialog() != 0));
     QTtoolbar::entries(tid_files)->set_action(a);
 
     // "/Tools/_Circuits", "<alt>C", "<CheckItem>"
@@ -210,7 +210,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_circuits);
     a->setShortcut(QKeySequence("Alt+C"));
     a->setToolTip(tr("List circuits"));
-    QTdev::SetStatus(a, TB()->entries(tid_circuits)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_circuits)->dialog() != 0));
     QTtoolbar::entries(tid_circuits)->set_action(a);
 
     // "/Tools/_Plots", "<alt>P", "<CheckItem>");
@@ -219,7 +219,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_plots);
     a->setShortcut(QKeySequence("Alt+P"));
     a->setToolTip(tr("List result plot data"));
-    QTdev::SetStatus(a, TB()->entries(tid_plots)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_plots)->dialog() != 0));
     QTtoolbar::entries(tid_plots)->set_action(a);
 
     // "/Tools/P_lot Opts", "<alt>L", "<CheckItem>"
@@ -228,7 +228,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_plotdefs);
     a->setShortcut(QKeySequence("Alt+L"));
     a->setToolTip(tr("Set plot options"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_plotdefs)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_plotdefs)->dialog() != 0));
     QTtoolbar::entries(tid_plotdefs)->set_action(a);
 
     // "/Tools/C_olors", "<alt>O", "<CheckItem>");
@@ -237,7 +237,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_colors);
     a->setShortcut(QKeySequence("Alt+O"));
     a->setToolTip(tr("Set plot colors"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_colors)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_colors)->dialog() != 0));
     QTtoolbar::entries(tid_colors)->set_action(a);
 
     // "/Tools/_Vectors", "<alt>V", "<CheckItem>"
@@ -246,7 +246,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_vectors);
     a->setShortcut(QKeySequence("Alt+V"));
     a->setToolTip(tr("List vectors in current plot"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_vectors)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_vectors)->dialog() != 0));
     QTtoolbar::entries(tid_vectors)->set_action(a);
 
     // "/Tools/Va_riables", "<alt>R", "<CheckItem>");
@@ -255,7 +255,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_variables);
     a->setShortcut(QKeySequence("Alt+R"));
     a->setToolTip(tr("List set shell variables"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_variables)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_variables)->dialog() != 0));
     QTtoolbar::entries(tid_variables)->set_action(a);
 
     // "/Tools/_Shell", "<alt>S", "<CheckItem>");
@@ -264,7 +264,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_shell);
     a->setShortcut(QKeySequence("Alt+S"));
     a->setToolTip(tr("Set shell options"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_shell)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_shell)->dialog() != 0));
     QTtoolbar::entries(tid_shell)->set_action(a);
 
     // "/Tools/S_im Opts", "<alt>I", "<CheckItem>"
@@ -273,7 +273,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_simdefs);
     a->setShortcut(QKeySequence("Alt+I"));
     a->setToolTip(tr("Set simulation options"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_simdefs)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_simdefs)->dialog() != 0));
     QTtoolbar::entries(tid_simdefs)->set_action(a);
 
     // "/Tools/Co_mmands", "<alt>M", "<CheckItem>"
@@ -282,7 +282,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_commands);
     a->setShortcut(QKeySequence("Alt+M"));
     a->setToolTip(tr("Set command options"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_commands)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_commands)->dialog() != 0));
     QTtoolbar::entries(tid_commands)->set_action(a);
 
     // "/Tools/_Runops", "<alt>U", "<CheckItem>");
@@ -291,7 +291,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_runops);
     a->setShortcut(QKeySequence("Alt+U"));
     a->setToolTip(tr("List runops (traces, etc.) in effect"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_runops)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_runops)->dialog() != 0));
     QTtoolbar::entries(tid_runops)->set_action(a);
 
     // "/Tools/_Debug", "<alt>D", "<CheckItem>");
@@ -300,7 +300,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(tid_debug);
     a->setShortcut(QKeySequence("Alt+D"));
     a->setToolTip(tr("Set debugging options"));
-    QTdev::SetStatus(a, QTtoolbar::entries(tid_debug)->active());
+    QTdev::SetStatus(a, (QTtoolbar::entries(tid_debug)->dialog() != 0));
     QTtoolbar::entries(tid_debug)->set_action(a);
     connect(tb_tools_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(tools_menu_slot(QAction*)));
@@ -325,8 +325,8 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     a->setData(MA_notes);
     a->setShortcut(QKeySequence("Ctrl+N"));
     a->setToolTip(tr("Show release notes"));
-    connect(tb_tools_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(tools_menu_slot(QAction*)));
+    connect(tb_help_menu, SIGNAL(triggered(QAction*)),
+        this, SLOT(help_menu_slot(QAction*)));
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMargin(2);
@@ -370,7 +370,6 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
 
     gd_viewport = new QTcanvas();
     vb->addWidget(Viewport());
-    Gbag()->set_draw_if(gd_viewport);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
@@ -427,7 +426,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     TB()->RegisterTimeoutProc(50, tb_res_timeout, (void*)1L);
     TB()->RegisterTimeoutProc(2000, tb_res_timeout, 0);
     TB()->FixLoc(&x, &y);
-    TB()->SetActive(tid_toolbar, true);
+    TB()->SetActiveDlg(tid_toolbar, this);
     move(x, y);
 }
 
@@ -436,7 +435,7 @@ QTtbDlg::~QTtbDlg()
 {
     instPtr = 0;
     TB()->SetLoc(tid_toolbar, this);
-    TB()->SetActive(tid_toolbar, false);
+    TB()->SetActiveDlg(tid_toolbar, 0);
 }
 
 
@@ -786,87 +785,87 @@ QTtbDlg::tools_menu_slot(QAction *a)
     QTtoolbar::tbent_t *tb = QTtoolbar::entries(id);
 
     if (id == tid_bug) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpBugRpt(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpBugRpt(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_font) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpFont(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpFont(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_files) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpFiles(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpFiles(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_circuits) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpCircuits(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpCircuits(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_plots) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpPlots(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpPlots(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_plotdefs) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpPlotDefs(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpPlotDefs(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_colors) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpColors(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpColors(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_vectors) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpVectors(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpVectors(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_variables) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpVariables(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpVariables(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_shell) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpShellDefs(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpShellDefs(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_simdefs) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpSimDefs(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpSimDefs(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_commands) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpCmdConfig(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpCmdConfig(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_runops) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpRunops(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpRunops(MODE_OFF, tb->x(), tb->y());
     }
     else if (id == tid_debug) {
-        if (a->isChecked() && !tb->active())
+        if (a->isChecked() && !tb->dialog())
             TB()->PopUpDebugDefs(MODE_ON, tb->x(), tb->y());
-        else if (!a->isChecked() && tb->active())
+        else if (!a->isChecked() && tb->dialog())
             TB()->PopUpDebugDefs(MODE_OFF, tb->x(), tb->y());
     }
 }
@@ -905,30 +904,7 @@ QTtbDlg::help_menu_slot(QAction *a)
                     lstr.add(buf);
                 }
                 fclose(fp);
-           /*XXX why all this work?
-                GdkRectangle rect;
-                gtk_ShellGeometry(this, 0, &rect);
-                int mwid, mhei;
-                gtk_MonitorGeom(0, 0, 0, &mwid, &mhei);
-                LWenum code;
-                if (mhei - (rect.y + rect.height) < rect.y) {
-                    if (mwid - (rect.x + rect.width) < rect.x)
-                        code = LW_LR;
-                    else
-                        code = LW_LL;
-                }
-                else {
-                    if (mwid - (rect.x + rect.width) < rect.x)
-                        code = LW_UR;
-                    else
-                        code = LW_UL;
-                }
-                    
-                TB()->PopUpHTMLinfo(MODE_ON, lstr.string(),
-                    GRloc(code));
-            */
-                TB()->PopUpHTMLinfo(MODE_ON, lstr.string(),
-                    GRloc(LW_CENTER));
+                TB()->PopUpHTMLinfo(MODE_ON, lstr.string(), GRloc(LW_CENTER));
                 return;
             }
         }
@@ -982,7 +958,7 @@ QTtbDlg::wr_btn_slot()
 {
     // The WR button slot, linked to the bug report popup.
     QTtoolbar::tbent_t *tb = QTtoolbar::entries(tid_bug);
-    TB()->PopUpBugRpt(tb->active() ? MODE_OFF : MODE_ON, tb->x(), tb->y());
+    TB()->PopUpBugRpt(tb->dialog() ? MODE_OFF : MODE_ON, tb->x(), tb->y());
 }
 
 

@@ -183,7 +183,7 @@ QTrunopListDlg::QTrunopListDlg(int x, int y, const char *s)
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     TB()->FixLoc(&x, &y);
-    TB()->SetActive(tid_runops, true);
+    TB()->SetActiveDlg(tid_runops, this);
     move(x, y);
 }
 
@@ -192,7 +192,7 @@ QTrunopListDlg::~QTrunopListDlg()
 {
     instPtr = 0;
     TB()->SetLoc(tid_runops, this);
-    TB()->SetActive(tid_runops, false);
+    TB()->SetActiveDlg(tid_runops, 0);
     QTtoolbar::entries(tid_runops)->action()->setChecked(false);
 }
 
@@ -254,29 +254,6 @@ QTrunopListDlg::recolor()
 void
 QTrunopListDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    /*XXX
-    sTextPop *pop = (sTextPop*)arg;
-    if (event->type == GDK_BUTTON_PRESS) {
-        if (event->button.button == 1) {
-            pop->tp_lx = (int)event->button.x;
-            pop->tp_ly = (int)event->button.y;
-            return (false);
-        }
-        return (true);
-    }
-    if (event->type == GDK_BUTTON_RELEASE) {
-        if (event->button.button == 1) {
-            int x = (int)event->button.x;
-            int y = (int)event->button.y;
-            if (abs(x - pop->tp_lx) <= 4 && abs(y - pop->tp_ly) <= 4) {
-                if (pop->tp_callback)
-                    (*pop->tp_callback)(caller, pop->tp_lx, pop->tp_ly);
-            }
-            return (false);
-        }
-    }
-    */
-
     if (ev->type() != QEvent::MouseButtonPress) {
         ev->ignore();
         return;

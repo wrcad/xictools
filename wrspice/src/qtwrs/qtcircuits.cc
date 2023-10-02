@@ -184,7 +184,7 @@ QTcircuitListDlg::QTcircuitListDlg(int x, int y, const char *s)
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     TB()->FixLoc(&x, &y);
-    TB()->SetActive(tid_circuits, true);
+    TB()->SetActiveDlg(tid_circuits, this);
     move(x, y);
 }
 
@@ -193,7 +193,7 @@ QTcircuitListDlg::~QTcircuitListDlg()
 {
     instPtr = 0;
     TB()->SetLoc(tid_circuits, this);
-    TB()->SetActive(tid_circuits, false);
+    TB()->SetActiveDlg(tid_circuits, 0);
     QTtoolbar::entries(tid_circuits)->action()->setChecked(false);
 }
 
@@ -254,29 +254,6 @@ QTcircuitListDlg::circuit_list()
 void
 QTcircuitListDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    /*XXX
-    sTextPop *pop = (sTextPop*)arg;
-    if (event->type == GDK_BUTTON_PRESS) {
-        if (event->button.button == 1) {
-            pop->tp_lx = (int)event->button.x;
-            pop->tp_ly = (int)event->button.y;
-            return (false);
-        }
-        return (true);
-    }
-    if (event->type == GDK_BUTTON_RELEASE) {
-        if (event->button.button == 1) {
-            int x = (int)event->button.x;
-            int y = (int)event->button.y;
-            if (abs(x - pop->tp_lx) <= 4 && abs(y - pop->tp_ly) <= 4) {
-                if (pop->tp_callback)
-                    (*pop->tp_callback)(caller, pop->tp_lx, pop->tp_ly);
-            }
-            return (false);
-        }
-    }
-    */
-
     if (ev->type() != QEvent::MouseButtonPress) {
         ev->ignore();
         return;
@@ -297,14 +274,23 @@ QTcircuitListDlg::mouse_press_slot(QMouseEvent *ev)
     int line = 0;
     for (int i = 0; i <= pos; i++) {
         if (str[i] == '\n') {
-            line++;
             if (i == pos) {
                 // Clicked to  right of line.
                 break;
             }
+            line++;
             lineptr = str + i+1;
         }
     }
+    sFtCirc *p;
+    int i = 0;
+    for (p = Sp.CircuitList(); p; i++, p = p->next()) {
+        if (i == line)
+            break;
+    }
+    if (p)
+        Sp.SetCircuit(p->name());
+         
 }
 
 
@@ -348,7 +334,7 @@ QTcircuitListDlg::button_slot(bool state)
                     cl_affirm->register_caller(btn, false, false);
                     QTaffirmDlg *af = dynamic_cast<QTaffirmDlg*>(cl_affirm);
                     connect(af, SIGNAL(affirm(bool, void*)),
-                        this, SLOT(delete_plot_slot(bool, void*)));
+                        this, SLOT(delete_ckt_slot(bool, void*)));
                     return;
                 }
             }
@@ -374,48 +360,3 @@ QTcircuitListDlg::delete_ckt_slot(bool yn, void*)
         delete Sp.CurCircuit();
 }
 
-
-#ifdef notdef
-
-
-// Static function.
-// 'Delete' button pressed, ask for confirmation.
-//
-void
-QTcircuitListDlg::ci_actions(GtkWidget *caller, void*)
-{
-}
-
-
-// Static function.
-// Callback to delete the current circuit.
-//
-void
-QTcircuitListDlg::ci_dfunc()
-{
-}
-
-
-// Static function.
-// Handle button presses in the text area.
-//
-void
-QTcircuitListDlg::ci_btn_hdlr(GtkWidget *caller, int x, int y)
-{
-    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
-        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
-    GtkTextIter iline;
-    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(caller), &iline, y, 0);
-    y = gtk_text_iter_get_line(&iline);
-
-    sFtCirc *p;
-    int i;
-    for (i = 0, p = Sp.CircuitList(); p; i++, p = p->next()) {
-        if (i == y)
-            break;
-    }
-    if (p)
-        Sp.SetCircuit(p->name());
-}
-// End of QTcircuitListDlg functions
-#endif

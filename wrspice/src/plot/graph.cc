@@ -371,8 +371,14 @@ sGraph::gr_redraw_keyed()
         y = yinv(y);
         gr_dev->Text(k->text, x, y, k->xform);
     }
-    // important for Windows, text update delayed otherwise
+
+    // Important for Windows, text update delayed otherwise, screws
+    // things up in QT.
+#ifdef WIN32
+#if defined(WITH_GTK2) || defined(WITH_GTK3)
     gr_dev->Update();
+#endif
+#endif
 
     if (gr_reference.mark)
         gr_mark();
@@ -1038,7 +1044,7 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
             // remove the reference
             if (gr_reference.mark)
                 gr_show_ghost(false);
-            gr_refmark();
+            gr_refmark(true);
             if (gr_reference.mark)
                 gr_show_ghost(true);
             gr_reference.set = false;
@@ -1130,7 +1136,13 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
                         yy = yinv(yy);
 
                         // The justification may have changed!
-                        gr_refresh(xx-w, yy+1, xx+2*w, yy-h);
+#if defined (WITH_QT5) || defined (WITH_QT6)
+                        gr_dev->SetOverlayMode(true);
+#endif
+                        gr_refresh(xx-w, yy+1, xx+2*w, yy-h, true);
+#if defined (WITH_QT5) || defined (WITH_QT6)
+                        gr_dev->SetOverlayMode(false);
+#endif
 
                         y = yinv(y);
                         if (k->xform & TXTF_HJR)
@@ -1501,14 +1513,15 @@ namespace {
 void
 sGraph::gr_mark()
 {
-    gr_refmark();
     if (!gr_reference.mark) {
+        gr_refmark(true);
         gr_set_ghost(0, 0, 0);
         // redraw scale factors
         dv_erase_factors();
         dv_trace(true);
     }
     else {
+        gr_refmark(false);
         if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
             return;
         dv_erase_factors();
@@ -1528,15 +1541,47 @@ sGraph::gr_mark()
 // Draw/undraw the reference marker.
 //
 void
-sGraph::gr_refmark()
+sGraph::gr_refmark(bool erase)
 {
     if (gr_reference.set) {
+#if defined (WITH_QT5) || defined (WITH_QT6)
+        if (erase) {
+            gr_dev->SetOverlayMode(true);
+            if (gr_xmono) {
+                gr_dev->Update(gr_reference.x, yinv(gr_vport.top()), 
+                    1, gr_vport.top() - gr_vport.bottom() + 1);
+            }
+            else {
+                gr_dev->Update(gr_reference.x-8, yinv(gr_reference.y), 17, 1); 
+                gr_dev->Update(gr_reference.x, yinv(gr_reference.y+8), 1, 17); 
+            }
+            gr_dev->SetOverlayMode(false);
+        }
+        else {
+            dv_erase_factors();
+            gr_dev->SetOverlayMode(true);
+            gr_dev->SetGhostColor(gr_colors[1].pixel);
+            if (gr_xmono) {
+                gr_dev->Line(gr_reference.x, yinv(gr_vport.bottom()), 
+                    gr_reference.x, yinv(gr_vport.top()));
+            }
+            else {
+                gr_dev->Line(gr_reference.x-8, yinv(gr_reference.y), 
+                    gr_reference.x+8, yinv(gr_reference.y));
+                gr_dev->Line(gr_reference.x, yinv(gr_reference.y-8), 
+                    gr_reference.x, yinv(gr_reference.y+8));
+            }
+            gr_dev->SetOverlayMode(false);
+        }
+#else
+        (void)erase;
         dv_erase_factors();
         gr_dev->SetXOR(GRxXor);
         gr_dev->SetGhostColor(gr_colors[1].pixel);
-        if (gr_xmono)
+        if (gr_xmono) {
             gr_dev->Line(gr_reference.x, yinv(gr_vport.bottom()), 
                 gr_reference.x, yinv(gr_vport.top()));
+        }
         else {
             gr_dev->Line(gr_reference.x-8, yinv(gr_reference.y), 
                 gr_reference.x+8, yinv(gr_reference.y));
@@ -1544,6 +1589,7 @@ sGraph::gr_refmark()
                 gr_reference.x, yinv(gr_reference.y+8));
         }
         gr_dev->SetXOR(GRxNone);
+#endif
     }
 }
 
@@ -1577,38 +1623,18 @@ sGraph::gr_setref(int x0, int y0)
         if (x0 < nmin || x0 > nmax)
             return;
     }
-    if (gr_reference.set) {
-        gr_dev->SetXOR(GRxXor);
-        gr_dev->SetGhostColor(gr_colors[1].pixel);
-        if (gr_xmono)
-            gr_dev->Line(gr_reference.x, yinv(gr_vport.bottom()), 
-                gr_reference.x, yinv(gr_vport.top()));
-        else {
-            gr_dev->Line(gr_reference.x-8, yinv(gr_reference.y), 
-                gr_reference.x+8, yinv(gr_reference.y));
-            gr_dev->Line(gr_reference.x, yinv(gr_reference.y-8), 
-                gr_reference.x, yinv(gr_reference.y+8));
-        }
-        gr_dev->SetXOR(GRxNone);
-    }
+
     gr_set_ghost(0, 0, 0);
+
+    if (gr_reference.set)
+        gr_refmark(true);
     dv_erase_factors();
     gr_reference.set = true;
     gr_reference.x = x0;
     gr_reference.y = y0;
+    gr_refmark(false);
+
     gr_set_ghost(ghost_mark, 0, 0);
-    gr_dev->SetXOR(GRxXor);
-    gr_dev->SetGhostColor(gr_colors[1].pixel);
-    if (gr_xmono)
-        gr_dev->Line(gr_reference.x, yinv(gr_vport.bottom()), 
-            gr_reference.x, yinv(gr_vport.top()));
-    else {
-        gr_dev->Line(gr_reference.x-8, yinv(gr_reference.y), 
-            gr_reference.x+8, yinv(gr_reference.y));
-        gr_dev->Line(gr_reference.x, yinv(gr_reference.y-8), 
-            gr_reference.x, yinv(gr_reference.y+8));
-    }
-    gr_dev->SetXOR(GRxNone);
 }
 
 
@@ -1952,9 +1978,13 @@ void
 sGraph::gr_ghost_mark(int x, int y, bool erase)
 {
     if (erase) {
+#if defined (WITH_QT5) || defined (WITH_QT6)
+        dv_erase_factors();
+#else
         gr_dev->SetXOR(GRxNone);
         dv_erase_factors();
         gr_dev->SetXOR(GRxXor);
+#endif
     }
     gr_dev->SetGhostColor(gr_colors[1].pixel);
     y = yinv(y);

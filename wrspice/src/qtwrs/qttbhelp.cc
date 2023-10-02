@@ -38,16 +38,29 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "qttbhelp.h"
 #include "qtinterf/qttextw.h"
 #include "qtinterf/qtfont.h"
+#include "simulator.h"
+#include "cshell.h"
+#include "keywords.h"
 #include "qttoolb.h"
+#ifdef HAVE_MOZY
+#include "help/help_defs.h"
+#include "qtmozy/qthelp.h"
+#endif
 
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QMouseEvent>
+
+
+// Dialog to display keyword help lists.  Clicking on the list entries
+// calls the main help system.  This is called from the dialogs which
+// contain lists of 'set' variables to modify.
 
 void
 QTtoolbar::PopUpTBhelp(ShowMode mode, GRobject parent, GRobject call_btn,
@@ -68,36 +81,36 @@ QTtoolbar::PopUpTBhelp(ShowMode mode, GRobject parent, GRobject call_btn,
     th->show();
 }
 
+
 char *
 QTtoolbar::KeywordsText(GRobject parent)
 {
     sLstr lstr;
-/* XXX fixme
-    if (parent == (GRobject)tb_shell) {
+    if (parent == QTtoolbar::entries(tid_shell)->dialog()) {
         for (int i = 0; KW.shell(i)->word; i++)
             KW.shell(i)->print(&lstr);
     }
-    else if (parent == (GRobject)tb_simdeffs) {
+    else if (parent == QTtoolbar::entries(tid_simdefs)->dialog()) {
         for (int i = 0; KW.sim(i)->word; i++)
             KW.sim(i)->print(&lstr);
     }
-    else if (parent == (GRobject)tb_commands) {
+    else if (parent == QTtoolbar::entries(tid_commands)->dialog()) {
         for (int i = 0; KW.cmds(i)->word; i++)
             KW.cmds(i)->print(&lstr);
     }
-    else if (parent == (GRobject)tb_plotdefs) {
+    else if (parent == QTtoolbar::entries(tid_plotdefs)->dialog()) {
         for (int i = 0; KW.plot(i)->word; i++)
             KW.plot(i)->print(&lstr);
     }
-    else if (parent == (GRobject)tb_debug) {
+    else if (parent == QTtoolbar::entries(tid_debug)->dialog()) {
         for (int i = 0; KW.debug(i)->word; i++)
             KW.debug(i)->print(&lstr);
     }
     else
-*/
         lstr.add("Internal error.");
     return (lstr.string_trim());
 }
+
 
 void
 QTtoolbar::KeywordsCleanup(QTtbHelpDlg *dlg)
@@ -111,12 +124,6 @@ QTtoolbar::KeywordsCleanup(QTtbHelpDlg *dlg)
     tb_kw_help_pos[t].y = pt.y();
 }
 // End of QTtoolbar functions;
-
-
-// Dialog to display keyword help lists.  Clicking on the list entries
-// calls the main help system.  This is called from the dialogs which
-// contain lists of 'set' variables to modify.
-//
 
 
 QTtbHelpDlg::QTtbHelpDlg(GRobject parent, GRobject call_btn, TBH_type type)
@@ -152,6 +159,7 @@ QTtbHelpDlg::QTtbHelpDlg(GRobject parent, GRobject call_btn, TBH_type type)
     vbox->addWidget(th_text);
     th_text->setReadOnly(true);
     th_text->setMouseTracking(true);
+    th_text->setLineWrapMode(QTextEdit::NoWrap);
     connect(th_text, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
     QFont *fnt;
@@ -163,16 +171,6 @@ QTtbHelpDlg::QTtbHelpDlg(GRobject parent, GRobject call_btn, TBH_type type)
     char *s = TB()->KeywordsText(th_parent);
     th_text->set_chars(s);
     delete [] s;
-
-/* XXX
-    // This will provide an arrow cursor.
-    g_signal_connect_after(G_OBJECT(th_text), "realize",
-        G_CALLBACK(text_realize_proc), 0);
-*/
-
-    int wid = 80*QTfont::stringWidth(0, th_text);
-    int hei = 12*QTfont::lineHeight(th_text);
-//XXX    gtk_window_set_default_size(GTK_WINDOW(th_popup), wid + 8, hei + 20);
 
     // buttons
     //
@@ -195,6 +193,15 @@ QTtbHelpDlg::~QTtbHelpDlg()
 }
 
 
+QSize
+QTtbHelpDlg::sizeHint() const
+{
+    int wid = 80*QTfont::stringWidth(0, th_text);
+    int hei = 12*QTfont::lineHeight(th_text);
+    return (QSize(wid+8, hei+20));
+}
+
+
 void
 QTtbHelpDlg::dismiss_btn_slot()
 {
@@ -205,26 +212,6 @@ QTtbHelpDlg::dismiss_btn_slot()
 void
 QTtbHelpDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    /*
-    QTtbHelpDlg *th = (QTtbHelpDlg*)arg;
-    if (event->type == GDK_BUTTON_PRESS) {
-        if (event->button.button == 1) {
-            th->th_lx = (int)event->button.x;
-            th->th_ly = (int)event->button.y;
-            return (false);
-        }
-        return (true);
-    }
-    if (event->type == GDK_BUTTON_RELEASE) {
-        if (event->button.button == 1) {
-            int x = (int)event->button.x;
-            int y = (int)event->button.y;
-            if (abs(x - th->th_lx) <= 4 && abs(y - th->th_ly) <= 4)
-                th->select(caller, th->th_lx, th->th_ly);
-            return (false);
-        }
-    }
-    */
     if (ev->type() != QEvent::MouseButtonPress) {
         ev->ignore();
         return;

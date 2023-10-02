@@ -964,7 +964,6 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
             printf("Using QT native graphics system.\n");
     }
     gd_viewport = draw_if::new_draw_interface(sw_drawtype, true, this);
-    Gbag()->set_draw_if(gd_viewport);
     Viewport()->setFocusPolicy(Qt::StrongFocus);
     Viewport()->setAcceptDrops(true);
 
@@ -1572,7 +1571,7 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
     if (wb_message)
         wb_message->popdown();
 
-    bool showing_ghost = gd_gbag->showing_ghost();
+    bool showing_ghost = ShowingGhost();
     if (showing_ghost)
         ShowGhost(ERASE);
 /*
@@ -1690,7 +1689,7 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
     bool in = (ev->x() >= 0 && ev->x() < BB->right &&
         ev->y() >= 0 && ev->y() < BB->bottom);
 
-    bool showing_ghost = gd_gbag->showing_ghost();
+    bool showing_ghost = ShowingGhost();
     if (showing_ghost)
         ShowGhost(ERASE);
 
@@ -1741,7 +1740,7 @@ QTsubwin::motion_slot(QMouseEvent *ev)
     if (ev->type() != QEvent::MouseMove || !r.contains(ev->x(), ev->y())) {
         // Leave event is not reliably delivered so do this here, too.
         UndrawGhost();
-        gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
+//XXX        gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
         ev->ignore();
         return;
     }
@@ -1920,7 +1919,7 @@ QTsubwin::leave_slot(QEvent *ev)
     EV()->MotionCallback(sw_windesc,
         mod_state(QGuiApplication::keyboardModifiers()));
     UndrawGhost();
-    gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
+//XXX    gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
 }
 
 

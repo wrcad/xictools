@@ -279,7 +279,7 @@ QTshellParamDlg::QTshellParamDlg(int x, int y)
         TB()->FixLoc(&x, &y);
         move(x, y);
     }
-    TB()->SetActive(tid_shell, true);
+    TB()->SetActiveDlg(tid_shell, this);
 }
 
 
@@ -288,7 +288,7 @@ QTshellParamDlg::~QTshellParamDlg()
     TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_SH);
     instPtr = 0;
     TB()->SetLoc(tid_shell, this);
-    TB()->SetActive(tid_shell, false);
+    TB()->SetActiveDlg(tid_shell, 0);
     QTtoolbar::entries(tid_shell)->action()->setChecked(false);
 }
 

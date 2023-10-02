@@ -59,7 +59,7 @@ namespace {
 }
 
 
-// Handle message printing, takes care of the pop-up, log file, and
+// Handle message printing, takes care of the dialog, log file, and
 // stdout printing.
 //
 void
@@ -153,8 +153,6 @@ QTerrmsgDlg::QTerrmsgDlg()
     er_text->setLineWrapMode(
         msgDB.get_wrap() ? QTextEdit::WidgetWidth : QTextEdit::NoWrap);
 
-//XXX    QTdev::self()->SetDoubleClickExit(er_popup, cancel);
-
     if (msgDB.get_x() == 0 && msgDB.get_y() == 0) {
         QSize screen_sz = screen()->size();
         msgDB.set_x((screen_sz.width() - ER_WIDTH)/2);
@@ -194,9 +192,10 @@ QTerrmsgDlg::stuff_msg(const char *string)
     char *t;
     char *s = er_text->get_chars();
     int cnt = 0;
-    for (t = s; *t; t++)
+    for (t = s; *t; t++) {
         if (*t == '\n')
             cnt++;
+    }
     er_text->set_editable(true);
     if (cnt > MAX_ERR_LINES) {
         cnt = 0;
@@ -214,15 +213,6 @@ QTerrmsgDlg::stuff_msg(const char *string)
 
     er_text->insert_chars_at_point(0, string, -1, -1);
     er_text->set_editable(false);
-/*XXX
-    GtkAdjustment *adj = gtk_text_view_get_vadjustment(GTK_TEXT_VIEW(er_text));
-    if (adj && gtk_adjustment_get_value(adj) <
-            gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj)) {
-        gtk_adjustment_set_value(adj,
-            gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj));
-        g_signal_emit_by_name(G_OBJECT(adj), "value_changed");
-    }
-*/
 }
 
 

@@ -40,6 +40,7 @@
 
 #include "qtdraw.h"
 #include "qtcanvas.h"
+#include "miscutil/texttf.h"
 #ifdef WITH_X11
 #include "qtcanvas_x.h"
 #endif
@@ -94,137 +95,6 @@ sGbag::default_gbag(int type)
 
 
 //-----------------------------------------------------------------------------
-// sGdraw functions, ghost rendering
-
-// Set up ghost drawing.  Whenever the pointer moves, the callback is
-// called with the current position and the x, y reference.
-//
-void
-sGdraw::set_ghost(GhostDrawFunc callback, int x, int y)
-{
-    if (callback) {
-        gd_draw_ghost = callback;
-        gd_ref_x = x;
-        gd_ref_y = y;
-        gd_last_x = 0;
-        gd_last_y = 0;
-        gd_ghost_cx_cnt = 0;
-        gd_first_ghost = true;
-        gd_show_ghost = true;
-        gd_undraw = false;
-        return;
-    }
-    if (gd_draw_ghost) {
-        if (!gd_first_ghost) {
-            // undraw last
-            gd_linedb = new GRlineDb;
-            (*gd_draw_ghost)(gd_last_x, gd_last_y, gd_ref_x, gd_ref_y,
-                gd_undraw);
-            delete gd_linedb;
-            gd_linedb = 0;
-            gd_undraw ^= true;
-        }
-        gd_draw_ghost = 0;
-    }
-}
-
-
-/*XXX
-// Below, show_ghost is called after every display refresh.  If the
-// warp pointer call is made directly, when dragging a window across
-// the main drawing area, this causes ugly things to happen to the
-// display, particularly when running over a network.  Therefor we put
-// the warp pointer call in a timeout which will cut the call
-// frequency way down.
-//
-namespace {
-    int ghost_timer_id;
-
-    int ghost_timeout(void*)
-    {
-        ghost_timer_id = 0;
-
-        // This redraws ghost objects.
-        int x0, y0;
-        GdkScreen *screen;
-        GdkDisplay *display = gdk_display_get_default();
-        gdk_display_get_pointer(display, &screen, &x0, &y0, 0);
-        gdk_display_warp_pointer(display, screen, x0, y0);
-        return (0);
-    }
-}
-*/
-
-
-// Turn on/off display of ghosting.  Keep track of calls in ghostcxcnt.
-//
-void
-sGdraw::show_ghost(bool show)
-{
-    if (!show) {
-        if (!gd_ghost_cx_cnt) {
-            undraw_ghost(false);
-            gd_show_ghost = false;
-            gd_first_ghost = true;
-        }
-        gd_ghost_cx_cnt++;
-    }
-    else {
-        if (gd_ghost_cx_cnt)
-            gd_ghost_cx_cnt--;
-        if (!gd_ghost_cx_cnt) {
-            gd_show_ghost = true;
-
-            // The warp_pointer call mungs things if called too
-            // frequently, so we put it in a timeout.
-
-/*XXX
-            if (ghost_timer_id)
-                g_source_remove(ghost_timer_id);
-            ghost_timer_id = g_timeout_add(100, ghost_timeout, 0);
-*/
-        }
-    }
-}
-
-
-// Erase the last ghost.
-//
-void
-sGdraw::undraw_ghost(bool reset)
-{
-    if (gd_draw_ghost && gd_show_ghost && gd_undraw && !gd_first_ghost) {
-        gd_linedb = new GRlineDb;
-        (*gd_draw_ghost)(gd_last_x, gd_last_y, gd_ref_x, gd_ref_y, gd_undraw);
-        delete gd_linedb;
-        gd_linedb = 0;
-        gd_undraw ^= true;
-        if (reset)
-            gd_first_ghost = true;
-    }
-}
-
-
-// Draw a ghost at x, y.
-//
-void
-sGdraw::draw_ghost(int x, int y)
-{
-    if (gd_draw_ghost && gd_show_ghost && !gd_undraw) {
-        gd_last_x = x;
-        gd_last_y = y;
-        gd_linedb = new GRlineDb;
-        (*gd_draw_ghost)(x, y, gd_ref_x, gd_ref_y, gd_undraw);
-        delete gd_linedb;
-        gd_linedb = 0;
-        gd_undraw ^= true;
-        gd_first_ghost = false;
-    }
-}
-// End of sGbag functions
-
-
-//-----------------------------------------------------------------------------
 // QTdraw functions
 
 QTdraw::QTdraw(int type)
@@ -237,6 +107,51 @@ QTdraw::QTdraw(int type)
 void
 QTdraw::Halt()
 {
+}
+
+
+//XXX Need transformations
+void
+QTdraw::Text(const char *str, int x, int y, int xform, int, int)
+{
+    if (!gd_viewport || !str || !*str)
+        return;
+
+    // Swap out embedded newlines for a special character so string
+    // remains on one line.
+    sLstr lstr;
+    if (strchr(str, '\n')) {
+        const char *t = str;
+        while (*t) {
+            if (*t == '\n') {
+                // This is the "section sign" UTF-8 character.
+                lstr.add_c(0xc2);
+                lstr.add_c(0xa7);
+            }
+            else
+                lstr.add_c(*t);
+            t++;
+        }
+        str = lstr.string();
+    }
+
+    // Handle justification.
+    int wid, hei;
+    TextExtent(str, &wid, &hei);
+    if (xform & (TXTF_HJC | TXTF_HJR)) {
+        if (xform & TXTF_HJR)
+            x -= wid;
+        else
+            x -= wid/2;
+    }
+    if (xform & (TXTF_VJC | TXTF_VJT)) {
+        if (xform & TXTF_VJT)
+            y += hei;
+        else
+            y += hei/2;
+    }
+
+    gd_viewport->draw_text(x, y, str, -1);
 }
 
 
@@ -289,27 +204,21 @@ QTdraw::DefineColor(int *pixel, int r, int g, int b)
 
 
 void
-QTdraw::SetGhostColor(int pixel)
-{
-    gd_viewport->set_ghost_color(pixel);
-}
-
-
-void
 QTdraw::Input(int*, int*, int*, int*)
 {
 }
 
 
+//XXX
 void
 QTdraw::SetXOR(int val)
 {
     switch (val) {
     case GRxNone:
-        gd_viewport->set_xor_mode(false);
+        gd_viewport->set_overlay_mode(false);
         break;
     case GRxXor:
-        gd_viewport->set_xor_mode(true);
+        gd_viewport->set_overlay_mode(true);
         break;
     case GRxHlite:
     case GRxUnhlite:
@@ -318,9 +227,31 @@ QTdraw::SetXOR(int val)
 }
 
 
+#define GlyphWidth 7
+
+namespace {
+    struct glymap { unsigned char bits[GlyphWidth]; } glyphs[] =
+    {
+       { {0x00, 0x1c, 0x22, 0x22, 0x22, 0x1c, 0x00} }, // circle
+       { {0x41, 0x22, 0x14, 0x08, 0x14, 0x22, 0x41} }, // cross (x)
+       { {0x08, 0x14, 0x22, 0x41, 0x22, 0x14, 0x08} }, // diamond
+       { {0x08, 0x14, 0x14, 0x22, 0x22, 0x41, 0x7f} }, // triangle
+       { {0x7f, 0x41, 0x22, 0x22, 0x14, 0x14, 0x08} }, // inverted triangle
+       { {0x7f, 0x41, 0x41, 0x41, 0x41, 0x41, 0x7f} }, // square
+       { {0x00, 0x00, 0x1c, 0x14, 0x1c, 0x00, 0x00} }, // dot
+       { {0x08, 0x08, 0x08, 0x7f, 0x08, 0x08, 0x08} }, // cross (+)
+    };
+}
+
+
+// Show a glyph (from the list) centered at x,y.
+//
 void
-QTdraw::ShowGlyph(int, int, int)
+QTdraw::ShowGlyph(int gnum, int x, int y)
 {
+    gnum = gnum % (sizeof(glyphs)/sizeof(glymap));
+    glymap *g = &glyphs[gnum];
+    gd_viewport->draw_glyph(x, y, g->bits, GlyphWidth);
 }
 
 

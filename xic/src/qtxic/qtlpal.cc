@@ -210,7 +210,6 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
 
     gd_viewport = new QTcanvas();
     vb->addWidget(gd_viewport->widget());
-    Gbag()->set_draw_if(gd_viewport);
     Viewport()->setFocusPolicy(Qt::StrongFocus);
     Viewport()->setAcceptDrops(true);
 

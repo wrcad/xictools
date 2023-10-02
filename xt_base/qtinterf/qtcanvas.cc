@@ -54,6 +54,7 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     setMouseTracking(true);
 
     da_pixmap = new QPixmap(1, 1);
+    da_overlay_bg = 0;
     da_pixmap2 = 0;
     da_pixmap_bak = 0;
     da_tile_pixmap = 0;
@@ -63,14 +64,32 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     da_tile_x = 0;
     da_tile_y = 0;
     da_fill_mode = false;
-    da_xor_mode = false;
-    da_direct_mode = false;
+    da_ghost_bg_set = false;
+    da_overlay_count = 0;
     da_line_mode = 0;
     da_line_style = 0;
     da_xb1 = 0;
     da_yb1 = 0;
     da_xb2 = 0;
     da_yb2 = 0;
+    da_olx = 0;
+    da_oly = 0;
+    da_olw = 0;
+    da_olh = 0;
+
+    // Ghost drawing.
+    gd_overlay_bg = 0;
+    gd_ghost_draw_func = 0;
+    gd_linedb = 0;
+    gd_ref_x = 0;
+    gd_ref_y = 0;
+    gd_last_x = 0;
+    gd_last_y = 0;
+    gd_ghost_cx_cnt = 0;
+    gd_first_ghost = false;
+    gd_show_ghost = false;
+    gd_undraw = false;
+    gd_xor_mode = false;
 
     da_bg.setNamedColor(QString("white"));
     da_fg.setNamedColor(QString("black"));
@@ -88,11 +107,17 @@ QTcanvas::~QTcanvas()
         da_painter->end();
     delete da_pixmap;
     delete da_painter;
+    delete da_overlay_bg;
+    delete gd_overlay_bg;
     if (da_pixmap_bak) {
+        if (da_painter_bak->isActive())
+            da_painter_bak->end();
         delete da_pixmap_bak;
         delete da_painter_bak;
     }
     else if (da_pixmap2) {
+        if (da_painter2->isActive())
+            da_painter2->end();
         delete da_pixmap2;
         delete da_painter2;
     }
@@ -102,20 +127,6 @@ QTcanvas::~QTcanvas()
 //
 // The drawing interface.
 //
-
-// This switches "direct mode" on/off.  When not in direct mode, the
-// drawing target is a pixmap, which can be drawn on at any time. 
-// During a paint event, the window surface is updated from the
-// pixmap.  In direct mode, after updating from the pixmap, the paint
-// event is emitted and the user can handle this and paint directly.
-// DOES NOT WORK IN QT.
-//
-void
-QTcanvas::draw_direct(bool direct)
-{
-    (void)direct;
-//    da_direct_mode = direct;
-}
 
 
 // Switch the drawing context to the second pixmap.
@@ -130,7 +141,6 @@ QTcanvas::switch_to_pixmap2()
     if (!da_pixmap2) {
         da_pixmap2 = new QPixmap(da_pixmap->size());
         da_painter2 = new QPainter(da_pixmap2);
-//        da_painter2->clear();
     }
     da_pixmap_bak = da_pixmap;
     da_pixmap = da_pixmap2;
@@ -168,6 +178,122 @@ printf("sw from\n");
 }
 
 
+void
+QTcanvas::set_overlay_mode(bool set)
+{
+    if (set) {
+        if (da_overlay_count == DA_MAX_OVERLAY) {
+            fprintf(stderr, "Error: QTcanvas::set_overlay_mode call overflow\n");
+            return;
+        }
+
+        // This should have been called already, but if not do it here.
+        if (!da_overlay_bg)
+            create_overlay_backg();
+
+        // Set up to accumulate the bounding box of rendered area
+        // while in overlay mode.  This area will be used to update
+        // the screen.
+
+        if (da_overlay_count == 0)
+            bb_init();
+        da_overlay_count++;
+    }
+    else {
+        if (!da_overlay_count)
+            return;
+
+        // Switch out of overlay mode and reepaint the area modified
+        // while in overlay mode.
+
+        da_overlay_count--;
+        if (da_overlay_count == 0) {
+            da_olx = da_xb1;
+            da_oly = da_yb1;
+            da_olw = da_xb2-da_xb1+1;
+            da_olh = da_yb2-da_yb1+1;
+            if (da_olw > 0 && da_olh > 0) {
+                repaint(da_olx, da_oly, da_olw, da_olh);
+            }
+            bb_init();
+        }
+    }
+}
+
+
+void
+QTcanvas::create_overlay_backg()
+{
+    // Make sure that the overlay_bg is size consistent with the main
+    // pixmap and copy the main pixmap into it.  The user must call this
+    // before entering overlay mode.
+
+    if (da_overlay_bg && (da_overlay_bg->size() != da_pixmap->size())) {
+        delete da_overlay_bg;
+        da_overlay_bg = 0;
+    }
+    if (!da_overlay_bg)
+        da_overlay_bg = new QPixmap(da_pixmap->size());
+    QPainter painter(da_overlay_bg);
+    painter.drawPixmap(0, 0, *da_pixmap, 0, 0,
+        da_pixmap->width(), da_pixmap->height());
+}
+
+
+// Erase the accumulated drawn area of the recently completed
+// overlay drawing by copying in the backing pixmap.
+//
+void
+QTcanvas::erase_last_overlay()
+{
+    if (da_overlay_count && da_overlay_bg && da_olw > 0 && da_olh > 0) {
+        da_painter->drawPixmap(da_olx, da_oly, da_olw, da_olh,
+            *da_overlay_bg, da_olx, da_oly, da_olw, da_olh);
+        bb_add(da_olx, da_oly);
+        bb_add(da_olx + da_olw, da_oly + da_olh);
+    }
+}
+
+/*
+Theory of overlays.
+
+There are three drawing levels, from the bottom up.  The lowest
+"base" level contains the complex drawing, that is likely expensive
+to render.  Above this is the "annotation" overlay which may
+contain circles and arrows and text.  These come and go, and we can
+erase these objects efficiently by copying up the base level
+pixmap.  Above the annotation is an overlay for "ghost" objects,
+which are animations, generally attached to the mouse cursor.  The
+background generated from the annotation level is used to
+efficiently erase the ghosts.
+
+The main context element is the background pixmap.  This must be
+switched between the three sources before drawing into an overlay. 
+The logic for this may be a bit tricky.
+
+When a new scene is generated, the base and annotation backgrounds are
+generated:
+
+compose base
+create base background
+draw annotation
+create annotation background.
+
+The ghost background is computed when a ghost-drawing mode is entered,
+in graphics code, not in the application.
+
+The base background is created whenever the window is redrawn from
+scratch, after a mode change of some sort.  There is likely one place
+in the application where this is done.  In this same location, after
+default annotation is applied, the annotation background can be created.
+The annotation backgound may subsequently change as the annotation
+changes within the application.  This must be implementated in
+application code.
+*/
+
+
+
+
 // Switch the drawing context to the supplied pixmap, or back to the
 // main pixmap if 0 is passed.
 //
@@ -196,6 +322,21 @@ QTcanvas::set_draw_to_pixmap(QPixmap *pixmap)
 }
 
 
+void
+QTcanvas::set_clipping(int xx, int yy, int w, int h)
+{
+    // Set a clip rectangle in the main pixmap painter.  Call with
+    // zero w and h to end clipping.
+
+    if (w > 0 && h > 0) {
+        da_painter->setClipRect(QRectF(xx, yy, w, h));
+        da_painter->setClipping(true);
+    }
+    else
+        da_painter->setClipping(false);
+}
+
+
 // Copy the pixmap2 area into the main pixmap.
 //
 void
@@ -209,11 +350,22 @@ QTcanvas::refresh(int xx, int yy, int w, int h)
 }
 
 
-// Paint the screen window from the main pixmap.
+// If not in overlay mode paint the screen window from the main
+// pixmap.  When in overlay mode, instead copy the overlay background
+// into the main pixmap, effecting erasure of the overlay drawing in
+// the given area.
 //
 void
 QTcanvas::update(int xx, int yy, int w, int h)
 {
+    if (da_overlay_count) {
+        if (da_overlay_bg) {
+            da_painter->drawPixmap(xx, yy, w, h, *da_overlay_bg, xx, yy, w, h);
+            bb_add(xx, yy);
+            bb_add(xx+w, yy+h);
+        }
+        return;
+    }
     repaint(xx, yy, w, h);
 }
 
@@ -252,10 +404,7 @@ void
 QTcanvas::set_foreground(unsigned int pix)
 {
     da_fg.setRgb(pix);
-    da_brush.setColor(da_fg);
-    da_pen.setColor(da_fg);
-    da_painter->setPen(da_pen);
-    da_painter->setBrush(da_brush);
+    set_color(da_fg);
 }
 
 
@@ -265,6 +414,8 @@ void
 QTcanvas::set_background(unsigned int pix)
 {
     da_bg.setRgb(pix);
+    if (gd_xor_mode)
+        da_ghost_fg.setRgb(da_ghost.rgb() ^ da_bg.rgb());
 }
 
 
@@ -273,6 +424,8 @@ QTcanvas::set_background(unsigned int pix)
 void
 QTcanvas::draw_pixel(int x0, int y0)
 {
+    if (da_overlay_count)
+        bb_add(x0, y0);
     da_pen.setStyle(Qt::SolidLine);
     da_painter->setPen(da_pen);
     da_painter->drawPoint(x0, y0);
@@ -284,6 +437,17 @@ QTcanvas::draw_pixel(int x0, int y0)
 void
 QTcanvas::draw_pixels(GRmultiPt *p, int n)
 {
+    if (da_overlay_count) {
+        p->data_ptr_init();
+        int nn = n;
+        while (nn--) {
+            int xx = p->data_ptr_x();
+            int yy = p->data_ptr_y();
+            bb_add(xx, yy);
+            p->data_ptr_inc();
+        }
+    }
+
     QPolygon poly;
     poly.setPoints(n, (int*)p->data());
     da_pen.setStyle(Qt::SolidLine);
@@ -413,7 +577,7 @@ QTcanvas::draw_line_prv(int x1, int y1, int x2, int y2)
 void
 QTcanvas::draw_line(int x1, int y1, int x2, int y2)
 {
-    if (da_xor_mode) {
+    if (da_overlay_count) {
         bb_add(x1, y1);
         bb_add(x2, y2);
     }
@@ -442,7 +606,7 @@ QTcanvas::draw_polyline(GRmultiPt *p, int n)
     if (n < 2)
         return;
 
-    if (da_xor_mode) {
+    if (da_overlay_count) {
         p->data_ptr_init();
         int nn = n;
         while (nn--) {
@@ -486,7 +650,7 @@ QTcanvas::draw_lines(GRmultiPt *p, int n)
     if (n < 1)
         return;
 
-    if (da_xor_mode) {
+    if (da_overlay_count) {
         p->data_ptr_init();
         int nn = n;
         while (nn--) {
@@ -600,7 +764,7 @@ QTcanvas::set_fillpattern(const GRfillType *fillp)
 void
 QTcanvas::draw_box(int x1, int y1, int x2, int y2)
 {
-    if (da_xor_mode) {
+    if (da_overlay_count) {
         bb_add(x1, y1);
         bb_add(x2, y2);
     }
@@ -631,7 +795,7 @@ QTcanvas::draw_boxes(GRmultiPt *p, int n)
         int yy = p->data_ptr_y();
         p->data_ptr_inc();
         da_painter->drawRect(xx, yy, p->data_ptr_x() - 1, p->data_ptr_y() - 1);
-        if (da_xor_mode) {
+        if (da_overlay_count) {
             bb_add(xx, yy);
             xx += p->data_ptr_x() - 1;
             yy += p->data_ptr_y() - 1;
@@ -647,7 +811,7 @@ QTcanvas::draw_boxes(GRmultiPt *p, int n)
 void
 QTcanvas::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 {
-    if (da_xor_mode) {
+    if (da_overlay_count) {
         bb_add(x0-r, y0-r);
         bb_add(x0+r, y0+r);
     }
@@ -667,7 +831,7 @@ QTcanvas::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 void
 QTcanvas::draw_polygon(GRmultiPt *p, int n)
 {
-    if (da_xor_mode) {
+    if (da_overlay_count) {
         p->data_ptr_init();
         while (n--) {
             int xx = p->data_ptr_x();
@@ -683,7 +847,7 @@ QTcanvas::draw_polygon(GRmultiPt *p, int n)
 void
 QTcanvas::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 {
-    if (da_xor_mode) {
+    if (da_overlay_count) {
         bb_add(xll, yl);
         bb_add(xul, yu);
         bb_add(xlr, yl);
@@ -781,8 +945,14 @@ QTcanvas::draw_text(int x0, int y0, const char *str, int len)
     if (len >= 0)
         qs.truncate(len);
 
-    // This changed between 4.0.1 and 4.1.2, the pen style can't be
-    // Qt::NoPen or text will not be rendered.
+    if (da_overlay_count) {
+        const QFont &f = font();
+        QFontMetrics fm(f);
+        QRect r = fm.boundingRect(qs);
+        bb_add(x0 + r.x(), y0 + r.y());
+        bb_add(x0 + r.x() + r.width(), y0 + r.y() + r.height());
+    }
+
     da_painter->setFont(font());
     da_pen.setStyle(Qt::SolidLine);
     da_painter->setPen(da_pen);
@@ -792,27 +962,26 @@ QTcanvas::draw_text(int x0, int y0, const char *str, int len)
 }
 
 
+// Draw a len X len glyph with bitmap data given in bits centered at
+// x0, y0.
 void
-QTcanvas::set_xor_mode(bool set)
+QTcanvas::draw_glyph(int x0, int y0, const unsigned char *bits, int len)
 {
-    if (set) {
-        da_xor_mode = true;
-        bb_init();
-        da_painter->setCompositionMode(QPainter::RasterOp_SourceXorDestination);
+    x0 -= len/2;
+    y0 -= len/2;
+    if (da_overlay_count) {
+        bb_add(x0, y0);
+        bb_add(x0 + len, y0 + len);
     }
-    else {
-        repaint(da_xb1, da_yb1, da_xb2-da_xb1+1, da_yb2-da_yb1+1);
-        da_painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-        da_xor_mode = false;
-    }
-}
-
-
-void
-QTcanvas::set_ghost_color(unsigned int pixel)
-{
-    da_ghost.setRgb(pixel);
-    da_ghost_fg.setRgb(pixel ^ da_bg.rgb());
+    Qt::BrushStyle st = da_brush.style();
+    QBitmap bm(QBitmap::fromData(QSize(len, len), bits));
+    da_brush.setTexture(bm);
+    da_brush.setTransform(QTransform::fromTranslate(x0, y0));
+    da_painter->setBrush(da_brush);
+    da_painter->drawRect(x0, y0, len, len);
+    da_brush.setStyle(st);
+    da_brush.setTransform(QTransform());
+    da_painter->setBrush(da_brush);
 }
 
 
@@ -939,6 +1108,8 @@ QTcanvas::resizeEvent(QResizeEvent *ev)
     da_painter->end();
     delete da_painter;
     delete da_pixmap;
+    delete da_overlay_bg;
+    da_overlay_bg = 0;
     da_pixmap = new QPixmap(ev->size());
     da_painter = new QPainter(da_pixmap);
     da_painter->setFont(fnt);
@@ -983,21 +1154,6 @@ QTcanvas::paintEvent(QPaintEvent *ev)
         }
         */
     }
-    /*
-    if (da_direct_mode) {
-        // The application can handle this to draw highlighting that
-        // is not in the pixmap.  In some applications, it is
-        // desirable to keep highlighting out of the pixmap, since it
-        // can be very expensive to erase the highlighting.
-        //
-        QPainter *t = da_painter;
-        da_painter = &p;
-        da_painter->setBrush(da_brush);
-        da_painter->setPen(da_pen);
-        emit paint_event(ev);
-        da_painter = t;
-    }
-    */
 }
 
 
@@ -1086,5 +1242,188 @@ QTcanvas::initialize()
     da_painter->setPen(da_pen);
     clear();
     bb_init();
+}
+
+
+// Ghost drawing.
+
+void
+QTcanvas::set_ghost(GhostDrawFunc callback, int x, int y)
+{
+    if (gd_ghost_draw_func) {
+        if (gd_undraw && !gd_first_ghost) {
+            // undraw last
+            set_overlay_mode(true);
+            if (gd_xor_mode) {
+                da_painter->setCompositionMode(
+                    QPainter::RasterOp_SourceXorDestination);
+                set_color(da_ghost_fg);
+                gd_linedb = new GRlineDb;
+                (*gd_ghost_draw_func)(gd_last_x, gd_last_y,
+                    gd_ref_x, gd_ref_y, gd_undraw);
+                delete gd_linedb;
+                gd_linedb = 0;
+                set_color(da_fg);
+                da_painter->setCompositionMode(
+                    QPainter::CompositionMode_SourceOver);
+            }
+            else
+                erase_last_overlay();
+            gd_undraw = false;
+            set_overlay_mode(false);
+        }
+        gd_ghost_draw_func = 0;
+    }
+
+    if (callback) {
+        if (!da_ghost_bg_set) {
+            QPixmap *tmp = da_overlay_bg;
+            da_overlay_bg = gd_overlay_bg;
+            gd_overlay_bg = tmp;
+            da_ghost_bg_set = true;
+        }
+        create_overlay_backg();
+
+        gd_ghost_draw_func = callback;
+        gd_ref_x = x;
+        gd_ref_y = y;
+        gd_last_x = 0;
+        gd_last_y = 0;
+        gd_ghost_cx_cnt = 0;
+        gd_first_ghost = true;
+        gd_show_ghost = true;
+        gd_undraw = false;
+    }
+    else if (gd_show_ghost) {
+        gd_show_ghost = false;
+
+        if (da_ghost_bg_set) {
+            QPixmap *tmp = da_overlay_bg;
+            da_overlay_bg = gd_overlay_bg;
+            gd_overlay_bg = tmp;
+            da_ghost_bg_set = false;
+        }
+    }
+}
+
+
+// Turn on/off display of ghosting.  Keep track of calls in ghost_cx_cnt.
+//
+void
+QTcanvas::show_ghost(bool show)
+{
+    if (!show) {
+        if (!gd_ghost_cx_cnt && gd_show_ghost) {
+            undraw_ghost(false);
+            gd_show_ghost = false;
+            gd_first_ghost = true;
+
+            if (da_ghost_bg_set) {
+                QPixmap *tmp = da_overlay_bg;
+                da_overlay_bg = gd_overlay_bg;
+                gd_overlay_bg = tmp;
+                da_ghost_bg_set = false;
+            }
+//printf("show0 %p\n", da_overlay_bg);
+        }
+        gd_ghost_cx_cnt++;
+    }
+    else {
+        if (gd_ghost_cx_cnt)
+            gd_ghost_cx_cnt--;
+        if (!gd_ghost_cx_cnt && !gd_show_ghost && gd_ghost_draw_func) {
+
+            if (!da_ghost_bg_set) {
+                QPixmap *tmp = da_overlay_bg;
+                da_overlay_bg = gd_overlay_bg;
+                gd_overlay_bg = tmp;
+                da_ghost_bg_set = true;
+            }
+            create_overlay_backg();
+//printf("show 1 %p\n", da_overlay_bg);
+
+            gd_show_ghost = true;
+
+            // This will redraw ghost.
+            QPoint qp = QCursor::pos();
+            QCursor::setPos(qp.x() + 0, qp.y() + 0);
+        }
+    }
+}
+
+
+// Erase the last ghost.
+//
+void
+QTcanvas::undraw_ghost(bool reset)
+{
+    if (gd_ghost_draw_func && gd_show_ghost && gd_undraw &&
+            !gd_first_ghost) {
+        set_overlay_mode(true);
+        if (gd_xor_mode) {
+            da_painter->setCompositionMode(QPainter::RasterOp_SourceXorDestination);
+            set_color(da_ghost_fg);
+            gd_linedb = new GRlineDb;
+            (*gd_ghost_draw_func)(gd_last_x, gd_last_y,
+                gd_ref_x, gd_ref_y, gd_undraw);
+            delete gd_linedb;
+            gd_linedb = 0;
+            set_color(da_fg);
+            da_painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+        }
+        else
+            erase_last_overlay();
+        gd_undraw = false;
+        if (reset)
+            gd_first_ghost = true;
+        set_overlay_mode(false);
+    }
+}
+
+
+// Draw a ghost at x, y.
+//
+void
+QTcanvas::draw_ghost(int x, int y)
+{
+    if (gd_ghost_draw_func && gd_show_ghost && !gd_undraw) {
+        set_overlay_mode(true);
+        gd_last_x = x;
+        gd_last_y = y;
+        if (gd_xor_mode) {
+            da_painter->setCompositionMode(QPainter::RasterOp_SourceXorDestination);
+            set_color(da_ghost_fg);
+            gd_linedb = new GRlineDb;
+            (*gd_ghost_draw_func)(x, y, gd_ref_x, gd_ref_y, gd_undraw);
+            delete gd_linedb;
+            gd_linedb = 0;
+            set_color(da_fg);
+            da_painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+        }
+        else
+            (*gd_ghost_draw_func)(x, y, gd_ref_x, gd_ref_y, gd_undraw);
+        gd_undraw = true;
+        gd_first_ghost = false;
+        set_overlay_mode(false);
+    }
+}
+
+
+void
+QTcanvas::set_ghost_mode(bool xor_mode)
+{
+    gd_xor_mode = xor_mode;
+}
+
+
+void
+QTcanvas::set_ghost_color(unsigned int pixel)
+{
+    if (gd_xor_mode) {
+        da_ghost.setRgb(pixel);
+        da_ghost_fg.setRgb(pixel ^ da_bg.rgb());
+    }
+    else
+        set_foreground(pixel);
 }
 

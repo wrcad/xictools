@@ -74,10 +74,13 @@ public:
     QWidget *widget()           { return (this); }
     QPixmap *pixmap()           { return (da_pixmap); }
 
-    void draw_direct(bool);
     void switch_to_pixmap2();
     void switch_from_pixmap2(int, int, int, int, int, int);
+    void set_overlay_mode(bool);
+    void create_overlay_backg();
+    void erase_last_overlay();
     void set_draw_to_pixmap(QPixmap*);
+    void set_clipping(int, int, int, int);
     void refresh(int, int, int, int);
     void refresh()              { refresh(0, 0, width(), height()); }
     void update(int, int, int, int);
@@ -109,9 +112,7 @@ public:
     int  text_width(QFont*, const char*, int);
     void text_extent(const char*, int*, int*);
     void draw_text(int, int, const char*, int);
-
-    void set_xor_mode(bool);
-    void set_ghost_color(unsigned int);
+    void draw_glyph(int, int, const unsigned char*, int);
 
     void draw_pixmap(int, int, QPixmap*, int, int, int, int);
     void draw_image(int, int, QImage*, int, int, int, int);
@@ -126,6 +127,25 @@ public:
     void draw_polygon(bool, QPoint*, int);
 
     QPainter *cur_painter() { return (da_painter); }
+
+    // Ghost drawing.
+    void set_ghost(GhostDrawFunc, int, int);
+    void show_ghost(bool);
+    void undraw_ghost(bool);
+    void draw_ghost(int, int);
+
+    void set_ghost_mode(bool);
+    void set_ghost_color(unsigned int);
+    bool has_ghost()        { return (gd_ghost_draw_func != 0); }
+    bool showing_ghost()    { return (gd_show_ghost && has_ghost()); }
+    GRlineDb *linedb()      { return (gd_linedb); }
+
+    GhostDrawFunc get_ghost_func()  { return (gd_ghost_draw_func); }
+    void set_ghost_func(GhostDrawFunc f)
+    {
+        gd_ghost_draw_func = f;
+        gd_first_ghost = true;
+    }
 
 signals:
     void resize_event(QResizeEvent*);
@@ -159,6 +179,14 @@ protected:
     void dropEvent(QDropEvent*);
 
 private:
+    void set_color(const QColor &qc)
+    {
+        da_brush.setColor(qc);
+        da_pen.setColor(qc);
+        da_painter->setPen(da_pen);
+        da_painter->setBrush(da_brush);
+    }
+
     // Init a bounding box for refreshing.                                 
     void bb_init()
     {
@@ -184,38 +212,56 @@ private:
     void draw_line_prv(int, int, int, int);
     void initialize();
 
-    QPixmap     *da_pixmap;         // main pixmap
-    QPixmap     *da_pixmap2;        // backing pixmap
-    QPixmap     *da_pixmap_bak;     // mode_swap_backing
-    QPixmap     *da_tile_pixmap;    // tiling pixmap;
-    QPainter    *da_painter;        // main painter, paints da_pixmap
-    QPainter    *da_painter2;       // backing painter, paints da_pixmap2
-    QPainter    *da_painter_bak;    // mode swap backing
-    QColor      da_fg;              // foreground color
-    QColor      da_bg;              // background color
-    QColor      da_ghost;           // ghost color
-    QColor      da_ghost_fg;        // ghost color ^ background
-    QBrush      da_brush;           // solid fill brush 
-    QPen        da_pen;             // min width pen
-    int         da_tile_x;          // tile origin x
-    int         da_tile_y;          // tile origin y
-    bool        da_fill_mode;       // true when tiling
-    bool        da_xor_mode;        // true in XOR mode
-    bool        da_direct_mode;     // direct mode, see note in draw_direct
-    int         da_line_mode;       // true when using internal textured
-                                    //  lines (Qt::PenStyle - 1)
+    QPixmap     *da_pixmap;         // Main pixmap.
+    QPixmap     *da_overlay_bg;     // Background pixmap for overlay.
+    QPixmap     *da_pixmap2;        // Backing pixmap.
+    QPixmap     *da_pixmap_bak;     // Mode_swap_backing.
+    QPixmap     *da_tile_pixmap;    // Tiling pixmap.
+    QPainter    *da_painter;        // Main painter, paints da_pixmap.
+    QPainter    *da_painter2;       // Backing painter, paints da_pixmap2.
+    QPainter    *da_painter_bak;    // Mode swap backing.
+    QColor      da_fg;              // Foreground color.
+    QColor      da_bg;              // Background color.
+    QColor      da_ghost;           // Ghost color.
+    QColor      da_ghost_fg;        // Ghost color ^ background.
+    QBrush      da_brush;           // Solid fill brush.
+    QPen        da_pen;             // Min width pen.
+    int         da_tile_x;          // Tile origin x.
+    int         da_tile_y;          // Tile origin y.
+    bool        da_fill_mode;       // True when tiling.
+    bool        da_ghost_bg_set;    // True when the ghost bg is overlay_bg
+#define DA_MAX_OVERLAY 32
+    char        da_overlay_count;   // Overlay nesting count.
+    int         da_line_mode;       // Nonzero when using internal textured
+                                    //  lines (Qt::PenStyle - 1).
                                     //  1: dashes separated by a few pixels
                                     //  2: dots separated by a few pixels
                                     //  3: alternate dots and dashes
                                     //  4: one dash, two dots, one dash,
                                     //     two dots
     const
-    GRlineType *da_line_style;      // set for user-defined texture,
-                                    //  da_line_mode = 0 in this case
+    GRlineType *da_line_style;      // Set for user-defined texture,
+                                    //  da_line_mode = 0 in this case.
 
-    // Keep a bounding box for refreshing.                                 
-    int         da_xb1, da_yb1;
-    int         da_xb2, da_yb2;
+    int         da_xb1, da_yb1;     // Accumulated bounding box for
+    int         da_xb2, da_yb2;     //  drawing overlay.
+
+    int         da_olx, da_oly;     // Previous accumulated overlay
+    int         da_olw, da_olh;     //  bounding box.
+
+    // Ghost drawing.
+    QPixmap     *gd_overlay_bg;
+    GhostDrawFunc gd_ghost_draw_func;
+    GRlineDb    *gd_linedb;
+    int         gd_ref_x;
+    int         gd_ref_y;
+    int         gd_last_x;
+    int         gd_last_y;
+    int         gd_ghost_cx_cnt;
+    bool        gd_first_ghost;
+    bool        gd_show_ghost;
+    bool        gd_undraw;
+    bool        gd_xor_mode;        // XOR drawing, not supported presently
 };
 
 #endif

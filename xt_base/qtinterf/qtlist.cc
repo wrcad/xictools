@@ -73,6 +73,7 @@ QTbag::PopUpList(stringlist *symlist, const char *title,
     QTlistDlg *list = new QTlistDlg(this, symlist, title, header,
         usepix);
     list->register_callback(callback);
+    list->set_callback_arg(arg);
 
     list->set_visible(true);
     return (list);

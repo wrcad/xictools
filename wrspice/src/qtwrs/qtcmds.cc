@@ -242,7 +242,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     grid->setSpacing(2);
 
     gb = new QGroupBox();
-    grid->addWidget(gb, 0, 0);
+    grid->addWidget(gb, 0, 0, 1, 2);
     hb = new QHBoxLayout(gb);
     label = new QLabel(tr("The check Command"));
     hb->addWidget(label);
@@ -254,14 +254,13 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
             STRINGIFY(DEF_checkiterate));
         grid->addWidget(entry->qtent(), 1, 0);
         entry->qtent()->setup(DEF_checkiterate, 1.0, 0.0, 0.0, 0);
-//XXX        grid->setStretch(1, 1, 1);
     }
 
     entry = KWGET(kw_mplot_cur);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_string_func, entry,
             "");
-        grid->addWidget(entry->qtent(), 2, 0);
+        grid->addWidget(entry->qtent(), 2, 0, 1, 2);
     }
     grid->setRowStretch(3, 1);
 
@@ -627,7 +626,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
         TB()->FixLoc(&x, &y);
         move(x, y);
     }
-    TB()->SetActive(tid_commands, true);
+    TB()->SetActiveDlg(tid_commands, this);
 }
 
 
@@ -636,7 +635,7 @@ QTcmdParamDlg::~QTcmdParamDlg()
     TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_CM);
     instPtr = 0;
     TB()->SetLoc(tid_commands, this);
-    TB()->SetActive(tid_commands, false);
+    TB()->SetActiveDlg(tid_commands, 0);
     QTtoolbar::entries(tid_commands)->action()->setChecked(false);
 }
 
@@ -701,130 +700,3 @@ QTcmdParamDlg::help_btn_slot(bool state)
         TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_CM);
 }
 
-//XXX
-#ifdef notdef
-
-namespace {
-    int cmd_choice_hdlr(GtkWidget *caller, GdkEvent*, void *client_data)
-    {
-        xKWent *entry = static_cast<xKWent*>(client_data);
-        if (GTKdev::GetStatus(entry->ent->active))
-            return (true);
-        int i;
-        if (!strcmp(entry->word, kw_filetype)) {
-            const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
-            for (i = 0; KW.ft(i)->word; i++)
-                if (!strcmp(string, KW.ft(i)->word))
-                    break;
-            if (!KW.ft(i)->word) {
-                GRpkg::self()->ErrPrintf(ET_ERROR,
-                    "bad filetype found: %s.\n", string);
-                i = 0;
-            }
-            else {
-                if (g_object_get_data(G_OBJECT(caller), "down")) {
-                    i--;
-                    if (i < 0) {
-                        i = 0;
-                        while (KW.ft(i)->word && KW.ft(i+1)->word)
-                            i++;
-                    }
-                }
-                else {
-                    i++;
-                    if (!KW.ft(i)->word)
-                        i = 0;
-                }
-            }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry), KW.ft(i)->word);
-        }
-        else if (!strcmp(entry->word, kw_level)) {
-            const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
-            for (i = 0; KW.level(i)->word; i++)
-                if (!strcmp(string, KW.level(i)->word))
-                    break;
-            if (!KW.level(i)->word) {
-                GRpkg::self()->ErrPrintf(ET_ERROR,
-                    "bad level found: %s.\n", string);
-                i = 0;
-            }
-            else {
-                if (g_object_get_data(G_OBJECT(caller), "down")) {
-                    i--;
-                    if (i < 0) {
-                        i = 0;
-                        while (KW.level(i)->word && KW.level(i+1)->word)
-                            i++;
-                    }
-                }
-                else {
-                    i++;
-                    if (!KW.level(i)->word)
-                        i = 0;
-                }
-            }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),KW.level(i)->word);
-        }
-        else if (!strcmp(entry->word, kw_specwindow)) {
-            const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
-            for (i = 0; KW.spec(i)->word; i++)
-                if (!strcmp(string, KW.spec(i)->word))
-                    break;
-            if (!KW.spec(i)->word) {
-                GRpkg::self()->ErrPrintf(ET_ERROR,
-                    "bad specwindow found: %s.\n", string);
-                i = 0;
-            }
-            else {
-                if (g_object_get_data(G_OBJECT(caller), "down")) {
-                    i--;
-                    if (i < 0) {
-                        i = 0;
-                        while (KW.spec(i)->word && KW.spec(i+1)->word)
-                            i++;
-                    }
-                }
-                else {
-                    i++;
-                    if (!KW.spec(i)->word)
-                        i = 0;
-                }
-            }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry), KW.spec(i)->word);
-        }
-        else if (!strcmp(entry->word, kw_units)) {
-            const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
-            for (i = 0; KW.units(i)->word; i++)
-                if (!strcmp(string, KW.units(i)->word))
-                    break;
-            if (!KW.units(i)->word) {
-                GRpkg::self()->ErrPrintf(ET_ERROR,
-                    "bad units found: %s.\n", string);
-                i = 0;
-            }
-            else {
-                if (g_object_get_data(G_OBJECT(caller), "down")) {
-                    i--;
-                    if (i < 0) {
-                        i = 0;
-                        while (KW.units(i)->word && KW.units(i+1)->word)
-                            i++;
-                    }
-                }
-                else {
-                    i++;
-                    if (!KW.units(i)->word)
-                        i = 0;
-                }
-            }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),KW.units(i)->word);
-        }
-        return (true);
-    }
-}
-
-#endif

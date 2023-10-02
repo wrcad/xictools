@@ -226,7 +226,7 @@ QTfilesListDlg::QTfilesListDlg(int x, int y)
     update();
 
     TB()->FixLoc(&x, &y);
-    TB()->SetActive(tid_files, true);
+    TB()->SetActiveDlg(tid_files, this);
     move(x, y);
 }
 
@@ -244,7 +244,7 @@ QTfilesListDlg::~QTfilesListDlg()
         QTdev::Deselect(fl_caller);
     delete [] fl_selection;
     TB()->SetLoc(tid_files, this);
-    TB()->SetActive(tid_files, false);
+    TB()->SetActiveDlg(tid_files, 0);
     QTtoolbar::entries(tid_files)->action()->setChecked(false);
 }
 

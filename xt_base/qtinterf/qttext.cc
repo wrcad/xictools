@@ -162,6 +162,15 @@ QTtextDlg::~QTtextDlg()
 }
 
 
+QSize
+QTtextDlg::sizeHint() const
+{
+    int w = 80 * QTfont::stringWidth(0, FNT_FIXED);
+    int h = 24 * QTfont::lineHeight(FNT_FIXED);
+    return (QSize(w+4, h+4));
+}
+
+
 // GRpopup override
 //
 void

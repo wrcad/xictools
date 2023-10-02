@@ -62,6 +62,8 @@ public:
     QTtbHelpDlg(GRobject, GRobject, TBH_type);
     ~QTtbHelpDlg();
 
+    QSize sizeHint() const;
+
     TBH_type type()         { return (th_type); }
     GRobject parent()       { return (th_parent); }
     GRobject caller()       { return (th_caller); }

@@ -181,7 +181,7 @@ QTvarListDlg::QTvarListDlg(int x, int y, const char *s)
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     TB()->FixLoc(&x, &y);
-    TB()->SetActive(tid_variables, true);
+    TB()->SetActiveDlg(tid_variables, this);
     move(x, y);
 }
 
@@ -190,7 +190,7 @@ QTvarListDlg::~QTvarListDlg()
 {
     instPtr = 0;
     TB()->SetLoc(tid_variables, this);
-    TB()->SetActive(tid_variables, false);
+    TB()->SetActiveDlg(tid_variables, 0);
     QTtoolbar::entries(tid_variables)->action()->setChecked(false);
 }
 
@@ -225,29 +225,6 @@ QTvarListDlg::update(const char *s)
 void
 QTvarListDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    /*XXX
-    sTextPop *pop = (sTextPop*)arg;
-    if (event->type == GDK_BUTTON_PRESS) {
-        if (event->button.button == 1) {
-            pop->tp_lx = (int)event->button.x;
-            pop->tp_ly = (int)event->button.y;
-            return (false);
-        }
-        return (true);
-    }
-    if (event->type == GDK_BUTTON_RELEASE) {
-        if (event->button.button == 1) {
-            int x = (int)event->button.x;
-            int y = (int)event->button.y;
-            if (abs(x - pop->tp_lx) <= 4 && abs(y - pop->tp_ly) <= 4) {
-                if (pop->tp_callback)
-                    (*pop->tp_callback)(caller, pop->tp_lx, pop->tp_ly);
-            }
-            return (false);
-        }
-    }
-    */
-
     if (ev->type() != QEvent::MouseButtonPress) {
         ev->ignore();
         return;
@@ -257,6 +234,7 @@ QTvarListDlg::mouse_press_slot(QMouseEvent *ev)
     if (!instPtr)
         return;
 
+//XXX this is all dead code.
     QByteArray ba = wb_textarea->toPlainText().toLatin1();
     const char *str = ba.constData();
     int x = ev->x();

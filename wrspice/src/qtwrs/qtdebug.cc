@@ -277,7 +277,7 @@ QTdebugParamDlg::QTdebugParamDlg(int x, int y)
         TB()->FixLoc(&x, &y);
         move(x, y);
     }
-    TB()->SetActive(tid_debug, true);
+    TB()->SetActiveDlg(tid_debug, this);
 }
 
 
@@ -286,7 +286,7 @@ QTdebugParamDlg::~QTdebugParamDlg()
     TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_DB);
     instPtr = 0;
     TB()->SetLoc(tid_debug, this);
-    TB()->SetActive(tid_debug, false);
+    TB()->SetActiveDlg(tid_debug, 0);
     QTtoolbar::entries(tid_debug)->action()->setChecked(false);
 }
 
@@ -384,65 +384,4 @@ QTdebugParamDlg::set_btn_slot(int state)
         }
     }
 }
-
-
-/*XXX
-// Remove the plot defaults popup.  Called from the toolbar.
-//
-void
-GTKtoolbar::PopDownDebugDefs()
-{
-    if (!db_shell)
-        return;
-    TB()->PopDownTBhelp(TBH_DB);
-    SetLoc(ntb_debug, db_shell);
-
-    GTKdev::Deselect(tb_debug);
-    g_signal_handlers_disconnect_by_func(G_OBJECT(db_shell),
-        (gpointer)dbg_cancel_proc, db_shell);
-
-    int i;
-    for (i = 0; KW.debug(i)->word; i++) {
-        xKWent *ent = static_cast<xKWent*>(KW.debug(i));
-        if (ent->ent) {
-            if (ent->ent->entry) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
-                delete [] ent->lastv1;
-                ent->lastv1 = lstring::copy(str);
-            }
-            if (ent->ent->entry2) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
-                delete [] ent->lastv2;
-                ent->lastv2 = lstring::copy(str);
-            }
-            delete ent->ent;
-            ent->ent = 0;
-        }
-    }
-    for (i = 0; KW.dbargs(i)->word; i++) {
-        xKWent *ent = static_cast<xKWent*>(KW.dbargs(i));
-        if (ent->ent) {
-            if (ent->ent->entry) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
-                delete [] ent->lastv1;
-                ent->lastv1 = lstring::copy(str);
-            }
-            if (ent->ent->entry2) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
-                delete [] ent->lastv2;
-                ent->lastv2 = lstring::copy(str);
-            }
-            delete ent->ent;
-            ent->ent = 0;
-        }
-    }
-    gtk_widget_destroy(db_shell);
-    db_shell = 0;
-    SetActive(ntb_debug, false);
-}
-*/
 

@@ -58,7 +58,7 @@ Authors: 1988 Jeffrey M. Hsu
 #include "spnumber/spnumber.h"
 
 //
-// The graphics-package dependent part of the sGtaph structure.
+// The graphics-package (QT) dependent part of the sGraph class.
 //
 
 
@@ -125,7 +125,7 @@ sGraph::gr_init_btns()
 bool
 sGraph::gr_check_plot_events()
 {
-    /*
+    /*XXX can QT do this?
     GdkEvent *ev;
     while ((ev = gdk_event_peek()) != 0) {
         if (QTplotDlg::check_event(ev, this)) {
@@ -159,6 +159,10 @@ sGraph::gr_redraw()
     wb->Box(0, 0, width, height);
     gr_redraw_direct();  // This might change area().width/area().height.
 
+    // Save the un-annotated plot pixmap for refreshing behind
+    // user-editable annotation.
+    wb->DrawIf()->create_overlay_backg();
+
     gr_redraw_keyed();
     gr_dirty = false;
     wb->Update();
@@ -175,7 +179,12 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
     QTplotDlg *wb = dynamic_cast<QTplotDlg*>(gr_dev);
     area().set_width(wb->Viewport()->width());
     area().set_height(wb->Viewport()->height());
-    wb->Refresh(left, top, right - left, bottom - top);
+    if (!notxt) {
+        wb->DrawIf()->set_clipping(left, top, right-left + 1, bottom-top + 1);
+        gr_redraw_keyed();
+        wb->DrawIf()->set_clipping(0, 0, 0, 0);
+    }
+    wb->Update(left, top, right-left + 1, bottom-top + 1);
 }
 
 

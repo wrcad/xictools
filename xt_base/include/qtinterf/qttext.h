@@ -69,6 +69,8 @@ public:
     QTtextDlg(QTbag*, const char*, PuType=PuInfo, STYtype=STY_NORM);
     ~QTtextDlg();
 
+    QSize sizeHint() const;
+
     // GRpopup overrides
     void set_visible(bool visib)
     {

@@ -418,7 +418,7 @@ struct sGraph
     void gr_zoom(double, double, double, double);
     void gr_end();
     void gr_mark();
-    void gr_refmark();
+    void gr_refmark(bool);
     void gr_setref(int, int);
     void gr_data_to_screen(double, double, int*, int*);
     void gr_screen_to_data(int, int, double*, double*);

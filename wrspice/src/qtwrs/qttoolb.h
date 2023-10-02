@@ -51,6 +51,7 @@ enum tid_id { tid_toolbar, tid_bug, tid_font, tid_files, tid_circuits,
 
 class QTtbHelpDlg;
 class QAction;
+class QDialog;
 
 extern inline class QTtoolbar *TB();
 
@@ -76,31 +77,34 @@ public:
         tbent_t(const char *n = 0, int i = -1)
         {
             te_action = 0;
+            te_dialog = 0;
             te_name = n;
             te_id = i;
-            te_active = false;
             te_x = te_y = 0;
         }
 
         QAction *action()       const { return (te_action); }
         const char *name()      const { return (te_name); }
         int id()                const { return (te_id); }
-        bool active()           const { return (te_active); }
+        QDialog *dialog()       const { return (te_dialog); }
         int x()                 const { return (te_x); }
         int y()                 const { return (te_y); }
+        bool active()           const { return (te_active); }
 
         void set_action(QAction *a)     { te_action = a; }
         void set_name(const char *n)    { te_name = n; }
         void set_id(int i)              { te_id = i; }
-        void set_active(bool b)         { te_active = b; }
+        void set_dialog(QDialog *d)     { te_dialog = d; }
         void set_xy(int ix, int iy)     { te_x = ix; te_y = iy; }
+        void set_active(bool b)         { te_active = b; }
 
     private:
-        QAction     *te_action;
-        const char  *te_name;
-        int         te_id;
-        bool        te_active;
-        int         te_x, te_y;
+        QAction     *te_action;     // menu button
+        QDialog     *te_dialog;     // dialog when active
+        const char  *te_name;       // dialog name
+        int         te_id;          // dialog id
+        bool        te_active;      // show on startup
+        int         te_x, te_y;     // dialog last location
     };
 
     struct tbpoint_t
@@ -200,24 +204,17 @@ public:
 
     // Register that a tool is active, or not.
     //
-    static void SetActive(tid_id id, bool state)
+    static void SetActiveDlg(tid_id id, QDialog *d)
     {
-        tb_entries[id].set_active(state);
+        tb_entries[id].set_dialog(d);
     }
 
-    static void SetLoc(tid_id, QWidget*);
+    static void SetLoc(tid_id, QDialog*);
     static void FixLoc(int*, int*);
     static char *ConfigString();
 
     // gtkcolor.cc
     const char *XRMgetFromDb(const char*);
-
-/*XXX
-    GtkWidget *TextPop(int, int, const char*, const char*,
-        const char*, void(*)(GtkWidget*, int, int), const char**, int,
-        void(*)(GtkWidget*, void*));
-    void RUsure(GtkWidget*, void(*)());
-*/
 
     bool Saved()            { return (tb_saved); }
     void SetSaved(bool b)   { tb_saved = b; }

@@ -321,7 +321,7 @@ QTcolorParamDlg::QTcolorParamDlg(int x, int y)
         TB()->FixLoc(&x, &y);
         move(x, y);
     }
-    TB()->SetActive(tid_colors, true);
+    TB()->SetActiveDlg(tid_colors, this);
 }
 
 
@@ -329,7 +329,7 @@ QTcolorParamDlg::~QTcolorParamDlg()
 {
     instPtr = 0;
     TB()->SetLoc(tid_colors, this);
-    TB()->SetActive(tid_colors, false);
+    TB()->SetActiveDlg(tid_colors, 0);
     QTtoolbar::entries(tid_colors)->action()->setChecked(false);
 }
 

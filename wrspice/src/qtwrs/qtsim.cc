@@ -718,7 +718,7 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
         TB()->FixLoc(&x, &y);
         move(x, y);
     }
-    TB()->SetActive(tid_simdefs, true);
+    TB()->SetActiveDlg(tid_simdefs, this);
 }
 
 
@@ -727,7 +727,7 @@ QTsimParamDlg::~QTsimParamDlg()
     TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_SD);
     instPtr = 0;
     TB()->SetLoc(tid_simdefs, this);
-    TB()->SetActive(tid_simdefs, false);
+    TB()->SetActiveDlg(tid_simdefs, 0);
     QTtoolbar::entries(tid_simdefs)->action()->setChecked(false);
 }
 
