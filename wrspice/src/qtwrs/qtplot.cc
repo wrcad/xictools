@@ -86,22 +86,6 @@ Authors: 1988 Jeffrey M. Hsu
 // plotpanel
 // mplotpanel
 
-// X dependent default parameters
-#define DEF_FONT "6x10"
-#define NUMLINESTYLES 8
-#define NXPLANES 5
-
-/* do this in constructor
-    // set up initial xor color
-    GdkColor clr;
-    clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
-#if GTK_CHECK_VERSION(3,0,0)
-    w->XorGC()->set_foreground(&clr);
-#else
-    gdk_gc_set_foreground(w->XorGC(), &clr);
-#endif
-*/
-
 
 QSize
 QTplotDlg::sizeHint() const
@@ -537,65 +521,12 @@ QTplotDlg::check_event(GdkEvent *ev, sGraph *graph)
 int
 QTplotDlg::redraw_timeout(void *arg)
 {
-    /* XXX Need this?  Might be a good idea.
     QTplotDlg *w = static_cast<QTplotDlg*>(arg);
 
     w->pb_rdid = 0;
-
-    w->SetColor(w->pb_graph->color(0).pixel);
-    w->Box(0, 0, w->pb_graph->area().width(), w->pb_graph->area().height());
-    w->pb_graph->gr_redraw_direct();
-
-    w->pb_graph->gr_redraw_keyed();
-    w->pb_graph->set_dirty(false);
+    w->pb_graph->gr_redraw();
     return (0);
-    */
 }
-
-
-/* XXX Need this?  Implement similar in resize slot.
-// Static function.
-int
-QTplotDlg::redraw(GtkWidget*, GdkEvent *event, void *arg)
-{
-    QTplotDlg *wb = static_cast<QTplotDlg*>(arg);
-
-    GdkEventExpose *pev = &event->expose;
-
-    int w = gdk_window_get_width(wb->Window());
-    int h = gdk_window_get_height(wb->Window());
-    if (!wb->pb_pixmap || wb->pb_pmwid != w || wb->pb_pmhei != h) {
-        graph->area().set_width(w);
-        graph->area().set_height(h);
-
-        if (wb->pb_pixmap)
-            gdk_pixmap_unref(wb->pb_pixmap);
-        wb->pb_pixmap = gdk_pixmap_new(wb->Window(), graph->area().width(),
-            graph->area().height(),
-            gdk_visual_get_depth(GTKdev::self()->Visual()));
-        wb->pb_pmwid = graph->area().width();
-        wb->pb_pmhei = graph->area().height();
-        graph->set_dirty(true);
-    }
-    if (graph->dirty()) {
-        if (wb->pb_rdid)
-            g_source_remove(wb->pb_rdid);
-        wb->pb_rdid = g_timeout_add(250, redraw_timeout, client_data);
-    }
-    else {
-        gdk_window_copy_area(wb->Window(), wb->GC(), pev->area.x,
-            pev->area.y, wb->pb_pixmap, pev->area.x, pev->area.y,
-            pev->area.width, pev->area.height);
-
-        gdk_gc_set_clip_rectangle(wb->GC(), &pev->area);
-        gdk_gc_set_clip_rectangle(wb->XorGC(), &pev->area);
-        graph->gr_redraw_keyed();
-        gdk_gc_set_clip_rectangle(wb->GC(), 0);
-        gdk_gc_set_clip_rectangle(wb->XorGC(), 0);
-    }
-    return (true);
-}
-*/
 
 
 // Static function.
@@ -619,11 +550,9 @@ QTplotDlg::motion_idle(void *arg)
 
 // Static function.
 void
-QTplotDlg::do_save_plot(const char *fnamein, void *client_data)
+QTplotDlg::do_save_plot(const char *fnamein, void *arg)
 {
-    /* XXX FIXME put this in slot
-    sGraph *graph = static_cast<sGraph*>(client_data);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
+    QTplotDlg *w = static_cast<QTplotDlg*>(arg);
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
         return;
@@ -634,16 +563,15 @@ QTplotDlg::do_save_plot(const char *fnamein, void *client_data)
     }
     wordlist wl;
     wl.wl_word = fname;
-    wl.wl_next = graph->command();
-    graph->command()->wl_prev = &wl;
+    wl.wl_next = w->pb_graph->command();
+    w->pb_graph->command()->wl_prev = &wl;
     CommandTab::com_write(&wl);
-    graph->command()->wl_prev = 0;
+    w->pb_graph->command()->wl_prev = 0;
 
     if (w->wb_input)
         w->wb_input->popdown();
     w->PopUpMessage("Operation completed.", false);
     delete [] fname;
-    */
 }
 
 
@@ -781,7 +709,9 @@ QTplotDlg::resize_slot(QResizeEvent*)
     pb_graph->gr_abort();
     pb_graph->gr_pkg_init_colors();
     Clear();
-    pb_graph->gr_redraw();
+    if (pb_rdid)
+        QTdev::self()->RemoveTimer(pb_rdid);
+    pb_rdid = QTdev::self()->AddTimer(250, redraw_timeout, this);
 }
 
 
@@ -1029,7 +959,7 @@ void
 QTplotDlg::saveplt_btn_slot()
 {
     PopUpInput("Enter name for data file", 0, "Save Plot File",
-        do_save_plot, pb_graph);
+        do_save_plot, this);
 }
 
 

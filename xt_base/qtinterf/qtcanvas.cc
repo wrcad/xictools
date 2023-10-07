@@ -625,6 +625,7 @@ QTcanvas::draw_polyline(GRmultiPt *p, int n)
         da_pen.setStyle(Qt::SolidLine);
         da_painter->setPen(da_pen);
         p->data_ptr_init();
+        n--;
         while (n--) {
             int xx = p->data_ptr_x();
             int yy = p->data_ptr_y();

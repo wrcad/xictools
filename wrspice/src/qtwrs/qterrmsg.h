@@ -82,7 +82,7 @@ class QTerrmsgDlg : public QDialog
     Q_OBJECT
 
 public:
-    QTerrmsgDlg();
+    QTerrmsgDlg(const char*);
     ~QTerrmsgDlg();
 
     QSize sizeHint() const;

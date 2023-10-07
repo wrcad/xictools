@@ -41,6 +41,7 @@
 #include "qtkwent.h"
 #include "qttoolb.h"
 #include "spnumber/spnumber.h"
+#include <math.h>
 
 #include <QLayout>
 #include <QCheckBox>

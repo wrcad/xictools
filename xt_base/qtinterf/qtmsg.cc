@@ -104,6 +104,13 @@ QTmsgDlg::~QTmsgDlg()
 }
 
 
+QSize
+QTmsgDlg::sizeHint() const
+{
+    return (QSize(400, 120));
+}
+
+
 // GRpopup override
 //
 void

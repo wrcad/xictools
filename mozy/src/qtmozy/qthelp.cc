@@ -1277,7 +1277,7 @@ QThelpDlg::reload_slot()
 void
 QThelpDlg::quit_slot()
 {
-    delete this;
+    deleteLater();
 }
 
 

@@ -235,264 +235,264 @@ endif
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc
 
-moc_main.o: moc_main.cpp  qtmain.h
-moc_asm.o: moc_asm.cpp  qtasm.h
-moc_attri.o: moc_attri.cpp  qtattri.h
-moc_auxtab.o: moc_auxtab.cpp  qtauxtab.h
-moc_cells.o: moc_cells.cpp  qtcells.h
-moc_cfilt.o: moc_cfilt.cpp  qtcfilt.h
-moc_cflags.o: moc_cflags.cpp  qtcflags.h
-moc_cgdlist.o: moc_cgdlist.cpp  qtcgdlist.h
-moc_cgdopen.o: moc_cgdopen.cpp  qtcgdopen.h
-moc_chdcfg.o: moc_chdcfg.cpp  qtchdcfg.h
-moc_chdlist.o: moc_chdlist.cpp  qtchdlist.h
-moc_chdopen.o: moc_chdopen.cpp  qtchdopen.h
-moc_chdsave.o: moc_chdsave.cpp  qtchdsave.h
-moc_cmp.o: moc_cmp.cpp  qtcmp.h
-moc_cnmap.o: moc_cnmap.cpp  qtcnmap.h
-moc_color.o: moc_color.cpp  qtcolor.h
-moc_coord.o: moc_coord.cpp  qtcoord.h
-moc_cv.o: moc_cv.cpp  qtcv.h
-moc_cvin.o: moc_cvin.cpp  qtcvin.h
-moc_cvofmt.o: moc_cvofmt.cpp  qtcvofmt.h
-moc_cvout.o: moc_cvout.cpp  qtcvout.h
-moc_dbgflg.o: moc_dbgflg.cpp  qtdbgflg.h
-moc_debug.o: moc_debug.cpp  qtdebug.h
-moc_devedit.o: moc_devedit.cpp  qtdevedit.h
-moc_devs.o: moc_devs.cpp  qtdevs.h
-moc_dots.o: moc_dots.cpp  qtdots.h
-moc_drcedit.o: moc_drcedit.cpp  qtdrcedit.h
-moc_drclim.o: moc_drclim.cpp  qtdrclim.h
-moc_drcrun.o: moc_drcrun.cpp  qtdrcrun.h
-moc_dspwin.o: moc_dspwin.cpp  qtdspwin.h
-moc_edset.o: moc_edset.cpp  qtedset.h
-moc_empty.o: moc_empty.cpp  qtempty.h
-moc_expand.o: moc_expand.cpp  qtexpand.h
-moc_extcmd.o: moc_extcmd.cpp  qtextcmd.h
-moc_extdev.o: moc_extdev.cpp  qtextdev.h
-moc_extfc.o: moc_extfc.cpp  qtextfc.h
-moc_extfh.o: moc_extfh.cpp  qtextfh.h
-moc_extsel.o: moc_extsel.cpp  qtextsel.h
-moc_extset.o: moc_extset.cpp  qtextset.h
-moc_files.o: moc_files.cpp  qtfiles.h
-moc_fillp.o: moc_fillp.cpp  qtfillp.h
-moc_flatten.o: moc_flatten.cpp  qtflatten.h
-moc_htext.o: moc_htext.cpp  qthtext.h
-moc_join.o: moc_join.cpp  qtjoin.h
-moc_lexp.o: moc_lexp.cpp  qtlexp.h
-moc_libs.o: moc_libs.cpp  qtlibs.h
-moc_llist.o: moc_llist.cpp  qtllist.h
-moc_logo.o: moc_logo.cpp  qtlogo.h
-moc_lpal.o: moc_lpal.cpp  qtlpal.h
-moc_lpedit.o: moc_lpedit.cpp  qtlpedit.h
-moc_ltab.o: moc_ltab.cpp  qtltab.h
-moc_ltalias.o: moc_ltalias.cpp  qtltalias.h
-moc_ltedit.o: moc_ltedit.cpp  qtltedit.h
-moc_mclchg.o: moc_mclchg.cpp  qtmclchg.h
-moc_mem.o: moc_mem.cpp  qtmem.h
-moc_menu.o: moc_menu.cpp  qtmenu.h
-moc_menucfg.o: moc_menucfg.cpp  qtmenucfg.h
-moc_merge.o: moc_merge.cpp  qtmerge.h
-moc_modif.o: moc_modif.cpp  qtmodif.h
-moc_nodmp.o: moc_nodmp.cpp  qtnodmp.h
-moc_oadefs.o: moc_oadefs.cpp  qtoadefs.h
-moc_oalibs.o: moc_oalibs.cpp  qtoalibs.h
-moc_oatech.o: moc_oatech.cpp  qtoatech.h
-moc_oasis.o: moc_oasis.cpp  qtoasis.h
-moc_param.o: moc_param.cpp  qtparam.h
-moc_pcctrl.o: moc_pcctrl.cpp  qtpcctrl.h
-moc_pcprms.o: moc_pcprms.cpp  qtpcprms.h
-moc_pfilt.o: moc_pfilt.cpp  qtpfilt.h
-moc_place.o: moc_place.cpp  qtplace.h
-moc_prpcedit.o: moc_prpcedit.cpp  qtprpcedit.h
-moc_prpedit.o: moc_prpedit.cpp  qtprpedit.h
-moc_prpinfo.o: moc_prpinfo.cpp  qtprpinfo.h
-moc_ptedit.o: moc_ptedit.cpp  qtptedit.h
-moc_rule.o: moc_rule.cpp  qtrule.h
-moc_sel.o: moc_sel.cpp  qtsel.h
-moc_selinst.o: moc_selinst.cpp  qtselinst.h
-moc_sim.o: moc_sim.cpp  qtsim.h
-moc_spif.o: moc_spif.cpp  qtspif.h
-moc_stab.o: moc_stab.cpp  qtstab.h
-moc_tech.o: moc_tech.cpp  qttech.h
-moc_tedit.o: moc_tedit.cpp  qttedit.h
-moc_tree.o: moc_tree.cpp  qttree.h
-moc_via.o: moc_via.cpp  qtvia.h
-moc_wndc.o: moc_wndc.cpp  qtwndc.h
-moc_xform.o: moc_xform.cpp  qtxform.h
-moc_zoom.o: moc_zoom.cpp  qtzoom.h
+moc_main.o: moc_main.cpp
+moc_asm.o: moc_asm.cpp
+moc_attri.o: moc_attri.cpp
+moc_auxtab.o: moc_auxtab.cpp
+moc_cells.o: moc_cells.cpp
+moc_cfilt.o: moc_cfilt.cpp
+moc_cflags.o: moc_cflags.cpp
+moc_cgdlist.o: moc_cgdlist.cpp
+moc_cgdopen.o: moc_cgdopen.cpp
+moc_chdcfg.o: moc_chdcfg.cpp
+moc_chdlist.o: moc_chdlist.cpp
+moc_chdopen.o: moc_chdopen.cpp
+moc_chdsave.o: moc_chdsave.cpp
+moc_cmp.o: moc_cmp.cpp
+moc_cnmap.o: moc_cnmap.cpp
+moc_color.o: moc_color.cpp
+moc_coord.o: moc_coord.cpp
+moc_cv.o: moc_cv.cpp
+moc_cvin.o: moc_cvin.cpp
+moc_cvofmt.o: moc_cvofmt.cpp
+moc_cvout.o: moc_cvout.cpp
+moc_dbgflg.o: moc_dbgflg.cpp
+moc_debug.o: moc_debug.cpp
+moc_devedit.o: moc_devedit.cpp
+moc_devs.o: moc_devs.cpp
+moc_dots.o: moc_dots.cpp
+moc_drcedit.o: moc_drcedit.cpp
+moc_drclim.o: moc_drclim.cpp
+moc_drcrun.o: moc_drcrun.cpp
+moc_dspwin.o: moc_dspwin.cpp
+moc_edset.o: moc_edset.cpp
+moc_empty.o: moc_empty.cpp
+moc_expand.o: moc_expand.cpp
+moc_extcmd.o: moc_extcmd.cpp
+moc_extdev.o: moc_extdev.cpp
+moc_extfc.o: moc_extfc.cpp
+moc_extfh.o: moc_extfh.cpp
+moc_extsel.o: moc_extsel.cpp
+moc_extset.o: moc_extset.cpp
+moc_files.o: moc_files.cpp
+moc_fillp.o: moc_fillp.cpp
+moc_flatten.o: moc_flatten.cpp
+moc_htext.o: moc_htext.cpp
+moc_join.o: moc_join.cpp
+moc_lexp.o: moc_lexp.cpp
+moc_libs.o: moc_libs.cpp
+moc_llist.o: moc_llist.cpp
+moc_logo.o: moc_logo.cpp
+moc_lpal.o: moc_lpal.cpp
+moc_lpedit.o: moc_lpedit.cpp
+moc_ltab.o: moc_ltab.cpp
+moc_ltalias.o: moc_ltalias.cpp
+moc_ltedit.o: moc_ltedit.cpp
+moc_mclchg.o: moc_mclchg.cpp
+moc_mem.o: moc_mem.cpp
+moc_menu.o: moc_menu.cpp
+moc_menucfg.o: moc_menucfg.cpp
+moc_merge.o: moc_merge.cpp
+moc_modif.o: moc_modif.cpp
+moc_nodmp.o: moc_nodmp.cpp
+moc_oadefs.o: moc_oadefs.cpp
+moc_oalibs.o: moc_oalibs.cpp
+moc_oatech.o: moc_oatech.cpp
+moc_oasis.o: moc_oasis.cpp
+moc_param.o: moc_param.cpp
+moc_pcctrl.o: moc_pcctrl.cpp
+moc_pcprms.o: moc_pcprms.cpp
+moc_pfilt.o: moc_pfilt.cpp
+moc_place.o: moc_place.cpp
+moc_prpcedit.o: moc_prpcedit.cpp
+moc_prpedit.o: moc_prpedit.cpp
+moc_prpinfo.o: moc_prpinfo.cpp
+moc_ptedit.o: moc_ptedit.cpp
+moc_rule.o: moc_rule.cpp
+moc_sel.o: moc_sel.cpp
+moc_selinst.o: moc_selinst.cpp
+moc_sim.o: moc_sim.cpp
+moc_spif.o: moc_spif.cpp
+moc_stab.o: moc_stab.cpp
+moc_tech.o: moc_tech.cpp
+moc_tedit.o: moc_tedit.cpp
+moc_tree.o: moc_tree.cpp
+moc_via.o: moc_via.cpp
+moc_wndc.o: moc_wndc.cpp
+moc_xform.o: moc_xform.cpp
+moc_zoom.o: moc_zoom.cpp
 
-moc_main.cpp: $(MOC) qtmain.h
+moc_main.cpp: $(MOC) qtmain.o
 	$(MOC) qtmain.h -o moc_main.cpp
-moc_asm.cpp: $(MOC) qtasm.h
+moc_asm.cpp: $(MOC) qtasm.o
 	$(MOC) qtasm.h -o moc_asm.cpp
-moc_attri.cpp: $(MOC) qtattri.h
+moc_attri.cpp: $(MOC) qtattri.o
 	$(MOC) qtattri.h -o moc_attri.cpp
-moc_auxtab.cpp: $(MOC) qtauxtab.h
+moc_auxtab.cpp: $(MOC) qtauxtab.o
 	$(MOC) qtauxtab.h -o moc_auxtab.cpp
-moc_cells.cpp: $(MOC) qtcells.h
+moc_cells.cpp: $(MOC) qtcells.o
 	$(MOC) qtcells.h -o moc_cells.cpp
-moc_cfilt.cpp: $(MOC) qtcfilt.h
+moc_cfilt.cpp: $(MOC) qtcfilt.o
 	$(MOC) qtcfilt.h -o moc_cfilt.cpp
-moc_cflags.cpp: $(MOC) qtcflags.h
+moc_cflags.cpp: $(MOC) qtcflags.o
 	$(MOC) qtcflags.h -o moc_cflags.cpp
-moc_cgdlist.cpp: $(MOC) qtcgdlist.h
+moc_cgdlist.cpp: $(MOC) qtcgdlist.o
 	$(MOC) qtcgdlist.h -o moc_cgdlist.cpp
-moc_cgdopen.cpp: $(MOC) qtcgdopen.h
+moc_cgdopen.cpp: $(MOC) qtcgdopen.o
 	$(MOC) qtcgdopen.h -o moc_cgdopen.cpp
-moc_chdcfg.cpp: $(MOC) qtchdcfg.h
+moc_chdcfg.cpp: $(MOC) qtchdcfg.o
 	$(MOC) qtchdcfg.h -o moc_chdcfg.cpp
-moc_chdlist.cpp: $(MOC) qtchdlist.h
+moc_chdlist.cpp: $(MOC) qtchdlist.o
 	$(MOC) qtchdlist.h -o moc_chdlist.cpp
-moc_chdopen.cpp: $(MOC) qtchdopen.h
+moc_chdopen.cpp: $(MOC) qtchdopen.o
 	$(MOC) qtchdopen.h -o moc_chdopen.cpp
-moc_chdsave.cpp: $(MOC) qtchdsave.h
+moc_chdsave.cpp: $(MOC) qtchdsave.o
 	$(MOC) qtchdsave.h -o moc_chdsave.cpp
-moc_cmp.cpp: $(MOC) qtcmp.h
+moc_cmp.cpp: $(MOC) qtcmp.o
 	$(MOC) qtcmp.h -o moc_cmp.cpp
-moc_cnmap.cpp: $(MOC) qtcnmap.h
+moc_cnmap.cpp: $(MOC) qtcnmap.o
 	$(MOC) qtcnmap.h -o moc_cnmap.cpp
-moc_color.cpp: $(MOC) qtcolor.h
+moc_color.cpp: $(MOC) qtcolor.o
 	$(MOC) qtcolor.h -o moc_color.cpp
-moc_coord.cpp: $(MOC) qtcoord.h
+moc_coord.cpp: $(MOC) qtcoord.o
 	$(MOC) qtcoord.h -o moc_coord.cpp
-moc_cv.cpp: $(MOC) qtcv.h
+moc_cv.cpp: $(MOC) qtcv.o
 	$(MOC) qtcv.h -o moc_cv.cpp
-moc_cvin.cpp: $(MOC) qtcvin.h
+moc_cvin.cpp: $(MOC) qtcvin.o
 	$(MOC) qtcvin.h -o moc_cvin.cpp
-moc_cvofmt.cpp: $(MOC) qtcvofmt.h
+moc_cvofmt.cpp: $(MOC) qtcvofmt.o
 	$(MOC) qtcvofmt.h -o moc_cvofmt.cpp
-moc_cvout.cpp: $(MOC) qtcvout.h
+moc_cvout.cpp: $(MOC) qtcvout.o
 	$(MOC) qtcvout.h -o moc_cvout.cpp
-moc_dbgflg.cpp: $(MOC) qtdbgflg.h
+moc_dbgflg.cpp: $(MOC) qtdbgflg.o
 	$(MOC) qtdbgflg.h -o moc_dbgflg.cpp
-moc_debug.cpp: $(MOC) qtdebug.h
+moc_debug.cpp: $(MOC) qtdebug.o
 	$(MOC) qtdebug.h -o moc_debug.cpp
-moc_devedit.cpp: $(MOC) qtdevedit.h
+moc_devedit.cpp: $(MOC) qtdevedit.o
 	$(MOC) qtdevedit.h -o moc_devedit.cpp
 moc_devs.cpp: $(MOC) qtdevs.h
 	$(MOC) qtdevs.h -o moc_devs.cpp
-moc_dots.cpp: $(MOC) qtdots.h
+moc_dots.cpp: $(MOC) qtdots.o
 	$(MOC) qtdots.h -o moc_dots.cpp
-moc_drcedit.cpp: $(MOC) qtdrcedit.h
+moc_drcedit.cpp: $(MOC) qtdrcedit.o
 	$(MOC) qtdrcedit.h -o moc_drcedit.cpp
-moc_drclim.cpp: $(MOC) qtdrclim.h
+moc_drclim.cpp: $(MOC) qtdrclim.o
 	$(MOC) qtdrclim.h -o moc_drclim.cpp
-moc_drcrun.cpp: $(MOC) qtdrcrun.h
+moc_drcrun.cpp: $(MOC) qtdrcrun.o
 	$(MOC) qtdrcrun.h -o moc_drcrun.cpp
-moc_dspwin.cpp: $(MOC) qtdspwin.h
+moc_dspwin.cpp: $(MOC) qtdspwin.o
 	$(MOC) qtdspwin.h -o moc_dspwin.cpp
-moc_edset.cpp: $(MOC) qtedset.h
+moc_edset.cpp: $(MOC) qtedset.o
 	$(MOC) qtedset.h -o moc_edset.cpp
-moc_empty.cpp: $(MOC) qtempty.h
+moc_empty.cpp: $(MOC) qtempty.o
 	$(MOC) qtempty.h -o moc_empty.cpp
-moc_expand.cpp: $(MOC) qtexpand.h
+moc_expand.cpp: $(MOC) qtexpand.o
 	$(MOC) qtexpand.h -o moc_expand.cpp
-moc_extcmd.cpp: $(MOC) qtextcmd.h
+moc_extcmd.cpp: $(MOC) qtextcmd.o
 	$(MOC) qtextcmd.h -o moc_extcmd.cpp
-moc_extdev.cpp: $(MOC) qtextdev.h
+moc_extdev.cpp: $(MOC) qtextdev.o
 	$(MOC) qtextdev.h -o moc_extdev.cpp
-moc_extfc.cpp: $(MOC) qtextfc.h
+moc_extfc.cpp: $(MOC) qtextfc.o
 	$(MOC) qtextfc.h -o moc_extfc.cpp
-moc_extfh.cpp: $(MOC) qtextfh.h
+moc_extfh.cpp: $(MOC) qtextfh.o
 	$(MOC) qtextfh.h -o moc_extfh.cpp
-moc_extsel.cpp: $(MOC) qtextsel.h
+moc_extsel.cpp: $(MOC) qtextsel.o
 	$(MOC) qtextsel.h -o moc_extsel.cpp
-moc_extset.cpp: $(MOC) qtextset.h
+moc_extset.cpp: $(MOC) qtextset.o
 	$(MOC) qtextset.h -o moc_extset.cpp
-moc_files.cpp: $(MOC) qtfiles.h
+moc_files.cpp: $(MOC) qtfiles.o
 	$(MOC) qtfiles.h -o moc_files.cpp
-moc_fillp.cpp: $(MOC) qtfillp.h
+moc_fillp.cpp: $(MOC) qtfillp.o
 	$(MOC) qtfillp.h -o moc_fillp.cpp
-moc_flatten.cpp: $(MOC) qtflatten.h
+moc_flatten.cpp: $(MOC) qtflatten.o
 	$(MOC) qtflatten.h -o moc_flatten.cpp
-moc_htext.cpp: $(MOC) qthtext.h
+moc_htext.cpp: $(MOC) qthtext.o
 	$(MOC) qthtext.h -o moc_htext.cpp
-moc_join.cpp: $(MOC) qtjoin.h
+moc_join.cpp: $(MOC) qtjoin.o
 	$(MOC) qtjoin.h -o moc_join.cpp
-moc_lexp.cpp: $(MOC) qtlexp.h
+moc_lexp.cpp: $(MOC) qtlexp.o
 	$(MOC) qtlexp.h -o moc_lexp.cpp
-moc_libs.cpp: $(MOC) qtlibs.h
+moc_libs.cpp: $(MOC) qtlibs.o
 	$(MOC) qtlibs.h -o moc_libs.cpp
-moc_llist.cpp: $(MOC) qtllist.h
+moc_llist.cpp: $(MOC) qtllist.o
 	$(MOC) qtllist.h -o moc_llist.cpp
-moc_logo.cpp: $(MOC) qtlogo.h
+moc_logo.cpp: $(MOC) qtlogo.o
 	$(MOC) qtlogo.h -o moc_logo.cpp
-moc_lpal.cpp: $(MOC) qtlpal.h
+moc_lpal.cpp: $(MOC) qtlpal.o
 	$(MOC) qtlpal.h -o moc_lpal.cpp
-moc_lpedit.cpp: $(MOC) qtlpedit.h
+moc_lpedit.cpp: $(MOC) qtlpedit.o
 	$(MOC) qtlpedit.h -o moc_lpedit.cpp
-moc_ltab.cpp: $(MOC) qtltab.h
+moc_ltab.cpp: $(MOC) qtltab.o
 	$(MOC) qtltab.h -o moc_ltab.cpp
-moc_ltalias.cpp: $(MOC) qtltalias.h
+moc_ltalias.cpp: $(MOC) qtltalias.o
 	$(MOC) qtltalias.h -o moc_ltalias.cpp
-moc_ltedit.cpp: $(MOC) qtltedit.h
+moc_ltedit.cpp: $(MOC) qtltedit.o
 	$(MOC) qtltedit.h -o moc_ltedit.cpp
-moc_mclchg.cpp: $(MOC) qtmclchg.h
+moc_mclchg.cpp: $(MOC) qtmclchg.o
 	$(MOC) qtmclchg.h -o moc_mclchg.cpp
-moc_mem.cpp: $(MOC) qtmem.h
+moc_mem.cpp: $(MOC) qtmem.o
 	$(MOC) qtmem.h -o moc_mem.cpp
-moc_menu.cpp: $(MOC) qtmenu.h
+moc_menu.cpp: $(MOC) qtmenu.o
 	$(MOC) qtmenu.h -o moc_menu.cpp
-moc_menucfg.cpp: $(MOC) qtmenucfg.h
+moc_menucfg.cpp: $(MOC) qtmenucfg.o
 	$(MOC) qtmenucfg.h -o moc_menucfg.cpp
-moc_merge.cpp: $(MOC) qtmerge.h
+moc_merge.cpp: $(MOC) qtmerge.o
 	$(MOC) qtmerge.h -o moc_merge.cpp
-moc_modif.cpp: $(MOC) qtmodif.h
+moc_modif.cpp: $(MOC) qtmodif.o
 	$(MOC) qtmodif.h -o moc_modif.cpp
-moc_nodmp.cpp: $(MOC) qtnodmp.h
+moc_nodmp.cpp: $(MOC) qtnodmp.o
 	$(MOC) qtnodmp.h -o moc_nodmp.cpp
-moc_oadefs.cpp: $(MOC) qtoadefs.h
+moc_oadefs.cpp: $(MOC) qtoadefs.o
 	$(MOC) qtoadefs.h -o moc_oadefs.cpp
-moc_oalibs.cpp: $(MOC) qtoalibs.h
+moc_oalibs.cpp: $(MOC) qtoalibs.o
 	$(MOC) qtoalibs.h -o moc_oalibs.cpp
-moc_oatech.cpp: $(MOC) qtoatech.h
+moc_oatech.cpp: $(MOC) qtoatech.o
 	$(MOC) qtoatech.h -o moc_oatech.cpp
-moc_oasis.cpp: $(MOC) qtoasis.h
+moc_oasis.cpp: $(MOC) qtoasis.o
 	$(MOC) qtoasis.h -o moc_oasis.cpp
-moc_param.cpp: $(MOC) qtparam.h
+moc_param.cpp: $(MOC) qtparam.o
 	$(MOC) qtparam.h -o moc_param.cpp
-moc_pcctrl.cpp: $(MOC) qtpcctrl.h
+moc_pcctrl.cpp: $(MOC) qtpcctrl.o
 	$(MOC) qtpcctrl.h -o moc_pcctrl.cpp
-moc_pcprms.cpp: $(MOC) qtpcprms.h
+moc_pcprms.cpp: $(MOC) qtpcprms.o
 	$(MOC) qtpcprms.h -o moc_pcprms.cpp
-moc_pfilt.cpp: $(MOC) qtpfilt.h
+moc_pfilt.cpp: $(MOC) qtpfilt.o
 	$(MOC) qtpfilt.h -o moc_pfilt.cpp
-moc_place.cpp: $(MOC) qtplace.h
+moc_place.cpp: $(MOC) qtplace.o
 	$(MOC) qtplace.h -o moc_place.cpp
-moc_prpcedit.cpp: $(MOC) qtprpcedit.h
+moc_prpcedit.cpp: $(MOC) qtprpcedit.o
 	$(MOC) qtprpcedit.h -o moc_prpcedit.cpp
-moc_prpedit.cpp: $(MOC) qtprpedit.h
+moc_prpedit.cpp: $(MOC) qtprpedit.o
 	$(MOC) qtprpedit.h -o moc_prpedit.cpp
-moc_prpinfo.cpp: $(MOC) qtprpinfo.h
+moc_prpinfo.cpp: $(MOC) qtprpinfo.o
 	$(MOC) qtprpinfo.h -o moc_prpinfo.cpp
-moc_ptedit.cpp: $(MOC) qtptedit.h
+moc_ptedit.cpp: $(MOC) qtptedit.o
 	$(MOC) qtptedit.h -o moc_ptedit.cpp
-moc_rule.cpp: $(MOC) qtrule.h
+moc_rule.cpp: $(MOC) qtrule.o
 	$(MOC) qtrule.h -o moc_rule.cpp
-moc_sel.cpp: $(MOC) qtsel.h
+moc_sel.cpp: $(MOC) qtsel.o
 	$(MOC) qtsel.h -o moc_sel.cpp
-moc_selinst.cpp: $(MOC) qtselinst.h
+moc_selinst.cpp: $(MOC) qtselinst.o
 	$(MOC) qtselinst.h -o moc_selinst.cpp
-moc_sim.cpp: $(MOC) qtsim.h
+moc_sim.cpp: $(MOC) qtsim.o
 	$(MOC) qtsim.h -o moc_sim.cpp
-moc_spif.cpp: $(MOC) qtspif.h
+moc_spif.cpp: $(MOC) qtspif.o
 	$(MOC) qtspif.h -o moc_spif.cpp
-moc_stab.cpp: $(MOC) qtstab.h
+moc_stab.cpp: $(MOC) qtstab.o
 	$(MOC) qtstab.h -o moc_stab.cpp
-moc_tech.cpp: $(MOC) qttech.h
+moc_tech.cpp: $(MOC) qttech.o
 	$(MOC) qttech.h -o moc_tech.cpp
-moc_tedit.cpp: $(MOC) qttedit.h
+moc_tedit.cpp: $(MOC) qttedit.o
 	$(MOC) qttedit.h -o moc_tedit.cpp
-moc_tree.cpp: $(MOC) qttree.h
+moc_tree.cpp: $(MOC) qttree.o
 	$(MOC) qttree.h -o moc_tree.cpp
-moc_via.cpp: $(MOC) qtvia.h
+moc_via.cpp: $(MOC) qtvia.o
 	$(MOC) qtvia.h -o moc_via.cpp
-moc_wndc.cpp: $(MOC) qtwndc.h
+moc_wndc.cpp: $(MOC) qtwndc.o
 	$(MOC) qtwndc.h -o moc_wndc.cpp
-moc_xform.cpp: $(MOC) qtxform.h
+moc_xform.cpp: $(MOC) qtxform.o
 	$(MOC) qtxform.h -o moc_xform.cpp
-moc_zoom.cpp: $(MOC) qtzoom.h
+moc_zoom.cpp: $(MOC) qtzoom.o
 	$(MOC) qtzoom.h -o moc_zoom.cpp
 
 depend:

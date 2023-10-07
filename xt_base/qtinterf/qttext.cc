@@ -58,6 +58,11 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
     STYtype sty)
 {
     p_parent = owner;
+    tx_tbox = 0;
+    tx_save = 0;
+    tx_activate = 0;
+    tx_save_pop = 0;
+    tx_msg_pop = 0;
     tx_which = which;
     tx_style = sty;
     tx_desens = false;

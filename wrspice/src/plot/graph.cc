@@ -666,10 +666,18 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             if (k->inspos > 0) {
                 gr_show_sel_text(false);
                 k->inspos--;
+#if defined (WITH_QT5) || defined (WITH_QT6)
+                int x, y;
+                gr_get_keyed_posn(k, &x, &y);
+                y = yinv(y);
+                gr_dev->SetColor(gr_colors[k->colorindex].pixel);
+                gr_dev->Text(k->text, x, y, k->xform);
+#else
                 int xl, yb, xr, yt;
                 if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
                     gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
                 }
+#endif
                 gr_show_sel_text(true);
             }
         }
@@ -695,9 +703,17 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
                 gr_show_sel_text(false);
                 k->inspos++;
                 int xl, yb, xr, yt;
+#if defined (WITH_QT5) || defined (WITH_QT6)
+                int x, y;
+                gr_get_keyed_posn(k, &x, &y);
+                y = yinv(y);
+                gr_dev->SetColor(gr_colors[k->colorindex].pixel);
+                gr_dev->Text(k->text, x, y, k->xform);
+#else
                 if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
                     gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
                 }
+#endif
                 gr_show_sel_text(true);
             }
         }
@@ -2259,6 +2275,7 @@ sGraph::gr_show_sel_text(bool show)
     gr_show_ghost(false);
     int xl, yb, xr, yt;
     if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
+        gr_dev->SetOverlayMode(true);
         if (show) {
             gr_dev->SetColor(gr_colors[1].pixel);
             gr_dev->Box(xl-4, yinv(yb), xl-3, yinv(yt));
@@ -2278,6 +2295,7 @@ sGraph::gr_show_sel_text(bool show)
             int xx = xl-1 + k->inspos*gr_fontwid;
             gr_refresh(xx, yinv(yb)+1, xx+1, yinv(yt));
         }
+        gr_dev->SetOverlayMode(false);
     }
     gr_show_ghost(true);
 }

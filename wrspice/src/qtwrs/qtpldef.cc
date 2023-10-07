@@ -486,11 +486,11 @@ QTplotParamDlg::QTplotParamDlg(int x, int y)
 
 QTplotParamDlg::~QTplotParamDlg()
 {
-    TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_SD);
+    TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_PD);
     instPtr = 0;
-    TB()->SetLoc(tid_simdefs, this);
-    TB()->SetActiveDlg(tid_simdefs, 0);
-    QTtoolbar::entries(tid_simdefs)->action()->setChecked(false);
+    TB()->SetLoc(tid_plotdefs, this);
+    TB()->SetActiveDlg(tid_plotdefs, 0);
+    QTtoolbar::entries(tid_plotdefs)->action()->setChecked(false);
 }
 
 

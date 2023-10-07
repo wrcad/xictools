@@ -1851,14 +1851,18 @@ namespace {
     bool expiring;
 }
 
+// QT shutdown code.
+//XXX may no be needed
+extern void GRexit(int);
 
 void
 fatal(int error)
 {
     static bool in_fatal;
 
-    if (in_fatal)
+    if (in_fatal) {
         exit(EXIT_BAD);
+    }
     in_fatal = true;
     if (Global.MemError()) {
         fprintf(stderr,
@@ -1889,6 +1893,7 @@ fatal(int error)
 #endif
     if (error)
         panic_to_gdb();
+    GRexit(EXIT_NORMAL);
     exit(EXIT_NORMAL);
 }
 

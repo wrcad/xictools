@@ -91,60 +91,60 @@ $(LIB_TARGET): $(LIBOBJS)
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) $(TOOLKITINC) $*.cc
 
-moc_circuits.o: moc_circuits.cpp qtcircuits.h
-moc_cmds.o: moc_cmds.cpp qtcmds.h
-moc_color.o: moc_color.cpp qtcolor.h
-moc_debug.o: moc_debug.cpp qtdebug.h
-moc_errmsg.o: moc_errmsg.cpp qterrmsg.h
-moc_files.o: moc_files.cpp qtfiles.h
-moc_kwent.o: moc_kwent.cpp qtkwent.h
-moc_pldef.o: moc_pldef.cpp qtpldef.h
-moc_plot.o: moc_plot.cpp qtplot.h
-moc_plots.o: moc_plots.cpp qtplots.h
-moc_runops.o: moc_runops.cpp qtrunops.h
-moc_shell.o: moc_shell.cpp qtshell.h
-moc_sim.o: moc_sim.cpp qtsim.h
-moc_spmsg.o: moc_spmsg.cpp qtspmsg.h
-moc_tbdlg.o: moc_tbdlg.cpp qttbdlg.h
-moc_tbhelp.o: moc_tbhelp.cpp qttbhelp.h
-moc_variables.o: moc_variables.cpp qtvariables.h
-moc_vectors.o: moc_vectors.cpp qtvectors.h
+moc_circuits.o: moc_circuits.cpp
+moc_cmds.o: moc_cmds.cpp
+moc_color.o: moc_color.cpp
+moc_debug.o: moc_debug.cpp
+moc_errmsg.o: moc_errmsg.cpp
+moc_files.o: moc_files.cpp
+moc_kwent.o: moc_kwent.cpp
+moc_pldef.o: moc_pldef.cpp
+moc_plot.o: moc_plot.cpp
+moc_plots.o: moc_plots.cpp
+moc_runops.o: moc_runops.cpp
+moc_shell.o: moc_shell.cpp
+moc_sim.o: moc_sim.cpp
+moc_spmsg.o: moc_spmsg.cpp
+moc_tbdlg.o: moc_tbdlg.cpp
+moc_tbhelp.o: moc_tbhelp.cpp
+moc_variables.o: moc_variables.cpp
+moc_vectors.o: moc_vectors.cpp
 
-moc_circuits.cpp: $(MOC) qtcircuits.h
+moc_circuits.cpp: $(MOC) qtcircuits.o
 	$(MOC) qtcircuits.h -o moc_circuits.cpp
-moc_cmds.cpp: $(MOC) qtcmds.h
+moc_cmds.cpp: $(MOC) qtcmds.o
 	$(MOC) qtcmds.h -o moc_cmds.cpp
-moc_color.cpp: $(MOC) qtcolor.h
+moc_color.cpp: $(MOC) qtcolor.o
 	$(MOC) qtcolor.h -o moc_color.cpp
-moc_debug.cpp: $(MOC) qtdebug.h
+moc_debug.cpp: $(MOC) qtdebug.o
 	$(MOC) qtdebug.h -o moc_debug.cpp
-moc_errmsg.cpp: $(MOC) qterrmsg.h
+moc_errmsg.cpp: $(MOC) qterrmsg.o
 	$(MOC) qterrmsg.h -o moc_errmsg.cpp
-moc_files.cpp: $(MOC) qtfiles.h
+moc_files.cpp: $(MOC) qtfiles.o
 	$(MOC) qtfiles.h -o moc_files.cpp
-moc_kwent.cpp: $(MOC) qtkwent.h
+moc_kwent.cpp: $(MOC) qtkwent.o
 	$(MOC) qtkwent.h -o moc_kwent.cpp
-moc_pldef.cpp: $(MOC) qtpldef.h
+moc_pldef.cpp: $(MOC) qtpldef.o
 	$(MOC) qtpldef.h -o moc_pldef.cpp
-moc_plot.cpp: $(MOC) qtplot.h
+moc_plot.cpp: $(MOC) qtplot.o
 	$(MOC) qtplot.h -o moc_plot.cpp
-moc_plots.cpp: $(MOC) qtplots.h
+moc_plots.cpp: $(MOC) qtplots.o
 	$(MOC) qtplots.h -o moc_plots.cpp
-moc_runops.cpp: $(MOC) qtrunops.h
+moc_runops.cpp: $(MOC) qtrunops.o
 	$(MOC) qtrunops.h -o moc_runops.cpp
-moc_shell.cpp: $(MOC) qtshell.h
+moc_shell.cpp: $(MOC) qtshell.o
 	$(MOC) qtshell.h -o moc_shell.cpp
-moc_sim.cpp: $(MOC) qtsim.h
+moc_sim.cpp: $(MOC) qtsim.o
 	$(MOC) qtsim.h -o moc_sim.cpp
-moc_spmsg.cpp: $(MOC) qtspmsg.h
+moc_spmsg.cpp: $(MOC) qtspmsg.o
 	$(MOC) qtspmsg.h -o moc_spmsg.cpp
-moc_tbdlg.cpp: $(MOC) qttbdlg.h
+moc_tbdlg.cpp: $(MOC) qttbdlg.o
 	$(MOC) qttbdlg.h -o moc_tbdlg.cpp
-moc_tbhelp.cpp: $(MOC) qttbhelp.h
+moc_tbhelp.cpp: $(MOC) qttbhelp.o
 	$(MOC) qttbhelp.h -o moc_tbhelp.cpp
-moc_variables.cpp: $(MOC) qtvariables.h
+moc_variables.cpp: $(MOC) qtvariables.o
 	$(MOC) qtvariables.h -o moc_variables.cpp
-moc_vectors.cpp: $(MOC) qtvectors.h
+moc_vectors.cpp: $(MOC) qtvectors.o
 	$(MOC) qtvectors.h -o moc_vectors.cpp
 
 depend:

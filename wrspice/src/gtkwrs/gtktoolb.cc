@@ -1427,7 +1427,7 @@ GTKtoolbar::RevertFocus(GtkWidget *widget)
 #ifdef __linux__
         RevertMode = RVTrhel7;
 #else
-#ifdef ___APPLE__
+#ifdef __APPLE__
         RevertMode = RVTmac;
 #else
 #ifdef WIN32

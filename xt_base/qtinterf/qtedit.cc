@@ -843,7 +843,7 @@ QTeditDlg::quit_slot()
             return;
         }
     }
-    delete this;
+    deleteLater();
 }
 
 

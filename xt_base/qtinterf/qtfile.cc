@@ -68,6 +68,7 @@
 #include <QSplitter>
 #include <QTimer>
 #include <QTreeWidget>
+#include <QKeyEvent>
 
 // File selection pop-up.  The panel consists of a CTree which
 // maintains a visual representation of the directory hierarchy, and a
@@ -129,90 +130,6 @@ static const char * const go_xpm[] = {
 "              +++++             ",
 "                                "};
 
-// XPM
-static const char* const folder_xpm[] = {
-"16 16 8 1",
-"   c None",
-".  c #909000",
-"+  c #000000",
-"@  c #EFE8EF",
-"#  c #FFF8CF",
-"$  c #FFF890",
-"%  c #CFC860",
-"&  c #FFC890",
-"                ",
-"  .....+        ",
-" .@##$$.+       ",
-".%%%%%%%......  ",
-".###########$%+ ",
-".#$$$$$$$$$$&%+ ",
-".#$$$$$$$&$&$%+ ",
-".#$$$$$$$$&$&%+ ",
-".#$$$$$&$&$&$%+ ",
-".#$$$$$$&$&$&%+ ",
-".#$$$&$&$&$&&%+ ",
-".#&$&$&$&$&&&%+ ",
-".%%%%%%%%%%%%%+ ",
-" ++++++++++++++ ",
-"                ",
-"                "};
-
-// XPM
-static const char* const ofolder_xpm[] = {
-"16 16 12 1",
-"   c None",
-".  c #808080",
-"+  c #E0E0D0",
-"@  c #4F484F",
-"#  c #909000",
-"$  c #FFF8EF",
-"%  c #CFC860",
-"&  c #003090",
-"*  c #7F7800",
-"=  c #FFC890",
-"-  c #FFF890",
-";  c #2F3000",
-"        .       ",
-"       .+@      ",
-"   ###.$$+@     ",
-"  #%%.$$$$+@    ",
-"  #%.$$$&$$+@** ",
-"  #.+++&+&+++@* ",
-"############++@ ",
-"#$$$$$$$$$=%#++@",
-"#$-------=-=#+; ",
-" #---=--=-==%#; ",
-" #-----=-=-==#; ",
-" #-=--=-=-=-=#; ",
-"  #=-=-=-=-==#; ",
-"  ############; ",
-"   ;;;;;;;;;;;  ",
-"                "};
-
-// XPM
-static const char* const file_xpm[] = {
-"16 16 5 1",
-". c #7f7f7f",
-"# c None",
-"c c #000000",
-"b c #bfbfbf",
-"a c #ffffff",
-"################",
-"..........######",
-".aaaaaaaab.#####",
-".aaaaaaaaba.####",
-".aaaaaaaacccc###",
-".aaaaaaaaaabc###",
-".aaaaaaaaaabc###",
-".aaaaaaaaaabc###",
-".aaaaaaaaaabc###",
-".aaaaaaaaaabc###",
-".aaaaaaaaaabc###",
-".aaaaaaaaaabc###",
-".aaaaaaaaaabc###",
-".aaaaaaaaaabc###",
-".bbbbbbbbbbbc###",
-"ccccccccccccc###"};
 
 // The supported modes
 // fsSEL:
@@ -312,8 +229,10 @@ file_tree_widget::mouseMoveEvent(QMouseEvent *ev)
         int dist = (ev->pos() - drag_pos).manhattanLength();
         if (dist > QApplication::startDragDistance())
             start_drag();
+        ev->accept();
+        return;
     }
-    QTreeWidget::mouseMoveEvent(ev);
+    ev->ignore();
 }
 
 
@@ -321,7 +240,7 @@ void
 file_tree_widget::dragMoveEvent(QDragMoveEvent *ev)
 {
     QTreeWidget::dragMoveEvent(ev);  // handles scrolling at edges
-    if (ev->mimeData()->hasText()) {
+    if (ev->mimeData()->hasUrls()) {
 
         // Yes, this must be done here.
         ev->acceptProposedAction();
@@ -334,15 +253,16 @@ file_tree_widget::dragMoveEvent(QDragMoveEvent *ev)
             it->setBackground(0, QColor(255,255,120));
             target = it;
         }
+        return;
     }
+    ev->ignore();
 }
 
 
 void
 file_tree_widget::dragEnterEvent(QDragEnterEvent *ev)
 {
-    if (ev->mimeData()->hasText()) {
-        ev->accept();
+    if (ev->mimeData()->hasUrls()) {
         ev->acceptProposedAction();
         target = 0;
     }
@@ -366,24 +286,26 @@ file_tree_widget::dropEvent(QDropEvent *ev)
     QTreeWidgetItem *it = itemAt(ev->pos());
     if (it) {
         int proposed_action = ev->proposedAction();
-        const QMimeData *md = ev->mimeData();
-        char *src = lstring::copy(md->text().toLatin1().constData());
         char *dst = fsel->get_dir(it);
+        foreach (const QUrl &url, ev->mimeData()->urls()) {
+            QByteArray dnba = url.toLocalFile().toLatin1();
+            const char *src = dnba.constData();
 
-        if (src && dst) {
-            QTfileDlg::ActionType a = QTfileDlg::A_NOOP;
-            if (proposed_action & Qt::CopyAction)
-                a = QTfileDlg::A_COPY;
-            else if (proposed_action & Qt::MoveAction)
-                a = QTfileDlg::A_MOVE;
-            else if (proposed_action & Qt::LinkAction)
-                a = QTfileDlg::A_LINK;
+            if (src && dst) {
+                QTfileDlg::ActionType a = QTfileDlg::A_NOOP;
+                if (proposed_action & Qt::CopyAction)
+                    a = QTfileDlg::A_COPY;
+                else if (proposed_action & Qt::MoveAction)
+                    a = QTfileDlg::A_MOVE;
+                else if (proposed_action & Qt::LinkAction)
+                    a = QTfileDlg::A_LINK;
 
-            QTfileDlg::DoFileAction(fsel, src, dst, a);
+                QTfileDlg::DoFileAction(fsel, src, dst, a);
+            }
         }
-        delete [] src;
         delete [] dst;
         fsel->flash(it);
+        ev->acceptProposedAction();
     }
 }
 
@@ -396,11 +318,44 @@ file_tree_widget::start_drag()
         if (path) {
             QDrag *drag = new QDrag(this);
             QMimeData *md = new QMimeData();
-            md->setText(QString(path));
+            QList<QUrl> ulst;
+            ulst << QUrl(QString("File://") + path);
+            md->setUrls(ulst);
             drag->setMimeData(md);
-            drag->setPixmap(QPixmap(folder_xpm));
-            drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction);
+            QIcon dicon = QApplication::style()->standardIcon(QStyle::SP_DirIcon);
+            drag->setPixmap(dicon.pixmap(32, 32));
             delete [] path;
+
+            Qt::KeyboardModifiers m = QGuiApplication::queryKeyboardModifiers();
+#ifdef __APPLE__
+            // alt == option on Apple's planet
+            if ((m & Qt::ShiftModifier) && (m & Qt::AltModifier)) {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::LinkAction);
+            }
+            else if (m & Qt::ShiftModifier) {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::CopyAction);
+            }
+            else {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::MoveAction);
+            }
+#else
+            if ((m & Qt::ShiftModifier) && (m & Qt::ControlModifier)) {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::LinkAction);
+            }
+            else if (m & Qt::ShiftModifier) {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::CopyAction);
+            }
+            else {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::MoveAction);
+            }
+#endif
+            delete drag;
         }
     }
 }
@@ -442,10 +397,7 @@ namespace qtinterf
     class file_delegate : public QItemDelegate
     {
     public:
-        file_delegate(file_list_widget *w) : QItemDelegate(w)
-            {
-                widget = w;
-            }
+        file_delegate(file_list_widget *w) : QItemDelegate(w) { widget = w; }
 
         QSize sizeHint(const QStyleOptionViewItem&,
             const QModelIndex&)  const;
@@ -491,12 +443,6 @@ file_list_widget::mousePressEvent(QMouseEvent *ev)
     if (ev->button() == Qt::LeftButton)
         drag_pos = ev->pos();
     QListWidget::mousePressEvent(ev);
-/*XXX
-    if (fsel) {
-        if (fsel->p_path_set)
-            (*fsel->p_path_set)(fsel->get_selection());   
-    }
-*/
 }
 
 
@@ -507,8 +453,10 @@ file_list_widget::mouseMoveEvent(QMouseEvent *ev)
         int dist = (ev->pos() - drag_pos).manhattanLength();
         if (dist > QApplication::startDragDistance())
             start_drag();
+        ev->accept();
+        return;
     }
-    QListWidget::mouseMoveEvent(ev);
+    ev->ignore();
 }
 
 
@@ -516,21 +464,21 @@ void
 file_list_widget::dragMoveEvent(QDragMoveEvent *ev)
 {
     QListWidget::dragMoveEvent(ev);  // handles scrolling at edges
-    if (ev->mimeData()->hasText()) {
+    if (ev->mimeData()->hasUrls()) {
 
         // Yes, this must be done here.
         ev->acceptProposedAction();
+        return;
     }
+    ev->ignore();
 }
 
 
 void
 file_list_widget::dragEnterEvent(QDragEnterEvent *ev)
 {
-    if (ev->mimeData()->hasText()) {
-        ev->accept();
+    if (ev->mimeData()->hasUrls())
         ev->acceptProposedAction();
-    }
     else
         ev->ignore();
 }
@@ -539,23 +487,25 @@ file_list_widget::dragEnterEvent(QDragEnterEvent *ev)
 void
 file_list_widget::dropEvent(QDropEvent *ev)
 {
-    int proposed_action = ev->proposedAction();
-    const QMimeData *md = ev->mimeData();
-    char *src = lstring::copy(md->text().toLatin1().constData());
     char *dst = fsel->get_dir();
+    int proposed_action = ev->proposedAction();
+    foreach (const QUrl &url, ev->mimeData()->urls()) {
+        QByteArray fnba = url.toLocalFile().toLatin1();
+        const char *src = fnba.constData();
 
-    if (src && dst) {
-        QTfileDlg::ActionType a = QTfileDlg::A_NOOP;
-        if (proposed_action & Qt::CopyAction)
-            a = QTfileDlg::A_COPY;
-        else if (proposed_action & Qt::MoveAction)
-            a = QTfileDlg::A_MOVE;
-        else if (proposed_action & Qt::LinkAction)
-            a = QTfileDlg::A_LINK;
-        QTfileDlg::DoFileAction(fsel, src, dst, a);
+        if (src && dst) {
+            QTfileDlg::ActionType a = QTfileDlg::A_NOOP;
+            if (proposed_action & Qt::CopyAction)
+                a = QTfileDlg::A_COPY;
+            else if (proposed_action & Qt::MoveAction)
+                a = QTfileDlg::A_MOVE;
+            else if (proposed_action & Qt::LinkAction)
+                a = QTfileDlg::A_LINK;
+            QTfileDlg::DoFileAction(fsel, src, dst, a);
+        }
     }
-    delete [] src;
     delete [] dst;
+    ev->acceptProposedAction();
 }
 
 
@@ -567,11 +517,44 @@ file_list_widget::start_drag()
         if (path) {
             QDrag *drag = new QDrag(this);
             QMimeData *md = new QMimeData();
-            md->setText(QString(path));
+            QList<QUrl> ulst;
+            ulst << QUrl(QString("File://") + path);
+            md->setUrls(ulst);
             drag->setMimeData(md);
-            drag->setPixmap(QPixmap(file_xpm));
-            drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction);
+            QIcon ficon = QApplication::style()->standardIcon(QStyle::SP_FileIcon);
+            drag->setPixmap(ficon.pixmap(32, 32));
             delete [] path;
+
+            Qt::KeyboardModifiers m = QGuiApplication::queryKeyboardModifiers();
+#ifdef __APPLE__
+            // alt == option on Apple's planet
+            if ((m & Qt::ShiftModifier) && (m & Qt::AltModifier)) {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::LinkAction);
+            }
+            else if (m & Qt::ShiftModifier) {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::CopyAction);
+            }
+            else {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::MoveAction);
+            }
+#else
+            if ((m & Qt::ShiftModifier) && (m & Qt::ControlModifier)) {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::LinkAction);
+            }
+            else if (m & Qt::ShiftModifier) {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::CopyAction);
+            }
+            else {
+                drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+                    Qt::MoveAction);
+            }
+#endif
+            delete drag;
         }
     }
 }
@@ -676,8 +659,8 @@ wb_shell = this;
     policy.setVerticalPolicy(QSizePolicy::Expanding);
     setSizePolicy(policy);
 
-    closed_folder_icon.addPixmap(QPixmap(folder_xpm));
-    open_folder_icon.addPixmap(QPixmap(ofolder_xpm));
+    closed_folder_icon = QApplication::style()->standardIcon(QStyle::SP_DirIcon);
+    open_folder_icon = QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon);
 
     if (f_config == fsSEL) {
         setWindowTitle(QString(tr("File Selection")));
@@ -737,11 +720,16 @@ wb_shell = this;
     f_tree->register_fsel(this);
 
     f_menubar = new QMenuBar(this);
+#ifdef __APPLE__
+    // Put these as buttons elsewhere, Apply won't include them in the main
+    // window menu.
+#else
     f_Up = f_menubar->addAction(QString("up"), this, SLOT(up_slot()));
     f_Up->setIcon(QIcon(QPixmap(up_xpm)));
 
     f_Go = f_menubar->addAction(QString("go"), this, SLOT(open_slot()));
     f_Go->setIcon(QIcon(QPixmap(go_xpm)));
+#endif
 
     if (f_config == fsSEL || f_config == fsSAVE || f_config == fsOPEN) {
         f_filemenu = new QMenu(this);
@@ -767,8 +755,11 @@ wb_shell = this;
     }
 
     f_upmenu = new QMenu(this);
+#ifdef __APPLE__
+#else
     f_upmenu->setTitle(QString(tr("&Up")));
     f_UpMenu = f_menubar->addMenu(f_upmenu);
+#endif
     connect(f_upmenu, SIGNAL(triggered(QAction*)),
         this, SLOT(up_menu_slot(QAction*)));
 
@@ -826,10 +817,30 @@ wb_shell = this;
     if (f_config == fsSEL || f_config == fsOPEN) {
         QSplitter *sp = new QSplitter(this);
         sp->setChildrenCollapsible(false);
-
-        sp->addWidget(f_tree);
-
+#ifdef __APPLE__
         QWidget *holder = new QWidget(this);
+        sp->addWidget(holder);
+        QVBoxLayout *vb = new QVBoxLayout(holder);
+        vb->setMargin(2);
+        vb->setSpacing(2);
+        QHBoxLayout *hb = new QHBoxLayout();
+        vb->addLayout(hb);
+        hb->setMargin(2);
+        hb->setSpacing(0);
+        f_Up = new QPushButton();
+        f_Up->setIcon(QPixmap(up_xpm));
+        f_Up->setMenu(f_upmenu);
+        hb->addWidget(f_Up);
+        f_Go = new QPushButton();
+        f_Go->setIcon(QPixmap(go_xpm));
+        hb->addWidget(f_Go);
+        connect(f_Go, SIGNAL(clicked()), this, SLOT(open_slot()));
+        vb->addWidget(f_tree);
+        holder = new QWidget();
+#else
+        sp->addWidget(f_tree);
+        QWidget *holder = new QWidget(this);
+#endif
 
         f_list = new file_list_widget(holder);
         f_list->setWrapping(true);
@@ -847,7 +858,11 @@ wb_shell = this;
             this, SLOT(filter_change_slot(const QString&)));
         f_filter->setInsertPolicy(QComboBox::NoInsert);
 
+#ifdef __APPLE__
+        vb = new QVBoxLayout(holder);
+#else
         QVBoxLayout *vb = new QVBoxLayout(holder);
+#endif
         vb->setMargin(0);
         vb->setSpacing(2);
         vb->addWidget(f_list);
@@ -904,6 +919,7 @@ wb_shell = this;
 
 QTfileDlg::~QTfileDlg()
 {
+//    emit dismiss();
     f_timer->stop();
     if (p_usrptr)
         *p_usrptr = 0;
@@ -1263,9 +1279,10 @@ QTfileDlg::filter_choice_slot(int index)
     f_filter->setEditable((index > 1));
     f_filter_index = index;
     QLineEdit *ed = f_filter->lineEdit();
-    if (ed)
+    if (ed) {
         connect(ed, SIGNAL(editingFinished()),
             this, SLOT(list_files_slot()));
+    }
 }
 
 
@@ -1287,8 +1304,7 @@ QTfileDlg::filter_change_slot(const QString &qs)
 void
 QTfileDlg::quit_slot()
 {
-    emit dismiss();
-    delete this;
+    deleteLater();
 }
 
 
@@ -1568,11 +1584,17 @@ QTfileDlg::init()
     select_file(0);
     if (f_rootdir && !is_root(f_rootdir)) {
         f_Up->setEnabled(true);
+#ifdef __APPLE__
+#else
         f_UpMenu->setEnabled(true);
+#endif
     }
     else {
         f_Up->setEnabled(false);
+#ifdef __APPLE__
+#else
         f_UpMenu->setEnabled(false);
+#endif
     }
     QTreeWidgetItem *prnt = insert_node(f_rootdir, 0);
     // prnt == 0 when f_rootdir == "/"
@@ -1820,6 +1842,13 @@ namespace {
     //
     char *doit(char *buf)
     {
+        if (getenv("XT_FT_DEBUG")) {
+            sLstr lstr;
+            lstr.add(buf);
+            lstr.add_c('\n');
+            lstr.add("Opertion not performed, XT_FT_DEBUG is set.\n");
+            return (lstr.string_trim());
+        }
         FILE *fp = popen(buf, "r");
         if (!fp)
             return (0);
@@ -1896,6 +1925,97 @@ QTfileDlg::DoFileAction(QTbag *bg, const char *src, const char *dst,
         delete [] err;
     }
 }
+
+
+/* XXX
+// Function to pop up a dialog for file move/copy/linking.
+// is used for positioning.
+//
+void
+QTfileDlg::FileAction(QTbag *bg, const char *src, const char *dst, xxx)
+{
+    GtkWidget *popup = gtk_NewPopup(0, "File Transfer", action_cancel, 0);
+
+    GtkWidget *form = gtk_table_new(1, 3, false);
+    gtk_widget_show(form);
+    gtk_container_add(GTK_CONTAINER(popup), form);
+
+    GtkWidget *entry_src = gtk_entry_new();
+    gtk_widget_show(entry_src);
+    gtk_entry_set_text(GTK_ENTRY(entry_src), src);
+    GtkWidget *frame = gtk_frame_new("Source");
+    gtk_widget_show(frame);
+    gtk_container_add(GTK_CONTAINER(frame), entry_src);
+    g_object_set_data(G_OBJECT(popup), "source", entry_src);
+    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+
+    GtkWidget *entry_dst = gtk_entry_new();
+    gtk_widget_show(entry_dst);
+    gtk_entry_set_text(GTK_ENTRY(entry_dst), dst);
+    frame = gtk_frame_new("Destination");
+    gtk_widget_show(frame);
+    gtk_container_add(GTK_CONTAINER(frame), entry_dst);
+    g_object_set_data(G_OBJECT(popup), "dest", entry_dst);
+    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 1, 2,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+
+    GtkWidget *hbox = gtk_hbox_new(false, 2);
+    gtk_widget_show(hbox);
+
+    GtkWidget *button = gtk_button_new_with_label("Move");
+    gtk_widget_set_name(button, "Move");
+    gtk_widget_show(button);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(action_proc), context);
+    g_object_set_data(G_OBJECT(button), "popup", popup);
+    g_object_set_data(G_OBJECT(button), "action",
+        (void*)GDK_ACTION_MOVE);
+    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+
+    button = gtk_button_new_with_label("Copy");
+    gtk_widget_set_name(button, "Copy");
+    gtk_widget_show(button);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(action_proc), context);
+    g_object_set_data(G_OBJECT(button), "popup", popup);
+    g_object_set_data(G_OBJECT(button), "action",
+        (void*)GDK_ACTION_COPY);
+    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+
+    button = gtk_button_new_with_label("Link");
+    gtk_widget_set_name(button, "Link");
+    gtk_widget_show(button);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(action_proc), context);
+    g_object_set_data(G_OBJECT(button), "popup", popup);
+    g_object_set_data(G_OBJECT(button), "action",
+        (void*)GDK_ACTION_LINK);
+    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+
+    button = gtk_button_new_with_label("Cancel");
+    gtk_widget_set_name(button, "Cancel");
+    gtk_widget_show(button);
+    g_signal_connect(G_OBJECT(button), "clicked",
+        G_CALLBACK(action_proc), 0);
+    g_object_set_data(G_OBJECT(button), "popup", popup);
+    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+
+    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 2, 3,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    gtk_window_set_focus(GTK_WINDOW(popup), button);
+
+    gtk_widget_set_size_request(popup, 400, -1);
+    if (shell) {
+        gtk_window_set_transient_for(GTK_WINDOW(popup), GTK_WINDOW(shell));
+        GTKdev::self()->SetPopupLocation(GRloc(), popup, shell);
+    }
+    gtk_widget_show(popup);
+}
+*/
 
 
 // File monitor - periodically check for changes in directory

@@ -374,6 +374,13 @@ QTdev::BreakLoop()
 }
 
 
+void GRexit(int ev)
+{
+    QApplication::exit(ev);
+    // no return
+}
+
+
 // Write a status/error message on the go button popup, called from
 // the graphics drivers.
 //
@@ -1062,6 +1069,7 @@ const char *QTbag::wb_closed_folder_xpm[] = {
 QTbag::QTbag()
 {
     wb_shell = 0;
+    wb_textarea = 0;
     wb_input = 0;
     wb_message = 0;
     wb_info = 0;

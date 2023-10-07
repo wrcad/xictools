@@ -97,7 +97,7 @@ QTmsgDb::PopUpErr(const char *string)
         append_message(string);
         return;
     }
-    new QTerrmsgDlg();
+    new QTerrmsgDlg(string);
     first_message(string);
 }
 
@@ -113,7 +113,7 @@ QTmsgDb::stuff_msg(const char *str)
 
 QTerrmsgDlg *QTerrmsgDlg::instPtr;
 
-QTerrmsgDlg::QTerrmsgDlg()
+QTerrmsgDlg::QTerrmsgDlg(const char *string)
 {
     instPtr = this;
     setWindowTitle(tr("ERROR"));
@@ -158,6 +158,8 @@ QTerrmsgDlg::QTerrmsgDlg()
         msgDB.set_x((screen_sz.width() - ER_WIDTH)/2);
         msgDB.set_y(0);
     }
+    if (string && *string)
+        er_text->set_chars(string);
     move(msgDB.get_x(), msgDB.get_y());
     show();
 }

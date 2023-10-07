@@ -64,8 +64,7 @@ namespace qtinterf {
     class QTfileDlg;
 }
 
-class qtinterf::QTfileDlg : public QDialog, public GRfilePopup,
-    public QTbag
+class qtinterf::QTfileDlg : public QDialog, public GRfilePopup, public QTbag
 {
     Q_OBJECT
 
@@ -77,15 +76,15 @@ public:
 
     // GRpopup overrides
     void set_visible(bool visib)
-        {
-            if (visib) {
-                show();
-                raise();
-                activateWindow();
-            }
-            else
-                hide();
+    {
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
         }
+        else
+            hide();
+    }
     void popdown();
 
     // GRfilePopup override
@@ -99,14 +98,7 @@ public:
     QSize sizeHint() const { return (QSize(500, 250)); }
     QSize minimumSizeHint() const { return (QSize(250, 125)); }
 
-    // This widget will be deleted when closed with the title bar "X"
-    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-    // not called.  The default behavior is to hide the widget instead
-    // of deleting it, which would likely be a core leak here.
-    void closeEvent(QCloseEvent*) { quit_slot(); }
-
-    static void DoFileAction(QTbag*, const char*, const char*,
-        ActionType);
+    static void DoFileAction(QTbag*, const char*, const char*, ActionType);
 
 signals:
     void file_selected(const char*, void*);
@@ -156,8 +148,13 @@ private:
     file_list_widget *f_list;
     QLabel      *f_label;
     QComboBox   *f_filter;
+#ifdef __APPLE__
+    QPushButton *f_Up;
+    QPushButton *f_Go;
+#else
     QAction     *f_Up;
     QAction     *f_Go;
+#endif
     QAction     *f_UpMenu;
     QAction     *f_Open;
     QAction     *f_New;

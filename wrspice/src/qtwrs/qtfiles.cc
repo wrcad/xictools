@@ -52,6 +52,7 @@
 #include "qtinterf/qtfile.h"
 #include "qtinterf/qttextw.h"
 #include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 #ifdef HAVE_MOZY
 #include "help/help_defs.h"
 #endif
@@ -68,6 +69,7 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QAction>
+#include <QApplication>
 
 
 //===========================================================================
@@ -548,9 +550,10 @@ QTfilesListDlg::create_page(sDirList *dl)
     //
     QTtextEdit *nbtext = new QTtextEdit();
     vbox->addWidget(nbtext);
-    dl->set_dataptr(nbtext);
     nbtext->setReadOnly(true);
     nbtext->setMouseTracking(true);
+    nbtext->setAcceptDrops(true);
+    dl->set_dataptr(nbtext);
     nbtext->set_chars(dl->dirfiles());
 
     QFont *tfont;
@@ -567,53 +570,6 @@ QTfilesListDlg::create_page(sDirList *dl)
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
     connect(nbtext, SIGNAL(mime_data_received(const QMimeData*)),
         this, SLOT(mime_data_received_slot(const QMimeData*)));
-
-/*XXX
-    if (f_btn_hdlr) {
-        gtk_widget_add_events(nbtext, GDK_BUTTON_PRESS_MASK);
-        g_signal_connect(G_OBJECT(nbtext), "button-press-event",
-            G_CALLBACK(f_btn_hdlr), this);
-    }
-    g_signal_connect(G_OBJECT(nbtext), "button-release-event",
-        G_CALLBACK(f_btn_release_hdlr), this);
-    g_signal_connect(G_OBJECT(nbtext), "motion-notify-event",
-        G_CALLBACK(f_motion), this);
-    g_signal_connect_after(G_OBJECT(nbtext), "realize",
-        G_CALLBACK(f_realize_proc), this);
-
-    g_signal_connect(G_OBJECT(nbtext), "unrealize",
-        G_CALLBACK(f_unrealize_proc), this);
-
-    // Gtk-2 is tricky to overcome internal selection handling.
-    // Must remove clipboard (in f_realize_proc), and explicitly
-    // call gtk_selection_owner_set after selecting text.  Note
-    // also that explicit clear-event handling is needed.
-
-    gtk_selection_add_targets(nbtext, GDK_SELECTION_PRIMARY,
-        target_table, n_targets);
-    g_signal_connect(G_OBJECT(nbtext), "selection-clear-event",
-        G_CALLBACK(f_selection_clear), 0);
-    g_signal_connect(G_OBJECT(nbtext), "selection-get",
-        G_CALLBACK(f_selection_get), 0);
-
-    GtkTextBuffer *textbuf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(nbtext));
-    const char *bclr = GRpkg::self()->GetAttrColor(GRattrColorLocSel);
-    gtk_text_buffer_create_tag(textbuf, "primary",
-        "background", bclr, NULL);
-
-    // drag source (starts explicitly)
-    g_signal_connect(G_OBJECT(nbtext), "drag-data-get",
-        G_CALLBACK(f_source_drag_data_get), this);
-
-    // drop site
-    gtk_drag_dest_set(nbtext, GTK_DEST_DEFAULT_ALL, target_table,
-        n_targets,
-        (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE |
-         GDK_ACTION_LINK | GDK_ACTION_ASK));
-    g_signal_connect_after(G_OBJECT(nbtext), "drag-data-received",
-        G_CALLBACK(f_drag_data_received), this);
-*/
     return (page);
 }
 
@@ -1103,14 +1059,53 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
     char *s = get_selection();
     if (!s)
         return;
+    GFTtype ft = filestat::get_file_type(s);
     int sz = strlen(s) + 1;
     QDrag *drag = new QDrag(wb_textarea);
     QMimeData *mimedata = new QMimeData();
-    QByteArray qdata(s, sz);
-    mimedata->setData("text/plain", qdata);
+    QList<QUrl> ulst;
+    ulst << QUrl(QString("File://") + s);
+    mimedata->setUrls(ulst);
     delete [] s;
     drag->setMimeData(mimedata);
-    drag->exec(Qt::CopyAction);
+    if (ft == GFT_DIR) {
+        QIcon dicon = QApplication::style()->standardIcon(QStyle::SP_DirIcon);
+        drag->setPixmap(dicon.pixmap(32, 32));
+    }
+    else {
+        QIcon ficon = QApplication::style()->standardIcon(QStyle::SP_FileIcon);
+        drag->setPixmap(ficon.pixmap(32, 32));
+    }
+
+    Qt::KeyboardModifiers m = QGuiApplication::queryKeyboardModifiers();
+#ifdef __APPLE__
+    // alt == option on Apple's planet
+    if ((m & Qt::ShiftModifier) && (m & Qt::AltModifier)) {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::LinkAction);
+    }
+    else if (m & Qt::ShiftModifier) {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::CopyAction);
+    }
+    else {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::MoveAction);
+    }
+#else
+    if ((m & Qt::ShiftModifier) && (m & Qt::ControlModifier)) {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::LinkAction);
+    }
+    else if (m & Qt::ShiftModifier) {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::CopyAction);
+    }
+    else {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::MoveAction);
+    }
+#endif
     delete drag;
 }
 
@@ -1118,13 +1113,15 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
 void
 QTfilesListDlg::mime_data_received_slot(const QMimeData *data)
 {
-    QByteArray bary = data->data("text/plain");
-    const char *src = bary.constData();
-    if (src && *src && instPtr->wb_textarea) {
-        const char *dst = f_directory;
-        if (dst && *dst && strcmp(src, dst)) {
-            QTfileDlg::DoFileAction(this, src, dst, QTfileDlg::A_NOOP);
-            return;
+    foreach (const QUrl &url, data->urls()) {
+        QByteArray bary = url.toLocalFile().toLatin1();
+        const char *src = bary.constData();
+        if (src && *src && instPtr->wb_textarea) {
+            const char *dst = f_directory;
+            if (dst && *dst && strcmp(src, dst)) {
+                QTfileDlg::DoFileAction(this, src, dst, QTfileDlg::A_NOOP);
+                return;
+            }
         }
     }
 }
