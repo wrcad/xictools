@@ -73,20 +73,22 @@ QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode)
     setWindowTitle(tr("Progress"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     if (mode == prgFileop) {
         QHBoxLayout *hbox = new QHBoxLayout();
-        hbox->setMargin(0);
+        hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
         vbox->addLayout(hbox);
 
         pg_gb_in = new QGroupBox(tr("Input"));
         hbox->addWidget(pg_gb_in);
         QVBoxLayout *vb = new QVBoxLayout(pg_gb_in);
-        vb->setMargin(2);
+        vb->setContentsMargins(qmtop);
         vb->setSpacing(2);
         pg_label_in = new QLabel("");
         vb->addWidget(pg_label_in);
@@ -95,7 +97,7 @@ QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode)
         pg_gb_out = new QGroupBox(tr("Output"));
         hbox->addWidget(pg_gb_out);
         vb = new QVBoxLayout(pg_gb_out);
-        vb->setMargin(2);
+        vb->setContentsMargins(qmtop);
         vb->setSpacing(2);
         pg_label_out = new QLabel("");
         vb->addWidget(pg_label_out);
@@ -104,7 +106,7 @@ QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode)
         pg_gb_info = new QGroupBox(tr("Info"));
         vbox->addWidget(pg_gb_info);
         vb = new QVBoxLayout(pg_gb_info);
-        vb->setMargin(2);
+        vb->setContentsMargins(qmtop);
         vb->setSpacing(2);
         vb->addSpacing(10);
         pg_te_info = new QTextEdit();
@@ -115,13 +117,13 @@ QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode)
     pg_gb_etc = new QGroupBox(this);
     vbox->addWidget(pg_gb_etc);
     QVBoxLayout *vb = new QVBoxLayout(pg_gb_etc);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
     pg_label_etc = new QLabel("");
     vb->addWidget(pg_label_etc);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

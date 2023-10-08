@@ -78,18 +78,20 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_ShowWithoutActivating);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     QGroupBox *gb = new QGroupBox(this);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     QLabel *lbl = new QLabel(gb);
     lbl->setText(tr("Set zoom factor or display window"));
     hb->addWidget(lbl);
@@ -104,7 +106,7 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
         // Showing cross-section, add a control set for the Y-scale.
 
         hbox = new QHBoxLayout(0);
-        hbox->setMargin(0);
+        hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
         vbox->addLayout(hbox);
 
@@ -115,7 +117,7 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
         hbox->addWidget(lbl);
 
         hbox = new QHBoxLayout(0);
-        hbox->setMargin(0);
+        hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
         vbox->addLayout(hbox);
 
@@ -135,7 +137,7 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     }
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -154,7 +156,7 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     connect(btn, SIGNAL(clicked()), this, SLOT(z_apply_btn_slot()));
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -176,7 +178,7 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     hbox->addWidget(zm_y);
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -195,7 +197,7 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     connect(btn, SIGNAL(clicked()), this, SLOT(window_apply_btn_slot()));
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

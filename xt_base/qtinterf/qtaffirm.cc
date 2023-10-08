@@ -81,7 +81,7 @@ QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str)
     setSizePolicy(policy);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
+    vbox->setContentsMargins(2, 2, 2, 2);
     vbox->setSpacing(2);
 
     text_edit *tarea = new text_edit();
@@ -91,7 +91,7 @@ QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str)
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
     QPushButton *btn = new QPushButton(tr("Affirm"));

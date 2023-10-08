@@ -64,15 +64,17 @@ QTledDlg::QTledDlg(QTbag *owner, const char *label_str,
     setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
 
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     if (!label_str)
@@ -92,7 +94,7 @@ QTledDlg::QTledDlg(QTbag *owner, const char *label_str,
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     if (!action_str)

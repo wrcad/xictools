@@ -94,8 +94,9 @@ QTdotsDlg::QTdotsDlg(GRobject caller)
 //    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(dt_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     dt_none = new QRadioButton(tr("Don't show dots"));

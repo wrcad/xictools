@@ -167,16 +167,19 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
     fp_foreg = dsp_prm(LT()->CurLayer())->pixel();
     fp_pixbg = DSP()->Color(BackgroundColor);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
+
     // Mainrow + button row
     //
     QVBoxLayout *top_vbox = new QVBoxLayout(this);
-    top_vbox->setMargin(0);
+    top_vbox->setContentsMargins(qm);
     top_vbox->setSpacing(2);
 
     // Leftcol + pixel editor + stores
     //
     QHBoxLayout *mainrow = new QHBoxLayout();
-    mainrow->setMargin(2);
+    mainrow->setContentsMargins(qmtop);
     mainrow->setSpacing(2);
     top_vbox->addLayout(mainrow);
 
@@ -186,7 +189,7 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
     // Pixel editor controls + stores controls + sample area
     //
     QVBoxLayout *leftcol = new QVBoxLayout();
-    leftcol->setMargin(2);
+    leftcol->setContentsMargins(qmtop);
     leftcol->setSpacing(2);
     bb->setLayout(leftcol);
 
@@ -196,13 +199,13 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
     leftcol->addWidget(fp_editctrl);
 
     QVBoxLayout *vbox = new QVBoxLayout();
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
     fp_editctrl->setLayout(vbox);
 
     QGroupBox *gb = new QGroupBox(tr("NX x NY"));
     QHBoxLayout *hbox = new QHBoxLayout(gb);
-    hbox->setMargin(2);
+    hbox->setContentsMargins(qmtop);
     vbox->addWidget(gb);
 
     fp_spnx = new QSpinBox();
@@ -221,7 +224,7 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
         this, SLOT(ny_change_slot(int)));
 
     hbox = new QHBoxLayout();
-    hbox->setMargin(2);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -246,14 +249,14 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
     leftcol->addWidget(fp_stoctrl);
 
     vbox = new QVBoxLayout;
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
     fp_stoctrl->setLayout(vbox);
 
     gb = new QGroupBox(tr("Page"));
     vbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     fp_defpats = new QSpinBox();
     fp_defpats->setValue(1);
     fp_defpats->setMinimum(1);
@@ -276,7 +279,7 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
     gb = new QGroupBox(tr("Sample"));
     leftcol->addWidget(gb);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
 
     fp_sample = new QTcanvas();
     hb->addWidget(fp_sample);
@@ -287,7 +290,7 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
     fp_editframe = new QGroupBox(tr("Pixel Editor"));
     mainrow->addWidget(fp_editframe);
     hb = new QHBoxLayout(fp_editframe);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
 
     fp_editor = new QTcanvas();
     fp_editor->setMinimumWidth(fp_edt_box_dim);
@@ -306,12 +309,12 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
     mainrow->addWidget(fp_stoframe);
 
     vbox = new QVBoxLayout();
-    vbox->setMargin(0);
+    vbox->setContentsMargins(qm);
     vbox->setSpacing(0);
     fp_stoframe->setLayout(vbox);
     for (int i = 0; i < 3; i++) {
         hbox = new QHBoxLayout();
-        hbox->setMargin(0);
+        hbox->setContentsMargins(qm);
         hbox->setSpacing(0);
         vbox->addLayout(hbox);
         for (int j = 0; j < 6; j++) {
@@ -325,7 +328,7 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
             darea->setMaximumHeight(fp_def_box_h);
 
             hb = new QHBoxLayout(iframe);
-            hb->setMargin(0);
+            hb->setContentsMargins(qm);
             hb->addWidget(darea);
             connect_sigs(darea, (k > 1));
             hbox->addWidget(iframe);
@@ -335,7 +338,7 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
     // Button line
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(2);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
     top_vbox->addLayout(hbox);
 

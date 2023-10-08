@@ -111,8 +111,9 @@ QTmemMonDlg::QTmemMonDlg() : QTdraw(XW_TEXT)
     setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
+    QMargins qmtop(2, 2, 2, 2);
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // The drawing area.

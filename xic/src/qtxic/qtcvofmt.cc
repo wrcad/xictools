@@ -153,13 +153,15 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     QWidget *page = new QWidget();
     addTab(page, "GDSII");
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);;
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     fmt_gdsftopt = new QComboBox();
@@ -180,7 +182,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     // next row
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     fmt_level = new QComboBox();
@@ -205,7 +207,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     // next row
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     fmt_gdscut = new QCheckBox(tr("Accept but truncate too-long strings"));
@@ -245,12 +247,12 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     addTab(page, "OASIS");
 
     vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     label = new QLabel(tr("Output Format:  OASIS archive"));
@@ -274,16 +276,16 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     // next two rows, in columns
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     QVBoxLayout *col1 = new QVBoxLayout();
-    col1->setMargin(0);
+    col1->setContentsMargins(qm);
     col1->setSpacing(2);
     hbox->addLayout(col1);
 
     QVBoxLayout *col2 = new QVBoxLayout();
-    col1->setMargin(0);
+    col1->setContentsMargins(qm);
     col1->setSpacing(2);
     hbox->addLayout(col2);
 
@@ -317,12 +319,12 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     addTab(page, "CIF");
 
     vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     label = new QLabel(tr("Output Format:  CIF archive"));
@@ -360,22 +362,22 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     // next two rows in three columns
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     col1 = new QVBoxLayout();
     hbox->addLayout(col1);
-    col1->setMargin(0);
+    col1->setContentsMargins(qm);
     col1->setSpacing(2);
 
     col2 = new QVBoxLayout();
     hbox->addLayout(col2);
-    col2->setMargin(0);
+    col2->setContentsMargins(qm);
     col2->setSpacing(2);
 
     QVBoxLayout *col3 = new QVBoxLayout();
     hbox->addLayout(col3);
-    col3->setMargin(0);
+    col3->setContentsMargins(qm);
     col3->setSpacing(2);
 
     label = new QLabel(tr("Cell Name Extension"));
@@ -452,7 +454,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     addTab(page, "CGX");
 
     vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     label = new QLabel(tr("Output Format: CGX archive"));
@@ -472,7 +474,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     addTab(page, "XIC cell files");
 
     vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     label = new QLabel(tr("Output Format: XIC native cell files"));
@@ -485,7 +487,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     addTab(page, "ASCII text");
 
     vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     label = new QLabel(tr("Output Format:  ASCII text file"));
@@ -494,7 +496,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     fmt_oasoff = new QCheckBox(tr("OASIS text: print offsets"));

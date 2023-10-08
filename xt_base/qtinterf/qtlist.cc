@@ -149,7 +149,7 @@ QTlistDlg::QTlistDlg(QTbag *owner, stringlist *symlist, const char *title,
     setAttribute(Qt::WA_DeleteOnClose);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(2, 2, 2, 2);
     vbox->setSpacing(2);
 
     const char *t;

@@ -111,12 +111,14 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(pcc_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -125,7 +127,7 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Control Parameterized Cell Options"));
     hb->addWidget(label);
@@ -135,7 +137,7 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -155,7 +157,7 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
         this, SLOT(hidestr_btn_slot(int)));
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

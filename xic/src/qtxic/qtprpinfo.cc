@@ -116,8 +116,9 @@ QTprpInfoDlg::QTprpInfoDlg(CDo *odesc)
     setWindowTitle(tr("Properties"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // scrolled text area

@@ -57,13 +57,15 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_sens_test = sens_test;
     wnd_func_mode = fmode;
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(16);
 
     wnd_use_win = new QCheckBox(tr("Use Window"));
@@ -89,7 +91,7 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     // two rows, six cols
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     QVBoxLayout *col = new QVBoxLayout();

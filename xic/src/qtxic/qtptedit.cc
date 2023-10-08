@@ -122,12 +122,14 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     setWindowTitle(tr("Terminal Edit"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -136,7 +138,7 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Edit Terminal Properties"));
     hb->addWidget(label);
@@ -150,7 +152,7 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     gb = new QGroupBox(tr("Terminal Name"));
     vbox->addWidget(gb);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     te_name = new QLabel("");
@@ -161,7 +163,7 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     te_physgrp = new QGroupBox(tr("Physical"));
     vbox->addWidget(te_physgrp);
     QGridLayout *grid = new QGridLayout(gb);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     // Layer Binding
@@ -176,7 +178,7 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     grid->addWidget(te_fixed, 1, 0, 1, 2);
 
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -189,7 +191,7 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     // Prev, Next buttons.
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -215,7 +217,7 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     // Apply, Dismiss buttons
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

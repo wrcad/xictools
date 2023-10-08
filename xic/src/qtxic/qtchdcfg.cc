@@ -119,12 +119,14 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
     setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -133,7 +135,7 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     cf_label = new QLabel("");
     hb->addWidget(cf_label);
@@ -148,12 +150,12 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
     vbox->addWidget(gb);
 
     QVBoxLayout *gvbox = new QVBoxLayout(gb);
-    gvbox->setMargin(2);
+    gvbox->setContentsMargins(qmtop);
     gvbox->setSpacing(2);
 
     QHBoxLayout *ghbox = new QHBoxLayout();
     gvbox->addLayout(ghbox);
-    ghbox->setMargin(0);
+    ghbox->setContentsMargins(qm);
     ghbox->setSpacing(2);
 
     cf_apply_tc = new QPushButton("");
@@ -167,7 +169,7 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
     //
     ghbox = new QHBoxLayout();
     gvbox->addLayout(ghbox);
-    ghbox->setMargin(0);
+    ghbox->setContentsMargins(qm);
     ghbox->setSpacing(2);
 
     cf_dtc_label = new QLabel(tr("Default top cell"));
@@ -199,12 +201,12 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
     vbox->addWidget(gb);
 
     gvbox = new QVBoxLayout(gb);
-    gvbox->setMargin(2);
+    gvbox->setContentsMargins(qmtop);
     gvbox->setSpacing(2);
 
     ghbox = new QHBoxLayout();
     gvbox->addLayout(ghbox);
-    ghbox->setMargin(0);
+    ghbox->setContentsMargins(qm);
     ghbox->setSpacing(2);
 
     cf_apply_cgd = new QPushButton("");
@@ -222,7 +224,7 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
 
     ghbox = new QHBoxLayout();
     gvbox->addLayout(ghbox);
-    ghbox->setMargin(0);
+    ghbox->setContentsMargins(qm);
     ghbox->setSpacing(2);
 
     cf_cgdlabel = new QLabel(tr("CGD name"));

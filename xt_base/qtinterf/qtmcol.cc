@@ -125,7 +125,7 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
     setAttribute(Qt::WA_DeleteOnClose);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(2, 2, 2, 2);
     vbox->setSpacing(2);
 
     // Title label.
@@ -155,7 +155,7 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
     QPushButton *btn = new QPushButton(tr("Save Text "));

@@ -105,19 +105,21 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     setWindowTitle(tr("Command Options"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Command Defaults"));
     hb->addWidget(label);
@@ -140,7 +142,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, tr("General"));
 
     QGridLayout *grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -214,7 +216,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "aspice");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -238,7 +240,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "check");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -270,7 +272,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "diff");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -312,7 +314,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "edit");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -357,7 +359,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "fourier");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -413,7 +415,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "help");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -462,7 +464,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "print");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -508,7 +510,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "rawfile");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -552,7 +554,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "rspice");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -582,7 +584,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "source");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -605,7 +607,7 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     notebook->addTab(page, "write");
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();

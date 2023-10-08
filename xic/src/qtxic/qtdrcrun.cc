@@ -169,12 +169,14 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(dc_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -183,7 +185,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Initiate batch DRC run"));
     hb->addWidget(label);
@@ -201,10 +203,10 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     nbook->addTab(page, tr("Run"));
 
     QVBoxLayout *vb = new QVBoxLayout(page);
-    vb->setMargin(0);
+    vb->setContentsMargins(qm);
     vb->setSpacing(2);
     QGridLayout *grid = new QGridLayout();
-    grid->setMargin(0);
+    grid->setContentsMargins(qm);
     grid->setSpacing(2);
     vb->addLayout(grid);
 
@@ -215,7 +217,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
 
     hb = new QHBoxLayout();
     grid->addLayout(hb, 0, 1);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     dc_use = new QPushButton(tr("Use"));
@@ -243,7 +245,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
 
     hb = new QHBoxLayout();
     grid->addLayout(hb, 2, 1);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     dc_none = new QPushButton(tr("None"));
@@ -262,7 +264,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     // Use Window
     //
     grid = new QGridLayout();
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
     vb->addLayout(grid);
 
@@ -352,7 +354,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     page = new QWidget();
     nbook->addTab(page, tr("Jobs"));
     vb = new QVBoxLayout(page);
-    vb->setMargin(0);
+    vb->setContentsMargins(qm);
     vb->setSpacing(2);
 
     dc_jobs = new QTtextEdit();

@@ -132,12 +132,14 @@ QToasisDlg::QToasisDlg(GRobject c)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(oas_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -173,7 +175,7 @@ QToasisDlg::QToasisDlg(GRobject c)
         this, SLOT(oldsort_btn_slot(int)));
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -192,7 +194,7 @@ QToasisDlg::QToasisDlg(GRobject c)
 //    GtkWidget *sep = gtk_hseparator_new();
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -207,7 +209,7 @@ QToasisDlg::QToasisDlg(GRobject c)
     // Repetition Finder Configuration
     // four columns
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -217,7 +219,7 @@ QToasisDlg::QToasisDlg(GRobject c)
     QGroupBox *gb = new QGroupBox(tr("Objects"));
     grid->addWidget(gb, 0, 0, 4, 1);
     QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     oas_objc = new QCheckBox(tr("Cells"));

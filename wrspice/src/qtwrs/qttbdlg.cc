@@ -328,13 +328,15 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     connect(tb_help_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(help_menu_slot(QAction*)));
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     // the WR logo button
@@ -365,7 +367,7 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
     QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     gd_viewport = new QTcanvas();

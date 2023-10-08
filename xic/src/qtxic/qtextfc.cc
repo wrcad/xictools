@@ -178,12 +178,14 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     setWindowTitle(tr("Cap. Extraction"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -192,7 +194,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Fast[er]Cap Interface"));
     hb->addWidget(label);
@@ -211,11 +213,11 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     QWidget *page = new QWidget();
     nbook->addTab(page, tr("Run"));
     QVBoxLayout *vb = new QVBoxLayout(page);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     fc_foreg = new QCheckBox(tr("Run in foreground"));
@@ -230,7 +232,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     fc_shownum = new QCheckBox(tr("Show Numbers"));
@@ -242,7 +244,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     btn = new QPushButton(tr("Run File"));
@@ -254,7 +256,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     btn = new QPushButton("Run Extraction");
@@ -294,7 +296,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     gb = new QGroupBox("FcPlaneBloat");
     grid->addWidget(gb, 0, 0);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     int ndgt = CD()->numDigits();
@@ -311,7 +313,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     gb = new QGroupBox("SubstrateThickness");
     grid->addWidget(gb, 0, 1);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     fc_sb_substrate_thickness = new QDoubleSpinBox();
@@ -326,7 +328,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     gb = new QGroupBox("FcUnits");
     grid->addWidget(gb, 1, 0);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     fc_units = new QComboBox();;
@@ -340,7 +342,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     gb = new QGroupBox("SubstrateEps");
     grid->addWidget(gb, 1, 1);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     fc_sb_substrate_eps = new QDoubleSpinBox();
@@ -357,14 +359,14 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     gb = new QGroupBox();
     vb->addWidget(gb);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     label = new QLabel(tr("FastCap Panel Refinement"));
     hb->addWidget(label);
 
     hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
     vb->addLayout(hb);
 
@@ -376,7 +378,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     gb = new QGroupBox("FcPanelTarget");
     hb->addWidget(gb);
     QHBoxLayout *hb1 = new QHBoxLayout(gb);
-    hb1->setMargin(2);
+    hb1->setContentsMargins(qmtop);
     hb1->setSpacing(2);
 
 
@@ -478,7 +480,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     page = new QWidget();
     nbook->addTab(page, tr("Jobs"));
     vb = new QVBoxLayout(page);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     fc_jobs = new QTtextEdit();
@@ -504,7 +506,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     gb = new QGroupBox();
     vbox->addWidget(gb);
     hbox = new QHBoxLayout(gb);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     char *s = FCif()->statusString();

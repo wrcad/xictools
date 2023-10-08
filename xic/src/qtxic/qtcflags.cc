@@ -104,12 +104,14 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     setWindowTitle(tr("Set Cell Flags"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -121,7 +123,7 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     hbox->addWidget(label);
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -144,7 +146,7 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     cf_label = new QLabel("");
@@ -168,7 +170,7 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

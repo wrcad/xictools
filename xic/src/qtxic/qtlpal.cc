@@ -157,12 +157,14 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(lp_shell), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -205,7 +207,7 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     QGroupBox *gb = new QGroupBox(0);
     vbox->addWidget(gb);
     QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     gd_viewport = new QTcanvas();

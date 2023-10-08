@@ -318,6 +318,8 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
 
     const char *type = CDvdb()->getVariable(VA_DevMenuStyle);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     if (type && *type == '0' + dvMenuPict) {
         dv_type = dvMenuPict;
         gd_viewport = new QTcanvas();
@@ -362,13 +364,13 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         dv_width = init_sizes();
 
         QHBoxLayout *hbox = new QHBoxLayout(this);
-        hbox->setMargin(2);
+        hbox->setContentsMargins(qmtop);
         hbox->setSpacing(2);
         hbox->addWidget(gd_viewport->widget());
 
         QVBoxLayout *vbox = new QVBoxLayout();
         hbox->addLayout(vbox);
-        vbox->setMargin(0);
+        vbox->setContentsMargins(qm);
         vbox->setSpacing(2);
 
         dv_morebtn = new QPushButton();
@@ -400,13 +402,13 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         dv_type = dvMenuAlpha;
 
         QHBoxLayout *hbox = new QHBoxLayout(this);
-        hbox->setMargin(2);
+        hbox->setContentsMargins(qmtop);
         hbox->setSpacing(2);
 
         QGroupBox *gb = new QGroupBox();
         hbox->addWidget(gb);
         hbox = new QHBoxLayout(gb);
-        hbox->setMargin(2);
+        hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
 
         QMenuBar *menubar = new QMenuBar();
@@ -445,7 +447,7 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         dv_type = dvMenuCateg;
 
         QHBoxLayout *hbox = new QHBoxLayout(this);
-        hbox->setMargin(2);
+        hbox->setContentsMargins(qmtop);
         hbox->setSpacing(2);
 
 #ifdef __APPLE__

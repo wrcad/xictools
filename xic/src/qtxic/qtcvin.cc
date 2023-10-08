@@ -170,12 +170,14 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(cvi_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -184,7 +186,7 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     cvi_label = new QLabel(tr("Set parameters for reading input"));
     hb->addWidget(cvi_label);
@@ -204,12 +206,12 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
     cvi_nbook->addTab(page, tr("Setup"));
 
     QVBoxLayout *pvbox = new QVBoxLayout(page);
-    pvbox->setMargin(2);
+    pvbox->setContentsMargins(qmtop);
     pvbox->setSpacing(2);
 
     QHBoxLayout *phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
-    phbox->setMargin(0);
+    phbox->setContentsMargins(qm);
     phbox->setSpacing(2);
 
     QLabel *label = new QLabel(tr(" PCell evaluation:"));
@@ -235,7 +237,7 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
 
     phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
-    phbox->setMargin(0);
+    phbox->setContentsMargins(qm);
     phbox->setSpacing(2);
 
     cvi_over = new QComboBox();
@@ -268,7 +270,7 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
 
     phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
-    phbox->setMargin(0);
+    phbox->setContentsMargins(qm);
     phbox->setSpacing(2);
 
     cvi_dup = new QComboBox();
@@ -296,7 +298,7 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
 
     phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
-    phbox->setMargin(0);
+    phbox->setContentsMargins(qm);
     phbox->setSpacing(2);
 
     cvi_force = new QComboBox();
@@ -340,12 +342,12 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
     cvi_nbook->addTab(page, tr("Read File"));
 
     pvbox = new QVBoxLayout(page);
-    pvbox->setMargin(2);
+    pvbox->setContentsMargins(qmtop);
     pvbox->setSpacing(2);
 
     phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
-    phbox->setMargin(0);
+    phbox->setContentsMargins(qm);
     phbox->setSpacing(2);
 
     cvi_merg = new QComboBox();
@@ -379,7 +381,7 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
     //
     phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
-    phbox->setMargin(0);
+    phbox->setContentsMargins(qm);
     phbox->setSpacing(2);
 
     label = new QLabel(tr("Reading Scale Factor"));

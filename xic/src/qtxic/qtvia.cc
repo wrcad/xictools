@@ -194,12 +194,14 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(stv_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -208,7 +210,7 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set parameters for new standard via"));
     hb->addWidget(label);
@@ -219,7 +221,7 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
 
     QGridLayout *grid = new QGridLayout();
     vbox->addLayout(grid);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     label = new QLabel(tr("via name, cut layer"));
@@ -384,7 +386,7 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
     //
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     stv_apply = new QPushButton(tr("Apply"));

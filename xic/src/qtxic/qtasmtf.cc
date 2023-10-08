@@ -86,7 +86,9 @@ QTasmTf::QTasmTf(QTasmPage *src)
     //
     QWidget *page = new QWidget();
     QGridLayout *grid = new QGridLayout(page);
-    grid->setMargin(2);
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
     insertTab(0, page, tr("Basic"));
 
@@ -157,7 +159,7 @@ QTasmTf::QTasmTf(QTasmPage *src)
     //
     page = new QWidget();
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
     insertTab(1, page, tr("Advanced"));
 
@@ -165,7 +167,7 @@ QTasmTf::QTasmTf(QTasmPage *src)
     //
     QHBoxLayout *hbox = new QHBoxLayout();
     grid->addLayout(hbox, 0, 0, 1, 4);
-    hbox->setMargin(2);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     tf_use_win = new QCheckBox(tr("Use Window"));

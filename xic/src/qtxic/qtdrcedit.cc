@@ -127,8 +127,9 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
     setWindowTitle(tr("Design Rule Editor"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // menu bar

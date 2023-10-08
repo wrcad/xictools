@@ -86,7 +86,7 @@ QTform_file::QTform_file(htmForm *entry, QWidget *prnt) : QWidget(prnt)
     ff_browse->setText(QString("Browse..."));
     ff_browse->setMaximumHeight(ht);
     QHBoxLayout *hbox = new QHBoxLayout(this);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(4);
     hbox->addWidget(ff_edit);
     hbox->addWidget(ff_browse);

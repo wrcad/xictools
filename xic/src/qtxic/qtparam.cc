@@ -70,7 +70,7 @@ QTparam::QTparam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 
     gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
     QHBoxLayout *hbox = new QHBoxLayout(this);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(0);
     hbox->addWidget(gd_viewport->widget());
 

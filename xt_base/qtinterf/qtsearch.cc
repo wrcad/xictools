@@ -105,14 +105,16 @@ QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) : se_timer(this)
     setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
     QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
     se_label = new QLabel("");
     vb->addWidget(se_label);
@@ -123,7 +125,7 @@ QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) : se_timer(this)
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     QPushButton *btn = new QPushButton();

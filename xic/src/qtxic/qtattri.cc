@@ -276,12 +276,14 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(at_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -290,7 +292,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set misc. window attributes"));
     hb->addWidget(label);
@@ -307,12 +309,12 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     QWidget *page = new QWidget();
     nbook->addTab(page, tr("General"));
     QVBoxLayout *vb = new QVBoxLayout(page);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     label = new QLabel(tr("Cursor:"));
@@ -369,7 +371,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     page = new QWidget();
     nbook->addTab(page, tr("Selections"));
     vb = new QVBoxLayout(page);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     at_minst = new QCheckBox(tr(
@@ -413,7 +415,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid = new QGridLayout(page);
     hb = new QHBoxLayout;
     grid->addLayout(hb, 0, 0, 1, 2);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     label = new QLabel(tr("Erase behind physical terminals"));
@@ -455,7 +457,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid = new QGridLayout(page);
     hb = new QHBoxLayout();
     grid->addLayout(hb, 0, 0, 1, 2);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     label = new QLabel(tr("Hidden label scope"));

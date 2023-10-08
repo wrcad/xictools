@@ -89,13 +89,15 @@ QTltabEditDlg::QTltabEditDlg(GRobject c)
     setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(le_shell), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     // label in frame
@@ -103,7 +105,7 @@ QTltabEditDlg::QTltabEditDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     le_label = new QLabel(tr(initmsg));
     hb->addWidget(le_label);
@@ -113,7 +115,7 @@ QTltabEditDlg::QTltabEditDlg(GRobject c)
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
     // combo box input area
@@ -127,7 +129,7 @@ QTltabEditDlg::QTltabEditDlg(GRobject c)
     //
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     btn = new QPushButton(tr("Add Layer"));

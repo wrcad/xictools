@@ -105,12 +105,14 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     setWindowTitle(tr("OpenAccess Tech"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -119,7 +121,7 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     ot_label = new QLabel(tr("Set technology for library"));
     hb->addWidget(ot_label);
@@ -129,7 +131,7 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -149,7 +151,7 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     connect(ot_def, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
 
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -164,7 +166,7 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     gb = new QGroupBox();
     vbox->addWidget(gb);
     hbox = new QHBoxLayout(gb);
-    hbox->setMargin(2);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
 
     ot_status = new QLabel(tr("Tech status:"));

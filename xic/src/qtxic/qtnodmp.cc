@@ -229,12 +229,14 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
     setWindowTitle(tr("Node (Net) Name Mapping"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -271,7 +273,7 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
     // second button line
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -294,7 +296,7 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
     hbox->addWidget(rbtn);
 
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -333,7 +335,7 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
     // cancel button row
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

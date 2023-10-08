@@ -61,14 +61,15 @@ QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
     setWindowTitle(err ? tr("ERROR") : tr("Message"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
     QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     tx_tbox = new QTextEdit();

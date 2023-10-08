@@ -172,18 +172,20 @@ printf("x1\n");
 //    gtk_window_set_resizable(GTK_WINDOW(mc_popup), false);
 //    gtk_BlackHoleFix(mc_popup);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     QGroupBox *gb = new QGroupBox(this);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qm);
     mc_label = new QLabel(gb);
     char buf[256];
     snprintf(buf, sizeof(buf), "Cell: %s", mi->name);
@@ -194,7 +196,7 @@ printf("x1\n");
     vbox->addLayout(hbox);
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
     
     QCheckBox *cb = new QCheckBox();
@@ -205,7 +207,7 @@ printf("x1\n");
     cb->setChecked(mc_do_elec);
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
     cb = new QCheckBox();
@@ -216,7 +218,7 @@ printf("x1\n");
     cb->setChecked(mc_do_elec);
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
     QPushButton *btn = new QPushButton();

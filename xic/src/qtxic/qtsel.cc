@@ -119,7 +119,8 @@ QTselectDlg::QTselectDlg(GRobject c)
     //
     QGroupBox *pmgb = new QGroupBox(tr("Pointer Mode"));
     QVBoxLayout *vb = new QVBoxLayout(pmgb);
-    vb->setMargin(0);
+    QMargins qm;
+    vb->setContentsMargins(qm);
     vb->setSpacing(2);
     sl_pm_norm = new QRadioButton(tr("Normal"));
     vb->addWidget(sl_pm_norm);
@@ -138,7 +139,7 @@ QTselectDlg::QTselectDlg(GRobject c)
     //
     QGroupBox *amgb = new QGroupBox(tr("Area Mode"));
     vb = new QVBoxLayout(amgb);
-    vb->setMargin(0);
+    vb->setContentsMargins(qm);
     vb->setSpacing(2);
     sl_am_norm = new QRadioButton(tr("Normal"));
     vb->addWidget(sl_am_norm);
@@ -157,7 +158,7 @@ QTselectDlg::QTselectDlg(GRobject c)
     //
     QGroupBox *sgb = new QGroupBox(tr("Selections"));
     vb = new QVBoxLayout(sgb);
-    vb->setMargin(0);
+    vb->setContentsMargins(qm);
     vb->setSpacing(2);
     sl_sel_norm = new QRadioButton(tr("Normal"));
     vb->addWidget(sl_sel_norm);
@@ -180,7 +181,7 @@ QTselectDlg::QTselectDlg(GRobject c)
     //
     QGroupBox *ogb = new QGroupBox(tr("Objects"));
     vb = new QVBoxLayout(ogb);
-    vb->setMargin(0);
+    vb->setContentsMargins(qm);
     vb->setSpacing(2);
     sl_cell = new QCheckBox(tr("Cells"));
     vb->addWidget(sl_cell);
@@ -211,30 +212,30 @@ QTselectDlg::QTselectDlg(GRobject c)
     connect(sl_upbtn, SIGNAL(toggled(bool)), this, SLOT(up_btn_slot(bool)));
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     hbox->addWidget(pmgb);
     hbox->addWidget(amgb);
 
     QVBoxLayout *vbox = new QVBoxLayout();
-    vbox->setMargin(0);
+    vbox->setContentsMargins(qm);
     vbox->setSpacing(2);
     vbox->addLayout(hbox);
     vbox->addWidget(sl_upbtn);
 
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     hbox->addLayout(vbox);
     hbox->addWidget(sgb);
 
     vbox = new QVBoxLayout();
-    vbox->setMargin(0);
+    vbox->setContentsMargins(qm);
     vbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     QPushButton *btn = new QPushButton(tr("Help"));
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
@@ -245,7 +246,7 @@ QTselectDlg::QTselectDlg(GRobject c)
     vbox->addLayout(hbox);
 
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     hbox->addLayout(vbox);
     hbox->addWidget(ogb);

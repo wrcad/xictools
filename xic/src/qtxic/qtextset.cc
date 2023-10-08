@@ -164,12 +164,14 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(es_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -178,7 +180,7 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set parameters for extraction"));
     hb->addWidget(label);
@@ -198,7 +200,7 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     // set/clear extraction buttons, dismiss button
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -237,14 +239,16 @@ QTextSetupDlg::views_and_ops_page()
     QWidget *page = new QWidget();
     es_notebook->addTab(page, tr("Views and\nOperations"));
     QVBoxLayout *vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // The Show group.
     //
     QGroupBox *gb = new QGroupBox(tr("Show"));
     QGridLayout *grid = new QGridLayout(gb);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     es_p1_extview = new QCheckBox(tr("Extraction View"));
@@ -277,11 +281,11 @@ QTextSetupDlg::views_and_ops_page()
     gb = new QGroupBox(tr("Terminals"));
     vbox->addWidget(gb);
     QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
     QHBoxLayout *hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     QPushButton *btn = new QPushButton(tr("Reset Terms"));
@@ -299,7 +303,7 @@ QTextSetupDlg::views_and_ops_page()
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     es_p1_tedit = new QPushButton(tr("Edit Terminals"));
@@ -318,7 +322,7 @@ QTextSetupDlg::views_and_ops_page()
     //
     hb = new QHBoxLayout();
     vbox->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     QLabel *label = new QLabel(tr("Select Unassociated"));
@@ -344,11 +348,13 @@ QTextSetupDlg::net_and_cell_page()
     QWidget *page = new QWidget();
     es_notebook->addTab(page, tr("Net\nConfig"));
     QVBoxLayout *vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     // Nets
@@ -356,7 +362,7 @@ QTextSetupDlg::net_and_cell_page()
     QGroupBox *gb = new QGroupBox(tr("Net label purpose name"));
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     es_p2_nlprpset = new QPushButton(tr("Apply"));
@@ -371,7 +377,7 @@ QTextSetupDlg::net_and_cell_page()
     gb = new QGroupBox(tr("Net label layer"));
     hbox->addWidget(gb);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     es_p2_nllset = new QPushButton(tr("Apply"));
@@ -413,11 +419,11 @@ QTextSetupDlg::net_and_cell_page()
     gb = new QGroupBox(tr("Via Detection"));
     vbox->addWidget(gb);
     QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     es_p2_vcvx = new QCheckBox(tr("Assume convex vias"));
@@ -439,7 +445,7 @@ QTextSetupDlg::net_and_cell_page()
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     es_p2_vsubs = new QCheckBox(tr(
@@ -453,7 +459,7 @@ QTextSetupDlg::net_and_cell_page()
     gb = new QGroupBox(tr("Ground Plane Handling"));
     vbox->addWidget(gb);
     vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     es_p2_gpglob = new QCheckBox(tr(
@@ -494,7 +500,9 @@ QTextSetupDlg::devs_page()
     QWidget *page = new QWidget();
     es_notebook->addTab(page, tr("Device\nConfig"));
     QVBoxLayout *vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // Menu bar.
@@ -565,7 +573,7 @@ QTextSetupDlg::devs_page()
     QGroupBox *gb = new QGroupBox(tr("Resistor/Inductor Extraction"));
     vbox->addWidget(gb);
     QGridLayout *grid = new QGridLayout(gb);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     es_p3_deltaset = new QCheckBox(tr("Set/use fixed grid size"));
@@ -617,7 +625,9 @@ QTextSetupDlg::misc_page()
     QWidget *page = new QWidget();
     es_notebook->addTab(page, tr("Misc\nConfig"));
     QVBoxLayout *vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // Flatten token entry group, check box.
@@ -625,7 +635,7 @@ QTextSetupDlg::misc_page()
     QGroupBox *gb = new QGroupBox(tr("Cell flattening name keys"));
     vbox->addWidget(gb);
     QHBoxLayout *hbox = new QHBoxLayout(gb);
-    hbox->setMargin(2);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
 
     es_p4_flkeyset = new QPushButton(tr("Apply"));
@@ -653,7 +663,7 @@ QTextSetupDlg::misc_page()
     gb = new QGroupBox(tr("Global exclude layer expression"));
     vbox->addWidget(gb);
     hbox = new QHBoxLayout(gb);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     es_p4_glbexset = new QPushButton(tr("Apply"));
@@ -670,7 +680,7 @@ QTextSetupDlg::misc_page()
     gb = new QGroupBox(tr("Association"));
     vbox->addWidget(gb);
     QGridLayout *grid = new QGridLayout(gb);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     es_p4_noperm = new QCheckBox(tr(

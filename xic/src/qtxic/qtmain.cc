@@ -1010,8 +1010,10 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     sw_keys_pressed->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     sw_keys_pressed->show_keys();
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
 #ifndef __APPLE__
@@ -1019,7 +1021,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     // upper left window corner.
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     hbox->setMenuBar(sw_menubar);
@@ -2129,8 +2131,10 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     connect(a, SIGNAL(triggered()), this, SLOT(wr_btn_slot()));
 #endif
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 #ifndef __APPLE__
     // By default, this does nothing in Apple, menus are set in the
@@ -2139,7 +2143,7 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
 #endif
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -2160,7 +2164,7 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     hbox->addWidget(new QWidget(this));  // Filler
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     mw_phys_button_box = new QWidget(this);
@@ -2187,7 +2191,7 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     vbox->addLayout(hbox);
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

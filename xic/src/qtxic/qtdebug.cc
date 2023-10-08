@@ -189,8 +189,10 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
     setWindowTitle(tr("Script Debugger"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // menu bar
@@ -306,7 +308,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
         this, SLOT(help_menu_slot(QAction*)));
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -321,7 +323,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     db_modelabel = new QLabel(tr("Edit Mode"));
     hb->addWidget(db_modelabel);
@@ -1785,8 +1787,9 @@ QTdbgVarsDlg::QTdbgVarsDlg(void *p)
     setWindowTitle(tr("Variables"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // variable listing text

@@ -139,12 +139,14 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     setWindowTitle(tr("Cell List Filter"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -182,7 +184,7 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set filtering for cells list"));
     hb->addWidget(label);
@@ -193,37 +195,37 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
 
     // Two colums
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     QVBoxLayout *col1 = new QVBoxLayout();
-    col1->setMargin(0);
+    col1->setContentsMargins(qm);
     col1->setSpacing(2);
     hbox->addLayout(col1);
 
     QVBoxLayout *col2 = new QVBoxLayout();
-    col2->setMargin(0);
+    col2->setContentsMargins(qm);
     col2->setSpacing(2);
     hbox->addLayout(col2);
 
     QVBoxLayout *col3 = new QVBoxLayout();
-    col3->setMargin(0);
+    col3->setContentsMargins(qm);
     col3->setSpacing(2);
     hbox->addLayout(col3);
 
     hb = new QHBoxLayout();
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     col3->addLayout(hb);
 
     QVBoxLayout *col3a = new QVBoxLayout();
-    col3->setMargin(0);
+    col3->setContentsMargins(qm);
     col3->setSpacing(2);
     hb->addLayout(col3a);
 
     QVBoxLayout *col3b = new QVBoxLayout();
-    col3->setMargin(0);
+    col3->setContentsMargins(qm);
     col3->setSpacing(2);
     hb->addLayout(col3b);
 
@@ -394,7 +396,7 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // Apply and Dismiss buttons
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

@@ -85,7 +85,7 @@ QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
     setSizePolicy(policy);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(2, 2, 2, 2);;
     vbox->setSpacing(2);
 
     nu_label = new text_edit();
@@ -103,7 +103,7 @@ QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
     nu_yesbtn = new QPushButton(tr("Apply"));

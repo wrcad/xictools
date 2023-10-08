@@ -134,8 +134,10 @@ QTasmDlg::QTasmDlg(GRobject c)
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
     QTpkg::self()->RegisterMainWbag(this);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // menu bar
@@ -214,7 +216,7 @@ QTasmDlg::QTasmDlg(GRobject c)
     //
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
 
@@ -589,8 +591,10 @@ QTasmDlg::output_page_setup()
 {
     QWidget *page = new QWidget();
     asm_notebook->insertTab(0, page, tr("Output"));
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     asm_fmt = new QTconvOutFmt(0, asm_fmt_type, QTconvOutFmt::cvofmt_asm);
@@ -600,7 +604,7 @@ QTasmDlg::output_page_setup()
     //
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     QLabel *label = new QLabel(tr("Top-Level Cell Name"));
@@ -612,7 +616,7 @@ QTasmDlg::output_page_setup()
     QGroupBox *gb = new QGroupBox(path_to_new_string);
     vbox->addWidget(gb);
     QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     asm_outfile = new QLineEdit();

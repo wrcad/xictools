@@ -787,13 +787,16 @@ wb_shell = this;
             this, SLOT(help_slot()), Qt::CTRL+Qt::Key_H);
     }
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
+
     QGroupBox *gbox = 0;
     f_label = 0;
     f_entry = 0;
     if (f_config == fsSEL) {
         gbox = new QGroupBox(this);
         QVBoxLayout *vbox = new QVBoxLayout(gbox);
-        vbox->setMargin(2);
+        vbox->setContentsMargins(qmtop);
         f_label = new QLabel(gbox);
         f_label->setText(QString("Root:\nCwd:"));
         f_label->setMinimumHeight(24);
@@ -811,7 +814,7 @@ wb_shell = this;
     }
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
     vbox->setMenuBar(f_menubar);
     if (f_config == fsSEL || f_config == fsOPEN) {
@@ -821,11 +824,11 @@ wb_shell = this;
         QWidget *holder = new QWidget(this);
         sp->addWidget(holder);
         QVBoxLayout *vb = new QVBoxLayout(holder);
-        vb->setMargin(2);
+        vb->setContentsMargins(qmtop);
         vb->setSpacing(2);
         QHBoxLayout *hb = new QHBoxLayout();
         vb->addLayout(hb);
-        hb->setMargin(2);
+        hb->setContentsMargins(qmtop);
         hb->setSpacing(0);
         f_Up = new QPushButton();
         f_Up->setIcon(QPixmap(up_xpm));
@@ -863,7 +866,7 @@ wb_shell = this;
 #else
         QVBoxLayout *vb = new QVBoxLayout(holder);
 #endif
-        vb->setMargin(0);
+        vb->setContentsMargins(qm);
         vb->setSpacing(2);
         vb->addWidget(f_list);
         vb->addWidget(f_filter);

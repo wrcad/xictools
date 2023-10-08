@@ -505,14 +505,16 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     ft_menu->setMinimumHeight(qs.height());
     ft_menu->setEditable(false);
 
+    QMargins qmtop(2, 2, 2, 2);
+//    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(4);
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(4);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
     QVBoxLayout *vb = new QVBoxLayout(0);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     QLabel *label = new QLabel(this);
     label->setText(QString(tr("Faces")));
     vb->addWidget(label);
@@ -520,7 +522,7 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     hbox->addLayout(vb);
 
     vb = new QVBoxLayout(0);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     label = new QLabel(this);
     label->setText(QString(tr("Styles")));
     vb->addWidget(label);
@@ -528,7 +530,7 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     hbox->addLayout(vb);
 
     vb = new QVBoxLayout(0);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     label = new QLabel(this);
     label->setText(QString(tr("Sizes")));
     vb->addWidget(label);
@@ -541,13 +543,13 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     ft_preview = new QTextEdit(gb);
     ft_preview->setFixedHeight(50);
     vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(4);
     vb->addWidget(ft_preview);
     vbox->addWidget(gb);
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(4);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
     hbox->addWidget(ft_apply);
     hbox->addWidget(ft_menu);

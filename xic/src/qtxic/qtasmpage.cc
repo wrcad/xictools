@@ -79,14 +79,16 @@ QTasmPage::QTasmPage(QTasmDlg *mt)
     pg_numtlcells = 0;
     pg_curtlcell = -1;
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QGridLayout *grid = new QGridLayout(this);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     QGroupBox *gb = new QGroupBox();
     grid->addWidget(gb, 0, 0, 1, 3);
     QVBoxLayout *vbox = new QVBoxLayout(gb);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // path to source
@@ -112,7 +114,7 @@ QTasmPage::QTasmPage(QTasmDlg *mt)
     //
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     label = new QLabel(tr("Conversion Scale Factor"));
@@ -124,7 +126,7 @@ QTasmPage::QTasmPage(QTasmDlg *mt)
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     pg_sb_scale = new QDoubleSpinBox();

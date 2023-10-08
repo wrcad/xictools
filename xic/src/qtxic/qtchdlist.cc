@@ -135,12 +135,14 @@ QTchdListDlg::QTchdListDlg(GRobject c)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_default_size(QT_WINDOW(wb_shell), 350, 150);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -243,17 +245,17 @@ QTchdListDlg::QTchdListDlg(GRobject c)
         this, SLOT(rename_btn_slot(int)));
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     QVBoxLayout *col1 = new QVBoxLayout();
-    col1->setMargin(0);
+    col1->setContentsMargins(qm);
     col1->setSpacing(2);
     hbox->addLayout(col1);
 
     QVBoxLayout *col2 = new QVBoxLayout();
-    col2->setMargin(0);
+    col2->setContentsMargins(qm);
     col2->setSpacing(2);
     hbox->addLayout(col2);
 

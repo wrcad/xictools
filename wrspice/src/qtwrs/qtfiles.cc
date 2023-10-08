@@ -175,14 +175,16 @@ QTfilesListDlg::QTfilesListDlg(int x, int y)
     setWindowTitle(tr("Search Path Files Listing"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // Create the layout for the button row.
     f_button_box = new QHBoxLayout();
     vbox->addLayout(f_button_box);
-    f_button_box->setMargin(0);
+    f_button_box->setContentsMargins(qm);
     f_button_box->setSpacing(2);
 
     // title label
@@ -190,7 +192,7 @@ QTfilesListDlg::QTfilesListDlg(int x, int y)
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
     QHBoxLayout *hbox = new QHBoxLayout(gb);
-    hbox->setMargin(2);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
 
     QLabel *label = new QLabel(tr(files_msg));
@@ -543,7 +545,7 @@ QTfilesListDlg::create_page(sDirList *dl)
 {
     QWidget *page = new QWidget();
     QVBoxLayout *vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(2, 2, 2, 2);
     vbox->setSpacing(2);
 
     // scrolled text area

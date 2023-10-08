@@ -213,12 +213,14 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*))
     setWindowTitle(tr("Modified Cells"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -231,11 +233,11 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*))
     connect(btn, SIGNAL(clicked()), this, SLOT(skip_all_slot()));
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
 
     QGroupBox *gb = new QGroupBox(this);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     m_label = new QLabel(gb);
 
     hb->addWidget(m_label);
@@ -254,7 +256,7 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*))
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     btn = new QPushButton(tr("Apply - Continue"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_slot()));

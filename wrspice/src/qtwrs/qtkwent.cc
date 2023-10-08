@@ -181,7 +181,7 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
     setTitle(kwstruct->word);
 
     QHBoxLayout *hbox = new QHBoxLayout(this);
-    hbox->setMargin(2);
+    hbox->setContentsMargins(2, 2, 2, 2);
     hbox->setSpacing(2);
 
     ke_active = new QCheckBox(tr("Set "));

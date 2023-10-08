@@ -119,20 +119,23 @@ QTxformDlg::QTxformDlg(GRobject c,
     setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(tf_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
+
     // Label in frame plus help btn
     //
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     QGroupBox *gb = new QGroupBox(this);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     QLabel *lbl =
         new QLabel(tr("Set transform for new cells\nand move/copy."));
     hb->addWidget(lbl);
@@ -145,7 +148,7 @@ QTxformDlg::QTxformDlg(GRobject c,
     // Rotation entry and mirror buttons
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
     lbl = new QLabel(tr("Angle"));
@@ -170,7 +173,7 @@ QTxformDlg::QTxformDlg(GRobject c,
     // Magnification label and spin button.
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
     lbl = new QLabel(tr("Magnification"));
@@ -188,7 +191,7 @@ QTxformDlg::QTxformDlg(GRobject c,
     // Identity and Last buttons
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
     tf_id = new QPushButton(tr("Identity Transform"));
@@ -202,7 +205,7 @@ QTxformDlg::QTxformDlg(GRobject c,
     // Store buttons
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
     btn = new QPushButton(tr("Sto 1"));
@@ -219,7 +222,7 @@ QTxformDlg::QTxformDlg(GRobject c,
     // Recall buttons
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
     btn = new QPushButton(tr("Rcl 1"));
@@ -236,7 +239,7 @@ QTxformDlg::QTxformDlg(GRobject c,
     // Dismiss button
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
     tf_cancel = new QPushButton(tr("Dismiss"));

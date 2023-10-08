@@ -138,8 +138,10 @@ QTtbHelpDlg::QTtbHelpDlg(GRobject parent, GRobject call_btn, TBH_type type)
     setWindowTitle(tr("Keyword Help"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // label in frame
@@ -147,7 +149,7 @@ QTtbHelpDlg::QTtbHelpDlg(GRobject parent, GRobject call_btn, TBH_type type)
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     QLabel *label = new QLabel(tr("Click on entries for more help: "));
@@ -176,7 +178,7 @@ QTtbHelpDlg::QTtbHelpDlg(GRobject parent, GRobject call_btn, TBH_type type)
     //
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));

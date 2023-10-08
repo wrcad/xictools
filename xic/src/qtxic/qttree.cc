@@ -181,19 +181,21 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     else
         t_root_cd = lstring::copy(root);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     t_label = new QLabel("");
@@ -278,7 +280,7 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
         G_CALLBACK(t_selection_get), 0);
 */
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -292,7 +294,7 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     // dismiss button line
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

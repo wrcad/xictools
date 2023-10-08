@@ -166,8 +166,10 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
 
     setWindowTitle(tr("Device Parameters"));
     setAttribute(Qt::WA_DeleteOnClose);
+
+    QMargins qmtop(2, 2, 2, 2);
     QGridLayout *grid = new QGridLayout(this);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     QLabel *label = new QLabel(tr("Device Name"));
@@ -292,7 +294,7 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
 
     hbox = new QHBoxLayout;
     grid->addLayout(hbox, 7, 0, 1, 3);
-    hbox->setMargin(2);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
 
     btn = new QPushButton(tr("Save in Library"));

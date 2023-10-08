@@ -81,8 +81,9 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     if (nogr)
         return;
 
+    QMargins qm;
     QHBoxLayout *hbox = new QHBoxLayout(this);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     pe_keys = new cKeys(0, 0);

@@ -266,12 +266,14 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
     }
     pd_active = true;
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     int row1cnt = 0;
@@ -366,7 +368,7 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
 
     QGroupBox *gb = new QGroupBox(this);
     hbox = new QHBoxLayout(gb);
-    hbox->setMargin(4);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
     pd_cmdlab = new QLabel(gb);
     pd_cmdlab->setText(QString(tr(pd_tofile ? "File Name" : "Print Command")));
@@ -380,7 +382,7 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
         vbox->addWidget(gb);
     else {
         hbox = new QHBoxLayout(0);
-        hbox->setMargin(0);
+        hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
         hbox->addWidget(gb);
         pd_hlpbtn = new QPushButton(this);
@@ -397,13 +399,13 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
 
     if (pd_textmode == HCgraphical) {
         hbox = new QHBoxLayout(0);
-        hbox->setMargin(0);
+        hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
         QVBoxLayout *vb = new QVBoxLayout(0);
 
         gb = new QGroupBox(this);
         QHBoxLayout *hb = new QHBoxLayout(gb);
-        hb->setMargin(2);
+        hb->setContentsMargins(qmtop);
         hb->setSpacing(2);
         pd_portbtn = new QCheckBox(gb);
         pd_portbtn->setText(QString(tr("Portrait")));
@@ -432,7 +434,7 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
 
         gb = new QGroupBox(this);
         hb = new QHBoxLayout(gb);
-        hb->setMargin(2);
+        hb->setContentsMargins(qmtop);
         hb->setSpacing(2);
         QLabel *res = new QLabel(gb);
         res->setText(QString(tr("Resolution")));
@@ -454,14 +456,14 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
         vbox->addLayout(hbox);
 
         hbox = new QHBoxLayout(0);
-        hbox->setMargin(0);
+        hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
 
         HCdesc *desc = GRpkg::self()->HCof(pd_fmt);
         vb = new QVBoxLayout(0);
         gb = new QGroupBox(this);
         hb = new QHBoxLayout(gb);
-        hb->setMargin(2);
+        hb->setContentsMargins(qmtop);
         pd_wlabel = new QCheckBox(gb);
         pd_wlabel->setText(QString(tr("Width")));
         connect(pd_wlabel, SIGNAL(toggled(bool)),
@@ -480,7 +482,7 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
         vb = new QVBoxLayout(0);
         gb = new QGroupBox(this);
         hb = new QHBoxLayout(gb);
-        hb->setMargin(2);
+        hb->setContentsMargins(qmtop);
         pd_hlabel = new QCheckBox(gb);
         pd_hlabel->setText(QString(tr("Height")));
         connect(pd_hlabel, SIGNAL(toggled(bool)),
@@ -499,7 +501,7 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
         vb = new QVBoxLayout(0);
         gb = new QGroupBox(this);
         hb = new QHBoxLayout(gb);
-        hb->setMargin(2);
+        hb->setContentsMargins(qmtop);
         pd_xlabel = new QLabel(gb);
         pd_xlabel->setText(QString(tr("Left")));
         hb->addWidget(pd_xlabel);
@@ -516,7 +518,7 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
         vb = new QVBoxLayout(0);
         gb = new QGroupBox(this);
         hb = new QHBoxLayout(gb);
-        hb->setMargin(2);
+        hb->setContentsMargins(qmtop);
         pd_ylabel = new QLabel(gb);
         pd_ylabel->setText(QString(tr("Bottom")));
         hb->addWidget(pd_ylabel);
@@ -533,7 +535,7 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
         vbox->addLayout(hbox);
 
         hbox = new QHBoxLayout(0);
-        hbox->setMargin(0);
+        hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
 
         pd_pgsmenu = new QComboBox(this);
@@ -553,7 +555,7 @@ QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
     }
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     pd_printbtn = new QPushButton(this);

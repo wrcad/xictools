@@ -101,7 +101,7 @@ QTcmpPrpFltDlg::QTcmpPrpFltDlg(GRobject c)
     QGridLayout *grid = new QGridLayout(this);
     QHBoxLayout *hbox = new QHBoxLayout();
     grid->addLayout(hbox, 0, 1);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
     // physical strings

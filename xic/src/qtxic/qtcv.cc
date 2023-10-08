@@ -130,12 +130,14 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(cv_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -144,7 +146,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     cv_label = new QLabel("");
     hb->addWidget(cv_label);
@@ -156,7 +158,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     // Input selection menu
     //
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -191,7 +193,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     cv_nbook->addTab(page, tr("Setup"));
 
     QVBoxLayout *vb = new QVBoxLayout(page);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     // Strip for Export button
@@ -253,7 +255,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     page = new QWidget();
     cv_nbook->addTab(page, tr("Convert File"));
     vb = new QVBoxLayout(page);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
 
@@ -276,7 +278,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     //
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     btn = new QPushButton(tr("Convert"));

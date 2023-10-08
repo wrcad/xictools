@@ -118,12 +118,14 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     setWindowTitle(tr("Editing Setup"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -132,7 +134,7 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set editing flags and parameters"));
     hb->addWidget(label);
@@ -178,18 +180,18 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     // integer parameters
     //
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     QVBoxLayout *col1 = new QVBoxLayout();
     hbox->addLayout(col1);
-    col1->setMargin(0);
+    col1->setContentsMargins(qm);
     col1->setSpacing(2);
 
     QVBoxLayout *col2 = new QVBoxLayout();
     hbox->addLayout(col2);
-    col2->setMargin(0);
+    col2->setContentsMargins(qm);
     col2->setSpacing(2);
 
     label = new QLabel(tr("Maximum undo list length"));
@@ -215,7 +217,7 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
         this, SLOT(maxgobs_changed_slot(int)));
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

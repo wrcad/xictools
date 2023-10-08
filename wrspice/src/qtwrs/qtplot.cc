@@ -179,7 +179,7 @@ QTplotDlg::init(sGraph *gr)
 */
 
     QHBoxLayout *hbox = new QHBoxLayout(this);
-    hbox->setMargin(2);
+    hbox->setContentsMargins(2, 2, 2, 2);
     hbox->setSpacing(2);
 
     // set up viewport
@@ -254,7 +254,7 @@ bool
 QTplotDlg::init_gbuttons()
 {
     QVBoxLayout *vbox = new QVBoxLayout(pb_gbox);
-    vbox->setMargin(0);
+    vbox->setContentsMargins(0, 0, 0, 0);
     vbox->setSpacing(2);
 
     // Just rebuild the whole button array, easier that way.

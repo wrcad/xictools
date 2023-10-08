@@ -78,7 +78,7 @@ QTspmsgDlg::QTspmsgDlg(const char *string)
     setAttribute(Qt::WA_DeleteOnClose);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(2, 2, 2, 2);
     vbox->setSpacing(2);
 
     // the label, in a frame
@@ -86,7 +86,7 @@ QTspmsgDlg::QTspmsgDlg(const char *string)
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(2, 2, 2, 2);
     hb->setSpacing(2);
 
     QLabel *label = new QLabel(tr(string));

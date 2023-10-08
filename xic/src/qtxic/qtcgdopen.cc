@@ -123,12 +123,14 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     setWindowTitle(tr("Open Cell Geometry Digest"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -137,7 +139,7 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr(
         "Enter parameters to create new Cell Geometry Digest"));
@@ -156,7 +158,7 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     cgo_nbook->addTab(page, tr("in memory"));
 
     QVBoxLayout *pvbox = new QVBoxLayout(page);
-    pvbox->setMargin(2);
+    pvbox->setContentsMargins(qmtop);
     pvbox->setSpacing(2);
 
     label = new QLabel(tr("All geometry data will be kept in memory."));
@@ -202,7 +204,7 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     cgo_nbook->addTab(page, tr("file reference"));
 
     pvbox = new QVBoxLayout(page);
-    pvbox->setMargin(2);
+    pvbox->setContentsMargins(qmtop);
     pvbox->setSpacing(2);
 
     label = new QLabel(tr("Geometry will be read from given file."));
@@ -234,7 +236,7 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     cgo_nbook->addTab(page, tr("remote server reference"));
 
     pvbox = new QVBoxLayout(page);
-    pvbox->setMargin(2);
+    pvbox->setContentsMargins(qmtop);
     pvbox->setSpacing(2);
 
     label = new QLabel(tr("Geometry will be read from server on remote host."));
@@ -242,17 +244,17 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
 
     QHBoxLayout *phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
-    phbox->setMargin(0);
+    phbox->setContentsMargins(qm);
     phbox->setSpacing(2);
 
     QVBoxLayout *col1 = new QVBoxLayout();
     phbox->addLayout(col1);
-    col1->setMargin(0);
+    col1->setContentsMargins(qm);
     col1->setSpacing(2);
 
     QVBoxLayout *col2 = new QVBoxLayout();
     phbox->addLayout(col2);
-    col2->setMargin(0);
+    col2->setContentsMargins(qm);
     col2->setSpacing(2);
 
     label = new QLabel(tr("Host name:"));
@@ -281,7 +283,7 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     label = new QLabel(tr("Access name:"));
@@ -303,7 +305,7 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     //
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     cgo_apply = new QPushButton(tr("Apply"));

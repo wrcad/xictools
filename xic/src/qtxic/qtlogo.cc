@@ -352,14 +352,16 @@ QTlogoDlg::QTlogoDlg(GRobject c)
 
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // Font selection radio buttons
     //
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -383,17 +385,17 @@ QTlogoDlg::QTlogoDlg(GRobject c)
 
     // second row
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     QVBoxLayout *col1 = new QVBoxLayout();
-    col1->setMargin(0);
+    col1->setContentsMargins(qm);
     col1->setSpacing(2);
     hbox->addLayout(col1);
 
     QVBoxLayout *col2 = new QVBoxLayout();
-    col2->setMargin(0);
+    col2->setContentsMargins(qm);
     col2->setSpacing(2);
     hbox->addLayout(col2);
 

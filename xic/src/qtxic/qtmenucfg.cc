@@ -730,7 +730,7 @@ QTmenuConfig::instantiateTopButtonMenu()
     MenuBox *mbox = Menu()->GetMiscMenu();
     if (top_button_box && mbox && mbox->menu) {
         QHBoxLayout *hbox = new QHBoxLayout(top_button_box);
-        hbox->setMargin(2);
+        hbox->setContentsMargins(2, 2, 2, 2);
         hbox->setSpacing(2);
 
         set(mbox->menu[miscMenu], 0, 0);
@@ -785,7 +785,7 @@ QTmenuConfig::instantiateSideButtonMenus()
 
         // Physical side menu
         QVBoxLayout *vbox = new QVBoxLayout(phys_button_box);
-        vbox->setMargin(2);
+        vbox->setContentsMargins(2, 2, 2, 2);
         vbox->setSpacing(2);
         phys_button_box->setMaximumWidth(side_btn_width + 4);
 
@@ -854,7 +854,7 @@ QTmenuConfig::instantiateSideButtonMenus()
 
         // Electrical side menu
         QVBoxLayout *vbox = new QVBoxLayout(elec_button_box);
-        vbox->setMargin(2);
+        vbox->setContentsMargins(2, 2, 2, 2);
         vbox->setSpacing(2);
         elec_button_box->setMaximumWidth(side_btn_width + 4);
 

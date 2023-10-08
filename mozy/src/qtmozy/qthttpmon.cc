@@ -121,13 +121,13 @@ QThttpmon::QThttpmon(QWidget *prnt) : QDialog(prnt)
     g_label = new QLabel("", g_gb);
     g_label->setMinimumWidth(350);
     QVBoxLayout *vbox = new QVBoxLayout(g_gb);
-    vbox->setMargin(4);
+    vbox->setContentsMargins(2, 2, 2, 2);
     vbox->setSpacing(2);
     vbox->addWidget(g_label);
 
     g_cancel = new QPushButton(tr("Cancel Download"), this);
     vbox = new QVBoxLayout(this);
-    vbox->setMargin(4);
+    vbox->setContentsMargins(2, 2, 2, 2);
     vbox->setSpacing(2);
     vbox->addWidget(g_gb);
     vbox->addWidget(g_cancel);

@@ -145,12 +145,14 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     setWindowTitle(tr("LR Extraction"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -159,7 +161,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("FastHenry Interface"));
     hb->addWidget(label);
@@ -176,11 +178,11 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     QWidget *page = new QWidget();
     nbook->addTab(page, tr("Run"));
     QVBoxLayout *vb = new QVBoxLayout(page);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     fh_foreg = new QCheckBox(tr("Run in foreground"));
@@ -197,7 +199,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     btn = new QPushButton(tr("Run File"));
@@ -209,7 +211,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     btn = new QPushButton(tr("Run FastHenry"));
@@ -223,7 +225,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     gb = new QGroupBox("FhArgs");
     vb->addWidget(gb);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     fh_args = new QLineEdit();
@@ -234,7 +236,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     gb = new QGroupBox("FhFreq");
     vb->addWidget(gb);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     label = new QLabel(" fmin=");
@@ -261,7 +263,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     gb = new QGroupBox(tr("Path to FastHenry"));
     vb->addWidget(gb);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     fh_path = new QLineEdit();
@@ -274,11 +276,11 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     page = new QWidget();
     nbook->addTab(page, tr("Params"));
     vb = new QVBoxLayout(page);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     gb = new QGroupBox("FhUnits");
@@ -296,7 +298,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     gb = new QGroupBox("FhManhGridCnt");
     hb->addWidget(gb);
     hb1 = new QHBoxLayout(gb);
-    hb1->setMargin(2);
+    hb1->setContentsMargins(qmtop);
     hb1->setSpacing(2);
 
     fh_sb_manh_grid_cnt = new QSpinBox();
@@ -310,7 +312,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     gb = new QGroupBox("FhDefaults");
     vb->addWidget(gb);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     fh_defs = new QLineEdit();
@@ -320,13 +322,13 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     gb = new QGroupBox("FhDefNhinc");
     vb->addWidget(gb);
     hb1 = new QHBoxLayout(gb);
-    hb1->setMargin(0);
+    hb1->setContentsMargins(qm);
     hb1->setSpacing(0);
 
     fh_sb_nhinc = new QSpinBox();
@@ -340,7 +342,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     gb = new QGroupBox("FhDefRh");
     hb->addWidget(gb);
     hb1 = new QHBoxLayout(gb);
-    hb1->setMargin(0);
+    hb1->setContentsMargins(qm);
     hb1->setSpacing(0);
 
     fh_sb_rh = new QDoubleSpinBox();
@@ -365,7 +367,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     gb = new QGroupBox();
     vb->addWidget(gb);
     hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(0);
 
     label = new QLabel(tr("FastHenry Volume Element Refinement"));
@@ -374,7 +376,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     fh_enab = new QCheckBox(tr("Enable"));
@@ -385,7 +387,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     gb = new QGroupBox("FhVolElMin");
     hb->addWidget(gb);
     hb1 = new QHBoxLayout(gb);
-    hb1->setMargin(0);
+    hb1->setContentsMargins(qm);
     hb1->setSpacing(0);
 
     fh_sb_volel_min = new QDoubleSpinBox();
@@ -401,7 +403,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     gb = new QGroupBox("FhVolElTarget");
     hb->addWidget(gb);
     hb1 = new QHBoxLayout(gb);
-    hb1->setMargin(0);
+    hb1->setContentsMargins(qm);
     hb1->setSpacing(0);
 
     fh_sb_volel_target = new QSpinBox();
@@ -418,7 +420,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     page = new QWidget();
     nbook->addTab(page, tr("Jobs"));
     vb = new QVBoxLayout(page);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     fh_jobs = new QTtextEdit();
@@ -445,7 +447,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     gb = new QGroupBox();
     vbox->addWidget(gb);
     hbox = new QHBoxLayout(gb);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     const char *s = FHif()->statusString();

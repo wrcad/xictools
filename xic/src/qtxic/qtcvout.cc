@@ -139,12 +139,14 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(cvo_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -153,7 +155,7 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     cvo_label = new QLabel("");
     cvo_label->setAlignment(Qt::AlignCenter);
@@ -183,11 +185,11 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     cvo_nbook->addTab(page, tr("Setup"));
 
     QVBoxLayout *pvbox = new QVBoxLayout(page);
-    pvbox->setMargin(2);
+    pvbox->setContentsMargins(qmtop);
     pvbox->setSpacing(2);
 
     QHBoxLayout *phbox = new QHBoxLayout(0);
-    phbox->setMargin(0);
+    phbox->setContentsMargins(qm);
     phbox->setSpacing(2);
     pvbox->addLayout(phbox);
 
@@ -286,7 +288,7 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     cvo_nbook->addTab(page, tr("Write File"));
 
     pvbox = new QVBoxLayout(page);
-    pvbox->setMargin(2);
+    pvbox->setContentsMargins(qmtop);
     pvbox->setSpacing(2);
 
     // Cell name mapping
@@ -303,7 +305,7 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     //
     phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
-    phbox->setMargin(0);
+    phbox->setContentsMargins(qm);
     phbox->setSpacing(2);
 
     label = new QLabel(tr("Writing Scale Factor"));

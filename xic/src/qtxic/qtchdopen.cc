@@ -116,12 +116,14 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     setWindowTitle("Open Cell Hierarchy Digest");
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -130,7 +132,7 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel( tr(
         "Enter path to layout or saved digest file"));
@@ -150,7 +152,7 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     //
     QWidget *page = new QWidget();
     QVBoxLayout *p_vbox = new QVBoxLayout(page);
-    p_vbox->setMargin(2);
+    p_vbox->setContentsMargins(qmtop);
     p_vbox->setSpacing(2);
 
     co_p1_text = new QLineEdit();
@@ -172,7 +174,7 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
 
     QHBoxLayout *p_hbox = new QHBoxLayout();
     p_vbox->addLayout(p_hbox);
-    p_hbox->setMargin(0);
+    p_hbox->setContentsMargins(qm);
     p_hbox->setSpacing(2);
 
     // Info options
@@ -196,7 +198,7 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     //
     page = new QWidget();
     p_vbox = new QVBoxLayout(page);
-    p_vbox->setMargin(2);
+    p_vbox->setContentsMargins(qmtop);
     p_vbox->setSpacing(2);
 
     co_p2_text = new QLineEdit();
@@ -243,7 +245,7 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     //
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     label = new QLabel(tr("Access name:"));
@@ -264,7 +266,7 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     //
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     co_apply = new QPushButton(tr("Apply"));

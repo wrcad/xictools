@@ -142,12 +142,13 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
     if (nogr)
         return;
 
+    QMargins qm;
     QVBoxLayout *vb = new QVBoxLayout(this);
-    vb->setMargin(0);
+    vb->setContentsMargins(qm);
     vb->setSpacing(0);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(0);
 
     ltab_scrollbar = new QScrollBar(Qt::Vertical, this);

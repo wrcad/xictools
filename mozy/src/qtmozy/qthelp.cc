@@ -368,7 +368,7 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
     if (!has_menu)
         h_status_bar->hide();
     QVBoxLayout *vbox = new QVBoxLayout(cwidget);
-    vbox->setMargin(4);
+    vbox->setContentsMargins(2, 2, 2, 2);
     vbox->setSpacing(2);
 #ifdef __APPLE__
     // Without a local menubar, the forward and back icons aren't

@@ -115,12 +115,14 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -152,7 +154,7 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
     // quick paths ground plane method
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -170,7 +172,7 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
     // depth control line
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -200,7 +202,7 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
     // check boxes
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -217,7 +219,7 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
     // botton button row
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -236,7 +238,7 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
     // Path file vias check boxes.
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -253,7 +255,7 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
     // resistance measurememt
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

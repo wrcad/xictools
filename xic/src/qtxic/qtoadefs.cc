@@ -104,12 +104,14 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
     setWindowTitle(tr("OpenAccess Defaults"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -118,7 +120,7 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set interface defaults and options"));
     hb->addWidget(label);
@@ -130,7 +132,7 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
     gb = new QGroupBox(tr("Library Path"));
     vbox->addWidget(gb);
     hbox = new QHBoxLayout(gb);
-    hbox->setMargin(2);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
 
     od_path = new QLineEdit();
@@ -140,7 +142,7 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
 
     QGridLayout *grid = new QGridLayout();
     vbox->addLayout(grid);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     label = new QLabel(tr("Default Library"));

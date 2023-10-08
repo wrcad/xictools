@@ -203,17 +203,19 @@ QTcellsDlg::QTcellsDlg(GRobject c)
     setWindowTitle(tr("Cells Listing"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     QVBoxLayout *col1 = new QVBoxLayout();
-    col1->setMargin(0);
+    col1->setContentsMargins(qm);
     col1->setSpacing(2);
     hbox->addLayout(col1);
 
@@ -289,13 +291,13 @@ QTcellsDlg::QTcellsDlg(GRobject c)
     //
     QVBoxLayout *col2 = new QVBoxLayout();
     hbox->addLayout(col2);
-    col2->setMargin(0);
+    col2->setContentsMargins(qm);
     col2->setSpacing(2);
 
     QGroupBox *gb = new QGroupBox();
     col2->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     c_label = new QLabel("");
@@ -325,7 +327,7 @@ QTcellsDlg::QTcellsDlg(GRobject c)
     //
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     btn = new QPushButton(tr("Save Text"));

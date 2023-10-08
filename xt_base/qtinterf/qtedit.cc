@@ -223,16 +223,17 @@ wb_shell = this;
         SLOT(help_slot()));
     ed_HelpMenu = ed_menubar->addMenu(ed_helpmenu);
 
+    QMargins qmtop(2, 2, 2, 2);
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setMenuBar(ed_menubar);
-    vbox->setMargin(4);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     if (ed_widget_type == Mailer) {
         QGroupBox *gb = new QGroupBox(this);
         gb->setTitle(QString(tr("To:")));
         QVBoxLayout *vb = new QVBoxLayout(gb);
-        vb->setMargin(4);
+        vb->setContentsMargins(qmtop);
         ed_to_entry = new QLineEdit(gb);
         vb->addWidget(ed_to_entry);
         vbox->addWidget(gb);
@@ -241,7 +242,7 @@ wb_shell = this;
         gb = new QGroupBox(this);
         gb->setTitle(QString(tr("Subject:")));
         vb = new QVBoxLayout(gb);
-        vb->setMargin(4);
+        vb->setContentsMargins(qmtop);
         ed_subj_entry = new QLineEdit(gb);
         vb->addWidget(ed_subj_entry);
         vbox->addWidget(gb);

@@ -134,12 +134,14 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     setWindowTitle(tr("Terminal Edit"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -148,7 +150,7 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     te_lab_top = new QLabel("");
     hb->addWidget(te_lab_top);
@@ -160,7 +162,7 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     // Bus Term Indices.
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -176,7 +178,7 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     // Name Entry
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -189,7 +191,7 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     // NetEx Entry
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -207,7 +209,7 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     // Has Physical Term?
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -225,11 +227,11 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     te_physgrp = new QGroupBox(tr("Physical"));
     vbox->addWidget(te_physgrp);
     QVBoxLayout *vb = new QVBoxLayout(te_physgrp);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     // Layer Binding
@@ -259,11 +261,11 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     te_bitsgrp = new QGroupBox(tr("Bus Term Bits"));
     vbox->addWidget(te_bitsgrp);
     vb = new QVBoxLayout(te_bitsgrp);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     te_crtbits = new QPushButton(tr("Check/Create Bits"));
@@ -276,7 +278,7 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
     btn = new QPushButton(tr("Schem Vis"));
@@ -300,7 +302,7 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     // Prev, Next buttons
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -327,7 +329,7 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     // Apply, Dismiss buttons
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

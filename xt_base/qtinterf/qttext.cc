@@ -84,14 +84,16 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
     setWindowTitle(tr(t));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);;
     vbox->setSpacing(2);
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
 
     QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);;
     vb->setSpacing(2);
 
     tx_tbox = new QTextEdit();
@@ -109,7 +111,7 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     /* Used to use mozy for this.

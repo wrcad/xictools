@@ -118,21 +118,23 @@ QTrunopListDlg::QTrunopListDlg(int x, int y, const char *s)
     setWindowTitle(tr("Runops"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // title label and help button
     //
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(0);
 
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     QLabel *label = new QLabel(tr("Active Runops (traces, iplots, debugs)"));
@@ -167,7 +169,7 @@ QTrunopListDlg::QTrunopListDlg(int x, int y, const char *s)
     //
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(0);
 
     for (int n = 0; tl_btns[n]; n++) {

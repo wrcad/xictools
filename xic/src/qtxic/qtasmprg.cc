@@ -66,14 +66,16 @@ QTasmPrgDlg::QTasmPrgDlg()
     setWindowTitle(tr("Progress"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QGridLayout *grid = new QGridLayout(this);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     QGroupBox *gb = new QGroupBox(tr("Input"));
     grid->addWidget(gb, 0, 0);
     QHBoxLayout *hbox = new QHBoxLayout(gb);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     prg_inp_label = new QLabel("");
     hbox->addWidget(prg_inp_label);
@@ -81,7 +83,7 @@ QTasmPrgDlg::QTasmPrgDlg()
     gb = new QGroupBox(tr("Output"));
     grid->addWidget(gb, 0, 1);
     hbox = new QHBoxLayout(gb);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     prg_out_label = new QLabel("");
@@ -90,7 +92,7 @@ QTasmPrgDlg::QTasmPrgDlg()
     gb = new QGroupBox(tr("Info"));
     grid->addWidget(gb, 1, 0, 1, 2);
     hbox = new QHBoxLayout(gb);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     prg_info_label = new QLabel("");
@@ -99,7 +101,7 @@ QTasmPrgDlg::QTasmPrgDlg()
     gb = new QGroupBox();
     grid->addWidget(gb, 2, 0, 1, 2);
     hbox = new QHBoxLayout(gb);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     prg_cname_label = new QLabel("");
@@ -107,7 +109,7 @@ QTasmPrgDlg::QTasmPrgDlg()
 
     hbox = new QHBoxLayout(0);
     grid->addLayout(hbox, 3, 0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     QPushButton *btn = new QPushButton(tr("Abort"));

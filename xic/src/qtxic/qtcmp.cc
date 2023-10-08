@@ -142,12 +142,14 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     setWindowTitle(tr("Compare Layouts"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -156,7 +158,7 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Compare Cells/Geometry Between Layouts"));
     hb->addWidget(label);
@@ -232,7 +234,7 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     // Diff only and max differences spin button
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -253,7 +255,7 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     // Go and Dismiss buttons
     //
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
@@ -422,6 +424,7 @@ QTcompareDlg::per_cell_obj_page()
     QWidget *page = new QWidget;
     cmp_mode->addTab(page, tr("Per-Cell Objrcts"));
     QGridLayout *grid = new QGridLayout(page);
+    QMargins qmtop(2, 2, 2, 2);
 
     // Expand arrays and Recurse buttons
     //
@@ -442,7 +445,7 @@ QTcompareDlg::per_cell_obj_page()
     QGroupBox *gb = new QGroupBox(tr("Object Types"));
     grid->addWidget(gb, 2, 0, 5, 1);
     QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     cmp_p1_boxes = new QCheckBox(tr("Boxes"));
@@ -475,7 +478,7 @@ QTcompareDlg::per_cell_obj_page()
     gb = new QGroupBox(tr("Properties"));
     grid->addWidget(gb, 2, 1, 5, 1);
     vb = new QVBoxLayout(gb);
-    vb->setMargin(2);
+    vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
     cmp_p1_boxes_prp = new QCheckBox();
@@ -534,13 +537,15 @@ QTcompareDlg::per_cell_geom_page()
 {
     QWidget *page = new QWidget;
     cmp_mode->addTab(page, tr("Per-Cell Geometry"));
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(page);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     // Expand arrays and Recurse buttons

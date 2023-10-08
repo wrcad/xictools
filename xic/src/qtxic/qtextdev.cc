@@ -115,8 +115,10 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(ed_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QGridLayout *grid = new QGridLayout(this);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     ed_update = new QPushButton(tr("Update\nList"));
@@ -124,7 +126,7 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     connect(ed_update, SIGNAL(clicked()), this, SLOT(update_btn_slot()));
 
     QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     grid->addLayout(hbox, 0, 1);
 
@@ -141,7 +143,7 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout();
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     grid->addLayout(hbox, 1, 1);
 
@@ -214,7 +216,7 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     gb = new QGroupBox();
     grid->addWidget(gb, 4, 0, 1, 2);
     hbox = new QHBoxLayout(gb);
-    hbox->setMargin(2);
+    hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
 
     ed_measbox = new QPushButton(tr("Enable Measure Box"));

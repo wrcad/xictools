@@ -99,19 +99,21 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     setWindowTitle(tr("Simulation Options"));
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     
     QGroupBox *gb = new QGroupBox();
     hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(2);
+    hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set simulation parameters"));
     hb->addWidget(label);
@@ -134,7 +136,7 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     si_notebook->addTab(page, tr("General"));
 
     QGridLayout *grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -205,7 +207,7 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     si_notebook->addTab(page, tr("Timestep"));
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -348,7 +350,7 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     si_notebook->addTab(page, tr("Tolerance"));
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -413,7 +415,7 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     si_notebook->addTab(page, tr("Convergence"));
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -529,7 +531,7 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     si_notebook->addTab(page, tr("Devices"));
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -608,7 +610,7 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     si_notebook->addTab(page, tr("Temperature"));
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();
@@ -643,7 +645,7 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     si_notebook->addTab(page, tr("Parser"));
 
     grid = new QGridLayout(page);
-    grid->setMargin(2);
+    grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
     gb = new QGroupBox();

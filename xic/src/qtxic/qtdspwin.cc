@@ -101,8 +101,10 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(dw_popup), false);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     // label in frame
@@ -110,27 +112,27 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Set area to display"));
     hb->addWidget(label);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     QVBoxLayout *col1 = new QVBoxLayout(this);
     hbox->addLayout(col1);
-    col1->setMargin(0);
+    col1->setContentsMargins(qm);
     col1->setSpacing(2);
     QVBoxLayout *col2 = new QVBoxLayout(this);
     hbox->addLayout(col2);
-    col2->setMargin(0);
+    col2->setContentsMargins(qm);
     col2->setSpacing(2);
     QVBoxLayout *col3 = new QVBoxLayout(this);
     hbox->addLayout(col3);
-    col3->setMargin(0);
+    col3->setContentsMargins(qm);
     col3->setSpacing(2);
 
     label = new QLabel(tr("Center X,Y"));
@@ -172,7 +174,7 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     connect(dw_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 

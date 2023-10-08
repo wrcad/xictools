@@ -64,17 +64,19 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(2);
+    vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     QGroupBox *gb = new QGroupBox(this);
     QHBoxLayout *hb = new QHBoxLayout(gb);
-    hb->setMargin(0);
+    hb->setContentsMargins(qm);
     hb->setSpacing(2);
     label = new QLabel(gb);
     label->setText(QString(tr("Set Expansion Control String")));
@@ -91,7 +93,7 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     vbox->addLayout(hbox);
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     
     edit = new QLineEdit(this);
@@ -164,7 +166,7 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     vbox->addLayout(hbox);
 
     hbox = new QHBoxLayout(0);
-    hbox->setMargin(0);
+    hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
     b_apply = new QPushButton(this);
