@@ -738,7 +738,7 @@ QTplotDlg::button_down_slot(QMouseEvent *ev)
     int button = 0;
     if (ev->button() == Qt::LeftButton)
         button = 1;
-    else if (ev->button() == Qt::MidButton)
+    else if (ev->button() == Qt::MiddleButton)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;
@@ -774,7 +774,7 @@ QTplotDlg::button_up_slot(QMouseEvent *ev)
     int button = 0;
     if (ev->button() == Qt::LeftButton)
         button = 1;
-    else if (ev->button() == Qt::MidButton)
+    else if (ev->button() == Qt::MiddleButton)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;

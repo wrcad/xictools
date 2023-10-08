@@ -61,6 +61,7 @@
 #include <QResizeEvent>
 #include <QScrollBar>
 #include <QToolBar>
+#include <QActionGroup>
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -1613,7 +1614,7 @@ QThelpDlg::newtopic_slot(htmAnchorCallbackStruct *c)
 
     if (!spawn) {
         // spawn a new window if button 2 pressed
-        if (qme && qme->button() == Qt::MidButton)
+        if (qme && qme->button() == Qt::MiddleButton)
             spawn = true;
     }
 

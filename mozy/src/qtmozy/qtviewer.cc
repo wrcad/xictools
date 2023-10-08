@@ -1203,9 +1203,10 @@ QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
             lb->addItem(QString(entry->name));
 
             // add this item to the list of selected items
-            if (entry->selected)
+            if (entry->selected) {
                 // single selection always takes the last inserted item
-                lb->setItemSelected(lb->item(prnt->maxlength), true);
+                lb->item(prnt->maxlength)->setSelected(true);
+            }
         }
         else {
             QTform_combo *cb = (QTform_combo*)prnt->widget;
@@ -1356,7 +1357,7 @@ QTviewer::tk_get_checked(htmForm *entry)
                 return (false);
             int cnt = 0;
             for (htmForm *f = entry->options; f; f = f->next)
-                f->checked = lb->isItemSelected(lb->item(cnt++));
+                f->checked = lb->item(cnt++)->isSelected();
         }
         else {
             QTform_combo *cb = (QTform_combo*)entry->widget;
@@ -1395,7 +1396,7 @@ QTviewer::tk_set_checked(htmForm *entry)
                 return;
             int cnt = 0;
             for (htmForm *f = entry->options; f; f = f->next) {
-                lb->setItemSelected(lb->item(cnt++), f->selected);
+                lb->item(cnt++)->setSelected(f->selected);
                 cnt++;
             }
         }
@@ -1485,7 +1486,7 @@ QTviewer::press_event_slot(QMouseEvent *ev)
     case Qt::LeftButton:
         extendStart(ev, 1, ev->x(), ev->y());
         break;
-    case Qt::MidButton:
+    case Qt::MiddleButton:
         extendStart(ev, 2, ev->x(), ev->y());
         break;
     case Qt::RightButton:
@@ -1518,7 +1519,7 @@ QTviewer::release_event_slot(QMouseEvent *ev)
         case Qt::LeftButton:
             extendEnd(ev, 1, v_btn_pressed, ev->x(), ev->y());
             break;
-        case Qt::MidButton:
+        case Qt::MiddleButton:
             extendEnd(ev, 2, v_btn_pressed, ev->x(), ev->y());
             break;
         case Qt::RightButton:

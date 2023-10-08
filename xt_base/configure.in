@@ -803,7 +803,11 @@ dnl        done
     fi
 
     GRPREF=qt
-    MOC="$QTBASE/bin/moc"
+    if test $grpkg == QT5 ; then
+        MOC="$QTBASE/bin/moc"
+    elif test $grpkg == QT6 ; then
+        MOC="$QTBASE/libexec/moc"
+    fi
     TOOLKITINC="$QT_INCLUDE"
     TOOLKITLIBS="$QT_LIBS"
     TOOLKITCFLAGS="$QT_CFLAGS $QT_DEFINES"

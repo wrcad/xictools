@@ -64,7 +64,11 @@ char_width(QWidget *w)
 {
     QFont f = w->font();
     QFontMetrics fm(f);
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+    return (fm.horizontalAdvance(QString("X")));
+#else
     return (fm.width(QString("X")));
+#endif
 }
 
 inline int

@@ -180,7 +180,7 @@ QThttpmon::widget_print(const char *buf)
         delete [] str;
     }
     if (qApp) {
-        while (qApp->hasPendingEvents())
+//XXX        while (qApp->hasPendingEvents())
             qApp->processEvents();
     }
     return (true);
