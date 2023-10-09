@@ -81,6 +81,7 @@
 #include <QPushButton>
 #include <QGroupBox>
 #include <QScreen>
+#include <QGuiApplication>
 
 #ifdef WIN32
 // Reference a symbol in the resource module so the resources are linked.
@@ -552,7 +553,11 @@ QTtoolbar::SetLoc(tid_id id, QDialog *w)
     QPoint pt = w->mapToGlobal(QPoint(0, 0));
 
     // Subtract the monitor origin.
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
     QScreen *screen = w->screen();
+#else
+    QScreen *screen = QGuiApplication::primaryScreen();
+#endif
     QRect r = screen->geometry();
     tb->set_xy(pt.x() - r.x(), pt.y() - r.y());
 }
@@ -567,7 +572,11 @@ void
 QTtoolbar::FixLoc(int *px, int *py)
 {
     if (QTtbDlg::self()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
         QScreen *screen = QTtbDlg::self()->screen();
+#else
+        QScreen *screen = QGuiApplication::primaryScreen();
+#endif
         QRect r = screen->geometry();
         *px += r.x();
         *py += r.y();

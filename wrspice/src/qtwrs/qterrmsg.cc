@@ -48,6 +48,7 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QScreen>
+#include <QGuiApplication>
 
 // Error message default window size.
 #define ER_WIDTH    400
@@ -156,7 +157,11 @@ QTerrmsgDlg::QTerrmsgDlg(const char *string)
         msgDB.get_wrap() ? QTextEdit::WidgetWidth : QTextEdit::NoWrap);
 
     if (msgDB.get_x() == 0 && msgDB.get_y() == 0) {
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
         QSize screen_sz = screen()->size();
+#else
+        QSize screen_sz = QGuiApplication::primaryScreen()->size();
+#endif
         msgDB.set_x((screen_sz.width() - ER_WIDTH)/2);
         msgDB.set_y(0);
     }

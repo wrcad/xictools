@@ -398,7 +398,10 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     page = new QWidget();
     nbook->addTab(page, tr("Debug"));
     grid = new QGridLayout(page);
+//XXX work needed here
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
     nbook->setTabVisible(2, CDvdb()->getVariable(VA_FcDebug));
+#endif
 
     fc_dbg_zoids = new QCheckBox("Zoids");
     grid->addWidget(fc_dbg_zoids, 0, 0);

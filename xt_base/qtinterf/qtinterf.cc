@@ -447,7 +447,11 @@ QTdev::SetPopupLocation(GRloc loc, QWidget *widget, QWidget *shell)
         return;
     int x, y;
     ComputePopupLocation(loc, widget, shell, &x, &y);
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
     QScreen *sc = shell->screen();
+#else
+    QScreen *sc = QGuiApplication::primaryScreen();
+#endif
     QSize scsz = sc->availableSize();
     QSize wsz = widget->size();
     if (x + wsz.width() > scsz.width())
