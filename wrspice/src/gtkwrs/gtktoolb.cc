@@ -2955,7 +2955,7 @@ namespace {
     void action_proc(GtkWidget*, void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
-        entry->ent->handler(entry);
+        entry->xent()->handler(entry);
     }
 
 
@@ -2982,7 +2982,7 @@ namespace {
     void value_changed(GtkWidget*, void *client_data)
     {
         xKWent *kwent = (xKWent*)client_data;
-        xEnt *ent = kwent->ent;
+        xEnt *ent = kwent->xent();
         if (ent->defstr && ent->active &&
                 !GTKdev::GetStatus(ent->active)) {
             const char *str = gtk_entry_get_text(GTK_ENTRY(ent->entry));
@@ -3382,10 +3382,10 @@ namespace {
     //
     void bump(xKWent *entry)
     {
-        if (!gtk_widget_is_sensitive(entry->ent->entry))
+        if (!gtk_widget_is_sensitive(entry->xent()->entry))
             return;
         char *string =
-            gtk_editable_get_chars(GTK_EDITABLE(entry->ent->entry), 0, -1);
+            gtk_editable_get_chars(GTK_EDITABLE(entry->xent()->entry), 0, -1);
         double d;
         sscanf(string, "%lf", &d);
         bool neg = false;
@@ -3398,13 +3398,13 @@ namespace {
         logd -= ex;
         double mant = pow(10.0, logd);
 
-        if ((!entry->ent->down && !neg) || (entry->ent->down && neg))
-            mant += entry->ent->del;
+        if ((!entry->xent()->down && !neg) || (entry->xent()->down && neg))
+            mant += entry->xent()->del;
         else {
-            if (mant - entry->ent->del < 1.0)
-                mant = 1.0 - (1.0 - mant + entry->ent->del)/10;
+            if (mant - entry->xent()->del < 1.0)
+                mant = 1.0 - (1.0 - mant + entry->xent()->del)/10;
             else
-                mant -= entry->ent->del;
+                mant -= entry->xent()->del;
         }
         d = mant * pow(10.0, ex);
         if (neg)
@@ -3414,8 +3414,8 @@ namespace {
         else if (d < entry->min)
             d = entry->min;
         char buf[128];
-        snprintf(buf, sizeof(buf), "%.*e", entry->ent->numd, d);
-        gtk_entry_set_text(GTK_ENTRY(entry->ent->entry), buf);
+        snprintf(buf, sizeof(buf), "%.*e", entry->xent()->numd, d);
+        gtk_entry_set_text(GTK_ENTRY(entry->xent()->entry), buf);
     }
 
 
@@ -3433,7 +3433,7 @@ namespace {
     int delay_timer(void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
-        entry->ent->thandle = g_timeout_add(50, repeat_timer, client_data);
+        entry->xent()->thandle = g_timeout_add(50, repeat_timer, client_data);
         return (false);
     }
 }
@@ -3446,13 +3446,13 @@ kw_float_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
     xKWent *entry = static_cast<xKWent*>(client_data);
     if (event->type == GDK_BUTTON_PRESS) {
-        entry->ent->down =
+        entry->xent()->down =
             g_object_get_data(G_OBJECT(caller), "down") ? true : false;
         bump(entry);
-        entry->ent->thandle = g_timeout_add(200, delay_timer, entry);
+        entry->xent()->thandle = g_timeout_add(200, delay_timer, entry);
     }
     else if (event->type == GDK_BUTTON_RELEASE)
-        g_source_remove(entry->ent->thandle);
+        g_source_remove(entry->xent()->thandle);
     return (true);
 }
 

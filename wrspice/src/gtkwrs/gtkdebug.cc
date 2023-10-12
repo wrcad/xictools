@@ -84,38 +84,38 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
         for (i = 0; KW.debug(i)->word; i++) {
             xKWent *ent = static_cast<xKWent*>(KW.debug(i));
             if (ent->ent) {
-                if (ent->ent->entry) {
+                if (ent->xent()->entry) {
                     const char *str =
-                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
+                        gtk_entry_get_text(GTK_ENTRY(ent->xent()->entry));
                     delete [] ent->lastv1;
                     ent->lastv1 = lstring::copy(str);
                 }
-                if (ent->ent->entry2) {
+                if (ent->xent()->entry2) {
                     const char *str =
-                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
+                        gtk_entry_get_text(GTK_ENTRY(ent->xent()->entry2));
                     delete [] ent->lastv2;
                     ent->lastv2 = lstring::copy(str);
                 }
-                delete ent->ent;
+                delete ent->xent();
                 ent->ent = 0;
             }
         }
         for (i = 0; KW.dbargs(i)->word; i++) {
             xKWent *ent = static_cast<xKWent*>(KW.dbargs(i));
             if (ent->ent) {
-                if (ent->ent->entry) {
+                if (ent->xent()->entry) {
                     const char *str =
-                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
+                        gtk_entry_get_text(GTK_ENTRY(ent->xent()->entry));
                     delete [] ent->lastv1;
                     ent->lastv1 = lstring::copy(str);
                 }
-                if (ent->ent->entry2) {
+                if (ent->xent()->entry2) {
                     const char *str =
-                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
+                        gtk_entry_get_text(GTK_ENTRY(ent->xent()->entry2));
                     delete [] ent->lastv2;
                     ent->lastv2 = lstring::copy(str);
                 }
-                delete ent->ent;
+                delete ent->xent();
                 ent->ent = 0;
             }
         }
@@ -169,11 +169,11 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     xKWent *entry = KWGET(kw_program);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, CP.Program());
+        entry->xent()->create_widgets(entry, CP.Program());
 
-        gtk_widget_set_sensitive(entry->ent->active, false);
+        gtk_widget_set_sensitive(entry->xent()->active, false);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -182,11 +182,11 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_display);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, CP.Display());
+        entry->xent()->create_widgets(entry, CP.Display());
 
-        gtk_widget_set_sensitive(entry->ent->active, false);
+        gtk_widget_set_sensitive(entry->xent()->active, false);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 4,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 2, 4,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -196,13 +196,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_debug);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_debug_proc), entry);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -213,13 +213,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_async);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_upd_proc), dbent);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 3,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 2, 3,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -228,13 +228,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_control);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_upd_proc), dbent);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 3, 4,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 3, 4,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -244,13 +244,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_cshpar);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_upd_proc), dbent);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -259,13 +259,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_eval);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_upd_proc), dbent);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -274,13 +274,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_ginterface);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_upd_proc), dbent);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 3,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 2, 3,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -289,13 +289,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_helpsys);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_upd_proc), dbent);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 3, 4,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 3, 4,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -305,13 +305,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_plot);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_upd_proc), dbent);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -320,13 +320,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_parser);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_upd_proc), dbent);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -335,13 +335,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_siminterface);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_upd_proc), dbent);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 3,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 2, 3,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -350,13 +350,13 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_vecdb);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->mode = KW_NO_CB;
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->mode = KW_NO_CB;
+        entry->xent()->create_widgets(entry, 0);
 
-        g_signal_connect(G_OBJECT(entry->ent->active), "clicked",
+        g_signal_connect(G_OBJECT(entry->xent()->active), "clicked",
             G_CALLBACK(dbg_upd_proc), dbent);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 3, 4,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 3, 4,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -374,10 +374,10 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_trantrace);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
-        entry->ent->setup(0.0, 1.0, 0.0, 0.0, 0);
-        entry->ent->create_widgets(entry, "0");
+        entry->xent()->setup(0.0, 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, "0");
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -386,9 +386,9 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_term);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, "");
+        entry->xent()->create_widgets(entry, "");
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 4,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 2, 4,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -398,9 +398,9 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_dontplot);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -409,9 +409,9 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_nosubckt);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -420,9 +420,9 @@ GTKtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
     entry = KWGET(kw_strictnumparse);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 3,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 2, 3,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -473,7 +473,7 @@ namespace {
             int i, j;
             for (j = 0, i = 0; KW.dbargs(i)->word; i++) {
                 xKWent *k = static_cast<xKWent*>(KW.dbargs(i));
-                if (GTKdev::GetStatus(k->ent->active))
+                if (GTKdev::GetStatus(k->xent()->active))
                    j++;
             }
             if (j == i || j == 0) {
@@ -483,7 +483,7 @@ namespace {
             else if (j == 1) {
                 for (i = 0; KW.dbargs(i)->word; i++) {
                     xKWent *k = static_cast<xKWent*>(KW.dbargs(i));
-                    if (GTKdev::GetStatus(k->ent->active)) {
+                    if (GTKdev::GetStatus(k->xent()->active)) {
                         v.set_string(k->word);
                         break;
                     }
@@ -494,7 +494,7 @@ namespace {
                 variable *vl = 0, *vl0 = 0;
                 for (i = 0; KW.dbargs(i)->word; i++) {
                     xKWent *k = static_cast<xKWent*>(KW.dbargs(i));
-                    if (GTKdev::GetStatus(k->ent->active)) {
+                    if (GTKdev::GetStatus(k->xent()->active)) {
                         if (!vl)
                             vl = vl0 = new variable;
                         else {
@@ -515,29 +515,29 @@ namespace {
     dbg_upd_proc(GtkWidget *caller, void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
-        bool state = GTKdev::GetStatus(entry->ent->active);
+        bool state = GTKdev::GetStatus(entry->xent()->active);
         if (!state) {
             state = GTKdev::GetStatus(caller);
             if (state)
-                GTKdev::SetStatus(entry->ent->active, true);
+                GTKdev::SetStatus(entry->xent()->active, true);
         }
         else {
             bool st = false;
             for (int i = 0; KW.dbargs(i)->word; i++) {
                 xKWent *k = static_cast<xKWent*>(KW.dbargs(i));
-                st = GTKdev::GetStatus(k->ent->active);
+                st = GTKdev::GetStatus(k->xent()->active);
                 if (st)
                    break;
             }
             if (!st) {
                 variable v;
                 v.set_boolean(false);
-                GTKdev::SetStatus(entry->ent->active, false);
+                GTKdev::SetStatus(entry->xent()->active, false);
                 entry->callback(false, &v);
                 return;
             }
         }
-        dbg_debug_proc(entry->ent->active, entry);
+        dbg_debug_proc(entry->xent()->active, entry);
     }
 }
 

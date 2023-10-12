@@ -277,6 +277,13 @@ enum EntryMode { KW_NORMAL, KW_INT_2, KW_REAL_2, KW_FLOAT, KW_NO_SPIN,
 // KW_STR_PICK     String selection - callback arg passed to
 //                  create_widgets()
 
+// Wrapper to access KWent::ent cleanly.
+//
+struct xKWent : public KWent
+{
+    inline struct xEnt *xent();
+};
+
 // Struct used in the keyword entry popups
 //
 struct xEnt : public userEnt
@@ -291,7 +298,7 @@ struct xEnt : public userEnt
         { val = v; del = d; pgsize = p; rate = r; numd = n; }
     void callback(bool isset, variable *v)
         { if (update) (*update)(isset, v, this); }
-    void create_widgets(sKWent<xEnt>*, const char*,
+    void create_widgets(xKWent*, const char*,
         int(*)(GtkWidget*, GdkEvent*, void*) = 0);
     void set_state(bool);
     void handler(void*);
@@ -311,7 +318,9 @@ struct xEnt : public userEnt
     bool down;                               // decrement flag
     EntryMode mode;                          // operating mode
 };
-typedef sKWent<xEnt> xKWent;
+
+inline xEnt *
+xKWent::xent()     { return (dynamic_cast<xEnt*>(ent)); }
 
 //
 // Some global callback functions for use as an argument to

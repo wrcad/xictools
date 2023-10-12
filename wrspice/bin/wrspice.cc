@@ -1851,9 +1851,6 @@ namespace {
     bool expiring;
 }
 
-// QT shutdown code.
-//XXX may no be needed
-extern void GRexit(int);
 
 void
 fatal(int error)
@@ -1893,7 +1890,6 @@ fatal(int error)
 #endif
     if (error)
         panic_to_gdb();
-    GRexit(EXIT_NORMAL);
     exit(EXIT_NORMAL);
 }
 

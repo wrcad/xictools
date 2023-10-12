@@ -295,7 +295,7 @@ GTKdraw::GTKdraw(int type)
 #endif
     gd_gbag = sGbag::default_gbag(type);
     gd_backg = 0;
-    gd_foreg = 0xffffff;
+    gd_foreg = 0xffffff;  //XXX not used
     gd_xor_fg = gd_foreg;
 }
 
@@ -1106,6 +1106,22 @@ GTKdraw::Text(const char *text, int x, int y, int xform, int, int)
 #if GTK_CHECK_VERSION(3,0,0)
     if (gd_dw.get_state() == DW_NONE)
         return;
+
+#else
+    // Save the GC state.
+    GdkGCValues vals;
+    gdk_gc_get_values(GC(), &vals);
+
+    if (GC() == XorGC()) {
+        // Set the foreground to the true ghost-drawing color, this is
+        // currently the true color xor'ed with the background.
+        GdkColor clr;
+        clr.pixel = gd_xor_fg;
+        gdk_gc_set_foreground(GC(), &clr);
+    }
+
+    // Switch to copy function.
+    gdk_gc_set_function(GC(), GDK_COPY);
 #endif
 
     // We need to handle strings with embedded newlines on a single
@@ -1138,6 +1154,13 @@ GTKdraw::Text(const char *text, int x, int y, int xform, int, int)
     int wid, hei;
     pango_layout_get_pixel_size(lout, &wid, &hei);
     if (wid <= 0 || hei <= 0) {
+#if GTK_CHECK_VERSION(3,0,0)
+#else
+        // Fix up the GC as it was.
+        if (GC() == XorGC())
+            gdk_gc_set_foreground(GC(), &vals.foreground);
+        gdk_gc_set_function(GC(), vals.function);
+#endif
         g_object_unref(lout);
         return;
     }
@@ -1162,6 +1185,10 @@ GTKdraw::Text(const char *text, int x, int y, int xform, int, int)
     CpyGC()->draw_pango_layout(GetDrawable(), x, y, lout);
 #else
     gdk_draw_layout(gd_window, GC(), x, y, lout);
+    // Fix up the GC as it was.
+    if (GC() == XorGC())
+        gdk_gc_set_foreground(GC(), &vals.foreground);
+    gdk_gc_set_function(GC(), vals.function);
 #endif
     g_object_unref(lout);
 }

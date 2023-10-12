@@ -97,19 +97,19 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
         for (int i = 0; KW.cmds(i)->word; i++) {
             xKWent *ent = static_cast<xKWent*>(KW.cmds(i));
             if (ent->ent) {
-                if (ent->ent->entry) {
+                if (ent->xent()->entry) {
                     const char *str =
-                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
+                        gtk_entry_get_text(GTK_ENTRY(ent->xent()->entry));
                     delete [] ent->lastv1;
                     ent->lastv1 = lstring::copy(str);
                 }
-                if (ent->ent->entry2) {
+                if (ent->xent()->entry2) {
                     const char *str =
-                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
+                        gtk_entry_get_text(GTK_ENTRY(ent->xent()->entry2));
                     delete [] ent->lastv2;
                     ent->lastv2 = lstring::copy(str);
                 }
-                delete ent->ent;
+                delete ent->xent();
                 ent->ent = 0;
             }
         }
@@ -194,10 +194,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     xKWent *entry = KWGET(kw_numdgt);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
-        entry->ent->setup(DEF_numdgt, 1.0, 0.0, 0.0, 0);
-        entry->ent->create_widgets(entry, STRINGIFY(DEF_numdgt));
+        entry->xent()->setup(DEF_numdgt, 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, STRINGIFY(DEF_numdgt));
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -206,9 +206,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_units);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, KW.units(0)->word, cmd_choice_hdlr);
+        entry->xent()->create_widgets(entry, KW.units(0)->word, cmd_choice_hdlr);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 5,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 2, 5,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -218,10 +218,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_dpolydegree);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
-        entry->ent->setup(DEF_dpolydegree, 1.0, 0.0, 0.0, 0);
-        entry->ent->create_widgets(entry, STRINGIFY(DEF_dpolydegree));
+        entry->xent()->setup(DEF_dpolydegree, 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, STRINGIFY(DEF_dpolydegree));
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -230,9 +230,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(spkw_dcoddstep);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -241,9 +241,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_dollarcmt);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 2, 3,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 2, 3,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -252,9 +252,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_nopage);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 3, 4,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 3, 4,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -262,10 +262,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
 
     entry = KWGET(kw_random);
     if (entry) {
-        entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->ent= new xEnt(kw_bool_func);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 4, 5,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 4, 5,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -275,9 +275,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_errorlog);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, "");
+        entry->xent()->create_widgets(entry, "");
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 5,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 5,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -311,9 +311,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_spicepath);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, Global.ExecProg());
+        entry->xent()->create_widgets(entry, Global.ExecProg());
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -347,10 +347,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_checkiterate);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
-        entry->ent->setup(DEF_checkiterate, 1.0, 0.0, 0.0, 0);
-        entry->ent->create_widgets(entry, STRINGIFY(DEF_checkiterate));
+        entry->xent()->setup(DEF_checkiterate, 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, STRINGIFY(DEF_checkiterate));
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -360,9 +360,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_mplot_cur);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, "");
+        entry->xent()->create_widgets(entry, "");
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -398,11 +398,11 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     if (entry) {
         dblpr(tbuf, 2, DEF_diff_abstol, true);
         entry->ent = new xEnt(kw_real_func);
-        entry->ent->setup(DEF_diff_abstol, 0.1, 0.0, 0.0, 2);
-        entry->ent->mode = KW_FLOAT;
-        entry->ent->create_widgets(entry, tbuf, kw_float_hdlr);
+        entry->xent()->setup(DEF_diff_abstol, 0.1, 0.0, 0.0, 2);
+        entry->xent()->mode = KW_FLOAT;
+        entry->xent()->create_widgets(entry, tbuf, kw_float_hdlr);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -412,11 +412,11 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     if (entry) {
         dblpr(tbuf, 2, DEF_diff_reltol, true);
         entry->ent = new xEnt(kw_real_func);
-        entry->ent->setup(DEF_diff_reltol, 0.1, 0.0, 0.0, 2);
-        entry->ent->mode = KW_FLOAT;
-        entry->ent->create_widgets(entry, tbuf, kw_float_hdlr);
+        entry->xent()->setup(DEF_diff_reltol, 0.1, 0.0, 0.0, 2);
+        entry->xent()->mode = KW_FLOAT;
+        entry->xent()->create_widgets(entry, tbuf, kw_float_hdlr);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -427,11 +427,11 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     if (entry) {
         dblpr(tbuf, 2, DEF_diff_vntol, true);
         entry->ent = new xEnt(kw_real_func);
-        entry->ent->setup(DEF_diff_vntol, 0.1, 0.0, 0.0, 2);
-        entry->ent->mode = KW_FLOAT;
-        entry->ent->create_widgets(entry, tbuf, kw_float_hdlr);
+        entry->xent()->setup(DEF_diff_vntol, 0.1, 0.0, 0.0, 2);
+        entry->xent()->mode = KW_FLOAT;
+        entry->xent()->create_widgets(entry, tbuf, kw_float_hdlr);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -465,9 +465,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_editor);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, "xeditor");
+        entry->xent()->create_widgets(entry, "xeditor");
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -490,10 +490,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
         path = pathlist::mk_path(prefix, tpath);
         delete [] tpath;
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, path);
+        entry->xent()->create_widgets(entry, path);
         delete [] path;
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -527,10 +527,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_fourgridsize);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
-        entry->ent->setup(DEF_fourgridsize, 1.0, 0.0, 0.0, 0);
-        entry->ent->create_widgets(entry, STRINGIFY(DEF_fourgridsize));
+        entry->xent()->setup(DEF_fourgridsize, 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, STRINGIFY(DEF_fourgridsize));
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -539,10 +539,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_nfreqs);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
-        entry->ent->setup(DEF_nfreqs, 1.0, 0.0, 0.0, 0);
-        entry->ent->create_widgets(entry, STRINGIFY(DEF_nfreqs));
+        entry->xent()->setup(DEF_nfreqs, 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, STRINGIFY(DEF_nfreqs));
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -557,9 +557,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_specwindow);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, kw_hanning, cmd_choice_hdlr);
+        entry->xent()->create_widgets(entry, kw_hanning, cmd_choice_hdlr);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -568,10 +568,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_specwindoworder);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
-        entry->ent->setup(DEF_specwindoworder, 1.0, 0.0, 0.0, 0);
-        entry->ent->create_widgets(entry, STRINGIFY(DEF_specwindoworder));
+        entry->xent()->setup(DEF_specwindoworder, 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, STRINGIFY(DEF_specwindoworder));
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -582,9 +582,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_spectrace);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -621,10 +621,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     if (entry) {
         snprintf(tbuf, sizeof(tbuf), "%d", HLP()->get_init_x());
         entry->ent = new xEnt(kw_int_func);
-        entry->ent->setup(HLP()->get_init_x(), 1.0, 0.0, 0.0, 0);
-        entry->ent->create_widgets(entry, tbuf);
+        entry->xent()->setup(HLP()->get_init_x(), 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, tbuf);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -634,10 +634,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     if (entry) {
         snprintf(tbuf, sizeof(tbuf), "%d", HLP()->get_init_y());
         entry->ent = new xEnt(kw_int_func);
-        entry->ent->setup(HLP()->get_init_y(), 1.0, 0.0, 0.0, 0);
-        entry->ent->create_widgets(entry, tbuf);
+        entry->xent()->setup(HLP()->get_init_y(), 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, tbuf);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -647,9 +647,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_level);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, KW.level(0)->word, cmd_choice_hdlr);
+        entry->xent()->create_widgets(entry, KW.level(0)->word, cmd_choice_hdlr);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -661,10 +661,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
         char *s;
         get_helppath(&s);
         entry->ent = new xEnt(helppath_func);
-        entry->ent->create_widgets(entry, s);
+        entry->xent()->create_widgets(entry, s);
         delete [] s;
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -699,9 +699,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_printautowidth);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -711,9 +711,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_printnoindex);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -721,9 +721,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_printnoscale);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -733,9 +733,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_printnoheader);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -743,9 +743,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_printnopageheader);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -779,9 +779,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_filetype);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, KW.ft(0)->word, cmd_choice_hdlr);
+        entry->xent()->create_widgets(entry, KW.ft(0)->word, cmd_choice_hdlr);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -790,10 +790,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_rawfileprec);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
-        entry->ent->setup(DEF_rawfileprec, 1.0, 0.0, 0.0, 0);
-        entry->ent->create_widgets(entry, STRINGIFY(DEF_rawfileprec));
+        entry->xent()->setup(DEF_rawfileprec, 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, STRINGIFY(DEF_rawfileprec));
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 1, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -803,9 +803,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_nopadding);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 1,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -815,10 +815,10 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_rawfile);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry,
+        entry->xent()->create_widgets(entry,
             OP.getOutDesc()->outFile() ? OP.getOutDesc()->outFile() : "");
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -852,9 +852,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_rhost);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, "");
+        entry->xent()->create_widgets(entry, "");
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -864,9 +864,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_rprogram);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, CP.Program());
+        entry->xent()->create_widgets(entry, CP.Program());
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -900,9 +900,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_noprtitle);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -936,9 +936,9 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
     entry = KWGET(kw_appendwrite);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, 0);
+        entry->xent()->create_widgets(entry, 0);
 
-        gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 2,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
@@ -1017,12 +1017,12 @@ namespace {
     int cmd_choice_hdlr(GtkWidget *caller, GdkEvent*, void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
-        if (GTKdev::GetStatus(entry->ent->active))
+        if (GTKdev::GetStatus(entry->xent()->active))
             return (true);
         int i;
         if (!strcmp(entry->word, kw_filetype)) {
             const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
+                gtk_entry_get_text(GTK_ENTRY(entry->xent()->entry));
             for (i = 0; KW.ft(i)->word; i++)
                 if (!strcmp(string, KW.ft(i)->word))
                     break;
@@ -1046,11 +1046,11 @@ namespace {
                         i = 0;
                 }
             }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry), KW.ft(i)->word);
+            gtk_entry_set_text(GTK_ENTRY(entry->xent()->entry), KW.ft(i)->word);
         }
         else if (!strcmp(entry->word, kw_level)) {
             const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
+                gtk_entry_get_text(GTK_ENTRY(entry->xent()->entry));
             for (i = 0; KW.level(i)->word; i++)
                 if (!strcmp(string, KW.level(i)->word))
                     break;
@@ -1074,11 +1074,11 @@ namespace {
                         i = 0;
                 }
             }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),KW.level(i)->word);
+            gtk_entry_set_text(GTK_ENTRY(entry->xent()->entry),KW.level(i)->word);
         }
         else if (!strcmp(entry->word, kw_specwindow)) {
             const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
+                gtk_entry_get_text(GTK_ENTRY(entry->xent()->entry));
             for (i = 0; KW.spec(i)->word; i++)
                 if (!strcmp(string, KW.spec(i)->word))
                     break;
@@ -1102,11 +1102,11 @@ namespace {
                         i = 0;
                 }
             }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry), KW.spec(i)->word);
+            gtk_entry_set_text(GTK_ENTRY(entry->xent()->entry), KW.spec(i)->word);
         }
         else if (!strcmp(entry->word, kw_units)) {
             const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
+                gtk_entry_get_text(GTK_ENTRY(entry->xent()->entry));
             for (i = 0; KW.units(i)->word; i++)
                 if (!strcmp(string, KW.units(i)->word))
                     break;
@@ -1130,7 +1130,7 @@ namespace {
                         i = 0;
                 }
             }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),KW.units(i)->word);
+            gtk_entry_set_text(GTK_ENTRY(entry->xent()->entry),KW.units(i)->word);
         }
         return (true);
     }

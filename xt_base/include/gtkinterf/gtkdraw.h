@@ -260,6 +260,7 @@ namespace gtkinterf {
         void SetGhost(GhostDrawFunc cb, int x, int y)
                                             { gd_gbag->set_ghost(cb, x, y); }
         void ShowGhost(bool show)           { gd_gbag->show_ghost(show); }
+        bool ShowingGhost()             { return (gd_gbag->showing_ghost()); }
         void UndrawGhost(bool reset = false)
                                             { gd_gbag->undraw_ghost(reset); }
         void DrawGhost(int x, int y)        { gd_gbag->draw_ghost(x, y); }
@@ -280,6 +281,8 @@ namespace gtkinterf {
         void Update(int, int, int, int)                 { }
         void Update();
         void Input(int*, int*, int*, int*);
+        void SetOverlayMode(bool)                       { }
+        void CreateOverlayBackg()                       { }
         void SetXOR(int);
         void ShowGlyph(int, int, int);
         GRobject GetRegion(int, int, int, int);

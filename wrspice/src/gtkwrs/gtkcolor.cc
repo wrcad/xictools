@@ -88,19 +88,19 @@ GTKtoolbar::PopUpColors(ShowMode mode, int x, int y)
         for (int i = 0; KW.color(i)->word; i++) {
             xKWent *ent = static_cast<xKWent*>(KW.color(i));
             if (ent->ent) {
-                if (ent->ent->entry) {
+                if (ent->xent()->entry) {
                     const char *str =
-                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
+                        gtk_entry_get_text(GTK_ENTRY(ent->xent()->entry));
                     delete [] ent->lastv1;
                     ent->lastv1 = lstring::copy(str);
                 }
-                if (ent->ent->entry2) {
+                if (ent->xent()->entry2) {
                     const char *str =
-                        gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
+                        gtk_entry_get_text(GTK_ENTRY(ent->xent()->entry2));
                     delete [] ent->lastv2;
                     ent->lastv2 = lstring::copy(str);
                 }
-                delete ent->ent;
+                delete ent->xent();
                 ent->ent = 0;
             }
         }
@@ -161,9 +161,9 @@ GTKtoolbar::PopUpColors(ShowMode mode, int x, int y)
                     SpGrPkg::DefColorNames[i] = s;
             }
             entry->ent = new xEnt(kw_string_func);
-            entry->ent->create_widgets(entry, SpGrPkg::DefColorNames[i]);
+            entry->xent()->create_widgets(entry, SpGrPkg::DefColorNames[i]);
 
-            gtk_table_attach(GTK_TABLE(form), entry->ent->frame, i&1, (i&1) + 1,
+            gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, i&1, (i&1) + 1,
                 i/2 + 1, i/2 + 2,
                 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
                 (GtkAttachOptions)0, 2, 2);
@@ -208,11 +208,11 @@ GTKtoolbar::UpdateColors(const char *s)
                 *v = '\0';
                 if (i >= 0 || i < NUMPLOTCOLORS) {
                     xKWent *entry = static_cast<xKWent*>(KW.color(i));
-                    if (entry->ent && entry->ent->active) {
+                    if (entry->ent && entry->xent()->active) {
                         bool state =
-                            GTKdev::GetStatus(entry->ent->active);;
+                            GTKdev::GetStatus(entry->xent()->active);;
                         if (!state)
-                            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),
+                            gtk_entry_set_text(GTK_ENTRY(entry->xent()->entry),
                                 buf);
                     }
                 }

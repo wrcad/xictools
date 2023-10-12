@@ -72,8 +72,10 @@ GRfont::fnt_t GRfont::app_fonts[] =
 int GRfont::num_app_fonts =
     sizeof(GRfont::app_fonts)/sizeof(GRfont::app_fonts[0]);
 
-#define DEF_FIXED_FACE "Courier New"
-#define DEF_PROP_FACE "Helvetica"
+//#define DEF_FIXED_FACE "Courier New"
+//#define DEF_PROP_FACE "Helvetica"
+#define DEF_FIXED_FACE "Monospace"
+#define DEF_PROP_FACE "Sans"
 
 
 // This sets the default font names and sizes.  It nust be called as

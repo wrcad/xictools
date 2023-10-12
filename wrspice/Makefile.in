@@ -316,6 +316,11 @@ distclean: eclean
 	-@rm -f bin/*.o wrspice_ipc_demo.tar.gz Makefile
 	-@rm -f examples/wrspice_ipc_demo.tar.gz
 
+grclean:
+	cd src/$(GRPREF)wrs; $(MAKE) clean
+	cd ../mozy/src/$(GRPREF)mozy; $(MAKE) clean
+	cd ../xt_base/$(GRPREF)interf; $(MAKE) clean
+
 #######################################################################
 ####### Install into another location #################################
 

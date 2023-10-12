@@ -180,6 +180,7 @@ namespace ginterf
         void MovePointer(int, int, bool)                        { }
         void SetGhost(GhostDrawFunc, int, int)                  { }
         void ShowGhost(bool)                                    { }
+        bool ShowingGhost()                                 { return(false); }
         void UndrawGhost(bool = false)                          { }
         void DrawGhost(int, int)                                { }
         void QueryPointer(int*, int*, unsigned*)                { }
@@ -196,6 +197,8 @@ namespace ginterf
         void Refresh()                                          { }
         void Update(int, int, int, int)                         { }
         void Update();
+        void SetOverlayMode(bool)                               { }
+        void CreateOverlayBackg()                               { }
         void Input(int*, int*, int*, int*)                      { }
         void SetXOR(int);
 
