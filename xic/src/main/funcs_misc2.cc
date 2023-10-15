@@ -5730,14 +5730,14 @@ misc2_funcs::IFsetButtonStatus(Variable *res, Variable *args, void*)
         return (BAD);
     res->type = TYP_SCALAR;
     res->content.value = 0;
-    int state = Menu()->MenuButtonStatus(menuname, button);
+    int state = MainMenu()->MenuButtonStatus(menuname, button);
     if (state == 0) {
         if (set)
-            res->content.value = Menu()->MenuButtonPress(menuname, button);
+            res->content.value = MainMenu()->MenuButtonPress(menuname, button);
     }
     else if (state == 1) {
         if (!set)
-            res->content.value = Menu()->MenuButtonPress(menuname, button);
+            res->content.value = MainMenu()->MenuButtonPress(menuname, button);
     }
     else
         res->content.value = -1;
@@ -5763,7 +5763,7 @@ misc2_funcs::IFgetButtonStatus(Variable *res, Variable *args, void*)
     if (!button || !*button)
         return (BAD);
     res->type = TYP_SCALAR;
-    res->content.value = Menu()->MenuButtonStatus(menuname, button);
+    res->content.value = MainMenu()->MenuButtonStatus(menuname, button);
     return (OK);
 }
 
@@ -5792,7 +5792,7 @@ misc2_funcs::IFpressButton(Variable *res, Variable *args, void*)
     EditIf()->ulCommitChanges();
 
     res->type = TYP_SCALAR;
-    res->content.value = Menu()->MenuButtonPress(menuname, button);
+    res->content.value = MainMenu()->MenuButtonPress(menuname, button);
     return (OK);
 }
 

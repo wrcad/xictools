@@ -580,15 +580,15 @@ cExt::editTermsExec(GRobject caller, GRobject endfix)
     if (!caller)
         return;
     if (!XM()->CheckCurMode(Physical)) {
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
     if (!XM()->CheckCurCell(true, false, Physical)) {
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
     if (!XM()->CheckCurCell(true, false, Electrical)) {
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
 
@@ -626,7 +626,7 @@ cExt::editTermsExec(GRobject caller, GRobject endfix)
     PtCmd->setup(caller, endfix);
     if (!EV()->PushCallback(PtCmd)) {
         delete PtCmd;
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
     PtCmd->message();
@@ -647,14 +647,14 @@ cExt::showPhysTermsExec(GRobject caller, bool contacts_only)
     if (!caller)
         return;
     if (!XM()->CheckCurMode(Physical)) {
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
     if (!XM()->CheckCurCell(false, false, Physical)) {
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
-    if (!Menu()->GetStatus(caller)) {
+    if (!MainMenu()->GetStatus(caller)) {
         if (DSP()->TerminalsVisible()) {
             DSP()->ShowTerminals(ERASE);
             DSP()->SetTerminalsVisible(false);
@@ -684,13 +684,13 @@ cExt::showPhysTermsExec(GRobject caller, bool contacts_only)
 
     if (!EX()->associate(CurCell(Physical))) {
         PL()->ShowPrompt("Association failed!");
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
     cGroupDesc *gd = CurCell(Physical)->groups();
     if (!gd || gd->isempty() || !gd->elec_nets()) {
         PL()->ShowPrompt("No terminals found to display.");
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
     if (contacts_only)
@@ -756,7 +756,7 @@ PtState::terminalEdit(CDsterm *term)
         DSP()->HlitePhysTermList(ERASE, &p);
     }
     int x, y;
-    Menu()->PointerRootLoc(&x, &y);
+    MainMenu()->PointerRootLoc(&x, &y);
     TermEditInfo tinfo(term);
     EX()->PopUpPhysTermEdit(0, MODE_UPD, &tinfo, 0, term, 0, 0);
     DSP()->HlitePhysTermList(DISPLAY, Terms);
@@ -845,7 +845,7 @@ PtState::b1down()
                 DSP()->HlitePhysTermList(ERASE, &p);
             }
             int x, y;
-            Menu()->PointerRootLoc(&x, &y);
+            MainMenu()->PointerRootLoc(&x, &y);
             TermEditInfo tinfo(Terms->term());
             EX()->PopUpPhysTermEdit(0, MODE_ON, &tinfo, te_cb,
                 Terms->term(), x + 50, y + 20);
@@ -872,7 +872,7 @@ PtState::b1down()
                     DSP()->HlitePhysTermList(ERASE, &p);
                 }
                 int x, y;
-                Menu()->PointerRootLoc(&x, &y);
+                MainMenu()->PointerRootLoc(&x, &y);
                 TermEditInfo tinfo(Terms->term());
                 EX()->PopUpPhysTermEdit(0, MODE_ON, &tinfo, te_cb,
                     Terms->term(), x + 50, y + 20);
@@ -952,7 +952,7 @@ PtState::esc()
     if (EndFix) {
         // EndFix is the "Show Cell Terms Only" button.
         if (!DSP()->TerminalsVisible()) {
-            if (!Menu()->GetStatus(EndFix)) {
+            if (!MainMenu()->GetStatus(EndFix)) {
                 DSP()->SetContactsVisible(false);
                 DSP()->ShowTerminals(ERASE);
             }
@@ -967,7 +967,7 @@ PtState::esc()
     }
     EV()->PopCallback(this);
     if (Caller)
-        Menu()->Deselect(Caller);
+        MainMenu()->Deselect(Caller);
     CDpin::destroy(Terms);
     CDs *cursde = CurCell(Electrical, true);
     if (cursde)

@@ -3780,7 +3780,7 @@ MarkState::esc()
     PL()->ErasePrompt();
     EV()->PopCallback(this);
     if (Caller)
-        Menu()->Deselect(Caller);
+        MainMenu()->Deselect(Caller);
     delete this;
 }
 
@@ -4128,7 +4128,7 @@ bangcmds::script(const char *s)
         return;
     }
     XM()->RegisterScript(name, path);
-    Menu()->UpdateUserMenu();
+    MainMenu()->UpdateUserMenu();
     delete [] name;
     delete [] path;
     PL()->ErasePrompt();

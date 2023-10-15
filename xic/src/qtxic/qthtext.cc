@@ -139,7 +139,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     connect(pe_ltx_btn, SIGNAL(clicked()),
         this, SLOT(long_text_slot()));
 
-    gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
+    gd_viewport = QTdrawIf::new_draw_interface(DrawNative, false, this);
     hbox->addWidget(Viewport());
     Viewport()->setAcceptDrops(true);
 
@@ -274,7 +274,7 @@ QTedit::save_line()
 int
 QTedit::win_width(bool)
 {
-    return (gd_viewport->widget()->width());
+    return (gd_viewport->width());
 }
 
 
@@ -510,19 +510,19 @@ QTedit::press_slot(QMouseEvent *ev)
 
     if (ev->type() == QEvent::MouseButtonPress) {
         if (ev->button() == Qt::LeftButton)
-            button_press_handler(1, ev->x(), ev->y());
+            button_press_handler(1, ev->position().x(), ev->position().y());
         else if (ev->button() == Qt::MiddleButton)
-            button_press_handler(2, ev->x(), ev->y());
+            button_press_handler(2, ev->position().x(), ev->position().y());
         else if (ev->button() == Qt::RightButton)
-            button_press_handler(3, ev->x(), ev->y());
+            button_press_handler(3, ev->position().x(), ev->position().y());
     }
     else if (ev->type() == QEvent::MouseButtonRelease) {
         if (ev->button() == Qt::LeftButton)
-            button_release_handler(1, ev->x(), ev->y());
+            button_release_handler(1, ev->position().x(), ev->position().y());
         else if (ev->button() == Qt::MiddleButton)
-            button_release_handler(2, ev->x(), ev->y());
+            button_release_handler(2, ev->position().x(), ev->position().y());
         else if (ev->button() == Qt::RightButton)
-            button_release_handler(3, ev->x(), ev->y());
+            button_release_handler(3, ev->position().x(), ev->position().y());
     }
     ev->accept();
 }
@@ -552,7 +552,7 @@ void
 QTedit::motion_slot(QMouseEvent *ev)
 {
     if (pe_has_drag)
-        pointer_motion_handler(ev->x(), ev->y());
+        pointer_motion_handler(ev->position().x(), ev->position().y());
 }
 
 

@@ -120,14 +120,14 @@ cMain::SetMode(DisplayMode mode, int wnum)
 
     ScedIf()->assertSymbolic(false);
 
-    Menu()->CleanupBeforeModeSwitch();
+    MainMenu()->CleanupBeforeModeSwitch();
     hist().saveCurrent();
     if (DSP()->CurMode() == Physical)
         DSP()->SetCurMode(Electrical);
     else
         DSP()->SetCurMode(Physical);
     hist().assertSaved();
-    Menu()->SwitchMenu();
+    MainMenu()->SwitchMenu();
     DSPmainWbag(HCsetFormat(Tech()->HC().format))
 
     EditIf()->ulListBegin(false, false);
@@ -179,7 +179,7 @@ cMain::SetMode(DisplayMode mode, int wnum)
     LT()->ShowLayerTable();
     DSP()->MainWdesc()->Redisplay(0);
 
-    Menu()->InitAfterModeSwitch(0);
+    MainMenu()->InitAfterModeSwitch(0);
     PopUpCells(0, MODE_UPD);
     if (!TreeCaptive()) {
         // If the tree is under control of the Cells panel, don't
@@ -220,30 +220,30 @@ cMain::SetHierDisplayMode(const char *cxname, const char *cellname,
         return;
     if (cxname && *cxname) {
         EV()->InitCallback();
-        Menu()->HideButtonMenu(true);
-        Menu()->DisableMainMenuItem(MMfile, MenuOPEN, true);
-        Menu()->DisableMainMenuItem(MMfile, MenuFSEL, true);
-        Menu()->DisableMainMenuItem(MMcell, MenuPUSH, true);
-        Menu()->DisableMainMenuItem(MMcell, MenuPOP, true);
-        Menu()->DisableMainMenuItem(MMcell, MenuSTABS, true);
+        MainMenu()->HideButtonMenu(true);
+        MainMenu()->DisableMainMenuItem(MMfile, MenuOPEN, true);
+        MainMenu()->DisableMainMenuItem(MMfile, MenuFSEL, true);
+        MainMenu()->DisableMainMenuItem(MMcell, MenuPUSH, true);
+        MainMenu()->DisableMainMenuItem(MMcell, MenuPOP, true);
+        MainMenu()->DisableMainMenuItem(MMcell, MenuSTABS, true);
 
-        Menu()->DisableMainMenuItem(MMedit, 0, true);
-        Menu()->DisableMainMenuItem(MMmod, 0, true);
+        MainMenu()->DisableMainMenuItem(MMedit, 0, true);
+        MainMenu()->DisableMainMenuItem(MMmod, 0, true);
 
-        Menu()->DisableMainMenuItem(MMview, MenuSCED, true);
-        Menu()->DisableMainMenuItem(MMview, MenuPEEK, true);
-        Menu()->DisableMainMenuItem(MMview, MenuCSECT, true);
-        Menu()->DisableMainMenuItem(MMview, MenuINFO, true);
+        MainMenu()->DisableMainMenuItem(MMview, MenuSCED, true);
+        MainMenu()->DisableMainMenuItem(MMview, MenuPEEK, true);
+        MainMenu()->DisableMainMenuItem(MMview, MenuCSECT, true);
+        MainMenu()->DisableMainMenuItem(MMview, MenuINFO, true);
 
-        Menu()->DisableMainMenuItem(MMattr, MenuCNTXT, true);
-        Menu()->DisableMainMenuItem(MMattr, MenuPROPS, true);
+        MainMenu()->DisableMainMenuItem(MMattr, MenuCNTXT, true);
+        MainMenu()->DisableMainMenuItem(MMattr, MenuPROPS, true);
 
-        Menu()->DisableMainMenuItem(MMconv, MenuIMPRT, true);
-        Menu()->DisableMainMenuItem(MMconv, MenuEXPRT, true);
-        Menu()->DisableMainMenuItem(MMconv, MenuTXTED, true);
+        MainMenu()->DisableMainMenuItem(MMconv, MenuIMPRT, true);
+        MainMenu()->DisableMainMenuItem(MMconv, MenuEXPRT, true);
+        MainMenu()->DisableMainMenuItem(MMconv, MenuTXTED, true);
 
-        Menu()->DisableMainMenuItem(MMdrc, 0, true);
-        Menu()->DisableMainMenuItem(MMext, 0, true);
+        MainMenu()->DisableMainMenuItem(MMdrc, 0, true);
+        MainMenu()->DisableMainMenuItem(MMext, 0, true);
 
         hist().saveCurrent();
         DSP()->MainWdesc()->SetHierDisplayMode(cxname, cellname, BB);
@@ -252,31 +252,31 @@ cMain::SetHierDisplayMode(const char *cxname, const char *cellname,
         hist().assertSaved();
         DSP()->MainWdesc()->SetHierDisplayMode(0, 0, 0);
 
-        Menu()->HideButtonMenu(false);
+        MainMenu()->HideButtonMenu(false);
 
-        Menu()->DisableMainMenuItem(MMfile, MenuOPEN, false);
-        Menu()->DisableMainMenuItem(MMfile, MenuFSEL, false);
-        Menu()->DisableMainMenuItem(MMcell, MenuPUSH, false);
-        Menu()->DisableMainMenuItem(MMcell, MenuPOP, false);
-        Menu()->DisableMainMenuItem(MMcell, MenuSTABS, false);
+        MainMenu()->DisableMainMenuItem(MMfile, MenuOPEN, false);
+        MainMenu()->DisableMainMenuItem(MMfile, MenuFSEL, false);
+        MainMenu()->DisableMainMenuItem(MMcell, MenuPUSH, false);
+        MainMenu()->DisableMainMenuItem(MMcell, MenuPOP, false);
+        MainMenu()->DisableMainMenuItem(MMcell, MenuSTABS, false);
 
-        Menu()->DisableMainMenuItem(MMedit, 0, false);
-        Menu()->DisableMainMenuItem(MMmod, 0, false);
+        MainMenu()->DisableMainMenuItem(MMedit, 0, false);
+        MainMenu()->DisableMainMenuItem(MMmod, 0, false);
 
-        Menu()->DisableMainMenuItem(MMview, MenuSCED, false);
-        Menu()->DisableMainMenuItem(MMview, MenuPEEK, false);
-        Menu()->DisableMainMenuItem(MMview, MenuCSECT, false);
-        Menu()->DisableMainMenuItem(MMview, MenuINFO, false);
+        MainMenu()->DisableMainMenuItem(MMview, MenuSCED, false);
+        MainMenu()->DisableMainMenuItem(MMview, MenuPEEK, false);
+        MainMenu()->DisableMainMenuItem(MMview, MenuCSECT, false);
+        MainMenu()->DisableMainMenuItem(MMview, MenuINFO, false);
 
-        Menu()->DisableMainMenuItem(MMattr, MenuCNTXT, false);
-        Menu()->DisableMainMenuItem(MMattr, MenuPROPS, false);
+        MainMenu()->DisableMainMenuItem(MMattr, MenuCNTXT, false);
+        MainMenu()->DisableMainMenuItem(MMattr, MenuPROPS, false);
 
-        Menu()->DisableMainMenuItem(MMconv, MenuIMPRT, false);
-        Menu()->DisableMainMenuItem(MMconv, MenuEXPRT, false);
-        Menu()->DisableMainMenuItem(MMconv, MenuTXTED, false);
+        MainMenu()->DisableMainMenuItem(MMconv, MenuIMPRT, false);
+        MainMenu()->DisableMainMenuItem(MMconv, MenuEXPRT, false);
+        MainMenu()->DisableMainMenuItem(MMconv, MenuTXTED, false);
 
-        Menu()->DisableMainMenuItem(MMdrc, 0, false);
-        Menu()->DisableMainMenuItem(MMext, 0, false);
+        MainMenu()->DisableMainMenuItem(MMdrc, 0, false);
+        MainMenu()->DisableMainMenuItem(MMext, 0, false);
 
         EditIf()->setEditingMode(!CurCell() || !CurCell()->isImmutable());
     }

@@ -106,7 +106,7 @@ cMain::RulerExec(CmdDesc *cmd)
     RuCmd->setCaller(cmd ? cmd->caller : 0);
     if (!EV()->PushCallback(RuCmd)) {
         if (cmd)
-            Menu()->Deselect(cmd->caller);
+            MainMenu()->Deselect(cmd->caller);
         delete RuCmd;
         return;
     }
@@ -284,7 +284,7 @@ RuState::esc()
         Wdesc->GhostFinalUpdate();  // Final highlighting redisplay.
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 

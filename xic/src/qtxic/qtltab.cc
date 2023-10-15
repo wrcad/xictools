@@ -155,8 +155,8 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
     hbox->addWidget(ltab_scrollbar);
 
     gd_viewport = new QTcanvas();
-    gd_viewport->widget()->setAcceptDrops(true);
-    hbox->addWidget(gd_viewport->widget());
+    gd_viewport->setAcceptDrops(true);
+    hbox->addWidget(gd_viewport);
 
     vb->addLayout(hbox);
 
@@ -166,19 +166,19 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed(int)), Qt::QueuedConnection);
 
-    connect(gd_viewport->widget(), SIGNAL(resize_event(QResizeEvent*)),
+    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
-    connect(gd_viewport->widget(), SIGNAL(press_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(button_press_slot(QMouseEvent*)));
-    connect(gd_viewport->widget(), SIGNAL(release_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(button_release_slot(QMouseEvent*)));
-    connect(gd_viewport->widget(), SIGNAL(motion_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
     connect(ltab_scrollbar, SIGNAL(valueChanged(int)),
         this, SLOT(ltab_scroll_value_changed_slot(int)));
-    connect(gd_viewport->widget(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
+    connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(gd_viewport->widget(), SIGNAL(drop_event(QDropEvent*)),
+    connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
         this, SLOT(drop_event_slot(QDropEvent*)));
 }
 
@@ -224,7 +224,7 @@ QTltab::show(const CDl *ld)
 void
 QTltab::refresh(int xx, int yy, int w, int h)
 {
-    gd_viewport->widget()->repaint(xx, yy, w, h);
+    gd_viewport->repaint(xx, yy, w, h);
 }
 
 
@@ -233,7 +233,7 @@ QTltab::refresh(int xx, int yy, int w, int h)
 void
 QTltab::win_size(int *w, int *h)
 {
-    QSize qs = gd_viewport->widget()->size();
+    QSize qs = gd_viewport->size();
     *w = qs.width();
     *h = qs.height();
 }
@@ -337,7 +337,7 @@ QTltab::button_press_slot(QMouseEvent *ev)
     int button = 0;
     if (ev->button() == Qt::LeftButton)
         button = 1;
-    else if (ev->button() == Qt::MidButton)
+    else if (ev->button() == Qt::MiddleButton)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;
@@ -352,13 +352,13 @@ QTltab::button_press_slot(QMouseEvent *ev)
 
     switch (button) {
     case 1:
-        b1_handler(ev->x(), ev->y(), state, true);
+        b1_handler(ev->position().x(), ev->position().y(), state, true);
         break;
     case 2:
-        b2_handler(ev->x(), ev->y(), state, true);
+        b2_handler(ev->position().x(), ev->position().y(), state, true);
         break;
     case 3:
-        b3_handler(ev->x(), ev->y(), state, true);
+        b3_handler(ev->position().x(), ev->position().y(), state, true);
         break;
     }
     update();
@@ -371,7 +371,7 @@ QTltab::button_release_slot(QMouseEvent *ev)
     int button = 0;
     if (ev->button() == Qt::LeftButton)
         button = 1;
-    else if (ev->button() == Qt::MidButton)
+    else if (ev->button() == Qt::MiddleButton)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;
@@ -386,13 +386,13 @@ QTltab::button_release_slot(QMouseEvent *ev)
 
     switch (button) {
     case 1:
-        b1_handler(ev->x(), ev->y(), state, false);
+        b1_handler(ev->position().x(), ev->position().y(), state, false);
         break;
     case 2:
-        b2_handler(ev->x(), ev->y(), state, false);
+        b2_handler(ev->position().x(), ev->position().y(), state, false);
         break;
     case 3:
-        b3_handler(ev->x(), ev->y(), state, false);
+        b3_handler(ev->position().x(), ev->position().y(), state, false);
         break;
     }
 }
@@ -407,8 +407,8 @@ QTltab::motion_slot(QMouseEvent *ev)
     }
     ev->accept();
 
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     if (drag_check(x, y)) {
         // fillpattern only
 
@@ -453,7 +453,8 @@ QTltab::drop_event_slot(QDropEvent *ev)
     if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
         QByteArray bary = ev->mimeData()->data(QTltab::mime_type());
         LayerFillData *dd = (LayerFillData*)bary.data();
-        XM()->FillLoadCallback(dd, LT()->LayerAt(ev->pos().x(), ev->pos().y()));
+        XM()->FillLoadCallback(dd,
+            LT()->LayerAt(ev->position().x(), ev->position().y()));
         ev->acceptProposedAction();
         if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
             DSP()->RedisplayAll();
@@ -462,7 +463,7 @@ QTltab::drop_event_slot(QDropEvent *ev)
     if (ev->mimeData()->hasColor()) {
         ev->acceptProposedAction();
         QColor color = qvariant_cast<QColor>(ev->mimeData()->colorData());
-        int entry = entry_of_xy(ev->pos().x(), ev->pos().y());
+        int entry = entry_of_xy(ev->position().x(), ev->position().y());
 
         if (entry > last_entry())
             return;

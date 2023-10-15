@@ -68,11 +68,11 @@ QTparam::QTparam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 {
     instPtr = this;
 
-    gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
+    gd_viewport = QTdrawIf::new_draw_interface(DrawNative, false, this);
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(0);
-    hbox->addWidget(gd_viewport->widget());
+    hbox->addWidget(gd_viewport);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))

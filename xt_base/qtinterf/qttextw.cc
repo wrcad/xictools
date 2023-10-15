@@ -106,7 +106,8 @@ QTtextEdit::replace_chars(const QColor *color, const char *string,
     delete_chars(start, end);
     QTextCursor c = textCursor();
     QColor clr = textColor();
-    setTextColor(QColor("red"));
+    if (color)
+        setTextColor(*color);
     if (end < 0)
         insertPlainText(string);
     else {

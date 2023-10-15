@@ -129,7 +129,7 @@ cMain::EditLtabExec(CmdDesc *cmd)
     LeCmd = new LeState("EDLYR", "xic:edlyr");
     if (!EV()->PushCallback(LeCmd)) {
         if (cmd)
-            Menu()->Deselect(cmd->caller);
+            MainMenu()->Deselect(cmd->caller);
         delete LeCmd;
         return;
     }
@@ -357,7 +357,7 @@ namespace {
             {
                 cEventHdlr::sel_esc();
                 EV()->PopCallback(this);
-                Menu()->Deselect(Caller);
+                MainMenu()->Deselect(Caller);
                 PL()->ErasePrompt();
                 delete this;
             }
@@ -1220,11 +1220,11 @@ cLtab::b3_handler(int x, int y, int state, bool down)
                 DSP()->CurMode()));
 
             if (ctrl && !shft)
-                Menu()->MenuButtonPress(MMmain, MenuCOLOR);
+                MainMenu()->MenuButtonPress(MMmain, MenuCOLOR);
             else if (!ctrl && shft)
-                Menu()->MenuButtonPress(MMmain, MenuFILL);
+                MainMenu()->MenuButtonPress(MMmain, MenuFILL);
             else if (ctrl && shft)
-                Menu()->MenuButtonPress(MMmain, MenuLPEDT);
+                MainMenu()->MenuButtonPress(MMmain, MenuLPEDT);
         }
         else {
             int entry = entry_of_xy(x, y);

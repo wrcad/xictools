@@ -1317,7 +1317,7 @@ InfoState::InfoState(const char *nm, const char *hk) : CmdState(nm, hk)
     TmpCell = 0;
     ExpObjs = 0;
     ExpMode = false;
-    Menu()->MenuButtonSet(MMview, MenuINFO, true);
+    MainMenu()->MenuButtonSet(MMview, MenuINFO, true);
 }
 
 
@@ -1333,7 +1333,7 @@ InfoState::~InfoState()
         delete o->odesc;
         delete o;
     }
-    Menu()->MenuButtonSet(MMview, MenuINFO, false);
+    MainMenu()->MenuButtonSet(MMview, MenuINFO, false);
 }
 
 
@@ -1366,12 +1366,12 @@ InfoState::NewInfo(CmdDesc *cmd, tlst_t **pselobj)
         if (!in) {
             PL()->ErasePrompt();
             if (cmd && cmd->caller)
-                Menu()->Deselect(cmd->caller);
+                MainMenu()->Deselect(cmd->caller);
             return (false);
         }
         if (*in == 'y' || *in == 'Y') {
             if (cmd && cmd->caller)
-                Menu()->Deselect(cmd->caller);
+                MainMenu()->Deselect(cmd->caller);
             in = XM()->SaveFileDlg("File name for info? ", "infolist.txt");
             if (!in) {
                 PL()->ErasePrompt();

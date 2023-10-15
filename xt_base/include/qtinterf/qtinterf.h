@@ -89,7 +89,7 @@ using namespace qtinterf;
 class qtinterf::QTbag : virtual public GRwbag
 {
 public:
-    QTbag();
+    QTbag(QWidget* = 0);
     virtual ~QTbag();
 
     // QT-SPECIFIC
@@ -195,7 +195,6 @@ public:
     void            SetErrorLogName(const char*);
 
     // QT-SPECIFIC
-    QWidget         *shell_widget()      { return (wb_shell); }
     static QColor   PopupColor(GRattrColor);
 
 protected:

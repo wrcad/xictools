@@ -44,7 +44,9 @@
 #include "ginterf/graphics.h"
 #include "ginterf/grlinedb.h"
 
-class QWidget;
+#include <QWidget>
+
+
 class QFont;
 class QCursor;
 class QPixmap;
@@ -53,8 +55,6 @@ class QPaintEvent;
 
 // This is an abstract class for a simple but efficient drawing area.
 // New instances are intended to be obtained from new_draw_interface().
-// Note that this is not a widget, but the widget pointer is available
-// through the widget() method.
 
 
 // The X11Extras don't seem to be available on MacPorts.
@@ -67,7 +67,7 @@ class QPaintEvent;
 
 namespace qtinterf {
     struct sGbag;
-    class draw_if;
+    class QTdrawIf;
     class cGhostDraw;
     class QTdraw;
 
@@ -103,14 +103,15 @@ struct qtinterf::sGbag
 
 // The QTcanvas drawing interface.
 //
-class qtinterf::draw_if
+class qtinterf::QTdrawIf : public QWidget
 {
 public:
-    static draw_if *new_draw_interface(DrawType, bool, QWidget*);
-    virtual ~draw_if() { }
+    static QTdrawIf *new_draw_interface(DrawType, bool, QWidget*);
 
-    virtual QWidget *widget() = 0;
-    virtual QPixmap *pixmap() = 0;
+    QTdrawIf(QWidget *prnt = 0) : QWidget(prnt) { }
+    virtual ~QTdrawIf() { }
+
+    virtual QPixmap *pixmap() = 0; 
 
     virtual void switch_to_pixmap2() = 0;
     virtual void switch_from_pixmap2(int, int, int, int, int, int) = 0;
@@ -266,11 +267,10 @@ public:
 
     sGbag *Gbag()           { return (gd_gbag); }
     void SetGbag(sGbag *b)  { gd_gbag = b; }
-    QWidget *Viewport()     { return (gd_viewport->widget()); }
-    draw_if *DrawIf()       { return (gd_viewport); }
+    QTdrawIf *Viewport()    { return (gd_viewport); }
 
 protected:
-    draw_if *gd_viewport;
+    QTdrawIf *gd_viewport;
     sGbag   *gd_gbag;       // graphics rendering context
 };
 

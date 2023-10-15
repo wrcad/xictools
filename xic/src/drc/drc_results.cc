@@ -958,7 +958,7 @@ namespace {
             return;
         }
         if (SEV.sev_caller)
-            Menu()->SetStatus(SEV.sev_caller, true);
+            MainMenu()->SetStatus(SEV.sev_caller, true);
 
         if (SEV.sev_parser->maxErrorNum() == 0)
             PL()->ShowPrompt("No errors recorded.");
@@ -983,10 +983,10 @@ cDRC::viewErrsSequentiallyExec(CmdDesc *cmd)
         // Note:  the caller button is deselected during ambiguity
         // resolution, and this function is locked out.
         if (SEV.caller())
-            Menu()->SetStatus(SEV.caller(), false);
+            MainMenu()->SetStatus(SEV.caller(), false);
         return;
     }
-    if (!Menu()->GetStatus(cmd->caller)) {
+    if (!MainMenu()->GetStatus(cmd->caller)) {
         SEV.clear();
         return;
     }
@@ -1017,7 +1017,7 @@ void
 cDRC::cancelNext()
 {
     if (SEV.active()) {
-        Menu()->Deselect(SEV.caller());
+        MainMenu()->Deselect(SEV.caller());
         SEV.clear();
     }
 }

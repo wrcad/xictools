@@ -191,7 +191,7 @@ namespace {
             while ((wd = wgen.next()) != 0) {
                 QTsubwin *sw = dynamic_cast<QTsubwin*>(wd->Wbag());
                 if (sw) {
-                    draw_if *dif = dynamic_cast<draw_if*>(sw->Viewport());
+                    QTdrawIf *dif = sw->Viewport();
 //XXX                    dif->refresh(0, 0, -1, -1);
                     if (wd->DbType() == WDcddb) {
                         if (Selections.blinking())

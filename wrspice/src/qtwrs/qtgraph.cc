@@ -161,7 +161,7 @@ sGraph::gr_redraw()
 
     // Save the un-annotated plot pixmap for refreshing behind
     // user-editable annotation.
-    wb->DrawIf()->create_overlay_backg();
+    wb->Viewport()->create_overlay_backg();
 
     gr_redraw_keyed();
     gr_dirty = false;
@@ -180,9 +180,9 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
     area().set_width(wb->Viewport()->width());
     area().set_height(wb->Viewport()->height());
     if (!notxt) {
-        wb->DrawIf()->set_clipping(left, top, right-left + 1, bottom-top + 1);
+        wb->Viewport()->set_clipping(left, top, right-left + 1, bottom-top + 1);
         gr_redraw_keyed();
-        wb->DrawIf()->set_clipping(0, 0, 0, 0);
+        wb->Viewport()->set_clipping(0, 0, 0, 0);
     }
     wb->Update(left, top, right-left + 1, bottom-top + 1);
 }

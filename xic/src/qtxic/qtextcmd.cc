@@ -263,7 +263,7 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
         //
         gb = new QGroupBox();
         vbox->addWidget(gb);
-        QHBoxLayout *hb = new QHBoxLayout(gb);
+        hb = new QHBoxLayout(gb);
         hb->setContentsMargins(qm);
         hb->setSpacing(2);
 

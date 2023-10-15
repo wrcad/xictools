@@ -439,8 +439,8 @@ QTauxTabDlg::mouse_press_slot(QMouseEvent *ev)
 
     char *str =
         lstring::copy(wb_textarea->toPlainText().toLatin1().constData());
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
 
@@ -489,7 +489,8 @@ QTauxTabDlg::mouse_motion_slot(QMouseEvent *ev)
 
     if (!at_dragging)
         return;
-    if (abs(ev->x() - at_drag_x) < 5 && abs(ev->y() - at_drag_y) < 5)
+    if (abs(ev->position().x() - at_drag_x) < 5 &&
+            abs(ev->position().y() - at_drag_y) < 5)
         return;
 
     char *sel = wb_textarea->get_selection();

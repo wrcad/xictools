@@ -49,7 +49,7 @@
 
 using namespace qtinterf;
 
-QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
+QTcanvas::QTcanvas(QWidget *prnt) : QTdrawIf(prnt)
 {
     setMouseTracking(true);
 
@@ -150,7 +150,6 @@ QTcanvas::switch_to_pixmap2()
     da_painter->setPen(da_pen);
     bb_init();
     emit new_painter(da_painter);
-printf("sw to\n");
 }
 
 
@@ -174,7 +173,6 @@ QTcanvas::switch_from_pixmap2(int xd, int yd, int xs, int ys, int w, int h)
     emit new_painter(da_painter);
     da_painter->drawPixmap(xd, yd, *da_pixmap2, xs, ys, w, h);
     repaint(xd, yd, w, h);
-printf("sw from\n");
 }
 
 
@@ -893,7 +891,7 @@ QTcanvas::draw_image(const GRimage *im, int xx, int yy, int w, int h)
 void
 QTcanvas::set_font(QFont *fnt)
 {
-    widget()->setFont(*fnt);
+    setFont(*fnt);
 }
 
 
@@ -1194,10 +1192,9 @@ QTcanvas::keyReleaseEvent(QKeyEvent *ev)
 
 
 void
-QTcanvas::enterEvent(QEvent *ev)
+QTcanvas::enterEvent(QEnterEvent *ev)
 {
-    QEnterEvent *eve = dynamic_cast<QEnterEvent*>(ev);
-    emit enter_event(eve);
+    emit enter_event(ev);
 }
 
 

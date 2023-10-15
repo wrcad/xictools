@@ -366,7 +366,7 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         QHBoxLayout *hbox = new QHBoxLayout(this);
         hbox->setContentsMargins(qmtop);
         hbox->setSpacing(2);
-        hbox->addWidget(gd_viewport->widget());
+        hbox->addWidget(gd_viewport);
 
         QVBoxLayout *vbox = new QVBoxLayout();
         hbox->addLayout(vbox);
@@ -829,7 +829,7 @@ QTdevMenuDlg::show_selected(int which)
     xp.assign(2, xp.at(1).x, xp.at(1).y - h);
     SetColor(0x888888);
     PolyLine(&xp, 3);
-    gd_viewport->widget()->repaint(dv_entries[which].x - SPA/2 - dv_leftofst, SPA/2, w+1, h+1);
+    gd_viewport->repaint(dv_entries[which].x - SPA/2 - dv_leftofst, SPA/2, w+1, h+1);
 }
 
 
@@ -858,7 +858,7 @@ QTdevMenuDlg::show_unselected(int which)
     xp.assign(2, xp.at(1).x, xp.at(1).y - h);
     SetColor(0xcccccc);
     PolyLine(&xp, 3);
-    gd_viewport->widget()->repaint(dv_entries[which].x - SPA/2 - dv_leftofst, SPA/2, w+1, h+1);
+    gd_viewport->repaint(dv_entries[which].x - SPA/2 - dv_leftofst, SPA/2, w+1, h+1);
 }
 
 
@@ -866,7 +866,7 @@ void
 QTdevMenuDlg::redraw()
 {
     dv_leftofst = dv_entries[dv_leftindx].x - SPA;
-    int width = gd_viewport->widget()->width();
+    int width = gd_viewport->width();
     int i;
     for (i = dv_leftindx; i < dv_numdevs; i++) {
         if (dv_entries[i].x - dv_leftofst +
@@ -885,7 +885,7 @@ QTdevMenuDlg::redraw()
 
     for (i = dv_leftindx; i < dv_rightindx; i++)
         render_cell(i, i == dv_pressed);
-    gd_viewport->widget()->update();
+    gd_viewport->update();
     for (i = dv_leftindx; i < dv_rightindx; i++)
         show_unselected(i);
 }
@@ -962,7 +962,7 @@ QTdevMenuDlg::button_down_slot(QMouseEvent *ev)
     // Draw/redraw the toolbar.
     // Select the device clicked on, and call the function to allow
     // device placement.
-    int n = whichent((int)ev->x());
+    int n = whichent((int)ev->position().x());
     if (n < 0)
         return;
     dv_curdev = n;
@@ -1001,7 +1001,7 @@ void
 QTdevMenuDlg::motion_slot(QMouseEvent *ev)
 {
     // Change the border surrounding the device under the pointer.
-    int n = whichent((int)ev->x());
+    int n = whichent((int)ev->position().x());
     if (n != dv_curdev)
         show_unselected(dv_curdev);
     dv_curdev = n;
@@ -1013,22 +1013,22 @@ void
 QTdevMenuDlg::enter_slot(QEnterEvent *ev)
 {
     // On entering the toolbar, change the border of the device.
-    dv_curdev = whichent((int)ev->x());
+    dv_curdev = whichent((int)ev->position().x());
     show_selected(dv_curdev);
 }
 
 
 void
-QTdevMenuDlg::leave_slot(QEvent *ev)
+QTdevMenuDlg::leave_slot(QEvent*)
 {
     // On leaving the toolbar, return the border to normal.
-//    dv_curdev = whichent((int)ev->x());
+//    dv_curdev = whichent((int)ev->position().x());
     show_unselected(dv_curdev);
 }
 
 
 void
-QTdevMenuDlg::resize_slot(QResizeEvent *ev)
+QTdevMenuDlg::resize_slot(QResizeEvent*)
 {
     redraw();
 }

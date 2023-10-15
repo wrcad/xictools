@@ -709,6 +709,7 @@ QToaLibsDlg::tech_btn_slot(bool state)
 void
 QToaLibsDlg::dest_btn_slot(bool state)
 {
+//XXX do something with arg?
     if (!lb_selection)
         return;
     sLstr lstr;

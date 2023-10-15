@@ -475,7 +475,7 @@ QTnodeMapDlg::update(int node)
     QTdev::SetStatus(nm_use_np, SCD()->includeNoPhys());
     if (nm_use_extract) {
         QTdev::SetStatus(nm_point_btn,
-            Menu()->MenuButtonStatus(MMext, MenuEXSEL));
+            MainMenu()->MenuButtonStatus(MMext, MenuEXSEL));
     }
     else
         QTdev::SetStatus(nm_point_btn, (nm_cmd != 0));
@@ -1045,9 +1045,9 @@ void
 QTnodeMapDlg::click_btn_slot(bool state)
 {
     if (nm_use_extract) {
-        bool st = Menu()->MenuButtonStatus(MMext, MenuEXSEL);
+        bool st = MainMenu()->MenuButtonStatus(MMext, MenuEXSEL);
         if (st != state)
-            Menu()->MenuButtonPress(MMext, MenuEXSEL);
+            MainMenu()->MenuButtonPress(MMext, MenuEXSEL);
     }
     else {
         if (state) {

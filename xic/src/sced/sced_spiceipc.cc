@@ -342,7 +342,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
     if (ipc_in_spice && ipc_msg_skt >= 0) {
         PL()->ShowPrompt("WRspice analysis in progress.");
         if (cmd)
-            Menu()->Select(cmd->caller);
+            MainMenu()->Select(cmd->caller);
         SCD()->PopUpSim(SpBusy);
         return (true);
     }
@@ -979,7 +979,7 @@ cSpiceIPC::CloseSpice()
             Proc()->RemoveChildHandler(ipc_child_sp_pid, child_hdlr);
 #endif
             write_msg("close 0", ipc_msg_skt);
-            Menu()->MenuButtonSet(MMmain, MenuRUN, false);
+            MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
         }
     }
     close_all();
@@ -1046,7 +1046,7 @@ cSpiceIPC::SigIOhdlr(int sig)
         if (Errs()->has_error())
             Log()->ErrorLog(SpiceIPC, Errs()->get_error());
         SCD()->PopUpSim(SpError);
-        Menu()->MenuButtonSet(MMmain, MenuRUN, false);
+        MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
         return;
     }
     if (FD_ISSET(ipc_msg_skt, &readfds)) {
@@ -1059,7 +1059,7 @@ cSpiceIPC::SigIOhdlr(int sig)
             Log()->ErrorLog(SpiceIPC, Errs()->get_error());
         if (!ok) {
             SCD()->PopUpSim(SpError);
-            Menu()->MenuButtonSet(MMmain, MenuRUN, false);
+            MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
         }
     }
     if (ipc_stdout_skt > 0 && FD_ISSET(ipc_stdout_skt, &readfds)) {
@@ -1656,13 +1656,23 @@ cSpiceIPC::init_local()
         DSPpkg::self()->CloseGraphicsConnection();
         dup2(ipc_stdout_skt2, fileno(stdout));
         dup2(ipc_stdout_skt2, fileno(stderr));
-        if (has_graphics && *display_string) {
-            if (ipc_no_toolbar)
-                execl(ipc_spice_path, prog_name, "-P", "-D",
-                    display_string, (char*)0);
-            else
-                execl(ipc_spice_path, prog_name, "-P", "-I", "-D",
-                    display_string, (char*)0);
+        if (has_graphics) {
+            if (display_string) {
+                if (ipc_no_toolbar) {
+                    execl(ipc_spice_path, prog_name, "-P", "-D",
+                        display_string, (char*)0);
+                }
+                else {
+                    execl(ipc_spice_path, prog_name, "-P", "-I", "-D",
+                        display_string, (char*)0);
+                }
+            }
+            else {
+                if (ipc_no_toolbar)
+                    execl(ipc_spice_path, prog_name, "-P", (char*)0);
+                else
+                    execl(ipc_spice_path, prog_name, "-P", "-I", (char*)0);
+            }
         }
         else
             execl(ipc_spice_path, prog_name, "-P", "-Dnone", (char*)0);
@@ -1769,7 +1779,7 @@ cSpiceIPC::runnit(const char *what)
     if (i > 0) {
         if (!complete_spice()) {
             SCD()->PopUpSim(SpError);
-            Menu()->MenuButtonSet(MMmain, MenuRUN, false);
+            MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
         }
     }
     else {
@@ -2387,11 +2397,11 @@ cSpiceIPC::complete_spice()
             return (false);
 
         SCD()->PopUpSim(SpDone);
-        Menu()->MenuButtonSet(MMmain, MenuRUN, false);
+        MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
     }
     else {
         SCD()->PopUpSim(SpPause);
-        Menu()->MenuButtonSet(MMmain, MenuRUN, false);
+        MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
     }
     return (true);
 }

@@ -134,9 +134,8 @@ list_delegate::sizeHint(const QStyleOptionViewItem&,
 
 
 QTlistDlg::QTlistDlg(QTbag *owner, stringlist *symlist, const char *title,
-    const char *header, bool usepix)
+    const char *header, bool usepix) : QTbag(this)
 {
-    wb_shell = this;
     p_parent = owner;
     li_use_pix = usepix;
     li_open_pm = 0;

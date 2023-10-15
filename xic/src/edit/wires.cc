@@ -660,7 +660,7 @@ WireState::esc()
             20, DSP()->CurMode());
     }
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 

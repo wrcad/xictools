@@ -631,7 +631,8 @@ private:
     void dv_pl_environ(double, double, double, double, bool);
     void dv_find_selections();
 
-    static int timeout(void*);
+    static int timeout_move(void*);
+    static int timeout_zoom(void*);
 
     // grid.cc
     void lingrid(double*, Axis);

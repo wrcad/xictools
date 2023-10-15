@@ -316,6 +316,7 @@ QTdebugParamDlg::set_btn_slot(int state)
     QTkwent *ent = static_cast<QTkwent*>(sender()->parent());
     if (ent->kwstruct() != db_dbent) {
         // Not from the "debug" kwyword.
+//XXX fix state
         bool state = QTdev::GetStatus(db_dbent->qtent()->active());
         if (!state) {
             state = QTdev::GetStatus(sender());

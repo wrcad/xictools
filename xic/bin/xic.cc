@@ -661,7 +661,7 @@ xic_main::start_proc(void*)
 #endif
 #endif
     if (miscutil::new_release(APP_ROOT, VERSION_STR))
-        Menu()->MenuButtonPress("help", MenuNOTES);
+        MainMenu()->MenuButtonPress("help", MenuNOTES);
 
 #ifdef HAVE_ATEXIT
     atexit(xic_main::onexit);
@@ -1506,33 +1506,33 @@ cMain::InitializeMenus()
     Log()->SetMailAddress(BUG_ADDR);
 
     // Setup Menus
-    Menu()->RegisterMenu(createFileMenu());
-    Menu()->RegisterMenu(createCellMenu());
+    MainMenu()->RegisterMenu(createFileMenu());
+    MainMenu()->RegisterMenu(createCellMenu());
     if (EditIf()->hasEdit()) {
-        Menu()->RegisterMenu(ED()->createEditMenu());
-        Menu()->RegisterMenu(ED()->createModfMenu());
+        MainMenu()->RegisterMenu(ED()->createEditMenu());
+        MainMenu()->RegisterMenu(ED()->createModfMenu());
     }
-    Menu()->RegisterMenu(createViewMenu());
-    Menu()->RegisterMenu(createAttrMenu());
-    Menu()->RegisterMenu(createCvrtMenu());
+    MainMenu()->RegisterMenu(createViewMenu());
+    MainMenu()->RegisterMenu(createAttrMenu());
+    MainMenu()->RegisterMenu(createCvrtMenu());
     if (ExtIf()->hasExtract()) {
-        Menu()->RegisterMenu(DRC()->createMenu());
-        Menu()->RegisterMenu(EX()->createMenu());
+        MainMenu()->RegisterMenu(DRC()->createMenu());
+        MainMenu()->RegisterMenu(EX()->createMenu());
     }
     if (EditIf()->hasEdit()) {
-        Menu()->RegisterMenu(createUserMenu());
+        MainMenu()->RegisterMenu(createUserMenu());
     }
-    Menu()->RegisterMenu(createHelpMenu());
-    Menu()->RegisterMiscMenu(createMiscMenu());
+    MainMenu()->RegisterMenu(createHelpMenu());
+    MainMenu()->RegisterMiscMenu(createMiscMenu());
     if (EditIf()->hasEdit()) {
-        Menu()->RegisterButtonMenu(ED()->createPbtnMenu(), Physical);
+        MainMenu()->RegisterButtonMenu(ED()->createPbtnMenu(), Physical);
     }
     if (ExtIf()->hasExtract()) {
-        Menu()->RegisterButtonMenu(SCD()->createEbtnMenu(), Electrical);
+        MainMenu()->RegisterButtonMenu(SCD()->createEbtnMenu(), Electrical);
     }
-    Menu()->RegisterSubwMenu(createSubwViewMenu());
-    Menu()->RegisterSubwMenu(createSubwAttrMenu());
-    Menu()->RegisterSubwMenu(createSubwHelpMenu());
+    MainMenu()->RegisterSubwMenu(createSubwViewMenu());
+    MainMenu()->RegisterSubwMenu(createSubwAttrMenu());
+    MainMenu()->RegisterSubwMenu(createSubwHelpMenu());
 }
 
 

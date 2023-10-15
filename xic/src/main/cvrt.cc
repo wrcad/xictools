@@ -465,7 +465,7 @@ cConvert::CutWindowExec(CmdDesc *cmd)
     CutCmd->SetCaller(cmd ? cmd->caller : 0);
     if (!EV()->PushCallback(CutCmd)) {
         if (cmd)
-            Menu()->Deselect(cmd->caller);
+            MainMenu()->Deselect(cmd->caller);
         delete CutCmd;
         return;
     }
@@ -480,7 +480,7 @@ void
 cConvert::SetConvertFilename(const char *fname)
 {
     if (fname) {
-        if (Menu()->MenuButtonStatus(MMconv, MenuCONVT) == 1) {
+        if (MainMenu()->MenuButtonStatus(MMconv, MenuCONVT) == 1) {
             delete [] cvt_cv_filename;
             cvt_cv_filename = lstring::copy(fname);
         }
@@ -524,7 +524,7 @@ void
 cConvert::SetWriteFilename(const char *fname)
 {
     if (fname) {
-        if (Menu()->MenuButtonStatus(MMconv, MenuEXPRT) == 1) {
+        if (MainMenu()->MenuButtonStatus(MMconv, MenuEXPRT) == 1) {
             delete [] cvt_wr_filename;
             cvt_wr_filename = lstring::copy(fname);
         }
@@ -635,7 +635,7 @@ CutState::esc()
     Gst()->SetGhost(GFnone);
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 
@@ -657,8 +657,8 @@ CutState::cut_doit(int x, int y)
     char namebuf[256];
     if (DSP()->MainWdesc()->DbType() == WDcddb) {
         Cvt()->SetupWriteCut(&AOI);
-        if (Menu()->MenuButtonStatus(MMconv, MenuEXPRT) == 0)
-            Menu()->MenuButtonPress(MMconv, MenuEXPRT);
+        if (MainMenu()->MenuButtonStatus(MMconv, MenuEXPRT) == 0)
+            MainMenu()->MenuButtonPress(MMconv, MenuEXPRT);
         snprintf(namebuf, sizeof(namebuf), "%s-cut",
             Tstring(DSP()->CurCellName()));
         Cvt()->SetWriteFilename(namebuf);
@@ -666,8 +666,8 @@ CutState::cut_doit(int x, int y)
     }
     else if (DSP()->MainWdesc()->DbType() == WDchd) {
         Cvt()->SetupConvertCut(&AOI);
-        if (Menu()->MenuButtonStatus(MMconv, MenuCONVT) == 0)
-            Menu()->MenuButtonPress(MMconv, MenuCONVT);
+        if (MainMenu()->MenuButtonStatus(MMconv, MenuCONVT) == 0)
+            MainMenu()->MenuButtonPress(MMconv, MenuCONVT);
         Cvt()->SetConvertFilename(DSP()->MainWdesc()->DbName());
         // "-cut" is appended to this name in the pop-up handler.
         Cvt()->PopUpConvert(0, MODE_UPD, cConvert::cvChdName, 0, 0);

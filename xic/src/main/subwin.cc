@@ -100,7 +100,7 @@ cMain::SubWindowExec(CmdDesc *cmd)
     SubwCmd->setCaller(cmd ? cmd->caller : 0);
     if (!EV()->PushCallback(SubwCmd)) {
         if (cmd)
-            Menu()->Deselect(cmd->caller);
+            MainMenu()->Deselect(cmd->caller);
         delete SubwCmd;
         return;
     }
@@ -186,7 +186,7 @@ SubwState::esc()
     Gst()->SetGhost(GFnone);
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 

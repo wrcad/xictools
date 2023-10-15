@@ -106,7 +106,7 @@ cMain::ExpandExec(CmdDesc *cmd)
         PeekCmd->esc();
         return;
     }
-    if (Menu()->GetStatus(cmd->caller)) {
+    if (MainMenu()->GetStatus(cmd->caller)) {
         PeekState::RedisplayWin = 0;
         DSPattrib *a = cmd->wdesc->Attrib();
         const char *cur;
@@ -238,7 +238,7 @@ PeekState::esc()
     cEventHdlr::sel_esc();
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 

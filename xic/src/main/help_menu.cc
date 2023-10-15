@@ -179,7 +179,7 @@ help_menu::M_Help(CmdDesc *cmd)
         DSPmainWbag(PopUpHelp("xic:vport"))
         return;
     }
-    if (Menu()->IsGlobalInsensitive()) {
+    if (MainMenu()->IsGlobalInsensitive()) {
         DSPmainWbag(PopUpHelp("xicinfo"))
         return;
     }
@@ -188,7 +188,7 @@ help_menu::M_Help(CmdDesc *cmd)
     HelpCmd->setCaller(cmd ? cmd->caller : 0);
     if (!EV()->PushCallback(HelpCmd)) {
         if (cmd)
-            Menu()->Deselect(cmd->caller);
+            MainMenu()->Deselect(cmd->caller);
         delete HelpCmd;
         HelpCmd = 0;
         return;
@@ -237,7 +237,7 @@ void
 HelpState::esc()
 {
     XM()->SetDoingHelp(false);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     EV()->PopCallback(this);
     delete this;
 }
@@ -253,7 +253,7 @@ help_menu::M_MultiWin(CmdDesc *cmd)
 {
     if (!cmd || !cmd->caller)
         return;
-    if (Menu()->GetStatus(cmd->caller))
+    if (MainMenu()->GetStatus(cmd->caller))
         CDvdb()->setVariable(VA_HelpMultiWin, "");
     else
         CDvdb()->clearVariable(VA_HelpMultiWin);
@@ -335,7 +335,7 @@ void
 help_menu::M_Debug(CmdDesc *cmd)
 {
     if (cmd && cmd->caller) {
-        if (Menu()->GetStatus(cmd->caller))
+        if (MainMenu()->GetStatus(cmd->caller))
             XM()->PopUpDebugFlags(cmd->caller, MODE_ON);
         else
             XM()->PopUpDebugFlags(cmd->caller, MODE_OFF);

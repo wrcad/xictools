@@ -70,7 +70,7 @@ Deselector::Deselector(CmdDesc *cmd)
 Deselector::~Deselector()
 {
     if (d_cmd && d_cmd->caller)
-        Menu()->Deselect(d_cmd->caller);
+        MainMenu()->Deselect(d_cmd->caller);
 }
 // End of Deselector functions.
 

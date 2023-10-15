@@ -974,22 +974,22 @@ main(int argc, char **argv)
     Sp.SetFlag(FT_SERVERMODE, CmdLineOpts.servermode);
     if (CmdLineOpts.batchmode || CmdLineOpts.servermode || CmdLineOpts.portmon)
         CP.SetFlag(CP_NOTTYIO, true);
+
+    // The CP.Display string is null when no graphics, otherwise it
+    // should be set to something, which is not important except when
+    // under X, in which case it must be the display name.
     if (CmdLineOpts.display) {
         if (lstring::cieq(CmdLineOpts.display, "none"))
             CP.SetDisplay(0);
         else
-#ifdef WIN32
-            CP.SetDisplay(":0");
-#else
             CP.SetDisplay(CmdLineOpts.display);
-#endif
     }
     else {
-#ifdef WIN32
-        CP.SetDisplay(":0");
-#else
-        CP.SetDisplay(getenv("DISPLAY"));
-#endif
+        const char *dpy = getenv("DISPLAY");
+        if (dpy)
+            CP.SetDisplay(dpy);
+        else
+            CP.SetDisplay(":0");
     }
     if (CmdLineOpts.term)
         Sp.SetVar("term", CmdLineOpts.term);
@@ -1052,12 +1052,14 @@ main(int argc, char **argv)
     TTY.init_more();
     if (!Sp.GetFlag(FT_BATCHMODE)) {
         if (CP.Display()) {
-            if (GR.InitPkg(GR_CONFIG, &argc, argv))
+            if (GR.InitPkg(GR_CONFIG, &argc, argv)) {
                 // failed to open X
                 // Display() is a "use X" flag
                 CP.SetDisplay(0);
-            else
+            }
+            else {
                 GR.InitColormap(0, 0, false);
+            }
         }
         if (!CP.Display()) {
             GR.SetNullGraphics();
@@ -1068,11 +1070,8 @@ main(int argc, char **argv)
 
     // Now check for unrecognized options.
     for (int i = 1; i < argc; i++) {
-        if (*argv[i] == '-') {
-            fprintf(stderr, "Error: bad option %s\n", argv[i]);
-            fprintf(stderr, usage, CP.Program());
-            return (EXIT_BAD);
-        }
+        if (*argv[i] == '-')
+            fprintf(stderr, "Warning: unrecognized option %s\n", argv[i]);
     }
 
     Sp.PreInit();

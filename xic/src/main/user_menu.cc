@@ -165,7 +165,7 @@ cMain::createUserMenu()
 void
 user_menu::M_Debug(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         XM()->PopUpDebug(cmd->caller, MODE_ON);
     else
         XM()->PopUpDebug(0, MODE_OFF);

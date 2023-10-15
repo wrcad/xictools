@@ -63,7 +63,7 @@ namespace qtinterf {
     class QTcanvas;
 }
 
-class qtinterf::QTcanvas : public QWidget, public draw_if
+class qtinterf::QTcanvas : public QTdrawIf
 {
     Q_OBJECT
 
@@ -71,7 +71,6 @@ public:
     QTcanvas(QWidget *parent = nullptr);
     ~QTcanvas();
 
-    QWidget *widget()           { return (this); }
     QPixmap *pixmap()           { return (da_pixmap); }
 
     void switch_to_pixmap2();
@@ -171,7 +170,7 @@ protected:
     void mouseMoveEvent(QMouseEvent*);
     void keyPressEvent(QKeyEvent*);
     void keyReleaseEvent(QKeyEvent*);
-    void enterEvent(QEvent*);
+    void enterEvent(QEnterEvent*);
     void leaveEvent(QEvent*);
     void focusInEvent(QFocusEvent*);
     void focusOutEvent(QFocusEvent*);

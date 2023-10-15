@@ -1123,8 +1123,8 @@ QTfastHenryDlg::mouse_press_slot(QMouseEvent *ev)
 
     QByteArray qbstr = fh_jobs->toPlainText().toLatin1();
     const char *str = qbstr.constData();
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = fh_jobs->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
     

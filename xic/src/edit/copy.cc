@@ -435,7 +435,7 @@ CopyState::esc()
     }
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     EV()->SetConstrained(false);
     ED()->setMoveOrCopy(CDmove);
     delete this;

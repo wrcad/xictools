@@ -46,17 +46,30 @@
 
 #include <QDialog>
 
-class QWidget;
+class QAction;
+class QGroupBox;
+class QLabel;
+class QPushButton;
+class QSpinBox;
 class QDoubleSpinBox;
+class QCheckBox;
+class QComboBox;
+class QRadioButton;
+class QMenu;
+class QMouseEvent;
+class QResizeEvent;
+namespace qtinterf {
+class QTcanvas;
+}
 
 
-class cGridDlg : public QDialog, public QTbag, public QTdraw, public GRpopup
+class QTgridDlg : public QDialog, public QTbag, public QTdraw, public GRpopup
 {
-//    Q_OBJECT
+    Q_OBJECT
 
 public:
-    cGridDlg(QTbag*, WindowDesc*);
-    ~cGridDlg();
+    QTgridDlg(QTbag*, WindowDesc*);
+    ~QTgridDlg();
 
     // GRpopup override
     void set_visible(bool visib)
@@ -71,28 +84,45 @@ public:
     void update(bool = false);
     void initialize();
 
+    private slots:
+        void help_btn_slot();
+        void resol_changed_slot(double);
+        void snap_changed_slot(int);
+        void gridpersnap_btn_slot(int);
+        void edge_menu_slot(int);
+        void off_grid_btn_slot(int);
+        void use_nm_btn_slot(int);
+        void wire_edge_btn_slot(int);
+        void wire_path_btn_slot(int);
+
+        void show_btn_slot(bool);
+        void top_btn_slot(bool);
+        void store_menu_slot(QAction*);
+        void rcl_menu_slot(QAction*);
+        void noaxes_btn_slot(bool);
+        void plaxes_btn_slot(bool);
+        void oraxes_btn_slot(bool);
+        void cmult_changed_slot(int);
+        void solid_btn_slot(bool);
+        void dots_btn_slot(bool);
+        void stip_btn_slot(bool);
+        void cross_size_changed(int);
+        void nocoarse_btn_slot(int);
+        void thresh_changed_slot(int);
+        void apply_slot();
+        void dismiss_slot();
+        void smp_btn_press_slot(QMouseEvent*);
+        void smp_btn_release_slot(QMouseEvent*);
+        void smp_motion_slot(QMouseEvent*);
+        void vp_btn_press_slot(QMouseEvent*);
+        void vp_btn_release_slot(QMouseEvent*);
+        void vp_resize_slot(QResizeEvent*);
+
 private:
+    void redraw();
+
     /*
-    static void gd_cancel_proc(GtkWidget*, void*);
     static int gd_key_hdlr(GtkWidget*, GdkEvent*event, void*);
-    static void gd_apply_proc(GtkWidget*, void*);
-    static void gd_snap_proc(GtkWidget*, void*);
-    static void gd_resol_change_proc(GtkWidget*, void*);
-    static void gd_snap_change_proc(GtkWidget*, void*);
-    static void gd_edge_menu_proc(GtkWidget*, void*);
-    static void gd_btn_proc(GtkWidget*, void*);
-    static void gd_sto_menu_proc(GtkWidget*, void*);
-    static void gd_rcl_menu_proc(GtkWidget*, void*);
-    static void gd_axes_proc(GtkWidget*, void*);
-    static void gd_lst_proc(GtkWidget*, void*);
-    static void gd_cmult_change_proc(GtkWidget*, void*);
-    static void gd_thresh_change_proc(GtkWidget*, void*);
-    static void gd_crs_change_proc(GtkWidget*, void*);
-#if GTK_CHECK_VERSION(3,0,0)
-    static int gd_redraw_hdlr(GtkWidget*, cairo_t*, void*);
-#else
-    static int gd_redraw_hdlr(GtkWidget*, GdkEvent*, void*);
-#endif
     static int gd_button_press_hdlr(GtkWidget*, GdkEvent*, void*);
     static int gd_button_release_hdlr(GtkWidget*, GdkEvent*, void*);
     static int gd_motion_hdlr(GtkWidget*, GdkEvent*, void*);
@@ -100,30 +130,35 @@ private:
         GtkSelectionData*, guint, guint, void*);
     */
 
-    QWidget *gd_mfglabel;
-    QWidget *gd_snapbox;
-    QWidget *gd_snapbtn;
-    QWidget *gd_edgegrp;
-    QWidget *gd_edge;
-    QWidget *gd_off_grid;
-    QWidget *gd_use_nm_edge;
-    QWidget *gd_wire_edge;
-    QWidget *gd_wire_path;
+    QGroupBox   *gd_snapbox;
+    QDoubleSpinBox *gd_resol;
+    QLabel      *gd_mfglabel;
+    QSpinBox    *gd_snap;
+    QCheckBox   *gd_snapbtn;
+    QGroupBox   *gd_edgegrp;
+    QComboBox   *gd_edge;
+    QCheckBox   *gd_off_grid;
+    QCheckBox   *gd_use_nm_edge;
+    QCheckBox   *gd_wire_edge;
+    QCheckBox   *gd_wire_path;
 
-    QWidget *gd_showbtn;
-    QWidget *gd_topbtn;
-    QWidget *gd_noaxesbtn;
-    QWidget *gd_plaxesbtn;
-    QWidget *gd_oraxesbtn;
-    QWidget *gd_nocoarse;
-    QWidget *gd_sample;
-    QWidget *gd_solidbtn;
-    QWidget *gd_dotsbtn;
-    QWidget *gd_stipbtn;
-    QWidget *gd_crs_frame;
+    QPushButton *gd_showbtn;
+    QPushButton *gd_topbtn;
+    QRadioButton *gd_noaxesbtn;
+    QRadioButton *gd_plaxesbtn;
+    QRadioButton *gd_oraxesbtn;
+    QSpinBox    *gd_cmult;
+    QCheckBox   *gd_nocoarse;
+    QTcanvas    *gd_sample;
+    QRadioButton *gd_solidbtn;
+    QRadioButton *gd_dotsbtn;
+    QRadioButton *gd_stipbtn;
+    QGroupBox   *gd_crs_frame;
+    QSpinBox    *gd_crs;
+    QSpinBox    *gd_thresh;
 
-    QWidget *gd_apply;
-    QWidget *gd_cancel;
+    QPushButton *gd_apply;
+    QPushButton *gd_cancel;
 
     GridDesc gd_grid;
     unsigned int gd_mask_bak;
@@ -133,13 +168,7 @@ private:
     int gd_drag_y;
     bool gd_dragging;
 
-    QDoubleSpinBox *gd_resol;
-    QDoubleSpinBox *gd_snap;
-    QDoubleSpinBox *gd_cmult;
-    QDoubleSpinBox *gd_thresh;
-    QDoubleSpinBox *gd_crs;
-
-    static cGridDlg *grid_pops[DSP_NUMWINS];
+    static QTgridDlg *grid_pops[DSP_NUMWINS];
 };
 
 #endif

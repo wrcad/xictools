@@ -156,18 +156,18 @@ namespace {
         GRobject caller = (GRobject)arg;
         CDs *psdesc = CurCell(Physical);
         if (!psdesc) {
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
             return (false);
         }
         if (!EX()->extract(psdesc)) {
             PL()->ShowPrompt("Extraction failed!");
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
             return (false);
         }
         cGroupDesc *gd = psdesc->groups();
         if (!gd || gd->isempty()) {
             PL()->ShowPrompt("No conductor groups found!");
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
             return (false);
         }
 
@@ -190,7 +190,7 @@ namespace {
         GRobject caller = (GRobject)arg;
         CDs *psdesc = CurCell(Physical);
         if (!psdesc) {
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
             return (false);
         }
 
@@ -215,7 +215,7 @@ cExt::selectPath(GRobject caller)
 {
     if (!caller)
         return;
-    bool state = Menu()->GetStatus(caller);
+    bool state = MainMenu()->GetStatus(caller);
     if (!state) {
         if (PathCmd)
             PathCmd->esc();
@@ -226,7 +226,7 @@ cExt::selectPath(GRobject caller)
         QpathCmd->esc();
 
     if (!XM()->CheckCurCell(false, false, Physical)) {
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
 
@@ -244,7 +244,7 @@ cExt::selectPathQuick(GRobject caller)
 {
     if (!caller)
         return;
-    bool state = Menu()->GetStatus(caller);
+    bool state = MainMenu()->GetStatus(caller);
     if (!state) {
         if (QpathCmd)
             QpathCmd->esc();
@@ -254,7 +254,7 @@ cExt::selectPathQuick(GRobject caller)
         PathCmd->esc();
 
     if (!XM()->CheckCurCell(false, false, Physical)) {
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
 
@@ -487,7 +487,7 @@ void
 sPcmd::esc()
 {
     cEventHdlr::sel_esc();
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     EV()->PopCallback(this);
     WindowDesc *wd;
     WDgen wgen(WDgen::MAIN, WDgen::CDDB);

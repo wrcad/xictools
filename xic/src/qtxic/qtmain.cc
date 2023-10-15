@@ -555,7 +555,7 @@ QTpkg::SubwinDestroy(int wnum)
         w->pre_destroy(wnum);
         delete w;
     }
-    Menu()->DestroySubwinMenu(wnum);
+    MainMenu()->DestroySubwinMenu(wnum);
 }
 
 
@@ -867,7 +867,7 @@ cKeys::check_exec(bool exact)
     if (!k_keypos)
         return;
 
-    MenuEnt *ent = Menu()->MatchEntry(k_keys, k_keypos, k_win_number, exact);
+    MenuEnt *ent = MainMenu()->MatchEntry(k_keys, k_keypos, k_win_number, exact);
     if (!ent || !ent->cmd.caller)
         return;
 
@@ -912,7 +912,7 @@ cKeys::check_exec(bool exact)
     }
 
     // Do the command.
-    Menu()->CallCallback(ent->cmd.caller);
+    MainMenu()->CallCallback(ent->cmd.caller);
 }
 
 
@@ -963,7 +963,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
         else
             printf("Using QT native graphics system.\n");
     }
-    gd_viewport = draw_if::new_draw_interface(sw_drawtype, true, this);
+    gd_viewport = QTdrawIf::new_draw_interface(sw_drawtype, true, this);
     Viewport()->setFocusPolicy(Qt::StrongFocus);
     Viewport()->setAcceptDrops(true);
 
@@ -1011,7 +1011,6 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     sw_keys_pressed->show_keys();
 
     QMargins qmtop(2, 2, 2, 2);
-    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
@@ -1055,7 +1054,7 @@ QTsubwin::subw_initialize(int wnum)
     DSP()->Window(wnum)->SetWdraw(this);
 
     // Create new menu, just copy template.
-    Menu()->CreateSubwinMenu(wnum);
+    MainMenu()->CreateSubwinMenu(wnum);
 
     connect(this, SIGNAL(update_coords(int, int)),
         QTmainwin::self(), SLOT(update_coords_slot(int, int)));
@@ -1317,12 +1316,6 @@ QTsubwin::SetLabelText(const char*)
 
 
 void
-QTsubwin::PopUpGrid(GRobject, ShowMode)
-{
-}
-
-
-void
 QTsubwin::PopUpExpand(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, void*),
     void *arg, const char *string, bool nopeek)
@@ -1555,7 +1548,7 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
     int button = 0;
     if (ev->button() == Qt::LeftButton)
         button = 1;
-    else if (ev->button() == Qt::MidButton)
+    else if (ev->button() == Qt::MiddleButton)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;
@@ -1601,12 +1594,12 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
             if (XM()->IsDoingHelp())
                 PopUpHelp("button4");
             else {
-                EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(),
-                    mod_state(state));
+                EV()->ButtonNopCallback(sw_windesc, ev->position().x(),
+                    ev->position().y(), mod_state(state));
             }
         }
         else {
-            EV()->Button1Callback(sw_windesc, ev->x(), ev->y(),
+            EV()->Button1Callback(sw_windesc, ev->position().x(), ev->position().y(),
                 mod_state(state));
         }
         break;
@@ -1615,7 +1608,7 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button2");
         else {
-            EV()->Button2Callback(sw_windesc, ev->x(), ev->y(),
+            EV()->Button2Callback(sw_windesc, ev->position().x(), ev->position().y(),
                 mod_state(state));
         }
         break;
@@ -1624,7 +1617,7 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button3");
         else {
-            EV()->Button3Callback(sw_windesc, ev->x(), ev->y(),
+            EV()->Button3Callback(sw_windesc, ev->position().x(), ev->position().y(),
                 mod_state(state));
         }
         break;
@@ -1633,7 +1626,7 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button4");
         else {
-            EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(),
+            EV()->ButtonNopCallback(sw_windesc, ev->position().x(), ev->position().y(),
                 mod_state(state));
         }
         break;
@@ -1661,7 +1654,7 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
     int button = 0;
     if (ev->button() == Qt::LeftButton)
         button = 1;
-    else if (ev->button() == Qt::MidButton)
+    else if (ev->button() == Qt::MiddleButton)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;
@@ -1688,8 +1681,8 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
     // The point can be outside of the viewport, due to the grab.
     // Check for this.
     const BBox *BB = &sw_windesc->Viewport();
-    bool in = (ev->x() >= 0 && ev->x() < BB->right &&
-        ev->y() >= 0 && ev->y() < BB->bottom);
+    bool in = (ev->position().x() >= 0 && ev->position().x() < BB->right &&
+        ev->position().y() >= 0 && ev->position().y() < BB->bottom);
 
     bool showing_ghost = ShowingGhost();
     if (showing_ghost)
@@ -1702,24 +1695,24 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
 //        if (grabstate.check_simb4(false)) {
         if (0) {
             EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
-                ev->x(), ev->y(), mod_state(state));
+                ev->position().x(), ev->position().y(), mod_state(state));
         }
         else {
             EV()->Button1ReleaseCallback((in ? sw_windesc : 0),
-                ev->x(), ev->y(), mod_state(state));
+                ev->position().x(), ev->position().y(), mod_state(state));
         }
         break;
     case 2:
         EV()->Button2ReleaseCallback((in ? sw_windesc : 0),
-            ev->x(), ev->y(), mod_state(state));
+            ev->position().x(), ev->position().y(), mod_state(state));
         break;
     case 3:
         EV()->Button3ReleaseCallback((in ? sw_windesc : 0),
-            ev->x(), ev->y(), mod_state(state));
+            ev->position().x(), ev->position().y(), mod_state(state));
         break;
     default:
         EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
-            ev->x(), ev->y(), mod_state(state));
+            ev->position().x(), ev->position().y(), mod_state(state));
         break;
     }
     if (showing_ghost)
@@ -1738,8 +1731,9 @@ QTsubwin::motion_slot(QMouseEvent *ev)
         return;
     }
 
-    QRect r(QPoint(0, 0), gd_viewport->widget()->size());
-    if (ev->type() != QEvent::MouseMove || !r.contains(ev->x(), ev->y())) {
+    QRect r(QPoint(0, 0), gd_viewport->size());
+    if (ev->type() != QEvent::MouseMove ||
+            !r.contains(ev->position().x(), ev->position().y())) {
         // Leave event is not reliably delivered so do this here, too.
         UndrawGhost();
 //XXX        gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
@@ -1751,11 +1745,11 @@ QTsubwin::motion_slot(QMouseEvent *ev)
     EV()->MotionCallback(sw_windesc, mod_state(ev->modifiers()));
     if (Gst()->ShowingGhostInWindow(sw_windesc)) {
         UndrawGhost();
-        DrawGhost(ev->x(), ev->y());
+        DrawGhost(ev->position().x(), ev->position().y());
     }
 
-    int xx = ev->x();
-    int yy = ev->y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
     sw_windesc->PToL(xx, yy, xx, yy);
     emit update_coords(xx, yy);
 }

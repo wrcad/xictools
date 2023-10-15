@@ -88,7 +88,7 @@ namespace {
     evDrc(const char*, bool set)
     {
         DRC()->setInteractive(set);
-        Menu()->MenuButtonSet(MenuDRC, MenuINTR, DRC()->isInteractive());
+        MainMenu()->MenuButtonSet(MenuDRC, MenuINTR, DRC()->isInteractive());
         return (true);
     }
 
@@ -116,7 +116,7 @@ namespace {
     {
         DRC()->setIntrNoErrMsg(set);
         CDvdb()->registerPostFunc(postset);
-        Menu()->MenuButtonSet(MenuDRC, MenuNOPOP, DRC()->isIntrNoErrMsg());
+        MainMenu()->MenuButtonSet(MenuDRC, MenuNOPOP, DRC()->isIntrNoErrMsg());
         return (true);
     }
 

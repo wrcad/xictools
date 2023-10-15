@@ -165,6 +165,7 @@ MOCFILES = \
     moc_files.cpp \
     moc_fillp.cpp \
     moc_flatten.cpp \
+    moc_grid.cpp \
     moc_htext.cpp \
     moc_join.cpp \
     moc_lexp.cpp \
@@ -277,6 +278,7 @@ moc_extset.o: moc_extset.cpp
 moc_files.o: moc_files.cpp
 moc_fillp.o: moc_fillp.cpp
 moc_flatten.o: moc_flatten.cpp
+moc_grid.o: moc_grid.cpp
 moc_htext.o: moc_htext.cpp
 moc_join.o: moc_join.cpp
 moc_lexp.o: moc_lexp.cpp
@@ -406,6 +408,8 @@ moc_fillp.cpp: $(MOC) qtfillp.o
 	$(MOC) qtfillp.h -o moc_fillp.cpp
 moc_flatten.cpp: $(MOC) qtflatten.o
 	$(MOC) qtflatten.h -o moc_flatten.cpp
+moc_grid.cpp: $(MOC) qtgrid.o
+	$(MOC) qtgrid.h -o moc_grid.cpp
 moc_htext.cpp: $(MOC) qthtext.o
 	$(MOC) qthtext.h -o moc_htext.cpp
 moc_join.cpp: $(MOC) qtjoin.o

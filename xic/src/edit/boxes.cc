@@ -283,7 +283,7 @@ BoxState::esc()
     PL()->ErasePrompt();
     EV()->PopCallback(this);
     if (Caller)
-        Menu()->Deselect(Caller);
+        MainMenu()->Deselect(Caller);
     delete this;
 }
 

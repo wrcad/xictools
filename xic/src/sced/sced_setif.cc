@@ -136,7 +136,7 @@ namespace {
     static bool
     is_subct_cmd_active()
     {
-        return (Menu()->MenuButtonStatus(MMmain, MenuSUBCT) == 1);
+        return (MainMenu()->MenuButtonStatus(MMmain, MenuSUBCT) == 1);
     }
 }
 

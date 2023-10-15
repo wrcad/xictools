@@ -1070,9 +1070,9 @@ const char *QTbag::wb_closed_folder_xpm[] = {
     "                "
 };
 
-QTbag::QTbag()
+QTbag::QTbag(QWidget *w)
 {
-    wb_shell = 0;
+    wb_shell = w;
     wb_textarea = 0;
     wb_input = 0;
     wb_message = 0;

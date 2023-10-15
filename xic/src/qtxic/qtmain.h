@@ -60,7 +60,7 @@ class QTparam;
 class cKeys;
 class QTexpandDlg;
 class QTzoomDlg;
-class cGridDlg;
+class QTgridDlg;
 class QTidleproc;
 class QTltab;
 
@@ -253,7 +253,7 @@ protected:
     cKeys       *sw_keys_pressed;
     QTexpandDlg *sw_expand;
     QTzoomDlg   *sw_zoom;
-    cGridDlg    *sw_gridpop;
+    QTgridDlg   *sw_gridpop;
     WindowDesc  *sw_windesc;
     int         sw_win_number;
 

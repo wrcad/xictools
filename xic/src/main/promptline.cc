@@ -1206,7 +1206,7 @@ cPromptEdit::editor()
     pe_offset = 0;
     set_focus();
     indicate(true);
-    Menu()->SetUndoSens(false);
+    MainMenu()->SetUndoSens(false);
     pe_column = 0;
     set_col(0);
     draw_text(DRAW, TOEND, true);
@@ -1229,7 +1229,7 @@ cPromptEdit::editor()
     if (!KbMac()->MacroPush(0))
         DSPpkg::self()->MainLoop();
 
-    Menu()->SetUndoSens(true);
+    MainMenu()->SetUndoSens(true);
     indicate(false);
     if (pe_active == hyESCAPE) {
         pe_active = hyOFF;

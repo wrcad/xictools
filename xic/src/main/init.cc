@@ -246,7 +246,7 @@ cMain::AppInit()
 
     SetCoordMode(CO_REDRAW);
 
-    Menu()->InitAfterModeSwitch(0);
+    MainMenu()->InitAfterModeSwitch(0);
     LT()->InitLayerTable();
     DSPmainDraw(Clear())
     DSP()->MainWdesc()->DefaultWindow();
@@ -423,8 +423,8 @@ void
 cMain::Rehash()
 {
     if (XM()->RunMode() == ModeNormal) {
-        if (Menu())
-            Menu()->UpdateUserMenu();
+        if (MainMenu())
+            MainMenu()->UpdateUserMenu();
     }
     else {
         // Read the library files in the script path

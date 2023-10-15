@@ -267,7 +267,7 @@ modf_menu::M_ChangeLayer(CmdDesc *cmd)
 void
 modf_menu::M_MClayerChg(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         ED()->PopUpLayerChangeMode(MODE_ON);
     else
         ED()->PopUpLayerChangeMode(MODE_OFF);

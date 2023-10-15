@@ -267,8 +267,8 @@ QTcircuitListDlg::mouse_press_slot(QMouseEvent *ev)
 
     QByteArray ba = wb_textarea->toPlainText().toLatin1();
     const char *str = ba.constData();
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
 

@@ -1330,8 +1330,8 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
     if (wb_textarea->toPlainText() == QString(nofiles_msg))
         return;
     QByteArray qba = wb_textarea->toPlainText().toLatin1();
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
     const char *str = lstring::copy((const char*)qba.constData());
@@ -1436,7 +1436,8 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
 {
     if (!f_drag_start)
         return;
-    if (abs(ev->x() - f_drag_x) < 5 && abs(ev->y() - f_drag_y) < 5)
+    if (abs(ev->position().x() - f_drag_x) < 5 &&
+            abs(ev->position().y() - f_drag_y) < 5)
         return;
     f_drag_start = false;
 

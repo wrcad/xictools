@@ -100,9 +100,9 @@ namespace {
 void
 cEdit::sidesExec(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller)) {
+    if (cmd && MainMenu()->GetStatus(cmd->caller)) {
         int x, y;
-        Menu()->Location(cmd->caller, &x, &y);
+        MainMenu()->Location(cmd->caller, &x, &y);
         cmd->wdesc->Wbag()->PopUpNumeric(cmd->caller, GRloc(LW_XYA, x, y),
             "Number of sides for round objects? ",
             GEO()->roundFlashSides(DSP()->CurMode() == Electrical),
@@ -681,7 +681,7 @@ PolyState::esc()
     }
     EV()->PopCallback(this);
     if (Caller)
-        Menu()->Deselect(Caller);
+        MainMenu()->Deselect(Caller);
     delete this;
 }
 
@@ -1906,7 +1906,7 @@ RoundState::esc()
     XM()->SetCoordMode(CO_ABSOLUTE);
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 

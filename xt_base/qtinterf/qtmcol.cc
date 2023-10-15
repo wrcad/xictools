@@ -88,9 +88,8 @@ QTbag::PopUpMultiCol(stringlist *symlist, const char *title,
 
 
 QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
-    const char *title, const char **buttons, int pgsize)
+    const char *title, const char **buttons, int pgsize) : QTbag(this)
 {
-    wb_shell = this;
     p_parent = owner;
     mc_pagesel = 0;
     for (int i = 0; i < MC_MAXBTNS; i++)
@@ -492,8 +491,8 @@ QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
 
     const char *str = lstring::copy(
         wb_textarea->toPlainText().toLatin1().constData());
-    int x = ev->x();
-    int y = ev->y();;
+    int x = ev->position().x();
+    int y = ev->position().y();;
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
 
@@ -566,7 +565,8 @@ QTmcolDlg::mouse_motion_slot(QMouseEvent *ev)
         return;
     if (!mc_dragging)
         return;
-    if (abs(ev->x() - mc_drag_x) < 5 && abs(ev->y() - mc_drag_y) < 5)
+    if (abs(ev->position().x() - mc_drag_x) < 5 &&
+            abs(ev->position().y() - mc_drag_y) < 5)
         return;
     if (!wb_textarea->has_selection())
         return;

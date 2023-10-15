@@ -346,6 +346,7 @@ QTcolorParamDlg::dismiss_btn_slot()
 void
 QTcolorParamDlg::help_btn_slot(bool state)
 {
+    //XXX boolean?
 #ifdef HAVE_MOZY
     HLP()->word("color");
 #endif

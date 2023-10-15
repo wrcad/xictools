@@ -1138,7 +1138,7 @@ LabelState::esc()
             PL()->ErasePrompt();
         if (Pushed)
             EV()->PopCallback(this);
-        Menu()->Deselect(Caller);
+        MainMenu()->Deselect(Caller);
         if (!KeepLT)
             // pop down long text editor
             PL()->AbortLongText();

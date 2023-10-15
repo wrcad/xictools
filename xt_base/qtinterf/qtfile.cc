@@ -246,7 +246,7 @@ file_tree_widget::dragMoveEvent(QDragMoveEvent *ev)
         ev->acceptProposedAction();
 
         // Paint target background
-        QTreeWidgetItem *it = itemAt(ev->pos());
+        QTreeWidgetItem *it = itemAt(ev->position().toPoint());
         if (it && target != it) {
             if (target)
                 target->setBackground(0, QColor(255,255,255));
@@ -283,7 +283,7 @@ file_tree_widget::dragLeaveEvent(QDragLeaveEvent*)
 void
 file_tree_widget::dropEvent(QDropEvent *ev)
 {
-    QTreeWidgetItem *it = itemAt(ev->pos());
+    QTreeWidgetItem *it = itemAt(ev->position().toPoint());
     if (it) {
         int proposed_action = ev->proposedAction();
         char *dst = fsel->get_dir(it);
@@ -603,9 +603,8 @@ namespace {
 
 QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     const char *root_or_fname) :
-    QDialog(owner ? owner->Shell() : 0), QTbag()
+    QDialog(owner ? owner->Shell() : 0), QTbag(this)
 {
-wb_shell = this;
     p_parent = owner;
     p_cb_arg = arg;
     f_menubar = 0;
@@ -736,22 +735,23 @@ wb_shell = this;
         f_filemenu->setTitle(QString(tr("&File")));
         f_menubar->addMenu(f_filemenu);
 
-        if (f_config == fsSEL)
+        if (f_config == fsSEL) {
             f_Open = f_filemenu->addAction(QString(tr("&Open")),
-                this, SLOT(open_slot()), Qt::CTRL+Qt::Key_O);
+                Qt::CTRL|Qt::Key_O, this, SLOT(open_slot()));
+        }
         f_New = f_filemenu->addAction(QString(tr("New &Folder")),
-            this, SLOT(new_folder_slot()), Qt::CTRL+Qt::Key_F);
+            Qt::CTRL|Qt::Key_F, this, SLOT(new_folder_slot()));
         f_Delete = f_filemenu->addAction(QString(tr("&Delete")),
-            this, SLOT(delete_slot()), Qt::CTRL+Qt::Key_D);
+            Qt::CTRL|Qt::Key_D, this, SLOT(delete_slot()));
         f_Rename = f_filemenu->addAction(QString(tr("&Rename")),
-            this, SLOT(rename_slot()), Qt::CTRL+Qt::Key_R);
+            Qt::CTRL|Qt::Key_R, this, SLOT(rename_slot()));
         f_filemenu->addAction(QString(tr("N&ew Root")),
-            this, SLOT(new_root_slot()), Qt::CTRL+Qt::Key_E);
+            Qt::CTRL|Qt::Key_E, this, SLOT(new_root_slot()));
         f_filemenu->addAction(QString(tr("New C&WD")),
-            this, SLOT(new_cwd_slot()), Qt::CTRL+Qt::Key_W);
+            Qt::CTRL|Qt::Key_W, this, SLOT(new_cwd_slot()));
         f_filemenu->addSeparator();
         f_filemenu->addAction(QString(tr("&Quit")),
-            this, SLOT(quit_slot()), Qt::CTRL+Qt::Key_Q);
+            Qt::CTRL|Qt::Key_Q, this, SLOT(quit_slot()));
     }
 
     f_upmenu = new QMenu(this);
@@ -770,11 +770,11 @@ wb_shell = this;
 
         QAction *a = f_listmenu->addAction(QString(tr("&Show Filter")));
         a->setCheckable(true);
-        a->setShortcut(Qt::CTRL+Qt::Key_S);
+        a->setShortcut(Qt::CTRL|Qt::Key_S);
         connect(a, SIGNAL(toggled(bool)),
             this, SLOT(show_filter_slot(bool)));
         f_listmenu->addAction(QString(tr("Re&list")),
-            this, SLOT(list_files_slot()), Qt::CTRL+Qt::Key_L);
+            Qt::CTRL|Qt::Key_L, this, SLOT(list_files_slot()));
     }
 
     if (f_config == fsSEL || f_config == fsSAVE || f_config == fsOPEN) {
@@ -784,7 +784,7 @@ wb_shell = this;
         f_helpmenu->setTitle(QString(tr("&Help")));
         f_menubar->addMenu(f_helpmenu);
         f_helpmenu->addAction(QString(tr("&Help")),
-            this, SLOT(help_slot()), Qt::CTRL+Qt::Key_H);
+            Qt::CTRL|Qt::Key_H, this, SLOT(help_slot()));
     }
 
     QMargins qmtop(2, 2, 2, 2);

@@ -438,7 +438,7 @@ QTphysTermDlg::toindex_btn_slot()
         }
     }
     int xx, yy;
-    Menu()->PointerRootLoc(&xx, &yy);
+    MainMenu()->PointerRootLoc(&xx, &yy);
     PL()->FlashMessageHereV(xx, yy, "No terminal for index %d", indx);
 }
 

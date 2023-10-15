@@ -1016,7 +1016,8 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
                         gr_pressx = xl;
                     GP.SetSourceGraph(this);
 
-                    gr_timer_id = GRpkg::self()->AddTimer(200, timeout, this);
+                    gr_timer_id = GRpkg::self()->AddTimer(200, timeout_move,
+                        this);
                     return;
                 }
             }
@@ -1077,11 +1078,12 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
         if (dv_dims_map_hdlr(button, x, y, false))
             return;
         if (!(gr_cmdmode & grMoving)) {
-            if (gr_reference.mark)
-                gr_show_ghost(false);
-            gr_zoomin(x, y);
-            if (gr_reference.mark)
-                gr_show_ghost(true);
+            gr_pressx = x;
+            gr_pressy = y;
+            gr_cmdmode |= grZoomIn;
+            // Use a timeout to avoid zooming into a click, which is likely
+            // inadvertant.
+            gr_timer_id = GRpkg::self()->AddTimer(300, timeout_zoom, this);
         }
     }
 }
@@ -1305,31 +1307,39 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
         }
     }
     if (gr_cmdmode & grZoomIn) {
-        gr_set_ghost(0, 0, 0);
-        int xlbnd = gr_vport.left() - 2;
-        int xubnd = gr_vport.right() + 2;
-        int ylbnd = gr_vport.bottom() - 2;
-        int yubnd = gr_vport.top() + 2;
-        if (x >= xlbnd && x <= xubnd && y >= ylbnd && y <= yubnd) {
-            int lowerx, lowery, upperx, uppery;
-            if (gr_format != FT_SINGLE || gr_ysep) {
-                uppery = yubnd;
-                lowery = ylbnd;
+        if (gr_timer_id) {
+            // Don't zoomin if the user clicks, user has to hold the
+            // button down for a moment.
+            GRpkg::self()->RemoveTimer(gr_timer_id);
+            gr_timer_id = 0;
+        }
+        else {
+            gr_set_ghost(0, 0, 0);
+            int xlbnd = gr_vport.left() - 2;
+            int xubnd = gr_vport.right() + 2;
+            int ylbnd = gr_vport.bottom() - 2;
+            int yubnd = gr_vport.top() + 2;
+            if (x >= xlbnd && x <= xubnd && y >= ylbnd && y <= yubnd) {
+                int lowerx, lowery, upperx, uppery;
+                if (gr_format != FT_SINGLE || gr_ysep) {
+                    uppery = yubnd;
+                    lowery = ylbnd;
+                }
+                else {
+                    uppery = gr_pressy > y ? gr_pressy : y;
+                    lowery = gr_pressy < y ? gr_pressy : y;
+                }
+                upperx = gr_pressx > x ? gr_pressx : x;
+                lowerx = gr_pressx < x ? gr_pressx : x;
+                double fx0, fx1, fy0, fy1;
+                gr_screen_to_data(lowerx, lowery, &fx0, &fy0);
+                gr_screen_to_data(upperx, uppery, &fx1, &fy1);
+                if (gr_format != FT_SINGLE || gr_ysep) {
+                    fy0 = gr_rawdata.ymin;
+                    fy1 = gr_rawdata.ymax;
+                }
+                gr_zoom(fx0, fy0, fx1, fy1);
             }
-            else {
-                uppery = gr_pressy > y ? gr_pressy : y;
-                lowery = gr_pressy < y ? gr_pressy : y;
-            }
-            upperx = gr_pressx > x ? gr_pressx : x;
-            lowerx = gr_pressx < x ? gr_pressx : x;
-            double fx0, fx1, fy0, fy1;
-            gr_screen_to_data(lowerx, lowery, &fx0, &fy0);
-            gr_screen_to_data(upperx, uppery, &fx1, &fy1);
-            if (gr_format != FT_SINGLE || gr_ysep) {
-                fy0 = gr_rawdata.ymin;
-                fy1 = gr_rawdata.ymax;
-            }
-            gr_zoom(fx0, fy0, fx1, fy1);
         }
         gr_cmdmode &= ~grZoomIn;
     }
@@ -1431,6 +1441,7 @@ sGraph::gr_zoomin(int x0, int y0)
             y1 = y0 + BOXSIZE;
     }
 
+    // redundant
     gr_cmdmode |= grZoomIn;
     gr_pressx = x0;
     gr_pressy = y0;
@@ -4653,12 +4664,28 @@ sGraph::dv_find_selections()
 
 // Static function.
 int
-sGraph::timeout(void *arg)
+sGraph::timeout_move(void *arg)
 {
     sGraph *graph = (sGraph*)arg;
     graph->gr_set_ghost(ghost_tbox, 0, 0);
     graph->gr_dev->MovePointer(0, 0, false);
     graph->gr_cmdmode |= grMoving;
+    graph->gr_timer_id = 0;
+    return (false);
+}
+
+
+// Static function.
+int
+sGraph::timeout_zoom(void *arg)
+{
+    sGraph *graph = (sGraph*)arg;
+    if (graph->gr_reference.mark)
+        graph->gr_show_ghost(false);
+    graph->gr_zoomin(graph->gr_pressx, graph->gr_pressy);
+    if (graph->gr_reference.mark)
+        graph->gr_show_ghost(true);
+    graph->gr_timer_id = 0;
     return (false);
 }
 // End of sGraph private functions.

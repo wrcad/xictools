@@ -94,9 +94,9 @@ namespace {
         if (!menu || !DSP()->MainWdesc())
             return;
         MenuEnt *ent = &menu[viewMenuExpnd];
-        if (Menu()->GetStatus(ent->cmd.caller))
+        if (MainMenu()->GetStatus(ent->cmd.caller))
             // pop down expnd popup, or reset peek mode
-            Menu()->CallCallback(ent->cmd.caller);
+            MainMenu()->CallCallback(ent->cmd.caller);
     }
 
 
@@ -109,15 +109,15 @@ namespace {
             MenuEnt *ent = &menu[i];
             if (i == viewMenuCsect) {
                 if (DSP()->CurMode() == Electrical)
-                    Menu()->SetSensitive(ent->cmd.caller, false);
+                    MainMenu()->SetSensitive(ent->cmd.caller, false);
                 else
-                    Menu()->SetSensitive(ent->cmd.caller, true);
+                    MainMenu()->SetSensitive(ent->cmd.caller, true);
             }
             else if (i == viewMenuRuler) {
                 if (DSP()->CurMode() == Electrical)
-                    Menu()->SetSensitive(ent->cmd.caller, false);
+                    MainMenu()->SetSensitive(ent->cmd.caller, false);
                 else
-                    Menu()->SetSensitive(ent->cmd.caller, true);
+                    MainMenu()->SetSensitive(ent->cmd.caller, true);
             }
         }
     }
@@ -201,22 +201,22 @@ namespace {
 
         if (wdesc->DbType() != WDcddb) {
             MenuEnt *ent = &menu[subwViewMenuSwap];
-            Menu()->SetSensitive(ent->cmd.caller, false);
+            MainMenu()->SetSensitive(ent->cmd.caller, false);
         }
         if (wdesc->DbType() == WDblist || wdesc->DbType() == WDsdb) {
             // cross section or special database display
             MenuEnt *ent = &menu[subwViewMenuSced];
-            Menu()->SetSensitive(ent->cmd.caller, false);
+            MainMenu()->SetSensitive(ent->cmd.caller, false);
             ent = &menu[subwViewMenuExpnd];
-            Menu()->SetSensitive(ent->cmd.caller, false);
+            MainMenu()->SetSensitive(ent->cmd.caller, false);
             ent = &menu[subwViewMenuLshow];
-            Menu()->SetSensitive(ent->cmd.caller, false);
+            MainMenu()->SetSensitive(ent->cmd.caller, false);
             ent = &menu[subwViewMenuLoad];
-            Menu()->SetSensitive(ent->cmd.caller, false);
+            MainMenu()->SetSensitive(ent->cmd.caller, false);
             return;
         }
         MenuEnt *ent = &menu[subwViewMenuLshow];
-        Menu()->SetSensitive(ent->cmd.caller, (wdesc->Mode() == Physical));
+        MainMenu()->SetSensitive(ent->cmd.caller, (wdesc->Mode() == Physical));
     }
 }
 
@@ -284,7 +284,7 @@ view_menu::M_SwitchMode(CmdDesc *cmd)
             break;
     if (wnum == DSP_NUMWINS)
         return;
-    const char *label = Menu()->GetLabel(cmd->caller);
+    const char *label = MainMenu()->GetLabel(cmd->caller);
     while (isspace(*label))
         label++;
     if (*label == 'p' || *label == 'P')
@@ -316,7 +316,7 @@ void
 view_menu::M_Zoom(CmdDesc *cmd)
 {
     if (cmd) {
-        if (Menu()->GetStatus(cmd->caller))
+        if (MainMenu()->GetStatus(cmd->caller))
             cmd->wdesc->Wbag()->PopUpZoom(cmd->caller, MODE_ON);
         else
             cmd->wdesc->Wbag()->PopUpZoom(0, MODE_OFF);
@@ -382,7 +382,7 @@ view_menu::M_Info(CmdDesc *cmd)
 void
 view_menu::M_Alloc(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         XM()->PopUpMemory(MODE_ON);
     else
         XM()->PopUpMemory(MODE_OFF);
@@ -442,7 +442,7 @@ subw_view_menu::M_LocShow(CmdDesc *cmd)
 {
     if (cmd && cmd->wdesc && cmd->wdesc != DSP()->MainWdesc()
             && cmd->wdesc->Mode() == Physical && cmd->caller) {
-        cmd->wdesc->SetShowLoc(Menu()->GetStatus(cmd->caller));
+        cmd->wdesc->SetShowLoc(MainMenu()->GetStatus(cmd->caller));
         DSP()->MainWdesc()->Refresh(cmd->wdesc->Window());
     }
 }

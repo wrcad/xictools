@@ -212,7 +212,7 @@ PlaceState::esc()
     PL()->ErasePrompt();
     EV()->PopCallback(this);
     if (Caller)
-        Menu()->Deselect(Caller);
+        MainMenu()->Deselect(Caller);
     if (ED()->replacing())
         cEventHdlr::sel_esc();
     ScedIf()->DevsEscCallback();

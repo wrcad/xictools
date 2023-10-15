@@ -226,7 +226,7 @@ LpeekState::esc()
     Gst()->SetGhost(GFnone);
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 
@@ -439,7 +439,7 @@ ProfState::esc()
     Gst()->SetGhost(GFnone);
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 

@@ -110,12 +110,12 @@ namespace {
         if (!menu || !DSP()->MainWdesc())
             return;
         MenuEnt *ent = &menu[btnElecMenuTerms];
-        Menu()->Deselect(ent->cmd.caller);
+        MainMenu()->Deselect(ent->cmd.caller);
         ent = &menu[btnElecMenuIplot];
-        Menu()->Deselect(ent->cmd.caller);
+        MainMenu()->Deselect(ent->cmd.caller);
 
         ent = &menu[btnElecMenuDevs];
-        SCD()->setShowDevs(Menu()->GetStatus(ent->cmd.caller));
+        SCD()->setShowDevs(MainMenu()->GetStatus(ent->cmd.caller));
         SCD()->PopUpDevs(0, MODE_OFF);
 
         SCD()->clearPlots();
@@ -137,7 +137,7 @@ namespace {
         }
         if (SCD()->spif()->SimulationActive()) {
             MenuEnt *ent = &menu[btnElecMenuRun];
-            Menu()->SetStatus(ent->cmd.caller, true);
+            MainMenu()->SetStatus(ent->cmd.caller, true);
         }
         SCD()->setDoingIplot(false);
         SCD()->setIplotStatusChanged(false);
@@ -247,7 +247,7 @@ cSced::setupCommand(MenuEnt *ent, bool *retval, bool *call_on_up)
 void
 ebtn_menu::M_Xform(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         ED()->PopUpTransform(cmd->caller, MODE_ON, cEdit::cur_tf_cb, 0);
     else
         ED()->PopUpTransform(0, MODE_OFF, 0, 0);
@@ -272,7 +272,7 @@ ebtn_menu::M_Place(CmdDesc *cmd)
 void
 ebtn_menu::M_Devs(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller)) {
+    if (cmd && MainMenu()->GetStatus(cmd->caller)) {
         SCD()->PopUpDevs(cmd->caller, MODE_ON);
         SCD()->setShowDevs(true);
     }
@@ -348,7 +348,7 @@ ebtn_menu::M_NodeMap(CmdDesc *cmd)
         return;
     ds.clear();
 
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         SCD()->PopUpNodeMap(cmd->caller, MODE_ON);
     else
         SCD()->PopUpNodeMap(cmd->caller, MODE_OFF);
@@ -439,7 +439,7 @@ ebtn_menu::M_SpiceCmd(CmdDesc *cmd)
 
     EV()->InitCallback();
 
-    if (cmd && Menu()->GetStatus(cmd->caller)) {
+    if (cmd && MainMenu()->GetStatus(cmd->caller)) {
         char *in = PL()->EditPrompt(
             "Enter WRspice command, or press Enter for setup: ", "");
         if (!in)
@@ -539,7 +539,7 @@ ebtn_menu::M_RunSpice(CmdDesc *cmd)
     if (!XM()->CheckCurCell(false, false, Electrical))
         return;
 
-    if (cmd && Menu()->GetStatus(cmd->caller)) {
+    if (cmd && MainMenu()->GetStatus(cmd->caller)) {
         if (!SCD()->spif()->RunSpice(cmd))
             return;
         ds.clear();

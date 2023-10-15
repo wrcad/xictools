@@ -719,8 +719,8 @@ QTdrcRuleEditDlg::mouse_press_slot(QMouseEvent *ev)
     ev->accept();
 
     char *str = dim_text->get_chars();
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = dim_text->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
 

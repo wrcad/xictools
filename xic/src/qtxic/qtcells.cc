@@ -1132,7 +1132,7 @@ QTcellsDlg::tree_btn_slot()
 
     if (cname) {
         // find the main menu button for the tree popup
-        MenuEnt *m = Menu()->FindEntry(MMcell, MenuTREE);
+        MenuEnt *m = MainMenu()->FindEntry(MMcell, MenuTREE);
         GRobject widg = 0;
         if (m)
             widg = m->cmd.caller;
@@ -1441,8 +1441,8 @@ QTcellsDlg::mouse_press_slot(QMouseEvent *ev)
 
     char *str =
         lstring::copy(wb_textarea->toPlainText().toLatin1().constData());
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
 
@@ -1491,7 +1491,8 @@ QTcellsDlg::mouse_motion_slot(QMouseEvent *ev)
 
     if (!c_dragging)
         return;
-    if (abs(ev->x() - c_drag_x) < 5 && abs(ev->y() - c_drag_y) < 5)
+    if (abs(ev->position().x() - c_drag_x) < 5 &&
+            abs(ev->position().y() - c_drag_y) < 5)
         return;
 
     char *sel = wb_textarea->get_selection();

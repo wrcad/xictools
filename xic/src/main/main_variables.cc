@@ -580,27 +580,27 @@ namespace {
         CD()->SetNoElectrical(false);
         if (set) {
             if (DSP()->CurMode() == Physical) {
-                MenuEnt *ent = Menu()->FindEntry(MMview, MenuSCED);
+                MenuEnt *ent = MainMenu()->FindEntry(MMview, MenuSCED);
                 if (ent)
-                    Menu()->SetSensitive(ent->cmd.caller, false);
+                    MainMenu()->SetSensitive(ent->cmd.caller, false);
                 CD()->SetNoElectrical(true);
             }
             else {
-                MenuEnt *ent = Menu()->FindEntry(MMview, MenuPHYS);
+                MenuEnt *ent = MainMenu()->FindEntry(MMview, MenuPHYS);
                 if (ent)
-                    Menu()->SetSensitive(ent->cmd.caller, false);
+                    MainMenu()->SetSensitive(ent->cmd.caller, false);
             }
         }
         else {
             if (DSP()->CurMode() == Physical) {
-                MenuEnt *ent = Menu()->FindEntry(MMview, MenuSCED);
+                MenuEnt *ent = MainMenu()->FindEntry(MMview, MenuSCED);
                 if (ent)
-                    Menu()->SetSensitive(ent->cmd.caller, true);
+                    MainMenu()->SetSensitive(ent->cmd.caller, true);
             }
             else {
-                MenuEnt *ent = Menu()->FindEntry(MMview, MenuPHYS);
+                MenuEnt *ent = MainMenu()->FindEntry(MMview, MenuPHYS);
                 if (ent)
-                    Menu()->SetSensitive(ent->cmd.caller, true);
+                    MainMenu()->SetSensitive(ent->cmd.caller, true);
             }
         }
         return (true);
@@ -765,7 +765,7 @@ namespace {
 #ifdef MOZY
         HLP()->set_multi_win(set);
 #endif
-        Menu()->MenuButtonSet(MMhelp, MenuMULTW, set);
+        MainMenu()->MenuButtonSet(MMhelp, MenuMULTW, set);
         return (true);
     }
 }

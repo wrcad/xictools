@@ -65,9 +65,9 @@ namespace {
     void via_notify(bool b)
     {
         if (DSP()->CurMode() == Physical) {
-            MenuBox *mb = Menu()->FindMainMenu(MMedit);
+            MenuBox *mb = MainMenu()->FindMainMenu(MMedit);
             if (mb)
-                Menu()->SetSensitive(mb->menu[editMenuCrvia].cmd.caller, b);
+                MainMenu()->SetSensitive(mb->menu[editMenuCrvia].cmd.caller, b);
         }
     }
 }
@@ -138,33 +138,33 @@ cEdit::setEditingMode(bool edit)
         return;
 
     if (edit) {
-        Menu()->HideButtonMenu(false);
+        MainMenu()->HideButtonMenu(false);
 
-        Menu()->DisableMainMenuItem(MMedit, MenuFLATN, false);
-        Menu()->DisableMainMenuItem(MMedit, MenuJOIN, false);
-        Menu()->DisableMainMenuItem(MMedit, MenuLEXPR, false);
-        Menu()->DisableMainMenuItem(MMedit, MenuPRPTY, false);
-        Menu()->DisableMainMenuItem(MMedit, MenuCPROP, false);
+        MainMenu()->DisableMainMenuItem(MMedit, MenuFLATN, false);
+        MainMenu()->DisableMainMenuItem(MMedit, MenuJOIN, false);
+        MainMenu()->DisableMainMenuItem(MMedit, MenuLEXPR, false);
+        MainMenu()->DisableMainMenuItem(MMedit, MenuPRPTY, false);
+        MainMenu()->DisableMainMenuItem(MMedit, MenuCPROP, false);
 
-        Menu()->DisableMainMenuItem(MMmod, 0, false);
+        MainMenu()->DisableMainMenuItem(MMmod, 0, false);
 
-        Menu()->MenuButtonSet(MMedit, MenuCEDIT, true);
+        MainMenu()->MenuButtonSet(MMedit, MenuCEDIT, true);
     }
     else {
         EV()->InitCallback();
-        Menu()->HideButtonMenu(true);
+        MainMenu()->HideButtonMenu(true);
 
         EditIf()->ulListFinalize(false);
 
-        Menu()->DisableMainMenuItem(MMedit, MenuFLATN, true);
-        Menu()->DisableMainMenuItem(MMedit, MenuJOIN, true);
-        Menu()->DisableMainMenuItem(MMedit, MenuLEXPR, true);
-        Menu()->DisableMainMenuItem(MMedit, MenuPRPTY, true);
-        Menu()->DisableMainMenuItem(MMedit, MenuCPROP, true);
+        MainMenu()->DisableMainMenuItem(MMedit, MenuFLATN, true);
+        MainMenu()->DisableMainMenuItem(MMedit, MenuJOIN, true);
+        MainMenu()->DisableMainMenuItem(MMedit, MenuLEXPR, true);
+        MainMenu()->DisableMainMenuItem(MMedit, MenuPRPTY, true);
+        MainMenu()->DisableMainMenuItem(MMedit, MenuCPROP, true);
 
-        Menu()->DisableMainMenuItem(MMmod, 0, true);
+        MainMenu()->DisableMainMenuItem(MMmod, 0, true);
 
-        Menu()->MenuButtonSet(MMedit, MenuCEDIT, false);
+        MainMenu()->MenuButtonSet(MMedit, MenuCEDIT, false);
     }
     XM()->PopUpCells(0, MODE_UPD);
 }

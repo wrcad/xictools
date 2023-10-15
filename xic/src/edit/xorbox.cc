@@ -227,7 +227,7 @@ XorState::esc()
     XM()->SetCoordMode(CO_ABSOLUTE);
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 

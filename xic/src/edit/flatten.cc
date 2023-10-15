@@ -232,10 +232,10 @@ cEdit::flattenExec(CmdDesc *cmd)
         return;
     if (!XM()->CheckCurCell(true, false, DSP()->CurMode())) {
         if (cmd && cmd->caller)
-            Menu()->Deselect(cmd->caller);
+            MainMenu()->Deselect(cmd->caller);
         return;
     }
-    if (cmd && Menu()->GetStatus(cmd->caller)) {
+    if (cmd && MainMenu()->GetStatus(cmd->caller)) {
         PopUpFlatten(cmd->caller, MODE_ON, f_cb, &Fdata, Fdata.depth,
             Fdata.mode);
     }

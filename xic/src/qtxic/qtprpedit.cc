@@ -287,8 +287,8 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ)
 QTprpEditorDlg::~QTprpEditorDlg()
 {
     instPtr = 0;
-    if (Menu()->MenuButtonStatus(MMedit, MenuPRPTY) == 1) {
-        Menu()->MenuButtonPress(MMedit, MenuPRPTY);
+    if (MainMenu()->MenuButtonStatus(MMedit, MenuPRPTY) == 1) {
+        MainMenu()->MenuButtonPress(MMedit, MenuPRPTY);
         if (pb_odesc)
             DSP()->ShowCurrentObject(ERASE, pb_odesc, MarkerColor);
     }
@@ -580,14 +580,14 @@ QTprpEditorDlg::activ_btn_slot(bool state)
         EV()->CurCmd()->esc();
 
     if (state) {
-        if (Menu()->MenuButtonStatus(MMedit, MenuPRPTY) == 0)
-            Menu()->MenuButtonPress(MMedit, MenuPRPTY);
+        if (MainMenu()->MenuButtonStatus(MMedit, MenuPRPTY) == 0)
+            MainMenu()->MenuButtonPress(MMedit, MenuPRPTY);
     }
     else {
         QTdev::SetStatus(po_info, false);
         QTdev::SetStatus(po_global, false);
-        if (Menu()->MenuButtonStatus(MMedit, MenuPRPTY) == 1)
-            Menu()->MenuButtonPress(MMedit, MenuPRPTY);
+        if (MainMenu()->MenuButtonStatus(MMedit, MenuPRPTY) == 1)
+            MainMenu()->MenuButtonPress(MMedit, MenuPRPTY);
     }
     activate(state);
 }

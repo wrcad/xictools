@@ -102,24 +102,24 @@ namespace {
                 ent->set_state(DRC()->isInteractive());
             else if (i == drcMenuNopop) {
                 ent->set_state(DRC()->isIntrNoErrMsg());
-                Menu()->SetSensitive(ent->cmd.caller,
+                MainMenu()->SetSensitive(ent->cmd.caller,
                     DRC()->isInteractive());
             }
             else if (i == drcMenuLimit) {
                 if (DSP()->CurMode() == Electrical) {
-                    if (Menu()->MenuButtonStatus(MenuDRC, MenuLIMIT) == 1)
-                        Menu()->MenuButtonPress(MenuDRC, MenuLIMIT);
+                    if (MainMenu()->MenuButtonStatus(MenuDRC, MenuLIMIT) == 1)
+                        MainMenu()->MenuButtonPress(MenuDRC, MenuLIMIT);
                 }
             }
             else if (i == drcMenuCheck) {
                 if (DSP()->CurMode() == Electrical) {
-                    if (Menu()->MenuButtonStatus(MenuDRC, MenuCHECK) == 1)
-                        Menu()->MenuButtonPress(MenuDRC, MenuCHECK);
+                    if (MainMenu()->MenuButtonStatus(MenuDRC, MenuCHECK) == 1)
+                        MainMenu()->MenuButtonPress(MenuDRC, MenuCHECK);
                 }
             }
             else
                 continue;
-            Menu()->SetStatus(ent->cmd.caller, ent->is_set());
+            MainMenu()->SetStatus(ent->cmd.caller, ent->is_set());
         }
     }
 }
@@ -188,7 +188,7 @@ cDRC::createMenu()
 void
 drc_menu::M_DrcLimits(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         DRC()->PopUpDrcLimits(cmd->caller, MODE_ON);
     else
         DRC()->PopUpDrcLimits(0, MODE_OFF);
@@ -321,7 +321,7 @@ FlagState::esc()
     Selections.deselectTypes(CurCell(Physical), 0);
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 
@@ -336,17 +336,17 @@ drc_menu::M_DrcOn(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc)
         return;
-    MenuEnt *ent = Menu()->FindEntOfWin(cmd->wdesc, MenuNOPOP);
-    if (Menu()->GetStatus(cmd->caller)) {
+    MenuEnt *ent = MainMenu()->FindEntOfWin(cmd->wdesc, MenuNOPOP);
+    if (MainMenu()->GetStatus(cmd->caller)) {
         CDvdb()->setVariable(VA_Drc, "");
         if (ent && ent->cmd.caller)
-            Menu()->SetSensitive(ent->cmd.caller, true);
+            MainMenu()->SetSensitive(ent->cmd.caller, true);
         PL()->ShowPrompt("Will perform DRC when objects change.");
     }
     else {
         CDvdb()->clearVariable(VA_Drc);
         if (ent && ent->cmd.caller)
-            Menu()->SetSensitive(ent->cmd.caller, false);
+            MainMenu()->SetSensitive(ent->cmd.caller, false);
         PL()->ShowPrompt("Interactive DRC not active.");
     }
 }
@@ -360,7 +360,7 @@ drc_menu::M_DrcOn(CmdDesc *cmd)
 void
 drc_menu::M_DrcNoPop(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller)) {
+    if (cmd && MainMenu()->GetStatus(cmd->caller)) {
         CDvdb()->setVariable(VA_DrcNoPopup, "");
         PL()->ShowPrompt("No pop-up list of interactive DRC error messages.");
     }
@@ -381,7 +381,7 @@ drc_menu::M_DrcNoPop(CmdDesc *cmd)
 void
 drc_menu::M_DrcCheck(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         DRC()->PopUpDrcRun(cmd->caller, MODE_ON);
     else
         DRC()->PopUpDrcRun(0, MODE_OFF);
@@ -503,7 +503,7 @@ DrcState::esc()
     if (State != 2)
         PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 
@@ -530,7 +530,7 @@ drc_menu::M_DrcClear(CmdDesc *cmd)
         DRC()->showCurError(wd, false);
     DRC()->clearCurError();
     if (cmd)
-        Menu()->Deselect(cmd->caller);
+        MainMenu()->Deselect(cmd->caller);
 }
 
 
@@ -627,7 +627,7 @@ QuState::esc()
     cEventHdlr::sel_esc();
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 
@@ -714,9 +714,9 @@ drc_menu::M_DrcLayer(CmdDesc*)
 void
 drc_menu::M_DrcRules(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller)) {
+    if (cmd && MainMenu()->GetStatus(cmd->caller)) {
         if (!XM()->CheckCurLayer()) {
-            Menu()->Deselect(cmd->caller);
+            MainMenu()->Deselect(cmd->caller);
             return;
         }
         DRC()->PopUpRules(cmd->caller, MODE_ON);

@@ -686,7 +686,7 @@ PushState::b1up()
 
         PP()->PushContext(cd, ix, iy);
         EV()->PopCallback(this);
-        Menu()->Deselect(Caller);
+        MainMenu()->Deselect(Caller);
         delete this;
     }
 }
@@ -704,7 +704,7 @@ PushState::key(int code, const char*, int state)
         if (!(state & GR_CONTROL_MASK)) {
             // If Ctrl is also held, keep Push mode active
             EV()->PopCallback(this);
-            Menu()->Deselect(Caller);
+            MainMenu()->Deselect(Caller);
             delete this;
         }
         return (true);
@@ -721,7 +721,7 @@ PushState::esc()
     cEventHdlr::sel_esc();
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 // End of PushState functions

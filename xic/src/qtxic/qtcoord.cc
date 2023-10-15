@@ -76,11 +76,11 @@ QTcoord::QTcoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     co_rel = false;
     co_snap = true;
 
-    gd_viewport = draw_if::new_draw_interface(DrawNative, false, this);
+    gd_viewport = QTdrawIf::new_draw_interface(DrawNative, false, this);
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(0);
-    hbox->addWidget(gd_viewport->widget());
+    hbox->addWidget(gd_viewport);
 
     int wid = 90*QTfont::stringWidth(0, FNT_SCREEN);
     int hei = QTfont::lineHeight(FNT_SCREEN) + 2;
@@ -89,7 +89,7 @@ QTcoord::QTcoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     setMaximumHeight(hei);
     co_width = wid;
     co_height = hei;
-    connect(gd_viewport->widget(), SIGNAL(resize_event(QResizeEvent*)),
+    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(redraw_slot()), Qt::QueuedConnection);
 
     QFont *fnt;
@@ -156,7 +156,7 @@ QTcoord::print(int xc, int yc, int upd)
         yc = co_ly;
     }
 
-    QSize qs = gd_viewport->widget()->size();
+    QSize qs = gd_viewport->size();
     co_width = qs.width();
     co_height = qs.height();
 

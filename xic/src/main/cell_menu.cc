@@ -139,7 +139,7 @@ cell_menu::M_Pop(CmdDesc*)
 void
 cell_menu::M_SymTabs(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         XM()->PopUpSymTabs(cmd->caller, MODE_ON);
     else
         XM()->PopUpSymTabs(0, MODE_OFF);
@@ -155,7 +155,7 @@ void
 cell_menu::M_Cells(CmdDesc *cmd)
 {
     XM()->PopUpCells(cmd ? cmd->caller : 0,
-        cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
+        cmd && MainMenu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
 }
 
 
@@ -170,12 +170,12 @@ cell_menu::M_Tree(CmdDesc *cmd)
     if (DSP()->MainWdesc()->DbType() == WDcddb) {
         if (DSP()->CurCellName())
             XM()->PopUpTree(cmd ? cmd->caller : 0,
-                cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF,
+                cmd && MainMenu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF,
                 Tstring(DSP()->CurCellName()), TU_CUR);
     }
     else if (DSP()->MainWdesc()->DbType() == WDchd) {
         XM()->PopUpTree(cmd ? cmd->caller : 0,
-            cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF, 0,
+            cmd && MainMenu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF, 0,
             TU_CUR);
     }
 }

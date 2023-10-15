@@ -138,7 +138,7 @@ QTstabDlg::QTstabDlg(GRobject c)
 
     tb_tables = new QComboBox();
     hbox->addWidget(tb_tables);
-    stringlist *tb_namelist = CDcdb()->listTables();
+    tb_namelist = CDcdb()->listTables();
     for (stringlist *s = tb_namelist; s; s = s->next)
         tb_tables->addItem((const char*)s->string);
     tb_tables->setCurrentIndex(0);
@@ -230,8 +230,8 @@ void
 QTstabDlg::table_change_slot(int)
 {
     QString qs = tb_tables->currentText();
-    if (!qs.length() > 0)
-        XM()->SetSymbolTable((const char*)qs.toLatin1());
+    if (qs.length() > 0)
+        XM()->SetSymbolTable(qs.toLatin1().constData());
 }
 
 

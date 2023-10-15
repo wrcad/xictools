@@ -270,7 +270,7 @@ cEdit::propertiesExec(CmdDesc *cmd)
     if (!XM()->CheckCurCell(true, false, DSP()->CurMode()))
         return;
     if (DSP()->CurMode() == Electrical &&
-            Menu()->MenuButtonStatus(MMmain, MenuSYMBL) == 1) {
+            MainMenu()->MenuButtonStatus(MMmain, MenuSYMBL) == 1) {
         PL()->ShowPrompt("Can't show properties in symbolic mode.");
         return;
     }
@@ -763,7 +763,7 @@ PrptyState::esc()
     Scur = Shead = 0;
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     switchPropertiesMenu(false);
     ED()->PopUpPropertyInfo(0, MODE_OFF);
     ED()->PopUpProperties(0, MODE_UPD, PRPinactive);

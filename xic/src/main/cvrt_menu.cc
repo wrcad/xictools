@@ -347,11 +347,11 @@ namespace {
 void
 cvrt_menu::M_Export(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller)) {
+    if (cmd && MainMenu()->GetStatus(cmd->caller)) {
         if (!DSP()->CurCellName()) {
             PL()->ShowPrompt("No current cell!");
             if (cmd)
-                Menu()->Deselect(cmd->caller);
+                MainMenu()->Deselect(cmd->caller);
             return;
         }
         Cvt()->PopUpExport(cmd->caller, MODE_ON, out_cb, 0);
@@ -513,7 +513,7 @@ namespace {
 void
 cvrt_menu::M_Import(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         Cvt()->PopUpImport(cmd->caller, MODE_ON, in_cb, 0);
     else
         Cvt()->PopUpImport(0, MODE_OFF, 0, 0);
@@ -906,7 +906,7 @@ namespace {
 void
 cvrt_menu::M_Convert(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         Cvt()->PopUpConvert(cmd->caller, MODE_ON, 0, cv_cb, 0);
     else
         Cvt()->PopUpConvert(0, MODE_OFF, 0, 0, 0);
@@ -919,7 +919,7 @@ cvrt_menu::M_Convert(CmdDesc *cmd)
 void
 cvrt_menu::M_Assemble(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         Cvt()->PopUpAssemble(cmd->caller, MODE_ON);
     else
         Cvt()->PopUpAssemble(0, MODE_OFF);
@@ -932,7 +932,7 @@ cvrt_menu::M_Assemble(CmdDesc *cmd)
 void
 cvrt_menu::M_Diff(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         Cvt()->PopUpCompare(cmd->caller, MODE_ON);
     else
         Cvt()->PopUpCompare(0, MODE_OFF);

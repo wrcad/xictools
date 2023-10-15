@@ -751,7 +751,7 @@ QTfillPatDlg::button_down_slot(QMouseEvent *ev)
     int button = 0;
     if (ev->button() == Qt::LeftButton)
         button = 1;
-    else if (ev->button() == Qt::MidButton)
+    else if (ev->button() == Qt::MiddleButton)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;
@@ -759,8 +759,8 @@ QTfillPatDlg::button_down_slot(QMouseEvent *ev)
 
     if (sender() == fp_editor) {
         // pixel editor
-        fp_jj = ev->x();
-        fp_ii = ev->y();
+        fp_jj = ev->position().x();
+        fp_ii = ev->position().y();
         fp_downbtn = 0;
         if (getij(&fp_jj, &fp_ii)) {
             fp_downbtn = button;
@@ -777,8 +777,8 @@ QTfillPatDlg::button_down_slot(QMouseEvent *ev)
 
     fp_dragging = true;
     fp_drag_btn = button;
-    fp_drag_x = ev->x();
-    fp_drag_y = ev->y();
+    fp_drag_x = ev->position().x();
+    fp_drag_y = ev->position().y();
 }
 
 
@@ -816,8 +816,8 @@ QTfillPatDlg::button_up_slot(QMouseEvent *ev)
 
         int jo = fp_jj;
         int io = fp_ii;
-        fp_jj = ev->x();
-        fp_ii = ev->y();
+        fp_jj = ev->position().x();
+        fp_ii = ev->position().y();
         if (!getij(&fp_jj, &fp_ii))
             return;
         int imin = (io < fp_ii ? io : fp_ii);
@@ -941,8 +941,8 @@ QTfillPatDlg::motion_slot(QMouseEvent *ev)
     if (sender() == fp_editor) {
         if (!fp_downbtn)
             return;
-        int x = ev->x();
-        int y = ev->y();
+        int x = ev->position().x();
+        int y = ev->position().y();
         if (!getij(&x, &y))
             return;
 
@@ -955,8 +955,8 @@ QTfillPatDlg::motion_slot(QMouseEvent *ev)
         DrawGhost(x, y);
     }
     else if (fp_dragging &&
-            (abs(ev->x() - fp_drag_x) > 4 ||
-            abs(ev->y() - fp_drag_y) > 4)) {
+            (abs(ev->position().x() - fp_drag_x) > 4 ||
+            abs(ev->position().y() - fp_drag_y) > 4)) {
         fp_dragging = false;
 
         LayerFillData dd;
@@ -1018,7 +1018,7 @@ QTfillPatDlg::motion_slot(QMouseEvent *ev)
 
 
 void
-QTfillPatDlg::enter_slot(QEnterEvent *ev)
+QTfillPatDlg::enter_slot(QEnterEvent*)
 {
     // Pointer entered the fill editor.
     // Set focus so we can see arrow keys.

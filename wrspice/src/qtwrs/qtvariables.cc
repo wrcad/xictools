@@ -237,10 +237,11 @@ QTvarListDlg::mouse_press_slot(QMouseEvent *ev)
         return;
 
 //XXX this is all dead code.
+/* what is this supposed to do?
     QByteArray ba = wb_textarea->toPlainText().toLatin1();
     const char *str = ba.constData();
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
 
@@ -256,6 +257,7 @@ QTvarListDlg::mouse_press_slot(QMouseEvent *ev)
             lineptr = str + i+1;
         }
     }
+    */
 }
 
 

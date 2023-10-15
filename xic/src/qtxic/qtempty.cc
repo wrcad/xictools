@@ -352,8 +352,8 @@ QTemptyDlg::mouse_press_slot(QMouseEvent *ev)
 
     const char *str = lstring::copy(
         (const char*)ec_text->toPlainText().toLatin1().constData());
-    int x = (int)ev->x();
-    int y = (int)ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = ec_text->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
     

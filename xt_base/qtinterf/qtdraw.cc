@@ -50,8 +50,8 @@
 using namespace qtinterf;
 
 
-draw_if *
-draw_if::new_draw_interface(DrawType type, bool use_common, QWidget *parent)
+QTdrawIf *
+QTdrawIf::new_draw_interface(DrawType type, bool use_common, QWidget *parent)
 {
     (void)use_common; //XXX
     if (type == DrawGL) {

@@ -351,8 +351,8 @@ QTcflagsDlg::mouse_press_slot(QMouseEvent *ev)
     ev->accept();
 
     char *str = wb_textarea->get_chars(0, -1);
-    int x = (int)ev->x();
-    int y = (int)ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
 

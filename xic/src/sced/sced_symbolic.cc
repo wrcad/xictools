@@ -73,30 +73,30 @@ namespace {
             state = true;
         }
 
-        MenuEnt *ent = Menu()->FindEntry(MMcell, MenuPUSH);
+        MenuEnt *ent = MainMenu()->FindEntry(MMcell, MenuPUSH);
         if (ent)
-            Menu()->SetSensitive(ent->cmd.caller, state);
+            MainMenu()->SetSensitive(ent->cmd.caller, state);
 
-        ent = Menu()->FindEntry(MMside, MenuPLACE);
+        ent = MainMenu()->FindEntry(MMside, MenuPLACE);
         if (ent)
-            Menu()->SetSensitive(ent->cmd.caller, state);
-        ent = Menu()->FindEntry(MMedit, MenuPRPTY, 0);
+            MainMenu()->SetSensitive(ent->cmd.caller, state);
+        ent = MainMenu()->FindEntry(MMedit, MenuPRPTY, 0);
         if (ent)
-            Menu()->SetSensitive(ent->cmd.caller, state);
-        ent = Menu()->FindEntry(MMedit, MenuFLATN);
+            MainMenu()->SetSensitive(ent->cmd.caller, state);
+        ent = MainMenu()->FindEntry(MMedit, MenuFLATN);
         if (ent)
-            Menu()->SetSensitive(ent->cmd.caller, state);
+            MainMenu()->SetSensitive(ent->cmd.caller, state);
 
-        ent = Menu()->FindEntry(0, MenuMUTUL);
+        ent = MainMenu()->FindEntry(0, MenuMUTUL);
         if (ent)
-            Menu()->SetSensitive(ent->cmd.caller, state);
+            MainMenu()->SetSensitive(ent->cmd.caller, state);
 
-        ent = Menu()->FindEntry(MMext, MenuEXSEL);
+        ent = MainMenu()->FindEntry(MMext, MenuEXSEL);
         if (ent)
-            Menu()->SetSensitive(ent->cmd.caller, state);
-        ent = Menu()->FindEntry(MMext, MenuDVSEL);
+            MainMenu()->SetSensitive(ent->cmd.caller, state);
+        ent = MainMenu()->FindEntry(MMext, MenuDVSEL);
         if (ent)
-            Menu()->SetSensitive(ent->cmd.caller, state);
+            MainMenu()->SetSensitive(ent->cmd.caller, state);
     }
 }
 
@@ -114,7 +114,7 @@ cSced::symbolicExec(CmdDesc *cmd)
     if (!XM()->CheckCurCell(true, false, Electrical))
         return;
 
-    bool status = cmd && Menu()->GetStatus(cmd->caller);
+    bool status = cmd && MainMenu()->GetStatus(cmd->caller);
     if (!setCurSymbolic(status)) {
         Log()->PopUpErr(Errs()->get_error());
         return;
@@ -148,8 +148,8 @@ cSced::setCurSymbolic(bool symb)
     CDs *cursde = CurCell(true);
 
     // exit incompatible comands
-    if (Menu()->MenuButtonStatus(0, MenuPRPTY) == 1)
-        Menu()->MenuButtonPress(0, MenuPRPTY);
+    if (MainMenu()->MenuButtonStatus(0, MenuPRPTY) == 1)
+        MainMenu()->MenuButtonPress(0, MenuPRPTY);
     if (EV()->CurCmd() && EV()->CurCmd()->Name() &&
             !strcmp(EV()->CurCmd()->Name(), "MUTUAL"))
         // mutul command, in device menu
@@ -248,11 +248,11 @@ cSced::assertSymbolic(bool mode)
         // Set the button if the cell is symbolic, whether or not it
         // is being displayed as such, set_sensitive will do the right
         // thing.
-        Menu()->MenuButtonSet(MMmain, MenuSYMBL, true);
+        MainMenu()->MenuButtonSet(MMmain, MenuSYMBL, true);
         set_sensitive(false);
     }
     else {
-        Menu()->MenuButtonSet(MMmain, MenuSYMBL, false);
+        MainMenu()->MenuButtonSet(MMmain, MenuSYMBL, false);
         set_sensitive(true);
     }
     cursde->computeBB();

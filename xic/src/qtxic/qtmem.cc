@@ -119,7 +119,7 @@ QTmemMonDlg::QTmemMonDlg() : QTdraw(XW_TEXT)
     // The drawing area.
     //
     gd_viewport = new QTcanvas();
-    vbox->addWidget(gd_viewport->widget());
+    vbox->addWidget(gd_viewport);
 
     // The dismiss button.
     //
@@ -127,14 +127,14 @@ QTmemMonDlg::QTmemMonDlg() : QTdraw(XW_TEXT)
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
-    connect(gd_viewport->widget(), SIGNAL(resize_event(QResizeEvent*)),
+    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
 
     // Font setup.
     //
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED)) {
-        gd_viewport->widget()->setFont(*fnt);
+        gd_viewport->setFont(*fnt);
     }
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -148,15 +148,15 @@ QTmemMonDlg::~QTmemMonDlg()
 {
 printf("destr\n");
     instPtr = 0;
-    Menu()->MenuButtonSet(0, MenuALLOC, false);
+    MainMenu()->MenuButtonSet(0, MenuALLOC, false);
 }
 
 
 QSize
 QTmemMonDlg::sizeHint() const
 {
-    int fw = QTfont::stringWidth(0, gd_viewport->widget());
-    int fh = QTfont::lineHeight(gd_viewport->widget());
+    int fw = QTfont::stringWidth(0, gd_viewport);
+    int fh = QTfont::lineHeight(gd_viewport);
     int ww = 34*fw + 4;
     if (ww < MEM_MINWIDTH)
         ww = MEM_MINWIDTH;
@@ -323,7 +323,7 @@ QTmemMonDlg::font_changed_slot(int fnum)
     if (fnum == FNT_FIXED) {
         QFont *fnt;
         if (FC.getFont(&fnt, FNT_FIXED))
-            gd_viewport->widget()->setFont(*fnt);
+            gd_viewport->setFont(*fnt);
         XM()->PopUpMemory(MODE_UPD);
     }
 }

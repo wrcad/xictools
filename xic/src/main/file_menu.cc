@@ -86,7 +86,7 @@ namespace {
     {
         if (!menu || !DSP()->MainWdesc())
             return;
-        Menu()->SetVisible(menu[fileMenuSaveAsDev].cmd.caller,
+        MainMenu()->SetVisible(menu[fileMenuSaveAsDev].cmd.caller,
             DSP()->CurMode() == Electrical);
     }
 }
@@ -168,7 +168,7 @@ cMain::OpenCellMenuList()
 void
 cMain::PushOpenCellName(const char *name)
 {
-    MenuEnt *ent = Menu()->FindEntry(MMfile, MenuOPEN);
+    MenuEnt *ent = MainMenu()->FindEntry(MMfile, MenuOPEN);
     if (!ent || !ent->cmd.caller)
         return;
     int i;
@@ -178,27 +178,27 @@ cMain::PushOpenCellName(const char *name)
             const char *s = menu_list[i];
             while (i > menu_list_offset) {
                 menu_list[i] = menu_list[i-1];
-                Menu()->SetDDentry(ent->cmd.caller, i, menu_list[i]);
+                MainMenu()->SetDDentry(ent->cmd.caller, i, menu_list[i]);
                 i--;
             }
             menu_list[menu_list_offset] = s;
-            Menu()->SetDDentry(ent->cmd.caller, menu_list_offset,
+            MainMenu()->SetDDentry(ent->cmd.caller, menu_list_offset,
                 menu_list[menu_list_offset]);
             return;
         }
     }
     for (i = menu_list_offset; i <= MENU_SIZE && menu_list[i]; i++) ;
     if (i <= MENU_SIZE)
-        Menu()->NewDDentry(ent->cmd.caller, "");
+        MainMenu()->NewDDentry(ent->cmd.caller, "");
     else
         i--;
     while (i > menu_list_offset) {
         menu_list[i] = menu_list[i-1];
-        Menu()->SetDDentry(ent->cmd.caller, i, menu_list[i]);
+        MainMenu()->SetDDentry(ent->cmd.caller, i, menu_list[i]);
         i--;
     }
     menu_list[menu_list_offset] = lstring::copy(name);
-    Menu()->SetDDentry(ent->cmd.caller, menu_list_offset,
+    MainMenu()->SetDDentry(ent->cmd.caller, menu_list_offset,
         menu_list[menu_list_offset]);
 }
 
@@ -213,10 +213,10 @@ cMain::ReplaceOpenCellName(const char *newname, const char *oldname)
             if (newname && *newname) {
                 delete [] menu_list[i];
                 menu_list[i] = lstring::copy(newname);
-                MenuEnt *ent = Menu()->FindEntry(MMfile, MenuOPEN);
+                MenuEnt *ent = MainMenu()->FindEntry(MMfile, MenuOPEN);
                 if (!ent || !ent->cmd.caller)
                     return;
-                Menu()->SetDDentry(ent->cmd.caller, i, menu_list[i]);
+                MainMenu()->SetDDentry(ent->cmd.caller, i, menu_list[i]);
             }
             break;
         }
@@ -361,7 +361,7 @@ void
 file_menu::M_SaveAsDev(CmdDesc *cmd)
 {
     ScedIf()->PopUpDevEdit(cmd ? cmd->caller : 0,
-        cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
+        cmd && MainMenu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
 }
 
 
@@ -386,7 +386,7 @@ void
 file_menu::M_Files(CmdDesc *cmd)
 {
     Cvt()->PopUpFiles(cmd ? cmd->caller : 0,
-        cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
+        cmd && MainMenu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
 }
 
 
@@ -399,7 +399,7 @@ void
 file_menu::M_Hier(CmdDesc *cmd)
 {
     Cvt()->PopUpHierarchies(cmd ? cmd->caller : 0,
-        cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
+        cmd && MainMenu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
 }
 
 
@@ -412,7 +412,7 @@ void
 file_menu::M_Geom(CmdDesc *cmd)
 {
     Cvt()->PopUpGeometries(cmd ? cmd->caller : 0,
-        cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
+        cmd && MainMenu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
 }
 
 
@@ -425,7 +425,7 @@ void
 file_menu::M_Libraries(CmdDesc *cmd)
 {
     Cvt()->PopUpLibraries(cmd ? cmd->caller : 0,
-        cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
+        cmd && MainMenu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
 }
 
 
@@ -438,7 +438,7 @@ void
 file_menu::M_OAlibs(CmdDesc *cmd)
 {
     OAif()->PopUpOAlibraries(cmd ? cmd->caller : 0,
-        cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
+        cmd && MainMenu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
 }
 
 

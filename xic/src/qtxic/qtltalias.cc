@@ -219,7 +219,7 @@ QTlayerAliasDlg::update()
     char *s0 = latab.toString(la_show_dec);
     const char *str = s0;
 
-/*
+/*XXX fixme
     // We need to deselect before clearing, so that the deselection
     // signal is generated.
     GtkTreeSelection *sel =

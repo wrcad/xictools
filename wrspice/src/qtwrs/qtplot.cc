@@ -754,7 +754,8 @@ QTplotDlg::button_down_slot(QMouseEvent *ev)
     else
         pb_graph->set_cmdmode(pb_graph->cmdmode() & ~grControlMode);
 
-    pb_graph->gr_bdown_hdlr(button, ev->x(), pb_graph->yinv(ev->y()));
+    pb_graph->gr_bdown_hdlr(button, ev->position().x(),
+        pb_graph->yinv(ev->position().y()));
 }
 
 
@@ -790,7 +791,8 @@ QTplotDlg::button_up_slot(QMouseEvent *ev)
     else
         pb_graph->set_cmdmode(pb_graph->cmdmode() & ~grControlMode);
 
-    pb_graph->gr_bup_hdlr(button, ev->x(), pb_graph->yinv(ev->y()));
+    pb_graph->gr_bup_hdlr(button, ev->position().x(),
+        pb_graph->yinv(ev->position().y()));
 }
 
 
@@ -802,8 +804,8 @@ QTplotDlg::motion_slot(QMouseEvent *ev)
             QTdev::self()->RemoveIdleProc(pb_id);
             pb_id = 0;
         }
-        pb_x = ev->x();
-        pb_y = ev->y();
+        pb_x = ev->position().x();
+        pb_y = ev->position().y();
         pb_id = QTdev::self()->AddIdleProc(motion_idle, this);
     }
 }
@@ -888,14 +890,14 @@ void
 QTplotDlg::leave_slot(QEvent*)
 {
     // Pointer left the drawing window.
-    if (DrawIf()->has_ghost()) {
+    if (Viewport()->has_ghost()) {
         GP.PushGraphContext(pb_graph);
 //        ShowGhost(false);
         GP.PopGraphContext();
     }
     if (GP.SourceGraph() && pb_graph != GP.SourceGraph()) {
         // remove hacked ghost
-//        DrawIf()->set_ghost_func(0);
+//        Viewport()->set_ghost_func(0);
     }
 }
 

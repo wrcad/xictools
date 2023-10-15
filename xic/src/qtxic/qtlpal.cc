@@ -211,7 +211,7 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     vb->setSpacing(2);
 
     gd_viewport = new QTcanvas();
-    vb->addWidget(gd_viewport->widget());
+    vb->addWidget(gd_viewport);
     Viewport()->setFocusPolicy(Qt::StrongFocus);
     Viewport()->setAcceptDrops(true);
 
@@ -338,10 +338,10 @@ QTlayerPaletteDlg::update_info(CDl *ldesc)
     SetColor(c1);
     str = "name (num): ";
     Text(str, x, y, 0);
-    x += QTfont::stringWidth(str, gd_viewport->widget());
+    x += QTfont::stringWidth(str, gd_viewport);
     SetColor(c2);
     Text(lname, x, y, 0);
-    x += QTfont::stringWidth(lname, gd_viewport->widget());
+    x += QTfont::stringWidth(lname, gd_viewport);
     Text(buf, x, y, 0);
 
     y += fhei;
@@ -354,10 +354,10 @@ QTlayerPaletteDlg::update_info(CDl *ldesc)
     SetColor(c1);
     str = "purpose (num): ";
     Text(str, x, y, 0);
-    x += QTfont::stringWidth(str, gd_viewport->widget());
+    x += QTfont::stringWidth(str, gd_viewport);
     SetColor(c2);
     Text(pname, x, y, 0);
-    x += QTfont::stringWidth(pname, gd_viewport->widget());
+    x += QTfont::stringWidth(pname, gd_viewport);
     Text(buf, x, y, 0);
 
     y += fhei;
@@ -366,7 +366,7 @@ QTlayerPaletteDlg::update_info(CDl *ldesc)
     SetColor(c1);
     str = "alias: ";
     Text(str, x, y, 0);
-    x += QTfont::stringWidth(str, gd_viewport->widget());
+    x += QTfont::stringWidth(str, gd_viewport);
     if (ldesc->lppName()) {
         SetColor(c2);
         Text(ldesc->lppName(), x, y, 0);
@@ -378,7 +378,7 @@ QTlayerPaletteDlg::update_info(CDl *ldesc)
     SetColor(c1);
     str = "descr: ";
     Text(str, x, y, 0);
-    x += QTfont::stringWidth(str, gd_viewport->widget());
+    x += QTfont::stringWidth(str, gd_viewport);
     if (ldesc->description()) {
         SetColor(c2);
         Text(ldesc->description(), x, y, 0);
@@ -400,7 +400,7 @@ QTlayerPaletteDlg::update_info(CDl *ldesc)
         SetColor(c1);
         str = "GDSII layer/dtype: ";
         Text(str, x, y, 0);
-        x += QTfont::stringWidth(str, gd_viewport->widget());
+        x += QTfont::stringWidth(str, gd_viewport);
 
         if (l > 255 || d > 255)
             snprintf(buf, sizeof(buf), "%d (%04Xh) / ", l, l);
@@ -408,7 +408,7 @@ QTlayerPaletteDlg::update_info(CDl *ldesc)
             snprintf(buf, sizeof(buf), "%d (%02Xh) / ", l, l);
         SetColor(c2);
         Text(buf, x, y, 0);
-        x += QTfont::stringWidth(buf, gd_viewport->widget());
+        x += QTfont::stringWidth(buf, gd_viewport);
         if (l > 255 || d > 255)
             snprintf(buf, sizeof(buf), "%d (%04Xh)", d, d);
         else
@@ -544,8 +544,8 @@ QTlayerPaletteDlg::init_size()
 
     int wid = LP_PALETTE_COLS*lp_entry_width + 4;
     int hei = lp_user_y + (2*fhei + fhei/2)*LP_PALETTE_ROWS;
-    gd_viewport->widget()->setMinimumWidth(wid);
-    gd_viewport->widget()->setMinimumHeight(hei);
+    gd_viewport->setMinimumWidth(wid);
+    gd_viewport->setMinimumHeight(hei);
 }
 
 
@@ -840,11 +840,11 @@ QTlayerPaletteDlg::b3_handler(int x, int y, int state, bool down)
             LT()->HandleLayerSelect(ld);
 
             if (ctrl && !shft)
-                Menu()->MenuButtonPress(MMmain, MenuCOLOR);
+                MainMenu()->MenuButtonPress(MMmain, MenuCOLOR);
             else if (!ctrl && shft)
-                Menu()->MenuButtonPress(MMmain, MenuFILL);
+                MainMenu()->MenuButtonPress(MMmain, MenuFILL);
             else if (ctrl && shft)
-                Menu()->MenuButtonPress(MMmain, MenuLPEDT);
+                MainMenu()->MenuButtonPress(MMmain, MenuLPEDT);
         }
         else
             QTltab::self()->blink(ld);
@@ -984,7 +984,7 @@ QTlayerPaletteDlg::button_down_slot(QMouseEvent *ev)
     int button = 0;
     if (ev->button() == Qt::LeftButton)
         button = 1;
-    else if (ev->button() == Qt::MidButton)
+    else if (ev->button() == Qt::MiddleButton)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;
@@ -999,13 +999,13 @@ QTlayerPaletteDlg::button_down_slot(QMouseEvent *ev)
 
     switch (button) {
     case 1:
-        b1_handler(ev->x(), ev->y(), state, true);
+        b1_handler(ev->position().x(), ev->position().y(), state, true);
         break;
     case 2:
-        b2_handler(ev->x(), ev->y(), state, true);
+        b2_handler(ev->position().x(), ev->position().y(), state, true);
         break;
     case 3:
-        b3_handler(ev->x(), ev->y(), state, true);
+        b3_handler(ev->position().x(), ev->position().y(), state, true);
         break;
     }
     update();
@@ -1018,7 +1018,7 @@ QTlayerPaletteDlg::button_up_slot(QMouseEvent *ev)
     int button = 0;
     if (ev->button() == Qt::LeftButton)
         button = 1;
-    else if (ev->button() == Qt::MidButton)
+    else if (ev->button() == Qt::MiddleButton)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;
@@ -1033,13 +1033,13 @@ QTlayerPaletteDlg::button_up_slot(QMouseEvent *ev)
 
     switch (button) {
     case 1:
-        b1_handler(ev->x(), ev->y(), state, false);
+        b1_handler(ev->position().x(), ev->position().y(), state, false);
         break;
     case 2:
-        b2_handler(ev->x(), ev->y(), state, false);
+        b2_handler(ev->position().x(), ev->position().y(), state, false);
         break;
     case 3:
-        b3_handler(ev->x(), ev->y(), state, false);
+        b3_handler(ev->position().x(), ev->position().y(), state, false);
         break;
     }
 }
@@ -1054,8 +1054,8 @@ QTlayerPaletteDlg::motion_slot(QMouseEvent *ev)
     }
     ev->accept();
 
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     if (lp_dragging &&
             (abs(x - lp_drag_x) > 4 || abs(y - lp_drag_y) > 4)) {
         lp_dragging = false;
@@ -1137,7 +1137,8 @@ QTlayerPaletteDlg::drop_slot(QDropEvent *ev)
     if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
         QByteArray bary = ev->mimeData()->data(QTltab::mime_type());
         LayerFillData *dd = (LayerFillData*)bary.data();
-        XM()->FillLoadCallback(dd, LT()->LayerAt(ev->pos().x(), ev->pos().y()));
+        XM()->FillLoadCallback(dd,
+                LT()->LayerAt(ev->position().x(), ev->position().y()));
         ev->acceptProposedAction();
         if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
             DSP()->RedisplayAll();
@@ -1147,14 +1148,14 @@ QTlayerPaletteDlg::drop_slot(QDropEvent *ev)
         ev->acceptProposedAction();
         QColor color = qvariant_cast<QColor>(ev->mimeData()->colorData());
         /*
-        int entry = entry_of_xy(ev->pos().x(), ev->pos().y());
+        int entry = entry_of_xy(ev->position().x(), ev->position().y());
 
         if (entry > last_entry())
             return;
         CDl *layer =
             CDldb()->layer(entry + first_visible() + 1, DSP()->CurMode());
         */
-        CDl *layer = ldesc_at(ev->pos().x(), ev->pos().y());
+        CDl *layer = ldesc_at(ev->position().x(), ev->position().y());
 
         LT()->SetLayerColor(layer, color.red(), color.green(), color.blue());
         // update the colors

@@ -262,7 +262,7 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    MenuEnt *m = Menu()->FindEntry(MMside, MenuPLACE);
+    MenuEnt *m = MainMenu()->FindEntry(MMside, MenuPLACE);
     if (m)
         pl_menu_placebtn = (QPushButton*)m->cmd.caller;
     if (pl_menu_placebtn) {

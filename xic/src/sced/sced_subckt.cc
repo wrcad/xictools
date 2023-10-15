@@ -79,7 +79,7 @@ namespace {
 void
 cSced::showTermsExec(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         DSP()->ShowTerminals(DISPLAY);
     else {
         DSP()->ShowTerminals(ERASE);
@@ -425,7 +425,7 @@ cSced::subcircuitBitsVisible(int flag)
     if (SubcCmd) {
         if (SubcCmd->bterm_bits_flags(false, flag)) {
             int xx, yy;
-            Menu()->PointerRootLoc(&xx, &yy);
+            MainMenu()->PointerRootLoc(&xx, &yy);
             PL()->FlashMessageHereV(xx, yy,
                 "%s bit terminals are now visible",
                 flag == TE_SCINVIS ? "Schematic" : "Symbol");
@@ -445,7 +445,7 @@ cSced::subcircuitBitsInvisible(int flag)
     if (SubcCmd) {
         if (SubcCmd->bterm_bits_flags(true, flag)) {
             int xx, yy;
-            Menu()->PointerRootLoc(&xx, &yy);
+            MainMenu()->PointerRootLoc(&xx, &yy);
             PL()->FlashMessageHereV(xx, yy,
                 "%s bit terminals are now invisible",
                 flag == TE_SCINVIS ? "Schematic" : "Symbol");
@@ -701,7 +701,7 @@ SubcState::check_bterm_bits()
 
     if (ret) {
         int xx, yy;
-        Menu()->PointerRootLoc(&xx, &yy);
+        MainMenu()->PointerRootLoc(&xx, &yy);
         PL()->FlashMessageHereV(xx, yy, "Added %d new properties", added);
     }
     return (ret);
@@ -846,7 +846,7 @@ SubcState::order_bterm_bits()
 
     if (ret) {
         int xx, yy;
-        Menu()->PointerRootLoc(&xx, &yy);
+        MainMenu()->PointerRootLoc(&xx, &yy);
         PL()->FlashMessageHereV(xx, yy, "properties reordered, %d created",
             added);
     }
@@ -1060,7 +1060,7 @@ SubcState::b1down()
                 if (x != Lastx || y != Lasty) {
                     if (find_term(x, y, true) || find_bterm(x, y)) {
                         int xx, yy;
-                        Menu()->PointerRootLoc(&xx, &yy);
+                        MainMenu()->PointerRootLoc(&xx, &yy);
                         PL()->FlashMessageHere(xx, yy,
                             "Coincident terminals not allowed!");
                         return;
@@ -1090,7 +1090,7 @@ SubcState::b1down()
             if (x != Lastx || y != Lasty) {
                 if (find_term(x, y, true) || find_bterm(x, y)) {
                     int xx, yy;
-                    Menu()->PointerRootLoc(&xx, &yy);
+                    MainMenu()->PointerRootLoc(&xx, &yy);
                     PL()->FlashMessageHere(xx, yy,
                         "Coincident terminals not allowed!");
                     return;
@@ -1136,7 +1136,7 @@ SubcState::b1up()
                     if (x != Lastx || y != Lasty) {
                         if (find_term(x, y, true) || find_bterm(x, y)) {
                             int xx, yy;
-                            Menu()->PointerRootLoc(&xx, &yy);
+                            MainMenu()->PointerRootLoc(&xx, &yy);
                             PL()->FlashMessageHere(xx, yy,
                                 "Coincident terminals not allowed!");
                             return;
@@ -1172,7 +1172,7 @@ SubcState::b1up()
                 if (x != Lastx || y != Lasty) {
                     if (find_term(x, y, true) || find_bterm(x, y)) {
                         int xx, yy;
-                        Menu()->PointerRootLoc(&xx, &yy);
+                        MainMenu()->PointerRootLoc(&xx, &yy);
                         PL()->FlashMessageHere(xx, yy,
                             "Coincident terminals not allowed!");
                         return;
@@ -1252,7 +1252,7 @@ SubcState::esc()
     update();
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     if (DSP()->ShowTerminals())
         // add the cell's marks only
         DSP()->ShowCellTerminalMarks(DISPLAY);
@@ -2102,7 +2102,7 @@ SubcState::delete_terminal(int x, int y)
             Plist::destroy(p0);
             show_terms(DISPLAY, count);
             int xx, yy;
-            Menu()->PointerRootLoc(&xx, &yy);
+            MainMenu()->PointerRootLoc(&xx, &yy);
             PL()->FlashMessageHere(xx, yy, "Can't delete from symbolic view!");
             return (false);
         }
@@ -2571,7 +2571,7 @@ SubcState::edit_terminal(CDp_snode *pn, bool upd)
     EditNode = 0;
     EditBterm = 0;
     int x, y;
-    Menu()->PointerRootLoc(&x, &y);
+    MainMenu()->PointerRootLoc(&x, &y);
 
     int cnt = 0;
     for (int i = 0; i < Nodesize; i++) {
@@ -2891,7 +2891,7 @@ SubcState::edit_bterm(CDp_bsnode *pn, bool upd)
     EditNode = 0;
     EditBterm = 0;
     int x, y;
-    Menu()->PointerRootLoc(&x, &y);
+    MainMenu()->PointerRootLoc(&x, &y);
     TermEditInfo tinfo(pn);
     SCD()->PopUpTermEdit(0, MODE_ON, &tinfo, te_cb, pn, x + 50, y + 20);
     if (!upd) {

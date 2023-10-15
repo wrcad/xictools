@@ -313,11 +313,11 @@ namespace {
     window_view_saved(WindowDesc *wd, int indx)
     {
         if (indx >= 0) {
-            MenuEnt *ent = Menu()->FindEntOfWin(wd, MenuVIEW);
+            MenuEnt *ent = MainMenu()->FindEntOfWin(wd, MenuVIEW);
             if (ent) {
                 char buf[8];
                 snprintf(buf, sizeof(buf), "%c    ", 'A'+indx);
-                Menu()->NewDDentry(ent->cmd.caller, buf);
+                MainMenu()->NewDDentry(ent->cmd.caller, buf);
             }
             PL()->ShowPromptV("Current view assigned to: %s",
                 wd->Views()->view()->name);
@@ -332,9 +332,9 @@ namespace {
     void
     window_clear_views(WindowDesc *wd)
     {
-        MenuEnt *ent = Menu()->FindEntOfWin(wd, MenuVIEW);
+        MenuEnt *ent = MainMenu()->FindEntOfWin(wd, MenuVIEW);
         if (ent)
-            Menu()->NewDDmenu(ent->cmd.caller, XM()->ViewList());
+            MainMenu()->NewDDmenu(ent->cmd.caller, XM()->ViewList());
     }
 
     // Update the menu for the subwindow according to the mode.
@@ -344,8 +344,8 @@ namespace {
     {
         for (int i = 1; i < DSP_NUMWINS; i++) {
             if (wd == DSP()->Window(i)) {
-                Menu()->SwitchSubwMenu(i, wd->Mode());
-                Menu()->InitAfterModeSwitch(i);
+                MainMenu()->SwitchSubwMenu(i, wd->Mode());
+                MainMenu()->InitAfterModeSwitch(i);
                 return;
             }
         }

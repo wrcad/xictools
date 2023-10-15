@@ -576,8 +576,6 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
         add_choice(fnt, FC.getLabel(i));
     }
     ft_menu->setCurrentIndex(indx-1);
-
-    ft_fdb = new QFontDatabase();
     menu_choice_slot(indx - 1);
 }
 
@@ -712,7 +710,7 @@ QTfontDlg::select_font(const QFont *fnt)
         if (!found)
             return;
     }
-    QString sty = ft_fdb->styleString(*fnt);
+    QString sty = QFontDatabase::styleString(*fnt);
     list = ft_style_list->findItems(sty, Qt::MatchExactly);
     if (list.size() > 0)
         ft_style_list->setCurrentItem(list.at(0));
@@ -744,7 +742,7 @@ QTfontDlg::current_selection()
     if (!item)
         return (0);
     int sz = item->text().toInt();
-    return (new QFont(ft_fdb->font(qface, qstyle, sz)));
+    return (new QFont(QFontDatabase::font(qface, qstyle, sz)));
 }
 
 
@@ -857,11 +855,11 @@ QTfontDlg::face_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
         qsize = ft_size_list->currentItem()->text();
     ft_size_list->clear();
 
-    QStringList styles = ft_fdb->styles(qface);
+    QStringList styles = QFontDatabase::styles(qface);
     for (int i = 0; i < styles.size(); i++)
         ft_style_list->addItem(styles.at(i));
 
-    QList<int> sizes = ft_fdb->smoothSizes(qface, styles.at(0));
+    QList<int> sizes = QFontDatabase::smoothSizes(qface, styles.at(0));
     for (int i = 0; i < sizes.size(); i++)
         ft_size_list->addItem(QString("%1").arg(sizes.at(i)));
 
@@ -925,7 +923,7 @@ QTfontDlg::menu_choice_slot(int indx)
     ft_style_list->clear();
     ft_size_list->clear();
 
-    QStringList families = ft_fdb->families();
+    QStringList families = QFontDatabase::families();
     for (int i = 0; i < families.size(); i++) {
 
         // The isFixedPitch function lies, have to identify fixed

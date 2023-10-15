@@ -90,11 +90,11 @@ cMain::ConfirmAbort(const char *msg)
             PL()->ShowPrompt("Interrupted!");
             return (true);
         }
-        Menu()->SetSensGlobal(false);
+        MainMenu()->SetSensGlobal(false);
         DSPpkg::self()->SetOverrideBusy(true);
         char *in = PL()->EditPrompt(
             (msg ? msg : "Interrupted.  Abort? "), "n");
-        Menu()->SetSensGlobal(true);
+        MainMenu()->SetSensGlobal(true);
         DSPpkg::self()->SetOverrideBusy(false);
         in = lstring::strip_space(in);
         if (in && (*in == 'y' || *in == 'Y')) {

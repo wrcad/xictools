@@ -93,7 +93,7 @@ public:
     void SetModal(QDialog *w)   { modalShell = w; }
     QDialog *GetModal()         { return (modalShell); }
 
-    static QTmenu *self() { return (dynamic_cast<QTmenu*>(Menu())); }
+    static QTmenu *self() { return (dynamic_cast<QTmenu*>(MainMenu())); }
 
 private:
     QDialog     *modalShell;

@@ -136,7 +136,7 @@ misc_menu::M_Mail(CmdDesc*)
 void
 misc_menu::M_LtabVis(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         LT()->HideLayerTable(true);
     else
         LT()->HideLayerTable(false);
@@ -151,7 +151,7 @@ misc_menu::M_LtabVis(CmdDesc *cmd)
 void
 misc_menu::M_Palette(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         XM()->PopUpLayerPalette(cmd->caller, MODE_ON, false, 0);
     else
         XM()->PopUpLayerPalette(0, MODE_OFF, false, 0);
@@ -179,7 +179,7 @@ misc_menu::M_Setcl(CmdDesc *cmd)
 void
 misc_menu::M_SelPanel(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         XM()->PopUpSelectControl(cmd->caller, MODE_ON);
     else
         XM()->PopUpSelectControl(0, MODE_OFF);

@@ -130,7 +130,7 @@ KsState::esc()
     EV()->PopCallback(this);
     if (!Finished)
         PL()->ErasePrompt();
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 

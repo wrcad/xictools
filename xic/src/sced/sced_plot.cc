@@ -120,7 +120,7 @@ cSced::setDoIplotExec(CmdDesc *cmd)
         return;
     }
 
-    sc_doing_iplot = cmd && Menu()->GetStatus(cmd->caller);
+    sc_doing_iplot = cmd && MainMenu()->GetStatus(cmd->caller);
     if (!sc_doing_iplot) {
         spif()->ClearIplot();
         sc_iplot_status_changed = false;
@@ -291,7 +291,7 @@ cSced::clearPlots()
         sc_iplot_hpr_list = 0;
         sc_iplot_status_changed = true;
     }
-    Menu()->MenuButtonSet(MMside, "iplot", false);
+    MainMenu()->MenuButtonSet(MMside, "iplot", false);
 }
 
 

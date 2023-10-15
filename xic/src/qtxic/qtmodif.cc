@@ -419,8 +419,8 @@ QTmodifDlg::mouse_press_slot(QMouseEvent *ev)
 
     const char *str = lstring::copy(
         m_text->toPlainText().toLatin1().constData());
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = m_text->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
 

@@ -86,21 +86,21 @@ namespace {
             MenuEnt *ent = &menu[i];
             if (i == extMenuExC) {
                 if (DSP()->CurMode() == Electrical) {
-                    if (Menu()->MenuButtonStatus(MenuEXTRC, MenuEXC) == 1)
-                        Menu()->MenuButtonPress(MenuEXTRC, MenuEXC);
+                    if (MainMenu()->MenuButtonStatus(MenuEXTRC, MenuEXC) == 1)
+                        MainMenu()->MenuButtonPress(MenuEXTRC, MenuEXC);
                 }
             }
             else if (i == extMenuExLR) {
                 if (DSP()->CurMode() == Electrical) {
-                    if (Menu()->MenuButtonStatus(MenuEXTRC, MenuEXLR) == 1)
-                        Menu()->MenuButtonPress(MenuEXTRC, MenuEXLR);
+                    if (MainMenu()->MenuButtonStatus(MenuEXTRC, MenuEXLR) == 1)
+                        MainMenu()->MenuButtonPress(MenuEXTRC, MenuEXLR);
                 }
             }
 
             switch (i) {
             case extMenuExC:
             case extMenuExLR:
-                Menu()->SetSensitive(ent->cmd.caller,
+                MainMenu()->SetSensitive(ent->cmd.caller,
                     (DSP()->CurMode() != Electrical));
                 break;
             default:
@@ -205,7 +205,7 @@ cExt::setupCommand(MenuEnt *ent, bool *retval, bool *call_on_up)
 void
 ext_menu::M_Config(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         EX()->PopUpExtSetup(cmd->caller, MODE_ON);
     else
         EX()->PopUpExtSetup(cmd->caller, MODE_OFF);
@@ -218,7 +218,7 @@ ext_menu::M_Config(CmdDesc *cmd)
 void
 ext_menu::M_ExtSel(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         EX()->PopUpSelections(cmd->caller, MODE_ON);
     else
         EX()->PopUpSelections(cmd->caller, MODE_OFF);
@@ -232,7 +232,7 @@ ext_menu::M_ExtSel(CmdDesc *cmd)
 void
 ext_menu::M_DevSelect(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         EX()->PopUpDevices(cmd->caller, MODE_ON);
     else
         EX()->PopUpDevices(cmd->caller, MODE_OFF);
@@ -566,7 +566,7 @@ ext_menu::M_LVS(CmdDesc *cmd)
 void
 ext_menu::M_ExtractC(CmdDesc *cmd)
 {
-    if (cmd && !Menu()->GetStatus(cmd->caller)) {
+    if (cmd && !MainMenu()->GetStatus(cmd->caller)) {
         FCif()->PopUpExtIf(0, MODE_OFF);
         return;
     }
@@ -589,7 +589,7 @@ ext_menu::M_ExtractC(CmdDesc *cmd)
 void
 ext_menu::M_ExtractLR(CmdDesc *cmd)
 {
-    if (cmd && !Menu()->GetStatus(cmd->caller)) {
+    if (cmd && !MainMenu()->GetStatus(cmd->caller)) {
         FHif()->PopUpExtIf(0, MODE_OFF);
         return;
     }

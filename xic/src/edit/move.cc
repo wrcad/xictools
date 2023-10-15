@@ -289,7 +289,7 @@ MoveState::esc()
     }
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     EV()->SetConstrained(false);
     delete this;
 }

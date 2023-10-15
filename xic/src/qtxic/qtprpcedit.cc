@@ -197,7 +197,7 @@ QTcellPrpDlg::~QTcellPrpDlg()
     }
     instPtr = 0;
     PrptyText::destroy(pc_list);
-    Menu()->MenuButtonSet(0, MenuCPROP, false);
+    MainMenu()->MenuButtonSet(0, MenuCPROP, false);
     PL()->AbortLongText();
 }
 
@@ -339,8 +339,8 @@ QTcellPrpDlg::handle_button_down(QMouseEvent *ev)
 // Drag support disabled, this provides selection support only.
 //    pc_dragging = false;
     QByteArray qba = wb_textarea->toPlainText().toLatin1();
-    int x = ev->x();
-    int y = ev->y();
+    int x = ev->position().x();
+    int y = ev->position().y();
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
     const char *str = lstring::copy((const char*)qba.constData());

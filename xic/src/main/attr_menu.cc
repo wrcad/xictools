@@ -187,8 +187,8 @@ namespace {
                 case subwAttrMenuNouxp:
                 case subwAttrMenuTinyb:
                 case subwAttrMenuNosym:
-                    Menu()->SetStatus(ent->cmd.caller, ent->is_set());
-                    Menu()->SetSensitive(ent->cmd.caller, false);
+                    MainMenu()->SetStatus(ent->cmd.caller, ent->is_set());
+                    MainMenu()->SetSensitive(ent->cmd.caller, false);
                     break;
                 default:
                     break;
@@ -204,36 +204,36 @@ namespace {
             else if (i == subwAttrMenuCntxt) {
                 ent->set_state(a->show_context(mode));
                 if (wdesc->DbType() == WDchd)
-                    Menu()->SetSensitive(ent->cmd.caller, false);
+                    MainMenu()->SetSensitive(ent->cmd.caller, false);
                 else
-                    Menu()->SetSensitive(ent->cmd.caller, true);
+                    MainMenu()->SetSensitive(ent->cmd.caller, true);
             }
             else if (i == subwAttrMenuProps) {
                 if (wdesc->DbType() == WDchd)
-                    Menu()->SetSensitive(ent->cmd.caller, false);
+                    MainMenu()->SetSensitive(ent->cmd.caller, false);
                 else if (mode == Physical) {
                     ent->set_state(a->show_phys_props());
-                    Menu()->SetSensitive(ent->cmd.caller, true);
+                    MainMenu()->SetSensitive(ent->cmd.caller, true);
                 }
                 else {
                     ent->set_state(false);
-                    Menu()->SetSensitive(ent->cmd.caller, false);
+                    MainMenu()->SetSensitive(ent->cmd.caller, false);
                 }
             }
             else if (i == subwAttrMenuLabls)
                 ent->set_state(a->display_labels(mode));
             else if (i == subwAttrMenuLarot) {
                 ent->set_state(a->display_labels(mode) == SLtrueOrient);
-                Menu()->SetSensitive(ent->cmd.caller, a->display_labels(mode));
+                MainMenu()->SetSensitive(ent->cmd.caller, a->display_labels(mode));
             }
             else if (i == subwAttrMenuCnams) {
                 ent->set_state(a->label_instances(mode));
-                Menu()->SetSensitive(ent->cmd.caller,
+                MainMenu()->SetSensitive(ent->cmd.caller,
                     !a->no_show_unexpand(mode));
             }
             else if (i == subwAttrMenuCnrot) {
                 ent->set_state(a->label_instances(mode) == SLtrueOrient);
-                Menu()->SetSensitive(ent->cmd.caller,
+                MainMenu()->SetSensitive(ent->cmd.caller,
                     a->label_instances(mode) && !a->no_show_unexpand(mode));
             }
             else if (i == subwAttrMenuNouxp)
@@ -245,14 +245,14 @@ namespace {
             else if (i == subwAttrMenuNosym) {
                 ent->set_state(a->no_elec_symbolic());
                 if (wdesc->DbType() == WDchd)
-                    Menu()->SetSensitive(ent->cmd.caller, false);
+                    MainMenu()->SetSensitive(ent->cmd.caller, false);
                 else
-                    Menu()->SetSensitive(ent->cmd.caller, true);
+                    MainMenu()->SetSensitive(ent->cmd.caller, true);
             }
             else
                 ent->set_state(false);
 
-            Menu()->SetStatus(ent->cmd.caller, ent->is_set());
+            MainMenu()->SetStatus(ent->cmd.caller, ent->is_set());
         }
     }
 }
@@ -331,16 +331,16 @@ namespace {
 
         MenuEnt *ent = &menu[objSubMenuBoxes];
         ent->set_state(a->showing_boxes());
-        Menu()->SetStatus(ent->cmd.caller, ent->is_set());
+        MainMenu()->SetStatus(ent->cmd.caller, ent->is_set());
         ent = &menu[objSubMenuPolys];
         ent->set_state(a->showing_polys());
-        Menu()->SetStatus(ent->cmd.caller, ent->is_set());
+        MainMenu()->SetStatus(ent->cmd.caller, ent->is_set());
         ent = &menu[objSubMenuWires];
         ent->set_state(a->showing_wires());
-        Menu()->SetStatus(ent->cmd.caller, ent->is_set());
+        MainMenu()->SetStatus(ent->cmd.caller, ent->is_set());
         ent = &menu[objSubMenuLabels];
         ent->set_state(a->showing_labels());
-        Menu()->SetStatus(ent->cmd.caller, ent->is_set());
+        MainMenu()->SetStatus(ent->cmd.caller, ent->is_set());
     }
 }
 
@@ -383,7 +383,7 @@ cMain::createObjSubMenu()
 void
 attr_menu::M_SaveTech(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         XM()->PopUpTechWrite(cmd->caller, MODE_ON);
     else
         XM()->PopUpTechWrite(cmd->caller, MODE_OFF);
@@ -419,7 +419,7 @@ void
 attr_menu::M_Freeze(CmdDesc *cmd)
 {
     if (cmd && cmd->wdesc && cmd->caller) {
-        cmd->wdesc->SetFrozen(Menu()->GetStatus(cmd->caller));
+        cmd->wdesc->SetFrozen(MainMenu()->GetStatus(cmd->caller));
         cmd->wdesc->Redisplay(0);
     }
 }
@@ -433,7 +433,7 @@ attr_menu::M_Freeze(CmdDesc *cmd)
 void
 attr_menu::M_Attr(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         XM()->PopUpAttributes(cmd->caller, MODE_ON);
     else
         XM()->PopUpAttributes(cmd->caller, MODE_OFF);
@@ -448,7 +448,7 @@ attr_menu::M_Attr(CmdDesc *cmd)
 void
 attr_menu::M_Dots(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         ScedIf()->PopUpDots(cmd->caller, MODE_ON);
     else
         ScedIf()->PopUpDots(cmd->caller, MODE_OFF);
@@ -506,7 +506,7 @@ namespace {
             return;
         }
         if (name == 0 && fname == 0)
-            Menu()->Deselect(arg);
+            MainMenu()->Deselect(arg);
     }
 }
 
@@ -516,14 +516,14 @@ namespace {
 void
 attr_menu::M_Font(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         DSPmainWbag(PopUpFontSel(cmd->caller, GRloc(), MODE_ON, font_cb,
             cmd->caller, FNT_FIXED, btn_names))
     else
         DSPmainWbag(PopUpFontSel(cmd->caller, GRloc(), MODE_OFF, 0, 0, 0))
 
 /*XXX for GTK, why is panel hidden not destroyed?
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         DSPmainWbag(PopUpFontSel(0, GRloc(), MODE_ON, font_cb,
             cmd->caller, FNT_FIXED, btn_names))
     else
@@ -540,7 +540,7 @@ attr_menu::M_Font(CmdDesc *cmd)
 void
 attr_menu::M_Color(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         XM()->PopUpColor(cmd->caller, MODE_ON);
     else
         XM()->PopUpColor(cmd->caller, MODE_OFF);
@@ -555,7 +555,7 @@ attr_menu::M_Color(CmdDesc *cmd)
 void
 attr_menu::M_FillEdit(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         XM()->PopUpFillEditor(cmd->caller, MODE_ON);
     else
         XM()->PopUpFillEditor(cmd->caller, MODE_OFF);
@@ -584,7 +584,7 @@ subw_attr_menu::M_Context(CmdDesc *cmd)
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
     cmd->wdesc->Attrib()->set_show_context(cmd->wdesc->Mode(),
-        Menu()->GetStatus(cmd->caller));
+        MainMenu()->GetStatus(cmd->caller));
     if (cmd->wdesc == DSP()->MainWdesc()) {
         if (cmd->wdesc->Attrib()->show_context(cmd->wdesc->Mode()))
             PL()->ShowPrompt("Will show context in subedit.");
@@ -608,17 +608,17 @@ subw_attr_menu::M_ShowProps(CmdDesc *cmd)
         return;
     DSPattrib *a = cmd->wdesc->Attrib();
     if (cmd->wdesc->Mode() != Physical) {
-        Menu()->Deselect(cmd->caller);
+        MainMenu()->Deselect(cmd->caller);
         return;
     }
     if (!a->show_phys_props()) {
-        Menu()->Select(cmd->caller);
+        MainMenu()->Select(cmd->caller);
         cmd->wdesc->ShowPhysProperties(0, ERASE);
         a->set_show_phys_props(true);
         cmd->wdesc->ShowPhysProperties(0, DISPLAY);
     }
     else {
-        Menu()->Deselect(cmd->caller);
+        MainMenu()->Deselect(cmd->caller);
         cmd->wdesc->ShowPhysProperties(0, ERASE);
         a->set_show_phys_props(false);
         cmd->wdesc->ShowPhysProperties(0, DISPLAY);
@@ -636,12 +636,12 @@ subw_attr_menu::M_SetLabels(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
-    bool state = Menu()->GetStatus(cmd->caller);
-    MenuEnt *ent = Menu()->FindEntOfWin(cmd->wdesc, MenuLAROT);
+    bool state = MainMenu()->GetStatus(cmd->caller);
+    MenuEnt *ent = MainMenu()->FindEntOfWin(cmd->wdesc, MenuLAROT);
     if (state) {
         if (ent && ent->cmd.caller)
-            Menu()->SetSensitive(ent->cmd.caller, true);
-        if (ent && ent->cmd.caller && Menu()->GetStatus(ent->cmd.caller)) {
+            MainMenu()->SetSensitive(ent->cmd.caller, true);
+        if (ent && ent->cmd.caller && MainMenu()->GetStatus(ent->cmd.caller)) {
             cmd->wdesc->Attrib()->set_display_labels(cmd->wdesc->Mode(),
                 SLtrueOrient);
             PL()->ShowPrompt(
@@ -655,7 +655,7 @@ subw_attr_menu::M_SetLabels(CmdDesc *cmd)
     }
     else {
         if (ent && ent->cmd.caller)
-            Menu()->SetSensitive(ent->cmd.caller, false);
+            MainMenu()->SetSensitive(ent->cmd.caller, false);
         cmd->wdesc->Attrib()->set_display_labels(cmd->wdesc->Mode(),
             SLnone);
         PL()->ShowPrompt("Labels will not be shown.");
@@ -673,7 +673,7 @@ subw_attr_menu::M_SetLabelRot(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
-    bool state = Menu()->GetStatus(cmd->caller);
+    bool state = MainMenu()->GetStatus(cmd->caller);
     if (state) {
         cmd->wdesc->Attrib()->set_display_labels(cmd->wdesc->Mode(),
             SLtrueOrient);
@@ -699,12 +699,12 @@ subw_attr_menu::M_SetCnames(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
-    bool state = Menu()->GetStatus(cmd->caller);
-    MenuEnt *ent = Menu()->FindEntOfWin(cmd->wdesc, MenuCNROT);
+    bool state = MainMenu()->GetStatus(cmd->caller);
+    MenuEnt *ent = MainMenu()->FindEntOfWin(cmd->wdesc, MenuCNROT);
     if (state) {
         if (ent && ent->cmd.caller)
-            Menu()->SetSensitive(ent->cmd.caller, true);
-        if (ent && ent->cmd.caller && Menu()->GetStatus(ent->cmd.caller)) {
+            MainMenu()->SetSensitive(ent->cmd.caller, true);
+        if (ent && ent->cmd.caller && MainMenu()->GetStatus(ent->cmd.caller)) {
             cmd->wdesc->Attrib()->set_label_instances(
                 cmd->wdesc->Mode(), SLtrueOrient);
             PL()->ShowPrompt(
@@ -718,7 +718,7 @@ subw_attr_menu::M_SetCnames(CmdDesc *cmd)
     }
     else {
         if (ent && ent->cmd.caller)
-            Menu()->SetSensitive(ent->cmd.caller, false);
+            MainMenu()->SetSensitive(ent->cmd.caller, false);
         cmd->wdesc->Attrib()->set_label_instances(
             cmd->wdesc->Mode(), SLnone);
         PL()->ShowPrompt("Instances will not be labeled.");
@@ -737,7 +737,7 @@ subw_attr_menu::M_SetCnameRot(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
-    bool state = Menu()->GetStatus(cmd->caller);
+    bool state = MainMenu()->GetStatus(cmd->caller);
     if (state) {
         cmd->wdesc->Attrib()->set_label_instances(
             cmd->wdesc->Mode(), SLtrueOrient);
@@ -761,27 +761,27 @@ subw_attr_menu::M_SetNoUnexp(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
-    bool state = Menu()->GetStatus(cmd->caller);
-    MenuEnt *entn = Menu()->FindEntOfWin(cmd->wdesc, MenuCNAMS);
-    MenuEnt *entr = Menu()->FindEntOfWin(cmd->wdesc, MenuCNROT);
+    bool state = MainMenu()->GetStatus(cmd->caller);
+    MenuEnt *entn = MainMenu()->FindEntOfWin(cmd->wdesc, MenuCNAMS);
+    MenuEnt *entr = MainMenu()->FindEntOfWin(cmd->wdesc, MenuCNROT);
     if (state) {
         cmd->wdesc->Attrib()->set_no_show_unexpand(cmd->wdesc->Mode(), true);
         if (entn && entn->cmd.caller)
-            Menu()->SetSensitive(entn->cmd.caller, false);
+            MainMenu()->SetSensitive(entn->cmd.caller, false);
         if (entr && entr->cmd.caller)
-            Menu()->SetSensitive(entr->cmd.caller, false);
+            MainMenu()->SetSensitive(entr->cmd.caller, false);
         PL()->ShowPrompt("Unexpanded subcells will NOT be shown.");
     }
     else {
         cmd->wdesc->Attrib()->set_no_show_unexpand(cmd->wdesc->Mode(), false);
         if (entn && entn->cmd.caller)
-            Menu()->SetSensitive(entn->cmd.caller, true);
+            MainMenu()->SetSensitive(entn->cmd.caller, true);
         if (entr && entr->cmd.caller) {
             if (entn && entn->cmd.caller &&
-                    Menu()->GetStatus(entn->cmd.caller))
-                Menu()->SetSensitive(entr->cmd.caller, true);
+                    MainMenu()->GetStatus(entn->cmd.caller))
+                MainMenu()->SetSensitive(entr->cmd.caller, true);
             else
-                Menu()->SetSensitive(entr->cmd.caller, false);
+                MainMenu()->SetSensitive(entr->cmd.caller, false);
         }
         PL()->ShowPrompt("Unexpanded subcells will be shown.");
     }
@@ -797,7 +797,7 @@ obj_menu::M_Boxes(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
-    bool state = Menu()->GetStatus(cmd->caller);
+    bool state = MainMenu()->GetStatus(cmd->caller);
     cmd->wdesc->Attrib()->set_showing_boxes(state);
 }
 
@@ -807,7 +807,7 @@ obj_menu::M_Polys(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
-    bool state = Menu()->GetStatus(cmd->caller);
+    bool state = MainMenu()->GetStatus(cmd->caller);
     cmd->wdesc->Attrib()->set_showing_polys(state);
 }
 
@@ -817,7 +817,7 @@ obj_menu::M_Wires(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
-    bool state = Menu()->GetStatus(cmd->caller);
+    bool state = MainMenu()->GetStatus(cmd->caller);
     cmd->wdesc->Attrib()->set_showing_wires(state);
 }
 
@@ -827,7 +827,7 @@ obj_menu::M_Labels(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
-    bool state = Menu()->GetStatus(cmd->caller);
+    bool state = MainMenu()->GetStatus(cmd->caller);
     cmd->wdesc->Attrib()->set_showing_labels(state);
 }
 
@@ -843,7 +843,7 @@ subw_attr_menu::M_TinyBB(CmdDesc *cmd)
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
     DSPattrib *a = cmd->wdesc->Attrib();
-    if (Menu()->GetStatus(cmd->caller)) {
+    if (MainMenu()->GetStatus(cmd->caller)) {
         PL()->ShowPrompt("Tiny cells will show bounding box only.");
         a->set_show_tiny_bb(cmd->wdesc->Mode(), true);
     }
@@ -870,7 +870,7 @@ subw_attr_menu::M_NoSymbl(CmdDesc *cmd)
         EV()->InitCallback();
         Selections.deselectTypes(CurCell(), 0);
     }
-    if (Menu()->GetStatus(cmd->caller)) {
+    if (MainMenu()->GetStatus(cmd->caller)) {
         PL()->ShowPrompt("Window will NOT show symbolic form of top cell.");
         a->set_no_elec_symbolic(true);
         if (cmd->wdesc == DSP()->MainWdesc())
@@ -884,7 +884,7 @@ subw_attr_menu::M_NoSymbl(CmdDesc *cmd)
             // as symbolic.  Don't want to do that.
             PL()->ShowPrompt(
         "Cannot display top level of context as symbolic while in Push.\n");
-            Menu()->SetStatus(cmd->caller, true);
+            MainMenu()->SetStatus(cmd->caller, true);
             return;
         }
         PL()->ShowPrompt("Window will show symbolic form of top cell.");
@@ -910,9 +910,10 @@ subw_attr_menu::M_SetGrid(CmdDesc *cmd)
 {
     if (!cmd || !cmd->wdesc || !cmd->caller)
         return;
-    if (cmd->wdesc->Wbag())
+    if (cmd->wdesc->Wbag()) {
         cmd->wdesc->Wbag()->PopUpGrid(cmd->caller,
-            Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
+            MainMenu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF);
+    }
 }
 
 
@@ -922,13 +923,13 @@ subw_attr_menu::M_SetGrid(CmdDesc *cmd)
 void
 attr_menu::M_LyrPrmEdit(CmdDesc *cmd)
 {  
-    if (cmd && !Menu()->GetStatus(cmd->caller)) {
+    if (cmd && !MainMenu()->GetStatus(cmd->caller)) {
         XM()->PopUpLayerParamEditor(0, MODE_OFF, 0, 0);
         return;
     }
     if (!XM()->CheckCurLayer()) {
         if (cmd)
-            Menu()->Deselect(cmd->caller);
+            MainMenu()->Deselect(cmd->caller);
         return;
     }
     XM()->PopUpLayerParamEditor(cmd ? cmd->caller : 0, MODE_ON, 0, 0);

@@ -106,19 +106,19 @@ namespace {
 
         CDs *psdesc = CurCell(Physical);
         if (!psdesc) {
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
             return (false);
         }
 
         if (!EX()->associate(psdesc)) {
             PL()->ShowPrompt("Association failed!");
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
             return (false);
         }
         cGroupDesc *gd = psdesc->groups();
         if (!gd || gd->isempty()) {
             PL()->ShowPrompt("No conductor groups found!");
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
             return (false);
         }
 
@@ -150,7 +150,7 @@ cExt::selectGroupNode(GRobject caller)
 {
     if (!caller)
         return;
-    bool state = Menu()->GetStatus(caller);
+    bool state = MainMenu()->GetStatus(caller);
     if (!state) {
         if (SelCmd)
             SelCmd->esc();
@@ -160,7 +160,7 @@ cExt::selectGroupNode(GRobject caller)
         return;
 
     if (!XM()->CheckCurCell(false, false, Physical)) {
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
         return;
     }
 
@@ -567,7 +567,7 @@ SelState::esc()
     EX()->pathFinder(cExt::PFclear);
     EX()->setGNShowPath(false);
     EX()->PopUpSelections(0, MODE_UPD);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     PL()->ErasePrompt();
     EV()->PopCallback(this);
     delete this;

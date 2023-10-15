@@ -89,7 +89,7 @@ namespace {
         bool nostdvia = (DSP()->CurMode() == Electrical ||
             !Tech()->StdViaTab() || !Tech()->StdViaTab()->allocated());
 
-        Menu()->SetSensitive(menu[editMenuCrvia].cmd.caller, !nostdvia);
+        MainMenu()->SetSensitive(menu[editMenuCrvia].cmd.caller, !nostdvia);
     }
 }
 
@@ -151,7 +151,7 @@ edit_menu::M_Edit(CmdDesc *cmd)
     if (!cmd)
         return;
     CDs *sd = CurCell(DSP()->CurMode());
-    if (Menu()->GetStatus(cmd->caller)) {
+    if (MainMenu()->GetStatus(cmd->caller)) {
         if (sd)
             sd->setImmutable(false);
         ED()->setEditingMode(true);
@@ -174,7 +174,7 @@ edit_menu::M_Edit(CmdDesc *cmd)
 void
 edit_menu::M_Setup(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         ED()->PopUpEditSetup(cmd->caller, MODE_ON);
     else
         ED()->PopUpEditSetup(0, MODE_OFF);
@@ -187,7 +187,7 @@ edit_menu::M_Setup(CmdDesc *cmd)
 void
 edit_menu::M_PcCtl(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         ED()->PopUpPCellCtrl(cmd->caller, MODE_ON);
     else
         ED()->PopUpPCellCtrl(0, MODE_OFF);
@@ -211,7 +211,7 @@ void
 edit_menu::M_CreateVia(CmdDesc *cmd)
 {
     if (cmd) {
-        if (Menu()->GetStatus(cmd->caller))
+        if (MainMenu()->GetStatus(cmd->caller))
             ED()->PopUpStdVia(cmd->caller, MODE_ON);
         else
             ED()->PopUpStdVia(cmd->caller, MODE_OFF);
@@ -235,7 +235,7 @@ edit_menu::M_Flatten(CmdDesc *cmd)
 void
 edit_menu::M_Join(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         ED()->PopUpJoin(cmd->caller, MODE_ON);
     else
         ED()->PopUpJoin(0, MODE_OFF);
@@ -248,7 +248,7 @@ edit_menu::M_Join(CmdDesc *cmd)
 void
 edit_menu::M_LayerExp(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         ED()->PopUpLayerExp(cmd->caller, MODE_ON);
     else
         ED()->PopUpLayerExp(0, MODE_OFF);
@@ -277,7 +277,7 @@ edit_menu::M_CellPrpty(CmdDesc *cmd)
     if (!XM()->CheckCurCell(true, true, DSP()->CurMode()))
         return;
 
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         ED()->PopUpCellProperties(MODE_ON);
     else
         ED()->PopUpCellProperties(MODE_OFF);

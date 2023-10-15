@@ -302,8 +302,7 @@ struct MenuList
 #define MMsub3      "sub3"
 #define MMsub4      "sub4"
 
-//XXX Rid this for self()
-inline class MenuMain *Menu();
+inline class MenuMain *MainMenu();
 
 // The main menu class.  This contains information about the
 // application's menus.  This or a derived class is intended to be
@@ -321,7 +320,7 @@ class MenuMain
     static void on_null_ptr();
 
 public:
-    friend inline MenuMain *Menu() { return (MenuMain::ptr()); }
+    friend inline MenuMain *MainMenu() { return (MenuMain::ptr()); }
 
     MenuMain();
     virtual ~MenuMain() { }

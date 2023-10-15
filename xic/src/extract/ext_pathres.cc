@@ -160,7 +160,7 @@ void
 TermState::esc()
 {
     if (caller)
-        Menu()->Deselect(caller);
+        MainMenu()->Deselect(caller);
     EV()->PopCallback(this);
     PL()->ErasePrompt();
     EX()->showTerminals(0, ERASE);
@@ -182,7 +182,7 @@ cExt::editTerminals(GRobject caller)
     if (DSP()->CurMode() != Physical) {
         PL()->ShowPrompt("Command available in physical mode only.");
         if (caller)
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
         return;
     }
 

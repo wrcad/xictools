@@ -1484,13 +1484,13 @@ QTviewer::press_event_slot(QMouseEvent *ev)
 {
     switch (ev->button()) {
     case Qt::LeftButton:
-        extendStart(ev, 1, ev->x(), ev->y());
+        extendStart(ev, 1, ev->position().x(), ev->position().y());
         break;
     case Qt::MiddleButton:
-        extendStart(ev, 2, ev->x(), ev->y());
+        extendStart(ev, 2, ev->position().x(), ev->position().y());
         break;
     case Qt::RightButton:
-        extendStart(ev, 3, ev->x(), ev->y());
+        extendStart(ev, 3, ev->position().x(), ev->position().y());
         break;
     default:
         return;
@@ -1514,16 +1514,19 @@ QTviewer::release_event_slot(QMouseEvent *ev)
     if (sb)
         r.moveTop(sb->value());
 
-    if (r.contains(ev->x(), ev->y())) {
+    if (r.contains(ev->position().x(), ev->position().y())) {
         switch (ev->button()) {
         case Qt::LeftButton:
-            extendEnd(ev, 1, v_btn_pressed, ev->x(), ev->y());
+            extendEnd(ev, 1, v_btn_pressed, ev->position().x(),
+                ev->position().y());
             break;
         case Qt::MiddleButton:
-            extendEnd(ev, 2, v_btn_pressed, ev->x(), ev->y());
+            extendEnd(ev, 2, v_btn_pressed, ev->position().x(),
+                ev->position().y());
             break;
         case Qt::RightButton:
-            extendEnd(ev, 3, v_btn_pressed, ev->x(), ev->y());
+            extendEnd(ev, 3, v_btn_pressed, ev->position().x(),
+                ev->position().y());
             break;
         default:
             return;
@@ -1544,13 +1547,13 @@ QTviewer::motion_event_slot(QMouseEvent *ev)
     if (sb)
         r.moveTop(sb->value());
 
-    if (r.contains(ev->x(), ev->y())) {
+    if (r.contains(ev->position().x(), ev->position().y())) {
         if (v_rband) {
             v_rband->show();
             int lastx = viewportX(htm_press_x);
             int lasty = viewportY(htm_press_y);
-            int xx = ev->x() < lastx ? ev->x() : lastx;
-            int yy = ev->y() < lasty ? ev->y() : lasty;
+            int xx = ev->position().x() < lastx ? ev->position().x() : lastx;
+            int yy = ev->position().y() < lasty ? ev->position().y() : lasty;
 
             // hmmm, have to use QT's viewport
             sb = horizontalScrollBar();
@@ -1560,11 +1563,12 @@ QTviewer::motion_event_slot(QMouseEvent *ev)
             if (sb)
                 yy -= sb->value();
 
-            QRect rb(xx, yy, abs(ev->x() - lastx), abs(ev->y() - lasty));
+            QRect rb(xx, yy, abs(ev->position().x() - lastx),
+                abs(ev->position().y() - lasty));
             v_rband->setGeometry(rb);
             return;
         }
-        anchorTrack(ev, ev->x(), ev->y());
+        anchorTrack(ev, ev->position().x(), ev->position().y());
     }
     else if (v_rband)
         v_rband->hide();

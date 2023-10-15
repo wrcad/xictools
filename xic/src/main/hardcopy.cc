@@ -225,7 +225,7 @@ cMain::HCkillFrame()
         FrameState::FrameOK = false;
     }
     if (FrameCmd) {
-        Menu()->Deselect(FrameCmd->Caller);
+        MainMenu()->Deselect(FrameCmd->Caller);
         FrameCmd->esc();
     }
 }
@@ -404,7 +404,7 @@ sHcImage::xichcframe(HCframeMode mode, GRobject caller, int *l, int *b,
         FrameCmd = new FrameState("FRAME", "hcopypanel#frame");
         FrameCmd->setCaller(caller);
         if (!EV()->PushCallback(FrameCmd)) {
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
             delete FrameCmd;
             FrameCmd = 0;
             return (false);
@@ -480,7 +480,7 @@ sHcImage::switch_mode(bool dohc, bool transient, int drvr)
         Tech()->SetHcopyDriver(-1);
     }
     if (!transient)
-        Menu()->InitAfterModeSwitch(0);
+        MainMenu()->InitAfterModeSwitch(0);
 }
 
 
@@ -1061,7 +1061,7 @@ FrameState::esc()
         EV()->PopCallback(this);
         Gst()->SetGhost(GFnone);
     }
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     delete this;
 }
 

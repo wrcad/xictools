@@ -147,12 +147,12 @@ cExt::showExtractionView(GRobject caller)
 {
     if (!caller)
         return;
-    if (Menu()->GetStatus(caller)) {
+    if (MainMenu()->GetStatus(caller)) {
         if (!ext_extraction_view) {
             CDs *psdesc = CurCell(Physical);
             if (!psdesc) {
                 PL()->ShowPrompt("No current physical cell!");
-                Menu()->Deselect(caller);
+                MainMenu()->Deselect(caller);
                 return;
             }
             // Exit command state.  Editing is forbiddne in Extraction
@@ -161,7 +161,7 @@ cExt::showExtractionView(GRobject caller)
 
             if (!EX()->associate(psdesc)) {
                 PL()->ShowPrompt("Association failed!");
-                Menu()->Deselect(caller);
+                MainMenu()->Deselect(caller);
                 return;
             }
 

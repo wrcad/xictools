@@ -93,11 +93,11 @@ bool
 cExt::selectDevices(GRobject caller)
 {
     if (DvselCmd) {
-        if (!caller || !Menu()->GetStatus(caller))
+        if (!caller || !MainMenu()->GetStatus(caller))
             DvselCmd->esc();
         return (true);
     }
-    else if (caller && !Menu()->GetStatus(caller))
+    else if (caller && !MainMenu()->GetStatus(caller))
         return (true);
 
     if (!XM()->CheckCurCell(false, true, Physical))
@@ -151,7 +151,7 @@ DvselState::halt()
     }
     EX()->queueDevice(0);
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     EX()->PopUpDevices(0, MODE_UPD);
     delete this;
 }
@@ -226,7 +226,7 @@ DvselState::esc()
     EX()->queueDevice(0);
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     EX()->PopUpDevices(0, MODE_UPD);
     delete this;
 }
@@ -502,11 +502,11 @@ bool
 cExt::measureLayerElectrical(GRobject caller)
 {
     if (MeasCmd) {
-        if (!caller || !Menu()->GetStatus(caller))
+        if (!caller || !MainMenu()->GetStatus(caller))
             MeasCmd->esc();
         return (true);
     }
-    else if (caller && !Menu()->GetStatus(caller))
+    else if (caller && !MainMenu()->GetStatus(caller))
         return (true);
 
     if (!XM()->CheckCurCell(false, true, Physical))
@@ -625,7 +625,7 @@ MeasState::esc()
     XM()->SetCoordMode(CO_ABSOLUTE);
     PL()->ErasePrompt();
     EV()->PopCallback(this);
-    Menu()->Deselect(Caller);
+    MainMenu()->Deselect(Caller);
     EX()->PopUpDevices(0, MODE_UPD);
     delete this;
 }

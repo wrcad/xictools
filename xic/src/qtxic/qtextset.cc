@@ -488,10 +488,6 @@ QTextSetupDlg::net_and_cell_page()
 }
 
 
-namespace {
-    const char *MIDX = "midx";
-}
-
 // Page 3, Device Config.
 //
 void
@@ -501,7 +497,6 @@ QTextSetupDlg::devs_page()
     es_notebook->addTab(page, tr("Device\nConfig"));
     QVBoxLayout *vbox = new QVBoxLayout(page);
     QMargins qmtop(2, 2, 2, 2);
-    QMargins qm;
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
@@ -733,9 +728,9 @@ QTextSetupDlg::update()
 
     if (DSP()->CurMode() == Electrical) {
         QTdev::SetStatus(es_p1_tedit,
-            Menu()->MenuButtonStatus(MMside, MenuSUBCT));
+            MainMenu()->MenuButtonStatus(MMside, MenuSUBCT));
         QTdev::SetStatus(es_p1_tfind,
-            Menu()->MenuButtonStatus(MMside, MenuNODMP));
+            MainMenu()->MenuButtonStatus(MMside, MenuNODMP));
     }
 
     QTdev::SetStatus(es_p1_extview, EX()->isExtractionView());
@@ -937,7 +932,7 @@ void
 QTextSetupDlg::show_grp_node(QCheckBox *caller)
 {
     CDs *cursdp = CurCell(Physical);
-    if (caller && cursdp && Menu()->GetStatus(caller)) {
+    if (caller && cursdp && MainMenu()->GetStatus(caller)) {
         if (!EX()->associate(cursdp)) {
             QTdev::Deselect(caller);
             return;
@@ -1025,7 +1020,7 @@ void
 QTextSetupDlg::p1_groups_btn_slot(int)
 {
     if (!CurCell(Physical)) {
-        Menu()->Deselect(es_p1_groups);
+        MainMenu()->Deselect(es_p1_groups);
         PL()->ShowPrompt("No physical data for current cell!");
         return;
     }
@@ -1037,7 +1032,7 @@ void
 QTextSetupDlg::p1_nodes_btn_slot(int)
 {
     if (!CurCell(Electrical)) {
-        Menu()->Deselect(es_p1_nodes);
+        MainMenu()->Deselect(es_p1_nodes);
         PL()->ShowPrompt("No electrical data for current cell!");
         return;
     }
@@ -1105,9 +1100,9 @@ QTextSetupDlg::p1_tedit_btn_slot(bool state)
     if (DSP()->CurMode() == Physical)
         EX()->editTermsExec(es_p1_tedit, es_p1_cterms);
     else {
-        bool st = Menu()->MenuButtonStatus(MMside, MenuSUBCT);
+        bool st = MainMenu()->MenuButtonStatus(MMside, MenuSUBCT);
         if (st != state)
-            Menu()->MenuButtonPress(MMside, MenuSUBCT);
+            MainMenu()->MenuButtonPress(MMside, MenuSUBCT);
     }
 }
 
@@ -1122,9 +1117,9 @@ QTextSetupDlg::p1_tfind_btn_slot(bool state)
             SCD()->PopUpNodeMap(0, MODE_OFF);
     }
     else {
-        bool st = Menu()->MenuButtonStatus(MMside, MenuNODMP);
+        bool st = MainMenu()->MenuButtonStatus(MMside, MenuNODMP);
         if (st != state)
-            Menu()->MenuButtonPress(MMside, MenuNODMP);
+            MainMenu()->MenuButtonPress(MMside, MenuNODMP);
     }
 }
 

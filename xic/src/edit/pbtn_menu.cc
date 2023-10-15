@@ -194,7 +194,7 @@ cEdit::createPbtnMenu()
 void
 pbtn_menu::M_Xform(CmdDesc *cmd)
 {
-    if (cmd && Menu()->GetStatus(cmd->caller))
+    if (cmd && MainMenu()->GetStatus(cmd->caller))
         ED()->PopUpTransform(cmd->caller, MODE_ON, cEdit::cur_tf_cb, 0);
     else
         ED()->PopUpTransform(0, MODE_OFF, 0, 0);

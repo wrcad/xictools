@@ -43,6 +43,22 @@
 #include "menu.h"
 #include "errorlog.h"
 #include "tech.h"
+#include "qtinterf/qtcanvas.h"
+
+#include <QLayout>
+#include <QAction>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QDoubleSpinBox>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QRadioButton>
+#include <QMenu>
+#include <QMouseEvent>
+#include <QResizeEvent>
+#include <QGuiApplication>
 
 
 // The Grid Setup panel, used to control the grid in each drawing
@@ -50,8 +66,8 @@
 //
 // Help keyword used: xic:grid
 
-namespace gtkgrid {
 
+namespace {
     enum { LstSolid, LstDots, LstStip };
 
     const char *edgevals[] =
@@ -61,7 +77,6 @@ namespace gtkgrid {
         "Enabled always",
         0
     };
-
 }
 
 #define REVERT "revert"
@@ -71,6 +86,8 @@ namespace gtkgrid {
 void
 QTsubwin::PopUpGrid(GRobject caller, ShowMode mode)
 {
+    if (!QTdev::exists() || !QTmainwin::exists())
+        return;
     if (mode == MODE_OFF) {
         if (sw_gridpop)
             sw_gridpop->deleteLater();
@@ -86,7 +103,7 @@ QTsubwin::PopUpGrid(GRobject caller, ShowMode mode)
     if (!QTmainwin::self())
         return;
 
-    sw_gridpop = new cGridDlg(this, sw_windesc);
+    sw_gridpop = new QTgridDlg(this, sw_windesc);
     sw_gridpop->register_usrptr((void**)&sw_gridpop);
     sw_gridpop->register_caller(caller);
     sw_gridpop->initialize();
@@ -95,13 +112,15 @@ QTsubwin::PopUpGrid(GRobject caller, ShowMode mode)
 // End of QTsubwin functions.
 
 
-cGridDlg *cGridDlg::grid_pops[DSP_NUMWINS];
+QTgridDlg *QTgridDlg::grid_pops[DSP_NUMWINS];
 
-cGridDlg::cGridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
+QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
 {
     p_parent = owner;
-    gd_mfglabel = 0;
     gd_snapbox = 0;
+    gd_resol = 0;
+    gd_mfglabel = 0;
+    gd_snap = 0;
     gd_snapbtn = 0;
     gd_edgegrp = 0;
     gd_edge = 0;
@@ -115,12 +134,15 @@ cGridDlg::cGridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
     gd_noaxesbtn = 0;
     gd_plaxesbtn = 0;
     gd_oraxesbtn = 0;
+    gd_cmult = 0;
     gd_nocoarse = 0;
     gd_sample = 0;
     gd_solidbtn = 0;
     gd_dotsbtn = 0;
     gd_stipbtn = 0;
     gd_crs_frame = 0;
+    gd_crs = 0;
+    gd_thresh = 0;
 
     gd_apply = 0;
     gd_cancel = 0;
@@ -136,6 +158,7 @@ cGridDlg::cGridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
 
     if (gd_win_num < 0) {
         // Bail out if we don't have a valid window.
+//XXX
         wb_shell = 0;
         return;
     }
@@ -145,551 +168,373 @@ cGridDlg::cGridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
     if (owner)
         owner->MonitorAdd(this);
 
-#ifdef notdef
-    wb_shell = gtk_NewPopup(0, "Grid Setup", gd_cancel_proc,
-        grid_pops + gd_win_num);
-    if (!wb_shell)
-        return;
-    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
+    setWindowTitle(tr("Grid Setup"));
+    setAttribute(Qt::WA_DeleteOnClose);
+//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
-#if GTK_CHECK_VERSION(3,0,0)
-        g_signal_connect(G_OBJECT(wb_shell), "draw",
-            G_CALLBACK(gd_redraw_hdlr), grid_pops + gd_win_num);
-#else
-        g_signal_connect(G_OBJECT(wb_shell), "expose-event",
-            G_CALLBACK(gd_redraw_hdlr), grid_pops + gd_win_num);
-#endif
+    QMargins qmtop(2, 2, 2, 2);
+    QMargins qm;
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setContentsMargins(qmtop);
+    vbox->setSpacing(2);
 
-    GtkWidget *topform = gtk_table_new(2, 1, false);
-    gtk_widget_show(topform);
-    gtk_container_add(GTK_CONTAINER(wb_shell), topform);
-    int rowcnt = 0;
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
 
-    //
     // label in frame plus help btn
     //
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setContentsMargins(qm);
+    hb->setSpacing(2);
+    QLabel *label = new QLabel(tr("Set grid parameters"));
+    hb->addWidget(label);
 
-    GtkWidget *row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
-    GtkWidget *label = gtk_label_new("Set grid parameters");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), label);
-    gtk_box_pack_start(GTK_BOX(row), frame, true, true, 0);
-    GtkWidget *button = gtk_button_new_with_label("Help");
-    gtk_widget_set_name(button, "help");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
-    gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
-    gtk_table_attach(GTK_TABLE(topform), row, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    GtkWidget *nbook = gtk_notebook_new();
-    gtk_widget_show(nbook);
-    gtk_table_attach(GTK_TABLE(topform), nbook, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    QTabWidget *nbook = new QTabWidget();
+    vbox->addWidget(nbook);
 
-    //
     // Snapping Page
     //
+    QWidget *page = new QWidget();
+    nbook->addTab(page, tr("Snapping"));
 
-    GtkWidget *form = gtk_table_new(2, 1, false);
-    gtk_widget_show(form);
+    QVBoxLayout *pvbox = new QVBoxLayout(page);
+    pvbox->setContentsMargins(qmtop);
+    pvbox->setSpacing(2);
+
+    QHBoxLayout *phbox = new QHBoxLayout();
+    pvbox->addLayout(phbox);
+    phbox->setContentsMargins(qm);
+    phbox->setSpacing(2);
 
     // Grid Snapping controls
+    gb = new QGroupBox(tr("Snap Spacing"));
+    phbox->addWidget(gb);
+    QVBoxLayout *vb = new QVBoxLayout(gb);
+    vb->setContentsMargins(qm);
+    vb->setSpacing(2);
 
-    frame = gtk_frame_new("Snap Spacing");
-    gtk_widget_show(frame);
-    GtkWidget *vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
-    gtk_container_add(GTK_CONTAINER(frame), vbox);
+    gd_resol = new QDoubleSpinBox();
+    vb->addWidget(gd_resol);
+    gd_resol->setRange(0.0, 10000.0);
+    gd_resol->setDecimals(4);
+    gd_resol->setValue(1.0);
+    connect(gd_resol, SIGNAL(valueChanged(double)),
+        this, SLOT(resol_changed_slot(double)));
 
-    GtkWidget *sb = sb_resol.init(1.0, 0.0, 10000.0, 4);
-    GtkWidget *focus_widget = sb;
-    sb_resol.connect_changed(G_CALLBACK(gd_resol_change_proc),
-        grid_pops + gd_win_num, "Resolution");
-    gtk_widget_set_size_request(sb, 80, -1);
-    gtk_box_pack_start(GTK_BOX(vbox), sb, false, false, 0);
+    gd_mfglabel = new QLabel();
+    vb->addWidget(gd_mfglabel);
 
-    label = gtk_label_new("");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    gd_mfglabel = label;
-    gtk_box_pack_start(GTK_BOX(vbox), label, false, false, 0);
+    gd_snapbox = new QGroupBox(tr("SnapPerGrid"));
+    phbox->addWidget(gd_snapbox);
+    vb = new QVBoxLayout(gd_snapbox);
+    vb->setContentsMargins(qm);
+    vb->setSpacing(2);
 
-    int rcnt = 0;
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, rcnt, rcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    gd_snap = new QSpinBox();
+    vb->addWidget(gd_snap);
+    gd_snap->setRange(1, 10);
+    gd_snap->setValue(1);
+    connect(gd_snap, SIGNAL(valueChanged(int)),
+        this, SLOT(snap_changed_slot(int)));
 
-    frame = gtk_frame_new("Snap");
-    gtk_widget_show(frame);
-    gd_snapbox = frame;
-
-    vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
-    gtk_container_add(GTK_CONTAINER(frame), vbox);
-
-    sb = sb_snap.init(1, 1.0, 10.0, 0);
-    sb_snap.connect_changed(G_CALLBACK(gd_snap_change_proc),
-        grid_pops + gd_win_num, "Snap");
-    gtk_widget_set_size_request(sb, 80, -1);
-    gtk_box_pack_start(GTK_BOX(vbox), sb, true, false, 0);
-
-    button = gtk_check_button_new_with_label("GridPerSnap");
-    gtk_widget_show(button);
-    gtk_box_pack_start(GTK_BOX(vbox), button, false, false, 0);
-    gd_snapbtn = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_snap_proc), grid_pops + gd_win_num);
-
-    gtk_table_attach(GTK_TABLE(form), frame, 1, 2, rcnt, rcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    rcnt++;
-
-    GtkWidget *hsep = gtk_hseparator_new();
-    gtk_widget_show(hsep);
-    gtk_table_attach(GTK_TABLE(form), hsep, 0, 2, rcnt, rcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    rcnt++;
+    gd_snapbtn = new QCheckBox(tr("GridPerSnap"));
+    vb->addWidget(gd_snapbtn);
+    connect(gd_snapbtn, SIGNAL(stateChanged(int)),
+        this, SLOT(gridpersnap_btn_slot(int)));
 
     // Edge Snapping group
+    gd_edgegrp = new QGroupBox("Edge Snapping");
+    pvbox->addWidget(gd_edgegrp);
 
-    frame = gtk_frame_new("Edge Snapping");
-    gtk_widget_show(frame);
-    gd_edgegrp = frame;
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 2, rcnt, rcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    rcnt++;
+    vb = new QVBoxLayout(gd_edgegrp);
+    vb->setContentsMargins(qmtop);
+    vb->setSpacing(2);
 
-    GtkWidget *col = gtk_vbox_new(false, 2);
-    gtk_widget_show(col);
-    gtk_container_add(GTK_CONTAINER(frame), col);
-
-    GtkWidget *entry = gtk_combo_box_text_new();
-    gtk_widget_set_name(entry, "edgemenu");
-    gtk_widget_show(entry);
+    gd_edge = new QComboBox();
+    vb->addWidget(gd_edge);
     for (int i = 0; edgevals[i]; i++) {
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry),
-            edgevals[i]);
+        gd_edge->addItem(edgevals[i], i);
     }
-    g_signal_connect(G_OBJECT(entry), "changed",
-        G_CALLBACK(gd_edge_menu_proc), grid_pops + gd_win_num);
-    gd_edge = entry;
-    gtk_box_pack_start(GTK_BOX(col), entry, true, true, 0);
+    connect(gd_edge, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(edge_menu_slot(int)));
 
-    button = gtk_check_button_new_with_label(
-        "Allow off-grid edge snapping");
-    gtk_widget_set_name(button, "offg");
-    gtk_widget_show(button);
-    gd_off_grid = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
-    gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
+    gd_off_grid = new QCheckBox(tr("Allow off-grid edge snapping"));
+    vb->addWidget(gd_off_grid);
+    connect(gd_off_grid, SIGNAL(stateChanged(int)),
+        this, SLOT(off_grid_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label(
-        "Include non-Manhattan edges");
-    gtk_widget_set_name(button, "usenm");
-    gtk_widget_show(button);
-    gd_use_nm_edge = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
-    gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
+    gd_use_nm_edge = new QCheckBox(tr("Include non-Manhattan edges"));
+    vb->addWidget(gd_use_nm_edge);
+    connect(gd_use_nm_edge, SIGNAL(stateChanged(int)),
+        this, SLOT(use_nm_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label(
-        "Include wire edges");
-    gtk_widget_set_name(button, "wedge");
-    gtk_widget_show(button);
-    gd_wire_edge = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
-    gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
+    gd_wire_edge = new QCheckBox(tr("Include wire edges"));
+    vb->addWidget(gd_wire_edge);
+    connect(gd_wire_edge, SIGNAL(stateChanged(int)),
+        this, SLOT(wire_edge_btn_slot(int)));
 
-    button = gtk_check_button_new_with_label(
-        "Include wire path");
-    gtk_widget_set_name(button, "wpath");
-    gtk_widget_show(button);
-    gd_wire_path = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
-    gtk_box_pack_start(GTK_BOX(col), button, true, true, 0);
+    gd_wire_path = new QCheckBox(tr("Include wire path"));
+    vb->addWidget(gd_wire_path);
+    connect(gd_wire_path, SIGNAL(stateChanged(int)),
+        this, SLOT(wire_path_btn_slot(int)));
 
-    label = gtk_label_new("Snapping");
-    gtk_widget_show(label);
-    gtk_notebook_append_page(GTK_NOTEBOOK(nbook), form, label);
-
-    //
     // Style page
     //
+    page = new QWidget();
+    nbook->addTab(page, tr("Style"));
 
-    form = gtk_table_new(4, 5, false);
-    gtk_widget_show(form);
+    pvbox = new QVBoxLayout(page);
+    pvbox->setContentsMargins(qmtop);
+    pvbox->setSpacing(2);
+
+    hb = new QHBoxLayout();
+    pvbox->addLayout(hb);
+    hb->setContentsMargins(qm);
+    hb->setSpacing(2);
 
     // Top buttons
+    gd_showbtn = new QPushButton(tr("Show"));
+    hb->addWidget(gd_showbtn);
+    gd_showbtn->setCheckable(true);
+    connect(gd_showbtn, SIGNAL(toggled(bool)),
+        this, SLOT(show_btn_slot(bool)));
+    QTdev::SetStatus(gd_showbtn, gd_grid.displayed());
 
-    button = gtk_toggle_button_new_with_label("Show");
-    gtk_widget_show(button);
-    gtk_widget_set_name(button, "Show");
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
-    GTKdev::SetStatus(button, gd_grid.displayed());
-    gd_showbtn = button;
-    rcnt = 0;
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, rcnt, rcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    gd_topbtn = new QPushButton(tr("On Top"));
+    hb->addWidget(gd_topbtn);
+    gd_topbtn->setCheckable(true);
+    connect(gd_topbtn, SIGNAL(toggled(bool)),
+        this, SLOT(top_btn_slot(bool)));
+    QTdev::SetStatus(gd_topbtn, gd_grid.show_on_top());
 
-    button = gtk_toggle_button_new_with_label("On Top");
-    gtk_widget_show(button);
-    gtk_widget_set_name(button, "OnTop");
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
-    GTKdev::SetStatus(button, gd_grid.show_on_top());
-    gd_topbtn = button;
-    gtk_table_attach(GTK_TABLE(form), button, 1, 2, rcnt, rcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    GtkWidget *menubar = gtk_menu_bar_new();
-    gtk_widget_set_name(menubar, "StoreB");
-    gtk_widget_show(menubar);
-
-    GtkWidget *item = gtk_menu_item_new_with_label("Store");
-    gtk_widget_set_name(item, "Store");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *menu;
+    btn = new QPushButton(tr("Store"));
+    hb->addWidget(btn);
+    QMenu *menu = new QMenu();
+    btn->setMenu(menu);
     {
         char buf[64];
-        menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "StMenu");
         for (int i = 1; i < TECH_NUM_GRIDS; i++) {
             snprintf(buf, sizeof(buf), "reg%d", i);
-            GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
-            gtk_widget_set_name(menu_item, buf);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-            g_signal_connect(G_OBJECT(menu_item), "activate",
-                G_CALLBACK(gd_sto_menu_proc), grid_pops + gd_win_num);
-            gtk_widget_show(menu_item);
+            menu->addAction(buf);
         }
-        gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
+        connect(menu, SIGNAL(triggered(QAction*)),
+            this, SLOT(store_menu_slot(QAction*)));
     }
 
-    gtk_table_attach(GTK_TABLE(form), menubar, 2, 3, rcnt, rcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    menubar = gtk_menu_bar_new();
-    gtk_widget_set_name(menubar, "RecallB");
-    gtk_widget_show(menubar);
-
-    item = gtk_menu_item_new_with_label("Recall");
-    gtk_widget_set_name(item, "Recall");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    btn = new QPushButton(tr("Recall"));
+    hb->addWidget(btn);
+    menu = new QMenu();
+    btn->setMenu(menu);
     {
         char buf[64];
-        menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "RcMenu");
 
         strcpy(buf, REVERT);
-        GtkWidget *menu_item = gtk_menu_item_new_with_label(buf);
-        gtk_widget_set_name(menu_item, buf);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-        g_signal_connect(G_OBJECT(menu_item), "activate",
-            G_CALLBACK(gd_rcl_menu_proc), grid_pops + gd_win_num);
-        gtk_widget_show(menu_item);
-
+        menu->addAction(buf);
         strcpy(buf, LASTAPPL);
-        menu_item = gtk_menu_item_new_with_label(buf);
-        gtk_widget_set_name(menu_item, buf);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-        g_signal_connect(G_OBJECT(menu_item), "activate",
-            G_CALLBACK(gd_rcl_menu_proc), grid_pops + gd_win_num);
-        gtk_widget_show(menu_item);
-
+        menu->addAction(buf);
         for (int i = 1; i < TECH_NUM_GRIDS; i++) {
             snprintf(buf, sizeof(buf), "reg%d", i);
-            menu_item = gtk_menu_item_new_with_label(buf);
-            gtk_widget_set_name(menu_item, buf);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-            g_signal_connect(G_OBJECT(menu_item), "activate",
-                G_CALLBACK(gd_rcl_menu_proc), grid_pops + gd_win_num);
-            gtk_widget_show(menu_item);
+            menu->addAction(buf);
         }
-        gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
+        connect(menu, SIGNAL(triggered(QAction*)),
+            this, SLOT(rcl_menu_slot(QAction*)));
     }
-
-    gtk_table_attach(GTK_TABLE(form), menubar, 3, 4, rcnt, rcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    rcnt++;
 
     // Axes and Coarse Mult
+    hb = new QHBoxLayout();
+    pvbox->addLayout(hb);
+    hb->setContentsMargins(qm);
+    hb->setSpacing(2);
+    QVBoxLayout *col = new QVBoxLayout();
+    hb->addLayout(col);
+    col->setContentsMargins(qm);
 
-    vbox = gtk_vbox_new(false, 0);
-    gtk_widget_show(vbox);
-    button = gtk_radio_button_new_with_label(0, "No Axes");
-    gtk_widget_set_name(button, "NoAxes");
-    gtk_widget_show(button);
-    g_object_set_data(G_OBJECT(button), "axes", (void*)AxesNone);
-    GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_axes_proc), grid_pops + gd_win_num);
-    gd_noaxesbtn = button;
+    gd_noaxesbtn = new QRadioButton(tr("No Axes"));
+    col->addWidget(gd_noaxesbtn);
+    connect(gd_noaxesbtn, SIGNAL(toggled(bool)),
+        this, SLOT(noaxes_btn_slot(bool)));
 
-    button = gtk_radio_button_new_with_label(group, "Plain Axes");
-    gtk_widget_set_name(button, "PlainAxes");
-    gtk_widget_show(button);
-    g_object_set_data(G_OBJECT(button), "axes", (void*)AxesPlain);
-    if (gd_grid.axes() == AxesPlain) {
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_noaxesbtn), false);
+    gd_plaxesbtn = new QRadioButton(tr("Plain Axes"));;
+    col->addWidget(gd_plaxesbtn);
+    connect(gd_plaxesbtn, SIGNAL(toggled(bool)),
+        this, SLOT(plaxes_btn_slot(bool)));
+
+    gd_oraxesbtn = new QRadioButton(tr("Mark Origin"));;
+    col->addWidget(gd_oraxesbtn);
+    connect(gd_oraxesbtn, SIGNAL(toggled(bool)),
+        this, SLOT(oraxes_btn_slot(bool)));
+
+    if (gd_grid.axes() == AxesNone) {
+        gd_noaxesbtn->setChecked(true);
     }
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_axes_proc), grid_pops + gd_win_num);
-    gd_plaxesbtn = button;
-
-    button = gtk_radio_button_new_with_label(group, "Mark Origin");
-    gtk_widget_set_name(button, "MarkOrigin");
-    gtk_widget_show(button);
-    g_object_set_data(G_OBJECT(button), "axes", (void*)AxesMark);
-    if (gd_grid.axes() == AxesMark) {
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_noaxesbtn), false);
+    else if (gd_grid.axes() == AxesPlain) {
+        gd_plaxesbtn->setChecked(true);
     }
-    gtk_box_pack_start(GTK_BOX(vbox), button, true, false, 0);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_axes_proc), grid_pops + gd_win_num);
-    gd_oraxesbtn = button;
+    else if (gd_grid.axes() == AxesMark) {
+        gd_oraxesbtn->setChecked(true);
+    }
 
-    gtk_table_attach(GTK_TABLE(form), vbox, 0, 2, rcnt, rcnt+1,
-        (GtkAttachOptions)0,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    gb = new QGroupBox(tr("Coarse Mult"));
+    hb->addWidget(gb);
+    col = new QVBoxLayout(gb);
+    col->setContentsMargins(qm);
+    col->setSpacing(2);
 
-    frame = gtk_frame_new("Coarse Mult");
-    gtk_widget_show(frame);
-
-    sb = sb_cmult.init(1, 1.0, 50.0, 0);
-    sb_cmult.connect_changed(G_CALLBACK(gd_cmult_change_proc),
-        grid_pops + gd_win_num, "CoarseMult");
-    gtk_widget_set_size_request(sb, 80, -1);
-    gtk_container_add(GTK_CONTAINER(frame), sb);
-
-    gtk_table_attach(GTK_TABLE(form), frame, 2, 4, rcnt, rcnt+1,
-        (GtkAttachOptions)0,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    rcnt++;
+    gd_cmult = new QSpinBox();
+    col->addWidget(gd_cmult);
+    gd_cmult->setRange(1, 50);
+    gd_cmult->setValue(1);
+    connect(gd_cmult, SIGNAL(valueChanged(int)),
+        this, SLOT(cmult_changed_slot(int)));
 
     // Line Style Editor
+    gb = new QGroupBox(tr("Line Style Editor"));
+    pvbox->addWidget(gb);
+    vb = new QVBoxLayout(gb);
+    vb->setContentsMargins(qmtop);
+    vb->setSpacing(2);
+    hb = new QHBoxLayout();
+    vb->addLayout(hb);
+    hb->setContentsMargins(qm);
+    hb->setSpacing(2);
 
-    frame = gtk_frame_new("Line Style Editor");
-    gtk_widget_show(frame);
+    gd_solidbtn = new QRadioButton(tr("Solid"));
+    hb->addWidget(gd_solidbtn);
+    connect(gd_solidbtn, SIGNAL(toggled(bool)),
+        this, SLOT(solid_btn_slot(bool)));
+    gd_dotsbtn = new QRadioButton(tr("Dots"));
+    hb->addWidget(gd_dotsbtn);;
+    connect(gd_dotsbtn, SIGNAL(toggled(bool)),
+        this, SLOT(dots_btn_slot(bool)));
 
-    GtkWidget *eform = gtk_table_new(3, 4, false);
-    gtk_widget_show(eform);
-    gtk_container_add(GTK_CONTAINER(frame), eform);
+    gd_stipbtn = new QRadioButton(tr("Textured"));;
+    hb->addWidget(gd_stipbtn);
+    connect(gd_stipbtn, SIGNAL(toggled(bool)),
+        this, SLOT(stip_btn_slot(bool)));
 
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 4, rcnt, rcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(0), 2, 2);
-    rcnt++;
-
-    button = gtk_radio_button_new_with_label(0, "Solid");
-    gtk_widget_set_name(button, "Solid");
-    gtk_widget_show(button);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
-    g_object_set_data(G_OBJECT(button), "lst", (void*)LstSolid);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_lst_proc), grid_pops + gd_win_num);
-    gtk_table_attach(GTK_TABLE(eform), button, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    gd_solidbtn = button;
-
-    button = gtk_radio_button_new_with_label(group, "Dots");
-    gtk_widget_set_name(button, "Dots");
-    gtk_widget_show(button);
-    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
-    g_object_set_data(G_OBJECT(button), "lst", (void*)LstDots);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_lst_proc), grid_pops + gd_win_num);
-    gtk_table_attach(GTK_TABLE(eform), button, 1, 2, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    gd_dotsbtn = button;
     if (gd_grid.linestyle().mask == 0) {
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_solidbtn), false);
+        gd_solidbtn->setChecked(true);
     }
-
-    button = gtk_radio_button_new_with_label(group, "Textured");
-    gtk_widget_set_name(button, "Textured");
-    gtk_widget_show(button);
-    g_object_set_data(G_OBJECT(button), "lst", (void*)LstStip);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_lst_proc), grid_pops + gd_win_num);
-    gtk_table_attach(GTK_TABLE(eform), button, 2, 3, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    gd_stipbtn = button;
     if (gd_grid.linestyle().mask != 0 && gd_grid.linestyle().mask != -1) {
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), true);
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_solidbtn), false);
+        gd_stipbtn->setChecked(true);
     }
 
-    GtkWidget *bframe = gtk_frame_new("Cross Size");
+    QGridLayout *grd = new QGridLayout();
+    vb->addLayout(grd);
+    grd->setContentsMargins(qm);
+    grd->setSpacing(2);
+    grd->setColumnStretch(0, 1);
+    grd->setColumnStretch(2, 1);
+
+    gd_crs_frame = new QGroupBox(tr("Cross Size"));
+    grd->addWidget(gd_crs_frame, 0, 1);
+    QVBoxLayout *vb2 = new QVBoxLayout(gd_crs_frame);
+    vb2->setContentsMargins(qmtop);
+    vb2->setSpacing(2);
+
     // start out hidden
-    gd_crs_frame = bframe;
+    gd_crs_frame->hide();
 
-    sb = sb_crs.init(0, 0.0, 6.0, 0);
-    sb_crs.connect_changed(G_CALLBACK(gd_crs_change_proc),
-        grid_pops + gd_win_num, "CrossSize");
-    gtk_widget_set_size_request(sb, 80, -1);
-    gtk_container_add(GTK_CONTAINER(bframe), sb);
-    gtk_table_attach(GTK_TABLE(eform), bframe, 1, 2, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    gd_crs = new QSpinBox();
+    vb2->addWidget(gd_crs);
+    gd_crs->setRange(0, 6);
+    gd_crs->setValue(0);
+    connect(gd_crs, SIGNAL(valueChanged(int)),
+        this, SLOT(cross_size_changed(int)));
 
-    GtkWidget *darea = gtk_drawing_area_new();
-    gtk_widget_show(darea);
-    gtk_widget_set_size_request(darea, 200, 10);
-    gtk_table_attach(GTK_TABLE(eform), darea, 0, 3, 2, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    gd_sample = darea;
-
+    gd_sample = new QTcanvas();
+    grd->addWidget(gd_sample, 1, 1);
+    gd_sample->setFixedSize(QSize(200, 10));
     // The sample is a drag source of a piece of plain text which is
     // the line style mask in "0xhhhh" format.  This might be useful
     // for exporting the line style.
 
-    gtk_widget_add_events(darea, GDK_BUTTON_PRESS_MASK);
-    gtk_widget_add_events(darea, GDK_BUTTON_RELEASE_MASK);
-    gtk_widget_add_events(darea, GDK_POINTER_MOTION_MASK);
-    g_signal_connect(G_OBJECT(darea), "button-press-event",
-        G_CALLBACK(gd_button_press_hdlr), grid_pops + gd_win_num);
-    g_signal_connect(G_OBJECT(darea), "button-release-event",
-        G_CALLBACK(gd_button_release_hdlr), grid_pops + gd_win_num);
-    g_signal_connect(G_OBJECT(darea), "motion-notify-event",
-        G_CALLBACK(gd_motion_hdlr), grid_pops + gd_win_num);
-    g_signal_connect(G_OBJECT(darea), "drag-data-get",
-        G_CALLBACK(gd_drag_data_get), grid_pops + gd_win_num);
+    connect(gd_sample, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(smp_btn_press_slot(QMouseEvent*)));
+    connect(gd_sample, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(smp_btn_release_slot(QMouseEvent*)));
+    connect(gd_sample, SIGNAL(motion_event(QMouseEvent*)),
+        this, SLOT(smp_motion_slot(QMouseEvent*)));
 
-    darea = gtk_drawing_area_new();
-    gtk_widget_show(darea);
-    gtk_widget_set_size_request(darea, 200, 10);
-    gtk_widget_add_events(darea, GDK_BUTTON_PRESS_MASK);
-    gtk_widget_add_events(darea, GDK_BUTTON_RELEASE_MASK);
-    g_signal_connect(G_OBJECT(darea), "button-press-event",
-        G_CALLBACK(gd_button_press_hdlr), grid_pops + gd_win_num);
-    gd_viewport = darea;
-    g_signal_connect(G_OBJECT(darea), "button-release-event",
-        G_CALLBACK(gd_button_release_hdlr), grid_pops + gd_win_num);
-    gtk_table_attach(GTK_TABLE(eform), darea, 0, 3, 3, 4,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    gd_viewport = QTdrawIf::new_draw_interface(DrawNative, false, this);
+    grd->addWidget(gd_viewport, 2, 1);
+    gd_viewport->setFixedSize(QSize(200, 10));
+
+    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(vp_btn_press_slot(QMouseEvent*)));
+    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(vp_btn_release_slot(QMouseEvent*)));
+    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
+        this, SLOT(vp_resize_slot(QResizeEvent*)));
 
     // Visibility controls (global)
+    gb = new QGroupBox(tr("All Windows"));
+    vb->addWidget(gb);
+    vb = new QVBoxLayout(gb);
+    vb->setContentsMargins(qmtop);
+    vb->setSpacing(2);
+    if (gd_win_num != 0)
+        gb->hide();
 
-    frame = gtk_frame_new("All Windows");
-    if (gd_win_num == 0)
-        gtk_widget_show(frame);
-    else
-        gtk_widget_hide(frame);
+    gd_nocoarse = new QCheckBox(tr("No coarse when fine invisible"));
+    vb->addWidget(gd_nocoarse);
+    connect(gd_nocoarse, SIGNAL(stateChanged(int)),
+        this, SLOT(nocoarse_btn_slot(int)));
 
-    GtkWidget *gform = gtk_table_new(2, 1, false);
-    gtk_widget_show(gform);
-    gtk_container_add(GTK_CONTAINER(frame), gform);
+    hb = new QHBoxLayout();
+    vb->addLayout(hb);
+    hb->setContentsMargins(qm);
+    hb->setSpacing(2);
 
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 4, rcnt, rcnt+1,
-        (GtkAttachOptions)0,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-    rcnt++;
+    label = new QLabel(tr("Visibility Threshold"));
+    hb->addWidget(label);
 
-    button = gtk_check_button_new_with_label("No coarse when fine invisible");
-    gtk_widget_set_name(button, "cvis");
-    gtk_widget_show(button);
-    gd_nocoarse = button;
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_btn_proc), grid_pops + gd_win_num);
+    gd_thresh = new QSpinBox();
+    hb->addWidget(gd_thresh);
+    gd_thresh->setRange(DSP_MIN_GRID_THRESHOLD, DSP_MAX_GRID_THRESHOLD);
+    gd_thresh->setValue(DSP_DEF_GRID_THRESHOLD);
+    connect(gd_thresh, SIGNAL(valueChanged(int)),
+        this, SLOT(thresh_changed_slot(int)));
 
-    gtk_table_attach(GTK_TABLE(gform), button, 0, 2, 0, 1,
-        (GtkAttachOptions)0,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    label = gtk_label_new("Visibility Threshold");
-    gtk_widget_show(label);
-    gtk_table_attach(GTK_TABLE(gform), label, 0, 1, 1, 2,
-        (GtkAttachOptions)0,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    sb = sb_thresh.init(DSP_DEF_GRID_THRESHOLD, DSP_MIN_GRID_THRESHOLD,
-        DSP_MAX_GRID_THRESHOLD, 0);
-    sb_thresh.connect_changed(G_CALLBACK(gd_thresh_change_proc),
-        grid_pops + gd_win_num, "GridThreshold");
-    gtk_widget_set_size_request(sb, 50, -1);
-    gtk_table_attach(GTK_TABLE(gform), sb, 1, 2, 1, 2,
-        (GtkAttachOptions)0,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    label = gtk_label_new("Style");
-    gtk_widget_show(label);
-    gtk_notebook_append_page(GTK_NOTEBOOK(nbook), form, label);
-
-    //
     // Apply and Dismiss buttons
     //
 
-    row = gtk_hbox_new(false, 2);
-    gtk_widget_show(row);
+    hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
 
-    button = gtk_button_new_with_label("Apply");
-    gtk_widget_set_name(button, "Apply Grid");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_apply_proc), grid_pops + gd_win_num);
-    gd_apply = button;
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
+    gd_apply = new QPushButton(tr("Apply"));;
+    hbox->addWidget(gd_apply);
+    connect(gd_apply, SIGNAL(clicked()), this, SLOT(apply_slot()));
 
-    button = gtk_button_new_with_label("Dismiss");
-    gtk_widget_set_name(button, "Dismiss");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(gd_cancel_proc), grid_pops + gd_win_num);
-    gd_cancel = button;
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-
-    gtk_table_attach(GTK_TABLE(topform), row, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    gd_cancel = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(gd_cancel);
+    connect(gd_cancel, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
 
     // Initially focus to the Snap Spacing entry.  Set up a handler
     // so that Enter will call apply, then a second Enter will call
     // cancel.
     //
+    /*
     gtk_window_set_focus(GTK_WINDOW(wb_shell), focus_widget);
     g_signal_connect(G_OBJECT(wb_shell), "key-release-event",
         G_CALLBACK(gd_key_hdlr), grid_pops + gd_win_num);
+XXX    */
 
-#endif
     update();
 }
 
 
-cGridDlg::~cGridDlg()
+QTgridDlg::~QTgridDlg()
 {
     if (gd_win_num >= 0)
         grid_pops[gd_win_num] = 0;
@@ -709,7 +554,7 @@ cGridDlg::~cGridDlg()
 // GRpopup override
 //
 void
-cGridDlg::popdown()
+QTgridDlg::popdown()
 {
     if (!p_parent)
         return;
@@ -721,9 +566,8 @@ cGridDlg::popdown()
 
 
 void
-cGridDlg::update(bool skip_init)
+QTgridDlg::update(bool skip_init)
 {
-    /*
     WindowDesc *wd = DSP()->Window(gd_win_num);
     if (!wd)
         return;
@@ -736,10 +580,10 @@ cGridDlg::update(bool skip_init)
     if (del <= 0.0)
         del = wd->Mode() == Physical ? MICRONS(1) : ELEC_MICRONS(100);
 
-    sb_resol.set_min(del);
-    sb_resol.set_delta(del);
-    sb_resol.set_value(gd_grid.spacing(wd->Mode()));
-    sb_snap.set_value(abs(gd_grid.snap()));
+    gd_resol->setMinimum(del);
+    gd_resol->setSingleStep(del);
+    gd_resol->setValue(gd_grid.spacing(wd->Mode()));
+    gd_snap->setValue(abs(gd_grid.snap()));
 
     char buf[64];
     del = GridDesc::mfg_grid(wd->Mode());
@@ -747,99 +591,647 @@ cGridDlg::update(bool skip_init)
         snprintf(buf, sizeof(buf), "MfgGrid: %.4f", del);
     else
         strcpy(buf, "MfgGrid: unset");
-    gtk_label_set_text(GTK_LABEL(gd_mfglabel), buf);
+    gd_mfglabel->setText(buf);
     if (gd_grid.snap() < 0) {
-        GTKdev::SetStatus(gd_snapbtn, true);
-        gtk_frame_set_label(GTK_FRAME(gd_snapbox), "GridPerSnap");
+        QTdev::SetStatus(gd_snapbtn, true);
+        gd_snapbox->setTitle("GridPerSnap");
     }
     else {
-        GTKdev::SetStatus(gd_snapbtn, false);
-        gtk_frame_set_label(GTK_FRAME(gd_snapbox), "SnapPerGrid");
+        QTdev::SetStatus(gd_snapbtn, false);
+        gd_snapbox->setTitle("SnapPerGrid");
     }
 
-    gtk_combo_box_set_active(GTK_COMBO_BOX(gd_edge),
-        wd->Attrib()->edge_snapping());
-    GTKdev::SetStatus(gd_off_grid, wd->Attrib()->edge_off_grid());
-    GTKdev::SetStatus(gd_use_nm_edge, wd->Attrib()->edge_non_manh());
-    GTKdev::SetStatus(gd_wire_edge, wd->Attrib()->edge_wire_edge());
-    GTKdev::SetStatus(gd_wire_path, wd->Attrib()->edge_wire_path());
+    gd_edge->setCurrentIndex(wd->Attrib()->edge_snapping());
+    QTdev::SetStatus(gd_off_grid, wd->Attrib()->edge_off_grid());
+    QTdev::SetStatus(gd_use_nm_edge, wd->Attrib()->edge_non_manh());
+    QTdev::SetStatus(gd_wire_edge, wd->Attrib()->edge_wire_edge());
+    QTdev::SetStatus(gd_wire_path, wd->Attrib()->edge_wire_path());
 
     // Style page
 
-    GTKdev::SetStatus(gd_showbtn, gd_grid.displayed());
-    GTKdev::SetStatus(gd_topbtn, gd_grid.show_on_top());
+    QTdev::SetStatus(gd_showbtn, gd_grid.displayed());
+    QTdev::SetStatus(gd_topbtn, gd_grid.show_on_top());
     if (gd_grid.axes() == AxesNone)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_noaxesbtn), true);
+        gd_noaxesbtn->setChecked(true);
     else if (gd_grid.axes() == AxesPlain)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_plaxesbtn), true);
+        gd_plaxesbtn->setChecked(true);
     else if (gd_grid.axes() == AxesMark)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_oraxesbtn), true);
+        gd_oraxesbtn->setChecked(true);
     if (wd->Mode() == Electrical) {
-        gtk_widget_set_sensitive(gd_noaxesbtn, false);
-        gtk_widget_set_sensitive(gd_plaxesbtn, false);
-        gtk_widget_set_sensitive(gd_oraxesbtn, false);
-        gtk_widget_set_sensitive(gd_nocoarse, false);
-        gtk_widget_set_sensitive(gd_edgegrp, false);
+        gd_noaxesbtn->setEnabled(false);
+        gd_plaxesbtn->setEnabled(false);
+        gd_oraxesbtn->setEnabled(false);
+        gd_nocoarse->setEnabled(false);
+        gd_edgegrp->setEnabled(false);
     }
     else {
-        gtk_widget_set_sensitive(gd_noaxesbtn, true);
-        gtk_widget_set_sensitive(gd_plaxesbtn, true);
-        gtk_widget_set_sensitive(gd_oraxesbtn, true);
-        gtk_widget_set_sensitive(gd_nocoarse, true);
-        gtk_widget_set_sensitive(gd_edgegrp, true);
+        gd_noaxesbtn->setEnabled(true);
+        gd_plaxesbtn->setEnabled(true);
+        gd_oraxesbtn->setEnabled(true);
+        gd_nocoarse->setEnabled(true);
+        gd_edgegrp->setEnabled(true);
     }
 
-    sb_cmult.set_value(gd_grid.coarse_mult());
+    gd_cmult->setValue(gd_grid.coarse_mult());
 
-    GTKdev::SetStatus(gd_nocoarse, DSP()->GridNoCoarseOnly());
-    sb_thresh.set_value(DSP()->GridThreshold());
+    QTdev::SetStatus(gd_nocoarse, DSP()->GridNoCoarseOnly());
+    gd_thresh->setValue(DSP()->GridThreshold());
 
     gd_mask_bak = 0;
     if (gd_grid.linestyle().mask == -1)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_solidbtn), true);
+        gd_solidbtn->setChecked(true);
     else if (gd_grid.linestyle().mask == 0) {
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_dotsbtn), true);
-        sb_crs.set_value(gd_grid.dotsize());
+        gd_dotsbtn->setChecked(true);
+        gd_crs->setValue(gd_grid.dotsize());
     }
     else
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gd_stipbtn), true);
+        gd_stipbtn->setChecked(true);
 
-    if (gtk_widget_get_mapped(wb_shell))
-        gd_redraw_hdlr(0, 0, grid_pops + gd_win_num);
-    */
+    redraw();
 }
 
 
 void
-cGridDlg::initialize()
+QTgridDlg::initialize()
 {
-    /*
     QTsubwin *w = dynamic_cast<QTsubwin*>(p_parent);
-    if (w) {
-        gtk_window_set_transient_for(GTK_WINDOW(wb_shell),
-            GTK_WINDOW(w->Shell()));
-        GTKdev::self()->SetPopupLocation(GRloc(), wb_shell, w->Viewport());
-    }
-    */
+    if (!w)
+        return;
+    QTdev::self()->SetPopupLocation(GRloc(), this, w->Viewport());
 }
+
+
+void
+QTgridDlg::redraw()
+{
+    if (!gd_viewport)
+        return;
+
+    if (gd_stipbtn->isChecked()) {
+        gd_crs_frame->hide();
+        gd_sample->show();
+        gd_viewport->show();
+
+        SetWindowBackground(QTdev::self()->NameColor("white"));
+        Clear();
+        SetFillpattern(0);
+        SetColor(QTdev::self()->NameColor("blue"));
+        int wid = gd_viewport->width();
+        int hei = gd_viewport->height();
+        int w = wid/32 - 1;
+        if (w < 2)
+            w = 2;
+        int tw = 32*w;
+        int os = 0;
+        if (tw < wid)
+            os = (wid - tw)/2;
+        unsigned mask = ~((~(unsigned)0) >> 1);
+        int x = os;
+        int xs = -1;
+        for (int i = 0; i < 32; i++) {
+            if (mask & gd_grid.linestyle().mask) {
+                Box(x, 1, x+w, hei-2);
+                if (xs < 0)
+                    xs = x;
+            }
+            x += w;
+            mask >>= 1;
+        }
+        if (xs < 0)
+            xs = tw + os;
+        QPalette pal = QGuiApplication::palette();
+        QColor clr = pal.color(QPalette::Inactive, QPalette::Window);
+        if (os) {
+            SetColor(clr.rgb());
+            Box(0, 0, os, hei);
+            Box(os + tw, 0, wid, hei);
+        }
+        clr = pal.color(QPalette::Normal, QPalette::Window);
+//XXX        SetColor(style->bg[GTK_STATE_ACTIVE].pixel);
+SetColor(clr.rgb());
+        Box(os, 0, xs, hei);
+Update();
+
+        QTdrawIf *tmp = gd_viewport;
+        gd_viewport = gd_sample;
+        SetWindowBackground(QTdev::self()->NameColor("black"));
+        Clear();
+        if (gd_grid.linestyle().mask) {
+            // DefineLinestyle will convert 1,3,7,... to -1.
+            unsigned ltmp = gd_grid.linestyle().mask;
+            defineLinestyle(&gd_grid.linestyle(), ltmp);
+            gd_grid.linestyle().mask = ltmp;
+            SetColor(QTdev::self()->NameColor("white"));
+            SetFillpattern(0);
+            Line(os+2, 5, os+tw-2, 5);
+        }
+        if (os) {
+            SetColor(clr.rgb());
+            Box(0, 0, os, hei);
+            Box(os + tw, 0, wid, hei);
+        }
+        gd_viewport = tmp;
+        gd_sample->repaint(0, 0, gd_sample->width(), gd_sample->height());
+    }
+    else if (gd_dotsbtn->isChecked()) {
+        gd_sample->hide();
+        gd_viewport->hide();
+        gd_crs_frame->show();
+    }
+    else if (gd_solidbtn->isChecked()) {
+        gd_crs_frame->hide();
+        gd_sample->show();
+        gd_viewport->show();
+
+        QPalette pal = QGuiApplication::palette();
+        QColor clr = pal.color(QPalette::Inactive, QPalette::Window);
+        SetWindowBackground(clr.rgb());
+        Clear();
+        Update();
+
+        QTdrawIf *tmp = gd_viewport;
+        gd_viewport = gd_sample;
+        SetWindowBackground(clr.rgb());
+        Clear();
+        gd_viewport = tmp;
+        gd_sample->repaint(0, 0, gd_sample->width(), gd_sample->height());
+    }
+}
+
+
+void
+QTgridDlg::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:grid"));
+}
+
+
+void
+QTgridDlg::resol_changed_slot(double val)
+{
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd)
+        return;
+
+    gd_grid.set_spacing(val);
+
+    // Reset the value, as it might have been reset to the mfg grid.
+    gd_resol->setValue(gd_grid.spacing(wd->Mode()));
+}
+
+
+void
+QTgridDlg::snap_changed_slot(int n)
+{
+    bool neg = QTdev::GetStatus(gd_snapbtn);
+    gd_grid.set_snap(neg ? -n : n);
+}
+
+
+void
+QTgridDlg::gridpersnap_btn_slot(int state)
+{
+    if (state) {
+        gd_snapbox->setTitle("GridPerSnap");
+        int sn = gd_snap->value();
+        gd_grid.set_snap(-sn);
+    }
+    else {
+        gd_snapbox->setTitle("SnapPerGrid");
+        int sn = gd_snap->value();
+        gd_grid.set_snap(sn);
+    }
+}
+
+
+void
+QTgridDlg::edge_menu_slot(int i)
+{
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd)
+        return;
+    switch (i) {
+    case EdgeSnapNone:
+        wd->Attrib()->set_edge_snapping(EdgeSnapNone);
+        break;
+    case EdgeSnapSome:
+        wd->Attrib()->set_edge_snapping(EdgeSnapSome);
+        break;
+    case EdgeSnapAll:
+        wd->Attrib()->set_edge_snapping(EdgeSnapAll);
+        break;
+    }
+}
+
+
+void
+QTgridDlg::off_grid_btn_slot(int state)
+{
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd)
+        return;
+    wd->Attrib()->set_edge_off_grid(state);
+}
+
+
+void
+QTgridDlg::use_nm_btn_slot(int state)
+{
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd)
+        return;
+    wd->Attrib()->set_edge_non_manh(state);
+}
+
+
+void
+QTgridDlg::wire_edge_btn_slot(int state)
+{
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd)
+        return;
+    wd->Attrib()->set_edge_wire_edge(state);
+}
+
+
+void
+QTgridDlg::wire_path_btn_slot(int state)
+{
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd)
+        return;
+    wd->Attrib()->set_edge_wire_path(state);
+}
+
+
+void
+QTgridDlg::show_btn_slot(bool state)
+{
+    gd_grid.set_displayed(state);
+}
+
+
+void
+QTgridDlg::top_btn_slot(bool state)
+{
+    gd_grid.set_show_on_top(state);
+}
+
+
+void
+QTgridDlg::store_menu_slot(QAction *a)
+{
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd)
+        return;
+
+    QByteArray ba = a->text().toLatin1();
+    const char *string = ba.constData();
+    DisplayMode mode = wd->Mode();
+    if (string) {
+        while (isalpha(*string))
+            string++;
+        int indx = atoi(string);
+        if (indx >= 0 && indx < TECH_NUM_GRIDS)
+            Tech()->SetGridReg(indx, gd_grid, mode);
+    }
+}
+
+
+void
+QTgridDlg::rcl_menu_slot(QAction *a)
+{
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd)
+        return;
+
+    QByteArray ba = a->text().toLatin1();
+    const char *string = ba.constData();
+    if (string) {
+        if (!strcmp(string, REVERT)) {
+            // Revert to the current Attributes grid.
+            update();
+            return;
+        }
+        if (!strcmp(string, LASTAPPL)) {
+            // Return to the last grid applied (reg 0);
+            GridDesc gref;
+            DisplayMode mode = wd->Mode();
+            GridDesc *g = Tech()->GridReg(0, mode);
+            if (*g != gref) {
+                gd_grid.set(*g);
+                update(true);
+            }
+            return;
+        }
+        while (isalpha(*string))
+            string++;
+        int indx = atoi(string);
+        if (indx >= 0 && indx < TECH_NUM_GRIDS) {
+            GridDesc gref;
+            DisplayMode mode = wd->Mode();
+            GridDesc *g = Tech()->GridReg(indx, mode);
+            if (*g != gref) {
+                gd_grid.set(*g);
+                update(true);
+            }
+        }
+    }
+}
+
+
+void
+QTgridDlg::noaxes_btn_slot(bool state)
+{
+    if (!state)
+        return;
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd || (wd->Mode() != Physical))
+        return;
+    gd_grid.set_axes(AxesNone);
+}
+
+
+void
+QTgridDlg::plaxes_btn_slot(bool state)
+{
+    if (!state)
+        return;
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd || (wd->Mode() != Physical))
+        return;
+    gd_grid.set_axes(AxesPlain);
+}
+
+
+void
+QTgridDlg::oraxes_btn_slot(bool state)
+{
+    if (!state)
+        return;
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd || (wd->Mode() != Physical))
+        return;
+    gd_grid.set_axes(AxesMark);
+}
+
+
+void
+QTgridDlg::cmult_changed_slot(int i)
+{
+    gd_grid.set_coarse_mult(i);
+}
+
+
+void
+QTgridDlg::solid_btn_slot(bool state)
+{
+    if (!state)
+        return;
+    if (!gd_mask_bak && gd_grid.linestyle().mask != 0 &&
+            gd_grid.linestyle().mask != -1)
+        gd_mask_bak = gd_grid.linestyle().mask;
+    gd_grid.linestyle().mask = -1;
+    redraw();
+}
+
+
+void
+QTgridDlg::dots_btn_slot(bool state)
+{
+    if (!state)
+        return;
+    if (!gd_mask_bak && gd_grid.linestyle().mask != 0 &&
+            gd_grid.linestyle().mask != -1)
+        gd_mask_bak = gd_grid.linestyle().mask;
+    gd_grid.linestyle().mask = 0;
+    redraw();
+}
+
+
+void
+QTgridDlg::stip_btn_slot(bool state)
+{
+    if (!state)
+        return;
+    if (gd_mask_bak) {
+        gd_grid.linestyle().mask = gd_mask_bak;
+        gd_mask_bak = 0;
+    }
+    redraw();
+}
+
+
+void
+QTgridDlg::cross_size_changed(int i)
+{
+    gd_grid.set_dotsize(i);
+}
+
+
+void
+QTgridDlg::nocoarse_btn_slot(int state)
+{
+    if (state)
+        CDvdb()->setVariable(VA_GridNoCoarseOnly, "");
+    else
+        CDvdb()->clearVariable(VA_GridNoCoarseOnly);
+}
+
+
+void
+QTgridDlg::thresh_changed_slot(int n)
+{
+    char buf[32];
+    if (n < DSP_MIN_GRID_THRESHOLD || n > DSP_MAX_GRID_THRESHOLD)
+        return;
+    snprintf(buf, sizeof(buf), "%d", n);
+    if (n != DSP_DEF_GRID_THRESHOLD)
+        CDvdb()->setVariable(VA_GridThreshold, buf);
+    else
+        CDvdb()->clearVariable(VA_GridThreshold);
+}
+
+
+void
+QTgridDlg::apply_slot()
+{
+    WindowDesc *wd = DSP()->Window(gd_win_num);
+    if (!wd)
+        return;
+
+    DisplayMode mode = wd->Mode();
+    if (mode == Electrical) {
+        double spa = gd_grid.spacing(mode);
+        if (10*ELEC_INTERNAL_UNITS(spa) % CDelecResolution) {
+            // "can't happen"
+            Log()->ErrorLog(mh::Initialization,
+                "Error: electrical mode snap points must be "
+                "0.1 micron multiples.");
+            return;
+        }
+        if (ELEC_INTERNAL_UNITS(spa) % CDelecResolution) {
+            Log()->WarningLog(mh::Initialization,
+                "Sub-micron snap points are NOT RECOMMENDED in\n"
+                "electrical mode.  Connection points should be on\n"
+                "a one micron grid.  The present grid is accepted\n"
+                "to allow repair of old files.");
+        }
+    }
+    DSPattrib *a = wd->Attrib();
+    GridDesc lastgrid = *a->grid(mode);
+    Tech()->SetGridReg(0, lastgrid, mode);
+    a->grid(mode)->set(gd_grid);
+    bool axes_changed =
+        (mode == Physical && a->grid(mode)->axes() != lastgrid.axes());
+    if (lastgrid.visually_differ(a->grid(mode)))
+        wd->Redisplay(0);
+    else if (axes_changed) {
+        if (lastgrid.axes() != AxesNone)
+            wd->ShowAxes(ERASE);
+        wd->ShowAxes(DISPLAY);
+    }
+    XM()->ShowParameters();
+}
+
+
+void
+QTgridDlg::dismiss_slot()
+{
+    popdown();
+}
+
+
+void
+QTgridDlg::smp_btn_press_slot(QMouseEvent *ev)
+{
+    if (ev->button() != Qt::LeftButton)
+        return;
+    gd_dragging = true;
+    gd_drag_x = ev->position().x();
+    gd_drag_y = ev->position().y();
+}
+
+
+void
+QTgridDlg::smp_btn_release_slot(QMouseEvent*)
+{
+    gd_dragging = false;
+    gd_drag_x = 0;
+    gd_drag_y = 0;
+}
+
+
+void
+QTgridDlg::smp_motion_slot(QMouseEvent *ev)
+{
+    int x = ev->position().x();
+    int y = ev->position().y();
+    if (gd_dragging && (abs(x - gd_drag_x) > 2 || abs(y - gd_drag_y) > 2)) {
+        gd_dragging = false;
+        /*XXX
+        GtkTargetList *targets = gtk_target_list_new(gd_targets, 1);
+        gtk_drag_begin(caller, targets, (GdkDragAction)GDK_ACTION_COPY,
+            1, event);
+            */
+    }
+}
+
+
+void
+QTgridDlg::vp_btn_press_slot(QMouseEvent *ev)
+{
+    if (gd_stipbtn->isChecked()) {
+        int x = ev->position().x();
+        int wid = gd_viewport->width();
+        int w = wid/32 - 1;
+        if (w < 2)
+            w = 2;
+        int tw = 32*w;
+        int os = 0;
+        if (tw < wid)
+            os = (wid - tw)/2;
+        int n = (x - os)/w;
+        if (n < 0 || n > 31)
+            return;
+        n = 31 - n;
+        if (ev->button() == Qt::LeftButton)
+            gd_grid.linestyle().mask ^= (1 << n);
+        else if (ev->button() == Qt::MiddleButton)
+            gd_grid.linestyle().mask &= ~(1 << n);
+        else if (ev->button() == Qt::RightButton)
+            gd_grid.linestyle().mask |= (1 << n);
+        else
+            return;
+        gd_last_n = n;
+        redraw();
+    }
+}
+
+
+void
+QTgridDlg::vp_btn_release_slot(QMouseEvent *ev)
+{
+    if (gd_stipbtn->isChecked()) {
+
+        int x = ev->position().x();
+        int wid = gd_viewport->width();
+        int w = wid/32 - 1;
+        if (w < 2)
+            w = 2;
+        int tw = 32*w;
+        int os = 0;
+        if (tw < wid)
+            os = (wid - tw)/2;
+        int n = (x - os)/w;
+        if (n < 0 || n > 31)
+            return;
+        n = 31 - n;
+        if (n > gd_last_n) {
+            for (int i = gd_last_n + 1; i <= n; i++) {
+                if (ev->button() == Qt::LeftButton)
+                    gd_grid.linestyle().mask ^= (1 << i);
+                else if (ev->button() == Qt::MiddleButton)
+                    gd_grid.linestyle().mask &= ~(1 << i);
+                else if (ev->button() == Qt::RightButton)
+                    gd_grid.linestyle().mask |= (1 << i);
+                else
+                    return;
+            }
+            redraw();
+        }
+        else if (n < gd_last_n) {
+            for (int i = gd_last_n - 1; i >= n; i--) {
+                if (ev->button() == Qt::LeftButton)
+                    gd_grid.linestyle().mask ^= (1 << i);
+                else if (ev->button() == Qt::MiddleButton)
+                    gd_grid.linestyle().mask &= ~(1 << i);
+                else if (ev->button() == Qt::RightButton)
+                    gd_grid.linestyle().mask |= (1 << i);
+                else
+                    return;
+            }
+            redraw();
+        }
+    }
+}
+
+
+void
+QTgridDlg::vp_resize_slot(QResizeEvent*)
+{
+    redraw();
+}
+
 
 #ifdef notdef
-
-// Static function.
-void
-cGridDlg::gd_cancel_proc(GtkWidget*, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (grd)
-        grd->popdown();
-}
 
 
 // Static function.
 int
-cGridDlg::gd_key_hdlr(GtkWidget*, GdkEvent *event, void *arg)
+QTgridDlg::gd_key_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 {
-    cGridDlg *grd = *(cGridDlg**)arg;
+    QTgridDlg *grd = *(QTgridDlg**)arg;
     if (!grd || !grd->gd_apply)
         return (0);
 
@@ -859,599 +1251,15 @@ cGridDlg::gd_key_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 }
 
 
-// Static function.
-void
-cGridDlg::gd_apply_proc(GtkWidget*, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return;
-    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
-    if (!wd)
-        return;
-
-    DisplayMode mode = wd->Mode();
-    if (mode == Electrical) {
-        double spa = grd->gd_grid.spacing(mode);
-        if (10*ELEC_INTERNAL_UNITS(spa) % CDelecResolution) {
-            // "can't happen"
-            Log()->ErrorLog(mh::Initialization,
-                "Error: electrical mode snap points must be "
-                "0.1 micron multiples.");
-            return;
-        }
-        if (ELEC_INTERNAL_UNITS(spa) % CDelecResolution) {
-            Log()->WarningLog(mh::Initialization,
-                "Sub-micron snap points are NOT RECOMMENDED in\n"
-                "electrical mode.  Connection points should be on\n"
-                "a one micron grid.  The present grid is accepted\n"
-                "to allow repair of old files.");
-        }
-    }
-    DSPattrib *a = wd->Attrib();
-    GridDesc lastgrid = *a->grid(mode);
-    Tech()->SetGridReg(0, lastgrid, mode);
-    a->grid(mode)->set(grd->gd_grid);
-    bool axes_changed =
-        (mode == Physical && a->grid(mode)->axes() != lastgrid.axes());
-    if (lastgrid.visually_differ(a->grid(mode)))
-        wd->Redisplay(0);
-    else if (axes_changed) {
-        if (lastgrid.axes() != AxesNone)
-            wd->ShowAxes(ERASE);
-        wd->ShowAxes(DISPLAY);
-    }
-    XM()->ShowParameters();
-}
-
-
-// Static function.
-void
-cGridDlg::gd_snap_proc(GtkWidget *widget, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return;
-    if (GTKdev::GetStatus(widget)) {
-        gtk_frame_set_label(GTK_FRAME(grd->gd_snapbox), "GridPerSnap");
-        int sn = grd->sb_snap.get_value_as_int();
-        grd->gd_grid.set_snap(-sn);
-    }
-    else {
-        gtk_frame_set_label(GTK_FRAME(grd->gd_snapbox), "SnapPerGrid");
-        int sn = grd->sb_snap.get_value_as_int();
-        grd->gd_grid.set_snap(sn);
-    }
-}
-
-
-// Static function.
-void
-cGridDlg::gd_resol_change_proc(GtkWidget*, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return;
-    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
-    if (!wd)
-        return;
-
-    grd->gd_grid.set_spacing(grd->sb_resol.get_value());
-
-    // Reset the value, as it might have been reset to the mfg grid.
-    grd->sb_resol.set_value(grd->gd_grid.spacing(wd->Mode()));
-}
-
-
-// Static function.
-void
-cGridDlg::gd_snap_change_proc(GtkWidget*, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (grd) {
-        bool neg = GTKdev::GetStatus(grd->gd_snapbtn);
-        int sn = grd->sb_snap.get_value_as_int();
-        grd->gd_grid.set_snap(neg ? -sn : sn);
-    }
-}
-
-
-// Static function.
-void
-cGridDlg::gd_edge_menu_proc(GtkWidget*, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return;
-    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
-    if (!wd)
-        return;
-    switch (gtk_combo_box_get_active(GTK_COMBO_BOX(grd->gd_edge))) {
-    case EdgeSnapNone:
-        wd->Attrib()->set_edge_snapping(EdgeSnapNone);
-        break;
-    case EdgeSnapSome:
-        wd->Attrib()->set_edge_snapping(EdgeSnapSome);
-        break;
-    case EdgeSnapAll:
-        wd->Attrib()->set_edge_snapping(EdgeSnapAll);
-        break;
-    }
-}
-
-
-// Static function.
-void
-cGridDlg::gd_btn_proc(GtkWidget *widget, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return;
-    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
-    if (!wd)
-        return;
-
-    const char *name = gtk_widget_get_name(widget);
-    if (name && !strcmp(name, "help")) {
-        DSPmainWbag(PopUpHelp("xic:grid"));
-        return;
-    }
-
-    bool state = GTKdev::GetStatus(widget);
-    if (widget == grd->gd_off_grid)
-        wd->Attrib()->set_edge_off_grid(state);
-    else if (widget == grd->gd_use_nm_edge)
-        wd->Attrib()->set_edge_non_manh(state);
-    else if (widget == grd->gd_wire_edge)
-        wd->Attrib()->set_edge_wire_edge(state);
-    else if (widget == grd->gd_wire_path)
-        wd->Attrib()->set_edge_wire_path(state);
-    else if (widget == grd->gd_showbtn)
-        grd->gd_grid.set_displayed(GTKdev::GetStatus(widget));
-    else if (widget == grd->gd_topbtn)
-        grd->gd_grid.set_show_on_top(GTKdev::GetStatus(widget));
-    else if (widget == grd->gd_nocoarse) {
-        if (GTKdev::GetStatus(widget))
-            CDvdb()->setVariable(VA_GridNoCoarseOnly, "");
-        else
-            CDvdb()->clearVariable(VA_GridNoCoarseOnly);
-    }
-}
-
-
-// Static function.
-void
-cGridDlg::gd_sto_menu_proc(GtkWidget *widget, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return;
-    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
-    if (!wd)
-        return;
-
-    DisplayMode mode = wd->Mode();
-    const char *string = gtk_widget_get_name(widget);
-    if (string) {
-        while (isalpha(*string))
-            string++;
-        int indx = atoi(string);
-        if (indx >= 0 && indx < TECH_NUM_GRIDS)
-            Tech()->SetGridReg(indx, grd->gd_grid, mode);
-    }
-}
-
-
-// Static function.
-void
-cGridDlg::gd_rcl_menu_proc(GtkWidget *widget, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return;
-    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
-    if (!wd)
-        return;
-
-    const char *string = gtk_widget_get_name(widget);
-    if (string) {
-        if (!strcmp(string, REVERT)) {
-            // Revert to the current Attributes grid.
-            grd->update();
-            return;
-        }
-        if (!strcmp(string, LASTAPPL)) {
-            // Return to the last grid applied (reg 0);
-            GridDesc gref;
-            DisplayMode mode = wd->Mode();
-            GridDesc *g = Tech()->GridReg(0, mode);
-            if (*g != gref) {
-                grd->gd_grid.set(*g);
-                grd->update(true);
-            }
-            return;
-        }
-        while (isalpha(*string))
-            string++;
-        int indx = atoi(string);
-        if (indx >= 0 && indx < TECH_NUM_GRIDS) {
-            GridDesc gref;
-            DisplayMode mode = wd->Mode();
-            GridDesc *g = Tech()->GridReg(indx, mode);
-            if (*g != gref) {
-                grd->gd_grid.set(*g);
-                grd->update(true);
-            }
-        }
-    }
-}
-
-
-// Static function.
-void
-cGridDlg::gd_axes_proc(GtkWidget *widget, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return;
-    WindowDesc *wd = DSP()->Window(grd->gd_win_num);
-    if (!wd)
-        return;
-    if (GTKdev::GetStatus(widget) && wd->Mode() == Physical) {
-        grd->gd_grid.set_axes((AxesType)(intptr_t)
-            g_object_get_data(G_OBJECT(widget), "axes"));
-    }
-}
-
-
-// Static function.
-void
-cGridDlg::gd_lst_proc(GtkWidget *widget, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (grd && GTKdev::GetStatus(widget)) {
-        int lst = (intptr_t)g_object_get_data(G_OBJECT(widget), "lst");
-        if (lst == LstSolid) {
-            if (!grd->gd_mask_bak && grd->gd_grid.linestyle().mask != 0 &&
-                    grd->gd_grid.linestyle().mask != -1)
-                grd->gd_mask_bak = grd->gd_grid.linestyle().mask;
-            grd->gd_grid.linestyle().mask = -1;
-        }
-        else if (lst == LstDots) {
-            if (!grd->gd_mask_bak && grd->gd_grid.linestyle().mask != 0 &&
-                    grd->gd_grid.linestyle().mask != -1)
-                grd->gd_mask_bak = grd->gd_grid.linestyle().mask;
-            grd->gd_grid.linestyle().mask = 0;
-        }
-        else {
-            if (grd->gd_mask_bak) {
-                grd->gd_grid.linestyle().mask = grd->gd_mask_bak;
-                grd->gd_mask_bak = 0;
-            }
-        }
-        gd_redraw_hdlr(0, 0, grid_pops + grd->gd_win_num);
-    }
-}
-
-
-// Static function.
-void
-cGridDlg::gd_cmult_change_proc(GtkWidget*, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (grd) {
-        int cm = grd->sb_cmult.get_value_as_int();
-        grd->gd_grid.set_coarse_mult(cm);
-    }
-}
-
-
-// Static function.
-void
-cGridDlg::gd_thresh_change_proc(GtkWidget*, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (grd) {
-        char buf[32];
-        int n = grd->sb_thresh.get_value_as_int();
-        if (n < DSP_MIN_GRID_THRESHOLD || n > DSP_MAX_GRID_THRESHOLD)
-            return;
-        snprintf(buf, sizeof(buf), "%d", n);
-        if (n != DSP_DEF_GRID_THRESHOLD)
-            CDvdb()->setVariable(VA_GridThreshold, buf);
-        else
-            CDvdb()->clearVariable(VA_GridThreshold);
-    }
-}
-
-
-// Static function.
-void
-cGridDlg::gd_crs_change_proc(GtkWidget*, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (grd)
-        grd->gd_grid.set_dotsize(grd->sb_crs.get_value_as_int());
-}
-
-
-// Static function.
-#if GTK_CHECK_VERSION(3,0,0)
-int
-cGridDlg::gd_redraw_hdlr(GtkWidget*, cairo_t*, void *arg)
-#else
-int
-cGridDlg::gd_redraw_hdlr(GtkWidget*, GdkEvent*, void *arg)
-#endif
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd || !grd->gd_viewport)
-        return (false);
-
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {
-        gtk_widget_hide(grd->gd_crs_frame);
-        gtk_widget_show(grd->gd_sample);
-        gtk_widget_show(grd->gd_viewport);
-
-        if (gtk_widget_get_mapped(grd->gd_viewport)) {
-#if GTK_CHECK_VERSION(3,0,0)
-            grd->GetDrawable()->set_window(
-                gtk_widget_get_window(grd->gd_viewport));
-#else
-            grd->gd_window = gtk_widget_get_window(grd->gd_viewport);
-#endif
-            grd->SetWindowBackground(GTKdev::self()->NameColor("white"));
-            grd->Clear();
-            grd->SetFillpattern(0);
-            grd->SetColor(GTKdev::self()->NameColor("blue"));
-#if GTK_CHECK_VERSION(3,0,0)
-            int wid = grd->GetDrawable()->get_width();
-            int hei = grd->GetDrawable()->get_height();
-#else
-            int wid = gdk_window_get_width(grd->gd_window);
-            int hei = gdk_window_get_height(grd->gd_window);
-#endif
-            int w = wid/32 - 1;
-            if (w < 2)
-                w = 2;
-            int tw = 32*w;
-            int os = 0;
-            if (tw < wid)
-                os = (wid - tw)/2;
-            unsigned mask = ~((~(unsigned)0) >> 1);
-            int x = os;
-            int xs = -1;
-            for (int i = 0; i < 32; i++) {
-                if (mask & grd->gd_grid.linestyle().mask) {
-                    grd->Box(x, 1, x+w, hei-2);
-                    if (xs < 0)
-                        xs = x;
-                }
-                x += w;
-                mask >>= 1;
-            }
-            if (xs < 0)
-                xs = tw + os;
-            GtkStyle *style = gtk_widget_get_style(grd->gd_viewport);
-            if (os) {
-                grd->SetColor(style->bg[GTK_STATE_NORMAL].pixel);
-                grd->Box(0, 0, os, hei);
-                grd->Box(os + tw, 0, wid, hei);
-            }
-            grd->SetColor(style->bg[GTK_STATE_ACTIVE].pixel);
-            grd->Box(os, 0, xs, hei);
-
-#if GTK_CHECK_VERSION(3,0,0)
-            grd->GetDrawable()->set_window(
-                gtk_widget_get_window(grd->gd_sample));
-#else
-            grd->gd_window = gtk_widget_get_window(grd->gd_sample);
-#endif
-            grd->SetWindowBackground(GTKdev::self()->NameColor("black"));
-            grd->Clear();
-            if (grd->gd_grid.linestyle().mask) {
-                // DefineLinestyle will convert 1,3,7,... to -1.
-                unsigned ltmp = grd->gd_grid.linestyle().mask;
-                grd->defineLinestyle(&grd->gd_grid.linestyle(), ltmp);
-                grd->gd_grid.linestyle().mask = ltmp;
-                grd->SetColor(GTKdev::self()->NameColor("white"));
-                grd->SetFillpattern(0);
-                grd->Line(os+2, 5, os+tw-2, 5);
-            }
-            if (os) {
-                grd->SetColor(style->bg[GTK_STATE_NORMAL].pixel);
-                grd->Box(0, 0, os, hei);
-                grd->Box(os + tw, 0, wid, hei);
-            }
-        }
-    }
-    else {
-        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_dotsbtn)))
-            gtk_widget_show(grd->gd_crs_frame);
-        else
-            gtk_widget_hide(grd->gd_crs_frame);
-
-        if (gtk_widget_get_mapped(grd->gd_viewport)) {
-#if GTK_CHECK_VERSION(3,0,0)
-            grd->GetDrawable()->set_window(
-                gtk_widget_get_window(grd->gd_viewport));
-#else
-            grd->gd_window = gtk_widget_get_window(grd->gd_viewport);
-#endif
-            GtkStyle *style = gtk_widget_get_style(grd->gd_viewport);
-            grd->SetWindowBackground(style->bg[GTK_STATE_NORMAL].pixel);
-            grd->Clear();
-#if GTK_CHECK_VERSION(3,0,0)
-            grd->GetDrawable()->set_window(
-                gtk_widget_get_window(grd->gd_sample));
-#else
-            grd->gd_window = gtk_widget_get_window(grd->gd_sample);
-#endif
-            grd->SetWindowBackground(style->bg[GTK_STATE_NORMAL].pixel);
-            grd->Clear();
-        }
-
-        if (gtk_toggle_button_get_active(
-                GTK_TOGGLE_BUTTON(grd->gd_solidbtn))) {
-            gtk_widget_show(grd->gd_sample);
-            gtk_widget_show(grd->gd_viewport);
-        }
-        else {
-            gtk_widget_hide(grd->gd_sample);
-            gtk_widget_hide(grd->gd_viewport);
-        }
-    }
-    return (false);
-}
-
-
-// Static function.
-int
-cGridDlg::gd_button_press_hdlr(GtkWidget *widget, GdkEvent *event, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return (false);
-
-    if (widget == grd->gd_sample) {
-        grd->gd_dragging = true;
-        grd->gd_drag_x = (int)event->button.x;
-        grd->gd_drag_y = (int)event->button.y;
-        return (true);
-    }
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {
-        int x = (int)event->button.x;
-#if GTK_CHECK_VERSION(3,0,0)
-        int wid = grd->GetDrawable()->get_width();
-#else
-        int wid = gdk_window_get_width(grd->gd_window);
-#endif
-        int w = wid/32 - 1;
-        if (w < 2)
-            w = 2;
-        int tw = 32*w;
-        int os = 0;
-        if (tw < wid)
-            os = (wid - tw)/2;
-        int n = (x - os)/w;
-        if (n < 0 || n > 31)
-            return (true);
-        n = 31 - n;
-        if (event->button.button == 1)
-            grd->gd_grid.linestyle().mask ^= (1 << n);
-        else if (event->button.button == 2)
-            grd->gd_grid.linestyle().mask &= ~(1 << n);
-        else if (event->button.button == 3)
-            grd->gd_grid.linestyle().mask |= (1 << n);
-        else
-            return (false);
-        grd->gd_last_n = n;
-        gd_redraw_hdlr(0, 0, grid_pops + grd->gd_win_num);
-    }
-    return (true);
-}
-
-
-// Static function.
-int
-cGridDlg::gd_button_release_hdlr(GtkWidget *widget, GdkEvent *event, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return (false);
-
-    if (widget == grd->gd_sample) {
-        grd->gd_dragging = false;
-        grd->gd_drag_x = 0;
-        grd->gd_drag_y = 0;
-        return (true);
-    }
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(grd->gd_stipbtn))) {
-
-        int x = (int)event->button.x;
-#if GTK_CHECK_VERSION(3,0,0)
-        int wid = grd->GetDrawable()->get_width();
-#else
-        int wid = gdk_window_get_width(grd->gd_window);
-#endif
-        int w = wid/32 - 1;
-        if (w < 2)
-            w = 2;
-        int tw = 32*w;
-        int os = 0;
-        if (tw < wid)
-            os = (wid - tw)/2;
-        int n = (x - os)/w;
-        if (n < 0 || n > 31)
-            return (true);
-        n = 31 - n;
-        if (n > grd->gd_last_n) {
-            for (int i = grd->gd_last_n + 1; i <= n; i++) {
-                if (event->button.button == 1)
-                    grd->gd_grid.linestyle().mask ^= (1 << i);
-                else if (event->button.button == 2)
-                    grd->gd_grid.linestyle().mask &= ~(1 << i);
-                else if (event->button.button == 3)
-                    grd->gd_grid.linestyle().mask |= (1 << i);
-                else
-                    return (true);
-            }
-            gd_redraw_hdlr(0, 0, grid_pops + grd->gd_win_num);
-        }
-        else if (n < grd->gd_last_n) {
-            for (int i = grd->gd_last_n - 1; i >= n; i--) {
-                if (event->button.button == 1)
-                    grd->gd_grid.linestyle().mask ^= (1 << i);
-                else if (event->button.button == 2)
-                    grd->gd_grid.linestyle().mask &= ~(1 << i);
-                else if (event->button.button == 3)
-                    grd->gd_grid.linestyle().mask |= (1 << i);
-                else
-                    return (true);
-            }
-            gd_redraw_hdlr(0, 0, grid_pops + grd->gd_win_num);
-        }
-    }
-    return (true);
-}
-
-
-namespace {
-    GtkTargetEntry gd_targets[] = {
-        { (char*)"text/plain", 0, 4 },
-    };
-}
-
-
-// Static function.
-int
-cGridDlg::gd_motion_hdlr(GtkWidget *caller, GdkEvent *event, void *arg)
-{
-    cGridDlg *grd = *(cGridDlg**)arg;
-    if (!grd)
-        return (false);
-
-    int x = (int)event->motion.x;
-    int y = (int)event->motion.y;
-    if (grd->gd_dragging &&
-            (abs(x - grd->gd_drag_x) > 2 || abs(y - grd->gd_drag_y) > 2)) {
-        grd->gd_dragging = false;
-        GtkTargetList *targets = gtk_target_list_new(gd_targets, 1);
-        gtk_drag_begin(caller, targets, (GdkDragAction)GDK_ACTION_COPY,
-            1, event);
-    }
-    return (true);
-}
-
 
 // Static function.
 // Initialize data for drag/drop transfer from 'this'.
 //
 void
-cGridDlg::gd_drag_data_get(GtkWidget*, GdkDragContext*,
+QTgridDlg::gd_drag_data_get(GtkWidget*, GdkDragContext*,
     GtkSelectionData *data, guint, guint, void *arg)
 {
-    cGridDlg *grd = *(cGridDlg**)arg;
+    QTgridDlg *grd = *(QTgridDlg**)arg;
     if (!grd)
         return;
 
