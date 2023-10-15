@@ -291,7 +291,7 @@ sPc::~sPc()
     }
     Pc = 0;
     PrptyText::destroy(pc_list);
-    Menu()->MenuButtonSet(0, MenuCPROP, false);
+    MainMenu()->MenuButtonSet(0, MenuCPROP, false);
     PL()->AbortLongText();
     if (wb_shell)
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),

@@ -178,7 +178,7 @@ cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
     if (!sd) {
         Log()->PopUpErr("No current cell!");
         if (caller)
-            Menu()->SetStatus(caller, false);
+            MainMenu()->SetStatus(caller, false);
         return;
     }
     CDm_gen mgen(sd, GEN_MASTERS);
@@ -187,7 +187,7 @@ cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
             Log()->PopUpErr(
                 "Current cell contains instantiations, can't be a device.");
             if (caller)
-                Menu()->SetStatus(caller, false);
+                MainMenu()->SetStatus(caller, false);
             return;
         }
     }
@@ -196,7 +196,7 @@ cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
         Log()->PopUpErr(
             "Current cell contains physical data, can't be a device.");
         if (caller)
-            Menu()->SetStatus(caller, false);
+            MainMenu()->SetStatus(caller, false);
         return;
     }
 

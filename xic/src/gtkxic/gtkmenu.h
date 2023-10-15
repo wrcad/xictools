@@ -99,7 +99,7 @@ public:
 
     GtkAccelGroup *AccelGroup() { return (accelGroup); }
 
-    static GTKmenu *self()  { return (dynamic_cast<GTKmenu*>(Menu())); }
+    static GTKmenu *self()  { return (dynamic_cast<GTKmenu*>(::MainMenu())); }
 
 private:
 

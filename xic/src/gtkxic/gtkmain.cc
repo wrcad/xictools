@@ -697,7 +697,7 @@ GTKpkg::SubwinDestroy(int wnum)
         w->pre_destroy(wnum);
         delete w;
     }
-    Menu()->DestroySubwinMenu(wnum);
+    MainMenu()->DestroySubwinMenu(wnum);
 }
 
 
@@ -1119,7 +1119,7 @@ GTKsubwin::subw_initialize(int wnum)
         gtk_window_move(GTK_WINDOW(wb_shell), rect.x, rect.y);
     }
 
-    GtkWidget *menu = GTK_WIDGET(Menu()->CreateSubwinMenu(wnum));
+    GtkWidget *menu = GTK_WIDGET(MainMenu()->CreateSubwinMenu(wnum));
     gtk_widget_show(menu);
 
     // A dummy menubar item displaying a label.
@@ -1703,7 +1703,7 @@ GTKsubwin::CheckExec(bool exact)
             break;
     if (wnum == DSP_NUMWINS)
         wnum = -1;
-    MenuEnt *ent = Menu()->MatchEntry(wib_keys, wib_keypos, wnum, exact);
+    MenuEnt *ent = MainMenu()->MatchEntry(wib_keys, wib_keypos, wnum, exact);
     if (ent) {
         if (ent->is_dynamic()) {
             // Ignore the submenu buttons in the User menu

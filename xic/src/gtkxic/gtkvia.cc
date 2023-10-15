@@ -570,7 +570,7 @@ sStv::update(GRobject caller, CDc *cd)
             // Panel was started from the menu (via creation mode),
             // detach from menu.
 
-            Menu()->SetStatus(caller, false);
+            MainMenu()->SetStatus(caller, false);
             stv_caller = 0;
         }
         gtk_button_set_label(GTK_BUTTON(stv_apply), "Update Via");

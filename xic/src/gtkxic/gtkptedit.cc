@@ -591,7 +591,7 @@ sTE::te_action_proc(GtkWidget *caller, void*)
             }
         }
         int xx, yy;
-        Menu()->PointerRootLoc(&xx, &yy);
+        MainMenu()->PointerRootLoc(&xx, &yy);
         PL()->FlashMessageHereV(xx, yy, "No terminal for index %d", indx);
     }
 }

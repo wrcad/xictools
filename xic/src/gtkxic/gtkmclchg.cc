@@ -88,7 +88,7 @@ cEdit::PopUpLayerChangeMode(ShowMode mode)
     if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        Menu()->MenuButtonSet(MMmain, MenuMCLCG, false);
+        MainMenu()->MenuButtonSet(MMmain, MenuMCLCG, false);
         delete Lcg;
         return;
     }

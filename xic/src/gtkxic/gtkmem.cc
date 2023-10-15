@@ -220,7 +220,7 @@ sMem::sMem() : GTKdraw(XW_TEXT)
 sMem::~sMem()
 {
     Mem = 0;
-    Menu()->MenuButtonSet(0, MenuALLOC, false);
+    MainMenu()->MenuButtonSet(0, MenuALLOC, false);
     if (wb_shell) {
         g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
             (gpointer)mem_popdown, wb_shell);

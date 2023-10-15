@@ -1219,9 +1219,9 @@ sEs::update()
 
     if (DSP()->CurMode() == Electrical) {
         GTKdev::SetStatus(es_p1_tedit,
-            Menu()->MenuButtonStatus(MMside, MenuSUBCT));
+            MainMenu()->MenuButtonStatus(MMside, MenuSUBCT));
         GTKdev::SetStatus(es_p1_tfind,
-            Menu()->MenuButtonStatus(MMside, MenuNODMP));
+            MainMenu()->MenuButtonStatus(MMside, MenuNODMP));
     }
 
     GTKdev::SetStatus(es_p1_extview, EX()->isExtractionView());
@@ -1427,7 +1427,7 @@ void
 sEs::es_show_grp_node(GtkWidget *caller)
 {
     CDs *cursdp = CurCell(Physical);
-    if (caller && cursdp && Menu()->GetStatus(caller)) {
+    if (caller && cursdp && MainMenu()->GetStatus(caller)) {
         if (!EX()->associate(cursdp)) {
             GTKdev::Deselect(caller);
             return;
@@ -1499,7 +1499,7 @@ sEs::es_action(GtkWidget *caller, void*)
     }
     else if (!strcmp(name, "Groups")) {
         if (!CurCell(Physical)) {
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
             PL()->ShowPrompt("No physical data for current cell!");
             return;
         }
@@ -1507,7 +1507,7 @@ sEs::es_action(GtkWidget *caller, void*)
     }
     else if (!strcmp(name, "Nodes")) {
         if (!CurCell(Electrical)) {
-            Menu()->Deselect(caller);
+            MainMenu()->Deselect(caller);
             PL()->ShowPrompt("No electrical data for current cell!");
             return;
         }
@@ -1582,9 +1582,9 @@ sEs::es_action(GtkWidget *caller, void*)
             EX()->editTermsExec(Es->es_p1_tedit, Es->es_p1_cterms);
         else {
             bool state = GTKdev::GetStatus(caller);
-            bool st = Menu()->MenuButtonStatus(MMside, MenuSUBCT);
+            bool st = MainMenu()->MenuButtonStatus(MMside, MenuSUBCT);
             if (st != state)
-                Menu()->MenuButtonPress(MMside, MenuSUBCT);
+                MainMenu()->MenuButtonPress(MMside, MenuSUBCT);
         }
     }
     else if (!strcmp(name, "FindTerm")) {
@@ -1596,9 +1596,9 @@ sEs::es_action(GtkWidget *caller, void*)
                 SCD()->PopUpNodeMap(0, MODE_OFF);
         }
         else {
-            bool st = Menu()->MenuButtonStatus(MMside, MenuNODMP);
+            bool st = MainMenu()->MenuButtonStatus(MMside, MenuNODMP);
             if (st != state)
-                Menu()->MenuButtonPress(MMside, MenuNODMP);
+                MainMenu()->MenuButtonPress(MMside, MenuNODMP);
         }
     }
 

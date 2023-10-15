@@ -948,7 +948,7 @@ sCells::action_hdlr(GtkWidget *caller, void *client_data)
     else if (client_data == (void*)TreeCode) {
         if (cname) {
             // find the main menu button for the tree popup
-            MenuEnt *m = Menu()->FindEntry(MMcell, MenuTREE);
+            MenuEnt *m = MainMenu()->FindEntry(MMcell, MenuTREE);
             GtkWidget *widg = 0;
             if (m)
                 widg = (GtkWidget*)m->cmd.caller;

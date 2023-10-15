@@ -415,8 +415,8 @@ sPo::sPo(CDo *odesc, PRPmode activ)
 sPo::~sPo()
 {
     Po = 0;
-    if (Menu()->MenuButtonStatus(MMedit, MenuPRPTY) == 1) {
-        Menu()->MenuButtonPress(MMedit, MenuPRPTY);
+    if (MainMenu()->MenuButtonStatus(MMedit, MenuPRPTY) == 1) {
+        MainMenu()->MenuButtonPress(MMedit, MenuPRPTY);
         if (pi_odesc)
             DSP()->ShowCurrentObject(ERASE, pi_odesc, MarkerColor);
     }
@@ -690,14 +690,14 @@ sPo::po_action_proc(GtkWidget *caller, void *client_data)
     }
     if (client_data == (void*)ActivCode) {
         if (state) {
-            if (Menu()->MenuButtonStatus(MMedit, MenuPRPTY) == 0)
-                Menu()->MenuButtonPress(MMedit, MenuPRPTY);
+            if (MainMenu()->MenuButtonStatus(MMedit, MenuPRPTY) == 0)
+                MainMenu()->MenuButtonPress(MMedit, MenuPRPTY);
         }
         else {
             GTKdev::SetStatus(Po->po_info, false);
             GTKdev::SetStatus(Po->po_global, false);
-            if (Menu()->MenuButtonStatus(MMedit, MenuPRPTY) == 1)
-                Menu()->MenuButtonPress(MMedit, MenuPRPTY);
+            if (MainMenu()->MenuButtonStatus(MMedit, MenuPRPTY) == 1)
+                MainMenu()->MenuButtonPress(MMedit, MenuPRPTY);
         }
         Po->activate(state);
         return;

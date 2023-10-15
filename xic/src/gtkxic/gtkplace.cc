@@ -394,7 +394,7 @@ sPlc::sPlc(bool noprompt)
     hbox = gtk_hbox_new(false, 2);
     gtk_widget_show(hbox);
 
-    MenuEnt *m = Menu()->FindEntry(MMside, MenuPLACE);
+    MenuEnt *m = MainMenu()->FindEntry(MMside, MenuPLACE);
     if (m)
         pl_menu_placebtn = (GtkWidget*)m->cmd.caller;
     if (pl_menu_placebtn) {

@@ -645,7 +645,7 @@ sNM::update(int node)
     GTKdev::SetStatus(nm_use_np, SCD()->includeNoPhys());
     if (nm_use_extract) {
         GTKdev::SetStatus(nm_point_btn,
-            Menu()->MenuButtonStatus(MMext, MenuEXSEL));
+            MainMenu()->MenuButtonStatus(MMext, MenuEXSEL));
     }
     else
         GTKdev::SetStatus(nm_point_btn, (nm_cmd != 0));
@@ -1386,9 +1386,9 @@ sNM::nm_point_proc(GtkWidget *caller, void*)
         return;
     int state = GTKdev::GetStatus(caller);
     if (sNM::nm_use_extract) {
-        bool st = Menu()->MenuButtonStatus(MMext, MenuEXSEL);
+        bool st = MainMenu()->MenuButtonStatus(MMext, MenuEXSEL);
         if (st != state)
-            Menu()->MenuButtonPress(MMext, MenuEXSEL);
+            MainMenu()->MenuButtonPress(MMext, MenuEXSEL);
     }
     else {
         if (state) {
