@@ -1594,13 +1594,22 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
             if (XM()->IsDoingHelp())
                 PopUpHelp("button4");
             else {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
                 EV()->ButtonNopCallback(sw_windesc, ev->position().x(),
                     ev->position().y(), mod_state(state));
+#else
+                EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(),
+                    mod_state(state));
+#endif
             }
         }
         else {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
             EV()->Button1Callback(sw_windesc, ev->position().x(), ev->position().y(),
                 mod_state(state));
+#else
+            EV()->Button1Callback(sw_windesc, ev->x(), ev->y(), mod_state(state));
+#endif
         }
         break;
     case 2:
@@ -1608,8 +1617,12 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button2");
         else {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
             EV()->Button2Callback(sw_windesc, ev->position().x(), ev->position().y(),
                 mod_state(state));
+#else
+            EV()->Button2Callback(sw_windesc, ev->x(), ev->y(), mod_state(state));
+#endif
         }
         break;
     case 3:
@@ -1617,8 +1630,12 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button3");
         else {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
             EV()->Button3Callback(sw_windesc, ev->position().x(), ev->position().y(),
                 mod_state(state));
+#else
+            EV()->Button3Callback(sw_windesc, ev->x(), ev->y(), mod_state(state));
+#endif
         }
         break;
     default:
@@ -1626,8 +1643,12 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button4");
         else {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
             EV()->ButtonNopCallback(sw_windesc, ev->position().x(), ev->position().y(),
                 mod_state(state));
+#else
+            EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(), mod_state(state));
+#endif
         }
         break;
     }
@@ -1681,8 +1702,13 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
     // The point can be outside of the viewport, due to the grab.
     // Check for this.
     const BBox *BB = &sw_windesc->Viewport();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     bool in = (ev->position().x() >= 0 && ev->position().x() < BB->right &&
         ev->position().y() >= 0 && ev->position().y() < BB->bottom);
+#else
+    bool in = (ev->x() >= 0 && ev->x() < BB->right &&
+        ev->y() >= 0 && ev->y() < BB->bottom);
+#endif
 
     bool showing_ghost = ShowingGhost();
     if (showing_ghost)
@@ -1693,6 +1719,7 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
     switch (button) {
     case 1:
 //        if (grabstate.check_simb4(false)) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         if (0) {
             EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
                 ev->position().x(), ev->position().y(), mod_state(state));
@@ -1701,18 +1728,43 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
             EV()->Button1ReleaseCallback((in ? sw_windesc : 0),
                 ev->position().x(), ev->position().y(), mod_state(state));
         }
+#else
+        if (0) {
+            EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
+                ev->x(), ev->y(), mod_state(state));
+        }
+        else {
+            EV()->Button1ReleaseCallback((in ? sw_windesc : 0),
+                ev->x(), ev->y(), mod_state(state));
+        }
+#endif
         break;
     case 2:
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         EV()->Button2ReleaseCallback((in ? sw_windesc : 0),
             ev->position().x(), ev->position().y(), mod_state(state));
+#else
+        EV()->Button2ReleaseCallback((in ? sw_windesc : 0),
+            ev->x(), ev->y(), mod_state(state));
+#endif
         break;
     case 3:
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         EV()->Button3ReleaseCallback((in ? sw_windesc : 0),
             ev->position().x(), ev->position().y(), mod_state(state));
+#else
+        EV()->Button3ReleaseCallback((in ? sw_windesc : 0),
+            ev->x(), ev->y(), mod_state(state));
+#endif
         break;
     default:
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
             ev->position().x(), ev->position().y(), mod_state(state));
+#else
+        EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
+            ev->x(), ev->y(), mod_state(state));
+#endif
         break;
     }
     if (showing_ghost)
@@ -1733,7 +1785,11 @@ QTsubwin::motion_slot(QMouseEvent *ev)
 
     QRect r(QPoint(0, 0), gd_viewport->size());
     if (ev->type() != QEvent::MouseMove ||
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
             !r.contains(ev->position().x(), ev->position().y())) {
+#else
+            !r.contains(ev->x(), ev->y())) {
+#endif
         // Leave event is not reliably delivered so do this here, too.
         UndrawGhost();
 //XXX        gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
@@ -1745,11 +1801,20 @@ QTsubwin::motion_slot(QMouseEvent *ev)
     EV()->MotionCallback(sw_windesc, mod_state(ev->modifiers()));
     if (Gst()->ShowingGhostInWindow(sw_windesc)) {
         UndrawGhost();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         DrawGhost(ev->position().x(), ev->position().y());
+#else
+        DrawGhost(ev->x(), ev->y());
+#endif
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();
+#else
+    int xx = ev->x();
+    int yy = ev->y();
+#endif
     sw_windesc->PToL(xx, yy, xx, yy);
     emit update_coords(xx, yy);
 }

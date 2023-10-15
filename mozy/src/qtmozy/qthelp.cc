@@ -414,9 +414,10 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
     h_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
 #endif
     h_main_menus[0] = menuBar()->addMenu(tr("&File"));
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     h_Open = h_main_menus[0]->addAction(tr("&Open"), Qt::CTRL|Qt::Key_O,
         this, SLOT(open_slot()));
-    h_OpenFile = h_main_menus[0]->addAction(QString(tr("Open &File")),
+    h_OpenFile = h_main_menus[0]->addAction(tr("Open &File"),
         Qt::CTRL|Qt::Key_F, this, SLOT(open_file_slot()));
     h_Save = h_main_menus[0]->addAction(tr("&Save"), Qt::CTRL|Qt::Key_S,
         this, SLOT(save_slot()));
@@ -427,6 +428,21 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), Qt::CTRL|Qt::Key_Q,
         this, SLOT(quit_slot()));
+#else
+    h_Open = h_main_menus[0]->addAction(tr("&Open"), this,
+        SLOT(open_slot()), Qt::CTRL|Qt::Key_O);
+    h_OpenFile = h_main_menus[0]->addAction(tr("Open &File"), this,
+        SLOT(open_file_slot()),  Qt::CTRL|Qt::Key_F);
+    h_Save = h_main_menus[0]->addAction(tr("&Save"), this,
+        SLOT(save_slot()), Qt::CTRL|Qt::Key_S);
+    h_Print = h_main_menus[0]->addAction(tr("&Print"), this,
+        SLOT(print_slot()), Qt::CTRL|Qt::Key_P);
+    h_Reload = h_main_menus[0]->addAction(tr("&Reload"), this,
+        SLOT(reload_slot()), Qt::CTRL|Qt::Key_R);
+    h_main_menus[0]->addSeparator();
+    h_Quit = h_main_menus[0]->addAction(tr("&Quit"), this,
+        SLOT(quit_slot()), Qt::CTRL|Qt::Key_Q);
+#endif
 
     h_main_menus[1] = menuBar()->addMenu(tr("&Options"));
     h_Search = h_main_menus[1]->addAction(tr("S&earch"),
@@ -548,8 +564,13 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
 
     menuBar()->addSeparator();
     h_main_menus[3] = menuBar()->addMenu(tr("&Help"));
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     h_Help = h_main_menus[3]->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H,
         this, SLOT(help_slot()));
+#else
+    h_Help = h_main_menus[3]->addAction(tr("&Help"), this,
+        SLOT(help_slot()), Qt::CTRL|Qt::Key_H);
+#endif
 
     h_viewer->thaw();
 

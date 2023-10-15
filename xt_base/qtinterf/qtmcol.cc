@@ -491,8 +491,13 @@ QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
 
     const char *str = lstring::copy(
         wb_textarea->toPlainText().toLatin1().constData());
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int x = ev->position().x();
     int y = ev->position().y();;
+#else
+    int x = ev->x();
+    int y = ev->y();;
+#endif
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
 
@@ -565,8 +570,12 @@ QTmcolDlg::mouse_motion_slot(QMouseEvent *ev)
         return;
     if (!mc_dragging)
         return;
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     if (abs(ev->position().x() - mc_drag_x) < 5 &&
             abs(ev->position().y() - mc_drag_y) < 5)
+#else
+    if (abs(ev->x() - mc_drag_x) < 5 && abs(ev->y() - mc_drag_y) < 5)
+#endif
         return;
     if (!wb_textarea->has_selection())
         return;

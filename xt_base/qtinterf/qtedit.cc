@@ -160,32 +160,66 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     ed_filemenu = new QMenu(this);
     ed_filemenu->setTitle(QString(tr("&File")));
     if (ed_widget_type == Editor || ed_widget_type == Browser) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_filemenu->addAction(QString(tr("&Open")), Qt::CTRL|Qt::Key_O,
             this, SLOT(open_slot()));
         ed_Load = ed_filemenu->addAction(QString(tr("&Load")),
             Qt::CTRL|Qt::Key_L, this, SLOT(load_slot()));
+#else
+        ed_filemenu->addAction(QString(tr("&Open")), this, SLOT(open_slot()),
+            Qt::CTRL|Qt::Key_O);
+        ed_Load = ed_filemenu->addAction(QString(tr("&Load")), this,
+            SLOT(load_slot()), Qt::CTRL|Qt::Key_L);
+#endif
     }
     if (ed_widget_type != Browser) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_Read = ed_filemenu->addAction(QString(tr("&Read")),
             Qt::CTRL|Qt::Key_R, this, SLOT(read_slot()));
+#else
+        ed_Read = ed_filemenu->addAction(QString(tr("&Read")), this,
+            SLOT(read_slot()), Qt::CTRL|Qt::Key_R);
+#endif
     }
     if (ed_widget_type == Editor || ed_widget_type == StringEditor) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_Save = ed_filemenu->addAction(QString(tr("&Save")),
             Qt::CTRL|Qt::Key_S, this, SLOT(save_slot()));
+#else
+        ed_Save = ed_filemenu->addAction(QString(tr("&Save")), this,
+            SLOT(save_slot()), Qt::CTRL|Qt::Key_S);
+#endif
     }
     if (ed_widget_type != StringEditor) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_SaveAs = ed_filemenu->addAction(QString(tr("Save &As")),
             Qt::CTRL|Qt::Key_A, this, SLOT(save_as_slot()));
         ed_filemenu->addAction(QString(tr("&Print")), Qt::CTRL|Qt::Key_P,
             this, SLOT(print_slot()));
+#else
+        ed_SaveAs = ed_filemenu->addAction(QString(tr("Save &As")), this,
+            SLOT(save_as_slot()), Qt::CTRL|Qt::Key_A);
+        ed_filemenu->addAction(QString(tr("&Print")), this,
+            SLOT(print_slot()), Qt::CTRL|Qt::Key_P);
+#endif
     }
     ed_filemenu->addSeparator();
     if (ed_widget_type == Mailer)  {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_filemenu->addAction(QString(tr("Send &Mail")), Qt::CTRL|Qt::Key_M,
             this, SLOT(send_slot()));
+#else
+        ed_filemenu->addAction(QString(tr("Send &Mail")), this,
+            SLOT(send_slot()), Qt::CTRL|Qt::Key_M);
+#endif
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     ed_filemenu->addAction(QString(tr("&Quit")), Qt::CTRL|Qt::Key_Q,
         this, SLOT(quit_slot()));
+#else
+    ed_filemenu->addAction(QString(tr("&Quit")), this, SLOT(quit_slot()),
+            Qt::CTRL|Qt::Key_Q);
+#endif
     ed_menubar->addMenu(ed_filemenu);
 
     ed_editmenu = new QMenu(this);

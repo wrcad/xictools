@@ -839,8 +839,13 @@ QTdrcRunDlg::mouse_press_slot(QMouseEvent *ev)
 
     const char *str = lstring::copy(
         (const char*)dc_jobs->toPlainText().toLatin1());
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int x = ev->position().x();
     int y = ev->position().y();
+#else
+    int x = ev->x();
+    int y = ev->y();
+#endif
     QTextCursor cur = dc_jobs->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
     

@@ -186,8 +186,13 @@ QTprpBase::handle_button_down(QMouseEvent *ev)
 {
     pb_dragging = false;
     QByteArray qba = wb_textarea->toPlainText().toLatin1();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int x = ev->position().x();
     int y = ev->position().y();
+#else
+    int x = ev->x();
+    int y = ev->y();
+#endif
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
     const char *str = lstring::copy((const char*)qba.constData());
@@ -241,8 +246,12 @@ QTprpBase::handle_mouse_motion(QMouseEvent *ev)
 {
     if (!pb_dragging)
         return;
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     if (abs(ev->position().x() - pb_drag_x) < 5 &&
             abs(ev->position().y() - pb_drag_y) < 5)
+#else
+    if (abs(ev->x() - pb_drag_x) < 5 && abs(ev->y() - pb_drag_y) < 5)
+#endif
         return;
     PrptyText *p = get_selection();
     if (!p)

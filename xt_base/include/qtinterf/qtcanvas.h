@@ -170,7 +170,11 @@ protected:
     void mouseMoveEvent(QMouseEvent*);
     void keyPressEvent(QKeyEvent*);
     void keyReleaseEvent(QKeyEvent*);
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     void enterEvent(QEnterEvent*);
+#else
+    void enterEvent(QEvent*);
+#endif
     void leaveEvent(QEvent*);
     void focusInEvent(QFocusEvent*);
     void focusOutEvent(QFocusEvent*);

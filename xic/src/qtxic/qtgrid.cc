@@ -1108,8 +1108,13 @@ QTgridDlg::smp_btn_press_slot(QMouseEvent *ev)
     if (ev->button() != Qt::LeftButton)
         return;
     gd_dragging = true;
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     gd_drag_x = ev->position().x();
     gd_drag_y = ev->position().y();
+#else
+    gd_drag_x = ev->x();
+    gd_drag_y = ev->y();
+#endif
 }
 
 
@@ -1125,8 +1130,13 @@ QTgridDlg::smp_btn_release_slot(QMouseEvent*)
 void
 QTgridDlg::smp_motion_slot(QMouseEvent *ev)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int x = ev->position().x();
     int y = ev->position().y();
+#else
+    int x = ev->x();
+    int y = ev->y();
+#endif
     if (gd_dragging && (abs(x - gd_drag_x) > 2 || abs(y - gd_drag_y) > 2)) {
         gd_dragging = false;
         /*XXX
@@ -1142,7 +1152,11 @@ void
 QTgridDlg::vp_btn_press_slot(QMouseEvent *ev)
 {
     if (gd_stipbtn->isChecked()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         int x = ev->position().x();
+#else
+        int x = ev->x();
+#endif
         int wid = gd_viewport->width();
         int w = wid/32 - 1;
         if (w < 2)
@@ -1173,8 +1187,11 @@ void
 QTgridDlg::vp_btn_release_slot(QMouseEvent *ev)
 {
     if (gd_stipbtn->isChecked()) {
-
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         int x = ev->position().x();
+#else
+        int x = ev->x();
+#endif
         int wid = gd_viewport->width();
         int w = wid/32 - 1;
         if (w < 2)

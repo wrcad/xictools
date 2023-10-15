@@ -351,6 +351,7 @@ QTltab::button_press_slot(QMouseEvent *ev)
     }
 
     switch (button) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     case 1:
         b1_handler(ev->position().x(), ev->position().y(), state, true);
         break;
@@ -360,6 +361,17 @@ QTltab::button_press_slot(QMouseEvent *ev)
     case 3:
         b3_handler(ev->position().x(), ev->position().y(), state, true);
         break;
+#else
+    case 1:
+        b1_handler(ev->x(), ev->y(), state, true);
+        break;
+    case 2:
+        b2_handler(ev->x(), ev->y(), state, true);
+        break;
+    case 3:
+        b3_handler(ev->x(), ev->y(), state, true);
+        break;
+#endif
     }
     update();
 }
@@ -385,6 +397,7 @@ QTltab::button_release_slot(QMouseEvent *ev)
     }
 
     switch (button) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     case 1:
         b1_handler(ev->position().x(), ev->position().y(), state, false);
         break;
@@ -394,6 +407,17 @@ QTltab::button_release_slot(QMouseEvent *ev)
     case 3:
         b3_handler(ev->position().x(), ev->position().y(), state, false);
         break;
+#else
+    case 1:
+        b1_handler(ev->x(), ev->y(), state, false);
+        break;
+    case 2:
+        b2_handler(ev->x(), ev->y(), state, false);
+        break;
+    case 3:
+        b3_handler(ev->x(), ev->y(), state, false);
+        break;
+#endif
     }
 }
 
@@ -407,8 +431,13 @@ QTltab::motion_slot(QMouseEvent *ev)
     }
     ev->accept();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int x = ev->position().x();
     int y = ev->position().y();
+#else
+    int x = ev->x();
+    int y = ev->y();
+#endif
     if (drag_check(x, y)) {
         // fillpattern only
 
@@ -453,8 +482,12 @@ QTltab::drop_event_slot(QDropEvent *ev)
     if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
         QByteArray bary = ev->mimeData()->data(QTltab::mime_type());
         LayerFillData *dd = (LayerFillData*)bary.data();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         XM()->FillLoadCallback(dd,
             LT()->LayerAt(ev->position().x(), ev->position().y()));
+#else
+        XM()->FillLoadCallback(dd, LT()->LayerAt(ev->pos().x(), ev->pos().y()));
+#endif
         ev->acceptProposedAction();
         if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
             DSP()->RedisplayAll();
@@ -463,7 +496,11 @@ QTltab::drop_event_slot(QDropEvent *ev)
     if (ev->mimeData()->hasColor()) {
         ev->acceptProposedAction();
         QColor color = qvariant_cast<QColor>(ev->mimeData()->colorData());
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         int entry = entry_of_xy(ev->position().x(), ev->position().y());
+#else
+        int entry = entry_of_xy(ev->pos().x(), ev->pos().y());
+#endif
 
         if (entry > last_entry())
             return;

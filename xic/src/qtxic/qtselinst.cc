@@ -381,8 +381,13 @@ QTcellInstSelectDlg::mouse_press_slot(QMouseEvent *ev)
     ev->accept();
 
     char *str = wb_textarea->get_chars();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int x = ev->position().x();
     int y = ev->position().y();
+#else
+    int x = ev->x();
+    int y = ev->y();
+#endif
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
 

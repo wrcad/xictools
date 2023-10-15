@@ -754,8 +754,12 @@ QTplotDlg::button_down_slot(QMouseEvent *ev)
     else
         pb_graph->set_cmdmode(pb_graph->cmdmode() & ~grControlMode);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     pb_graph->gr_bdown_hdlr(button, ev->position().x(),
         pb_graph->yinv(ev->position().y()));
+#else
+    pb_graph->gr_bdown_hdlr(button, ev->x(), pb_graph->yinv(ev->y()));
+#endif
 }
 
 
@@ -791,8 +795,12 @@ QTplotDlg::button_up_slot(QMouseEvent *ev)
     else
         pb_graph->set_cmdmode(pb_graph->cmdmode() & ~grControlMode);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     pb_graph->gr_bup_hdlr(button, ev->position().x(),
         pb_graph->yinv(ev->position().y()));
+#else
+    pb_graph->gr_bup_hdlr(button, ev->x(), pb_graph->yinv(ev->y()));
+#endif
 }
 
 
@@ -804,8 +812,13 @@ QTplotDlg::motion_slot(QMouseEvent *ev)
             QTdev::self()->RemoveIdleProc(pb_id);
             pb_id = 0;
         }
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         pb_x = ev->position().x();
         pb_y = ev->position().y();
+#else
+        pb_x = ev->x();
+        pb_y = ev->y();
+#endif
         pb_id = QTdev::self()->AddIdleProc(motion_idle, this);
     }
 }

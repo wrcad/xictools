@@ -1191,11 +1191,24 @@ QTcanvas::keyReleaseEvent(QKeyEvent *ev)
 }
 
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+
 void
 QTcanvas::enterEvent(QEnterEvent *ev)
 {
     emit enter_event(ev);
 }
+
+#else
+
+void
+QTcanvas::enterEvent(QEvent *evp)
+{
+    QEnterEvent *ev = dynamic_cast<QEnterEvent*>(evp);
+    emit enter_event(ev);
+}
+
+#endif
 
 
 void

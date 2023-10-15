@@ -759,8 +759,13 @@ QTfillPatDlg::button_down_slot(QMouseEvent *ev)
 
     if (sender() == fp_editor) {
         // pixel editor
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         fp_jj = ev->position().x();
         fp_ii = ev->position().y();
+#else
+        fp_jj = ev->x();
+        fp_ii = ev->y();
+#endif
         fp_downbtn = 0;
         if (getij(&fp_jj, &fp_ii)) {
             fp_downbtn = button;
@@ -777,8 +782,13 @@ QTfillPatDlg::button_down_slot(QMouseEvent *ev)
 
     fp_dragging = true;
     fp_drag_btn = button;
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     fp_drag_x = ev->position().x();
     fp_drag_y = ev->position().y();
+#else
+    fp_drag_x = ev->x();
+    fp_drag_y = ev->y();
+#endif
 }
 
 
@@ -816,8 +826,13 @@ QTfillPatDlg::button_up_slot(QMouseEvent *ev)
 
         int jo = fp_jj;
         int io = fp_ii;
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         fp_jj = ev->position().x();
         fp_ii = ev->position().y();
+#else
+        fp_jj = ev->x();
+        fp_ii = ev->y();
+#endif
         if (!getij(&fp_jj, &fp_ii))
             return;
         int imin = (io < fp_ii ? io : fp_ii);
@@ -941,8 +956,13 @@ QTfillPatDlg::motion_slot(QMouseEvent *ev)
     if (sender() == fp_editor) {
         if (!fp_downbtn)
             return;
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         int x = ev->position().x();
         int y = ev->position().y();
+#else
+        int x = ev->x();
+        int y = ev->y();
+#endif
         if (!getij(&x, &y))
             return;
 
@@ -955,8 +975,12 @@ QTfillPatDlg::motion_slot(QMouseEvent *ev)
         DrawGhost(x, y);
     }
     else if (fp_dragging &&
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
             (abs(ev->position().x() - fp_drag_x) > 4 ||
             abs(ev->position().y() - fp_drag_y) > 4)) {
+#else
+            (abs(ev->x() - fp_drag_x) > 4 || abs(ev->y() - fp_drag_y) > 4)) {
+#endif
         fp_dragging = false;
 
         LayerFillData dd;

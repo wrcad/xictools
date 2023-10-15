@@ -962,7 +962,11 @@ QTdevMenuDlg::button_down_slot(QMouseEvent *ev)
     // Draw/redraw the toolbar.
     // Select the device clicked on, and call the function to allow
     // device placement.
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int n = whichent((int)ev->position().x());
+#else
+    int n = whichent(ev->x());
+#endif
     if (n < 0)
         return;
     dv_curdev = n;
@@ -1001,7 +1005,11 @@ void
 QTdevMenuDlg::motion_slot(QMouseEvent *ev)
 {
     // Change the border surrounding the device under the pointer.
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int n = whichent((int)ev->position().x());
+#else
+    int n = whichent(ev->x());
+#endif
     if (n != dv_curdev)
         show_unselected(dv_curdev);
     dv_curdev = n;
@@ -1013,16 +1021,19 @@ void
 QTdevMenuDlg::enter_slot(QEnterEvent *ev)
 {
     // On entering the toolbar, change the border of the device.
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     dv_curdev = whichent((int)ev->position().x());
+#else
+    dv_curdev = whichent(ev->x());
+#endif
     show_selected(dv_curdev);
 }
 
 
 void
-QTdevMenuDlg::leave_slot(QEvent*)
+QTdevMenuDlg::leave_slot(QEvent *ev)
 {
     // On leaving the toolbar, return the border to normal.
-//    dv_curdev = whichent((int)ev->position().x());
     show_unselected(dv_curdev);
 }
 

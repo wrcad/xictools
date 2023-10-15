@@ -339,8 +339,13 @@ QTcellPrpDlg::handle_button_down(QMouseEvent *ev)
 // Drag support disabled, this provides selection support only.
 //    pc_dragging = false;
     QByteArray qba = wb_textarea->toPlainText().toLatin1();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int x = ev->position().x();
     int y = ev->position().y();
+#else
+    int x = ev->x();
+    int y = ev->y();
+#endif
     QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
     int pos = cur.position();
     const char *str = lstring::copy((const char*)qba.constData());
