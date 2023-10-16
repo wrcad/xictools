@@ -589,10 +589,10 @@ QTplaceDlg::master_menu_slot(int ix)
         }
         if (pl_str_editor)
             pl_str_editor->popdown();
-        int x, y;
-        QTdev::self()->Location(pl_masterbtn, &x, &y);
+        int xx, yy;
+        QTdev::self()->Location(pl_masterbtn, &xx, &yy);
         pl_str_editor = DSPmainWbagRet(PopUpEditString(0,
-            GRloc(LW_XYA, x - 200, y), "File or cell name of cell to place?",
+            GRloc(LW_XYA, xx - 200, yy), "File or cell name of cell to place?",
             defname, pl_new_cb, 0, 200, 0));
         if (pl_str_editor)
             pl_str_editor->register_usrptr((void**)&pl_str_editor);

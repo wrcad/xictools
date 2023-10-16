@@ -804,9 +804,9 @@ void
 QTconvOutFmt::oasadv_btn_slot(bool state)
 {
     if (state) {
-        int x, y;
-        QTdev::self()->Location(fmt_oasadv, &x, &y);
-        Cvt()->PopUpOasAdv(fmt_oasadv, MODE_ON, x, y);
+        int xx, yy;
+        QTdev::self()->Location(fmt_oasadv, &xx, &yy);
+        Cvt()->PopUpOasAdv(fmt_oasadv, MODE_ON, xx, yy);
     }
     else
         Cvt()->PopUpOasAdv(0, MODE_OFF, 0, 0);

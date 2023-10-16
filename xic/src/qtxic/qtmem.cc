@@ -178,22 +178,22 @@ QTmemMonDlg::update()
     Clear();
     char buf[128];
 
-    int x = 2;
-    int y = fhei;
+    int xx = 2;
+    int yy = fhei;
     int spw = fwid;
 
     SetColor(c1);
     const char *str = "Cells:";
-    Text(str, x, y, 0);
-    x += 7 * spw;
+    Text(str, xx, yy, 0);
+    xx += 7 * spw;
     snprintf(buf, sizeof(buf), "phys=%d elec=%d", CDcdb()->cellCount(Physical),
         CDcdb()->cellCount(Electrical));
     str = buf;
     SetColor(c2);
-    Text(str, x, y, 0);
+    Text(str, xx, yy, 0);
 
-    x = 2;
-    y += fhei;
+    xx = 2;
+    yy += fhei;
     SetColor(c1);
     char b;
 #ifdef HAVE_LOCAL_ALLOCATOR
@@ -202,11 +202,11 @@ QTmemMonDlg::update()
     double v = chk_val(coresize(), &b);
 #endif
     snprintf(buf, sizeof(buf), "Current Datasize (%cB):", b);
-    Text(buf, x, y, 0);
-    x += 24 * spw;
+    Text(buf, xx, yy, 0);
+    xx += 24 * spw;
     snprintf(buf, sizeof(buf), "%.3f", v);
     SetColor(c2);
-    Text(buf, x, y, 0);
+    Text(buf, xx, yy, 0);
 
 #ifdef HAVE_SYS_RESOURCE_H
     rlimit rl;
@@ -221,51 +221,51 @@ QTmemMonDlg::update()
         return;
     }
 
-    x = 2;
-    y += fhei;
+    xx = 2;
+    yy += fhei;
     str = "System Datasize Limits";
     SetColor(c1);
-    Text(str, x, y, 0);
-    x = 2;
-    y += fhei;
+    Text(str, xx, yy, 0);
+    xx = 2;
+    yy += fhei;
     if (rl.rlim_cur != RLIM_INFINITY && rl2.rlim_cur != RLIM_INFINITY &&
             (v = chk_val(0.001 * (rl.rlim_cur + rl2.rlim_cur), &b)) > 0) {
         snprintf(buf, sizeof(buf), "Soft (%cB):", b);
-        Text(buf, x, y, 0);
-        x += 24*spw;
+        Text(buf, xx, yy, 0);
+        xx += 24*spw;
         snprintf(buf, sizeof(buf), "%.1f", v);
         SetColor(c2);
-        Text(buf, x, y, 0);
+        Text(buf, xx, yy, 0);
     }
     else {
         str = "Soft:";
-        Text(str, x, y, 0);
-        x += 24*spw;
+        Text(str, xx, yy, 0);
+        xx += 24*spw;
         str = "none set";
         SetColor(c2);
-        Text(str, x, y, 0);
+        Text(str, xx, yy, 0);
     }
 
     SetColor(c1);
-    x = 2;
-    y += fhei;
+    xx = 2;
+    yy += fhei;
 
     if (rl.rlim_max != RLIM_INFINITY && rl2.rlim_max != RLIM_INFINITY &&
             (v = chk_val(0.001 * (rl.rlim_max + rl2.rlim_max), &b)) > 0) {
         snprintf(buf, sizeof(buf), "Hard (%cB):", b);
-        Text(buf, x, y, 0);
-        x += 24*spw;
+        Text(buf, xx, yy, 0);
+        xx += 24*spw;
         snprintf(buf, sizeof(buf), "%.1f", v);
         SetColor(c2);
-        Text(buf, x, y, 0);
+        Text(buf, xx, yy, 0);
     }
     else {
         str = "Hard:";
-        Text(str, x, y, 0);
-        x += 24*spw;
+        Text(str, xx, yy, 0);
+        xx += 24*spw;
         str = "none set";
         SetColor(c2);
-        Text(str, x, y, 0);
+        Text(str, xx, yy, 0);
     }
 #else
 #ifdef WIN32
@@ -276,27 +276,27 @@ QTmemMonDlg::update()
     unsigned avail = mem.dwAvailPhys + mem.dwAvailPageFile;
     unsigned total = mem.dwTotalPhys + mem.dwTotalPageFile;
 
-    x = 2;
-    y += fhei;
+    xx = 2;
+    yy += fhei;
     v = chk_val(0.001 * avail, &b);
     snprintf(buf, sizeof(buf), "Available Memory (%cB):", b);
     SetColor(c1);
-    Text(buf, x, y, 0);
-    x += 24 * spw;
+    Text(buf, xx, yy, 0);
+    xx += 24 * spw;
     snprintf(buf, sizeof(buf), "%.1f", v);
     SetColor(c2);
-    Text(buf, x, y, 0);
+    Text(buf, xx, yy, 0);
 
-    x = 2;
-    y += fhei;
+    xx = 2;
+    yy += fhei;
     v = chk_val(0.001 * total, &b);
     snprintf(buf, sizeof(buf), "Total Memory (%cB):", b);
     SetColor(c1);
-    Text(buf, x, y, 0);
-    x += 24 * spw;
+    Text(buf, xx, yy, 0);
+    xx += 24 * spw;
     snprintf(buf, sizeof(buf), "%.1f", v);
     SetColor(c2);
-    Text(buf, x, y, 0);
+    Text(buf, xx, yy, 0);
 #endif
 #endif
     Update();

@@ -139,13 +139,7 @@ namespace {
 }
 
 
-//-------------------------------------------------------------------------
-// Node (Net) Name Mapping
-//
-// Help system keywords used:
-//  xic:nodmp
-
-namespace {
+namespace ns_nodmp {
     struct NmpState : public CmdState
     {
         NmpState(const char *nm, const char *hk) : CmdState(nm, hk) { }
@@ -158,6 +152,12 @@ namespace {
     };
 }
 
+
+//-------------------------------------------------------------------------
+// Node (Net) Name Mapping
+//
+// Help system keywords used:
+//  xic:nodmp
 
 // The return is true when MODE_UPD, and an update was done.  This is
 // used by the extraction system.  True is also returned on successful

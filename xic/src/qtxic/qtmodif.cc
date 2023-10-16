@@ -420,25 +420,25 @@ QTmodifDlg::mouse_press_slot(QMouseEvent *ev)
     const char *str = lstring::copy(
         m_text->toPlainText().toLatin1().constData());
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    QTextCursor cur = m_text->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    QTextCursor cur = m_text->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
 
-    if (isspace(str[pos])) {
+    if (isspace(str[posn])) {
         // Clicked on white space.
         delete [] str;
         return;
     }
 
     const char *lineptr = str;
-    for (int i = 0; i <= pos; i++) {
+    for (int i = 0; i <= posn; i++) {
         if (str[i] == '\n') {
-            if (i == pos) {
+            if (i == posn) {
                 // Clicked to right of line.
                 delete [] str;
                 return;
@@ -447,7 +447,7 @@ QTmodifDlg::mouse_press_slot(QMouseEvent *ev)
         }
     }
 
-    const char *start = str + pos;
+    const char *start = str + posn;
     const char *end = start;
     while (start > lineptr && !isspace(*start))
         start--;

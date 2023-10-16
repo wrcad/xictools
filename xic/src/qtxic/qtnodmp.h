@@ -51,12 +51,16 @@
 // Node (Net) Name Mapping
 //
 
-namespace { struct NmpState; }
+namespace ns_nodmp {
+    struct NmpState;
+}
 class QPushButton;
 class QLineEdit;
 class QRadioButton;
 class QTreeWidget;
 class QCheckBox;
+
+using namespace ns_nodmp;
 
 class QTnodeMapDlg : public QDialog, public QTbag
 {

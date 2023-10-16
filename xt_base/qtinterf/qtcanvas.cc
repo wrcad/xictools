@@ -296,17 +296,17 @@ application code.
 // main pixmap if 0 is passed.
 //
 void
-QTcanvas::set_draw_to_pixmap(QPixmap *pixmap)
+QTcanvas::set_draw_to_pixmap(QPixmap *pixmp)
 {
-    (void)pixmap;
+    (void)pixmp;
     //XXX called from html viewer
     /*
-    if (pixmap) {
+    if (pixmp) {
         if (da_painter_temp)
             // already drawing to pixmap
             return;
         da_painter_temp = da_painter;
-        da_painter = new QPainter(pixmap);
+        da_painter = new QPainter(pixmp);
     }
     else {
         if (!da_painter_temp)
@@ -1028,9 +1028,9 @@ QTcanvas::set_fill(bool tiling)
 // Set the pixmap for use in tiling (see set_fill).
 //
 void
-QTcanvas::set_tile(QPixmap *pixmap)
+QTcanvas::set_tile(QPixmap *pixmp)
 {
-    da_tile_pixmap = pixmap;
+    da_tile_pixmap = pixmp;
 }
 
 
@@ -1259,7 +1259,7 @@ QTcanvas::initialize()
 // Ghost drawing.
 
 void
-QTcanvas::set_ghost(GhostDrawFunc callback, int x, int y)
+QTcanvas::set_ghost(GhostDrawFunc callback, int xx, int yy)
 {
     if (gd_ghost_draw_func) {
         if (gd_undraw && !gd_first_ghost) {
@@ -1296,8 +1296,8 @@ QTcanvas::set_ghost(GhostDrawFunc callback, int x, int y)
         create_overlay_backg();
 
         gd_ghost_draw_func = callback;
-        gd_ref_x = x;
-        gd_ref_y = y;
+        gd_ref_x = xx;
+        gd_ref_y = yy;
         gd_last_x = 0;
         gd_last_y = 0;
         gd_ghost_cx_cnt = 0;
@@ -1321,9 +1321,9 @@ QTcanvas::set_ghost(GhostDrawFunc callback, int x, int y)
 // Turn on/off display of ghosting.  Keep track of calls in ghost_cx_cnt.
 //
 void
-QTcanvas::show_ghost(bool show)
+QTcanvas::show_ghost(bool showit)
 {
-    if (!show) {
+    if (!showit) {
         if (!gd_ghost_cx_cnt && gd_show_ghost) {
             undraw_ghost(false);
             gd_show_ghost = false;
@@ -1335,7 +1335,6 @@ QTcanvas::show_ghost(bool show)
                 gd_overlay_bg = tmp;
                 da_ghost_bg_set = false;
             }
-//printf("show0 %p\n", da_overlay_bg);
         }
         gd_ghost_cx_cnt++;
     }
@@ -1351,7 +1350,6 @@ QTcanvas::show_ghost(bool show)
                 da_ghost_bg_set = true;
             }
             create_overlay_backg();
-//printf("show 1 %p\n", da_overlay_bg);
 
             gd_show_ghost = true;
 
@@ -1395,24 +1393,26 @@ QTcanvas::undraw_ghost(bool reset)
 // Draw a ghost at x, y.
 //
 void
-QTcanvas::draw_ghost(int x, int y)
+QTcanvas::draw_ghost(int xx, int yy)
 {
     if (gd_ghost_draw_func && gd_show_ghost && !gd_undraw) {
         set_overlay_mode(true);
-        gd_last_x = x;
-        gd_last_y = y;
+        gd_last_x = xx;
+        gd_last_y = yy;
         if (gd_xor_mode) {
-            da_painter->setCompositionMode(QPainter::RasterOp_SourceXorDestination);
+            da_painter->setCompositionMode(
+                QPainter::RasterOp_SourceXorDestination);
             set_color(da_ghost_fg);
             gd_linedb = new GRlineDb;
-            (*gd_ghost_draw_func)(x, y, gd_ref_x, gd_ref_y, gd_undraw);
+            (*gd_ghost_draw_func)(xx, yy, gd_ref_x, gd_ref_y, gd_undraw);
             delete gd_linedb;
             gd_linedb = 0;
             set_color(da_fg);
-            da_painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+            da_painter->setCompositionMode(
+                QPainter::CompositionMode_SourceOver);
         }
         else
-            (*gd_ghost_draw_func)(x, y, gd_ref_x, gd_ref_y, gd_undraw);
+            (*gd_ghost_draw_func)(xx, yy, gd_ref_x, gd_ref_y, gd_undraw);
         gd_undraw = true;
         gd_first_ghost = false;
         set_overlay_mode(false);

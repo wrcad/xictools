@@ -1020,7 +1020,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     // upper left window corner.
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
-    hbox->setContentsMargins(qm);
+    hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
     hbox->setMenuBar(sw_menubar);

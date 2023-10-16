@@ -205,11 +205,11 @@ QTdisplayWinDlg::update(const BBox *BB)
 {
     if (!BB)
         return;
-    int x = (BB->left + BB->right)/2;
-    int y = (BB->bottom + BB->top)/2;
+    int xx = (BB->left + BB->right)/2;
+    int yy = (BB->bottom + BB->top)/2;
     int w = BB->width();
-    dw_sb_x->setValue(MICRONS(x));
-    dw_sb_y->setValue(MICRONS(y));
+    dw_sb_x->setValue(MICRONS(xx));
+    dw_sb_y->setValue(MICRONS(yy));
     dw_sb_wid->setValue(MICRONS(w));
 }
 
@@ -221,10 +221,10 @@ QTdisplayWinDlg::apply_btn_slot()
     double dw = dw_sb_wid->value();
 
     int wid2 = abs(INTERNAL_UNITS(dw)/2);
-    int x = INTERNAL_UNITS(dx);
-    int y = INTERNAL_UNITS(dy);
+    int xx = INTERNAL_UNITS(dx);
+    int yy = INTERNAL_UNITS(dy);
 
-    BBox BB(x - wid2, y, x + wid2, y);
+    BBox BB(xx - wid2, yy, xx + wid2, yy);
     if (dw_callback && !(*dw_callback)(true, &BB, dw_arg))
         return;
     Cvt()->PopUpDisplayWindow(0, MODE_OFF, 0, 0, 0);

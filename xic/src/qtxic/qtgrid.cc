@@ -685,17 +685,17 @@ QTgridDlg::redraw()
         int os = 0;
         if (tw < wid)
             os = (wid - tw)/2;
-        unsigned mask = ~((~(unsigned)0) >> 1);
-        int x = os;
+        unsigned msk = ~((~(unsigned)0) >> 1);
+        int xx = os;
         int xs = -1;
         for (int i = 0; i < 32; i++) {
-            if (mask & gd_grid.linestyle().mask) {
-                Box(x, 1, x+w, hei-2);
+            if (msk & gd_grid.linestyle().mask) {
+                Box(xx, 1, xx+w, hei-2);
                 if (xs < 0)
-                    xs = x;
+                    xs = xx;
             }
-            x += w;
-            mask >>= 1;
+            xx += w;
+            msk >>= 1;
         }
         if (xs < 0)
             xs = tw + os;
@@ -1131,13 +1131,13 @@ void
 QTgridDlg::smp_motion_slot(QMouseEvent *ev)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    if (gd_dragging && (abs(x - gd_drag_x) > 2 || abs(y - gd_drag_y) > 2)) {
+    if (gd_dragging && (abs(xx - gd_drag_x) > 2 || abs(yy - gd_drag_y) > 2)) {
         gd_dragging = false;
         /*XXX
         GtkTargetList *targets = gtk_target_list_new(gd_targets, 1);
@@ -1153,9 +1153,9 @@ QTgridDlg::vp_btn_press_slot(QMouseEvent *ev)
 {
     if (gd_stipbtn->isChecked()) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        int x = ev->position().x();
+        int xx = ev->position().x();
 #else
-        int x = ev->x();
+        int xx = ev->x();
 #endif
         int wid = gd_viewport->width();
         int w = wid/32 - 1;
@@ -1165,7 +1165,7 @@ QTgridDlg::vp_btn_press_slot(QMouseEvent *ev)
         int os = 0;
         if (tw < wid)
             os = (wid - tw)/2;
-        int n = (x - os)/w;
+        int n = (xx - os)/w;
         if (n < 0 || n > 31)
             return;
         n = 31 - n;
@@ -1188,9 +1188,9 @@ QTgridDlg::vp_btn_release_slot(QMouseEvent *ev)
 {
     if (gd_stipbtn->isChecked()) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        int x = ev->position().x();
+        int xx = ev->position().x();
 #else
-        int x = ev->x();
+        int xx = ev->x();
 #endif
         int wid = gd_viewport->width();
         int w = wid/32 - 1;
@@ -1200,7 +1200,7 @@ QTgridDlg::vp_btn_release_slot(QMouseEvent *ev)
         int os = 0;
         if (tw < wid)
             os = (wid - tw)/2;
-        int n = (x - os)/w;
+        int n = (xx - os)/w;
         if (n < 0 || n > 31)
             return;
         n = 31 - n;

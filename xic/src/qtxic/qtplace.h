@@ -43,6 +43,7 @@
 
 #include "main.h"
 #include "edit.h"
+#include "dsp_inlines.h"
 #include "qtmain.h"
 
 #include <QDialog>

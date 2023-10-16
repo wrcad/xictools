@@ -289,9 +289,9 @@ QTphysTermDlg::update(TermEditInfo *tinfo, CDsterm *term)
     }
 
     sLstr lstr;
-    unsigned int mask = TE_UNINIT | TE_FIXED;
+    unsigned int msk = TE_UNINIT | TE_FIXED;
     for (FlagDef *f = TermFlags; f->name; f++) {
-        if (tinfo->flags() & f->value & mask) {
+        if (tinfo->flags() & f->value & msk) {
             if (lstr.string())
                 lstr.add_c(' ');
             lstr.add(f->name);

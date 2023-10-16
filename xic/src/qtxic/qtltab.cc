@@ -432,16 +432,16 @@ QTltab::motion_slot(QMouseEvent *ev)
     ev->accept();
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    if (drag_check(x, y)) {
+    if (drag_check(xx, yy)) {
         // fillpattern only
 
-        int entry = entry_of_xy(x, y);
+        int entry = entry_of_xy(xx, yy);
         int last_ent = last_entry();
         if (entry <= last_ent) {
             CDl *ld =

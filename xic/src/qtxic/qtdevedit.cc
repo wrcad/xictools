@@ -322,10 +322,10 @@ QTdeviceDlg::~QTdeviceDlg()
 
 
 void
-QTdeviceDlg::set_ref(int x, int y)
+QTdeviceDlg::set_ref(int xx, int yy)
 {
-    de_xref = x;
-    de_yref = y;
+    de_xref = xx;
+    de_yref = yy;
     QTdev::SetStatus(de_branch, false);
 }
 

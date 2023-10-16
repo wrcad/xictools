@@ -143,18 +143,18 @@ QTtextEdit::set_editable(bool editable)
 //
 void
 QTtextEdit::insert_chars_at_point(const QColor *color, const char *string,
-    int pos, int nc)
+    int posn, int nc)
 {
     if (!string || nc == 0)
         return;
     QTextCursor c = textCursor();
-    if (pos < 0)
+    if (posn < 0)
         c.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
     else {
         c.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-        if (pos) {
+        if (posn) {
             c.movePosition(QTextCursor::NextCharacter,
-                QTextCursor::MoveAnchor, pos);
+                QTextCursor::MoveAnchor, posn);
         }
     }
     setTextCursor(c);
@@ -191,16 +191,16 @@ QTtextEdit::get_insertion_point()
 // Set the cursor offset into text, -1 indicates end.
 //
 void
-QTtextEdit::set_insertion_point(int pos)
+QTtextEdit::set_insertion_point(int posn)
 {
     QTextCursor c = textCursor();
-    if (pos < 0)
+    if (posn < 0)
         c.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
     else {
         c.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-        if (pos) {
+        if (posn) {
             c.movePosition(QTextCursor::NextCharacter,
-                QTextCursor::MoveAnchor, pos);
+                QTextCursor::MoveAnchor, posn);
         }
     }
     setTextCursor(c);
@@ -451,9 +451,9 @@ return (val);
 // visible.
 //
 void
-QTtextEdit::scroll_to_pos(int pos)
+QTtextEdit::scroll_to_pos(int posn)
 {
-    set_insertion_point(pos);  // scrolls there automatically?
+    set_insertion_point(posn);  // scrolls there automatically?
 
 /*
     GtkTextBuffer *tbf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));

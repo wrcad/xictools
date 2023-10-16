@@ -340,20 +340,20 @@ QTcellPrpDlg::handle_button_down(QMouseEvent *ev)
 //    pc_dragging = false;
     QByteArray qba = wb_textarea->toPlainText().toLatin1();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
     const char *str = lstring::copy((const char*)qba.constData());
     const char *line_start = str;
     int linesel = 0;
-    for (int i = 0; i <= pos; i++) {
+    for (int i = 0; i <= posn; i++) {
         if (str[i] == '\n') {
-            if (i == pos) {
+            if (i == posn) {
                 // Clicked to  right of line.
                 delete [] str;
                 return;
@@ -364,9 +364,9 @@ QTcellPrpDlg::handle_button_down(QMouseEvent *ev)
     }
     if (line_start && *line_start != '\n') {
         PrptyText *p = pc_list;
-        pos = line_start - str;
+        posn = line_start - str;
         for ( ; p; p = p->next()) {
-            if (pos >= p->start() && pos < p->end())
+            if (posn >= p->start() && posn < p->end())
                 break;
         }
         if (p && pc_line_selected != linesel) {
@@ -375,8 +375,8 @@ QTcellPrpDlg::handle_button_down(QMouseEvent *ev)
 //            if (pc_btn_callback)
 //                (*pc_btn_callback)(p);
             delete [] str;
-//            pc_drag_x = x;
-//            pc_drag_y = y;
+//            pc_drag_x = xx;
+//            pc_drag_y = yy;
 //            pc_dragging = true;
             return;
         }

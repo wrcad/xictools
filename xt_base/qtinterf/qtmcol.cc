@@ -263,13 +263,13 @@ QTmcolDlg::get_selection()
 // Bit == 1:  button sensitive when selection.
 //
 void
-QTmcolDlg::set_button_sens(int mask)
+QTmcolDlg::set_button_sens(int msk)
 {
     int bm = 1;
-    mc_btnmask = ~mask;
+    mc_btnmask = ~msk;
     bool has_sel = (mc_end != mc_start);
     for (int i = 0; i < MC_MAXBTNS && mc_buttons[i]; i++) {
-        mc_buttons[i]->setEnabled((bm & mask) && has_sel);
+        mc_buttons[i]->setEnabled((bm & msk) && has_sel);
         bm <<= 1;
     }
 }
@@ -492,27 +492,27 @@ QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
     const char *str = lstring::copy(
         wb_textarea->toPlainText().toLatin1().constData());
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();;
+    int xx = ev->position().x();
+    int yy = ev->position().y();;
 #else
-    int x = ev->x();
-    int y = ev->y();;
+    int xx = ev->x();
+    int yy = ev->y();;
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
 
     select_range(0, 0);
 
-    if (isspace(str[pos])) {
+    if (isspace(str[posn])) {
         // Clicked on white space.
         delete [] str;
         return;
     }
 
     const char *lineptr = str;
-    for (int i = 0; i <= pos; i++) {
+    for (int i = 0; i <= posn; i++) {
         if (str[i] == '\n') {
-            if (i == pos) {
+            if (i == posn) {
                 // Clicked to right of line.
                 delete [] str;
                 return;
@@ -520,7 +520,7 @@ QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
             lineptr = str + i+1;
         }
     }
-    int start = pos - (lineptr - str);;
+    int start = posn - (lineptr - str);;
     int end = start;
     while (start > 0 && !isspace(lineptr[start]))
         start--;
@@ -550,8 +550,8 @@ QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
         (*p_callback)(tbuf, p_cb_arg);
     delete [] tbuf;
 
-    mc_drag_x = x;
-    mc_drag_y = y;
+    mc_drag_x = xx;
+    mc_drag_y = yy;
     mc_dragging = true;
 }
 

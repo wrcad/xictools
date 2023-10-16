@@ -833,14 +833,25 @@ QTeditDlg::send_slot()
         if (!state.nfiles) {
             snprintf(buf, sizeof(buf), "mail -s \"%s\" %s < %s", subject,
                 mailaddr, descname);
-            system(buf);
+            int rt = system(buf);
+            if (rt) {
+                snprintf(buf, sizeof(buf),
+                    "Warning: operation returned error status %d.\n", rt);
+                PopUpMessage(buf, false);
+            }
         }
         else {
             for (int i = 0; i < state.nfiles; i++) {
                 // What is "-oi"?  took this from mpack
+//XXX fixme, sendmail may not exist
                 snprintf(buf, sizeof(buf), "sendmail -oi %s < %s", mailaddr,
                     state.fnames[i]);
-                system(buf);
+                int rt = system(buf);
+                if (rt) {
+                    snprintf(buf, sizeof(buf),
+                        "Warning: operation returned error status %d.\n", rt);
+                    fprintf(stderr, buf);
+                }
             }
         }
     }

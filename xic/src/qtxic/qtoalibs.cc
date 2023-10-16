@@ -677,9 +677,9 @@ void
 QToaLibsDlg::defs_btn_slot(bool state)
 {
     if (state) {
-        int x, y;
-        QTdev::self()->Location(lb_defsbtn, &x, &y);
-        OAif()->PopUpOAdefs(lb_defsbtn, MODE_ON, x - 100, y + 50);
+        int xx, yy;
+        QTdev::self()->Location(lb_defsbtn, &xx, &yy);
+        OAif()->PopUpOAdefs(lb_defsbtn, MODE_ON, xx - 100, yy + 50);
     }
     else
         OAif()->PopUpOAdefs(0, MODE_OFF, 0, 0);
@@ -697,9 +697,9 @@ void
 QToaLibsDlg::tech_btn_slot(bool state)
 {
     if (state) {
-        int x, y;
-        QTdev::self()->Location(lb_techbtn, &x, &y);
-        OAif()->PopUpOAtech(lb_techbtn, MODE_ON, x + 100, y + 50);
+        int xx, yy;
+        QTdev::self()->Location(lb_techbtn, &xx, &yy);
+        OAif()->PopUpOAtech(lb_techbtn, MODE_ON, xx + 100, yy + 50);
     }
     else
         OAif()->PopUpOAtech(0, MODE_OFF, 0, 0);
@@ -709,6 +709,7 @@ QToaLibsDlg::tech_btn_slot(bool state)
 void
 QToaLibsDlg::dest_btn_slot(bool state)
 {
+(void)state;
 //XXX do something with arg?
     if (!lb_selection)
         return;

@@ -541,7 +541,7 @@ namespace {
 // Recursively add the hierarchy to the tree (using CDs objects).
 //
 bool
-QTtreeDlg::build_tree_rc(CDs *sdesc, QTreeWidgetItem *parent, int dpt)
+QTtreeDlg::build_tree_rc(CDs *sdesc, QTreeWidgetItem *prnt, int dpt)
 {
     if (!sdesc || !instPtr)
         return (false);
@@ -550,12 +550,12 @@ QTtreeDlg::build_tree_rc(CDs *sdesc, QTreeWidgetItem *parent, int dpt)
     GtkTreeStore *store =
         GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
     GtkTreeIter iter;
-    gtk_tree_store_append(store, &iter, parent);
+    gtk_tree_store_append(store, &iter, prnt);
     gtk_tree_store_set(store, &iter, 0, Tstring(sdesc->cellname()), -1);
 */
-    QTreeWidgetItem *item = new QTreeWidgetItem(parent);
+    QTreeWidgetItem *item = new QTreeWidgetItem(prnt);
     item->setText(0, Tstring(sdesc->cellname()));
-    if (!parent)
+    if (!prnt)
         t_tree->addTopLevelItem(item);
 
     if (dpt > t_mdepth)
@@ -620,7 +620,7 @@ QTtreeDlg::build_tree_rc(CDs *sdesc, QTreeWidgetItem *parent, int dpt)
 // Recursively add the hierarchy to the tree (using symref_t objects).
 //
 bool
-QTtreeDlg::build_tree_rc(cCHD *chd, symref_t *p, QTreeWidgetItem *parent, int dpt)
+QTtreeDlg::build_tree_rc(cCHD *chd, symref_t *p, QTreeWidgetItem *prnt, int dpt)
 {
     if (!p || !instPtr)
         return (false);
@@ -629,12 +629,12 @@ QTtreeDlg::build_tree_rc(cCHD *chd, symref_t *p, QTreeWidgetItem *parent, int dp
     GtkTreeStore *store =
         GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
     GtkTreeIter iter;
-    gtk_tree_store_append(store, &iter, parent);
+    gtk_tree_store_append(store, &iter, prnt);
     gtk_tree_store_set(store, &iter, 0, Tstring(p->get_name()), -1);
     */
-    QTreeWidgetItem *item = new QTreeWidgetItem(parent);
+    QTreeWidgetItem *item = new QTreeWidgetItem(prnt);
     item->setText(0, Tstring(p->get_name()));
-    if (!parent)
+    if (!prnt)
         t_tree->addTopLevelItem(item);
 
     if (dpt > t_mdepth)
