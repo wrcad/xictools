@@ -283,6 +283,7 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     }
     ed_text_editor = new QTextEdit(this);
     vbox->addWidget(ed_text_editor);
+    ed_text_editor->setLineWrapMode(QTextEdit::NoWrap);
 
     ed_status_bar = new QStatusBar(this);
     vbox->addWidget(ed_status_bar);
@@ -301,8 +302,10 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     if (ed_widget_type == Editor || ed_widget_type == Browser) {
-        if (ed_widget_type == Browser)
+        if (ed_widget_type == Browser) {
             ed_text_editor->setReadOnly(true);
+            ed_text_editor->viewport()->setCursor(Qt::ArrowCursor);
+        }
 
         char *fname = pathlist::expand_path(file_or_string, false, true);
         check_t which = filestat::check_file(fname, R_OK);

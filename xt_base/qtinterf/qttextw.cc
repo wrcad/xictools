@@ -54,10 +54,14 @@
 using namespace qtinterf;
 
 
-QTtextEdit::QTtextEdit()
+QTtextEdit::QTtextEdit(QWidget *prnt) : QTextEdit(prnt)
 {
-    // Doesn't work, fixme!
+    // Set an arrow cursor rather than te default I-beam.
     viewport()->setCursor(Qt::ArrowCursor);
+
+    // Default to no wrapping, horizontal scroll bar should appear
+    // insted.
+    setLineWrapMode(QTextEdit::NoWrap);
 }
 
 

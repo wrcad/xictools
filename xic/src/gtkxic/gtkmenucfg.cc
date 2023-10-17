@@ -955,7 +955,7 @@ GTKmenuConfig::instantiateEditMenu()
     check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuEdSet];
-    item = miset(ent, "_Setup", 0);
+    item = miset(ent, "Editing _Setup", 0);
     g_object_set_data(G_OBJECT(item), MIDX, voidptr editMenuEdSet);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -1643,7 +1643,7 @@ GTKmenuConfig::instantiateDRCMenu()
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[drcMenuLimit];
-    item = miset(ent, "_Setup", 0);
+    item = miset(ent, "DRC _Setup", 0);
     g_object_set_data(G_OBJECT(item), MIDX, voidptr drcMenuLimit);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -1781,7 +1781,7 @@ GTKmenuConfig::instantiateExtractMenu()
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 
     ent = &mbox->menu[extMenuExcfg];
-    item = miset(ent, "Set_up", 0);
+    item = miset(ent, "Extraction Set_up", 0);
     g_object_set_data(G_OBJECT(item), MIDX, voidptr extMenuExcfg);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",

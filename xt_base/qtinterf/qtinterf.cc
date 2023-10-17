@@ -1258,9 +1258,6 @@ QTbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
 void
 QTbag::PopUpPrint(GRobject, HCcb *cb, HCmode mode, GRdraw*)
 {
-// gtk impl has this one line
-//XXX    GTKprintPopup::hc_hcpopup(caller, this, cb, mode, context);
-
     if (wb_hc) {
         bool active = !wb_hc->is_active();
         wb_hc->set_active(active);
@@ -1521,42 +1518,42 @@ QTbag::PopUpMessage(const char *string, bool err, bool desens,
 }
 
 
-//XXX
-int
-QTbag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
-    GRloc loc)
-{
-    if (mode == MODE_OFF) {
-        delete wb_error;
-        return (0);
-    }
-    if (mode == MODE_UPD) {
-        if (wb_error)
-            return (wb_err_cnt);
-        return (0);
-    }
-    if (wb_error) {
-        wb_error->setText(message_str);
-        wb_error->set_visible(true);
-    }
-    else {
-        wb_error = new QTtextDlg(this, message_str, QTtextDlg::PuWarn, style);
-        wb_error->set_visible(true);
-        QTdev::self()->SetPopupLocation(loc, wb_error, wb_shell);
-    }
-    return (wb_err_cnt);
-}
-
-
-// The next few functions pop up and down error and info popups.  The
-// shell and text widgets are stored in the QTbag struct, so there
-// can be only one of each type per QTbag.  Additional calls to
-// PopUpxxx() simply update the text.
+// The next few functions pop up and down warning, error and info
+// messages.  The shell and text widgets are stored in the QTbag
+// struct, so there can be only one of each type per QTbag. 
+// Additional calls to PopUpxxx() simply update the text.
 //
 // The functions return in integer index, which is incremented when
 // the window is explicitly popped down.  Calling with mode ==
 // MODE_UPD also returns the index, and can be used to determine if
 // the "same" window is still visible.
+
+int
+QTbag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
+    GRloc loc)
+{
+    if (mode == MODE_OFF) {
+        delete wb_warning;
+        return (0);
+    }
+    if (mode == MODE_UPD) {
+        if (wb_warning)
+            return (wb_warn_cnt);
+        return (0);
+    }
+    if (wb_warning) {
+        wb_warning->setText(message_str);
+        wb_warning->set_visible(true);
+    }
+    else {
+        wb_warning = new QTtextDlg(this, message_str, QTtextDlg::PuWarn,
+            style);
+        wb_warning->set_visible(true);
+        QTdev::self()->SetPopupLocation(loc, wb_warning, wb_shell);
+    }
+    return (wb_warn_cnt);
+}
+
 
 int
 QTbag::PopUpErr(ShowMode mode, const char *message_str, STYtype style,

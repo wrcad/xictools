@@ -50,6 +50,7 @@
 #include "select.h"
 #include "events.h"
 #include "errorlog.h"
+#include "oa_if.h"
 
 #include "file_menu.h"
 #include "cell_menu.h"
@@ -193,6 +194,8 @@ QTmenuConfig::instantiateMainMenus()
             action(ent)->setData((int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
+            if (ent - mbox->menu == fileMenuOAlib)
+                action(ent)->setVisible(OAif()->hasOA());
             if (ent->is_separator())
                 file_menu->addSeparator();
             ent->cmd.caller = ent->user_action;
@@ -200,7 +203,8 @@ QTmenuConfig::instantiateMainMenus()
  
             // Open sub-menu.
             if (ent - mbox->menu == fileMenuOpen) {
-                MainMenu()->NewDDmenu(ent->user_action, XM()->OpenCellMenuList());
+                MainMenu()->NewDDmenu(ent->user_action,
+                    XM()->OpenCellMenuList());
                 QMenu *submenu = action(ent)->menu();
                 connect(submenu, SIGNAL(triggered(QAction*)),
                     this, SLOT(file_open_menu_slot(QAction*)));
@@ -255,7 +259,7 @@ QTmenuConfig::instantiateMainMenus()
 
         set(mbox->menu[editMenu], "&Edit", 0);
         set(mbox->menu[editMenuCedit], "&Enable Editing", 0);
-        set(mbox->menu[editMenuEdSet], "x&Setup", 0);
+        set(mbox->menu[editMenuEdSet], "Editing &Setup", 0);
         set(mbox->menu[editMenuPcctl], "PCell C&ontrol", 0);
         set(mbox->menu[editMenuCrcel], "Cre&ate Cell", 0);
         set(mbox->menu[editMenuCrvia], "Create &Via", 0);
@@ -485,6 +489,9 @@ QTmenuConfig::instantiateMainMenus()
                 newsubm->clear();
             }
         }
+        if (DSP()->CurMode() == Physical)
+            action(&mbox->menu[subwAttrMenuNosym])->setVisible(false);
+
         connect(submenu, SIGNAL(triggered(QAction*)),
             this, SLOT(attr_main_win_menu_slot(QAction*)));
         submenu = newsubm;
@@ -567,7 +574,7 @@ QTmenuConfig::instantiateMainMenus()
         menubar->addMenu(drc_menu);
 
         set(mbox->menu[drcMenu], "&DRC", 0);
-        set(mbox->menu[drcMenuLimit], "x&Setup", 0);
+        set(mbox->menu[drcMenuLimit], "DRC &Setup", 0);
         set(mbox->menu[drcMenuSflag], "Set Skip &Flags", 0);
         set(mbox->menu[drcMenuIntr], "Enable &Interactive", "Alt+I");
         set(mbox->menu[drcMenuNopop], "&No Pop-up Errors", 0);
@@ -611,7 +618,7 @@ QTmenuConfig::instantiateMainMenus()
         menubar->addMenu(ext_menu);
 
         set(mbox->menu[extMenu], "E&xtract", 0);
-        set(mbox->menu[extMenuExcfg], "xSet&up", 0);
+        set(mbox->menu[extMenuExcfg], "Extraction Set&up", 0);
         set(mbox->menu[extMenuSel], "&Net Selections", 0);
         set(mbox->menu[extMenuDvsel], "&Device Selections", 0);
         set(mbox->menu[extMenuSourc], "&Source SPICE", 0);
@@ -1031,6 +1038,8 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = wdesc;
         }
+        if (DSP()->Window(wnum)->Mode() == Physical);
+            action(&mbox->menu[subwAttrMenuNosym])->setVisible(false);
 
         connect(subwin_attr_menu, SIGNAL(triggered(QAction*)),
             this, SLOT(subwin_attr_menu_slot(QAction*)));
@@ -1204,6 +1213,10 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
                 action(&mbox->menu[viewMenuSced])->setVisible(true);
             }
 
+            mbox = MainMenu()->GetAttrSubMenu();
+            if (mbox && mbox->menu)
+                action(&mbox->menu[subwAttrMenuNosym])->setVisible(false);
+
             // Desensitize the DRC menu in electrical mode.
             mbox = MainMenu()->FindMainMenu("drc");
             if (mbox && mbox->menu) {
@@ -1223,6 +1236,10 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
                 action(&mbox->menu[viewMenuSced])->setVisible(false);
                 action(&mbox->menu[viewMenuPhys])->setVisible(true);
             }
+
+            mbox = MainMenu()->GetAttrSubMenu();
+            if (mbox && mbox->menu)
+                action(&mbox->menu[subwAttrMenuNosym])->setVisible(true);
 
             // Desensitize the DRC menu in electrical mode.
             mbox = MainMenu()->FindMainMenu("drc");
@@ -1254,6 +1271,12 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
                 action(&mbox->menu[subwViewMenuSced])->setVisible(false);
                 action(&mbox->menu[subwViewMenuPhys])->setVisible(true);
             }
+        }
+
+        mbox = MainMenu()->FindSubwMenu("attr", wnum);
+        if (mbox && mbox->menu) {
+            action(&mbox->menu[subwAttrMenuNosym])->setVisible(
+                mode != Physical);
         }
     }
 }

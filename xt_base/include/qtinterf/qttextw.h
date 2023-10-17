@@ -59,7 +59,7 @@ class qtinterf::QTtextEdit : public QTextEdit
     Q_OBJECT
 
 public:
-    QTtextEdit();
+    QTtextEdit(QWidget* = 0);
 
     // editing
     void delete_chars(int, int);

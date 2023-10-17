@@ -472,6 +472,14 @@ namespace {
 }
 
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#else
+namespace {
+    QFontDatabase *fdb;
+}
+#endif
+
+
 QTfontDlg *QTfontDlg::activeFontSels[4];
 
 QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
@@ -488,6 +496,12 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     }
     if (owner)
         owner->MonitorAdd(this);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#else
+    if (!fdb)
+        fdb = new QFontDatabase();
+#endif
 
     setWindowTitle(QString(tr("Font Selection")));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -678,12 +692,6 @@ QTfontDlg::update_label(const char *text)
 //XXX
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-#else
-namespace {
-    QFontDatabase fdb;
-}
-#endif
 
 void
 QTfontDlg::select_font(const QFont *fnt)
@@ -719,7 +727,7 @@ QTfontDlg::select_font(const QFont *fnt)
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     QString sty = QFontDatabase::styleString(*fnt);
 #else
-    QString sty = fdb.styleString(*fnt);
+    QString sty = fdb->styleString(*fnt);
 #endif
     list = ft_style_list->findItems(sty, Qt::MatchExactly);
     if (list.size() > 0)
@@ -755,7 +763,7 @@ QTfontDlg::current_selection()
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     return (new QFont(QFontDatabase::font(qface, qstyle, sz)));
 #else
-    return (new QFont(fdb.font(qface, qstyle, sz)));
+    return (new QFont(fdb->font(qface, qstyle, sz)));
 #endif
 }
 
@@ -872,7 +880,7 @@ QTfontDlg::face_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     QStringList styles = QFontDatabase::styles(qface);
 #else
-    QStringList styles = fdb.styles(qface);
+    QStringList styles = fdb->styles(qface);
 #endif
     for (int i = 0; i < styles.size(); i++)
         ft_style_list->addItem(styles.at(i));
@@ -880,7 +888,7 @@ QTfontDlg::face_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     QList<int> sizes = QFontDatabase::smoothSizes(qface, styles.at(0));
 #else
-    QList<int> sizes = fdb.smoothSizes(qface, styles.at(0));
+    QList<int> sizes = fdb->smoothSizes(qface, styles.at(0));
 #endif
     for (int i = 0; i < sizes.size(); i++)
         ft_size_list->addItem(QString("%1").arg(sizes.at(i)));
@@ -948,7 +956,7 @@ QTfontDlg::menu_choice_slot(int indx)
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     QStringList families = QFontDatabase::families();
 #else
-    QStringList families = fdb.families();
+    QStringList families = fdb->families();
 #endif
     for (int i = 0; i < families.size(); i++) {
 

@@ -1971,97 +1971,6 @@ QTfileDlg::DoFileAction(QTbag *bg, const char *src, const char *dst,
 }
 
 
-/* XXX
-// Function to pop up a dialog for file move/copy/linking.
-// is used for positioning.
-//
-void
-QTfileDlg::FileAction(QTbag *bg, const char *src, const char *dst, xxx)
-{
-    GtkWidget *popup = gtk_NewPopup(0, "File Transfer", action_cancel, 0);
-
-    GtkWidget *form = gtk_table_new(1, 3, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(popup), form);
-
-    GtkWidget *entry_src = gtk_entry_new();
-    gtk_widget_show(entry_src);
-    gtk_entry_set_text(GTK_ENTRY(entry_src), src);
-    GtkWidget *frame = gtk_frame_new("Source");
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), entry_src);
-    g_object_set_data(G_OBJECT(popup), "source", entry_src);
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    GtkWidget *entry_dst = gtk_entry_new();
-    gtk_widget_show(entry_dst);
-    gtk_entry_set_text(GTK_ENTRY(entry_dst), dst);
-    frame = gtk_frame_new("Destination");
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), entry_dst);
-    g_object_set_data(G_OBJECT(popup), "dest", entry_dst);
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-
-    GtkWidget *button = gtk_button_new_with_label("Move");
-    gtk_widget_set_name(button, "Move");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(action_proc), context);
-    g_object_set_data(G_OBJECT(button), "popup", popup);
-    g_object_set_data(G_OBJECT(button), "action",
-        (void*)GDK_ACTION_MOVE);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-
-    button = gtk_button_new_with_label("Copy");
-    gtk_widget_set_name(button, "Copy");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(action_proc), context);
-    g_object_set_data(G_OBJECT(button), "popup", popup);
-    g_object_set_data(G_OBJECT(button), "action",
-        (void*)GDK_ACTION_COPY);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-
-    button = gtk_button_new_with_label("Link");
-    gtk_widget_set_name(button, "Link");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(action_proc), context);
-    g_object_set_data(G_OBJECT(button), "popup", popup);
-    g_object_set_data(G_OBJECT(button), "action",
-        (void*)GDK_ACTION_LINK);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-
-    button = gtk_button_new_with_label("Cancel");
-    gtk_widget_set_name(button, "Cancel");
-    gtk_widget_show(button);
-    g_signal_connect(G_OBJECT(button), "clicked",
-        G_CALLBACK(action_proc), 0);
-    g_object_set_data(G_OBJECT(button), "popup", popup);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
-
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 2, 3,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    gtk_window_set_focus(GTK_WINDOW(popup), button);
-
-    gtk_widget_set_size_request(popup, 400, -1);
-    if (shell) {
-        gtk_window_set_transient_for(GTK_WINDOW(popup), GTK_WINDOW(shell));
-        GTKdev::self()->SetPopupLocation(GRloc(), popup, shell);
-    }
-    gtk_widget_show(popup);
-}
-*/
-
-
 // File monitor - periodically check for changes in directory
 // hierarchy and update display when necessary.  Set up a timer to
 // monitor the currently displayed hierarchy.  If the modification
@@ -2281,4 +2190,107 @@ stringdiff(stringlist **s1p, stringlist **s2p)
 	*s2p = s2;
 }
 
+
+
+/* XXX
+
+class QTfileActionDlg : public QDialog
+{
+    Q_OBJECT
+
+public:
+    QTfileActionDlg(QTbag *bg, const char *src, const char *dst, xxx);
+
+private slots:
+    void move_btn_slot();
+    void copy_btn_slot();
+    void link_btn_slot();
+    void cancel_btn_slot();
+
+private:
+};
+
+void
+QTfileActionDlg::QTfileActionDlg(QTbag *bg, const char *src, const char *dst,
+    xxx)
+{
+    setWindowTitle(tr("File Transfer"));
+
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setContentsMargins(2, 2, 2, 2);
+    vbox->setSpacing(2);
+
+    QGroupBox *gb = new QGroupBoc(tr("Source"));
+    vbox->addWidget(gb);
+    QHBoxLayout *hb = new QHBoxLayout(gb);
+    hb->setContentsMargins(2, 2, 2, 2);
+    hb->setSpacing(2);
+
+    QLineEdit *entry_src = new QLineEdit();
+    entry_src->setText(src);
+    hb->addWidget(entry_src);
+
+    gb = new QGroupBox(tr("Destination")};
+    vbox->addWidget(gb);
+    hb = new QHBoxLayout(gb);
+    hb->setContentsMargins(2, 2, 2, 2);
+    hb->setSpacing(2);
+
+    QLineEdit *entry_dst = new QLineEdit();
+    entry_dst->setText(dst);
+    hb->addWidget(entry_dst);
+
+    hb = new QHBoxLayout();
+    vbox->addLayout(hb);
+    hb->setContentsMargins(0, 0, 0, 0);
+    hb->setSpacing(2);
+
+    QPushButton *btn = new QPushButton(tr("Move"));
+    hb->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(move_btn_slot()));
+
+    btn = new QPushButton(tr("Copy"));
+    hb->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(copy_btn_slot()));
+
+    btn = new QPushButton(tr("Link"));
+    hb->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(link_btn_slot()));
+
+    btn = new QPushButton(tr("Cancel"));
+    hb->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
+
+    GTKdev::self()->SetPopupLocation(GRloc(), popup, shell);
+    gtk_widget_show(popup);
+}
+
+void
+QTfileActionDlg::move_btn_slot()
+{
+    QTfileDlg::DoFileAction(bag, src, dst, A_MOVE);
+}
+
+
+void
+QTfileActionDlg::copy_btn_slot()
+{
+    QTfileDlg::DoFileAction(bag, src, dst, A_COPY);
+}
+
+
+void
+QTfileActionDlg::link_btn_slot()
+{
+    QTfileDlg::DoFileAction(bag, src, dst, A_LINK);
+}
+
+
+void
+QTfileActionDlg::cancel_btn_slot()
+{
+    deleteLater();
+}
+
+*/
 
