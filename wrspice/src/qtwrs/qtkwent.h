@@ -56,8 +56,8 @@
 class QTexpDoubleSpinBox : public QDoubleSpinBox
 {
 public:
-    explicit QTexpDoubleSpinBox(QWidget *parent = nullptr) :
-        QDoubleSpinBox(parent)
+    explicit QTexpDoubleSpinBox(QWidget *prnt = nullptr) :
+        QDoubleSpinBox(prnt)
     {
         QDoubleSpinBox::setDecimals(400);
     }
@@ -98,7 +98,7 @@ class QTkwent;
 class QTchoiceSpinBox : public QSpinBox
 {
 public:
-    explicit QTchoiceSpinBox(QWidget *parent = nullptr) : QSpinBox(parent) { }
+    explicit QTchoiceSpinBox(QWidget *prnt = nullptr) : QSpinBox(prnt) { }
     ~QTchoiceSpinBox() { }
 
     // Overrides

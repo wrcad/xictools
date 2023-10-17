@@ -89,7 +89,7 @@ QTtoolbar::PopUpPlotDefs(ShowMode mode, int x, int y)
 Kword **QTplotParamDlg::KWdrvrs;
 QTplotParamDlg *QTplotParamDlg::instPtr;
 
-QTplotParamDlg::QTplotParamDlg(int x, int y)
+QTplotParamDlg::QTplotParamDlg(int xx, int yy)
 {
     instPtr = this;
     pd_notebook = 0;
@@ -478,9 +478,9 @@ QTplotParamDlg::QTplotParamDlg(int x, int y)
     }
     grid->setRowStretch(2, 1);
 
-    if (x || y) {
-        TB()->FixLoc(&x, &y);
-        move(x, y);
+    if (xx || yy) {
+        TB()->FixLoc(&xx, &yy);
+        move(xx, yy);
     }
     TB()->SetActiveDlg(tid_plotdefs, this);
 }

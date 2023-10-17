@@ -878,22 +878,22 @@ QTchdListDlg::cnt_btn_slot()
     syrlist_t *allcells = chd->listing(DSP()->CurMode(), false);
     syrlist_t *topcells = chd->topCells(DSP()->CurMode());
     stringlist *s0 = 0, *se = 0;
-    for (syrlist_t *x = allcells; x; x = x->next) {
+    for (syrlist_t *sx = allcells; sx; sx = sx->next) {
         bool istop = false;
-        for (syrlist_t *y = topcells; y; y = y->next) {
-            if (y->symref == x->symref) {
+        for (syrlist_t *sy = topcells; sy; sy = sy->next) {
+            if (sy->symref == sx->symref) {
                 istop = true;
                 break;
             }
         }
         char *t;
         if (!istop)
-            t = lstring::copy(Tstring(x->symref->get_name()));
+            t = lstring::copy(Tstring(sx->symref->get_name()));
         else {
             t = new char[
-                strlen(Tstring(x->symref->get_name())) + 2];
+                strlen(Tstring(sx->symref->get_name())) + 2];
             *t = '*';
-            strcpy(t+1, Tstring(x->symref->get_name()));
+            strcpy(t+1, Tstring(sx->symref->get_name()));
         }
         if (!s0)
             s0 = se = new stringlist(t, 0);

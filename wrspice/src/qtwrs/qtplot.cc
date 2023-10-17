@@ -229,10 +229,10 @@ QTplotDlg::init(sGraph *gr)
     hbox->setStretch(0, 1);
 
     // Position the plot on screen and enable display.
-    int x, y;
-    GP.PlotPosition(&x, &y);
-    TB()->FixLoc(&x, &y);
-    move(x, y);
+    int xx, yy;
+    GP.PlotPosition(&xx, &yy);
+    TB()->FixLoc(&xx, &yy);
+    move(xx, yy);
     show();
 
     gr->gr_pkg_init_colors();

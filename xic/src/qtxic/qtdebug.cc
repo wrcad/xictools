@@ -1539,20 +1539,20 @@ QTscriptDebuggerDlg::mouse_press_slot(QMouseEvent *ev)
 
     char *str = wb_textarea->get_chars();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
 
     const char *lineptr = str;
     int line = 0;
-    for (int i = 0; i <= pos; i++) {
+    for (int i = 0; i <= posn; i++) {
         if (str[i] == '\n') {
-            if (i == pos) {
+            if (i == posn) {
                 // Clicked to right of line.
                 break;
             }
@@ -1636,7 +1636,7 @@ QTscriptDebuggerDlg::text_changed_slot()
 
 
 void
-QTscriptDebuggerDlg::text_change_slot(int start, int nch_rm, int nch_add)
+QTscriptDebuggerDlg::text_change_slot(int strt, int nch_rm, int nch_add)
 {
     if (nch_rm) {
         // chars_deleted
@@ -1644,11 +1644,11 @@ QTscriptDebuggerDlg::text_change_slot(int start, int nch_rm, int nch_add)
             return;
         char *text = wb_textarea->get_chars();
         char *ntext = new char[nch_rm+1];
-        strncpy(ntext, text+start, nch_rm);
+        strncpy(ntext, text+strt, nch_rm);
         ntext[nch_rm] = 0;
         delete [] text;
 //XXX?        char *s = lstring::tocpp(gtk_text_iter_get_text(istart, iend));
-        db_undo_list = new histlist(ntext, start, true, db_undo_list);
+        db_undo_list = new histlist(ntext, strt, true, db_undo_list);
         histlist::destroy(db_redo_list);
         db_redo_list = 0;
         check_sens();
@@ -1659,10 +1659,10 @@ QTscriptDebuggerDlg::text_change_slot(int start, int nch_rm, int nch_add)
             return;
         char *text = wb_textarea->get_chars();
         char *ntext = new char[nch_add+1];
-        strncpy(ntext, text+start, nch_add);
+        strncpy(ntext, text+strt, nch_add);
         ntext[nch_add] = 0;
         delete [] text;
-        db_undo_list = new histlist(ntext, start, false, db_undo_list);
+        db_undo_list = new histlist(ntext, strt, false, db_undo_list);
         histlist::destroy(db_redo_list);
         db_redo_list = 0;
         check_sens();
@@ -1671,15 +1671,15 @@ QTscriptDebuggerDlg::text_change_slot(int start, int nch_rm, int nch_add)
 
 
 void
-QTscriptDebuggerDlg::mime_data_received_slot(const QMimeData *data)
+QTscriptDebuggerDlg::mime_data_received_slot(const QMimeData *dta)
 {
     // Receive drop data (a path name).
 
     QByteArray data_ba;
-    if (data->hasFormat("text/twostring"))
-        data_ba = data->data("text/twostring");
-    else if (data->hasFormat("text/plain"))
-        data_ba = data->data("text/plain");
+    if (dta->hasFormat("text/twostring"))
+        data_ba = dta->data("text/twostring");
+    else if (dta->hasFormat("text/plain"))
+        data_ba = dta->data("text/plain");
     else
         return;
     char *src = lstring::copy(data_ba.constData());

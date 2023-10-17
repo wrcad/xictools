@@ -91,7 +91,7 @@ namespace {
 
 QTsimParamDlg *QTsimParamDlg::instPtr;
 
-QTsimParamDlg::QTsimParamDlg(int x, int y)
+QTsimParamDlg::QTsimParamDlg(int xx, int yy)
 {
     instPtr = this;
     si_notebook = 0;
@@ -716,9 +716,9 @@ QTsimParamDlg::QTsimParamDlg(int x, int y)
     }
     grid->setRowStretch(6, 1);
 
-    if (x || y) {
-        TB()->FixLoc(&x, &y);
-        move(x, y);
+    if (xx || yy) {
+        TB()->FixLoc(&xx, &yy);
+        move(xx, yy);
     }
     TB()->SetActiveDlg(tid_simdefs, this);
 }

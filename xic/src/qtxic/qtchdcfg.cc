@@ -455,7 +455,6 @@ QTchdCfgDlg::apply_cgd_btn_slot()
     delete [] cf_cgdname;
     cf_cgdname = 
         lstring::copy(cf_cgdentry->text().toLatin1().constData());
-    const char *str = cf_cgdname;
     cCGD *cgd = CDcgd()->cgdRecall(cf_cgdname, false);
     if (!cgd) {
         if (QTdev::GetStatus(cf_newcgd)) {

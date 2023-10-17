@@ -534,10 +534,10 @@ QTfillPatDlg::rot90_btn_slot()
         unsigned int d = *a++;
         for (int j = 1; j < bpl; j++)
             d |= *a++ << j*8;
-        unsigned int mask = 1;
+        unsigned int msk = 1;
         for (int j = 0; j < fp_nx; j++) {
-            bool lit = mask & d;
-            mask <<= 1;
+            bool lit = msk & d;
+            msk <<= 1;
             if (lit)
                 setpix(i, ny, nx - j - 1, ary);
         }
@@ -570,10 +570,10 @@ QTfillPatDlg::x_btn_slot()
         unsigned int d = *a++;
         for (int j = 1; j < bpl; j++)
             d |= *a++ << j*8;
-        unsigned int mask = 1;
+        unsigned int msk = 1;
         for (int j = 0; j < fp_nx; j++) {
-            bool lit = mask & d;
-            mask <<= 1;
+            bool lit = msk & d;
+            msk <<= 1;
             if (lit) {
                 if (flipy)
                     setpix(j, nx, ny - i - 1, ary);
@@ -606,10 +606,10 @@ QTfillPatDlg::y_btn_slot()
         unsigned int d = *a++;
         for (int j = 1; j < bpl; j++)
             d |= *a++ << j*8;
-        unsigned int mask = 1;
+        unsigned int msk = 1;
         for (int j = 0; j < fp_nx; j++) {
-            bool lit = mask & d;
-            mask <<= 1;
+            bool lit = msk & d;
+            msk <<= 1;
             if (lit) {
                 if (flipy)
                     setpix(j, nx, ny - i - 1, ary);
@@ -957,22 +957,22 @@ QTfillPatDlg::motion_slot(QMouseEvent *ev)
         if (!fp_downbtn)
             return;
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        int x = ev->position().x();
-        int y = ev->position().y();
+        int xx = ev->position().x();
+        int yy = ev->position().y();
 #else
-        int x = ev->x();
-        int y = ev->y();
+        int xx = ev->x();
+        int yy = ev->y();
 #endif
-        if (!getij(&x, &y))
+        if (!getij(&xx, &yy))
             return;
 
-        x = fp_spa + x*fp_epsz + fp_epsz/2;
-        y = fp_spa + y*fp_epsz + fp_epsz/2;
+        xx = fp_spa + xx*fp_epsz + fp_epsz/2;
+        yy = fp_spa + yy*fp_epsz + fp_epsz/2;
 
         gd_viewport = fp_editor;
         SetColor(0xffffff);
         UndrawGhost();
-        DrawGhost(x, y);
+        DrawGhost(xx, yy);
     }
     else if (fp_dragging &&
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
@@ -1165,12 +1165,12 @@ QTfillPatDlg::redraw_edit()
         for (int j = 1; j < bpl; j++)
             d |= *a++ << j*8;
 
-        unsigned int mask = 1;
+        unsigned int msk = 1;
         for (int j = 0; j < fp_nx; j++) {
-            bool lit = mask & d;
+            bool lit = msk & d;
             SetColor(lit ? fp_foreg : fp_pixbg);
             show_pixel(i, j);
-            mask <<= 1;
+            msk <<= 1;
         }
     }
     fp_editor->update();
@@ -1293,10 +1293,10 @@ QTfillPatDlg::redraw_store(int i)
 void
 QTfillPatDlg::show_pixel(int i, int j)
 {
-    int x = fp_spa + j*fp_epsz + 1;
-    int y = fp_spa + i*fp_epsz + 1;
+    int xx = fp_spa + j*fp_epsz + 1;
+    int yy = fp_spa + i*fp_epsz + 1;
     SetFillpattern(0);
-    Box(x, y, x + fp_epsz - 2, y + fp_epsz - 2);
+    Box(xx, yy, xx + fp_epsz - 2, yy + fp_epsz - 2);
 }
 
 
@@ -1304,11 +1304,11 @@ QTfillPatDlg::show_pixel(int i, int j)
 // the GC to use this pixmap.
 //
 void
-QTfillPatDlg::set_fp(unsigned char *pmap, int x, int y)
+QTfillPatDlg::set_fp(unsigned char *pmap, int xx, int yy)
 {
     if (!fp_fp)
         fp_fp = new GRfillType;
-    fp_fp->newMap(x, y, pmap);      // Destroy/create new pixel map.
+    fp_fp->newMap(xx, yy, pmap);    // Destroy/create new pixel map.
     DefineFillpattern(fp_fp);       // Destroy/create new pixmap.
     SetFillpattern(fp_fp);          // Save the pixmap for rendering.
 }
@@ -1318,17 +1318,17 @@ QTfillPatDlg::set_fp(unsigned char *pmap, int x, int y)
 // array j, i.
 //
 bool
-QTfillPatDlg::getij(int *x, int *y)
+QTfillPatDlg::getij(int *x1, int *y1)
 {
-    int xx = *x;
-    int yy = *y;
+    int xx = *x1;
+    int yy = *y1;
     xx -= fp_spa;
     xx /= fp_epsz;
     yy -= fp_spa;
     yy /= fp_epsz;
     if (xx >= 0 && xx < fp_nx && yy >= 0 && yy < fp_ny) {
-        *x = xx;
-        *y = yy;
+        *x1 = xx;
+        *y1 = yy;
         return (true);
     }
     return (false);
@@ -1345,25 +1345,25 @@ QTfillPatDlg::set_pixel(int i, int j, FPSETtype mode)
     unsigned int d = *a++;
     for (int k = 1; k < bpl; k++)
         d |= *a++ << k*8;
-    unsigned int mask = 1 << j;
+    unsigned int msk = 1 << j;
     
     if (mode == FPSETflip) {
-        if (d & mask) {
+        if (d & msk) {
             SetColor(fp_pixbg);
-            d &= ~mask;
+            d &= ~msk;
         }
         else {
             SetColor(fp_foreg);
-            d |= mask;
+            d |= msk;
         }
     }
     else if (mode == FPSETon) {
         SetColor(fp_foreg);
-        d |= mask;
+        d |= msk;
     }
     else {
         SetColor(fp_pixbg);
-        d &= ~mask;
+        d &= ~msk;
     }
     j /= 8;
     fp_array[i*bpl + j] = d >> j*8;
@@ -1380,8 +1380,8 @@ QTfillPatDlg::get_pixel(int i, int j)
     unsigned int d = *a++;
     for (int k = 1; k < bpl; k++)
         d |= *a++ << k*8;
-    unsigned int mask = 1 << j;
-    return ((d & mask) ? FPSETon : FPSEToff);
+    unsigned int msk = 1 << j;
+    return ((d & msk) ? FPSETon : FPSEToff);
 }
 
 

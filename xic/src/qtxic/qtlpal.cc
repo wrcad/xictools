@@ -318,8 +318,8 @@ QTlayerPaletteDlg::update_info(CDl *ldesc)
 {
     int fwid, fhei;
     TextExtent(0, &fwid, &fhei);
-    int x = 2;
-    int y = fhei;
+    int xx = 2;
+    int yy = fhei;
 
     SetColor(text_backg());
     SetFillpattern(0);
@@ -337,15 +337,15 @@ QTlayerPaletteDlg::update_info(CDl *ldesc)
     snprintf(buf, 32, " (%d)", ldesc->oaLayerNum());
     SetColor(c1);
     str = "name (num): ";
-    Text(str, x, y, 0);
-    x += QTfont::stringWidth(str, gd_viewport);
+    Text(str, xx, yy, 0);
+    xx += QTfont::stringWidth(str, gd_viewport);
     SetColor(c2);
-    Text(lname, x, y, 0);
-    x += QTfont::stringWidth(lname, gd_viewport);
-    Text(buf, x, y, 0);
+    Text(lname, xx, yy, 0);
+    xx += QTfont::stringWidth(lname, gd_viewport);
+    Text(buf, xx, yy, 0);
 
-    y += fhei;
-    x = 2;
+    yy += fhei;
+    xx = 2;
 
     const char *pname = CDldb()->getOApurposeName(ldesc->oaPurposeNum());
     if (!pname)
@@ -353,39 +353,39 @@ QTlayerPaletteDlg::update_info(CDl *ldesc)
     snprintf(buf, 32, " (%d)", ldesc->oaPurposeNum());
     SetColor(c1);
     str = "purpose (num): ";
-    Text(str, x, y, 0);
-    x += QTfont::stringWidth(str, gd_viewport);
+    Text(str, xx, yy, 0);
+    xx += QTfont::stringWidth(str, gd_viewport);
     SetColor(c2);
-    Text(pname, x, y, 0);
-    x += QTfont::stringWidth(pname, gd_viewport);
-    Text(buf, x, y, 0);
+    Text(pname, xx, yy, 0);
+    xx += QTfont::stringWidth(pname, gd_viewport);
+    Text(buf, xx, yy, 0);
 
-    y += fhei;
-    x = 2;
+    yy += fhei;
+    xx = 2;
 
     SetColor(c1);
     str = "alias: ";
-    Text(str, x, y, 0);
-    x += QTfont::stringWidth(str, gd_viewport);
+    Text(str, xx, yy, 0);
+    xx += QTfont::stringWidth(str, gd_viewport);
     if (ldesc->lppName()) {
         SetColor(c2);
-        Text(ldesc->lppName(), x, y, 0);
+        Text(ldesc->lppName(), xx, yy, 0);
     }
 
-    y += fhei;
-    x = 2;
+    yy += fhei;
+    xx = 2;
 
     SetColor(c1);
     str = "descr: ";
-    Text(str, x, y, 0);
-    x += QTfont::stringWidth(str, gd_viewport);
+    Text(str, xx, yy, 0);
+    xx += QTfont::stringWidth(str, gd_viewport);
     if (ldesc->description()) {
         SetColor(c2);
-        Text(ldesc->description(), x, y, 0);
+        Text(ldesc->description(), xx, yy, 0);
     }
 
-    y += fhei;
-    x = 2;
+    yy += fhei;
+    xx = 2;
 
     bool hasmap = false;
     int l = -1, d = -1;
@@ -399,21 +399,21 @@ QTlayerPaletteDlg::update_info(CDl *ldesc)
     if (hasmap) {
         SetColor(c1);
         str = "GDSII layer/dtype: ";
-        Text(str, x, y, 0);
-        x += QTfont::stringWidth(str, gd_viewport);
+        Text(str, xx, yy, 0);
+        xx += QTfont::stringWidth(str, gd_viewport);
 
         if (l > 255 || d > 255)
             snprintf(buf, sizeof(buf), "%d (%04Xh) / ", l, l);
         else
             snprintf(buf, sizeof(buf), "%d (%02Xh) / ", l, l);
         SetColor(c2);
-        Text(buf, x, y, 0);
-        x += QTfont::stringWidth(buf, gd_viewport);
+        Text(buf, xx, yy, 0);
+        xx += QTfont::stringWidth(buf, gd_viewport);
         if (l > 255 || d > 255)
             snprintf(buf, sizeof(buf), "%d (%04Xh)", d, d);
         else
             snprintf(buf, sizeof(buf), "%d (%02Xh)", d, d);
-        Text(buf, x, y, 0);
+        Text(buf, xx, yy, 0);
     }
 
     Update();
@@ -471,14 +471,14 @@ QTlayerPaletteDlg::update_layer(CDl *ldesc)
 
 
 void
-QTlayerPaletteDlg::update_user(CDl *ldesc, int x, int y)
+QTlayerPaletteDlg::update_user(CDl *ldesc, int xx, int yy)
 {
-    int col = (x-2)/lp_entry_width;
+    int col = (xx-2)/lp_entry_width;
     if (col < 0)
         col = 0;
     else if (col >= LP_PALETTE_COLS)
         col = LP_PALETTE_COLS - 1;
-    int row = (y - lp_user_y)/(lp_user_y - lp_hist_y);
+    int row = (yy - lp_user_y)/(lp_user_y - lp_hist_y);
     if (row < 0)
         row = 0;
     else if (row >= LP_PALETTE_ROWS)
@@ -568,8 +568,8 @@ QTlayerPaletteDlg::redraw()
     char buf[128];
     for (int xx = 0; xx < 2; xx++) {
         CDl **lary = xx ? lp_user : lp_history;
-        int y = xx ? lp_user_y : lp_hist_y;
-        int x = 4;
+        int y1 = xx ? lp_user_y : lp_hist_y;
+        int x1 = 4;
         int sz = LP_PALETTE_COLS;
         if (xx)
             sz *= LP_PALETTE_ROWS;
@@ -579,46 +579,47 @@ QTlayerPaletteDlg::redraw()
                 continue;
 
             if (i && i % LP_PALETTE_COLS == 0) {
-                y += (lp_user_y - lp_hist_y);
-                x = 4;
+                y1 += (lp_user_y - lp_hist_y);
+                x1 = 4;
             }
             SetFillpattern(0);
             SetColor(backg);
-            Box(x-4, y-4, x + lp_box_dimension + 4, y + lp_box_dimension + 4);
+            Box(x1-4, y1-4, x1 + lp_box_dimension + 4,
+                y1 + lp_box_dimension + 4);
 
             SetColor(dsp_prm(ld)->pixel());
             if (!ld->isInvisible()) {
                 if (ld->isFilled()) {
                     SetFillpattern(dsp_prm(ld)->fill());
-                    Box(x, y, x + lp_box_dimension, y + lp_box_dimension);
+                    Box(x1, y1, x1 + lp_box_dimension, y1 + lp_box_dimension);
                     if (dsp_prm(ld)->fill()) {
                         SetFillpattern(0);
                         if (ld->isOutlined()) {
                             SetLinestyle(0);
                             GRmultiPt xp(5);
                             if (ld->isOutlinedFat()) {
-                                xp.assign(0, x+1, y+1);
-                                xp.assign(1, x+1, y + lp_box_dimension-1);
-                                xp.assign(2, x + lp_box_dimension-1, y +
+                                xp.assign(0, x1+1, y1+1);
+                                xp.assign(1, x1+1, y1 + lp_box_dimension-1);
+                                xp.assign(2, x1 + lp_box_dimension-1, y1 +
                                     lp_box_dimension-1);
-                                xp.assign(3, x + lp_box_dimension-1, y+1);
-                                xp.assign(4, x+1, y+1);
+                                xp.assign(3, x1 + lp_box_dimension-1, y1+1);
+                                xp.assign(4, x1+1, y1+1);
                                 PolyLine(&xp, 5);
                             }
-                            xp.assign(0, x, y);
-                            xp.assign(1, x, y + lp_box_dimension);
-                            xp.assign(2, x + lp_box_dimension,
-                                y + lp_box_dimension);
-                            xp.assign(3, x + lp_box_dimension, y);
-                            xp.assign(4, x, y);
+                            xp.assign(0, x1, y1);
+                            xp.assign(1, x1, y1 + lp_box_dimension);
+                            xp.assign(2, x1 + lp_box_dimension,
+                                y1 + lp_box_dimension);
+                            xp.assign(3, x1 + lp_box_dimension, y1);
+                            xp.assign(4, x1, y1);
                             PolyLine(&xp, 5);
                         }
                         if (ld->isCut()) {
                             SetLinestyle(0);
-                            Line(x, y, x + lp_box_dimension,
-                                y + lp_box_dimension);
-                            Line(x, y + lp_box_dimension,
-                                x + lp_box_dimension, y);
+                            Line(x1, y1, x1 + lp_box_dimension,
+                                y1 + lp_box_dimension);
+                            Line(x1, y1 + lp_box_dimension,
+                                x1 + lp_box_dimension, y1);
                         }
                     }
                 }
@@ -627,12 +628,12 @@ QTlayerPaletteDlg::redraw()
                     SetFillpattern(0);
                     if (ld->isOutlined()) {
                         if (ld->isOutlinedFat()) {
-                            xp.assign(0, x+1, y+1);
-                            xp.assign(1, x+1, y + lp_box_dimension-1);
-                            xp.assign(2, x + lp_box_dimension-1,
-                                y + lp_box_dimension-1);
-                            xp.assign(3, x + lp_box_dimension-1, y+1);
-                            xp.assign(4, x+1, y+1);
+                            xp.assign(0, x1+1, y1+1);
+                            xp.assign(1, x1+1, y1 + lp_box_dimension-1);
+                            xp.assign(2, x1 + lp_box_dimension-1,
+                                y1 + lp_box_dimension-1);
+                            xp.assign(3, x1 + lp_box_dimension-1, y1+1);
+                            xp.assign(4, x1+1, y1+1);
                             PolyLine(&xp, 5);
                         }
                         else
@@ -640,15 +641,17 @@ QTlayerPaletteDlg::redraw()
                     }
                     else
                         SetLinestyle(0);
-                    xp.assign(0, x, y);
-                    xp.assign(1, x, y + lp_box_dimension);
-                    xp.assign(2, x + lp_box_dimension, y + lp_box_dimension);
-                    xp.assign(3, x + lp_box_dimension, y);
-                    xp.assign(4, x, y);
+                    xp.assign(0, x1, y1);
+                    xp.assign(1, x1, y1 + lp_box_dimension);
+                    xp.assign(2, x1 + lp_box_dimension, y1 + lp_box_dimension);
+                    xp.assign(3, x1 + lp_box_dimension, y1);
+                    xp.assign(4, x1, y1);
                     PolyLine(&xp, 5);
                     if (ld->isCut()) {
-                        Line(x, y, x + lp_box_dimension, y + lp_box_dimension);
-                        Line(x, y + lp_box_dimension, x + lp_box_dimension, y);
+                        Line(x1, y1, x1 + lp_box_dimension,
+                            y1 + lp_box_dimension);
+                        Line(x1, y1 + lp_box_dimension, x1 + lp_box_dimension,
+                            y1);
                     }
                 }
             }
@@ -660,14 +663,14 @@ QTlayerPaletteDlg::redraw()
                 SetColor(user_backg());
             else
                 SetColor(hist_backg());
-            Box(x + lp_box_dimension + lp_box_text_spacing, y,
-                x + lp_entry_width - lp_box_text_spacing - 4,
-                y + lp_box_dimension);
+            Box(x1 + lp_box_dimension + lp_box_text_spacing, y1,
+                x1 + lp_entry_width - lp_box_text_spacing - 4,
+                y1 + lp_box_dimension);
 
             SetColor(DSP()->Color(PromptEditTextColor));
             int y_text_fudge = 2;
-            int yt = y + lp_box_dimension + y_text_fudge;
-            int xt = x + lp_box_dimension + lp_box_text_spacing + 2;
+            int yt = y1 + lp_box_dimension + y_text_fudge;
+            int xt = x1 + lp_box_dimension + lp_box_text_spacing + 2;
             snprintf(buf, sizeof(buf), "%d", ld->index(DSP()->CurMode()));
             Text(buf, xt, yt, 0);
 
@@ -675,7 +678,7 @@ QTlayerPaletteDlg::redraw()
             if (ld == LT()->CurLayer()) {
                 SetLinestyle(0);
                 GRmultiPt xp(5);
-                xp.assign(0, x - 2, y - 2);
+                xp.assign(0, x1 - 2, y1 - 2);
                 xp.assign(1,
                     xp.at(0).x, xp.at(0).y + lp_box_dimension + 4);
                 xp.assign(2,
@@ -689,7 +692,7 @@ QTlayerPaletteDlg::redraw()
                 PolyLine(&xp, 5);
             }
 
-            x += lp_entry_width;
+            x1 += lp_entry_width;
         }
     }
 //    lp_pmap_dirty = true;
@@ -699,7 +702,7 @@ QTlayerPaletteDlg::redraw()
 // Exposure redraw, avoids flicker.
 //
 void
-QTlayerPaletteDlg::refresh(int x, int y, int w, int h)
+QTlayerPaletteDlg::refresh(int xx, int yy, int w, int h)
 {
     /*
 #if GTK_CHECK_VERSION(3,0,0)
@@ -763,15 +766,15 @@ QTlayerPaletteDlg::refresh(int x, int y, int w, int h)
 // pointed to, and perform necessary actions.
 //
 void
-QTlayerPaletteDlg::b1_handler(int x, int y, int state, bool down)
+QTlayerPaletteDlg::b1_handler(int xx, int yy, int state, bool down)
 {
     if (down) {
-        if (remove(x, y)) {
+        if (remove(xx, yy)) {
 //            lp_pmap_dirty = true;
             refresh(0, 0, 0, 0);
             return;
         }
-        CDl *ld = ldesc_at(x, y);
+        CDl *ld = ldesc_at(xx, yy);
         if (!ld)
             return;
         if (state & (GR_SHIFT_MASK | GR_CONTROL_MASK)) {
@@ -786,8 +789,8 @@ QTlayerPaletteDlg::b1_handler(int x, int y, int state, bool down)
         }
 
         lp_dragging = true;
-        lp_drag_x = x;
-        lp_drag_y = y;
+        lp_drag_x = xx;
+        lp_drag_y = yy;
         LT()->HandleLayerSelect(ld);
     }
     else
@@ -805,10 +808,10 @@ QTlayerPaletteDlg::b1_handler(int x, int y, int state, bool down)
 // changing (for now) whether dots are filled or outlined only.
 //
 void
-QTlayerPaletteDlg::b2_handler(int x, int y, int state, bool down)
+QTlayerPaletteDlg::b2_handler(int xx, int yy, int state, bool down)
 {
     if (down) {
-        CDl *ld = ldesc_at(x, y);
+        CDl *ld = ldesc_at(xx, yy);
         if (!ld)
             return;
 
@@ -827,10 +830,10 @@ QTlayerPaletteDlg::b2_handler(int x, int y, int state, bool down)
 // selected layer(s).
 //
 void
-QTlayerPaletteDlg::b3_handler(int x, int y, int state, bool down)
+QTlayerPaletteDlg::b3_handler(int xx, int yy, int state, bool down)
 {
     if (down) {
-        CDl *ld = ldesc_at(x, y);
+        CDl *ld = ldesc_at(xx, yy);
         if (!ld)
             return;
 
@@ -853,20 +856,20 @@ QTlayerPaletteDlg::b3_handler(int x, int y, int state, bool down)
 
 
 CDl *
-QTlayerPaletteDlg::ldesc_at(int x, int y)
+QTlayerPaletteDlg::ldesc_at(int xx, int yy)
 {
-    if (y < lp_hist_y)
+    if (yy < lp_hist_y)
         return (0);
-    int col = (x - 2)/lp_entry_width;
+    int col = (xx - 2)/lp_entry_width;
     if (col < 0)
         col = 0;
     else if (col >= LP_PALETTE_COLS)
         col = LP_PALETTE_COLS - 1;
 
-    if (y < lp_user_y)
+    if (yy < lp_user_y)
         return (lp_history[col]);
 
-    int row = (y - lp_user_y)/(lp_user_y - lp_hist_y);
+    int row = (yy - lp_user_y)/(lp_user_y - lp_hist_y);
     if (row < 0)
         row = 0;
     else if (row > LP_PALETTE_ROWS-1)
@@ -879,18 +882,18 @@ QTlayerPaletteDlg::ldesc_at(int x, int y)
 // active, remove the entry and reset the button.
 //
 bool
-QTlayerPaletteDlg::remove(int x, int y)
+QTlayerPaletteDlg::remove(int xx, int yy)
 {
     if (!QTdev::GetStatus(lp_remove))
         return (false);
-    if (y < lp_user_y)
+    if (yy < lp_user_y)
         return (false);
-    int row = (y - lp_user_y)/(lp_user_y - lp_hist_y);
+    int row = (yy - lp_user_y)/(lp_user_y - lp_hist_y);
     if (row < 0)
         row = 0;
     else if (row > LP_PALETTE_ROWS-1)
         row = LP_PALETTE_ROWS-1;
-    int col = (x - 2)/lp_entry_width;
+    int col = (xx - 2)/lp_entry_width;
     if (col < 0)
         col = 0;
     else if (col >= LP_PALETTE_COLS)
@@ -1079,20 +1082,20 @@ QTlayerPaletteDlg::motion_slot(QMouseEvent *ev)
     ev->accept();
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
     if (lp_dragging &&
-            (abs(x - lp_drag_x) > 4 || abs(y - lp_drag_y) > 4)) {
+            (abs(xx - lp_drag_x) > 4 || abs(yy - lp_drag_y) > 4)) {
         lp_dragging = false;
 
-//        int entry = entry_of_xy(x, y);
+//        int entry = entry_of_xy(xx, yy);
 //        int last_ent = last_entry();
 //        if (entry <= last_ent) {
-            CDl *ld = ldesc_at(x, y);
+            CDl *ld = ldesc_at(xx, yy);
             XM()->PopUpLayerPalette(0, MODE_UPD, true, ld);
 
             LayerFillData dd(ld);

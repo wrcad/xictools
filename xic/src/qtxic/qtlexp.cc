@@ -577,12 +577,12 @@ QTlayerExpDlg::eval_btn_slot()
     lstr.add(s);
     delete [] s;
 
-    int depth = depth_hst;
-    if (depth == DMAX)
-        depth = CDMAXCALLDEPTH;
+    int dep = depth_hst;
+    if (dep == DMAX)
+        dep = CDMAXCALLDEPTH;
 
     int flags = create_mode;
-    if (do_recurse && depth > 0)
+    if (do_recurse && dep > 0)
         flags |= CLrecurse;
     if (noclear)
         flags |= CLnoClear;
@@ -591,7 +591,7 @@ QTlayerExpDlg::eval_btn_slot()
     if (fast_mode)
         flags |= CLnoUndo;
 
-    ED()->createLayerCmd(lstr.string(), depth, flags);
+    ED()->createLayerCmd(lstr.string(), dep, flags);
 }
 
 

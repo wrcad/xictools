@@ -151,7 +151,7 @@ char *QTfilesListDlg::f_cwd;
 int QTfilesListDlg::f_timer_tag;
 QTfilesListDlg *QTfilesListDlg::instPtr;
 
-QTfilesListDlg::QTfilesListDlg(int x, int y)
+QTfilesListDlg::QTfilesListDlg(int xx, int yy)
 {
     fl_caller = TB()->entries(tid_files)->action();;
     instPtr = this;
@@ -229,9 +229,9 @@ QTfilesListDlg::QTfilesListDlg(int x, int y)
 
     update();
 
-    TB()->FixLoc(&x, &y);
+    TB()->FixLoc(&xx, &yy);
     TB()->SetActiveDlg(tid_files, this);
-    move(x, y);
+    move(xx, yy);
 }
 
 
@@ -956,19 +956,19 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
         return;
     QByteArray qba = wb_textarea->toPlainText().toLatin1();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
     const char *str = lstring::copy((const char*)qba.constData());
     const char *line_start = str;
-    for (int i = 0; i <= pos; i++) {
+    for (int i = 0; i <= posn; i++) {
         if (str[i] == '\n') {
-            if (i == pos) {
+            if (i == posn) {
                 // Clicked to  right of line.
                 delete [] str;
                 return;
@@ -989,7 +989,7 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
         return;
     }
 
-    int cpos = &str[pos] - line_start;
+    int cpos = &str[posn] - line_start;
     int cstart = 0;
     int cend = 0;
     for (int i = 0; colwid[i]; i++) {
@@ -1048,8 +1048,8 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
 
         f_drag_start = true;
         f_drag_btn = ev->button();
-        f_drag_x = x;
-        f_drag_y = y;
+        f_drag_x = xx;
+        f_drag_y = yy;
     }
 }
 
@@ -1122,9 +1122,8 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-QTfilesListDlg::mime_data_received_slot(const QMimeData *data)
-{
-    foreach (const QUrl &url, data->urls()) {
+QTfilesListDlg::mime_data_received_slot(const QMimeData *dta) {
+    foreach (const QUrl &url, dta->urls()) {
         QByteArray bary = url.toLocalFile().toLatin1();
         const char *src = bary.constData();
         if (src && *src && instPtr->wb_textarea) {

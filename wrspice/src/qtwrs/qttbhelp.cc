@@ -126,12 +126,12 @@ QTtoolbar::KeywordsCleanup(QTtbHelpDlg *dlg)
 // End of QTtoolbar functions;
 
 
-QTtbHelpDlg::QTtbHelpDlg(GRobject parent, GRobject call_btn, TBH_type type)
+QTtbHelpDlg::QTtbHelpDlg(GRobject prnt, GRobject call_btn, TBH_type typ)
 {
     th_text = 0;
-    th_parent = parent;
+    th_parent = prnt;
     th_caller = call_btn;
-    th_type = type;
+    th_type = typ;
     th_lx = 0;
     th_ly = 0;
 
@@ -223,19 +223,19 @@ QTtbHelpDlg::mouse_press_slot(QMouseEvent *ev)
     const char *str = lstring::copy(
         th_text->toPlainText().toLatin1().constData());
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    QTextCursor cur = th_text->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    QTextCursor cur = th_text->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
 
     const char *lineptr = str;
-    for (int i = 0; i <= pos; i++) {
+    for (int i = 0; i <= posn; i++) {
         if (str[i] == '\n') {
-            if (i == pos) {
+            if (i == posn) {
                 // Clicked to right of line.
                 th_text->select_range(0, 0);
                 delete [] str;

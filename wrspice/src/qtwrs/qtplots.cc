@@ -148,7 +148,7 @@ QTtoolbar::UpdatePlots(int lev)
 const char *QTplotListDlg::pl_btns[] = { "New Plot", "Delete Current", 0 };
 QTplotListDlg *QTplotListDlg::instPtr;
 
-QTplotListDlg::QTplotListDlg(int x, int y, const char *s)
+QTplotListDlg::QTplotListDlg(int xx, int yy, const char *s)
 {
     instPtr = this;
     pl_affirm = 0;
@@ -222,9 +222,9 @@ QTplotListDlg::QTplotListDlg(int x, int y, const char *s)
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
-    TB()->FixLoc(&x, &y);
+    TB()->FixLoc(&xx, &yy);
     TB()->SetActiveDlg(tid_plots, this);
-    move(x, y);
+    move(xx, yy);
 }
 
 
@@ -279,25 +279,25 @@ QTplotListDlg::mouse_press_slot(QMouseEvent *ev)
     QByteArray ba = wb_textarea->toPlainText().toLatin1();
     const char *str = ba.constData();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
 
-    const char *lineptr = str;
+//    const char *lineptr = str;
     int line = 0;
-    for (int i = 0; i <= pos; i++) {
+    for (int i = 0; i <= posn; i++) {
         if (str[i] == '\n') {
             line++;
-            if (i == pos) {
+            if (i == posn) {
                 // Clicked to  right of line.
                 break;
             }
-            lineptr = str + i+1;
+//            lineptr = str + i+1;
         }
     }
 

@@ -1442,22 +1442,22 @@ QTcellsDlg::mouse_press_slot(QMouseEvent *ev)
     char *str =
         lstring::copy(wb_textarea->toPlainText().toLatin1().constData());
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
 
-    if (isspace(str[pos])) {
+    if (isspace(str[posn])) {
         // Clicked on white space.
         delete [] str;
         return;
     }
 
-    char *start = str + pos;
+    char *start = str + posn;
     char *end = start;
     while (!isspace(*start) && start > str)
         start--;
@@ -1480,8 +1480,8 @@ QTcellsDlg::mouse_press_slot(QMouseEvent *ev)
     delete [] str;
 
     c_dragging = true;
-    c_drag_x = x;
-    c_drag_y = y;
+    c_drag_x = xx;
+    c_drag_y = yy;
 }
 
 

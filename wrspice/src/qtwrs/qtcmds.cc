@@ -98,7 +98,7 @@ namespace {
 
 QTcmdParamDlg *QTcmdParamDlg::instPtr;
 
-QTcmdParamDlg::QTcmdParamDlg(int x, int y)
+QTcmdParamDlg::QTcmdParamDlg(int xx, int yy)
 {
     instPtr = this;
 
@@ -624,9 +624,9 @@ QTcmdParamDlg::QTcmdParamDlg(int x, int y)
     }
     grid->setRowStretch(2, 1);
 
-    if (x || y) {
-        TB()->FixLoc(&x, &y);
-        move(x, y);
+    if (xx || yy) {
+        TB()->FixLoc(&xx, &yy);
+        move(xx, yy);
     }
     TB()->SetActiveDlg(tid_commands, this);
 }

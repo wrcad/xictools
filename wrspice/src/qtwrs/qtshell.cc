@@ -123,7 +123,7 @@ GTKtoolbar::PopDownShellDefs()
 
 QTshellParamDlg *QTshellParamDlg::instPtr;
 
-QTshellParamDlg::QTshellParamDlg(int x, int y)
+QTshellParamDlg::QTshellParamDlg(int xx, int yy)
 {
     instPtr = this;
 
@@ -277,9 +277,9 @@ QTshellParamDlg::QTshellParamDlg(int x, int y)
         delete [] s;
     }
 
-    if (x || y) {
-        TB()->FixLoc(&x, &y);
-        move(x, y);
+    if (xx || yy) {
+        TB()->FixLoc(&xx, &yy);
+        move(xx, yy);
     }
     TB()->SetActiveDlg(tid_shell, this);
 }

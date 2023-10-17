@@ -668,14 +668,14 @@ QTdevMenuDlg::init_sizes()
     if (!QTmainwin::self())
         return (0);
 
-    int width = QTmainwin::self()->Viewport()->width();
+    int wid = QTmainwin::self()->Viewport()->width();
     left += 40 + SPA;  // Button width is approx 40.
-    if (left < width)
-        width = left;
-    if (width <= 0)
+    if (left < wid)
+        wid = left;
+    if (wid <= 0)
         // all lib cells are empty, shouldn't happen
-        width = 100;
-    return (width);
+        wid = 100;
+    return (wid);
 }
 
 
@@ -696,8 +696,8 @@ QTdevMenuDlg::render_cell(int which, bool selected)
         sdesc = syr;
     sdesc->computeBB();
     BBox BB = *sdesc->BB();
-    int x = (BB.left + BB.right)/2;
-    int y = (BB.bottom + BB.top)/2;
+    int xx = (BB.left + BB.right)/2;
+    int yy = (BB.bottom + BB.top)/2;
 
     int vp_height = CELL_SIZE - 2*SPA;
     int vp_width = dv_entries[which].width + 2;
@@ -708,9 +708,9 @@ QTdevMenuDlg::render_cell(int which, bool selected)
     wd.SetWdraw(this);
 
     wd.SetRatio(((double)vp_height)/DEVSIZE);
-    int height = (int)(vp_height/wd.Ratio());
-    wd.Window()->top = y + height/2;
-    wd.Window()->bottom = y - height/2;
+    int hei = (int)(vp_height/wd.Ratio());
+    wd.Window()->top = yy + hei/2;
+    wd.Window()->bottom = yy - hei/2;
     // Shift a little for text placement compensation.
     wd.Window()->left = BB.left - (int)(SPA/wd.Ratio());
     wd.Window()->right = BB.right - (int)(SPA/wd.Ratio());
@@ -756,10 +756,10 @@ QTdevMenuDlg::render_cell(int which, bool selected)
     }
     int fwid, fhei;
     TextExtent(dv_entries[which].name, &fwid, &fhei);
-    x = 0;
-    y = vp_height - fhei;
+    xx = 0;
+    yy = vp_height - fhei;
     SetColor(selected ? dv_selec : dv_backg);
-    BBox tBB(x, y+fhei, x+fwid, y);
+    BBox tBB(xx, yy+fhei, xx+fwid, yy);
     Box(tBB.left, tBB.bottom, tBB.right,
         tBB.bottom - (abs(tBB.height())*8)/10);
     SetColor(dv_hlite);
@@ -792,11 +792,12 @@ QTdevMenuDlg::cyclemore()
 // -1 if the pointer is not over a device.
 //
 int
-QTdevMenuDlg::whichent(int x)
+QTdevMenuDlg::whichent(int xx)
 {
-    x += dv_leftofst;
+    xx += dv_leftofst;
     for (int i = dv_leftindx; i < dv_rightindx; i++) {
-        if (dv_entries[i].x <= x && x <= dv_entries[i].x + dv_entries[i].width)
+        if (dv_entries[i].x <= xx &&
+                xx <= dv_entries[i].x + dv_entries[i].width)
             return (i);
     }
     return (-1);
@@ -866,11 +867,11 @@ void
 QTdevMenuDlg::redraw()
 {
     dv_leftofst = dv_entries[dv_leftindx].x - SPA;
-    int width = gd_viewport->width();
+    int wid = gd_viewport->width();
     int i;
     for (i = dv_leftindx; i < dv_numdevs; i++) {
         if (dv_entries[i].x - dv_leftofst +
-                dv_entries[i].width + SPA > width)
+                dv_entries[i].width + SPA > wid)
             break;
     }
     if (i == dv_numdevs && dv_leftindx == 0) {
@@ -1031,7 +1032,7 @@ QTdevMenuDlg::enter_slot(QEnterEvent *ev)
 
 
 void
-QTdevMenuDlg::leave_slot(QEvent *ev)
+QTdevMenuDlg::leave_slot(QEvent*)
 {
     // On leaving the toolbar, return the border to normal.
     show_unselected(dv_curdev);

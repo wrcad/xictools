@@ -97,7 +97,7 @@ namespace {
 
 QTdebugParamDlg *QTdebugParamDlg::instPtr;
 
-QTdebugParamDlg::QTdebugParamDlg(int x, int y)
+QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
 {
     instPtr = this;
     db_dbent = 0;
@@ -275,9 +275,9 @@ QTdebugParamDlg::QTdebugParamDlg(int x, int y)
         grid->addWidget(entry->qtent(), 5, 2, 1, 2);
     }
 
-    if (x || y) {
-        TB()->FixLoc(&x, &y);
-        move(x, y);
+    if (xx || yy) {
+        TB()->FixLoc(&xx, &yy);
+        move(xx, yy);
     }
     TB()->SetActiveDlg(tid_debug, this);
 }

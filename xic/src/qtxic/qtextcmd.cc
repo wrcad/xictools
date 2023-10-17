@@ -115,7 +115,7 @@ QTextCmdDlg *QTextCmdDlg::instPtr;
 
 QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
     bool (*action_cb)(const char*, void*, bool, const char*, int, int),
-    void *action_arg, int depth)
+    void *action_arg, int dep)
 {
     instPtr = this;
     cmd_caller = c;
@@ -240,10 +240,10 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
 
         cmd_depth = new QComboBox();
         hbox->addWidget(cmd_depth);
-        if (depth < 0)
-            depth = 0;
-        if (depth > DMAX)
-            depth = DMAX;
+        if (dep < 0)
+            dep = 0;
+        if (dep > DMAX)
+            dep = DMAX;
         for (int i = 0; i <= DMAX; i++) {
             char buf[16];
             if (i == DMAX)
@@ -252,7 +252,7 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
                 snprintf(buf, sizeof(buf), "%d", i);
             cmd_depth->addItem(buf);
         }
-        cmd_depth->setCurrentIndex(depth);
+        cmd_depth->setCurrentIndex(dep);
         connect(cmd_depth, SIGNAL(currentIndexChanged(int)),
             this, SLOT(depth_changed_slot(int)));
     }

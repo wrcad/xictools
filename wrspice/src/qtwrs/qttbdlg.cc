@@ -91,7 +91,7 @@ QTtoolbar::PopUpToolbar(ShowMode mode, int x, int y)
 
 QTtbDlg *QTtbDlg::instPtr;
 
-QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
+QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
 {
     instPtr = this;
     tb_file_menu = 0;
@@ -427,9 +427,9 @@ QTtbDlg::QTtbDlg(int x, int y) : QTdraw(0)
 
     TB()->RegisterTimeoutProc(50, tb_res_timeout, (void*)1L);
     TB()->RegisterTimeoutProc(2000, tb_res_timeout, 0);
-    TB()->FixLoc(&x, &y);
+    TB()->FixLoc(&xx, &yy);
     TB()->SetActiveDlg(tid_toolbar, this);
-    move(x, y);
+    move(xx, yy);
 }
 
 
@@ -459,11 +459,11 @@ namespace {
 // Redraw the resource information.
 //
 void
-QTtbDlg::update(ResUpdType update)
+QTtbDlg::update(ResUpdType updt)
 {
     if (!GP.isMainThread())
         return;
-    if (update == RES_UPD_TIME) {
+    if (updt == RES_UPD_TIME) {
         double elapsed, user, cpu;
         ResPrint::get_elapsed(&elapsed, &user, &cpu);
         tb_elapsed_start = elapsed;
@@ -476,8 +476,8 @@ QTtbDlg::update(ResUpdType update)
         TextExtent(0, &fwid, &dy);
         SetWindowBackground(SpGrPkg::DefColors[0].pixel);
         SetBackground(SpGrPkg::DefColors[0].pixel);
-        int y = dy + 2;
-        int x = 4;
+        int yy = dy + 2;
+        int xx = 4;
         int ux = 18*fwid;
         int vx = ux + 14*fwid;
 
@@ -494,7 +494,7 @@ QTtbDlg::update(ResUpdType update)
             elapsed = 0.0;
         hms(elapsed, &hours, &minutes, &secs);
         SetColor(tb_clr_1);
-        Text("elapsed", x, y, 0);
+        Text("elapsed", xx, yy, 0);
         SetColor(tb_clr_2);
         *buf = 0;
         if (hours)
@@ -505,7 +505,7 @@ QTtbDlg::update(ResUpdType update)
         }
         int len = strlen(buf);
         snprintf(buf + len, sizeof(buf) - len, "%.2f", secs);
-        Text(buf, ux, y, 0);
+        Text(buf, ux, yy, 0);
         if (Sp.GetFlag(FT_SIMFLAG)) {
             strcpy(buf, "running");
             SetColor(tb_clr_3);
@@ -516,19 +516,19 @@ QTtbDlg::update(ResUpdType update)
         }
         else
             strcpy(buf, "idle");
-        Text(buf, vx, y, 0);
-        y += dy;
+        Text(buf, vx, yy, 0);
+        yy += dy;
         if (Sp.GetFlag(FT_SIMFLAG) && Sp.CurCircuit()) {
             double pct = Sp.CurCircuit()->getPctDone();
             if (pct > 0.0) {
                 snprintf(buf, sizeof(buf), "%.1f%%", pct);
-                Text(buf, vx, y, 0);
+                Text(buf, vx, yy, 0);
             }
         }
         if (user >= 0.0) {
             hms(user, &hours, &minutes, &secs);
             SetColor(tb_clr_1);
-            Text("total user", x, y, 0);
+            Text("total user", xx, yy, 0);
             SetColor(tb_clr_2);
             *buf = 0;
             if (hours)
@@ -539,13 +539,13 @@ QTtbDlg::update(ResUpdType update)
             }
             len = strlen(buf);
             snprintf(buf + len, sizeof(buf) - len, "%.2f", secs);
-            Text(buf, ux, y, 0);
-            y += dy;
+            Text(buf, ux, yy, 0);
+            yy += dy;
         }
         if (cpu >= 0.0) {
             hms(cpu, &hours, &minutes, &secs);
             SetColor(tb_clr_1);
-            Text("total system", x, y, 0);
+            Text("total system", xx, yy, 0);
             SetColor(tb_clr_2);
             *buf = 0;
             if (hours)
@@ -556,39 +556,39 @@ QTtbDlg::update(ResUpdType update)
             }
             len = strlen(buf);
             snprintf(buf + len, sizeof(buf) - len, "%.2f", secs);
-            Text(buf, ux, y, 0);
-            y += dy;
+            Text(buf, ux, yy, 0);
+            yy += dy;
         }
-        unsigned int data, hlimit, slimit;
-        ResPrint::get_space(&data, &hlimit, &slimit);
-        if (data) {
+        unsigned int dta, hlimit, slimit;
+        ResPrint::get_space(&dta, &hlimit, &slimit);
+        if (dta) {
             SetColor(tb_clr_1);
-            Text("data size", x, y, 0);
+            Text("data size", xx, yy, 0);
             SetColor(tb_clr_2);
-            snprintf(buf, sizeof(buf), "%d", data/1024);
-            Text(buf, ux, y, 0);
-            y += dy;
+            snprintf(buf, sizeof(buf), "%d", dta/1024);
+            Text(buf, ux, yy, 0);
+            yy += dy;
 
             double val = DEF_maxData;
             VTvalue vv;
             if (Sp.GetVar(spkw_maxdata, VTYP_REAL, &vv, Sp.CurCircuit()))
                 val = vv.get_real();
             SetColor(tb_clr_1);
-            Text("program limit", x, y, 0);
+            Text("program limit", xx, yy, 0);
             SetColor(tb_clr_2);
             snprintf(buf, sizeof(buf), "%d", (int)val);
-            Text(buf, ux, y, 0);
-            y += dy;
+            Text(buf, ux, yy, 0);
+            yy += dy;
 
             if (hlimit || slimit) {
                 if (hlimit == 0 || (slimit > 0 && slimit < hlimit))
                     hlimit = slimit;
                 SetColor(tb_clr_1);
-                Text("system limit", x, y, 0);
+                Text("system limit", xx, yy, 0);
                 SetColor(tb_clr_2);
                 snprintf(buf, sizeof(buf), "%d", hlimit/1024);
-                Text(buf, ux, y, 0);
-                y += dy;
+                Text(buf, ux, yy, 0);
+                yy += dy;
             }
         }
         Update();
@@ -687,14 +687,14 @@ QTtbDlg::file_menu_slot(QAction *a)
     if (tp == MA_file_sel) {
         // Pop up the file selection panel.
         static int cnt;
-        int x = 100, y = 100;
-        x += cnt*200;
-        y += cnt*100;
-        TB()->FixLoc(&x, &y);
+        int xx = 100, yy = 100;
+        xx += cnt*200;
+        yy += cnt*100;
+        TB()->FixLoc(&xx, &yy);
         cnt++;
         if (cnt == 3)
             cnt = 0;
-        TB()->PopUpFileSelector(fsSEL, GRloc(LW_XYA, x, y),
+        TB()->PopUpFileSelector(fsSEL, GRloc(LW_XYA, xx, yy),
             file_sel_cb, 0, 0, 0);
     }
     else if (tp == MA_source) {

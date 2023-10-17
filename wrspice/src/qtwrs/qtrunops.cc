@@ -110,7 +110,7 @@ QTtoolbar::UpdateRunops()
 const char *QTrunopListDlg::tl_btns[] = { "Delete Inactive", 0 };
 QTrunopListDlg *QTrunopListDlg::instPtr;
 
-QTrunopListDlg::QTrunopListDlg(int x, int y, const char *s)
+QTrunopListDlg::QTrunopListDlg(int xx, int yy, const char *s)
 {
     instPtr = this;
     tl_affirm = 0;
@@ -184,9 +184,9 @@ QTrunopListDlg::QTrunopListDlg(int x, int y, const char *s)
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
-    TB()->FixLoc(&x, &y);
+    TB()->FixLoc(&xx, &yy);
     TB()->SetActiveDlg(tid_runops, this);
-    move(x, y);
+    move(xx, yy);
 }
 
 
@@ -268,19 +268,19 @@ QTrunopListDlg::mouse_press_slot(QMouseEvent *ev)
     QByteArray ba = wb_textarea->toPlainText().toLatin1();
     const char *str = ba.constData();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
 
     const char *lineptr = str;
-    for (int i = 0; i <= pos; i++) {
+    for (int i = 0; i <= posn; i++) {
         if (str[i] == '\n') {
-            if (i == pos) {
+            if (i == posn) {
                 // Clicked to  right of line.
                 break;
             }
@@ -304,9 +304,9 @@ QTrunopListDlg::mouse_press_slot(QMouseEvent *ev)
     OP.setRunopActive(dnum, active);
 
     QColor red("red");
-    int posn = lineptr - str;
+    int psn = lineptr - str;
     wb_textarea->set_editable(true);
-    wb_textarea->replace_chars(&red, active ? " " : "I", posn, posn+1);
+    wb_textarea->replace_chars(&red, active ? " " : "I", psn, psn+1);
     wb_textarea->set_editable(false);
 }
 

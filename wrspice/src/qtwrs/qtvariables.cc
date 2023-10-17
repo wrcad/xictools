@@ -107,7 +107,7 @@ QTtoolbar::UpdateVariables()
 const char *QTvarListDlg::vl_btns[] = { 0 };
 QTvarListDlg *QTvarListDlg::instPtr;
 
-QTvarListDlg::QTvarListDlg(int x, int y, const char *s)
+QTvarListDlg::QTvarListDlg(int xx, int yy, const char *s)
 {
     instPtr = this;
 
@@ -182,9 +182,9 @@ QTvarListDlg::QTvarListDlg(int x, int y, const char *s)
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
-    TB()->FixLoc(&x, &y);
+    TB()->FixLoc(&xx, &yy);
     TB()->SetActiveDlg(tid_variables, this);
-    move(x, y);
+    move(xx, yy);
 }
 
 

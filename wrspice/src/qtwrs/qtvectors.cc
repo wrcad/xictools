@@ -130,7 +130,7 @@ const char *QTvectorListDlg::vl_btns[] =
     { "Desel All", "Print", "Plot", "Delete", 0 };
 QTvectorListDlg *QTvectorListDlg::instPtr;
 
-QTvectorListDlg::QTvectorListDlg(int x, int y, const char *s)
+QTvectorListDlg::QTvectorListDlg(int xx, int yy, const char *s)
 {
     instPtr = this;
     vl_affirm = 0;
@@ -205,9 +205,9 @@ QTvectorListDlg::QTvectorListDlg(int x, int y, const char *s)
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
-    TB()->FixLoc(&x, &y);
+    TB()->FixLoc(&xx, &yy);
     TB()->SetActiveDlg(tid_vectors, this);
-    move(x, y);
+    move(xx, yy);
 }
 
 
@@ -338,21 +338,21 @@ QTvectorListDlg::mouse_press_slot(QMouseEvent *ev)
     QByteArray ba = wb_textarea->toPlainText().toLatin1();
     const char *str = ba.constData();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int x = ev->position().x();
-    int y = ev->position().y();
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    int x = ev->x();
-    int y = ev->y();
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
 
     const char *lineptr = str;
     int line = 0;
-    for (int i = 0; i <= pos; i++) {
+    for (int i = 0; i <= posn; i++) {
         if (str[i] == '\n') {
             line++;
-            if (i == pos) {
+            if (i == posn) {
                 // Clicked to  right of line.
                 break;
             }
@@ -384,10 +384,10 @@ QTvectorListDlg::mouse_press_slot(QMouseEvent *ev)
     else
         dv->set_flags(dv->flags() & ~VF_SELECTED);
 
-    int posn = lineptr - str;
+    int pn = lineptr - str;
     QColor red("red");
     wb_textarea->set_editable(true);
-    wb_textarea->replace_chars(&red, select ? ">" : " ", posn, posn+1);
+    wb_textarea->replace_chars(&red, select ? ">" : " ", pn, pn+1);
     wb_textarea->set_editable(false);
 }
 

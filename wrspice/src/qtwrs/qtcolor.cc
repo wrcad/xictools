@@ -262,7 +262,7 @@ CommandTab::com_setrdb(wordlist *wl)
 
 QTcolorParamDlg *QTcolorParamDlg::instPtr;
 
-QTcolorParamDlg::QTcolorParamDlg(int x, int y)
+QTcolorParamDlg::QTcolorParamDlg(int xx, int yy)
 {
     instPtr = this;
 
@@ -319,9 +319,9 @@ QTcolorParamDlg::QTcolorParamDlg(int x, int y)
         }
     }
 
-    if (x || y) {
-        TB()->FixLoc(&x, &y);
-        move(x, y);
+    if (xx || yy) {
+        TB()->FixLoc(&xx, &yy);
+        move(xx, yy);
     }
     TB()->SetActiveDlg(tid_colors, this);
 }

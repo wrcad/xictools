@@ -96,7 +96,7 @@ QTflattenDlg *QTflattenDlg::instPtr;
 
 QTflattenDlg::QTflattenDlg(
     GRobject c, bool(*callback)(const char*, bool, const char*, void*),
-    void *arg, int depth, bool fmode)
+    void *arg, int dep, bool fmode)
 {
     instPtr = this;
     fl_caller = c;
@@ -151,10 +151,10 @@ QTflattenDlg::QTflattenDlg(
     QComboBox *entry = new QComboBox();
     hbox->addWidget(entry);
 
-    if (depth < 0)
-        depth = 0;
-    if (depth > DMAX)
-        depth = DMAX;
+    if (dep < 0)
+        dep = 0;
+    if (dep > DMAX)
+        dep = DMAX;
     for (int i = 0; i <= DMAX; i++) {
         char buf[16];
         if (i == DMAX)
@@ -163,7 +163,7 @@ QTflattenDlg::QTflattenDlg(
             snprintf(buf, sizeof(buf), "%d", i);
         entry->addItem(buf);
     }
-    entry->setCurrentIndex(depth);
+    entry->setCurrentIndex(dep);
     connect(entry, SIGNAL(currentTextChanged(const QString&)),
         this, SLOT(depth_menu_slot(const QString&)));
 
