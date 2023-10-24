@@ -578,7 +578,12 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
 
     menubar->addSeparator();
 #ifdef USE_QTOOLBAR
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     menubar->addAction(tr("Help"), Qt::CTRL|Qt::Key_H, this, SLOT(help_slot()));
+#else
+    a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a->setShortcut(QKeySequence("Ctrl+H"));
+#endif
 #else
     h_main_menus[3] = menubar->addMenu(tr("&Help"));
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)

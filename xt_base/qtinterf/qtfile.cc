@@ -846,8 +846,8 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
         menubar->addAction(tr("&Help"),
             Qt::CTRL|Qt::Key_H, this, SLOT(help_slot()));
 #else
-        menubar->addAction(tr("&Help"),
-            this, SLOT(help_slot()), Qt::CTRL|Qt::Key_H);
+        QAction *a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+        a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 #else
         f_helpmenu = new QMenu(this);

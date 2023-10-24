@@ -1076,17 +1076,13 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 
         menubar->addSeparator();
 #ifdef USE_QTOOLBAR
-        menubar->addAction(tr("Help"), Qt::CTRL|Qt::Key_H,
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H,
             sub_win, SLOT(help_slot()));
-/*
-old, use menu with Help entry
-        QAction *a = menubar->addAction("Help");
-        a->setMenu(subwin_help_menu);
-        QToolButton *tb = dynamic_cast<QToolButton*>(
-            menubar->widgetForAction(a));
-        if (tb)
-            tb->setPopupMode(QToolButton::InstantPopup);
-*/
+#else
+        QAction *a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+        a->setShortcut(QKeySequence("Ctrl+H"));
+#endif
 #else
         QMenu *subwin_help_menu = new QMenu(sub_win);
         subwin_help_menu->setTitle(tr(mbox->name));

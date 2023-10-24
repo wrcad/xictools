@@ -84,6 +84,8 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QToolButton>
+#include <QScreen>
+#include <QWheelEvent>
 
 // Name clash with QT avoided with this placement.
 #include "miscutil/timer.h"
@@ -1367,6 +1369,48 @@ QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
 // End of cAppWinFuncs interface
 
 
+void
+QTsubwin::wheelEvent(QWheelEvent *ev)
+{
+    QPoint numDegrees = ev->angleDelta()/8;
+    if (numDegrees.isNull() || numDegrees.y() == 0) {
+        ev->ignore();
+        return;
+    }
+    bool scroll_up = (numDegrees.y() > 0);
+    ev->accept();
+    if (scroll_up) {
+
+        if (ev->modifiers() & Qt::ControlModifier) {
+            if (DSP()->MouseWheelZoomFactor() > 0.0)
+                sw_windesc->Zoom(1.0 - DSP()->MouseWheelZoomFactor());
+        }
+        else if (ev->modifiers() & Qt::ShiftModifier) {
+            if (DSP()->MouseWheelPanFactor() > 0.0)
+                sw_windesc->Pan(DirEast, DSP()->MouseWheelPanFactor());
+        }
+        else {
+            if (DSP()->MouseWheelPanFactor() > 0.0)
+                sw_windesc->Pan(DirNorth, DSP()->MouseWheelPanFactor());
+        }
+    }
+    else {
+        if (ev->modifiers() & Qt::ControlModifier) {
+            if (DSP()->MouseWheelZoomFactor() > 0.0)
+                sw_windesc->Zoom(1.0 + DSP()->MouseWheelZoomFactor());
+        }
+        else if (ev->modifiers() & Qt::ShiftModifier) {
+            if (DSP()->MouseWheelPanFactor() > 0.0)
+                sw_windesc->Pan(DirWest, DSP()->MouseWheelPanFactor());
+        }
+        else {
+            if (DSP()->MouseWheelPanFactor() > 0.0)
+                sw_windesc->Pan(DirSouth, DSP()->MouseWheelPanFactor());
+        }
+    }
+}
+
+
 #define MODMASK (GR_SHIFT_MASK | GR_CONTROL_MASK | GR_ALT_MASK)
 
 
@@ -2291,8 +2335,9 @@ QTmainwin::sizeHint() const
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     QSize sz = screen()->availableSize();
 #else
-    QScreen *scr = QGuiApplication::screenAt(mapToGlobal(width()/2, height()/2));
-    QSize sz = scr ? scr->availableSize() : QScreen(1024, 768);;
+    QScreen *scr = QGuiApplication::screenAt(mapToGlobal(
+        QPoint(width()/2, height()/2)));
+    QSize sz = scr ? scr->availableSize() : QSize(1024, 768);;
 #endif
     // Max honored size is 2/3 the screen width and height.
     return (QSize((sz.width()*2)/3, (sz.height()*2)/3));

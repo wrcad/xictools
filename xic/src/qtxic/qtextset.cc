@@ -243,7 +243,7 @@ void
 QTextSetupDlg::views_and_ops_page()
 {
     QWidget *page = new QWidget();
-    es_notebook->addTab(page, tr("Views and\nOperations"));
+    es_notebook->addTab(page, tr("Views and Operations"));
     QVBoxLayout *vbox = new QVBoxLayout(page);
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -253,6 +253,7 @@ QTextSetupDlg::views_and_ops_page()
     // The Show group.
     //
     QGroupBox *gb = new QGroupBox(tr("Show"));
+    vbox->addWidget(gb);
     QGridLayout *grid = new QGridLayout(gb);
     grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
@@ -352,7 +353,7 @@ void
 QTextSetupDlg::net_and_cell_page()
 {
     QWidget *page = new QWidget();
-    es_notebook->addTab(page, tr("Net\nConfig"));
+    es_notebook->addTab(page, tr("Net Config"));
     QVBoxLayout *vbox = new QVBoxLayout(page);
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -500,7 +501,7 @@ void
 QTextSetupDlg::devs_page()
 {
     QWidget *page = new QWidget();
-    es_notebook->addTab(page, tr("Device\nConfig"));
+    es_notebook->addTab(page, tr("Device Config"));
     QVBoxLayout *vbox = new QVBoxLayout(page);
     QMargins qmtop(2, 2, 2, 2);
     vbox->setContentsMargins(qmtop);
@@ -638,7 +639,7 @@ void
 QTextSetupDlg::misc_page()
 {
     QWidget *page = new QWidget();
-    es_notebook->addTab(page, tr("Misc\nConfig"));
+    es_notebook->addTab(page, tr("Misc Config"));
     QVBoxLayout *vbox = new QVBoxLayout(page);
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

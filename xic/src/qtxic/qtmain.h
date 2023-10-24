@@ -72,6 +72,7 @@ class QPushButton;
 class QEnterEvent;
 class QFocusEvent;
 class QSplitter;
+class QWheelEvent;
 
 // Graphics contexgt classes for application windows.
 enum XIC_WINDOW_CLASS
@@ -224,6 +225,8 @@ public:
 
     QSize sizeHint()                const { return (QSize(500, 400)); }
     QSize minimumSizeHint()         const { return (QSize(250, 200)); }
+
+    void wheelEvent(QWheelEvent*);
 
     bool keypress_handler(unsigned int, unsigned int, const char*, bool, bool);
 

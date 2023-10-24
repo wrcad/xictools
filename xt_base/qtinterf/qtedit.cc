@@ -287,8 +287,13 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
 
     menubar->addSeparator();
 #ifdef USE_QTOOLBAR
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
         SLOT(help_slot()));
+#else
+    a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a->setShortcut(QKeySequence("Ctrl+H"));
+#endif
 #else
     ed_helpmenu = new QMenu(this);
     ed_helpmenu->setTitle(QString(tr("&Help")));
