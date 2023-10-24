@@ -47,7 +47,8 @@
 #include "htm/htm_widget.h"
 
 #include <QVariant>
-#include <QMainWindow>
+//XXX#include <QMainWindow>
+#include <QDialog>
 
 // This implements a help/html viewer dialog, providing menus and
 // interfaces to the QTviewer viewing area.  This derives from QDialog
@@ -77,7 +78,7 @@ namespace qtinterf {
     class QThelpDlg;
 }
 
-class qtinterf::QThelpDlg : public QMainWindow, public HelpWidget,
+class qtinterf::QThelpDlg : public QDialog, public HelpWidget,
     public htmDataInterface, public QTbag
 {
     Q_OBJECT

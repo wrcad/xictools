@@ -395,9 +395,8 @@ QTmenu::DisableMainMenuItem(const char *mname, const char *item, bool desens)
 // End of QTmenu functions.
 
 
-QTmenuButton::QTmenuButton(MenuEnt *ent, QWidget *prnt) : QPushButton(prnt)
+QTmenuButton::QTmenuButton(MenuEnt *ent, QWidget *prnt) : QToolButton(prnt)
 {
-    setAutoDefault(false);
     if (ent->is_toggle())
         setCheckable(true);
     entry = ent;

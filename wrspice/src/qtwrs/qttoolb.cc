@@ -498,6 +498,7 @@ QTtoolbar::tb_font_cb(const char *btn, const char *name, void*)
     if (!name && !btn) {
         TB()->SetLoc(tid_font, TB()->tb_fontsel);
         TB()->SetActiveDlg(tid_font, 0);
+        entries(tid_font)->action()->setChecked(false);;
     }
 }
 

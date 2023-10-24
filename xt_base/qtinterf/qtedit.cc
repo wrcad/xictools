@@ -58,11 +58,17 @@
 #include <QLineEdit>
 #include <QMenu>
 #include <QMenuBar>
+#include <QToolBar>
 #include <QPushButton>
+#include <QToolButton>
 #include <QStatusBar>
 #include <QTextBlock>
 #include <QTextCursor>
 #include <QTextEdit>
+
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 // If the message would exceed this size, it is split into multiple
 // messages
@@ -136,7 +142,6 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     ed_ignChange = false;
     ed_searcher = 0;
 
-    ed_menubar = 0;
     ed_filemenu = 0;
     ed_editmenu = 0;
     ed_optmenu = 0;
@@ -156,7 +161,13 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
         owner->MonitorAdd(this);
     setAttribute(Qt::WA_DeleteOnClose);
 
-    ed_menubar = new QMenuBar(this);
+#ifdef USE_QTOOLBAR
+    QToolBar *menubar = new QToolBar();
+    menubar->setMaximumHeight(22);
+#else
+    QMenuBar *menubar = new QMenuBar();
+#endif
+    ed_bar = menubar;
     ed_filemenu = new QMenu(this);
     ed_filemenu->setTitle(QString(tr("&File")));
     if (ed_widget_type == Editor || ed_widget_type == Browser) {
@@ -220,7 +231,16 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     ed_filemenu->addAction(QString(tr("&Quit")), this, SLOT(quit_slot()),
             Qt::CTRL|Qt::Key_Q);
 #endif
-    ed_menubar->addMenu(ed_filemenu);
+
+#ifdef USE_QTOOLBAR
+    QAction *a = menubar->addAction("File");
+    a->setMenu(ed_filemenu);
+    QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
+    menubar->addMenu(ed_filemenu);
+#endif
 
     ed_editmenu = new QMenu(this);
     ed_editmenu->setTitle(QString(tr("&Edit")));
@@ -230,7 +250,15 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
         SLOT(copy_slot()));
     ed_editmenu->addAction(QString(tr("&Paste")), this,
         SLOT(paste_slot()));
-    ed_menubar->addMenu(ed_editmenu);
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction("Edit");
+    a->setMenu(ed_editmenu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
+    menubar->addMenu(ed_editmenu);
+#endif
 
     ed_optmenu = new QMenu(this);
     ed_optmenu->setTitle(QString(tr("&Options")));
@@ -247,18 +275,30 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     }
     ed_optmenu->addAction(QString(tr("&Font")), this,
         SLOT(font_slot()));
-    ed_menubar->addMenu(ed_optmenu);
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction("Options");
+    a->setMenu(ed_optmenu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
+    menubar->addMenu(ed_optmenu);
+#endif
 
-    ed_menubar->addSeparator();
+    menubar->addSeparator();
+#ifdef USE_QTOOLBAR
+    menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
+        SLOT(help_slot()));
+#else
     ed_helpmenu = new QMenu(this);
     ed_helpmenu->setTitle(QString(tr("&Help")));
-    ed_helpmenu->addAction(QString(tr("&Help")), this,
-        SLOT(help_slot()));
-    ed_HelpMenu = ed_menubar->addMenu(ed_helpmenu);
+    ed_helpmenu->addAction(tr("&Help"), this, SLOT(help_slot()));
+    ed_HelpMenu = menubar->addMenu(ed_helpmenu);
+#endif
 
     QMargins qmtop(2, 2, 2, 2);
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMenuBar(ed_menubar);
+    vbox->setMenuBar(menubar);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
@@ -349,26 +389,44 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
 
 QTeditDlg::~QTeditDlg()
 {
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller) {
-        QObject *o = (QObject*)p_caller;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn)
-                btn->setChecked(false);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->setChecked(false);
-        }
-    }
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
+
+    /*
+    const char *fnamein = 0;
+    if (ed_widget_type != Mailer && ed_widget_type != StringEditor) {
+        if (ed_savedAs)
+            fnamein = lstring::copy(ed_savedAs);
+        else if (ed_title)
+            fnamein = lstring::copy(ed_title->title().toLatin1().constData());
+    }
+    */
+    if (wb_fontsel)
+        wb_fontsel->popdown();
+//XXX    register_edit(false);
+
+    delete ed_searcher;
+/*
+    for (int k = 0; k < 4; k++) {
+        if (ed_fsels[k])
+            ed_fsels[k]->popdown();
+    }
+*/
+    if (ed_widget_type != Mailer) {
+ //       if (p_callback)
+ //           (*p_callback)(fnamein, p_cb_arg, XE_QUIT);
+ //       delete [] fnamein;
+    }
+    else if (p_cancel)
+        (*p_cancel)(this);
+    if (p_usrptr)
+        *p_usrptr = 0;
+    if (p_caller)
+        QTdev::Deselect(p_caller);
+
     delete [] ed_savedAs;
     delete [] ed_sourceFile;
     delete [] ed_dropFile;
@@ -796,7 +854,7 @@ QTeditDlg::send_slot()
 
     char *subject = lstring::copy(ed_subj_entry->text().toLatin1().constData());
     bool err = false;
-    QList<QAction*> acts = ed_menubar->actions();
+    QList<QAction*> acts = ed_bar->actions();
     for (int i = 0; i < acts.size(); i++) {
         QString qs = acts.at(i)->text();
         if (qs.isNull() || qs.isEmpty())
@@ -851,9 +909,8 @@ QTeditDlg::send_slot()
                     state.fnames[i]);
                 int rt = system(buf);
                 if (rt) {
-                    snprintf(buf, sizeof(buf),
+                    fprintf(stderr, 
                         "Warning: operation returned error status %d.\n", rt);
-                    fprintf(stderr, buf);
                 }
             }
         }
@@ -1027,7 +1084,7 @@ QTeditDlg::attach_file_slot(const char *fnamein, void*)
     a->setMenu(menu);
     a->setIcon(QIcon(QPixmap(attach_xpm)));
     a->setText(QString("    "));  // need to set text or nothing will show!
-    ed_menubar->insertAction(ed_HelpMenu, a);
+    ed_bar->insertAction(ed_HelpMenu, a);
     QAction *a_path = a;
 
     char *fn = lstring::copy(lstring::strip_path(fname));

@@ -97,9 +97,8 @@ QTmclChangeDlg::QTmclChangeDlg()
     lcg_all = 0;
 
     setWindowTitle(tr("Layer Change Mode"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(lcg_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);

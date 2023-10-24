@@ -71,6 +71,7 @@
 #include <QLayout>
 #include <QMenu>
 #include <QMenuBar>
+#include <QToolBar>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QResizeEvent>
@@ -82,6 +83,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QToolButton>
 
 // Name clash with QT avoided with this placement.
 #include "miscutil/timer.h"
@@ -937,8 +939,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     QTdraw(XW_DRAWING)
 {
     wb_shell = this;
+    sw_toolbar = 0;
     sw_pixmap = 0;
-    sw_menubar = new QMenuBar(this);
     sw_keys_pressed = 0;
     sw_expand = 0;
     sw_zoom = 0;
@@ -1015,18 +1017,15 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
-#ifndef __APPLE__
-    // For Apple, there is no menubar, and the keys show up in the
-    // upper left window corner.
+    sw_toolbar = new QToolBar();
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
-    hbox->setMenuBar(sw_menubar);
+    hbox->addWidget(sw_toolbar);
     hbox->addWidget(sw_keys_pressed);
-    vbox->addLayout(hbox);
-#endif
 
     vbox->addWidget(Viewport());
 }
@@ -2118,6 +2117,13 @@ QTsubwin::font_changed(int fnum)
         //XXX
     }
 }
+
+
+void
+QTsubwin::help_slot()
+{
+    PopUpHelp("xic:vport");
+}
 // End of QRsubwin slots.
  
 
@@ -2172,8 +2178,9 @@ is_shift_down()
 //-----------------------------------------------------------------------------
 // GTKmainwin functions
 
-QTmainwin::QTmainwin() : QTsubwin(0, 0)
+QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
 {
+    mw_menubar = new QMenuBar();
     mw_top_button_box = 0;
     mw_phys_button_box = 0;
     mw_elec_button_box = 0;
@@ -2184,8 +2191,9 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     mw_layertab = 0;
     mw_status = 0;
 
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 #ifndef __APPLE__
-    QAction *a = sw_menubar->addAction(tr("wr"));
+    QAction *a = mw_menubar->addAction(tr("wr"));
     a->setIcon(QIcon(QPixmap(wr_xpm)));
     connect(a, SIGNAL(triggered()), this, SLOT(wr_btn_slot()));
 #endif
@@ -2198,31 +2206,35 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
 #ifndef __APPLE__
     // By default, this does nothing in Apple, menus are set in the
     // main display frame.
-    vbox->setMenuBar(sw_menubar);
+    vbox->setMenuBar(mw_menubar);
 #endif
 
-    QHBoxLayout *hbox = new QHBoxLayout(0);
+    QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
     // Search button and entry, used with layer table.
-    QPushButton *ltab_sbtn = new QPushButton();
-    ltab_sbtn->setAutoDefault(false);
-    ltab_sbtn->setMaximumWidth(40);
+    QToolButton *ltab_sbtn = new QToolButton();
+    ltab_sbtn->setMaximumWidth(20);
     hbox->addWidget(ltab_sbtn);
+    hbox->setStretch(0, 0);
 
     QLineEdit *ltab_entry = new QLineEdit();
-    ltab_entry->setMinimumWidth(120);
+    ltab_entry->setMinimumWidth(60);
+    ltab_entry->setMaximumWidth(120);
     hbox->addWidget(ltab_entry);
+    hbox->setStretch(1, 0);
 
-    mw_top_button_box = new QWidget(this);
+    mw_top_button_box = new QWidget();
     hbox->addWidget(mw_top_button_box);
-    mw_coords = new QTcoord(this);
-    hbox->addWidget(mw_coords);
-    hbox->addWidget(new QWidget(this));  // Filler
+    hbox->setStretch(2, 0);
 
-    hbox = new QHBoxLayout(0);
+    mw_coords = new QTcoord();
+    hbox->addWidget(mw_coords);
+    hbox->setStretch(3, 1);
+
+    hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
@@ -2242,10 +2254,10 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
     mw_splitter->addWidget(mw_layertab);
     mw_splitter->addWidget(Viewport());
 
-    // This sets the handle is a sensible place, not easy!
+    // This sets the handle in a sensible place, not easy!
     int wd = sizeHint().width();
     int w = QTfont::stringWidth(0, FNT_SCREEN);
-    mw_splitter->setSizes(QList<int>() << 50 + 10*w << wd);
+    mw_splitter->setSizes(QList<int>() << 50 + 10*w << wd - 200);
 
     vbox->addLayout(hbox);
 
@@ -2270,6 +2282,27 @@ QTmainwin::QTmainwin() : QTsubwin(0, 0)
 
     connect(this, SIGNAL(update_coords(int, int)),
         this, SLOT(update_coords_slot(int, int)));
+}
+
+
+QSize
+QTmainwin::sizeHint() const
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    QSize sz = screen()->availableSize();
+#else
+    QScreen *scr = QGuiApplication::screenAt(mapToGlobal(width()/2, height()/2));
+    QSize sz = scr ? scr->availableSize() : QScreen(1024, 768);;
+#endif
+    // Max honored size is 2/3 the screen width and height.
+    return (QSize((sz.width()*2)/3, (sz.height()*2)/3));
+}
+
+
+QSize
+QTmainwin::minimumSizeHint() const
+{
+    return (QSize(600, 600));
 }
 
 

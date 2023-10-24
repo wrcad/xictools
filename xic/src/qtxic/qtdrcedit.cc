@@ -54,10 +54,15 @@
 
 #include <QLayout>
 #include <QMenuBar>
+#include <QToolBar>
+#include <QToolButton>
 #include <QMenu>
 #include <QAction>
 #include <QMouseEvent>
 
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 //-----------------------------------------------------------------------------
 // Pop up to display a listing of design rules for the current layer.
@@ -134,10 +139,25 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
 
     // menu bar
     //
+#ifdef USE_QTOOLBAR
+    QToolBar *menubar = new QToolBar(this);
+#else
     QMenuBar *menubar = new QMenuBar(this);
+#endif
+    vbox->addWidget(menubar);
 
     // Edit menu.
+    QAction *a;
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&Edit"));
+    QMenu *menu = new QMenu();
+    a->setMenu(menu);
+    QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     QMenu *menu = menubar->addMenu(tr("&Edit"));
+#endif
     // _Edit, <control>E, dim_edit_proc, 0, 0
     dim_edit = menu->addAction(tr("&Edit"));
     dim_edit->setShortcut(QKeySequence("Ctrl+E"));
@@ -152,13 +172,22 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
     dim_del->setShortcut(QKeySequence("Ctrl+U"));
     menu->addSeparator();
     // _Quit, <control>Q, dim_cancel_proc, 0, 0
-    QAction *a = menu->addAction(tr("_Quit"));
+    a = menu->addAction(tr("_Quit"));
     a->setShortcut(QKeySequence("Ctrl+Q"));
     connect(menu, SIGNAL(triggered(QAction*)),
         this, SLOT(edit_menu_slot(QAction*)));
 
     // Rules menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&Rules"));
+    dim_menu = new QMenu();
+    a->setMenu(dim_menu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     dim_menu = menubar->addMenu(tr("&Rules"));
+#endif
     // User Defined Rule, 0, 0, 0, "<Branch>"
     dim_umenu = dim_menu->addMenu(tr("User Defined Rule"));
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
@@ -228,7 +257,16 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
         this, SLOT(rules_menu_slot(QAction*)));
 
     // Rule Block menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("Rule &Block"));
+    dim_rbmenu = new QMenu();
+    a->setMenu(dim_rbmenu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     dim_rbmenu = menubar->addMenu(tr("Rule &Block"));
+#endif
     // New, 0, dim_rule_menu_proc, 0, 0
     dim_rbmenu->addAction(tr("New"));
     // Delete, 0, dim_rule_menu_proc, 1, <CheckItem>
@@ -244,12 +282,15 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
         this, SLOT(ruleblk_menu_slot(QAction*)));
 
     // Help menu.
+#ifdef USE_QTOOLBAR
+    menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
+        SLOT(help_slot()));
+#else
     menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, dim_help_proc, 0, 0);
-    a = menu->addAction(tr("&Help"));
+    a = menu->addAction(tr("&Help", this, SLOT(help_slot()));
     a->setShortcut(QKeySequence("Ctrl+H"));
-    connect(menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(help_menu_slot(QAction*)));
+#endif
 
     dim_text = new QTtextEdit();
     vbox->addWidget(dim_text);
@@ -699,7 +740,7 @@ QTdrcRuleEditDlg::ruleblk_menu_slot(QAction *a)
 
 
 void
-QTdrcRuleEditDlg::help_menu_slot(QAction*)
+QTdrcRuleEditDlg::help_slot()
 {
     DSPmainWbag(PopUpHelp("xic:dredt"))
 }

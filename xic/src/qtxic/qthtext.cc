@@ -47,7 +47,8 @@
 #include "events.h"
 #include "keymap.h"
 #include <QLayout>
-#include <QPushButton>
+//XXX #include <QPushButton>
+#include <QToolButton>
 #include <QMenu>
 #include <QMouseEvent>
 #include <QEnterEvent>
@@ -93,11 +94,14 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     int w = QTfont::stringWidth(0, FNT_SCREEN);
 
     // Recall button and menu.
-    pe_rcl_btn = new QPushButton("R");
-    pe_rcl_btn->setAutoDefault(false);
-    pe_rcl_btn->setMaximumWidth(7*w + 4);
+    pe_rcl_btn = new QToolButton();
+    pe_rcl_btn->setText("R");
     pe_rcl_btn->setToolTip(tr("Recall edit string from a register."));
     hbox->addWidget(pe_rcl_btn);
+
+    // Prevent height change of row when buttons come ang go, to avoid main
+    // window resize/redraw.
+    hbox->addStrut(pe_rcl_btn->sizeHint().height() + 2);
 
     char buf[4];
     QMenu *rcl_menu = new QMenu();
@@ -107,14 +111,14 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
         rcl_menu->addAction(buf);
     }
     pe_rcl_btn->setMenu(rcl_menu);
+    pe_rcl_btn->setPopupMode(QToolButton::InstantPopup);
     pe_rcl_btn->hide();
     connect(rcl_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(recall_menu_slot(QAction*)));
 
     // Store button and menu.
-    pe_sto_btn = new QPushButton("S");
-    pe_sto_btn->setAutoDefault(false);
-    pe_sto_btn->setMaximumWidth(7*w + 4);
+    pe_sto_btn = new QToolButton();
+    pe_sto_btn->setText("S");
     pe_sto_btn->setToolTip(tr("Save edit string to a register."));
     hbox->addWidget(pe_sto_btn);
 
@@ -125,14 +129,14 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
         sto_menu->addAction(buf);
     }
     pe_sto_btn->setMenu(sto_menu);
+    pe_sto_btn->setPopupMode(QToolButton::InstantPopup);
     pe_sto_btn->hide();
     connect(sto_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(store_menu_slot(QAction*)));
 
     // Long Text button.
-    pe_ltx_btn = new QPushButton("L");
-    pe_ltx_btn->setAutoDefault(false);
-    pe_ltx_btn->setMaximumWidth(6*w + 4);
+    pe_ltx_btn = new QToolButton();
+    pe_ltx_btn->setText("L");
     pe_ltx_btn->setToolTip(tr(
         "Associate a block of text with the label - pop up an editor."));
     hbox->addWidget(pe_ltx_btn);

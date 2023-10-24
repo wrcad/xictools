@@ -69,6 +69,7 @@
 
 #include <QApplication>
 #include <QMenuBar>
+#include <QToolBar>
 #include <QMenu>
 #include <QLayout>
 
@@ -757,8 +758,7 @@ QTmenuConfig::instantiateTopButtonMenu()
         for (MenuEnt *ent = mbox->menu + 2; ent->entry; ent++) {
 #endif
             QTmenuButton *b = new QTmenuButton(ent, top_button_box);
-            b->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-            b->setMaximumWidth(40);
+            b->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
             b->setToolTip(tr(ent->description));
             ent->cmd.caller = b;
             if (ent->xpm)
@@ -781,8 +781,6 @@ QTmenuConfig::instantiateSideButtonMenus()
         return;
     QTmainwin *main_win = QTmainwin::self();
 
-    const int side_btn_width = 42;
-
     QWidget *phys_button_box = main_win->PhysButtonBox();
     MenuBox *mbox = MainMenu()->GetPhysButtonMenu();
     if (phys_button_box && mbox && mbox->menu) {
@@ -794,7 +792,6 @@ QTmenuConfig::instantiateSideButtonMenus()
         QVBoxLayout *vbox = new QVBoxLayout(phys_button_box);
         vbox->setContentsMargins(2, 2, 2, 2);
         vbox->setSpacing(2);
-        phys_button_box->setMaximumWidth(side_btn_width + 4);
 
         set(mbox->menu[btnPhysMenu], 0, 0);
         set(mbox->menu[btnPhysMenuXform], "Xform", 0);
@@ -817,8 +814,8 @@ QTmenuConfig::instantiateSideButtonMenus()
 
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
             QTmenuButton *b = new QTmenuButton(ent, phys_button_box);
+
             b->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-            b->setMaximumWidth(side_btn_width);
             b->setToolTip(tr(ent->description));
             ent->cmd.caller = b;
             if (ent - mbox->menu == btnPhysMenuStyle) {
@@ -829,6 +826,10 @@ QTmenuConfig::instantiateSideButtonMenus()
                 if (ent->xpm)
                     b->setIcon(QPixmap(ent->xpm));
             }
+
+            if (ent - mbox->menu == 1)
+                phys_button_box->setMaximumWidth(b->sizeHint().width() + 4);
+
             vbox->addWidget(b);
             ent->cmd.caller = b;
             ent->cmd.wdesc = DSP()->MainWdesc();
@@ -863,7 +864,6 @@ QTmenuConfig::instantiateSideButtonMenus()
         QVBoxLayout *vbox = new QVBoxLayout(elec_button_box);
         vbox->setContentsMargins(2, 2, 2, 2);
         vbox->setSpacing(2);
-        elec_button_box->setMaximumWidth(side_btn_width + 4);
 
         set(mbox->menu[btnElecMenu], 0, 0);
         set(mbox->menu[btnElecMenuXform], "Xform", 0);
@@ -887,11 +887,14 @@ QTmenuConfig::instantiateSideButtonMenus()
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
             QTmenuButton *b = new QTmenuButton(ent, elec_button_box);
             b->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-            b->setMaximumWidth(side_btn_width);
             b->setToolTip(tr(ent->description));
             ent->cmd.caller = b;
             if (ent->xpm)
                 b->setIcon(QPixmap(ent->xpm));
+
+            if (ent - mbox->menu == 1)
+                elec_button_box->setMaximumWidth(b->sizeHint().width() + 4);
+
             vbox->addWidget(b);
             ent->cmd.caller = b;
             ent->cmd.wdesc = DSP()->MainWdesc();
@@ -916,6 +919,7 @@ QTmenuConfig::instantiateSideButtonMenus()
     }
 }
 
+#define USE_QTOOLBAR
 
 void
 QTmenuConfig::instantiateSubwMenus(int wnum)
@@ -926,7 +930,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
     QTsubwin *sub_win = dynamic_cast<QTsubwin*>(wdesc->Wbag());
     if (!sub_win)
         return;
-    QMenuBar *menubar = sub_win->MenuBar();
+    QToolBar *menubar = sub_win->ToolBar();
     if (!menubar)
         return;
 
@@ -951,7 +955,16 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 
         QMenu *subwin_view_menu = new QMenu(sub_win);
         subwin_view_menu->setTitle(tr(mbox->name));
+#ifdef USE_QTOOLBAR
+        QAction *a = menubar->addAction("View");
+        a->setMenu(subwin_view_menu);
+        QToolButton *tb = dynamic_cast<QToolButton*>(
+            menubar->widgetForAction(a));
+        if (tb)
+            tb->setPopupMode(QToolButton::InstantPopup);
+#else
         menubar->addMenu(subwin_view_menu);
+#endif
 
         // First elt is a dummy containing the menubar item.
         mbox->menu[0].cmd.caller = subwin_view_menu;
@@ -1017,7 +1030,16 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 
         QMenu *subwin_attr_menu = new QMenu(sub_win);
         subwin_attr_menu->setTitle(tr(mbox->name));
+#ifdef USE_QTOOLBAR
+        QAction *a = menubar->addAction("Attributes");
+        a->setMenu(subwin_attr_menu);
+        QToolButton *tb = dynamic_cast<QToolButton*>(
+            menubar->widgetForAction(a));
+        if (tb)
+            tb->setPopupMode(QToolButton::InstantPopup);
+#else
         menubar->addMenu(subwin_attr_menu);
+#endif
 
         // First elt is a dummy containing the menubar item.
         mbox->menu[0].cmd.caller = subwin_attr_menu;
@@ -1052,9 +1074,22 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
         set(mbox->menu[subwHelpMenu], "&Help", 0);
         set(mbox->menu[subwHelpMenuHelp], "&Help", "Ctrl+H");
 
+        menubar->addSeparator();
+#ifdef USE_QTOOLBAR
+        menubar->addAction(tr("Help"), Qt::CTRL|Qt::Key_H,
+            sub_win, SLOT(help_slot()));
+/*
+old, use menu with Help entry
+        QAction *a = menubar->addAction("Help");
+        a->setMenu(subwin_help_menu);
+        QToolButton *tb = dynamic_cast<QToolButton*>(
+            menubar->widgetForAction(a));
+        if (tb)
+            tb->setPopupMode(QToolButton::InstantPopup);
+*/
+#else
         QMenu *subwin_help_menu = new QMenu(sub_win);
         subwin_help_menu->setTitle(tr(mbox->name));
-        menubar->addSeparator();
         menubar->addMenu(subwin_help_menu);
 
         // First elt is a dummy containing the menubar item.
@@ -1079,6 +1114,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 
         connect(subwin_help_menu, SIGNAL(triggered(QAction*)),
             this, SLOT(subwin_help_menu_slot(QAction*)));
+#endif
     }
 }
 

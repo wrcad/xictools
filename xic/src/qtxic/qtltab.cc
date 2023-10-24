@@ -58,7 +58,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QLayout>
-#include <QPushButton>
+#include <QToolButton>
 #include <QScrollBar>
 #include <QLineEdit>
 #include <QDrag>
@@ -307,7 +307,7 @@ QTltab::set_layer()
 
 
 void
-QTltab::set_search_widgets(QPushButton *p, QLineEdit *e)
+QTltab::set_search_widgets(QToolButton *p, QLineEdit *e)
 {
     if (!p || !e)
         return;

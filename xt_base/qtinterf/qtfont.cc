@@ -77,7 +77,11 @@ int GRfont::num_app_fonts =
 //#define DEF_PROP_FACE "Helvetica"
 #define DEF_FIXED_FACE "Menlo"
 #define DEF_PROP_FACE "Ariel"
+#ifdef __APPLE__
 #define DEF_SIZE 11
+#else
+#define DEF_SIZE 9
+#endif
 
 
 QTfont *QTfont::instancePtr = 0;

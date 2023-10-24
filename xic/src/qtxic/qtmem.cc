@@ -106,9 +106,8 @@ QTmemMonDlg::QTmemMonDlg() : QTdraw(XW_TEXT)
     instPtr = this;
 
     setWindowTitle(tr("Memory Monitor"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     QMargins qmtop(2, 2, 2, 2);

@@ -52,6 +52,7 @@
 #include <QWidget>
 
 class QEnterEvent;
+class QToolButton;
 
 // String storage registers, 0 is "last", 1-5 are general.
 #define PE_NUMSTORES 6
@@ -110,9 +111,9 @@ private:
     static void on_null_ptr();
 
     cKeys *pe_keys;
-    QPushButton *pe_rcl_btn;
-    QPushButton *pe_sto_btn;
-    QPushButton *pe_ltx_btn;
+    QToolButton *pe_rcl_btn;
+    QToolButton *pe_sto_btn;
+    QToolButton *pe_ltx_btn;
 
     static hyList *pe_stores[PE_NUMSTORES]; // Editor text string registers.
     static QTedit *instancePtr;

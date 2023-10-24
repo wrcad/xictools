@@ -57,8 +57,10 @@ public:
     // update mode for QTcoord::print()
     enum { COOR_BEGIN, COOR_MOTION, COOR_REL };
 
-    QTcoord(QTmainwin*);
+    QTcoord(QWidget* = 0);
     ~QTcoord();
+
+    QSize sizeHint() const;
 
     static QTcoord *self()          { return (instPtr); }
 

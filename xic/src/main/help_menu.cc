@@ -162,8 +162,6 @@ using namespace help_menu;
 void
 cMain::QuitHelp()
 {
-//XXX
-printf("QiotHelp\n");
     if (HelpCmd)
         HelpCmd->esc();
 }

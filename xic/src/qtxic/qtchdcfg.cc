@@ -116,7 +116,6 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
     cf_cgdname = 0;
 
     setWindowTitle(tr("Configure Cell Hierarchy Digest"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
     QMargins qmtop(2, 2, 2, 2);

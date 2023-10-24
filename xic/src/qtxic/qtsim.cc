@@ -70,7 +70,7 @@ QTsimRunDlg::QTsimRunDlg(const char *msg)
     sp_status = SpNil;
 
     setWindowTitle(tr("SPICE Run"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(popup), false);

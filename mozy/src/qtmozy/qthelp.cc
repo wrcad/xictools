@@ -57,10 +57,11 @@
 #include <QLayout>
 #include <QMenu>
 #include <QMenuBar>
+#include <QToolBar>
+#include <QToolButton>
 #include <QStatusBar>
 #include <QResizeEvent>
 #include <QScrollBar>
-#include <QToolBar>
 #include <QActionGroup>
 
 #include <fcntl.h>
@@ -176,9 +177,9 @@ namespace qtinterf
 static const char * const forward_xpm[] = {
 "16 16 4 1",
 " 	c none",
-".	c #00dd00",
-"x	c #00ee00",
-"+  c #00ff00",
+".	c #0000dd",
+"x	c #0000ee",
+"+  c #0000ff",
 "                ",
 "    .+          ",
 "    .x+         ",
@@ -200,9 +201,9 @@ static const char * const forward_xpm[] = {
 static const char * const backward_xpm[] = {
 "16 16 4 1",
 " 	c none",
-".	c #00dd00",
-"x	c #00ee00",
-"+  c #00ff00",
+".	c #0000dd",
+"x	c #0000ee",
+"+  c #0000ff",
 "                ",
 "          +.    ",
 "         +x.    ",
@@ -324,7 +325,12 @@ namespace {
 }
 
 
-QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
+
+
+QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     QTbag()
 {
     // If has_menu is false, the widget will not have the menu or the
@@ -344,12 +350,19 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
 
     wb_sens_set = ::sens_set;
 
-    if (!has_menu) {
-        // This is for Apple, when given it uses a per-window menubar
-        // like other systems.
-        menuBar()->setNativeMenuBar(false);
-        menuBar()->hide();
-    }
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    vbox->setContentsMargins(2, 2, 2, 2);
+    vbox->setSpacing(2);
+#ifdef USE_QTOOLBAR
+    QToolBar *menubar = new QToolBar();
+    vbox->addWidget(menubar);
+    menubar->setMaximumHeight(24);
+#else
+    QMenuBar *menubar = new QMenuBar();
+    vbox->setMenuBar(menubar;
+#endif
+    if (!has_menu)
+        menubar->hide();
     else {
         int xx = 0, yy = 0;
         if (prnt) {
@@ -362,58 +375,41 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
         setWindowFlags(Qt::Dialog);
         move(xx, yy);
     }
-    QWidget *cwidget = new QWidget;
+
     h_viewer = new QTviewer(HLP_DEF_WIDTH, HLP_DEF_HEIGHT, this, this);
-    setCentralWidget(cwidget);
+    vbox->addWidget(h_viewer);
     h_status_bar = new QStatusBar(this);
+    vbox->addWidget(h_status_bar);
     if (!has_menu)
         h_status_bar->hide();
-    QVBoxLayout *vbox = new QVBoxLayout(cwidget);
-    vbox->setContentsMargins(2, 2, 2, 2);
-    vbox->setSpacing(2);
-#ifdef __APPLE__
-    // Without a local menubar, the forward and back icons aren't
-    // visible, so we put them in a tool bar.
-    QToolBar *tb = new QToolBar();
-    if (!has_menu)
-        tb->hide();
-    tb->setMaximumHeight(24);
-    vbox->addWidget(tb);
-#endif
-    vbox->addWidget(h_viewer);
-    vbox->addWidget(h_status_bar);
 
     if (!h_is_frame)
         h_params = new HLPparams(HLP()->no_file_fonts());
 
     h_viewer->freeze();
 
-#ifdef __APPLE__
-    h_Backward = tb->addAction(tr("back"),
+    h_Backward = menubar->addAction(tr("back"),
         this, SLOT(backward_slot()));
     h_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
 
-    h_Forward = tb->addAction(tr("forw"),
+    h_Forward = menubar->addAction(tr("forw"),
         this, SLOT(forward_slot()));
     h_Forward->setIcon(QIcon(QPixmap(forward_xpm)));
 
-    h_Stop = tb->addAction(tr("stop"),
+    h_Stop = menubar->addAction(tr("stop"),
         this, SLOT(stop_slot()));
     h_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
+
+#ifdef USE_QTOOLBAR
+    QAction *a = menubar->addAction(tr("&File"));
+    h_main_menus[0] = new QMenu();
+    a->setMenu(h_main_menus[0]);
+    QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
 #else
-    h_Backward = menuBar()->addAction(tr("back"),
-        this, SLOT(backward_slot()));
-    h_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
-
-    h_Forward = menuBar()->addAction(tr("forw"),
-        this, SLOT(forward_slot()));
-    h_Forward->setIcon(QIcon(QPixmap(forward_xpm)));
-
-    h_Stop = menuBar()->addAction(tr("stop"),
-        this, SLOT(stop_slot()));
-    h_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
+    h_main_menus[0] = menubar->addMenu(tr("&File"));
 #endif
-    h_main_menus[0] = menuBar()->addMenu(tr("&File"));
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     h_Open = h_main_menus[0]->addAction(tr("&Open"), Qt::CTRL|Qt::Key_O,
         this, SLOT(open_slot()));
@@ -444,7 +440,16 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
         SLOT(quit_slot()), Qt::CTRL|Qt::Key_Q);
 #endif
 
-    h_main_menus[1] = menuBar()->addMenu(tr("&Options"));
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&Options"));
+    h_main_menus[1] = new QMenu();
+    a->setMenu(h_main_menus[1]);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
+    h_main_menus[1] = menubar->addMenu(tr("&Options"));
+#endif
     h_Search = h_main_menus[1]->addAction(tr("S&earch"),
         this, SLOT(search_slot()));
     h_FindText = h_main_menus[1]->addAction(tr("Find Text"),
@@ -554,7 +559,16 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
         this, SLOT(log_transactions_slot(bool)));
     h_LogTransactions->setChecked(h_params->PrintTransact);
 
-    h_main_menus[2] = menuBar()->addMenu(tr("&Bookmarks"));
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&Bookmarks"));
+    h_main_menus[2] = new QMenu();
+    a->setMenu(h_main_menus[2]);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
+    h_main_menus[2] = menubar->addMenu(tr("&Bookmarks"));
+#endif
     h_AddBookmark = h_main_menus[2]->addAction(tr("Add"),
         this, SLOT(add_slot()));
     h_DeleteBookmark = h_main_menus[2]->addAction(tr("Delete"),
@@ -562,14 +576,18 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QMainWindow(prnt),
     h_DeleteBookmark->setCheckable(true);
     h_main_menus[2]->addSeparator();
 
-    menuBar()->addSeparator();
-    h_main_menus[3] = menuBar()->addMenu(tr("&Help"));
+    menubar->addSeparator();
+#ifdef USE_QTOOLBAR
+    menubar->addAction(tr("Help"), Qt::CTRL|Qt::Key_H, this, SLOT(help_slot()));
+#else
+    h_main_menus[3] = menubar->addMenu(tr("&Help"));
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     h_Help = h_main_menus[3]->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H,
         this, SLOT(help_slot()));
 #else
     h_Help = h_main_menus[3]->addAction(tr("&Help"), this,
         SLOT(help_slot()), Qt::CTRL|Qt::Key_H);
+#endif
 #endif
 
     h_viewer->thaw();

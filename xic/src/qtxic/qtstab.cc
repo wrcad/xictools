@@ -102,9 +102,8 @@ QTstabDlg::QTstabDlg(GRobject c)
     tb_namelist = 0;
 
     setWindowTitle(tr("Symbol Tables"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     QMargins qmtop(2, 2, 2, 2);

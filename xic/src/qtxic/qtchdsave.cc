@@ -102,7 +102,6 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
     cs_arg = arg;
 
     setWindowTitle(tr("Save Hierarchy Digest File"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
     QMargins qmtop(2, 2, 2, 2);

@@ -76,7 +76,7 @@ private slots:
     void user_menu_slot(QAction*);
     void rules_menu_slot(QAction*);
     void ruleblk_menu_slot(QAction*);
-    void help_menu_slot(QAction*);
+    void help_slot();
     void mouse_press_slot(QMouseEvent*);
     void font_changed_slot(int);
 

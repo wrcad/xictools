@@ -153,7 +153,7 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
     mc_do_elec = false;
 
     setWindowTitle(tr("Symbol Merge"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_ShowWithoutActivating);
 

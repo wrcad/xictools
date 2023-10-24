@@ -53,6 +53,8 @@
 
 #include <QLayout>
 #include <QMenuBar>
+#include <QToolBar>
+#include <QToolButton>
 #include <QMenu>
 #include <QAction>
 #include <QTabWidget>
@@ -95,6 +97,9 @@ cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
 }
 // End of cMain functions.
 
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 // Default window size, assumes 6X13 chars, 80 cols, 12 rows
 // with a 2-pixel margin.
@@ -149,14 +154,28 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
 
     // menu bar
     //
+#ifdef USE_QTOOLBAR
+    QToolBar *menubar = new QToolBar(this);
+#else
     QMenuBar *menubar = new QMenuBar(this);
+#endif
 
     // Edit menu.
+    QAction *a;
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&Edit"));
+    QMenu *menu = new QMenu();
+    a->setMenu(menu);
+    QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     QMenu *menu = menubar->addMenu(tr("&Edit"));
+#endif
     connect(menu, SIGNAL(triggered(QAction*)),
         this, SLOT(edit_menu_slot(QAction*)));
     // _Edit, edEdit, Ctrl-E
-    QAction *a = menu->addAction(tr("Edit"));
+    a = menu->addAction(tr("Edit"));
     a->setData(edEdit);
     a->setShortcut(QKeySequence("Ctrl+E"));
     lp_edit = a;
@@ -178,7 +197,16 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
     a->setShortcut(QKeySequence("Ctrl+Q"));
 
     // Layer Keywords menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction("Layer Keywords");
+    lp_lyr_menu = new QMenu();
+    a->setMenu(lp_lyr_menu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     lp_lyr_menu = menubar->addMenu(tr("Layer &Keywords"));
+#endif
     connect(lp_lyr_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(layer_menu_slot(QAction*)));
     // LppName, lpLppName, 0
@@ -220,7 +248,16 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
     lp_xthk = a;
 
     // Extract Keywords menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction("Extract Keywords");
+    lp_ext_menu = new QMenu();
+    a->setMenu(lp_ext_menu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     lp_ext_menu = menubar->addMenu(tr("Extract &Keywords"));
+#endif
     connect(lp_ext_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(extract_menu_slot(QAction*)));
     lp_ext_menu->menuAction()->setVisible(false);
@@ -254,7 +291,16 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
     lp_darkfield = a;
 
     // Physical Keywords menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction("Physical Keywords");
+    lp_phy_menu = new QMenu();
+    a->setMenu(lp_phy_menu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     lp_phy_menu = menubar->addMenu(tr("Physical &Keywords"));
+#endif
     connect(lp_phy_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(physical_menu_slot(QAction*)));
     lp_phy_menu->menuAction()->setVisible(false);
@@ -308,7 +354,16 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
     lp_antenna = a;
 
     // Convert Keywords menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction("Convert Keywords");
+    lp_cvt_menu = new QMenu();
+    a->setMenu(lp_cvt_menu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     lp_cvt_menu = menubar->addMenu(tr("Convert &Keywords"));
+#endif
     connect(lp_cvt_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(convert_menu_slot(QAction*)));
     lp_cvt_menu->menuAction()->setVisible(false);
@@ -324,7 +379,16 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
     lp_nddt = a;
 
     // Global Attributes menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction("Global Attributes");
+    menu = new QMenu();
+    a->setMenu(menu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     menu = menubar->addMenu(tr("Global &Attributes"));
+#endif
     connect(menu, SIGNAL(triggered(QAction*)),
         this, SLOT(global_menu_slot(QAction*)));
     // BoxLineStyle, lpBoxLineStyle, 0
@@ -347,11 +411,14 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
     a->setData(lpSubstrateThickness);
 
     // Help Menu.
-    menu = menubar->addMenu(tr("Help"));
-    connect(menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(help_menu_slot(QAction*)));
-    a = menu->addAction("Help");
+#ifdef USE_QTOOLBAR
+    menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
+        SLOT(help_slot()));
+#else
+    menu = menubar->addMenu(tr("&Help"));
+    a = menu->addAction(tr("&Help", this, SLOT(help_slot()));
     a->setShortcut(QKeySequence("Ctrl+H"));
+#endif
 
     // End of menus.
 
@@ -359,47 +426,49 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->addWidget(menubar);
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
+    nbook->setMaximumHeight(50);
     connect(nbook, SIGNAL(currentChanged(int)),
         this, SLOT(page_changed_slot(int)));
 
     QWidget *page = new QWidget();
     nbook->addTab(page, tr("Layer"));
-    QHBoxLayout *hbox = new QHBoxLayout(page);
-    hbox->setContentsMargins(qmtop);
-    hbox->setSpacing(2);
+    QVBoxLayout *vb = new QVBoxLayout(page);
+    vb->setContentsMargins(qmtop);
+    vb->setSpacing(2);
 
     QLabel *label = new QLabel(tr("Edit basic parameters for layer"));
-    hbox->addWidget(label);
+    vb->addWidget(label);
 
     page = new QWidget();
     nbook->addTab(page, tr("Extract"));
-    hbox = new QHBoxLayout(page);
-    hbox->setContentsMargins(qmtop);
-    hbox->setSpacing(2);
+    vb = new QVBoxLayout(page);
+    vb->setContentsMargins(qmtop);
+    vb->setSpacing(2);
 
     label = new QLabel(tr("Edit extraction parameters for layer"));
-    hbox->addWidget(label);
+    vb->addWidget(label);
 
     page = new QWidget();
     nbook->addTab(page, tr("Physical"));
-    hbox = new QHBoxLayout(page);
-    hbox->setContentsMargins(qmtop);
-    hbox->setSpacing(2);
+    vb = new QVBoxLayout(page);
+    vb->setContentsMargins(qmtop);
+    vb->setSpacing(2);
 
     label = new QLabel(tr("Edit physical attributes of layer"));
-    hbox->addWidget(label);
+    vb->addWidget(label);
 
     page = new QWidget();
     nbook->addTab(page, tr("Convert"));
-    hbox = new QHBoxLayout(page);
-    hbox->setContentsMargins(qmtop);
-    hbox->setSpacing(2);
+    vb = new QVBoxLayout(page);
+    vb->setContentsMargins(qmtop);
+    vb->setSpacing(2);
 
     label = new QLabel(tr("Edit conversion parameters of layer"));
-    hbox->addWidget(label);
+    vb->addWidget(label);
 
     lp_text = new QTtextEdit();
     vbox->addWidget(lp_text);
@@ -410,7 +479,7 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
-    hbox = new QHBoxLayout(gb);
+    QHBoxLayout *hbox = new QHBoxLayout(gb);
     hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
 
@@ -460,7 +529,7 @@ QTlayerParamDlg::sizeHint() const
 {
     int fw, fh;
     QTfont::stringBounds(0, FNT_FIXED, &fw, &fh);
-    return (QSize(80*fw + 4, 32*fh));
+    return (QSize(80*fw + 4, 16*fh));
 }
 
 
@@ -1170,7 +1239,7 @@ QTlayerParamDlg::global_menu_slot(QAction *a)
 
 
 void
-QTlayerParamDlg::help_menu_slot(QAction*)
+QTlayerParamDlg::help_slot()
 {
     DSPmainWbag(PopUpHelp("xic:lpedt"))
 }

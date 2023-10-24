@@ -109,9 +109,8 @@ QTflattenDlg::QTflattenDlg(
     fl_arg = arg;
 
     setWindowTitle(tr("Flatten Hierarchy"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

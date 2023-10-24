@@ -192,7 +192,6 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ)
     po_dspmode = -1;
 
     setWindowTitle(tr("Property Editor"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
     QMargins qmtop(2, 2, 2, 2);

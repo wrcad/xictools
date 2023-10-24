@@ -48,6 +48,7 @@
 class QLineEdit;
 class QMenu;
 class QMenuBar;
+class QToolBar;
 class QStatusBar;
 class QTextEdit;
 
@@ -55,6 +56,7 @@ namespace qtinterf {
     class QTsearchDlg;
     class QTeditDlg;
 }
+
 
 class qtinterf::QTeditDlg : public QDialog, public GReditPopup,
     public QTbag
@@ -152,7 +154,7 @@ private:
     bool        ed_ignChange;
     QTsearchDlg *ed_searcher;
 
-    QMenuBar    *ed_menubar;
+    QWidget     *ed_bar;
     QMenu       *ed_filemenu;
     QMenu       *ed_editmenu;
     QMenu       *ed_optmenu;

@@ -108,9 +108,7 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     jn_last = 0;
 
     setWindowTitle(tr("Join or Split Objects"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(jn_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);

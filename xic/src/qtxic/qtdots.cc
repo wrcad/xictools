@@ -89,9 +89,8 @@ QTdotsDlg::QTdotsDlg(GRobject caller)
     dt_all = 0;
 
     setWindowTitle(tr("Connection Points"));
-//    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-//    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(dt_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);

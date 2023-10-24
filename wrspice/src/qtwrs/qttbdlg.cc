@@ -344,6 +344,7 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     btn->setIcon(QPixmap(tm30));
     hbox->addWidget(btn);
     btn->setToolTip(tr("Pop up email client"));
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(wr_btn_slot()));
 
     // the Run button
@@ -351,6 +352,7 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     btn->setIcon(QPixmap(run_xpm));
     hbox->addWidget(btn);
     btn->setToolTip(tr("Run current circuit"));
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(run_btn_slot()));
 
     // the Stop button
@@ -358,6 +360,7 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     btn->setIcon(QPixmap(stop_xpm));
     hbox->addWidget(btn);
     btn->setToolTip(tr("Pause current analysis"));
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(stop_btn_slot()));
 
 #ifndef __APPLE__

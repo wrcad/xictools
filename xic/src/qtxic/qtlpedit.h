@@ -83,7 +83,7 @@ private slots:
     void physical_menu_slot(QAction*);
     void convert_menu_slot(QAction*);
     void global_menu_slot(QAction*);
-    void help_menu_slot(QAction*);
+    void help_slot();
     void page_changed_slot(int);
     void mouse_press_slot(QMouseEvent*);
     void font_changed_slot(int);

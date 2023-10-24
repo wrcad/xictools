@@ -45,6 +45,7 @@
 #include "menu.h"
 
 #include <QPushButton>
+#include <QToolButton>
 
 class QAction;
 
@@ -100,7 +101,8 @@ private:
     QDialog     *modalShell;
 };
 
-class QTmenuButton : public QPushButton
+class QTmenuButton : public QToolButton
+//XXXclass QTmenuButton : public QPushButton
 {
     Q_OBJECT
 

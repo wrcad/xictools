@@ -66,6 +66,7 @@ class QTltab;
 
 class QMenu;
 class QMenuBar;
+class QToolBar;
 class QLineEdit;
 class QPushButton;
 class QEnterEvent;
@@ -175,7 +176,7 @@ class QTsubwin : public QDialog, virtual public DSPwbag, public QTbag,
     Q_OBJECT
 
 public:
-    QTsubwin(int, QWidget*);
+    QTsubwin(int, QWidget* = 0);
     ~QTsubwin();
 
     void subw_initialize(int);
@@ -215,8 +216,7 @@ public:
     //
     // End of cAppWinFuncs interface
 
-    QMenuBar *MenuBar()             { return (sw_menubar); }
-
+    QToolBar *ToolBar()             { return (sw_toolbar); }
     cKeys *Keys()                   { return (sw_keys_pressed); }
     void clear_expand()             { sw_expand = 0; }
 
@@ -246,10 +246,11 @@ protected slots:
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);
     void font_changed(int);
+    void help_slot();
 
 protected:
+    QToolBar    *sw_toolbar;
     QPixmap     *sw_pixmap;
-    QMenuBar    *sw_menubar;
     cKeys       *sw_keys_pressed;
     QTexpandDlg *sw_expand;
     QTzoomDlg   *sw_zoom;
@@ -281,16 +282,23 @@ public:
         return (false);
     }
 
-
-    // qtmain.cc
-    QTmainwin();
-    void initialize();
-    void send_key_event(sKeyEvent*);
-
+    QMenuBar *MenuBar()         { return (mw_menubar); }
     QWidget *PromptLine()       { return (mw_promptline); }
     QTltab *LayerTable()        { return (mw_layertab); }
     QSplitter *splitter()       { return (mw_splitter); }
-    
+
+    QWidget *TopButtonBox()     { return (mw_top_button_box); }
+    QWidget *PhysButtonBox()    { return (mw_phys_button_box); }
+    QWidget *ElecButtonBox()    { return (mw_elec_button_box); }
+
+
+    // qtmain.cc
+    QTmainwin(QWidget* = 0);
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+    void initialize();
+    void send_key_event(sKeyEvent*);
+
     // qtcells.cc
     static char *get_cell_selection();
     static void cells_panic();
@@ -307,13 +315,6 @@ public:
     static char *get_tree_selection();
     static void tree_panic();
 
-    QSize sizeHint() const      { return (QSize(800, 650)); }
-    QSize minimumSizeHint()     const { return (QSize(800, 650)); }
-
-    QWidget *TopButtonBox()     { return (mw_top_button_box); }
-    QWidget *PhysButtonBox()    { return (mw_phys_button_box); }
-    QWidget *ElecButtonBox()    { return (mw_elec_button_box); }
-
 signals:
     void side_button_press(MenuEnt*);
 
@@ -325,6 +326,7 @@ private:
     // QWidget virtual overrides
     void closeEvent(QCloseEvent*);
 
+    QMenuBar    *mw_menubar;
     QWidget     *mw_top_button_box;
     QWidget     *mw_phys_button_box;
     QWidget     *mw_elec_button_box;

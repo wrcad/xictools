@@ -93,7 +93,7 @@ QTemptyDlg::QTemptyDlg(stringlist *l)
     ec_changed = false;
 
     setWindowTitle(tr("Empty Cells"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_ShowWithoutActivating);
 

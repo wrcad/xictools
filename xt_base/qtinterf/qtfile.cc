@@ -62,9 +62,11 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMenuBar>
+#include <QToolBar>
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QPushButton>
+#include <QToolButton>
 #include <QSplitter>
 #include <QTimer>
 #include <QTreeWidget>
@@ -79,6 +81,10 @@
 
 // Help keywords used in this file:
 // filesel
+
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 #define COLUMN_SPACING 20
 
@@ -615,14 +621,12 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
 {
     p_parent = owner;
     p_cb_arg = arg;
-    f_menubar = 0;
     f_tree = 0;
     f_list = 0;
     f_label = 0;
     f_filter = 0;
     f_Up = 0;
     f_Go = 0;
-    f_UpMenu = 0;
     f_Open = 0;
     f_New = 0;
     f_Delete = 0;
@@ -726,22 +730,38 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     f_tree->setMinimumWidth(100);
     f_tree->register_fsel(this);
 
-    f_menubar = new QMenuBar(this);
-#ifdef __APPLE__
-    // Put these as buttons elsewhere, Apply won't include them in the main
-    // window menu.
+#ifdef USE_QTOOLBAR
+    QToolBar *menubar = new QToolBar();
+    menubar->setMaximumHeight(22);
 #else
-    f_Up = f_menubar->addAction(QString("up"), this, SLOT(up_slot()));
-    f_Up->setIcon(QIcon(QPixmap(up_xpm)));
+    QMenuBar *menubar = new QMenuBar();
+#endif
+#if defined(USE_QTOOLBAR) || !defined(__APPLE__)
+    // Put these as buttons elsewhere in Apple, they can't be in the
+    // main window menu.
 
-    f_Go = f_menubar->addAction(QString("go"), this, SLOT(open_slot()));
+    f_Up = menubar->addAction("");
+    f_Up->setIcon(QIcon(QPixmap(up_xpm)));
+    QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(f_Up));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+
+    f_Go = menubar->addAction(QString("go"), this, SLOT(open_slot()));
     f_Go->setIcon(QIcon(QPixmap(go_xpm)));
 #endif
 
     if (f_config == fsSEL || f_config == fsSAVE || f_config == fsOPEN) {
         f_filemenu = new QMenu(this);
         f_filemenu->setTitle(QString(tr("&File")));
-        f_menubar->addMenu(f_filemenu);
+#ifdef USE_QTOOLBAR
+        QAction *a = menubar->addAction("File");
+        a->setMenu(f_filemenu);
+        tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+        if (tb)
+            tb->setPopupMode(QToolButton::InstantPopup);
+#else
+        menubar->addMenu(f_filemenu);
+#endif
 
         if (f_config == fsSEL) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
@@ -786,20 +806,25 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     }
 
     f_upmenu = new QMenu(this);
-#ifdef __APPLE__
-#else
-    f_upmenu->setTitle(QString(tr("&Up")));
-    f_UpMenu = f_menubar->addMenu(f_upmenu);
-#endif
+    f_Up->setMenu(f_upmenu);
     connect(f_upmenu, SIGNAL(triggered(QAction*)),
         this, SLOT(up_menu_slot(QAction*)));
 
     if (f_config == fsSEL || f_config == fsOPEN) {
         f_listmenu = new QMenu(this);
         f_listmenu->setTitle(QString(tr("&Listing")));
-        f_menubar->addMenu(f_listmenu);
+        QAction *a;
+#ifdef USE_QTOOLBAR
+        a = menubar->addAction("Listing");
+        a->setMenu(f_listmenu);
+        tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+        if (tb)
+            tb->setPopupMode(QToolButton::InstantPopup);
+#else
+        menubar->addMenu(f_listmenu);
+#endif
 
-        QAction *a = f_listmenu->addAction(QString(tr("&Show Filter")));
+        a = f_listmenu->addAction(tr("&Show Filter"));
         a->setCheckable(true);
         a->setShortcut(Qt::CTRL|Qt::Key_S);
         connect(a, SIGNAL(toggled(bool)),
@@ -814,17 +839,27 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     }
 
     if (f_config == fsSEL || f_config == fsSAVE || f_config == fsOPEN) {
-        f_menubar->addSeparator();
+        menubar->addSeparator();
 
-        f_helpmenu = new QMenu(this);
-        f_helpmenu->setTitle(QString(tr("&Help")));
-        f_menubar->addMenu(f_helpmenu);
+#ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        f_helpmenu->addAction(QString(tr("&Help")),
+        menubar->addAction(tr("&Help"),
             Qt::CTRL|Qt::Key_H, this, SLOT(help_slot()));
 #else
-        f_helpmenu->addAction(QString(tr("&Help")),
+        menubar->addAction(tr("&Help"),
             this, SLOT(help_slot()), Qt::CTRL|Qt::Key_H);
+#endif
+#else
+        f_helpmenu = new QMenu(this);
+        f_helpmenu->setTitle(QString(tr("&Help")));
+        menubar->addMenu(f_helpmenu);
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        f_helpmenu->addAction(tr("&Help"),
+            Qt::CTRL|Qt::Key_H, this, SLOT(help_slot()));
+#else
+        f_helpmenu->addAction(tr("&Help"),
+            this, SLOT(help_slot()), Qt::CTRL|Qt::Key_H);
+#endif
 #endif
     }
 
@@ -857,34 +892,12 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
-    vbox->setMenuBar(f_menubar);
+    vbox->addWidget(menubar);
     if (f_config == fsSEL || f_config == fsOPEN) {
         QSplitter *sp = new QSplitter(this);
         sp->setChildrenCollapsible(false);
-#ifdef __APPLE__
-        QWidget *holder = new QWidget(this);
-        sp->addWidget(holder);
-        QVBoxLayout *vb = new QVBoxLayout(holder);
-        vb->setContentsMargins(qmtop);
-        vb->setSpacing(2);
-        QHBoxLayout *hb = new QHBoxLayout();
-        vb->addLayout(hb);
-        hb->setContentsMargins(qmtop);
-        hb->setSpacing(0);
-        f_Up = new QPushButton();
-        f_Up->setIcon(QPixmap(up_xpm));
-        f_Up->setMenu(f_upmenu);
-        hb->addWidget(f_Up);
-        f_Go = new QPushButton();
-        f_Go->setIcon(QPixmap(go_xpm));
-        hb->addWidget(f_Go);
-        connect(f_Go, SIGNAL(clicked()), this, SLOT(open_slot()));
-        vb->addWidget(f_tree);
-        holder = new QWidget();
-#else
         sp->addWidget(f_tree);
         QWidget *holder = new QWidget(this);
-#endif
 
         f_list = new file_list_widget(holder);
         f_list->setWrapping(true);
@@ -902,11 +915,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
             this, SLOT(filter_change_slot(const QString&)));
         f_filter->setInsertPolicy(QComboBox::NoInsert);
 
-#ifdef __APPLE__
-        vb = new QVBoxLayout(holder);
-#else
         QVBoxLayout *vb = new QVBoxLayout(holder);
-#endif
         vb->setContentsMargins(qm);
         vb->setSpacing(2);
         vb->addWidget(f_list);
@@ -1073,25 +1082,6 @@ QTfileDlg::flash(QTreeWidgetItem *it)
     f_flasher_item = it;
     f_flasher_cnt = 1;
     f_flasher->start();
-}
-
-
-void
-QTfileDlg::up_slot()
-{
-    if (!f_rootdir || !strcmp(f_rootdir, "/"))
-        return;
-
-    char *s = lstring::strrdirsep(f_rootdir);
-    if (s) {
-        if (s == f_rootdir)
-            s++;
-        *s = 0;
-        s = lstring::copy(f_rootdir);
-        delete [] f_rootdir;
-        f_rootdir = s;
-    }
-    init();
 }
 
 
@@ -1626,20 +1616,10 @@ QTfileDlg::init()
     f_tree->clear();
     select_dir(0);
     select_file(0);
-    if (f_rootdir && !is_root(f_rootdir)) {
+    if (f_rootdir && !is_root(f_rootdir))
         f_Up->setEnabled(true);
-#ifdef __APPLE__
-#else
-        f_UpMenu->setEnabled(true);
-#endif
-    }
-    else {
+    else
         f_Up->setEnabled(false);
-#ifdef __APPLE__
-#else
-        f_UpMenu->setEnabled(false);
-#endif
-    }
     QTreeWidgetItem *prnt = insert_node(f_rootdir, 0);
     // prnt == 0 when f_rootdir == "/"
     add_dir(prnt, f_rootdir);

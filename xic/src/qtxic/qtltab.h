@@ -54,7 +54,7 @@
 
 #include <QWidget>
 
-class QPushButton;
+class QToolButton;
 class QScrollBar;
 class QHBoxLayout;
 class QMouseEvent;
@@ -84,7 +84,7 @@ public:
     void set_layer();
 
     // Instantiated in main window.
-    void set_search_widgets(QPushButton*, QLineEdit*);
+    void set_search_widgets(QToolButton*, QLineEdit*);
 
     QScrollBar *scrollbar()                 { return (ltab_scrollbar); }
 
@@ -120,7 +120,7 @@ private:
 
     QScrollBar  *ltab_scrollbar;
     QLineEdit   *ltab_entry;
-    QPushButton *ltab_sbtn;
+    QToolButton *ltab_sbtn;
     QPixmap     *ltab_lsearch;
     QPixmap     *ltab_lsearchn;
 

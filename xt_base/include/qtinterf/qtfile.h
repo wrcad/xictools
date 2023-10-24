@@ -57,12 +57,15 @@ class QLineEdit;
 class QMenu;
 class QMenuBar;
 class QTimer;
+class QToolButton;
+class QToolBar;
 
 namespace qtinterf {
     class file_tree_widget;
     class file_list_widget;
     class QTfileDlg;
 }
+
 
 class qtinterf::QTfileDlg : public QDialog, public GRfilePopup, public QTbag
 {
@@ -105,7 +108,6 @@ signals:
     void dismiss();
 
 private slots:
-    void up_slot();
     void open_slot();
     void new_folder_slot();
     void new_folder_cb_slot(const char*, void*);
@@ -143,19 +145,12 @@ private:
     stringlist *tokenize_filter();
     char *get_newdir(const char*);
 
-    QMenuBar    *f_menubar;
     file_tree_widget *f_tree;
     file_list_widget *f_list;
     QLabel      *f_label;
     QComboBox   *f_filter;
-#ifdef __APPLE__
-    QPushButton *f_Up;
-    QPushButton *f_Go;
-#else
     QAction     *f_Up;
     QAction     *f_Go;
-#endif
-    QAction     *f_UpMenu;
     QAction     *f_Open;
     QAction     *f_New;
     QAction     *f_Delete;

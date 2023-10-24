@@ -66,7 +66,7 @@ cMain::SetCoordMode(COmode mode, int rx, int ry)
 
 QTcoord *QTcoord::instPtr = 0;
 
-QTcoord::QTcoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
+QTcoord::QTcoord(QWidget *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 {
     instPtr = this;
 
@@ -84,9 +84,7 @@ QTcoord::QTcoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 
     int wid = 90*QTfont::stringWidth(0, FNT_SCREEN);
     int hei = QTfont::lineHeight(FNT_SCREEN) + 2;
-    setMinimumWidth(wid);
-    setMinimumHeight(hei);
-    setMaximumHeight(hei);
+    setMinimumWidth(wid/3);
     co_width = wid;
     co_height = hei;
     connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
@@ -103,6 +101,15 @@ QTcoord::QTcoord(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 QTcoord::~QTcoord()
 {
     instPtr = 0;
+}
+
+
+QSize
+QTcoord::sizeHint() const
+{
+    int wid = 90*QTfont::stringWidth(0, FNT_SCREEN);
+    int hei = QTfont::lineHeight(FNT_SCREEN) + 2;
+    return (QSize(wid, hei));
 }
 
 
@@ -140,7 +147,7 @@ QTcoord::print(int xc, int yc, int upd)
     int fwid, fhei;
     TextExtent(0, &fwid, &fhei);
     int xx = 2;
-    int yy = fhei-2;
+    int yy = (height() - fhei)/2 + fhei-2;
 
     if (co_snap)
         EV()->CurrentWin()->Snap(&xc, &yc);

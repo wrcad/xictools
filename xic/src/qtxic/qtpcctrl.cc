@@ -107,7 +107,6 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     pcc_allwarn = 0;
 
     setWindowTitle(tr("PCell Control"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(pcc_popup), false);
 

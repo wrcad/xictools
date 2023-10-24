@@ -57,15 +57,21 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QPushButton>
+#include <QToolButton>
 #include <QTabWidget>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QMenuBar>
+#include <QToolBar>
 #include <QMenu>
 #include <QAction>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QLineEdit>
+
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 //--------------------------------------------------------------------
 // Pop-up to control misc. extraction variables.
@@ -502,14 +508,28 @@ QTextSetupDlg::devs_page()
 
     // Menu bar.
     //
+#ifdef USE_QTOOLBAR
+    QToolBar *menubar = new QToolBar();
+#else
     QMenuBar *menubar = new QMenuBar();
+#endif
     vbox->addWidget(menubar);
 
     // Device Block menu.
+    QAction *a;
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&Device Block"));
+    QMenu *menu = new QMenu();
+    a->setMenu(menu);
+    QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     QMenu *menu = menubar->addMenu(tr("&Device Block"));
+#endif
 
     // New, 0, es_dev_menu_proc, 0, 0
-    QAction *a = menu->addAction(tr("New"));
+    a = menu->addAction(tr("New"));
 
     // Delete, 0, es_dev_menu_proc, 1, <CheckItem>
     a = menu->addAction(tr("Delete"));
