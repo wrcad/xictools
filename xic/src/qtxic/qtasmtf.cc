@@ -172,7 +172,7 @@ QTasmTf::QTasmTf(QTasmPage *src)
 
     tf_use_win = new QCheckBox(tr("Use Window"));
     hbox->addWidget(tf_use_win);
-    connect(tf_use_win, SIGNAL(stateChaged(int)),
+    connect(tf_use_win, SIGNAL(stateChanged(int)),
         this, SLOT(usew_btn_slot(int)));
 
     tf_do_clip = new QCheckBox(tr("Clip"));

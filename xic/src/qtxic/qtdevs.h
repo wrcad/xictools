@@ -55,6 +55,7 @@
 //
 
 class QPushButton;
+class QToolButton;
 
 class QTdevMenuDlg : public QDialog, public QTbag, public QTdraw
 {
@@ -115,7 +116,7 @@ private:
     void redraw();
 
     GRobject    dv_caller;
-    QPushButton *dv_morebtn;
+    QToolButton *dv_morebtn;
     sEnt        *dv_entries;
     int         dv_numdevs;
     int         dv_leftindx;

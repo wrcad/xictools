@@ -60,17 +60,23 @@
 #include <QApplication>
 #include <QLayout>
 #include <QMenuBar>
+#include <QToolBar>
 #include <QMenu>
 #include <QAction>
 #include <QLabel>
 #include <QGroupBox>
 #include <QPushButton>
+#include <QToolButton>
 #include <QTreeWidget>
 #include <QTreeWidget>
 #include <QHeaderView>
 #include <QMouseEvent>
 #include <QMimeData>
 
+
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 //-----------------------------------------------------------------------------
 // Pop-up panel and supporting functions for script debugger.
@@ -197,12 +203,27 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
 
     // menu bar
     //
+#ifdef USE_QTOOLBAR
+    QToolBar *menubar = new QToolBar(this);
+#else
     QMenuBar *menubar = new QMenuBar(this);
+#endif
+    vbox->addWidget(menubar);
 
     // File menu.
+    QAction *a;
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&File"));
+    db_filemenu = new QMenu();
+    a->setMenu(db_filemenu);
+    QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     db_filemenu = menubar->addMenu(tr("&File"));
+#endif
     // _New, 0, db_action_proc, NewCode, 0
-    QAction *a = db_filemenu->addAction(tr("&New"));
+    a = db_filemenu->addAction(tr("&New"));
     a->setData(NewCode);
     // _Load", <control>L", db_action_proc, LoadCode, 0
     a = db_filemenu->addAction(tr("&Load"));
@@ -235,7 +256,16 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
         this, SLOT(file_menu_slot(QAction*)));
 
     // Edit menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&Edit"));
+    db_editmenu = new QMenu();
+    a->setMenu(db_editmenu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     db_editmenu = menubar->addMenu(tr("&Edit"));
+#endif
     // Undo, <Alt>U, db_undo_proc, 0, 0
     a = db_editmenu->addAction(tr("Undo"));
     a->setShortcut(QKeySequence("Alt+U"));
@@ -266,7 +296,16 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
         this, SLOT(edit_menu_slot(QAction*)));
 
     // Execute menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("E&xecute"));
+    db_execmenu = new QMenu();
+    a->setMenu(db_execmenu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     db_execmenu = menubar->addMenu(tr("E&xecute"));
+#endif
     // _Run, <control>R, db_action_proc, RunCode, 0
     a = db_execmenu->addAction(tr("&Run"));
     a->setData(RunCode);
@@ -287,7 +326,16 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
         this, SLOT(exec_menu_slot(QAction*)));
 
     // Options menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&Options"));
+    QMenu *menu = new QMenu();
+    a->setMenu(menu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     QMenu *menu = menubar->addMenu(tr("&Options"));
+#endif
     // _Search, 0, db_search_proc, 0, <CheckItem>);
     a = menu->addAction(tr("&Search"));
     a->setData(1);
@@ -300,12 +348,20 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
         this, SLOT(options_menu_slot(QAction*)));
 
     // Help menu.
+#ifdef USE_QTOOLBAR
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
+        SLOT(help_slot()));
+#else
+    a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a->setShortcut(QKeySequence("Ctrl+H"));
+#endif
+#else
     menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, db_action_proc, HelpCode, 0
-    a = menu->addAction(tr("&Help"));
+    a = menu->addAction(tr("&Help", this, SLOT(help_slot()));
     a->setShortcut(QKeySequence("Ctrl+H"));
-    connect(menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(help_menu_slot(QAction*)));
+#endif
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -1473,7 +1529,7 @@ QTscriptDebuggerDlg::options_menu_slot(QAction *a)
 
 
 void
-QTscriptDebuggerDlg::help_menu_slot(QAction*)
+QTscriptDebuggerDlg::help_slot()
 {
     DSPmainWbag(PopUpHelp("xic:debug"))
 }

@@ -261,6 +261,7 @@ private slots:
     void tab_changed_slot(int);
     void crlayout_btn_slot();
     void dismiss_btn_slot();
+    void help_slot();
 
 private:
     static void asm_save_cb(const char*, void*);

@@ -242,6 +242,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     label = new QLabel(" fmin=");
     hb->addWidget(label);
     fh_fmin = new QLineEdit();
+    fh_fmin->setMaximumWidth(70);
     hb->addWidget(fh_fmin);
     connect(fh_fmin, SIGNAL(textChanged(const QString&)),
         this, SLOT(fmin_changed_slot(const QString&)));
@@ -249,6 +250,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     label = new QLabel(" fmax=");
     hb->addWidget(label);
     fh_fmax = new QLineEdit();
+    fh_fmax->setMaximumWidth(70);
     hb->addWidget(fh_fmax);
     connect(fh_fmax, SIGNAL(textChanged(const QString&)),
         this, SLOT(fmax_changed_slot(const QString&)));
@@ -257,6 +259,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     hb->addWidget(label);
     fh_ndec = new QLineEdit();
     hb->addWidget(fh_ndec);
+    fh_ndec->setMaximumWidth(50);
     connect(fh_ndec, SIGNAL(textChanged(const QString&)),
         this, SLOT(ndec_changed_slot(const QString&)));
 
@@ -292,7 +295,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
     for (int i = 0; unit_t::units_strings[i]; i++)
         fh_units->addItem(unit_t::units_strings[i]);
     fh_units->setCurrentIndex(FHif()->getUnitsIndex(0));
-    connect(fh_units, SIGNAL(curentIndexChanged(int)),
+    connect(fh_units, SIGNAL(currentIndexChanged(int)),
         this, SLOT(units_changed_slot(int)));
 
     gb = new QGroupBox("FhManhGridCnt");
@@ -303,8 +306,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     fh_sb_manh_grid_cnt = new QSpinBox();
     hb1->addWidget(fh_sb_manh_grid_cnt);
-    fh_sb_manh_grid_cnt->setMinimum(FH_MIN_MANH_GRID_CNT);
-    fh_sb_manh_grid_cnt->setMaximum(FH_MAX_MANH_GRID_CNT);
+    fh_sb_manh_grid_cnt->setRange(FH_MIN_MANH_GRID_CNT, FH_MAX_MANH_GRID_CNT);
     fh_sb_manh_grid_cnt->setValue(FH_DEF_MANH_GRID_CNT);
     connect(fh_sb_manh_grid_cnt, SIGNAL(valueChanged(int)),
         this, SLOT(manh_grid_changed_slot(int)));
@@ -333,8 +335,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     fh_sb_nhinc = new QSpinBox();
     hb1->addWidget(fh_sb_nhinc);
-    fh_sb_nhinc->setMinimum(FH_MIN_DEF_NHINC);
-    fh_sb_nhinc->setMaximum(FH_MAX_DEF_NHINC);
+    fh_sb_nhinc->setRange(FH_MIN_DEF_NHINC, FH_MAX_DEF_NHINC);
     fh_sb_nhinc->setValue(DEF_FH_NHINC); 
     connect(fh_sb_nhinc, SIGNAL(valueChanged(int)),
         this, SLOT(nhinc_changed_slot(int)));
@@ -347,8 +348,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     fh_sb_rh = new QDoubleSpinBox();
     hb1->addWidget(fh_sb_rh);
-    fh_sb_rh->setMinimum(FH_MIN_DEF_RH);
-    fh_sb_rh->setMaximum(FH_MAX_DEF_RH);
+    fh_sb_rh->setRange(FH_MIN_DEF_RH, FH_MAX_DEF_RH);
     fh_sb_rh->setDecimals(3);
     fh_sb_rh->setValue(DEF_FH_RH);
     connect(fh_sb_rh, SIGNAL(valueChanged(double)),
@@ -392,12 +392,11 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     fh_sb_volel_min = new QDoubleSpinBox();
     hb1->addWidget(fh_sb_volel_min);
-    fh_sb_volel_min->setMinimum(FH_MIN_VOLEL_MIN);
-    fh_sb_volel_min->setMaximum(FH_MAX_VOLEL_MIN);
+    fh_sb_volel_min->setRange(FH_MIN_VOLEL_MIN, FH_MAX_VOLEL_MIN);
     fh_sb_volel_min->setDecimals(2);
     fh_sb_volel_min->setValue(FH_DEF_VOLEL_MIN);
     connect(fh_sb_volel_min, SIGNAL(valueChanged(double)),
-        this, SLOT(volel_minh_changed_slot(double)));
+        this, SLOT(volel_min_changed_slot(double)));
     fh_sb_volel_min->setEnabled(false);
 
     gb = new QGroupBox("FhVolElTarget");
@@ -408,8 +407,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     fh_sb_volel_target = new QSpinBox();
     hb1->addWidget(fh_sb_volel_target);
-    fh_sb_volel_target->setMinimum(FH_MIN_VOLEL_TARG);
-    fh_sb_volel_target->setMaximum(FH_MAX_VOLEL_TARG);
+    fh_sb_volel_target->setRange(FH_MIN_VOLEL_TARG, FH_MAX_VOLEL_TARG);
     fh_sb_volel_target->setValue(FH_DEF_VOLEL_TARG);
     connect(fh_sb_volel_target, SIGNAL(valueChanged(int)),
         this, SLOT(volel_target_changed_slot(int)));

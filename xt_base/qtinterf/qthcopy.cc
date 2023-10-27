@@ -133,9 +133,10 @@ namespace {
 #define MM(x) (pd_metric ? (x)*MMPI : (x))
 
 
-QTprintDlg::QTprintDlg(HCcb *cb, HCmode textmode, QTbag *wbag) :
+QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) :
     QDialog(wbag ? wbag->Shell() : 0)
 {
+    pd_caller = caller;
     pd_owner = wbag;
     pd_cb = cb;
     pd_cmdtext = 0;
@@ -615,6 +616,8 @@ QTprintDlg::~QTprintDlg()
 {
     if (pd_owner)
         pd_owner->SetHC(0);
+    if (pd_caller)
+        QTdev::self()->SetStatus(pd_caller, false);
 }
 
 
@@ -693,12 +696,16 @@ QTprintDlg::set_active(bool set)
             raise();
             activateWindow();
         }
+        if (pd_caller)
+            QTdev::self()->SetStatus(pd_caller, true);
     }
     else {
         if (pd_active) {
             pd_active = false;
             hide();
         }
+        if (pd_caller)
+            QTdev::self()->SetStatus(pd_caller, false);
     }
 }
 

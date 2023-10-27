@@ -50,14 +50,21 @@
 
 #include <QLayout>
 #include <QMenuBar>
+#include <QToolBar>
 #include <QMenu>
 #include <QAction>
 #include <QTabWidget>
 #include <QPushButton>
+#include <QToolButton>
 #include <QLabel>
 #include <QLineEdit>
 #include <QGroupBox>
 #include <QDoubleSpinBox>
+
+
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 //-----------------------------------------------------------------------------
 // Pop-up to merge layout sources into a single file.
@@ -142,12 +149,27 @@ QTasmDlg::QTasmDlg(GRobject c)
 
     // menu bar
     //
-    QMenuBar *menubar = new QMenuBar(this);
+#ifdef USE_QTOOLBAR
+    QToolBar *menubar = new QToolBar();
+#else
+    QMenuBar *menubar = new QMenuBar();
+#endif
+    vbox->addWidget(menubar);
 
     // File menu.
+    QAction *a;
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&File"));
+    QMenu *menu = new QMenu();
+    a->setMenu(menu);
+    QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     QMenu *menu = menubar->addMenu(tr("&File"));
+#endif
     // _File Select, <control>O, asm_action_proc, OpenCode, CheckItem>
-    QAction *a = menu->addAction(tr("_File Select"));
+    a = menu->addAction(tr("_File Select"));
     a->setCheckable(true);
     a->setData(OpenCode);
     a->setShortcut(QKeySequence("Ctrl+O"));
@@ -170,7 +192,16 @@ QTasmDlg::QTasmDlg(GRobject c)
         this, SLOT(main_menu_slot(QAction*)));
 
     // Options menu.
+#ifdef USE_QTOOLBAR
+    a = menubar->addAction(tr("&Options"));
+    menu = new QMenu();
+    a->setMenu(menu);
+    tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+    if (tb)
+        tb->setPopupMode(QToolButton::InstantPopup);
+#else
     menu = menubar->addMenu(tr("&Options"));
+#endif
     // R_eset, <control>E, asm_action_proc, ResetCode, 0
     a = menu->addAction(tr("R&eset"));
     a->setData(ResetCode);
@@ -193,20 +224,28 @@ QTasmDlg::QTasmDlg(GRobject c)
         this, SLOT(main_menu_slot(QAction*)));
 
     // Help menu.
+#ifdef USE_QTOOLBAR
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
+        SLOT(help_slot()));
+#else
+    a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a->setShortcut(QKeySequence("Ctrl+H"));
+#endif
+#else
     menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, asm_action_proc, HelpCode, 0
-    a = menu->addAction(tr("&Help"));
+    a = menu->addAction(tr("&Help"), this, SLOT(help_slot()));
     a->setData(HelpCode);
     a->setShortcut(QKeySequence("Ctrl+H"));
-    connect(menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(main_menu_slot(QAction*)));
+#endif
 
     // notebook setup
     //
     asm_notebook = new QTabWidget();
     vbox->addWidget(asm_notebook);
     connect(asm_notebook, SIGNAL(currentChanged(int)),
-        this, SLOT(tab_changed_slotI(int)));
+        this, SLOT(tab_changed_slot(int)));
 
 
     output_page_setup();
@@ -1160,6 +1199,12 @@ QTasmDlg::dismiss_btn_slot()
     Cvt()->PopUpAssemble(0, MODE_OFF);
 }
 
+
+void
+QTasmDlg::help_slot()
+{
+    PopUpHelp("xic:assem");
+}
 
 
 #ifdef notdef

@@ -56,14 +56,20 @@
 
 #include <QLayout>
 #include <QMenuBar>
+#include <QToolBar>
 #include <QMenu>
 #include <QAction>
 #include <QPushButton>
+#include <QToolButton>
 #include <QGroupBox>
 #include <QIcon>
 #include <QPixmap>
 #include <QMouseEvent>
 
+
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 //-----------------------------------------------------------------------------
 // This implements a menu of devices from the device library, in three
@@ -315,6 +321,7 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
 
     setWindowTitle(tr("Device Palette"));
     setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
     const char *type = CDvdb()->getVariable(VA_DevMenuStyle);
 
@@ -373,13 +380,15 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         vbox->setContentsMargins(qm);
         vbox->setSpacing(2);
 
-        dv_morebtn = new QPushButton();
+//XXX        dv_morebtn = new QPushButton();
+        dv_morebtn = new QToolButton();
         dv_morebtn->setIcon(QIcon(QPixmap(more_xpm)));
         dv_morebtn->setMaximumWidth(80);
         vbox->addWidget(dv_morebtn);
         connect(dv_morebtn, SIGNAL(clicked()), this, SLOT(more_btn_slot()));
 
-        QPushButton *btn = new QPushButton();
+//        QPushButton *btn = new QPushButton();
+        QToolButton *btn = new QToolButton();
         btn->setIcon(QIcon(QPixmap(dd_xpm)));
         btn->setMaximumWidth(80);
         vbox->addWidget(btn);
@@ -401,17 +410,21 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
     if (type && *type == '0' + dvMenuAlpha) {
         dv_type = dvMenuAlpha;
 
-        QHBoxLayout *hbox = new QHBoxLayout(this);
-        hbox->setContentsMargins(qmtop);
-        hbox->setSpacing(2);
+        QVBoxLayout *vbox = new QVBoxLayout(this);
+        vbox->setContentsMargins(qmtop);
+        vbox->setSpacing(2);
 
         QGroupBox *gb = new QGroupBox();
-        hbox->addWidget(gb);
-        hbox = new QHBoxLayout(gb);
+        vbox->addWidget(gb);
+        QHBoxLayout *hbox = new QHBoxLayout(gb);
         hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
 
+#ifdef USE_QTOOLBAR
+        QToolBar *menubar = new QToolBar();
+#else
         QMenuBar *menubar = new QMenuBar();
+#endif
         hbox->addWidget(menubar);
 
         char lastc = 0;
@@ -429,7 +442,17 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
                 bf[0] = c;
                 bf[1] = '\0';
 
+#ifdef USE_QTOOLBAR
+                QAction *a = menubar->addAction(bf);
+                menu = new QMenu();
+                a->setMenu(menu);
+                QToolButton *tb = dynamic_cast<QToolButton*>(
+                    menubar->widgetForAction(a));
+                if (tb)
+                    tb->setPopupMode(QToolButton::InstantPopup);
+#else
                 menu = menubar->addMenu(bf);
+#endif
                 connect(menu, SIGNAL(triggered(QAction*)),
                     this, SLOT(menu_slot(QAction*)));
             }
@@ -438,7 +461,8 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         }
         stringlist::destroy(wl);
 
-        QPushButton *btn = new QPushButton();
+//XXX        QPushButton *btn = new QPushButton();
+        QToolButton *btn = new QToolButton();
         btn->setIcon(QIcon(QPixmap(pict_xpm)));
         hbox->addWidget(btn);
         connect(btn, SIGNAL(clicked()), this, SLOT(style_btn_slot()));
@@ -446,41 +470,55 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
     else {
         dv_type = dvMenuCateg;
 
-        QHBoxLayout *hbox = new QHBoxLayout(this);
-        hbox->setContentsMargins(qmtop);
+        QVBoxLayout *vbox = new QVBoxLayout(this);
+        vbox->setContentsMargins(qmtop);
+        vbox->setSpacing(2);
+
+        QHBoxLayout *hbox = new QHBoxLayout();
+        vbox->addLayout(hbox);
+        hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
 
-#ifdef __APPLE__
-        QPushButton *btn = new QPushButton(tr("Devices"));
-        hbox->addWidget(btn);
+#ifdef USE_QTOOLBAR
+        QToolBar *menubar = new QToolBar();
+        QAction *a = menubar->addAction(tr("Devices"));
         QMenu *menu_d = new QMenu();
-        btn->setMenu(menu_d);
+        a->setMenu(menu_d);
+        QToolButton *tb =
+            dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+        if (tb)
+            tb->setPopupMode(QToolButton::InstantPopup);
         connect(menu_d, SIGNAL(triggered(QAction*)),
             this, SLOT(menu_slot(QAction*)));
 
-        btn = new QPushButton(tr("Sources"));
-        hbox->addWidget(btn);
+        a = menubar->addAction(tr("Sources"));
         QMenu *menu_s = new QMenu();
-        btn->setMenu(menu_s);
+        a->setMenu(menu_s);
+        tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+        if (tb)
+            tb->setPopupMode(QToolButton::InstantPopup);
         connect(menu_s, SIGNAL(triggered(QAction*)),
             this, SLOT(menu_slot(QAction*)));
 
-        btn = new QPushButton(tr("Macros"));
-        hbox->addWidget(btn);
+        a = menubar->addAction(tr("Macros"));
         QMenu *menu_m = new QMenu();
-        btn->setMenu(menu_m);
+        a->setMenu(menu_m);
+        tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+        if (tb)
+            tb->setPopupMode(QToolButton::InstantPopup);
         connect(menu_m, SIGNAL(triggered(QAction*)),
             this, SLOT(menu_slot(QAction*)));
 
-        btn = new QPushButton(tr("Terminals"));
-        hbox->addWidget(btn);
+        a = menubar->addAction(tr("Terminals"));
         QMenu *menu_t = new QMenu();
-        btn->setMenu(menu_t);
+        a->setMenu(menu_t);
+        tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
+        if (tb)
+            tb->setPopupMode(QToolButton::InstantPopup);
         connect(menu_t, SIGNAL(triggered(QAction*)),
             this, SLOT(menu_slot(QAction*)));
 #else
         QMenuBar *menubar = new QMenuBar();
-        hbox->addWidget(menubar);
 
         QMenu *menu_d = menubar->addMenu(tr("Devices"));
         connect(menu_d, SIGNAL(triggered(QAction*)),
@@ -494,8 +532,8 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         QMenu *menu_t = menubar->addMenu(tr("Terminals"));
         connect(menu_t, SIGNAL(triggered(QAction*)),
             this, SLOT(menu_slot(QAction*)));
-        QPushButton *btn;  // needed below
 #endif
+        hbox->addWidget(menubar);
 
         for (stringlist *ww = wl; ww; ww = ww->next) {
             CDcbin cbin;
@@ -557,7 +595,7 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         }
         stringlist::destroy(wl);
 
-        btn = new QPushButton();
+        QToolButton *btn = new QToolButton();
         btn->setIcon(QIcon(QPixmap(dda_xpm)));
         hbox->addWidget(btn);
         connect(btn, SIGNAL(clicked()), this, SLOT(style_btn_slot()));
@@ -580,8 +618,11 @@ QTdevMenuDlg::sizeHint() const
 {
     if (dv_type == dvMenuPict)
         return (QSize(dv_width, CELL_SIZE + 4));
-    else
-        return (QSize(0, 0));
+    if (dv_type == dvMenuCateg)
+        return (QSize(300, 24));
+    if (dv_type == dvMenuAlpha)
+        return (QSize(500, 24));
+    return (QSize(-1, -1));
 }
 
 

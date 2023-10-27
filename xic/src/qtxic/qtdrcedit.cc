@@ -293,7 +293,7 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
 #else
     menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, dim_help_proc, 0, 0);
-    a = menu->addAction(tr("&Help", this, SLOT(help_slot()));
+    a = menu->addAction(tr("&Help"), this, SLOT(help_slot()));
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 

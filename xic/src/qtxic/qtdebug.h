@@ -181,7 +181,7 @@ private slots:
     void edit_menu_slot(QAction*);
     void exec_menu_slot(QAction*);
     void options_menu_slot(QAction*);
-    void help_menu_slot(QAction*);
+    void help_slot();
     void mode_btn_slot();
     void mouse_press_slot(QMouseEvent*);
     void text_changed_slot();

@@ -733,19 +733,18 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
 #ifdef USE_QTOOLBAR
     QToolBar *menubar = new QToolBar();
     menubar->setMaximumHeight(22);
-#else
-    QMenuBar *menubar = new QMenuBar();
-#endif
-#if defined(USE_QTOOLBAR) || !defined(__APPLE__)
-    // Put these as buttons elsewhere in Apple, they can't be in the
-    // main window menu.
-
     f_Up = menubar->addAction("");
     f_Up->setIcon(QIcon(QPixmap(up_xpm)));
     QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(f_Up));
     if (tb)
         tb->setPopupMode(QToolButton::InstantPopup);
 
+    f_Go = menubar->addAction(QString("go"), this, SLOT(open_slot()));
+    f_Go->setIcon(QIcon(QPixmap(go_xpm)));
+#else
+    QMenuBar *menubar = new QMenuBar();
+    f_Up = menubar->addAction("");
+    f_Up->setIcon(QIcon(QPixmap(up_xpm)));
     f_Go = menubar->addAction(QString("go"), this, SLOT(open_slot()));
     f_Go->setIcon(QIcon(QPixmap(go_xpm)));
 #endif

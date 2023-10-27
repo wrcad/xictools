@@ -1140,8 +1140,10 @@ QTbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
 // Printing support.  Caller is the initiating button, if any.
 //
 void
-QTbag::PopUpPrint(GRobject, HCcb *cb, HCmode mode, GRdraw*)
+QTbag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw*)
 {
+    QAction *a = static_cast<QAction*>(caller);
+    bool bstate = !a || a->isChecked();
     if (wb_hc) {
         bool active = !wb_hc->is_active();
         wb_hc->set_active(active);
@@ -1152,13 +1154,15 @@ QTbag::PopUpPrint(GRobject, HCcb *cb, HCmode mode, GRdraw*)
         return;
     }
 
-    // This will set this->hc if successful,
-    QTprintDlg *pd = new QTprintDlg(cb, mode, this);
+    if (bstate) {
+        // This will set this->hc if successful.
+        QTprintDlg *pd = new QTprintDlg(caller, cb, mode, this);
 
-    if (!wb_hc)
-        delete pd;
-    else
-        wb_hc->show();
+        if (!wb_hc)
+            delete pd;
+        else
+            wb_hc->show();
+    }
 }
 
 

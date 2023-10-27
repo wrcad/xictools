@@ -205,7 +205,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
-    connect(nbook, SIGNAL(currentIndexChanged(int)),
+    connect(nbook, SIGNAL(currentChanged(int)),
         this, SLOT(page_changed_slot(int)));
 
     // Run page.
@@ -302,8 +302,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     int ndgt = CD()->numDigits();
 
     fc_sb_plane_bloat = new QDoubleSpinBox();
-    fc_sb_plane_bloat->setMinimum(FC_PLANE_BLOAT_MIN);
-    fc_sb_plane_bloat->setMaximum(FC_PLANE_BLOAT_MAX);
+    fc_sb_plane_bloat->setRange(FC_PLANE_BLOAT_MIN, FC_PLANE_BLOAT_MAX);
     fc_sb_plane_bloat->setDecimals(ndgt);
     fc_sb_plane_bloat->setValue(FC_PLANE_BLOAT_DEF);
     hb->addWidget(fc_sb_plane_bloat);
@@ -317,8 +316,8 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     hb->setSpacing(2);
 
     fc_sb_substrate_thickness = new QDoubleSpinBox();
-    fc_sb_substrate_thickness->setMinimum(SUBSTRATE_THICKNESS_MIN);
-    fc_sb_substrate_thickness->setMaximum(SUBSTRATE_THICKNESS_MAX);
+    fc_sb_substrate_thickness->setRange(
+        SUBSTRATE_THICKNESS_MIN, SUBSTRATE_THICKNESS_MAX);
     fc_sb_substrate_thickness->setDecimals(ndgt);
     fc_sb_substrate_thickness->setValue(SUBSTRATE_THICKNESS);
     hb->addWidget(fc_sb_substrate_thickness);
@@ -346,49 +345,41 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
     hb->setSpacing(2);
 
     fc_sb_substrate_eps = new QDoubleSpinBox();
-    fc_sb_substrate_eps->setMinimum(SUBSTRATE_EPS_MIN);
-    fc_sb_substrate_eps->setMaximum(SUBSTRATE_EPS_MAX);
+    fc_sb_substrate_eps->setRange(SUBSTRATE_EPS_MIN, SUBSTRATE_EPS_MAX);
     fc_sb_substrate_eps->setDecimals(3);
     fc_sb_substrate_eps->setValue(SUBSTRATE_EPS);
     hb->addWidget(fc_sb_substrate_eps);
     connect(fc_sb_substrate_eps, SIGNAL(valueChanged(double)),
         this, SLOT(subeps_changed_slot(double)));
 
-    vb->addStretch(1);
-
     gb = new QGroupBox();
-    vb->addWidget(gb);
+    grid->addWidget(gb, 2, 0, 1, 2);
     hb = new QHBoxLayout(gb);
     hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
     label = new QLabel(tr("FastCap Panel Refinement"));
+    label->setAlignment(Qt::AlignCenter);
     hb->addWidget(label);
 
-    hb = new QHBoxLayout(gb);
-    hb->setContentsMargins(qmtop);
-    hb->setSpacing(2);
-    vb->addLayout(hb);
-
     fc_enab = new QCheckBox(tr("Enable"));
-    hb->addWidget(fc_enab);
-    connect(fc_enab, SIGNAL(stteChanged(int)),
+    grid->addWidget(fc_enab, 3, 0);
+    connect(fc_enab, SIGNAL(stateChanged(int)),
         this, SLOT(enable_btn_slot(int)));
 
     gb = new QGroupBox("FcPanelTarget");
-    hb->addWidget(gb);
-    QHBoxLayout *hb1 = new QHBoxLayout(gb);
-    hb1->setContentsMargins(qmtop);
-    hb1->setSpacing(2);
+    grid->addWidget(gb, 3, 1);
+    hb = new QHBoxLayout(gb);
+    hb->setContentsMargins(qmtop);
+    hb->setSpacing(2);
 
 
 //XXX This is exponential display, can QT do this?
     fc_sb_panel_target = new QDoubleSpinBox();
-    fc_sb_panel_target->setMinimum(FC_MIN_TARG_PANELS);
-    fc_sb_panel_target->setMaximum(FC_MAX_TARG_PANELS);
+    fc_sb_panel_target->setRange(FC_MIN_TARG_PANELS, FC_MAX_TARG_PANELS);
     fc_sb_panel_target->setDecimals(1);
     fc_sb_panel_target->setValue(FC_DEF_TARG_PANELS);
-    hb1->addWidget(fc_sb_panel_target);
+    hb->addWidget(fc_sb_panel_target);
     connect(fc_sb_panel_target, SIGNAL(valueChanged(double)),
         this, SLOT(panels_changed_slot(double)));
 

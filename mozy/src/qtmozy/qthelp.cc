@@ -359,7 +359,7 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     menubar->setMaximumHeight(24);
 #else
     QMenuBar *menubar = new QMenuBar();
-    vbox->setMenuBar(menubar;
+    vbox->setMenuBar(menubar);
 #endif
     if (!has_menu)
         menubar->hide();

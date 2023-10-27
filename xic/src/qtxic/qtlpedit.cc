@@ -421,7 +421,7 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
 #endif
 #else
     menu = menubar->addMenu(tr("&Help"));
-    a = menu->addAction(tr("&Help", this, SLOT(help_slot()));
+    a = menu->addAction(tr("&Help"), this, SLOT(help_slot()));
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 

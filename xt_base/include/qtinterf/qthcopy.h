@@ -76,7 +76,7 @@ class qtinterf::QTprintDlg : public QDialog
     Q_OBJECT
 
 public:
-    QTprintDlg(HCcb*, HCmode, QTbag* = 0);
+    QTprintDlg(GRobject, HCcb*, HCmode, QTbag* = 0);
     ~QTprintDlg();
 
     void update(HCcb*);
@@ -121,6 +121,7 @@ private:
     void set_sens(unsigned int);
     void fork_and_submit(const char*, const char*);
 
+    GRobject        pd_caller;      // launching button
     QTbag           *pd_owner;      // back pointer to owning set
     HCcb            *pd_cb;         // parameter data struct
     const char      *pd_cmdtext;    // print command or file name

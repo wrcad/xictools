@@ -76,7 +76,7 @@ int GRfont::num_app_fonts =
 //#define DEF_FIXED_FACE "Courier New"
 //#define DEF_PROP_FACE "Helvetica"
 #define DEF_FIXED_FACE "Menlo"
-#define DEF_PROP_FACE "Ariel"
+#define DEF_PROP_FACE "Arial"
 #ifdef __APPLE__
 #define DEF_SIZE 11
 #else

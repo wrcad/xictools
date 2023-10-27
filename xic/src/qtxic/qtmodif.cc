@@ -212,6 +212,7 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*))
 
     setWindowTitle(tr("Modified Cells"));
     setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

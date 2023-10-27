@@ -211,7 +211,7 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     vbox->addWidget(t_tree);
 
     connect(t_tree,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgretItem*)),
+        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
         this,
         SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
     connect(t_tree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
@@ -220,10 +220,10 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
         this, SLOT(item_changed(QTreeWidgetItem*, int)));
     connect(t_tree, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
         this, SLOT(item_clicked(QTreeWidgetItem*, int)));
-    connect(t_tree, SIGNAL(itemCollapsed(QTreeWidgetItem*, int)),
-        this, SLOT(item_collapsed(QTreeWidgetItem*, int)));
-    connect(t_tree, SIGNAL(itemExpanded(QTreeWidgetItem*, int)),
-        this, SLOT(item_expanded(QTreeWidgetItem*, int)));
+    connect(t_tree, SIGNAL(itemCollapsed(QTreeWidgetItem*)),
+        this, SLOT(item_collapsed(QTreeWidgetItem*)));
+    connect(t_tree, SIGNAL(itemExpanded(QTreeWidgetItem*)),
+        this, SLOT(item_expanded(QTreeWidgetItem*)));
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_PROP))
@@ -820,13 +820,13 @@ QTtreeDlg::item_clicked(QTreeWidgetItem*, int)
 
 
 void
-QTtreeDlg::item_collapsed(QTreeWidgetItem*, int)
+QTtreeDlg::item_collapsed(QTreeWidgetItem*)
 {
 }
 
 
 void
-QTtreeDlg::item_expanded(QTreeWidgetItem*, int)
+QTtreeDlg::item_expanded(QTreeWidgetItem*)
 {
 }
 

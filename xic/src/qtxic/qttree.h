@@ -79,8 +79,8 @@ private slots:
     void item_activated(QTreeWidgetItem*, int);
     void item_changed(QTreeWidgetItem*, int);
     void item_clicked(QTreeWidgetItem*, int);
-    void item_collapsed(QTreeWidgetItem*, int);
-    void item_expanded(QTreeWidgetItem*, int);
+    void item_collapsed(QTreeWidgetItem*);
+    void item_expanded(QTreeWidgetItem*);
     void font_changed_slot(int);
 
 private:
