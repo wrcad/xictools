@@ -2694,7 +2694,7 @@ GTKtoolbar::xic_proc(GtkWidget*, void*)
 void
 GTKtoolbar::menu_proc(GtkWidget*, void *data)
 {
-    unsigned long indx = (unsigned long)data;
+    unsigned int indx = (uintptr_t)data;
     tbent *tb = &TB()->entries[indx];
     if (tb->name == TB()->ntb_bug) {
         if (!tb->active)

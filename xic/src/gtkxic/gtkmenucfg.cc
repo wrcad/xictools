@@ -2495,7 +2495,7 @@ void
 GTKmenuConfig::menu_handler(GtkWidget *caller, void *client_data)
 {
     unsigned int action =
-        (unsigned long)g_object_get_data(G_OBJECT(caller), MIDX);
+        (uintptr_t)g_object_get_data(G_OBJECT(caller), MIDX);
     if (action == 0) {
         fprintf(stderr, "Null action in menu_handler\n");
         return;

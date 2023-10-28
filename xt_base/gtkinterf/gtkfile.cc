@@ -2339,8 +2339,8 @@ GTKfilePopup::fs_menu_proc(GtkWidget *widget, void *client_data)
 {
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(client_data);
     if (fs) {
-        unsigned long code =
-            (unsigned long)g_object_get_data(G_OBJECT(widget), "index");
+        intptr_t code =
+            (intptr_t)g_object_get_data(G_OBJECT(widget), "index");
         fs->menu_handler(widget, (int)code);
     }
 }
@@ -3547,7 +3547,7 @@ gtkinterf::gtk_Progress(GtkWidget *shell, const char *msg)
     gtk_widget_show(pbar);
     unsigned timer = g_timeout_add(100, (GSourceFunc)progress_timeout,
         pbar);
-    g_object_set_data(G_OBJECT(popup), "timer", (void*)(long)timer);
+    g_object_set_data(G_OBJECT(popup), "timer", (void*)(intptr_t)timer);
 
     gtk_table_attach(GTK_TABLE(form), pbar, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

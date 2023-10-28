@@ -847,7 +847,7 @@ sDim::dim_undo_proc(GtkWidget*, void*)
 void
 sDim::dim_rule_proc(GtkWidget *caller, void *user_name)
 {
-    long action = (long)g_object_get_data(G_OBJECT(caller), MIDX);
+    int action = (intptr_t)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!LT()->CurLayer() || !Dim)
         return;
     if (user_name)
@@ -1004,7 +1004,7 @@ sDim::dim_editsave(const char *fname, void*, XEtype type)
 void
 sDim::dim_rule_menu_proc(GtkWidget *caller, void *client_data)
 {
-    long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
+    int type = (intptr_t)g_object_get_data(G_OBJECT(caller), MIDX);
     if (type == 2) {
         // Undelete button
         if (!DRC()->userTests())

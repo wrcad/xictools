@@ -1120,7 +1120,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         rcnt++;
 
         //
-        // paper size option menu and metric button
+        // paper size combo box and metric button
         //
         row = gtk_hbox_new(false, 2);
         gtk_widget_show(row);
@@ -1276,12 +1276,12 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
     }
     else {
         for (int i = 0; i < hc->hc_numprinters; i++) {
-            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(whc->hc_prntmenu),
+            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(hc->hc_prntmenu),
                 hc->hc_printers[i]);
         }
     }
-    gtk_combo_box_set_active(GTK_COMBO_BOX(whc->hc_prntmenu), 0);
-    g_signal_connect(G_OBJECT(mi), "activate",
+    gtk_combo_box_set_active(GTK_COMBO_BOX(hc->hc_prntmenu), 0);
+    g_signal_connect(G_OBJECT(hc->hc_prntmenu), "activate",
         G_CALLBACK(hc_prntmenu_proc), wb);
     hc_set_printer(wb);
 #endif
@@ -1330,7 +1330,7 @@ GTKprintPopup::hc_set_printer(GTKbag *wb)
     if (!hc->hc_printers) {
         curprinter = 0;
         if (hc->hc_prntmenu)
-            gtk_cxombo_box_set_active(GTK_COMBO_BOX(hc->hc_prntmenu), 0);
+            gtk_combo_box_set_active(GTK_COMBO_BOX(hc->hc_prntmenu), 0);
         return;
     }
     if (curprinter < 0)
@@ -1701,7 +1701,7 @@ GTKprintPopup::hc_formenu_proc(GtkWidget*, void *client_data)
 void
 GTKprintPopup::hc_prntmenu_proc(GtkWidget *caller, void*)
 {
-    curprinter = gtk_combo_box_get_active(GTK_OPTION_MENU(caller));
+    curprinter = gtk_combo_box_get_active(GTK_COMBO_BOX(caller));
 }
 #endif
 
@@ -2080,7 +2080,7 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
         tmpstr = gtk_entry_get_text(GTK_ENTRY(hc->hc_cmdtxtbox));
     else {
         int prn =
-            gtk_option_menu_get_history(GTK_OPTION_MENU(hc->hc_prntmenu));
+            gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_prntmenu));
         tmpstr = hc->hc_printers[prn];
     }
 #else
@@ -2310,11 +2310,11 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
         strcat(buf, " -l");
 
 #ifdef WIN32
-    int media = gtk_option_menu_get_history(GTK_OPTION_MENU(hc->hc_pgsmenu));
-    int prnt = gtk_option_menu_get_history(GTK_OPTION_MENU(hc->hc_prntmenu));
+    int media = gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_pgsmenu));
+    int prnt = gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_prntmenu));
     if (!strcmp(hcdesc->keyword, "windows_native")) {
         int len = strlen(buf);
-        sbprintf(buf + len, sizeof(buf) - len, " -nat %s %d",
+        snprintf(buf + len, sizeof(buf) - len, " -nat %s %d",
             hc->hc_printers[prnt], media);
     }
 #endif

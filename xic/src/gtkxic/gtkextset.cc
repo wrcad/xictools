@@ -1928,7 +1928,7 @@ sEs::es_editsave(const char *fname, void*, XEtype type)
 void
 sEs::es_dev_menu_proc(GtkWidget *caller, void *client_data)
 {
-    long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
+    int type = (intptr_t)g_object_get_data(G_OBJECT(caller), MIDX);
     if (type == 2) {
         // Undelete button
         EX()->addDevice(Es->es_devdesc);

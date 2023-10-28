@@ -1008,7 +1008,7 @@ sAsm::asm_page_change_proc(GtkWidget*, void*, int page, void*)
 void
 sAsm::asm_action_proc(GtkWidget *caller, void*)
 {
-    long code = (long)g_object_get_data(G_OBJECT(caller), MIDX);
+    int code = (intptr_t)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!Asm)
         return;
     if (code == NoCode) {

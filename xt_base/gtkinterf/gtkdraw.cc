@@ -561,6 +561,8 @@ GTKdraw::Line(int x1, int y1, int x2, int y2)
 
 // XXX WIN32 needs support
 
+#ifdef WIN32
+#else
 #if GTK_CHECK_VERSION(3,0,0)
     Drawable xid = gd_dw.get_xid();
 #else
@@ -618,6 +620,7 @@ GTKdraw::Line(int x1, int y1, int x2, int y2)
     XDrawLine(GC()->get_xdisplay(), xid, GC()->get_xgc(), x1, y1, x2, y2);
 #else
     gdk_draw_line(gd_window, GC(), x1, y1, x2, y2);
+#endif
 #endif
 }
 

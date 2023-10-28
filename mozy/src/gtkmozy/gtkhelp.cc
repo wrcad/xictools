@@ -1659,7 +1659,7 @@ namespace {
     GtkWidget *find_item(GList *list, unsigned int ix)
     {
         for (GList *l = list; l; l = l->next) {
-            unsigned long x = (unsigned long)g_object_get_data(
+            intptr_t x = (intptr_t)g_object_get_data(
                 G_OBJECT(l->data), MIDX);
             if (x == ix)
                 return (GTK_WIDGET(l->data));
@@ -2044,8 +2044,7 @@ GTKhelpPopup::h_fontsel(GTKbag *w, GtkWidget *caller)
 void
 GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr)
 {
-    unsigned long activate =
-        (unsigned long)g_object_get_data(G_OBJECT(caller), MIDX);
+    intptr_t activate = (intptr_t)g_object_get_data(G_OBJECT(caller), MIDX);
     if (activate == HA_NIL)
         return;
     GTKhelpPopup *w = static_cast<GTKhelpPopup*>(hlpptr);

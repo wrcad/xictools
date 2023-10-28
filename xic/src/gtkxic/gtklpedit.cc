@@ -1455,7 +1455,7 @@ sLpe::lp_undo_proc(GtkWidget*, void*)
 void
 sLpe::lp_kw_proc(GtkWidget *caller, void*)
 {
-    long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
+    int type = (intptr_t)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!Lpe)
         return;
     char *string = 0;
@@ -1490,7 +1490,7 @@ sLpe::lp_kw_proc(GtkWidget *caller, void*)
 void
 sLpe::lp_attr_proc(GtkWidget *caller, void*)
 {
-    long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
+    int type = (intptr_t)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!Lpe)
         return;
     char tbuf[64];

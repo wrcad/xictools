@@ -507,7 +507,7 @@ sLA::yn_cb(bool yn, void*)
 void
 sLA::la_action_proc(GtkWidget *caller, void*)
 {
-    long code = (long)g_object_get_data(G_OBJECT(caller), MIDX);
+    int code = (intptr_t)g_object_get_data(G_OBJECT(caller), MIDX);
     int w = gdk_window_get_width(gtk_widget_get_window(LA->wb_shell));
     GRloc loc(LW_XYR, w + 4, 0);
     if (code == CancelCode)

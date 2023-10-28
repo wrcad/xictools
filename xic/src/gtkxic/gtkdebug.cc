@@ -1834,7 +1834,7 @@ sDbg::db_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 void
 sDbg::db_action_proc(GtkWidget *caller, void *client_data)
 {
-    long code = (long)g_object_get_data(G_OBJECT(caller), MIDX);
+    int code = (intptr_t)g_object_get_data(G_OBJECT(caller), MIDX);
     if (!Dbg)
         return;
     switch (code) {

@@ -330,7 +330,7 @@ namespace {
     BOOL CALLBACK AbortFunc(HDC, int)
     {
         if (GTKdev::self()->CheckForEvents()) {
-            GRpkgIf()->HCabort("User aborted");
+            GRpkg::self()->HCabort("User aborted");
             return (FALSE);
         }
         return (TRUE);
@@ -347,7 +347,7 @@ MSPparams::Halt()
     if (dcp) {
         SetAbortProc(dcp, AbortFunc);
         int ok = EndPage(dcp);
-        if (ok <= 0 || GRpkgIf()->HCaborted())
+        if (ok <= 0 || GRpkg::self()->HCaborted())
             AbortDoc(dcp);
         else
             ok = EndDoc(dcp);
@@ -358,10 +358,10 @@ MSPparams::Halt()
         DeletePen(pen);
         DeleteBrush(brush);
         if (ok <= 0)
-            GRpkgIf()->HCabort("Print driver returned failure status.");
+            GRpkg::self()->HCabort("Print driver returned failure status.");
     }
     else
-        GRpkgIf()->HCabort("User aborted");
+        GRpkg::self()->HCabort("User aborted");
     GRappIf()->SetupLayers(0, this, lcx);
     delete this;
 }
