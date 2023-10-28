@@ -88,6 +88,16 @@ public:
     int format_index()              { return (pd_fmt); }
     HCcb *callbacks()               { return (pd_cb); }
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     // Window title bar X button.
     void closeEvent(QCloseEvent*)   { quit_slot(); }
 

@@ -77,6 +77,16 @@ public:
     void register_caller(GRobject, bool=false, bool=false);
     void popdown();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     QSize sizeHint()        const { return (QSize(300, 150)); }
 
 signals:

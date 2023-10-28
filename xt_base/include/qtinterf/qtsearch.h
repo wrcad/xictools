@@ -78,6 +78,16 @@ public:
     }
     void popdown();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     void set_ign_case(bool);
     void set_message(const char*);
     void set_transient_message(const char*);

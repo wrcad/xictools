@@ -83,6 +83,16 @@ public:
     bool get_btn2_state()           { return (false); }
     void set_btn2_state(bool)       { }
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     void popdown();
     void setTitle(const char*);
     void setText(const char*);

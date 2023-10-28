@@ -73,6 +73,16 @@ public:
     QTfont();
     ~QTfont();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     void initFonts();
     GRfontType getType();
     void setName(const char*, int);

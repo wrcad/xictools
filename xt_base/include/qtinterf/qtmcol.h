@@ -81,6 +81,16 @@ public:
     char *get_selection();
     void set_button_sens(int);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
 private slots:
     void save_btn_slot(bool);
     void dismiss_btn_slot();

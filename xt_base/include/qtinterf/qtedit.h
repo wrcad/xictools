@@ -76,37 +76,41 @@ public:
 
     // GRpopup overrides
     void set_visible(bool visib)
-        {
-            if (visib) {
-                show();
-                raise();
-                activateWindow();
-            }
-            else
-                hide();
+    {
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
         }
+        else
+            hide();
+    }
     void popdown();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     void set_caller(GRobject);
-    WidgetType get_widget_type() { return (ed_widget_type); }
-    const char *get_file() { return (ed_sourceFile); }
-    void load_file(const char *f) { load_file_slot(f, 0); }
+    WidgetType get_widget_type()    { return (ed_widget_type); }
+    const char *get_file()          { return (ed_sourceFile); }
+    void load_file(const char *f)   { load_file_slot(f, 0); }
 
     void set_mailaddr(const char*);
     void set_mailsubj(const char*);
 
     QSize sizeHint() const
-        {
-            if (ed_widget_type == Mailer)
-                return (QSize(400, 350));
-            return (QSize(500, 300));
-        }
-
-    // This widget will be deleted when closed with the title bar "X"
-    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-    // not called.  The default behavior is to hide the widget instead
-    // of deleting it, which would likely be a core leak here.
-    void closeEvent(QCloseEvent*) { quit_slot(); }
+    {
+        if (ed_widget_type == Mailer)
+            return (QSize(400, 350));
+        return (QSize(500, 300));
+    }
 
 private slots:
     void file_selection_slot(const char*, void*);

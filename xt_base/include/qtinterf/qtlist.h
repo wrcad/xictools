@@ -87,6 +87,16 @@ public:
     void update(bool(*)(const char*));
     void unselect_all();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     QList<QListWidgetItem*> get_items();
 
 signals:

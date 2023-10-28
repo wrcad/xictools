@@ -85,6 +85,16 @@ public:
     void set_desens()               { tx_desens = true; }
     bool is_desens()                { return (tx_desens); }
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     // When set, error pop-ups have a "Show Error Log" button that
     // pops up a file browser on this file.
     //

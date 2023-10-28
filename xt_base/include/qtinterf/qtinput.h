@@ -79,6 +79,16 @@ public:
     // GRledPopup override
     void update(const char*, const char*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     void set_ignore_return(bool set)    { ed_ign_ret = set; }
     void set_message(const char*);
     void set_text(const char*);

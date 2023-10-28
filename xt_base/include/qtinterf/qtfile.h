@@ -93,6 +93,16 @@ public:
     // GRfilePopup override
     char *get_selection();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     char *get_dir(QTreeWidgetItem *node = 0)
         { return (get_path(node ? node : f_curnode, false)); }
     void set_label();

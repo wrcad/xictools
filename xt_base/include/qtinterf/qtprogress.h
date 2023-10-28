@@ -87,6 +87,16 @@ public:
     void start();
     void finished();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
+
     void set_info_limit(int n)  { pg_info_limit = n; pg_info_count = 0; }
 
 signals:
