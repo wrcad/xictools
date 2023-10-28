@@ -95,6 +95,9 @@ public:
     {
         Qt::WindowFlags f = windowFlags();
         setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
         setWindowFlags(f);
     }
 
