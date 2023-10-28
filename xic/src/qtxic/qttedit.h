@@ -72,6 +72,13 @@ public:
 
     void update(TermEditInfo*, CDp*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTelecTermEditDlg *self()            { return (instPtr); }
 
 private slots:

@@ -117,6 +117,7 @@ cMain::PopUpCells(GRobject caller, ShowMode mode)
 
     new QTcellsDlg(caller);
 
+    QTcellsDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTcellsDlg::self(),
         QTmainwin::self()->Viewport());
     QTcellsDlg::self()->show();

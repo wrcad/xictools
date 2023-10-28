@@ -81,6 +81,7 @@ cExt::PopUpDevices(GRobject caller, ShowMode mode)
 
     new QTextDevDlg(caller);
 
+    QTextDevDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UR), QTextDevDlg::self(),
         QTmainwin::self()->Viewport());
     QTextDevDlg::self()->show();

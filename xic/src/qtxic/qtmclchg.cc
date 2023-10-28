@@ -80,6 +80,7 @@ cEdit::PopUpLayerChangeMode(ShowMode mode)
 
     new QTmclChangeDlg;
 
+    QTmclChangeDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTmclChangeDlg::self(),
         QTmainwin::self()->Viewport());
     QTmclChangeDlg::self()->show();
@@ -97,7 +98,6 @@ QTmclChangeDlg::QTmclChangeDlg()
     lcg_all = 0;
 
     setWindowTitle(tr("Layer Change Mode"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(lcg_popup), false);
 

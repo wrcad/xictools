@@ -65,6 +65,13 @@ public:
     char *get_selection();
     void update();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static void set_panic()             { instPtr = 0; }
     static QTlibsDlg *self()            { return (instPtr); }
 

@@ -72,6 +72,13 @@ public:
     PrptyText *cycle(CDp*, bool(*)(const CDp*), bool);
     void set_btn_callback(int(*)(PrptyText*));
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTprpEditorDlg *self()           { return (instPtr); }
 
 private slots:

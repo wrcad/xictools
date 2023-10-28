@@ -67,6 +67,13 @@ public:
     void update();
     void drag_load(LayerFillData*, CDl*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTfillPatDlg *self()             { return (instPtr); }
 
 private slots:

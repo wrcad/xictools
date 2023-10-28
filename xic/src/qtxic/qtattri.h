@@ -67,6 +67,13 @@ public:
 
     void update();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTattributesDlg *self()          { return (instPtr); }
 
 private slots:

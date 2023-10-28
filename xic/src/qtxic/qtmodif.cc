@@ -107,6 +107,7 @@ cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
         QTmodifDlg::self()->deleteLater();
         return (PMerr);
     }
+    QTmodifDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTmodifDlg::self(),
         QTmainwin::self()->Viewport());
 
@@ -212,7 +213,6 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*))
 
     setWindowTitle(tr("Modified Cells"));
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

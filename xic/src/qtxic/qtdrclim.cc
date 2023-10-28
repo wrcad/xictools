@@ -81,6 +81,7 @@ cDRC::PopUpDrcLimits(GRobject caller, ShowMode mode)
 
     new QTdrcLimitsDlg(caller);
 
+    QTdrcLimitsDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UR), QTdrcLimitsDlg::self(),
         QTmainwin::self()->Viewport());
     QTdrcLimitsDlg::self()->show();

@@ -90,6 +90,7 @@ cConvert::PopUpConvert(GRobject caller, ShowMode mode, int inp_type,
 
     new QTconvertFmtDlg(caller, inp_type, callback, arg);
 
+    QTconvertFmtDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTconvertFmtDlg::self(),
         QTmainwin::self()->Viewport());
     QTconvertFmtDlg::self()->show();

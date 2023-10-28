@@ -72,6 +72,13 @@ public:
     void set_window(const BBox*);
     void unset_set();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTdrcRunDlg *self()          { return (instPtr); }
 
 private slots:

@@ -127,6 +127,7 @@ cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
 
     new QTtreeDlg(caller, root, dmode);
 
+    QTtreeDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTtreeDlg::self(),
         QTmainwin::self()->Viewport());
     QTtreeDlg::self()->show();
@@ -174,7 +175,6 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
 
     setWindowTitle(tr("Cell Hierarchy Tree"));
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 
     if (DSP()->MainWdesc()->DbType() == WDchd)
         t_root_db = lstring::copy(root);

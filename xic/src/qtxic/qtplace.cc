@@ -96,6 +96,7 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
         return;
 
     new QTplaceDlg(noprompt);
+    QTplaceDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTplaceDlg::self(),
         QTmainwin::self()->Viewport());
     QTplaceDlg::self()->show();

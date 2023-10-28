@@ -99,6 +99,7 @@ cExt::PopUpExtSetup(GRobject caller, ShowMode mode)
 
     new QTextSetupDlg(caller);
 
+    QTextSetupDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LR), QTextSetupDlg::self(),
         QTmainwin::self()->Viewport());
     QTextSetupDlg::self()->show();

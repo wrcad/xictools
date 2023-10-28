@@ -103,6 +103,7 @@ cMain::PopUpDebug(GRobject caller, ShowMode mode)
 
     new QTscriptDebuggerDlg(caller);
 
+    QTscriptDebuggerDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTscriptDebuggerDlg::self(),
         QTmainwin::self()->Viewport());
     QTscriptDebuggerDlg::self()->show();
@@ -359,7 +360,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
 #else
     menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, db_action_proc, HelpCode, 0
-    a = menu->addAction(tr("&Help", this, SLOT(help_slot()));
+    a = menu->addAction(tr("&Help"), this, SLOT(help_slot()));
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 
@@ -1641,7 +1642,7 @@ QTscriptDebuggerDlg::mouse_press_slot(QMouseEvent *ev)
         return;
     }
 
-    char buf[16];
+    char buf[18];
     strncpy(buf, s, 16);
     s = buf;
     delete [] str;

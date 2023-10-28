@@ -1203,21 +1203,22 @@ QTprintDlg::print_slot()
         }
         else if (pd_textmode == HCtextPS) {
             char *text = 0;
-            int fontcode = 0;
             switch (pd_textfmt) {
             case PlainText:
             case PrettyText:
                 text = pd_owner->GetPlainText();
                 break;
             case PSlucida:
-                fontcode++;
+                text = pd_owner->GetPostscriptText(3, 0, 0, true, pd_metric);
+                break;
             case PScentury:
-                fontcode++;
+                text = pd_owner->GetPostscriptText(2, 0, 0, true, pd_metric);
+                break;
             case PShelv:
-                fontcode++;
+                text = pd_owner->GetPostscriptText(1, 0, 0, true, pd_metric);
+                break;
             case PStimes:
-                text = pd_owner->GetPostscriptText(fontcode, 0, 0, true,
-                    pd_metric);
+                text = pd_owner->GetPostscriptText(0, 0, 0, true, pd_metric);
                 break;
             case HtmlText:
                 text = pd_owner->GetHtmlText();

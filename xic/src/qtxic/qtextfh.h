@@ -75,6 +75,13 @@ public:
     void update_jobs_list();
     void update_label(const char*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTfastHenryDlg *self()           { return (instPtr); }
 
 private slots:

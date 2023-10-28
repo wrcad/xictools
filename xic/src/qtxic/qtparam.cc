@@ -150,15 +150,15 @@ QTparam::print()
         GridDesc *g = a->grid(m);
         double spa = g->spacing(m);
         if (g->snap() < 0)
-            snprintf(textbuf, 24, "%g/%g", -spa/g->snap(), spa);
+            snprintf(textbuf, 28, "%g/%g", -spa/g->snap(), spa);
         else
-            snprintf(textbuf, 24, "%g/%g", spa*g->snap(), spa);
+            snprintf(textbuf, 28, "%g/%g", spa*g->snap(), spa);
         p_text.append_string("Grid/Snap: ", c1);
         p_text.append_string(textbuf, c2);
         p_text.append_string("  ", c2);
     }
     if (selectno) {
-        snprintf(textbuf, 12, "%d", selectno);
+        snprintf(textbuf, 10, "%d", selectno);
         p_text.append_string("Select: ", c1);
         p_text.append_string(textbuf, c2);
         CDc *cd = (CDc*)Selections.firstObject(CurCell(), "c");
@@ -170,7 +170,7 @@ QTparam::print()
     }
     int clev = PP()->Level();
     if (clev) {
-        snprintf(textbuf, 8, "%d", clev);
+        snprintf(textbuf, 10, "%d", clev);
         p_text.append_string("Push: ", c1);
         p_text.append_string(textbuf, c2);
         p_text.append_string("  ", c2);

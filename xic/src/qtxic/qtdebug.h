@@ -92,6 +92,13 @@ public:
 
     void update(stringlist*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     void popdown()                  { deleteLater(); }
 
 private slots:
@@ -173,6 +180,13 @@ public:
     QSize sizeHint() const;
 
     bool load_from_menu(MenuEnt*);
+
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
 
     static QTscriptDebuggerDlg *self()          { return (instPtr); }
 

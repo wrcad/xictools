@@ -73,6 +73,7 @@ cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
 
     new QTdisplayWinDlg(caller, BB, cb, arg);
 
+    QTdisplayWinDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTdisplayWinDlg::self(),
         QTmainwin::self()->Viewport());
     QTdisplayWinDlg::self()->show();
@@ -97,7 +98,6 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     dw_arg = arg;
 
     setWindowTitle(tr("Set Display Window"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(dw_popup), false);
 

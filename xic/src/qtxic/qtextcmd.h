@@ -73,6 +73,13 @@ public:
 
     static QTextCmdDlg *self()          { return (instPtr); }
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     void update();
 
 private slots:

@@ -63,6 +63,13 @@ public:
         void*, const char*, const char*);
     ~QTchdOpenDlg();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     void update(const char*, const char*);
 
     static QTchdOpenDlg *self()             { return (instPtr); }

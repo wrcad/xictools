@@ -120,6 +120,7 @@ cSced::PopUpDevs(GRobject caller, ShowMode mode)
 
     new QTdevMenuDlg(caller, wl);
 
+    QTdevMenuDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTdevMenuDlg::self(),
         QTmainwin::self()->Viewport());
     QTdevMenuDlg::self()->show();
@@ -321,7 +322,6 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
 
     setWindowTitle(tr("Device Palette"));
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
     const char *type = CDvdb()->getVariable(VA_DevMenuStyle);
 

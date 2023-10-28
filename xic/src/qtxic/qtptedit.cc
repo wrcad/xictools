@@ -95,6 +95,7 @@ cExt::PopUpPhysTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
 
     new QTphysTermDlg(caller, tinfo, action, term);
 
+    QTphysTermDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
         QTphysTermDlg::self(), QTmainwin::self()->Viewport());
     QTphysTermDlg::self()->show();

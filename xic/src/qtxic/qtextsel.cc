@@ -82,6 +82,7 @@ cExt::PopUpSelections(GRobject caller, ShowMode mode)
 
     new QTextNetSelDlg(caller);
 
+    QTextNetSelDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTextNetSelDlg::self(),
         QTmainwin::self()->Viewport());
     QTextNetSelDlg::self()->show();

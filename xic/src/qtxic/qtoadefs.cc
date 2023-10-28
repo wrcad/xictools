@@ -79,6 +79,7 @@ cOAif::PopUpOAdefs(GRobject caller, ShowMode mode, int x, int y)
 
     new QToaDefsDlg(caller);
 
+    QToaDefsDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
         QToaDefsDlg::self(), QTmainwin::self()->Viewport());
     QToaDefsDlg::self()->show();

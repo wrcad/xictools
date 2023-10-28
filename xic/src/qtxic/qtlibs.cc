@@ -125,6 +125,7 @@ cConvert::PopUpLibraries(GRobject caller, ShowMode mode)
 
     new QTlibsDlg(caller);
 
+    QTlibsDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTlibsDlg::self(),
         QTmainwin::self()->Viewport());
     QTlibsDlg::self()->show();

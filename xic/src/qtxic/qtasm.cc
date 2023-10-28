@@ -94,6 +94,7 @@ cConvert::PopUpAssemble(GRobject caller, ShowMode mode)
 
     new QTasmDlg(caller);
 
+    QTasmDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTasmDlg::self(),
         QTmainwin::self()->Viewport());
     QTasmDlg::self()->show();

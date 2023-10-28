@@ -84,6 +84,7 @@ cEdit::PopUpLayerExp(GRobject caller, ShowMode mode)
 
     new QTlayerExpDlg(caller);
 
+    QTlayerExpDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTlayerExpDlg::self(),
         QTmainwin::self()->Viewport());
     QTlayerExpDlg::self()->show();

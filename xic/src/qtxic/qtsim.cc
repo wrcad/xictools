@@ -70,9 +70,7 @@ QTsimRunDlg::QTsimRunDlg(const char *msg)
     sp_status = SpNil;
 
     setWindowTitle(tr("SPICE Run"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
@@ -103,6 +101,7 @@ QTsimRunDlg::QTsimRunDlg(const char *msg)
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     QTmainwin *w = QTmainwin::self();
+    set_transient_for(w);
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), this, w->Viewport());
     show();
 }

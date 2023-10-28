@@ -100,6 +100,7 @@ cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
 
     new QTextCmdDlg(caller, cmd, action_cb, action_arg, depth);
 
+    QTextCmdDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTextCmdDlg::self(),
         QTmainwin::self()->Viewport());
     QTextCmdDlg::self()->show();

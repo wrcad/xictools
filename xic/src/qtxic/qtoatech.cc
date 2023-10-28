@@ -79,6 +79,7 @@ cOAif::PopUpOAtech(GRobject caller, ShowMode mode, int x, int y)
 
     new QToaTechAttachDlg(caller);
 
+    QToaTechAttachDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
         QToaTechAttachDlg::self(), QTmainwin::self()->Viewport());
     QToaTechAttachDlg::self()->show();

@@ -86,6 +86,7 @@ cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
 
     new QToasisDlg(caller);
 
+    QToasisDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
         QToasisDlg::self(), QTmainwin::self()->Viewport());
     QToasisDlg::self()->show();

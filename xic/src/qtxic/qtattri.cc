@@ -252,6 +252,7 @@ cMain::PopUpAttributes(GRobject caller, ShowMode mode)
 
     new QTattributesDlg(caller);
 
+    QTattributesDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTattributesDlg::self(),
         QTmainwin::self()->Viewport());
     QTattributesDlg::self()->show();

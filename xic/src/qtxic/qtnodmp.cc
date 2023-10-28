@@ -185,6 +185,7 @@ cSced::PopUpNodeMap(GRobject caller, ShowMode mode, int node)
 
     new QTnodeMapDlg(caller, node);
 
+    QTnodeMapDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTnodeMapDlg::self(),
         QTmainwin::self()->Viewport());
     QTnodeMapDlg::self()->show();

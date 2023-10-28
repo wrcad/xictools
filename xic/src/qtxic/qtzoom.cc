@@ -74,7 +74,6 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
         owner->MonitorAdd(this);
 
     setWindowTitle(tr("Set Display Window"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
     QMargins qmtop(2, 2, 2, 2);

@@ -94,6 +94,7 @@ cSced::PopUpTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
 
     new QTelecTermEditDlg(caller, tinfo, action, prp);
 
+    QTelecTermEditDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
         QTelecTermEditDlg::self(), QTmainwin::self()->Viewport());
     QTelecTermEditDlg::self()->show();

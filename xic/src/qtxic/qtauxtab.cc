@@ -82,6 +82,7 @@ cConvert::PopUpAuxTab(GRobject caller, ShowMode mode)
 
     new QTauxTabDlg(caller);
 
+    QTauxTabDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTauxTabDlg::self(),
         QTmainwin::self()->Viewport());
     QTauxTabDlg::self()->show();

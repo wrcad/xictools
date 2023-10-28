@@ -85,6 +85,7 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
 
     new QTchdOpenDlg(caller, callback, arg, init_idname, init_str);
 
+    QTchdOpenDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
         QTchdOpenDlg::self(), QTmainwin::self()->Viewport());
     QTchdOpenDlg::self()->show();

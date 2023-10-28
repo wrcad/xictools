@@ -132,6 +132,7 @@ cEdit::PopUpPCellParams(GRobject caller, ShowMode mode, PCellParam *p,
 
     new QTpcellParamsDlg(caller, p, dbname, pmode);
 
+    QTpcellParamsDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UR), QTpcellParamsDlg::self(),
         QTmainwin::self()->Viewport());
     QTpcellParamsDlg::self()->show();

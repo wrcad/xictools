@@ -142,6 +142,7 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
 
     new QTfilesListDlg(caller);
 
+    QTfilesListDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTfilesListDlg::self(),
         QTmainwin::self()->Viewport());
     QTfilesListDlg::self()->show();

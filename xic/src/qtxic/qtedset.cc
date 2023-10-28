@@ -79,6 +79,7 @@ cEdit::PopUpEditSetup(GRobject caller, ShowMode mode)
 
     new QTeditSetupDlg(caller);
 
+    QTeditSetupDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTeditSetupDlg::self(),
         QTmainwin::self()->Viewport());
     QTeditSetupDlg::self()->show();

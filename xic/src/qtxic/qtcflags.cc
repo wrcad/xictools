@@ -83,6 +83,7 @@ cMain::PopUpCellFlags(GRobject caller, ShowMode mode, const stringlist *list,
 
     new QTcflagsDlg(caller, list, dmode);
 
+    QTcflagsDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTcflagsDlg::self(),
         QTmainwin::self()->Viewport());
     QTcflagsDlg::self()->show();

@@ -91,6 +91,13 @@ public:
         return (tc);
     }
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     bool is_active()                    { return (dv_active); }
     static QTdevMenuDlg *self()         { return (instPtr); }
 

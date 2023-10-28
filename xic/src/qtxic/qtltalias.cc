@@ -80,6 +80,7 @@ cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
 
     new QTlayerAliasDlg(caller);
 
+    QTlayerAliasDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTlayerAliasDlg::self(),
         QTmainwin::self()->Viewport());
     QTlayerAliasDlg::self()->show();

@@ -93,6 +93,7 @@ cConvert::PopUpGeometries(GRobject caller, ShowMode mode)
 
     new QTcgdListDlg(caller);
 
+    QTcgdListDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTcgdListDlg::self(),
         QTmainwin::self()->Viewport());
     QTcgdListDlg::self()->show();

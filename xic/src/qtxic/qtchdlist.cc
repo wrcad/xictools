@@ -91,6 +91,7 @@ cConvert::PopUpHierarchies(GRobject caller, ShowMode mode)
 
     new QTchdListDlg(caller);
 
+    QTchdListDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTchdListDlg::self(),
         QTmainwin::self()->Viewport());
     QTchdListDlg::self()->show();

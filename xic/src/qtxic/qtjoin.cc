@@ -78,6 +78,7 @@ cEdit::PopUpJoin(GRobject caller, ShowMode mode)
 
     new QTjoinDlg(caller);
 
+    QTjoinDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTjoinDlg::self(),
         QTmainwin::self()->Viewport());
     QTjoinDlg::self()->show();

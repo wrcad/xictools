@@ -82,6 +82,7 @@ cMain::PopUpDebugFlags(GRobject caller, ShowMode mode)
 
     new QTdbgFlagsDlg(caller);
 
+    QTdbgFlagsDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTdbgFlagsDlg::self(),
         QTmainwin::self()->Viewport());
     QTdbgFlagsDlg::self()->show();

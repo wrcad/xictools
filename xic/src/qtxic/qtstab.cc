@@ -80,6 +80,7 @@ cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
 
     new QTstabDlg(caller);
 
+    QTstabDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTstabDlg::self(),
         QTmainwin::self()->Viewport());
     QTstabDlg::self()->show();
@@ -102,7 +103,6 @@ QTstabDlg::QTstabDlg(GRobject c)
     tb_namelist = 0;
 
     setWindowTitle(tr("Symbol Tables"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 

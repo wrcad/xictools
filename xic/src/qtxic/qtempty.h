@@ -72,6 +72,13 @@ public:
     QSize sizeHint() const;
     void update(stringlist*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTemptyDlg *self()           { return (instPtr); }
 
 private slots:

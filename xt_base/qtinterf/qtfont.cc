@@ -832,7 +832,7 @@ QTfontDlg::action_slot()
     int len = strlen(face);
     if (sty)
         len += strlen(sty) + 1;
-    len += 8;
+    len += 12;
     char *spec = new char[len];
     strcpy(spec, face);
     char *t = spec + strlen(face);
@@ -844,7 +844,7 @@ QTfontDlg::action_slot()
         delete [] sty;
     }
     *t++ = ' ';
-    snprintf(t, 8, "%d", sz);
+    snprintf(t, 11, "%d", sz);
     int fnum = ft_menu->currentIndex() + 1;
     FC.setName(spec, fnum);
     if (p_callback)

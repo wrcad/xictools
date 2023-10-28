@@ -94,6 +94,7 @@ cDRC::PopUpDrcRun(GRobject caller, ShowMode mode)
 
     new QTdrcRunDlg(caller);
 
+    QTdrcRunDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTdrcRunDlg::self(),
         QTmainwin::self()->Viewport());
     QTdrcRunDlg::self()->show();

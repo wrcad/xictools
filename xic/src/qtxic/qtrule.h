@@ -69,6 +69,13 @@ public:
 
     void update(DRCtype, const char*, const DRCtestDesc*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTruleDlg *self()            { return (instPtr); }
 
 private slots:

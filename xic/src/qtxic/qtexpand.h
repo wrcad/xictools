@@ -74,6 +74,13 @@ public:
 
     void register_callback(ExpandCallback cb) { p_callback = cb; }
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     void update(const char *);
 
 signals:

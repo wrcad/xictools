@@ -87,6 +87,7 @@ cConvert::PopUpCompare(GRobject caller, ShowMode mode)
 
     new QTcompareDlg(caller);
 
+    QTcompareDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UR), QTcompareDlg::self(),
         QTmainwin::self()->Viewport());
     QTcompareDlg::self()->show();

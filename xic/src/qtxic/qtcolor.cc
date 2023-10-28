@@ -84,6 +84,7 @@ cMain::PopUpColor(GRobject caller, ShowMode mode)
 
     new QTcolorDlg(caller);
 
+    QTcolorDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTcolorDlg::self(),
         QTmainwin::self()->Viewport());
     QTcolorDlg::self()->show();
@@ -173,7 +174,6 @@ QTcolorDlg::QTcolorDlg(GRobject c)
 
     setWindowTitle(tr("Color Selection"));
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

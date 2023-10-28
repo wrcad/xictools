@@ -86,6 +86,7 @@ cEdit::PopUpCellProperties(ShowMode mode)
 
     new QTcellPrpDlg();
 
+    QTcellPrpDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTcellPrpDlg::self(),
         QTmainwin::self()->Viewport());
     QTcellPrpDlg::self()->show();

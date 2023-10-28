@@ -69,6 +69,13 @@ public:
     QSize sizeHint() const;
     void update();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTdrcRuleEditDlg *self()         { return (instPtr); }
 
 private slots:

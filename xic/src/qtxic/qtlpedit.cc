@@ -91,6 +91,7 @@ cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
 
     new QTlayerParamDlg(caller, msg, string);
 
+    QTlayerParamDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTlayerParamDlg::self(),
         QTmainwin::self()->Viewport());
     QTlayerParamDlg::self()->show();

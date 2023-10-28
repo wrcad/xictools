@@ -73,6 +73,7 @@ cEdit::PopUpLogo(GRobject caller, ShowMode mode)
 
     new QTlogoDlg(caller);
 
+    QTlogoDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTlogoDlg::self(),
         QTmainwin::self()->Viewport());
     QTlogoDlg::self()->show();
@@ -347,7 +348,6 @@ QTlogoDlg::QTlogoDlg(GRobject c)
     lgo_sav_pop = 0;
 
     setWindowTitle(tr("Logo Font Setup"));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);

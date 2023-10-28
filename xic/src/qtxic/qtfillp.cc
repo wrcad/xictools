@@ -95,6 +95,7 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
 
     new QTfillPatDlg(caller);
 
+    QTfillPatDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LR), QTfillPatDlg::self(),
         QTmainwin::self()->Viewport());
     QTfillPatDlg::self()->show();
@@ -153,7 +154,6 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
 
     setWindowTitle(tr("Fill Pattern Editor"));
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     fp_width = 466;

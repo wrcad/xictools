@@ -73,6 +73,7 @@ cConvert::PopUpEmpties(stringlist *list)
 
     new QTemptyDlg(list);
 
+    QTemptyDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTemptyDlg::self(),
         QTmainwin::self()->Viewport());
     QTemptyDlg::self()->show();
@@ -93,9 +94,7 @@ QTemptyDlg::QTemptyDlg(stringlist *l)
     ec_changed = false;
 
     setWindowTitle(tr("Empty Cells"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

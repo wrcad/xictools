@@ -93,6 +93,7 @@ cFC::PopUpExtIf(GRobject caller, ShowMode mode)
 
     new QTfastCapDlg(caller);
 
+    QTfastCapDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LR), QTfastCapDlg::self(),
         QTmainwin::self()->Viewport());
     QTfastCapDlg::self()->show();
@@ -841,11 +842,13 @@ QTfastCapDlg::fc_dump_cb(const char *fname, void *client_data)
             if (!QTfastCapDlg::self())
                 return;
             const char *fn = lstring::strip_path(fname);
-            char tbuf[256];
-            snprintf(tbuf, sizeof(tbuf),
-                "Input is in file %s.  View file? ", fn);
-            QTfastCapDlg::self()->PopUpAffirm(0, GRloc(LW_UL), tbuf, fc_p_cb,
-                lstring::copy(fname));
+            if (fn && *fn) {
+                char tbuf[256];
+                snprintf(tbuf, sizeof(tbuf),
+                    "Input is in file %s.  View file? ", fn);
+                QTfastCapDlg::self()->PopUpAffirm(0, GRloc(LW_UL), tbuf, fc_p_cb,
+                    lstring::copy(fname));
+            }
         }
         break;
     }

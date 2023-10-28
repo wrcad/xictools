@@ -50,7 +50,6 @@
 class QColorDialog;
 class QComboBox;
 
-//class QTcolorDlg : public QColorDialog
 class QTcolorDlg : public QDialog
 {
     Q_OBJECT
@@ -67,6 +66,13 @@ public:
     ~QTcolorDlg();
 
     void update();
+
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
 
     static QTcolorDlg *self()           { return (instPtr); }
 

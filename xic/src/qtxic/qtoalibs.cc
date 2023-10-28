@@ -92,6 +92,7 @@ cOAif::PopUpOAlibraries(GRobject caller, ShowMode mode)
 
     new QToaLibsDlg(caller);
 
+    QToaLibsDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QToaLibsDlg::self(),
         QTmainwin::self()->Viewport());
     QToaLibsDlg::self()->show();

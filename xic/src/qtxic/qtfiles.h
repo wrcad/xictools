@@ -75,6 +75,13 @@ public:
     void update(const char*, const char** = 0, int = 0);
     char *get_selection();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     const char *get_directory()         { return (f_directory); }
     static void panic()                 { instPtr = 0; }
     static QTfilesListDlg *self()       { return (instPtr); }

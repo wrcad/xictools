@@ -79,6 +79,7 @@ cSced::PopUpSpiceIf(GRobject caller, ShowMode mode)
 
     new QTspiceIfDlg(caller);
 
+    QTspiceIfDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTspiceIfDlg::self(),
         QTmainwin::self()->Viewport());
     QTspiceIfDlg::self()->show();

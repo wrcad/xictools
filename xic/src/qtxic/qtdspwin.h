@@ -61,6 +61,13 @@ public:
 
     void update(const BBox*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTdisplayWinDlg *self()          { return (instPtr); }
 
 private slots:

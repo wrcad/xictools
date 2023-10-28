@@ -81,6 +81,13 @@ public:
     void update_info(CDl*);
     void update_layer(CDl*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTlayerPaletteDlg *self()            { return (instPtr); }
 
 private slots:

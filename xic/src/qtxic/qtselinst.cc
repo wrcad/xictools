@@ -96,6 +96,7 @@ cMain::PopUpSelectInstances(CDol *list)
 
     new QTcellInstSelectDlg(list);
 
+    QTcellInstSelectDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTcellInstSelectDlg::self(),
         QTmainwin::self()->Viewport());
     QTcellInstSelectDlg::self()->show();

@@ -61,7 +61,6 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
         owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Expand")));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
     QMargins qmtop(2, 2, 2, 2);

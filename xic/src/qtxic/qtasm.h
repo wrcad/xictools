@@ -236,6 +236,13 @@ public:
     QTasmDlg(GRobject);
     ~QTasmDlg();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTasmDlg *self()         { return (instPtr); }
     bool scanning()                 { return (asm_doing_scan); }
     void set_scanning(bool b)       { asm_doing_scan = b; }

@@ -126,6 +126,7 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
         if (QTmergeDlg::self()->is_hidden())
             return (true);
 
+        QTmergeDlg::self()->set_transient_for(QTmainwin::self());
         QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTmergeDlg::self(),
             QTmainwin::self()->Viewport());
         start_modal(QTmergeDlg::self());
@@ -153,9 +154,7 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
     mc_do_elec = false;
 
     setWindowTitle(tr("Symbol Merge"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowWithoutActivating);
 
     mc_names->add(lstring::copy(mi->name), (void*)1, false);
 

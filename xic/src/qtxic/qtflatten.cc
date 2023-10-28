@@ -85,6 +85,7 @@ cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
 
     new QTflattenDlg(caller, callback, arg, depth, fmode);
 
+    QTflattenDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTflattenDlg::self(),
         QTmainwin::self()->Viewport());
     QTflattenDlg::self()->show();
@@ -109,7 +110,6 @@ QTflattenDlg::QTflattenDlg(
     fl_arg = arg;
 
     setWindowTitle(tr("Flatten Hierarchy"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
     QMargins qmtop(2, 2, 2, 2);

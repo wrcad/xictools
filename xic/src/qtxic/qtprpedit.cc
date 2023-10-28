@@ -88,6 +88,7 @@ cEdit::PopUpProperties(CDo *odesc, ShowMode mode, PRPmode activ)
 
     new QTprpEditorDlg(odesc, activ);
 
+    QTprpEditorDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTprpEditorDlg::self(),
         QTmainwin::self()->Viewport());
     QTprpEditorDlg::self()->show();

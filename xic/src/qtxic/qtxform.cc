@@ -91,6 +91,7 @@ cEdit::PopUpTransform(GRobject caller, ShowMode mode,
         return;
 
     new QTxformDlg(caller, callback, arg);
+    QTxformDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTxformDlg::self(),
         QTmainwin::self()->Viewport());
     QTxformDlg::self()->show();
@@ -114,7 +115,6 @@ QTxformDlg::QTxformDlg(GRobject c,
     tf_arg = arg;
 
     setWindowTitle(tr("Current Transform"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(tf_popup), false);
 

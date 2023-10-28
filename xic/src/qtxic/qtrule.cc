@@ -86,6 +86,7 @@ cDRC::PopUpRuleEdit(GRobject caller, ShowMode mode, DRCtype type,
 
     new QTruleDlg(caller, type, username, callback, arg, rule);
 
+    QTruleDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTruleDlg::self(),
         QTmainwin::self()->Viewport());
     QTruleDlg::self()->show();

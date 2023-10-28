@@ -110,6 +110,7 @@ cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
 
     new QTdeviceDlg(caller);
 
+    QTdeviceDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTdeviceDlg::self(),
         QTmainwin::self()->Viewport());
     QTdeviceDlg::self()->show();

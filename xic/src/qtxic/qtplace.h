@@ -71,6 +71,13 @@ public:
     void desel_placebtn();
     bool smash_mode();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTplaceDlg *self()           { return (instPtr); }
 
     static void update_params()

@@ -101,6 +101,7 @@ cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
 
     new QTlayerPaletteDlg(caller);
 
+    QTlayerPaletteDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTlayerPaletteDlg::self(),
         QTmainwin::self()->Viewport());
     QTlayerPaletteDlg::self()->show();

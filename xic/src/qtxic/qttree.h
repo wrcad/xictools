@@ -66,6 +66,13 @@ public:
     void update(const char*, const char*, TreeUpdMode);
     char *get_selection();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     // Program is exiting, disable updates.
     static void set_panic()             { instPtr = 0; }
 

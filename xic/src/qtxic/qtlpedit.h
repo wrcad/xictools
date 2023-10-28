@@ -74,6 +74,13 @@ public:
     QSize sizeHint() const;
     void update(const char*, const char*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTlayerParamDlg *self()          { return (instPtr); }
 
 private slots:

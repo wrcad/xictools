@@ -185,7 +185,7 @@ namespace qtinterf
     class file_tree_widget : public QTreeWidget
     {
     public:
-        file_tree_widget(QWidget*);
+        file_tree_widget(QWidget* = 0);
 
         void register_fsel(QTfileDlg *f) { fsel = f; }
 
@@ -724,12 +724,6 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
             setWindowTitle(QString(tr("File Selection")));
     }
 
-    f_tree = new file_tree_widget(this);
-    f_tree->setColumnCount(1);
-    f_tree->header()->hide();
-    f_tree->setMinimumWidth(100);
-    f_tree->register_fsel(this);
-
 #ifdef USE_QTOOLBAR
     QToolBar *menubar = new QToolBar();
     menubar->setMaximumHeight(22);
@@ -891,7 +885,14 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
-    vbox->addWidget(menubar);
+    vbox->setMenuBar(menubar);
+
+    f_tree = new file_tree_widget();
+    f_tree->setColumnCount(1);
+    f_tree->header()->hide();
+    f_tree->setMinimumWidth(100);
+    f_tree->register_fsel(this);
+
     if (f_config == fsSEL || f_config == fsOPEN) {
         QSplitter *sp = new QSplitter(this);
         sp->setChildrenCollapsible(false);

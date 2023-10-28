@@ -100,6 +100,13 @@ public:
 
     void set_ref(int, int);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTdeviceDlg *self()          { return (instPtr); }
 
 private slots:

@@ -75,6 +75,7 @@ cConvert::PopUpPropertyFilter(GRobject caller, ShowMode mode)
 
     new QTcmpPrpFltDlg(caller);
 
+    QTcmpPrpFltDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UR), QTcmpPrpFltDlg::self(),
         QTmainwin::self()->Viewport());
     QTcmpPrpFltDlg::self()->show();

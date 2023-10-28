@@ -78,6 +78,7 @@ cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
 
     new QTselectDlg(caller);
 
+    QTselectDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTselectDlg::self(),
         QTmainwin::self()->Viewport());
     QTselectDlg::self()->show();
@@ -109,7 +110,6 @@ QTselectDlg::QTselectDlg(GRobject c)
     sl_upbtn = 0;
 
     setWindowTitle(tr("Selection Control"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 

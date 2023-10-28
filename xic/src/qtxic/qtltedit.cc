@@ -65,6 +65,7 @@ cMain::PopUpLayerEditor(GRobject c)
         return (0);
     QTltabEditDlg *cbs = new QTltabEditDlg(c);
 
+    cbs->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), cbs,
         QTmainwin::self()->Viewport());
     cbs->show();
@@ -84,7 +85,6 @@ QTltabEditDlg::QTltabEditDlg(GRobject c)
     le_label = 0;
 
     setWindowTitle(tr("Layer Editor"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(le_shell), false);
 

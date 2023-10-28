@@ -58,6 +58,13 @@ public:
     void update(CDo*);
     void purge(CDo*, CDo*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTprpInfoDlg *self()         { return (instPtr); }
 
 private slots:

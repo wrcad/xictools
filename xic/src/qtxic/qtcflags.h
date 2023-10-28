@@ -84,6 +84,13 @@ public:
 
     void update(const stringlist*, int);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTcflagsDlg *self()          { return (instPtr); }
 
 private slots:

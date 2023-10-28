@@ -106,6 +106,7 @@ cEdit::PopUpStdVia(GRobject caller, ShowMode mode, CDc *cdvia)
 
     new QTstdViaDlg(caller, cdvia);
 
+    QTstdViaDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTstdViaDlg::self(),
         QTmainwin::self()->Viewport());
     QTstdViaDlg::self()->show();

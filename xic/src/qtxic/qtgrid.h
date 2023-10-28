@@ -80,6 +80,13 @@ public:
             hide();
     }
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     void popdown();
     void update(bool = false);
     void initialize();

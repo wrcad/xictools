@@ -71,6 +71,7 @@ cSced::PopUpDots(GRobject caller, ShowMode mode)
 
     new QTdotsDlg(caller);
 
+    QTdotsDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTdotsDlg::self(),
         QTmainwin::self()->Viewport());
     QTdotsDlg::self()->show();
@@ -89,7 +90,6 @@ QTdotsDlg::QTdotsDlg(GRobject caller)
     dt_all = 0;
 
     setWindowTitle(tr("Connection Points"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(dt_popup), false);
 

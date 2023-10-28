@@ -80,6 +80,7 @@ cMain::PopUpCellFilt(GRobject caller, ShowMode mode, DisplayMode dm,
 
     new QTcfiltDlg(caller, dm, cb, arg);
 
+    QTcfiltDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTcfiltDlg::self(),
         QTmainwin::self()->Viewport());
     QTcfiltDlg::self()->show();

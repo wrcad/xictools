@@ -74,6 +74,13 @@ public:
     void show_node_terms(int);
     void update_map();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     void clear_cmd()                    { nm_cmd = 0; }
     void desel_point_btn()              { QTdev::Deselect(nm_point_btn); }
 

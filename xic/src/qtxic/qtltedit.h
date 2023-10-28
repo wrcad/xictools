@@ -66,6 +66,13 @@ public:
     void desel_rem();
     void popdown();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
 private slots:
     void help_btn_slot();
     void add_layer_slot(bool);

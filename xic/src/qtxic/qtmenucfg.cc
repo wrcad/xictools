@@ -1060,7 +1060,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = wdesc;
         }
-        if (DSP()->Window(wnum)->Mode() == Physical);
+        if (DSP()->Window(wnum)->Mode() == Physical)
             action(&mbox->menu[subwAttrMenuNosym])->setVisible(false);
 
         connect(subwin_attr_menu, SIGNAL(triggered(QAction*)),

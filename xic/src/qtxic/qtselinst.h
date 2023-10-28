@@ -83,6 +83,13 @@ public:
     QSize sizeHint() const;
     void update(CDol*);
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static CDol *instances()                    { return (ci_return); }
     static QTcellInstSelectDlg *self()          { return (instPtr); }
 

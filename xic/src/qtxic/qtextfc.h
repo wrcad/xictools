@@ -77,6 +77,13 @@ public:
     void update_numbers();
     void clear_numbers();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     static QTfastCapDlg *self()           { return (instPtr); }
 
 private slots:

@@ -62,6 +62,13 @@ public:
 
     void update();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     GRobject call_btn()                 { return (oas_caller); }
     static QToasisDlg *self()           { return (instPtr); }
 

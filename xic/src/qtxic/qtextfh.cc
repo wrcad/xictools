@@ -91,6 +91,7 @@ cFH::PopUpExtIf(GRobject caller, ShowMode mode)
 
     new QTfastHenryDlg(caller);
 
+    QTfastHenryDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LR), QTfastHenryDlg::self(),
         QTmainwin::self()->Viewport());
     QTfastHenryDlg::self()->show();
@@ -835,11 +836,13 @@ QTfastHenryDlg::fh_dump_cb(const char *fname, void *client_data)
             if (!QTfastHenryDlg::self())
                 return;
             const char *fn = lstring::strip_path(fname);
-            char tbuf[256];
-            snprintf(tbuf, sizeof(tbuf),
-                "FastHenry input is in file %s.  View file? ", fn);
-            QTfastHenryDlg::self()->PopUpAffirm(0, GRloc(LW_UL), tbuf,
-                fh_p_cb, lstring::copy(fname));
+            if (fn && *fn) {
+                char tbuf[256];
+                snprintf(tbuf, sizeof(tbuf),
+                    "FastHenry input is in file %s.  View file? ", fn);
+                QTfastHenryDlg::self()->PopUpAffirm(0, GRloc(LW_UL), tbuf,
+                    fh_p_cb, lstring::copy(fname));
+            }
         }
         break;
     }

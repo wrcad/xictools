@@ -61,6 +61,13 @@ public:
     QTmergeDlg(mitem_t*);
     ~QTmergeDlg();
 
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+        setWindowFlags(f);
+    }
+
     bool is_hidden()                    { return (mc_allflag); }
     static QTmergeDlg *self()           { return (instPtr); }
 

@@ -79,6 +79,7 @@ cMain::PopUpTechWrite(GRobject caller, ShowMode mode)
 
     new QTwriteTechDlg(caller);
 
+    QTwriteTechDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTwriteTechDlg::self(),
         QTmainwin::self()->Viewport());
     QTwriteTechDlg::self()->show();

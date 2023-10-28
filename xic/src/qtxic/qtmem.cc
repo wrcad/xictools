@@ -89,6 +89,7 @@ cMain::PopUpMemory(ShowMode mode)
 
     new QTmemMonDlg;
 
+    QTmemMonDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTmemMonDlg::self(),
         QTmainwin::self()->Viewport());
     QTmemMonDlg::self()->show();
@@ -106,7 +107,6 @@ QTmemMonDlg::QTmemMonDlg() : QTdraw(XW_TEXT)
     instPtr = this;
 
     setWindowTitle(tr("Memory Monitor"));
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
