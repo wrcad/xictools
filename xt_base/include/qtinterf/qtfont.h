@@ -73,16 +73,6 @@ public:
     QTfont();
     ~QTfont();
 
-    void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
-#ifdef __APPLE__
-        f |= Qt::Tool;
-#endif
-        setWindowFlags(f);
-    }
-
     void initFonts();
     GRfontType getType();
     void setName(const char*, int);
@@ -141,6 +131,16 @@ class qtinterf::QTfontDlg : public QDialog, public GRfontPopup
 public:
     QTfontDlg(QTbag*, int, void*);
     ~QTfontDlg();
+
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
 
     // GRpopup overrides
     void set_visible(bool visib)

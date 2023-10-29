@@ -98,6 +98,9 @@ QTdev::QTdev()
     dv_minx         = 0;
     dv_miny         = 0;
     dv_loop_level   = 0;
+#ifdef WIN32
+    dv_crlf_terminate = true;
+#endif
 }
 
 

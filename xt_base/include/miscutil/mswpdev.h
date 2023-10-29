@@ -32,43 +32,66 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Xic Integrated Circuit Layout and Schematic Editor                     *
+ * GtkInterf Graphical Interface Library                                  *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-// LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
-LANGUAGE 0x09,0x01
+#ifndef MSWPDEV_H
+#define MSWPDEV_H
+#ifdef WIN32
 
-// Icons
-//
-1 ICON DISCARDABLE "bitmaps/xic.ico"
 
-// Version Info
+// Windows Native hardcopy driver
 //
-1 VERSIONINFO
-FILEVERSION XIC_BIN_VERSION
-PRODUCTVERSION XIC_BIN_VERSION
-// FILEOS VOS__WINDOWS32
-FILEOS 4
-// FILETYPE VFT_APP
-FILETYPE 1
-FILESUBTYPE 0
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "04090000"
-        BEGIN
-            VALUE "CompanyName", "Whiteley Research Inc."
-            VALUE "FileDescription", "Graphical Editor for IC Design"
-            VALUE "FileVersion", XIC_FILE_VERSION
-            VALUE "InternalName", "xic"
-            VALUE "LegalCopyright", "Copyright \251 2013 Whiteley Research Inc."
-            VALUE "OriginalFilename", "xic.exe"
-            VALUE "ProductName", "Xic"
-            VALUE "ProductVersion", XIC_PROG_VERSION
-        END
-    END
-END
+
+namespace mswinterf {
+    extern HCdesc MSPdesc;
+
+    struct MSWdev : public GRdev
+    {
+    };
+
+    class MSPdev : public MSWdev
+    {
+    public:
+        MSPdev()
+            {
+                name = "MSP";
+                ident = _devMSP_;
+                devtype = GRhardcopy;
+                printer = 0;
+                media = 0;
+                data = 0;
+            }
+        bool Init(int*, char**);
+        GRdraw *NewDraw(int);
+
+        friend struct MSPparams;
+
+    private:
+        char *printer;
+        int media;
+        HCdata *data;
+    };
+
+    struct MSPparams : public msw_draw
+    {
+        MSPparams() { dev = 0; lcx = 0; md_gbag = new sGbagMsw; }
+        virtual ~MSPparams() { delete md_gbag; }
+        int SwathHeight(int*);
+        void ResetViewport(int, int);
+        void Halt();
+
+        friend class MSPdev;
+
+    private:
+        MSPdev *dev;               // pointer to driver desc
+        void *lcx;                 // layer context
+    };
+}
+
+#endif
+#endif
 

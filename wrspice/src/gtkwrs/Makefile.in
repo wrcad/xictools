@@ -65,14 +65,14 @@ clean:
 distclean: clean
 	-@rm -f Makefile
 
-resource.o: resource.cc wrs.rc
+resource.o: ../msw/resource.cc ../msw/wrs.rc
 	vers=$(SPICE_VERSION); \
 	IFS="$$IFS."; \
 	set $$vers; \
 	$(WINDRES) -DWRSPICE_RESOURCE -DWRS_BIN_VERSION="0,$$1,$$2,$$3" \
  -DWRS_FILE_VERSION=\\\"$$1.$$2.$$3\\\" \
- -DWRS_PROG_VERSION=\\\"Xic-$$1.$$2.$$3\\\"  wrs.rc resource_temp.o
-	$(CC) -c -o restmp.o resource.cc
+ -DWRS_PROG_VERSION=\\\"Xic-$$1.$$2.$$3\\\"  ../msw/wrs.rc resource_temp.o
+	$(CC) -c -o restmp.o ../msw/resource.cc
 	$(LD) -r -o resource.o resource_temp.o restmp.o
 	rm -f resource_temp.o restmp.o
 

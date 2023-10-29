@@ -56,11 +56,21 @@
 
 using namespace qtinterf;
 
-static void checklims(HCdesc*);
-static void mkargv(int*, char**, char*);
-
 // Help keywords used in this file:
 // hcopypanel
+
+
+// Global abort function exported to the Microsoft native print driver.
+//
+int HCabort_callabck()
+{
+    if (QTdev::self()->CheckForEvents()) {
+        GRpkg::self()->HCabort("User aborted");
+        return (0);
+    }
+    return (1);
+}
+
 
 namespace qtinterf
 {
@@ -1553,10 +1563,11 @@ QTprintDlg::fork_and_submit(const char *str, const char *filename)
 }
 
 
+// Static function.
 // Sanity check limits/defaults
 //
-static void
-checklims(HCdesc *desc)
+void
+QTprintDlg::checklims(HCdesc *desc)
 {
     if (desc->limits.minwidth > desc->limits.maxwidth) {
         double tmp = desc->limits.minwidth;
@@ -1613,10 +1624,11 @@ checklims(HCdesc *desc)
 }
 
 
+// Static function.
 // Make an argv-type string array from string str.
 //
-static void
-mkargv(int *acp, char **av, char *str)
+void
+QTprintDlg::mkargv(int *acp, char **av, char *str)
 {
     char *s = str;
     int j = 0;

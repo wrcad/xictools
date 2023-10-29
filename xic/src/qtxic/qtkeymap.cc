@@ -44,7 +44,7 @@
 #include "keymap.h"
 #include "drc.h"
 #include <unistd.h>
-#include <pwd.h>
+//#include <pwd.h>
 #include <sys/stat.h>
 
 #include <QKeyEvent>

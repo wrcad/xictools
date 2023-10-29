@@ -11,21 +11,21 @@ DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
 AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
+MSW = @MSW@
 
-ifeq ($(FLAT), yes)
-INCLUDE = -I.
-LIB_TARGET = miscutil.a
-else
 INCLUDE = -I../include -I../include/miscutil
 LIB_TARGET = ../lib/miscutil.a
+
+ifdef MSW
+MSWFILES = msw.cc mswdraw.cc mswpdev.cc
 endif
 
 HFILES =
 CCFILES = \
   childproc.cc coresize.cc crypt.cc encode.cc errorrec.cc filestat.cc \
-  lstring.cc md5.cc miscmath.cc miscutil.cc msw.cc pathlist.cc proxy.cc \
+  lstring.cc md5.cc miscmath.cc miscutil.cc pathlist.cc proxy.cc \
   quicksort.cc random.cc randval.cc texttf.cc threadpool.cc timedbg.cc \
-  timer.cc tvals.cc
+  timer.cc tvals.cc $(MSWFILES)
 
 CCOBJS = $(CCFILES:.cc=.o)
 

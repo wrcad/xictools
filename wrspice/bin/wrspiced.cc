@@ -464,17 +464,31 @@ main(int, char **av)
             // disconnected from the controlling terminal.  To Bill,
             // let me simply say, "fork you"
 
-            char cmdline[256];
+            wchar_t cmdline[256];
             GetModuleFileName(0, cmdline, 256);
-            char *cmdstr = GetCommandLine();
-            while (*cmdstr && !isspace(*cmdstr))
+            wchar_t *cmdstr = GetCommandLine();
+            while (*cmdstr && !iswspace(*cmdstr))
                 cmdstr++;
-            int len = strlen(cmdline);
-            snprintf(cmdline + len, sizeof(cmdline) - len, "%s -winbg",
-                cmdstr);
+            int len = wcslen(cmdline);
+            wchar_t *st = cmdline + len;
+            size_t sz = 256 - len;
+            size_t szstr = wcslen(cmdstr);
+            if (len + szstr + 7 > sz) {
+                wcscpy(st, cmdstr);
+                wcscpy(st + szstr, L" -winbg");
+            }
+            else {
+                fprintf(stderr,
+                    "Command line too long, exiting.\n");
+                return (1);
+            }
+            //snprintf(cmdline + len, sizeof(cmdline) - len, "%s -winbg",
+            //    cmdstr);
+            char tbf[256];
+            wcstombs(tbf, cmdline, wcslen(cmdline) + 1);
 
 //XXX handle .bat file?
-            PROCESS_INFORMATION *info = msw::NewProcess(0, cmdline,
+            PROCESS_INFORMATION *info = msw::NewProcess(0, tbf,
                 DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, false);
             if (!info) {
                 fprintf(stderr,
@@ -739,9 +753,14 @@ again:
         sa.nLength = sizeof(SECURITY_ATTRIBUTES);
         sa.bInheritHandle = true;
         char *outfile = smktemp("out");
-        HANDLE hin = CreateFile(infile, GENERIC_READ, 0, &sa,
+        wchar_t wcout[256];
+        wchar_t wcin[256];
+        mbstowcs(wcout, outfile, strlen(outfile) + 1);
+        mbstowcs(wcin, infile, strlen(infile) + 1);
+
+        HANDLE hin = CreateFile(wcin, GENERIC_READ, 0, &sa,
             OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-        HANDLE hout = CreateFile(outfile, GENERIC_WRITE,
+        HANDLE hout = CreateFile(wcout, GENERIC_WRITE,
             FILE_SHARE_READ, &sa, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
 //XXX handle .bat file?

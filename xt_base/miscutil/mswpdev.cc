@@ -38,18 +38,16 @@
  $Id:$
  *========================================================================*/
 
-#include "gtkinterf.h"
-#ifndef WIN32
-// Dummy symbol to avoid linker warning.
-bool NO_MSWPDEV = true;
+#ifdef WIN32
 
-#else
-// Windows only code.
-
-#include "miscutil/lstring.h"
+#include "ginterf/graphics.h"
 #include "ginterf/xdraw.h"
+#include "miscutil/lstring.h"
 #include "mswdraw.h"
 #include "mswpdev.h"
+#include <time.h>
+#include <string.h>
+#include <stdio.h>
 
 
 //
@@ -329,10 +327,12 @@ MSPdev::NewDraw(int)
 namespace {
     BOOL CALLBACK AbortFunc(HDC, int)
     {
+        /* XXX fixme!
         if (GTKdev::self()->CheckForEvents()) {
             GRpkg::self()->HCabort("User aborted");
             return (FALSE);
         }
+        */
         return (TRUE);
     }
 }

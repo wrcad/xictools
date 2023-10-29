@@ -38,19 +38,13 @@
  $Id:$
  *========================================================================*/
 
+#ifdef WIN32
+
 #include "ginterf/graphics.h"
-#ifndef WIN32
-// Dummy symbol to avoid linker warning.
-bool NO_MSWDRAW = true;
-
-#else
-// Windows only code.
-
-#include "mswdraw.h"
+#include "ginterf/fontutil.h"
 #include "miscutil/texttf.h"
 #include "miscutil/lstring.h"
-#include "ginterf/fontutil.h"
-
+#include "mswdraw.h"
 #include <math.h>
 
 

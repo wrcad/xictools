@@ -266,6 +266,12 @@ public:
     void RegisterMainFrame(QTbag *w)    { dv_main_bag = w; }
     QTbag *MainFrame()                  { return (dv_main_bag); }
 
+#ifdef WIN32
+    // Flag for DOS/UNIX line termination in output.
+    bool GetCRLFtermination()           { return (dv_crlf_terminate); }
+    void SetCRLFtermination(bool b)     { dv_crlf_terminate = b; }
+#endif
+
     static QTdev *self()
     {
         if (!instancePtr)
@@ -309,6 +315,9 @@ private:
     int             dv_minx;
     int             dv_miny;
     int             dv_loop_level;  // loop level
+#ifdef WIN32
+    bool            dv_crlf_terminate;
+#endif
 
     static QTdev    *instancePtr;
 };

@@ -6,6 +6,7 @@ DATE = @DATE@
 MALLOC = @MALLOC@
 REGEX = @REGEX@
 GRPREF = @GRPREF@
+MSW = @MSW@
 
 ifdef MALLOC
 MALLOC_DIR = malloc
@@ -15,11 +16,16 @@ ifdef REGEX
 REGEX_DIR = regex
 endif
 
+ifdef MSW
+MSW_DIR = msw
+endif
+
 SUBDIRS = \
   miscutil \
   ginterf \
   $(GRPREF)interf \
   util \
+  $(MSW_DIR) \
   $(MALLOC_DIR) \
   $(REGEX_DIR)
 

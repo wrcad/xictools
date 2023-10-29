@@ -260,6 +260,7 @@ QTparam::select(int x1, int x2)
             // For some reason the owner_set code doesn't work in
             // Windows.
 
+            /*
             char *str = QTparam::self()->p_text.get_sel();
             if (str) {
                 GtkClipboard *cb = gtk_clipboard_get_for_display(
@@ -269,6 +270,7 @@ QTparam::select(int x1, int x2)
                 delete [] str;
                 display(xstart, xend);
             }
+            */
 #else
             display(xstart, xend);
 //            gtk_selection_owner_set(Viewport(), GDK_SELECTION_PRIMARY,
@@ -296,6 +298,7 @@ QTparam::select_word(int xx)
             // For some reason the owner_set code doesn't work in
             // Windows.
 
+            /*
             char *str = QTparam::self()->p_text.get_sel();
             if (str) {
                 GtkClipboard *cb = gtk_clipboard_get_for_display(
@@ -305,6 +308,7 @@ QTparam::select_word(int xx)
                 delete [] str;
                 display(xstart, xend);
             }
+            */
 #else
             display(xstart, xend);
 //            gtk_selection_owner_set(Viewport(), GDK_SELECTION_PRIMARY,
@@ -332,6 +336,7 @@ QTparam::deselect()
 }
 
 
+/*XXX
 #ifdef WIN32
 // Static function.
 void
@@ -356,6 +361,7 @@ QTparam::primary_clear_cb(GtkClipboard*, void*)
         QTparam::self()->deselect();
 }
 #endif
+*/
 
 
 #ifdef NOTDEF

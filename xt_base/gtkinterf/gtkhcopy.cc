@@ -166,6 +166,18 @@ GTKdev::HCmessage(const char *str)
 // End of GTKdev functions.
 
 
+// Global abort function exported to the Microsoft native print driver.
+//
+int HCabort_callabck()
+{
+    if (GTKdev::self()->CheckForEvents()) {
+        GRpkg::self()->HCabort("User aborted");
+        return (0);
+    }
+    return (1);
+}
+
+
 namespace gtkinterf {
     // Class to maintain a list of active windows for asynchronous
     // messages from the printer.  The process forks to initiate a

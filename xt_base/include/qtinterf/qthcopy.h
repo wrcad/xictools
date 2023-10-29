@@ -130,6 +130,8 @@ private slots:
 private:
     void set_sens(unsigned int);
     void fork_and_submit(const char*, const char*);
+    static void checklims(HCdesc*);
+    static void mkargv(int*, char**, char*);
 
     GRobject        pd_caller;      // launching button
     QTbag           *pd_owner;      // back pointer to owning set

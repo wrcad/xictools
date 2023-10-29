@@ -696,6 +696,7 @@ namespace {
             ff = WRSPICE_FIFO;
 #ifdef WIN32
         char buf[256];
+        wchar_t wbuf[256];
         ff = lstring::strip_path(ff);
         snprintf(buf, sizeof(buf) - 6, "\\\\.\\pipe\\%s", ff);
         char *t = buf + strlen(buf);
@@ -712,7 +713,8 @@ namespace {
         sa.lpSecurityDescriptor = &sd;
         sa.bInheritHandle = false;
 
-        HANDLE hpipe = CreateNamedPipe(buf,
+        mbstowcs(wbuf, buf, strlen(buf)+1);
+        HANDLE hpipe = CreateNamedPipe(wbuf,
             PIPE_ACCESS_INBOUND,
             PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
             PIPE_UNLIMITED_INSTANCES,
@@ -928,7 +930,7 @@ main(int argc, char **argv)
 
     // The inno installer is sensitive to this, prevents install when
     // application is active.
-    CreateMutex(0, false, "WRspiceMutex");
+    CreateMutex(0, false, L"WRspiceMutex");
 #endif
 
     {
@@ -1200,12 +1202,15 @@ main(int argc, char **argv)
 #ifdef WIN32
         // Set up a thread and a semaphore to enable passing SIGINT.
         char tbuf[64];
+        wchar_t wbuf[64];
         snprintf(tbuf, sizeof(tbuf), "wrspice.sigint.%d", getpid());
-        HANDLE hintr = CreateSemaphore(0, 0, 1, tbuf);
+        mbstowcs(wbuf, tbuf, strlen(tbuf)+1);
+        HANDLE hintr = CreateSemaphore(0, 0, 1, wbuf);
         _beginthread(intr_proc, 0, hintr);
         // Set up a thread and a semaphore to enable passing SIGTERM.
         snprintf(tbuf, sizeof(tbuf), "wrspice.sigterm.%d", getpid());
-        HANDLE hterm = CreateSemaphore(0, 0, 1, tbuf);
+        mbstowcs(wbuf, tbuf, strlen(tbuf)+1);
+        HANDLE hterm = CreateSemaphore(0, 0, 1, wbuf);
         _beginthread(term_proc, 0, hterm);
 #endif
         if (!CmdLineOpts.portmon) {

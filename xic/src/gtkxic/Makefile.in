@@ -85,14 +85,14 @@ clean:
 distclean: clean
 	-@rm -f Makefile
 
-resource.o: resource.cc xic.rc
+resource.o: ../msw/resource.cc ../msw/xic.rc
 	vers=$(GFX_VERSION); \
 	IFS="$$IFS."; \
 	set $$vers; \
 	$(WINDRES) -DXIC_BIN_VERSION="0,$$1,$$2,$$3" \
  -DXIC_FILE_VERSION=\\\"$$1.$$2.$$3\\\" \
- -DXIC_PROG_VERSION=\\\"Xic-$$1.$$2.$$3\\\"  xic.rc resource_temp.o
-	$(CC) -c -o restmp.o resource.cc
+ -DXIC_PROG_VERSION=\\\"Xic-$$1.$$2.$$3\\\"  ../msw/xic.rc resource_temp.o
+	$(CC) -c -o restmp.o ../msw/resource.cc
 	$(LD) -r -o resource.o resource_temp.o restmp.o
 	rm -f resource_temp.o restmp.o
 

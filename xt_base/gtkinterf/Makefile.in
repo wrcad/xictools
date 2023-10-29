@@ -24,8 +24,9 @@ HFILES =
 CCFILES = \
   gtkdraw.cc gtkedit.cc gtkfile.cc gtkfont.cc gtkhcopy.cc gtkinterf.cc \
   gtklist.cc gtkmcol.cc gtkpfiles.cc gtksearch.cc gtkspinbtn.cc \
-  gtkutil.cc gtkxdraw.cc mswdraw.cc mswpdev.cc ndkcursor.cc \
-  ndkdrawable.cc ndkgc.cc ndkimage.cc ndkpixmap.cc
+  gtkutil.cc gtkxdraw.cc ndkcursor.cc ndkdrawable.cc ndkgc.cc \
+  ndkimage.cc ndkpixmap.cc
+
 CCOBJS = $(CCFILES:.cc=.o)
 
 $(LIB_TARGET): $(CCOBJS)

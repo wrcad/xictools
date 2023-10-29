@@ -402,6 +402,7 @@ NODLL_XIC_PROG='xic'
 
 case $sys_os in
 MINGW)
+    MSW="msw"
     EXESUFFIX=".exe"
     if test $NEED_FILTER = yes; then
         FILTER="|sed -e s/C:// -e s///g"
@@ -613,6 +614,7 @@ fi
 
 AC_SUBST(SDK)
 AC_SUBST(UFLAGS)
+AC_SUBST(MSW)
 AC_SUBST(EXESUFFIX)
 AC_SUBST(FILTER)
 AC_SUBST(MALLOC)
@@ -715,24 +717,46 @@ if test -z "$grpkg"; then
 elif test $grpkg == QT5 -o $grpkg == QT6 ; then
     QTBASE=$qtloc
 
-    tmpdir="/tmp/__tmp__"
+    # Msys Bug?  If tmpdir is in /tmp, the include paths are relative
+    # and wrong in usage here.  As below, paths start -IC:/msys64/
+    # which apparently is ok.
+
+    tmpdir="`pwd`/__tmp__"
+    if test -d $tmpdir; then
+        rm -rf $tmpdir
+    fi
     cwd=`pwd`
     mkdir $tmpdir
     cd $tmpdir
     touch empty.cc
-    $QTBASE/bin/qmake -project
-    if test $OSNAME == Darwin; then
-        $QTBASE/bin/qmake "QT += widgets xml opengl printsupport"
-    else
-        $QTBASE/bin/qmake "QT += widgets xml opengl printsupport x11extras"
+    if test $grpkg == QT5; then
+        if test -f $QTBASE/bin/qmake5.exe; then
+            qmake=$QTBASE/bin/qmake5
+        fi
+    elif test $grpkg == QT6 ; then
+        if test -f $QTBASE/bin/qmake6.exe; then
+            qmake=$QTBASE/bin/qmake6
+        fi
     fi
+    if test -z $qmake; then
+        qmake=$QTBASE/bin/qmake
+    fi
+    $qmake -project
+    $qmake "QT += widgets xml opengl printsupport"
+    # $qmake "QT += widgets xml opengl printsupport x11extras"
     cd $cwd
 
+    if test -f $tmpdir/Makefile.Release; then
+        makefile=$tmpdir/Makefile.Release
+    elif test -f $tmpdir/Makefile; then
+        makefile=$tmpdir/Makefile
+    fi
+
     has_qt=no
-    if test -f $tmpdir/Makefile; then
+    if test -n $makefile; then
         has_qt=yes
 
-        defines=`grep '^DEFINES' $tmpdir/Makefile`
+        defines=`grep '^DEFINES' $makefile`
         set $defines
         while test x"$1" != x; do
             y=`echo $1 |grep "^-D"`
@@ -743,7 +767,7 @@ elif test $grpkg == QT5 -o $grpkg == QT6 ; then
         done
         echo "QT_DEFINES=$QT_DEFINES"
 
-        cxxflags=`grep '^CXXFLAGS' $tmpdir/Makefile`
+        cxxflags=`grep '^CXXFLAGS' $makefile`
         set $cxxflags
         shift
         shift
@@ -755,7 +779,7 @@ elif test $grpkg == QT5 -o $grpkg == QT6 ; then
         done
         echo "QT_CFLAGS=$QT_CFLAGS"
 
-        incpath=`grep '^INCPATH' $tmpdir/Makefile`
+        incpath=`grep '^INCPATH' $makefile`
         set $incpath
         QT_INCLUDE="-I$QTBASE/include"
         if test $OSNAME == Darwin ; then
@@ -774,7 +798,7 @@ dnl            shift
 dnl        done
         echo "QT_INCLUDE=$QT_INCLUDE"
 
-        lflags=`grep '^LFLAGS' $tmpdir/Makefile`
+        lflags=`grep '^LFLAGS' $makefile`
         set $lflags
         shift
         shift
@@ -784,7 +808,7 @@ dnl        done
         done
         echo "QT_LFLAGS=$QT_LFLAGS"
 
-        libs=`grep '^LIBS' $tmpdir/Makefile`
+        libs=`grep '^LIBS' $makefile`
         set $libs
         shift
         shift
@@ -806,7 +830,11 @@ dnl        done
     if test $grpkg == QT5 ; then
         MOC="$QTBASE/bin/moc"
     elif test $grpkg == QT6 ; then
-        MOC="$QTBASE/libexec/moc"
+        if test -f "$QTBASE/share/qt6/bin/moc.exe"; then
+            MOC="$QTBASE/share/qt6/bin/moc"
+        else
+            MOC="$QTBASE/libexec/moc"
+        fi
     fi
     TOOLKITINC="$QT_INCLUDE"
     TOOLKITLIBS="$QT_LIBS"

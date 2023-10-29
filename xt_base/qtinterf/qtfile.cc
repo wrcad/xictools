@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "qtfile.h"
 #include "qtaffirm.h"
 #include "qtinput.h"
@@ -49,7 +50,14 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
+#ifdef HAVE_FNMATCH_H
 #include <fnmatch.h>
+#else
+#ifdef WIN32
+// This is in the mingw library, but there is no prototype.
+extern "C" { extern int fnmatch(const char*, const char*, int); }
+#endif
+#endif
 
 #include <QApplication>
 #include <QComboBox>
@@ -1124,7 +1132,11 @@ QTfileDlg::new_folder_cb_slot(const char *string, void*)
     else {
         char *path = get_path(f_curnode, false);
         char *dir = pathlist::mk_path(path, string);
+#ifdef WIN32
+        if (mkdir(dir) != 0)
+#else
         if (mkdir(dir, 0755) != 0)
+#endif
             PopUpMessage(strerror(errno), true);
         delete [] dir;
         delete [] path;
@@ -1598,8 +1610,8 @@ is_root(const char *str)
     if (lstring::is_dirsep(str[0]) && !str[1])
         return (true);
 #ifdef WIN32
-    if (strlen(f_rootdir) == 3 && isalpha(f_rootdir[0]) &&
-            f_rootdir[1] == ':' && is_dirsep(f_rootdir[2]))
+    if (strlen(str) == 3 && isalpha(str[0]) &&
+            str[1] == ':' && lstring::is_dirsep(str[2]))
         return (true);
 #endif
     return (false);

@@ -38,16 +38,16 @@
  $Id:$
  *========================================================================*/
 
+#ifdef WIN32
+
 // Needed for KEY_WOW64_64KEY
 #define WINVER 0x502
 
 #include "msw.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
-
-#ifdef WIN32
 #include <mapi.h>
 
 

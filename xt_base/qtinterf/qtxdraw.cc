@@ -1425,7 +1425,7 @@ Xparams::Halt()
                 if (ret == ImError) {
                     fprintf(stderr,
                         "Image creation failed, internal error.\n");
-                    GRpkf::self()->HCabort("Image creation error");
+                    GRpkg::self()->HCabort("Image creation error");
                 }
                 else if (ret == ImNoSupport) {
                     fprintf(stderr,

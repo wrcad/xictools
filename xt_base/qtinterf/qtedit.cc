@@ -1100,7 +1100,7 @@ QTeditDlg::attach_file_slot(const char *fnamein, void*)
     delete fn;
     a = new QAction(this);
     a->setText(QString("Unattach"));
-    a->setData(QVariant((unsigned long long)(unsigned long)a_path));
+    a->setData(QVariant((unsigned long long)(uintptr_t)a_path));
     menu->addAction(a);
     connect(menu, SIGNAL(triggered(QAction*)),
         this, SLOT(unattach_slot(QAction*)));
