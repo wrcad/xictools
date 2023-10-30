@@ -117,6 +117,31 @@ End of general info.
 
 
 ===============================================================================
+wrspice-4.3.18  10/28/2023
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Work toward migrating WRspice graphics to use the QT system.  This
+  is behind the scene and should not affect the GTK releases, which
+  will remain the standard for now.
+
+* Changed GMAX parameter default/max from 1e3/1e6 to 1e6/1e9.
+
+* Attempt to speed up vectors that are being created an element
+  at a time.  This causes storage reallocation and is slow.  Now
+  reallocating in larger increments to make reallocation less
+  frequent.
+
+
+BUGS FIXED
+---- -----
+
+* misc. minor fixes.
+
+
+-------------------------------------------------------------------------------
 wrspice-4.3.17  9/18/2022
 Current Release
 

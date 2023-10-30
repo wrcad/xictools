@@ -115,6 +115,37 @@ End of general info.
 
 
 ===============================================================================
+xic-4.3.13  10/28/2023
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* There is an ongoing major project to port Xic and WRspice to use the
+  QT graphics package.  Presently, production releases use the gtk-2.0
+  graphics package, which after years of tweaking works well. 
+  However, this package, and its successor gtk-3.0, are considered
+  obsolete.  After several months attempting to port to gtk-3.0 as a
+  stepping stone to the current gtk-4.0, this effort was abandoned in
+  favor of QT.  The main problem is that the drawing package Cairo,
+  used in gtk-3.0 and later, is not suitable for EDA/CAD programs such
+  as Xic, and can't be gotten around.  It is intended for programs
+  like PowerPoint, not Cadence Virtuoso.
+
+  Although the work required is immense, porting to QT will provide
+  a much better graphics system going forward.
+
+* This release contains many small tweaks and fixes that have been
+  applied since the last release, but nothing major.
+
+
+BUGS FIXED
+---- -----
+
+* Hopefully more fixed than introduced.
+
+
+------------------------------------------------------------------------------
 xic-4.3.12  05/29/2022
 Current Release
 
