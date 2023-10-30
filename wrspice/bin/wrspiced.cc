@@ -465,8 +465,8 @@ main(int, char **av)
             // let me simply say, "fork you"
 
             wchar_t cmdline[256];
-            GetModuleFileName(0, cmdline, 256);
-            wchar_t *cmdstr = GetCommandLine();
+            GetModuleFileNameW(0, cmdline, 256);
+            wchar_t *cmdstr = GetCommandLineW();
             while (*cmdstr && !iswspace(*cmdstr))
                 cmdstr++;
             int len = wcslen(cmdline);
@@ -636,9 +636,9 @@ again:
             }
             else {
                 // Add the path.
-                int len = strlen(program) + strlen(Spice_Exec_Dir) + 2;
-                char *t = new char[len];
-                snprintf(t, len, "%s/%s", Spice_Exec_Dir, program);
+                int slen = strlen(program) + strlen(Spice_Exec_Dir) + 2;
+                char *t = new char[slen];
+                snprintf(t, slen, "%s/%s", Spice_Exec_Dir, program);
                 delete [] program;
                 program = t;
             }
@@ -758,9 +758,9 @@ again:
         mbstowcs(wcout, outfile, strlen(outfile) + 1);
         mbstowcs(wcin, infile, strlen(infile) + 1);
 
-        HANDLE hin = CreateFile(wcin, GENERIC_READ, 0, &sa,
+        HANDLE hin = CreateFileW(wcin, GENERIC_READ, 0, &sa,
             OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-        HANDLE hout = CreateFile(wcout, GENERIC_WRITE,
+        HANDLE hout = CreateFileW(wcout, GENERIC_WRITE,
             FILE_SHARE_READ, &sa, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
 //XXX handle .bat file?

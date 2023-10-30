@@ -714,7 +714,7 @@ namespace {
         sa.bInheritHandle = false;
 
         mbstowcs(wbuf, buf, strlen(buf)+1);
-        HANDLE hpipe = CreateNamedPipe(wbuf,
+        HANDLE hpipe = CreateNamedPipeW(wbuf,
             PIPE_ACCESS_INBOUND,
             PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
             PIPE_UNLIMITED_INSTANCES,
@@ -930,7 +930,7 @@ main(int argc, char **argv)
 
     // The inno installer is sensitive to this, prevents install when
     // application is active.
-    CreateMutex(0, false, L"WRspiceMutex");
+    CreateMutexW(0, false, L"WRspiceMutex");
 #endif
 
     {
@@ -1205,12 +1205,12 @@ main(int argc, char **argv)
         wchar_t wbuf[64];
         snprintf(tbuf, sizeof(tbuf), "wrspice.sigint.%d", getpid());
         mbstowcs(wbuf, tbuf, strlen(tbuf)+1);
-        HANDLE hintr = CreateSemaphore(0, 0, 1, wbuf);
+        HANDLE hintr = CreateSemaphoreW(0, 0, 1, wbuf);
         _beginthread(intr_proc, 0, hintr);
         // Set up a thread and a semaphore to enable passing SIGTERM.
         snprintf(tbuf, sizeof(tbuf), "wrspice.sigterm.%d", getpid());
         mbstowcs(wbuf, tbuf, strlen(tbuf)+1);
-        HANDLE hterm = CreateSemaphore(0, 0, 1, wbuf);
+        HANDLE hterm = CreateSemaphoreW(0, 0, 1, wbuf);
         _beginthread(term_proc, 0, hterm);
 #endif
         if (!CmdLineOpts.portmon) {
