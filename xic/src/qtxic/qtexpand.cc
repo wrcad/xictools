@@ -48,6 +48,7 @@
 #include <QLayout>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QToolButton>
 
 
 QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
@@ -69,117 +70,112 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
-    QHBoxLayout *hbox = new QHBoxLayout(0);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    QGroupBox *gb = new QGroupBox(this);
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
-    label = new QLabel(gb);
-    label->setText(QString(tr("Set Expansion Control String")));
+    label = new QLabel(tr("Set Expansion Control String"));
     hb->addWidget(label);
-    hbox->addWidget(gb);
 
-    b_help = new QPushButton(this);
-    b_help->setText(QString(tr("Help")));
+    b_help = new QPushButton(tr("Help"));
+    hbox->addWidget(b_help);
     b_help->setAutoDefault(false);
     b_help->setMaximumWidth(70);
     connect(b_help, SIGNAL(clicked()), this, SLOT(help_slot()));
 
-    hbox->addWidget(b_help);
+    hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-
-    hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     
-    edit = new QLineEdit(this);
-    edit->setText(QString(string));
+    edit = new QLineEdit();
+    edit->setText(string);
     edit->setMaximumWidth(60);
     hbox->addWidget(edit);
-    b_plus = new QPushButton(this);
-    b_plus->setText(QString("+"));
-    b_plus->setAutoDefault(false);
-    connect(b_plus, SIGNAL(clicked()), this, SLOT(plus_slot()));
+
+    b_plus = new QToolButton();
     hbox->addWidget(b_plus);
+    b_plus->setText(QString("+"));
+//XXX    b_plus->setAutoDefault(false);
+    connect(b_plus, SIGNAL(clicked()), this, SLOT(plus_slot()));
 
-    b_minus = new QPushButton(this);
-    b_minus->setText(QString("-"));
-    b_minus->setAutoDefault(false);
-    connect(b_minus, SIGNAL(clicked()), this, SLOT(minus_slot()));
+    b_minus = new QToolButton();
     hbox->addWidget(b_minus);
+    b_minus->setText(QString("-"));
+//XXX    b_minus->setAutoDefault(false);
+    connect(b_minus, SIGNAL(clicked()), this, SLOT(minus_slot()));
 
-    b_all = new QPushButton(this);
-    b_all->setText(QString(tr("all")));
-    b_all->setAutoDefault(false);
-    connect(b_all, SIGNAL(clicked()), this, SLOT(all_slot()));
+    b_all = new QToolButton();
     hbox->addWidget(b_all);
+    b_all->setText(QString(tr("all")));
+//XXX    b_all->setAutoDefault(false);
+    connect(b_all, SIGNAL(clicked()), this, SLOT(all_slot()));
 
-    b_0 = new QPushButton(this);
-    b_0->setText(QString("0"));
-    b_0->setAutoDefault(false);
-    connect(b_0, SIGNAL(clicked()), this, SLOT(b0_slot()));
+    b_0 = new QToolButton();
     hbox->addWidget(b_0);
+    b_0->setText(QString("0"));
+//XXX    b_0->setAutoDefault(false);
+    connect(b_0, SIGNAL(clicked()), this, SLOT(b0_slot()));
 
-    b_1 = new QPushButton(this);
-    b_1->setText(QString("1"));
-    b_1->setAutoDefault(false);
-    connect(b_1, SIGNAL(clicked()), this, SLOT(b1_slot()));
+    b_1 = new QToolButton();
     hbox->addWidget(b_1);
+    b_1->setText(QString("1"));
+//XXX    b_1->setAutoDefault(false);
+    connect(b_1, SIGNAL(clicked()), this, SLOT(b1_slot()));
 
-    b_2 = new QPushButton(this);
-    b_2->setText(QString("2"));
-    b_2->setAutoDefault(false);
-    connect(b_2, SIGNAL(clicked()), this, SLOT(b2_slot()));
+    b_2 = new QToolButton();
     hbox->addWidget(b_2);
+    b_2->setText(QString("2"));
+//XXX    b_2->setAutoDefault(false);
+    connect(b_2, SIGNAL(clicked()), this, SLOT(b2_slot()));
 
-    b_3 = new QPushButton(this);
-    b_3->setText(QString("3"));
-    b_3->setAutoDefault(false);
-    connect(b_3, SIGNAL(clicked()), this, SLOT(b3_slot()));
+    b_3 = new QToolButton();
     hbox->addWidget(b_3);
+    b_3->setText(QString("3"));
+//XXX    b_3->setAutoDefault(false);
+    connect(b_3, SIGNAL(clicked()), this, SLOT(b3_slot()));
 
-    b_4 = new QPushButton(this);
-    b_4->setText(QString("4"));
-    b_4->setAutoDefault(false);
-    connect(b_4, SIGNAL(clicked()), this, SLOT(b4_slot()));
+    b_4 = new QToolButton();
     hbox->addWidget(b_4);
+    b_4->setText(QString("4"));
+//XXX    b_4->setAutoDefault(false);
+    connect(b_4, SIGNAL(clicked()), this, SLOT(b4_slot()));
 
-    b_5 = new QPushButton(this);
-    b_5->setText(QString("5"));
-    b_5->setAutoDefault(false);
-    connect(b_5, SIGNAL(clicked()), this, SLOT(b5_slot()));
+    b_5 = new QToolButton();
     hbox->addWidget(b_5);
+    b_5->setText(QString("5"));
+//XXX    b_5->setAutoDefault(false);
+    connect(b_5, SIGNAL(clicked()), this, SLOT(b5_slot()));
 
     if (!nopeek) {
-        b_peek = new QPushButton(this);
-        b_peek->setText(QString(tr("Peek Mode")));
+        b_peek = new QPushButton(tr("Peek Mode"));
         b_peek->setAutoDefault(false);
         hbox->addWidget(b_peek);
         connect(b_peek, SIGNAL(clicked()), this, SLOT(peek_slot()));
     }
     else
         b_peek = 0;
-    vbox->addLayout(hbox);
 
     hbox = new QHBoxLayout(0);
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    b_apply = new QPushButton(this);
-    b_apply->setText(QString(tr("Apply")));
+    b_apply = new QPushButton(tr("Apply"));
+    hbox->addWidget(b_apply);
     b_apply->setAutoDefault(true);
     connect(b_apply, SIGNAL(clicked()), this, SLOT(apply_slot()));
-    hbox->addWidget(b_apply);
 
-    b_dismiss = new QPushButton(this);
-    b_dismiss->setText(QString(tr("Dismiss")));
+    b_dismiss = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(b_dismiss);
     b_dismiss->setAutoDefault(false);
     connect(b_dismiss, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
-    hbox->addWidget(b_dismiss);
-    vbox->addLayout(hbox);
 }
 
 

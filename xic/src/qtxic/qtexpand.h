@@ -48,6 +48,7 @@
 class QLabel;
 class QLineEdit;
 class QPushButton;
+class QToolButton;
 
 class QTexpandDlg : public QDialog, public GRpopup
 {
@@ -108,15 +109,15 @@ private:
     QLabel *label;
     QLineEdit *edit;
     QPushButton *b_help;
-    QPushButton *b_plus;
-    QPushButton *b_minus;
-    QPushButton *b_all;
-    QPushButton *b_0;
-    QPushButton *b_1;
-    QPushButton *b_2;
-    QPushButton *b_3;
-    QPushButton *b_4;
-    QPushButton *b_5;
+    QToolButton *b_plus;
+    QToolButton *b_minus;
+    QToolButton *b_all;
+    QToolButton *b_0;
+    QToolButton *b_1;
+    QToolButton *b_2;
+    QToolButton *b_3;
+    QToolButton *b_4;
+    QToolButton *b_5;
     QPushButton *b_peek;
     QPushButton *b_apply;
     QPushButton *b_dismiss;
