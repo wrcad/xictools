@@ -2335,9 +2335,22 @@ QTmainwin::sizeHint() const
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     QSize sz = screen()->availableSize();
 #else
+#if QT_VERSION >= QT_VERSION_CHECK(5,10,0)
     QScreen *scr = QGuiApplication::screenAt(mapToGlobal(
         QPoint(width()/2, height()/2)));
     QSize sz = scr ? scr->availableSize() : QSize(1024, 768);;
+#else
+    QSize sz(1024, 768);
+    QList<QScreen*> qsl = QGuiApplication::screens();
+    for (int i = 0; i < qsl.size(); i++) {
+        QScreen *sc = qsl.at(i);
+        QRect r = sc->availableGeometry();
+        if (r.contains(QPoint(width()/2, height()/2))) {
+            sz = QSize(r.width(), r.height());
+            break;
+        }
+    }
+#endif
 #endif
     // Max honored size is 2/3 the screen width and height.
     return (QSize((sz.width()*2)/3, (sz.height()*2)/3));
