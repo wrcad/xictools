@@ -56,25 +56,17 @@ class QPaintEvent;
 // This is an abstract class for a simple but efficient drawing area.
 // New instances are intended to be obtained from new_draw_interface().
 
-
-// The X11Extras don't seem to be available on MacPorts.
-#ifndef __APPLE__
-//#define WITH_X11
-#endif
-#ifdef WITH_X11
-//#include <X11/Xlib.h>
-#endif
-
 namespace qtinterf {
     struct sGbag;
     class QTdrawIf;
     class cGhostDraw;
     class QTdraw;
 
+//XXX get rid the interface, use QTcanvas only.
     enum DrawType
     {
-        DrawGL,         // use OpenGL
-        DrawX,          // use X-Windows direct calls
+        DrawGL,         // use OpenGL (not supported)
+        DrawX,          // use X-Windows direct calls (not supported)
         DrawNative      // use QPainter
     };
 }
@@ -222,8 +214,8 @@ public:
         { if (gd_viewport) gd_viewport->undraw_ghost(rst); }
     void DrawGhost(int x, int y)
         { if (gd_viewport) gd_viewport->draw_ghost(x, y); }
+    void DrawGhost();
 
-    void MovePointer(int, int, bool);
     void QueryPointer(int*, int*, unsigned*);
     void DefineColor(int*, int, int, int);
     void SetBackground(int pix)

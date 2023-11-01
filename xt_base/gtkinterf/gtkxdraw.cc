@@ -177,12 +177,12 @@ namespace ginterf
         void Zoid(int, int, int, int, int, int);
         void Text(const char*, int, int, int, int = -1, int = -1);
         void TextExtent(const char*, int*, int*);
-        void MovePointer(int, int, bool)                        { }
         void SetGhost(GhostDrawFunc, int, int)                  { }
         void ShowGhost(bool)                                    { }
         bool ShowingGhost()                                 { return(false); }
         void UndrawGhost(bool = false)                          { }
         void DrawGhost(int, int)                                { }
+        void DrawGhost()                                        { }
         void QueryPointer(int*, int*, unsigned*)                { }
         void DefineColor(int*, int, int, int);
         void SetBackground(int);

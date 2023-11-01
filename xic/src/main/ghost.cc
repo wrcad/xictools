@@ -218,25 +218,26 @@ cGhost::RestoreGhost()
 void
 cGhost::RepaintGhost()
 {
-    DSPmainDraw(MovePointer(0, 0, false))
+    DSPmainDraw(DrawGhost())
 }
 
 
 void
 cGhost::BumpGhostPointer(int gmode)
 {
+//XXX fix this
     switch (gmode) {
     case GFdisk:
     case GFdonut:
     case GFarc:
     case GFdiskpth:
     case GFarcpth:
-        DSPmainDraw(MovePointer(10, 10, false))
+        DSPmainDraw(DrawGhost())
         break;
     case GFbox_ns:
     case GFzoom:
     case GFpterms:
-        DSPmainDraw(MovePointer(5, 5, false))
+        DSPmainDraw(DrawGhost())
         break;
     default:
         break;
@@ -391,7 +392,7 @@ cGhost::setghost()
                     g->type == GFlabel ||
                     g->type == GFput ||
                     g->type == GFscript)
-                DSPmainDraw(MovePointer(0, 0, false))
+                DSPmainDraw(DrawGhost())
         }
     }
 }

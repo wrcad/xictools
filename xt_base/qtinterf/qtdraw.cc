@@ -155,19 +155,19 @@ QTdraw::Text(const char *str, int x, int y, int xform, int, int)
 }
 
 
-// Move the pointer by x, y relative to current position, if absolute
-// is false.  If true, move to given location.
-//
 void
-QTdraw::MovePointer(int x, int y, bool absolute)
+QTdraw::DrawGhost()
 {
-    // Called with 0,0 this redraws ghost objects
-    if (absolute)
-        QCursor::setPos(x, y);
-    else {
-        QPoint qp = QCursor::pos();
-        QCursor::setPos(qp.x() + x, qp.y() + y);
-    }
+    // This will show the ghost drawing if it has been paused, such as
+    // when the ghost changes.  Previously, we would call MovePointer
+    // and let the move events trigger the redraw, but applications
+    // moving the pointer is no longer generqlly supported in QT, at
+    // least in an obvious way.  This is the replacement for the
+    // MovePointer calls, the only purpose of which was to wake up the
+    // ghosting.
+
+    QPoint qp = ((QWidget*)gd_viewport)->mapFromGlobal(QCursor::pos());
+    gd_viewport->draw_ghost(qp.x(), qp.y());
 }
 
 

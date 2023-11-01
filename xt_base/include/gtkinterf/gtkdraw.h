@@ -264,8 +264,8 @@ namespace gtkinterf {
         void UndrawGhost(bool reset = false)
                                             { gd_gbag->undraw_ghost(reset); }
         void DrawGhost(int x, int y)        { gd_gbag->draw_ghost(x, y); }
+        void DrawGhost();
 
-        void MovePointer(int, int, bool);
         void QueryPointer(int*, int*, unsigned*);
         void DefineColor(int*, int, int, int);
         void SetBackground(int);

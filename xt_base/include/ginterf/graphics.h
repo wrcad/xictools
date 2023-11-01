@@ -954,7 +954,7 @@ namespace ginterf
         virtual bool ShowingGhost()                                     = 0;
         virtual void UndrawGhost(bool = false)                          = 0;
         virtual void DrawGhost(int, int)                                = 0;
-        virtual void MovePointer(int, int, bool)                        = 0;
+        virtual void DrawGhost()                                        = 0;
         virtual void QueryPointer(int*, int*, unsigned*)                = 0;
         virtual void DefineColor(int*, int, int, int)                   = 0;
         virtual void SetBackground(int)                                 = 0;
@@ -1026,8 +1026,8 @@ namespace ginterf
         void ShowGhost(bool)                                    { }
         void UndrawGhost(bool = false)                          { }
         void DrawGhost(int, int)                                { }
+        void DrawGhost()                                        { }
 
-        void MovePointer(int, int, bool)                        { }
         void QueryPointer(int*, int*, unsigned*)                { }
 
         void DefineColor(int*, int, int, int)                   { }

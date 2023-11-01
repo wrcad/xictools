@@ -98,8 +98,8 @@ struct msw_draw : virtual public GRdraw
     bool ShowingGhost()                             { return (false); }
     void UndrawGhost(bool = false)                  { }
     void DrawGhost(int, int)                        { }
+    void DrawGhost()                                { }
 
-    void MovePointer(int, int, bool)                { }
     void QueryPointer(int*, int*, unsigned*)        { }
 
     void DefineColor(int*, int, int, int);

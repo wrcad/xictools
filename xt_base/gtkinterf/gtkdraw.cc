@@ -1235,11 +1235,8 @@ GTKdraw::TextExtent(const char *text, int *wid, int *hei)
 }
 
 
-// Move the pointer by x, y relative to current position, if absolute
-// is false.  If true, move to given location.
-//
 void
-GTKdraw::MovePointer(int x, int y, bool absolute)
+DTKdraw::DrawGhost()
 {
     // Called with 0,0 this redraws ghost objects.
 #if GTK_CHECK_VERSION(3,0,0)
@@ -1252,11 +1249,11 @@ GTKdraw::MovePointer(int x, int y, bool absolute)
         GdkScreen *screen;
         GdkDisplay *display = gdk_display_get_default();
         gdk_display_get_pointer(display, &screen, &x0, &y0, 0);
-        if (absolute)
-            gdk_window_get_root_origin(window, &x0, &y0);
-        x += x0;
-        y += y0;
-        gdk_display_warp_pointer(display, screen, x, y);
+//        if (absolute)
+//            gdk_window_get_root_origin(window, &x0, &y0);
+//        x += x0;
+//        y += y0;
+        gdk_display_warp_pointer(display, screen, x0, y0);
     }
 }
 
