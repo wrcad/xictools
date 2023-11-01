@@ -1236,7 +1236,7 @@ GTKdraw::TextExtent(const char *text, int *wid, int *hei)
 
 
 void
-DTKdraw::DrawGhost()
+GTKdraw::DrawGhost()
 {
     // Called with 0,0 this redraws ghost objects.
 #if GTK_CHECK_VERSION(3,0,0)
