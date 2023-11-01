@@ -81,6 +81,8 @@ private slots:
     void magnification_change_slot(double);
     void identity_btn_slot();
     void last_btn_slot();
+    void store_btn_slot();
+    void rcl_btn_slot();
     void dismiss_btn_slot();
 
 private:

@@ -1447,7 +1447,7 @@ sGraph::gr_zoomin(int x0, int y0)
     gr_pressy = y0;
 
     gr_set_ghost(ghost_zoom, x0, y0);
-    gr_dev->MovePointer(16, -16, false);
+    gr_dev->DrawGhost();
 }
 
 
@@ -4668,7 +4668,7 @@ sGraph::timeout_move(void *arg)
 {
     sGraph *graph = (sGraph*)arg;
     graph->gr_set_ghost(ghost_tbox, 0, 0);
-    graph->gr_dev->MovePointer(0, 0, false);
+    graph->gr_dev->DrawGhost();
     graph->gr_cmdmode |= grMoving;
     graph->gr_timer_id = 0;
     return (false);

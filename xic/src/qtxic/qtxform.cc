@@ -50,6 +50,7 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QPushButton>
+#include <QToolButton>
 
 //--------------------------------------------------------------------------
 // Pop up for setting the current transform.
@@ -140,9 +141,9 @@ QTxformDlg::QTxformDlg(GRobject c,
     hb->addWidget(lbl);
     hbox->addWidget(gb);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QPushButton *hbtn = new QPushButton(tr("Help"));
+    hbox->addWidget(hbtn);
+    connect(hbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Rotation entry and mirror buttons
     //
@@ -207,16 +208,26 @@ QTxformDlg::QTxformDlg(GRobject c,
     hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Sto 1"));
+    QToolButton *btn = new QToolButton();
+    btn->setText(tr("Sto 1"));
     hbox->addWidget(btn);
-    btn = new QPushButton(tr("Sto 2"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(store_btn_slot()));
+    btn = new QToolButton();
+    btn->setText(tr("Sto 2"));
     hbox->addWidget(btn);
-    btn = new QPushButton(tr("Sto 3"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(store_btn_slot()));
+    btn = new QToolButton();
+    btn->setText(tr("Sto 3"));
     hbox->addWidget(btn);
-    btn = new QPushButton(tr("Sto 4"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(store_btn_slot()));
+    btn = new QToolButton();
+    btn->setText(tr("Sto 4"));
     hbox->addWidget(btn);
-    btn = new QPushButton(tr("Sto 5"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(store_btn_slot()));
+    btn = new QToolButton();
+    btn->setText(tr("Sto 5"));
     hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(store_btn_slot()));
 
     // Recall buttons
     //
@@ -224,16 +235,26 @@ QTxformDlg::QTxformDlg(GRobject c,
     hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Rcl 1"));
+    btn = new QToolButton();
+    btn->setText(tr("Rcl 1"));
     hbox->addWidget(btn);
-    btn = new QPushButton(tr("Rcl 2"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(rcl_btn_slot()));
+    btn = new QToolButton();
+    btn->setText(tr("Rcl 2"));
     hbox->addWidget(btn);
-    btn = new QPushButton(tr("Rcl 3"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(rcl_btn_slot()));
+    btn = new QToolButton();
+    btn->setText(tr("Rcl 3"));
     hbox->addWidget(btn);
-    btn = new QPushButton(tr("Rcl 4"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(rcl_btn_slot()));
+    btn = new QToolButton();
+    btn->setText(tr("Rcl 4"));
     hbox->addWidget(btn);
-    btn = new QPushButton(tr("Rcl 5"));
+    connect(btn, SIGNAL(clicked()), this, SLOT(rcl_btn_slot()));
+    btn = new QToolButton();
+    btn->setText(tr("Rcl 5"));
     hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(rcl_btn_slot()));
 
     // Dismiss button
     //
@@ -361,67 +382,73 @@ QTxformDlg::last_btn_slot()
 
 
 void
+QTxformDlg::store_btn_slot()
+{
+    QToolButton *tb = dynamic_cast<QToolButton*>(sender());
+    if (!tb)
+        return;
+    QString qs = tb->text();
+    if (qs == "Sto 1") {
+        ED()->saveCurTransform(1);
+        return;
+    }
+    if (qs == "Sto 2") {
+        ED()->saveCurTransform(2);
+        return;
+    }
+    if (qs == "Sto 3") {
+        ED()->saveCurTransform(3);
+        return;
+    }
+    if (qs == "Sto 4") {
+        ED()->saveCurTransform(4);
+        return;
+    }
+    if (qs == "Sto 5") {
+        ED()->saveCurTransform(5);
+        return;
+    }
+}
+
+
+void
+QTxformDlg::rcl_btn_slot()
+{
+    QToolButton *tb = dynamic_cast<QToolButton*>(sender());
+    if (!tb)
+        return;
+    QString qs = tb->text();
+    if (qs == "Rcl 1") {
+        ED()->saveCurTransform(0);
+        ED()->recallCurTransform(1);
+        return;
+    }
+    if (qs == "Rcl 2") {
+        ED()->saveCurTransform(0);
+        ED()->recallCurTransform(2);
+        return;
+    }
+    if (qs == "Rcl 3") {
+        ED()->saveCurTransform(0);
+        ED()->recallCurTransform(3);
+        return;
+    }
+    if (qs == "Rcl 4") {
+        ED()->saveCurTransform(0);
+        ED()->recallCurTransform(4);
+        return;
+    }
+    if (qs == "Rcl 5") {
+        ED()->saveCurTransform(0);
+        ED()->recallCurTransform(5);
+        return;
+    }
+}
+
+
+void
 QTxformDlg::dismiss_btn_slot()
 {
     ED()->PopUpTransform(0, MODE_OFF, 0, 0);
 }
 
-
-
-
-#ifdef notdef
-
-// Static function.
-void
-QTxformDlg::tf_action_proc(GtkWidget *widget, void*)
-{
-    if (Tfm && Tfm->tf_callback) {
-        if (!strcmp(name, "sto1")) {
-            ED()->saveCurTransform(1);
-            return;
-        }
-        if (!strcmp(name, "sto2")) {
-            ED()->saveCurTransform(2);
-            return;
-        }
-        if (!strcmp(name, "sto3")) {
-            ED()->saveCurTransform(3);
-            return;
-        }
-        if (!strcmp(name, "sto4")) {
-            ED()->saveCurTransform(4);
-            return;
-        }
-        if (!strcmp(name, "sto5")) {
-            ED()->saveCurTransform(5);
-            return;
-        }
-        if (!strcmp(name, "rcl1")) {
-            ED()->saveCurTransform(0);
-            ED()->recallCurTransform(1);
-            return;
-        }
-        if (!strcmp(name, "rcl2")) {
-            ED()->saveCurTransform(0);
-            ED()->recallCurTransform(2);
-            return;
-        }
-        if (!strcmp(name, "rcl3")) {
-            ED()->saveCurTransform(0);
-            ED()->recallCurTransform(3);
-            return;
-        }
-        if (!strcmp(name, "rcl4")) {
-            ED()->saveCurTransform(0);
-            ED()->recallCurTransform(4);
-            return;
-        }
-        if (!strcmp(name, "rcl5")) {
-            ED()->saveCurTransform(0);
-            ED()->recallCurTransform(5);
-            return;
-        }
-    }
-}
-
-#endif

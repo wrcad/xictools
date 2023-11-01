@@ -185,10 +185,11 @@ extern const char *spkw_oldsteplim;
 extern const char *spkw_renumber;
 extern const char *spkw_savecurrent;
 extern const char *spkw_spice3;
+extern const char *spkw_translate;
 extern const char *spkw_trapcheck;
 extern const char *spkw_trytocompact;
 extern const char *spkw_useadjoint;
-extern const char *spkw_translate;
+extern const char *spkw_vasilent;
 
 // strings
 extern const char *spkw_method;

@@ -57,6 +57,7 @@ Authors: 1986 Wayne A. Christopher
 #include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
+#include "kwords_analysis.h"
 #include "commands.h"
 #include "device.h"
 #include "input.h"
@@ -1483,8 +1484,11 @@ namespace {
     {
         if (fd == 0)
             GRpkg::self()->ErrPrintf(ET_MSG, str);
-        else if (fd <= 1)
+        else if (fd <= 1) {
+            if (Sp.GetRawVar(spkw_vasilent, Sp.CurCircuit()))
+                return;
             write(fileno(stdout), str, strlen(str));
+        }
         else
             write(fd, str, strlen(str));
     }

@@ -118,10 +118,13 @@ const char *spkw_oldsteplim     = "oldsteplim";
 const char *spkw_renumber       = "renumber";
 const char *spkw_savecurrent    = "savecurrent";
 const char *spkw_spice3         = "spice3";
+const char *spkw_translate      = "translate";
 const char *spkw_trapcheck      = "trapcheck";
 const char *spkw_trytocompact   = "trytocompact";
 const char *spkw_useadjoint     = "useadjoint";
-const char *spkw_translate      = "translate";
+
+// Just a normal variable, no associated flag.
+const char *spkw_vasilent       = "vasilent";
 
 // strings
 const char *spkw_method         = "method";
