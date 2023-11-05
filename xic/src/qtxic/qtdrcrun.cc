@@ -193,6 +193,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QTabWidget *nbook = new QTabWidget();
@@ -222,8 +223,9 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     hb->setSpacing(2);
 
     dc_use = new QPushButton(tr("Use"));
-    dc_use->setCheckable(true);
     hb->addWidget(dc_use);
+    dc_use->setCheckable(true);
+    dc_use->setAutoDefault(false);
     connect(dc_use, SIGNAL(toggled(bool)), this, SLOT(use_btn_slot(bool)));
 
     dc_chdname = new QLineEdit();
@@ -250,8 +252,9 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     hb->setSpacing(2);
 
     dc_none = new QPushButton(tr("None"));
-    dc_none->setCheckable(true);
     hb->addWidget(dc_none);
+    dc_none->setCheckable(true);
+    dc_none->setAutoDefault(false);
     connect(dc_none, SIGNAL(toggled(bool)), this, SLOT(none_btn_slot(bool)));
 
     dc_sb_part = new QDoubleSpinBox();
@@ -280,8 +283,9 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
         this, SLOT(flat_btn_slot(int)));
 
     dc_set = new QPushButton(tr("Set"));
-    dc_set->setCheckable(true);
     grid->addWidget(dc_set, 0, 3);
+    dc_set->setCheckable(true);
+    dc_set->setAutoDefault(false);
     connect(dc_set, SIGNAL(toggled(bool)), this, SLOT(set_btn_slot(bool)));
 
     // Window LBRT
@@ -335,8 +339,9 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     // Check, Check Bg buttons
     //
     dc_check = new QPushButton(tr("Check\n"));
-    dc_check->setCheckable(true);
     grid->addWidget(dc_check, 3, 0, 1, 2);
+    dc_check->setCheckable(true);
+    dc_check->setAutoDefault(false);
     connect(dc_check, SIGNAL(toggled(bool)), this, SLOT(check_btn_slot(bool)));
 
     // This is black magic to allow button pressess/releases to be
@@ -345,8 +350,9 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
 //XXX    g_object_set_data(G_OBJECT(button), "abort", (void*)1);
 
     dc_checkbg = new QPushButton(tr("Check in\nBackground"));
-    dc_checkbg->setCheckable(true);
     grid->addWidget(dc_checkbg, 3, 2, 1, 2);
+    dc_checkbg->setCheckable(true);
+    dc_checkbg->setAutoDefault(false);
     connect(dc_checkbg, SIGNAL(toggled(bool)),
         this, SLOT(checkbg_btn_slot(bool)));
 
@@ -373,6 +379,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
 
     dc_kill = new QPushButton(tr("Abort job"));
     vb->addWidget(dc_kill);
+    dc_kill->setAutoDefault(false);
     connect(dc_kill, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
 
     // Dismiss button

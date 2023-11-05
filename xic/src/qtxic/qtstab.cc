@@ -128,6 +128,7 @@ QTstabDlg::QTstabDlg(GRobject c)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout(0);
@@ -145,18 +146,21 @@ QTstabDlg::QTstabDlg(GRobject c)
         this, SLOT(table_change_slot(int)));
     
     tb_add = new QPushButton(tr("Add"));
-    tb_add->setCheckable(true);
     hbox->addWidget(tb_add);
+    tb_add->setCheckable(true);
+    tb_add->setAutoDefault(false);
     connect(tb_add, SIGNAL(toggled(bool)), this, SLOT(add_btn_slot(bool)));
 
     tb_clr = new QPushButton(tr("Clear"));
-    tb_clr->setCheckable(true);
     hbox->addWidget(tb_add);
+    tb_clr->setCheckable(true);
+    tb_clr->setAutoDefault(false);
     connect(tb_clr, SIGNAL(toggled(bool)), this, SLOT(clear_btn_slot(bool)));
 
     tb_del = new QPushButton(tr("Destroy"));
-    tb_del->setCheckable(true);
     hbox->addWidget(tb_del);
+    tb_del->setCheckable(true);
+    tb_del->setAutoDefault(false);
     if (!tb_namelist || !strcmp(tb_namelist->string, CD_MAIN_ST_NAME))
         tb_del->setEnabled(false);
     connect(tb_del, SIGNAL(toggled(bool)), this, SLOT(destroy_btn_slot(bool)));

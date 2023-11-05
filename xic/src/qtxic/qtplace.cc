@@ -149,20 +149,23 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     // First row buttons.
     //
     pl_arraybtn = new QPushButton(tr("Use Array"));
-    pl_arraybtn->setCheckable(true);
     hbox->addWidget(pl_arraybtn);
+    pl_arraybtn->setCheckable(true);
+    pl_arraybtn->setAutoDefault(false);
     connect(pl_arraybtn, SIGNAL(toggled(bool)),
         this, SLOT(array_btn_slot(bool)));
 
     pl_replbtn = new QPushButton(tr("Replace"));
-    pl_replbtn->setCheckable(true);
     hbox->addWidget(pl_replbtn);
+    pl_replbtn->setCheckable(true);
+    pl_replbtn->setAutoDefault(false);
     connect(pl_replbtn, SIGNAL(clicked(bool)),
         this, SLOT(replace_btn_slot(bool)));
 
     pl_smashbtn = new QPushButton(tr("Smash"));
-    pl_smashbtn->setCheckable(true);
     hbox->addWidget(pl_smashbtn);
+    pl_smashbtn->setCheckable(true);
+    pl_smashbtn->setAutoDefault(false);
 
     pl_refmenu = new QComboBox();
     pl_refmenu->addItem(tr("Origin"));
@@ -177,6 +180,7 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Array set labels and entries.
@@ -272,6 +276,7 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
 
         pl_placebtn = new QPushButton(tr("Place"));;
         pl_placebtn->setCheckable(true);
+        pl_placebtn->setAutoDefault(false);
         bool status = QTdev::GetStatus(pl_menu_placebtn);
         pl_placebtn->setChecked(status);
         hbox->addWidget(pl_placebtn);
@@ -408,12 +413,15 @@ QTplaceDlg::rebuild_menu()
 void
 QTplaceDlg::dragEnterEvent(QDragEnterEvent *ev)
 {
-    if (ev->mimeData()->hasFormat("text/twostring") ||
+    if (ev->mimeData()->hasUrls() ||
+            ev->mimeData()->hasFormat("text/twostring") ||
             ev->mimeData()->hasFormat("text/cellname") ||
             ev->mimeData()->hasFormat("text/string") ||
             ev->mimeData()->hasFormat("text/plain")) {
-        ev->acceptProposedAction();
+        ev->accept();
     }
+    else
+        ev->ignore();
 }
 
 
@@ -421,6 +429,21 @@ QTplaceDlg::dragEnterEvent(QDragEnterEvent *ev)
 void
 QTplaceDlg::dropEvent(QDropEvent *ev)
 {
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        delete [] pl_dropfile;
+        pl_dropfile = 0;
+        if (pl_str_editor) {
+            pl_str_editor->update(0, str);
+        }
+        else {
+            pl_dropfile = lstring::copy(str);
+            master_menu_slot(0);
+        }
+        ev->accept();
+        return;
+    }
     const char *fmt = 0;
     if (ev->mimeData()->hasFormat("text/twostring"))
         fmt = "text/twostring";
@@ -451,8 +474,10 @@ QTplaceDlg::dropEvent(QDropEvent *ev)
             pl_dropfile = src;
             master_menu_slot(0);
         }
-        ev->acceptProposedAction();
+        ev->accept();
+        return;
     }
+    ev->ignore();
 }
 
 

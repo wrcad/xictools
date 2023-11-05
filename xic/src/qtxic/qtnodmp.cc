@@ -244,31 +244,36 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
     // button line
     //
     nm_use_np = new QPushButton(tr("Use nophys"));
-    nm_use_np->setCheckable(true);
     hbox->addWidget(nm_use_np);
+    nm_use_np->setCheckable(true);
+    nm_use_np->setAutoDefault(false);
     connect(nm_use_np, SIGNAL(toggled(bool)),
         this, SLOT(nophys_btn_slot(bool)));
 
     nm_rename = new QPushButton(tr("Map Name"));
-    nm_rename->setCheckable(true);
     hbox->addWidget(nm_rename);
+    nm_rename->setCheckable(true);
+    nm_rename->setAutoDefault(false);
     connect(nm_rename, SIGNAL(toggled(bool)),
         this, SLOT(mapname_btn_slot(bool)));
 
     nm_remove = new QPushButton(tr("Unmap"));
-    nm_remove->setCheckable(true);
     hbox->addWidget(nm_remove);
+    nm_remove->setCheckable(true);
+    nm_remove->setAutoDefault(false);
     connect(nm_remove, SIGNAL(toggled(bool)),
         this, SLOT(unmap_btn_slot(bool)));
 
     nm_point_btn = new QPushButton(tr("Click-Select Mode"));
-    nm_point_btn->setCheckable(true);
     hbox->addWidget(nm_point_btn);
+    nm_point_btn->setCheckable(true);
+    nm_point_btn->setAutoDefault(false);
     connect(nm_point_btn, SIGNAL(toggled(bool)),
         this, SLOT(click_btn_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // second button line
@@ -284,6 +289,7 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
     nm_srch_btn = new QPushButton();
     hbox->addWidget(nm_srch_btn);
     nm_srch_btn->setIcon(QIcon(QPixmap(lsearch_xpm)));
+    nm_srch_btn->setAutoDefault(false);
     connect(nm_srch_btn, SIGNAL(clicked()), this, SLOT(srch_btn_slot()));
 
     nm_srch_entry = new QLineEdit();
@@ -342,6 +348,7 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
 
     btn = new QPushButton(tr(" Deselect "));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(deselect_btn_slot()));
 
     btn = new QPushButton(tr("Dismiss"));
@@ -359,6 +366,7 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
 
     nm_find_btn = new QPushButton(tr("Find"));
     hbox->addWidget(nm_find_btn);
+    nm_find_btn->setAutoDefault(false);
     connect(nm_find_btn, SIGNAL(clicked()), this, SLOT(find_btn_slot()));
 
     // If the group/node selection mode in extraction is enabled with

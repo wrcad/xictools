@@ -171,6 +171,7 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
 
     dw_apply = new QPushButton(tr("Apply"));
     col3->addWidget(dw_apply);
+    dw_apply->setAutoDefault(false);
     connect(dw_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
     hbox = new QHBoxLayout(0);
@@ -180,6 +181,7 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
 
     dw_center = new QPushButton(tr("Center Full View"));
     hbox->addWidget(dw_center);
+    dw_center->setAutoDefault(false);
     connect(dw_center, SIGNAL(clicked()), this, SLOT(center_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));

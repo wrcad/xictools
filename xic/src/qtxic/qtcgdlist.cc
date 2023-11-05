@@ -137,35 +137,41 @@ QTcgdListDlg::QTcgdListDlg(GRobject c)
     vbox->addLayout(hbox);
 
     cgl_addbtn = new QPushButton(tr("Add"));
-    cgl_addbtn->setCheckable(true);
     hbox->addWidget(cgl_addbtn);
+    cgl_addbtn->setCheckable(true);
+    cgl_addbtn->setAutoDefault(false);
     connect(cgl_addbtn, SIGNAL(toggled(bool)),
         this, SLOT(add_btn_slot(bool)));
 
     cgl_savbtn = new QPushButton(tr("Save"));
-    cgl_savbtn->setCheckable(true);
     hbox->addWidget(cgl_savbtn);
+    cgl_savbtn->setCheckable(true);
+    cgl_savbtn->setAutoDefault(false);
     connect(cgl_savbtn, SIGNAL(toggled(bool)),
         this, SLOT(sav_btn_slot(bool)));
 
     cgl_delbtn = new QPushButton(tr("Delete"));
-    cgl_delbtn->setCheckable(true);
     hbox->addWidget(cgl_delbtn);
+    cgl_delbtn->setCheckable(true);
+    cgl_delbtn->setAutoDefault(false);
     connect(cgl_delbtn, SIGNAL(toggled(bool)),
         this, SLOT(del_btn_slot(bool)));
 
     cgl_cntbtn = new QPushButton(tr("Contents"));
     hbox->addWidget(cgl_cntbtn);
+    cgl_cntbtn->setAutoDefault(false);
     connect(cgl_cntbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
 
     cgl_infbtn = new QPushButton(tr("Info"));
-    cgl_infbtn->setCheckable(true);
     hbox->addWidget(cgl_infbtn);
+    cgl_infbtn->setCheckable(true);
+    cgl_infbtn->setAutoDefault(false);
     connect(cgl_infbtn, SIGNAL(toggled(bool)),
         this, SLOT(inf_btn_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled list

@@ -55,6 +55,9 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QRadioButton>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 
 //-----------------------------------------------------------------------------
@@ -91,6 +94,65 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
     QTchdOpenDlg::self()->show();
 }
 // End of cConvert functions.
+
+
+class QTchdOpenPathEdit : public QLineEdit
+{
+public:
+    QTchdOpenPathEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTchdOpenPathEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+void
+QTchdOpenPathEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        setText(str);
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/twostring")) {
+        // Drops from content lists may be in the form
+        // "fname_or_chd\ncellname".  Keep the filename.
+        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *t = strchr(str, '\n');
+        if (t)
+            *t = 0;
+        setText(str);
+        delete [] str;
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        // The default action will insert the text at the click location,
+        // instead here we replace any existing text.
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        setText(ba.constData());
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
 
 
 QTchdOpenDlg *QTchdOpenDlg::instPtr;
@@ -141,6 +203,7 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // This allows user to change label text.
@@ -156,19 +219,10 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     p_vbox->setContentsMargins(qmtop);
     p_vbox->setSpacing(2);
 
-    co_p1_text = new QLineEdit();
+    co_p1_text = new QTchdOpenPathEdit();
     p_vbox->addWidget(co_p1_text);
     co_p1_text->setReadOnly(false);
-
-    // drop site
-/*
-    GtkDestDefaults DD = (GtkDestDefaults)
-        (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
-    gtk_drag_dest_set(co_p1_text, DD, target_table, n_targets,
-        GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(co_p1_text), "drag-data-received",
-        G_CALLBACK(co_drag_data_received), 0);
-*/
+    co_p1_text->setAcceptDrops(true);
 
     co_p1_cnmap = new QTcnameMap(false);
     p_vbox->addWidget(co_p1_cnmap);
@@ -202,9 +256,10 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     p_vbox->setContentsMargins(qmtop);
     p_vbox->setSpacing(2);
 
-    co_p2_text = new QLineEdit();
+    co_p2_text = new QTchdOpenPathEdit();
     p_vbox->addWidget(co_p2_text);
     co_p2_text->setReadOnly(false);
+    co_p1_text->setAcceptDrops(true);
 
 // Add vspace
 
@@ -325,6 +380,7 @@ QTchdOpenDlg::update(const char *init_idname, const char *init_str)
     co_p1_cnmap->update();
 }
 
+
 void
 QTchdOpenDlg::help_btn_slot()
 {
@@ -404,85 +460,3 @@ QTchdOpenDlg::dismiss_btn_slot()
     QTchdOpenDlg::self()->deleteLater();
 }
 
-
-#ifdef notdef
-
-
-// Private static GTK signal handler.
-// In single-line mode, Return is taken as an "OK" termination.
-//
-int
-QTchdOpenDlg::co_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
-{
-    if (Co && ev->key.keyval == GDK_KEY_Return) {
-        const char *string;
-        int pg = gtk_notebook_get_current_page(GTK_NOTEBOOK(Co->co_nbook));
-        if (pg == 0)
-            string = gtk_entry_get_text(GTK_ENTRY(Co->co_p1_text));
-        else
-            string = gtk_entry_get_text(GTK_ENTRY(Co->co_p2_text));
-        if (string && *string) {
-            Co->apply_proc(Co->co_apply);
-            return (true);
-        }
-    }
-    return (false);
-}
-
-/*
-namespace {
-    // Drag/drop stuff, also used in PopUpInput(), PopUpEditString()
-    //
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-}
-*/
-
-
-// Private static GTK signal handler.
-// Drag data received in editing window, grab it
-//
-void
-QTchdOpenDlg::co_drag_data_received(GtkWidget *entry,
-    GdkDragContext *context, gint, gint, GtkSelectionData *data,
-    guint, guint time)
-{
-    if (gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8 &&
-            gtk_selection_data_get_data(data)) {
-        char *src = (char*)gtk_selection_data_get_data(data);
-        if (gtk_selection_data_get_target(data) ==
-                gdk_atom_intern("TWOSTRING", true)) {
-            // Drops from content lists may be in the form
-            // "fname_or_chd\ncellname".  Keep the filename.
-            char *t = strchr(src, '\n');
-            if (t)
-                *t = 0;
-        }
-        gtk_entry_set_text(GTK_ENTRY(entry), src);
-        gtk_drag_finish(context, true, false, time);
-        return;
-    }
-    gtk_drag_finish(context, false, false, time);
-}
-
-
-// Private static GTK signal handler.
-// Handle page change, set focus to text entry.
-//
-void
-QTchdOpenDlg::co_page_proc(GtkNotebook*, void*, int num, void*)
-{
-    if (!Co)
-        return;
-    if (num == 0)
-        gtk_window_set_focus(GTK_WINDOW(Co->wb_shell), Co->co_p1_text);
-    else
-        gtk_window_set_focus(GTK_WINDOW(Co->wb_shell), Co->co_p2_text);
-}
-
-#endif

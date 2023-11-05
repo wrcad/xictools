@@ -50,6 +50,68 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QTreeWidget>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
+
+
+class QTasmPagePathEdit : public QLineEdit
+{
+public:
+    QTasmPagePathEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTasmPagePathEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+void
+QTasmPagePathEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        setText(str);
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/twostring")) {
+        // Drops from content lists may be in the form
+        // "fname_or_chd\ncellname".  Keep the cellname.
+        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *t = strchr(str, '\n');
+        if (t)
+            *t = 0;
+        setText(str);
+        delete [] str;
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        // The default action will insert the text at the click location,
+        // instead here we replace any existing text.
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        setText(ba.constData());
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
 
 
 //-----------------------------------------------------------------------------
@@ -97,18 +159,10 @@ QTasmPage::QTasmPage(QTasmDlg *mt)
     label->setAlignment(Qt::AlignCenter);
     vbox->addWidget(label);
 
-    pg_path = new QLineEdit();
+    pg_path = new QTasmPagePathEdit();
     vbox->addWidget(pg_path);
-
-/*
-    // drop site
-    GtkDestDefaults DD = (GtkDestDefaults)
-        (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
-    gtk_drag_dest_set(pg_path, DD, QTasmDlg::target_table, QTasmDlg::n_targets,
-        GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(pg_path), "drag-data-received",
-        G_CALLBACK(QTasmDlg::asm_drag_data_received), 0);
-*/
+    pg_path->setReadOnly(false);
+    pg_path->setAcceptDrops(true);
 
     // scale factor and cell name aliasing
     //

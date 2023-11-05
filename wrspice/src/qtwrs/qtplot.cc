@@ -272,6 +272,7 @@ QTplotDlg::init_gbuttons()
     if (!pb_checkwins[pbtn_help]) {
         QPushButton *btn = new QPushButton(tr("Help"));
         vbox->addWidget(btn);
+        btn->setAutoDefault(false);
         btn->setToolTip(tr("Press for help"));
         pb_checkwins[pbtn_help] = btn;
         connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
@@ -280,6 +281,7 @@ QTplotDlg::init_gbuttons()
     if (!pb_checkwins[pbtn_redraw]) {
         QPushButton *btn = new QPushButton(tr("Redraw"));
         vbox->addWidget(btn);
+        btn->setAutoDefault(false);
         btn->setToolTip(tr("Redraw the plot"));
         pb_checkwins[pbtn_redraw] = btn;
         connect(btn, SIGNAL(clicked()),
@@ -290,6 +292,7 @@ QTplotDlg::init_gbuttons()
         QPushButton *btn = new QPushButton(tr("Print"));
         vbox->addWidget(btn);
         btn->setCheckable(true);
+        btn->setAutoDefault(false);
         btn->setToolTip(tr("Print control panel"));
         pb_checkwins[pbtn_print] = btn;
         connect(btn, SIGNAL(toggled(bool)),
@@ -300,6 +303,7 @@ QTplotDlg::init_gbuttons()
         if (!pb_checkwins[pbtn_saveplot]) {
             QPushButton *btn = new QPushButton(tr("Save Plot"));
             vbox->addWidget(btn);
+            btn->setAutoDefault(false);
             btn->setToolTip(tr("Save the plot in a plot file"));
             pb_checkwins[pbtn_saveplot] = btn;
             connect(btn, SIGNAL(clicked()),
@@ -309,6 +313,7 @@ QTplotDlg::init_gbuttons()
         if (!pb_checkwins[pbtn_saveprint]) {
             QPushButton *btn = new QPushButton(tr("Save Print "));
             vbox->addWidget(btn);
+            btn->setAutoDefault(false);
             btn->setToolTip(tr("Save the plot in a print file"));
             pb_checkwins[pbtn_saveprint] = btn;
             connect(btn, SIGNAL(clicked()),
@@ -320,6 +325,7 @@ QTplotDlg::init_gbuttons()
             vbox->addWidget(btn);
             btn->setCheckable(true);
             btn->setChecked(pb_graph->plottype() == PLOT_POINT); 
+            btn->setAutoDefault(false);
             btn->setToolTip(tr("Plot data as points"));
             pb_checkwins[pbtn_points] = btn;
             connect(btn, SIGNAL(toggled(bool)),
@@ -331,6 +337,7 @@ QTplotDlg::init_gbuttons()
             vbox->addWidget(btn);
             btn->setCheckable(true);
             btn->setChecked(pb_graph->plottype() == PLOT_COMB); 
+            btn->setAutoDefault(false);
             btn->setToolTip(tr("Plot data as histogram"));
             pb_checkwins[pbtn_comb] = btn;
             connect(btn, SIGNAL(toggled(bool)),
@@ -344,6 +351,7 @@ QTplotDlg::init_gbuttons()
                 btn->setCheckable(true);
                 btn->setChecked(pb_graph->gridtype() == GRID_XLOG ||
                     pb_graph->gridtype() == GRID_LOGLOG);
+                btn->setAutoDefault(false);
                 btn->setToolTip(tr(
                     "Use logarithmic horizontal scale"));
                 pb_checkwins[pbtn_logx] = btn;
@@ -365,6 +373,7 @@ QTplotDlg::init_gbuttons()
                 btn->setCheckable(true);
                 btn->setChecked(pb_graph->gridtype() == GRID_YLOG ||
                     pb_graph->gridtype() == GRID_LOGLOG);
+                btn->setAutoDefault(false);
                 btn->setToolTip(tr(
                     "Use logarithmic vertical scale"));
                 pb_checkwins[pbtn_logy] = btn;
@@ -384,6 +393,7 @@ QTplotDlg::init_gbuttons()
             vbox->addWidget(btn);
             btn->setCheckable(true);
             btn->setChecked(pb_graph->reference().mark);
+            btn->setAutoDefault(false);
             btn->setToolTip(tr("Show marker"));
             pb_checkwins[pbtn_marker] = btn;
             connect(btn, SIGNAL(toggled(bool)),
@@ -396,6 +406,7 @@ QTplotDlg::init_gbuttons()
                 vbox->addWidget(btn);
                 btn->setCheckable(true);
                 btn->setChecked(pb_graph->yseparate());
+                btn->setAutoDefault(false);
                 btn->setToolTip(tr("Show traces separately"));
                 pb_checkwins[pbtn_separate] = btn;
                 connect(btn, SIGNAL(toggled(bool)),
@@ -418,6 +429,7 @@ QTplotDlg::init_gbuttons()
                     vbox->addWidget(btn);
                     btn->setCheckable(true);
                     btn->setChecked(pb_graph->format() == FT_SINGLE);
+                    btn->setAutoDefault(false);
                     btn->setToolTip(tr(
                         "Use single vertical scale"));
                     pb_checkwins[pbtn_single] = btn;
@@ -432,6 +444,7 @@ QTplotDlg::init_gbuttons()
                     vbox->addWidget(btn);
                     btn->setCheckable(true);
                     btn->setChecked(pb_graph->format() == FT_SINGLE);
+                    btn->setAutoDefault(false);
                     btn->setToolTip(tr( 
                         "Use single vertical scale"));
                     pb_checkwins[pbtn_single] = btn;
@@ -444,6 +457,7 @@ QTplotDlg::init_gbuttons()
                     vbox->addWidget(btn);
                     btn->setCheckable(true);
                     btn->setChecked(pb_graph->format() == FT_GROUP);
+                    btn->setAutoDefault(false);
                     btn->setToolTip(tr(
                         "Same scale for groups: V, I, other"));
                     pb_checkwins[pbtn_group] = btn;

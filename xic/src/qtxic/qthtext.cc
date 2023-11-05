@@ -46,8 +46,9 @@
 #include "menu.h"
 #include "events.h"
 #include "keymap.h"
+#include "sced.h"
+
 #include <QLayout>
-//XXX #include <QPushButton>
 #include <QToolButton>
 #include <QMenu>
 #include <QMouseEvent>
@@ -90,8 +91,6 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     pe_keys = new cKeys(0, 0);
     pe_keys->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     hbox->addWidget(pe_keys);
-
-    int w = QTfont::stringWidth(0, FNT_SCREEN);
 
     // Recall button and menu.
     pe_rcl_btn = new QToolButton();
@@ -583,22 +582,96 @@ QTedit::motion_slot(QMouseEvent *ev)
 }
 
 
+namespace {
+    struct load_file_data
+    {
+        load_file_data(const char *f, const char *c)
+            {
+                filename = lstring::copy(f);
+                cellname = lstring::copy(c);
+            }
+
+        ~load_file_data()
+            {
+                delete [] filename;
+                delete [] cellname;
+            }
+
+        char *filename;
+        char *cellname;
+    };
+
+    // Idle procedure to load a file, called from the drop handler.
+    //
+    int load_file_idle(void *arg)
+    {
+        load_file_data *data = (load_file_data*)arg;
+        XM()->Load(EV()->CurrentWin(), data->filename, 0, data->cellname);
+        delete data;
+        return (0);
+    }
+
+    void load_file_proc(const char *fmt, const char *s)
+    {
+        char *src = lstring::copy(s);
+        char *t = 0;
+        if (!strcmp(fmt, "text/twostring")) {
+            // Drops from content lists may be in the form
+            // "fname_or_chd\ncellname".
+            t = strchr(src, '\n');
+            if (t)
+                *t++ = 0;
+        }
+        load_file_data *lfd = new load_file_data(src, t);
+        delete [] src;
+
+        bool didit = false;
+        if (QTedit::self() && QTedit::self()->is_active()) {
+            if (ScedIf()->doingPlot()) {
+                // Plot/Iplot edit line is active, break out.
+                QTedit::self()->abort();
+            }
+            else {
+                // If editing, push into prompt line.
+                // Keep the cellname.
+                if (lfd->cellname)
+                    QTedit::self()->insert(lfd->cellname);
+                else
+                    QTedit::self()->insert(lfd->filename);
+                delete lfd;
+                didit = true;
+            }
+        }
+        if (!didit)
+            QTpkg::self()->RegisterIdleProc(load_file_idle, lfd);
+    }
+}
+
+
 void
 QTedit::drag_enter_slot(QDragEnterEvent *ev)
 {
-    if (ev->mimeData()->hasFormat("text/property") ||
+    if (ev->mimeData()->hasUrls() || ev->mimeData()->hasFormat("text/property") ||
             ev->mimeData()->hasFormat("text/twostring") ||
             ev->mimeData()->hasFormat("text/cellname") ||
             ev->mimeData()->hasFormat("text/string") ||
             ev->mimeData()->hasFormat("text/plain")) {
-        ev->acceptProposedAction();
+        ev->accept();
     }
+    ev->ignore();
 }
 
 
 void
 QTedit::drop_slot(QDropEvent *ev)
 {
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        load_file_proc("", str);
+        ev->accept();
+        return;
+    }
     if (ev->mimeData()->hasFormat("text/property")) {
         if (is_active()) {
             QByteArray bary = ev->mimeData()->data("text/property");
@@ -608,7 +681,7 @@ QTedit::drop_slot(QDropEvent *ev)
             insert(hp);
             hyList::destroy(hp);
         }
-        ev->acceptProposedAction();
+        ev->accept();
         return;
     }
     const char *fmt = 0;
@@ -622,28 +695,11 @@ QTedit::drop_slot(QDropEvent *ev)
         fmt = "text/plain";
     if (fmt) {
         QByteArray bary = ev->mimeData()->data(fmt);
-        char *src = lstring::copy((const char*)bary.data());
-        char *t = 0;
-        if (!strcmp(fmt, "text/twostring")) {
-            // Drops from content lists may be in the form
-            // "fname_or_chd\ncellname".
-            t = strchr(src, '\n');
-            if (t)
-                *t++ = 0;
-        }
-        if (is_active()) {
-            // Keep the cellname.
-            // If editing, push into prompt line.
-            insert(t);
-        }
-        else {
-            if (t)
-                XM()->Load(EV()->CurrentWin(), src, 0, t);
-            else
-                XM()->Load(EV()->CurrentWin(), src);
-        }
-        ev->acceptProposedAction();
+        load_file_proc(fmt, bary.constData());
+        ev->accept();
+        return;
     }
+    ev->ignore();
 }
 
 
@@ -659,7 +715,6 @@ QTedit::keys_press_slot(QMouseEvent *ev)
 
 
 #ifdef notdef
-
 
 namespace {
     // Copy the string, encoding unicode excapes to UTF-8 characters.

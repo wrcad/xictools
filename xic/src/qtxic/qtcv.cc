@@ -154,6 +154,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Input selection menu
@@ -284,6 +285,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
 
     btn = new QPushButton(tr("Convert"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(convert_btn_slot()));
 
     // Conversion scale

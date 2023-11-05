@@ -107,14 +107,14 @@ QTemptyDlg::QTemptyDlg(stringlist *l)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    QPushButton *btn = new QPushButton();
-    btn->setText(tr("Delete All"));
+    QPushButton *btn = new QPushButton(tr("Delete All"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(delete_btn_slot()));
 
-    btn = new QPushButton();
-    btn->setText(tr("Skip All"));
+    btn = new QPushButton(tr("Skip All"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(skip_btn_slot()));
 
     QGroupBox *gb = new QGroupBox();

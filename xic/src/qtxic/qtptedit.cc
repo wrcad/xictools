@@ -146,6 +146,7 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Name Entry
@@ -198,16 +199,19 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
 
     btn = new QPushButton(tr("Prev"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(prev_btn_slot()));
 
     btn = new QPushButton(tr("Next"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(next_btn_slot()));
 
     hbox->addStretch(1);
 
     btn = new QPushButton(tr("To Index"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(toindedx_btn_slot()));
 
     te_sb_toindex = new QSpinBox();

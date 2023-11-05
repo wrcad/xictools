@@ -224,68 +224,80 @@ QTcellsDlg::QTcellsDlg(GRobject c)
     //
     c_clearbtn = new QPushButton(tr("Clear"));
     col1->addWidget(c_clearbtn);
+    c_clearbtn->setAutoDefault(false);
     connect(c_clearbtn, SIGNAL(clicked()), this, SLOT(clear_btn_slot()));
     if (!EditIf()->hasEdit())
         c_clearbtn->hide();
 
     c_treebtn = new QPushButton(tr("Tree"));
     col1->addWidget(c_treebtn);
+    c_treebtn->setAutoDefault(false);
     connect(c_treebtn, SIGNAL(clicked()), this, SLOT(tree_btn_slot()));
 
     c_openbtn = new QPushButton(tr("Open"));
     col1->addWidget(c_openbtn);
+    c_openbtn->setAutoDefault(false);
     connect(c_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
     c_placebtn = new QPushButton(tr("Place"));
     col1->addWidget(c_placebtn);
+    c_placebtn->setAutoDefault(false);
     connect(c_placebtn, SIGNAL(clicked()), this, SLOT(place_btn_slot()));
     if (!EditIf()->hasEdit())
         c_placebtn->hide();
 
     c_copybtn = new QPushButton(tr("Copy"));
     col1->addWidget(c_copybtn);
+    c_copybtn->setAutoDefault(false);
     connect(c_copybtn, SIGNAL(clicked()), this, SLOT(copy_btn_slot()));
     if (!EditIf()->hasEdit())
         c_copybtn->hide();
 
     c_replbtn = new QPushButton(tr("Replace"));;
     col1->addWidget(c_replbtn);
+    c_replbtn->setAutoDefault(false);
     connect(c_replbtn, SIGNAL(clicked()), this, SLOT(repl_btn_slot()));
     if (!EditIf()->hasEdit())
         c_replbtn->hide();
 
     c_renamebtn = new QPushButton(tr("Rename"));;
     col1->addWidget(c_renamebtn);
+    c_renamebtn->setAutoDefault(false);
     connect(c_renamebtn, SIGNAL(clicked()), this, SLOT(rename_btn_slot()));
     if (!EditIf()->hasEdit())
         c_renamebtn->hide();
 
     c_searchbtn = new QPushButton(tr("Search"));;
-    c_searchbtn->setCheckable(true);
     col1->addWidget(c_searchbtn);
+    c_searchbtn->setCheckable(true);
+    c_searchbtn->setAutoDefault(false);
     connect(c_searchbtn, SIGNAL(toggled(bool)),
         this, SLOT(search_btn_slot(bool)));
 
     c_flagbtn = new QPushButton(tr("Flags"));
     col1->addWidget(c_flagbtn);
+    c_flagbtn->setAutoDefault(false);
     connect(c_flagbtn, SIGNAL(clicked()), this, SLOT(flag_btn_slot()));
 
     c_infobtn = new QPushButton(tr("Info"));;
     col1->addWidget(c_infobtn);
+    c_infobtn->setAutoDefault(false);
     connect(c_infobtn, SIGNAL(clicked()), this, SLOT(info_btn_slot()));
 
     c_showbtn = new QPushButton(tr("Show"));;
-    c_showbtn->setCheckable(true);
     col1->addWidget(c_showbtn);
+    c_showbtn->setAutoDefault(false);
     connect(c_showbtn, SIGNAL(toggled(bool)), this, SLOT(show_btn_slot(bool)));
 
     c_fltrbtn = new QPushButton(tr("Filter"));
-    c_fltrbtn->setCheckable(true);
     col1->addWidget(c_fltrbtn);
+    c_fltrbtn->setCheckable(true);
+    c_fltrbtn->setAutoDefault(false);
     connect(c_fltrbtn, SIGNAL(toggled(bool)), this, SLOT(fltr_btn_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("Help"));
     col1->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // title label
@@ -332,8 +344,9 @@ QTcellsDlg::QTcellsDlg(GRobject c)
     hbox->setSpacing(2);
 
     btn = new QPushButton(tr("Save Text"));
-    btn->setCheckable(true);
     hbox->addWidget(btn);
+    btn->setCheckable(true);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
 
     c_page_combo = new QComboBox();
@@ -1508,17 +1521,6 @@ QTcellsDlg::mouse_motion_slot(QMouseEvent *ev)
     char *sel = wb_textarea->get_selection();
     if (!sel)
         return;
-
-/*
-namespace {
-    GtkTargetEntry target_table[] = {
-        { (char*)"CELLNAME",    2, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-}
-*/
 
     c_dragging = false;
     QDrag *drag = new QDrag(wb_textarea);

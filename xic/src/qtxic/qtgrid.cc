@@ -59,6 +59,9 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 #include <QGuiApplication>
+#include <QDrag>
+#include <QMimeData>
+#include <QKeyEvent>
 
 
 // The Grid Setup panel, used to control the grid in each drawing
@@ -195,6 +198,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QTabWidget *nbook = new QTabWidget();
@@ -304,6 +308,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
     gd_showbtn = new QPushButton(tr("Show"));
     hb->addWidget(gd_showbtn);
     gd_showbtn->setCheckable(true);
+    gd_showbtn->setAutoDefault(false);
     connect(gd_showbtn, SIGNAL(toggled(bool)),
         this, SLOT(show_btn_slot(bool)));
     QTdev::SetStatus(gd_showbtn, gd_grid.displayed());
@@ -311,12 +316,14 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
     gd_topbtn = new QPushButton(tr("On Top"));
     hb->addWidget(gd_topbtn);
     gd_topbtn->setCheckable(true);
+    gd_topbtn->setAutoDefault(false);
     connect(gd_topbtn, SIGNAL(toggled(bool)),
         this, SLOT(top_btn_slot(bool)));
     QTdev::SetStatus(gd_topbtn, gd_grid.show_on_top());
 
     btn = new QPushButton(tr("Store"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     QMenu *menu = new QMenu();
     btn->setMenu(menu);
     {
@@ -331,6 +338,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
 
     btn = new QPushButton(tr("Recall"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     menu = new QMenu();
     btn->setMenu(menu);
     {
@@ -760,6 +768,25 @@ Update();
 
 
 void
+QTgridDlg::keyPressEvent(QKeyEvent *ev)
+{
+    // Look only at Enter key events.  If not focussed on the Dismiss
+    // button, run the Apply callback and set focus to the Dismiss
+    // button.  A second Enter press will then dismiss the pop-up.
+
+    if (ev->type() == QEvent::KeyPress && ev->key() == Qt::Key_Return) {
+        QWidget *w = focusWidget();
+        if (w != gd_cancel) {
+            apply_slot();
+            gd_cancel->setFocus();
+            return;
+        }
+    }
+    QDialog::keyPressEvent(ev);
+}
+
+
+void
 QTgridDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:grid"));
@@ -1139,11 +1166,15 @@ QTgridDlg::smp_motion_slot(QMouseEvent *ev)
 #endif
     if (gd_dragging && (abs(xx - gd_drag_x) > 2 || abs(yy - gd_drag_y) > 2)) {
         gd_dragging = false;
-        /*XXX
-        GtkTargetList *targets = gtk_target_list_new(gd_targets, 1);
-        gtk_drag_begin(caller, targets, (GdkDragAction)GDK_ACTION_COPY,
-            1, event);
-            */
+        char buf[64];
+        snprintf(buf, sizeof(buf), "0x%x", gd_grid.linestyle().mask);
+        QDrag *drag = new QDrag(gd_sample);
+        QMimeData *mimedata = new QMimeData();
+        QByteArray qdata(buf, strlen(buf)+1);
+        mimedata->setData("text/plain", qdata);
+        drag->setMimeData(mimedata);
+        drag->exec(Qt::CopyAction);
+        delete drag;
     }
 }
 
@@ -1249,41 +1280,7 @@ int
 QTgridDlg::gd_key_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 {
     QTgridDlg *grd = *(QTgridDlg**)arg;
-    if (!grd || !grd->gd_apply)
-        return (0);
-
-    // Look only at Enter key events.  If not focussed on the Dismiss
-    // button, run the apply callback and set focus to the Dismiss
-    // button.  A second Enter press will then dismiss the pop-up.
-
-    if (event->key.keyval == GDK_KEY_Return) {
-        GtkWidget *w = gtk_window_get_focus(GTK_WINDOW(grd->wb_shell));
-        if (w != grd->gd_cancel) {
-            grd->gd_apply_proc(0, arg);
-            gtk_window_set_focus(GTK_WINDOW(grd->wb_shell), grd->gd_cancel);
-            return (1);
-        }
-    }
     return (0);
-}
-
-
-
-// Static function.
-// Initialize data for drag/drop transfer from 'this'.
-//
-void
-QTgridDlg::gd_drag_data_get(GtkWidget*, GdkDragContext*,
-    GtkSelectionData *data, guint, guint, void *arg)
-{
-    QTgridDlg *grd = *(QTgridDlg**)arg;
-    if (!grd)
-        return;
-
-    char buf[64];
-    snprintf(buf, sizeof(buf), "0x%x", grd->gd_grid.linestyle().mask);
-    gtk_selection_data_set(data, gtk_selection_data_get_target(data),
-        8, (unsigned char*)buf, strlen(buf)+1);
 }
 
 #endif

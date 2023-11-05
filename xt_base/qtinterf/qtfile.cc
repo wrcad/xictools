@@ -344,7 +344,8 @@ file_tree_widget::start_drag()
             ulst << QUrl(QString("File://") + path);
             md->setUrls(ulst);
             drag->setMimeData(md);
-            QIcon dicon = QApplication::style()->standardIcon(QStyle::SP_DirIcon);
+            QIcon dicon = QApplication::style()->standardIcon(
+                QStyle::SP_DirIcon);
             drag->setPixmap(dicon.pixmap(32, 32));
             delete [] path;
 
@@ -2239,14 +2240,17 @@ QTfileActionDlg::QTfileActionDlg(QTbag *bg, const char *src, const char *dst,
 
     QPushButton *btn = new QPushButton(tr("Move"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(move_btn_slot()));
 
     btn = new QPushButton(tr("Copy"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(copy_btn_slot()));
 
     btn = new QPushButton(tr("Link"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(link_btn_slot()));
 
     btn = new QPushButton(tr("Cancel"));

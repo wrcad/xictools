@@ -130,25 +130,29 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
     // top button row
     //
     es_gnsel = new QPushButton(tr("Select Group/Node"));
-    es_gnsel->setCheckable(true);
     hbox->addWidget(es_gnsel);
+    es_gnsel->setCheckable(true);
+    es_gnsel->setAutoDefault(false);
     connect(es_gnsel, SIGNAL(toggled(bool)),
         this, SLOT(gnsel_btn_slot(bool)));
 
     es_paths = new QPushButton(tr("Select Path"));
-    es_paths->setCheckable(true);
     hbox->addWidget(es_paths);
+    es_paths->setCheckable(true);
+    es_paths->setAutoDefault(false);
     connect(es_paths, SIGNAL(toggled(bool)),
         this, SLOT(pathsel_btn_slot(bool)));
 
     es_qpath = new QPushButton(tr("\"Quick\" Path"));
-    es_qpath->setCheckable(true);
     hbox->addWidget(es_qpath);
+    es_qpath->setCheckable(true);
+    es_qpath->setAutoDefault(false);
     connect(es_qpath, SIGNAL(toggled(bool)),
         this, SLOT(qpath_btn_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
 
@@ -189,10 +193,12 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
 
     btn = new QPushButton("0");
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(zbtn_slot()));
 
     btn = new QPushButton(tr("all"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(allbtn_slot()));
 
     es_qpconn = new QCheckBox(tr("\"Quick\" Path use Conductor"));
@@ -226,14 +232,17 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
 
     es_antenna = new QPushButton(tr("Load Antenna file"));
     hbox->addWidget(es_antenna);
+    es_antenna->setAutoDefault(false);
     connect(es_antenna, SIGNAL(clicked()), this, SLOT(ldant_btn_slot()));
 
     es_zoid = new QPushButton(tr("To trapezoids"));
     hbox->addWidget(es_zoid);
+    es_zoid->setAutoDefault(false);
     connect(es_zoid, SIGNAL(clicked()), this, SLOT(zoid_btn_slot()));
 
     es_tofile = new QPushButton(tr("Save path to file"));
     hbox->addWidget(es_tofile);
+    es_tofile->setAutoDefault(false);
     connect(es_tofile, SIGNAL(clicked()), this, SLOT(tofile_btn_slot()));
 
     // Path file vias check boxes.
@@ -264,13 +273,15 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
     hbox->addWidget(es_rlab);
 
     es_terms = new QPushButton(tr("Define terminals"));
-    es_terms->setCheckable(true);
     hbox->addWidget(es_terms);
+    es_terms->setCheckable(true);
+    es_terms->setAutoDefault(false);
     connect(es_terms, SIGNAL(toggled(bool)),
         this, SLOT(def_terms_slot(bool)));
 
     es_meas = new QPushButton(tr("Measure"));
     hbox->addWidget(es_meas);
+    es_meas->setAutoDefault(false);
     connect(es_meas, SIGNAL(clicked()), this, SLOT(meas_btn_slot()));
 
     // dismiss button

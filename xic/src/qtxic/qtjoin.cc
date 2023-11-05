@@ -136,6 +136,7 @@ QTjoinDlg::QTjoinDlg(GRobject c)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // no limit check box
@@ -225,22 +226,27 @@ QTjoinDlg::QTjoinDlg(GRobject c)
 
     jn_join = new QPushButton(tr("Join"));
     hbox->addWidget(jn_join);
+    jn_join->setAutoDefault(false);
     connect(jn_join, SIGNAL(clicked()), this, SLOT(join_btn_slot()));
 
     jn_join_lyr = new QPushButton(tr("Join Lyr"));
     hbox->addWidget(jn_join_lyr);
+    jn_join_lyr->setAutoDefault(false);
     connect(jn_join_lyr, SIGNAL(clicked()), this, SLOT(join_lyr_btn_slot()));
 
     jn_join_all = new QPushButton(tr("Join All"));
     hbox->addWidget(jn_join_all);
+    jn_join_all->setAutoDefault(false);
     connect(jn_join_all, SIGNAL(clicked()), this, SLOT(join_all_btn_slot()));
 
     jn_split_h = new QPushButton(tr("Split Horiz"));
     hbox->addWidget(jn_split_h);
+    jn_split_h->setAutoDefault(false);
     connect(jn_split_h, SIGNAL(clicked()), this, SLOT(split_h_btn_slot()));
 
     jn_split_v = new QPushButton(tr("Split Vert"));
     hbox->addWidget(jn_split_v);
+    jn_split_v->setAutoDefault(false);
     connect(jn_split_v, SIGNAL(clicked()), this, SLOT(split_v_btn_slot()));
 
     // Dismiss button

@@ -180,6 +180,7 @@ QTplotListDlg::QTplotListDlg(int xx, int yy, const char *s)
 
     QPushButton *btn = new QPushButton(tr("help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled text area
@@ -212,8 +213,9 @@ QTplotListDlg::QTplotListDlg(int xx, int yy, const char *s)
 
     for (int n = 0; pl_btns[n]; n++) {
         btn = new QPushButton(tr(pl_btns[n]));
-        btn->setCheckable(true);
         hbox->addWidget(btn);
+        btn->setCheckable(true);
+        btn->setAutoDefault(false);
         connect(btn, SIGNAL(toggled(bool)),
             this, SLOT(button_slot(bool)));
     }

@@ -156,28 +156,34 @@ QToaLibsDlg::QToaLibsDlg(GRobject c)
 
     lb_openbtn = new QPushButton(tr("Open/Close"));
     hbox->addWidget(lb_openbtn);
+    lb_openbtn->setAutoDefault(false);
     connect(lb_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
     lb_writbtn = new QPushButton(tr("Writable Y/N"));
     hbox->addWidget(lb_writbtn);
+    lb_writbtn->setAutoDefault(false);
     connect(lb_writbtn, SIGNAL(clicked()), this, SLOT(write_btn_slot()));
 
     lb_contbtn = new QPushButton(tr("Contents"));
     hbox->addWidget(lb_contbtn);
+    lb_contbtn->setAutoDefault(false);
     connect(lb_contbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Create"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(create_btn_slot()));
 
     lb_defsbtn = new QPushButton(tr("Defaults"));
-    lb_defsbtn->setCheckable(true);
     hbox->addWidget(lb_defsbtn);
+    lb_defsbtn->setCheckable(true);
+    lb_defsbtn->setAutoDefault(false);
     connect(lb_defsbtn, SIGNAL(toggled(bool)),
         this, SLOT(defs_btn_slot(bool)));
 
     btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout(0);
@@ -186,13 +192,15 @@ QToaLibsDlg::QToaLibsDlg(GRobject c)
     vbox->addLayout(hbox);
 
     lb_techbtn = new QPushButton(tr("Tech"));
-    lb_techbtn->setCheckable(true);
     hbox->addWidget(lb_techbtn);
+    lb_techbtn->setCheckable(true);
+    lb_techbtn->setAutoDefault(false);
     connect(lb_techbtn, SIGNAL(toggled(bool)),
         this, SLOT(tech_btn_slot(bool)));
 
     lb_destbtn = new QPushButton(tr("Destroy"));
     hbox->addWidget(lb_destbtn);
+    lb_destbtn->setAutoDefault(false);
     connect(lb_destbtn, SIGNAL(clicked()), this, SLOT(dest_btn_slot()));
 
     sLstr lstr;
@@ -785,14 +793,73 @@ QToaLibsDlg::item_activated_slot(QTreeWidgetItem*, int)
 
 
 void
-QToaLibsDlg::item_clicked_slot(QTreeWidgetItem*, int)
+QToaLibsDlg::item_clicked_slot(QTreeWidgetItem *itm, int col)
 {
+    // Toggle closed/open pr writable Y/N by clicking on the icon in
+    // the selected row.
+
+    if (!lb_selection)
+        return;
+    QTreeWidget *w = dynamic_cast<QTreeWidget*>(sender());
+    if (!w)
+        return;
+    QList<QTreeWidgetItem*> lst = w->selectedItems();
+    if (lst.isEmpty() || lst[0] != itm)
+        return;
+
+    if (col == 0) {
+        bool isopen;
+        if (!OAif()->is_lib_open(lb_selection, &isopen)) {
+            Log()->ErrorLog(mh::Processing, Errs()->get_error());
+            OAif()->set_lib_open(lb_selection, false);
+        }
+        else if (isopen)
+            OAif()->set_lib_open(lb_selection, false);
+        else
+            OAif()->set_lib_open(lb_selection, true);
+        update();
+    }
+    else if (col == 1) {
+        bool branded;
+        if (!OAif()->is_lib_branded(lb_selection, &branded)) {
+            Log()->ErrorLog(mh::Processing, Errs()->get_error());
+            OAif()->brand_lib(lb_selection, false);
+        }
+        else if (!OAif()->brand_lib(lb_selection, !branded))
+            Log()->ErrorLog(mh::Processing, Errs()->get_error());
+        update();
+    }
 }
 
 
 void
 QToaLibsDlg::item_selection_change()
 {
+//XXX check this
+// Selection callback for the list.  This is called when a new selection
+// is made, but not when the selection disappears, which happens when the
+// list is updated.
+
+    QTreeWidget *w = dynamic_cast<QTreeWidget*>(sender());
+    if (!w)
+        return;
+    QList<QTreeWidgetItem*> lst = w->selectedItems();
+    char *text = 0;
+    if (!lst.isEmpty())
+        text = lstring::copy(lst[2]->text(0).toLatin1().constData());
+
+    if (!text || !strcmp(nolibmsg, text)) {
+        set_sensitive(false);
+        delete [] text;
+        return;
+    }
+    if (!lb_selection || strcmp(text, lb_selection)) {
+        delete [] lb_selection;
+        lb_selection = text;
+        OAif()->PopUpOAtech(0, MODE_UPD, 0, 0);
+        update_contents(true);
+    }
+    set_sensitive(true);
 }
 
 
@@ -814,106 +881,3 @@ QToaLibsDlg::font_changed_slot(int fnum)
     }
 }
 
-
-#ifdef notdef
-
-
-// Static function.
-// Selection callback for the list.  This is called when a new selection
-// is made, but not when the selection disappears, which happens when the
-// list is updated.
-//
-int
-QToaLibsDlg::lb_selection_proc(GtkTreeSelection*, GtkTreeModel *store,
-    GtkTreePath *path, int issel, void*)
-{
-    if (LB) {
-        if (LB->lb_no_select && !issel)
-            return (false);
-        char *text = 0;
-        GtkTreeIter iter;
-        if (gtk_tree_model_get_iter(store, &iter, path))
-            gtk_tree_model_get(store, &iter, 2, &text, -1);
-        if (!text || !strcmp(nolibmsg, text)) {
-            LB->set_sensitive(false);
-            free(text);
-            return (false);
-        }
-
-        // Behavior is a bit strange.  When clicking on a new selection,
-        // we get called three times:
-        // 0  old  (initial click, integer is issel value)
-        // 0  new  (the second click an a new library gives these three)
-        // 1  old
-        // 0  new
-        // printf("%d %s\n", issel, text);
-
-        if (issel) {
-            LB->set_sensitive(false);
-            free(text);
-            return (true);
-        }
-        if (!LB->lb_selection || strcmp(text, LB->lb_selection)) {
-            delete [] LB->lb_selection;
-            LB->lb_selection = lstring::copy(text);
-            OAif()->PopUpOAtech(0, MODE_UPD, 0, 0);
-            LB->update_contents(true);
-        }
-        LB->set_sensitive(true);
-        free(text);
-    }
-    return (true);
-}
-
-
-// Toggle closed/open pr writable Y/N by clicking on the icon in the
-// selected row.
-//
-int
-QToaLibsDlg::lb_button_press_proc(GtkWidget*, GdkEvent *event, void*)
-{
-    if (LB) {
-        GtkTreePath *p;
-        GtkTreeView *tv = GTK_TREE_VIEW(LB->lb_list);
-        GtkTreeViewColumn *col;
-        if (!gtk_tree_view_get_path_at_pos(tv,
-                (int)event->button.x, (int)event->button.y, &p, &col, 0, 0))
-            return (false);
-        if (!LB->lb_selection)
-            return (false);
-        GtkTreeModel *mod = gtk_tree_view_get_model(tv);
-        GtkTreeIter iter;
-        gtk_tree_model_get_iter(mod, &iter, p);
-        gtk_tree_path_free(p);
-
-        GtkTreeSelection *sel = gtk_tree_view_get_selection(tv);
-        if (!gtk_tree_selection_iter_is_selected(sel, &iter))
-            return (false);
-
-        if (col == gtk_tree_view_get_column(tv, 0)) {
-            bool isopen;
-            if (!OAif()->is_lib_open(LB->lb_selection, &isopen)) {
-                Log()->ErrorLog(mh::Processing, Errs()->get_error());
-                OAif()->set_lib_open(LB->lb_selection, false);
-            }
-            else if (isopen)
-                OAif()->set_lib_open(LB->lb_selection, false);
-            else
-                OAif()->set_lib_open(LB->lb_selection, true);
-            LB->update();
-        }
-        else if (col == gtk_tree_view_get_column(tv, 1)) {
-            bool branded;
-            if (!OAif()->is_lib_branded(LB->lb_selection, &branded)) {
-                Log()->ErrorLog(mh::Processing, Errs()->get_error());
-                OAif()->brand_lib(LB->lb_selection, false);
-            }
-            else if (!OAif()->brand_lib(LB->lb_selection, !branded))
-                Log()->ErrorLog(mh::Processing, Errs()->get_error());
-            LB->update();
-        }
-    }
-    return (false);
-}
-
-#endif

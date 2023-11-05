@@ -78,7 +78,6 @@
 #include <QMenu>
 #include <QAction>
 #include <QDialog>
-#include <QPushButton>
 #include <QGroupBox>
 #include <QScreen>
 #include <QGuiApplication>

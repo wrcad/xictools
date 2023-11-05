@@ -202,6 +202,7 @@ QTpcellParamsDlg::QTpcellParamsDlg(GRobject c, PCellParam *prm,
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
 //    gtk_widget_set_size_request(pcp_popup, 300, 400);
@@ -219,16 +220,19 @@ QTpcellParamsDlg::QTpcellParamsDlg(GRobject c, PCellParam *prm,
     if (pcp_mode == pcpOpen) {
         btn = new QPushButton(tr("Open"));
         hbox->addWidget(btn);
+        btn->setAutoDefault(false);
         connect(btn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
     }
     else {
         btn = new QPushButton(tr("Apply"));
         hbox->addWidget(btn);
+        btn->setAutoDefault(false);
         connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
     }
 
     btn = new QPushButton(tr("Reset"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(reset_btn_slot()));
 
     btn = new QPushButton(tr("Dismiss"));

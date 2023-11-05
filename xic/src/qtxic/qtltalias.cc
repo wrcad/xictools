@@ -129,33 +129,39 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c)
     // _Open, <control>O, la_action_proc, OpenCode, 0
     la_open = new QPushButton(tr("Open"));
     hbox->addWidget(la_open);
+    la_open->setAutoDefault(false);
     connect(la_open, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
     // _Save, <control>S, la_action_proc, SaveCode, 0
     la_save = new QPushButton(tr("Save"));
     hbox->addWidget(la_save);
+    la_save->setAutoDefault(false);
     connect(la_save, SIGNAL(clicked()), this, SLOT(save_btn_slot()));
 
     // _New, <control>N, la_action_proc, NewCode, 0
     la_new = new QPushButton(tr("New"));
     hbox->addWidget(la_new);
+    la_new->setAutoDefault(false);
     connect(la_new, SIGNAL(clicked()), this, SLOT(new_btn_slot()));
 
     // _Delete, <control>D, la_action_proc, DeleteCode, 0
     la_del = new QPushButton(tr("Edit"));
     la_del->setEnabled(false);
     hbox->addWidget(la_del);
+    la_del->setAutoDefault(false);
     connect(la_del, SIGNAL(clicked()), this, SLOT(del_btn_slot()));
 
     // _Edit, <control>E, la_action_proc, EditCode, 0
     la_edit = new QPushButton(tr("Edit"));
     la_edit->setEnabled(false);
     hbox->addWidget(la_edit);
+    la_edit->setAutoDefault(false);
     connect(la_edit, SIGNAL(clicked()), this, SLOT(edit_btn_slot()));
 
     // Help menu.
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Scrolled display window.
@@ -220,29 +226,27 @@ QTlayerAliasDlg::update()
     char *s0 = latab.toString(la_show_dec);
     const char *str = s0;
 
-/*XXX fixme
+//XXX need this?
     // We need to deselect before clearing, so that the deselection
     // signal is generated.
-    GtkTreeSelection *sel =
-        gtk_tree_view_get_selection(GTK_TREE_VIEW(la_list));
-    gtk_tree_selection_unselect_all(sel);
-    GtkListStore *store =
-        GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(la_list)));
-    gtk_list_store_clear(store);
+//    GtkTreeSelection *sel =
+//        gtk_tree_view_get_selection(GTK_TREE_VIEW(la_list));
+//    gtk_tree_selection_unselect_all(sel);
 
-    GtkTreeIter iter;
+    la_list->clear();
+
     char *stok;
     while ((stok = lstring::gettok(&str)) != 0) {
         char *t = strchr(stok, '=');
         if (t) {
             *t++ = 0;
-            gtk_list_store_append(store, &iter);
-            gtk_list_store_set(store, &iter, 0, stok, 1, t, -1);
+            QTreeWidgetItem *item = new QTreeWidgetItem(
+                QStringList(QList<QString>() << stok << t));
+            la_list->addTopLevelItem(item);
         }
         delete [] stok;
     }
     delete [] s0;
-*/
 }
 
 
@@ -455,7 +459,8 @@ QTlayerAliasDlg::help_btn_slot()
 
 
 void
-QTlayerAliasDlg::current_item_changed(QTreeWidgetItem *cur, QTreeWidgetItem*)
+QTlayerAliasDlg::current_item_changed_slot(QTreeWidgetItem *cur,
+    QTreeWidgetItem*)
 {
     if (!cur) {
         la_row = -1;

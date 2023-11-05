@@ -166,6 +166,7 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Format selection notebook.

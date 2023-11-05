@@ -129,8 +129,9 @@ QTcmdParamDlg::QTcmdParamDlg(int xx, int yy)
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     btn = new QPushButton(tr("Help"));
-    btn->setCheckable(true);
     hbox->addWidget(btn);
+    btn->setCheckable(true);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
 
     QTabWidget *notebook = new QTabWidget();

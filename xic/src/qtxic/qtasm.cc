@@ -60,6 +60,9 @@
 #include <QLineEdit>
 #include <QGroupBox>
 #include <QDoubleSpinBox>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 
 #ifdef __APPLE__
@@ -100,6 +103,65 @@ cConvert::PopUpAssemble(GRobject caller, ShowMode mode)
     QTasmDlg::self()->show();
 }
 // End of cConvert functions.
+
+
+class QTasmPathEdit : public QLineEdit
+{
+public:
+    QTasmPathEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTasmPathEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+void
+QTasmPathEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        setText(str);
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/twostring")) {
+        // Drops from content lists may be in the form
+        // "fname_or_chd\ncellname".  Keep the cellname.
+        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *t = strchr(str, '\n');
+        if (t)
+            *t = 0;
+        setText(str);
+        delete [] str;
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        // The default action will insert the text at the click location,
+        // instead here we replace any existing text.
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        setText(ba.constData());
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
 
 
 //-----------------------------------------------------------------------------
@@ -659,19 +721,10 @@ QTasmDlg::output_page_setup()
     vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
-    asm_outfile = new QLineEdit();
+    asm_outfile = new QTasmPathEdit();
     vb->addWidget(asm_outfile);
-
-    // drop site
-/*
-    GtkDestDefaults DD = (GtkDestDefaults)
-        (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
-    gtk_drag_dest_set(asm_outfile, DD, target_table, n_targets,
-        GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(asm_outfile), "drag-data-received",
-        G_CALLBACK(asm_drag_data_received), 0);
-*/
-
+    asm_outfile->setReadOnly(false);
+    asm_outfile->setAcceptDrops(true);
 }
 
 
@@ -1207,50 +1260,3 @@ QTasmDlg::help_slot()
     PopUpHelp("xic:assem");
 }
 
-
-#ifdef notdef
-
-// Drag/drop stuff.
-//
-/*
-GtkTargetEntry QTasmDlg::target_table[] =
-{
-    { (char*)"TWOSTRING",   0, 0 },
-    { (char*)"CELLNAME",    0, 1 },
-    { (char*)"STRING",      0, 2 },
-    { (char*)"text/plain",  0, 3 }
-};
-guint QTasmDlg::n_targets =
-    sizeof(QTasmDlg::target_table)/sizeof(QTasmDlg::target_table[0]);
-*/
-
-// Static function.
-// Drag data received in entry window, grab it.
-//
-void
-QTasmDlg::asm_drag_data_received(GtkWidget *entry, GdkDragContext *context,
-    gint, gint, GtkSelectionData *data, guint, guint time)
-{
-//    if (data->length >= 0 && data->format == 8 && data->data) {
-    if (gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8 &&
-            gtk_selection_data_get_data(data)) {
-//        char *src = (char*)data->data;
-        char *src = (char*)gtk_selection_data_get_data(data);
-//        if (data->target == gdk_atom_intern("TWOSTRING", true)) {
-        if (gtk_selection_data_get_target(data) ==
-                gdk_atom_intern("TWOSTRING", true)) {
-            // Drops from content lists may be in the form
-            // "fname_or_chd\ncellname".  Keep the filename.
-            char *t = strchr(src, '\n');
-            if (t)
-                *t = 0;
-        }
-        gtk_entry_set_text(GTK_ENTRY(entry), src);
-        gtk_drag_finish(context, true, false, time);
-        return;
-    }
-    gtk_drag_finish(context, false, false, time);
-}
-
-#endif

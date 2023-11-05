@@ -158,8 +158,9 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
     hbox->setSpacing(2);
 
     QPushButton *btn = new QPushButton(tr("Save Text "));
-    btn->setCheckable(true);
     hbox->addWidget(btn);
+    btn->setCheckable(true);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
 
     mc_pagesel = new QComboBox();
@@ -174,6 +175,7 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
     if (buttons) {
         for (int i = 0; i < MC_MAXBTNS && buttons[i]; i++) {
             btn = new QPushButton(buttons[i]);
+            btn->setAutoDefault(false);
             btn->setEnabled(false);
             mc_buttons[i] = btn;
             hbox->addWidget(btn);

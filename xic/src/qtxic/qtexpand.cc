@@ -102,55 +102,46 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     b_plus = new QToolButton();
     hbox->addWidget(b_plus);
     b_plus->setText(QString("+"));
-//XXX    b_plus->setAutoDefault(false);
     connect(b_plus, SIGNAL(clicked()), this, SLOT(plus_slot()));
 
     b_minus = new QToolButton();
     hbox->addWidget(b_minus);
     b_minus->setText(QString("-"));
-//XXX    b_minus->setAutoDefault(false);
     connect(b_minus, SIGNAL(clicked()), this, SLOT(minus_slot()));
 
     b_all = new QToolButton();
     hbox->addWidget(b_all);
     b_all->setText(QString(tr("all")));
-//XXX    b_all->setAutoDefault(false);
     connect(b_all, SIGNAL(clicked()), this, SLOT(all_slot()));
 
     b_0 = new QToolButton();
     hbox->addWidget(b_0);
     b_0->setText(QString("0"));
-//XXX    b_0->setAutoDefault(false);
     connect(b_0, SIGNAL(clicked()), this, SLOT(b0_slot()));
 
     b_1 = new QToolButton();
     hbox->addWidget(b_1);
     b_1->setText(QString("1"));
-//XXX    b_1->setAutoDefault(false);
     connect(b_1, SIGNAL(clicked()), this, SLOT(b1_slot()));
 
     b_2 = new QToolButton();
     hbox->addWidget(b_2);
     b_2->setText(QString("2"));
-//XXX    b_2->setAutoDefault(false);
     connect(b_2, SIGNAL(clicked()), this, SLOT(b2_slot()));
 
     b_3 = new QToolButton();
     hbox->addWidget(b_3);
     b_3->setText(QString("3"));
-//XXX    b_3->setAutoDefault(false);
     connect(b_3, SIGNAL(clicked()), this, SLOT(b3_slot()));
 
     b_4 = new QToolButton();
     hbox->addWidget(b_4);
     b_4->setText(QString("4"));
-//XXX    b_4->setAutoDefault(false);
     connect(b_4, SIGNAL(clicked()), this, SLOT(b4_slot()));
 
     b_5 = new QToolButton();
     hbox->addWidget(b_5);
     b_5->setText(QString("5"));
-//XXX    b_5->setAutoDefault(false);
     connect(b_5, SIGNAL(clicked()), this, SLOT(b5_slot()));
 
     if (!nopeek) {
@@ -169,12 +160,10 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
 
     b_apply = new QPushButton(tr("Apply"));
     hbox->addWidget(b_apply);
-    b_apply->setAutoDefault(true);
     connect(b_apply, SIGNAL(clicked()), this, SLOT(apply_slot()));
 
     b_dismiss = new QPushButton(tr("Dismiss"));
     hbox->addWidget(b_dismiss);
-    b_dismiss->setAutoDefault(false);
     connect(b_dismiss, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
 }
 

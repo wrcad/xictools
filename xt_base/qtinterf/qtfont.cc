@@ -452,7 +452,7 @@ namespace {
     class font_list_widget : public QListWidget
     {
     public:
-        font_list_widget(int w, QWidget *prnt) : QListWidget(prnt)
+        font_list_widget(int w, QWidget *prnt=0) : QListWidget(prnt)
         {
             pref_width = w;
             QSizePolicy p = sizePolicy();
@@ -509,83 +509,78 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
 
     setWindowTitle(QString(tr("Font Selection")));
     setAttribute(Qt::WA_DeleteOnClose);
-    ft_face_list = new font_list_widget(180, this);
-    ft_style_list = new font_list_widget(120, this);
-    ft_size_list = new font_list_widget(60, this);
-    ft_quit = new QPushButton(this);
-    ft_quit->setText(QString(tr("Dismiss")));
-    ft_apply = new QPushButton(this);
-    ft_apply->setText(QString(tr("Apply")));
-    ft_apply->setAutoDefault(false);
-    ft_menu = new QComboBox(this);
-
-    QSize qs = ft_apply->sizeHint();
-    ft_menu->setMinimumHeight(qs.height());
-    ft_menu->setEditable(false);
 
     QMargins qmtop(2, 2, 2, 2);
-//    QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(4);
-    QHBoxLayout *hbox = new QHBoxLayout(0);
+
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
-    QVBoxLayout *vb = new QVBoxLayout(0);
-    vb->setContentsMargins(qmtop);
-    QLabel *label = new QLabel(this);
-    label->setText(QString(tr("Faces")));
-    vb->addWidget(label);
-    vb->addWidget(ft_face_list);
+
+    QVBoxLayout *vb = new QVBoxLayout();
     hbox->addLayout(vb);
-
-    vb = new QVBoxLayout(0);
     vb->setContentsMargins(qmtop);
-    label = new QLabel(this);
-    label->setText(QString(tr("Styles")));
+    QLabel *label = new QLabel(tr("Faces"));
     vb->addWidget(label);
-    vb->addWidget(ft_style_list);
-    hbox->addLayout(vb);
-
-    vb = new QVBoxLayout(0);
-    vb->setContentsMargins(qmtop);
-    label = new QLabel(this);
-    label->setText(QString(tr("Sizes")));
-    vb->addWidget(label);
-    vb->addWidget(ft_size_list);
-    hbox->addLayout(vb);
-    vbox->addLayout(hbox);
-
-    QGroupBox *gb = new QGroupBox(this);
-    gb->setTitle(QString(tr("Preview")));
-    ft_preview = new QTextEdit(gb);
-    ft_preview->setFixedHeight(50);
-    vb = new QVBoxLayout(gb);
-    vb->setContentsMargins(qmtop);
-    vb->setSpacing(4);
-    vb->addWidget(ft_preview);
-    vbox->addWidget(gb);
-
-    hbox = new QHBoxLayout(0);
-    hbox->setContentsMargins(qmtop);
-    hbox->setSpacing(2);
-    hbox->addWidget(ft_apply);
-    hbox->addWidget(ft_menu);
-    hbox->addWidget(ft_quit);
-    vbox->addLayout(hbox);
-
+    ft_face_list = new font_list_widget(180);
     connect(ft_face_list,
         SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
         SLOT(face_changed_slot(QListWidgetItem*, QListWidgetItem*)));
+    vb->addWidget(ft_face_list);
+
+    vb = new QVBoxLayout();
+    hbox->addLayout(vb);
+    vb->setContentsMargins(qmtop);
+    label = new QLabel(tr("Styles"));
+    vb->addWidget(label);
+    ft_style_list = new font_list_widget(120);
     connect(ft_style_list,
         SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
         SLOT(style_changed_slot(QListWidgetItem*, QListWidgetItem*)));
+    vb->addWidget(ft_style_list);
+
+    vb = new QVBoxLayout();
+    hbox->addLayout(vb);
+    vb->setContentsMargins(qmtop);
+    label = new QLabel(tr("Sizes"));
+    vb->addWidget(label);
+    ft_size_list = new font_list_widget(60);
     connect(ft_size_list,
         SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
         SLOT(size_changed_slot(QListWidgetItem*, QListWidgetItem*)));
+    vb->addWidget(ft_size_list);
+
+    QGroupBox *gb = new QGroupBox(tr("Preview"));
+    vbox->addWidget(gb);
+    vb = new QVBoxLayout(gb);
+    vb->setContentsMargins(qmtop);
+    vb->setSpacing(2);
+    ft_preview = new QTextEdit();
+    ft_preview->setFixedHeight(50);
+    vb->addWidget(ft_preview);
+
+    hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setContentsMargins(qmtop);
+    hbox->setSpacing(2);
+    ft_apply = new QPushButton(tr("Apply"));
+    hbox->addWidget(ft_apply);
+    ft_apply->setAutoDefault(false);
+    connect(ft_apply, SIGNAL(clicked()), this, SLOT(action_slot()));
+
+    ft_menu = new QComboBox(this);
+    hbox->addWidget(ft_menu);
+    QSize qs = ft_apply->sizeHint();
+    ft_menu->setMinimumHeight(qs.height());
+    ft_menu->setEditable(false);
     connect(ft_menu, SIGNAL(activated(int)), this, SLOT(menu_choice_slot(int)));
 
-    connect(ft_apply, SIGNAL(clicked()), this, SLOT(action_slot()));
+    ft_quit = new QPushButton(tr("Dismiss"));
+    hbox->addWidget(ft_quit);
+    ft_quit->setAutoDefault(false);
     connect(ft_quit, SIGNAL(clicked()), this, SLOT(quit_slot()));
 
     for (int i = 1; i < FC.num_app_fonts; i++) {

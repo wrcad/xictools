@@ -154,6 +154,7 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // store/recall menus, label in frame plus help btn
     //
     QPushButton *btn = new QPushButton(tr("Store"));
+    btn->setAutoDefault(false);
     hbox->addWidget(btn);
     {
         char buf[16];
@@ -168,6 +169,7 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
             this, SLOT(store_menu_slot(QAction*)));
     }
     btn = new QPushButton(tr("Recall"));
+    btn->setAutoDefault(false);
     hbox->addWidget(btn);
     {
         char buf[16];
@@ -191,6 +193,7 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     hb->addWidget(label);
 
     btn = new QPushButton(tr("Help"));
+    btn->setAutoDefault(false);
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 

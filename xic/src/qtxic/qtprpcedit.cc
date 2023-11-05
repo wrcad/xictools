@@ -144,16 +144,19 @@ QTcellPrpDlg::QTcellPrpDlg()
     // top row buttons
     //
     pc_edit = new QPushButton(tr("Edit"));
-    pc_edit->setCheckable(true);
     hbox->addWidget(pc_edit);
+    pc_edit->setCheckable(true);
+    pc_edit->setAutoDefault(false);
     connect(pc_edit, SIGNAL(toggled(bool)), this, SLOT(edit_btn_slot(bool)));
 
     pc_del = new QPushButton(tr("Delete"));
     hbox->addWidget(pc_del);
+    pc_del->setAutoDefault(false);
     connect(pc_del, SIGNAL(toggled(bool)), this, SLOT(del_btn_slot(bool)));
 
     pc_add = new QPushButton(tr("Add"));
     pc_add->setCheckable(true);
+    pc_add->setAutoDefault(false);
     hbox->addWidget(pc_add);
 
     pc_addmenu = new QMenu();
@@ -163,6 +166,7 @@ QTcellPrpDlg::QTcellPrpDlg()
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled text area

@@ -57,14 +57,12 @@
 #include <QMouseEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include <QDrag>
+#include <QMimeData>
 #include <QLayout>
 #include <QToolButton>
 #include <QScrollBar>
 #include <QLineEdit>
-#include <QDrag>
-#include <QMimeData>
-#include <QDragEnterEvent>
-#include <QDropEvent>
 #include <QSplitter>
 
 // help keywords used:
@@ -343,7 +341,7 @@ QTltab::button_press_slot(QMouseEvent *ev)
         button = 3;
 
     button = Kmap()->ButtonMap(button);
-    int state = ev->modifiers();
+    int state = mod_state(ev->modifiers());
 
     if (XM()->IsDoingHelp() && (state & GR_SHIFT_MASK)) {
         DSPmainWbag(PopUpHelp("layertab"))
@@ -389,7 +387,7 @@ QTltab::button_release_slot(QMouseEvent *ev)
         button = 3;
 
     button = Kmap()->ButtonMap(button);
-    int state = ev->modifiers();
+    int state = mod_state(ev->modifiers());
 
     if (XM()->IsDoingHelp() && (state & GR_SHIFT_MASK)) {
         DSPmainWbag(PopUpHelp("layertab"))
@@ -455,11 +453,7 @@ QTltab::motion_slot(QMouseEvent *ev)
             QByteArray qdata((const char*)&dd, sizeof(LayerFillData));
             mimedata->setData(mime_type(), qdata);
             drag->setMimeData(mimedata);
-
-//            QTsubwin::HaveDrag = true;
             drag->exec(Qt::CopyAction);
-//            QTsubwin::HaveDrag = false;
-
             delete drag;
         }
     }
@@ -469,10 +463,9 @@ QTltab::motion_slot(QMouseEvent *ev)
 void
 QTltab::drag_enter_slot(QDragEnterEvent *ev)
 {
-    if (ev->mimeData()->hasFormat(QTltab::mime_type()))
-        ev->acceptProposedAction();
-    if (ev->mimeData()->hasColor())
-        ev->acceptProposedAction();
+    if (ev->mimeData()->hasFormat(QTltab::mime_type()) || ev->mimeData()->hasColor())
+        ev->accept();
+    ev->ignore();
 }
 
 
@@ -488,13 +481,12 @@ QTltab::drop_event_slot(QDropEvent *ev)
 #else
         XM()->FillLoadCallback(dd, LT()->LayerAt(ev->pos().x(), ev->pos().y()));
 #endif
-        ev->acceptProposedAction();
         if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
             DSP()->RedisplayAll();
+        ev->accept();
         return;
     }
     if (ev->mimeData()->hasColor()) {
-        ev->acceptProposedAction();
         QColor color = qvariant_cast<QColor>(ev->mimeData()->colorData());
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         int entry = entry_of_xy(ev->position().x(), ev->position().y());
@@ -511,10 +503,12 @@ QTltab::drop_event_slot(QDropEvent *ev)
         // update the colors
         LT()->ShowLayerTable(layer);
         XM()->PopUpFillEditor(0, MODE_UPD);
-        ev->acceptProposedAction();
         if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
             DSP()->RedisplayAll();
+        ev->accept();
+        return;
     }
+    ev->ignore();
 }
 
 

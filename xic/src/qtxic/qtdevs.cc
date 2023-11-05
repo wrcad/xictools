@@ -59,7 +59,6 @@
 #include <QToolBar>
 #include <QMenu>
 #include <QAction>
-#include <QPushButton>
 #include <QToolButton>
 #include <QGroupBox>
 #include <QIcon>
@@ -380,14 +379,12 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         vbox->setContentsMargins(qm);
         vbox->setSpacing(2);
 
-//XXX        dv_morebtn = new QPushButton();
         dv_morebtn = new QToolButton();
         dv_morebtn->setIcon(QIcon(QPixmap(more_xpm)));
         dv_morebtn->setMaximumWidth(80);
         vbox->addWidget(dv_morebtn);
         connect(dv_morebtn, SIGNAL(clicked()), this, SLOT(more_btn_slot()));
 
-//        QPushButton *btn = new QPushButton();
         QToolButton *btn = new QToolButton();
         btn->setIcon(QIcon(QPixmap(dd_xpm)));
         btn->setMaximumWidth(80);
@@ -461,7 +458,6 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         }
         stringlist::destroy(wl);
 
-//XXX        QPushButton *btn = new QPushButton();
         QToolButton *btn = new QToolButton();
         btn->setIcon(QIcon(QPixmap(pict_xpm)));
         hbox->addWidget(btn);
@@ -1086,35 +1082,3 @@ QTdevMenuDlg::resize_slot(QResizeEvent*)
     redraw();
 }
 
-#ifdef notdef
-
-// Static function.
-// Pop down if we get a message from the window manager.
-//
-void
-QTdevMenuDlg::dv_cancel_proc(GtkWidget*, void*)
-{
-    SCD()->PopUpDevs(0, MODE_OFF);
-}
-
-
-//
-// Handler functions, used in Pictorial mode only.
-//
-
-// Static function.
-// Draw/redraw the toolbar.
-//
-#if GTK_CHECK_VERSION(3,0,0)
-int
-QTdevMenuDlg::dv_redraw_hdlr(GtkWidget*, cairo_t*, void*)
-#else
-int
-QTdevMenuDlg::dv_redraw_hdlr(GtkWidget*, GdkEvent*, void*)
-#endif
-{
-    GTKpkg::self()->RegisterIdleProc(dv_redraw_idle, 0);
-    return (true);
-}
-
-#endif

@@ -1118,7 +1118,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 void
 QTmenuConfig::updateDynamicMenus()
 {
-    /*
+    /**** FIXME!
     GtkItemFactory *item_factory = gtkMenu()->itemFactory;
     // Destroy the present user menu widget tree.
     {

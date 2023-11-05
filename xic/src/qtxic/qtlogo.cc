@@ -444,6 +444,7 @@ QTlogoDlg::QTlogoDlg(GRobject c)
     lgo_dump = new QPushButton(tr("Dump Vector Font "));
     col2->addWidget(lgo_dump);
     lgo_dump->setCheckable(true);
+    lgo_dump->setAutoDefault(false);
     connect(lgo_dump, SIGNAL(toggled(bool)),
         this, SLOT(dump_btn_slot(bool)));
 
@@ -451,6 +452,7 @@ QTlogoDlg::QTlogoDlg(GRobject c)
     lgo_sel = new QPushButton(tr("Select Pretty Font"));
     col1->addWidget(lgo_sel);
     lgo_sel->setCheckable(true);
+    lgo_sel->setAutoDefault(false);
     connect(lgo_sel, SIGNAL(toggled(bool)),
         this, SLOT(sel_btn_slot(bool)));
 

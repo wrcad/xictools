@@ -169,6 +169,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QTabWidget *nbook = new QTabWidget();
@@ -205,6 +206,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     btn = new QPushButton(tr("Run File"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(runfile_btn_slot()));
 
     fh_file = new QLineEdit();
@@ -217,10 +219,12 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     btn = new QPushButton(tr("Run FastHenry"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(runext_btn_slot()));
 
     btn = new QPushButton(tr("Dump FastHenry File"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(dumplist_btn_slot()));
 
     gb = new QGroupBox("FhArgs");
@@ -437,6 +441,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c)
 
     fh_kill = new QPushButton(tr("Abort job"));
     vb->addWidget(fh_kill);
+    fh_kill->setAutoDefault(false);
     connect(fh_kill, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
 
 

@@ -197,6 +197,7 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     grid->addWidget(btn, 0, 2, 2, 1);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     label = new QLabel(tr("Default Model"));
@@ -242,8 +243,9 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
     grid->addLayout(hbox, 5, 0);
 
     de_toggle = new QPushButton(tr("Hot Spot"));
-    de_toggle->setCheckable(true);
     hbox->addWidget(de_toggle);
+    de_toggle->setCheckable(true);
+    de_toggle->setAutoDefault(false);
     connect(de_toggle, SIGNAL(toggled(bool)),
         this, SLOT(hotspot_btn_slot(bool)));
 
@@ -623,6 +625,10 @@ QTdeviceDlg::help_btn_slot()
 void
 QTdeviceDlg::hotspot_btn_slot(bool state)
 {
+    // When the Branch button is active, clicking in the drawing moves
+    // a marker around to set the "hot spot" location for the branch
+    // property.
+
     if (state) {
         if (!Bcmd) {
             Bcmd = new sBstate("brloc", "devedit#hspot");
@@ -666,21 +672,6 @@ QTdeviceDlg::dismiss_btn_slot()
 {
     SCD()->PopUpDevEdit(0, MODE_OFF);
 }
-
-
-
-#ifdef notdef
-
-
-// When the Branch button is active, clicking in the drawing moves a
-// marker around to set the "hot spot" location for the branch property.
-
-// Static function.
-void
-QTdeviceDlg::de_branch_proc(GtkWidget *caller, void*)
-{
-}
-#endif
 // End of QTdeviceDlg functions.
 
 

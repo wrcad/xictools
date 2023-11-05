@@ -119,25 +119,29 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
     }
     */
     tx_save = new QPushButton(tr("Save Text "));
-    tx_save->setCheckable(true);
     hbox->addWidget(tx_save);
+    tx_save->setCheckable(true);
+    tx_save->setAutoDefault(false);
     connect(tx_save, SIGNAL(toggled(bool)),
         this, SLOT(save_btn_slot(bool)));
     if ((tx_which == PuErr || tx_which == PuErrAlso) &&
             tx_errlog && p_parent) {
         QPushButton *btn = new QPushButton(tr("Show Error Log"));
         hbox->addWidget(btn);
+        btn->setAutoDefault(false);
         connect(btn, SIGNAL(clicked()),
             this, SLOT(showlog_btn_slot()));
     }
     if (tx_which == PuInfo2) {
         QPushButton *btn = new QPushButton(tr("Help"));
         hbox->addWidget(btn);
+        btn->setAutoDefault(false);
         connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
         tx_activate = new QPushButton(tr("Activate"));
         tx_activate->setCheckable(true);
         tx_activate->setChecked(true);
+        tx_activate->setAutoDefault(false);
         hbox->addWidget(tx_activate);
         connect(tx_activate, SIGNAL(toggled(bool)),
             this, SLOT(activate_btn_slot(bool)));

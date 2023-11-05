@@ -290,33 +290,29 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
     int row1cnt = 0;
     if (pd_textmode == HCgraphical) {
         if (cb && cb->hcframe) {
-            pd_frmbtn = new QPushButton(this);
-            pd_frmbtn->setText(QString(tr("Frame")));
+            pd_frmbtn = new QPushButton(tr("Frame"));
+            hbox->addWidget(pd_frmbtn);
             pd_frmbtn->setAutoDefault(false);
             connect(pd_frmbtn, SIGNAL(toggled(bool)),
                 this, SLOT(frame_slot(bool)));
-            hbox->addWidget(pd_frmbtn);
             row1cnt++;
         }
-        pd_fitbtn = new QCheckBox(this);
-        pd_fitbtn->setText(QString(tr("Best Fit")));
+        pd_fitbtn = new QCheckBox(tr("Best Fit"));
+        hbox->addWidget(pd_fitbtn);
         connect(pd_fitbtn, SIGNAL(toggled(bool)),
             this, SLOT(best_fit_slot(bool)));
-        hbox->addWidget(pd_fitbtn);
         row1cnt++;
         if (!cb || cb->legend != HClegNone) {
-            pd_legbtn = new QCheckBox(this);
-            pd_legbtn->setText(QString(tr("Legend")));
+            pd_legbtn = new QCheckBox(tr("Legend"));
+            hbox->addWidget(pd_legbtn);
             connect(pd_legbtn, SIGNAL(toggled(bool)),
                 this, SLOT(legend_slot(bool)));
-            hbox->addWidget(pd_legbtn);
             row1cnt++;
         }
     }
     else {
         if (!cb || cb->legend != HClegNone) {
-            pd_legbtn = new QCheckBox(this);
-            pd_legbtn->setText(QString(tr("Legend")));
+            pd_legbtn = new QCheckBox(tr("Legend"));
             hbox->addWidget(pd_legbtn);
             if (pd_legend == HClegNone)
                 pd_legbtn->setEnabled(false);
@@ -327,16 +323,14 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
             row1cnt++;
         }
         if (pd_textmode == HCtextPS) {
-            pd_a4btn = new QCheckBox(this);
-            pd_a4btn->setText(QString(tr("A4")));
+            pd_a4btn = new QCheckBox(tr("A4"));
+            hbox->addWidget(pd_a4btn);
             connect(pd_a4btn, SIGNAL(toggled(bool)),
                 this, SLOT(a4_slot(bool)));
-            hbox->addWidget(pd_a4btn);
-            pd_ltrbtn = new QCheckBox(this);
-            pd_ltrbtn->setText(QString(tr("Letter")));
+            pd_ltrbtn = new QCheckBox(tr("Letter"));
+            hbox->addWidget(pd_ltrbtn);
             connect(pd_ltrbtn, SIGNAL(toggled(bool)),
                 this, SLOT(letter_slot(bool)));
-            hbox->addWidget(pd_ltrbtn);
             hbox->addSpacing(20);
             if (pd_metric)
                 pd_a4btn->setChecked(true);
@@ -346,11 +340,12 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
 
             pd_textfmt = PStimes;  // default postscript times
 
-            pd_fontmenu = new QComboBox(this);
+            pd_fontmenu = new QComboBox();
+            hbox->addWidget(pd_fontmenu);
             int entries = sizeof(textfonts)/sizeof(sFonts);
             int hist = -1;
             for (int i = 0; i < entries; i++) {
-                pd_fontmenu->addItem(QString(textfonts[i].descr));
+                pd_fontmenu->addItem(textfonts[i].descr);
                 if (pd_textfmt == textfonts[i].type)
                     hist = i;
             }
@@ -361,224 +356,207 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
             pd_fontmenu->setCurrentIndex(hist);
             connect(pd_fontmenu, SIGNAL(activated(int)),
                 this, SLOT(font_slot(int)));
-            hbox->addWidget(pd_fontmenu);
             row1cnt++;
         }
     }
     // Don't leave a lonely help button in the top row, move it to the
     // second row.
     if (row1cnt) {
-        pd_hlpbtn = new QPushButton(this);
-        pd_hlpbtn->setText(QString(tr("Help")));
-        pd_hlpbtn->setAutoDefault(false);
+        pd_hlpbtn = new QPushButton(tr("Help"));
         hbox->addWidget(pd_hlpbtn);
+        pd_hlpbtn->setAutoDefault(false);
         vbox->addLayout(hbox);
     }
     else
         delete hbox;
 
-    QGroupBox *gb = new QGroupBox(this);
+    QGroupBox *gb = new QGroupBox();
     hbox = new QHBoxLayout(gb);
     hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
-    pd_cmdlab = new QLabel(gb);
-    pd_cmdlab->setText(QString(tr(pd_tofile ? "File Name" : "Print Command")));
+    pd_cmdlab = new QLabel(tr(pd_tofile ? "File Name" : "Print Command"));
     hbox->addWidget(pd_cmdlab);
-    pd_tofbtn = new QCheckBox(gb);
-    pd_tofbtn->setText(QString(tr("To File")));
+    pd_tofbtn = new QCheckBox(tr("To File"));
     pd_tofbtn->setChecked(pd_tofile);
     connect(pd_tofbtn, SIGNAL(toggled(bool)), this, SLOT(tofile_slot(bool)));
     hbox->addWidget(pd_tofbtn);
     if (row1cnt)
         vbox->addWidget(gb);
     else {
-        hbox = new QHBoxLayout(0);
+        hbox = new QHBoxLayout();
         hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
         hbox->addWidget(gb);
-        pd_hlpbtn = new QPushButton(this);
-        pd_hlpbtn->setText(QString(tr("Help")));
+        pd_hlpbtn = new QPushButton(tr("Help"));
         pd_hlpbtn->setAutoDefault(false);
         hbox->addWidget(pd_hlpbtn);
         vbox->addLayout(hbox);
     }
     connect(pd_hlpbtn, SIGNAL(clicked()), this, SLOT(help_slot()));
 
-    pd_cmdtxtbox = new QLineEdit(this);
-    pd_cmdtxtbox->setText(QString(pd_tofile ? pd_tofilename : pd_cmdtext));
+    pd_cmdtxtbox = new QLineEdit();
+    pd_cmdtxtbox->setText(pd_tofile ? pd_tofilename : pd_cmdtext);
     vbox->addWidget(pd_cmdtxtbox);
 
     if (pd_textmode == HCgraphical) {
         hbox = new QHBoxLayout(0);
         hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
-        QVBoxLayout *vb = new QVBoxLayout(0);
+        QVBoxLayout *vb = new QVBoxLayout();
 
-        gb = new QGroupBox(this);
+        gb = new QGroupBox();
         QHBoxLayout *hb = new QHBoxLayout(gb);
         hb->setContentsMargins(qmtop);
         hb->setSpacing(2);
-        pd_portbtn = new QCheckBox(gb);
-        pd_portbtn->setText(QString(tr("Portrait")));
+        pd_portbtn = new QCheckBox(tr("Portrait"));
         hb->addWidget(pd_portbtn);
         connect(pd_portbtn, SIGNAL(toggled(bool)),
             this, SLOT(portrait_slot(bool)));
-        pd_landsbtn = new QCheckBox(gb);
-        pd_landsbtn->setText(QString(tr("Landscape")));
+        pd_landsbtn = new QCheckBox(tr("Landscape"));
         hb->addWidget(pd_landsbtn);
         connect(pd_landsbtn, SIGNAL(toggled(bool)),
             this, SLOT(landscape_slot(bool)));
         vb->addWidget(gb);
 
-        pd_fmtmenu = new QComboBox(this);
+        pd_fmtmenu = new QComboBox();
         for (int i = 0; GRpkg::self()->HCof(i); i++) {
             if (pd_drvrmask & (1 << i))
                 continue;
             pd_fmtmenu->addItem(QString(GRpkg::self()->HCof(i)->descr));
         }
         pd_fmtmenu->setCurrentIndex(pd_fmt);
-        connect(pd_fmtmenu, SIGNAL(activated(int)), this, SLOT(format_slot(int)));
         vb->addWidget(pd_fmtmenu);
+        connect(pd_fmtmenu, SIGNAL(activated(int)),
+            this, SLOT(format_slot(int)));
         hbox->addLayout(vb);
 
-        vb = new QVBoxLayout(0);
+        vb = new QVBoxLayout();
 
-        gb = new QGroupBox(this);
+        gb = new QGroupBox();
+        vb->addWidget(gb);
         hb = new QHBoxLayout(gb);
         hb->setContentsMargins(qmtop);
         hb->setSpacing(2);
-        QLabel *res = new QLabel(gb);
-        res->setText(QString(tr("Resolution")));
+        QLabel *res = new QLabel(tr("Resolution"));
         hb->addWidget(res);
-        vb->addWidget(gb);
 
-        pd_resmenu = new QComboBox(this);
+        pd_resmenu = new QComboBox();
         const char **s = GRpkg::self()->HCof(pd_fmt)->limits.resols;
         if (s && *s) {
             for (int i = 0; s[i]; i++)
-                pd_resmenu->addItem(QString(s[i]));
+                pd_resmenu->addItem(s[i]);
         }
         else
-            pd_resmenu->addItem(QString("fixed"));
+            pd_resmenu->addItem("fixed");
         pd_resmenu->setCurrentIndex(pd_resol);
-        connect(pd_resmenu, SIGNAL(activated(int)), this, SLOT(resol_slot(int)));
+        connect(pd_resmenu, SIGNAL(activated(int)),
+            this, SLOT(resol_slot(int)));
         vb->addWidget(pd_resmenu);
         hbox->addLayout(vb);
         vbox->addLayout(hbox);
 
         hbox = new QHBoxLayout(0);
+        vbox->addLayout(hbox);
         hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
 
         HCdesc *desc = GRpkg::self()->HCof(pd_fmt);
-        vb = new QVBoxLayout(0);
-        gb = new QGroupBox(this);
+        vb = new QVBoxLayout();
+        hbox->addLayout(vb);
+        gb = new QGroupBox();
+        vb->addWidget(gb);
         hb = new QHBoxLayout(gb);
         hb->setContentsMargins(qmtop);
-        pd_wlabel = new QCheckBox(gb);
-        pd_wlabel->setText(QString(tr("Width")));
+        pd_wlabel = new QCheckBox(tr("Width"));
         connect(pd_wlabel, SIGNAL(toggled(bool)),
             this, SLOT(auto_width_slot(bool)));
         hb->addWidget(pd_wlabel);
-        vb->addWidget(gb);
-        pd_wid = new QDoubleSpinBox(this);
+        pd_wid = new QDoubleSpinBox();
         pd_wid->setDecimals(2);
-        pd_wid->setMinimum(MM(desc->limits.minwidth));
-        pd_wid->setMaximum(MM(desc->limits.maxwidth));
+        pd_wid->setRange(MM(desc->limits.minwidth), MM(desc->limits.maxwidth));
         pd_wid->setValue(pd_wid_val);
         pd_wid->setSingleStep(0.1);
         vb->addWidget(pd_wid);
-        hbox->addLayout(vb);
 
-        vb = new QVBoxLayout(0);
-        gb = new QGroupBox(this);
+        vb = new QVBoxLayout();
+        hbox->addLayout(vb);
+        gb = new QGroupBox();
+        vb->addWidget(gb);
         hb = new QHBoxLayout(gb);
         hb->setContentsMargins(qmtop);
-        pd_hlabel = new QCheckBox(gb);
-        pd_hlabel->setText(QString(tr("Height")));
+        pd_hlabel = new QCheckBox(tr("Height"));
         connect(pd_hlabel, SIGNAL(toggled(bool)),
             this, SLOT(auto_height_slot(bool)));
         hb->addWidget(pd_hlabel);
-        vb->addWidget(gb);
-        pd_hei = new QDoubleSpinBox(this);
+        pd_hei = new QDoubleSpinBox();
         pd_hei->setDecimals(2);
-        pd_hei->setMinimum(MM(desc->limits.minheight));
-        pd_hei->setMaximum(MM(desc->limits.maxheight));
+        pd_hei->setRange(MM(desc->limits.minheight),MM(desc->limits.maxheight));
         pd_hei->setValue(pd_hei_val);
         pd_hei->setSingleStep(0.1);
         vb->addWidget(pd_hei);
-        hbox->addLayout(vb);
 
-        vb = new QVBoxLayout(0);
-        gb = new QGroupBox(this);
+        vb = new QVBoxLayout();
+        hbox->addLayout(vb);
+        gb = new QGroupBox();
+        vb->addWidget(gb);
         hb = new QHBoxLayout(gb);
         hb->setContentsMargins(qmtop);
-        pd_xlabel = new QLabel(gb);
-        pd_xlabel->setText(QString(tr("Left")));
+        pd_xlabel = new QLabel(tr("Left"));
         hb->addWidget(pd_xlabel);
-        vb->addWidget(gb);
-        pd_left = new QDoubleSpinBox(this);
+        pd_left = new QDoubleSpinBox();
         pd_left->setDecimals(2);
-        pd_left->setMinimum(MM(desc->limits.minxoff));
-        pd_left->setMaximum(MM(desc->limits.maxxoff));
+        pd_left->setRange(MM(desc->limits.minxoff), MM(desc->limits.maxxoff));
         pd_left->setValue(pd_lft_val);
         pd_left->setSingleStep(0.1);
         vb->addWidget(pd_left);
-        hbox->addLayout(vb);
 
-        vb = new QVBoxLayout(0);
-        gb = new QGroupBox(this);
+        vb = new QVBoxLayout();
+        hbox->addLayout(vb);
+        gb = new QGroupBox();
+        vb->addWidget(gb);
         hb = new QHBoxLayout(gb);
         hb->setContentsMargins(qmtop);
-        pd_ylabel = new QLabel(gb);
-        pd_ylabel->setText(QString(tr("Bottom")));
+        pd_ylabel = new QLabel(tr("Bottom"));
         hb->addWidget(pd_ylabel);
-        vb->addWidget(gb);
-        pd_top = new QDoubleSpinBox(this);
+        pd_top = new QDoubleSpinBox();
         pd_top->setDecimals(2);
-        pd_top->setMinimum(MM(desc->limits.minyoff));
-        pd_top->setMaximum(MM(desc->limits.maxyoff));
+        pd_top->setRange(MM(desc->limits.minyoff), MM(desc->limits.maxyoff));
         pd_top->setValue(pd_top_val);
         pd_top->setSingleStep(0.1);
         vb->addWidget(pd_top);
-        hbox->addLayout(vb);
-
-        vbox->addLayout(hbox);
 
         hbox = new QHBoxLayout(0);
+        vbox->addLayout(hbox);
         hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
 
-        pd_pgsmenu = new QComboBox(this);
+        pd_pgsmenu = new QComboBox();
         hbox->addWidget(pd_pgsmenu);
         int i = 0;
         for (sMedia *m = pagesizes; m->name; m++, i++)
-            pd_pgsmenu->addItem(QString(m->name));
+            pd_pgsmenu->addItem(m->name);
         connect(pd_pgsmenu, SIGNAL(activated(int)),
             this, SLOT(pagesize_slot(int)));
-        pd_metbtn = new QCheckBox(this);
-        pd_metbtn->setText(QString(tr("Metric (mm)")));
+        pd_metbtn = new QCheckBox(tr("Metric (mm)"));
         pd_metbtn->setChecked(pd_metric);
-        connect(pd_metbtn, SIGNAL(toggled(bool)), this, SLOT(metric_slot(bool)));
+        connect(pd_metbtn, SIGNAL(toggled(bool)),
+            this, SLOT(metric_slot(bool)));
         hbox->addSpacing(20);
         hbox->addWidget(pd_metbtn);
-        vbox->addLayout(hbox);
     }
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    pd_printbtn = new QPushButton(this);
-    pd_printbtn->setText(QString(tr("Print")));
+    pd_printbtn = new QPushButton(tr("Print"));
+    hbox->addWidget(pd_printbtn);
     pd_printbtn->setAutoDefault(false);
     connect(pd_printbtn, SIGNAL(clicked()), this, SLOT(print_slot()));
-    hbox->addWidget(pd_printbtn);
-    pd_dismissbtn = new QPushButton(this);
-    pd_dismissbtn->setText(QString(tr("Dismiss")));
+    pd_dismissbtn = new QPushButton(tr("Dismiss"));
+    vbox->addLayout(hbox);
     connect(pd_dismissbtn, SIGNAL(clicked()), this, SLOT(quit_slot()));
     hbox->addWidget(pd_dismissbtn);
-    vbox->addLayout(hbox);
     pd_dismissbtn->setFocus(Qt::ActiveWindowFocusReason);
 
     if (pd_cb && pd_cb->hcsetup)

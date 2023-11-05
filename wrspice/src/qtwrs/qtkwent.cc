@@ -193,6 +193,7 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
         // second term is for "debug" button in debug panel
         ke_deflt = new QPushButton(tr("Def"));
         hbox->addWidget(ke_deflt);
+        ke_deflt->setAutoDefault(false);
         connect(ke_deflt, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
     }
 

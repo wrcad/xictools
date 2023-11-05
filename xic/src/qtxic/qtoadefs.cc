@@ -128,6 +128,7 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     gb = new QGroupBox(tr("Library Path"));

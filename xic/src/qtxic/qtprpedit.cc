@@ -209,17 +209,20 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ)
     // top row buttons
     //
     po_edit = new QPushButton(tr("Edit"));
-    po_edit->setCheckable(true);
     hbox->addWidget(po_edit);
+    po_edit->setCheckable(true);
+    po_edit->setAutoDefault(false);
     connect(po_edit, SIGNAL(toggled(bool)), this, SLOT(edit_btn_slot(bool)));
 
     po_del = new QPushButton(tr("Delete"));
-    po_del->setCheckable(true);
     hbox->addWidget(po_del);
+    po_del->setCheckable(true);
+    po_del->setAutoDefault(false);
     connect(po_del, SIGNAL(toggled(bool)), this, SLOT(del_btn_slot(bool)));
 
     po_add = new QPushButton(tr("Add"));
     po_add->setCheckable(true);
+    po_add->setAutoDefault(false);
     hbox->addWidget(po_add);
 
     po_addmenu = new QMenu();
@@ -228,19 +231,22 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ)
         this, SLOT(add_menu_slot(QAction*)));
 
     po_global = new QPushButton(tr("Global"));
-    po_global->setCheckable(true);
     hbox->addWidget(po_global);
+    po_global->setCheckable(true);
+    po_global->setAutoDefault(false);
     connect(po_global, SIGNAL(toggled(bool)),
         this, SLOT(global_btn_slot(bool)));
 
     po_info = new QPushButton(tr("Info"));
-    po_info->setCheckable(true);
     hbox->addWidget(po_info);
+    po_info->setCheckable(true);
+    po_info->setAutoDefault(false);
     connect(po_info, SIGNAL(toggled(bool)),
         this, SLOT(info_btn_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled text area

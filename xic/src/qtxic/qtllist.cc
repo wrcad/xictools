@@ -96,6 +96,7 @@ QTlayerList::QTlayerList()
     ll_aledit = new QPushButton(tr("Edit Layer Aliases"));
     hbox->addWidget(ll_aledit);
     ll_aledit->setCheckable(true);
+    ll_aledit->setAutoDefault(false);
     connect(ll_aledit, SIGNAL(toggled(bool)),
         this, SLOT(aledit_btn_slot(bool)));
 

@@ -76,7 +76,6 @@
 #include <QKeyEvent>
 #include <QResizeEvent>
 #include <QSplitter>
-#include <QPushButton>
 #include <QLineEdit>
 #include <QEnterEvent>
 #include <QFocusEvent>
@@ -2073,49 +2072,10 @@ namespace {
         delete data;
         return (0);
     }
-}
 
-
-void
-QTsubwin::drag_enter_slot(QDragEnterEvent *ev)
-{
-    if (ev->mimeData()->hasFormat("text/property") ||
-            ev->mimeData()->hasFormat("text/twostring") ||
-            ev->mimeData()->hasFormat("text/cellname") ||
-            ev->mimeData()->hasFormat("text/string") ||
-            ev->mimeData()->hasFormat("text/plain")) {
-        ev->acceptProposedAction();
-    }
-}
-
-
-void
-QTsubwin::drop_slot(QDropEvent *ev)
-{
-    if (ev->mimeData()->hasFormat("text/property")) {
-        if (QTedit::self() && QTedit::self()->is_active()) {
-            QByteArray bary = ev->mimeData()->data("text/property");
-            const char *val = (const char*)bary.data() + sizeof(int);
-            CDs *cursd = CurCell(true);
-            hyList *hp = new hyList(cursd, val, HYcvAscii);
-            QTedit::self()->insert(hp);
-            hyList::destroy(hp);
-        }
-        ev->acceptProposedAction();
-        return;
-    }
-    const char *fmt = 0;
-    if (ev->mimeData()->hasFormat("text/twostring"))
-        fmt = "text/twostring";
-    else if (ev->mimeData()->hasFormat("text/cellname"))
-        fmt = "text/cellname";
-    else if (ev->mimeData()->hasFormat("text/string"))
-        fmt = "text/string";
-    else if (ev->mimeData()->hasFormat("text/plain"))
-        fmt = "text/plain";
-    if (fmt) {
-        QByteArray bary = ev->mimeData()->data(fmt);
-        char *src = lstring::copy((const char*)bary.data());
+    void load_file_proc(const char *fmt, const char *s)
+    {
+        char *src = lstring::copy(s);
         char *t = 0;
         if (!strcmp(fmt, "text/twostring")) {
             // Drops from content lists may be in the form
@@ -2146,8 +2106,64 @@ QTsubwin::drop_slot(QDropEvent *ev)
         }
         if (!didit)
             QTpkg::self()->RegisterIdleProc(load_file_idle, lfd);
-        ev->acceptProposedAction();
     }
+}
+
+
+void
+QTsubwin::drag_enter_slot(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls() ||
+            ev->mimeData()->hasFormat("text/property") ||
+            ev->mimeData()->hasFormat("text/twostring") ||
+            ev->mimeData()->hasFormat("text/cellname") ||
+            ev->mimeData()->hasFormat("text/string") ||
+            ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+    }
+    else
+        ev->ignore();
+}
+
+
+void
+QTsubwin::drop_slot(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        load_file_proc("", str);
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/property")) {
+        if (QTedit::self() && QTedit::self()->is_active()) {
+            QByteArray bary = ev->mimeData()->data("text/property");
+            const char *val = (const char*)bary.data() + sizeof(int);
+            CDs *cursd = CurCell(true);
+            hyList *hp = new hyList(cursd, val, HYcvAscii);
+            QTedit::self()->insert(hp);
+            hyList::destroy(hp);
+        }
+        ev->accept();
+        return;
+    }
+    const char *fmt = 0;
+    if (ev->mimeData()->hasFormat("text/twostring"))
+        fmt = "text/twostring";
+    else if (ev->mimeData()->hasFormat("text/cellname"))
+        fmt = "text/cellname";
+    else if (ev->mimeData()->hasFormat("text/string"))
+        fmt = "text/string";
+    else if (ev->mimeData()->hasFormat("text/plain"))
+        fmt = "text/plain";
+    if (fmt) {
+        QByteArray bary = ev->mimeData()->data(fmt);
+        load_file_proc(fmt, bary.constData());
+        ev->accept();
+        return;
+    }
+    ev->ignore();
 }
 
 

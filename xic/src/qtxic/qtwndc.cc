@@ -99,6 +99,7 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     wnd_sbutton = new QPushButton("S");
     col->addWidget(wnd_sbutton);
+    wnd_sbutton->setAutoDefault(false);
 
     wnd_s_menu = new QMenu();
     wnd_sbutton->setMenu(wnd_s_menu);
@@ -114,6 +115,7 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     wnd_rbutton = new QPushButton("R");
     col->addWidget(wnd_rbutton);
+    wnd_rbutton->setAutoDefault(false);
 
     wnd_r_menu = new QMenu();
     wnd_rbutton->setMenu(wnd_s_menu);

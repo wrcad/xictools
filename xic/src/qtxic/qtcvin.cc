@@ -194,6 +194,7 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     cvi_nbook = new QTabWidget();
@@ -401,8 +402,8 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
     // Read File button
     //
     btn = new QPushButton(tr("Read File"));
-    btn->setMaximumWidth(140);
     pvbox->addWidget(btn);
+    btn->setMaximumWidth(140);
     connect(btn, SIGNAL(clicked()), this, SLOT(read_btn_slot()));
 
     // Dismiss button

@@ -143,6 +143,7 @@ QTxformDlg::QTxformDlg(GRobject c,
 
     QPushButton *hbtn = new QPushButton(tr("Help"));
     hbox->addWidget(hbtn);
+    hbtn->setAutoDefault(false);
     connect(hbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Rotation entry and mirror buttons
@@ -196,10 +197,12 @@ QTxformDlg::QTxformDlg(GRobject c,
 
     tf_id = new QPushButton(tr("Identity Transform"));
     hbox->addWidget(tf_id);
+    tf_id->setAutoDefault(false);
     connect(tf_id, SIGNAL(clicked()), this, SLOT(identity_btn_slot()));
 
     tf_last = new QPushButton(tr("Last Transform"));
     hbox->addWidget(tf_last);
+    tf_last->setAutoDefault(false);
     connect(tf_last, SIGNAL(clicked()), this, SLOT(last_btn_slot()));
 
     // Store buttons
@@ -310,12 +313,10 @@ QTxformDlg::update()
         tf_mag->setEnabled(false);
     }
 
-    /*XXX
     if (has_tf)
-        gtk_window_set_focus(GTK_WINDOW(tf_popup), tf_id);
+        tf_id->setFocus();
     else
-        gtk_window_set_focus(GTK_WINDOW(tf_popup), tf_last);
-    */
+        tf_last->setFocus();
 }
 
 void

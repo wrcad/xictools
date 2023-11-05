@@ -124,6 +124,7 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
 
     ed_update = new QPushButton(tr("Update\nList"));
     grid->addWidget(ed_update, 0, 0, 2, 1);
+    ed_update->setAutoDefault(false);
     connect(ed_update, SIGNAL(clicked()), this, SLOT(update_btn_slot()));
 
     QHBoxLayout *hbox = new QHBoxLayout();
@@ -133,14 +134,17 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
 
     ed_show_all = new QPushButton(tr("Show All"));
     hbox->addWidget(ed_show_all);
+    ed_show_all->setAutoDefault(false);
     connect(ed_show_all, SIGNAL(clicked()), this, SLOT(showall_btn_slot()));
 
     ed_erase_all = new QPushButton(tr("Erase All"));
     hbox->addWidget(ed_erase_all);
+    ed_erase_all->setAutoDefault(false);
     connect(ed_erase_all, SIGNAL(clicked()), this, SLOT(eraseall_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout();
@@ -150,10 +154,12 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
 
     ed_show = new QPushButton(tr("Show"));
     hbox->addWidget(ed_show);
+    btn->setAutoDefault(false);
     connect(ed_show, SIGNAL(clicked()), this, SLOT(show_btn_slot()));
 
     ed_erase = new QPushButton(tr("Erase"));
     hbox->addWidget(ed_erase);
+    btn->setAutoDefault(false);
     connect(ed_erase, SIGNAL(clicked()), this, SLOT(erase_btn_slot()));
 
     QLabel *label = new QLabel(tr("Indices"));
@@ -195,8 +201,9 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     QGridLayout *gr = new QGridLayout(gb);
 
     ed_select = new QPushButton(tr("Enable\nSelect"));
-    ed_select->setCheckable(true);
     gr->addWidget(ed_select, 0, 0, 2, 1);
+    ed_select->setCheckable(true);
+    ed_select->setAutoDefault(false);
     connect(ed_select, SIGNAL(toggled(bool)),
         this, SLOT(enablesel_btn_slot(bool)));
 
@@ -221,13 +228,15 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     hbox->setSpacing(2);
 
     ed_measbox = new QPushButton(tr("Enable Measure Box"));
-    ed_measbox->setCheckable(true);
     hbox->addWidget(ed_measbox);
+    ed_measbox->setCheckable(true);
+    ed_measbox->setAutoDefault(false);
     connect(ed_measbox, SIGNAL(toggled(bool)),
         this, SLOT(measbox_btn_slot(bool)));
 
     ed_paint = new QPushButton(tr("Paint Box (use current layer)"));
     hbox->addWidget(ed_paint);
+    ed_paint->setAutoDefault(false);
     connect(ed_paint, SIGNAL(clicked()), this, SLOT(paint_btn_slot()));
 
     // Dismiss button.
@@ -481,6 +490,60 @@ QTextDevDlg::erase_btn_slot()
 void
 QTextDevDlg::current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
 {
+
+    //XXX FIXME handle selections
+#ifdef notdef
+// Static function.
+//
+int
+QTextDevDlg::ed_selection_proc(GtkTreeSelection*, GtkTreeModel *store,
+    GtkTreePath *path, int issel, void *)
+{
+// Selection callback for the list.  This is called when a new selection
+// is made, but not when the selection disappears, which happens when the
+// list is updated.
+    if (ED) {
+        if (!ED->ed_devs_listed)
+            return (false);
+        if (ED->ed_no_select && !issel)
+            return (false);
+        char *name = 0, *pref = 0;
+        GtkTreeIter iter;
+        if (gtk_tree_model_get_iter(store, &iter, path))
+            gtk_tree_model_get(store, &iter, 0, &name, 1, &pref, -1);
+        if (!name || !pref) {
+            free(name);
+            free(pref);
+            return (false);
+        }
+        if (!strcmp(name, "no") && !strcmp(pref, "devices")) {
+            // First two tokens of nodevmsg.
+            gtk_widget_set_sensitive(ED->ed_show, false);
+            gtk_widget_set_sensitive(ED->ed_erase, false);
+            free(name);
+            free(pref);
+            return (false);
+        }
+        if (issel) {
+            gtk_widget_set_sensitive(ED->ed_show, true);
+            gtk_widget_set_sensitive(ED->ed_erase, true);
+            free(name);
+            free(pref);
+            return (true);
+        }
+        delete [] ED->ed_selection;
+        ED->ed_selection = new char[strlen(name) + strlen(pref) + 2];
+        char *t = lstring::stpcpy(ED->ed_selection, name);
+        *t++ = ' ';
+        strcpy(t, pref);
+        gtk_widget_set_sensitive(ED->ed_show, true);
+        gtk_widget_set_sensitive(ED->ed_erase, true);
+        free(name);
+        free(pref);
+    }
+    return (true);
+}
+#endif
 }
 
 
@@ -581,59 +644,3 @@ QTextDevDlg::font_changed_slot(int fnum)
     }
 }
 
-
-#ifdef notdef
-
-
-// Static function.
-// Selection callback for the list.  This is called when a new selection
-// is made, but not when the selection disappears, which happens when the
-// list is updated.
-//
-int
-QTextDevDlg::ed_selection_proc(GtkTreeSelection*, GtkTreeModel *store,
-    GtkTreePath *path, int issel, void *)
-{
-    if (ED) {
-        if (!ED->ed_devs_listed)
-            return (false);
-        if (ED->ed_no_select && !issel)
-            return (false);
-        char *name = 0, *pref = 0;
-        GtkTreeIter iter;
-        if (gtk_tree_model_get_iter(store, &iter, path))
-            gtk_tree_model_get(store, &iter, 0, &name, 1, &pref, -1);
-        if (!name || !pref) {
-            free(name);
-            free(pref);
-            return (false);
-        }
-        if (!strcmp(name, "no") && !strcmp(pref, "devices")) {
-            // First two tokens of nodevmsg.
-            gtk_widget_set_sensitive(ED->ed_show, false);
-            gtk_widget_set_sensitive(ED->ed_erase, false);
-            free(name);
-            free(pref);
-            return (false);
-        }
-        if (issel) {
-            gtk_widget_set_sensitive(ED->ed_show, true);
-            gtk_widget_set_sensitive(ED->ed_erase, true);
-            free(name);
-            free(pref);
-            return (true);
-        }
-        delete [] ED->ed_selection;
-        ED->ed_selection = new char[strlen(name) + strlen(pref) + 2];
-        char *t = lstring::stpcpy(ED->ed_selection, name);
-        *t++ = ' ';
-        strcpy(t, pref);
-        gtk_widget_set_sensitive(ED->ed_show, true);
-        gtk_widget_set_sensitive(ED->ed_erase, true);
-        free(name);
-        free(pref);
-    }
-    return (true);
-}
-
-#endif

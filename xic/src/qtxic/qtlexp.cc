@@ -150,6 +150,7 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // depth option, recurse check box
@@ -200,8 +201,9 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     hbox->addWidget(label);
 
     lx_none = new QPushButton(tr("None"));
-    lx_none->setCheckable(true);
     hbox->addWidget(lx_none);
+    lx_none->setCheckable(true);
+    lx_none->setAutoDefault(false);
     connect(lx_none, SIGNAL(toggled(bool)),
         this, SLOT(none_btn_slot(bool)));
 
@@ -278,6 +280,7 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
 
     lx_recall = new QPushButton(tr("Recall"));
     hb->addWidget(lx_recall);
+    lx_recall->setAutoDefault(false);
     lx_recall_menu = new QMenu();
     lx_recall->setMenu(lx_recall_menu);
     for (int i = 0; i < ED_LEXPR_STORES; i++) {
@@ -291,6 +294,7 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
 
     lx_save = new QPushButton(tr("Save"));
     hb->addWidget(lx_save);
+    lx_save->setAutoDefault(false);
     lx_save_menu = new QMenu();
     lx_save->setMenu(lx_save_menu);
     for (int i = 0; i < ED_LEXPR_STORES; i++) {

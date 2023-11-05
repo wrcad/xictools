@@ -2,6 +2,10 @@ Issues:
 1.  How to implement "tranisent-for" behavior in pop-up windows.  Than is,
 how to keep them on top of the main window, without making them modal or
 setting the flag to keep them on top of everything.
+Solution:  Set the dialog parent to the associated transient parent.  This works
+for Linux and Windows, but not for Apple.  On Apple, st the Qt::Flag, which
+enforces desired behavior, but changes the appearance of the dialogs, which
+is ok.
 
 2.  How to handle drawing, accommoting the paint events and other
 specifics.  Presently there are visible artifacts and things not quite
@@ -10,9 +14,10 @@ right involving mostly ghosting and animation, recoloring, highlighting..
 TODO
 Double spin btns, step issue, exponential button in extfc.cc and elsewhere?
 
-Button defaulting. button state indication.
+Button defaulting. button state indication.  FIXED, all of the buttons other
+than Apply/Dismiss have auto default turned off.
 
-Mouse wheel support in drawing wins.
+Mouse wheel support in drawing wins.  DONE
 
 These use QMenuBar, which gets hijacked in Apple.
 qtasm.cc
@@ -24,46 +29,51 @@ qtlpedit.cc
 qtmain.cc
 qtmenucfg.cc
 
-These use QDrag
-qtauxtab.cc
-qtcells.cc
-qtfiles.cc
-qtfillp.cc
-qthtext.cc
-qtlpal.cc
-qtltab.cc
-qtmain.cc
-qtplace.cc
-qtprpbase.cc
-qtprpcedit.cc
+These use QDrag, may need update
+qtauxtab.cc     OK
+qtcells.cc      OK
+qtfiles.cc      OK
+qtfillp.cc      OK
+qtgrid,cc       OK
+qtlpal.cc       OK
+qtltab.cc       OK
+qtprpbase.cc    OK
+qtprpcedit.cc (not used, OK)
 
+These use mime data
+qtasm.cc       OK hasUrls() text/twostring text/plain
+qtasmpage.cc   OK hasUrls() text/twostring text/plain (XXX tree widget drops!)
+qtcgdopen.cc:  OK hasUrls() text/twostring text/plain
+qtchdopen.cc:  OK hasUrls() text/twostring text/plain
+qtchdcfg.cc    OK hasUrls() text/twostring text/plain
+qtchdsave.cc:  OK hasUrls() text/twostring text/plain
+qtcmp.cc       OK hasUrls() text/twostring text/plain
+qtextcmd.cc    OK hasUrls() text/twostring text/plain
+qtfiles.cc     OK hasUrls() text/twostring text/plain, source text/plain
+qtfillp.cc:    OK QTltab::mime_type() (source and drip site)
+qthtext.cc:    OK (promptline drop)
+    hasUrls() text/property text/twostring text/cellname text/string text/plain
+qtlpal.cc:     OK QTltab::mime_type() hasColor()
+qtltab.cc:     OK QTltab::mime_type() hasColor()
+qtmain.cc:     OK (drawing win drop)
+    hasUrls() text/property text/twostring text/cellname text/string text/plain
+qtplace.cc:    OK hasUrls() text/twostring text/cellname text/string text/plain
+
+// FIX THIS STUFF
 These have "#ifdef notdef", i.e., code to translate.
-qtasm.cc
-qtasmpage.cc
-qtcgdopen.cc
-qtchdcfg.cc
-qtchdopen.cc
-qtchdsave.cc
-qtcmp.cc
-qtcvofmt.cc
-qtdebug.cc
-qtdevedit.cc
-qtdevs.cc
-qtextcmd.cc
-qtextdev.cc
-qtextset.cc
-qtfiles.cc
-qtgrid.cc
-qthtext.cc
-qtlogo.cc
-qtlpal.cc
-qtltab.cc
-qtmenucfg.cc
-qtnodmp.cc
-qtoalibs.cc
-qtprpcedit.cc
-qttree.cc
-qtxform.cc
+qtasmpage.cc  selections, tree widget drops
+qtdebug.cc   keypress, selections
+qtextcmd.cc  update function
+qtextdev.cc  selections
+qtextset.cc edit block
+qtfiles.cc  selection, clipboard
+qthtext.cc  selections
+qtlogo.cc   font selection
+qtltab.cc   blinking layers
+qtmenucfg.cc  fixme dynamic entries
+qtnodmp.cc  selections, misc handlers
+qtoalibs.cc selections, button press
+qttree.cc   clipboard, drag, possibly deselect collapsed selection
 
 These use QTcanvas
 qtdevs.cc

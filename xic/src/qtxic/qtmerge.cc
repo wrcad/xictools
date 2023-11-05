@@ -220,13 +220,13 @@ printf("x1\n");
     hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton();
-    btn->setText(tr("Apply"));
+    QPushButton *btn = new QPushButton(tr("Apply"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
-    btn = new QPushButton();
-    btn->setText(tr("Apply To Rest"));
+    btn = new QPushButton(tr("Apply To Rest"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_to_all_btn_slot()));
 
     show();

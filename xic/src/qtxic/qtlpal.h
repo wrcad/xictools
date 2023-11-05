@@ -110,7 +110,6 @@ private:
     void update_user(CDl*, int, int);
     void init_size();
     void redraw();
-    void refresh(int, int, int, int);
     void b1_handler(int, int, int, bool);
     void b2_handler(int, int, int, bool);
     void b3_handler(int, int, int, bool);

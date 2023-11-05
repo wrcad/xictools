@@ -342,25 +342,25 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     // the WR logo button
     QPushButton *btn =  new QPushButton();
     btn->setIcon(QPixmap(tm30));
+    btn->setAutoDefault(false);
     hbox->addWidget(btn);
     btn->setToolTip(tr("Pop up email client"));
-    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(wr_btn_slot()));
 
     // the Run button
     btn = new QPushButton();
     btn->setIcon(QPixmap(run_xpm));
     hbox->addWidget(btn);
-    btn->setToolTip(tr("Run current circuit"));
     btn->setAutoDefault(false);
+    btn->setToolTip(tr("Run current circuit"));
     connect(btn, SIGNAL(clicked()), this, SLOT(run_btn_slot()));
 
     // the Stop button
     btn = new QPushButton();
     btn->setIcon(QPixmap(stop_xpm));
     hbox->addWidget(btn);
-    btn->setToolTip(tr("Pause current analysis"));
     btn->setAutoDefault(false);
+    btn->setToolTip(tr("Pause current analysis"));
     connect(btn, SIGNAL(clicked()), this, SLOT(stop_btn_slot()));
 
 #ifndef __APPLE__

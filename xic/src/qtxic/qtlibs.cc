@@ -170,14 +170,17 @@ QTlibsDlg::QTlibsDlg(GRobject c)
 
     lb_openbtn = new QPushButton(tr("Open/Close"));
     hbox->addWidget(lb_openbtn);
+    lb_openbtn->setAutoDefault(false);
     connect(lb_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
     lb_contbtn = new QPushButton(tr("Contents"));
     hbox->addWidget(lb_contbtn);
+    lb_contbtn->setAutoDefault(false);
     connect(lb_openbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled list
@@ -216,8 +219,9 @@ QTlibsDlg::QTlibsDlg(GRobject c)
     vbox->addLayout(hbox);
 
     lb_noovr = new QPushButton(tr("No Overwrite Lib Cells"));
-    lb_noovr->setCheckable(true);
     hbox->addWidget(lb_noovr);
+    lb_noovr->setCheckable(true);
+    lb_noovr->setAutoDefault(false);
     connect(lb_noovr, SIGNAL(toggled(bool)),
         this, SLOT(noovr_btn_slot(bool)));
 

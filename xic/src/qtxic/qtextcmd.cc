@@ -50,6 +50,9 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 
 //---------------------------------------------------------------------------
@@ -108,9 +111,67 @@ cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
 // End of cExt functions.
 
 
+class QTextCmdPathEdit : public QLineEdit
+{
+public:
+    QTextCmdPathEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTextCmdPathEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+void
+QTextCmdPathEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        setText(str);
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/twostring")) {
+        // Drops from content lists may be in the form
+        // "fname_or_chd\ncellname".  Keep the cellname.
+        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *t = strchr(str, '\n');
+        if (t)
+            *t = 0;
+        setText(str);
+        delete [] str;
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        // The default action will insert the text at the click location,
+        // instead here we replace any existing text.
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        setText(ba.constData());
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
 // Depth choices are 0 -- DMAX-1, "all"
 #define DMAX 6
-
 
 QTextCmdDlg *QTextCmdDlg::instPtr;
 
@@ -184,6 +245,7 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     gb = new QGroupBox(tr(cmd_excmd->btntitle()));
@@ -278,24 +340,7 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
         if (cmd_excmd->filename())
             cmd_text->setText(cmd_excmd->filename());
         cmd_text->setReadOnly(false);
-
-        int wid = 250;
-        if (cmd_excmd->filename()) {
-            int twid = QTfont::stringWidth(cmd_excmd->filename(), cmd_text);
-            if (wid < twid)
-                wid = twid;
-        }
-//XXX        gtk_widget_set_size_request(cmd_text, wid + 10, -1);
-
-        // drop site
-/*
-        GtkDestDefaults DD = (GtkDestDefaults)
-            (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
-        gtk_drag_dest_set(cmd_text, DD, target_table, n_targets,
-            GDK_ACTION_COPY);
-        g_signal_connect_after(G_OBJECT(cmd_text), "drag-data-received",
-            G_CALLBACK(cmd_drag_data_received), 0);
-*/
+        cmd_text->setAcceptDrops(true);
     }
 
     // activate button
@@ -305,13 +350,12 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
     vbox->addLayout(hbox);
 
     cmd_go = new QPushButton(tr(cmd_excmd->gotext()));
-    cmd_go->setCheckable(true);
     hbox->addWidget(cmd_go);
-//    gtk_widget_set_name(button, cmd_excmd->gotext());
+    cmd_go->setCheckable(true);
+    cmd_go->setAutoDefault(false);
     connect(cmd_go, SIGNAL(toggled(bool)), this, SLOT(go_btn_slot(bool)));
 
-    const char *cn = "Cancel";
-    cmd_cancel = new QPushButton(tr(cn));
+    cmd_cancel = new QPushButton(tr("Cancel"));
     hbox->addWidget(cmd_cancel);
     connect(cmd_cancel, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 }
@@ -333,7 +377,7 @@ QTextCmdDlg::~QTextCmdDlg()
 void
 QTextCmdDlg::update()
 {
-    /*
+    /*XXX
     for (int i = 0; i < cmd_excmd->num_buttons(); i++) {
         if (cmd_excmd->button(i)->var()) {
             bool bstate = gtk_toggle_button_get_active(
@@ -369,7 +413,7 @@ QTextCmdDlg::go_btn_slot(bool)
 void
 QTextCmdDlg::check_state_changed_slot(int)
 {
-    /*
+    /*XXX fixme
     if (!Cmd)
         return;
     if (caller == Cmd->cmd_go && !GTKdev::GetStatus(caller))
@@ -442,46 +486,3 @@ QTextCmdDlg::cancel_btn_slot()
     EX()->PopUpExtCmd(0, MODE_OFF, 0, 0, 0);
 }
 
-
-#ifdef notdef
-
-namespace {
-    /*
-    // Drag/drop stuff
-    //
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-    */
-}
-
-// Static function.
-// Drag data received in editing window, grab it.
-//
-void
-QTextCmdDlg::cmd_drag_data_received(GtkWidget *entry, GdkDragContext *context,
-    gint, gint, GtkSelectionData *data, guint, guint time)
-{
-    if (gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8 &&
-            gtk_selection_data_get_data(data)) {
-        char *src = (char*)gtk_selection_data_get_data(data);
-        if (gtk_selection_data_get_target(data) ==
-                gdk_atom_intern("TWOSTRING", true)) {
-            // Drops from content lists may be in the form
-            // "fname_or_chd\ncellname".  Keep the filename.
-            char *t = strchr(src, '\n');
-            if (t)
-                *t = 0;
-        }
-        gtk_entry_set_text(GTK_ENTRY(entry), src);
-        gtk_drag_finish(context, true, false, time);
-        return;
-    }
-    gtk_drag_finish(context, false, false, time);
-}
-
-#endif

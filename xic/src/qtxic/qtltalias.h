@@ -82,7 +82,7 @@ private slots:
     void del_btn_slot();
     void edit_btn_slot();
     void help_btn_slot();
-    void current_item_changed(QTreeWidgetItem*, QTreeWidgetItem*);
+    void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
     void decimal_btn_slot(int);
     void dismiss_btn_slot();
     void font_changed_slot(int);

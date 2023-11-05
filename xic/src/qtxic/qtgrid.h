@@ -58,6 +58,7 @@ class QRadioButton;
 class QMenu;
 class QMouseEvent;
 class QResizeEvent;
+class QKeyPressEvent;
 namespace qtinterf {
 class QTcanvas;
 }
@@ -130,15 +131,7 @@ public:
 
 private:
     void redraw();
-
-    /*
-    static int gd_key_hdlr(GtkWidget*, GdkEvent*event, void*);
-    static int gd_button_press_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int gd_button_release_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int gd_motion_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void gd_drag_data_get(GtkWidget*, GdkDragContext*,
-        GtkSelectionData*, guint, guint, void*);
-    */
+    void keyPressEvent(QKeyEvent*);
 
     QGroupBox   *gd_snapbox;
     QDoubleSpinBox *gd_resol;

@@ -140,8 +140,8 @@ QTerrmsgDlg::QTerrmsgDlg(const char *string)
     hbox->setSpacing(2);
 
     QPushButton *wrap = new QPushButton(tr("Wrap Lines"));;
-    wrap->setCheckable(true);
     hbox->addWidget(wrap);
+    wrap->setCheckable(true);
     wrap->setAutoDefault(false);
     connect(wrap, SIGNAL(toggled(bool)),
         this, SLOT(wrap_btn_slot(bool)));

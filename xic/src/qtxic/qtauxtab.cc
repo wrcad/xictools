@@ -124,20 +124,23 @@ QTauxTabDlg::QTauxTabDlg(GRobject c)
     // Button row
     //
     at_addbtn = new QPushButton(tr("Add"));
-    at_addbtn->setCheckable(true);
     hbox->addWidget(at_addbtn);
+    at_addbtn->setCheckable(true);
+    at_addbtn->setAutoDefault(false);
     connect(at_addbtn, SIGNAL(toggled(bool)),
         this, SLOT(add_btn_slot(bool)));
 
     at_rembtn = new QPushButton(tr("Remove"));
-    at_rembtn->setCheckable(true);
     hbox->addWidget(at_rembtn);
+    at_rembtn->setCheckable(true);
+    at_rembtn->setAutoDefault(false);
     connect(at_rembtn, SIGNAL(toggled(bool)),
         this, SLOT(rem_btn_slot(bool)));
 
     at_clearbtn = new QPushButton(tr("Clear"));
-    at_clearbtn->setCheckable(true);
     hbox->addWidget(at_clearbtn);
+    at_clearbtn->setCheckable(true);
+    at_clearbtn->setAutoDefault(false);
     connect(at_clearbtn, SIGNAL(toggled(bool)),
         this, SLOT(clear_btn_slot(bool)));
 

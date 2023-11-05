@@ -230,17 +230,21 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
 
     QPushButton *btn = new QPushButton(tr("Rot90"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(rot90_btn_slot()));
 
     btn = new QPushButton("X");
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(x_btn_slot()));
     btn = new QPushButton("Y");
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(y_btn_slot()));
 
     btn = new QPushButton(tr("Stores"));
     vbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(stores_btn_slot()));
 
     // Stores display controls
@@ -268,10 +272,12 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
 
     btn = new QPushButton(tr("Dump Defs"));
     vbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(dump_btn_slot()));
 
     btn = new QPushButton(tr("Pixel Editor"));
     vbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(pixed_btn_slot()));
 
     // Sample area
@@ -344,31 +350,37 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING)
 
     btn = new QPushButton(tr("Load"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(load_btn_slot()));
 
     btn = new QPushButton(tr("Apply"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
     btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     btn = new QPushButton(tr("Outline"));
     hbox->addWidget(btn);
     btn->setCheckable(true);
+    btn->setAutoDefault(false);
     fp_outl = btn;
     connect(btn, SIGNAL(toggled(bool)), this, SLOT(outline_btn_slot(bool)));
 
     btn = new QPushButton(tr("Fat"));
     hbox->addWidget(btn);
     btn->setCheckable(true);
+    btn->setAutoDefault(false);
     fp_fat = btn;;
     connect(btn, SIGNAL(toggled(bool)), this, SLOT(fat_btn_slot(bool)));
 
     btn = new QPushButton(tr("Cut"));
     hbox->addWidget(btn);
     btn->setCheckable(true);
+    btn->setAutoDefault(false);
     fp_cut = btn;
     connect(btn, SIGNAL(toggled(bool)), this, SLOT(cut_btn_slot(bool)));
 
@@ -1057,7 +1069,7 @@ QTfillPatDlg::drag_enter_slot(QDragEnterEvent *ev)
     if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
         // The "sender()" is the widget that recieved the event.
         if (sender() == fp_sample || sender() == fp_editor) {
-            ev->acceptProposedAction();
+            ev->accept();
             return;
         }
 
@@ -1067,10 +1079,11 @@ QTfillPatDlg::drag_enter_slot(QDragEnterEvent *ev)
         QByteArray bary = ev->mimeData()->data(QTltab::mime_type());
         LayerFillData *dd = (LayerFillData*)bary.data();
         if (dd->d_from_sample || dd->d_from_layer) {
-            ev->acceptProposedAction();
+            ev->accept();
             return;
         }
     }
+    ev->ignore();
 }
 
 
@@ -1108,8 +1121,9 @@ QTfillPatDlg::drop_event_slot(QDropEvent *ev)
                 }
             }
         }
-        ev->acceptProposedAction();
+        ev->accept();
     }
+    ev->ignore();
 }
 // End of slots.
 

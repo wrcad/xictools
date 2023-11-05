@@ -155,6 +155,7 @@ QTshellParamDlg::QTshellParamDlg(int xx, int yy)
 
     btn = new QPushButton(tr("Help"));
     btn->setCheckable(true);
+    btn->setAutoDefault(false);
     hbox->addWidget(btn);
     connect(btn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
 

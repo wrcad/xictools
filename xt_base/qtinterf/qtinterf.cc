@@ -57,7 +57,6 @@
 
 #include <QApplication>
 #include <QAction>
-#include <QPushButton>
 #include <QCheckBox>
 #include <QRadioButton>
 #include <QMenu>

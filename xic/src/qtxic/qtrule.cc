@@ -161,6 +161,7 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QGridLayout *grid = new QGridLayout();
@@ -255,6 +256,7 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
 
     ru_edit_st = new QPushButton(tr("Edit Table"));
     grid->addWidget(ru_edit_st, 7, 1);
+    ru_edit_st->setAutoDefault(false);
     connect(ru_edit_st, SIGNAL(clicked()), this, SLOT(edit_table_slot()));
 
     // Dimension when target objects are fully enclosed.

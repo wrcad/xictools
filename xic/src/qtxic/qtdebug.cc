@@ -373,6 +373,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
     hbox->addWidget(db_modebtn);
     db_modebtn->setEnabled(false);
     db_modebtn->setMaximumWidth(80);
+    db_modebtn->setAutoDefault(false);
     connect(db_modebtn, SIGNAL(clicked()), this, SLOT(mode_btn_slot()));
 
     // labels in frame

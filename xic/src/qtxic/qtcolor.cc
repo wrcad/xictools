@@ -233,13 +233,15 @@ QTcolorDlg::QTcolorDlg(GRobject c)
     //
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     c_listbtn = new QPushButton(tr("Named Colors"));
+    hbox->addWidget(c_listbtn);
     c_listbtn->setCheckable(true);
+    c_listbtn->setAutoDefault(false);
     connect(c_listbtn, SIGNAL(toggled(bool)),
         this, SLOT(colors_btn_slot(bool)));
-    hbox->addWidget(c_listbtn);
 
     btn = new QPushButton(tr("Apply"));
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));

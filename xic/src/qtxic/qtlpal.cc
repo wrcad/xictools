@@ -139,9 +139,6 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     lp_remove = 0;
     memset(lp_history, 0, LP_PALETTE_COLS * sizeof(CDl*));
     memset(lp_user, 0, LP_PALETTE_COLS * LP_PALETTE_ROWS * sizeof(CDl*));
-//    lp_pmap_width = 0;
-//    lp_pmap_height = 0;
-//    lp_pmap_dirty = false;
 
     lp_drag_x = 0;
     lp_drag_y = 0;
@@ -171,6 +168,7 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
 
     QPushButton *recall_btn = new QPushButton(tr("Recall"));
     hbox->addWidget(recall_btn);
+    recall_btn->setAutoDefault(false);
 
     QMenu *recall_menu = new QMenu();
     recall_btn->setMenu(recall_menu);
@@ -185,6 +183,7 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
 
     QPushButton *save_btn = new QPushButton(tr("Save"));
     hbox->addWidget(save_btn);
+    save_btn->setAutoDefault(false);
 
     QMenu *save_menu = new QMenu();
     save_btn->setMenu(save_menu);
@@ -198,14 +197,16 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
         this, SLOT(save_menu_slot(QAction*)));
 
     lp_remove = new QPushButton(tr("Remove"));
-    lp_remove->setCheckable(true);
     hbox->addWidget(lp_remove);
+    lp_remove->setCheckable(true);
+    lp_remove->setAutoDefault(false);
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    QGroupBox *gb = new QGroupBox(0);
+    QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
     QVBoxLayout *vb = new QVBoxLayout(gb);
     vb->setContentsMargins(qmtop);
@@ -224,7 +225,7 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
 
     connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
-/*
+/*XXX
     connect(Viewport(), SIGNAL(new_painter(QPainter*)),
         this, SLOT(new_painter_slot(QPainter*)));
     connect(Viewport(), SIGNAL(paint_event(QPaintEvent*)),
@@ -236,7 +237,7 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
         this, SLOT(button_up_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
-/*
+/*XXX
     connect(Viewport(), SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_down_slot(QKeyEvent*)));
     connect(Viewport(), SIGNAL(key_release_event(QKeyEvent*)),
@@ -254,43 +255,6 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
     connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
         this, SLOT(drop_slot(QDropEvent*)));
-
-    /*
-    gtk_widget_add_events(gd_viewport, GDK_STRUCTURE_MASK);
-    g_signal_connect(G_OBJECT(gd_viewport), "configure-event",
-        G_CALLBACK(lp_resize_hdlr), 0);
-#if GTK_CHECK_VERSION(3,0,0)
-    g_signal_connect(G_OBJECT(gd_viewport), "draw",
-        G_CALLBACK(lp_redraw_hdlr), 0);
-#else
-    gtk_widget_add_events(gd_viewport, GDK_EXPOSURE_MASK);
-    g_signal_connect(G_OBJECT(gd_viewport), "expose-event",
-        G_CALLBACK(lp_redraw_hdlr), 0);
-#endif
-    gtk_widget_add_events(gd_viewport, GDK_BUTTON_PRESS_MASK);
-    g_signal_connect(G_OBJECT(gd_viewport), "button-press-event",
-        G_CALLBACK(lp_button_down_hdlr), 0);
-    gtk_widget_add_events(gd_viewport, GDK_BUTTON_RELEASE_MASK);
-    g_signal_connect(G_OBJECT(gd_viewport), "button-release-event",
-        G_CALLBACK(lp_button_up_hdlr), 0);
-    gtk_widget_add_events(gd_viewport, GDK_POINTER_MOTION_MASK);
-    g_signal_connect(G_OBJECT(gd_viewport), "motion-notify-event",
-        G_CALLBACK(lp_motion_hdlr), 0);
-    g_signal_connect(G_OBJECT(gd_viewport), "drag-begin",
-        G_CALLBACK(lp_drag_begin), 0);
-    g_signal_connect(G_OBJECT(gd_viewport), "drag-end",
-        G_CALLBACK(lp_drag_end), 0);
-    g_signal_connect(G_OBJECT(gd_viewport), "drag-data-get",
-        G_CALLBACK(lp_drag_data_get), 0);
-    gtk_drag_dest_set(gd_viewport, GTK_DEST_DEFAULT_ALL, lp_targets,
-        n_lp_targets, GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(gd_viewport), "drag-data-received",
-        G_CALLBACK(lp_drag_data_received), 0);
-    g_signal_connect(G_OBJECT(gd_viewport), "style-set",
-        G_CALLBACK(lp_font_change_hdlr), 0);
-
-    GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);
-    */
 
     btn = new QPushButton(tr("Dismiss"));
     vbox->addWidget(btn);
@@ -456,8 +420,7 @@ QTlayerPaletteDlg::update_layer(CDl *ldesc)
                     for (int j = i; j > 0; j--)
                         lp_history[j] = lp_history[j-1];
                     lp_history[0] = ldesc;
-//                    lp_pmap_dirty = true;
-                    refresh(0, 0, 0, 0);
+                    redraw();
                     return;
                 }
             }
@@ -466,8 +429,7 @@ QTlayerPaletteDlg::update_layer(CDl *ldesc)
             lp_history[0] = ldesc;
         }
     }
-//    lp_pmap_dirty = true;
-    refresh(0, 0, 0, 0);
+    redraw();
 }
 
 
@@ -524,8 +486,7 @@ QTlayerPaletteDlg::update_user(CDl *ldesc, int xx, int yy)
     }
     else
         return;
-//    lp_pmap_dirty = true;
-    refresh(0, 0, 0, 0);
+    redraw();
 }
 
 
@@ -696,70 +657,7 @@ QTlayerPaletteDlg::redraw()
             x1 += lp_entry_width;
         }
     }
-//    lp_pmap_dirty = true;
-}
-
-
-// Exposure redraw, avoids flicker.
-//
-void
-QTlayerPaletteDlg::refresh(int xx, int yy, int w, int h)
-{
-    /*
-#if GTK_CHECK_VERSION(3,0,0)
-    if (!GetDrawable()->get_window())
-        GetDrawable()->set_window(gtk_widget_get_window(gd_viewport));
-    if (!GetDrawable()->get_window())
-        return;
-    int win_width = GetDrawable()->get_width();
-    int win_height = GetDrawable()->get_height();
-    lp_pmap_dirty = GetDrawable()->set_draw_to_pixmap();
-    if (w <= 0)
-        w = win_width;
-    if (h <= 0)
-        h = win_height;
-#else
-    if (!gd_window)
-        gd_window = gtk_widget_get_window(gd_viewport);
-    if (!gd_window)
-        return;
-
-    int win_width = gdk_window_get_width(gd_window);
-    int win_height = gdk_window_get_height(gd_window);
-    if (w <= 0)
-        w = win_width;
-    if (h <= 0)
-        h = win_height;
-
-    if (!lp_pixmap || lp_pmap_width != win_width ||
-            lp_pmap_height != win_height) {
-        // Widget is not currently resizable.
-        if (lp_pixmap)
-            gdk_pixmap_unref(lp_pixmap);
-        lp_pmap_width = win_width;
-        lp_pmap_height = win_height;
-        lp_pixmap = gdk_pixmap_new(gd_window, lp_pmap_width, lp_pmap_height,
-            gdk_visual_get_depth(GTKdev::self()->Visual()));
-        lp_pmap_dirty = true;
-    }
-
-    GdkWindow *win = gd_window;
-    gd_window = lp_pixmap;
-#endif
-
-    if (lp_pmap_dirty) {
-        redraw();
-        lp_pmap_dirty = false;
-    }
-
-#if GTK_CHECK_VERSION(3,0,0)
-    GetDrawable()->set_draw_to_window();
-    GetDrawable()->copy_pixmap_to_window(GC(), x, y, w, h);
-#else
-    gdk_window_copy_area(win, GC(), x, y, gd_window, x, y, w, h);
-    gd_window = win;
-#endif
-    */
+    Update();
 }
 
 
@@ -771,8 +669,7 @@ QTlayerPaletteDlg::b1_handler(int xx, int yy, int state, bool down)
 {
     if (down) {
         if (remove(xx, yy)) {
-//            lp_pmap_dirty = true;
-            refresh(0, 0, 0, 0);
+            redraw();
             return;
         }
         CDl *ld = ldesc_at(xx, yy);
@@ -784,8 +681,7 @@ QTlayerPaletteDlg::b1_handler(int xx, int yy, int state, bool down)
                     (DSP()->CurMode() == Electrical) || !LT()->NoPhysRedraw());
             if (state & GR_CONTROL_MASK)
                 LT()->SetLayerSelectability(LTtoggle, ld);
-//            lp_pmap_dirty = true;
-            refresh(0, 0, 0, 0);
+            redraw();
             return;
         }
 
@@ -820,8 +716,7 @@ QTlayerPaletteDlg::b2_handler(int xx, int yy, int state, bool down)
             ((DSP()->CurMode() == Electrical) ||
             (LT()->NoPhysRedraw() && (state & GR_SHIFT_MASK)) ||
             (!LT()->NoPhysRedraw() && !(state & GR_SHIFT_MASK))));
-//        lp_pmap_dirty = true;
-        refresh(0, 0, 0, 0);
+        redraw();
     }
 }
 
@@ -933,8 +828,7 @@ QTlayerPaletteDlg::recall_menu_slot(QAction *a)
         lp_user[cnt] = ld;
         cnt++;
     }
-//    lp_pmap_dirty = true;
-    refresh(0, 0, 0, 0);
+    redraw();
 }
 
 
@@ -972,6 +866,7 @@ QTlayerPaletteDlg::font_changed_slot(int fnum)
         if (FC.getFont(&fnt, FNT_SCREEN))
             gd_viewport->set_font(fnt);
         init_size();
+        redraw();
     }
 }
 
@@ -979,6 +874,10 @@ QTlayerPaletteDlg::font_changed_slot(int fnum)
 void
 QTlayerPaletteDlg::resize_slot(QResizeEvent*)
 {
+    init_size();
+    update_layer(LT()->CurLayer());
+    update_info(LT()->CurLayer());
+    redraw();
 }
 
 
@@ -994,7 +893,7 @@ QTlayerPaletteDlg::button_down_slot(QMouseEvent *ev)
         button = 3;
 
     button = Kmap()->ButtonMap(button);
-    int state = ev->modifiers();
+    int state = mod_state(ev->modifiers());
 
     if (XM()->IsDoingHelp() && (state & GR_SHIFT_MASK)) {
         DSPmainWbag(PopUpHelp("layertab"))
@@ -1040,7 +939,7 @@ QTlayerPaletteDlg::button_up_slot(QMouseEvent *ev)
         button = 3;
 
     button = Kmap()->ButtonMap(button);
-    int state = ev->modifiers();
+    int state = mod_state(ev->modifiers());
 
     if (XM()->IsDoingHelp() && (state & GR_SHIFT_MASK)) {
         DSPmainWbag(PopUpHelp("layertab"))
@@ -1093,50 +992,19 @@ QTlayerPaletteDlg::motion_slot(QMouseEvent *ev)
             (abs(xx - lp_drag_x) > 4 || abs(yy - lp_drag_y) > 4)) {
         lp_dragging = false;
 
-//        int entry = entry_of_xy(xx, yy);
-//        int last_ent = last_entry();
-//        if (entry <= last_ent) {
-            CDl *ld = ldesc_at(xx, yy);
-            XM()->PopUpLayerPalette(0, MODE_UPD, true, ld);
+        CDl *ld = ldesc_at(xx, yy);
+        XM()->PopUpLayerPalette(0, MODE_UPD, true, ld);
 
-            LayerFillData dd(ld);
-            QDrag *drag = new QDrag(sender());
-            drag->setPixmap(QPixmap(QTltab::fillpattern_xpm()));
-            QMimeData *mimedata = new QMimeData();
-            QByteArray qdata((const char*)&dd, sizeof(LayerFillData));
-            mimedata->setData(QTltab::mime_type(), qdata);
-            drag->setMimeData(mimedata);
-
-//            QTsubwin::HaveDrag = true;
-            drag->exec(Qt::CopyAction);
-//            QTsubwin::HaveDrag = false;
-
-            delete drag;
-//        }
+        LayerFillData dd(ld);
+        QDrag *drag = new QDrag(sender());
+        drag->setPixmap(QPixmap(QTltab::fillpattern_xpm()));
+        QMimeData *mimedata = new QMimeData();
+        QByteArray qdata((const char*)&dd, sizeof(LayerFillData));
+        mimedata->setData(QTltab::mime_type(), qdata);
+        drag->setMimeData(mimedata);
+        drag->exec(Qt::CopyAction);
+        delete drag;
     }
-
-
-
-    /*
-
-    if (!Lpal)
-        return (false);
-    int x = (int)event->motion.x;
-    int y = (int)event->motion.y;
-    if (Lpal->lp_dragging &&
-            (abs(x - Lpal->lp_drag_x) > 4 || abs(y - Lpal->lp_drag_y) > 4)) {
-        Lpal->lp_dragging = false;
-        // fillpattern only
-        GtkTargetList *targets = gtk_target_list_new(lp_targets, 1);
-        gtk_drag_begin(caller, targets, (GdkDragAction)GDK_ACTION_COPY,
-            1, event);
-    }
-
-    CDl *ld = Lpal->ldesc_at(x, y);
-    if (ld)
-        Lpal->update_info(ld);
-        */
-
 }
 
 
@@ -1157,59 +1025,61 @@ QTlayerPaletteDlg::key_up_slot(QKeyEvent*)
 void
 QTlayerPaletteDlg::drag_enter_slot(QDragEnterEvent *ev)
 {
-    if (ev->mimeData()->hasFormat(QTltab::mime_type()))
-        ev->acceptProposedAction();
-    if (ev->mimeData()->hasColor())
-        ev->acceptProposedAction();
+    if (ev->mimeData()->hasFormat(QTltab::mime_type()) ||
+            ev->mimeData()->hasColor())
+        ev->accept();
+    else
+        ev->ignore();
 }
 
 
 void
 QTlayerPaletteDlg::drop_slot(QDropEvent *ev)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    int xx = ev->position().x();
+    int yy = ev->position().y();
+#else
+    int xx = ev->pos().x();
+    int yy = ev->pos().y();
+#endif
     if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
         QByteArray bary = ev->mimeData()->data(QTltab::mime_type());
         LayerFillData *dd = (LayerFillData*)bary.data();
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        XM()->FillLoadCallback(dd,
-                LT()->LayerAt(ev->position().x(), ev->position().y()));
-#else
-        XM()->FillLoadCallback(dd, LT()->LayerAt(ev->pos().x(), ev->pos().y()));
-#endif
-        ev->acceptProposedAction();
+        if (dd->d_from_layer) {
+            if (dd->d_layernum > 0) {
+                CDl *ld = CDldb()->layer(dd->d_layernum, DSP()->CurMode());
+                if (ld)
+                    update_user(ld, xx, yy);
+            }
+        }
+        else {
+            CDl *ld = ldesc_at(xx, yy);
+            XM()->FillLoadCallback(dd, ld);
+            // update the colors
+            update_layer(0);
+            LT()->ShowLayerTable(ld);
+            XM()->PopUpFillEditor(0, MODE_UPD);
+        }
         if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
             DSP()->RedisplayAll();
+        ev->accept();
         return;
     }
     if (ev->mimeData()->hasColor()) {
-        ev->acceptProposedAction();
         QColor color = qvariant_cast<QColor>(ev->mimeData()->colorData());
-/* XXX
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        int entry = entry_of_xy(ev->position().x(), ev->position().y());
-#else
-        int entry = entry_of_xy(ev->x(), ev->y());
-#endif
-
-        if (entry > last_entry())
-            return;
-        CDl *layer =
-            CDldb()->layer(entry + first_visible() + 1, DSP()->CurMode());
-*/
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        CDl *layer = ldesc_at(ev->position().x(), ev->position().y());
-#else
-        CDl *layer = ldesc_at(ev->pos().x(), ev->pos().y());
-#endif
-
+        CDl *layer = ldesc_at(xx, yy);
         LT()->SetLayerColor(layer, color.red(), color.green(), color.blue());
         // update the colors
+        update_layer(0);
         LT()->ShowLayerTable(layer);
         XM()->PopUpFillEditor(0, MODE_UPD);
-        ev->acceptProposedAction();
         if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
             DSP()->RedisplayAll();
+        ev->accept();
+        return;
     }
+    ev->ignore();
 }
 
 
@@ -1219,156 +1089,3 @@ QTlayerPaletteDlg::dismiss_btn_slot()
     XM()->PopUpLayerPalette(0, MODE_OFF, false, 0);
 }
 
-
-#ifdef notdef
-
-// Static function.
-// Widget is not resizable.
-int
-QTlayerPaletteDlg::lp_resize_hdlr(GtkWidget*, GdkEvent*, void*)
-{
-    if (!Lpal)
-        return (0);
-#if GTK_CHECK_VERSION(3,0,0)
-    if (!Lpal->GetDrawable()->get_window()) {
-        GdkWindow *window = gtk_widget_get_window(Lpal->gd_viewport);
-        Lpal->GetDrawable()->set_window(window);
-    }
-#else
-    if (!Lpal->gd_window)
-        Lpal->gd_window = gtk_widget_get_window(Lpal->gd_viewport);
-#endif
-    Lpal->update_layer(LT()->CurLayer());
-    Lpal->update_info(LT()->CurLayer());
-    return (true);
-}
-
-
-// Static function.
-// Redraw the drawing area.
-//
-#if GTK_CHECK_VERSION(3,0,0)
-int
-QTlayerPaletteDlg::lp_redraw_hdlr(GtkWidget*, cairo_t *cr, void*)
-#else
-int
-QTlayerPaletteDlg::lp_redraw_hdlr(GtkWidget*, GdkEvent *event, void*)
-#endif
-{
-#if GTK_CHECK_VERSION(3,0,0)
-    cairo_rectangle_int_t rect;
-    ndkDrawable::redraw_area(cr, &rect);
-    Lpal->refresh(rect.x, rect.y, rect.width, rect.height);
-#else
-    GdkEventExpose *pev = (GdkEventExpose*)event;
-    Lpal->refresh(pev->area.x, pev->area.y,
-        pev->area.width, pev->area.height);
-#endif
-    return (true);
-}
-
-
-// Static function.
-// Set the pixmap.
-//
-void
-QTlayerPaletteDlg::lp_drag_begin(GtkWidget*, GdkDragContext *context, gpointer)
-{
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(fillpattern_xpm);
-    gtk_drag_set_icon_pixbuf(context, pixbuf, -2, -2);
-    GTKsubwin::HaveDrag = true;
-}
-
-
-// Static function.
-void
-QTlayerPaletteDlg::lp_drag_end(GtkWidget*, GdkDragContext*, gpointer)
-{
-    GTKsubwin::HaveDrag = false;
-}
-
-
-// Static function.
-// Initialize data for drag/drop transfer from 'this'.
-//
-void
-QTlayerPaletteDlg::lp_drag_data_get(GtkWidget*, GdkDragContext*,
-    GtkSelectionData *data, guint, guint, void*)
-{
-    CDl *ld = LT()->CurLayer();
-    if (!ld)
-        return;
-    LayerFillData dd(ld);
-    gtk_selection_data_set(data, gtk_selection_data_get_target(data),
-        8, (unsigned char*)&dd, sizeof(LayerFillData));
-}
-
-
-    /*
-    // The layer table is a dnd source for fill patterns, and a receiver for
-    // fillpatterns and colors.
-    //
-    GtkTargetEntry lp_targets[] = {
-        { (char*)"fillpattern", 0, 0 },
-        { (char*)"application/x-color", 0, 1 }
-    };
-    guint n_lp_targets = sizeof(lp_targets) / sizeof(lp_targets[0]);
-    */
-
-// Static function.
-// Drag data received from layer table, or from 'this'.  The layer is added
-// to the user palette line.
-//
-void
-QTlayerPaletteDlg::lp_drag_data_received(GtkWidget*, GdkDragContext *context,
-    gint x, gint y, GtkSelectionData *data, guint, guint time)
-{
-    // datum is a guint16 array of the format:
-    //  R G B opacity
-    GdkAtom a = gdk_atom_intern("fillpattern", true);
-    if (gtk_selection_data_get_target(data) == a) {
-        LayerFillData *dd = (LayerFillData*)gtk_selection_data_get_data(data);
-        if (dd->d_from_layer) {
-            if (dd->d_layernum > 0) {
-                CDl *ld = CDldb()->layer(dd->d_layernum, DSP()->CurMode());
-                if (ld && Lpal)
-                    Lpal->update_user(ld, x, y);
-            }
-        }
-        else {
-            CDl *ld = Lpal->ldesc_at(x, y);
-            XM()->FillLoadCallback(
-                (LayerFillData*)gtk_selection_data_get_data(data), ld);
-            // update the colors
-            Lpal->update_layer(0);
-            LT()->ShowLayerTable(ld);
-            XM()->PopUpFillEditor(0, MODE_UPD);
-        }
-    }
-    else {
-        if (gtk_selection_data_get_length(data) < 0) {
-            gtk_drag_finish(context, false, false, time);
-            return;
-        }
-        if (gtk_selection_data_get_format(data) != 16 ||
-                gtk_selection_data_get_length(data) != 8) {
-            fprintf(stderr, "Received invalid color data\n");
-            gtk_drag_finish(context, false, false, time);
-            return;
-        }
-        guint16 *vals = (guint16*)gtk_selection_data_get_data(data);
-
-        CDl *ld = Lpal->ldesc_at(x, y);
-
-        LT()->SetLayerColor(ld, vals[0] >> 8, vals[1] >> 8, vals[2] >> 8);
-        // update the colors
-        Lpal->update_layer(0);
-        LT()->ShowLayerTable(ld);
-        XM()->PopUpFillEditor(0, MODE_UPD);
-    }
-    gtk_drag_finish(context, true, false, time);
-    if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw())
-        DSP()->RedisplayAll();
-}
-
-#endif

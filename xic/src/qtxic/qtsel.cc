@@ -113,12 +113,16 @@ QTselectDlg::QTselectDlg(GRobject c)
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
+    QMargins qm;
+    QGridLayout *grid = new QGridLayout(this);
+    grid->setContentsMargins(qm);
+    grid->setSpacing(2);
 
     // pointer mode radio group
     //
     QGroupBox *pmgb = new QGroupBox(tr("Pointer Mode"));
+    grid->addWidget(pmgb, 0, 0, 1, 2);
     QVBoxLayout *vb = new QVBoxLayout(pmgb);
-    QMargins qm;
     vb->setContentsMargins(qm);
     vb->setSpacing(2);
     sl_pm_norm = new QRadioButton(tr("Normal"));
@@ -137,6 +141,7 @@ QTselectDlg::QTselectDlg(GRobject c)
     // area mode radio group
     //
     QGroupBox *amgb = new QGroupBox(tr("Area Mode"));
+    grid->addWidget(amgb, 0, 2);
     vb = new QVBoxLayout(amgb);
     vb->setContentsMargins(qm);
     vb->setSpacing(2);
@@ -153,9 +158,16 @@ QTselectDlg::QTselectDlg(GRobject c)
     connect(sl_am_all, SIGNAL(toggled(bool)),
         this, SLOT(am_all_slot(bool)));
 
+    sl_upbtn = new QPushButton(tr("Search Bottom to Top"));
+    grid->addWidget(sl_upbtn, 1, 0, 1, 3);
+    sl_upbtn->setCheckable(true);
+    sl_upbtn->setAutoDefault(false);
+    connect(sl_upbtn, SIGNAL(toggled(bool)), this, SLOT(up_btn_slot(bool)));
+
     // addition mode radio group
     //
     QGroupBox *sgb = new QGroupBox(tr("Selections"));
+    grid->addWidget(sgb, 0, 3, 2, 1);
     vb = new QVBoxLayout(sgb);
     vb->setContentsMargins(qm);
     vb->setSpacing(2);
@@ -176,9 +188,18 @@ QTselectDlg::QTselectDlg(GRobject c)
     connect(sl_sel_rem, SIGNAL(toggled(bool)),
         this, SLOT(sl_rem_slot(bool)));
 
+    QPushButton *btn = new QPushButton(tr("Help"));
+    grid->addWidget(btn, 2, 0);
+    btn->setAutoDefault(false);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    btn = new QPushButton(tr("Dismiss"));
+    grid->addWidget(btn, 2, 1, 1, 3);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+
     // objects group
     //
     QGroupBox *ogb = new QGroupBox(tr("Objects"));
+    grid->addWidget(ogb, 0, 4, 3, 1);
     vb = new QVBoxLayout(ogb);
     vb->setContentsMargins(qm);
     vb->setSpacing(2);
@@ -203,53 +224,6 @@ QTselectDlg::QTselectDlg(GRobject c)
     connect(sl_label, SIGNAL(stateChanged(int)),
         this, SLOT(ob_label_slot(int)));
 
-    // buttons
-    //
-    sl_upbtn = new QPushButton(tr("Search Bottom to Top"));
-    sl_upbtn->setCheckable(true);
-    sl_upbtn->setAutoDefault(false);
-    connect(sl_upbtn, SIGNAL(toggled(bool)), this, SLOT(up_btn_slot(bool)));
-
-    QHBoxLayout *hbox = new QHBoxLayout();
-    hbox->setContentsMargins(qm);
-    hbox->setSpacing(2);
-    hbox->addWidget(pmgb);
-    hbox->addWidget(amgb);
-
-    QVBoxLayout *vbox = new QVBoxLayout();
-    vbox->setContentsMargins(qm);
-    vbox->setSpacing(2);
-    vbox->addLayout(hbox);
-    vbox->addWidget(sl_upbtn);
-
-    hbox = new QHBoxLayout();
-    hbox->setContentsMargins(qm);
-    hbox->setSpacing(2);
-    hbox->addLayout(vbox);
-    hbox->addWidget(sgb);
-
-    vbox = new QVBoxLayout();
-    vbox->setContentsMargins(qm);
-    vbox->setSpacing(2);
-    vbox->addLayout(hbox);
-
-    hbox = new QHBoxLayout();
-    hbox->setContentsMargins(qm);
-    hbox->setSpacing(2);
-    QPushButton *btn = new QPushButton(tr("Help"));
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
-    hbox->addWidget(btn);
-    btn = new QPushButton(tr("Dismiss"));
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-    hbox->addWidget(btn);
-    vbox->addLayout(hbox);
-
-    hbox = new QHBoxLayout();
-    hbox->setContentsMargins(qm);
-    hbox->setSpacing(2);
-    hbox->addLayout(vbox);
-    hbox->addWidget(ogb);
-    setLayout(hbox);
     update();
 }
 

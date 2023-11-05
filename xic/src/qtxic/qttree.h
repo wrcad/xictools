@@ -85,12 +85,8 @@ private slots:
     void help_btn_slot();
     void dismiss_btn_slot();
     void user_btn_slot();
-    void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
-    void item_activated(QTreeWidgetItem*, int);
-    void item_changed(QTreeWidgetItem*, int);
-    void item_clicked(QTreeWidgetItem*, int);
-    void item_collapsed(QTreeWidgetItem*);
-    void item_expanded(QTreeWidgetItem*);
+    void item_collapsed_slot(QTreeWidgetItem*);
+    void item_selection_changed_slot();
     void font_changed_slot(int);
 
 private:
@@ -100,44 +96,24 @@ private:
     void build_tree(cCHD*, symref_t*);
     bool build_tree_rc(CDs*, QTreeWidgetItem*, int);
     bool build_tree_rc(cCHD*, symref_t*, QTreeWidgetItem*, int);
-
     static int t_build_proc(void*);
-    /*
-    static int t_select_proc(GtkTreeSelection*, GtkTreeModel*,
-        GtkTreePath*, int, void*);
-    static bool t_focus_proc(GtkWidget*, GdkEvent*, void*);
-    static int t_collapse_proc(GtkTreeView*, GtkTreeIter*,
-        GtkTreePath*, void*);
-    static void t_cancel(GtkWidget*, void*);
-    static void t_action(GtkWidget*, void*);
-
-    static int t_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int t_btn_release_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int t_motion_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void t_drag_data_get(GtkWidget *widget, GdkDragContext*,
-        GtkSelectionData*, guint, guint, void*);
-    static int t_selection_clear(GtkWidget*, GdkEventSelection*,
-        void*);
-    static void t_selection_get(GtkWidget*, GtkSelectionData*, guint,
-        guint, gpointer);
-    */
 
     GRobject t_caller;          // toggle button initiator
-    QLabel *t_label;            // label above listing
-    QLabel *t_info;             // label below listing
+    QLabel  *t_label;           // label above listing
+    QLabel  *t_info;            // label below listing
     QTreeWidget *t_tree;        // tree listing
     QPushButton *t_buttons[TR_MAXBTNS]; // user buttons
     QTreeWidgetItem *t_curnode; // selected node
-    char *t_selection;          // selected text
-    char *t_root_cd;            // name of root cell
-    char *t_root_db;            // name of root cell
+    char    *t_selection;       // selected text
+    char    *t_root_cd;         // name of root cell
+    char    *t_root_db;         // name of root cell
     DisplayMode t_mode;         // display mode of cells
-    bool t_dragging;            // drag/drop
-    bool t_no_select;           // treeview focus hack
-    int t_dragX, t_dragY;       // drag/drop
+    bool    t_dragging;         // drag/drop
+    bool    t_no_select;        // treeview focus hack
+    int     t_dragX, t_dragY;   // drag/drop
     unsigned int t_ucount;      // user feedback counter
     unsigned int t_udel;        // user feedback increment
-    int t_mdepth;               // max depth
+    int     t_mdepth;           // max depth
     uint64_t t_check_time;      // interval test
 
     static QTtreeDlg *instPtr;

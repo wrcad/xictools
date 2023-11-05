@@ -143,6 +143,7 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
 
     QPushButton *btn = new QPushButton(tr("help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled text area
@@ -176,6 +177,7 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
     for (int n = 0; cl_btns[n]; n++) {
         btn = new QPushButton(tr(cl_btns[n]));
         btn->setCheckable(true);
+        btn->setAutoDefault(false);
         hbox->addWidget(btn);
         connect(btn, SIGNAL(toggled(bool)),
             this, SLOT(button_slot(bool)));

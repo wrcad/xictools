@@ -44,6 +44,7 @@
 #include "fio.h"
 #include "qtllist.h"
 #include "qtcnmap.h"
+#include "qtltab.h"
 
 #include <QLayout>
 #include <QLabel>
@@ -51,6 +52,8 @@
 #include <QLineEdit>
 #include <QTabWidget>
 #include <QPushButton>
+#include <QDragEnterEvent>
+#include <QMimeData>
 
 
 //-----------------------------------------------------------------------------
@@ -58,7 +61,6 @@
 //
 // Help system keywords used:
 //  xic:cgdopen
-
 
 void
 cConvert::PopUpCgdOpen(GRobject caller, ShowMode mode,
@@ -88,6 +90,101 @@ cConvert::PopUpCgdOpen(GRobject caller, ShowMode mode,
     QTcgdOpenDlg::self()->show();
 }
 // End of cConvert functions.
+
+
+class QTcgdOpenPathEdit : public QLineEdit
+{
+public:
+    QTcgdOpenPathEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTcgdOpenPathEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+void
+QTcgdOpenPathEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        setText(str);
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/twostring")) {
+        // Drops from content lists may be in the form
+        // "fname_or_chd\ncellname".  Keep the filename.
+        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *t = strchr(str, '\n');
+        if (t)
+            *t = 0;
+        setText(str);
+        delete [] str;
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        // The default action will insert the text at the click location,
+        // instead here we replace any existing text.
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        setText(ba.constData());
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+/* XXX use in llist
+class QTcgdOpenLayerEdit : public QLineEdit
+{
+public:
+    QTcgdOpenLayerEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTcgdOpenLayerEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        ev->accept();
+        return;
+    }
+    QLineEdit::dragEnterEvent(ev);
+}
+
+
+void
+QTcgdOpenLayerEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        ev->accept();
+    printf("here\n");
+        return;
+    }
+    QLineEdit::dropEvent(ev);
+
+}
+*/
 
 
 // When are the layer list and cell name mapping entries applicable?
@@ -148,6 +245,7 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     cgo_nbook = new QTabWidget();
@@ -169,19 +267,10 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
         "Enter path to layout, CHD, or CGD file, or CHD name:"));
     pvbox->addWidget(label);
 
-    cgo_p1_entry = new QLineEdit();
+    cgo_p1_entry = new class QTcgdOpenPathEdit();
     cgo_p1_entry->setReadOnly(false);
+    cgo_p1_entry->setAcceptDrops(true);
     pvbox->addWidget(cgo_p1_entry);
-
-    // Drop site.
-/*
-    GtkDestDefaults DD = (GtkDestDefaults)
-        (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
-    gtk_drag_dest_set(cgo_p1_entry, DD, target_table, n_targets,
-        GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(cgo_p1_entry), "drag-data-received",
-        G_CALLBACK(cgo_drag_data_received), 0);
-*/
 
     label = new QLabel(tr(
         "For layout file, CHD name, or CHD file without geometry only:"));
@@ -216,9 +305,11 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
         "Enter path to CGD file or CHD file containing geometry:"));
     pvbox->addWidget(label);
 
-    cgo_p2_entry = new QLineEdit();
+    cgo_p2_entry = new class QTcgdOpenPathEdit();
+    cgo_p2_entry->setReadOnly(false);
+    cgo_p2_entry->setAcceptDrops(true);
     pvbox->addWidget(cgo_p2_entry);
-    pvbox->addStretch(0.8);
+    pvbox->addStretch(1);
 
 
     // Drop site.
@@ -278,7 +369,7 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     cgo_p3_idname = new QLineEdit();
     cgo_p3_idname->setReadOnly(false);
     col2->addWidget(cgo_p3_idname);
-    pvbox->addStretch(0.8);
+    pvbox->addStretch(1);
     //
     // End of pages
 
@@ -518,7 +609,6 @@ QTcgdOpenDlg::dismiss_btn_slot()
 
 #ifdef notdef
 
-
 // Private static GTK signal handler.
 // Return is taken as an Apply press, if chars have been entered.
 //
@@ -552,47 +642,6 @@ QTcgdOpenDlg::cgo_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
         }
     }
     return (false);
-}
-
-/*
-namespace {
-    // Drag/drop stuff, also used in PopUpInput(), PopUpEditString()
-    //
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-}
-*/
-
-
-// Private static GTK signal handler.
-// Drag data received in editing window, grab it.
-//
-void
-QTcgdOpenDlg::cgo_drag_data_received(GtkWidget *entry,
-    GdkDragContext *context, gint, gint, GtkSelectionData *data,
-    guint, guint time)
-{
-    if (gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8 &&
-            gtk_selection_data_get_data(data)) {
-        char *src = (char*)gtk_selection_data_get_data(data);
-        if (gtk_selection_data_get_target(data) ==
-                gdk_atom_intern("TWOSTRING", true)) {
-            // Drops from content lists may be in the form
-            // "fname_or_chd\ncellname".  Keep the filename.
-            char *t = strchr(src, '\n');
-            if (t)
-                *t = 0;
-        }
-        gtk_entry_set_text(GTK_ENTRY(entry), src);
-        gtk_drag_finish(context, true, false, time);
-        return;
-    }
-    gtk_drag_finish(context, false, false, time);
 }
 
 

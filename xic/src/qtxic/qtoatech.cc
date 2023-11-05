@@ -129,6 +129,7 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout();
@@ -138,10 +139,12 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
 
     ot_unat = new QPushButton(tr("Unattach"));
     hbox->addWidget(ot_unat);
+    ot_unat->setAutoDefault(false);
     connect(ot_unat, SIGNAL(clicked()), this, SLOT(unat_btn_slot()));
 
     ot_at = new QPushButton(tr("Attach"));
     hbox->addWidget(ot_at);
+    ot_at->setAutoDefault(false);
     connect(ot_at, SIGNAL(clicked()), this, SLOT(at_btn_slot()));
 
     ot_tech = new QLineEdit();
@@ -149,6 +152,7 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
 
     ot_def = new QPushButton(tr("Default"));
     hbox->addWidget(ot_def);
+    ot_def->setAutoDefault(false);
     connect(ot_def, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
 
     hbox = new QHBoxLayout();
@@ -158,10 +162,12 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
 
     ot_dest = new QPushButton(tr("Destroy Tech"));
     hbox->addWidget(ot_dest);
+    ot_dest->setAutoDefault(false);
     connect(ot_dest, SIGNAL(clicked()), this, SLOT(dest_btn_slot()));
 
     ot_crt = new QPushButton(tr("Create New Tech"));
     hbox->addWidget(ot_crt);
+    ot_crt->setAutoDefault(false);
     connect(ot_crt, SIGNAL(clicked()), this, SLOT(crt_btn_slot()));
 
     gb = new QGroupBox();

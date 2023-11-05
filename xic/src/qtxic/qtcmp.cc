@@ -58,14 +58,16 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QMenu>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 
 //-----------------------------------------------------------------------------
-// The Compare Layers pop-up
+// The Compare Layers dialog.
 //
 // Help system keywords used:
 //  xic:diff
-
 
 void
 cConvert::PopUpCompare(GRobject caller, ShowMode mode)
@@ -93,6 +95,127 @@ cConvert::PopUpCompare(GRobject caller, ShowMode mode)
     QTcompareDlg::self()->show();
 }
 // End of cConvert functions.
+
+
+class QTcomparePathEdit : public QLineEdit
+{
+public:
+    QTcomparePathEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTcomparePathEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+void
+QTcomparePathEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        setText(str);
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/twostring")) {
+        // Drops from content lists may be in the form
+        // "fname_or_chd\ncellname".  Keep the filename.
+        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *t = strchr(str, '\n');
+        if (t)
+            *t = 0;
+        setText(str);
+        delete [] str;
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        // The default action will insert the text at the click location,
+        // instead here we replace any existing text.
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        setText(ba.constData());
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+class QTcompareCellEdit : public QLineEdit
+{
+public:
+    QTcompareCellEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTcompareCellEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+void
+QTcompareCellEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        str = lstring::strip_path(str);
+        setText(text() + QString(" ") + QString(str));
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/twostring")) {
+        // Drops from content lists may be in the form
+        // "fname_or_chd\ncellname".  Keep the cellname.
+        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        const char *t = strchr(str, '\n');
+        if (t)
+            t = t+1;
+        else
+            t = str;
+        setText(text() + QString(" ") + QString(t));
+        delete [] str;
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        // The default action will insert the text at the click location,
+        // instead here we append to any existing text.
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        setText(text() + QString(" ") + ba.constData());
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
 
 
 QTcompareDlg::sCmp_store QTcompareDlg::cmp_store;
@@ -166,6 +289,7 @@ QTcompareDlg::QTcompareDlg(GRobject c)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Comparison mode selection notebook.
@@ -187,13 +311,14 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     grid->addWidget(label, 0, 0);
     label = new QLabel(tr("Cells"));
     grid->addWidget(label, 1, 0);
-    cmp_fname1 = new QLineEdit();
-    grid->addWidget(cmp_fname1, 0, 1);
-    cmp_cnames1 = new QLineEdit();
-    grid->addWidget(cmp_cnames1, 1, 1);
-
+    cmp_fname1 =  new QTcomparePathEdit();
+    cmp_fname1->setReadOnly(false);
     cmp_fname1->setAcceptDrops(true);
+    grid->addWidget(cmp_fname1, 0, 1);
+    cmp_cnames1 = new QTcompareCellEdit();
+    cmp_cnames1->setReadOnly(false);
     cmp_cnames1->setAcceptDrops(true);
+    grid->addWidget(cmp_cnames1, 1, 1);
 
     // Right file/cell entries
     //
@@ -205,9 +330,13 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     grid->addWidget(label, 0, 0);
     label = new QLabel(tr("Equiv"));
     grid->addWidget(label, 1, 0);
-    cmp_fname2 = new QLineEdit();
+    cmp_fname2 = new QTcomparePathEdit();
+    cmp_fname2->setReadOnly(false);
+    cmp_fname2->setAcceptDrops(true);
     grid->addWidget(cmp_fname2, 0, 1);
-    cmp_cnames2 = new QLineEdit();
+    cmp_cnames2 = new QTcompareCellEdit();
+    cmp_cnames2->setReadOnly(false);
+    cmp_cnames2->setAcceptDrops(true);
     grid->addWidget(cmp_cnames2, 1, 1);
 
     cmp_fname2->setAcceptDrops(true);
@@ -524,8 +653,9 @@ QTcompareDlg::per_cell_obj_page()
         this, SLOT(p1_fltr_menu_slot(int)));
 
     cmp_p1_setup = new QPushButton(tr("Setup"));
-    cmp_p1_setup->setCheckable(true);
     hb->addWidget(cmp_p1_setup);
+    cmp_p1_setup->setCheckable(true);
+    cmp_p1_setup->setAutoDefault(false);
     connect(cmp_p1_setup, SIGNAL(toggled(bool)),
         this, SLOT(p1_setup_btn_slot(bool)));
 
@@ -582,6 +712,7 @@ QTcompareDlg::flat_geom_page()
 
     cmp_p3_s_btn = new QPushButton("S");
     grid->addWidget(cmp_p3_s_btn, 1, 0);
+    cmp_p3_s_btn->setAutoDefault(false);
     cmp_p3_s_menu = new QMenu();
     char buf[64];
     cmp_p3_s_btn->setMenu(cmp_p3_s_menu);
@@ -595,6 +726,7 @@ QTcompareDlg::flat_geom_page()
 
     cmp_p3_r_btn = new QPushButton("R");
     grid->addWidget(cmp_p3_r_btn, 2, 0);
+    cmp_p3_r_btn->setAutoDefault(false);
     cmp_p3_r_menu = new QMenu();
     cmp_p3_r_btn->setMenu(cmp_p3_r_menu);
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
@@ -1215,112 +1347,3 @@ QTcompareDlg::sCmp_store::~sCmp_store()
 }
 // End of sCmp_store functions.
 
-
-#ifdef notdef
-
-//XXX FIXME drop handling
-
-/*
-    GtkDestDefaults DD = (GtkDestDefaults)
-        (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
-
-    // Drag/drop stuff.
-    //
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"CELLNAME",    0, 1 },
-        { (char*)"STRING",      0, 2 },
-        { (char*)"text/plain",  0, 3 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-
-    // drop site
-    gtk_drag_dest_set(cmp_fname1, DD, target_table, n_targets,
-        GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(cmp_fname1), "drag-data-received",
-        G_CALLBACK(cmp_drag_data_received), 0);
-    gtk_drag_dest_set(cmp_cnames1, DD, target_table, n_targets,
-        GDK_ACTION_COPY);
-    // Don't use connect_after here, see note in cmp_drag_data_received.
-    g_signal_connect(G_OBJECT(cmp_cnames1), "drag-data-received",
-        G_CALLBACK(cmp_drag_data_received), 0);
-*/
-/*
-    // drop site
-    gtk_drag_dest_set(cmp_fname2, DD, target_table, n_targets,
-        GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(cmp_fname2), "drag-data-received",
-        G_CALLBACK(cmp_drag_data_received), 0);
-    gtk_drag_dest_set(cmp_cnames2, DD, target_table, n_targets,
-        GDK_ACTION_COPY);
-    // Don't use connect_after here, see note in cmp_drag_data_received.
-    g_signal_connect(G_OBJECT(cmp_cnames2), "drag-data-received",
-        G_CALLBACK(cmp_drag_data_received), 0);
-*/
-
-
-// Private static GTK signal handler.
-// Drag data received in entry area, deal accordingly.
-//
-void
-QTcompareDlg::cmp_drag_data_received(GtkWidget *entry,
-    GdkDragContext *context, gint, gint, GtkSelectionData *data,
-    guint, guint time)
-{
-    if (Cmp && gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8 &&
-            gtk_selection_data_get_data(data)) {
-        char *src = (char*)gtk_selection_data_get_data(data);
-        char *t = 0;
-        if (gtk_selection_data_get_target(data) ==
-                gdk_atom_intern("TWOSTRING", true)) {
-            // Drops from content lists may be in the form
-            // "fname_or_chd\ncellname".
-            t = strchr(src, '\n');
-        }
-        if (entry == Cmp->cmp_fname1 || entry == Cmp->cmp_fname2) {
-            if (t)
-                *t = 0;
-            gtk_entry_set_text(GTK_ENTRY(entry), src);
-        }
-        else if (entry == Cmp->cmp_cnames1 || entry == Cmp->cmp_cnames2) {
-            if (t)
-                src = t+1;
-            // Add new cell name to end of existing text.
-            sLstr lstr;
-            lstr.add(gtk_entry_get_text(GTK_ENTRY(entry)));
-            if (lstr.string() && *lstr.string())
-                lstr.add_c(' ');
-            lstr.add(src);
-            gtk_entry_set_text(GTK_ENTRY(entry), lstr.string());
-        }
-        gtk_drag_finish(context, true, false, time);
-
-        // The concatenation behavior above is unique, and opened a
-        // can of worms in GTK-2.  The problem is that the GtkEntry
-        // will call its own data-received handler before calling
-        // this one, or call this one twice, if this handler is
-        // connect-after.  Various changes were made to fight this: 
-        //
-        // 1.  Don't set GTK_DEST_DEFAULT_DROP.  This avoids a
-        // double call of this handler for targets not handled by
-        // the internal handler.  The internal handler takes only
-        // the plain text targets.
-        //
-        // 2.  Use local targets preferentially by putting such
-        // targets as TWOSTRING and CELLNAME at the beginning of
-        // the targets lists.
-        //
-        // 3.  Still, a plain text drop would cause trouble.  This
-        // was finally resolved by not using connect-after, and
-        // adding the emit_stop call below.
-        //
-        g_signal_stop_emission_by_name(G_OBJECT(entry),
-            "drag-data-received");
-        return;
-    }
-    gtk_drag_finish(context, false, false, time);
-}
-// End of QTcompareDlg functions.
-
-#endif

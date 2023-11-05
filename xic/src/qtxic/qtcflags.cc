@@ -130,18 +130,22 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
 
     QPushButton *btn = new QPushButton(tr("None"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(imm_none_btn_slot()));
 
     btn = new QPushButton(tr("All"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(imm_all_btn_slot()));
 
     btn = new QPushButton(tr("None"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(lib_none_btn_slot()));
 
     btn = new QPushButton(tr("All"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(lib_all_btn_slot()));
 
     QGroupBox *gb = new QGroupBox();

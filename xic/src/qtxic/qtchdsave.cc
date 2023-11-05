@@ -49,6 +49,9 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 
 //-----------------------------------------------------------------------------
@@ -85,6 +88,65 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
     QTchdSaveDlg::self()->show();
 }
 // End of cConvert functions.
+
+
+class QTchdSavePathEdit : public QLineEdit
+{
+public:
+    QTchdSavePathEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTchdSavePathEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+void
+QTchdSavePathEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        setText(str);
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/twostring")) {
+        // Drops from content lists may be in the form
+        // "fname_or_chd\ncellname".  Keep the filename.
+        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *t = strchr(str, '\n');
+        if (t)
+            *t = 0;
+        setText(str);
+        delete [] str;
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        // The default action will insert the text at the click location,
+        // instead here we replace any existing text.
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        setText(ba.constData());
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
 
 
 QTchdSaveDlg *QTchdSaveDlg::instPtr;
@@ -131,26 +193,18 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // This allows user to change label text.
 //    g_object_set_data(G_OBJECT(cs_popup), "label", cs_label);
 
-    cs_text = new QLineEdit();
+    cs_text = new QTchdSavePathEdit();
     vbox->addWidget(cs_text);
     cs_text->setReadOnly(false);
-    connect(cs_text, SIGNAL(textChanged(const QString&)),
-        this, SLOT(text_changed_slot(const QString&)));
-
-    // drop site
-/*
-    GtkDestDefaults DD = (GtkDestDefaults)
-        (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
-    gtk_drag_dest_set(cs_text, DD, target_table, n_targets,
-        GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(cs_text), "drag-data-received",
-        G_CALLBACK(cs_drag_data_received), 0);
-*/
+    cs_text->setAcceptDrops(true);
+//    connect(cs_text, SIGNAL(textChanged(const QString&)),
+//        this, SLOT(text_changed_slot(const QString&)));
 
     cs_geom = new QCheckBox(tr("Include geometry records in file"));
     vbox->addWidget(cs_geom);
@@ -242,78 +296,4 @@ QTchdSaveDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpChdSave(0, MODE_OFF, 0, 0, 0, 0, 0);
 }
-
-#ifdef notdef
-
-// Private static GTK signal handler.
-// The entry widget has the focus initially, and the Enter key is ignored.
-// After the user types, the Enter key will call the Apply method.
-//
-void
-QTchdSaveDlg::cs_change_proc(GtkWidget*, void*)
-{
-    if (Cs) {
-        g_signal_connect(G_OBJECT(Cs->cs_popup), "key-press-event",
-            G_CALLBACK(cs_key_hdlr), 0);
-        g_signal_handlers_disconnect_by_func(G_OBJECT(Cs->cs_text),
-            (gpointer)cs_change_proc, 0);
-    }
-}
-
-
-// Private static GTK signal handler.
-// In single-line mode, Return is taken as an "OK" termination.
-//
-int
-QTchdSaveDlg::cs_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
-{
-    if (Cs && ev->key.keyval == GDK_KEY_Return) {
-        Cs->button_hdlr(Cs->cs_apply);
-        return (true);
-    }
-    return (false);
-}
-
-
-/*
-namespace {
-    // Drag/drop stuff, also used in PopUpInput(), PopUpEditString()
-    //
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-}
-*/
-
-
-// Private static GTK signal handler.
-// Drag data received in editing window, grab it
-//
-void
-QTchdSaveDlg::cs_drag_data_received(GtkWidget *entry,
-    GdkDragContext *context, gint, gint, GtkSelectionData *data,
-    guint, guint time)
-{
-    if (gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8 &&
-            gtk_selection_data_get_data(data)) {
-        char *src = (char*)gtk_selection_data_get_data(data);
-        if (gtk_selection_data_get_target(data) ==
-                gdk_atom_intern("TWOSTRING", true)) {
-            // Drops from content lists may be in the form
-            // "fname_or_chd\ncellname".  Keep the filename.
-            char *t = strchr(src, '\n');
-            if (t)
-                *t = 0;
-        }
-        gtk_entry_set_text(GTK_ENTRY(entry), src);
-        gtk_drag_finish(context, true, false, time);
-        return;
-    }
-    gtk_drag_finish(context, false, false, time);
-}
-#endif
 

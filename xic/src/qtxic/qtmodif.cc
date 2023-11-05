@@ -220,34 +220,37 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*))
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
-    QHBoxLayout *hbox = new QHBoxLayout(0);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-    vbox->addLayout(hbox);
 
     QPushButton *btn = new QPushButton(tr("Save All"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(save_all_slot()));
 
     btn = new QPushButton(tr("Skip All"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(skip_all_slot()));
 
-    hbox = new QHBoxLayout(0);
+    hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
 
-    QGroupBox *gb = new QGroupBox(this);
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
     hb->setContentsMargins(qmtop);
     m_label = new QLabel(gb);
-
     hb->addWidget(m_label);
-    hbox->addWidget(gb);
 
     btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_slot()));
-    vbox->addLayout(hbox);
 
     m_text = new QTtextEdit();
     m_text->setReadOnly(true);
@@ -256,14 +259,17 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*))
     connect(m_text, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
-    hbox = new QHBoxLayout(0);
+    hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
     btn = new QPushButton(tr("Apply - Continue"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_slot()));
     btn = new QPushButton(tr("ABORT"));
     hbox->addWidget(btn);
-    vbox->addLayout(hbox);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(abort_slot()));
 
     // Use a fixed font in the label, same as the text area, so can

@@ -158,6 +158,7 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Bus Term Indices.
@@ -221,6 +222,7 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
 
     btn = new QPushButton("Delete");
     hbox->addWidget(te_phys);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(destroy_btn_slot()));
 
     // Physical Group
@@ -271,10 +273,12 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
 
     te_crtbits = new QPushButton(tr("Check/Create Bits"));
     hb->addWidget(te_crtbits);
+    btn->setAutoDefault(false);
     connect(te_crtbits, SIGNAL(clicked()), this, SLOT(crbits_btn_slot()));
 
     te_ordbits = new QPushButton(tr("Reorder to Index"));
     hb->addWidget(te_ordbits);
+    btn->setAutoDefault(false);
     connect(te_ordbits, SIGNAL(clicked()), this, SLOT(ordbits_btn_slot()));
 
     hb = new QHBoxLayout();
@@ -284,20 +288,24 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
 
     btn = new QPushButton(tr("Schem Vis"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(scvis_btn_slot()));
 
     btn = new QPushButton(tr("Invis"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(scinvis_btn_slot()));
 
     hb->addStretch(1);
 
     btn = new QPushButton(tr("Symbol Vis"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(syvis_btn_slot()));
 
     btn = new QPushButton(tr("Invis"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(syinvis_btn_slot()));
 
     // Prev, Next buttons
@@ -309,16 +317,19 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
 
     btn = new QPushButton(tr("Prev"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(prev_btn_slot()));
 
     btn = new QPushButton(tr("Next"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(next_btn_slot()));
 
     hbox->addStretch(1);
 
     btn = new QPushButton(tr("To Index"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(toindex_btn_slot()));
 
     te_sb_toindex = new QSpinBox();

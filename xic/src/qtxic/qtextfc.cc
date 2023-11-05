@@ -202,6 +202,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QTabWidget *nbook = new QTabWidget();
@@ -250,6 +251,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
 
     btn = new QPushButton(tr("Run File"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(runfile_btn_slot()));
 
     fc_file = new QLineEdit();
@@ -262,10 +264,12 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
 
     btn = new QPushButton("Run Extraction");
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(runext_btn_slot()));
 
     btn = new QPushButton(tr("Dump Unified List File"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(dumplist_btn_slot()));
 
     gb = new QGroupBox(tr("FcArgs"));
@@ -493,6 +497,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c)
 
     fc_kill = new QPushButton(tr("Abort job"));
     vb->addWidget(fc_kill);
+    fc_kill->setAutoDefault(false);
     connect(fc_kill, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
 
     // End of pages.

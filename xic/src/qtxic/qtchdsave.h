@@ -62,7 +62,7 @@ public:
     ~QTchdSaveDlg();
 
     void update(const char*);
-    
+
     void set_transient_for(QWidget *prnt)
     {
         Qt::WindowFlags f = windowFlags();

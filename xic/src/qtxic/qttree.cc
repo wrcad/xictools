@@ -203,27 +203,20 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled tree
     //
     t_tree = new QTreeWidget();
     vbox->addWidget(t_tree);
+    t_tree->setHeaderHidden(true);
+    t_tree->setDragDropMode(QAbstractItemView::DragOnly);
 
-    connect(t_tree,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-        this,
-        SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
-    connect(t_tree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-        this, SLOT(item_activated(QTreeWidgetItem*, int)));
-    connect(t_tree, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
-        this, SLOT(item_changed(QTreeWidgetItem*, int)));
-    connect(t_tree, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-        this, SLOT(item_clicked(QTreeWidgetItem*, int)));
     connect(t_tree, SIGNAL(itemCollapsed(QTreeWidgetItem*)),
-        this, SLOT(item_collapsed(QTreeWidgetItem*)));
-    connect(t_tree, SIGNAL(itemExpanded(QTreeWidgetItem*)),
-        this, SLOT(item_expanded(QTreeWidgetItem*)));
+        this, SLOT(item_collapsed_slot(QTreeWidgetItem*)));
+    connect(t_tree, SIGNAL(itemSelectionChanged()),
+        this, SLOT(item_selection_changed_slot()));
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_PROP))
@@ -231,54 +224,6 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    /*
-    GtkTreeStore *store = gtk_tree_store_new(1, G_TYPE_STRING);
-    t_tree = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
-    gtk_widget_show(t_tree);
-    gtk_tree_view_set_enable_search(GTK_TREE_VIEW(t_tree), false);
-    GtkCellRenderer *rnd = gtk_cell_renderer_text_new();
-    GtkTreeViewColumn *tvcol =
-            gtk_tree_view_column_new_with_attributes(0, rnd,
-        "text", 0, NULL);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(t_tree), tvcol);
-    gtk_tree_view_set_show_expanders(GTK_TREE_VIEW(t_tree), true);
-    gtk_tree_view_set_enable_tree_lines(GTK_TREE_VIEW(t_tree), true);
-    gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(t_tree), false);
-
-    GtkTreeSelection *sel =
-        gtk_tree_view_get_selection(GTK_TREE_VIEW(t_tree));
-    gtk_tree_selection_set_select_function(sel, t_select_proc, 0, 0);
-    // TreeView bug hack, see note with handlers.   
-    g_signal_connect(G_OBJECT(t_tree), "focus",
-        G_CALLBACK(t_focus_proc), this);
-    */
-
-
-/*
-    // Set up font and tracking.
-    GTKfont::setupFont(t_tree, FNT_PROP, true);
-*/
-
-/*
-    g_signal_connect(G_OBJECT(t_tree), "test_collapse_row",
-        (GCallback)t_collapse_proc, 0);
-    // init for drag/drop
-    g_signal_connect(G_OBJECT(t_tree), "button-press-event",
-        G_CALLBACK(t_btn_hdlr), 0);
-    g_signal_connect(G_OBJECT(t_tree), "button-release-event",
-        G_CALLBACK(t_btn_release_hdlr), 0);
-    g_signal_connect(G_OBJECT(t_tree), "motion-notify-event",
-        G_CALLBACK(t_motion_hdlr), 0);
-    g_signal_connect(G_OBJECT(t_tree), "drag-data-get",
-        G_CALLBACK(t_drag_data_get), 0);
-
-    gtk_selection_add_targets(t_tree, GDK_SELECTION_PRIMARY, target_table,
-        n_targets);
-    g_signal_connect(G_OBJECT(t_tree), "selection-clear-event",
-        G_CALLBACK(t_selection_clear), 0);
-    g_signal_connect(G_OBJECT(t_tree), "selection-get",
-        G_CALLBACK(t_selection_get), 0);
-*/
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
@@ -287,9 +232,12 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     gb = new QGroupBox();
     hbox->addWidget(gb);
     hb = new QHBoxLayout(gb);
+    hb->setContentsMargins(qm);
+    hb->setSpacing(2);
 
     t_info = new QLabel("");
     hb->addWidget(t_info);
+    t_info->setMaximumHeight(20);
 
     // dismiss button line
     //
@@ -317,6 +265,7 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
 
     for (int i = 0; i < TR_MAXBTNS && buttons[i]; i++) {
         btn = new QPushButton(tr(buttons[i]));
+        btn->setAutoDefault(false);
         connect(btn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
         t_buttons[i] = btn;
         hbox->addWidget(btn);
@@ -796,38 +745,29 @@ QTtreeDlg::user_btn_slot()
 
 
 void
-QTtreeDlg::current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
+QTtreeDlg::item_collapsed_slot(QTreeWidgetItem*)
 {
+    //XXX FIXME
+// If the selected row is collapsed, deselect.  This does not happen
+// automatically.
 }
 
 
 void
-QTtreeDlg::item_activated(QTreeWidgetItem*, int)
+QTtreeDlg::item_selection_changed_slot()
 {
-}
-
-
-void
-QTtreeDlg::item_changed(QTreeWidgetItem*, int)
-{
-}
-
-
-void
-QTtreeDlg::item_clicked(QTreeWidgetItem*, int)
-{
-}
-
-
-void
-QTtreeDlg::item_collapsed(QTreeWidgetItem*)
-{
-}
-
-
-void
-QTtreeDlg::item_expanded(QTreeWidgetItem*)
-{
+    QTreeWidget *w = dynamic_cast<QTreeWidget*>(sender());
+    if (!w)
+        return;
+    delete [] t_selection;
+    t_selection = 0;
+    QList<QTreeWidgetItem*> lst = w->selectedItems();
+    if (!lst.isEmpty())
+        t_selection = lstring::copy(lst[0]->text(0).toLatin1().constData());
+//XXX add to clipboard
+//   gtk_selection_owner_set(Tree->t_tree, GDK_SELECTION_PRIMARY,
+//      GDK_CURRENT_TIME);
+    check_sens();
 }
 
 
@@ -838,189 +778,6 @@ QTtreeDlg::font_changed_slot(int fnum)
         QFont *fnt;
         if (FC.getFont(&fnt, fnum))
             t_tree->setFont(*fnt);
-//XXX needs redraw        update();
     }
 }
-
-
-#ifdef notdef
-
-// Static function.
-//
-int
-QTtreeDlg::t_select_proc(GtkTreeSelection*, GtkTreeModel *store,
-    GtkTreePath *path, int issel, void*)
-{
-    if (!Tree)
-        return (false);
-    if (Tree->t_no_select && !issel)
-        return (false);
-    delete [] Tree->t_selection;
-    Tree->t_selection = 0;
-    if (Tree->t_curnode)
-        gtk_tree_path_free(Tree->t_curnode);
-    Tree->t_curnode = 0;
-    if (!issel) {
-        char *cname = 0;
-        GtkTreeIter iter;
-        if (gtk_tree_model_get_iter(store, &iter, path))
-            gtk_tree_model_get(store, &iter, 0, &cname, -1);
-        if (cname) {
-            Tree->t_selection = lstring::tocpp(cname);
-            Tree->t_curnode = gtk_tree_path_copy(path);
-
-            gtk_selection_owner_set(Tree->t_tree, GDK_SELECTION_PRIMARY,
-                GDK_CURRENT_TIME);
-        }
-    }
-    Tree->check_sens();
-    return (true);
-}
-
-
-// Static function.
-// This handler is a hack to avoid a GtkTreeWidget defect:  when focus
-// is taken and there are no selections, the 0'th row will be
-// selected.  There seems to be no way to avoid this other than a hack
-// like this one.  We set a flag to lock out selection changes in this
-// case.
-//
-bool
-QTtreeDlg::t_focus_proc(GtkWidget*, GdkEvent*, void*)
-{
-    if (Tree) {
-        GtkTreeSelection *sel =
-            gtk_tree_view_get_selection(GTK_TREE_VIEW(Tree->t_tree));
-        // If nothing selected set the flag.
-        if (!gtk_tree_selection_get_selected(sel, 0, 0))
-            Tree->t_no_select = true;
-    }
-    return (false);
-}
-
-
-// Static function.
-// If the selected row is collapsed, deselect.  This does not happen
-// automatically.
-//
-int
-QTtreeDlg::t_collapse_proc(GtkTreeView *tv, GtkTreeIter*, GtkTreePath *path, void*)
-{
-    if (!Tree)
-        return (true);
-    if (Tree->t_curnode && gtk_tree_path_is_ancestor(path, Tree->t_curnode)) {
-        GtkTreeSelection *sel = gtk_tree_view_get_selection(tv);
-        gtk_tree_selection_unselect_path(sel, Tree->t_curnode);
-    }
-    return (false);
-}
-
-
-// Static function.
-//
-void
-QTtreeDlg::t_action(GtkWidget *widget, void*)
-{
-    if (!Tree)
-        return;
-    const char *wname = gtk_widget_get_name(widget);
-    if (!wname)
-        return;
-    if (!strcmp("Help", wname)) {
-        return;
-    }
-}
-
-
-// Static function.
-//
-int
-QTtreeDlg::t_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
-{
-    if (Tree && event->type == GDK_BUTTON_PRESS) {
-        Tree->t_dragging = true;
-        Tree->t_dragX = (int)event->button.x;
-        Tree->t_dragY = (int)event->button.y;
-    }
-    return (false);
-}
-
-
-// Static function.
-//
-int
-QTtreeDlg::t_btn_release_hdlr(GtkWidget*, GdkEvent*, void*)
-{
-    if (Tree)
-        Tree->t_dragging = false;
-    return (false);
-}
-
-
-// Static function.
-// Motion handler, begin drag.
-//
-int
-QTtreeDlg::t_motion_hdlr(GtkWidget *caller, GdkEvent *event, void*)
-{
-    if (Tree && Tree->t_dragging) {
-        if ((abs((int)event->motion.x - Tree->t_dragX) > 4 ||
-                abs((int)event->motion.y - Tree->t_dragY) > 4)) {
-            Tree->t_dragging = false;
-            GtkTargetList *targets = gtk_target_list_new(target_table,
-                n_targets);
-            GdkDragContext *drcx = gtk_drag_begin(caller, targets,
-                (GdkDragAction)GDK_ACTION_COPY, 1, event);
-            gtk_drag_set_icon_default(drcx);
-            return (true);
-        }
-    }
-    return (false);
-}
-
-
-// Static function.
-// Data-get function, for drag/drop.
-//
-void
-QTtreeDlg::t_drag_data_get(GtkWidget*, GdkDragContext*,
-    GtkSelectionData *data, guint, guint, void*)
-{
-    if (!Tree || !Tree->t_curnode || !Tree->t_selection)
-        return;
-    gtk_selection_data_set(data, gtk_selection_data_get_target(data),
-        8, (unsigned char*)Tree->t_selection, strlen(Tree->t_selection)+1);
-}
-
-
-// Static function.
-// Selection clear handler.
-//
-int
-QTtreeDlg::t_selection_clear(GtkWidget*, GdkEventSelection*, void*)
-{
-    if (Tree && Tree->t_curnode) {
-        GtkTreeSelection *sel =
-            gtk_tree_view_get_selection(GTK_TREE_VIEW(Tree->t_tree));
-        gtk_tree_selection_unselect_path(sel, Tree->t_curnode);
-    }
-    return (true);
-}
-
-
-// Static function.
-//
-void
-QTtreeDlg::t_selection_get(GtkWidget*, GtkSelectionData *data,
-    guint, guint, void*)
-{
-    if (gtk_selection_data_get_selection(data) != GDK_SELECTION_PRIMARY)
-        return;
-    if (!Tree || !Tree->t_curnode || !Tree->t_selection)
-        return;
-    gtk_selection_data_set(data, gtk_selection_data_get_target(data),
-        8, (unsigned char*)Tree->t_selection, strlen(Tree->t_selection)+1);
-}
-
-#endif
 

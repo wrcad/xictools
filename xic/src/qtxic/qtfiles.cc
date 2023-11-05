@@ -355,6 +355,7 @@ QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
             QPushButton *btn = new QPushButton(tr(buttons[i]));
             f_button_box->addWidget(btn);
             btn->setCheckable(true);
+            btn->setAutoDefault(false);
             f_buttons[i] = btn;
             connect(btn, SIGNAL(toggled(bool)),
                 this, SLOT(button_slot(bool)));
@@ -1469,14 +1470,22 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
 void
 QTfilesListDlg::mime_data_received_slot(const QMimeData *dta)
 {
+    // Handles URLs, text/twostring, and regular strings.
     QByteArray bary = dta->data("text/plain");
     const char *src = bary.constData();
     if (src && *src && instPtr->wb_textarea) {
-        const char *dst = f_directory;
-        if (dst && *dst && strcmp(src, dst)) {
-            QTfileDlg::DoFileAction(this, src, dst, QTfileDlg::A_NOOP);
-            return;
+        if (!strncmp(src, "File://", 7))
+            src += 7;
+        char *pth = lstring::copy(src);
+        char *t = strchr(pth, '\n');
+        if (t) {
+            // text/twostring, keep the first token only.
+            *t = 0;
         }
+        const char *dst = f_directory;
+        if (dst && *dst && strcmp(pth, dst))
+            QTfileDlg::DoFileAction(this, pth, dst, QTfileDlg::A_NOOP);
+        delete [] pth;
     }
 }
 

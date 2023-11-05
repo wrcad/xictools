@@ -95,9 +95,9 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     hb->addWidget(lbl);
     hbox->addWidget(gb);
 
-    QPushButton *btn = new QPushButton();
-    btn->setText(tr("Help"));
+    QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     if (w->IsXSect()) {
@@ -128,16 +128,16 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
         zm_yscale->setValue(1.0);
         zm_yscale->setDecimals(5);
         hbox->addWidget(zm_yscale);
-        btn = new QPushButton();
-        btn->setText(tr("Apply"));
+        btn = new QPushButton(tr("Apply"));
         hbox->addWidget(btn);
+        btn->setAutoDefault(false);
         connect(btn, SIGNAL(clicked()), this, SLOT(y_apply_btn_slot()));
     }
 
     hbox = new QHBoxLayout(0);
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-    vbox->addLayout(hbox);
 
     lbl = new QLabel();
     lbl->setText(tr("Zoom Factor"));
@@ -148,15 +148,15 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     zm_zoom->setValue(1.0);
     zm_zoom->setDecimals(5);
     hbox->addWidget(zm_zoom);
-    btn = new QPushButton();
-    btn->setText(tr("Apply"));
+    btn = new QPushButton(tr("Apply"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(z_apply_btn_slot()));
 
     hbox = new QHBoxLayout(0);
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-    vbox->addLayout(hbox);
 
     lbl = new QLabel();
     lbl->setText(tr("Center X,Y"));
@@ -175,10 +175,10 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     zm_y->setDecimals(ndgt);
     hbox->addWidget(zm_y);
 
-    hbox = new QHBoxLayout(0);
+    hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-    vbox->addLayout(hbox);
 
     lbl = new QLabel();
     lbl->setText(tr("Window Width"));
@@ -189,18 +189,17 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     zm_wid->setValue(100.0);
     zm_wid->setDecimals(ndgt);
     hbox->addWidget(zm_wid);
-    btn = new QPushButton();
-    btn->setText(tr("Apply"));
+    btn = new QPushButton(tr("Apply"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(window_apply_btn_slot()));
 
-    hbox = new QHBoxLayout(0);
+    hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-    vbox->addLayout(hbox);
 
-    btn = new QPushButton();
-    btn->setText(tr("Dismiss"));
+    btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

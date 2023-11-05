@@ -309,6 +309,7 @@ QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
             QPushButton *btn = new QPushButton(tr(buttons[i]));
             f_button_box->addWidget(btn);
             btn->setCheckable(true);
+            btn->setAutoDefault(false);
             f_buttons[i] = btn;
             connect(btn, SIGNAL(toggled(bool)),
                 this, SLOT(button_slot(bool)));

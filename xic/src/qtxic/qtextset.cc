@@ -194,6 +194,7 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     es_notebook = new QTabWidget();
@@ -213,10 +214,12 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
 
     es_clrex = new QPushButton(tr("Clear Extraction"));
     hbox->addWidget(es_clrex);
+    es_clrex->setAutoDefault(false);
     connect(es_clrex, SIGNAL(clicked()), this, SLOT(clrex_btn_slot()));
 
     es_doex = new QPushButton(tr("Do Extraction"));
     hbox->addWidget(es_doex);
+    es_doex->setAutoDefault(false);
     connect(es_doex, SIGNAL(clicked()), this, SLOT(doex_btn_slot()));
 
     btn = new QPushButton(tr("Dismiss"));
@@ -298,10 +301,12 @@ QTextSetupDlg::views_and_ops_page()
 
     QPushButton *btn = new QPushButton(tr("Reset Terms"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(p1_rsterms_btn_slot()));
 
     btn = new QPushButton(tr("Reset Subckts"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(p1_rssubs_btn_slot()));
 
     es_p1_recurs = new QCheckBox(tr("Recursive"));
@@ -315,14 +320,16 @@ QTextSetupDlg::views_and_ops_page()
     hb->setSpacing(2);
 
     es_p1_tedit = new QPushButton(tr("Edit Terminals"));
-    es_p1_tedit->setCheckable(true);
     hb->addWidget(es_p1_tedit);
+    es_p1_tedit->setCheckable(true);
+    es_p1_tedit->setAutoDefault(false);
     connect(es_p1_tedit, SIGNAL(toggled(bool)),
         this, SLOT(p1_tedit_btn_slot(bool)));
 
     es_p1_tfind = new QPushButton(tr("Find Terminal"));
-    es_p1_tfind->setCheckable(true);
     hb->addWidget(es_p1_tfind);
+    es_p1_tfind->setCheckable(true);
+    es_p1_tfind->setAutoDefault(false);
     connect(es_p1_tfind, SIGNAL(toggled(bool)),
         this, SLOT(p1_tfind_btn_slot(bool)));
 
@@ -338,14 +345,17 @@ QTextSetupDlg::views_and_ops_page()
 
     btn = new QPushButton(tr("Groups/Nodes"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(p1_uagn_btn_slot()));
 
     btn = new QPushButton(tr("Devices"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(p1_uadev_btn_slot()));
 
     btn = new QPushButton(tr("Subckts"));
     hb->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(p1_uasub_btn_slot()));
 }
 
@@ -374,8 +384,9 @@ QTextSetupDlg::net_and_cell_page()
     hb->setSpacing(2);
 
     es_p2_nlprpset = new QPushButton(tr("Apply"));
-    es_p2_nlprpset->setCheckable(true);
     hb->addWidget(es_p2_nlprpset);
+    es_p2_nlprpset->setCheckable(true);
+    es_p2_nlprpset->setAutoDefault(false);
     connect(es_p2_nlprpset, SIGNAL(toggled(bool)),
         this, SLOT(p2_papply_btn_slot(bool)));
 
@@ -389,8 +400,9 @@ QTextSetupDlg::net_and_cell_page()
     hb->setSpacing(2);
 
     es_p2_nllset = new QPushButton(tr("Apply"));
-    es_p2_nllset->setCheckable(true);
     hb->addWidget(es_p2_nllset);
+    es_p2_nllset->setCheckable(true);
+    es_p2_nllset->setAutoDefault(false);
     connect(es_p2_nllset, SIGNAL(toggled(bool)),
         this, SLOT(p2_lapply_btn_slot(bool)));
 
@@ -656,8 +668,9 @@ QTextSetupDlg::misc_page()
     hbox->setSpacing(2);
 
     es_p4_flkeyset = new QPushButton(tr("Apply"));
-    es_p4_flkeyset->setCheckable(true);
     hbox->addWidget(es_p4_flkeyset);
+    es_p4_flkeyset->setCheckable(true);
+    es_p4_flkeyset->setAutoDefault(false);
     connect(es_p4_flkeyset, SIGNAL(toggled(bool)),
         this, SLOT(p4_flapply_btn_slot(bool)));
 
@@ -684,8 +697,9 @@ QTextSetupDlg::misc_page()
     hbox->setSpacing(2);
 
     es_p4_glbexset = new QPushButton(tr("Apply"));
-    es_p4_glbexset->setCheckable(true);
     hbox->addWidget(es_p4_glbexset);
+    es_p4_glbexset->setCheckable(true);
+    es_p4_glbexset->setAutoDefault(false);
     connect(es_p4_glbexset, SIGNAL(toggled(bool)),
         this, SLOT(p4_glapply_btn_slot(bool)));
 

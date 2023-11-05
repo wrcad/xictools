@@ -166,14 +166,16 @@ QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton(tr(
-        ci_filt ? "Choose All" : "Select All"));
+    QPushButton *btn = new QPushButton(
+        tr(ci_filt ? "Choose All" : "Select All"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(sel_btn_slot()));
 
     btn = new QPushButton(tr(
         ci_filt ? "Ignore All" : "Desel All"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(desel_btn_slot()));
 
     QGroupBox *gb = new QGroupBox();
@@ -191,8 +193,7 @@ QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode)
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
-    btn = new QPushButton(tr(
-        ci_filt ? "Continue" : "Dismiss"));
+    btn = new QPushButton(tr(ci_filt ? "Continue" : "Dismiss"));
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

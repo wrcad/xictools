@@ -53,6 +53,9 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QLineEdit>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 
 //-----------------------------------------------------------------------------
@@ -95,6 +98,69 @@ cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
     QTchdCfgDlg::self()->show();
 }
 // End of cConvert functions.
+
+
+class QTchdCfgCellEdit : public QLineEdit
+{
+public:
+    QTchdCfgCellEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTchdCfgCellEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+void
+QTchdCfgCellEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        str = lstring::strip_path(str);
+        setText(str);
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/twostring")) {
+        // Drops from content lists may be in the form
+        // "fname_or_chd\ncellname".  Keep the cellname.
+        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        const char *t = strchr(str, '\n');
+        if (t)
+            t = t+1;
+        else
+            t = str;
+        setText(t);
+        delete [] str;
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        // The default action will insert the text at the click location,
+        // instead here we replace any existing text.
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = lstring::strip_path(ba.constData());
+        setText(str);
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
 
 
 QTchdCfgDlg *QTchdCfgDlg::instPtr;
@@ -142,6 +208,7 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Frame and name group.
@@ -160,6 +227,7 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
 
     cf_apply_tc = new QPushButton("");
     ghbox->addWidget(cf_apply_tc);
+    cf_apply_tc->setAutoDefault(false);
     connect(cf_apply_tc, SIGNAL(clicked()), this, SLOT(apply_tc_btn_slot()));
 
     QLabel *label = new QLabel(tr("Set Default Cell"));
@@ -177,22 +245,13 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
 
     cf_last = new QPushButton(tr("Last"));
     ghbox->addWidget(cf_last);
+    cf_last->setAutoDefault(false);
     connect(cf_last, SIGNAL(clicked()), this, SLOT(last_btn_slot()));
 
     cf_text = new QLineEdit();
     cf_text->setReadOnly(false);
+    cf_text->setAcceptDrops(true);
     ghbox->addWidget(cf_text);
-
-    // drop site
-/*
-    GtkDestDefaults DD = (GtkDestDefaults)
-        (GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT);
-    gtk_drag_dest_set(cf_text, DD, target_table, n_targets,
-        GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(cf_text), "drag-data-received",
-        G_CALLBACK(cf_drag_data_received), 0);
-*/
-    //
     // End of name group.
 
     // Frame and CGD group.
@@ -211,8 +270,9 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
 
     cf_apply_cgd = new QPushButton("");
     ghbox->addWidget(cf_apply_cgd);
+    cf_apply_cgd->setAutoDefault(false);
     connect(cf_apply_cgd, SIGNAL(clicked()),
-        this, SLOT(apply_cgd__btn_slot()));
+        this, SLOT(apply_cgd_btn_slot()));
 
     label = new QLabel(tr("Setup Linked Cell Geometry Digest"));
     ghbox->addWidget(label);
@@ -240,7 +300,7 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
     //
     btn = new QPushButton(tr("Dismiss"));
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss _btn_slot()));
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update(chdname);
 }
@@ -499,47 +559,3 @@ QTchdCfgDlg::dismiss_btn_slot()
     Cvt()->PopUpChdConfig(0, MODE_OFF, 0, 0, 0);
 }
 
-
-#ifdef notdef
-/*
-namespace {
-    // Drag/drop stuff.
-    //
-    GtkTargetEntry target_table[] = {
-        { (char*)"TWOSTRING",   0, 0 },
-        { (char*)"CELLNAME",    0, 1 },
-        { (char*)"STRING",      0, 2 },
-        { (char*)"text/plain",  0, 3 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-}
-*/
-
-
-// Private static GTK signal handler.
-// Drag data received in editing window, grab it
-//
-void
-QTchdCfgDlg::cf_drag_data_received(GtkWidget *entry, GdkDragContext *context,
-    gint, gint, GtkSelectionData *data, guint, guint time)
-{
-    if (gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8 &&
-            gtk_selection_data_get_data(data)) {
-        char *src = (char*)gtk_selection_data_get_data(data);
-        if (gtk_selection_data_get_target(data) ==
-                gdk_atom_intern("TWOSTRING", true)) {
-            // Drops from content lists may be in the form
-            // "fname_or_chd\ncellname".  Keep the cellname.
-            char *t = strchr(src, '\n');
-            if (t)
-                src = t+1;
-        }
-        gtk_entry_set_text(GTK_ENTRY(entry), src);
-        gtk_drag_finish(context, true, false, time);
-        return;
-    }
-    gtk_drag_finish(context, false, false, time);
-}
-
-#endif

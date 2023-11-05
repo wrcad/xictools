@@ -94,10 +94,12 @@ QTsimRunDlg::QTsimRunDlg(const char *msg)
 
     QPushButton *btn = new QPushButton(tr("Pause"));
     hbox->addWidget(btn); 
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(pause_btn_slot()));
 
     btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn); 
+    btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     QTmainwin *w = QTmainwin::self();
