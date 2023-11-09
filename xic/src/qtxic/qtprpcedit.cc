@@ -449,7 +449,6 @@ QTcellPrpDlg::handle_mouse_motion(QMouseEvent *ev)
     delete [] bf;
     drag->setMimeData(mimedata);
     drag->exec(Qt::CopyAction);
-    delete drag;
 }
 ****/
 

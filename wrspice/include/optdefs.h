@@ -73,6 +73,7 @@ enum OPTtype
     OPT_PIVTOL,
     OPT_RAMPUP,
     OPT_RELTOL,
+    OPT_RESMIN,
     OPT_TEMP,
     OPT_TNOM,
     OPT_TRAPRATIO,

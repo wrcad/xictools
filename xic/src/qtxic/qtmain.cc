@@ -551,14 +551,7 @@ QTpkg::SubwinDestroy(int wnum)
     WindowDesc *wdesc = DSP()->Window(wnum);
     if (!wdesc)
         return;
-    QTsubwin *w = dynamic_cast<QTsubwin*>(wdesc->Wbag());
-    if (w) {
-        wdesc->SetWbag(0);
-        wdesc->SetWdraw(0);
-        w->pre_destroy(wnum);
-        delete w;
-    }
-    MainMenu()->DestroySubwinMenu(wnum);
+    delete dynamic_cast<QTsubwin*>(wdesc->Wbag());
 }
 
 
@@ -949,6 +942,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
     sw_windesc = 0;
     sw_win_number = wnum < 0 ? -1 : wnum;
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     if (sw_win_number == 0) {
         const char *str = getenv("GR_SYSTEM");
         if (str) {
@@ -1037,6 +1032,15 @@ QTsubwin::~QTsubwin()
     PopUpExpand(0, MODE_OFF, 0, 0, 0, false);
     PopUpGrid(0, MODE_OFF);
     PopUpZoom(0, MODE_OFF);
+    if (sw_win_number > 0) {
+        WindowDesc *wdesc = DSP()->Window(sw_win_number);
+        if (!wdesc)
+            return;
+        wdesc->SetWbag(0);
+        wdesc->SetWdraw(0);
+        pre_destroy(sw_win_number);
+        MainMenu()->DestroySubwinMenu(sw_win_number);
+    }
 }
 
 
@@ -2252,6 +2256,8 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     mw_status = 0;
 
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    setWindowFlags(Qt::Window);
+    setAttribute(Qt::WA_DeleteOnClose);
 #ifndef __APPLE__
     QAction *a = mw_menubar->addAction(tr("wr"));
     a->setIcon(QIcon(QPixmap(wr_xpm)));

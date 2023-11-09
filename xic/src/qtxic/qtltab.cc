@@ -454,7 +454,6 @@ QTltab::motion_slot(QMouseEvent *ev)
             mimedata->setData(mime_type(), qdata);
             drag->setMimeData(mimedata);
             drag->exec(Qt::CopyAction);
-            delete drag;
         }
     }
 }

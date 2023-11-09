@@ -92,14 +92,14 @@ private slots:
     void defs_btn_slot(bool);
     void help_btn_slot();
     void tech_btn_slot(bool);
-    void dest_btn_slot(bool);
+    void dest_btn_slot();
     void both_btn_slot(bool);
     void phys_btn_slot(bool);
     void elec_btn_slot(bool);
-    void item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
+    void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
     void item_activated_slot(QTreeWidgetItem*, int);
     void item_clicked_slot(QTreeWidgetItem*, int);
-    void item_selection_change();
+    void item_selection_changed_slot();
     void dismiss_btn_slot();
     void font_changed_slot(int);
 

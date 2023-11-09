@@ -108,6 +108,15 @@ sOPTIONS::dump()
     askOpt(OPT_PIVTOL, &value, &notset);
     if (!notset)
         TTY.printf(dfmt, spkw_pivtol, nd, value.rValue);
+    askOpt(OPT_RAMPUP, &value, &notset);
+    if (!notset)
+        TTY.printf(dfmt, spkw_rampup, nd, value.rValue);
+    askOpt(OPT_RELTOL, &value, &notset);
+    if (!notset)
+        TTY.printf(dfmt, spkw_reltol, nd, value.rValue);
+    askOpt(OPT_RESMIN, &value, &notset);
+    if (!notset)
+        TTY.printf(dfmt, spkw_resmin, nd, value.rValue);
     askOpt(OPT_TEMP, &value, &notset);
     if (!notset)
         TTY.printf(dfmt, spkw_temp, nd, value.rValue);
@@ -366,6 +375,12 @@ sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
     case OPT_RELTOL:
         if (opt && OPTreltol_given)
             value->rValue = OPTreltol;
+        else
+            *notset = 1;
+        break;
+    case OPT_RESMIN:
+        if (opt && OPTresmin_given)
+            value->rValue = OPTresmin;
         else
             *notset = 1;
         break;
@@ -807,6 +822,10 @@ OPTanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         value->rValue = task->TSKreltol;
         data->type = IF_REAL;
         break;
+    case OPT_RESMIN:
+        value->rValue = task->TSKresmin;
+        data->type = IF_REAL;
+        break;
     case OPT_TEMP:
         value->rValue = task->TSKtemp - wrsCONSTCtoK;
         data->type = IF_REAL;
@@ -856,6 +875,14 @@ OPTanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         value->iValue = task->TSKdcTrcvMaxIter;
         data->type = IF_INTEGER;
         break;
+    case OPT_ITL2GMIN:
+        value->iValue = task->TSKdcOpGminMaxIter;
+        data->type = IF_INTEGER;
+        break;
+    case OPT_ITL2SRC:
+        value->iValue = task->TSKdcOpSrcMaxIter;
+        data->type = IF_INTEGER;
+        break;
     case OPT_ITL4:
         value->iValue = task->TSKtranMaxIter;
         data->type = IF_INTEGER;
@@ -882,7 +909,6 @@ OPTanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         value->iValue = task->TSKvaStep;
         data->type = IF_INTEGER;
         break;
-
 
     case OPT_DCODDSTEP:
         value->iValue = task->TSKdcOddStep;

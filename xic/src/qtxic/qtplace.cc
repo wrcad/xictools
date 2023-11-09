@@ -406,6 +406,8 @@ QTplaceDlg::rebuild_menu()
         pl_masterbtn->setCurrentIndex(0);
     connect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
         this, SLOT(master_menu_slot(int)));
+    connect(pl_masterbtn, SIGNAL(activated(int)),
+        this, SLOT(master_menu_active_slot(int)));
 }
 
 
@@ -439,7 +441,7 @@ QTplaceDlg::dropEvent(QDropEvent *ev)
         }
         else {
             pl_dropfile = lstring::copy(str);
-            master_menu_slot(0);
+            master_menu_active_slot(0);
         }
         ev->accept();
         return;
@@ -472,7 +474,7 @@ QTplaceDlg::dropEvent(QDropEvent *ev)
         }
         else {
             pl_dropfile = src;
-            master_menu_slot(0);
+            master_menu_active_slot(0);
         }
         ev->accept();
         return;
@@ -502,7 +504,7 @@ int
 QTplaceDlg::pl_timeout(void*)
 {
     if (instPtr)
-        instPtr->master_menu_slot(0);
+        instPtr->master_menu_active_slot(0);
     return (0);
 }
 
@@ -598,6 +600,24 @@ QTplaceDlg::dismiss_btn_slot()
 void
 QTplaceDlg::master_menu_slot(int ix)
 {
+    if (ix != 0) {
+        const char *tok = (const char*)pl_masterbtn->currentText().toLatin1();
+        const char *string = tok;
+        const char *aname = lstring::getqtok(&string);
+        const char *cname = lstring::getqtok(&string);
+        ED()->addMaster(aname, cname);
+        delete [] aname;
+        delete [] cname;
+    }
+}
+
+
+void
+QTplaceDlg::master_menu_active_slot(int ix)
+{
+    // The New button should be called on each click, not just when
+    // the current item changes.
+
     if (ix == 0) {
         if (QTdev::GetStatus(pl_placebtn))
             QTdev::CallCallback(pl_menu_placebtn);
@@ -613,8 +633,10 @@ QTplaceDlg::master_menu_slot(int ix)
                     defname = Tstring(cd->cellname());
             }
         }
-        if (pl_str_editor)
+        if (pl_str_editor) {
             pl_str_editor->popdown();
+            pl_str_editor = 0;
+        }
         int xx, yy;
         QTdev::self()->Location(pl_masterbtn, &xx, &yy);
         pl_str_editor = DSPmainWbagRet(PopUpEditString(0,
@@ -622,15 +644,6 @@ QTplaceDlg::master_menu_slot(int ix)
             defname, pl_new_cb, 0, 200, 0));
         if (pl_str_editor)
             pl_str_editor->register_usrptr((void**)&pl_str_editor);
-    }
-    else {
-        const char *tok = (const char*)pl_masterbtn->currentText().toLatin1();
-        const char *string = tok;
-        const char *aname = lstring::getqtok(&string);
-        const char *cname = lstring::getqtok(&string);
-        ED()->addMaster(aname, cname);
-        delete [] aname;
-        delete [] cname;
     }
 }
 

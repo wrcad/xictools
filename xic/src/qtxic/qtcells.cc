@@ -1530,7 +1530,6 @@ QTcellsDlg::mouse_motion_slot(QMouseEvent *ev)
     delete [] sel;
     drag->setMimeData(mimedata);
     drag->exec(Qt::CopyAction);
-    delete drag;
 }
 
 

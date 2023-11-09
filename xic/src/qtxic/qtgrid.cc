@@ -1174,7 +1174,6 @@ QTgridDlg::smp_motion_slot(QMouseEvent *ev)
         mimedata->setData("text/plain", qdata);
         drag->setMimeData(mimedata);
         drag->exec(Qt::CopyAction);
-        delete drag;
     }
 }
 

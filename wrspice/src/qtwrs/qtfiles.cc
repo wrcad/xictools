@@ -1118,7 +1118,6 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
             Qt::MoveAction);
     }
 #endif
-    delete drag;
 }
 
 

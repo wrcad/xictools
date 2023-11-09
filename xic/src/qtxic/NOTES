@@ -13,6 +13,7 @@ right involving mostly ghosting and animation, recoloring, highlighting..
 
 TODO
 Double spin btns, step issue, exponential button in extfc.cc and elsewhere?
+Qinterf objects: Qt::Tool, parenting
 
 Button defaulting. button state indication.  FIXED, all of the buttons other
 than Apply/Dismiss have auto default turned off.

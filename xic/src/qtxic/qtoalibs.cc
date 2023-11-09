@@ -253,7 +253,7 @@ QToaLibsDlg::QToaLibsDlg(GRobject c)
     connect(lb_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
         this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
     connect(lb_list, SIGNAL(itemSelectionChanged()),
-        this, SLOT(item_selection_changed()));
+        this, SLOT(item_selection_changed_slot()));
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_PROP))
@@ -716,10 +716,8 @@ QToaLibsDlg::tech_btn_slot(bool state)
 
 
 void
-QToaLibsDlg::dest_btn_slot(bool state)
+QToaLibsDlg::dest_btn_slot()
 {
-(void)state;
-//XXX do something with arg?
     if (!lb_selection)
         return;
     sLstr lstr;
@@ -781,7 +779,7 @@ QToaLibsDlg::elec_btn_slot(bool state)
 
 
 void
-QToaLibsDlg::item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
+QToaLibsDlg::current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
 {
 }
 
@@ -833,7 +831,7 @@ QToaLibsDlg::item_clicked_slot(QTreeWidgetItem *itm, int col)
 
 
 void
-QToaLibsDlg::item_selection_change()
+QToaLibsDlg::item_selection_changed_slot()
 {
 //XXX check this
 // Selection callback for the list.  This is called when a new selection
@@ -846,7 +844,7 @@ QToaLibsDlg::item_selection_change()
     QList<QTreeWidgetItem*> lst = w->selectedItems();
     char *text = 0;
     if (!lst.isEmpty())
-        text = lstring::copy(lst[2]->text(0).toLatin1().constData());
+        text = lstring::copy(lst[0]->text(2).toLatin1().constData());
 
     if (!text || !strcmp(nolibmsg, text)) {
         set_sensitive(false);

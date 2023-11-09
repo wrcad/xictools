@@ -1463,7 +1463,6 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
     delete [] s;
     drag->setMimeData(mimedata);
     drag->exec(Qt::CopyAction);
-    delete drag;
 }
 
 

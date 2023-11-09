@@ -96,6 +96,7 @@ private slots:
     void help_btn_slot();
     void dismiss_btn_slot();
     void master_menu_slot(int);
+    void master_menu_active_slot(int);
     void place_btn_slot(bool);
     void menu_placebtn_slot(bool);
     void mmlen_change_slot(int);

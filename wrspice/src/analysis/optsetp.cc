@@ -72,6 +72,7 @@ const char *spkw_pivrel         = "pivrel";
 const char *spkw_pivtol         = "pivtol";
 const char *spkw_rampup         = "rampup";
 const char *spkw_reltol         = "reltol";
+const char *spkw_resmin         = "resmin";
 const char *spkw_temp           = "temp";
 const char *spkw_tnom           = "tnom";
 const char *spkw_trapratio      = "trapratio";
@@ -260,6 +261,10 @@ sOPTIONS::setup(const sOPTIONS *opts, OMRG_TYPE mt)
     if (opts->OPTreltol_given && (mt == OMRG_GLOBAL || !OPTreltol_given)) {
         OPTreltol = opts->OPTreltol;
         OPTreltol_given = 1;
+    }
+    if (opts->OPTresmin_given && (mt == OMRG_GLOBAL || !OPTresmin_given)) {
+        OPTresmin = opts->OPTresmin;
+        OPTresmin_given = 1;
     }
     if (opts->OPTtemp_given && (mt == OMRG_GLOBAL || !OPTtemp_given)) {
         OPTtemp = opts->OPTtemp;
@@ -656,6 +661,15 @@ OPTanalysis::setParm(sJOB *anal, int which, IFdata *data)
         }
         else
             opt->OPTreltol_given = 0;
+        break;
+    case OPT_RESMIN:
+        if (value) {
+            CHECKSET(spkw_resmin, opt->OPTresmin, value->rValue,
+                DEF_resmin_MIN, DEF_resmin_MAX)
+            opt->OPTresmin_given = 1;
+        }
+        else
+            opt->OPTresmin_given = 0;
         break;
     case OPT_TEMP:
         if (value) {
@@ -1165,6 +1179,8 @@ namespace {
             "Transient source ramp-up time"),
         IFparm(spkw_reltol,         OPT_RELTOL,         IF_IO|IF_REAL,
             "Relative error tolerence"),
+        IFparm(spkw_resmin,         OPT_RESMIN,         IF_IO|IF_REAL,
+            "Minimum resistor absolute value"),
         IFparm(spkw_temp,           OPT_TEMP,           IF_IO|IF_REAL,
             "Operating temperature"),
         IFparm(spkw_tnom,           OPT_TNOM,           IF_IO|IF_REAL,

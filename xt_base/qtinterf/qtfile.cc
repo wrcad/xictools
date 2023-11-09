@@ -378,7 +378,6 @@ file_tree_widget::start_drag()
                     Qt::MoveAction);
             }
 #endif
-            delete drag;
         }
     }
 }
@@ -577,7 +576,6 @@ file_list_widget::start_drag()
                     Qt::MoveAction);
             }
 #endif
-            delete drag;
         }
     }
 }

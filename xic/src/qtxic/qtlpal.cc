@@ -1003,7 +1003,6 @@ QTlayerPaletteDlg::motion_slot(QMouseEvent *ev)
         mimedata->setData(QTltab::mime_type(), qdata);
         drag->setMimeData(mimedata);
         drag->exec(Qt::CopyAction);
-        delete drag;
     }
 }
 

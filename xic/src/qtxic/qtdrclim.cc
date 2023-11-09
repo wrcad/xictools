@@ -236,7 +236,7 @@ QTdrcLimitsDlg::QTdrcLimitsDlg(GRobject c)
     dl_skip = new QCheckBox(tr(
         "Skip interactive test of moved/copied/placed cells"));
     grid->addWidget(dl_skip, 4, 0, 1, 2);
-    connect(dl_skip, SIGNAL(valueChanged(int)),
+    connect(dl_skip, SIGNAL(stateChanged(int)),
         this, SLOT(skip_btn_slot(int)));
 
     // DRC error level

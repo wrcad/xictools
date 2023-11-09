@@ -68,6 +68,8 @@ QTbag::PopUpMultiCol(stringlist *symlist, const char *title,
     static int mcol_count;
 
     QTmcolDlg *mcol = new QTmcolDlg(this, symlist, title, buttons, pgsize);
+    if (wb_shell)
+       mcol->set_transient_for(wb_shell);
     mcol->register_callback(callback);
     mcol->set_callback_arg(arg);
     mcol->set_no_dragdrop(no_dd);
@@ -605,7 +607,6 @@ QTmcolDlg::mouse_motion_slot(QMouseEvent *ev)
     delete [] sel;
     drag->setMimeData(mimedata);
     drag->exec(Qt::CopyAction);
-    delete drag;
 }
 
 

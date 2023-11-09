@@ -191,18 +191,20 @@ RESdev::temperature(sGENmodel *genmod, sCKT *ckt)
                     return (E_SYNTAX);
             }
             if (res_given) {
-                if (fabs(inst->RESresist) < RES_RMIN) {
+                if (fabs(inst->RESresist) < ckt->CKTcurTask->TSKresmin) {
                     if (inst->RESresist < 0.0) {
-                        inst->RESresist = -RES_RMIN;
+                        inst->RESresist = -ckt->CKTcurTask->TSKresmin;
                         DVO.textOut(OUT_WARNING,
                             "%s: resistance reset to %g by rmin limiting.",
-                            (const char*)inst->GENname, -RES_RMIN);
+                            (const char*)inst->GENname,
+                            -ckt->CKTcurTask->TSKresmin);
                     }
                     else {
-                        inst->RESresist = RES_RMIN;
+                        inst->RESresist = ckt->CKTcurTask->TSKresmin;
                         DVO.textOut(OUT_WARNING,
                             "%s: resistance reset to %g by rmin limiting.",
-                            (const char*)inst->GENname, RES_RMIN);
+                            (const char*)inst->GENname,
+                            ckt->CKTcurTask->TSKresmin);
                     }
                 }
                 inst->RESconduct = inst->RESm/(inst->RESresist * factor);

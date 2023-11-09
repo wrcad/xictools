@@ -68,9 +68,6 @@ Authors: 1985 Thomas L. Quarles
 // Use WRspice pre-loading of constant elements when possible.
 #define USE_PRELOAD
 
-// Minimum resistance allowed.
-#define RES_RMIN 1e-5
-
 namespace RES {
 
 struct RESdev : public IFdevice

@@ -538,6 +538,10 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_reltol_MIN          1e-8
 #define DEF_reltol_MAX          1e-2
 
+#define DEF_resmin              1e-5
+#define DEF_resmin_MIN          1e-15
+#define DEF_resmin_MAX          10
+
 #define DEF_temp                wrsREFTEMP
 #define DEF_temp_MIN            0.0
 #define DEF_temp_MAX            1000.0 + wrsCONSTCtoK
@@ -683,6 +687,7 @@ struct sOPTIONS : public sJOB
             OPTpivtol       = DEF_pivotAbsTol;
             OPTrampup       = DEF_rampup;
             OPTreltol       = DEF_reltol;
+            OPTresmin       = DEF_resmin;
             OPTtemp         = DEF_temp;
             OPTtnom         = DEF_nomTemp;
             OPTtrapratio    = DEF_trapRatio;
@@ -753,6 +758,7 @@ struct sOPTIONS : public sJOB
             OPTpivtol_given         = 0;
             OPTrampup_given         = 0;
             OPTreltol_given         = 0;
+            OPTresmin_given         = 0;
             OPTtemp_given           = 0;
             OPTtnom_given           = 0;
             OPTtrapratio_given      = 0;
@@ -834,6 +840,7 @@ struct sOPTIONS : public sJOB
     double OPTpivtol;
     double OPTrampup;
     double OPTreltol;
+    double OPTresmin;
     double OPTtemp;
     double OPTtnom;
     double OPTtrapratio;
@@ -904,6 +911,7 @@ struct sOPTIONS : public sJOB
     unsigned int OPTpivtol_given:1;
     unsigned int OPTrampup_given:1;
     unsigned int OPTreltol_given:1;
+    unsigned int OPTresmin_given:1;
     unsigned int OPTtemp_given:1;
     unsigned int OPTtnom_given:1;
     unsigned int OPTtrapratio_given:1;
@@ -1011,6 +1019,7 @@ struct sTASK : public cBase
 #define TSKpivotAbsTol      TSKopts.OPTpivtol
 #define TSKrampUpTime       TSKopts.OPTrampup
 #define TSKreltol           TSKopts.OPTreltol
+#define TSKresmin           TSKopts.OPTresmin
 #define TSKtemp             TSKopts.OPTtemp
 #define TSKnomTemp          TSKopts.OPTtnom
 #define TSKtrapRatio        TSKopts.OPTtrapratio

@@ -1013,6 +1013,8 @@ QTbag::PopUpTextEditor(const char *fname,
 {
     QTeditDlg *text = new QTeditDlg(this, QTeditDlg::Editor, fname,
         source, arg);
+    if (wb_shell)
+        text->set_transient_for(wb_shell);
     text->register_callback(editsave);
     text->set_visible(true);
     return (text);
@@ -1025,7 +1027,7 @@ QTbag::PopUpTextEditor(const char *fname,
 GReditPopup *
 QTbag::PopUpFileBrowser(const char *fname)
 {
-/*
+/*XXX what is this?
     // If we happen to already have this file open, reread it.
     // Called after something was appended to the file.
     for (interface::svptr *s = widgets; s; s = s->nextItem()) {
@@ -1044,6 +1046,8 @@ QTbag::PopUpFileBrowser(const char *fname)
 */
     QTeditDlg *text = new QTeditDlg(this, QTeditDlg::Browser, fname,
         false, 0);
+    if (wb_shell)
+        text->set_transient_for(wb_shell);
     text->set_visible(true);
     return (text);
 }
@@ -1076,6 +1080,8 @@ QTbag::PopUpStringEditor(const char *string,
 
     QTeditDlg *text = new QTeditDlg(this, QTeditDlg::StringEditor,
         string, false, arg);
+    if (wb_shell)
+        text->set_transient_for(wb_shell);
     text->register_callback(callback);
     text->set_visible(true);
     return (text);
@@ -1094,6 +1100,8 @@ QTbag::PopUpMail(const char *subject, const char *mailaddr,
 {
     QTeditDlg *text = new QTeditDlg(this, QTeditDlg::Mailer, 0,
         false, 0);
+    if (wb_shell)
+        text->set_transient_for(wb_shell);
     if (subject && *subject)
         text->set_mailsubj(subject);
     if (mailaddr && *mailaddr)
@@ -1124,6 +1132,8 @@ QTbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
         if (wb_fontsel)
             return;
         wb_fontsel = new QTfontDlg(this, indx, arg);
+        if (wb_shell)
+            wb_fontsel->set_transient_for(wb_shell);
         wb_fontsel->register_callback(cb);
         wb_fontsel->register_caller(caller, false, true);
         wb_fontsel->show();
@@ -1159,6 +1169,8 @@ QTbag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw*)
     if (bstate) {
         // This will set this->hc if successful.
         QTprintDlg *pd = new QTprintDlg(caller, cb, mode, this);
+        if (wb_shell)
+           pd->set_transient_for(wb_shell);
 
         if (!wb_hc)
             delete pd;
@@ -1211,6 +1223,8 @@ QTbag::PopUpFileSelector(FsMode mode, GRloc loc,
     void *arg, const char *root_or_fname)
 {
     QTfileDlg *fsel = new QTfileDlg(this, mode, arg, root_or_fname);
+    if (wb_shell)
+       fsel->set_transient_for(wb_shell);
     fsel->register_callback(cb);
     fsel->register_quit_callback(down_cb);
     fsel->set_visible(true);
@@ -1293,6 +1307,8 @@ QTbag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
     void(*action_callback)(bool, void*), void *action_arg)
 {
     QTaffirmDlg *affirm = new QTaffirmDlg(this, question_str);
+    if (wb_shell)
+       affirm->set_transient_for(wb_shell);
     affirm->register_caller(caller, false, true);
     affirm->register_callback(action_callback);
     affirm->set_callback_arg(action_arg);
@@ -1312,6 +1328,8 @@ QTbag::PopUpNumeric(GRobject caller, GRloc loc, const char *prompt_str,
 {
     QTnumDlg *numer = new QTnumDlg(this, prompt_str, initd, mind, maxd,
         del, numd);
+    if (wb_shell)
+       numer->set_transient_for(wb_shell);
     numer->register_caller(caller, false, true);
     numer->register_callback(action_callback);
     numer->set_callback_arg(action_arg);
@@ -1342,6 +1360,8 @@ QTbag::PopUpEditString(GRobject caller, GRloc loc, const char *prompt_string,
 {
     QTledDlg *inp = new QTledDlg(this, prompt_string, init_str, btnstr,
         multiline);
+    if (wb_shell)
+       inp->set_transient_for(wb_shell);
     inp->register_caller(caller, false, true);
     inp->register_callback((GRledPopup::GRledCallback)action_callback);
     inp->set_callback_arg(action_arg);
@@ -1367,6 +1387,8 @@ QTbag::PopUpInput(const char *label_str, const char *initial_str,
     if (wb_input)
         delete wb_input;
     wb_input = new QTledDlg(this, label_str, initial_str, action_str, false);
+    if (wb_shell)
+       wb_input->set_transient_for(wb_shell);
     wb_input->register_callback((GRledPopup::GRledCallback)action_callback);
     wb_input->set_callback_arg(arg);
     wb_input->set_ignore_return(true);
@@ -1395,6 +1417,8 @@ QTbag::PopUpMessage(const char *string, bool err, bool desens,
         wb_message->popdown();
 
     QTmsgDlg *mesg = new QTmsgDlg(this, string, err, STY_NORM);
+    if (wb_shell)
+       mesg->set_transient_for(wb_shell);
     if (!multi)
         wb_message = mesg;
     QTdev::self()->SetPopupLocation(loc, wb_message, wb_shell);
@@ -1438,6 +1462,8 @@ QTbag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
     else {
         wb_warning = new QTtextDlg(this, message_str, QTtextDlg::PuWarn,
             style);
+        if (wb_shell)
+           wb_warning->set_transient_for(wb_shell);
         wb_warning->set_visible(true);
         QTdev::self()->SetPopupLocation(loc, wb_warning, wb_shell);
     }
@@ -1464,6 +1490,8 @@ QTbag::PopUpErr(ShowMode mode, const char *message_str, STYtype style,
     }
     else {
         wb_error = new QTtextDlg(this, message_str, QTtextDlg::PuErr, style);
+        if (wb_shell)
+           wb_error->set_transient_for(wb_shell);
         wb_error->set_visible(true);
         QTdev::self()->SetPopupLocation(loc, wb_error, wb_shell);
     }
@@ -1474,7 +1502,10 @@ QTbag::PopUpErr(ShowMode mode, const char *message_str, STYtype style,
 GRtextPopup *
 QTbag::PopUpErrText(const char *message_str, STYtype style, GRloc loc)
 {
-    QTtextDlg *mesg = new QTtextDlg(this, message_str, QTtextDlg::PuErrAlso, style);
+    QTtextDlg *mesg = new QTtextDlg(this, message_str, QTtextDlg::PuErrAlso,
+        style);
+    if (wb_shell)
+       mesg->set_transient_for(wb_shell);
     mesg->set_visible(true);
     QTdev::self()->SetPopupLocation(loc, mesg, wb_shell);
     return (mesg);
@@ -1499,6 +1530,8 @@ QTbag::PopUpInfo(ShowMode mode, const char *msg, STYtype style, GRloc loc)
     }
     else {
         wb_info = new QTtextDlg(this, msg, QTtextDlg::PuInfo, style);
+        if (wb_shell)
+           wb_info->set_transient_for(wb_shell);
         wb_info->setTitle("Info");
         wb_info->set_visible(true);
         QTdev::self()->SetPopupLocation(loc, wb_info, wb_shell);
@@ -1527,6 +1560,8 @@ QTbag::PopUpInfo2(ShowMode mode, const char *msg, bool(*cb)(bool, void*),
     }
     else {
         wb_info2 = new QTtextDlg(this, msg, QTtextDlg::PuInfo2, style);
+        if (wb_shell)
+           wb_info2->set_transient_for(wb_shell);
         wb_info2->set_visible(true);
         wb_info2->register_callback(cb);
         wb_info2->set_callback_arg(arg);
@@ -1554,6 +1589,8 @@ QTbag::PopUpHTMLinfo(ShowMode mode, const char *msg, GRloc loc)
     }
     else {
         wb_htinfo = new QTtextDlg(this, msg, QTtextDlg::PuHTML, STY_HTML);
+        if (wb_shell)
+           wb_htinfo->set_transient_for(wb_shell);
         wb_htinfo->set_visible(true);
         QTdev::self()->SetPopupLocation(loc, wb_htinfo, wb_shell);
     }

@@ -141,6 +141,7 @@ extern const char *spkw_pivrel;
 extern const char *spkw_pivtol;
 extern const char *spkw_rampup;
 extern const char *spkw_reltol;
+extern const char *spkw_resmin;
 extern const char *spkw_temp;
 extern const char *spkw_tnom;
 extern const char *spkw_trapratio;
