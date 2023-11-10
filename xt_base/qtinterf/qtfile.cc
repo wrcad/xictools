@@ -656,6 +656,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     f_temp_string = 0;
     f_filter_index = 0;
     f_no_disable_go = false;
+    f_reverted = false;
 
     if (owner)
         owner->MonitorAdd(this);
@@ -699,6 +700,9 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
             f_rootdir = lstring::copy("/");
     }
     else if (f_config == fsSAVE || f_config == fsOPEN) {
+        // Don't steal focus
+//        setAttribute(Qt::WA_ShowWithoutActivating);
+//XXX file selector comes up empty
         // name should be tilde and dot expanded
         char *fn;
         if (root_or_fname && *root_or_fname) {
@@ -1566,6 +1570,8 @@ QTfileDlg::list_select_slot(QListWidgetItem *cur, QListWidgetItem*)
         char *str = lstring::copy(cur->text().toLatin1().constData());
         select_file(str);
         delete [] str;
+        if (p_path_set)
+            (*p_path_set)(get_selection());
     }
     else
         select_file(0);
@@ -2071,6 +2077,17 @@ QTfileDlg::check_slot()
 
     for (int i = 0; i < dead_list.size(); i++)
         delete dead_list.at(i);
+
+    if (!f_reverted) {
+        // Give the focus back to the parent.
+        if (f_config == fsSAVE || f_config == fsOPEN) {
+            if (parent()) {
+                ((QWidget*)parent())->activateWindow();
+                ((QWidget*)parent())->setFocus();
+            }
+        }
+        f_reverted = true;
+    }
 }
 
 

@@ -108,8 +108,8 @@ public:
     void set_label();
     void flash(QTreeWidgetItem*);
 
-    QSize sizeHint() const { return (QSize(500, 250)); }
-    QSize minimumSizeHint() const { return (QSize(250, 125)); }
+    QSize sizeHint() const      { return (QSize(500, 250)); }
+    QSize minimumSizeHint()     const { return (QSize(250, 125)); }
 
     static void DoFileAction(QTbag*, const char*, const char*, ActionType);
 
@@ -183,6 +183,7 @@ private:
     char        *f_temp_string;
     int         f_filter_index;
     bool        f_no_disable_go;
+    bool        f_reverted;
 
     QIcon closed_folder_icon;
     QIcon open_folder_icon;

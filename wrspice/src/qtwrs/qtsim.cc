@@ -598,11 +598,20 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
         grid->addWidget(entry->qtent(), 3, 2);
     }
 
+    entry = KWGET(spkw_resmin);
+    if (entry) {
+        dblpr(tbuf, 2, DEF_resmin, true);
+        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry, tbuf);
+        grid->addWidget(entry->qtent(), 4, 0);
+        entry->qtent()->setup(DEF_gmax, 0.1, 0.0, 0.0, 2);
+    }
+
     entry = KWGET(spkw_useadjoint);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->qtent(), 4, 0);
+        grid->addWidget(entry->qtent(), 4, 1);
     }
+
     grid->setRowStretch(5, 1);
 
     // Temperature page
