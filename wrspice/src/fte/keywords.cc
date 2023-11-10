@@ -4325,6 +4325,34 @@ struct KWent_reltol : public KWent
     }
 };
 
+struct KWent_resmin : public KWent
+{
+    KWent_resmin() { set(
+        spkw_resmin,
+        VTYP_REAL, DEF_resmin_MIN, DEF_resmin_MAX,
+        "Minimum resistor absolute value, default "
+            STRINGIFY(DEF_resmin) "."); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset) {
+            if (v->type() == VTYP_NUM && v->integer() >= min &&
+                    v->integer() <= max) {
+                double dval = v->integer();
+                v->set_real(dval);
+            }
+            else if (!(v->type() == VTYP_REAL && v->real() >= min &&
+                    v->real() <= max)) {
+                error_pr(word, 0, pr_real(min, max));
+                return;
+            }
+        }
+        if (checknset(word, isset, v))
+            return;
+        KWent::callback(isset, v);
+    }
+};
+
 struct KWent_temp : public KWent
 {
     KWent_temp() { set(
@@ -5575,6 +5603,7 @@ Kword *cKeyWords::KWsim[] = {
     new KWent_rampup(),
     new KWent_reltol(),
     new KWent_renumber(),
+    new KWent_resmin(),
     new KWent_savecurrent(),
     new KWent_spice3(),
     new KWent_srcsteps(),
@@ -5612,6 +5641,7 @@ Kword *cKeyWords::KWsim[] = {
     new KWent_pivrel(),
     new KWent_pivtol(),
     new KWent_reltol(),
+    new KWent_resmin(),
     new KWent_temp(),
     new KWent_tnom(),
     new KWent_trapratio(),

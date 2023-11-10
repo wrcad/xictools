@@ -192,6 +192,8 @@ options
       <td>Time to ramp up sources in transient analysis.</td></tr>
     <tr><td><a href="reltol"><tt>reltol</tt></a></td>
       <td>The relative error tolerance of the program.</td></tr>
+    <tr><td><a href="resmin"><tt>resmin</tt></a></td>
+      <td>The smallest absolute resistor value.</td></tr>
     <tr><td><a href="temp"><tt>temp</tt></a></td>
       <td>The assumed circuit operating temperature.</td></tr>
     <tr><td><a href="tnom"><tt>tnom</tt></a></td>
@@ -298,6 +300,8 @@ options
     <tr><td><a href="spice3"><tt>spice3</tt></a></td>
       <td>Use the SPICE3 integration level control logic in transient
       analysis.</td></tr>
+    <tr><td><a href="translate"><tt>translate</tt></a></td>
+      <td>Map node numbers into matrix assuming nodes are not compact.</td></tr>
     <tr><td><a href="trapcheck"><tt>trapcheck</tt></a></td>
       <td>Perform trapezoidal integration convergence testing in transient
       analysis.</td></tr>
@@ -305,8 +309,8 @@ options
       <td>Enable compaction in LTRA (lossy transmission line) model.</td></tr>
     <tr><td><a href="useadjoint"><tt>useadjoint</tt></a></td>
       <td>Create an adjoint matric for BSIM device current monitoring.</td></tr>
-    <tr><td><a href="translate"><tt>translate</tt></a></td>
-      <td>Map node numbers into matrix assuming nodes are not compact.</td></tr>
+    <tr><td><a href="vasilent"><tt>vasilent</tt></a></td>
+      <td>Suppress run time text output from Verilog-A device models.</td></tr>
 
     <tr><th colspan=2>String Parameters</th></tr>
     <tr><td><a href="method"><tt>method</tt></a></td>
@@ -390,6 +394,7 @@ unused_vars
 !!REDIRECT pivtol       sim_vars#pivtol
 !!REDIRECT rampup       sim_vars#rampup
 !!REDIRECT reltol       sim_vars#reltol
+!!REDIRECT resmin       sim_vars#resmin
 !!REDIRECT temp         sim_vars#temp
 !!REDIRECT tnom         sim_vars#tnom
 !!REDIRECT trtol        sim_vars#trtol
@@ -431,11 +436,13 @@ unused_vars
 !!REDIRECT renumber     sim_vars#renumber
 !!REDIRECT savecurrent  sim_vars#savecurrent
 !!REDIRECT spice3       sim_vars#spice3
+!!REDIRECT translate    sim_vars#translate
 !!REDIRECT trapcheck    sim_vars#trapcheck
 !!REDIRECT notrapcheck  sim_vars#notrapcheck
 !!REDIRECT trytocompact sim_vars#trytocompact
 !!REDIRECT useadjoint   sim_vars#useadjoint
 !!REDIRECT noadjoint    sim_vars#noadjoint
+!!REDIRECT vasilent     sim_vars#vasilent
 
 !! strings
 !!REDIRECT method       sim_vars#method
@@ -825,6 +832,22 @@ Simulation Option Variables
       <th>Set From</th></tr>
     <tr><td>1e-3</td> <td>1e-8</td> <td>1e-2</td>
       <th>Simulation Options/Tolerance</th></tr>
+    </table>
+    </dl>
+
+!! 110923
+    <a name="resmin>
+    <dl>
+    <dt><tt>resmin><dd>
+    This is the smallest absolute value of a resistor, smaller given
+    values are set to this value, preserving sign.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1e-15</td> <td>10</td> <td>1e-5</td>
+      <th>Simulation Options/Devices</th></tr>
     </table>
     </dl>
 
@@ -1782,6 +1805,13 @@ Simulation Option Variables
     Where set: <b>Simulation Options/Timestep</b>
     </dl>
 
+!! 110923
+    <a name="translate"></a>
+    <dl>
+    <dt><tt>translate</tt><dd>
+    This should be ignored.  It enables some unneeded processing when
+    building the circuit matrix internally.
+
 !! 082015
     <a name="trapcheck"></a>
     <dl>
@@ -1865,10 +1895,15 @@ Simulation Option Variables
     could be set to disable the feature.  The <tt>noadjoint</tt>
     option is no longer recognized.
 
-    <p>
-    Where set: <b>Simulation Options/Devices</b>
-    </dl>
+!! 110923
+    <a name="vasilent"></a>
+    <dl>
+    <dt><tt>vasilent</tt><dd>
+    When set, text generated from Verilog-A models is suppressed while
+    simulating.  This can be used to prevent debugging or other
+    messages from appearing on the screen.
 
+    <p>
     <h3>String Parameters</h3>
 
 !! 082015

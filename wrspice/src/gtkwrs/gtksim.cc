@@ -930,6 +930,20 @@ GTKtoolbar::PopUpSimDefs(ShowMode mode, int x, int y)
         (GtkAttachOptions)0, 2, 2);
     entrycount++;
 
+    entry = KWGET(spkw_resmin);
+    if (entry) {
+        dblpr(tbuf, 2, DEF_resmin, true);
+        entry->ent = new xEnt(kw_real_func);
+        entry->xent()->setup(DEF_resmin, 0.1, 0.0, 0.0, 2);
+        entry->xent()->mode = KW_FLOAT;
+        entry->xent()->create_widgets(entry, tbuf, kw_float_hdlr);
+
+        gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
+            entrycount, entrycount + 1,
+            (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+            (GtkAttachOptions)0, 2, 2);
+    }
+
     entry = KWGET(spkw_useadjoint);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
